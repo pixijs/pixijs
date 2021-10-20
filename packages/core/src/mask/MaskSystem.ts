@@ -1,10 +1,16 @@
+import type { IMaskTarget } from './MaskData';
 import { MaskData } from './MaskData';
 import { SpriteMaskFilter } from '../filters/spriteMask/SpriteMaskFilter';
-import { MASK_TYPES } from '@pixi/constants';
+import { FILTER_CHECK_RESULT, MASK_TYPES } from '@pixi/constants';
 
 import type { ISystem } from '../ISystem';
-import type { IMaskTarget } from './MaskData';
 import type { Renderer } from '../Renderer';
+import { ScissorMaskHandler } from '@pixi/core';
+
+export interface IMaskHandler
+{
+    checkMask(renderer: Renderer, maskData: MaskData): FILTER_CHECK_RESULT;
+}
 
 /**
  * System plugin to the renderer to manage masks.
@@ -39,6 +45,11 @@ export class MaskSystem implements ISystem
      */
     public enableScissor: boolean;
 
+    /**
+     * Containers can use this as default mask handler. It has to be passed to push()
+     */
+    public defaultHandler: IMaskHandler;
+
     /** Pool of used sprite mask filters. */
     protected readonly alphaMaskPool: Array<SpriteMaskFilter[]>;
 
@@ -67,6 +78,8 @@ export class MaskSystem implements ISystem
 
         this.maskStack = [];
         this.alphaMaskIndex = 0;
+
+        this.defaultHandler = new ScissorMaskHandler();
     }
 
     /**
@@ -88,8 +101,10 @@ export class MaskSystem implements ISystem
      *
      * @param {PIXI.DisplayObject} target - Display Object to push the mask to
      * @param {PIXI.MaskData|PIXI.Sprite|PIXI.Graphics|PIXI.DisplayObject} maskData - The masking data.
+     * @param handler - affects mask logic, can stop it from applying
+     * @returns all the data about applied mask. Please do not store it, it might be pooled!
      */
-    push(target: IMaskTarget, maskDataOrTarget: MaskData|IMaskTarget): void
+    push(target: IMaskTarget, maskDataOrTarget: MaskData|IMaskTarget, handler?: IMaskHandler): MaskData
     {
         let maskData = maskDataOrTarget as MaskData;
 
@@ -117,7 +132,16 @@ export class MaskSystem implements ISystem
             this.maskStack.push(maskData);
         }
 
-        if (maskData.enabled)
+        if (handler)
+        {
+            maskData.checkResult = handler.checkMask(this.renderer, maskData);
+            if (maskData.checkResult === FILTER_CHECK_RESULT.DONT_RENDER)
+            {
+                return maskData;
+            }
+        }
+
+        if (maskData.enabled && maskData.checkResult === FILTER_CHECK_RESULT.RENDER)
         {
             switch (maskData.type)
             {
@@ -140,6 +164,8 @@ export class MaskSystem implements ISystem
         {
             this.maskStack.push(maskData);
         }
+
+        return maskData;
     }
 
     /**
@@ -160,7 +186,7 @@ export class MaskSystem implements ISystem
             return;
         }
 
-        if (maskData.enabled)
+        if (maskData.enabled && maskData.checkResult === FILTER_CHECK_RESULT.RENDER)
         {
             switch (maskData.type)
             {
@@ -215,6 +241,7 @@ export class MaskSystem implements ISystem
         {
             const matrix = maskObject.worldTransform;
 
+            // TODO: check current renderer projection
             // TODO: move the check to the matrix itself
             // we are checking that its orthogonal and x rotation is 0 90 180 or 270
 

@@ -2,6 +2,33 @@ import { AbstractMaskSystem } from './AbstractMaskSystem';
 
 import type { Renderer } from '../Renderer';
 import type { MaskData } from './MaskData';
+import { FILTER_CHECK_RESULT, MASK_TYPES } from '@pixi/constants';
+import { IMaskHandler } from '@pixi/core';
+import { Matrix, Rectangle } from '@pixi/math';
+
+export class ScissorMaskHandler implements IMaskHandler
+{
+    checkMask(renderer: Renderer, maskData: MaskData): FILTER_CHECK_RESULT
+    {
+        if (maskData.type !== MASK_TYPES.SCISSOR)
+        {
+            return FILTER_CHECK_RESULT.RENDER;
+        }
+
+        renderer.scissor.calcScissorRect(maskData);
+
+        const rect = maskData._scissorRect;
+
+        if (rect.x < 1 || rect.y < 1)
+        {
+            return FILTER_CHECK_RESULT.DONT_RENDER;
+        }
+
+        return FILTER_CHECK_RESULT.DRY_RUN;
+    }
+}
+
+const tempMatrix = new Matrix();
 
 /**
  * System plugin to the renderer to manage scissor masking.
@@ -48,23 +75,21 @@ export class ScissorSystem extends AbstractMaskSystem
 
         maskObject.renderable = true;
 
-        const prevData = maskData._scissorRect;
-        const bounds = maskObject.getBounds(true);
+        if (!maskData._boundsTransformed)
+        {
+            this.calcScissorRect(maskData);
+        }
+
         const { gl } = this.renderer;
 
         maskObject.renderable = false;
 
-        if (prevData)
-        {
-            bounds.fit(prevData);
-        }
-        else
+        if (maskData._scissorEnable)
         {
             gl.enable(gl.SCISSOR_TEST);
         }
 
         maskData._scissorCounter++;
-        maskData._scissorRect = bounds;
         this._useCurrent();
     }
 
@@ -89,39 +114,87 @@ export class ScissorSystem extends AbstractMaskSystem
     }
 
     /**
+     * evaluates _boundsTransformed, _scissorRect, _scissorEnable for MaskData
+     * @param maskData
+     */
+    calcScissorRect(maskData: MaskData): void
+    {
+        const prevData = maskData._scissorRect;
+        const { renderer } = this;
+        const renderTextureSystem = renderer.renderTexture;
+
+        maskData._boundsTransformed = maskData.maskObject.getBounds();
+        this.roundFrameToPixels(maskData._boundsTransformed,
+            renderTextureSystem.current ? renderTextureSystem.current.resolution : renderer.resolution,
+            renderTextureSystem.sourceFrame,
+            renderTextureSystem.destinationFrame,
+            renderer.projection.transform);
+
+        const rect = maskData._boundsTransformed.clone();
+
+        maskData._scissorEnable = !prevData;
+        if (prevData)
+        {
+            rect.fit(prevData);
+        }
+        maskData._scissorRect = rect;
+    }
+
+    /**
      * Setup renderer to use the current scissor data.
      * @private
      */
     _useCurrent(): void
     {
         const rect = this.maskStack[this.maskStack.length - 1]._scissorRect;
-        const rt = this.renderer.renderTexture.current;
-        const { transform, sourceFrame, destinationFrame } = this.renderer.projection;
-        const resolution = rt ? rt.resolution : this.renderer.resolution;
-        const sx = destinationFrame.width / sourceFrame.width;
-        const sy = destinationFrame.height / sourceFrame.height;
 
-        let x = (((rect.x - sourceFrame.x) * sx) + destinationFrame.x) * resolution;
-        let y = (((rect.y - sourceFrame.y) * sy) + destinationFrame.y) * resolution;
-        let width = rect.width * sx * resolution;
-        let height = rect.height * sy * resolution;
-
-        if (transform)
-        {
-            x += transform.tx * resolution;
-            y += transform.ty * resolution;
-        }
-        if (!rt)
+        if (!this.renderer.renderTexture.current)
         {
             // flipY. In future we'll have it over renderTextures as an option
-            y = this.renderer.height - height - y;
+            rect.y = this.renderer.height - rect.height - rect.y;
         }
 
-        x = Math.round(x);
-        y = Math.round(y);
-        width = Math.round(width);
-        height = Math.round(height);
+        this.renderer.gl.scissor(rect.x, rect.y, rect.width, rect.height);
+    }
 
-        this.renderer.gl.scissor(x, y, width, height);
+    private roundFrameToPixels(
+        frame: Rectangle,
+        resolution: number,
+        bindingSourceFrame: Rectangle,
+        bindingDestinationFrame: Rectangle,
+        transform?: Matrix,
+    )
+    {
+        if (transform)
+        {
+            const { a, b, c, d } = transform;
+
+            // Skip if skew/rotation present in matrix, except for multiple of 90° rotation. If rotation
+            // is a multiple of 90°, then either pair of (b,c) or (a,d) will be (0,0).
+            if ((Math.abs(b) > 1e-4 || Math.abs(c) > 1e-4)
+                && (Math.abs(a) > 1e-4 || Math.abs(d) > 1e-4))
+            {
+                return;
+            }
+        }
+
+        transform = transform ? tempMatrix.copyFrom(transform) : tempMatrix.identity();
+
+        // Get forward transform from world space to screen space
+        transform
+            .translate(-bindingSourceFrame.x, -bindingSourceFrame.y)
+            .scale(
+                bindingDestinationFrame.width / bindingSourceFrame.width,
+                bindingDestinationFrame.height / bindingSourceFrame.height)
+            .translate(bindingDestinationFrame.x, bindingDestinationFrame.y);
+
+        // Convert frame to screen space
+        (this.renderer.filter as any).transformAABB(transform, frame);
+
+        frame.fit(bindingDestinationFrame);
+        frame.x = Math.round(frame.x * resolution);
+        frame.y = Math.round(frame.y * resolution);
+        frame.width = Math.round(frame.width * resolution);
+        frame.height = Math.round(frame.height * resolution);
     }
 }

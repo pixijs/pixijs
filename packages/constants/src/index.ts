@@ -505,3 +505,16 @@ export enum BUFFER_TYPE {
     // NOT YET SUPPORTED
     UNIFORM_BUFFER = 35345,
 }
+
+/**
+ * For functions that check whether to render subtree, dont render, or render but dont apply effect
+ *
+ * @property {number} DONT_RENDER - do not render subtree at all
+ * @property {number} RENDER - apply filter/mask and render subtree
+ * @property {number} DRY_RUN - render subtree without filter/mask
+ */
+export enum FILTER_CHECK_RESULT {
+    DONT_RENDER = 0,
+    RENDER = 1,
+    DRY_RUN = 2,
+}

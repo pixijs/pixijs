@@ -1,4 +1,4 @@
-import { MASK_TYPES, MSAA_QUALITY } from '@pixi/constants';
+import { FILTER_CHECK_RESULT, MASK_TYPES, MSAA_QUALITY } from '@pixi/constants';
 import { settings } from '@pixi/settings';
 import { ISpriteMaskFilter } from '@pixi/core';
 
@@ -62,6 +62,8 @@ export class MaskData
     /** If enabled is true the mask is applied, if false it will not. */
     public enabled: boolean;
 
+    /** If mask checker approved mask */
+    public checkResult: FILTER_CHECK_RESULT;
     /**
      * The sprite mask filter wrapped in an array.
      * @private
@@ -85,6 +87,16 @@ export class MaskData
      * Null if _scissorCounter is zero, rectangle instance if positive.
      */
     _scissorRect: Rectangle;
+
+    /**
+     * Whether we should enable scissor at this mask
+     */
+    _scissorEnable: boolean;
+
+    /**
+     * Mask bounds, after applying projection transform
+     */
+    _boundsTransformed: Rectangle;
 
     /**
      * Targeted element. Temporary variable set by MaskSystem
@@ -112,7 +124,10 @@ export class MaskData
         this._stencilCounter = 0;
         this._scissorCounter = 0;
         this._scissorRect = null;
+        this._scissorEnable = false;
+        this._boundsTransformed = null;
         this._target = null;
+        this.checkResult = FILTER_CHECK_RESULT.RENDER;
     }
 
     /**
@@ -157,6 +172,8 @@ export class MaskData
         }
 
         this._target = null;
+        this._boundsTransformed = null;
+        this.checkResult = FILTER_CHECK_RESULT.RENDER;
     }
 
     /** Copies counters from maskData above, called from pushMask(). */

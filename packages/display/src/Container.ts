@@ -644,18 +644,23 @@ export class Container extends DisplayObject
             renderer.filter.push(this, this._enabledFilters);
         }
 
+        let doRender = false;
+
         if (mask)
         {
-            renderer.mask.push(this, this._mask);
+            doRender = renderer.mask.push(this, this._mask, renderer.mask.defaultHandler).checkResult > 0;
         }
 
-        // add this object to the batch, only rendered if it has a texture.
-        this._render(renderer);
-
-        // now loop through the children and make sure they get rendered
-        for (let i = 0, j = this.children.length; i < j; i++)
+        if (doRender)
         {
-            this.children[i].render(renderer);
+            // add this object to the batch, only rendered if it has a texture.
+            this._render(renderer);
+
+            // now loop through the children and make sure they get rendered
+            for (let i = 0, j = this.children.length; i < j; i++)
+            {
+                this.children[i].render(renderer);
+            }
         }
 
         if (flush)
