@@ -89,11 +89,6 @@ export class MaskData
     _scissorRect: Rectangle;
 
     /**
-     * Whether we should enable scissor at this mask
-     */
-    _scissorEnable: boolean;
-
-    /**
      * Mask bounds, after applying projection transform
      */
     _boundsTransformed: Rectangle;
@@ -124,7 +119,6 @@ export class MaskData
         this._stencilCounter = 0;
         this._scissorCounter = 0;
         this._scissorRect = null;
-        this._scissorEnable = false;
         this._boundsTransformed = null;
         this._target = null;
         this.checkResult = FILTER_CHECK_RESULT.RENDER;

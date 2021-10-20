@@ -82,7 +82,7 @@ export class ScissorSystem extends AbstractMaskSystem
 
         maskObject.renderable = false;
 
-        if (maskData._scissorEnable)
+        if (maskData._scissorCounter === 0)
         {
             gl.enable(gl.SCISSOR_TEST);
         }
@@ -112,7 +112,7 @@ export class ScissorSystem extends AbstractMaskSystem
     }
 
     /**
-     * evaluates _boundsTransformed, _scissorRect, _scissorEnable for MaskData
+     * evaluates _boundsTransformed, _scissorRect for MaskData
      * @param maskData
      */
     calcScissorRect(maskData: MaskData): void
@@ -130,7 +130,6 @@ export class ScissorSystem extends AbstractMaskSystem
 
         const rect = maskData._boundsTransformed.clone();
 
-        maskData._scissorEnable = !prevData;
         if (prevData)
         {
             rect.fit(prevData);
