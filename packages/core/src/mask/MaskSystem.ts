@@ -102,14 +102,15 @@ export class MaskSystem implements ISystem
             maskData = d;
         }
 
+        const maskAbove = this.maskStack.length !== 0 ? this.maskStack[this.maskStack.length - 1] : null;
+
+        maskData.copyCountersOrReset(maskAbove);
+
         if (maskData.autoDetect)
         {
             this.detect(maskData);
         }
 
-        const maskAbove = this.maskStack.length !== 0 ? this.maskStack[this.maskStack.length - 1] : null;
-
-        maskData.copyCountersOrReset(maskAbove);
         maskData._target = target;
 
         if (maskData.type !== MASK_TYPES.SPRITE)
@@ -204,34 +205,14 @@ export class MaskSystem implements ISystem
         if (maskObject.isSprite)
         {
             maskData.type = MASK_TYPES.SPRITE;
-
-            return;
         }
-        maskData.type = MASK_TYPES.STENCIL;
-        // detect scissor in graphics
-        if (this.enableScissor
-            && maskObject.isFastRect
-            && maskObject.isFastRect())
+        else if (this.enableScissor && this.renderer.scissor.testScissor(maskData))
         {
-            const matrix = maskObject.worldTransform;
-
-            // TODO: move the check to the matrix itself
-            // we are checking that its orthogonal and x rotation is 0 90 180 or 270
-
-            let rotX = Math.atan2(matrix.b, matrix.a);
-            let rotXY = Math.atan2(matrix.d, matrix.c);
-
-            // use the nearest degree to 0.01
-            rotX = Math.round(rotX * (180 / Math.PI) * 100);
-            rotXY = Math.round(rotXY * (180 / Math.PI) * 100) - rotX;
-
-            rotX = ((rotX % 9000) + 9000) % 9000;
-            rotXY = ((rotXY % 18000) + 18000) % 18000;
-
-            if (rotX === 0 && rotXY === 9000)
-            {
-                maskData.type = MASK_TYPES.SCISSOR;
-            }
+            maskData.type = MASK_TYPES.SCISSOR;
+        }
+        else
+        {
+            maskData.type = MASK_TYPES.STENCIL;
         }
     }
 
