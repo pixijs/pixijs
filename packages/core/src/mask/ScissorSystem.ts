@@ -5,6 +5,7 @@ import type { MaskData } from './MaskData';
 import { Matrix, Rectangle } from '@pixi/math';
 
 const tempMatrix = new Matrix();
+
 /**
  * System plugin to the renderer to manage scissor masking.
  *
