@@ -2,7 +2,7 @@ import { AbstractMaskSystem } from './AbstractMaskSystem';
 
 import type { Renderer } from '../Renderer';
 import type { MaskData } from './MaskData';
-import { Matrix, Rectangle } from "@pixi/math";
+import { Matrix, Rectangle } from '@pixi/math';
 
 const tempMatrix = new Matrix();
 /**
@@ -57,6 +57,7 @@ export class ScissorSystem extends AbstractMaskSystem
         maskObject.renderable = true;
 
         const rect = maskObject.getBounds();
+
         this.roundFrameToPixels(rect,
             renderTextureSystem.current ? renderTextureSystem.current.resolution : renderer.resolution,
             renderTextureSystem.sourceFrame,
@@ -148,7 +149,6 @@ export class ScissorSystem extends AbstractMaskSystem
         frame.width = Math.round(frame.width * resolution);
         frame.height = Math.round(frame.height * resolution);
     }
-
 
     /**
      * Applies the Mask and adds it to the current stencil stack.
