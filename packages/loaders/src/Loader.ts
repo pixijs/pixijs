@@ -775,23 +775,24 @@ namespace Loader
      */
     export type OnStartSignal = (loader: Loader) => void;
     /**
-     * When the progress changes the loader and resource are disaptched.
+     * When the progress changes the loader and resource are dispatched.
      * @param loader - The loader the progress is advancing on.
      * @param resource - The resource that has completed or failed to cause the progress to advance.
      */
     export type OnProgressSignal = (loader: Loader, resource: LoaderResource) => void;
     /**
-     * When a load completes the loader and resource are dispatched.
+     * When a load completes without error the loader and resource are dispatched.
      * @param loader - The loader that has started loading resources.
+     * @param resource - The resource that has completed.
      */
-    export type OnLoadSignal = (loader: Loader) => void;
+    export type OnLoadSignal = (loader: Loader, resource: LoaderResource) => void;
     /**
      * When the loader starts loading resources it dispatches this callback.
      * @param loader - The loader that has started loading resources.
      */
     export type OnCompleteSignal = (loader: Loader, resources: Dict<LoaderResource>) => void;
     /**
-     * When an error occurrs the loader and resource are disaptched.
+     * When an error occurs the loader and resource are dispatched.
      * @param loader - The loader the error happened in.
      * @param resource - The resource that caused the error.
      */
