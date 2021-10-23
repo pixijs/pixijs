@@ -33,43 +33,37 @@ export interface IUniformData
 /**
  * Helper class to create a shader program.
  *
- * @class
  * @memberof PIXI
  */
 export class Program
 {
     public id: number;
+
+    /** Source code for the vertex shader. */
     public vertexSrc: string;
+
+    /** Source code for the fragment shader. */
     public fragmentSrc: string;
+
     nameCache: any;
     glPrograms: { [ key: number ]: GLProgram};
     syncUniforms: any;
+
     /** Assigned when a program is first bound to the shader system. */
     attributeData: { [key: string]: IAttributeData};
+
     /** Assigned when a program is first bound to the shader system. */
     uniformData: {[key: string]: IUniformData};
 
     /**
-     * @param {string} [vertexSrc] - The source of the vertex shader.
-     * @param {string} [fragmentSrc] - The source of the fragment shader.
-     * @param {string} [name] - Name for shader
+     * @param vertexSrc - The source of the vertex shader.
+     * @param fragmentSrc - The source of the fragment shader.
+     * @param name - Name for shader
      */
     constructor(vertexSrc?: string, fragmentSrc?: string, name = 'pixi-shader')
     {
         this.id = UID++;
-
-        /**
-         * The vertex shader.
-         *
-         * @member {string}
-         */
         this.vertexSrc = vertexSrc || Program.defaultVertexSrc;
-
-        /**
-         * The fragment shader.
-         *
-         * @member {string}
-         */
         this.fragmentSrc = fragmentSrc || Program.defaultFragmentSrc;
 
         this.vertexSrc = this.vertexSrc.trim();
@@ -104,11 +98,9 @@ export class Program
     }
 
     /**
-     * The default vertex shader source
+     * The default vertex shader source.
      *
-     * @static
      * @constant
-     * @member {string}
      */
     static get defaultVertexSrc(): string
     {
@@ -116,11 +108,9 @@ export class Program
     }
 
     /**
-     * The default fragment shader source
+     * The default fragment shader source.
      *
-     * @static
      * @constant
-     * @member {string}
      */
     static get defaultFragmentSrc(): string
     {
@@ -128,14 +118,14 @@ export class Program
     }
 
     /**
-     * A short hand function to create a program based of a vertex and fragment shader
-     * this method will also check to see if there is a cached program.
+     * A short hand function to create a program based of a vertex and fragment shader.
      *
-     * @param {string} [vertexSrc] - The source of the vertex shader.
-     * @param {string} [fragmentSrc] - The source of the fragment shader.
-     * @param {string} [name=pixi-shader] - Name for shader
+     * This method will also check to see if there is a cached program.
      *
-     * @returns {PIXI.Program} an shiny new Pixi shader!
+     * @param vertexSrc - The source of the vertex shader.
+     * @param fragmentSrc - The source of the fragment shader.
+     * @param name - Name for shader
+     * @returns A shiny new PixiJS shader program!
      */
     static from(vertexSrc?: string, fragmentSrc?: string, name?: string): Program
     {
