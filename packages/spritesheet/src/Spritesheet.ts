@@ -114,6 +114,11 @@ export class Spritesheet
 
     /** Current batch index being processed. */
     private _batchIndex: number;
+
+    /**
+     * Callback when parse is completed.
+     * @type {Function}
+     */
     private _callback: (textures: Dict<Texture>) => void;
 
     /**
@@ -137,12 +142,6 @@ export class Spritesheet
         this._frames = this.data.frames;
         this._frameKeys = Object.keys(this._frames);
         this._batchIndex = 0;
-
-        /**
-         * Callback when parse is completed.
-         * @type {Function}
-         * @private
-         */
         this._callback = null;
     }
 
@@ -327,7 +326,7 @@ export class Spritesheet
     /**
      * Destroy Spritesheet and don't use after this.
      *
-     * @param {boolean}[destroyBase=false] - Whether to destroy the base texture as well
+     * @param {boolean} [destroyBase=false] - Whether to destroy the base texture as well
      */
     public destroy(destroyBase = false): void
     {
