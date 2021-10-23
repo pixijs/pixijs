@@ -15,55 +15,53 @@ export interface ISupportDict {
 /**
  * System plugin to the renderer to manage the context.
  *
- * @class
- * @extends PIXI.System
  * @memberof PIXI
  */
 export class ContextSystem implements ISystem
 {
+    /**
+     * Either 1 or 2 to reflect the WebGL version being used.
+     *
+     * @readonly
+     */
     public webGLVersion: number;
+
+    /**
+     * Features supported by current context.
+     *
+     * @type {object}
+     * @readonly
+     * @property {boolean} uint32Indices - Support for 32-bit indices buffer.
+     */
     readonly supports: ISupportDict;
 
     protected CONTEXT_UID: number;
     protected gl: IRenderingContext;
 
+    /**
+     * Extensions available.
+     *
+     * @type {object}
+     * @readonly
+     * @property {WEBGL_draw_buffers} drawBuffers - WebGL v1 extension
+     * @property {WEBGL_depth_texture} depthTexture - WebGL v1 extension
+     * @property {OES_texture_float} floatTexture - WebGL v1 extension
+     * @property {WEBGL_lose_context} loseContext - WebGL v1 extension
+     * @property {OES_vertex_array_object} vertexArrayObject - WebGL v1 extension
+     * @property {EXT_texture_filter_anisotropic} anisotropicFiltering - WebGL v1 and v2 extension
+     */
     public extensions: WebGLExtensions;
+
     private renderer: Renderer;
 
-    /**
-     * @param {PIXI.Renderer} renderer - The renderer this System works for.
-     */
+    /** @param renderer - The renderer this System works for. */
     constructor(renderer: Renderer)
     {
         this.renderer = renderer;
 
-        /**
-         * Either 1 or 2 to reflect the WebGL version being used
-         * @member {number}
-         * @readonly
-         */
         this.webGLVersion = 1;
-
-        /**
-         * Extensions being used
-         * @member {object}
-         * @readonly
-         * @property {WEBGL_draw_buffers} drawBuffers - WebGL v1 extension
-         * @property {WEBGL_depth_texture} depthTexture - WebGL v1 extension
-         * @property {OES_texture_float} floatTexture - WebGL v1 extension
-         * @property {WEBGL_lose_context} loseContext - WebGL v1 extension
-         * @property {OES_vertex_array_object} vertexArrayObject - WebGL v1 extension
-         * @property {EXT_texture_filter_anisotropic} anisotropicFiltering - WebGL v1 and v2 extension
-         */
         this.extensions = {};
 
-        /**
-         * Features supported by current context
-         * @member {object}
-         * @private
-         * @readonly
-         * @property {boolean} uint32Indices - Supports of 32-bit indices buffer
-         */
         this.supports = {
             uint32Indices: false,
         };
@@ -78,7 +76,7 @@ export class ContextSystem implements ISystem
 
     /**
      * `true` if the context is lost
-     * @member {boolean}
+     *
      * @readonly
      */
     get isLost(): boolean
@@ -87,8 +85,9 @@ export class ContextSystem implements ISystem
     }
 
     /**
-     * Handle the context change event
-     * @param {WebGLRenderingContext} gl - new webgl context
+     * Handles the context change event.
+     *
+     * @param {WebGLRenderingContext} gl - New WebGL context.
      */
     protected contextChange(gl: IRenderingContext): void
     {
@@ -104,7 +103,7 @@ export class ContextSystem implements ISystem
     }
 
     /**
-     * Initialize the context
+     * Initializes the context.
      *
      * @protected
      * @param {WebGLRenderingContext} gl - WebGL context
@@ -135,8 +134,8 @@ export class ContextSystem implements ISystem
     /**
      * Helper class to create a WebGL Context
      *
-     * @param {HTMLCanvasElement} canvas - the canvas element that we will get the context from
-     * @param {object} options - An options object that gets passed in to the canvas element containing the
+     * @param canvas - the canvas element that we will get the context from
+     * @param options - An options object that gets passed in to the canvas element containing the
      *    context attributes
      * @see https://developer.mozilla.org/en/docs/Web/API/HTMLCanvasElement/getContext
      * @return {WebGLRenderingContext} the WebGL context
@@ -175,11 +174,7 @@ export class ContextSystem implements ISystem
         return this.gl;
     }
 
-    /**
-     * Auto-populate the extensions
-     *
-     * @protected
-     */
+    /** Auto-populate the {@link PIXI.ContextSystem.extensions extensions}. */
     protected getExtensions(): void
     {
         // time to set up default extensions that Pixi uses.
@@ -228,7 +223,6 @@ export class ContextSystem implements ISystem
     /**
      * Handles a lost webgl context
      *
-     * @protected
      * @param {WebGLContextEvent} event - The context lost event.
      */
     protected handleContextLost(event: WebGLContextEvent): void
@@ -236,11 +230,7 @@ export class ContextSystem implements ISystem
         event.preventDefault();
     }
 
-    /**
-     * Handles a restored webgl context
-     *
-     * @protected
-     */
+    /** Handles a restored webgl context. */
     protected handleContextRestored(): void
     {
         this.renderer.runners.contextChange.emit(this.gl);
@@ -264,11 +254,7 @@ export class ContextSystem implements ISystem
         }
     }
 
-    /**
-     * Handle the post-render runner event
-     *
-     * @protected
-     */
+    /** Handle the post-render runner event. */
     protected postrender(): void
     {
         if (this.renderer.renderingToScreen)
@@ -278,10 +264,9 @@ export class ContextSystem implements ISystem
     }
 
     /**
-     * Validate context
+     * Validate context.
      *
-     * @protected
-     * @param {WebGLRenderingContext} gl - Render context
+     * @param {WebGLRenderingContext} gl - Render context.
      */
     protected validateContext(gl: IRenderingContext): void
     {
