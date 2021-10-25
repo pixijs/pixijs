@@ -23,7 +23,6 @@ export class Rectangle
 
     /** @default 0 */
     public y: number;
-    
     /** @default 0 */
     public width: number;
 
