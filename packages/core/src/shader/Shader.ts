@@ -4,33 +4,28 @@ import { UniformGroup } from './UniformGroup';
 import type { Dict } from '@pixi/utils';
 
 /**
- * A helper class for shaders
+ * A helper class for shaders.
  *
- * @class
  * @memberof PIXI
  */
 export class Shader
 {
+    /** Program that the shader uses. */
     public program: Program;
     public uniformGroup: UniformGroup;
 
     /**
-     * used internally to bind uniform buffer objects
+     * Used internally to bind uniform buffer objects.
      * @ignore
      */
     uniformBindCount = 0;
 
     /**
-     * @param {PIXI.Program} [program] - The program the shader will use.
-     * @param {object} [uniforms] - Custom uniforms to use to augment the built-in ones.
+     * @param program - The program the shader will use.
+     * @param uniforms - Custom uniforms to use to augment the built-in ones.
      */
     constructor(program: Program, uniforms?: Dict<any>)
     {
-        /**
-         * Program that the shader uses
-         *
-         * @member {PIXI.Program}
-         */
         this.program = program;
 
         // lets see whats been passed in
@@ -84,9 +79,9 @@ export class Shader
     }
 
     /**
-     * Shader uniform values, shortcut for `uniformGroup.uniforms`
+     * Shader uniform values, shortcut for `uniformGroup.uniforms`.
+     *
      * @readonly
-     * @member {object}
      */
     get uniforms(): Dict<any>
     {
@@ -94,13 +89,12 @@ export class Shader
     }
 
     /**
-     * A short hand function to create a shader based of a vertex and fragment shader
+     * A short hand function to create a shader based of a vertex and fragment shader.
      *
-     * @param {string} [vertexSrc] - The source of the vertex shader.
-     * @param {string} [fragmentSrc] - The source of the fragment shader.
-     * @param {object} [uniforms] - Custom uniforms to use to augment the built-in ones.
-     *
-     * @returns {PIXI.Shader} an shiny new Pixi shader!
+     * @param vertexSrc - The source of the vertex shader.
+     * @param fragmentSrc - The source of the fragment shader.
+     * @param uniforms - Custom uniforms to use to augment the built-in ones.
+     * @returns A shiny new PixiJS shader!
      */
     static from(vertexSrc?: string, fragmentSrc?: string, uniforms?: Dict<any>): Shader
     {
