@@ -42,7 +42,6 @@ export class Rectangle
      * @param width - The overall width of the rectangle
      * @param height - The overall height of the rectangle
      */
-    
     constructor(x = 0, y = 0, width = 0, height = 0)
     {
         this.x = Number(x);
