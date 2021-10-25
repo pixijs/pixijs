@@ -87,6 +87,12 @@ export class MaskData
     _scissorRect: Rectangle;
 
     /**
+     * pre-computed scissor rect
+     * does become _scissorRect when mask is actually pushed
+     */
+    _scissorRectLocal: Rectangle;
+
+    /**
      * Targeted element. Temporary variable set by MaskSystem
      * @member {PIXI.DisplayObject}
      * @private
@@ -112,6 +118,7 @@ export class MaskData
         this._stencilCounter = 0;
         this._scissorCounter = 0;
         this._scissorRect = null;
+        this._scissorRectLocal = null;
         this._target = null;
     }
 
@@ -157,6 +164,7 @@ export class MaskData
         }
 
         this._target = null;
+        this._scissorRectLocal = null;
     }
 
     /** Copies counters from maskData above, called from pushMask(). */
