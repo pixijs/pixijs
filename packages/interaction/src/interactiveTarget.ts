@@ -37,7 +37,7 @@ type Cursor = 'auto'
     | 'grab'
     | 'grabbing';
 
-interface IHitArea {
+export interface IHitArea {
     contains(x: number, y: number): boolean;
 }
 
