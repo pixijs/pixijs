@@ -9,7 +9,6 @@
       <excludeFolder url="file://$MODULE_DIR$/packages/app/lib" />
       <excludeFolder url="file://$MODULE_DIR$/packages/basis/dist" />
       <excludeFolder url="file://$MODULE_DIR$/packages/basis/assets" />
-      <excludeFolder url="file://$MODULE_DIR$/packages/basis/src" />
       <excludeFolder url="file://$MODULE_DIR$/packages/canvas/canvas-display/dist" />
       <excludeFolder url="file://$MODULE_DIR$/packages/canvas/canvas-display/lib" />
       <excludeFolder url="file://$MODULE_DIR$/packages/canvas/canvas-extract/dist" />
@@ -19,7 +18,6 @@
       <excludeFolder url="file://$MODULE_DIR$/packages/canvas/canvas-mesh/dist" />
       <excludeFolder url="file://$MODULE_DIR$/packages/canvas/canvas-mesh/lib" />
       <excludeFolder url="file://$MODULE_DIR$/packages/canvas/canvas-particle-container/dist" />
-      <excludeFolder url="file://$MODULE_DIR$/packages/canvas/canvas-particle-container/src" />
       <excludeFolder url="file://$MODULE_DIR$/packages/canvas/canvas-particles/lib" />
       <excludeFolder url="file://$MODULE_DIR$/packages/canvas/canvas-prepare/dist" />
       <excludeFolder url="file://$MODULE_DIR$/packages/canvas/canvas-prepare/lib" />
