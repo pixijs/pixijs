@@ -8,7 +8,7 @@ import { Dict } from '@pixi/utils';
 const MAX_PROGRESS = 100;
 const rgxExtractUrlHash = /(#[\w-]+)?$/;
 
-export type ILoaderMiddleware = (resource: LoaderResource, next?: (...args: any[]) => void) => void;
+export type ILoaderMiddleware = (resource: LoaderResource, next: (...args: any[]) => void) => void;
 
 export interface ILoaderAdd {
     (this: Loader, name: string, url: string, callback?: LoaderResource.OnCompleteSignal): Loader;
@@ -821,12 +821,12 @@ export interface ILoaderPlugin {
      * @param resource - resource
      * @param next - next middleware
      */
-    pre?(resource: LoaderResource, next?: (...args: any[]) => void): void;
+    pre?(resource: LoaderResource, next: (...args: any[]) => void): void;
 
     /**
      * Middleware function to run after load
      * @param resource - resource
      * @param next - next middleware
      */
-    use?(resource: LoaderResource, next?: (...args: any[]) => void): void;
+    use?(resource: LoaderResource, next: (...args: any[]) => void): void;
 }
