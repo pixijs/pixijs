@@ -60,114 +60,88 @@ export interface ISpritesheetData {
  * Default anchor points (see {@link PIXI.Texture#defaultAnchor}) and grouping of animation sprites are currently only
  * supported by TexturePacker.
  *
- * @class
  * @memberof PIXI
  */
 export class Spritesheet
 {
-    /**
-     * The maximum number of Textures to build per process.
-     *
-     * @type {number}
-     * @default 1000
-     */
+    /** The maximum number of Textures to build per process. */
     static readonly BATCH_SIZE = 1000;
 
+    /** Reference to ths source texture. */
     public baseTexture: BaseTexture;
+
+    /**
+     * A map containing all textures of the sprite sheet.
+     * Can be used to create a {@link PIXI.Sprite|Sprite}:
+     * ```js
+     * new PIXI.Sprite(sheet.textures["image.png"]);
+     * ```
+     */
     public textures: Dict<Texture>;
+
+    /**
+     * A map containing the textures for each animation.
+     * Can be used to create an {@link PIXI.AnimatedSprite|AnimatedSprite}:
+     * ```js
+     * new PIXI.AnimatedSprite(sheet.animations["anim_name"])
+     * ```
+     */
     public animations: Dict<Texture[]>;
+
+    /**
+     * Reference to the original JSON data.
+     * @type {Object}
+     */
     public data: ISpritesheetData;
+
+    /** The resolution of the spritesheet. */
     public resolution: number;
 
+    /**
+     * Reference to original source image from the Loader. This reference is retained so we
+     * can destroy the Texture later on. It is never used internally.
+     */
     private _texture: Texture;
+
+    /**
+     * Map of spritesheet frames.
+     * @type {Object}
+     */
     private _frames: Dict<ISpritesheetFrameData>;
+
+    /** Collection of frame names. */
     private _frameKeys: string[];
+
+    /** Current batch index being processed. */
     private _batchIndex: number;
+
+    /**
+     * Callback when parse is completed.
+     * @type {Function}
+     */
     private _callback: (textures: Dict<Texture>) => void;
 
     /**
-     * @param {PIXI.BaseTexture|PIXI.Texture} baseTexture - Reference to the source BaseTexture object.
+     * @param baseTexture - Reference to the source BaseTexture object.
      * @param {Object} data - Spritesheet image data.
-     * @param {string} [resolutionFilename] - The filename to consider when determining
+     * @param resolutionFilename - The filename to consider when determining
      *        the resolution of the spritesheet. If not provided, the imageUrl will
      *        be used on the BaseTexture.
      */
     constructor(texture: BaseTexture | Texture, data: ISpritesheetData, resolutionFilename: string = null)
     {
-        /**
-         * Reference to original source image from the Loader. This reference is retained so we
-         * can destroy the Texture later on. It is never used internally.
-         * @type {PIXI.Texture}
-         * @private
-         */
         this._texture = texture instanceof Texture ? texture : null;
-
-        /**
-         * Reference to ths source texture.
-         * @type {PIXI.BaseTexture}
-         */
         this.baseTexture = texture instanceof BaseTexture ? texture : this._texture.baseTexture;
-
-        /**
-         * A map containing all textures of the sprite sheet.
-         * Can be used to create a {@link PIXI.Sprite|Sprite}:
-         * ```js
-         * new PIXI.Sprite(sheet.textures["image.png"]);
-         * ```
-         * @member {Object}
-         */
         this.textures = {};
-
-        /**
-         * A map containing the textures for each animation.
-         * Can be used to create an {@link PIXI.AnimatedSprite|AnimatedSprite}:
-         * ```js
-         * new PIXI.AnimatedSprite(sheet.animations["anim_name"])
-         * ```
-         * @member {Object}
-         */
         this.animations = {};
-
-        /**
-         * Reference to the original JSON data.
-         * @type {Object}
-         */
         this.data = data;
 
         const resource = this.baseTexture.resource as ImageResource;
 
-        /**
-         * The resolution of the spritesheet.
-         * @type {number}
-         */
         this.resolution = this._updateResolution(resolutionFilename || (resource ? resource.url : null));
-
-        /**
-         * Map of spritesheet frames.
-         * @type {Object}
-         * @private
-         */
         this._frames = this.data.frames;
-
-        /**
-         * Collection of frame names.
-         * @type {string[]}
-         * @private
-         */
         this._frameKeys = Object.keys(this._frames);
-
-        /**
-         * Current batch index being processed.
-         * @type {number}
-         * @private
-         */
         this._batchIndex = 0;
-
-        /**
-         * Callback when parse is completed.
-         * @type {Function}
-         * @private
-         */
         this._callback = null;
     }
 
@@ -175,10 +149,9 @@ export class Spritesheet
      * Generate the resolution from the filename or fallback
      * to the meta.scale field of the JSON data.
      *
-     * @private
-     * @param {string} resolutionFilename - The filename to use for resolving
+     * @param resolutionFilename - The filename to use for resolving
      *        the default resolution.
-     * @return {number} Resolution to use for spritesheet.
+     * @return Resolution to use for spritesheet.
      */
     private _updateResolution(resolutionFilename: string = null): number
     {
@@ -230,8 +203,7 @@ export class Spritesheet
     /**
      * Process a batch of frames
      *
-     * @private
-     * @param {number} initialFrameIndex - The index of frame to start.
+     * @param initialFrameIndex - The index of frame to start.
      */
     private _processFrames(initialFrameIndex: number): void
     {
@@ -305,11 +277,7 @@ export class Spritesheet
         }
     }
 
-    /**
-     * Parse animations config
-     *
-     * @private
-     */
+    /** Parse animations config. */
     private _processAnimations(): void
     {
         const animations = this.data.animations || {};
@@ -326,11 +294,7 @@ export class Spritesheet
         }
     }
 
-    /**
-     * The parse has completed.
-     *
-     * @private
-     */
+    /** The parse has completed. */
     private _parseComplete(): void
     {
         const callback = this._callback;
@@ -340,11 +304,7 @@ export class Spritesheet
         callback.call(this, this.textures);
     }
 
-    /**
-     * Begin the next batch of textures.
-     *
-     * @private
-     */
+    /** Begin the next batch of textures. */
     private _nextBatch(): void
     {
         this._processFrames(this._batchIndex * Spritesheet.BATCH_SIZE);
