@@ -37,7 +37,7 @@
     "prerelease": "run-s clean:build test",
     "postversion": "run-s lint:src types build:prod build:types",
     "release": "lerna version --exact --force-publish",
-    "version": "ts-node scripts/fixPeerVersions.ts && git add package-lock.json",
+    "version": "ts-node scripts/fixPeerVersions.ts && npm i --package-lock-only && git add package-lock.json",
     "prepublish-ci": "run-s build:types",
     "publish-ci": "lerna publish from-package --yes --no-verify-access",
     "webdoc": "webdoc"
@@ -48,7 +48,7 @@
   "engines": {
     "node": ">=12",
     "yarn": "please-use-npm",
-    "npm": ">=7"
+    "npm": ">=7 <=7.20.2"
   },
   "nyc": {
     "all": true,
