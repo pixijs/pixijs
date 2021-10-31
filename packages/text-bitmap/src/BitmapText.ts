@@ -31,6 +31,7 @@ interface CharRenderData {
     charCode: number;
     position: Point;
     prevSpaces: number;
+    xAdvance: number;
 }
 
 // If we ever need more than two pools, please make a Dict or something better.
@@ -313,6 +314,7 @@ export class BitmapText extends Container
                 line: 0,
                 charCode: 0,
                 prevSpaces: 0,
+                xAdvance: 0,
                 position: new Point(),
             };
 
@@ -322,6 +324,7 @@ export class BitmapText extends Container
             charRenderData.position.x = pos.x + charData.xOffset + (this._letterSpacing / 2);
             charRenderData.position.y = pos.y + charData.yOffset;
             charRenderData.prevSpaces = spaceCount;
+            charRenderData.xAdvance = charData.xAdvance;
 
             chars.push(charRenderData);
 
@@ -350,6 +353,9 @@ export class BitmapText extends Container
         }
 
         const lastChar = charsInput[charsInput.length - 1];
+        const lastRenderData = chars[chars.length - 1];
+
+        lastLineWidth = lastLineWidth - lastRenderData.texture.orig.width + lastRenderData.xAdvance;
 
         if (lastChar !== '\r' && lastChar !== '\n')
         {
