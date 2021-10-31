@@ -31,7 +31,7 @@ interface CharRenderData {
     charCode: number;
     position: Point;
     prevSpaces: number;
-    xAdvance: number;
+    charWidth: number;
 }
 
 // If we ever need more than two pools, please make a Dict or something better.
@@ -262,6 +262,7 @@ export class BitmapText extends Container
 
         let prevCharCode = null;
         let lastLineWidth = 0;
+        let xOffsetWidthComp = 0;
         let maxLineWidth = 0;
         let line = 0;
         let lastBreakPos = -1;
@@ -314,7 +315,7 @@ export class BitmapText extends Container
                 line: 0,
                 charCode: 0,
                 prevSpaces: 0,
-                xAdvance: 0,
+                charWidth: 0,
                 position: new Point(),
             };
 
@@ -324,11 +325,17 @@ export class BitmapText extends Container
             charRenderData.position.x = pos.x + charData.xOffset + (this._letterSpacing / 2);
             charRenderData.position.y = pos.y + charData.yOffset;
             charRenderData.prevSpaces = spaceCount;
-            charRenderData.xAdvance = charData.xAdvance;
+            charRenderData.charWidth = Math.max(charData.texture.orig.width, charData.xAdvance - charData.xOffset);
 
             chars.push(charRenderData);
 
-            lastLineWidth = charRenderData.position.x + charData.texture.orig.width;// Use charRenderData position!
+            if (charRenderData.position.x < 0)
+            {
+                xOffsetWidthComp = Math.min(charRenderData.position.x, xOffsetWidthComp);
+            }
+
+            // Use charRenderData position!
+            lastLineWidth = Math.max(lastLineWidth, charRenderData.position.x + charRenderData.charWidth);
             pos.x += charData.xAdvance + this._letterSpacing;
             maxLineHeight = Math.max(maxLineHeight, (charData.yOffset + charData.texture.height));
             prevCharCode = charCode;
@@ -349,13 +356,12 @@ export class BitmapText extends Container
                 pos.y += data.lineHeight;
                 prevCharCode = null;
                 spaceCount = 0;
+                lastLineWidth = lastBreakWidth;
             }
         }
 
         const lastChar = charsInput[charsInput.length - 1];
-        const lastRenderData = chars[chars.length - 1];
-
-        lastLineWidth = lastLineWidth - lastRenderData.texture.orig.width + lastRenderData.xAdvance;
+        lastLineWidth += Math.abs(xOffsetWidthComp);
 
         if (lastChar !== '\r' && lastChar !== '\n')
         {
