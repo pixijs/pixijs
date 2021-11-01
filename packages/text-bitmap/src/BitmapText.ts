@@ -361,6 +361,7 @@ export class BitmapText extends Container
         }
 
         const lastChar = charsInput[charsInput.length - 1];
+
         lastLineWidth += Math.abs(xOffsetWidthComp);
 
         if (lastChar !== '\r' && lastChar !== '\n')
