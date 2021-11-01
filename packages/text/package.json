@@ -1,6 +1,6 @@
 {
   "name": "@pixi/text",
-  "version": "5.3.10",
+  "version": "5.3.11",
   "main": "lib/text.js",
   "module": "lib/text.es.js",
   "bundle": "dist/text.js",
@@ -24,15 +24,15 @@
     "dist"
   ],
   "dependencies": {
-    "@pixi/core": "5.3.10",
-    "@pixi/math": "5.3.10",
-    "@pixi/settings": "5.3.10",
-    "@pixi/sprite": "5.3.10",
-    "@pixi/utils": "5.3.10"
+    "@pixi/core": "5.3.11",
+    "@pixi/math": "5.3.11",
+    "@pixi/settings": "5.3.11",
+    "@pixi/sprite": "5.3.11",
+    "@pixi/utils": "5.3.11"
   },
   "devDependencies": {
-    "@pixi/canvas-display": "5.3.10",
-    "@pixi/canvas-renderer": "5.3.10",
-    "@pixi/canvas-sprite": "5.3.10"
+    "@pixi/canvas-display": "5.3.11",
+    "@pixi/canvas-renderer": "5.3.11",
+    "@pixi/canvas-sprite": "5.3.11"
   }
 }
