@@ -142,46 +142,42 @@ export class Container extends DisplayObject
      * @param {...PIXI.DisplayObject} children - The DisplayObject(s) to add to the container
      * @return {PIXI.DisplayObject} The first child that was added.
      */
-    addChild<T extends DisplayObject>(...children: [T, ...DisplayObject[]]): T
+    addChild<T extends DisplayObject>(child: T, ...additional: DisplayObject[]): T
     {
         // if there is only one argument we can bypass looping through the them
-        if (children.length > 1)
+        if (additional.length > 0)
         {
             // loop through the array and add all children
-            for (let i = 0; i < children.length; i++)
+            for (let i = 0; i < additional.length; i++)
             {
                 // eslint-disable-next-line prefer-rest-params
-                this.addChild(children[i]);
+                this.addChild(additional[i]);
             }
         }
-        else
+
+        // if the child has a parent then lets remove it as PixiJS objects can only exist in one place
+        if (child.parent)
         {
-            const child = children[0];
-            // if the child has a parent then lets remove it as PixiJS objects can only exist in one place
-
-            if (child.parent)
-            {
-                child.parent.removeChild(child);
-            }
-
-            child.parent = this;
-            this.sortDirty = true;
-
-            // ensure child transform will be recalculated
-            child.transform._parentID = -1;
-
-            this.children.push(child);
-
-            // ensure bounds will be recalculated
-            this._boundsID++;
-
-            // TODO - lets either do all callbacks or all events.. not both!
-            this.onChildrenChange(this.children.length - 1);
-            this.emit('childAdded', child, this, this.children.length - 1);
-            child.emit('added', this);
+            child.parent.removeChild(child);
         }
 
-        return children[0];
+        child.parent = this;
+        this.sortDirty = true;
+
+        // ensure child transform will be recalculated
+        child.transform._parentID = -1;
+
+        this.children.push(child);
+
+        // ensure bounds will be recalculated
+        this._boundsID++;
+
+        // TODO - lets either do all callbacks or all events.. not both!
+        this.onChildrenChange(this.children.length - 1);
+        this.emit('childAdded', child, this, this.children.length - 1);
+        child.emit('added', this);
+
+        return child;
     }
 
     /**
