@@ -144,17 +144,6 @@ export class Container extends DisplayObject
      */
     addChild<T extends DisplayObject>(child: T, ...additional: DisplayObject[]): T
     {
-        // if there is only one argument we can bypass looping through the them
-        if (additional.length > 0)
-        {
-            // loop through the array and add all children
-            for (let i = 0; i < additional.length; i++)
-            {
-                // eslint-disable-next-line prefer-rest-params
-                this.addChild(additional[i]);
-            }
-        }
-
         // if the child has a parent then lets remove it as PixiJS objects can only exist in one place
         if (child.parent)
         {
@@ -176,6 +165,17 @@ export class Container extends DisplayObject
         this.onChildrenChange(this.children.length - 1);
         this.emit('childAdded', child, this, this.children.length - 1);
         child.emit('added', this);
+
+        // if there is only one argument we can bypass looping through the them
+        if (additional.length > 0)
+        {
+            // loop through the array and add all children
+            for (let i = 0; i < additional.length; i++)
+            {
+                // eslint-disable-next-line prefer-rest-params
+                this.addChild(additional[i]);
+            }
+        }
 
         return child;
     }
