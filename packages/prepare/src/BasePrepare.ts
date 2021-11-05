@@ -336,7 +336,7 @@ export class BasePrepare
         // that we could upload
         if (item)
         {
-            this.add(item as IDisplayObjectExtended | IUploadHook | IFindHook);
+            this.add(item as IDisplayObjectExtended | Container | BaseTexture | Texture);
         }
 
         // Get the items for upload from the display
