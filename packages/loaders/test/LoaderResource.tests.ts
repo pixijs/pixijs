@@ -271,7 +271,8 @@ describe('LoaderResource', () =>
         {
             res.onComplete.add(() =>
             {
-                expect(res).to.have.property('data', fixtureData.dataJson);
+                expect(res).to.have.property('data');
+                expect(JSON.stringify(res.data)).to.equal(fixtureData.dataJson);
                 done();
             });
 
