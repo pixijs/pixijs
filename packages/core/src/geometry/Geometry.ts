@@ -36,9 +36,8 @@ const map: Dict<any> = {
  * geometry.addAttribute('positions', [0, 0, 100, 0, 100, 100, 0, 100], 2);
  * geometry.addAttribute('uvs', [0,0,1,0,1,1,0,1],2)
  * geometry.addIndex([0,1,2,1,3,2])
- *
  * ```
- * @class
+ *
  * @memberof PIXI
  */
 export class Geometry
@@ -47,14 +46,31 @@ export class Geometry
     public indexBuffer: Buffer;
     public attributes: {[key: string]: Attribute};
     public id: number;
+
+    /** Whether the geometry is instanced. */
     public instanced: boolean;
+
+    /**
+     * Number of instances in this geometry, pass it to `GeometrySystem.draw()`.
+     *
+     * @default 1
+     */
     public instanceCount: number;
+
+    /**
+     * A map of renderer IDs to webgl VAOs
+     *
+     * @type {object}
+     */
     glVertexArrayObjects: {[key: number]: {[key: string]: WebGLVertexArrayObject}};
     disposeRunner: Runner;
+
+    /** Count of existing (not destroyed) meshes that reference this geometry. */
     refCount: number;
+
     /**
-     * @param {PIXI.Buffer[]} [buffers] - an array of buffers. optional.
-     * @param {object} [attributes] - of the geometry, optional structure of the attributes layout
+     * @param buffers - An array of buffers. optional.
+     * @param attributes - Of the geometry, optional structure of the attributes layout
      */
     constructor(buffers: Array<Buffer> = [], attributes: {[key: string]: Attribute} = {})
     {
@@ -64,50 +80,32 @@ export class Geometry
 
         this.attributes = attributes;
 
-        /**
-         * A map of renderer IDs to webgl VAOs
-         *
-         * @protected
-         * @type {object}
-         */
         this.glVertexArrayObjects = {};
 
         this.id = UID++;
 
         this.instanced = false;
-
-        /**
-         * Number of instances in this geometry, pass it to `GeometrySystem.draw()`
-         * @member {number}
-         * @default 1
-         */
         this.instanceCount = 1;
 
         this.disposeRunner = new Runner('disposeGeometry');
-
-        /**
-         * Count of existing (not destroyed) meshes that reference this geometry
-         * @member {number}
-         */
         this.refCount = 0;
     }
 
     /**
-    *
-    * Adds an attribute to the geometry
-    * Note: `stride` and `start` should be `undefined` if you dont know them, not 0!
-    *
-    * @param {String} id - the name of the attribute (matching up to a shader)
-    * @param {PIXI.Buffer|number[]} buffer - the buffer that holds the data of the attribute . You can also provide an Array and a buffer will be created from it.
-    * @param {Number} [size=0] - the size of the attribute. If you have 2 floats per vertex (eg position x and y) this would be 2
-    * @param {Boolean} [normalized=false] - should the data be normalized.
-    * @param {PIXI.TYPES} [type=PIXI.TYPES.FLOAT] - what type of number is the attribute. Check {PIXI.TYPES} to see the ones available
-    * @param {Number} [stride] - How far apart, in bytes, the start of each value is. (used for interleaving data)
-    * @param {Number} [start] - How far into the array to start reading values (used for interleaving data)
-    * @param {boolean} [instance=false] - Instancing flag
-    *
-    * @return {PIXI.Geometry} returns self, useful for chaining.
-    */
+     *
+     * Adds an attribute to the geometry
+     * Note: `stride` and `start` should be `undefined` if you dont know them, not 0!
+     *
+     * @param id - the name of the attribute (matching up to a shader)
+     * @param {PIXI.Buffer|number[]} buffer - the buffer that holds the data of the attribute . You can also provide an Array and a buffer will be created from it.
+     * @param size - the size of the attribute. If you have 2 floats per vertex (eg position x and y) this would be 2
+     * @param normalized - should the data be normalized.
+     * @param [type=PIXI.TYPES.FLOAT] - what type of number is the attribute. Check {PIXI.TYPES} to see the ones available
+     * @param [stride=0] - How far apart, in bytes, the start of each value is. (used for interleaving data)
+     * @param [start=0] - How far into the array to start reading values (used for interleaving data)
+     * @param instance - Instancing flag
+     * @return - Returns self, useful for chaining.
+     */
     addAttribute(id: string, buffer: Buffer|Float32Array|Uint32Array|Array<number>, size = 0, normalized = false,
         type?: TYPES, stride?: number, start?: number, instance = false): this
     {
@@ -157,10 +155,10 @@ export class Geometry
     }
 
     /**
-     * returns the requested attribute
+     * Returns the requested attribute.
      *
-     * @param {String} id - the name of the attribute required
-     * @return {PIXI.Attribute} the attribute requested.
+     * @param id - The name of the attribute required
+     * @return - The attribute requested.
      */
     getAttribute(id: string): Attribute
     {
@@ -168,10 +166,10 @@ export class Geometry
     }
 
     /**
-     * returns the requested buffer
+     * Returns the requested buffer.
      *
-     * @param {String} id - the name of the buffer required
-     * @return {PIXI.Buffer} the buffer requested.
+     * @param id - The name of the buffer required.
+     * @return - The buffer requested.
      */
     getBuffer(id: string): Buffer
     {
@@ -183,8 +181,8 @@ export class Geometry
     * Adds an index buffer to the geometry
     * The index buffer contains integers, three for each triangle in the geometry, which reference the various attribute buffers (position, colour, UV coordinates, other UV coordinates, normal, …). There is only ONE index buffer.
     *
-    * @param {PIXI.Buffer|number[]} [buffer] - the buffer that holds the data of the index buffer. You can also provide an Array and a buffer will be created from it.
-    * @return {PIXI.Geometry} returns self, useful for chaining.
+    * @param {PIXI.Buffer|number[]} [buffer] - The buffer that holds the data of the index buffer. You can also provide an Array and a buffer will be created from it.
+    * @return - Returns self, useful for chaining.
     */
     addIndex(buffer?: Buffer | IArrayBuffer | number[]): Geometry
     {
@@ -212,9 +210,9 @@ export class Geometry
     }
 
     /**
-     * returns the index buffer
+     * Returns the index buffer
      *
-     * @return {PIXI.Buffer} the index buffer.
+     * @return - The index buffer.
      */
     getIndex(): Buffer
     {
@@ -222,10 +220,10 @@ export class Geometry
     }
 
     /**
-     * this function modifies the structure so that all current attributes become interleaved into a single buffer
+     * This function modifies the structure so that all current attributes become interleaved into a single buffer
      * This can be useful if your model remains static as it offers a little performance boost
      *
-     * @return {PIXI.Geometry} returns self, useful for chaining.
+     * @return - Returns self, useful for chaining.
      */
     interleave(): Geometry
     {
@@ -271,6 +269,7 @@ export class Geometry
         return this;
     }
 
+    /** Get the size of the geometries, in vertices. */
     getSize(): number
     {
         for (const i in this.attributes)
@@ -284,17 +283,13 @@ export class Geometry
         return 0;
     }
 
-    /**
-     * disposes WebGL resources that are connected to this geometry
-     */
+    /** Disposes WebGL resources that are connected to this geometry. */
     dispose(): void
     {
         this.disposeRunner.emit(this, false);
     }
 
-    /**
-     * Destroys the geometry.
-     */
+    /** Destroys the geometry. */
     destroy(): void
     {
         this.dispose();
@@ -305,9 +300,9 @@ export class Geometry
     }
 
     /**
-     * returns a clone of the geometry
+     * Returns a clone of the geometry.
      *
-     * @returns {PIXI.Geometry} a new clone of this geometry
+     * @returns - A new clone of this geometry.
      */
     clone(): Geometry
     {
@@ -343,11 +338,12 @@ export class Geometry
     }
 
     /**
-     * merges an array of geometries into a new single one
-     * geometry attribute styles must match for this operation to work
+     * Merges an array of geometries into a new single one.
      *
-     * @param {PIXI.Geometry[]} geometries - array of geometries to merge
-     * @returns {PIXI.Geometry} shiny new geometry!
+     * Geometry attribute styles must match for this operation to work.
+     *
+     * @param geometries - array of geometries to merge
+     * @return - Shiny new geometry!
      */
     static merge(geometries: Array<Geometry>): Geometry
     {
