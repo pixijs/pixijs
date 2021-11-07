@@ -258,6 +258,7 @@ export class MaskSystem implements ISystem
 
         alphaMaskFilter[0].resolution = resolution;
         alphaMaskFilter[0].multisample = multisample;
+        alphaMaskFilter[0].state = maskData.state;
         alphaMaskFilter[0].maskSprite = maskObject;
 
         const stashFilterArea = target.filterArea;

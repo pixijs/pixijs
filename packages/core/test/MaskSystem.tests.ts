@@ -1,7 +1,8 @@
-import { MASK_TYPES, MSAA_QUALITY } from '@pixi/constants';
+import { BLEND_MODES, MASK_TYPES, MSAA_QUALITY } from '@pixi/constants';
 import { Rectangle, Matrix } from '@pixi/math';
 import { Renderer, MaskData, RenderTexture, Filter, Texture, BaseTexture, CanvasResource,
     SpriteMaskFilter } from '@pixi/core';
+import { Container } from '@pixi/display';
 import { Graphics } from '@pixi/graphics';
 import { Sprite } from '@pixi/sprite';
 import sinon from 'sinon';
@@ -395,5 +396,70 @@ describe('MaskSystem', function ()
         expect(maskData2.filter.maskSprite).to.be.null;
 
         renderTexture.destroy(true);
+    });
+
+    it('should render correctly with NORMAL blend mode', function ()
+    {
+        const container = new Container();
+        const graphics1 = new Graphics().beginFill(0xff0000, 1.0).drawRect(0, 0, 1, 1).endFill();
+        const graphics2 = new Graphics().beginFill(0x00ff00, 1.0).drawRect(0, 0, 1, 1).endFill();
+
+        graphics2.mask = new MaskData(new Sprite(this.textureRed));
+
+        expect(graphics2.mask.blendMode).to.equal(BLEND_MODES.NORMAL);
+
+        container.addChild(graphics1, graphics2);
+
+        const renderTexture = this.renderer.generateTexture(container);
+
+        container.destroy(true);
+
+        this.renderer.renderTexture.bind(renderTexture);
+
+        const pixel = new Uint8Array(4);
+        const gl = this.renderer.gl;
+
+        gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixel);
+
+        renderTexture.destroy(true);
+
+        const [r, g, b, a] = pixel;
+
+        expect(r).to.equal(0x00);
+        expect(g).to.equal(0xff);
+        expect(b).to.equal(0x00);
+        expect(a).to.equal(0xff);
+    });
+
+    it('should render correctly with ADD blend mode', function ()
+    {
+        const container = new Container();
+        const graphics1 = new Graphics().beginFill(0xff0000, 1.0).drawRect(0, 0, 1, 1).endFill();
+        const graphics2 = new Graphics().beginFill(0x00ff00, 1.0).drawRect(0, 0, 1, 1).endFill();
+
+        graphics2.mask = new MaskData(new Sprite(this.textureRed));
+        graphics2.mask.blendMode = BLEND_MODES.ADD;
+
+        container.addChild(graphics1, graphics2);
+
+        const renderTexture = this.renderer.generateTexture(container);
+
+        container.destroy(true);
+
+        this.renderer.renderTexture.bind(renderTexture);
+
+        const pixel = new Uint8Array(4);
+        const gl = this.renderer.gl;
+
+        gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixel);
+
+        renderTexture.destroy(true);
+
+        const [r, g, b, a] = pixel;
+
+        expect(r).to.equal(0xff);
+        expect(g).to.equal(0xff);
+        expect(b).to.equal(0x00);
+        expect(a).to.equal(0xff);
     });
 });

@@ -1,6 +1,7 @@
-import { MASK_TYPES, MSAA_QUALITY } from '@pixi/constants';
+import { BLEND_MODES, MASK_TYPES, MSAA_QUALITY } from '@pixi/constants';
 import { settings } from '@pixi/settings';
 import { ISpriteMaskFilter } from '@pixi/core';
+import { State } from '../state/State';
 
 import type { Rectangle, Matrix } from '@pixi/math';
 import type { IFilterTarget } from '../filters/IFilterTarget';
@@ -59,6 +60,9 @@ export class MaskData
      */
     public multisample: MSAA_QUALITY;
 
+    /** WebGL state of the sprite mask filter. */
+    public state: State;
+
     /** If enabled is true the mask is applied, if false it will not. */
     public enabled: boolean;
 
@@ -113,6 +117,7 @@ export class MaskData
         this.isMaskData = true;
         this.resolution = null;
         this.multisample = settings.FILTER_MULTISAMPLE;
+        this.state = new State();
         this.enabled = true;
         this._filters = null;
         this._stencilCounter = 0;
@@ -149,6 +154,22 @@ export class MaskData
         {
             this._filters = null;
         }
+    }
+
+    /**
+     * Sets the blend mode of the sprite mask filter
+     *
+     * @member {number}
+     * @default PIXI.BLEND_MODES.NORMAL
+     */
+    get blendMode(): BLEND_MODES
+    {
+        return this.state.blendMode;
+    }
+
+    set blendMode(value: BLEND_MODES)
+    {
+        this.state.blendMode = value;
     }
 
     /** Resets the mask data after popMask(). */
