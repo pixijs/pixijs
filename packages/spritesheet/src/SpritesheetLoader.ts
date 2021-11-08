@@ -23,17 +23,16 @@ import type { Loader } from '@pixi/loaders';
  *   loader.resources.myatlas_image; // atlas Image resource
  * });
  *
- * @class
  * @memberof PIXI
- * @implements PIXI.ILoaderPlugin
  */
 export class SpritesheetLoader
 {
     /**
      * Called after a resource is loaded.
+     *
      * @see PIXI.Loader.loaderMiddleware
-     * @param {PIXI.LoaderResource} resource
-     * @param {function} next
+     * @param resource
+     * @param next
      */
     static use(resource: LoaderResource, next: (...args: unknown[]) => void): void
     {
@@ -124,8 +123,9 @@ export class SpritesheetLoader
 
     /**
      * Get the spritesheets root path
-     * @param {PIXI.LoaderResource} resource - Resource to check path
-     * @param {string} baseUrl - Base root url
+     *
+     * @param resource - Resource to check path
+     * @param baseUrl - Base root url
      */
     static getResourcePath(resource: LoaderResource, baseUrl: string): string
     {

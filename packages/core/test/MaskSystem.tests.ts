@@ -165,9 +165,9 @@ describe('MaskSystem', function ()
         };
 
         this.renderer.resolution = 2;
-        this.renderer.resize(10, 10);
+        this.renderer.resize(30, 30);
 
-        const rt = RenderTexture.create({ width: 10, height: 10, resolution: 3 });
+        const rt = RenderTexture.create({ width: 20, height: 20, resolution: 3 });
         const scissor = sinon.spy(this.renderer.gl, 'scissor');
 
         this.renderer.projection.transform = new Matrix(1, 0, 0, 1, 0.5, 1);
@@ -181,8 +181,8 @@ describe('MaskSystem', function ()
         this.renderer.mask.pop(context, maskObject);
 
         expect(scissor.calledTwice).to.be.true;
-        // result Y is 2 because after transform y=8 h=10 and renderer H=20 is inverted , 8-18 becomes 12-2, e.g. Y=2
-        expect(scissor.args[0]).to.eql([Math.round(5), Math.round(2), Math.round(12), Math.round(10)]);
+        // result Y is 2 because after transform y=8 h=10 and renderer H=60 is inverted , 8-18 becomes 52-42, e.g. Y=2
+        expect(scissor.args[0]).to.eql([Math.round(5), Math.round(42), Math.round(12), Math.round(10)]);
         // resolution is 3 , and Y is not reversed
         expect(scissor.args[1]).to.eql([Math.round(7.5), Math.round(12), Math.round(18), Math.round(15)]);
 

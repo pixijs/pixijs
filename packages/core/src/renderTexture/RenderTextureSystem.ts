@@ -31,88 +31,73 @@ const tempRect2 = new Rectangle();
  * | destinationFrame       | The rectangle in the render-target (canvas or texture) into which contents should be rendered | If rendering to the canvas, this is in screen space and the origin is on the top-left. If rendering to a render-texture, this is in its base-texture's space with the origin on the bottom-left.  |
  * | viewportFrame          | The framebuffer viewport corresponding to the destination-frame  | **Window Coordinates**: The origin is always on the bottom-left. |
  *
- * @class
- * @extends PIXI.System
  * @memberof PIXI
  */
 export class RenderTextureSystem implements ISystem
 {
 /* eslint-enable max-len */
 
+    /** The clear background color as RGBA. */
     public clearColor: number[];
+
+    /**
+     * List of masks for the {@link PIXI.StencilSystem}.
+     *
+     * @readonly
+     */
     public defaultMaskStack: Array<MaskData>;
-    public current: RenderTexture;
+
+    /**
+     * Render texture currently bound. {@code null} if rendering to the canvas.
+     *
+     * @readonly
+     */
+    public current: RenderTexture | null;
+
+    /**
+     * The source frame for the render-target's projection mapping.
+     *
+     * See {@link PIXI.ProjectionSystem#sourceFrame} for more details
+     */
     public readonly sourceFrame: Rectangle;
+
+    /**
+     * The destination frame for the render-target's projection mapping.
+     *
+     * See {@link PIXI.Projection#destinationFrame} for more details.
+     */
     public readonly destinationFrame: Rectangle;
+
+    /**
+     * The viewport frame for the render-target's viewport binding. This is equal to the destination-frame
+     * for render-textures, while it is y-flipped when rendering to the screen (i.e. its origin is always on
+     * the bottom-left).
+     */
     public readonly viewportFrame: Rectangle;
+
     private renderer: Renderer;
 
     /**
-     * @param {PIXI.Renderer} renderer - The renderer this System works for.
+     * @param renderer - The renderer this System works for.
      */
     constructor(renderer: Renderer)
     {
         this.renderer = renderer;
 
-        /**
-         * The clear background color as rgba
-         * @member {number[]}
-         */
         this.clearColor = renderer._backgroundColorRgba;
-
-        // TODO move this property somewhere else!
-        /**
-         * List of masks for the StencilSystem
-         * @member {PIXI.Graphics[]}
-         * @readonly
-         */
         this.defaultMaskStack = [];
-
-        // empty render texture?
-        /**
-         * Render texture
-         * @member {PIXI.RenderTexture}
-         * @readonly
-         */
         this.current = null;
-
-        /**
-         * The source frame for the render-target's projection mapping.
-         *
-         * See {@link PIXI.ProjectionSystem#sourceFrame} for more details.
-         *
-         * @member {PIXI.Rectangle}
-         * @readonly
-         */
         this.sourceFrame = new Rectangle();
-
-        /**
-         * The destination frame for the render-target's projection mapping.
-         *
-         * See {@link PIXI.Projection#destinationFrame} for more details.
-         *
-         * @member {PIXI.Rectangle}
-         * @readonly
-         */
         this.destinationFrame = new Rectangle();
-
-        /**
-         * The viewport frame for the render-target's viewport binding. This is equal to the destination-frame
-         * for render-textures, while it is y-flipped when rendering to the screen (i.e. its origin is always on
-         * the bottom-left).
-         *
-         * @member {PIXI.Rectangle}
-         * @readonly
-         */
         this.viewportFrame = new Rectangle();
     }
 
     /**
-     * Bind the current render texture
+     * Bind the current render texture.
      *
-     * @param {PIXI.RenderTexture} [renderTexture] - RenderTexture to bind, by default its `null`, the screen
-     * @param {PIXI.Rectangle} [sourceFrame] - part of screen that is mapped to the renderTexture
-     * @param {PIXI.Rectangle} [destinationFrame] - part of renderTexture, by default it has the same size as sourceFrame
+     * @param renderTexture - RenderTexture to bind, by default its `null` - the screen.
+     * @param sourceFrame - Part of world that is mapped to the renderTexture.
+     * @param destinationFrame - Part of renderTexture, by default it has the same size as sourceFrame.
      */
     bind(renderTexture: RenderTexture = null, sourceFrame?: Rectangle, destinationFrame?: Rectangle): void
     {
@@ -202,12 +187,11 @@ export class RenderTextureSystem implements ISystem
     }
 
     /**
-     * Erases the render texture and fills the drawing area with a colour
+     * Erases the render texture and fills the drawing area with a colour.
      *
-     * @param {number[]} [clearColor] - The color as rgba, default to use the renderer backgroundColor
-     * @param {PIXI.BUFFER_BITS} [mask=BUFFER_BITS.COLOR | BUFFER_BITS.DEPTH] - Bitwise OR of masks
+     * @param clearColor - The color as rgba, default to use the renderer backgroundColor
+     * @param [mask=BUFFER_BITS.COLOR | BUFFER_BITS.DEPTH] - Bitwise OR of masks
      *  that indicate the buffers to be cleared, by default COLOR and DEPTH buffers.
-     * @return {PIXI.Renderer} Returns itself.
      */
     clear(clearColor?: number[], mask?: BUFFER_BITS): void
     {
@@ -253,17 +237,12 @@ export class RenderTextureSystem implements ISystem
         this.bind(null);
     }
 
-    /**
-     * Resets renderTexture state
-     */
+    /** Resets render-texture state. */
     reset(): void
     {
         this.bind(null);
     }
 
-    /**
-     * @ignore
-     */
     destroy(): void
     {
         this.renderer = null;

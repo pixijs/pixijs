@@ -7,7 +7,6 @@ import type { BatchTextureArray } from './BatchTextureArray';
  * Used by the batcher to draw batches.
  * Each one of these contains all information required to draw a bound geometry.
  *
- * @class
  * @memberof PIXI
  */
 export class BatchDrawCall
@@ -17,6 +16,8 @@ export class BatchDrawCall
     blend: BLEND_MODES;
     start: number;
     size: number;
+
+    /** Data for uniforms or custom webgl state. */
     data: any;
 
     constructor()
@@ -28,10 +29,6 @@ export class BatchDrawCall
         this.start = 0;
         this.size = 0;
 
-        /**
-         * data for uniforms or custom webgl state
-         * @member {object}
-         */
         this.data = null;
     }
 }

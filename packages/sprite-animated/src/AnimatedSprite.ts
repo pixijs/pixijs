@@ -32,29 +32,94 @@ import type { IDestroyOptions } from '@pixi/display';
  * }
  * ```
  *
- * @class
- * @extends PIXI.Sprite
  * @memberof PIXI
  */
 export class AnimatedSprite extends Sprite
 {
+    /**
+     * The speed that the AnimatedSprite will play at. Higher is faster, lower is slower.
+     *
+     * @default 1
+     */
     public animationSpeed: number;
+
+    /**
+     * Whether or not the animate sprite repeats after playing.
+     *
+     * @default true
+     */
     public loop: boolean;
+
+    /**
+     * Update anchor to [Texture's defaultAnchor]{@link PIXI.Texture#defaultAnchor} when frame changes.
+     *
+     * Useful with [sprite sheet animations]{@link PIXI.Spritesheet#animations} created with tools.
+     * Changing anchor for each frame allows to pin sprite origin to certain moving feature
+     * of the frame (e.g. left foot).
+     *
+     * Note: Enabling this will override any previously set `anchor` on each frame change.
+     *
+     * @default false
+     */
     public updateAnchor: boolean;
+
+    /**
+     * User-assigned function to call when an AnimatedSprite finishes playing.
+     *
+     * @example
+     * animation.onComplete = function () {
+     *   // finished!
+     * };
+     */
     public onComplete?: () => void;
+
+    /**
+     * User-assigned function to call when an AnimatedSprite changes which texture is being rendered.
+     *
+     * @example
+     * animation.onFrameChange = function () {
+     *   // updated!
+     * };
+     */
     public onFrameChange?: (currentFrame: number) => void;
+
+    /**
+     * User-assigned function to call when `loop` is true, and an AnimatedSprite is played and
+     * loops around to start again.
+     *
+     * @example
+     * animation.onLoop = function () {
+     *   // looped!
+     * };
+     */
     public onLoop?: () => void;
 
     private _playing: boolean;
     private _textures: Texture[];
     private _durations: number[];
+
+    /**
+     * `true` uses PIXI.Ticker.shared to auto update animation time.
+     *
+     * @default true
+     */
     private _autoUpdate: boolean;
+
+    /**
+     * `true` if the instance is currently connected to PIXI.Ticker.shared to auto update animation time.
+     *
+     * @default false
+     */
     private _isConnectedToTicker: boolean;
+
+    /** Elapsed time since animation has been started, used internally to display current texture. */
     private _currentTime: number;
+
+    /** The texture index that was displayed last time. */
     private _previousFrame: number;
 
     /**
-     * @param {PIXI.Texture[]|PIXI.AnimatedSprite.FrameObject[]} textures - An array of {@link PIXI.Texture} or frame
+     * @param textures - An array of {@link PIXI.Texture} or frame
      *  objects that make up the animation.
      * @param {boolean} [autoUpdate=true] - Whether to use PIXI.Ticker.shared to auto update animation time.
      */
@@ -62,125 +127,27 @@ export class AnimatedSprite extends Sprite
     {
         super(textures[0] instanceof Texture ? textures[0] : textures[0].texture);
 
-        /**
-         * @type {PIXI.Texture[]}
-         * @private
-         */
         this._textures = null;
-
-        /**
-         * @type {number[]}
-         * @private
-         */
         this._durations = null;
-
-        /**
-         * `true` uses PIXI.Ticker.shared to auto update animation time.
-         *
-         * @type {boolean}
-         * @default true
-         * @private
-         */
         this._autoUpdate = autoUpdate;
-
-        /**
-         * `true` if the instance is currently connected to PIXI.Ticker.shared to auto update animation time.
-         *
-         * @type {boolean}
-         * @default false
-         * @private
-         */
         this._isConnectedToTicker = false;
 
-        /**
-         * The speed that the AnimatedSprite will play at. Higher is faster, lower is slower.
-         *
-         * @member {number}
-         * @default 1
-         */
         this.animationSpeed = 1;
-
-        /**
-         * Whether or not the animate sprite repeats after playing.
-         *
-         * @member {boolean}
-         * @default true
-         */
         this.loop = true;
-
-        /**
-         * Update anchor to [Texture's defaultAnchor]{@link PIXI.Texture#defaultAnchor} when frame changes.
-         *
-         * Useful with [sprite sheet animations]{@link PIXI.Spritesheet#animations} created with tools.
-         * Changing anchor for each frame allows to pin sprite origin to certain moving feature
-         * of the frame (e.g. left foot).
-         *
-         * Note: Enabling this will override any previously set `anchor` on each frame change.
-         *
-         * @member {boolean}
-         * @default false
-         */
         this.updateAnchor = false;
-
-        /**
-         * User-assigned function to call when an AnimatedSprite finishes playing.
-         *
-         * @example
-         * animation.onComplete = function () {
-         *   // finished!
-         * };
-         * @member {Function}
-         */
         this.onComplete = null;
-
-        /**
-         * User-assigned function to call when an AnimatedSprite changes which texture is being rendered.
-         *
-         * @example
-         * animation.onFrameChange = function () {
-         *   // updated!
-         * };
-         * @member {Function}
-         */
         this.onFrameChange = null;
-
-        /**
-         * User-assigned function to call when `loop` is true, and an AnimatedSprite is played and
-         * loops around to start again.
-         *
-         * @example
-         * animation.onLoop = function () {
-         *   // looped!
-         * };
-         * @member {Function}
-         */
         this.onLoop = null;
 
-        /**
-         * Elapsed time since animation has been started, used internally to display current texture.
-         *
-         * @member {number}
-         * @private
-         */
         this._currentTime = 0;
 
         this._playing = false;
-
-        /**
-         * The texture index that was displayed last time
-         *
-         * @member {number}
-         * @private
-         */
         this._previousFrame = null;
 
         this.textures = textures;
     }
 
-    /**
-     * Stops the AnimatedSprite.
-     *
-     */
+    /** Stops the AnimatedSprite. */
     public stop(): void
     {
         if (!this._playing)
@@ -196,10 +163,7 @@ export class AnimatedSprite extends Sprite
         }
     }
 
-    /**
-     * Plays the AnimatedSprite.
-     *
-     */
+    /** Plays the AnimatedSprite. */
     public play(): void
     {
         if (this._playing)
@@ -218,7 +182,7 @@ export class AnimatedSprite extends Sprite
     /**
      * Stops the AnimatedSprite and goes to a specific frame.
      *
-     * @param {number} frameNumber - Frame index to stop at.
+     * @param frameNumber - Frame index to stop at.
      */
     public gotoAndStop(frameNumber: number): void
     {
@@ -237,7 +201,7 @@ export class AnimatedSprite extends Sprite
     /**
      * Goes to a specific frame and begins playing the AnimatedSprite.
      *
-     * @param {number} frameNumber - Frame index to start at.
+     * @param frameNumber - Frame index to start at.
      */
     public gotoAndPlay(frameNumber: number): void
     {
@@ -256,7 +220,7 @@ export class AnimatedSprite extends Sprite
     /**
      * Updates the object transform for rendering.
      *
-     * @param {number} deltaTime - Time since last tick.
+     * @param deltaTime - Time since last tick.
      */
     update(deltaTime: number): void
     {
@@ -333,11 +297,7 @@ export class AnimatedSprite extends Sprite
         }
     }
 
-    /**
-     * Updates the displayed texture to match the current frame index.
-     *
-     * @private
-     */
+    /** Updates the displayed texture to match the current frame index. */
     private updateTexture(): void
     {
         const currentFrame = this.currentFrame;
@@ -389,9 +349,8 @@ export class AnimatedSprite extends Sprite
     /**
      * A short hand way of creating an AnimatedSprite from an array of frame ids.
      *
-     * @static
-     * @param {string[]} frames - The array of frames ids the AnimatedSprite will use as its texture frames.
-     * @return {PIXI.AnimatedSprite} The new animated sprite with the specified frames.
+     * @param frames - The array of frames ids the AnimatedSprite will use as its texture frames.
+     * @return - The new animated sprite with the specified frames.
      */
     public static fromFrames(frames: string[]): AnimatedSprite
     {
@@ -408,9 +367,8 @@ export class AnimatedSprite extends Sprite
     /**
      * A short hand way of creating an AnimatedSprite from an array of image ids.
      *
-     * @static
-     * @param {string[]} images - The array of image urls the AnimatedSprite will use as its texture frames.
-     * @return {PIXI.AnimatedSprite} The new animate sprite with the specified images as frames.
+     * @param images - The array of image urls the AnimatedSprite will use as its texture frames.
+     * @return The new animate sprite with the specified images as frames.
      */
     public static fromImages(images: string[]): AnimatedSprite
     {
@@ -429,7 +387,6 @@ export class AnimatedSprite extends Sprite
      * assigned to the AnimatedSprite.
      *
      * @readonly
-     * @member {number}
      * @default 0
      */
     get totalFrames(): number
@@ -437,11 +394,7 @@ export class AnimatedSprite extends Sprite
         return this._textures.length;
     }
 
-    /**
-     * The array of textures used for this AnimatedSprite.
-     *
-     * @member {PIXI.Texture[]}
-     */
+    /** The array of textures used for this AnimatedSprite. */
     get textures(): Texture[]|FrameObject[]
     {
         return this._textures;
@@ -471,11 +424,10 @@ export class AnimatedSprite extends Sprite
     }
 
     /**
-    * The AnimatedSprites current frame index.
-    *
-    * @member {number}
-    * @readonly
-    */
+     * The AnimatedSprites current frame index.
+     *
+     * @readonly
+     */
     get currentFrame(): number
     {
         let currentFrame = Math.floor(this._currentTime) % this._textures.length;
@@ -491,7 +443,6 @@ export class AnimatedSprite extends Sprite
     /**
      * Indicates if the AnimatedSprite is currently playing.
      *
-     * @member {boolean}
      * @readonly
      */
     get playing(): boolean
@@ -499,11 +450,7 @@ export class AnimatedSprite extends Sprite
         return this._playing;
     }
 
-    /**
-     * Whether to use PIXI.Ticker.shared to auto update animation time
-     *
-     * @member {boolean}
-     */
+    /** Whether to use PIXI.Ticker.shared to auto update animation time. */
     get autoUpdate(): boolean
     {
         return this._autoUpdate;
@@ -529,15 +476,11 @@ export class AnimatedSprite extends Sprite
     }
 }
 
+/** @memberof PIXI.AnimatedSprite */
 export interface FrameObject {
+    /** The {@link PIXI.Texture} of the frame. */
     texture: Texture;
+
+    /** The duration of the frame, in milliseconds. */
     time: number;
 }
-
-/**
- * @memberof PIXI.AnimatedSprite
- * @typedef {object} FrameObject
- * @type {object}
- * @property {PIXI.Texture} texture - The {@link PIXI.Texture} of the frame
- * @property {number} time - the duration of the frame in ms
- */

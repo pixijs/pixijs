@@ -16,27 +16,87 @@ export interface IMaskTarget extends IFilterTarget
     render(renderer: Renderer): void;
 }
 /**
- * Component for masked elements
+ * Component for masked elements.
  *
- * Holds mask mode and temporary data about current mask
+ * Holds mask mode and temporary data about current mask.
  *
- * @class
  * @memberof PIXI
  */
 export class MaskData
 {
+    /** Mask type */
     public type: MASK_TYPES;
+
+    /**
+     * Whether we know the mask type beforehand
+     * @default true
+     */
     public autoDetect: boolean;
+
+    /**
+     * Which element we use to mask
+     * @member {PIXI.DisplayObject}
+     */
     public maskObject: IMaskTarget;
+
+    /** Whether it belongs to MaskSystem pool */
     public pooled: boolean;
-    public isMaskData: true;
+
+    /** Indicator of the type (always true for {@link MaskData} objects) */
+    public isMaskData: boolean;// webdoc crashes if the type is true because reasons... (will fix)
+
+    /**
+     * Resolution of the sprite mask filter.
+     * If set to `null` or `0`, the resolution of the current render target is used.
+     * @default null
+     */
     public resolution: number;
+
+    /**
+     * Number of samples of the sprite mask filter.
+     * If set to `null`, the sample count of the current render target is used.
+     * @default PIXI.settings.FILTER_MULTISAMPLE
+     */
     public multisample: MSAA_QUALITY;
+
+    /** If enabled is true the mask is applied, if false it will not. */
     public enabled: boolean;
+
+    /**
+     * The sprite mask filter wrapped in an array.
+     * @private
+     */
     _filters: ISpriteMaskFilter[];
+
+    /**
+     * Stencil counter above the mask in stack
+     * @private
+     */
     _stencilCounter: number;
+
+    /**
+     * Scissor counter above the mask in stack
+     * @private
+     */
     _scissorCounter: number;
+
+    /**
+     * Scissor operation above the mask in stack.
+     * Null if _scissorCounter is zero, rectangle instance if positive.
+     */
     _scissorRect: Rectangle;
+
+    /**
+     * pre-computed scissor rect
+     * does become _scissorRect when mask is actually pushed
+     */
+    _scissorRectLocal: Rectangle;
+
+    /**
+     * Targeted element. Temporary variable set by MaskSystem
+     * @member {PIXI.DisplayObject}
+     * @private
+     */
     _target: IMaskTarget;
 
     /**
@@ -46,99 +106,25 @@ export class MaskData
      */
     constructor(maskObject: IMaskTarget = null)
     {
-        /**
-         * Mask type
-         * @member {PIXI.MASK_TYPES}
-         */
         this.type = MASK_TYPES.NONE;
-
-        /**
-         * Whether we know the mask type beforehand
-         * @member {boolean}
-         * @default true
-         */
         this.autoDetect = true;
-
-        /**
-         * Which element we use to mask
-         * @member {PIXI.DisplayObject}
-         */
         this.maskObject = maskObject || null;
-
-        /**
-         * Whether it belongs to MaskSystem pool
-         * @member {boolean}
-         */
         this.pooled = false;
-
-        /**
-         * Indicator of the type
-         * @member {boolean}
-         */
         this.isMaskData = true;
-
-        /**
-         * Resolution of the sprite mask filter.
-         * If set to `null` or `0`, the resolution of the current render target is used.
-         * @member {number}
-         * @default null
-         */
         this.resolution = null;
-
-        /**
-         * Number of samples of the sprite mask filter.
-         * If set to `null`, the sample count of the current render target is used.
-         * @member {PIXI.MSAA_QUALITY}
-         * @default PIXI.settings.FILTER_MULTISAMPLE
-         */
         this.multisample = settings.FILTER_MULTISAMPLE;
-
-        /**
-         * If enabled is true the mask is applied, if false it will not.
-         *
-         * @member {boolean}
-         */
         this.enabled = true;
-
-        /**
-         * The sprite mask filter wrapped in an array.
-         * @member {PIXI.ISpriteMaskFilter[]}
-         * @private
-         */
         this._filters = null;
-
-        /**
-         * Stencil counter above the mask in stack
-         * @member {number}
-         * @private
-         */
         this._stencilCounter = 0;
-        /**
-         * Scissor counter above the mask in stack
-         * @member {number}
-         * @private
-         */
         this._scissorCounter = 0;
-
-        /**
-         * Scissor operation above the mask in stack.
-         * Null if _scissorCounter is zero, rectangle instance if positive.
-         * @member {PIXI.Rectangle}
-         */
         this._scissorRect = null;
-
-        /**
-         * Targeted element. Temporary variable set by MaskSystem
-         * @member {PIXI.DisplayObject}
-         * @private
-         */
+        this._scissorRectLocal = null;
         this._target = null;
     }
 
     /**
      * The sprite mask filter.
      * If set to `null`, the default sprite mask filter is used.
-     * @member {PIXI.ISpriteMaskFilter}
      * @default null
      */
     get filter(): ISpriteMaskFilter
@@ -165,9 +151,7 @@ export class MaskData
         }
     }
 
-    /**
-     * resets the mask data after popMask()
-     */
+    /** Resets the mask data after popMask(). */
     reset(): void
     {
         if (this.pooled)
@@ -180,12 +164,10 @@ export class MaskData
         }
 
         this._target = null;
+        this._scissorRectLocal = null;
     }
 
-    /**
-     * copies counters from maskData above, called from pushMask()
-     * @param {PIXI.MaskData|null} maskAbove
-     */
+    /** Copies counters from maskData above, called from pushMask(). */
     copyCountersOrReset(maskAbove?: MaskData): void
     {
         if (maskAbove)

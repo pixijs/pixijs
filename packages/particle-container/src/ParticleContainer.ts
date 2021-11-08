@@ -45,7 +45,7 @@ export interface IParticleProperties {
  */
 export class ParticleContainer extends Container
 {
-    public readonly blendMode: BLEND_MODES;
+    public blendMode: BLEND_MODES;
     public autoResize: boolean;
     public roundPixels: boolean;
     public baseTexture: BaseTexture;
@@ -73,7 +73,7 @@ export class ParticleContainer extends Container
      * @param {boolean} [autoResize=false] - If true, container allocates more batches in case
      *  there are more than `maxSize` particles.
      */
-    constructor(maxSize = 1500, properties: IParticleProperties, batchSize = 16384, autoResize = false)
+    constructor(maxSize = 1500, properties?: IParticleProperties, batchSize = 16384, autoResize = false)
     {
         super();
 

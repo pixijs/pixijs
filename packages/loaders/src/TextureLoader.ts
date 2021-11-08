@@ -1,13 +1,12 @@
 import { Texture } from '@pixi/core';
 import { LoaderResource } from './LoaderResource';
-import { ILoaderPlugin } from './Loader';
 
 /**
  * Loader plugin for handling Texture resources.
  *
  * @memberof PIXI
  */
-export class TextureLoader implements ILoaderPlugin
+export class TextureLoader
 {
     /**
      * Handle SVG elements a text, render with SVGResource.

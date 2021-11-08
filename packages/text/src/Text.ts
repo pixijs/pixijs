@@ -18,6 +18,19 @@ const defaultDestroyOptions: IDestroyOptions = {
     baseTexture: true,
 };
 
+interface ModernContext2D extends CanvasRenderingContext2D {
+   // for chrome less 94
+   textLetterSpacing?: number;
+   // for chrome greater 94
+   letterSpacing?: number;
+}
+
+// Checking that we can use moddern canvas2D api
+// https://developer.chrome.com/origintrials/#/view_trial/3585991203293757441
+// note: this is unstable API, Chrome less 94 use a `textLetterSpacing`, newest use a letterSpacing
+// eslint-disable-next-line max-len
+const supportLetterSpacing = 'letterSpacing' in CanvasRenderingContext2D.prototype || 'textLetterSpacing' in CanvasRenderingContext2D.prototype;
+
 /**
  * A Text Object will create a line or multiple lines of text.
  *
@@ -39,8 +52,6 @@ const defaultDestroyOptions: IDestroyOptions = {
  * let text = new PIXI.Text('This is a PixiJS text',{fontFamily : 'Arial', fontSize: 24, fill : 0xff1010, align : 'center'});
  * ```
  *
- * @class
- * @extends PIXI.Sprite
  * @memberof PIXI
  */
 export class Text extends Sprite
@@ -50,31 +61,66 @@ export class Text extends Sprite
      * make sure the first baseline is offset by the `lineHeight` value if it is greater than `fontSize`.
      * A value of `false` will use the legacy behavior and not change the baseline of the first line.
      * In the next major release, we'll enable this by default.
-     *
-     * @static
-     * @memberof PIXI.Text
-     * @member {boolean} nextLineHeightBehavior
-     * @default false
      */
     public static nextLineHeightBehavior = false;
 
+    /** The canvas element that everything is drawn to. */
     public canvas: HTMLCanvasElement;
-    public context: CanvasRenderingContext2D;
+    /** The canvas 2d context that everything is drawn with. */
+    public context: ModernContext2D;
     public localStyleID: number;
     public dirty: boolean;
 
+    /**
+     * The resolution / device pixel ratio of the canvas.
+     *
+     * This is set to automatically match the renderer resolution by default, but can be overridden by setting manually.
+     *
+     * @default PIXI.settings.RESOLUTION
+     */
     _resolution: number;
     _autoResolution: boolean;
+
+    /**
+     * Private tracker for the current text.
+     *
+     * @private
+     */
     protected _text: string;
+
+    /**
+     * Private tracker for the current font.
+     *
+     * @private
+     */
     protected _font: string;
+
+    /**
+     * Private tracker for the current style.
+     *
+     * @private
+     */
     protected _style: TextStyle;
+
+    /**
+     * Private listener to track style changes.
+     *
+     * @private
+     */
     protected _styleListener: () => void;
+
+    /**
+     * Keep track if this Text object created it's own canvas
+     * element (`true`) or uses the constructor argument (`false`).
+     * Used to workaround a GC issues with Safari < 13 when
+     * destroying Text. See `destroy` for more info.
+     */
     private _ownCanvas: boolean;
 
     /**
-     * @param {string} text - The string that you would like the text to display
+     * @param text - The string that you would like the text to display
      * @param {object|PIXI.TextStyle} [style] - The style parameters
-     * @param {HTMLCanvasElement} [canvas] - The canvas element for drawing text
+     * @param canvas - The canvas element for drawing text
      */
     constructor(text: string, style?: Partial<ITextStyle>|TextStyle, canvas?: HTMLCanvasElement)
     {
@@ -96,68 +142,15 @@ export class Text extends Sprite
 
         super(texture);
 
-        /**
-         * Keep track if this Text object created it's own canvas
-         * element (`true`) or uses the constructor argument (`false`).
-         * Used to workaround a GC issues with Safari < 13 when
-         * destroying Text. See `destroy` for more info.
-         *
-         * @member {boolean}
-         * @private
-         */
         this._ownCanvas = ownCanvas;
-
-        /**
-         * The canvas element that everything is drawn to
-         *
-         * @member {HTMLCanvasElement}
-         */
         this.canvas = canvas;
-
-        /**
-         * The canvas 2d context that everything is drawn with
-         * @member {CanvasRenderingContext2D}
-         */
         this.context = this.canvas.getContext('2d');
 
-        /**
-         * The resolution / device pixel ratio of the canvas.
-         * This is set to automatically match the renderer resolution by default, but can be overridden by setting manually.
-         * @member {number}
-         * @default PIXI.settings.RESOLUTION
-         */
         this._resolution = settings.RESOLUTION;
         this._autoResolution = true;
-
-        /**
-         * Private tracker for the current text.
-         *
-         * @member {string}
-         * @private
-         */
         this._text = null;
-
-        /**
-         * Private tracker for the current style.
-         *
-         * @member {object}
-         * @private
-         */
         this._style = null;
-        /**
-         * Private listener to track style changes.
-         *
-         * @member {Function}
-         * @private
-         */
         this._styleListener = null;
-
-        /**
-         * Private tracker for the current font.
-         *
-         * @member {string}
-         * @private
-         */
         this._font = '';
 
         this.text = text;
@@ -168,11 +161,12 @@ export class Text extends Sprite
 
     /**
      * Renders text to its canvas, and updates its texture.
+     *
      * By default this is used internally to ensure the texture is correct before rendering,
      * but it can be used called externally, for example from this class to 'pre-generate' the texture from a piece of text,
      * and then shared across multiple Sprites.
      *
-     * @param {boolean} respectDirty - Whether to abort updating the text if the Text isn't dirty and the function is called.
+     * @param respectDirty - Whether to abort updating the text if the Text isn't dirty and the function is called.
      */
     public updateText(respectDirty: boolean): void
     {
@@ -319,12 +313,12 @@ export class Text extends Sprite
 
     /**
      * Render the text with letter-spacing.
-     * @param {string} text - The text to draw
-     * @param {number} x - Horizontal position to draw the text
-     * @param {number} y - Vertical position to draw the text
-     * @param {boolean} [isStroke=false] - Is this drawing for the outside stroke of the
+     *
+     * @param text - The text to draw
+     * @param x - Horizontal position to draw the text
+     * @param y - Vertical position to draw the text
+     * @param isStroke - Is this drawing for the outside stroke of the
      *  text? If not, it's for the inside fill
-     * @private
      */
     private drawLetterSpacing(text: string, x: number, y: number, isStroke = false): void
     {
@@ -333,8 +327,14 @@ export class Text extends Sprite
         // letterSpacing of 0 means normal
         const letterSpacing = style.letterSpacing;
 
-        if (letterSpacing === 0)
+        if (letterSpacing === 0 || supportLetterSpacing)
         {
+            if (supportLetterSpacing)
+            {
+                this.context.letterSpacing = letterSpacing;
+                this.context.textLetterSpacing = letterSpacing;
+            }
+
             if (isStroke)
             {
                 this.context.strokeText(text, x, y);
@@ -377,11 +377,7 @@ export class Text extends Sprite
         }
     }
 
-    /**
-     * Updates texture size based on canvas size
-     *
-     * @private
-     */
+    /** Updates texture size based on canvas size. */
     private updateTexture(): void
     {
         const canvas = this.canvas;
@@ -427,8 +423,7 @@ export class Text extends Sprite
     /**
      * Renders the object using the WebGL renderer
      *
-     * @protected
-     * @param {PIXI.Renderer} renderer - The renderer
+     * @param renderer - The renderer
      */
     protected _render(renderer: Renderer): void
     {
@@ -446,8 +441,8 @@ export class Text extends Sprite
     /**
      * Gets the local bounds of the text object.
      *
-     * @param {PIXI.Rectangle} rect - The output rectangle.
-     * @return {PIXI.Rectangle} The bounds.
+     * @param rect - The output rectangle.
+     * @return The bounds.
      */
     public getLocalBounds(rect: Rectangle): Rectangle
     {
@@ -456,10 +451,7 @@ export class Text extends Sprite
         return super.getLocalBounds.call(this, rect);
     }
 
-    /**
-     * calculates the bounds of the Text as a rectangle. The bounds calculation takes the worldTransform into account.
-     * @protected
-     */
+    /** Calculates the bounds of the Text as a rectangle. The bounds calculation takes the worldTransform into account. */
     protected _calculateBounds(): void
     {
         this.updateText(true);
@@ -471,10 +463,9 @@ export class Text extends Sprite
     /**
      * Generates the fill style. Can automatically generate a gradient based on the fill style being an array
      *
-     * @private
-     * @param {object} style - The style.
-     * @param {string[]} lines - The lines of text.
-     * @return {string|number|CanvasGradient} The fill style
+     * @param style - The style.
+     * @param lines - The lines of text.
+     * @return The fill style
      */
     private _generateFillStyle(style: TextStyle, lines: string[], metrics: TextMetrics): string|CanvasGradient|CanvasPattern
     {
@@ -620,10 +611,11 @@ export class Text extends Sprite
 
     /**
      * Destroys this text object.
+     *
      * Note* Unlike a Sprite, a Text object will automatically destroy its baseTexture and texture as
      * the majority of the time the texture will not be shared with any other Sprites.
      *
-     * @param {object|boolean} [options] - Options parameter. A boolean will act as if all options
+     * @param options - Options parameter. A boolean will act as if all options
      *  have been set to that value
      * @param {boolean} [options.children=false] - if set to true, all the children will have their
      *  destroy method called as well. 'options' will be passed on to those calls.
@@ -655,11 +647,7 @@ export class Text extends Sprite
         this._style = null;
     }
 
-    /**
-     * The width of the Text, setting this will actually modify the scale to achieve the value set
-     *
-     * @member {number}
-     */
+    /** The width of the Text, setting this will actually modify the scale to achieve the value set. */
     get width(): number
     {
         this.updateText(true);
@@ -677,11 +665,7 @@ export class Text extends Sprite
         this._width = value;
     }
 
-    /**
-     * The height of the Text, setting this will actually modify the scale to achieve the value set
-     *
-     * @member {number}
-     */
+    /** The height of the Text, setting this will actually modify the scale to achieve the value set. */
     get height(): number
     {
         this.updateText(true);
@@ -700,10 +684,9 @@ export class Text extends Sprite
     }
 
     /**
-     * Set the style of the text. Set up an event listener to listen for changes on the style
-     * object and mark the text as dirty.
+     * Set the style of the text.
      *
-     * @member {object|PIXI.TextStyle}
+     * Set up an event listener to listen for changes on the style object and mark the text as dirty.
      */
     get style(): TextStyle|Partial<ITextStyle>
     {
@@ -730,11 +713,7 @@ export class Text extends Sprite
         this.dirty = true;
     }
 
-    /**
-     * Set the copy for the text object. To split a line you can use '\n'.
-     *
-     * @member {string}
-     */
+    /** Set the copy for the text object. To split a line you can use '\n'. */
     get text(): string
     {
         return this._text;
@@ -754,8 +733,9 @@ export class Text extends Sprite
 
     /**
      * The resolution / device pixel ratio of the canvas.
+     *
      * This is set to automatically match the renderer resolution by default, but can be overridden by setting manually.
-     * @member {number}
+     *
      * @default 1
      */
     get resolution(): number

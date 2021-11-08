@@ -33,7 +33,7 @@ export interface DisplayObject extends Omit<GlobalMixins.DisplayObject, keyof Ev
  * | {@link PIXI.AnimatedSprite}     | Draws an animation of multiple images                                 |
  * | {@link PIXI.Mesh}               | Provides a lower-level API for drawing meshes with custom data        |
  * | {@link PIXI.NineSlicePlane}     | Mesh-related                                                          |
- * | {@link PIXI.SimpleMesh}         | v4-compatibile mesh                                                   |
+ * | {@link PIXI.SimpleMesh}         | v4-compatible mesh                                                    |
  * | {@link PIXI.SimplePlane}        | Mesh-related                                                          |
  * | {@link PIXI.SimpleRope}         | Mesh-related                                                          |
  *

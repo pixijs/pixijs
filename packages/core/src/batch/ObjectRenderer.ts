@@ -1,26 +1,22 @@
+import type { ISystem } from '../ISystem';
 import type { Renderer } from '../Renderer';
 
 /**
  * Base for a common object renderer that can be used as a
  * system renderer plugin.
  *
- * @class
- * @extends PIXI.System
  * @memberof PIXI
  */
-export class ObjectRenderer
+export class ObjectRenderer implements ISystem
 {
+    /** The renderer this manager works for. */
     protected renderer: Renderer;
+
     /**
-     * @param {PIXI.Renderer} renderer - The renderer this manager works for.
+     * @param renderer - The renderer this manager works for.
      */
     constructor(renderer: Renderer)
     {
-        /**
-         * The renderer this manager works for.
-         *
-         * @member {PIXI.Renderer}
-         */
         this.renderer = renderer;
     }
 
