@@ -21,7 +21,7 @@ export interface Mesh extends GlobalMixins.Mesh {}
  *
  * This class empowers you to have maximum flexibility to render any kind of WebGL visuals you can think of.
  * This class assumes a certain level of WebGL knowledge.
- * If you know a bit this should abstract enough away to make you life easier!
+ * If you know a bit this should abstract enough away to make your life easier!
  *
  * Pretty much ALL WebGL can be broken down into the following:
  * - Geometry - The structure and data for the mesh. This can include anything from positions, uvs, normals, colors etc..
@@ -30,124 +30,101 @@ export interface Mesh extends GlobalMixins.Mesh {}
  *
  * Through a combination of the above elements you can render anything you want, 2D or 3D!
  *
- * @class
- * @extends PIXI.Container
  * @memberof PIXI
  */
 export class Mesh<T extends Shader = MeshMaterial> extends Container
 {
+    /**
+     * Represents the vertex and fragment shaders that processes the geometry and runs on the GPU.
+     * Can be shared between multiple Mesh objects.
+     *
+     * @type {PIXI.Shader|PIXI.MeshMaterial}
+     */
     public shader: T;
+
+    /**
+     * Represents the WebGL state the Mesh required to render, excludes shader and geometry. E.g.,
+     * blend mode, culling, depth testing, direction of rendering triangles, backface, etc.
+     */
     public state: State;
+
+    /** The way the Mesh should be drawn, can be any of the {@link PIXI.DRAW_MODES} constants. */
     public drawMode: DRAW_MODES;
+
+    /**
+     * Typically the index of the IndexBuffer where to start drawing.
+     *
+     * @default 0
+     */
     public start: number;
+
+    /**
+     * How much of the geometry to draw, by default `0` renders everything.
+     *
+     * @default 0
+     */
     public size: number;
 
     private _geometry: Geometry;
+
+    /** This is the caching layer used by the batcher. */
     private vertexData: Float32Array;
+
+    /**
+     * If geometry is changed used to decide to re-transform
+     * the vertexData.
+     */
     private vertexDirty: number;
     private _transformID: number;
+
+    /** Internal roundPixels field. */
     private _roundPixels: boolean;
+
+    /** Batched UV's are cached for atlas textures. */
     private batchUvs: MeshBatchUvs;
 
     // Internal-only properties
+    /**
+     * These are used as easy access for batching.
+     *
+     * @private
+     */
     uvs: Float32Array;
+
+    /**
+     * These are used as easy access for batching.
+     *
+     * @private
+     */
     indices: Uint16Array;
     _tintRGB: number;
     _texture: Texture;
 
     /**
-     * @param {PIXI.Geometry} geometry - the geometry the mesh will use
-     * @param {PIXI.MeshMaterial} shader - the shader the mesh will use
-     * @param {PIXI.State} [state] - the state that the WebGL context is required to be in to render the mesh
+     * @param geometry - The geometry the mesh will use.
+     * @param {PIXI.MeshMaterial} shader - The shader the mesh will use.
+     * @param state - The state that the WebGL context is required to be in to render the mesh
      *        if no state is provided, uses {@link PIXI.State.for2d} to create a 2D state for PixiJS.
-     * @param {number} [drawMode=PIXI.DRAW_MODES.TRIANGLES] - the drawMode, can be any of the PIXI.DRAW_MODES consts
+     * @param drawMode - The drawMode, can be any of the {@link PIXI.DRAW_MODES} constants.
      */
-    constructor(geometry: Geometry, shader: T, state?: State, drawMode = DRAW_MODES.TRIANGLES)
+    constructor(geometry: Geometry, shader: T, state?: State, drawMode: DRAW_MODES = DRAW_MODES.TRIANGLES)
     {
         super();
 
         this.geometry = geometry;
-
-        /**
-         * Represents the vertex and fragment shaders that processes the geometry and runs on the GPU.
-         * Can be shared between multiple Mesh objects.
-         * @member {PIXI.Shader|PIXI.MeshMaterial}
-         */
         this.shader = shader;
-
-        /**
-         * Represents the WebGL state the Mesh required to render, excludes shader and geometry. E.g.,
-         * blend mode, culling, depth testing, direction of rendering triangles, backface, etc.
-         * @member {PIXI.State}
-         */
         this.state = state || State.for2d();
-
-        /**
-         * The way the Mesh should be drawn, can be any of the {@link PIXI.DRAW_MODES} constants.
-         *
-         * @member {number}
-         * @see PIXI.DRAW_MODES
-         */
         this.drawMode = drawMode;
-
-        /**
-         * Typically the index of the IndexBuffer where to start drawing.
-         * @member {number}
-         * @default 0
-         */
         this.start = 0;
-
-        /**
-         * How much of the geometry to draw, by default `0` renders everything.
-         * @member {number}
-         * @default 0
-         */
         this.size = 0;
 
-        /**
-         * these are used as easy access for batching
-         * @member {Float32Array}
-         * @private
-         */
         this.uvs = null;
-
-        /**
-         * these are used as easy access for batching
-         * @member {Uint16Array}
-         * @private
-         */
         this.indices = null;
-
-        /**
-         * this is the caching layer used by the batcher
-         * @member {Float32Array}
-         * @private
-         */
         this.vertexData = new Float32Array(1);
-
-        /**
-         * If geometry is changed used to decide to re-transform
-         * the vertexData.
-         * @member {number}
-         * @private
-         */
         this.vertexDirty = -1;
 
         this._transformID = -1;
-
-        /**
-         * Internal roundPixels field
-         *
-         * @member {boolean}
-         * @private
-         */
         this._roundPixels = settings.ROUND_PIXELS;
-
-        /**
-         * Batched UV's are cached for atlas textures
-         * @member {PIXI.MeshBatchUvs}
-         * @private
-         */
         this.batchUvs = null;
     }
 
@@ -155,7 +132,6 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
      * Includes vertex positions, face indices, normals, colors, UVs, and
      * custom attributes within buffers, reducing the cost of passing all
      * this data to the GPU. Can be shared between multiple Mesh objects.
-     * @member {PIXI.Geometry}
      */
     get geometry(): Geometry
     {
@@ -191,7 +167,7 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
 
     /**
      * To change mesh uv's, change its uvBuffer data and increment its _updateID.
-     * @member {PIXI.Buffer}
+     *
      * @readonly
      */
     get uvBuffer(): Buffer
@@ -202,7 +178,7 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
     /**
      * To change mesh vertices, change its uvBuffer data and increment its _updateID.
      * Incrementing _updateID is optional because most of Mesh objects do it anyway.
-     * @member {PIXI.Buffer}
+     *
      * @readonly
      */
     get verticesBuffer(): Buffer
@@ -210,10 +186,7 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
         return this.geometry.buffers[0];
     }
 
-    /**
-     * Alias for {@link PIXI.Mesh#shader}.
-     * @member {PIXI.MeshMaterial}
-     */
+    /** Alias for {@link PIXI.Mesh#shader}. */
     set material(value: T)
     {
         this.shader = value;
@@ -228,9 +201,7 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
      * The blend mode to be applied to the Mesh. Apply a value of
      * `PIXI.BLEND_MODES.NORMAL` to reset the blend mode.
      *
-     * @member {number}
      * @default PIXI.BLEND_MODES.NORMAL;
-     * @see PIXI.BLEND_MODES
      */
     set blendMode(value: BLEND_MODES)
     {
@@ -248,7 +219,6 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
      * The main disadvantage is movement of objects may appear less smooth.
      * To set the global default, change {@link PIXI.settings.ROUND_PIXELS}
      *
-     * @member {boolean}
      * @default false
      */
     set roundPixels(value: boolean)
@@ -270,7 +240,7 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
      * `0xFFFFFF` will remove any tint effect.
      *
      * Null for non-MeshMaterial shaders
-     * @member {number}
+     *
      * @default 0xFFFFFF
      */
     get tint(): number
@@ -287,7 +257,6 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
      * The texture that the Mesh uses.
      *
      * Null for non-MeshMaterial shaders
-     * @member {PIXI.Texture}
      */
     get texture(): Texture
     {
@@ -301,8 +270,8 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
 
     /**
      * Standard renderer draw.
-     * @protected
-     * @param {PIXI.Renderer} renderer - Instance to renderer.
+     *
+     * @param renderer - Instance to renderer.
      */
     protected _render(renderer: Renderer): void
     {
@@ -328,8 +297,8 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
 
     /**
      * Standard non-batching way of rendering.
-     * @protected
-     * @param {PIXI.Renderer} renderer - Instance to renderer.
+     *
+     * @param renderer - Instance to renderer.
      */
     protected _renderDefault(renderer: Renderer): void
     {
@@ -359,8 +328,8 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
 
     /**
      * Rendering by using the Batch system.
-     * @protected
-     * @param {PIXI.Renderer} renderer - Instance to renderer.
+     *
+     * @param renderer - Instance to renderer.
      */
     protected _renderToBatch(renderer: Renderer): void
     {
@@ -385,9 +354,7 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
         renderer.plugins[pluginName].render(this);
     }
 
-    /**
-     * Updates vertexData field based on transform and vertices
-     */
+    /** Updates vertexData field based on transform and vertices. */
     public calculateVertices(): void
     {
         const geometry = this.geometry;
@@ -439,9 +406,7 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
         this.vertexDirty = vertexDirtyId;
     }
 
-    /**
-     * Updates uv field based on from geometry uv's or batchUvs
-     */
+    /** Updates uv field based on from geometry uv's or batchUvs. */
     public calculateUvs(): void
     {
         const geomUvs = this.geometry.buffers[1];
@@ -465,8 +430,6 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
     /**
      * Updates the bounds of the mesh as a rectangle. The bounds calculation takes the worldTransform into account.
      * there must be a aVertexPosition attribute present in the geometry for bounds to be calculated correctly.
-     *
-     * @protected
      */
     protected _calculateBounds(): void
     {
@@ -478,8 +441,8 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
     /**
      * Tests if a point is inside this mesh. Works only for PIXI.DRAW_MODES.TRIANGLES.
      *
-     * @param {PIXI.IPointData} point - the point to test
-     * @return {boolean} the result of the test
+     * @param point - The point to test.
+     * @return - The result of the test.
      */
     public containsPoint(point: IPointData): boolean
     {
@@ -518,14 +481,7 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
 
         return false;
     }
-    /**
-     * Destroys the Mesh object.
-     *
-     * @param {object|boolean} [options] - Options parameter. A boolean will act as if all
-     *  options have been set to that value
-     * @param {boolean} [options.children=false] - if set to true, all the children will have
-     *  their destroy method called as well. 'options' will be passed on to those calls.
-     */
+
     public destroy(options?: IDestroyOptions|boolean): void
     {
         super.destroy(options);
@@ -547,9 +503,6 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
     /**
      * The maximum number of vertices to consider batchable. Generally, the complexity
      * of the geometry.
-     * @memberof PIXI.Mesh
-     * @static
-     * @member {number} BATCHABLE_SIZE
      */
     public static BATCHABLE_SIZE = 100;
 }
