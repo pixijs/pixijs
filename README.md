@@ -1,5 +1,7 @@
 # PixiJS Animated GIF
 
+[![Node.js CI](https://github.com/pixijs/gif/actions/workflows/nodejs.yml/badge.svg?branch=master)](https://github.com/pixijs/gif/actions/workflows/nodejs.yml)
+
 Plugin to support playback of animated GIF images in PixiJS.
 
 ## Usage
