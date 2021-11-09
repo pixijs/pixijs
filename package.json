@@ -1,0 +1,131 @@
+{
+  "name": "@pixi/gif",
+  "version": "1.0.0",
+  "description": "Animated GIF Runtime for PixiJS",
+  "main": "dist/pixi-gif.cjs.js",
+  "module": "dist/pixi-gif.esm.js",
+  "types": "dist/pixi-gif.d.ts",
+  "scripts": {
+    "test": "floss -p test --require ts-node/register",
+    "coverage": "nyc floss -p test --require ts-node/register",
+    "clean": "rimraf dist/**",
+    "start": "run-s watch",
+    "watch": "rollup -c  config/rollup.js --environment DEV --watch",
+    "lint": "eslint --ext .js --ext .ts test src scripts --ignore-path .gitignore",
+    "lint:fix": "npm run lint -- --fix",
+    "types": "tsc --noEmit",
+    "prebuild": "run-s clean lint types",
+    "build": "rollup -c config/rollup.js",
+    "postbuild": "run-s build:types",
+    "patch:types": "ts-node scripts/fix-types.ts",
+    "build:prod": "cross-env NODE_ENV=production run-s build",
+    "prebuild:types": "rimraf .types_output/**",
+    "build:types": "tsc --declaration --emitDeclarationOnly --skipLibCheck --outDir .types_output",
+    "postbuild:types": "run-s bundle:types patch:types",
+    "bundle:types": "api-extractor run --local",
+    "predocs": "rimraf docs/**",
+    "docs": "webdoc -c config/webdoc.json -r README.md",
+    "predeploy": "run-s docs",
+    "predeploy:ci": "rimraf deploy/**",
+    "deploy:ci": "mkdirp deploy && copyfiles \"{dist,demo,docs,coverage}/**\" deploy && copyfiles -f dist/pixi-gif.js* deploy",
+    "deploy": "gh-pages -d . -s \"{dist,demo,docs}/**\" -f",
+    "examples": "http-server . -a localhost -o",
+    "publish:patch": "npm version patch && run-s publish:skip",
+    "publish:minor": "npm version minor && run-s publish:skip",
+    "publish:major": "npm version major && run-s publish:skip",
+    "publish:skip": "run-s build:prod test && npm publish",
+    "postpublish": "run-s deploy && git push && git push --tags",
+    "prepack": "clean-package",
+    "postpack": "clean-package restore"
+  },
+  "engines": {
+    "node": ">=12",
+    "yarn": "please-use-npm",
+    "npm": ">=7"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pixijs/gif.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist/",
+    "global.d.ts"
+  ],
+  "keywords": [
+    "gif",
+    "animation",
+    "pixi",
+    "pixijs"
+  ],
+  "author": "Matt Karl @bigtimebuddy",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pixijs/gif/issues"
+  },
+  "homepage": "https://github.com/pixijs/gif#readme",
+  "pre-commit": [
+    "lint",
+    "types"
+  ],
+  "clean-package": {
+    "indent": 2,
+    "remove": [
+      "clean-package",
+      "scripts",
+      "engines",
+      "pre-commit",
+      "devDependencies",
+      "eslintConfig"
+    ]
+  },
+  "devDependencies": {
+    "@microsoft/api-extractor": "^7.13.3",
+    "@pixi/eslint-config": "^2.0.1",
+    "@pixi/webdoc-template": "^1.2.0",
+    "@rollup/plugin-commonjs": "^21.0.1",
+    "@rollup/plugin-node-resolve": "^13.0.6",
+    "@rollup/plugin-typescript": "^8.0.0",
+    "@types/chai": "^4.2.16",
+    "@types/mocha": "^8.2.2",
+    "@types/node": "^12.0.0",
+    "@types/offscreencanvas": "^2019.6.4",
+    "@webdoc/cli": "^1.2.0",
+    "chai": "^4.2.0",
+    "clean-package": "^1.0.1",
+    "copyfiles": "^2.1.0",
+    "cross-env": "^5.2.0",
+    "electron": "^12.0.0",
+    "eslint": "^7.23.0",
+    "floss": "^5.0.0",
+    "gh-pages": "^3.2.3",
+    "gifuct-js": "^2.1.2",
+    "http-server": "^0.11.1",
+    "jsdoc": "^3.6.1",
+    "mkdirp": "^0.5.1",
+    "npm-run-all": "^4.1.5",
+    "nyc": "^14.1.0",
+    "pixi.js": "^6.0.0",
+    "pre-commit": "^1.2.2",
+    "rimraf": "^2.6.3",
+    "rollup": "^2.0.0",
+    "rollup-plugin-terser": "^7.0.0",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.0.0"
+  },
+  "peerDependencies": {
+    "@pixi/constants": ">=5",
+    "@pixi/core": ">=5",
+    "@pixi/loaders": ">=5",
+    "@pixi/settings": ">=5",
+    "@pixi/sprite": ">=5",
+    "@pixi/ticker": ">=5"
+  },
+  "eslintConfig": {
+    "extends": [
+      "@pixi/eslint-config"
+    ]
+  }
+}

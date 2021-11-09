@@ -1,0 +1,11 @@
+{
+  "extension": [
+    ".ts"
+  ],
+  "reporter": [
+    "html",
+    "lcov",
+    "text",
+    "text-summary"
+  ]
+}

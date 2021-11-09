@@ -1,0 +1,46 @@
+{
+    "tags": {
+      "allowUnknownTags": false
+    },
+    "source": {
+      "include": [
+        "src/**/*.ts"
+      ]
+    },
+    "plugins": [
+      "plugins/markdown"
+    ],
+    "template": {
+      "readme": "./README.md",
+      "repository": "https://github.com/pixijs/gif/"
+    },
+    "templates": {
+      "cleverLinks": false,
+      "monospaceLinks": false,
+      "default": {
+        "outputSourceFiles": false
+      },
+      "applicationName": "PixiJS GIF",
+      "footer": "Made with ♥ by Matt Karl (github.com/bigtimebuddy)",
+      "copyright": "PIXI Copyright &copy; 2017 - 2021 Matt Karl.",
+      "linenums": false,
+      "googleAnalytics": "UA-103772589-1",
+      "meta": {
+        "title": "PixiJS GIF API Documentation",
+        "description": "Documentation for PixiJS GIF library",
+        "keyword": "docs, documentation, pixi, pixijs, gif, animation, html5, javascript, jsdoc"
+      }
+    },
+    "markdown": {
+      "parser": "gfm",
+      "hardwrap": false
+    },
+    "opts": {
+      "encoding": "utf8",
+      "recurse": true,
+      "private": false,
+      "lenient": true,
+      "destination": "docs",
+      "template": "@pixi/webdoc-template"
+    }
+  }

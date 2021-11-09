@@ -1,0 +1,27 @@
+{
+    "compilerOptions": {
+        "moduleResolution": "node",
+        "target": "es5",
+        "noImplicitThis": true,
+        "removeComments": false,
+        "strictFunctionTypes": true,
+        "strictBindCallApply": true,
+        "noImplicitAny": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "preserveConstEnums": true,
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitReturns": true,
+        "noUncheckedIndexedAccess": true,
+        "sourceMap": true,
+        "inlineSources": true,
+        "esModuleInterop": true
+    },
+    "include": [
+        "src/*"
+    ],
+    "exclude": [
+        "dist",
+        "node_modules"
+    ]
+}

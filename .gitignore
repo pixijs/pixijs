@@ -1,0 +1,10 @@
+node_modules
+/dist
+/docs
+/coverage
+/deploy
+.rpt2_cache
+.DS_Store
+.nyc_output
+.types_output
+/example.api.json

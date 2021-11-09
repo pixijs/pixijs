@@ -1,0 +1,8 @@
+{
+    "rules": {
+        "func-names": 0,
+        "no-return-assign": 0,
+        "@typescript-eslint/no-empty-function": 0,
+        "@typescript-eslint/no-unused-expressions": 0
+    }
+}
