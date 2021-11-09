@@ -4,6 +4,9 @@
 
 Plugin to support playback of animated GIF images in PixiJS.
 
+* [Demo](https://pixijs.io/gif/demo/)
+* [API Documentation](https://pixijs.io/gif/docs/)
+
 ## Usage
 
 Install the loader for handle GIF images.
