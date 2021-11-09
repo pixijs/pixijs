@@ -18,11 +18,12 @@ Loader.registerPlugin(AnimatedGIFLoader);
 Load an animated GIF image.
 
 ```ts
-const loader = new Loader();
-loader.add('image', 'image.gif');
-loader.load((loader, resources) => {
-    const image = resources.image.data;
-    image.play();
-    this.addChild(image);
+import { Application } from 'pixi.js';
+
+const app = new Application();
+app.loader.add('image', 'image.gif');
+app.loader.load((loader, resources) => {
+    const image = resources.image.animation;
+    app.stage.addChild(image);
 });
 ```
