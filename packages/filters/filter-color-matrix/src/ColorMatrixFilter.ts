@@ -16,8 +16,6 @@ export type ColorMatrix = ArrayFixed<number, 20>;
  *  colorMatrix.contrast(2);
  * ```
  * @author Clément Chenebault <clement@goodboydigital.com>
- * @class
- * @extends PIXI.Filter
  * @memberof PIXI.filters
  */
 export class ColorMatrixFilter extends Filter
@@ -43,7 +41,7 @@ export class ColorMatrixFilter extends Filter
      * Transforms current matrix and set the new one
      *
      * @param {number[]} matrix - 5x4 matrix
-     * @param {boolean} multiply - if true, current matrix and matrix are multiplied. If false,
+     * @param multiply - if true, current matrix and matrix are multiplied. If false,
      *  just set the current matrix with @param matrix
      */
     private _loadMatrix(matrix: ColorMatrix, multiply = false): void
@@ -64,9 +62,9 @@ export class ColorMatrixFilter extends Filter
      * Multiplies two mat5's
      *
      * @private
-     * @param {number[]} out - 5x4 matrix the receiving matrix
-     * @param {number[]} a - 5x4 matrix the first operand
-     * @param {number[]} b - 5x4 matrix the second operand
+     * @param out - 5x4 matrix the receiving matrix
+     * @param a - 5x4 matrix the first operand
+     * @param b - 5x4 matrix the second operand
      * @returns {number[]} 5x4 matrix
      */
     private _multiply(out: ColorMatrix, a: ColorMatrix, b: ColorMatrix): ColorMatrix
@@ -105,7 +103,6 @@ export class ColorMatrixFilter extends Filter
     /**
      * Create a Float32 Array and normalize the offset component to 0-1
      *
-     * @private
      * @param {number[]} matrix - 5x4 matrix
      * @return {number[]} 5x4 matrix with all values between 0-1
      */
@@ -125,8 +122,8 @@ export class ColorMatrixFilter extends Filter
     /**
      * Adjusts brightness
      *
-     * @param {number} b - value of the brigthness (0-1, where 0 is black)
-     * @param {boolean} multiply - if true, current matrix and matrix are multiplied. If false,
+     * @param b - value of the brigthness (0-1, where 0 is black)
+     * @param multiply - if true, current matrix and matrix are multiplied. If false,
      *  just set the current matrix with @param matrix
      */
     public brightness(b: number, multiply: boolean): void
@@ -146,8 +143,8 @@ export class ColorMatrixFilter extends Filter
      * This can be used to achieve a tinting effect on Containers similar to the tint field of some
      * display objects like Sprite, Text, Graphics, and Mesh.
      *
-     * @param {number} color - Color of the tint. This is a hex value.
-     * @param {boolean} multiply - if true, current matrix and matrix are multiplied. If false,
+     * @param color - Color of the tint. This is a hex value.
+     * @param multiply - if true, current matrix and matrix are multiplied. If false,
      *  just set the current matrix with @param matrix
      */
     public tint(color: number, multiply?: boolean): void
@@ -169,8 +166,8 @@ export class ColorMatrixFilter extends Filter
     /**
      * Set the matrices in grey scales
      *
-     * @param {number} scale - value of the grey (0-1, where 0 is black)
-     * @param {boolean} multiply - if true, current matrix and matrix are multiplied. If false,
+     * @param scale - value of the grey (0-1, where 0 is black)
+     * @param multiply - if true, current matrix and matrix are multiplied. If false,
      *  just set the current matrix with @param matrix
      */
     public greyscale(scale: number, multiply: boolean): void
@@ -188,7 +185,7 @@ export class ColorMatrixFilter extends Filter
     /**
      * Set the black and white matrice.
      *
-     * @param {boolean} multiply - if true, current matrix and matrix are multiplied. If false,
+     * @param multiply - if true, current matrix and matrix are multiplied. If false,
      *  just set the current matrix with @param matrix
      */
     public blackAndWhite(multiply: boolean): void
@@ -206,8 +203,8 @@ export class ColorMatrixFilter extends Filter
     /**
      * Set the hue property of the color
      *
-     * @param {number} rotation - in degrees
-     * @param {boolean} multiply - if true, current matrix and matrix are multiplied. If false,
+     * @param rotation - in degrees
+     * @param multiply - if true, current matrix and matrix are multiplied. If false,
      *  just set the current matrix with @param matrix
      */
     public hue(rotation: number, multiply: boolean): void
@@ -261,8 +258,8 @@ export class ColorMatrixFilter extends Filter
      * Increase contrast : shadows darker and highlights brighter
      * Decrease contrast : bring the shadows up and the highlights down
      *
-     * @param {number} amount - value of the contrast (0-1)
-     * @param {boolean} multiply - if true, current matrix and matrix are multiplied. If false,
+     * @param amount - value of the contrast (0-1)
+     * @param multiply - if true, current matrix and matrix are multiplied. If false,
      *  just set the current matrix with @param matrix
      */
     public contrast(amount: number, multiply: boolean): void
@@ -284,8 +281,8 @@ export class ColorMatrixFilter extends Filter
      * Set the saturation matrix, increase the separation between colors
      * Increase saturation : increase contrast, brightness, and sharpness
      *
-     * @param {number} amount - The saturation amount (0-1)
-     * @param {boolean} [multiply] - if true, current matrix and matrix are multiplied. If false,
+     * @param amount - The saturation amount (0-1)
+     * @param multiply - if true, current matrix and matrix are multiplied. If false,
      *  just set the current matrix with @param matrix
      */
     public saturate(amount = 0, multiply?: boolean): void
@@ -307,7 +304,6 @@ export class ColorMatrixFilter extends Filter
      * Desaturate image (remove color)
      *
      * Call the saturate function
-     *
      */
     public desaturate(): void // eslint-disable-line no-unused-vars
     {
@@ -317,7 +313,7 @@ export class ColorMatrixFilter extends Filter
     /**
      * Negative image (inverse of classic rgb matrix)
      *
-     * @param {boolean} multiply - if true, current matrix and matrix are multiplied. If false,
+     * @param multiply - if true, current matrix and matrix are multiplied. If false,
      *  just set the current matrix with @param matrix
      */
     public negative(multiply: boolean): void
@@ -335,7 +331,7 @@ export class ColorMatrixFilter extends Filter
     /**
      * Sepia image
      *
-     * @param {boolean} multiply - if true, current matrix and matrix are multiplied. If false,
+     * @param multiply - if true, current matrix and matrix are multiplied. If false,
      *  just set the current matrix with @param matrix
      */
     public sepia(multiply: boolean): void
@@ -353,7 +349,7 @@ export class ColorMatrixFilter extends Filter
     /**
      * Color motion picture process invented in 1916 (thanks Dominic Szablewski)
      *
-     * @param {boolean} multiply - if true, current matrix and matrix are multiplied. If false,
+     * @param multiply - if true, current matrix and matrix are multiplied. If false,
      *  just set the current matrix with @param matrix
      */
     public technicolor(multiply: boolean): void
@@ -371,7 +367,7 @@ export class ColorMatrixFilter extends Filter
     /**
      * Polaroid filter
      *
-     * @param {boolean} multiply - if true, current matrix and matrix are multiplied. If false,
+     * @param multiply - if true, current matrix and matrix are multiplied. If false,
      *  just set the current matrix with @param matrix
      */
     public polaroid(multiply: boolean): void
@@ -389,7 +385,7 @@ export class ColorMatrixFilter extends Filter
     /**
      * Filter who transforms : Red -> Blue and Blue -> Red
      *
-     * @param {boolean} multiply - if true, current matrix and matrix are multiplied. If false,
+     * @param multiply - if true, current matrix and matrix are multiplied. If false,
      *  just set the current matrix with @param matrix
      */
     public toBGR(multiply: boolean): void
@@ -407,7 +403,7 @@ export class ColorMatrixFilter extends Filter
     /**
      * Color reversal film introduced by Eastman Kodak in 1935. (thanks Dominic Szablewski)
      *
-     * @param {boolean} multiply - if true, current matrix and matrix are multiplied. If false,
+     * @param multiply - if true, current matrix and matrix are multiplied. If false,
      *  just set the current matrix with @param matrix
      */
     public kodachrome(multiply: boolean): void
@@ -425,7 +421,7 @@ export class ColorMatrixFilter extends Filter
     /**
      * Brown delicious browni filter (thanks Dominic Szablewski)
      *
-     * @param {boolean} multiply - if true, current matrix and matrix are multiplied. If false,
+     * @param multiply - if true, current matrix and matrix are multiplied. If false,
      *  just set the current matrix with @param matrix
      */
     public browni(multiply: boolean): void
@@ -443,7 +439,7 @@ export class ColorMatrixFilter extends Filter
     /**
      * Vintage filter (thanks Dominic Szablewski)
      *
-     * @param {boolean} multiply - if true, current matrix and matrix are multiplied. If false,
+     * @param multiply - if true, current matrix and matrix are multiplied. If false,
      *  just set the current matrix with @param matrix
      */
     public vintage(multiply: boolean): void
@@ -461,11 +457,11 @@ export class ColorMatrixFilter extends Filter
     /**
      * We don't know exactly what it does, kind of gradient map, but funny to play with!
      *
-     * @param {number} desaturation - Tone values.
-     * @param {number} toned - Tone values.
-     * @param {number} lightColor - Tone values, example: `0xFFE580`
-     * @param {number} darkColor - Tone values, example: `0xFFE580`
-     * @param {boolean} multiply - if true, current matrix and matrix are multiplied. If false,
+     * @param desaturation - Tone values.
+     * @param toned - Tone values.
+     * @param lightColor - Tone values, example: `0xFFE580`
+     * @param darkColor - Tone values, example: `0xFFE580`
+     * @param multiply - if true, current matrix and matrix are multiplied. If false,
      *  just set the current matrix with @param matrix
      */
     public colorTone(desaturation: number, toned: number, lightColor: number, darkColor: number, multiply: boolean): void
@@ -496,8 +492,8 @@ export class ColorMatrixFilter extends Filter
     /**
      * Night effect
      *
-     * @param {number} intensity - The intensity of the night effect.
-     * @param {boolean} multiply - if true, current matrix and matrix are multiplied. If false,
+     * @param intensity - The intensity of the night effect.
+     * @param multiply - if true, current matrix and matrix are multiplied. If false,
      *  just set the current matrix with @param matrix
      */
     public night(intensity: number, multiply: boolean): void
@@ -519,8 +515,8 @@ export class ColorMatrixFilter extends Filter
      *
      * Erase the current matrix by setting a new indepent one
      *
-     * @param {number} amount - how much the predator feels his future victim
-     * @param {boolean} multiply - if true, current matrix and matrix are multiplied. If false,
+     * @param amount - how much the predator feels his future victim
+     * @param multiply - if true, current matrix and matrix are multiplied. If false,
      *  just set the current matrix with @param matrix
      */
     public predator(amount: number, multiply: boolean): void
@@ -556,7 +552,7 @@ export class ColorMatrixFilter extends Filter
      *
      * Multiply the current matrix
      *
-     * @param {boolean} multiply - if true, current matrix and matrix are multiplied. If false,
+     * @param multiply - if true, current matrix and matrix are multiplied. If false,
      *  just set the current matrix with @param matrix
      */
     public lsd(multiply: boolean): void
@@ -571,10 +567,7 @@ export class ColorMatrixFilter extends Filter
         this._loadMatrix(matrix, multiply);
     }
 
-    /**
-     * Erase the current matrix by setting the default one
-     *
-     */
+    /** Erase the current matrix by setting the default one. */
     public reset(): void
     {
         const matrix: ColorMatrix = [
@@ -610,7 +603,6 @@ export class ColorMatrixFilter extends Filter
      * When the value is 1, the result color is used.
      * When in the range (0, 1) the color is interpolated between the original and result by this amount.
      *
-     * @member {number}
      * @default 1
      */
     get alpha(): number

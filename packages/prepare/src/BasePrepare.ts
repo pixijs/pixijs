@@ -324,7 +324,7 @@ export class BasePrepare
      *        or the callback function, if items have been added using `prepare.add`.
      * @param {Function} [done] - Optional callback when all queued uploads have completed
      */
-    upload(item: IDisplayObjectExtended | IUploadHook | IFindHook | (() => void), done?: () => void): void
+    upload(item: IDisplayObjectExtended | Container | BaseTexture | Texture | (() => void), done?: () => void): void
     {
         if (typeof item === 'function')
         {
@@ -336,7 +336,7 @@ export class BasePrepare
         // that we could upload
         if (item)
         {
-            this.add(item as IDisplayObjectExtended | IUploadHook | IFindHook);
+            this.add(item as IDisplayObjectExtended | Container | BaseTexture | Texture);
         }
 
         // Get the items for upload from the display
@@ -465,7 +465,7 @@ export class BasePrepare
      *        add to the queue
      * @return Instance of plugin for chaining.
      */
-    add(item: IDisplayObjectExtended | IUploadHook | IFindHook): this
+    add(item: IDisplayObjectExtended | Container | BaseTexture | Texture): this
     {
         // Add additional hooks for finding elements on special
         // types of objects that
