@@ -26,8 +26,6 @@
     "predocs": "rimraf docs/**",
     "docs": "webdoc -c config/webdoc.json -r README.md",
     "predeploy": "run-s docs",
-    "predeploy:ci": "rimraf deploy/**",
-    "deploy:ci": "mkdirp deploy && copyfiles \"{dist,demo,docs,coverage}/**\" deploy && copyfiles -f dist/pixi-gif.js* deploy",
     "deploy": "gh-pages -d . -s \"{dist,demo,docs}/**\" -f",
     "examples": "http-server . -a localhost -o",
     "publish:patch": "npm version patch && run-s publish:skip",

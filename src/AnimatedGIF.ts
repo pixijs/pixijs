@@ -359,6 +359,19 @@ class AnimatedGIF extends Sprite
     }
 
     /**
+     * Renders the object using the WebGL renderer
+     *
+     * @param {PIXI.CanvasRenderer} renderer - The renderer
+     * @private
+     */
+    _renderCanvas(renderer: any): void
+    {
+        this.updateFrame();
+
+        super._render(renderer);
+    }
+
+    /**
      * Whether to use PIXI.Ticker.shared to auto update animation time.
      * @default true
      */
