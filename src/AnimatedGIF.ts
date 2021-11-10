@@ -191,12 +191,13 @@ class AnimatedGIF extends Sprite
             patchData.data.set(patch);
             patchContext.putImageData(patchData, 0, 0);
 
+            context.drawImage(patchCanvas, left, top);
+            const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+
             if (disposalType === 2)
             {
                 context.clearRect(0, 0, width, height);
             }
-            context.drawImage(patchCanvas, left, top);
-            const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
 
             frames.push({
                 start: time,
