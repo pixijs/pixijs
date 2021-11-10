@@ -364,11 +364,14 @@ class AnimatedGIF extends Sprite
      * @param {PIXI.CanvasRenderer} renderer - The renderer
      * @private
      */
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     _renderCanvas(renderer: any): void
     {
         this.updateFrame();
 
-        super._render(renderer);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        super._renderCanvas(renderer);
     }
 
     /**
