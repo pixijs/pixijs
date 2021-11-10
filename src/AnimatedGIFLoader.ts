@@ -16,13 +16,16 @@ declare global {
 }
 
 /**
- * Handle the loading of GIF images.
+ * Handle the loading of GIF images. Registering this loader plugin will
+ * load all `.gif` images as an ArrayBuffer and transform into an
+ * AnimatedGIF object. Use Resource's `animation` property to access the object.
  * @memberof PIXI.gif
  * @class AnimatedGIFLoader
  * @example
  * import { Loader } from '@pixi/loaders';
- * import { GIFLoader } from '@pixi/gif';
- * Loader.registerPlugin(GIFLoader);
+ * import { AnimatedGIFLoader } from '@pixi/gif';
+ *
+ * Loader.registerPlugin(AnimatedGIFLoader);
  */
 const AnimatedGIFLoader: ILoaderPlugin = {
     /** For loading methods */

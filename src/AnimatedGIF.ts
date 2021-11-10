@@ -100,7 +100,7 @@ class AnimatedGIF extends Sprite
      * };
      */
     public onFrameChange?: (currentFrame: number) => void;
- 
+
     /**
      * User-assigned function to call when `loop` is true, and animation is played and
      * loops around to start again. This only happens if loop is set to `true`.
