@@ -21,21 +21,21 @@ interface FrameObject {
  */
 interface AnimatedGIFOptions {
     /** Whether to start playing right away */
-    autoPlay?: boolean;
+    autoPlay: boolean;
     /** Scale Mode to use for the texture */
-    scaleMode?: SCALE_MODES;
+    scaleMode: SCALE_MODES;
     /** To enable looping */
-    loop?: boolean;
+    loop: boolean;
     /** Speed of the animation */
-    animationSpeed?: number;
+    animationSpeed: number;
     /** Set to `false` to manage updates yourself */
-    autoUpdate?: boolean;
+    autoUpdate: boolean;
     /** The completed callback, optional */
-    onComplete?: () => void;
+    onComplete: () => void;
     /** The loop callback, optional */
-    onLoop?: () => void;
+    onLoop: () => void;
     /** The frame callback, optional */
-    onFrameChange?: (currentFrame: number) => void;
+    onFrameChange: (currentFrame: number) => void;
 }
 
 /**
@@ -138,7 +138,7 @@ class AnimatedGIF extends Sprite
      * @param options - Option to use
      * @returns
      */
-    static fromBuffer(buffer: ArrayBuffer, options?: AnimatedGIFOptions): AnimatedGIF
+    static fromBuffer(buffer: ArrayBuffer, options?: Partial<AnimatedGIFOptions>): AnimatedGIF
     {
         if (!buffer || buffer.byteLength === 0)
         {
@@ -193,8 +193,16 @@ class AnimatedGIF extends Sprite
     /**
      * @param buffer - Data of the GIF image.
      * @param options - Options for the AnimatedGIF
+     * @param [options.scaleMode=SCALE_MODES.LINEAR] - How to scale the image.
+     * @param [options.loop=true] - Whether to loop the animation.
+     * @param [options.animationSpeed=1] - The speed that the animation will play at.
+     * @param [options.autoPlay=true] - Whether to start playing the animation right away.
+     * @param [options.autoUpdate=true] - Whether to use PIXI.Ticker.shared to auto update animation time.
+     * @param [options.onComplete=null] - Function to call when the animation finishes playing.
+     * @param [options.onFrameChange=null] - Function to call when the frame changes.
+     * @param [options.onLoop=null] - Function to call when the animation loops.
      */
-    constructor(frames: FrameObject[], options?: AnimatedGIFOptions)
+    constructor(frames: FrameObject[], options?: Partial<AnimatedGIFOptions>)
     {
         // Get the options, apply defaults
         const { scaleMode, ...rest } = Object.assign({},
