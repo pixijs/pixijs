@@ -342,8 +342,9 @@ class AnimatedGIF extends Sprite
 
         // Workaround hack for Safari & iOS
         // which fails to upload canvas after putImageData
+        // See: https://bugs.webkit.org/show_bug.cgi?id=229986
         this._context.fillStyle = 'transparent';
-        this._context.fillRect(0, 0, 1, 1);
+        this._context.fillRect(0, 0, 0, 1);
 
         this.texture.update();
 
