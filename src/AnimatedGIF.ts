@@ -39,88 +39,24 @@ interface AnimatedGIFOptions {
 }
 
 /**
- * Runtime object to display animated GIFs.
+ * Runtime object to play animated GIFs. This object is similar to an AnimatedSprite.
+ * It support playback (seek, play, stop) as well as animation speed and looping.
  * @memberof PIXI.gif
  * @see Thanks to {@link https://github.com/matt-way/gifuct-js/ gifuct-js}
  */
 class AnimatedGIF extends Sprite
 {
     /**
-     * The speed that the AnimatedSprite will play at. Higher is faster, lower is slower.
-     *
-     * @default 1
+     * Default options for all AnimatedGIF objects.
+     * @property [scaleMode=SCALE_MODES.LINEAR] {SCALE_MODES} - Scale mode to use for the texture.
+     * @property [loop=true] {boolean} - To enable looping.
+     * @property [animationSpeed=1] {number} - Speed of the animation.
+     * @property [autoUpdate=true] {boolean} - Set to `false` to manage updates yourself.
+     * @property [autoPlay=true] {boolean} - To start playing right away.
+     * @property [onComplete=null] {function} - The completed callback, optional.
+     * @property [onLoop=null] {function} - The loop callback, optional.
+     * @property [onFrameChange=null] {function} - The frame callback, optional.
      */
-    public animationSpeed: number;
-
-    /**
-     * Whether or not the animate sprite repeats after playing.
-     *
-     * @default true
-     */
-    public loop: boolean;
-
-    /** Collection of frame to render */
-    private _frames: FrameObject[];
-
-    /** Drawing context */
-    private _context: CanvasRenderingContext2D;
-
-    /** If the iamge to be drawn */
-    public dirty: boolean;
-
-    /** The current frame number (index) */
-    private _currentFrame: number;
-
-    /** The total duration of animation in milliseconds */
-    public readonly duration: number;
-
-    /** Play the animation to start */
-    public readonly autoPlay: boolean;
-
-    /** `true` uses PIXI.Ticker.shared to auto update animation time.*/
-    private _autoUpdate: boolean;
-
-    /** `true` if the instance is currently connected to PIXI.Ticker.shared to auto update animation time. */
-    private _isConnectedToTicker: boolean;
-
-    /** If animation is currently playing */
-    private _playing: boolean;
-
-    /** Current playback position in milliseconds */
-    private _currentTime: number;
-
-    /**
-     * User-assigned function to call when an AnimatedSprite finishes playing.
-     *
-     * @example
-     * animation.onComplete = function () {
-     *   // finished!
-     * };
-     */
-    public onComplete?: () => void;
-
-    /**
-     * User-assigned function to call when an AnimatedSprite changes which texture is being rendered.
-     *
-     * @example
-     * animation.onFrameChange = function () {
-     *   // updated!
-     * };
-     */
-    public onFrameChange?: (currentFrame: number) => void;
-
-    /**
-     * User-assigned function to call when `loop` is true, and an AnimatedSprite is played and
-     * loops around to start again.
-     *
-     * @example
-     * animation.onLoop = function () {
-     *   // looped!
-     * };
-     */
-    public onLoop?: () => void;
-
-    /** Default options for all AnimatedGIF objects */
     public static defaultOptions: AnimatedGIFOptions = {
         scaleMode: SCALE_MODES.LINEAR,
         loop: true,
@@ -133,9 +69,91 @@ class AnimatedGIF extends Sprite
     };
 
     /**
-     * Create an animated GIF animation from a GIF image.
-     * @param buffer - GIF image arraybuffer from loader
-     * @param options - Option to use
+     * The speed that the animation will play at. Higher is faster, lower is slower.
+     * @default 1
+     */
+    public animationSpeed: number;
+
+    /**
+     * Whether or not the animate sprite repeats after playing.
+     * @default true
+     */
+    public loop: boolean;
+
+    /**
+     * User-assigned function to call when animation finishes playing. This only happens
+     * if loop is set to `false`.
+     *
+     * @example
+     * animation.onComplete = () => {
+     *   // finished!
+     * };
+     */
+    public onComplete?: () => void;
+
+    /**
+     * User-assigned function to call when animation changes which texture is being rendered.
+     *
+     * @example
+     * animation.onFrameChange = () => {
+     *   // updated!
+     * };
+     */
+    public onFrameChange?: (currentFrame: number) => void;
+ 
+    /**
+     * User-assigned function to call when `loop` is true, and animation is played and
+     * loops around to start again. This only happens if loop is set to `true`.
+     *
+     * @example
+     * animation.onLoop = () => {
+     *   // looped!
+     * };
+     */
+    public onLoop?: () => void;
+
+    /** The total duration of animation in milliseconds. */
+    public readonly duration: number;
+
+    /** Whether to play the animation after constructing. */
+    public readonly autoPlay: boolean;
+
+    /** Collection of frame to render. */
+    private _frames: FrameObject[];
+
+    /** Drawing context reference. */
+    private _context: CanvasRenderingContext2D;
+
+    /** Dirty means the image needs to be redrawn. */
+    private dirty: boolean;
+
+    /** The current frame number (zero-based index). */
+    private _currentFrame: number;
+
+    /** `true` uses PIXI.Ticker.shared to auto update animation time.*/
+    private _autoUpdate: boolean;
+
+    /** `true` if the instance is currently connected to PIXI.Ticker.shared to auto update animation time. */
+    private _isConnectedToTicker: boolean;
+
+    /** If animation is currently playing. */
+    private _playing: boolean;
+
+    /** Current playback position in milliseconds. */
+    private _currentTime: number;
+
+    /**
+     * Create an animated GIF animation from a GIF image's ArrayBuffer. The easiest way to get
+     * the buffer is to use the Loader.
+     * @example
+     * const loader = new PIXI.Loader();
+     * loader.add('myFile', 'file.gif');
+     * loader.load((loader, resources) => {
+     *    const gif = resources.myFile.animation;
+     *    // add to the stage...
+     * });
+     * @param buffer - GIF image arraybuffer from loader.
+     * @param options - Options to use.
      * @returns
      */
     static fromBuffer(buffer: ArrayBuffer, options?: Partial<AnimatedGIFOptions>): AnimatedGIF
@@ -274,7 +292,7 @@ class AnimatedGIF extends Sprite
     }
 
     /**
-     * Get the current progress of the AnimatedSprite from 0 to 1.
+     * Get the current progress of the animation from 0 to 1.
      * @readonly
      */
     public get progress(): number
@@ -463,7 +481,13 @@ class AnimatedGIF extends Sprite
         this.onLoop = null;
     }
 
-    /** Copy the animation, will copy all settings */
+    /**
+     * Cloning the animation is a useful way to create a duplicate animation.
+     * This maintains all the properties of the original animation but allows
+     * you to control playback independent of the original animation.
+     * If you want to create a simple copy, and not control independently,
+     * then you can simply create a new Sprite, e.g. `const sprite = new Sprite(animation.texture)`.
+     */
     clone(): AnimatedGIF
     {
         return new AnimatedGIF([...this._frames], {
