@@ -4,7 +4,7 @@
   "description": "Animated GIF Runtime for PixiJS",
   "main": "dist/pixi-gif.cjs.js",
   "module": "dist/pixi-gif.esm.js",
-  "types": "dist/pixi-gif.d.ts",
+  "types": "index.d.ts",
   "scripts": {
     "test": "floss -p test --require ts-node/register",
     "coverage": "nyc floss -p test --require ts-node/register",
@@ -49,8 +49,8 @@
     "access": "public"
   },
   "files": [
-    "dist/",
-    "global.d.ts"
+    "dist",
+    "*.d.ts"
   ],
   "keywords": [
     "gif",

@@ -8,3 +8,4 @@ node_modules
 .nyc_output
 .types_output
 /example.api.json
+index.d.ts
