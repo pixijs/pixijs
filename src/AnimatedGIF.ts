@@ -124,8 +124,8 @@ class AnimatedGIF extends Sprite
     /** Drawing context reference. */
     private _context: CanvasRenderingContext2D;
 
-    /** Dirty means the image needs to be redrawn. */
-    private dirty: boolean;
+    /** Dirty means the image needs to be redrawn. Set to `true` to force redraw. */
+    public dirty: boolean;
 
     /** The current frame number (zero-based index). */
     private _currentFrame: number;
@@ -350,13 +350,11 @@ class AnimatedGIF extends Sprite
     }
 
     /**
-     *
-     * @param respectDirty - Set to `false` to force the update of the texture.
-     * @returns
+     * Redraw the current frame, is necessary for the animation to work when
      */
-    private updateFrame(respectDirty = true): void
+    private updateFrame(): void
     {
-        if (!this.dirty && respectDirty)
+        if (!this.dirty)
         {
             return;
         }
