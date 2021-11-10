@@ -339,6 +339,12 @@ class AnimatedGIF extends Sprite
         const { imageData } = this._frames[this._currentFrame];
 
         this._context.putImageData(imageData, 0, 0);
+
+        // Workaround hack for Safari & iOS
+        // which fails to upload canvas after putImageData
+        this._context.fillStyle = 'transparent';
+        this._context.fillRect(0, 0, 1, 1);
+
         this.texture.update();
 
         // Mark as clean
