@@ -181,7 +181,7 @@ class AnimatedGIF extends Sprite
         // Precompute each frame and store as ImageData
         for (let i = 0; i < gifFrames.length; i++)
         {
-            const { delay, patch, dims: { width, height, left, top } } = gifFrames[i];
+            const { disposalType, delay, patch, dims: { width, height, left, top } } = gifFrames[i];
 
             patchCanvas.width = width;
             patchCanvas.height = height;
@@ -190,6 +190,11 @@ class AnimatedGIF extends Sprite
 
             patchData.data.set(patch);
             patchContext.putImageData(patchData, 0, 0);
+
+            if (disposalType === 2)
+            {
+                context.clearRect(0, 0, width, height);
+            }
             context.drawImage(patchCanvas, left, top);
             const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
 
