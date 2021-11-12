@@ -1,6 +1,9 @@
 # package.lock
 packages/**/package-lock.json
 
+# yarn.lock
+packages/**/yarn.lock
+
 # sublime text files
 *.sublime*
 *.*~*.TMP
