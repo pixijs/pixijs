@@ -10,16 +10,14 @@ import type { ISize } from '@pixi/math';
 /**
  * A resource that contains a number of sources.
  *
- * @class
- * @extends PIXI.Resource
  * @memberof PIXI
  */
 export class ArrayResource extends AbstractMultiResource
 {
     /**
-     * @param {number|Array<*>} source - Number of items in array or the collection
+     * @param source - Number of items in array or the collection
      *        of image URLs to use. Can also be resources, image elements, canvas, etc.
-     * @param {object} [options] - Options to apply to {@link PIXI.autoDetectResource}
+     * @param options - Options to apply to {@link PIXI.autoDetectResource}
      * @param {number} [options.width] - Width of the resource
      * @param {number} [options.height] - Height of the resource
      */
@@ -47,13 +45,14 @@ export class ArrayResource extends AbstractMultiResource
             this.initFromArray(urls, options);
         }
     }
+
     /**
      * Set a baseTexture by ID,
      * ArrayResource just takes resource from it, nothing more
      *
-     * @param {PIXI.BaseTexture} baseTexture
-     * @param {number} index - Zero-based index of resource to set
-     * @return {PIXI.ArrayResource} Instance for chaining
+     * @param baseTexture
+     * @param index - Zero-based index of resource to set
+     * @return - Instance for chaining
      */
     addBaseTextureAt(baseTexture: BaseTexture, index: number): this
     {
@@ -69,11 +68,7 @@ export class ArrayResource extends AbstractMultiResource
         return this;
     }
 
-    /**
-     * Add binding
-     * @member {PIXI.BaseTexture}
-     * @override
-     */
+    /** Add binding */
     bind(baseTexture: BaseTexture): void
     {
         super.bind(baseTexture);
@@ -83,10 +78,11 @@ export class ArrayResource extends AbstractMultiResource
 
     /**
      * Upload the resources to the GPU.
-     * @param {PIXI.Renderer} renderer
-     * @param {PIXI.BaseTexture} texture
-     * @param {PIXI.GLTexture} glTexture
-     * @returns {boolean} whether texture was uploaded
+     *
+     * @param renderer
+     * @param texture
+     * @param glTexture
+     * @returns - whether texture was uploaded
      */
     upload(renderer: Renderer, texture: BaseTexture, glTexture: GLTexture): boolean
     {
