@@ -71,6 +71,30 @@ describe('DisplayObject#cacheAsBitmap', function ()
         }
     });
 
+    it('should not throw error when filters is empty array', function ()
+    {
+        const obj = new Container();
+
+        obj.filters = [];
+        obj.cacheAsBitmap = true;
+
+        expect(function ()
+        {
+            let renderer = null;
+
+            try
+            {
+                renderer = new Renderer({ width: 50, height: 50 });
+
+                obj.render(renderer);
+            }
+            finally
+            {
+                renderer.destroy();
+            }
+        }).to.not.throw();
+    });
+
     it('should respect projection', function ()
     {
         const par = new Container();
