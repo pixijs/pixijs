@@ -1,6 +1,10 @@
 import { BitmapFontData } from '../BitmapFontData';
 
-/** BitmapFont format that's XML-based. */
+/**
+ * BitmapFont format that's XML-based.
+ *
+ * @private
+ */
 export class XMLFormat
 {
     /**
