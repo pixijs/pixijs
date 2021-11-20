@@ -71,7 +71,7 @@ export interface IBitmapFontDataChar {
     /** x-position of character in page. */
     x: number;
 
-    /** y-positionf of character in page. */
+    /** y-position of character in page. */
     y: number;
 
     /** Width of character in page. */
