@@ -321,7 +321,7 @@ export class KTXLoader
                 uncompressed: imageBuffers.map((levelBuffers) => (
                     {
                         resource: new BufferResource(
-                            glType === TYPES.FLOAT ? new Float32Array(levelBuffers[0].levelBuffer)
+                            glType === TYPES.FLOAT ? new Float32Array(levelBuffers[0].levelBuffer.buffer)
                                 : levelBuffers[0].levelBuffer,
                             {
                                 width: levelBuffers[0].levelWidth,
