@@ -61,6 +61,8 @@ const FILE_HEADER_SIZE = 64;
 export const TYPES_TO_BYTES_PER_COMPONENT: { [id: number]: number } = {
     [TYPES.UNSIGNED_BYTE]: 1,
     [TYPES.UNSIGNED_SHORT]: 2,
+    [TYPES.INT]: 4,
+    [TYPES.UNSIGNED_INT]: 4,
     [TYPES.FLOAT]: 4,
     [TYPES.HALF_FLOAT]: 8
 };
@@ -318,11 +320,35 @@ export class KTXLoader
         if (glType !== 0)
         {
             return {
-                uncompressed: imageBuffers.map((levelBuffers) => (
+                uncompressed: imageBuffers.map((levelBuffers) =>
+                {
+                    let buffer: Float32Array | Uint32Array | Int32Array | Uint8Array = levelBuffers[0].levelBuffer;
+
+                    if (glType === TYPES.FLOAT)
                     {
+                        buffer = new Float32Array(
+                            levelBuffers[0].levelBuffer.buffer,
+                            levelBuffers[0].levelBuffer.byteOffset,
+                            levelBuffers[0].levelBuffer.byteLength / 4);
+                    }
+                    else if (glType === TYPES.UNSIGNED_INT)
+                    {
+                        buffer = new Uint32Array(
+                            levelBuffers[0].levelBuffer.buffer,
+                            levelBuffers[0].levelBuffer.byteOffset,
+                            levelBuffers[0].levelBuffer.byteLength / 4);
+                    }
+                    else if (glType === TYPES.INT)
+                    {
+                        buffer = new Int32Array(
+                            levelBuffers[0].levelBuffer.buffer,
+                            levelBuffers[0].levelBuffer.byteOffset,
+                            levelBuffers[0].levelBuffer.byteLength / 4);
+                    }
+
+                    return {
                         resource: new BufferResource(
-                            glType === TYPES.FLOAT ? new Float32Array(levelBuffers[0].levelBuffer.buffer)
-                                : levelBuffers[0].levelBuffer,
+                            buffer,
                             {
                                 width: levelBuffers[0].levelWidth,
                                 height: levelBuffers[0].levelHeight,
@@ -330,8 +356,8 @@ export class KTXLoader
                         ),
                         type: glType,
                         format: glFormat,
-                    }
-                ))
+                    };
+                })
             };
         }
 
