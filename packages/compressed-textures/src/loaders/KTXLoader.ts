@@ -295,8 +295,10 @@ export class KTXLoader
 
                 mips[mipmapLevel] = {
                     levelID: mipmapLevel,
-                    levelWidth: numberOfMipmapLevels > 1 ? mipWidth : alignedMipWidth,
-                    levelHeight: numberOfMipmapLevels > 1 ? mipHeight : alignedMipHeight,
+
+                    // don't align mipWidth when texture not compressed! (glType not zero)
+                    levelWidth: numberOfMipmapLevels > 1 || glType !== 0 ? mipWidth : alignedMipWidth,
+                    levelHeight: numberOfMipmapLevels > 1 || glType !== 0 ? mipHeight : alignedMipHeight,
                     levelBuffer: new Uint8Array(arrayBuffer, elementOffset, mipByteSize)
                 };
                 elementOffset += mipByteSize;
@@ -323,6 +325,7 @@ export class KTXLoader
                 uncompressed: imageBuffers.map((levelBuffers) =>
                 {
                     let buffer: Float32Array | Uint32Array | Int32Array | Uint8Array = levelBuffers[0].levelBuffer;
+                    let convertToInt = false
 
                     if (glType === TYPES.FLOAT)
                     {
@@ -333,6 +336,7 @@ export class KTXLoader
                     }
                     else if (glType === TYPES.UNSIGNED_INT)
                     {
+                        convertToInt = true
                         buffer = new Uint32Array(
                             levelBuffers[0].levelBuffer.buffer,
                             levelBuffers[0].levelBuffer.byteOffset,
@@ -340,6 +344,7 @@ export class KTXLoader
                     }
                     else if (glType === TYPES.INT)
                     {
+                        convertToInt = true
                         buffer = new Int32Array(
                             levelBuffers[0].levelBuffer.buffer,
                             levelBuffers[0].levelBuffer.byteOffset,
@@ -355,7 +360,7 @@ export class KTXLoader
                             }
                         ),
                         type: glType,
-                        format: glFormat,
+                        format: convertToInt ? KTXLoader.convertFormatToInteger(glFormat) : glFormat,
                     };
                 })
             };
@@ -390,5 +395,17 @@ export class KTXLoader
         }
 
         return true;
+    }
+
+    private static convertFormatToInteger(format: FORMATS)
+    {
+        switch (format)
+        {
+            case FORMATS.RGBA: return FORMATS.RGBA_INTEGER
+            case FORMATS.RGB: return FORMATS.RGB_INTEGER
+            case FORMATS.RG: return FORMATS.RG_INTEGER
+            case FORMATS.RED: return FORMATS.RED_INTEGER
+            default: return format
+        }
     }
 }
