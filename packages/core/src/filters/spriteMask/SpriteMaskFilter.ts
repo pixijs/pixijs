@@ -28,13 +28,14 @@ export interface ISpriteMaskFilter extends Filter
  *
  * WebGL only.
  *
- * @class
- * @extends PIXI.Filter
  * @memberof PIXI
  */
 export class SpriteMaskFilter extends Filter
 {
+    /** @private */
     _maskSprite: IMaskTarget;
+
+    /** Mask matrix */
     maskMatrix: Matrix;
 
     /**
@@ -43,15 +44,13 @@ export class SpriteMaskFilter extends Filter
     constructor(sprite: IMaskTarget);
 
     /**
-     * @param {string} [vertexSrc] - The source of the vertex shader.
-     * @param {string} [fragmentSrc] - The source of the fragment shader.
-     * @param {object} [uniforms] - Custom uniforms to use to augment the built-in ones.
+     * @param vertexSrc - The source of the vertex shader.
+     * @param fragmentSrc - The source of the fragment shader.
+     * @param uniforms - Custom uniforms to use to augment the built-in ones.
      */
     constructor(vertexSrc?: string, fragmentSrc?: string, uniforms?: Dict<any>);
 
-    /**
-     * @ignore
-     */
+    /** @ignore */
     constructor(vertexSrc?: string | IMaskTarget, fragmentSrc?: string, uniforms?: Dict<any>)
     {
         let sprite = null;
@@ -66,19 +65,15 @@ export class SpriteMaskFilter extends Filter
 
         super(vertexSrc as string || vertex, fragmentSrc || fragment, uniforms);
 
-        /**
-         * Sprite mask
-         * @member {PIXI.Sprite}
-         */
         this.maskSprite = sprite;
-
-        /**
-         * Mask matrix
-         * @member {PIXI.Matrix}
-         */
         this.maskMatrix = new Matrix();
     }
 
+    /**
+     * Sprite mask
+     *
+     * @type {PIXI.DisplayObject}
+     */
     get maskSprite(): IMaskTarget
     {
         return this._maskSprite;
@@ -97,10 +92,10 @@ export class SpriteMaskFilter extends Filter
     /**
      * Applies the filter
      *
-     * @param {PIXI.FilterSystem} filterManager - The renderer to retrieve the filter from
-     * @param {PIXI.RenderTexture} input - The input render target.
-     * @param {PIXI.RenderTexture} output - The target to output to.
-     * @param {PIXI.CLEAR_MODES} clearMode - Should the output be cleared before rendering to it.
+     * @param filterManager - The renderer to retrieve the filter from
+     * @param input - The input render target.
+     * @param output - The target to output to.
+     * @param clearMode - Should the output be cleared before rendering to it.
      */
     apply(filterManager: FilterSystem, input: RenderTexture, output: RenderTexture, clearMode: CLEAR_MODES): void
     {
