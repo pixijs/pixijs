@@ -14,22 +14,34 @@ export interface ISVGResourceOptions
 }
 /**
  * Resource type for SVG elements and graphics.
- * @class
- * @extends PIXI.BaseImageResource
+ *
  * @memberof PIXI
  */
 export class SVGResource extends BaseImageResource
 {
+    /** Base64 encoded SVG element or URL for SVG file. */
     public readonly svg: string;
+
+    /** The source scale to apply when rasterizing on load. */
     public readonly scale: number;
-    readonly _overrideWidth: number;
-    readonly _overrideHeight: number;
+
+    /** A width override for rasterization on load. */
+    public readonly _overrideWidth: number;
+
+    /** A height override for rasterization on load. */
+    public readonly _overrideHeight: number;
+
+    /** Call when completely loaded. */
     private _resolve: () => void;
+
+    /** Promise when loading */
     private _load: Promise<SVGResource>;
+
+    /** Cross origin value to use */
     private _crossorigin?: boolean|string;
 
     /**
-     * @param {string} source - Base64 encoded SVG element or URL for SVG file.
+     * @param sourceBase64 - Base64 encoded SVG element or URL for SVG file.
      * @param {object} [options] - Options to use
      * @param {number} [options.scale=1] - Scale to apply to SVG. Overridden by...
      * @param {number} [options.width] - Rasterize SVG this wide. Aspect ratio preserved if height not specified.
@@ -44,54 +56,13 @@ export class SVGResource extends BaseImageResource
         this._width = 0;
         this._height = 0;
 
-        /**
-         * Base64 encoded SVG element or URL for SVG file
-         * @readonly
-         * @member {string}
-         */
         this.svg = sourceBase64;
-
-        /**
-         * The source scale to apply when rasterizing on load
-         * @readonly
-         * @member {number}
-         */
         this.scale = options.scale || 1;
-
-        /**
-         * A width override for rasterization on load
-         * @readonly
-         * @member {number}
-         */
         this._overrideWidth = options.width;
-
-        /**
-         * A height override for rasterization on load
-         * @readonly
-         * @member {number}
-         */
         this._overrideHeight = options.height;
 
-        /**
-         * Call when completely loaded
-         * @private
-         * @member {function}
-         */
         this._resolve = null;
-
-        /**
-         * Cross origin value to use
-         * @private
-         * @member {boolean|string}
-         */
         this._crossorigin = options.crossorigin;
-
-        /**
-         * Promise when loading
-         * @member {Promise<void>}
-         * @private
-         * @default null
-         */
         this._load = null;
 
         if (options.autoLoad !== false)
@@ -132,11 +103,7 @@ export class SVGResource extends BaseImageResource
         return this._load;
     }
 
-    /**
-     * Loads an SVG image from `imageUrl` or `data URL`.
-     *
-     * @private
-     */
+    /** Loads an SVG image from `imageUrl` or `data URL`. */
     private _loadSvg(): void
     {
         const tempImage = new Image();
@@ -200,11 +167,10 @@ export class SVGResource extends BaseImageResource
     }
 
     /**
-     * Get size from an svg string using regexp.
+     * Get size from an svg string using a regular expression.
      *
-     * @method
-     * @param {string} svgString - a serialized svg element
-     * @return {PIXI.ISize} image extension
+     * @param svgString - a serialized svg element
+     * @return - image extension
      */
     static getSize(svgString?: string): ISize
     {
@@ -220,10 +186,7 @@ export class SVGResource extends BaseImageResource
         return size;
     }
 
-    /**
-     * Destroys this texture
-     * @override
-     */
+    /** Destroys this texture. */
     dispose(): void
     {
         super.dispose();
@@ -234,9 +197,9 @@ export class SVGResource extends BaseImageResource
     /**
      * Used to auto-detect the type of resource.
      *
-     * @static
      * @param {*} source - The source object
      * @param {string} extension - The extension of source, if set
+     * @return {boolean} - If the source is a SVG source or data file
      */
     static test(source: unknown, extension?: string): boolean
     {
@@ -249,19 +212,18 @@ export class SVGResource extends BaseImageResource
     }
 
     /**
-     * RegExp for SVG XML document.
+     * Regular expression for SVG XML document.
      *
      * @example &lt;?xml version="1.0" encoding="utf-8" ?&gt;&lt;!-- image/svg --&gt;&lt;svg
+     * @readonly
      */
     static SVG_XML = /^(<\?xml[^?]+\?>)?\s*(<!--[^(-->)]*-->)?\s*\<svg/m;
 
     /**
-     * RegExp for SVG size.
+     * Regular expression for SVG size.
      *
-     * @static
-     * @constant {RegExp|string} SVG_SIZE
-     * @memberof PIXI.SVGResource
      * @example &lt;svg width="100" height="100"&gt;&lt;/svg&gt;
+     * @readonly
      */
     static SVG_SIZE = /<svg[^>]*(?:\s(width|height)=('|")(\d*(?:\.\d+)?)(?:px)?('|"))[^>]*(?:\s(width|height)=('|")(\d*(?:\.\d+)?)(?:px)?('|"))[^>]*>/i; // eslint-disable-line max-len
 }
