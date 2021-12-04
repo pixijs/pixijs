@@ -325,7 +325,7 @@ export class KTXLoader
                 uncompressed: imageBuffers.map((levelBuffers) =>
                 {
                     let buffer: Float32Array | Uint32Array | Int32Array | Uint8Array = levelBuffers[0].levelBuffer;
-                    let convertToInt = false
+                    let convertToInt = false;
 
                     if (glType === TYPES.FLOAT)
                     {
@@ -336,7 +336,7 @@ export class KTXLoader
                     }
                     else if (glType === TYPES.UNSIGNED_INT)
                     {
-                        convertToInt = true
+                        convertToInt = true;
                         buffer = new Uint32Array(
                             levelBuffers[0].levelBuffer.buffer,
                             levelBuffers[0].levelBuffer.byteOffset,
@@ -344,7 +344,7 @@ export class KTXLoader
                     }
                     else if (glType === TYPES.INT)
                     {
-                        convertToInt = true
+                        convertToInt = true;
                         buffer = new Int32Array(
                             levelBuffers[0].levelBuffer.buffer,
                             levelBuffers[0].levelBuffer.byteOffset,
@@ -401,11 +401,11 @@ export class KTXLoader
     {
         switch (format)
         {
-            case FORMATS.RGBA: return FORMATS.RGBA_INTEGER
-            case FORMATS.RGB: return FORMATS.RGB_INTEGER
-            case FORMATS.RG: return FORMATS.RG_INTEGER
-            case FORMATS.RED: return FORMATS.RED_INTEGER
-            default: return format
+            case FORMATS.RGBA: return FORMATS.RGBA_INTEGER;
+            case FORMATS.RGB: return FORMATS.RGB_INTEGER;
+            case FORMATS.RG: return FORMATS.RG_INTEGER;
+            case FORMATS.RED: return FORMATS.RED_INTEGER;
+            default: return format;
         }
     }
 }
