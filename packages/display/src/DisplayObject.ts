@@ -211,7 +211,7 @@ export abstract class DisplayObject extends EventEmitter
     public worldAlpha: number;
     public transform: Transform;
     public alpha: number;
-    public visible: boolean;
+    public _visible: boolean;
     public renderable: boolean;
     public filterArea: Rectangle;
     public filters: Filter[] | null;
@@ -290,7 +290,7 @@ export abstract class DisplayObject extends EventEmitter
          *
          * @member {boolean}
          */
-        this.visible = true;
+        this._visible = true;
 
         /**
          * Can this object be rendered, if false the object will not be drawn but the updateTransform
@@ -1085,6 +1085,28 @@ export abstract class DisplayObject extends EventEmitter
             }
 
             maskObject._maskRefCount++;
+        }
+    }
+
+    /**
+     * The visibility of the displayObject.
+     * If false the object will not be updateTransform.
+     * If the object changes to true, will be updateTransform.
+     *
+     * @member {boolean}
+     */
+    get visible(): boolean
+    {
+        return this._visible;
+    }
+
+    set visible(value: boolean)
+    {
+        if (value !== this._visible) {
+            this._visible = value;
+            if (value) {
+                this.updateTransform();
+            }
         }
     }
 }
