@@ -1102,9 +1102,11 @@ export abstract class DisplayObject extends EventEmitter
 
     set visible(value: boolean)
     {
-        if (value !== this._visible) {
+        if (value !== this._visible)
+        {
             this._visible = value;
-            if (value) {
+            if (value)
+            {
                 this.updateTransform();
             }
         }
