@@ -59,5 +59,9 @@ describe('RoundedRectangle', function ()
         const rrect3 = new RoundedRectangle(0, 0, 0, 10, 1);
 
         expect(rrect3.contains(0, 0)).to.be.false;
+
+        const rrect4 = new RoundedRectangle(0, 0, 10, 10, 1000);
+
+        expect(rrect4.contains(5, 5)).to.be.true;
     });
 });
