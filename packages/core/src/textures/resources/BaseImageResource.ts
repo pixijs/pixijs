@@ -5,15 +5,29 @@ import { ALPHA_MODES } from '@pixi/constants';
 import type { BaseTexture, ImageSource } from '../BaseTexture';
 import type { Renderer } from '../../Renderer';
 import type { GLTexture } from '../GLTexture';
+
 /**
- * Base for all the image/canvas resources
- * @class
- * @extends PIXI.Resource
+ * Base for all the image/canvas resources.
+ *
  * @memberof PIXI
  */
 export class BaseImageResource extends Resource
 {
+    /**
+     * The source element.
+     *
+     * @member {HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|SVGElement}
+     * @readonly
+     */
     public source: ImageSource;
+
+    /**
+     * If set to `true`, will force `texImage2D` over `texSubImage2D` for uploading.
+     * Certain types of media (e.g. video) using `texImage2D` is more performant.
+     *
+     * @default false
+     * @private
+     */
     public noSubImage: boolean;
 
     /**
@@ -27,29 +41,16 @@ export class BaseImageResource extends Resource
 
         super(width, height);
 
-        /**
-         * The source element
-         * @member {HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|SVGElement}
-         * @readonly
-         */
         this.source = source;
-
-        /**
-         * If set to `true`, will force `texImage2D` over `texSubImage2D` for uploading.
-         * Certain types of media (e.g. video) using `texImage2D` is more performant.
-         * @member {boolean}
-         * @default false
-         * @private
-         */
         this.noSubImage = false;
     }
 
     /**
      * Set cross origin based detecting the url and the crossorigin
-     * @protected
-     * @param {HTMLElement} element - Element to apply crossOrigin
-     * @param {string} url - URL to check
-     * @param {boolean|string} [crossorigin=true] - Cross origin value to use
+     *
+     * @param element - Element to apply crossOrigin
+     * @param url - URL to check
+     * @param crossorigin - Cross origin value to use
      */
     static crossOrigin(element: HTMLImageElement|HTMLVideoElement, url: string, crossorigin?: boolean|string): void
     {
@@ -65,11 +66,12 @@ export class BaseImageResource extends Resource
 
     /**
      * Upload the texture to the GPU.
-     * @param {PIXI.Renderer} renderer - Upload to the renderer
-     * @param {PIXI.BaseTexture} baseTexture - Reference to parent texture
-     * @param {PIXI.GLTexture} glTexture
+     *
+     * @param renderer - Upload to the renderer
+     * @param baseTexture - Reference to parent texture
+     * @param glTexture
      * @param {HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|SVGElement} [source] - (optional)
-     * @returns {boolean} true is success
+     * @returns - true is success
      */
     upload(renderer: Renderer, baseTexture: BaseTexture, glTexture: GLTexture, source?: ImageSource): boolean
     {
@@ -120,10 +122,7 @@ export class BaseImageResource extends Resource
         super.update();
     }
 
-    /**
-     * Destroy this BaseImageResource
-     * @override
-     */
+    /** Destroy this {@link BaseImageResource} */
     dispose(): void
     {
         this.source = null;

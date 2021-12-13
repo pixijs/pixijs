@@ -67,8 +67,6 @@ const charRenderDataPool: CharRenderData[] = [];
  * });
  * ```
  *
- * @class
- * @extends PIXI.Container
  * @memberof PIXI
  */
 export class BitmapText extends Container
@@ -79,25 +77,108 @@ export class BitmapText extends Container
         maxWidth: 0,
         letterSpacing: 0,
     };
+
+    /** Set to `true` if the BitmapText needs to be redrawn. */
     public dirty: boolean;
+
+    /**
+     * Private tracker for the width of the overall text.
+     *
+     * @private
+     */
     protected _textWidth: number;
+
+    /**
+     * Private tracker for the height of the overall text.
+     *
+     * @private
+     */
     protected _textHeight: number;
+
+    /**
+     * Private tracker for the current text.
+     *
+     * @private
+     */
     protected _text: string;
+
+    /**
+     * The max width of this bitmap text in pixels. If the text provided is longer than the
+     * value provided, line breaks will be automatically inserted in the last whitespace.
+     * Disable by setting value to 0
+     *
+     * @private
+     */
     protected _maxWidth: number;
+
+    /**
+     * The max line height. This is useful when trying to use the total height of the Text,
+     * ie: when trying to vertically align. (Internally used)
+     *
+     * @private
+     */
     protected _maxLineHeight: number;
+
+    /**
+     * Letter spacing. This is useful for setting the space between characters.
+     *
+     * @private
+     */
     protected _letterSpacing: number;
+
+    /**
+     * Text anchor.
+     *
+     * @readonly
+     * @private
+     */
     protected _anchor: ObservablePoint;
+
+    /**
+     * Private tracker for the current font name.
+     *
+     * @private
+     */
     protected _fontName: string;
+
+    /**
+     * Private tracker for the current font size.
+     *
+     * @private
+     */
     protected _fontSize: number;
+
+    /**
+     * Private tracker for the current text align.
+     *
+     * @type {string}
+     * @private
+     */
     protected _align: TextStyleAlign;
+
+    /** Collection of page mesh data. */
     protected _activePagesMeshData: PageMeshData[];
+
+    /**
+     * Private tracker for the current tint.
+     *
+     * @private
+     */
     protected _tint = 0xFFFFFF;
+
+    /**
+     * If true PixiJS will Math.floor() x/y values when rendering.
+     *
+     * @default PIXI.settings.ROUND_PIXELS
+     */
     protected _roundPixels: boolean;
+
+    /** Cached char texture is destroyed when BitmapText is destroyed. */
     private _textureCache: Record<number, Texture>;
 
     /**
-     * @param {string} text - A string that you would like the text to display.
-     * @param {object} style - The style parameters.
+     * @param text - A string that you would like the text to display.
+     * @param style - The style parameters.
      * @param {string} style.fontName - The installed BitmapFont name.
      * @param {number} [style.fontSize] - The size of the font in pixels, e.g. 24. If undefined,
      *.     this will default to the BitmapFont size.
@@ -120,124 +201,20 @@ export class BitmapText extends Container
             throw new Error(`Missing BitmapFont "${fontName}"`);
         }
 
-        /**
-         * Collection of page mesh data.
-         *
-         * @member {object}
-         * @private
-         */
         this._activePagesMeshData = [];
-
-        /**
-         * Private tracker for the width of the overall text
-         *
-         * @member {number}
-         * @private
-         */
         this._textWidth = 0;
-
-        /**
-         * Private tracker for the height of the overall text
-         *
-         * @member {number}
-         * @private
-         */
         this._textHeight = 0;
-
-        /**
-         * Private tracker for the current text align.
-         *
-         * @member {string}
-         * @private
-         */
         this._align = align;
-
-        /**
-         * Private tracker for the current tint.
-         *
-         * @member {number}
-         * @private
-         */
         this._tint = tint;
-
-        /**
-         * Private tracker for the current font name.
-         *
-         * @member {string}
-         * @private
-         */
         this._fontName = fontName;
-
-        /**
-         * Private tracker for the current font size.
-         *
-         * @member {number}
-         * @private
-         */
         this._fontSize = fontSize || BitmapFont.available[fontName].size;
-
-        /**
-         * Private tracker for the current text.
-         *
-         * @member {string}
-         * @private
-         */
         this._text = text;
-
-        /**
-         * The max width of this bitmap text in pixels. If the text provided is longer than the
-         * value provided, line breaks will be automatically inserted in the last whitespace.
-         * Disable by setting value to 0
-         *
-         * @member {number}
-         * @private
-         */
         this._maxWidth = maxWidth;
-
-        /**
-         * The max line height. This is useful when trying to use the total height of the Text,
-         * ie: when trying to vertically align. (Internally used)
-         *
-         * @member {number}
-         * @private
-         */
         this._maxLineHeight = 0;
-
-        /**
-         * Letter spacing. This is useful for setting the space between characters.
-         * @member {number}
-         * @private
-         */
         this._letterSpacing = letterSpacing;
-
-        /**
-         * Text anchor. read-only
-         *
-         * @member {PIXI.ObservablePoint}
-         * @private
-         */
         this._anchor = new ObservablePoint((): void => { this.dirty = true; }, this, 0, 0);
-
-        /**
-         * If true PixiJS will Math.floor() x/y values when rendering
-         *
-         * @member {boolean}
-         * @default PIXI.settings.ROUND_PIXELS
-         */
         this._roundPixels = settings.ROUND_PIXELS;
-
-        /**
-         * Set to `true` if the BitmapText needs to be redrawn.
-         *
-         * @member {boolean}
-         */
         this.dirty = true;
-
-        /**
-         * Cached char texture is destroyed when BitmapText is destroyed
-         * @member {Record<number, Texture>}
-         * @private
-         */
         this._textureCache = {};
     }
 
@@ -623,11 +600,6 @@ export class BitmapText extends Container
         }
     }
 
-    /**
-     * Updates the transform of this object
-     *
-     * @private
-     */
     updateTransform(): void
     {
         this.validate();
@@ -662,7 +634,7 @@ export class BitmapText extends Container
     /**
      * Validates text before calling parent's getLocalBounds
      *
-     * @return {PIXI.Rectangle} The rectangular bounding area
+     * @return - The rectangular bounding area
      */
     public getLocalBounds(): Rectangle
     {
@@ -688,7 +660,6 @@ export class BitmapText extends Container
     /**
      * The tint of the BitmapText object.
      *
-     * @member {number}
      * @default 0xffffff
      */
     public get tint(): number
@@ -728,11 +699,7 @@ export class BitmapText extends Container
         }
     }
 
-    /**
-     * The name of the BitmapFont.
-     *
-     * @member {string}
-     */
+    /** The name of the BitmapFont. */
     public get fontName(): string
     {
         return this._fontName;
@@ -752,11 +719,7 @@ export class BitmapText extends Container
         }
     }
 
-    /**
-     * The size of the font to display.
-     *
-     * @member {number}
-     */
+    /** The size of the font to display. */
     public get fontSize(): number
     {
         return this._fontSize;
@@ -779,8 +742,6 @@ export class BitmapText extends Container
      * Setting the anchor to `(0.5,0.5)` means the text's origin is centered.
      *
      * Setting the anchor to `(1,1)` would mean the text's origin point will be the bottom right corner.
-     *
-     * @member {PIXI.Point | number}
      */
     public get anchor(): ObservablePoint
     {
@@ -799,11 +760,7 @@ export class BitmapText extends Container
         }
     }
 
-    /**
-     * The text of the BitmapText object.
-     *
-     * @member {string}
-     */
+    /** The text of the BitmapText object. */
     public get text(): string
     {
         return this._text;
@@ -825,8 +782,6 @@ export class BitmapText extends Container
      * The max width of this bitmap text in pixels. If the text provided is longer than the
      * value provided, line breaks will be automatically inserted in the last whitespace.
      * Disable by setting the value to 0.
-     *
-     * @member {number}
      */
     public get maxWidth(): number
     {
@@ -847,7 +802,6 @@ export class BitmapText extends Container
      * The max line height. This is useful when trying to use the total height of the Text,
      * i.e. when trying to vertically align.
      *
-     * @member {number}
      * @readonly
      */
     public get maxLineHeight(): number
@@ -861,7 +815,6 @@ export class BitmapText extends Container
      * The width of the overall text, different from fontSize,
      * which is defined in the style object.
      *
-     * @member {number}
      * @readonly
      */
     public get textWidth(): number
@@ -871,11 +824,7 @@ export class BitmapText extends Container
         return this._textWidth;
     }
 
-    /**
-     * Additional space between characters.
-     *
-     * @member {number}
-     */
+    /** Additional space between characters. */
     public get letterSpacing(): number
     {
         return this._letterSpacing;
@@ -896,7 +845,6 @@ export class BitmapText extends Container
      * The main disadvantage is movement of objects may appear less smooth.
      * To set the global default, change {@link PIXI.settings.ROUND_PIXELS}
      *
-     * @member {boolean}
      * @default PIXI.settings.ROUND_PIXELS
      */
     public get roundPixels(): boolean
@@ -917,7 +865,6 @@ export class BitmapText extends Container
      * The height of the overall text, different from fontSize,
      * which is defined in the style object.
      *
-     * @member {number}
      * @readonly
      */
     public get textHeight(): number
