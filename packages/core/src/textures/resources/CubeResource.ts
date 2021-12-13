@@ -13,27 +13,33 @@ import type { GLTexture } from '../GLTexture';
  */
 export interface ICubeResourceOptions extends ISize
 {
+    /** Whether to auto-load resources */
     autoLoad?: boolean;
+
+    /** In case BaseTextures are supplied, whether to copy them or use. */
     linkBaseTexture?: boolean;
 }
 
 /**
  * Resource for a CubeTexture which contains six resources.
  *
- * @class
- * @extends PIXI.ArrayResource
  * @memberof PIXI
  */
 export class CubeResource extends AbstractMultiResource
 {
     items: ArrayFixed<BaseTexture, 6>;
 
+    /**
+     * In case BaseTextures are supplied, whether to use same resource or bind baseTexture itself.
+     *
+     * @protected
+     */
     linkBaseTexture: boolean;
 
     /**
      * @param {Array<string|PIXI.Resource>} [source] - Collection of URLs or resources
      *        to use as the sides of the cube.
-     * @param {object} [options] - ImageResource options
+     * @param options - ImageResource options
      * @param {number} [options.width] - Width of resource
      * @param {number} [options.height] - Height of resource
      * @param {number} [options.autoLoad=true] - Whether to auto-load resources
@@ -56,11 +62,6 @@ export class CubeResource extends AbstractMultiResource
             this.items[i].target = TARGETS.TEXTURE_CUBE_MAP_POSITIVE_X + i;
         }
 
-        /**
-         * In case BaseTextures are supplied, whether to use same resource or bind baseTexture itself
-         * @member {boolean}
-         * @protected
-         */
         this.linkBaseTexture = linkBaseTexture !== false;
 
         if (source)
@@ -75,10 +76,9 @@ export class CubeResource extends AbstractMultiResource
     }
 
     /**
-     * Add binding
+     * Add binding.
      *
-     * @override
-     * @param {PIXI.BaseTexture} baseTexture - parent base texture
+     * @param baseTexture - parent base texture
      */
     bind(baseTexture: BaseTexture): void
     {
@@ -172,21 +172,13 @@ export class CubeResource extends AbstractMultiResource
         return true;
     }
 
-    /**
-     * Number of texture sides to store for CubeResources
-     *
-     * @name PIXI.CubeResource.SIDES
-     * @static
-     * @member {number}
-     * @default 6
-     */
+    /** Number of texture sides to store for CubeResources. */
     static SIDES = 6;
 
     /**
      * Used to auto-detect the type of resource.
      *
-     * @static
-     * @param {object} source - The source object
+     * @param {*} source - The source object
      * @return {boolean} `true` if source is an array of 6 elements
      */
     static test(source: unknown): source is ArrayFixed<string|Resource, 6>
