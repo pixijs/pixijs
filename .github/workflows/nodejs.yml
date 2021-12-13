@@ -28,7 +28,7 @@ jobs:
         node-version: 12
         registry-url: 'https://registry.npmjs.org'
     - name: Install npm
-      run: npm install -g npm@7.11.2
+      run: npm install -g npm@>=7
     - name: Install Dependencies
       run: npm ci
     - name: Install Code Coverage Dependency

@@ -180,28 +180,47 @@ import type { Dict } from '@pixi/utils';
  * Since PixiJS only had a handful of built-in filters, additional filters can be downloaded
  * {@link https://github.com/pixijs/pixi-filters here} from the PixiJS Filters repository.
  *
- * @class
  * @memberof PIXI
- * @extends PIXI.Shader
  */
 export class Filter extends Shader
 {
+    /**
+     * The padding of the filter. Some filters require extra space to breath such as a blur.
+     * Increasing this will add extra width and height to the bounds of the object that the
+     * filter is applied to.
+     */
     public padding: number;
+
+    /** The samples of the filter. */
     public multisample: MSAA_QUALITY;
+
+    /** If enabled is true the filter is applied, if false it will not. */
     public enabled: boolean;
+
+    /**
+     * If enabled, PixiJS will fit the filter area into boundaries for better performance.
+     * Switch it off if it does not work for specific shader.
+     *
+     * @default true
+     */
     public autoFit: boolean;
+
     /**
      * Legacy filters use position and uvs from attributes (set by filter system)
+     *
      * @readonly
      */
     public legacy: boolean;
+
+    /** The WebGL state the filter requires to render. */
     state: State;
 
     protected _resolution: number;
+
     /**
-     * @param {string} [vertexSrc] - The source of the vertex shader.
-     * @param {string} [fragmentSrc] - The source of the fragment shader.
-     * @param {object} [uniforms] - Custom uniforms to use to augment the built-in ones.
+     * @param vertexSrc - The source of the vertex shader.
+     * @param fragmentSrc - The source of the fragment shader.
+     * @param uniforms - Custom uniforms to use to augment the built-in ones.
      */
     constructor(vertexSrc?: string, fragmentSrc?: string, uniforms?: Dict<any>)
     {
@@ -210,43 +229,11 @@ export class Filter extends Shader
 
         super(program, uniforms);
 
-        /**
-         * The padding of the filter. Some filters require extra space to breath such as a blur.
-         * Increasing this will add extra width and height to the bounds of the object that the
-         * filter is applied to.
-         *
-         * @member {number}
-         */
         this.padding = 0;
-
         this.resolution = settings.FILTER_RESOLUTION;
-
-        /**
-         * The samples of the filter.
-         *
-         * @member {PIXI.MSAA_QUALITY}
-         */
         this.multisample = settings.FILTER_MULTISAMPLE;
-
-        /**
-         * If enabled is true the filter is applied, if false it will not.
-         *
-         * @member {boolean}
-         */
         this.enabled = true;
-
-        /**
-         * If enabled, PixiJS will fit the filter area into boundaries for better performance.
-         * Switch it off if it does not work for specific shader.
-         *
-         * @member {boolean}
-         */
         this.autoFit = true;
-
-        /**
-         * The WebGL state the filter requires to render
-         * @member {PIXI.State}
-         */
         this.state = new State();
     }
 
@@ -272,9 +259,8 @@ export class Filter extends Shader
     }
 
     /**
-     * Sets the blendmode of the filter
+     * Sets the blend mode of the filter.
      *
-     * @member {number}
      * @default PIXI.BLEND_MODES.NORMAL
      */
     get blendMode(): BLEND_MODES
@@ -290,8 +276,6 @@ export class Filter extends Shader
     /**
      * The resolution of the filter. Setting this to be lower will lower the quality but
      * increase the performance of the filter.
-     *
-     * @member {number}
      */
     get resolution(): number
     {
@@ -306,8 +290,6 @@ export class Filter extends Shader
     /**
      * The default vertex shader source
      *
-     * @static
-     * @type {string}
      * @constant
      */
     static get defaultVertexSrc(): string
@@ -318,8 +300,6 @@ export class Filter extends Shader
     /**
      * The default fragment shader source
      *
-     * @static
-     * @type {string}
      * @constant
      */
     static get defaultFragmentSrc(): string
@@ -327,12 +307,6 @@ export class Filter extends Shader
         return defaultFragment;
     }
 
-    /**
-     * Used for caching shader IDs
-     *
-     * @static
-     * @type {object}
-     * @protected
-     */
+    /** Used for caching shader IDs. */
     static SOURCE_KEY_MAP: Dict<string>;
 }

@@ -20,8 +20,6 @@ import type { FilterSystem, RenderTexture, Texture, ISpriteMaskTarget } from '@p
  * For example, if a displacement map pixel has `red = 1` and the filter scale is `20`,
  * this filter will output the pixel approximately 20 pixels to the right of the original.
  *
- * @class
- * @extends PIXI.Filter
  * @memberof PIXI.filters
  */
 export class DisplacementFilter extends Filter
@@ -32,7 +30,7 @@ export class DisplacementFilter extends Filter
 
     /**
      * @param {PIXI.Sprite} sprite - The sprite used for the displacement map. (make sure its added to the scene!)
-     * @param {number} [scale] - The scale of the displacement
+     * @param scale - The scale of the displacement
      */
     constructor(sprite: ISpriteMaskTarget, scale?: number)
     {
@@ -65,10 +63,10 @@ export class DisplacementFilter extends Filter
     /**
      * Applies the filter.
      *
-     * @param {PIXI.FilterSystem} filterManager - The manager.
-     * @param {PIXI.RenderTexture} input - The input target.
-     * @param {PIXI.RenderTexture} output - The output target.
-     * @param {PIXI.CLEAR_MODES} clearMode - clearMode.
+     * @param filterManager - The manager.
+     * @param input - The input target.
+     * @param output - The output target.
+     * @param clearMode - clearMode.
      */
     public apply(
         filterManager: FilterSystem, input: RenderTexture, output: RenderTexture, clearMode: CLEAR_MODES
@@ -96,11 +94,7 @@ export class DisplacementFilter extends Filter
         filterManager.applyFilter(this, input, output, clearMode);
     }
 
-    /**
-     * The texture used for the displacement map. Must be power of 2 sized texture.
-     *
-     * @member {PIXI.Texture}
-     */
+    /** The texture used for the displacement map. Must be power of 2 sized texture. */
     get map(): Texture
     {
         return this.uniforms.mapSampler;

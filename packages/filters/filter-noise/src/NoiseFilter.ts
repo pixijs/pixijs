@@ -6,8 +6,6 @@ import fragment from './noise.frag';
  *
  * original filter: https://github.com/evanw/glfx.js/blob/master/src/filters/adjust/noise.js
  *
- * @class
- * @extends PIXI.Filter
  * @memberof PIXI.filters
  * @author Vico @vicocotea
  */
@@ -31,7 +29,6 @@ export class NoiseFilter extends Filter
     /**
      * The amount of noise to apply, this value should be in the range (0, 1].
      *
-     * @member {number}
      * @default 0.5
      */
     get noise(): number
@@ -44,11 +41,7 @@ export class NoiseFilter extends Filter
         this.uniforms.uNoise = value;
     }
 
-    /**
-     * A seed value to apply to the random noise generation. `Math.random()` is a good value to use.
-     *
-     * @member {number}
-     */
+    /** A seed value to apply to the random noise generation. `Math.random()` is a good value to use. */
     get seed(): number
     {
         return this.uniforms.uSeed;

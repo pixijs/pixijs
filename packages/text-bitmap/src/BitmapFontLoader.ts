@@ -9,9 +9,8 @@ import type { Texture } from '@pixi/core';
 /**
  * {@link PIXI.Loader Loader} middleware for loading
  * bitmap-based fonts suitable for using with {@link PIXI.BitmapText}.
- * @class
+ *
  * @memberof PIXI
- * @implements PIXI.ILoaderPlugin
  */
 export class BitmapFontLoader
 {
@@ -27,6 +26,7 @@ export class BitmapFontLoader
 
     /**
      * Called after a resource is loaded.
+     *
      * @see PIXI.Loader.loaderMiddleware
      * @param {PIXI.LoaderResource} resource
      * @param {function} next
@@ -108,13 +108,7 @@ export class BitmapFontLoader
         }
     }
 
-    /**
-     * Get folder path from a resource
-     * @private
-     * @param {PIXI.Loader} loader
-     * @param {PIXI.LoaderResource} resource
-     * @return {string}
-     */
+    /** Get folder path from a resource. */
     private static getBaseUrl(loader: Loader, resource: LoaderResource): string
     {
         let resUrl = !resource.isDataUrl ? BitmapFontLoader.dirname(resource.url) : '';
@@ -150,7 +144,7 @@ export class BitmapFontLoader
 
     /**
      * Replacement for NodeJS's path.dirname
-     * @private
+     *
      * @param {string} url - Path to get directory for
      */
     private static dirname(url: string): string

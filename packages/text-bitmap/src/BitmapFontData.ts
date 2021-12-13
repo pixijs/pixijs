@@ -3,129 +3,110 @@
 /**
  * Normalized parsed data from .fnt files.
  *
- * @class
  * @memberof PIXI
  */
 export class BitmapFontData
 {
+    /** @readonly */
     public info: IBitmapFontDataInfo[];
+
+    /** @readonly */
     public common: IBitmapFontDataCommon[];
+
+    /** @readonly */
     public page: IBitmapFontDataPage[];
+
+    /** @readonly */
     public char: IBitmapFontDataChar[];
+
+    /** @readonly */
     public kerning: IBitmapFontDataKerning[];
+
+    /** @readonly */
     public distanceField: IBitmapFontDataDistanceField[];
 
     constructor()
     {
-        /**
-         * @member {PIXI.IBitmapFontDataInfo[]}
-         * @readOnly
-         */
         this.info = [];
-
-        /**
-         * @member {PIXI.IBitmapFontDataCommon[]}
-         * @readOnly
-         */
         this.common = [];
-
-        /**
-         * @member {PIXI.IBitmapFontDataPage[]}
-         * @readOnly
-         */
         this.page = [];
-
-        /**
-         * @member {PIXI.IBitmapFontDataChar[]}
-         * @readOnly
-         */
         this.char = [];
-
-        /**
-         * @member {PIXI.IBitmapFontDataKerning[]}
-         * @readOnly
-         */
         this.kerning = [];
-
         this.distanceField = [];
     }
 }
 
+/** @memberof PIXI */
 export interface IBitmapFontDataInfo {
+    /** Font face */
     face: string;
+
+    /** Font size */
     size: number;
 }
 
+/** @memberof PIXI */
 export interface IBitmapFontDataCommon {
+    /** Line height, in pixels. */
     lineHeight: number;
 }
 
+/** @memberof PIXI */
 export interface IBitmapFontDataPage {
+    /** Unique id for bitmap texture */
     id: number;
+
+    /** File name */
     file: string;
 }
 
+/** @memberof PIXI */
 export interface IBitmapFontDataChar {
+    /** Unique id of character */
     id: number;
+
+    /** {@link PIXI.IBitmapFontDataPage} id */
     page: number;
+
+    /** x-position of character in page. */
     x: number;
+
+    /** y-position of character in page. */
     y: number;
+
+    /** Width of character in page. */
     width: number;
+
+    /** Height of character in page. */
     height: number;
+
+    /** x-offset to apply when rendering character */
     xoffset: number;
+
+    /** y-offset to apply when rendering character. */
     yoffset: number;
+
+    /** Advancement to apply to next character. */
     xadvance: number;
 }
 
+/** @memberof PIXI */
 export interface IBitmapFontDataKerning {
+    /** First character of pair */
     first: number;
+
+    /** Second character of pair */
     second: number;
+
+    /** x-offset to apply between first & second characters when they are next to each other. */
     amount: number;
 }
 
+/** @memberof PIXI */
 export interface IBitmapFontDataDistanceField {
+    /** Type of distance field */
     fieldType: string;
+
+    /** Range of distance */
     distanceRange: number;
 }
-
-/**
- * @memberof PIXI
- * @typedef {object} IBitmapFontDataInfo
- * @property {string} face
- * @property {number} size
- */
-
-/**
- * @memberof PIXI
- * @typedef {object} IBitmapFontDataCommon
- * @property {number} lineHeight
- */
-
-/**
- * @memberof PIXI
- * @typedef {object} IBitmapFontDataPage
- * @property {number} id
- * @property {string} file
- */
-
-/**
- * @memberof PIXI
- * @typedef {object} IBitmapFontDataChar
- * @property {string} id
- * @property {number} page
- * @property {number} x
- * @property {number} y
- * @property {number} width
- * @property {number} height
- * @property {number} xoffset
- * @property {number} yoffset
- * @property {number} xadvance
- */
-
-/**
- * @memberof PIXI
- * @typedef {object} IBitmapFontDataKerning
- * @property {number} first
- * @property {number} second
- * @property {number} amount
- */

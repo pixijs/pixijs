@@ -8,10 +8,7 @@ import fragment from './fxaa.frag';
  *
  * @see https://github.com/mitsuhiko/webgl-meincraft
  *
- * @class
- * @extends PIXI.Filter
  * @memberof PIXI.filters
- *
  */
 export class FXAAFilter extends Filter
 {
