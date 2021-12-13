@@ -590,19 +590,6 @@ export class FilterSystem implements ISystem
         transform?: Matrix
     )
     {
-        if (transform)
-        {
-            const { a, b, c, d } = transform;
-
-            // Skip if skew/rotation present in matrix, except for multiple of 90° rotation. If rotation
-            // is a multiple of 90°, then either pair of (b,c) or (a,d) will be (0,0).
-            if ((Math.abs(b) > 1e-4 || Math.abs(c) > 1e-4)
-                && (Math.abs(a) > 1e-4 || Math.abs(d) > 1e-4))
-            {
-                return;
-            }
-        }
-
         transform = transform ? tempMatrix.copyFrom(transform) : tempMatrix.identity();
 
         // Get forward transform from world space to screen space
