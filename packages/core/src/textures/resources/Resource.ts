@@ -9,88 +9,79 @@ import type { GLTexture } from '../GLTexture';
  *
  * Uploading of a base texture to the GPU is required.
  *
- * @class
  * @memberof PIXI
  */
 export abstract class Resource
 {
+    /**
+     * If resource has been destroyed.
+     *
+     * @readonly
+     * @default false
+     */
     public destroyed: boolean;
+
+    /**
+     * `true` if resource is created by BaseTexture
+     * useful for doing cleanup with BaseTexture destroy
+     * and not cleaning up resources that were created
+     * externally.
+     */
     public internal: boolean;
+
+    /** Internal width of the resource. */
     protected _width: number;
+
+    /** Internal height of the resource. */
     protected _height: number;
-    protected onResize: Runner;
+
+    /**
+     * Mini-runner for handling resize events
+     * accepts 2 parameters: width, height
+     *
+     * @member {Runner}
+     * @private
+     */
+    protected onResize: Runner; // TODO: Should this be private? It doesn't seem to be used anywhere else.
+
+    /**
+     * Mini-runner for handling update events
+     *
+     * @member {Runner}
+     * @private
+     */
     protected onUpdate: Runner;
+
+    /**
+     * Handle internal errors, such as loading errors
+     * accepts 1 param: error
+     *
+     * @member {Runner}
+     * @private
+     */
     protected onError: Runner;
 
     /**
-     * @param {number} [width=0] - Width of the resource
-     * @param {number} [height=0] - Height of the resource
+     * @param width - Width of the resource
+     * @param height - Height of the resource
      */
     constructor(width = 0, height = 0)
     {
-        /**
-         * Internal width of the resource
-         * @member {number}
-         * @protected
-         */
         this._width = width;
-
-        /**
-         * Internal height of the resource
-         * @member {number}
-         * @protected
-         */
         this._height = height;
 
-        /**
-         * If resource has been destroyed
-         * @member {boolean}
-         * @readonly
-         * @default false
-         */
         this.destroyed = false;
-
-        /**
-         * `true` if resource is created by BaseTexture
-         * useful for doing cleanup with BaseTexture destroy
-         * and not cleaning up resources that were created
-         * externally.
-         * @member {boolean}
-         * @protected
-         */
         this.internal = false;
 
-        /**
-         * Mini-runner for handling resize events
-         * accepts 2 parameters: width, height
-         *
-         * @member {Runner}
-         * @private
-         */
         this.onResize = new Runner('setRealSize');
-
-        /**
-         * Mini-runner for handling update events
-         *
-         * @member {Runner}
-         * @private
-         */
         this.onUpdate = new Runner('update');
-
-        /**
-         * Handle internal errors, such as loading errors
-         * accepts 1 param: error
-         *
-         * @member {Runner}
-         * @private
-         */
         this.onError = new Runner('onError');
     }
 
     /**
      * Bind to a parent BaseTexture
      *
-     * @param {PIXI.BaseTexture} baseTexture - Parent texture
+     * @param baseTexture - Parent texture
      */
     bind(baseTexture: BaseTexture): void
     {
@@ -109,7 +100,7 @@ export abstract class Resource
     /**
      * Unbind to a parent BaseTexture
      *
-     * @param {PIXI.BaseTexture} baseTexture - Parent texture
+     * @param baseTexture - Parent texture
      */
     unbind(baseTexture: BaseTexture): void
     {
@@ -120,8 +111,9 @@ export abstract class Resource
 
     /**
      * Trigger a resize event
-     * @param {number} width - X dimension
-     * @param {number} height - Y dimension
+     *
+     * @param width - X dimension
+     * @param height - Y dimension
      */
     resize(width: number, height: number): void
     {
@@ -135,17 +127,15 @@ export abstract class Resource
 
     /**
      * Has been validated
+     *
      * @readonly
-     * @member {boolean}
      */
     get valid(): boolean
     {
         return !!this._width && !!this._height;
     }
 
-    /**
-     * Has been updated trigger event
-     */
+    /** Has been updated trigger event. */
     update(): void
     {
         if (!this.destroyed)
@@ -157,8 +147,9 @@ export abstract class Resource
     /**
      * This can be overridden to start preloading a resource
      * or do any other prepare step.
+     *
      * @protected
-     * @return {Promise<void>} Handle the validate event
+     * @return Handle the validate event
      */
     load(): Promise<Resource>
     {
@@ -168,7 +159,6 @@ export abstract class Resource
     /**
      * The width of the resource.
      *
-     * @member {number}
      * @readonly
      */
     get width(): number
@@ -179,7 +169,6 @@ export abstract class Resource
     /**
      * The height of the resource.
      *
-     * @member {number}
      * @readonly
      */
     get height(): number
@@ -190,31 +179,27 @@ export abstract class Resource
     /**
      * Uploads the texture or returns false if it cant for some reason. Override this.
      *
-     * @param {PIXI.Renderer} renderer - yeah, renderer!
-     * @param {PIXI.BaseTexture} baseTexture - the texture
-     * @param {PIXI.GLTexture} glTexture - texture instance for this webgl context
-     * @returns {boolean} true is success
+     * @param renderer - yeah, renderer!
+     * @param baseTexture - the texture
+     * @param glTexture - texture instance for this webgl context
+     * @returns - true is success
      */
     abstract upload(renderer: Renderer, baseTexture: BaseTexture, glTexture: GLTexture): boolean;
 
     /**
      * Set the style, optional to override
      *
-     * @param {PIXI.Renderer} renderer - yeah, renderer!
-     * @param {PIXI.BaseTexture} baseTexture - the texture
-     * @param {PIXI.GLTexture} glTexture - texture instance for this webgl context
-     * @returns {boolean} `true` is success
+     * @param renderer - yeah, renderer!
+     * @param baseTexture - the texture
+     * @param glTexture - texture instance for this webgl context
+     * @returns - `true` is success
      */
     style(_renderer: Renderer, _baseTexture: BaseTexture, _glTexture: GLTexture): boolean
     {
         return false;
     }
 
-    /**
-     * Clean up anything, this happens when destroying is ready.
-     *
-     * @protected
-     */
+    /** Clean up anything, this happens when destroying is ready. */
     dispose(): void
     {
         // override
@@ -241,9 +226,8 @@ export abstract class Resource
     }
 
     /**
-     * Abstract, used to auto-detect resource type
+     * Abstract, used to auto-detect resource type.
      *
-     * @static
      * @param {*} source - The source object
      * @param {string} extension - The extension of source, if set
      */
