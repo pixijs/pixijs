@@ -109,7 +109,7 @@ export class ResizePlugin
             let height: number;
 
             // Resize to the window
-            if (this._resizeTo === globalThis)
+            if (this._resizeTo === globalThis.window)
             {
                 width = globalThis.innerWidth;
                 height = globalThis.innerHeight;
