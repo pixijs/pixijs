@@ -516,7 +516,7 @@ export class CanvasGraphicsRenderer
             context.fillStyle = contextFillStyle;
             context.fill();
         }
-        
+
         if (lineStyle.alignment === 0)
         {
             context.restore();
@@ -578,7 +578,7 @@ export class CanvasGraphicsRenderer
             context.fillStyle = contextFillStyle;
             context.fill();
         }
-        
+
         if (lineStyle.alignment === 0)
         {
             context.restore();
