@@ -115,7 +115,7 @@ export class AccessibilityManager
         this._onMouseMove = this._onMouseMove.bind(this);
 
         // let listen for tab.. once pressed we can fire up and show the accessibility layer
-        self.addEventListener('keydown', this._onKeyDown, false);
+        globalThis.addEventListener('keydown', this._onKeyDown, false);
     }
 
     /**
@@ -197,8 +197,8 @@ export class AccessibilityManager
 
         this._isActive = true;
 
-        self.document.addEventListener('mousemove', this._onMouseMove, true);
-        self.removeEventListener('keydown', this._onKeyDown, false);
+        globalThis.document.addEventListener('mousemove', this._onMouseMove, true);
+        globalThis.removeEventListener('keydown', this._onKeyDown, false);
 
         this.renderer.on('postrender', this.update, this);
         this.renderer.view.parentNode?.appendChild(this.div);
@@ -219,8 +219,8 @@ export class AccessibilityManager
 
         this._isActive = false;
 
-        self.document.removeEventListener('mousemove', this._onMouseMove, true);
-        self.addEventListener('keydown', this._onKeyDown, false);
+        globalThis.document.removeEventListener('mousemove', this._onMouseMove, true);
+        globalThis.addEventListener('keydown', this._onKeyDown, false);
 
         this.renderer.off('postrender', this.update);
         this.div.parentNode?.removeChild(this.div);
@@ -595,8 +595,8 @@ export class AccessibilityManager
         this.destroyTouchHook();
         this.div = null;
 
-        self.document.removeEventListener('mousemove', this._onMouseMove, true);
-        self.removeEventListener('keydown', this._onKeyDown);
+        globalThis.document.removeEventListener('mousemove', this._onMouseMove, true);
+        globalThis.removeEventListener('keydown', this._onKeyDown);
 
         this.pool = null;
         this.children = null;

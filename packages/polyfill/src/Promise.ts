@@ -1,7 +1,7 @@
-import Polyfill from 'promise-polyfill';
+packages/polyfill/src/index.tsimport Polyfill from 'promise-polyfill';
 
 // Support for IE 9 - 11 which does not include Promises
 if (!globalThis.Promise)
 {
-    self.Promise = Polyfill;
+    globalThis.Promise = Polyfill;
 }

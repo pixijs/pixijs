@@ -4,7 +4,7 @@ import { parseUri } from './base/parseUri';
 import type { IBaseTextureOptions, Texture } from '@pixi/core';
 
 // tests if CORS is supported in XHR, if not we need to use XDR
-const useXdr = !!((self as any).XDomainRequest && !('withCredentials' in (new XMLHttpRequest())));
+const useXdr = !!((globalThis as any).XDomainRequest && !('withCredentials' in (new XMLHttpRequest())));
 let tempAnchor: any = null;
 
 // some status constants
@@ -731,7 +731,7 @@ class LoaderResource
         {
             this.data = this.metadata.loadElement;
         }
-        else if (type === 'image' && typeof self.Image !== 'undefined')
+        else if (type === 'image' && typeof globalThis.Image !== 'undefined')
         {
             this.data = new Image();
         }
@@ -771,7 +771,7 @@ class LoaderResource
         {
             this.data = this.metadata.loadElement;
         }
-        else if (type === 'audio' && typeof self.Audio !== 'undefined')
+        else if (type === 'audio' && typeof globalThis.Audio !== 'undefined')
         {
             this.data = new Audio();
         }
@@ -883,7 +883,7 @@ class LoaderResource
             this.xhrType = this._determineXhrType();
         }
 
-        const xdr = this.xhr = new (self as any).XDomainRequest(); // eslint-disable-line no-undef
+        const xdr = this.xhr = new (globalThis as any).XDomainRequest(); // eslint-disable-line no-undef
 
         // XDomainRequest has a few quirks. Occasionally it will abort requests
         // A way to avoid this is to make sure ALL callbacks are set even if not used
@@ -1043,7 +1043,7 @@ class LoaderResource
             {
                 try
                 {
-                    if (self.DOMParser)
+                    if (globalThis.DOMParser)
                     {
                         const domparser = new DOMParser();
 
@@ -1089,7 +1089,7 @@ class LoaderResource
      * function does nothing.
      * @private
      * @param url - The url to test.
-     * @param [loc=self.location] - The location object to test against.
+     * @param [loc=globalThis.location] - The location object to test against.
      * @return The crossOrigin value to use (or empty string for none).
      */
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -1102,15 +1102,15 @@ class LoaderResource
         }
 
         // A sandboxed iframe without the 'allow-same-origin' attribute will have a special
-        // origin designed not to match self.location.origin, and will always require
+        // origin designed not to match globalThis.location.origin, and will always require
         // crossOrigin requests regardless of whether the location matches.
-        if (self.origin !== self.location.origin)
+        if (globalThis.origin !== globalThis.location.origin)
         {
             return 'anonymous';
         }
 
-        // default is self.location
-        loc = loc || self.location;
+        // default is globalThis.location
+        loc = loc || globalThis.location;
 
         if (!tempAnchor)
         {
