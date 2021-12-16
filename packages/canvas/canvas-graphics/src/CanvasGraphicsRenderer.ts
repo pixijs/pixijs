@@ -492,6 +492,11 @@ export class CanvasGraphicsRenderer
         const xm = x + (w / 2); // x-middle
         const ym = y + (h / 2); // y-middle
 
+        if (lineStyle.alignment === 0)
+        {
+            context.save();
+        }
+
         context.beginPath();
         context.moveTo(x, ym);
         context.bezierCurveTo(x, ym - oy, xm - ox, y, xm, y);
@@ -510,6 +515,11 @@ export class CanvasGraphicsRenderer
             context.globalAlpha = fillStyle.alpha * worldAlpha;
             context.fillStyle = contextFillStyle;
             context.fill();
+        }
+        
+        if (lineStyle.alignment === 0)
+        {
+            context.restore();
         }
     }
 
@@ -540,6 +550,11 @@ export class CanvasGraphicsRenderer
 
         radius = radius > maxRadius ? maxRadius : radius;
 
+        if (lineStyle.alignment === 0)
+        {
+            context.save();
+        }
+
         context.beginPath();
         context.moveTo(rx, ry + radius);
         context.lineTo(rx, ry + height - radius);
@@ -562,6 +577,11 @@ export class CanvasGraphicsRenderer
             context.globalAlpha = fillStyle.alpha * worldAlpha;
             context.fillStyle = contextFillStyle;
             context.fill();
+        }
+        
+        if (lineStyle.alignment === 0)
+        {
+            context.restore();
         }
     }
 
