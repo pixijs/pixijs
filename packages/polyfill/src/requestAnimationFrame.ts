@@ -65,7 +65,7 @@ if (!globalThis.requestAnimationFrame)
 
         lastTime = currentTime;
 
-        return globalThis.setTimeout(() =>
+        return globalThis.self.setTimeout(() =>
         {
             lastTime = Date.now();
             callback(performance.now());
