@@ -3,8 +3,8 @@
 
 precision lowp float;
 
-in vec2 aVertexPosition;
-in vec2 aTextureCoord;
+layout(location = 1) in vec2 aVertexPosition;
+layout(location = 0) in vec2 aTextureCoord;
 
 uniform mat3 projectionMatrix;
 uniform mat3 translationMatrix;
