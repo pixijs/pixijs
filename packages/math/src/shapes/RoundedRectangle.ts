@@ -93,30 +93,32 @@ export class RoundedRectangle
         {
             if (y >= this.y && y <= this.y + this.height)
             {
-                if ((y >= this.y + this.radius && y <= this.y + this.height - this.radius)
-                || (x >= this.x + this.radius && x <= this.x + this.width - this.radius))
+                const radius = Math.max(0, Math.min(this.radius, Math.min(this.width, this.height) / 2));
+
+                if ((y >= this.y + radius && y <= this.y + this.height - radius)
+                || (x >= this.x + radius && x <= this.x + this.width - radius))
                 {
                     return true;
                 }
-                let dx = x - (this.x + this.radius);
-                let dy = y - (this.y + this.radius);
-                const radius2 = this.radius * this.radius;
+                let dx = x - (this.x + radius);
+                let dy = y - (this.y + radius);
+                const radius2 = radius * radius;
 
                 if ((dx * dx) + (dy * dy) <= radius2)
                 {
                     return true;
                 }
-                dx = x - (this.x + this.width - this.radius);
+                dx = x - (this.x + this.width - radius);
                 if ((dx * dx) + (dy * dy) <= radius2)
                 {
                     return true;
                 }
-                dy = y - (this.y + this.height - this.radius);
+                dy = y - (this.y + this.height - radius);
                 if ((dx * dx) + (dy * dy) <= radius2)
                 {
                     return true;
                 }
-                dx = x - (this.x + this.radius);
+                dx = x - (this.x + radius);
                 if ((dx * dx) + (dy * dy) <= radius2)
                 {
                     return true;
