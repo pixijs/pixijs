@@ -14,7 +14,7 @@ export class Circle
     /** @default 0 */
     public y: number;
 
-    /** @default 1 */
+    /** @default 0 */
     public radius: number;
 
     /**
