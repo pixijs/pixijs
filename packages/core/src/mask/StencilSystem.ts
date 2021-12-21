@@ -47,6 +47,8 @@ export class StencilSystem extends AbstractMaskSystem
         {
             // force use stencil texture in current framebuffer
             this.renderer.framebuffer.forceStencil();
+            gl.clearStencil(0);
+            gl.clear(gl.STENCIL_BUFFER_BIT);
             gl.enable(gl.STENCIL_TEST);
         }
 
@@ -78,8 +80,6 @@ export class StencilSystem extends AbstractMaskSystem
         {
             // the stack is empty!
             gl.disable(gl.STENCIL_TEST);
-            gl.clearStencil(0);
-            gl.clear(gl.STENCIL_BUFFER_BIT);
         }
         else
         {
