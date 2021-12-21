@@ -147,7 +147,9 @@ export class FilterSystem implements ISystem
         let multisample = filters[0].multisample;
         let padding = filters[0].padding;
         let autoFit = filters[0].autoFit;
-        let legacy = filters[0].legacy;
+        // We don't know whether it's a legacy filter until it was bound for the first time,
+        // therefore we have to assume that it is if legacy is undefined.
+        let legacy = filters[0].legacy ?? true;
 
         for (let i = 1; i < filters.length; i++)
         {
@@ -166,7 +168,7 @@ export class FilterSystem implements ISystem
             // only auto fit if all filters are autofit
             autoFit = autoFit && filter.autoFit;
 
-            legacy = legacy || filter.legacy;
+            legacy = legacy || (filter.legacy ?? true);
         }
 
         if (filterStack.length === 1)
