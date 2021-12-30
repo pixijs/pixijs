@@ -631,8 +631,9 @@ class Loader
     private static _shared: Loader;
     /**
      * If this loader cannot be destroyed.
+     * @default false
      */
-    private _protected = false;
+    private _protected: boolean;
 
     /**
      * Destroy the loader, removes references.
