@@ -149,6 +149,31 @@ export class Rectangle
     }
 
     /**
+     * Determines whether the `other` Rectangle intersects with `this` Rectangle object.
+     * Returns true only if the area of the intersection is >0, this means that Rectangles
+     * sharing a side are not overlapping. Another side effect is that an arealess rectangle
+     * (width or height equal to zero) can't intersect any other rectangle.
+     *
+     * @param {Rectangle} other - The Rectangle to intersect with `this`.
+     * @returns {boolean} A value of `true` if the `other` Rectangle intersects with `this`; otherwise `false`.
+     */
+    intersects(other: Rectangle): boolean
+    {
+        const x0 = this.x < other.x ? other.x : this.x;
+        const x1 = this.right > other.right ? other.right : this.right;
+
+        if (x1 <= x0)
+        {
+            return false;
+        }
+
+        const y0 = this.y < other.y ? other.y : this.y;
+        const y1 = this.bottom > other.bottom ? other.bottom : this.bottom;
+
+        return y1 > y0;
+    }
+
+    /**
      * Pads the rectangle making it grow in all directions.
      * If paddingY is omitted, both paddingX and paddingY will be set to paddingX.
      *

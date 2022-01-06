@@ -1,35 +1,6 @@
 import { Rectangle } from '@pixi/math';
 
 /**
- * Determines whether the `other` Rectangle intersects with `this` Rectangle object.
- * Returns true only if the area of the intersection is >0, this means that Rectangles
- * sharing a side are not overlapping. Another side effect is that an arealess rectangle
- * (width or height equal to zero) can't intersect any other rectangle.
- *
- * _Note: Only available with **@pixi/math-extras**._
- *
- * @method intersects
- * @memberof PIXI.Rectangle#
- * @param {Rectangle} other - The Rectangle to intersect with `this`.
- * @returns {boolean} A value of `true` if the `other` Rectangle intersects with `this`; otherwise `false`.
- */
-Rectangle.prototype.intersects = function intersects(other: Rectangle): boolean
-{
-    const x0 = this.x < other.x ? other.x : this.x;
-    const x1 = this.right > other.right ? other.right : this.right;
-
-    if (x1 <= x0)
-    {
-        return false;
-    }
-
-    const y0 = this.y < other.y ? other.y : this.y;
-    const y1 = this.bottom > other.bottom ? other.bottom : this.bottom;
-
-    return y1 > y0;
-};
-
-/**
  * Determines whether the `other` Rectangle is contained within `this` Rectangle object.
  * Rectangles that occupy the same space are considered to be containing each other.
  * Rectangles without area (width or height equal to zero) can't contain anything,
