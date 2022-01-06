@@ -63,6 +63,7 @@ export class Container extends DisplayObject
     public sortDirty: boolean;
     public parent: Container;
     public containerUpdateTransform: () => void;
+    public cullable;
 
     protected _width: number;
     protected _height: number;
@@ -104,6 +105,13 @@ export class Container extends DisplayObject
          * @member {boolean}
          */
         this.sortDirty = false;
+
+        /**
+         * Should rendering be skipped if the bounds of the object are out of frame.
+         *
+         * @member {boolean}
+         */
+        this.cullable = false;
 
         /**
          * Fired when a DisplayObject is added to this Container.
@@ -553,6 +561,18 @@ export class Container extends DisplayObject
         // FILL IN//
     }
 
+    private _isCulled(renderer: Renderer): boolean
+    {
+        if (!this.cullable)
+        {
+            return false;
+        }
+
+        const sourceFrame = renderer.renderTexture.sourceFrame;
+
+        return !(sourceFrame.width > 0 && sourceFrame.height > 0 && this.getBounds(true).intersects(sourceFrame));
+    }
+
     /**
      * Renders the object using the WebGL renderer.
      *
@@ -560,8 +580,9 @@ export class Container extends DisplayObject
      * container itself. This `render` method will invoke it, and also invoke the `render` methods of all
      * children afterward.
      *
-     * If `renderable` or `visible` is false or if `worldAlpha` is not positive, this implementation will entirely
-     * skip rendering. See {@link PIXI.DisplayObject} for choosing between `renderable` or `visible`. Generally,
+     * If `renderable` or `visible` is false or if `worldAlpha` is not positive or if `cullable` is true and the
+     * bounds of the object do no intersect with the frame, this implementation will entirely skip rendering.
+     * See {@link PIXI.DisplayObject} for choosing between `renderable` or `visible`. Generally,
      * setting alpha to zero is not recommended for purely skipping rendering.
      *
      * When your scene becomes large (especially when it is larger than can be viewed in a single screen), it is
@@ -588,7 +609,7 @@ export class Container extends DisplayObject
         {
             this.renderAdvanced(renderer);
         }
-        else
+        else if (!this._isCulled(renderer))
         {
             this._render(renderer);
 
@@ -649,13 +670,16 @@ export class Container extends DisplayObject
             renderer.mask.push(this, this._mask);
         }
 
-        // add this object to the batch, only rendered if it has a texture.
-        this._render(renderer);
-
-        // now loop through the children and make sure they get rendered
-        for (let i = 0, j = this.children.length; i < j; i++)
+        if (!this._isCulled(renderer))
         {
-            this.children[i].render(renderer);
+            // add this object to the batch, only rendered if it has a texture.
+            this._render(renderer);
+
+            // now loop through the children and make sure they get rendered
+            for (let i = 0, j = this.children.length; i < j; i++)
+            {
+                this.children[i].render(renderer);
+            }
         }
 
         if (flush)
