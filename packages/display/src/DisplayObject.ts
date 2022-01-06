@@ -213,6 +213,7 @@ export abstract class DisplayObject extends EventEmitter
     public alpha: number;
     public visible: boolean;
     public renderable: boolean;
+    public cullable: boolean;
     public filterArea: Rectangle;
     public filters: Filter[] | null;
     public isSprite: boolean;
@@ -301,6 +302,13 @@ export abstract class DisplayObject extends EventEmitter
          * @member {boolean}
          */
         this.renderable = true;
+
+        /**
+         * Should rendering be skipped if the bounds of the object are out of frame.
+         *
+         * @member {boolean}
+         */
+        this.cullable = false;
 
         /**
          * The display object container that contains this display object.

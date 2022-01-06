@@ -63,7 +63,6 @@ export class Container extends DisplayObject
     public sortDirty: boolean;
     public parent: Container;
     public containerUpdateTransform: () => void;
-    public cullable: boolean;
 
     protected _width: number;
     protected _height: number;
@@ -105,13 +104,6 @@ export class Container extends DisplayObject
          * @member {boolean}
          */
         this.sortDirty = false;
-
-        /**
-         * Should rendering be skipped if the bounds of the object are out of frame.
-         *
-         * @member {boolean}
-         */
-        this.cullable = false;
 
         /**
          * Fired when a DisplayObject is added to this Container.
@@ -561,16 +553,42 @@ export class Container extends DisplayObject
         // FILL IN//
     }
 
-    private _isCulled(renderer: Renderer): boolean
+    /**
+     * Renders this container and its children with culling.
+     *
+     * @protected
+     * @param {PIXI.Renderer} renderer - The renderer
+     */
+    protected _renderWithCulling(renderer: Renderer): void
     {
-        if (!this.cullable)
-        {
-            return false;
-        }
-
         const sourceFrame = renderer.renderTexture.sourceFrame;
 
-        return !(sourceFrame.width > 0 && sourceFrame.height > 0 && this.getBounds(true).intersects(sourceFrame));
+        // If the source frame is empty, stop rendering
+        if (!(sourceFrame.width > 0 && sourceFrame.height > 0))
+        {
+            return;
+        }
+
+        // Render this container only if its bounds intersect with the source frame
+        if (this.getBounds(true).intersects(sourceFrame))
+        {
+            this._render(renderer);
+        }
+
+        // We cannot skip the children if the bounds do not intersect the source frame,
+        // because the children might have filters with padding, which may intersect with
+        // the source frame while the bounds do not: filter padding is not included in the bounds.
+
+        // Render the children with culling temporarily enabled
+        for (let i = 0, j = this.children.length; i < j; ++i)
+        {
+            const child = this.children[i] as any;
+            const childCullable = child.cullable;
+
+            child.cullable = true;
+            child.render(renderer);
+            child.cullable = childCullable;
+        }
     }
 
     /**
@@ -609,11 +627,14 @@ export class Container extends DisplayObject
         {
             this.renderAdvanced(renderer);
         }
-        else if (!this._isCulled(renderer))
+        else if (this.cullable)
+        {
+            this._renderWithCulling(renderer);
+        }
+        else
         {
             this._render(renderer);
 
-            // simple render children!
             for (let i = 0, j = this.children.length; i < j; ++i)
             {
                 this.children[i].render(renderer);
@@ -670,13 +691,15 @@ export class Container extends DisplayObject
             renderer.mask.push(this, this._mask);
         }
 
-        if (!this._isCulled(renderer))
+        if (this.cullable)
         {
-            // add this object to the batch, only rendered if it has a texture.
+            this._renderWithCulling(renderer);
+        }
+        else
+        {
             this._render(renderer);
 
-            // now loop through the children and make sure they get rendered
-            for (let i = 0, j = this.children.length; i < j; i++)
+            for (let i = 0, j = this.children.length; i < j; ++i)
             {
                 this.children[i].render(renderer);
             }
