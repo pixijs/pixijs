@@ -63,7 +63,7 @@ export class Container extends DisplayObject
     public sortDirty: boolean;
     public parent: Container;
     public containerUpdateTransform: () => void;
-    public cullable;
+    public cullable: boolean;
 
     protected _width: number;
     protected _height: number;
