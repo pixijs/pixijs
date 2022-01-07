@@ -202,6 +202,12 @@ export class FilterSystem implements ISystem
         if (autoFit)
         {
             state.sourceFrame.fit(sourceFrameProjected);
+
+            if (state.sourceFrame.width <= 0 || state.sourceFrame.height <= 0)
+            {
+                state.sourceFrame.width = 0;
+                state.sourceFrame.height = 0;
+            }
         }
         else if (!state.sourceFrame.intersects(sourceFrameProjected))
         {
