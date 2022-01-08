@@ -554,7 +554,7 @@ export class Container extends DisplayObject
     }
 
     /**
-     * Renders this container and its children with culling.
+     * Renders this object and its children with culling.
      *
      * @protected
      * @param {PIXI.Renderer} renderer - The renderer
@@ -563,26 +563,30 @@ export class Container extends DisplayObject
     {
         const sourceFrame = renderer.renderTexture.sourceFrame;
 
-        // If the source frame is empty, stop rendering
+        // If the source frame is empty, stop rendering.
         if (!(sourceFrame.width > 0 && sourceFrame.height > 0))
         {
             return;
         }
 
-        // Render this container only if its bounds intersect with the source frame
+        // Render the content of the container only if its bounds intersect with the source frame.
+        // All filters are on the stack at this point, and the filter source frame is bound:
+        // therefore, even if the bounds to non intersect the filter frame, the filter
+        // is still applied and any filter padding that is in the frame is rendered correctly.
         if (this.getBounds(true).intersects(sourceFrame))
         {
             this._render(renderer);
         }
 
-        // We cannot skip the children if the bounds do not intersect the source frame,
-        // because the children might have filters with padding, which may intersect with
+        // We cannot skip the children if the bounds of the container do not intersect the source frame,
+        // because the children might have filters with nonzero padding, which may intersect with
         // the source frame while the bounds do not: filter padding is not included in the bounds.
 
-        // Render the children with culling temporarily enabled
+        // Render the children with culling temporarily enabled so that they are not rendered if they are out of frame.
+        // The bounds of the entire subtree have already been computed at this point by the intersection check above.
         for (let i = 0, j = this.children.length; i < j; ++i)
         {
-            const child = this.children[i] as any;
+            const child = this.children[i];
             const childCullable = child.cullable;
 
             child.cullable = true;
