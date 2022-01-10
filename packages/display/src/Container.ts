@@ -573,7 +573,8 @@ export class Container extends DisplayObject
         // All filters are on the stack at this point, and the filter source frame is bound:
         // therefore, even if the bounds to non intersect the filter frame, the filter
         // is still applied and any filter padding that is in the frame is rendered correctly.
-        if (this.getBounds(true).intersects(sourceFrame))
+        // If the container doesn't override _render, we can skip the bounds calculation and intersection test.
+        if (this._render !== Container.prototype._render && this.getBounds(true).intersects(sourceFrame))
         {
             this._render(renderer);
         }
@@ -583,7 +584,6 @@ export class Container extends DisplayObject
         // the source frame while the bounds do not: filter padding is not included in the bounds.
 
         // Render the children with culling temporarily enabled so that they are not rendered if they are out of frame.
-        // The bounds of the entire subtree have already been computed at this point by the intersection check above.
         for (let i = 0, j = this.children.length; i < j; ++i)
         {
             const child = this.children[i];
