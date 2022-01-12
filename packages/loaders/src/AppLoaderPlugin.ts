@@ -7,16 +7,20 @@ import { Loader } from './Loader';
  * import {AppLoaderPlugin} from '@pixi/loaders';
  * import {Application} from '@pixi/app';
  * Application.registerPlugin(AppLoaderPlugin);
- * @class
  * @memberof PIXI
  */
 export class AppLoaderPlugin
 {
+    /**
+     * Loader instance to help with asset loading.
+     * @memberof PIXI.Application#
+     * @readonly
+     */
     public static loader: Loader;
 
     /**
      * Called on application constructor
-     * @param {object} options
+     *
      * @private
      */
     static init(options?: GlobalMixins.IApplicationOptions): void
@@ -25,12 +29,6 @@ export class AppLoaderPlugin
             sharedLoader: false,
         }, options);
 
-        /**
-         * Loader instance to help with asset loading.
-         * @memberof PIXI.Application#
-         * @type {PIXI.Loader}
-         * @readonly
-         */
         this.loader = options.sharedLoader ? Loader.shared : new Loader();
     }
 
