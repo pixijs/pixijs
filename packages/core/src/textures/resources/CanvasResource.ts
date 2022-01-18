@@ -26,9 +26,9 @@ export class CanvasResource extends BaseImageResource
      * @param {*} source - The source object
      * @return {boolean} `true` if source is HTMLCanvasElement or OffscreenCanvas
      */
-    static test(source: unknown): source is OffscreenCanvas|HTMLCanvasElement
+    static test(source: unknown): source is OffscreenCanvas | HTMLCanvasElement
     {
-        const { OffscreenCanvas } = self;
+        const { OffscreenCanvas } = globalThis;
 
         // Check for browsers that don't yet support OffscreenCanvas
         if (OffscreenCanvas && source instanceof OffscreenCanvas)
@@ -36,6 +36,6 @@ export class CanvasResource extends BaseImageResource
             return true;
         }
 
-        return self.HTMLCanvasElement && source instanceof HTMLCanvasElement;
+        return globalThis.HTMLCanvasElement && source instanceof HTMLCanvasElement;
     }
 }

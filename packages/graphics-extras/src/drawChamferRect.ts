@@ -11,7 +11,7 @@ import type { Graphics } from '@pixi/graphics';
  * @param {number} width - Width of rect
  * @param {number} height - Height of rect
  * @param {number} chamfer - non-zero real number, size of corner cutout
- * @return {PIXI.Graphics} Returns self.
+ * @return {PIXI.Graphics} Returns globalThis.
  */
 export function drawChamferRect(this: Graphics,
     x: number,

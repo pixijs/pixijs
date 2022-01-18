@@ -12,7 +12,7 @@ import type { Graphics } from '@pixi/graphics';
  * @param {number} width - Width of rect
  * @param {number} height - Height of rect
  * @param {number} fillet - accept negative or positive values
- * @return {PIXI.Graphics} Returns self.
+ * @return {PIXI.Graphics} Returns globalThis.
  */
 export function drawFilletRect(this: Graphics,
     x: number,

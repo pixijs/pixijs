@@ -80,7 +80,7 @@ export function TranscoderWorkerWrapper(): void
     const messageHandlers = {
         init: (message: IInitializeTranscoderMessage): ITranscodeResponse =>
         {
-            if (!self.BASIS)
+            if (!globalThis.BASIS)
             {
                 console.warn('jsSource was not prepended?');
 
@@ -90,12 +90,12 @@ export function TranscoderWorkerWrapper(): void
                 };
             }
 
-            self.BASIS({ wasmBinary: message.wasmSource }).then((basisLibrary) =>
+            globalThis.BASIS({ wasmBinary: message.wasmSource }).then((basisLibrary) =>
             {
                 basisLibrary.initializeBasis();
                 basisBinding = basisLibrary;
 
-                (self as any).postMessage({
+                (globalThis as any).postMessage({
                     type: 'init',
                     success: true
                 });
@@ -211,14 +211,14 @@ export function TranscoderWorkerWrapper(): void
         }
     };
 
-    self.onmessage = (e: { data: Partial<IInitializeTranscoderMessage | ITranscodeMessage> }): void =>
+    globalThis.onmessage = (e: { data: Partial<IInitializeTranscoderMessage | ITranscodeMessage> }): void =>
     {
         const msg = e.data;
         const response = messageHandlers[msg.type](msg as any);
 
         if (response)
         {
-            (self as any).postMessage(response);
+            (globalThis as any).postMessage(response);
         }
     };
 }

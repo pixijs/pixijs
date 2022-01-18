@@ -112,7 +112,7 @@ export class ImageResource extends BaseImageResource
 
         this.preserveBitmap = false;
         this.createBitmap = (options.createBitmap !== undefined
-            ? options.createBitmap : settings.CREATE_IMAGE_BITMAP) && !!self.createImageBitmap;
+            ? options.createBitmap : settings.CREATE_IMAGE_BITMAP) && !!globalThis.createImageBitmap;
         this.alphaMode = typeof options.alphaMode === 'number' ? options.alphaMode : null;
         this.bitmap = null;
 
@@ -202,12 +202,12 @@ export class ImageResource extends BaseImageResource
         {
             return this._process;
         }
-        if (this.bitmap !== null || !self.createImageBitmap)
+        if (this.bitmap !== null || !globalThis.createImageBitmap)
         {
             return Promise.resolve(this);
         }
 
-        const createImageBitmap = self.createImageBitmap as any;
+        const createImageBitmap = globalThis.createImageBitmap as any;
         const cors = !source.crossOrigin || source.crossOrigin === 'anonymous';
 
         this._process = fetch(source.src,
