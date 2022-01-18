@@ -24,22 +24,19 @@ export interface ILoaderAdd {
  *
  * @see Loader#add
  *
- * @typedef {object} IAddOptions
- * @property {string} [name] - The name of the resource to load, if not passed the url is used.
- * @property {string} [key] - Alias for `name`.
- * @property {string} [url] - The url for this resource, relative to the baseUrl of this loader.
- * @property {string|boolean} [crossOrigin] - Is this request cross-origin? Default is to
- *      determine automatically.
- * @property {number} [timeout=0] - A timeout in milliseconds for the load. If the load takes
- *      longer than this time it is cancelled and the load is considered a failure. If this value is
+ * @property name - The name of the resource to load, if not passed the url is used.
+ * @property key - Alias for `name`.
+ * @property url - The url for this resource, relative to the baseUrl of this loader.
+ * @property crossOrigin - Is this request cross-origin? Default is to determine automatically.
+ * @property timeout=0 - A timeout in milliseconds for the load. If the load takes longer
+ *      than this time it is cancelled and the load is considered a failure. If this value is
  *      set to `0` then there is no explicit timeout.
- * @property {PIXI.LoaderResource.LOAD_TYPE} [loadType=LoaderResource.LOAD_TYPE.XHR] - How should this resource
- *      be loaded?
- * @property {PIXI.LoaderResource.XHR_RESPONSE_TYPE} [xhrType=LoaderResource.XHR_RESPONSE_TYPE.DEFAULT] - How
- *      should the data being loaded be interpreted when using XHR?
- * @property {PIXI.LoaderResource.OnCompleteSignal} [onComplete] - Callback to add an an onComplete signal istener.
- * @property {PIXI.LoaderResource.OnCompleteSignal} [callback] - Alias for `onComplete`.
- * @property {PIXI.LoaderResource.IMetadata} [metadata] - Extra configuration for middleware and the Resource object.
+ * @property loadType=LoaderResource.LOAD_TYPE.XHR - How should this resource be loaded?
+ * @property xhrType=LoaderResource.XHR_RESPONSE_TYPE.DEFAULT - How should the data being
+ *      loaded be interpreted when using XHR?
+ * @property onComplete - Callback to add an an onComplete signal istener.
+ * @property callback - Alias for `onComplete`.
+ * @property metadata - Extra configuration for middleware and the Resource object.
  */
 export interface IAddOptions {
     name?: string;
@@ -60,8 +57,8 @@ export interface IAddOptions {
  *
  * ```js
  * const loader = PIXI.Loader.shared; // PixiJS exposes a premade instance for you to use.
- * //or
- * const loader = new PIXI.Loader(); // you can also create your own if you want
+ * // or
+ * const loader = new PIXI.Loader(); // You can also create your own if you want
  *
  * const sprites = {};
  *
@@ -99,33 +96,24 @@ export interface IAddOptions {
  * loader.onComplete.add(() => {}); // called once when the queued resources all load.
  * ```
  *
- * @class Loader
  * @memberof PIXI
  */
 class Loader
 {
     /**
      * The base url for all resources loaded by this loader.
-     *
-     * @member {string}
      */
     baseUrl: string;
 
     /**
      * The progress percent of the loader going through the queue.
-     *
-     * @member {number}
-     * @default 0
      */
-    progress: number;
+    progress = 0;
 
     /**
      * Loading state of the loader, true if it is currently loading resources.
-     *
-     * @member {boolean}
-     * @default false
      */
-    loading: boolean;
+    loading = false;
 
     /**
      * A querystring to append to every URL added to the loader.
@@ -146,11 +134,8 @@ class Loader
      *
      * // This will request 'image.png?v=1&user=me&password=secret'
      * loader.add('iamge.png?v=1').load();
-     *
-     * @member {string}
-     * @default ''
      */
-    defaultQueryString: string;
+    defaultQueryString = '';
 
     /**
      * The middleware to run before loading each resource.
@@ -170,59 +155,43 @@ class Loader
     /**
      * The `_loadResource` function bound with this object context.
      *
-     * @private
-     * @member {function}
-     * @param {PIXI.LoaderResource} r - The resource to load
-     * @param {Function} d - The dequeue function
-     * @return {undefined}
+     * @param r - The resource to load
+     * @param d - The dequeue function
      */
-    _boundLoadResource = (r: LoaderResource, d: () => void): void => this._loadResource(r, d);
+    private _boundLoadResource = (r: LoaderResource, d: () => void): void => this._loadResource(r, d);
 
     /**
      * The resources waiting to be loaded.
-     * @private
      */
-    _queue: AsyncQueue<any>;
+    private _queue: AsyncQueue<any>;
 
     /**
      * All the resources for this loader keyed by name.
-     *
-     * @member {object<string, PIXI.LoaderResource>}
      */
     resources: Dict<LoaderResource> = {};
 
     /**
      * Dispatched once per loaded or errored resource.
-     *
-     * @member {PIXI.Signal}
      */
     onProgress: Signal<Loader.OnProgressSignal>;
 
     /**
      * Dispatched once per errored resource.
-     *
-     * @member {PIXI.Signal}
      */
     onError: Signal<Loader.OnErrorSignal>;
 
     /**
      * Dispatched once per loaded resource.
-     *
-     * @member {PIXI.Signal}
      */
     onLoad: Signal<Loader.OnLoadSignal>;
 
     /**
      * Dispatched when the loader begins to process the queue.
-     *
-     * @member {PIXI.Signal}
      */
     onStart: Signal<Loader.OnStartSignal>;
 
     /**
      * Dispatched when the queued resources all load.
-     *
-     * @member {PIXI.Signal}
      */
     onComplete: Signal<Loader.OnCompleteSignal>;
 
@@ -233,9 +202,6 @@ class Loader
     constructor(baseUrl = '', concurrency = 10)
     {
         this.baseUrl = baseUrl;
-        this.progress = 0;
-        this.loading = false;
-        this.defaultQueryString = '';
         this._beforeMiddleware = [];
         this._afterMiddleware = [];
         this._resourcesParsing = [];
@@ -268,7 +234,6 @@ class Loader
         this._protected = false;
     }
 
-    /* eslint-disable require-jsdoc,valid-jsdoc */
     /**
      * Adds a resource (or multiple resources) to the loader queue.
      *
@@ -317,12 +282,13 @@ class Loader
 
     /**
      * Same as add, params have strict order
+     *
      * @private
      * @param name - The name of the resource to load.
      * @param url - The url for this resource, relative to the baseUrl of this loader.
      * @param options - The options for the load.
      * @param callback - Function to call when this specific resource completes loading.
-     * @return {this} Returns itself.
+     * @return The loader itself.
      */
     protected _add(name: string, url: string, options: IAddOptions, callback?: LoaderResource.OnCompleteSignal): this
     {
@@ -390,7 +356,7 @@ class Loader
      * resource is loaded.
      *
      * @param fn - The middleware function to register.
-     * @return Returns itself.
+     * @return The loader itself.
      */
     pre(fn: ILoaderMiddleware): this
     {
@@ -404,7 +370,7 @@ class Loader
      * resource is loaded.
      *
      * @param fn - The middleware function to register.
-     * @return Returns itself.
+     * @return The loader itself.
      */
     use(fn: ILoaderMiddleware): this
     {
@@ -416,7 +382,7 @@ class Loader
     /**
      * Resets the queue of the loader to prepare for a new load.
      *
-     * @return Returns itself.
+     * @return The loader itself.
      */
     reset(): this
     {
@@ -449,8 +415,8 @@ class Loader
 
     /**
      * Starts loading the queued resources.
-     * @param [cb] - Optional callback that will be bound to the `complete` event.
-     * @return Returns itself.
+     * @param cb - Optional callback that will be bound to the `complete` event.
+     * @return The loader itself.
      */
     load(cb?: Loader.OnCompleteSignal): this
     {
@@ -495,14 +461,12 @@ class Loader
     /**
      * The number of resources to load concurrently.
      *
-     * @member {number}
      * @default 10
      */
     get concurrency(): number
     {
         return this._queue.concurrency;
     }
-    // eslint-disable-next-line require-jsdoc
     set concurrency(concurrency: number)
     {
         this._queue.concurrency = concurrency;
@@ -561,11 +525,10 @@ class Loader
     /**
      * Loads a single resource.
      *
-     * @private
-     * @param {PIXI.LoaderResource} resource - The resource to load.
-     * @param {function} dequeue - The function to call when we need to dequeue this item.
+     * @param resource - The resource to load.
+     * @param dequeue - The function to call when we need to dequeue this item.
      */
-    _loadResource(resource: LoaderResource, dequeue: () => void): void
+    private _loadResource(resource: LoaderResource, dequeue: () => void): void
     {
         resource._dequeue = dequeue;
 
@@ -804,10 +767,10 @@ export { Loader };
 /**
  * Plugin to be installed for handling specific Loader resources.
  *
- * @property [add] - Function to call immediate after registering plugin.
- * @property [pre] - Middleware function to run before load, the
+ * @property add - Function to call immediate after registering plugin.
+ * @property pre - Middleware function to run before load, the
  *           arguments for this are `(resource, next)`
- * @property [use] - Middleware function to run after load, the
+ * @property use - Middleware function to run after load, the
  *           arguments for this are `(resource, next)`
  */
 export interface ILoaderPlugin {
