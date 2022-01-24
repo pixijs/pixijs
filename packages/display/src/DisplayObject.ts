@@ -215,6 +215,7 @@ export abstract class DisplayObject extends EventEmitter
     public renderable: boolean;
     public filterArea: Rectangle;
     public filters: Filter[] | null;
+    public interactive: boolean;
     public isSprite: boolean;
     public isMask: boolean;
     public _lastSortedIndex: number;
@@ -353,6 +354,12 @@ export abstract class DisplayObject extends EventEmitter
          * @member {?PIXI.Filter[]}
          */
         this.filters = null;
+
+        /**
+         * Enable interaction events for the DisplayObject.
+         * Touch, pointer and mouse events will not be emitted unless `interactive` is set to `true`.
+         */
+        this.interactive = false;
 
         /**
          * Currently enabled filters
