@@ -1,11 +1,14 @@
 import { settings } from '@pixi/settings';
 import { removeItems } from '@pixi/utils';
 import { DisplayObject } from './DisplayObject';
-import { Rectangle } from '@pixi/math';
+import { Rectangle, Point } from '@pixi/math';
 import { MASK_TYPES } from '@pixi/constants';
 
 import type { MaskData, Renderer } from '@pixi/core';
 import type { IDestroyOptions } from './DisplayObject';
+
+const tempPoints = [new Point(), new Point(), new Point(), new Point()];
+const tempRect = new Rectangle();
 
 function sortChildren(a: DisplayObject, b: DisplayObject): number
 {
@@ -573,23 +576,71 @@ export class Container extends DisplayObject
         // All filters are on the stack at this point, and the filter source frame is bound:
         // therefore, even if the bounds to non intersect the filter frame, the filter
         // is still applied and any filter padding that is in the frame is rendered correctly.
+
+        let bounds;
+
+        // If cullArea is set, we use this rectangle instead of the bounds of the object. The cullArea
+        // rectangle must completely contain the container and its children including filter padding.
+        if (this.cullArea)
+        {
+            // Transform the cullArea rectangle to world space.
+            bounds = tempRect.copyFrom(this.cullArea);
+
+            const wt = this.worldTransform;
+            const lt = tempPoints[0];
+            const lb = tempPoints[1];
+            const rt = tempPoints[2];
+            const rb = tempPoints[3];
+
+            lt.set(bounds.left, bounds.top);
+            lb.set(bounds.left, bounds.bottom);
+            rt.set(bounds.right, bounds.top);
+            rb.set(bounds.right, bounds.bottom);
+
+            wt.apply(lt, lt);
+            wt.apply(lb, lb);
+            wt.apply(rt, rt);
+            wt.apply(rb, rb);
+
+            const x0 = Math.min(lt.x, lb.x, rt.x, rb.x);
+            const y0 = Math.min(lt.y, lb.y, rt.y, rb.y);
+            const x1 = Math.max(lt.x, lb.x, rt.x, rb.x);
+            const y1 = Math.max(lt.y, lb.y, rt.y, rb.y);
+
+            bounds.x = x0;
+            bounds.y = y0;
+            bounds.width = x1 - x0;
+            bounds.height = y1 - y0;
+        }
         // If the container doesn't override _render, we can skip the bounds calculation and intersection test.
-        if (this._render !== Container.prototype._render && this.getBounds(true).intersects(sourceFrame))
+        else if (this._render !== Container.prototype._render)
+        {
+            bounds = this.getBounds(true);
+        }
+
+        // Render the container if the source frame intersects the bounds.
+        if (bounds?.intersects(sourceFrame))
         {
             this._render(renderer);
         }
+        // If the bounds are defined by cullArea and do not intersect with the source frame, stop rendering.
+        else if (this.cullArea)
+        {
+            return;
+        }
 
-        // We cannot skip the children if the bounds of the container do not intersect the source frame,
-        // because the children might have filters with nonzero padding, which may intersect with
-        // the source frame while the bounds do not: filter padding is not included in the bounds.
+        // Unless cullArea is set, we cannot skip the children if the bounds of the container do not intersect
+        // the source frame, because the children might have filters with nonzero padding, which may intersect
+        // with the source frame while the bounds do not: filter padding is not included in the bounds.
 
-        // Render the children with culling temporarily enabled so that they are not rendered if they are out of frame.
+        // If cullArea is not set, render the children with culling temporarily enabled so that they are not rendered
+        // if they are out of frame; otherwise, render the children normally.
         for (let i = 0, j = this.children.length; i < j; ++i)
         {
             const child = this.children[i];
             const childCullable = child.cullable;
 
-            child.cullable = true;
+            child.cullable = childCullable || !this.cullArea;
             child.render(renderer);
             child.cullable = childCullable;
         }

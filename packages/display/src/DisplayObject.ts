@@ -214,6 +214,7 @@ export abstract class DisplayObject extends EventEmitter
     public visible: boolean;
     public renderable: boolean;
     public cullable: boolean;
+    public cullArea: Rectangle;
     public filterArea: Rectangle;
     public filters: Filter[] | null;
     public isSprite: boolean;
@@ -309,6 +310,14 @@ export abstract class DisplayObject extends EventEmitter
          * @member {boolean}
          */
         this.cullable = false;
+
+        /**
+         * If set, this shape is used for culling instead of the bounds of the object.
+         * The culling area is defined in local space.
+         *
+         * @member {PIXI.Rectangle}
+         */
+        this.cullArea = null;
 
         /**
          * The display object container that contains this display object.
@@ -778,6 +787,7 @@ export abstract class DisplayObject extends EventEmitter
         this._bounds = null;
         this.mask = null;
 
+        this.cullArea = null;
         this.filters = null;
         this.filterArea = null;
         this.hitArea = null;

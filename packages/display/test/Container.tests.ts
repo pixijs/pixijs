@@ -2,6 +2,7 @@ import { Renderer } from '@pixi/core';
 import { Container, DisplayObject } from '@pixi/display';
 import { AlphaFilter } from '@pixi/filter-alpha';
 import { Graphics } from '@pixi/graphics';
+import { Rectangle } from '@pixi/math';
 import sinon from 'sinon';
 import { expect } from 'chai';
 
@@ -1151,6 +1152,42 @@ describe('Container', function ()
             expect(_renderContainer).to.not.have.been.called;
             expect(renderGraphics).to.not.have.been.called;
             expect(this.filterPush).to.have.been.called;
+        });
+
+        it('cullable container with cullArea should be rendered if the bounds intersect the frame', function ()
+        {
+            const renderer = this.renderer;
+            const container = new Container();
+            const graphics = container.addChild(new Graphics().beginFill().drawRect(0, 0, 10, 10).endFill());
+
+            container.cullable = true;
+            container.cullArea = new Rectangle(-5, -5, 15, 15);
+            container.x = 0;
+            container.y = -9;
+
+            const _renderGraphics = sinon.spy(graphics, '_render');
+
+            renderer.render(container);
+
+            expect(_renderGraphics).to.have.been.called;
+        });
+
+        it('cullable container with cullArea should not be rendered if the bounds do not intersect the frame', function ()
+        {
+            const renderer = this.renderer;
+            const container = new Container();
+            const graphics = container.addChild(new Graphics().beginFill().drawRect(0, 0, 10, 10).endFill());
+
+            container.cullable = true;
+            container.cullArea = new Rectangle(-5, -5, 15, 15);
+            container.x = 0;
+            container.y = -10;
+
+            const renderGraphics = sinon.spy(graphics, 'render');
+
+            renderer.render(container);
+
+            expect(renderGraphics).to.not.have.been.called;
         });
     });
 });
