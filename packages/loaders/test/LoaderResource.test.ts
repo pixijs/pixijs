@@ -356,6 +356,19 @@ describe('LoaderResource', () =>
 
             spy.restore();
         });
+
+        it('should set withCredentials for XHR when crossOrigin specified', () =>
+        {
+            const res = new LoaderResource(name, fixtureData.url, {
+                loadType: LoaderResource.LOAD_TYPE.XHR,
+            });
+
+            res.crossOrigin = 'use-credentials';
+
+            res.load();
+
+            expect(request.withCredentials).to.equal(true);
+        });
     });
 
     describe('#load with timeout', () =>
