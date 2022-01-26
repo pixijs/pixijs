@@ -25,12 +25,6 @@ interface ModernContext2D extends CanvasRenderingContext2D {
    letterSpacing?: number;
 }
 
-// Checking that we can use moddern canvas2D api
-// https://developer.chrome.com/origintrials/#/view_trial/3585991203293757441
-// note: this is unstable API, Chrome less 94 use a `textLetterSpacing`, newest use a letterSpacing
-// eslint-disable-next-line max-len
-const supportLetterSpacing = 'letterSpacing' in CanvasRenderingContext2D.prototype || 'textLetterSpacing' in CanvasRenderingContext2D.prototype;
-
 /**
  * A Text Object will create a line or multiple lines of text.
  *
@@ -243,11 +237,13 @@ export class Text extends Sprite
 
                 const dropShadowColor = style.dropShadowColor;
                 const rgb = hex2rgb(typeof dropShadowColor === 'number' ? dropShadowColor : string2hex(dropShadowColor));
+                const dropShadowBlur = style.dropShadowBlur * this._resolution;
+                const dropShadowDistance = style.dropShadowDistance * this._resolution;
 
                 context.shadowColor = `rgba(${rgb[0] * 255},${rgb[1] * 255},${rgb[2] * 255},${style.dropShadowAlpha})`;
-                context.shadowBlur = style.dropShadowBlur;
-                context.shadowOffsetX = Math.cos(style.dropShadowAngle) * style.dropShadowDistance;
-                context.shadowOffsetY = (Math.sin(style.dropShadowAngle) * style.dropShadowDistance) + dsOffsetShadow;
+                context.shadowBlur = dropShadowBlur;
+                context.shadowOffsetX = Math.cos(style.dropShadowAngle) * dropShadowDistance;
+                context.shadowOffsetY = (Math.sin(style.dropShadowAngle) * dropShadowDistance) + dsOffsetShadow;
             }
             else
             {
@@ -327,6 +323,13 @@ export class Text extends Sprite
         // letterSpacing of 0 means normal
         const letterSpacing = style.letterSpacing;
 
+        // Checking that we can use moddern canvas2D api
+        // https://developer.chrome.com/origintrials/#/view_trial/3585991203293757441
+        // note: this is unstable API, Chrome less 94 use a `textLetterSpacing`, newest use a letterSpacing
+        // eslint-disable-next-line max-len
+        const supportLetterSpacing = 'letterSpacing' in CanvasRenderingContext2D.prototype
+            || 'textLetterSpacing' in CanvasRenderingContext2D.prototype;
+
         if (letterSpacing === 0 || supportLetterSpacing)
         {
             if (supportLetterSpacing)
@@ -371,7 +374,13 @@ export class Text extends Sprite
             {
                 this.context.fillText(currentChar, currentPosition, y);
             }
-            currentWidth = this.context.measureText(text.substring(i + 1)).width;
+            let textStr = '';
+
+            for (let j = i + 1; j < stringArray.length; ++j)
+            {
+                textStr += stringArray[j];
+            }
+            currentWidth = this.context.measureText(textStr).width;
             currentPosition += previousWidth - currentWidth + letterSpacing;
             previousWidth = currentWidth;
         }
