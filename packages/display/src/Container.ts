@@ -1,14 +1,11 @@
 import { settings } from '@pixi/settings';
 import { removeItems } from '@pixi/utils';
 import { DisplayObject } from './DisplayObject';
-import { Rectangle, Point } from '@pixi/math';
+import { Rectangle } from '@pixi/math';
 import { MASK_TYPES } from '@pixi/constants';
 
 import type { MaskData, Renderer } from '@pixi/core';
 import type { IDestroyOptions } from './DisplayObject';
-
-const tempPoints = [new Point(), new Point(), new Point(), new Point()];
-const tempRect = new Rectangle();
 
 function sortChildren(a: DisplayObject, b: DisplayObject): number
 {
@@ -578,39 +575,14 @@ export class Container extends DisplayObject
         // is still applied and any filter padding that is in the frame is rendered correctly.
 
         let bounds;
+        let transform;
 
         // If cullArea is set, we use this rectangle instead of the bounds of the object. The cullArea
         // rectangle must completely contain the container and its children including filter padding.
         if (this.cullArea)
         {
-            // Transform the cullArea rectangle to world space.
-            bounds = tempRect.copyFrom(this.cullArea);
-
-            const wt = this.worldTransform;
-            const lt = tempPoints[0];
-            const lb = tempPoints[1];
-            const rt = tempPoints[2];
-            const rb = tempPoints[3];
-
-            lt.set(bounds.left, bounds.top);
-            lb.set(bounds.left, bounds.bottom);
-            rt.set(bounds.right, bounds.top);
-            rb.set(bounds.right, bounds.bottom);
-
-            wt.apply(lt, lt);
-            wt.apply(lb, lb);
-            wt.apply(rt, rt);
-            wt.apply(rb, rb);
-
-            const x0 = Math.min(lt.x, lb.x, rt.x, rb.x);
-            const y0 = Math.min(lt.y, lb.y, rt.y, rb.y);
-            const x1 = Math.max(lt.x, lb.x, rt.x, rb.x);
-            const y1 = Math.max(lt.y, lb.y, rt.y, rb.y);
-
-            bounds.x = x0;
-            bounds.y = y0;
-            bounds.width = x1 - x0;
-            bounds.height = y1 - y0;
+            bounds = this.cullArea;
+            transform = this.worldTransform;
         }
         // If the container doesn't override _render, we can skip the bounds calculation and intersection test.
         else if (this._render !== Container.prototype._render)
@@ -619,7 +591,7 @@ export class Container extends DisplayObject
         }
 
         // Render the container if the source frame intersects the bounds.
-        if (bounds?.intersects(sourceFrame))
+        if (bounds && sourceFrame.intersects(bounds, transform))
         {
             this._render(renderer);
         }

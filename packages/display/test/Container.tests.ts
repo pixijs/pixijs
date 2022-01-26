@@ -1161,9 +1161,9 @@ describe('Container', function ()
             const graphics = container.addChild(new Graphics().beginFill().drawRect(0, 0, 10, 10).endFill());
 
             container.cullable = true;
-            container.cullArea = new Rectangle(-5, -5, 15, 15);
-            container.x = 0;
-            container.y = -9;
+            container.cullArea = new Rectangle(-10, -10, 10, 10);
+            container.x = container.y = 107.07;
+            container.rotation = Math.PI / 4;
 
             const _renderGraphics = sinon.spy(graphics, '_render');
 
@@ -1179,9 +1179,9 @@ describe('Container', function ()
             const graphics = container.addChild(new Graphics().beginFill().drawRect(0, 0, 10, 10).endFill());
 
             container.cullable = true;
-            container.cullArea = new Rectangle(-5, -5, 15, 15);
-            container.x = 0;
-            container.y = -10;
+            container.cullArea = new Rectangle(-10, -10, 10, 10);
+            container.x = container.y = 107.08;
+            container.rotation = Math.PI / 4;
 
             const renderGraphics = sinon.spy(graphics, 'render');
 
