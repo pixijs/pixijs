@@ -47,15 +47,17 @@ export function drawGlyph(
     context.fillStyle = generateFillStyle(canvas, context, style, resolution, [char], metrics);
     context.strokeStyle = style.stroke as string;
 
-    const dropShadowColor = style.dropShadowColor;
-    const rgb = hex2rgb(typeof dropShadowColor === 'number' ? dropShadowColor : string2hex(dropShadowColor));
-
     if (style.dropShadow)
     {
+        const dropShadowColor = style.dropShadowColor;
+        const rgb = hex2rgb(typeof dropShadowColor === 'number' ? dropShadowColor : string2hex(dropShadowColor));
+        const dropShadowBlur = style.dropShadowBlur * resolution;
+        const dropShadowDistance = style.dropShadowDistance * resolution;
+
         context.shadowColor = `rgba(${rgb[0] * 255},${rgb[1] * 255},${rgb[2] * 255},${style.dropShadowAlpha})`;
-        context.shadowBlur = style.dropShadowBlur;
-        context.shadowOffsetX = Math.cos(style.dropShadowAngle) * style.dropShadowDistance;
-        context.shadowOffsetY = Math.sin(style.dropShadowAngle) * style.dropShadowDistance;
+        context.shadowBlur = dropShadowBlur;
+        context.shadowOffsetX = Math.cos(style.dropShadowAngle) * dropShadowDistance;
+        context.shadowOffsetY = Math.sin(style.dropShadowAngle) * dropShadowDistance;
     }
     else
     {
