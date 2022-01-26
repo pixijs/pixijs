@@ -592,6 +592,11 @@ export class FilterSystem implements ISystem
         transform?: Matrix
     )
     {
+        if (frame.width <= 0 || frame.height <= 0 || bindingSourceFrame.width <= 0 || bindingSourceFrame.height <= 0)
+        {
+            return;
+        }
+
         if (transform)
         {
             const { a, b, c, d } = transform;
