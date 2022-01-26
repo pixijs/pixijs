@@ -846,6 +846,12 @@ class LoaderResource
 
         const xhr = this.xhr = new XMLHttpRequest();
 
+        // send credentials when crossOrigin with credentials requested
+        if (this.crossOrigin === 'use-credentials')
+        {
+            xhr.withCredentials = true;
+        }
+
         // set the request type and url
         xhr.open('GET', this.url, true);
 
