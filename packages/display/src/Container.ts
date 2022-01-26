@@ -1,7 +1,7 @@
 import { settings } from '@pixi/settings';
 import { removeItems } from '@pixi/utils';
 import { DisplayObject } from './DisplayObject';
-import { Rectangle } from '@pixi/math';
+import { Matrix, Rectangle } from '@pixi/math';
 import { MASK_TYPES } from '@pixi/constants';
 
 import type { MaskData, Renderer } from '@pixi/core';
@@ -574,8 +574,8 @@ export class Container extends DisplayObject
         // therefore, even if the bounds to non intersect the filter frame, the filter
         // is still applied and any filter padding that is in the frame is rendered correctly.
 
-        let bounds;
-        let transform;
+        let bounds: Rectangle;
+        let transform: Matrix;
 
         // If cullArea is set, we use this rectangle instead of the bounds of the object. The cullArea
         // rectangle must completely contain the container and its children including filter padding.
