@@ -111,6 +111,36 @@ describe('Sprite', function ()
             expect(bounds.width).to.equal(20);
             expect(bounds.height).to.equal(30);
         });
+
+        it('should not corrupt bounds', function ()
+        {
+            const texture = RenderTexture.create({ width: 20, height: 30 });
+            const sprite = new Sprite(texture);
+
+            sprite.scale.x = 2;
+            sprite.y = -5;
+
+            let bounds = sprite.getBounds(false);
+
+            expect(bounds.x).to.equal(0);
+            expect(bounds.y).to.equal(-5);
+            expect(bounds.width).to.equal(40);
+            expect(bounds.height).to.equal(30);
+
+            bounds = sprite.getLocalBounds();
+
+            expect(bounds.x).to.equal(0);
+            expect(bounds.y).to.equal(0);
+            expect(bounds.width).to.equal(20);
+            expect(bounds.height).to.equal(30);
+
+            bounds = sprite.getBounds(true);
+
+            expect(bounds.x).to.equal(0);
+            expect(bounds.y).to.equal(-5);
+            expect(bounds.width).to.equal(40);
+            expect(bounds.height).to.equal(30);
+        });
     });
 
     describe('containsPoint', function ()
