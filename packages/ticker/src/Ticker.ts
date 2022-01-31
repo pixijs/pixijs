@@ -91,7 +91,7 @@ export class Ticker
     private _maxElapsedMS = 100;
     /**
      * Internal value managed by minFPS property setter and getter.
-     * This is the maximum allowed milliseconds between updates.
+     * This is the minimum allowed milliseconds between updates.
      */
     private _minElapsedMS = 0;
     /** If enabled, deleting is disabled.*/
