@@ -12,76 +12,73 @@ import type { Renderer } from '../Renderer';
 /**
  * System plugin to the renderer to manage textures.
  *
- * @class
- * @extends PIXI.System
  * @memberof PIXI
  */
-
 export class TextureSystem implements ISystem
 {
+    /**
+     * Bound textures.
+     *
+     * @readonly
+     */
     public boundTextures: BaseTexture[];
+
+    /**
+     * List of managed textures.
+     *
+     * @readonly
+     */
     public managedTextures: Array<BaseTexture>;
+
     /** Whether glTexture with int/uint sampler type was uploaded. */
     protected hasIntegerTextures: boolean;
     protected CONTEXT_UID: number;
     protected gl: IRenderingContext;
     protected internalFormats: { [type: number]: { [format: number]: number } };
     protected webGLVersion: number;
+
+    /**
+     * BaseTexture value that shows that we don't know what is bound.
+     *
+     * @readonly
+     */
     protected unknownTexture: BaseTexture;
+
+    /**
+     * Did someone temper with textures state? We'll overwrite them when we need to unbind something.
+     *
+     * @private
+     */
     protected _unknownBoundTextures: boolean;
+
+    /**
+     * Current location.
+     *
+     * @readonly
+     */
     currentLocation: number;
     emptyTextures: {[key: number]: GLTexture};
     private renderer: Renderer;
 
     /**
-     * @param {PIXI.Renderer} renderer - The renderer this System works for.
+     * @param renderer - The renderer this system works for.
      */
     constructor(renderer: Renderer)
     {
         this.renderer = renderer;
 
         // TODO set to max textures...
-        /**
-         * Bound textures
-         * @member {PIXI.BaseTexture[]}
-         * @readonly
-         */
         this.boundTextures = [];
-
-        /**
-         * Current location
-         * @member {number}
-         * @readonly
-         */
         this.currentLocation = -1;
-
-        /**
-         * List of managed textures
-         * @member {PIXI.BaseTexture[]}
-         * @readonly
-         */
         this.managedTextures = [];
 
-        /**
-         * Did someone temper with textures state? We'll overwrite them when we need to unbind something.
-         * @member {boolean}
-         * @private
-         */
         this._unknownBoundTextures = false;
-
-        /**
-         * BaseTexture value that shows that we don't know what is bound
-         * @member {PIXI.BaseTexture}
-         * @readonly
-         */
         this.unknownTexture = new BaseTexture();
 
         this.hasIntegerTextures = false;
     }
 
-    /**
-     * Sets up the renderer context and necessary buffers.
-     */
+    /** Sets up the renderer context and necessary buffers. */
     contextChange(): void
     {
         const gl = this.gl = this.renderer.gl;
@@ -133,8 +130,8 @@ export class TextureSystem implements ISystem
      *
      * If you want to unbind something, please use `unbind(texture)` instead of `bind(null, textureLocation)`
      *
-     * @param {PIXI.Texture|PIXI.BaseTexture} texture_ - Texture to bind
-     * @param {number} [location=0] - Location to bind at
+     * @param texture_ - Texture to bind
+     * @param [location=0] - Location to bind at
      */
     bind(texture: Texture|BaseTexture, location = 0): void
     {
@@ -204,8 +201,9 @@ export class TextureSystem implements ISystem
     }
 
     /**
-     * Unbind a texture
-     * @param {PIXI.BaseTexture} texture - Texture to bind
+     * Unbind a texture.
+     *
+     * @param texture - Texture to bind
      */
     unbind(texture?: BaseTexture): void
     {
@@ -276,7 +274,7 @@ export class TextureSystem implements ISystem
      * Initialize a texture
      *
      * @private
-     * @param {PIXI.BaseTexture} texture - Texture to initialize
+     * @param texture - Texture to initialize
      */
     initTexture(texture: BaseTexture): GLTexture
     {
@@ -373,8 +371,8 @@ export class TextureSystem implements ISystem
      * Deletes the texture from WebGL
      *
      * @private
-     * @param {PIXI.BaseTexture|PIXI.Texture} texture_ - the texture to destroy
-     * @param {boolean} [skipRemove=false] - Whether to skip removing the texture from the TextureManager.
+     * @param texture_ - the texture to destroy
+     * @param [skipRemove=false] - Whether to skip removing the texture from the TextureManager.
      */
     destroyTexture(texture: BaseTexture|Texture, skipRemove?: boolean): void
     {
@@ -452,8 +450,8 @@ export class TextureSystem implements ISystem
      * Set style for texture
      *
      * @private
-     * @param {PIXI.BaseTexture} texture - Texture to update
-     * @param {PIXI.GLTexture} glTexture
+     * @param texture - Texture to update
+     * @param glTexture
      */
     setStyle(texture: BaseTexture, glTexture: GLTexture): void
     {
@@ -490,9 +488,6 @@ export class TextureSystem implements ISystem
         gl.texParameteri(texture.target, gl.TEXTURE_MAG_FILTER, texture.scaleMode === SCALE_MODES.LINEAR ? gl.LINEAR : gl.NEAREST);
     }
 
-    /**
-     * @ignore
-     */
     destroy(): void
     {
         this.renderer = null;
