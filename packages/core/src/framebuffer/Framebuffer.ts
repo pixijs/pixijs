@@ -11,13 +11,32 @@ import type { GLFramebuffer } from './GLFramebuffer';
  *
  * On WebGL 2 machines, shaders can output to multiple textures simultaneously with GLSL 300 ES.
  *
- * @class
  * @memberof PIXI
  */
 export class Framebuffer
 {
+    /** Width of framebuffer in pixels. */
     public width: number;
+
+    /** Height of framebuffer in pixels. */
     public height: number;
+
+    /**
+     * Desired number of samples for antialiasing. 0 means AA should not be used.
+     *
+     * Experimental WebGL2 feature, allows to use antialiasing in individual renderTextures.
+     * Antialiasing is the same as for main buffer with renderer `antialias:true` options.
+     * Seriously affects GPU memory consumption and GPU performance.
+     *
+     *```js
+     * renderTexture.framebuffer.multisample = PIXI.MSAA_QUALITY.HIGH;
+     * //...
+     * renderer.render(myContainer, {renderTexture});
+     * renderer.framebuffer.blit(); // copies data from MSAA framebuffer to texture
+     *  ```
+     *
+     * @default PIXI.MSAA_QUALITY.NONE
+     */
     public multisample: MSAA_QUALITY;
 
     stencil: boolean;
@@ -31,21 +50,12 @@ export class Framebuffer
     disposeRunner: Runner;
 
     /**
-     * @param {number} width - Width of the frame buffer
-     * @param {number} height - Height of the frame buffer
+     * @param width - Width of the frame buffer
+     * @param height - Height of the frame buffer
      */
     constructor(width: number, height: number)
     {
-        /**
-         * Width of framebuffer in pixels
-         * @member {number}
-         */
         this.width = Math.round(width || 100);
-
-        /**
-         * Height of framebuffer in pixels
-         * @member {number}
-         */
         this.height = Math.round(height || 100);
 
         this.stencil = false;
@@ -61,31 +71,12 @@ export class Framebuffer
         this.glFramebuffers = {};
 
         this.disposeRunner = new Runner('disposeFramebuffer');
-
-        /**
-         * Desired number of samples for antialiasing. 0 means AA should not be used.
-         *
-         * Experimental WebGL2 feature, allows to use antialiasing in individual renderTextures.
-         * Antialiasing is the same as for main buffer with renderer `antialias:true` options.
-         * Seriously affects GPU memory consumption and GPU performance.
-         *
-         *```js
-         * renderTexture.framebuffer.multisample = PIXI.MSAA_QUALITY.HIGH;
-         * //...
-         * renderer.render(myContainer, {renderTexture});
-         * renderer.framebuffer.blit(); // copies data from MSAA framebuffer to texture
-         *  ```
-         *
-         * @member {PIXI.MSAA_QUALITY}
-         * @default PIXI.MSAA_QUALITY.NONE
-         */
         this.multisample = MSAA_QUALITY.NONE;
     }
 
     /**
      * Reference to the colorTexture.
      *
-     * @member {PIXI.BaseTexture[]}
      * @readonly
      */
     get colorTexture(): BaseTexture
@@ -94,10 +85,10 @@ export class Framebuffer
     }
 
     /**
-     * Add texture to the colorTexture array
+     * Add texture to the colorTexture array.
      *
-     * @param {number} [index=0] - Index of the array to add the texture to
-     * @param {PIXI.BaseTexture} [texture] - Texture to add to the array
+     * @param index - Index of the array to add the texture to
+     * @param texture - Texture to add to the array
      */
     addColorTexture(index = 0, texture?: BaseTexture): this
     {
@@ -117,9 +108,9 @@ export class Framebuffer
     }
 
     /**
-     * Add a depth texture to the frame buffer
+     * Add a depth texture to the frame buffer.
      *
-     * @param {PIXI.BaseTexture} [texture] - Texture to add
+     * @param texture - Texture to add.
      */
     addDepthTexture(texture?: BaseTexture): this
     {
@@ -140,9 +131,7 @@ export class Framebuffer
         return this;
     }
 
-    /**
-     * Enable depth on the frame buffer
-     */
+    /** Enable depth on the frame buffer. */
     enableDepth(): this
     {
         this.depth = true;
@@ -153,9 +142,7 @@ export class Framebuffer
         return this;
     }
 
-    /**
-     * Enable stencil on the frame buffer
-     */
+    /** Enable stencil on the frame buffer. */
     enableStencil(): this
     {
         this.stencil = true;
@@ -169,8 +156,8 @@ export class Framebuffer
     /**
      * Resize the frame buffer
      *
-     * @param {number} width - Width of the frame buffer to resize to
-     * @param {number} height - Height of the frame buffer to resize to
+     * @param width - Width of the frame buffer to resize to
+     * @param height - Height of the frame buffer to resize to
      */
     resize(width: number, height: number): void
     {
@@ -202,17 +189,13 @@ export class Framebuffer
         }
     }
 
-    /**
-     * Disposes WebGL resources that are connected to this geometry
-     */
+    /** Disposes WebGL resources that are connected to this geometry. */
     dispose(): void
     {
         this.disposeRunner.emit(this, false);
     }
 
-    /**
-     * Destroys and removes the depth texture added to this framebuffer.
-     */
+    /** Destroys and removes the depth texture added to this framebuffer. */
     destroyDepthTexture(): void
     {
         if (this.depthTexture)
