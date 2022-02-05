@@ -1,3 +1,4 @@
+import './globalThis';
 import './Promise';
 import './Object.assign';
 import './requestAnimationFrame';
