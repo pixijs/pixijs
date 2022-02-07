@@ -11,21 +11,27 @@ import type { IPoint } from '@pixi/math';
  * const rope = new PIXI.RopeGeometry(100, points);
  * ```
  *
- * @class
- * @extends PIXI.MeshGeometry
  * @memberof PIXI
- *
  */
 export class RopeGeometry extends MeshGeometry
 {
+    /** An array of points that determine the rope. */
     public points: IPoint[];
+
+    /** Rope texture scale, if zero then the rope texture is stretched. */
     public readonly textureScale: number;
+
+    /**
+     * The width (i.e., thickness) of the rope.
+     *
+     * @readonly
+     */
     _width: number;
 
     /**
-     * @param {number} [width=200] - The width (i.e., thickness) of the rope.
-     * @param {PIXI.Point[]} [points] - An array of {@link PIXI.Point} objects to construct this rope.
-     * @param {number} [textureScale=0] - By default the rope texture will be stretched to match
+     * @param width - The width (i.e., thickness) of the rope.
+     * @param points - An array of {@link PIXI.Point} objects to construct this rope.
+     * @param textureScale - By default the rope texture will be stretched to match
      *     rope length. If textureScale is positive this value will be treated as a scaling
      *     factor and the texture will preserve its aspect ratio instead. To create a tiling rope
      *     set baseTexture.wrapMode to {@link PIXI.WRAP_MODES.REPEAT} and use a power of two texture,
@@ -39,24 +45,8 @@ export class RopeGeometry extends MeshGeometry
             new Float32Array(points.length * 4),
             new Uint16Array((points.length - 1) * 6));
 
-        /**
-         * An array of points that determine the rope
-         * @member {PIXI.Point[]}
-         */
         this.points = points;
-
-        /**
-         * The width (i.e., thickness) of the rope.
-         * @member {number}
-         * @readOnly
-         */
         this._width = width;
-
-        /**
-         * Rope texture scale, if zero then the rope texture is stretched.
-         * @member {number}
-         * @readOnly
-         */
         this.textureScale = textureScale;
 
         this.build();
@@ -64,7 +54,7 @@ export class RopeGeometry extends MeshGeometry
 
     /**
      * The width (i.e., thickness) of the rope.
-     * @member {number}
+     *
      * @readOnly
      */
     get width(): number
@@ -72,10 +62,7 @@ export class RopeGeometry extends MeshGeometry
         return this._width;
     }
 
-    /**
-     * Refreshes Rope indices and uvs
-     * @private
-     */
+    /** Refreshes Rope indices and uvs */
     private build(): void
     {
         const points = this.points;
