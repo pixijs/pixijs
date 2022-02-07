@@ -1,6 +1,6 @@
 {
   "name": "@pixi/gif",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Animated GIF Runtime for PixiJS",
   "main": "dist/pixi-gif.cjs.js",
   "module": "dist/pixi-gif.esm.js",
