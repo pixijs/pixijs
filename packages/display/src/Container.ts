@@ -587,8 +587,8 @@ export class Container extends DisplayObject
      * container itself. This `render` method will invoke it, and also invoke the `render` methods of all
      * children afterward.
      *
-     * If `renderable` or `visible` is false or if `worldAlpha` is not positive or if `cullable` is true and the
-     * bounds of the object do no intersect with the frame, this implementation will entirely skip rendering.
+     * If `renderable` or `visible` is false or if `worldAlpha` is not positive or if `cullable` is true and
+     * the bounds of this object are out of frame, this implementation will entirely skip rendering.
      * See {@link PIXI.DisplayObject} for choosing between `renderable` or `visible`. Generally,
      * setting alpha to zero is not recommended for purely skipping rendering.
      *
