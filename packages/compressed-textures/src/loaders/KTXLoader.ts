@@ -1,7 +1,8 @@
-import { TYPES, FORMATS } from '@pixi/constants';
-import { INTERNAL_FORMAT_TO_BYTES_PER_PIXEL } from '../const';
-import { CompressedTextureResource, CompressedLevelBuffer } from '../resources/CompressedTextureResource';
+import { ALPHA_MODES, FORMATS, MIPMAP_MODES, TYPES } from '@pixi/constants';
+import { BaseTexture, BufferResource, Texture } from '@pixi/core';
+import { CompressedLevelBuffer, CompressedTextureResource } from '../resources/CompressedTextureResource';
 import { LoaderResource } from '@pixi/loaders';
+import { INTERNAL_FORMAT_TO_BYTES_PER_PIXEL } from '../const';
 import { registerCompressedTextures } from './registerCompressedTextures';
 
 // Set KTX files to be loaded as an ArrayBuffer
@@ -60,6 +61,8 @@ const FILE_HEADER_SIZE = 64;
 export const TYPES_TO_BYTES_PER_COMPONENT: { [id: number]: number } = {
     [TYPES.UNSIGNED_BYTE]: 1,
     [TYPES.UNSIGNED_SHORT]: 2,
+    [TYPES.INT]: 4,
+    [TYPES.UNSIGNED_INT]: 4,
     [TYPES.FLOAT]: 4,
     [TYPES.HALF_FLOAT]: 8
 };
@@ -72,6 +75,8 @@ export const TYPES_TO_BYTES_PER_COMPONENT: { [id: number]: number } = {
 export const FORMATS_TO_COMPONENTS: { [id: number]: number } = {
     [FORMATS.RGBA]: 4,
     [FORMATS.RGB]: 3,
+    [FORMATS.RG]: 2,
+    [FORMATS.RED]: 1,
     [FORMATS.LUMINANCE]: 1,
     [FORMATS.LUMINANCE_ALPHA]: 2,
     [FORMATS.ALPHA]: 1
@@ -100,7 +105,7 @@ export const TYPES_TO_BYTES_PER_PIXEL: { [id: number]: number } = {
  *
  * It does supports the following features:
  * * multiple textures per file
- * * mipmapping
+ * * mipmapping (only for compressed formats)
  *
  * @class
  * @memberof PIXI
@@ -125,12 +130,48 @@ export class KTXLoader
             try
             {
                 const url = resource.name || resource.url;
+                const { compressed, uncompressed } = KTXLoader.parse(url, resource.data);
 
-                Object.assign(resource, registerCompressedTextures(
-                    url,
-                    KTXLoader.parse(url, resource.data),
-                    resource.metadata,
-                ));
+                if (compressed)
+                {
+                    Object.assign(resource, registerCompressedTextures(
+                        url,
+                        compressed,
+                        resource.metadata,
+                    ));
+                }
+                else if (uncompressed)
+                {
+                    const textures: Record<string, Texture> = {};
+
+                    uncompressed.forEach((image, i) =>
+                    {
+                        const texture = new Texture(new BaseTexture(
+                            image.resource,
+                            {
+                                mipmap: MIPMAP_MODES.OFF,
+                                alphaMode: ALPHA_MODES.NO_PREMULTIPLIED_ALPHA,
+                                type: image.type,
+                                format: image.format,
+                            }
+                        ));
+                        const cacheID = `${url}-${i + 1}`;
+
+                        BaseTexture.addToCache(texture.baseTexture, cacheID);
+                        Texture.addToCache(texture, cacheID);
+
+                        if (i === 0)
+                        {
+                            textures[url] = texture;
+                            BaseTexture.addToCache(texture.baseTexture, url);
+                            Texture.addToCache(texture, url);
+                        }
+
+                        textures[cacheID] = texture;
+                    });
+
+                    Object.assign(resource, { textures });
+                }
             }
             catch (err)
             {
@@ -144,7 +185,10 @@ export class KTXLoader
     }
 
     /** Parses the KTX file header, generates base-textures, and puts them into the texture cache. */
-    private static parse(url: string, arrayBuffer: ArrayBuffer): CompressedTextureResource[] | null
+    private static parse(url: string, arrayBuffer: ArrayBuffer): {
+        compressed?: CompressedTextureResource[]
+        uncompressed?: { resource: BufferResource, type: TYPES, format: FORMATS }[]
+    }
     {
         const dataView = new DataView(arrayBuffer);
 
@@ -251,8 +295,10 @@ export class KTXLoader
 
                 mips[mipmapLevel] = {
                     levelID: mipmapLevel,
-                    levelWidth: numberOfMipmapLevels > 1 ? mipWidth : alignedMipWidth,
-                    levelHeight: numberOfMipmapLevels > 1 ? mipHeight : alignedMipHeight,
+
+                    // don't align mipWidth when texture not compressed! (glType not zero)
+                    levelWidth: numberOfMipmapLevels > 1 || glType !== 0 ? mipWidth : alignedMipWidth,
+                    levelHeight: numberOfMipmapLevels > 1 || glType !== 0 ? mipHeight : alignedMipHeight,
                     levelBuffer: new Uint8Array(arrayBuffer, elementOffset, mipByteSize)
                 };
                 elementOffset += mipByteSize;
@@ -275,16 +321,60 @@ export class KTXLoader
         // We use the levelBuffers feature of CompressedTextureResource b/c texture data is image-major, not level-major.
         if (glType !== 0)
         {
-            throw new Error('TODO: Uncompressed');
+            return {
+                uncompressed: imageBuffers.map((levelBuffers) =>
+                {
+                    let buffer: Float32Array | Uint32Array | Int32Array | Uint8Array = levelBuffers[0].levelBuffer;
+                    let convertToInt = false;
+
+                    if (glType === TYPES.FLOAT)
+                    {
+                        buffer = new Float32Array(
+                            levelBuffers[0].levelBuffer.buffer,
+                            levelBuffers[0].levelBuffer.byteOffset,
+                            levelBuffers[0].levelBuffer.byteLength / 4);
+                    }
+                    else if (glType === TYPES.UNSIGNED_INT)
+                    {
+                        convertToInt = true;
+                        buffer = new Uint32Array(
+                            levelBuffers[0].levelBuffer.buffer,
+                            levelBuffers[0].levelBuffer.byteOffset,
+                            levelBuffers[0].levelBuffer.byteLength / 4);
+                    }
+                    else if (glType === TYPES.INT)
+                    {
+                        convertToInt = true;
+                        buffer = new Int32Array(
+                            levelBuffers[0].levelBuffer.buffer,
+                            levelBuffers[0].levelBuffer.byteOffset,
+                            levelBuffers[0].levelBuffer.byteLength / 4);
+                    }
+
+                    return {
+                        resource: new BufferResource(
+                            buffer,
+                            {
+                                width: levelBuffers[0].levelWidth,
+                                height: levelBuffers[0].levelHeight,
+                            }
+                        ),
+                        type: glType,
+                        format: convertToInt ? KTXLoader.convertFormatToInteger(glFormat) : glFormat,
+                    };
+                })
+            };
         }
 
-        return imageBuffers.map((levelBuffers) => new CompressedTextureResource(null, {
-            format: glInternalFormat,
-            width: pixelWidth,
-            height: pixelHeight,
-            levels: numberOfMipmapLevels,
-            levelBuffers,
-        }));
+        return {
+            compressed: imageBuffers.map((levelBuffers) => new CompressedTextureResource(null, {
+                format: glInternalFormat,
+                width: pixelWidth,
+                height: pixelHeight,
+                levels: numberOfMipmapLevels,
+                levelBuffers,
+            }))
+        };
     }
 
     /** Checks whether the arrayBuffer contains a valid *.ktx file. */
@@ -305,5 +395,17 @@ export class KTXLoader
         }
 
         return true;
+    }
+
+    private static convertFormatToInteger(format: FORMATS)
+    {
+        switch (format)
+        {
+            case FORMATS.RGBA: return FORMATS.RGBA_INTEGER;
+            case FORMATS.RGB: return FORMATS.RGB_INTEGER;
+            case FORMATS.RG: return FORMATS.RG_INTEGER;
+            case FORMATS.RED: return FORMATS.RED_INTEGER;
+            default: return format;
+        }
     }
 }

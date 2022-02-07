@@ -8,70 +8,52 @@ import type { IPointData, Transform, Matrix } from '@pixi/math';
  * This could be called an Axis-Aligned Bounding Box.
  * It is not an actual shape. It is a mutable thing; no 'EMPTY' or those kind of problems.
  *
- * @class
  * @memberof PIXI
  */
 export class Bounds
 {
+    /** @default Infinity */
     public minX: number;
+
+    /** @default Infinity */
     public minY: number;
+
+    /** @default -Infinity */
     public maxX: number;
+
+    /** @default -Infinity */
     public maxY: number;
+
     public rect: Rectangle;
+
+    /**
+     * It is updated to _boundsID of corresponding object to keep bounds in sync with content.
+     * Updated from outside, thus public modifier.
+     */
     public updateID: number;
 
     constructor()
     {
-        /**
-         * @member {number}
-         * @default 0
-         */
         this.minX = Infinity;
-
-        /**
-         * @member {number}
-         * @default 0
-         */
         this.minY = Infinity;
-
-        /**
-         * @member {number}
-         * @default 0
-         */
         this.maxX = -Infinity;
-
-        /**
-         * @member {number}
-         * @default 0
-         */
         this.maxY = -Infinity;
 
         this.rect = null;
-
-        /**
-         * It is updated to _boundsID of corresponding object to keep bounds in sync with content.
-         * Updated from outside, thus public modifier.
-         *
-         * @member {number}
-         * @public
-         */
         this.updateID = -1;
     }
 
     /**
      * Checks if bounds are empty.
      *
-     * @return {boolean} True if empty.
+     * @return - True if empty.
      */
     isEmpty(): boolean
     {
         return this.minX > this.maxX || this.minY > this.maxY;
     }
 
-    /**
-     * Clears the bounds and resets.
-     *
-     */
+    /** Clears the bounds and resets. */
     clear(): void
     {
         this.minX = Infinity;
@@ -84,8 +66,8 @@ export class Bounds
      * Can return Rectangle.EMPTY constant, either construct new rectangle, either use your rectangle
      * It is not guaranteed that it will return tempRect
      *
-     * @param {PIXI.Rectangle} rect - temporary object will be used if AABB is not empty
-     * @returns {PIXI.Rectangle} A rectangle of the bounds
+     * @param rect - Temporary object will be used if AABB is not empty
+     * @returns - A rectangle of the bounds
      */
     getRectangle(rect?: Rectangle): Rectangle
     {
@@ -107,7 +89,7 @@ export class Bounds
     /**
      * This function should be inlined when its possible.
      *
-     * @param {PIXI.IPointData} point - The point to add.
+     * @param point - The point to add.
      */
     addPoint(point: IPointData): void
     {
@@ -117,12 +99,7 @@ export class Bounds
         this.maxY = Math.max(this.maxY, point.y);
     }
 
-    /**
-     * Adds a point, after transformed. This should be inlined when its possible.
-     *
-     * @param matrix
-     * @param point
-     */
+    /** Adds a point, after transformed. This should be inlined when its possible. */
     addPointMatrix(matrix: Matrix, point: IPointData): void
     {
         const { a, b, c, d, tx, ty } = matrix;
@@ -139,7 +116,7 @@ export class Bounds
     /**
      * Adds a quad, not transformed
      *
-     * @param {Float32Array} vertices - The verts to add.
+     * @param vertices - The verts to add.
      */
     addQuad(vertices: Float32Array): void
     {
@@ -186,11 +163,11 @@ export class Bounds
     /**
      * Adds sprite frame, transformed.
      *
-     * @param {PIXI.Transform} transform - transform to apply
-     * @param {number} x0 - left X of frame
-     * @param {number} y0 - top Y of frame
-     * @param {number} x1 - right X of frame
-     * @param {number} y1 - bottom Y of frame
+     * @param transform - transform to apply
+     * @param x0 - left X of frame
+     * @param y0 - top Y of frame
+     * @param x1 - right X of frame
+     * @param y1 - bottom Y of frame
      */
     addFrame(transform: Transform, x0: number, y0: number, x1: number, y1: number): void
     {
@@ -200,11 +177,11 @@ export class Bounds
     /**
      * Adds sprite frame, multiplied by matrix
      *
-     * @param {PIXI.Matrix} matrix - matrix to apply
-     * @param {number} x0 - left X of frame
-     * @param {number} y0 - top Y of frame
-     * @param {number} x1 - right X of frame
-     * @param {number} y1 - bottom Y of frame
+     * @param matrix - matrix to apply
+     * @param x0 - left X of frame
+     * @param y0 - top Y of frame
+     * @param x1 - right X of frame
+     * @param y1 - bottom Y of frame
      */
     addFrameMatrix(matrix: Matrix, x0: number, y0: number, x1: number, y1: number): void
     {
@@ -258,9 +235,9 @@ export class Bounds
     /**
      * Adds screen vertices from array
      *
-     * @param {Float32Array} vertexData - calculated vertices
-     * @param {number} beginOffset - begin offset
-     * @param {number} endOffset - end offset, excluded
+     * @param vertexData - calculated vertices
+     * @param beginOffset - begin offset
+     * @param endOffset - end offset, excluded
      */
     addVertexData(vertexData: Float32Array, beginOffset: number, endOffset: number): void
     {
@@ -289,10 +266,10 @@ export class Bounds
     /**
      * Add an array of mesh vertices
      *
-     * @param {PIXI.Transform} transform - mesh transform
-     * @param {Float32Array} vertices - mesh coordinates in array
-     * @param {number} beginOffset - begin offset
-     * @param {number} endOffset - end offset, excluded
+     * @param transform - mesh transform
+     * @param vertices - mesh coordinates in array
+     * @param beginOffset - begin offset
+     * @param endOffset - end offset, excluded
      */
     addVertices(transform: Transform, vertices: Float32Array, beginOffset: number, endOffset: number): void
     {
@@ -302,12 +279,12 @@ export class Bounds
     /**
      * Add an array of mesh vertices.
      *
-     * @param {PIXI.Matrix} matrix - mesh matrix
-     * @param {Float32Array} vertices - mesh coordinates in array
-     * @param {number} beginOffset - begin offset
-     * @param {number} endOffset - end offset, excluded
-     * @param {number} [padX=0] - x padding
-     * @param {number} [padY=0] - y padding
+     * @param matrix - mesh matrix
+     * @param vertices - mesh coordinates in array
+     * @param beginOffset - begin offset
+     * @param endOffset - end offset, excluded
+     * @param padX - x padding
+     * @param padY - y padding
      */
     addVerticesMatrix(matrix: Matrix, vertices: Float32Array, beginOffset: number,
         endOffset: number, padX = 0, padY = padX): void
@@ -344,9 +321,9 @@ export class Bounds
     }
 
     /**
-     * Adds other Bounds.
+     * Adds other {@link Bounds}.
      *
-     * @param {PIXI.Bounds} bounds - The Bounds to be added
+     * @param bounds - The Bounds to be added
      */
     addBounds(bounds: Bounds): void
     {
@@ -364,8 +341,8 @@ export class Bounds
     /**
      * Adds other Bounds, masked with Bounds.
      *
-     * @param {PIXI.Bounds} bounds - The Bounds to be added.
-     * @param {PIXI.Bounds} mask - TODO
+     * @param bounds - The Bounds to be added.
+     * @param mask - TODO
      */
     addBoundsMask(bounds: Bounds, mask: Bounds): void
     {
@@ -391,8 +368,8 @@ export class Bounds
     /**
      * Adds other Bounds, multiplied by matrix. Bounds shouldn't be empty.
      *
-     * @param {PIXI.Bounds} bounds - other bounds
-     * @param {PIXI.Matrix} matrix - multiplicator
+     * @param bounds - other bounds
+     * @param matrix - multiplicator
      */
     addBoundsMatrix(bounds: Bounds, matrix: Matrix): void
     {
@@ -402,8 +379,8 @@ export class Bounds
     /**
      * Adds other Bounds, masked with Rectangle.
      *
-     * @param {PIXI.Bounds} bounds - TODO
-     * @param {PIXI.Rectangle} area - TODO
+     * @param bounds - TODO
+     * @param area - TODO
      */
     addBoundsArea(bounds: Bounds, area: Rectangle): void
     {
@@ -430,8 +407,8 @@ export class Bounds
      * Pads bounds object, making it grow in all directions.
      * If paddingY is omitted, both paddingX and paddingY will be set to paddingX.
      *
-     * @param {number} [paddingX=0] - The horizontal padding amount.
-     * @param {number} [paddingY=0] - The vertical padding amount.
+     * @param paddingX - The horizontal padding amount.
+     * @param paddingY - The vertical padding amount.
      */
     pad(paddingX = 0, paddingY = paddingX): void
     {
@@ -447,12 +424,12 @@ export class Bounds
     /**
      * Adds padded frame. (x0, y0) should be strictly less than (x1, y1)
      *
-     * @param {number} x0 - left X of frame
-     * @param {number} y0 - top Y of frame
-     * @param {number} x1 - right X of frame
-     * @param {number} y1 - bottom Y of frame
-     * @param {number} padX - padding X
-     * @param {number} padY - padding Y
+     * @param x0 - left X of frame
+     * @param y0 - top Y of frame
+     * @param x1 - right X of frame
+     * @param y1 - bottom Y of frame
+     * @param padX - padding X
+     * @param padY - padding Y
      */
     addFramePad(x0: number, y0: number, x1: number, y1: number, padX: number, padY: number): void
     {

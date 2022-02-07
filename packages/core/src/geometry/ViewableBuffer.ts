@@ -3,14 +3,19 @@ import type { ITypedArray } from './Buffer';
 /**
  * Flexible wrapper around `ArrayBuffer` that also provides typed array views on demand.
  *
- * @class
  * @memberof PIXI
  */
 export class ViewableBuffer
 {
     public size: number;
+
+    /** Underlying `ArrayBuffer` that holds all the data and is of capacity `this.size`. */
     public rawBinaryData: ArrayBuffer;
+
+    /** View on the raw binary data as a `Uint32Array`. */
     public uint32View: Uint32Array;
+
+    /** View on the raw binary data as a `Float32Array`. */
     public float32View: Float32Array;
 
     private _int8View: Int8Array;
@@ -20,12 +25,12 @@ export class ViewableBuffer
     private _int32View: Int32Array;
 
     /**
-     * @param {number} length - The size of the buffer in bytes.
+     * @param length - The size of the buffer in bytes.
      */
     constructor(length: number);
 
     /**
-     * @param {ArrayBuffer} arrayBuffer - The source array buffer.
+     * @param arrayBuffer - The source array buffer.
      */
     constructor(arrayBuffer: ArrayBuffer);
 
@@ -33,11 +38,6 @@ export class ViewableBuffer
     {
         if (typeof sizeOrBuffer === 'number')
         {
-            /**
-             * Underlying `ArrayBuffer` that holds all the data and is of capacity `this.size`.
-             *
-             * @member {ArrayBuffer}
-             */
             this.rawBinaryData = new ArrayBuffer(sizeOrBuffer);
         }
         else if (sizeOrBuffer instanceof Uint8Array)
@@ -49,26 +49,11 @@ export class ViewableBuffer
             this.rawBinaryData = sizeOrBuffer;
         }
 
-        /**
-         * View on the raw binary data as a `Uint32Array`.
-         *
-         * @member {Uint32Array}
-         */
         this.uint32View = new Uint32Array(this.rawBinaryData);
-
-        /**
-         * View on the raw binary data as a `Float32Array`.
-         *
-         * @member {Float32Array}
-         */
         this.float32View = new Float32Array(this.rawBinaryData);
     }
 
-    /**
-     * View on the raw binary data as a `Int8Array`.
-     *
-     * @member {Int8Array}
-     */
+    /** View on the raw binary data as a `Int8Array`. */
     get int8View(): Int8Array
     {
         if (!this._int8View)
@@ -79,11 +64,7 @@ export class ViewableBuffer
         return this._int8View;
     }
 
-    /**
-     * View on the raw binary data as a `Uint8Array`.
-     *
-     * @member {Uint8Array}
-     */
+    /** View on the raw binary data as a `Uint8Array`. */
     get uint8View(): Uint8Array
     {
         if (!this._uint8View)
@@ -94,11 +75,7 @@ export class ViewableBuffer
         return this._uint8View;
     }
 
-    /**
-     * View on the raw binary data as a `Int16Array`.
-     *
-     * @member {Int16Array}
-     */
+    /**  View on the raw binary data as a `Int16Array`. */
     get int16View(): Int16Array
     {
         if (!this._int16View)
@@ -109,11 +86,7 @@ export class ViewableBuffer
         return this._int16View;
     }
 
-    /**
-     * View on the raw binary data as a `Uint16Array`.
-     *
-     * @member {Uint16Array}
-     */
+    /** View on the raw binary data as a `Uint16Array`. */
     get uint16View(): Uint16Array
     {
         if (!this._uint16View)
@@ -124,11 +97,7 @@ export class ViewableBuffer
         return this._uint16View;
     }
 
-    /**
-     * View on the raw binary data as a `Int32Array`.
-     *
-     * @member {Int32Array}
-     */
+    /** View on the raw binary data as a `Int32Array`. */
     get int32View(): Int32Array
     {
         if (!this._int32View)
@@ -142,19 +111,16 @@ export class ViewableBuffer
     /**
      * Returns the view of the given type.
      *
-     * @param {string} type - One of `int8`, `uint8`, `int16`,
+     * @param type - One of `int8`, `uint8`, `int16`,
      *    `uint16`, `int32`, `uint32`, and `float32`.
-     * @return {object} typed array of given type
+     * @return - typed array of given type
      */
     view(type: string): ITypedArray
     {
         return (this as any)[`${type}View`];
     }
 
-    /**
-     * Destroys all buffer references. Do not use after calling
-     * this.
-     */
+    /** Destroys all buffer references. Do not use after calling this. */
     destroy(): void
     {
         this.rawBinaryData = null;

@@ -14,6 +14,7 @@ const BYTES_PER_PIXEL = 4;
  *
  * Do not instantiate these plugins directly. It is available from the `renderer.plugins` property.
  * See {@link PIXI.CanvasRenderer#plugins} or {@link PIXI.Renderer#plugins}.
+ *
  * @example
  * // Create a new app (will auto-add extract plugin to renderer)
  * const app = new PIXI.Application();
@@ -26,7 +27,7 @@ const BYTES_PER_PIXEL = 4;
  * // Render the graphics as an HTMLImageElement
  * const image = app.renderer.plugins.extract.image(graphics);
  * document.body.appendChild(image);
- * @class
+ *
  * @memberof PIXI
  */
 export class Extract implements IRendererPlugin
@@ -34,7 +35,7 @@ export class Extract implements IRendererPlugin
     private renderer: Renderer;
 
     /**
-     * @param {PIXI.Renderer} renderer - A reference to the current renderer
+     * @param renderer - A reference to the current renderer
      */
     constructor(renderer: Renderer)
     {
@@ -44,11 +45,11 @@ export class Extract implements IRendererPlugin
     /**
      * Will return a HTML Image of the target
      *
-     * @param {PIXI.DisplayObject|PIXI.RenderTexture} target - A displayObject or renderTexture
+     * @param target - A displayObject or renderTexture
      *  to convert. If left empty will use the main renderer
-     * @param {string} [format] - Image format, e.g. "image/jpeg" or "image/webp".
-     * @param {number} [quality] - JPEG or Webp compression from 0 to 1. Default is 0.92.
-     * @return {HTMLImageElement} HTML Image of the target
+     * @param format - Image format, e.g. "image/jpeg" or "image/webp".
+     * @param quality - JPEG or Webp compression from 0 to 1. Default is 0.92.
+     * @return - HTML Image of the target
      */
     public image(target: DisplayObject|RenderTexture, format?: string, quality?: number): HTMLImageElement
     {
@@ -63,11 +64,11 @@ export class Extract implements IRendererPlugin
      * Will return a a base64 encoded string of this target. It works by calling
      *  `Extract.getCanvas` and then running toDataURL on that.
      *
-     * @param {PIXI.DisplayObject|PIXI.RenderTexture} target - A displayObject or renderTexture
+     * @param target - A displayObject or renderTexture
      *  to convert. If left empty will use the main renderer
-     * @param {string} [format] - Image format, e.g. "image/jpeg" or "image/webp".
-     * @param {number} [quality] - JPEG or Webp compression from 0 to 1. Default is 0.92.
-     * @return {string} A base64 encoded string of the texture.
+     * @param format - Image format, e.g. "image/jpeg" or "image/webp".
+     * @param quality - JPEG or Webp compression from 0 to 1. Default is 0.92.
+     * @return - A base64 encoded string of the texture.
      */
     public base64(target: DisplayObject|RenderTexture, format?: string, quality?: number): string
     {
@@ -77,9 +78,9 @@ export class Extract implements IRendererPlugin
     /**
      * Creates a Canvas element, renders this target to it and then returns it.
      *
-     * @param {PIXI.DisplayObject|PIXI.RenderTexture} target - A displayObject or renderTexture
+     * @param target - A displayObject or renderTexture
      *  to convert. If left empty will use the main renderer
-     * @return {HTMLCanvasElement} A Canvas element with the texture rendered on.
+     * @return - A Canvas element with the texture rendered on.
      */
     public canvas(target: DisplayObject|RenderTexture): HTMLCanvasElement
     {
@@ -177,9 +178,9 @@ export class Extract implements IRendererPlugin
      * Will return a one-dimensional array containing the pixel data of the entire texture in RGBA
      * order, with integer values between 0 and 255 (included).
      *
-     * @param {PIXI.DisplayObject|PIXI.RenderTexture} target - A displayObject or renderTexture
+     * @param target - A displayObject or renderTexture
      *  to convert. If left empty will use the main renderer
-     * @return {Uint8Array} One-dimensional array containing the pixel data of the entire texture
+     * @return - One-dimensional array containing the pixel data of the entire texture
      */
     public pixels(target?: DisplayObject|RenderTexture): Uint8Array
     {
@@ -249,10 +250,7 @@ export class Extract implements IRendererPlugin
         return webglPixels;
     }
 
-    /**
-     * Destroys the extract
-     *
-     */
+    /** Destroys the extract. */
     public destroy(): void
     {
         this.renderer = null;
@@ -262,8 +260,8 @@ export class Extract implements IRendererPlugin
      * Takes premultiplied pixel data and produces regular pixel data
      *
      * @private
-     * @param {number[] | Uint8Array | Uint8ClampedArray} pixels - array of pixel data
-     * @param {number[] | Uint8Array | Uint8ClampedArray} out - output array
+     * @param pixels - array of pixel data
+     * @param out - output array
      */
     static arrayPostDivide(
         pixels: number[] | Uint8Array | Uint8ClampedArray, out: number[] | Uint8Array | Uint8ClampedArray
