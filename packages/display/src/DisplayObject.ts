@@ -199,36 +199,118 @@ export interface DisplayObject extends Omit<GlobalMixins.DisplayObject, keyof Ev
  * Otherwise, to prevent an object from rendering in the general-purpose sense - `visible` is the property to use. This
  * one is also better in terms of performance.
  *
- * @class
- * @extends PIXI.utils.EventEmitter
  * @memberof PIXI
  */
 export abstract class DisplayObject extends EventEmitter
 {
     abstract sortDirty: boolean;
 
+    /** The display object container that contains this display object. */
     public parent: Container;
+
+    /**
+     * The multiplied alpha of the displayObject.
+     *
+     * @readonly
+     */
     public worldAlpha: number;
+
+    /**
+     * World transform and local transform of this object.
+     * This will become read-only later, please do not assign anything there unless you know what are you doing.
+     */
     public transform: Transform;
+
+    /** The opacity of the object. */
     public alpha: number;
+
+    /**
+     * The visibility of the object. If false the object will not be drawn, and
+     * the updateTransform function will not be called.
+     *
+     * Only affects recursive calls from parent. You can ask for bounds or call updateTransform manually.
+     */
     public visible: boolean;
+
+    /**
+     * Can this object be rendered, if false the object will not be drawn but the updateTransform
+     * methods will still be called.
+     *
+     * Only affects recursive calls from parent. You can ask for bounds manually.
+     */
     public renderable: boolean;
+
+    /**
+     * The area the filter is applied to. This is used as more of an optimization
+     * rather than figuring out the dimensions of the displayObject each frame you can set this rectangle.
+     *
+     * Also works as an interaction mask.
+     */
     public filterArea: Rectangle;
+
+    /**
+     * Sets the filters for the displayObject.
+     * * IMPORTANT: This is a WebGL only feature and will be ignored by the canvas renderer.
+     * To remove filters simply set this property to `'null'`.
+     */
     public filters: Filter[] | null;
+
+    /** Used to fast check if a sprite is.. a sprite! */
     public isSprite: boolean;
+
+    /** Does any other displayObject use this object as a mask? */
     public isMask: boolean;
+
+    /**
+     * Which index in the children array the display component was before the previous zIndex sort.
+     * Used by containers to help sort objects with the same zIndex, by using previous array index as the decider.
+     *
+     * @protected
+     */
     public _lastSortedIndex: number;
+
+    /**
+     * The original, cached mask of the object.
+     *
+     * @protected
+     */
     public _mask: Container|MaskData;
+
+    /** The bounds object, this is used to calculate and store the bounds of the displayObject. */
     public _bounds: Bounds;
+
+    /** Local bounds object, swapped with `_bounds` when using `getLocalBounds()`. */
     public _localBounds: Bounds;
 
+    /**
+     * The zIndex of the displayObject.
+     * A higher value will mean it will be rendered on top of other displayObjects within the same container.
+     *
+     * @protected
+     */
     protected _zIndex: number;
+
+    /**
+     * Currently enabled filters.
+     *
+     * @protected
+     */
     protected _enabledFilters: Filter[];
+
+    /** Flags the cached bounds as dirty. */
     protected _boundsID: number;
+
+    /** Cache of this display-object's bounds-rectangle. */
     protected _boundsRect: Rectangle;
+
+    /** Cache of this display-object's local-bounds rectangle. */
     protected _localBoundsRect: Rectangle;
+
+    /** If the object has been destroyed via destroy(). If true, it should not be used. */
     protected _destroyed: boolean;
 
+    /**
+     * The number of times this object is used as a mask by another object. */
     private _maskRefCount: number;
     private tempDisplayObjectParent: TemporaryDisplayObject;
     public displayObjectUpdateTransform: () => void;
@@ -236,7 +318,7 @@ export abstract class DisplayObject extends EventEmitter
     /**
      * Mixes all enumerable properties and methods from a source object to DisplayObject.
      *
-     * @param {object} source - The source of properties and methods to mix in.
+     * @param source - The source of properties and methods to mix in.
      */
     static mixin(source: Dict<any>): void
     {
@@ -267,172 +349,31 @@ export abstract class DisplayObject extends EventEmitter
         this.tempDisplayObjectParent = null;
 
         // TODO: need to create Transform from factory
-        /**
-         * World transform and local transform of this object.
-         * This will become read-only later, please do not assign anything there unless you know what are you doing.
-         *
-         * @member {PIXI.Transform}
-         */
         this.transform = new Transform();
-
-        /**
-         * The opacity of the object.
-         *
-         * @member {number}
-         */
         this.alpha = 1;
-
-        /**
-         * The visibility of the object. If false the object will not be drawn, and
-         * the updateTransform function will not be called.
-         *
-         * Only affects recursive calls from parent. You can ask for bounds or call updateTransform manually.
-         *
-         * @member {boolean}
-         */
         this.visible = true;
-
-        /**
-         * Can this object be rendered, if false the object will not be drawn but the updateTransform
-         * methods will still be called.
-         *
-         * Only affects recursive calls from parent. You can ask for bounds manually.
-         *
-         * @member {boolean}
-         */
         this.renderable = true;
 
-        /**
-         * The display object container that contains this display object.
-         *
-         * @member {PIXI.Container}
-         */
         this.parent = null;
-
-        /**
-         * The multiplied alpha of the displayObject.
-         *
-         * @member {number}
-         * @readonly
-         */
         this.worldAlpha = 1;
 
-        /**
-         * Which index in the children array the display component was before the previous zIndex sort.
-         * Used by containers to help sort objects with the same zIndex, by using previous array index as the decider.
-         *
-         * @member {number}
-         * @protected
-         */
         this._lastSortedIndex = 0;
-
-        /**
-         * The zIndex of the displayObject.
-         * A higher value will mean it will be rendered on top of other displayObjects within the same container.
-         *
-         * @member {number}
-         * @protected
-         */
         this._zIndex = 0;
 
-        /**
-         * The area the filter is applied to. This is used as more of an optimization
-         * rather than figuring out the dimensions of the displayObject each frame you can set this rectangle.
-         *
-         * Also works as an interaction mask.
-         *
-         * @member {?PIXI.Rectangle}
-         */
         this.filterArea = null;
-
-        /**
-         * Sets the filters for the displayObject.
-         * * IMPORTANT: This is a WebGL only feature and will be ignored by the canvas renderer.
-         * To remove filters simply set this property to `'null'`.
-         *
-         * @member {?PIXI.Filter[]}
-         */
         this.filters = null;
-
-        /**
-         * Currently enabled filters
-         * @member {PIXI.Filter[]}
-         * @protected
-         */
         this._enabledFilters = null;
 
-        /**
-         * The bounds object, this is used to calculate and store the bounds of the displayObject.
-         *
-         * @member {PIXI.Bounds}
-         */
         this._bounds = new Bounds();
-
-        /**
-         * Local bounds object, swapped with `_bounds` when using `getLocalBounds()`.
-         *
-         * @member {PIXI.Bounds}
-         */
         this._localBounds = null;
-
-        /**
-         * Flags the cached bounds as dirty.
-         *
-         * @member {number}
-         * @protected
-         */
         this._boundsID = 0;
-
-        /**
-         * Cache of this display-object's bounds-rectangle.
-         *
-         * @member {PIXI.Bounds}
-         * @protected
-         */
         this._boundsRect = null;
-
-        /**
-         * Cache of this display-object's local-bounds rectangle.
-         *
-         * @member {PIXI.Bounds}
-         * @protected
-         */
         this._localBoundsRect = null;
-
-        /**
-         * The original, cached mask of the object.
-         *
-         * @member {PIXI.Container|PIXI.MaskData|null}
-         * @protected
-         */
         this._mask = null;
-
-        /**
-         * The number of times this object is used as a mask by another object.
-         *
-         * @member {number}
-         * @private
-         */
         this._maskRefCount = 0;
-
-        /**
-         * If the object has been destroyed via destroy(). If true, it should not be used.
-         *
-         * @member {boolean}
-         * @protected
-         */
         this._destroyed = false;
 
-        /**
-         * used to fast check if a sprite is.. a sprite!
-         * @member {boolean}
-         */
         this.isSprite = false;
-
-        /**
-         * Does any other displayObject use this object as a mask?
-         * @member {boolean}
-         */
         this.isMask = false;
     }
 
@@ -459,17 +400,13 @@ export abstract class DisplayObject extends EventEmitter
      * @event destroyed
      */
 
-    /**
-     * Readonly flag for destroyed display objects.
-     */
+    /** Readonly flag for destroyed display objects. */
     get destroyed(): boolean
     {
         return this._destroyed;
     }
 
-    /**
-     * Recalculates the bounds of the display object.
-     */
+    /** Recalculates the bounds of the display object. */
     abstract calculateBounds(): void;
 
     abstract removeChild(child: DisplayObject): void;
@@ -477,7 +414,7 @@ export abstract class DisplayObject extends EventEmitter
     /**
      * Renders the object using the WebGL renderer.
      *
-     * @param {PIXI.Renderer} renderer - The renderer.
+     * @param renderer - The renderer.
      */
     abstract render(renderer: Renderer): void;
 
@@ -541,11 +478,11 @@ export abstract class DisplayObject extends EventEmitter
      * are guaranteed to be update-to-date. In fact, recalculating inside a render() call may cause corruption in certain
      * cases.
      *
-     * @param {boolean} [skipUpdate] - Setting to `true` will stop the transforms of the scene graph from
+     * @param skipUpdate - Setting to `true` will stop the transforms of the scene graph from
      *  being updated. This means the calculation returned MAY be out of date BUT will give you a
      *  nice performance boost.
-     * @param {PIXI.Rectangle} [rect] - Optional rectangle to store the result of the bounds calculation.
-     * @return {PIXI.Rectangle} The minimum axis-aligned rectangle in world space that fits around this object.
+     * @param rect - Optional rectangle to store the result of the bounds calculation.
+     * @return - The minimum axis-aligned rectangle in world space that fits around this object.
      */
     getBounds(skipUpdate?: boolean, rect?: Rectangle): Rectangle
     {
@@ -586,8 +523,8 @@ export abstract class DisplayObject extends EventEmitter
     /**
      * Retrieves the local bounds of the displayObject as a rectangle object.
      *
-     * @param {PIXI.Rectangle} [rect] - Optional rectangle to store the result of the bounds calculation.
-     * @return {PIXI.Rectangle} The rectangular bounding area.
+     * @param rect - Optional rectangle to store the result of the bounds calculation.
+     * @return - The rectangular bounding area.
      */
     getLocalBounds(rect?: Rectangle): Rectangle
     {
@@ -631,11 +568,11 @@ export abstract class DisplayObject extends EventEmitter
     /**
      * Calculates the global position of the display object.
      *
-     * @param {PIXI.IPointData} position - The world origin to calculate from.
-     * @param {PIXI.Point} [point] - A Point object in which to store the value, optional
+     * @param position - The world origin to calculate from.
+     * @param point - A Point object in which to store the value, optional
      *  (otherwise will create a new Point).
-     * @param {boolean} [skipUpdate=false] - Should we skip the update transform.
-     * @return {PIXI.Point} A point object representing the position of this object.
+     * @param skipUpdate - Should we skip the update transform.
+     * @return - A point object representing the position of this object.
      */
     toGlobal<P extends IPointData = Point>(position: IPointData, point?: P, skipUpdate = false): P
     {
@@ -665,12 +602,12 @@ export abstract class DisplayObject extends EventEmitter
     /**
      * Calculates the local position of the display object relative to another point.
      *
-     * @param {PIXI.IPointData} position - The world origin to calculate from.
-     * @param {PIXI.DisplayObject} [from] - The DisplayObject to calculate the global position from.
-     * @param {PIXI.Point} [point] - A Point object in which to store the value, optional
+     * @param position - The world origin to calculate from.
+     * @param from - The DisplayObject to calculate the global position from.
+     * @param point - A Point object in which to store the value, optional
      *  (otherwise will create a new Point).
-     * @param {boolean} [skipUpdate=false] - Should we skip the update transform
-     * @return {PIXI.Point} A point object representing the position of this object
+     * @param skipUpdate - Should we skip the update transform
+     * @return - A point object representing the position of this object
      */
     toLocal<P extends IPointData = Point>(position: IPointData, from?: DisplayObject, point?: P, skipUpdate?: boolean): P
     {
@@ -705,8 +642,8 @@ export abstract class DisplayObject extends EventEmitter
     /**
      * Set the parent Container of this DisplayObject.
      *
-     * @param {PIXI.Container} container - The Container to add this DisplayObject to.
-     * @return {PIXI.Container} The Container that this DisplayObject was added to.
+     * @param container - The Container to add this DisplayObject to.
+     * @return - The Container that this DisplayObject was added to.
      */
     setParent(container: Container): Container
     {
@@ -723,16 +660,16 @@ export abstract class DisplayObject extends EventEmitter
     /**
      * Convenience function to set the position, scale, skew and pivot at once.
      *
-     * @param {number} [x=0] - The X position
-     * @param {number} [y=0] - The Y position
-     * @param {number} [scaleX=1] - The X scale value
-     * @param {number} [scaleY=1] - The Y scale value
-     * @param {number} [rotation=0] - The rotation
-     * @param {number} [skewX=0] - The X skew value
-     * @param {number} [skewY=0] - The Y skew value
-     * @param {number} [pivotX=0] - The X pivot value
-     * @param {number} [pivotY=0] - The Y pivot value
-     * @return {PIXI.DisplayObject} The DisplayObject instance
+     * @param x - The X position
+     * @param y - The Y position
+     * @param scaleX - The X scale value
+     * @param scaleY - The Y scale value
+     * @param rotation - The rotation
+     * @param skewX - The X skew value
+     * @param skewY - The Y skew value
+     * @param pivotX - The X pivot value
+     * @param pivotY - The Y pivot value
+     * @return - The DisplayObject instance
      */
     setTransform(x = 0, y = 0, scaleX = 1, scaleY = 1, rotation = 0, skewX = 0, skewY = 0, pivotX = 0, pivotY = 0): this
     {
@@ -754,7 +691,6 @@ export abstract class DisplayObject extends EventEmitter
      * remove the display object from its parent Container as well as remove
      * all current event listeners and internal references. Do not use a DisplayObject
      * after calling `destroy()`.
-     *
      */
     destroy(_options?: IDestroyOptions|boolean): void
     {
@@ -804,7 +740,7 @@ export abstract class DisplayObject extends EventEmitter
      * elem.disableTempParent(cacheParent);
      * ```
      *
-     * @returns {PIXI.Container} current parent
+     * @returns - current parent
      */
     enableTempParent(): Container
     {
@@ -818,7 +754,7 @@ export abstract class DisplayObject extends EventEmitter
     /**
      * Pair method for `enableTempParent`
      *
-     * @param {PIXI.Container} cacheParent - Actual parent of element
+     * @param cacheParent - Actual parent of element
      */
     disableTempParent(cacheParent: Container): void
     {
@@ -828,8 +764,6 @@ export abstract class DisplayObject extends EventEmitter
     /**
      * The position of the displayObject on the x axis relative to the local coordinates of the parent.
      * An alias to position.x
-     *
-     * @member {number}
      */
     get x(): number
     {
@@ -844,8 +778,6 @@ export abstract class DisplayObject extends EventEmitter
     /**
      * The position of the displayObject on the y axis relative to the local coordinates of the parent.
      * An alias to position.y
-     *
-     * @member {number}
      */
     get y(): number
     {
@@ -860,7 +792,6 @@ export abstract class DisplayObject extends EventEmitter
     /**
      * Current transform of the object based on world (parent) factors.
      *
-     * @member {PIXI.Matrix}
      * @readonly
      */
     get worldTransform(): Matrix
@@ -871,7 +802,6 @@ export abstract class DisplayObject extends EventEmitter
     /**
      * Current transform of the object based on local factors: position, scale, other stuff.
      *
-     * @member {PIXI.Matrix}
      * @readonly
      */
     get localTransform(): Matrix
@@ -883,7 +813,6 @@ export abstract class DisplayObject extends EventEmitter
      * The coordinate of the object relative to the local coordinates of the parent.
      *
      * @since PixiJS 4
-     * @member {PIXI.ObservablePoint}
      */
     get position(): ObservablePoint
     {
@@ -901,7 +830,6 @@ export abstract class DisplayObject extends EventEmitter
      * The default scale is (1, 1).
      *
      * @since PixiJS 4
-     * @member {PIXI.ObservablePoint}
      */
     get scale(): ObservablePoint
     {
@@ -920,7 +848,6 @@ export abstract class DisplayObject extends EventEmitter
      * By default, the pivot is the origin (0, 0).
      *
      * @since PixiJS 4
-     * @member {PIXI.ObservablePoint}
      */
     get pivot(): ObservablePoint
     {
@@ -936,7 +863,6 @@ export abstract class DisplayObject extends EventEmitter
      * The skew factor for the object in radians.
      *
      * @since PixiJS 4
-     * @member {PIXI.ObservablePoint}
      */
     get skew(): ObservablePoint
     {
@@ -951,8 +877,6 @@ export abstract class DisplayObject extends EventEmitter
     /**
      * The rotation of the object in radians.
      * 'rotation' and 'angle' have the same effect on a display object; rotation is in radians, angle is in degrees.
-     *
-     * @member {number}
      */
     get rotation(): number
     {
@@ -967,8 +891,6 @@ export abstract class DisplayObject extends EventEmitter
     /**
      * The angle of the object in degrees.
      * 'rotation' and 'angle' have the same effect on a display object; rotation is in radians, angle is in degrees.
-     *
-     * @member {number}
      */
     get angle(): number
     {
@@ -987,7 +909,6 @@ export abstract class DisplayObject extends EventEmitter
      * sorted by zIndex value; a higher value will mean it will be moved towards the end of the array,
      * and thus rendered on top of other display objects within the same container.
      *
-     * @member {number}
      * @see PIXI.Container#sortableChildren
      */
     get zIndex(): number
@@ -1007,7 +928,6 @@ export abstract class DisplayObject extends EventEmitter
     /**
      * Indicates if the object is globally visible.
      *
-     * @member {boolean}
      * @readonly
      */
     get worldVisible(): boolean
@@ -1045,7 +965,6 @@ export abstract class DisplayObject extends EventEmitter
      * sprite.mask = graphics;
      *
      * @todo At the moment, PIXI.CanvasRenderer doesn't support PIXI.Sprite as mask.
-     * @member {PIXI.Container|PIXI.MaskData|null}
      */
     get mask(): Container|MaskData|null
     {

@@ -52,14 +52,37 @@ export interface Container extends GlobalMixins.Container, DisplayObject {}
  *  .endFill();
  * ```
  *
- * @class
- * @extends PIXI.DisplayObject
  * @memberof PIXI
  */
 export class Container extends DisplayObject
 {
+    /**
+     * The array of children of this container.
+     *
+     * @readonly
+     */
     public readonly children: DisplayObject[];
+
+    /**
+     * If set to true, the container will sort its children by zIndex value
+     * when updateTransform() is called, or manually if sortChildren() is called.
+     *
+     * This actually changes the order of elements in the array, so should be treated
+     * as a basic solution that is not performant compared to other solutions,
+     * such as @link https://github.com/pixijs/pixi-display
+     *
+     * Also be aware of that this may not work nicely with the addChildAt() function,
+     * as the zIndex sorting may cause the child to automatically sorted to another position.
+     *
+     * @see PIXI.settings.SORTABLE_CHILDREN
+     */
     public sortableChildren: boolean;
+
+    /**
+     * Should children be sorted by zIndex at the next updateTransform call.
+     *
+     * Will get automatically set to true if a new child is added, or if a child's zIndex changes.
+     */
     public sortDirty: boolean;
     public parent: Container;
     public containerUpdateTransform: () => void;
@@ -71,38 +94,8 @@ export class Container extends DisplayObject
     {
         super();
 
-        /**
-         * The array of children of this container.
-         *
-         * @member {PIXI.DisplayObject[]}
-         * @readonly
-         */
         this.children = [];
-
-        /**
-         * If set to true, the container will sort its children by zIndex value
-         * when updateTransform() is called, or manually if sortChildren() is called.
-         *
-         * This actually changes the order of elements in the array, so should be treated
-         * as a basic solution that is not performant compared to other solutions,
-         * such as @link https://github.com/pixijs/pixi-display
-         *
-         * Also be aware of that this may not work nicely with the addChildAt() function,
-         * as the zIndex sorting may cause the child to automatically sorted to another position.
-         *
-         * @see PIXI.settings.SORTABLE_CHILDREN
-         *
-         * @member {boolean}
-         */
         this.sortableChildren = settings.SORTABLE_CHILDREN;
-
-        /**
-         * Should children be sorted by zIndex at the next updateTransform call.
-         *
-         * Will get automatically set to true if a new child is added, or if a child's zIndex changes.
-         *
-         * @member {boolean}
-         */
         this.sortDirty = false;
 
         /**
@@ -124,11 +117,7 @@ export class Container extends DisplayObject
          */
     }
 
-    /**
-     * Overridable method that can be used by Container subclasses whenever the children array is modified
-     *
-     * @protected
-     */
+    /** Overridable method that can be used by Container subclasses whenever the children array is modified. */
     protected onChildrenChange(_length?: number): void
     {
         /* empty */
@@ -140,7 +129,7 @@ export class Container extends DisplayObject
      * Multiple items can be added like so: `myContainer.addChild(thingOne, thingTwo, thingThree)`
      *
      * @param {...PIXI.DisplayObject} children - The DisplayObject(s) to add to the container
-     * @return {PIXI.DisplayObject} The first child that was added.
+     * @return {PIXI.DisplayObject} - The first child that was added.
      */
     addChild<T extends DisplayObject[]>(...children: T): T[0]
     {
@@ -225,8 +214,8 @@ export class Container extends DisplayObject
     /**
      * Swaps the position of 2 Display Objects within this container.
      *
-     * @param {PIXI.DisplayObject} child - First display object to swap
-     * @param {PIXI.DisplayObject} child2 - Second display object to swap
+     * @param child - First display object to swap
+     * @param child2 - Second display object to swap
      */
     swapChildren(child: DisplayObject, child2: DisplayObject): void
     {
@@ -246,8 +235,8 @@ export class Container extends DisplayObject
     /**
      * Returns the index position of a child DisplayObject instance
      *
-     * @param {PIXI.DisplayObject} child - The DisplayObject instance to identify
-     * @return {number} The index position of the child display object to identify
+     * @param child - The DisplayObject instance to identify
+     * @return - The index position of the child display object to identify
      */
     getChildIndex(child: DisplayObject): number
     {
@@ -264,8 +253,8 @@ export class Container extends DisplayObject
     /**
      * Changes the position of an existing child in the display object container
      *
-     * @param {PIXI.DisplayObject} child - The child DisplayObject instance for which you want to change the index number
-     * @param {number} index - The resulting index number for the child display object
+     * @param child - The child DisplayObject instance for which you want to change the index number
+     * @param index - The resulting index number for the child display object
      */
     setChildIndex(child: DisplayObject, index: number): void
     {
@@ -285,8 +274,8 @@ export class Container extends DisplayObject
     /**
      * Returns the child at the specified index
      *
-     * @param {number} index - The index to get the child at
-     * @return {PIXI.DisplayObject} The child at the given index, if any.
+     * @param index - The index to get the child at
+     * @return - The child at the given index, if any.
      */
     getChildAt(index: number): DisplayObject
     {
@@ -342,8 +331,8 @@ export class Container extends DisplayObject
     /**
      * Removes a child from the specified index position.
      *
-     * @param {number} index - The index to get the child from
-     * @return {PIXI.DisplayObject} The child that was removed.
+     * @param index - The index to get the child from
+     * @return The child that was removed.
      */
     removeChildAt(index: number): DisplayObject
     {
@@ -368,9 +357,9 @@ export class Container extends DisplayObject
     /**
      * Removes all children from this container that are within the begin and end indexes.
      *
-     * @param {number} [beginIndex=0] - The beginning position.
-     * @param {number} [endIndex=this.children.length] - The ending position. Default value is size of the container.
-     * @returns {PIXI.DisplayObject[]} List of removed children
+     * @param beginIndex - The beginning position.
+     * @param endIndex - The ending position. Default value is size of the container.
+     * @returns - List of removed children
      */
     removeChildren(beginIndex = 0, endIndex = this.children.length): DisplayObject[]
     {
@@ -412,9 +401,7 @@ export class Container extends DisplayObject
         throw new RangeError('removeChildren: numeric values are outside the acceptable range.');
     }
 
-    /**
-     * Sorts children by zIndex. Previous order is maintained for 2 children with the same zIndex.
-     */
+    /** Sorts children by zIndex. Previous order is maintained for 2 children with the same zIndex. */
     sortChildren(): void
     {
         let sortRequired = false;
@@ -439,9 +426,7 @@ export class Container extends DisplayObject
         this.sortDirty = false;
     }
 
-    /**
-     * Updates the transform on all children of this container for rendering
-     */
+    /** Updates the transform on all children of this container for rendering. */
     updateTransform(): void
     {
         if (this.sortableChildren && this.sortDirty)
@@ -517,10 +502,10 @@ export class Container extends DisplayObject
      * Calling `getLocalBounds` may invalidate the `_bounds` of the whole subtree below. If using it inside a render()
      * call, it is advised to call `getBounds()` immediately after to recalculate the world bounds of the subtree.
      *
-     * @param {PIXI.Rectangle} [rect] - Optional rectangle to store the result of the bounds calculation.
-     * @param {boolean} [skipChildrenUpdate=false] - Setting to `true` will stop re-calculation of children transforms,
+     * @param rect - Optional rectangle to store the result of the bounds calculation.
+     * @param skipChildrenUpdate - Setting to `true` will stop re-calculation of children transforms,
      *  it was default behaviour of pixi 4.0-5.2 and caused many problems to users.
-     * @return {PIXI.Rectangle} The rectangular bounding area.
+     * @return - The rectangular bounding area.
      */
     public getLocalBounds(rect?: Rectangle, skipChildrenUpdate = false): Rectangle
     {
@@ -573,7 +558,7 @@ export class Container extends DisplayObject
      * filtering is applied on a container. This does, however, break batching and can affect performance when
      * masking and filtering is applied extensively throughout the scene graph.
      *
-     * @param {PIXI.Renderer} renderer - The renderer
+     * @param renderer - The renderer
      */
     render(renderer: Renderer): void
     {
@@ -603,8 +588,7 @@ export class Container extends DisplayObject
     /**
      * Render the object using the WebGL renderer and advanced features.
      *
-     * @protected
-     * @param {PIXI.Renderer} renderer - The renderer
+     * @param renderer - The renderer
      */
     protected renderAdvanced(renderer: Renderer): void
     {
@@ -677,8 +661,7 @@ export class Container extends DisplayObject
     /**
      * To be overridden by the subclasses.
      *
-     * @protected
-     * @param {PIXI.Renderer} renderer - The renderer
+     * @param renderer - The renderer
      */
     protected _render(_renderer: Renderer): void // eslint-disable-line no-unused-vars
     {
@@ -689,7 +672,7 @@ export class Container extends DisplayObject
      * Removes all internal references and listeners as well as removes children from the display list.
      * Do not use a Container after calling `destroy`.
      *
-     * @param {object|boolean} [options] - Options parameter. A boolean will act as if all options
+     * @param options - Options parameter. A boolean will act as if all options
      *  have been set to that value
      * @param {boolean} [options.children=false] - if set to true, all the children will have their destroy
      *  method called as well. 'options' will be passed on to those calls.
@@ -717,11 +700,7 @@ export class Container extends DisplayObject
         }
     }
 
-    /**
-     * The width of the Container, setting this will actually modify the scale to achieve the value set
-     *
-     * @member {number}
-     */
+    /** The width of the Container, setting this will actually modify the scale to achieve the value set. */
     get width(): number
     {
         return this.scale.x * this.getLocalBounds().width;
@@ -743,11 +722,7 @@ export class Container extends DisplayObject
         this._width = value;
     }
 
-    /**
-     * The height of the Container, setting this will actually modify the scale to achieve the value set
-     *
-     * @member {number}
-     */
+    /** The height of the Container, setting this will actually modify the scale to achieve the value set. */
     get height(): number
     {
         return this.scale.y * this.getLocalBounds().height;
