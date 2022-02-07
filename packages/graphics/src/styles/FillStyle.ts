@@ -4,7 +4,6 @@ import type { Matrix } from '@pixi/math';
 /**
  * Fill style object for Graphics.
  *
- * @class
  * @memberof PIXI
  */
 export class FillStyle
@@ -22,7 +21,6 @@ export class FillStyle
     /**
      * The texture to be used for the fill.
      *
-     * @member {PIXI.Texture}
      * @default 0
      */
     public texture: Texture = Texture.WHITE;
@@ -30,7 +28,6 @@ export class FillStyle
     /**
      * The transform applied to the texture.
      *
-     * @member {PIXI.Matrix}
      * @default null
      */
     public matrix: Matrix = null;
@@ -43,11 +40,7 @@ export class FillStyle
         this.reset();
     }
 
-    /**
-     * Clones the object
-     *
-     * @return {PIXI.FillStyle}
-     */
+    /** Clones the object */
     public clone(): FillStyle
     {
         const obj = new FillStyle();
@@ -61,9 +54,7 @@ export class FillStyle
         return obj;
     }
 
-    /**
-     * Reset
-     */
+    /** Reset */
     public reset(): void
     {
         this.color = 0xFFFFFF;
@@ -73,9 +64,7 @@ export class FillStyle
         this.visible = false;
     }
 
-    /**
-     * Destroy and don't use after this
-     */
+    /** Destroy and don't use after this. */
     public destroy(): void
     {
         this.texture = null;

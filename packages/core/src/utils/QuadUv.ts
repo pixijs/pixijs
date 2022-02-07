@@ -6,26 +6,23 @@ import type { Rectangle } from '@pixi/math';
 /**
  * Helper class to create a quad with uvs like in v4
  *
- * @class
  * @memberof PIXI
- * @extends PIXI.Geometry
  */
 export class QuadUv extends Geometry
 {
     vertexBuffer: Buffer;
     uvBuffer: Buffer;
+
+    /** An array of vertices. */
     vertices: Float32Array;
+
+    /** The Uvs of the quad. */
     uvs: Float32Array;
 
     constructor()
     {
         super();
 
-        /**
-         * An array of vertices
-         *
-         * @member {Float32Array}
-         */
         this.vertices = new Float32Array([
             -1, -1,
             1, -1,
@@ -33,11 +30,6 @@ export class QuadUv extends Geometry
             -1, 1,
         ]);
 
-        /**
-         * The Uvs of the quad
-         *
-         * @member {Float32Array}
-         */
         this.uvs = new Float32Array([
             0, 0,
             1, 0,
@@ -56,9 +48,9 @@ export class QuadUv extends Geometry
     /**
      * Maps two Rectangle to the quad.
      *
-     * @param {PIXI.Rectangle} targetTextureFrame - the first rectangle
-     * @param {PIXI.Rectangle} destinationFrame - the second rectangle
-     * @return {PIXI.Quad} Returns itself.
+     * @param targetTextureFrame - The first rectangle
+     * @param destinationFrame - The second rectangle
+     * @return - Returns itself.
      */
     map(targetTextureFrame: Rectangle, destinationFrame: Rectangle): this
     {
@@ -98,8 +90,9 @@ export class QuadUv extends Geometry
     }
 
     /**
-     * legacy upload method, just marks buffers dirty
-     * @returns {PIXI.QuadUv} Returns itself.
+     * Legacy upload method, just marks buffers dirty.
+     *
+     * @returns - Returns itself.
      */
     invalidate(): this
     {

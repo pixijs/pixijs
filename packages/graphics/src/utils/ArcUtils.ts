@@ -11,8 +11,8 @@ interface IArcLikeShape {
 }
 
 /**
- * Utilities for arc curves
- * @class
+ * Utilities for arc curves.
+ *
  * @private
  */
 export class ArcUtils
@@ -23,12 +23,12 @@ export class ArcUtils
      * "borrowed" from https://code.google.com/p/fxcanvas/ - thanks google!
      *
      * @private
-     * @param {number} x1 - The x-coordinate of the beginning of the arc
-     * @param {number} y1 - The y-coordinate of the beginning of the arc
-     * @param {number} x2 - The x-coordinate of the end of the arc
-     * @param {number} y2 - The y-coordinate of the end of the arc
-     * @param {number} radius - The radius of the arc
-     * @return {object} If the arc length is valid, return center of circle, radius and other info otherwise `null`.
+     * @param x1 - The x-coordinate of the beginning of the arc
+     * @param y1 - The y-coordinate of the beginning of the arc
+     * @param x2 - The x-coordinate of the end of the arc
+     * @param y2 - The y-coordinate of the end of the arc
+     * @param radius - The radius of the arc
+     * @return - If the arc length is valid, return center of circle, radius and other info otherwise `null`.
      */
     static curveTo(x1: number, y1: number, x2: number, y2: number, radius: number, points: Array<number>): IArcLikeShape
     {
@@ -82,18 +82,18 @@ export class ArcUtils
      * The arc method creates an arc/curve (used to create circles, or parts of circles).
      *
      * @private
-     * @param {number} startX - Start x location of arc
-     * @param {number} startY - Start y location of arc
-     * @param {number} cx - The x-coordinate of the center of the circle
-     * @param {number} cy - The y-coordinate of the center of the circle
-     * @param {number} radius - The radius of the circle
-     * @param {number} startAngle - The starting angle, in radians (0 is at the 3 o'clock position
+     * @param startX - Start x location of arc
+     * @param startY - Start y location of arc
+     * @param cx - The x-coordinate of the center of the circle
+     * @param cy - The y-coordinate of the center of the circle
+     * @param radius - The radius of the circle
+     * @param startAngle - The starting angle, in radians (0 is at the 3 o'clock position
      *  of the arc's circle)
-     * @param {number} endAngle - The ending angle, in radians
-     * @param {boolean} anticlockwise - Specifies whether the drawing should be
+     * @param endAngle - The ending angle, in radians
+     * @param anticlockwise - Specifies whether the drawing should be
      *  counter-clockwise or clockwise. False is default, and indicates clockwise, while true
      *  indicates counter-clockwise.
-     * @param {number[]} points - Collection of points to add to
+     * @param points - Collection of points to add to
      */
     static arc(_startX: number, _startY: number, cx: number, cy: number, radius: number,
         startAngle: number, endAngle: number, _anticlockwise: boolean, points: Array<number>): void
