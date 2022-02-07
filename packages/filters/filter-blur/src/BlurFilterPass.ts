@@ -9,8 +9,6 @@ import type { FilterSystem, RenderTexture } from '@pixi/core';
 /**
  * The BlurFilterPass applies a horizontal or vertical Gaussian blur to an object.
  *
- * @class
- * @extends PIXI.Filter
  * @memberof PIXI.filters
  */
 export class BlurFilterPass extends Filter
@@ -22,11 +20,11 @@ export class BlurFilterPass extends Filter
     private _quality: number;
 
     /**
-     * @param {boolean} horizontal - Do pass along the x-axis (`true`) or y-axis (`false`).
-     * @param {number} [strength=8] - The strength of the blur filter.
-     * @param {number} [quality=4] - The quality of the blur filter.
-     * @param {number} [resolution=PIXI.settings.FILTER_RESOLUTION] - The resolution of the blur filter.
-     * @param {number} [kernelSize=5] - The kernelSize of the blur filter.Options: 5, 7, 9, 11, 13, 15.
+     * @param horizontal - Do pass along the x-axis (`true`) or y-axis (`false`).
+     * @param strength - The strength of the blur filter.
+     * @param quality - The quality of the blur filter.
+     * @param resolution - The resolution of the blur filter.
+     * @param kernelSize - The kernelSize of the blur filter.Options: 5, 7, 9, 11, 13, 15.
      */
     constructor(horizontal: boolean, strength = 8, quality = 4, resolution = settings.FILTER_RESOLUTION, kernelSize = 5)
     {
@@ -54,10 +52,10 @@ export class BlurFilterPass extends Filter
     /**
      * Applies the filter.
      *
-     * @param {PIXI.FilterSystem} filterManager - The manager.
-     * @param {PIXI.RenderTexture} input - The input target.
-     * @param {PIXI.RenderTexture} output - The output target.
-     * @param {PIXI.CLEAR_MODES} clearMode - How to clear
+     * @param filterManager - The manager.
+     * @param input - The input target.
+     * @param output - The output target.
+     * @param clearMode - How to clear
      */
     public apply(
         filterManager: FilterSystem, input: RenderTexture, output: RenderTexture, clearMode: CLEAR_MODES
@@ -128,7 +126,6 @@ export class BlurFilterPass extends Filter
     /**
      * Sets the strength of both the blur.
      *
-     * @member {number}
      * @default 16
      */
     get blur(): number
@@ -146,7 +143,6 @@ export class BlurFilterPass extends Filter
      * Sets the quality of the blur by modifying the number of passes. More passes means higher
      * quality bluring but the lower the performance.
      *
-     * @member {number}
      * @default 4
      */
     get quality(): number
