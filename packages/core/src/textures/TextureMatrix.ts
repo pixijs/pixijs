@@ -18,100 +18,90 @@ const tempMat = new Matrix();
  * @see PIXI.Texture
  * @see PIXI.Mesh
  * @see PIXI.TilingSprite
- * @class
  * @memberof PIXI
  */
 export class TextureMatrix
 {
+    /**
+     * Matrix operation that converts texture region coords to texture coords
+     *
+     * @readonly
+     */
     public mapCoord: Matrix;
+
+    /**
+     * Changes frame clamping
+     * Works with TilingSprite and Mesh
+     * Change to 1.5 if you texture has repeated right and bottom lines, that leads to smoother borders
+     *
+     * @default 0
+     */
     public clampOffset: number;
+
+    /**
+     * Changes frame clamping
+     * Works with TilingSprite and Mesh
+     * Change to -0.5 to add a pixel to the edge, recommended for transparent trimmed textures in atlas
+     *
+     * @default 0.5
+     */
     public clampMargin: number;
+
+    /**
+     * Clamp region for normalized coords, left-top pixel center in xy , bottom-right in zw.
+     * Calculated based on clampOffset.
+     */
     readonly uClampFrame: Float32Array;
+
+    /**
+     * Normalized clamp offset.
+     * Calculated based on clampOffset.
+     */
     readonly uClampOffset: Float32Array;
+
+    /**
+     * Tracks Texture frame changes.
+     *
+     * @protected
+     */
     _textureID: number;
+
+    /**
+     * Tracks Texture frame changes.
+     *
+     * @protected
+     */
     _updateID: number;
     _texture: Texture;
-    isSimple: boolean;
+
     /**
+     * If texture size is the same as baseTexture.
      *
-     * @param {PIXI.Texture} texture - observed texture
-     * @param {number} [clampMargin] - Changes frame clamping, 0.5 by default. Use -0.5 for extra border.
-     * @constructor
+     * @default false
+     * @readonly
+     */
+    isSimple: boolean;
+
+    /**
+     * @param texture - observed texture
+     * @param clampMargin - Changes frame clamping, 0.5 by default. Use -0.5 for extra border.
      */
     constructor(texture: Texture, clampMargin?: number)
     {
         this._texture = texture;
 
-        /**
-         * Matrix operation that converts texture region coords to texture coords
-         * @member {PIXI.Matrix}
-         * @readonly
-         */
         this.mapCoord = new Matrix();
-
-        /**
-         * Clamp region for normalized coords, left-top pixel center in xy , bottom-right in zw.
-         * Calculated based on clampOffset.
-         * @member {Float32Array}
-         * @readonly
-         */
         this.uClampFrame = new Float32Array(4);
-
-        /**
-         * Normalized clamp offset.
-         * Calculated based on clampOffset.
-         * @member {Float32Array}
-         * @readonly
-         */
         this.uClampOffset = new Float32Array(2);
-
-        /**
-         * Tracks Texture frame changes
-         * @member {number}
-         * @protected
-         */
         this._textureID = -1;
-
-        /**
-         * Tracks Texture frame changes
-         * @member {number}
-         * @protected
-         */
         this._updateID = 0;
 
-        /**
-         * Changes frame clamping
-         * Works with TilingSprite and Mesh
-         * Change to 1.5 if you texture has repeated right and bottom lines, that leads to smoother borders
-         *
-         * @default 0
-         * @member {number}
-         */
         this.clampOffset = 0;
-
-        /**
-         * Changes frame clamping
-         * Works with TilingSprite and Mesh
-         * Change to -0.5 to add a pixel to the edge, recommended for transparent trimmed textures in atlas
-         *
-         * @default 0.5
-         * @member {number}
-         */
         this.clampMargin = (typeof clampMargin === 'undefined') ? 0.5 : clampMargin;
-
-        /**
-         * If texture size is the same as baseTexture
-         * @member {boolean}
-         * @default false
-         * @readonly
-         */
         this.isSimple = false;
     }
 
-    /**
-     * texture property
-     * @member {PIXI.Texture}
-     */
+    /** Texture property. */
     get texture(): Texture
     {
         return this._texture;
@@ -125,9 +115,10 @@ export class TextureMatrix
 
     /**
      * Multiplies uvs array to transform
-     * @param {Float32Array} uvs - mesh uvs
-     * @param {Float32Array} [out=uvs] - output
-     * @returns {Float32Array} output
+     *
+     * @param uvs - mesh uvs
+     * @param [out=uvs] - output
+     * @returns - output
      */
     multiplyUvs(uvs: Float32Array, out?: Float32Array): Float32Array
     {
@@ -151,9 +142,10 @@ export class TextureMatrix
     }
 
     /**
-     * updates matrices if texture was changed
-     * @param {boolean} [forceUpdate=false] - if true, matrices will be updated any case
-     * @returns {boolean} whether or not it was updated
+     * Updates matrices if texture was changed.
+     *
+     * @param [forceUpdate=false] - if true, matrices will be updated any case
+     * @returns - Whether or not it was updated
      */
     update(forceUpdate?: boolean): boolean
     {
