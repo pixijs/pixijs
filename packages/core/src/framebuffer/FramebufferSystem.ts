@@ -573,8 +573,9 @@ export class FramebufferSystem implements ISystem
 
         this.bind(framebuffer);
         gl.bindFramebuffer(gl.READ_FRAMEBUFFER, fbo.framebuffer);
-        gl.blitFramebuffer(sourcePixels.x, sourcePixels.y, sourcePixels.width, sourcePixels.height,
-            destPixels.x, destPixels.y, destPixels.width, destPixels.height,
+        gl.blitFramebuffer(
+            sourcePixels.left, sourcePixels.top, sourcePixels.right, sourcePixels.bottom,
+            destPixels.left, destPixels.top, destPixels.right, destPixels.bottom,
             gl.COLOR_BUFFER_BIT, sameSize ? gl.NEAREST : gl.LINEAR
         );
     }
