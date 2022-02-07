@@ -7,7 +7,7 @@
 
 // Expected to be used with Browserfiy
 // Browserify automatically detects the use of `global` and passes the
-// correct reference of `global`, `self`, and finally `window`
+// correct reference of `global`, `globalThis`, and finally `window`
 
 const ONE_FRAME_TIME = 16;
 
@@ -21,34 +21,34 @@ if (!(Date.now && Date.prototype.getTime))
 }
 
 // performance.now
-if (!(self.performance && self.performance.now))
+if (!(globalThis.performance && globalThis.performance.now))
 {
     const startTime = Date.now();
 
-    if (!self.performance)
+    if (!globalThis.performance)
     {
-        (self as any).performance = {};
+        (globalThis as any).performance = {};
     }
 
-    self.performance.now = (): number => Date.now() - startTime;
+    globalThis.performance.now = (): number => Date.now() - startTime;
 }
 
 // requestAnimationFrame
 let lastTime = Date.now();
 const vendors = ['ms', 'moz', 'webkit', 'o'];
 
-for (let x = 0; x < vendors.length && !self.requestAnimationFrame; ++x)
+for (let x = 0; x < vendors.length && !globalThis.requestAnimationFrame; ++x)
 {
     const p = vendors[x];
 
-    self.requestAnimationFrame = (self as any)[`${p}RequestAnimationFrame`];
-    self.cancelAnimationFrame = (self as any)[`${p}CancelAnimationFrame`]
-        || (self as any)[`${p}CancelRequestAnimationFrame`];
+    globalThis.requestAnimationFrame = (globalThis as any)[`${p}RequestAnimationFrame`];
+    globalThis.cancelAnimationFrame = (globalThis as any)[`${p}CancelAnimationFrame`]
+        || (globalThis as any)[`${p}CancelRequestAnimationFrame`];
 }
 
-if (!self.requestAnimationFrame)
+if (!globalThis.requestAnimationFrame)
 {
-    self.requestAnimationFrame = (callback: (...parms: any[]) => void): number =>
+    globalThis.requestAnimationFrame = (callback: (...parms: any[]) => void): number =>
     {
         if (typeof callback !== 'function')
         {
@@ -65,7 +65,7 @@ if (!self.requestAnimationFrame)
 
         lastTime = currentTime;
 
-        return self.setTimeout(() =>
+        return globalThis.self.setTimeout(() =>
         {
             lastTime = Date.now();
             callback(performance.now());
@@ -73,7 +73,7 @@ if (!self.requestAnimationFrame)
     };
 }
 
-if (!self.cancelAnimationFrame)
+if (!globalThis.cancelAnimationFrame)
 {
-    self.cancelAnimationFrame = (id: number): void => clearTimeout(id);
+    globalThis.cancelAnimationFrame = (id: number): void => clearTimeout(id);
 }

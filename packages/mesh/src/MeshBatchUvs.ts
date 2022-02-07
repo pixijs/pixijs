@@ -3,13 +3,17 @@ import type { TextureMatrix, Buffer } from '@pixi/core';
 /**
  * Class controls cache for UV mapping from Texture normal space to BaseTexture normal space.
  *
- * @class
  * @memberof PIXI
  */
 export class MeshBatchUvs
 {
+    /** UV Buffer data. */
     public readonly data: Float32Array;
+
+    /** Buffer with normalized UV's. */
     public uvBuffer: Buffer;
+
+    /** Material UV matrix. */
     public uvMatrix: TextureMatrix;
 
     private _bufferUpdateId: number;
@@ -19,41 +23,24 @@ export class MeshBatchUvs
     _updateID: number;
 
     /**
-     * @param {PIXI.Buffer} uvBuffer - Buffer with normalized uv's
-     * @param {PIXI.TextureMatrix} uvMatrix - Material UV matrix
+     * @param uvBuffer - Buffer with normalized uv's
+     * @param uvMatrix - Material UV matrix
      */
     constructor(uvBuffer: Buffer, uvMatrix: TextureMatrix)
     {
-        /**
-         * Buffer with normalized UV's
-         * @member {PIXI.Buffer}
-         */
         this.uvBuffer = uvBuffer;
-
-        /**
-         * Material UV matrix
-         * @member {PIXI.TextureMatrix}
-         */
         this.uvMatrix = uvMatrix;
-
-        /**
-         * UV Buffer data
-         * @member {Float32Array}
-         * @readonly
-         */
         this.data = null;
 
         this._bufferUpdateId = -1;
-
         this._textureUpdateId = -1;
-
         this._updateID = 0;
     }
 
     /**
-     * updates
+     * Updates
      *
-     * @param {boolean} [forceUpdate] - force the update
+     * @param forceUpdate - force the update
      */
     public update(forceUpdate?: boolean): void
     {
