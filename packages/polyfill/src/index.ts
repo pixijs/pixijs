@@ -1,35 +1,36 @@
+import './globalThis';
 import './Promise';
 import './Object.assign';
 import './requestAnimationFrame';
 import './Math.sign';
 import './Number.isInteger';
 
-if (!self.ArrayBuffer)
+if (!globalThis.ArrayBuffer)
 {
-    (self as any).ArrayBuffer = Array;
+    (globalThis as any).ArrayBuffer = Array;
 }
 
-if (!self.Float32Array)
+if (!globalThis.Float32Array)
 {
-    (self as any).Float32Array = Array;
+    (globalThis as any).Float32Array = Array;
 }
 
-if (!self.Uint32Array)
+if (!globalThis.Uint32Array)
 {
-    (self as any).Uint32Array = Array;
+    (globalThis as any).Uint32Array = Array;
 }
 
-if (!self.Uint16Array)
+if (!globalThis.Uint16Array)
 {
-    (self as any).Uint16Array = Array;
+    (globalThis as any).Uint16Array = Array;
 }
 
-if (!self.Uint8Array)
+if (!globalThis.Uint8Array)
 {
-    (self as any).Uint8Array = Array;
+    (globalThis as any).Uint8Array = Array;
 }
 
-if (!self.Int32Array)
+if (!globalThis.Int32Array)
 {
-    (self as any).Int32Array = Array;
+    (globalThis as any).Int32Array = Array;
 }

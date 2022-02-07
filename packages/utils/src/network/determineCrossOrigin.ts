@@ -13,7 +13,7 @@ let tempAnchor: HTMLAnchorElement|undefined;
  * @param {object} [loc=window.location] - The location object to test against.
  * @return {string} The crossOrigin value to use (or empty string for none).
  */
-export function determineCrossOrigin(url: string, loc: Location = self.location): string
+export function determineCrossOrigin(url: string, loc: Location = globalThis.location): string
 {
     // data: and javascript: urls are considered same-origin
     if (url.indexOf('data:') === 0)
@@ -22,7 +22,7 @@ export function determineCrossOrigin(url: string, loc: Location = self.location)
     }
 
     // default is window.location
-    loc = loc || self.location;
+    loc = loc || globalThis.location;
 
     if (!tempAnchor)
     {

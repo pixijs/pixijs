@@ -14,78 +14,45 @@ import type { Rectangle, ISize } from '@pixi/math';
  * | Bottom-Right | `(x2,y2)`   |
  * | Bottom-Left  | `(x3,y3)`   |
  *
- * @class
  * @protected
  * @memberof PIXI
  */
 export class TextureUvs
 {
+    /** X-component of top-left corner `(x0,y0)`. */
     public x0: number;
+
+    /** Y-component of top-left corner `(x0,y0)`. */
     public y0: number;
+
+    /** X-component of top-right corner `(x1,y1)`. */
     public x1: number;
+
+    /** Y-component of top-right corner `(x1,y1)`. */
     public y1: number;
+
+    /** X-component of bottom-right corner `(x2,y2)`. */
     public x2: number;
+
+    /** Y-component of bottom-right corner `(x2,y2)`. */
     public y2: number;
+
+    /** X-component of bottom-left corner `(x3,y3)`. */
     public x3: number;
+
+    /** Y-component of bottom-right corner `(x3,y3)`. */
     public y3: number;
     public uvsFloat32: Float32Array;
 
     constructor()
     {
-        /**
-         * X-component of top-left corner `(x0,y0)`.
-         *
-         * @member {number}
-         */
         this.x0 = 0;
-
-        /**
-         * Y-component of top-left corner `(x0,y0)`.
-         *
-         * @member {number}
-         */
         this.y0 = 0;
-
-        /**
-         * X-component of top-right corner `(x1,y1)`.
-         *
-         * @member {number}
-         */
         this.x1 = 1;
-
-        /**
-         * Y-component of top-right corner `(x1,y1)`.
-         *
-         * @member {number}
-         */
         this.y1 = 0;
-
-        /**
-         * X-component of bottom-right corner `(x2,y2)`.
-         *
-         * @member {number}
-         */
         this.x2 = 1;
-
-        /**
-         * Y-component of bottom-right corner `(x2,y2)`.
-         *
-         * @member {number}
-         */
         this.y2 = 1;
-
-        /**
-         * X-component of bottom-left corner `(x3,y3)`.
-         *
-         * @member {number}
-         */
         this.x3 = 0;
-
-        /**
-         * Y-component of bottom-right corner `(x3,y3)`.
-         *
-         * @member {number}
-         */
         this.y3 = 1;
 
         this.uvsFloat32 = new Float32Array(8);
@@ -95,9 +62,9 @@ export class TextureUvs
      * Sets the texture Uvs based on the given frame information.
      *
      * @protected
-     * @param {PIXI.Rectangle} frame - The frame of the texture
-     * @param {PIXI.Rectangle} baseFrame - The base frame of the texture
-     * @param {number} rotate - Rotation of frame, see {@link PIXI.groupD8}
+     * @param frame - The frame of the texture
+     * @param baseFrame - The base frame of the texture
+     * @param rotate - Rotation of frame, see {@link PIXI.groupD8}
      */
     set(frame: Rectangle, baseFrame: ISize, rotate: number): void
     {

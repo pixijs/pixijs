@@ -16,13 +16,20 @@ import type { IArrayBuffer } from '@pixi/core';
  * geometry.addIndex([0,1,2,1,3,2]);
  *
  * ```
- * @class
+ *
  * @memberof PIXI
- * @extends PIXI.Geometry
  */
 export class MeshGeometry extends Geometry
 {
     // Internal-only properties
+    /**
+     * Dirty flag to limit update calls on Mesh. For example,
+     * limiting updates on a single Mesh instance with a shared Geometry
+     * within the render loop.
+     *
+     * @private
+     * @default -1
+     */
     _updateId: number;
 
     /**
@@ -42,20 +49,12 @@ export class MeshGeometry extends Geometry
             .addAttribute('aTextureCoord', uvsBuffer, 2, false, TYPES.FLOAT)
             .addIndex(indexBuffer);
 
-        /**
-         * Dirty flag to limit update calls on Mesh. For example,
-         * limiting updates on a single Mesh instance with a shared Geometry
-         * within the render loop.
-         * @private
-         * @member {number}
-         * @default -1
-         */
         this._updateId = -1;
     }
 
     /**
      * If the vertex position is updated.
-     * @member {number}
+     *
      * @readonly
      * @private
      */

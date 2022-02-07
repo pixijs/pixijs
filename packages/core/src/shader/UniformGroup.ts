@@ -46,63 +46,61 @@ let UID = 0;
  *
  *  ```
  *
- * @class
  * @memberof PIXI
  */
 export class UniformGroup<LAYOUT = Dict<any>>
 {
+    /**
+     * Uniform values
+     *
+     * @member {object}
+     */
     public readonly uniforms: LAYOUT;
+
+    /**
+     * Its a group and not a single uniforms.
+     *
+     * @default true
+     */
     public readonly group: boolean;
+
+    /**
+     * unique id
+     *
+     * @protected
+     */
     public id: number;
     syncUniforms: Dict<UniformsSyncCallback>;
+
+    /**
+     * Dirty version
+     *
+     * @protected
+     */
     dirtyId: number;
+
+    /** Flag for if uniforms wont be changed after creation. */
     static: boolean;
+
+    /** Flags whether this group is treated like a uniform buffer object. */
     ubo: boolean;
     buffer?: Buffer;
     autoManage: boolean;
 
     /**
-     * @param {object | Buffer} [uniforms] - Custom uniforms to use to augment the built-in ones. Or a pixi buffer
-     * @param {boolean} [isStatic] - Uniforms wont be changed after creation
-     * @param {boolean} [isUbo] - if true, will treat this uniform group as a uniform buffer object
+     * @param {object | Buffer} [uniforms] - Custom uniforms to use to augment the built-in ones. Or a pixi buffer.
+     * @param isStatic - Uniforms wont be changed after creation.
+     * @param isUbo - If true, will treat this uniform group as a uniform buffer object.
      */
     constructor(uniforms: LAYOUT | Buffer, isStatic?: boolean, isUbo?: boolean)
     {
-        /**
-         * Its a group and not a single uniforms
-         * @member {boolean}
-         * @readonly
-         * @default true
-         */
         this.group = true;
 
         // lets generate this when the shader ?
         this.syncUniforms = {};
-
-        /**
-         * dirty version
-         * @protected
-         * @member {number}
-         */
         this.dirtyId = 0;
-
-        /**
-         * unique id
-         * @protected
-         * @member {number}
-         */
         this.id = UID++;
-
-        /**
-         * Uniforms wont be changed after creation
-         * @member {boolean}
-         */
         this.static = !!isStatic;
-
-        /**
-         * Flags whether this group is treated like a uniform buffer object.
-         * @member {boolean}
-         */
         this.ubo = !!isUbo;
 
         if (uniforms instanceof Buffer)
@@ -114,11 +112,6 @@ export class UniformGroup<LAYOUT = Dict<any>>
         }
         else
         {
-            /**
-             * uniform values
-             * @member {object}
-             * @readonly
-             */
             this.uniforms = uniforms;
 
             if (this.ubo)
