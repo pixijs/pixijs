@@ -15,90 +15,103 @@
         <script src="https://pixijs.download/dev/pixi-legacy.min.js"></script>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" />
         <script src="../dist/pixi-gif.js"></script>
-        <style>
-            .frame {
-                max-width: 500px;
-            }
-        </style>
     </head>
     <body>
 
         <div class="frame container pt-5">
             <div class="row text-center mb-5">
                 <h1>@pixi/gif Demo</h1>
+                <p>
+                    <button data-src="example.gif" class="btn btn-primary">Tree</button>
+                    <button data-src="homer.gif" class="btn btn-primary">Homer</button>
+                    <button data-src="cat.gif" class="btn btn-primary">Nyan Cat</button>
+                </p>
             </div>
             <div class="row justify-content-center">
-                <div class="col text-center">
+                <div class="col-md text-center">
                     <h2 class="mb-3">PixiJS</h2>
-                    <canvas id="root"></canvas>
+                    <canvas id="root" class="d-block mx-auto"></canvas>
+                    <div class="d-flex align-items-center mt-2">
+                        <div class="btn-group">
+                            <button id="play" class="btn btn-sm btn-primary">&#9658;</button>
+                            <button id="stop" class="btn btn-sm btn-primary">&#9632;</button>
+                        </div>
+                        <input id="slider" class="form-range mx-2" type="range" min="0" max="0" value="0" step="1" />
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="loop" checked />
+                            <label class="form-check-label" for="loop">Loop</label>
+                        </div>
+                    </div>
                 </div>
-                <div class="col text-center">
+                <div class="col-md text-center">
                     <h2 class="mb-3">Original GIF</h2>
-                    <img src="example.gif">
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-6">
-                    <input id="slider" class="form-range" type="range" min="0" max="0" value="0" step="1" /><br>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-6">
-                    <div class="btn-group d-flex w-100 mb-2">
-                        <button id="play" class="btn btn-primary">Play</button>
-                        <button id="stop" class="btn btn-primary">Stop</button>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="loop" />
-                        <label class="form-check-label" for="loop">Loop</label>
-                    </div>
+                    <img id="preview" src="example.gif">
                 </div>
             </div>
         </div>
         <script>
             
             const $ = document.querySelector.bind(document);
-            
+            const $$ = document.querySelectorAll.bind(document);
+            const $view = $('#root');
+            const $preview = $('#preview');
+            const $buttons = Array.from($$('button[data-src]'));
+            const $play = $('#play');
+            const $stop = $('#stop');
+            const $loop = $('#loop');
+            const $slider = $('#slider');
+
             // Install the plugin
             PIXI.Loader.registerPlugin(PIXI.gif.AnimatedGIFLoader);
 
             // Boilerplate create application
             const app = new PIXI.Application({
-                width: 150,
-                height: 189,
+                width: 476,
+                height: 280,
                 backgroundColor: 0xffffff,
-                view: $('#root'),
+                view: $view,
             });
 
-            // Load the GIF image
-            app.loader.add('image', 'example.gif');
+            let currentAnimation = null;
+            const sources = $buttons.map(i => i.dataset.src);
+            sources.forEach(src => app.loader.add(src));
+            
             app.loader.load((loader) => {
-                const image = loader.resources.image.animation;
-                app.stage.addChild(image);
-                // Handle the slider
-                const slider = $('#slider');
-                image.onFrameChange = (value) => slider.value = value;
-                image.onLoop = () => console.log('Looped!');
-                image.onComplete = () => console.log('Completed!');
-
-                slider.max = image.totalFrames - 1;
-                slider.addEventListener('input', () => image.currentFrame = slider.value);
-
-                // Setup loop check
-                const loop = $('#loop');
-                loop.checked = image.loop;
-                loop.addEventListener('change', () => image.loop = loop.checked);
-
-                $('#play').addEventListener('click', () => {
-                    // slider.disabled = true;
-                    image.play();
-                });
-                $('#stop').addEventListener('click', () => {
-                    // slider.disabled = false;
-                    image.stop();
-                });
+                $buttons.forEach($button =>
+                    $button.addEventListener('click', () => playAnimation($button.dataset.src), false));
+                $play.addEventListener('click', () => currentAnimation.play(), false);
+                $stop.addEventListener('click', () => currentAnimation.stop(), false);
+                $loop.addEventListener('change', () => currentAnimation.loop = $loop.checked);
+                $slider.addEventListener('input', () => currentAnimation.currentFrame = slider.value);
+                playAnimation(sources[0]);
             });
+
+            function playAnimation(imageName) {
+                clearAnimation();
+                animation = app.loader.resources[imageName].animation;
+                $view.width = animation.width;
+                $view.height = animation.height;
+                app.renderer.resize($view.width, $view.height);
+                $preview.src = imageName;
+                $slider.max = animation.totalFrames - 1;
+                currentAnimation = animation;
+                app.stage.addChild(currentAnimation);
+                currentAnimation.onFrameChange = (value) => slider.value = value;
+                currentAnimation.onLoop = () => console.log('Looped!');
+                currentAnimation.onComplete = () => console.log('Completed!');
+                $loop.checked = currentAnimation.loop;
+                currentAnimation.play();
+            }
+
+            function clearAnimation() {
+                if (currentAnimation) {
+                    currentAnimation.stop();
+                    currentAnimation.currentFrame = 0;
+                    app.stage.removeChild(currentAnimation);
+                    currentAnimation = null;
+                }
+            }
+
         </script>
-        
     </body>
 </html>

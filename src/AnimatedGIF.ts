@@ -36,6 +36,8 @@ interface AnimatedGIFOptions {
     onLoop: () => void;
     /** The frame callback, optional */
     onFrameChange: (currentFrame: number) => void;
+    /** Fallback FPS if GIF contains no time information */
+    fps?: number;
 }
 
 /**
@@ -59,6 +61,7 @@ class AnimatedGIF extends Sprite
      */
     public static defaultOptions: AnimatedGIFOptions = {
         scaleMode: SCALE_MODES.LINEAR,
+        fps: Ticker.shared.FPS,
         loop: true,
         animationSpeed: 1,
         autoPlay: true,
@@ -178,10 +181,15 @@ class AnimatedGIF extends Sprite
 
         let time = 0;
 
+        // Some GIFs have a non-zero frame delay, so we need to calculate the fallback
+        const { fps } = Object.assign({}, AnimatedGIF.defaultOptions, options);
+        const defaultDelay = 1000 / fps;
+
         // Precompute each frame and store as ImageData
         for (let i = 0; i < gifFrames.length; i++)
         {
-            const { disposalType, delay, patch, dims: { width, height, left, top } } = gifFrames[i];
+            // Some GIF's omit the disposalType, so let's assume clear if missing
+            const { disposalType = 2, delay = defaultDelay, patch, dims: { width, height, left, top } } = gifFrames[i];
 
             patchCanvas.width = width;
             patchCanvas.height = height;
