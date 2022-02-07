@@ -210,7 +210,7 @@ export class InteractionManager extends EventEmitter
          * @protected
          * @member {boolean}
          */
-        this.mouseOverRenderer = !('PointerEvent' in self);
+        this.mouseOverRenderer = !('PointerEvent' in globalThis);
 
         /**
          * Does the device support touch events
@@ -219,7 +219,7 @@ export class InteractionManager extends EventEmitter
          * @readonly
          * @member {boolean}
          */
-        this.supportsTouchEvents = 'ontouchstart' in self;
+        this.supportsTouchEvents = 'ontouchstart' in globalThis;
 
         /**
          * Does the device support pointer events
@@ -228,7 +228,7 @@ export class InteractionManager extends EventEmitter
          * @readonly
          * @member {boolean}
          */
-        this.supportsPointerEvents = !!self.PointerEvent;
+        this.supportsPointerEvents = !!globalThis.PointerEvent;
 
         // this will make it so that you don't have to call bind all the time
 
@@ -923,7 +923,7 @@ export class InteractionManager extends EventEmitter
 
         const style = this.interactionDOMElement.style as CrossCSSStyleDeclaration;
 
-        if (self.navigator.msPointerEnabled)
+        if (globalThis.navigator.msPointerEnabled)
         {
             style.msContentZooming = 'none';
             style.msTouchAction = 'none';
@@ -939,23 +939,23 @@ export class InteractionManager extends EventEmitter
          */
         if (this.supportsPointerEvents)
         {
-            self.document.addEventListener('pointermove', this.onPointerMove, this._eventListenerOptions);
+            globalThis.document.addEventListener('pointermove', this.onPointerMove, this._eventListenerOptions);
             this.interactionDOMElement.addEventListener('pointerdown', this.onPointerDown, this._eventListenerOptions);
             // pointerout is fired in addition to pointerup (for touch events) and pointercancel
             // we already handle those, so for the purposes of what we do in onPointerOut, we only
             // care about the pointerleave event
             this.interactionDOMElement.addEventListener('pointerleave', this.onPointerOut, this._eventListenerOptions);
             this.interactionDOMElement.addEventListener('pointerover', this.onPointerOver, this._eventListenerOptions);
-            self.addEventListener('pointercancel', this.onPointerCancel, this._eventListenerOptions);
-            self.addEventListener('pointerup', this.onPointerUp, this._eventListenerOptions);
+            globalThis.addEventListener('pointercancel', this.onPointerCancel, this._eventListenerOptions);
+            globalThis.addEventListener('pointerup', this.onPointerUp, this._eventListenerOptions);
         }
         else
         {
-            self.document.addEventListener('mousemove', this.onPointerMove, this._eventListenerOptions);
+            globalThis.document.addEventListener('mousemove', this.onPointerMove, this._eventListenerOptions);
             this.interactionDOMElement.addEventListener('mousedown', this.onPointerDown, this._eventListenerOptions);
             this.interactionDOMElement.addEventListener('mouseout', this.onPointerOut, this._eventListenerOptions);
             this.interactionDOMElement.addEventListener('mouseover', this.onPointerOver, this._eventListenerOptions);
-            self.addEventListener('mouseup', this.onPointerUp, this._eventListenerOptions);
+            globalThis.addEventListener('mouseup', this.onPointerUp, this._eventListenerOptions);
         }
 
         // always look directly for touch events so that we can provide original data
@@ -986,7 +986,7 @@ export class InteractionManager extends EventEmitter
 
         const style = this.interactionDOMElement.style as CrossCSSStyleDeclaration;
 
-        if (self.navigator.msPointerEnabled)
+        if (globalThis.navigator.msPointerEnabled)
         {
             style.msContentZooming = '';
             style.msTouchAction = '';
@@ -998,20 +998,20 @@ export class InteractionManager extends EventEmitter
 
         if (this.supportsPointerEvents)
         {
-            self.document.removeEventListener('pointermove', this.onPointerMove, this._eventListenerOptions);
+            globalThis.document.removeEventListener('pointermove', this.onPointerMove, this._eventListenerOptions);
             this.interactionDOMElement.removeEventListener('pointerdown', this.onPointerDown, this._eventListenerOptions);
             this.interactionDOMElement.removeEventListener('pointerleave', this.onPointerOut, this._eventListenerOptions);
             this.interactionDOMElement.removeEventListener('pointerover', this.onPointerOver, this._eventListenerOptions);
-            self.removeEventListener('pointercancel', this.onPointerCancel, this._eventListenerOptions);
-            self.removeEventListener('pointerup', this.onPointerUp, this._eventListenerOptions);
+            globalThis.removeEventListener('pointercancel', this.onPointerCancel, this._eventListenerOptions);
+            globalThis.removeEventListener('pointerup', this.onPointerUp, this._eventListenerOptions);
         }
         else
         {
-            self.document.removeEventListener('mousemove', this.onPointerMove, this._eventListenerOptions);
+            globalThis.document.removeEventListener('mousemove', this.onPointerMove, this._eventListenerOptions);
             this.interactionDOMElement.removeEventListener('mousedown', this.onPointerDown, this._eventListenerOptions);
             this.interactionDOMElement.removeEventListener('mouseout', this.onPointerOut, this._eventListenerOptions);
             this.interactionDOMElement.removeEventListener('mouseover', this.onPointerOver, this._eventListenerOptions);
-            self.removeEventListener('mouseup', this.onPointerUp, this._eventListenerOptions);
+            globalThis.removeEventListener('mouseup', this.onPointerUp, this._eventListenerOptions);
         }
 
         if (this.supportsTouchEvents)
@@ -1112,7 +1112,7 @@ export class InteractionManager extends EventEmitter
 
         // offscreen canvas does not support setting styles, but cursor modes can be functions,
         // in order to handle pixi rendered cursors, so we can't bail
-        if (self.OffscreenCanvas && this.interactionDOMElement instanceof OffscreenCanvas)
+        if (globalThis.OffscreenCanvas && this.interactionDOMElement instanceof OffscreenCanvas)
         {
             applyStyles = false;
         }
@@ -1926,8 +1926,8 @@ export class InteractionManager extends EventEmitter
             }
         }
         // apparently PointerEvent subclasses MouseEvent, so yay
-        else if (!self.MouseEvent
-            || (event instanceof MouseEvent && (!this.supportsPointerEvents || !(event instanceof self.PointerEvent))))
+        else if (!globalThis.MouseEvent
+            || (event instanceof MouseEvent && (!this.supportsPointerEvents || !(event instanceof globalThis.PointerEvent))))
         {
             const tempEvent = event as PixiPointerEvent;
 

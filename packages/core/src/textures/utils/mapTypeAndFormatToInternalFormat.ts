@@ -14,7 +14,7 @@ export function mapTypeAndFormatToInternalFormat(gl: WebGLRenderingContextBase):
 {
     let table;
 
-    if ('WebGL2RenderingContext' in self && gl instanceof self.WebGL2RenderingContext)
+    if ('WebGL2RenderingContext' in globalThis && gl instanceof globalThis.WebGL2RenderingContext)
     {
         table = {
             [TYPES.UNSIGNED_BYTE]: {

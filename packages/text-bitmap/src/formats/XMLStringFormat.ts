@@ -18,7 +18,7 @@ export class XMLStringFormat
     {
         if (typeof data === 'string' && data.indexOf('<font>') > -1)
         {
-            const xml = new self.DOMParser().parseFromString(data, 'text/xml');
+            const xml = new globalThis.DOMParser().parseFromString(data, 'text/xml');
 
             return XMLFormat.test(xml);
         }
@@ -34,7 +34,7 @@ export class XMLStringFormat
      */
     static parse(xmlTxt: string): BitmapFontData
     {
-        const xml = new self.DOMParser().parseFromString(xmlTxt, 'text/xml');
+        const xml = new globalThis.DOMParser().parseFromString(xmlTxt, 'text/xml');
 
         return XMLFormat.parse(xml);
     }
