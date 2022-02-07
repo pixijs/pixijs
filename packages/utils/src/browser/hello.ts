@@ -44,11 +44,11 @@ export function sayHello(type: string): void
             'color: #ff2424; background: #fff; padding:5px 0;',
         ];
 
-        self.console.log(...args);
+        globalThis.console.log(...args);
     }
-    else if (self.console)
+    else if (globalThis.console)
     {
-        self.console.log(`PixiJS ${VERSION} - ${type} - http://www.pixijs.com/`);
+        globalThis.console.log(`PixiJS ${VERSION} - ${type} - http://www.pixijs.com/`);
     }
 
     saidHello = true;
