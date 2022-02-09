@@ -193,8 +193,8 @@ export class TreeSearch
      */
     public findHit(interactionEvent: InteractionEvent, displayObject: DisplayObject,
         func?: InteractionCallback, hitTest?: boolean
-    ): void
+    ): boolean
     {
-        this.recursiveFindHit(interactionEvent, displayObject, func, hitTest, false);
+        return this.recursiveFindHit(interactionEvent, displayObject, func, hitTest, false);
     }
 }
