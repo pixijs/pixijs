@@ -649,7 +649,7 @@ export class Text extends Sprite
             this.canvas.height = this.canvas.width = 0;
         }
 
-        // make sure to reset the the context and canvas.. dont want this hanging around in memory!
+        // make sure to reset the context and canvas.. dont want this hanging around in memory!
         this.context = null;
         this.canvas = null;
 

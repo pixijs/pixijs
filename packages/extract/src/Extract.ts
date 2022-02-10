@@ -61,7 +61,7 @@ export class Extract implements IRendererPlugin
     }
 
     /**
-     * Will return a a base64 encoded string of this target. It works by calling
+     * Will return a base64 encoded string of this target. It works by calling
      *  `Extract.getCanvas` and then running toDataURL on that.
      *
      * @param target - A displayObject or renderTexture
