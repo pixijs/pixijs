@@ -124,7 +124,7 @@ export class BufferSystem implements ISystem
     }
 
     /**
-     * Will ensure sure the the data in the buffer is uploaded to the GPU.
+     * Will ensure the data in the buffer is uploaded to the GPU.
      *
      * @param {PIXI.Buffer} buffer - the buffer to update
      */
