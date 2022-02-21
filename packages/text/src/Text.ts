@@ -326,9 +326,10 @@ export class Text extends Sprite
         // Checking that we can use moddern canvas2D api
         // https://developer.chrome.com/origintrials/#/view_trial/3585991203293757441
         // note: this is unstable API, Chrome less 94 use a `textLetterSpacing`, newest use a letterSpacing
-        // eslint-disable-next-line max-len
-        const supportLetterSpacing = 'letterSpacing' in CanvasRenderingContext2D.prototype
-            || 'textLetterSpacing' in CanvasRenderingContext2D.prototype;
+        const supportLetterSpacing = window?.CanvasRenderingContext2D !== undefined
+            ? ('letterSpacing' in CanvasRenderingContext2D.prototype
+            || 'textLetterSpacing' in CanvasRenderingContext2D.prototype)
+            : false;
 
         if (letterSpacing === 0 || supportLetterSpacing)
         {
