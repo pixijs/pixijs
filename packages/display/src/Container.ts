@@ -1,7 +1,7 @@
 import { settings } from '@pixi/settings';
 import { removeItems } from '@pixi/utils';
 import { DisplayObject } from './DisplayObject';
-import { Rectangle } from '@pixi/math';
+import { Matrix, Rectangle } from '@pixi/math';
 import { MASK_TYPES } from '@pixi/constants';
 
 import type { MaskData, Renderer } from '@pixi/core';
@@ -558,23 +558,46 @@ export class Container extends DisplayObject
         // All filters are on the stack at this point, and the filter source frame is bound:
         // therefore, even if the bounds to non intersect the filter frame, the filter
         // is still applied and any filter padding that is in the frame is rendered correctly.
+
+        let bounds: Rectangle;
+        let transform: Matrix;
+
+        // If cullArea is set, we use this rectangle instead of the bounds of the object. The cullArea
+        // rectangle must completely contain the container and its children including filter padding.
+        if (this.cullArea)
+        {
+            bounds = this.cullArea;
+            transform = this.worldTransform;
+        }
         // If the container doesn't override _render, we can skip the bounds calculation and intersection test.
-        if (this._render !== Container.prototype._render && this.getBounds(true).intersects(sourceFrame))
+        else if (this._render !== Container.prototype._render)
+        {
+            bounds = this.getBounds(true);
+        }
+
+        // Render the container if the source frame intersects the bounds.
+        if (bounds && sourceFrame.intersects(bounds, transform))
         {
             this._render(renderer);
         }
+        // If the bounds are defined by cullArea and do not intersect with the source frame, stop rendering.
+        else if (this.cullArea)
+        {
+            return;
+        }
 
-        // We cannot skip the children if the bounds of the container do not intersect the source frame,
-        // because the children might have filters with nonzero padding, which may intersect with
-        // the source frame while the bounds do not: filter padding is not included in the bounds.
+        // Unless cullArea is set, we cannot skip the children if the bounds of the container do not intersect
+        // the source frame, because the children might have filters with nonzero padding, which may intersect
+        // with the source frame while the bounds do not: filter padding is not included in the bounds.
 
-        // Render the children with culling temporarily enabled so that they are not rendered if they are out of frame.
+        // If cullArea is not set, render the children with culling temporarily enabled so that they are not rendered
+        // if they are out of frame; otherwise, render the children normally.
         for (let i = 0, j = this.children.length; i < j; ++i)
         {
             const child = this.children[i];
             const childCullable = child.cullable;
 
-            child.cullable = true;
+            child.cullable = childCullable || !this.cullArea;
             child.render(renderer);
             child.cullable = childCullable;
         }

@@ -246,6 +246,12 @@ export abstract class DisplayObject extends EventEmitter
     public cullable: boolean;
 
     /**
+     * If set, this shape is used for culling instead of the bounds of this object.
+     * The culling area is defined in local space.
+     */
+    public cullArea: Rectangle;
+
+    /**
      * The area the filter is applied to. This is used as more of an optimization
      * rather than figuring out the dimensions of the displayObject each frame you can set this rectangle.
      *
@@ -359,6 +365,7 @@ export abstract class DisplayObject extends EventEmitter
         this.visible = true;
         this.renderable = true;
         this.cullable = false;
+        this.cullArea = null;
 
         this.parent = null;
         this.worldAlpha = 1;
@@ -712,6 +719,7 @@ export abstract class DisplayObject extends EventEmitter
         this._bounds = null;
         this.mask = null;
 
+        this.cullArea = null;
         this.filters = null;
         this.filterArea = null;
         this.hitArea = null;
