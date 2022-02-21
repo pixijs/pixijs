@@ -148,7 +148,7 @@ export abstract class AbstractRenderer extends EventEmitter
         this.resolution = options.resolution || settings.RESOLUTION;
 
         /**
-         * Pass-thru setting for the the canvas' context `alpha` property. This is typically
+         * Pass-thru setting for the canvas' context `alpha` property. This is typically
          * not something you need to fiddle with. If you want transparency, use `backgroundAlpha`.
          *
          * @member {boolean}
