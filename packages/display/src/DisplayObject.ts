@@ -242,11 +242,14 @@ export abstract class DisplayObject extends EventEmitter
 
     /**
      * Should this object be rendered if the bounds of this object are out of frame?
+     *
+     * Culling has no effect on whether updateTransform is called.
      */
     public cullable: boolean;
 
     /**
      * If set, this shape is used for culling instead of the bounds of this object.
+     * It can improve the culling performance of objects with many children.
      * The culling area is defined in local space.
      */
     public cullArea: Rectangle;

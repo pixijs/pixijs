@@ -616,9 +616,11 @@ export class Container extends DisplayObject
      * setting alpha to zero is not recommended for purely skipping rendering.
      *
      * When your scene becomes large (especially when it is larger than can be viewed in a single screen), it is
-     * advised to employ **culling** to automatically skip rendering objects outside of the current screen. The
+     * advised to employ **culling** to automatically skip rendering objects outside of the current screen.
+     * See [cullable]{@link PIXI.DisplayObject#cullable} and [cullArea]{@link PIXI.DisplayObject#cullArea}.
+     * Other culling methods might be better suited for a large number static objects; see
      * [@pixi-essentials/cull]{@link https://www.npmjs.com/package/@pixi-essentials/cull} and
-     * [pixi-cull]{@link https://www.npmjs.com/package/pixi-cull} packages do this out of the box.
+     * [pixi-cull]{@link https://www.npmjs.com/package/pixi-cull}.
      *
      * The [renderAdvanced]{@link PIXI.Container#renderAdvanced} method is internally used when when masking or
      * filtering is applied on a container. This does, however, break batching and can affect performance when
