@@ -1,7 +1,7 @@
 import { settings } from '@pixi/settings';
 import { removeItems } from '@pixi/utils';
 import { DisplayObject } from './DisplayObject';
-import { Rectangle } from '@pixi/math';
+import { Matrix, Rectangle } from '@pixi/math';
 import { MASK_TYPES } from '@pixi/constants';
 
 import type { MaskData, Renderer } from '@pixi/core';
@@ -539,20 +539,88 @@ export class Container extends DisplayObject
     }
 
     /**
+     * Renders this object and its children with culling.
+     *
+     * @protected
+     * @param {PIXI.Renderer} renderer - The renderer
+     */
+    protected _renderWithCulling(renderer: Renderer): void
+    {
+        const sourceFrame = renderer.renderTexture.sourceFrame;
+
+        // If the source frame is empty, stop rendering.
+        if (!(sourceFrame.width > 0 && sourceFrame.height > 0))
+        {
+            return;
+        }
+
+        // Render the content of the container only if its bounds intersect with the source frame.
+        // All filters are on the stack at this point, and the filter source frame is bound:
+        // therefore, even if the bounds to non intersect the filter frame, the filter
+        // is still applied and any filter padding that is in the frame is rendered correctly.
+
+        let bounds: Rectangle;
+        let transform: Matrix;
+
+        // If cullArea is set, we use this rectangle instead of the bounds of the object. The cullArea
+        // rectangle must completely contain the container and its children including filter padding.
+        if (this.cullArea)
+        {
+            bounds = this.cullArea;
+            transform = this.worldTransform;
+        }
+        // If the container doesn't override _render, we can skip the bounds calculation and intersection test.
+        else if (this._render !== Container.prototype._render)
+        {
+            bounds = this.getBounds(true);
+        }
+
+        // Render the container if the source frame intersects the bounds.
+        if (bounds && sourceFrame.intersects(bounds, transform))
+        {
+            this._render(renderer);
+        }
+        // If the bounds are defined by cullArea and do not intersect with the source frame, stop rendering.
+        else if (this.cullArea)
+        {
+            return;
+        }
+
+        // Unless cullArea is set, we cannot skip the children if the bounds of the container do not intersect
+        // the source frame, because the children might have filters with nonzero padding, which may intersect
+        // with the source frame while the bounds do not: filter padding is not included in the bounds.
+
+        // If cullArea is not set, render the children with culling temporarily enabled so that they are not rendered
+        // if they are out of frame; otherwise, render the children normally.
+        for (let i = 0, j = this.children.length; i < j; ++i)
+        {
+            const child = this.children[i];
+            const childCullable = child.cullable;
+
+            child.cullable = childCullable || !this.cullArea;
+            child.render(renderer);
+            child.cullable = childCullable;
+        }
+    }
+
+    /**
      * Renders the object using the WebGL renderer.
      *
      * The [_render]{@link PIXI.Container#_render} method is be overriden for rendering the contents of the
      * container itself. This `render` method will invoke it, and also invoke the `render` methods of all
      * children afterward.
      *
-     * If `renderable` or `visible` is false or if `worldAlpha` is not positive, this implementation will entirely
-     * skip rendering. See {@link PIXI.DisplayObject} for choosing between `renderable` or `visible`. Generally,
+     * If `renderable` or `visible` is false or if `worldAlpha` is not positive or if `cullable` is true and
+     * the bounds of this object are out of frame, this implementation will entirely skip rendering.
+     * See {@link PIXI.DisplayObject} for choosing between `renderable` or `visible`. Generally,
      * setting alpha to zero is not recommended for purely skipping rendering.
      *
      * When your scene becomes large (especially when it is larger than can be viewed in a single screen), it is
-     * advised to employ **culling** to automatically skip rendering objects outside of the current screen. The
+     * advised to employ **culling** to automatically skip rendering objects outside of the current screen.
+     * See [cullable]{@link PIXI.DisplayObject#cullable} and [cullArea]{@link PIXI.DisplayObject#cullArea}.
+     * Other culling methods might be better suited for a large number static objects; see
      * [@pixi-essentials/cull]{@link https://www.npmjs.com/package/@pixi-essentials/cull} and
-     * [pixi-cull]{@link https://www.npmjs.com/package/pixi-cull} packages do this out of the box.
+     * [pixi-cull]{@link https://www.npmjs.com/package/pixi-cull}.
      *
      * The [renderAdvanced]{@link PIXI.Container#renderAdvanced} method is internally used when when masking or
      * filtering is applied on a container. This does, however, break batching and can affect performance when
@@ -573,11 +641,14 @@ export class Container extends DisplayObject
         {
             this.renderAdvanced(renderer);
         }
+        else if (this.cullable)
+        {
+            this._renderWithCulling(renderer);
+        }
         else
         {
             this._render(renderer);
 
-            // simple render children!
             for (let i = 0, j = this.children.length; i < j; ++i)
             {
                 this.children[i].render(renderer);
@@ -633,13 +704,18 @@ export class Container extends DisplayObject
             renderer.mask.push(this, this._mask);
         }
 
-        // add this object to the batch, only rendered if it has a texture.
-        this._render(renderer);
-
-        // now loop through the children and make sure they get rendered
-        for (let i = 0, j = this.children.length; i < j; i++)
+        if (this.cullable)
         {
-            this.children[i].render(renderer);
+            this._renderWithCulling(renderer);
+        }
+        else
+        {
+            this._render(renderer);
+
+            for (let i = 0, j = this.children.length; i < j; ++i)
+            {
+                this.children[i].render(renderer);
+            }
         }
 
         if (flush)

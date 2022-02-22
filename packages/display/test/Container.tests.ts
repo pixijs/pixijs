@@ -1,4 +1,8 @@
+import { Renderer } from '@pixi/core';
 import { Container, DisplayObject } from '@pixi/display';
+import { AlphaFilter } from '@pixi/filter-alpha';
+import { Graphics } from '@pixi/graphics';
+import { Rectangle } from '@pixi/math';
 import sinon from 'sinon';
 import { expect } from 'chai';
 
@@ -992,4 +996,198 @@ describe('Container', function ()
         expect(parent.children.length).to.be.equals(0);
         expect(child.parent).to.be.equals(container);
     }
+
+    describe('culling', function ()
+    {
+        before(function ()
+        {
+            this.renderer = new Renderer({ width: 100, height: 100 });
+            this.filterPush = sinon.spy(this.renderer.filter, 'push');
+        });
+
+        after(function ()
+        {
+            this.renderer.destroy();
+            this.renderer = null;
+            this.filterPush = null;
+        });
+
+        afterEach(function ()
+        {
+            this.filterPush.resetHistory();
+        });
+
+        it('noncullable container should always be rendered even if bounds do not intersect the frame', function ()
+        {
+            const renderer = this.renderer;
+            const container = new Container();
+            const graphics = container.addChild(new Graphics().beginFill().drawRect(0, 0, 10, 10).endFill());
+
+            container.cullable = false;
+            graphics.x = -1000;
+            graphics.y = -1000;
+
+            const _renderContainer = sinon.spy(container, '_render');
+            const _renderGraphics = sinon.spy(graphics, '_render');
+
+            renderer.render(container);
+
+            expect(_renderContainer).to.have.been.called;
+            expect(_renderGraphics).to.have.been.called;
+        });
+
+        it('cullable container should not be rendered if bounds do not intersect the frame', function ()
+        {
+            const renderer = this.renderer;
+            const container = new Container();
+            const graphics = container.addChild(new Graphics().beginFill().drawRect(0, 0, 10, 10).endFill());
+
+            container.cullable = true;
+            graphics.x = 0;
+            graphics.y = -10;
+
+            const _renderContainer = sinon.spy(container, '_render');
+            const _renderGraphics = sinon.spy(graphics, '_render');
+
+            renderer.render(container);
+
+            expect(_renderContainer).to.not.have.been.called;
+            expect(_renderGraphics).to.not.have.been.called;
+        });
+
+        it('cullable container should be rendered if bounds intersects the frame', function ()
+        {
+            const renderer = this.renderer;
+            const container = new Container();
+            const graphics = container.addChild(new Graphics().beginFill().drawRect(0, 0, 10, 10).endFill());
+
+            container.cullable = true;
+            graphics.x = 0;
+            graphics.y = -9;
+
+            const _renderContainer = sinon.spy(container, '_render');
+            const _renderGraphics = sinon.spy(graphics, '_render');
+
+            renderer.render(container);
+
+            expect(_renderContainer).to.have.been.called;
+            expect(_renderGraphics).to.have.been.called;
+        });
+
+        it('cullable container that contains a child with a padded filter (autoFit=true) '
+            + 'such that the child in out of frame but the filter padding intersects the frame '
+            + 'should render the filter padding but not the container or child', function ()
+        {
+            const renderer = this.renderer;
+            const container = new Container();
+            const graphics = container.addChild(new Graphics().beginFill().drawRect(0, 0, 10, 10).endFill());
+            const filter = new AlphaFilter();
+
+            filter.padding = 30;
+            filter.autoFit = true;
+
+            container.cullable = true;
+            graphics.filters = [filter];
+            graphics.x = 0;
+            graphics.y = -15;
+
+            const _renderContainer = sinon.spy(container, '_render');
+            const _renderGraphics = sinon.spy(graphics, '_render');
+
+            renderer.render(container);
+
+            expect(_renderContainer).to.not.have.been.called;
+            expect(_renderGraphics).to.not.have.been.called;
+            expect(this.filterPush).to.have.been.called;
+        });
+
+        it('cullable container that contains a child with a padded filter (autoFit=false) '
+            + 'such that the child in out of frame but the filter padding intersects the frame '
+            + 'should render the filtered child but not the container', function ()
+        {
+            const renderer = this.renderer;
+            const container = new Container();
+            const graphics = container.addChild(new Graphics().beginFill().drawRect(0, 0, 10, 10).endFill());
+            const filter = new AlphaFilter();
+
+            filter.padding = 30;
+            filter.autoFit = false;
+
+            container.cullable = true;
+            graphics.filters = [filter];
+            graphics.x = 0;
+            graphics.y = -15;
+
+            const _renderContainer = sinon.spy(container, '_render');
+            const _renderGraphics = sinon.spy(graphics, '_render');
+
+            renderer.render(container);
+
+            expect(_renderContainer).to.not.have.been.called;
+            expect(_renderGraphics).to.have.been.called;
+            expect(this.filterPush).to.have.been.called;
+        });
+
+        it('cullable container with a filter (autoFit=true) should not render the container or children '
+            + 'if the bounds as well as the filter padding do no intersect the frame', function ()
+        {
+            const renderer = this.renderer;
+            const container = new Container();
+            const graphics = container.addChild(new Graphics().beginFill().drawRect(0, 0, 10, 10).endFill());
+            const filter = new AlphaFilter();
+
+            filter.padding = 5;
+            filter.autoFit = true;
+
+            container.cullable = true;
+            container.filters = [filter];
+            graphics.x = 0;
+            graphics.y = -15;
+
+            const _renderContainer = sinon.spy(container, '_render');
+            const renderGraphics = sinon.spy(graphics, 'render');
+
+            renderer.render(container);
+
+            expect(_renderContainer).to.not.have.been.called;
+            expect(renderGraphics).to.not.have.been.called;
+            expect(this.filterPush).to.have.been.called;
+        });
+
+        it('cullable container with cullArea should be rendered if the bounds intersect the frame', function ()
+        {
+            const renderer = this.renderer;
+            const container = new Container();
+            const graphics = container.addChild(new Graphics().beginFill().drawRect(0, 0, 10, 10).endFill());
+
+            container.cullable = true;
+            container.cullArea = new Rectangle(-10, -10, 10, 10);
+            container.x = container.y = 107.07;
+            container.rotation = Math.PI / 4;
+
+            const _renderGraphics = sinon.spy(graphics, '_render');
+
+            renderer.render(container);
+
+            expect(_renderGraphics).to.have.been.called;
+        });
+
+        it('cullable container with cullArea should not be rendered if the bounds do not intersect the frame', function ()
+        {
+            const renderer = this.renderer;
+            const container = new Container();
+            const graphics = container.addChild(new Graphics().beginFill().drawRect(0, 0, 10, 10).endFill());
+
+            container.cullable = true;
+            container.cullArea = new Rectangle(-10, -10, 10, 10);
+            container.x = container.y = 107.08;
+            container.rotation = Math.PI / 4;
+
+            const renderGraphics = sinon.spy(graphics, 'render');
+
+            renderer.render(container);
+
+            expect(renderGraphics).to.not.have.been.called;
+        });
+    });
 });
