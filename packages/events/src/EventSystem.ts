@@ -46,13 +46,13 @@ export class EventSystem
      * Does the device support touch events
      * https://www.w3.org/TR/touch-events/
      */
-    public readonly supportsTouchEvents = 'ontouchstart' in self;
+    public readonly supportsTouchEvents = 'ontouchstart' in globalThis;
 
     /**
      * Does the device support pointer events
      * https://www.w3.org/Submission/pointer-events/
      */
-    public readonly supportsPointerEvents = !!self.PointerEvent;
+    public readonly supportsPointerEvents = !!globalThis.PointerEvent;
 
     /**
      * Should default browser actions automatically be prevented.
@@ -151,7 +151,7 @@ export class EventSystem
 
         // offscreen canvas does not support setting styles, but cursor modes can be functions,
         // in order to handle pixi rendered cursors, so we can't bail
-        if (self.OffscreenCanvas && this.domElement instanceof OffscreenCanvas)
+        if (globalThis.OffscreenCanvas && this.domElement instanceof OffscreenCanvas)
         {
             applyStyles = false;
         }
@@ -354,7 +354,7 @@ export class EventSystem
 
         const style = this.domElement.style as CrossCSSStyleDeclaration;
 
-        if (self.navigator.msPointerEnabled)
+        if (globalThis.navigator.msPointerEnabled)
         {
             style.msContentZooming = 'none';
             style.msTouchAction = 'none';
@@ -370,23 +370,23 @@ export class EventSystem
          */
         if (this.supportsPointerEvents)
         {
-            self.document.addEventListener('pointermove', this.onPointerMove, true);
+            globalThis.document.addEventListener('pointermove', this.onPointerMove, true);
             this.domElement.addEventListener('pointerdown', this.onPointerDown, true);
             // pointerout is fired in addition to pointerup (for touch events) and pointercancel
             // we already handle those, so for the purposes of what we do in onPointerOut, we only
             // care about the pointerleave event
             this.domElement.addEventListener('pointerleave', this.onPointerOverOut, true);
             this.domElement.addEventListener('pointerover', this.onPointerOverOut, true);
-            // self.addEventListener('pointercancel', this.onPointerCancel, true);
-            self.addEventListener('pointerup', this.onPointerUp, true);
+            // globalThis.addEventListener('pointercancel', this.onPointerCancel, true);
+            globalThis.addEventListener('pointerup', this.onPointerUp, true);
         }
         else
         {
-            self.document.addEventListener('mousemove', this.onPointerMove, true);
+            globalThis.document.addEventListener('mousemove', this.onPointerMove, true);
             this.domElement.addEventListener('mousedown', this.onPointerDown, true);
             this.domElement.addEventListener('mouseout', this.onPointerOverOut, true);
             this.domElement.addEventListener('mouseover', this.onPointerOverOut, true);
-            self.addEventListener('mouseup', this.onPointerUp, true);
+            globalThis.addEventListener('mouseup', this.onPointerUp, true);
         }
 
         // Always look directly for touch events so that we can provide original data
@@ -420,7 +420,7 @@ export class EventSystem
 
         const style = this.domElement.style as CrossCSSStyleDeclaration;
 
-        if (self.navigator.msPointerEnabled)
+        if (globalThis.navigator.msPointerEnabled)
         {
             style.msContentZooming = '';
             style.msTouchAction = '';
@@ -432,20 +432,20 @@ export class EventSystem
 
         if (this.supportsPointerEvents)
         {
-            self.document.removeEventListener('pointermove', this.onPointerMove, true);
+            globalThis.document.removeEventListener('pointermove', this.onPointerMove, true);
             this.domElement.removeEventListener('pointerdown', this.onPointerDown, true);
             this.domElement.removeEventListener('pointerleave', this.onPointerOverOut, true);
             this.domElement.removeEventListener('pointerover', this.onPointerOverOut, true);
-            // self.removeEventListener('pointercancel', this.onPointerCancel, true);
-            self.removeEventListener('pointerup', this.onPointerUp, true);
+            // globalThis.removeEventListener('pointercancel', this.onPointerCancel, true);
+            globalThis.removeEventListener('pointerup', this.onPointerUp, true);
         }
         else
         {
-            self.document.removeEventListener('mousemove', this.onPointerMove, true);
+            globalThis.document.removeEventListener('mousemove', this.onPointerMove, true);
             this.domElement.removeEventListener('mousedown', this.onPointerDown, true);
             this.domElement.removeEventListener('mouseout', this.onPointerOverOut, true);
             this.domElement.removeEventListener('mouseover', this.onPointerOverOut, true);
-            self.removeEventListener('mouseup', this.onPointerUp, true);
+            globalThis.removeEventListener('mouseup', this.onPointerUp, true);
         }
 
         if (this.supportsTouchEvents)
@@ -545,8 +545,8 @@ export class EventSystem
             }
         }
         // apparently PointerEvent subclasses MouseEvent, so yay
-        else if (!self.MouseEvent
-            || (event instanceof MouseEvent && (!this.supportsPointerEvents || !(event instanceof self.PointerEvent))))
+        else if (!globalThis.MouseEvent
+            || (event instanceof MouseEvent && (!this.supportsPointerEvents || !(event instanceof globalThis.PointerEvent))))
         {
             const tempEvent = event as PixiPointerEvent;
 

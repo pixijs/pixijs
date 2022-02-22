@@ -272,7 +272,7 @@ export class ContextSystem implements ISystem
     {
         const attributes = gl.getContextAttributes();
 
-        const isWebGl2 = 'WebGL2RenderingContext' in self && gl instanceof self.WebGL2RenderingContext;
+        const isWebGl2 = 'WebGL2RenderingContext' in globalThis && gl instanceof globalThis.WebGL2RenderingContext;
 
         if (isWebGl2)
         {

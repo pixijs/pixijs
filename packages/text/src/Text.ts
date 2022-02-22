@@ -237,11 +237,13 @@ export class Text extends Sprite
 
                 const dropShadowColor = style.dropShadowColor;
                 const rgb = hex2rgb(typeof dropShadowColor === 'number' ? dropShadowColor : string2hex(dropShadowColor));
+                const dropShadowBlur = style.dropShadowBlur * this._resolution;
+                const dropShadowDistance = style.dropShadowDistance * this._resolution;
 
                 context.shadowColor = `rgba(${rgb[0] * 255},${rgb[1] * 255},${rgb[2] * 255},${style.dropShadowAlpha})`;
-                context.shadowBlur = style.dropShadowBlur;
-                context.shadowOffsetX = Math.cos(style.dropShadowAngle) * style.dropShadowDistance;
-                context.shadowOffsetY = (Math.sin(style.dropShadowAngle) * style.dropShadowDistance) + dsOffsetShadow;
+                context.shadowBlur = dropShadowBlur;
+                context.shadowOffsetX = Math.cos(style.dropShadowAngle) * dropShadowDistance;
+                context.shadowOffsetY = (Math.sin(style.dropShadowAngle) * dropShadowDistance) + dsOffsetShadow;
             }
             else
             {
@@ -372,7 +374,13 @@ export class Text extends Sprite
             {
                 this.context.fillText(currentChar, currentPosition, y);
             }
-            currentWidth = this.context.measureText(text.substring(i + 1)).width;
+            let textStr = '';
+
+            for (let j = i + 1; j < stringArray.length; ++j)
+            {
+                textStr += stringArray[j];
+            }
+            currentWidth = this.context.measureText(textStr).width;
             currentPosition += previousWidth - currentWidth + letterSpacing;
             previousWidth = currentWidth;
         }
@@ -641,7 +649,7 @@ export class Text extends Sprite
             this.canvas.height = this.canvas.width = 0;
         }
 
-        // make sure to reset the the context and canvas.. dont want this hanging around in memory!
+        // make sure to reset the context and canvas.. dont want this hanging around in memory!
         this.context = null;
         this.canvas = null;
 

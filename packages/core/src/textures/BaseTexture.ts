@@ -41,8 +41,6 @@ export interface BaseTexture extends GlobalMixins.BaseTexture, EventEmitter {}
  * All textures have a base texture, which contains information about the source.
  * Therefore you can have many textures all using a single BaseTexture
  *
- * @class
- * @extends PIXI.utils.EventEmitter
  * @memberof PIXI
  * @typeParam R - The BaseTexture's Resource type.
  * @typeParam RO - The options for constructing resource.
@@ -223,7 +221,7 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
      * @param {PIXI.Resource|string|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement} [resource=null] -
      *        The current resource to use, for things that aren't Resource objects, will be converted
      *        into a Resource.
-     * @param {Object} [options] - Collection of options
+     * @param options - Collection of options
      * @param {PIXI.MIPMAP_MODES} [options.mipmap=PIXI.settings.MIPMAP_TEXTURES] - If mipmapping is enabled for texture
      * @param {number} [options.anisotropicLevel=PIXI.settings.ANISOTROPIC_LEVEL] - Anisotropic filtering level of texture
      * @param {PIXI.WRAP_MODES} [options.wrapMode=PIXI.settings.WRAP_MODE] - Wrap mode for textures
@@ -333,7 +331,6 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
      * Pixel width of the source of this texture
      *
      * @readonly
-     * @member {number}
      */
     get realWidth(): number
     {
@@ -344,7 +341,6 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
      * Pixel height of the source of this texture
      *
      * @readonly
-     * @member {number}
      */
     get realHeight(): number
     {
@@ -354,7 +350,6 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
     /**
      * Mipmap mode of the texture, affects downscaled images
      *
-     * @member {PIXI.MIPMAP_MODES}
      * @default PIXI.settings.MIPMAP_TEXTURES
      */
     get mipmap(): MIPMAP_MODES
@@ -373,7 +368,6 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
     /**
      * The scale mode to apply when scaling this texture
      *
-     * @member {PIXI.SCALE_MODES}
      * @default PIXI.settings.SCALE_MODE
      */
     get scaleMode(): SCALE_MODES
@@ -391,7 +385,7 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
 
     /**
      * How the texture wraps
-     * @member {PIXI.WRAP_MODES}
+     *
      * @default PIXI.settings.WRAP_MODE
      */
     get wrapMode(): WRAP_MODES
@@ -410,9 +404,9 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
     /**
      * Changes style options of BaseTexture
      *
-     * @param {PIXI.SCALE_MODES} [scaleMode] - Pixi scalemode
-     * @param {PIXI.MIPMAP_MODES} [mipmap] - enable mipmaps
-     * @returns {PIXI.BaseTexture} this
+     * @param scaleMode - Pixi scalemode
+     * @param mipmap - enable mipmaps
+     * @returns - this
      */
     setStyle(scaleMode?: SCALE_MODES, mipmap?: MIPMAP_MODES): this
     {
@@ -441,10 +435,10 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
     /**
      * Changes w/h/resolution. Texture becomes valid if width and height are greater than zero.
      *
-     * @param {number} desiredWidth - Desired visual width
-     * @param {number} desiredHeight - Desired visual height
-     * @param {number} [resolution] - Optionally set resolution
-     * @returns {PIXI.BaseTexture} this
+     * @param desiredWidth - Desired visual width
+     * @param desiredHeight - Desired visual height
+     * @param resolution - Optionally set resolution
+     * @returns - this
      */
     setSize(desiredWidth: number, desiredHeight: number, resolution?: number): this
     {
@@ -456,10 +450,10 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
     /**
      * Sets real size of baseTexture, preserves current resolution.
      *
-     * @param {number} realWidth - Full rendered width
-     * @param {number} realHeight - Full rendered height
-     * @param {number} [resolution] - Optionally set resolution
-     * @returns {PIXI.BaseTexture} this
+     * @param realWidth - Full rendered width
+     * @param realHeight - Full rendered height
+     * @param resolution - Optionally set resolution
+     * @returns - this
      */
     setRealSize(realWidth: number, realHeight: number, resolution?: number): this
     {
@@ -485,8 +479,8 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
     /**
      * Changes resolution
      *
-     * @param {number} resolution - res
-     * @returns {PIXI.BaseTexture} this
+     * @param resolution - res
+     * @returns - this
      */
     setResolution(resolution: number): this
     {
@@ -514,8 +508,8 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
     /**
      * Sets the resource if it wasn't set. Throws error if resource already present
      *
-     * @param {PIXI.Resource} resource - that is managing this BaseTexture
-     * @returns {PIXI.BaseTexture} this
+     * @param resource - that is managing this BaseTexture
+     * @returns - this
      */
     setResource(resource: R): this
     {
@@ -536,9 +530,7 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
         return this;
     }
 
-    /**
-     * Invalidates the object. Texture becomes valid if width and height are greater than zero.
-     */
+    /** Invalidates the object. Texture becomes valid if width and height are greater than zero. */
     update(): void
     {
         if (!this.valid)
@@ -560,8 +552,9 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
 
     /**
      * Handle errors with resources.
+     *
      * @private
-     * @param {ErrorEvent} event - Error event emitted.
+     * @param event - Error event emitted.
      */
     onError(event: ErrorEvent): void
     {
@@ -616,9 +609,7 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
         this.emit('dispose', this);
     }
 
-    /**
-     * Utility function for BaseTexture|Texture cast
-     */
+    /** Utility function for BaseTexture|Texture cast. */
     castToBaseTexture(): BaseTexture
     {
         return this;
@@ -633,7 +624,7 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
      * @static
      * @param {string|HTMLImageElement|HTMLCanvasElement|SVGElement|HTMLVideoElement} source - The
      *        source to create base texture from.
-     * @param {object} [options] - See {@link PIXI.BaseTexture}'s constructor for options.
+     * @param options - See {@link PIXI.BaseTexture}'s constructor for options.
      * @param {string} [options.pixiIdPrefix=pixiid] - If a source has no id, this is the prefix of the generated id
      * @param {boolean} [strict] - Enforce strict-mode, see {@link PIXI.settings.STRICT_TEXTURE_CACHE}.
      * @returns {PIXI.BaseTexture} The new base texture.
@@ -681,13 +672,13 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
     /**
      * Create a new BaseTexture with a BufferResource from a Float32Array.
      * RGBA values are floats from 0 to 1.
-     * @static
+     *
      * @param {Float32Array|Uint8Array} buffer - The optional array to use, if no data
      *        is provided, a new Float32Array is created.
-     * @param {number} width - Width of the resource
-     * @param {number} height - Height of the resource
-     * @param {object} [options] - See {@link PIXI.BaseTexture}'s constructor for options.
-     * @return {PIXI.BaseTexture} The resulting new BaseTexture
+     * @param width - Width of the resource
+     * @param height - Height of the resource
+     * @param options - See {@link PIXI.BaseTexture}'s constructor for options.
+     * @return - The resulting new BaseTexture
      */
     static fromBuffer(buffer: Float32Array|Uint8Array,
         width: number, height: number, options?: IBaseTextureOptions): BaseTexture<BufferResource>
@@ -703,7 +694,7 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
     /**
      * Adds a BaseTexture to the global BaseTextureCache. This cache is shared across the whole PIXI object.
      *
-     * @static
+     *
      * @param {PIXI.BaseTexture} baseTexture - The BaseTexture to add to the cache.
      * @param {string} id - The id that the BaseTexture will be stored against.
      */
@@ -729,7 +720,6 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
     /**
      * Remove a BaseTexture from the global BaseTextureCache.
      *
-     * @static
      * @param {string|PIXI.BaseTexture} baseTexture - id of a BaseTexture to be removed, or a BaseTexture instance itself.
      * @return {PIXI.BaseTexture|null} The BaseTexture that was removed.
      */
@@ -768,11 +758,6 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
         return null;
     }
 
-    /**
-     * Global number of the texture batch, used by multi-texture renderers
-     *
-     * @static
-     * @member {number}
-     */
+    /** Global number of the texture batch, used by multi-texture renderers. */
     static _globalBatch = 0;
 }
