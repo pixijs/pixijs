@@ -66,7 +66,7 @@ export class BaseRenderTexture extends BaseTexture
      *   of the texture being generated.
      * @param {PIXI.MSAA_QUALITY} [options.multisample=PIXI.MSAA_QUALITY.NONE] - The number of samples of the frame buffer.
      */
-    constructor(options?: IBaseTextureOptions)
+    constructor(options: IBaseTextureOptions = {})
     {
         if (typeof options === 'number')
         {
