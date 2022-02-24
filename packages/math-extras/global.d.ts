@@ -36,8 +36,8 @@ interface Vector2Math {
     multiply(other: import('@pixi/math').IPointData): import('@pixi/math').Point;
     multiply<T extends import('@pixi/math').IPointData>(other: import('@pixi/math').IPointData, outPoint: T): T;
 
-    divide(other: import('@pixi/math').IPointData): import('@pixi/math').Point;
-    divide<T extends import('@pixi/math').IPointData>(other: import('@pixi/math').IPointData, outPoint: T): T;
+    // divide(other: import('@pixi/math').IPointData): import('@pixi/math').Point;
+    // divide<T extends import('@pixi/math').IPointData>(other: import('@pixi/math').IPointData, outPoint: T): T;
 
     multiplyScalar(scalar: number): import('@pixi/math').Point;
     multiplyScalar<T extends import('@pixi/math').IPointData>(scalar: number, outPoint: T): T;
