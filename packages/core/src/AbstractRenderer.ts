@@ -391,7 +391,7 @@ export abstract class AbstractRenderer extends EventEmitter
      * Adds a new system to the renderer.
      *
      * @param ClassRef - Class reference
-     * @param [name] - Property name for system
+     * @param name - Property name for system
      * @return Return instance of renderer
      */
     abstract addSystem(ClassRef: ISystemConstructor, name: string): this;

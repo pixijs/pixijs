@@ -371,10 +371,8 @@ export class Renderer extends AbstractRenderer
     /**
      * Add a new system to the renderer.
      *
-     * @extends PIXI.AbstractRenderer#addSystem
-     *
      * @param ClassRef - Class reference
-     * @param [name] - Property name for system, if not specified
+     * @param name - Property name for system, if not specified
      *        will use a static `name` property on the class itself. This
      *        name will be assigned as s property on the Renderer so make
      *        sure it doesn't collide with properties on Renderer.

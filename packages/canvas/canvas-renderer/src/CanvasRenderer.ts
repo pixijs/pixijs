@@ -154,8 +154,6 @@ export class CanvasRenderer extends AbstractRenderer
 
     /**
      * Adds a new system to the renderer. It does nothing in the CanvasRenderer.
-     *
-     * @extends PIXI.AbstractRenderer#addSystem
      */
     addSystem(): this
     {
