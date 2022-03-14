@@ -47,6 +47,16 @@ export function drawGlyph(
     context.fillStyle = generateFillStyle(canvas, context, style, resolution, [char], metrics);
     context.strokeStyle = style.stroke as string;
 
+    context.font = style.toFontString();
+    context.lineWidth = style.strokeThickness;
+    context.textBaseline = style.textBaseline;
+    context.lineJoin = style.lineJoin;
+    context.miterLimit = style.miterLimit;
+
+    // set canvas text styles
+    context.fillStyle = generateFillStyle(canvas, context, style, resolution, [char], metrics);
+    context.strokeStyle = style.stroke as string;
+
     if (style.dropShadow)
     {
         const dropShadowColor = style.dropShadowColor;
