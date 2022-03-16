@@ -17,9 +17,9 @@ export function isPolygonClockwise(polygon: Polygon): boolean
 
     let sum = 0;
 
-    for (let i = 0; i < points.length - 2; i += 2)
+    for (let i = 0, j = points.length - 2; i < points.length; j = i, i += 2)
     {
-        sum += (points[i + 2] - points[i]) * (points[i + 3] + points[i + 1]);
+        sum += (points[i] - points[j]) * (points[i + 1] + points[j + 1]);
     }
 
     return sum > 0;
