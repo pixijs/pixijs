@@ -1,5 +1,6 @@
 import { Renderer, BatchRenderer, Texture } from '@pixi/core';
 import { Graphics, GRAPHICS_CURVES, FillStyle, LineStyle, graphicsUtils } from '@pixi/graphics';
+import { isPolygonClockwise } from '../src/utils/isPolygonClockwise';
 const { FILL_COMMANDS, buildLine } = graphicsUtils;
 
 import { BLEND_MODES } from '@pixi/constants';
@@ -192,6 +193,19 @@ describe('Graphics', function ()
             data.lineStyle.native = true;
             // native = true
             expect(function () { buildLine(data, geometry); }).to.not.throw();
+        });
+
+        it('isPolygonClockwise', function ()
+        {
+            const ccwTriangle = new Polygon(0, 0, 1, 0, 0, 1);
+            const cwTriangle = new Polygon(0, 1, 1, 0, 0, 0);
+            const ccwSquare = new Polygon(0, 0, 1, 0, 1, 1, 0, 1);
+            const cwSquare = new Polygon(0, 1, 1, 1, 1, 0, 0, 0);
+
+            expect(isPolygonClockwise(cwTriangle)).to.be.true;
+            expect(isPolygonClockwise(cwSquare)).to.be.true;
+            expect(isPolygonClockwise(ccwTriangle)).to.be.false;
+            expect(isPolygonClockwise(ccwSquare)).to.be.false;
         });
     });
 
