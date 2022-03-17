@@ -14,8 +14,7 @@ export { buildCircle };
 import { buildRectangle } from './buildRectangle';
 export { buildRectangle };
 
-import { buildRoundedRectangle } from './buildRoundedRectangle';
-export { buildRoundedRectangle };
+export { buildCircle as buildRoundedRectangle };
 
 export * from './buildLine';
 export * from './ArcUtils';
@@ -40,7 +39,7 @@ export const FILL_COMMANDS: Record<SHAPES, IShapeBuildCommand> = {
     [SHAPES.CIRC]: buildCircle,
     [SHAPES.ELIP]: buildCircle,
     [SHAPES.RECT]: buildRectangle,
-    [SHAPES.RREC]: buildRoundedRectangle,
+    [SHAPES.RREC]: buildCircle,
 };
 
 /**
