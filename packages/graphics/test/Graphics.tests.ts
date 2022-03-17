@@ -1,6 +1,5 @@
 import { Renderer, BatchRenderer, Texture } from '@pixi/core';
 import { Graphics, GRAPHICS_CURVES, FillStyle, LineStyle, graphicsUtils } from '@pixi/graphics';
-import { isPolygonClockwise } from '../src/utils/isPolygonClockwise';
 const { FILL_COMMANDS, buildLine } = graphicsUtils;
 
 import { BLEND_MODES } from '@pixi/constants';
@@ -193,39 +192,6 @@ describe('Graphics', function ()
             data.lineStyle.native = true;
             // native = true
             expect(function () { buildLine(data, geometry); }).to.not.throw();
-        });
-
-        it('isPolygonClockwise', function ()
-        {
-            const ccwTriangle1 = new Polygon(0, 0, 1, 0, 0, 1);
-            const ccwTriangle2 = new Polygon(1, 0, 0, 1, 0, 0);
-            const ccwTriangle3 = new Polygon(0, 1, 0, 0, 1, 0);
-            const cwTriangle1 = new Polygon(0, 1, 1, 0, 0, 0);
-            const cwTriangle2 = new Polygon(1, 0, 0, 0, 0, 1);
-            const cwTriangle3 = new Polygon(0, 0, 0, 1, 1, 0);
-            const ccwSquare1 = new Polygon(0, 0, 1, 0, 1, 1, 0, 1);
-            const ccwSquare2 = new Polygon(1, 0, 1, 1, 0, 1, 0, 0);
-            const ccwSquare3 = new Polygon(1, 1, 0, 1, 0, 0, 1, 0);
-            const ccwSquare4 = new Polygon(0, 1, 0, 0, 1, 0, 1, 1);
-            const cwSquare1 = new Polygon(0, 1, 1, 1, 1, 0, 0, 0);
-            const cwSquare2 = new Polygon(1, 1, 1, 0, 0, 0, 0, 1);
-            const cwSquare3 = new Polygon(1, 0, 0, 0, 0, 1, 1, 1);
-            const cwSquare4 = new Polygon(0, 0, 0, 1, 1, 1, 1, 0);
-
-            expect(isPolygonClockwise(cwTriangle1)).to.be.true;
-            expect(isPolygonClockwise(cwTriangle2)).to.be.true;
-            expect(isPolygonClockwise(cwTriangle3)).to.be.true;
-            expect(isPolygonClockwise(cwSquare1)).to.be.true;
-            expect(isPolygonClockwise(cwSquare2)).to.be.true;
-            expect(isPolygonClockwise(cwSquare3)).to.be.true;
-            expect(isPolygonClockwise(cwSquare4)).to.be.true;
-            expect(isPolygonClockwise(ccwTriangle1)).to.be.false;
-            expect(isPolygonClockwise(ccwTriangle2)).to.be.false;
-            expect(isPolygonClockwise(ccwTriangle3)).to.be.false;
-            expect(isPolygonClockwise(ccwSquare1)).to.be.false;
-            expect(isPolygonClockwise(ccwSquare2)).to.be.false;
-            expect(isPolygonClockwise(ccwSquare3)).to.be.false;
-            expect(isPolygonClockwise(ccwSquare4)).to.be.false;
         });
     });
 
