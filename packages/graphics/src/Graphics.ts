@@ -83,6 +83,12 @@ export interface Graphics extends GlobalMixins.Graphics, Container {}
 export class Graphics extends Container
 {
     /**
+     * New rendering behavior for rounded rectangles: circular arcs instead of quadratic bezier curves.
+     * In the next major release, we'll enable this by default.
+     */
+    public static nextRoundedRectBehavior = false;
+
+    /**
      * Temporary point to use for containsPoint.
      *
      * @private
