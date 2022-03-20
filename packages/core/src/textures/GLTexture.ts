@@ -1,79 +1,52 @@
 import { FORMATS, TYPES } from '@pixi/constants';
 
 /**
- * Internal texture for WebGL context
- * @class
+ * Internal texture for WebGL context.
+ *
  * @memberof PIXI
  */
 export class GLTexture
 {
+    /** The WebGL texture. */
     public texture: WebGLTexture;
+
+    /** Width of texture that was used in texImage2D. */
     public width: number;
+
+    /** Height of texture that was used in texImage2D. */
     public height: number;
+
+    /** Whether mip levels has to be generated. */
     public mipmap: boolean;
+
+    /** WrapMode copied from baseTexture. */
     public wrapMode: number;
+
+    /** Type copied from baseTexture. */
     public type: number;
+
+    /** Type copied from baseTexture. */
     public internalFormat: number;
+
     /** Type of sampler corresponding to this texture. See {@link PIXI.SAMPLER_TYPES} */
     public samplerType: number;
 
+    /** Texture contents dirty flag. */
     dirtyId: number;
+
+    /** Texture style dirty flag. */
     dirtyStyleId: number;
 
     constructor(texture: WebGLTexture)
     {
-        /**
-         * The WebGL texture
-         * @member {WebGLTexture}
-         */
         this.texture = texture;
-
-        /**
-         * Width of texture that was used in texImage2D
-         * @member {number}
-         */
         this.width = -1;
-
-        /**
-         * Height of texture that was used in texImage2D
-         * @member {number}
-         */
         this.height = -1;
-
-        /**
-         * Texture contents dirty flag
-         * @member {number}
-         */
         this.dirtyId = -1;
-
-        /**
-         * Texture style dirty flag
-         * @member {number}
-         */
         this.dirtyStyleId = -1;
-
-        /**
-         * Whether mip levels has to be generated
-         * @member {boolean}
-         */
         this.mipmap = false;
-
-        /**
-         * WrapMode copied from baseTexture
-         * @member {number}
-         */
         this.wrapMode = 33071;
-
-        /**
-         * Type copied from baseTexture
-         * @member {number}
-         */
         this.type = TYPES.UNSIGNED_BYTE;
-
-        /**
-         * Type copied from baseTexture
-         * @member {number}
-         */
         this.internalFormat = FORMATS.RGBA;
 
         this.samplerType = 0;

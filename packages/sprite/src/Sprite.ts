@@ -1,6 +1,6 @@
 import { BLEND_MODES } from '@pixi/constants';
 import { Texture } from '@pixi/core';
-import { Container } from '@pixi/display';
+import { Bounds, Container } from '@pixi/display';
 import { ObservablePoint, Point, Rectangle } from '@pixi/math';
 import { settings } from '@pixi/settings';
 import { sign } from '@pixi/utils';
@@ -417,10 +417,15 @@ export class Sprite extends Container
         // we can do a fast local bounds if the sprite has no children!
         if (this.children.length === 0)
         {
-            this._bounds.minX = this._texture.orig.width * -this._anchor._x;
-            this._bounds.minY = this._texture.orig.height * -this._anchor._y;
-            this._bounds.maxX = this._texture.orig.width * (1 - this._anchor._x);
-            this._bounds.maxY = this._texture.orig.height * (1 - this._anchor._y);
+            if (!this._localBounds)
+            {
+                this._localBounds = new Bounds();
+            }
+
+            this._localBounds.minX = this._texture.orig.width * -this._anchor._x;
+            this._localBounds.minY = this._texture.orig.height * -this._anchor._y;
+            this._localBounds.maxX = this._texture.orig.width * (1 - this._anchor._x);
+            this._localBounds.maxY = this._texture.orig.height * (1 - this._anchor._y);
 
             if (!rect)
             {
@@ -432,7 +437,7 @@ export class Sprite extends Container
                 rect = this._localBoundsRect;
             }
 
-            return this._bounds.getRectangle(rect);
+            return this._localBounds.getRectangle(rect);
         }
 
         return super.getLocalBounds.call(this, rect);

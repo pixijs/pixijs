@@ -81,6 +81,21 @@ export class BaseImageResource extends Resource
 
         source = source || this.source;
 
+        if (source instanceof HTMLImageElement)
+        {
+            if (!source.complete || source.naturalWidth === 0)
+            {
+                return false;
+            }
+        }
+        else if (source instanceof HTMLVideoElement)
+        {
+            if (source.readyState <= 1)
+            {
+                return false;
+            }
+        }
+
         gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, baseTexture.alphaMode === ALPHA_MODES.UNPACK);
 
         if (!this.noSubImage

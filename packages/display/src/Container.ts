@@ -1,7 +1,7 @@
 import { settings } from '@pixi/settings';
 import { removeItems } from '@pixi/utils';
 import { DisplayObject } from './DisplayObject';
-import { Rectangle } from '@pixi/math';
+import { Matrix, Rectangle } from '@pixi/math';
 import { MASK_TYPES } from '@pixi/constants';
 
 import type { MaskData, Renderer } from '@pixi/core';
@@ -52,14 +52,37 @@ export interface Container extends GlobalMixins.Container, DisplayObject {}
  *  .endFill();
  * ```
  *
- * @class
- * @extends PIXI.DisplayObject
  * @memberof PIXI
  */
 export class Container extends DisplayObject
 {
+    /**
+     * The array of children of this container.
+     *
+     * @readonly
+     */
     public readonly children: DisplayObject[];
+
+    /**
+     * If set to true, the container will sort its children by zIndex value
+     * when updateTransform() is called, or manually if sortChildren() is called.
+     *
+     * This actually changes the order of elements in the array, so should be treated
+     * as a basic solution that is not performant compared to other solutions,
+     * such as @link https://github.com/pixijs/pixi-display
+     *
+     * Also be aware of that this may not work nicely with the addChildAt() function,
+     * as the zIndex sorting may cause the child to automatically sorted to another position.
+     *
+     * @see PIXI.settings.SORTABLE_CHILDREN
+     */
     public sortableChildren: boolean;
+
+    /**
+     * Should children be sorted by zIndex at the next updateTransform call.
+     *
+     * Will get automatically set to true if a new child is added, or if a child's zIndex changes.
+     */
     public sortDirty: boolean;
     public parent: Container;
     public containerUpdateTransform: () => void;
@@ -71,38 +94,8 @@ export class Container extends DisplayObject
     {
         super();
 
-        /**
-         * The array of children of this container.
-         *
-         * @member {PIXI.DisplayObject[]}
-         * @readonly
-         */
         this.children = [];
-
-        /**
-         * If set to true, the container will sort its children by zIndex value
-         * when updateTransform() is called, or manually if sortChildren() is called.
-         *
-         * This actually changes the order of elements in the array, so should be treated
-         * as a basic solution that is not performant compared to other solutions,
-         * such as @link https://github.com/pixijs/pixi-display
-         *
-         * Also be aware of that this may not work nicely with the addChildAt() function,
-         * as the zIndex sorting may cause the child to automatically sorted to another position.
-         *
-         * @see PIXI.settings.SORTABLE_CHILDREN
-         *
-         * @member {boolean}
-         */
         this.sortableChildren = settings.SORTABLE_CHILDREN;
-
-        /**
-         * Should children be sorted by zIndex at the next updateTransform call.
-         *
-         * Will get automatically set to true if a new child is added, or if a child's zIndex changes.
-         *
-         * @member {boolean}
-         */
         this.sortDirty = false;
 
         /**
@@ -124,11 +117,7 @@ export class Container extends DisplayObject
          */
     }
 
-    /**
-     * Overridable method that can be used by Container subclasses whenever the children array is modified
-     *
-     * @protected
-     */
+    /** Overridable method that can be used by Container subclasses whenever the children array is modified. */
     protected onChildrenChange(_length?: number): void
     {
         /* empty */
@@ -140,7 +129,7 @@ export class Container extends DisplayObject
      * Multiple items can be added like so: `myContainer.addChild(thingOne, thingTwo, thingThree)`
      *
      * @param {...PIXI.DisplayObject} children - The DisplayObject(s) to add to the container
-     * @return {PIXI.DisplayObject} The first child that was added.
+     * @return {PIXI.DisplayObject} - The first child that was added.
      */
     addChild<T extends DisplayObject[]>(...children: T): T[0]
     {
@@ -225,8 +214,8 @@ export class Container extends DisplayObject
     /**
      * Swaps the position of 2 Display Objects within this container.
      *
-     * @param {PIXI.DisplayObject} child - First display object to swap
-     * @param {PIXI.DisplayObject} child2 - Second display object to swap
+     * @param child - First display object to swap
+     * @param child2 - Second display object to swap
      */
     swapChildren(child: DisplayObject, child2: DisplayObject): void
     {
@@ -246,8 +235,8 @@ export class Container extends DisplayObject
     /**
      * Returns the index position of a child DisplayObject instance
      *
-     * @param {PIXI.DisplayObject} child - The DisplayObject instance to identify
-     * @return {number} The index position of the child display object to identify
+     * @param child - The DisplayObject instance to identify
+     * @return - The index position of the child display object to identify
      */
     getChildIndex(child: DisplayObject): number
     {
@@ -264,8 +253,8 @@ export class Container extends DisplayObject
     /**
      * Changes the position of an existing child in the display object container
      *
-     * @param {PIXI.DisplayObject} child - The child DisplayObject instance for which you want to change the index number
-     * @param {number} index - The resulting index number for the child display object
+     * @param child - The child DisplayObject instance for which you want to change the index number
+     * @param index - The resulting index number for the child display object
      */
     setChildIndex(child: DisplayObject, index: number): void
     {
@@ -285,8 +274,8 @@ export class Container extends DisplayObject
     /**
      * Returns the child at the specified index
      *
-     * @param {number} index - The index to get the child at
-     * @return {PIXI.DisplayObject} The child at the given index, if any.
+     * @param index - The index to get the child at
+     * @return - The child at the given index, if any.
      */
     getChildAt(index: number): DisplayObject
     {
@@ -342,8 +331,8 @@ export class Container extends DisplayObject
     /**
      * Removes a child from the specified index position.
      *
-     * @param {number} index - The index to get the child from
-     * @return {PIXI.DisplayObject} The child that was removed.
+     * @param index - The index to get the child from
+     * @return The child that was removed.
      */
     removeChildAt(index: number): DisplayObject
     {
@@ -368,9 +357,9 @@ export class Container extends DisplayObject
     /**
      * Removes all children from this container that are within the begin and end indexes.
      *
-     * @param {number} [beginIndex=0] - The beginning position.
-     * @param {number} [endIndex=this.children.length] - The ending position. Default value is size of the container.
-     * @returns {PIXI.DisplayObject[]} List of removed children
+     * @param beginIndex - The beginning position.
+     * @param endIndex - The ending position. Default value is size of the container.
+     * @returns - List of removed children
      */
     removeChildren(beginIndex = 0, endIndex = this.children.length): DisplayObject[]
     {
@@ -412,9 +401,7 @@ export class Container extends DisplayObject
         throw new RangeError('removeChildren: numeric values are outside the acceptable range.');
     }
 
-    /**
-     * Sorts children by zIndex. Previous order is maintained for 2 children with the same zIndex.
-     */
+    /** Sorts children by zIndex. Previous order is maintained for 2 children with the same zIndex. */
     sortChildren(): void
     {
         let sortRequired = false;
@@ -439,9 +426,7 @@ export class Container extends DisplayObject
         this.sortDirty = false;
     }
 
-    /**
-     * Updates the transform on all children of this container for rendering
-     */
+    /** Updates the transform on all children of this container for rendering. */
     updateTransform(): void
     {
         if (this.sortableChildren && this.sortDirty)
@@ -517,10 +502,10 @@ export class Container extends DisplayObject
      * Calling `getLocalBounds` may invalidate the `_bounds` of the whole subtree below. If using it inside a render()
      * call, it is advised to call `getBounds()` immediately after to recalculate the world bounds of the subtree.
      *
-     * @param {PIXI.Rectangle} [rect] - Optional rectangle to store the result of the bounds calculation.
-     * @param {boolean} [skipChildrenUpdate=false] - Setting to `true` will stop re-calculation of children transforms,
+     * @param rect - Optional rectangle to store the result of the bounds calculation.
+     * @param skipChildrenUpdate - Setting to `true` will stop re-calculation of children transforms,
      *  it was default behaviour of pixi 4.0-5.2 and caused many problems to users.
-     * @return {PIXI.Rectangle} The rectangular bounding area.
+     * @return - The rectangular bounding area.
      */
     public getLocalBounds(rect?: Rectangle, skipChildrenUpdate = false): Rectangle
     {
@@ -554,26 +539,94 @@ export class Container extends DisplayObject
     }
 
     /**
+     * Renders this object and its children with culling.
+     *
+     * @protected
+     * @param {PIXI.Renderer} renderer - The renderer
+     */
+    protected _renderWithCulling(renderer: Renderer): void
+    {
+        const sourceFrame = renderer.renderTexture.sourceFrame;
+
+        // If the source frame is empty, stop rendering.
+        if (!(sourceFrame.width > 0 && sourceFrame.height > 0))
+        {
+            return;
+        }
+
+        // Render the content of the container only if its bounds intersect with the source frame.
+        // All filters are on the stack at this point, and the filter source frame is bound:
+        // therefore, even if the bounds to non intersect the filter frame, the filter
+        // is still applied and any filter padding that is in the frame is rendered correctly.
+
+        let bounds: Rectangle;
+        let transform: Matrix;
+
+        // If cullArea is set, we use this rectangle instead of the bounds of the object. The cullArea
+        // rectangle must completely contain the container and its children including filter padding.
+        if (this.cullArea)
+        {
+            bounds = this.cullArea;
+            transform = this.worldTransform;
+        }
+        // If the container doesn't override _render, we can skip the bounds calculation and intersection test.
+        else if (this._render !== Container.prototype._render)
+        {
+            bounds = this.getBounds(true);
+        }
+
+        // Render the container if the source frame intersects the bounds.
+        if (bounds && sourceFrame.intersects(bounds, transform))
+        {
+            this._render(renderer);
+        }
+        // If the bounds are defined by cullArea and do not intersect with the source frame, stop rendering.
+        else if (this.cullArea)
+        {
+            return;
+        }
+
+        // Unless cullArea is set, we cannot skip the children if the bounds of the container do not intersect
+        // the source frame, because the children might have filters with nonzero padding, which may intersect
+        // with the source frame while the bounds do not: filter padding is not included in the bounds.
+
+        // If cullArea is not set, render the children with culling temporarily enabled so that they are not rendered
+        // if they are out of frame; otherwise, render the children normally.
+        for (let i = 0, j = this.children.length; i < j; ++i)
+        {
+            const child = this.children[i];
+            const childCullable = child.cullable;
+
+            child.cullable = childCullable || !this.cullArea;
+            child.render(renderer);
+            child.cullable = childCullable;
+        }
+    }
+
+    /**
      * Renders the object using the WebGL renderer.
      *
      * The [_render]{@link PIXI.Container#_render} method is be overriden for rendering the contents of the
      * container itself. This `render` method will invoke it, and also invoke the `render` methods of all
      * children afterward.
      *
-     * If `renderable` or `visible` is false or if `worldAlpha` is not positive, this implementation will entirely
-     * skip rendering. See {@link PIXI.DisplayObject} for choosing between `renderable` or `visible`. Generally,
+     * If `renderable` or `visible` is false or if `worldAlpha` is not positive or if `cullable` is true and
+     * the bounds of this object are out of frame, this implementation will entirely skip rendering.
+     * See {@link PIXI.DisplayObject} for choosing between `renderable` or `visible`. Generally,
      * setting alpha to zero is not recommended for purely skipping rendering.
      *
      * When your scene becomes large (especially when it is larger than can be viewed in a single screen), it is
-     * advised to employ **culling** to automatically skip rendering objects outside of the current screen. The
+     * advised to employ **culling** to automatically skip rendering objects outside of the current screen.
+     * See [cullable]{@link PIXI.DisplayObject#cullable} and [cullArea]{@link PIXI.DisplayObject#cullArea}.
+     * Other culling methods might be better suited for a large number static objects; see
      * [@pixi-essentials/cull]{@link https://www.npmjs.com/package/@pixi-essentials/cull} and
-     * [pixi-cull]{@link https://www.npmjs.com/package/pixi-cull} packages do this out of the box.
+     * [pixi-cull]{@link https://www.npmjs.com/package/pixi-cull}.
      *
      * The [renderAdvanced]{@link PIXI.Container#renderAdvanced} method is internally used when when masking or
      * filtering is applied on a container. This does, however, break batching and can affect performance when
      * masking and filtering is applied extensively throughout the scene graph.
      *
-     * @param {PIXI.Renderer} renderer - The renderer
+     * @param renderer - The renderer
      */
     render(renderer: Renderer): void
     {
@@ -588,11 +641,14 @@ export class Container extends DisplayObject
         {
             this.renderAdvanced(renderer);
         }
+        else if (this.cullable)
+        {
+            this._renderWithCulling(renderer);
+        }
         else
         {
             this._render(renderer);
 
-            // simple render children!
             for (let i = 0, j = this.children.length; i < j; ++i)
             {
                 this.children[i].render(renderer);
@@ -603,8 +659,7 @@ export class Container extends DisplayObject
     /**
      * Render the object using the WebGL renderer and advanced features.
      *
-     * @protected
-     * @param {PIXI.Renderer} renderer - The renderer
+     * @param renderer - The renderer
      */
     protected renderAdvanced(renderer: Renderer): void
     {
@@ -649,13 +704,18 @@ export class Container extends DisplayObject
             renderer.mask.push(this, this._mask);
         }
 
-        // add this object to the batch, only rendered if it has a texture.
-        this._render(renderer);
-
-        // now loop through the children and make sure they get rendered
-        for (let i = 0, j = this.children.length; i < j; i++)
+        if (this.cullable)
         {
-            this.children[i].render(renderer);
+            this._renderWithCulling(renderer);
+        }
+        else
+        {
+            this._render(renderer);
+
+            for (let i = 0, j = this.children.length; i < j; ++i)
+            {
+                this.children[i].render(renderer);
+            }
         }
 
         if (flush)
@@ -677,8 +737,7 @@ export class Container extends DisplayObject
     /**
      * To be overridden by the subclasses.
      *
-     * @protected
-     * @param {PIXI.Renderer} renderer - The renderer
+     * @param renderer - The renderer
      */
     protected _render(_renderer: Renderer): void // eslint-disable-line no-unused-vars
     {
@@ -689,7 +748,7 @@ export class Container extends DisplayObject
      * Removes all internal references and listeners as well as removes children from the display list.
      * Do not use a Container after calling `destroy`.
      *
-     * @param {object|boolean} [options] - Options parameter. A boolean will act as if all options
+     * @param options - Options parameter. A boolean will act as if all options
      *  have been set to that value
      * @param {boolean} [options.children=false] - if set to true, all the children will have their destroy
      *  method called as well. 'options' will be passed on to those calls.
@@ -717,11 +776,7 @@ export class Container extends DisplayObject
         }
     }
 
-    /**
-     * The width of the Container, setting this will actually modify the scale to achieve the value set
-     *
-     * @member {number}
-     */
+    /** The width of the Container, setting this will actually modify the scale to achieve the value set. */
     get width(): number
     {
         return this.scale.x * this.getLocalBounds().width;
@@ -743,11 +798,7 @@ export class Container extends DisplayObject
         this._width = value;
     }
 
-    /**
-     * The height of the Container, setting this will actually modify the scale to achieve the value set
-     *
-     * @member {number}
-     */
+    /** The height of the Container, setting this will actually modify the scale to achieve the value set. */
     get height(): number
     {
         return this.scale.y * this.getLocalBounds().height;

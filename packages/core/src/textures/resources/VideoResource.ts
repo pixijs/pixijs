@@ -370,7 +370,7 @@ export class VideoResource extends BaseImageResource
      */
     static test(source: unknown, extension?: string): source is HTMLVideoElement
     {
-        return (self.HTMLVideoElement && source instanceof HTMLVideoElement)
+        return (globalThis.HTMLVideoElement && source instanceof HTMLVideoElement)
             || VideoResource.TYPES.indexOf(extension) > -1;
     }
 
