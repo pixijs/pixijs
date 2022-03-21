@@ -390,6 +390,11 @@ export class GraphicsGeometry extends BatchGeometry
                 this.transformPoints(data.points, data.matrix);
             }
 
+            if (fillStyle.visible || lineStyle.visible)
+            {
+                this.processHoles(data.holes);
+            }
+
             for (let j = 0; j < 2; j++)
             {
                 const style = (j === 0) ? fillStyle : lineStyle;
@@ -731,8 +736,6 @@ export class GraphicsGeometry extends BatchGeometry
     {
         if (data.holes.length)
         {
-            this.processHoles(data.holes);
-
             buildPoly.triangulate(data, this);
         }
         else
