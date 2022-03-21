@@ -3,6 +3,8 @@ import { earcut } from '@pixi/utils';
 // for type only
 import type { IShapeBuildCommand } from './IShapeBuildCommand';
 import type { RoundedRectangle } from '@pixi/math';
+import { Graphics } from '../Graphics';
+import { buildCircle } from './buildCircle';
 
 /**
  * Calculate a single point for a quadratic bezier curve.
@@ -98,6 +100,13 @@ export const buildRoundedRectangle: IShapeBuildCommand = {
 
     build(graphicsData)
     {
+        if (Graphics.nextRoundedRectBehavior)
+        {
+            buildCircle.build(graphicsData);
+
+            return;
+        }
+
         const rrectData = graphicsData.shape as RoundedRectangle;
         const points = graphicsData.points;
         const x = rrectData.x;
@@ -141,6 +150,13 @@ export const buildRoundedRectangle: IShapeBuildCommand = {
 
     triangulate(graphicsData, graphicsGeometry)
     {
+        if (Graphics.nextRoundedRectBehavior)
+        {
+            buildCircle.triangulate(graphicsData, graphicsGeometry);
+
+            return;
+        }
+
         const points = graphicsData.points;
 
         const verts = graphicsGeometry.points;

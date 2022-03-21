@@ -775,38 +775,6 @@ describe('Graphics', function ()
         });
     });
 
-    describe('drawCircle', function ()
-    {
-        it('should have no gaps in line border', function ()
-        {
-            const renderer = new Renderer(200, 200, {});
-
-            try
-            {
-                const graphics = new Graphics();
-
-                graphics.lineStyle(15, 0x8FC7E6);
-                graphics.drawCircle(100, 100, 30);
-                renderer.render(graphics);
-                const points = graphics.geometry.graphicsData[0].points;
-
-                // The first point is center, not first point on circumference
-                const firstX = points[0];
-                const firstY = points[1];
-
-                const lastX = points[points.length - 2];
-                const lastY = points[points.length - 1];
-
-                expect(firstX).to.equals(lastX);
-                expect(firstY).to.equals(lastY);
-            }
-            finally
-            {
-                renderer.destroy();
-            }
-        });
-    });
-
     describe('startPoly', function ()
     {
         it('should fill two triangles', function ()

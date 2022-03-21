@@ -21,7 +21,7 @@ import { EventSystem } from '@pixi/events';
 delete Renderer.__plugins.interaction;
 
 const app = new PIXI.Application();
-const { renderer} = app;
+const { renderer } = app;
 
 document.body.appendChild(app.view);
 

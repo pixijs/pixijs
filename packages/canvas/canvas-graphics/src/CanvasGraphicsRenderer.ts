@@ -66,7 +66,7 @@ export class CanvasGraphicsRenderer
         }
         else
         {
-            res = `#${(`00000${(tint | 0).toString(16)}`).substr(-6)}`;
+            res = `#${(`00000${(tint | 0).toString(16)}`).slice(-6)}`;
         }
 
         return res;

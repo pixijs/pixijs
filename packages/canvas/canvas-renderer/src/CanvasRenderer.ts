@@ -153,6 +153,14 @@ export class CanvasRenderer extends AbstractRenderer
     }
 
     /**
+     * Adds a new system to the renderer. It does nothing in the CanvasRenderer.
+     */
+    addSystem(): this
+    {
+        return this;
+    }
+
+    /**
      * Renders the object to its WebGL view.
      *
      * @param displayObject - The object to be rendered.
