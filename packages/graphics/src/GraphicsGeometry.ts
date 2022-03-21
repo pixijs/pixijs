@@ -15,7 +15,6 @@ import {
     Texture,
 } from '@pixi/core';
 
-import { isPolygonClockwise } from './utils/isPolygonClockwise';
 import { DRAW_MODES, WRAP_MODES } from '@pixi/constants';
 import { SHAPES, Point, Matrix } from '@pixi/math';
 import { GraphicsData } from './GraphicsData';
@@ -795,25 +794,7 @@ export class GraphicsGeometry extends BatchGeometry
 
             if (lineStyle && lineStyle.visible)
             {
-                const alignment = lineStyle.alignment;
-
-                lineWidth = lineStyle.width;
-
-                if (type === SHAPES.POLY)
-                {
-                    if (isPolygonClockwise(shape as Polygon))
-                    {
-                        lineWidth = lineWidth * (1 - alignment);
-                    }
-                    else
-                    {
-                        lineWidth = lineWidth * alignment;
-                    }
-                }
-                else
-                {
-                    lineWidth = lineWidth * Math.max(0, alignment);
-                }
+                lineWidth = lineStyle.width * Math.max(0, lineStyle.alignment);
             }
 
             if (curMatrix !== nextMatrix)
