@@ -5,6 +5,7 @@ import { settings } from '@pixi/settings';
 import { RenderTexture } from './renderTexture/RenderTexture';
 
 import type { SCALE_MODES } from '@pixi/constants';
+import type { ISystemConstructor } from './ISystem';
 import type { IRenderingContext } from './IRenderingContext';
 import type { IRenderableContainer, IRenderableObject } from './IRenderableObject';
 
@@ -385,6 +386,15 @@ export abstract class AbstractRenderer extends EventEmitter
 
         return renderTexture;
     }
+
+    /**
+     * Adds a new system to the renderer.
+     *
+     * @param ClassRef - Class reference
+     * @param name - Property name for system
+     * @return Return instance of renderer
+     */
+    abstract addSystem(ClassRef: ISystemConstructor, name: string): this;
 
     abstract render(displayObject: IRenderableObject, options?: IRendererRenderOptions): void;
 
