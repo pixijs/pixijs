@@ -57,6 +57,13 @@ export class Text extends Sprite
      * In the next major release, we'll enable this by default.
      */
     public static nextLineHeightBehavior = false;
+    
+    /**
+     * New rendering behavior for letter-spacing which uses Chrome's new native API. This will
+     * lead to more accurate letter-spacing results because it does not try to manually draw
+     * each character. However, this Chrome API is experimental and may not serve all cases yet.
+     */
+    public static experimentalLetterSpacing = false;
 
     /** The canvas element that everything is drawn to. */
     public canvas: HTMLCanvasElement;
@@ -327,8 +334,9 @@ export class Text extends Sprite
         // https://developer.chrome.com/origintrials/#/view_trial/3585991203293757441
         // note: this is unstable API, Chrome less 94 use a `textLetterSpacing`, newest use a letterSpacing
         // eslint-disable-next-line max-len
-        const supportLetterSpacing = 'letterSpacing' in CanvasRenderingContext2D.prototype
-            || 'textLetterSpacing' in CanvasRenderingContext2D.prototype;
+        const supportLetterSpacing = Text.experimentalLetterSpacing &&
+            ('letterSpacing' in CanvasRenderingContext2D.prototype
+                || 'textLetterSpacing' in CanvasRenderingContext2D.prototype);
 
         if (letterSpacing === 0 || supportLetterSpacing)
         {
