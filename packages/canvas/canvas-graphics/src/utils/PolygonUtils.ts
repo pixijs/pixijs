@@ -131,9 +131,9 @@ export class PolygonUtils
     {
         let sum = 0;
 
-        for (let i = 0; i < polygon.length - 2; i += 2)
+        for (let i = 0, j = polygon.length - 2; i < polygon.length; j = i, i += 2)
         {
-            sum += (polygon[i + 2] - polygon[i]) * (polygon[i + 3] + polygon[i + 1]);
+            sum += (polygon[i] - polygon[j]) * (polygon[i + 1] + polygon[j + 1]);
         }
 
         return sum > 0;
