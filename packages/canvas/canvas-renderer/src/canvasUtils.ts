@@ -29,7 +29,7 @@ export const canvasUtils = {
 
         color = canvasUtils.roundColor(color);
 
-        const stringColor = `#${(`00000${(color | 0).toString(16)}`).substr(-6)}`;
+        const stringColor = `#${(`00000${(color | 0).toString(16)}`).slice(-6)}`;
 
         texture.tintCache = texture.tintCache || {};
 
@@ -84,7 +84,7 @@ export const canvasUtils = {
     {
         color = canvasUtils.roundColor(color);
 
-        const stringColor = `#${(`00000${(color | 0).toString(16)}`).substr(-6)}`;
+        const stringColor = `#${(`00000${(color | 0).toString(16)}`).slice(-6)}`;
 
         texture.patternCache = texture.patternCache || {};
 
@@ -129,7 +129,7 @@ export const canvasUtils = {
         canvas.height = Math.ceil(crop.height);
 
         context.save();
-        context.fillStyle = `#${(`00000${(color | 0).toString(16)}`).substr(-6)}`;
+        context.fillStyle = `#${(`00000${(color | 0).toString(16)}`).slice(-6)}`;
 
         context.fillRect(0, 0, crop.width, crop.height);
 
@@ -189,7 +189,7 @@ export const canvasUtils = {
 
         context.save();
         context.globalCompositeOperation = 'copy';
-        context.fillStyle = `#${(`00000${(color | 0).toString(16)}`).substr(-6)}`;
+        context.fillStyle = `#${(`00000${(color | 0).toString(16)}`).slice(-6)}`;
         context.fillRect(0, 0, crop.width, crop.height);
 
         context.globalCompositeOperation = 'destination-atop';

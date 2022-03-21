@@ -34,7 +34,7 @@ export function hex2string(hex: number): string
 {
     let hexString = hex.toString(16);
 
-    hexString = '000000'.substr(0, 6 - hexString.length) + hexString;
+    hexString = '000000'.substring(0, 6 - hexString.length) + hexString;
 
     return `#${hexString}`;
 }
@@ -62,7 +62,7 @@ export function string2hex(string: string): number
 
         if (string[0] === '#')
         {
-            string = string.substr(1);
+            string = string.slice(1);
         }
     }
 
