@@ -3,6 +3,7 @@ import { FederatedMouseEvent } from './FederatedMouseEvent';
 import { FederatedPointerEvent } from './FederatedPointerEvent';
 import { FederatedWheelEvent } from './FederatedWheelEvent';
 
+import type { IRenderableObject } from '@pixi/core';
 import type { DisplayObject } from '@pixi/display';
 import type { IPointData } from '@pixi/math';
 
@@ -17,7 +18,7 @@ const TOUCH_TO_POINTER: Record<string, string> = {
 
 interface Renderer
 {
-    _lastObjectRendered: DisplayObject;
+    _lastObjectRendered: IRenderableObject;
     view: HTMLCanvasElement;
     resolution: number;
     plugins: Record<string, any>;
