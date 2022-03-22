@@ -72,6 +72,17 @@ export const buildCircle: IShapeBuildCommand = {
             return;
         }
 
+        if (n === 0)
+        {
+            points.length = 8;
+            points[0] = points[6] = x + dx;
+            points[1] = points[3] = y + dy;
+            points[2] = points[4] = x - dx;
+            points[5] = points[7] = y - dy;
+
+            return;
+        }
+
         let j1 = 0;
         let j2 = (n * 4) + (dx ? 2 : 0) + 2;
         let j3 = j2;
