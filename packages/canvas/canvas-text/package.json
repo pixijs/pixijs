@@ -1,6 +1,6 @@
 {
   "name": "@pixi/canvas-text",
-  "version": "5.3.11",
+  "version": "5.3.12",
   "main": "lib/canvas-text.js",
   "module": "lib/canvas-text.es.js",
   "bundle": "dist/canvas-text.js",
@@ -22,7 +22,7 @@
     "dist"
   ],
   "dependencies": {
-    "@pixi/sprite": "5.3.11",
-    "@pixi/text": "5.3.11"
+    "@pixi/sprite": "5.3.12",
+    "@pixi/text": "5.3.12"
   }
 }
