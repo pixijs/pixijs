@@ -36,11 +36,11 @@ export class ResizePlugin
             {
                 set(dom: Window|HTMLElement)
                 {
-                    self.removeEventListener('resize', this.queueResize);
+                    globalThis.removeEventListener('resize', this.queueResize);
                     this._resizeTo = dom;
                     if (dom)
                     {
-                        self.addEventListener('resize', this.queueResize);
+                        globalThis.addEventListener('resize', this.queueResize);
                         this.resize();
                     }
                 },
@@ -109,10 +109,10 @@ export class ResizePlugin
             let height: number;
 
             // Resize to the window
-            if (this._resizeTo === self)
+            if (this._resizeTo === globalThis.window)
             {
-                width = self.innerWidth;
-                height = self.innerHeight;
+                width = globalThis.innerWidth;
+                height = globalThis.innerHeight;
             }
             // Resize to other HTML entities
             else
@@ -140,7 +140,7 @@ export class ResizePlugin
      */
     static destroy(): void
     {
-        self.removeEventListener('resize', this.queueResize);
+        globalThis.removeEventListener('resize', this.queueResize);
         this.cancelResize();
         this.cancelResize = null;
         this.queueResize = null;

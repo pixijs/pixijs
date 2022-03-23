@@ -70,7 +70,7 @@ export interface FederatedEventTarget extends EventEmitter, EventTarget {
     interactiveChildren: boolean;
 
     /** The hit-area specifies the area for which pointer events should be captured by this event target. */
-    hitArea: IHitArea;
+    hitArea: IHitArea | null;
 }
 
 export const FederatedDisplayObject: Omit<

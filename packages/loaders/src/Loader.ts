@@ -505,7 +505,7 @@ class Loader
         {
             const hash = rgxExtractUrlHash.exec(result)[0];
 
-            result = result.substr(0, result.length - hash.length);
+            result = result.slice(0, result.length - hash.length);
 
             if (result.indexOf('?') !== -1)
             {

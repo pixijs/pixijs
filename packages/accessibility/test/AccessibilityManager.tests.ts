@@ -50,9 +50,9 @@ describe('AccessibilityManager', function ()
         const renderer = new Renderer();
         const manager = new AccessibilityManager(renderer);
 
-        self.dispatchEvent(new KeyboardEvent('keydown', { keyCode: 9, key: 'tab' }));
+        globalThis.dispatchEvent(new KeyboardEvent('keydown', { keyCode: 9, key: 'tab' }));
         expect(manager.isActive).to.be.true;
-        self.document.dispatchEvent(new MouseEvent('mousemove', { movementX: 10, movementY: 10 }));
+        globalThis.document.dispatchEvent(new MouseEvent('mousemove', { movementX: 10, movementY: 10 }));
         expect(manager.isActive).to.be.false;
     });
 
@@ -68,7 +68,7 @@ describe('AccessibilityManager', function ()
         const stage = new Container().addChild(new CompleteDisplayObject());
         const manager = new AccessibilityManager(renderer);
 
-        self.dispatchEvent(new KeyboardEvent('keydown', { keyCode: 9, key: 'tab' }));
+        globalThis.dispatchEvent(new KeyboardEvent('keydown', { keyCode: 9, key: 'tab' }));
 
         expect(() => renderer.render(stage)).not.to.throw();
         expect(manager.isActive).to.be.true;

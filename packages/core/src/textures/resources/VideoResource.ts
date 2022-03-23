@@ -102,7 +102,7 @@ export class VideoResource extends BaseImageResource
                 src = src || source[i] as string;
 
                 const baseSrc = src.split('?').shift().toLowerCase();
-                const ext = baseSrc.substr(baseSrc.lastIndexOf('.') + 1);
+                const ext = baseSrc.slice(baseSrc.lastIndexOf('.') + 1);
 
                 mime = mime || VideoResource.MIME_TYPES[ext] || `video/${ext}`;
 
@@ -370,7 +370,7 @@ export class VideoResource extends BaseImageResource
      */
     static test(source: unknown, extension?: string): source is HTMLVideoElement
     {
-        return (self.HTMLVideoElement && source instanceof HTMLVideoElement)
+        return (globalThis.HTMLVideoElement && source instanceof HTMLVideoElement)
             || VideoResource.TYPES.indexOf(extension) > -1;
     }
 

@@ -276,7 +276,7 @@ export class CanvasMeshRenderer
         context.closePath();
     }
 
-    /** destroy the the renderer */
+    /** destroy the renderer */
     public destroy(): void
     {
         this.renderer = null;

@@ -28,6 +28,9 @@
     "type": "opencollective",
     "url": "https://opencollective.com/pixijs"
   },
+  "dependencies": {
+    "@types/offscreencanvas": "^2019.6.4"
+  },
   "peerDependencies": {
     "@pixi/constants": "6.2.2",
     "@pixi/math": "6.2.2",
