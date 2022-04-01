@@ -100,13 +100,13 @@ export const TYPES_TO_BYTES_PER_PIXEL: { [id: number]: number } = {
  * This KTX loader does not currently support the following features:
  * * cube textures
  * * 3D textures
- * * vendor-specific key/value data parsing
  * * endianness conversion for big-endian machines
  * * embedded *.basis files
  *
  * It does supports the following features:
  * * multiple textures per file
  * * mipmapping (only for compressed formats)
+ * * vendor-specific key/value data parsing (enable {@link PIXI.settings.KTX_LOAD_KV_DATA})
  *
  * @class
  * @memberof PIXI
