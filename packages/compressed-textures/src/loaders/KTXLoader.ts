@@ -4,6 +4,7 @@ import { CompressedLevelBuffer, CompressedTextureResource } from '../resources/C
 import { LoaderResource } from '@pixi/loaders';
 import { INTERNAL_FORMAT_TO_BYTES_PER_PIXEL } from '../const';
 import { registerCompressedTextures } from './registerCompressedTextures';
+import { settings } from '@pixi/settings';
 
 // Set KTX files to be loaded as an ArrayBuffer
 LoaderResource.setExtensionXhrType('ktx', LoaderResource.XHR_RESPONSE_TYPE.BUFFER);
@@ -130,15 +131,25 @@ export class KTXLoader
             try
             {
                 const url = resource.name || resource.url;
-                const { compressed, uncompressed } = KTXLoader.parse(url, resource.data);
+                const { compressed, uncompressed, kvData } = KTXLoader.parse(url, resource.data);
 
                 if (compressed)
                 {
-                    Object.assign(resource, registerCompressedTextures(
+                    const result = registerCompressedTextures(
                         url,
                         compressed,
                         resource.metadata,
-                    ));
+                    );
+
+                    if (kvData && result.textures)
+                    {
+                        for (const textureId in result.textures)
+                        {
+                            result.textures[textureId].baseTexture.ktxKvData = kvData;
+                        }
+                    }
+
+                    Object.assign(resource, result);
                 }
                 else if (uncompressed)
                 {
@@ -156,6 +167,8 @@ export class KTXLoader
                             }
                         ));
                         const cacheID = `${url}-${i + 1}`;
+
+                        if (kvData) texture.baseTexture.ktxKvData = kvData;
 
                         BaseTexture.addToCache(texture.baseTexture, cacheID);
                         Texture.addToCache(texture, cacheID);
@@ -188,6 +201,7 @@ export class KTXLoader
     private static parse(url: string, arrayBuffer: ArrayBuffer): {
         compressed?: CompressedTextureResource[]
         uncompressed?: { resource: BufferResource, type: TYPES, format: FORMATS }[]
+        kvData: Map<string, DataView> | null
     }
     {
         const dataView = new DataView(arrayBuffer);
@@ -267,6 +281,10 @@ export class KTXLoader
         {
             throw new Error('Unable to resolve the pixel format stored in the *.ktx file!');
         }
+
+        const kvData: Map<string, DataView> | null = settings.KTX_LOAD_KV_DATA
+            ? KTXLoader.parseKvData(dataView, bytesOfKeyValueData, littleEndian)
+            : null;
 
         const imageByteSize = imagePixels * imagePixelByteSize;
         let mipByteSize = imageByteSize;
@@ -362,7 +380,8 @@ export class KTXLoader
                         type: glType,
                         format: convertToInt ? KTXLoader.convertFormatToInteger(glFormat) : glFormat,
                     };
-                })
+                }),
+                kvData
             };
         }
 
@@ -373,7 +392,8 @@ export class KTXLoader
                 height: pixelHeight,
                 levels: numberOfMipmapLevels,
                 levelBuffers,
-            }))
+            })),
+            kvData
         };
     }
 
@@ -407,5 +427,60 @@ export class KTXLoader
             case FORMATS.RED: return FORMATS.RED_INTEGER;
             default: return format;
         }
+    }
+
+    private static parseKvData(dataView: DataView, bytesOfKeyValueData: number, littleEndian: boolean): Map<string, DataView>
+    {
+        const kvData = new Map<string, DataView>();
+        let bytesIntoKeyValueData = 0;
+
+        while (bytesIntoKeyValueData < bytesOfKeyValueData)
+        {
+            const keyAndValueByteSize = dataView.getUint32(FILE_HEADER_SIZE + bytesIntoKeyValueData, littleEndian);
+            const keyAndValueByteOffset = FILE_HEADER_SIZE + bytesIntoKeyValueData + 4;
+            const valuePadding = 3 - ((keyAndValueByteSize + 3) % 4);
+
+            // Bounds check
+            if (keyAndValueByteSize === 0 || keyAndValueByteSize > bytesOfKeyValueData - bytesIntoKeyValueData)
+            {
+                console.error('KTXLoader: keyAndValueByteSize out of bounds');
+                break;
+            }
+
+            // Note: keyNulByte can't be 0 otherwise the key is an empty string.
+            let keyNulByte = 0;
+
+            for (; keyNulByte < keyAndValueByteSize; keyNulByte++)
+            {
+                if (dataView.getUint8(keyAndValueByteOffset + keyNulByte) === 0x00)
+                {
+                    break;
+                }
+            }
+
+            if (keyNulByte === -1)
+            {
+                console.error('KTXLoader: Failed to find null byte terminating kvData key');
+                break;
+            }
+
+            const key = new TextDecoder().decode(
+                new Uint8Array(dataView.buffer, keyAndValueByteOffset, keyNulByte)
+            );
+            const value = new DataView(
+                dataView.buffer,
+                keyAndValueByteOffset + keyNulByte + 1,
+                keyAndValueByteSize - keyNulByte - 1,
+            );
+
+            kvData.set(key, value);
+
+            // 4 = the keyAndValueByteSize field itself
+            // keyAndValueByteSize = the bytes taken by the key and value
+            // valuePadding = extra padding to align with 4 bytes
+            bytesIntoKeyValueData += 4 + keyAndValueByteSize + valuePadding;
+        }
+
+        return kvData;
     }
 }
