@@ -67,7 +67,7 @@ describe('Spritesheet', function ()
     it('should exist on PIXI', function ()
     {
         expect(Spritesheet).to.be.a('function');
-        expect(Spritesheet.BATCH_SIZE).to.be.a.number;
+        expect(Spritesheet.BATCH_SIZE).to.be.a('number');
     });
 
     it('should create an instance', function ()
