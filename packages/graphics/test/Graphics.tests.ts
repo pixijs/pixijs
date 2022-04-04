@@ -109,7 +109,7 @@ describe('Graphics', function ()
 
             expect(graphics.line.width).to.equal(1);
             expect(graphics.line.texture).to.equal(texture);
-            expect(graphics.line.matrix).to.be.okay;
+            expect(graphics.line.matrix).to.be.ok;
             expect(graphics.line.color).to.equal(0xff0000);
             expect(graphics.line.alignment).to.equal(1);
             expect(graphics.line.alpha).to.equal(0.5);
