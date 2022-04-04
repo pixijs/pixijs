@@ -208,7 +208,7 @@ export class BitmapText extends Container
         this._tint = tint;
         this._fontName = fontName;
         this._fontSize = fontSize || BitmapFont.available[fontName].size;
-        this._text = String(text === null || text === undefined ? '' : text);
+        this.text = text;
         this._maxWidth = maxWidth;
         this._maxLineHeight = 0;
         this._letterSpacing = letterSpacing;
