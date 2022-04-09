@@ -4,7 +4,6 @@ import { CompressedLevelBuffer, CompressedTextureResource } from '../resources/C
 import { LoaderResource } from '@pixi/loaders';
 import { INTERNAL_FORMAT_TO_BYTES_PER_PIXEL } from '../const';
 import { registerCompressedTextures } from './registerCompressedTextures';
-import { settings } from '@pixi/settings';
 
 // Set KTX files to be loaded as an ArrayBuffer
 LoaderResource.setExtensionXhrType('ktx', LoaderResource.XHR_RESPONSE_TYPE.BUFFER);
@@ -106,14 +105,23 @@ export const TYPES_TO_BYTES_PER_PIXEL: { [id: number]: number } = {
  * It does supports the following features:
  * * multiple textures per file
  * * mipmapping (only for compressed formats)
- * * vendor-specific key/value data parsing (enable {@link PIXI.settings.KTX_LOAD_KV_DATA})
+ * * vendor-specific key/value data parsing (enable {@link PIXI.KTXLoader.loadKeyValueData})
  *
- * @class
  * @memberof PIXI
  * @implements PIXI.ILoaderPlugin
  */
 export class KTXLoader
 {
+    /**
+     * If set to `true`, {@link PIXI.KTXLoader} will parse key-value data in KTX textures. This feature relies
+     * on the [Encoding Standard]{@link https://encoding.spec.whatwg.org}.
+     *
+     * The key-value data will be available on the base-textures as {@code PIXI.BaseTexture.ktxKeyValueData}. They
+     * will hold a reference to the texture data buffer, so make sure to delete key-value data once you are done
+     * using it.
+     */
+    static loadKeyValueData = false;
+
     /**
      * Called after a KTX file is loaded.
      *
@@ -145,7 +153,7 @@ export class KTXLoader
                     {
                         for (const textureId in result.textures)
                         {
-                            result.textures[textureId].baseTexture.ktxKvData = kvData;
+                            result.textures[textureId].baseTexture.ktxKeyValueData = kvData;
                         }
                     }
 
@@ -168,7 +176,7 @@ export class KTXLoader
                         ));
                         const cacheID = `${url}-${i + 1}`;
 
-                        if (kvData) texture.baseTexture.ktxKvData = kvData;
+                        if (kvData) texture.baseTexture.ktxKeyValueData = kvData;
 
                         BaseTexture.addToCache(texture.baseTexture, cacheID);
                         Texture.addToCache(texture, cacheID);
@@ -282,7 +290,7 @@ export class KTXLoader
             throw new Error('Unable to resolve the pixel format stored in the *.ktx file!');
         }
 
-        const kvData: Map<string, DataView> | null = settings.KTX_LOAD_KV_DATA
+        const kvData: Map<string, DataView> | null = KTXLoader.loadKeyValueData
             ? KTXLoader.parseKvData(dataView, bytesOfKeyValueData, littleEndian)
             : null;
 

@@ -45,7 +45,6 @@ export interface ISettings {
     STRICT_TEXTURE_CACHE?: boolean;
     MESH_CANVAS_PADDING?: number;
     TARGET_FPMS?: number;
-    KTX_LOAD_KV_DATA?: boolean;
 }
 
 /**
