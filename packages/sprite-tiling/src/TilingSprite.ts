@@ -87,7 +87,7 @@ export class TilingSprite extends Sprite
         return this.tileTransform.scale;
     }
 
-    set tileScale(value: ObservablePoint)
+    set tileScale(value: IPointData)
     {
         this.tileTransform.scale.copyFrom(value as IPoint);
     }
