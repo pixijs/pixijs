@@ -4,12 +4,13 @@ import { LoaderResource } from '@pixi/loaders';
 import { expect } from 'chai';
 import { fixtureData } from './fixtures/data';
 
-describe('LoaderResource', () =>
+describe.only('LoaderResource', () =>
 {
     let request: any;
     let res: LoaderResource;
     let xhr: any;
     let clock: any;
+    let image: any;
     const name = 'test-resource';
 
     before(() =>
@@ -20,12 +21,15 @@ describe('LoaderResource', () =>
             request = req;
         };
         clock = sinon.useFakeTimers();
+
+        image = sinon.spy(globalThis, 'Image');
     });
 
     after(() =>
     {
         xhr.restore();
         clock.restore();
+        image.restore();
     });
 
     beforeEach(() =>
@@ -38,10 +42,11 @@ describe('LoaderResource', () =>
     {
         expect(res).to.have.property('name', name);
         expect(res).to.have.property('type', LoaderResource.TYPE.UNKNOWN);
+        expect(res).to.have.property('extension', fixtureData.extension);
         expect(res).to.have.property('url', fixtureData.url);
         expect(res).to.have.property('data', null);
         expect(res).to.have.property('crossOrigin', undefined);
-        expect(res).to.have.property('loadType', LoaderResource.LOAD_TYPE.XHR);
+        expect(res).to.have.property('loadType', LoaderResource.LOAD_TYPE.IMAGE);
         expect(res).to.have.property('xhrType', undefined);
         expect(res).to.have.property('metadata').that.is.eql({});
         expect(res).to.have.property('error', null);
@@ -135,6 +140,7 @@ describe('LoaderResource', () =>
     {
         it('should abort in-flight XHR requests', () =>
         {
+            res.loadType = LoaderResource.LOAD_TYPE.XHR;
             res.load();
 
             res.xhr.abort = sinon.spy();
@@ -193,14 +199,38 @@ describe('LoaderResource', () =>
 
             res.load();
 
-            expect(request).to.exist;
             expect(spy).to.have.been.calledWith(res);
         });
 
-        it('should emit the complete event', () =>
+        it('should create an XMLHttpRequest for XHR loads', () =>
+        {
+            res.loadType = LoaderResource.LOAD_TYPE.XHR;
+            res.load();
+
+            expect(request).to.exist;
+        });
+
+        it('should emit the complete event using Image', () =>
         {
             const spy = sinon.spy();
 
+            res.loadType = LoaderResource.LOAD_TYPE.IMAGE;
+            res.onComplete.add(spy);
+
+            res.load();
+
+            expect(image).to.have.been.called;
+
+            image.returnValues.forEach((img) => img.dispatchEvent(new Event('load')));
+
+            expect(spy).to.have.been.calledWith(res);
+        });
+
+        it('should emit the complete event for XHR loads', () =>
+        {
+            const spy = sinon.spy();
+
+            res.loadType = LoaderResource.LOAD_TYPE.XHR;
             res.onComplete.add(spy);
 
             res.load();
@@ -269,6 +299,9 @@ describe('LoaderResource', () =>
 
         it('should load using XHR', (done) =>
         {
+            res.loadType = LoaderResource.LOAD_TYPE.XHR;
+            res.xhrType = LoaderResource.XHR_RESPONSE_TYPE.TEXT;// fixture is a png so have to manually set
+
             res.onComplete.add(() =>
             {
                 expect(res).to.have.property('data', fixtureData.dataJson);
