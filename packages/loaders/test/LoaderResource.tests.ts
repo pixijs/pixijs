@@ -4,7 +4,7 @@ import { LoaderResource } from '@pixi/loaders';
 import { expect } from 'chai';
 import { fixtureData } from './fixtures/data';
 
-describe.only('LoaderResource', () =>
+describe('LoaderResource', () =>
 {
     let request: any;
     let res: LoaderResource;
