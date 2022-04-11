@@ -72,7 +72,7 @@ describe('Runner', function ()
         }
         catch (e)
         {
-            expect(!!e).to.equal.true;
+            expect(!!e).to.be.true;
             expect(e.message).to.equal('max arguments reached');
         }
     });

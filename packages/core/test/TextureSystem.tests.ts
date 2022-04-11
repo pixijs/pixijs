@@ -1,5 +1,5 @@
 import { WRAP_MODES, TYPES, FORMATS, SAMPLER_TYPES } from '@pixi/constants';
-import { Renderer, Texture, BaseTexture, BufferResource } from '@pixi/core';
+import { Renderer, Texture, BaseTexture } from '@pixi/core';
 import { expect } from 'chai';
 
 describe('TextureSystem', function ()
@@ -62,7 +62,7 @@ describe('TextureSystem', function ()
 
         const glTex = baseTex._glTextures[this.renderer.CONTEXT_UID];
 
-        expect(glTex).to.be.notnull;
+        expect(glTex).to.not.be.null;
         expect(glTex.internalFormat).to.equal(this.renderer.gl.RGBA32F);
     });
 
@@ -74,7 +74,7 @@ describe('TextureSystem', function ()
 
         const glTex = baseTex._glTextures[this.renderer.CONTEXT_UID];
 
-        expect(glTex).to.be.notnull;
+        expect(glTex).to.not.be.null;
         expect(glTex.internalFormat).to.equal(this.renderer.gl.R32F);
     });
 
@@ -86,7 +86,7 @@ describe('TextureSystem', function ()
 
         const glTex = baseTex._glTextures[this.renderer.CONTEXT_UID];
 
-        expect(glTex).to.be.notnull;
+        expect(glTex).to.not.be.null;
         expect(glTex.internalFormat).to.equal(this.renderer.gl.RGB32F);
     });
 
