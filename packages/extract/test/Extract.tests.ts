@@ -1,8 +1,8 @@
 import { Sprite } from '@pixi/sprite';
 import { expect } from 'chai';
 import { skipHello } from '@pixi/utils';
-import { Texture, RenderTexture, BatchRenderer, Renderer, Options } from '@pixi/core';
-import { Extract } from '@pixi/extract';
+import { Texture, RenderTexture, BatchRenderer, Renderer } from '@pixi/core';
+import { Extract, PixelExtractOptions } from '@pixi/extract';
 
 skipHello();
 
@@ -57,7 +57,7 @@ describe('Extract', function ()
         const extract = renderer.plugins.extract as Extract;
         const renderTexture = RenderTexture.create({ width: 10, height: 10 });
         const sprite = new Sprite(Texture.WHITE);
-        const test: Options = { x: 1, y: 2, scall: 5, width: 10, height: 10 };
+        const test: PixelExtractOptions = { x: 1, y: 2, resolution: 5, width: 10, height: 10 };
 
         renderer.render(sprite, { renderTexture });
 

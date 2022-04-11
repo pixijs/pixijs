@@ -1,6 +1,6 @@
 import { CanvasRenderTarget } from '@pixi/utils';
 import { Rectangle } from '@pixi/math';
-import { Options, RenderTexture } from '@pixi/core';
+import { RenderTexture } from '@pixi/core';
 
 import type { Renderer, IRendererPlugin } from '@pixi/core';
 import { DisplayObject } from '@pixi/display';
@@ -30,6 +30,15 @@ const BYTES_PER_PIXEL = 4;
  *
  * @memberof PIXI
  */
+
+export interface PixelExtractOptions {
+    x: number,
+    y: number,
+    height: number,
+    resolution: number,
+    width: number
+}
+
 export class Extract implements IRendererPlugin
 {
     private renderer: Renderer;
@@ -184,7 +193,7 @@ export class Extract implements IRendererPlugin
      */
 
     // any { x: double; y: double; scale : double; Width:double;height :double}
-    public pixels(target?: DisplayObject|RenderTexture, opt?: Options): Uint8Array
+    public pixels(target?: DisplayObject|RenderTexture, options?: PixelExtractOptions): Uint8Array
     {
         const renderer = this.renderer;
         let resolution;
@@ -207,9 +216,9 @@ export class Extract implements IRendererPlugin
 
         if (renderTexture)
         {
-            if (opt)
+            if (options)
             {
-                resolution = opt.scall;
+                resolution = options.resolution;
                 frame = renderTexture.frame;
 
                 // bind the buffer
@@ -224,13 +233,13 @@ export class Extract implements IRendererPlugin
                 renderer.renderTexture.bind(renderTexture);
             }
         }
-        else if (opt)
+        else if (options)
         {
-            resolution = opt.scall;
+            resolution = options.resolution;
 
             frame = TEMP_RECT;
-            frame.width = opt.width;
-            frame.height = opt.height;
+            frame.width = options.width;
+            frame.height = options.height;
             renderer.renderTexture.bind(null);
         }
         else
