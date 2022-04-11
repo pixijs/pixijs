@@ -1,6 +1,6 @@
 {
   "name": "@pixi/mixin-get-global-position",
-  "version": "6.2.1",
+  "version": "6.3.0",
   "main": "dist/cjs/mixin-get-global-position.js",
   "module": "dist/esm/mixin-get-global-position.js",
   "bundle": "dist/browser/mixin-get-global-position.js",
@@ -26,7 +26,7 @@
     "*.d.ts"
   ],
   "peerDependencies": {
-    "@pixi/display": "6.2.1",
-    "@pixi/math": "6.2.1"
+    "@pixi/display": "6.3.0",
+    "@pixi/math": "6.3.0"
   }
 }

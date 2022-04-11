@@ -1,6 +1,6 @@
 {
   "name": "@pixi/interaction",
-  "version": "6.2.1",
+  "version": "6.3.0",
   "main": "dist/cjs/interaction.js",
   "module": "dist/esm/interaction.js",
   "bundle": "dist/browser/interaction.js",
@@ -25,10 +25,10 @@
     "*.d.ts"
   ],
   "peerDependencies": {
-    "@pixi/core": "6.2.1",
-    "@pixi/display": "6.2.1",
-    "@pixi/math": "6.2.1",
-    "@pixi/ticker": "6.2.1",
-    "@pixi/utils": "6.2.1"
+    "@pixi/core": "6.3.0",
+    "@pixi/display": "6.3.0",
+    "@pixi/math": "6.3.0",
+    "@pixi/ticker": "6.3.0",
+    "@pixi/utils": "6.3.0"
   }
 }

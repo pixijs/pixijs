@@ -1,6 +1,6 @@
 {
   "name": "@pixi/app",
-  "version": "6.2.1",
+  "version": "6.3.0",
   "main": "dist/cjs/app.js",
   "module": "dist/esm/app.js",
   "bundle": "dist/browser/app.js",
@@ -25,7 +25,7 @@
     "*.d.ts"
   ],
   "peerDependencies": {
-    "@pixi/core": "6.2.1",
-    "@pixi/display": "6.2.1"
+    "@pixi/core": "6.3.0",
+    "@pixi/display": "6.3.0"
   }
 }

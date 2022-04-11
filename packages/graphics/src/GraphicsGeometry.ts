@@ -15,7 +15,6 @@ import {
     Texture,
 } from '@pixi/core';
 
-import { isPolygonClockwise } from './utils/isPolygonClockwise';
 import { DRAW_MODES, WRAP_MODES } from '@pixi/constants';
 import { SHAPES, Point, Matrix } from '@pixi/math';
 import { GraphicsData } from './GraphicsData';
@@ -390,6 +389,11 @@ export class GraphicsGeometry extends BatchGeometry
                 this.transformPoints(data.points, data.matrix);
             }
 
+            if (fillStyle.visible || lineStyle.visible)
+            {
+                this.processHoles(data.holes);
+            }
+
             for (let j = 0; j < 2; j++)
             {
                 const style = (j === 0) ? fillStyle : lineStyle;
@@ -731,8 +735,6 @@ export class GraphicsGeometry extends BatchGeometry
     {
         if (data.holes.length)
         {
-            this.processHoles(data.holes);
-
             buildPoly.triangulate(data, this);
         }
         else
@@ -792,24 +794,15 @@ export class GraphicsGeometry extends BatchGeometry
 
             if (lineStyle && lineStyle.visible)
             {
-                const alignment = lineStyle.alignment;
-
                 lineWidth = lineStyle.width;
 
-                if (type === SHAPES.POLY)
+                if (type !== SHAPES.POLY || data.fillStyle.visible)
                 {
-                    if (isPolygonClockwise(shape as Polygon))
-                    {
-                        lineWidth = lineWidth * (1 - alignment);
-                    }
-                    else
-                    {
-                        lineWidth = lineWidth * alignment;
-                    }
+                    lineWidth *= Math.max(0, lineStyle.alignment);
                 }
                 else
                 {
-                    lineWidth = lineWidth * Math.max(0, alignment);
+                    lineWidth *= Math.max(lineStyle.alignment, 1 - lineStyle.alignment);
                 }
             }
 

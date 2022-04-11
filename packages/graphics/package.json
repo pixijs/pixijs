@@ -1,6 +1,6 @@
 {
   "name": "@pixi/graphics",
-  "version": "6.2.1",
+  "version": "6.3.0",
   "main": "dist/cjs/graphics.js",
   "module": "dist/esm/graphics.js",
   "bundle": "dist/browser/graphics.js",
@@ -25,11 +25,11 @@
     "*.d.ts"
   ],
   "peerDependencies": {
-    "@pixi/constants": "6.2.1",
-    "@pixi/core": "6.2.1",
-    "@pixi/display": "6.2.1",
-    "@pixi/math": "6.2.1",
-    "@pixi/sprite": "6.2.1",
-    "@pixi/utils": "6.2.1"
+    "@pixi/constants": "6.3.0",
+    "@pixi/core": "6.3.0",
+    "@pixi/display": "6.3.0",
+    "@pixi/math": "6.3.0",
+    "@pixi/sprite": "6.3.0",
+    "@pixi/utils": "6.3.0"
   }
 }

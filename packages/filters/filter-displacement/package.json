@@ -1,6 +1,6 @@
 {
   "name": "@pixi/filter-displacement",
-  "version": "6.2.1",
+  "version": "6.3.0",
   "main": "dist/cjs/filter-displacement.js",
   "module": "dist/esm/filter-displacement.js",
   "bundle": "dist/browser/filter-displacement.js",
@@ -26,7 +26,7 @@
     "*.d.ts"
   ],
   "peerDependencies": {
-    "@pixi/core": "6.2.1",
-    "@pixi/math": "6.2.1"
+    "@pixi/core": "6.3.0",
+    "@pixi/math": "6.3.0"
   }
 }

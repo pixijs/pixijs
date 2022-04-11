@@ -109,7 +109,7 @@ describe('Graphics', function ()
 
             expect(graphics.line.width).to.equal(1);
             expect(graphics.line.texture).to.equal(texture);
-            expect(graphics.line.matrix).to.be.okay;
+            expect(graphics.line.matrix).to.be.ok;
             expect(graphics.line.color).to.equal(0xff0000);
             expect(graphics.line.alignment).to.equal(1);
             expect(graphics.line.alpha).to.equal(0.5);
@@ -772,38 +772,6 @@ describe('Graphics', function ()
             expect(y).to.equal(20);
             expect(width).to.equal(100);
             expect(height).to.equal(200);
-        });
-    });
-
-    describe('drawCircle', function ()
-    {
-        it('should have no gaps in line border', function ()
-        {
-            const renderer = new Renderer(200, 200, {});
-
-            try
-            {
-                const graphics = new Graphics();
-
-                graphics.lineStyle(15, 0x8FC7E6);
-                graphics.drawCircle(100, 100, 30);
-                renderer.render(graphics);
-                const points = graphics.geometry.graphicsData[0].points;
-
-                // The first point is center, not first point on circumference
-                const firstX = points[0];
-                const firstY = points[1];
-
-                const lastX = points[points.length - 2];
-                const lastY = points[points.length - 1];
-
-                expect(firstX).to.equals(lastX);
-                expect(firstY).to.equals(lastY);
-            }
-            finally
-            {
-                renderer.destroy();
-            }
         });
     });
 

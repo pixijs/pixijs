@@ -1,6 +1,6 @@
 {
   "name": "@pixi/mixin-get-child-by-name",
-  "version": "6.2.1",
+  "version": "6.3.0",
   "main": "dist/cjs/mixin-get-child-by-name.js",
   "module": "dist/esm/mixin-get-child-by-name.js",
   "bundle": "dist/browser/mixin-get-child-by-name.js",
@@ -26,6 +26,6 @@
     "*.d.ts"
   ],
   "peerDependencies": {
-    "@pixi/display": "6.2.1"
+    "@pixi/display": "6.3.0"
   }
 }

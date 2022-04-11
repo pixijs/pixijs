@@ -78,8 +78,8 @@ export class RenderTexturePool
     {
         let key;
 
-        minWidth = Math.ceil(minWidth * resolution);
-        minHeight = Math.ceil(minHeight * resolution);
+        minWidth = Math.ceil((minWidth * resolution) - 1e-6);
+        minHeight = Math.ceil((minHeight * resolution) - 1e-6);
 
         if (!this.enableFullScreen || minWidth !== this._pixelsWidth || minHeight !== this._pixelsHeight)
         {
