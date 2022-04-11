@@ -169,4 +169,20 @@ describe('BitmapText', function ()
             }
         }
     });
+    it('should not crash if text is undefined', function ()
+    {
+        let text = new BitmapText(undefined, {
+            fontName: this.font.font,
+        });
+
+        expect(() => text.updateText()).to.not.throw();
+
+        text = new BitmapText('not undefined', {
+            fontName: this.font.font,
+        });
+
+        text.text = undefined;
+
+        expect(() => text.updateText()).to.not.throw();
+    });
 });
