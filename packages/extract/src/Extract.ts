@@ -9,6 +9,20 @@ const TEMP_RECT = new Rectangle();
 const BYTES_PER_PIXEL = 4;
 
 /**
+ * this interface is used to extract only  a single pixel of Render Texture or Display Object
+ * if you use this Interface all fields is required
+ * @exemple
+ * test: PixelExtractOptions = { x: 15, y: 20, resolution: 4, width: 10, height: 10 }
+ */
+export interface PixelExtractOptions {
+    x: number,
+    y: number,
+    height: number,
+    resolution: number,
+    width: number
+}
+
+/**
  * This class provides renderer-specific plugins for exporting content from a renderer.
  * For instance, these plugins can be used for saving an Image, Canvas element or for exporting the raw image data (pixels).
  *
@@ -30,14 +44,6 @@ const BYTES_PER_PIXEL = 4;
  *
  * @memberof PIXI
  */
-
-export interface PixelExtractOptions {
-    x: number,
-    y: number,
-    height: number,
-    resolution: number,
-    width: number
-}
 
 export class Extract implements IRendererPlugin
 {
@@ -192,7 +198,6 @@ export class Extract implements IRendererPlugin
      * @return - One-dimensional array containing the pixel data of the entire texture
      */
 
-    // any { x: double; y: double; scale : double; Width:double;height :double}
     public pixels(target?: DisplayObject|RenderTexture, options?: PixelExtractOptions): Uint8Array
     {
         const renderer = this.renderer;

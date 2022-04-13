@@ -45,7 +45,6 @@ import { deprecation } from '@pixi/utils';
  * ```
  *
  * @memberof PIXI
- *
  */
 
 export class RenderTexture extends Texture
