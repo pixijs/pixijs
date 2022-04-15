@@ -197,7 +197,6 @@ export class Extract implements IRendererPlugin
      *  to convert. If left empty will use the main renderer
      * @return - One-dimensional array containing the pixel data of the entire texture
      */
-
     public pixels(target?: DisplayObject|RenderTexture, options?: PixelExtractOptions): Uint8Array
     {
         const renderer = this.renderer;
