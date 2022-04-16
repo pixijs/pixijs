@@ -20,7 +20,6 @@ describe('LoaderResource', () =>
         {
             request = req;
         };
-        clock = sinon.useFakeTimers();
 
         image = sinon.spy(globalThis, 'Image');
     });
@@ -28,7 +27,6 @@ describe('LoaderResource', () =>
     after(() =>
     {
         xhr.restore();
-        clock.restore();
         image.restore();
     });
 
@@ -36,6 +34,12 @@ describe('LoaderResource', () =>
     {
         res = new LoaderResource(name, fixtureData.url);
         request = null;
+        clock = sinon.useFakeTimers({ global });
+    });
+
+    afterEach(() =>
+    {
+        clock.restore();
     });
 
     it('should construct properly with only a URL passed', () =>
