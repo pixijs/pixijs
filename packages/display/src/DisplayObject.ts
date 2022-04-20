@@ -714,8 +714,7 @@ export abstract class DisplayObject extends EventEmitter
         {
             this.parent.removeChild(this);
         }
-        this.emit('destroyed');
-        this.removeAllListeners();
+        this._destroyed = true;
         this.transform = null;
 
         this.parent = null;
@@ -730,7 +729,8 @@ export abstract class DisplayObject extends EventEmitter
         this.interactive = false;
         this.interactiveChildren = false;
 
-        this._destroyed = true;
+        this.emit('destroyed');
+        this.removeAllListeners();
     }
 
     /**

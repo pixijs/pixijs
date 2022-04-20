@@ -247,23 +247,29 @@ describe('DisplayObject', function ()
 
     describe('destroy', function ()
     {
-        it('should trigger destroyed listeners', function ()
+        it('should trigger destroyed listeners once destruction is complete', function ()
         {
-            const listener = sinon.spy();
+            let listenerCallCount = 0;
+            let isChildDestroyed = false;
             const child = new DisplayObject();
             const container = new Container();
 
-            child.on('destroyed', listener);
+            child.on('destroyed', () =>
+            {
+                listenerCallCount++;
+                isChildDestroyed = child.destroyed;
+            });
 
             container.addChild(child);
             container.removeChild(child);
 
-            expect(listener.notCalled).to.be.true;
+            expect(listenerCallCount).to.equal(0);
 
             container.addChild(child);
             child.destroy();
 
-            expect(listener.calledOnce).to.be.true;
+            expect(listenerCallCount).to.equal(1);
+            expect(isChildDestroyed).to.be.true;
         });
     });
 });
