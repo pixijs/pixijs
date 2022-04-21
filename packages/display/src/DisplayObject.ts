@@ -410,7 +410,8 @@ export abstract class DisplayObject extends EventEmitter
      */
 
     /**
-     * Fired when this DisplayObject is destroyed.
+     * Fired when this DisplayObject is destroyed. This event is emitted once
+     * destroy is finished.
      *
      * @instance
      * @event destroyed
