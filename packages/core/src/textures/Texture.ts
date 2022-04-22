@@ -337,7 +337,7 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
      * @param {boolean} [strict] - Enforce strict-mode, see {@link PIXI.settings.STRICT_TEXTURE_CACHE}.
      * @return {PIXI.Texture} The newly created texture
      */
-    static from<R extends Resource = Resource, RO = any>(source: TextureSource, options: IBaseTextureOptions<RO> = {},
+    static from<R extends Resource = Resource, RO = any>(source: TextureSource | TextureSource[], options: IBaseTextureOptions<RO> = {},
         strict = settings.STRICT_TEXTURE_CACHE): Texture<R>
     {
         const isFrame = typeof source === 'string';
@@ -413,7 +413,7 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
      * @return - A Promise that resolves to a Texture.
      */
     static fromURL<R extends Resource = Resource, RO = any>(
-        url: string, options?: IBaseTextureOptions<RO>): Promise<Texture<R>>
+        url: string | string[], options?: IBaseTextureOptions<RO>): Promise<Texture<R>>
     {
         const resourceOptions = Object.assign({ autoLoad: false }, options?.resourceOptions);
         const texture = Texture.from<R>(url, Object.assign({ resourceOptions }, options), false);
