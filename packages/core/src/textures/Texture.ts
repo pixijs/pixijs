@@ -331,13 +331,14 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
      * The source can be - frame id, image url, video url, canvas element, video element, base texture
      *
      * @param {string|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|PIXI.BaseTexture} source -
-     *        Source to create texture from
+     *        Source or array of sources to create texture from
      * @param options - See {@link PIXI.BaseTexture}'s constructor for options.
      * @param {string} [options.pixiIdPrefix=pixiid] - If a source has no id, this is the prefix of the generated id
      * @param {boolean} [strict] - Enforce strict-mode, see {@link PIXI.settings.STRICT_TEXTURE_CACHE}.
      * @return {PIXI.Texture} The newly created texture
      */
-    static from<R extends Resource = Resource, RO = any>(source: TextureSource | TextureSource[], options: IBaseTextureOptions<RO> = {},
+    static from<R extends Resource = Resource, RO = any>(source: TextureSource | TextureSource[], 
+        options: IBaseTextureOptions<RO> = {},
         strict = settings.STRICT_TEXTURE_CACHE): Texture<R>
     {
         const isFrame = typeof source === 'string';
@@ -408,7 +409,7 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
      * it does a better job of handling failed URLs more effectively. This also ignores
      * `PIXI.settings.STRICT_TEXTURE_CACHE`. Works for Videos, SVGs, Images.
      *
-     * @param url - The remote URL to load.
+     * @param url - The remote URL or array of URLs to load.
      * @param options - Optional options to include
      * @return - A Promise that resolves to a Texture.
      */
