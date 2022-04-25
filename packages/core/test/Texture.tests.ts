@@ -3,6 +3,7 @@ import { Rectangle, Point } from '@pixi/math';
 import { BaseTexture, Texture } from '@pixi/core';
 import { settings } from '@pixi/settings';
 import { expect } from 'chai';
+import path from 'path';
 
 const URL = 'foo.png';
 const NAME = 'foo';
@@ -285,25 +286,6 @@ describe('Texture', function ()
         texture.destroy(true);
     });
 
-    it('should handle loading an invalid URL', function ()
-    {
-        expect(() => Texture.fromURL('invalid/image.png')).throws;
-    });
-
-    it('should handle loading an cached URL', async function ()
-    {
-        const url = 'noop.png';
-
-        TextureCache[url] = Texture.WHITE;
-
-        expect(Texture.WHITE.valid).to.be.true;
-
-        const texture = await Texture.fromURL(url);
-
-        expect(texture).equals(Texture.WHITE);
-        delete TextureCache[url];
-    });
-
     it('should throw and error in strict from mode', function ()
     {
         const id = 'baz';
@@ -321,11 +303,69 @@ describe('Texture', function ()
             const baseTexture = new BaseTexture(null, { width: 100, height: 100 });
             const texture1 = Texture.from(baseTexture);
 
-            expect(baseTexture.cacheId).to.not.equal(null);
+            expect(baseTexture.cacheId).to.not.be.null;
             expect(BaseTextureCache[baseTexture.cacheId]).to.equal(baseTexture);
             expect(texture1.baseTexture).to.equal(baseTexture);
 
             expect(Texture.from(baseTexture)).to.equal(texture1);
+        });
+
+        it('should accept an array of strings to create a cubemap', () =>
+        {
+            const resources = path.join(__dirname, 'resources/cube');
+
+            const texture = Texture.from([
+                path.join(resources, 'cube-face.jpg'),
+                path.join(resources, 'cube-face.jpg'),
+                path.join(resources, 'cube-face.jpg'),
+                path.join(resources, 'cube-face.jpg'),
+                path.join(resources, 'cube-face.jpg'),
+                path.join(resources, 'cube-face.jpg')]);
+
+            expect(texture).to.not.be.null
+                .and.to.not.be.undefined;
+
+            expect(texture).to.be.an.instanceof(Texture);
+        });
+    });
+
+    describe('Texture.fromURL', () =>
+    {
+        it('should handle loading an invalid URL', function ()
+        {
+            expect(() => Texture.fromURL('invalid/image.png')).throws;
+        });
+
+        it('should handle loading an cached URL', async function ()
+        {
+            const url = 'noop.png';
+
+            TextureCache[url] = Texture.WHITE;
+
+            expect(Texture.WHITE.valid).to.be.true;
+
+            const texture = await Texture.fromURL(url);
+
+            expect(texture).equals(Texture.WHITE);
+            delete TextureCache[url];
+        });
+
+        it('should accept an array of strings to create a cubemap', async () =>
+        {
+            const resources = path.join(__dirname, 'resources');
+
+            const texture = await Texture.fromURL([
+                path.join(resources, 'cube-face.jpg'),
+                path.join(resources, 'cube-face.jpg'),
+                path.join(resources, 'cube-face.jpg'),
+                path.join(resources, 'cube-face.jpg'),
+                path.join(resources, 'cube-face.jpg'),
+                path.join(resources, 'cube-face.jpg')]);
+
+            expect(texture).to.not.be.null
+                .and.to.not.be.undefined;
+
+            expect(texture).to.be.an.instanceof(Texture);
         });
     });
 });
