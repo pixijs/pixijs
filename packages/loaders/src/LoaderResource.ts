@@ -4,7 +4,7 @@ import { parseUri } from './base/parseUri';
 import type { IBaseTextureOptions, Texture } from '@pixi/core';
 
 // tests if CORS is supported in XHR, if not we need to use XDR
-const useXdr = !!((globalThis as any).XDomainRequest && !('withCredentials' in (new XMLHttpRequest())));
+let useXdr: boolean;
 let tempAnchor: any = null;
 
 // some status constants
@@ -634,6 +634,10 @@ class LoaderResource
             case LoaderResource.LOAD_TYPE.XHR:
             /* falls through */
             default:
+                if (typeof useXdr === 'undefined')
+                {
+                    useXdr = !!((globalThis as any).XDomainRequest && !('withCredentials' in (new XMLHttpRequest())));
+                }
                 if (useXdr && this.crossOrigin)
                 {
                     this._loadXdr();
