@@ -57,7 +57,7 @@ export class TextMetrics
     public static HEIGHT_MULTIPLIER: number;
 
     // TODO: These should be protected but they're initialized outside of the class.
-    public static _canvas: HTMLCanvasElement|OffscreenCanvas;
+    private static __canvas: HTMLCanvasElement|OffscreenCanvas;
     public static _context: CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D;
     public static _fonts: { [font: string]: IFontMetrics };
     public static _newlines: number[];
@@ -714,6 +714,40 @@ export class TextMetrics
             TextMetrics._fonts = {};
         }
     }
+
+    /**
+     * Cached canvas element for measuring text
+     */
+    public static get _canvas(): HTMLCanvasElement|OffscreenCanvas
+    {
+        if (!TextMetrics.__canvas)
+        {
+            let result: HTMLCanvasElement|OffscreenCanvas;
+
+            try
+            {
+                // OffscreenCanvas2D measureText can be up to 40% faster.
+                const c = new OffscreenCanvas(0, 0);
+                const context = c.getContext('2d');
+
+                if (context && context.measureText)
+                {
+                    return c;
+                }
+
+                result = document.createElement('canvas');
+            }
+            catch (ex)
+            {
+                result = document.createElement('canvas');
+            }
+            result.width = result.height = 10;
+            TextMetrics.__canvas = result;
+            TextMetrics._context = result.getContext('2d');
+        }
+
+        return TextMetrics.__canvas;
+    }
 }
 
 /**
@@ -726,47 +760,6 @@ export class TextMetrics
  * @memberof PIXI.TextMetrics
  * @private
  */
-
-const canvas = ((): HTMLCanvasElement|OffscreenCanvas =>
-{
-    try
-    {
-        // OffscreenCanvas2D measureText can be up to 40% faster.
-        const c = new OffscreenCanvas(0, 0);
-        const context = c.getContext('2d');
-
-        if (context && context.measureText)
-        {
-            return c;
-        }
-
-        return document.createElement('canvas');
-    }
-    catch (ex)
-    {
-        return document.createElement('canvas');
-    }
-})();
-
-canvas.width = canvas.height = 10;
-
-/**
- * Cached canvas element for measuring text
- *
- * @memberof PIXI.TextMetrics
- * @type {HTMLCanvasElement}
- * @private
- */
-TextMetrics._canvas = canvas;
-
-/**
- * Cache for context to use.
- *
- * @memberof PIXI.TextMetrics
- * @type {CanvasRenderingContext2D}
- * @private
- */
-TextMetrics._context = canvas.getContext('2d');
 
 /**
  * Cache of {@see PIXI.TextMetrics.FontMetrics} objects.
