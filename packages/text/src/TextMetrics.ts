@@ -58,7 +58,7 @@ export class TextMetrics
 
     // TODO: These should be protected but they're initialized outside of the class.
     private static __canvas: HTMLCanvasElement|OffscreenCanvas;
-    public static _context: CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D;
+    private static __context: CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D;
     public static _fonts: { [font: string]: IFontMetrics };
     public static _newlines: number[];
     public static _breakingSpaces: number[];
@@ -722,7 +722,7 @@ export class TextMetrics
     {
         if (!TextMetrics.__canvas)
         {
-            let result: HTMLCanvasElement|OffscreenCanvas;
+            let canvas: HTMLCanvasElement|OffscreenCanvas;
 
             try
             {
@@ -735,18 +735,27 @@ export class TextMetrics
                     return c;
                 }
 
-                result = document.createElement('canvas');
+                canvas = document.createElement('canvas');
             }
             catch (ex)
             {
-                result = document.createElement('canvas');
+                canvas = document.createElement('canvas');
             }
-            result.width = result.height = 10;
-            TextMetrics.__canvas = result;
-            TextMetrics._context = result.getContext('2d');
+            canvas.width = canvas.height = 10;
+            TextMetrics.__canvas = canvas;
         }
 
         return TextMetrics.__canvas;
+    }
+
+    public static get _context(): CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D
+    {
+        if (!TextMetrics.__context)
+        {
+            TextMetrics.__context = TextMetrics._canvas.getContext('2d');
+        }
+
+        return TextMetrics.__context;
     }
 }
 
