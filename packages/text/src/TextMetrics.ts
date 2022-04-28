@@ -58,7 +58,7 @@ export class TextMetrics
 
     private static __canvas: HTMLCanvasElement|OffscreenCanvas;
     private static __context: CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D;
-    
+
     // TODO: These should be protected but they're initialized outside of the class.
     public static _fonts: { [font: string]: IFontMetrics };
     public static _newlines: number[];
