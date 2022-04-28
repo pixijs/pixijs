@@ -56,9 +56,10 @@ export class TextMetrics
     public static BASELINE_MULTIPLIER: number;
     public static HEIGHT_MULTIPLIER: number;
 
-    // TODO: These should be protected but they're initialized outside of the class.
     private static __canvas: HTMLCanvasElement|OffscreenCanvas;
     private static __context: CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D;
+    
+    // TODO: These should be protected but they're initialized outside of the class.
     public static _fonts: { [font: string]: IFontMetrics };
     public static _newlines: number[];
     public static _breakingSpaces: number[];
@@ -717,6 +718,9 @@ export class TextMetrics
 
     /**
      * Cached canvas element for measuring text
+     * TODO: this should be private, but isn't because of backward compat, will fix later.
+     *
+     * @ignore
      */
     public static get _canvas(): HTMLCanvasElement|OffscreenCanvas
     {
@@ -748,6 +752,11 @@ export class TextMetrics
         return TextMetrics.__canvas;
     }
 
+    /**
+     * TODO: this should be private, but isn't because of backward compat, will fix later.
+     *
+     * @ignore
+     */
     public static get _context(): CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D
     {
         if (!TextMetrics.__context)
