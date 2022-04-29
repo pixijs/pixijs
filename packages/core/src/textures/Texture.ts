@@ -19,6 +19,18 @@ export type TextureSource = string|BaseTexture|ImageSource;
 export interface Texture extends GlobalMixins.Texture, EventEmitter {}
 
 /**
+ * Used to remove listeners from WHITE and EMPTY Textures
+ * @ignore
+ */
+function removeAllHandlers(tex: any): void
+{
+    tex.destroy = function _emptyDestroy(): void { /* empty */ };
+    tex.on = function _emptyOn(): void { /* empty */ };
+    tex.once = function _emptyOnce(): void { /* empty */ };
+    tex.emit = function _emptyEmit(): void { /* empty */ };
+}
+
+/**
  * A texture stores the information that represents an image or part of an image.
  *
  * It cannot be added to the display list directly; instead use it as the texture for a Sprite.
@@ -664,53 +676,47 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
         return this.baseTexture;
     }
 
-    static readonly EMPTY: Texture<CanvasResource>;
-    static readonly WHITE: Texture<CanvasResource>;
+    private static _EMPTY: Texture<Resource>;
+    private static _WHITE: Texture<CanvasResource>;
+
+    /**
+     * An empty texture, used often to not have to create multiple empty textures.
+     * Can not be destroyed.
+     */
+    public static get EMPTY(): Texture<Resource>
+    {
+        if (!Texture._EMPTY)
+        {
+            Texture._EMPTY = new Texture(new BaseTexture());
+            removeAllHandlers(Texture._EMPTY);
+            removeAllHandlers(Texture._EMPTY.baseTexture);
+        }
+
+        return Texture._EMPTY;
+    }
+
+    /**
+     * A white texture of 16x16 size, used for graphics and other things
+     * Can not be destroyed.
+     */
+    public static get WHITE(): Texture<CanvasResource>
+    {
+        if (!Texture._WHITE)
+        {
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+
+            canvas.width = 16;
+            canvas.height = 16;
+            context.fillStyle = 'white';
+            context.fillRect(0, 0, 16, 16);
+
+            Texture._WHITE = new Texture(new BaseTexture(new CanvasResource(canvas)));
+            removeAllHandlers(Texture._WHITE);
+            removeAllHandlers(Texture._WHITE.baseTexture);
+        }
+
+        return Texture._WHITE;
+    }
 }
 
-function createWhiteTexture(): Texture<CanvasResource>
-{
-    const canvas = document.createElement('canvas');
-
-    canvas.width = 16;
-    canvas.height = 16;
-
-    const context = canvas.getContext('2d');
-
-    context.fillStyle = 'white';
-    context.fillRect(0, 0, 16, 16);
-
-    return new Texture(new BaseTexture(new CanvasResource(canvas)));
-}
-
-function removeAllHandlers(tex: any): void
-{
-    tex.destroy = function _emptyDestroy(): void { /* empty */ };
-    tex.on = function _emptyOn(): void { /* empty */ };
-    tex.once = function _emptyOnce(): void { /* empty */ };
-    tex.emit = function _emptyEmit(): void { /* empty */ };
-}
-
-/**
- * An empty texture, used often to not have to create multiple empty textures.
- * Can not be destroyed.
- *
- * @static
- * @constant
- * @member {PIXI.Texture}
- */
-(Texture as any).EMPTY = new Texture(new BaseTexture());
-removeAllHandlers(Texture.EMPTY);
-removeAllHandlers(Texture.EMPTY.baseTexture);
-
-/**
- * A white texture of 16x16 size, used for graphics and other things
- * Can not be destroyed.
- *
- * @static
- * @constant
- * @member {PIXI.Texture}
- */
-(Texture as any).WHITE = createWhiteTexture();
-removeAllHandlers(Texture.WHITE);
-removeAllHandlers(Texture.WHITE.baseTexture);

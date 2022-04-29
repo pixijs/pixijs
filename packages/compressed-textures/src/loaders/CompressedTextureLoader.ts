@@ -42,10 +42,10 @@ export type CompressedTextureExtensionRef = keyof CompressedTextureExtensions;
 export class CompressedTextureLoader
 {
     /**  Map of available texture extensions. */
-    static textureExtensions: Partial<CompressedTextureExtensions>;
+    private static _textureExtensions: Partial<CompressedTextureExtensions>;
 
     /** Map of available texture formats. */
-    static textureFormats: { [P in keyof INTERNAL_FORMATS]?: number };
+    private static _textureFormats: { [P in keyof INTERNAL_FORMATS]?: number };
 
     /**
      * Called after a compressed-textures manifest is loaded.
@@ -160,52 +160,66 @@ export class CompressedTextureLoader
         }
     }
 
-    /**
-     * Detects the available compressed texture extensions on the device.
-     * @ignore
-     */
-    static add(): void
+    /**  Map of available texture extensions. */
+    public static get textureExtensions(): Partial<CompressedTextureExtensions>
     {
-        // Auto-detect WebGL compressed-texture extensions
-        const canvas = document.createElement('canvas');
-        const gl = canvas.getContext('webgl');
-
-        if (!gl)
+        if (!CompressedTextureLoader._textureExtensions)
         {
-            // #if _DEBUG
-            console.warn('WebGL not available for compressed textures. Silently failing.');
-            // #endif
+            // Auto-detect WebGL compressed-texture extensions
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl');
 
-            return;
-        }
-
-        const extensions = {
-            s3tc: gl.getExtension('WEBGL_compressed_texture_s3tc'),
-            s3tc_sRGB: gl.getExtension('WEBGL_compressed_texture_s3tc_srgb'), /* eslint-disable-line camelcase */
-            etc: gl.getExtension('WEBGL_compressed_texture_etc'),
-            etc1: gl.getExtension('WEBGL_compressed_texture_etc1'),
-            pvrtc: gl.getExtension('WEBGL_compressed_texture_pvrtc')
-                || gl.getExtension('WEBKIT_WEBGL_compressed_texture_pvrtc'),
-            atc: gl.getExtension('WEBGL_compressed_texture_atc'),
-            astc: gl.getExtension('WEBGL_compressed_texture_astc')
-        };
-
-        CompressedTextureLoader.textureExtensions = extensions;
-        CompressedTextureLoader.textureFormats = {};
-
-        // Assign all available compressed-texture formats
-        for (const extensionName in extensions)
-        {
-            const extension = extensions[extensionName as CompressedTextureExtensionRef];
-
-            if (!extension)
+            if (!gl)
             {
-                continue;
+                // #if _DEBUG
+                console.warn('WebGL not available for compressed textures. Silently failing.');
+                // #endif
+
+                return {};
             }
 
-            Object.assign(
-                CompressedTextureLoader.textureFormats,
-                Object.getPrototypeOf(extension));
+            const extensions = {
+                s3tc: gl.getExtension('WEBGL_compressed_texture_s3tc'),
+                s3tc_sRGB: gl.getExtension('WEBGL_compressed_texture_s3tc_srgb'), /* eslint-disable-line camelcase */
+                etc: gl.getExtension('WEBGL_compressed_texture_etc'),
+                etc1: gl.getExtension('WEBGL_compressed_texture_etc1'),
+                pvrtc: gl.getExtension('WEBGL_compressed_texture_pvrtc')
+                    || gl.getExtension('WEBKIT_WEBGL_compressed_texture_pvrtc'),
+                atc: gl.getExtension('WEBGL_compressed_texture_atc'),
+                astc: gl.getExtension('WEBGL_compressed_texture_astc')
+            };
+
+            CompressedTextureLoader._textureExtensions = extensions;
         }
+
+        return CompressedTextureLoader._textureExtensions;
+    }
+
+    /** Map of available texture formats. */
+    public static get textureFormats(): { [P in keyof INTERNAL_FORMATS]?: number }
+    {
+        if (!CompressedTextureLoader._textureFormats)
+        {
+            const extensions = CompressedTextureLoader.textureExtensions;
+
+            CompressedTextureLoader._textureFormats = {};
+
+            // Assign all available compressed-texture formats
+            for (const extensionName in extensions)
+            {
+                const extension = extensions[extensionName as CompressedTextureExtensionRef];
+
+                if (!extension)
+                {
+                    continue;
+                }
+
+                Object.assign(
+                    CompressedTextureLoader._textureFormats,
+                    Object.getPrototypeOf(extension));
+            }
+        }
+
+        return CompressedTextureLoader._textureFormats;
     }
 }
