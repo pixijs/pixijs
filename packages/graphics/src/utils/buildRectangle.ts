@@ -29,6 +29,11 @@ export const buildRectangle: IShapeBuildCommand = {
 
         points.length = 0;
 
+        if (!(width >= 0 && height >= 0))
+        {
+            return;
+        }
+
         points.push(x, y,
             x + width, y,
             x + width, y + height,
@@ -39,6 +44,11 @@ export const buildRectangle: IShapeBuildCommand = {
     {
         const points = graphicsData.points;
         const verts = graphicsGeometry.points;
+
+        if (points.length === 0)
+        {
+            return;
+        }
 
         const vertPos = verts.length / 2;
 
