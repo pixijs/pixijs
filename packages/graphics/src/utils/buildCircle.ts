@@ -160,6 +160,11 @@ export const buildCircle: IShapeBuildCommand = {
         const verts = graphicsGeometry.points;
         const indices = graphicsGeometry.indices;
 
+        if (points.length === 0)
+        {
+            return;
+        }
+
         let vertPos = verts.length / 2;
         const center = vertPos;
 
