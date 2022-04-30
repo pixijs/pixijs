@@ -63,6 +63,8 @@ export const buildCircle: IShapeBuildCommand = {
 
         if (!(rx >= 0 && ry >= 0 && dx >= 0 && dy >= 0))
         {
+            points.length = 0;
+
             return;
         }
 
