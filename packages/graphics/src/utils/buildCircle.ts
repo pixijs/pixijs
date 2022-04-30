@@ -61,6 +61,11 @@ export const buildCircle: IShapeBuildCommand = {
             dy = halfHeight - ry;
         }
 
+        if (!(rx >= 0 && ry >= 0 && dx >= 0 && dy >= 0))
+        {
+            return;
+        }
+
         // Choose a number of segments such that the maximum absolute deviation from the circle is approximately 0.029
         const n = Math.ceil(2.3 * Math.sqrt(rx + ry));
         const m = (n * 8) + (dx ? 4 : 0) + (dy ? 4 : 0);
