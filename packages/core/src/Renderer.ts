@@ -24,9 +24,10 @@ import { RenderTexture } from './renderTexture/RenderTexture';
 import type { SCALE_MODES } from '@pixi/constants';
 import type { IRendererOptions, IRendererPlugins, IRendererRenderOptions,
     IGenerateTextureOptions } from './AbstractRenderer';
-import type { ISystemConstructor } from './ISystem';
 import type { IRenderingContext } from './IRenderingContext';
 import type { IRenderableObject } from './IRenderableObject';
+import { PluginSystem } from './PluginSystem';
+import { MultisampleSystem } from './MultisampleSystem';
 
 export interface IRendererPluginConstructor {
     new (renderer: Renderer, options?: any): IRendererPlugin;
@@ -93,11 +94,6 @@ export class Renderer extends AbstractRenderer
      */
     public renderingToScreen: boolean;
 
-    /**
-     * The number of msaa samples of the canvas.
-     * @readonly
-     */
-    public multisample: MSAA_QUALITY;
     // systems
 
     /**
@@ -190,6 +186,9 @@ export class Renderer extends AbstractRenderer
      */
     public batch: BatchSystem;
 
+    public plugin: PluginSystem;
+    public _multisample: MultisampleSystem;
+
     /**
      * Internal signal instances of **runner**, these
      * are assigned to each system created.
@@ -261,17 +260,7 @@ export class Renderer extends AbstractRenderer
 
         this.CONTEXT_UID = 0;
 
-        this.runners = {
-            destroy: new Runner('destroy'),
-            contextChange: new Runner('contextChange'),
-            reset: new Runner('reset'),
-            update: new Runner('update'),
-            postrender: new Runner('postrender'),
-            prerender: new Runner('prerender'),
-            resize: new Runner('resize'),
-        };
-
-        this.runners.contextChange.add(this);
+        this.addRunners('destroy', 'contextChange', 'reset', 'update', 'postrender', 'prerender', 'resize');
 
         this.globalUniforms = new UniformGroup({
             projectionMatrix: new Matrix(),
@@ -291,11 +280,11 @@ export class Renderer extends AbstractRenderer
             .addSystem(TextureGCSystem, 'textureGC')
             .addSystem(FilterSystem, 'filter')
             .addSystem(RenderTextureSystem, 'renderTexture')
-            .addSystem(BatchSystem, 'batch');
+            .addSystem(BatchSystem, 'batch')
+            .addSystem(PluginSystem, 'plugin')
+            .addSystem(MultisampleSystem, '_multisample');
 
-        this.initPlugins(Renderer.__plugins);
-
-        this.multisample = undefined;
+        this.plugin.init(Renderer.__plugins);
 
         /*
          * The options passed in to create a new WebGL context.
@@ -321,99 +310,6 @@ export class Renderer extends AbstractRenderer
         sayHello(this.context.webGLVersion === 2 ? 'WebGL 2' : 'WebGL 1');
 
         this.resize(this.options.width, this.options.height);
-    }
-
-    protected contextChange(): void
-    {
-        const gl = this.gl;
-
-        let samples;
-
-        if (this.context.webGLVersion === 1)
-        {
-            const framebuffer = gl.getParameter(gl.FRAMEBUFFER_BINDING);
-
-            gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-
-            samples = gl.getParameter(gl.SAMPLES);
-
-            gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
-        }
-        else
-        {
-            const framebuffer = gl.getParameter(gl.DRAW_FRAMEBUFFER_BINDING);
-
-            gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, null);
-
-            samples = gl.getParameter(gl.SAMPLES);
-
-            gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, framebuffer);
-        }
-
-        if (samples >= MSAA_QUALITY.HIGH)
-        {
-            this.multisample = MSAA_QUALITY.HIGH;
-        }
-        else if (samples >= MSAA_QUALITY.MEDIUM)
-        {
-            this.multisample = MSAA_QUALITY.MEDIUM;
-        }
-        else if (samples >= MSAA_QUALITY.LOW)
-        {
-            this.multisample = MSAA_QUALITY.LOW;
-        }
-        else
-        {
-            this.multisample = MSAA_QUALITY.NONE;
-        }
-    }
-
-    /**
-     * Add a new system to the renderer.
-     *
-     * @param ClassRef - Class reference
-     * @param name - Property name for system, if not specified
-     *        will use a static `name` property on the class itself. This
-     *        name will be assigned as s property on the Renderer so make
-     *        sure it doesn't collide with properties on Renderer.
-     * @return Return instance of renderer
-     */
-    addSystem(ClassRef: ISystemConstructor, name: string): this
-    {
-        const system = new ClassRef(this);
-
-        if ((this as any)[name])
-        {
-            throw new Error(`Whoops! The name "${name}" is already in use`);
-        }
-
-        (this as any)[name] = system;
-
-        for (const i in this.runners)
-        {
-            this.runners[i].add(system);
-        }
-
-        /**
-         * Fired after rendering finishes.
-         *
-         * @event PIXI.Renderer#postrender
-         */
-
-        /**
-         * Fired before rendering starts.
-         *
-         * @event PIXI.Renderer#prerender
-         */
-
-        /**
-         * Fired when the WebGL context is set.
-         *
-         * @event PIXI.Renderer#context
-         * @param {WebGLRenderingContext} gl - WebGL context.
-         */
-
-        return this;
     }
 
     /**
@@ -613,6 +509,16 @@ export class Renderer extends AbstractRenderer
         // #endif
 
         return this.plugins.extract;
+    }
+
+    get plugins(): IRendererPlugins
+    {
+        return this.plugin.plugins;
+    }
+
+    get multisample(): MSAA_QUALITY
+    {
+        return this._multisample.multisample;
     }
 
     /**

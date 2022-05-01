@@ -1,13 +1,14 @@
-import { hex2string, hex2rgb, EventEmitter, deprecation } from '@pixi/utils';
+import { hex2string, hex2rgb, deprecation } from '@pixi/utils';
 import { Matrix, Rectangle } from '@pixi/math';
 import { MSAA_QUALITY, RENDERER_TYPE } from '@pixi/constants';
 import { settings } from '@pixi/settings';
 import { RenderTexture } from './renderTexture/RenderTexture';
 
 import type { SCALE_MODES } from '@pixi/constants';
-import type { ISystemConstructor } from './ISystem';
+
 import type { IRenderingContext } from './IRenderingContext';
 import type { IRenderableContainer, IRenderableObject } from './IRenderableObject';
+import { BaseRenderer } from './BaseRenderer';
 
 const tempMatrix = new Matrix();
 
@@ -61,7 +62,7 @@ export interface IGenerateTextureOptions {
  * @extends PIXI.utils.EventEmitter
  * @memberof PIXI
  */
-export abstract class AbstractRenderer extends EventEmitter
+export abstract class AbstractRenderer extends BaseRenderer
 {
     public resolution: number;
     public clearBeforeRender?: boolean;
@@ -69,7 +70,6 @@ export abstract class AbstractRenderer extends EventEmitter
     public readonly type: RENDERER_TYPE;
     public readonly screen: Rectangle;
     public readonly view: HTMLCanvasElement;
-    public readonly plugins: IRendererPlugins;
     public readonly useContextAlpha: boolean | 'notMultiplied';
     public readonly autoDensity: boolean;
     public readonly preserveDrawingBuffer: boolean;
@@ -227,27 +227,6 @@ export abstract class AbstractRenderer extends EventEmitter
          * @protected
          */
         this._lastObjectRendered = null;
-
-        /**
-         * Collection of plugins.
-         * @readonly
-         * @member {object}
-         */
-        this.plugins = {};
-    }
-
-    /**
-     * Initialize the plugins.
-     *
-     * @protected
-     * @param {object} staticMap - The dictionary of statically saved plugins.
-     */
-    initPlugins(staticMap: IRendererPlugins): void
-    {
-        for (const o in staticMap)
-        {
-            this.plugins[o] = new (staticMap[o])(this);
-        }
     }
 
     /**
@@ -387,15 +366,6 @@ export abstract class AbstractRenderer extends EventEmitter
         return renderTexture;
     }
 
-    /**
-     * Adds a new system to the renderer.
-     *
-     * @param ClassRef - Class reference
-     * @param name - Property name for system
-     * @return Return instance of renderer
-     */
-    abstract addSystem(ClassRef: ISystemConstructor, name: string): this;
-
     abstract render(displayObject: IRenderableObject, options?: IRendererRenderOptions): void;
 
     /**
@@ -405,12 +375,6 @@ export abstract class AbstractRenderer extends EventEmitter
      */
     destroy(removeView?: boolean): void
     {
-        for (const o in this.plugins)
-        {
-            this.plugins[o].destroy();
-            this.plugins[o] = null;
-        }
-
         if (removeView && this.view.parentNode)
         {
             this.view.parentNode.removeChild(this.view);
@@ -420,7 +384,6 @@ export abstract class AbstractRenderer extends EventEmitter
 
         // null-ing all objects, that's a tradition!
 
-        thisAny.plugins = null;
         thisAny.type = RENDERER_TYPE.UNKNOWN;
         thisAny.view = null;
         thisAny.screen = null;
