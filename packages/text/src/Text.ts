@@ -431,9 +431,6 @@ export class Text extends Sprite
 
         texture.updateUvs();
 
-        // Recursively updates transform of all objects from the root to this one
-        this._recursivePostUpdateTransform();
-
         this.dirty = false;
     }
 
@@ -455,6 +452,27 @@ export class Text extends Sprite
         super._render(renderer);
     }
 
+    /** Updates the transform on all children of this container for rendering. */
+    public updateTransform(): void
+    {
+        this.updateText(true);
+
+        super.updateTransform();
+    }
+
+    public getBounds(skipUpdate?: boolean, rect?: Rectangle): Rectangle
+    {
+        this.updateText(true);
+
+        if (this._textureID === -1)
+        {
+            // texture was updated: recalculate transforms
+            skipUpdate = false;
+        }
+
+        return super.getBounds(skipUpdate, rect);
+    }
+
     /**
      * Gets the local bounds of the text object.
      *
@@ -471,7 +489,6 @@ export class Text extends Sprite
     /** Calculates the bounds of the Text as a rectangle. The bounds calculation takes the worldTransform into account. */
     protected _calculateBounds(): void
     {
-        this.updateText(true);
         this.calculateVertices();
         // if we have already done this on THIS frame.
         this._bounds.addQuad(this.vertexData);
