@@ -265,5 +265,29 @@ describe('DisplayObject', function ()
 
             expect(listener.calledOnce).to.be.true;
         });
+
+        it('should trigger destroyed listeners once destruction is complete', function ()
+        {
+            let listenerCallCount = 0;
+            const child = new DisplayObject();
+            const container = new Container();
+
+            child.on('destroyed', () =>
+            {
+                listenerCallCount++;
+                expect(child.destroyed).to.be.true;
+                expect(child.parent).to.be.null;
+            });
+
+            container.addChild(child);
+            container.removeChild(child);
+
+            expect(listenerCallCount).to.equal(0);
+
+            container.addChild(child);
+            child.destroy();
+
+            expect(listenerCallCount).to.equal(1);
+        });
     });
 });
