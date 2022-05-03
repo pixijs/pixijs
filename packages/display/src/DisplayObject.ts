@@ -837,7 +837,7 @@ export abstract class DisplayObject extends EventEmitter
         return this.transform.position;
     }
 
-    set position(value: ObservablePoint)
+    set position(value: IPointData)
     {
         this.transform.position.copyFrom(value);
     }
@@ -854,7 +854,7 @@ export abstract class DisplayObject extends EventEmitter
         return this.transform.scale;
     }
 
-    set scale(value: ObservablePoint)
+    set scale(value: IPointData)
     {
         this.transform.scale.copyFrom(value);
     }
@@ -872,7 +872,7 @@ export abstract class DisplayObject extends EventEmitter
         return this.transform.pivot;
     }
 
-    set pivot(value: ObservablePoint)
+    set pivot(value: IPointData)
     {
         this.transform.pivot.copyFrom(value);
     }
@@ -887,7 +887,7 @@ export abstract class DisplayObject extends EventEmitter
         return this.transform.skew;
     }
 
-    set skew(value: ObservablePoint)
+    set skew(value: IPointData)
     {
         this.transform.skew.copyFrom(value);
     }
