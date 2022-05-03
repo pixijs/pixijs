@@ -410,7 +410,8 @@ export abstract class DisplayObject extends EventEmitter
      */
 
     /**
-     * Fired when this DisplayObject is destroyed.
+     * Fired when this DisplayObject is destroyed. This event is emitted once
+     * destroy is finished.
      *
      * @instance
      * @event destroyed
@@ -714,8 +715,7 @@ export abstract class DisplayObject extends EventEmitter
         {
             this.parent.removeChild(this);
         }
-        this.emit('destroyed');
-        this.removeAllListeners();
+        this._destroyed = true;
         this.transform = null;
 
         this.parent = null;
@@ -730,7 +730,8 @@ export abstract class DisplayObject extends EventEmitter
         this.interactive = false;
         this.interactiveChildren = false;
 
-        this._destroyed = true;
+        this.emit('destroyed');
+        this.removeAllListeners();
     }
 
     /**
