@@ -73,7 +73,7 @@ export class TextureGCSystem implements ISystem
      */
     protected postrender(): void
     {
-        if (!this.renderer.renderingToScreen)
+        if (!this.renderer._render.renderingToScreen)
         {
             return;
         }

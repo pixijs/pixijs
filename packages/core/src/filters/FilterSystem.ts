@@ -105,7 +105,7 @@ export class FilterSystem implements ISystem
         this.defaultFilterStack = [{}] as any;
 
         this.texturePool = new RenderTexturePool();
-        this.texturePool.setScreenSize(renderer.view);
+
         this.statePool = [];
 
         this.quad = new Quad();
@@ -127,6 +127,11 @@ export class FilterSystem implements ISystem
 
         this.forceClear = false;
         this.useMaxPadding = false;
+    }
+
+    init(): void
+    {
+        this.texturePool.setScreenSize(this.renderer.view);
     }
 
     /**

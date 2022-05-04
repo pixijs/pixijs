@@ -37,9 +37,6 @@ export class RenderTextureSystem implements ISystem
 {
 /* eslint-enable max-len */
 
-    /** The clear background color as RGBA. */
-    public clearColor: number[];
-
     /**
      * List of masks for the {@link PIXI.StencilSystem}.
      *
@@ -84,7 +81,6 @@ export class RenderTextureSystem implements ISystem
     {
         this.renderer = renderer;
 
-        this.clearColor = renderer._backgroundColorRgba;
         this.defaultMaskStack = [];
         this.current = null;
         this.sourceFrame = new Rectangle();
@@ -201,7 +197,7 @@ export class RenderTextureSystem implements ISystem
         }
         else
         {
-            clearColor = clearColor || this.clearColor;
+            clearColor = clearColor || this.renderer._background.backgroundColorRgba;
         }
 
         const destinationFrame = this.destinationFrame;

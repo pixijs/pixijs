@@ -4,8 +4,8 @@ import { accessibleTarget } from './accessibleTarget';
 
 import type { Rectangle } from '@pixi/math';
 import type { Container } from '@pixi/display';
-import type { Renderer, AbstractRenderer } from '@pixi/core';
 import type { IAccessibleHTMLElement } from './accessibleTarget';
+import { IRenderer } from 'packages/core/src/IRenderer';
 
 // add some extra variables to the container..
 DisplayObject.mixin(accessibleTarget);
@@ -44,7 +44,7 @@ export class AccessibilityManager
      *
      * @type {PIXI.CanvasRenderer|PIXI.Renderer}
      */
-    public renderer: AbstractRenderer|Renderer;
+    public renderer: IRenderer;
 
     /** Internal variable, see isActive getter. */
     private _isActive = false;
@@ -76,7 +76,7 @@ export class AccessibilityManager
     /**
      * @param {PIXI.CanvasRenderer|PIXI.Renderer} renderer - A reference to the current renderer
      */
-    constructor(renderer: AbstractRenderer|Renderer)
+    constructor(renderer: IRenderer)
     {
         this._hookDiv = null;
 
@@ -280,7 +280,7 @@ export class AccessibilityManager
 
         this.androidUpdateCount = now + this.androidUpdateFrequency;
 
-        if (!(this.renderer as Renderer).renderingToScreen)
+        if (!(this.renderer as IRenderer).renderingToScreen)
         {
             return;
         }

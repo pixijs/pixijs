@@ -1,0 +1,73 @@
+import { SCALE_MODES } from '@pixi/constants';
+import { Matrix, Rectangle } from '@pixi/math';
+import { deprecation } from '@pixi/utils';
+import { IGenerateTextureOptions } from './AbstractRenderer';
+import { IRenderableContainer, IRenderableObject } from './IRenderableObject';
+import { ISystem } from './ISystem';
+import { Renderer } from './Renderer';
+import { RenderTexture } from './renderTexture/RenderTexture';
+
+// TODO could this just be part of extract?
+export class GenerateTextureSystem implements ISystem
+{
+    autoDensity: boolean;
+    renderer: Renderer;
+    resolution: number;
+    screen: Rectangle;
+    tempMatrix: Matrix;
+
+    constructor(renderer: Renderer)
+    {
+        this.renderer = renderer;
+        this.autoDensity = true;
+
+        this.tempMatrix = new Matrix();
+    }
+
+    generateTexture(displayObject: IRenderableObject,
+        options: IGenerateTextureOptions | SCALE_MODES = {},
+        resolution?: number, region?: Rectangle): RenderTexture
+    {
+        // @deprecated parameters spread, use options instead
+        if (typeof options === 'number')
+        {
+            // #if _DEBUG
+            deprecation('6.1.0', 'generateTexture options (scaleMode, resolution, region) are now object options.');
+            // #endif
+
+            options = { scaleMode: options, resolution, region };
+        }
+
+        const { region: manualRegion, ...textureOptions } = options;
+
+        region = manualRegion || (displayObject as IRenderableContainer).getLocalBounds(null, true);
+
+        // minimum texture size is 1x1, 0x0 will throw an error
+        if (region.width === 0) region.width = 1;
+        if (region.height === 0) region.height = 1;
+
+        const renderTexture = RenderTexture.create(
+            {
+                width: region.width,
+                height: region.height,
+                ...textureOptions,
+            });
+
+        this.tempMatrix.tx = -region.x;
+        this.tempMatrix.ty = -region.y;
+
+        this.renderer.render(displayObject, {
+            renderTexture,
+            clear: false,
+            transform:  this.tempMatrix,
+            skipUpdateTransform: !!displayObject.parent
+        });
+
+        return renderTexture;
+    }
+
+    destroy(): void
+    {
+        // ka boom!
+    }
+}

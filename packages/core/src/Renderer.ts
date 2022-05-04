@@ -1,4 +1,3 @@
-import { AbstractRenderer } from './AbstractRenderer';
 import { sayHello, isWebGLSupported, deprecation } from '@pixi/utils';
 import { MaskSystem } from './mask/MaskSystem';
 import { StencilSystem } from './mask/StencilSystem';
@@ -17,7 +16,6 @@ import { TextureGCSystem } from './textures/TextureGCSystem';
 import { MSAA_QUALITY, RENDERER_TYPE } from '@pixi/constants';
 import { UniformGroup } from './shader/UniformGroup';
 import { Matrix, Rectangle } from '@pixi/math';
-import { Runner } from '@pixi/runner';
 import { BufferSystem } from './geometry/BufferSystem';
 import { RenderTexture } from './renderTexture/RenderTexture';
 
@@ -28,6 +26,13 @@ import type { IRenderingContext } from './IRenderingContext';
 import type { IRenderableObject } from './IRenderableObject';
 import { PluginSystem } from './PluginSystem';
 import { MultisampleSystem } from './MultisampleSystem';
+import { GenerateTextureSystem } from './GenerateTextureSystem';
+import { BackgroundSystem } from './BackgroundSystem';
+import { ViewSystem } from './ViewSystem';
+import { RendererSystem } from './RenderSystem';
+import { settings } from '@pixi/settings';
+import { BaseRenderer } from './BaseRenderer';
+import { IRenderer } from './IRenderer';
 
 export interface IRendererPluginConstructor {
     new (renderer: Renderer, options?: any): IRendererPlugin;
@@ -70,8 +75,17 @@ export interface IRendererPlugin {
  *
  * @memberof PIXI
  */
-export class Renderer extends AbstractRenderer
+export class Renderer extends BaseRenderer implements IRenderer
 {
+    /**
+     * The type of the renderer.
+     *
+     * @member {number}
+     * @default PIXI.RENDERER_TYPE.UNKNOWN
+     * @see PIXI.RENDERER_TYPE
+     */
+    public readonly type: RENDERER_TYPE;
+
     /**
      * WebGL context, set by {@link PIXI.ContextSystem this.context}.
      *
@@ -85,14 +99,6 @@ export class Renderer extends AbstractRenderer
 
     /** Unique UID assigned to the renderer's WebGL context. */
     public CONTEXT_UID: number;
-
-    /**
-     * Flag if we are rendering to the screen vs renderTexture
-     *
-     * @readonly
-     * @default true
-     */
-    public renderingToScreen: boolean;
 
     // systems
 
@@ -186,8 +192,12 @@ export class Renderer extends AbstractRenderer
      */
     public batch: BatchSystem;
 
-    public plugin: PluginSystem;
+    public _plugin: PluginSystem;
     public _multisample: MultisampleSystem;
+    public _generateTexture: GenerateTextureSystem;
+    public _background: BackgroundSystem;
+    public _view: ViewSystem;
+    public _render: RendererSystem;
 
     /**
      * Internal signal instances of **runner**, these
@@ -205,7 +215,6 @@ export class Renderer extends AbstractRenderer
      * @property {PIXI.Runner} prerender - Pre-render runner
      * @property {PIXI.Runner} resize - Resize runner
      */
-    runners: {[key: string]: Runner};
 
     /**
      * Create renderer if WebGL is available. Overrideable
@@ -214,7 +223,7 @@ export class Renderer extends AbstractRenderer
      *
      * @private
      */
-    static create(options?: IRendererOptions): AbstractRenderer
+    static create(options?: IRendererOptions): IRenderer
     {
         if (isWebGLSupported())
         {
@@ -251,22 +260,32 @@ export class Renderer extends AbstractRenderer
      */
     constructor(options? : IRendererOptions)
     {
-        super(RENDERER_TYPE.WEBGL, options);
+        super();
 
-        // the options will have been modified here in the super constructor with pixi's default settings..
-        options = this.options;
+        // Add the default render options
+        options = Object.assign({}, settings.RENDER_OPTIONS, options);
+
+        this.addRunners('contextChange', 'reset', 'update', 'postrender', 'prerender', 'resize');
+        this.type = RENDERER_TYPE.WEBGL;
 
         this.gl = null;
 
         this.CONTEXT_UID = 0;
 
-        this.addRunners('destroy', 'contextChange', 'reset', 'update', 'postrender', 'prerender', 'resize');
-
         this.globalUniforms = new UniformGroup({
             projectionMatrix: new Matrix(),
         }, true);
 
-        this.addSystem(MaskSystem, 'mask')
+        this
+            // standard render systems!
+            .addSystem(GenerateTextureSystem, '_generateTexture')
+            .addSystem(BackgroundSystem, '_background')
+            .addSystem(ViewSystem, '_view')
+            .addSystem(PluginSystem, '_plugin')
+
+            // webgl specific systems
+            .addSystem(MultisampleSystem, '_multisample')
+            .addSystem(MaskSystem, 'mask')
             .addSystem(ContextSystem, 'context')
             .addSystem(StateSystem, 'state')
             .addSystem(ShaderSystem, 'shader')
@@ -281,35 +300,18 @@ export class Renderer extends AbstractRenderer
             .addSystem(FilterSystem, 'filter')
             .addSystem(RenderTextureSystem, 'renderTexture')
             .addSystem(BatchSystem, 'batch')
-            .addSystem(PluginSystem, 'plugin')
-            .addSystem(MultisampleSystem, '_multisample');
+            .addSystem(RendererSystem, '_render');
 
-        this.plugin.init(Renderer.__plugins);
-
-        /*
-         * The options passed in to create a new WebGL context.
-         */
-        if (options.context)
-        {
-            this.context.initFromContext(options.context);
-        }
-        else
-        {
-            this.context.initFromOptions({
-                alpha: !!this.useContextAlpha,
-                antialias: options.antialias,
-                premultipliedAlpha: this.useContextAlpha && this.useContextAlpha !== 'notMultiplied',
-                stencil: true,
-                preserveDrawingBuffer: options.preserveDrawingBuffer,
-                powerPreference: this.options.powerPreference,
-            });
-        }
-
-        this.renderingToScreen = true;
+        this.init({
+            _plugin: Renderer.__plugins,
+            _background: options,
+            _view: options,
+            context: options,
+        });
 
         sayHello(this.context.webGLVersion === 2 ? 'WebGL 2' : 'WebGL 1');
 
-        this.resize(this.options.width, this.options.height);
+        this.resize(options.width, options.height);
     }
 
     /**
@@ -342,104 +344,7 @@ export class Renderer extends AbstractRenderer
      */
     render(displayObject: IRenderableObject, options?: IRendererRenderOptions | RenderTexture): void
     {
-        let renderTexture: RenderTexture;
-        let clear: boolean;
-        let transform: Matrix;
-        let skipUpdateTransform: boolean;
-
-        if (options)
-        {
-            if (options instanceof RenderTexture)
-            {
-                // #if _DEBUG
-                deprecation('6.0.0', 'Renderer#render arguments changed, use options instead.');
-                // #endif
-
-                /* eslint-disable prefer-rest-params */
-                renderTexture = options;
-                clear = arguments[2];
-                transform = arguments[3];
-                skipUpdateTransform = arguments[4];
-                /* eslint-enable prefer-rest-params */
-            }
-            else
-            {
-                renderTexture = options.renderTexture;
-                clear = options.clear;
-                transform = options.transform;
-                skipUpdateTransform = options.skipUpdateTransform;
-            }
-        }
-
-        // can be handy to know!
-        this.renderingToScreen = !renderTexture;
-
-        this.runners.prerender.emit();
-        this.emit('prerender');
-
-        // apply a transform at a GPU level
-        this.projection.transform = transform;
-
-        // no point rendering if our context has been blown up!
-        if (this.context.isLost)
-        {
-            return;
-        }
-
-        if (!renderTexture)
-        {
-            this._lastObjectRendered = displayObject;
-        }
-
-        if (!skipUpdateTransform)
-        {
-            // update the scene graph
-            const cacheParent = displayObject.enableTempParent();
-
-            displayObject.updateTransform();
-            displayObject.disableTempParent(cacheParent);
-            // displayObject.hitArea = //TODO add a temp hit area
-        }
-
-        this.renderTexture.bind(renderTexture);
-        this.batch.currentRenderer.start();
-
-        if (clear !== undefined ? clear : this.clearBeforeRender)
-        {
-            this.renderTexture.clear();
-        }
-
-        displayObject.render(this);
-
-        // apply transform..
-        this.batch.currentRenderer.flush();
-
-        if (renderTexture)
-        {
-            renderTexture.baseTexture.update();
-        }
-
-        this.runners.postrender.emit();
-
-        // reset transform after render
-        this.projection.transform = null;
-
-        this.emit('postrender');
-    }
-
-    /**
-     * @override
-     * @ignore
-     */
-    generateTexture(displayObject: IRenderableObject,
-        options: IGenerateTextureOptions | SCALE_MODES = {},
-        resolution?: number, region?: Rectangle): RenderTexture
-    {
-        const renderTexture = super.generateTexture(displayObject, options as any, resolution, region);
-
-        this.framebuffer.blit();
-
-        return renderTexture;
+        this._render.render(displayObject, options);
     }
 
     /**
@@ -450,9 +355,7 @@ export class Renderer extends AbstractRenderer
      */
     resize(desiredScreenWidth: number, desiredScreenHeight: number): void
     {
-        super.resize(desiredScreenWidth, desiredScreenHeight);
-
-        this.runners.resize.emit(this.screen.height, this.screen.width);
+        this._view.resizeView(desiredScreenWidth, desiredScreenHeight);
     }
 
     /**
@@ -480,20 +383,11 @@ export class Renderer extends AbstractRenderer
      * @param [removeView=false] - Removes the Canvas element from the DOM.
      *  See: https://github.com/pixijs/pixi.js/issues/2233
      */
-    destroy(removeView?: boolean): void
+    destroy(removeView = false): void
     {
-        this.runners.destroy.emit();
-
-        for (const r in this.runners)
-        {
-            this.runners[r].destroy();
-        }
-
-        // call base destroy
-        super.destroy(removeView);
-
-        // TODO nullify all the managers..
-        this.gl = null;
+        super.destroy({
+            _view: removeView,
+        });
     }
 
     /**
@@ -513,12 +407,114 @@ export class Renderer extends AbstractRenderer
 
     get plugins(): IRendererPlugins
     {
-        return this.plugin.plugins;
+        return this._plugin.plugins;
     }
 
     get multisample(): MSAA_QUALITY
     {
         return this._multisample.multisample;
+    }
+
+    /**
+     * Same as view.width, actual number of pixels in the canvas by horizontal.
+     *
+     * @member {number}
+     * @readonly
+     * @default 800
+     */
+    get width(): number
+    {
+        return this._view.view.width;
+    }
+
+    /**
+       * Same as view.height, actual number of pixels in the canvas by vertical.
+       *
+       * @member {number}
+       * @readonly
+       * @default 600
+       */
+    get height(): number
+    {
+        return this._view.view.height;
+    }
+
+    get resolution(): number
+    {
+        return this._view.resolution;
+    }
+
+    get autoDensity(): boolean
+    {
+        return this._view.autoDensity;
+    }
+
+    get view(): HTMLCanvasElement
+    {
+        return this._view.view;
+    }
+
+    get screen(): Rectangle
+    {
+        return this._view.screen;
+    }
+
+    get _lastObjectRendered(): IRenderableObject
+    {
+        return this._render._lastObjectRendered;
+    }
+
+    get renderingToScreen(): boolean
+    {
+        return this._render.renderingToScreen;
+    }
+
+    /**
+     * Useful function that returns a texture of the display object that can then be used to create sprites
+     * This can be quite useful if your displayObject is complicated and needs to be reused multiple times.
+     * @method PIXI.AbstractRenderer#generateTexture
+     * @param displayObject - The displayObject the object will be generated from.
+     * @param {object} options - Generate texture options.
+     * @param {PIXI.SCALE_MODES} options.scaleMode - The scale mode of the texture.
+     * @param {number} options.resolution - The resolution / device pixel ratio of the texture being generated.
+     * @param {PIXI.Rectangle} options.region - The region of the displayObject, that shall be rendered,
+     *        if no region is specified, defaults to the local bounds of the displayObject.
+     * @param {PIXI.MSAA_QUALITY} options.multisample - The number of samples of the frame buffer.
+     * @return A texture of the graphics object.
+     */
+    generateTexture(displayObject: IRenderableObject, options?: IGenerateTextureOptions): RenderTexture;
+
+    /**
+       * Please use the options argument instead.
+       *
+       * @method PIXI.AbstractRenderer#generateTexture
+       * @deprecated Since 6.1.0
+       * @param displayObject - The displayObject the object will be generated from.
+       * @param scaleMode - The scale mode of the texture.
+       * @param resolution - The resolution / device pixel ratio of the texture being generated.
+       * @param region - The region of the displayObject, that shall be rendered,
+       *        if no region is specified, defaults to the local bounds of the displayObject.
+       * @return A texture of the graphics object.
+       */
+    generateTexture(
+          displayObject: IRenderableObject,
+          scaleMode?: SCALE_MODES,
+          resolution?: number,
+          region?: Rectangle): RenderTexture;
+
+    /**
+     * @ignore
+     */
+    generateTexture(displayObject: IRenderableObject,
+        options: IGenerateTextureOptions | SCALE_MODES = {},
+        resolution?: number, region?: Rectangle): RenderTexture
+    {
+        const renderTexture = this._generateTexture.generateTexture(displayObject, options as any, resolution, region);
+
+        // TODO mode this to the framebuffer system or generateTexture?..
+        this.framebuffer.blit();
+
+        return renderTexture;
     }
 
     /**

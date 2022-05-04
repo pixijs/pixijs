@@ -12,6 +12,14 @@ export interface ISupportDict {
     uint32Indices: boolean;
 }
 
+export interface ContextOptions {
+    context?: IRenderingContext;
+    premultipliedAlpha?: boolean;
+    powerPreference?: WebGLPowerPreference;
+    preserveDrawingBuffer?: boolean;
+    antialias?: boolean;
+}
+
 /**
  * System plugin to the renderer to manage the context.
  *
@@ -69,9 +77,6 @@ export class ContextSystem implements ISystem
         // Bind functions
         this.handleContextLost = this.handleContextLost.bind(this);
         this.handleContextRestored = this.handleContextRestored.bind(this);
-
-        (renderer.view as any).addEventListener('webglcontextlost', this.handleContextLost, false);
-        renderer.view.addEventListener('webglcontextrestored', this.handleContextRestored, false);
     }
 
     /**
@@ -102,6 +107,31 @@ export class ContextSystem implements ISystem
         }
     }
 
+    init(options: ContextOptions): void
+    {
+        /*
+         * The options passed in to create a new WebGL context.
+         */
+        if (options.context)
+        {
+            this.initFromContext(options.context);
+        }
+        else
+        {
+            const alpha = this.renderer._background.backgroundAlpha === 0;
+            const premultipliedAlpha =  options.premultipliedAlpha ?? true;
+
+            this.initFromOptions({
+                alpha,
+                premultipliedAlpha,
+                antialias: options.antialias,
+                stencil: true,
+                preserveDrawingBuffer: options.preserveDrawingBuffer,
+                powerPreference: options.powerPreference,
+            });
+        }
+    }
+
     /**
      * Initializes the context.
      *
@@ -115,6 +145,9 @@ export class ContextSystem implements ISystem
         this.renderer.gl = gl;
         this.renderer.CONTEXT_UID = CONTEXT_UID_COUNTER++;
         this.renderer.runners.contextChange.emit(gl);
+
+        (this.renderer.view as any).addEventListener('webglcontextlost', this.handleContextLost, false);
+        this.renderer.view.addEventListener('webglcontextrestored', this.handleContextRestored, false);
     }
 
     /**
@@ -257,7 +290,7 @@ export class ContextSystem implements ISystem
     /** Handle the post-render runner event. */
     protected postrender(): void
     {
-        if (this.renderer.renderingToScreen)
+        if (this.renderer._render.renderingToScreen)
         {
             this.gl.flush();
         }
