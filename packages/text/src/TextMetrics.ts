@@ -736,6 +736,8 @@ export class TextMetrics
 
                 if (context && context.measureText)
                 {
+                    TextMetrics.__canvas = c;
+
                     return c;
                 }
 
