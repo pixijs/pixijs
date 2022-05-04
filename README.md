@@ -3,7 +3,7 @@ PixiJS — The HTML5 Creation Engine
 
 ![pixi.js logo](https://pixijs.download/pixijs-banner-no-version.png)
 
-[![Discord](https://badgen.net/badge/icon/discord?icon=discord&label)](https://discord.gg/wNyCcTvf)
+[![Discord](https://badgen.net/badge/icon/discord?icon=discord&label)](https://discord.gg/QrnxmQUPGV)
 [![npm version](https://badge.fury.io/js/pixi.js.svg)](https://badge.fury.io/js/pixi.js)
 [![Node.js CI](https://github.com/pixijs/pixi.js/workflows/Node.js%20CI/badge.svg)](https://github.com/pixi.js/pixi.js/actions?query=workflow%3A%22Node.js+CI%22)
 
