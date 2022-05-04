@@ -42,7 +42,7 @@ PixiJS has full [WebGL](https://en.wikipedia.org/wiki/WebGL) support and seamles
 ### Community ###
 - Forums: Check out the [forum](https://www.html5gamedevs.com/forum/15-pixijs/) and [Stackoverflow](http://stackoverflow.com/search?q=pixi.js), both friendly places to ask your PixiJS questions.
 - Inspiration: Check out the [gallery](https://www.pixijs.com/gallery) to see some of the amazing things people have created!
-- Chat: You can join us on [Discord](https://discord.gg/wNyCcTvf) to chat about PixiJS.
+- Chat: You can join us on [Discord](https://discord.gg/QrnxmQUPGV) to chat about PixiJS.
 
 ### Setup ###
 
