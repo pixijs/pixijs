@@ -34,5 +34,6 @@ export class StartupSystem implements ISystem
     destroy(): void
     {
         // ka pow!
+        this.renderer = null;
     }
 }

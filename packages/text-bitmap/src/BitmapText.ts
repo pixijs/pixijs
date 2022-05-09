@@ -622,9 +622,11 @@ export class BitmapText extends Container
 
             const fontScale = this._fontSize / size;
 
+            const resolution =  renderer._view.resolution;
+
             for (const mesh of this._activePagesMeshData)
             {
-                mesh.mesh.shader.uniforms.uFWidth = worldScale * distanceFieldRange * fontScale * renderer.resolution;
+                mesh.mesh.shader.uniforms.uFWidth = worldScale * distanceFieldRange * fontScale * resolution;
             }
         }
 

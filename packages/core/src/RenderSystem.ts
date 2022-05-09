@@ -93,5 +93,7 @@ export class RendererSystem implements ISystem
     destroy(): void
     {
         // ka pow!
+        this.renderer = null;
+        this.lastObjectRendered = null;
     }
 }

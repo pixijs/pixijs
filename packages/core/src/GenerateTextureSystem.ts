@@ -16,16 +16,12 @@ export interface IGenerateTextureOptions {
 
 export class GenerateTextureSystem implements ISystem
 {
-    autoDensity: boolean;
     renderer: IRenderer;
-    resolution: number;
-    screen: Rectangle;
     tempMatrix: Matrix;
 
     constructor(renderer: IRenderer)
     {
         this.renderer = renderer;
-        this.autoDensity = true;
 
         this.tempMatrix = new Matrix();
     }
@@ -75,5 +71,7 @@ export class GenerateTextureSystem implements ISystem
     destroy(): void
     {
         // ka boom!
+        this.renderer = null;
+        this.tempMatrix = null;
     }
 }

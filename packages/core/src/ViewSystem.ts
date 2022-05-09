@@ -93,5 +93,9 @@ export class ViewSystem implements ISystem
         {
             this.view.parentNode.removeChild(this.view);
         }
+
+        this.renderer = null;
+        this.view = null;
+        this.screen = null;
     }
 }

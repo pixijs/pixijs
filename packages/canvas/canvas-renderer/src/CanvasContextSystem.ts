@@ -212,8 +212,10 @@ export class CanvasContextSystem implements ISystem
 
     public destroy(): void
     {
-        this.activeContext = null;
+        this.renderer = null;
+        this.rootContext = null;
 
+        this.activeContext = null;
         this.smoothProperty = null;
     }
 }

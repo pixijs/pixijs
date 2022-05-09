@@ -112,4 +112,9 @@ export class BackgroundSystem implements ISystem
     {
         return this._backgroundColorString;
     }
+
+    destroy(): void
+    {
+        // ka boom!
+    }
 }
