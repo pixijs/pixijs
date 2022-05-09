@@ -86,9 +86,15 @@ export class SystemManager<R=IRenderer> extends EventEmitter
 
     emitWithCustomOptions(runner: Runner, options: Record<string, unknown>): void
     {
-        Object.keys(this._systemsHash).forEach((id) =>
+        const systemHashKeys = Object.keys(this._systemsHash);
+
+        runner.items.forEach((system) =>
         {
-            this._systemsHash[id][runner.name]?.(options[id]);
+            // I know this does not need to be a performant function so it.. isn't!
+            // its only used for init and destroy.. we can refactor if required..
+            const systemName = systemHashKeys.find((systemId) => this._systemsHash[systemId] === system);
+
+            system[runner.name](options[systemName]);
         });
     }
 

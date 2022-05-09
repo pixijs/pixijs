@@ -421,6 +421,8 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      */
     destroy(removeView = false): void
     {
+        this.runners.destroy.items.reverse();
+
         this.emitWithCustomOptions(this.runners.destroy, {
             _view: removeView,
         });

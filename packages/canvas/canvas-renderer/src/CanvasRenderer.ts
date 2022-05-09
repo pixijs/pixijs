@@ -19,6 +19,7 @@ import { SystemManager } from 'packages/core/src/SystemManager';
 import { CanvasContextSystem } from './CanvasContextSystem';
 import { CanvasRenderSystem } from './CanvasRenderSystem';
 import { StartupOptions, StartupSystem } from 'packages/core/src/StartupSystem';
+import { settings } from '@pixi/settings';
 
 export interface ICanvasRendererPluginConstructor {
     new (renderer: CanvasRenderer, options?: any): IRendererPlugin;
@@ -85,6 +86,9 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
      constructor(options?: IRendererOptions)
      {
          super();
+
+         // Add the default render options
+         options = Object.assign({}, settings.RENDER_OPTIONS, options);
 
          this.type = RENDERER_TYPE.CANVAS;
 
@@ -189,6 +193,8 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
      */
      public destroy(removeView?: boolean): void
      {
+         this.runners.destroy.items.reverse();
+
          this.emitWithCustomOptions(this.runners.destroy, {
              _view: removeView,
          });
