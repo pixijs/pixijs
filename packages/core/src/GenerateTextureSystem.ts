@@ -1,22 +1,28 @@
-import { SCALE_MODES } from '@pixi/constants';
+import { MSAA_QUALITY, SCALE_MODES } from '@pixi/constants';
 import { Matrix, Rectangle } from '@pixi/math';
 import { deprecation } from '@pixi/utils';
-import { IGenerateTextureOptions } from './AbstractRenderer';
 import { IRenderableContainer, IRenderableObject } from './IRenderableObject';
+import { IRenderer } from './IRenderer';
 import { ISystem } from './ISystem';
-import { Renderer } from './Renderer';
 import { RenderTexture } from './renderTexture/RenderTexture';
 
 // TODO could this just be part of extract?
+export interface IGenerateTextureOptions {
+    scaleMode?: SCALE_MODES;
+    resolution?: number;
+    region?: Rectangle;
+    multisample?: MSAA_QUALITY;
+}
+
 export class GenerateTextureSystem implements ISystem
 {
     autoDensity: boolean;
-    renderer: Renderer;
+    renderer: IRenderer;
     resolution: number;
     screen: Rectangle;
     tempMatrix: Matrix;
 
-    constructor(renderer: Renderer)
+    constructor(renderer: IRenderer)
     {
         this.renderer = renderer;
         this.autoDensity = true;

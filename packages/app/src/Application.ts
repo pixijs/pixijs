@@ -2,8 +2,9 @@ import { Container } from '@pixi/display';
 import { autoDetectRenderer } from '@pixi/core';
 
 import type { Rectangle } from '@pixi/math';
-import type { Renderer, IRendererOptionsAuto, AbstractRenderer } from '@pixi/core';
+import type {  IRendererOptionsAuto } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
+import { IRenderer } from 'packages/core/src/IRenderer';
 
 /**
  * Any plugin that's usable for Application should contain these methods.
@@ -62,7 +63,7 @@ export class Application
      * WebGL renderer if available, otherwise CanvasRenderer.
      * @member {PIXI.Renderer|PIXI.CanvasRenderer}
      */
-    public renderer: Renderer|AbstractRenderer;
+    public renderer: IRenderer;
 
     /**
      * @param {object} [options] - The optional renderer parameters.
@@ -148,7 +149,7 @@ export class Application
      */
     get screen(): Rectangle
     {
-        return this.renderer.screen;
+        return this.renderer._view.screen;
     }
 
     /**

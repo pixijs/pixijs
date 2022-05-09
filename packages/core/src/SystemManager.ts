@@ -1,12 +1,30 @@
 import { Runner } from '@pixi/runner';
 import { EventEmitter } from '@pixi/utils';
+import { IRenderer } from './IRenderer';
 import { ISystem, ISystemConstructor } from './ISystem';
+interface ISystemConfig {
+    runners: string[],
+    systems: Record<string, ISystemConstructor>
+}
 
-export abstract class BaseRenderer extends EventEmitter
+export class SystemManager<R=IRenderer> extends EventEmitter
 {
     readonly runners: {[key: string]: Runner} = {};
 
     private _systemsHash: Record<string, ISystem> = {};
+
+    setup(config: ISystemConfig): void
+    {
+        this.addRunners(...config.runners);
+
+        let i: keyof typeof config.systems;
+
+        for (i in config.systems)
+        {
+            // @zyie not sure about the TS here..
+            this.addSystem(config.systems[i], i);
+        }
+    }
 
     addRunners(...runnerIds: string[]): void
     {
@@ -26,9 +44,9 @@ export abstract class BaseRenderer extends EventEmitter
      *        sure it doesn't collide with properties on Renderer.
      * @return Return instance of renderer
      */
-    addSystem(ClassRef: ISystemConstructor, name: string): this
+    addSystem(ClassRef: ISystemConstructor<R>, name: string): this
     {
-        const system = new ClassRef(this);
+        const system = new ClassRef(this as any as R);
 
         if ((this as any)[name])
         {
@@ -66,21 +84,16 @@ export abstract class BaseRenderer extends EventEmitter
         return this;
     }
 
-    init(options: Record<string, unknown>): void
+    emitWithCustomOptions(runner: Runner, options: Record<string, unknown>): void
     {
         Object.keys(this._systemsHash).forEach((id) =>
         {
-            this._systemsHash[id].init?.(options[id]);
+            this._systemsHash[id][runner.name]?.(options[id]);
         });
     }
 
-    destroy(options: Record<string, unknown>): void
+    destroy(): void
     {
-        Object.keys(this._systemsHash).forEach((id) =>
-        {
-            this._systemsHash[id].destroy?.(options[id]);
-        });
-
         Object.values(this.runners).forEach((runner) =>
         {
             runner.destroy();

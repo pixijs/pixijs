@@ -1,7 +1,7 @@
 import { Rectangle } from '@pixi/math';
 import { settings } from '@pixi/settings';
+import { IRenderer } from './IRenderer';
 import { ISystem } from './ISystem';
-import { Renderer } from './Renderer';
 
 export interface ViewOptions {
     width: number
@@ -12,14 +12,14 @@ export interface ViewOptions {
 
 export class ViewSystem implements ISystem
 {
-    private renderer: Renderer;
+    private renderer: IRenderer;
 
     public resolution: number;
     public screen: Rectangle;
     public view: HTMLCanvasElement;
     public autoDensity: boolean;
 
-    constructor(renderer: Renderer)
+    constructor(renderer: IRenderer)
     {
         this.renderer = renderer;
     }

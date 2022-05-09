@@ -51,7 +51,8 @@ export class CanvasSpriteRenderer
     {
         const texture = sprite._texture;
         const renderer = this.renderer;
-        const context = renderer.context;
+        const context = renderer.context.activeContext;
+        const activeResolution = renderer.context.activeResolution;
 
         if (!texture.valid)
         {
@@ -72,17 +73,18 @@ export class CanvasSpriteRenderer
             return;
         }
 
-        renderer.setBlendMode(sprite.blendMode, true);
+        renderer.context.setBlendMode(sprite.blendMode, true);
 
-        renderer.context.globalAlpha = sprite.worldAlpha;
+        context.globalAlpha = sprite.worldAlpha;
 
         // If smoothingEnabled is supported and we need to change the smoothing property for sprite texture
         const smoothingEnabled = texture.baseTexture.scaleMode === SCALE_MODES.LINEAR;
+        const smoothProperty = renderer.context.smoothProperty;
 
-        if (renderer.smoothProperty
-            && renderer.context[renderer.smoothProperty] !== smoothingEnabled)
+        if (smoothProperty
+            && context[smoothProperty] !== smoothingEnabled)
         {
-            context[renderer.smoothProperty] = smoothingEnabled;
+            context[smoothProperty] = smoothingEnabled;
         }
 
         if (texture.trim)
@@ -109,7 +111,7 @@ export class CanvasSpriteRenderer
         dx -= width / 2;
         dy -= height / 2;
 
-        renderer.setContextTransform(wt, sprite.roundPixels, 1);
+        renderer.context.setContextTransform(wt, sprite.roundPixels, 1);
         // Allow for pixel rounding
         if (sprite.roundPixels)
         {
@@ -118,17 +120,18 @@ export class CanvasSpriteRenderer
         }
 
         const resolution = texture.baseTexture.resolution;
-        const outerBlend = renderer._outerBlend;
+
+        const outerBlend = renderer.context._outerBlend;
 
         if (outerBlend)
         {
             context.save();
             context.beginPath();
             context.rect(
-                dx * renderer.resolution,
-                dy * renderer.resolution,
-                width * renderer.resolution,
-                height * renderer.resolution
+                dx * activeResolution,
+                dy * activeResolution,
+                width * activeResolution,
+                height * activeResolution
             );
             context.clip();
         }
@@ -149,10 +152,10 @@ export class CanvasSpriteRenderer
                 0,
                 Math.floor(width * resolution),
                 Math.floor(height * resolution),
-                Math.floor(dx * renderer.resolution),
-                Math.floor(dy * renderer.resolution),
-                Math.floor(width * renderer.resolution),
-                Math.floor(height * renderer.resolution)
+                Math.floor(dx * activeResolution),
+                Math.floor(dy * activeResolution),
+                Math.floor(width * activeResolution),
+                Math.floor(height * activeResolution)
             );
         }
         else
@@ -163,10 +166,10 @@ export class CanvasSpriteRenderer
                 texture._frame.y * resolution,
                 Math.floor(width * resolution),
                 Math.floor(height * resolution),
-                Math.floor(dx * renderer.resolution),
-                Math.floor(dy * renderer.resolution),
-                Math.floor(width * renderer.resolution),
-                Math.floor(height * renderer.resolution)
+                Math.floor(dx * activeResolution),
+                Math.floor(dy * activeResolution),
+                Math.floor(width * activeResolution),
+                Math.floor(height * activeResolution)
             );
         }
 
@@ -175,7 +178,7 @@ export class CanvasSpriteRenderer
             context.restore();
         }
         // just in case, leaking outer blend here will be catastrophic!
-        renderer.setBlendMode(BLEND_MODES.NORMAL);
+        renderer.context.setBlendMode(BLEND_MODES.NORMAL);
     }
 
     /** destroy the sprite object */

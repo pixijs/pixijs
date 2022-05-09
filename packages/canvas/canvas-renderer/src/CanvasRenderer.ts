@@ -1,10 +1,7 @@
-import { AbstractRenderer, CanvasResource, RenderTexture, BaseRenderTexture } from '@pixi/core';
-import { CanvasRenderTarget, sayHello, rgb2hex, hex2string, deprecation } from '@pixi/utils';
-import { CanvasMaskManager } from './utils/CanvasMaskManager';
-import { mapCanvasBlendModesToPixi } from './utils/mapCanvasBlendModesToPixi';
-import { RENDERER_TYPE, SCALE_MODES, BLEND_MODES } from '@pixi/constants';
-import { settings } from '@pixi/settings';
-import { Matrix } from '@pixi/math';
+import { RenderTexture, BaseRenderTexture, IRenderableObject } from '@pixi/core';
+import { CanvasMaskSystem } from './CanvasMaskSystem';
+import { RENDERER_TYPE, SCALE_MODES } from '@pixi/constants';
+import { Matrix, Rectangle } from '@pixi/math';
 
 import type { DisplayObject } from '@pixi/display';
 import type {
@@ -13,40 +10,18 @@ import type {
     IRendererPlugins,
     IRendererRenderOptions
 } from '@pixi/core';
-
-const tempMatrix = new Matrix();
+import { IRenderer } from 'packages/core/src/IRenderer';
+import { GenerateTextureSystem, IGenerateTextureOptions } from 'packages/core/src/GenerateTextureSystem';
+import { BackgroundSystem } from 'packages/core/src/BackgroundSystem';
+import { ViewSystem } from 'packages/core/src/ViewSystem';
+import { PluginSystem } from 'packages/core/src/PluginSystem';
+import { SystemManager } from 'packages/core/src/SystemManager';
+import { CanvasContextSystem } from './CanvasContextSystem';
+import { CanvasRenderSystem } from './CanvasRenderSystem';
+import { StartupOptions, StartupSystem } from 'packages/core/src/StartupSystem';
 
 export interface ICanvasRendererPluginConstructor {
     new (renderer: CanvasRenderer, options?: any): IRendererPlugin;
-}
-
-export interface ICanvasRendererPlugins
-{
-    [key: string]: any;
-}
-
-/*
- * Different browsers support different smoothing property names
- * this is the list of all platform props.
- */
-type SmoothingEnabledProperties =
-    'imageSmoothingEnabled' |
-    'webkitImageSmoothingEnabled' |
-    'mozImageSmoothingEnabled' |
-    'oImageSmoothingEnabled' |
-    'msImageSmoothingEnabled';
-
-/**
- * Rendering context for all browsers. This includes platform-specific
- * properties that are not included in the spec for CanvasRenderingContext2D
- * @private
- */
-export interface CrossPlatformCanvasRenderingContext2D extends CanvasRenderingContext2D
-{
-    webkitImageSmoothingEnabled: boolean;
-    mozImageSmoothingEnabled: boolean;
-    oImageSmoothingEnabled: boolean;
-    msImageSmoothingEnabled: boolean;
 }
 
 /**
@@ -57,9 +32,9 @@ export interface CrossPlatformCanvasRenderingContext2D extends CanvasRenderingCo
  *
  * @class
  * @memberof PIXI
- * @extends PIXI.AbstractRenderer
+ * @implements PIXI.IRenderer
  */
-export class CanvasRenderer extends AbstractRenderer
+export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRenderer
 {
     /**
      * Fired after rendering finishes.
@@ -70,31 +45,24 @@ export class CanvasRenderer extends AbstractRenderer
      * @event PIXI.CanvasRenderer#prerender
      */
 
-    /** The root canvas 2d context that everything is drawn with. */
-    public readonly rootContext: CrossPlatformCanvasRenderingContext2D;
-    /** The currently active canvas 2d context (could change with renderTextures) */
-    public context: CrossPlatformCanvasRenderingContext2D;
-    /** Boolean flag controlling canvas refresh. */
-    public refresh = true;
+    // systems..
     /**
      * Instance of a CanvasMaskManager, handles masking when using the canvas renderer.
      * @member {PIXI.CanvasMaskManager}
      */
-    public maskManager: CanvasMaskManager = new CanvasMaskManager(this);
-    /** The canvas property used to set the canvas smoothing property. */
-    public smoothProperty: SmoothingEnabledProperties = 'imageSmoothingEnabled';
-    /** Tracks the blend modes useful for this renderer. */
-    public readonly blendModes: string[] = mapCanvasBlendModesToPixi();
-    public renderingToScreen = false;
+    public textureGenerator: GenerateTextureSystem;
+    public background: BackgroundSystem;
+    public mask: CanvasMaskSystem;
+    public _view: ViewSystem;
+     public _plugin: PluginSystem;
+     public context: CanvasContextSystem;
+     public _renderer: CanvasRenderSystem;
+     public startup: StartupSystem;
 
-    private _activeBlendMode: BLEND_MODES =null;
-    /** Projection transform, passed in render() stored here */
-    private _projTransform: Matrix = null;
+     public type: RENDERER_TYPE;
+     public readonly rendererLogId = 'Canvas';
 
-    /** @private */
-    _outerBlend = false;
-
-    /**
+     /**
      * @param options - The optional renderer parameters
      * @param {number} [options.width=800] - the width of the screen
      * @param {number} [options.height=600] - the height of the screen
@@ -114,53 +82,65 @@ export class CanvasRenderer extends AbstractRenderer
      *  (shown if not transparent).
      * @param {number} [options.backgroundAlpha=1] - Value from 0 (fully transparent) to 1 (fully opaque).
      */
-    constructor(options?: IRendererOptions)
-    {
-        super(RENDERER_TYPE.CANVAS, options);
+     constructor(options?: IRendererOptions)
+     {
+         super();
 
-        this.rootContext = this.view.getContext('2d', { alpha: this.useContextAlpha }) as
-            CrossPlatformCanvasRenderingContext2D;
+         this.type = RENDERER_TYPE.CANVAS;
 
-        this.context = this.rootContext;
+         const systemConfig = {
+             runners: ['init', 'destroy', 'contextChange', 'reset', 'update', 'postrender', 'prerender', 'resize'],
+             systems: {
+                 // systems shared by all renderers..
+                 textureGenerator: GenerateTextureSystem,
+                 background: BackgroundSystem,
+                 _view: ViewSystem,
+                 _plugin: PluginSystem,
+                 startup: StartupSystem,
 
-        if (!this.rootContext.imageSmoothingEnabled)
-        {
-            const rc = this.rootContext;
+                 // canvas systems..
+                 mask: CanvasMaskSystem,
+                 context: CanvasContextSystem,
+                 _renderer: CanvasRenderSystem,
 
-            if (rc.webkitImageSmoothingEnabled)
-            {
-                this.smoothProperty = 'webkitImageSmoothingEnabled';
-            }
-            else if (rc.mozImageSmoothingEnabled)
-            {
-                this.smoothProperty = 'mozImageSmoothingEnabled';
-            }
-            else if (rc.oImageSmoothingEnabled)
-            {
-                this.smoothProperty = 'oImageSmoothingEnabled';
-            }
-            else if (rc.msImageSmoothingEnabled)
-            {
-                this.smoothProperty = 'msImageSmoothingEnabled';
-            }
-        }
+             }
+         };
 
-        this.initPlugins(CanvasRenderer.__plugins);
+         this.setup(systemConfig);
 
-        sayHello('Canvas');
+         // new options!
+         const startupOptions: StartupOptions = {
+             _plugin: CanvasRenderer.__plugins,
+             background: {
+                 backgroundAlpha: options.backgroundAlpha,
+                 backgroundColor: options.backgroundColor,
+                 clearBeforeRender: options.clearBeforeRender,
 
-        this.resize(this.options.width, this.options.height);
-    }
+             },
+             _view: {
+                 height: options.height,
+                 width: options.width,
+                 autoDensity: options.autoDensity,
+                 resolution: options.resolution,
+             }
+         };
 
-    /**
-     * Adds a new system to the renderer. It does nothing in the CanvasRenderer.
-     */
-    addSystem(): this
-    {
-        return this;
-    }
+         this.startup.run(startupOptions);
+     }
 
-    /**
+     generateTexture(displayObject: IRenderableObject,
+         options: IGenerateTextureOptions | SCALE_MODES = {},
+         resolution?: number, region?: Rectangle): RenderTexture
+     {
+         return this.textureGenerator.generateTexture(displayObject, options as any, resolution, region);
+     }
+
+     reset(): void
+     {
+         throw new Error('Method not implemented.');
+     }
+
+     /**
      * Renders the object to its WebGL view.
      *
      * @param displayObject - The object to be rendered.
@@ -170,9 +150,9 @@ export class CanvasRenderer extends AbstractRenderer
      * @param {PIXI.Matrix} [options.transform] - A transform to apply to the render texture before rendering.
      * @param {boolean} [options.skipUpdateTransform=false] - Should we skip the update transform pass?
      */
-    render(displayObject: DisplayObject, options?: IRendererRenderOptions): void;
+     render(displayObject: DisplayObject, options?: IRendererRenderOptions): void;
 
-    /**
+     /**
      * Please use the `option` render arguments instead.
      *
      * @deprecated Since 6.0.0
@@ -182,289 +162,111 @@ export class CanvasRenderer extends AbstractRenderer
      * @param transform - A transform to apply to the render texture before rendering.
      * @param skipUpdateTransform - Should we skip the update transform pass?
      */
-    render(displayObject: DisplayObject, renderTexture?: RenderTexture | BaseRenderTexture,
+     render(displayObject: DisplayObject, renderTexture?: RenderTexture | BaseRenderTexture,
         clear?: boolean, transform?: Matrix, skipUpdateTransform?: boolean): void;
 
-    /** @ignore */
-    public render(displayObject: DisplayObject, options?: IRendererRenderOptions | RenderTexture | BaseRenderTexture): void
-    {
-        if (!this.view)
-        {
-            return;
-        }
+     /** @ignore */
+     public render(displayObject: DisplayObject, options?: IRendererRenderOptions | RenderTexture | BaseRenderTexture): void
+     {
+         this._renderer.render(displayObject, options);
+     }
 
-        let renderTexture: BaseRenderTexture | RenderTexture;
-        let clear: boolean;
-        let transform: Matrix;
-        let skipUpdateTransform: boolean;
-
-        if (options)
-        {
-            if (options instanceof RenderTexture || options instanceof BaseRenderTexture)
-            {
-                // #if _DEBUG
-                deprecation('6.0.0', 'CanvasRenderer#render arguments changed, use options instead.');
-                // #endif
-
-                /* eslint-disable prefer-rest-params */
-                renderTexture = options;
-                clear = arguments[2];
-                transform = arguments[3];
-                skipUpdateTransform = arguments[4];
-                /* eslint-enable prefer-rest-params */
-            }
-            else
-            {
-                renderTexture = options.renderTexture;
-                clear = options.clear;
-                transform = options.transform;
-                skipUpdateTransform = options.skipUpdateTransform;
-            }
-        }
-
-        // can be handy to know!
-        this.renderingToScreen = !renderTexture;
-
-        this.emit('prerender');
-
-        const rootResolution = this.resolution;
-
-        if (renderTexture)
-        {
-            renderTexture = renderTexture.castToBaseTexture() as BaseRenderTexture;
-
-            if (!renderTexture._canvasRenderTarget)
-            {
-                renderTexture._canvasRenderTarget = new CanvasRenderTarget(
-                    renderTexture.width,
-                    renderTexture.height,
-                    renderTexture.resolution
-                );
-                renderTexture.resource = new CanvasResource(renderTexture._canvasRenderTarget.canvas);
-                renderTexture.valid = true;
-            }
-
-            this.context = renderTexture._canvasRenderTarget.context as CrossPlatformCanvasRenderingContext2D;
-            this.resolution = renderTexture._canvasRenderTarget.resolution;
-        }
-        else
-        {
-            this.context = this.rootContext;
-        }
-
-        const context = this.context;
-
-        this._projTransform = transform || null;
-
-        if (!renderTexture)
-        {
-            this._lastObjectRendered = displayObject;
-        }
-
-        if (!skipUpdateTransform)
-        {
-            // update the scene graph
-            const cacheParent = displayObject.enableTempParent();
-
-            displayObject.updateTransform();
-            displayObject.disableTempParent(cacheParent);
-        }
-
-        context.save();
-        context.setTransform(1, 0, 0, 1, 0, 0);
-        context.globalAlpha = 1;
-        this._activeBlendMode = BLEND_MODES.NORMAL;
-        this._outerBlend = false;
-        context.globalCompositeOperation = this.blendModes[BLEND_MODES.NORMAL];
-
-        if (clear !== undefined ? clear : this.clearBeforeRender)
-        {
-            if (this.renderingToScreen)
-            {
-                context.clearRect(0, 0, this.width, this.height);
-
-                if (this.backgroundAlpha > 0)
-                {
-                    context.globalAlpha = this.useContextAlpha ? this.backgroundAlpha : 1;
-                    context.fillStyle = this._backgroundColorString;
-                    context.fillRect(0, 0, this.width, this.height);
-                    context.globalAlpha = 1;
-                }
-            }
-            else
-            {
-                renderTexture = (renderTexture as BaseRenderTexture);
-                renderTexture._canvasRenderTarget.clear();
-
-                const clearColor = renderTexture.clearColor;
-
-                if (clearColor[3] > 0)
-                {
-                    context.globalAlpha = this.useContextAlpha ? clearColor[3] : 1;
-                    context.fillStyle = hex2string(rgb2hex(clearColor));
-                    context.fillRect(0, 0, renderTexture.realWidth, renderTexture.realHeight);
-                    context.globalAlpha = 1;
-                }
-            }
-        }
-
-        // TODO RENDER TARGET STUFF HERE..
-        const tempContext = this.context;
-
-        this.context = context;
-        displayObject.renderCanvas(this);
-        this.context = tempContext;
-
-        context.restore();
-
-        this.resolution = rootResolution;
-        this._projTransform = null;
-
-        this.emit('postrender');
-    }
-
-    /**
-     * Sets matrix of context.
-     * called only from render() methods
-     * takes care about resolution
-     * @param transform - world matrix of current element
-     * @param roundPixels - whether to round (tx,ty) coords
-     * @param localResolution - If specified, used instead of `renderer.resolution` for local scaling
-     */
-    setContextTransform(transform: Matrix, roundPixels?: boolean, localResolution?: number): void
-    {
-        let mat = transform;
-        const proj = this._projTransform;
-        const resolution = this.resolution;
-
-        localResolution = localResolution || resolution;
-
-        if (proj)
-        {
-            mat = tempMatrix;
-            mat.copyFrom(transform);
-            mat.prepend(proj);
-        }
-
-        if (roundPixels)
-        {
-            this.context.setTransform(
-                mat.a * localResolution,
-                mat.b * localResolution,
-                mat.c * localResolution,
-                mat.d * localResolution,
-                (mat.tx * resolution) | 0,
-                (mat.ty * resolution) | 0
-            );
-        }
-        else
-        {
-            this.context.setTransform(
-                mat.a * localResolution,
-                mat.b * localResolution,
-                mat.c * localResolution,
-                mat.d * localResolution,
-                mat.tx * resolution,
-                mat.ty * resolution
-            );
-        }
-    }
-
-    /**
+     /**
      * Clear the canvas of renderer.
      *
      * @param {string} [clearColor] - Clear the canvas with this color, except the canvas is transparent.
      * @param {number} [alpha] - Alpha to apply to the background fill color.
      */
-    public clear(clearColor: string = this._backgroundColorString, alpha: number = this.backgroundAlpha): void
-    {
-        const { context } = this;
+     public clear(): void
+     {
+         this.context.clear();
+     }
 
-        context.clearRect(0, 0, this.width, this.height);
-
-        if (clearColor)
-        {
-            context.globalAlpha = this.useContextAlpha ? alpha : 1;
-            context.fillStyle = clearColor;
-            context.fillRect(0, 0, this.width, this.height);
-            context.globalAlpha = 1;
-        }
-    }
-
-    /**
-     * Sets the blend mode of the renderer.
-     *
-     * @param {number} blendMode - See {@link PIXI.BLEND_MODES} for valid values.
-     * @param {boolean} [readyForOuterBlend=false] - Some blendModes are dangerous, they affect outer space of sprite.
-     * Pass `true` only if you are ready to use them.
-     */
-    setBlendMode(blendMode: BLEND_MODES, readyForOuterBlend?: boolean): void
-    {
-        const outerBlend = blendMode === BLEND_MODES.SRC_IN
-            || blendMode === BLEND_MODES.SRC_OUT
-            || blendMode === BLEND_MODES.DST_IN
-            || blendMode === BLEND_MODES.DST_ATOP;
-
-        if (!readyForOuterBlend && outerBlend)
-        {
-            blendMode = BLEND_MODES.NORMAL;
-        }
-
-        if (this._activeBlendMode === blendMode)
-        {
-            return;
-        }
-
-        this._activeBlendMode = blendMode;
-        this._outerBlend = outerBlend;
-        this.context.globalCompositeOperation = this.blendModes[blendMode];
-    }
-
-    /**
+     /**
      * Removes everything from the renderer and optionally removes the Canvas DOM element.
      *
      * @param {boolean} [removeView=false] - Removes the Canvas element from the DOM.
      */
-    public destroy(removeView?: boolean): void
-    {
-        // call the base destroy
-        super.destroy(removeView);
+     public destroy(removeView?: boolean): void
+     {
+         this.emitWithCustomOptions(this.runners.destroy, {
+             _view: removeView,
+         });
 
-        this.context = null;
+         super.destroy();
+     }
 
-        this.refresh = true;
+     get plugins(): IRendererPlugins
+     {
+         return this._plugin.plugins;
+     }
 
-        this.maskManager.destroy();
-        this.maskManager = null;
-
-        this.smoothProperty = null;
-    }
-
-    /**
+     /**
      * Resizes the canvas view to the specified width and height.
      *
-     * @extends PIXI.AbstractRenderer#resize
+     * @implements PIXI.IRenderer#resize
      *
      * @param desiredScreenWidth - the desired width of the screen
      * @param desiredScreenHeight - the desired height of the screen
      */
-    public resize(desiredScreenWidth: number, desiredScreenHeight: number): void
-    {
-        super.resize(desiredScreenWidth, desiredScreenHeight);
+     public resize(desiredScreenWidth: number, desiredScreenHeight: number): void
+     {
+         this._view.resizeView(desiredScreenWidth, desiredScreenHeight);
+     }
 
-        // reset the scale mode.. oddly this seems to be reset when the canvas is resized.
-        // surely a browser bug?? Let PixiJS fix that for you..
-        if (this.smoothProperty)
-        {
-            this.rootContext[this.smoothProperty] = (settings.SCALE_MODE === SCALE_MODES.LINEAR);
-        }
-    }
+     /**
+     * Same as view.width, actual number of pixels in the canvas by horizontal.
+     *
+     * @member {number}
+     * @readonly
+     * @default 800
+     */
+     get width(): number
+     {
+         return this._view.view.width;
+     }
 
-    /** Checks if blend mode has changed. */
-    invalidateBlendMode(): void
-    {
-        this._activeBlendMode = this.blendModes.indexOf(this.context.globalCompositeOperation);
-    }
+     /**
+     * Same as view.height, actual number of pixels in the canvas by vertical.
+     *
+     * @member {number}
+     * @readonly
+     * @default 600
+     */
+     get height(): number
+     {
+         return this._view.view.height;
+     }
+
+     get resolution(): number
+     {
+         return this._view.resolution;
+     }
+
+     get autoDensity(): boolean
+     {
+         return this._view.autoDensity;
+     }
+
+     get view(): HTMLCanvasElement
+     {
+         return this._view.view;
+     }
+
+     get screen(): Rectangle
+     {
+         return this._view.screen;
+     }
+
+     get lastObjectRendered(): IRenderableObject
+     {
+         return this._renderer.lastObjectRendered;
+     }
+
+     get renderingToScreen(): boolean
+     {
+         return this._renderer.renderingToScreen;
+     }
 
     static __plugins: IRendererPlugins;
 

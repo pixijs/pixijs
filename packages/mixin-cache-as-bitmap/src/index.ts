@@ -1,4 +1,4 @@
-import { Texture, BaseTexture, RenderTexture, Renderer, MaskData, AbstractRenderer } from '@pixi/core';
+import { Texture, BaseTexture, RenderTexture, Renderer, MaskData, IRenderer } from '@pixi/core';
 import { Sprite } from '@pixi/sprite';
 import { Container, DisplayObject, IDestroyOptions } from '@pixi/display';
 import { IPointData, Matrix, Rectangle } from '@pixi/math';
@@ -8,7 +8,7 @@ import { MSAA_QUALITY } from '@pixi/constants';
 
 // Don't import CanvasRender to remove dependency on this optional package
 // this type should satisify these requirements for cacheAsBitmap types
-interface CanvasRenderer extends AbstractRenderer {
+interface CanvasRenderer extends IRenderer {
     context: CanvasRenderingContext2D;
 }
 
@@ -31,7 +31,7 @@ export class CacheData
 {
     public textureCacheId: string;
     public originalRender: (renderer: Renderer) => void;
-    public originalRenderCanvas: (renderer: AbstractRenderer) => void;
+    public originalRenderCanvas: (renderer: IRenderer) => void;
     public originalCalculateBounds: () => void;
     public originalGetLocalBounds: (rect?: Rectangle) => Rectangle;
     public originalUpdateTransform: () => void;
@@ -355,7 +355,7 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
  * @memberof PIXI.DisplayObject#
  * @param {PIXI.CanvasRenderer} renderer - The canvas renderer
  */
-DisplayObject.prototype._renderCachedCanvas = function _renderCachedCanvas(renderer: AbstractRenderer): void
+DisplayObject.prototype._renderCachedCanvas = function _renderCachedCanvas(renderer: IRenderer): void
 {
     if (!this.visible || this.worldAlpha <= 0 || !this.renderable)
     {

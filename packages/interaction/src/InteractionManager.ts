@@ -7,9 +7,9 @@ import { TreeSearch } from './TreeSearch';
 import { EventEmitter } from '@pixi/utils';
 import { interactiveTarget } from './interactiveTarget';
 
-import type { AbstractRenderer } from '@pixi/core';
 import type { Point, IPointData } from '@pixi/math';
 import type { Dict } from '@pixi/utils';
+import { IRenderer } from 'packages/core/src/IRenderer';
 
 // Mix interactiveTarget into DisplayObject.prototype
 DisplayObject.mixin(interactiveTarget);
@@ -111,7 +111,7 @@ export class InteractionManager extends EventEmitter
     public search: TreeSearch;
 
     /** The renderer this interaction manager works for. */
-    public renderer: AbstractRenderer;
+    public renderer: IRenderer;
 
     /**
      * Should default browser actions automatically be prevented.
@@ -204,7 +204,7 @@ export class InteractionManager extends EventEmitter
      * @param {number} [options.interactionFrequency=10] - Maximum frequency (ms) at pointer over/out states will be checked.
      * @param {number} [options.useSystemTicker=true] - Whether to add {@link tickerUpdate} to {@link PIXI.Ticker.system}.
      */
-    constructor(renderer: AbstractRenderer, options?: InteractionManagerOptions)
+    constructor(renderer: IRenderer, options?: InteractionManagerOptions)
     {
         super();
 
@@ -748,7 +748,7 @@ export class InteractionManager extends EventEmitter
      */
     get lastObjectRendered(): DisplayObject
     {
-        return (this.renderer._render._lastObjectRendered as DisplayObject) || this._tempDisplayObject;
+        return (this.renderer.lastObjectRendered as DisplayObject) || this._tempDisplayObject;
     }
 
     /**

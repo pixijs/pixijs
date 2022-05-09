@@ -137,8 +137,8 @@ export class RenderTextureSystem implements ISystem
 
             if (!sourceFrame)
             {
-                tempRect.width = renderer.screen.width;
-                tempRect.height = renderer.screen.height;
+                tempRect.width = renderer._view.screen.width;
+                tempRect.height = renderer._view.screen.height;
 
                 sourceFrame = tempRect;
             }
@@ -197,11 +197,11 @@ export class RenderTextureSystem implements ISystem
         }
         else
         {
-            clearColor = clearColor || this.renderer._background.backgroundColorRgba;
+            clearColor = clearColor || this.renderer.background.backgroundColorRgba;
         }
 
         const destinationFrame = this.destinationFrame;
-        const baseFrame: ISize = this.current ? this.current.baseTexture : this.renderer.screen;
+        const baseFrame: ISize = this.current ? this.current.baseTexture : this.renderer._view.screen;
         const clearMask = destinationFrame.width !== baseFrame.width || destinationFrame.height !== baseFrame.height;
 
         if (clearMask)

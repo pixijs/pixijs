@@ -1,10 +1,11 @@
 import { Texture } from '@pixi/core';
 import { SHAPES, Matrix } from '@pixi/math';
-import { canvasUtils, CrossPlatformCanvasRenderingContext2D } from '@pixi/canvas-renderer';
+import { canvasUtils } from '@pixi/canvas-renderer';
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
 import type { FillStyle, Graphics, GraphicsData, LineStyle } from '@pixi/graphics';
 import type { Circle, Ellipse, Polygon, Rectangle, RoundedRectangle } from '@pixi/math';
 import { PolygonUtils } from './utils/PolygonUtils';
+import { CrossPlatformCanvasRenderingContext2D } from 'packages/canvas/canvas-renderer/src/CanvasContextSystem';
 
 /*
  * @author Mat Groves
@@ -80,12 +81,13 @@ export class CanvasGraphicsRenderer
     public render(graphics: Graphics): void
     {
         const renderer = this.renderer;
-        const context = renderer.context;
+
+        const context = renderer.context.activeContext;
         const worldAlpha = graphics.worldAlpha;
         const transform = graphics.transform.worldTransform;
 
-        renderer.setContextTransform(transform);
-        renderer.setBlendMode(graphics.blendMode);
+        renderer.context.setContextTransform(transform);
+        renderer.context.setBlendMode(graphics.blendMode);
 
         const graphicsData = graphics.geometry.graphicsData;
 
@@ -108,7 +110,7 @@ export class CanvasGraphicsRenderer
 
             if (data.matrix)
             {
-                renderer.setContextTransform(transform.copyTo(this._tempMatrix).append(data.matrix));
+                renderer.context.setContextTransform(transform.copyTo(this._tempMatrix).append(data.matrix));
             }
 
             if (fillStyle.visible)

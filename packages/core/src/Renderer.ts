@@ -1,4 +1,4 @@
-import { sayHello, isWebGLSupported, deprecation } from '@pixi/utils';
+import { isWebGLSupported, deprecation } from '@pixi/utils';
 import { MaskSystem } from './mask/MaskSystem';
 import { StencilSystem } from './mask/StencilSystem';
 import { ScissorSystem } from './mask/ScissorSystem';
@@ -20,26 +20,22 @@ import { BufferSystem } from './geometry/BufferSystem';
 import { RenderTexture } from './renderTexture/RenderTexture';
 
 import type { SCALE_MODES } from '@pixi/constants';
-import type { IRendererOptions, IRendererPlugins, IRendererRenderOptions,
-    IGenerateTextureOptions } from './AbstractRenderer';
+
 import type { IRenderingContext } from './IRenderingContext';
 import type { IRenderableObject } from './IRenderableObject';
-import { PluginSystem } from './PluginSystem';
+import { IRendererPlugin, IRendererPlugins, PluginSystem } from './PluginSystem';
 import { MultisampleSystem } from './MultisampleSystem';
-import { GenerateTextureSystem } from './GenerateTextureSystem';
+import { GenerateTextureSystem, IGenerateTextureOptions } from './GenerateTextureSystem';
 import { BackgroundSystem } from './BackgroundSystem';
 import { ViewSystem } from './ViewSystem';
 import { RendererSystem } from './RenderSystem';
 import { settings } from '@pixi/settings';
-import { BaseRenderer } from './BaseRenderer';
-import { IRenderer } from './IRenderer';
+import { SystemManager } from './SystemManager';
+import { IRenderer, IRendererOptions, IRendererRenderOptions } from './IRenderer';
+import { StartupOptions, StartupSystem } from './StartupSystem';
 
 export interface IRendererPluginConstructor {
     new (renderer: Renderer, options?: any): IRendererPlugin;
-}
-
-export interface IRendererPlugin {
-    destroy(): void;
 }
 
 /**
@@ -75,7 +71,7 @@ export interface IRendererPlugin {
  *
  * @memberof PIXI
  */
-export class Renderer extends BaseRenderer implements IRenderer
+export class Renderer extends SystemManager<Renderer> implements IRenderer
 {
     /**
      * The type of the renderer.
@@ -194,10 +190,11 @@ export class Renderer extends BaseRenderer implements IRenderer
 
     public _plugin: PluginSystem;
     public _multisample: MultisampleSystem;
-    public _generateTexture: GenerateTextureSystem;
-    public _background: BackgroundSystem;
+    public textureGenerator: GenerateTextureSystem;
+    public background: BackgroundSystem;
     public _view: ViewSystem;
     public _render: RendererSystem;
+    public startup: StartupSystem;
 
     /**
      * Internal signal instances of **runner**, these
@@ -265,7 +262,6 @@ export class Renderer extends BaseRenderer implements IRenderer
         // Add the default render options
         options = Object.assign({}, settings.RENDER_OPTIONS, options);
 
-        this.addRunners('contextChange', 'reset', 'update', 'postrender', 'prerender', 'resize');
         this.type = RENDERER_TYPE.WEBGL;
 
         this.gl = null;
@@ -276,42 +272,66 @@ export class Renderer extends BaseRenderer implements IRenderer
             projectionMatrix: new Matrix(),
         }, true);
 
-        this
-            // standard render systems!
-            .addSystem(GenerateTextureSystem, '_generateTexture')
-            .addSystem(BackgroundSystem, '_background')
-            .addSystem(ViewSystem, '_view')
-            .addSystem(PluginSystem, '_plugin')
+        const systemConfig = {
+            runners: ['init', 'destroy', 'contextChange', 'reset', 'update', 'postrender', 'prerender', 'resize'],
+            systems: {
+                // systems hared by all renderers..
+                textureGenerator: GenerateTextureSystem,
+                background: BackgroundSystem,
+                _view: ViewSystem,
+                _plugin: PluginSystem,
+                startup: StartupSystem,
 
-            // webgl specific systems
-            .addSystem(MultisampleSystem, '_multisample')
-            .addSystem(MaskSystem, 'mask')
-            .addSystem(ContextSystem, 'context')
-            .addSystem(StateSystem, 'state')
-            .addSystem(ShaderSystem, 'shader')
-            .addSystem(TextureSystem, 'texture')
-            .addSystem(BufferSystem, 'buffer')
-            .addSystem(GeometrySystem, 'geometry')
-            .addSystem(FramebufferSystem, 'framebuffer')
-            .addSystem(ScissorSystem, 'scissor')
-            .addSystem(StencilSystem, 'stencil')
-            .addSystem(ProjectionSystem, 'projection')
-            .addSystem(TextureGCSystem, 'textureGC')
-            .addSystem(FilterSystem, 'filter')
-            .addSystem(RenderTextureSystem, 'renderTexture')
-            .addSystem(BatchSystem, 'batch')
-            .addSystem(RendererSystem, '_render');
+                // low level WebGL systems
+                context: ContextSystem,
+                state: StateSystem,
+                shader: ShaderSystem,
+                texture: TextureSystem,
+                buffer: BufferSystem,
+                geometry: GeometrySystem,
+                framebuffer: FramebufferSystem,
 
-        this.init({
+                // high level pixi specific rendering
+                mask: MaskSystem,
+                scissor: ScissorSystem,
+                stencil: StencilSystem,
+                projection: ProjectionSystem,
+                textureGC: TextureGCSystem,
+                filter: FilterSystem,
+                renderTexture: RenderTextureSystem,
+                batch: BatchSystem,
+                _multisample: MultisampleSystem,
+                _render: RendererSystem
+            }
+        };
+
+        this.setup(systemConfig);
+
+        // new options!
+        const startupOptions: StartupOptions = {
             _plugin: Renderer.__plugins,
-            _background: options,
-            _view: options,
-            context: options,
-        });
+            background: {
+                backgroundAlpha: options.backgroundAlpha,
+                backgroundColor: options.backgroundColor,
+                clearBeforeRender: options.clearBeforeRender,
+                transparent: options.transparent,
+            },
+            _view: {
+                height: options.height,
+                width: options.width,
+                autoDensity: options.autoDensity,
+                resolution: options.resolution,
+            },
+            context: {
+                antialias: options.antialias,
+                context: options.context,
+                powerPreference: options.powerPreference,
+                premultipliedAlpha: !!options.useContextAlpha,
+                preserveDrawingBuffer: options.preserveDrawingBuffer,
+            },
+        };
 
-        sayHello(this.context.webGLVersion === 2 ? 'WebGL 2' : 'WebGL 1');
-
-        this.resize(options.width, options.height);
+        this.startup.run(startupOptions);
     }
 
     /**
@@ -344,6 +364,22 @@ export class Renderer extends BaseRenderer implements IRenderer
      */
     render(displayObject: IRenderableObject, options?: IRendererRenderOptions | RenderTexture): void
     {
+        if (options instanceof RenderTexture)
+        {
+            // #if _DEBUG
+            deprecation('6.0.0', 'Renderer#render arguments changed, use options instead.');
+            // #endif
+
+            /* eslint-disable prefer-rest-params */
+            options = {
+                renderTexture: options,
+                clear: arguments[2],
+                transform: arguments[3],
+                skipUpdateTransform: arguments[4]
+            };
+            /* eslint-enable prefer-rest-params */
+        }
+
         this._render.render(displayObject, options);
     }
 
@@ -385,9 +421,11 @@ export class Renderer extends BaseRenderer implements IRenderer
      */
     destroy(removeView = false): void
     {
-        super.destroy({
+        this.emitWithCustomOptions(this.runners.destroy, {
             _view: removeView,
         });
+
+        super.destroy();
     }
 
     /**
@@ -459,9 +497,9 @@ export class Renderer extends BaseRenderer implements IRenderer
         return this._view.screen;
     }
 
-    get _lastObjectRendered(): IRenderableObject
+    get lastObjectRendered(): IRenderableObject
     {
-        return this._render._lastObjectRendered;
+        return this._render.lastObjectRendered;
     }
 
     get renderingToScreen(): boolean
@@ -469,10 +507,15 @@ export class Renderer extends BaseRenderer implements IRenderer
         return this._render.renderingToScreen;
     }
 
+    get rendererLogId(): string
+    {
+        return `WebGL ${this.context.webGLVersion}`;
+    }
+
     /**
      * Useful function that returns a texture of the display object that can then be used to create sprites
      * This can be quite useful if your displayObject is complicated and needs to be reused multiple times.
-     * @method PIXI.AbstractRenderer#generateTexture
+     * @method PIXI.IRenderer#generateTexture
      * @param displayObject - The displayObject the object will be generated from.
      * @param {object} options - Generate texture options.
      * @param {PIXI.SCALE_MODES} options.scaleMode - The scale mode of the texture.
@@ -487,7 +530,7 @@ export class Renderer extends BaseRenderer implements IRenderer
     /**
        * Please use the options argument instead.
        *
-       * @method PIXI.AbstractRenderer#generateTexture
+       * @method PIXI.IRenderer#generateTexture
        * @deprecated Since 6.1.0
        * @param displayObject - The displayObject the object will be generated from.
        * @param scaleMode - The scale mode of the texture.
@@ -509,10 +552,7 @@ export class Renderer extends BaseRenderer implements IRenderer
         options: IGenerateTextureOptions | SCALE_MODES = {},
         resolution?: number, region?: Rectangle): RenderTexture
     {
-        const renderTexture = this._generateTexture.generateTexture(displayObject, options as any, resolution, region);
-
-        // TODO mode this to the framebuffer system or generateTexture?..
-        this.framebuffer.blit();
+        const renderTexture = this.textureGenerator.generateTexture(displayObject, options as any, resolution, region);
 
         return renderTexture;
     }

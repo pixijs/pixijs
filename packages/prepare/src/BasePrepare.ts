@@ -5,13 +5,13 @@ import { Container, DisplayObject } from '@pixi/display';
 import { Text, TextStyle, TextMetrics } from '@pixi/text';
 import { CountLimiter } from './CountLimiter';
 
-import type { AbstractRenderer } from '@pixi/core';
+import type { IRenderer } from '@pixi/core';
 
 interface IArrowFunction {
     (): void;
 }
 interface IUploadHook {
-    (helper: AbstractRenderer | BasePrepare, item: IDisplayObjectExtended): boolean;
+    (helper: IRenderer | BasePrepare, item: IDisplayObjectExtended): boolean;
 }
 
 interface IFindHook {
@@ -115,7 +115,7 @@ function findTexture(item: IDisplayObjectExtended, queue: Array<any>): boolean
  * @param item - Item to check
  * @return If item was uploaded.
  */
-function drawText(_helper: AbstractRenderer | BasePrepare, item: IDisplayObjectExtended): boolean
+function drawText(_helper: IRenderer | BasePrepare, item: IDisplayObjectExtended): boolean
 {
     if (item instanceof Text)
     {
@@ -136,7 +136,7 @@ function drawText(_helper: AbstractRenderer | BasePrepare, item: IDisplayObjectE
  * @param item - Item to check
  * @return If item was uploaded.
  */
-function calculateTextStyle(_helper: AbstractRenderer | BasePrepare, item: IDisplayObjectExtended): boolean
+function calculateTextStyle(_helper: IRenderer | BasePrepare, item: IDisplayObjectExtended): boolean
 {
     if (item instanceof TextStyle)
     {
@@ -240,7 +240,7 @@ export class BasePrepare
     private limiter: CountLimiter;
 
     /** Reference to the renderer. */
-    protected renderer: AbstractRenderer;
+    protected renderer: IRenderer;
 
     /**
      * The only real difference between CanvasPrepare and Prepare is what they pass
@@ -282,9 +282,9 @@ export class BasePrepare
     private delayedTick: IArrowFunction;
 
     /**
-     * @param {PIXI.AbstractRenderer} renderer - A reference to the current renderer
+     * @param {PIXI.IRenderer} renderer - A reference to the current renderer
      */
-    constructor(renderer: AbstractRenderer)
+    constructor(renderer: IRenderer)
     {
         this.limiter = new CountLimiter(settings.UPLOADS_PER_FRAME);
         this.renderer = renderer;

@@ -1,7 +1,6 @@
 import { Matrix } from '@pixi/math';
-import { deprecation } from '@pixi/utils';
-import { IRendererRenderOptions } from './AbstractRenderer';
 import { IRenderableObject } from './IRenderableObject';
+import { IRendererRenderOptions } from './IRenderer';
 import { ISystem } from './ISystem';
 import { Renderer } from './Renderer';
 import { RenderTexture } from './renderTexture/RenderTexture';
@@ -10,7 +9,7 @@ export class RendererSystem implements ISystem
 {
     renderer: Renderer;
     renderingToScreen: boolean;
-    _lastObjectRendered: IRenderableObject;
+    lastObjectRendered: IRenderableObject;
 
     // renderers scene graph!
     constructor(renderer: Renderer)
@@ -18,7 +17,7 @@ export class RendererSystem implements ISystem
         this.renderer = renderer;
     }
 
-    render(displayObject: IRenderableObject, options?: IRendererRenderOptions | RenderTexture): void
+    render(displayObject: IRenderableObject, options?: IRendererRenderOptions): void
     {
         const renderer = this.renderer;
 
@@ -29,26 +28,10 @@ export class RendererSystem implements ISystem
 
         if (options)
         {
-            if (options instanceof RenderTexture)
-            {
-                // #if _DEBUG
-                deprecation('6.0.0', 'Renderer#render arguments changed, use options instead.');
-                // #endif
-
-                /* eslint-disable prefer-rest-params */
-                renderTexture = options;
-                clear = arguments[2];
-                transform = arguments[3];
-                skipUpdateTransform = arguments[4];
-                /* eslint-enable prefer-rest-params */
-            }
-            else
-            {
-                renderTexture = options.renderTexture;
-                clear = options.clear;
-                transform = options.transform;
-                skipUpdateTransform = options.skipUpdateTransform;
-            }
+            renderTexture = options.renderTexture;
+            clear = options.clear;
+            transform = options.transform;
+            skipUpdateTransform = options.skipUpdateTransform;
         }
 
         // can be handy to know!
@@ -68,7 +51,7 @@ export class RendererSystem implements ISystem
 
         if (!renderTexture)
         {
-            this._lastObjectRendered = displayObject;
+            this.lastObjectRendered = displayObject;
         }
 
         if (!skipUpdateTransform)
@@ -84,7 +67,7 @@ export class RendererSystem implements ISystem
         renderer.renderTexture.bind(renderTexture);
         renderer.batch.currentRenderer.start();
 
-        if (clear !== undefined ? clear : renderer._background.clearBeforeRender)
+        if (clear !== undefined ? clear : renderer.background.clearBeforeRender)
         {
             renderer.renderTexture.clear();
         }
@@ -105,5 +88,10 @@ export class RendererSystem implements ISystem
         renderer.projection.transform = null;
 
         renderer.emit('postrender');
+    }
+
+    destroy(): void
+    {
+        // ka pow!
     }
 }

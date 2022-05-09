@@ -118,7 +118,7 @@ export class ContextSystem implements ISystem
         }
         else
         {
-            const alpha = this.renderer._background.backgroundAlpha === 0;
+            const alpha = this.renderer.background.backgroundAlpha < 1;
             const premultipliedAlpha =  options.premultipliedAlpha ?? true;
 
             this.initFromOptions({

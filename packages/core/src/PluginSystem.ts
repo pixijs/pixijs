@@ -1,13 +1,21 @@
-import { IRendererPlugins } from './AbstractRenderer';
+import { IRenderer, IRendererPlugins } from './IRenderer';
 import { ISystem } from './ISystem';
-import { Renderer } from './Renderer';
+
+export interface IRendererPlugin {
+    destroy(): void;
+}
+
+export interface IRendererPlugins
+{
+    [key: string]: any;
+}
 
 export class PluginSystem implements ISystem
 {
     public readonly plugins: IRendererPlugins;
-    private renderer: Renderer;
+    private renderer: IRenderer;
 
-    constructor(renderer: Renderer)
+    constructor(renderer: IRenderer)
     {
         this.renderer = renderer;
 

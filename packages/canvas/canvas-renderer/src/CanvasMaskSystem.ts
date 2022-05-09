@@ -1,8 +1,8 @@
 import { Polygon, SHAPES } from '@pixi/math';
 
-import type { CanvasRenderer } from '../CanvasRenderer';
+import type { CanvasRenderer } from './CanvasRenderer';
 import type { Graphics } from '@pixi/graphics';
-import type { MaskData } from '@pixi/core';
+import type { ISystem, MaskData } from '@pixi/core';
 import type { Container } from '@pixi/display';
 
 /**
@@ -13,7 +13,7 @@ import type { Container } from '@pixi/display';
  * @class
  * @memberof PIXI
  */
-export class CanvasMaskManager
+export class CanvasMaskSystem implements ISystem
 {
     /** A reference to the current renderer */
     private renderer: CanvasRenderer;
@@ -35,7 +35,7 @@ export class CanvasMaskManager
         const renderer = this.renderer;
         const maskObject = ((maskData as MaskData).maskObject || maskData) as Container;
 
-        renderer.context.save();
+        renderer.context.activeContext.save();
 
         // TODO support sprite alpha masks??
         // lots of effort required. If demand is great enough..
@@ -45,7 +45,7 @@ export class CanvasMaskManager
         this.recursiveFindShapes(maskObject, foundShapes);
         if (foundShapes.length > 0)
         {
-            const { context } = renderer;
+            const context = renderer.context.activeContext;
 
             context.beginPath();
 
@@ -54,7 +54,7 @@ export class CanvasMaskManager
                 const shape = foundShapes[i];
                 const transform = shape.transform.worldTransform;
 
-                this.renderer.setContextTransform(transform);
+                this.renderer.context.setContextTransform(transform);
 
                 this.renderGraphicsShape(shape);
             }
@@ -97,7 +97,7 @@ export class CanvasMaskManager
     {
         graphics.finishPoly();
 
-        const context = this.renderer.context;
+        const context = this.renderer.context.activeContext;
         const graphicsData = graphics.geometry.graphicsData;
         const len = graphicsData.length;
 
@@ -255,8 +255,8 @@ export class CanvasMaskManager
      */
     popMask(renderer: CanvasRenderer): void
     {
-        renderer.context.restore();
-        renderer.invalidateBlendMode();
+        renderer.context.activeContext.restore();
+        renderer.context.invalidateBlendMode();
     }
 
     /** Destroys this canvas mask manager. */

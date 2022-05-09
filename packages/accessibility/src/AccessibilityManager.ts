@@ -286,9 +286,9 @@ export class AccessibilityManager
         }
 
         // update children...
-        if (this.renderer._lastObjectRendered)
+        if (this.renderer.lastObjectRendered)
         {
-            this.updateAccessibleObjects(this.renderer._lastObjectRendered as Container);
+            this.updateAccessibleObjects(this.renderer.lastObjectRendered as Container);
         }
 
         const { left, top, width, height } = this.renderer.view.getBoundingClientRect();
