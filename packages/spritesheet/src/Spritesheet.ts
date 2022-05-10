@@ -53,13 +53,13 @@ export interface ISpritesheetData {
  *   ...
  * }
  * ```
- * 
+ *
  * Alternately, you may circumvent the loader by instantiating the Spritesheet directly:
  * ```js
- * const sheet = new PIXI.Spritesheet(texture | baseTexture, iSpritesheetData)
- * sheet.parse(_textures => console.log(sheet.animations))
+ * const sheet = new PIXI.Spritesheet(texture, spritesheetData);
+ * sheet.parse(() => console.log('Spritesheet ready to use!'));
  * ```
- * 
+ *
  * With the `sheet.textures` you can create Sprite objects,`sheet.animations` can be used to create an AnimatedSprite.
  *
  * Sprite sheets can be packed using tools like {@link https://codeandweb.com/texturepacker|TexturePacker},
