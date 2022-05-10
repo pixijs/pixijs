@@ -427,11 +427,7 @@ function buildNonNativeLine(graphicsData: GraphicsData, graphicsGeometry: Graphi
         {
             verts.push(x1 - (perpx * innerWeight), y1 - (perpy * innerWeight)); // first segment's inner vertex
             verts.push(x1 + (perpx * outerWeight), y1 + (perpy * outerWeight)); // first segment's outer vertex
-            if (style.join === LINE_JOIN.BEVEL || pdist / widthSquared > miterLimitSquared)
-            {
-                // Nothing needed
-            }
-            else if (style.join === LINE_JOIN.ROUND)
+            if (style.join === LINE_JOIN.ROUND)
             {
                 if (clockwise) /* arc is outside */
                 {
@@ -452,7 +448,7 @@ function buildNonNativeLine(graphicsData: GraphicsData, graphicsGeometry: Graphi
                     ) + 2;
                 }
             }
-            else
+            else if (style.join === LINE_JOIN.MITER && pdist / widthSquared <= miterLimitSquared)
             {
                 if (clockwise)
                 {
