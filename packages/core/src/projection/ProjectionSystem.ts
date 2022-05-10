@@ -1,6 +1,6 @@
 import { Matrix } from '@pixi/math';
 
-import type { ISystem } from '../ISystem';
+import type { ISystem } from '../system/ISystem';
 import type { Rectangle } from '@pixi/math';
 import type { Renderer } from '../Renderer';
 

@@ -6,7 +6,7 @@ import { UniformGroup } from '../shader/UniformGroup';
 import { DRAW_MODES, CLEAR_MODES, MSAA_QUALITY } from '@pixi/constants';
 import { FilterState } from './FilterState';
 
-import type { ISystem } from '../ISystem';
+import type { ISystem } from '../system/ISystem';
 import type { Filter } from './Filter';
 import type { IFilterTarget } from './IFilterTarget';
 import type { ISpriteMaskTarget } from './spriteMask/SpriteMaskFilter';

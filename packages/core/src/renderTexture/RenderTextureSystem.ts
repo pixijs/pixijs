@@ -1,7 +1,7 @@
 import { Rectangle } from '@pixi/math';
 import { BUFFER_BITS } from '@pixi/constants';
 
-import type { ISystem } from '../ISystem';
+import type { ISystem } from '../system/ISystem';
 import type { Renderer } from '../Renderer';
 import type { RenderTexture } from './RenderTexture';
 import type { BaseRenderTexture } from './BaseRenderTexture';

@@ -1,7 +1,7 @@
 import { GLProgram } from './GLProgram';
 import { generateUniformsSync, unsafeEvalSupported } from './utils';
 
-import type { ISystem } from '../ISystem';
+import type { ISystem } from '../system/ISystem';
 import type { Renderer } from '../Renderer';
 import type { IRenderingContext } from '../IRenderingContext';
 import type { Shader } from './Shader';

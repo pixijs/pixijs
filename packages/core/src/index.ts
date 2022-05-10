@@ -3,13 +3,12 @@ import './settings';
 export * from './textures/resources';
 export * from './systems';
 export * from './IRenderer';
-export * from './IRenderingContext';
-export * from './IRenderableObject';
+
 export * from './autoDetectRenderer';
 export * from './fragments';
-export * from './ISystem';
+export * from './system/ISystem';
 export * from './IRenderer';
-export * from './PluginSystem';
+export * from './plugin/PluginSystem';
 export * from './Renderer';
 export * from './framebuffer/Framebuffer';
 export * from './framebuffer/GLFramebuffer';

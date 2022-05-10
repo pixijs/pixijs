@@ -1,7 +1,7 @@
 import { GC_MODES } from '@pixi/constants';
 import { settings } from '@pixi/settings';
 
-import type { ISystem } from '../ISystem';
+import type { ISystem } from '../system/ISystem';
 import type { Renderer } from '../Renderer';
 import type { Texture } from './Texture';
 import type { RenderTexture } from '../renderTexture/RenderTexture';

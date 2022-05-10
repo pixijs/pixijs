@@ -1,5 +1,5 @@
 import { deprecation, hex2rgb, hex2string } from '@pixi/utils';
-import { ISystem } from './ISystem';
+import { ISystem } from '../system/ISystem';
 
 export interface BackgroundOptions {
     backgroundAlpha: number,

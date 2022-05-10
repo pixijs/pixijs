@@ -21,18 +21,16 @@ import { RenderTexture } from './renderTexture/RenderTexture';
 
 import type { SCALE_MODES } from '@pixi/constants';
 
-import type { IRenderingContext } from './IRenderingContext';
-import type { IRenderableObject } from './IRenderableObject';
-import { IRendererPlugin, IRendererPlugins, PluginSystem } from './PluginSystem';
-import { MultisampleSystem } from './MultisampleSystem';
-import { GenerateTextureSystem, IGenerateTextureOptions } from './GenerateTextureSystem';
-import { BackgroundSystem } from './BackgroundSystem';
-import { ViewSystem } from './ViewSystem';
-import { RendererSystem } from './RenderSystem';
+import { IRendererPlugin, IRendererPlugins, PluginSystem } from './plugin/PluginSystem';
+import { MultisampleSystem } from './framebuffer/MultisampleSystem';
+import { GenerateTextureSystem, IGenerateTextureOptions } from './renderTexture/GenerateTextureSystem';
+import { BackgroundSystem } from './background/BackgroundSystem';
+import { ViewSystem } from './view/ViewSystem';
+import { RendererSystem } from './render/RenderSystem';
 import { settings } from '@pixi/settings';
-import { SystemManager } from './SystemManager';
-import { IRenderer, IRendererOptions, IRendererRenderOptions } from './IRenderer';
-import { StartupOptions, StartupSystem } from './StartupSystem';
+import { SystemManager } from './system/SystemManager';
+import { IRenderableObject, IRenderer, IRendererOptions, IRendererRenderOptions, IRenderingContext } from './IRenderer';
+import { StartupOptions, StartupSystem } from './startup/StartupSystem';
 
 export interface IRendererPluginConstructor {
     new (renderer: Renderer, options?: any): IRendererPlugin;

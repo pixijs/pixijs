@@ -11,14 +11,14 @@ import type {
     IRendererRenderOptions
 } from '@pixi/core';
 import { IRenderer } from 'packages/core/src/IRenderer';
-import { GenerateTextureSystem, IGenerateTextureOptions } from 'packages/core/src/GenerateTextureSystem';
-import { BackgroundSystem } from 'packages/core/src/BackgroundSystem';
-import { ViewSystem } from 'packages/core/src/ViewSystem';
-import { PluginSystem } from 'packages/core/src/PluginSystem';
-import { SystemManager } from 'packages/core/src/SystemManager';
+import { GenerateTextureSystem, IGenerateTextureOptions } from 'packages/core/src/renderTexture/GenerateTextureSystem';
+import { BackgroundSystem } from 'packages/core/src/background/BackgroundSystem';
+import { ViewSystem } from 'packages/core/src/view/ViewSystem';
+import { PluginSystem } from 'packages/core/src/plugin/PluginSystem';
+import { SystemManager } from 'packages/core/src/system/SystemManager';
 import { CanvasContextSystem } from './CanvasContextSystem';
 import { CanvasRenderSystem } from './CanvasRenderSystem';
-import { StartupOptions, StartupSystem } from 'packages/core/src/StartupSystem';
+import { StartupOptions, StartupSystem } from 'packages/core/src/startup/StartupSystem';
 import { settings } from '@pixi/settings';
 
 export interface ICanvasRendererPluginConstructor {

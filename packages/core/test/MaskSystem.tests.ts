@@ -164,7 +164,7 @@ describe('MaskSystem', function ()
             render() { /* nothing*/ },
         };
 
-        this.renderer.resolution = 2;
+        // this.renderer.resolution = 2;
         this.renderer.resize(30, 30);
 
         const rt = RenderTexture.create({ width: 20, height: 20, resolution: 3 });
@@ -188,7 +188,7 @@ describe('MaskSystem', function ()
 
         rt.destroy(true);
         this.renderer.projection.transform = null;
-        this.renderer.resolution = 1;
+        //  this.renderer.resolution = 1;
     });
 
     it('should correctly calculate alpha mask area if filter is present', function ()

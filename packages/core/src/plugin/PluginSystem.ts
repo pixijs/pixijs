@@ -1,5 +1,5 @@
-import { IRenderer, IRendererPlugins } from './IRenderer';
-import { ISystem } from './ISystem';
+import { IRenderer, IRendererPlugins } from '../IRenderer';
+import { ISystem } from '../system/ISystem';
 
 export interface IRendererPlugin {
     destroy(): void;

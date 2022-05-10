@@ -1,9 +1,8 @@
 import { Matrix } from '@pixi/math';
-import { IRenderableObject } from './IRenderableObject';
-import { IRendererRenderOptions } from './IRenderer';
-import { ISystem } from './ISystem';
-import { Renderer } from './Renderer';
-import { RenderTexture } from './renderTexture/RenderTexture';
+import { IRenderableObject, IRendererRenderOptions } from '../IRenderer';
+import { ISystem } from '../system/ISystem';
+import { Renderer } from '../Renderer';
+import { RenderTexture } from '../renderTexture/RenderTexture';
 
 export class RendererSystem implements ISystem
 {

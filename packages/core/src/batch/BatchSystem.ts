@@ -1,6 +1,6 @@
 import { ObjectRenderer } from './ObjectRenderer';
 
-import type { ISystem } from '../ISystem';
+import type { ISystem } from '../system/ISystem';
 import type { Renderer } from '../Renderer';
 import type { BaseTexture } from '../textures/BaseTexture';
 import type { BatchTextureArray } from './BatchTextureArray';

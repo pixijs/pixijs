@@ -1,10 +1,9 @@
 import { MSAA_QUALITY, SCALE_MODES } from '@pixi/constants';
 import { Matrix, Rectangle } from '@pixi/math';
 import { deprecation } from '@pixi/utils';
-import { IRenderableContainer, IRenderableObject } from './IRenderableObject';
-import { IRenderer } from './IRenderer';
-import { ISystem } from './ISystem';
-import { RenderTexture } from './renderTexture/RenderTexture';
+import { IRenderer, IRenderableContainer, IRenderableObject } from '../IRenderer';
+import { ISystem } from '../system/ISystem';
+import { RenderTexture } from './RenderTexture';
 
 // TODO could this just be part of extract?
 export interface IGenerateTextureOptions {

@@ -1,4 +1,4 @@
-import type { Renderer } from './Renderer';
+import type { Renderer } from '../Renderer';
 import { deprecation } from '@pixi/utils';
 
 /**

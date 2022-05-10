@@ -1,7 +1,7 @@
 import { Rectangle } from '@pixi/math';
 import { settings } from '@pixi/settings';
-import { IRenderer } from './IRenderer';
-import { ISystem } from './ISystem';
+import { IRenderer } from '../IRenderer';
+import { ISystem } from '../system/ISystem';
 
 export interface ViewOptions {
     width: number
