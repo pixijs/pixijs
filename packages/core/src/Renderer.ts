@@ -41,7 +41,7 @@ export interface IRendererPluginConstructor {
  *
  * This renderer should be used for browsers that support WebGL.
  *
- * This renderer works by automatically managing WebGLBatchesm, so no need for Sprite Batches or Sprite Clouds.
+ * This renderer works by automatically managing WebGLBatches, so no need for Sprite Batches or Sprite Clouds.
  * Don't forget to add the view to your DOM or you will not see anything!
  *
  * Renderer is composed of systems that manage specific tasks. The following systems are added by default
@@ -49,21 +49,37 @@ export interface IRendererPluginConstructor {
  *
  * | System                               | Description                                                                   |
  * | ------------------------------------ | ----------------------------------------------------------------------------- |
- * | {@link PIXI.BatchSystem}             | This manages object renderers that defer rendering until a flush.             |
- * | {@link PIXI.ContextSystem}           | This manages the WebGL context and extensions.                                |
+ * |                                      |                                                                               |
+ * | Generic Systems                      | Systems that manage functionality that all renderer types share               |
+ * | ------------------------------------ | ----------------------------------------------------------------------------- |
+ * | {@link PIXI.ViewSystem}              | This manages the main view of the renderer usually a Canvas                   |
+ * | {@link PIXI.PluginSystem}            | This manages plugins for the renderer                                         |
+ * | {@link PIXI.BackgroundSystem}        | This manages the main views background color and alpha                        |
  * | {@link PIXI.EventSystem}             | This manages UI events.                                                       |
- * | {@link PIXI.FilterSystem}            | This manages the filtering pipeline for post-processing effects.              |
+ * | {@link PIXI.StartupSystem}           | Boots up a renderer and initiatives all the systems                           |
+ * |                                      |                                                                               |
+ * | WebGL Core Systems                   | Provide an optimised, easy to use API to work with WebGL                      |
+ * | ------------------------------------ | ----------------------------------------------------------------------------- |
+ * | {@link PIXI.ContextSystem}           | This manages the WebGL context and extensions.                                |
  * | {@link PIXI.FramebufferSystem}       | This manages framebuffers, which are used for offscreen rendering.            |
  * | {@link PIXI.GeometrySystem}          | This manages geometries & buffers, which are used to draw object meshes.      |
- * | {@link PIXI.MaskSystem}              | This manages masking operations.                                              |
- * | {@link PIXI.ProjectionSystem}        | This manages the `projectionMatrix`, used by shaders to get NDC coordinates.  |
- * | {@link PIXI.RenderTextureSystem}     | This manages render-textures, which are an abstraction over framebuffers.     |
- * | {@link PIXI.ScissorSystem}           | This handles scissor masking, and is used internally by {@link MaskSystem}    |
  * | {@link PIXI.ShaderSystem}            | This manages shaders, programs that run on the GPU to calculate 'em pixels.   |
  * | {@link PIXI.StateSystem}             | This manages the WebGL state variables like blend mode, depth testing, etc.   |
- * | {@link PIXI.StencilSystem}           | This handles stencil masking, and is used internally by {@link MaskSystem}    |
  * | {@link PIXI.TextureSystem}           | This manages textures and their resources on the GPU.                         |
  * | {@link PIXI.TextureGCSystem}         | This will automatically remove textures from the GPU if they are not used.    |
+ * | {@link PIXI.MultisampleSystem}       | This manages the multisample const on the WEbGL Renderer                      |
+ * |                                      |                                                                               |
+ * | Pixi high level Systems              | Set of Pixi specific systems designed to work with Pixi objects               |
+ * | ------------------------------------ | ----------------------------------------------------------------------------- |
+ * | {@link PIXI.RendererSystem}          | This adds the ability to render a PIXI.DisplayObject                          |
+ * | {@link PIXI.GenerateTextureSystem}   | This adds the ability to generate textures from any PIXI.DisplayObject        |
+ * | {@link PIXI.ProjectionSystem}        | This manages the `projectionMatrix`, used by shaders to get NDC coordinates.  |
+ * | {@link PIXI.RenderTextureSystem}     | This manages render-textures, which are an abstraction over framebuffers.     |
+ * | {@link PIXI.MaskSystem}              | This manages masking operations.                                              |
+ * | {@link PIXI.ScissorSystem}           | This handles scissor masking, and is used internally by {@link MaskSystem}    |
+ * | {@link PIXI.StencilSystem}           | This handles stencil masking, and is used internally by {@link MaskSystem}    |
+ * | {@link PIXI.FilterSystem}            | This manages the filtering pipeline for post-processing effects.              |
+ * | {@link PIXI.BatchSystem}             | This manages object renderers that defer rendering until a flush.             |
  *
  * The breadth of the API surface provided by the renderer is contained within these systems.
  *
@@ -100,99 +116,133 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      * Mask system instance
      * @readonly
      */
-    public mask: MaskSystem;
+    public readonly mask: MaskSystem;
 
     /**
      * Context system instance
      * @readonly
      */
-    public context: ContextSystem;
+    public readonly context: ContextSystem;
 
     /**
      * State system instance
      * @readonly
      */
-    public state: StateSystem;
+    public readonly state: StateSystem;
 
     /**
      * Shader system instance
      * @readonly
      */
-    public shader: ShaderSystem;
+    public readonly shader: ShaderSystem;
 
     /**
      * Texture system instance
      * @readonly
      */
-    public texture: TextureSystem;
+    public readonly texture: TextureSystem;
 
     /**
      * Buffer system instance
      * @readonly
      */
-    public buffer: BufferSystem;
+    public readonly buffer: BufferSystem;
 
     /**
      * Geometry system instance
      * @readonly
      */
-    public geometry: GeometrySystem;
+    public readonly geometry: GeometrySystem;
 
     /**
      * Framebuffer system instance
      * @readonly
      */
-    public framebuffer: FramebufferSystem;
+    public readonly framebuffer: FramebufferSystem;
 
     /**
      * Scissor system instance
      * @readonly
      */
-    public scissor: ScissorSystem;
+    public readonly scissor: ScissorSystem;
 
     /**
      * Stencil system instance
      * @readonly
      */
-    public stencil: StencilSystem;
+    public readonly stencil: StencilSystem;
 
     /**
      * Projection system instance
      * @readonly
      */
-    public projection: ProjectionSystem;
+    public readonly projection: ProjectionSystem;
 
     /**
      * Texture garbage collector system instance
      * @readonly
      */
-    public textureGC: TextureGCSystem;
+    public readonly textureGC: TextureGCSystem;
 
     /**
      * Filter system instance
      * @readonly
      */
-    public filter: FilterSystem;
+    public readonly filter: FilterSystem;
 
     /**
      * RenderTexture system instance
      * @readonly
      */
-    public renderTexture: RenderTextureSystem;
+    public readonly renderTexture: RenderTextureSystem;
 
     /**
      * Batch system instance
      * @readonly
      */
-    public batch: BatchSystem;
+    public readonly batch: BatchSystem;
 
-    public _plugin: PluginSystem;
-    public _multisample: MultisampleSystem;
-    public textureGenerator: GenerateTextureSystem;
-    public background: BackgroundSystem;
-    public _view: ViewSystem;
-    public _render: RendererSystem;
-    public startup: StartupSystem;
+    /**
+     * plugin system instance
+     * @readonly
+     */
+    public readonly _plugin: PluginSystem;
+
+    /**
+     * _multisample system instance
+     * @readonly
+     */
+    public readonly _multisample: MultisampleSystem;
+
+    /**
+     * textureGenerator system instance
+     * @readonly
+     */
+    public readonly textureGenerator: GenerateTextureSystem;
+
+    /**
+     * background system instance
+     * @readonly
+     */
+    public readonly background: BackgroundSystem;
+
+    /**
+     * _view system instance
+     * @readonly
+     */
+    public readonly _view: ViewSystem;
+
+    /**
+     * _render system instance
+     * @readonly
+     */
+    public readonly _render: RendererSystem;
+
+    /**
+     * startup system instance
+     * @readonly
+     */
+    public readonly startup: StartupSystem;
 
     /**
      * Internal signal instances of **runner**, these
@@ -273,7 +323,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
         const systemConfig = {
             runners: ['init', 'destroy', 'contextChange', 'reset', 'update', 'postrender', 'prerender', 'resize'],
             systems: {
-                // systems hared by all renderers..
+                // systems shared by all renderers..
                 textureGenerator: GenerateTextureSystem,
                 background: BackgroundSystem,
                 _view: ViewSystem,
