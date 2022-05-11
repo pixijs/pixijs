@@ -7,7 +7,20 @@ import { RenderTexture } from '../renderTexture/RenderTexture';
 export class RendererSystem implements ISystem
 {
     renderer: Renderer;
+
+    /**
+     * Flag if we are rendering to the screen vs renderTexture
+     *
+     * @readonly
+     * @default true
+     */
     renderingToScreen: boolean;
+
+    /**
+     * the last object rendered by the renderer. Useful for other plugins like interaction managers
+     *
+     * @readonly
+     */
     lastObjectRendered: IRenderableObject;
 
     // renderers scene graph!
@@ -16,6 +29,12 @@ export class RendererSystem implements ISystem
         this.renderer = renderer;
     }
 
+    /**
+     * Renders the object to its WebGL view.
+     *
+     * @param displayObject The object to be rendered.
+     * @param options the options to be passed to the renderer
+     */
     render(displayObject: IRenderableObject, options?: IRendererRenderOptions): void
     {
         const renderer = this.renderer;

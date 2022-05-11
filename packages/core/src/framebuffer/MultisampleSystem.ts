@@ -3,6 +3,11 @@ import { IRenderingContext } from '../IRenderingContext';
 import { ISystem } from '../system/ISystem';
 import { Renderer } from '../Renderer';
 
+/**
+ * System that manages the multisample property on the WebGL renderer
+ *
+ * @memberof PIXI
+ */
 export class MultisampleSystem implements ISystem
 {
     /**
@@ -10,6 +15,7 @@ export class MultisampleSystem implements ISystem
      * @readonly
      */
     public multisample: MSAA_QUALITY;
+
     private renderer: Renderer;
 
     constructor(renderer: Renderer)
@@ -17,7 +23,7 @@ export class MultisampleSystem implements ISystem
         this.renderer = renderer;
     }
 
-    contextChange(gl: IRenderingContext): void
+    protected contextChange(gl: IRenderingContext): void
     {
         let samples;
 

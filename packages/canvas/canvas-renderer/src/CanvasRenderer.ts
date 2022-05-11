@@ -20,6 +20,7 @@ import { CanvasContextSystem } from './CanvasContextSystem';
 import { CanvasRenderSystem } from './CanvasRenderSystem';
 import { StartupOptions, StartupSystem } from 'packages/core/src/startup/StartupSystem';
 import { settings } from '@pixi/settings';
+import { deprecation } from '@pixi/utils';
 
 export interface ICanvasRendererPluginConstructor {
     new (renderer: CanvasRenderer, options?: any): IRendererPlugin;
@@ -136,12 +137,22 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
          options: IGenerateTextureOptions | SCALE_MODES = {},
          resolution?: number, region?: Rectangle): RenderTexture
      {
-         return this.textureGenerator.generateTexture(displayObject, options as any, resolution, region);
+         // @deprecated parameters spread, use options instead
+         if (typeof options === 'number')
+         {
+             // #if _DEBUG
+             deprecation('6.1.0', 'generateTexture options (scaleMode, resolution, region) are now object options.');
+             // #endif
+
+             options = { scaleMode: options, resolution, region };
+         }
+
+         return this.textureGenerator.generateTexture(displayObject, options);
      }
 
      reset(): void
      {
-         throw new Error('Method not implemented.');
+         // nothing to be done :D
      }
 
      /**
