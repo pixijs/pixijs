@@ -2,9 +2,9 @@ import { Runner } from '@pixi/runner';
 import { EventEmitter } from '@pixi/utils';
 import { IRenderer } from '../IRenderer';
 import { ISystem, ISystemConstructor } from './ISystem';
-interface ISystemConfig {
+interface ISystemConfig<R> {
     runners: string[],
-    systems: Record<string, ISystemConstructor>
+    systems: Record<string, ISystemConstructor<R>>
 }
 
 /**
@@ -26,7 +26,7 @@ export class SystemManager<R=IRenderer> extends EventEmitter
      *
      * @param config - the config for the system manager
      */
-    setup(config: ISystemConfig): void
+    setup(config: ISystemConfig<R>): void
     {
         this.addRunners(...config.runners);
 

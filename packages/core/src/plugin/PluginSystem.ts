@@ -1,4 +1,5 @@
 import { IRenderer } from '../IRenderer';
+import { Renderer } from '../Renderer';
 import { ISystem } from '../system/ISystem';
 
 export interface IRendererPlugin {
@@ -10,8 +11,8 @@ export interface IRendererPlugins
     [key: string]: any;
 }
 
-export interface IRendererPluginConstructor {
-    new (renderer: IRenderer, options?: any): IRendererPlugin;
+export interface IRendererPluginConstructor<R extends IRenderer = Renderer> {
+    new (renderer: R, options?: any): IRendererPlugin;
 }
 
 /**
