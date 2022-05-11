@@ -3,7 +3,7 @@ import { State } from './State';
 import { BLEND_MODES } from '@pixi/constants';
 
 import type { ISystem } from '../system/ISystem';
-import type { IRenderingContext } from '../IRenderingContext';
+import { IRenderingContext } from '../IRenderer';
 
 const BLEND = 0;
 const OFFSET = 1;

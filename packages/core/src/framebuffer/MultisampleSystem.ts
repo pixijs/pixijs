@@ -1,7 +1,7 @@
 import { MSAA_QUALITY } from '@pixi/constants';
-import { IRenderingContext } from '../IRenderingContext';
 import { ISystem } from '../system/ISystem';
 import { Renderer } from '../Renderer';
+import { IRenderingContext } from '../IRenderer';
 
 /**
  * System that manages the multisample property on the WebGL renderer

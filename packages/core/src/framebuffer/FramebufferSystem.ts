@@ -6,7 +6,7 @@ import { GLFramebuffer } from './GLFramebuffer';
 
 import type { ISystem } from '../system/ISystem';
 import type { Renderer } from '../Renderer';
-import type { IRenderingContext } from '../IRenderingContext';
+import { IRenderingContext } from '../IRenderer';
 
 const tempRectangle = new Rectangle();
 

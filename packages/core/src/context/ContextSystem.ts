@@ -2,9 +2,9 @@ import { ENV } from '@pixi/constants';
 import { settings } from '../settings';
 
 import type { ISystem } from '../system/ISystem';
-import type { IRenderingContext } from '../IRenderingContext';
 import type { Renderer } from '../Renderer';
 import type { WebGLExtensions } from './WebGLExtensions';
+import { IRenderingContext } from '../IRenderer';
 
 let CONTEXT_UID_COUNTER = 0;
 

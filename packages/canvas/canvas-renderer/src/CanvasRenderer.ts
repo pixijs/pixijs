@@ -177,7 +177,6 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
                  mask: CanvasMaskSystem,
                  context: CanvasContextSystem,
                  _renderer: CanvasRenderSystem,
-
              }
          };
 

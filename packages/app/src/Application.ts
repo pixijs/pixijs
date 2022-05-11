@@ -149,7 +149,7 @@ export class Application
      */
     get screen(): Rectangle
     {
-        return this.renderer._view.screen;
+        return this.renderer.screen;
     }
 
     /**

@@ -3,7 +3,6 @@ import { generateUniformsSync, unsafeEvalSupported } from './utils';
 
 import type { ISystem } from '../system/ISystem';
 import type { Renderer } from '../Renderer';
-import type { IRenderingContext } from '../IRenderingContext';
 import type { Shader } from './Shader';
 import type { Program } from './Program';
 import type { UniformGroup } from './UniformGroup';
@@ -12,6 +11,7 @@ import type { UniformsSyncCallback } from './utils';
 import { generateUniformBufferSync } from './utils/generateUniformBufferSync';
 
 import { generateProgram } from './utils/generateProgram';
+import { IRenderingContext } from '../IRenderer';
 
 let UID = 0;
 // default sync data so we don't create a new one each time!

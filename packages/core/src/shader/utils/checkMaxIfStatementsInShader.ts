@@ -1,4 +1,4 @@
-import type { IRenderingContext } from '../../IRenderingContext';
+import { IRenderingContext } from '../../IRenderer';
 
 const fragTemplate = [
     'precision mediump float;',

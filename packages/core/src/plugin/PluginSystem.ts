@@ -1,4 +1,4 @@
-import { IRenderer, IRendererPlugins } from '../IRenderer';
+import { IRenderer } from '../IRenderer';
 import { ISystem } from '../system/ISystem';
 
 export interface IRendererPlugin {

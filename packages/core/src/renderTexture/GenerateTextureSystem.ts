@@ -84,7 +84,5 @@ export class GenerateTextureSystem implements ISystem
     destroy(): void
     {
         // ka boom!
-        this.renderer = null;
-        this._tempMatrix = null;
     }
 }

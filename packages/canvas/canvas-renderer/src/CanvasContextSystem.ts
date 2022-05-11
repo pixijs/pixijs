@@ -53,7 +53,7 @@ export class CanvasContextSystem implements ISystem
     /** Tracks the blend modes useful for this renderer. */
     public readonly blendModes: string[] = mapCanvasBlendModesToPixi();
 
-    private _activeBlendMode: BLEND_MODES =null;
+    _activeBlendMode: BLEND_MODES =null;
     /** Projection transform, passed in render() stored here */
     _projTransform: Matrix = null;
 
