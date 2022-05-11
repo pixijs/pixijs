@@ -70,7 +70,7 @@ export class ViewSystem implements ISystem
     /**
      * initiates the view system
      *
-     * @param {PIXI.ViewOptions} options the options for the view
+     * @param {PIXI.ViewOptions} options - the options for the view
      */
     init(options: ViewOptions): void
     {

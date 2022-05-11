@@ -28,7 +28,7 @@ export interface StartupOptions extends Record<string, unknown> {
     /**
      * It all starts here! This initiates every system, passing in the options for any system by name.
      *
-     * @param options the config for the renderer and all its systems
+     * @param options - the config for the renderer and all its systems
      */
     run(options: StartupOptions): void
     {

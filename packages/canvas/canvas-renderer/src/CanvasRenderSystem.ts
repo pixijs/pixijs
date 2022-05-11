@@ -29,8 +29,8 @@ export class CanvasRenderSystem implements ISystem
     /**
      * Renders the object to its Canvas view.
      *
-     * @param displayObject The object to be rendered.
-     * @param options the options to be passed to the renderer
+     * @param displayObject - The object to be rendered.
+     * @param options - the options to be passed to the renderer
      */
     public render(displayObject: DisplayObject, options?: IRendererRenderOptions | RenderTexture | BaseRenderTexture): void
     {

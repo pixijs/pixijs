@@ -52,7 +52,7 @@ export class BackgroundSystem implements ISystem
     /**
      * initiates the background system
      *
-     * @param {BackgroundOptions} options the options for the background colors
+     * @param {BackgroundOptions} options - the options for the background colors
      */
     init(options: BackgroundOptions): void
     {

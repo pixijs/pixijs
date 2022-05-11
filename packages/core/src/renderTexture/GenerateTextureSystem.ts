@@ -47,7 +47,7 @@ export class GenerateTextureSystem implements ISystem
      * A Useful function that returns a texture of the display object that can then be used to create sprites
      * This can be quite useful if your displayObject is complicated and needs to be reused multiple times.
      *
-     * @param displayObject The displayObject the object will be generated from.
+     * @param displayObject - The displayObject the object will be generated from.
      * @param {IGenerateTextureOptions} options - Generate texture options.
      * @returns a shiny new texture of the display object passed in
      */

@@ -38,8 +38,8 @@ export class RendererSystem implements ISystem
     /**
      * Renders the object to its WebGL view.
      *
-     * @param displayObject The object to be rendered.
-     * @param options the options to be passed to the renderer
+     * @param displayObject - The object to be rendered.
+     * @param options - the options to be passed to the renderer
      */
     render(displayObject: IRenderableObject, options?: IRendererRenderOptions): void
     {

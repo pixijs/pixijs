@@ -91,7 +91,7 @@ export class ScissorSystem extends AbstractMaskSystem
     /**
      * Test, whether the object can be scissor mask with current renderer projection.
      * Calls "calcScissorRect()" if its true.
-     * @param maskData mask data
+     * @param maskData - mask data
      * @returns whether Whether the object can be scissor mask
      */
     public testScissor(maskData: MaskData): boolean
