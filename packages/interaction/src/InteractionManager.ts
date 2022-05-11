@@ -9,7 +9,7 @@ import { interactiveTarget } from './interactiveTarget';
 
 import type { Point, IPointData } from '@pixi/math';
 import type { Dict } from '@pixi/utils';
-import { IRenderer } from 'packages/core/src/IRenderer';
+import { IRenderer } from '@pixi/core';
 
 // Mix interactiveTarget into DisplayObject.prototype
 DisplayObject.mixin(interactiveTarget);
