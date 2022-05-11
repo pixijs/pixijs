@@ -7,12 +7,25 @@ interface ISystemConfig {
     systems: Record<string, ISystemConstructor>
 }
 
+/**
+ * The SystemManager is a class that provides functions for managing a set of systems
+ * This is a base class, that is generic (no render code or knowledge at all)
+ *
+ * @memberof PIXI
+ */
 export class SystemManager<R=IRenderer> extends EventEmitter
 {
+    /** a collection of runners defined by the user */
     readonly runners: {[key: string]: Runner} = {};
 
     private _systemsHash: Record<string, ISystem> = {};
 
+    /**
+     * Set up a system with a collection of SystemClasses and runners.
+     * Systems are attached dynamically to this class when added.
+     *
+     * @param config - the config for the system manager
+     */
     setup(config: ISystemConfig): void
     {
         this.addRunners(...config.runners);
@@ -26,6 +39,10 @@ export class SystemManager<R=IRenderer> extends EventEmitter
         }
     }
 
+    /**
+     * Create a bunch of runners based of a collection of ids
+     * @param runnerIds - the runner ids to add
+     */
     addRunners(...runnerIds: string[]): void
     {
         runnerIds.forEach((runnerId) =>
@@ -84,6 +101,24 @@ export class SystemManager<R=IRenderer> extends EventEmitter
         return this;
     }
 
+    /**
+     * A function that will run a runner and call the runners function but pass in different options
+     * to each system based on there name.
+     *
+     * eg if you have two systems added called `systemA` and `systemB` you could call do the following:
+     *
+     * ```
+     * system.emitWithCustomOptions(init, {
+     *   systemA: {...optionsForA},
+     *   systemB: {...optionsForB}
+     * })
+     *
+     * init would be called on system A passing options.A and init would be called on system B passing options.B
+     * ```
+     *
+     * @param runner - the runner to target
+     * @param options - key value options for each system
+     */
     emitWithCustomOptions(runner: Runner, options: Record<string, unknown>): void
     {
         const systemHashKeys = Object.keys(this._systemsHash);
@@ -98,6 +133,9 @@ export class SystemManager<R=IRenderer> extends EventEmitter
         });
     }
 
+    /**
+     * destroy the all runners and systems. Its apps job to
+     */
     destroy(): void
     {
         Object.values(this.runners).forEach((runner) =>
