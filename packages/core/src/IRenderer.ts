@@ -70,8 +70,13 @@ export interface IRendererRenderOptions {
     skipUpdateTransform?: boolean;
 }
 
+/**
+ * Starard Interface for a Pixi renderer.
+ * @memberof PIXI
+ */
 export interface IRenderer extends SystemManager
 {
+
     resize(width: number, height: number): void;
     render(displayObject: IRenderableObject, options?: IRendererRenderOptions): void
     generateTexture(displayObject: IRenderableObject, options?: IGenerateTextureOptions): void
@@ -79,8 +84,19 @@ export interface IRenderer extends SystemManager
     clear(): void;
     reset(): void;
 
+    /**
+     * The type of the renderer.
+     *
+     * @member {number}
+     * @see PIXI.RENDERER_TYPE
+     */
     readonly type: RENDERER_TYPE
 
+    /**
+     * When logging Pixi to the console, this is the name we will show
+     *
+     * @member {string}
+     */
     readonly rendererLogId: string
 
     readonly view: HTMLCanvasElement

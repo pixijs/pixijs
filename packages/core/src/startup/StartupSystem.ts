@@ -11,15 +11,25 @@ export interface StartupOptions extends Record<string, unknown> {
     background: BackgroundOptions,
     _view: ViewOptions,
 }
-export class StartupSystem implements ISystem
+
+/**
+ * A simple system responsible for initiating the renderer.
+ *
+ * @memberof PIXI
+ */export class StartupSystem implements ISystem
 {
-    renderer: IRenderer;
+    readonly renderer: IRenderer;
 
     constructor(renderer: IRenderer)
     {
         this.renderer = renderer;
     }
 
+    /**
+     * It all starts here! This initiates every system, passing in the options for any system by name.
+     *
+     * @param options the config for the renderer and all its systems
+     */
     run(options: StartupOptions): void
     {
         const renderer = this.renderer;
@@ -34,6 +44,5 @@ export class StartupSystem implements ISystem
     destroy(): void
     {
         // ka pow!
-        this.renderer = null;
     }
 }

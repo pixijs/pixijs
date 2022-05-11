@@ -4,20 +4,57 @@ import { IRenderer } from '../IRenderer';
 import { ISystem } from '../system/ISystem';
 
 export interface ViewOptions {
+    /** The width of the screen. */
     width: number
+    /** The height of the screen. */
     height: number
-    view: HTMLCanvasElement;
+    /** The canvas to use as a view, optional. */
+    view?: HTMLCanvasElement;
+    /** Resizes renderer view in CSS pixels to allow for resolutions other than 1. */
     autoDensity?: boolean
+    /** The resolution / device pixel ratio of the renderer. */
     resolution?: number
 }
 
+/**
+ * The view system manages the main canvas that is attached to the DOM.
+ * This main role is to deal with how the holding the view reference and dealing with how it is resized.
+ *
+ * @memberof PIXI
+ */
 export class ViewSystem implements ISystem
 {
     private renderer: IRenderer;
 
+    /**
+     * The resolution / device pixel ratio of the renderer.
+     *
+     * @member {number}
+     * @default PIXI.settings.RESOLUTION
+     */
     public resolution: number;
+
+    /**
+     * Measurements of the screen. (0, 0, screenWidth, screenHeight).
+     *
+     * Its safe to use as filterArea or hitArea for the whole stage.
+     *
+     * @member {PIXI.Rectangle}
+     */
+
     public screen: Rectangle;
+    /**
+     * The canvas element that everything is drawn to.
+     *
+     * @member {HTMLCanvasElement}
+     */
     public view: HTMLCanvasElement;
+
+    /**
+     * Whether CSS dimensions of canvas view should be resized to screen dimensions automatically.
+     *
+     * @member {boolean}
+     */
     public autoDensity: boolean;
 
     constructor(renderer: IRenderer)
@@ -25,40 +62,28 @@ export class ViewSystem implements ISystem
         this.renderer = renderer;
     }
 
+    /**
+     * initiates the view system
+     *
+     * @param {ViewOptions} options the options for the view
+     */
     init(options: ViewOptions): void
     {
-        /**
-         * Measurements of the screen. (0, 0, screenWidth, screenHeight).
-         *
-         * Its safe to use as filterArea or hitArea for the whole stage.
-         *
-         * @member {PIXI.Rectangle}
-         */
         this.screen = new Rectangle(0, 0, options.width, options.height);
 
-        /**
-          * The canvas element that everything is drawn to.
-          *
-          * @member {HTMLCanvasElement}
-          */
         this.view = options.view || document.createElement('canvas');
 
-        /**
-          * The resolution / device pixel ratio of the renderer.
-          *
-          * @member {number}
-          * @default PIXI.settings.RESOLUTION
-          */
         this.resolution = options.resolution || settings.RESOLUTION;
 
-        /**
-          * Whether CSS dimensions of canvas view should be resized to screen dimensions automatically.
-          *
-          * @member {boolean}
-          */
         this.autoDensity = !!options.autoDensity;
     }
 
+    /**
+     * Resizes the screen and canvas to the specified dimensions.
+     *
+     * @param {number} screenWidth - The new width of the screen.
+     * @param {number} screenHeight - The new height of the screen.
+     */
     resizeView(desiredScreenWidth: number, desiredScreenHeight: number): void
     {
         this.view.width = Math.round(desiredScreenWidth * this.resolution);
@@ -87,6 +112,11 @@ export class ViewSystem implements ISystem
         this.renderer.runners.resize.emit(this.screen.height, this.screen.width);
     }
 
+    /**
+     * Destroys this System and optionally removes the canvas from the dom.
+     *
+     * @param {boolean} [removeView=false] - Whether to remove the canvas from the DOM.
+     */
     destroy(removeView: boolean): void
     {
         // ka boom!

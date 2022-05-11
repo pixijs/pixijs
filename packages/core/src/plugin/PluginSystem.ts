@@ -10,8 +10,18 @@ export interface IRendererPlugins
     [key: string]: any;
 }
 
+/**
+ * Manages the functionality that allows users to extend pixi functionality via additional plugins.
+ *
+ * @memberof PIXI
+ */
 export class PluginSystem implements ISystem
 {
+    /**
+     * Collection of plugins.
+     * @readonly
+     * @member {object}
+     */
     public readonly plugins: IRendererPlugins;
     private renderer: IRenderer;
 

@@ -2,15 +2,21 @@ import { deprecation, hex2rgb, hex2string } from '@pixi/utils';
 import { ISystem } from '../system/ISystem';
 
 export interface BackgroundOptions {
+    /** the main canvas background alpha. From 0 (fully transparent) to 1 (fully opaque). */
     backgroundAlpha: number,
+    /** the main canvas background color. */
     backgroundColor: number,
+    /** sets if the renderer will clear the canvas or not before the new render pass. */
     clearBeforeRender: boolean
-    /**
-     * @deprecated The method should not be used
-     */
+    /** @deprecated The method should not be used */
     transparent?: boolean
 }
 
+/**
+ * The background system manages the background color and alpha of the main view.
+ *
+ * @memberof PIXI
+ */
 export class BackgroundSystem implements ISystem
 {
     /**
@@ -43,6 +49,11 @@ export class BackgroundSystem implements ISystem
         this.backgroundAlpha = 1;
     }
 
+    /**
+     * initiates the background system
+     *
+     * @param {BackgroundOptions} options the options for the background colors
+     */
     init(options: BackgroundOptions): void
     {
         if (options.transparent !== undefined)
