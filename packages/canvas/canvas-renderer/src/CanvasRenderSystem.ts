@@ -7,6 +7,12 @@ import { CanvasRenderTarget, deprecation, hex2string, rgb2hex } from '@pixi/util
 import { DisplayObject } from 'pixi.js';
 import { CrossPlatformCanvasRenderingContext2D } from './CanvasContextSystem';
 
+/**
+ * system that provides a render function that focussing on rendering Pixi Scene Graph objects
+ * to either the main view or to a renderTexture. Used for Canvas `2d` contexts
+ *
+ * @memberof PIXI
+ */
 export class CanvasRenderSystem implements ISystem
 {
     /** A reference to the current renderer */
@@ -20,6 +26,12 @@ export class CanvasRenderSystem implements ISystem
         this.renderer = renderer;
     }
 
+    /**
+     * Renders the object to its Canvas view.
+     *
+     * @param displayObject The object to be rendered.
+     * @param options the options to be passed to the renderer
+     */
     public render(displayObject: DisplayObject, options?: IRendererRenderOptions | RenderTexture | BaseRenderTexture): void
     {
         const renderer = this.renderer;

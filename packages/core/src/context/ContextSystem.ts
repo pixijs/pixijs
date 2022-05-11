@@ -21,7 +21,7 @@ export interface ContextOptions {
 }
 
 /**
- * System plugin to the renderer to manage the context.
+ * System plugin for the renderer to manage the context.
  *
  * @memberof PIXI
  */

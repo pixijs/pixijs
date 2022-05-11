@@ -1,4 +1,16 @@
-import { RenderTexture, BaseRenderTexture, IRenderableObject } from '@pixi/core';
+import {
+    RenderTexture,
+    BaseRenderTexture,
+    IRenderableObject,
+    GenerateTextureSystem,
+    SystemManager, IRenderer,
+    BackgroundSystem,
+    ViewSystem,
+    PluginSystem,
+    StartupSystem,
+    StartupOptions,
+    IGenerateTextureOptions
+} from '@pixi/core';
 import { CanvasMaskSystem } from './CanvasMaskSystem';
 import { RENDERER_TYPE, SCALE_MODES } from '@pixi/constants';
 import { Matrix, Rectangle } from '@pixi/math';
@@ -10,15 +22,9 @@ import type {
     IRendererPlugins,
     IRendererRenderOptions
 } from '@pixi/core';
-import { IRenderer } from 'packages/core/src/IRenderer';
-import { GenerateTextureSystem, IGenerateTextureOptions } from 'packages/core/src/renderTexture/GenerateTextureSystem';
-import { BackgroundSystem } from 'packages/core/src/background/BackgroundSystem';
-import { ViewSystem } from 'packages/core/src/view/ViewSystem';
-import { PluginSystem } from 'packages/core/src/plugin/PluginSystem';
-import { SystemManager } from 'packages/core/src/system/SystemManager';
+
 import { CanvasContextSystem } from './CanvasContextSystem';
 import { CanvasRenderSystem } from './CanvasRenderSystem';
-import { StartupOptions, StartupSystem } from 'packages/core/src/startup/StartupSystem';
 import { settings } from '@pixi/settings';
 import { deprecation } from '@pixi/utils';
 
@@ -29,10 +35,34 @@ export interface ICanvasRendererPluginConstructor {
 /**
  * The CanvasRenderer draws the scene and all its content onto a 2d canvas.
  *
- * This renderer should be used for browsers that do not support WebGL.
- * Don't forget to add the CanvasRenderer.view to your DOM or you will not see anything!
+ * This renderer should be used for browsers that support WebGL.
  *
- * @class
+ * This renderer should be used for browsers that do not support WebGL.
+ * Don't forget to add the view to your DOM or you will not see anything!
+ *
+ * Renderer is composed of systems that manage specific tasks. The following systems are added by default
+ * whenever you create a renderer:
+ *
+ * | System                               | Description                                                                   |
+ * | ------------------------------------ | ----------------------------------------------------------------------------- |
+
+ * | Generic Systems                      | Systems that manage functionality that all renderer types share               |
+ * | ------------------------------------ | ----------------------------------------------------------------------------- |
+ * | {@link PIXI.ViewSystem}              | This manages the main view of the renderer usually a Canvas                   |
+ * | {@link PIXI.PluginSystem}            | This manages plugins for the renderer                                         |
+ * | {@link PIXI.BackgroundSystem}        | This manages the main views background color and alpha                        |
+ * | {@link PIXI.StartupSystem}           | Boots up a renderer and initiatives all the systems                           |
+ * | {@link PIXI.EventSystem}             | This manages UI events.                                                       |
+ * | {@link PIXI.GenerateTextureSystem}   | This adds the ability to generate textures from any PIXI.DisplayObject        |
+
+ * | Pixi high level Systems              | Set of Pixi specific systems designed to work with Pixi objects               |
+ * | ------------------------------------ | ----------------------------------------------------------------------------- |
+ * | {@link PIXI.CanvasContextSystem}     | This manages the canvas `2d` contexts and their state                         |
+ * | {@link PIXI.CanvasMaskSystem}        | This manages masking operations.                                              |
+ * | {@link PIXI.CanvasRenderSystem}      | This adds the ability to render a PIXI.DisplayObject                          |
+ *
+ * The breadth of the API surface provided by the renderer is contained within these systems.
+ *
  * @memberof PIXI
  * @implements PIXI.IRenderer
  */
@@ -47,22 +77,64 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
      * @event PIXI.CanvasRenderer#prerender
      */
 
-    // systems..
     /**
-     * Instance of a CanvasMaskManager, handles masking when using the canvas renderer.
-     * @member {PIXI.CanvasMaskManager}
+     * The type of the renderer. will be PIXI.RENDERER_TYPE.CANVAS
+     *
+     * @member {number}
+     * @see PIXI.RENDERER_TYPE
      */
-    public textureGenerator: GenerateTextureSystem;
-    public background: BackgroundSystem;
-    public mask: CanvasMaskSystem;
-    public _view: ViewSystem;
+     public readonly type: RENDERER_TYPE.CANVAS;
+
+     public readonly rendererLogId = 'Canvas';
+
+     // systems..
+     /**
+     * textureGenerator system instance
+     * @readonly
+     */
+     public textureGenerator: GenerateTextureSystem;
+
+     /**
+     * background system instance
+     * @readonly
+     */
+     public background: BackgroundSystem;
+
+     /**
+     * canvas mask system instance
+     * @readonly
+     */
+     public mask: CanvasMaskSystem;
+
+     /**
+     * plugin system instance
+     * @readonly
+     */
      public _plugin: PluginSystem;
+
+     /**
+     * Canvas context system instance
+     * @readonly
+     */
      public context: CanvasContextSystem;
-     public _renderer: CanvasRenderSystem;
+
+     /**
+     * Startup system instance
+     * @readonly
+     */
      public startup: StartupSystem;
 
-     public type: RENDERER_TYPE;
-     public readonly rendererLogId = 'Canvas';
+     /**
+     * View system instance
+     * @readonly
+     */
+     public _view: ViewSystem;
+
+     /**
+     * renderer system instance
+     * @readonly
+     */
+     public _renderer: CanvasRenderSystem;
 
      /**
      * @param options - The optional renderer parameters
@@ -91,8 +163,6 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
          // Add the default render options
          options = Object.assign({}, settings.RENDER_OPTIONS, options);
 
-         this.type = RENDERER_TYPE.CANVAS;
-
          const systemConfig = {
              runners: ['init', 'destroy', 'contextChange', 'reset', 'update', 'postrender', 'prerender', 'resize'],
              systems: {
@@ -113,7 +183,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
 
          this.setup(systemConfig);
 
-         // new options!
+         // convert our big blob of options into system specific ones..
          const startupOptions: StartupOptions = {
              _plugin: CanvasRenderer.__plugins,
              background: {

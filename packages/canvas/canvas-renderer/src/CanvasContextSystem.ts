@@ -32,6 +32,11 @@ type SmoothingEnabledProperties =
     'oImageSmoothingEnabled' |
     'msImageSmoothingEnabled';
 
+/**
+ * System that manages the canvas `2d` contexts
+ *
+ * @memberof PIXI
+ */
 export class CanvasContextSystem implements ISystem
 {
     /** A reference to the current renderer */
@@ -61,6 +66,7 @@ export class CanvasContextSystem implements ISystem
         this.renderer = renderer;
     }
 
+    /** initiates the system */
     init(): void
     {
         const alpha = this.renderer.background.backgroundAlpha < 1;

@@ -86,28 +86,32 @@ export interface IRenderer extends SystemManager
 
     /**
      * The type of the renderer.
-     *
-     * @member {number}
      * @see PIXI.RENDERER_TYPE
      */
     readonly type: RENDERER_TYPE
 
-    /**
-     * When logging Pixi to the console, this is the name we will show
-     *
-     * @member {string}
-     */
+    /** When logging Pixi to the console, this is the name we will show */
     readonly rendererLogId: string
 
+    /** The canvas element that everything is drawn to.*/
     readonly view: HTMLCanvasElement
+    /** Flag if we are rendering to the screen vs renderTexture */
     readonly renderingToScreen: boolean
-
+    /** The resolution / device pixel ratio of the renderer. */
     readonly resolution: number
+    /** the width of the screen */
     readonly width: number
+    /** the height of the screen */
     readonly height: number
+    /**
+     * Measurements of the screen. (0, 0, screenWidth, screenHeight).
+     * Its safe to use as filterArea or hitArea for the whole stage.
+     */
     readonly screen: Rectangle
-
+    /**
+     * the last object rendered by the renderer. Useful for other plugins like interaction managers
+     */
     readonly lastObjectRendered: IRenderableObject
-
+    /** Collection of plugins */
     readonly plugins: IRendererPlugins
 }

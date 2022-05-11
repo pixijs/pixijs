@@ -4,6 +4,12 @@ import { ISystem } from '../system/ISystem';
 import { Renderer } from '../Renderer';
 import { RenderTexture } from '../renderTexture/RenderTexture';
 
+/**
+ * system that provides a render function that focussing on rendering Pixi Scene Graph objects
+ * to either the main view or to a renderTexture.  Used for Canvas `WebGL` contexts
+ *
+ * @memberof PIXI
+ */
 export class RendererSystem implements ISystem
 {
     renderer: Renderer;

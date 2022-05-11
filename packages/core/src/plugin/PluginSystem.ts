@@ -10,6 +10,10 @@ export interface IRendererPlugins
     [key: string]: any;
 }
 
+export interface IRendererPluginConstructor {
+    new (renderer: IRenderer, options?: any): IRendererPlugin;
+}
+
 /**
  * Manages the functionality that allows users to extend pixi functionality via additional plugins.
  *

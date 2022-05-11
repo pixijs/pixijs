@@ -3,6 +3,11 @@ import { settings } from '@pixi/settings';
 import { IRenderer } from '../IRenderer';
 import { ISystem } from '../system/ISystem';
 
+/**
+ * Options passed to the ViewSystem
+ *
+ * @memberof PIXI
+ */
 export interface ViewOptions {
     /** The width of the screen. */
     width: number
@@ -65,7 +70,7 @@ export class ViewSystem implements ISystem
     /**
      * initiates the view system
      *
-     * @param {ViewOptions} options the options for the view
+     * @param {PIXI.ViewOptions} options the options for the view
      */
     init(options: ViewOptions): void
     {

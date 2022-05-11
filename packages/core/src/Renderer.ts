@@ -21,7 +21,7 @@ import { RenderTexture } from './renderTexture/RenderTexture';
 
 import type { SCALE_MODES } from '@pixi/constants';
 
-import { IRendererPlugin, IRendererPlugins, PluginSystem } from './plugin/PluginSystem';
+import { IRendererPluginConstructor, IRendererPlugins, PluginSystem } from './plugin/PluginSystem';
 import { MultisampleSystem } from './framebuffer/MultisampleSystem';
 import { GenerateTextureSystem, IGenerateTextureOptions } from './renderTexture/GenerateTextureSystem';
 import { BackgroundSystem } from './background/BackgroundSystem';
@@ -31,10 +31,6 @@ import { settings } from '@pixi/settings';
 import { SystemManager } from './system/SystemManager';
 import { IRenderableObject, IRenderer, IRendererOptions, IRendererRenderOptions, IRenderingContext } from './IRenderer';
 import { StartupOptions, StartupSystem } from './startup/StartupSystem';
-
-export interface IRendererPluginConstructor {
-    new (renderer: Renderer, options?: any): IRendererPlugin;
-}
 
 /**
  * The Renderer draws the scene and all its content onto a WebGL enabled canvas.
@@ -49,7 +45,7 @@ export interface IRendererPluginConstructor {
  *
  * | System                               | Description                                                                   |
  * | ------------------------------------ | ----------------------------------------------------------------------------- |
- * |                                      |                                                                               |
+
  * | Generic Systems                      | Systems that manage functionality that all renderer types share               |
  * | ------------------------------------ | ----------------------------------------------------------------------------- |
  * | {@link PIXI.ViewSystem}              | This manages the main view of the renderer usually a Canvas                   |
@@ -57,7 +53,7 @@ export interface IRendererPluginConstructor {
  * | {@link PIXI.BackgroundSystem}        | This manages the main views background color and alpha                        |
  * | {@link PIXI.StartupSystem}           | Boots up a renderer and initiatives all the systems                           |
  * | {@link PIXI.EventSystem}             | This manages UI events.                                                       |
- * |                                      |                                                                               |
+
  * | WebGL Core Systems                   | Provide an optimised, easy to use API to work with WebGL                      |
  * | ------------------------------------ | ----------------------------------------------------------------------------- |
  * | {@link PIXI.ContextSystem}           | This manages the WebGL context and extensions.                                |
@@ -68,10 +64,10 @@ export interface IRendererPluginConstructor {
  * | {@link PIXI.TextureSystem}           | This manages textures and their resources on the GPU.                         |
  * | {@link PIXI.TextureGCSystem}         | This will automatically remove textures from the GPU if they are not used.    |
  * | {@link PIXI.MultisampleSystem}       | This manages the multisample const on the WEbGL Renderer                      |
- * |                                      |                                                                               |
+
  * | Pixi high level Systems              | Set of Pixi specific systems designed to work with Pixi objects               |
  * | ------------------------------------ | ----------------------------------------------------------------------------- |
- * | {@link PIXI.RendererSystem}          | This adds the ability to render a PIXI.DisplayObject                          |
+ * | {@link PIXI.RenderSystem}          | This adds the ability to render a PIXI.DisplayObject                          |
  * | {@link PIXI.GenerateTextureSystem}   | This adds the ability to generate textures from any PIXI.DisplayObject        |
  * | {@link PIXI.ProjectionSystem}        | This manages the `projectionMatrix`, used by shaders to get NDC coordinates.  |
  * | {@link PIXI.RenderTextureSystem}     | This manages render-textures, which are an abstraction over framebuffers.     |
@@ -83,18 +79,20 @@ export interface IRendererPluginConstructor {
  *
  * The breadth of the API surface provided by the renderer is contained within these systems.
  *
+ * @class
  * @memberof PIXI
+ * @implements PIXI.IRenderer
  */
 export class Renderer extends SystemManager<Renderer> implements IRenderer
 {
     /**
-     * The type of the renderer.
+     * The type of the renderer. will be PIXI.RENDERER_TYPE.CANVAS
      *
      * @member {number}
-     * @default PIXI.RENDERER_TYPE.UNKNOWN
+
      * @see PIXI.RENDERER_TYPE
      */
-    public readonly type: RENDERER_TYPE;
+    public readonly type: RENDERER_TYPE.WEBGL;
 
     /**
      * WebGL context, set by {@link PIXI.ContextSystem this.context}.
@@ -104,7 +102,13 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      */
     public gl: IRenderingContext;
 
-    /** Global uniforms */
+    /**
+     * Global uniforms
+     * Add any uniforms you want shared across your shaders.
+     * the must be added before the scene is rendered for the first time
+     * as we dynamically buildcode to handle all global var per shader
+     *
+     * */
     public globalUniforms: UniformGroup;
 
     /** Unique UID assigned to the renderer's WebGL context. */
@@ -309,8 +313,6 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
 
         // Add the default render options
         options = Object.assign({}, settings.RENDER_OPTIONS, options);
-
-        this.type = RENDERER_TYPE.WEBGL;
 
         this.gl = null;
 
