@@ -299,7 +299,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
                 renderTexture: RenderTextureSystem,
                 batch: BatchSystem,
                 _multisample: MultisampleSystem,
-                _render: RendererSystem
+                _render: RendererSystem,
             }
         };
 
@@ -319,6 +319,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
                 width: options.width,
                 autoDensity: options.autoDensity,
                 resolution: options.resolution,
+                view: options.view,
             },
             context: {
                 antialias: options.antialias,
@@ -552,9 +553,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
         options: IGenerateTextureOptions | SCALE_MODES = {},
         resolution?: number, region?: Rectangle): RenderTexture
     {
-        const renderTexture = this.textureGenerator.generateTexture(displayObject, options as any, resolution, region);
-
-        return renderTexture;
+        return this.textureGenerator.generateTexture(displayObject, options as any, resolution, region);
     }
 
     /**

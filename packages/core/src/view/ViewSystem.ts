@@ -6,6 +6,7 @@ import { ISystem } from '../system/ISystem';
 export interface ViewOptions {
     width: number
     height: number
+    view: HTMLCanvasElement;
     autoDensity?: boolean
     resolution?: number
 }
