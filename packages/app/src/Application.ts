@@ -2,9 +2,8 @@ import { Container } from '@pixi/display';
 import { autoDetectRenderer } from '@pixi/core';
 
 import type { Rectangle } from '@pixi/math';
-import type {  IRendererOptionsAuto } from '@pixi/core';
+import type {  IRendererOptionsAuto, IRenderer } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
-import { IRenderer } from 'packages/core/src/IRenderer';
 
 /**
  * Any plugin that's usable for Application should contain these methods.

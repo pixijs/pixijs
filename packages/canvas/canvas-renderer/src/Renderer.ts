@@ -1,8 +1,7 @@
 import { Renderer } from '@pixi/core';
 import { CanvasRenderer } from './CanvasRenderer';
 
-import type { IRendererOptionsAuto } from '@pixi/core';
-import { IRenderer } from 'packages/core/src/IRenderer';
+import type { IRenderer, IRendererOptionsAuto } from '@pixi/core';
 
 // Reference to Renderer.create static function
 const parentCreate = Renderer.create;
