@@ -46,6 +46,10 @@ export interface IRendererOptions extends GlobalMixins.IRendererOptions {
     width?: number;
     height?: number;
     view?: HTMLCanvasElement;
+    /**
+     * Use premultipliedAlpha and backgroundAlpha instead
+     * @deprecated
+     */
     useContextAlpha?: boolean | 'notMultiplied';
     /**
      * Use `backgroundAlpha` instead.
@@ -59,6 +63,7 @@ export interface IRendererOptions extends GlobalMixins.IRendererOptions {
     clearBeforeRender?: boolean;
     backgroundColor?: number;
     backgroundAlpha?: number;
+    premultipliedAlpha: boolean;
     powerPreference?: WebGLPowerPreference;
     context?: IRenderingContext;
 }

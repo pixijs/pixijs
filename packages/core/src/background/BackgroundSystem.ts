@@ -45,8 +45,8 @@ export class BackgroundSystem implements ISystem
 
         this._backgroundColorString = '#000000';
 
-        this.backgroundColor = this._backgroundColor; // run bg color setter
-        this.backgroundAlpha = 1;
+        this.color = this._backgroundColor; // run bg color setter
+        this.alpha = 1;
     }
 
     /**
@@ -66,8 +66,8 @@ export class BackgroundSystem implements ISystem
         }
 
         this.clearBeforeRender = options.clearBeforeRender;
-        this.backgroundColor = options.backgroundColor || this._backgroundColor; // run bg color setter
-        this.backgroundAlpha = options.backgroundAlpha;
+        this.color = options.backgroundColor || this._backgroundColor; // run bg color setter
+        this.alpha = options.backgroundAlpha;
     }
 
     /**
@@ -75,12 +75,12 @@ export class BackgroundSystem implements ISystem
      *
      * @member {number}
      */
-    get backgroundColor(): number
+    get color(): number
     {
         return this._backgroundColor;
     }
 
-    set backgroundColor(value: number)
+    set color(value: number)
     {
         this._backgroundColor = value;
         this._backgroundColorString = hex2string(value);
@@ -92,12 +92,12 @@ export class BackgroundSystem implements ISystem
      *
      * @member {number}
      */
-    get backgroundAlpha(): number
+    get alpha(): number
     {
         return this._backgroundColorRgba[3];
     }
 
-    set backgroundAlpha(value: number)
+    set alpha(value: number)
     {
         this._backgroundColorRgba[3] = value;
     }
@@ -108,7 +108,7 @@ export class BackgroundSystem implements ISystem
      * @member {number[]}
      * @protected
      */
-    get backgroundColorRgba(): number[]
+    get colorRgba(): number[]
     {
         return this._backgroundColorRgba;
     }
@@ -119,7 +119,7 @@ export class BackgroundSystem implements ISystem
      * @member {string}
      * @protected
      */
-    get backgroundColorString(): string
+    get colorString(): string
     {
         return this._backgroundColorString;
     }

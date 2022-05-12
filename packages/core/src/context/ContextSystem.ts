@@ -14,6 +14,12 @@ export interface ISupportDict {
 
 export interface ContextOptions {
     context?: IRenderingContext;
+    /**
+     * Use premultipliedAlpha instead
+     *
+     * @deprecated
+     */
+    useContextAlpha?: boolean | 'notMultiplied';
     premultipliedAlpha?: boolean;
     powerPreference?: WebGLPowerPreference;
     preserveDrawingBuffer?: boolean;
@@ -42,6 +48,17 @@ export class ContextSystem implements ISystem
      * @property {boolean} uint32Indices - Support for 32-bit indices buffer.
      */
     readonly supports: ISupportDict;
+
+    preserveDrawingBuffer: boolean;
+
+    /**
+     * Pass-thru setting for the canvas' context `alpha` property. This is typically
+     * not something you need to fiddle with. If you want transparency, use `backgroundAlpha`.
+     *
+     * @member {boolean}
+     * @deprecated since 6.2.0
+     */
+    useContextAlpha: boolean | 'notMultiplied';
 
     protected CONTEXT_UID: number;
     protected gl: IRenderingContext;
@@ -118,8 +135,11 @@ export class ContextSystem implements ISystem
         }
         else
         {
-            const alpha = this.renderer.background.backgroundAlpha < 1;
+            const alpha = this.renderer.background.alpha < 1;
             const premultipliedAlpha =  options.premultipliedAlpha ?? true;
+
+            this.preserveDrawingBuffer = options.preserveDrawingBuffer;
+            this.useContextAlpha = options.useContextAlpha;
 
             this.initFromOptions({
                 alpha,

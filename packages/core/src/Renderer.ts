@@ -377,7 +377,8 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
                 antialias: options.antialias,
                 context: options.context,
                 powerPreference: options.powerPreference,
-                premultipliedAlpha: !!options.useContextAlpha,
+                premultipliedAlpha: options.premultipliedAlpha
+                ?? (options.useContextAlpha && options.useContextAlpha !== 'notMultiplied'),
                 preserveDrawingBuffer: options.preserveDrawingBuffer,
             },
         };
@@ -496,11 +497,13 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
         return this.plugins.extract;
     }
 
+    /** Collection of plugins */
     get plugins(): IRendererPlugins
     {
         return this._plugin.plugins;
     }
 
+    /** The number of msaa samples of the canvas. */
     get multisample(): MSAA_QUALITY
     {
         return this._multisample.multisample;
@@ -520,9 +523,6 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
 
     /**
      * Same as view.height, actual number of pixels in the canvas by vertical.
-     *
-     * @member {number}
-     * @readonly
      * @default 600
      */
     get height(): number
@@ -530,39 +530,91 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
         return this._view.view.height;
     }
 
+    /** The resolution / device pixel ratio of the renderer. */
     get resolution(): number
     {
         return this._view.resolution;
     }
 
+    /** Whether CSS dimensions of canvas view should be resized to screen dimensions automatically. */
     get autoDensity(): boolean
     {
         return this._view.autoDensity;
     }
 
+    /** The canvas element that everything is drawn to.*/
     get view(): HTMLCanvasElement
     {
         return this._view.view;
     }
 
+    /**
+     * Measurements of the screen. (0, 0, screenWidth, screenHeight).
+     *
+     * Its safe to use as filterArea or hitArea for the whole stage.
+     *
+     * @member {PIXI.Rectangle}
+     */
     get screen(): Rectangle
     {
         return this._view.screen;
     }
 
+    /** the last object rendered by the renderer. Useful for other plugins like interaction managers */
     get lastObjectRendered(): IRenderableObject
     {
         return this._render.lastObjectRendered;
     }
 
+    /** Flag if we are rendering to the screen vs renderTexture */
     get renderingToScreen(): boolean
     {
         return this._render.renderingToScreen;
     }
 
+    /** When logging Pixi to the console, this is the name we will show */
     get rendererLogId(): string
     {
         return `WebGL ${this.context.webGLVersion}`;
+    }
+
+    /**
+     * this sets weather the screen is totally cleared between each frame withthe background color and alpha
+     */
+    get clearBeforeRender(): boolean
+    {
+        // eslint-disable-next-line max-len
+        deprecation('6.1.0', 'Renderer#useContextAlpha has been deprecated, please use Renderer#background.clearBeforeRender instead.');
+
+        return this.background.clearBeforeRender;
+    }
+
+    /**
+     * Pass-thru setting for the canvas' context `alpha` property. This is typically
+     * not something you need to fiddle with. If you want transparency, use `backgroundAlpha`.
+     *
+     * @member {boolean}
+     */
+    get useContextAlpha(): boolean | 'notMultiplied'
+    {
+        // eslint-disable-next-line max-len
+        deprecation('6.2.0', 'Renderer#useContextAlpha has been deprecated, please use Renderer#context.premultipliedAlpha instead.');
+
+        return this.context.useContextAlpha;
+    }
+
+    /**
+     * readonly drawing buffer preservation
+     * we can only know this if Pixi created the context
+     *
+     * @deprecated since 6.2.0
+     */
+    get preserveDrawingBuffer(): boolean
+    {
+        // eslint-disable-next-line max-len
+        deprecation('6.2.0', 'Renderer#preserveDrawingBuffer has been deprecated, we cannot truly know this unless pixi created the context');
+
+        return this.context.preserveDrawingBuffer;
     }
 
     /**

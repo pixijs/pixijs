@@ -85,6 +85,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
      */
      public readonly type: RENDERER_TYPE.CANVAS;
 
+     /** When logging Pixi to the console, this is the name we will show */
      public readonly rendererLogId = 'Canvas';
 
      // systems..
@@ -282,6 +283,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
          super.destroy();
      }
 
+     /** Collection of plugins */
      get plugins(): IRendererPlugins
      {
          return this._plugin.plugins;
@@ -324,34 +326,58 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
          return this._view.view.height;
      }
 
+     /** The resolution / device pixel ratio of the renderer. */
      get resolution(): number
      {
          return this._view.resolution;
      }
 
+     /** Whether CSS dimensions of canvas view should be resized to screen dimensions automatically. */
      get autoDensity(): boolean
      {
          return this._view.autoDensity;
      }
 
+     /** The canvas element that everything is drawn to.*/
      get view(): HTMLCanvasElement
      {
          return this._view.view;
      }
 
+     /**
+     * Measurements of the screen. (0, 0, screenWidth, screenHeight).
+     *
+     * Its safe to use as filterArea or hitArea for the whole stage.
+     *
+     * @member {PIXI.Rectangle}
+     */
      get screen(): Rectangle
      {
          return this._view.screen;
      }
 
+     /** the last object rendered by the renderer. Useful for other plugins like interaction managers */
      get lastObjectRendered(): IRenderableObject
      {
          return this._renderer.lastObjectRendered;
      }
 
+     /** Flag if we are rendering to the screen vs renderTexture */
      get renderingToScreen(): boolean
      {
          return this._renderer.renderingToScreen;
+     }
+
+     /**
+     * This sets if the CanvasRenderer will clear the canvas or not before the new render pass.
+     * If the scene is NOT transparent PixiJS will use a canvas sized fillRect operation every
+     * frame to set the canvas background color. If the scene is transparent PixiJS will use clearRect
+     * to clear the canvas every frame. Disable this by setting this to false. For example, if
+     * your game has a canvas filling background image you often don't need this set.
+     */
+     get clearBeforeRender(): boolean
+     {
+         return this.background.clearBeforeRender;
      }
 
     static __plugins: IRendererPlugins;
