@@ -41,7 +41,7 @@ export class CanvasRenderSystem implements ISystem
             return;
         }
 
-        const _context = renderer.context;
+        const _context = renderer.canvasContext;
 
         let renderTexture: BaseRenderTexture | RenderTexture;
         let clear: boolean;
@@ -96,7 +96,7 @@ export class CanvasRenderSystem implements ISystem
             }
 
             _context.activeContext = renderTexture._canvasRenderTarget.context as CrossPlatformCanvasRenderingContext2D;
-            renderer.context.activeResolution = renderTexture._canvasRenderTarget.resolution;
+            renderer.canvasContext.activeResolution = renderTexture._canvasRenderTarget.resolution;
         }
         else
         {

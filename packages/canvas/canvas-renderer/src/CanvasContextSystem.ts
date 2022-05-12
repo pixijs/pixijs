@@ -113,7 +113,7 @@ export class CanvasContextSystem implements ISystem
 
         let mat = transform;
         const proj = this._projTransform;
-        const contextResolution = renderer.context.activeResolution;
+        const contextResolution = renderer.canvasContext.activeResolution;
 
         localResolution = localResolution || contextResolution;
 

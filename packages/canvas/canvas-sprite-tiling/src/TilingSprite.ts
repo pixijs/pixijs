@@ -26,7 +26,7 @@ TilingSprite.prototype._renderCanvas = function _renderCanvas(renderer: CanvasRe
         return;
     }
 
-    const context = renderer.context.activeContext;
+    const context = renderer.canvasContext.activeContext;
     const transform = this.worldTransform;
     const baseTexture = texture.baseTexture;
     const source = baseTexture.getDrawableSource();
@@ -58,7 +58,7 @@ TilingSprite.prototype._renderCanvas = function _renderCanvas(renderer: CanvasRe
 
     // set context state..
     context.globalAlpha = this.worldAlpha;
-    renderer.context.setBlendMode(this.blendMode);
+    renderer.canvasContext.setBlendMode(this.blendMode);
 
     this.tileTransform.updateLocalTransform();
     const lt = this.tileTransform.localTransform;
@@ -131,7 +131,7 @@ TilingSprite.prototype._renderCanvas = function _renderCanvas(renderer: CanvasRe
     worldMatrix.prepend(patternMatrix);
     worldMatrix.prepend(transform);
 
-    renderer.context.setContextTransform(worldMatrix);
+    renderer.canvasContext.setContextTransform(worldMatrix);
 
     // Fill the pattern!
     context.fillStyle = this._canvasPattern;

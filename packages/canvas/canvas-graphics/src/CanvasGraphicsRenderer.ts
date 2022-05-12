@@ -82,12 +82,12 @@ export class CanvasGraphicsRenderer
     {
         const renderer = this.renderer;
 
-        const context = renderer.context.activeContext;
+        const context = renderer.canvasContext.activeContext;
         const worldAlpha = graphics.worldAlpha;
         const transform = graphics.transform.worldTransform;
 
-        renderer.context.setContextTransform(transform);
-        renderer.context.setBlendMode(graphics.blendMode);
+        renderer.canvasContext.setContextTransform(transform);
+        renderer.canvasContext.setBlendMode(graphics.blendMode);
 
         const graphicsData = graphics.geometry.graphicsData;
 
@@ -110,7 +110,7 @@ export class CanvasGraphicsRenderer
 
             if (data.matrix)
             {
-                renderer.context.setContextTransform(transform.copyTo(this._tempMatrix).append(data.matrix));
+                renderer.canvasContext.setContextTransform(transform.copyTo(this._tempMatrix).append(data.matrix));
             }
 
             if (fillStyle.visible)

@@ -35,7 +35,7 @@ export class CanvasMaskSystem implements ISystem
         const renderer = this.renderer;
         const maskObject = ((maskData as MaskData).maskObject || maskData) as Container;
 
-        renderer.context.activeContext.save();
+        renderer.canvasContext.activeContext.save();
 
         // TODO support sprite alpha masks??
         // lots of effort required. If demand is great enough..
@@ -45,7 +45,7 @@ export class CanvasMaskSystem implements ISystem
         this.recursiveFindShapes(maskObject, foundShapes);
         if (foundShapes.length > 0)
         {
-            const context = renderer.context.activeContext;
+            const context = renderer.canvasContext.activeContext;
 
             context.beginPath();
 
@@ -54,7 +54,7 @@ export class CanvasMaskSystem implements ISystem
                 const shape = foundShapes[i];
                 const transform = shape.transform.worldTransform;
 
-                this.renderer.context.setContextTransform(transform);
+                this.renderer.canvasContext.setContextTransform(transform);
 
                 this.renderGraphicsShape(shape);
             }
@@ -97,7 +97,7 @@ export class CanvasMaskSystem implements ISystem
     {
         graphics.finishPoly();
 
-        const context = this.renderer.context.activeContext;
+        const context = this.renderer.canvasContext.activeContext;
         const graphicsData = graphics.geometry.graphicsData;
         const len = graphicsData.length;
 
@@ -255,8 +255,8 @@ export class CanvasMaskSystem implements ISystem
      */
     popMask(renderer: CanvasRenderer): void
     {
-        renderer.context.activeContext.restore();
-        renderer.context.invalidateBlendMode();
+        renderer.canvasContext.activeContext.restore();
+        renderer.canvasContext.invalidateBlendMode();
     }
 
     /** Destroys this canvas mask manager. */

@@ -51,8 +51,8 @@ export class CanvasSpriteRenderer
     {
         const texture = sprite._texture;
         const renderer = this.renderer;
-        const context = renderer.context.activeContext;
-        const activeResolution = renderer.context.activeResolution;
+        const context = renderer.canvasContext.activeContext;
+        const activeResolution = renderer.canvasContext.activeResolution;
 
         if (!texture.valid)
         {
@@ -73,13 +73,13 @@ export class CanvasSpriteRenderer
             return;
         }
 
-        renderer.context.setBlendMode(sprite.blendMode, true);
+        renderer.canvasContext.setBlendMode(sprite.blendMode, true);
 
         context.globalAlpha = sprite.worldAlpha;
 
         // If smoothingEnabled is supported and we need to change the smoothing property for sprite texture
         const smoothingEnabled = texture.baseTexture.scaleMode === SCALE_MODES.LINEAR;
-        const smoothProperty = renderer.context.smoothProperty;
+        const smoothProperty = renderer.canvasContext.smoothProperty;
 
         if (smoothProperty
             && context[smoothProperty] !== smoothingEnabled)
@@ -111,7 +111,7 @@ export class CanvasSpriteRenderer
         dx -= width / 2;
         dy -= height / 2;
 
-        renderer.context.setContextTransform(wt, sprite.roundPixels, 1);
+        renderer.canvasContext.setContextTransform(wt, sprite.roundPixels, 1);
         // Allow for pixel rounding
         if (sprite.roundPixels)
         {
@@ -121,7 +121,7 @@ export class CanvasSpriteRenderer
 
         const resolution = texture.baseTexture.resolution;
 
-        const outerBlend = renderer.context._outerBlend;
+        const outerBlend = renderer.canvasContext._outerBlend;
 
         if (outerBlend)
         {
@@ -178,7 +178,7 @@ export class CanvasSpriteRenderer
             context.restore();
         }
         // just in case, leaking outer blend here will be catastrophic!
-        renderer.context.setBlendMode(BLEND_MODES.NORMAL);
+        renderer.canvasContext.setBlendMode(BLEND_MODES.NORMAL);
     }
 
     /** destroy the sprite object */

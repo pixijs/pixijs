@@ -33,9 +33,9 @@ export class CanvasMeshRenderer
         const renderer = this.renderer;
         const transform = mesh.worldTransform;
 
-        renderer.context.activeContext.globalAlpha = mesh.worldAlpha;
-        renderer.context.setBlendMode(mesh.blendMode);
-        renderer.context.setContextTransform(transform, mesh.roundPixels);
+        renderer.canvasContext.activeContext.globalAlpha = mesh.worldAlpha;
+        renderer.canvasContext.setBlendMode(mesh.blendMode);
+        renderer.canvasContext.setContextTransform(transform, mesh.roundPixels);
 
         if (mesh.drawMode !== DRAW_MODES.TRIANGLES)
         {
@@ -101,7 +101,7 @@ export class CanvasMeshRenderer
      */
     private _renderDrawTriangle(mesh: Mesh, index0: number, index1: number, index2: number): void
     {
-        const context = this.renderer.context.activeContext;
+        const context = this.renderer.canvasContext.activeContext;
         const vertices = mesh.geometry.buffers[0].data;
         const { uvs, texture } = mesh;
 
@@ -143,7 +143,7 @@ export class CanvasMeshRenderer
         let y1 = vertices[index1 + 1];
         let y2 = vertices[index2 + 1];
 
-        const screenPadding = mesh.canvasPadding / this.renderer.context.activeResolution;
+        const screenPadding = mesh.canvasPadding / this.renderer.canvasContext.activeResolution;
 
         if (screenPadding > 0)
         {
@@ -233,7 +233,7 @@ export class CanvasMeshRenderer
         );
 
         context.restore();
-        this.renderer.context.invalidateBlendMode();
+        this.renderer.canvasContext.invalidateBlendMode();
     }
 
     /**
@@ -244,7 +244,7 @@ export class CanvasMeshRenderer
      */
     renderMeshFlat(mesh: Mesh): void
     {
-        const context = this.renderer.context.activeContext;
+        const context = this.renderer.canvasContext.activeContext;
         const vertices = mesh.geometry.getBuffer('aVertexPosition').data;
         const length = vertices.length / 2;
 

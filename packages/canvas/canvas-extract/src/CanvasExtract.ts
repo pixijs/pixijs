@@ -96,7 +96,7 @@ export class CanvasExtract
         }
         else
         {
-            context = renderer.context.rootContext;
+            context = renderer.canvasContext.rootContext;
             resolution = renderer._view.resolution;
             frame = TEMP_RECT;
             frame.width = this.renderer.width;
@@ -151,7 +151,7 @@ export class CanvasExtract
         }
         else
         {
-            context = renderer.context.rootContext;
+            context = renderer.canvasContext.rootContext;
             resolution = renderer.resolution;
             frame = TEMP_RECT;
             frame.width = renderer.width;

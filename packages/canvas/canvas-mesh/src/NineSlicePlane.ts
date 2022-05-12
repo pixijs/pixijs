@@ -37,7 +37,7 @@ NineSlicePlane.prototype._canvasUvs = null;
  */
 NineSlicePlane.prototype._renderCanvas = function _renderCanvas(renderer: CanvasRenderer): void
 {
-    const context = renderer.context.activeContext;
+    const context = renderer.canvasContext.activeContext;
     const transform = this.worldTransform;
     const isTinted = this.tint !== 0xFFFFFF;
     const texture = this.texture;
@@ -89,8 +89,8 @@ NineSlicePlane.prototype._renderCanvas = function _renderCanvas(renderer: Canvas
     }
 
     context.globalAlpha = this.worldAlpha;
-    renderer.context.setBlendMode(this.blendMode);
-    renderer.context.setContextTransform(transform, this.roundPixels);
+    renderer.canvasContext.setBlendMode(this.blendMode);
+    renderer.canvasContext.setContextTransform(transform, this.roundPixels);
 
     for (let row = 0; row < 3; row++)
     {

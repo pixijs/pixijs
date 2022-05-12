@@ -117,7 +117,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
      * Canvas context system instance
      * @readonly
      */
-     public context: CanvasContextSystem;
+     public canvasContext: CanvasContextSystem;
 
      /**
      * Startup system instance
@@ -176,7 +176,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
 
                  // canvas systems..
                  mask: CanvasMaskSystem,
-                 context: CanvasContextSystem,
+                 canvasContext: CanvasContextSystem,
                  _renderer: CanvasRenderSystem,
              }
          };
@@ -264,7 +264,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
      */
      public clear(): void
      {
-         this.context.clear();
+         this.canvasContext.clear();
      }
 
      /**
@@ -387,7 +387,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
          // eslint-disable-next-line max-len
          deprecation('6.4.0', 'Renderer#preserveDrawingBuffer has been deprecated, we cannot truly know this unless pixi created the context');
 
-         return this.context.blendModes;
+         return this.canvasContext.blendModes;
      }
 
      get maskManager(): CanvasMaskSystem
@@ -399,32 +399,45 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
 
      get refresh(): boolean
      {
-         deprecation('6.4.0', 'renderer.refresh has been deprecated, please use renderer.context.refresh instead');
+         deprecation('6.4.0', 'renderer.refresh has been deprecated, please use renderer.canvasContext.refresh instead');
 
          return true;
      }
 
      /**
       * The root canvas 2d context that everything is drawn with.
-      * @deprecated since 6.4.0 Use `renderer.context.rootContext instead
+      * @deprecated since 6.4.0 Use `renderer.canvasContext.rootContext instead
       */
      get rootContext(): CanvasRenderingContext2D
      {
-         deprecation('6.4.0', 'renderer.rootContext has been deprecated, please use renderer.context.rootContext instead');
+         // eslint-disable-next-line max-len
+         deprecation('6.4.0', 'renderer.rootContext has been deprecated, please use renderer.canvasContext.rootContext instead');
 
-         return this.context.rootContext;
+         return this.canvasContext.rootContext;
+     }
+
+     /**
+      * The currently active canvas 2d context (could change with renderTextures)
+      * @deprecated since 6.4.0 Use `renderer.canvasContext.activeContext instead
+      */
+     get context(): CanvasRenderingContext2D
+     {
+         // eslint-disable-next-line max-len
+         deprecation('6.4.0', 'renderer.context has been deprecated, please use renderer.canvasContext.activeContext instead');
+
+         return this.canvasContext.activeContext;
      }
 
      /**
       * The canvas property used to set the canvas smoothing property.
-      * @deprecated since 6.4.0 Use `renderer.context.smoothProperty` instead.
+      * @deprecated since 6.4.0 Use `renderer.canvasContext.smoothProperty` instead.
       */
      get smoothProperty(): SmoothingEnabledProperties
      {
          // eslint-disable-next-line max-len
-         deprecation('6.4.0', 'renderer.smoothProperty has been deprecated, please use renderer.context.smoothProperty instead');
+         deprecation('6.4.0', 'renderer.smoothProperty has been deprecated, please use renderer.canvasContext.smoothProperty instead');
 
-         return this.context.smoothProperty;
+         return this.canvasContext.smoothProperty;
      }
 
      /**
@@ -434,22 +447,23 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
      * @param {boolean} [readyForOuterBlend=false] - Some blendModes are dangerous, they affect outer space of sprite.
      * Pass `true` only if you are ready to use them.
      *
-     * @deprecated since 6.4.0 Use `renderer.context.setBlendMode` instead.
+     * @deprecated since 6.4.0 Use `renderer.canvasContext.setBlendMode` instead.
      */
      setBlendMode(blendMode: BLEND_MODES, readyForOuterBlend?: boolean): void
      {
-         deprecation('6.4.0', 'renderer.setBlendMode has been deprecated, use renderer.context.setBlendMode instead');
-         this.context.setBlendMode(blendMode, readyForOuterBlend);
+         deprecation('6.4.0', 'renderer.setBlendMode has been deprecated, use renderer.canvasContext.setBlendMode instead');
+         this.canvasContext.setBlendMode(blendMode, readyForOuterBlend);
      }
 
      /**
      * Checks if blend mode has changed.
-     * @deprecated since 6.4.0 Use `renderer.context.invalidateBlendMode` instead.
+     * @deprecated since 6.4.0 Use `renderer.canvasContext.invalidateBlendMode` instead.
      */
      invalidateBlendMode(): void
      {
          // eslint-disable-next-line max-len
-         deprecation('6.4.0', 'renderer.invalidateBlendMode has been deprecated, use renderer.context.invalidateBlendMode instead');
+         deprecation('6.4.0', 'renderer.invalidateBlendMode has been deprecated, use renderer.canvasContext.invalidateBlendMode instead');
+         this.canvasContext.invalidateBlendMode();
      }
 
      /**
@@ -460,12 +474,13 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
      * @param roundPixels - whether to round (tx,ty) coords
      * @param localResolution - If specified, used instead of `renderer.resolution` for local scaling
      *
-     * @deprecated since 6.4.0 - Use `renderer.context.setContextTransform` instead.
+     * @deprecated since 6.4.0 - Use `renderer.canvasContext.setContextTransform` instead.
      */
      setContextTransform(transform: Matrix, roundPixels?: boolean, localResolution?: number): void
      {
-         deprecation('6.4.0', 'Renderer#setContextTrasform has been deprecated, ');
-         this.context.setContextTransform(transform, roundPixels, localResolution);
+         // eslint-disable-next-line max-len
+         deprecation('6.4.0', 'renderer.setContextTransform has been deprecated, use renderer.canvasContext.setContextTransform instead');
+         this.canvasContext.setContextTransform(transform, roundPixels, localResolution);
      }
 
     static __plugins: IRendererPlugins;
