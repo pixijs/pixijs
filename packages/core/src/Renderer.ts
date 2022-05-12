@@ -612,9 +612,60 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
     get preserveDrawingBuffer(): boolean
     {
         // eslint-disable-next-line max-len
-        deprecation('6.4.0', 'Renderer#preserveDrawingBuffer has been deprecated, we cannot truly know this unless pixi created the context');
+        deprecation('6.4.0', 'renderer.preserveDrawingBuffer has been deprecated, we cannot truly know this unless pixi created the context');
 
         return this.context.preserveDrawingBuffer;
+    }
+
+    /**
+     * The background color to fill if not transparent
+     *
+     * @member {number}
+     * @deprecated since 6.4.0
+     */
+    get backgroundColor(): number
+    {
+        // eslint-disable-next-line max-len
+        deprecation('6.4.0', 'renderer.backgroundColor has been deprecated, use renderer.background.color instead.');
+
+        return this.background.color;
+    }
+
+    set backgroundColor(value: number)
+    {
+        deprecation('6.4.0', 'renderer.backgroundColor has been deprecated, use renderer.background.color instead.');
+
+        this.background.color = value;
+    }
+
+    /**
+     * The background color alpha. Setting this to 0 will make the canvas transparent.
+     *
+     * @member {number}
+     * @deprecated since 6.4.0
+     */
+    get backgroundAlpha(): number
+    {
+        // eslint-disable-next-line max-len
+        deprecation('6.4.0', 'renderer.backgroundAlpha has been deprecated, use renderer.background.alpha instead.');
+
+        return this.background.color;
+    }
+
+    set backgroundAlpha(value: number)
+    {
+        // eslint-disable-next-line max-len
+        deprecation('6.4.0', 'renderer.backgroundAlpha has been deprecated, use renderer.background.alpha instead.');
+
+        this.background.alpha = value;
+    }
+
+    get powerPreference(): WebGLPowerPreference
+    {
+        // eslint-disable-next-line max-len
+        deprecation('6.4.0', 'renderer.powerPreference has been deprecated, we can only know this if pixi creates the context');
+
+        return this.context.powerPreference;
     }
 
     /**

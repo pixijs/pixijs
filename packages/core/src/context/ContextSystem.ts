@@ -50,6 +50,7 @@ export class ContextSystem implements ISystem
     readonly supports: ISupportDict;
 
     preserveDrawingBuffer: boolean;
+    powerPreference: WebGLPowerPreference;
 
     /**
      * Pass-thru setting for the canvas' context `alpha` property. This is typically
@@ -140,6 +141,7 @@ export class ContextSystem implements ISystem
 
             this.preserveDrawingBuffer = options.preserveDrawingBuffer;
             this.useContextAlpha = options.useContextAlpha;
+            this.powerPreference = options.powerPreference;
 
             this.initFromOptions({
                 alpha,

@@ -483,6 +483,49 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
          this.canvasContext.setContextTransform(transform, roundPixels, localResolution);
      }
 
+     /**
+     * The background color to fill if not transparent
+     *
+     * @member {number}
+     * @deprecated since 6.4.0
+     */
+     get backgroundColor(): number
+     {
+         // eslint-disable-next-line max-len
+         deprecation('6.4.0', 'renderer.backgroundColor has been deprecated, use renderer.background.color instead.');
+
+         return this.background.color;
+     }
+
+     set backgroundColor(value: number)
+     {
+         deprecation('6.4.0', 'renderer.backgroundColor has been deprecated, use renderer.background.color instead.');
+
+         this.background.color = value;
+     }
+
+     /**
+     * The background color alpha. Setting this to 0 will make the canvas transparent.
+     *
+     * @member {number}
+     * @deprecated since 6.4.0
+     */
+     get backgroundAlpha(): number
+     {
+         // eslint-disable-next-line max-len
+         deprecation('6.4.0', 'renderer.backgroundAlpha has been deprecated, use renderer.background.alpha instead.');
+
+         return this.background.color;
+     }
+
+     set backgroundAlpha(value: number)
+     {
+         // eslint-disable-next-line max-len
+         deprecation('6.4.0', 'renderer.backgroundAlpha has been deprecated, use renderer.background.alpha instead.');
+
+         this.background.alpha = value;
+     }
+
     static __plugins: IRendererPlugins;
 
     /**
