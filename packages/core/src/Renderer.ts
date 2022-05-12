@@ -306,6 +306,8 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      * @param {string} [options.powerPreference] - Parameter passed to WebGL context, set to "high-performance"
      *  for devices with dual graphics card.
      * @param {object} [options.context] - If WebGL context already exists, all parameters must be taken from it.
+     * @param {object} [options.blit] - if rendering to a renderTexture, set to true if you want to run blit after
+     * the render. defaults to false.
      */
     constructor(options? : IRendererOptions)
     {

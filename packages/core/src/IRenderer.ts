@@ -70,6 +70,7 @@ export interface IRendererOptions extends GlobalMixins.IRendererOptions {
 
 export interface IRendererRenderOptions {
     renderTexture?: RenderTexture;
+    blit?: boolean
     clear?: boolean;
     transform?: Matrix;
     skipUpdateTransform?: boolean;

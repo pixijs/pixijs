@@ -103,8 +103,10 @@ export class RendererSystem implements ISystem
 
         if (renderTexture)
         {
-            // @dev7355608 please confirm this is ok to be here?
-            renderer.framebuffer.blit();
+            if (options.blit)
+            {
+                renderer.framebuffer.blit();
+            }
 
             renderTexture.baseTexture.update();
         }
