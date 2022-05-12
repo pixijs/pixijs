@@ -11,7 +11,7 @@ describe('CanvasMaskSystem', function ()
     {
         const renderer = new CanvasRenderer({ width: 1, height: 1 });
         const shapeSpy = sinon.spy(renderer.mask, 'renderGraphicsShape');
-        const contextPath = sinon.spy(renderer.context.activeContext, 'closePath');
+        const contextPath = sinon.spy(renderer.canvasContext.activeContext, 'closePath');
         const cont = new Container();
 
         cont.mask = new Sprite();
@@ -43,7 +43,7 @@ describe('CanvasMaskSystem', function ()
     it('should set correct transform for graphics', function ()
     {
         const renderer = new CanvasRenderer({ width: 1, height: 1 });
-        const transformSpy = sinon.spy(renderer.context.activeContext, 'setTransform');
+        const transformSpy = sinon.spy(renderer.canvasContext.activeContext, 'setTransform');
         const cont = new Container();
         const graphics1 = new Graphics();
         const graphics2 = new Graphics();
