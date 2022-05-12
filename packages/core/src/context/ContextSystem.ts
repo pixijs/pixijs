@@ -56,7 +56,7 @@ export class ContextSystem implements ISystem
      * not something you need to fiddle with. If you want transparency, use `backgroundAlpha`.
      *
      * @member {boolean}
-     * @deprecated since 6.2.0
+     * @deprecated since 6.4.0
      */
     useContextAlpha: boolean | 'notMultiplied';
 

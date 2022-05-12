@@ -25,7 +25,7 @@ export interface CrossPlatformCanvasRenderingContext2D extends CanvasRenderingCo
  * Different browsers support different smoothing property names
  * this is the list of all platform props.
  */
-type SmoothingEnabledProperties =
+export type SmoothingEnabledProperties =
     'imageSmoothingEnabled' |
     'webkitImageSmoothingEnabled' |
     'mozImageSmoothingEnabled' |

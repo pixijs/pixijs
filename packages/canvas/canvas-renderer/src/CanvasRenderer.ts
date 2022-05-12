@@ -12,7 +12,7 @@ import {
     IGenerateTextureOptions
 } from '@pixi/core';
 import { CanvasMaskSystem } from './CanvasMaskSystem';
-import { RENDERER_TYPE, SCALE_MODES } from '@pixi/constants';
+import { BLEND_MODES, RENDERER_TYPE, SCALE_MODES } from '@pixi/constants';
 import { Matrix, Rectangle } from '@pixi/math';
 
 import type { DisplayObject } from '@pixi/display';
@@ -23,7 +23,7 @@ import type {
     IRendererRenderOptions
 } from '@pixi/core';
 
-import { CanvasContextSystem } from './CanvasContextSystem';
+import { CanvasContextSystem, SmoothingEnabledProperties } from './CanvasContextSystem';
 import { CanvasRenderSystem } from './CanvasRenderSystem';
 import { settings } from '@pixi/settings';
 import { deprecation } from '@pixi/utils';
@@ -380,7 +380,93 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
          return this.background.clearBeforeRender;
      }
 
-     // deprecated getters..
+     // deprecated zone..
+
+     get blendModes(): string[]
+     {
+         // eslint-disable-next-line max-len
+         deprecation('6.4.0', 'Renderer#preserveDrawingBuffer has been deprecated, we cannot truly know this unless pixi created the context');
+
+         return this.context.blendModes;
+     }
+
+     get maskManager(): CanvasMaskSystem
+     {
+         deprecation('6.4.0', 'renderer.maskManager has been deprecated, please use renderer.mask instead');
+
+         return this.mask;
+     }
+
+     get refresh(): boolean
+     {
+         deprecation('6.4.0', 'renderer.refresh has been deprecated, please use renderer.context.refresh instead');
+
+         return true;
+     }
+
+     /**
+      * The root canvas 2d context that everything is drawn with.
+      * @deprecated since 6.4.0 Use `renderer.context.rootContext instead
+      */
+     get rootContext(): CanvasRenderingContext2D
+     {
+         deprecation('6.4.0', 'renderer.rootContext has been deprecated, please use renderer.context.rootContext instead');
+
+         return this.context.rootContext;
+     }
+
+     /**
+      * The canvas property used to set the canvas smoothing property.
+      * @deprecated since 6.4.0 Use `renderer.context.smoothProperty` instead.
+      */
+     get smoothProperty(): SmoothingEnabledProperties
+     {
+         // eslint-disable-next-line max-len
+         deprecation('6.4.0', 'renderer.smoothProperty has been deprecated, please use renderer.context.smoothProperty instead');
+
+         return this.context.smoothProperty;
+     }
+
+     /**
+     * Sets the blend mode of the renderer.
+     *
+     * @param {number} blendMode - See {@link PIXI.BLEND_MODES} for valid values.
+     * @param {boolean} [readyForOuterBlend=false] - Some blendModes are dangerous, they affect outer space of sprite.
+     * Pass `true` only if you are ready to use them.
+     *
+     * @deprecated since 6.4.0 Use `renderer.context.setBlendMode` instead.
+     */
+     setBlendMode(blendMode: BLEND_MODES, readyForOuterBlend?: boolean): void
+     {
+         deprecation('6.4.0', 'renderer.setBlendMode has been deprecated, use renderer.context.setBlendMode instead');
+         this.context.setBlendMode(blendMode, readyForOuterBlend);
+     }
+
+     /**
+     * Checks if blend mode has changed.
+     * @deprecated since 6.4.0 Use `renderer.context.invalidateBlendMode` instead.
+     */
+     invalidateBlendMode(): void
+     {
+         // eslint-disable-next-line max-len
+         deprecation('6.4.0', 'renderer.invalidateBlendMode has been deprecated, use renderer.context.invalidateBlendMode instead');
+     }
+
+     /**
+     * Sets matrix of context.
+     * called only from render() methods
+     * takes care about resolution
+     * @param transform - world matrix of current element
+     * @param roundPixels - whether to round (tx,ty) coords
+     * @param localResolution - If specified, used instead of `renderer.resolution` for local scaling
+     *
+     * @deprecated since 6.4.0 - Use `renderer.context.setContextTransform` instead.
+     */
+     setContextTransform(transform: Matrix, roundPixels?: boolean, localResolution?: number): void
+     {
+         deprecation('6.4.0', 'Renderer#setContextTrasform has been deprecated, ');
+         this.context.setContextTransform(transform, roundPixels, localResolution);
+     }
 
     static __plugins: IRendererPlugins;
 

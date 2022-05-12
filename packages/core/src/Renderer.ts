@@ -598,7 +598,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
     get useContextAlpha(): boolean | 'notMultiplied'
     {
         // eslint-disable-next-line max-len
-        deprecation('6.2.0', 'Renderer#useContextAlpha has been deprecated, please use Renderer#context.premultipliedAlpha instead.');
+        deprecation('6.4.0', 'Renderer#useContextAlpha has been deprecated, please use Renderer#context.premultipliedAlpha instead.');
 
         return this.context.useContextAlpha;
     }
@@ -607,12 +607,12 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      * readonly drawing buffer preservation
      * we can only know this if Pixi created the context
      *
-     * @deprecated since 6.2.0
+     * @deprecated since 6.4.0
      */
     get preserveDrawingBuffer(): boolean
     {
         // eslint-disable-next-line max-len
-        deprecation('6.2.0', 'Renderer#preserveDrawingBuffer has been deprecated, we cannot truly know this unless pixi created the context');
+        deprecation('6.4.0', 'Renderer#preserveDrawingBuffer has been deprecated, we cannot truly know this unless pixi created the context');
 
         return this.context.preserveDrawingBuffer;
     }
