@@ -393,7 +393,7 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDis
 
     this.alpha = 1;
 
-    const cachedRenderTarget = renderer.context;
+    const cachedRenderTarget = renderer.canvasContext.activeContext;
     const cachedProjectionTransform = (renderer as any)._projTransform;
 
     bounds.ceil(settings.RESOLUTION);
@@ -422,7 +422,7 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDis
 
     renderer.render(this, { renderTexture, clear: true, transform: m, skipUpdateTransform: false });
     // now restore the state be setting the new properties
-    renderer.context = cachedRenderTarget;
+    renderer.canvasContext.activeContext = cachedRenderTarget;
     (renderer as any)._projTransform = cachedProjectionTransform;
 
     this.renderCanvas = this._renderCachedCanvas;
