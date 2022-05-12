@@ -380,6 +380,8 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
          return this.background.clearBeforeRender;
      }
 
+     // deprecated getters..
+
     static __plugins: IRendererPlugins;
 
     /**

@@ -4,12 +4,14 @@ import type { ViewOptions } from '../view/ViewSystem';
 import type { IRendererPlugins } from '../plugin/PluginSystem';
 import { IRenderer } from '../IRenderer';
 import { ISystem } from '../system/ISystem';
+import { ContextOptions } from '../systems';
 
 // TODO this can be infered by good use of generics in the future..
 export interface StartupOptions extends Record<string, unknown> {
     _plugin: IRendererPlugins,
     background: BackgroundOptions,
     _view: ViewOptions,
+    context?: ContextOptions
 }
 
 /**
