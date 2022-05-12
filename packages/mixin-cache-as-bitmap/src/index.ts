@@ -9,7 +9,9 @@ import { MSAA_QUALITY } from '@pixi/constants';
 // Don't import CanvasRender to remove dependency on this optional package
 // this type should satisify these requirements for cacheAsBitmap types
 interface CanvasRenderer extends IRenderer {
-    context: CanvasRenderingContext2D;
+    canvasContext: {
+        activeContext: CanvasRenderingContext2D;
+    }
 }
 
 const _tempMatrix = new Matrix();
