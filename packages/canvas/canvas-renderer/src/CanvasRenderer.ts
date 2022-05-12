@@ -187,8 +187,8 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
          const startupOptions: StartupOptions = {
              _plugin: CanvasRenderer.__plugins,
              background: {
-                 backgroundAlpha: options.backgroundAlpha,
-                 backgroundColor: options.backgroundColor,
+                 alpha: options.backgroundAlpha,
+                 color: options.backgroundColor,
                  clearBeforeRender: options.clearBeforeRender,
 
              },

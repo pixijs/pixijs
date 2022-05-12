@@ -3,9 +3,9 @@ import { ISystem } from '../system/ISystem';
 
 export interface BackgroundOptions {
     /** the main canvas background alpha. From 0 (fully transparent) to 1 (fully opaque). */
-    backgroundAlpha: number,
+    alpha: number,
     /** the main canvas background color. */
-    backgroundColor: number,
+    color: number,
     /** sets if the renderer will clear the canvas or not before the new render pass. */
     clearBeforeRender: boolean
     /** @deprecated The method should not be used */
@@ -62,12 +62,12 @@ export class BackgroundSystem implements ISystem
             deprecation('6.0.0', 'Option transparent is deprecated, please use backgroundAlpha instead.');
             // #endif
 
-            options.backgroundAlpha = options.transparent ? 0 : 1;
+            options.alpha = options.transparent ? 0 : 1;
         }
 
         this.clearBeforeRender = options.clearBeforeRender;
-        this.color = options.backgroundColor || this._backgroundColor; // run bg color setter
-        this.alpha = options.backgroundAlpha;
+        this.color = options.color || this._backgroundColor; // run bg color setter
+        this.alpha = options.alpha;
     }
 
     /**

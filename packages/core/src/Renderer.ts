@@ -361,8 +361,8 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
         const startupOptions: StartupOptions = {
             _plugin: Renderer.__plugins,
             background: {
-                backgroundAlpha: options.backgroundAlpha,
-                backgroundColor: options.backgroundColor,
+                alpha: options.backgroundAlpha,
+                color: options.backgroundColor,
                 clearBeforeRender: options.clearBeforeRender,
                 transparent: options.transparent,
             },
