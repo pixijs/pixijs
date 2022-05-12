@@ -133,9 +133,7 @@ export class SystemManager<R=IRenderer> extends EventEmitter
         });
     }
 
-    /**
-     * destroy the all runners and systems. Its apps job to
-     */
+    /** destroy the all runners and systems. Its apps job to */
     destroy(): void
     {
         Object.values(this.runners).forEach((runner) =>
