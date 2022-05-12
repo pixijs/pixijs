@@ -346,10 +346,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
 
      /**
      * Measurements of the screen. (0, 0, screenWidth, screenHeight).
-     *
      * Its safe to use as filterArea or hitArea for the whole stage.
-     *
-     * @member {PIXI.Rectangle}
      */
      get screen(): Rectangle
      {
@@ -382,14 +379,22 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
 
      // deprecated zone..
 
+     /**
+      * Tracks the blend modes useful for this renderer.
+      * @deprecated since 6.4.0 use `renderer.canvasContext.blendModes` instead
+      * */
      get blendModes(): string[]
      {
          // eslint-disable-next-line max-len
-         deprecation('6.4.0', 'Renderer#preserveDrawingBuffer has been deprecated, we cannot truly know this unless pixi created the context');
+         deprecation('6.4.0', 'renderer.blendModes has been deprecated, please use renderer.canvasContext.blendModes instead');
 
          return this.canvasContext.blendModes;
      }
 
+     /**
+      * system that manages canvas masks
+      * @deprecated since 6.4.0 use `renderer.canvasContext.mask`
+      */
      get maskManager(): CanvasMaskSystem
      {
          deprecation('6.4.0', 'renderer.maskManager has been deprecated, please use renderer.mask instead');
@@ -397,9 +402,13 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
          return this.mask;
      }
 
+     /**
+      * Boolean flag controlling canvas refresh.
+      * @deprecated since 6.4.0
+      */
      get refresh(): boolean
      {
-         deprecation('6.4.0', 'renderer.refresh has been deprecated, please use renderer.canvasContext.refresh instead');
+         deprecation('6.4.0', 'renderer.refresh has been deprecated');
 
          return true;
      }
@@ -524,6 +533,28 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
          deprecation('6.4.0', 'renderer.backgroundAlpha has been deprecated, use renderer.background.alpha instead.');
 
          this.background.alpha = value;
+     }
+
+     /**
+      * old abstract function not used by canvas renderer
+      * @deprecated since 6.4.0
+      */
+     get preserveDrawingBuffer(): boolean
+     {
+         deprecation('6.4.0', 'renderer.preserveDrawingBuffer has been deprecated');
+
+         return false;
+     }
+
+     /**
+      * old abstract function not used by canvas renderer
+      * @deprecated since 6.4.0
+      */
+     get useContextAlpha(): boolean
+     {
+         deprecation('6.4.0', 'renderer.useContextAlpha has been deprecated');
+
+         return false;
      }
 
     static __plugins: IRendererPlugins;
