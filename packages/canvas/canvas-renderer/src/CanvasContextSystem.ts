@@ -69,7 +69,7 @@ export class CanvasContextSystem implements ISystem
     /** initiates the system */
     init(): void
     {
-        const alpha = this.renderer.background.backgroundAlpha < 1;
+        const alpha = this.renderer.background.alpha < 1;
 
         this.rootContext = this.renderer.view.getContext('2d', { alpha }) as
         CrossPlatformCanvasRenderingContext2D;
@@ -109,11 +109,9 @@ export class CanvasContextSystem implements ISystem
      */
     setContextTransform(transform: Matrix, roundPixels?: boolean, localResolution?: number): void
     {
-        const renderer = this.renderer;
-
         let mat = transform;
         const proj = this._projTransform;
-        const contextResolution = renderer.canvasContext.activeResolution;
+        const contextResolution = this.activeResolution;
 
         localResolution = localResolution || contextResolution;
 
@@ -158,13 +156,13 @@ export class CanvasContextSystem implements ISystem
     {
         const { activeContext: context, renderer } = this;
 
-        clearColor = clearColor ?? this.renderer.background.backgroundColorString;
+        clearColor = clearColor ?? this.renderer.background.colorString;
 
         context.clearRect(0, 0, renderer.width, renderer.height);
 
         if (clearColor)
         {
-            context.globalAlpha = alpha ?? this.renderer.background.backgroundAlpha;
+            context.globalAlpha = alpha ?? this.renderer.background.alpha;
             context.fillStyle = clearColor;
             context.fillRect(0, 0, renderer.width, renderer.height);
             context.globalAlpha = 1;

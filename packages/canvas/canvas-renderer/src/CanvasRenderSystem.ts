@@ -137,10 +137,10 @@ export class CanvasRenderSystem implements ISystem
 
                 const background = renderer.background;
 
-                if (background.backgroundAlpha > 0)
+                if (background.alpha > 0)
                 {
-                    context2D.globalAlpha = background.backgroundAlpha;
-                    context2D.fillStyle = background.backgroundColorString;
+                    context2D.globalAlpha = background.alpha;
+                    context2D.fillStyle = background.colorString;
                     context2D.fillRect(0, 0, renderer.width, renderer.height);
                     context2D.globalAlpha = 1;
                 }

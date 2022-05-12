@@ -197,7 +197,7 @@ export class RenderTextureSystem implements ISystem
         }
         else
         {
-            clearColor = clearColor || this.renderer.background.backgroundColorRgba;
+            clearColor = clearColor || this.renderer.background.colorRgba;
         }
 
         const destinationFrame = this.destinationFrame;
