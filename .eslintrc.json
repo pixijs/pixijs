@@ -2,6 +2,67 @@
   "extends": [
     "@pixi/eslint-config"
   ],
+  "parserOptions": {
+    "project": ["./tsconfig.eslint.json"]
+  },
+  "overrides": [
+    {
+      "files": ["*.ts"],
+      "extends": ["plugin:@typescript-eslint/recommended"],
+      "rules": {
+        "@typescript-eslint/no-explicit-any": 0,
+        "@typescript-eslint/interface-name-prefix": 0,
+
+        "@typescript-eslint/no-unused-expressions": 1,
+        "no-unused-expressions": "off",
+
+        "@typescript-eslint/no-use-before-define": [1, "nofunc"],
+        "no-use-before-define": "off",
+
+        "@typescript-eslint/semi": 1,
+        "semi": "off",
+
+        "@typescript-eslint/dot-notation": 1,
+        "dot-notation": "off",
+
+        "@typescript-eslint/no-unused-vars": [1, { "argsIgnorePattern": "^_" }],
+        "no-unused-vars": "off",
+
+        "@typescript-eslint/comma-dangle": [1, "always-multiline"],
+        "comma-dangle": "off",
+
+        "@typescript-eslint/space-before-function-paren": [1, { "anonymous": "always", "named": "never" }],
+        "space-before-function-paren": "off",
+
+        "@typescript-eslint/quotes": [1, "single", { "allowTemplateLiterals": true }],
+        "quotes": "off",
+
+        "@typescript-eslint/brace-style": [1, "allman", { "allowSingleLine": true }],
+        "brace-style": "off",
+
+        "@typescript-eslint/comma-spacing": [1, { "before": false, "after": true }],
+        "comma-spacing": "off",
+
+        "@typescript-eslint/indent": [1, 4, { "SwitchCase": 1, "VariableDeclarator": { "var": 1, "let": 1, "const": 1 } }],
+        "indent": "off",
+
+        "@typescript-eslint/no-array-constructor": 1,
+        "no-array-constructor": "off",
+
+        "@typescript-eslint/no-empty-function": 1,
+        "no-empty-function": "off",
+
+        "@typescript-eslint/no-extra-semi": 1,
+        "no-extra-semi": "off",
+
+        "@typescript-eslint/no-duplicate-imports": 1,
+        "no-duplicate-imports": "off",
+
+        "@typescript-eslint/space-infix-ops": [1, { "int32Hint": false }],
+        "space-infix-ops": "off"
+      }
+    }
+  ],
   "rules": {
     "@typescript-eslint/no-parameter-properties": 1,
     "@typescript-eslint/type-annotation-spacing": 1

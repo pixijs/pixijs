@@ -10,7 +10,8 @@ import type { IDestroyOptions } from '@pixi/display';
  * @memberof PIXI
  * @see {@link PIXI.Application.registerPlugin}
  */
-export interface IApplicationPlugin {
+export interface IApplicationPlugin
+{
     /**
      * Called when Application is constructed, scoped to Application instance.
      * Passes in `options` as the only argument, which are Application constructor options.
