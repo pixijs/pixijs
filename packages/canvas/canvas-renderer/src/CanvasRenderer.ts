@@ -385,8 +385,10 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
       * */
      get blendModes(): string[]
      {
+         // #if _DEBUG
          // eslint-disable-next-line max-len
          deprecation('6.4.0', 'renderer.blendModes has been deprecated, please use renderer.canvasContext.blendModes instead');
+         // #endif
 
          return this.canvasContext.blendModes;
      }
@@ -408,7 +410,9 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
       */
      get refresh(): boolean
      {
+         // #if _DEBUG
          deprecation('6.4.0', 'renderer.refresh has been deprecated');
+         // #endif
 
          return true;
      }
@@ -419,8 +423,10 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
       */
      get rootContext(): CanvasRenderingContext2D
      {
+         // #if _DEBUG
          // eslint-disable-next-line max-len
          deprecation('6.4.0', 'renderer.rootContext has been deprecated, please use renderer.canvasContext.rootContext instead');
+         // #endif
 
          return this.canvasContext.rootContext;
      }
@@ -431,8 +437,10 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
       */
      get context(): CanvasRenderingContext2D
      {
+         // #if _DEBUG
          // eslint-disable-next-line max-len
          deprecation('6.4.0', 'renderer.context has been deprecated, please use renderer.canvasContext.activeContext instead');
+         // #endif
 
          return this.canvasContext.activeContext;
      }
@@ -443,8 +451,10 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
       */
      get smoothProperty(): SmoothingEnabledProperties
      {
+         // #if _DEBUG
          // eslint-disable-next-line max-len
          deprecation('6.4.0', 'renderer.smoothProperty has been deprecated, please use renderer.canvasContext.smoothProperty instead');
+         // #endif
 
          return this.canvasContext.smoothProperty;
      }
@@ -460,7 +470,10 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
      */
      setBlendMode(blendMode: BLEND_MODES, readyForOuterBlend?: boolean): void
      {
+         // #if _DEBUG
          deprecation('6.4.0', 'renderer.setBlendMode has been deprecated, use renderer.canvasContext.setBlendMode instead');
+         // #endif
+
          this.canvasContext.setBlendMode(blendMode, readyForOuterBlend);
      }
 
@@ -470,8 +483,11 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
      */
      invalidateBlendMode(): void
      {
+         // #if _DEBUG
          // eslint-disable-next-line max-len
          deprecation('6.4.0', 'renderer.invalidateBlendMode has been deprecated, use renderer.canvasContext.invalidateBlendMode instead');
+         // #endif
+
          this.canvasContext.invalidateBlendMode();
      }
 
@@ -487,8 +503,11 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
      */
      setContextTransform(transform: Matrix, roundPixels?: boolean, localResolution?: number): void
      {
+         // #if _DEBUG
          // eslint-disable-next-line max-len
          deprecation('6.4.0', 'renderer.setContextTransform has been deprecated, use renderer.canvasContext.setContextTransform instead');
+         // #endif
+
          this.canvasContext.setContextTransform(transform, roundPixels, localResolution);
      }
 
@@ -500,15 +519,19 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
      */
      get backgroundColor(): number
      {
+         // #if _DEBUG
          // eslint-disable-next-line max-len
          deprecation('6.4.0', 'renderer.backgroundColor has been deprecated, use renderer.background.color instead.');
+         // #endif
 
          return this.background.color;
      }
 
      set backgroundColor(value: number)
      {
+         // #if _DEBUG
          deprecation('6.4.0', 'renderer.backgroundColor has been deprecated, use renderer.background.color instead.');
+         // #endif
 
          this.background.color = value;
      }
@@ -521,16 +544,20 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
      */
      get backgroundAlpha(): number
      {
+         // #if _DEBUG
          // eslint-disable-next-line max-len
          deprecation('6.4.0', 'renderer.backgroundAlpha has been deprecated, use renderer.background.alpha instead.');
+         // #endif
 
          return this.background.color;
      }
 
      set backgroundAlpha(value: number)
      {
+         // #if _DEBUG
          // eslint-disable-next-line max-len
          deprecation('6.4.0', 'renderer.backgroundAlpha has been deprecated, use renderer.background.alpha instead.');
+         // #endif
 
          this.background.alpha = value;
      }
@@ -541,7 +568,9 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
       */
      get preserveDrawingBuffer(): boolean
      {
+         // #if _DEBUG
          deprecation('6.4.0', 'renderer.preserveDrawingBuffer has been deprecated');
+         // #endif
 
          return false;
      }
@@ -552,7 +581,9 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
       */
      get useContextAlpha(): boolean
      {
+         // #if _DEBUG
          deprecation('6.4.0', 'renderer.useContextAlpha has been deprecated');
+         // #endif
 
          return false;
      }

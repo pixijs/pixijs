@@ -585,8 +585,10 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      */
     get clearBeforeRender(): boolean
     {
+        // #if _DEBUG
         // eslint-disable-next-line max-len
-        deprecation('6.1.0', 'Renderer#useContextAlpha has been deprecated, please use Renderer#background.clearBeforeRender instead.');
+        deprecation('6.4.0', 'renderer.useContextAlpha has been deprecated, please use renderer.background.clearBeforeRender instead.');
+        // #endif
 
         return this.background.clearBeforeRender;
     }
@@ -599,8 +601,10 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      */
     get useContextAlpha(): boolean | 'notMultiplied'
     {
+        // #if _DEBUG
         // eslint-disable-next-line max-len
         deprecation('6.4.0', 'Renderer#useContextAlpha has been deprecated, please use Renderer#context.premultipliedAlpha instead.');
+        // #endif
 
         return this.context.useContextAlpha;
     }
@@ -613,8 +617,10 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      */
     get preserveDrawingBuffer(): boolean
     {
+        // #if _DEBUG
         // eslint-disable-next-line max-len
         deprecation('6.4.0', 'renderer.preserveDrawingBuffer has been deprecated, we cannot truly know this unless pixi created the context');
+        // #endif
 
         return this.context.preserveDrawingBuffer;
     }
@@ -627,15 +633,19 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      */
     get backgroundColor(): number
     {
+        // #if _DEBUG
         // eslint-disable-next-line max-len
         deprecation('6.4.0', 'renderer.backgroundColor has been deprecated, use renderer.background.color instead.');
+        // #endif
 
         return this.background.color;
     }
 
     set backgroundColor(value: number)
     {
+        // #if _DEBUG
         deprecation('6.4.0', 'renderer.backgroundColor has been deprecated, use renderer.background.color instead.');
+        // #endif
 
         this.background.color = value;
     }
@@ -648,24 +658,30 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      */
     get backgroundAlpha(): number
     {
+        // #if _DEBUG
         // eslint-disable-next-line max-len
         deprecation('6.4.0', 'renderer.backgroundAlpha has been deprecated, use renderer.background.alpha instead.');
+        // #endif
 
         return this.background.color;
     }
 
     set backgroundAlpha(value: number)
     {
+        // #if _DEBUG
         // eslint-disable-next-line max-len
         deprecation('6.4.0', 'renderer.backgroundAlpha has been deprecated, use renderer.background.alpha instead.');
+        // #endif
 
         this.background.alpha = value;
     }
 
     get powerPreference(): WebGLPowerPreference
     {
+        // #if _DEBUG
         // eslint-disable-next-line max-len
         deprecation('6.4.0', 'renderer.powerPreference has been deprecated, we can only know this if pixi creates the context');
+        // #endif
 
         return this.context.powerPreference;
     }
