@@ -7,7 +7,6 @@ import { ITranscodeResponse, TranscoderWorkerWrapper } from './TranscoderWorkerW
  *
  * To enable asynchronous transcoding, you need to provide the URL to the basis_universal transcoding
  * library.
- *
  * @memberof PIXI.BasisLoader
  */
 export class TranscoderWorker
@@ -81,7 +80,7 @@ export class TranscoderWorker
         });
     }
 
-    /** @returns a promise that is resolved when the web-worker is initialized */
+    /** @return a promise that is resolved when the web-worker is initialized */
     initAsync(): Promise<void>
     {
         return this.initPromise;
@@ -92,7 +91,7 @@ export class TranscoderWorker
      * @param basisData - *.basis file contents
      * @param rgbaFormat - transcoding format for RGBA files
      * @param rgbFormat - transcoding format for RGB files
-     * @returns a promise that is resolved with the transcoding response of the web-worker
+     * @return a promise that is resolved with the transcoding response of the web-worker
      */
     async transcodeAsync(
         basisData: Uint8Array,
@@ -124,7 +123,6 @@ export class TranscoderWorker
 
     /**
      * Handles responses from the web-worker
-     *
      * @param e - a message event containing the transcoded response
      */
     protected onMessage = (e: MessageEvent): void =>
@@ -162,10 +160,9 @@ export class TranscoderWorker
 
     /**
      * Loads the transcoder source code
-     *
      * @param jsURL - URL to the javascript basis transcoder
      * @param wasmURL - URL to the wasm basis transcoder
-     * @returns A promise that resolves when both the js and wasm transcoders have been loaded.
+     * @return A promise that resolves when both the js and wasm transcoders have been loaded.
      */
     static loadTranscoder(jsURL: string, wasmURL: string): Promise<[void, void]>
     {
@@ -186,7 +183,6 @@ export class TranscoderWorker
 
     /**
      * Set the transcoder source code directly
-     *
      * @param jsSource - source for the javascript basis transcoder
      * @param wasmSource - source for the wasm basis transcoder
      */
