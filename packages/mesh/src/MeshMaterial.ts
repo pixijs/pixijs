@@ -7,7 +7,8 @@ import vertex from './shader/mesh.vert';
 import type { Texture } from '@pixi/core';
 import type { Dict } from '@pixi/utils';
 
-export interface IMeshMaterialOptions {
+export interface IMeshMaterialOptions
+{
     alpha?: number;
     tint?: number;
     pluginName?: string;

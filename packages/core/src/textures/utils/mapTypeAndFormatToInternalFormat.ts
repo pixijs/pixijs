@@ -10,7 +10,7 @@ import { FORMATS, TYPES } from '@pixi/constants';
  * @return {{ [type: number]: { [format: number]: number } }} Lookup table.
  */
 export function mapTypeAndFormatToInternalFormat(gl: WebGLRenderingContextBase):
-    { [type: number]: { [format: number]: number } }
+{ [type: number]: { [format: number]: number } }
 {
     let table;
 

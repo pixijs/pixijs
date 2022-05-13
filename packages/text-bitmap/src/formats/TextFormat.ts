@@ -4,7 +4,8 @@ import { BitmapFontData } from '../BitmapFontData';
  * Internal data format used to convert to BitmapFontData.
  * @private
  */
-interface IBitmapFontRawData {
+interface IBitmapFontRawData
+{
     info: {
         face: string;
         size: string;

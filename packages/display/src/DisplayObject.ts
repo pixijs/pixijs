@@ -7,7 +7,8 @@ import type { Filter, MaskData, Renderer } from '@pixi/core';
 import type { IPointData, ObservablePoint } from '@pixi/math';
 import type { Dict } from '@pixi/utils';
 
-export interface IDestroyOptions {
+export interface IDestroyOptions
+{
     children?: boolean;
     texture?: boolean;
     baseTexture?: boolean;
@@ -288,7 +289,7 @@ export abstract class DisplayObject extends EventEmitter
      *
      * @protected
      */
-    public _mask: Container|MaskData;
+    public _mask: Container | MaskData;
 
     /** The bounds object, this is used to calculate and store the bounds of the displayObject. */
     public _bounds: Bounds;
@@ -709,7 +710,7 @@ export abstract class DisplayObject extends EventEmitter
      * all current event listeners and internal references. Do not use a DisplayObject
      * after calling `destroy()`.
      */
-    destroy(_options?: IDestroyOptions|boolean): void
+    destroy(_options?: IDestroyOptions | boolean): void
     {
         if (this.parent)
         {
@@ -984,12 +985,12 @@ export abstract class DisplayObject extends EventEmitter
      *
      * @todo At the moment, PIXI.CanvasRenderer doesn't support PIXI.Sprite as mask.
      */
-    get mask(): Container|MaskData|null
+    get mask(): Container | MaskData | null
     {
         return this._mask;
     }
 
-    set mask(value: Container|MaskData|null)
+    set mask(value: Container | MaskData | null)
     {
         if (this._mask === value)
         {

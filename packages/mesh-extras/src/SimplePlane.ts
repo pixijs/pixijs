@@ -99,7 +99,7 @@ export class SimplePlane extends Mesh
         super._render(renderer);
     }
 
-    public destroy(options?: IDestroyOptions|boolean): void
+    public destroy(options?: IDestroyOptions | boolean): void
     {
         this.shader.texture.off('update', this.textureUpdated, this);
         super.destroy(options);

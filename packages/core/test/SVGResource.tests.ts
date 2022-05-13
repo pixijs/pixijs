@@ -180,7 +180,7 @@ describe('SVGResource', function ()
 
         it('should return a size object from an SVG string with inverted quotes', function ()
         {
-            const svgSize = SVGResource.getSize("<svg height='32' width='64'></svg>"); // eslint-disable-line quotes
+            const svgSize = SVGResource.getSize('<svg height=\'32\' width=\'64\'></svg>'); // eslint-disable-line quotes
 
             expect(svgSize)
                 .to.be.an('object');

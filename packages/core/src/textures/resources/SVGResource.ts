@@ -10,7 +10,7 @@ export interface ISVGResourceOptions
     width?: number;
     height?: number;
     autoLoad?: boolean;
-    crossorigin?: boolean|string;
+    crossorigin?: boolean | string;
 }
 /**
  * Resource type for SVG elements and graphics.
@@ -38,7 +38,7 @@ export class SVGResource extends BaseImageResource
     private _load: Promise<SVGResource>;
 
     /** Cross origin value to use */
-    private _crossorigin?: boolean|string;
+    private _crossorigin?: boolean | string;
 
     /**
      * @param sourceBase64 - Base64 encoded SVG element or URL for SVG file.

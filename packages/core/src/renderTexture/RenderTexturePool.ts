@@ -28,7 +28,7 @@ export class RenderTexturePool
      * @default false
      */
     public enableFullScreen: boolean;
-    texturePool: {[x in string|number]: RenderTexture[]};
+    texturePool: {[x in string | number]: RenderTexture[]};
     private _pixelsWidth: number;
     private _pixelsHeight: number;
 

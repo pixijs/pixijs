@@ -6,7 +6,8 @@ import type { Renderer } from '../Renderer';
 import type { Texture } from './Texture';
 import type { RenderTexture } from '../renderTexture/RenderTexture';
 
-export interface IUnloadableTexture {
+export interface IUnloadableTexture
+{
     _texture: Texture | RenderTexture;
     children: IUnloadableTexture[];
 }

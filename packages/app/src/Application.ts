@@ -63,7 +63,7 @@ export class Application
      * WebGL renderer if available, otherwise CanvasRenderer.
      * @member {PIXI.Renderer|PIXI.CanvasRenderer}
      */
-    public renderer: Renderer|AbstractRenderer;
+    public renderer: Renderer | AbstractRenderer;
 
     /**
      * @param {object} [options] - The optional renderer parameters.
@@ -164,7 +164,7 @@ export class Application
      * @param {boolean} [stageOptions.baseTexture=false] - Only used for child Sprites if stageOptions.children is set
      *  to true. Should it destroy the base texture of the child sprite
      */
-    public destroy(removeView?: boolean, stageOptions?: IDestroyOptions|boolean): void
+    public destroy(removeView?: boolean, stageOptions?: IDestroyOptions | boolean): void
     {
         // Destroy plugins in the opposite order
         // which they were constructed

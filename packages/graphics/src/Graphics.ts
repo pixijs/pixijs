@@ -26,7 +26,8 @@ import { LINE_JOIN, LINE_CAP } from './const';
 /**
  * Batch element computed from Graphics geometry
  */
-export interface IGraphicsBatchElement {
+export interface IGraphicsBatchElement
+{
     vertexData: Float32Array;
     blendMode: BLEND_MODES;
     indices: Uint16Array | Uint32Array;
@@ -38,14 +39,16 @@ export interface IGraphicsBatchElement {
     _texture: Texture;
 }
 
-export interface IFillStyleOptions {
+export interface IFillStyleOptions
+{
     color?: number;
     alpha?: number;
     texture?: Texture;
     matrix?: Matrix;
 }
 
-export interface ILineStyleOptions extends IFillStyleOptions {
+export interface ILineStyleOptions extends IFillStyleOptions
+{
     width?: number;
     alignment?: number;
     native?: boolean;
@@ -742,8 +745,8 @@ export class Graphics extends Container
         return this.drawShape(new Ellipse(x, y, width, height));
     }
 
-    public drawPolygon(...path: Array<number> | Array<Point>): this
-    public drawPolygon(path: Array<number> | Array<Point> | Polygon): this
+    public drawPolygon(...path: Array<number> | Array<Point>): this;
+    public drawPolygon(path: Array<number> | Array<Point> | Polygon): this;
 
     /**
      * Draws a polygon using the given path.
@@ -1223,7 +1226,7 @@ export class Graphics extends Container
      * @param {boolean} [options.baseTexture=false] - Only used for child Sprites if options.children is set to true
      *  Should it destroy the base texture of the child sprite
      */
-    public destroy(options?: IDestroyOptions|boolean): void
+    public destroy(options?: IDestroyOptions | boolean): void
     {
         this._geometry.refCount--;
         if (this._geometry.refCount === 0)

@@ -92,7 +92,8 @@ const GLSL_TO_STD40_SIZE: Dict<number> = {
     mat4:     16 * 4,
 };
 
-interface UBOElement {
+interface UBOElement
+{
     data: IUniformData
     offset: number,
     dataLen: number,

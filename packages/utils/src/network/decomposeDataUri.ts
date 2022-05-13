@@ -1,6 +1,7 @@
 import { DATA_URI } from '../const';
 
-export interface DecomposedDataUri {
+export interface DecomposedDataUri
+{
     mediaType: string;
     subType: string;
     charset: string;

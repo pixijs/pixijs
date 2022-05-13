@@ -10,7 +10,8 @@
  * @property {number} WEBGL - Version 1 of WebGL
  * @property {number} WEBGL2 - Version 2 of WebGL
  */
-export enum ENV {
+export enum ENV
+    {
     WEBGL_LEGACY,
     WEBGL,
     WEBGL2,
@@ -27,7 +28,8 @@ export enum ENV {
  * @property {number} WEBGL - WebGL render type.
  * @property {number} CANVAS - Canvas render type.
  */
-export enum RENDERER_TYPE {
+export enum RENDERER_TYPE
+    {
     UNKNOWN,
     WEBGL,
     CANVAS,
@@ -44,7 +46,8 @@ export enum RENDERER_TYPE {
  * @property {number} DEPTH - Indicates the depth buffer.
  * @property {number} STENCIL - Indicates the stencil buffer.
  */
-export enum BUFFER_BITS {
+export enum BUFFER_BITS
+    {
     COLOR = 0x00004000,
     DEPTH = 0x00000100,
     STENCIL = 0x00000400
@@ -92,7 +95,8 @@ export enum BUFFER_BITS {
  * @property {number} ERASE
  * @property {number} XOR
  */
-export enum BLEND_MODES {
+export enum BLEND_MODES
+    {
     NORMAL = 0,
     ADD = 1,
     MULTIPLY = 2,
@@ -144,7 +148,8 @@ export enum BLEND_MODES {
  * @property {number} TRIANGLE_STRIP
  * @property {number} TRIANGLE_FAN
  */
-export enum DRAW_MODES {
+export enum DRAW_MODES
+    {
     POINTS,
     LINES,
     LINE_LOOP,
@@ -175,7 +180,8 @@ export enum DRAW_MODES {
  * @property {number} DEPTH_COMPONENT=6402
  * @property {number} DEPTH_STENCIL=34041
  */
-export enum FORMATS {
+export enum FORMATS
+    {
     RGBA = 6408,
     RGB = 6407,
     RG = 33319,
@@ -208,7 +214,8 @@ export enum FORMATS {
  * @property {number} TEXTURE_CUBE_MAP_POSITIVE_Z=34073
  * @property {number} TEXTURE_CUBE_MAP_NEGATIVE_Z=34074
  */
-export enum TARGETS {
+export enum TARGETS
+    {
     TEXTURE_2D = 3553,
     TEXTURE_CUBE_MAP = 34067,
     TEXTURE_2D_ARRAY = 35866,
@@ -244,7 +251,8 @@ export enum TARGETS {
  * @property {number} FLOAT_32_UNSIGNED_INT_24_8_REV=36269
  * @property {number} HALF_FLOAT=36193
  */
-export enum TYPES {
+export enum TYPES
+    {
     UNSIGNED_BYTE = 5121,
     UNSIGNED_SHORT = 5123,
     UNSIGNED_SHORT_5_6_5 = 33635,
@@ -275,7 +283,8 @@ export enum TYPES {
  * @property {number} INT=1
  * @property {number} UINT=2
  */
-export enum SAMPLER_TYPES {
+export enum SAMPLER_TYPES
+    {
     FLOAT = 0,
     INT = 1,
     UINT = 2,
@@ -294,7 +303,8 @@ export enum SAMPLER_TYPES {
  * @property {number} LINEAR Smooth scaling
  * @property {number} NEAREST Pixelating scaling
  */
-export enum SCALE_MODES {
+export enum SCALE_MODES
+    {
     NEAREST,
     LINEAR,
 }
@@ -317,7 +327,8 @@ export enum SCALE_MODES {
  * @property {number} REPEAT - The texture uvs tile and repeat
  * @property {number} MIRRORED_REPEAT - The texture uvs tile and repeat with mirroring
  */
-export enum WRAP_MODES {
+export enum WRAP_MODES
+    {
     CLAMP = 33071,
     REPEAT = 10497,
     MIRRORED_REPEAT = 33648,
@@ -343,7 +354,8 @@ export enum WRAP_MODES {
  * @property {number} ON_MANUAL - Use mipmaps, but do not auto-generate them; this is used with a resource
  *   that supports buffering each level-of-detail.
  */
-export enum MIPMAP_MODES {
+export enum MIPMAP_MODES
+    {
     OFF,
     POW2,
     ON,
@@ -367,7 +379,8 @@ export enum MIPMAP_MODES {
  * @property {number} UNPACK - Default option, alias for PREMULTIPLY_ON_UPLOAD.
  * @property {number} PMA - Alias for PREMULTIPLIED_ALPHA.
  */
-export enum ALPHA_MODES {
+export enum ALPHA_MODES
+    {
     NPM = 0,
     UNPACK = 1,
     PMA = 2,
@@ -394,7 +407,8 @@ export enum ALPHA_MODES {
  * @property {number} YES - Alias for CLEAR, same as `true` in earlier versions
  * @property {number} AUTO - Alias for BLIT
  */
-export enum CLEAR_MODES {
+export enum CLEAR_MODES
+    {
     NO = 0,
     YES = 1,
     AUTO = 2,
@@ -422,7 +436,8 @@ export enum CLEAR_MODES {
  * @property {number} AUTO - Garbage collection will happen periodically automatically
  * @property {number} MANUAL - Garbage collection will need to be called manually
  */
-export enum GC_MODES {
+export enum GC_MODES
+    {
     AUTO,
     MANUAL,
 }
@@ -439,7 +454,8 @@ export enum GC_MODES {
  * @property {string} MEDIUM='mediump'
  * @property {string} HIGH='highp'
  */
-export enum PRECISION {
+export enum PRECISION
+    {
     LOW = 'lowp',
     MEDIUM = 'mediump',
     HIGH = 'highp',
@@ -458,7 +474,8 @@ export enum PRECISION {
  * @property {number} STENCIL - Stencil mask, 1-bit, medium, works only if renderer supports stencil
  * @property {number} SPRITE - Mask that uses SpriteMaskFilter, uses temporary RenderTexture
  */
-export enum MASK_TYPES {
+export enum MASK_TYPES
+    {
     NONE = 0,
     SCISSOR = 1,
     STENCIL = 2,
@@ -479,7 +496,8 @@ export enum MASK_TYPES {
  * @property {number} MEDIUM - Try 4 samples
  * @property {number} HIGH - Try 8 samples
  */
-export enum MSAA_QUALITY {
+export enum MSAA_QUALITY
+    {
     NONE = 0,
     LOW = 2,
     MEDIUM = 4,
@@ -499,7 +517,8 @@ export enum MSAA_QUALITY {
  * @property {number} ARRAY_BUFFER - buffer type for using attribute data
  * @property {number} UNIFORM_BUFFER - the buffer type is for uniform buffer objects
  */
-export enum BUFFER_TYPE {
+export enum BUFFER_TYPE
+    {
     ELEMENT_ARRAY_BUFFER = 34963,
     ARRAY_BUFFER = 34962,
     // NOT YET SUPPORTED

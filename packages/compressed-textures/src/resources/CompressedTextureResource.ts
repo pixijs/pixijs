@@ -177,8 +177,8 @@ export class CompressedTextureResource extends BlobResource
      * @param format - the compression format to get the extension for.
      */
     private static _formatToExtension(format: INTERNAL_FORMATS):
-        's3tc' | 's3tc_sRGB' | 'atc' |
-        'astc' | 'etc' | 'etc1' | 'pvrtc'
+    's3tc' | 's3tc_sRGB' | 'atc' |
+    'astc' | 'etc' | 'etc1' | 'pvrtc'
     {
         if (format >= 0x83F0 && format <= 0x83F3)
         {

@@ -10,7 +10,8 @@ import type { DisplayObject } from '@pixi/display';
 import type { ParticleContainer } from './ParticleContainer';
 import type { Renderer } from '@pixi/core';
 
-export interface IParticleRendererProperty {
+export interface IParticleRendererProperty
+{
     attributeName: string;
     size: number;
     type?: TYPES;

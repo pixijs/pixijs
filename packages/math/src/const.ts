@@ -37,7 +37,8 @@ export const DEG_TO_RAD = Math.PI / 180;
  * @property {number} ELIP Ellipse
  * @property {number} RREC Rounded Rectangle
  */
-export enum SHAPES {
+export enum SHAPES
+    {
     POLY = 0,
     RECT = 1,
     CIRC = 2,
