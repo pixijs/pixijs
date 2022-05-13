@@ -18,7 +18,9 @@ describe('Container', function ()
 
             parent.addChild(container);
 
+            graphics.beginFill();
             graphics.drawRect(0, 0, 10, 10);
+            graphics.endFill();
             container.position.set(100, 200);
             container.updateTransform();
 
@@ -68,7 +70,9 @@ describe('Container', function ()
             const container = new Container();
             const graphics = new Graphics();
 
+            graphics.beginFill();
             graphics.drawRect(0, 0, 10, 10);
+            graphics.endFill();
             container.addChild(graphics);
             container.scale.x = 2;
 
@@ -80,7 +84,9 @@ describe('Container', function ()
             const container = new Container();
             const graphics = new Graphics();
 
+            graphics.beginFill();
             graphics.drawRect(0, 0, 10, 10);
+            graphics.endFill();
             container.addChild(graphics);
 
             container.width = 20;
@@ -97,7 +103,9 @@ describe('Container', function ()
             const container = new Container();
             const graphics = new Graphics();
 
+            graphics.beginFill();
             graphics.drawRect(0, 0, 10, 10);
+            graphics.endFill();
             container.addChild(graphics);
             container.scale.y = 2;
 
@@ -109,7 +117,9 @@ describe('Container', function ()
             const container = new Container();
             const graphics = new Graphics();
 
+            graphics.beginFill();
             graphics.drawRect(0, 0, 10, 10);
+            graphics.endFill();
             container.addChild(graphics);
 
             container.height = 20;
