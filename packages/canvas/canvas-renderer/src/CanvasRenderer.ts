@@ -203,6 +203,40 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
          this.startup.run(startupOptions);
      }
 
+     /**
+     * Useful function that returns a texture of the display object that can then be used to create sprites
+     * This can be quite useful if your displayObject is complicated and needs to be reused multiple times.
+     * @param displayObject - The displayObject the object will be generated from.
+     * @param {object} options - Generate texture options.
+     * @param {PIXI.SCALE_MODES} options.scaleMode - The scale mode of the texture.
+     * @param {number} options.resolution - The resolution / device pixel ratio of the texture being generated.
+     * @param {PIXI.Rectangle} options.region - The region of the displayObject, that shall be rendered,
+     *        if no region is specified, defaults to the local bounds of the displayObject.
+     * @param {PIXI.MSAA_QUALITY} options.multisample - The number of samples of the frame buffer.
+     * @return A texture of the graphics object.
+     */
+     generateTexture(displayObject: IRenderableObject, options?: IGenerateTextureOptions): RenderTexture;
+
+     /**
+     * Please use the options argument instead.
+     *
+     * @deprecated Since 6.1.0
+     * @param displayObject - The displayObject the object will be generated from.
+     * @param scaleMode - The scale mode of the texture.
+     * @param resolution - The resolution / device pixel ratio of the texture being generated.
+     * @param region - The region of the displayObject, that shall be rendered,
+     *        if no region is specified, defaults to the local bounds of the displayObject.
+     * @return A texture of the graphics object.
+     */
+     generateTexture(
+          displayObject: IRenderableObject,
+          scaleMode?: SCALE_MODES,
+          resolution?: number,
+          region?: Rectangle): RenderTexture;
+
+     /**
+     * @ignore
+     */
      generateTexture(displayObject: IRenderableObject,
          options: IGenerateTextureOptions | SCALE_MODES = {},
          resolution?: number, region?: Rectangle): RenderTexture

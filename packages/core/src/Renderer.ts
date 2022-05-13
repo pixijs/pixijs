@@ -689,7 +689,6 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
     /**
      * Useful function that returns a texture of the display object that can then be used to create sprites
      * This can be quite useful if your displayObject is complicated and needs to be reused multiple times.
-     * @method PIXI.IRenderer#generateTexture
      * @param displayObject - The displayObject the object will be generated from.
      * @param {object} options - Generate texture options.
      * @param {PIXI.SCALE_MODES} options.scaleMode - The scale mode of the texture.
@@ -704,7 +703,6 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
     /**
      * Please use the options argument instead.
      *
-     * @method PIXI.IRenderer#generateTexture
      * @deprecated Since 6.1.0
      * @param displayObject - The displayObject the object will be generated from.
      * @param scaleMode - The scale mode of the texture.

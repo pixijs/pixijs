@@ -1,9 +1,9 @@
-import { RENDERER_TYPE } from '@pixi/constants';
-import { Matrix, Rectangle } from '@pixi/math';
-import { IGenerateTextureOptions } from './renderTexture/GenerateTextureSystem';
-import { IRendererPlugins } from './plugin/PluginSystem';
-import { RenderTexture } from './renderTexture/RenderTexture';
-import { SystemManager } from './system/SystemManager';
+import type { RENDERER_TYPE } from '@pixi/constants';
+import type { Matrix, Rectangle } from '@pixi/math';
+import type { IGenerateTextureOptions } from './renderTexture/GenerateTextureSystem';
+import type { IRendererPlugins } from './plugin/PluginSystem';
+import type { RenderTexture } from './renderTexture/RenderTexture';
+import type { SystemManager } from './system/SystemManager';
 
 /**
  * Interface for DisplayObject to interface with Renderer.
