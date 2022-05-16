@@ -52,7 +52,7 @@ Rectangle.prototype.equals = function equals(other: Rectangle): boolean
  *
  * _Note: Only available with **@pixi/math-extras**._
  *
- * @method intersects
+ * @method intersection
  * @memberof PIXI.Rectangle#
  * @param {Rectangle} other - The Rectangle to intersect with `this`.
  * @param {Rectangle} [outRect] - A Rectangle object in which to store the value,
@@ -100,7 +100,7 @@ Rectangle.prototype.intersection = function intersection<T extends Rectangle>(ot
  *
  * _Note: Only available with **@pixi/math-extras**._
  *
- * @method intersects
+ * @method union
  * @memberof PIXI.Rectangle#
  * @param {Rectangle} other - The Rectangle to unite with `this`.
  * @param {Rectangle} [outRect] - A Rectangle object in which to store the value,

@@ -188,20 +188,31 @@ export class FilterSystem implements ISystem
 
         state.sourceFrame.pad(padding);
 
+        const sourceFrameProjected = this.tempRect.copyFrom(renderTextureSystem.sourceFrame);
+
+        // Project source frame into world space (if projection is applied)
+        if (renderer.projection.transform)
+        {
+            this.transformAABB(
+                tempMatrix.copyFrom(renderer.projection.transform).invert(),
+                sourceFrameProjected
+            );
+        }
+
         if (autoFit)
         {
-            const sourceFrameProjected = this.tempRect.copyFrom(renderTextureSystem.sourceFrame);
-
-            // Project source frame into world space (if projection is applied)
-            if (renderer.projection.transform)
-            {
-                this.transformAABB(
-                    tempMatrix.copyFrom(renderer.projection.transform).invert(),
-                    sourceFrameProjected
-                );
-            }
-
             state.sourceFrame.fit(sourceFrameProjected);
+
+            if (state.sourceFrame.width <= 0 || state.sourceFrame.height <= 0)
+            {
+                state.sourceFrame.width = 0;
+                state.sourceFrame.height = 0;
+            }
+        }
+        else if (!state.sourceFrame.intersects(sourceFrameProjected))
+        {
+            state.sourceFrame.width = 0;
+            state.sourceFrame.height = 0;
         }
 
         // Round sourceFrame in screen space based on render-texture.

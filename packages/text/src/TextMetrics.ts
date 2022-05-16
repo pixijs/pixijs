@@ -56,9 +56,10 @@ export class TextMetrics
     public static BASELINE_MULTIPLIER: number;
     public static HEIGHT_MULTIPLIER: number;
 
+    private static __canvas: HTMLCanvasElement|OffscreenCanvas;
+    private static __context: CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D;
+
     // TODO: These should be protected but they're initialized outside of the class.
-    public static _canvas: HTMLCanvasElement|OffscreenCanvas;
-    public static _context: CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D;
     public static _fonts: { [font: string]: IFontMetrics };
     public static _newlines: number[];
     public static _breakingSpaces: number[];
@@ -714,6 +715,59 @@ export class TextMetrics
             TextMetrics._fonts = {};
         }
     }
+
+    /**
+     * Cached canvas element for measuring text
+     * TODO: this should be private, but isn't because of backward compat, will fix later.
+     *
+     * @ignore
+     */
+    public static get _canvas(): HTMLCanvasElement|OffscreenCanvas
+    {
+        if (!TextMetrics.__canvas)
+        {
+            let canvas: HTMLCanvasElement|OffscreenCanvas;
+
+            try
+            {
+                // OffscreenCanvas2D measureText can be up to 40% faster.
+                const c = new OffscreenCanvas(0, 0);
+                const context = c.getContext('2d');
+
+                if (context && context.measureText)
+                {
+                    TextMetrics.__canvas = c;
+
+                    return c;
+                }
+
+                canvas = document.createElement('canvas');
+            }
+            catch (ex)
+            {
+                canvas = document.createElement('canvas');
+            }
+            canvas.width = canvas.height = 10;
+            TextMetrics.__canvas = canvas;
+        }
+
+        return TextMetrics.__canvas;
+    }
+
+    /**
+     * TODO: this should be private, but isn't because of backward compat, will fix later.
+     *
+     * @ignore
+     */
+    public static get _context(): CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D
+    {
+        if (!TextMetrics.__context)
+        {
+            TextMetrics.__context = TextMetrics._canvas.getContext('2d');
+        }
+
+        return TextMetrics.__context;
+    }
 }
 
 /**
@@ -726,47 +780,6 @@ export class TextMetrics
  * @memberof PIXI.TextMetrics
  * @private
  */
-
-const canvas = ((): HTMLCanvasElement|OffscreenCanvas =>
-{
-    try
-    {
-        // OffscreenCanvas2D measureText can be up to 40% faster.
-        const c = new OffscreenCanvas(0, 0);
-        const context = c.getContext('2d');
-
-        if (context && context.measureText)
-        {
-            return c;
-        }
-
-        return document.createElement('canvas');
-    }
-    catch (ex)
-    {
-        return document.createElement('canvas');
-    }
-})();
-
-canvas.width = canvas.height = 10;
-
-/**
- * Cached canvas element for measuring text
- *
- * @memberof PIXI.TextMetrics
- * @type {HTMLCanvasElement}
- * @private
- */
-TextMetrics._canvas = canvas;
-
-/**
- * Cache for context to use.
- *
- * @memberof PIXI.TextMetrics
- * @type {CanvasRenderingContext2D}
- * @private
- */
-TextMetrics._context = canvas.getContext('2d');
 
 /**
  * Cache of {@see PIXI.TextMetrics.FontMetrics} objects.
