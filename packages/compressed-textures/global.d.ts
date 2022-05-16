@@ -1,7 +1,8 @@
 declare namespace GlobalMixins
 {
+    // eslint-disable-next-line @typescript-eslint/no-empty-interface
     interface BaseTexture
     {
-        ktxKvData?: Map<string, DataView> | null
+        ktxKeyValueData: Map<string, DataView>;
     }
 }
