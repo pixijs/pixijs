@@ -457,12 +457,33 @@ export enum PRECISION {
  * @property {number} SCISSOR - Scissor mask, rectangle on screen, cheap
  * @property {number} STENCIL - Stencil mask, 1-bit, medium, works only if renderer supports stencil
  * @property {number} SPRITE - Mask that uses SpriteMaskFilter, uses temporary RenderTexture
+ * @property {number} COLOR - Color mask (RGBA)
  */
 export enum MASK_TYPES {
     NONE = 0,
     SCISSOR = 1,
     STENCIL = 2,
     SPRITE = 3,
+    COLOR = 4,
+}
+
+/**
+ * Bitwise OR of masks that indicate the color channels that are rendered to.
+ *
+ * @static
+ * @memberof PIXI
+ * @name COLOR_MASK_BITS
+ * @enum {number}
+ * @property {number} RED - Red channel.
+ * @property {number} GREEN - Green channel
+ * @property {number} BLUE - Blue channel.
+ * @property {number} ALPHA - Alpha channel.
+ */
+export enum COLOR_MASK_BITS {
+    RED = 0x1,
+    GREEN = 0x2,
+    BLUE = 0x4,
+    ALPHA = 0x8
 }
 
 /**
