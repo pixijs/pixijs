@@ -1,4 +1,4 @@
-import type { Rectangle } from '@pixi/math';
+import type { Rectangle, Transform } from '@pixi/math';
 import type { Renderer } from './Renderer';
 
 /**
@@ -10,6 +10,8 @@ interface IRenderableObject
 {
     /** Object must have a parent container */
     parent: IRenderableContainer;
+    /** Object must have a transform */
+    transform: Transform;
     /** Before method for transform updates */
     enableTempParent(): IRenderableContainer;
     /** Update the transforms */

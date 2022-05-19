@@ -1,5 +1,5 @@
 import { hex2string, hex2rgb, EventEmitter, deprecation } from '@pixi/utils';
-import { Matrix, Rectangle } from '@pixi/math';
+import { Matrix, Rectangle, Transform } from '@pixi/math';
 import { MSAA_QUALITY, RENDERER_TYPE } from '@pixi/constants';
 import { settings } from '@pixi/settings';
 import { RenderTexture } from './renderTexture/RenderTexture';
@@ -10,6 +10,7 @@ import type { IRenderingContext } from './IRenderingContext';
 import type { IRenderableContainer, IRenderableObject } from './IRenderableObject';
 
 const tempMatrix = new Matrix();
+const tempTransform = new Transform();
 
 export interface IRendererOptions extends GlobalMixins.IRendererOptions
 {
@@ -359,12 +360,16 @@ export abstract class AbstractRenderer extends EventEmitter
         tempMatrix.tx = -region.x;
         tempMatrix.ty = -region.y;
 
+        const transform = displayObject.transform;
+
+        displayObject.transform = tempTransform;
+
         this.render(displayObject, {
             renderTexture,
-            clear: false,
-            transform: tempMatrix,
-            skipUpdateTransform: !!displayObject.parent
+            transform: tempMatrix
         });
+
+        displayObject.transform = transform;
 
         return renderTexture;
     }
