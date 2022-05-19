@@ -312,7 +312,7 @@ export class ContextSystem implements ISystem
     /** Handle the post-render runner event. */
     protected postrender(): void
     {
-        if (this.renderer._render.renderingToScreen)
+        if (this.renderer.objectRenderer.renderingToScreen)
         {
             this.gl.flush();
         }

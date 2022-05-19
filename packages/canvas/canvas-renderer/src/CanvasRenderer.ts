@@ -24,7 +24,7 @@ import type {
 } from '@pixi/core';
 
 import { CanvasContextSystem, SmoothingEnabledProperties } from './CanvasContextSystem';
-import { CanvasRenderSystem } from './CanvasRenderSystem';
+import { CanvasObjectRendererSystem } from './CanvasObjectRendererSystem';
 import { settings } from '@pixi/settings';
 import { deprecation } from '@pixi/utils';
 
@@ -135,7 +135,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
      * renderer system instance
      * @readonly
      */
-     public _renderer: CanvasRenderSystem;
+     public objectRenderer: CanvasObjectRendererSystem;
 
      /**
      * @param options - The optional renderer parameters
@@ -177,7 +177,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
                  // canvas systems..
                  mask: CanvasMaskSystem,
                  canvasContext: CanvasContextSystem,
-                 _renderer: CanvasRenderSystem,
+                 objectRenderer: CanvasObjectRendererSystem,
              }
          };
 
@@ -287,7 +287,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
      /** @ignore */
      public render(displayObject: DisplayObject, options?: IRendererRenderOptions | RenderTexture | BaseRenderTexture): void
      {
-         this._renderer.render(displayObject, options);
+         this.objectRenderer.render(displayObject, options);
      }
 
      /**
@@ -345,7 +345,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
      */
      get width(): number
      {
-         return this._view.view.width;
+         return this._view.element.width;
      }
 
      /**
@@ -357,7 +357,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
      */
      get height(): number
      {
-         return this._view.view.height;
+         return this._view.element.height;
      }
 
      /** The resolution / device pixel ratio of the renderer. */
@@ -375,7 +375,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
      /** The canvas element that everything is drawn to.*/
      get view(): HTMLCanvasElement
      {
-         return this._view.view;
+         return this._view.element;
      }
 
      /**
@@ -390,13 +390,13 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
      /** the last object rendered by the renderer. Useful for other plugins like interaction managers */
      get lastObjectRendered(): IRenderableObject
      {
-         return this._renderer.lastObjectRendered;
+         return this.objectRenderer.lastObjectRendered;
      }
 
      /** Flag if we are rendering to the screen vs renderTexture */
      get renderingToScreen(): boolean
      {
-         return this._renderer.renderingToScreen;
+         return this.objectRenderer.renderingToScreen;
      }
 
      /**

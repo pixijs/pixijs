@@ -10,7 +10,7 @@ import { RenderTexture } from '../renderTexture/RenderTexture';
  *
  * @memberof PIXI
  */
-export class RendererSystem implements ISystem
+export class ObjectRendererSystem implements ISystem
 {
     renderer: Renderer;
 

@@ -13,7 +13,7 @@ import { CrossPlatformCanvasRenderingContext2D } from './CanvasContextSystem';
  *
  * @memberof PIXI
  */
-export class CanvasRenderSystem implements ISystem
+export class CanvasObjectRendererSystem implements ISystem
 {
     /** A reference to the current renderer */
     private renderer: CanvasRenderer;

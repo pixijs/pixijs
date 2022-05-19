@@ -53,7 +53,7 @@ export class ViewSystem implements ISystem
      *
      * @member {HTMLCanvasElement}
      */
-    public view: HTMLCanvasElement;
+    public element: HTMLCanvasElement;
 
     /**
      * Whether CSS dimensions of canvas view should be resized to screen dimensions automatically.
@@ -76,7 +76,7 @@ export class ViewSystem implements ISystem
     {
         this.screen = new Rectangle(0, 0, options.width, options.height);
 
-        this.view = options.view || document.createElement('canvas');
+        this.element = options.view || document.createElement('canvas');
 
         this.resolution = options.resolution || settings.RESOLUTION;
 
@@ -91,19 +91,19 @@ export class ViewSystem implements ISystem
      */
     resizeView(desiredScreenWidth: number, desiredScreenHeight: number): void
     {
-        this.view.width = Math.round(desiredScreenWidth * this.resolution);
-        this.view.height = Math.round(desiredScreenHeight * this.resolution);
+        this.element.width = Math.round(desiredScreenWidth * this.resolution);
+        this.element.height = Math.round(desiredScreenHeight * this.resolution);
 
-        const screenWidth = this.view.width / this.resolution;
-        const screenHeight = this.view.height / this.resolution;
+        const screenWidth = this.element.width / this.resolution;
+        const screenHeight = this.element.height / this.resolution;
 
         this.screen.width = screenWidth;
         this.screen.height = screenHeight;
 
         if (this.autoDensity)
         {
-            this.view.style.width = `${screenWidth}px`;
-            this.view.style.height = `${screenHeight}px`;
+            this.element.style.width = `${screenWidth}px`;
+            this.element.style.height = `${screenHeight}px`;
         }
 
         /**
@@ -125,13 +125,13 @@ export class ViewSystem implements ISystem
     destroy(removeView: boolean): void
     {
         // ka boom!
-        if (removeView && this.view.parentNode)
+        if (removeView && this.element.parentNode)
         {
-            this.view.parentNode.removeChild(this.view);
+            this.element.parentNode.removeChild(this.element);
         }
 
         this.renderer = null;
-        this.view = null;
+        this.element = null;
         this.screen = null;
     }
 }

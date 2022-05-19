@@ -26,7 +26,7 @@ import { MultisampleSystem } from './framebuffer/MultisampleSystem';
 import { GenerateTextureSystem, IGenerateTextureOptions } from './renderTexture/GenerateTextureSystem';
 import { BackgroundSystem } from './background/BackgroundSystem';
 import { ViewSystem } from './view/ViewSystem';
-import { RendererSystem } from './render/RenderSystem';
+import { ObjectRendererSystem } from './render/ObjectRendererSystem';
 import { settings } from '@pixi/settings';
 import { SystemManager } from './system/SystemManager';
 import { IRenderableObject, IRenderer, IRendererOptions, IRendererRenderOptions, IRenderingContext } from './IRenderer';
@@ -240,7 +240,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      * _render system instance
      * @readonly
      */
-    public readonly _render: RendererSystem;
+    public readonly objectRenderer: ObjectRendererSystem;
 
     /**
      * startup system instance
@@ -352,8 +352,8 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
                 filter: FilterSystem,
                 renderTexture: RenderTextureSystem,
                 batch: BatchSystem,
+                objectRenderer: ObjectRendererSystem,
                 _multisample: MultisampleSystem,
-                _render: RendererSystem,
             }
         };
 
@@ -434,7 +434,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
             /* eslint-enable prefer-rest-params */
         }
 
-        this._render.render(displayObject, options);
+        this.objectRenderer.render(displayObject, options);
     }
 
     /**
@@ -520,7 +520,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      */
     get width(): number
     {
-        return this._view.view.width;
+        return this._view.element.width;
     }
 
     /**
@@ -529,7 +529,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      */
     get height(): number
     {
-        return this._view.view.height;
+        return this._view.element.height;
     }
 
     /** The resolution / device pixel ratio of the renderer. */
@@ -547,7 +547,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
     /** The canvas element that everything is drawn to.*/
     get view(): HTMLCanvasElement
     {
-        return this._view.view;
+        return this._view.element;
     }
 
     /**
@@ -565,13 +565,13 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
     /** the last object rendered by the renderer. Useful for other plugins like interaction managers */
     get lastObjectRendered(): IRenderableObject
     {
-        return this._render.lastObjectRendered;
+        return this.objectRenderer.lastObjectRendered;
     }
 
     /** Flag if we are rendering to the screen vs renderTexture */
     get renderingToScreen(): boolean
     {
-        return this._render.renderingToScreen;
+        return this.objectRenderer.renderingToScreen;
     }
 
     /** When logging Pixi to the console, this is the name we will show */
