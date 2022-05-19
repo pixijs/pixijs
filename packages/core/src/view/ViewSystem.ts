@@ -46,8 +46,8 @@ export class ViewSystem implements ISystem
      *
      * @member {PIXI.Rectangle}
      */
-
     public screen: Rectangle;
+
     /**
      * The canvas element that everything is drawn to.
      *
