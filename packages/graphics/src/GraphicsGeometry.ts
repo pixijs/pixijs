@@ -118,6 +118,9 @@ export class GraphicsGeometry extends BatchGeometry
     /** Cached bounds. */
     protected _bounds: Bounds = new Bounds();
 
+    /** The bounds dirty flag. */
+    protected boundsDirty = -1;
+
     // eslint-disable-next-line @typescript-eslint/no-useless-constructor
     constructor()
     {
@@ -131,9 +134,11 @@ export class GraphicsGeometry extends BatchGeometry
      */
     public get bounds(): Bounds
     {
-        if (this.validateBatching())
+        this.updateBatches();
+
+        if (this.boundsDirty !== this.dirty)
         {
-            this.updateBatches();
+            this.boundsDirty = this.dirty;
             this.calculateBounds();
         }
 
@@ -146,6 +151,7 @@ export class GraphicsGeometry extends BatchGeometry
      */
     protected invalidate(): void
     {
+        this.boundsDirty = -1;
         this.dirty++;
         this.batchDirty++;
         this.shapeIndex = 0;
