@@ -87,7 +87,10 @@ export class TreeSearch
         {
             if (hitTest)
             {
-                if (!((displayObject._mask as any).containsPoint && (displayObject._mask as any).containsPoint(point)))
+                const maskObject = ((displayObject._mask as any).isMaskData
+                    ? (displayObject._mask as any).maskObject : displayObject._mask) as any;
+
+                if (maskObject && !(maskObject.containsPoint && maskObject.containsPoint(point)))
                 {
                     hitTest = false;
                 }
