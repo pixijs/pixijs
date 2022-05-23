@@ -1,7 +1,8 @@
 import path from 'path';
 import fs from 'fs';
 import { BitmapText, BitmapFont } from '@pixi/text-bitmap';
-import { Texture } from '@pixi/core';
+import { settings } from '@pixi/settings';
+import { Texture, Renderer } from '@pixi/core';
 import sinon from 'sinon';
 import { expect } from 'chai';
 
@@ -184,5 +185,52 @@ describe('BitmapText', function ()
         text.text = undefined;
 
         expect(() => text.updateText()).to.not.throw();
+    });
+
+    it('should set the text resolution to match the resolution setting when constructed time', function ()
+    {
+        const text = new BitmapText('foo', {
+            fontName: this.font.font,
+        });
+
+        expect(text.resolution).to.equal(settings.RESOLUTION);
+    });
+
+    it('should update the text resolution to match the renderer resolution when being rendered to screen', function ()
+    {
+        const text = new BitmapText('foo', {
+            fontName: this.font.font,
+        });
+
+        expect(text.resolution).to.equal(settings.RESOLUTION);
+
+        const renderer = new Renderer({ resolution: 2 });
+
+        expect(renderer.resolution).to.equal(2);
+
+        renderer.render(text);
+
+        expect(text.resolution).to.equal(renderer.resolution);
+
+        renderer.destroy();
+    });
+
+    it('should use any manually set text resolution over the renderer resolution', function ()
+    {
+        const text = new BitmapText('foo', {
+            fontName: this.font.font,
+        });
+
+        text.resolution = 3;
+
+        expect(text.resolution).to.equal(3);
+
+        const renderer = new Renderer({ resolution: 2 });
+
+        renderer.render(text);
+
+        expect(text.resolution).to.equal(3);
+
+        renderer.destroy();
     });
 });
