@@ -82,6 +82,16 @@ export class BitmapText extends Container
     public dirty: boolean;
 
     /**
+     * The resolution / device pixel ratio of the canvas.
+     *
+     * This is set to automatically match the renderer resolution by default, but can be overridden by setting manually.
+     *
+     * @default PIXI.settings.RESOLUTION
+     */
+    _resolution: number;
+    _autoResolution: boolean;
+
+    /**
      * Private tracker for the width of the overall text.
      *
      * @private
@@ -215,6 +225,8 @@ export class BitmapText extends Container
         this._anchor = new ObservablePoint((): void => { this.dirty = true; }, this, 0, 0);
         this._roundPixels = settings.ROUND_PIXELS;
         this.dirty = true;
+        this._resolution = settings.RESOLUTION;
+        this._autoResolution = true;
         this._textureCache = {};
     }
 
@@ -608,6 +620,12 @@ export class BitmapText extends Container
 
     _render(renderer: Renderer): void
     {
+        if (this._autoResolution && this._resolution !== renderer.resolution)
+        {
+            this._resolution = renderer.resolution;
+            this.dirty = true;
+        }
+
         // Update the uniform
         const { distanceFieldRange, distanceFieldType, size } = BitmapFont.available[this._fontName];
 
@@ -624,7 +642,7 @@ export class BitmapText extends Container
 
             for (const mesh of this._activePagesMeshData)
             {
-                mesh.mesh.shader.uniforms.uFWidth = worldScale * distanceFieldRange * fontScale * renderer.resolution;
+                mesh.mesh.shader.uniforms.uFWidth = worldScale * distanceFieldRange * fontScale * this._resolution;
             }
         }
 
@@ -872,6 +890,31 @@ export class BitmapText extends Container
         this.validate();
 
         return this._textHeight;
+    }
+
+    /**
+     * The resolution / device pixel ratio of the canvas.
+     *
+     * This is set to automatically match the renderer resolution by default, but can be overridden by setting manually.
+     *
+     * @default 1
+     */
+    get resolution(): number
+    {
+        return this._resolution;
+    }
+
+    set resolution(value: number)
+    {
+        this._autoResolution = false;
+
+        if (this._resolution === value)
+        {
+            return;
+        }
+
+        this._resolution = value;
+        this.dirty = true;
     }
 
     destroy(options?: boolean | IDestroyOptions): void
