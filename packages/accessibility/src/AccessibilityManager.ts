@@ -280,7 +280,7 @@ export class AccessibilityManager
 
         this.androidUpdateCount = now + this.androidUpdateFrequency;
 
-        if (!(this.renderer as IRenderer).renderingToScreen)
+        if (!this.renderer.renderingToScreen)
         {
             return;
         }
