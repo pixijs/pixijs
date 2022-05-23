@@ -7,7 +7,7 @@ import type { MaskData } from '@pixi/core';
  * @method _renderCanvas
  * @memberof PIXI.Container#
  * @protected
- * @param {PIXI.CanvasRenderer} renderer - The renderer
+ * @param {PIXI.CanvasRenderer} _renderer - The renderer
  */
 Container.prototype._renderCanvas = function _renderCanvas(_renderer: CanvasRenderer): void
 {

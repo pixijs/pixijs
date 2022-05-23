@@ -3,7 +3,6 @@ import { LINE_JOIN, LINE_CAP } from '../const';
 
 /**
  * Represents the line style for Graphics.
- *
  * @memberof PIXI
  */
 export class LineStyle extends FillStyle
@@ -19,7 +18,6 @@ export class LineStyle extends FillStyle
 
     /**
      * Line cap style.
-     *
      * @member {PIXI.LINE_CAP}
      * @default PIXI.LINE_CAP.BUTT
      */
@@ -27,7 +25,6 @@ export class LineStyle extends FillStyle
 
     /**
      * Line join style.
-     *
      * @member {PIXI.LINE_JOIN}
      * @default PIXI.LINE_JOIN.MITER
      */

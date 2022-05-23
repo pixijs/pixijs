@@ -11,7 +11,6 @@ const patternRect = [new Point(), new Point(), new Point(), new Point()];
 
 /**
  * Renders the object using the Canvas renderer
- *
  * @protected
  * @function _renderCanvas
  * @memberof PIXI.TilingSprite#

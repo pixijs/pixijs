@@ -4,11 +4,14 @@ import { TextStyle, TextMetrics, TEXT_GRADIENT } from '@pixi/text';
 
 /**
  * Generates the fill style. Can automatically generate a gradient based on the fill style being an array
- *
  * @private
+ * @param canvas
+ * @param context
  * @param {object} style - The style.
+ * @param resolution
  * @param {string[]} lines - The lines of text.
- * @return {string|number|CanvasGradient} The fill style
+ * @param metrics
+ * @returns {string|number|CanvasGradient} The fill style
  */
 export function generateFillStyle(
     canvas: HTMLCanvasElement,

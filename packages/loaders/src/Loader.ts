@@ -21,22 +21,20 @@ export interface ILoaderAdd {
 
 /**
  * Options for a call to `.add()`.
- *
  * @see Loader#add
- *
- * @property name - The name of the resource to load, if not passed the url is used.
- * @property key - Alias for `name`.
- * @property url - The url for this resource, relative to the baseUrl of this loader.
- * @property crossOrigin - Is this request cross-origin? Default is to determine automatically.
- * @property timeout=0 - A timeout in milliseconds for the load. If the load takes longer
+ * @property {string} name - The name of the resource to load, if not passed the url is used.
+ * @property {string} key - Alias for `name`.
+ * @property {string} url - The url for this resource, relative to the baseUrl of this loader.
+ * @property {string|boolean} crossOrigin - Is this request cross-origin? Default is to determine automatically.
+ * @property {number} [timeout=0] - A timeout in milliseconds for the load. If the load takes longer
  *      than this time it is cancelled and the load is considered a failure. If this value is
  *      set to `0` then there is no explicit timeout.
- * @property loadType=LoaderResource.LOAD_TYPE.XHR - How should this resource be loaded?
- * @property xhrType=LoaderResource.XHR_RESPONSE_TYPE.DEFAULT - How should the data being
- *      loaded be interpreted when using XHR?
- * @property onComplete - Callback to add an an onComplete signal istener.
- * @property callback - Alias for `onComplete`.
- * @property metadata - Extra configuration for middleware and the Resource object.
+ * @property {LoaderResource.LOAD_TYPE} [loadType=LoaderResource.LOAD_TYPE.XHR] - How should this resource be loaded?
+ * @property {LoaderResource.XHR_RESPONSE_TYPE} [xhrType=LoaderResource.XHR_RESPONSE_TYPE.DEFAULT] - How should the data
+ *      being loaded be interpreted when using XHR?
+ * @property {LoaderResource.OnCompleteSignal} onComplete - Callback to add an an onComplete signal istener.
+ * @property {LoaderResource.OnCompleteSignal} callback - Alias for `onComplete`.
+ * @property {IResourceMetadata} metadata - Extra configuration for middleware and the Resource object.
  */
 export interface IAddOptions {
     name?: string;
@@ -95,24 +93,17 @@ export interface IAddOptions {
  * loader.onLoad.add(() => {}); // called once per loaded file
  * loader.onComplete.add(() => {}); // called once when the queued resources all load.
  * ```
- *
  * @memberof PIXI
  */
 class Loader
 {
-    /**
-     * The base url for all resources loaded by this loader.
-     */
+    /** The base url for all resources loaded by this loader. */
     baseUrl: string;
 
-    /**
-     * The progress percent of the loader going through the queue.
-     */
+    /** The progress percent of the loader going through the queue. */
     progress = 0;
 
-    /**
-     * Loading state of the loader, true if it is currently loading resources.
-     */
+    /** Loading state of the loader, true if it is currently loading resources. */
     loading = false;
 
     /**
@@ -121,7 +112,6 @@ class Loader
      * This should be a valid query string *without* the question-mark (`?`). The loader will
      * also *not* escape values for you. Make sure to escape your parameters with
      * [`encodeURIComponent`](https://mdn.io/encodeURIComponent) before assigning this property.
-     *
      * @example
      * const loader = new Loader();
      *
@@ -137,62 +127,41 @@ class Loader
      */
     defaultQueryString = '';
 
-    /**
-     * The middleware to run before loading each resource.
-     */
+    /** The middleware to run before loading each resource. */
     private _beforeMiddleware: Array<ILoaderMiddleware> = [];
 
-    /**
-     * The middleware to run after loading each resource.
-     */
+    /** The middleware to run after loading each resource. */
     private _afterMiddleware: Array<ILoaderMiddleware> = [];
 
-    /**
-     * The tracks the resources we are currently completing parsing for.
-     */
+    /** The tracks the resources we are currently completing parsing for. */
     private _resourcesParsing: Array<LoaderResource> = [];
 
     /**
      * The `_loadResource` function bound with this object context.
-     *
      * @param r - The resource to load
      * @param d - The dequeue function
      */
     private _boundLoadResource = (r: LoaderResource, d: () => void): void => this._loadResource(r, d);
 
-    /**
-     * The resources waiting to be loaded.
-     */
+    /** The resources waiting to be loaded. */
     private _queue: AsyncQueue<any>;
 
-    /**
-     * All the resources for this loader keyed by name.
-     */
+    /** All the resources for this loader keyed by name. */
     resources: Dict<LoaderResource> = {};
 
-    /**
-     * Dispatched once per loaded or errored resource.
-     */
+    /** Dispatched once per loaded or errored resource. */
     onProgress: Signal<Loader.OnProgressSignal>;
 
-    /**
-     * Dispatched once per errored resource.
-     */
+    /** Dispatched once per errored resource. */
     onError: Signal<Loader.OnErrorSignal>;
 
-    /**
-     * Dispatched once per loaded resource.
-     */
+    /** Dispatched once per loaded resource. */
     onLoad: Signal<Loader.OnLoadSignal>;
 
-    /**
-     * Dispatched when the loader begins to process the queue.
-     */
+    /** Dispatched when the loader begins to process the queue. */
     onStart: Signal<Loader.OnStartSignal>;
 
-    /**
-     * Dispatched when the queued resources all load.
-     */
+    /** Dispatched when the queued resources all load. */
     onComplete: Signal<Loader.OnCompleteSignal>;
 
     /**
@@ -282,13 +251,12 @@ class Loader
 
     /**
      * Same as add, params have strict order
-     *
      * @private
      * @param name - The name of the resource to load.
      * @param url - The url for this resource, relative to the baseUrl of this loader.
      * @param options - The options for the load.
      * @param callback - Function to call when this specific resource completes loading.
-     * @return The loader itself.
+     * @returns The loader itself.
      */
     protected _add(name: string, url: string, options: IAddOptions, callback?: LoaderResource.OnCompleteSignal): this
     {
@@ -354,9 +322,8 @@ class Loader
     /**
      * Sets up a middleware function that will run *before* the
      * resource is loaded.
-     *
      * @param fn - The middleware function to register.
-     * @return The loader itself.
+     * @returns The loader itself.
      */
     pre(fn: ILoaderMiddleware): this
     {
@@ -368,9 +335,8 @@ class Loader
     /**
      * Sets up a middleware function that will run *after* the
      * resource is loaded.
-     *
      * @param fn - The middleware function to register.
-     * @return The loader itself.
+     * @returns The loader itself.
      */
     use(fn: ILoaderMiddleware): this
     {
@@ -381,8 +347,7 @@ class Loader
 
     /**
      * Resets the queue of the loader to prepare for a new load.
-     *
-     * @return The loader itself.
+     * @returns The loader itself.
      */
     reset(): this
     {
@@ -416,7 +381,7 @@ class Loader
     /**
      * Starts loading the queued resources.
      * @param cb - Optional callback that will be bound to the `complete` event.
-     * @return The loader itself.
+     * @returns The loader itself.
      */
     load(cb?: Loader.OnCompleteSignal): this
     {
@@ -460,7 +425,6 @@ class Loader
 
     /**
      * The number of resources to load concurrently.
-     *
      * @default 10
      */
     get concurrency(): number
@@ -475,7 +439,7 @@ class Loader
     /**
      * Prepares a url for usage based on the configuration of this object
      * @param url - The url to prepare.
-     * @return The prepared url.
+     * @returns The prepared url.
      */
     private _prepareUrl(url: string): string
     {
@@ -524,7 +488,6 @@ class Loader
 
     /**
      * Loads a single resource.
-     *
      * @param resource - The resource to load.
      * @param dequeue - The function to call when we need to dequeue this item.
      */
@@ -560,9 +523,7 @@ class Loader
         );
     }
 
-    /**
-     * Called once loading has started.
-     */
+    /** Called once loading has started. */
     private _onStart(): void
     {
         this.progress = 0;
@@ -570,9 +531,7 @@ class Loader
         this.onStart.dispatch(this);
     }
 
-    /**
-     * Called once each resource has loaded.
-     */
+    /** Called once each resource has loaded. */
     private _onComplete(): void
     {
         this.progress = MAX_PROGRESS;
@@ -635,9 +594,7 @@ class Loader
      */
     private _protected: boolean;
 
-    /**
-     * Destroy the loader, removes references.
-     */
+    /** Destroy the loader, removes references. */
     public destroy(): void
     {
         if (!this._protected)
@@ -646,9 +603,7 @@ class Loader
         }
     }
 
-    /**
-     * A premade instance of the loader that can be used to load resources.
-     */
+    /** A premade instance of the loader that can be used to load resources. */
     public static get shared(): Loader
     {
         let shared = Loader._shared;
@@ -666,9 +621,8 @@ class Loader
     /**
      * Adds a Loader plugin for the global shared loader and all
      * new Loader instances created.
-     *
      * @param plugin - The plugin to add
-     * @return Reference to PIXI.Loader for chaining
+     * @returns Reference to PIXI.Loader for chaining
      */
     public static registerPlugin(plugin: ILoaderPlugin): typeof Loader
     {
@@ -766,30 +720,27 @@ export { Loader };
 
 /**
  * Plugin to be installed for handling specific Loader resources.
- *
- * @property add - Function to call immediate after registering plugin.
- * @property pre - Middleware function to run before load, the
+ * @property {Function} add - Function to call immediate after registering plugin.
+ * @property {Function} pre - Middleware function to run before load, the
  *           arguments for this are `(resource, next)`
- * @property use - Middleware function to run after load, the
+ * @property {Function} use - Middleware function to run after load, the
  *           arguments for this are `(resource, next)`
  */
 export interface ILoaderPlugin {
-    /**
-     * Function to call immediate after registering plugin.
-     */
+    /** Function to call immediate after registering plugin. */
     add?(): void;
 
     /**
      * Middleware function to run before load
-     * @param resource - resource
-     * @param next - next middleware
+     * @param {LoaderResource} resource - resource
+     * @param {LoaderResource} next - next middleware
      */
     pre?(resource: LoaderResource, next: (...args: any[]) => void): void;
 
     /**
      * Middleware function to run after load
-     * @param resource - resource
-     * @param next - next middleware
+     * @param {LoaderResource} resource - resource
+     * @param {LoaderResource} next - next middleware
      */
     use?(resource: LoaderResource, next: (...args: any[]) => void): void;
 }

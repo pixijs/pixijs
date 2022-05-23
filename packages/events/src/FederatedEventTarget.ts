@@ -47,7 +47,6 @@ export interface IHitArea {
 
 /**
  * Describes the shape for a {@link FederatedEvent}'s' `eventTarget`.
- *
  * @memberof PIXI
  */
 export interface FederatedEventTarget extends EventEmitter, EventTarget {
@@ -63,10 +62,7 @@ export interface FederatedEventTarget extends EventEmitter, EventTarget {
     /** Whether this event target should fire UI events. */
     interactive: boolean;
 
-    /**
-     * Whether this event target has any children that need UI events. This can be used optimize
-     * event propagation.
-     */
+    /** Whether this event target has any children that need UI events. This can be used optimize event propagation. */
     interactiveChildren: boolean;
 
     /** The hit-area specifies the area for which pointer events should be captured by this event target. */
@@ -80,7 +76,6 @@ export const FederatedDisplayObject: Omit<
     /**
      * Enable interaction events for the DisplayObject. Touch, pointer and mouse
      * events will not be emitted unless `interactive` is set to `true`.
-     *
      * @example
      * const sprite = new PIXI.Sprite(texture);
      * sprite.interactive = true;
@@ -94,7 +89,6 @@ export const FederatedDisplayObject: Omit<
     /**
      * Determines if the children to the displayObject can be clicked/touched
      * Setting this to false allows PixiJS to bypass a recursive `hitTest` function
-     *
      * @memberof PIXI.Container#
      */
     interactiveChildren: true,
@@ -102,7 +96,6 @@ export const FederatedDisplayObject: Omit<
     /**
      * Interaction shape. Children will be hit first, then this shape will be checked.
      * Setting this will cause this shape to be checked in hit tests rather than the displayObject's bounds.
-     *
      * @example
      * const sprite = new PIXI.Sprite(texture);
      * sprite.interactive = true;
@@ -194,7 +187,7 @@ export const FederatedDisplayObject: Omit<
      * **IMPORTANT:** _Only_ available if using the `@pixi/events` package.
      * @memberof PIXI.DisplayObject
      * @param e - The event to dispatch.
-     * @return Whether the {@link PIXI.FederatedEvent.preventDefault preventDefault}() method was not invoked.
+     * @returns Whether the {@link PIXI.FederatedEvent.preventDefault preventDefault}() method was not invoked.
      * @example
      * // Reuse a click event!
      * button.dispatchEvent(clickEvent);

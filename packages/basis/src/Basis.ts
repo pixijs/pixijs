@@ -5,7 +5,6 @@ import { INTERNAL_FORMATS } from '@pixi/compressed-textures';
  * The transcoding formats provided by basis_universal.
  *
  * NOTE: Not all of these formats are supported on WebGL!
- *
  * @ignore
  */
 /* eslint-disable camelcase */
@@ -31,7 +30,6 @@ export enum BASIS_FORMATS {
 
 /**
  * Maps {@link BASIS_FORMATS} to {@link PIXI.INTERNAL_FORMATS}
- *
  * @ignore
  */
 export const BASIS_FORMAT_TO_INTERNAL_FORMAT: { [id: number]: INTERNAL_FORMATS } = {
@@ -50,7 +48,6 @@ export const BASIS_FORMAT_TO_INTERNAL_FORMAT: { [id: number]: INTERNAL_FORMATS }
  *
  * NOTE: {@link BASIS_FORMATS.cTFBGR565} is not supported, while {@link BASIS_FORMATS.cTFRGBA4444} is not implemented by
  *  [at]pixi/basis.
- *
  * @ignore
  */
 export const BASIS_FORMAT_TO_TYPE: { [id: number]: TYPES } = {
@@ -61,7 +58,6 @@ export const BASIS_FORMAT_TO_TYPE: { [id: number]: TYPES } = {
 
 /**
  * Maps {@link PIXI.INTERNAL_FORMATS} to {@link BASIS_FORMATS}
- *
  * @ignore
  */
 export const INTERNAL_FORMAT_TO_BASIS_FORMAT: { [id: number]: number }
@@ -76,7 +72,6 @@ export const INTERNAL_FORMAT_TO_BASIS_FORMAT: { [id: number]: number }
 
 /**
  * Enumerates the basis formats with alpha components
- *
  * @ignore
  */
 export const BASIS_FORMATS_ALPHA: { [id: number]: boolean } = {
@@ -87,7 +82,6 @@ export const BASIS_FORMATS_ALPHA: { [id: number]: boolean } = {
 
 /**
  * Binding to C++ {@code BasisFile} wrapper class.
- *
  * @see https://github.com/BinomialLLC/basis_universal/blob/master/webgl/transcoder/basis_wrappers.cpp
  * @private
  */
@@ -117,7 +111,6 @@ export declare class BasisFile
 // Missing typings? - https://github.com/microsoft/TypeScript/issues/39655
 /**
  * Compressed texture extensions relevant to the formats into which Basis can decompress into.
- *
  * @ignore
  */
 /* eslint-disable camelcase */
@@ -134,7 +127,6 @@ export type BasisTextureExtensions = {
 
 /**
  * API provided by basis_universal WebGL library.
- *
  * @ignore
  */
 export type BasisBinding = {
@@ -144,7 +136,6 @@ export type BasisBinding = {
 
 /**
  * Binding to basis_universal WebGL library.
- *
  * @see https://github.com/BinomialLLC/basis_universal/blob/master/webgl/transcoder/build/basis_transcoder.js
  * @ignore
  */

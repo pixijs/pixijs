@@ -5,7 +5,6 @@ import fragment from './noise.frag';
  * A Noise effect filter.
  *
  * original filter: https://github.com/evanw/glfx.js/blob/master/src/filters/adjust/noise.js
- *
  * @memberof PIXI.filters
  * @author Vico @vicocotea
  */
@@ -28,7 +27,6 @@ export class NoiseFilter extends Filter
 
     /**
      * The amount of noise to apply, this value should be in the range (0, 1].
-     *
      * @default 0.5
      */
     get noise(): number

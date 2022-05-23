@@ -5,9 +5,7 @@ import type { Dict } from '@pixi/utils';
 import type { ImageResource } from '@pixi/core';
 import type { IPointData } from '@pixi/math';
 
-/**
- * Represents the JSON data for a spritesheet atlas.
- */
+/** Represents the JSON data for a spritesheet atlas. */
 export interface ISpritesheetFrameData {
     frame: {
         x: number;
@@ -28,9 +26,7 @@ export interface ISpritesheetFrameData {
     anchor?: IPointData;
 }
 
-/**
- * Atlas format.
- */
+/** Atlas format. */
 export interface ISpritesheetData {
     frames: Dict<ISpritesheetFrameData>;
     animations?: Dict<string[]>;
@@ -66,7 +62,6 @@ export interface ISpritesheetData {
  * {@link https://renderhjs.net/shoebox/|Shoebox} or {@link https://github.com/krzysztof-o/spritesheet.js|Spritesheet.js}.
  * Default anchor points (see {@link PIXI.Texture#defaultAnchor}) and grouping of animation sprites are currently only
  * supported by TexturePacker.
- *
  * @memberof PIXI
  */
 export class Spritesheet
@@ -97,7 +92,7 @@ export class Spritesheet
 
     /**
      * Reference to the original JSON data.
-     * @type {Object}
+     * @type {object}
      */
     public data: ISpritesheetData;
 
@@ -112,7 +107,7 @@ export class Spritesheet
 
     /**
      * Map of spritesheet frames.
-     * @type {Object}
+     * @type {object}
      */
     private _frames: Dict<ISpritesheetFrameData>;
 
@@ -129,8 +124,8 @@ export class Spritesheet
     private _callback: (textures: Dict<Texture>) => void;
 
     /**
-     * @param baseTexture - Reference to the source BaseTexture object.
-     * @param {Object} data - Spritesheet image data.
+     * @param texture - Reference to the source BaseTexture object.
+     * @param {object} data - Spritesheet image data.
      * @param resolutionFilename - The filename to consider when determining
      *        the resolution of the spritesheet. If not provided, the imageUrl will
      *        be used on the BaseTexture.
@@ -155,10 +150,9 @@ export class Spritesheet
     /**
      * Generate the resolution from the filename or fallback
      * to the meta.scale field of the JSON data.
-     *
      * @param resolutionFilename - The filename to use for resolving
      *        the default resolution.
-     * @return Resolution to use for spritesheet.
+     * @returns Resolution to use for spritesheet.
      */
     private _updateResolution(resolutionFilename: string = null): number
     {
@@ -186,7 +180,6 @@ export class Spritesheet
     /**
      * Parser spritesheet from loaded data. This is done asynchronously
      * to prevent creating too many Texture within a single process.
-     *
      * @param {Function} callback - Callback when complete returns
      *        a map of the Textures for this spritesheet.
      */
@@ -209,7 +202,6 @@ export class Spritesheet
 
     /**
      * Process a batch of frames
-     *
      * @param initialFrameIndex - The index of frame to start.
      */
     private _processFrames(initialFrameIndex: number): void
@@ -332,7 +324,6 @@ export class Spritesheet
 
     /**
      * Destroy Spritesheet and don't use after this.
-     *
      * @param {boolean} [destroyBase=false] - Whether to destroy the base texture as well
      */
     public destroy(destroyBase = false): void
@@ -364,7 +355,7 @@ export class Spritesheet
 
 /**
  * Dictionary of textures from Spritesheet.
- * @member {object<string, PIXI.Texture>} textures
+ * @member {Object<string, PIXI.Texture>} textures
  * @memberof PIXI.LoaderResource
  * @instance
  */

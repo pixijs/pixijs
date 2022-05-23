@@ -14,42 +14,36 @@ export interface IUnloadableTexture {
 /**
  * System plugin to the renderer to manage texture garbage collection on the GPU,
  * ensuring that it does not get clogged up with textures that are no longer being used.
- *
  * @memberof PIXI
  */
 export class TextureGCSystem implements ISystem
 {
     /**
      * Count
-     *
      * @readonly
      */
     public count: number;
 
     /**
      * Check count
-     *
      * @readonly
      */
     public checkCount: number;
 
     /**
      * Maximum idle time, in seconds
-     *
      * @see PIXI.settings.GC_MAX_IDLE
      */
     public maxIdle: number;
 
     /**
      * Maximum number of item to check
-     *
      * @see PIXI.settings.GC_MAX_CHECK_COUNT
      */
     public checkCountMax: number;
 
     /**
      * Current garbage collection mode
-     *
      * @see PIXI.settings.GC_MODE
      */
     public mode: GC_MODES;
@@ -136,7 +130,6 @@ export class TextureGCSystem implements ISystem
 
     /**
      * Removes all the textures within the specified displayObject and its children from the GPU
-     *
      * @param {PIXI.DisplayObject} displayObject - the displayObject to remove the textures from.
      */
     unload(displayObject: IUnloadableTexture): void

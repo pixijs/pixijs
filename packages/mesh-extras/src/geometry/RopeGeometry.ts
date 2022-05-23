@@ -10,7 +10,6 @@ import type { IPoint } from '@pixi/math';
  * };
  * const rope = new PIXI.RopeGeometry(100, points);
  * ```
- *
  * @memberof PIXI
  */
 export class RopeGeometry extends MeshGeometry
@@ -23,7 +22,6 @@ export class RopeGeometry extends MeshGeometry
 
     /**
      * The width (i.e., thickness) of the rope.
-     *
      * @readonly
      */
     _width: number;
@@ -54,8 +52,7 @@ export class RopeGeometry extends MeshGeometry
 
     /**
      * The width (i.e., thickness) of the rope.
-     *
-     * @readOnly
+     * @readonly
      */
     get width(): number
     {
@@ -150,9 +147,7 @@ export class RopeGeometry extends MeshGeometry
         this.updateVertices();
     }
 
-    /**
-     * refreshes vertices of Rope mesh
-     */
+    /** refreshes vertices of Rope mesh */
     public updateVertices(): void
     {
         const points = this.points;

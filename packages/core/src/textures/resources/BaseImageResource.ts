@@ -8,14 +8,12 @@ import type { GLTexture } from '../GLTexture';
 
 /**
  * Base for all the image/canvas resources.
- *
  * @memberof PIXI
  */
 export class BaseImageResource extends Resource
 {
     /**
      * The source element.
-     *
      * @member {HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|SVGElement}
      * @readonly
      */
@@ -24,7 +22,6 @@ export class BaseImageResource extends Resource
     /**
      * If set to `true`, will force `texImage2D` over `texSubImage2D` for uploading.
      * Certain types of media (e.g. video) using `texImage2D` is more performant.
-     *
      * @default false
      * @private
      */
@@ -47,7 +44,6 @@ export class BaseImageResource extends Resource
 
     /**
      * Set cross origin based detecting the url and the crossorigin
-     *
      * @param element - Element to apply crossOrigin
      * @param url - URL to check
      * @param crossorigin - Cross origin value to use
@@ -66,7 +62,6 @@ export class BaseImageResource extends Resource
 
     /**
      * Upload the texture to the GPU.
-     *
      * @param renderer - Upload to the renderer
      * @param baseTexture - Reference to parent texture
      * @param glTexture

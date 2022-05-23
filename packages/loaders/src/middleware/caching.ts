@@ -6,7 +6,6 @@ const cache: Dict<any> = {};
 
 /**
  * A simple in-memory cache for resource.
- *
  * @ignore
  * @function caching
  * @example

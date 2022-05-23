@@ -37,10 +37,10 @@ export interface ICompressedTextureResourceOptions
  * For most developers, container file formats are a better abstraction instead of directly handling raw texture
  * data. PixiJS provides native support for the following texture file formats (via {@link PIXI.Loader}):
  *
- * * **.dds** - the DirectDraw Surface file format stores DXTn (DXT-1,3,5) data. See {@link PIXI.DDSLoader}
- * * **.ktx** - the Khronos Texture Container file format supports storing all the supported WebGL compression formats.
+ * **.dds** - the DirectDraw Surface file format stores DXTn (DXT-1,3,5) data. See {@link PIXI.DDSLoader}
+ * **.ktx** - the Khronos Texture Container file format supports storing all the supported WebGL compression formats.
  *  See {@link PIXI.KTXLoader}.
- * * **.basis** - the BASIS supercompressed file format stores texture data in an internal format that is transcoded
+ * **.basis** - the BASIS supercompressed file format stores texture data in an internal format that is transcoded
  *  to the compression format supported on the device at _runtime_. It also supports transcoding into a uncompressed
  *  format as a fallback; you must install the `@pixi/basis-loader`, `@pixi/basis-transcoder` packages separately to
  *  use these files. See {@link PIXI.BasisLoader}.
@@ -73,7 +73,6 @@ export interface ICompressedTextureResourceOptions
  * PIXI.BaseTexture.addToCache(baseTexture, "bunny.dxt5");
  * PIXI.Texture.addToCache(texture, "bunny.dxt5");
  * ```
- *
  * @memberof PIXI
  */
 export class CompressedTextureResource extends BlobResource
@@ -172,7 +171,6 @@ export class CompressedTextureResource extends BlobResource
 
     /**
      * Returns the key (to ContextSystem#extensions) for the WebGL extension supporting the compression format
-     *
      * @private
      * @param format - the compression format to get the extension for.
      */
@@ -206,7 +204,6 @@ export class CompressedTextureResource extends BlobResource
 
     /**
      * Pre-creates buffer views for each mipmap level
-     *
      * @private
      * @param buffer -
      * @param format - compression formats

@@ -66,7 +66,6 @@ const charRenderDataPool: CharRenderData[] = [];
  *   align: "right"
  * });
  * ```
- *
  * @memberof PIXI
  */
 export class BitmapText extends Container
@@ -83,21 +82,18 @@ export class BitmapText extends Container
 
     /**
      * Private tracker for the width of the overall text.
-     *
      * @private
      */
     protected _textWidth: number;
 
     /**
      * Private tracker for the height of the overall text.
-     *
      * @private
      */
     protected _textHeight: number;
 
     /**
      * Private tracker for the current text.
-     *
      * @private
      */
     protected _text: string;
@@ -106,7 +102,6 @@ export class BitmapText extends Container
      * The max width of this bitmap text in pixels. If the text provided is longer than the
      * value provided, line breaks will be automatically inserted in the last whitespace.
      * Disable by setting value to 0
-     *
      * @private
      */
     protected _maxWidth: number;
@@ -114,21 +109,18 @@ export class BitmapText extends Container
     /**
      * The max line height. This is useful when trying to use the total height of the Text,
      * ie: when trying to vertically align. (Internally used)
-     *
      * @private
      */
     protected _maxLineHeight: number;
 
     /**
      * Letter spacing. This is useful for setting the space between characters.
-     *
      * @private
      */
     protected _letterSpacing: number;
 
     /**
      * Text anchor.
-     *
      * @readonly
      * @private
      */
@@ -136,21 +128,18 @@ export class BitmapText extends Container
 
     /**
      * Private tracker for the current font name.
-     *
      * @private
      */
     protected _fontName: string;
 
     /**
      * Private tracker for the current font size.
-     *
      * @private
      */
     protected _fontSize: number;
 
     /**
      * Private tracker for the current text align.
-     *
      * @type {string}
      * @private
      */
@@ -161,14 +150,12 @@ export class BitmapText extends Container
 
     /**
      * Private tracker for the current tint.
-     *
      * @private
      */
     protected _tint = 0xFFFFFF;
 
     /**
      * If true PixiJS will Math.floor() x/y values when rendering.
-     *
      * @default PIXI.settings.ROUND_PIXELS
      */
     protected _roundPixels: boolean;
@@ -218,10 +205,7 @@ export class BitmapText extends Container
         this._textureCache = {};
     }
 
-    /**
-     * Renders text and updates it when needed. This should only be called
-     * if the BitmapFont is regenerated.
-     */
+    /** Renders text and updates it when needed. This should only be called if the BitmapFont is regenerated. */
     public updateText(): void
     {
         const data = BitmapFont.available[this._fontName];
@@ -633,8 +617,7 @@ export class BitmapText extends Container
 
     /**
      * Validates text before calling parent's getLocalBounds
-     *
-     * @return - The rectangular bounding area
+     * @returns - The rectangular bounding area
      */
     public getLocalBounds(): Rectangle
     {
@@ -645,7 +628,6 @@ export class BitmapText extends Container
 
     /**
      * Updates text when needed
-     *
      * @private
      */
     protected validate(): void
@@ -659,7 +641,6 @@ export class BitmapText extends Container
 
     /**
      * The tint of the BitmapText object.
-     *
      * @default 0xffffff
      */
     public get tint(): number
@@ -681,7 +662,6 @@ export class BitmapText extends Container
 
     /**
      * The alignment of the BitmapText object.
-     *
      * @member {string}
      * @default 'left'
      */
@@ -801,7 +781,6 @@ export class BitmapText extends Container
     /**
      * The max line height. This is useful when trying to use the total height of the Text,
      * i.e. when trying to vertically align.
-     *
      * @readonly
      */
     public get maxLineHeight(): number
@@ -814,7 +793,6 @@ export class BitmapText extends Container
     /**
      * The width of the overall text, different from fontSize,
      * which is defined in the style object.
-     *
      * @readonly
      */
     public get textWidth(): number
@@ -844,7 +822,6 @@ export class BitmapText extends Container
      * Advantages can include sharper image quality (like text) and faster rendering on canvas.
      * The main disadvantage is movement of objects may appear less smooth.
      * To set the global default, change {@link PIXI.settings.ROUND_PIXELS}
-     *
      * @default PIXI.settings.ROUND_PIXELS
      */
     public get roundPixels(): boolean
@@ -864,7 +841,6 @@ export class BitmapText extends Container
     /**
      * The height of the overall text, different from fontSize,
      * which is defined in the style object.
-     *
      * @readonly
      */
     public get textHeight(): number

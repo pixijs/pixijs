@@ -1,9 +1,7 @@
 /**
  * Supported line joints in `PIXI.LineStyle` for graphics.
- *
  * @see PIXI.Graphics#lineStyle
  * @see https://graphicdesign.stackexchange.com/questions/59018/what-is-a-bevel-join-of-two-lines-exactly-illustrator
- *
  * @name LINE_JOIN
  * @memberof PIXI
  * @static
@@ -20,9 +18,7 @@ export enum LINE_JOIN {
 
 /**
  * Support line caps in `PIXI.LineStyle` for graphics.
- *
  * @see PIXI.Graphics#lineStyle
- *
  * @name LINE_CAP
  * @memberof PIXI
  * @static
@@ -52,16 +48,15 @@ export interface IGraphicsCurvesSettings {
  * Graphics curves resolution settings. If `adaptive` flag is set to `true`,
  * the resolution is calculated based on the curve's length to ensure better visual quality.
  * Adaptive draw works with `bezierCurveTo` and `quadraticCurveTo`.
- *
  * @static
  * @constant
  * @memberof PIXI
  * @name GRAPHICS_CURVES
  * @type {object}
- * @property {boolean} adaptive=true - flag indicating if the resolution should be adaptive
- * @property {number} maxLength=10 - maximal length of a single segment of the curve (if adaptive = false, ignored)
- * @property {number} minSegments=8 - minimal number of segments in the curve (if adaptive = false, ignored)
- * @property {number} maxSegments=2048 - maximal number of segments in the curve (if adaptive = false, ignored)
+ * @property {boolean} [adaptive=true] - flag indicating if the resolution should be adaptive
+ * @property {number} [maxLength=10] - maximal length of a single segment of the curve (if adaptive = false, ignored)
+ * @property {number} [minSegments=8] - minimal number of segments in the curve (if adaptive = false, ignored)
+ * @property {number} [maxSegments=2048] - maximal number of segments in the curve (if adaptive = false, ignored)
  */
 export const GRAPHICS_CURVES: IGraphicsCurvesSettings = {
     adaptive: true,

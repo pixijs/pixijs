@@ -8,7 +8,6 @@ import type { Texture } from '@pixi/core';
  *
  * Tinting with the CanvasRenderer involves creating a new canvas to use as a texture,
  * so be aware of the performance implications.
- *
  * @namespace PIXI.canvasUtils
  * @memberof PIXI
  */
@@ -17,11 +16,11 @@ export const canvasUtils = {
 
     /**
      * Basically this method just needs a sprite and a color and tints the sprite with the given color.
-     *
      * @memberof PIXI.canvasUtils
      * @param {PIXI.Sprite} sprite - the sprite to tint
+     * @param sprite.texture
      * @param {number} color - the color to use to tint the sprite with
-     * @return {HTMLCanvasElement} The tinted canvas
+     * @returns {HTMLCanvasElement} The tinted canvas
      */
     getTintedCanvas: (sprite: { texture: Texture }, color: number): HTMLCanvasElement | HTMLImageElement =>
     {
@@ -74,11 +73,10 @@ export const canvasUtils = {
 
     /**
      * Basically this method just needs a sprite and a color and tints the sprite with the given color.
-     *
      * @memberof PIXI.canvasUtils
      * @param {PIXI.Texture} texture - the sprite to tint
      * @param {number} color - the color to use to tint the sprite with
-     * @return {HTMLCanvasElement} The tinted canvas
+     * @returns {HTMLCanvasElement} The tinted canvas
      */
     getTintedPattern: (texture: Texture, color: number): CanvasPattern =>
     {
@@ -108,7 +106,6 @@ export const canvasUtils = {
 
     /**
      * Tint a texture using the 'multiply' operation.
-     *
      * @memberof PIXI.canvasUtils
      * @param {PIXI.Texture} texture - the texture to tint
      * @param {number} color - the color to use to tint the sprite with
@@ -167,7 +164,6 @@ export const canvasUtils = {
 
     /**
      * Tint a texture using the 'overlay' operation.
-     *
      * @memberof PIXI.canvasUtils
      * @param {PIXI.Texture} texture - the texture to tint
      * @param {number} color - the color to use to tint the sprite with
@@ -211,7 +207,6 @@ export const canvasUtils = {
 
     /**
      * Tint a texture pixel per pixel.
-     *
      * @memberof PIXI.canvasUtils
      * @param {PIXI.Texture} texture - the texture to tint
      * @param {number} color - the color to use to tint the sprite with
@@ -267,10 +262,9 @@ export const canvasUtils = {
 
     /**
      * Rounds the specified color according to the canvasUtils.cacheStepsPerColorChannel.
-     *
      * @memberof PIXI.canvasUtils
      * @param {number} color - the color to round, should be a hex color
-     * @return {number} The rounded color.
+     * @returns {number} The rounded color.
      */
     roundColor: (color: number): number =>
     {
@@ -287,7 +281,6 @@ export const canvasUtils = {
 
     /**
      * Number of steps which will be used as a cap when rounding colors.
-     *
      * @memberof PIXI.canvasUtils
      * @type {number}
      */
@@ -295,7 +288,6 @@ export const canvasUtils = {
 
     /**
      * Tint cache boolean flag.
-     *
      * @memberof PIXI.canvasUtils
      * @type {boolean}
      */
@@ -303,7 +295,6 @@ export const canvasUtils = {
 
     /**
      * Whether or not the Canvas BlendModes are supported, consequently the ability to tint using the multiply method.
-     *
      * @memberof PIXI.canvasUtils
      * @type {boolean}
      */
@@ -311,7 +302,6 @@ export const canvasUtils = {
 
     /**
      * The tinting method that will be used.
-     *
      * @memberof PIXI.canvasUtils
      * @type {Function}
      */

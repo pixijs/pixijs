@@ -2,37 +2,33 @@ import type { Program, Texture, BaseTexture } from '@pixi/core';
 
 /**
  * @todo Describe property usage
- *
  * @static
  * @name ProgramCache
  * @memberof PIXI.utils
- * @type {Object}
+ * @type {object}
  */
 export const ProgramCache: {[key: string]: Program} = {};
 
 /**
  * @todo Describe property usage
- *
  * @static
  * @name TextureCache
  * @memberof PIXI.utils
- * @type {Object}
+ * @type {object}
  */
 export const TextureCache: {[key: string]: Texture} = Object.create(null);
 
 /**
  * @todo Describe property usage
- *
  * @static
  * @name BaseTextureCache
  * @memberof PIXI.utils
- * @type {Object}
+ * @type {object}
  */
 export const BaseTextureCache: {[key: string]: BaseTexture} = Object.create(null);
 
 /**
  * Destroys all texture in the cache
- *
  * @memberof PIXI.utils
  * @function destroyTextureCache
  */
@@ -52,7 +48,6 @@ export function destroyTextureCache(): void
 
 /**
  * Removes all textures from cache, but does not destroy them
- *
  * @memberof PIXI.utils
  * @function clearTextureCache
  */

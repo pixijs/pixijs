@@ -80,7 +80,7 @@ export class TranscoderWorker
         });
     }
 
-    /** @return a promise that is resolved when the web-worker is initialized */
+    /** @returns a promise that is resolved when the web-worker is initialized */
     initAsync(): Promise<void>
     {
         return this.initPromise;
@@ -91,7 +91,7 @@ export class TranscoderWorker
      * @param basisData - *.basis file contents
      * @param rgbaFormat - transcoding format for RGBA files
      * @param rgbFormat - transcoding format for RGB files
-     * @return a promise that is resolved with the transcoding response of the web-worker
+     * @returns a promise that is resolved with the transcoding response of the web-worker
      */
     async transcodeAsync(
         basisData: Uint8Array,
@@ -162,7 +162,7 @@ export class TranscoderWorker
      * Loads the transcoder source code
      * @param jsURL - URL to the javascript basis transcoder
      * @param wasmURL - URL to the wasm basis transcoder
-     * @return A promise that resolves when both the js and wasm transcoders have been loaded.
+     * @returns A promise that resolves when both the js and wasm transcoders have been loaded.
      */
     static loadTranscoder(jsURL: string, wasmURL: string): Promise<[void, void]>
     {

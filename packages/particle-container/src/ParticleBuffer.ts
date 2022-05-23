@@ -19,7 +19,6 @@ import type { IParticleRendererProperty } from './ParticleRenderer';
 
 /**
  * The particle buffer manages the static and dynamic buffers for a particle container.
- *
  * @private
  * @memberof PIXI
  */
@@ -182,7 +181,6 @@ export class ParticleBuffer
 
     /**
      * Uploads the dynamic properties.
-     *
      * @param children - The children to upload.
      * @param startIndex - The index to start at.
      * @param amount - The number to upload.
@@ -203,7 +201,6 @@ export class ParticleBuffer
 
     /**
      * Uploads the static properties.
-     *
      * @param children - The children to upload.
      * @param startIndex - The index to start at.
      * @param amount - The number to upload.

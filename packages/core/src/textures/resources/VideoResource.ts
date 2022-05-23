@@ -19,7 +19,6 @@ export interface IVideoResourceOptionsElement
 
 /**
  * Resource type for {@code HTMLVideoElement}.
- *
  * @memberof PIXI
  */
 export class VideoResource extends BaseImageResource
@@ -29,14 +28,12 @@ export class VideoResource extends BaseImageResource
 
     /**
      * `true` to use PIXI.Ticker.shared to auto update the base texture.
-     *
      * @default true
      */
     protected _autoUpdate: boolean;
 
     /**
      * `true` if the instance is currently connected to PIXI.Ticker.shared to auto update the base texture.
-     *
      * @default false
      */
     protected _isConnectedToTicker: boolean;
@@ -46,14 +43,12 @@ export class VideoResource extends BaseImageResource
     /**
      * When set to true will automatically play videos used by this texture once
      * they are loaded. If false, it will not modify the playing state.
-     *
      * @default true
      */
     protected autoPlay: boolean;
 
     /**
      * Promise when loading.
-     *
      * @default null
      */
     private _load: Promise<VideoResource>;
@@ -142,8 +137,7 @@ export class VideoResource extends BaseImageResource
 
     /**
      * Trigger updating of the texture.
-     *
-     * @param deltaTime - time delta since last tick
+     * @param _deltaTime - time delta since last tick
      */
     update(_deltaTime = 0): void
     {
@@ -163,8 +157,7 @@ export class VideoResource extends BaseImageResource
 
     /**
      * Start preloading the video resource.
-     *
-     * @return {Promise<void>} Handle the validate event
+     * @returns {Promise<void>} Handle the validate event
      */
     load(): Promise<VideoResource>
     {
@@ -212,7 +205,10 @@ export class VideoResource extends BaseImageResource
         return this._load;
     }
 
-    /** Handle video error events. */
+    /**
+     * Handle video error events.
+     * @param event
+     */
     private _onError(event: ErrorEvent): void
     {
         (this.source as HTMLVideoElement).removeEventListener('error', this._onError, true);
@@ -221,8 +217,7 @@ export class VideoResource extends BaseImageResource
 
     /**
      * Returns true if the underlying source is playing.
-     *
-     * @return - True if playing.
+     * @returns - True if playing.
      */
     private _isSourcePlaying(): boolean
     {
@@ -233,8 +228,7 @@ export class VideoResource extends BaseImageResource
 
     /**
      * Returns true if the underlying source is ready for playing.
-     *
-     * @return - True if ready.
+     * @returns - True if ready.
      */
     private _isSourceReady(): boolean
     {
@@ -363,10 +357,9 @@ export class VideoResource extends BaseImageResource
 
     /**
      * Used to auto-detect the type of resource.
-     *
      * @param {*} source - The source object
      * @param {string} extension - The extension of source, if set
-     * @return {boolean} `true` if video source
+     * @returns {boolean} `true` if video source
      */
     static test(source: unknown, extension?: string): source is HTMLVideoElement
     {
@@ -376,14 +369,12 @@ export class VideoResource extends BaseImageResource
 
     /**
      * List of common video file extensions supported by VideoResource.
-     *
      * @readonly
      */
     static TYPES: Array<string> = ['mp4', 'm4v', 'webm', 'ogg', 'ogv', 'h264', 'avi', 'mov'];
 
     /**
      * Map of video MIME types that can't be directly derived from file extensions.
-     *
      * @readonly
      */
     static MIME_TYPES: Dict<string> = {

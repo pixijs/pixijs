@@ -10,7 +10,6 @@ import type { BLEND_MODES } from '@pixi/constants';
  * The BlurFilter applies a Gaussian blur to an object.
  *
  * The strength of the blur can be set for the x-axis and y-axis separately.
- *
  * @memberof PIXI.filters
  */
 export class BlurFilter extends Filter
@@ -42,7 +41,6 @@ export class BlurFilter extends Filter
 
     /**
      * Applies the filter.
-     *
      * @param filterManager - The manager.
      * @param input - The input target.
      * @param output - The output target.
@@ -86,7 +84,6 @@ export class BlurFilter extends Filter
 
     /**
      * Sets the strength of both the blurX and blurY properties simultaneously
-     *
      * @default 2
      */
     get blur(): number
@@ -102,7 +99,6 @@ export class BlurFilter extends Filter
 
     /**
      * Sets the number of passes for blur. More passes means higher quality bluring.
-     *
      * @default 1
      */
     get quality(): number
@@ -117,7 +113,6 @@ export class BlurFilter extends Filter
 
     /**
      * Sets the strength of the blurX property
-     *
      * @default 2
      */
     get blurX(): number
@@ -133,7 +128,6 @@ export class BlurFilter extends Filter
 
     /**
      * Sets the strength of the blurY property
-     *
      * @default 2
      */
     get blurY(): number
@@ -149,7 +143,6 @@ export class BlurFilter extends Filter
 
     /**
      * Sets the blendmode of the filter
-     *
      * @default PIXI.BLEND_MODES.NORMAL
      */
     get blendMode(): BLEND_MODES
@@ -164,7 +157,6 @@ export class BlurFilter extends Filter
 
     /**
      * If set to true the edge of the target will be clamped
-     *
      * @default false
      */
     get repeatEdgePixels(): boolean

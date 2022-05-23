@@ -16,7 +16,6 @@ const tempMat = new Matrix();
 
 /**
  * WebGL renderer plugin for tiling sprites
- *
  * @class
  * @memberof PIXI
  * @extends PIXI.ObjectRenderer
@@ -30,7 +29,6 @@ export class TilingSpriteRenderer extends ObjectRenderer
 
     /**
      * constructor for renderer
-     *
      * @param {PIXI.Renderer} renderer - The renderer this tiling awesomeness works for.
      */
     constructor(renderer: Renderer)
@@ -44,16 +42,13 @@ export class TilingSpriteRenderer extends ObjectRenderer
 
         /**
          * The WebGL state in which this renderer will work.
-         *
          * @member {PIXI.State}
          * @readonly
          */
         this.state = State.for2d();
     }
 
-    /**
-     * Creates shaders when context is initialized.
-     */
+    /** Creates shaders when context is initialized. */
     contextChange(): void
     {
         const renderer = this.renderer;

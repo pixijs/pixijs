@@ -11,7 +11,6 @@ const TEMP_RECT = new Rectangle();
  * The extract manager provides functionality to export content from the renderers.
  *
  * An instance of this class is automatically created by default, and can be found at `renderer.plugins.extract`
- *
  * @class
  * @memberof PIXI
  */
@@ -30,12 +29,11 @@ export class CanvasExtract
 
     /**
      * Will return a HTML Image of the target
-     *
      * @param target - A displayObject or renderTexture
      *  to convert. If left empty will use the main renderer
      * @param format - Image format, e.g. "image/jpeg" or "image/webp".
      * @param quality - JPEG or Webp compression from 0 to 1. Default is 0.92.
-     * @return HTML Image of the target
+     * @returns HTML Image of the target
      */
     public image(target?: DisplayObject|RenderTexture, format?: string, quality?: number): HTMLImageElement
     {
@@ -49,12 +47,11 @@ export class CanvasExtract
     /**
      * Will return a base64 encoded string of this target. It works by calling
      *  `CanvasExtract.getCanvas` and then running toDataURL on that.
-     *
      * @param target - A displayObject or renderTexture
      *  to convert. If left empty will use the main renderer
      * @param format - Image format, e.g. "image/jpeg" or "image/webp".
      * @param quality - JPEG or Webp compression from 0 to 1. Default is 0.92.
-     * @return A base64 encoded string of the texture.
+     * @returns A base64 encoded string of the texture.
      */
     public base64(target?: DisplayObject|RenderTexture, format?: string, quality?: number): string
     {
@@ -63,10 +60,9 @@ export class CanvasExtract
 
     /**
      * Creates a Canvas element, renders this target to it and then returns it.
-     *
      * @param target - A displayObject or renderTexture
      *  to convert. If left empty will use the main renderer
-     * @return A Canvas element with the texture rendered on.
+     * @returns A Canvas element with the texture rendered on.
      */
     public canvas(target?: DisplayObject|RenderTexture): HTMLCanvasElement
     {
@@ -118,10 +114,9 @@ export class CanvasExtract
     /**
      * Will return a one-dimensional array containing the pixel data of the entire texture in RGBA
      * order, with integer values between 0 and 255 (included).
-     *
      * @param target - A displayObject or renderTexture
      *  to convert. If left empty will use the main renderer
-     * @return One-dimensional array containing the pixel data of the entire texture
+     * @returns One-dimensional array containing the pixel data of the entire texture
      */
     public pixels(target?: DisplayObject|RenderTexture): Uint8ClampedArray
     {

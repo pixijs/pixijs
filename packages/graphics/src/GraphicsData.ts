@@ -4,14 +4,12 @@ import type { LineStyle } from './styles/LineStyle';
 
 /**
  * A class to contain data useful for Graphics objects
- *
  * @memberof PIXI
  */
 export class GraphicsData
 {
     /**
      * The shape object to draw.
-     *
      * @member {PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.Rectangle|PIXI.RoundedRectangle}
      */
     shape: IShape;
@@ -52,8 +50,7 @@ export class GraphicsData
 
     /**
      * Creates a new GraphicsData object with the same values as this one.
-     *
-     * @return - Cloned GraphicsData object
+     * @returns - Cloned GraphicsData object
      */
     public clone(): GraphicsData
     {

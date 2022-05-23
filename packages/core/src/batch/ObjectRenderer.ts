@@ -4,7 +4,6 @@ import type { Renderer } from '../Renderer';
 /**
  * Base for a common object renderer that can be used as a
  * system renderer plugin.
- *
  * @memberof PIXI
  */
 export class ObjectRenderer implements ISystem
@@ -20,19 +19,13 @@ export class ObjectRenderer implements ISystem
         this.renderer = renderer;
     }
 
-    /**
-     * Stub method that should be used to empty the current
-     * batch by rendering objects now.
-     */
+    /** Stub method that should be used to empty the current batch by rendering objects now. */
     flush(): void
     {
         // flush!
     }
 
-    /**
-     * Generic destruction method that frees all resources. This
-     * should be called by subclasses.
-     */
+    /** Generic destruction method that frees all resources. This should be called by subclasses. */
     destroy(): void
     {
         this.renderer = null;
@@ -49,10 +42,7 @@ export class ObjectRenderer implements ISystem
         // set the shader..
     }
 
-    /**
-     * Stops the renderer. It should free up any state and
-     * become dormant.
-     */
+    /** Stops the renderer. It should free up any state and become dormant. */
     stop(): void
     {
         this.flush();
@@ -61,8 +51,7 @@ export class ObjectRenderer implements ISystem
     /**
      * Keeps the object to render. It doesn't have to be
      * rendered immediately.
-     *
-     * @param {PIXI.DisplayObject} object - The object to render.
+     * @param {PIXI.DisplayObject} _object - The object to render.
      */
     render(_object: any): void // eslint-disable-line @typescript-eslint/explicit-module-boundary-types
     {

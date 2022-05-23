@@ -6,7 +6,6 @@ let context: WebGLRenderingContext | WebGL2RenderingContext = unknownContext as 
 
 /**
  * returns a little WebGL context to use for program inspection.
- *
  * @static
  * @private
  * @returns {WebGLRenderingContext} a gl context to test with

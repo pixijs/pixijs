@@ -54,7 +54,6 @@ export interface CrossPlatformCanvasRenderingContext2D extends CanvasRenderingCo
  *
  * This renderer should be used for browsers that do not support WebGL.
  * Don't forget to add the CanvasRenderer.view to your DOM or you will not see anything!
- *
  * @class
  * @memberof PIXI
  * @extends PIXI.AbstractRenderer
@@ -152,9 +151,7 @@ export class CanvasRenderer extends AbstractRenderer
         this.resize(this.options.width, this.options.height);
     }
 
-    /**
-     * Adds a new system to the renderer. It does nothing in the CanvasRenderer.
-     */
+    /** Adds a new system to the renderer. It does nothing in the CanvasRenderer. */
     addSystem(): this
     {
         return this;
@@ -162,7 +159,6 @@ export class CanvasRenderer extends AbstractRenderer
 
     /**
      * Renders the object to its WebGL view.
-     *
      * @param displayObject - The object to be rendered.
      * @param options - Object to use for render options.
      * @param {PIXI.RenderTexture} [options.renderTexture] - The render texture to render to.
@@ -174,7 +170,6 @@ export class CanvasRenderer extends AbstractRenderer
 
     /**
      * Please use the `option` render arguments instead.
-     *
      * @deprecated Since 6.0.0
      * @param displayObject - The object to be rendered.
      * @param renderTexture - The render texture to render to.
@@ -372,7 +367,6 @@ export class CanvasRenderer extends AbstractRenderer
 
     /**
      * Clear the canvas of renderer.
-     *
      * @param {string} [clearColor] - Clear the canvas with this color, except the canvas is transparent.
      * @param {number} [alpha] - Alpha to apply to the background fill color.
      */
@@ -393,7 +387,6 @@ export class CanvasRenderer extends AbstractRenderer
 
     /**
      * Sets the blend mode of the renderer.
-     *
      * @param {number} blendMode - See {@link PIXI.BLEND_MODES} for valid values.
      * @param {boolean} [readyForOuterBlend=false] - Some blendModes are dangerous, they affect outer space of sprite.
      * Pass `true` only if you are ready to use them.
@@ -422,7 +415,6 @@ export class CanvasRenderer extends AbstractRenderer
 
     /**
      * Removes everything from the renderer and optionally removes the Canvas DOM element.
-     *
      * @param {boolean} [removeView=false] - Removes the Canvas element from the DOM.
      */
     public destroy(removeView?: boolean): void
@@ -442,9 +434,7 @@ export class CanvasRenderer extends AbstractRenderer
 
     /**
      * Resizes the canvas view to the specified width and height.
-     *
      * @extends PIXI.AbstractRenderer#resize
-     *
      * @param desiredScreenWidth - the desired width of the screen
      * @param desiredScreenHeight - the desired height of the screen
      */
@@ -482,7 +472,6 @@ export class CanvasRenderer extends AbstractRenderer
 
     /**
      * Adds a plugin to the renderer.
-     *
      * @param pluginName - The name of the plugin.
      * @param ctor - The constructor function or class for the plugin.
      */

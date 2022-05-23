@@ -1,6 +1,5 @@
 /**
  * Different types of environments for WebGL.
- *
  * @static
  * @memberof PIXI
  * @name ENV
@@ -18,7 +17,6 @@ export enum ENV {
 
 /**
  * Constant to identify the Renderer Type.
- *
  * @static
  * @memberof PIXI
  * @name RENDERER_TYPE
@@ -35,7 +33,6 @@ export enum RENDERER_TYPE {
 
 /**
  * Bitwise OR of masks that indicate the buffers to be cleared.
- *
  * @static
  * @memberof PIXI
  * @name BUFFER_BITS
@@ -55,42 +52,41 @@ export enum BUFFER_BITS {
  *
  * IMPORTANT - The WebGL renderer only supports the NORMAL, ADD, MULTIPLY and SCREEN blend modes.
  * Anything else will silently act like NORMAL.
- *
  * @memberof PIXI
  * @name BLEND_MODES
  * @enum {number}
- * @property {number} NORMAL
- * @property {number} ADD
- * @property {number} MULTIPLY
- * @property {number} SCREEN
- * @property {number} OVERLAY
- * @property {number} DARKEN
- * @property {number} LIGHTEN
- * @property {number} COLOR_DODGE
- * @property {number} COLOR_BURN
- * @property {number} HARD_LIGHT
- * @property {number} SOFT_LIGHT
- * @property {number} DIFFERENCE
- * @property {number} EXCLUSION
- * @property {number} HUE
- * @property {number} SATURATION
- * @property {number} COLOR
- * @property {number} LUMINOSITY
- * @property {number} NORMAL_NPM
- * @property {number} ADD_NPM
- * @property {number} SCREEN_NPM
- * @property {number} NONE
- * @property {number} SRC_IN
- * @property {number} SRC_OUT
- * @property {number} SRC_ATOP
- * @property {number} DST_OVER
- * @property {number} DST_IN
- * @property {number} DST_OUT
- * @property {number} DST_ATOP
- * @property {number} SUBTRACT
- * @property {number} SRC_OVER
- * @property {number} ERASE
- * @property {number} XOR
+ * @property {number} NORMAL -
+ * @property {number} ADD -
+ * @property {number} MULTIPLY -
+ * @property {number} SCREEN -
+ * @property {number} OVERLAY -
+ * @property {number} DARKEN -
+ * @property {number} LIGHTEN -
+ * @property {number} COLOR_DODGE -
+ * @property {number} COLOR_BURN -
+ * @property {number} HARD_LIGHT -
+ * @property {number} SOFT_LIGHT -
+ * @property {number} DIFFERENCE -
+ * @property {number} EXCLUSION -
+ * @property {number} HUE -
+ * @property {number} SATURATION -
+ * @property {number} COLOR -
+ * @property {number} LUMINOSITY -
+ * @property {number} NORMAL_NPM -
+ * @property {number} ADD_NPM -
+ * @property {number} SCREEN_NPM -
+ * @property {number} NONE -
+ * @property {number} SRC_IN -
+ * @property {number} SRC_OUT -
+ * @property {number} SRC_ATOP -
+ * @property {number} DST_OVER -
+ * @property {number} DST_IN -
+ * @property {number} DST_OUT -
+ * @property {number} DST_ATOP -
+ * @property {number} SUBTRACT -
+ * @property {number} SRC_OVER -
+ * @property {number} ERASE -
+ * @property {number} XOR -
  */
 export enum BLEND_MODES {
     NORMAL = 0,
@@ -131,18 +127,17 @@ export enum BLEND_MODES {
 /**
  * Various webgl draw modes. These can be used to specify which GL drawMode to use
  * under certain situations and renderers.
- *
  * @memberof PIXI
  * @static
  * @name DRAW_MODES
  * @enum {number}
- * @property {number} POINTS
- * @property {number} LINES
- * @property {number} LINE_LOOP
- * @property {number} LINE_STRIP
- * @property {number} TRIANGLES
- * @property {number} TRIANGLE_STRIP
- * @property {number} TRIANGLE_FAN
+ * @property {number} POINTS -
+ * @property {number} LINES -
+ * @property {number} LINE_LOOP -
+ * @property {number} LINE_STRIP -
+ * @property {number} TRIANGLES -
+ * @property {number} TRIANGLE_STRIP -
+ * @property {number} TRIANGLE_FAN -
  */
 export enum DRAW_MODES {
     POINTS,
@@ -156,24 +151,23 @@ export enum DRAW_MODES {
 
 /**
  * Various GL texture/resources formats.
- *
  * @memberof PIXI
  * @static
  * @name FORMATS
  * @enum {number}
- * @property {number} RGBA=6408
- * @property {number} RGB=6407
- * @property {number} RG=33319
- * @property {number} RED=6403
- * @property {number} RGBA_INTEGER=36249
- * @property {number} RGB_INTEGER=36248
- * @property {number} RG_INTEGER=33320
- * @property {number} RED_INTEGER=36244
- * @property {number} ALPHA=6406
- * @property {number} LUMINANCE=6409
- * @property {number} LUMINANCE_ALPHA=6410
- * @property {number} DEPTH_COMPONENT=6402
- * @property {number} DEPTH_STENCIL=34041
+ * @property {number} [RGBA=6408] -
+ * @property {number} [RGB=6407] -
+ * @property {number} [RG=33319] -
+ * @property {number} [RED=6403] -
+ * @property {number} [RGBA_INTEGER=36249] -
+ * @property {number} [RGB_INTEGER=36248] -
+ * @property {number} [RG_INTEGER=33320] -
+ * @property {number} [RED_INTEGER=36244] -
+ * @property {number} [ALPHA=6406] -
+ * @property {number} [LUMINANCE=6409] -
+ * @property {number} [LUMINANCE_ALPHA=6410] -
+ * @property {number} [DEPTH_COMPONENT=6402] -
+ * @property {number} [DEPTH_STENCIL=34041] -
  */
 export enum FORMATS {
     RGBA = 6408,
@@ -193,20 +187,19 @@ export enum FORMATS {
 
 /**
  * Various GL target types.
- *
  * @memberof PIXI
  * @static
  * @name TARGETS
  * @enum {number}
- * @property {number} TEXTURE_2D=3553
- * @property {number} TEXTURE_CUBE_MAP=34067
- * @property {number} TEXTURE_2D_ARRAY=35866
- * @property {number} TEXTURE_CUBE_MAP_POSITIVE_X=34069
- * @property {number} TEXTURE_CUBE_MAP_NEGATIVE_X=34070
- * @property {number} TEXTURE_CUBE_MAP_POSITIVE_Y=34071
- * @property {number} TEXTURE_CUBE_MAP_NEGATIVE_Y=34072
- * @property {number} TEXTURE_CUBE_MAP_POSITIVE_Z=34073
- * @property {number} TEXTURE_CUBE_MAP_NEGATIVE_Z=34074
+ * @property {number} [TEXTURE_2D=3553] -
+ * @property {number} [TEXTURE_CUBE_MAP=34067] -
+ * @property {number} [TEXTURE_2D_ARRAY=35866] -
+ * @property {number} [TEXTURE_CUBE_MAP_POSITIVE_X=34069] -
+ * @property {number} [TEXTURE_CUBE_MAP_NEGATIVE_X=34070] -
+ * @property {number} [TEXTURE_CUBE_MAP_POSITIVE_Y=34071] -
+ * @property {number} [TEXTURE_CUBE_MAP_NEGATIVE_Y=34072] -
+ * @property {number} [TEXTURE_CUBE_MAP_POSITIVE_Z=34073] -
+ * @property {number} [TEXTURE_CUBE_MAP_NEGATIVE_Z=34074] -
  */
 export enum TARGETS {
     TEXTURE_2D = 3553,
@@ -222,27 +215,26 @@ export enum TARGETS {
 
 /**
  * Various GL data format types.
- *
  * @memberof PIXI
  * @static
  * @name TYPES
  * @enum {number}
- * @property {number} UNSIGNED_BYTE=5121
- * @property {number} UNSIGNED_SHORT=5123
- * @property {number} UNSIGNED_SHORT_5_6_5=33635
- * @property {number} UNSIGNED_SHORT_4_4_4_4=32819
- * @property {number} UNSIGNED_SHORT_5_5_5_1=32820
- * @property {number} UNSIGNED_INT=5125
- * @property {number} UNSIGNED_INT_10F_11F_11F_REV=35899
- * @property {number} UNSIGNED_INT_2_10_10_10_REV=33640
- * @property {number} UNSIGNED_INT_24_8=34042
- * @property {number} UNSIGNED_INT_5_9_9_9_REV=35902
- * @property {number} BYTE=5120
- * @property {number} SHORT=5122
- * @property {number} INT=5124
- * @property {number} FLOAT=5126
- * @property {number} FLOAT_32_UNSIGNED_INT_24_8_REV=36269
- * @property {number} HALF_FLOAT=36193
+ * @property {number} [UNSIGNED_BYTE=5121] -
+ * @property {number} [UNSIGNED_SHORT=5123] -
+ * @property {number} [UNSIGNED_SHORT_5_6_5=33635] -
+ * @property {number} [UNSIGNED_SHORT_4_4_4_4=32819] -
+ * @property {number} [UNSIGNED_SHORT_5_5_5_1=32820] -
+ * @property {number} [UNSIGNED_INT=5125] -
+ * @property {number} [UNSIGNED_INT_10F_11F_11F_REV=35899] -
+ * @property {number} [UNSIGNED_INT_2_10_10_10_REV=33640] -
+ * @property {number} [UNSIGNED_INT_24_8=34042] -
+ * @property {number} [UNSIGNED_INT_5_9_9_9_REV=35902] -
+ * @property {number} [BYTE=5120] -
+ * @property {number} [SHORT=5122] -
+ * @property {number} [INT=5124] -
+ * @property {number} [FLOAT=5126] -
+ * @property {number} [FLOAT_32_UNSIGNED_INT_24_8_REV=36269] -
+ * @property {number} [HALF_FLOAT=36193] -
  */
 export enum TYPES {
     UNSIGNED_BYTE = 5121,
@@ -266,14 +258,13 @@ export enum TYPES {
 /**
  * Various sampler types. Correspond to `sampler`, `isampler`, `usampler` GLSL types respectively.
  * WebGL1 works only with FLOAT.
- *
  * @memberof PIXI
  * @static
  * @name SAMPLER_TYPES
  * @enum {number}
- * @property {number} FLOAT=0
- * @property {number} INT=1
- * @property {number} UINT=2
+ * @property {number} [FLOAT=0] -
+ * @property {number} [INT=1] -
+ * @property {number} [UINT=2] -
  */
 export enum SAMPLER_TYPES {
     FLOAT = 0,
@@ -286,7 +277,6 @@ export enum SAMPLER_TYPES {
  *
  * The {@link PIXI.settings.SCALE_MODE} scale mode affects the default scaling mode of future operations.
  * It can be re-assigned to either LINEAR or NEAREST, depending upon suitability.
- *
  * @memberof PIXI
  * @static
  * @name SCALE_MODES
@@ -308,7 +298,6 @@ export enum SCALE_MODES {
  * only use REPEAT if the texture is po2.
  *
  * This property only affects WebGL.
- *
  * @name WRAP_MODES
  * @memberof PIXI
  * @static
@@ -332,7 +321,6 @@ export enum WRAP_MODES {
  * Due to platform restriction, `ON` option will work like `POW2` for webgl-1.
  *
  * This property only affects WebGL.
- *
  * @name MIPMAP_MODES
  * @memberof PIXI
  * @static
@@ -352,7 +340,6 @@ export enum MIPMAP_MODES {
 
 /**
  * How to treat textures with premultiplied alpha
- *
  * @name ALPHA_MODES
  * @memberof PIXI
  * @static
@@ -382,7 +369,6 @@ export enum ALPHA_MODES {
  *
  * Filter textures need not be cleared if the filter does not use pixel blending. {@link CLEAR_MODES.BLIT} will detect
  * this and skip clearing as an optimization.
- *
  * @name CLEAR_MODES
  * @memberof PIXI
  * @static
@@ -414,7 +400,6 @@ export enum CLEAR_MODES {
  *
  * Handy for mobile devices!
  * This property only affects WebGL.
- *
  * @name GC_MODES
  * @enum {number}
  * @static
@@ -429,15 +414,14 @@ export enum GC_MODES {
 
 /**
  * Constants that specify float precision in shaders.
- *
  * @name PRECISION
  * @memberof PIXI
  * @constant
  * @static
  * @enum {string}
- * @property {string} LOW='lowp'
- * @property {string} MEDIUM='mediump'
- * @property {string} HIGH='highp'
+ * @property {string} [LOW='lowp'] -
+ * @property {string} [MEDIUM='mediump'] -
+ * @property {string} [HIGH='highp'] -
  */
 export enum PRECISION {
     LOW = 'lowp',
@@ -448,7 +432,6 @@ export enum PRECISION {
 /**
  * Constants for mask implementations.
  * We use `type` suffix because it leads to very different behaviours
- *
  * @name MASK_TYPES
  * @memberof PIXI
  * @static
@@ -467,9 +450,7 @@ export enum MASK_TYPES {
 
 /**
  * Constants for multi-sampling antialiasing.
- *
  * @see PIXI.Framebuffer#multisample
- *
  * @name MSAA_QUALITY
  * @memberof PIXI
  * @static
@@ -488,9 +469,7 @@ export enum MSAA_QUALITY {
 
 /**
  * Constants for various buffer types in Pixi
- *
  * @see PIXI.BUFFER_TYPE
- *
  * @name BUFFER_TYPE
  * @memberof PIXI
  * @static

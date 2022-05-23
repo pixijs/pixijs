@@ -6,10 +6,9 @@ export interface Point extends GlobalMixins.Point, IPoint {}
 /**
  * The Point object represents a location in a two-dimensional coordinate system, where `x` represents
  * the position on the horizontal axis and `y` represents the position on the vertical axis
- *
  * @class
  * @memberof PIXI
- * @implements IPoint
+ * @implements {IPoint}
  */
 export class Point implements IPoint
 {
@@ -18,7 +17,8 @@ export class Point implements IPoint
     /** Position of the point on the y axis */
     public y = 0;
 
-    /** Creates a new `Point`
+    /**
+     * Creates a new `Point`
      * @param {number} [x=0] - position of the point on the x axis
      * @param {number} [y=0] - position of the point on the y axis
      */
@@ -28,7 +28,8 @@ export class Point implements IPoint
         this.y = y;
     }
 
-    /** Creates a clone of this point
+    /**
+     * Creates a clone of this point
      * @returns A clone of this point
      */
     clone(): Point
@@ -38,7 +39,6 @@ export class Point implements IPoint
 
     /**
      * Copies `x` and `y` from the given point into this point
-     *
      * @param p - The point to copy from
      * @returns The point instance itself
      */
@@ -51,7 +51,6 @@ export class Point implements IPoint
 
     /**
      * Copies this point's x and y into the given point (`p`).
-     *
      * @param p - The point to copy to. Can be any of type that is or extends `IPointData`
      * @returns The point (`p`) with values updated
      */
@@ -64,7 +63,6 @@ export class Point implements IPoint
 
     /**
      * Accepts another point (`p`) and returns `true` if the given point is equal to this point
-     *
      * @param p - The point to check
      * @returns Returns `true` if both `x` and `y` are equal
      */
@@ -76,7 +74,6 @@ export class Point implements IPoint
     /**
      * Sets the point to a new `x` and `y` position.
      * If `y` is omitted, both `x` and `y` will be set to `x`.
-     *
      * @param {number} [x=0] - position of the point on the `x` axis
      * @param {number} [y=x] - position of the point on the `y` axis
      * @returns The point instance itself

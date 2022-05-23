@@ -58,10 +58,9 @@ LoaderResource.setExtensionXhrType('basis', LoaderResource.XHR_RESPONSE_TYPE.BUF
  * ```
  *
  * NOTE: This can only be used with web-workers.
- *
  * @class
  * @memberof PIXI
- * @implements PIXI.ILoaderPlugin
+ * @implements {PIXI.ILoaderPlugin}
  */
 export class BasisLoader
 {
@@ -74,7 +73,6 @@ export class BasisLoader
     /**
      * Transcodes the *.basis data when the data is loaded. If the transcoder is not bound yet, it
      * will hook transcoding to {@link BasisResource#onTranscoderInitialized}.
-     *
      * @see PIXI.Loader.loaderMiddleware
      * @param resource - loader resource that is checked to see if it is a basis file
      * @param next - callback Function to call when done
@@ -104,7 +102,6 @@ export class BasisLoader
     /**
      * Runs transcoding and populates {@link imageArray}. It will run the transcoding in a web worker
      * if they are available.
-     *
      * @private
      */
     private static async transcode(resource: LoaderResource, next: (...args: any[]) => void): Promise<void>
@@ -202,7 +199,6 @@ export class BasisLoader
 
     /**
      * Finds a suitable worker for transcoding and sends a transcoding request
-     *
      * @private
      * @async
      */
@@ -282,7 +278,6 @@ export class BasisLoader
 
     /**
      * Runs transcoding on the main thread.
-     *
      * @private
      */
     private static transcodeSync(arrayBuffer: ArrayBuffer): TranscodedResourcesArray
@@ -400,7 +395,6 @@ export class BasisLoader
 
     /**
      * Detects the available compressed texture formats on the device.
-     *
      * @param extensions - extensions provided by a WebGL context
      * @ignore
      */
@@ -504,7 +498,6 @@ export class BasisLoader
      *     BasisLoader.bindTranscoder(basisLibrary);
      * });
      * ```
-     *
      * @param basisLibrary - the initialized transcoder library
      * @private
      */
@@ -515,7 +508,6 @@ export class BasisLoader
 
     /**
      * Loads the transcoder source code for use in {@link PIXI.BasisLoader.TranscoderWorker}.
-     *
      * @private
      * @param jsURL - URL to the javascript basis transcoder
      * @param wasmURL - URL to the wasm basis transcoder
@@ -527,7 +519,6 @@ export class BasisLoader
 
     /**
      * Set the transcoder source code directly
-     *
      * @private
      * @param jsSource - source for the javascript basis transcoder
      * @param wasmSource - source for the wasm basis transcoder

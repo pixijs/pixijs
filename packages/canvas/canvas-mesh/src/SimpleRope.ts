@@ -5,7 +5,6 @@ import type { CanvasRenderer } from '@pixi/canvas-renderer';
 
 /**
  * Renders the object using the Canvas renderer
- *
  * @protected
  * @method _renderCanvas
  * @memberof PIXI.Mesh#

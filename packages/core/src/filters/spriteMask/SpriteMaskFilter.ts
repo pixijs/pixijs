@@ -27,7 +27,6 @@ export interface ISpriteMaskFilter extends Filter
  * This handles a Sprite acting as a mask, as opposed to a Graphic.
  *
  * WebGL only.
- *
  * @memberof PIXI
  */
 export class SpriteMaskFilter extends Filter
@@ -71,7 +70,6 @@ export class SpriteMaskFilter extends Filter
 
     /**
      * Sprite mask
-     *
      * @type {PIXI.DisplayObject}
      */
     get maskSprite(): IMaskTarget
@@ -91,7 +89,6 @@ export class SpriteMaskFilter extends Filter
 
     /**
      * Applies the filter
-     *
      * @param filterManager - The renderer to retrieve the filter from
      * @param input - The input render target.
      * @param output - The target to output to.

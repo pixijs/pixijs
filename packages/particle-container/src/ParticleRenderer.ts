@@ -32,7 +32,6 @@ export interface IParticleRendererProperty {
 
 /**
  * Renderer for Particles that is designer for speed over feature set.
- *
  * @memberof PIXI
  */
 export class ParticleRenderer extends ObjectRenderer
@@ -109,7 +108,6 @@ export class ParticleRenderer extends ObjectRenderer
 
     /**
      * Renders the particle container object.
-     *
      * @param container - The container to render using this ParticleRenderer.
      */
     public render(container: ParticleContainer): void
@@ -197,9 +195,8 @@ export class ParticleRenderer extends ObjectRenderer
 
     /**
      * Creates one particle buffer for each child in the container we want to render and updates internal properties.
-     *
      * @param container - The container to render using this ParticleRenderer
-     * @return - The buffers
+     * @returns - The buffers
      */
     private generateBuffers(container: ParticleContainer): ParticleBuffer[]
     {
@@ -218,9 +215,8 @@ export class ParticleRenderer extends ObjectRenderer
 
     /**
      * Creates one more particle buffer, because container has autoResize feature.
-     *
      * @param container - The container to render using this ParticleRenderer
-     * @return - The generated buffer
+     * @returns - The generated buffer
      */
     private _generateOneMoreBuffer(container: ParticleContainer): ParticleBuffer
     {
@@ -232,7 +228,6 @@ export class ParticleRenderer extends ObjectRenderer
 
     /**
      * Uploads the vertices.
-     *
      * @param children - the array of display objects to render
      * @param startIndex - the index to start from in the children array
      * @param amount - the amount of children that will have their vertices uploaded
@@ -296,7 +291,6 @@ export class ParticleRenderer extends ObjectRenderer
 
     /**
      * Uploads the position.
-     *
      * @param children - the array of display objects to render
      * @param startIndex - the index to start from in the children array
      * @param amount - the amount of children that will have their positions uploaded
@@ -331,7 +325,6 @@ export class ParticleRenderer extends ObjectRenderer
 
     /**
      * Uploads the rotation.
-     *
      * @param children - the array of display objects to render
      * @param startIndex - the index to start from in the children array
      * @param amount - the amount of children that will have their rotation uploaded
@@ -359,7 +352,6 @@ export class ParticleRenderer extends ObjectRenderer
 
     /**
      * Uploads the UVs.
-     *
      * @param children - the array of display objects to render
      * @param startIndex - the index to start from in the children array
      * @param amount - the amount of children that will have their rotation uploaded
@@ -414,7 +406,6 @@ export class ParticleRenderer extends ObjectRenderer
 
     /**
      * Uploads the tint.
-     *
      * @param children - the array of display objects to render
      * @param startIndex - the index to start from in the children array
      * @param amount - the amount of children that will have their rotation uploaded

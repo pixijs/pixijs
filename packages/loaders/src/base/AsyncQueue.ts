@@ -9,8 +9,8 @@ function _noop(): void
 /**
  * Ensures a function is only called once.
  * @ignore
- * @param {function} fn - The function to wrap.
- * @return {function} The wrapping function.
+ * @param {Function} fn - The function to wrap.
+ * @returns {Function} The wrapping function.
  */
 function onlyOnce(fn: () => void): () => void
 {
@@ -43,6 +43,8 @@ export class AsyncQueueItem<TaskData>
     callback: (...args: any[]) => void;
 
     /**
+     * @param data
+     * @param callback
      * @private
      */
     constructor(data: TaskData, callback: (...args: any[]) => void)
@@ -76,6 +78,8 @@ export class AsyncQueue<TaskData>
     _tasks: Array<AsyncQueueItem<TaskData>> = [];
 
     /**
+     * @param worker
+     * @param concurrency
      * @private
      */
     constructor(worker: (x: TaskData, next: () => void) => void, concurrency = 1)
@@ -149,6 +153,7 @@ export class AsyncQueue<TaskData>
     };
 
     /**
+     * @param task
      * @private
      */
     _next(task: AsyncQueueItem<TaskData>): (...args: any) => void
@@ -245,10 +250,9 @@ export class AsyncQueue<TaskData>
 
     /**
      * Iterates an array in series.
-     *
      * @param {Array.<*>} array - Array to iterate.
-     * @param {function} iterator - Function to call for each element.
-     * @param {function} callback - Function to call when done, or on error.
+     * @param {Function} iterator - Function to call for each element.
+     * @param {Function} callback - Function to call when done, or on error.
      * @param {boolean} [deferNext=false] - Break synchronous each loop by calling next with a setTimeout of 1.
      */
     static eachSeries(array: Array<any>, iterator: (x: any, next: (err?: any) => void) => void,
@@ -287,10 +291,9 @@ export class AsyncQueue<TaskData>
 
     /**
      * Async queue implementation,
-     *
-     * @param {function} worker - The worker function to call for each task.
+     * @param {Function} worker - The worker function to call for each task.
      * @param {number} concurrency - How many workers to run in parrallel.
-     * @return {*} The async queue object.
+     * @returns {*} The async queue object.
      */
     static queue(worker: (x: any, next: (...args: any) => void) => void, concurrency?: number): AsyncQueue<any>
     {

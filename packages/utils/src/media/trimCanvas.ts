@@ -7,7 +7,6 @@ interface Inset {
 
 /**
  * Trim transparent borders from a canvas
- *
  * @memberof PIXI.utils
  * @function trimCanvas
  * @param {HTMLCanvasElement} canvas - the canvas to trim
