@@ -46,7 +46,7 @@
     "lintfix"
   ],
   "engines": {
-    "node": ">=12",
+    "node": ">=14",
     "yarn": "please-use-npm",
     "npm": ">=7"
   },
