@@ -20,7 +20,6 @@ import { PolygonUtils } from './utils/PolygonUtils';
 
 /**
  * Renderer dedicated to drawing and batching graphics objects.
- *
  * @class
  * @protected
  * @memberof PIXI
@@ -29,7 +28,7 @@ export class CanvasGraphicsRenderer
 {
     /** A reference to the current renderer */
     public renderer: CanvasRenderer;
-    private _svgMatrix: DOMMatrix|boolean = null;
+    private _svgMatrix: DOMMatrix | boolean = null;
     private _tempMatrix: Matrix = new Matrix();
 
     /**
@@ -42,13 +41,12 @@ export class CanvasGraphicsRenderer
 
     /**
      * calculates fill/stroke style for canvas
-     *
      * @private
      * @param style - A graphics {@link PIXI.FILL_STYLE} where if `texture` is specified then a tinted CanvasPattern
      * will be used for the fill.stroke
      * @param tint - color to set the fill/stroke too.
      */
-    private _calcCanvasStyle(style: FillStyle, tint: number): string|CanvasPattern
+    private _calcCanvasStyle(style: FillStyle, tint: number): string | CanvasPattern
     {
         let res;
 
@@ -74,7 +72,6 @@ export class CanvasGraphicsRenderer
 
     /**
      * Renders a Graphics object to a canvas.
-     *
      * @param graphics - the actual graphics object to render
      */
     public render(graphics: Graphics): void
@@ -390,7 +387,6 @@ export class CanvasGraphicsRenderer
 
     /**
      * Paint stroke for polygon and holes
-     *
      * @private
      * @param shape - Shape to be drawn
      * @param lineStyle - Line style for the shape
@@ -401,7 +397,7 @@ export class CanvasGraphicsRenderer
      * @param context - The canvas context
      */
     private paintPolygonStroke(
-        shape: Polygon, lineStyle: LineStyle, contextStrokeStyle: string|CanvasPattern,
+        shape: Polygon, lineStyle: LineStyle, contextStrokeStyle: string | CanvasPattern,
         holes: GraphicsData[], holesDirection: boolean[],
         worldAlpha: number, context: CrossPlatformCanvasRenderingContext2D
     ): void
@@ -463,7 +459,6 @@ export class CanvasGraphicsRenderer
 
     /**
      * Paint Ellipse
-     *
      * @private
      * @param shape - Shape to be drawn
      * @param fillStyle - Fill for the shape
@@ -474,7 +469,7 @@ export class CanvasGraphicsRenderer
      */
     private paintEllipse(
         shape: Ellipse, fillStyle: FillStyle, lineStyle: LineStyle,
-        contextFillStyle: string|CanvasPattern, worldAlpha: number,
+        contextFillStyle: string | CanvasPattern, worldAlpha: number,
         context: CrossPlatformCanvasRenderingContext2D): void
     {
         // ellipse code taken from: http://stackoverflow.com/questions/2172798/how-to-draw-an-oval-in-html5-canvas
@@ -525,7 +520,6 @@ export class CanvasGraphicsRenderer
 
     /**
      * Paint Rounded Rectangle
-     *
      * @private
      * @param shape - Shape to be drawn
      * @param fillStyle - Fill for the shape
@@ -536,7 +530,7 @@ export class CanvasGraphicsRenderer
      */
     private paintRoundedRectangle(
         shape: RoundedRectangle, fillStyle: FillStyle, lineStyle: LineStyle,
-        contextFillStyle: string|CanvasPattern, worldAlpha: number,
+        contextFillStyle: string | CanvasPattern, worldAlpha: number,
         context: CrossPlatformCanvasRenderingContext2D
     ): void
     {

@@ -1,4 +1,5 @@
-interface IGAUSSIAN_VALUES {
+interface IGAUSSIAN_VALUES
+{
     [x: number]: number[];
 }
 const GAUSSIAN_VALUES: IGAUSSIAN_VALUES = {

@@ -9,6 +9,7 @@ const parentCreate = Renderer.create;
 /**
  * Override the Renderer.create to fallback to use CanvasRenderer.
  * Also supports forceCanvas option with Application or autoDetectRenderer.
+ * @param options
  * @private
  */
 Renderer.create = function create(options: IRendererOptionsAuto): AbstractRenderer

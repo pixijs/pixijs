@@ -6,7 +6,6 @@ export interface Transform extends GlobalMixins.Transform {}
 
 /**
  * Transform that takes care about its versions.
- *
  * @memberof PIXI
  */
 export class Transform
@@ -32,10 +31,7 @@ export class Transform
     /** The skew amount, on the x and y axis. */
     public skew: ObservablePoint;
 
-    /**
-     * The locally unique ID of the parent's world transform
-     * used to calculate the current world transformation matrix.
-     */
+    /** The locally unique ID of the parent's world transform used to calculate the current world transformation matrix. */
     public _parentID: number;
 
     /** The locally unique ID of the world transform. */
@@ -71,10 +67,7 @@ export class Transform
     /** The locally unique ID of the local transform. */
     protected _localID: number;
 
-    /**
-     * The locally unique ID of the local transform
-     * used to calculate the current local transformation matrix.
-     */
+    /** The locally unique ID of the local transform used to calculate the current local transformation matrix. */
     protected _currentLocalID: number;
 
     constructor()
@@ -151,7 +144,6 @@ export class Transform
 
     /**
      * Updates the local and the world transformation matrices.
-     *
      * @param parentTransform - The parent transform
      */
     updateTransform(parentTransform: Transform): void
@@ -196,7 +188,6 @@ export class Transform
 
     /**
      * Decomposes a matrix and sets the transforms properties based on it.
-     *
      * @param matrix - The matrix to decompose
      */
     setFromMatrix(matrix: Matrix): void

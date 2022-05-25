@@ -1,6 +1,7 @@
 declare namespace GlobalMixins
 {
-    interface IBitmapFontResource {
+    interface IBitmapFontResource
+    {
         bitmapFont: import('@pixi/text-bitmap').BitmapFont;
     }
 
@@ -10,7 +11,8 @@ declare namespace GlobalMixins
 
     }
 
-    interface IBitmapFontResourceMetadata {
+    interface IBitmapFontResourceMetadata
+    {
         pageFile: string;
     }
 

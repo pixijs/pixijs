@@ -13,7 +13,6 @@ import type { Rectangle, ISize } from '@pixi/math';
  * | Top-Right    | `(x1,y1)`   |
  * | Bottom-Right | `(x2,y2)`   |
  * | Bottom-Left  | `(x3,y3)`   |
- *
  * @protected
  * @memberof PIXI
  */
@@ -60,7 +59,6 @@ export class TextureUvs
 
     /**
      * Sets the texture Uvs based on the given frame information.
-     *
      * @protected
      * @param frame - The frame of the texture
      * @param baseFrame - The base frame of the texture

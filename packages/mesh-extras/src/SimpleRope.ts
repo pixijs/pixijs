@@ -14,7 +14,6 @@ import type { IPoint } from '@pixi/math';
  * };
  * let rope = new PIXI.SimpleRope(PIXI.Texture.from("snake.png"), points);
  *  ```
- *
  * @memberof PIXI
  */
 export class SimpleRope extends Mesh
@@ -42,7 +41,6 @@ export class SimpleRope extends Mesh
 
         /**
          * re-calculate vertices by rope points each frame
-         *
          * @member {boolean}
          */
         this.autoUpdate = true;

@@ -9,11 +9,10 @@ const CANVAS_START_SIZE = 16;
 
 /**
  * Built-in hook to upload PIXI.Texture objects to the GPU.
- *
  * @private
  * @param prepare - Instance of CanvasPrepare
  * @param item - Item to check
- * @return If item was uploaded.
+ * @returns If item was uploaded.
  */
 function uploadBaseTextures(prepare: AbstractRenderer | BasePrepare, item: IDisplayObjectExtended): boolean
 {
@@ -50,7 +49,6 @@ function uploadBaseTextures(prepare: AbstractRenderer | BasePrepare, item: IDisp
  * textures to an offline canvas. This draw call will force the texture to be moved onto the GPU.
  *
  * An instance of this class is automatically created by default, and can be found at `renderer.plugins.prepare`
- *
  * @class
  * @extends PIXI.BasePrepare
  * @memberof PIXI

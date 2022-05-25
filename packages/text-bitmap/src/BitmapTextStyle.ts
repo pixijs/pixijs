@@ -1,6 +1,7 @@
 import type { TextStyleAlign } from '@pixi/text';
 
-export interface IBitmapTextStyle {
+export interface IBitmapTextStyle
+{
     fontName: string;
     fontSize: number;
     tint: number;
@@ -9,7 +10,8 @@ export interface IBitmapTextStyle {
     maxWidth: number;
 }
 
-export interface IBitmapTextFontDescriptor {
+export interface IBitmapTextFontDescriptor
+{
     name: string;
     size: number;
 }

@@ -1,9 +1,8 @@
 /**
  * Creates a little colored canvas
- *
  * @ignore
  * @param {string} color - The color to make the canvas
- * @return {canvas} a small canvas element
+ * @returns {HTMLCanvasElement} a small canvas element
  */
 function createColoredCanvas(color: string): HTMLCanvasElement
 {
@@ -22,9 +21,8 @@ function createColoredCanvas(color: string): HTMLCanvasElement
 
 /**
  * Checks whether the Canvas BlendModes are supported by the current browser
- *
  * @private
- * @return {boolean} whether they are supported
+ * @returns {boolean} whether they are supported
  */
 export function canUseNewCanvasBlendModes(): boolean
 {

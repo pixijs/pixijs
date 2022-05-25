@@ -15,9 +15,10 @@ const defaultBufferOptions = {
     alphaMode: ALPHA_MODES.NPM,
 };
 
-export type ImageSource = HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|ImageBitmap;
+export type ImageSource = HTMLImageElement | HTMLCanvasElement | HTMLVideoElement | ImageBitmap;
 
-export interface IBaseTextureOptions<RO = any> {
+export interface IBaseTextureOptions<RO = any>
+{
     alphaMode?: ALPHA_MODES;
     mipmap?: MIPMAP_MODES;
     anisotropicLevel?: number;
@@ -40,7 +41,6 @@ export interface BaseTexture extends GlobalMixins.BaseTexture, EventEmitter {}
  * A Texture stores the information that represents an image.
  * All textures have a base texture, which contains information about the source.
  * Therefore you can have many textures all using a single BaseTexture
- *
  * @memberof PIXI
  * @typeParam R - The BaseTexture's Resource type.
  * @typeParam RO - The options for constructing resource.
@@ -49,21 +49,18 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
 {
     /**
      * The width of the base texture set when the image has loaded
-     *
      * @readonly
      */
     public width: number;
 
     /**
      * The height of the base texture set when the image has loaded
-     *
      * @readonly
      */
     public height: number;
 
     /**
      * The resolution / device pixel ratio of the texture
-     *
      * @readonly
      * @default PIXI.settings.RESOLUTION
      */
@@ -71,7 +68,6 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
 
     /**
      * How to treat premultiplied alpha, see {@link PIXI.ALPHA_MODES}.
-     *
      * @member {PIXI.ALPHA_MODES}
      * @default PIXI.ALPHA_MODES.UNPACK
      */
@@ -79,7 +75,6 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
 
     /**
      * Anisotropic filtering level of texture
-     *
      * @member {number}
      * @default PIXI.settings.ANISOTROPIC_LEVEL
      */
@@ -87,35 +82,30 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
 
     /**
      * The pixel format of the texture
-     *
      * @default PIXI.FORMATS.RGBA
      */
     public format?: FORMATS;
 
     /**
      * The type of resource data
-     *
      * @default PIXI.TYPES.UNSIGNED_BYTE
      */
     public type?: TYPES;
 
     /**
      * The target type
-     *
      * @default PIXI.TARGETS.TEXTURE_2D
      */
     public target?: TARGETS;
 
     /**
      * Global unique identifier for this BaseTexture
-     *
      * @protected
      */
     public readonly uid: number;
 
     /**
      * Used by automatic texture Garbage Collection, stores last GC tick when it was bound
-     *
      * @protected
      */
     touched: number;
@@ -123,7 +113,6 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
     /**
      * Whether or not the texture is a power of two, try to use power of two textures as much
      * as you can
-     *
      * @readonly
      * @default false
      */
@@ -131,7 +120,6 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
 
     /**
      * The map of render context textures where this is bound
-     *
      * @private
      */
     _glTextures: { [key: number]: GLTexture };
@@ -139,21 +127,18 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
     /**
      * Used by TextureSystem to only update texture to the GPU when needed.
      * Please call `update()` to increment it.
-     *
      * @readonly
      */
     dirtyId: number;
 
     /**
      * Used by TextureSystem to only update texture style when needed.
-     *
      * @protected
      */
     dirtyStyleId: number;
 
     /**
      * Currently default cache ID.
-     *
      * @member {string}
      */
     public cacheId: string;
@@ -168,7 +153,6 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
     /**
      * The collection of alternative cache ids, since some BaseTextures
      * can have more than one ID, short name and longer full URL
-     *
      * @member {Array<string>}
      * @readonly
      */
@@ -176,7 +160,6 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
 
     /**
      * Flag if BaseTexture has been destroyed.
-     *
      * @member {boolean}
      * @readonly
      */
@@ -186,7 +169,6 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
      * The resource used by this BaseTexture, there can only
      * be one resource per BaseTexture, but textures can share
      * resources.
-     *
      * @member {PIXI.Resource}
      * @readonly
      */
@@ -194,21 +176,18 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
 
     /**
      * Number of the texture batch, used by multi-texture renderers
-     *
      * @member {number}
      */
     _batchEnabled: number;
 
     /**
      * Location inside texture batch, used by multi-texture renderers
-     *
      * @member {number}
      */
     _batchLocation: number;
 
     /**
      * Whether its a part of another texture, handled by ArrayResource or CubeResource
-     *
      * @member {PIXI.BaseTexture}
      */
     parentTextureArray: BaseTexture;
@@ -284,7 +263,6 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
 
         /**
          * Fired when a not-immediately-available source finishes loading.
-         *
          * @protected
          * @event PIXI.BaseTexture#loaded
          * @param {PIXI.BaseTexture} baseTexture - Resource loaded.
@@ -292,7 +270,6 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
 
         /**
          * Fired when a not-immediately-available source fails to load.
-         *
          * @protected
          * @event PIXI.BaseTexture#error
          * @param {PIXI.BaseTexture} baseTexture - Resource errored.
@@ -301,7 +278,6 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
 
         /**
          * Fired when BaseTexture is updated.
-         *
          * @protected
          * @event PIXI.BaseTexture#loaded
          * @param {PIXI.BaseTexture} baseTexture - Resource loaded.
@@ -309,7 +285,6 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
 
         /**
          * Fired when BaseTexture is updated.
-         *
          * @protected
          * @event PIXI.BaseTexture#update
          * @param {PIXI.BaseTexture} baseTexture - Instance of texture being updated.
@@ -317,7 +292,6 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
 
         /**
          * Fired when BaseTexture is destroyed.
-         *
          * @protected
          * @event PIXI.BaseTexture#dispose
          * @param {PIXI.BaseTexture} baseTexture - Instance of texture being destroyed.
@@ -329,7 +303,6 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
 
     /**
      * Pixel width of the source of this texture
-     *
      * @readonly
      */
     get realWidth(): number
@@ -339,7 +312,6 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
 
     /**
      * Pixel height of the source of this texture
-     *
      * @readonly
      */
     get realHeight(): number
@@ -349,7 +321,6 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
 
     /**
      * Mipmap mode of the texture, affects downscaled images
-     *
      * @default PIXI.settings.MIPMAP_TEXTURES
      */
     get mipmap(): MIPMAP_MODES
@@ -367,7 +338,6 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
 
     /**
      * The scale mode to apply when scaling this texture
-     *
      * @default PIXI.settings.SCALE_MODE
      */
     get scaleMode(): SCALE_MODES
@@ -385,7 +355,6 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
 
     /**
      * How the texture wraps
-     *
      * @default PIXI.settings.WRAP_MODE
      */
     get wrapMode(): WRAP_MODES
@@ -403,7 +372,6 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
 
     /**
      * Changes style options of BaseTexture
-     *
      * @param scaleMode - Pixi scalemode
      * @param mipmap - enable mipmaps
      * @returns - this
@@ -434,7 +402,6 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
 
     /**
      * Changes w/h/resolution. Texture becomes valid if width and height are greater than zero.
-     *
      * @param desiredWidth - Desired visual width
      * @param desiredHeight - Desired visual height
      * @param resolution - Optionally set resolution
@@ -449,7 +416,6 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
 
     /**
      * Sets real size of baseTexture, preserves current resolution.
-     *
      * @param realWidth - Full rendered width
      * @param realHeight - Full rendered height
      * @param resolution - Optionally set resolution
@@ -468,7 +434,6 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
 
     /**
      * Refresh check for isPowerOfTwo texture based on size
-     *
      * @private
      */
     protected _refreshPOT(): void
@@ -478,7 +443,6 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
 
     /**
      * Changes resolution
-     *
      * @param resolution - res
      * @returns - this
      */
@@ -507,7 +471,6 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
 
     /**
      * Sets the resource if it wasn't set. Throws error if resource already present
-     *
      * @param resource - that is managing this BaseTexture
      * @returns - this
      */
@@ -552,7 +515,6 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
 
     /**
      * Handle errors with resources.
-     *
      * @private
      * @param event - Error event emitted.
      */
@@ -601,7 +563,6 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
      * Frees the texture from WebGL memory without destroying this texture object.
      * This means you can still use the texture later which will upload it to GPU
      * memory again.
-     *
      * @fires PIXI.BaseTexture#dispose
      */
     dispose(): void
@@ -620,7 +581,6 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
      * The source can be - image url, image element, canvas element. If the
      * source is an image url or an image element and not in the base texture
      * cache, it will be created and loaded.
-     *
      * @static
      * @param {string|HTMLImageElement|HTMLCanvasElement|SVGElement|HTMLVideoElement} source - The
      *        source to create base texture from.
@@ -629,7 +589,7 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
      * @param {boolean} [strict] - Enforce strict-mode, see {@link PIXI.settings.STRICT_TEXTURE_CACHE}.
      * @returns {PIXI.BaseTexture} The new base texture.
      */
-    static from<R extends Resource = Resource, RO = IAutoDetectOptions>(source: ImageSource|string,
+    static from<R extends Resource = Resource, RO = IAutoDetectOptions>(source: ImageSource | string,
         options?: IBaseTextureOptions<RO>, strict = settings.STRICT_TEXTURE_CACHE): BaseTexture<R>
     {
         const isFrame = typeof source === 'string';
@@ -672,15 +632,14 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
     /**
      * Create a new BaseTexture with a BufferResource from a Float32Array.
      * RGBA values are floats from 0 to 1.
-     *
      * @param {Float32Array|Uint8Array} buffer - The optional array to use, if no data
      *        is provided, a new Float32Array is created.
      * @param width - Width of the resource
      * @param height - Height of the resource
      * @param options - See {@link PIXI.BaseTexture}'s constructor for options.
-     * @return - The resulting new BaseTexture
+     * @returns - The resulting new BaseTexture
      */
-    static fromBuffer(buffer: Float32Array|Uint8Array,
+    static fromBuffer(buffer: Float32Array | Uint8Array,
         width: number, height: number, options?: IBaseTextureOptions): BaseTexture<BufferResource>
     {
         buffer = buffer || new Float32Array(width * height * 4);
@@ -693,8 +652,6 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
 
     /**
      * Adds a BaseTexture to the global BaseTextureCache. This cache is shared across the whole PIXI object.
-     *
-     *
      * @param {PIXI.BaseTexture} baseTexture - The BaseTexture to add to the cache.
      * @param {string} id - The id that the BaseTexture will be stored against.
      */
@@ -719,11 +676,10 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
 
     /**
      * Remove a BaseTexture from the global BaseTextureCache.
-     *
      * @param {string|PIXI.BaseTexture} baseTexture - id of a BaseTexture to be removed, or a BaseTexture instance itself.
-     * @return {PIXI.BaseTexture|null} The BaseTexture that was removed.
+     * @returns {PIXI.BaseTexture|null} The BaseTexture that was removed.
      */
-    static removeFromCache(baseTexture: string | BaseTexture): BaseTexture|null
+    static removeFromCache(baseTexture: string | BaseTexture): BaseTexture | null
     {
         if (typeof baseTexture === 'string')
         {

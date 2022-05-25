@@ -32,7 +32,6 @@ export interface IUniformData
 
 /**
  * Helper class to create a shader program.
- *
  * @memberof PIXI
  */
 export class Program
@@ -99,7 +98,6 @@ export class Program
 
     /**
      * The default vertex shader source.
-     *
      * @constant
      */
     static get defaultVertexSrc(): string
@@ -109,7 +107,6 @@ export class Program
 
     /**
      * The default fragment shader source.
-     *
      * @constant
      */
     static get defaultFragmentSrc(): string
@@ -121,7 +118,6 @@ export class Program
      * A short hand function to create a program based of a vertex and fragment shader.
      *
      * This method will also check to see if there is a cached program.
-     *
      * @param vertexSrc - The source of the vertex shader.
      * @param fragmentSrc - The source of the fragment shader.
      * @param name - Name for shader

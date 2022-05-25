@@ -29,7 +29,6 @@ NineSlicePlane.prototype._canvasUvs = null;
 
 /**
  * Renders the object using the Canvas renderer
- *
  * @private
  * @method _renderCanvas
  * @memberof PIXI.NineSlicePlane#

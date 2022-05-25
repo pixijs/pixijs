@@ -2,7 +2,6 @@ import { FORMATS, TYPES } from '@pixi/constants';
 
 /**
  * Internal texture for WebGL context.
- *
  * @memberof PIXI
  */
 export class GLTexture

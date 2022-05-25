@@ -20,10 +20,10 @@ import type { BLEND_MODES } from '@pixi/constants';
 
 /**
  * Interface for elements like Sprite, Mesh etc. for batching.
- *
  * @memberof PIXI
  */
-export interface IBatchableElement {
+export interface IBatchableElement
+{
     _texture: Texture;
     vertexData: Float32Array;
     indices: Uint16Array | Uint32Array | Array<number>;
@@ -40,7 +40,6 @@ export interface IBatchableElement {
  * with texture-based geometries and renders them in
  * batches. It uploads multiple textures to the GPU to
  * reduce to the number of draw calls.
- *
  * @memberof PIXI
  */
 export class AbstractBatchRenderer extends ObjectRenderer
@@ -51,7 +50,6 @@ export class AbstractBatchRenderer extends ObjectRenderer
     /**
      * The number of bufferable objects before a flush
      * occurs automatically.
-     *
      * @default settings.SPRITE_BATCH_SIZE * 4
      */
     public size: number;
@@ -60,7 +58,6 @@ export class AbstractBatchRenderer extends ObjectRenderer
      * Maximum number of textures that can be uploaded to
      * the GPU under the current context. It is initialized
      * properly in `this.contextChange`.
-     *
      * @see PIXI.AbstractBatchRenderer#contextChange
      * @readonly
      */
@@ -82,7 +79,6 @@ export class AbstractBatchRenderer extends ObjectRenderer
     /**
      * The class that represents the geometry of objects
      * that are going to be batched with this.
-     *
      * @member {object}
      * @default PIXI.BatchGeometry
      */
@@ -98,7 +94,6 @@ export class AbstractBatchRenderer extends ObjectRenderer
      * | aTextureCoords  | 2 |
      * | aColor          | 1 |
      * | aTextureId      | 1 |
-     *
      * @readonly
      */
     protected vertexSize: number;
@@ -111,14 +106,12 @@ export class AbstractBatchRenderer extends ObjectRenderer
 
     /**
      * Buffer of objects that are yet to be rendered.
-     *
      * @member {PIXI.DisplayObject[]}
      */
     protected _bufferedElements: Array<IBatchableElement>;
 
     /**
      * Data for texture batch builder, helps to save a bit of CPU on a pass.
-     *
      * @member {PIXI.BaseTexture[]}
      */
     protected _bufferedTextures: Array<BaseTexture>;
@@ -154,7 +147,6 @@ export class AbstractBatchRenderer extends ObjectRenderer
      *
      * The first buffer has a size of 8; each subsequent
      * buffer has double capacity of its previous.
-     *
      * @member {PIXI.ViewableBuffer[]}
      * @see PIXI.AbstractBatchRenderer#getAttributeBuffer
      */
@@ -168,7 +160,6 @@ export class AbstractBatchRenderer extends ObjectRenderer
      *
      * The first buffer has a size of 12; each subsequent
      * buffer has double capacity of its previous.
-     *
      * @member {Uint16Array[]}
      * @see PIXI.AbstractBatchRenderer#getIndexBuffer
      */
@@ -188,7 +179,6 @@ export class AbstractBatchRenderer extends ObjectRenderer
      * These are never re-allocated again, unless a
      * context change occurs; however, the pool may
      * be expanded if required.
-     *
      * @member {PIXI.Geometry[]}
      * @see PIXI.AbstractBatchRenderer.contextChange
      */
@@ -204,7 +194,6 @@ export class AbstractBatchRenderer extends ObjectRenderer
     /**
      * This will hook onto the renderer's `contextChange`
      * and `prerender` signals.
-     *
      * @param {PIXI.Renderer} renderer - The renderer this works for.
      */
     constructor(renderer: Renderer)
@@ -305,11 +294,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
         }
     }
 
-    /**
-     * Handles the `prerender` signal.
-     *
-     * It ensures that flushes start from the first geometry object again.
-     */
+    /** Handles the `prerender` signal. It ensures that flushes start from the first geometry object again. */
     onPrerender(): void
     {
         this._flushId = 0;
@@ -317,7 +302,6 @@ export class AbstractBatchRenderer extends ObjectRenderer
 
     /**
      * Buffers the "batchable" object. It need not be rendered immediately.
-     *
      * @param {PIXI.DisplayObject} element - the element to render when
      *    using this renderer
      */
@@ -398,7 +382,12 @@ export class AbstractBatchRenderer extends ObjectRenderer
         BaseTexture._globalBatch = TICK;
     }
 
-    /** Populating drawcalls for rendering */
+    /**
+     * Populating drawcalls for rendering
+     * @param texArray
+     * @param start
+     * @param finish
+     */
     buildDrawCalls(texArray: BatchTextureArray, start: number, finish: number): void
     {
         const {
@@ -454,7 +443,10 @@ export class AbstractBatchRenderer extends ObjectRenderer
         this._iIndex = iIndex;
     }
 
-    /** Bind textures for current rendering */
+    /**
+     * Bind textures for current rendering
+     * @param texArray
+     */
     bindAndClearTexArray(texArray: BatchTextureArray): void
     {
         const textureSystem = this.renderer.texture;
@@ -602,9 +594,8 @@ export class AbstractBatchRenderer extends ObjectRenderer
 
     /**
      * Fetches an attribute buffer from `this._aBuffers` that can hold atleast `size` floats.
-     *
      * @param size - minimum capacity required
-     * @return - buffer than can hold atleast `size` floats
+     * @returns - buffer than can hold atleast `size` floats
      */
     getAttributeBuffer(size: number): ViewableBuffer
     {
@@ -631,9 +622,8 @@ export class AbstractBatchRenderer extends ObjectRenderer
     /**
      * Fetches an index buffer from `this._iBuffers` that can
      * have at least `size` capacity.
-     *
      * @param size - minimum required capacity
-     * @return - buffer that can fit `size` indices.
+     * @returns - buffer that can fit `size` indices.
      */
     getIndexBuffer(size: number): Uint16Array
     {
@@ -664,7 +654,6 @@ export class AbstractBatchRenderer extends ObjectRenderer
      * It uses these properties: `vertexData` `uvs`, `textureId` and
      * `indicies`. It also uses the "tint" of the base-texture, if
      * present.
-     *
      * @param {PIXI.DisplayObject} element - element being rendered
      * @param attributeBuffer - attribute buffer.
      * @param indexBuffer - index buffer
@@ -714,7 +703,6 @@ export class AbstractBatchRenderer extends ObjectRenderer
      *
      * These are never re-allocated again.
      * Shared between all batch renderers because it can be only one "flush" working at the moment.
-     *
      * @member {PIXI.BatchDrawCall[]}
      */
     static _drawCallPool: Array<BatchDrawCall> = [];
@@ -725,7 +713,6 @@ export class AbstractBatchRenderer extends ObjectRenderer
      *
      * These are never re-allocated again.
      * Shared between all batch renderers because it can be only one "flush" working at the moment.
-     *
      * @member {PIXI.BatchTextureArray[]}
      */
     static _textureArrayPool: Array<BatchTextureArray> = [];

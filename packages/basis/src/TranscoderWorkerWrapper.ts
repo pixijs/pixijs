@@ -4,7 +4,8 @@ import type { BASIS, BASIS_FORMATS, BasisBinding } from './Basis';
  * Initialization message sent by the main thread.
  * @ignore
  */
-export interface IInitializeTranscoderMessage {
+export interface IInitializeTranscoderMessage
+{
     wasmSource: ArrayBuffer;
     type: 'init';
 }
@@ -23,7 +24,8 @@ export interface ITranscodeMessage
 }
 
 /** @ignore */
-export interface ITranscodedImage {
+export interface ITranscodedImage
+{
     imageID: number;
     levelArray: Array<{
         levelID: number,
@@ -39,7 +41,8 @@ export interface ITranscodedImage {
  * Response format for {@link TranscoderWorker}.
  * @ignore
  */
-export interface ITranscodeResponse {
+export interface ITranscodeResponse
+{
     type: 'init' | 'transcode';
     requestID?: number;
     success: boolean;
@@ -57,8 +60,10 @@ export interface ITranscodeResponse {
     }>;
 }
 
-declare global {
-    interface Window {
+declare global
+{
+    interface Window
+    {
         BASIS: BASIS;
     }
 }
@@ -70,7 +75,6 @@ declare global {
  * The transcoder worker responds to two types of messages: "init" and "transcode". You must always send the first "init"
  * {@link IInitializeTranscoderMessage} message with the WebAssembly binary; if the transcoder is successfully initialized,
  * the web-worker will respond by sending another {@link ITranscodeResponse} message with `success: true`.
- *
  * @ignore
  */
 export function TranscoderWorkerWrapper(): void

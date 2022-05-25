@@ -9,7 +9,6 @@ import type { Container } from '@pixi/display';
  * A set of functions used to handle masking.
  *
  * Sprite masking is not supported on the CanvasRenderer.
- *
  * @class
  * @memberof PIXI
  */
@@ -27,7 +26,6 @@ export class CanvasMaskManager
 
     /**
      * This method adds it to the current stack of masks.
-     *
      * @param maskData - the maskData that will be pushed
      */
     pushMask(maskData: MaskData | Graphics): void
@@ -66,7 +64,6 @@ export class CanvasMaskManager
 
     /**
      * Renders all PIXI.Graphics shapes in a subtree.
-     *
      * @param container - container to scan.
      * @param out - where to put found shapes
      */
@@ -90,7 +87,6 @@ export class CanvasMaskManager
 
     /**
      * Renders a PIXI.Graphics shape.
-     *
      * @param graphics - The object to render.
      */
     renderGraphicsShape(graphics: Graphics): void
@@ -250,7 +246,6 @@ export class CanvasMaskManager
 
     /**
      * Restores the current drawing context to the state it was before the mask was applied.
-     *
      * @param renderer - The renderer context to use.
      */
     popMask(renderer: CanvasRenderer): void

@@ -26,7 +26,8 @@ declare namespace GlobalMixins
     }
 }
 
-interface Vector2Math {
+interface Vector2Math
+{
     add(other: import('@pixi/math').IPointData): import('@pixi/math').Point;
     add<T extends import('@pixi/math').IPointData>(other: import('@pixi/math').IPointData, outPoint: T): T;
 

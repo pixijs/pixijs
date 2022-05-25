@@ -10,14 +10,12 @@ import { buildCircle } from './buildCircle';
  * Calculate a single point for a quadratic bezier curve.
  * Utility function used by quadraticBezierCurve.
  * Ignored from docs since it is not directly exposed.
- *
  * @ignore
  * @private
  * @param {number} n1 - first number
  * @param {number} n2 - second number
  * @param {number} perc - percentage
- * @return {number} the result
- *
+ * @returns {number} the result
  */
 function getPt(n1: number, n2: number, perc: number): number
 {
@@ -31,7 +29,6 @@ function getPt(n1: number, n2: number, perc: number): number
  * Based on: https://stackoverflow.com/questions/785097/how-do-i-implement-a-bezier-curve-in-c
  *
  * Ignored from docs since it is not directly exposed.
- *
  * @ignore
  * @private
  * @param {number} fromX - Origin point x
@@ -41,7 +38,7 @@ function getPt(n1: number, n2: number, perc: number): number
  * @param {number} toX - Destination point x
  * @param {number} toY - Destination point y
  * @param {number[]} [out=[]] - The output array to add points into. If not passed, a new array is created.
- * @return {number[]} an array of points
+ * @returns {number[]} an array of points
  */
 function quadraticBezierCurve(
     fromX: number, fromY: number,
@@ -89,7 +86,6 @@ function quadraticBezierCurve(
  * Builds a rounded rectangle to draw
  *
  * Ignored from docs since it is not directly exposed.
- *
  * @ignore
  * @private
  * @param {PIXI.WebGLGraphicsData} graphicsData - The graphics object containing all the necessary properties

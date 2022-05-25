@@ -8,7 +8,6 @@ const { system } = Ticker;
 
 /**
  * Use this to mock mouse/touch/pointer events
- *
  * @class
  */
 class MockPointer
@@ -45,9 +44,7 @@ class MockPointer
         system.remove(this.interaction.update, this.interaction);
     }
 
-    /**
-     * Cleans up after tests
-     */
+    /** Cleans up after tests */
     cleanup()
     {
         if (this.createdPointerEvent)
@@ -81,13 +78,13 @@ class MockPointer
 
     /**
      * [createEvent description]
-     * @param  {string} eventType  `type` of event
-     * @param  {number} x          pointer x position
-     * @param  {number} y          pointer y position
-     * @param  {number} [identifier] pointer id for touch events
-     * @param  {boolean} [asPointer]  If it should be a PointerEvent from a mouse or touch
-     * @param  {boolean} [onCanvas=true] If the event should be on the canvas (as opposed to a different element)
-     * @return {Event} Generated MouseEvent, TouchEvent, or PointerEvent
+     * @param {string} eventType - `type` of event
+     * @param {number} x - pointer x position
+     * @param {number} y - pointer y position
+     * @param {number} [identifier] - pointer id for touch events
+     * @param {boolean} [asPointer] -  If it should be a PointerEvent from a mouse or touch
+     * @param {boolean} [onCanvas=true] - If the event should be on the canvas (as opposed to a different element)
+     * @returns {Event} Generated MouseEvent, TouchEvent, or PointerEvent
      */
     createEvent(eventType, x, y, identifier, asPointer, onCanvas = true)
     {

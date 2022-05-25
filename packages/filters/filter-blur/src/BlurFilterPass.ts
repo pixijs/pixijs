@@ -8,7 +8,6 @@ import type { FilterSystem, RenderTexture } from '@pixi/core';
 
 /**
  * The BlurFilterPass applies a horizontal or vertical Gaussian blur to an object.
- *
  * @memberof PIXI.filters
  */
 export class BlurFilterPass extends Filter
@@ -51,7 +50,6 @@ export class BlurFilterPass extends Filter
 
     /**
      * Applies the filter.
-     *
      * @param filterManager - The manager.
      * @param input - The input target.
      * @param output - The output target.
@@ -125,7 +123,6 @@ export class BlurFilterPass extends Filter
     }
     /**
      * Sets the strength of both the blur.
-     *
      * @default 16
      */
     get blur(): number
@@ -142,7 +139,6 @@ export class BlurFilterPass extends Filter
     /**
      * Sets the quality of the blur by modifying the number of passes. More passes means higher
      * quality bluring but the lower the performance.
-     *
      * @default 4
      */
     get quality(): number

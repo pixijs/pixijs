@@ -19,7 +19,6 @@ import type { FilterSystem, RenderTexture, Texture, ISpriteMaskTarget } from '@p
  * Instead, it's starting at the output and asking "which pixel from the original goes here".
  * For example, if a displacement map pixel has `red = 1` and the filter scale is `20`,
  * this filter will output the pixel approximately 20 pixels to the right of the original.
- *
  * @memberof PIXI.filters
  */
 export class DisplacementFilter extends Filter
@@ -62,7 +61,6 @@ export class DisplacementFilter extends Filter
 
     /**
      * Applies the filter.
-     *
      * @param filterManager - The manager.
      * @param input - The input target.
      * @param output - The output target.

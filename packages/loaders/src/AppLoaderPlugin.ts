@@ -20,7 +20,7 @@ export class AppLoaderPlugin
 
     /**
      * Called on application constructor
-     *
+     * @param options
      * @private
      */
     static init(options?: GlobalMixins.IApplicationOptions): void
@@ -34,7 +34,6 @@ export class AppLoaderPlugin
 
     /**
      * Called when application destroyed
-     *
      * @private
      */
     static destroy(): void

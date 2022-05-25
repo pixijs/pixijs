@@ -7,15 +7,12 @@ import { deprecation } from '@pixi/utils';
  */
 export interface ISystem
 {
-    /**
-     * Generic destroy methods to be overridden by the subclass
-     */
+    /** Generic destroy methods to be overridden by the subclass */
     destroy(): void;
 }
 
 /**
  * Types for system and pipe classes.
- *
  * @ignore
  */
 export interface ISystemConstructor<R = Renderer>

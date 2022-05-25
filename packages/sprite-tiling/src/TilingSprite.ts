@@ -12,7 +12,6 @@ export interface TilingSprite extends GlobalMixins.TilingSprite {}
 
 /**
  * A tiling sprite is a fast way of rendering a tiling image.
- *
  * @memberof PIXI
  */
 export class TilingSprite extends Sprite
@@ -29,7 +28,6 @@ export class TilingSprite extends Sprite
      *
      * This will make the texture coordinates assigned to each vertex dependent on the value of the anchor. Without
      * this, the top-left corner always gets the (0, 0) texture coordinate.
-     *
      * @default false
      */
     public uvRespectAnchor: boolean;
@@ -56,7 +54,6 @@ export class TilingSprite extends Sprite
         /**
          * Plugin that is responsible for rendering this element.
          * Allows to customize the rendering process without overriding '_render' method.
-         *
          * @default 'tilingSprite'
          */
         this.pluginName = 'tilingSprite';
@@ -66,7 +63,6 @@ export class TilingSprite extends Sprite
     /**
      * Changes frame clamping in corresponding textureTransform, shortcut
      * Change to -0.5 to add a pixel to the edge, recommended for transparent trimmed textures in atlas
-     *
      * @default 0.5
      * @member {number}
      */
@@ -87,7 +83,7 @@ export class TilingSprite extends Sprite
         return this.tileTransform.scale;
     }
 
-    set tileScale(value: ObservablePoint)
+    set tileScale(value: IPointData)
     {
         this.tileTransform.scale.copyFrom(value as IPoint);
     }
@@ -117,7 +113,6 @@ export class TilingSprite extends Sprite
 
     /**
      * Renders the object using the WebGL renderer
-     *
      * @param renderer - The renderer
      */
     protected _render(renderer: Renderer): void
@@ -150,9 +145,8 @@ export class TilingSprite extends Sprite
 
     /**
      * Gets the local bounds of the sprite object.
-     *
      * @param rect - Optional output rectangle.
-     * @return The bounds.
+     * @returns The bounds.
      */
     public getLocalBounds(rect?: Rectangle): Rectangle
     {
@@ -182,9 +176,8 @@ export class TilingSprite extends Sprite
 
     /**
      * Checks if a point is inside this tiling sprite.
-     *
      * @param point - The point to check.
-     * @return Whether or not the sprite contains the point.
+     * @returns Whether or not the sprite contains the point.
      */
     public containsPoint(point: IPointData): boolean
     {
@@ -209,7 +202,6 @@ export class TilingSprite extends Sprite
 
     /**
      * Destroys this sprite and optionally its texture and children
-     *
      * @param {object|boolean} [options] - Options parameter. A boolean will act as if all options
      *  have been set to that value
      * @param {boolean} [options.children=false] - if set to true, all the children will have their destroy
@@ -217,7 +209,7 @@ export class TilingSprite extends Sprite
      * @param {boolean} [options.texture=false] - Should it destroy the current texture of the sprite as well
      * @param {boolean} [options.baseTexture=false] - Should it destroy the base texture of the sprite as well
      */
-    public destroy(options?: IDestroyOptions|boolean): void
+    public destroy(options?: IDestroyOptions | boolean): void
     {
         super.destroy(options);
 
@@ -228,13 +220,12 @@ export class TilingSprite extends Sprite
     /**
      * Helper function that creates a new tiling sprite based on the source you provide.
      * The source can be - frame id, image url, video url, canvas element, video element, base texture
-     *
      * @static
      * @param {string|PIXI.Texture|HTMLCanvasElement|HTMLVideoElement} source - Source to create texture from
-     * @param {Object} options - See {@link PIXI.BaseTexture}'s constructor for options.
+     * @param {object} options - See {@link PIXI.BaseTexture}'s constructor for options.
      * @param {number} options.width - required width of the tiling sprite
      * @param {number} options.height - required height of the tiling sprite
-     * @return {PIXI.TilingSprite} The newly created texture
+     * @returns {PIXI.TilingSprite} The newly created texture
      */
     static from(source: TextureSource, options: ISize & IBaseTextureOptions): TilingSprite
     {

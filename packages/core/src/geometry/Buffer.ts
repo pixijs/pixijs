@@ -21,8 +21,7 @@ export interface IArrayBuffer extends ArrayBuffer
  * to support expressions like `geometry.buffers[0].data[0] = position.x`.
  *
  * Gives access to indexing and `length` field
- *
- * @popelyshev: If data is actually ArrayBuffer and throws Exception on indexing - its user problem :)
+ * * @popelyshev: If data is actually ArrayBuffer and throws Exception on indexing - its user problem :)
  */
 export interface ITypedArray extends IArrayBuffer
 {
@@ -33,14 +32,12 @@ export interface ITypedArray extends IArrayBuffer
 
 /**
  * A wrapper for data so that it can be used and uploaded by WebGL
- *
  * @memberof PIXI
  */
 export class Buffer
 {
     /**
      * The data in the buffer, as a typed array
-     *
      * @type {ArrayBuffer| SharedArrayBuffer | ArrayBufferView}
      */
     public data: ITypedArray;
@@ -55,13 +52,12 @@ export class Buffer
 
     public static: boolean;
     public id: number;
-     disposeRunner: Runner;
+    disposeRunner: Runner;
 
     /**
      * A map of renderer IDs to webgl buffer
-     *
      * @private
-     * @type {object<number, GLBuffer>}
+     * @type {Object<number, GLBuffer>}
      */
     _glBuffers: {[key: number]: GLBuffer};
     _updateID: number;
@@ -134,9 +130,8 @@ export class Buffer
 
     /**
      * Helper function that creates a buffer based on an array or TypedArray
-     *
      * @param {ArrayBufferView | number[]} data - the TypedArray that the buffer will store. If this is a regular Array it will be converted to a Float32Array.
-     * @return - A new Buffer based on the data provided.
+     * @returns - A new Buffer based on the data provided.
      */
     static from(data: IArrayBuffer | number[]): Buffer
     {

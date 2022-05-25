@@ -3,7 +3,7 @@ PixiJS — The HTML5 Creation Engine
 
 ![pixi.js logo](https://pixijs.download/pixijs-banner-no-version.png)
 
-[![Discord](https://badgen.net/badge/icon/discord?icon=discord&label)](https://discord.gg/wNyCcTvf)
+[![Discord](https://badgen.net/badge/icon/discord?icon=discord&label)](https://discord.gg/QrnxmQUPGV)
 [![npm version](https://badge.fury.io/js/pixi.js.svg)](https://badge.fury.io/js/pixi.js)
 [![Node.js CI](https://github.com/pixijs/pixi.js/workflows/Node.js%20CI/badge.svg)](https://github.com/pixi.js/pixi.js/actions?query=workflow%3A%22Node.js+CI%22)
 
@@ -42,7 +42,7 @@ PixiJS has full [WebGL](https://en.wikipedia.org/wiki/WebGL) support and seamles
 ### Community ###
 - Forums: Check out the [forum](https://www.html5gamedevs.com/forum/15-pixijs/) and [Stackoverflow](http://stackoverflow.com/search?q=pixi.js), both friendly places to ask your PixiJS questions.
 - Inspiration: Check out the [gallery](https://www.pixijs.com/gallery) to see some of the amazing things people have created!
-- Chat: You can join us on [Discord](https://discord.gg/wNyCcTvf) to chat about PixiJS.
+- Chat: You can join us on [Discord](https://discord.gg/QrnxmQUPGV) to chat about PixiJS.
 
 ### Setup ###
 

@@ -18,11 +18,12 @@ const defaultDestroyOptions: IDestroyOptions = {
     baseTexture: true,
 };
 
-interface ModernContext2D extends CanvasRenderingContext2D {
-   // for chrome less 94
-   textLetterSpacing?: number;
-   // for chrome greater 94
-   letterSpacing?: number;
+interface ModernContext2D extends CanvasRenderingContext2D
+{
+    // for chrome less 94
+    textLetterSpacing?: number;
+    // for chrome greater 94
+    letterSpacing?: number;
 }
 
 /**
@@ -45,7 +46,6 @@ interface ModernContext2D extends CanvasRenderingContext2D {
  * ```js
  * let text = new PIXI.Text('This is a PixiJS text',{fontFamily : 'Arial', fontSize: 24, fill : 0xff1010, align : 'center'});
  * ```
- *
  * @memberof PIXI
  */
 export class Text extends Sprite
@@ -76,7 +76,6 @@ export class Text extends Sprite
      * The resolution / device pixel ratio of the canvas.
      *
      * This is set to automatically match the renderer resolution by default, but can be overridden by setting manually.
-     *
      * @default PIXI.settings.RESOLUTION
      */
     _resolution: number;
@@ -84,28 +83,24 @@ export class Text extends Sprite
 
     /**
      * Private tracker for the current text.
-     *
      * @private
      */
     protected _text: string;
 
     /**
      * Private tracker for the current font.
-     *
      * @private
      */
     protected _font: string;
 
     /**
      * Private tracker for the current style.
-     *
      * @private
      */
     protected _style: TextStyle;
 
     /**
      * Private listener to track style changes.
-     *
      * @private
      */
     protected _styleListener: () => void;
@@ -123,7 +118,7 @@ export class Text extends Sprite
      * @param {object|PIXI.TextStyle} [style] - The style parameters
      * @param canvas - The canvas element for drawing text
      */
-    constructor(text: string, style?: Partial<ITextStyle>|TextStyle, canvas?: HTMLCanvasElement)
+    constructor(text: string, style?: Partial<ITextStyle> | TextStyle, canvas?: HTMLCanvasElement)
     {
         let ownCanvas = false;
 
@@ -166,7 +161,6 @@ export class Text extends Sprite
      * By default this is used internally to ensure the texture is correct before rendering,
      * but it can be used called externally, for example from this class to 'pre-generate' the texture from a piece of text,
      * and then shared across multiple Sprites.
-     *
      * @param respectDirty - Whether to abort updating the text if the Text isn't dirty and the function is called.
      */
     public updateText(respectDirty: boolean): void
@@ -316,7 +310,6 @@ export class Text extends Sprite
 
     /**
      * Render the text with letter-spacing.
-     *
      * @param text - The text to draw
      * @param x - Horizontal position to draw the text
      * @param y - Vertical position to draw the text
@@ -431,15 +424,11 @@ export class Text extends Sprite
 
         texture.updateUvs();
 
-        // Recursively updates transform of all objects from the root to this one
-        this._recursivePostUpdateTransform();
-
         this.dirty = false;
     }
 
     /**
      * Renders the object using the WebGL renderer
-     *
      * @param renderer - The renderer
      */
     protected _render(renderer: Renderer): void
@@ -455,11 +444,31 @@ export class Text extends Sprite
         super._render(renderer);
     }
 
+    /** Updates the transform on all children of this container for rendering. */
+    public updateTransform(): void
+    {
+        this.updateText(true);
+
+        super.updateTransform();
+    }
+
+    public getBounds(skipUpdate?: boolean, rect?: Rectangle): Rectangle
+    {
+        this.updateText(true);
+
+        if (this._textureID === -1)
+        {
+            // texture was updated: recalculate transforms
+            skipUpdate = false;
+        }
+
+        return super.getBounds(skipUpdate, rect);
+    }
+
     /**
      * Gets the local bounds of the text object.
-     *
      * @param rect - The output rectangle.
-     * @return The bounds.
+     * @returns The bounds.
      */
     public getLocalBounds(rect: Rectangle): Rectangle
     {
@@ -471,7 +480,6 @@ export class Text extends Sprite
     /** Calculates the bounds of the Text as a rectangle. The bounds calculation takes the worldTransform into account. */
     protected _calculateBounds(): void
     {
-        this.updateText(true);
         this.calculateVertices();
         // if we have already done this on THIS frame.
         this._bounds.addQuad(this.vertexData);
@@ -479,17 +487,19 @@ export class Text extends Sprite
 
     /**
      * Generates the fill style. Can automatically generate a gradient based on the fill style being an array
-     *
      * @param style - The style.
      * @param lines - The lines of text.
-     * @return The fill style
+     * @param metrics
+     * @returns The fill style
      */
-    private _generateFillStyle(style: TextStyle, lines: string[], metrics: TextMetrics): string|CanvasGradient|CanvasPattern
+    private _generateFillStyle(
+        style: TextStyle, lines: string[], metrics: TextMetrics
+    ): string | CanvasGradient | CanvasPattern
     {
         // TODO: Can't have different types for getter and setter. The getter shouldn't have the number type as
         //       the setter converts to string. See this thread for more details:
         //       https://github.com/microsoft/TypeScript/issues/2521
-        const fillStyle: string|string[]|CanvasGradient|CanvasPattern = style.fill as any;
+        const fillStyle: string | string[] | CanvasGradient | CanvasPattern = style.fill as any;
 
         if (!Array.isArray(fillStyle))
         {
@@ -502,7 +512,7 @@ export class Text extends Sprite
 
         // the gradient will be evenly spaced out according to how large the array is.
         // ['#FF0000', '#00FF00', '#0000FF'] would created stops at 0.25, 0.5 and 0.75
-        let gradient: string[]|CanvasGradient;
+        let gradient: string[] | CanvasGradient;
 
         // a dropshadow will enlarge the canvas and result in the gradient being
         // generated with the incorrect dimensions
@@ -631,7 +641,6 @@ export class Text extends Sprite
      *
      * Note* Unlike a Sprite, a Text object will automatically destroy its baseTexture and texture as
      * the majority of the time the texture will not be shared with any other Sprites.
-     *
      * @param options - Options parameter. A boolean will act as if all options
      *  have been set to that value
      * @param {boolean} [options.children=false] - if set to true, all the children will have their
@@ -639,7 +648,7 @@ export class Text extends Sprite
      * @param {boolean} [options.texture=true] - Should it destroy the current texture of the sprite as well
      * @param {boolean} [options.baseTexture=true] - Should it destroy the base texture of the sprite as well
      */
-    public destroy(options?: IDestroyOptions|boolean): void
+    public destroy(options?: IDestroyOptions | boolean): void
     {
         if (typeof options === 'boolean')
         {
@@ -705,7 +714,7 @@ export class Text extends Sprite
      *
      * Set up an event listener to listen for changes on the style object and mark the text as dirty.
      */
-    get style(): TextStyle|Partial<ITextStyle>
+    get style(): TextStyle | Partial<ITextStyle>
     {
         // TODO: Can't have different types for getter and setter. The getter shouldn't have the ITextStyle
         //       since the setter creates the TextStyle. See this thread for more details:
@@ -713,7 +722,7 @@ export class Text extends Sprite
         return this._style;
     }
 
-    set style(style: TextStyle|Partial<ITextStyle>)
+    set style(style: TextStyle | Partial<ITextStyle>)
     {
         style = style || {};
 
@@ -752,7 +761,6 @@ export class Text extends Sprite
      * The resolution / device pixel ratio of the canvas.
      *
      * This is set to automatically match the renderer resolution by default, but can be overridden by setting manually.
-     *
      * @default 1
      */
     get resolution(): number

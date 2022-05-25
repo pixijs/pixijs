@@ -14,14 +14,15 @@ type CompressedTexturesResult = Pick<LoaderResource, 'textures' | 'texture'>;
  * Creates base-textures and textures for each compressed-texture resource and adds them into the global
  * texture cache. The first texture has two IDs - `${url}`, `${url}-1`; while the rest have an ID of the
  * form `${url}-i`.
- *
  * @param url - the original address of the resources
  * @param resources - the resources backing texture data
  * @ignore
  */
-export function registerCompressedTextures(url: string,
+export function registerCompressedTextures(
+    url: string,
     resources: CompressedTextureResource[],
-    metadata: IResourceMetadata): CompressedTexturesResult
+    metadata: IResourceMetadata
+): CompressedTexturesResult
 {
     const result: CompressedTexturesResult = {
         textures: {},
