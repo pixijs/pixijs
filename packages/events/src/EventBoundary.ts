@@ -56,8 +56,8 @@ type TrackingData = {
  * @ignore
  */
 type EmitterListeners = Record<string,
-    | Array<{ fn(...args: any[]): any, context: any }>
-    | { fn(...args: any[]): any, context: any }
+| Array<{ fn(...args: any[]): any, context: any }>
+| { fn(...args: any[]): any, context: any }
 >;
 
 /**

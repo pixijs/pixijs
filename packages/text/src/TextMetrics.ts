@@ -1,6 +1,7 @@
 import { TextStyle, TextStyleWhiteSpace } from './TextStyle';
 
-interface IFontMetrics {
+interface IFontMetrics
+{
     ascent: number;
     descent: number;
     fontSize: number;
@@ -54,8 +55,8 @@ export class TextMetrics
     public static BASELINE_MULTIPLIER: number;
     public static HEIGHT_MULTIPLIER: number;
 
-    private static __canvas: HTMLCanvasElement|OffscreenCanvas;
-    private static __context: CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D;
+    private static __canvas: HTMLCanvasElement | OffscreenCanvas;
+    private static __context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
 
     // TODO: These should be protected but they're initialized outside of the class.
     public static _fonts: { [font: string]: IFontMetrics };
@@ -382,7 +383,7 @@ export class TextMetrics
      * @returns The from cache.
      */
     private static getFromCache(key: string, letterSpacing: number, cache: CharacterWidthCache,
-        context: CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D): number
+        context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D): number
     {
         let width = cache[key];
 
@@ -703,11 +704,11 @@ export class TextMetrics
      * TODO: this should be private, but isn't because of backward compat, will fix later.
      * @ignore
      */
-    public static get _canvas(): HTMLCanvasElement|OffscreenCanvas
+    public static get _canvas(): HTMLCanvasElement | OffscreenCanvas
     {
         if (!TextMetrics.__canvas)
         {
-            let canvas: HTMLCanvasElement|OffscreenCanvas;
+            let canvas: HTMLCanvasElement | OffscreenCanvas;
 
             try
             {
@@ -739,7 +740,7 @@ export class TextMetrics
      * TODO: this should be private, but isn't because of backward compat, will fix later.
      * @ignore
      */
-    public static get _context(): CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D
+    public static get _context(): CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D
     {
         if (!TextMetrics.__context)
         {

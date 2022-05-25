@@ -102,7 +102,7 @@ export class Geometry
      * @param instance - Instancing flag
      * @returns - Returns self, useful for chaining.
      */
-    addAttribute(id: string, buffer: Buffer|Float32Array|Uint32Array|Array<number>, size = 0, normalized = false,
+    addAttribute(id: string, buffer: Buffer | Float32Array | Uint32Array | Array<number>, size = 0, normalized = false,
         type?: TYPES, stride?: number, start?: number, instance = false): this
     {
         if (!buffer)

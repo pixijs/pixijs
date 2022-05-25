@@ -1,6 +1,6 @@
 import { settings } from '../settings';
 
-let supported: boolean|undefined;
+let supported: boolean | undefined;
 
 /**
  * Helper for checking for WebGL support.

@@ -60,7 +60,8 @@ const DDS_DX10_FIELDS = {
  */
 // This is way over-blown for us! Lend us a hand, and remove the ones that aren't used (but set the remaining
 // ones to their correct value)
-enum DXGI_FORMAT {
+enum DXGI_FORMAT
+    {
     DXGI_FORMAT_UNKNOWN,
     DXGI_FORMAT_R32G32B32A32_TYPELESS,
     DXGI_FORMAT_R32G32B32A32_FLOAT,
@@ -189,7 +190,8 @@ enum DXGI_FORMAT {
  * Possible values of the field {@link DDS_DX10_FIELDS.RESOURCE_DIMENSION}
  * @ignore
  */
-enum D3D10_RESOURCE_DIMENSION {
+enum D3D10_RESOURCE_DIMENSION
+    {
     DDS_DIMENSION_TEXTURE1D = 2,
     DDS_DIMENSION_TEXTURE2D = 3,
     DDS_DIMENSION_TEXTURE3D = 6

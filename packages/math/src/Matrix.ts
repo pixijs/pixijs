@@ -35,7 +35,7 @@ export class Matrix
     /** @default 0 */
     public ty: number;
 
-    public array: Float32Array|null = null;
+    public array: Float32Array | null = null;
 
     /**
      * @param a - x scale

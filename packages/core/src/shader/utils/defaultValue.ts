@@ -17,7 +17,10 @@ function booleanArray(size: number): Array<boolean>
  * @param {number} size
  * @private
  */
-export function defaultValue(type: string, size: number): number|Float32Array|Int32Array|Uint32Array|boolean|boolean[]
+export function defaultValue(
+    type: string,
+    size: number
+): number | Float32Array | Int32Array | Uint32Array | boolean | boolean[]
 {
     switch (type)
     {

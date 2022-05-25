@@ -4,44 +4,45 @@ import { FederatedEvent } from './FederatedEvent';
 import type { EventEmitter } from '@pixi/utils';
 
 export type Cursor = 'auto'
-    | 'default'
-    | 'none'
-    | 'context-menu'
-    | 'help'
-    | 'pointer'
-    | 'progress'
-    | 'wait'
-    | 'cell'
-    | 'crosshair'
-    | 'text'
-    | 'vertical-text'
-    | 'alias'
-    | 'copy'
-    | 'move'
-    | 'no-drop'
-    | 'not-allowed'
-    | 'e-resize'
-    | 'n-resize'
-    | 'ne-resize'
-    | 'nw-resize'
-    | 's-resize'
-    | 'se-resize'
-    | 'sw-resize'
-    | 'w-resize'
-    | 'ns-resize'
-    | 'ew-resize'
-    | 'nesw-resize'
-    | 'col-resize'
-    | 'nwse-resize'
-    | 'row-resize'
-    | 'all-scroll'
-    | 'zoom-in'
-    | 'zoom-out'
-    | 'grab'
-    | 'grabbing';
+| 'default'
+| 'none'
+| 'context-menu'
+| 'help'
+| 'pointer'
+| 'progress'
+| 'wait'
+| 'cell'
+| 'crosshair'
+| 'text'
+| 'vertical-text'
+| 'alias'
+| 'copy'
+| 'move'
+| 'no-drop'
+| 'not-allowed'
+| 'e-resize'
+| 'n-resize'
+| 'ne-resize'
+| 'nw-resize'
+| 's-resize'
+| 'se-resize'
+| 'sw-resize'
+| 'w-resize'
+| 'ns-resize'
+| 'ew-resize'
+| 'nesw-resize'
+| 'col-resize'
+| 'nwse-resize'
+| 'row-resize'
+| 'all-scroll'
+| 'zoom-in'
+| 'zoom-out'
+| 'grab'
+| 'grabbing';
 
 // @ignore - This is documented elsewhere.
-export interface IHitArea {
+export interface IHitArea
+{
     contains(x: number, y: number): boolean;
 }
 
@@ -49,7 +50,8 @@ export interface IHitArea {
  * Describes the shape for a {@link FederatedEvent}'s' `eventTarget`.
  * @memberof PIXI
  */
-export interface FederatedEventTarget extends EventEmitter, EventTarget {
+export interface FederatedEventTarget extends EventEmitter, EventTarget
+{
     /** The cursor preferred when the mouse pointer is hovering over. */
     cursor: Cursor | string;
 
@@ -70,8 +72,8 @@ export interface FederatedEventTarget extends EventEmitter, EventTarget {
 }
 
 export const FederatedDisplayObject: Omit<
-    FederatedEventTarget,
-    'parent' | 'children' | keyof EventEmitter | 'cursor'
+FederatedEventTarget,
+'parent' | 'children' | keyof EventEmitter | 'cursor'
 > = {
     /**
      * Enable interaction events for the DisplayObject. Touch, pointer and mouse

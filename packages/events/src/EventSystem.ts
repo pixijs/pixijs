@@ -478,7 +478,7 @@ export class EventSystem
      * @returns An array containing a single normalized pointer event, in the case of a pointer
      *  or mouse event, or a multiple normalized pointer events if there are multiple changed touches
      */
-    private normalizeToPointerData(event: TouchEvent|MouseEvent|PointerEvent): PointerEvent[]
+    private normalizeToPointerData(event: TouchEvent | MouseEvent | PointerEvent): PointerEvent[]
     {
         const normalizedEvents = [];
 

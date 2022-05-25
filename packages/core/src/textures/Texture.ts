@@ -14,7 +14,7 @@ import type { TextureMatrix } from './TextureMatrix';
 
 const DEFAULT_UVS = new TextureUvs();
 
-export type TextureSource = string|BaseTexture|ImageSource;
+export type TextureSource = string | BaseTexture | ImageSource;
 
 export interface Texture extends GlobalMixins.Texture, EventEmitter {}
 
@@ -440,7 +440,7 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
      * @param options - See {@link PIXI.BaseTexture}'s constructor for options.
      * @returns - The resulting new BaseTexture
      */
-    static fromBuffer(buffer: Float32Array|Uint8Array,
+    static fromBuffer(buffer: Float32Array | Uint8Array,
         width: number, height: number, options?: IBaseTextureOptions<ISize>): Texture<BufferResource>
     {
         return new Texture(BaseTexture.fromBuffer(buffer, width, height, options));
@@ -455,7 +455,7 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
      * @param options
      * @returns - Output texture
      */
-    static fromLoader<R extends Resource = Resource>(source: HTMLImageElement|HTMLCanvasElement|string,
+    static fromLoader<R extends Resource = Resource>(source: HTMLImageElement | HTMLCanvasElement | string,
         imageUrl: string, name?: string, options?: IBaseTextureOptions): Promise<Texture<R>>
     {
         const baseTexture = new BaseTexture<R>(source, Object.assign({
@@ -531,7 +531,7 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
      * @param texture - id of a Texture to be removed, or a Texture instance itself
      * @returns - The Texture that was removed
      */
-    static removeFromCache(texture: string|Texture): Texture|null
+    static removeFromCache(texture: string | Texture): Texture | null
     {
         if (typeof texture === 'string')
         {

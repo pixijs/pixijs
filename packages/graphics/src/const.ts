@@ -10,7 +10,9 @@
  * @property {string} BEVEL - 'bevel': add a square butt at each end of line segment and fill the triangle at turn
  * @property {string} ROUND - 'round': add an arc at the joint
  */
-export enum LINE_JOIN {
+export enum LINE_JOIN
+// eslint-disable-next-line @typescript-eslint/indent
+{
     MITER = 'miter',
     BEVEL = 'bevel',
     ROUND = 'round'
@@ -27,13 +29,16 @@ export enum LINE_JOIN {
  * @property {string} ROUND - 'round': add semicircle at ends
  * @property {string} SQUARE - 'square': add square at end (like `BUTT` except more length at end)
  */
-export enum LINE_CAP {
+export enum LINE_CAP
+// eslint-disable-next-line @typescript-eslint/indent
+{
     BUTT = 'butt',
     ROUND = 'round',
     SQUARE = 'square'
 }
 
-export interface IGraphicsCurvesSettings {
+export interface IGraphicsCurvesSettings
+{
     adaptive: boolean;
     maxLength: number;
     minSegments: number;

@@ -28,7 +28,7 @@ export class CanvasGraphicsRenderer
 {
     /** A reference to the current renderer */
     public renderer: CanvasRenderer;
-    private _svgMatrix: DOMMatrix|boolean = null;
+    private _svgMatrix: DOMMatrix | boolean = null;
     private _tempMatrix: Matrix = new Matrix();
 
     /**
@@ -46,7 +46,7 @@ export class CanvasGraphicsRenderer
      * will be used for the fill.stroke
      * @param tint - color to set the fill/stroke too.
      */
-    private _calcCanvasStyle(style: FillStyle, tint: number): string|CanvasPattern
+    private _calcCanvasStyle(style: FillStyle, tint: number): string | CanvasPattern
     {
         let res;
 
@@ -397,7 +397,7 @@ export class CanvasGraphicsRenderer
      * @param context - The canvas context
      */
     private paintPolygonStroke(
-        shape: Polygon, lineStyle: LineStyle, contextStrokeStyle: string|CanvasPattern,
+        shape: Polygon, lineStyle: LineStyle, contextStrokeStyle: string | CanvasPattern,
         holes: GraphicsData[], holesDirection: boolean[],
         worldAlpha: number, context: CrossPlatformCanvasRenderingContext2D
     ): void
@@ -469,7 +469,7 @@ export class CanvasGraphicsRenderer
      */
     private paintEllipse(
         shape: Ellipse, fillStyle: FillStyle, lineStyle: LineStyle,
-        contextFillStyle: string|CanvasPattern, worldAlpha: number,
+        contextFillStyle: string | CanvasPattern, worldAlpha: number,
         context: CrossPlatformCanvasRenderingContext2D): void
     {
         // ellipse code taken from: http://stackoverflow.com/questions/2172798/how-to-draw-an-oval-in-html5-canvas
@@ -530,7 +530,7 @@ export class CanvasGraphicsRenderer
      */
     private paintRoundedRectangle(
         shape: RoundedRectangle, fillStyle: FillStyle, lineStyle: LineStyle,
-        contextFillStyle: string|CanvasPattern, worldAlpha: number,
+        contextFillStyle: string | CanvasPattern, worldAlpha: number,
         context: CrossPlatformCanvasRenderingContext2D
     ): void
     {

@@ -8,7 +8,8 @@ import type { WebGLExtensions } from './WebGLExtensions';
 
 let CONTEXT_UID_COUNTER = 0;
 
-export interface ISupportDict {
+export interface ISupportDict
+{
     uint32Indices: boolean;
 }
 

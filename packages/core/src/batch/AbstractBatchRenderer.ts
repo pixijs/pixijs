@@ -22,7 +22,8 @@ import type { BLEND_MODES } from '@pixi/constants';
  * Interface for elements like Sprite, Mesh etc. for batching.
  * @memberof PIXI
  */
-export interface IBatchableElement {
+export interface IBatchableElement
+{
     _texture: Texture;
     vertexData: Float32Array;
     indices: Uint16Array | Uint32Array | Array<number>;

@@ -6,7 +6,7 @@
  * @param {Uint16Array|Uint32Array} [outBuffer] - Buffer for output, length has to be `6 * size`
  * @returns {Uint16Array|Uint32Array} - Resulting index buffer
  */
-export function createIndicesForQuads(size: number, outBuffer: Uint16Array|Uint32Array = null): Uint16Array|Uint32Array
+export function createIndicesForQuads(size: number, outBuffer: Uint16Array | Uint32Array = null): Uint16Array | Uint32Array
 {
     // the total number of indices in our array, there are 6 points per quad.
     const totalIndices = size * 6;

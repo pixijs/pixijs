@@ -42,7 +42,7 @@ export class AccessibilityManager
      * The renderer this accessibility manager works for.
      * @type {PIXI.CanvasRenderer|PIXI.Renderer}
      */
-    public renderer: AbstractRenderer|Renderer;
+    public renderer: AbstractRenderer | Renderer;
 
     /** Internal variable, see isActive getter. */
     private _isActive = false;
@@ -74,7 +74,7 @@ export class AccessibilityManager
     /**
      * @param {PIXI.CanvasRenderer|PIXI.Renderer} renderer - A reference to the current renderer
      */
-    constructor(renderer: AbstractRenderer|Renderer)
+    constructor(renderer: AbstractRenderer | Renderer)
     {
         this._hookDiv = null;
 

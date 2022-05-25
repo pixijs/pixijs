@@ -10,7 +10,8 @@ const rgxExtractUrlHash = /(#[\w-]+)?$/;
 
 export type ILoaderMiddleware = (resource: LoaderResource, next: (...args: any[]) => void) => void;
 
-export interface ILoaderAdd {
+export interface ILoaderAdd
+{
     (this: Loader, name: string, url: string, callback?: LoaderResource.OnCompleteSignal): Loader;
     (this: Loader, name: string, url: string, options?: IAddOptions, callback?: LoaderResource.OnCompleteSignal): Loader;
     (this: Loader, url: string, callback?: LoaderResource.OnCompleteSignal): Loader;
@@ -36,7 +37,8 @@ export interface ILoaderAdd {
  * @property {LoaderResource.OnCompleteSignal} callback - Alias for `onComplete`.
  * @property {IResourceMetadata} metadata - Extra configuration for middleware and the Resource object.
  */
-export interface IAddOptions {
+export interface IAddOptions
+{
     name?: string;
     key?: string;
     url?: string;
@@ -726,7 +728,8 @@ export { Loader };
  * @property {Function} use - Middleware function to run after load, the
  *           arguments for this are `(resource, next)`
  */
-export interface ILoaderPlugin {
+export interface ILoaderPlugin
+{
     /** Function to call immediate after registering plugin. */
     add?(): void;
 

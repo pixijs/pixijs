@@ -14,7 +14,8 @@ import { Container } from '@pixi/display';
 import type { IDestroyOptions } from '@pixi/display';
 import { BLEND_MODES } from '@pixi/constants';
 
-interface PageMeshData {
+interface PageMeshData
+{
     index: number;
     indexCount: number;
     vertexCount: number;
@@ -25,7 +26,8 @@ interface PageMeshData {
     uvs?: Float32Array;
     indices?: Uint16Array;
 }
-interface CharRenderData {
+interface CharRenderData
+{
     texture: Texture;
     line: number;
     charCode: number;

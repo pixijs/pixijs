@@ -16,7 +16,8 @@ import type {
 
 const tempMatrix = new Matrix();
 
-export interface ICanvasRendererPluginConstructor {
+export interface ICanvasRendererPluginConstructor
+{
     new (renderer: CanvasRenderer, options?: any): IRendererPlugin;
 }
 
@@ -86,7 +87,7 @@ export class CanvasRenderer extends AbstractRenderer
     public readonly blendModes: string[] = mapCanvasBlendModesToPixi();
     public renderingToScreen = false;
 
-    private _activeBlendMode: BLEND_MODES =null;
+    private _activeBlendMode: BLEND_MODES = null;
     /** Projection transform, passed in render() stored here */
     private _projTransform: Matrix = null;
 

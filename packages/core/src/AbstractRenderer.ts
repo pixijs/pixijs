@@ -38,14 +38,16 @@ export interface IRendererPlugins
     [key: string]: any;
 }
 
-export interface IRendererRenderOptions {
+export interface IRendererRenderOptions
+{
     renderTexture?: RenderTexture;
     clear?: boolean;
     transform?: Matrix;
     skipUpdateTransform?: boolean;
 }
 
-export interface IGenerateTextureOptions {
+export interface IGenerateTextureOptions
+{
     scaleMode?: SCALE_MODES;
     resolution?: number;
     region?: Rectangle;

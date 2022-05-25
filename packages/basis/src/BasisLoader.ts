@@ -8,7 +8,7 @@ import {
     BASIS_FORMATS_ALPHA,
     BasisTextureExtensions,
     BasisBinding,
-    BASIS_FORMAT_TO_TYPE
+    BASIS_FORMAT_TO_TYPE,
 } from './Basis';
 import { TranscoderWorker } from './TranscoderWorker';
 import { LoaderResource } from '@pixi/loaders';
@@ -123,7 +123,7 @@ export class BasisLoader
             Object.assign(resource, BasisLoader.registerTextures(
                 resource.url,
                 resources,
-                resource.metadata
+                resource.metadata,
             ));
         }
         catch (err)
@@ -146,7 +146,7 @@ export class BasisLoader
     private static registerTextures(
         url: string,
         resources: TranscodedResourcesArray,
-        metadata: IResourceMetadata
+        metadata: IResourceMetadata,
     ): BasisTexturesResult
     {
         const result: BasisTexturesResult = {
@@ -172,7 +172,7 @@ export class BasisLoader
                         : MIPMAP_MODES.OFF,
                     alphaMode: ALPHA_MODES.NO_PREMULTIPLIED_ALPHA,
                     type,
-                    format
+                    format,
                 }, metadata)))
             ));
 
@@ -232,7 +232,7 @@ export class BasisLoader
         const response = await worker.transcodeAsync(
             new Uint8Array(arrayBuffer),
             BasisLoader.defaultRGBAFormat.basisFormat,
-            BasisLoader.defaultRGBFormat.basisFormat
+            BasisLoader.defaultRGBFormat.basisFormat,
         );
 
         const basisFormat = response.basisFormat;
@@ -256,7 +256,7 @@ export class BasisLoader
                     width: imageArray[i].width,
                     height: imageArray[i].height,
                     levelBuffers: imageArray[i].levelArray,
-                    levels: imageArray[i].levelArray.length
+                    levels: imageArray[i].levelArray.length,
                 });
             }
         }
@@ -266,8 +266,8 @@ export class BasisLoader
             imageResources = imageArray.map((image) => new BufferResource(
                 new Uint16Array(image.levelArray[0].levelBuffer.buffer), {
                     width: image.width,
-                    height: image.height
-                })
+                    height: image.height,
+                }),
             ) as TranscodedResourcesArray;
         }
 
@@ -370,7 +370,7 @@ export class BasisLoader
                     width: alignedWidth,
                     height: alignedHeight,
                     levelBuffers: imageLevels,
-                    levels
+                    levels,
                 });
             }
             else
@@ -421,7 +421,7 @@ export class BasisLoader
                 pvrtc: gl.getExtension('WEBGL_compressed_texture_pvrtc')
                     || gl.getExtension('WEBKIT_WEBGL_compressed_texture_pvrtc'),
                 atc: gl.getExtension('WEBGL_compressed_texture_atc'),
-                astc: gl.getExtension('WEBGL_compressed_texture_astc')
+                astc: gl.getExtension('WEBGL_compressed_texture_astc'),
             };
         }
 
@@ -473,7 +473,7 @@ export class BasisLoader
             {
                 BasisLoader[detectWithAlpha ? 'defaultRGBAFormat' : 'defaultRGBFormat'] = {
                     textureFormat: TYPES.UNSIGNED_SHORT_5_6_5,
-                    basisFormat: BASIS_FORMATS.cTFRGB565
+                    basisFormat: BASIS_FORMATS.cTFRGB565,
                 };
 
                 BasisLoader.fallbackMode = true;

@@ -55,13 +55,13 @@ export class RenderTexture extends Texture
      * You can read it inside filters.
      * @readonly
      */
-    public filterFrame: Rectangle|null;
+    public filterFrame: Rectangle | null;
 
     /**
      * The key for pooled texture of FilterSystem.
      * @see PIXI.RenderTexturePool
      */
-    public filterPoolKey: string|number|null;
+    public filterPoolKey: string | number | null;
 
     /**
      * @param baseRenderTexture - The base texture object that this texture uses.

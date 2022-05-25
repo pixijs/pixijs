@@ -1,4 +1,5 @@
-interface Inset {
+interface Inset
+{
     top?: number;
     left?: number;
     right?: number;

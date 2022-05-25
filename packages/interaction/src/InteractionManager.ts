@@ -31,13 +31,15 @@ const hitTestEvent: TestInteractionEvent = {
     },
 };
 
-export interface InteractionManagerOptions {
+export interface InteractionManagerOptions
+{
     autoPreventDefault?: boolean;
     interactionFrequency?: number;
     useSystemTicker?: boolean;
 }
 
-export interface DelayedEvent {
+export interface DelayedEvent
+{
     displayObject: DisplayObject;
     eventString: string;
     eventData: InteractionEvent;

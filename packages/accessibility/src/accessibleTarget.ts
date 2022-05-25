@@ -12,7 +12,8 @@ export type PointerEvents = 'auto'
 | 'all'
 | 'inherit';
 
-export interface IAccessibleTarget {
+export interface IAccessibleTarget
+{
     accessible: boolean;
     accessibleTitle: string;
     accessibleHint: string;
@@ -25,7 +26,8 @@ export interface IAccessibleTarget {
     renderId: number;
 }
 
-export interface IAccessibleHTMLElement extends HTMLElement {
+export interface IAccessibleHTMLElement extends HTMLElement
+{
     type?: string;
     displayObject?: DisplayObject;
 }

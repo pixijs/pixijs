@@ -18,11 +18,12 @@ const defaultDestroyOptions: IDestroyOptions = {
     baseTexture: true,
 };
 
-interface ModernContext2D extends CanvasRenderingContext2D {
-   // for chrome less 94
-   textLetterSpacing?: number;
-   // for chrome greater 94
-   letterSpacing?: number;
+interface ModernContext2D extends CanvasRenderingContext2D
+{
+    // for chrome less 94
+    textLetterSpacing?: number;
+    // for chrome greater 94
+    letterSpacing?: number;
 }
 
 /**
@@ -117,7 +118,7 @@ export class Text extends Sprite
      * @param {object|PIXI.TextStyle} [style] - The style parameters
      * @param canvas - The canvas element for drawing text
      */
-    constructor(text: string, style?: Partial<ITextStyle>|TextStyle, canvas?: HTMLCanvasElement)
+    constructor(text: string, style?: Partial<ITextStyle> | TextStyle, canvas?: HTMLCanvasElement)
     {
         let ownCanvas = false;
 
@@ -491,12 +492,14 @@ export class Text extends Sprite
      * @param metrics
      * @returns The fill style
      */
-    private _generateFillStyle(style: TextStyle, lines: string[], metrics: TextMetrics): string|CanvasGradient|CanvasPattern
+    private _generateFillStyle(
+        style: TextStyle, lines: string[], metrics: TextMetrics
+    ): string | CanvasGradient | CanvasPattern
     {
         // TODO: Can't have different types for getter and setter. The getter shouldn't have the number type as
         //       the setter converts to string. See this thread for more details:
         //       https://github.com/microsoft/TypeScript/issues/2521
-        const fillStyle: string|string[]|CanvasGradient|CanvasPattern = style.fill as any;
+        const fillStyle: string | string[] | CanvasGradient | CanvasPattern = style.fill as any;
 
         if (!Array.isArray(fillStyle))
         {
@@ -509,7 +512,7 @@ export class Text extends Sprite
 
         // the gradient will be evenly spaced out according to how large the array is.
         // ['#FF0000', '#00FF00', '#0000FF'] would created stops at 0.25, 0.5 and 0.75
-        let gradient: string[]|CanvasGradient;
+        let gradient: string[] | CanvasGradient;
 
         // a dropshadow will enlarge the canvas and result in the gradient being
         // generated with the incorrect dimensions
@@ -645,7 +648,7 @@ export class Text extends Sprite
      * @param {boolean} [options.texture=true] - Should it destroy the current texture of the sprite as well
      * @param {boolean} [options.baseTexture=true] - Should it destroy the base texture of the sprite as well
      */
-    public destroy(options?: IDestroyOptions|boolean): void
+    public destroy(options?: IDestroyOptions | boolean): void
     {
         if (typeof options === 'boolean')
         {
@@ -711,7 +714,7 @@ export class Text extends Sprite
      *
      * Set up an event listener to listen for changes on the style object and mark the text as dirty.
      */
-    get style(): TextStyle|Partial<ITextStyle>
+    get style(): TextStyle | Partial<ITextStyle>
     {
         // TODO: Can't have different types for getter and setter. The getter shouldn't have the ITextStyle
         //       since the setter creates the TextStyle. See this thread for more details:
@@ -719,7 +722,7 @@ export class Text extends Sprite
         return this._style;
     }
 
-    set style(style: TextStyle|Partial<ITextStyle>)
+    set style(style: TextStyle | Partial<ITextStyle>)
     {
         style = style || {};
 

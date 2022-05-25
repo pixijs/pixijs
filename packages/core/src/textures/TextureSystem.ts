@@ -126,7 +126,7 @@ export class TextureSystem implements ISystem
      * @param texture - Texture to bind
      * @param [location=0] - Location to bind at
      */
-    bind(texture: Texture|BaseTexture, location = 0): void
+    bind(texture: Texture | BaseTexture, location = 0): void
     {
         const { gl } = this;
 
@@ -358,7 +358,7 @@ export class TextureSystem implements ISystem
      * @param texture - the texture to destroy
      * @param [skipRemove=false] - Whether to skip removing the texture from the TextureManager.
      */
-    destroyTexture(texture: BaseTexture|Texture, skipRemove?: boolean): void
+    destroyTexture(texture: BaseTexture | Texture, skipRemove?: boolean): void
     {
         const { gl } = this;
 

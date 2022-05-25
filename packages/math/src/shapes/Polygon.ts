@@ -20,8 +20,8 @@ export class Polygon
      */
     public readonly type: SHAPES.POLY;
 
-    constructor(points: IPointData[]|number[]);
-    constructor(...points: IPointData[]|number[]);
+    constructor(points: IPointData[] | number[]);
+    constructor(...points: IPointData[] | number[]);
 
     /**
      * @param {PIXI.IPointData[]|number[]} points - This can be an array of Points
@@ -32,7 +32,7 @@ export class Polygon
      */
     constructor(...points: any[])
     {
-        let flat: IPointData[]|number[] = Array.isArray(points[0]) ? points[0] : points;
+        let flat: IPointData[] | number[] = Array.isArray(points[0]) ? points[0] : points;
 
         // if this is an array of points, convert it to a flat array of numbers
         if (typeof flat[0] !== 'number')

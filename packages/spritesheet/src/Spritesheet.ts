@@ -6,7 +6,8 @@ import type { ImageResource } from '@pixi/core';
 import type { IPointData } from '@pixi/math';
 
 /** Represents the JSON data for a spritesheet atlas. */
-export interface ISpritesheetFrameData {
+export interface ISpritesheetFrameData
+{
     frame: {
         x: number;
         y: number;
@@ -27,7 +28,8 @@ export interface ISpritesheetFrameData {
 }
 
 /** Atlas format. */
-export interface ISpritesheetData {
+export interface ISpritesheetData
+{
     frames: Dict<ISpritesheetFrameData>;
     animations?: Dict<string[]>;
     meta: {

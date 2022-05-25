@@ -15,9 +15,10 @@ const defaultBufferOptions = {
     alphaMode: ALPHA_MODES.NPM,
 };
 
-export type ImageSource = HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|ImageBitmap;
+export type ImageSource = HTMLImageElement | HTMLCanvasElement | HTMLVideoElement | ImageBitmap;
 
-export interface IBaseTextureOptions<RO = any> {
+export interface IBaseTextureOptions<RO = any>
+{
     alphaMode?: ALPHA_MODES;
     mipmap?: MIPMAP_MODES;
     anisotropicLevel?: number;
@@ -588,7 +589,7 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
      * @param {boolean} [strict] - Enforce strict-mode, see {@link PIXI.settings.STRICT_TEXTURE_CACHE}.
      * @returns {PIXI.BaseTexture} The new base texture.
      */
-    static from<R extends Resource = Resource, RO = IAutoDetectOptions>(source: ImageSource|string,
+    static from<R extends Resource = Resource, RO = IAutoDetectOptions>(source: ImageSource | string,
         options?: IBaseTextureOptions<RO>, strict = settings.STRICT_TEXTURE_CACHE): BaseTexture<R>
     {
         const isFrame = typeof source === 'string';
@@ -638,7 +639,7 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
      * @param options - See {@link PIXI.BaseTexture}'s constructor for options.
      * @returns - The resulting new BaseTexture
      */
-    static fromBuffer(buffer: Float32Array|Uint8Array,
+    static fromBuffer(buffer: Float32Array | Uint8Array,
         width: number, height: number, options?: IBaseTextureOptions): BaseTexture<BufferResource>
     {
         buffer = buffer || new Float32Array(width * height * 4);
@@ -678,7 +679,7 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
      * @param {string|PIXI.BaseTexture} baseTexture - id of a BaseTexture to be removed, or a BaseTexture instance itself.
      * @returns {PIXI.BaseTexture|null} The BaseTexture that was removed.
      */
-    static removeFromCache(baseTexture: string | BaseTexture): BaseTexture|null
+    static removeFromCache(baseTexture: string | BaseTexture): BaseTexture | null
     {
         if (typeof baseTexture === 'string')
         {

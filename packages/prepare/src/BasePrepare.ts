@@ -7,21 +7,25 @@ import { CountLimiter } from './CountLimiter';
 
 import type { AbstractRenderer } from '@pixi/core';
 
-interface IArrowFunction {
+interface IArrowFunction
+{
     (): void;
 }
-interface IUploadHook {
+interface IUploadHook
+{
     (helper: AbstractRenderer | BasePrepare, item: IDisplayObjectExtended): boolean;
 }
 
-interface IFindHook {
+interface IFindHook
+{
     (item: any, queue: Array<any>): boolean;
 }
 
-export interface IDisplayObjectExtended extends DisplayObject {
+export interface IDisplayObjectExtended extends DisplayObject
+{
     _textures?: Array<Texture>;
     _texture?: Texture;
-    style?: TextStyle|Partial<TextStyle>;
+    style?: TextStyle | Partial<TextStyle>;
 }
 
 /**
