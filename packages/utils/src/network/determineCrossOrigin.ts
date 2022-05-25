@@ -1,6 +1,6 @@
 import { url as _url } from '../url';
 
-let tempAnchor: HTMLAnchorElement|undefined;
+let tempAnchor: HTMLAnchorElement | undefined;
 
 /**
  * Sets the `crossOrigin` property for this resource based on if the url

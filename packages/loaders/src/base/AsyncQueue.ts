@@ -29,7 +29,8 @@ function onlyOnce(fn: () => void): () => void
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface IQueue {
+export interface IQueue
+{
 
 }
 

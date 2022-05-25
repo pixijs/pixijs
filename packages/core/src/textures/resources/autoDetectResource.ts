@@ -15,11 +15,11 @@ export type IResourcePluginOptions = { [key: string]: any };
  * All allowable options for autoDetectResource
  */
 export type IAutoDetectOptions = ISize
-    | ICubeResourceOptions
-    | IImageResourceOptions
-    | ISVGResourceOptions
-    | IVideoResourceOptions
-    | IResourcePluginOptions;
+| ICubeResourceOptions
+| IImageResourceOptions
+| ISVGResourceOptions
+| IVideoResourceOptions
+| IResourcePluginOptions;
 
 /**
  * Shape of supported resource plugins

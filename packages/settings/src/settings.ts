@@ -4,7 +4,8 @@ import { canUploadSameBuffer } from './utils/canUploadSameBuffer';
 import { GC_MODES, MIPMAP_MODES, MSAA_QUALITY, PRECISION, SCALE_MODES, WRAP_MODES } from '@pixi/constants';
 import type { ENV } from '@pixi/constants';
 
-export interface IRenderOptions {
+export interface IRenderOptions
+{
     view: HTMLCanvasElement;
     antialias: boolean;
     autoDensity: boolean;
@@ -18,7 +19,8 @@ export interface IRenderOptions {
     legacy: boolean;
 }
 
-export interface ISettings {
+export interface ISettings
+{
     MIPMAP_TEXTURES: MIPMAP_MODES;
     ANISOTROPIC_LEVEL: number;
     RESOLUTION: number;

@@ -15,7 +15,7 @@ export interface IImageResourceOptions
     createBitmap?: boolean;
 
     /** Load image using cross origin. */
-    crossorigin?: boolean|string;
+    crossorigin?: boolean | string;
 
     /** Premultiply image alpha in bitmap. */
     alphaMode?: ALPHA_MODES;
@@ -80,7 +80,7 @@ export class ImageResource extends BaseImageResource
      * @param {boolean} [options.crossorigin=true] - Load image using cross origin
      * @param {PIXI.ALPHA_MODES} [options.alphaMode=PIXI.ALPHA_MODES.UNPACK] - Premultiply image alpha in bitmap
      */
-    constructor(source: HTMLImageElement|string, options?: IImageResourceOptions)
+    constructor(source: HTMLImageElement | string, options?: IImageResourceOptions)
     {
         options = options || {};
 
@@ -325,7 +325,7 @@ export class ImageResource extends BaseImageResource
      * @param {*} source - The source object
      * @return {boolean} `true` if source is string or HTMLImageElement
      */
-    static test(source: unknown): source is string|HTMLImageElement
+    static test(source: unknown): source is string | HTMLImageElement
     {
         return typeof source === 'string' || source instanceof HTMLImageElement;
     }

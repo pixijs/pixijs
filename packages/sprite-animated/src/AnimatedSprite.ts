@@ -123,7 +123,7 @@ export class AnimatedSprite extends Sprite
      *  objects that make up the animation.
      * @param {boolean} [autoUpdate=true] - Whether to use PIXI.Ticker.shared to auto update animation time.
      */
-    constructor(textures: Texture[]|FrameObject[], autoUpdate = true)
+    constructor(textures: Texture[] | FrameObject[], autoUpdate = true)
     {
         super(textures[0] instanceof Texture ? textures[0] : textures[0].texture);
 
@@ -336,7 +336,7 @@ export class AnimatedSprite extends Sprite
      * @param {boolean} [options.texture=false] - Should it destroy the current texture of the sprite as well.
      * @param {boolean} [options.baseTexture=false] - Should it destroy the base texture of the sprite as well.
      */
-    public destroy(options?: IDestroyOptions|boolean): void
+    public destroy(options?: IDestroyOptions | boolean): void
     {
         this.stop();
         super.destroy(options);
@@ -395,12 +395,12 @@ export class AnimatedSprite extends Sprite
     }
 
     /** The array of textures used for this AnimatedSprite. */
-    get textures(): Texture[]|FrameObject[]
+    get textures(): Texture[] | FrameObject[]
     {
         return this._textures;
     }
 
-    set textures(value: Texture[]|FrameObject[])
+    set textures(value: Texture[] | FrameObject[])
     {
         if (value[0] instanceof Texture)
         {
@@ -477,7 +477,8 @@ export class AnimatedSprite extends Sprite
 }
 
 /** @memberof PIXI.AnimatedSprite */
-export interface FrameObject {
+export interface FrameObject
+{
     /** The {@link PIXI.Texture} of the frame. */
     texture: Texture;
 

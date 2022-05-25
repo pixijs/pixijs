@@ -9,12 +9,12 @@ import type { IApplicationOptions } from './Application';
  */
 export class ResizePlugin
 {
-    public static resizeTo: Window|HTMLElement;
+    public static resizeTo: Window | HTMLElement;
     public static resize: () => void;
-    public static renderer: Renderer|CanvasRenderer;
+    public static renderer: Renderer | CanvasRenderer;
     public static queueResize: () => void;
     private static _resizeId: number;
-    private static _resizeTo: Window|HTMLElement;
+    private static _resizeTo: Window | HTMLElement;
     private static cancelResize: () => void;
 
     /**
@@ -34,7 +34,7 @@ export class ResizePlugin
              * @memberof PIXI.Application#
              */
             {
-                set(dom: Window|HTMLElement)
+                set(dom: Window | HTMLElement)
                 {
                     globalThis.removeEventListener('resize', this.queueResize);
                     this._resizeTo = dom;

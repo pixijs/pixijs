@@ -23,7 +23,8 @@ import type { BLEND_MODES } from '@pixi/constants';
  *
  * @memberof PIXI
  */
-export interface IBatchableElement {
+export interface IBatchableElement
+{
     _texture: Texture;
     vertexData: Float32Array;
     indices: Uint16Array | Uint32Array | Array<number>;

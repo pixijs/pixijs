@@ -28,11 +28,13 @@ import type { ISystemConstructor } from './ISystem';
 import type { IRenderingContext } from './IRenderingContext';
 import type { IRenderableObject } from './IRenderableObject';
 
-export interface IRendererPluginConstructor {
+export interface IRendererPluginConstructor
+{
     new (renderer: Renderer, options?: any): IRendererPlugin;
 }
 
-export interface IRendererPlugin {
+export interface IRendererPlugin
+{
     destroy(): void;
 }
 
@@ -250,7 +252,7 @@ export class Renderer extends AbstractRenderer
      *  for devices with dual graphics card.
      * @param {object} [options.context] - If WebGL context already exists, all parameters must be taken from it.
      */
-    constructor(options? : IRendererOptions)
+    constructor(options?: IRendererOptions)
     {
         super(RENDERER_TYPE.WEBGL, options);
 

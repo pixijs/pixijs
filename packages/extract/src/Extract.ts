@@ -14,7 +14,8 @@ const BYTES_PER_PIXEL = 4;
  * @exemple
  * test: PixelExtractOptions = { x: 15, y: 20, resolution: 4, width: 10, height: 10 }
  */
-export interface PixelExtractOptions {
+export interface PixelExtractOptions
+{
     x: number,
     y: number,
     height: number,
@@ -66,7 +67,7 @@ export class Extract implements IRendererPlugin
      * @param quality - JPEG or Webp compression from 0 to 1. Default is 0.92.
      * @return - HTML Image of the target
      */
-    public image(target: DisplayObject|RenderTexture, format?: string, quality?: number): HTMLImageElement
+    public image(target: DisplayObject | RenderTexture, format?: string, quality?: number): HTMLImageElement
     {
         const image = new Image();
 
@@ -85,7 +86,7 @@ export class Extract implements IRendererPlugin
      * @param quality - JPEG or Webp compression from 0 to 1. Default is 0.92.
      * @return - A base64 encoded string of the texture.
      */
-    public base64(target: DisplayObject|RenderTexture, format?: string, quality?: number): string
+    public base64(target: DisplayObject | RenderTexture, format?: string, quality?: number): string
     {
         return this.canvas(target).toDataURL(format, quality);
     }
@@ -97,7 +98,7 @@ export class Extract implements IRendererPlugin
      *  to convert. If left empty will use the main renderer
      * @return - A Canvas element with the texture rendered on.
      */
-    public canvas(target: DisplayObject|RenderTexture): HTMLCanvasElement
+    public canvas(target: DisplayObject | RenderTexture): HTMLCanvasElement
     {
         const renderer = this.renderer;
         let resolution;
@@ -197,7 +198,7 @@ export class Extract implements IRendererPlugin
      *  to convert. If left empty will use the main renderer
      * @return - One-dimensional array containing the pixel data of the entire texture
      */
-    public pixels(target?: DisplayObject|RenderTexture, options?: PixelExtractOptions): Uint8Array
+    public pixels(target?: DisplayObject | RenderTexture, options?: PixelExtractOptions): Uint8Array
     {
         const renderer = this.renderer;
         let resolution;

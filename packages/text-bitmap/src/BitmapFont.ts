@@ -144,7 +144,7 @@ export class BitmapFont
      * @param ownsTextures - Setting to `true` will destroy page textures
      *        when the font is uninstalled.
      */
-    constructor(data: BitmapFontData, textures: Texture[]|Dict<Texture>, ownsTextures?: boolean)
+    constructor(data: BitmapFontData, textures: Texture[] | Dict<Texture>, ownsTextures?: boolean)
     {
         const [info] = data.info;
         const [common] = data.common;
@@ -267,8 +267,8 @@ export class BitmapFont
      *         and char fields.
      */
     public static install(
-        data: string|XMLDocument|BitmapFontData,
-        textures: Texture|Texture[]|Dict<Texture>,
+        data: string | XMLDocument | BitmapFontData,
+        textures: Texture | Texture[] | Dict<Texture>,
         ownsTextures?: boolean
     ): BitmapFont
     {

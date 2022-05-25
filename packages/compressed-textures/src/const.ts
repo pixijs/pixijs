@@ -32,7 +32,9 @@
  * @property {number} COMPRESSED_RGBA_ATC_EXPLICIT_ALPHA_WEBGL=0x8C92
  * @property {number} COMPRESSED_RGBA_ATC_INTERPOLATED_ALPHA_WEBGL=0x87EE
  */
-export enum INTERNAL_FORMATS {
+export enum INTERNAL_FORMATS
+// eslint-disable-next-line @typescript-eslint/indent
+{
     // WEBGL_compressed_texture_s3tc
     COMPRESSED_RGB_S3TC_DXT1_EXT = 0x83F0,
     COMPRESSED_RGBA_S3TC_DXT1_EXT = 0x83F1,

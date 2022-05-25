@@ -8,7 +8,8 @@ import { MSAA_QUALITY } from '@pixi/constants';
 
 // Don't import CanvasRender to remove dependency on this optional package
 // this type should satisify these requirements for cacheAsBitmap types
-interface CanvasRenderer extends AbstractRenderer {
+interface CanvasRenderer extends AbstractRenderer
+{
     context: CanvasRenderingContext2D;
 }
 
@@ -35,8 +36,8 @@ export class CacheData
     public originalCalculateBounds: () => void;
     public originalGetLocalBounds: (rect?: Rectangle) => Rectangle;
     public originalUpdateTransform: () => void;
-    public originalDestroy: (options?: IDestroyOptions|boolean) => void;
-    public originalMask: Container|MaskData;
+    public originalDestroy: (options?: IDestroyOptions | boolean) => void;
+    public originalMask: Container | MaskData;
     public originalFilterArea: Rectangle;
     public originalContainsPoint: (point: IPointData) => boolean;
     public sprite: Sprite;
@@ -515,7 +516,7 @@ DisplayObject.prototype._destroyCachedDisplayObject = function _destroyCachedDis
  *  have been set to that value.
  *  Used when destroying containers, see the Container.destroy method.
  */
-DisplayObject.prototype._cacheAsBitmapDestroy = function _cacheAsBitmapDestroy(options?: IDestroyOptions|boolean): void
+DisplayObject.prototype._cacheAsBitmapDestroy = function _cacheAsBitmapDestroy(options?: IDestroyOptions | boolean): void
 {
     this.cacheAsBitmap = false;
     this.destroy(options);

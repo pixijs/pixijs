@@ -8,7 +8,7 @@ export interface IVideoResourceOptions
     autoLoad?: boolean;
     autoPlay?: boolean;
     updateFPS?: number;
-    crossorigin?: boolean|string;
+    crossorigin?: boolean | string;
 }
 
 export interface IVideoResourceOptionsElement
@@ -70,7 +70,9 @@ export class VideoResource extends BaseImageResource
      * Leave at 0 to update at every render.
      * @param {boolean} [options.crossorigin=true] - Load image using cross origin
      */
-    constructor(source?: HTMLVideoElement|Array<string|IVideoResourceOptionsElement>|string, options?: IVideoResourceOptions)
+    constructor(
+        source?: HTMLVideoElement | Array<string | IVideoResourceOptionsElement> | string, options?: IVideoResourceOptions
+    )
     {
         options = options || {};
 
