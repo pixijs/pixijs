@@ -19,9 +19,11 @@ type CompressedTexturesResult = Pick<LoaderResource, 'textures' | 'texture'>;
  * @param resources - the resources backing texture data
  * @ignore
  */
-export function registerCompressedTextures(url: string,
+export function registerCompressedTextures(
+    url: string,
     resources: CompressedTextureResource[],
-    metadata: IResourceMetadata): CompressedTexturesResult
+    metadata: IResourceMetadata
+): CompressedTexturesResult
 {
     const result: CompressedTexturesResult = {
         textures: {},
