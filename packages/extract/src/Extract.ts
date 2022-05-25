@@ -3,10 +3,25 @@ import { Rectangle } from '@pixi/math';
 import { RenderTexture } from '@pixi/core';
 
 import type { Renderer, IRendererPlugin } from '@pixi/core';
-import type { DisplayObject } from '@pixi/display';
+import { DisplayObject } from '@pixi/display';
 
 const TEMP_RECT = new Rectangle();
 const BYTES_PER_PIXEL = 4;
+
+/**
+ * this interface is used to extract only  a single pixel of Render Texture or Display Object
+ * if you use this Interface all fields is required
+ * @exemple
+ * test: PixelExtractOptions = { x: 15, y: 20, resolution: 4, width: 10, height: 10 }
+ */
+export interface PixelExtractOptions
+{
+    x: number,
+    y: number,
+    height: number,
+    resolution: number,
+    width: number
+}
 
 /**
  * This class provides renderer-specific plugins for exporting content from a renderer.
@@ -30,6 +45,7 @@ const BYTES_PER_PIXEL = 4;
  *
  * @memberof PIXI
  */
+
 export class Extract implements IRendererPlugin
 {
     private renderer: Renderer;
@@ -51,7 +67,7 @@ export class Extract implements IRendererPlugin
      * @param quality - JPEG or Webp compression from 0 to 1. Default is 0.92.
      * @return - HTML Image of the target
      */
-    public image(target: DisplayObject|RenderTexture, format?: string, quality?: number): HTMLImageElement
+    public image(target: DisplayObject | RenderTexture, format?: string, quality?: number): HTMLImageElement
     {
         const image = new Image();
 
@@ -70,7 +86,7 @@ export class Extract implements IRendererPlugin
      * @param quality - JPEG or Webp compression from 0 to 1. Default is 0.92.
      * @return - A base64 encoded string of the texture.
      */
-    public base64(target: DisplayObject|RenderTexture, format?: string, quality?: number): string
+    public base64(target: DisplayObject | RenderTexture, format?: string, quality?: number): string
     {
         return this.canvas(target).toDataURL(format, quality);
     }
@@ -82,7 +98,7 @@ export class Extract implements IRendererPlugin
      *  to convert. If left empty will use the main renderer
      * @return - A Canvas element with the texture rendered on.
      */
-    public canvas(target: DisplayObject|RenderTexture): HTMLCanvasElement
+    public canvas(target: DisplayObject | RenderTexture): HTMLCanvasElement
     {
         const renderer = this.renderer;
         let resolution;
@@ -182,7 +198,7 @@ export class Extract implements IRendererPlugin
      *  to convert. If left empty will use the main renderer
      * @return - One-dimensional array containing the pixel data of the entire texture
      */
-    public pixels(target?: DisplayObject|RenderTexture): Uint8Array
+    public pixels(target?: DisplayObject | RenderTexture, options?: PixelExtractOptions): Uint8Array
     {
         const renderer = this.renderer;
         let resolution;
@@ -196,7 +212,7 @@ export class Extract implements IRendererPlugin
             {
                 renderTexture = target;
             }
-            else
+            else if (target instanceof DisplayObject)
             {
                 renderTexture = this.renderer.generateTexture(target);
                 generated = true;
@@ -205,11 +221,31 @@ export class Extract implements IRendererPlugin
 
         if (renderTexture)
         {
-            resolution = renderTexture.baseTexture.resolution;
-            frame = renderTexture.frame;
+            if (options)
+            {
+                resolution = options.resolution;
+                frame = renderTexture.frame;
 
-            // bind the buffer
-            renderer.renderTexture.bind(renderTexture);
+                // bind the buffer
+                renderer.renderTexture.bind(renderTexture);
+            }
+            else
+            {
+                resolution = renderTexture.baseTexture.resolution;
+                frame = renderTexture.frame;
+
+                // bind the buffer
+                renderer.renderTexture.bind(renderTexture);
+            }
+        }
+        else if (options)
+        {
+            resolution = options.resolution;
+
+            frame = TEMP_RECT;
+            frame.width = options.width;
+            frame.height = options.height;
+            renderer.renderTexture.bind(null);
         }
         else
         {

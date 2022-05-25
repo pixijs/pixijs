@@ -7,7 +7,8 @@ import type { FlossOptions } from 'floss';
 import type { PackageResult } from './packages';
 
 // Support for global otpions
-declare global {
+declare global
+{
     let options: FlossOptions;
 }
 

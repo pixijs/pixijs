@@ -482,7 +482,7 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
         return false;
     }
 
-    public destroy(options?: IDestroyOptions|boolean): void
+    public destroy(options?: IDestroyOptions | boolean): void
     {
         super.destroy(options);
 

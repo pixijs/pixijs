@@ -69,7 +69,7 @@ export function correctBlendMode(blendMode: number, premultiplied: boolean): num
  * @returns {Float32Array} vec4 rgba
  */
 export function premultiplyRgba(
-    rgb: Float32Array|number[],
+    rgb: Float32Array | number[],
     alpha: number,
     out?: Float32Array,
     premultiply?: boolean

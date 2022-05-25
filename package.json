@@ -63,9 +63,9 @@
   },
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
-    "@microsoft/api-extractor": "^7.9.11",
-    "@pixi-build-tools/api-extractor-lerna-monorepo": "^1.0.3",
-    "@pixi/eslint-config": "^2.0.1",
+    "@microsoft/api-extractor": "~7.20.1",
+    "@pixi-build-tools/api-extractor-lerna-monorepo": "~1.1.0",
+    "@pixi/eslint-config": "^4.0.1",
     "@pixi/webdoc-template": "^1.5.3",
     "@rollup/plugin-alias": "^3.1.1",
     "@rollup/plugin-buble": "^0.21.3",
@@ -97,7 +97,7 @@
     "sinon-chai": "^3.3.0",
     "ts-node": "^9.0.0",
     "tsconfig-paths": "^3.10.1",
-    "typescript": "^3.9.5",
+    "typescript": "~4.3.0",
     "workspaces-run": "^1.0.1"
   }
 }

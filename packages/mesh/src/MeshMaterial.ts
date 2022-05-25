@@ -7,7 +7,8 @@ import vertex from './shader/mesh.vert';
 import type { Texture } from '@pixi/core';
 import type { Dict } from '@pixi/utils';
 
-export interface IMeshMaterialOptions {
+export interface IMeshMaterialOptions
+{
     alpha?: number;
     tint?: number;
     pluginName?: string;
@@ -110,6 +111,11 @@ export class MeshMaterial extends Shader
     {
         if (this.uniforms.uSampler !== value)
         {
+            if (!this.uniforms.uSampler.baseTexture.alphaMode !== !value.baseTexture.alphaMode)
+            {
+                this._colorDirty = true;
+            }
+
             this.uniforms.uSampler = value;
             this.uvMatrix.texture = value;
         }

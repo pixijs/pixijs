@@ -8,7 +8,8 @@ import type { IPointData } from '@pixi/math';
 /**
  * Represents the JSON data for a spritesheet atlas.
  */
-export interface ISpritesheetFrameData {
+export interface ISpritesheetFrameData
+{
     frame: {
         x: number;
         y: number;
@@ -31,7 +32,8 @@ export interface ISpritesheetFrameData {
 /**
  * Atlas format.
  */
-export interface ISpritesheetData {
+export interface ISpritesheetData
+{
     frames: Dict<ISpritesheetFrameData>;
     animations?: Dict<string[]>;
     meta: {
@@ -43,7 +45,7 @@ export interface ISpritesheetData {
  * Utility class for maintaining reference to a collection
  * of Textures on a single Spritesheet.
  *
- * To access a sprite sheet from your code pass its JSON data file to Pixi's loader:
+ * To access a sprite sheet from your code you may pass its JSON data file to Pixi's loader:
  *
  * ```js
  * PIXI.Loader.shared.add("images/spritesheet.json").load(setup);
@@ -53,6 +55,13 @@ export interface ISpritesheetData {
  *   ...
  * }
  * ```
+ *
+ * Alternately, you may circumvent the loader by instantiating the Spritesheet directly:
+ * ```js
+ * const sheet = new PIXI.Spritesheet(texture, spritesheetData);
+ * sheet.parse(() => console.log('Spritesheet ready to use!'));
+ * ```
+ *
  * With the `sheet.textures` you can create Sprite objects,`sheet.animations` can be used to create an AnimatedSprite.
  *
  * Sprite sheets can be packed using tools like {@link https://codeandweb.com/texturepacker|TexturePacker},

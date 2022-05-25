@@ -8,7 +8,8 @@ import type { WebGLExtensions } from './WebGLExtensions';
 
 let CONTEXT_UID_COUNTER = 0;
 
-export interface ISupportDict {
+export interface ISupportDict
+{
     uint32Indices: boolean;
 }
 
@@ -280,7 +281,7 @@ export class ContextSystem implements ISystem
         }
 
         // this is going to be fairly simple for now.. but at least we have room to grow!
-        if (!attributes.stencil)
+        if (attributes && !attributes.stencil)
         {
             /* eslint-disable max-len, no-console */
             console.warn('Provided WebGL context does not have a stencil buffer, masks may not render correctly');

@@ -21,7 +21,7 @@ export class ArrayResource extends AbstractMultiResource
      * @param {number} [options.width] - Width of the resource
      * @param {number} [options.height] - Height of the resource
      */
-    constructor(source: number|Array<any>, options?: ISize)
+    constructor(source: number | Array<any>, options?: ISize)
     {
         const { width, height } = options || {};
 

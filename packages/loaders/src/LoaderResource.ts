@@ -1235,7 +1235,8 @@ class LoaderResource
 }
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
-namespace LoaderResource {
+namespace LoaderResource
+{
     /**
      * When the resource starts to load.
      *
@@ -1270,15 +1271,17 @@ namespace LoaderResource {
      * @enum {number}
      * @memberof PIXI.LoaderResource
      */
-    export enum STATUS_FLAGS {
+    export enum STATUS_FLAGS
+    // eslint-disable-next-line @typescript-eslint/indent
+    {
         /** None */
-        NONE= 0,
+        NONE = 0,
         /** Data URL */
-        DATA_URL= (1 << 0),
+        DATA_URL = (1 << 0),
         /** Complete */
-        COMPLETE= (1 << 1),
+        COMPLETE = (1 << 1),
         /** Loading */
-        LOADING= (1 << 2),
+        LOADING = (1 << 2),
     }
 
     /**
@@ -1289,21 +1292,23 @@ namespace LoaderResource {
      * @enum {number}
      * @memberof PIXI.LoaderResource
      */
-    export enum TYPE {
+    export enum TYPE
+    // eslint-disable-next-line @typescript-eslint/indent
+    {
         /** Unknown */
-        UNKNOWN= 0,
+        UNKNOWN = 0,
         /** JSON */
-        JSON= 1,
+        JSON = 1,
         /** XML */
-        XML= 2,
+        XML = 2,
         /** Image */
-        IMAGE= 3,
+        IMAGE = 3,
         /** Audio */
-        AUDIO= 4,
+        AUDIO = 4,
         /** Video */
-        VIDEO= 5,
+        VIDEO = 5,
         /** Plain text */
-        TEXT= 6,
+        TEXT = 6,
     }
 
     /**
@@ -1314,7 +1319,9 @@ namespace LoaderResource {
      * @enum {number}
      * @memberof PIXI.LoaderResource
      */
-    export enum LOAD_TYPE {
+    export enum LOAD_TYPE
+    // eslint-disable-next-line @typescript-eslint/indent
+    {
         /** Uses XMLHttpRequest to load the resource. */
         XHR = 1,
         /** Uses an `Image` object to load the resource. */
@@ -1333,7 +1340,9 @@ namespace LoaderResource {
      * @enum {string}
      * @memberof PIXI.LoaderResource
      */
-    export enum XHR_RESPONSE_TYPE {
+    export enum XHR_RESPONSE_TYPE
+    // eslint-disable-next-line @typescript-eslint/indent
+    {
         /** string */
         DEFAULT = 'text',
         /** ArrayBuffer */

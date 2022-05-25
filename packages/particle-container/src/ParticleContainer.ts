@@ -6,7 +6,8 @@ import type { BaseTexture, Renderer } from '@pixi/core';
 import type { ParticleBuffer } from './ParticleBuffer';
 import type { IDestroyOptions } from '@pixi/display';
 
-export interface IParticleProperties {
+export interface IParticleProperties
+{
     vertices?: boolean;
     position?: boolean;
     rotation?: boolean;
@@ -271,7 +272,7 @@ export class ParticleContainer extends Container
      * @param {boolean} [options.baseTexture=false] - Only used for child Sprites if options.children is set to true
      *  Should it destroy the base texture of the child sprite
      */
-    public destroy(options?: IDestroyOptions|boolean): void
+    public destroy(options?: IDestroyOptions | boolean): void
     {
         super.destroy(options);
 

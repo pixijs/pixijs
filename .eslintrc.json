@@ -2,6 +2,9 @@
   "extends": [
     "@pixi/eslint-config"
   ],
+  "parserOptions": {
+    "project": ["./tsconfig.eslint.json"]
+  },
   "rules": {
     "@typescript-eslint/no-parameter-properties": 1,
     "@typescript-eslint/type-annotation-spacing": 1

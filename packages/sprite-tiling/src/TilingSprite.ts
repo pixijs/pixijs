@@ -87,7 +87,7 @@ export class TilingSprite extends Sprite
         return this.tileTransform.scale;
     }
 
-    set tileScale(value: ObservablePoint)
+    set tileScale(value: IPointData)
     {
         this.tileTransform.scale.copyFrom(value as IPoint);
     }
@@ -217,7 +217,7 @@ export class TilingSprite extends Sprite
      * @param {boolean} [options.texture=false] - Should it destroy the current texture of the sprite as well
      * @param {boolean} [options.baseTexture=false] - Should it destroy the base texture of the sprite as well
      */
-    public destroy(options?: IDestroyOptions|boolean): void
+    public destroy(options?: IDestroyOptions | boolean): void
     {
         super.destroy(options);
 

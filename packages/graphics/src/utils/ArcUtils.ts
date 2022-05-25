@@ -1,7 +1,8 @@
 import { GRAPHICS_CURVES } from '../const';
 import { PI_2 } from '@pixi/math';
 
-interface IArcLikeShape {
+interface IArcLikeShape
+{
     cx: number;
     cy: number;
     radius: number;

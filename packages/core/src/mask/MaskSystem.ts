@@ -89,7 +89,7 @@ export class MaskSystem implements ISystem
      * @param {PIXI.DisplayObject} target - Display Object to push the mask to
      * @param {PIXI.MaskData|PIXI.Sprite|PIXI.Graphics|PIXI.DisplayObject} maskData - The masking data.
      */
-    push(target: IMaskTarget, maskDataOrTarget: MaskData|IMaskTarget): void
+    push(target: IMaskTarget, maskDataOrTarget: MaskData | IMaskTarget): void
     {
         let maskData = maskDataOrTarget as MaskData;
 

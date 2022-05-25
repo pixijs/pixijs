@@ -30,7 +30,8 @@ export interface WEBGL_compressed_texture_atc
     COMPRESSED_RGBA_ATC_INTERPOLATED_ALPHA_WEBGL: number;
 }
 
-export interface WebGLExtensions {
+export interface WebGLExtensions
+{
     drawBuffers?: WEBGL_draw_buffers;
     depthTexture?: OES_texture_float;
     loseContext?: WEBGL_lose_context;

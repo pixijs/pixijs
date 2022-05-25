@@ -757,7 +757,7 @@ export class Container extends DisplayObject
      * @param {boolean} [options.baseTexture=false] - Only used for child Sprites if options.children is set to true
      *  Should it destroy the base texture of the child sprite
      */
-    destroy(options?: IDestroyOptions|boolean): void
+    destroy(options?: IDestroyOptions | boolean): void
     {
         super.destroy();
 

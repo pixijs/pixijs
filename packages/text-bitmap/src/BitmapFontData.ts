@@ -37,7 +37,8 @@ export class BitmapFontData
 }
 
 /** @memberof PIXI */
-export interface IBitmapFontDataInfo {
+export interface IBitmapFontDataInfo
+{
     /** Font face */
     face: string;
 
@@ -46,13 +47,15 @@ export interface IBitmapFontDataInfo {
 }
 
 /** @memberof PIXI */
-export interface IBitmapFontDataCommon {
+export interface IBitmapFontDataCommon
+{
     /** Line height, in pixels. */
     lineHeight: number;
 }
 
 /** @memberof PIXI */
-export interface IBitmapFontDataPage {
+export interface IBitmapFontDataPage
+{
     /** Unique id for bitmap texture */
     id: number;
 
@@ -61,7 +64,8 @@ export interface IBitmapFontDataPage {
 }
 
 /** @memberof PIXI */
-export interface IBitmapFontDataChar {
+export interface IBitmapFontDataChar
+{
     /** Unique id of character */
     id: number;
 
@@ -91,7 +95,8 @@ export interface IBitmapFontDataChar {
 }
 
 /** @memberof PIXI */
-export interface IBitmapFontDataKerning {
+export interface IBitmapFontDataKerning
+{
     /** First character of pair */
     first: number;
 
@@ -103,7 +108,8 @@ export interface IBitmapFontDataKerning {
 }
 
 /** @memberof PIXI */
-export interface IBitmapFontDataDistanceField {
+export interface IBitmapFontDataDistanceField
+{
     /** Type of distance field */
     fieldType: string;
 

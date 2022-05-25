@@ -7,7 +7,8 @@ import type { Filter, MaskData, Renderer } from '@pixi/core';
 import type { IPointData, ObservablePoint } from '@pixi/math';
 import type { Dict } from '@pixi/utils';
 
-export interface IDestroyOptions {
+export interface IDestroyOptions
+{
     children?: boolean;
     texture?: boolean;
     baseTexture?: boolean;
@@ -288,7 +289,7 @@ export abstract class DisplayObject extends EventEmitter
      *
      * @protected
      */
-    public _mask: Container|MaskData;
+    public _mask: Container | MaskData;
 
     /** The bounds object, this is used to calculate and store the bounds of the displayObject. */
     public _bounds: Bounds;
@@ -410,7 +411,8 @@ export abstract class DisplayObject extends EventEmitter
      */
 
     /**
-     * Fired when this DisplayObject is destroyed.
+     * Fired when this DisplayObject is destroyed. This event is emitted once
+     * destroy is finished.
      *
      * @instance
      * @event destroyed
@@ -708,14 +710,13 @@ export abstract class DisplayObject extends EventEmitter
      * all current event listeners and internal references. Do not use a DisplayObject
      * after calling `destroy()`.
      */
-    destroy(_options?: IDestroyOptions|boolean): void
+    destroy(_options?: IDestroyOptions | boolean): void
     {
         if (this.parent)
         {
             this.parent.removeChild(this);
         }
-        this.emit('destroyed');
-        this.removeAllListeners();
+        this._destroyed = true;
         this.transform = null;
 
         this.parent = null;
@@ -730,7 +731,8 @@ export abstract class DisplayObject extends EventEmitter
         this.interactive = false;
         this.interactiveChildren = false;
 
-        this._destroyed = true;
+        this.emit('destroyed');
+        this.removeAllListeners();
     }
 
     /**
@@ -836,7 +838,7 @@ export abstract class DisplayObject extends EventEmitter
         return this.transform.position;
     }
 
-    set position(value: ObservablePoint)
+    set position(value: IPointData)
     {
         this.transform.position.copyFrom(value);
     }
@@ -853,7 +855,7 @@ export abstract class DisplayObject extends EventEmitter
         return this.transform.scale;
     }
 
-    set scale(value: ObservablePoint)
+    set scale(value: IPointData)
     {
         this.transform.scale.copyFrom(value);
     }
@@ -871,7 +873,7 @@ export abstract class DisplayObject extends EventEmitter
         return this.transform.pivot;
     }
 
-    set pivot(value: ObservablePoint)
+    set pivot(value: IPointData)
     {
         this.transform.pivot.copyFrom(value);
     }
@@ -886,7 +888,7 @@ export abstract class DisplayObject extends EventEmitter
         return this.transform.skew;
     }
 
-    set skew(value: ObservablePoint)
+    set skew(value: IPointData)
     {
         this.transform.skew.copyFrom(value);
     }
@@ -983,12 +985,12 @@ export abstract class DisplayObject extends EventEmitter
      *
      * @todo At the moment, PIXI.CanvasRenderer doesn't support PIXI.Sprite as mask.
      */
-    get mask(): Container|MaskData|null
+    get mask(): Container | MaskData | null
     {
         return this._mask;
     }
 
-    set mask(value: Container|MaskData|null)
+    set mask(value: Container | MaskData | null)
     {
         if (this._mask === value)
         {

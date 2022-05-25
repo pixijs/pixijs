@@ -7,7 +7,7 @@ import { Point } from '@pixi/math';
  * @memberof PIXI
  */
 export class FederatedMouseEvent extends FederatedEvent<
-    MouseEvent | PointerEvent | TouchEvent
+MouseEvent | PointerEvent | TouchEvent
 > implements MouseEvent
 {
     /** Whether the "alt" key was pressed when this mouse event occurred. */
