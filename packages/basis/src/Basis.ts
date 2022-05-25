@@ -8,9 +8,9 @@ import { INTERNAL_FORMATS } from '@pixi/compressed-textures';
  *
  * @ignore
  */
-/* eslint-disable camelcase */
+/* eslint-disable camelcase, @typescript-eslint/indent */
 export enum BASIS_FORMATS
-    {
+{
     cTFETC1 = 0,
     cTFETC2 = 1,
     cTFBC1 = 2,
@@ -28,7 +28,7 @@ export enum BASIS_FORMATS
     cTFBGR565 = 15,
     cTFRGBA4444 = 16,
 }
-/* eslint-enable camelcase */
+/* eslint-enable camelcase, @typescript-eslint/indent */
 
 /**
  * Maps {@link BASIS_FORMATS} to {@link PIXI.INTERNAL_FORMATS}

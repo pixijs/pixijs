@@ -13,7 +13,8 @@
  * @property {string} ROUND - 'round': add an arc at the joint
  */
 export enum LINE_JOIN
-    {
+// eslint-disable-next-line @typescript-eslint/indent
+{
     MITER = 'miter',
     BEVEL = 'bevel',
     ROUND = 'round'
@@ -33,7 +34,8 @@ export enum LINE_JOIN
  * @property {string} SQUARE - 'square': add square at end (like `BUTT` except more length at end)
  */
 export enum LINE_CAP
-    {
+// eslint-disable-next-line @typescript-eslint/indent
+{
     BUTT = 'butt',
     ROUND = 'round',
     SQUARE = 'square'

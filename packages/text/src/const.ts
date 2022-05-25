@@ -10,7 +10,8 @@
  * @property {number} LINEAR_HORIZONTAL Linear gradient
  */
 export enum TEXT_GRADIENT
-    {
+// eslint-disable-next-line @typescript-eslint/indent
+{
     LINEAR_VERTICAL = 0,
     LINEAR_HORIZONTAL = 1
 }

@@ -15,7 +15,8 @@
  * @property {number} UTILITY=-50 Lowest priority used for {@link PIXI.BasePrepare} utility.
  */
 export enum UPDATE_PRIORITY
-    {
+// eslint-disable-next-line @typescript-eslint/indent
+{
     INTERACTION = 50,
     HIGH = 25,
     NORMAL = 0,

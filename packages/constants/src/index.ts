@@ -11,7 +11,8 @@
  * @property {number} WEBGL2 - Version 2 of WebGL
  */
 export enum ENV
-    {
+// eslint-disable-next-line @typescript-eslint/indent
+{
     WEBGL_LEGACY,
     WEBGL,
     WEBGL2,
@@ -29,7 +30,8 @@ export enum ENV
  * @property {number} CANVAS - Canvas render type.
  */
 export enum RENDERER_TYPE
-    {
+// eslint-disable-next-line @typescript-eslint/indent
+{
     UNKNOWN,
     WEBGL,
     CANVAS,
@@ -47,7 +49,8 @@ export enum RENDERER_TYPE
  * @property {number} STENCIL - Indicates the stencil buffer.
  */
 export enum BUFFER_BITS
-    {
+// eslint-disable-next-line @typescript-eslint/indent
+{
     COLOR = 0x00004000,
     DEPTH = 0x00000100,
     STENCIL = 0x00000400
@@ -96,7 +99,8 @@ export enum BUFFER_BITS
  * @property {number} XOR
  */
 export enum BLEND_MODES
-    {
+// eslint-disable-next-line @typescript-eslint/indent
+{
     NORMAL = 0,
     ADD = 1,
     MULTIPLY = 2,
@@ -149,7 +153,8 @@ export enum BLEND_MODES
  * @property {number} TRIANGLE_FAN
  */
 export enum DRAW_MODES
-    {
+// eslint-disable-next-line @typescript-eslint/indent
+{
     POINTS,
     LINES,
     LINE_LOOP,
@@ -181,7 +186,8 @@ export enum DRAW_MODES
  * @property {number} DEPTH_STENCIL=34041
  */
 export enum FORMATS
-    {
+// eslint-disable-next-line @typescript-eslint/indent
+{
     RGBA = 6408,
     RGB = 6407,
     RG = 33319,
@@ -215,7 +221,8 @@ export enum FORMATS
  * @property {number} TEXTURE_CUBE_MAP_NEGATIVE_Z=34074
  */
 export enum TARGETS
-    {
+// eslint-disable-next-line @typescript-eslint/indent
+{
     TEXTURE_2D = 3553,
     TEXTURE_CUBE_MAP = 34067,
     TEXTURE_2D_ARRAY = 35866,
@@ -252,7 +259,8 @@ export enum TARGETS
  * @property {number} HALF_FLOAT=36193
  */
 export enum TYPES
-    {
+// eslint-disable-next-line @typescript-eslint/indent
+{
     UNSIGNED_BYTE = 5121,
     UNSIGNED_SHORT = 5123,
     UNSIGNED_SHORT_5_6_5 = 33635,
@@ -284,7 +292,8 @@ export enum TYPES
  * @property {number} UINT=2
  */
 export enum SAMPLER_TYPES
-    {
+// eslint-disable-next-line @typescript-eslint/indent
+{
     FLOAT = 0,
     INT = 1,
     UINT = 2,
@@ -304,7 +313,8 @@ export enum SAMPLER_TYPES
  * @property {number} NEAREST Pixelating scaling
  */
 export enum SCALE_MODES
-    {
+// eslint-disable-next-line @typescript-eslint/indent
+{
     NEAREST,
     LINEAR,
 }
@@ -328,7 +338,8 @@ export enum SCALE_MODES
  * @property {number} MIRRORED_REPEAT - The texture uvs tile and repeat with mirroring
  */
 export enum WRAP_MODES
-    {
+// eslint-disable-next-line @typescript-eslint/indent
+{
     CLAMP = 33071,
     REPEAT = 10497,
     MIRRORED_REPEAT = 33648,
@@ -355,7 +366,8 @@ export enum WRAP_MODES
  *   that supports buffering each level-of-detail.
  */
 export enum MIPMAP_MODES
-    {
+// eslint-disable-next-line @typescript-eslint/indent
+{
     OFF,
     POW2,
     ON,
@@ -380,7 +392,8 @@ export enum MIPMAP_MODES
  * @property {number} PMA - Alias for PREMULTIPLIED_ALPHA.
  */
 export enum ALPHA_MODES
-    {
+// eslint-disable-next-line @typescript-eslint/indent
+{
     NPM = 0,
     UNPACK = 1,
     PMA = 2,
@@ -408,7 +421,8 @@ export enum ALPHA_MODES
  * @property {number} AUTO - Alias for BLIT
  */
 export enum CLEAR_MODES
-    {
+// eslint-disable-next-line @typescript-eslint/indent
+{
     NO = 0,
     YES = 1,
     AUTO = 2,
@@ -437,7 +451,8 @@ export enum CLEAR_MODES
  * @property {number} MANUAL - Garbage collection will need to be called manually
  */
 export enum GC_MODES
-    {
+// eslint-disable-next-line @typescript-eslint/indent
+{
     AUTO,
     MANUAL,
 }
@@ -455,7 +470,8 @@ export enum GC_MODES
  * @property {string} HIGH='highp'
  */
 export enum PRECISION
-    {
+// eslint-disable-next-line @typescript-eslint/indent
+{
     LOW = 'lowp',
     MEDIUM = 'mediump',
     HIGH = 'highp',
@@ -475,7 +491,8 @@ export enum PRECISION
  * @property {number} SPRITE - Mask that uses SpriteMaskFilter, uses temporary RenderTexture
  */
 export enum MASK_TYPES
-    {
+// eslint-disable-next-line @typescript-eslint/indent
+{
     NONE = 0,
     SCISSOR = 1,
     STENCIL = 2,
@@ -497,7 +514,8 @@ export enum MASK_TYPES
  * @property {number} HIGH - Try 8 samples
  */
 export enum MSAA_QUALITY
-    {
+// eslint-disable-next-line @typescript-eslint/indent
+{
     NONE = 0,
     LOW = 2,
     MEDIUM = 4,
@@ -518,7 +536,8 @@ export enum MSAA_QUALITY
  * @property {number} UNIFORM_BUFFER - the buffer type is for uniform buffer objects
  */
 export enum BUFFER_TYPE
-    {
+// eslint-disable-next-line @typescript-eslint/indent
+{
     ELEMENT_ARRAY_BUFFER = 34963,
     ARRAY_BUFFER = 34962,
     // NOT YET SUPPORTED

@@ -1272,7 +1272,8 @@ namespace LoaderResource
      * @memberof PIXI.LoaderResource
      */
     export enum STATUS_FLAGS
-        {
+    // eslint-disable-next-line @typescript-eslint/indent
+    {
         /** None */
         NONE = 0,
         /** Data URL */
@@ -1292,7 +1293,8 @@ namespace LoaderResource
      * @memberof PIXI.LoaderResource
      */
     export enum TYPE
-        {
+    // eslint-disable-next-line @typescript-eslint/indent
+    {
         /** Unknown */
         UNKNOWN = 0,
         /** JSON */
@@ -1318,7 +1320,8 @@ namespace LoaderResource
      * @memberof PIXI.LoaderResource
      */
     export enum LOAD_TYPE
-        {
+    // eslint-disable-next-line @typescript-eslint/indent
+    {
         /** Uses XMLHttpRequest to load the resource. */
         XHR = 1,
         /** Uses an `Image` object to load the resource. */
@@ -1338,7 +1341,8 @@ namespace LoaderResource
      * @memberof PIXI.LoaderResource
      */
     export enum XHR_RESPONSE_TYPE
-        {
+    // eslint-disable-next-line @typescript-eslint/indent
+    {
         /** string */
         DEFAULT = 'text',
         /** ArrayBuffer */

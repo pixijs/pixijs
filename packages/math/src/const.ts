@@ -38,7 +38,8 @@ export const DEG_TO_RAD = Math.PI / 180;
  * @property {number} RREC Rounded Rectangle
  */
 export enum SHAPES
-    {
+// eslint-disable-next-line @typescript-eslint/indent
+{
     POLY = 0,
     RECT = 1,
     CIRC = 2,
