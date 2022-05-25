@@ -31,7 +31,6 @@ Mesh.prototype._cachedTexture = null;
 
 /**
  * Renders the object using the Canvas renderer
- *
  * @private
  * @method _renderCanvas
  * @memberof PIXI.Mesh#
@@ -65,7 +64,6 @@ Mesh.prototype._renderCanvas = function _renderCanvas(renderer: CanvasRenderer):
 
 /**
  * Internal variable for `canvasPadding`.
- *
  * @private
  * @memberof PIXI.Mesh
  * @member {number}
@@ -76,7 +74,6 @@ Mesh.prototype._canvasPadding = null;
 /**
  * Triangles in canvas mode are automatically antialiased, use this value to force triangles
  * to overlap a bit with each other. To set the global default, set {@link PIXI.settings.MESH_CANVAS_PADDING}
- *
  * @see PIXI.settings.MESH_CANVAS_PADDING
  * @member {number} canvasPadding
  * @memberof PIXI.SimpleMesh#

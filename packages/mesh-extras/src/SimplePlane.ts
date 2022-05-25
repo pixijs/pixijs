@@ -14,7 +14,6 @@ import type { IDestroyOptions } from '@pixi/display';
  * };
  * let SimplePlane = new PIXI.SimplePlane(PIXI.Texture.from("snake.png"), points);
  *  ```
- *
  * @memberof PIXI
  */
 export class SimplePlane extends Mesh

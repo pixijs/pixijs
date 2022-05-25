@@ -53,7 +53,6 @@ export class ResizePlugin
         /**
          * Resize is throttled, so it's safe to call this multiple times per frame and it'll
          * only be called once.
-         *
          * @memberof PIXI.Application#
          * @method queueResize
          * @private
@@ -73,7 +72,6 @@ export class ResizePlugin
 
         /**
          * Cancel the resize queue.
-         *
          * @memberof PIXI.Application#
          * @method cancelResize
          * @private
@@ -91,7 +89,6 @@ export class ResizePlugin
          * Execute an immediate resize on the renderer, this is not
          * throttled and can be expensive to call many times in a row.
          * Will resize only if `resizeTo` property is set.
-         *
          * @memberof PIXI.Application#
          * @method resize
          */
@@ -134,7 +131,6 @@ export class ResizePlugin
 
     /**
      * Clean up the ticker, scoped to application
-     *
      * @static
      * @private
      */

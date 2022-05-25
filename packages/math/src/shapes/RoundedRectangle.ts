@@ -3,7 +3,6 @@ import { SHAPES } from '../const';
 /**
  * The Rounded Rectangle object is an area that has nice rounded corners, as indicated by its
  * top-left corner point (x, y) and by its width and its height and its radius.
- *
  * @memberof PIXI
  */
 export class RoundedRectangle
@@ -25,7 +24,6 @@ export class RoundedRectangle
 
     /**
      * The type of the object, mainly used to avoid `instanceof` checks
-     *
      * @default PIXI.SHAPES.RREC
      * @see PIXI.SHAPES
      */
@@ -50,8 +48,7 @@ export class RoundedRectangle
 
     /**
      * Creates a clone of this Rounded Rectangle.
-     *
-     * @return - A copy of the rounded rectangle.
+     * @returns - A copy of the rounded rectangle.
      */
     clone(): RoundedRectangle
     {
@@ -60,10 +57,9 @@ export class RoundedRectangle
 
     /**
      * Checks whether the x and y coordinates given are contained within this Rounded Rectangle
-     *
      * @param x - The X coordinate of the point to test.
      * @param y - The Y coordinate of the point to test.
-     * @return - Whether the x/y coordinates are within this Rounded Rectangle.
+     * @returns - Whether the x/y coordinates are within this Rounded Rectangle.
      */
     contains(x: number, y: number): boolean
     {

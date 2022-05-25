@@ -46,7 +46,7 @@
     "lintfix"
   ],
   "engines": {
-    "node": ">=12",
+    "node": ">=14",
     "yarn": "please-use-npm",
     "npm": ">=7"
   },
@@ -80,6 +80,7 @@
     "cross-env": "^5.2.0",
     "electron": "^12.0.0",
     "eslint": "^7.2.0",
+    "eslint-plugin-jsdoc": "^39.2.9",
     "floss": "^5.0.0",
     "glob": "^7.1.3",
     "lerna": "^4.0.0",

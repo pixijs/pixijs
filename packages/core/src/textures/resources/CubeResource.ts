@@ -8,9 +8,7 @@ import type { BaseTexture } from '../BaseTexture';
 import type { Renderer } from '../../Renderer';
 import type { GLTexture } from '../GLTexture';
 
-/**
- * Constructor options for CubeResource
- */
+/** Constructor options for CubeResource */
 export interface ICubeResourceOptions extends ISize
 {
     /** Whether to auto-load resources */
@@ -22,7 +20,6 @@ export interface ICubeResourceOptions extends ISize
 
 /**
  * Resource for a CubeTexture which contains six resources.
- *
  * @memberof PIXI
  */
 export class CubeResource extends AbstractMultiResource
@@ -31,7 +28,6 @@ export class CubeResource extends AbstractMultiResource
 
     /**
      * In case BaseTextures are supplied, whether to use same resource or bind baseTexture itself.
-     *
      * @protected
      */
     linkBaseTexture: boolean;
@@ -77,7 +73,6 @@ export class CubeResource extends AbstractMultiResource
 
     /**
      * Add binding.
-     *
      * @param baseTexture - parent base texture
      */
     bind(baseTexture: BaseTexture): void
@@ -134,7 +129,9 @@ export class CubeResource extends AbstractMultiResource
 
     /**
      * Upload the resource
-     *
+     * @param renderer
+     * @param _baseTexture
+     * @param glTexture
      * @returns {boolean} true is success
      */
     upload(renderer: Renderer, _baseTexture: BaseTexture, glTexture: GLTexture): boolean
@@ -177,9 +174,8 @@ export class CubeResource extends AbstractMultiResource
 
     /**
      * Used to auto-detect the type of resource.
-     *
      * @param {*} source - The source object
-     * @return {boolean} `true` if source is an array of 6 elements
+     * @returns {boolean} `true` if source is an array of 6 elements
      */
     static test(source: unknown): source is ArrayFixed<string | Resource, 6>
     {

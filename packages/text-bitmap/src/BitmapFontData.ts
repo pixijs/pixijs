@@ -2,7 +2,6 @@
 
 /**
  * Normalized parsed data from .fnt files.
- *
  * @memberof PIXI
  */
 export class BitmapFontData

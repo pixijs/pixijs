@@ -39,7 +39,6 @@ export interface IParticleProperties
  * ```
  *
  * And here you have a hundred sprites that will be rendered at the speed of light.
- *
  * @memberof PIXI
  */
 export class ParticleContainer extends Container
@@ -47,14 +46,12 @@ export class ParticleContainer extends Container
     /**
      * The blend mode to be applied to the sprite. Apply a value of `PIXI.BLEND_MODES.NORMAL`
      * to reset the blend mode.
-     *
      * @default PIXI.BLEND_MODES.NORMAL
      */
     public blendMode: BLEND_MODES;
 
     /**
      * If true, container allocates more batches in case there are more than `maxSize` particles.
-     *
      * @default false
      */
     public autoResize: boolean;
@@ -64,14 +61,12 @@ export class ParticleContainer extends Container
      * Advantages can include sharper image quality (like text) and faster rendering on canvas.
      * The main disadvantage is movement of objects may appear less smooth.
      * Default to true here as performance is usually the priority for particles.
-     *
      * @default true
      */
     public roundPixels: boolean;
 
     /**
      * The texture used to render the children.
-     *
      * @readonly
      */
     public baseTexture: BaseTexture;
@@ -88,21 +83,18 @@ export class ParticleContainer extends Container
 
     /**
      * Set properties to be dynamic (true) / static (false).
-     *
      * @private
      */
     _properties: boolean[];
 
     /**
      * For every batch, stores _updateID corresponding to the last change in that batch.
-     *
      * @private
      */
     _bufferUpdateIDs: number[];
 
     /**
      * When child inserted, removed or changes position this number goes up.
-     *
      * @private
      */
     _updateID: number;
@@ -110,7 +102,6 @@ export class ParticleContainer extends Container
     /**
      * The tint applied to the container.
      * This is a hex value. A value of 0xFFFFFF will remove any tint effect.
-     *
      * @default 0xFFFFFF
      */
     private _tint: number;
@@ -165,7 +156,6 @@ export class ParticleContainer extends Container
 
     /**
      * Sets the private properties array to dynamic / static based on the passed properties object
-     *
      * @param properties - The properties to be uploaded
      */
     public setProperties(properties: IParticleProperties): void
@@ -192,7 +182,6 @@ export class ParticleContainer extends Container
      * The tint applied to the container. This is a hex value.
      * A value of 0xFFFFFF will remove any tint effect.
      * IMPORTANT: This is a WebGL only feature and will be ignored by the canvas renderer.
-     *
      * @default 0xFFFFFF
      */
     get tint(): number
@@ -208,7 +197,6 @@ export class ParticleContainer extends Container
 
     /**
      * Renders the container using the WebGL renderer.
-     *
      * @param renderer - The WebGL renderer.
      */
     public render(renderer: Renderer): void
@@ -233,7 +221,6 @@ export class ParticleContainer extends Container
 
     /**
      * Set the flag that static data should be updated to true
-     *
      * @param smallestChildIndex - The smallest child index.
      */
     protected onChildrenChange(smallestChildIndex: number): void
@@ -262,7 +249,6 @@ export class ParticleContainer extends Container
 
     /**
      * Destroys the container
-     *
      * @param options - Options parameter. A boolean will act as if all options
      *  have been set to that value
      * @param {boolean} [options.children=false] - if set to true, all the children will have their

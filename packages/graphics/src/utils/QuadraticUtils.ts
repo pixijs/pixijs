@@ -2,7 +2,6 @@ import { GRAPHICS_CURVES } from '../const';
 
 /**
  * Utilities for quadratic curves.
- *
  * @private
  */
 export class QuadraticUtils
@@ -11,7 +10,6 @@ export class QuadraticUtils
      * Calculate length of quadratic curve
      * @see {@link http://www.malczak.linuxpl.com/blog/quadratic-bezier-curve-length/}
      * for the detailed explanation of math behind this.
-     *
      * @private
      * @param fromX - x-coordinate of curve start point
      * @param fromY - y-coordinate of curve start point
@@ -19,7 +17,7 @@ export class QuadraticUtils
      * @param cpY - y-coordinate of curve control point
      * @param toX - x-coordinate of curve end point
      * @param toY - y-coordinate of curve end point
-     * @return - Length of quadratic curve
+     * @returns - Length of quadratic curve
      */
     static curveLength(
         fromX: number, fromY: number,
@@ -53,7 +51,6 @@ export class QuadraticUtils
     /**
      * Calculate the points for a quadratic bezier curve and then draws it.
      * Based on: https://stackoverflow.com/questions/785097/how-do-i-implement-a-bezier-curve-in-c
-     *
      * @private
      * @param cpX - Control point x
      * @param cpY - Control point y

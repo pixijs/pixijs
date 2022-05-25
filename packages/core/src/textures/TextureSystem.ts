@@ -11,21 +11,18 @@ import type { Renderer } from '../Renderer';
 
 /**
  * System plugin to the renderer to manage textures.
- *
  * @memberof PIXI
  */
 export class TextureSystem implements ISystem
 {
     /**
      * Bound textures.
-     *
      * @readonly
      */
     public boundTextures: BaseTexture[];
 
     /**
      * List of managed textures.
-     *
      * @readonly
      */
     public managedTextures: Array<BaseTexture>;
@@ -39,21 +36,18 @@ export class TextureSystem implements ISystem
 
     /**
      * BaseTexture value that shows that we don't know what is bound.
-     *
      * @readonly
      */
     protected unknownTexture: BaseTexture;
 
     /**
      * Did someone temper with textures state? We'll overwrite them when we need to unbind something.
-     *
      * @private
      */
     protected _unknownBoundTextures: boolean;
 
     /**
      * Current location.
-     *
      * @readonly
      */
     currentLocation: number;
@@ -129,8 +123,7 @@ export class TextureSystem implements ISystem
      * Bind a texture to a specific location
      *
      * If you want to unbind something, please use `unbind(texture)` instead of `bind(null, textureLocation)`
-     *
-     * @param texture_ - Texture to bind
+     * @param texture - Texture to bind
      * @param [location=0] - Location to bind at
      */
     bind(texture: Texture | BaseTexture, location = 0): void
@@ -183,11 +176,7 @@ export class TextureSystem implements ISystem
         }
     }
 
-    /**
-     * Resets texture location and bound textures
-     *
-     * Actual `bind(null, i)` calls will be performed at next `unbind()` call
-     */
+    /** Resets texture location and bound textures Actual `bind(null, i)` calls will be performed at next `unbind()` call */
     reset(): void
     {
         this._unknownBoundTextures = true;
@@ -202,7 +191,6 @@ export class TextureSystem implements ISystem
 
     /**
      * Unbind a texture.
-     *
      * @param texture - Texture to bind
      */
     unbind(texture?: BaseTexture): void
@@ -242,7 +230,6 @@ export class TextureSystem implements ISystem
     /**
      * Ensures that current boundTextures all have FLOAT sampler type,
      * see {@link PIXI.SAMPLER_TYPES} for explanation.
-     *
      * @param maxTextures - number of locations to check
      */
     ensureSamplerType(maxTextures: number): void
@@ -272,7 +259,6 @@ export class TextureSystem implements ISystem
 
     /**
      * Initialize a texture
-     *
      * @private
      * @param texture - Texture to initialize
      */
@@ -309,7 +295,6 @@ export class TextureSystem implements ISystem
 
     /**
      * Update a texture
-     *
      * @private
      * @param {PIXI.BaseTexture} texture - Texture to initialize
      */
@@ -369,9 +354,8 @@ export class TextureSystem implements ISystem
 
     /**
      * Deletes the texture from WebGL
-     *
      * @private
-     * @param texture_ - the texture to destroy
+     * @param texture - the texture to destroy
      * @param [skipRemove=false] - Whether to skip removing the texture from the TextureManager.
      */
     destroyTexture(texture: BaseTexture | Texture, skipRemove?: boolean): void
@@ -403,7 +387,6 @@ export class TextureSystem implements ISystem
 
     /**
      * Update texture style such as mipmap flag
-     *
      * @private
      * @param {PIXI.BaseTexture} texture - Texture to update
      */
@@ -448,7 +431,6 @@ export class TextureSystem implements ISystem
 
     /**
      * Set style for texture
-     *
      * @private
      * @param texture - Texture to update
      * @param glTexture

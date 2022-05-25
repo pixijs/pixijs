@@ -9,7 +9,6 @@ interface IBlobOptions
 
 /**
  * Resource that fetches texture data over the network and stores it in a buffer.
- *
  * @class
  * @extends PIXI.Resource
  * @memberof PIXI
@@ -21,9 +20,12 @@ export abstract class BlobResource extends BufferResource
     protected loaded: boolean;
 
     /**
-     * @param {string} url - the URL of the texture file
-     * @param {boolean}[autoLoad] - whether to fetch the data immediately;
+     * @param {string} source - the URL of the texture file
+     * @param {PIXI.IBlobOptions} options
+     * @param {boolean}[options.autoLoad] - whether to fetch the data immediately;
      *  you can fetch it later via {@link BlobResource#load}
+     * @param {boolean}[options.width] - the width in pixels.
+     * @param {boolean}[options.height] - the height in pixels.
      */
     constructor(source: string | Uint8Array | Uint32Array | Float32Array,
         options: IBlobOptions = { width: 1, height: 1, autoLoad: true })
@@ -74,9 +76,7 @@ export abstract class BlobResource extends BufferResource
         // TODO: Override this method
     }
 
-    /**
-     * Loads the blob
-     */
+    /** Loads the blob */
     async load(): Promise<Resource>
     {
         const response = await fetch(this.origin);

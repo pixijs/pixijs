@@ -39,7 +39,6 @@ export class ColorMatrixFilter extends Filter
 
     /**
      * Transforms current matrix and set the new one
-     *
      * @param {number[]} matrix - 5x4 matrix
      * @param multiply - if true, current matrix and matrix are multiplied. If false,
      *  just set the current matrix with @param matrix
@@ -60,7 +59,6 @@ export class ColorMatrixFilter extends Filter
 
     /**
      * Multiplies two mat5's
-     *
      * @private
      * @param out - 5x4 matrix the receiving matrix
      * @param a - 5x4 matrix the first operand
@@ -102,9 +100,8 @@ export class ColorMatrixFilter extends Filter
 
     /**
      * Create a Float32 Array and normalize the offset component to 0-1
-     *
      * @param {number[]} matrix - 5x4 matrix
-     * @return {number[]} 5x4 matrix with all values between 0-1
+     * @returns {number[]} 5x4 matrix with all values between 0-1
      */
     private _colorMatrix(matrix: ColorMatrix): ColorMatrix
     {
@@ -121,7 +118,6 @@ export class ColorMatrixFilter extends Filter
 
     /**
      * Adjusts brightness
-     *
      * @param b - value of the brigthness (0-1, where 0 is black)
      * @param multiply - if true, current matrix and matrix are multiplied. If false,
      *  just set the current matrix with @param matrix
@@ -142,7 +138,6 @@ export class ColorMatrixFilter extends Filter
      * Sets each channel on the diagonal of the color matrix.
      * This can be used to achieve a tinting effect on Containers similar to the tint field of some
      * display objects like Sprite, Text, Graphics, and Mesh.
-     *
      * @param color - Color of the tint. This is a hex value.
      * @param multiply - if true, current matrix and matrix are multiplied. If false,
      *  just set the current matrix with @param matrix
@@ -165,7 +160,6 @@ export class ColorMatrixFilter extends Filter
 
     /**
      * Set the matrices in grey scales
-     *
      * @param scale - value of the grey (0-1, where 0 is black)
      * @param multiply - if true, current matrix and matrix are multiplied. If false,
      *  just set the current matrix with @param matrix
@@ -184,7 +178,6 @@ export class ColorMatrixFilter extends Filter
 
     /**
      * Set the black and white matrice.
-     *
      * @param multiply - if true, current matrix and matrix are multiplied. If false,
      *  just set the current matrix with @param matrix
      */
@@ -202,7 +195,6 @@ export class ColorMatrixFilter extends Filter
 
     /**
      * Set the hue property of the color
-     *
      * @param rotation - in degrees
      * @param multiply - if true, current matrix and matrix are multiplied. If false,
      *  just set the current matrix with @param matrix
@@ -257,7 +249,6 @@ export class ColorMatrixFilter extends Filter
      * Set the contrast matrix, increase the separation between dark and bright
      * Increase contrast : shadows darker and highlights brighter
      * Decrease contrast : bring the shadows up and the highlights down
-     *
      * @param amount - value of the contrast (0-1)
      * @param multiply - if true, current matrix and matrix are multiplied. If false,
      *  just set the current matrix with @param matrix
@@ -280,7 +271,6 @@ export class ColorMatrixFilter extends Filter
     /**
      * Set the saturation matrix, increase the separation between colors
      * Increase saturation : increase contrast, brightness, and sharpness
-     *
      * @param amount - The saturation amount (0-1)
      * @param multiply - if true, current matrix and matrix are multiplied. If false,
      *  just set the current matrix with @param matrix
@@ -300,11 +290,7 @@ export class ColorMatrixFilter extends Filter
         this._loadMatrix(matrix, multiply);
     }
 
-    /**
-     * Desaturate image (remove color)
-     *
-     * Call the saturate function
-     */
+    /** Desaturate image (remove color) Call the saturate function */
     public desaturate(): void // eslint-disable-line no-unused-vars
     {
         this.saturate(-1);
@@ -312,7 +298,6 @@ export class ColorMatrixFilter extends Filter
 
     /**
      * Negative image (inverse of classic rgb matrix)
-     *
      * @param multiply - if true, current matrix and matrix are multiplied. If false,
      *  just set the current matrix with @param matrix
      */
@@ -330,7 +315,6 @@ export class ColorMatrixFilter extends Filter
 
     /**
      * Sepia image
-     *
      * @param multiply - if true, current matrix and matrix are multiplied. If false,
      *  just set the current matrix with @param matrix
      */
@@ -348,7 +332,6 @@ export class ColorMatrixFilter extends Filter
 
     /**
      * Color motion picture process invented in 1916 (thanks Dominic Szablewski)
-     *
      * @param multiply - if true, current matrix and matrix are multiplied. If false,
      *  just set the current matrix with @param matrix
      */
@@ -366,7 +349,6 @@ export class ColorMatrixFilter extends Filter
 
     /**
      * Polaroid filter
-     *
      * @param multiply - if true, current matrix and matrix are multiplied. If false,
      *  just set the current matrix with @param matrix
      */
@@ -384,7 +366,6 @@ export class ColorMatrixFilter extends Filter
 
     /**
      * Filter who transforms : Red -> Blue and Blue -> Red
-     *
      * @param multiply - if true, current matrix and matrix are multiplied. If false,
      *  just set the current matrix with @param matrix
      */
@@ -402,7 +383,6 @@ export class ColorMatrixFilter extends Filter
 
     /**
      * Color reversal film introduced by Eastman Kodak in 1935. (thanks Dominic Szablewski)
-     *
      * @param multiply - if true, current matrix and matrix are multiplied. If false,
      *  just set the current matrix with @param matrix
      */
@@ -420,7 +400,6 @@ export class ColorMatrixFilter extends Filter
 
     /**
      * Brown delicious browni filter (thanks Dominic Szablewski)
-     *
      * @param multiply - if true, current matrix and matrix are multiplied. If false,
      *  just set the current matrix with @param matrix
      */
@@ -438,7 +417,6 @@ export class ColorMatrixFilter extends Filter
 
     /**
      * Vintage filter (thanks Dominic Szablewski)
-     *
      * @param multiply - if true, current matrix and matrix are multiplied. If false,
      *  just set the current matrix with @param matrix
      */
@@ -456,7 +434,6 @@ export class ColorMatrixFilter extends Filter
 
     /**
      * We don't know exactly what it does, kind of gradient map, but funny to play with!
-     *
      * @param desaturation - Tone values.
      * @param toned - Tone values.
      * @param lightColor - Tone values, example: `0xFFE580`
@@ -491,7 +468,6 @@ export class ColorMatrixFilter extends Filter
 
     /**
      * Night effect
-     *
      * @param intensity - The intensity of the night effect.
      * @param multiply - if true, current matrix and matrix are multiplied. If false,
      *  just set the current matrix with @param matrix
@@ -514,7 +490,6 @@ export class ColorMatrixFilter extends Filter
      * Predator effect
      *
      * Erase the current matrix by setting a new indepent one
-     *
      * @param amount - how much the predator feels his future victim
      * @param multiply - if true, current matrix and matrix are multiplied. If false,
      *  just set the current matrix with @param matrix
@@ -551,7 +526,6 @@ export class ColorMatrixFilter extends Filter
      * LSD effect
      *
      * Multiply the current matrix
-     *
      * @param multiply - if true, current matrix and matrix are multiplied. If false,
      *  just set the current matrix with @param matrix
      */
@@ -582,7 +556,6 @@ export class ColorMatrixFilter extends Filter
 
     /**
      * The matrix of the color matrix filter
-     *
      * @member {number[]}
      * @default [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0]
      */
@@ -602,7 +575,6 @@ export class ColorMatrixFilter extends Filter
      * When the value is 0, the original color is used without modification.
      * When the value is 1, the result color is used.
      * When in the range (0, 1) the color is interpolated between the original and result by this amount.
-     *
      * @default 1
      */
     get alpha(): number

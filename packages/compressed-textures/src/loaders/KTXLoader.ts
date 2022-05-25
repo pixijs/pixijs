@@ -10,7 +10,6 @@ LoaderResource.setExtensionXhrType('ktx', LoaderResource.XHR_RESPONSE_TYPE.BUFFE
 
 /**
  * The 12-byte KTX file identifier
- *
  * @see https://www.khronos.org/opengles/sdk/tools/KTX/file_format_spec/#2.1
  * @ignore
  */
@@ -18,7 +17,6 @@ const FILE_IDENTIFIER = [0xAB, 0x4B, 0x54, 0x58, 0x20, 0x31, 0x31, 0xBB, 0x0D, 0
 
 /**
  * The value stored in the "endianness" field.
- *
  * @see https://www.khronos.org/opengles/sdk/tools/KTX/file_format_spec/#2.2
  * @ignore
  */
@@ -26,7 +24,6 @@ const ENDIANNESS = 0x04030201;
 
 /**
  * Byte offsets of the KTX file header fields
- *
  * @ignore
  */
 const KTX_FIELDS = {
@@ -48,14 +45,12 @@ const KTX_FIELDS = {
 
 /**
  * Byte size of the file header fields in {@code KTX_FIELDS}
- *
  * @ignore
  */
 const FILE_HEADER_SIZE = 64;
 
 /**
  * Maps {@link PIXI.TYPES} to the bytes taken per component, excluding those ones that are bit-fields.
- *
  * @ignore
  */
 export const TYPES_TO_BYTES_PER_COMPONENT: { [id: number]: number } = {
@@ -69,7 +64,6 @@ export const TYPES_TO_BYTES_PER_COMPONENT: { [id: number]: number } = {
 
 /**
  * Number of components in each {@link PIXI.FORMATS}
- *
  * @ignore
  */
 export const FORMATS_TO_COMPONENTS: { [id: number]: number } = {
@@ -84,7 +78,6 @@ export const FORMATS_TO_COMPONENTS: { [id: number]: number } = {
 
 /**
  * Number of bytes per pixel in bit-field types in {@link PIXI.TYPES}
- *
  * @ignore
  */
 export const TYPES_TO_BYTES_PER_PIXEL: { [id: number]: number } = {
@@ -106,9 +99,9 @@ export const TYPES_TO_BYTES_PER_PIXEL: { [id: number]: number } = {
  * * multiple textures per file
  * * mipmapping (only for compressed formats)
  * * vendor-specific key/value data parsing (enable {@link PIXI.KTXLoader.loadKeyValueData})
- *
+ * @class
  * @memberof PIXI
- * @implements PIXI.ILoaderPlugin
+ * @implements {PIXI.ILoaderPlugin}
  */
 export class KTXLoader
 {
@@ -127,7 +120,6 @@ export class KTXLoader
      *
      * This will parse the KTX file header and add a {@code BaseTexture} to the texture
      * cache.
-     *
      * @see PIXI.Loader.loaderMiddleware
      * @param resource - loader resource that is checked to see if it is a KTX file
      * @param next - callback Function to call when done

@@ -7,7 +7,6 @@ import type { Mesh } from '@pixi/mesh';
 
 /**
  * Renderer dedicated to meshes.
- *
  * @class
  * @protected
  * @memberof PIXI
@@ -25,7 +24,6 @@ export class CanvasMeshRenderer
 
     /**
      * Renders the Mesh
-     *
      * @param mesh - the Mesh to render
      */
     public render(mesh: Mesh): void
@@ -49,7 +47,6 @@ export class CanvasMeshRenderer
 
     /**
      * Draws the object in Triangle Mesh mode
-     *
      * @private
      * @param mesh - the Mesh to render
      */
@@ -69,7 +66,6 @@ export class CanvasMeshRenderer
 
     /**
      * Draws the object in triangle mode using canvas
-     *
      * @private
      * @param mesh - the current mesh
      */
@@ -92,7 +88,6 @@ export class CanvasMeshRenderer
 
     /**
      * Draws one of the triangles that from the Mesh
-     *
      * @private
      * @param mesh - the current mesh
      * @param index0 - the index of the first vertex
@@ -238,7 +233,6 @@ export class CanvasMeshRenderer
 
     /**
      * Renders a flat Mesh
-     *
      * @private
      * @param mesh - The Mesh to render
      */

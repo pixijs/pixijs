@@ -45,16 +45,14 @@ interface IBitmapFontRawData
 
 /**
  * BitmapFont format that's Text-based.
- *
  * @private
  */
 export class TextFormat
 {
     /**
      * Check if resource refers to txt font data.
-     *
      * @param data
-     * @return - True if resource could be treated as font data, false otherwise.
+     * @returns - True if resource could be treated as font data, false otherwise.
      */
     static test(data: unknown): boolean
     {
@@ -63,9 +61,8 @@ export class TextFormat
 
     /**
      * Convert text font data to a javascript object.
-     *
      * @param txt - Raw string data to be converted
-     * @return - Parsed font data
+     * @returns - Parsed font data
      */
     static parse(txt: string): BitmapFontData
     {

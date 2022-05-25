@@ -45,28 +45,24 @@ let UID = 0;
  * })
  *
  *  ```
- *
  * @memberof PIXI
  */
 export class UniformGroup<LAYOUT = Dict<any>>
 {
     /**
      * Uniform values
-     *
      * @member {object}
      */
     public readonly uniforms: LAYOUT;
 
     /**
      * Its a group and not a single uniforms.
-     *
      * @default true
      */
     public readonly group: boolean;
 
     /**
      * unique id
-     *
      * @protected
      */
     public id: number;
@@ -74,7 +70,6 @@ export class UniformGroup<LAYOUT = Dict<any>>
 
     /**
      * Dirty version
-     *
      * @protected
      */
     dirtyId: number;
@@ -153,7 +148,6 @@ export class UniformGroup<LAYOUT = Dict<any>>
 
     /**
      * A short hand function for creating a static UBO UniformGroup.
-     *
      * @param uniforms - the ubo item
      * @param _static - should this be updated each time it is used? defaults to true here!
      */

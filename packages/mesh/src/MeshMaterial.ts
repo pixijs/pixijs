@@ -21,28 +21,24 @@ export interface MeshMaterial extends GlobalMixins.MeshMaterial {}
 
 /**
  * Slightly opinionated default shader for PixiJS 2D objects.
- *
  * @memberof PIXI
  */
 export class MeshMaterial extends Shader
 {
     /**
      * TextureMatrix instance for this Mesh, used to track Texture changes.
-     *
      * @readonly
      */
     public readonly uvMatrix: TextureMatrix;
 
     /**
      * `true` if shader can be batch with the renderer's batch system.
-     *
      * @default true
      */
     public batchable: boolean;
 
     /**
      * Renderer plugin for batching.
-     *
      * @default 'batch'
      */
     public pluginName: string;
@@ -52,7 +48,6 @@ export class MeshMaterial extends Shader
 
     /**
      * Only do update if tint or alpha changes.
-     *
      * @private
      * @default false
      */
@@ -123,7 +118,6 @@ export class MeshMaterial extends Shader
 
     /**
      * This gets automatically set by the object using this.
-     *
      * @default 1
      */
     set alpha(value: number)
@@ -140,7 +134,6 @@ export class MeshMaterial extends Shader
 
     /**
      * Multiply tint for the material.
-     *
      * @default 0xFFFFFF
      */
     set tint(value: number)
@@ -156,10 +149,7 @@ export class MeshMaterial extends Shader
         return this._tint;
     }
 
-    /**
-     * Gets called automatically by the Mesh. Intended to be overridden for custom
-     * {@link MeshMaterial} objects.
-     */
+    /** Gets called automatically by the Mesh. Intended to be overridden for custom {@link MeshMaterial} objects. */
     public update(): void
     {
         if (this._colorDirty)

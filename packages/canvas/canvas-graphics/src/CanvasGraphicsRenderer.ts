@@ -20,7 +20,6 @@ import { PolygonUtils } from './utils/PolygonUtils';
 
 /**
  * Renderer dedicated to drawing and batching graphics objects.
- *
  * @class
  * @protected
  * @memberof PIXI
@@ -42,7 +41,6 @@ export class CanvasGraphicsRenderer
 
     /**
      * calculates fill/stroke style for canvas
-     *
      * @private
      * @param style - A graphics {@link PIXI.FILL_STYLE} where if `texture` is specified then a tinted CanvasPattern
      * will be used for the fill.stroke
@@ -74,7 +72,6 @@ export class CanvasGraphicsRenderer
 
     /**
      * Renders a Graphics object to a canvas.
-     *
      * @param graphics - the actual graphics object to render
      */
     public render(graphics: Graphics): void
@@ -390,7 +387,6 @@ export class CanvasGraphicsRenderer
 
     /**
      * Paint stroke for polygon and holes
-     *
      * @private
      * @param shape - Shape to be drawn
      * @param lineStyle - Line style for the shape
@@ -463,7 +459,6 @@ export class CanvasGraphicsRenderer
 
     /**
      * Paint Ellipse
-     *
      * @private
      * @param shape - Shape to be drawn
      * @param fillStyle - Fill for the shape
@@ -525,7 +520,6 @@ export class CanvasGraphicsRenderer
 
     /**
      * Paint Rounded Rectangle
-     *
      * @private
      * @param shape - Shape to be drawn
      * @param fillStyle - Fill for the shape

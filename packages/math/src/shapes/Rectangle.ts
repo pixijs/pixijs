@@ -9,15 +9,15 @@ export interface Rectangle extends GlobalMixins.Rectangle {}
 
 /**
  * Size object, contains width and height
- *
  * @memberof PIXI
  * @typedef {object} ISize
+ * @property {number} width - Width component
+ * @property {number} height - Height component
  */
 
 /**
  * Rectangle object is an area defined by its position, as indicated by its top-left corner
  * point (x, y) and by its width and its height.
- *
  * @memberof PIXI
  */
 export class Rectangle
@@ -87,8 +87,7 @@ export class Rectangle
 
     /**
      * Creates a clone of this Rectangle
-     *
-     * @return a copy of the rectangle
+     * @returns a copy of the rectangle
      */
     clone(): Rectangle
     {
@@ -97,9 +96,8 @@ export class Rectangle
 
     /**
      * Copies another rectangle to this one.
-     *
      * @param rectangle - The rectangle to copy from.
-     * @return Returns itself.
+     * @returns Returns itself.
      */
     copyFrom(rectangle: Rectangle): Rectangle
     {
@@ -113,9 +111,8 @@ export class Rectangle
 
     /**
      * Copies this rectangle to another one.
-     *
      * @param rectangle - The rectangle to copy to.
-     * @return Returns given parameter.
+     * @returns Returns given parameter.
      */
     copyTo(rectangle: Rectangle): Rectangle
     {
@@ -129,10 +126,9 @@ export class Rectangle
 
     /**
      * Checks whether the x and y coordinates given are contained within this Rectangle
-     *
      * @param x - The X coordinate of the point to test
      * @param y - The Y coordinate of the point to test
-     * @return Whether the x/y coordinates are within this Rectangle
+     * @returns Whether the x/y coordinates are within this Rectangle
      */
     contains(x: number, y: number): boolean
     {
@@ -157,7 +153,6 @@ export class Rectangle
      * Returns true only if the area of the intersection is >0, this means that Rectangles
      * sharing a side are not overlapping. Another side effect is that an arealess rectangle
      * (width or height equal to zero) can't intersect any other rectangle.
-     *
      * @param {Rectangle} other - The Rectangle to intersect with `this`.
      * @param {Matrix} transform - The transformation matrix of `other`.
      * @returns {boolean} A value of `true` if the transformed `other` Rectangle intersects with `this`; otherwise `false`.
@@ -252,10 +247,9 @@ export class Rectangle
     /**
      * Pads the rectangle making it grow in all directions.
      * If paddingY is omitted, both paddingX and paddingY will be set to paddingX.
-     *
      * @param paddingX - The horizontal padding amount.
      * @param paddingY - The vertical padding amount.
-     * @return Returns itself.
+     * @returns Returns itself.
      */
     pad(paddingX = 0, paddingY = paddingX): this
     {
@@ -270,9 +264,8 @@ export class Rectangle
 
     /**
      * Fits this rectangle around the passed one.
-     *
      * @param rectangle - The rectangle to fit.
-     * @return Returns itself.
+     * @returns Returns itself.
      */
     fit(rectangle: Rectangle): this
     {
@@ -291,10 +284,9 @@ export class Rectangle
 
     /**
      * Enlarges rectangle that way its corners lie on grid
-     *
      * @param resolution - resolution
      * @param eps - precision
-     * @return Returns itself.
+     * @returns Returns itself.
      */
     ceil(resolution = 1, eps = 0.001): this
     {
@@ -312,9 +304,8 @@ export class Rectangle
 
     /**
      * Enlarges this rectangle to include the passed rectangle.
-     *
      * @param rectangle - The rectangle to include.
-     * @return Returns itself.
+     * @returns Returns itself.
      */
     enlarge(rectangle: Rectangle): this
     {

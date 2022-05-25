@@ -14,6 +14,7 @@ const mimeTypes = {
 
 /**
  * Very HTTP server to requesting files.
+ * @param port
  */
 const createServer = (port) =>
 {

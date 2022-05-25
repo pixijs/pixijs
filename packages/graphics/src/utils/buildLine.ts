@@ -9,15 +9,17 @@ import { LINE_JOIN, LINE_CAP, GRAPHICS_CURVES } from '../const';
  * Buffers vertices to draw a square cap.
  *
  * Ignored from docs since it is not directly exposed.
- *
  * @ignore
  * @private
  * @param {number} x - X-coord of end point
  * @param {number} y - Y-coord of end point
  * @param {number} nx - X-coord of line normal pointing inside
  * @param {number} ny - Y-coord of line normal pointing inside
+ * @param {number} innerWeight - Weight of inner points
+ * @param {number} outerWeight - Weight of outer points
+ * @param {boolean} clockwise - Whether the cap is drawn clockwise
  * @param {Array<number>} verts - vertex buffer
- * @returns {}
+ * @returns {number} - no. of vertices pushed
  */
 function square(
     x: number,
@@ -67,7 +69,6 @@ function square(
  * Buffers vertices to draw an arc at the line joint or cap.
  *
  * Ignored from docs since it is not directly exposed.
- *
  * @ignore
  * @private
  * @param {number} cx - X-coord of center
@@ -172,7 +173,6 @@ function round(
  * Builds a line to draw using the polygon method.
  *
  * Ignored from docs since it is not directly exposed.
- *
  * @ignore
  * @private
  * @param {PIXI.GraphicsData} graphicsData - The graphics object containing all the necessary properties
@@ -536,7 +536,6 @@ function buildNonNativeLine(graphicsData: GraphicsData, graphicsGeometry: Graphi
  * Builds a line to draw using the gl.drawArrays(gl.LINES) method
  *
  * Ignored from docs since it is not directly exposed.
- *
  * @ignore
  * @private
  * @param {PIXI.GraphicsData} graphicsData - The graphics object containing all the necessary properties
@@ -579,7 +578,6 @@ function buildNativeLine(graphicsData: GraphicsData, graphicsGeometry: GraphicsG
  * Builds a line to draw
  *
  * Ignored from docs since it is not directly exposed.
- *
  * @ignore
  * @private
  * @param {PIXI.GraphicsData} graphicsData - The graphics object containing all the necessary properties

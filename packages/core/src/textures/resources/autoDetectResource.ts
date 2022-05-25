@@ -23,7 +23,6 @@ export type IAutoDetectOptions = ISize
 
 /**
  * Shape of supported resource plugins
- *
  * @memberof PIXI
  */
 export interface IResourcePlugin<R, RO>
@@ -52,7 +51,6 @@ export interface IResourcePlugin<R, RO>
  * }
  * // Install the new resource type
  * PIXI.INSTALLED.push(CustomResource);
- *
  * @memberof PIXI
  * @type {Array<PIXI.IResourcePlugin>}
  * @static
@@ -88,7 +86,7 @@ export const INSTALLED: Array<IResourcePlugin<any, any>> = [];
  * @param {boolean} [options.autoPlay=true] - Video option to start playing video immediately
  * @param {number} [options.updateFPS=0] - Video option to update how many times a second the
  *        texture should be updated from the video. Leave at 0 to update at every render
- * @return {PIXI.Resource} The created resource.
+ * @returns {PIXI.Resource} The created resource.
  */
 export function autoDetectResource<R extends Resource, RO>(source: unknown, options?: RO): R
 {

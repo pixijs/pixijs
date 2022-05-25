@@ -37,7 +37,6 @@ const map: Dict<any> = {
  * geometry.addAttribute('uvs', [0,0,1,0,1,1,0,1],2)
  * geometry.addIndex([0,1,2,1,3,2])
  * ```
- *
  * @memberof PIXI
  */
 export class Geometry
@@ -52,14 +51,12 @@ export class Geometry
 
     /**
      * Number of instances in this geometry, pass it to `GeometrySystem.draw()`.
-     *
      * @default 1
      */
     public instanceCount: number;
 
     /**
      * A map of renderer IDs to webgl VAOs
-     *
      * @type {object}
      */
     glVertexArrayObjects: {[key: number]: {[key: string]: WebGLVertexArrayObject}};
@@ -95,7 +92,6 @@ export class Geometry
      *
      * Adds an attribute to the geometry
      * Note: `stride` and `start` should be `undefined` if you dont know them, not 0!
-     *
      * @param id - the name of the attribute (matching up to a shader)
      * @param {PIXI.Buffer|number[]} buffer - the buffer that holds the data of the attribute . You can also provide an Array and a buffer will be created from it.
      * @param size - the size of the attribute. If you have 2 floats per vertex (eg position x and y) this would be 2
@@ -104,7 +100,7 @@ export class Geometry
      * @param [stride=0] - How far apart, in bytes, the start of each value is. (used for interleaving data)
      * @param [start=0] - How far into the array to start reading values (used for interleaving data)
      * @param instance - Instancing flag
-     * @return - Returns self, useful for chaining.
+     * @returns - Returns self, useful for chaining.
      */
     addAttribute(id: string, buffer: Buffer | Float32Array | Uint32Array | Array<number>, size = 0, normalized = false,
         type?: TYPES, stride?: number, start?: number, instance = false): this
@@ -156,9 +152,8 @@ export class Geometry
 
     /**
      * Returns the requested attribute.
-     *
      * @param id - The name of the attribute required
-     * @return - The attribute requested.
+     * @returns - The attribute requested.
      */
     getAttribute(id: string): Attribute
     {
@@ -167,9 +162,8 @@ export class Geometry
 
     /**
      * Returns the requested buffer.
-     *
      * @param id - The name of the buffer required.
-     * @return - The buffer requested.
+     * @returns - The buffer requested.
      */
     getBuffer(id: string): Buffer
     {
@@ -177,13 +171,12 @@ export class Geometry
     }
 
     /**
-    *
-    * Adds an index buffer to the geometry
-    * The index buffer contains integers, three for each triangle in the geometry, which reference the various attribute buffers (position, colour, UV coordinates, other UV coordinates, normal, …). There is only ONE index buffer.
-    *
-    * @param {PIXI.Buffer|number[]} [buffer] - The buffer that holds the data of the index buffer. You can also provide an Array and a buffer will be created from it.
-    * @return - Returns self, useful for chaining.
-    */
+     *
+     * Adds an index buffer to the geometry
+     * The index buffer contains integers, three for each triangle in the geometry, which reference the various attribute buffers (position, colour, UV coordinates, other UV coordinates, normal, …). There is only ONE index buffer.
+     * @param {PIXI.Buffer|number[]} [buffer] - The buffer that holds the data of the index buffer. You can also provide an Array and a buffer will be created from it.
+     * @returns - Returns self, useful for chaining.
+     */
     addIndex(buffer?: Buffer | IArrayBuffer | number[]): Geometry
     {
         if (!(buffer instanceof Buffer))
@@ -211,8 +204,7 @@ export class Geometry
 
     /**
      * Returns the index buffer
-     *
-     * @return - The index buffer.
+     * @returns - The index buffer.
      */
     getIndex(): Buffer
     {
@@ -222,8 +214,7 @@ export class Geometry
     /**
      * This function modifies the structure so that all current attributes become interleaved into a single buffer
      * This can be useful if your model remains static as it offers a little performance boost
-     *
-     * @return - Returns self, useful for chaining.
+     * @returns - Returns self, useful for chaining.
      */
     interleave(): Geometry
     {
@@ -301,7 +292,6 @@ export class Geometry
 
     /**
      * Returns a clone of the geometry.
-     *
      * @returns - A new clone of this geometry.
      */
     clone(): Geometry
@@ -341,9 +331,8 @@ export class Geometry
      * Merges an array of geometries into a new single one.
      *
      * Geometry attribute styles must match for this operation to work.
-     *
      * @param geometries - array of geometries to merge
-     * @return - Shiny new geometry!
+     * @returns - Shiny new geometry!
      */
     static merge(geometries: Array<Geometry>): Geometry
     {

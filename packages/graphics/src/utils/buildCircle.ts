@@ -8,7 +8,6 @@ import type { IShapeBuildCommand } from './IShapeBuildCommand';
  * Builds a circle to draw
  *
  * Ignored from docs since it is not directly exposed.
- *
  * @ignore
  * @private
  * @param {PIXI.WebGLGraphicsData} graphicsData - The graphics object to draw

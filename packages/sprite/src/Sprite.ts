@@ -18,7 +18,7 @@ export interface Sprite extends GlobalMixins.Sprite, Container {}
 
 /**
  * The Sprite object is the base for all textured objects that are rendered to the screen
-*
+ *
  * A sprite can be created directly from an image like this:
  *
  * ```js
@@ -37,14 +37,12 @@ export interface Sprite extends GlobalMixins.Sprite, Container {}
  *   ...
  * }
  * ```
- *
  * @memberof PIXI
  */
 export class Sprite extends Container
 {
     /**
      * The blend mode to be applied to the sprite. Apply a value of `PIXI.BLEND_MODES.NORMAL` to reset the blend mode.
-     *
      * @default PIXI.BLEND_MODES.NORMAL
      */
     public blendMode: BLEND_MODES;
@@ -53,28 +51,24 @@ export class Sprite extends Container
     /**
      * Plugin that is responsible for rendering this element.
      * Allows to customize the rendering process without overriding '_render' & '_renderCanvas' methods.
-     *
      * @default 'batch'
      */
     public pluginName: string;
 
     /**
      * The width of the sprite (this is initially set by the texture).
-     *
      * @protected
      */
     _width: number;
 
     /**
      * The height of the sprite (this is initially set by the texture)
-     *
      * @protected
      */
     _height: number;
 
     /**
      * The texture that the sprite is using.
-     *
      * @private
      */
     _texture: Texture;
@@ -83,7 +77,6 @@ export class Sprite extends Container
     /**
      * Cached tint value so we can tell when the tint is changed.
      * Value is used for 2d CanvasRenderer.
-     *
      * @protected
      * @default 0xFFFFFF
      */
@@ -93,7 +86,6 @@ export class Sprite extends Container
     /**
      * This is used to store the uvs data of the sprite, assigned at the same time
      * as the vertexData in calculateVertices().
-     *
      * @member {Float32Array}
      */
     protected uvs: Float32Array;
@@ -111,28 +103,24 @@ export class Sprite extends Container
      * constructing a `Sprite` does _not_ update its anchor.
      *
      * {@link https://docs.cocos2d-x.org/cocos2d-x/en/sprites/manipulation.html}
-     *
      * @default `this.texture.defaultAnchor`
      */
     protected _anchor: ObservablePoint;
 
     /**
      * This is used to store the vertex data of the sprite (basically a quad).
-     *
      * @member {Float32Array}
      */
     protected vertexData: Float32Array;
 
     /**
      * This is used to calculate the bounds of the object IF it is a trimmed sprite.
-     *
      * @member {Float32Array}
      */
     private vertexTrimmedData: Float32Array;
 
     /**
      * Internal roundPixels field
-     *
      * @private
      */
     private _roundPixels: boolean;
@@ -141,7 +129,6 @@ export class Sprite extends Container
 
     /**
      * The tint applied to the sprite. This is a hex value. A value of 0xFFFFFF will remove any tint effect.
-     *
      * @default 0xFFFFFF
      */
     private _tint: number;
@@ -149,7 +136,6 @@ export class Sprite extends Container
     // Internal-only properties
     /**
      * The tint applied to the sprite. This is a RGB value. A value of 0xFFFFFF will remove any tint effect.
-     *
      * @private
      * @default 16777215
      */
@@ -374,7 +360,6 @@ export class Sprite extends Container
     /**
      *
      * Renders the object using the WebGL renderer
-     *
      * @param renderer - The webgl renderer to use.
      */
     protected _render(renderer: Renderer): void
@@ -408,9 +393,8 @@ export class Sprite extends Container
 
     /**
      * Gets the local bounds of the sprite object.
-     *
      * @param rect - Optional output rectangle.
-     * @return The bounds.
+     * @returns The bounds.
      */
     public getLocalBounds(rect?: Rectangle): Rectangle
     {
@@ -445,9 +429,8 @@ export class Sprite extends Container
 
     /**
      * Tests if a point is inside this sprite
-     *
      * @param point - the point to test
-     * @return The result of the test
+     * @returns The result of the test
      */
     public containsPoint(point: IPointData): boolean
     {
@@ -473,7 +456,6 @@ export class Sprite extends Container
 
     /**
      * Destroys this sprite and optionally its texture and children.
-     *
      * @param options - Options parameter. A boolean will act as if all options
      *  have been set to that value
      * @param [options.children=false] - if set to true, all the children will have their destroy
@@ -506,10 +488,9 @@ export class Sprite extends Container
     /**
      * Helper function that creates a new sprite based on the source you provide.
      * The source can be - frame id, image url, video url, canvas element, video element, base texture
-     *
      * @param {string|PIXI.Texture|HTMLCanvasElement|HTMLVideoElement} source - Source to create texture from
      * @param {object} [options] - See {@link PIXI.BaseTexture}'s constructor for options.
-     * @return The newly created sprite
+     * @returns The newly created sprite
      */
     static from(source: SpriteSource, options?: IBaseTextureOptions): Sprite
     {
@@ -527,7 +508,6 @@ export class Sprite extends Container
      * The main disadvantage is movement of objects may appear less smooth.
      *
      * To set the global default, change {@link PIXI.settings.ROUND_PIXELS}.
-     *
      * @default false
      */
     set roundPixels(value: boolean)
@@ -583,7 +563,6 @@ export class Sprite extends Container
      * Setting the anchor to `(1,1)` would mean the sprite's origin point will be the bottom right corner.
      *
      * If you pass only single parameter, it will set both x and y to the same value as shown in the example below.
-     *
      * @example
      * const sprite = new PIXI.Sprite(texture);
      * sprite.anchor.set(0.5); // This will set the origin to center. (0.5) is same as (0.5, 0.5).
@@ -602,7 +581,6 @@ export class Sprite extends Container
      * The tint applied to the sprite. This is a hex value.
      *
      * A value of 0xFFFFFF will remove any tint effect.
-     *
      * @default 0xFFFFFF
      */
     get tint(): number

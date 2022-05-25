@@ -45,7 +45,6 @@ function fixOrientation(points: number[], hole = false)
  * Builds a polygon to draw
  *
  * Ignored from docs since it is not directly exposed.
- *
  * @ignore
  * @private
  * @param {PIXI.WebGLGraphicsData} graphicsData - The graphics object containing all the necessary properties

@@ -61,29 +61,26 @@ export interface InteractiveTarget
  * - {@link PIXI.Ellipse}
  * - {@link PIXI.Polygon}
  * - {@link PIXI.RoundedRectangle}
- *
  * @interface IHitArea
  * @memberof PIXI
  */
 
 /**
  * Checks whether the x and y coordinates given are contained within this area
- *
  * @method
  * @name contains
  * @memberof PIXI.IHitArea#
  * @param {number} x - The X coordinate of the point to test
  * @param {number} y - The Y coordinate of the point to test
- * @return {boolean} Whether the x/y coordinates are within this area
+ * @returns {boolean} Whether the x/y coordinates are within this area
  */
 
 /**
  * Default property values of interactive objects
  * Used by {@link PIXI.InteractionManager} to automatically give all DisplayObjects these properties
- *
  * @private
  * @name interactiveTarget
- * @type {Object}
+ * @type {object}
  * @memberof PIXI
  * @example
  *      function MyObject() {}
@@ -101,7 +98,6 @@ export const interactiveTarget: InteractiveTarget = {
     /**
      * If enabled, the mouse cursor use the pointer behavior when hovered over the displayObject if it is interactive
      * Setting this changes the 'cursor' property to `'pointer'`.
-     *
      * @example
      * const sprite = new PIXI.Sprite(texture);
      * sprite.interactive = true;
@@ -128,13 +124,11 @@ export const interactiveTarget: InteractiveTarget = {
     /**
      * This defines what cursor mode is used when the mouse cursor
      * is hovered over the displayObject.
-     *
      * @example
      * const sprite = new PIXI.Sprite(texture);
      * sprite.interactive = true;
      * sprite.cursor = 'wait';
      * @see https://developer.mozilla.org/en/docs/Web/CSS/cursor
-     *
      * @member {string}
      * @memberof PIXI.DisplayObject#
      */
@@ -142,7 +136,6 @@ export const interactiveTarget: InteractiveTarget = {
 
     /**
      * Internal set of all active pointers, by identifier
-     *
      * @member {Map<number, InteractionTrackingData>}
      * @memberof PIXI.DisplayObject#
      * @private
@@ -156,7 +149,6 @@ export const interactiveTarget: InteractiveTarget = {
 
     /**
      * Map of all tracked pointers, by identifier. Use trackedPointers to access.
-     *
      * @private
      * @type {Map<number, InteractionTrackingData>}
      */

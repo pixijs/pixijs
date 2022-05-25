@@ -15,21 +15,18 @@ import type { Loader } from '@pixi/loaders';
  * The Loader's image Resource name is automatically appended with `"_image"`.
  * If a Resource with this name is already loaded, the Loader will skip parsing the
  * Spritesheet. The code below will generate an internal Loader Resource called `"myatlas_image"`.
- *
  * @example
  * loader.add('myatlas', 'path/to/myatlas.json');
  * loader.load(() => {
  *   loader.resources.myatlas; // atlas JSON resource
  *   loader.resources.myatlas_image; // atlas Image resource
  * });
- *
  * @memberof PIXI
  */
 export class SpritesheetLoader
 {
     /**
      * Called after a resource is loaded.
-     *
      * @see PIXI.Loader.loaderMiddleware
      * @param resource
      * @param next
@@ -123,7 +120,6 @@ export class SpritesheetLoader
 
     /**
      * Get the spritesheets root path
-     *
      * @param resource - Resource to check path
      * @param baseUrl - Base root url
      */

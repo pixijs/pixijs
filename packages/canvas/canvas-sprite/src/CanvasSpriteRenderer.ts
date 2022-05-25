@@ -26,7 +26,6 @@ const canvasRenderWorldTransform = new Matrix();
 
 /**
  * Renderer dedicated to drawing and batching sprites.
- *
  * @class
  * @protected
  * @memberof PIXI
@@ -44,7 +43,6 @@ export class CanvasSpriteRenderer
 
     /**
      * Renders the sprite object.
-     *
      * @param sprite - the sprite to render when using this spritebatch
      */
     render(sprite: Sprite): void

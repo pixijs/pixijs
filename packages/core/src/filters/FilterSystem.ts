@@ -33,20 +33,19 @@ const tempMatrix = new Matrix();
  *
  * {@link PIXI.Container#renderAdvanced} is an example of how to use the filter system. It is a 3 step process:
  *
- * * **push**: Use {@link PIXI.FilterSystem#push} to push the set of filters to be applied on a filter-target.
- * * **render**: Render the contents to be filtered using the renderer. The filter-system will only capture the contents
+ * **push**: Use {@link PIXI.FilterSystem#push} to push the set of filters to be applied on a filter-target.
+ * **render**: Render the contents to be filtered using the renderer. The filter-system will only capture the contents
  *      inside the bounds of the filter-target. NOTE: Using {@link PIXI.Renderer#render} is
  *      illegal during an existing render cycle, and it may reset the filter system.
- * * **pop**: Use {@link PIXI.FilterSystem#pop} to pop & execute the filters you initially pushed. It will apply them
+ * **pop**: Use {@link PIXI.FilterSystem#pop} to pop & execute the filters you initially pushed. It will apply them
  *      serially and output to the bounds of the filter-target.
- *
  * @memberof PIXI
  */
 export class FilterSystem implements ISystem
 {
     /**
      * List of filters for the FilterSystem
-     * @member {Object[]}
+     * @member {object[]}
      */
     public readonly defaultFilterStack: Array<FilterState>;
 
@@ -80,14 +79,13 @@ export class FilterSystem implements ISystem
 
     /**
      * This uniform group is attached to filter uniforms when used.
-     *
-     * @property {PIXI.Rectangle} outputFrame
-     * @property {Float32Array} inputSize
-     * @property {Float32Array} inputPixel
-     * @property {Float32Array} inputClamp
-     * @property {Number} resolution
-     * @property {Float32Array} filterArea
-     * @property {Float32Array} filterClamp
+     * @property {PIXI.Rectangle} outputFrame -
+     * @property {Float32Array} inputSize -
+     * @property {Float32Array} inputPixel -
+     * @property {Float32Array} inputClamp -
+     * @property {number} resolution -
+     * @property {Float32Array} filterArea -
+     * @property {Float32Array} filterClamp -
      */
     protected globalUniforms: UniformGroup;
 
@@ -132,7 +130,6 @@ export class FilterSystem implements ISystem
     /**
      * Pushes a set of filters to be applied later to the system. This will redirect further rendering into an
      * input render-texture for the rest of the filtering pipeline.
-     *
      * @param {PIXI.DisplayObject} target - The target of the filter to render.
      * @param filters - The filters to apply.
      */
@@ -359,7 +356,6 @@ export class FilterSystem implements ISystem
 
     /**
      * Binds a renderTexture with corresponding `filterFrame`, clears it if mode corresponds.
-     *
      * @param filterTexture - renderTexture to bind, should belong to filter pool or filter stack
      * @param clearMode - clearMode, by default its CLEAR/YES. See {@link PIXI.CLEAR_MODES}
      */
@@ -424,7 +420,6 @@ export class FilterSystem implements ISystem
      * Draws a filter using the default rendering process.
      *
      * This should be called only by {@link Filter#apply}.
-     *
      * @param filter - The filter to draw.
      * @param input - The input render target.
      * @param output - The target to output to.
@@ -468,10 +463,9 @@ export class FilterSystem implements ISystem
      * Multiply _input normalized coordinates_ to this matrix to get _sprite texture normalized coordinates_.
      *
      * Use `outputMatrix * vTextureCoord` in the shader.
-     *
      * @param outputMatrix - The matrix to output to.
      * @param {PIXI.Sprite} sprite - The sprite to map to.
-     * @return The mapped matrix.
+     * @returns The mapped matrix.
      */
     calculateSpriteMatrix(outputMatrix: Matrix, sprite: ISpriteMaskTarget): Matrix
     {
@@ -500,12 +494,11 @@ export class FilterSystem implements ISystem
 
     /**
      * Gets a Power-of-Two render texture or fullScreen texture
-     *
      * @param minWidth - The minimum width of the render texture in real pixels.
      * @param minHeight - The minimum height of the render texture in real pixels.
      * @param resolution - The resolution of the render texture.
      * @param multisample - Number of samples of the render texture.
-     * @return - The new render texture.
+     * @returns - The new render texture.
      */
     protected getOptimalFilterTexture(minWidth: number, minHeight: number, resolution = 1,
         multisample: MSAA_QUALITY = MSAA_QUALITY.NONE): RenderTexture
@@ -516,7 +509,6 @@ export class FilterSystem implements ISystem
     /**
      * Gets extra render texture to use inside current filter
      * To be compliant with older filters, you can use params in any order
-     *
      * @param input - renderTexture from which size and resolution will be copied
      * @param resolution - override resolution of the renderTexture
      * @param multisample - number of samples of the renderTexture
@@ -543,7 +535,6 @@ export class FilterSystem implements ISystem
 
     /**
      * Frees a render texture back into the pool.
-     *
      * @param renderTexture - The renderTarget to free
      */
     returnFilterTexture(renderTexture: RenderTexture): void

@@ -5,7 +5,7 @@ import { BaseTexture, BaseRenderTexture, Texture } from '@pixi/core';
  * for rendering with CanvasRenderer. Provided by **@pixi/canvas-renderer** package.
  * @method getDrawableSource
  * @memberof PIXI.BaseTexture#
- * @return {PIXI.ICanvasImageSource} Source to render with CanvasRenderer
+ * @returns {PIXI.ICanvasImageSource} Source to render with CanvasRenderer
  */
 BaseTexture.prototype.getDrawableSource = function getDrawableSource(): CanvasImageSource
 {
@@ -16,7 +16,6 @@ BaseTexture.prototype.getDrawableSource = function getDrawableSource(): CanvasIm
 
 /**
  * A reference to the canvas render target (we only need one as this can be shared across renderers)
- *
  * @protected
  * @member {PIXI.utils.CanvasRenderTarget} _canvasRenderTarget
  * @memberof PIXI.BaseRenderTexture#

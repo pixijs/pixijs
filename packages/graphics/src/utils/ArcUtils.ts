@@ -13,7 +13,6 @@ interface IArcLikeShape
 
 /**
  * Utilities for arc curves.
- *
  * @private
  */
 export class ArcUtils
@@ -22,14 +21,14 @@ export class ArcUtils
      * The arcTo() method creates an arc/curve between two tangents on the canvas.
      *
      * "borrowed" from https://code.google.com/p/fxcanvas/ - thanks google!
-     *
      * @private
      * @param x1 - The x-coordinate of the beginning of the arc
      * @param y1 - The y-coordinate of the beginning of the arc
      * @param x2 - The x-coordinate of the end of the arc
      * @param y2 - The y-coordinate of the end of the arc
      * @param radius - The radius of the arc
-     * @return - If the arc length is valid, return center of circle, radius and other info otherwise `null`.
+     * @param points -
+     * @returns - If the arc length is valid, return center of circle, radius and other info otherwise `null`.
      */
     static curveTo(x1: number, y1: number, x2: number, y2: number, radius: number, points: Array<number>): IArcLikeShape
     {
@@ -81,17 +80,16 @@ export class ArcUtils
     /* eslint-disable max-len */
     /**
      * The arc method creates an arc/curve (used to create circles, or parts of circles).
-     *
      * @private
-     * @param startX - Start x location of arc
-     * @param startY - Start y location of arc
+     * @param _startX - Start x location of arc
+     * @param _startY - Start y location of arc
      * @param cx - The x-coordinate of the center of the circle
      * @param cy - The y-coordinate of the center of the circle
      * @param radius - The radius of the circle
      * @param startAngle - The starting angle, in radians (0 is at the 3 o'clock position
      *  of the arc's circle)
      * @param endAngle - The ending angle, in radians
-     * @param anticlockwise - Specifies whether the drawing should be
+     * @param _anticlockwise - Specifies whether the drawing should be
      *  counter-clockwise or clockwise. False is default, and indicates clockwise, while true
      *  indicates counter-clockwise.
      * @param points - Collection of points to add to

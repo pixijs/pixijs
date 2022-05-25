@@ -68,14 +68,12 @@ export interface IRendererPlugin
  * | {@link PIXI.TextureGCSystem}         | This will automatically remove textures from the GPU if they are not used.    |
  *
  * The breadth of the API surface provided by the renderer is contained within these systems.
- *
  * @memberof PIXI
  */
 export class Renderer extends AbstractRenderer
 {
     /**
      * WebGL context, set by {@link PIXI.ContextSystem this.context}.
-     *
      * @readonly
      * @member {WebGLRenderingContext}
      */
@@ -89,7 +87,6 @@ export class Renderer extends AbstractRenderer
 
     /**
      * Flag if we are rendering to the screen vs renderTexture
-     *
      * @readonly
      * @default true
      */
@@ -214,7 +211,7 @@ export class Renderer extends AbstractRenderer
      * Create renderer if WebGL is available. Overrideable
      * by the **@pixi/canvas-renderer** package to allow fallback.
      * throws error if WebGL is not available.
-     *
+     * @param options
      * @private
      */
     static create(options?: IRendererOptions): AbstractRenderer
@@ -372,13 +369,12 @@ export class Renderer extends AbstractRenderer
 
     /**
      * Add a new system to the renderer.
-     *
      * @param ClassRef - Class reference
      * @param name - Property name for system, if not specified
      *        will use a static `name` property on the class itself. This
      *        name will be assigned as s property on the Renderer so make
      *        sure it doesn't collide with properties on Renderer.
-     * @return Return instance of renderer
+     * @returns Return instance of renderer
      */
     addSystem(ClassRef: ISystemConstructor, name: string): this
     {
@@ -398,19 +394,16 @@ export class Renderer extends AbstractRenderer
 
         /**
          * Fired after rendering finishes.
-         *
          * @event PIXI.Renderer#postrender
          */
 
         /**
          * Fired before rendering starts.
-         *
          * @event PIXI.Renderer#prerender
          */
 
         /**
          * Fired when the WebGL context is set.
-         *
          * @event PIXI.Renderer#context
          * @param {WebGLRenderingContext} gl - WebGL context.
          */
@@ -420,7 +413,6 @@ export class Renderer extends AbstractRenderer
 
     /**
      * Renders the object to its WebGL view.
-     *
      * @param displayObject - The object to be rendered.
      * @param {object} [options] - Object to use for render options.
      * @param {PIXI.RenderTexture} [options.renderTexture] - The render texture to render to.
@@ -432,7 +424,6 @@ export class Renderer extends AbstractRenderer
 
     /**
      * Please use the `option` render arguments instead.
-     *
      * @deprecated Since 6.0.0
      * @param displayObject
      * @param renderTexture
@@ -550,7 +541,6 @@ export class Renderer extends AbstractRenderer
 
     /**
      * Resizes the WebGL view to the specified width and height.
-     *
      * @param desiredScreenWidth - The desired width of the screen.
      * @param desiredScreenHeight - The desired height of the screen.
      */
@@ -563,8 +553,7 @@ export class Renderer extends AbstractRenderer
 
     /**
      * Resets the WebGL state so you can render things however you fancy!
-     *
-     * @return Returns itself.
+     * @returns Returns itself.
      */
     reset(): this
     {
@@ -582,7 +571,6 @@ export class Renderer extends AbstractRenderer
 
     /**
      * Removes everything from the renderer (event listeners, spritebatch, etc...)
-     *
      * @param [removeView=false] - Removes the Canvas element from the DOM.
      *  See: https://github.com/pixijs/pixi.js/issues/2233
      */
@@ -621,7 +609,6 @@ export class Renderer extends AbstractRenderer
      * Collection of installed plugins. These are included by default in PIXI, but can be excluded
      * by creating a custom build. Consult the README for more information about creating custom
      * builds and excluding plugins.
-     *
      * @readonly
      * @property {PIXI.AccessibilityManager} accessibility Support tabbing interactive elements.
      * @property {PIXI.Extract} extract Extract image data from renderer.
@@ -635,7 +622,6 @@ export class Renderer extends AbstractRenderer
 
     /**
      * Adds a plugin to the renderer.
-     *
      * @param pluginName - The name of the plugin.
      * @param ctor - The constructor function or class for the plugin.
      */

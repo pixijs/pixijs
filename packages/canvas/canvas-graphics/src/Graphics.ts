@@ -16,7 +16,7 @@ const tempMatrix = new Matrix();
  * @memberof PIXI.Graphics#
  * @param {PIXI.SCALE_MODES} scaleMode - The scale mode of the texture.
  * @param {number} resolution - The resolution of the texture.
- * @return {PIXI.Texture} The new texture.
+ * @returns {PIXI.Texture} The new texture.
  */
 Graphics.prototype.generateCanvasTexture = function generateCanvasTexture(scaleMode: SCALE_MODES, resolution = 1): Texture
 {
@@ -57,7 +57,6 @@ Graphics.prototype.cachedGraphicsData = [];
 
 /**
  * Renders the object using the Canvas renderer
- *
  * @method _renderCanvas
  * @memberof PIXI.Graphics#
  * @private

@@ -31,21 +31,18 @@ import type { IDestroyOptions } from '@pixi/display';
  *   ...
  * }
  * ```
- *
  * @memberof PIXI
  */
 export class AnimatedSprite extends Sprite
 {
     /**
      * The speed that the AnimatedSprite will play at. Higher is faster, lower is slower.
-     *
      * @default 1
      */
     public animationSpeed: number;
 
     /**
      * Whether or not the animate sprite repeats after playing.
-     *
      * @default true
      */
     public loop: boolean;
@@ -58,14 +55,12 @@ export class AnimatedSprite extends Sprite
      * of the frame (e.g. left foot).
      *
      * Note: Enabling this will override any previously set `anchor` on each frame change.
-     *
      * @default false
      */
     public updateAnchor: boolean;
 
     /**
      * User-assigned function to call when an AnimatedSprite finishes playing.
-     *
      * @example
      * animation.onComplete = function () {
      *   // finished!
@@ -75,7 +70,6 @@ export class AnimatedSprite extends Sprite
 
     /**
      * User-assigned function to call when an AnimatedSprite changes which texture is being rendered.
-     *
      * @example
      * animation.onFrameChange = function () {
      *   // updated!
@@ -86,7 +80,6 @@ export class AnimatedSprite extends Sprite
     /**
      * User-assigned function to call when `loop` is true, and an AnimatedSprite is played and
      * loops around to start again.
-     *
      * @example
      * animation.onLoop = function () {
      *   // looped!
@@ -100,14 +93,12 @@ export class AnimatedSprite extends Sprite
 
     /**
      * `true` uses PIXI.Ticker.shared to auto update animation time.
-     *
      * @default true
      */
     private _autoUpdate: boolean;
 
     /**
      * `true` if the instance is currently connected to PIXI.Ticker.shared to auto update animation time.
-     *
      * @default false
      */
     private _isConnectedToTicker: boolean;
@@ -181,7 +172,6 @@ export class AnimatedSprite extends Sprite
 
     /**
      * Stops the AnimatedSprite and goes to a specific frame.
-     *
      * @param frameNumber - Frame index to stop at.
      */
     public gotoAndStop(frameNumber: number): void
@@ -200,7 +190,6 @@ export class AnimatedSprite extends Sprite
 
     /**
      * Goes to a specific frame and begins playing the AnimatedSprite.
-     *
      * @param frameNumber - Frame index to start at.
      */
     public gotoAndPlay(frameNumber: number): void
@@ -219,7 +208,6 @@ export class AnimatedSprite extends Sprite
 
     /**
      * Updates the object transform for rendering.
-     *
      * @param deltaTime - Time since last tick.
      */
     update(deltaTime: number): void
@@ -328,7 +316,6 @@ export class AnimatedSprite extends Sprite
 
     /**
      * Stops the AnimatedSprite and destroys it.
-     *
      * @param {object|boolean} [options] - Options parameter. A boolean will act as if all options
      *  have been set to that value.
      * @param {boolean} [options.children=false] - If set to true, all the children will have their destroy
@@ -348,9 +335,8 @@ export class AnimatedSprite extends Sprite
 
     /**
      * A short hand way of creating an AnimatedSprite from an array of frame ids.
-     *
      * @param frames - The array of frames ids the AnimatedSprite will use as its texture frames.
-     * @return - The new animated sprite with the specified frames.
+     * @returns - The new animated sprite with the specified frames.
      */
     public static fromFrames(frames: string[]): AnimatedSprite
     {
@@ -366,9 +352,8 @@ export class AnimatedSprite extends Sprite
 
     /**
      * A short hand way of creating an AnimatedSprite from an array of image ids.
-     *
      * @param images - The array of image urls the AnimatedSprite will use as its texture frames.
-     * @return The new animate sprite with the specified images as frames.
+     * @returns The new animate sprite with the specified images as frames.
      */
     public static fromImages(images: string[]): AnimatedSprite
     {
@@ -385,7 +370,6 @@ export class AnimatedSprite extends Sprite
     /**
      * The total number of frames in the AnimatedSprite. This is the same as number of textures
      * assigned to the AnimatedSprite.
-     *
      * @readonly
      * @default 0
      */
@@ -425,7 +409,6 @@ export class AnimatedSprite extends Sprite
 
     /**
      * The AnimatedSprites current frame index.
-     *
      * @readonly
      */
     get currentFrame(): number
@@ -442,7 +425,6 @@ export class AnimatedSprite extends Sprite
 
     /**
      * Indicates if the AnimatedSprite is currently playing.
-     *
      * @readonly
      */
     get playing(): boolean

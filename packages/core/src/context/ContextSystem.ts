@@ -15,21 +15,18 @@ export interface ISupportDict
 
 /**
  * System plugin to the renderer to manage the context.
- *
  * @memberof PIXI
  */
 export class ContextSystem implements ISystem
 {
     /**
      * Either 1 or 2 to reflect the WebGL version being used.
-     *
      * @readonly
      */
     public webGLVersion: number;
 
     /**
      * Features supported by current context.
-     *
      * @type {object}
      * @readonly
      * @property {boolean} uint32Indices - Support for 32-bit indices buffer.
@@ -41,7 +38,6 @@ export class ContextSystem implements ISystem
 
     /**
      * Extensions available.
-     *
      * @type {object}
      * @readonly
      * @property {WEBGL_draw_buffers} drawBuffers - WebGL v1 extension
@@ -77,7 +73,6 @@ export class ContextSystem implements ISystem
 
     /**
      * `true` if the context is lost
-     *
      * @readonly
      */
     get isLost(): boolean
@@ -87,7 +82,6 @@ export class ContextSystem implements ISystem
 
     /**
      * Handles the context change event.
-     *
      * @param {WebGLRenderingContext} gl - New WebGL context.
      */
     protected contextChange(gl: IRenderingContext): void
@@ -105,7 +99,6 @@ export class ContextSystem implements ISystem
 
     /**
      * Initializes the context.
-     *
      * @protected
      * @param {WebGLRenderingContext} gl - WebGL context
      */
@@ -120,7 +113,6 @@ export class ContextSystem implements ISystem
 
     /**
      * Initialize from context options
-     *
      * @protected
      * @see https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/getContext
      * @param {object} options - context attributes
@@ -134,12 +126,11 @@ export class ContextSystem implements ISystem
 
     /**
      * Helper class to create a WebGL Context
-     *
      * @param canvas - the canvas element that we will get the context from
      * @param options - An options object that gets passed in to the canvas element containing the
      *    context attributes
      * @see https://developer.mozilla.org/en/docs/Web/API/HTMLCanvasElement/getContext
-     * @return {WebGLRenderingContext} the WebGL context
+     * @returns {WebGLRenderingContext} the WebGL context
      */
     createContext(canvas: HTMLCanvasElement, options: WebGLContextAttributes): IRenderingContext
     {
@@ -223,7 +214,6 @@ export class ContextSystem implements ISystem
 
     /**
      * Handles a lost webgl context
-     *
      * @param {WebGLContextEvent} event - The context lost event.
      */
     protected handleContextLost(event: WebGLContextEvent): void
@@ -266,7 +256,6 @@ export class ContextSystem implements ISystem
 
     /**
      * Validate context.
-     *
      * @param {WebGLRenderingContext} gl - Render context.
      */
     protected validateContext(gl: IRenderingContext): void

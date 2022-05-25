@@ -1,6 +1,5 @@
 /**
  * Returns sign of number
- *
  * @memberof PIXI.utils
  * @function sign
  * @param {number} n - the number to check the sign of

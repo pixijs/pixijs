@@ -7,7 +7,6 @@ import type { DRAW_MODES } from '@pixi/constants';
 /**
  * The Simple Mesh class mimics Mesh in PixiJS v4, providing easy-to-use constructor arguments.
  * For more robust customization, use {@link PIXI.Mesh}.
- *
  * @memberof PIXI
  */
 export class SimpleMesh extends Mesh

@@ -1,7 +1,6 @@
 /**
  * TimeLimiter limits the number of items handled by a {@link PIXI.BasePrepare} to a specified
  * number of milliseconds per frame.
- *
  * @memberof PIXI
  */
 export class TimeLimiter
@@ -11,7 +10,6 @@ export class TimeLimiter
 
     /**
      * The start time of the current frame.
-     *
      * @readonly
      */
     public frameStart: number;
@@ -31,8 +29,7 @@ export class TimeLimiter
 
     /**
      * Checks to see if another item can be uploaded. This should only be called once per item.
-     *
-     * @return - If the item is allowed to be uploaded.
+     * @returns - If the item is allowed to be uploaded.
      */
     allowedToUpload(): boolean
     {

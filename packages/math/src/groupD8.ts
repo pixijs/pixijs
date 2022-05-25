@@ -19,16 +19,14 @@ const vy = [1, 1, 0, -1, -1, -1, 0, 1, -1, -1, 0, 1, 1, 1, 0, -1];
 /**
  * [Cayley Table]{@link https://en.wikipedia.org/wiki/Cayley_table}
  * for the composition of each rotation in the dihederal group D8.
- *
- * @type number[][]
+ * @type {number[][]}
  * @private
  */
 const rotationCayley: number[][] = [];
 
 /**
  * Matrices for each `GD8Symmetry` rotation.
- *
- * @type Matrix[]
+ * @type {PIXI.Matrix[]}
  * @private
  */
 const rotationMatrices: Matrix[] = [];
@@ -101,7 +99,6 @@ type GD8Symmetry = number;
  *
  * **Origin:**<br>
  *  This is the small part of gameofbombs.com portal system. It works.
- *
  * @see PIXI.groupD8.E
  * @see PIXI.groupD8.SE
  * @see PIXI.groupD8.S
@@ -119,7 +116,6 @@ export const groupD8 = {
      * | Rotation | Direction |
      * |----------|-----------|
      * | 0°       | East      |
-     *
      * @memberof PIXI.groupD8
      * @constant {PIXI.GD8Symmetry}
      */
@@ -129,7 +125,6 @@ export const groupD8 = {
      * | Rotation | Direction |
      * |----------|-----------|
      * | 45°↻     | Southeast |
-     *
      * @memberof PIXI.groupD8
      * @constant {PIXI.GD8Symmetry}
      */
@@ -139,7 +134,6 @@ export const groupD8 = {
      * | Rotation | Direction |
      * |----------|-----------|
      * | 90°↻     | South     |
-     *
      * @memberof PIXI.groupD8
      * @constant {PIXI.GD8Symmetry}
      */
@@ -149,7 +143,6 @@ export const groupD8 = {
      * | Rotation | Direction |
      * |----------|-----------|
      * | 135°↻    | Southwest |
-     *
      * @memberof PIXI.groupD8
      * @constant {PIXI.GD8Symmetry}
      */
@@ -159,7 +152,6 @@ export const groupD8 = {
      * | Rotation | Direction |
      * |----------|-----------|
      * | 180°     | West      |
-     *
      * @memberof PIXI.groupD8
      * @constant {PIXI.GD8Symmetry}
      */
@@ -169,7 +161,6 @@ export const groupD8 = {
      * | Rotation    | Direction    |
      * |-------------|--------------|
      * | -135°/225°↻ | Northwest    |
-     *
      * @memberof PIXI.groupD8
      * @constant {PIXI.GD8Symmetry}
      */
@@ -179,7 +170,6 @@ export const groupD8 = {
      * | Rotation    | Direction    |
      * |-------------|--------------|
      * | -90°/270°↻  | North        |
-     *
      * @memberof PIXI.groupD8
      * @constant {PIXI.GD8Symmetry}
      */
@@ -189,7 +179,6 @@ export const groupD8 = {
      * | Rotation    | Direction    |
      * |-------------|--------------|
      * | -45°/315°↻  | Northeast    |
-     *
      * @memberof PIXI.groupD8
      * @constant {PIXI.GD8Symmetry}
      */
@@ -197,7 +186,6 @@ export const groupD8 = {
 
     /**
      * Reflection about Y-axis.
-     *
      * @memberof PIXI.groupD8
      * @constant {PIXI.GD8Symmetry}
      */
@@ -205,7 +193,6 @@ export const groupD8 = {
 
     /**
      * Reflection about the main diagonal.
-     *
      * @memberof PIXI.groupD8
      * @constant {PIXI.GD8Symmetry}
      */
@@ -213,7 +200,6 @@ export const groupD8 = {
 
     /**
      * Reflection about X-axis.
-     *
      * @memberof PIXI.groupD8
      * @constant {PIXI.GD8Symmetry}
      */
@@ -221,7 +207,6 @@ export const groupD8 = {
 
     /**
      * Reflection about reverse diagonal.
-     *
      * @memberof PIXI.groupD8
      * @constant {PIXI.GD8Symmetry}
      */
@@ -230,7 +215,7 @@ export const groupD8 = {
     /**
      * @memberof PIXI.groupD8
      * @param {PIXI.GD8Symmetry} ind - sprite rotation angle.
-     * @return {PIXI.GD8Symmetry} The X-component of the U-axis
+     * @returns {PIXI.GD8Symmetry} The X-component of the U-axis
      *    after rotating the axes.
      */
     uX: (ind: GD8Symmetry): GD8Symmetry => ux[ind],
@@ -238,7 +223,7 @@ export const groupD8 = {
     /**
      * @memberof PIXI.groupD8
      * @param {PIXI.GD8Symmetry} ind - sprite rotation angle.
-     * @return {PIXI.GD8Symmetry} The Y-component of the U-axis
+     * @returns {PIXI.GD8Symmetry} The Y-component of the U-axis
      *    after rotating the axes.
      */
     uY: (ind: GD8Symmetry): GD8Symmetry => uy[ind],
@@ -246,7 +231,7 @@ export const groupD8 = {
     /**
      * @memberof PIXI.groupD8
      * @param {PIXI.GD8Symmetry} ind - sprite rotation angle.
-     * @return {PIXI.GD8Symmetry} The X-component of the V-axis
+     * @returns {PIXI.GD8Symmetry} The X-component of the V-axis
      *    after rotating the axes.
      */
     vX: (ind: GD8Symmetry): GD8Symmetry => vx[ind],
@@ -254,7 +239,7 @@ export const groupD8 = {
     /**
      * @memberof PIXI.groupD8
      * @param {PIXI.GD8Symmetry} ind - sprite rotation angle.
-     * @return {PIXI.GD8Symmetry} The Y-component of the V-axis
+     * @returns {PIXI.GD8Symmetry} The Y-component of the V-axis
      *    after rotating the axes.
      */
     vY: (ind: GD8Symmetry): GD8Symmetry => vy[ind],
@@ -264,7 +249,7 @@ export const groupD8 = {
      * @param {PIXI.GD8Symmetry} rotation - symmetry whose opposite
      *   is needed. Only rotations have opposite symmetries while
      *   reflections don't.
-     * @return {PIXI.GD8Symmetry} The opposite symmetry of `rotation`
+     * @returns {PIXI.GD8Symmetry} The opposite symmetry of `rotation`
      */
     inv: (rotation: GD8Symmetry): GD8Symmetry =>
     {
@@ -298,7 +283,7 @@ export const groupD8 = {
      *   is the row in the above cayley table.
      * @param {PIXI.GD8Symmetry} rotationFirst - First operation, which
      *   is the column in the above cayley table.
-     * @return {PIXI.GD8Symmetry} Composed operation
+     * @returns {PIXI.GD8Symmetry} Composed operation
      */
     add: (rotationSecond: GD8Symmetry, rotationFirst: GD8Symmetry): GD8Symmetry => (
         rotationCayley[rotationSecond][rotationFirst]
@@ -306,11 +291,10 @@ export const groupD8 = {
 
     /**
      * Reverse of `add`.
-     *
      * @memberof PIXI.groupD8
      * @param {PIXI.GD8Symmetry} rotationSecond - Second operation
      * @param {PIXI.GD8Symmetry} rotationFirst - First operation
-     * @return {PIXI.GD8Symmetry} Result
+     * @returns {PIXI.GD8Symmetry} Result
      */
     sub: (rotationSecond: GD8Symmetry, rotationFirst: GD8Symmetry): GD8Symmetry => (
         rotationCayley[rotationSecond][groupD8.inv(rotationFirst)]
@@ -319,7 +303,6 @@ export const groupD8 = {
     /**
      * Adds 180 degrees to rotation, which is a commutative
      * operation.
-     *
      * @memberof PIXI.groupD8
      * @param {number} rotation - The number to rotate.
      * @returns {number} Rotated number
@@ -329,7 +312,6 @@ export const groupD8 = {
     /**
      * Checks if the rotation angle is vertical, i.e. south
      * or north. It doesn't work for reflections.
-     *
      * @memberof PIXI.groupD8
      * @param {PIXI.GD8Symmetry} rotation - The number to check.
      * @returns {boolean} Whether or not the direction is vertical
@@ -339,11 +321,10 @@ export const groupD8 = {
     /**
      * Approximates the vector `V(dx,dy)` into one of the
      * eight directions provided by `groupD8`.
-     *
      * @memberof PIXI.groupD8
      * @param {number} dx - X-component of the vector
      * @param {number} dy - Y-component of the vector
-     * @return {PIXI.GD8Symmetry} Approximation of the vector into
+     * @returns {PIXI.GD8Symmetry} Approximation of the vector into
      *  one of the eight symmetries.
      */
     byDirection: (dx: number, dy: number): GD8Symmetry =>
@@ -385,7 +366,6 @@ export const groupD8 = {
 
     /**
      * Helps sprite to compensate texture packer rotation.
-     *
      * @memberof PIXI.groupD8
      * @param {PIXI.Matrix} matrix - sprite world matrix
      * @param {PIXI.GD8Symmetry} rotation - The rotation factor to use.

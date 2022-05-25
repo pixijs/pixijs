@@ -30,11 +30,10 @@ const tempLocalMapping = new Point();
  * };
  * overTargets: FederatedEventTarget[];
  * ```
- *
  * @typedef {object} TrackingData
  * @property {Record.<number, PIXI.FederatedEventTarget>} pressTargetsByButton - The pressed display objects'
  *  propagation paths by each button of the pointer.
- * @property {Record.<number, Object>} clicksByButton - Holds clicking data for each button of the pointer.
+ * @property {Record.<number, object>} clicksByButton - Holds clicking data for each button of the pointer.
  * @property {PIXI.DisplayObject[]} overTargets - The DisplayObject propagation path over which the pointer is hovering.
  * @memberof PIXI
  */
@@ -54,7 +53,6 @@ type TrackingData = {
 
 /**
  * Internal storage of event listeners in EventEmitter.
- *
  * @ignore
  */
 type EmitterListeners = Record<string,
@@ -116,7 +114,6 @@ type EmitterListeners = Record<string,
  *     }
  * }
  * ```
- *
  * @memberof PIXI
  */
 export class EventBoundary
@@ -139,9 +136,7 @@ export class EventBoundary
      */
     public dispatch: EventEmitter = new EventEmitter();
 
-    /**
-     * The cursor preferred by the event targets underneath this boundary.
-     */
+    /** The cursor preferred by the event targets underneath this boundary. */
     public cursor: Cursor | string;
 
     /**
@@ -157,7 +152,6 @@ export class EventBoundary
      *
      * {@link PIXI.EventBoundary EventBoundary} provides mapping for "pointerdown", "pointermove",
      * "pointerout", "pointerleave", "pointerover", "pointerup", and "pointerupoutside" by default.
-     *
      * @see PIXI.EventBoundary#addEventMapping
      */
     protected mappingTable: Record<string, Array<{
@@ -167,7 +161,6 @@ export class EventBoundary
 
     /**
      * State object for mapping methods.
-     *
      * @see PIXI.EventBoundary#trackingData
      */
     protected mappingState: Record<string, any> = {
@@ -176,7 +169,6 @@ export class EventBoundary
 
     /**
      * The event pool maps event constructors to an free pool of instances of those specific events.
-     *
      * @see PIXI.EventBoundary#allocateEvent
      * @see PIXI.EventBoundary#freeEvent
      */
@@ -219,7 +211,6 @@ export class EventBoundary
      *
      * To modify the semantics of existing events, the built-in mapping methods of EventBoundary should be overridden
      * instead.
-     *
      * @param type - The type of upstream event to map.
      * @param fn - The mapping method. The context of this function must be bound manually, if desired.
      */
@@ -237,7 +228,11 @@ export class EventBoundary
         this.mappingTable[type].sort((a, b) => a.priority - b.priority);
     }
 
-    /** Dispatches the given event */
+    /**
+     * Dispatches the given event
+     * @param e
+     * @param type
+     */
     public dispatchEvent(e: FederatedEvent, type?: string): void
     {
         e.propagationStopped = false;
@@ -247,7 +242,10 @@ export class EventBoundary
         this.dispatch.emit(type || e.type, e);
     }
 
-    /** Maps the given upstream event through the event boundary and propagates it downstream. */
+    /**
+     * Maps the given upstream event through the event boundary and propagates it downstream.
+     * @param e
+     */
     public mapEvent(e: FederatedEvent): void
     {
         if (!this.rootTarget)
@@ -274,6 +272,8 @@ export class EventBoundary
      * Finds the DisplayObject that is the target of a event at the given coordinates.
      *
      * The passed (x,y) coordinates are in the world space above this event boundary.
+     * @param x
+     * @param y
      */
     public hitTest(
         x: number,
@@ -294,8 +294,8 @@ export class EventBoundary
     /**
      * Propagate the passed event from from {@link EventBoundary.rootTarget this.rootTarget} to its
      * target {@code e.target}.
-     *
      * @param e - The event to propagate.
+     * @param type
      */
     public propagate(e: FederatedEvent, type?: string): void
     {
@@ -344,9 +344,9 @@ export class EventBoundary
      * Emits the event {@link e} to all display objects. The event is propagated in the bubbling phase always.
      *
      * This is used in the `pointermove` legacy mode.
-     *
      * @param e - The emitted event.
      * @param type - The listeners to notify.
+     * @param target
      */
     public all(e: FederatedEvent, type?: string, target: FederatedEventTarget = this.rootTarget): void
     {
@@ -369,7 +369,6 @@ export class EventBoundary
     /**
      * Finds the propagation path from {@link PIXI.EventBoundary.rootTarget rootTarget} to the passed
      * {@code target}. The last element in the path is {@code target}.
-     *
      * @param target
      */
     public propagationPath(target: FederatedEventTarget): FederatedEventTarget[]
@@ -395,7 +394,6 @@ export class EventBoundary
 
     /**
      * Recursive implementation for {@link EventBoundary.hitTest hitTest}.
-     *
      * @param currentTarget - The DisplayObject that is to be hit tested.
      * @param interactive - Flags whether `currentTarget` or one of its parents are interactive.
      * @param location - The location that is being tested for overlap.
@@ -404,7 +402,7 @@ export class EventBoundary
      * @param pruneFn - Callback that determiness whether the target and all of its children
      *  cannot pass the hit test. It is used as a preliminary optimization to prune entire subtrees
      *  of the scene graph.
-     * @return An array holding the hit testing target and all its ancestors in order. The first element
+     * @returns An array holding the hit testing target and all its ancestors in order. The first element
      *  is the target itself and the last is {@link EventBoundary.rootTarget rootTarget}. This is the opposite
      *  order w.r.t. the propagation path. If no hit testing target is found, null is returned.
      */
@@ -482,7 +480,6 @@ export class EventBoundary
      *
      * {@link EventBoundary}'s implementation uses the {@link PIXI.DisplayObject.hitArea hitArea}
      * and {@link PIXI.DisplayObject._mask} for pruning.
-     *
      * @param displayObject
      * @param location
      */
@@ -513,10 +510,9 @@ export class EventBoundary
 
     /**
      * Checks whether the display object passes hit testing for the given location.
-     *
      * @param displayObject
      * @param location
-     * @return - Whether `displayObject` passes hit testing for `location`.
+     * @returns - Whether `displayObject` passes hit testing for `location`.
      */
     protected hitTestFn(displayObject: DisplayObject, location: Point): boolean
     {
@@ -538,8 +534,8 @@ export class EventBoundary
 
     /**
      * Notify all the listeners to the event's `currentTarget`.
-     *
      * @param e - The event passed to the target.
+     * @param type
      */
     protected notifyTarget(e: FederatedEvent, type?: string): void
     {
@@ -558,7 +554,6 @@ export class EventBoundary
      * Maps the upstream `pointerdown` events to a downstream `pointerdown` event.
      *
      * `touchstart`, `rightdown`, `mousedown` events are also dispatched for specific pointer types.
-     *
      * @param from
      */
     protected mapPointerDown(from: FederatedEvent): void
@@ -597,7 +592,6 @@ export class EventBoundary
      *
      * The tracking data for the specific pointer has an updated `overTarget`. `mouseout`, `mouseover`,
      * `mousemove`, and `touchmove` events are fired as well for specific pointer types.
-     *
      * @param from - The upstream `pointermove` event.
      */
     protected mapPointerMove(from: FederatedEvent): void
@@ -718,7 +712,6 @@ export class EventBoundary
      * Maps the upstream `pointerover` to downstream `pointerover` and `pointerenter` events, in that order.
      *
      * The tracking data for the specific pointer gets a new `overTarget`.
-     *
      * @param from - The upstream `pointerover` event.
      */
     protected mapPointerOver(from: FederatedEvent): void
@@ -763,7 +756,6 @@ export class EventBoundary
      * Maps the upstream `pointerout` to downstream `pointerout`, `pointerleave` events, in that order.
      *
      * The tracking data for the specific pointer is cleared of a `overTarget`.
-     *
      * @param from - The upstream `pointerout` event.
      */
     protected mapPointerOut(from: FederatedEvent): void
@@ -821,7 +813,6 @@ export class EventBoundary
      * ancestor of the `pointerdown` and `pointerup` targets, which is also the `click` event's target. `touchend`,
      * `rightup`, `mouseup`, `touchendoutside`, `rightupoutside`, `mouseupoutside`, and `tap` are fired as well for
      * specific pointer types.
-     *
      * @param from - The upstream `pointerup` event.
      */
     protected mapPointerUp(from: FederatedEvent): void
@@ -949,7 +940,6 @@ export class EventBoundary
      *
      * `touchendoutside`, `mouseupoutside`, and `rightupoutside` events are fired as well for specific pointer
      * types. The tracking data for the specific pointer is cleared of a `pressTarget`.
-     *
      * @param from - The upstream `pointerupoutside` event.
      */
     protected mapPointerUpOutside(from: FederatedEvent): void
@@ -995,7 +985,6 @@ export class EventBoundary
 
     /**
      * Maps the upstream `wheel` event to a downstream `wheel` event.
-     *
      * @param from - The upstream `wheel` event.
      */
     protected mapWheel(from: FederatedEvent): void
@@ -1018,9 +1007,8 @@ export class EventBoundary
      *
      * This is used to find the correct `pointerup` and `pointerout` target in the case that the original `pointerdown`
      * or `pointerover` target was unmounted from the scene graph.
-     *
      * @param propagationPath - The propagation path was valid in the past.
-     * @return - The most specific event-target still mounted at the same location in the scene graph.
+     * @returns - The most specific event-target still mounted at the same location in the scene graph.
      */
     protected findMountedTarget(propagationPath: FederatedEventTarget[]): FederatedEventTarget
     {
@@ -1052,7 +1040,6 @@ export class EventBoundary
      * Creates an event whose {@code originalEvent} is {@code from}, with an optional `type` and `target` override.
      *
      * The event is allocated using {@link PIXI.EventBoundary#allocateEvent this.allocateEvent}.
-     *
      * @param from - The {@code originalEvent} for the returned event.
      * @param [type=from.type] - The type of the returned event.
      * @param target - The target of the returned event.
@@ -1085,7 +1072,6 @@ export class EventBoundary
      * Creates a wheel event whose {@code originalEvent} is {@code from}.
      *
      * The event is allocated using {@link PIXI.EventBoundary#allocateEvent this.allocateEvent}.
-     *
      * @param from - The upstream wheel event.
      */
     protected createWheelEvent(from: FederatedWheelEvent): FederatedWheelEvent
@@ -1107,7 +1093,6 @@ export class EventBoundary
      * Clones the event {@code from}, with an optional {@code type} override.
      *
      * The event is allocated using {@link PIXI.EventBoundary#allocateEvent this.allocateEvent}.
-     *
      * @param from - The event to clone.
      * @param [type=from.type] - The type of the returned event.
      */
@@ -1138,7 +1123,6 @@ export class EventBoundary
      * + deltaX
      * + deltaY
      * + deltaZ
-     *
      * @param from
      * @param to
      */
@@ -1163,7 +1147,6 @@ export class EventBoundary
      * + tangentialPressure
      * + tiltX
      * + tiltY
-     *
      * @param from
      * @param to
      */
@@ -1201,7 +1184,6 @@ export class EventBoundary
      * + y
      * + screen
      * + global
-     *
      * @param from
      * @param to
      */
@@ -1229,7 +1211,6 @@ export class EventBoundary
      * + srcElement
      * + timeStamp
      * + type
-     *
      * @param from - The event to copy data from.
      * @param to - The event to copy data into.
      */
@@ -1248,7 +1229,7 @@ export class EventBoundary
 
     /**
      * @param id - The pointer ID.
-     * @return The tracking data stored for the given pointer. If no data exists, a blank
+     * @returns The tracking data stored for the given pointer. If no data exists, a blank
      *  state will be created.
      */
     protected trackingData(id: number): TrackingData
@@ -1270,7 +1251,6 @@ export class EventBoundary
      *
      * This allocation is constructor-agnostic, as long as it only takes one argument - this event
      * boundary.
-     *
      * @param constructor - The event's constructor.
      */
     protected allocateEvent<T extends FederatedEvent>(
@@ -1301,7 +1281,6 @@ export class EventBoundary
      * It is also advised that events not allocated from {@link PIXI.EventBoundary#allocateEvent this.allocateEvent}
      * not be freed. This is because of the possibility that the same event is freed twice, which can cause
      * it to be allocated twice & result in overwriting.
-     *
      * @param event - The event to be freed.
      * @throws Error if the event is managed by another event boundary.
      */
@@ -1322,7 +1301,6 @@ export class EventBoundary
     /**
      * Similar to {@link EventEmitter.emit}, except it stops if the `propagationImmediatelyStopped` flag
      * is set on the event.
-     *
      * @param e - The event to call each listener with.
      * @param type - The event key.
      */
@@ -1354,7 +1332,6 @@ export class EventBoundary
  * object. DisplayObject's `interactive` property must be set to `true` to fire event.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#mousedown
  * @param {PIXI.FederatedPointerEvent} event - The mousedown event.
  */
@@ -1363,7 +1340,6 @@ export class EventBoundary
  * Capture phase equivalent of {@code mousedown}.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#mousedowncapture
  * @param {PIXI.FederatedPointerEvent} event - The capture phase mousedown.
  */
@@ -1373,7 +1349,6 @@ export class EventBoundary
  * on the display object. DisplayObject's `interactive` property must be set to `true` to fire event.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#rightdown
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1382,7 +1357,6 @@ export class EventBoundary
  * Capture phase equivalent of {@code rightdown}.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#rightdowncapture
  * @param {PIXI.FederatedPointerEvent} event - The rightdowncapture event.
  */
@@ -1392,7 +1366,6 @@ export class EventBoundary
  * object. DisplayObject's `interactive` property must be set to `true` to fire event.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#mouseup
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1401,7 +1374,6 @@ export class EventBoundary
  * Capture phase equivalent of {@code mouseup}.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#mouseupcature
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1411,7 +1383,6 @@ export class EventBoundary
  * over the display object. DisplayObject's `interactive` property must be set to `true` to fire event.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#rightup
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1420,7 +1391,6 @@ export class EventBoundary
  * Capture phase equivalent of {@code rightup}.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#rightupcapture
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1437,7 +1407,6 @@ export class EventBoundary
  * window of each other upto the current click. For example, it will be {@code 2} for a double click.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#click
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1446,7 +1415,6 @@ export class EventBoundary
  * Capture phase equivalent of {@code click}.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#clickcapture
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1458,7 +1426,6 @@ export class EventBoundary
  * This event follows the semantics of {@code click}.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#rightclick
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1467,7 +1434,6 @@ export class EventBoundary
  * Capture phase equivalent of {@code rightclick}.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#rightclickcapture
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1483,7 +1449,6 @@ export class EventBoundary
  * and {@code pointerup} events, i.e. the target of the {@code click} event.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#mouseupoutside
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1492,7 +1457,6 @@ export class EventBoundary
  * Capture phase equivalent of {@code mouseupoutside}.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#mouseupoutsidecapture
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1504,7 +1468,6 @@ export class EventBoundary
  * DisplayObject's `interactive` property must be set to `true` to fire event.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#rightupoutside
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1513,7 +1476,6 @@ export class EventBoundary
  * Capture phase equivalent of {@code rightupoutside}.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#rightupoutsidecapture
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1523,7 +1485,6 @@ export class EventBoundary
  * DisplayObject's `interactive` property must be set to `true` to fire event.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#mousemove
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1532,7 +1493,6 @@ export class EventBoundary
  * Capture phase equivalent of {@code mousemove}.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#mousemovecature
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1542,7 +1502,6 @@ export class EventBoundary
  * DisplayObject's `interactive` property must be set to `true` to fire event.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#mouseover
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1551,7 +1510,6 @@ export class EventBoundary
  * Capture phase equivalent of {@code mouseover}.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#mouseovercapture
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1560,7 +1518,6 @@ export class EventBoundary
  * Fired when the mouse pointer is moved over a DisplayObject and its descendant's hit testing boundaries.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#mouseenter
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1569,7 +1526,6 @@ export class EventBoundary
  * Capture phase equivalent of {@code mouseenter}
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#mouseentercapture
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1582,7 +1538,6 @@ export class EventBoundary
  * a {@code mouseover} event.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#mouseout
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1591,7 +1546,6 @@ export class EventBoundary
  * Capture phase equivalent of {@code mouseout}.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#mouseoutcapture
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1600,7 +1554,6 @@ export class EventBoundary
  * Fired when the mouse pointer exits a DisplayObject and its descendants.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#mouseleave
  * @param {PIXI.FederatedPointerEvent} event
  */
@@ -1609,7 +1562,6 @@ export class EventBoundary
  * Capture phase equivalent of {@code mouseleave}.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#mouseleavecapture
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1619,7 +1571,6 @@ export class EventBoundary
  * DisplayObject's `interactive` property must be set to `true` to fire event.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#pointerdown
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1628,7 +1579,6 @@ export class EventBoundary
  * Capture phase equivalent of {@code pointerdown}.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#pointerdowncapture
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1638,7 +1588,6 @@ export class EventBoundary
  * DisplayObject's `interactive` property must be set to `true` to fire event.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#pointerup
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1647,7 +1596,6 @@ export class EventBoundary
  * Capture phase equivalent of {@code pointerup}.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#pointerupcapture
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1657,7 +1605,6 @@ export class EventBoundary
  * DisplayObject's `interactive` property must be set to `true` to fire event.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#pointercancel
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1666,7 +1613,6 @@ export class EventBoundary
  * Capture phase equivalent of {@code pointercancel}.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#pointercancelcapture
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1676,7 +1622,6 @@ export class EventBoundary
  * DisplayObject's `interactive` property must be set to `true` to fire event.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#pointertap
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1685,7 +1630,6 @@ export class EventBoundary
  * Capture phase equivalent of {@code pointertap}.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#pointertapcapture
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1700,7 +1644,6 @@ export class EventBoundary
  * and {@code pointerup} events, i.e. the target of the {@code click} event.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#pointerupoutside
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1709,7 +1652,6 @@ export class EventBoundary
  * Capture phase equivalent of {@code pointerupoutside}.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#pointerupoutsidecapture
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1719,7 +1661,6 @@ export class EventBoundary
  * DisplayObject's `interactive` property must be set to `true` to fire event.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#pointermove
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1728,7 +1669,6 @@ export class EventBoundary
  * Capture phase equivalent of {@code pointermove}.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#pointermovecapture
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1738,7 +1678,6 @@ export class EventBoundary
  * DisplayObject's `interactive` property must be set to `true` to fire event.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#pointerover
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1747,7 +1686,6 @@ export class EventBoundary
  * Capture phase equivalent of {@code pointerover}.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#pointerovercapture
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1756,7 +1694,6 @@ export class EventBoundary
  * Fired when the pointer is moved over a DisplayObject and its descendant's hit testing boundaries.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#pointerenter
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1765,7 +1702,6 @@ export class EventBoundary
  * Capture phase equivalent of {@code pointerenter}
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#pointerentercapture
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1775,7 +1711,6 @@ export class EventBoundary
  * DisplayObject's `interactive` property must be set to `true` to fire event.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#pointerout
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1784,7 +1719,6 @@ export class EventBoundary
  * Capture phase equivalent of {@code pointerout}.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#pointeroutcapture
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1795,7 +1729,6 @@ export class EventBoundary
  * This event notifies only the target and does not bubble.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#pointerleave
  * @param {PIXI.FederatedPointerEvent} event - The `pointerleave` event.
  */
@@ -1804,7 +1737,6 @@ export class EventBoundary
  * Capture phase equivalent of {@code pointerleave}.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#pointerleavecapture
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1814,7 +1746,6 @@ export class EventBoundary
  * DisplayObject's `interactive` property must be set to `true` to fire event.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#touchstart
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1823,7 +1754,6 @@ export class EventBoundary
  * Capture phase equivalent of {@code touchstart}.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#touchstartcapture
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1833,7 +1763,6 @@ export class EventBoundary
  * DisplayObject's `interactive` property must be set to `true` to fire event.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#touchend
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1842,7 +1771,6 @@ export class EventBoundary
  * Capture phase equivalent of {@code touchend}.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#touchendcapture
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1852,7 +1780,6 @@ export class EventBoundary
  * DisplayObject's `interactive` property must be set to `true` to fire event.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#touchcancel
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1861,7 +1788,6 @@ export class EventBoundary
  * Capture phase equivalent of {@code touchcancel}.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#touchcancelcapture
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1871,7 +1797,6 @@ export class EventBoundary
  * DisplayObject's `interactive` property must be set to `true` to fire event.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#tap
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1880,7 +1805,6 @@ export class EventBoundary
  * Capture phase equivalent of {@code tap}.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#tapcapture
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1891,7 +1815,6 @@ export class EventBoundary
  * DisplayObject's `interactive` property must be set to `true` to fire event.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#touchendoutside
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1900,7 +1823,6 @@ export class EventBoundary
  * Capture phase equivalent of {@code touchendoutside}.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#touchendoutsidecapture
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1910,7 +1832,6 @@ export class EventBoundary
  * DisplayObject's `interactive` property must be set to `true` to fire event.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#touchmove
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1919,7 +1840,6 @@ export class EventBoundary
  * Capture phase equivalent of {@code touchmove}.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#touchmovecapture
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
@@ -1928,7 +1848,6 @@ export class EventBoundary
  * Fired when a the user scrolls with the mouse cursor over a DisplayObject.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#wheel
  * @type {PIXI.FederatedWheelEvent}
  */
@@ -1937,7 +1856,6 @@ export class EventBoundary
  * Capture phase equivalent of {@code wheel}.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- *
  * @event PIXI.DisplayObject#wheelcapture
  * @type {PIXI.FederatedWheelEvent}
  */
