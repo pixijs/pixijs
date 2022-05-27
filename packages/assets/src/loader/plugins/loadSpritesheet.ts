@@ -1,6 +1,6 @@
 import { dirname, extname } from 'path';
-import type { ISpritesheetData } from 'pixi.js';
-import { Spritesheet } from 'pixi.js';
+import type { ISpritesheetData } from '@pixi/spritesheet';
+import { Spritesheet } from '@pixi/spritesheet';
 
 import { Cache } from '../../cache/Cache';
 import type { LoadAsset, Loader } from '../Loader';

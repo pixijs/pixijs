@@ -1,6 +1,6 @@
 import { dirname, extname, join } from 'path';
-import type { Texture } from 'pixi.js';
-import { BitmapFont } from 'pixi.js';
+import type { Texture } from '@pixi/core';
+import { BitmapFont } from '@pixi/text-bitmap';
 
 import type { LoadAsset, Loader } from '../Loader';
 

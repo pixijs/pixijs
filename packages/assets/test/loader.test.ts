@@ -1,5 +1,6 @@
-import type { Spritesheet } from 'pixi.js';
-import { BitmapFont, Texture } from 'pixi.js';
+import type { Spritesheet } from '@pixi/spritesheet';
+import { Texture } from '@pixi/core';
+import { BitmapFont } from '@pixi/text-bitmap';
 
 import type { LoaderParser } from '../src/loader';
 import { Loader, loadJson, loadSpritesheet, loadTextures, loadWebFont } from '../src/loader';

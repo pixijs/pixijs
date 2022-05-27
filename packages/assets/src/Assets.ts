@@ -1,7 +1,6 @@
 // PreferOptions
 
-import { Texture } from 'pixi.js';
-
+import { Texture } from '@pixi/core';
 import { BackgroundLoader } from './BackgroundLoader';
 import { Cache } from './cache/Cache';
 import type {

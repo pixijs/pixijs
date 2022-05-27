@@ -1,4 +1,5 @@
-import { BaseTexture, Texture, utils } from 'pixi.js';
+import { BaseTexture, Texture } from '@pixi/core';
+import { getResolutionOfUrl } from '@pixi/utils';
 
 import type { LoaderParser } from './LoaderParser';
 import { WorkerManager } from './WorkerManager';
@@ -79,7 +80,7 @@ export const loadTextures = {
 
         const base = new BaseTexture(src, {
             // TODO - use the parsed resolution if it exists!
-            resolution: utils.getResolutionOfUrl(url),
+            resolution: getResolutionOfUrl(url),
         });
 
         // TODO need to adjust when adding to Pixi

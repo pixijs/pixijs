@@ -1,4 +1,4 @@
-import { settings } from 'pixi.js';
+import { settings } from '@pixi/settings';
 
 import { loadTextures } from '../loader';
 import { ResolveAsset } from '../resolver/Resolver';
