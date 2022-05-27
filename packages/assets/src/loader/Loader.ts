@@ -1,5 +1,5 @@
 import { makeAbsoluteUrl } from '../utils/makeAbsoluteUrl';
-import type { LoaderParser } from './plugins/LoaderParser';
+import type { LoaderParser } from './parsers/LoaderParser';
 
 export interface LoadAsset<T=any>
 {
@@ -18,10 +18,10 @@ export interface LoadAsset<T=any>
  */
 class Loader
 {
-    /** All loader plugins registered */
-    public plugins: LoaderParser[] = [];
+    /** All loader parsers registered */
+    public parsers: LoaderParser[] = [];
 
-    /** Stores all data loaded by the plugins */
+    /** Stores all data loaded by the parsers */
     public cache: Record<string, any> = {};
 
     /** Cache loading promises that ae currently active */
@@ -33,32 +33,32 @@ class Loader
         this.promiseCache = {};
         this.cache = {};
 
-        this.plugins.length = 0;
+        this.parsers.length = 0;
     }
 
     /**
-     * Use this to add any plugins to the loadAssets function to use
+     * Use this to add any parsers to the loadAssets function to use
      *
      * @param newParsers - a array of parsers to add to the loader, or just a single one
      */
     public addParser(...newParsers: LoaderParser[]): void
     {
-        this.plugins.push(...newParsers);
+        this.parsers.push(...newParsers);
     }
 
     /**
-     * For exceptional situations where a loader plugin might be causing some trouble,
-     * like loadAtlas plugin broken with the latest version of pixi-spine
+     * For exceptional situations where a loader parser might be causing some trouble,
+     * like loadAtlas parser broken with the latest version of pixi-spine
      *
-     * @param parsersToRemove - a array of plugins to remove from loader, or just a single one
+     * @param parsersToRemove - a array of parsers to remove from loader, or just a single one
      */
     public removeParser(...parsersToRemove: LoaderParser[]): void
     {
-        for (const plugin of parsersToRemove)
+        for (const parser of parsersToRemove)
         {
-            const index = this.plugins.indexOf(plugin);
+            const index = this.parsers.indexOf(parser);
 
-            if (index >= 0) this.plugins.splice(index, 1);
+            if (index >= 0) this.parsers.splice(index, 1);
         }
     }
 
@@ -73,26 +73,26 @@ class Loader
     {
         let asset = null;
 
-        for (let i = 0; i < this.plugins.length; i++)
+        for (let i = 0; i < this.parsers.length; i++)
         {
-            const plugin = this.plugins[i];
+            const parser = this.parsers[i];
 
-            if (plugin.load && plugin.test?.(url, data, this))
+            if (parser.load && parser.test?.(url, data, this))
             {
-                asset = await plugin?.load(url, data, this);
+                asset = await parser?.load(url, data, this);
             }
         }
 
-        for (let i = 0; i < this.plugins.length; i++)
+        for (let i = 0; i < this.parsers.length; i++)
         {
-            const plugin = this.plugins[i];
+            const parser = this.parsers[i];
 
-            if (plugin.parse)
+            if (parser.parse)
             {
-                if (!plugin.testParse || plugin.testParse(asset, data, this))
+                if (!parser.testParse || parser.testParse(asset, data, this))
                 {
                 // transform the asset..
-                    asset = await plugin.parse(asset, data, this) || asset;
+                    asset = await parser.parse(asset, data, this) || asset;
                 }
             }
         }
@@ -104,7 +104,7 @@ class Loader
 
     /**
      * The only function you need! will load your assets :D
-     * Add plugins to make this thing understand how to actually load stuff!
+     * Add parsers to make this thing understand how to actually load stuff!
      *
      * @example
      *

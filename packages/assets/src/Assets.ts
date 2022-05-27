@@ -12,7 +12,7 @@ import {
     loadTextures,
     loadWebFont,
 } from './loader';
-import { loadBitmapFont } from './loader/plugins/loadBitmapFont';
+import { loadBitmapFont } from './loader/parsers/loadBitmapFont';
 import type { PreferOrder, ResolveAsset, ResolverManifest, ResolveURLParser } from './resolver/Resolver';
 import { Resolver } from './resolver/Resolver';
 import { DetectAvif } from './utils/DetectAvif';
