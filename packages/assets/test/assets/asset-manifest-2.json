@@ -1,0 +1,54 @@
+{
+    "bundles":[
+        {
+            "name":"default",
+            "assets":[
+                {
+                    "name":"bunny",
+                    "srcs":[
+                        {
+                            "resolution":1,
+                            "format":"png",
+                            "src":"bunny.png"
+                        }
+                    ]
+                },
+                {
+                    "name":"spritesheet",
+                    "srcs":[
+                        {
+                            "resolution":1,
+                            "format":"png",
+                            "src":"spritesheet.json"
+                        },
+                        {
+                            "resolution":1,
+                            "format":"png",
+                            "src":"spritesheet.json"
+                        }
+                    ]
+                },
+                {
+                    "name":"profile-abel",
+                    "srcs":[
+                        "profile-abel@0.5x.jpg",
+                        "profile-abel@2x.webp",
+                        "profile-abel@0.5x.jpg",
+                        "profile-abel@2x.webp"
+                    ]
+                }
+
+            ]
+        },
+        {
+            "name":"data",
+            "assets":[
+                {
+                    "name":"test.json",
+                    "srcs":"test.json"
+                }
+            ]
+        }
+    ]
+}
+       
