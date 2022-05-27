@@ -1,4 +1,5 @@
-import { Spritesheet, Texture } from '@pixi/core';
+import { Spritesheet } from '@pixi/spritesheet';
+import { Texture } from '@pixi/core';
 
 import { Assets } from '../src/Assets';
 
