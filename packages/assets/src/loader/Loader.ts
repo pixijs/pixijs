@@ -24,13 +24,12 @@ class Loader
     /**
      * adds parsers added via this function will be added to the loader when it is created
      * this should be used by other packages to add their custom parsers
-     * 
      * @param plugins - the plugins to register
      */
     public static registerParser(...plugins: LoaderParser[]): void
     {
         Loader._parsers.push(...plugins);
-    } 
+    }
 
     /** All loader parsers registered */
     public parsers: LoaderParser[] = [];
