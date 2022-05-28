@@ -18,38 +18,16 @@ export interface LoadAsset<T=any>
  */
 class Loader
 {
-    /** store parsers used for all loaders */
-    private static _parsers: LoaderParser[] = [];
-
-    /**
-     * adds parsers added via this function will be added to the loader when it is created
-     * this should be used by other packages to add their custom parsers
-     * @param plugins - the plugins to register
-     */
-    public static registerParser(...plugins: LoaderParser[]): void
-    {
-        Loader._parsers.push(...plugins);
-    }
-
     /** All loader parsers registered */
     public parsers: LoaderParser[] = [];
 
-    /** Stores all data loaded by the parsers */
-    public cache: Record<string, any> = {};
-
     /** Cache loading promises that ae currently active */
     public promiseCache: Record<string, Promise<any>> = {};
-
-    constructor()
-    {
-        this.addParser(...Loader._parsers);
-    }
 
     /** function used for testing */
     public reset(): void
     {
         this.promiseCache = {};
-        this.cache = {};
 
         this.parsers.length = 0;
     }
@@ -111,8 +89,6 @@ class Loader
                 }
             }
         }
-
-        this.cache[url] = asset;
 
         return asset;
     }

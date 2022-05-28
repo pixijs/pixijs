@@ -113,17 +113,20 @@ export class Resolver
      * ```
      *
      * Multiple prefer user defined rules can be added.
-     * @param prefer - the prefer options
+     * @param preferOrders - the prefer options
      */
-    public prefer(prefer: PreferOrder): void
+    public prefer(...preferOrders: PreferOrder[]): void
     {
-        this._preferredOrder.push(prefer);
-
-        if (!prefer.priority)
+        preferOrders.forEach((prefer) =>
         {
-            // generate the priority based on the order of the object
-            prefer.priority = Object.keys(prefer.params);
-        }
+            this._preferredOrder.push(prefer);
+
+            if (!prefer.priority)
+            {
+                // generate the priority based on the order of the object
+                prefer.priority = Object.keys(prefer.params);
+            }
+        });
 
         this._resolverHash = {};
     }
@@ -202,13 +205,16 @@ export class Resolver
      * ]);
      *
      * ```
-     * @param parser - the url parser that you want to add to the resolver
+     * @param urlParsers - the url parser that you want to add to the resolver
      */
-    public addUrlParser(parser: ResolveURLParser): void
+    public addUrlParser(...urlParsers: ResolveURLParser[]): void
     {
-        if (this._parsers.includes(parser)) return;
+        urlParsers.forEach((parser) =>
+        {
+            if (this._parsers.includes(parser)) return;
 
-        this._parsers.push(parser);
+            this._parsers.push(parser);
+        });
     }
 
     /**
