@@ -100,5 +100,8 @@
     "tsconfig-paths": "^3.10.1",
     "typescript": "~4.3.0",
     "workspaces-run": "^1.0.1"
+  },
+  "dependencies": {
+    "path": "^0.12.7"
   }
 }
