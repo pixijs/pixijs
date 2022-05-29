@@ -397,6 +397,8 @@ export class AssetsClass
 
         // remap to the keys used..
 
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         const out: Record<string, T> = await this._mapLoadToResolve<T>(resolveResults, onProgress);
 
         return singleAsset ? out[urls[0]] : out;
@@ -476,6 +478,8 @@ export class AssetsClass
         {
             const resolveResult = resolveResults[bundleId];
 
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             return this._mapLoadToResolve(resolveResult, onProgress)
                 .then((resolveResult) =>
                 {
@@ -639,6 +643,7 @@ export class AssetsClass
         this.loader.load(url).then((loadedTexture) =>
         {
             texture.baseTexture = loadedTexture.baseTexture;
+            texture.onBaseTextureUpdated(texture.baseTexture);
         });
 
         return texture;

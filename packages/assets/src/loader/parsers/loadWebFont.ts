@@ -14,6 +14,10 @@ declare global
     }
 }
 
+const validWeights = ['normal', 'bold',
+    '100', '200', '300', '400', '500', '600', '700', '800', '900',
+];
+
 /**
  * Return font face name from a file name
  * Ex.: 'fonts/tital-one.woff' turns into 'Titan One'
@@ -54,15 +58,15 @@ export const loadWebFont = {
         if ('FontFace' in window)
         {
             const name = getFontFamilyName(url);
-            const weights = options.data?.weights ?? [
-                'normal', 'bold',
-                '100', '200', '300', '400', '500', '600', '700', '800', '900',
-            ];
+            const weights = options.data?.weights?.filter((weight) =>
+                validWeights.includes(weight)) ?? ['normal'];
 
             for (let i = 0; i < weights.length; i++)
             {
                 const weight = weights[i];
 
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
                 const font = new FontFace(name, `url(${url})`, {
                     weight,
                 });

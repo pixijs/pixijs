@@ -533,12 +533,19 @@ export class Resolver
      */
     private _getPreferredOrder(assets: ResolveAsset[]): PreferOrder
     {
-        const asset = assets[0];
+        for (let i = 0; i < assets.length; i++)
+        {
+            const asset = assets[0];
 
-        // if(Object.key(asset))
-        const preferred =  this._preferredOrder.find((preference: PreferOrder) =>
-            preference.params.format.includes(asset.format)) ?? this._preferredOrder[0];
+            const preferred =  this._preferredOrder.find((preference: PreferOrder) =>
+                preference.params.format.includes(asset.format));
 
-        return preferred;
+            if (preferred)
+            {
+                return preferred;
+            }
+        }
+
+        return this._preferredOrder[0];
     }
 }

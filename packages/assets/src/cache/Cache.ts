@@ -21,7 +21,14 @@ export class CacheClass
 
     public get<T = any>(key: string): T
     {
-        return this._cache.get(key) as T;
+        const result = this._cache.get(key);
+
+        if (!result)
+        {
+            console.warn(`[Assets] Asset id ${key} was not found in the Cache`);
+        }
+
+        return result as T;
     }
 
     public set(key: string, value: unknown): void

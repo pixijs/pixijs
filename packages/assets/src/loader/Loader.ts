@@ -65,6 +65,7 @@ class Loader
     private async _getLoadPromise(url: string, data?: any): Promise<any>
     {
         let asset = null;
+        let didParse = false;
 
         for (let i = 0; i < this.parsers.length; i++)
         {
@@ -72,8 +73,17 @@ class Loader
 
             if (parser.load && parser.test?.(url, data, this))
             {
+                didParse = true;
                 asset = await parser?.load(url, data, this);
             }
+        }
+
+        if (!didParse)
+        {
+            // eslint-disable-next-line max-len
+            console.warn(`[Assets] ${url} could not be loaded as we don't know how to parse it, ensure the correct parser has being added`);
+
+            return null;
         }
 
         for (let i = 0; i < this.parsers.length; i++)
@@ -142,7 +152,7 @@ class Loader
         {
             const url = makeAbsoluteUrl(asset.src);
 
-            if (!assets[url])
+            if (!assets[asset.src])
             {
                 try
                 {
@@ -151,7 +161,7 @@ class Loader
                         this.promiseCache[url] = this._getLoadPromise(url, asset);
                     }
 
-                    assets[url] = await this.promiseCache[url];
+                    assets[asset.src] = await this.promiseCache[url];
 
                     // Only progress if nothing goes wrong
                     if (onProgress) onProgress(++count / total);
@@ -161,7 +171,7 @@ class Loader
                     // Delete eventually registered file and promises from internal cache
                     // so they can be eligible for another loading attempt
                     delete this.promiseCache[url];
-                    delete assets[url];
+                    delete assets[asset.src];
 
                     // Stop further execution
                     throw new Error(`[Loader.load] Failed to load ${url}.\n${e}`);
