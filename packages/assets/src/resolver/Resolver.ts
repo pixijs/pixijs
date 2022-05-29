@@ -381,7 +381,7 @@ export class Resolver
      * @returns all the bundles assets or a hash of assets for each bundle specified
      */
     public resolveBundle(bundleIds: string | string[]):
-    Record<string, ResolveAsset[]> | Record<string, Record<string, ResolveAsset[]>>
+    Record<string, ResolveAsset> | Record<string, Record<string, ResolveAsset>>
     {
         let singleAsset = false;
 

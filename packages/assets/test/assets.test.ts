@@ -170,8 +170,6 @@ describe('Assets', () =>
 
         // TODO - this src will be added in the future..
 
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
         expect(bunny.baseTexture.resource.src).toBe('http://localhost:8080/bunny.png');
     });
 
@@ -191,8 +189,7 @@ describe('Assets', () =>
         expect(asset).toBeInstanceOf(Texture);
 
         // TODO - this src will be added in the future..
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
+
         expect(asset.baseTexture.resource.src).toBe('http://localhost:8080/bunny.png');
     });
 

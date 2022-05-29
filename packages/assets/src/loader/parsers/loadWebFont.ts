@@ -65,8 +65,6 @@ export const loadWebFont = {
             {
                 const weight = weights[i];
 
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
                 const font = new FontFace(name, `url(${url})`, {
                     weight,
                 });

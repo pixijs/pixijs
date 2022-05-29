@@ -82,10 +82,6 @@ export const loadTextures = {
             resolution: getResolutionOfUrl(url),
         });
 
-        // TODO need to adjust when adding to Pixi
-
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
         base.resource.src = url;
 
         const texture = new Texture(base);
