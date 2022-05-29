@@ -391,7 +391,7 @@ export class Resolver
             bundleIds = [bundleIds];
         }
 
-        const out: Record<string, Record<string, ResolveAsset[]>> = {};
+        const out: Record<string, Record<string, ResolveAsset>> = {};
 
         this._manifest.bundles.filter((bundle) => bundleIds.includes(bundle.name))
             .forEach((bundle) =>
@@ -410,7 +410,7 @@ export class Resolver
                     }
                 });
 
-                out[bundle.name] = this.resolve(assetNames) as Record<string, ResolveAsset[]>;
+                out[bundle.name] = this.resolve(assetNames) as Record<string, ResolveAsset>;
             });
 
         return singleAsset ? out[bundleIds[0]] : out;
