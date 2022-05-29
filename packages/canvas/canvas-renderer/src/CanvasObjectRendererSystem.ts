@@ -179,6 +179,7 @@ export class CanvasObjectRendererSystem implements ISystem
 
     public destroy(): void
     {
-        // ka boom!
+        this.lastObjectRendered = null;
+        this.render = null;
     }
 }
