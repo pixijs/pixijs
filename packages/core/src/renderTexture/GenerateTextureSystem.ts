@@ -1,8 +1,10 @@
 import { MSAA_QUALITY, SCALE_MODES } from '@pixi/constants';
-import { Matrix, Rectangle } from '@pixi/math';
+import { Matrix, Rectangle, Transform } from '@pixi/math';
 import { IRenderer, IRenderableContainer, IRenderableObject } from '../IRenderer';
 import { ISystem } from '../system/ISystem';
 import { RenderTexture } from './RenderTexture';
+
+const tempTransform = new Transform();
 
 // TODO could this just be part of extract?
 export interface IGenerateTextureOptions {
@@ -71,13 +73,17 @@ export class GenerateTextureSystem implements ISystem
         this._tempMatrix.tx = -region.x;
         this._tempMatrix.ty = -region.y;
 
+        const transform = displayObject.transform;
+
+        displayObject.transform = tempTransform;
+
         this.renderer.render(displayObject, {
             renderTexture,
-            blit: true,
-            clear: false,
-            transform:  this._tempMatrix,
+            transform: this._tempMatrix,
             skipUpdateTransform: !!displayObject.parent
         });
+
+        displayObject.transform = transform;
 
         return renderTexture;
     }

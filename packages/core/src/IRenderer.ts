@@ -1,5 +1,5 @@
 import type { RENDERER_TYPE } from '@pixi/constants';
-import type { Matrix, Rectangle } from '@pixi/math';
+import type { Matrix, Rectangle, Transform } from '@pixi/math';
 import type { IGenerateTextureOptions } from './renderTexture/GenerateTextureSystem';
 import type { IRendererPlugins } from './plugin/PluginSystem';
 import type { RenderTexture } from './renderTexture/RenderTexture';
@@ -13,6 +13,8 @@ import type { SystemManager } from './system/SystemManager';
 export interface IRenderableObject {
     /** Object must have a parent container */
     parent: IRenderableContainer;
+    /** Object must have a transform */
+    transform: Transform;
     /** Before method for transform updates */
     enableTempParent(): IRenderableContainer;
     /** Update the transforms */
