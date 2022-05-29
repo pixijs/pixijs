@@ -11,9 +11,9 @@
   "author": "Mat Groves <mat.groves@play.co>",
   "homepage": "https://github.com/pixijs/pixi.js#readme",
   "license": "MIT",
-  "main": "dist/cjs/basis.js",
-  "module": "dist/esm/basis.js",
-  "bundle": "dist/browser/basis.js",
+  "main": "dist/cjs/assets.js",
+  "module": "dist/esm/assets.js",
+  "bundle": "dist/browser/assets.js",
   "publishConfig": {
     "access": "public"
   },
