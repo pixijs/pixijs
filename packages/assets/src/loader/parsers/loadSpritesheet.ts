@@ -1,8 +1,8 @@
-import { dirname, extname } from 'path';
 import type { ISpritesheetData } from '@pixi/spritesheet';
 import { Spritesheet } from '@pixi/spritesheet';
 
 import { Cache } from '../../cache/Cache';
+import { dirname, extname } from '../../utils/path';
 import type { LoadAsset, Loader } from '../Loader';
 import type { LoaderParser } from './LoaderParser';
 

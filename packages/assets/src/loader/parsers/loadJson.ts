@@ -1,5 +1,4 @@
-import { extname } from 'path';
-
+import { extname } from '../../utils/path';
 import type { LoaderParser } from './LoaderParser';
 
 /** simple loader plugin for loading json data */

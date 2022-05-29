@@ -1,5 +1,4 @@
-import { basename, extname } from 'path';
-
+import { basename, extname } from '../../utils/path';
 import type { LoaderParser } from './LoaderParser';
 
 // FontFaceSet alias
