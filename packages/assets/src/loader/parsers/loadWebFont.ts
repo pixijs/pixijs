@@ -39,11 +39,17 @@ export function getFontFamilyName(url: string): string
     return nameTitleCase;
 }
 
+const validFonts = ['woff', 'woff2', 'ttf', 'otf'];
+
 /** Web font loader plugin */
+
 export const loadWebFont = {
     test(url: string): boolean
     {
-        return extname(url).split('?').shift().endsWith('woff2');
+        const tempURL = url.split('?')[0];
+        const extension = tempURL.split('.').pop();
+
+        return validFonts.includes(extension);
     },
 
     async load(url: string, options?: {data: {weights: string[]}}): Promise<void>
