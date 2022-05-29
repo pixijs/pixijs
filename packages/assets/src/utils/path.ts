@@ -16,7 +16,6 @@ function splitPath(filename: string): string[]
 export function basename(path: string, ext: string): string
 {
     let f = splitPath(path)[2];
-    // TODO: make this comparison case-insensitive on windows?
 
     if (ext && f.substring(-1 * ext.length) === ext)
     {
@@ -70,7 +69,7 @@ export function dirname(path: string): string
     if (dir)
     {
         // It has a dirname, strip trailing slash
-        dir = dir.substr(0, dir.length - 1);
+        dir = dir.substring(0, dir.length - 1);
     }
 
     return root + dir;
