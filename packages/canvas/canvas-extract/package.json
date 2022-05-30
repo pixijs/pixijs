@@ -4,6 +4,19 @@
   "main": "dist/cjs/canvas-extract.js",
   "module": "dist/esm/canvas-extract.js",
   "bundle": "dist/browser/canvas-extract.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+          "default": "./dist/cjs/canvas-extract.js",
+          "types": "./index.d.ts"
+      },
+      "require": {
+          "default": "./dist/esm/canvas-extract.js",
+          "types": "./index.d.ts"
+      }
+    }
+  },
   "description": "Canvas mixin for the extract package",
   "author": "Mat Groves",
   "contributors": [

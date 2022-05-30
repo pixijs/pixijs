@@ -4,6 +4,19 @@
   "main": "dist/cjs/graphics-extras.js",
   "module": "dist/esm/graphics-extras.js",
   "bundle": "dist/browser/graphics-extras.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+          "default": "./dist/cjs/graphics-extras.js",
+          "types": "./index.d.ts"
+      },
+      "require": {
+          "default": "./dist/esm/graphics-extras.js",
+          "types": "./index.d.ts"
+      }
+    }
+  },
   "bundleNoExports": true,
   "description": "Additional Graphics functions for drawing special shapes.",
   "author": "Matt Karl <matt@mattkarl.com>",

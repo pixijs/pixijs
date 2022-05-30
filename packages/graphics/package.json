@@ -4,6 +4,19 @@
   "main": "dist/cjs/graphics.js",
   "module": "dist/esm/graphics.js",
   "bundle": "dist/browser/graphics.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+          "default": "./dist/cjs/graphics.js",
+          "types": "./index.d.ts"
+      },
+      "require": {
+          "default": "./dist/esm/graphics.js",
+          "types": "./index.d.ts"
+      }
+    }
+  },
   "description": "Draw primitive shapes such as lines, circles and rectangles to the display",
   "author": "Mat Groves",
   "contributors": [

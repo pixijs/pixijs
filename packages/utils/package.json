@@ -4,6 +4,19 @@
   "main": "dist/cjs/utils.js",
   "module": "dist/esm/utils.js",
   "bundle": "dist/browser/utils.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+          "default": "./dist/cjs/utils.js",
+          "types": "./index.d.ts"
+      },
+      "require": {
+          "default": "./dist/esm/utils.js",
+          "types": "./index.d.ts"
+      }
+    }
+  },
   "namespace": "PIXI.utils",
   "description": "Collection of utilities used by PixiJS",
   "author": "Mat Groves",

@@ -4,6 +4,19 @@
   "main": "dist/cjs/filter-noise.js",
   "module": "dist/esm/filter-noise.js",
   "bundle": "dist/browser/filter-noise.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+          "default": "./dist/cjs/filter-noise.js",
+          "types": "./index.d.ts"
+      },
+      "require": {
+          "default": "./dist/esm/filter-noise.js",
+          "types": "./index.d.ts"
+      }
+    }
+  },
   "namespace": "PIXI.filters",
   "description": "Filter that applies noise to a display object",
   "author": "Mat Groves",

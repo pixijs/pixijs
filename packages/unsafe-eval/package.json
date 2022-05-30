@@ -4,6 +4,19 @@
   "main": "dist/cjs/unsafe-eval.js",
   "module": "dist/esm/unsafe-eval.js",
   "bundle": "dist/browser/unsafe-eval.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+          "default": "./dist/cjs/unsafe-eval.js",
+          "types": "./index.d.ts"
+      },
+      "require": {
+          "default": "./dist/esm/unsafe-eval.js",
+          "types": "./index.d.ts"
+      }
+    }
+  },
   "bundleInput": "src/bundle.ts",
   "standalone": true,
   "description": "Adds support for environments that disallow support of new Function",

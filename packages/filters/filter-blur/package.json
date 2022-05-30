@@ -4,6 +4,19 @@
   "main": "dist/cjs/filter-blur.js",
   "module": "dist/esm/filter-blur.js",
   "bundle": "dist/browser/filter-blur.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+          "default": "./dist/cjs/filter-blur.js",
+          "types": "./index.d.ts"
+      },
+      "require": {
+          "default": "./dist/esm/filter-blur.js",
+          "types": "./index.d.ts"
+      }
+    }
+  },
   "namespace": "PIXI.filters",
   "description": "Filter that blurs the display object",
   "author": "Mat Groves",
