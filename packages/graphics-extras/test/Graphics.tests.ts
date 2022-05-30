@@ -2,9 +2,9 @@ import { Graphics } from '@pixi/graphics';
 import { expect } from 'chai';
 import '@pixi/graphics-extras';
 
-describe('Graphics', function ()
+describe('Graphics', () =>
 {
-    it('should have extras as mixins', function ()
+    it('should have extras as mixins', () =>
     {
         const g = new Graphics();
 
@@ -18,7 +18,7 @@ describe('Graphics', function ()
         g.destroy();
     });
 
-    it('should call all commands with defaults', function ()
+    it('should call all commands with defaults', () =>
     {
         const g = new Graphics();
 

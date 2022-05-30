@@ -1,10 +1,10 @@
 import { expect } from 'chai';
 import { floatEqual } from '@pixi/math-extras';
 
-describe('floatEqual', function ()
+describe('floatEqual', () =>
 {
     it('should return true if the difference between values is less than epsilon',
-        function ()
+        () =>
         {
             // 0.1 + 0.2 = 0.3 is the common floating point pitfall.
             expect(floatEqual(0.1 + 0.2, 0.3)).to.equal(true);

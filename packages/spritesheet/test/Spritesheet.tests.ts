@@ -1,16 +1,20 @@
-import { Spritesheet } from '@pixi/spritesheet';
-import { BaseTexture, Texture } from '@pixi/core';
+import { ISpritesheetData, ISpritesheetFrameData, Spritesheet } from '@pixi/spritesheet';
+import { BaseTexture, ImageResource, Texture } from '@pixi/core';
 import path from 'path';
 import { expect } from 'chai';
 
-describe('Spritesheet', function ()
+describe('Spritesheet', () =>
 {
-    before(function ()
+    let resources: string;
+    let validate: (spritesheet: Spritesheet, done: () => void) => void;
+    let parseFrame: (frameData: ISpritesheetFrameData, cb: (frame: Texture) => void) => void;
+
+    before(() =>
     {
-        this.resources = path.join(__dirname, 'resources');
-        this.validate = function (spritesheet, done)
+        resources = path.join(__dirname, 'resources');
+        validate = (spritesheet: Spritesheet, done) =>
         {
-            spritesheet.parse(function (textures)
+            spritesheet.parse((textures) =>
             {
                 const id = 'goldmine_10_5.png';
                 const width = Math.floor(spritesheet.data.frames[id].frame.w);
@@ -25,10 +29,10 @@ describe('Spritesheet', function ()
                 expect(textures[id].defaultAnchor.y).to.equal(0);
                 expect(textures[id].textureCacheIds.indexOf(id)).to.equal(0);
 
-                expect(this.animations).to.have.property('star').that.is.an('array');
-                expect(this.animations.star.length).to.equal(4);
-                expect(this.animations.star[0].defaultAnchor.x).to.equal(0.5);
-                expect(this.animations.star[0].defaultAnchor.y).to.equal(0.5);
+                expect(spritesheet.animations).to.have.property('star').that.is.an('array');
+                expect(spritesheet.animations.star.length).to.equal(4);
+                expect(spritesheet.animations.star[0].defaultAnchor.x).to.equal(0.5);
+                expect(spritesheet.animations.star[0].defaultAnchor.y).to.equal(0.5);
 
                 spritesheet.destroy(true);
                 expect(spritesheet.textures).to.be.null;
@@ -37,16 +41,17 @@ describe('Spritesheet', function ()
             });
         };
 
-        this.parseFrame = function (frameData, callback)
+        parseFrame = (frameData, callback) =>
         {
             const data = {
                 frames: { frame: frameData },
                 meta: { scale: 1 },
-            };
+            } as unknown as ISpritesheetData;
             const baseTexture = BaseTexture.from(
                 document.createElement('canvas')
-            );
+            ) as BaseTexture<ImageResource>;
 
+            // @ts-expect-error - hack
             baseTexture.imageUrl = 'test.png';
 
             const sheet = new Spritesheet(baseTexture, data);
@@ -64,19 +69,19 @@ describe('Spritesheet', function ()
         };
     });
 
-    it('should exist on PIXI', function ()
+    it('should exist on PIXI', () =>
     {
         expect(Spritesheet).to.be.a('function');
         expect(Spritesheet.BATCH_SIZE).to.be.a('number');
     });
 
-    it('should create an instance', function ()
+    it('should create an instance', () =>
     {
         const baseTexture = new BaseTexture();
         const data = {
             frames: {},
             meta: {},
-        };
+        } as unknown as ISpritesheetData;
 
         const spritesheet = new Spritesheet(baseTexture, data);
 
@@ -87,27 +92,29 @@ describe('Spritesheet', function ()
         spritesheet.destroy(true);
     });
 
-    it('should create instance with scale resolution', function (done)
+    it('should create instance with scale resolution', (done) =>
     {
-        const data = require(path.resolve(this.resources, 'building1.json')); // eslint-disable-line global-require
+        // eslint-disable-next-line @typescript-eslint/no-var-requires, global-require
+        const data = require(path.resolve(resources, 'building1.json'));
         const image = new Image();
 
-        image.src = path.join(this.resources, data.meta.image);
+        image.src = path.join(resources, data.meta.image);
         image.onload = () =>
         {
-            const baseTexture = new BaseTexture(image, null, 1);
+            const baseTexture = new BaseTexture(image, null);
             const spritesheet = new Spritesheet(baseTexture, data);
 
             expect(data).to.be.an('object');
             expect(data.meta.image).to.equal('building1.png');
             expect(spritesheet.resolution).to.equal(0.5);
-            this.validate(spritesheet, done);
+            validate(spritesheet, done);
         };
     });
 
-    it('should create instance with BaseTexture source scale', function (done)
+    it('should create instance with BaseTexture source scale', (done) =>
     {
-        const data = require(path.resolve(this.resources, 'building1.json')); // eslint-disable-line global-require
+        // eslint-disable-next-line @typescript-eslint/no-var-requires, global-require
+        const data = require(path.resolve(resources, 'building1.json'));
         const baseTexture = BaseTexture.from(data.meta.image);// , undefined, undefined, 1.5);
         const spritesheet = new Spritesheet(baseTexture, data);
 
@@ -115,16 +122,17 @@ describe('Spritesheet', function ()
         expect(data.meta.image).to.equal('building1.png');
         expect(spritesheet.resolution).to.equal(0.5);
 
-        this.validate(spritesheet, done);
+        validate(spritesheet, done);
     });
 
-    it('should create instance with filename resolution', function (done)
+    it('should create instance with filename resolution', (done) =>
     {
-        const uri = path.resolve(this.resources, 'building1@2x.json');
-        const data = require(uri); // eslint-disable-line global-require
+        const uri = path.resolve(resources, 'building1@2x.json');
+        // eslint-disable-next-line @typescript-eslint/no-var-requires, global-require
+        const data = require(uri);
         const image = new Image();
 
-        image.src = path.join(this.resources, data.meta.image);
+        image.src = path.join(resources, data.meta.image);
         image.onload = () =>
         {
             const baseTexture = new BaseTexture(image, { resolution: 1 });
@@ -134,11 +142,11 @@ describe('Spritesheet', function ()
             expect(data.meta.image).to.equal('building1@2x.png');
             expect(spritesheet.resolution).to.equal(2);
 
-            this.validate(spritesheet, done);
+            validate(spritesheet, done);
         };
     });
 
-    it('should parse full data untrimmed', function (done)
+    it('should parse full data untrimmed', (done) =>
     {
         const data = {
             frame: { x: 0, y: 0, w: 14, h: 16 },
@@ -146,9 +154,9 @@ describe('Spritesheet', function ()
             trimmed: false,
             spriteSourceSize: { x: 0, y: 0, w: 14, h: 16 },
             sourceSize: { w: 14, h: 16 },
-        };
+        } as ISpritesheetFrameData;
 
-        this.parseFrame(data, (texture) =>
+        parseFrame(data, (texture) =>
         {
             expect(texture.width).to.equal(14);
             expect(texture.height).to.equal(16);
@@ -156,7 +164,7 @@ describe('Spritesheet', function ()
         });
     });
 
-    it('should parse texture from trimmed', function (done)
+    it('should parse texture from trimmed', (done) =>
     {
         const data = {
             frame: { x: 0, y: 28, w: 14, h: 14 },
@@ -166,7 +174,7 @@ describe('Spritesheet', function ()
             sourceSize: { w: 40, h: 20 },
         };
 
-        this.parseFrame(data, (texture) =>
+        parseFrame(data, (texture) =>
         {
             expect(texture.width).to.equal(40);
             expect(texture.height).to.equal(20);
@@ -174,11 +182,11 @@ describe('Spritesheet', function ()
         });
     });
 
-    it('should parse texture from minimal data', function (done)
+    it('should parse texture from minimal data', (done) =>
     {
         const data = { frame: { x: 0, y: 0, w: 14, h: 14 } };
 
-        this.parseFrame(data, (texture) =>
+        parseFrame(data, (texture) =>
         {
             expect(texture.width).to.equal(14);
             expect(texture.height).to.equal(14);
@@ -186,7 +194,7 @@ describe('Spritesheet', function ()
         });
     });
 
-    it('should parse texture without trimmed or sourceSize', function (done)
+    it('should parse texture without trimmed or sourceSize', (done) =>
     {
         const data = {
             frame: { x: 0, y: 14, w: 14, h: 14 },
@@ -195,7 +203,7 @@ describe('Spritesheet', function ()
             spriteSourceSize: { x: 0, y: 0, w: 20, h: 30 },
         };
 
-        this.parseFrame(data, (texture) =>
+        parseFrame(data, (texture) =>
         {
             expect(texture.width).to.equal(14);
             expect(texture.height).to.equal(14);
@@ -203,7 +211,7 @@ describe('Spritesheet', function ()
         });
     });
 
-    it('should parse as trimmed if spriteSourceSize is set', function (done)
+    it('should parse as trimmed if spriteSourceSize is set', (done) =>
     {
         // shoebox format
         const data = {
@@ -212,7 +220,7 @@ describe('Spritesheet', function ()
             sourceSize: { w: 120, h: 100 },
         };
 
-        this.parseFrame(data, (texture) =>
+        parseFrame(data, (texture) =>
         {
             expect(texture.width).to.equal(120);
             expect(texture.height).to.equal(100);

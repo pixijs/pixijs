@@ -1,9 +1,9 @@
 import { PolygonUtils } from '../src/utils/PolygonUtils';
 import { expect } from 'chai';
 
-describe('PolygonUtils', function ()
+describe('PolygonUtils', () =>
 {
-    it('isPolygonClockwise', function ()
+    it('isPolygonClockwise', () =>
     {
         const ccwTriangle1 = [0, 0, 1, 0, 0, 1];
         const ccwTriangle2 = [1, 0, 0, 1, 0, 0];

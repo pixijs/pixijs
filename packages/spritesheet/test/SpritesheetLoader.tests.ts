@@ -1,20 +1,20 @@
 import path from 'path';
-import { Loader, LoaderResource } from '@pixi/loaders';
+import { IAddOptions, Loader, LoaderResource } from '@pixi/loaders';
 import { Texture, BaseTexture } from '@pixi/core';
 import { BaseTextureCache, TextureCache, url, clearTextureCache } from '@pixi/utils';
 import { SpritesheetLoader, Spritesheet } from '@pixi/spritesheet';
 import sinon from 'sinon';
 import { expect } from 'chai';
 
-describe('SpritesheetLoader', function ()
+describe('SpritesheetLoader', () =>
 {
-    it('should exist and return a function', function ()
+    it('should exist and return a function', () =>
     {
         expect(SpritesheetLoader).to.not.be.undefined;
         expect(SpritesheetLoader.use).to.be.a('function');
     });
 
-    it('should install middleware', function (done)
+    it('should install middleware', (done) =>
     {
         Loader.registerPlugin(SpritesheetLoader);
 
@@ -35,10 +35,10 @@ describe('SpritesheetLoader', function ()
         });
     });
 
-    it('should do nothing if the resource is not JSON', function ()
+    it('should do nothing if the resource is not JSON', () =>
     {
         const spy = sinon.spy();
-        const res = {};
+        const res = {} as LoaderResource;
 
         SpritesheetLoader.use(res, spy);
 
@@ -46,7 +46,7 @@ describe('SpritesheetLoader', function ()
         expect(res.textures).to.be.undefined;
     });
 
-    it('should do nothing if the resource is JSON, but improper format', function ()
+    it('should do nothing if the resource is JSON, but improper format', () =>
     {
         const spy = sinon.spy();
         const res = createMockResource(LoaderResource.TYPE.JSON, {});
@@ -57,7 +57,7 @@ describe('SpritesheetLoader', function ()
         expect(res.textures).to.be.undefined;
     });
 
-    it('should load the image & create textures if json is properly formatted', function ()
+    it('should load the image & create textures if json is properly formatted', () =>
     {
         const spy = sinon.spy();
         const res = createMockResource(LoaderResource.TYPE.JSON, getJsonSpritesheet());
@@ -98,7 +98,7 @@ describe('SpritesheetLoader', function ()
         expect(res.spritesheet.animations.png123[0]).to.equal(res.textures['1.png']);
     });
 
-    it('should not load binary images as an image loader type', function (done)
+    it('should not load binary images as an image loader type', (done) =>
     {
         const loader = new Loader();
 
@@ -123,9 +123,9 @@ describe('SpritesheetLoader', function ()
             });
     });
 
-    it('should dispatch an error failing to load spritesheet image', function (done)
+    it('should dispatch an error failing to load spritesheet image', (done) =>
     {
-        const spy = sinon.spy((error, ldr, res) =>
+        const spy = sinon.spy((error, _ldr, res) =>
         {
             expect(res.name).to.equal('atlas_error_image');
             expect(res.error).to.equal(error);
@@ -144,14 +144,17 @@ describe('SpritesheetLoader', function ()
         });
     });
 
-    it('should build the image url', function ()
+    it('should build the image url', () =>
     {
-        function getPath(url, image)
+        function getPath(url: string, image: string)
         {
-            return SpritesheetLoader.getResourcePath({
-                url,
-                data: { meta: { image } },
-            });
+            return SpritesheetLoader.getResourcePath(
+                {
+                    url,
+                    data: { meta: { image } },
+                } as LoaderResource,
+                ''
+            );
         }
 
         let result = getPath('http://some.com/spritesheet.json', 'img.png');
@@ -185,7 +188,7 @@ describe('SpritesheetLoader', function ()
     // TODO: Test that resolution processing works correctly.
     // TODO: Test that metadata is honored.
 
-    it('should not add itself via multipack', function (done)
+    it('should not add itself via multipack', (done) =>
     {
         // clear the caches only to avoid cluttering the output
         clearTextureCache();
@@ -201,7 +204,7 @@ describe('SpritesheetLoader', function ()
         });
     });
 
-    it('should create multipack resources when related_multi_packs field is an array of strings', function (done)
+    it('should create multipack resources when related_multi_packs field is an array of strings', (done) =>
     {
         // clear the caches only to avoid cluttering the output
         clearTextureCache();
@@ -217,7 +220,7 @@ describe('SpritesheetLoader', function ()
         });
     });
 
-    it('should not create multipack resources when related_multi_packs field is missing or the wrong type', function (done)
+    it('should not create multipack resources when related_multi_packs field is missing or the wrong type', (done) =>
     {
         // clear the caches only to avoid cluttering the output
         clearTextureCache();
@@ -237,7 +240,7 @@ describe('SpritesheetLoader', function ()
         });
     });
 
-    it('should build the multipack url', function ()
+    it('should build the multipack url', () =>
     {
         let result = url.resolve('http://some.com/spritesheet.json', 'spritesheet-1.json');
 
@@ -265,7 +268,7 @@ describe('SpritesheetLoader', function ()
         expect(result).to.be.equals('/some/spritesheet-1.json');
     });
 
-    it('should use metadata to load all multipack resources', function (done)
+    it('should use metadata to load all multipack resources', (done) =>
     {
         // clear the caches only to avoid cluttering the output
         clearTextureCache();
@@ -273,8 +276,8 @@ describe('SpritesheetLoader', function ()
         const loader = new Loader();
         const metadata = { key: 'value' };
 
-        loader.add('building1-0', path.join(__dirname, 'resources', 'building1-0.json'), { metadata });
-        loader.load((loader, resources) =>
+        loader.add('building1-0', path.join(__dirname, 'resources', 'building1-0.json'), { metadata } as IAddOptions);
+        loader.load((_loader, resources) =>
         {
             expect(resources['building1-0'].metadata).to.be.equals(metadata);
             expect(resources['building1-1'].metadata).to.be.equals(metadata);
@@ -284,7 +287,7 @@ describe('SpritesheetLoader', function ()
     });
 });
 
-function createMockResource(type, data)
+function createMockResource(type: LoaderResource.TYPE, data: any): LoaderResource
 {
     const name = `${Math.floor(Date.now() * Math.random())}`;
 
@@ -294,7 +297,7 @@ function createMockResource(type, data)
         type,
         data,
         metadata: {},
-    };
+    } as LoaderResource;
 }
 
 function getJsonSpritesheet()

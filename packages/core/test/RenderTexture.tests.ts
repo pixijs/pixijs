@@ -5,21 +5,23 @@ import { MSAA_QUALITY } from '@pixi/constants';
 import { AlphaFilter } from '@pixi/filter-alpha';
 import { expect } from 'chai';
 
-describe('RenderTexture', function ()
+describe('RenderTexture', () =>
 {
-    before(function ()
+    let renderer: Renderer;
+
+    before(() =>
     {
         Renderer.registerPlugin('batch', BatchRenderer);
-        this.renderer = new Renderer();
+        renderer = new Renderer();
     });
 
-    after(function ()
+    after(() =>
     {
-        this.renderer.destroy();
-        this.renderer = null;
+        renderer.destroy();
+        renderer = null;
     });
 
-    it('should destroy the depth texture too', function ()
+    it('should destroy the depth texture too', () =>
     {
         const renderer = autoDetectRenderer() as Renderer;
 
@@ -38,9 +40,9 @@ describe('RenderTexture', function ()
         expect(depthTexture._glTextures[renderer.CONTEXT_UID]).to.equal(undefined);
     });
 
-    it('should render correctly with empty mask', function ()
+    it('should render correctly with empty mask', () =>
     {
-        const { gl } = this.renderer;
+        const { gl } = renderer;
 
         const renderTexture = RenderTexture.create({ width: 1, height: 1 });
 
@@ -59,9 +61,9 @@ describe('RenderTexture', function ()
         container.addChild(graphics);
         container.mask = container.addChild(new Graphics());
 
-        this.renderer.render(container, { renderTexture, clear: true });
+        renderer.render(container, { renderTexture, clear: true });
 
-        this.renderer.renderTexture.bind(renderTexture);
+        renderer.renderTexture.bind(renderTexture);
 
         const pixel = new Uint8Array([0x80, 0x80, 0x80, 0x80]);
 
@@ -73,9 +75,9 @@ describe('RenderTexture', function ()
         expect(pixel[3]).to.equal(51);
     });
 
-    it('should render correctly with empty mask and multisampling', function ()
+    it('should render correctly with empty mask and multisampling', () =>
     {
-        const { gl } = this.renderer;
+        const { gl } = renderer;
 
         const renderTexture = RenderTexture.create({ width: 1, height: 1 });
 
@@ -94,14 +96,14 @@ describe('RenderTexture', function ()
         container.addChild(graphics);
         container.mask = container.addChild(new Graphics());
 
-        this.renderer.render(container, { renderTexture, clear: true });
-        this.renderer.framebuffer.blit();
+        renderer.render(container, { renderTexture, clear: true });
+        renderer.framebuffer.blit();
 
         const textureFramebuffer = new Framebuffer(framebuffer.width, framebuffer.height);
 
         textureFramebuffer.addColorTexture(0, framebuffer.colorTextures[0]);
 
-        this.renderer.framebuffer.bind(textureFramebuffer);
+        renderer.framebuffer.bind(textureFramebuffer);
 
         const pixel = new Uint8Array([0x80, 0x80, 0x80, 0x80]);
 
@@ -113,9 +115,9 @@ describe('RenderTexture', function ()
         expect(pixel[3]).to.equal(51);
     });
 
-    it('should render correctly with mask', function ()
+    it('should render correctly with mask', () =>
     {
-        const { gl } = this.renderer;
+        const { gl } = renderer;
 
         const renderTexture = RenderTexture.create({ width: 2, height: 2 });
 
@@ -139,9 +141,9 @@ describe('RenderTexture', function ()
                 .endFill()
         );
 
-        this.renderer.render(container, { renderTexture, clear: true });
+        renderer.render(container, { renderTexture, clear: true });
 
-        this.renderer.renderTexture.bind(renderTexture);
+        renderer.renderTexture.bind(renderTexture);
 
         const pixel = new Uint8Array([0x80, 0x80, 0x80, 0x80]);
 
@@ -162,9 +164,9 @@ describe('RenderTexture', function ()
         expect(pixel[3]).to.equal(51);
     });
 
-    it('should render correctly with stencil mask and filter', function ()
+    it('should render correctly with stencil mask and filter', () =>
     {
-        const { gl } = this.renderer;
+        const { gl } = renderer;
 
         const renderTexture = RenderTexture.create({ width: 1, height: 1 });
 
@@ -186,13 +188,13 @@ describe('RenderTexture', function ()
         container.mask = container.addChild(
             new Graphics()
                 .beginFill(0xffffff)
-                .drawCircle(0, 0, 4, 4)
+                .drawCircle(0, 0, 4)
                 .endFill()
         );
 
-        this.renderer.render(container, { renderTexture, clear: true });
+        renderer.render(container, { renderTexture, clear: true });
 
-        this.renderer.renderTexture.bind(renderTexture);
+        renderer.renderTexture.bind(renderTexture);
 
         const pixel = new Uint8Array([0x80, 0x80, 0x80, 0x80]);
 
@@ -204,9 +206,9 @@ describe('RenderTexture', function ()
         expect(pixel[3]).to.equal(0xff);
     });
 
-    it('should render correctly with mask and multisampling', function ()
+    it('should render correctly with mask and multisampling', () =>
     {
-        const { gl } = this.renderer;
+        const { gl } = renderer;
 
         const renderTexture = RenderTexture.create({ width: 2, height: 2 });
 
@@ -230,14 +232,14 @@ describe('RenderTexture', function ()
                 .endFill()
         );
 
-        this.renderer.render(container, { renderTexture, clear: true });
-        this.renderer.framebuffer.blit();
+        renderer.render(container, { renderTexture, clear: true });
+        renderer.framebuffer.blit();
 
         const textureFramebuffer = new Framebuffer(framebuffer.width, framebuffer.height);
 
         textureFramebuffer.addColorTexture(0, framebuffer.colorTextures[0]);
 
-        this.renderer.framebuffer.bind(textureFramebuffer);
+        renderer.framebuffer.bind(textureFramebuffer);
 
         const pixel = new Uint8Array([0x80, 0x80, 0x80, 0x80]);
 
@@ -258,9 +260,9 @@ describe('RenderTexture', function ()
         expect(pixel[3]).to.equal(51);
     });
 
-    it('should resize framebuffer', function ()
+    it('should resize framebuffer', () =>
     {
-        const { gl } = this.renderer;
+        const { gl } = renderer;
 
         const renderTexture = RenderTexture.create({ width: 1, height: 1 });
 
@@ -274,13 +276,13 @@ describe('RenderTexture', function ()
 
         graphics.beginFill(0xffffff).drawRect(0, 0, 2, 2).endFill();
 
-        this.renderer.render(graphics, { renderTexture, clear: true });
+        renderer.render(graphics, { renderTexture, clear: true });
 
         renderTexture.resize(2, 2);
 
-        this.renderer.render(graphics, { renderTexture, clear: true });
+        renderer.render(graphics, { renderTexture, clear: true });
 
-        this.renderer.renderTexture.bind(renderTexture);
+        renderer.renderTexture.bind(renderTexture);
 
         const pixel = new Uint8Array([0x80, 0x80, 0x80, 0x80]);
 
@@ -292,9 +294,9 @@ describe('RenderTexture', function ()
         expect(pixel[3]).to.equal(0xff);
     });
 
-    it('should resize multisampled framebuffer', function ()
+    it('should resize multisampled framebuffer', () =>
     {
-        const { gl } = this.renderer;
+        const { gl } = renderer;
 
         const renderTexture = RenderTexture.create({ width: 1, height: 1 });
 
@@ -308,19 +310,19 @@ describe('RenderTexture', function ()
 
         graphics.beginFill(0xffffff).drawRect(0, 0, 2, 2).endFill();
 
-        this.renderer.render(graphics, { renderTexture, clear: true });
-        this.renderer.framebuffer.blit();
+        renderer.render(graphics, { renderTexture, clear: true });
+        renderer.framebuffer.blit();
 
         renderTexture.resize(2, 2);
 
-        this.renderer.render(graphics, { renderTexture, clear: true });
-        this.renderer.framebuffer.blit();
+        renderer.render(graphics, { renderTexture, clear: true });
+        renderer.framebuffer.blit();
 
         const textureFramebuffer = new Framebuffer(framebuffer.width, framebuffer.height);
 
         textureFramebuffer.addColorTexture(0, framebuffer.colorTextures[0]);
 
-        this.renderer.framebuffer.bind(textureFramebuffer);
+        renderer.framebuffer.bind(textureFramebuffer);
 
         const pixel = new Uint8Array([0x80, 0x80, 0x80, 0x80]);
 

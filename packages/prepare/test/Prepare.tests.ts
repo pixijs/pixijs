@@ -4,9 +4,9 @@ import { Container } from '@pixi/display';
 import { Graphics } from '@pixi/graphics';
 import { expect } from 'chai';
 
-describe('Prepare', function ()
+describe('Prepare', () =>
 {
-    it('should upload graphics vao and textures', function ()
+    it('should upload graphics vao and textures', () =>
     {
         const renderer = new Renderer({ width: 1, height: 1 });
         const prepare = new Prepare(renderer);
@@ -28,7 +28,7 @@ describe('Prepare', function ()
             graphics.drawRect(0, 0, 10, 10);
             graphics.beginTextureFill({ texture });
             graphics.drawRect(20, 20, 10, 10);
-            graphics.geometry.isBatchable = function () { return false; };
+            graphics.geometry['isBatchable'] = () => false;
             container.addChild(graphics);
 
             prepare.add(container);

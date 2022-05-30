@@ -1,9 +1,9 @@
 import { Point } from '@pixi/math';
 import { expect } from 'chai';
 
-describe('Point', function ()
+describe('Point', () =>
 {
-    it('should create a new point', function ()
+    it('should create a new point', () =>
     {
         const pt = new Point();
 
@@ -11,7 +11,7 @@ describe('Point', function ()
         expect(pt.y).to.equal(0);
     });
 
-    it('should clone a new point', function ()
+    it('should clone a new point', () =>
     {
         const p1 = new Point(10, 20);
 
@@ -26,7 +26,7 @@ describe('Point', function ()
         expect(p1.equals(p2)).to.be.true;
     });
 
-    it('should copy from one point to another', function ()
+    it('should copy from one point to another', () =>
     {
         const p1 = new Point(10, 20);
         const p2 = new Point(2, 5);
@@ -37,7 +37,7 @@ describe('Point', function ()
         expect(p1.y).to.equal(5);
     });
 
-    it('should set a new value', function ()
+    it('should set a new value', () =>
     {
         const p1 = new Point(10, 20);
 

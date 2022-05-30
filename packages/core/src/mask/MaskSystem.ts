@@ -143,7 +143,7 @@ export class MaskSystem implements ISystem
      * Removes the last mask from the mask stack and doesn't return it.
      *
      * NOTE: The batch renderer should be flushed beforehand to render the masked contents before the mask is removed.
-     * @param {PIXI.DisplayObject} target - Display Object to pop the mask from
+     * @param {PIXI.IMaskTarget} target - Display Object to pop the mask from
      */
     pop(target: IMaskTarget): void
     {

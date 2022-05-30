@@ -1,9 +1,9 @@
 import { AlphaFilter } from '@pixi/filter-alpha';
 import { expect } from 'chai';
 
-describe('AlphaFilter', function ()
+describe('AlphaFilter', () =>
 {
-    it('should construct filter', function ()
+    it('should construct filter', () =>
     {
         const filter = new AlphaFilter();
 
@@ -13,7 +13,7 @@ describe('AlphaFilter', function ()
         filter.destroy();
     });
 
-    it('should allow alpha to be set', function ()
+    it('should allow alpha to be set', () =>
     {
         const filter = new AlphaFilter();
 

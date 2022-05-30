@@ -4,20 +4,22 @@ import { CanvasRenderer } from '@pixi/canvas-renderer';
 import { NineSlicePlane } from '@pixi/mesh-extras';
 import { expect } from 'chai';
 
-describe('NineSlicePlane', function ()
+describe('NineSlicePlane', () =>
 {
-    before(function ()
+    let renderer: CanvasRenderer;
+
+    before(() =>
     {
-        this.renderer = new CanvasRenderer();
+        renderer = new CanvasRenderer();
     });
 
-    after(function ()
+    after(() =>
     {
-        this.renderer.destroy();
-        this.renderer = null;
+        renderer.destroy();
+        renderer = null;
     });
 
-    it('should be renderable with renderTexture in canvas', function ()
+    it('should be renderable with renderTexture in canvas', () =>
     {
         const rt = RenderTexture.create({ width: 10, height: 10 });
         const spr = new Sprite(Texture.WHITE);

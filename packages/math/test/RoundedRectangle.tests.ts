@@ -1,9 +1,9 @@
 import { RoundedRectangle } from '@pixi/math';
 import { expect } from 'chai';
 
-describe('RoundedRectangle', function ()
+describe('RoundedRectangle', () =>
 {
-    it('should create a new rounded rectangle', function ()
+    it('should create a new rounded rectangle', () =>
     {
         const rrect = new RoundedRectangle(5, 5, 1, 1);
 
@@ -14,7 +14,7 @@ describe('RoundedRectangle', function ()
         expect(rrect.radius).to.equal(20);
     });
 
-    it('should clone a new rounded rectangle', function ()
+    it('should clone a new rounded rectangle', () =>
     {
         const rrect1 = new RoundedRectangle(0, 0, 100, 100, 40);
 
@@ -34,7 +34,7 @@ describe('RoundedRectangle', function ()
         expect(rrect1).to.not.equal(rrect2);
     });
 
-    it('should check if point is within rounded rectangle', function ()
+    it('should check if point is within rounded rectangle', () =>
     {
         const rrect1 = new RoundedRectangle(0, 0, 200, 200, 50);
 

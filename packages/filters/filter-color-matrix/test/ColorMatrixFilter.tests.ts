@@ -1,9 +1,9 @@
 import { ColorMatrixFilter } from '@pixi/filter-color-matrix';
 import { expect } from 'chai';
 
-describe('ColorMatrixFilter', function ()
+describe('ColorMatrixFilter', () =>
 {
-    it('should construct filter', function ()
+    it('should construct filter', () =>
     {
         const filter = new ColorMatrixFilter();
 
@@ -20,7 +20,7 @@ describe('ColorMatrixFilter', function ()
         filter.destroy();
     });
 
-    it('should run all operations without multiply', function ()
+    it('should run all operations without multiply', () =>
     {
         const filter = new ColorMatrixFilter();
 
@@ -49,7 +49,7 @@ describe('ColorMatrixFilter', function ()
         filter.destroy();
     });
 
-    it('should run all operations with multiply', function ()
+    it('should run all operations with multiply', () =>
     {
         const filter = new ColorMatrixFilter();
 

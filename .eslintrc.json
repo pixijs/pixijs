@@ -1,6 +1,10 @@
 {
     "extends": ["@pixi/eslint-config"],
     "plugins": ["jsdoc"],
+    "parserOptions": {
+        "project": ["./tsconfig.eslint.json"]
+    },
+    "ignorePatterns": ["**/*.index.d.ts"],
     "settings": {
         "jsdoc": {
             "mode": "typescript",
@@ -59,5 +63,27 @@
         "jsdoc/require-returns-description": 1,
         "jsdoc/tag-lines": 1,
         "jsdoc/valid-types": 1
-    }
+    },
+    "overrides": [
+        {
+            "files": ["*.tests.ts", "*.test.ts"],
+            "globals": {
+                "expect": false,
+                "assert": false,
+                "sinon": false
+            },
+            "rules": {
+                "@typescript-eslint/no-unused-expressions": 0,
+                "@typescript-eslint/dot-notation": [
+                    0,
+                    {
+                        "allowPrivateClassPropertyAccess": true,
+                        "allowProtectedClassPropertyAccess": true,
+                        "allowIndexSignaturePropertyAccess": true
+                    }
+                ],
+                "dot-notation": 0
+            }
+        }
+    ]
 }

@@ -13,7 +13,6 @@
         "allowSyntheticDefaultImports": true,
         "moduleResolution": "node",
         "resolveJsonModule": true,
-        "downlevelIteration": true,
         "baseUrl": "./",
         "paths": {
             "@pixi/*": [
@@ -35,13 +34,10 @@
         "node_modules",
         "**/dist/**",
         "**/lib/**",
+        "**/scripts/**",
+        "**/test/**",
+        "**/types/**",
         "bundles/**/*.d.ts",
-        "**/out/**"
-    ],
-    "ts-node": {
-        "files": true,
-        "compilerOptions": {
-            "esModuleInterop": true
-        }
-    }
+        "rollup.config.js"
+    ]
 }

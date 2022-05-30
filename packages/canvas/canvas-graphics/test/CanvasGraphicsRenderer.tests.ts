@@ -4,9 +4,9 @@ import { CanvasRenderer } from '@pixi/canvas-renderer';
 import { CanvasGraphicsRenderer } from '@pixi/canvas-graphics';
 import { expect } from 'chai';
 
-describe('CanvasGraphicsRenderer', function ()
+describe('CanvasGraphicsRenderer', () =>
 {
-    it('should not create pattern for White Texture', function ()
+    it('should not create pattern for White Texture', () =>
     {
         const renderer = new CanvasRenderer({ width: 1, height: 1 });
 
@@ -14,7 +14,7 @@ describe('CanvasGraphicsRenderer', function ()
 
         const graphics = new Graphics();
 
-        graphics.beginFill({ texture: Texture.WHITE });
+        graphics.beginTextureFill({ texture: Texture.WHITE });
         graphics.drawRect(0, 0, 1, 1);
         graphics.endFill();
 
@@ -29,7 +29,7 @@ describe('CanvasGraphicsRenderer', function ()
         }
     });
 
-    it('should create pattern for textures', function ()
+    it('should create pattern for textures', () =>
     {
         const renderer = new CanvasRenderer({ width: 1, height: 1 });
 

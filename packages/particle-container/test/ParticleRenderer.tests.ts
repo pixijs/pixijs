@@ -7,19 +7,19 @@ import path from 'path';
 
 skipHello();
 
-describe('ParticleRenderer', function ()
+describe('ParticleRenderer', () =>
 {
-    beforeEach(function ()
+    beforeEach(() =>
     {
         Renderer.registerPlugin('particle', ParticleRenderer);
     });
 
-    afterEach(function ()
+    afterEach(() =>
     {
         delete Renderer.__plugins.particle;
     });
 
-    it('should render a particle container with no children', function ()
+    it('should render a particle container with no children', () =>
     {
         const renderer = new Renderer();
         const container = new ParticleContainer();
@@ -31,7 +31,7 @@ describe('ParticleRenderer', function ()
         renderer.destroy();
     });
 
-    it('should render a particle container with children', function ()
+    it('should render a particle container with children', () =>
     {
         const renderer = new Renderer();
         const container = new ParticleContainer();
@@ -43,7 +43,7 @@ describe('ParticleRenderer', function ()
         renderer.destroy();
     });
 
-    it('should render a particle container with lazy texture loading', function (done: () => void)
+    it('should render a particle container with lazy texture loading', (done: () => void) =>
     {
         const image = new Image();
 
@@ -67,7 +67,7 @@ describe('ParticleRenderer', function ()
         });
     });
 
-    it('should support autoResize off', function ()
+    it('should support autoResize off', () =>
     {
         const renderer = new Renderer();
         const container = new ParticleContainer(1);
@@ -81,7 +81,7 @@ describe('ParticleRenderer', function ()
         renderer.destroy();
     });
 
-    it('should support autoResize on', function ()
+    it('should support autoResize on', () =>
     {
         const renderer = new Renderer();
         const container = new ParticleContainer(1);

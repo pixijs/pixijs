@@ -1,9 +1,9 @@
 import { trimCanvas } from '@pixi/utils';
 import { expect } from 'chai';
 
-describe('trimCanvas', function ()
+describe('trimCanvas', () =>
 {
-    it('should trim the canvas', function ()
+    it('should trim the canvas', () =>
     {
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d');

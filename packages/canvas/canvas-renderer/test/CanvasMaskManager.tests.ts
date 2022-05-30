@@ -5,9 +5,9 @@ import { CanvasRenderer } from '@pixi/canvas-renderer';
 import sinon from 'sinon';
 import { expect } from 'chai';
 
-describe('CanvasMaskManager', function ()
+describe('CanvasMaskManager', () =>
 {
-    it('should work on all graphics masks inside container', function ()
+    it('should work on all graphics masks inside container', () =>
     {
         const renderer = new CanvasRenderer({ width: 1, height: 1 });
         const shapeSpy = sinon.spy(renderer.maskManager, 'renderGraphicsShape');
@@ -40,7 +40,7 @@ describe('CanvasMaskManager', function ()
         expect(contextPath).to.calledThrice;
     });
 
-    it('should set correct transform for graphics', function ()
+    it('should set correct transform for graphics', () =>
     {
         const renderer = new CanvasRenderer({ width: 1, height: 1 });
         const transformSpy = sinon.spy(renderer.context, 'setTransform');

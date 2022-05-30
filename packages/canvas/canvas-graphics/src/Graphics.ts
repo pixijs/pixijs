@@ -14,11 +14,11 @@ const tempMatrix = new Matrix();
  * or the **@pixi/canvas-graphics** package.
  * @method generateCanvasTexture
  * @memberof PIXI.Graphics#
- * @param {PIXI.SCALE_MODES} scaleMode - The scale mode of the texture.
+ * @param {PIXI.SCALE_MODES} [scaleMode] - The scale mode of the texture.
  * @param {number} resolution - The resolution of the texture.
  * @returns {PIXI.Texture} The new texture.
  */
-Graphics.prototype.generateCanvasTexture = function generateCanvasTexture(scaleMode: SCALE_MODES, resolution = 1): Texture
+Graphics.prototype.generateCanvasTexture = function generateCanvasTexture(scaleMode?: SCALE_MODES, resolution = 1): Texture
 {
     const bounds = this.getLocalBounds();
 
