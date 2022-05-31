@@ -4,6 +4,19 @@
   "main": "dist/cjs/canvas-prepare.js",
   "module": "dist/esm/canvas-prepare.js",
   "bundle": "dist/browser/canvas-prepare.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+          "default": "./dist/cjs/canvas-prepare.js",
+          "types": "./index.d.ts"
+      },
+      "require": {
+          "default": "./dist/esm/canvas-prepare.js",
+          "types": "./index.d.ts"
+      }
+    }
+  },
   "description": "Canvas mixin for the prepare package",
   "author": "Mat Groves",
   "contributors": [

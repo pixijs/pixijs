@@ -4,6 +4,19 @@
   "main": "dist/cjs/loaders.js",
   "module": "dist/esm/loaders.js",
   "bundle": "dist/browser/loaders.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+          "default": "./dist/cjs/loaders.js",
+          "types": "./index.d.ts"
+      },
+      "require": {
+          "default": "./dist/esm/loaders.js",
+          "types": "./index.d.ts"
+      }
+    }
+  },
   "description": "Load assets and resources",
   "author": "Mat Groves",
   "contributors": [

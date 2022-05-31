@@ -4,6 +4,19 @@
   "main": "dist/cjs/filter-alpha.js",
   "module": "dist/esm/filter-alpha.js",
   "bundle": "dist/browser/filter-alpha.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+          "default": "./dist/cjs/filter-alpha.js",
+          "types": "./index.d.ts"
+      },
+      "require": {
+          "default": "./dist/esm/filter-alpha.js",
+          "types": "./index.d.ts"
+      }
+    }
+  },
   "namespace": "PIXI.filters",
   "description": "Filter that applies alpha evenly across the entire display object and any opaque elements it contains",
   "author": "Mat Groves",

@@ -4,6 +4,19 @@
   "main": "dist/cjs/filter-fxaa.js",
   "module": "dist/esm/filter-fxaa.js",
   "bundle": "dist/browser/filter-fxaa.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+          "default": "./dist/cjs/filter-fxaa.js",
+          "types": "./index.d.ts"
+      },
+      "require": {
+          "default": "./dist/esm/filter-fxaa.js",
+          "types": "./index.d.ts"
+      }
+    }
+  },
   "namespace": "PIXI.filters",
   "description": "Filter for fast approximate anti-aliasing",
   "author": "Mat Groves",

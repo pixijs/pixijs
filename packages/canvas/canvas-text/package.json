@@ -4,6 +4,19 @@
   "main": "dist/cjs/canvas-text.js",
   "module": "dist/esm/canvas-text.js",
   "bundle": "dist/browser/canvas-text.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+          "default": "./dist/cjs/canvas-text.js",
+          "types": "./index.d.ts"
+      },
+      "require": {
+          "default": "./dist/esm/canvas-text.js",
+          "types": "./index.d.ts"
+      }
+    }
+  },
   "bundleNoExports": true,
   "description": "Canvas mixin for the text package",
   "author": "Dave Moore",

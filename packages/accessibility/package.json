@@ -4,6 +4,19 @@
   "main": "dist/cjs/accessibility.js",
   "module": "dist/esm/accessibility.js",
   "bundle": "dist/browser/accessibility.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+          "default": "./dist/cjs/accessibility.js",
+          "types": "./index.d.ts"
+      },
+      "require": {
+          "default": "./dist/esm/accessibility.js",
+          "types": "./index.d.ts"
+      }
+    }
+  },
   "description": "Accessibility Plugin for visually impaired users",
   "author": "Mat Groves",
   "contributors": [

@@ -4,6 +4,19 @@
   "main": "dist/cjs/app.js",
   "module": "dist/esm/app.js",
   "bundle": "dist/browser/app.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+          "default": "./dist/cjs/app.js",
+          "types": "./index.d.ts"
+      },
+      "require": {
+          "default": "./dist/esm/app.js",
+          "types": "./index.d.ts"
+      }
+    }
+  },
   "description": "Convenience class to create a new PixiJS application",
   "author": "Mat Groves",
   "contributors": [

@@ -4,6 +4,19 @@
   "main": "dist/cjs/canvas-renderer.js",
   "module": "dist/esm/canvas-renderer.js",
   "bundle": "dist/browser/canvas-renderer.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+          "default": "./dist/cjs/canvas-renderer.js",
+          "types": "./index.d.ts"
+      },
+      "require": {
+          "default": "./dist/esm/canvas-renderer.js",
+          "types": "./index.d.ts"
+      }
+    }
+  },
   "description": "Rendering using the Canvas API",
   "author": "Mat Groves",
   "contributors": [

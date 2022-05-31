@@ -4,6 +4,19 @@
   "main": "dist/cjs/mesh.js",
   "module": "dist/esm/mesh.js",
   "bundle": "dist/browser/mesh.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+          "default": "./dist/cjs/mesh.js",
+          "types": "./index.d.ts"
+      },
+      "require": {
+          "default": "./dist/esm/mesh.js",
+          "types": "./index.d.ts"
+      }
+    }
+  },
   "description": "Core Mesh functionality",
   "author": "Mat Groves",
   "contributors": [

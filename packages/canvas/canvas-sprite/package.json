@@ -4,6 +4,19 @@
   "main": "dist/cjs/canvas-sprite.js",
   "module": "dist/esm/canvas-sprite.js",
   "bundle": "dist/browser/canvas-sprite.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+          "default": "./dist/cjs/canvas-sprite.js",
+          "types": "./index.d.ts"
+      },
+      "require": {
+          "default": "./dist/esm/canvas-sprite.js",
+          "types": "./index.d.ts"
+      }
+    }
+  },
   "description": "Canvas mixin for the sprite package",
   "author": "Mat Groves",
   "contributors": [
