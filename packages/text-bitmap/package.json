@@ -4,6 +4,19 @@
   "main": "dist/cjs/text-bitmap.js",
   "module": "dist/esm/text-bitmap.js",
   "bundle": "dist/browser/text-bitmap.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+          "default": "./dist/cjs/text-bitmap.js",
+          "types": "./index.d.ts"
+      },
+      "require": {
+          "default": "./dist/esm/text-bitmap.js",
+          "types": "./index.d.ts"
+      }
+    }
+  },
   "description": "Text via bitmap fonts",
   "author": "Mat Groves",
   "contributors": [

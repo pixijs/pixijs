@@ -4,6 +4,19 @@
   "main": "dist/cjs/particle-container.js",
   "module": "dist/esm/particle-container.js",
   "bundle": "dist/browser/particle-container.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+          "default": "./dist/cjs/particle-container.js",
+          "types": "./index.d.ts"
+      },
+      "require": {
+          "default": "./dist/esm/particle-container.js",
+          "types": "./index.d.ts"
+      }
+    }
+  },
   "description": "Render many sprite particles as efficiently as possible",
   "author": "Mat Groves",
   "contributors": [

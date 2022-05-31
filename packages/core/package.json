@@ -4,6 +4,19 @@
   "main": "dist/cjs/core.js",
   "module": "dist/esm/core.js",
   "bundle": "dist/browser/core.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+          "default": "./dist/cjs/core.js",
+          "types": "./index.d.ts"
+      },
+      "require": {
+          "default": "./dist/esm/core.js",
+          "types": "./index.d.ts"
+      }
+    }
+  },
   "description": "Core PixiJS",
   "author": "Mat Groves",
   "contributors": [

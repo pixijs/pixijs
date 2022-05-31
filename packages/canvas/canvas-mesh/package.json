@@ -4,6 +4,19 @@
   "main": "dist/cjs/canvas-mesh.js",
   "module": "dist/esm/canvas-mesh.js",
   "bundle": "dist/browser/canvas-mesh.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+          "default": "./dist/cjs/canvas-mesh.js",
+          "types": "./index.d.ts"
+      },
+      "require": {
+          "default": "./dist/esm/canvas-mesh.js",
+          "types": "./index.d.ts"
+      }
+    }
+  },
   "description": "Canvas mixin for the mesh package",
   "author": "Mat Groves",
   "contributors": [

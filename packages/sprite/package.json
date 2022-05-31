@@ -4,6 +4,19 @@
   "main": "dist/cjs/sprite.js",
   "module": "dist/esm/sprite.js",
   "bundle": "dist/browser/sprite.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+          "default": "./dist/cjs/sprite.js",
+          "types": "./index.d.ts"
+      },
+      "require": {
+          "default": "./dist/esm/sprite.js",
+          "types": "./index.d.ts"
+      }
+    }
+  },
   "description": "Base object for textured objects rendered to the screen",
   "author": "Mat Groves",
   "contributors": [

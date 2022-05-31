@@ -4,6 +4,19 @@
   "main": "dist/cjs/math.js",
   "module": "dist/esm/math.js",
   "bundle": "dist/browser/math.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+          "default": "./dist/cjs/math.js",
+          "types": "./index.d.ts"
+      },
+      "require": {
+          "default": "./dist/esm/math.js",
+          "types": "./index.d.ts"
+      }
+    }
+  },
   "description": "Collection of math utilities",
   "author": "Mat Groves",
   "contributors": [

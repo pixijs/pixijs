@@ -4,6 +4,19 @@
   "main": "dist/cjs/interaction.js",
   "module": "dist/esm/interaction.js",
   "bundle": "dist/browser/interaction.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+          "default": "./dist/cjs/interaction.js",
+          "types": "./index.d.ts"
+      },
+      "require": {
+          "default": "./dist/esm/interaction.js",
+          "types": "./index.d.ts"
+      }
+    }
+  },
   "description": "Plugin for handling mouse, touch and pointer events",
   "author": "Mat Groves",
   "contributors": [
