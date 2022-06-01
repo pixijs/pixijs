@@ -10,15 +10,15 @@ import '@pixi/canvas-display';
 
 skipHello();
 
-describe('CanvasExtract', function ()
+describe('CanvasExtract', () =>
 {
-    before(function ()
+    before(() =>
     {
         CanvasRenderer.registerPlugin('extract', CanvasExtract);
         CanvasRenderer.registerPlugin('sprite', CanvasSpriteRenderer);
     });
 
-    it('should access extract on renderer', function ()
+    it('should access extract on renderer', () =>
     {
         const renderer = new CanvasRenderer();
 
@@ -27,7 +27,7 @@ describe('CanvasExtract', function ()
         renderer.destroy();
     });
 
-    it('should extract an sprite', function ()
+    it('should extract an sprite', () =>
     {
         const renderer = new CanvasRenderer();
         const sprite = new Sprite(Texture.WHITE);
@@ -42,7 +42,7 @@ describe('CanvasExtract', function ()
         sprite.destroy();
     });
 
-    it('should extract with no arguments', function ()
+    it('should extract with no arguments', () =>
     {
         const renderer = new CanvasRenderer();
         const extract = renderer.plugins.extract as CanvasExtract;
@@ -55,7 +55,7 @@ describe('CanvasExtract', function ()
         renderer.destroy();
     });
 
-    it('should extract a render texture', function ()
+    it('should extract a render texture', () =>
     {
         const renderer = new CanvasRenderer();
         const extract = renderer.plugins.extract as CanvasExtract;

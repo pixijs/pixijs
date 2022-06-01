@@ -331,7 +331,7 @@ export class EventSystem
 
         const style = this.domElement.style as CrossCSSStyleDeclaration;
 
-        if (globalThis.navigator.msPointerEnabled)
+        if ((globalThis.navigator as any).msPointerEnabled)
         {
             style.msContentZooming = 'none';
             style.msTouchAction = 'none';
@@ -395,7 +395,7 @@ export class EventSystem
 
         const style = this.domElement.style as CrossCSSStyleDeclaration;
 
-        if (globalThis.navigator.msPointerEnabled)
+        if ((globalThis.navigator as any).msPointerEnabled)
         {
             style.msContentZooming = '';
             style.msTouchAction = '';

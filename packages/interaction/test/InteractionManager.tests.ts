@@ -12,31 +12,35 @@ import sinon from 'sinon';
 import { expect } from 'chai';
 
 import '@pixi/canvas-display';
+import { Texture } from '@pixi/core';
 
 CanvasRenderer.registerPlugin('interaction', InteractionManager);
 CanvasRenderer.registerPlugin('graphics', CanvasGraphicsRenderer);
 CanvasRenderer.registerPlugin('sprite', CanvasSpriteRenderer);
 
-describe('InteractionManager', function ()
+describe('InteractionManager', () =>
 {
-    afterEach(function ()
+    let pointer: MockPointer;
+
+    afterEach(() =>
     {
         // if we made a MockPointer for the test, clean it up
-        if (this.pointer)
+        if (pointer)
         {
-            this.pointer.cleanUp();
-            this.pointer = null;
+            pointer.cleanup();
+            pointer = null;
         }
     });
 
-    describe('event basics', function ()
+    describe('event basics', () =>
     {
-        it('should call mousedown handler', function ()
+        it('should call mousedown handler', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
             const eventSpy = sinon.spy();
-            const pointer = this.pointer = new MockPointer(stage);
+
+            pointer = new MockPointer(stage);
 
             stage.addChild(graphics);
             graphics.beginFill(0xFFFFFF);
@@ -49,12 +53,13 @@ describe('InteractionManager', function ()
             expect(eventSpy).to.have.been.calledOnce;
         });
 
-        it('should call mouseup handler', function ()
+        it('should call mouseup handler', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
             const eventSpy = sinon.spy();
-            const pointer = this.pointer = new MockPointer(stage);
+
+            pointer = new MockPointer(stage);
 
             stage.addChild(graphics);
             graphics.beginFill(0xFFFFFF);
@@ -67,12 +72,13 @@ describe('InteractionManager', function ()
             expect(eventSpy).to.have.been.called;
         });
 
-        it('should call mouseupoutside handler', function ()
+        it('should call mouseupoutside handler', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
             const eventSpy = sinon.spy();
-            const pointer = this.pointer = new MockPointer(stage);
+
+            pointer = new MockPointer(stage);
 
             stage.addChild(graphics);
             graphics.beginFill(0xFFFFFF);
@@ -86,12 +92,13 @@ describe('InteractionManager', function ()
             expect(eventSpy).to.have.been.called;
         });
 
-        it('should call mouseupoutside handler on mouseup on different elements', function ()
+        it('should call mouseupoutside handler on mouseup on different elements', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
             const eventSpy = sinon.spy();
-            const pointer = this.pointer = new MockPointer(stage);
+
+            pointer = new MockPointer(stage);
 
             stage.addChild(graphics);
             graphics.beginFill(0xFFFFFF);
@@ -105,12 +112,13 @@ describe('InteractionManager', function ()
             expect(eventSpy).to.have.been.called;
         });
 
-        it('should call mouseover handler', function ()
+        it('should call mouseover handler', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
             const eventSpy = sinon.spy();
-            const pointer = this.pointer = new MockPointer(stage);
+
+            pointer = new MockPointer(stage);
 
             stage.addChild(graphics);
             graphics.beginFill(0xFFFFFF);
@@ -123,12 +131,13 @@ describe('InteractionManager', function ()
             expect(eventSpy).to.have.been.called;
         });
 
-        it('should call mouseout handler', function ()
+        it('should call mouseout handler', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
             const eventSpy = sinon.spy();
-            const pointer = this.pointer = new MockPointer(stage);
+
+            pointer = new MockPointer(stage);
 
             stage.addChild(graphics);
             graphics.beginFill(0xFFFFFF);
@@ -142,7 +151,7 @@ describe('InteractionManager', function ()
             expect(eventSpy).to.have.been.called;
         });
 
-        it('should always call mouseout before mouseover', function ()
+        it('should always call mouseout before mouseover', () =>
         {
             const stage = new Container();
             const graphicsA = new Graphics();
@@ -154,7 +163,7 @@ describe('InteractionManager', function ()
             const mouseOverSpyB = sinon.spy();
             const mouseOutSpyB = sinon.spy();
 
-            const pointer = this.pointer = new MockPointer(stage);
+            pointer = new MockPointer(stage);
 
             stage.addChild(graphicsA);
             graphicsA.beginFill(0xFFFFFF);
@@ -187,15 +196,15 @@ describe('InteractionManager', function ()
         });
     });
 
-    describe('event propagation', function ()
+    describe('event propagation', () =>
     {
-        it('should stop event propagation', function ()
+        it('should stop event propagation', () =>
         {
             const stage = new Container();
             const parent = new Container();
             const graphics = new Graphics();
 
-            const pointer = this.pointer = new MockPointer(stage);
+            pointer = new MockPointer(stage);
 
             const mouseDownChild = sinon.spy((evt) => evt.stopPropagation());
             const mouseDownParent = sinon.spy();
@@ -218,13 +227,13 @@ describe('InteractionManager', function ()
             expect(mouseDownParent).to.not.have.been.called;
         });
 
-        it('should not stop events on the same object from happening', function ()
+        it('should not stop events on the same object from happening', () =>
         {
             const stage = new Container();
             const parent = new Container();
             const graphics = new Graphics();
 
-            const pointer = this.pointer = new MockPointer(stage);
+            pointer = new MockPointer(stage);
 
             // Neither of these should stop the other from firing
             const mouseMoveChild = sinon.spy((evt) => evt.stopPropagation());
@@ -256,13 +265,13 @@ describe('InteractionManager', function ()
             expect(mouseMoveParent).to.not.have.been.called;
         });
 
-        it('should not stop events on children of an object from happening', function ()
+        it('should not stop events on children of an object from happening', () =>
         {
             const stage = new Container();
             const parent = new Container();
             const graphics = new Graphics();
 
-            const pointer = this.pointer = new MockPointer(stage);
+            pointer = new MockPointer(stage);
 
             const mouseMoveChild = sinon.spy();
             const mouseMoveParent = sinon.spy((evt) => evt.stopPropagation());
@@ -294,15 +303,16 @@ describe('InteractionManager', function ()
         });
     });
 
-    describe('touch vs pointer', function ()
+    describe('touch vs pointer', () =>
     {
-        it('should call touchstart and pointerdown when touch event and pointer supported', function ()
+        it('should call touchstart and pointerdown when touch event and pointer supported', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
             const touchSpy = sinon.spy(function touchListen() { /* noop */ });
             const pointerSpy = sinon.spy(function pointerListen() { /* noop */ });
-            const pointer = this.pointer = new MockPointer(stage, null, null, true);
+
+            pointer = new MockPointer(stage, null, null, true);
 
             stage.addChild(graphics);
             graphics.beginFill(0xFFFFFF);
@@ -317,13 +327,14 @@ describe('InteractionManager', function ()
             expect(pointerSpy).to.have.been.calledOnce;
         });
 
-        it('should not call touchstart or pointerdown when pointer event and touch supported', function ()
+        it('should not call touchstart or pointerdown when pointer event and touch supported', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
             const touchSpy = sinon.spy(function touchListen() { /* noop */ });
             const pointerSpy = sinon.spy(function pointerListen() { /* noop */ });
-            const pointer = this.pointer = new MockPointer(stage, null, null, true);
+
+            pointer = new MockPointer(stage, null, null, true);
 
             stage.addChild(graphics);
             graphics.beginFill(0xFFFFFF);
@@ -338,13 +349,14 @@ describe('InteractionManager', function ()
             expect(pointerSpy).to.not.have.been.called;
         });
 
-        it('should call touchstart and pointerdown when touch event and pointer not supported', function ()
+        it('should call touchstart and pointerdown when touch event and pointer not supported', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
             const touchSpy = sinon.spy(function touchListen() { /* noop */ });
             const pointerSpy = sinon.spy(function pointerListen() { /* noop */ });
-            const pointer = this.pointer = new MockPointer(stage, null, null, false);
+
+            pointer = new MockPointer(stage, null, null, false);
 
             stage.addChild(graphics);
             graphics.beginFill(0xFFFFFF);
@@ -359,13 +371,14 @@ describe('InteractionManager', function ()
             expect(pointerSpy).to.have.been.calledOnce;
         });
 
-        it('should call touchstart and pointerdown when pointer event and touch not supported', function ()
+        it('should call touchstart and pointerdown when pointer event and touch not supported', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
             const touchSpy = sinon.spy(function touchListen() { /* noop */ });
             const pointerSpy = sinon.spy(function pointerListen() { /* noop */ });
-            const pointer = this.pointer = new MockPointer(stage, null, null, true);
+
+            pointer = new MockPointer(stage, null, null, true);
 
             pointer.interaction.supportsTouchEvents = false;
 
@@ -383,35 +396,40 @@ describe('InteractionManager', function ()
         });
     });
 
-    describe('add/remove events and ticker', function ()
+    describe('add/remove events and ticker', () =>
     {
-        let stub;
+        let stub: sinon.SinonStub;
 
-        before(function ()
+        before(() =>
         {
             stub = sinon.stub(InteractionManager.prototype, 'setTargetElement');
         });
 
-        after(function ()
+        after(() =>
         {
             stub.restore();
         });
 
-        it('should add and remove pointer events to document', function ()
+        it('should add and remove pointer events to document', () =>
         {
-            const manager = new InteractionManager(sinon.stub());
+            const manager = new InteractionManager(sinon.stub() as any);
             const addSpy = sinon.spy(window.document, 'addEventListener');
             const removeSpy = sinon.spy(window.document, 'removeEventListener');
 
-            manager.interactionDOMElement = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
-            manager.supportsPointerEvents = true;
+            manager['interactionDOMElement'] = {
+                style: {},
+                addEventListener: sinon.stub(),
+                removeEventListener: sinon.stub()
+            } as unknown as HTMLElement;
+            // @ts-expect-error - overriding readonly prop
+            manager['supportsPointerEvents'] = true;
 
-            manager.addEvents();
+            manager['addEvents']();
 
             expect(addSpy).to.have.been.calledOnce;
             expect(addSpy).to.have.been.calledWith('pointermove');
 
-            manager.removeEvents();
+            manager['removeEvents']();
 
             expect(removeSpy).to.have.been.calledOnce;
             expect(removeSpy).to.have.been.calledWith('pointermove');
@@ -420,22 +438,27 @@ describe('InteractionManager', function ()
             removeSpy.restore();
         });
 
-        it('should add and remove pointer events to window', function ()
+        it('should add and remove pointer events to window', () =>
         {
-            const manager = new InteractionManager(sinon.stub());
+            const manager = new InteractionManager(sinon.stub() as any);
             const addSpy = sinon.spy(window, 'addEventListener');
             const removeSpy = sinon.spy(window, 'removeEventListener');
 
-            manager.interactionDOMElement = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
-            manager.supportsPointerEvents = true;
+            manager['interactionDOMElement'] = {
+                style: {},
+                addEventListener: sinon.stub(),
+                removeEventListener: sinon.stub()
+            } as unknown as HTMLElement;
+            // @ts-expect-error - overriding readonly prop
+            manager['supportsPointerEvents'] = true;
 
-            manager.addEvents();
+            manager['addEvents']();
 
             expect(addSpy).to.have.been.calledTwice;
             expect(addSpy).to.have.been.calledWith('pointercancel');
             expect(addSpy).to.have.been.calledWith('pointerup');
 
-            manager.removeEvents();
+            manager['removeEvents']();
 
             expect(removeSpy).to.have.been.calledTwice;
             expect(removeSpy).to.have.been.calledWith('pointercancel');
@@ -445,16 +468,22 @@ describe('InteractionManager', function ()
             removeSpy.restore();
         });
 
-        it('should add and remove pointer events to element seven times when touch events are supported', function ()
+        it('should add and remove pointer events to element seven times when touch events are supported', () =>
         {
-            const manager = new InteractionManager(sinon.stub());
-            const element = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
+            const manager = new InteractionManager(sinon.stub() as any);
+            const element = {
+                style: {},
+                addEventListener: sinon.stub(),
+                removeEventListener: sinon.stub()
+            } as unknown as HTMLElement;
 
-            manager.interactionDOMElement = element;
-            manager.supportsPointerEvents = true;
-            manager.supportsTouchEvents = true;
+            manager['interactionDOMElement'] = element;
+            // @ts-expect-error - overriding readonly prop
+            manager['supportsPointerEvents'] = true;
+            // @ts-expect-error - overriding readonly prop
+            manager['supportsTouchEvents'] = true;
 
-            manager.addEvents();
+            manager['addEvents']();
 
             expect(element.addEventListener).to.have.been.callCount(7);
             expect(element.addEventListener).to.have.been.calledWith('pointerdown');
@@ -466,7 +495,7 @@ describe('InteractionManager', function ()
             expect(element.addEventListener).to.have.been.calledWith('touchend');
             expect(element.addEventListener).to.have.been.calledWith('touchmove');
 
-            manager.removeEvents();
+            manager['removeEvents']();
 
             expect(element.removeEventListener).to.have.been.callCount(7);
             expect(element.removeEventListener).to.have.been.calledWith('pointerdown');
@@ -479,23 +508,29 @@ describe('InteractionManager', function ()
             expect(element.removeEventListener).to.have.been.calledWith('touchmove');
         });
 
-        it('should add and remove pointer events to element three times when touch events are not supported', function ()
+        it('should add and remove pointer events to element three times when touch events are not supported', () =>
         {
-            const manager = new InteractionManager(sinon.stub());
-            const element = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
+            const manager = new InteractionManager(sinon.stub() as any);
+            const element = {
+                style: {},
+                addEventListener: sinon.stub(),
+                removeEventListener: sinon.stub()
+            } as unknown as HTMLElement;
 
-            manager.interactionDOMElement = element;
-            manager.supportsPointerEvents = true;
-            manager.supportsTouchEvents = false;
+            manager['interactionDOMElement'] = element;
+            // @ts-expect-error - overriding readonly prop
+            manager['supportsPointerEvents'] = true;
+            // @ts-expect-error - overriding readonly prop
+            manager['supportsTouchEvents'] = false;
 
-            manager.addEvents();
+            manager['addEvents']();
 
             expect(element.addEventListener).to.have.been.calledThrice;
             expect(element.addEventListener).to.have.been.calledWith('pointerdown');
             expect(element.addEventListener).to.have.been.calledWith('pointerleave');
             expect(element.addEventListener).to.have.been.calledWith('pointerover');
 
-            manager.removeEvents();
+            manager['removeEvents']();
 
             expect(element.removeEventListener).to.have.been.calledThrice;
             expect(element.removeEventListener).to.have.been.calledWith('pointerdown');
@@ -503,21 +538,26 @@ describe('InteractionManager', function ()
             expect(element.removeEventListener).to.have.been.calledWith('pointerover');
         });
 
-        it('should add and remove mouse events to document', function ()
+        it('should add and remove mouse events to document', () =>
         {
-            const manager = new InteractionManager(sinon.stub());
+            const manager = new InteractionManager(sinon.stub() as any);
             const addSpy = sinon.spy(window.document, 'addEventListener');
             const removeSpy = sinon.spy(window.document, 'removeEventListener');
 
-            manager.interactionDOMElement = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
-            manager.supportsPointerEvents = false;
+            manager['interactionDOMElement'] = {
+                style: {},
+                addEventListener: sinon.stub(),
+                removeEventListener: sinon.stub()
+            } as unknown as HTMLElement;
+            // @ts-expect-error - overriding readonly prop
+            manager['supportsPointerEvents'] = false;
 
-            manager.addEvents();
+            manager['addEvents']();
 
             expect(addSpy).to.have.been.calledOnce;
             expect(addSpy).to.have.been.calledWith('mousemove');
 
-            manager.removeEvents();
+            manager['removeEvents']();
 
             expect(removeSpy).to.have.been.calledOnce;
             expect(removeSpy).to.have.been.calledWith('mousemove');
@@ -526,21 +566,26 @@ describe('InteractionManager', function ()
             removeSpy.restore();
         });
 
-        it('should add and remove mouse events to window', function ()
+        it('should add and remove mouse events to window', () =>
         {
-            const manager = new InteractionManager(sinon.stub());
+            const manager = new InteractionManager(sinon.stub() as any);
             const addSpy = sinon.spy(window, 'addEventListener');
             const removeSpy = sinon.spy(window, 'removeEventListener');
 
-            manager.interactionDOMElement = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
-            manager.supportsPointerEvents = false;
+            manager['interactionDOMElement'] = {
+                style: {},
+                addEventListener: sinon.stub(),
+                removeEventListener: sinon.stub()
+            } as unknown as HTMLElement;
+            // @ts-expect-error - overriding readonly prop
+            manager['supportsPointerEvents'] = false;
 
-            manager.addEvents();
+            manager['addEvents']();
 
             expect(addSpy).to.have.been.calledOnce;
             expect(addSpy).to.have.been.calledWith('mouseup');
 
-            manager.removeEvents();
+            manager['removeEvents']();
 
             expect(removeSpy).to.have.been.calledOnce;
             expect(removeSpy).to.have.been.calledWith('mouseup');
@@ -549,23 +594,29 @@ describe('InteractionManager', function ()
             removeSpy.restore();
         });
 
-        it('should add and remove mouse events to element', function ()
+        it('should add and remove mouse events to element', () =>
         {
-            const manager = new InteractionManager(sinon.stub());
-            const element = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
+            const manager = new InteractionManager(sinon.stub() as any);
+            const element = {
+                style: {},
+                addEventListener: sinon.stub(),
+                removeEventListener: sinon.stub()
+            } as unknown as HTMLElement;
 
-            manager.interactionDOMElement = element;
-            manager.supportsPointerEvents = false;
-            manager.supportsTouchEvents = false;
+            manager['interactionDOMElement'] = element;
+            // @ts-expect-error - overriding readonly prop
+            manager['supportsPointerEvents'] = false;
+            // @ts-expect-error - overriding readonly prop
+            manager['supportsTouchEvents'] = false;
 
-            manager.addEvents();
+            manager['addEvents']();
 
             expect(element.addEventListener).to.have.been.calledThrice;
             expect(element.addEventListener).to.have.been.calledWith('mousedown');
             expect(element.addEventListener).to.have.been.calledWith('mouseout');
             expect(element.addEventListener).to.have.been.calledWith('mouseover');
 
-            manager.removeEvents();
+            manager['removeEvents']();
 
             expect(element.removeEventListener).to.have.been.calledThrice;
             expect(element.removeEventListener).to.have.been.calledWith('mousedown');
@@ -573,23 +624,29 @@ describe('InteractionManager', function ()
             expect(element.removeEventListener).to.have.been.calledWith('mouseover');
         });
 
-        it('should add and remove touch events to element without pointer events', function ()
+        it('should add and remove touch events to element without pointer events', () =>
         {
-            const manager = new InteractionManager(sinon.stub());
-            const element = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
+            const manager = new InteractionManager(sinon.stub() as any);
+            const element = {
+                style: {},
+                addEventListener: sinon.stub(),
+                removeEventListener: sinon.stub()
+            } as unknown as HTMLElement;
 
-            manager.interactionDOMElement = element;
-            manager.supportsPointerEvents = false;
-            manager.supportsTouchEvents = true;
+            manager['interactionDOMElement'] = element;
+            // @ts-expect-error - overriding readonly prop
+            manager['supportsPointerEvents'] = false;
+            // @ts-expect-error - overriding readonly prop
+            manager['supportsTouchEvents'] = true;
 
-            manager.addEvents();
+            manager['addEvents']();
 
             expect(element.addEventListener).to.have.been.calledWith('touchstart');
             expect(element.addEventListener).to.have.been.calledWith('touchcancel');
             expect(element.addEventListener).to.have.been.calledWith('touchend');
             expect(element.addEventListener).to.have.been.calledWith('touchmove');
 
-            manager.removeEvents();
+            manager['removeEvents']();
 
             expect(element.removeEventListener).to.have.been.calledWith('touchstart');
             expect(element.removeEventListener).to.have.been.calledWith('touchcancel');
@@ -597,23 +654,29 @@ describe('InteractionManager', function ()
             expect(element.removeEventListener).to.have.been.calledWith('touchmove');
         });
 
-        it('should add and remove touch events to element with pointer events', function ()
+        it('should add and remove touch events to element with pointer events', () =>
         {
-            const manager = new InteractionManager(sinon.stub());
-            const element = { style: {}, addEventListener: sinon.stub(), removeEventListener: sinon.stub() };
+            const manager = new InteractionManager(sinon.stub() as any);
+            const element = {
+                style: {},
+                addEventListener: sinon.stub(),
+                removeEventListener: sinon.stub()
+            } as unknown as HTMLElement;
 
-            manager.interactionDOMElement = element;
-            manager.supportsPointerEvents = true;
-            manager.supportsTouchEvents = true;
+            manager['interactionDOMElement'] = element;
+            // @ts-expect-error - overriding readonly prop
+            manager['supportsPointerEvents'] = true;
+            // @ts-expect-error - overriding readonly prop
+            manager['supportsTouchEvents'] = true;
 
-            manager.addEvents();
+            manager['addEvents']();
 
             expect(element.addEventListener).to.have.been.calledWith('touchstart');
             expect(element.addEventListener).to.have.been.calledWith('touchcancel');
             expect(element.addEventListener).to.have.been.calledWith('touchend');
             expect(element.addEventListener).to.have.been.calledWith('touchmove');
 
-            manager.removeEvents();
+            manager['removeEvents']();
 
             expect(element.removeEventListener).to.have.been.calledWith('touchstart');
             expect(element.removeEventListener).to.have.been.calledWith('touchcancel');
@@ -621,17 +684,16 @@ describe('InteractionManager', function ()
             expect(element.removeEventListener).to.have.been.calledWith('touchmove');
         });
 
-        it('should add and remove Ticker.system listener', function ()
+        it('should add and remove Ticker.system listener', () =>
         {
-            const manager = new InteractionManager(sinon.stub());
+            const manager = new InteractionManager(sinon.stub() as any);
+            const element = {} as unknown as HTMLElement;
 
-            const element = {};
-
-            manager.interactionDOMElement = element;
+            manager['interactionDOMElement'] = element;
 
             const listenerCount = Ticker.system.count;
 
-            manager.addTickerListener();
+            manager['addTickerListener']();
 
             expect(Ticker.system.count).to.equal(listenerCount + 1);
 
@@ -643,7 +705,7 @@ describe('InteractionManager', function ()
 
             expect(Ticker.system.count).to.equal(listenerCount + 1);
 
-            manager.removeTickerListener();
+            manager['removeTickerListener']();
 
             expect(Ticker.system.count).to.equal(listenerCount);
 
@@ -651,20 +713,21 @@ describe('InteractionManager', function ()
 
             expect(Ticker.system.count).to.equal(listenerCount);
 
-            manager.addTickerListener();
+            manager['addTickerListener']();
 
             expect(Ticker.system.count).to.equal(listenerCount);
         });
     });
 
-    describe('onClick', function ()
+    describe('onClick', () =>
     {
-        it('should call handler when inside', function ()
+        it('should call handler when inside', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
             const clickSpy = sinon.spy();
-            const pointer = this.pointer = new MockPointer(stage);
+
+            pointer = new MockPointer(stage);
 
             stage.addChild(graphics);
             graphics.beginFill(0xFFFFFF);
@@ -677,12 +740,13 @@ describe('InteractionManager', function ()
             expect(clickSpy).to.have.been.calledOnce;
         });
 
-        it('should not call handler when outside', function ()
+        it('should not call handler when outside', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
             const clickSpy = sinon.spy();
-            const pointer = this.pointer = new MockPointer(stage);
+
+            pointer = new MockPointer(stage);
 
             stage.addChild(graphics);
             graphics.beginFill(0xFFFFFF);
@@ -695,7 +759,7 @@ describe('InteractionManager', function ()
             expect(clickSpy).to.not.have.been.called;
         });
 
-        it('should not call handler when mousedown not received', function ()
+        it('should not call handler when mousedown not received', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
@@ -719,14 +783,15 @@ describe('InteractionManager', function ()
         });
     });
 
-    describe('onTap', function ()
+    describe('onTap', () =>
     {
-        it('should call handler when inside', function ()
+        it('should call handler when inside', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
             const clickSpy = sinon.spy();
-            const pointer = this.pointer = new MockPointer(stage);
+
+            pointer = new MockPointer(stage);
 
             stage.addChild(graphics);
             graphics.beginFill(0xFFFFFF);
@@ -739,12 +804,13 @@ describe('InteractionManager', function ()
             expect(clickSpy).to.have.been.calledOnce;
         });
 
-        it('should not call handler when outside', function ()
+        it('should not call handler when outside', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
             const clickSpy = sinon.spy();
-            const pointer = this.pointer = new MockPointer(stage);
+
+            pointer = new MockPointer(stage);
 
             stage.addChild(graphics);
             graphics.beginFill(0xFFFFFF);
@@ -757,7 +823,7 @@ describe('InteractionManager', function ()
             expect(clickSpy).to.not.have.been.called;
         });
 
-        it('should not call handler when moved to other sprite', function ()
+        it('should not call handler when moved to other sprite', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
@@ -765,13 +831,13 @@ describe('InteractionManager', function ()
             const clickSpy = sinon.spy();
             const overSpy = sinon.spy();
             const endSpy = sinon.spy();
-            const pointer = this.pointer = new MockPointer(stage);
+
+            pointer = new MockPointer(stage);
 
             stage.addChild(graphics);
             graphics.beginFill(0xFFFFFF);
             graphics.drawRect(0, 0, 50, 50);
             graphics.interactive = true;
-            graphics.name = 'graphics1';
 
             stage.addChild(graphics2);
             graphics2.beginFill(0xFFFFFF);
@@ -780,7 +846,6 @@ describe('InteractionManager', function ()
             graphics2.on('tap', clickSpy);
             graphics2.on('touchmove', overSpy);
             graphics2.on('touchend', endSpy);
-            graphics2.name = 'graphics2';
 
             pointer.touchstart(25, 25, 3);
             pointer.touchmove(60, 60, 3);
@@ -793,14 +858,15 @@ describe('InteractionManager', function ()
         });
     });
 
-    describe('pointertap', function ()
+    describe('pointertap', () =>
     {
-        it('should call handler when inside', function ()
+        it('should call handler when inside', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
             const clickSpy = sinon.spy();
-            const pointer = this.pointer = new MockPointer(stage);
+
+            pointer = new MockPointer(stage);
 
             stage.addChild(graphics);
             graphics.beginFill(0xFFFFFF);
@@ -813,12 +879,13 @@ describe('InteractionManager', function ()
             expect(clickSpy).to.have.been.calledOnce;
         });
 
-        it('should not call handler when outside', function ()
+        it('should not call handler when outside', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
             const clickSpy = sinon.spy();
-            const pointer = this.pointer = new MockPointer(stage);
+
+            pointer = new MockPointer(stage);
 
             stage.addChild(graphics);
             graphics.beginFill(0xFFFFFF);
@@ -831,7 +898,7 @@ describe('InteractionManager', function ()
             expect(clickSpy).to.not.have.been.called;
         });
 
-        it('with mouse events, should not call handler when moved to other sprite', function ()
+        it('with mouse events, should not call handler when moved to other sprite', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
@@ -839,13 +906,13 @@ describe('InteractionManager', function ()
             const overSpy = sinon.spy();
             const upSpy = sinon.spy();
             const clickSpy = sinon.spy();
-            const pointer = this.pointer = new MockPointer(stage);
+
+            pointer = new MockPointer(stage);
 
             stage.addChild(graphics);
             graphics.beginFill(0xFFFFFF);
             graphics.drawRect(0, 0, 50, 50);
             graphics.interactive = true;
-            graphics.name = 'graphics1';
 
             stage.addChild(graphics2);
             graphics2.beginFill(0xFFFFFF);
@@ -854,7 +921,6 @@ describe('InteractionManager', function ()
             graphics2.on('pointertap', clickSpy);
             graphics2.on('pointerover', overSpy);
             graphics2.on('pointerup', upSpy);
-            graphics2.name = 'graphics2';
 
             pointer.mousedown(25, 25);
             pointer.mousemove(60, 60);
@@ -866,7 +932,7 @@ describe('InteractionManager', function ()
             expect(clickSpy).to.not.have.been.called;
         });
 
-        it('with pointer events, should not call handler when moved to other sprite', function ()
+        it('with pointer events, should not call handler when moved to other sprite', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
@@ -874,13 +940,13 @@ describe('InteractionManager', function ()
             const overSpy = sinon.spy();
             const upSpy = sinon.spy();
             const clickSpy = sinon.spy();
-            const pointer = this.pointer = new MockPointer(stage);
+
+            pointer = new MockPointer(stage);
 
             stage.addChild(graphics);
             graphics.beginFill(0xFFFFFF);
             graphics.drawRect(0, 0, 50, 50);
             graphics.interactive = true;
-            graphics.name = 'graphics1';
 
             stage.addChild(graphics2);
             graphics2.beginFill(0xFFFFFF);
@@ -889,7 +955,6 @@ describe('InteractionManager', function ()
             graphics2.on('pointertap', clickSpy);
             graphics2.on('pointerover', overSpy);
             graphics2.on('pointerup', upSpy);
-            graphics2.name = 'graphics2';
 
             pointer.mousedown(25, 25, true);
             pointer.mousemove(60, 60, true);
@@ -901,7 +966,7 @@ describe('InteractionManager', function ()
             expect(clickSpy).to.not.have.been.called;
         });
 
-        it('with touch events, should not call handler when moved to other sprite', function ()
+        it('with touch events, should not call handler when moved to other sprite', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
@@ -909,13 +974,13 @@ describe('InteractionManager', function ()
             const moveSpy = sinon.spy();
             const upSpy = sinon.spy();
             const clickSpy = sinon.spy();
-            const pointer = this.pointer = new MockPointer(stage);
+
+            pointer = new MockPointer(stage);
 
             stage.addChild(graphics);
             graphics.beginFill(0xFFFFFF);
             graphics.drawRect(0, 0, 50, 50);
             graphics.interactive = true;
-            graphics.name = 'graphics1';
 
             stage.addChild(graphics2);
             graphics2.beginFill(0xFFFFFF);
@@ -924,7 +989,6 @@ describe('InteractionManager', function ()
             graphics2.on('pointertap', clickSpy);
             graphics2.on('pointermove', moveSpy);
             graphics2.on('pointerup', upSpy);
-            graphics2.name = 'graphics2';
 
             pointer.touchstart(25, 25, true);
             pointer.touchmove(60, 60, true);
@@ -937,9 +1001,9 @@ describe('InteractionManager', function ()
         });
     });
 
-    describe('overlapping children', function ()
+    describe('overlapping children', () =>
     {
-        function getScene(callbackEventName, splitParents)
+        function getScene(callbackEventName: string, splitParents?: boolean)
         {
             const behindChild = new Graphics();
             const frontChild = new Graphics();
@@ -947,27 +1011,23 @@ describe('InteractionManager', function ()
             const behindChildCallback = sinon.spy(function behindSpy() { /* no op*/ });
             const frontChildCallback = sinon.spy(function frontSpy() { /* no op*/ });
             const parentCallback = sinon.spy(function parentSpy() { /* no op*/ });
-            let behindParent;
-            let frontParent;
-            let behindParentCallback;
-            let frontParentCallback;
+            let behindParent: Container;
+            let frontParent: Container;
+            let behindParentCallback: sinon.SinonSpy;
+            let frontParentCallback: sinon.SinonSpy;
 
             behindChild.beginFill(0xFF);
             behindChild.drawRect(0, 0, 50, 50);
             behindChild.on(callbackEventName, behindChildCallback);
-            behindChild.name = 'behind';
 
             frontChild.beginFill(0x00FF);
             frontChild.drawRect(0, 0, 50, 50);
             frontChild.on(callbackEventName, frontChildCallback);
-            frontChild.name = 'front';
 
             if (splitParents)
             {
                 behindParent = new Container();
-                behindParent.name = 'behindParent';
                 frontParent = new Container();
-                frontParent.name = 'frontParent';
                 behindParentCallback = sinon.spy(function behindParentSpy() { /* no op*/ });
                 frontParentCallback = sinon.spy(function frontParentSpy() { /* no op*/ });
                 behindParent.on(callbackEventName, behindParentCallback);
@@ -976,8 +1036,6 @@ describe('InteractionManager', function ()
                 parent.addChild(behindParent, frontParent);
                 behindParent.addChild(behindChild);
                 frontParent.addChild(frontChild);
-
-                parent.name = 'parent';
             }
             else
             {
@@ -999,14 +1057,15 @@ describe('InteractionManager', function ()
             };
         }
 
-        describe('when parent is non-interactive', function ()
+        describe('when parent is non-interactive', () =>
         {
-            describe('when both children are interactive', function ()
+            describe('when both children are interactive', () =>
             {
-                it('should callback front child when clicking front child', function ()
+                it('should callback front child when clicking front child', () =>
                 {
                     const stage = new Container();
-                    const pointer = this.pointer = new MockPointer(stage);
+
+                    pointer = new MockPointer(stage);
                     const scene = getScene('click');
 
                     scene.behindChild.interactive = true;
@@ -1021,10 +1080,11 @@ describe('InteractionManager', function ()
                     expect(scene.parentCallback).to.not.have.been.called;
                 });
 
-                it('should callback front child when clicking overlap', function ()
+                it('should callback front child when clicking overlap', () =>
                 {
                     const stage = new Container();
-                    const pointer = this.pointer = new MockPointer(stage);
+
+                    pointer = new MockPointer(stage);
                     const scene = getScene('click');
 
                     scene.behindChild.interactive = true;
@@ -1039,10 +1099,11 @@ describe('InteractionManager', function ()
                     expect(scene.parentCallback).to.not.have.been.called;
                 });
 
-                it('should callback behind child when clicking behind child', function ()
+                it('should callback behind child when clicking behind child', () =>
                 {
                     const stage = new Container();
-                    const pointer = this.pointer = new MockPointer(stage);
+
+                    pointer = new MockPointer(stage);
                     const scene = getScene('click');
 
                     scene.behindChild.interactive = true;
@@ -1057,10 +1118,11 @@ describe('InteractionManager', function ()
                     expect(scene.parentCallback).to.not.have.been.called;
                 });
 
-                it('should callback front child of different non-interactive parents when clicking overlap', function ()
+                it('should callback front child of different non-interactive parents when clicking overlap', () =>
                 {
                     const stage = new Container();
-                    const pointer = this.pointer = new MockPointer(stage);
+
+                    pointer = new MockPointer(stage);
                     const scene = getScene('click', true);
 
                     scene.behindChild.interactive = true;
@@ -1077,10 +1139,11 @@ describe('InteractionManager', function ()
                     expect(scene.frontParentCallback).to.not.have.been.called;
                 });
 
-                it('should callback front child of different interactive parents when clicking overlap', function ()
+                it('should callback front child of different interactive parents when clicking overlap', () =>
                 {
                     const stage = new Container();
-                    const pointer = this.pointer = new MockPointer(stage);
+
+                    pointer = new MockPointer(stage);
                     const scene = getScene('click', true);
 
                     scene.behindChild.interactive = true;
@@ -1100,12 +1163,13 @@ describe('InteractionManager', function ()
                 });
             });
 
-            describe('when front child is non-interactive', function ()
+            describe('when front child is non-interactive', () =>
             {
-                it('should not callback when clicking front child', function ()
+                it('should not callback when clicking front child', () =>
                 {
                     const stage = new Container();
-                    const pointer = this.pointer = new MockPointer(stage);
+
+                    pointer = new MockPointer(stage);
                     const scene = getScene('click');
 
                     scene.behindChild.interactive = true;
@@ -1119,10 +1183,11 @@ describe('InteractionManager', function ()
                     expect(scene.parentCallback).to.not.have.been.called;
                 });
 
-                it('should callback behind child when clicking overlap', function ()
+                it('should callback behind child when clicking overlap', () =>
                 {
                     const stage = new Container();
-                    const pointer = this.pointer = new MockPointer(stage);
+
+                    pointer = new MockPointer(stage);
                     const scene = getScene('click');
 
                     scene.behindChild.interactive = true;
@@ -1136,10 +1201,11 @@ describe('InteractionManager', function ()
                     expect(scene.parentCallback).to.not.have.been.called;
                 });
 
-                it('should callback behind child when clicking behind child', function ()
+                it('should callback behind child when clicking behind child', () =>
                 {
                     const stage = new Container();
-                    const pointer = this.pointer = new MockPointer(stage);
+
+                    pointer = new MockPointer(stage);
                     const scene = getScene('click');
 
                     scene.behindChild.interactive = true;
@@ -1154,12 +1220,13 @@ describe('InteractionManager', function ()
                 });
             });
 
-            describe('when behind child is non-interactive', function ()
+            describe('when behind child is non-interactive', () =>
             {
-                it('should callback front child when clicking front child', function ()
+                it('should callback front child when clicking front child', () =>
                 {
                     const stage = new Container();
-                    const pointer = this.pointer = new MockPointer(stage);
+
+                    pointer = new MockPointer(stage);
                     const scene = getScene('click');
 
                     scene.behindChild.x = 25;
@@ -1173,10 +1240,11 @@ describe('InteractionManager', function ()
                     expect(scene.parentCallback).to.not.have.been.called;
                 });
 
-                it('should callback front child when clicking overlap', function ()
+                it('should callback front child when clicking overlap', () =>
                 {
                     const stage = new Container();
-                    const pointer = this.pointer = new MockPointer(stage);
+
+                    pointer = new MockPointer(stage);
                     const scene = getScene('click');
 
                     scene.behindChild.x = 25;
@@ -1190,10 +1258,11 @@ describe('InteractionManager', function ()
                     expect(scene.parentCallback).to.not.have.been.called;
                 });
 
-                it('should not callback when clicking behind child', function ()
+                it('should not callback when clicking behind child', () =>
                 {
                     const stage = new Container();
-                    const pointer = this.pointer = new MockPointer(stage);
+
+                    pointer = new MockPointer(stage);
                     const scene = getScene('click');
 
                     scene.behindChild.x = 25;
@@ -1209,14 +1278,15 @@ describe('InteractionManager', function ()
             });
         });
 
-        describe('when parent is interactive', function ()
+        describe('when parent is interactive', () =>
         {
-            describe('when both children are interactive', function ()
+            describe('when both children are interactive', () =>
             {
-                it('should callback parent and front child when clicking front child', function ()
+                it('should callback parent and front child when clicking front child', () =>
                 {
                     const stage = new Container();
-                    const pointer = this.pointer = new MockPointer(stage);
+
+                    pointer = new MockPointer(stage);
                     const scene = getScene('click');
 
                     scene.behindChild.interactive = true;
@@ -1232,10 +1302,11 @@ describe('InteractionManager', function ()
                     expect(scene.parentCallback).to.have.been.calledOnce;
                 });
 
-                it('should callback parent and front child when clicking overlap', function ()
+                it('should callback parent and front child when clicking overlap', () =>
                 {
                     const stage = new Container();
-                    const pointer = this.pointer = new MockPointer(stage);
+
+                    pointer = new MockPointer(stage);
                     const scene = getScene('click');
 
                     scene.behindChild.interactive = true;
@@ -1251,10 +1322,11 @@ describe('InteractionManager', function ()
                     expect(scene.parentCallback).to.have.been.calledOnce;
                 });
 
-                it('should callback parent and behind child when clicking behind child', function ()
+                it('should callback parent and behind child when clicking behind child', () =>
                 {
                     const stage = new Container();
-                    const pointer = this.pointer = new MockPointer(stage);
+
+                    pointer = new MockPointer(stage);
                     const scene = getScene('click');
 
                     scene.behindChild.interactive = true;
@@ -1270,10 +1342,11 @@ describe('InteractionManager', function ()
                     expect(scene.parentCallback).to.have.been.calledOnce;
                 });
 
-                it('should callback front child of different non-interactive parents when clicking overlap', function ()
+                it('should callback front child of different non-interactive parents when clicking overlap', () =>
                 {
                     const stage = new Container();
-                    const pointer = this.pointer = new MockPointer(stage);
+
+                    pointer = new MockPointer(stage);
                     const scene = getScene('click', true);
 
                     scene.behindChild.interactive = true;
@@ -1291,10 +1364,11 @@ describe('InteractionManager', function ()
                     expect(scene.frontParentCallback).to.not.have.been.called;
                 });
 
-                it('should callback front child of different interactive parents when clicking overlap', function ()
+                it('should callback front child of different interactive parents when clicking overlap', () =>
                 {
                     const stage = new Container();
-                    const pointer = this.pointer = new MockPointer(stage);
+
+                    pointer = new MockPointer(stage);
                     const scene = getScene('click', true);
 
                     scene.behindChild.interactive = true;
@@ -1315,12 +1389,13 @@ describe('InteractionManager', function ()
                 });
             });
 
-            describe('when front child is non-interactive', function ()
+            describe('when front child is non-interactive', () =>
             {
-                it('should callback parent when clicking front child', function ()
+                it('should callback parent when clicking front child', () =>
                 {
                     const stage = new Container();
-                    const pointer = this.pointer = new MockPointer(stage);
+
+                    pointer = new MockPointer(stage);
                     const scene = getScene('click');
 
                     scene.behindChild.interactive = true;
@@ -1335,10 +1410,11 @@ describe('InteractionManager', function ()
                     expect(scene.parentCallback).to.have.been.calledOnce;
                 });
 
-                it('should callback parent and behind child when clicking overlap', function ()
+                it('should callback parent and behind child when clicking overlap', () =>
                 {
                     const stage = new Container();
-                    const pointer = this.pointer = new MockPointer(stage);
+
+                    pointer = new MockPointer(stage);
                     const scene = getScene('click');
 
                     scene.behindChild.interactive = true;
@@ -1353,10 +1429,11 @@ describe('InteractionManager', function ()
                     expect(scene.parentCallback).to.have.been.calledOnce;
                 });
 
-                it('should callback parent and behind child when clicking behind child', function ()
+                it('should callback parent and behind child when clicking behind child', () =>
                 {
                     const stage = new Container();
-                    const pointer = this.pointer = new MockPointer(stage);
+
+                    pointer = new MockPointer(stage);
                     const scene = getScene('click');
 
                     scene.behindChild.interactive = true;
@@ -1372,12 +1449,13 @@ describe('InteractionManager', function ()
                 });
             });
 
-            describe('when behind child is non-interactive', function ()
+            describe('when behind child is non-interactive', () =>
             {
-                it('should callback parent and front child when clicking front child', function ()
+                it('should callback parent and front child when clicking front child', () =>
                 {
                     const stage = new Container();
-                    const pointer = this.pointer = new MockPointer(stage);
+
+                    pointer = new MockPointer(stage);
                     const scene = getScene('click');
 
                     scene.behindChild.x = 25;
@@ -1392,10 +1470,11 @@ describe('InteractionManager', function ()
                     expect(scene.parentCallback).to.have.been.calledOnce;
                 });
 
-                it('should callback parent and front child when clicking overlap', function ()
+                it('should callback parent and front child when clicking overlap', () =>
                 {
                     const stage = new Container();
-                    const pointer = this.pointer = new MockPointer(stage);
+
+                    pointer = new MockPointer(stage);
                     const scene = getScene('click');
 
                     scene.behindChild.x = 25;
@@ -1410,10 +1489,11 @@ describe('InteractionManager', function ()
                     expect(scene.parentCallback).to.have.been.calledOnce;
                 });
 
-                it('should callback parent when clicking behind child', function ()
+                it('should callback parent when clicking behind child', () =>
                 {
                     const stage = new Container();
-                    const pointer = this.pointer = new MockPointer(stage);
+
+                    pointer = new MockPointer(stage);
                     const scene = getScene('click');
 
                     scene.behindChild.x = 25;
@@ -1430,7 +1510,7 @@ describe('InteractionManager', function ()
             });
         });
 
-        it('Semi-complicated nesting with overlap, should not call behind callback', function ()
+        it('Semi-complicated nesting with overlap, should not call behind callback', () =>
         {
             const stage = new Container();
             const frontParent = new Container();
@@ -1448,7 +1528,7 @@ describe('InteractionManager', function ()
             frontChild.beginFill(0x00FF);
             frontChild.drawRect(0, 0, 50, 50);
             frontParent.on('click', frontCallback);
-            const pointer = this.pointer = new MockPointer(stage);
+            pointer = new MockPointer(stage);
 
             behindParent.x = 25;
             subParent.interactive = true;
@@ -1467,9 +1547,9 @@ describe('InteractionManager', function ()
         });
     });
 
-    describe('masks', function ()
+    describe('masks', () =>
     {
-        it('should trigger interaction callback when no mask present', function ()
+        it('should trigger interaction callback when no mask present', () =>
         {
             const stage = new Container();
             const pointer = new MockPointer(stage);
@@ -1491,7 +1571,7 @@ describe('InteractionManager', function ()
             expect(spy).to.have.been.calledOnce;
         });
 
-        it('should trigger interaction callback when mask uses beginFill', function ()
+        it('should trigger interaction callback when mask uses beginFill', () =>
         {
             const stage = new Container();
             const pointer = new MockPointer(stage);
@@ -1513,7 +1593,7 @@ describe('InteractionManager', function ()
             expect(spy).to.have.been.calledOnce;
         });
 
-        it('should trigger interaction callback on child when inside of parents mask', function ()
+        it('should trigger interaction callback on child when inside of parents mask', () =>
         {
             const stage = new Container();
             const parent = new Container();
@@ -1537,7 +1617,7 @@ describe('InteractionManager', function ()
             expect(spy).to.have.been.calledOnce;
         });
 
-        it('should not trigger interaction callback on child when outside of parents mask', function ()
+        it('should not trigger interaction callback on child when outside of parents mask', () =>
         {
             const stage = new Container();
             const parent = new Container();
@@ -1561,7 +1641,7 @@ describe('InteractionManager', function ()
             expect(spy).to.have.not.been.calledOnce;
         });
 
-        it('should not trigger interaction callback when mask doesn\'t use beginFill', function ()
+        it('should not trigger interaction callback when mask doesn\'t use beginFill', () =>
         {
             const stage = new Container();
             const pointer = new MockPointer(stage);
@@ -1582,7 +1662,7 @@ describe('InteractionManager', function ()
             expect(spy).to.have.not.been.called;
         });
 
-        it('should trigger interaction callback when mask doesn\'t use beginFill but hitArea is defined', function ()
+        it('should trigger interaction callback when mask doesn\'t use beginFill but hitArea is defined', () =>
         {
             const stage = new Container();
             const pointer = new MockPointer(stage);
@@ -1604,7 +1684,7 @@ describe('InteractionManager', function ()
             expect(spy).to.have.been.calledOnce;
         });
 
-        it('should trigger interaction callback when mask is a sprite', function ()
+        it('should trigger interaction callback when mask is a sprite', () =>
         {
             const stage = new Container();
             const pointer = new MockPointer(stage);
@@ -1618,7 +1698,7 @@ describe('InteractionManager', function ()
             graphics.on('click', spy);
             stage.addChild(graphics);
             mask.drawRect(0, 0, 50, 50);
-            graphics.mask = new Sprite(mask.generateCanvasTexture());
+            graphics.mask = new Sprite(mask.generateCanvasTexture() as Texture);
 
             pointer.click(10, 10);
 
@@ -1626,9 +1706,9 @@ describe('InteractionManager', function ()
         });
     });
 
-    describe('hitArea', function ()
+    describe('hitArea', () =>
     {
-        it('should trigger interaction callback when within hitArea', function ()
+        it('should trigger interaction callback when within hitArea', () =>
         {
             const stage = new Container();
             const pointer = new MockPointer(stage);
@@ -1647,7 +1727,7 @@ describe('InteractionManager', function ()
             expect(spy).to.have.been.calledOnce;
         });
 
-        it('should not trigger interaction callback when not within hitArea', function ()
+        it('should not trigger interaction callback when not within hitArea', () =>
         {
             const stage = new Container();
             const pointer = new MockPointer(stage);
@@ -1666,7 +1746,7 @@ describe('InteractionManager', function ()
             expect(spy).to.have.not.been.calledOnce;
         });
 
-        it('should trigger interaction callback on child when inside of parents hitArea', function ()
+        it('should trigger interaction callback on child when inside of parents hitArea', () =>
         {
             const stage = new Container();
             const parent = new Container();
@@ -1687,7 +1767,7 @@ describe('InteractionManager', function ()
             expect(spy).to.have.been.calledOnce;
         });
 
-        it('should not trigger interaction callback on child when outside of parents hitArea', function ()
+        it('should not trigger interaction callback on child when outside of parents hitArea', () =>
         {
             const stage = new Container();
             const parent = new Container();
@@ -1709,13 +1789,14 @@ describe('InteractionManager', function ()
         });
     });
 
-    describe('cursor changes', function ()
+    describe('cursor changes', () =>
     {
-        it('cursor should be the cursor of interactive item', function ()
+        it('cursor should be the cursor of interactive item', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
-            const pointer = this.pointer = new MockPointer(stage);
+
+            pointer = new MockPointer(stage);
 
             stage.addChild(graphics);
             graphics.beginFill(0xFFFFFF);
@@ -1729,11 +1810,12 @@ describe('InteractionManager', function ()
             expect(pointer.renderer.view.style.cursor).to.equal('help');
         });
 
-        it('should return cursor to default on mouseout', function ()
+        it('should return cursor to default on mouseout', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
-            const pointer = this.pointer = new MockPointer(stage);
+
+            pointer = new MockPointer(stage);
 
             stage.addChild(graphics);
             graphics.beginFill(0xFFFFFF);
@@ -1748,11 +1830,12 @@ describe('InteractionManager', function ()
             expect(pointer.renderer.view.style.cursor).to.equal(pointer.interaction.cursorStyles.default);
         });
 
-        it('should still be the over cursor after a click', function ()
+        it('should still be the over cursor after a click', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
-            const pointer = this.pointer = new MockPointer(stage);
+
+            pointer = new MockPointer(stage);
 
             stage.addChild(graphics);
             graphics.beginFill(0xFFFFFF);
@@ -1767,11 +1850,12 @@ describe('InteractionManager', function ()
             expect(pointer.renderer.view.style.cursor).to.equal('help');
         });
 
-        it('should return cursor to default when mouse leaves renderer', function ()
+        it('should return cursor to default when mouse leaves renderer', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
-            const pointer = this.pointer = new MockPointer(stage);
+
+            pointer = new MockPointer(stage);
 
             stage.addChild(graphics);
             graphics.beginFill(0xFFFFFF);
@@ -1786,13 +1870,14 @@ describe('InteractionManager', function ()
             expect(pointer.renderer.view.style.cursor).to.equal(pointer.interaction.cursorStyles.default);
         });
 
-        it('cursor callback should be called', function ()
+        it('cursor callback should be called', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
             const overSpy = sinon.spy();
             const defaultSpy = sinon.spy();
-            const pointer = this.pointer = new MockPointer(stage);
+
+            pointer = new MockPointer(stage);
 
             stage.addChild(graphics);
             graphics.beginFill(0xFFFFFF);
@@ -1809,12 +1894,13 @@ describe('InteractionManager', function ()
             expect(defaultSpy).to.have.been.called;
         });
 
-        it('cursor callback should only be called if the cursor actually changed', function ()
+        it('cursor callback should only be called if the cursor actually changed', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
             const defaultSpy = sinon.spy();
-            const pointer = this.pointer = new MockPointer(stage);
+
+            pointer = new MockPointer(stage);
 
             stage.addChild(graphics);
             graphics.beginFill(0xFFFFFF);
@@ -1829,11 +1915,12 @@ describe('InteractionManager', function ()
             expect(defaultSpy).to.have.been.calledOnce;
         });
 
-        it('cursor style object should be fully applied', function ()
+        it('cursor style object should be fully applied', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
-            const pointer = this.pointer = new MockPointer(stage);
+
+            pointer = new MockPointer(stage);
 
             stage.addChild(graphics);
             graphics.beginFill(0xFFFFFF);
@@ -1851,11 +1938,12 @@ describe('InteractionManager', function ()
             expect(pointer.renderer.view.style.display).to.equal('none');
         });
 
-        it('should not change cursor style if null cursor style provided', function ()
+        it('should not change cursor style if null cursor style provided', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
-            const pointer = this.pointer = new MockPointer(stage);
+
+            pointer = new MockPointer(stage);
 
             stage.addChild(graphics);
             graphics.beginFill(0xFFFFFF);
@@ -1872,11 +1960,12 @@ describe('InteractionManager', function ()
             expect(pointer.renderer.view.style.cursor).to.equal('');
         });
 
-        it('should use cursor property as css if no style entry', function ()
+        it('should use cursor property as css if no style entry', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
-            const pointer = this.pointer = new MockPointer(stage);
+
+            pointer = new MockPointer(stage);
 
             stage.addChild(graphics);
             graphics.beginFill(0xFFFFFF);
@@ -1889,7 +1978,7 @@ describe('InteractionManager', function ()
         });
     });
 
-    describe('recursive hitTesting', function ()
+    describe('recursive hitTesting', () =>
     {
         function getScene()
         {
@@ -1917,12 +2006,13 @@ describe('InteractionManager', function ()
             };
         }
 
-        describe('when frontChild is interactive', function ()
+        describe('when frontChild is interactive', () =>
         {
-            it('should stop hitTesting after first hit', function ()
+            it('should stop hitTesting after first hit', () =>
             {
                 const scene = getScene();
-                const pointer = this.pointer = new MockPointer(scene.stage);
+
+                pointer = new MockPointer(scene.stage);
                 const frontHitTest = sinon.spy(scene.frontChild, 'containsPoint');
                 const middleHitTest = sinon.spy(scene.middleChild, 'containsPoint');
                 const behindHitTest = sinon.spy(scene.behindChild, 'containsPoint');
@@ -1939,12 +2029,13 @@ describe('InteractionManager', function ()
             });
         });
 
-        describe('when frontChild is not interactive', function ()
+        describe('when frontChild is not interactive', () =>
         {
-            it('should stop hitTesting after first hit', function ()
+            it('should stop hitTesting after first hit', () =>
             {
                 const scene = getScene();
-                const pointer = this.pointer = new MockPointer(scene.stage);
+
+                pointer = new MockPointer(scene.stage);
                 const frontHitTest = sinon.spy(scene.frontChild, 'containsPoint');
                 const middleHitTest = sinon.spy(scene.middleChild, 'containsPoint');
                 const behindHitTest = sinon.spy(scene.behindChild, 'containsPoint');
@@ -1962,13 +2053,14 @@ describe('InteractionManager', function ()
         });
     });
 
-    describe('pointer handling', function ()
+    describe('pointer handling', () =>
     {
-        it('pointer event from mouse should use single mouse data', function ()
+        it('pointer event from mouse should use single mouse data', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
-            const pointer = this.pointer = new MockPointer(stage, 100, 100, true);
+
+            pointer = new MockPointer(stage, 100, 100, true);
 
             stage.addChild(graphics);
             graphics.beginFill(0xFFFFFF);
@@ -1982,13 +2074,14 @@ describe('InteractionManager', function ()
         });
     });
 
-    describe('data cleanup', function ()
+    describe('data cleanup', () =>
     {
-        it('touchleave after touchout should not orphan data', function ()
+        it('touchleave after touchout should not orphan data', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
-            const pointer = this.pointer = new MockPointer(stage);
+
+            pointer = new MockPointer(stage);
 
             stage.addChild(graphics);
             graphics.beginFill(0xFFFFFF);
@@ -2004,13 +2097,14 @@ describe('InteractionManager', function ()
         });
     });
 
-    describe('hitTest()', function ()
+    describe('hitTest()', () =>
     {
-        it('should return hit', function ()
+        it('should return hit', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
-            const pointer = this.pointer = new MockPointer(stage);
+
+            pointer = new MockPointer(stage);
 
             stage.addChild(graphics);
             graphics.beginFill(0xFFFFFF);
@@ -2023,11 +2117,12 @@ describe('InteractionManager', function ()
             expect(hit).to.equal(graphics);
         });
 
-        it('should return null if not hit', function ()
+        it('should return null if not hit', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
-            const pointer = this.pointer = new MockPointer(stage);
+
+            pointer = new MockPointer(stage);
 
             stage.addChild(graphics);
             graphics.beginFill(0xFFFFFF);
@@ -2040,12 +2135,13 @@ describe('InteractionManager', function ()
             expect(hit).to.be.null;
         });
 
-        it('should return top thing that was hit', function ()
+        it('should return top thing that was hit', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
             const behind = new Graphics();
-            const pointer = this.pointer = new MockPointer(stage);
+
+            pointer = new MockPointer(stage);
 
             stage.addChild(behind);
             stage.addChild(graphics);
@@ -2062,12 +2158,13 @@ describe('InteractionManager', function ()
             expect(hit).to.equal(graphics);
         });
 
-        it('should return hit when passing in root', function ()
+        it('should return hit when passing in root', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
             const behind = new Graphics();
-            const pointer = this.pointer = new MockPointer(stage);
+
+            pointer = new MockPointer(stage);
 
             stage.addChild(behind);
             stage.addChild(graphics);
@@ -2085,13 +2182,14 @@ describe('InteractionManager', function ()
         });
     });
 
-    describe('InteractionData properties', function ()
+    describe('InteractionData properties', () =>
     {
-        it('isPrimary should be set for first touch only', function ()
+        it('isPrimary should be set for first touch only', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
-            const pointer = this.pointer = new MockPointer(stage);
+
+            pointer = new MockPointer(stage);
 
             stage.addChild(graphics);
             graphics.beginFill(0xFFFFFF);
@@ -2115,14 +2213,15 @@ describe('InteractionManager', function ()
         });
     });
 
-    describe('mouse events from pens', function ()
+    describe('mouse events from pens', () =>
     {
-        it('should call mousedown handler', function ()
+        it('should call mousedown handler', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
             const eventSpy = sinon.spy();
-            const pointer = this.pointer = new MockPointer(stage, null, null, true);
+
+            pointer = new MockPointer(stage, null, null, true);
 
             stage.addChild(graphics);
             graphics.beginFill(0xFFFFFF);
@@ -2135,12 +2234,13 @@ describe('InteractionManager', function ()
             expect(eventSpy).to.have.been.calledOnce;
         });
 
-        it('should call mousemove handler', function ()
+        it('should call mousemove handler', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
             const eventSpy = sinon.spy();
-            const pointer = this.pointer = new MockPointer(stage, null, null, true);
+
+            pointer = new MockPointer(stage, null, null, true);
 
             stage.addChild(graphics);
             graphics.beginFill(0xFFFFFF);
@@ -2153,12 +2253,13 @@ describe('InteractionManager', function ()
             expect(eventSpy).to.have.been.calledOnce;
         });
 
-        it('should call mouseup handler', function ()
+        it('should call mouseup handler', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
             const eventSpy = sinon.spy();
-            const pointer = this.pointer = new MockPointer(stage, null, null, true);
+
+            pointer = new MockPointer(stage, null, null, true);
 
             stage.addChild(graphics);
             graphics.beginFill(0xFFFFFF);

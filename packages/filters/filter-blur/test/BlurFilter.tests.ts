@@ -1,9 +1,9 @@
 import { BlurFilter } from '@pixi/filter-blur';
 import { expect } from 'chai';
 
-describe('BlurFilter', function ()
+describe('BlurFilter', () =>
 {
-    it('should construct filter', function ()
+    it('should construct filter', () =>
     {
         const filter = new BlurFilter();
 
@@ -16,7 +16,7 @@ describe('BlurFilter', function ()
         filter.destroy();
     });
 
-    it('should support repeatEdgePixels', function ()
+    it('should support repeatEdgePixels', () =>
     {
         const filter = new BlurFilter();
 

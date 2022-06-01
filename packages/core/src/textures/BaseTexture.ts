@@ -582,14 +582,14 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
      * source is an image url or an image element and not in the base texture
      * cache, it will be created and loaded.
      * @static
-     * @param {string|HTMLImageElement|HTMLCanvasElement|SVGElement|HTMLVideoElement} source - The
+     * @param {string|string[]|HTMLImageElement|HTMLCanvasElement|SVGElement|HTMLVideoElement} source - The
      *        source to create base texture from.
      * @param options - See {@link PIXI.BaseTexture}'s constructor for options.
      * @param {string} [options.pixiIdPrefix=pixiid] - If a source has no id, this is the prefix of the generated id
      * @param {boolean} [strict] - Enforce strict-mode, see {@link PIXI.settings.STRICT_TEXTURE_CACHE}.
      * @returns {PIXI.BaseTexture} The new base texture.
      */
-    static from<R extends Resource = Resource, RO = IAutoDetectOptions>(source: ImageSource | string,
+    static from<R extends Resource = Resource, RO = IAutoDetectOptions>(source: ImageSource | string | string[],
         options?: IBaseTextureOptions<RO>, strict = settings.STRICT_TEXTURE_CACHE): BaseTexture<R>
     {
         const isFrame = typeof source === 'string';

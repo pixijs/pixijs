@@ -3,9 +3,9 @@ import { Matrix } from '@pixi/math';
 import { CanvasRenderer } from '@pixi/canvas-renderer';
 import { expect } from 'chai';
 
-describe('CanvasRenderer', function ()
+describe('CanvasRenderer', () =>
 {
-    it('should default context to rootContext', function ()
+    it('should default context to rootContext', () =>
     {
         const renderer = new CanvasRenderer({ width: 1, height: 1 });
 
@@ -19,7 +19,7 @@ describe('CanvasRenderer', function ()
         }
     });
 
-    it('should allow clear() to work despite no containers added to the renderer', function ()
+    it('should allow clear() to work despite no containers added to the renderer', () =>
     {
         const renderer = new CanvasRenderer({ width: 1, height: 1 });
 
@@ -33,7 +33,7 @@ describe('CanvasRenderer', function ()
         }
     });
 
-    it('should update transform in case of temp parent', function ()
+    it('should update transform in case of temp parent', () =>
     {
         // this test works only for CanvasRenderer, WebGLRenderer behaviour is different
         const renderer = new CanvasRenderer({ width: 1, height: 1 });

@@ -4,16 +4,17 @@ import { skipHello } from '@pixi/utils';
 import { settings } from '@pixi/settings';
 import { Renderer, BatchRenderer } from '@pixi/core';
 import { expect } from 'chai';
+import { IDestroyOptions } from '@pixi/display';
 
 skipHello();
 
 Renderer.registerPlugin('batch', BatchRenderer);
 
-describe('Text', function ()
+describe('Text', () =>
 {
-    describe('properties', function ()
+    describe('properties', () =>
     {
-        it('should modify the height of the object when setting height', function ()
+        it('should modify the height of the object when setting height', () =>
         {
             const text = new Text('foo');
 
@@ -22,7 +23,7 @@ describe('Text', function ()
             expect(text.height).to.equal(300);
         });
 
-        it('should modify the width of the object when setting width', function ()
+        it('should modify the width of the object when setting width', () =>
         {
             const text = new Text('foo');
 
@@ -31,14 +32,14 @@ describe('Text', function ()
             expect(text.width).to.equal(300);
         });
 
-        it('should set the text resolution to match the resolution setting when constructed time', function ()
+        it('should set the text resolution to match the resolution setting when constructed time', () =>
         {
             const text = new Text('foo');
 
             expect(text.resolution).to.equal(settings.RESOLUTION);
         });
 
-        it('should update the text resolution to match the renderer resolution when being rendered to screen', function ()
+        it('should update the text resolution to match the renderer resolution when being rendered to screen', () =>
         {
             const text = new Text('foo');
 
@@ -55,7 +56,7 @@ describe('Text', function ()
             renderer.destroy();
         });
 
-        it('should use any manually set text resolution over the renderer resolution', function ()
+        it('should use any manually set text resolution over the renderer resolution', () =>
         {
             const text = new Text('foo');
 
@@ -73,9 +74,9 @@ describe('Text', function ()
         });
     });
 
-    describe('destroy', function ()
+    describe('destroy', () =>
     {
-        it('should now clear canvas size on imported canvas', function ()
+        it('should now clear canvas size on imported canvas', () =>
         {
             const canvas = document.createElement('canvas');
             const text = new Text('blah', {}, canvas);
@@ -87,7 +88,7 @@ describe('Text', function ()
             expect(canvas.height).to.equal(height);
         });
 
-        it('should clear size on owned canvas during destroy', function ()
+        it('should clear size on owned canvas during destroy', () =>
         {
             const text = new Text('blah', {});
             const { canvas } = text;
@@ -98,7 +99,7 @@ describe('Text', function ()
             expect(canvas.height).to.equal(0);
         });
 
-        it('should call through to Sprite.destroy', function ()
+        it('should call through to Sprite.destroy', () =>
         {
             const text = new Text('foo');
 
@@ -107,7 +108,7 @@ describe('Text', function ()
             expect(text.anchor).to.equal(null);
         });
 
-        it('should set context to null', function ()
+        it('should set context to null', () =>
         {
             const text = new Text('foo');
 
@@ -116,7 +117,7 @@ describe('Text', function ()
             expect(text.style).to.equal(null);
         });
 
-        it('should destroy children if children flag is set', function ()
+        it('should destroy children if children flag is set', () =>
         {
             const text = new Text('foo');
             const child = new Sprite();
@@ -127,7 +128,7 @@ describe('Text', function ()
             expect(child.transform).to.equal(null);
         });
 
-        it('should accept options correctly', function ()
+        it('should accept options correctly', () =>
         {
             const text = new Text('foo');
             const child = new Sprite();
@@ -138,13 +139,13 @@ describe('Text', function ()
             expect(child.transform).to.equal(null);
         });
 
-        it('should pass opts on to children if children flag is set', function ()
+        it('should pass opts on to children if children flag is set', () =>
         {
             const text = new Text('foo');
             const child = new Sprite();
-            let childDestroyOpts;
+            let childDestroyOpts: IDestroyOptions | boolean;
 
-            child.destroy = function (opts)
+            child.destroy = (opts) =>
             {
                 childDestroyOpts = opts;
             };
@@ -155,55 +156,55 @@ describe('Text', function ()
         });
     });
 
-    describe('text', function ()
+    describe('text', () =>
     {
-        it('should convert numbers into strings', function ()
+        it('should convert numbers into strings', () =>
         {
             const text = new Text(2);
 
             expect(text.text).to.equal('2');
         });
 
-        it('should not change 0 to \'\'', function ()
+        it('should not change 0 to \'\'', () =>
         {
             const text = new Text(0);
 
             expect(text.text).to.equal('0');
         });
 
-        it('should prevent setting null', function ()
+        it('should prevent setting null', () =>
         {
             const text = new Text(null);
 
             expect(text.text).to.equal('');
         });
 
-        it('should prevent setting undefined', function ()
+        it('should prevent setting undefined', () =>
         {
             const text = new Text();
 
             expect(text.text).to.equal('');
         });
 
-        it('should trim an empty string', function ()
+        it('should trim an empty string', () =>
         {
             const text = new Text('', { trim: true });
 
             expect(text.text).to.equal('');
         });
 
-        it('should allow setting \'\' for v5', function ()
+        it('should allow setting \'\' for v5', () =>
         {
             const text = new Text('');
 
             expect(text.text).to.equal('');
         });
 
-        it('should keep at least 1 pixel for canvas width and height', function ()
+        it('should keep at least 1 pixel for canvas width and height', () =>
         {
             const text = new Text('');
 
-            text.updateText();
+            text.updateText(undefined);
 
             expect(text.canvas.width).to.be.above(1);
             expect(text.canvas.height).to.be.above(1);

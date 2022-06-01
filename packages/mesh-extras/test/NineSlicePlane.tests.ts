@@ -5,9 +5,9 @@ import { expect } from 'chai';
 
 skipHello();
 
-describe('NineSlicePlane', function ()
+describe('NineSlicePlane', () =>
 {
-    it('should be able to create an instance', function ()
+    it('should be able to create an instance', () =>
     {
         const plane = new NineSlicePlane(Texture.WHITE);
 
@@ -22,19 +22,19 @@ describe('NineSlicePlane', function ()
         plane.destroy();
     });
 
-    it('shold return correct scaling for NineSlicePlane corners', function ()
+    it('shold return correct scaling for NineSlicePlane corners', () =>
     {
         const plane = new NineSlicePlane(Texture.EMPTY, 10, 10, 10, 10);
 
         plane.width = 100;
         plane.height = 100;
-        expect(plane._getMinScale()).to.equal(1);
+        expect(plane['_getMinScale']()).to.equal(1);
         plane.width = 10;
         plane.height = 100;
-        expect(plane._getMinScale()).to.equal(0.5);
+        expect(plane['_getMinScale']()).to.equal(0.5);
         plane.width = 100;
         plane.height = 10;
-        expect(plane._getMinScale()).to.equal(0.5);
+        expect(plane['_getMinScale']()).to.equal(0.5);
 
         plane.destroy();
     });

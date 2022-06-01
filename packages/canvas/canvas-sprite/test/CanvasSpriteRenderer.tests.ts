@@ -3,12 +3,12 @@ import { Sprite } from '@pixi/sprite';
 import { CanvasRenderer } from '@pixi/canvas-renderer';
 import { expect } from 'chai';
 
-describe('CanvasSpriteRenderer', function ()
+describe('CanvasSpriteRenderer', () =>
 {
-    it('should still render a sprite after texture is destroyed', function ()
+    it('should still render a sprite after texture is destroyed', () =>
     {
         const renderer = new CanvasRenderer({ width: 1, height: 1 });
-        const texture = new Texture(Texture.WHITE);
+        const texture = Texture.WHITE;
         const sprite = new Sprite(texture);
 
         renderer.render(sprite);

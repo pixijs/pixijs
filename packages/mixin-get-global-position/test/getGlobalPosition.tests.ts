@@ -3,17 +3,18 @@ import { expect } from 'chai';
 
 import '@pixi/mixin-get-global-position';
 
-describe('DisplayObject#getGlobalPosition', function ()
+describe('DisplayObject#getGlobalPosition', () =>
 {
-    it('should exist', function ()
+    it('should exist', () =>
     {
+        // @ts-expect-error - instantiating DisplayObject
         const obj = new DisplayObject();
 
         expect(obj.getGlobalPosition).to.be.not.undefined;
         expect(obj.getGlobalPosition).to.be.a('function');
     });
 
-    it('should return correct global coordinates of a displayObject, without depending on its pivot', function ()
+    it('should return correct global coordinates of a displayObject, without depending on its pivot', () =>
     {
         const parent = new Container();
 

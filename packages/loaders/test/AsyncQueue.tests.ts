@@ -296,6 +296,7 @@ describe('async', () =>
 
             expect(() =>
             {
+                // @ts-expect-error - testing for error
                 q.push({}, 1);
             }).to.throw();
             done();
@@ -660,13 +661,13 @@ describe('async', () =>
                 ]);
                 done();
             };
-            q.push();
+            q.push(undefined);
         });
 
         it('saturated', (done: () => void) =>
         {
             let saturatedCalled = false;
-            const q = async.queue((task, cb) =>
+            const q = async.queue((_task, cb) =>
             {
                 setTimeout(cb, 1);
             }, 2);
@@ -855,7 +856,7 @@ describe('async', () =>
 
         it('empty array', (done: () => void) =>
         {
-            async.eachSeries([], (x: number, callback: () => void) =>
+            async.eachSeries([], (_x: number, callback: () => void) =>
             {
                 expect(false).to.equal(true, 'iteratee should not be called');
                 callback();
@@ -875,7 +876,7 @@ describe('async', () =>
         {
             const arr = [1, 2, 3, 4];
 
-            async.eachSeries(arr, (x, callback) =>
+            async.eachSeries(arr, (_x, callback) =>
             {
                 setTimeout(callback, 1);
             }, () =>
@@ -896,7 +897,7 @@ describe('async', () =>
 
             async.eachSeries(
                 [1],
-                (i, cb) =>
+                (_i, cb) =>
                 {
                     cb(null);
                 },
@@ -916,7 +917,7 @@ describe('async', () =>
 
             async.eachSeries(
                 [1],
-                (i, cb) =>
+                (_i, cb) =>
                 {
                     cb(null);
                 },

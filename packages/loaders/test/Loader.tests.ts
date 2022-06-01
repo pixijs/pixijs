@@ -5,40 +5,44 @@ import { SCALE_MODES } from '@pixi/constants';
 import { createServer } from './resources';
 
 import { expect } from 'chai';
+import { Server } from 'http';
 
 const createRandomName = () => `image${(Math.random() * 10000) | 0}`;
 
-describe('Loader', function ()
+describe('Loader', () =>
 {
-    before(function ()
+    let server: Server;
+    let baseUrl: string;
+
+    before(() =>
     {
-        this.server = createServer(8125);
-        this.baseUrl = 'http://localhost:8125';
+        server = createServer(8125);
+        baseUrl = 'http://localhost:8125';
     });
 
-    after(function ()
+    after(() =>
     {
-        this.server.close();
-        this.server = null;
-        this.baseUrl = null;
+        server.close();
+        server = null;
+        baseUrl = null;
     });
 
-    it('should exist', function ()
+    it('should exist', () =>
     {
         expect(Loader).to.be.a('function');
     });
 
-    it('should have shared loader', function ()
+    it('should have shared loader', () =>
     {
         expect(Loader.shared).to.not.be.undefined;
         expect(Loader.shared).to.be.instanceof(Loader);
     });
 
-    it('should basic load an image using the TextureLoader', function (done)
+    it('should basic load an image using the TextureLoader', (done) =>
     {
         const loader = new Loader();
         const name = createRandomName();
-        const url = `${this.baseUrl}/bunny.png`;
+        const url = `${baseUrl}/bunny.png`;
 
         loader.add(name, url);
         loader.load((ldr, resources) =>
@@ -46,7 +50,7 @@ describe('Loader', function ()
             expect(ldr).equals(loader);
             expect(name in resources).to.be.ok;
 
-            const { texture } = resources[name];
+            const texture = resources[name].texture as Texture<ImageResource>;
 
             expect(texture).instanceof(Texture);
             expect(texture.baseTexture.valid).to.be.true;
@@ -63,11 +67,11 @@ describe('Loader', function ()
         });
     });
 
-    it('should basic load an SVG using the TextureLoader', function (done)
+    it('should basic load an SVG using the TextureLoader', (done) =>
     {
         const loader = new Loader();
         const name = createRandomName();
-        const url = `${this.baseUrl}/logo.svg`;
+        const url = `${baseUrl}/logo.svg`;
 
         loader.add(name, url);
         loader.load(() =>
@@ -86,7 +90,7 @@ describe('Loader', function ()
         });
     });
 
-    it('should allow setting baseTexture properties through metadata', function (done)
+    it('should allow setting baseTexture properties through metadata', (done) =>
     {
         const loader = new Loader();
         const name = createRandomName();
@@ -97,7 +101,7 @@ describe('Loader', function ()
             },
         };
 
-        loader.add(name, `${this.baseUrl}/bunny.png`, options).load(() =>
+        loader.add(name, `${baseUrl}/bunny.png`, options).load(() =>
         {
             const { texture } = loader.resources[name];
             const { scaleMode, resolution } = texture.baseTexture;
@@ -110,7 +114,7 @@ describe('Loader', function ()
         });
     });
 
-    it('should allow setting SVG width/height through metadata', function (done)
+    it('should allow setting SVG width/height through metadata', (done) =>
     {
         const loader = new Loader();
         const name = createRandomName();
@@ -123,7 +127,7 @@ describe('Loader', function ()
             },
         };
 
-        loader.add(name, `${this.baseUrl}/logo.svg`, options).load(() =>
+        loader.add(name, `${baseUrl}/logo.svg`, options).load(() =>
         {
             const { texture } = loader.resources[name];
             const { width, height } = texture.baseTexture;
@@ -136,7 +140,7 @@ describe('Loader', function ()
         });
     });
 
-    it('should allow setting SVG scale through metadata', function (done)
+    it('should allow setting SVG scale through metadata', (done) =>
     {
         const loader = new Loader();
         const name = createRandomName();
@@ -148,7 +152,7 @@ describe('Loader', function ()
             },
         };
 
-        loader.add(name, `${this.baseUrl}/logo.svg`, options).load(() =>
+        loader.add(name, `${baseUrl}/logo.svg`, options).load(() =>
         {
             const { texture } = loader.resources[name];
             const { width, height } = texture.baseTexture;

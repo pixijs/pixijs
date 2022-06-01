@@ -1,11 +1,11 @@
 import { AppLoaderPlugin, Loader } from '@pixi/loaders';
 import { expect } from 'chai';
 
-describe('AppLoaderPlugin', function ()
+describe('AppLoaderPlugin', () =>
 {
-    it('should contain loader property', function ()
+    it('should contain loader property', () =>
     {
-        const obj = {};
+        const obj = {} as any;
 
         AppLoaderPlugin.init.call(obj);
 
@@ -17,9 +17,9 @@ describe('AppLoaderPlugin', function ()
         expect(obj.loader).to.be.null;
     });
 
-    it('should use sharedLoader option', function ()
+    it('should use sharedLoader option', () =>
     {
-        const obj = {};
+        const obj = {} as any;
 
         AppLoaderPlugin.init.call(obj, { sharedLoader: true });
 

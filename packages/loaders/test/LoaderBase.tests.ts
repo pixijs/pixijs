@@ -6,20 +6,21 @@ import { fixtureData } from './fixtures/data';
 import { spritesheetMiddleware } from './fixtures/spritesheet';
 import { Dict } from '@pixi/utils/src';
 import { createServer } from './resources';
+import { Server } from 'http';
 
 describe('Loader', () =>
 {
-    before(function ()
+    let server: Server;
+
+    before(() =>
     {
-        this.server = createServer(8126);
-        this.baseUrl = 'http://localhost:8126';
+        server = createServer(8126);
     });
 
-    after(function ()
+    after(() =>
     {
-        this.server.close();
-        this.server = null;
-        this.baseUrl = null;
+        server.close();
+        server = null;
     });
 
     let loader: Loader = null;
@@ -27,8 +28,8 @@ describe('Loader', () =>
     beforeEach(() =>
     {
         loader = new Loader(fixtureData.baseUrl);
-        loader._beforeMiddleware = [];
-        loader._afterMiddleware = [];
+        loader['_beforeMiddleware'] = [];
+        loader['_afterMiddleware'] = [];
     });
 
     it('should have correct properties', () =>
@@ -61,9 +62,9 @@ describe('Loader', () =>
         {
             loader.add(name, fixtureData.url, options, callback);
 
-            expect(loader._queue.length()).to.equal(1);
+            expect(loader['_queue'].length()).to.equal(1);
 
-            const res = loader._queue._tasks[0].data;
+            const res = loader['_queue']._tasks[0].data;
 
             expect(res).to.be.an.instanceOf(LoaderResource);
             expect(res).to.have.property('name', name);
@@ -81,9 +82,9 @@ describe('Loader', () =>
         {
             loader.add(name, fixtureData.url, options);
 
-            expect(loader._queue.length()).to.equal(1);
+            expect(loader['_queue'].length()).to.equal(1);
 
-            const res = loader._queue._tasks[0].data;
+            const res = loader['_queue']._tasks[0].data;
 
             expect(res).to.be.an.instanceOf(LoaderResource);
             expect(res).to.have.property('name', name);
@@ -97,9 +98,9 @@ describe('Loader', () =>
         {
             loader.add(name, fixtureData.url, callback);
 
-            expect(loader._queue.length()).to.equal(1);
+            expect(loader['_queue'].length()).to.equal(1);
 
-            const res = loader._queue._tasks[0].data;
+            const res = loader['_queue']._tasks[0].data;
 
             expect(res).to.be.an.instanceOf(LoaderResource);
             expect(res).to.have.property('name', name);
@@ -114,9 +115,9 @@ describe('Loader', () =>
         {
             loader.add(name, fixtureData.url);
 
-            expect(loader._queue.length()).to.equal(1);
+            expect(loader['_queue'].length()).to.equal(1);
 
-            const res = loader._queue._tasks[0].data;
+            const res = loader['_queue']._tasks[0].data;
 
             expect(res).to.be.an.instanceOf(LoaderResource);
             expect(res).to.have.property('name', name);
@@ -127,9 +128,9 @@ describe('Loader', () =>
         {
             loader.add(fixtureData.url, options, callback);
 
-            expect(loader._queue.length()).to.equal(1);
+            expect(loader['_queue'].length()).to.equal(1);
 
-            const res = loader._queue._tasks[0].data;
+            const res = loader['_queue']._tasks[0].data;
 
             expect(res).to.be.an.instanceOf(LoaderResource);
             expect(res).to.have.property('name', fixtureData.url);
@@ -147,9 +148,9 @@ describe('Loader', () =>
         {
             loader.add(fixtureData.url, options);
 
-            expect(loader._queue.length()).to.equal(1);
+            expect(loader['_queue'].length()).to.equal(1);
 
-            const res = loader._queue._tasks[0].data;
+            const res = loader['_queue']._tasks[0].data;
 
             expect(res).to.be.an.instanceOf(LoaderResource);
             expect(res).to.have.property('name', fixtureData.url);
@@ -163,9 +164,9 @@ describe('Loader', () =>
         {
             loader.add(fixtureData.url, callback);
 
-            expect(loader._queue.length()).to.equal(1);
+            expect(loader['_queue'].length()).to.equal(1);
 
-            const res = loader._queue._tasks[0].data;
+            const res = loader['_queue']._tasks[0].data;
 
             expect(res).to.be.an.instanceOf(LoaderResource);
             expect(res).to.have.property('name', fixtureData.url);
@@ -180,9 +181,9 @@ describe('Loader', () =>
         {
             loader.add(fixtureData.url);
 
-            expect(loader._queue.length()).to.equal(1);
+            expect(loader['_queue'].length()).to.equal(1);
 
-            const res = loader._queue._tasks[0].data;
+            const res = loader['_queue']._tasks[0].data;
 
             expect(res).to.be.an.instanceOf(LoaderResource);
             expect(res).to.have.property('name', fixtureData.url);
@@ -193,9 +194,9 @@ describe('Loader', () =>
         {
             loader.add({ name, url: fixtureData.url }, callback);
 
-            expect(loader._queue.length()).to.equal(1);
+            expect(loader['_queue'].length()).to.equal(1);
 
-            const res = loader._queue._tasks[0].data;
+            const res = loader['_queue']._tasks[0].data;
 
             expect(res).to.be.an.instanceOf(LoaderResource);
             expect(res).to.have.property('name', name);
@@ -210,9 +211,9 @@ describe('Loader', () =>
         {
             loader.add({ name, url: fixtureData.url, onComplete: callback });
 
-            expect(loader._queue.length()).to.equal(1);
+            expect(loader['_queue'].length()).to.equal(1);
 
-            const res = loader._queue._tasks[0].data;
+            const res = loader['_queue']._tasks[0].data;
 
             expect(res).to.be.an.instanceOf(LoaderResource);
             expect(res).to.have.property('name', name);
@@ -227,9 +228,9 @@ describe('Loader', () =>
         {
             loader.add({ url: fixtureData.url, onComplete: callback });
 
-            expect(loader._queue.length()).to.equal(1);
+            expect(loader['_queue'].length()).to.equal(1);
 
-            const res = loader._queue._tasks[0].data;
+            const res = loader['_queue']._tasks[0].data;
 
             expect(res).to.be.an.instanceOf(LoaderResource);
             expect(res).to.have.property('name', fixtureData.url);
@@ -264,7 +265,7 @@ describe('Loader', () =>
         {
             loader.pre(() => { /* empty */ });
 
-            expect(loader._beforeMiddleware).to.have.length(1);
+            expect(loader['_beforeMiddleware']).to.have.length(1);
         });
     });
 
@@ -274,7 +275,7 @@ describe('Loader', () =>
         {
             loader.use(() => { /* empty */ });
 
-            expect(loader._afterMiddleware).to.have.length(1);
+            expect(loader['_afterMiddleware']).to.have.length(1);
         });
     });
 
@@ -300,13 +301,13 @@ describe('Loader', () =>
 
         it('should reset the queue/buffer of the loader', () =>
         {
-            loader._queue.push('me');
-            expect(loader._queue.length()).to.equal(1);
-            expect(loader._queue.started).to.equal(true);
+            loader['_queue'].push('me');
+            expect(loader['_queue'].length()).to.equal(1);
+            expect(loader['_queue'].started).to.equal(true);
 
             loader.reset();
-            expect(loader._queue.length()).to.equal(0);
-            expect(loader._queue.started).to.equal(false);
+            expect(loader['_queue'].length()).to.equal(0);
+            expect(loader['_queue'].started).to.equal(false);
         });
 
         it('should reset the resources of the loader', () =>
@@ -482,10 +483,10 @@ describe('Loader', () =>
             const u3 = '//myshare/image.png';
             const u4 = '//myshare/image.png?v=1#me';
 
-            expect(loader._prepareUrl(u1)).to.equal(u1);
-            expect(loader._prepareUrl(u2)).to.equal(u2);
-            expect(loader._prepareUrl(u3)).to.equal(u3);
-            expect(loader._prepareUrl(u4)).to.equal(u4);
+            expect(loader['_prepareUrl'](u1)).to.equal(u1);
+            expect(loader['_prepareUrl'](u2)).to.equal(u2);
+            expect(loader['_prepareUrl'](u3)).to.equal(u3);
+            expect(loader['_prepareUrl'](u4)).to.equal(u4);
         });
 
         it('should add the baseUrl for relative urls (no trailing slash on baseUrl)', () =>
@@ -496,10 +497,10 @@ describe('Loader', () =>
             const u3 = 'image.png?v=1';
             const u4 = '/image.png?v=1#me';
 
-            expect(loader._prepareUrl(u1)).to.equal(`${b}/${u1}`);
-            expect(loader._prepareUrl(u2)).to.equal(`${b}${u2}`);
-            expect(loader._prepareUrl(u3)).to.equal(`${b}/${u3}`);
-            expect(loader._prepareUrl(u4)).to.equal(`${b}${u4}`);
+            expect(loader['_prepareUrl'](u1)).to.equal(`${b}/${u1}`);
+            expect(loader['_prepareUrl'](u2)).to.equal(`${b}${u2}`);
+            expect(loader['_prepareUrl'](u3)).to.equal(`${b}/${u3}`);
+            expect(loader['_prepareUrl'](u4)).to.equal(`${b}${u4}`);
         });
 
         it('should add the baseUrl for relative urls (yes trailing slash on baseUrl)', () =>
@@ -510,10 +511,10 @@ describe('Loader', () =>
             const u3 = 'image.png?v=1';
             const u4 = '/image.png?v=1#me';
 
-            expect(loader._prepareUrl(u1)).to.equal(`${b}${u1}`);
-            expect(loader._prepareUrl(u2)).to.equal(`${b}${u2}`);
-            expect(loader._prepareUrl(u3)).to.equal(`${b}${u3}`);
-            expect(loader._prepareUrl(u4)).to.equal(`${b}${u4}`);
+            expect(loader['_prepareUrl'](u1)).to.equal(`${b}${u1}`);
+            expect(loader['_prepareUrl'](u2)).to.equal(`${b}${u2}`);
+            expect(loader['_prepareUrl'](u3)).to.equal(`${b}${u3}`);
+            expect(loader['_prepareUrl'](u4)).to.equal(`${b}${u4}`);
         });
 
         it('should add the queryString when set', () =>
@@ -524,10 +525,10 @@ describe('Loader', () =>
 
             loader.defaultQueryString = 'u=me&p=secret';
 
-            expect(loader._prepareUrl(u1))
+            expect(loader['_prepareUrl'](u1))
                 .to.equal(`${b}/${u1}?${loader.defaultQueryString}`);
 
-            expect(loader._prepareUrl(u2))
+            expect(loader['_prepareUrl'](u2))
                 .to.equal(`${b}${u2}?${loader.defaultQueryString}`);
         });
 
@@ -539,10 +540,10 @@ describe('Loader', () =>
 
             loader.defaultQueryString = 'u=me&p=secret';
 
-            expect(loader._prepareUrl(u1))
+            expect(loader['_prepareUrl'](u1))
                 .to.equal(`${b}/${u1}?${loader.defaultQueryString}`);
 
-            expect(loader._prepareUrl(u2))
+            expect(loader['_prepareUrl'](u2))
                 .to.equal(`${b}${u2}?${loader.defaultQueryString}`);
         });
 
@@ -553,7 +554,7 @@ describe('Loader', () =>
 
             loader.defaultQueryString = 'u=me&p=secret';
 
-            expect(loader._prepareUrl(u1))
+            expect(loader['_prepareUrl'](u1))
                 .to.equal(`${b}/${u1}&${loader.defaultQueryString}`);
         });
 
@@ -563,7 +564,7 @@ describe('Loader', () =>
 
             loader.defaultQueryString = 'u=me&p=secret';
 
-            expect(loader._prepareUrl('/image.png#me'))
+            expect(loader['_prepareUrl']('/image.png#me'))
                 .to.equal(`${b}/image.png?${loader.defaultQueryString}#me`);
         });
 
@@ -573,7 +574,7 @@ describe('Loader', () =>
 
             loader.defaultQueryString = 'u=me&p=secret';
 
-            expect(loader._prepareUrl('/image.png?v=1#me'))
+            expect(loader['_prepareUrl']('/image.png?v=1#me'))
                 .to.equal(`${b}/image.png?v=1&${loader.defaultQueryString}#me`);
         });
     });
@@ -583,11 +584,11 @@ describe('Loader', () =>
         it('should run the before middleware before loading the resource', (done: () => void) =>
         {
             const spy = sinon.spy();
-            const res = {};
+            const res = {} as LoaderResource;
 
             loader.pre(spy);
 
-            loader._loadResource(res, null);
+            loader['_loadResource'](res, null);
 
             setTimeout(() =>
             {
@@ -605,7 +606,7 @@ describe('Loader', () =>
 
             res.load = sinon.spy();
 
-            loader._loadResource(res, null);
+            loader['_loadResource'](res, null);
 
             expect(res.load).to.have.been.calledOnce;
         });
@@ -622,7 +623,7 @@ describe('Loader', () =>
                 done();
             });
 
-            loader._onStart();
+            loader['_onStart']();
         });
     });
 
@@ -638,7 +639,7 @@ describe('Loader', () =>
                 done();
             });
 
-            loader._onComplete();
+            loader['_onComplete']();
         });
     });
 
@@ -653,7 +654,7 @@ describe('Loader', () =>
 
             loader.onProgress.once(spy);
 
-            loader._onLoad(res);
+            loader['_onLoad'](res);
 
             expect(spy).to.have.been.calledOnce;
         });
@@ -669,7 +670,7 @@ describe('Loader', () =>
 
             loader.onError.once(spy);
 
-            loader._onLoad(res);
+            loader['_onLoad'](res);
 
             expect(spy).to.have.been.calledOnce;
         });
@@ -683,7 +684,7 @@ describe('Loader', () =>
 
             loader.onLoad.once(spy);
 
-            loader._onLoad(res);
+            loader['_onLoad'](res);
 
             expect(spy).to.have.been.calledOnce;
         });
@@ -697,7 +698,7 @@ describe('Loader', () =>
 
             loader.use(spy);
 
-            loader._onLoad(res);
+            loader['_onLoad'](res);
 
             setTimeout(() =>
             {

@@ -2,9 +2,9 @@ import { ObservablePoint } from '@pixi/math';
 import sinon from 'sinon';
 import { expect } from 'chai';
 
-describe('ObservablePoint', function ()
+describe('ObservablePoint', () =>
 {
-    it('should create a new observable point', function ()
+    it('should create a new observable point', () =>
     {
         const cb = sinon.spy();
         const pt = new ObservablePoint(cb, this);
@@ -33,7 +33,7 @@ describe('ObservablePoint', function ()
         expect(cb.callCount).to.equal(4);
     });
 
-    it('should copy a new observable point', function ()
+    it('should copy a new observable point', () =>
     {
         function cb()
         {
