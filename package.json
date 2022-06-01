@@ -4,13 +4,11 @@
   "workspaces": [
     "bundles/*",
     "packages/*",
-    "packages/canvas/*",
-    "packages/filters/*",
     "tools/*"
   ],
   "scripts": {
     "start": "run-s watch",
-    "clean:build": "rimraf \"{bundles,packages,packages/canvas,packages/filters,out}/*/dist\"",
+    "clean:build": "rimraf \"{bundles,packages,out}/*/dist\"",
     "clean:dist": "rimraf dist/*",
     "clean:modules": "lerna clean --yes",
     "clean": "run-s clean:*",
