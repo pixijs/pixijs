@@ -53,18 +53,13 @@ export class ScissorSystem extends AbstractMaskSystem
         const { maskObject } = maskData;
         const { renderer } = this;
         const renderTextureSystem = renderer.renderTexture;
-
-        maskObject.renderable = true;
-
-        const rect = maskObject.getBounds();
+        const rect = maskObject.getBounds(true);
 
         this.roundFrameToPixels(rect,
             renderTextureSystem.current ? renderTextureSystem.current.resolution : renderer.resolution,
             renderTextureSystem.sourceFrame,
             renderTextureSystem.destinationFrame,
             renderer.projection.transform);
-
-        maskObject.renderable = false;
 
         if (prevData)
         {
