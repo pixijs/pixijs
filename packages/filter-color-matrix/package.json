@@ -1,6 +1,6 @@
 {
   "name": "@pixi/filter-color-matrix",
-  "version": "6.3.2",
+  "version": "6.4.0",
   "main": "dist/cjs/filter-color-matrix.js",
   "module": "dist/esm/filter-color-matrix.js",
   "bundle": "dist/browser/filter-color-matrix.js",
@@ -8,12 +8,12 @@
   "exports": {
     ".": {
       "import": {
-          "default": "./dist/cjs/filter-color-matrix.js",
-          "types": "./index.d.ts"
+        "default": "./dist/cjs/filter-color-matrix.js",
+        "types": "./index.d.ts"
       },
       "require": {
-          "default": "./dist/esm/filter-color-matrix.js",
-          "types": "./index.d.ts"
+        "default": "./dist/esm/filter-color-matrix.js",
+        "types": "./index.d.ts"
       }
     }
   },
@@ -39,6 +39,6 @@
     "*.d.ts"
   ],
   "peerDependencies": {
-    "@pixi/core": "6.3.2"
+    "@pixi/core": "6.4.0"
   }
 }

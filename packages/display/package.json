@@ -1,6 +1,6 @@
 {
   "name": "@pixi/display",
-  "version": "6.3.2",
+  "version": "6.4.0",
   "main": "dist/cjs/display.js",
   "module": "dist/esm/display.js",
   "bundle": "dist/browser/display.js",
@@ -8,12 +8,12 @@
   "exports": {
     ".": {
       "import": {
-          "default": "./dist/cjs/display.js",
-          "types": "./index.d.ts"
+        "default": "./dist/cjs/display.js",
+        "types": "./index.d.ts"
       },
       "require": {
-          "default": "./dist/esm/display.js",
-          "types": "./index.d.ts"
+        "default": "./dist/esm/display.js",
+        "types": "./index.d.ts"
       }
     }
   },
@@ -38,8 +38,8 @@
     "*.d.ts"
   ],
   "peerDependencies": {
-    "@pixi/math": "6.3.2",
-    "@pixi/settings": "6.3.2",
-    "@pixi/utils": "6.3.2"
+    "@pixi/math": "6.4.0",
+    "@pixi/settings": "6.4.0",
+    "@pixi/utils": "6.4.0"
   }
 }

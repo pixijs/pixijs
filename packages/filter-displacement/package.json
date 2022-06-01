@@ -1,6 +1,6 @@
 {
   "name": "@pixi/filter-displacement",
-  "version": "6.3.2",
+  "version": "6.4.0",
   "main": "dist/cjs/filter-displacement.js",
   "module": "dist/esm/filter-displacement.js",
   "bundle": "dist/browser/filter-displacement.js",
@@ -8,12 +8,12 @@
   "exports": {
     ".": {
       "import": {
-          "default": "./dist/cjs/filter-displacement.js",
-          "types": "./index.d.ts"
+        "default": "./dist/cjs/filter-displacement.js",
+        "types": "./index.d.ts"
       },
       "require": {
-          "default": "./dist/esm/filter-displacement.js",
-          "types": "./index.d.ts"
+        "default": "./dist/esm/filter-displacement.js",
+        "types": "./index.d.ts"
       }
     }
   },
@@ -39,7 +39,7 @@
     "*.d.ts"
   ],
   "peerDependencies": {
-    "@pixi/core": "6.3.2",
-    "@pixi/math": "6.3.2"
+    "@pixi/core": "6.4.0",
+    "@pixi/math": "6.4.0"
   }
 }

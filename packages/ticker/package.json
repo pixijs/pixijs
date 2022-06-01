@@ -1,6 +1,6 @@
 {
   "name": "@pixi/ticker",
-  "version": "6.3.2",
+  "version": "6.4.0",
   "main": "dist/cjs/ticker.js",
   "module": "dist/esm/ticker.js",
   "bundle": "dist/browser/ticker.js",
@@ -8,12 +8,12 @@
   "exports": {
     ".": {
       "import": {
-          "default": "./dist/cjs/ticker.js",
-          "types": "./index.d.ts"
+        "default": "./dist/cjs/ticker.js",
+        "types": "./index.d.ts"
       },
       "require": {
-          "default": "./dist/esm/ticker.js",
-          "types": "./index.d.ts"
+        "default": "./dist/esm/ticker.js",
+        "types": "./index.d.ts"
       }
     }
   },
@@ -38,6 +38,6 @@
     "*.d.ts"
   ],
   "peerDependencies": {
-    "@pixi/settings": "6.3.2"
+    "@pixi/settings": "6.4.0"
   }
 }

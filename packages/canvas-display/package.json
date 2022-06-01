@@ -1,6 +1,6 @@
 {
   "name": "@pixi/canvas-display",
-  "version": "6.3.2",
+  "version": "6.4.0",
   "main": "dist/cjs/canvas-display.js",
   "module": "dist/esm/canvas-display.js",
   "bundle": "dist/browser/canvas-display.js",
@@ -8,12 +8,12 @@
   "exports": {
     ".": {
       "import": {
-          "default": "./dist/cjs/canvas-display.js",
-          "types": "./index.d.ts"
+        "default": "./dist/cjs/canvas-display.js",
+        "types": "./index.d.ts"
       },
       "require": {
-          "default": "./dist/esm/canvas-display.js",
-          "types": "./index.d.ts"
+        "default": "./dist/esm/canvas-display.js",
+        "types": "./index.d.ts"
       }
     }
   },
@@ -39,6 +39,6 @@
     "*.d.ts"
   ],
   "peerDependencies": {
-    "@pixi/display": "6.3.2"
+    "@pixi/display": "6.4.0"
   }
 }
