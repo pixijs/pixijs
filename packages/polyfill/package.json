@@ -1,6 +1,6 @@
 {
   "name": "@pixi/polyfill",
-  "version": "6.3.2",
+  "version": "6.4.0",
   "main": "dist/cjs/polyfill.js",
   "module": "dist/esm/polyfill.js",
   "bundle": "dist/browser/polyfill.js",
@@ -8,12 +8,12 @@
   "exports": {
     ".": {
       "import": {
-          "default": "./dist/cjs/polyfill.js",
-          "types": "./index.d.ts"
+        "default": "./dist/cjs/polyfill.js",
+        "types": "./index.d.ts"
       },
       "require": {
-          "default": "./dist/esm/polyfill.js",
-          "types": "./index.d.ts"
+        "default": "./dist/esm/polyfill.js",
+        "types": "./index.d.ts"
       }
     }
   },

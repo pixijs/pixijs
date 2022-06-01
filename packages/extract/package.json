@@ -1,6 +1,6 @@
 {
   "name": "@pixi/extract",
-  "version": "6.3.2",
+  "version": "6.4.0",
   "main": "dist/cjs/extract.js",
   "module": "dist/esm/extract.js",
   "bundle": "dist/browser/extract.js",
@@ -8,12 +8,12 @@
   "exports": {
     ".": {
       "import": {
-          "default": "./dist/cjs/extract.js",
-          "types": "./index.d.ts"
+        "default": "./dist/cjs/extract.js",
+        "types": "./index.d.ts"
       },
       "require": {
-          "default": "./dist/esm/extract.js",
-          "types": "./index.d.ts"
+        "default": "./dist/esm/extract.js",
+        "types": "./index.d.ts"
       }
     }
   },
@@ -38,8 +38,8 @@
     "*.d.ts"
   ],
   "peerDependencies": {
-    "@pixi/core": "6.3.2",
-    "@pixi/math": "6.3.2",
-    "@pixi/utils": "6.3.2"
+    "@pixi/core": "6.4.0",
+    "@pixi/math": "6.4.0",
+    "@pixi/utils": "6.4.0"
   }
 }

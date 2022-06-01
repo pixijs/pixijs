@@ -1,6 +1,6 @@
 {
   "name": "@pixi/utils",
-  "version": "6.3.2",
+  "version": "6.4.0",
   "main": "dist/cjs/utils.js",
   "module": "dist/esm/utils.js",
   "bundle": "dist/browser/utils.js",
@@ -8,12 +8,12 @@
   "exports": {
     ".": {
       "import": {
-          "default": "./dist/cjs/utils.js",
-          "types": "./index.d.ts"
+        "default": "./dist/cjs/utils.js",
+        "types": "./index.d.ts"
       },
       "require": {
-          "default": "./dist/esm/utils.js",
-          "types": "./index.d.ts"
+        "default": "./dist/esm/utils.js",
+        "types": "./index.d.ts"
       }
     }
   },
@@ -45,8 +45,8 @@
     "url": "^0.11.0"
   },
   "peerDependencies": {
-    "@pixi/constants": "6.3.2",
-    "@pixi/settings": "6.3.2"
+    "@pixi/constants": "6.4.0",
+    "@pixi/settings": "6.4.0"
   },
   "devDependencies": {
     "css-color-names": "^1.0.1"
