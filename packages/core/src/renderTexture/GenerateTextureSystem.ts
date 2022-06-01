@@ -80,7 +80,8 @@ export class GenerateTextureSystem implements ISystem
         this.renderer.render(displayObject, {
             renderTexture,
             transform: this._tempMatrix,
-            skipUpdateTransform: !!displayObject.parent
+            skipUpdateTransform: !!displayObject.parent,
+            blit: true,
         });
 
         displayObject.transform = transform;
