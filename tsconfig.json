@@ -17,9 +17,7 @@
         "baseUrl": "./",
         "paths": {
             "@pixi/*": [
-                "packages/*/src",
-                "packages/filters/*/src",
-                "packages/canvas/*/src"
+                "packages/*/src"
             ],
             "pixi.js": [
                 "bundles/pixi.js/src"
