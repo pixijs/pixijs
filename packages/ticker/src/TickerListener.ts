@@ -2,7 +2,6 @@ import { TickerCallback } from './Ticker';
 
 /**
  * Internal class for handling the priority sorting of ticker handlers.
- *
  * @private
  * @class
  * @memberof PIXI
@@ -46,7 +45,7 @@ export class TickerListener<T = any>
      * @private
      * @param fn - The listener function to be added for one update
      * @param context - The listener context
-     * @return `true` if the listener match the arguments
+     * @returns `true` if the listener match the arguments
      */
     match(fn: TickerCallback<T>, context: any = null): boolean
     {
@@ -57,7 +56,7 @@ export class TickerListener<T = any>
      * Emit by calling the current function.
      * @private
      * @param deltaTime - time since the last emit.
-     * @return Next ticker
+     * @returns Next ticker
      */
     emit(deltaTime: number): TickerListener
     {
@@ -111,7 +110,7 @@ export class TickerListener<T = any>
      * @private
      * @param hard - `true` to remove the `next` reference, this
      *        is considered a hard destroy. Soft destroy maintains the next reference.
-     * @return The listener to redirect while emitting or removing.
+     * @returns The listener to redirect while emitting or removing.
      */
     destroy(hard = false): TickerListener
     {

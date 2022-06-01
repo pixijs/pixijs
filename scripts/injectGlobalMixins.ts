@@ -2,9 +2,7 @@ import workspacesRun from 'workspaces-run';
 import path from 'path';
 import fs from 'fs';
 
-/**
- * simplified interface for a package.json
- */
+/** simplified interface for a package.json */
 interface SimplePackageJson
 {
     location: string
@@ -14,6 +12,8 @@ interface SimplePackageJson
 
 /**
  * Adds global reference to the start of a packages `index.d.ts` file
+ * @param basePath
+ * @param dataToWrite
  */
 function writeToIndex(basePath: string, dataToWrite: string): void
 {
@@ -26,6 +26,7 @@ function writeToIndex(basePath: string, dataToWrite: string): void
 
 /**
  * Collect the list of packages in the project
+ * @param result
  */
 async function getPackages(result: SimplePackageJson[] = []): Promise<SimplePackageJson[]>
 {

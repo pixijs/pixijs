@@ -32,8 +32,7 @@ const GLSL_TO_SIZE: Dict<number> = {
  * @private
  * @method mapSize
  * @memberof PIXI.glCore.shader
- * @param {String} type
- * @return {Number}
+ * @param {string} type
  */
 export function mapSize(type: string): number
 {

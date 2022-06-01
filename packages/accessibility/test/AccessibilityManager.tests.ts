@@ -5,22 +5,22 @@ import { Renderer } from '@pixi/core';
 import { isMobile } from '@pixi/utils';
 import { expect } from 'chai';
 
-describe('AccessibilityManager', function ()
+describe('AccessibilityManager', () =>
 {
-    it('should exist', function ()
+    it('should exist', () =>
     {
         expect(AccessibilityManager).to.be.not.undefined;
     });
 
-    it('should create new manager', function ()
+    it('should create new manager', () =>
     {
-        const manager = new AccessibilityManager();
+        const manager = new AccessibilityManager(undefined);
 
         expect(manager).to.be.instanceof(AccessibilityManager);
         manager.destroy();
     });
 
-    it('should be plugin for renderer', function ()
+    it('should be plugin for renderer', () =>
     {
         CanvasRenderer.registerPlugin('accessibility', AccessibilityManager);
 
@@ -30,13 +30,13 @@ describe('AccessibilityManager', function ()
         renderer.destroy();
     });
 
-    it('should remove touch hook when destroyed', function ()
+    it('should remove touch hook when destroyed', () =>
     {
         const phone = isMobile.phone;
 
         isMobile.phone = true;
-        const manager = new AccessibilityManager();
-        const hookDiv = manager._hookDiv;
+        const manager = new AccessibilityManager(undefined);
+        const hookDiv = manager['_hookDiv'];
 
         expect(hookDiv).to.be.instanceof(HTMLElement);
         expect(document.body.contains(hookDiv)).to.be.true;
@@ -45,7 +45,7 @@ describe('AccessibilityManager', function ()
         isMobile.phone = phone;
     });
 
-    it('should activate when tab is pressed and deactivate when mouse moved', function ()
+    it('should activate when tab is pressed and deactivate when mouse moved', () =>
     {
         const renderer = new Renderer();
         const manager = new AccessibilityManager(renderer);
@@ -56,8 +56,9 @@ describe('AccessibilityManager', function ()
         expect(manager.isActive).to.be.false;
     });
 
-    it('should not crash when scene graph contains DisplayObjects without children', function ()
+    it('should not crash when scene graph contains DisplayObjects without children', () =>
     {
+        // @ts-expect-error - mock DisplayObject
         class CompleteDisplayObject extends DisplayObject
         {
             calculateBounds() { /* noop */ }

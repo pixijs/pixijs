@@ -14,14 +14,15 @@ const mimeTypes = {
 
 /**
  * Very HTTP server to requesting files.
+ * @param port
  */
-const createServer = (port) =>
+const createServer = (port: number) =>
 {
     const server = http.createServer((request, response) =>
     {
         const filePath = path.join(__dirname, request.url);
         const extname = path.extname(filePath);
-        const contentType = mimeTypes[extname] || 'text/html';
+        const contentType = mimeTypes[extname as keyof typeof mimeTypes] || 'text/html';
 
         fs.readFile(filePath, (error, content) =>
         {

@@ -1,7 +1,6 @@
 /**
  * will log a shader error highlighting the lines with the error
  * also will add numbers along the side.
- *
  * @param gl - the WebGLContext
  * @param shader - the shader to log errors for
  */
@@ -54,7 +53,6 @@ function logPrettyShaderError(gl: WebGLRenderingContext, shader: WebGLShader): v
 /**
  *
  * logs out any program errors
- *
  * @param gl - The current WebGL context
  * @param program - the WebGL program to display errors for
  * @param vertexShader  - the fragment WebGL shader program

@@ -4,6 +4,19 @@
   "main": "dist/cjs/extract.js",
   "module": "dist/esm/extract.js",
   "bundle": "dist/browser/extract.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+          "default": "./dist/cjs/extract.js",
+          "types": "./index.d.ts"
+      },
+      "require": {
+          "default": "./dist/esm/extract.js",
+          "types": "./index.d.ts"
+      }
+    }
+  },
   "description": "Extract raw graphics data from renderer",
   "author": "Mat Groves",
   "contributors": [

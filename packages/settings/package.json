@@ -4,6 +4,19 @@
   "main": "dist/cjs/settings.js",
   "module": "dist/esm/settings.js",
   "bundle": "dist/browser/settings.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+          "default": "./dist/cjs/settings.js",
+          "types": "./index.d.ts"
+      },
+      "require": {
+          "default": "./dist/esm/settings.js",
+          "types": "./index.d.ts"
+      }
+    }
+  },
   "description": "Collecting of user configurable settings used throughout PixiJS",
   "author": "Mat Groves",
   "contributors": [

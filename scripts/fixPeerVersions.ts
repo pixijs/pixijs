@@ -3,9 +3,7 @@ import path from 'path';
 import fs from 'fs';
 import util from 'util';
 
-/**
- * Simplified interface for a package.json
- */
+/** Simplified interface for a package.json */
 interface Package
 {
     name: string;

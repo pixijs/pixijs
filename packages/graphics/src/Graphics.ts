@@ -23,10 +23,9 @@ import type { IShape, IPointData } from '@pixi/math';
 import type { IDestroyOptions } from '@pixi/display';
 import { LINE_JOIN, LINE_CAP } from './const';
 
-/**
- * Batch element computed from Graphics geometry
- */
-export interface IGraphicsBatchElement {
+/** Batch element computed from Graphics geometry */
+export interface IGraphicsBatchElement
+{
     vertexData: Float32Array;
     blendMode: BLEND_MODES;
     indices: Uint16Array | Uint32Array;
@@ -38,14 +37,16 @@ export interface IGraphicsBatchElement {
     _texture: Texture;
 }
 
-export interface IFillStyleOptions {
+export interface IFillStyleOptions
+{
     color?: number;
     alpha?: number;
     texture?: Texture;
     matrix?: Matrix;
 }
 
-export interface ILineStyleOptions extends IFillStyleOptions {
+export interface ILineStyleOptions extends IFillStyleOptions
+{
     width?: number;
     alignment?: number;
     native?: boolean;
@@ -77,7 +78,6 @@ export interface Graphics extends GlobalMixins.Graphics, Container {}
  * an optimization, by passing it into a new Geometry object's constructor.  Because of this
  * ability, it's important to call `destroy()` on Geometry objects once you are done with them, to
  * properly dereference each GraphicsGeometry and prevent memory leaks.
- *
  * @memberof PIXI
  */
 export class Graphics extends Container
@@ -90,7 +90,6 @@ export class Graphics extends Container
 
     /**
      * Temporary point to use for containsPoint.
-     *
      * @private
      */
     static _TEMP_POINT = new Point();
@@ -106,7 +105,6 @@ export class Graphics extends Container
 
     /**
      * Current path
-     *
      * @readonly
      */
     public currentPath: Polygon = null;
@@ -148,7 +146,6 @@ export class Graphics extends Container
      * Includes vertex positions, face indices, normals, colors, UVs, and
      * custom attributes within buffers, reducing the cost of passing all
      * this data to the GPU. Can be shared between multiple Mesh or Graphics objects.
-     *
      * @readonly
      */
     public get geometry(): GraphicsGeometry
@@ -172,7 +169,6 @@ export class Graphics extends Container
          * of the object in exchange for taking up texture memory. It is also useful if you need the graphics
          * object to be anti-aliased, because it will be rendered using canvas. This is not recommended if
          * you are constantly redrawing the graphics element.
-         *
          * @name cacheAsBitmap
          * @member {boolean}
          * @memberof PIXI.Graphics#
@@ -189,8 +185,7 @@ export class Graphics extends Container
     /**
      * Creates a new Graphics object with the same values as this one.
      * Note that only the geometry of the object is cloned, not its transform (position,scale,etc)
-     *
-     * @return - A clone of the graphics object
+     * @returns - A clone of the graphics object
      */
     public clone(): Graphics
     {
@@ -205,7 +200,6 @@ export class Graphics extends Container
      * primitive in the GraphicsGeometry list is rendered sequentially, modes
      * such as `PIXI.BLEND_MODES.ADD` and `PIXI.BLEND_MODES.MULTIPLY` will
      * be applied per-primitive.
-     *
      * @default PIXI.BLEND_MODES.NORMAL
      */
     public set blendMode(value: BLEND_MODES)
@@ -221,7 +215,6 @@ export class Graphics extends Container
     /**
      * The tint applied to each graphic shape. This is a hex value. A value of
      * 0xFFFFFF will remove any tint effect.
-     *
      * @default 0xFFFFFF
      */
     public get tint(): number
@@ -236,7 +229,6 @@ export class Graphics extends Container
 
     /**
      * The current fill style.
-     *
      * @readonly
      */
     public get fill(): FillStyle
@@ -246,7 +238,6 @@ export class Graphics extends Container
 
     /**
      * The current line style.
-     *
      * @readonly
      */
     public get line(): LineStyle
@@ -257,21 +248,19 @@ export class Graphics extends Container
     /**
      * Specifies the line style used for subsequent calls to Graphics methods such as the lineTo()
      * method or the drawCircle() method.
-     *
      * @param [width=0] - width of the line to draw, will update the objects stored style
      * @param [color=0x0] - color of the line to draw, will update the objects stored style
      * @param [alpha=1] - alpha of the line to draw, will update the objects stored style
      * @param [alignment=0.5] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outer).
      *        WebGL only.
      * @param [native=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
-     * @return - This Graphics object. Good for chaining method calls
+     * @returns - This Graphics object. Good for chaining method calls
      */
     public lineStyle(width: number, color?: number, alpha?: number, alignment?: number, native?: boolean): this;
 
     /**
      * Specifies the line style used for subsequent calls to Graphics methods such as the lineTo()
      * method or the drawCircle() method.
-     *
      * @param options - Line style options
      * @param {number} [options.width=0] - width of the line to draw, will update the objects stored style
      * @param {number} [options.color=0x0] - color of the line to draw, will update the objects stored style
@@ -282,7 +271,7 @@ export class Graphics extends Container
      * @param {PIXI.LINE_CAP}[options.cap=PIXI.LINE_CAP.BUTT] - line cap style
      * @param {PIXI.LINE_JOIN}[options.join=PIXI.LINE_JOIN.MITER] - line join style
      * @param {number}[options.miterLimit=10] - miter limit ratio
-     * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
+     * @returns {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
     public lineStyle(options?: ILineStyleOptions): this;
 
@@ -300,8 +289,7 @@ export class Graphics extends Container
 
     /**
      * Like line style but support texture for line fill.
-     *
-     * @param options - Collection of options for setting line style.
+     * @param [options] - Collection of options for setting line style.
      * @param {number} [options.width=0] - width of the line to draw, will update the objects stored style
      * @param {PIXI.Texture} [options.texture=PIXI.Texture.WHITE] - Texture to use
      * @param {number} [options.color=0x0] - color of the line to draw, will update the objects stored style.
@@ -314,9 +302,9 @@ export class Graphics extends Container
      * @param {PIXI.LINE_CAP}[options.cap=PIXI.LINE_CAP.BUTT] - line cap style
      * @param {PIXI.LINE_JOIN}[options.join=PIXI.LINE_JOIN.MITER] - line join style
      * @param {number}[options.miterLimit=10] - miter limit ratio
-     * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
+     * @returns {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    public lineTextureStyle(options: ILineStyleOptions): this
+    public lineTextureStyle(options?: ILineStyleOptions): this
     {
         // Apply defaults
         options = Object.assign({
@@ -359,7 +347,6 @@ export class Graphics extends Container
 
     /**
      * Start a polygon object internally.
-     *
      * @protected
      */
     protected startPoly(): void
@@ -386,7 +373,6 @@ export class Graphics extends Container
 
     /**
      * Finish the polygon object.
-     *
      * @protected
      */
     finishPoly(): void
@@ -407,10 +393,9 @@ export class Graphics extends Container
 
     /**
      * Moves the current drawing position to x, y.
-     *
      * @param x - the X coordinate to move to
      * @param y - the Y coordinate to move to
-     * @return - This Graphics object. Good for chaining method calls
+     * @returns - This Graphics object. Good for chaining method calls
      */
     public moveTo(x: number, y: number): this
     {
@@ -424,10 +409,9 @@ export class Graphics extends Container
     /**
      * Draws a line using the current line style from the current drawing position to (x, y);
      * The current drawing position is then set to (x, y).
-     *
      * @param x - the X coordinate to draw to
      * @param y - the Y coordinate to draw to
-     * @return - This Graphics object. Good for chaining method calls
+     * @returns - This Graphics object. Good for chaining method calls
      */
     public lineTo(x: number, y: number): this
     {
@@ -449,7 +433,11 @@ export class Graphics extends Container
         return this;
     }
 
-    /** Initialize the curve */
+    /**
+     * Initialize the curve
+     * @param x
+     * @param y
+     */
     protected _initCurve(x = 0, y = 0): void
     {
         if (this.currentPath)
@@ -468,12 +456,11 @@ export class Graphics extends Container
     /**
      * Calculate the points for a quadratic bezier curve and then draws it.
      * Based on: https://stackoverflow.com/questions/785097/how-do-i-implement-a-bezier-curve-in-c
-     *
      * @param cpX - Control point x
      * @param cpY - Control point y
      * @param toX - Destination point x
      * @param toY - Destination point y
-     * @return - This Graphics object. Good for chaining method calls
+     * @returns - This Graphics object. Good for chaining method calls
      */
     public quadraticCurveTo(cpX: number, cpY: number, toX: number, toY: number): this
     {
@@ -493,14 +480,13 @@ export class Graphics extends Container
 
     /**
      * Calculate the points for a bezier curve and then draws it.
-     *
      * @param cpX - Control point x
      * @param cpY - Control point y
      * @param cpX2 - Second Control point x
      * @param cpY2 - Second Control point y
      * @param toX - Destination point x
      * @param toY - Destination point y
-     * @return This Graphics object. Good for chaining method calls
+     * @returns This Graphics object. Good for chaining method calls
      */
     public bezierCurveTo(cpX: number, cpY: number, cpX2: number, cpY2: number, toX: number, toY: number): this
     {
@@ -515,13 +501,12 @@ export class Graphics extends Container
      * The arcTo() method creates an arc/curve between two tangents on the canvas.
      *
      * "borrowed" from https://code.google.com/p/fxcanvas/ - thanks google!
-     *
      * @param x1 - The x-coordinate of the first tangent point of the arc
      * @param y1 - The y-coordinate of the first tangent point of the arc
      * @param x2 - The x-coordinate of the end of the arc
      * @param y2 - The y-coordinate of the end of the arc
      * @param radius - The radius of the arc
-     * @return - This Graphics object. Good for chaining method calls
+     * @returns - This Graphics object. Good for chaining method calls
      */
     public arcTo(x1: number, y1: number, x2: number, y2: number, radius: number): this
     {
@@ -543,7 +528,6 @@ export class Graphics extends Container
 
     /**
      * The arc method creates an arc/curve (used to create circles, or parts of circles).
-     *
      * @param cx - The x-coordinate of the center of the circle
      * @param cy - The y-coordinate of the center of the circle
      * @param radius - The radius of the circle
@@ -553,7 +537,7 @@ export class Graphics extends Container
      * @param anticlockwise - Specifies whether the drawing should be
      *  counter-clockwise or clockwise. False is default, and indicates clockwise, while true
      *  indicates counter-clockwise.
-     * @return - This Graphics object. Good for chaining method calls
+     * @returns - This Graphics object. Good for chaining method calls
      */
     public arc(cx: number, cy: number, radius: number, startAngle: number, endAngle: number, anticlockwise = false): this
     {
@@ -617,10 +601,9 @@ export class Graphics extends Container
     /**
      * Specifies a simple one-color fill that subsequent calls to other Graphics methods
      * (such as lineTo() or drawCircle()) use when drawing.
-     *
      * @param color - the color of the fill
      * @param alpha - the alpha of the fill
-     * @return - This Graphics object. Good for chaining method calls
+     * @returns - This Graphics object. Good for chaining method calls
      */
     public beginFill(color = 0, alpha = 1): this
     {
@@ -629,13 +612,12 @@ export class Graphics extends Container
 
     /**
      * Begin the texture fill
-     *
      * @param options - Object object.
      * @param {PIXI.Texture} [options.texture=PIXI.Texture.WHITE] - Texture to fill
      * @param {number} [options.color=0xffffff] - Background to fill behind texture
      * @param {number} [options.alpha=1] - Alpha of fill
      * @param {PIXI.Matrix} [options.matrix=null] - Transform matrix
-     * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
+     * @returns {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
     beginTextureFill(options?: IFillStyleOptions): this
     {
@@ -674,8 +656,7 @@ export class Graphics extends Container
 
     /**
      * Applies a fill to the lines and shapes that were added since the last call to the beginFill() method.
-     *
-     * @return - This Graphics object. Good for chaining method calls
+     * @returns - This Graphics object. Good for chaining method calls
      */
     public endFill(): this
     {
@@ -688,12 +669,11 @@ export class Graphics extends Container
 
     /**
      * Draws a rectangle shape.
-     *
      * @param x - The X coord of the top-left of the rectangle
      * @param y - The Y coord of the top-left of the rectangle
      * @param width - The width of the rectangle
      * @param height - The height of the rectangle
-     * @return - This Graphics object. Good for chaining method calls
+     * @returns - This Graphics object. Good for chaining method calls
      */
     public drawRect(x: number, y: number, width: number, height: number): this
     {
@@ -702,13 +682,12 @@ export class Graphics extends Container
 
     /**
      * Draw a rectangle shape with rounded/beveled corners.
-     *
      * @param x - The X coord of the top-left of the rectangle
      * @param y - The Y coord of the top-left of the rectangle
      * @param width - The width of the rectangle
      * @param height - The height of the rectangle
      * @param radius - Radius of the rectangle corners
-     * @return - This Graphics object. Good for chaining method calls
+     * @returns - This Graphics object. Good for chaining method calls
      */
     public drawRoundedRect(x: number, y: number, width: number, height: number, radius: number): this
     {
@@ -717,11 +696,10 @@ export class Graphics extends Container
 
     /**
      * Draws a circle.
-     *
      * @param x - The X coordinate of the center of the circle
      * @param y - The Y coordinate of the center of the circle
      * @param radius - The radius of the circle
-     * @return - This Graphics object. Good for chaining method calls
+     * @returns - This Graphics object. Good for chaining method calls
      */
     public drawCircle(x: number, y: number, radius: number): this
     {
@@ -730,26 +708,24 @@ export class Graphics extends Container
 
     /**
      * Draws an ellipse.
-     *
      * @param x - The X coordinate of the center of the ellipse
      * @param y - The Y coordinate of the center of the ellipse
      * @param width - The half width of the ellipse
      * @param height - The half height of the ellipse
-     * @return - This Graphics object. Good for chaining method calls
+     * @returns - This Graphics object. Good for chaining method calls
      */
     public drawEllipse(x: number, y: number, width: number, height: number): this
     {
         return this.drawShape(new Ellipse(x, y, width, height));
     }
 
-    public drawPolygon(...path: Array<number> | Array<Point>): this
-    public drawPolygon(path: Array<number> | Array<Point> | Polygon): this
+    public drawPolygon(...path: Array<number> | Array<Point>): this;
+    public drawPolygon(path: Array<number> | Array<Point> | Polygon): this;
 
     /**
      * Draws a polygon using the given path.
-     *
      * @param {number[]|PIXI.Point[]|PIXI.Polygon} path - The path data used to construct the polygon.
-     * @return - This Graphics object. Good for chaining method calls
+     * @returns - This Graphics object. Good for chaining method calls
      */
     public drawPolygon(...path: any[]): this
     {
@@ -785,9 +761,8 @@ export class Graphics extends Container
 
     /**
      * Draw any shape.
-     *
      * @param {PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.Rectangle|PIXI.RoundedRectangle} shape - Shape to draw
-     * @return - This Graphics object. Good for chaining method calls
+     * @returns - This Graphics object. Good for chaining method calls
      */
     public drawShape(shape: IShape): this
     {
@@ -810,8 +785,7 @@ export class Graphics extends Container
 
     /**
      * Clears the graphics that were drawn to this Graphics object, and resets fill and line style settings.
-     *
-     * @return - This Graphics object. Good for chaining method calls
+     * @returns - This Graphics object. Good for chaining method calls
      */
     public clear(): this
     {
@@ -830,7 +804,6 @@ export class Graphics extends Container
     /**
      * True if graphics consists of one rectangle, and thus, can be drawn like a Sprite and
      * masked with gl.scissor.
-     *
      * @returns - True if only 1 rect.
      */
     public isFastRect(): boolean
@@ -846,7 +819,6 @@ export class Graphics extends Container
 
     /**
      * Renders the object using the WebGL renderer
-     *
      * @param renderer - The renderer
      */
     protected _render(renderer: Renderer): void
@@ -925,7 +897,6 @@ export class Graphics extends Container
 
     /**
      * Renders the batches using the BathedRenderer plugin
-     *
      * @param renderer - The renderer
      */
     protected _renderBatched(renderer: Renderer): void
@@ -952,7 +923,6 @@ export class Graphics extends Container
 
     /**
      * Renders the graphics direct
-     *
      * @param renderer - The renderer
      */
     protected _renderDirect(renderer: Renderer): void
@@ -992,7 +962,11 @@ export class Graphics extends Container
         }
     }
 
-    /** Renders specific DrawCall */
+    /**
+     * Renders specific DrawCall
+     * @param renderer
+     * @param drawCall
+     */
     protected _renderDrawCallDirect(renderer: Renderer, drawCall: BatchDrawCall): void
     {
         const { texArray, type, size, start } = drawCall;
@@ -1008,7 +982,6 @@ export class Graphics extends Container
 
     /**
      * Resolves shader for direct rendering
-     *
      * @param renderer - The renderer
      */
     protected _resolveDirectShader(renderer: Renderer): Shader
@@ -1069,9 +1042,8 @@ export class Graphics extends Container
 
     /**
      * Tests if a point is inside this graphics object
-     *
      * @param point - the point to test
-     * @return - the result of the test
+     * @returns - the result of the test
      */
     public containsPoint(point: IPointData): boolean
     {
@@ -1109,10 +1081,7 @@ export class Graphics extends Container
         }
     }
 
-    /**
-     * If there's a transform update or a change to the shape of the
-     * geometry, recalculate the vertices.
-     */
+    /** If there's a transform update or a change to the shape of the geometry, recalculate the vertices. */
     protected calculateVertices(): void
     {
         const wtID = this.transform._worldID;
@@ -1149,8 +1118,7 @@ export class Graphics extends Container
 
     /**
      * Closes the current path.
-     *
-     * @return - Returns itself.
+     * @returns - Returns itself.
      */
     public closePath(): this
     {
@@ -1170,9 +1138,8 @@ export class Graphics extends Container
 
     /**
      * Apply a matrix to the positional data.
-     *
      * @param matrix - Matrix to use for transform current shape.
-     * @return - Returns itself.
+     * @returns - Returns itself.
      */
     public setMatrix(matrix: Matrix): this
     {
@@ -1187,8 +1154,7 @@ export class Graphics extends Container
      * Also weirdness ensues if holes overlap!
      * Ellipses, Circles, Rectangles and Rounded Rectangles cannot be holes or host for holes in CanvasRenderer,
      * please use `moveTo` `lineTo`, `quadraticCurveTo` if you rely on pixi-legacy bundle.
-     *
-     * @return - Returns itself.
+     * @returns - Returns itself.
      */
     public beginHole(): this
     {
@@ -1200,8 +1166,7 @@ export class Graphics extends Container
 
     /**
      * End adding holes to the last draw shape.
-     *
-     * @return - Returns itself.
+     * @returns - Returns itself.
      */
     public endHole(): this
     {
@@ -1213,7 +1178,6 @@ export class Graphics extends Container
 
     /**
      * Destroys the Graphics object.
-     *
      * @param options - Options parameter. A boolean will act as if all
      *  options have been set to that value
      * @param {boolean} [options.children=false] - if set to true, all the children will have
@@ -1223,7 +1187,7 @@ export class Graphics extends Container
      * @param {boolean} [options.baseTexture=false] - Only used for child Sprites if options.children is set to true
      *  Should it destroy the base texture of the child sprite
      */
-    public destroy(options?: IDestroyOptions|boolean): void
+    public destroy(options?: IDestroyOptions | boolean): void
     {
         this._geometry.refCount--;
         if (this._geometry.refCount === 0)

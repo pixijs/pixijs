@@ -8,14 +8,12 @@ import type { GLTexture } from '../GLTexture';
  * Base resource class for textures that manages validation and uploading, depending on its type.
  *
  * Uploading of a base texture to the GPU is required.
- *
  * @memberof PIXI
  */
 export abstract class Resource
 {
     /**
      * If resource has been destroyed.
-     *
      * @readonly
      * @default false
      */
@@ -38,7 +36,6 @@ export abstract class Resource
     /**
      * Mini-runner for handling resize events
      * accepts 2 parameters: width, height
-     *
      * @member {Runner}
      * @private
      */
@@ -46,7 +43,6 @@ export abstract class Resource
 
     /**
      * Mini-runner for handling update events
-     *
      * @member {Runner}
      * @private
      */
@@ -55,7 +51,6 @@ export abstract class Resource
     /**
      * Handle internal errors, such as loading errors
      * accepts 1 param: error
-     *
      * @member {Runner}
      * @private
      */
@@ -80,7 +75,6 @@ export abstract class Resource
 
     /**
      * Bind to a parent BaseTexture
-     *
      * @param baseTexture - Parent texture
      */
     bind(baseTexture: BaseTexture): void
@@ -99,7 +93,6 @@ export abstract class Resource
 
     /**
      * Unbind to a parent BaseTexture
-     *
      * @param baseTexture - Parent texture
      */
     unbind(baseTexture: BaseTexture): void
@@ -111,7 +104,6 @@ export abstract class Resource
 
     /**
      * Trigger a resize event
-     *
      * @param width - X dimension
      * @param height - Y dimension
      */
@@ -127,7 +119,6 @@ export abstract class Resource
 
     /**
      * Has been validated
-     *
      * @readonly
      */
     get valid(): boolean
@@ -147,9 +138,8 @@ export abstract class Resource
     /**
      * This can be overridden to start preloading a resource
      * or do any other prepare step.
-     *
      * @protected
-     * @return Handle the validate event
+     * @returns Handle the validate event
      */
     load(): Promise<Resource>
     {
@@ -158,7 +148,6 @@ export abstract class Resource
 
     /**
      * The width of the resource.
-     *
      * @readonly
      */
     get width(): number
@@ -168,7 +157,6 @@ export abstract class Resource
 
     /**
      * The height of the resource.
-     *
      * @readonly
      */
     get height(): number
@@ -178,7 +166,6 @@ export abstract class Resource
 
     /**
      * Uploads the texture or returns false if it cant for some reason. Override this.
-     *
      * @param renderer - yeah, renderer!
      * @param baseTexture - the texture
      * @param glTexture - texture instance for this webgl context
@@ -188,10 +175,9 @@ export abstract class Resource
 
     /**
      * Set the style, optional to override
-     *
-     * @param renderer - yeah, renderer!
-     * @param baseTexture - the texture
-     * @param glTexture - texture instance for this webgl context
+     * @param _renderer - yeah, renderer!
+     * @param _baseTexture - the texture
+     * @param _glTexture - texture instance for this webgl context
      * @returns - `true` is success
      */
     style(_renderer: Renderer, _baseTexture: BaseTexture, _glTexture: GLTexture): boolean
@@ -227,9 +213,8 @@ export abstract class Resource
 
     /**
      * Abstract, used to auto-detect resource type.
-     *
-     * @param {*} source - The source object
-     * @param {string} extension - The extension of source, if set
+     * @param {*} _source - The source object
+     * @param {string} _extension - The extension of source, if set
      */
     static test(_source: unknown, _extension?: string): boolean
     {

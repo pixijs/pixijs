@@ -4,6 +4,19 @@
   "main": "dist/cjs/text.js",
   "module": "dist/esm/text.js",
   "bundle": "dist/browser/text.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+          "default": "./dist/cjs/text.js",
+          "types": "./index.d.ts"
+      },
+      "require": {
+          "default": "./dist/esm/text.js",
+          "types": "./index.d.ts"
+      }
+    }
+  },
   "description": "Text via the Canvas API",
   "author": "Mat Groves",
   "contributors": [

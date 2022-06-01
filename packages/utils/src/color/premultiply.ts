@@ -2,11 +2,10 @@ import { BLEND_MODES } from '@pixi/constants';
 
 /**
  * Corrects PixiJS blend, takes premultiplied alpha into account
- *
  * @memberof PIXI.utils
  * @function mapPremultipliedBlendModes
  * @private
- * @return {Array<number[]>} Mapped modes.
+ * @returns {Array<number[]>} Mapped modes.
  */
 function mapPremultipliedBlendModes(): number[][]
 {
@@ -38,14 +37,13 @@ function mapPremultipliedBlendModes(): number[][]
 /**
  * maps premultiply flag and blendMode to adjusted blendMode
  * @memberof PIXI.utils
- * @const premultiplyBlendMode
+ * @constant premultiplyBlendMode
  * @type {Array<number[]>}
  */
 export const premultiplyBlendMode = mapPremultipliedBlendModes();
 
 /**
  * changes blendMode according to texture format
- *
  * @memberof PIXI.utils
  * @function correctBlendMode
  * @param {number} blendMode - supposed blend mode
@@ -59,7 +57,6 @@ export function correctBlendMode(blendMode: number, premultiplied: boolean): num
 
 /**
  * combines rgb and alpha to out array
- *
  * @memberof PIXI.utils
  * @function premultiplyRgba
  * @param {Float32Array|number[]} rgb - input rgb
@@ -69,7 +66,7 @@ export function correctBlendMode(blendMode: number, premultiplied: boolean): num
  * @returns {Float32Array} vec4 rgba
  */
 export function premultiplyRgba(
-    rgb: Float32Array|number[],
+    rgb: Float32Array | number[],
     alpha: number,
     out?: Float32Array,
     premultiply?: boolean
@@ -95,7 +92,6 @@ export function premultiplyRgba(
 
 /**
  * premultiplies tint
- *
  * @memberof PIXI.utils
  * @function premultiplyTint
  * @param {number} tint - integer RGB
@@ -125,7 +121,6 @@ export function premultiplyTint(tint: number, alpha: number): number
 
 /**
  * converts integer tint and float alpha to vec4 form, premultiplies by default
- *
  * @memberof PIXI.utils
  * @function premultiplyTintToRgba
  * @param {number} tint - input tint

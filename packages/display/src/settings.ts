@@ -11,7 +11,6 @@ import { settings } from '@pixi/settings';
  *
  * Also be aware of that this may not work nicely with the addChildAt() function,
  * as the zIndex sorting may cause the child to automatically sorted to another position.
- *
  * @static
  * @constant
  * @name SORTABLE_CHILDREN

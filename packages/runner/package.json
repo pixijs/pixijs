@@ -4,6 +4,19 @@
   "main": "dist/cjs/runner.js",
   "module": "dist/esm/runner.js",
   "bundle": "dist/browser/runner.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+          "default": "./dist/cjs/runner.js",
+          "types": "./index.d.ts"
+      },
+      "require": {
+          "default": "./dist/esm/runner.js",
+          "types": "./index.d.ts"
+      }
+    }
+  },
   "description": "A simple alternative to events and signals with an emphasis on performance.",
   "author": "Mat Groves",
   "contributors": [

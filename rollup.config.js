@@ -19,7 +19,8 @@ const isProduction = process.env.NODE_ENV === 'production';
  * Get the JSCC plugin for preprocessing code.
  * @param {boolean} debug Build is for debugging
  */
-function preprocessPlugin(debug) {
+function preprocessPlugin(debug)
+{
     return jscc({
         values: {
             _DEBUG: debug,
@@ -33,7 +34,8 @@ function preprocessPlugin(debug) {
  * Convert a development file name to minified.
  * @param {string} name
  */
-function prodName(name) {
+function prodName(name)
+{
     return name.replace(/\.(m)?js$/, '.min.$1js');
 }
 
@@ -47,7 +49,9 @@ async function main()
         }),
         commonjs(),
         json(),
-        typescript(),
+        typescript({
+            tsconfig: path.resolve(__dirname, 'tsconfig.build.json'),
+        }),
         string({
             include: [
                 '**/*.frag',
@@ -119,7 +123,7 @@ async function main()
             dependencies,
             peerDependencies } = pkg.config;
 
-        let banner = [
+        const banner = [
             `/*!`,
             ` * ${pkg.name} - v${version}`,
             ` * Compiled ${compiled}`,
@@ -133,7 +137,7 @@ async function main()
         const external = Object.keys(dependencies || [])
             .concat(Object.keys(peerDependencies || []));
         const basePath = path.relative(__dirname, pkg.dir);
-        let input = path.join(basePath, 'src/index.ts');
+        const input = path.join(basePath, 'src/index.ts');
         const freeze = false;
 
         results.push({
@@ -158,7 +162,8 @@ async function main()
             plugins,
         });
 
-        if (isProduction) {
+        if (isProduction)
+        {
             results.push({
                 input,
                 output: [

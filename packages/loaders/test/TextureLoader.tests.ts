@@ -4,18 +4,18 @@ import { BaseTextureCache, TextureCache } from '@pixi/utils';
 import sinon from 'sinon';
 import { expect } from 'chai';
 
-describe('TextureLoader', function ()
+describe('TextureLoader', () =>
 {
-    it('should exist and return a function', function ()
+    it('should exist and return a function', () =>
     {
         expect(TextureLoader).to.not.be.undefined;
         expect(TextureLoader.use).to.be.a('function');
     });
 
-    it('should do nothing if the resource is not an image', function ()
+    it('should do nothing if the resource is not an image', () =>
     {
         const spy = sinon.spy();
-        const res = {};
+        const res = {} as LoaderResource;
 
         TextureLoader.use(res, spy);
 
@@ -23,13 +23,13 @@ describe('TextureLoader', function ()
         expect(res.texture).to.be.undefined;
     });
 
-    it('should create a texture if resource is an image', function (done)
+    it('should create a texture if resource is an image', (done) =>
     {
         const name = `${(Math.random() * 10000) | 0}`;
         const url = `http://localhost/doesnt_exist/${name}`;
         const data = new Image();
         const type = LoaderResource.TYPE.IMAGE;
-        const res = { url, name, type, data, metadata: {} };
+        const res = { url, name, type, data, metadata: {} } as LoaderResource;
 
         // Transparent image
         data.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJ'

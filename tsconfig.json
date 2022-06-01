@@ -13,12 +13,11 @@
         "allowSyntheticDefaultImports": true,
         "moduleResolution": "node",
         "resolveJsonModule": true,
+        "downlevelIteration": true,
         "baseUrl": "./",
         "paths": {
             "@pixi/*": [
-                "packages/*/src",
-                "packages/filters/*/src",
-                "packages/canvas/*/src"
+                "packages/*/src"
             ],
             "pixi.js": [
                 "bundles/pixi.js/src"
@@ -34,11 +33,8 @@
         "node_modules",
         "**/dist/**",
         "**/lib/**",
-        "**/test/**",
-        "**/scripts/**",
-        "**/types/**",
         "bundles/**/*.d.ts",
-        "rollup.config.js"
+        "**/out/**"
     ],
     "ts-node": {
         "files": true,

@@ -39,14 +39,16 @@ export interface IRendererPlugins
     [key: string]: any;
 }
 
-export interface IRendererRenderOptions {
+export interface IRendererRenderOptions
+{
     renderTexture?: RenderTexture;
     clear?: boolean;
     transform?: Matrix;
     skipUpdateTransform?: boolean;
 }
 
-export interface IGenerateTextureOptions {
+export interface IGenerateTextureOptions
+{
     scaleMode?: SCALE_MODES;
     resolution?: number;
     region?: Rectangle;
@@ -56,7 +58,6 @@ export interface IGenerateTextureOptions {
 /**
  * The AbstractRenderer is the base for a PixiJS Renderer. It is extended by the {@link PIXI.CanvasRenderer}
  * and {@link PIXI.Renderer} which can be used for rendering a PixiJS scene.
- *
  * @abstract
  * @class
  * @extends PIXI.utils.EventEmitter
@@ -81,7 +82,7 @@ export abstract class AbstractRenderer extends EventEmitter
     _lastObjectRendered: IRenderableObject;
 
     /**
-     * @param system - The name of the system this renderer is for.
+     * @param type - The renderer type.
      * @param [options] - The optional renderer parameters.
      * @param {number} [options.width=800] - The width of the screen.
      * @param {number} [options.height=600] - The height of the screen.
@@ -110,15 +111,13 @@ export abstract class AbstractRenderer extends EventEmitter
 
         /**
          * The supplied constructor options.
-         *
-         * @member {Object}
-         * @readOnly
+         * @member {object}
+         * @readonly
          */
         this.options = options;
 
         /**
          * The type of the renderer.
-         *
          * @member {number}
          * @default PIXI.RENDERER_TYPE.UNKNOWN
          * @see PIXI.RENDERER_TYPE
@@ -129,21 +128,18 @@ export abstract class AbstractRenderer extends EventEmitter
          * Measurements of the screen. (0, 0, screenWidth, screenHeight).
          *
          * Its safe to use as filterArea or hitArea for the whole stage.
-         *
          * @member {PIXI.Rectangle}
          */
         this.screen = new Rectangle(0, 0, options.width, options.height);
 
         /**
          * The canvas element that everything is drawn to.
-         *
          * @member {HTMLCanvasElement}
          */
         this.view = options.view || document.createElement('canvas');
 
         /**
          * The resolution / device pixel ratio of the renderer.
-         *
          * @member {number}
          * @default PIXI.settings.RESOLUTION
          */
@@ -152,14 +148,12 @@ export abstract class AbstractRenderer extends EventEmitter
         /**
          * Pass-thru setting for the canvas' context `alpha` property. This is typically
          * not something you need to fiddle with. If you want transparency, use `backgroundAlpha`.
-         *
          * @member {boolean}
          */
         this.useContextAlpha = options.useContextAlpha;
 
         /**
          * Whether CSS dimensions of canvas view should be resized to screen dimensions automatically.
-         *
          * @member {boolean}
          */
         this.autoDensity = !!options.autoDensity;
@@ -167,7 +161,6 @@ export abstract class AbstractRenderer extends EventEmitter
         /**
          * The value of the preserveDrawingBuffer flag affects whether or not the contents of
          * the stencil buffer is retained after rendering.
-         *
          * @member {boolean}
          */
         this.preserveDrawingBuffer = options.preserveDrawingBuffer;
@@ -178,7 +171,6 @@ export abstract class AbstractRenderer extends EventEmitter
          * frame to set the canvas background color. If the scene is transparent PixiJS will use clearRect
          * to clear the canvas every frame. Disable this by setting this to false. For example, if
          * your game has a canvas filling background image you often don't need this set.
-         *
          * @member {boolean}
          * @default
          */
@@ -186,7 +178,6 @@ export abstract class AbstractRenderer extends EventEmitter
 
         /**
          * The background color as a number.
-         *
          * @member {number}
          * @protected
          */
@@ -194,7 +185,6 @@ export abstract class AbstractRenderer extends EventEmitter
 
         /**
          * The background color as an [R, G, B, A] array.
-         *
          * @member {number[]}
          * @protected
          */
@@ -202,7 +192,6 @@ export abstract class AbstractRenderer extends EventEmitter
 
         /**
          * The background color as a string.
-         *
          * @member {string}
          * @protected
          */
@@ -223,7 +212,6 @@ export abstract class AbstractRenderer extends EventEmitter
 
         /**
          * The last root object that the renderer tried to render.
-         *
          * @member {PIXI.DisplayObject}
          * @protected
          */
@@ -239,7 +227,6 @@ export abstract class AbstractRenderer extends EventEmitter
 
     /**
      * Initialize the plugins.
-     *
      * @protected
      * @param {object} staticMap - The dictionary of statically saved plugins.
      */
@@ -253,7 +240,6 @@ export abstract class AbstractRenderer extends EventEmitter
 
     /**
      * Same as view.width, actual number of pixels in the canvas by horizontal.
-     *
      * @member {number}
      * @readonly
      * @default 800
@@ -265,7 +251,6 @@ export abstract class AbstractRenderer extends EventEmitter
 
     /**
      * Same as view.height, actual number of pixels in the canvas by vertical.
-     *
      * @member {number}
      * @readonly
      * @default 600
@@ -279,7 +264,6 @@ export abstract class AbstractRenderer extends EventEmitter
      * Resizes the screen and canvas as close as possible to the specified width and height.
      * Canvas dimensions are multiplied by resolution and rounded to the nearest integers.
      * The new canvas dimensions divided by the resolution become the new screen dimensions.
-     *
      * @param desiredScreenWidth - The desired width of the screen.
      * @param desiredScreenHeight - The desired height of the screen.
      */
@@ -302,7 +286,6 @@ export abstract class AbstractRenderer extends EventEmitter
 
         /**
          * Fired after view has been resized.
-         *
          * @event PIXI.Renderer#resize
          * @param {number} screenWidth - The new width of the screen.
          * @param {number} screenHeight - The new height of the screen.
@@ -321,13 +304,12 @@ export abstract class AbstractRenderer extends EventEmitter
      * @param {PIXI.Rectangle} options.region - The region of the displayObject, that shall be rendered,
      *        if no region is specified, defaults to the local bounds of the displayObject.
      * @param {PIXI.MSAA_QUALITY} options.multisample - The number of samples of the frame buffer.
-     * @return A texture of the graphics object.
+     * @returns A texture of the graphics object.
      */
     generateTexture(displayObject: IRenderableObject, options?: IGenerateTextureOptions): RenderTexture;
 
     /**
      * Please use the options argument instead.
-     *
      * @method PIXI.AbstractRenderer#generateTexture
      * @deprecated Since 6.1.0
      * @param displayObject - The displayObject the object will be generated from.
@@ -335,7 +317,7 @@ export abstract class AbstractRenderer extends EventEmitter
      * @param resolution - The resolution / device pixel ratio of the texture being generated.
      * @param region - The region of the displayObject, that shall be rendered,
      *        if no region is specified, defaults to the local bounds of the displayObject.
-     * @return A texture of the graphics object.
+     * @returns A texture of the graphics object.
      */
     generateTexture(
         displayObject: IRenderableObject,
@@ -394,10 +376,9 @@ export abstract class AbstractRenderer extends EventEmitter
 
     /**
      * Adds a new system to the renderer.
-     *
      * @param ClassRef - Class reference
      * @param name - Property name for system
-     * @return Return instance of renderer
+     * @returns Return instance of renderer
      */
     abstract addSystem(ClassRef: ISystemConstructor, name: string): this;
 
@@ -405,7 +386,6 @@ export abstract class AbstractRenderer extends EventEmitter
 
     /**
      * Removes everything from the renderer and optionally removes the Canvas DOM element.
-     *
      * @param [removeView=false] - Removes the Canvas element from the DOM.
      */
     destroy(removeView?: boolean): void
@@ -438,7 +418,6 @@ export abstract class AbstractRenderer extends EventEmitter
 
     /**
      * The background color to fill if not transparent
-     *
      * @member {number}
      */
     get backgroundColor(): number
@@ -455,7 +434,6 @@ export abstract class AbstractRenderer extends EventEmitter
 
     /**
      * The background color alpha. Setting this to 0 will make the canvas transparent.
-     *
      * @member {number}
      */
     get backgroundAlpha(): number

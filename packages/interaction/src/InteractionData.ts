@@ -6,7 +6,6 @@ export type InteractivePointerEvent = PointerEvent | TouchEvent | MouseEvent;
 
 /**
  * Holds all information related to an Interaction event
- *
  * @memberof PIXI
  */
 export class InteractionData
@@ -19,7 +18,6 @@ export class InteractionData
 
     /**
      * When passed to an event handler, this will be the original DOM Event that was captured
-     *
      * @see https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent
      * @see https://developer.mozilla.org/en-US/docs/Web/API/TouchEvent
      * @see https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent
@@ -32,21 +30,18 @@ export class InteractionData
 
     /**
      * Indicates whether or not the pointer device that created the event is the primary pointer.
-     *
      * @see https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent/isPrimary
      */
     public isPrimary: boolean;
 
     /**
      * Indicates which button was pressed on the mouse or pointer device to trigger the event.
-     *
      * @see https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/button
      */
     public button: number;
 
     /**
      * Indicates which buttons are pressed on the mouse or pointer device when the event is triggered.
-     *
      * @see https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/buttons
      */
     public buttons: number;
@@ -54,7 +49,6 @@ export class InteractionData
     /**
      * The width of the pointer's contact along the x-axis, measured in CSS pixels.
      * radiusX of TouchEvents will be represented by this value.
-     *
      * @see https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent/width
      */
     public width: number;
@@ -62,28 +56,24 @@ export class InteractionData
     /**
      * The height of the pointer's contact along the y-axis, measured in CSS pixels.
      * radiusY of TouchEvents will be represented by this value.
-     *
      * @see https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent/height
      */
     public height: number;
 
     /**
      * The angle, in degrees, between the pointer device and the screen.
-     *
      * @see https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent/tiltX
      */
     public tiltX: number;
 
     /**
      * The angle, in degrees, between the pointer device and the screen.
-     *
      * @see https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent/tiltY
      */
     public tiltY: number;
 
     /**
      * The type of pointer that triggered the event.
-     *
      * @see https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent/pointerType
      */
     public pointerType: string;
@@ -91,28 +81,24 @@ export class InteractionData
     /**
      * Pressure applied by the pointing device during the event. A Touch's force property
      * will be represented by this value.
-     *
      * @see https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent/pressure
      */
     public pressure = 0;
 
     /**
      * From TouchEvents (not PointerEvents triggered by touches), the rotationAngle of the Touch.
-     *
      * @see https://developer.mozilla.org/en-US/docs/Web/API/Touch/rotationAngle
      */
     public rotationAngle = 0;
 
     /**
      * Twist of a stylus pointer.
-     *
      * @see https://w3c.github.io/pointerevents/#pointerevent-interface
      */
     public twist = 0;
 
     /**
      * Barrel pressure on a stylus pointer.
-     *
      * @see https://w3c.github.io/pointerevents/#pointerevent-interface
      */
     public tangentialPressure = 0;
@@ -139,7 +125,6 @@ export class InteractionData
 
     /**
      * The unique identifier of the pointer. It will be the same as `identifier`.
-     *
      * @readonly
      * @see https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent/pointerId
      */
@@ -150,14 +135,13 @@ export class InteractionData
 
     /**
      * This will return the local coordinates of the specified displayObject for this InteractionData
-     *
      * @param displayObject - The DisplayObject that you would like the local
      *  coords off
      * @param point - A Point object in which to store the value, optional (otherwise
      *  will create a new point)
      * @param globalPos - A Point object containing your custom global coords, optional
      *  (otherwise will use the current global coords)
-     * @return - A point containing the coordinates of the InteractionData position relative
+     * @returns - A point containing the coordinates of the InteractionData position relative
      *  to the DisplayObject
      */
     public getLocalPosition<P extends IPointData = Point>(displayObject: DisplayObject, point?: P, globalPos?: IPointData): P
@@ -167,7 +151,6 @@ export class InteractionData
 
     /**
      * Copies properties from normalized event data.
-     *
      * @param {Touch|MouseEvent|PointerEvent} event - The normalized event data
      */
     public copyEvent(event: Touch | InteractivePointerEvent): void

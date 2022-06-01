@@ -5,7 +5,6 @@ import type { Rectangle } from '@pixi/math';
 
 /**
  * Helper class to create a quad with uvs like in v4
- *
  * @memberof PIXI
  */
 export class QuadUv extends Geometry
@@ -47,10 +46,9 @@ export class QuadUv extends Geometry
 
     /**
      * Maps two Rectangle to the quad.
-     *
      * @param targetTextureFrame - The first rectangle
      * @param destinationFrame - The second rectangle
-     * @return - Returns itself.
+     * @returns - Returns itself.
      */
     map(targetTextureFrame: Rectangle, destinationFrame: Rectangle): this
     {
@@ -91,7 +89,6 @@ export class QuadUv extends Geometry
 
     /**
      * Legacy upload method, just marks buffers dirty.
-     *
      * @returns - Returns itself.
      */
     invalidate(): this

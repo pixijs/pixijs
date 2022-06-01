@@ -4,9 +4,9 @@ import { Graphics } from '@pixi/graphics';
 import sinon from 'sinon';
 import { expect } from 'chai';
 
-describe('EventBoundary', function ()
+describe('EventBoundary', () =>
 {
-    it('should fire capture, bubble events on the correct target', function ()
+    it('should fire capture, bubble events on the correct target', () =>
     {
         const stage = new Container();
         const boundary = new EventBoundary(stage);
@@ -50,7 +50,7 @@ describe('EventBoundary', function ()
         expect(stageSpy).to.have.been.calledOnce;
     });
 
-    it('should set hit-test target to most specific ancestor if hit object is not interactive', function ()
+    it('should set hit-test target to most specific ancestor if hit object is not interactive', () =>
     {
         const stage = new Container();
         const boundary = new EventBoundary(stage);
@@ -65,13 +65,14 @@ describe('EventBoundary', function ()
         expect(hitTestTarget).to.equal(container);
     });
 
-    it('should fire pointerupoutside only on relevant & still mounted targets', function ()
+    it('should fire pointerupoutside only on relevant & still mounted targets', () =>
     {
         const stage = new Container();
         const boundary = new EventBoundary(stage);
         const container = stage.addChild(new Container());
         const pressed = container.addChild(new Graphics().beginFill(0).drawRect(0, 0, 100, 100));
-        const outside = stage.addChild(new Graphics().beginFill(0).drawRect(100, 0, 100, 100));
+
+        stage.addChild(new Graphics().beginFill(0).drawRect(100, 0, 100, 100));
 
         const eventSpy = sinon.spy();
         const containerSpy = sinon.spy();
@@ -101,7 +102,7 @@ describe('EventBoundary', function ()
         off.global.set(150, 50);
 
         boundary.mapEvent(on);
-        expect(boundary.trackingData(1).pressTargetsByButton[1][2]).to.equal(pressed);
+        expect(boundary['trackingData'](1).pressTargetsByButton[1][2]).to.equal(pressed);
 
         pressed.destroy();
         boundary.mapEvent(off);
@@ -118,7 +119,7 @@ describe('EventBoundary', function ()
         expect(stageSpy).to.have.been.calledOnce;
     });
 
-    it('should fire pointerout on the most specific mounted ancestor of pointerover target', function ()
+    it('should fire pointerout on the most specific mounted ancestor of pointerover target', () =>
     {
         const stage = new Container();
         const boundary = new EventBoundary(stage);
@@ -133,13 +134,13 @@ describe('EventBoundary', function ()
         const toOverSpy = sinon.spy();
 
         over.addEventListener('pointerover', orgOverSpy);
-        container.addEventListener('pointerover', function (e)
+        container.addEventListener('pointerover', (e) =>
         {
             expect(e.target).to.equal(over);
             orgContainerOverSpy();
         });
         over.addEventListener('pointerout', outSpy);
-        container.addEventListener('pointerout', function (e)
+        container.addEventListener('pointerout', (e) =>
         {
             expect(e.target).to.equal(container);
             containerOutSpy();

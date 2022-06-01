@@ -2,11 +2,11 @@ import { Rectangle } from '@pixi/math';
 import { expect } from 'chai';
 import '@pixi/math-extras';
 
-describe('Rectangle', function ()
+describe('Rectangle', () =>
 {
-    describe('containsRect', function ()
+    describe('containsRect', () =>
     {
-        it('should return true if all four corners are inside or on the edge of the rectangle', function ()
+        it('should return true if all four corners are inside or on the edge of the rectangle', () =>
         {
             /*
                 +-----------------+-----------------+
@@ -45,9 +45,9 @@ describe('Rectangle', function ()
         });
     });
 
-    describe('equals', function ()
+    describe('equals', () =>
     {
-        it('should return true x, y, width and height match', function ()
+        it('should return true x, y, width and height match', () =>
         {
             const a = new Rectangle(0, 0, 100, 100);
             const b = new Rectangle(0, 0, 100, 100);
@@ -67,10 +67,10 @@ describe('Rectangle', function ()
             expect(c.equals(c.clone())).to.equal(true);
         });
     });
-    describe('intersection', function ()
+    describe('intersection', () =>
     {
         it('should return a rectangle with the intersection if the area is > 0, otherwise an empty rectangle',
-            function ()
+            () =>
             {
                 /*
                 +--------+
@@ -120,7 +120,7 @@ describe('Rectangle', function ()
                 expect(emptyIntersectsItself.height).to.equal(0);
             });
 
-        it('should return the same reference given', function ()
+        it('should return the same reference given', () =>
         {
             const a = new Rectangle(0, 0, 100, 100);
             const b = new Rectangle(50, 50, 100, 100);
@@ -130,10 +130,10 @@ describe('Rectangle', function ()
         });
     });
 
-    describe('union', function ()
+    describe('union', () =>
     {
         it('should return a rectangle that includes both rectangles (similar to enlarge)',
-            function ()
+            () =>
             {
                 const a = new Rectangle(0, 0, 100, 100);
                 const b = new Rectangle(50, 50, 100, 100);
@@ -145,7 +145,7 @@ describe('Rectangle', function ()
                 expect(c.height).to.equal(150);
             });
 
-        it('should return the same reference given', function ()
+        it('should return the same reference given', () =>
         {
             const a = new Rectangle(0, 0, 100, 100);
             const b = new Rectangle(50, 50, 100, 100);
@@ -155,7 +155,7 @@ describe('Rectangle', function ()
         });
 
         it('should return the same values as enalrge()',
-            function ()
+            () =>
             {
                 const enlarged = new Rectangle(0, 0, 100, 100);
                 const a = new Rectangle(0, 0, 100, 100);

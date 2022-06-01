@@ -2,22 +2,22 @@ import { Texture, BaseTexture } from '@pixi/core';
 import { TextureCache, destroyTextureCache, clearTextureCache, BaseTextureCache } from '@pixi/utils';
 import { expect } from 'chai';
 
-describe('TextureCache', function ()
+describe('TextureCache', () =>
 {
-    beforeEach(function ()
+    beforeEach(() =>
     {
         destroyTextureCache();
         clearTextureCache();
     });
 
-    it('should exist', function ()
+    it('should exist', () =>
     {
         expect(TextureCache).to.be.an('object');
     });
 
-    describe('destroyTextureCache', function ()
+    describe('destroyTextureCache', () =>
     {
-        it('should successfully destroy the texture cache', function ()
+        it('should successfully destroy the texture cache', () =>
         {
             const canvas = document.createElement('canvas');
             const foo = new Texture(new BaseTexture(canvas));
@@ -45,9 +45,9 @@ describe('TextureCache', function ()
         });
     });
 
-    describe('clearTextureCache', function ()
+    describe('clearTextureCache', () =>
     {
-        it('should successfully clear the texture cache', function ()
+        it('should successfully clear the texture cache', () =>
         {
             const canvas = document.createElement('canvas');
             const foo = new Texture(new BaseTexture(canvas));

@@ -7,7 +7,6 @@ import type { BatchTextureArray } from './BatchTextureArray';
 
 /**
  * System plugin to the renderer to manage batching.
- *
  * @memberof PIXI
  */
 export class BatchSystem implements ISystem
@@ -31,7 +30,6 @@ export class BatchSystem implements ISystem
 
     /**
      * Changes the current renderer to the one given in parameter
-     *
      * @param objectRenderer - The object renderer to use.
      */
     setObjectRenderer(objectRenderer: ObjectRenderer): void
@@ -56,9 +54,7 @@ export class BatchSystem implements ISystem
         this.setObjectRenderer(this.emptyRenderer);
     }
 
-    /**
-     * Reset the system to an empty renderer
-     */
+    /** Reset the system to an empty renderer */
     reset(): void
     {
         this.setObjectRenderer(this.emptyRenderer);
@@ -67,7 +63,6 @@ export class BatchSystem implements ISystem
     /**
      * Handy function for batch renderers: copies bound textures in first maxTextures locations to array
      * sets actual _batchLocation for them
-     *
      * @param arr - arr copy destination
      * @param maxTextures - number of copied elements
      */
@@ -89,7 +84,6 @@ export class BatchSystem implements ISystem
      * Assigns batch locations to textures in array based on boundTextures state.
      * All textures in texArray should have `_batchEnabled = _batchId`,
      * and their count should be less than `maxTextures`.
-     *
      * @param texArray - textures to bound
      * @param boundTextures - current state of bound textures
      * @param batchId - marker for _batchEnabled param of textures in texArray

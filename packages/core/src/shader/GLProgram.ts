@@ -11,7 +11,6 @@ export class IGLUniformData
 
 /**
  * Helper class to create a WebGL Program
- *
  * @memberof PIXI
  */
 export class GLProgram
@@ -46,7 +45,6 @@ export class GLProgram
 
     /**
      * Makes a new Pixi program.
-     *
      * @param program - webgl program
      * @param uniformData - uniforms
      */

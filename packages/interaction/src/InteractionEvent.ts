@@ -5,7 +5,6 @@ export type InteractionCallback = (interactionEvent: InteractionEvent, displayOb
 
 /**
  * Event class that mimics native DOM events.
- *
  * @memberof PIXI
  */
 export class InteractionEvent
@@ -20,7 +19,6 @@ export class InteractionEvent
 
     /**
      * At which object this event stops propagating.
-     *
      * @private
      */
     public stopsPropagatingAt: DisplayObject;
@@ -29,7 +27,6 @@ export class InteractionEvent
      * Whether we already reached the element we want to
      * stop propagating at. This is important for delayed events,
      * where we start over deeper in the tree again.
-     *
      * @private
      */
     public stopPropagationHint: boolean;

@@ -7,7 +7,6 @@ import { ENV } from '@pixi/constants';
  * attempt to fallback support to WebGL 1. If you want to
  * explicitly remove feature support to target a more stable
  * baseline, prefer a lower environment.
- *
  * @static
  * @name PREFER_ENV
  * @memberof PIXI.settings
@@ -25,7 +24,6 @@ settings.PREFER_ENV = ENV.WEBGL2;
  * Otherwise, these `from` calls throw an exception. Using this property
  * can be useful if you want to enforce preloading all assets with
  * {@link PIXI.Loader Loader}.
- *
  * @static
  * @name STRICT_TEXTURE_CACHE
  * @memberof PIXI.settings

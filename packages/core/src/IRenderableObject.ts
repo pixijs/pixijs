@@ -6,7 +6,8 @@ import type { Renderer } from './Renderer';
  * The minimum APIs needed to implement a renderable object.
  * @memberof PIXI
  */
-interface IRenderableObject {
+interface IRenderableObject
+{
     /** Object must have a parent container */
     parent: IRenderableContainer;
     /** Object must have a transform */
@@ -25,7 +26,8 @@ interface IRenderableObject {
  * Interface for Container to interface with Renderer.
  * @memberof PIXI
  */
-interface IRenderableContainer extends IRenderableObject {
+interface IRenderableContainer extends IRenderableObject
+{
     /** Get Local bounds for container */
     getLocalBounds(rect?: Rectangle, skipChildrenUpdate?: boolean): Rectangle;
 }

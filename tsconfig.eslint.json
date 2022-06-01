@@ -1,0 +1,20 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "target": "es6",
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true,
+        "module": "commonjs",
+        "baseUrl": "./",
+        "paths": {
+            "@pixi/*": [
+                "packages/*/src"
+            ]
+        },
+    },
+    "exclude": [
+        "node_modules",
+        "**/dist/**",
+        "**/lib/**"
+    ]
+}
