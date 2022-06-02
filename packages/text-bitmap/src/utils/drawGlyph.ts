@@ -8,7 +8,6 @@ import type { TextMetrics, TextStyle } from '@pixi/text';
  * Draws the glyph `metrics.text` on the given canvas.
  *
  * Ignored because not directly exposed.
- *
  * @ignore
  * @param {HTMLCanvasElement} canvas
  * @param {CanvasRenderingContext2D} context

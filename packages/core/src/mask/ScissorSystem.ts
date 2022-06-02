@@ -12,7 +12,6 @@ const tempMatrix = new Matrix();
  * Scissor masking discards pixels outside of a rectangle called the scissor box. The scissor box is in the framebuffer
  * viewport's space; however, the mask's rectangle is projected from world-space to viewport space automatically
  * by this system.
- *
  * @memberof PIXI
  */
 export class ScissorSystem extends AbstractMaskSystem
@@ -153,7 +152,6 @@ export class ScissorSystem extends AbstractMaskSystem
 
     /**
      * Applies the Mask and adds it to the current stencil stack.
-     *
      * @author alvin
      * @param maskData - The mask data.
      */

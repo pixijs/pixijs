@@ -11,10 +11,11 @@ const BYTES_PER_PIXEL = 4;
 /**
  * this interface is used to extract only  a single pixel of Render Texture or Display Object
  * if you use this Interface all fields is required
- * @exemple
+ * @example
  * test: PixelExtractOptions = { x: 15, y: 20, resolution: 4, width: 10, height: 10 }
  */
-export interface PixelExtractOptions {
+export interface PixelExtractOptions
+{
     x: number,
     y: number,
     height: number,
@@ -28,7 +29,6 @@ export interface PixelExtractOptions {
  *
  * Do not instantiate these plugins directly. It is available from the `renderer.plugins` property.
  * See {@link PIXI.CanvasRenderer#plugins} or {@link PIXI.Renderer#plugins}.
- *
  * @example
  * // Create a new app (will auto-add extract plugin to renderer)
  * const app = new PIXI.Application();
@@ -41,7 +41,6 @@ export interface PixelExtractOptions {
  * // Render the graphics as an HTMLImageElement
  * const image = app.renderer.plugins.extract.image(graphics);
  * document.body.appendChild(image);
- *
  * @memberof PIXI
  */
 
@@ -59,14 +58,13 @@ export class Extract implements IRendererPlugin
 
     /**
      * Will return a HTML Image of the target
-     *
      * @param target - A displayObject or renderTexture
      *  to convert. If left empty will use the main renderer
      * @param format - Image format, e.g. "image/jpeg" or "image/webp".
      * @param quality - JPEG or Webp compression from 0 to 1. Default is 0.92.
-     * @return - HTML Image of the target
+     * @returns - HTML Image of the target
      */
-    public image(target: DisplayObject|RenderTexture, format?: string, quality?: number): HTMLImageElement
+    public image(target: DisplayObject | RenderTexture, format?: string, quality?: number): HTMLImageElement
     {
         const image = new Image();
 
@@ -78,26 +76,24 @@ export class Extract implements IRendererPlugin
     /**
      * Will return a base64 encoded string of this target. It works by calling
      *  `Extract.getCanvas` and then running toDataURL on that.
-     *
      * @param target - A displayObject or renderTexture
      *  to convert. If left empty will use the main renderer
      * @param format - Image format, e.g. "image/jpeg" or "image/webp".
      * @param quality - JPEG or Webp compression from 0 to 1. Default is 0.92.
-     * @return - A base64 encoded string of the texture.
+     * @returns - A base64 encoded string of the texture.
      */
-    public base64(target: DisplayObject|RenderTexture, format?: string, quality?: number): string
+    public base64(target: DisplayObject | RenderTexture, format?: string, quality?: number): string
     {
         return this.canvas(target).toDataURL(format, quality);
     }
 
     /**
      * Creates a Canvas element, renders this target to it and then returns it.
-     *
      * @param target - A displayObject or renderTexture
      *  to convert. If left empty will use the main renderer
-     * @return - A Canvas element with the texture rendered on.
+     * @returns - A Canvas element with the texture rendered on.
      */
-    public canvas(target: DisplayObject|RenderTexture): HTMLCanvasElement
+    public canvas(target: DisplayObject | RenderTexture): HTMLCanvasElement
     {
         const renderer = this.renderer;
         let resolution;
@@ -192,12 +188,12 @@ export class Extract implements IRendererPlugin
     /**
      * Will return a one-dimensional array containing the pixel data of the entire texture in RGBA
      * order, with integer values between 0 and 255 (included).
-     *
      * @param target - A displayObject or renderTexture
      *  to convert. If left empty will use the main renderer
-     * @return - One-dimensional array containing the pixel data of the entire texture
+     * @param options
+     * @returns - One-dimensional array containing the pixel data of the entire texture
      */
-    public pixels(target?: DisplayObject|RenderTexture, options?: PixelExtractOptions): Uint8Array
+    public pixels(target?: DisplayObject | RenderTexture, options?: PixelExtractOptions): Uint8Array
     {
         const renderer = this.renderer;
         let resolution;
@@ -293,7 +289,6 @@ export class Extract implements IRendererPlugin
 
     /**
      * Takes premultiplied pixel data and produces regular pixel data
-     *
      * @private
      * @param pixels - array of pixel data
      * @param out - output array

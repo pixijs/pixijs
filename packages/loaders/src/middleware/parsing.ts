@@ -3,7 +3,6 @@ import { encodeBinary } from '../base/encodeBinary';
 
 /**
  * A middleware for transforming XHR loaded Blobs into more useful objects
- *
  * @ignore
  * @function parsing
  * @example

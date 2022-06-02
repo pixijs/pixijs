@@ -5,11 +5,11 @@ import { INTERNAL_FORMATS } from '@pixi/compressed-textures';
  * The transcoding formats provided by basis_universal.
  *
  * NOTE: Not all of these formats are supported on WebGL!
- *
  * @ignore
  */
-/* eslint-disable camelcase */
-export enum BASIS_FORMATS {
+/* eslint-disable camelcase, @typescript-eslint/indent */
+export enum BASIS_FORMATS
+{
     cTFETC1 = 0,
     cTFETC2 = 1,
     cTFBC1 = 2,
@@ -27,11 +27,10 @@ export enum BASIS_FORMATS {
     cTFBGR565 = 15,
     cTFRGBA4444 = 16,
 }
-/* eslint-enable camelcase */
+/* eslint-enable camelcase, @typescript-eslint/indent */
 
 /**
  * Maps {@link BASIS_FORMATS} to {@link PIXI.INTERNAL_FORMATS}
- *
  * @ignore
  */
 export const BASIS_FORMAT_TO_INTERNAL_FORMAT: { [id: number]: INTERNAL_FORMATS } = {
@@ -41,7 +40,7 @@ export const BASIS_FORMAT_TO_INTERNAL_FORMAT: { [id: number]: INTERNAL_FORMATS }
     [BASIS_FORMATS.cTFPVRTC1_4_RGB]: INTERNAL_FORMATS.COMPRESSED_RGB_PVRTC_4BPPV1_IMG,
     [BASIS_FORMATS.cTFPVRTC1_4_RGBA]: INTERNAL_FORMATS.COMPRESSED_RGBA_PVRTC_4BPPV1_IMG,
     [BASIS_FORMATS.cTFATC_RGB]: INTERNAL_FORMATS.COMPRESSED_RGB_ATC_WEBGL,
-    [BASIS_FORMATS.cTFASTC_4x4]: INTERNAL_FORMATS.COMPRESSED_RGBA_ATC_INTERPOLATED_ALPHA_WEBGL
+    [BASIS_FORMATS.cTFASTC_4x4]: INTERNAL_FORMATS.COMPRESSED_RGBA_ATC_INTERPOLATED_ALPHA_WEBGL,
 };
 
 /**
@@ -50,18 +49,16 @@ export const BASIS_FORMAT_TO_INTERNAL_FORMAT: { [id: number]: INTERNAL_FORMATS }
  *
  * NOTE: {@link BASIS_FORMATS.cTFBGR565} is not supported, while {@link BASIS_FORMATS.cTFRGBA4444} is not implemented by
  *  [at]pixi/basis.
- *
  * @ignore
  */
 export const BASIS_FORMAT_TO_TYPE: { [id: number]: TYPES } = {
     [BASIS_FORMATS.cTFRGBA32]: TYPES.UNSIGNED_BYTE,
     [BASIS_FORMATS.cTFRGB565]: TYPES.UNSIGNED_SHORT_5_6_5,
-    [BASIS_FORMATS.cTFRGBA4444]: TYPES.UNSIGNED_SHORT_4_4_4_4
+    [BASIS_FORMATS.cTFRGBA4444]: TYPES.UNSIGNED_SHORT_4_4_4_4,
 };
 
 /**
  * Maps {@link PIXI.INTERNAL_FORMATS} to {@link BASIS_FORMATS}
- *
  * @ignore
  */
 export const INTERNAL_FORMAT_TO_BASIS_FORMAT: { [id: number]: number }
@@ -76,18 +73,16 @@ export const INTERNAL_FORMAT_TO_BASIS_FORMAT: { [id: number]: number }
 
 /**
  * Enumerates the basis formats with alpha components
- *
  * @ignore
  */
 export const BASIS_FORMATS_ALPHA: { [id: number]: boolean } = {
     [BASIS_FORMATS.cTFBC3]: true,
     [BASIS_FORMATS.cTFPVRTC1_4_RGBA]: true,
-    [BASIS_FORMATS.cTFASTC_4x4]: true
+    [BASIS_FORMATS.cTFASTC_4x4]: true,
 };
 
 /**
  * Binding to C++ {@code BasisFile} wrapper class.
- *
  * @see https://github.com/BinomialLLC/basis_universal/blob/master/webgl/transcoder/basis_wrappers.cpp
  * @private
  */
@@ -117,7 +112,6 @@ export declare class BasisFile
 // Missing typings? - https://github.com/microsoft/TypeScript/issues/39655
 /**
  * Compressed texture extensions relevant to the formats into which Basis can decompress into.
- *
  * @ignore
  */
 /* eslint-disable camelcase */
@@ -134,7 +128,6 @@ export type BasisTextureExtensions = {
 
 /**
  * API provided by basis_universal WebGL library.
- *
  * @ignore
  */
 export type BasisBinding = {
@@ -144,7 +137,6 @@ export type BasisBinding = {
 
 /**
  * Binding to basis_universal WebGL library.
- *
  * @see https://github.com/BinomialLLC/basis_universal/blob/master/webgl/transcoder/build/basis_transcoder.js
  * @ignore
  */

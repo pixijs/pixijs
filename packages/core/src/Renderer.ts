@@ -45,7 +45,7 @@ import { StartupOptions, StartupSystem } from './startup/StartupSystem';
  *
  * | System                               | Description                                                                   |
  * | ------------------------------------ | ----------------------------------------------------------------------------- |
-
+ 
  * | Generic Systems                      | Systems that manage functionality that all renderer types share               |
  * | ------------------------------------ | ----------------------------------------------------------------------------- |
  * | {@link PIXI.ViewSystem}              | This manages the main view of the renderer usually a Canvas                   |
@@ -53,7 +53,7 @@ import { StartupOptions, StartupSystem } from './startup/StartupSystem';
  * | {@link PIXI.BackgroundSystem}        | This manages the main views background color and alpha                        |
  * | {@link PIXI.StartupSystem}           | Boots up a renderer and initiatives all the systems                           |
  * | {@link PIXI.EventSystem}             | This manages UI events.                                                       |
-
+ 
  * | WebGL Core Systems                   | Provide an optimised, easy to use API to work with WebGL                      |
  * | ------------------------------------ | ----------------------------------------------------------------------------- |
  * | {@link PIXI.ContextSystem}           | This manages the WebGL context and extensions.                                |
@@ -64,7 +64,7 @@ import { StartupOptions, StartupSystem } from './startup/StartupSystem';
  * | {@link PIXI.TextureSystem}           | This manages textures and their resources on the GPU.                         |
  * | {@link PIXI.TextureGCSystem}         | This will automatically remove textures from the GPU if they are not used.    |
  * | {@link PIXI.MultisampleSystem}       | This manages the multisample const on the WEbGL Renderer                      |
-
+ 
  * | Pixi high level Systems              | Set of Pixi specific systems designed to work with Pixi objects               |
  * | ------------------------------------ | ----------------------------------------------------------------------------- |
  * | {@link PIXI.RenderSystem}          | This adds the ability to render a PIXI.DisplayObject                          |
@@ -78,8 +78,6 @@ import { StartupOptions, StartupSystem } from './startup/StartupSystem';
  * | {@link PIXI.BatchSystem}             | This manages object renderers that defer rendering until a flush.             |
  *
  * The breadth of the API surface provided by the renderer is contained within these systems.
- *
- * @class
  * @memberof PIXI
  * @implements PIXI.IRenderer
  */
@@ -87,16 +85,13 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
 {
     /**
      * The type of the renderer. will be PIXI.RENDERER_TYPE.CANVAS
-     *
      * @member {number}
-
      * @see PIXI.RENDERER_TYPE
      */
     public readonly type: RENDERER_TYPE.WEBGL;
 
     /**
      * WebGL context, set by {@link PIXI.ContextSystem this.context}.
-     *
      * @readonly
      * @member {WebGLRenderingContext}
      */
@@ -108,7 +103,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      * the must be added before the scene is rendered for the first time
      * as we dynamically buildcode to handle all global var per shader
      *
-     * */
+     */
     public globalUniforms: UniformGroup;
 
     /** Unique UID assigned to the renderer's WebGL context. */
@@ -269,7 +264,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      * Create renderer if WebGL is available. Overrideable
      * by the **@pixi/canvas-renderer** package to allow fallback.
      * throws error if WebGL is not available.
-     *
+     * @param options
      * @private
      */
     static create(options?: IRendererOptions): IRenderer
@@ -309,7 +304,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      * @param {object} [options.blit] - if rendering to a renderTexture, set to true if you want to run blit after
      * the render. defaults to false.
      */
-    constructor(options? : IRendererOptions)
+    constructor(options?: IRendererOptions)
     {
         super();
 
@@ -390,7 +385,6 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
 
     /**
      * Renders the object to its WebGL view.
-     *
      * @param displayObject - The object to be rendered.
      * @param {object} [options] - Object to use for render options.
      * @param {PIXI.RenderTexture} [options.renderTexture] - The render texture to render to.
@@ -402,7 +396,6 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
 
     /**
      * Please use the `option` render arguments instead.
-     *
      * @deprecated Since 6.0.0
      * @param displayObject
      * @param renderTexture
@@ -439,7 +432,6 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
 
     /**
      * Resizes the WebGL view to the specified width and height.
-     *
      * @param desiredScreenWidth - The desired width of the screen.
      * @param desiredScreenHeight - The desired height of the screen.
      */
@@ -450,8 +442,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
 
     /**
      * Resets the WebGL state so you can render things however you fancy!
-     *
-     * @return Returns itself.
+     * @returns Returns itself.
      */
     reset(): this
     {
@@ -469,7 +460,6 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
 
     /**
      * Removes everything from the renderer (event listeners, spritebatch, etc...)
-     *
      * @param [removeView=false] - Removes the Canvas element from the DOM.
      *  See: https://github.com/pixijs/pixi.js/issues/2233
      */
@@ -513,7 +503,6 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
 
     /**
      * Same as view.width, actual number of pixels in the canvas by horizontal.
-     *
      * @member {number}
      * @readonly
      * @default 800
@@ -554,7 +543,6 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      * Measurements of the screen. (0, 0, screenWidth, screenHeight).
      *
      * Its safe to use as filterArea or hitArea for the whole stage.
-     *
      * @member {PIXI.Rectangle}
      */
     get screen(): Rectangle
@@ -580,9 +568,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
         return `WebGL ${this.context.webGLVersion}`;
     }
 
-    /**
-     * this sets weather the screen is totally cleared between each frame withthe background color and alpha
-     */
+    /** this sets weather the screen is totally cleared between each frame withthe background color and alpha */
     get clearBeforeRender(): boolean
     {
         // #if _DEBUG
@@ -596,7 +582,6 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
     /**
      * Pass-thru setting for the canvas' context `alpha` property. This is typically
      * not something you need to fiddle with. If you want transparency, use `backgroundAlpha`.
-     *
      * @member {boolean}
      */
     get useContextAlpha(): boolean | 'notMultiplied'
@@ -612,7 +597,6 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
     /**
      * readonly drawing buffer preservation
      * we can only know this if Pixi created the context
-     *
      * @deprecated since 6.4.0
      */
     get preserveDrawingBuffer(): boolean
@@ -627,7 +611,6 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
 
     /**
      * The background color to fill if not transparent
-     *
      * @member {number}
      * @deprecated since 6.4.0
      */
@@ -652,7 +635,6 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
 
     /**
      * The background color alpha. Setting this to 0 will make the canvas transparent.
-     *
      * @member {number}
      * @deprecated since 6.4.0
      */
@@ -696,26 +678,25 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      * @param {PIXI.Rectangle} options.region - The region of the displayObject, that shall be rendered,
      *        if no region is specified, defaults to the local bounds of the displayObject.
      * @param {PIXI.MSAA_QUALITY} options.multisample - The number of samples of the frame buffer.
-     * @return A texture of the graphics object.
+     * @returns A texture of the graphics object.
      */
     generateTexture(displayObject: IRenderableObject, options?: IGenerateTextureOptions): RenderTexture;
 
     /**
      * Please use the options argument instead.
-     *
      * @deprecated Since 6.1.0
      * @param displayObject - The displayObject the object will be generated from.
      * @param scaleMode - The scale mode of the texture.
      * @param resolution - The resolution / device pixel ratio of the texture being generated.
      * @param region - The region of the displayObject, that shall be rendered,
      *        if no region is specified, defaults to the local bounds of the displayObject.
-     * @return A texture of the graphics object.
+     * @returns A texture of the graphics object.
      */
     generateTexture(
-          displayObject: IRenderableObject,
-          scaleMode?: SCALE_MODES,
-          resolution?: number,
-          region?: Rectangle): RenderTexture;
+        displayObject: IRenderableObject,
+        scaleMode?: SCALE_MODES,
+        resolution?: number,
+        region?: Rectangle): RenderTexture;
 
     /**
      * @ignore
@@ -741,7 +722,6 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      * Collection of installed plugins. These are included by default in PIXI, but can be excluded
      * by creating a custom build. Consult the README for more information about creating custom
      * builds and excluding plugins.
-     *
      * @readonly
      * @property {PIXI.AccessibilityManager} accessibility Support tabbing interactive elements.
      * @property {PIXI.Extract} extract Extract image data from renderer.
@@ -755,7 +735,6 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
 
     /**
      * Adds a plugin to the renderer.
-     *
      * @param pluginName - The name of the plugin.
      * @param ctor - The constructor function or class for the plugin.
      */

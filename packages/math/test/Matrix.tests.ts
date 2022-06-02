@@ -1,9 +1,9 @@
 import { Matrix, Transform } from '@pixi/math';
 import { expect } from 'chai';
 
-describe('Matrix', function ()
+describe('Matrix', () =>
 {
-    it('should create a new matrix', function ()
+    it('should create a new matrix', () =>
     {
         const matrix = new Matrix();
 
@@ -46,7 +46,7 @@ describe('Matrix', function ()
         expect(output[5]).to.equal(5);
     });
 
-    it('should apply different transforms', function ()
+    it('should apply different transforms', () =>
     {
         const matrix = new Matrix();
 
@@ -82,7 +82,7 @@ describe('Matrix', function ()
         expect(matrix.ty).to.equal(15);
     });
 
-    it('should allow rotatation', function ()
+    it('should allow rotatation', () =>
     {
         const matrix = new Matrix();
 
@@ -94,7 +94,7 @@ describe('Matrix', function ()
         expect(matrix.d).to.equal(-1);
     });
 
-    it('should append matrix', function ()
+    it('should append matrix', () =>
     {
         const m1 = new Matrix();
         const m2 = new Matrix();
@@ -108,7 +108,7 @@ describe('Matrix', function ()
         expect(m1.ty).to.equal(m2.ty);
     });
 
-    it('should prepend matrix', function ()
+    it('should prepend matrix', () =>
     {
         const m1 = new Matrix();
         const m2 = new Matrix();
@@ -136,13 +136,13 @@ describe('Matrix', function ()
         expect(m3.ty).to.equal(m4.ty);
     });
 
-    it('should get IDENTITY and TEMP_MATRIX', function ()
+    it('should get IDENTITY and TEMP_MATRIX', () =>
     {
         expect(Matrix.IDENTITY instanceof Matrix).to.be.true;
         expect(Matrix.TEMP_MATRIX instanceof Matrix).to.be.true;
     });
 
-    it('should reset matrix to default when identity() is called', function ()
+    it('should reset matrix to default when identity() is called', () =>
     {
         const matrix = new Matrix();
 
@@ -165,7 +165,7 @@ describe('Matrix', function ()
         expect(matrix.ty).to.equal(0);
     });
 
-    it('should have the same transform after decompose', function ()
+    it('should have the same transform after decompose', () =>
     {
         const matrix = new Matrix();
         const transformInitial  = new Transform();
@@ -182,7 +182,7 @@ describe('Matrix', function ()
             transformInitial.skew.y = (Math.random() - 2) * Math.PI;
 
             matrix.setTransform(
-                transformInitial.x, transformInitial.y,
+                transformInitial.position.x, transformInitial.position.y,
                 0, 0,
                 transformInitial.scale.x, transformInitial.scale.y,
                 transformInitial.rotation,
@@ -190,16 +190,19 @@ describe('Matrix', function ()
             );
             matrix.decompose(transformDecomposed);
 
-            expect(transformInitial.a).to.equal(transformDecomposed.a);
-            expect(transformInitial.b).to.equal(transformDecomposed.b);
-            expect(transformInitial.c).to.equal(transformDecomposed.c);
-            expect(transformInitial.d).to.equal(transformDecomposed.d);
-            expect(transformInitial.tx).to.equal(transformDecomposed.tx);
-            expect(transformInitial.ty).to.equal(transformDecomposed.ty);
+            transformInitial.updateLocalTransform();
+            transformDecomposed.updateLocalTransform();
+
+            expect(transformInitial.localTransform.a).to.be.closeTo(transformDecomposed.localTransform.a, 0.0001);
+            expect(transformInitial.localTransform.b).to.be.closeTo(transformDecomposed.localTransform.b, 0.0001);
+            expect(transformInitial.localTransform.c).to.be.closeTo(transformDecomposed.localTransform.c, 0.0001);
+            expect(transformInitial.localTransform.d).to.be.closeTo(transformDecomposed.localTransform.d, 0.0001);
+            expect(transformInitial.localTransform.tx).to.be.closeTo(transformDecomposed.localTransform.tx, 0.0001);
+            expect(transformInitial.localTransform.ty).to.be.closeTo(transformDecomposed.localTransform.ty, 0.0001);
         }
     });
 
-    it('should decompose corner case', function ()
+    it('should decompose corner case', () =>
     {
         const matrix = new Matrix();
         const transform  = new Transform();
@@ -218,9 +221,9 @@ describe('Matrix', function ()
         expect(result.d).to.closeTo(matrix.d, 0.001);
     });
 
-    describe('decompose', function ()
+    describe('decompose', () =>
     {
-        it('should be the inverse of updateLocalTransform even when pivot is set', function ()
+        it('should be the inverse of updateLocalTransform even when pivot is set', () =>
         {
             const matrix = new Matrix(0.01, 0.04, 0.04, 0.1, 2, 2);
             const transform = new Transform();

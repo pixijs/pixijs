@@ -10,11 +10,10 @@ export interface ISVGResourceOptions
     width?: number;
     height?: number;
     autoLoad?: boolean;
-    crossorigin?: boolean|string;
+    crossorigin?: boolean | string;
 }
 /**
  * Resource type for SVG elements and graphics.
- *
  * @memberof PIXI
  */
 export class SVGResource extends BaseImageResource
@@ -38,7 +37,7 @@ export class SVGResource extends BaseImageResource
     private _load: Promise<SVGResource>;
 
     /** Cross origin value to use */
-    private _crossorigin?: boolean|string;
+    private _crossorigin?: boolean | string;
 
     /**
      * @param sourceBase64 - Base64 encoded SVG element or URL for SVG file.
@@ -168,9 +167,8 @@ export class SVGResource extends BaseImageResource
 
     /**
      * Get size from an svg string using a regular expression.
-     *
      * @param svgString - a serialized svg element
-     * @return - image extension
+     * @returns - image extension
      */
     static getSize(svgString?: string): ISize
     {
@@ -196,10 +194,9 @@ export class SVGResource extends BaseImageResource
 
     /**
      * Used to auto-detect the type of resource.
-     *
      * @param {*} source - The source object
      * @param {string} extension - The extension of source, if set
-     * @return {boolean} - If the source is a SVG source or data file
+     * @returns {boolean} - If the source is a SVG source or data file
      */
     static test(source: unknown, extension?: string): boolean
     {
@@ -213,7 +210,6 @@ export class SVGResource extends BaseImageResource
 
     /**
      * Regular expression for SVG XML document.
-     *
      * @example &lt;?xml version="1.0" encoding="utf-8" ?&gt;&lt;!-- image/svg --&gt;&lt;svg
      * @readonly
      */
@@ -221,7 +217,6 @@ export class SVGResource extends BaseImageResource
 
     /**
      * Regular expression for SVG size.
-     *
      * @example &lt;svg width="100" height="100"&gt;&lt;/svg&gt;
      * @readonly
      */

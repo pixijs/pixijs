@@ -3,14 +3,12 @@ import type { Matrix } from '@pixi/math';
 
 /**
  * Fill style object for Graphics.
- *
  * @memberof PIXI
  */
 export class FillStyle
 {
     /**
      * The hex color value used when coloring the Graphics object.
-     *
      * @default 0xFFFFFF
      */
     public color = 0xFFFFFF;
@@ -20,14 +18,12 @@ export class FillStyle
 
     /**
      * The texture to be used for the fill.
-     *
      * @default 0
      */
     public texture: Texture = Texture.WHITE;
 
     /**
      * The transform applied to the texture.
-     *
      * @default null
      */
     public matrix: Matrix = null;

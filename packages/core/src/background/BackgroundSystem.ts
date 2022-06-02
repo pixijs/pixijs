@@ -1,7 +1,8 @@
 import { deprecation, hex2rgb, hex2string } from '@pixi/utils';
 import { ISystem } from '../system/ISystem';
 
-export interface BackgroundOptions {
+export interface BackgroundOptions
+{
     /** the main canvas background alpha. From 0 (fully transparent) to 1 (fully opaque). */
     alpha: number,
     /** the main canvas background color. */
@@ -14,7 +15,6 @@ export interface BackgroundOptions {
 
 /**
  * The background system manages the background color and alpha of the main view.
- *
  * @memberof PIXI
  */
 export class BackgroundSystem implements ISystem
@@ -25,7 +25,6 @@ export class BackgroundSystem implements ISystem
      * frame to set the canvas background color. If the scene is transparent PixiJS will use clearRect
      * to clear the canvas every frame. Disable this by setting this to false. For example, if
      * your game has a canvas filling background image you often don't need this set.
-     *
      * @member {boolean}
      * @default
      */
@@ -51,7 +50,6 @@ export class BackgroundSystem implements ISystem
 
     /**
      * initiates the background system
-     *
      * @param {BackgroundOptions} options - the options for the background colors
      */
     init(options: BackgroundOptions): void
@@ -72,7 +70,6 @@ export class BackgroundSystem implements ISystem
 
     /**
      * The background color to fill if not transparent
-     *
      * @member {number}
      */
     get color(): number
@@ -89,7 +86,6 @@ export class BackgroundSystem implements ISystem
 
     /**
      * The background color alpha. Setting this to 0 will make the canvas transparent.
-     *
      * @member {number}
      */
     get alpha(): number
@@ -104,7 +100,6 @@ export class BackgroundSystem implements ISystem
 
     /**
      * The background color as an [R, G, B, A] array.
-     *
      * @member {number[]}
      * @protected
      */
@@ -115,7 +110,6 @@ export class BackgroundSystem implements ISystem
 
     /**
      * The background color as a string.
-     *
      * @member {string}
      * @protected
      */

@@ -2,7 +2,6 @@ import { settings } from '@pixi/settings';
 
 /**
  * Creates a Canvas element of the given size to be used as a target for rendering to.
- *
  * @class
  * @memberof PIXI.utils
  */
@@ -38,7 +37,6 @@ export class CanvasRenderTarget
 
     /**
      * Clears the canvas that was created by the CanvasRenderTarget class.
-     *
      * @private
      */
     clear(): void
@@ -49,7 +47,6 @@ export class CanvasRenderTarget
 
     /**
      * Resizes the canvas to the specified width and height.
-     *
      * @param desiredWidth - the desired width of the canvas
      * @param desiredHeight - the desired height of the canvas
      */
@@ -68,7 +65,6 @@ export class CanvasRenderTarget
 
     /**
      * The width of the canvas buffer in pixels.
-     *
      * @member {number}
      */
     get width(): number
@@ -83,7 +79,6 @@ export class CanvasRenderTarget
 
     /**
      * The height of the canvas buffer in pixels.
-     *
      * @member {number}
      */
     get height(): number

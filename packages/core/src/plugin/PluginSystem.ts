@@ -2,7 +2,8 @@ import { IRenderer } from '../IRenderer';
 import { Renderer } from '../Renderer';
 import { ISystem } from '../system/ISystem';
 
-export interface IRendererPlugin {
+export interface IRendererPlugin
+{
     destroy(): void;
 }
 
@@ -11,13 +12,13 @@ export interface IRendererPlugins
     [key: string]: any;
 }
 
-export interface IRendererPluginConstructor<R extends IRenderer = Renderer> {
+export interface IRendererPluginConstructor<R extends IRenderer = Renderer>
+{
     new (renderer: R, options?: any): IRendererPlugin;
 }
 
 /**
  * Manages the functionality that allows users to extend pixi functionality via additional plugins.
- *
  * @memberof PIXI
  */
 export class PluginSystem implements ISystem
@@ -44,7 +45,6 @@ export class PluginSystem implements ISystem
 
     /**
      * Initialize the plugins.
-     *
      * @protected
      * @param {object} staticMap - The dictionary of statically saved plugins.
      */

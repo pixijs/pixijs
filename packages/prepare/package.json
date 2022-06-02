@@ -4,6 +4,19 @@
   "main": "dist/cjs/prepare.js",
   "module": "dist/esm/prepare.js",
   "bundle": "dist/browser/prepare.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+          "default": "./dist/cjs/prepare.js",
+          "types": "./index.d.ts"
+      },
+      "require": {
+          "default": "./dist/esm/prepare.js",
+          "types": "./index.d.ts"
+      }
+    }
+  },
   "description": "Plugin to allow uploading textures to the GPU",
   "author": "Mat Groves",
   "contributors": [

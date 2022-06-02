@@ -4,6 +4,19 @@
   "main": "dist/cjs/spritesheet.js",
   "module": "dist/esm/spritesheet.js",
   "bundle": "dist/browser/spritesheet.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+          "default": "./dist/cjs/spritesheet.js",
+          "types": "./index.d.ts"
+      },
+      "require": {
+          "default": "./dist/esm/spritesheet.js",
+          "types": "./index.d.ts"
+      }
+    }
+  },
   "description": "Spritesheets maintain a collection of Textures on a single image",
   "author": "Mat Groves",
   "contributors": [

@@ -17,6 +17,19 @@
   "bundleOutput": {
     "name": "PIXI"
   },
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+          "default": "./dist/cjs/pixi.js",
+          "types": "./index.d.ts"
+      },
+      "require": {
+          "default": "./dist/esm/pixi.js",
+          "types": "./index.d.ts"
+      }
+    }
+  },
   "homepage": "http://www.pixijs.com/",
   "bugs": "https://github.com/pixijs/pixi.js/issues",
   "license": "MIT",

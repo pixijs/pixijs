@@ -4,6 +4,19 @@
   "main": "dist/cjs/display.js",
   "module": "dist/esm/display.js",
   "bundle": "dist/browser/display.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+          "default": "./dist/cjs/display.js",
+          "types": "./index.d.ts"
+      },
+      "require": {
+          "default": "./dist/esm/display.js",
+          "types": "./index.d.ts"
+      }
+    }
+  },
   "description": "Core display functionality",
   "author": "Mat Groves",
   "contributors": [

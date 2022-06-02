@@ -4,6 +4,19 @@
   "main": "dist/cjs/polyfill.js",
   "module": "dist/esm/polyfill.js",
   "bundle": "dist/browser/polyfill.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+          "default": "./dist/cjs/polyfill.js",
+          "types": "./index.d.ts"
+      },
+      "require": {
+          "default": "./dist/esm/polyfill.js",
+          "types": "./index.d.ts"
+      }
+    }
+  },
   "standalone": true,
   "description": "Support for legacy browser JavaScript environments",
   "author": "Mat Groves",

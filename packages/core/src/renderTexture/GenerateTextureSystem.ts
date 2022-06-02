@@ -7,29 +7,23 @@ import { RenderTexture } from './RenderTexture';
 const tempTransform = new Transform();
 
 // TODO could this just be part of extract?
-export interface IGenerateTextureOptions {
-    /**
-     * The scale mode of the texture. Optional, defaults to `PIXI.settings.SCALE_MODE`.
-     */
+export interface IGenerateTextureOptions
+{
+    /** The scale mode of the texture. Optional, defaults to `PIXI.settings.SCALE_MODE`. */
     scaleMode?: SCALE_MODES;
-    /**
-     * The resolution / device pixel ratio of the texture being generated. Optional defaults to Renderer resolution.
-     */
+    /** The resolution / device pixel ratio of the texture being generated. Optional defaults to Renderer resolution. */
     resolution?: number;
     /**
      * The region of the displayObject, that shall be rendered,
      * if no region is specified, defaults to the local bounds of the displayObject.
      */
     region?: Rectangle;
-    /**
-     *  The number of samples of the frame buffer.
-     */
+    /** The number of samples of the frame buffer. */
     multisample?: MSAA_QUALITY;
 }
 
 /**
  * System that manages the generation of textures from the renderer.
- *
  * @memberof PIXI
  */
 export class GenerateTextureSystem implements ISystem
@@ -48,7 +42,6 @@ export class GenerateTextureSystem implements ISystem
     /**
      * A Useful function that returns a texture of the display object that can then be used to create sprites
      * This can be quite useful if your displayObject is complicated and needs to be reused multiple times.
-     *
      * @param displayObject - The displayObject the object will be generated from.
      * @param {IGenerateTextureOptions} options - Generate texture options.
      * @returns a shiny new texture of the display object passed in

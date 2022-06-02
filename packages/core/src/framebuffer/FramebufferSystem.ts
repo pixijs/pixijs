@@ -12,7 +12,6 @@ const tempRectangle = new Rectangle();
 
 /**
  * System plugin to the renderer to manage framebuffers.
- *
  * @memberof PIXI
  */
 export class FramebufferSystem implements ISystem
@@ -98,7 +97,6 @@ export class FramebufferSystem implements ISystem
 
     /**
      * Bind a framebuffer.
-     *
      * @param framebuffer
      * @param frame - frame, default is framebuffer size
      * @param mipLevel - optional mip level to set on the framebuffer - defaults to 0
@@ -200,7 +198,6 @@ export class FramebufferSystem implements ISystem
 
     /**
      * Set the WebGLRenderingContext's viewport.
-     *
      * @param x - X position of viewport
      * @param y - Y position of viewport
      * @param width - Width of viewport
@@ -228,7 +225,6 @@ export class FramebufferSystem implements ISystem
 
     /**
      * Get the size of the current width and height. Returns object with `width` and `height` values.
-     *
      * @readonly
      */
     get size(): { x: number; y: number; width: number; height: number }
@@ -244,7 +240,6 @@ export class FramebufferSystem implements ISystem
 
     /**
      * Clear the color of the context
-     *
      * @param r - Red value from 0 to 1
      * @param g - Green value from 0 to 1
      * @param b - Blue value from 0 to 1
@@ -263,7 +258,6 @@ export class FramebufferSystem implements ISystem
 
     /**
      * Initialize framebuffer for this context
-     *
      * @protected
      * @param framebuffer
      * @returns - created GLFramebuffer
@@ -284,7 +278,7 @@ export class FramebufferSystem implements ISystem
 
     /**
      * Resize the framebuffer
-     *
+     * @param framebuffer
      * @protected
      */
     resizeFramebuffer(framebuffer: Framebuffer): void
@@ -340,7 +334,8 @@ export class FramebufferSystem implements ISystem
 
     /**
      * Update the framebuffer
-     *
+     * @param framebuffer
+     * @param mipLevel
      * @protected
      */
     updateFramebuffer(framebuffer: Framebuffer, mipLevel: number): void
@@ -450,7 +445,10 @@ export class FramebufferSystem implements ISystem
         }
     }
 
-    /** Returns true if the frame buffer can be multisampled. */
+    /**
+     * Returns true if the frame buffer can be multisampled.
+     * @param framebuffer
+     */
     protected canMultisampleFramebuffer(framebuffer: Framebuffer): boolean
     {
         return this.renderer.context.webGLVersion !== 1
@@ -459,7 +457,6 @@ export class FramebufferSystem implements ISystem
 
     /**
      * Detects number of samples that is not more than a param but as close to it as possible
-     *
      * @param samples - number of samples
      * @returns - recommended number of samples
      */
@@ -496,7 +493,6 @@ export class FramebufferSystem implements ISystem
      * after that target framebuffer is bound
      *
      * Fails with WebGL warning if blits multisample framebuffer to different size
-     *
      * @param framebuffer - by default it blits "into itself", from renderBuffer to texture.
      * @param sourcePixels - source rectangle in pixels
      * @param destPixels - dest rectangle in pixels, assumed to be the same as sourcePixels
@@ -582,7 +578,6 @@ export class FramebufferSystem implements ISystem
 
     /**
      * Disposes framebuffer.
-     *
      * @param framebuffer - framebuffer that has to be disposed of
      * @param contextLost - If context was lost, we suppress all delete function calls
      */
@@ -630,7 +625,6 @@ export class FramebufferSystem implements ISystem
 
     /**
      * Disposes all framebuffers, but not textures bound to them.
-     *
      * @param [contextLost=false] - If context was lost, we suppress all delete function calls
      */
     disposeAll(contextLost?: boolean): void
@@ -650,7 +644,6 @@ export class FramebufferSystem implements ISystem
      * Used by MaskSystem, when its time to use stencil mask for Graphics element.
      *
      * Its an alternative for public lazy `framebuffer.enableStencil`, in case we need stencil without rebind.
-     *
      * @private
      */
     forceStencil(): void
@@ -691,11 +684,7 @@ export class FramebufferSystem implements ISystem
         gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, stencil);
     }
 
-    /**
-     * Resets framebuffer stored state, binds screen framebuffer.
-     *
-     * Should be called before renderTexture reset().
-     */
+    /** Resets framebuffer stored state, binds screen framebuffer. Should be called before renderTexture reset(). */
     reset(): void
     {
         this.current = this.unknownFramebuffer;

@@ -5,10 +5,10 @@ import { ISystem } from '../system/ISystem';
 
 /**
  * Options passed to the ViewSystem
- *
  * @memberof PIXI
  */
-export interface ViewOptions {
+export interface ViewOptions
+{
     /** The width of the screen. */
     width: number
     /** The height of the screen. */
@@ -24,7 +24,6 @@ export interface ViewOptions {
 /**
  * The view system manages the main canvas that is attached to the DOM.
  * This main role is to deal with how the holding the view reference and dealing with how it is resized.
- *
  * @memberof PIXI
  */
 export class ViewSystem implements ISystem
@@ -33,7 +32,6 @@ export class ViewSystem implements ISystem
 
     /**
      * The resolution / device pixel ratio of the renderer.
-     *
      * @member {number}
      * @default PIXI.settings.RESOLUTION
      */
@@ -43,21 +41,18 @@ export class ViewSystem implements ISystem
      * Measurements of the screen. (0, 0, screenWidth, screenHeight).
      *
      * Its safe to use as filterArea or hitArea for the whole stage.
-     *
      * @member {PIXI.Rectangle}
      */
     public screen: Rectangle;
 
     /**
      * The canvas element that everything is drawn to.
-     *
      * @member {HTMLCanvasElement}
      */
     public element: HTMLCanvasElement;
 
     /**
      * Whether CSS dimensions of canvas view should be resized to screen dimensions automatically.
-     *
      * @member {boolean}
      */
     public autoDensity: boolean;
@@ -69,7 +64,6 @@ export class ViewSystem implements ISystem
 
     /**
      * initiates the view system
-     *
      * @param {PIXI.ViewOptions} options - the options for the view
      */
     init(options: ViewOptions): void
@@ -85,9 +79,10 @@ export class ViewSystem implements ISystem
 
     /**
      * Resizes the screen and canvas to the specified dimensions.
-     *
      * @param {number} screenWidth - The new width of the screen.
      * @param {number} screenHeight - The new height of the screen.
+     * @param desiredScreenWidth
+     * @param desiredScreenHeight
      */
     resizeView(desiredScreenWidth: number, desiredScreenHeight: number): void
     {
@@ -108,7 +103,6 @@ export class ViewSystem implements ISystem
 
         /**
          * Fired after view has been resized.
-         *
          * @event PIXI.Renderer#resize
          * @param {number} screenWidth - The new width of the screen.
          * @param {number} screenHeight - The new height of the screen.
@@ -119,7 +113,6 @@ export class ViewSystem implements ISystem
 
     /**
      * Destroys this System and optionally removes the canvas from the dom.
-     *
      * @param {boolean} [removeView=false] - Whether to remove the canvas from the DOM.
      */
     destroy(removeView: boolean): void

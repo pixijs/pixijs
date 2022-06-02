@@ -10,16 +10,15 @@ import type { IDestroyOptions } from '@pixi/display';
  * @memberof PIXI
  * @see {@link PIXI.Application.registerPlugin}
  */
-export interface IApplicationPlugin {
+export interface IApplicationPlugin
+{
     /**
      * Called when Application is constructed, scoped to Application instance.
      * Passes in `options` as the only argument, which are Application constructor options.
      * @param {object} options - Application options.
      */
     init(options: IApplicationOptions): void;
-    /**
-     * Called when destroying Application, scoped to Application instance.
-     */
+    /** Called when destroying Application, scoped to Application instance. */
     destroy(): void;
 }
 
@@ -33,7 +32,6 @@ export interface Application extends GlobalMixins.Application {}
  * Convenience class to create a new PIXI application.
  *
  * This class automatically creates the renderer, ticker and root container.
- *
  * @example
  * // Create the application
  * const app = new PIXI.Application();
@@ -43,7 +41,6 @@ export interface Application extends GlobalMixins.Application {}
  *
  * // ex, add display objects
  * app.stage.addChild(PIXI.Sprite.from('something.png'));
- *
  * @class
  * @memberof PIXI
  */
@@ -123,9 +120,7 @@ export class Application
         Application._plugins.push(plugin);
     }
 
-    /**
-     * Render the current stage.
-     */
+    /** Render the current stage. */
     public render(): void
     {
         this.renderer.render(this.stage);
@@ -153,7 +148,7 @@ export class Application
 
     /**
      * Destroy and don't use after this.
-     * @param {Boolean} [removeView=false] - Automatically remove canvas from DOM.
+     * @param {boolean} [removeView=false] - Automatically remove canvas from DOM.
      * @param {object|boolean} [stageOptions] - Options parameter. A boolean will act as if all options
      *  have been set to that value
      * @param {boolean} [stageOptions.children=false] - if set to true, all the children will have their destroy
@@ -163,7 +158,7 @@ export class Application
      * @param {boolean} [stageOptions.baseTexture=false] - Only used for child Sprites if stageOptions.children is set
      *  to true. Should it destroy the base texture of the child sprite
      */
-    public destroy(removeView?: boolean, stageOptions?: IDestroyOptions|boolean): void
+    public destroy(removeView?: boolean, stageOptions?: IDestroyOptions | boolean): void
     {
         // Destroy plugins in the opposite order
         // which they were constructed

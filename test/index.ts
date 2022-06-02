@@ -7,7 +7,8 @@ import type { FlossOptions } from 'floss';
 import type { PackageResult } from './packages';
 
 // Support for global otpions
-declare global {
+declare global
+{
     let options: FlossOptions;
 }
 
@@ -17,7 +18,7 @@ import 'tsconfig-paths/register';
 // We only need to do this one time
 chai.use(sinonChai);
 
-const requireAsStrings = (module, filename) =>
+const requireAsStrings = (module: any, filename: string) =>
 {
     module.exports = fs.readFileSync(filename, 'utf8');
 };

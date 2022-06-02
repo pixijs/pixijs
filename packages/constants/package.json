@@ -4,6 +4,19 @@
   "main": "dist/cjs/constants.js",
   "module": "dist/esm/constants.js",
   "bundle": "dist/browser/constants.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+          "default": "./dist/cjs/constants.js",
+          "types": "./index.d.ts"
+      },
+      "require": {
+          "default": "./dist/esm/constants.js",
+          "types": "./index.d.ts"
+      }
+    }
+  },
   "description": "Constants used across PixiJS",
   "author": "Mat Groves",
   "contributors": [

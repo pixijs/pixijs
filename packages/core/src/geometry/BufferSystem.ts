@@ -19,8 +19,6 @@ import { IRenderingContext } from '../IRenderer';
  * This system will handle the binding of buffers to the GPU as well as uploading
  * them. With this system, you never need to work directly with GPU buffers, but instead work with
  * the PIXI.Buffer class.
- *
- *
  * @class
  * @memberof PIXI
  */
@@ -55,9 +53,7 @@ export class BufferSystem implements ISystem
         this.renderer = null;
     }
 
-    /**
-     * Sets up the renderer context and necessary buffers.
-     */
+    /** Sets up the renderer context and necessary buffers. */
     protected contextChange(): void
     {
         this.disposeAll(true);
@@ -70,7 +66,6 @@ export class BufferSystem implements ISystem
 
     /**
      * This binds specified buffer. On first run, it will create the webGL buffers for the context too
-     *
      * @param buffer - the buffer to bind to the renderer
      */
     bind(buffer: Buffer): void
@@ -86,7 +81,6 @@ export class BufferSystem implements ISystem
      * Binds an uniform buffer to at the given index.
      *
      * A cache is used so a buffer will not be bound again if already bound.
-     *
      * @param buffer - the buffer to bind
      * @param index - the base index to bind it to.
      */
@@ -107,7 +101,6 @@ export class BufferSystem implements ISystem
     /**
      * Binds a buffer whilst also binding its range.
      * This will make the buffer start from the offset supplied rather than 0 when it is read.
-     *
      * @param buffer - the buffer to bind
      * @param index - the base index to bind at, defaults to 0
      * @param offset - the offset to bind at (this is blocks of 256). 0 = 0, 1 = 256, 2 = 512 etc
@@ -125,7 +118,6 @@ export class BufferSystem implements ISystem
 
     /**
      * Will ensure the data in the buffer is uploaded to the GPU.
-     *
      * @param {PIXI.Buffer} buffer - the buffer to update
      */
     update(buffer: Buffer): void
@@ -205,6 +197,7 @@ export class BufferSystem implements ISystem
 
     /**
      * creates and attaches a GLBuffer object tied to the current context.
+     * @param buffer
      * @protected
      */
     protected createGLBuffer(buffer: Buffer): GLBuffer

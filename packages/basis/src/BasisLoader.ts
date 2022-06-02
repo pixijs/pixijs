@@ -8,7 +8,7 @@ import {
     BASIS_FORMATS_ALPHA,
     BasisTextureExtensions,
     BasisBinding,
-    BASIS_FORMAT_TO_TYPE
+    BASIS_FORMAT_TO_TYPE,
 } from './Basis';
 import { TranscoderWorker } from './TranscoderWorker';
 import { LoaderResource } from '@pixi/loaders';
@@ -58,10 +58,9 @@ LoaderResource.setExtensionXhrType('basis', LoaderResource.XHR_RESPONSE_TYPE.BUF
  * ```
  *
  * NOTE: This can only be used with web-workers.
- *
  * @class
  * @memberof PIXI
- * @implements PIXI.ILoaderPlugin
+ * @implements {PIXI.ILoaderPlugin}
  */
 export class BasisLoader
 {
@@ -74,7 +73,6 @@ export class BasisLoader
     /**
      * Transcodes the *.basis data when the data is loaded. If the transcoder is not bound yet, it
      * will hook transcoding to {@link BasisResource#onTranscoderInitialized}.
-     *
      * @see PIXI.Loader.loaderMiddleware
      * @param resource - loader resource that is checked to see if it is a basis file
      * @param next - callback Function to call when done
@@ -104,7 +102,6 @@ export class BasisLoader
     /**
      * Runs transcoding and populates {@link imageArray}. It will run the transcoding in a web worker
      * if they are available.
-     *
      * @private
      */
     private static async transcode(resource: LoaderResource, next: (...args: any[]) => void): Promise<void>
@@ -126,7 +123,7 @@ export class BasisLoader
             Object.assign(resource, BasisLoader.registerTextures(
                 resource.url,
                 resources,
-                resource.metadata
+                resource.metadata,
             ));
         }
         catch (err)
@@ -149,7 +146,7 @@ export class BasisLoader
     private static registerTextures(
         url: string,
         resources: TranscodedResourcesArray,
-        metadata: IResourceMetadata
+        metadata: IResourceMetadata,
     ): BasisTexturesResult
     {
         const result: BasisTexturesResult = {
@@ -175,7 +172,7 @@ export class BasisLoader
                         : MIPMAP_MODES.OFF,
                     alphaMode: ALPHA_MODES.NO_PREMULTIPLIED_ALPHA,
                     type,
-                    format
+                    format,
                 }, metadata)))
             ));
 
@@ -202,7 +199,6 @@ export class BasisLoader
 
     /**
      * Finds a suitable worker for transcoding and sends a transcoding request
-     *
      * @private
      * @async
      */
@@ -236,7 +232,7 @@ export class BasisLoader
         const response = await worker.transcodeAsync(
             new Uint8Array(arrayBuffer),
             BasisLoader.defaultRGBAFormat.basisFormat,
-            BasisLoader.defaultRGBFormat.basisFormat
+            BasisLoader.defaultRGBFormat.basisFormat,
         );
 
         const basisFormat = response.basisFormat;
@@ -260,7 +256,7 @@ export class BasisLoader
                     width: imageArray[i].width,
                     height: imageArray[i].height,
                     levelBuffers: imageArray[i].levelArray,
-                    levels: imageArray[i].levelArray.length
+                    levels: imageArray[i].levelArray.length,
                 });
             }
         }
@@ -270,8 +266,8 @@ export class BasisLoader
             imageResources = imageArray.map((image) => new BufferResource(
                 new Uint16Array(image.levelArray[0].levelBuffer.buffer), {
                     width: image.width,
-                    height: image.height
-                })
+                    height: image.height,
+                }),
             ) as TranscodedResourcesArray;
         }
 
@@ -282,7 +278,6 @@ export class BasisLoader
 
     /**
      * Runs transcoding on the main thread.
-     *
      * @private
      */
     private static transcodeSync(arrayBuffer: ArrayBuffer): TranscodedResourcesArray
@@ -375,7 +370,7 @@ export class BasisLoader
                     width: alignedWidth,
                     height: alignedHeight,
                     levelBuffers: imageLevels,
-                    levels
+                    levels,
                 });
             }
             else
@@ -400,7 +395,6 @@ export class BasisLoader
 
     /**
      * Detects the available compressed texture formats on the device.
-     *
      * @param extensions - extensions provided by a WebGL context
      * @ignore
      */
@@ -427,7 +421,7 @@ export class BasisLoader
                 pvrtc: gl.getExtension('WEBGL_compressed_texture_pvrtc')
                     || gl.getExtension('WEBKIT_WEBGL_compressed_texture_pvrtc'),
                 atc: gl.getExtension('WEBGL_compressed_texture_atc'),
-                astc: gl.getExtension('WEBGL_compressed_texture_astc')
+                astc: gl.getExtension('WEBGL_compressed_texture_astc'),
             };
         }
 
@@ -479,7 +473,7 @@ export class BasisLoader
             {
                 BasisLoader[detectWithAlpha ? 'defaultRGBAFormat' : 'defaultRGBFormat'] = {
                     textureFormat: TYPES.UNSIGNED_SHORT_5_6_5,
-                    basisFormat: BASIS_FORMATS.cTFRGB565
+                    basisFormat: BASIS_FORMATS.cTFRGB565,
                 };
 
                 BasisLoader.fallbackMode = true;
@@ -504,7 +498,6 @@ export class BasisLoader
      *     BasisLoader.bindTranscoder(basisLibrary);
      * });
      * ```
-     *
      * @param basisLibrary - the initialized transcoder library
      * @private
      */
@@ -515,7 +508,6 @@ export class BasisLoader
 
     /**
      * Loads the transcoder source code for use in {@link PIXI.BasisLoader.TranscoderWorker}.
-     *
      * @private
      * @param jsURL - URL to the javascript basis transcoder
      * @param wasmURL - URL to the wasm basis transcoder
@@ -527,7 +519,6 @@ export class BasisLoader
 
     /**
      * Set the transcoder source code directly
-     *
      * @private
      * @param jsSource - source for the javascript basis transcoder
      * @param wasmSource - source for the wasm basis transcoder

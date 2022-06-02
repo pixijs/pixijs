@@ -2,16 +2,18 @@ import { VideoResource } from '@pixi/core';
 import path from 'path';
 import { expect } from 'chai';
 
-describe('VideoResource', function ()
+describe('VideoResource', () =>
 {
-    before(function ()
+    let videoUrl: string;
+
+    before(() =>
     {
-        this.videoUrl = path.resolve(__dirname, 'resources', 'small.mp4');
+        videoUrl = path.resolve(__dirname, 'resources', 'small.mp4');
     });
 
-    it('should create new resource', function ()
+    it('should create new resource', () =>
     {
-        const resource = new VideoResource(this.videoUrl, { autoLoad: false });
+        const resource = new VideoResource(videoUrl, { autoLoad: false });
 
         expect(resource.width).to.equal(0);
         expect(resource.height).to.equal(0);
@@ -21,9 +23,9 @@ describe('VideoResource', function ()
         resource.destroy();
     });
 
-    it('should load new resource', function ()
+    it('should load new resource', () =>
     {
-        const resource = new VideoResource(this.videoUrl, {
+        const resource = new VideoResource(videoUrl, {
             autoLoad: false,
             autoPlay: false,
         });
@@ -38,33 +40,35 @@ describe('VideoResource', function ()
         });
     });
 
-    it('should find correct video extension from Url', function ()
+    it('should find correct video extension from Url', () =>
     {
         const resource = new VideoResource('https://example.org/video.webm', {
             autoLoad: false,
             autoPlay: false,
         });
 
+        // @ts-expect-error ---
         expect(resource.source.firstChild.type).to.be.equals('video/webm');
 
         resource.destroy();
     });
 
-    it('should get video extension without being thrown by query string', function ()
+    it('should get video extension without being thrown by query string', () =>
     {
         const resource = new VideoResource('/test.mp4?123...', {
             autoLoad: false,
             autoPlay: false,
         });
 
+        // @ts-expect-error ---
         expect(resource.source.firstChild.type).to.be.equals('video/mp4');
 
         resource.destroy();
     });
 
-    it('should respect the updateFPS settings property and getter / setter', function ()
+    it('should respect the updateFPS settings property and getter / setter', () =>
     {
-        const resource = new VideoResource(this.videoUrl, {
+        const resource = new VideoResource(videoUrl, {
             autoLoad: false,
             autoPlay: false,
             updateFPS: 30,

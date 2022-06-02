@@ -4,6 +4,19 @@
   "main": "dist/cjs/events.js",
   "module": "dist/esm/events.js",
   "bundle": "dist/browser/events.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+          "default": "./dist/cjs/events.js",
+          "types": "./index.d.ts"
+      },
+      "require": {
+          "default": "./dist/esm/events.js",
+          "types": "./index.d.ts"
+      }
+    }
+  },
   "description": "UI events for scene graphs",
   "keywords": [
     "interaction",

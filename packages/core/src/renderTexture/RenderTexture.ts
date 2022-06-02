@@ -43,7 +43,6 @@ import { deprecation } from '@pixi/utils';
  *
  * renderer.render(sprite, {renderTexture});  // Renders to center of RenderTexture
  * ```
- *
  * @memberof PIXI
  */
 export class RenderTexture extends Texture
@@ -54,17 +53,15 @@ export class RenderTexture extends Texture
      * Stores `sourceFrame` when this texture is inside current filter stack.
      *
      * You can read it inside filters.
-     *
      * @readonly
      */
-    public filterFrame: Rectangle|null;
+    public filterFrame: Rectangle | null;
 
     /**
      * The key for pooled texture of FilterSystem.
-     *
      * @see PIXI.RenderTexturePool
      */
-    public filterPoolKey: string|number|null;
+    public filterPoolKey: string | number | null;
 
     /**
      * @param baseRenderTexture - The base texture object that this texture uses.
@@ -84,7 +81,6 @@ export class RenderTexture extends Texture
 
     /**
      * Shortcut to `this.baseTexture.framebuffer`, saves baseTexture cast.
-     *
      * @readonly
      */
     get framebuffer(): Framebuffer
@@ -94,7 +90,6 @@ export class RenderTexture extends Texture
 
     /**
      * Shortcut to `this.framebuffer.multisample`.
-     *
      * @default PIXI.MSAA_QUALITY.NONE
      */
     get multisample(): MSAA_QUALITY
@@ -109,7 +104,6 @@ export class RenderTexture extends Texture
 
     /**
      * Resizes the RenderTexture.
-     *
      * @param desiredWidth - The desired width to resize to.
      * @param desiredHeight - The desired height to resize to.
      * @param resizeBaseTexture - Should the baseTexture.width and height values be resized as well?
@@ -136,7 +130,6 @@ export class RenderTexture extends Texture
 
     /**
      * Changes the resolution of baseTexture, but does not change framebuffer size.
-     *
      * @param resolution - The new resolution to apply to RenderTexture
      */
     setResolution(resolution: number): void
@@ -154,7 +147,6 @@ export class RenderTexture extends Texture
 
     /**
      * Use the object-based construction instead.
-     *
      * @deprecated since 6.0.0
      * @param {number} [width]
      * @param {number} [height]
@@ -165,7 +157,6 @@ export class RenderTexture extends Texture
 
     /**
      * A short hand way of creating a render texture.
-     *
      * @param options - Options
      * @param {number} [options.width=100] - The width of the render texture
      * @param {number} [options.height=100] - The height of the render texture
@@ -174,7 +165,7 @@ export class RenderTexture extends Texture
      * @param {number} [options.resolution=PIXI.settings.RESOLUTION] - The resolution / device pixel ratio of the texture
      *    being generated
      * @param {PIXI.MSAA_QUALITY} [options.multisample=PIXI.MSAA_QUALITY.NONE] - The number of samples of the frame buffer
-     * @return The new render texture
+     * @returns The new render texture
      */
     static create(options?: IBaseTextureOptions): RenderTexture;
     static create(options?: IBaseTextureOptions | number, ...rest: any[]): RenderTexture

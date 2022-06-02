@@ -1,6 +1,7 @@
 declare namespace GlobalMixins
 {
-    interface DisplayObject {
+    interface DisplayObject
+    {
         cacheAsBitmap: boolean;
         cacheAsBitmapResolution: number;
         cacheAsBitmapMultisample: import('@pixi/constants').MSAA_QUALITY;
@@ -15,6 +16,6 @@ declare namespace GlobalMixins
         _renderCachedCanvas(renderer: import('@pixi/core').IRenderer): void;
         _initCachedDisplayObjectCanvas(renderer: import('@pixi/core').IRenderer): void;
         _destroyCachedDisplayObject(): void;
-        _cacheAsBitmapDestroy(options?: import('@pixi/display').IDestroyOptions|boolean): void;
+        _cacheAsBitmapDestroy(options?: import('@pixi/display').IDestroyOptions | boolean): void;
     }
 }

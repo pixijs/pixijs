@@ -2,7 +2,6 @@ import { settings } from '@pixi/settings';
 
 /**
  * Default number of uploads per frame using prepare plugin.
- *
  * @static
  * @memberof PIXI.settings
  * @name UPLOADS_PER_FRAME

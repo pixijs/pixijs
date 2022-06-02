@@ -6,11 +6,10 @@ import type { Renderer, IRenderer } from '@pixi/core';
 
 /**
  * Built-in hook to upload PIXI.Texture objects to the GPU.
- *
  * @private
  * @param renderer - instance of the webgl renderer
  * @param item - Item to check
- * @return If item was uploaded.
+ * @returns If item was uploaded.
  */
 function uploadBaseTextures(renderer: IRenderer | BasePrepare, item: IDisplayObjectExtended | BaseTexture): boolean
 {
@@ -32,11 +31,10 @@ function uploadBaseTextures(renderer: IRenderer | BasePrepare, item: IDisplayObj
 
 /**
  * Built-in hook to upload PIXI.Graphics to the GPU.
- *
  * @private
  * @param renderer - instance of the webgl renderer
  * @param item - Item to check
- * @return If item was uploaded.
+ * @returns If item was uploaded.
  */
 function uploadGraphics(renderer: IRenderer | BasePrepare, item: IDisplayObjectExtended): boolean
 {
@@ -75,11 +73,10 @@ function uploadGraphics(renderer: IRenderer | BasePrepare, item: IDisplayObjectE
 
 /**
  * Built-in hook to find graphics.
- *
  * @private
  * @param item - Display object to check
  * @param queue - Collection of items to upload
- * @return if a PIXI.Graphics object was found.
+ * @returns if a PIXI.Graphics object was found.
  */
 function findGraphics(item: IDisplayObjectExtended, queue: Array<any>): boolean
 {
@@ -119,8 +116,6 @@ function findGraphics(item: IDisplayObjectExtended, queue: Array<any>): boolean
  * app.renderer.plugins.prepare.upload(app.stage, () => {
  *     app.start();
  * });
- *
- *
  * @memberof PIXI
  */
 export class Prepare extends BasePrepare

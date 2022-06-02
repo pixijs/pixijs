@@ -10,7 +10,8 @@ import type { SystemManager } from './system/SystemManager';
  * The minimum APIs needed to implement a renderable object.
  * @memberof PIXI
  */
-export interface IRenderableObject {
+export interface IRenderableObject
+{
     /** Object must have a parent container */
     parent: IRenderableContainer;
     /** Object must have a transform */
@@ -29,22 +30,21 @@ export interface IRenderableObject {
  * Interface for Container to interface with Renderer.
  * @memberof PIXI
  */
-export interface IRenderableContainer extends IRenderableObject {
+export interface IRenderableContainer extends IRenderableObject
+{
     /** Get Local bounds for container */
     getLocalBounds(rect?: Rectangle, skipChildrenUpdate?: boolean): Rectangle;
 }
 
-/**
- * Mixed WebGL1/WebGL2 Rendering Context.
- * Either its WebGL2, either its WebGL1 with PixiJS polyfills on it
- */
+/** Mixed WebGL1/WebGL2 Rendering Context. Either its WebGL2, either its WebGL1 with PixiJS polyfills on it */
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface IRenderingContext extends WebGL2RenderingContext
 {
 
 }
 
-export interface IRendererOptions extends GlobalMixins.IRendererOptions {
+export interface IRendererOptions extends GlobalMixins.IRendererOptions
+{
     width?: number;
     height?: number;
     view?: HTMLCanvasElement;
@@ -70,7 +70,8 @@ export interface IRendererOptions extends GlobalMixins.IRendererOptions {
     context?: IRenderingContext;
 }
 
-export interface IRendererRenderOptions {
+export interface IRendererRenderOptions
+{
     renderTexture?: RenderTexture;
     blit?: boolean
     clear?: boolean;
@@ -116,9 +117,7 @@ export interface IRenderer extends SystemManager
      * Its safe to use as filterArea or hitArea for the whole stage.
      */
     readonly screen: Rectangle
-    /**
-     * the last object rendered by the renderer. Useful for other plugins like interaction managers
-     */
+    /** the last object rendered by the renderer. Useful for other plugins like interaction managers */
     readonly lastObjectRendered: IRenderableObject
     /** Collection of plugins */
     readonly plugins: IRendererPlugins

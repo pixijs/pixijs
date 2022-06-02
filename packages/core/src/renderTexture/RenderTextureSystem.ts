@@ -30,7 +30,6 @@ const tempRect2 = new Rectangle();
  * | sourceFrame            | The rectangle inside of which display-objects are being rendered | **World Space**: The origin on the top-left             |
  * | destinationFrame       | The rectangle in the render-target (canvas or texture) into which contents should be rendered | If rendering to the canvas, this is in screen space and the origin is on the top-left. If rendering to a render-texture, this is in its base-texture's space with the origin on the bottom-left.  |
  * | viewportFrame          | The framebuffer viewport corresponding to the destination-frame  | **Window Coordinates**: The origin is always on the bottom-left. |
- *
  * @memberof PIXI
  */
 export class RenderTextureSystem implements ISystem
@@ -39,14 +38,12 @@ export class RenderTextureSystem implements ISystem
 
     /**
      * List of masks for the {@link PIXI.StencilSystem}.
-     *
      * @readonly
      */
     public defaultMaskStack: Array<MaskData>;
 
     /**
      * Render texture currently bound. {@code null} if rendering to the canvas.
-     *
      * @readonly
      */
     public current: RenderTexture | null;
@@ -90,7 +87,6 @@ export class RenderTextureSystem implements ISystem
 
     /**
      * Bind the current render texture.
-     *
      * @param renderTexture - RenderTexture to bind, by default its `null` - the screen.
      * @param sourceFrame - Part of world that is mapped to the renderTexture.
      * @param destinationFrame - Part of renderTexture, by default it has the same size as sourceFrame.
@@ -184,7 +180,6 @@ export class RenderTextureSystem implements ISystem
 
     /**
      * Erases the render texture and fills the drawing area with a colour.
-     *
      * @param clearColor - The color as rgba, default to use the renderer backgroundColor
      * @param [mask=BUFFER_BITS.COLOR | BUFFER_BITS.DEPTH] - Bitwise OR of masks
      *  that indicate the buffers to be cleared, by default COLOR and DEPTH buffers.

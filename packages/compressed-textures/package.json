@@ -16,6 +16,19 @@
   "main": "dist/cjs/compressed-textures.js",
   "module": "dist/esm/compressed-textures.js",
   "bundle": "dist/browser/compressed-textures.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+          "default": "./dist/cjs/compressed-textures.js",
+          "types": "./index.d.ts"
+      },
+      "require": {
+          "default": "./dist/esm/compressed-textures.js",
+          "types": "./index.d.ts"
+      }
+    }
+  },
   "publishConfig": {
     "access": "public"
   },

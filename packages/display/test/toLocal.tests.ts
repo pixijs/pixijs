@@ -2,9 +2,9 @@ import { Container } from '@pixi/display';
 import { Point } from '@pixi/math';
 import { expect } from 'chai';
 
-describe('toLocal', function ()
+describe('toLocal', () =>
 {
-    it('should return correct local cordinates of a displayObject', function ()
+    it('should return correct local cordinates of a displayObject', () =>
     {
         const parent = new Container();
 
@@ -31,7 +31,7 @@ describe('toLocal', function ()
         expect(localPoint.y).to.equal(40);
     });
 
-    it('should map the correct local cordinates of a displayObject to another', function ()
+    it('should map the correct local cordinates of a displayObject to another', () =>
     {
         const parent = new Container();
 

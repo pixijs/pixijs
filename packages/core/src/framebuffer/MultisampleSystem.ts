@@ -5,7 +5,6 @@ import { IRenderingContext } from '../IRenderer';
 
 /**
  * System that manages the multisample property on the WebGL renderer
- *
  * @memberof PIXI
  */
 export class MultisampleSystem implements ISystem

@@ -14,7 +14,6 @@ import type { IDestroyOptions } from '@pixi/display';
  * };
  * let SimplePlane = new PIXI.SimplePlane(PIXI.Texture.from("snake.png"), points);
  *  ```
- *
  * @memberof PIXI
  */
 export class SimplePlane extends Mesh
@@ -29,7 +28,7 @@ export class SimplePlane extends Mesh
      * @param verticesX - The number of vertices in the x-axis
      * @param verticesY - The number of vertices in the y-axis
      */
-    constructor(texture: Texture, verticesX: number, verticesY: number)
+    constructor(texture: Texture, verticesX?: number, verticesY?: number)
     {
         const planeGeometry = new PlaneGeometry(texture.width, texture.height, verticesX, verticesY);
         const meshMaterial = new MeshMaterial(Texture.WHITE);
@@ -99,7 +98,7 @@ export class SimplePlane extends Mesh
         super._render(renderer);
     }
 
-    public destroy(options?: IDestroyOptions|boolean): void
+    public destroy(options?: IDestroyOptions | boolean): void
     {
         this.shader.texture.off('update', this.textureUpdated, this);
         super.destroy(options);

@@ -7,7 +7,6 @@ import { RenderTexture } from '../renderTexture/RenderTexture';
 /**
  * system that provides a render function that focussing on rendering Pixi Scene Graph objects
  * to either the main view or to a renderTexture.  Used for Canvas `WebGL` contexts
- *
  * @memberof PIXI
  */
 export class ObjectRendererSystem implements ISystem
@@ -16,7 +15,6 @@ export class ObjectRendererSystem implements ISystem
 
     /**
      * Flag if we are rendering to the screen vs renderTexture
-     *
      * @readonly
      * @default true
      */
@@ -24,7 +22,6 @@ export class ObjectRendererSystem implements ISystem
 
     /**
      * the last object rendered by the renderer. Useful for other plugins like interaction managers
-     *
      * @readonly
      */
     lastObjectRendered: IRenderableObject;
@@ -37,7 +34,6 @@ export class ObjectRendererSystem implements ISystem
 
     /**
      * Renders the object to its WebGL view.
-     *
      * @param displayObject - The object to be rendered.
      * @param options - the options to be passed to the renderer
      */

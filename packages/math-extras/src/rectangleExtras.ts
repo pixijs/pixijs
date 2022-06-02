@@ -7,7 +7,6 @@ import { Rectangle } from '@pixi/math';
  * not even other arealess rectangles.
  *
  * _Note: Only available with **@pixi/math-extras**._
- *
  * @method containsRect
  * @memberof PIXI.Rectangle#
  * @param {Rectangle} other - The Rectangle to fit inside `this`.
@@ -27,7 +26,6 @@ Rectangle.prototype.containsRect = function containsRect(other: Rectangle): bool
  * Accepts `other` Rectangle and returns true if the given Rectangle is equal to `this` Rectangle.
  *
  * _Note: Only available with **@pixi/math-extras**._
- *
  * @method equals
  * @memberof PIXI.Rectangle#
  * @param {Rectangle} other - The Rectangle to compare with `this`
@@ -51,7 +49,6 @@ Rectangle.prototype.equals = function equals(other: Rectangle): boolean
  * and will always return an empty rectangle with its properties set to zero.
  *
  * _Note: Only available with **@pixi/math-extras**._
- *
  * @method intersection
  * @memberof PIXI.Rectangle#
  * @param {Rectangle} other - The Rectangle to intersect with `this`.
@@ -99,7 +96,6 @@ Rectangle.prototype.intersection = function intersection<T extends Rectangle>(ot
  * the horizontal and vertical space between the two rectangles.
  *
  * _Note: Only available with **@pixi/math-extras**._
- *
  * @method union
  * @memberof PIXI.Rectangle#
  * @param {Rectangle} other - The Rectangle to unite with `this`.

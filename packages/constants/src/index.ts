@@ -1,6 +1,5 @@
 /**
  * Different types of environments for WebGL.
- *
  * @static
  * @memberof PIXI
  * @name ENV
@@ -10,7 +9,9 @@
  * @property {number} WEBGL - Version 1 of WebGL
  * @property {number} WEBGL2 - Version 2 of WebGL
  */
-export enum ENV {
+export enum ENV
+// eslint-disable-next-line @typescript-eslint/indent
+{
     WEBGL_LEGACY,
     WEBGL,
     WEBGL2,
@@ -18,7 +19,6 @@ export enum ENV {
 
 /**
  * Constant to identify the Renderer Type.
- *
  * @static
  * @memberof PIXI
  * @name RENDERER_TYPE
@@ -27,7 +27,9 @@ export enum ENV {
  * @property {number} WEBGL - WebGL render type.
  * @property {number} CANVAS - Canvas render type.
  */
-export enum RENDERER_TYPE {
+export enum RENDERER_TYPE
+// eslint-disable-next-line @typescript-eslint/indent
+{
     UNKNOWN,
     WEBGL,
     CANVAS,
@@ -35,7 +37,6 @@ export enum RENDERER_TYPE {
 
 /**
  * Bitwise OR of masks that indicate the buffers to be cleared.
- *
  * @static
  * @memberof PIXI
  * @name BUFFER_BITS
@@ -44,7 +45,9 @@ export enum RENDERER_TYPE {
  * @property {number} DEPTH - Indicates the depth buffer.
  * @property {number} STENCIL - Indicates the stencil buffer.
  */
-export enum BUFFER_BITS {
+export enum BUFFER_BITS
+// eslint-disable-next-line @typescript-eslint/indent
+{
     COLOR = 0x00004000,
     DEPTH = 0x00000100,
     STENCIL = 0x00000400
@@ -55,44 +58,45 @@ export enum BUFFER_BITS {
  *
  * IMPORTANT - The WebGL renderer only supports the NORMAL, ADD, MULTIPLY and SCREEN blend modes.
  * Anything else will silently act like NORMAL.
- *
  * @memberof PIXI
  * @name BLEND_MODES
  * @enum {number}
- * @property {number} NORMAL
- * @property {number} ADD
- * @property {number} MULTIPLY
- * @property {number} SCREEN
- * @property {number} OVERLAY
- * @property {number} DARKEN
- * @property {number} LIGHTEN
- * @property {number} COLOR_DODGE
- * @property {number} COLOR_BURN
- * @property {number} HARD_LIGHT
- * @property {number} SOFT_LIGHT
- * @property {number} DIFFERENCE
- * @property {number} EXCLUSION
- * @property {number} HUE
- * @property {number} SATURATION
- * @property {number} COLOR
- * @property {number} LUMINOSITY
- * @property {number} NORMAL_NPM
- * @property {number} ADD_NPM
- * @property {number} SCREEN_NPM
- * @property {number} NONE
- * @property {number} SRC_IN
- * @property {number} SRC_OUT
- * @property {number} SRC_ATOP
- * @property {number} DST_OVER
- * @property {number} DST_IN
- * @property {number} DST_OUT
- * @property {number} DST_ATOP
- * @property {number} SUBTRACT
- * @property {number} SRC_OVER
- * @property {number} ERASE
- * @property {number} XOR
+ * @property {number} NORMAL -
+ * @property {number} ADD -
+ * @property {number} MULTIPLY -
+ * @property {number} SCREEN -
+ * @property {number} OVERLAY -
+ * @property {number} DARKEN -
+ * @property {number} LIGHTEN -
+ * @property {number} COLOR_DODGE -
+ * @property {number} COLOR_BURN -
+ * @property {number} HARD_LIGHT -
+ * @property {number} SOFT_LIGHT -
+ * @property {number} DIFFERENCE -
+ * @property {number} EXCLUSION -
+ * @property {number} HUE -
+ * @property {number} SATURATION -
+ * @property {number} COLOR -
+ * @property {number} LUMINOSITY -
+ * @property {number} NORMAL_NPM -
+ * @property {number} ADD_NPM -
+ * @property {number} SCREEN_NPM -
+ * @property {number} NONE -
+ * @property {number} SRC_IN -
+ * @property {number} SRC_OUT -
+ * @property {number} SRC_ATOP -
+ * @property {number} DST_OVER -
+ * @property {number} DST_IN -
+ * @property {number} DST_OUT -
+ * @property {number} DST_ATOP -
+ * @property {number} SUBTRACT -
+ * @property {number} SRC_OVER -
+ * @property {number} ERASE -
+ * @property {number} XOR -
  */
-export enum BLEND_MODES {
+export enum BLEND_MODES
+// eslint-disable-next-line @typescript-eslint/indent
+{
     NORMAL = 0,
     ADD = 1,
     MULTIPLY = 2,
@@ -131,20 +135,21 @@ export enum BLEND_MODES {
 /**
  * Various webgl draw modes. These can be used to specify which GL drawMode to use
  * under certain situations and renderers.
- *
  * @memberof PIXI
  * @static
  * @name DRAW_MODES
  * @enum {number}
- * @property {number} POINTS
- * @property {number} LINES
- * @property {number} LINE_LOOP
- * @property {number} LINE_STRIP
- * @property {number} TRIANGLES
- * @property {number} TRIANGLE_STRIP
- * @property {number} TRIANGLE_FAN
+ * @property {number} POINTS -
+ * @property {number} LINES -
+ * @property {number} LINE_LOOP -
+ * @property {number} LINE_STRIP -
+ * @property {number} TRIANGLES -
+ * @property {number} TRIANGLE_STRIP -
+ * @property {number} TRIANGLE_FAN -
  */
-export enum DRAW_MODES {
+export enum DRAW_MODES
+// eslint-disable-next-line @typescript-eslint/indent
+{
     POINTS,
     LINES,
     LINE_LOOP,
@@ -156,26 +161,27 @@ export enum DRAW_MODES {
 
 /**
  * Various GL texture/resources formats.
- *
  * @memberof PIXI
  * @static
  * @name FORMATS
  * @enum {number}
- * @property {number} RGBA=6408
- * @property {number} RGB=6407
- * @property {number} RG=33319
- * @property {number} RED=6403
- * @property {number} RGBA_INTEGER=36249
- * @property {number} RGB_INTEGER=36248
- * @property {number} RG_INTEGER=33320
- * @property {number} RED_INTEGER=36244
- * @property {number} ALPHA=6406
- * @property {number} LUMINANCE=6409
- * @property {number} LUMINANCE_ALPHA=6410
- * @property {number} DEPTH_COMPONENT=6402
- * @property {number} DEPTH_STENCIL=34041
+ * @property {number} [RGBA=6408] -
+ * @property {number} [RGB=6407] -
+ * @property {number} [RG=33319] -
+ * @property {number} [RED=6403] -
+ * @property {number} [RGBA_INTEGER=36249] -
+ * @property {number} [RGB_INTEGER=36248] -
+ * @property {number} [RG_INTEGER=33320] -
+ * @property {number} [RED_INTEGER=36244] -
+ * @property {number} [ALPHA=6406] -
+ * @property {number} [LUMINANCE=6409] -
+ * @property {number} [LUMINANCE_ALPHA=6410] -
+ * @property {number} [DEPTH_COMPONENT=6402] -
+ * @property {number} [DEPTH_STENCIL=34041] -
  */
-export enum FORMATS {
+export enum FORMATS
+// eslint-disable-next-line @typescript-eslint/indent
+{
     RGBA = 6408,
     RGB = 6407,
     RG = 33319,
@@ -193,22 +199,23 @@ export enum FORMATS {
 
 /**
  * Various GL target types.
- *
  * @memberof PIXI
  * @static
  * @name TARGETS
  * @enum {number}
- * @property {number} TEXTURE_2D=3553
- * @property {number} TEXTURE_CUBE_MAP=34067
- * @property {number} TEXTURE_2D_ARRAY=35866
- * @property {number} TEXTURE_CUBE_MAP_POSITIVE_X=34069
- * @property {number} TEXTURE_CUBE_MAP_NEGATIVE_X=34070
- * @property {number} TEXTURE_CUBE_MAP_POSITIVE_Y=34071
- * @property {number} TEXTURE_CUBE_MAP_NEGATIVE_Y=34072
- * @property {number} TEXTURE_CUBE_MAP_POSITIVE_Z=34073
- * @property {number} TEXTURE_CUBE_MAP_NEGATIVE_Z=34074
+ * @property {number} [TEXTURE_2D=3553] -
+ * @property {number} [TEXTURE_CUBE_MAP=34067] -
+ * @property {number} [TEXTURE_2D_ARRAY=35866] -
+ * @property {number} [TEXTURE_CUBE_MAP_POSITIVE_X=34069] -
+ * @property {number} [TEXTURE_CUBE_MAP_NEGATIVE_X=34070] -
+ * @property {number} [TEXTURE_CUBE_MAP_POSITIVE_Y=34071] -
+ * @property {number} [TEXTURE_CUBE_MAP_NEGATIVE_Y=34072] -
+ * @property {number} [TEXTURE_CUBE_MAP_POSITIVE_Z=34073] -
+ * @property {number} [TEXTURE_CUBE_MAP_NEGATIVE_Z=34074] -
  */
-export enum TARGETS {
+export enum TARGETS
+// eslint-disable-next-line @typescript-eslint/indent
+{
     TEXTURE_2D = 3553,
     TEXTURE_CUBE_MAP = 34067,
     TEXTURE_2D_ARRAY = 35866,
@@ -222,29 +229,30 @@ export enum TARGETS {
 
 /**
  * Various GL data format types.
- *
  * @memberof PIXI
  * @static
  * @name TYPES
  * @enum {number}
- * @property {number} UNSIGNED_BYTE=5121
- * @property {number} UNSIGNED_SHORT=5123
- * @property {number} UNSIGNED_SHORT_5_6_5=33635
- * @property {number} UNSIGNED_SHORT_4_4_4_4=32819
- * @property {number} UNSIGNED_SHORT_5_5_5_1=32820
- * @property {number} UNSIGNED_INT=5125
- * @property {number} UNSIGNED_INT_10F_11F_11F_REV=35899
- * @property {number} UNSIGNED_INT_2_10_10_10_REV=33640
- * @property {number} UNSIGNED_INT_24_8=34042
- * @property {number} UNSIGNED_INT_5_9_9_9_REV=35902
- * @property {number} BYTE=5120
- * @property {number} SHORT=5122
- * @property {number} INT=5124
- * @property {number} FLOAT=5126
- * @property {number} FLOAT_32_UNSIGNED_INT_24_8_REV=36269
- * @property {number} HALF_FLOAT=36193
+ * @property {number} [UNSIGNED_BYTE=5121] -
+ * @property {number} [UNSIGNED_SHORT=5123] -
+ * @property {number} [UNSIGNED_SHORT_5_6_5=33635] -
+ * @property {number} [UNSIGNED_SHORT_4_4_4_4=32819] -
+ * @property {number} [UNSIGNED_SHORT_5_5_5_1=32820] -
+ * @property {number} [UNSIGNED_INT=5125] -
+ * @property {number} [UNSIGNED_INT_10F_11F_11F_REV=35899] -
+ * @property {number} [UNSIGNED_INT_2_10_10_10_REV=33640] -
+ * @property {number} [UNSIGNED_INT_24_8=34042] -
+ * @property {number} [UNSIGNED_INT_5_9_9_9_REV=35902] -
+ * @property {number} [BYTE=5120] -
+ * @property {number} [SHORT=5122] -
+ * @property {number} [INT=5124] -
+ * @property {number} [FLOAT=5126] -
+ * @property {number} [FLOAT_32_UNSIGNED_INT_24_8_REV=36269] -
+ * @property {number} [HALF_FLOAT=36193] -
  */
-export enum TYPES {
+export enum TYPES
+// eslint-disable-next-line @typescript-eslint/indent
+{
     UNSIGNED_BYTE = 5121,
     UNSIGNED_SHORT = 5123,
     UNSIGNED_SHORT_5_6_5 = 33635,
@@ -266,16 +274,17 @@ export enum TYPES {
 /**
  * Various sampler types. Correspond to `sampler`, `isampler`, `usampler` GLSL types respectively.
  * WebGL1 works only with FLOAT.
- *
  * @memberof PIXI
  * @static
  * @name SAMPLER_TYPES
  * @enum {number}
- * @property {number} FLOAT=0
- * @property {number} INT=1
- * @property {number} UINT=2
+ * @property {number} [FLOAT=0] -
+ * @property {number} [INT=1] -
+ * @property {number} [UINT=2] -
  */
-export enum SAMPLER_TYPES {
+export enum SAMPLER_TYPES
+// eslint-disable-next-line @typescript-eslint/indent
+{
     FLOAT = 0,
     INT = 1,
     UINT = 2,
@@ -286,7 +295,6 @@ export enum SAMPLER_TYPES {
  *
  * The {@link PIXI.settings.SCALE_MODE} scale mode affects the default scaling mode of future operations.
  * It can be re-assigned to either LINEAR or NEAREST, depending upon suitability.
- *
  * @memberof PIXI
  * @static
  * @name SCALE_MODES
@@ -294,7 +302,9 @@ export enum SAMPLER_TYPES {
  * @property {number} LINEAR Smooth scaling
  * @property {number} NEAREST Pixelating scaling
  */
-export enum SCALE_MODES {
+export enum SCALE_MODES
+// eslint-disable-next-line @typescript-eslint/indent
+{
     NEAREST,
     LINEAR,
 }
@@ -308,7 +318,6 @@ export enum SCALE_MODES {
  * only use REPEAT if the texture is po2.
  *
  * This property only affects WebGL.
- *
  * @name WRAP_MODES
  * @memberof PIXI
  * @static
@@ -317,7 +326,9 @@ export enum SCALE_MODES {
  * @property {number} REPEAT - The texture uvs tile and repeat
  * @property {number} MIRRORED_REPEAT - The texture uvs tile and repeat with mirroring
  */
-export enum WRAP_MODES {
+export enum WRAP_MODES
+// eslint-disable-next-line @typescript-eslint/indent
+{
     CLAMP = 33071,
     REPEAT = 10497,
     MIRRORED_REPEAT = 33648,
@@ -332,7 +343,6 @@ export enum WRAP_MODES {
  * Due to platform restriction, `ON` option will work like `POW2` for webgl-1.
  *
  * This property only affects WebGL.
- *
  * @name MIPMAP_MODES
  * @memberof PIXI
  * @static
@@ -343,7 +353,9 @@ export enum WRAP_MODES {
  * @property {number} ON_MANUAL - Use mipmaps, but do not auto-generate them; this is used with a resource
  *   that supports buffering each level-of-detail.
  */
-export enum MIPMAP_MODES {
+export enum MIPMAP_MODES
+// eslint-disable-next-line @typescript-eslint/indent
+{
     OFF,
     POW2,
     ON,
@@ -352,7 +364,6 @@ export enum MIPMAP_MODES {
 
 /**
  * How to treat textures with premultiplied alpha
- *
  * @name ALPHA_MODES
  * @memberof PIXI
  * @static
@@ -367,7 +378,9 @@ export enum MIPMAP_MODES {
  * @property {number} UNPACK - Default option, alias for PREMULTIPLY_ON_UPLOAD.
  * @property {number} PMA - Alias for PREMULTIPLIED_ALPHA.
  */
-export enum ALPHA_MODES {
+export enum ALPHA_MODES
+// eslint-disable-next-line @typescript-eslint/indent
+{
     NPM = 0,
     UNPACK = 1,
     PMA = 2,
@@ -382,7 +395,6 @@ export enum ALPHA_MODES {
  *
  * Filter textures need not be cleared if the filter does not use pixel blending. {@link CLEAR_MODES.BLIT} will detect
  * this and skip clearing as an optimization.
- *
  * @name CLEAR_MODES
  * @memberof PIXI
  * @static
@@ -394,7 +406,9 @@ export enum ALPHA_MODES {
  * @property {number} YES - Alias for CLEAR, same as `true` in earlier versions
  * @property {number} AUTO - Alias for BLIT
  */
-export enum CLEAR_MODES {
+export enum CLEAR_MODES
+// eslint-disable-next-line @typescript-eslint/indent
+{
     NO = 0,
     YES = 1,
     AUTO = 2,
@@ -414,7 +428,6 @@ export enum CLEAR_MODES {
  *
  * Handy for mobile devices!
  * This property only affects WebGL.
- *
  * @name GC_MODES
  * @enum {number}
  * @static
@@ -422,24 +435,27 @@ export enum CLEAR_MODES {
  * @property {number} AUTO - Garbage collection will happen periodically automatically
  * @property {number} MANUAL - Garbage collection will need to be called manually
  */
-export enum GC_MODES {
+export enum GC_MODES
+// eslint-disable-next-line @typescript-eslint/indent
+{
     AUTO,
     MANUAL,
 }
 
 /**
  * Constants that specify float precision in shaders.
- *
  * @name PRECISION
  * @memberof PIXI
  * @constant
  * @static
  * @enum {string}
- * @property {string} LOW='lowp'
- * @property {string} MEDIUM='mediump'
- * @property {string} HIGH='highp'
+ * @property {string} [LOW='lowp'] -
+ * @property {string} [MEDIUM='mediump'] -
+ * @property {string} [HIGH='highp'] -
  */
-export enum PRECISION {
+export enum PRECISION
+// eslint-disable-next-line @typescript-eslint/indent
+{
     LOW = 'lowp',
     MEDIUM = 'mediump',
     HIGH = 'highp',
@@ -448,7 +464,6 @@ export enum PRECISION {
 /**
  * Constants for mask implementations.
  * We use `type` suffix because it leads to very different behaviours
- *
  * @name MASK_TYPES
  * @memberof PIXI
  * @static
@@ -458,7 +473,9 @@ export enum PRECISION {
  * @property {number} STENCIL - Stencil mask, 1-bit, medium, works only if renderer supports stencil
  * @property {number} SPRITE - Mask that uses SpriteMaskFilter, uses temporary RenderTexture
  */
-export enum MASK_TYPES {
+export enum MASK_TYPES
+// eslint-disable-next-line @typescript-eslint/indent
+{
     NONE = 0,
     SCISSOR = 1,
     STENCIL = 2,
@@ -467,9 +484,7 @@ export enum MASK_TYPES {
 
 /**
  * Constants for multi-sampling antialiasing.
- *
  * @see PIXI.Framebuffer#multisample
- *
  * @name MSAA_QUALITY
  * @memberof PIXI
  * @static
@@ -479,7 +494,9 @@ export enum MASK_TYPES {
  * @property {number} MEDIUM - Try 4 samples
  * @property {number} HIGH - Try 8 samples
  */
-export enum MSAA_QUALITY {
+export enum MSAA_QUALITY
+// eslint-disable-next-line @typescript-eslint/indent
+{
     NONE = 0,
     LOW = 2,
     MEDIUM = 4,
@@ -488,9 +505,7 @@ export enum MSAA_QUALITY {
 
 /**
  * Constants for various buffer types in Pixi
- *
  * @see PIXI.BUFFER_TYPE
- *
  * @name BUFFER_TYPE
  * @memberof PIXI
  * @static
@@ -499,7 +514,9 @@ export enum MSAA_QUALITY {
  * @property {number} ARRAY_BUFFER - buffer type for using attribute data
  * @property {number} UNIFORM_BUFFER - the buffer type is for uniform buffer objects
  */
-export enum BUFFER_TYPE {
+export enum BUFFER_TYPE
+// eslint-disable-next-line @typescript-eslint/indent
+{
     ELEMENT_ARRAY_BUFFER = 34963,
     ARRAY_BUFFER = 34962,
     // NOT YET SUPPORTED
