@@ -1,6 +1,6 @@
 {
   "name": "@pixi/spritesheet",
-  "version": "6.4.1",
+  "version": "6.4.2",
   "main": "dist/cjs/spritesheet.js",
   "module": "dist/esm/spritesheet.js",
   "bundle": "dist/browser/spritesheet.js",
@@ -38,9 +38,9 @@
     "*.d.ts"
   ],
   "peerDependencies": {
-    "@pixi/core": "6.4.1",
-    "@pixi/loaders": "6.4.1",
-    "@pixi/math": "6.4.1",
-    "@pixi/utils": "6.4.1"
+    "@pixi/core": "6.4.2",
+    "@pixi/loaders": "6.4.2",
+    "@pixi/math": "6.4.2",
+    "@pixi/utils": "6.4.2"
   }
 }

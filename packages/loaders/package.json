@@ -1,6 +1,6 @@
 {
   "name": "@pixi/loaders",
-  "version": "6.4.1",
+  "version": "6.4.2",
   "main": "dist/cjs/loaders.js",
   "module": "dist/esm/loaders.js",
   "bundle": "dist/browser/loaders.js",
@@ -38,8 +38,8 @@
     "*.d.ts"
   ],
   "peerDependencies": {
-    "@pixi/constants": "6.4.1",
-    "@pixi/core": "6.4.1",
-    "@pixi/utils": "6.4.1"
+    "@pixi/constants": "6.4.2",
+    "@pixi/core": "6.4.2",
+    "@pixi/utils": "6.4.2"
   }
 }
