@@ -45,7 +45,7 @@ import { StartupOptions, StartupSystem } from './startup/StartupSystem';
  *
  * | System                               | Description                                                                   |
  * | ------------------------------------ | ----------------------------------------------------------------------------- |
- 
+ *
  * | Generic Systems                      | Systems that manage functionality that all renderer types share               |
  * | ------------------------------------ | ----------------------------------------------------------------------------- |
  * | {@link PIXI.ViewSystem}              | This manages the main view of the renderer usually a Canvas                   |
@@ -53,7 +53,7 @@ import { StartupOptions, StartupSystem } from './startup/StartupSystem';
  * | {@link PIXI.BackgroundSystem}        | This manages the main views background color and alpha                        |
  * | {@link PIXI.StartupSystem}           | Boots up a renderer and initiatives all the systems                           |
  * | {@link PIXI.EventSystem}             | This manages UI events.                                                       |
- 
+ *
  * | WebGL Core Systems                   | Provide an optimised, easy to use API to work with WebGL                      |
  * | ------------------------------------ | ----------------------------------------------------------------------------- |
  * | {@link PIXI.ContextSystem}           | This manages the WebGL context and extensions.                                |
@@ -64,7 +64,7 @@ import { StartupOptions, StartupSystem } from './startup/StartupSystem';
  * | {@link PIXI.TextureSystem}           | This manages textures and their resources on the GPU.                         |
  * | {@link PIXI.TextureGCSystem}         | This will automatically remove textures from the GPU if they are not used.    |
  * | {@link PIXI.MultisampleSystem}       | This manages the multisample const on the WEbGL Renderer                      |
- 
+ *
  * | Pixi high level Systems              | Set of Pixi specific systems designed to work with Pixi objects               |
  * | ------------------------------------ | ----------------------------------------------------------------------------- |
  * | {@link PIXI.RenderSystem}          | This adds the ability to render a PIXI.DisplayObject                          |
@@ -79,7 +79,6 @@ import { StartupOptions, StartupSystem } from './startup/StartupSystem';
  *
  * The breadth of the API surface provided by the renderer is contained within these systems.
  * @memberof PIXI
- * @implements PIXI.IRenderer
  */
 export class Renderer extends SystemManager<Renderer> implements IRenderer
 {

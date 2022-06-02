@@ -46,7 +46,7 @@ export interface ICanvasRendererPluginConstructor
  *
  * | System                               | Description                                                                   |
  * | ------------------------------------ | ----------------------------------------------------------------------------- |
- 
+ *
  * | Generic Systems                      | Systems that manage functionality that all renderer types share               |
  * | ------------------------------------ | ----------------------------------------------------------------------------- |
  * | {@link PIXI.ViewSystem}              | This manages the main view of the renderer usually a Canvas                   |
@@ -55,7 +55,7 @@ export interface ICanvasRendererPluginConstructor
  * | {@link PIXI.StartupSystem}           | Boots up a renderer and initiatives all the systems                           |
  * | {@link PIXI.EventSystem}             | This manages UI events.                                                       |
  * | {@link PIXI.GenerateTextureSystem}   | This adds the ability to generate textures from any PIXI.DisplayObject        |
- 
+ *
  * | Pixi high level Systems              | Set of Pixi specific systems designed to work with Pixi objects               |
  * | ------------------------------------ | ----------------------------------------------------------------------------- |
  * | {@link PIXI.CanvasContextSystem}     | This manages the canvas `2d` contexts and their state                         |
@@ -65,7 +65,6 @@ export interface ICanvasRendererPluginConstructor
  * The breadth of the API surface provided by the renderer is contained within these systems.
  * @class
  * @memberof PIXI
- * @implements PIXI.IRenderer
  */
 export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRenderer
 {
@@ -190,7 +189,6 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
                 alpha: options.backgroundAlpha,
                 color: options.backgroundColor,
                 clearBeforeRender: options.clearBeforeRender,
-
             },
             _view: {
                 height: options.height,
@@ -287,11 +285,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
         this.objectRenderer.render(displayObject, options);
     }
 
-    /**
-     * Clear the canvas of renderer.
-     * @param {string} [clearColor] - Clear the canvas with this color, except the canvas is transparent.
-     * @param {number} [alpha] - Alpha to apply to the background fill color.
-     */
+    /** Clear the canvas of renderer. */
     public clear(): void
     {
         this.canvasContext.clear();
@@ -320,7 +314,6 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
 
     /**
      * Resizes the canvas view to the specified width and height.
-     * @implements PIXI.IRenderer#resize
      * @param desiredScreenWidth - the desired width of the screen
      * @param desiredScreenHeight - the desired height of the screen
      */

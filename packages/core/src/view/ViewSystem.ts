@@ -79,10 +79,8 @@ export class ViewSystem implements ISystem
 
     /**
      * Resizes the screen and canvas to the specified dimensions.
-     * @param {number} screenWidth - The new width of the screen.
-     * @param {number} screenHeight - The new height of the screen.
-     * @param desiredScreenWidth
-     * @param desiredScreenHeight
+     * @param desiredScreenWidth - The new width of the screen.
+     * @param desiredScreenHeight - The new height of the screen.
      */
     resizeView(desiredScreenWidth: number, desiredScreenHeight: number): void
     {
