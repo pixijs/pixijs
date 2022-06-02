@@ -1,14 +1,14 @@
 import { BasePrepare } from '@pixi/prepare';
 import sinon from 'sinon';
 import { expect } from 'chai';
-import { AbstractRenderer } from '@pixi/core';
 import { DisplayObject } from '@pixi/display';
+import { IRenderer } from '@pixi/core';
 
 describe('BasePrepare', () =>
 {
     it('should create a new, empty, BasePrepare', () =>
     {
-        const renderer = {} as AbstractRenderer;
+        const renderer = {} as IRenderer;
         const prep = new BasePrepare(renderer);
 
         expect(prep['renderer']).to.equal(renderer);
