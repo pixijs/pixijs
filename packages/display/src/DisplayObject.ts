@@ -936,9 +936,9 @@ export abstract class DisplayObject extends EventEmitter
      * Sets a mask for the displayObject. A mask is an object that limits the visibility of an
      * object to the shape of the mask applied to it. In PixiJS a regular mask must be a
      * {@link PIXI.Graphics} or a {@link PIXI.Sprite} object. This allows for much faster masking in canvas as it
-     * utilities shape clipping. Furthermore, a mask of an object must be in the subtree of its parent. 
+     * utilities shape clipping. Furthermore, a mask of an object must be in the subtree of its parent.
      * Otherwise, `getLocalBounds` may calculate incorrect bounds, which makes the container's width and height wrong.
-     * To remove a mask, set this property to `null`. 
+     * To remove a mask, set this property to `null`.
      *
      * For sprite mask both alpha and red channel are used. Black mask is the same as transparent mask.
      * @example
