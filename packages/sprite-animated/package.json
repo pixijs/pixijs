@@ -1,6 +1,6 @@
 {
   "name": "@pixi/sprite-animated",
-  "version": "6.4.0",
+  "version": "6.4.1",
   "main": "dist/cjs/sprite-animated.js",
   "module": "dist/esm/sprite-animated.js",
   "bundle": "dist/browser/sprite-animated.js",
@@ -38,8 +38,8 @@
     "*.d.ts"
   ],
   "peerDependencies": {
-    "@pixi/core": "6.4.0",
-    "@pixi/sprite": "6.4.0",
-    "@pixi/ticker": "6.4.0"
+    "@pixi/core": "6.4.1",
+    "@pixi/sprite": "6.4.1",
+    "@pixi/ticker": "6.4.1"
   }
 }

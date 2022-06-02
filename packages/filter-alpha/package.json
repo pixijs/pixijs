@@ -1,6 +1,6 @@
 {
   "name": "@pixi/filter-alpha",
-  "version": "6.4.0",
+  "version": "6.4.1",
   "main": "dist/cjs/filter-alpha.js",
   "module": "dist/esm/filter-alpha.js",
   "bundle": "dist/browser/filter-alpha.js",
@@ -39,6 +39,6 @@
     "*.d.ts"
   ],
   "peerDependencies": {
-    "@pixi/core": "6.4.0"
+    "@pixi/core": "6.4.1"
   }
 }
