@@ -8,12 +8,12 @@
   "exports": {
     ".": {
       "import": {
-        "default": "./dist/cjs/filter-fxaa.js",
-        "types": "./index.d.ts"
+        "types": "./index.d.ts",
+        "default": "./dist/esm/filter-fxaa.js"
       },
       "require": {
-        "default": "./dist/esm/filter-fxaa.js",
-        "types": "./index.d.ts"
+        "types": "./index.d.ts",
+        "default": "./dist/cjs/filter-fxaa.js"
       }
     }
   },

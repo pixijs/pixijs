@@ -8,12 +8,12 @@
   "exports": {
     ".": {
       "import": {
-        "default": "./dist/cjs/filter-color-matrix.js",
-        "types": "./index.d.ts"
+        "types": "./index.d.ts",
+        "default": "./dist/esm/filter-color-matrix.js"
       },
       "require": {
-        "default": "./dist/esm/filter-color-matrix.js",
-        "types": "./index.d.ts"
+        "types": "./index.d.ts",
+        "default": "./dist/cjs/filter-color-matrix.js"
       }
     }
   },

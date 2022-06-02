@@ -8,12 +8,12 @@
   "exports": {
     ".": {
       "import": {
-        "default": "./dist/cjs/mixin-get-global-position.js",
-        "types": "./index.d.ts"
+        "types": "./index.d.ts",
+        "default": "./dist/esm/mixin-get-global-position.js"
       },
       "require": {
-        "default": "./dist/esm/mixin-get-global-position.js",
-        "types": "./index.d.ts"
+        "types": "./index.d.ts",
+        "default": "./dist/cjs/mixin-get-global-position.js"
       }
     }
   },

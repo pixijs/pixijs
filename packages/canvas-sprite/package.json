@@ -8,12 +8,12 @@
   "exports": {
     ".": {
       "import": {
-        "default": "./dist/cjs/canvas-sprite.js",
-        "types": "./index.d.ts"
+        "types": "./index.d.ts",
+        "default": "./dist/esm/canvas-sprite.js"
       },
       "require": {
-        "default": "./dist/esm/canvas-sprite.js",
-        "types": "./index.d.ts"
+        "types": "./index.d.ts",
+        "default": "./dist/cjs/canvas-sprite.js"
       }
     }
   },

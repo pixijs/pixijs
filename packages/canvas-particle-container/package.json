@@ -8,12 +8,12 @@
   "exports": {
     ".": {
       "import": {
-        "default": "./dist/cjs/canvas-particle-container.js",
-        "types": "./index.d.ts"
+        "types": "./index.d.ts",
+        "default": "./dist/esm/canvas-particle-container.js"
       },
       "require": {
-        "default": "./dist/esm/canvas-particle-container.js",
-        "types": "./index.d.ts"
+        "types": "./index.d.ts",
+        "default": "./dist/cjs/canvas-particle-container.js"
       }
     }
   },
