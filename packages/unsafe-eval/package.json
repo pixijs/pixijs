@@ -8,12 +8,12 @@
   "exports": {
     ".": {
       "import": {
-        "default": "./dist/cjs/unsafe-eval.js",
-        "types": "./index.d.ts"
+        "types": "./index.d.ts",
+        "default": "./dist/esm/unsafe-eval.js"
       },
       "require": {
-        "default": "./dist/esm/unsafe-eval.js",
-        "types": "./index.d.ts"
+        "types": "./index.d.ts",
+        "default": "./dist/cjs/unsafe-eval.js"
       }
     }
   },

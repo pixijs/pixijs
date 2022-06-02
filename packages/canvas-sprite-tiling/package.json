@@ -8,12 +8,12 @@
   "exports": {
     ".": {
       "import": {
-        "default": "./dist/cjs/canvas-sprite-tiling.js",
-        "types": "./index.d.ts"
+        "types": "./index.d.ts",
+        "default": "./dist/esm/canvas-sprite-tiling.js"
       },
       "require": {
-        "default": "./dist/esm/canvas-sprite-tiling.js",
-        "types": "./index.d.ts"
+        "types": "./index.d.ts",
+        "default": "./dist/cjs/canvas-sprite-tiling.js"
       }
     }
   },

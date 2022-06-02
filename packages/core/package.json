@@ -8,12 +8,12 @@
   "exports": {
     ".": {
       "import": {
-        "default": "./dist/cjs/core.js",
-        "types": "./index.d.ts"
+        "types": "./index.d.ts",
+        "default": "./dist/esm/core.js"
       },
       "require": {
-        "default": "./dist/esm/core.js",
-        "types": "./index.d.ts"
+        "types": "./index.d.ts",
+        "default": "./dist/cjs/core.js"
       }
     }
   },

@@ -8,12 +8,12 @@
   "exports": {
     ".": {
       "import": {
-        "default": "./dist/cjs/mesh-extras.js",
-        "types": "./index.d.ts"
+        "types": "./index.d.ts",
+        "default": "./dist/esm/mesh-extras.js"
       },
       "require": {
-        "default": "./dist/esm/mesh-extras.js",
-        "types": "./index.d.ts"
+        "types": "./index.d.ts",
+        "default": "./dist/cjs/mesh-extras.js"
       }
     }
   },

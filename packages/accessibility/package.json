@@ -8,12 +8,12 @@
   "exports": {
     ".": {
       "import": {
-        "default": "./dist/cjs/accessibility.js",
-        "types": "./index.d.ts"
+        "types": "./index.d.ts",
+        "default": "./dist/esm/accessibility.js"
       },
       "require": {
-        "default": "./dist/esm/accessibility.js",
-        "types": "./index.d.ts"
+        "types": "./index.d.ts",
+        "default": "./dist/cjs/accessibility.js"
       }
     }
   },

@@ -8,12 +8,12 @@
   "exports": {
     ".": {
       "import": {
-        "default": "./dist/cjs/sprite-tiling.js",
-        "types": "./index.d.ts"
+        "types": "./index.d.ts",
+        "default": "./dist/esm/sprite-tiling.js"
       },
       "require": {
-        "default": "./dist/esm/sprite-tiling.js",
-        "types": "./index.d.ts"
+        "types": "./index.d.ts",
+        "default": "./dist/cjs/sprite-tiling.js"
       }
     }
   },

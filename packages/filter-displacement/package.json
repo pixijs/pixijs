@@ -8,12 +8,12 @@
   "exports": {
     ".": {
       "import": {
-        "default": "./dist/cjs/filter-displacement.js",
-        "types": "./index.d.ts"
+        "types": "./index.d.ts",
+        "default": "./dist/esm/filter-displacement.js"
       },
       "require": {
-        "default": "./dist/esm/filter-displacement.js",
-        "types": "./index.d.ts"
+        "types": "./index.d.ts",
+        "default": "./dist/cjs/filter-displacement.js"
       }
     }
   },

@@ -8,12 +8,12 @@
   "exports": {
     ".": {
       "import": {
-        "default": "./dist/cjs/mixin-cache-as-bitmap.js",
-        "types": "./index.d.ts"
+        "types": "./index.d.ts",
+        "default": "./dist/esm/mixin-cache-as-bitmap.js"
       },
       "require": {
-        "default": "./dist/esm/mixin-cache-as-bitmap.js",
-        "types": "./index.d.ts"
+        "types": "./index.d.ts",
+        "default": "./dist/cjs/mixin-cache-as-bitmap.js"
       }
     }
   },

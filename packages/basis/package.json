@@ -18,12 +18,12 @@
   "exports": {
     ".": {
       "import": {
-        "default": "./dist/cjs/basis.js",
-        "types": "./index.d.ts"
+        "types": "./index.d.ts",
+        "default": "./dist/esm/basis.js"
       },
       "require": {
-        "default": "./dist/esm/basis.js",
-        "types": "./index.d.ts"
+        "types": "./index.d.ts",
+        "default": "./dist/cjs/basis.js"
       }
     }
   },

@@ -20,12 +20,12 @@
   "exports": {
     ".": {
       "import": {
-        "default": "./dist/cjs/compressed-textures.js",
-        "types": "./index.d.ts"
+        "types": "./index.d.ts",
+        "default": "./dist/esm/compressed-textures.js"
       },
       "require": {
-        "default": "./dist/esm/compressed-textures.js",
-        "types": "./index.d.ts"
+        "types": "./index.d.ts",
+        "default": "./dist/cjs/compressed-textures.js"
       }
     }
   },
