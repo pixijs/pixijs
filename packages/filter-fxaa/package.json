@@ -1,6 +1,6 @@
 {
   "name": "@pixi/filter-fxaa",
-  "version": "6.3.2",
+  "version": "6.4.0",
   "main": "dist/cjs/filter-fxaa.js",
   "module": "dist/esm/filter-fxaa.js",
   "bundle": "dist/browser/filter-fxaa.js",
@@ -8,12 +8,12 @@
   "exports": {
     ".": {
       "import": {
-          "default": "./dist/cjs/filter-fxaa.js",
-          "types": "./index.d.ts"
+        "default": "./dist/cjs/filter-fxaa.js",
+        "types": "./index.d.ts"
       },
       "require": {
-          "default": "./dist/esm/filter-fxaa.js",
-          "types": "./index.d.ts"
+        "default": "./dist/esm/filter-fxaa.js",
+        "types": "./index.d.ts"
       }
     }
   },
@@ -39,6 +39,6 @@
     "*.d.ts"
   ],
   "peerDependencies": {
-    "@pixi/core": "6.3.2"
+    "@pixi/core": "6.4.0"
   }
 }

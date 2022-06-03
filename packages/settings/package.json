@@ -1,6 +1,6 @@
 {
   "name": "@pixi/settings",
-  "version": "6.3.2",
+  "version": "6.4.0",
   "main": "dist/cjs/settings.js",
   "module": "dist/esm/settings.js",
   "bundle": "dist/browser/settings.js",
@@ -8,12 +8,12 @@
   "exports": {
     ".": {
       "import": {
-          "default": "./dist/cjs/settings.js",
-          "types": "./index.d.ts"
+        "default": "./dist/cjs/settings.js",
+        "types": "./index.d.ts"
       },
       "require": {
-          "default": "./dist/esm/settings.js",
-          "types": "./index.d.ts"
+        "default": "./dist/esm/settings.js",
+        "types": "./index.d.ts"
       }
     }
   },

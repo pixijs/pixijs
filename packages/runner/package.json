@@ -1,6 +1,6 @@
 {
   "name": "@pixi/runner",
-  "version": "6.3.2",
+  "version": "6.4.0",
   "main": "dist/cjs/runner.js",
   "module": "dist/esm/runner.js",
   "bundle": "dist/browser/runner.js",
@@ -8,12 +8,12 @@
   "exports": {
     ".": {
       "import": {
-          "default": "./dist/cjs/runner.js",
-          "types": "./index.d.ts"
+        "default": "./dist/cjs/runner.js",
+        "types": "./index.d.ts"
       },
       "require": {
-          "default": "./dist/esm/runner.js",
-          "types": "./index.d.ts"
+        "default": "./dist/esm/runner.js",
+        "types": "./index.d.ts"
       }
     }
   },
