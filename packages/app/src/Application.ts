@@ -2,7 +2,7 @@ import { Container } from '@pixi/display';
 import { autoDetectRenderer } from '@pixi/core';
 
 import type { Rectangle } from '@pixi/math';
-import type { Renderer, IRendererOptionsAuto, AbstractRenderer } from '@pixi/core';
+import type {  IRendererOptionsAuto, IRenderer } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
 
 /**
@@ -59,7 +59,7 @@ export class Application
      * WebGL renderer if available, otherwise CanvasRenderer.
      * @member {PIXI.Renderer|PIXI.CanvasRenderer}
      */
-    public renderer: Renderer | AbstractRenderer;
+    public renderer: IRenderer;
 
     /**
      * @param {object} [options] - The optional renderer parameters.

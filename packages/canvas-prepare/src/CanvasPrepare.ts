@@ -1,7 +1,6 @@
-import { BaseTexture } from '@pixi/core';
+import { BaseTexture, IRenderer } from '@pixi/core';
 import { BasePrepare } from '@pixi/prepare';
 
-import type { AbstractRenderer } from '@pixi/core';
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
 import type { IDisplayObjectExtended } from '@pixi/prepare';
 
@@ -14,7 +13,7 @@ const CANVAS_START_SIZE = 16;
  * @param item - Item to check
  * @returns If item was uploaded.
  */
-function uploadBaseTextures(prepare: AbstractRenderer | BasePrepare, item: IDisplayObjectExtended): boolean
+function uploadBaseTextures(prepare: IRenderer | BasePrepare, item: IDisplayObjectExtended): boolean
 {
     const tempPrepare = prepare as CanvasPrepare;
 

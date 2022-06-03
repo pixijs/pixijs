@@ -1,16 +1,30 @@
 import { ENV } from '@pixi/constants';
 import { settings } from '../settings';
 
-import type { ISystem } from '../ISystem';
-import type { IRenderingContext } from '../IRenderingContext';
+import type { ISystem } from '../system/ISystem';
 import type { Renderer } from '../Renderer';
 import type { WebGLExtensions } from './WebGLExtensions';
+import { IRenderingContext } from '../IRenderer';
 
 let CONTEXT_UID_COUNTER = 0;
 
 export interface ISupportDict
 {
     uint32Indices: boolean;
+}
+
+export interface ContextOptions
+{
+    context?: IRenderingContext;
+    /**
+     * Use premultipliedAlpha instead
+     * @deprecated
+     */
+    useContextAlpha?: boolean | 'notMultiplied';
+    premultipliedAlpha?: boolean;
+    powerPreference?: WebGLPowerPreference;
+    preserveDrawingBuffer?: boolean;
+    antialias?: boolean;
 }
 
 /**
@@ -32,6 +46,17 @@ export class ContextSystem implements ISystem
      * @property {boolean} uint32Indices - Support for 32-bit indices buffer.
      */
     readonly supports: ISupportDict;
+
+    preserveDrawingBuffer: boolean;
+    powerPreference: WebGLPowerPreference;
+
+    /**
+     * Pass-thru setting for the canvas' context `alpha` property. This is typically
+     * not something you need to fiddle with. If you want transparency, use `backgroundAlpha`.
+     * @member {boolean}
+     * @deprecated since 6.4.0
+     */
+    useContextAlpha: boolean | 'notMultiplied';
 
     protected CONTEXT_UID: number;
     protected gl: IRenderingContext;
@@ -66,9 +91,6 @@ export class ContextSystem implements ISystem
         // Bind functions
         this.handleContextLost = this.handleContextLost.bind(this);
         this.handleContextRestored = this.handleContextRestored.bind(this);
-
-        (renderer.view as any).addEventListener('webglcontextlost', this.handleContextLost, false);
-        renderer.view.addEventListener('webglcontextrestored', this.handleContextRestored, false);
     }
 
     /**
@@ -97,6 +119,35 @@ export class ContextSystem implements ISystem
         }
     }
 
+    init(options: ContextOptions): void
+    {
+        /*
+         * The options passed in to create a new WebGL context.
+         */
+        if (options.context)
+        {
+            this.initFromContext(options.context);
+        }
+        else
+        {
+            const alpha = this.renderer.background.alpha < 1;
+            const premultipliedAlpha =  options.premultipliedAlpha ?? true;
+
+            this.preserveDrawingBuffer = options.preserveDrawingBuffer;
+            this.useContextAlpha = options.useContextAlpha;
+            this.powerPreference = options.powerPreference;
+
+            this.initFromOptions({
+                alpha,
+                premultipliedAlpha,
+                antialias: options.antialias,
+                stencil: true,
+                preserveDrawingBuffer: options.preserveDrawingBuffer,
+                powerPreference: options.powerPreference,
+            });
+        }
+    }
+
     /**
      * Initializes the context.
      * @protected
@@ -109,6 +160,9 @@ export class ContextSystem implements ISystem
         this.renderer.gl = gl;
         this.renderer.CONTEXT_UID = CONTEXT_UID_COUNTER++;
         this.renderer.runners.contextChange.emit(gl);
+
+        (this.renderer.view as any).addEventListener('webglcontextlost', this.handleContextLost, false);
+        this.renderer.view.addEventListener('webglcontextrestored', this.handleContextRestored, false);
     }
 
     /**
@@ -248,7 +302,7 @@ export class ContextSystem implements ISystem
     /** Handle the post-render runner event. */
     protected postrender(): void
     {
-        if (this.renderer.renderingToScreen)
+        if (this.renderer.objectRenderer.renderingToScreen)
         {
             this.gl.flush();
         }

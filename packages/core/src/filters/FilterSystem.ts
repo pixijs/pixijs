@@ -6,7 +6,7 @@ import { UniformGroup } from '../shader/UniformGroup';
 import { DRAW_MODES, CLEAR_MODES, MSAA_QUALITY } from '@pixi/constants';
 import { FilterState } from './FilterState';
 
-import type { ISystem } from '../ISystem';
+import type { ISystem } from '../system/ISystem';
 import type { Filter } from './Filter';
 import type { IFilterTarget } from './IFilterTarget';
 import type { ISpriteMaskTarget } from './spriteMask/SpriteMaskFilter';
@@ -103,7 +103,7 @@ export class FilterSystem implements ISystem
         this.defaultFilterStack = [{}] as any;
 
         this.texturePool = new RenderTexturePool();
-        this.texturePool.setScreenSize(renderer.view);
+
         this.statePool = [];
 
         this.quad = new Quad();
@@ -125,6 +125,11 @@ export class FilterSystem implements ISystem
 
         this.forceClear = false;
         this.useMaxPadding = false;
+    }
+
+    init(): void
+    {
+        this.texturePool.setScreenSize(this.renderer.view);
     }
 
     /**

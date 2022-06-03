@@ -2,8 +2,8 @@ import { mapWebGLBlendModesToPixi } from './utils/mapWebGLBlendModesToPixi';
 import { State } from './State';
 import { BLEND_MODES } from '@pixi/constants';
 
-import type { ISystem } from '../ISystem';
-import type { IRenderingContext } from '../IRenderingContext';
+import type { ISystem } from '../system/ISystem';
+import { IRenderingContext } from '../IRenderer';
 
 const BLEND = 0;
 const OFFSET = 1;

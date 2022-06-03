@@ -1,5 +1,5 @@
-import type { IRenderingContext } from '../../IRenderingContext';
 import type { Dict } from '@pixi/utils';
+import { IRenderingContext } from '../../IRenderer';
 
 // var GL_MAP = {};
 

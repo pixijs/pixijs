@@ -10,8 +10,8 @@ describe('CanvasMaskManager', () =>
     it('should work on all graphics masks inside container', () =>
     {
         const renderer = new CanvasRenderer({ width: 1, height: 1 });
-        const shapeSpy = sinon.spy(renderer.maskManager, 'renderGraphicsShape');
-        const contextPath = sinon.spy(renderer.context, 'closePath');
+        const shapeSpy = sinon.spy(renderer.mask, 'renderGraphicsShape');
+        const contextPath = sinon.spy(renderer.canvasContext.activeContext, 'closePath');
         const cont = new Container();
 
         cont.mask = new Sprite();
@@ -43,7 +43,7 @@ describe('CanvasMaskManager', () =>
     it('should set correct transform for graphics', () =>
     {
         const renderer = new CanvasRenderer({ width: 1, height: 1 });
-        const transformSpy = sinon.spy(renderer.context, 'setTransform');
+        const transformSpy = sinon.spy(renderer.canvasContext.activeContext, 'setTransform');
         const cont = new Container();
         const graphics1 = new Graphics();
         const graphics2 = new Graphics();

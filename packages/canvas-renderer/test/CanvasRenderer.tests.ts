@@ -11,7 +11,7 @@ describe('CanvasRenderer', () =>
 
         try
         {
-            expect(renderer.context).to.equal(renderer.rootContext);
+            expect(renderer.canvasContext.activeContext).to.equal(renderer.canvasContext.activeContext);
         }
         finally
         {

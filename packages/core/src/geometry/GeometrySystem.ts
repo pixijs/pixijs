@@ -2,14 +2,14 @@ import { GLBuffer } from './GLBuffer';
 import { ENV } from '@pixi/constants';
 import { settings } from '../settings';
 
-import type { ISystem } from '../ISystem';
+import type { ISystem } from '../system/ISystem';
 import type { DRAW_MODES } from '@pixi/constants';
 import type { Renderer } from '../Renderer';
-import type { IRenderingContext } from '../IRenderingContext';
 import type { Geometry } from './Geometry';
 import type { Shader } from '../shader/Shader';
 import type { Program } from '../shader/Program';
 import type { Dict } from '@pixi/utils';
+import { IRenderingContext } from '../IRenderer';
 
 const byteSizeMap: {[key: number]: number} = { 5126: 4, 5123: 2, 5121: 1 };
 

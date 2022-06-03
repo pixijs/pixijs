@@ -1,7 +1,7 @@
 import { Renderer } from '@pixi/core';
 import { CanvasRenderer } from './CanvasRenderer';
 
-import type { AbstractRenderer, IRendererOptionsAuto } from '@pixi/core';
+import type { IRenderer, IRendererOptionsAuto } from '@pixi/core';
 
 // Reference to Renderer.create static function
 const parentCreate = Renderer.create;
@@ -12,7 +12,7 @@ const parentCreate = Renderer.create;
  * @param options
  * @private
  */
-Renderer.create = function create(options: IRendererOptionsAuto): AbstractRenderer
+Renderer.create = function create(options: IRendererOptionsAuto): IRenderer
 {
     const forceCanvas = options && options.forceCanvas;
 
@@ -28,5 +28,6 @@ Renderer.create = function create(options: IRendererOptionsAuto): AbstractRender
         }
     }
 
+    //    return parentCreate(options);
     return new CanvasRenderer(options);
 };

@@ -1,7 +1,7 @@
 import { Rectangle } from '@pixi/math';
 import { BUFFER_BITS } from '@pixi/constants';
 
-import type { ISystem } from '../ISystem';
+import type { ISystem } from '../system/ISystem';
 import type { Renderer } from '../Renderer';
 import type { RenderTexture } from './RenderTexture';
 import type { BaseRenderTexture } from './BaseRenderTexture';
@@ -35,9 +35,6 @@ const tempRect2 = new Rectangle();
 export class RenderTextureSystem implements ISystem
 {
 /* eslint-enable max-len */
-
-    /** The clear background color as RGBA. */
-    public clearColor: number[];
 
     /**
      * List of masks for the {@link PIXI.StencilSystem}.
@@ -81,7 +78,6 @@ export class RenderTextureSystem implements ISystem
     {
         this.renderer = renderer;
 
-        this.clearColor = renderer._backgroundColorRgba;
         this.defaultMaskStack = [];
         this.current = null;
         this.sourceFrame = new Rectangle();
@@ -137,8 +133,8 @@ export class RenderTextureSystem implements ISystem
 
             if (!sourceFrame)
             {
-                tempRect.width = renderer.screen.width;
-                tempRect.height = renderer.screen.height;
+                tempRect.width = renderer._view.screen.width;
+                tempRect.height = renderer._view.screen.height;
 
                 sourceFrame = tempRect;
             }
@@ -196,11 +192,11 @@ export class RenderTextureSystem implements ISystem
         }
         else
         {
-            clearColor = clearColor || this.clearColor;
+            clearColor = clearColor || this.renderer.background.colorRgba;
         }
 
         const destinationFrame = this.destinationFrame;
-        const baseFrame: ISize = this.current ? this.current.baseTexture : this.renderer.screen;
+        const baseFrame: ISize = this.current ? this.current.baseTexture : this.renderer._view.screen;
         const clearMask = destinationFrame.width !== baseFrame.width || destinationFrame.height !== baseFrame.height;
 
         if (clearMask)

@@ -18,7 +18,7 @@ const TOUCH_TO_POINTER: Record<string, string> = {
 
 interface Renderer
 {
-    _lastObjectRendered: IRenderableObject;
+    lastObjectRendered: IRenderableObject;
     view: HTMLCanvasElement;
     resolution: number;
     plugins: Record<string, any>;
@@ -188,7 +188,7 @@ export class EventSystem
      */
     private onPointerDown(nativeEvent: MouseEvent | PointerEvent | TouchEvent): void
     {
-        this.rootBoundary.rootTarget = this.renderer._lastObjectRendered as DisplayObject;
+        this.rootBoundary.rootTarget = this.renderer.lastObjectRendered as DisplayObject;
 
         // if we support touch events, then only use those for touch events, not pointer events
         if (this.supportsTouchEvents && (nativeEvent as PointerEvent).pointerType === 'touch') return;
@@ -230,7 +230,7 @@ export class EventSystem
      */
     private onPointerMove(nativeEvent: MouseEvent | PointerEvent | TouchEvent): void
     {
-        this.rootBoundary.rootTarget = this.renderer._lastObjectRendered as DisplayObject;
+        this.rootBoundary.rootTarget = this.renderer.lastObjectRendered as DisplayObject;
 
         // if we support touch events, then only use those for touch events, not pointer events
         if (this.supportsTouchEvents && (nativeEvent as PointerEvent).pointerType === 'touch') return;
@@ -253,7 +253,7 @@ export class EventSystem
      */
     private onPointerUp(nativeEvent: MouseEvent | PointerEvent | TouchEvent): void
     {
-        this.rootBoundary.rootTarget = this.renderer._lastObjectRendered as DisplayObject;
+        this.rootBoundary.rootTarget = this.renderer.lastObjectRendered as DisplayObject;
 
         // if we support touch events, then only use those for touch events, not pointer events
         if (this.supportsTouchEvents && (nativeEvent as PointerEvent).pointerType === 'touch') return;
@@ -279,7 +279,7 @@ export class EventSystem
      */
     private onPointerOverOut(nativeEvent: MouseEvent | PointerEvent | TouchEvent): void
     {
-        this.rootBoundary.rootTarget = this.renderer._lastObjectRendered as DisplayObject;
+        this.rootBoundary.rootTarget = this.renderer.lastObjectRendered as DisplayObject;
 
         // if we support touch events, then only use those for touch events, not pointer events
         if (this.supportsTouchEvents && (nativeEvent as PointerEvent).pointerType === 'touch') return;
@@ -304,7 +304,7 @@ export class EventSystem
     {
         const wheelEvent = this.normalizeWheelEvent(nativeEvent);
 
-        this.rootBoundary.rootTarget = this.renderer._lastObjectRendered as DisplayObject;
+        this.rootBoundary.rootTarget = this.renderer.lastObjectRendered as DisplayObject;
         this.rootBoundary.mapEvent(wheelEvent);
     }
 
