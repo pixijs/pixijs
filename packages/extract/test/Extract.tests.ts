@@ -2,7 +2,8 @@ import { Sprite } from '@pixi/sprite';
 import { expect } from 'chai';
 import { skipHello } from '@pixi/utils';
 import { Texture, RenderTexture, BatchRenderer, Renderer } from '@pixi/core';
-import { Extract, PixelExtractOptions } from '@pixi/extract';
+import { Extract } from '@pixi/extract';
+import { Rectangle } from '@pixi/math';
 
 skipHello();
 
@@ -57,13 +58,13 @@ describe('Extract', () =>
         const extract = renderer.plugins.extract as Extract;
         const renderTexture = RenderTexture.create({ width: 10, height: 10 });
         const sprite = new Sprite(Texture.WHITE);
-        const test: PixelExtractOptions = { x: 1, y: 2, resolution: 5, width: 10, height: 10 };
+        const frame = new Rectangle(1, 2, 5, 6);
 
         renderer.render(sprite, { renderTexture });
 
         expect(extract.canvas(renderTexture)).to.be.an.instanceof(HTMLCanvasElement);
         expect(extract.base64(renderTexture)).to.be.a('string');
-        expect(extract.pixels(renderTexture, test)).to.be.instanceOf(Uint8Array);
+        expect(extract.pixels(renderTexture, frame)).to.be.instanceOf(Uint8Array);
         expect(extract.image(renderTexture)).to.be.instanceOf(HTMLImageElement);
 
         renderer.destroy();
