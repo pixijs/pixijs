@@ -96,6 +96,8 @@ export const filters = {
 
 // Export ES for those importing specifically by name,
 export * from '@pixi/accessibility';
+export * from '@pixi/adapter-browser';
+export * from '@pixi/adapter-node';
 export * from '@pixi/app';
 export * from '@pixi/constants';
 export * from '@pixi/compressed-textures';

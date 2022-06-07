@@ -1,0 +1,43 @@
+{
+  "name": "@pixi/adapter-browser",
+  "version": "6.4.2",
+  "main": "dist/cjs/adapter-browser.js",
+  "module": "dist/esm/adapter-browser.js",
+  "bundle": "dist/browser/adapter-browser.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./index.d.ts",
+        "default": "./dist/esm/adapter-browser.js"
+      },
+      "require": {
+        "types": "./index.d.ts",
+        "default": "./dist/cjs/adapter-browser.js"
+      }
+    }
+  },
+  "description": "Adapter for browser environments",
+  "author": "Mat Groves",
+  "contributors": [
+    "Matt Karl <matt@mattkarl.com>"
+  ],
+  "homepage": "http://pixijs.com/",
+  "bugs": "https://github.com/pixijs/pixi.js/issues",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pixijs/pixi.js.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "lib",
+    "dist",
+    "*.d.ts"
+  ],
+  "peerDependencies": {
+      "@pixi/settings": "^6.4.2"
+  }
+}

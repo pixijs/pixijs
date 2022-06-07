@@ -51,6 +51,8 @@
   },
   "dependencies": {
     "@pixi/accessibility": "6.4.2",
+    "@pixi/adapter-browser": "6.4.2",
+    "@pixi/adapter-node": "6.4.2",
     "@pixi/app": "6.4.2",
     "@pixi/compressed-textures": "6.4.2",
     "@pixi/constants": "6.4.2",

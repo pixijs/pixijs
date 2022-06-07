@@ -1,5 +1,5 @@
 import { ENV } from '@pixi/constants';
-import { settings } from '../settings';
+import { settings } from '@pixi/settings';
 
 import type { ISystem } from '../ISystem';
 import type { IRenderingContext } from '../IRenderingContext';
@@ -138,7 +138,7 @@ export class ContextSystem implements ISystem
 
         if (settings.PREFER_ENV >= ENV.WEBGL2)
         {
-            gl = canvas.getContext('webgl2', options);
+            gl = settings.ADAPTER.getContextWebgl2(options, canvas);
         }
 
         if (gl)
@@ -149,8 +149,8 @@ export class ContextSystem implements ISystem
         {
             this.webGLVersion = 1;
 
-            gl = canvas.getContext('webgl', options)
-            || canvas.getContext('experimental-webgl', options);
+            gl = settings.ADAPTER.getContextWebgl(options, canvas)
+            || settings.ADAPTER.getContextWebglExperimental(options, canvas);
 
             if (!gl)
             {

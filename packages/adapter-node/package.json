@@ -1,0 +1,48 @@
+{
+  "name": "@pixi/adapter-node",
+  "version": "6.4.2",
+  "main": "dist/cjs/adapter-node.js",
+  "module": "dist/esm/adapter-node.js",
+  "bundle": "dist/browser/adapter-node.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./index.d.ts",
+        "default": "./dist/esm/adapter-node.js"
+      },
+      "require": {
+        "types": "./index.d.ts",
+        "default": "./dist/cjs/adapter-node.js"
+      }
+    }
+  },
+  "description": "Adapter for NodeJS environments",
+  "author": "Mat Groves",
+  "contributors": [
+    "Matt Karl <matt@mattkarl.com>"
+  ],
+  "homepage": "http://pixijs.com/",
+  "bugs": "https://github.com/pixijs/pixi.js/issues",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pixijs/pixi.js.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "lib",
+    "dist",
+    "*.d.ts"
+  ],
+  "dependencies": {
+    "@types/gl": "^4.1.0",
+    "gl": "^5.0.0",
+    "canvas": "^2.9.1"
+  },
+  "peerDependencies": {
+      "@pixi/settings": "^6.4.2"
+  }
+}

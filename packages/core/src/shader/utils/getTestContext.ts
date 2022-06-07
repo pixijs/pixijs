@@ -1,4 +1,4 @@
-import { settings } from '../../settings';
+import { settings } from '@pixi/settings';
 import { ENV } from '@pixi/constants';
 
 const unknownContext = {};
@@ -14,19 +14,17 @@ export function getTestContext(): WebGLRenderingContext | WebGL2RenderingContext
 {
     if (context === unknownContext || (context && context.isContextLost()))
     {
-        const canvas = document.createElement('canvas');
-
         let gl: WebGLRenderingContext | WebGL2RenderingContext;
 
         if (settings.PREFER_ENV >= ENV.WEBGL2)
         {
-            gl = canvas.getContext('webgl2', {});
+            gl = settings.ADAPTER.getContextWebgl2({});
         }
 
         if (!gl)
         {
-            gl = canvas.getContext('webgl', {})
-            || (canvas.getContext('experimental-webgl', {}) as WebGLRenderingContext);
+            gl = settings.ADAPTER.getContextWebgl({})
+            || (settings.ADAPTER.getContextWebglExperimental({}));
 
             if (!gl)
             {

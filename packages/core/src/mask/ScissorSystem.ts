@@ -3,6 +3,7 @@ import { AbstractMaskSystem } from './AbstractMaskSystem';
 import type { Renderer } from '../Renderer';
 import type { MaskData } from './MaskData';
 import { Matrix, Rectangle } from '@pixi/math';
+import { settings } from '@pixi/settings';
 
 const tempMatrix = new Matrix();
 
@@ -23,7 +24,7 @@ export class ScissorSystem extends AbstractMaskSystem
     {
         super(renderer);
 
-        this.glConst = WebGLRenderingContext.SCISSOR_TEST;
+        this.glConst = settings.ADAPTER.getWebGLRenderingContext().SCISSOR_TEST;
     }
 
     getStackLength(): number
