@@ -40,7 +40,6 @@ const tmpBounds = new Bounds();
  *
  * GraphicsGeometry is designed to not be continually updating the geometry since it's expensive
  * to re-tesselate using **earcut**. Consider using {@link PIXI.Mesh} for this use-case, it's much faster.
- *
  * @memberof PIXI
  */
 export class GraphicsGeometry extends BatchGeometry
@@ -48,13 +47,11 @@ export class GraphicsGeometry extends BatchGeometry
     /**
      * The maximum number of points to consider an object "batchable",
      * able to be batched by the renderer's batch system.
-\    */
+\
+     */
     public static BATCHABLE_SIZE = 100;
 
-    /**
-     * Minimal distance between points that are considered different.
-     * Affects line tesselation.
-     */
+    /** Minimal distance between points that are considered different. Affects line tesselation. */
     public closePointEps = 1e-4;
 
     /** Padding to add to the bounds. */
@@ -81,14 +78,12 @@ export class GraphicsGeometry extends BatchGeometry
 
     /**
      * The collection of drawn shapes.
-     *
      * @member {PIXI.GraphicsData[]}
      */
     graphicsData: Array<GraphicsData> = [];
 
     /**
      * List of current draw calls drived from the batches.
-     *
      * @member {PIXI.BatchDrawCall[]}
      */
     drawCalls: Array<BatchDrawCall> = [];
@@ -99,7 +94,6 @@ export class GraphicsGeometry extends BatchGeometry
     /**
      * Intermediate abstract format sent to batch system.
      * Can be converted to drawCalls or to batchable objects.
-     *
      * @member {PIXI.graphicsUtils.BatchPart[]}
      */
     batches: Array<BatchPart> = [];
@@ -130,7 +124,6 @@ export class GraphicsGeometry extends BatchGeometry
 
     /**
      * Get the current bounds of the graphic geometry.
-     *
      * @readonly
      */
     public get bounds(): Bounds
@@ -144,10 +137,7 @@ export class GraphicsGeometry extends BatchGeometry
         return this._bounds;
     }
 
-    /**
-     * Call if you changed graphicsData manually.
-     * Empties all batch buffers.
-     */
+    /** Call if you changed graphicsData manually. Empties all batch buffers. */
     protected invalidate(): void
     {
         this.boundsDirty = -1;
@@ -182,8 +172,7 @@ export class GraphicsGeometry extends BatchGeometry
 
     /**
      * Clears the graphics that were drawn to this Graphics object, and resets fill and line style settings.
-     *
-     * @return - This GraphicsGeometry object. Good for chaining method calls
+     * @returns - This GraphicsGeometry object. Good for chaining method calls
      */
     public clear(): GraphicsGeometry
     {
@@ -199,12 +188,11 @@ export class GraphicsGeometry extends BatchGeometry
 
     /**
      * Draws the given shape to this Graphics object. Can be any of Circle, Rectangle, Ellipse, Line or Polygon.
-     *
      * @param {PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.Rectangle|PIXI.RoundedRectangle} shape - The shape object to draw.
      * @param fillStyle - Defines style of the fill.
      * @param lineStyle - Defines style of the lines.
      * @param matrix - Transform applied to the points of the shape.
-     * @return - Returns geometry for chaining.
+     * @returns - Returns geometry for chaining.
      */
     public drawShape(
         shape: IShape,
@@ -222,10 +210,9 @@ export class GraphicsGeometry extends BatchGeometry
 
     /**
      * Draws the given shape to this Graphics object. Can be any of Circle, Rectangle, Ellipse, Line or Polygon.
-     *
      * @param {PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.Rectangle|PIXI.RoundedRectangle} shape - The shape object to draw.
      * @param matrix - Transform applied to the points of the shape.
-     * @return - Returns geometry for chaining.
+     * @returns - Returns geometry for chaining.
      */
     public drawHole(shape: IShape, matrix: Matrix = null): GraphicsGeometry
     {
@@ -279,9 +266,8 @@ export class GraphicsGeometry extends BatchGeometry
 
     /**
      * Check to see if a point is contained within this geometry.
-     *
      * @param point - Point to check if it's contained.
-     * @return {Boolean} `true` if the point is contained within geometry.
+     * @returns {boolean} `true` if the point is contained within geometry.
      */
     public containsPoint(point: IPointData): boolean
     {
@@ -340,7 +326,6 @@ export class GraphicsGeometry extends BatchGeometry
     /**
      * Generates intermediate batch data. Either gets converted to drawCalls
      * or used to convert to batch objects directly by the Graphics object.
-     *
      * @param allow32Indices - Allow using 32-bit indices for preventing artifacts when more that 65535 vertices
      */
     updateBatches(allow32Indices?: boolean): void
@@ -482,7 +467,6 @@ export class GraphicsGeometry extends BatchGeometry
 
     /**
      * Affinity check
-     *
      * @param styleA
      * @param styleB
      */
@@ -730,7 +714,10 @@ export class GraphicsGeometry extends BatchGeometry
         this._indexBuffer.update(this.indicesUint16);
     }
 
-    /** Process fill part of Graphics. */
+    /**
+     * Process fill part of Graphics.
+     * @param data
+     */
     protected processFill(data: GraphicsData): void
     {
         if (data.holes.length)
@@ -745,7 +732,10 @@ export class GraphicsGeometry extends BatchGeometry
         }
     }
 
-    /** Process line part of Graphics. */
+    /**
+     * Process line part of Graphics.
+     * @param data
+     */
     protected processLine(data: GraphicsData): void
     {
         buildLine(data, this);
@@ -756,7 +746,10 @@ export class GraphicsGeometry extends BatchGeometry
         }
     }
 
-    /** Process the holes data. */
+    /**
+     * Process the holes data.
+     * @param holes
+     */
     protected processHoles(holes: Array<GraphicsData>): void
     {
         for (let i = 0; i < holes.length; i++)
@@ -856,7 +849,6 @@ export class GraphicsGeometry extends BatchGeometry
 
     /**
      * Transform points using matrix.
-     *
      * @param points - Points to transform
      * @param matrix - Transform matrix
      */
@@ -874,7 +866,6 @@ export class GraphicsGeometry extends BatchGeometry
 
     /**
      * Add colors.
-     *
      * @param colors - List of colors to add to
      * @param color - Color to add
      * @param alpha - Alpha to use
@@ -901,7 +892,13 @@ export class GraphicsGeometry extends BatchGeometry
         }
     }
 
-    /** Add texture id that the shader/fragment wants to use. */
+    /**
+     * Add texture id that the shader/fragment wants to use.
+     * @param textureIds
+     * @param id
+     * @param size
+     * @param offset
+     */
     protected addTextureIds(
         textureIds: Array<number>,
         id: number,
@@ -918,7 +915,6 @@ export class GraphicsGeometry extends BatchGeometry
 
     /**
      * Generates the UVs for a shape.
-     *
      * @param verts - Vertices
      * @param uvs - UVs
      * @param texture - Reference to Texture
@@ -968,7 +964,6 @@ export class GraphicsGeometry extends BatchGeometry
     /**
      * Modify uvs array according to position of texture region
      * Does not work with rotated or trimmed textures
-     *
      * @param uvs - array
      * @param texture - region
      * @param start - starting index for uvs

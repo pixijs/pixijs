@@ -8,7 +8,6 @@ import { IPointData, Point } from '@pixi/math';
  * and see if it is less than `Math.EPSILON`.
  *
  * _Note: Only available with **@pixi/math-extras**._
- *
  * @param {number} a - First floating number to compare.
  * @param {number} b - Second floating number to compare.
  * @returns {boolean} Returns `true` if the difference between the values is less than `Math.EPSILON`; otherwise `false`.
@@ -20,7 +19,6 @@ export function floatEqual(a: number, b: number): boolean;
  * A good epsilon would be the N% of the largest of the two values or `Math.EPSILON`.
  *
  * _Note: Only available with **@pixi/math-extras**._
- *
  * @memberof PIXI
  * @param {number} a - First floating number to compare.
  * @param {number} b - Second floating number to compare.
@@ -113,7 +111,6 @@ function genericLineIntersection<T extends IPointData>(
  * The intersection point may land outside the extents of the lines.
  *
  * _Note: Only available with **@pixi/math-extras**._
- *
  * @param aStart - First point of the first line.
  * @param aEnd - Second point of the first line.
  * @param bStart - First point of the second line.
@@ -127,7 +124,6 @@ export function lineIntersection(aStart: IPointData, aEnd: IPointData, bStart: I
  * The intersection point may land outside the extents of the lines.
  *
  * _Note: Only available with **@pixi/math-extras**._
- *
  * @memberof PIXI
  * @param aStart - First point of the first line.
  * @param aEnd - Second point of the first line.
@@ -151,7 +147,6 @@ export function lineIntersection
  * The intersection point must land inside the extents of the segments or return a `NaN` Point.
  *
  * _Note: Only available with **@pixi/math-extras**._
- *
  * @param aStart - Starting point of the first segment.
  * @param aEnd - Ending point of the first segment.
  * @param bStart - Starting point of the second segment.
@@ -165,7 +160,6 @@ export function segmentIntersection(aStart: IPointData, aEnd: IPointData, bStart
  * The intersection point must land inside the extents of the segments or return a `NaN` Point.
  *
  * _Note: Only available with **@pixi/math-extras**._
- *
  * @memberof PIXI
  * @param aStart - Starting point of the first segment.
  * @param aEnd - Ending point of the first segment.

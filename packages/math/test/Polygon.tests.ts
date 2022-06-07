@@ -1,18 +1,18 @@
 import { Polygon, Point } from '@pixi/math';
 import { expect } from 'chai';
 
-describe('Polygon', function ()
+describe('Polygon', () =>
 {
-    describe('constructor', function ()
+    describe('constructor', () =>
     {
-        it('should accept a spread of values', function ()
+        it('should accept a spread of values', () =>
         {
             const polygon = new Polygon(0, 0, 10, 0, 0, 10);
 
             expect(polygon.points.length).to.be.equals(6);
         });
 
-        it('should accept a spread of points', function ()
+        it('should accept a spread of points', () =>
         {
             const polygon = new Polygon(
                 new Point(0, 0),
@@ -23,14 +23,14 @@ describe('Polygon', function ()
             expect(polygon.points.length).to.be.equals(6);
         });
 
-        it('should accept an array of values', function ()
+        it('should accept an array of values', () =>
         {
             const polygon = new Polygon([0, 0, 10, 0, 0, 10]);
 
             expect(polygon.points.length).to.be.equals(6);
         });
 
-        it('should accept an array of points', function ()
+        it('should accept an array of points', () =>
         {
             const polygon = new Polygon([
                 new Point(0, 0),
@@ -42,9 +42,9 @@ describe('Polygon', function ()
         });
     });
 
-    describe('clone', function ()
+    describe('clone', () =>
     {
-        it('should create a copy', function ()
+        it('should create a copy', () =>
         {
             const polygon1 = new Polygon(0, 0, 10, 0, 0, 10);
 
@@ -68,9 +68,9 @@ describe('Polygon', function ()
         });
     });
 
-    describe('contains', function ()
+    describe('contains', () =>
     {
-        it('should include points inside', function ()
+        it('should include points inside', () =>
         {
             const polygon = new Polygon(0, 0, 10, 0, 10, 10, 0, 10, 0, 0);
 
@@ -80,7 +80,7 @@ describe('Polygon', function ()
             expect(polygon.contains(9, 9)).to.be.true;
         });
 
-        it('should exclude bounds', function ()
+        it('should exclude bounds', () =>
         {
             const polygon = new Polygon(0, 0, 10, 0, 10, 10, 0, 10, 0, 0);
 
@@ -90,7 +90,7 @@ describe('Polygon', function ()
             expect(polygon.contains(10, 10)).to.be.false;
         });
 
-        it('should exclude points outside', function ()
+        it('should exclude points outside', () =>
         {
             const polygon = new Polygon(0, 0, 10, 0, 10, 10, 0, 10, 0, 0);
 

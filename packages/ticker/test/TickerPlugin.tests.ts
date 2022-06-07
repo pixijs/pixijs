@@ -1,92 +1,101 @@
-import { TickerPlugin, UPDATE_PRIORITY, Ticker } from '@pixi/ticker';
-import sinon from 'sinon';
+import { Ticker, TickerPlugin, UPDATE_PRIORITY } from '@pixi/ticker';
 import { expect } from 'chai';
+import sinon from 'sinon';
 
-describe('TickerPlugin', function ()
+describe('TickerPlugin', () =>
 {
-    it('should not start application before calling start method if options.autoStart is false', function (done)
+    interface App
     {
-        const app = {};
+        _ticker?: Ticker;
+        ticker?: Ticker;
+        render?(): void;
+        start?(): void;
+    }
+    let app: App;
 
-        TickerPlugin.init.call(app, { autoStart: false });
+    it('should not start application before calling start method if options.autoStart is false', (done) =>
+    {
+        const appp = {} as App;
 
-        expect(app.ticker).to.be.instanceof(Ticker);
-        expect(app.ticker.started).to.be.false;
+        TickerPlugin.init.call(appp, { autoStart: false });
 
-        app.start();
+        expect(appp.ticker).to.be.instanceof(Ticker);
+        expect(appp.ticker.started).to.be.false;
 
-        app.ticker.addOnce(() =>
+        appp.start();
+
+        appp.ticker.addOnce(() =>
         {
-            TickerPlugin.destroy.call(app);
+            TickerPlugin.destroy.call(appp);
             done();
         });
     });
 
-    describe('set ticker', function ()
+    describe('set ticker', () =>
     {
-        before(function ()
+        before(() =>
         {
-            this.app = {
+            app = {
                 render()
                 {
                     // do nothing
                 },
             };
-            TickerPlugin.init.call(this.app);
+            TickerPlugin.init.call(app);
             /* remove default listener to prevent uncaught exception */
-            this.app._ticker.remove(this.app.render, this.app);
+            app._ticker.remove(app.render, app);
         });
 
-        after(function ()
+        after(() =>
         {
-            TickerPlugin.destroy.call(this.app);
+            TickerPlugin.destroy.call(app);
         });
 
-        it('should assign ticker object', function ()
+        it('should assign ticker object', () =>
         {
             const ticker = { add: sinon.spy() };
             const _ticker = { remove: sinon.spy() };
 
-            this.app._ticker = _ticker;
-            this.app.ticker = ticker;
+            app._ticker = _ticker as unknown as Ticker;
+            app.ticker = ticker as unknown as Ticker;
 
             expect(_ticker.remove).to.be.calledOnce;
-            expect(_ticker.remove.args[0][0]).to.be.equal(this.app.render);
-            expect(_ticker.remove.args[0][1]).to.be.equal(this.app);
+            expect(_ticker.remove.args[0][0]).to.be.equal(app.render);
+            expect(_ticker.remove.args[0][1]).to.be.equal(app);
 
-            expect(this.app._ticker).to.be.equal(ticker);
+            expect(app._ticker).to.be.equal(ticker);
             expect(ticker.add).to.be.calledOnce;
-            expect(ticker.add.args[0][0]).to.be.equal(this.app.render);
-            expect(ticker.add.args[0][1]).to.be.equal(this.app);
+            expect(ticker.add.args[0][0]).to.be.equal(app.render);
+            expect(ticker.add.args[0][1]).to.be.equal(app);
             expect(ticker.add.args[0][2]).to.be.equal(UPDATE_PRIORITY.LOW);
         });
 
-        it('should assign ticker if no ticker', function ()
+        it('should assign ticker if no ticker', () =>
         {
             const ticker = { add: sinon.spy() };
 
-            this.app._ticker = null;
-            this.app.ticker = ticker;
+            app._ticker = null;
+            app.ticker = ticker as unknown as Ticker;
 
-            expect(this.app._ticker).to.be.equal(ticker);
+            expect(app._ticker).to.be.equal(ticker);
             expect(ticker.add).to.be.calledOnce;
-            expect(ticker.add.args[0][0]).to.be.equal(this.app.render);
-            expect(ticker.add.args[0][1]).to.be.equal(this.app);
+            expect(ticker.add.args[0][0]).to.be.equal(app.render);
+            expect(ticker.add.args[0][1]).to.be.equal(app);
             expect(ticker.add.args[0][2]).to.be.equal(UPDATE_PRIORITY.LOW);
         });
 
-        it('should assign null ticker', function ()
+        it('should assign null ticker', () =>
         {
             const _ticker = { remove: sinon.spy() };
 
-            this.app._ticker = _ticker;
-            this.app.ticker = null;
+            app._ticker = _ticker as unknown as Ticker;
+            app.ticker = null;
 
             expect(_ticker.remove).to.be.calledOnce;
-            expect(_ticker.remove.args[0][0]).to.be.equal(this.app.render);
-            expect(_ticker.remove.args[0][1]).to.be.equal(this.app);
+            expect(_ticker.remove.args[0][0]).to.be.equal(app.render);
+            expect(_ticker.remove.args[0][1]).to.be.equal(app);
 
-            expect(this.app._ticker).to.be.null;
+            expect(app._ticker).to.be.null;
         });
     });
 });

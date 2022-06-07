@@ -17,14 +17,14 @@ CanvasRenderer.registerPlugin('sprite', CanvasSpriteRenderer);
 CanvasRenderer.registerPlugin('graphics', CanvasGraphicsRenderer);
 CanvasRenderer.registerPlugin('mesh', CanvasMeshRenderer);
 
-function withGL(fn)
+function withGL(fn: () => void)
 {
     return !process.env.DISABLE_WEBGL ? fn : undefined;
 }
 
-describe('getLocalBounds', function ()
+describe('getLocalBounds', () =>
 {
-    it('should register correct local-bounds with a LOADED Sprite', function ()
+    it('should register correct local-bounds with a LOADED Sprite', () =>
     {
         const parent = new Container();
         const texture = RenderTexture.create(10, 10);
@@ -54,7 +54,7 @@ describe('getLocalBounds', function ()
         expect(bounds.height).to.equal(10);
     });
 
-    it('should register correct local-bounds with Graphics', function ()
+    it('should register correct local-bounds with Graphics', () =>
     {
         const parent = new Container();
 
@@ -72,7 +72,7 @@ describe('getLocalBounds', function ()
         expect(bounds.height).to.equal(20);
     });
 
-    it('should register correct local-bounds with Graphics after clear', function ()
+    it('should register correct local-bounds with Graphics after clear', () =>
     {
         const parent = new Container();
 
@@ -102,7 +102,7 @@ describe('getLocalBounds', function ()
         expect(bounds.height).to.equal(10);
     });
 
-    it('should register correct local-bounds with Graphics after generateCanvasTexture and clear', function ()
+    it('should register correct local-bounds with Graphics after generateCanvasTexture and clear', () =>
     {
         const parent = new Container();
 
@@ -134,7 +134,7 @@ describe('getLocalBounds', function ()
         expect(bounds.height).to.equal(10);
     });
 
-    it('should register correct local-bounds with an empty Container', function ()
+    it('should register correct local-bounds with an empty Container', () =>
     {
         const parent = new Container();
 
@@ -150,7 +150,7 @@ describe('getLocalBounds', function ()
         expect(bounds.height).to.equal(0);
     });
 
-    it('should register correct local-bounds with an item that has already had its parent Container transformed', function ()
+    it('should register correct local-bounds with an item that has already had its parent Container transformed', () =>
     {
         const parent = new Container();
 
@@ -172,7 +172,7 @@ describe('getLocalBounds', function ()
         expect(bounds.height).to.equal(10);
     });
 
-    it('should register correct local-bounds with a Mesh', withGL(function ()
+    it('should register correct local-bounds with a Mesh', withGL(() =>
     {
         const parent = new Container();
 
@@ -193,7 +193,7 @@ describe('getLocalBounds', function ()
         expect(bounds.height).to.equal(10);
     }));
 
-    it('should register correct local-bounds with a cachAsBitmap item inside after a render', function ()
+    it('should register correct local-bounds with a cachAsBitmap item inside after a render', () =>
     {
         const parent = new Container();
 
@@ -206,8 +206,12 @@ describe('getLocalBounds', function ()
 
         parent.addChild(graphic);
 
-        const renderer = new CanvasRenderer(100, 100);
+        const renderer = new CanvasRenderer({
+            width: 100,
+            height: 100,
+        });
 
+        // @ts-expect-error ---
         renderer.sayHello = () => { /* empty */ };
         renderer.render(parent);
 
@@ -219,7 +223,7 @@ describe('getLocalBounds', function ()
         expect(bounds.height).to.equal(100);
     });
 
-    it('should register correct local-bounds with a Text', function ()
+    it('should register correct local-bounds with a Text', () =>
     {
         const text = new Text('hello');
         const bounds = text.getLocalBounds();

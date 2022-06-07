@@ -7,7 +7,6 @@ import { autoDetectResource, IAutoDetectOptions } from './autoDetectResource';
  * Resource that can manage several resource (items) inside.
  * All resources need to have the same pixel size.
  * Parent class for CubeResource and ArrayResource
- *
  * @memberof PIXI
  */
 export abstract class AbstractMultiResource extends Resource
@@ -17,21 +16,18 @@ export abstract class AbstractMultiResource extends Resource
 
     /**
      * Collection of partial baseTextures that correspond to resources.
-     *
      * @readonly
      */
     items: Array<BaseTexture>;
 
     /**
      * Dirty IDs for each part.
-     *
      * @readonly
      */
     itemDirtyIds: Array<number>;
 
     /**
      * Promise when loading.
-     *
      * @default null
      */
     private _load: Promise<this>;
@@ -72,7 +68,6 @@ export abstract class AbstractMultiResource extends Resource
 
     /**
      * Used from ArrayResource and CubeResource constructors.
-     *
      * @param resources - Can be resources, image elements, canvas, etc. ,
      *  length should be same as constructor length
      * @param options - Detect options for resources
@@ -114,19 +109,17 @@ export abstract class AbstractMultiResource extends Resource
 
     /**
      * Set a baseTexture by ID
-     *
      * @param baseTexture
      * @param index - Zero-based index of resource to set
-     * @return - Instance for chaining
+     * @returns - Instance for chaining
      */
     abstract addBaseTextureAt(baseTexture: BaseTexture, index: number): this;
 
     /**
      * Set a resource by ID
-     *
      * @param resource
      * @param index - Zero-based index of resource to set
-     * @return - Instance for chaining
+     * @returns - Instance for chaining
      */
     addResourceAt(resource: Resource, index: number): this
     {
@@ -146,7 +139,10 @@ export abstract class AbstractMultiResource extends Resource
         return this;
     }
 
-    /** Set the parent base texture. */
+    /**
+     * Set the parent base texture.
+     * @param baseTexture
+     */
     bind(baseTexture: BaseTexture): void
     {
         if (this.baseTexture !== null)
@@ -162,7 +158,10 @@ export abstract class AbstractMultiResource extends Resource
         }
     }
 
-    /** Unset the parent base texture. */
+    /**
+     * Unset the parent base texture.
+     * @param baseTexture
+     */
     unbind(baseTexture: BaseTexture): void
     {
         super.unbind(baseTexture);
@@ -176,8 +175,7 @@ export abstract class AbstractMultiResource extends Resource
 
     /**
      * Load all the resources simultaneously
-     *
-     * @return - When load is resolved
+     * @returns - When load is resolved
      */
     load(): Promise<this>
     {

@@ -5,10 +5,11 @@ import { expect } from 'chai';
 
 import '@pixi/mixin-cache-as-bitmap';
 
-describe('DisplayObject#cacheAsBitmap', function ()
+describe('DisplayObject#cacheAsBitmap', () =>
 {
-    it('should contain property', function ()
+    it('should contain property', () =>
     {
+        // @ts-expect-error - instantiating DisplayObject
         const obj = new DisplayObject();
 
         expect(obj.cacheAsBitmap).to.be.not.undefined;
@@ -16,14 +17,15 @@ describe('DisplayObject#cacheAsBitmap', function ()
         expect(obj.cacheAsBitmap).to.be.false;
     });
 
-    it('should enable cacheAsBitmap', function ()
+    it('should enable cacheAsBitmap', () =>
     {
+        // @ts-expect-error - instantiating DisplayObject
         const obj = new DisplayObject();
 
         obj.cacheAsBitmap = true;
     });
 
-    it('should respect filters', function ()
+    it('should respect filters', () =>
     {
         const par = new Container();
         const obj = new Container();
@@ -35,7 +37,8 @@ describe('DisplayObject#cacheAsBitmap', function ()
         obj.position.set(5, 15);
         obj.updateTransform();
         obj.cacheAsBitmap = true;
-        obj._calculateBounds = function ()
+        // eslint-disable-next-line func-names
+        obj['_calculateBounds'] = function ()
         {
             this._bounds.clear();
             this._bounds.addFrame(this.transform, 0, 0, 10, 11);
@@ -71,14 +74,14 @@ describe('DisplayObject#cacheAsBitmap', function ()
         }
     });
 
-    it('should not throw error when filters is empty array', function ()
+    it('should not throw error when filters is empty array', () =>
     {
         const obj = new Container();
 
         obj.filters = [];
         obj.cacheAsBitmap = true;
 
-        expect(function ()
+        expect(() =>
         {
             let renderer = null;
 
@@ -95,7 +98,7 @@ describe('DisplayObject#cacheAsBitmap', function ()
         }).to.not.throw();
     });
 
-    it('should respect projection', function ()
+    it('should respect projection', () =>
     {
         const par = new Container();
         const obj = new Container();
@@ -107,7 +110,8 @@ describe('DisplayObject#cacheAsBitmap', function ()
         obj.position.set(5, 15);
         obj.updateTransform();
         obj.cacheAsBitmap = true;
-        obj._calculateBounds = function ()
+        // eslint-disable-next-line func-names
+        obj['_calculateBounds'] = function ()
         {
             this._bounds.clear();
             this._bounds.addFrame(this.transform, 0, 0, 10, 11);

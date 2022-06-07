@@ -10,7 +10,6 @@ LoaderResource.setExtensionXhrType('ktx', LoaderResource.XHR_RESPONSE_TYPE.BUFFE
 
 /**
  * The 12-byte KTX file identifier
- *
  * @see https://www.khronos.org/opengles/sdk/tools/KTX/file_format_spec/#2.1
  * @ignore
  */
@@ -18,7 +17,6 @@ const FILE_IDENTIFIER = [0xAB, 0x4B, 0x54, 0x58, 0x20, 0x31, 0x31, 0xBB, 0x0D, 0
 
 /**
  * The value stored in the "endianness" field.
- *
  * @see https://www.khronos.org/opengles/sdk/tools/KTX/file_format_spec/#2.2
  * @ignore
  */
@@ -26,7 +24,6 @@ const ENDIANNESS = 0x04030201;
 
 /**
  * Byte offsets of the KTX file header fields
- *
  * @ignore
  */
 const KTX_FIELDS = {
@@ -48,14 +45,12 @@ const KTX_FIELDS = {
 
 /**
  * Byte size of the file header fields in {@code KTX_FIELDS}
- *
  * @ignore
  */
 const FILE_HEADER_SIZE = 64;
 
 /**
  * Maps {@link PIXI.TYPES} to the bytes taken per component, excluding those ones that are bit-fields.
- *
  * @ignore
  */
 export const TYPES_TO_BYTES_PER_COMPONENT: { [id: number]: number } = {
@@ -69,7 +64,6 @@ export const TYPES_TO_BYTES_PER_COMPONENT: { [id: number]: number } = {
 
 /**
  * Number of components in each {@link PIXI.FORMATS}
- *
  * @ignore
  */
 export const FORMATS_TO_COMPONENTS: { [id: number]: number } = {
@@ -84,7 +78,6 @@ export const FORMATS_TO_COMPONENTS: { [id: number]: number } = {
 
 /**
  * Number of bytes per pixel in bit-field types in {@link PIXI.TYPES}
- *
  * @ignore
  */
 export const TYPES_TO_BYTES_PER_PIXEL: { [id: number]: number } = {
@@ -99,26 +92,34 @@ export const TYPES_TO_BYTES_PER_PIXEL: { [id: number]: number } = {
  * This KTX loader does not currently support the following features:
  * * cube textures
  * * 3D textures
- * * vendor-specific key/value data parsing
  * * endianness conversion for big-endian machines
  * * embedded *.basis files
  *
  * It does supports the following features:
  * * multiple textures per file
  * * mipmapping (only for compressed formats)
- *
+ * * vendor-specific key/value data parsing (enable {@link PIXI.KTXLoader.loadKeyValueData})
  * @class
  * @memberof PIXI
- * @implements PIXI.ILoaderPlugin
+ * @implements {PIXI.ILoaderPlugin}
  */
 export class KTXLoader
 {
+    /**
+     * If set to `true`, {@link PIXI.KTXLoader} will parse key-value data in KTX textures. This feature relies
+     * on the [Encoding Standard]{@link https://encoding.spec.whatwg.org}.
+     *
+     * The key-value data will be available on the base-textures as {@code PIXI.BaseTexture.ktxKeyValueData}. They
+     * will hold a reference to the texture data buffer, so make sure to delete key-value data once you are done
+     * using it.
+     */
+    static loadKeyValueData = false;
+
     /**
      * Called after a KTX file is loaded.
      *
      * This will parse the KTX file header and add a {@code BaseTexture} to the texture
      * cache.
-     *
      * @see PIXI.Loader.loaderMiddleware
      * @param resource - loader resource that is checked to see if it is a KTX file
      * @param next - callback Function to call when done
@@ -130,15 +131,25 @@ export class KTXLoader
             try
             {
                 const url = resource.name || resource.url;
-                const { compressed, uncompressed } = KTXLoader.parse(url, resource.data);
+                const { compressed, uncompressed, kvData } = KTXLoader.parse(url, resource.data);
 
                 if (compressed)
                 {
-                    Object.assign(resource, registerCompressedTextures(
+                    const result = registerCompressedTextures(
                         url,
                         compressed,
                         resource.metadata,
-                    ));
+                    );
+
+                    if (kvData && result.textures)
+                    {
+                        for (const textureId in result.textures)
+                        {
+                            result.textures[textureId].baseTexture.ktxKeyValueData = kvData;
+                        }
+                    }
+
+                    Object.assign(resource, result);
                 }
                 else if (uncompressed)
                 {
@@ -156,6 +167,8 @@ export class KTXLoader
                             }
                         ));
                         const cacheID = `${url}-${i + 1}`;
+
+                        if (kvData) texture.baseTexture.ktxKeyValueData = kvData;
 
                         BaseTexture.addToCache(texture.baseTexture, cacheID);
                         Texture.addToCache(texture, cacheID);
@@ -188,6 +201,7 @@ export class KTXLoader
     private static parse(url: string, arrayBuffer: ArrayBuffer): {
         compressed?: CompressedTextureResource[]
         uncompressed?: { resource: BufferResource, type: TYPES, format: FORMATS }[]
+        kvData: Map<string, DataView> | null
     }
     {
         const dataView = new DataView(arrayBuffer);
@@ -267,6 +281,10 @@ export class KTXLoader
         {
             throw new Error('Unable to resolve the pixel format stored in the *.ktx file!');
         }
+
+        const kvData: Map<string, DataView> | null = KTXLoader.loadKeyValueData
+            ? KTXLoader.parseKvData(dataView, bytesOfKeyValueData, littleEndian)
+            : null;
 
         const imageByteSize = imagePixels * imagePixelByteSize;
         let mipByteSize = imageByteSize;
@@ -362,7 +380,8 @@ export class KTXLoader
                         type: glType,
                         format: convertToInt ? KTXLoader.convertFormatToInteger(glFormat) : glFormat,
                     };
-                })
+                }),
+                kvData
             };
         }
 
@@ -373,7 +392,8 @@ export class KTXLoader
                 height: pixelHeight,
                 levels: numberOfMipmapLevels,
                 levelBuffers,
-            }))
+            })),
+            kvData
         };
     }
 
@@ -407,5 +427,60 @@ export class KTXLoader
             case FORMATS.RED: return FORMATS.RED_INTEGER;
             default: return format;
         }
+    }
+
+    private static parseKvData(dataView: DataView, bytesOfKeyValueData: number, littleEndian: boolean): Map<string, DataView>
+    {
+        const kvData = new Map<string, DataView>();
+        let bytesIntoKeyValueData = 0;
+
+        while (bytesIntoKeyValueData < bytesOfKeyValueData)
+        {
+            const keyAndValueByteSize = dataView.getUint32(FILE_HEADER_SIZE + bytesIntoKeyValueData, littleEndian);
+            const keyAndValueByteOffset = FILE_HEADER_SIZE + bytesIntoKeyValueData + 4;
+            const valuePadding = 3 - ((keyAndValueByteSize + 3) % 4);
+
+            // Bounds check
+            if (keyAndValueByteSize === 0 || keyAndValueByteSize > bytesOfKeyValueData - bytesIntoKeyValueData)
+            {
+                console.error('KTXLoader: keyAndValueByteSize out of bounds');
+                break;
+            }
+
+            // Note: keyNulByte can't be 0 otherwise the key is an empty string.
+            let keyNulByte = 0;
+
+            for (; keyNulByte < keyAndValueByteSize; keyNulByte++)
+            {
+                if (dataView.getUint8(keyAndValueByteOffset + keyNulByte) === 0x00)
+                {
+                    break;
+                }
+            }
+
+            if (keyNulByte === -1)
+            {
+                console.error('KTXLoader: Failed to find null byte terminating kvData key');
+                break;
+            }
+
+            const key = new TextDecoder().decode(
+                new Uint8Array(dataView.buffer, keyAndValueByteOffset, keyNulByte)
+            );
+            const value = new DataView(
+                dataView.buffer,
+                keyAndValueByteOffset + keyNulByte + 1,
+                keyAndValueByteSize - keyNulByte - 1,
+            );
+
+            kvData.set(key, value);
+
+            // 4 = the keyAndValueByteSize field itself
+            // keyAndValueByteSize = the bytes taken by the key and value
+            // valuePadding = extra padding to align with 4 bytes
+            bytesIntoKeyValueData += 4 + keyAndValueByteSize + valuePadding;
+        }
+
+        return kvData;
     }
 }

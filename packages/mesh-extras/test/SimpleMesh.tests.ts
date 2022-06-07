@@ -5,9 +5,9 @@ import { expect } from 'chai';
 
 skipHello();
 
-describe('SimpleMesh', function ()
+describe('SimpleMesh', () =>
 {
-    it('should create a simple mesh with defaults', function ()
+    it('should create a simple mesh with defaults', () =>
     {
         const mesh = new SimpleMesh();
 
@@ -17,7 +17,7 @@ describe('SimpleMesh', function ()
         mesh.destroy();
     });
 
-    it('should render the rope', function ()
+    it('should render the rope', () =>
     {
         Renderer.registerPlugin('batch', BatchRenderer);
 

@@ -3,10 +3,11 @@ import { expect } from 'chai';
 
 import '@pixi/accessibility';
 
-describe('accessibleTarget', function ()
+describe('accessibleTarget', () =>
 {
-    it('should have target public properties', function ()
+    it('should have target public properties', () =>
     {
+        // @ts-expect-error ---
         const obj = new DisplayObject();
 
         expect(obj.accessible).to.be.a('boolean');

@@ -6,11 +6,11 @@ import { expect } from 'chai';
 
 import path from 'path';
 
-describe('Sprite', function ()
+describe('Sprite', () =>
 {
-    describe('width', function ()
+    describe('width', () =>
     {
-        it('should not be negative for negative scale.x', function ()
+        it('should not be negative for negative scale.x', () =>
         {
             const sprite = new Sprite();
 
@@ -20,7 +20,7 @@ describe('Sprite', function ()
             expect(sprite.width).to.be.at.least(0);
         });
 
-        it('should not change sign of scale.x', function ()
+        it('should not change sign of scale.x', () =>
         {
             const texture = new Texture(new BaseTexture());
             const sprite = new Sprite();
@@ -38,9 +38,9 @@ describe('Sprite', function ()
         });
     });
 
-    describe('height', function ()
+    describe('height', () =>
     {
-        it('should not be negative for negative scale.y', function ()
+        it('should not be negative for negative scale.y', () =>
         {
             const sprite = new Sprite();
 
@@ -50,7 +50,7 @@ describe('Sprite', function ()
             expect(sprite.height).to.be.at.least(0);
         });
 
-        it('should not change sign of scale.y', function ()
+        it('should not change sign of scale.y', () =>
         {
             const texture = new Texture(new BaseTexture());
             const sprite = new Sprite();
@@ -68,9 +68,9 @@ describe('Sprite', function ()
         });
     });
 
-    describe('getBounds', function ()
+    describe('getBounds', () =>
     {
-        it('must have correct value according to texture size, width, height and anchor', function ()
+        it('must have correct value according to texture size, width, height and anchor', () =>
         {
             const parent = new Container();
             const texture = RenderTexture.create({ width: 20, height: 30 });
@@ -95,9 +95,9 @@ describe('Sprite', function ()
         });
     });
 
-    describe('getLocalBounds', function ()
+    describe('getLocalBounds', () =>
     {
-        it('must have correct value according to texture size, width, height and anchor', function ()
+        it('must have correct value according to texture size, width, height and anchor', () =>
         {
             const texture = RenderTexture.create({ width: 20, height: 30 });
             const sprite = new Sprite(texture);
@@ -112,7 +112,7 @@ describe('Sprite', function ()
             expect(bounds.height).to.equal(30);
         });
 
-        it('should not corrupt bounds', function ()
+        it('should not corrupt bounds', () =>
         {
             const texture = RenderTexture.create({ width: 20, height: 30 });
             const sprite = new Sprite(texture);
@@ -143,33 +143,33 @@ describe('Sprite', function ()
         });
     });
 
-    describe('containsPoint', function ()
+    describe('containsPoint', () =>
     {
         const texture = RenderTexture.create({ width: 20, height: 30 });
         const sprite = new Sprite(texture);
 
-        it('should return true when point inside', function ()
+        it('should return true when point inside', () =>
         {
             const point = new Point(10, 10);
 
             expect(sprite.containsPoint(point)).to.be.true;
         });
 
-        it('should return true when point on left edge', function ()
+        it('should return true when point on left edge', () =>
         {
             const point = new Point(0, 15);
 
             expect(sprite.containsPoint(point)).to.be.true;
         });
 
-        it('should return true when point on top edge', function ()
+        it('should return true when point on top edge', () =>
         {
             const point = new Point(10, 0);
 
             expect(sprite.containsPoint(point)).to.be.true;
         });
 
-        it('should return false when point outside', function ()
+        it('should return false when point outside', () =>
         {
             const point = new Point(100, 100);
 
@@ -177,22 +177,27 @@ describe('Sprite', function ()
         });
     });
 
-    describe('texture', function ()
+    interface EETexture extends Texture
     {
-        it('should unsubscribe from old texture', function ()
+        _eventsCount: number; // missing in ee3 typings
+    }
+
+    describe('texture', () =>
+    {
+        it('should unsubscribe from old texture', () =>
         {
-            const texture = new Texture(new BaseTexture());
-            const texture2 = new Texture(new BaseTexture());
+            const texture = new Texture(new BaseTexture()) as EETexture;
+            const texture2 = new Texture(new BaseTexture()) as EETexture;
 
             const sprite = new Sprite(texture);
 
-            expect(texture._eventsCount).to.equal(1);
-            expect(texture2._eventsCount).to.equal(0);
+            expect(texture['_eventsCount']).to.equal(1);
+            expect(texture2['_eventsCount']).to.equal(0);
 
             sprite.texture = texture2;
 
-            expect(texture._eventsCount).to.equal(0);
-            expect(texture2._eventsCount).to.equal(1);
+            expect(texture['_eventsCount']).to.equal(0);
+            expect(texture2['_eventsCount']).to.equal(1);
 
             sprite.destroy();
             texture.destroy(true);
@@ -200,18 +205,18 @@ describe('Sprite', function ()
         });
     });
 
-    describe('destroy', function ()
+    describe('destroy', () =>
     {
-        it('should destroy while BaseTexture is loading', function ()
+        it('should destroy while BaseTexture is loading', () =>
         {
-            const texture = Texture.from(path.resolve(__dirname, 'resources', 'building1.png'));
+            const texture = Texture.from(path.resolve(__dirname, 'resources', 'building1.png')) as EETexture;
             const sprite = new Sprite(texture);
 
-            expect(texture._eventsCount).to.equal(1);
+            expect(texture['_eventsCount']).to.equal(1);
 
             sprite.destroy();
 
-            expect(texture._eventsCount).to.equal(0);
+            expect(texture['_eventsCount']).to.equal(0);
 
             texture.emit('update', texture);
             texture.destroy(true);

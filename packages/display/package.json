@@ -1,9 +1,22 @@
 {
   "name": "@pixi/display",
-  "version": "6.3.0",
+  "version": "6.4.2",
   "main": "dist/cjs/display.js",
   "module": "dist/esm/display.js",
   "bundle": "dist/browser/display.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./index.d.ts",
+        "default": "./dist/esm/display.js"
+      },
+      "require": {
+        "types": "./index.d.ts",
+        "default": "./dist/cjs/display.js"
+      }
+    }
+  },
   "description": "Core display functionality",
   "author": "Mat Groves",
   "contributors": [
@@ -25,8 +38,8 @@
     "*.d.ts"
   ],
   "peerDependencies": {
-    "@pixi/math": "6.3.0",
-    "@pixi/settings": "6.3.0",
-    "@pixi/utils": "6.3.0"
+    "@pixi/math": "6.4.2",
+    "@pixi/settings": "6.4.2",
+    "@pixi/utils": "6.4.2"
   }
 }

@@ -30,7 +30,6 @@ const DIV_HOOK_ZINDEX = 2;
  * events as if the mouse was being used, minimizing the effort required to implement.
  *
  * An instance of this class is automatically created by default, and can be found at `renderer.plugins.accessibility`
- *
  * @class
  * @memberof PIXI
  */
@@ -41,10 +40,9 @@ export class AccessibilityManager
 
     /**
      * The renderer this accessibility manager works for.
-     *
      * @type {PIXI.CanvasRenderer|PIXI.Renderer}
      */
-    public renderer: AbstractRenderer|Renderer;
+    public renderer: AbstractRenderer | Renderer;
 
     /** Internal variable, see isActive getter. */
     private _isActive = false;
@@ -76,7 +74,7 @@ export class AccessibilityManager
     /**
      * @param {PIXI.CanvasRenderer|PIXI.Renderer} renderer - A reference to the current renderer
      */
-    constructor(renderer: AbstractRenderer|Renderer)
+    constructor(renderer: AbstractRenderer | Renderer)
     {
         this._hookDiv = null;
 
@@ -100,7 +98,6 @@ export class AccessibilityManager
 
         /**
          * pre-bind the functions
-         *
          * @type {Function}
          * @private
          */
@@ -108,7 +105,6 @@ export class AccessibilityManager
 
         /**
          * pre-bind the functions
-         *
          * @type {Function}
          * @private
          */
@@ -140,7 +136,6 @@ export class AccessibilityManager
 
     /**
      * Creates the touch hooks.
-     *
      * @private
      */
     private createTouchHook(): void
@@ -169,7 +164,6 @@ export class AccessibilityManager
 
     /**
      * Destroys the touch hooks.
-     *
      * @private
      */
     private destroyTouchHook(): void
@@ -185,7 +179,6 @@ export class AccessibilityManager
     /**
      * Activating will cause the Accessibility layer to be shown.
      * This is called when a user presses the tab key.
-     *
      * @private
      */
     private activate(): void
@@ -207,7 +200,6 @@ export class AccessibilityManager
     /**
      * Deactivating will cause the Accessibility layer to be hidden.
      * This is called when a user moves the mouse.
-     *
      * @private
      */
     private deactivate(): void
@@ -228,7 +220,6 @@ export class AccessibilityManager
 
     /**
      * This recursive function will run through the scene graph and add any new accessible objects to the DOM layer.
-     *
      * @private
      * @param {PIXI.Container} displayObject - The DisplayObject to check.
      */
@@ -262,7 +253,6 @@ export class AccessibilityManager
 
     /**
      * Before each render this function will ensure that all divs are mapped correctly to their DisplayObjects.
-     *
      * @private
      */
     private update(): void
@@ -375,8 +365,7 @@ export class AccessibilityManager
     /**
      * private function that will visually add the information to the
      * accessability div
-     *
-     * @param {HTMLElement} div
+     * @param {HTMLElement} div -
      */
     public updateDebugHTML(div: IAccessibleHTMLElement): void
     {
@@ -385,7 +374,6 @@ export class AccessibilityManager
 
     /**
      * Adjust the hit area based on the bounds of a display object
-     *
      * @param {PIXI.Rectangle} hitArea - Bounds of the child
      */
     public capHitArea(hitArea: Rectangle): void
@@ -417,7 +405,6 @@ export class AccessibilityManager
 
     /**
      * Adds a DisplayObject to the accessibility manager
-     *
      * @private
      * @param {PIXI.DisplayObject} displayObject - The child to make accessible.
      */
@@ -499,7 +486,6 @@ export class AccessibilityManager
 
     /**
      * Maps the div button press to pixi's InteractionManager (click)
-     *
      * @private
      * @param {MouseEvent} e - The click event.
      */
@@ -516,7 +502,6 @@ export class AccessibilityManager
 
     /**
      * Maps the div focus events to pixi's InteractionManager (mouseover)
-     *
      * @private
      * @param {FocusEvent} e - The focus event.
      */
@@ -536,7 +521,6 @@ export class AccessibilityManager
 
     /**
      * Maps the div focus events to pixi's InteractionManager (mouseout)
-     *
      * @private
      * @param {FocusEvent} e - The focusout event.
      */
@@ -556,7 +540,6 @@ export class AccessibilityManager
 
     /**
      * Is called when a key is pressed
-     *
      * @private
      * @param {KeyboardEvent} e - The keydown event.
      */
@@ -572,7 +555,6 @@ export class AccessibilityManager
 
     /**
      * Is called when the mouse moves across the renderer element
-     *
      * @private
      * @param {MouseEvent} e - The mouse event.
      */
@@ -586,10 +568,7 @@ export class AccessibilityManager
         this.deactivate();
     }
 
-    /**
-     * Destroys the accessibility manager
-     *
-     */
+    /** Destroys the accessibility manager */
     public destroy(): void
     {
         this.destroyTouchHook();

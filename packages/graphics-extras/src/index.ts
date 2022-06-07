@@ -6,7 +6,8 @@ import { drawRegularPolygon } from './drawRegularPolygon';
 import { drawRoundedPolygon } from './drawRoundedPolygon';
 import { drawStar } from './drawStar';
 
-export interface IGraphicsExtras {
+export interface IGraphicsExtras
+{
     drawTorus: typeof drawTorus;
     drawChamferRect: typeof drawChamferRect;
     drawFilletRect: typeof drawFilletRect;

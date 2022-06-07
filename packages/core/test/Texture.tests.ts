@@ -1,8 +1,9 @@
 import { BaseTextureCache, TextureCache } from '@pixi/utils';
 import { Rectangle, Point } from '@pixi/math';
-import { BaseTexture, Texture } from '@pixi/core';
+import { BaseTexture, ImageResource, Texture } from '@pixi/core';
 import { settings } from '@pixi/settings';
 import { expect } from 'chai';
+import path from 'path';
 
 const URL = 'foo.png';
 const NAME = 'foo';
@@ -19,9 +20,14 @@ function cleanCache()
     delete TextureCache[NAME2];
 }
 
-describe('Texture', function ()
+interface PixiCanvas extends HTMLCanvasElement
 {
-    it('should register Texture from Loader', function (done)
+    _pixiId: string;
+}
+
+describe('Texture', () =>
+{
+    it('should register Texture from Loader', (done) =>
     {
         cleanCache();
 
@@ -32,7 +38,7 @@ describe('Texture', function ()
 
         Texture.fromLoader(image, URL, NAME).then((texture) =>
         {
-            expect(texture.baseTexture.resource.url).to.equal('foo.png');
+            expect((texture.baseTexture.resource as ImageResource).url).to.equal('foo.png');
             expect(TextureCache[NAME]).to.equal(texture);
             expect(BaseTextureCache[NAME]).to.equal(texture.baseTexture);
             expect(TextureCache[URL]).to.equal(texture);
@@ -42,7 +48,7 @@ describe('Texture', function ()
         });
     });
 
-    it('should remove Texture from cache on destroy', function ()
+    it('should remove Texture from cache on destroy', () =>
     {
         cleanCache();
 
@@ -60,14 +66,14 @@ describe('Texture', function ()
         expect(TextureCache[NAME2]).to.equal(undefined);
     });
 
-    it('should use pixiIdPrefix correctly', function ()
+    it('should use pixiIdPrefix correctly', () =>
     {
         cleanCache();
 
         const canvas = document.createElement('canvas');
         const texture = Texture.from(canvas, { pixiIdPrefix: 'unittest' });
-        const baseTexture = texture.baseTexture;
-        const _pixiId = baseTexture.resource.source._pixiId;
+        const baseTexture = texture.baseTexture as BaseTexture<ImageResource>;
+        const _pixiId = (baseTexture.resource.source as PixiCanvas)._pixiId;
 
         expect(_pixiId.indexOf('unittest_')).to.equal(0);
         expect(baseTexture.textureCacheIds.indexOf(_pixiId)).to.equal(0);
@@ -77,7 +83,7 @@ describe('Texture', function ()
     });
 
     it('should be added to the texture cache correctly, '
-     + 'and should remove only itself, not effecting the base texture and its cache', function ()
+     + 'and should remove only itself, not effecting the base texture and its cache', () =>
     {
         cleanCache();
 
@@ -96,7 +102,7 @@ describe('Texture', function ()
         expect(TextureCache[NAME]).to.equal(undefined);
     });
 
-    it('should remove Texture from entire cache using removeFromCache (by Texture instance)', function ()
+    it('should remove Texture from entire cache using removeFromCache (by Texture instance)', () =>
     {
         cleanCache();
 
@@ -115,7 +121,7 @@ describe('Texture', function ()
         expect(TextureCache[NAME2]).to.equal(undefined);
     });
 
-    it('should remove Texture from single cache entry using removeFromCache (by id)', function ()
+    it('should remove Texture from single cache entry using removeFromCache (by id)', () =>
     {
         cleanCache();
 
@@ -134,7 +140,7 @@ describe('Texture', function ()
         expect(TextureCache[NAME2]).to.equal(texture);
     });
 
-    it('should not remove Texture from cache if Texture instance has been replaced', function ()
+    it('should not remove Texture from cache if Texture instance has been replaced', () =>
     {
         cleanCache();
 
@@ -153,7 +159,7 @@ describe('Texture', function ()
         expect(TextureCache[NAME]).to.equal(texture2);
     });
 
-    it('destroying a destroyed texture should not throw an error', function ()
+    it('destroying a destroyed texture should not throw an error', () =>
     {
         const texture = new Texture(new BaseTexture());
 
@@ -161,7 +167,7 @@ describe('Texture', function ()
         texture.destroy(true);
     });
 
-    it('should not throw if base texture loaded after destroy', function ()
+    it('should not throw if base texture loaded after destroy', () =>
     {
         const base = new BaseTexture();
         const texture = new Texture(base);
@@ -170,13 +176,13 @@ describe('Texture', function ()
         base.emit('loaded', base);
     });
 
-    it('should clone a minimal texture', function ()
+    it('should clone a minimal texture', () =>
     {
         const baseTexture = new BaseTexture();
         const frame = new Rectangle(0, 0, 10, 10);
         const texture = new Texture(baseTexture, frame);
         const clone = texture.clone();
-        const toJSON = ({ x, y, width, height }) => ({ x, y, width, height });
+        const toJSON = ({ x, y, width, height }: any) => ({ x, y, width, height });
 
         expect(clone.baseTexture).to.equal(baseTexture);
         expect(clone.frame).to.not.equal(texture.frame);
@@ -191,7 +197,7 @@ describe('Texture', function ()
         texture.destroy(true);
     });
 
-    it('should clone a texture', function ()
+    it('should clone a texture', () =>
     {
         const baseTexture = new BaseTexture();
         const frame = new Rectangle();
@@ -201,7 +207,7 @@ describe('Texture', function ()
         const anchor = new Point(1, 0.5);
         const texture = new Texture(baseTexture, frame, orig, trim, rotate, anchor);
         const clone = texture.clone();
-        const toJSON = ({ x, y, width, height }) => ({ x, y, width, height });
+        const toJSON = ({ x, y, width, height }: any) => ({ x, y, width, height });
 
         expect(clone.baseTexture).to.equal(baseTexture);
         expect(clone.defaultAnchor).to.not.equal(texture.defaultAnchor);
@@ -221,7 +227,7 @@ describe('Texture', function ()
         texture.destroy(true);
     });
 
-    it('should update frame if its backed by canvas that was resized', function ()
+    it('should update frame if its backed by canvas that was resized', () =>
     {
         const canvas = document.createElement('canvas');
 
@@ -255,7 +261,7 @@ describe('Texture', function ()
         texture.destroy(true);
     });
 
-    it('should update frame on baseTexture update only if user set it in constructor or in setter', function ()
+    it('should update frame on baseTexture update only if user set it in constructor or in setter', () =>
     {
         let baseTexture = new BaseTexture();
 
@@ -285,26 +291,7 @@ describe('Texture', function ()
         texture.destroy(true);
     });
 
-    it('should handle loading an invalid URL', function ()
-    {
-        expect(() => Texture.fromURL('invalid/image.png')).throws;
-    });
-
-    it('should handle loading an cached URL', async function ()
-    {
-        const url = 'noop.png';
-
-        TextureCache[url] = Texture.WHITE;
-
-        expect(Texture.WHITE.valid).to.be.true;
-
-        const texture = await Texture.fromURL(url);
-
-        expect(texture).equals(Texture.WHITE);
-        delete TextureCache[url];
-    });
-
-    it('should throw and error in strict from mode', function ()
+    it('should throw and error in strict from mode', () =>
     {
         const id = 'baz';
 
@@ -321,11 +308,69 @@ describe('Texture', function ()
             const baseTexture = new BaseTexture(null, { width: 100, height: 100 });
             const texture1 = Texture.from(baseTexture);
 
-            expect(baseTexture.cacheId).to.not.equal(null);
+            expect(baseTexture.cacheId).to.not.be.null;
             expect(BaseTextureCache[baseTexture.cacheId]).to.equal(baseTexture);
             expect(texture1.baseTexture).to.equal(baseTexture);
 
             expect(Texture.from(baseTexture)).to.equal(texture1);
+        });
+
+        it('should accept an array of strings to create a cubemap', () =>
+        {
+            const resources = path.join(process.cwd(), 'packages/core/test/resources/');
+
+            const texture = Texture.from([
+                path.join(resources, 'cube-face.jpg'),
+                path.join(resources, 'cube-face.jpg'),
+                path.join(resources, 'cube-face.jpg'),
+                path.join(resources, 'cube-face.jpg'),
+                path.join(resources, 'cube-face.jpg'),
+                path.join(resources, 'cube-face.jpg')]);
+
+            expect(texture).to.not.be.null
+                .and.to.not.be.undefined;
+
+            expect(texture).to.be.an.instanceof(Texture);
+        });
+    });
+
+    describe('Texture.fromURL', () =>
+    {
+        it('should handle loading an invalid URL', () =>
+        {
+            expect(() => Texture.fromURL('invalid/image.png')).throws;
+        });
+
+        it('should handle loading an cached URL', async () =>
+        {
+            const url = 'noop.png';
+
+            TextureCache[url] = Texture.WHITE;
+
+            expect(Texture.WHITE.valid).to.be.true;
+
+            const texture = await Texture.fromURL(url);
+
+            expect(texture).equals(Texture.WHITE);
+            delete TextureCache[url];
+        });
+
+        it('should accept an array of strings to create a cubemap', async () =>
+        {
+            const resources = path.join(__dirname, 'resources');
+
+            const texture = await Texture.fromURL([
+                path.join(resources, 'cube-face.jpg'),
+                path.join(resources, 'cube-face.jpg'),
+                path.join(resources, 'cube-face.jpg'),
+                path.join(resources, 'cube-face.jpg'),
+                path.join(resources, 'cube-face.jpg'),
+                path.join(resources, 'cube-face.jpg')]);
+
+            expect(texture).to.not.be.null
+                .and.to.not.be.undefined;
+
+            expect(texture).to.be.an.instanceof(Texture);
         });
     });
 });

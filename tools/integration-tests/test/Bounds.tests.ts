@@ -7,9 +7,9 @@ import { Text } from '@pixi/text';
 // import { SimplePlane } from '@pixi/mesh-extras';
 import { expect } from 'chai';
 
-describe('getBounds', function ()
+describe('getBounds', () =>
 {
-    it('should register correct width/height with a LOADED Sprite', function ()
+    it('should register correct width/height with a LOADED Sprite', () =>
     {
         const parent = new Container();
         const texture = RenderTexture.create(10, 10);
@@ -46,7 +46,7 @@ describe('getBounds', function ()
         expect(bounds.height).to.equal(20);
     });
 
-    it('should register correct width/height with Graphics', function ()
+    it('should register correct width/height with Graphics', () =>
     {
         const parent = new Container();
         const graphics = new Graphics();
@@ -90,7 +90,7 @@ describe('getBounds', function ()
         expect(bounds.height).to.equal(40);
     });
 
-    it('should register correct width/height with an empty Container', function ()
+    it('should register correct width/height with an empty Container', () =>
     {
         const parent = new Container();
 
@@ -119,7 +119,7 @@ describe('getBounds', function ()
         expect(bounds.height).to.equal(0);
     });
 
-    it('should register correct width/height with a Container', function ()
+    it('should register correct width/height with a Container', () =>
     {
         const parent = new Container();
 
@@ -164,7 +164,7 @@ describe('getBounds', function ()
         expect(bounds.height | 0).to.equal(97);
     });
 
-    it('should register correct width/height with an item that has already had its parent Container transformed', function ()
+    it('should register correct width/height with an item that has already had its parent Container transformed', () =>
     {
         const parent = new Container();
 
@@ -194,7 +194,7 @@ describe('getBounds', function ()
     });
 
     /*
-    it('should register correct width/height with a Mesh', function ()
+    it('should register correct width/height with a Mesh', ()=>
     {
         const parent = new Container();
 
@@ -226,7 +226,7 @@ describe('getBounds', function ()
     });
     */
 
-    it('should register correct width/height with an a DisplayObject is visible false', function ()
+    it('should register correct width/height with an a DisplayObject is visible false', () =>
     {
         const parent = new Container();
 
@@ -273,7 +273,7 @@ describe('getBounds', function ()
         expect(bounds.height).to.equal(10);
     });
 
-    it('should register correct bounds of invisible Container', function ()
+    it('should register correct bounds of invisible Container', () =>
     {
         const parent = new Container();
 
@@ -297,7 +297,7 @@ describe('getBounds', function ()
         expect(bounds.height).to.equal(10);
     });
 
-    it('should register correct width/height with Container masked child', function ()
+    it('should register correct width/height with Container masked child', () =>
     {
         const parent = new Container();
 
@@ -334,7 +334,7 @@ describe('getBounds', function ()
         expect(bounds.height).to.equal(7);
     });
 
-    it('should register correct width/height with an a DisplayObject parent has moved', function ()
+    it('should register correct width/height with an a DisplayObject parent has moved', () =>
     {
         const parent = new Container();
 
@@ -359,7 +359,7 @@ describe('getBounds', function ()
         expect(bounds.height).to.equal(20);
     });
 
-    it('should register correct width/height with a Text Object', function ()
+    it('should register correct width/height with a Text Object', () =>
     {
         const parent = new Container();
 
@@ -387,7 +387,7 @@ describe('getBounds', function ()
         expect(bounds.width).to.not.equal(bx);
     });
 
-    it('should return a different rectangle if getting local bounds after global bounds ', function ()
+    it('should return a different rectangle if getting local bounds after global bounds ', () =>
     {
         const parent = new Container();
         const texture = RenderTexture.create(10, 10);
@@ -416,10 +416,13 @@ describe('getBounds', function ()
         expect(localBounds.height).to.equal(10);
     });
 
-    it('should ensure bounds respect the trim of a texture ', function ()
+    it('should ensure bounds respect the trim of a texture ', () =>
     {
         const parent = new Container();
-        const baseTexture = new BaseRenderTexture(100, 100);
+        const baseTexture = new BaseRenderTexture({
+            width: 100,
+            height: 100,
+        });
 
         const orig = new Rectangle(0, 0, 100, 50);
         const frame = new Rectangle(2, 2, 50, 50);

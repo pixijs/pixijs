@@ -1,13 +1,12 @@
 import { settings } from '../settings';
 
-let supported: boolean|undefined;
+let supported: boolean | undefined;
 
 /**
  * Helper for checking for WebGL support.
- *
  * @memberof PIXI.utils
  * @function isWebGLSupported
- * @return {boolean} Is WebGL supported.
+ * @returns {boolean} Is WebGL supported.
  */
 export function isWebGLSupported(): boolean
 {

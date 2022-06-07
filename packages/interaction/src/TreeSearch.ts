@@ -5,7 +5,6 @@ import type { Container, DisplayObject } from '@pixi/display';
 
 /**
  * Strategy how to search through stage tree for interactive objects
- *
  * @memberof PIXI
  */
 export class TreeSearch
@@ -19,7 +18,6 @@ export class TreeSearch
 
     /**
      * Recursive implementation for findHit
-     *
      * @private
      * @param interactionEvent - event containing the point that
      *  is tested for collision
@@ -29,7 +27,7 @@ export class TreeSearch
      *  interactionEvent, displayObject and hit will be passed to the function
      * @param hitTest - this indicates if the objects inside should be hit test against the point
      * @param interactive - Whether the displayObject is interactive
-     * @return - Returns true if the displayObject hit the point
+     * @returns - Returns true if the displayObject hit the point
      */
     public recursiveFindHit(interactionEvent: InteractionEvent, displayObject: DisplayObject,
         func?: InteractionCallback, hitTest?: boolean, interactive?: boolean
@@ -180,7 +178,6 @@ export class TreeSearch
      * This function is provides a neat way of crawling through the scene graph and running a
      * specified function on all interactive objects it finds. It will also take care of hit
      * testing the interactive objects and passes the hit across in the function.
-     *
      * @private
      * @param interactionEvent - event containing the point that
      *  is tested for collision
@@ -189,7 +186,7 @@ export class TreeSearch
      * @param func - the function that will be called on each interactive object. The
      *  interactionEvent, displayObject and hit will be passed to the function
      * @param hitTest - this indicates if the objects inside should be hit test against the point
-     * @return - Returns true if the displayObject hit the point
+     * @returns - Returns true if the displayObject hit the point
      */
     public findHit(interactionEvent: InteractionEvent, displayObject: DisplayObject,
         func?: InteractionCallback, hitTest?: boolean

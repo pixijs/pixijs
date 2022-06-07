@@ -15,7 +15,7 @@ export interface IImageResourceOptions
     createBitmap?: boolean;
 
     /** Load image using cross origin. */
-    crossorigin?: boolean|string;
+    crossorigin?: boolean | string;
 
     /** Premultiply image alpha in bitmap. */
     alphaMode?: ALPHA_MODES;
@@ -23,7 +23,6 @@ export interface IImageResourceOptions
 
 /**
  * Resource type for HTMLImageElement.
- *
  * @memberof PIXI
  */
 export class ImageResource extends BaseImageResource
@@ -33,14 +32,12 @@ export class ImageResource extends BaseImageResource
 
     /**
      * If the image should be disposed after upload
-     *
      * @default false
      */
     preserveBitmap: boolean;
 
     /**
      * If capable, convert the image using createImageBitmap API.
-     *
      * @default PIXI.settings.CREATE_IMAGE_BITMAP
      */
     createBitmap: boolean;
@@ -49,21 +46,18 @@ export class ImageResource extends BaseImageResource
      * Controls texture alphaMode field
      * Copies from options
      * Default is `null`, copies option from baseTexture
-     *
      * @readonly
      */
     alphaMode: ALPHA_MODES;
 
     /**
      * The ImageBitmap element created for a {@code HTMLImageElement}.
-     *
      * @default null
      */
     bitmap: ImageBitmap;
 
     /**
      * Promise when loading.
-     *
      * @default null
      */
     private _load: Promise<ImageResource>;
@@ -80,7 +74,7 @@ export class ImageResource extends BaseImageResource
      * @param {boolean} [options.crossorigin=true] - Load image using cross origin
      * @param {PIXI.ALPHA_MODES} [options.alphaMode=PIXI.ALPHA_MODES.UNPACK] - Premultiply image alpha in bitmap
      */
-    constructor(source: HTMLImageElement|string, options?: IImageResourceOptions)
+    constructor(source: HTMLImageElement | string, options?: IImageResourceOptions)
     {
         options = options || {};
 
@@ -126,7 +120,6 @@ export class ImageResource extends BaseImageResource
 
     /**
      * Returns a promise when image will be loaded and processed.
-     *
      * @param createBitmap - whether process image into bitmap
      */
     load(createBitmap?: boolean): Promise<ImageResource>
@@ -191,8 +184,7 @@ export class ImageResource extends BaseImageResource
     /**
      * Called when we need to convert image into BitmapImage.
      * Can be called multiple times, real promise is cached inside.
-     *
-     * @return - Cached promise to fill that bitmap
+     * @returns - Cached promise to fill that bitmap
      */
     process(): Promise<ImageResource>
     {
@@ -238,7 +230,6 @@ export class ImageResource extends BaseImageResource
 
     /**
      * Upload the image resource to GPU.
-     *
      * @param renderer - Renderer to upload to
      * @param baseTexture - BaseTexture for this resource
      * @param glTexture - GLTexture to use
@@ -321,11 +312,10 @@ export class ImageResource extends BaseImageResource
 
     /**
      * Used to auto-detect the type of resource.
-     *
      * @param {*} source - The source object
-     * @return {boolean} `true` if source is string or HTMLImageElement
+     * @returns {boolean} `true` if source is string or HTMLImageElement
      */
-    static test(source: unknown): source is string|HTMLImageElement
+    static test(source: unknown): source is string | HTMLImageElement
     {
         return typeof source === 'string' || source instanceof HTMLImageElement;
     }

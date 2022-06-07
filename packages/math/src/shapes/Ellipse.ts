@@ -3,7 +3,6 @@ import { SHAPES } from '../const';
 
 /**
  * The Ellipse object is used to help draw graphics and can also be used to specify a hit area for displayObjects.
- *
  * @memberof PIXI
  */
 export class Ellipse
@@ -22,7 +21,6 @@ export class Ellipse
 
     /**
      * The type of the object, mainly used to avoid `instanceof` checks
-     *
      * @default PIXI.SHAPES.ELIP
      * @see PIXI.SHAPES
      */
@@ -46,8 +44,7 @@ export class Ellipse
 
     /**
      * Creates a clone of this Ellipse instance
-     *
-     * @return {PIXI.Ellipse} A copy of the ellipse
+     * @returns {PIXI.Ellipse} A copy of the ellipse
      */
     clone(): Ellipse
     {
@@ -56,10 +53,9 @@ export class Ellipse
 
     /**
      * Checks whether the x and y coordinates given are contained within this ellipse
-     *
      * @param x - The X coordinate of the point to test
      * @param y - The Y coordinate of the point to test
-     * @return Whether the x/y coords are within this ellipse
+     * @returns Whether the x/y coords are within this ellipse
      */
     contains(x: number, y: number): boolean
     {
@@ -80,8 +76,7 @@ export class Ellipse
 
     /**
      * Returns the framing rectangle of the ellipse as a Rectangle object
-     *
-     * @return The framing rectangle
+     * @returns The framing rectangle
      */
     getBounds(): Rectangle
     {

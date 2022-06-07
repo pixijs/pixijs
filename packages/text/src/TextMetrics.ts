@@ -1,6 +1,7 @@
 import { TextStyle, TextStyleWhiteSpace } from './TextStyle';
 
-interface IFontMetrics {
+interface IFontMetrics
+{
     ascent: number;
     descent: number;
     fontSize: number;
@@ -15,7 +16,6 @@ type CharacterWidthCache = { [key: string]: number };
  * let style = new PIXI.TextStyle({fontFamily : 'Arial', fontSize: 24, fill : 0xff1010, align : 'center'})
  * let textMetrics = PIXI.TextMetrics.measureText('Your text', style)
  * ```
- *
  * @memberof PIXI
  */
 export class TextMetrics
@@ -46,7 +46,6 @@ export class TextMetrics
 
     /**
      * The font properties object from TextMetrics.measureFont.
-     *
      * @type {PIXI.IFontMetrics}
      */
     public fontProperties: IFontMetrics;
@@ -56,9 +55,10 @@ export class TextMetrics
     public static BASELINE_MULTIPLIER: number;
     public static HEIGHT_MULTIPLIER: number;
 
+    private static __canvas: HTMLCanvasElement | OffscreenCanvas;
+    private static __context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
+
     // TODO: These should be protected but they're initialized outside of the class.
-    public static _canvas: HTMLCanvasElement|OffscreenCanvas;
-    public static _context: CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D;
     public static _fonts: { [font: string]: IFontMetrics };
     public static _newlines: number[];
     public static _breakingSpaces: number[];
@@ -90,12 +90,11 @@ export class TextMetrics
 
     /**
      * Measures the supplied string of text and returns a Rectangle.
-     *
      * @param text - The text to measure.
      * @param style - The text style to use for measuring
      * @param wordWrap - Override for if word-wrap should be applied to the text.
      * @param canvas - optional specification of the canvas to use for measuring.
-     * @return Measured width and height of the text.
+     * @returns Measured width and height of the text.
      */
     public static measureText(
         text: string,
@@ -164,11 +163,10 @@ export class TextMetrics
     /**
      * Applies newlines to a string to have it optimally fit into the horizontal
      * bounds set by the Text object's wordWrapWidth property.
-     *
      * @param text - String to apply word wrapping to
      * @param style - the style to use when wrapping
      * @param canvas - optional specification of the canvas to use for measuring.
-     * @return New string with new lines applied where required
+     * @returns New string with new lines applied where required
      */
     private static wordWrap(
         text: string,
@@ -363,10 +361,9 @@ export class TextMetrics
 
     /**
      * Convienience function for logging each line added during the wordWrap method.
-     *
      * @param line    - The line of text to add
      * @param newLine - Add new line character to end
-     * @return A formatted line
+     * @returns A formatted line
      */
     private static addLine(line: string, newLine = true): string
     {
@@ -379,15 +376,14 @@ export class TextMetrics
 
     /**
      * Gets & sets the widths of calculated characters in a cache object
-     *
      * @param key            - The key
      * @param letterSpacing  - The letter spacing
      * @param cache          - The cache
      * @param context        - The canvas context
-     * @return The from cache.
+     * @returns The from cache.
      */
     private static getFromCache(key: string, letterSpacing: number, cache: CharacterWidthCache,
-        context: CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D): number
+        context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D): number
     {
         let width = cache[key];
 
@@ -404,9 +400,8 @@ export class TextMetrics
 
     /**
      * Determines whether we should collapse breaking spaces.
-     *
      * @param whiteSpace - The TextStyle property whiteSpace
-     * @return Should collapse
+     * @returns Should collapse
      */
     private static collapseSpaces(whiteSpace: TextStyleWhiteSpace): boolean
     {
@@ -415,9 +410,8 @@ export class TextMetrics
 
     /**
      * Determines whether we should collapse newLine chars.
-     *
      * @param whiteSpace - The white space
-     * @return  should collapse
+     * @returns  should collapse
      */
     private static collapseNewlines(whiteSpace: TextStyleWhiteSpace): boolean
     {
@@ -426,9 +420,8 @@ export class TextMetrics
 
     /**
      * Trims breaking whitespaces from string.
-     *
      * @param  text - The text
-     * @return Trimmed string
+     * @returns Trimmed string
      */
     private static trimRight(text: string): string
     {
@@ -454,9 +447,8 @@ export class TextMetrics
 
     /**
      * Determines if char is a newline.
-     *
      * @param  char - The character
-     * @return True if newline, False otherwise.
+     * @returns True if newline, False otherwise.
      */
     private static isNewline(char: string): boolean
     {
@@ -474,10 +466,9 @@ export class TextMetrics
      * It allows one to determine whether char should be a breaking whitespace
      * For example certain characters in CJK langs or numbers.
      * It must return a boolean.
-     *
-     * @param char     - The character
-     * @param [nextChar] - The next character
-     * @return True if whitespace, False otherwise.
+     * @param char - The character
+     * @param [_nextChar] - The next character
+     * @returns True if whitespace, False otherwise.
      */
     static isBreakingSpace(char: string, _nextChar?: string): boolean
     {
@@ -491,9 +482,8 @@ export class TextMetrics
 
     /**
      * Splits a string into words, breaking-spaces and newLine characters
-     *
      * @param  text - The text
-     * @return  A tokenized array
+     * @returns  A tokenized array
      */
     private static tokenize(text: string): string[]
     {
@@ -540,10 +530,9 @@ export class TextMetrics
      * It allows one to customise which words should break
      * Examples are if the token is CJK or numbers.
      * It must return a boolean.
-     *
-     * @param  token       - The token
+     * @param _token - The token
      * @param  breakWords - The style attr break words
-     * @return Whether to break word or not
+     * @returns Whether to break word or not
      */
     static canBreakWords(_token: string, breakWords: boolean): boolean
     {
@@ -557,13 +546,12 @@ export class TextMetrics
      * should be broken by newlines
      * For example certain characters in CJK langs or numbers.
      * It must return a boolean.
-     *
-     * @param  char        - The character
-     * @param  nextChar    - The next character
-     * @param  token       - The token/word the characters are from
-     * @param  index       - The index in the token of the char
-     * @param  breakWords - The style attr break words
-     * @return whether to break word or not
+     * @param _char - The character
+     * @param _nextChar - The next character
+     * @param _token - The token/word the characters are from
+     * @param _index - The index in the token of the char
+     * @param _breakWords - The style attr break words
+     * @returns whether to break word or not
      */
     static canBreakChars(_char: string, _nextChar: string, _token: string, _index: number,
         _breakWords: boolean): boolean
@@ -577,13 +565,11 @@ export class TextMetrics
      * It is called when a token (usually a word) has to be split into separate pieces
      * in order to determine the point to break a word.
      * It must return an array of characters.
-     *
      * @example
      * // Correctly splits emojis, eg "🤪🤪" will result in two element array, each with one emoji.
      * TextMetrics.wordWrapSplit = (token) => [...token];
-     *
      * @param  token - The token to split
-     * @return The characters of the token
+     * @returns The characters of the token
      */
     static wordWrapSplit(token: string): string[]
     {
@@ -592,9 +578,8 @@ export class TextMetrics
 
     /**
      * Calculates the ascent, descent and fontSize of a given font-style
-     *
      * @param font - String representing the style of the font
-     * @return Font properties object
+     * @returns Font properties object
      */
     public static measureFont(font: string): IFontMetrics
     {
@@ -700,7 +685,6 @@ export class TextMetrics
 
     /**
      * Clear font metrics in metrics cache.
-     *
      * @param {string} [font] - font name. If font name not set then clear cache for all fonts.
      */
     public static clearMetrics(font = ''): void
@@ -714,11 +698,61 @@ export class TextMetrics
             TextMetrics._fonts = {};
         }
     }
+
+    /**
+     * Cached canvas element for measuring text
+     * TODO: this should be private, but isn't because of backward compat, will fix later.
+     * @ignore
+     */
+    public static get _canvas(): HTMLCanvasElement | OffscreenCanvas
+    {
+        if (!TextMetrics.__canvas)
+        {
+            let canvas: HTMLCanvasElement | OffscreenCanvas;
+
+            try
+            {
+                // OffscreenCanvas2D measureText can be up to 40% faster.
+                const c = new OffscreenCanvas(0, 0);
+                const context = c.getContext('2d');
+
+                if (context && context.measureText)
+                {
+                    TextMetrics.__canvas = c;
+
+                    return c;
+                }
+
+                canvas = document.createElement('canvas');
+            }
+            catch (ex)
+            {
+                canvas = document.createElement('canvas');
+            }
+            canvas.width = canvas.height = 10;
+            TextMetrics.__canvas = canvas;
+        }
+
+        return TextMetrics.__canvas;
+    }
+
+    /**
+     * TODO: this should be private, but isn't because of backward compat, will fix later.
+     * @ignore
+     */
+    public static get _context(): CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D
+    {
+        if (!TextMetrics.__context)
+        {
+            TextMetrics.__context = TextMetrics._canvas.getContext('2d');
+        }
+
+        return TextMetrics.__context;
+    }
 }
 
 /**
  * Internal return object for {@link PIXI.TextMetrics.measureFont `TextMetrics.measureFont`}.
- *
  * @typedef {object} FontMetrics
  * @property {number} ascent - The ascent distance
  * @property {number} descent - The descent distance
@@ -727,52 +761,10 @@ export class TextMetrics
  * @private
  */
 
-const canvas = ((): HTMLCanvasElement|OffscreenCanvas =>
-{
-    try
-    {
-        // OffscreenCanvas2D measureText can be up to 40% faster.
-        const c = new OffscreenCanvas(0, 0);
-        const context = c.getContext('2d');
-
-        if (context && context.measureText)
-        {
-            return c;
-        }
-
-        return document.createElement('canvas');
-    }
-    catch (ex)
-    {
-        return document.createElement('canvas');
-    }
-})();
-
-canvas.width = canvas.height = 10;
-
-/**
- * Cached canvas element for measuring text
- *
- * @memberof PIXI.TextMetrics
- * @type {HTMLCanvasElement}
- * @private
- */
-TextMetrics._canvas = canvas;
-
-/**
- * Cache for context to use.
- *
- * @memberof PIXI.TextMetrics
- * @type {CanvasRenderingContext2D}
- * @private
- */
-TextMetrics._context = canvas.getContext('2d');
-
 /**
  * Cache of {@see PIXI.TextMetrics.FontMetrics} objects.
- *
  * @memberof PIXI.TextMetrics
- * @type {Object}
+ * @type {object}
  * @private
  */
 TextMetrics._fonts = {};
@@ -780,7 +772,6 @@ TextMetrics._fonts = {};
 /**
  * String used for calculate font metrics.
  * These characters are all tall to help calculate the height required for text.
- *
  * @static
  * @memberof PIXI.TextMetrics
  * @name METRICS_STRING
@@ -791,7 +782,6 @@ TextMetrics.METRICS_STRING = '|ÉqÅ';
 
 /**
  * Baseline symbol for calculate font metrics.
- *
  * @static
  * @memberof PIXI.TextMetrics
  * @name BASELINE_SYMBOL
@@ -802,7 +792,6 @@ TextMetrics.BASELINE_SYMBOL = 'M';
 
 /**
  * Baseline multiplier for calculate font metrics.
- *
  * @static
  * @memberof PIXI.TextMetrics
  * @name BASELINE_MULTIPLIER
@@ -813,7 +802,6 @@ TextMetrics.BASELINE_MULTIPLIER = 1.4;
 
 /**
  * Height multiplier for setting height of canvas to calculate font metrics.
- *
  * @static
  * @memberof PIXI.TextMetrics
  * @name HEIGHT_MULTIPLIER
@@ -824,7 +812,6 @@ TextMetrics.HEIGHT_MULTIPLIER = 2.0;
 
 /**
  * Cache of new line chars.
- *
  * @memberof PIXI.TextMetrics
  * @type {number[]}
  * @private
@@ -836,7 +823,6 @@ TextMetrics._newlines = [
 
 /**
  * Cache of breaking spaces.
- *
  * @memberof PIXI.TextMetrics
  * @type {number[]}
  * @private
@@ -860,7 +846,6 @@ TextMetrics._breakingSpaces = [
 
 /**
  * A number, or a string containing a number.
- *
  * @memberof PIXI
  * @typedef {object} IFontMetrics
  * @property {number} ascent - Font ascent

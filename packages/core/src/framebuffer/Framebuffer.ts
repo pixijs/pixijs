@@ -10,7 +10,6 @@ import type { GLFramebuffer } from './GLFramebuffer';
  * one internally to render into itself. You can attach a depth or stencil buffer to a framebuffer.
  *
  * On WebGL 2 machines, shaders can output to multiple textures simultaneously with GLSL 300 ES.
- *
  * @memberof PIXI
  */
 export class Framebuffer
@@ -34,7 +33,6 @@ export class Framebuffer
      * renderer.render(myContainer, {renderTexture});
      * renderer.framebuffer.blit(); // copies data from MSAA framebuffer to texture
      *  ```
-     *
      * @default PIXI.MSAA_QUALITY.NONE
      */
     public multisample: MSAA_QUALITY;
@@ -76,7 +74,6 @@ export class Framebuffer
 
     /**
      * Reference to the colorTexture.
-     *
      * @readonly
      */
     get colorTexture(): BaseTexture
@@ -86,7 +83,6 @@ export class Framebuffer
 
     /**
      * Add texture to the colorTexture array.
-     *
      * @param index - Index of the array to add the texture to
      * @param texture - Texture to add to the array
      */
@@ -109,7 +105,6 @@ export class Framebuffer
 
     /**
      * Add a depth texture to the frame buffer.
-     *
      * @param texture - Texture to add.
      */
     addDepthTexture(texture?: BaseTexture): this
@@ -155,7 +150,6 @@ export class Framebuffer
 
     /**
      * Resize the frame buffer
-     *
      * @param width - Width of the frame buffer to resize to
      * @param height - Height of the frame buffer to resize to
      */

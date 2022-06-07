@@ -1,9 +1,9 @@
 import { RenderTexturePool } from '@pixi/core';
 import { expect } from 'chai';
 
-describe('RenderTexturePool', function ()
+describe('RenderTexturePool', () =>
 {
-    it('should destroy screen-sized textures on resize', function ()
+    it('should destroy screen-sized textures on resize', () =>
     {
         const renderTexturePool = new RenderTexturePool();
 
@@ -30,7 +30,7 @@ describe('RenderTexturePool', function ()
         renderTexturePool.clear(true);
     });
 
-    it('should create screen-sized texture with noninteger resolution', function ()
+    it('should create screen-sized texture with noninteger resolution', () =>
     {
         const resolution = 1.1;
         const viewWidth = 1419;

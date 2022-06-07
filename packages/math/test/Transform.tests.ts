@@ -1,11 +1,11 @@
 import { Transform } from '@pixi/math';
 import { expect } from 'chai';
 
-describe('Transform', function ()
+describe('Transform', () =>
 {
-    describe('setFromMatrix', function ()
+    describe('setFromMatrix', () =>
     {
-        it('should decompose negative scale into rotation', function ()
+        it('should decompose negative scale into rotation', () =>
         {
             const eps = 1e-3;
 
@@ -33,7 +33,7 @@ describe('Transform', function ()
             expect(otherTransform.rotation).to.be.closeTo(-5 * Math.PI / 6, eps);
         });
 
-        it('should decompose mirror into skew', function ()
+        it('should decompose mirror into skew', () =>
         {
             const eps = 1e-3;
 
@@ -61,7 +61,7 @@ describe('Transform', function ()
             expect(otherTransform.rotation).to.equal(0);
         });
 
-        it('should apply skew before scale, like in adobe animate and spine', function ()
+        it('should apply skew before scale, like in adobe animate and spine', () =>
         {
             // this example looks the same in CSS and in pixi, made with pixi-animate by @bigtimebuddy
 

@@ -5,7 +5,6 @@ import type { Rectangle } from '@pixi/math';
  * Builds a rectangle to draw
  *
  * Ignored from docs since it is not directly exposed.
- *
  * @ignore
  * @private
  * @param {PIXI.WebGLGraphicsData} graphicsData - The graphics object containing all the necessary properties

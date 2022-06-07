@@ -4,15 +4,15 @@ import type { Graphics } from '@pixi/graphics';
  * Draw a regular polygon with rounded corners.
  *
  * _Note: Only available with **@pixi/graphics-extras**._
- *
  * @method PIXI.Graphics#drawRoundedPolygon
+ * @param this
  * @param {number} x - X position
  * @param {number} y - Y position
  * @param {number} radius - Polygon radius
  * @param {number} sides - Minimum value is 3
  * @param {number} corner - Corner size in pixels.
  * @param {number} rotation - Starting rotation values in radians..
- * @return {PIXI.Graphics}
+ * @returns {PIXI.Graphics} This Graphics object. Good for chaining method calls
  */
 export function drawRoundedPolygon(this: Graphics,
     x: number,

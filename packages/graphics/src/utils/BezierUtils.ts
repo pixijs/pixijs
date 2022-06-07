@@ -2,7 +2,6 @@ import { GRAPHICS_CURVES } from '../const';
 
 /**
  * Utilities for bezier curves
- *
  * @private
  */
 export class BezierUtils
@@ -11,7 +10,6 @@ export class BezierUtils
      * Calculate length of bezier curve.
      * Analytical solution is impossible, since it involves an integral that does not integrate in general.
      * Therefore numerical solution is used.
-     *
      * @private
      * @param fromX - Starting point x
      * @param fromY - Starting point y
@@ -21,7 +19,7 @@ export class BezierUtils
      * @param cpY2 - Second Control point y
      * @param toX - Destination point x
      * @param toY - Destination point y
-     * @return - Length of bezier curve
+     * @returns - Length of bezier curve
      */
     static curveLength(
         fromX: number, fromY: number,
@@ -70,7 +68,6 @@ export class BezierUtils
      * Calculate the points for a bezier curve and then draws it.
      *
      * Ignored from docs since it is not directly exposed.
-     *
      * @ignore
      * @param cpX - Control point x
      * @param cpY - Control point y

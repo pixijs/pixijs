@@ -6,7 +6,6 @@ import type { BatchTextureArray } from './BatchTextureArray';
 /**
  * Used by the batcher to draw batches.
  * Each one of these contains all information required to draw a bound geometry.
- *
  * @memberof PIXI
  */
 export class BatchDrawCall

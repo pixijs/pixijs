@@ -9,7 +9,6 @@ import type { ISize } from '@pixi/math';
 
 /**
  * A resource that contains a number of sources.
- *
  * @memberof PIXI
  */
 export class ArrayResource extends AbstractMultiResource
@@ -21,7 +20,7 @@ export class ArrayResource extends AbstractMultiResource
      * @param {number} [options.width] - Width of the resource
      * @param {number} [options.height] - Height of the resource
      */
-    constructor(source: number|Array<any>, options?: ISize)
+    constructor(source: number | Array<any>, options?: ISize)
     {
         const { width, height } = options || {};
 
@@ -49,10 +48,9 @@ export class ArrayResource extends AbstractMultiResource
     /**
      * Set a baseTexture by ID,
      * ArrayResource just takes resource from it, nothing more
-     *
      * @param baseTexture
      * @param index - Zero-based index of resource to set
-     * @return - Instance for chaining
+     * @returns - Instance for chaining
      */
     addBaseTextureAt(baseTexture: BaseTexture, index: number): this
     {
@@ -68,7 +66,10 @@ export class ArrayResource extends AbstractMultiResource
         return this;
     }
 
-    /** Add binding */
+    /**
+     * Add binding
+     * @param baseTexture
+     */
     bind(baseTexture: BaseTexture): void
     {
         super.bind(baseTexture);
@@ -78,7 +79,6 @@ export class ArrayResource extends AbstractMultiResource
 
     /**
      * Upload the resources to the GPU.
-     *
      * @param renderer
      * @param texture
      * @param glTexture
