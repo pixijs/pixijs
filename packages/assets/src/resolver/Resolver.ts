@@ -22,16 +22,18 @@ export interface ResolveAsset extends Record<string, any>
     src: string;
 }
 
+export type ResolverAssetsArray = {
+    name: string | string[];
+    srcs: string | ResolveAsset[];
+}[];
+
+export type ResolverAssetsObject = Record<string, (string | ResolveAsset)>;
+
 /** structure of a bundle found in a manfest file */
 export interface ResolverBundle
 {
     name: string;
-    assets: {
-        // TODO @bigtimebuddy - perhaps rename this to alias?.
-        name: string | string[];
-        // TODO @bigtimebuddy - need somthing better than this..
-        srcs: string | ResolveAsset[];
-    }[];
+    assets: ResolverAssetsArray | ResolverAssetsObject
 }
 
 /** the expected format of a manifest. This would normally be auto generated ar made by the developer */
@@ -92,6 +94,7 @@ export class Resolver
     private _resolverHash: Record<string, {src: string}> = {};
     private _basePath: string;
     private _manifest: ResolverManifest;
+    private _bundles: Record<string, string[]> = {};
 
     /**
      * let the resolver know which assets you prefer to use when resolving assets
@@ -233,11 +236,57 @@ export class Resolver
 
         manifest.bundles.forEach((bundle) =>
         {
-            bundle.assets.forEach((asset) =>
+            this.addBundle(bundle.name, bundle.assets);
+        });
+    }
+
+    /**
+     * This adds a bundle of assets in one go so that you can resolve them as a group.
+     * For example you could add a bundle for each screen in you pixi app
+     * @example
+     * ```
+     *  resolver.addBundle('animals', {
+     *    bunny: 'bunny.png',
+     *    chicken: 'chicken.png',
+     *    thumper: 'thumper.png',
+     *  });
+     *
+     * const resolvedAssets = await resolver.resolveBundle('preloaded');
+     *
+     * ```
+     * @param bundleId - the id of the bundle to add
+     * @param assets - a record of the the asset or assets that will be chosen from when loading via the specified key
+     */
+    public addBundle(bundleId: string, assets: ResolverBundle['assets']): void
+    {
+        const assetNames: string[] = [];
+
+        if (Array.isArray(assets))
+        {
+            assets.forEach((asset) =>
             {
+                if (typeof asset.name === 'string')
+                {
+                    assetNames.push(asset.name);
+                }
+                else
+                {
+                    assetNames.push(...asset.name);
+                }
+
                 this.add(asset.name, asset.srcs);
             });
-        });
+        }
+        else
+        {
+            Object.keys(assets).forEach((key) =>
+            {
+                assetNames.push(key);
+                this.add(key, assets[key]);
+            });
+        }
+
+        this._bundles[bundleId] = assetNames;
     }
 
     /**
@@ -417,25 +466,15 @@ export class Resolver
 
         const out: Record<string, Record<string, ResolveAsset>> = {};
 
-        this._manifest.bundles.filter((bundle) => bundleIds.includes(bundle.name))
-            .forEach((bundle) =>
+        bundleIds.forEach((bundleId) =>
+        {
+            const assetNames = this._bundles[bundleId];
+
+            if (assetNames)
             {
-                const assetNames: string[] = [];
-
-                bundle.assets.forEach((asset) =>
-                {
-                    if (typeof asset.name === 'string')
-                    {
-                        assetNames.push(asset.name);
-                    }
-                    else
-                    {
-                        assetNames.push(...asset.name);
-                    }
-                });
-
-                out[bundle.name] = this.resolve(assetNames) as Record<string, ResolveAsset>;
-            });
+                out[bundleId] = this.resolve(assetNames) as Record<string, ResolveAsset>;
+            }
+        });
 
         return singleAsset ? out[bundleIds[0]] : out;
     }

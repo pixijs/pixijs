@@ -14,7 +14,7 @@ import {
     loadWebFont,
 } from './loader';
 import { loadBitmapFont } from './loader/parsers/loadBitmapFont';
-import type { PreferOrder, ResolveAsset, ResolverManifest, ResolveURLParser } from './resolver/Resolver';
+import type { PreferOrder, ResolveAsset, ResolverBundle, ResolverManifest, ResolveURLParser } from './resolver/Resolver';
 import { Resolver } from './resolver/Resolver';
 import { DetectAvif } from './utils/DetectAvif';
 import { DetectWebp } from './utils/DetectWebp';
@@ -427,6 +427,28 @@ export class AssetsClass
         const out: Record<string, T> = await this._mapLoadToResolve<T>(resolveResults, onProgress);
 
         return singleAsset ? out[urlArray[0] as string] : out;
+    }
+
+    /**
+     * This adds a bundle of assets in one go so that you can load them as a group.
+     * For example you could add a bundle for each screen in you pixi app
+     * @example
+     * ```
+     *  Assets.addBundle('animals', {
+     *    bunny: 'bunny.png',
+     *    chicken: 'chicken.png',
+     *    thumper: 'thumper.png',
+     *  });
+     *
+     * const assets = await Assets.loadBundle('preloaded');
+     *
+     * ```
+     * @param bundleId - the id of the bundle to add
+     * @param assets - a record of the the asset or assets that will be chosen from when loading via the specified key
+     */
+    public addBundle(bundleId: string, assets: ResolverBundle['assets']): void
+    {
+        this.resolver.addBundle(bundleId, assets);
     }
 
     /**
