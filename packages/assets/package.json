@@ -1,6 +1,6 @@
 {
   "name": "@pixi/assets",
-  "version": "6.3.2",
+  "version": "6.4.2",
   "description": "Asset manager for PixiJS, loading resolving and Cacheing",
   "keywords": [
     "pixi",
@@ -33,9 +33,9 @@
     "url": "https://github.com/pixijs/pixi.js/issues"
   },
   "peerDependencies": {
-    "@pixi/core": "6.3.2",
-    "@pixi/settings": "6.3.2",
-    "@pixi/text-bitmap": "6.3.2",
-    "@pixi/spritesheet": "6.3.2"
+    "@pixi/core": "6.4.2",
+    "@pixi/settings": "6.4.2",
+    "@pixi/text-bitmap": "6.4.2",
+    "@pixi/spritesheet": "6.4.2"
   }
 }
