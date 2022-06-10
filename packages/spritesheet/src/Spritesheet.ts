@@ -1,6 +1,6 @@
 import { Rectangle } from '@pixi/math';
 import { Texture, BaseTexture } from '@pixi/core';
-import { getResolutionOfUrl } from '@pixi/utils';
+import { deprecation, getResolutionOfUrl } from '@pixi/utils';
 import type { Dict } from '@pixi/utils';
 import type { ImageResource } from '@pixi/core';
 import type { IPointData } from '@pixi/math';
@@ -55,7 +55,8 @@ export interface ISpritesheetData
  * Alternately, you may circumvent the loader by instantiating the Spritesheet directly:
  * ```js
  * const sheet = new PIXI.Spritesheet(texture, spritesheetData);
- * sheet.parse(() => console.log('Spritesheet ready to use!'));
+ * await sheet.parse();
+ * console.log('Spritesheet ready to use!');
  * ```
  *
  * With the `sheet.textures` you can create Sprite objects,`sheet.animations` can be used to create an AnimatedSprite.
@@ -185,21 +186,35 @@ export class Spritesheet
      * @param {Function} callback - Callback when complete returns
      *        a map of the Textures for this spritesheet.
      */
-    public parse(callback: (textures?: Dict<Texture>) => void): void
+    public parse(callback?: (textures?: Dict<Texture>) => void): Promise<Dict<Texture>>
     {
-        this._batchIndex = 0;
-        this._callback = callback;
+        // #if _DEBUG
+        if (callback)
+        {
+            deprecation('6.5.0', 'Spritesheet.parse callback is deprecated, use the return Promise instead.');
+        }
+        // #endif
 
-        if (this._frameKeys.length <= Spritesheet.BATCH_SIZE)
+        return new Promise((resolve) =>
         {
-            this._processFrames(0);
-            this._processAnimations();
-            this._parseComplete();
-        }
-        else
-        {
-            this._nextBatch();
-        }
+            this._callback = (textures: Dict<Texture>) =>
+            {
+                callback?.(textures);
+                resolve(textures);
+            };
+            this._batchIndex = 0;
+
+            if (this._frameKeys.length <= Spritesheet.BATCH_SIZE)
+            {
+                this._processFrames(0);
+                this._processAnimations();
+                this._parseComplete();
+            }
+            else
+            {
+                this._nextBatch();
+            }
+        });
     }
 
     /**
