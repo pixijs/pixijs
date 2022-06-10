@@ -2,6 +2,7 @@ import { AbstractMaskSystem } from './AbstractMaskSystem';
 
 import type { Renderer } from '../Renderer';
 import type { IMaskTarget, MaskData } from './MaskData';
+import { settings } from '@pixi/settings';
 
 /**
  * System plugin to the renderer to manage stencils (used for masks).
@@ -16,7 +17,7 @@ export class StencilSystem extends AbstractMaskSystem
     {
         super(renderer);
 
-        this.glConst = WebGLRenderingContext.STENCIL_TEST;
+        this.glConst = settings.ADAPTER.getWebGLRenderingContext().STENCIL_TEST;
     }
 
     getStackLength(): number

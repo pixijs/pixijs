@@ -14,19 +14,19 @@ export function getTestContext(): WebGLRenderingContext | WebGL2RenderingContext
 {
     if (context === unknownContext || (context && context.isContextLost()))
     {
-        const canvas = document.createElement('canvas');
+        const canvas = settings.ADAPTER.createCanvas();
 
         let gl: WebGLRenderingContext | WebGL2RenderingContext;
 
         if (settings.PREFER_ENV >= ENV.WEBGL2)
         {
-            gl = canvas.getContext('webgl2', {});
+            gl = settings.ADAPTER.getContext(canvas, 'webgl2', {}) as WebGL2RenderingContext;
         }
 
         if (!gl)
         {
-            gl = canvas.getContext('webgl', {})
-            || (canvas.getContext('experimental-webgl', {}) as WebGLRenderingContext);
+            gl = (settings.ADAPTER.getContext(canvas, 'webgl', {})
+                || (settings.ADAPTER.getContext(canvas, 'experimental-webgl', {}))) as WebGLRenderingContext;
 
             if (!gl)
             {

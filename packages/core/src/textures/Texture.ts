@@ -681,15 +681,15 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
     {
         if (!Texture._WHITE)
         {
-            const canvas = document.createElement('canvas');
-            const context = canvas.getContext('2d');
+            const canvas = settings.ADAPTER.createCanvas(16, 16);
+            const context = settings.ADAPTER.getContext(canvas, '2d') as CanvasRenderingContext2D;
 
             canvas.width = 16;
             canvas.height = 16;
             context.fillStyle = 'white';
             context.fillRect(0, 0, 16, 16);
 
-            Texture._WHITE = new Texture(new BaseTexture(new CanvasResource(canvas)));
+            Texture._WHITE = new Texture(BaseTexture.from(canvas));
             removeAllHandlers(Texture._WHITE);
             removeAllHandlers(Texture._WHITE.baseTexture);
         }

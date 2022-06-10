@@ -26,9 +26,9 @@ export class CanvasRenderTarget
      */
     constructor(width: number, height: number, resolution?: number)
     {
-        this.canvas = document.createElement('canvas');
+        this.canvas = settings.ADAPTER.createCanvas();
 
-        this.context = this.canvas.getContext('2d');
+        this.context = settings.ADAPTER.getContext(this.canvas, '2d') as CanvasRenderingContext2D;
 
         this.resolution = resolution || settings.RESOLUTION;
 

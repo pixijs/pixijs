@@ -9,6 +9,7 @@ import { resolveCharacters, drawGlyph, extractCharCode } from './utils';
 import type { Dict } from '@pixi/utils';
 import type { ITextStyle } from '@pixi/text';
 import { ALPHA_MODES } from '@pixi/constants';
+import { settings } from '@pixi/settings';
 
 export interface IBitmapFontCharacter
 {
@@ -397,11 +398,11 @@ export class BitmapFont
         {
             if (!canvas)
             {
-                canvas = document.createElement('canvas');
+                canvas = settings.ADAPTER.createCanvas();
                 canvas.width = textureWidth;
                 canvas.height = textureHeight;
 
-                context = canvas.getContext('2d');
+                context = settings.ADAPTER.getContext(canvas, '2d') as CanvasRenderingContext2D;
                 baseTexture = new BaseTexture(canvas, { resolution });
 
                 baseTextures.push(baseTexture);

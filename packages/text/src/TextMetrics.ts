@@ -1,3 +1,4 @@
+import { settings } from '@pixi/settings';
 import { TextStyle, TextStyleWhiteSpace } from './TextStyle';
 
 interface IFontMetrics
@@ -115,7 +116,7 @@ export class TextMetrics
             fontProperties.ascent = style.fontSize as number;
         }
 
-        const context = canvas.getContext('2d');
+        const context = settings.ADAPTER.getContext(canvas as HTMLCanvasElement, '2d') as CanvasRenderingContext2D;
 
         context.font = font;
 
@@ -723,11 +724,11 @@ export class TextMetrics
                     return c;
                 }
 
-                canvas = document.createElement('canvas');
+                canvas = settings.ADAPTER.createCanvas();
             }
             catch (ex)
             {
-                canvas = document.createElement('canvas');
+                canvas = settings.ADAPTER.createCanvas();
             }
             canvas.width = canvas.height = 10;
             TextMetrics.__canvas = canvas;
@@ -744,7 +745,10 @@ export class TextMetrics
     {
         if (!TextMetrics.__context)
         {
-            TextMetrics.__context = TextMetrics._canvas.getContext('2d');
+            TextMetrics.__context = settings.ADAPTER.getContext(
+                TextMetrics._canvas as HTMLCanvasElement,
+                '2d'
+            ) as CanvasRenderingContext2D;
         }
 
         return TextMetrics.__context;
