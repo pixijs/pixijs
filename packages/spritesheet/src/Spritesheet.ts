@@ -183,9 +183,20 @@ export class Spritesheet
     /**
      * Parser spritesheet from loaded data. This is done asynchronously
      * to prevent creating too many Texture within a single process.
+     * @method PIXI.Spritesheet#parse
+     */
+    public parse(): Promise<Dict<Texture>>;
+
+    /**
+     * Please use the Promise-based version of this function.
+     * @method PIXI.Spritesheet#parse
+     * @deprecated since version 6.5.0
      * @param {Function} callback - Callback when complete returns
      *        a map of the Textures for this spritesheet.
      */
+    public parse(callback?: (textures?: Dict<Texture>) => void): void;
+
+    /** @ignore */
     public parse(callback?: (textures?: Dict<Texture>) => void): Promise<Dict<Texture>>
     {
         // #if _DEBUG
