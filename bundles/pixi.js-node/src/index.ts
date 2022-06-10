@@ -1,49 +1,32 @@
 import '@pixi/polyfill';
-
-import * as utils from '@pixi/utils';
-import { AccessibilityManager } from '@pixi/accessibility';
-import { InteractionManager } from '@pixi/interaction';
+import '@pixi/adapter-node';
 import { Application } from '@pixi/app';
-import { Renderer, BatchRenderer } from '@pixi/core';
+import { BatchRenderer, Renderer } from '@pixi/core';
 import { Extract } from '@pixi/extract';
-import { Loader, AppLoaderPlugin } from '@pixi/loaders';
-import { CompressedTextureLoader, DDSLoader, KTXLoader } from '@pixi/compressed-textures';
-import { ParticleRenderer } from '@pixi/particle-container';
-import { Prepare } from '@pixi/prepare';
-import { SpritesheetLoader } from '@pixi/spritesheet';
-import { TilingSpriteRenderer } from '@pixi/sprite-tiling';
-import { BitmapFontLoader } from '@pixi/text-bitmap';
-import { TickerPlugin } from '@pixi/ticker';
 import { AlphaFilter } from '@pixi/filter-alpha';
 import { BlurFilter, BlurFilterPass } from '@pixi/filter-blur';
 import { ColorMatrixFilter } from '@pixi/filter-color-matrix';
 import { DisplacementFilter } from '@pixi/filter-displacement';
 import { FXAAFilter } from '@pixi/filter-fxaa';
 import { NoiseFilter } from '@pixi/filter-noise';
-
 import '@pixi/mixin-cache-as-bitmap';
 import '@pixi/mixin-get-child-by-name';
 import '@pixi/mixin-get-global-position';
+import { ParticleRenderer } from '@pixi/particle-container';
+import { Prepare } from '@pixi/prepare';
+import { TilingSpriteRenderer } from '@pixi/sprite-tiling';
+import { TickerPlugin } from '@pixi/ticker';
+import * as utils from '@pixi/utils';
 
 // Install renderer plugins
-Renderer.registerPlugin('accessibility', AccessibilityManager);
 Renderer.registerPlugin('extract', Extract);
-Renderer.registerPlugin('interaction', InteractionManager);
 Renderer.registerPlugin('particle', ParticleRenderer);
 Renderer.registerPlugin('prepare', Prepare);
 Renderer.registerPlugin('batch', BatchRenderer);
 Renderer.registerPlugin('tilingSprite', TilingSpriteRenderer);
 
-// Install loader plugins
-Loader.registerPlugin(BitmapFontLoader);
-Loader.registerPlugin(CompressedTextureLoader);
-Loader.registerPlugin(DDSLoader);
-Loader.registerPlugin(KTXLoader);
-Loader.registerPlugin(SpritesheetLoader);
-
 // Install application plugins
 Application.registerPlugin(TickerPlugin);
-Application.registerPlugin(AppLoaderPlugin);
 
 /**
  * String of the current PIXI version.
@@ -96,30 +79,28 @@ export const filters = {
 };
 
 // Export ES for those importing specifically by name,
-export * from '@pixi/accessibility';
 export * from '@pixi/app';
-export * from '@pixi/constants';
+export * from '@pixi/adapter-node';
+export * from '@pixi/assets';
 export * from '@pixi/compressed-textures';
+export * from '@pixi/constants';
 export * from '@pixi/core';
 export * from '@pixi/display';
 export * from '@pixi/extract';
 export * from '@pixi/graphics';
-export * from '@pixi/loaders';
-export * from '@pixi/interaction';
 export * from '@pixi/math';
 export * from '@pixi/mesh';
 export * from '@pixi/mesh-extras';
 export * from '@pixi/particle-container';
 export * from '@pixi/prepare';
 export * from '@pixi/runner';
+export * from '@pixi/settings';
 export * from '@pixi/sprite';
-export * from '@pixi/spritesheet';
 export * from '@pixi/sprite-animated';
 export * from '@pixi/sprite-tiling';
+export * from '@pixi/spritesheet';
 export * from '@pixi/text';
 export * from '@pixi/text-bitmap';
 export * from '@pixi/ticker';
-export * from '@pixi/settings';
-export * from '@pixi/assets';
-
 export { utils };
+

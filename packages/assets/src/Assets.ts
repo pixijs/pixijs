@@ -5,15 +5,15 @@ import { BackgroundLoader } from './BackgroundLoader';
 import { Cache } from './cache/Cache';
 import type {
     LoadAsset,
-    LoaderParser } from './loader';
+    LoaderParser
+} from './loader';
 import {
     Loader,
     loadJson,
     loadSpritesheet,
     loadTextures,
-    loadWebFont,
+    loadWebFont
 } from './loader';
-import { loadBitmapFont } from './loader/parsers/loadBitmapFont';
 import type { PreferOrder, ResolveAsset, ResolverManifest, ResolveURLParser } from './resolver/Resolver';
 import { Resolver } from './resolver/Resolver';
 import { DetectAvif } from './utils/DetectAvif';
@@ -606,7 +606,7 @@ export class AssetsClass
             loadTextures,
             loadJson,
             loadSpritesheet,
-            loadBitmapFont,
+            // loadBitmapFont,
             loadWebFont,
         );
 

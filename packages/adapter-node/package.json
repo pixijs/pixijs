@@ -40,9 +40,12 @@
   "dependencies": {
     "@types/gl": "^4.1.0",
     "gl": "^5.0.0",
-    "canvas": "^2.9.1"
+    "canvas": "^2.9.1",
+    "cross-fetch": "^3.1.5"
   },
   "peerDependencies": {
+      "@pixi/assets": "^6.4.2",
+      "@pixi/core": "^6.4.2",
       "@pixi/settings": "^6.4.2"
   }
 }

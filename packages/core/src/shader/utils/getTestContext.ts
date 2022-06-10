@@ -15,16 +15,17 @@ export function getTestContext(): WebGLRenderingContext | WebGL2RenderingContext
     if (context === unknownContext || (context && context.isContextLost()))
     {
         let gl: WebGLRenderingContext | WebGL2RenderingContext;
+        const canvas = settings.ADAPTER.createCanvas();
 
         if (settings.PREFER_ENV >= ENV.WEBGL2)
         {
-            gl = settings.ADAPTER.getContextWebgl2({});
+            gl = settings.ADAPTER.getContext(canvas, 'webgl2', {}) as WebGL2RenderingContext;
         }
 
         if (!gl)
         {
-            gl = settings.ADAPTER.getContextWebgl({})
-            || (settings.ADAPTER.getContextWebglExperimental({}));
+            gl = settings.ADAPTER.getContext(canvas, 'webgl', {}) as WebGLRenderingContext
+            || (settings.ADAPTER.getContext(canvas, 'experimental-webgl', {})) as WebGLRenderingContext;
 
             if (!gl)
             {

@@ -1,9 +1,9 @@
+import type { ENV } from '@pixi/constants';
+import { GC_MODES, MIPMAP_MODES, MSAA_QUALITY, PRECISION, SCALE_MODES, WRAP_MODES } from '@pixi/constants';
+import { BrowserAdapter, IAdapter } from './adapter';
+import { canUploadSameBuffer } from './utils/canUploadSameBuffer';
 import { isMobile } from './utils/isMobile';
 import { maxRecommendedTextures } from './utils/maxRecommendedTextures';
-import { canUploadSameBuffer } from './utils/canUploadSameBuffer';
-import { GC_MODES, MIPMAP_MODES, MSAA_QUALITY, PRECISION, SCALE_MODES, WRAP_MODES } from '@pixi/constants';
-import type { ENV } from '@pixi/constants';
-import { IAdapter } from './index';
 
 export interface IRenderOptions
 {
@@ -22,6 +22,7 @@ export interface IRenderOptions
 
 export interface ISettings
 {
+    ADAPTER: IAdapter;
     MIPMAP_TEXTURES: MIPMAP_MODES;
     ANISOTROPIC_LEVEL: number;
     RESOLUTION: number;
@@ -45,7 +46,6 @@ export interface ISettings
     UPLOADS_PER_FRAME?: number;
     SORTABLE_CHILDREN?: boolean;
     PREFER_ENV?: ENV;
-    ADAPTER?: IAdapter;
     STRICT_TEXTURE_CACHE?: boolean;
     MESH_CANVAS_PADDING?: number;
     TARGET_FPMS?: number;
@@ -65,6 +65,7 @@ export interface ISettings
  */
 export const settings: ISettings = {
 
+    ADAPTER: BrowserAdapter,
     /**
      * If set to true WebGL will attempt make textures mimpaped by default.
      * Mipmapping will only succeed if the base texture uploaded has power of two dimensions.
