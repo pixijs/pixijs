@@ -1,3 +1,5 @@
+import { BaseTexture, Texture } from '@pixi/core';
+
 /**
  * Super simple Cache for all pixi assets...
  * key value pairs.. that's it!
@@ -37,6 +39,22 @@ export class CacheClass
         {
             console.warn('[Cache] already has key:', key);
         }
+
+        // temporary to keep compatible with existing texture caching.. until we remove them!
+
+        if (value instanceof Texture)
+        {
+            const texture: Texture = value;
+
+            if (texture.baseTexture !== Texture.EMPTY.baseTexture)
+            {
+                BaseTexture.addToCache(texture.baseTexture, key);
+            }
+
+            Texture.addToCache(texture, key);
+        }
+
+        //
 
         this._cache.set(key, value);
     }

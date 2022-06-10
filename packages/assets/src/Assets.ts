@@ -1,6 +1,6 @@
 // PreferOptions
 
-import { Texture } from '@pixi/core';
+import { BaseTexture, Texture } from '@pixi/core';
 import { BackgroundLoader } from './BackgroundLoader';
 import { Cache } from './cache/Cache';
 import type {
@@ -685,8 +685,13 @@ export class AssetsClass
 
         const texture = new Texture(Texture.EMPTY.baseTexture);
 
+        Cache.set(key, texture);
+
         this.loader.load(url).then((loadedTexture) =>
         {
+            // to preserve backwards compatibility
+            BaseTexture.addToCache(texture.baseTexture, key);
+
             texture.baseTexture = loadedTexture.baseTexture;
             texture.onBaseTextureUpdated(texture.baseTexture);
         });
