@@ -1,18 +1,14 @@
 import { Application } from '@pixi/app';
-import { autoDetectRenderer } from '@pixi/canvas-renderer';
-import { Container, DisplayObject } from '@pixi/display';
+import { Container } from '@pixi/display';
 import { skipHello } from '@pixi/utils';
-import sinon from 'sinon';
 import { expect } from 'chai';
+import sinon from 'sinon';
 
 skipHello();
 
-// Use fallback if no webgl
-Application.prototype.createRenderer = autoDetectRenderer;
-
-describe('Application', function ()
+describe('Application', () =>
 {
-    it('should generate application', function ()
+    it('should generate application', () =>
     {
         expect(Application).to.be.a('function');
         const app = new Application();
@@ -26,7 +22,7 @@ describe('Application', function ()
         expect(app.renderer).to.be.null;
     });
 
-    it('register a new plugin, then destroy it', function ()
+    it('register a new plugin, then destroy it', () =>
     {
         const plugin = {
             init: sinon.spy(),
@@ -42,10 +38,10 @@ describe('Application', function ()
         expect(plugin.init).to.be.calledOnce;
         expect(plugin.destroy).to.be.calledOnce;
 
-        Application._plugins.pop();
+        Application['_plugins'].pop();
     });
 
-    it('should remove canvas when destroyed', function ()
+    it('should remove canvas when destroyed', () =>
     {
         const app = new Application();
         const view = app.view;
@@ -58,11 +54,11 @@ describe('Application', function ()
         expect(document.body.contains(view)).to.be.false;
     });
 
-    it('should not destroy children by default', function ()
+    it('should not destroy children by default', () =>
     {
         const app = new Application();
         const stage = app.stage;
-        const child = new DisplayObject();
+        const child = new Container();
 
         stage.addChild(child);
 
@@ -70,11 +66,11 @@ describe('Application', function ()
         expect(child.transform).to.not.be.null;
     });
 
-    it('should allow children destroy', function ()
+    it('should allow children destroy', () =>
     {
         const app = new Application();
         const stage = app.stage;
-        const child = new DisplayObject();
+        const child = new Container();
 
         stage.addChild(child);
 
@@ -82,41 +78,42 @@ describe('Application', function ()
         expect(child.transform).to.be.null;
     });
 
-    describe('resizeTo', function ()
+    describe('resizeTo', () =>
     {
-        before(function ()
+        let div: HTMLDivElement;
+
+        before(() =>
         {
-            const div = document.createElement('div');
+            div = document.createElement('div');
 
             div.style.width = '100px';
             div.style.height = '200px';
             document.body.appendChild(div);
-            this.div = div;
         });
 
-        after(function ()
+        after(() =>
         {
-            this.div.parentNode.removeChild(this.div);
-            this.div = null;
+            div.parentNode.removeChild(div);
+            div = null;
         });
 
-        it('should assign resizeTo', function ()
+        it('should assign resizeTo', () =>
         {
             const app = new Application({
-                resizeTo: this.div,
+                resizeTo: div,
             });
 
-            expect(app.resizeTo).to.equal(this.div);
+            expect(app.resizeTo).to.equal(div);
             expect(app.view.width).to.equal(100);
             expect(app.view.height).to.equal(200);
             app.destroy();
         });
 
-        it('should force multiple immediate resizes', function ()
+        it('should force multiple immediate resizes', () =>
         {
             const spy = sinon.spy();
             const app = new Application({
-                resizeTo: this.div,
+                resizeTo: div,
             });
 
             app.renderer.on('resize', spy);
@@ -129,11 +126,11 @@ describe('Application', function ()
             app.destroy();
         });
 
-        it('should throttle multiple resizes', function (done)
+        it('should throttle multiple resizes', (done) =>
         {
             const spy = sinon.spy();
             const app = new Application({
-                resizeTo: this.div,
+                resizeTo: div,
             });
 
             app.renderer.on('resize', spy);
@@ -148,11 +145,11 @@ describe('Application', function ()
             }, 50);
         });
 
-        it('should cancel resize on destroy', function (done)
+        it('should cancel resize on destroy', (done) =>
         {
             const spy = sinon.spy();
             const app = new Application({
-                resizeTo: this.div,
+                resizeTo: div,
             });
 
             app.renderer.on('resize', spy);
@@ -166,11 +163,11 @@ describe('Application', function ()
             });
         });
 
-        it('should resize cancel resize queue', function (done)
+        it('should resize cancel resize queue', (done) =>
         {
             const spy = sinon.spy();
             const app = new Application({
-                resizeTo: this.div,
+                resizeTo: div,
             });
 
             app.renderer.on('resize', spy);
@@ -185,11 +182,11 @@ describe('Application', function ()
             });
         });
 
-        it('should resizeTo with resolution', function ()
+        it('should resizeTo with resolution', () =>
         {
             const app = new Application({
                 resolution: 2,
-                resizeTo: this.div,
+                resizeTo: div,
             });
 
             expect(app.view.width).to.equal(200);
@@ -197,18 +194,18 @@ describe('Application', function ()
             app.destroy();
         });
 
-        it('should resizeTo with resolution and autoDensity', function ()
+        it('should resizeTo with resolution and autoDensity', () =>
         {
             const app = new Application({
                 resolution: 2,
-                resizeTo: this.div,
+                resizeTo: div,
                 autoDensity: true,
             });
 
             expect(app.view.width).to.equal(200);
             expect(app.view.height).to.equal(400);
-            expect(app.view.style.width).to.equal(this.div.style.width);
-            expect(app.view.style.height).to.equal(this.div.style.height);
+            expect(app.view.style.width).to.equal(div.style.width);
+            expect(app.view.style.height).to.equal(div.style.height);
             app.destroy();
         });
     });

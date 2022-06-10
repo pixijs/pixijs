@@ -1,5 +1,5 @@
 import { Renderer, BatchRenderer, Texture } from '@pixi/core';
-import { Graphics, GRAPHICS_CURVES, FillStyle, LineStyle, graphicsUtils } from '@pixi/graphics';
+import { Graphics, GRAPHICS_CURVES, FillStyle, LineStyle, graphicsUtils, GraphicsGeometry } from '@pixi/graphics';
 const { FILL_COMMANDS, buildLine } = graphicsUtils;
 
 import { BLEND_MODES } from '@pixi/constants';
@@ -12,11 +12,11 @@ Renderer.registerPlugin('batch', BatchRenderer);
 
 skipHello();
 
-describe('Graphics', function ()
+describe('Graphics', () =>
 {
-    describe('constructor', function ()
+    describe('constructor', () =>
     {
-        it('should set defaults', function ()
+        it('should set defaults', () =>
         {
             const graphics = new Graphics();
 
@@ -29,9 +29,9 @@ describe('Graphics', function ()
         });
     });
 
-    describe('lineStyle', function ()
+    describe('lineStyle', () =>
     {
-        it('should support a list of parameters', function ()
+        it('should support a list of parameters', () =>
         {
             const graphics = new Graphics();
 
@@ -46,7 +46,7 @@ describe('Graphics', function ()
             graphics.destroy();
         });
 
-        it('should default color to black if texture not present and white if present', function ()
+        it('should default color to black if texture not present and white if present', () =>
         {
             const graphics = new Graphics();
 
@@ -57,7 +57,7 @@ describe('Graphics', function ()
             graphics.destroy();
         });
 
-        it('should support object parameter', function ()
+        it('should support object parameter', () =>
         {
             const graphics = new Graphics();
 
@@ -89,13 +89,13 @@ describe('Graphics', function ()
         });
     });
 
-    describe('lineTextureStyle', function ()
+    describe('lineTextureStyle', () =>
     {
-        it('should support object parameter', function ()
+        it('should support object parameter', () =>
         {
             const graphics = new Graphics();
             const matrix = new Matrix();
-            const texture = Texture.BLACK;
+            const texture = Texture.WHITE;
 
             graphics.lineTextureStyle({
                 width: 1,
@@ -131,9 +131,9 @@ describe('Graphics', function ()
         });
     });
 
-    describe('beginTextureFill', function ()
+    describe('beginTextureFill', () =>
     {
-        it('should pass texture to batches', function ()
+        it('should pass texture to batches', () =>
         {
             const graphics = new Graphics();
             const canvas1 = document.createElement('canvas');
@@ -163,9 +163,9 @@ describe('Graphics', function ()
         });
     });
 
-    describe('utils', function ()
+    describe('utils', () =>
     {
-        it('FILL_COMMADS should be filled', function ()
+        it('FILL_COMMADS should be filled', () =>
         {
             expect(FILL_COMMANDS).to.not.be.null;
 
@@ -176,7 +176,7 @@ describe('Graphics', function ()
             expect(FILL_COMMANDS[SHAPES.RREC]).to.not.be.null;
         });
 
-        it('buildLine should execute without throws', function ()
+        it('buildLine should execute without throws', () =>
         {
             const graphics = new Graphics();
 
@@ -187,17 +187,17 @@ describe('Graphics', function ()
             const data = geometry.graphicsData[0];
 
             // native = false
-            expect(function () { buildLine(data, geometry); }).to.not.throw();
+            expect(() => { buildLine(data, geometry); }).to.not.throw();
 
             data.lineStyle.native = true;
             // native = true
-            expect(function () { buildLine(data, geometry); }).to.not.throw();
+            expect(() => { buildLine(data, geometry); }).to.not.throw();
         });
     });
 
-    describe('lineTo', function ()
+    describe('lineTo', () =>
     {
-        it('should return correct bounds - north', function ()
+        it('should return correct bounds - north', () =>
         {
             const graphics = new Graphics();
 
@@ -209,7 +209,7 @@ describe('Graphics', function ()
             expect(graphics.height).to.be.closeTo(11, 0.0001);
         });
 
-        it('should return correct bounds - south', function ()
+        it('should return correct bounds - south', () =>
         {
             const graphics = new Graphics();
 
@@ -221,7 +221,7 @@ describe('Graphics', function ()
             expect(graphics.height).to.be.closeTo(11, 0.0001);
         });
 
-        it('should return correct bounds - east', function ()
+        it('should return correct bounds - east', () =>
         {
             const graphics = new Graphics();
 
@@ -233,7 +233,7 @@ describe('Graphics', function ()
             expect(graphics.width).to.be.closeTo(11, 0.0001);
         });
 
-        it('should return correct bounds - west', function ()
+        it('should return correct bounds - west', () =>
         {
             const graphics = new Graphics();
 
@@ -245,7 +245,7 @@ describe('Graphics', function ()
             expect(graphics.width).to.be.closeTo(11, 0.0001);
         });
 
-        it('should return correct bounds when stacked with circle', function ()
+        it('should return correct bounds when stacked with circle', () =>
         {
             const graphics = new Graphics();
 
@@ -264,7 +264,7 @@ describe('Graphics', function ()
             expect(graphics.height).to.be.equals(100);
         });
 
-        it('should return correct bounds when square', function ()
+        it('should return correct bounds when square', () =>
         {
             const graphics = new Graphics();
 
@@ -279,7 +279,7 @@ describe('Graphics', function ()
             expect(graphics.height).to.be.equals(70);
         });
 
-        it('should ignore duplicate calls', function ()
+        it('should ignore duplicate calls', () =>
         {
             const graphics = new Graphics();
 
@@ -292,9 +292,9 @@ describe('Graphics', function ()
         });
     });
 
-    describe('containsPoint', function ()
+    describe('containsPoint', () =>
     {
-        it('should return true when point inside a standard shape', function ()
+        it('should return true when point inside a standard shape', () =>
         {
             const point = new Point(1, 1);
             const graphics = new Graphics();
@@ -305,7 +305,7 @@ describe('Graphics', function ()
             expect(graphics.containsPoint(point)).to.be.true;
         });
 
-        it('should return false when point outside a standard shape', function ()
+        it('should return false when point outside a standard shape', () =>
         {
             const point = new Point(20, 20);
             const graphics = new Graphics();
@@ -316,7 +316,7 @@ describe('Graphics', function ()
             expect(graphics.containsPoint(point)).to.be.false;
         });
 
-        it('should return true when point inside just lines', function ()
+        it('should return true when point inside just lines', () =>
         {
             const point = new Point(1, 1);
             const graphics = new Graphics();
@@ -332,7 +332,7 @@ describe('Graphics', function ()
             expect(graphics.containsPoint(point)).to.be.true;
         });
 
-        it('should return false when point outside just lines', function ()
+        it('should return false when point outside just lines', () =>
         {
             const point = new Point(20, 20);
             const graphics = new Graphics();
@@ -347,7 +347,7 @@ describe('Graphics', function ()
             expect(graphics.containsPoint(point)).to.be.false;
         });
 
-        it('should return false when no fill', function ()
+        it('should return false when no fill', () =>
         {
             const point = new Point(1, 1);
             const graphics = new Graphics();
@@ -357,7 +357,7 @@ describe('Graphics', function ()
             expect(graphics.containsPoint(point)).to.be.false;
         });
 
-        it('should return false with hole', function ()
+        it('should return false with hole', () =>
         {
             const point1 = new Point(1, 1);
             const point2 = new Point(5, 5);
@@ -379,7 +379,7 @@ describe('Graphics', function ()
             expect(graphics.containsPoint(point2)).to.be.false;
         });
 
-        it('should handle extra shapes in holes', function ()
+        it('should handle extra shapes in holes', () =>
         {
             const graphics = new Graphics();
 
@@ -413,7 +413,7 @@ describe('Graphics', function ()
             expect(graphics.containsPoint(new Point(6, 6))).to.be.true;
         });
 
-        it('should take a matrix into account', function ()
+        it('should take a matrix into account', () =>
         {
             const g = new Graphics();
             const m = new Matrix();
@@ -435,9 +435,9 @@ describe('Graphics', function ()
         });
     });
 
-    describe('chaining', function ()
+    describe('chaining', () =>
     {
-        it('should chain draw commands', function ()
+        it('should chain draw commands', () =>
         {
             // complex drawing #1: draw triangle, rounder rect and an arc (issue #3433)
             const graphics = new Graphics().beginFill(0xFF3300)
@@ -449,7 +449,7 @@ describe('Graphics', function ()
                 .beginHole()
                 .endHole()
                 .quadraticCurveTo(1, 1, 1, 1)
-                .bezierCurveTo(1, 1, 1, 1)
+                .bezierCurveTo(1, 1, 1, 1, 1, 1)
                 .arcTo(1, 1, 1, 1, 1)
                 .arc(1, 1, 1, 1, 1, false)
                 .drawRect(1, 1, 1, 1)
@@ -463,104 +463,112 @@ describe('Graphics', function ()
         });
     });
 
-    describe('drawPolygon', function ()
+    describe('drawPolygon', () =>
     {
-        before(function ()
+        let numbers: number[];
+        let points: Point[];
+        let poly: Polygon;
+
+        before(() =>
         {
-            this.numbers = [0, 0, 10, 10, 20, 20];
-            this.points = [new Point(0, 0), new Point(10, 10), new Point(20, 20)];
-            this.poly = new Polygon(this.points);
+            numbers = [0, 0, 10, 10, 20, 20];
+            points = [new Point(0, 0), new Point(10, 10), new Point(20, 20)];
+            poly = new Polygon(points);
         });
 
-        it('should support polygon argument', function ()
+        it('should support polygon argument', () =>
         {
             const graphics = new Graphics();
 
             expect(graphics.currentPath).to.be.null;
 
-            graphics.drawPolygon(this.poly);
+            graphics.drawPolygon(poly);
 
             expect(graphics.geometry.graphicsData[0]).to.be.not.null;
 
-            const result = graphics.geometry.graphicsData[0].shape.points;
+            const result = (graphics.geometry.graphicsData[0].shape as Polygon).points;
 
-            expect(result).to.deep.equals(this.numbers);
+            expect(result).to.deep.equals(numbers);
         });
 
-        it('should support array of numbers', function ()
+        it('should support array of numbers', () =>
         {
             const graphics = new Graphics();
 
             expect(graphics.currentPath).to.be.null;
 
-            graphics.drawPolygon(this.numbers);
+            graphics.drawPolygon(numbers);
 
             expect(graphics.geometry.graphicsData[0]).to.be.not.null;
 
-            const result = graphics.geometry.graphicsData[0].shape.points;
+            const result = (graphics.geometry.graphicsData[0].shape as Polygon).points;
 
-            expect(result).to.deep.equals(this.numbers);
+            expect(result).to.deep.equals(numbers);
         });
 
-        it('should support array of points', function ()
+        it('should support array of points', () =>
         {
             const graphics = new Graphics();
 
-            graphics.drawPolygon(this.points);
+            graphics.drawPolygon(points);
 
             expect(graphics.geometry.graphicsData[0]).to.be.not.null;
 
-            const result = graphics.geometry.graphicsData[0].shape.points;
+            const result = (graphics.geometry.graphicsData[0].shape as Polygon).points;
 
-            expect(result).to.deep.equals(this.numbers);
+            expect(result).to.deep.equals(numbers);
         });
 
-        it('should support flat arguments of numbers', function ()
-        {
-            const graphics = new Graphics();
-
-            expect(graphics.currentPath).to.be.null;
-
-            graphics.drawPolygon(...this.numbers);
-
-            expect(graphics.geometry.graphicsData[0]).to.be.not.null;
-
-            const result = graphics.geometry.graphicsData[0].shape.points;
-
-            expect(result).to.deep.equals(this.numbers);
-        });
-
-        it('should support flat arguments of points', function ()
+        it('should support flat arguments of numbers', () =>
         {
             const graphics = new Graphics();
 
             expect(graphics.currentPath).to.be.null;
 
-            graphics.drawPolygon(...this.points);
+            graphics.drawPolygon(...numbers);
 
             expect(graphics.geometry.graphicsData[0]).to.be.not.null;
 
-            const result = graphics.geometry.graphicsData[0].shape.points;
+            const result = (graphics.geometry.graphicsData[0].shape as Polygon).points;
 
-            expect(result).to.deep.equals(this.numbers);
+            expect(result).to.deep.equals(numbers);
+        });
+
+        it('should support flat arguments of points', () =>
+        {
+            const graphics = new Graphics();
+
+            expect(graphics.currentPath).to.be.null;
+
+            graphics.drawPolygon(...points);
+
+            expect(graphics.geometry.graphicsData[0]).to.be.not.null;
+
+            const result = (graphics.geometry.graphicsData[0].shape as Polygon).points;
+
+            expect(result).to.deep.equals(numbers);
         });
     });
 
-    describe('drawing same rectangle with drawPolygon and drawRect', function ()
+    describe('drawing same rectangle with drawPolygon and drawRect', () =>
     {
-        before(function ()
+        let width: number;
+        let height: number;
+        let points: Point[];
+
+        before(() =>
         {
-            this.width = 100;
-            this.height = 100;
-            this.points = [
+            width = 100;
+            height = 100;
+            points = [
                 new Point(0, 0),
-                new Point(this.width, 0),
-                new Point(this.width, this.height),
-                new Point(0, this.height)
+                new Point(width, 0),
+                new Point(width, height),
+                new Point(0, height)
             ];
         });
 
-        it('should have the same bounds for any line alignment value', function ()
+        it('should have the same bounds for any line alignment value', () =>
         {
             const polyGraphics = new Graphics();
             const rectGraphics = new Graphics();
@@ -575,12 +583,12 @@ describe('Graphics', function ()
 
                 polyGraphics.beginFill(0x0000ff);
                 polyGraphics.lineStyle(lineWidth, 0xff0000, 1, lineAlignment);
-                polyGraphics.drawPolygon(this.points);
+                polyGraphics.drawPolygon(points);
                 polyGraphics.endFill();
 
                 rectGraphics.beginFill(0x0000ff);
                 rectGraphics.lineStyle(lineWidth, 0xff0000, 1, lineAlignment);
-                rectGraphics.drawRect(0, 0, this.width, this.height);
+                rectGraphics.drawRect(0, 0, width, height);
                 rectGraphics.endFill();
 
                 const polyBounds = polyGraphics.getBounds();
@@ -594,9 +602,9 @@ describe('Graphics', function ()
         });
     });
 
-    describe('arc', function ()
+    describe('arc', () =>
     {
-        it('should draw an arc', function ()
+        it('should draw an arc', () =>
         {
             const graphics = new Graphics();
 
@@ -607,7 +615,7 @@ describe('Graphics', function ()
             expect(graphics.currentPath).to.be.not.null;
         });
 
-        it('should not throw with other shapes', function ()
+        it('should not throw with other shapes', () =>
         {
             // complex drawing #1: draw triangle, rounder rect and an arc (issue #3433)
             const graphics = new Graphics();
@@ -634,7 +642,7 @@ describe('Graphics', function ()
             expect(() => graphics.arc(300, 100, 20, 0, Math.PI)).to.not.throw();
         });
 
-        it('should do nothing when startAngle and endAngle are equal', function ()
+        it('should do nothing when startAngle and endAngle are equal', () =>
         {
             const graphics = new Graphics();
 
@@ -645,7 +653,7 @@ describe('Graphics', function ()
             expect(graphics.currentPath).to.be.null;
         });
 
-        it('should do nothing if sweep equals zero', function ()
+        it('should do nothing if sweep equals zero', () =>
         {
             const graphics = new Graphics();
 
@@ -657,44 +665,44 @@ describe('Graphics', function ()
         });
     });
 
-    describe('_calculateBounds', function ()
+    describe('_calculateBounds', () =>
     {
-        it('should only call updateLocalBounds once when not empty', function ()
+        it('should only call updateLocalBounds once when not empty', () =>
         {
             const graphics = new Graphics();
 
             graphics.drawRect(0, 0, 10, 10);
 
-            const spy = sinon.spy(graphics.geometry, 'calculateBounds');
+            const spy = sinon.spy(graphics.geometry, 'calculateBounds' as keyof GraphicsGeometry);
 
-            graphics._calculateBounds();
+            graphics['_calculateBounds']();
 
             expect(spy).to.have.been.calledOnce;
 
-            graphics._calculateBounds();
+            graphics['_calculateBounds']();
 
             expect(spy).to.have.been.calledOnce;
         });
 
-        it('should not call updateLocalBounds when empty', function ()
+        it('should not call updateLocalBounds when empty', () =>
         {
             const graphics = new Graphics();
 
-            const spy = sinon.spy(graphics.geometry, 'calculateBounds');
+            const spy = sinon.spy(graphics.geometry, 'calculateBounds' as keyof GraphicsGeometry);
 
-            graphics._calculateBounds();
+            graphics['_calculateBounds']();
 
             expect(spy).to.not.have.been.called;
 
-            graphics._calculateBounds();
+            graphics['_calculateBounds']();
 
             expect(spy).to.not.have.been.called;
         });
     });
 
-    describe('getBounds', function ()
+    describe('getBounds', () =>
     {
-        it('should use getBounds without stroke', function ()
+        it('should use getBounds without stroke', () =>
         {
             const graphics = new Graphics();
 
@@ -708,7 +716,7 @@ describe('Graphics', function ()
             expect(height).to.equal(200);
         });
 
-        it('should use getBounds with stroke', function ()
+        it('should use getBounds with stroke', () =>
         {
             const graphics = new Graphics();
 
@@ -725,7 +733,7 @@ describe('Graphics', function ()
             expect(height).to.equal(204);
         });
 
-        it('should be zero for empty Graphics', function ()
+        it('should be zero for empty Graphics', () =>
         {
             const graphics = new Graphics();
 
@@ -737,7 +745,7 @@ describe('Graphics', function ()
             expect(height).to.equal(0);
         });
 
-        it('should be zero after clear', function ()
+        it('should be zero after clear', () =>
         {
             const graphics = new Graphics();
 
@@ -755,7 +763,7 @@ describe('Graphics', function ()
             expect(height).to.equal(0);
         });
 
-        it('should be equal of childs bounds when empty', function ()
+        it('should be equal of childs bounds when empty', () =>
         {
             const graphics = new Graphics();
             const child = new Graphics();
@@ -775,9 +783,9 @@ describe('Graphics', function ()
         });
     });
 
-    describe('startPoly', function ()
+    describe('startPoly', () =>
     {
-        it('should fill two triangles', function ()
+        it('should fill two triangles', () =>
         {
             const graphics = new Graphics();
 
@@ -796,11 +804,11 @@ describe('Graphics', function ()
             const data = graphics.geometry.graphicsData;
 
             expect(data.length).to.equals(2);
-            expect(data[0].shape.points).to.eql([50, 50, 250, 50, 100, 100, 50, 50]);
-            expect(data[1].shape.points).to.eql([250, 50, 450, 50, 300, 100, 250, 50]);
+            expect((data[0].shape as Polygon).points).to.eql([50, 50, 250, 50, 100, 100, 50, 50]);
+            expect((data[1].shape as Polygon).points).to.eql([250, 50, 450, 50, 300, 100, 250, 50]);
         });
 
-        it('should honor lineStyle break', function ()
+        it('should honor lineStyle break', () =>
         {
             const graphics = new Graphics();
 
@@ -815,12 +823,12 @@ describe('Graphics', function ()
             const data = graphics.geometry.graphicsData;
 
             expect(data.length).to.equals(2);
-            expect(data[0].shape.points).to.eql([50, 50, 250, 50]);
-            expect(data[1].shape.points).to.eql([250, 50, 100, 100, 50, 50]);
+            expect((data[0].shape as Polygon).points).to.eql([50, 50, 250, 50]);
+            expect((data[1].shape as Polygon).points).to.eql([250, 50, 100, 100, 50, 50]);
         });
     });
 
-    describe('should support adaptive curves', function ()
+    describe('should support adaptive curves', () =>
     {
         const defMode = GRAPHICS_CURVES.adaptive;
         const defMaxLen = GRAPHICS_CURVES.maxLength;
@@ -834,7 +842,7 @@ describe('Graphics', function ()
         graphics.quadraticCurveTo(600, 510, 590, 500);
         graphics.endFill();
 
-        const pointsLen = graphics.geometry.graphicsData[0].shape.points.length / 2;
+        const pointsLen = (graphics.geometry.graphicsData[0].shape as Polygon).points.length / 2;
         const arcLen = Math.PI / 2 * Math.sqrt(200);
         const estimate = Math.ceil(arcLen / myMaxLen) + 1;
 
@@ -844,9 +852,9 @@ describe('Graphics', function ()
         GRAPHICS_CURVES.maxLength = defMaxLen;
     });
 
-    describe('geometry', function ()
+    describe('geometry', () =>
     {
-        it('validateBatching should return false if any of textures is invalid', function ()
+        it('validateBatching should return false if any of textures is invalid', () =>
         {
             const graphics = new Graphics();
             const invalidTex = Texture.EMPTY;
@@ -859,10 +867,10 @@ describe('Graphics', function ()
 
             const geometry = graphics.geometry;
 
-            expect(geometry.validateBatching()).to.be.false;
+            expect(geometry['validateBatching']()).to.be.false;
         });
 
-        it('validateBatching should return true if all textures is valid', function ()
+        it('validateBatching should return true if all textures is valid', () =>
         {
             const graphics = new Graphics();
             const validTex = Texture.WHITE;
@@ -874,10 +882,10 @@ describe('Graphics', function ()
 
             const geometry = graphics.geometry;
 
-            expect(geometry.validateBatching()).to.be.true;
+            expect(geometry['validateBatching']()).to.be.true;
         });
 
-        it('should be batchable if graphicsData is empty', function ()
+        it('should be batchable if graphicsData is empty', () =>
         {
             const graphics = new Graphics();
             const geometry = graphics.geometry;
@@ -886,7 +894,7 @@ describe('Graphics', function ()
             expect(geometry.batchable).to.be.true;
         });
 
-        it('_compareStyles should return true for identical styles', function ()
+        it('_compareStyles should return true for identical styles', () =>
         {
             const graphics = new Graphics();
             const geometry = graphics.geometry;
@@ -899,7 +907,7 @@ describe('Graphics', function ()
 
             const second = first.clone();
 
-            expect(geometry._compareStyles(first, second)).to.be.true;
+            expect(geometry['_compareStyles'](first, second)).to.be.true;
 
             const firstLine = new LineStyle();
 
@@ -909,10 +917,10 @@ describe('Graphics', function ()
 
             const secondLine = firstLine.clone();
 
-            expect(geometry._compareStyles(firstLine, secondLine)).to.be.true;
+            expect(geometry['_compareStyles'](firstLine, secondLine)).to.be.true;
         });
 
-        it('should be 1 batch for same styles', function ()
+        it('should be 1 batch for same styles', () =>
         {
             const graphics = new Graphics();
 
@@ -926,7 +934,7 @@ describe('Graphics', function ()
             expect(geometry.batches).to.have.lengthOf(1);
         });
 
-        it('should be 2 batches for 2 different styles', function ()
+        it('should be 2 batches for 2 different styles', () =>
         {
             const graphics = new Graphics();
 
@@ -947,7 +955,7 @@ describe('Graphics', function ()
             expect(geometry.batches).to.have.lengthOf(2);
         });
 
-        it('should be 1 batch if fill and line are the same', function ()
+        it('should be 1 batch if fill and line are the same', () =>
         {
             const graphics = new Graphics();
 
@@ -962,7 +970,7 @@ describe('Graphics', function ()
             expect(geometry.batches).to.have.lengthOf(1);
         });
 
-        it('should not use fill if triangulation does nothing', function ()
+        it('should not use fill if triangulation does nothing', () =>
         {
             const graphics = new Graphics();
 

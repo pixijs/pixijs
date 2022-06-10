@@ -1,17 +1,20 @@
-import { ArrayResource, ImageResource } from '@pixi/core';
+import { ArrayResource, BaseTexture, ImageResource } from '@pixi/core';
 import { join } from 'path';
 import sinon from 'sinon';
 import { expect } from 'chai';
 
-describe('ArrayResource', function ()
+describe('ArrayResource', () =>
 {
-    before(function ()
+    let basePath: string;
+    let imageUrl: string;
+
+    before(() =>
     {
-        this.basePath = join(__dirname, 'resources');
-        this.imageUrl = join(this.basePath, 'slug.png');
+        basePath = join(__dirname, 'resources');
+        imageUrl = join(basePath, 'slug.png');
     });
 
-    it('should create new resource by length', function ()
+    it('should create new resource by length', () =>
     {
         const resource = new ArrayResource(5, { width: 100, height: 100 });
 
@@ -19,40 +22,40 @@ describe('ArrayResource', function ()
         expect(resource.destroyed).to.be.true;
     });
 
-    it('should error on out of bound', function ()
+    it('should error on out of bound', () =>
     {
         const resource = new ArrayResource(5, { width: 100, height: 100 });
-        const image = new ImageResource(this.imageUrl);
+        const image = new ImageResource(imageUrl);
 
         expect(() => resource.addResourceAt(image, 10)).to.throw(Error, /out of bounds/);
 
         resource.destroy();
     });
 
-    it('should load array of URL resources', function ()
+    it('should load array of URL resources', () =>
     {
         const images = [
-            this.imageUrl,
-            this.imageUrl,
-            this.imageUrl,
-            this.imageUrl,
+            imageUrl,
+            imageUrl,
+            imageUrl,
+            imageUrl,
         ];
 
         const resource = new ArrayResource(images, {
             width: 100,
             height: 100,
-            autoLoad: false,
         });
         const baseTexture = {
             setRealSize: sinon.stub(),
             update: sinon.stub(),
-        };
+        } as unknown as BaseTexture;
 
         resource.bind(baseTexture);
 
         return resource.load().then((res) =>
         {
             expect(res).to.equal(resource);
+            // @ts-expect-error - issue with sinon typings
             expect(baseTexture.setRealSize.calledOnce).to.be.true;
             for (let i = 0; i < images.length; i++)
             {

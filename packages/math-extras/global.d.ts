@@ -12,17 +12,15 @@ declare namespace GlobalMixins
 
     interface Rectangle
     {
-        intersects(other: Rectangle): boolean;
+        containsRect(other: import('@pixi/math').Rectangle): boolean;
 
-        containsRect(other: Rectangle): boolean;
+        equals(other: import('@pixi/math').Rectangle): boolean;
 
-        equals(other: Rectangle): boolean;
+        intersection(other: import('@pixi/math').Rectangle): import('@pixi/math').Rectangle;
+        intersection<T extends import('@pixi/math').Rectangle>(other: import('@pixi/math').Rectangle, outRect: T): T;
 
-        intersection(other: Rectangle): Rectangle;
-        intersection<T extends Rectangle>(other: Rectangle, outRect: T): T;
-
-        union(other: Rectangle): Rectangle;
-        union<T extends Rectangle>(other: Rectangle, outRect: T): T;
+        union(other: import('@pixi/math').Rectangle): import('@pixi/math').Rectangle;
+        union<T extends import('@pixi/math').Rectangle>(other: import('@pixi/math').Rectangle, outRect: T): T;
     }
 }
 

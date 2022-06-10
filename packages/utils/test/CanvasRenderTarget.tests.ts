@@ -2,9 +2,9 @@ import { CanvasRenderTarget } from '@pixi/utils';
 import { settings } from '@pixi/settings';
 import { expect } from 'chai';
 
-describe('CanvasRenderTarget', function ()
+describe('CanvasRenderTarget', () =>
 {
-    it('should create with default resolution', function ()
+    it('should create with default resolution', () =>
     {
         const renderTarget = new CanvasRenderTarget(200, 100);
 
@@ -20,7 +20,7 @@ describe('CanvasRenderTarget', function ()
         expect(renderTarget.canvas).to.be.null;
     });
 
-    it('should create with custom resolution', function ()
+    it('should create with custom resolution', () =>
     {
         const renderTarget = new CanvasRenderTarget(200, 100, 2);
 
@@ -34,7 +34,7 @@ describe('CanvasRenderTarget', function ()
         renderTarget.destroy();
     });
 
-    it('should manually set width and height', function ()
+    it('should manually set width and height', () =>
     {
         const renderTarget = new CanvasRenderTarget(200, 100);
 
@@ -47,7 +47,7 @@ describe('CanvasRenderTarget', function ()
         renderTarget.destroy();
     });
 
-    it('should clear successfully', function ()
+    it('should clear successfully', () =>
     {
         const renderTarget = new CanvasRenderTarget(200, 100);
 

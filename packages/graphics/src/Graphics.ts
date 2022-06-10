@@ -289,7 +289,7 @@ export class Graphics extends Container
 
     /**
      * Like line style but support texture for line fill.
-     * @param options - Collection of options for setting line style.
+     * @param [options] - Collection of options for setting line style.
      * @param {number} [options.width=0] - width of the line to draw, will update the objects stored style
      * @param {PIXI.Texture} [options.texture=PIXI.Texture.WHITE] - Texture to use
      * @param {number} [options.color=0x0] - color of the line to draw, will update the objects stored style.
@@ -304,7 +304,7 @@ export class Graphics extends Container
      * @param {number}[options.miterLimit=10] - miter limit ratio
      * @returns {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
-    public lineTextureStyle(options: ILineStyleOptions): this
+    public lineTextureStyle(options?: ILineStyleOptions): this
     {
         // Apply defaults
         options = Object.assign({

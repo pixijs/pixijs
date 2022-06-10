@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { CanvasRenderer } from '@pixi/canvas-renderer';
 import { Ticker } from '@pixi/ticker';
-import { Rectangle } from '@pixi/math';
-import sinon from 'sinon';
+import { Point, Rectangle } from '@pixi/math';
+import { Container } from '@pixi/display';
 
 const { system } = Ticker;
 
@@ -12,21 +12,27 @@ const { system } = Ticker;
  */
 class MockPointer
 {
+    public createdPointerEvent: any;
+    public activeTouches: any[];
+    public stage: Container;
+    public renderer: CanvasRenderer;
+    public interaction: any;
     /**
      * @param {PIXI.Container} stage - The root of the scene tree
      * @param {number} [width=100] - Width of the renderer
      * @param {number} [height=100] - Height of the renderer
      * @param {boolean} [ensurePointerEvents=false] - If we should make sure that PointerEvents are 'supported'
      */
-    constructor(stage, width, height, ensurePointerEvents)
+    constructor(stage?: Container, width?: number, height?: number, ensurePointerEvents?: boolean)
     {
         // fake PointerEvent existing
         if (ensurePointerEvents && !window.PointerEvent)
         {
-            window.PointerEvent = class PointerEvent extends MouseEvent
+            (window as any).PointerEvent = class PointerEvent extends MouseEvent
             {
+                public pointerType: string;
                 // eslint-disable-next-line
-                constructor(type, opts)
+                constructor(type: string, opts: any)
                 {
                     super(type, opts);
                     this.pointerType = opts.pointerType;
@@ -37,7 +43,11 @@ class MockPointer
 
         this.activeTouches = [];
         this.stage = stage;
-        this.renderer = new CanvasRenderer(width || 100, height || 100);
+        this.renderer = new CanvasRenderer({
+            width: width || 100,
+            height: height || 100,
+        });
+        // @ts-expect-error ---
         this.renderer.sayHello = () => { /* empty */ };
         this.interaction = this.renderer.plugins.interaction;
         this.interaction.supportsTouchEvents = true;
@@ -59,9 +69,9 @@ class MockPointer
      * @param {number} x - pointer x position
      * @param {number} y - pointer y position
      */
-    setPosition(x, y)
+    setPosition(x: number, y: number)
     {
-        this.renderer.plugins.interaction.mapPositionToPoint = (point) =>
+        this.renderer.plugins.interaction.mapPositionToPoint = (point: Point) =>
         {
             point.x = x;
             point.y = y;
@@ -86,9 +96,16 @@ class MockPointer
      * @param {boolean} [onCanvas=true] - If the event should be on the canvas (as opposed to a different element)
      * @returns {Event} Generated MouseEvent, TouchEvent, or PointerEvent
      */
-    createEvent(eventType, x, y, identifier, asPointer, onCanvas = true)
+    createEvent(
+        eventType: string,
+        x: number,
+        y: number,
+        identifier?: number | boolean,
+        asPointer?: boolean,
+        onCanvas = true
+    ): Event
     {
-        let event;
+        let event: PointerEvent | MouseEvent | TouchEvent;
 
         if (eventType.startsWith('mouse'))
         {
@@ -98,7 +115,6 @@ class MockPointer
                     pointerType: 'mouse',
                     clientX: x,
                     clientY: y,
-                    preventDefault: sinon.stub(),
                 });
             }
             else
@@ -106,7 +122,6 @@ class MockPointer
                 event = new MouseEvent(eventType, {
                     clientX: x,
                     clientY: y,
-                    preventDefault: sinon.stub(),
                 });
             }
             if (onCanvas)
@@ -121,16 +136,15 @@ class MockPointer
                 eventType = eventType.replace('touch', 'pointer').replace('start', 'down').replace('end', 'up');
                 event = new PointerEvent(eventType, {
                     pointerType: 'touch',
-                    pointerId: identifier || 0,
+                    pointerId: identifier as number || 0,
                     clientX: x,
                     clientY: y,
-                    preventDefault: sinon.stub(),
                 });
                 Object.defineProperty(event, 'target', { value: this.renderer.view });
             }
             else
             {
-                const touch = new Touch({ identifier: identifier || 0, target: this.renderer.view });
+                const touch = new Touch({ identifier: identifier as number || 0, target: this.renderer.view });
 
                 if (eventType.endsWith('start'))
                 {
@@ -148,7 +162,6 @@ class MockPointer
                     }
                 }
                 event = new TouchEvent(eventType, {
-                    preventDefault: sinon.stub(),
                     changedTouches: [touch],
                     touches: this.activeTouches,
                 });
@@ -160,10 +173,9 @@ class MockPointer
         {
             event = new PointerEvent(eventType, {
                 pointerType: 'pen',
-                pointerId: identifier || 0,
+                pointerId: identifier as number || 0,
                 clientX: x,
                 clientY: y,
-                preventDefault: sinon.stub(),
             });
             Object.defineProperty(event, 'target', { value: this.renderer.view });
         }
@@ -179,7 +191,7 @@ class MockPointer
      * @param {number} y - pointer y position
      * @param {boolean} [asPointer] - if it should be a PointerEvent from a mouse
      */
-    mousemove(x, y, asPointer)
+    mousemove(x: number, y: number, asPointer?: boolean)
     {
         // mouseOverRenderer state should be correct, so mouse position to view rect
         const rect = new Rectangle(0, 0, this.renderer.width, this.renderer.height);
@@ -203,7 +215,7 @@ class MockPointer
      * @param {number} y - pointer y position
      * @param {boolean} [asPointer] - if it should be a PointerEvent from a mouse
      */
-    click(x, y, asPointer)
+    click(x: number, y: number, asPointer?: boolean)
     {
         this.mousedown(x, y, asPointer);
         this.mouseup(x, y, asPointer);
@@ -214,7 +226,7 @@ class MockPointer
      * @param {number} y - pointer y position
      * @param {boolean} [asPointer] - if it should be a PointerEvent from a mouse
      */
-    mousedown(x, y, asPointer)
+    mousedown(x: number, y: number, asPointer?: boolean)
     {
         this.interaction.onPointerDown(this.createEvent('mousedown', x, y, null, asPointer));
     }
@@ -225,7 +237,7 @@ class MockPointer
      * @param {boolean} [onCanvas=true] - if the event happened on the Canvas element or not
      * @param {boolean} [asPointer] - if it should be a PointerEvent from a mouse
      */
-    mouseup(x, y, onCanvas = true, asPointer = false)
+    mouseup(x: number, y: number, onCanvas = true, asPointer = false)
     {
         this.interaction.onPointerUp(this.createEvent('mouseup', x, y, null, asPointer, onCanvas));
     }
@@ -236,7 +248,7 @@ class MockPointer
      * @param {number} [identifier] - pointer id
      * @param {boolean} [asPointer] - if it should be a PointerEvent from a touch
      */
-    tap(x, y, identifier, asPointer)
+    tap(x: number, y: number, identifier?: undefined, asPointer?: undefined)
     {
         this.touchstart(x, y, identifier, asPointer);
         this.touchend(x, y, identifier, asPointer);
@@ -248,7 +260,7 @@ class MockPointer
      * @param {number} [identifier] - pointer id
      * @param {boolean} [asPointer] - if it should be a PointerEvent from a touch
      */
-    touchstart(x, y, identifier, asPointer)
+    touchstart(x: number, y: number, identifier?: number | boolean, asPointer?: boolean)
     {
         this.interaction.onPointerDown(this.createEvent('touchstart', x, y, identifier, asPointer));
     }
@@ -259,7 +271,7 @@ class MockPointer
      * @param {number} [identifier] - pointer id
      * @param {boolean} [asPointer] - if it should be a PointerEvent from a touch
      */
-    touchmove(x, y, identifier, asPointer)
+    touchmove(x: number, y: number, identifier?: number | boolean, asPointer?: boolean)
     {
         this.interaction.onPointerMove(this.createEvent('touchmove', x, y, identifier, asPointer));
     }
@@ -270,7 +282,7 @@ class MockPointer
      * @param {number} [identifier] - pointer id
      * @param {boolean} [asPointer] - if it should be a PointerEvent from a touch
      */
-    touchend(x, y, identifier, asPointer)
+    touchend(x: number, y: number, identifier?: number | boolean, asPointer?: boolean)
     {
         this.interaction.onPointerUp(this.createEvent('touchend', x, y, identifier, asPointer));
     }
@@ -281,7 +293,7 @@ class MockPointer
      * @param {number} [identifier] - pointer id
      * @param {boolean} [asPointer] - if it should be a PointerEvent from a touch
      */
-    touchleave(x, y, identifier, asPointer)
+    touchleave(x: number, y: number, identifier?: number | boolean, asPointer?: boolean)
     {
         this.interaction.onPointerOut(this.createEvent('touchleave', x, y, identifier, asPointer));
     }
@@ -291,7 +303,7 @@ class MockPointer
      * @param {number} y - pointer y position
      * @param {number} [identifier] - pointer id
      */
-    pendown(x, y, identifier)
+    pendown(x: number, y: number, identifier?: number)
     {
         this.interaction.onPointerDown(this.createEvent('pointerdown', x, y, identifier, true));
     }
@@ -301,7 +313,7 @@ class MockPointer
      * @param {number} y - pointer y position
      * @param {number} [identifier] - pointer id
      */
-    penmove(x, y, identifier)
+    penmove(x: number, y: number, identifier?: number)
     {
         this.interaction.onPointerMove(this.createEvent('pointermove', x, y, identifier, true));
     }
@@ -311,7 +323,7 @@ class MockPointer
      * @param {number} y - pointer y position
      * @param {number} [identifier] - pointer id
      */
-    penup(x, y, identifier)
+    penup(x: number, y: number, identifier?: number)
     {
         this.interaction.onPointerUp(this.createEvent('pointerup', x, y, identifier, true));
     }

@@ -1,9 +1,22 @@
 {
   "name": "@pixi/runner",
-  "version": "6.3.2",
+  "version": "6.4.2",
   "main": "dist/cjs/runner.js",
   "module": "dist/esm/runner.js",
   "bundle": "dist/browser/runner.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./index.d.ts",
+        "default": "./dist/esm/runner.js"
+      },
+      "require": {
+        "types": "./index.d.ts",
+        "default": "./dist/cjs/runner.js"
+      }
+    }
+  },
   "description": "A simple alternative to events and signals with an emphasis on performance.",
   "author": "Mat Groves",
   "contributors": [

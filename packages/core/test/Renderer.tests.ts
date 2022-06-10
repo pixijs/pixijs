@@ -1,4 +1,4 @@
-import { Renderer, Framebuffer } from '@pixi/core';
+import { Renderer, Framebuffer, ObjectRenderer } from '@pixi/core';
 import { Graphics } from '@pixi/graphics';
 import { settings } from '@pixi/settings';
 import { ENV, MSAA_QUALITY } from '@pixi/constants';
@@ -8,9 +8,9 @@ import { expect } from 'chai';
 
 skipHello();
 
-describe('Renderer', function ()
+describe('Renderer', () =>
 {
-    it('setting option legacy should disable VAOs and SPRITE_MAX_TEXTURES', function ()
+    it('setting option legacy should disable VAOs and SPRITE_MAX_TEXTURES', () =>
     {
         settings.PREFER_ENV = ENV.WEBGL_LEGACY;
         const renderer = new Renderer({ width: 1, height: 1 });
@@ -27,7 +27,7 @@ describe('Renderer', function ()
         settings.PREFER_ENV = ENV.WEBGL2;
     });
 
-    it('should allow clear() to work despite no containers added to the renderer', function ()
+    it('should allow clear() to work despite no containers added to the renderer', () =>
     {
         const renderer = new Renderer({ width: 1, height: 1 });
 
@@ -41,7 +41,7 @@ describe('Renderer', function ()
         }
     });
 
-    it('should emit resize event', function ()
+    it('should emit resize event', () =>
     {
         const renderer = new Renderer({ width: 1, height: 1 });
         const spy = sinon.spy();
@@ -56,59 +56,63 @@ describe('Renderer', function ()
         renderer.destroy();
     });
 
-    describe('.setObjectRenderer()', function ()
+    describe('.setObjectRenderer()', () =>
     {
-        before(function ()
+        let renderer: Renderer;
+        let curRenderer: ObjectRenderer;
+        let objRenderer: ObjectRenderer;
+
+        before(() =>
         {
-            this.renderer = new Renderer();
+            renderer = new Renderer();
         });
 
-        beforeEach(function ()
+        beforeEach(() =>
         {
-            this.curRenderer = {
+            curRenderer = {
                 start: sinon.spy(),
                 stop: sinon.spy(),
-            };
-            this.objRenderer = {
+            } as unknown as ObjectRenderer;
+            objRenderer = {
                 start: sinon.spy(),
                 stop: sinon.spy(),
-            };
-            this.renderer.batch.currentRenderer = this.curRenderer;
+            } as unknown as ObjectRenderer;
+            renderer.batch.currentRenderer = curRenderer;
         });
 
-        after(function ()
+        after(() =>
         {
-            this.renderer.destroy();
-            this.renderer = null;
-            this.curRenderer = null;
-            this.objRenderer = null;
+            renderer.destroy();
+            renderer = null;
+            curRenderer = null;
+            objRenderer = null;
         });
 
-        it('should set objectRenderer as new current renderer', function ()
+        it('should set objectRenderer as new current renderer', () =>
         {
-            this.renderer.batch.setObjectRenderer(this.objRenderer);
-            expect(this.curRenderer.stop).to.be.calledOnce;
-            expect(this.renderer.batch.currentRenderer).to.be.equal(this.objRenderer);
-            expect(this.objRenderer.start).to.be.calledOnce;
+            renderer.batch.setObjectRenderer(objRenderer);
+            expect(curRenderer.stop).to.be.calledOnce;
+            expect(renderer.batch.currentRenderer).to.be.equal(objRenderer);
+            expect(objRenderer.start).to.be.calledOnce;
         });
 
-        it('should do nothing if objectRenderer is already used as current', function ()
+        it('should do nothing if objectRenderer is already used as current', () =>
         {
-            this.renderer.batch.setObjectRenderer(this.curRenderer);
-            expect(this.renderer.batch.currentRenderer).to.be.equal(this.curRenderer);
-            expect(this.curRenderer.stop).to.not.be.called;
-            expect(this.curRenderer.start).to.not.be.called;
+            renderer.batch.setObjectRenderer(curRenderer);
+            expect(renderer.batch.currentRenderer).to.be.equal(curRenderer);
+            expect(curRenderer.stop).to.not.be.called;
+            expect(curRenderer.start).to.not.be.called;
         });
 
-        it('should generate a multisampled texture', function ()
+        it('should generate a multisampled texture', () =>
         {
-            const { gl } = this.renderer;
+            const { gl } = renderer;
 
             const graphics = new Graphics();
 
             graphics.beginFill(0xffffff).drawRect(0, 0, 1, 1).endFill();
 
-            const renderTexture = this.renderer.generateTexture(graphics, { multisample: MSAA_QUALITY.HIGH });
+            const renderTexture = renderer.generateTexture(graphics, { multisample: MSAA_QUALITY.HIGH });
 
             const framebuffer = renderTexture.framebuffer;
 
@@ -116,7 +120,7 @@ describe('Renderer', function ()
 
             textureFramebuffer.addColorTexture(0, framebuffer.colorTextures[0]);
 
-            this.renderer.framebuffer.bind(textureFramebuffer);
+            renderer.framebuffer.bind(textureFramebuffer);
 
             const pixel = new Uint8Array([0x80, 0x80, 0x80, 0x80]);
 

@@ -8,15 +8,13 @@
         "baseUrl": "./",
         "paths": {
             "@pixi/*": [
-                "packages/*/src",
-                "packages/filters/*/src",
-                "packages/canvas/*/src"
+                "packages/*/src"
             ]
         },
     },
     "exclude": [
         "node_modules",
         "**/dist/**",
-        "**/lib/**",
+        "**/lib/**"
     ]
 }

@@ -227,7 +227,7 @@ export class TilingSprite extends Sprite
      * @param {number} options.height - required height of the tiling sprite
      * @returns {PIXI.TilingSprite} The newly created texture
      */
-    static from(source: TextureSource, options: ISize & IBaseTextureOptions): TilingSprite
+    static from(source: TextureSource | Texture, options: ISize & IBaseTextureOptions): TilingSprite
     {
         const texture = (source instanceof Texture)
             ? source

@@ -1,9 +1,9 @@
 import { Ellipse } from '@pixi/math';
 import { expect } from 'chai';
 
-describe('Ellipse', function ()
+describe('Ellipse', () =>
 {
-    it('should create a new ellipse', function ()
+    it('should create a new ellipse', () =>
     {
         const ellipse1 = new Ellipse();
 
@@ -20,7 +20,7 @@ describe('Ellipse', function ()
         expect(ellipse2.height).to.equal(5);
     });
 
-    it('should clone a new ellipse', function ()
+    it('should clone a new ellipse', () =>
     {
         const ellipse1 = new Ellipse(10, 10, 5, 5);
 
@@ -37,7 +37,7 @@ describe('Ellipse', function ()
         expect(ellipse2.height).to.equal(5);
     });
 
-    it('should check if point is within ellipse', function ()
+    it('should check if point is within ellipse', () =>
     {
         const ellipse1 = new Ellipse(10, 10, 5, 5);
 
@@ -63,7 +63,7 @@ describe('Ellipse', function ()
         expect(ellipse2.contains(10, 10)).to.be.false;
     });
 
-    it('should return framing rectangle', function ()
+    it('should return framing rectangle', () =>
     {
         const ellipse1 = new Ellipse(10, 10, 5, 5);
         const rect1 = ellipse1.getBounds();

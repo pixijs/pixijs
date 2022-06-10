@@ -28,7 +28,7 @@ export class SimplePlane extends Mesh
      * @param verticesX - The number of vertices in the x-axis
      * @param verticesY - The number of vertices in the y-axis
      */
-    constructor(texture: Texture, verticesX: number, verticesY: number)
+    constructor(texture: Texture, verticesX?: number, verticesY?: number)
     {
         const planeGeometry = new PlaneGeometry(texture.width, texture.height, verticesX, verticesY);
         const meshMaterial = new MeshMaterial(Texture.WHITE);

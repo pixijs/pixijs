@@ -1,6 +1,5 @@
 import { BUFFER_TYPE } from '@pixi/constants';
 import { Runner } from '@pixi/runner';
-
 import type { GLBuffer } from './GLBuffer';
 
 let UID = 0;
@@ -38,7 +37,7 @@ export class Buffer
 {
     /**
      * The data in the buffer, as a typed array
-     * @type {ArrayBuffer| SharedArrayBuffer | ArrayBufferView}
+     * @type {PIXI.IArrayBuffer}
      */
     public data: ITypedArray;
 
@@ -63,7 +62,7 @@ export class Buffer
     _updateID: number;
 
     /**
-     * @param {ArrayBuffer| SharedArrayBuffer|ArrayBufferView} data - the data to store in the buffer.
+     * @param {PIXI.IArrayBuffer} data - the data to store in the buffer.
      * @param _static - `true` for static buffer
      * @param index - `true` for index buffer
      */
@@ -84,7 +83,7 @@ export class Buffer
     // TODO could explore flagging only a partial upload?
     /**
      * Flags this buffer as requiring an upload to the GPU.
-     * @param {ArrayBuffer|SharedArrayBuffer|ArrayBufferView|number[]} [data] - the data to update in the buffer.
+     * @param {PIXI.IArrayBuffer|number[]} [data] - the data to update in the buffer.
      */
     update(data?: IArrayBuffer | Array<number>): void
     {

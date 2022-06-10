@@ -118,7 +118,7 @@ export class Text extends Sprite
      * @param {object|PIXI.TextStyle} [style] - The style parameters
      * @param canvas - The canvas element for drawing text
      */
-    constructor(text: string, style?: Partial<ITextStyle> | TextStyle, canvas?: HTMLCanvasElement)
+    constructor(text?: string | number, style?: Partial<ITextStyle> | TextStyle, canvas?: HTMLCanvasElement)
     {
         let ownCanvas = false;
 
@@ -470,7 +470,7 @@ export class Text extends Sprite
      * @param rect - The output rectangle.
      * @returns The bounds.
      */
-    public getLocalBounds(rect: Rectangle): Rectangle
+    public getLocalBounds(rect?: Rectangle): Rectangle
     {
         this.updateText(true);
 
@@ -745,7 +745,7 @@ export class Text extends Sprite
         return this._text;
     }
 
-    set text(text: string)
+    set text(text: string | number)
     {
         text = String(text === null || text === undefined ? '' : text);
 

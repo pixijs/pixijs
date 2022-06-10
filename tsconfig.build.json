@@ -1,0 +1,41 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        "allowJs": false,
+        "sourceMap": true,
+        "removeComments": false,
+        "strict": true,
+        "noImplicitAny": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noImplicitReturns": true,
+        "strictNullChecks": false,
+        "allowSyntheticDefaultImports": true,
+        "moduleResolution": "node",
+        "resolveJsonModule": true,
+        "baseUrl": "./",
+        "paths": {
+            "@pixi/*": [
+                "packages/*/src"
+            ],
+            "pixi.js": [
+                "bundles/pixi.js/src"
+            ],
+            "pixi.js-legacy": [
+                "bundles/pixi.js-legacy/src"
+            ]
+        },
+        "outDir": "./out",
+        "declaration": true
+    },
+    "exclude": [
+        "node_modules",
+        "**/dist/**",
+        "**/lib/**",
+        "**/scripts/**",
+        "**/test/**",
+        "**/types/**",
+        "bundles/**/*.d.ts",
+        "rollup.config.js"
+    ]
+}

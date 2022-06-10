@@ -18,12 +18,12 @@ function cleanCache()
     delete TextureCache[NAME2];
 }
 
-describe('BaseTexture', function ()
+describe('BaseTexture', () =>
 {
     /*
-    describe('updateImageType', function ()
+    describe('updateImageType', () =>
     {
-        it('should allow no extension', function ()
+        it('should allow no extension', () =>
         {
             cleanCache();
 
@@ -36,15 +36,19 @@ describe('BaseTexture', function ()
         });
     });
     */
+    interface PixiCanvas extends HTMLCanvasElement
+    {
+        _pixiId: string;
+    }
 
-    it('should handle invalid image URL for textures', function (done)
+    it('should handle invalid image URL for textures', (done) =>
     {
         cleanCache();
 
         const invalidFile = 'missing-image.png';
         const baseTexture = BaseTexture.from(invalidFile);
 
-        baseTexture.once('error', function (baseTexture, event)
+        baseTexture.once('error', (baseTexture, event) =>
         {
             expect(baseTexture.resource).to.be.instanceof(ImageResource);
             expect(baseTexture.resource.url).contains(invalidFile);
@@ -54,14 +58,14 @@ describe('BaseTexture', function ()
         });
     });
 
-    it('should handle invalid svg URL for textures', function (done)
+    it('should handle invalid svg URL for textures', (done) =>
     {
         cleanCache();
 
         const invalidFile = 'missing-image.svg';
         const baseTexture = BaseTexture.from(invalidFile);
 
-        baseTexture.once('error', function (baseTexture, event)
+        baseTexture.once('error', (baseTexture, event) =>
         {
             expect(baseTexture.resource).to.be.instanceof(SVGResource);
             expect(baseTexture.resource.svg).contains(invalidFile);
@@ -71,14 +75,14 @@ describe('BaseTexture', function ()
         });
     });
 
-    it('should handle invalid video URL for textures', function (done)
+    it('should handle invalid video URL for textures', (done) =>
     {
         cleanCache();
 
         const invalidFile = 'missing-image.mp4';
         const baseTexture = BaseTexture.from(invalidFile);
 
-        baseTexture.once('error', function (baseTexture, event)
+        baseTexture.once('error', (baseTexture, event) =>
         {
             expect(baseTexture.resource).to.be.instanceof(VideoResource);
             expect(baseTexture.resource.source.firstChild.src).contains(invalidFile);
@@ -88,11 +92,11 @@ describe('BaseTexture', function ()
         });
     });
 
-    it('should use pixiIdPrefix correctly', function ()
+    it('should use pixiIdPrefix correctly', () =>
     {
         cleanCache();
 
-        const canvas = document.createElement('canvas');
+        const canvas = document.createElement('canvas') as PixiCanvas;
         const baseTexture = BaseTexture.from(canvas, { pixiIdPrefix: 'unittest' });
         const _pixiId = canvas._pixiId;
 
@@ -101,11 +105,11 @@ describe('BaseTexture', function ()
         expect(BaseTextureCache[_pixiId]).to.equal(baseTexture);
     });
 
-    it('should remove Canvas BaseTexture from cache on destroy', function ()
+    it('should remove Canvas BaseTexture from cache on destroy', () =>
     {
         cleanCache();
 
-        const canvas = document.createElement('canvas');
+        const canvas = document.createElement('canvas') as PixiCanvas;
         const baseTexture = BaseTexture.from(canvas);
         const _pixiId = canvas._pixiId;
 
@@ -116,7 +120,7 @@ describe('BaseTexture', function ()
         expect(BaseTextureCache[_pixiId]).to.equal(undefined);
     });
 
-    it('should remove Image BaseTexture from cache on destroy', function (done)
+    it('should remove Image BaseTexture from cache on destroy', (done) =>
     {
         cleanCache();
 
@@ -139,7 +143,7 @@ describe('BaseTexture', function ()
         });
     });
 
-    it('should remove BaseTexture from entire cache using removeFromCache (by BaseTexture instance)', function ()
+    it('should remove BaseTexture from entire cache using removeFromCache (by BaseTexture instance)', () =>
     {
         cleanCache();
 
@@ -158,7 +162,7 @@ describe('BaseTexture', function ()
         expect(BaseTextureCache[NAME2]).to.equal(undefined);
     });
 
-    it('should remove BaseTexture from single cache entry using removeFromCache (by id)', function ()
+    it('should remove BaseTexture from single cache entry using removeFromCache (by id)', () =>
     {
         cleanCache();
 
@@ -177,7 +181,7 @@ describe('BaseTexture', function ()
         expect(BaseTextureCache[NAME2]).to.equal(baseTexture);
     });
 
-    it('should not throw an error destroying a destroyed BaseTexture', function ()
+    it('should not throw an error destroying a destroyed BaseTexture', () =>
     {
         const baseTexture = new BaseTexture();
 
@@ -185,7 +189,7 @@ describe('BaseTexture', function ()
         baseTexture.destroy();
     });
 
-    it('should update width and height', function ()
+    it('should update width and height', () =>
     {
         const canvas = document.createElement('canvas');
 
@@ -200,7 +204,7 @@ describe('BaseTexture', function ()
         baseTexture.destroy();
     });
 
-    it('should set source.crossOrigin to anonymous if explicitly set', function ()
+    it('should set source.crossOrigin to anonymous if explicitly set', () =>
     {
         cleanCache();
 
@@ -209,14 +213,15 @@ describe('BaseTexture', function ()
         });
 
         const baseTexture = new BaseTexture(imageResource);
+        const source = (baseTexture.resource as ImageResource).source as HTMLImageElement;
 
-        expect(baseTexture.resource.source.crossOrigin).to.equal('anonymous');
+        expect(source.crossOrigin).to.equal('anonymous');
 
         baseTexture.destroy();
         imageResource.destroy();
     });
 
-    it('should not destroy externally created resources', function ()
+    it('should not destroy externally created resources', () =>
     {
         cleanCache();
 
@@ -233,7 +238,7 @@ describe('BaseTexture', function ()
         expect(imageResource.destroyed).to.be.true;
     });
 
-    it('should destroy internally created resources', function ()
+    it('should destroy internally created resources', () =>
     {
         cleanCache();
 
@@ -246,7 +251,7 @@ describe('BaseTexture', function ()
         expect(baseTexture.destroyed).to.be.true;
     });
 
-    it('should show correct width/height after setResolution', function ()
+    it('should show correct width/height after setResolution', () =>
     {
         const texture = RenderTexture.create({ width: 15, height: 15 });
 
@@ -255,7 +260,7 @@ describe('BaseTexture', function ()
         expect(texture.baseTexture.realHeight).to.equal(15);
     });
 
-    it('should throw and error in strict from mode', function ()
+    it('should throw and error in strict from mode', () =>
     {
         const id = 'baz';
 

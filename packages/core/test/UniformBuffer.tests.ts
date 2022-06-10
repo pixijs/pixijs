@@ -7,6 +7,7 @@ import {
     UniformGroup,
     generateProgram,
     getTestContext,
+    IRenderingContext,
 } from '@pixi/core';
 import { expect } from 'chai';
 import { skipHello } from '@pixi/utils';
@@ -36,9 +37,9 @@ const stubRenderer = {
     gl: {}
 };
 
-describe('UniformBuffer', function ()
+describe('UniformBuffer', () =>
 {
-    it('should generate the correct correctly ordered UBO data', function ()
+    it('should generate the correct correctly ordered UBO data', () =>
     {
         const uniformData = {
             uAlpha: {
@@ -105,7 +106,7 @@ describe('UniformBuffer', function ()
         expect(usedUniformData3).to.deep.equal(expectedResult);
     });
 
-    it('should generate correct UBO elements', function ()
+    it('should generate correct UBO elements', () =>
     {
         const uniformData = [
             { name: 'uFloat', index: 1, type: 'float', size: 1, isArray: false, value: 0 },
@@ -178,7 +179,7 @@ describe('UniformBuffer', function ()
             uRect: new Rectangle(0, 0, 33, 33),
         });
 
-        const gl = getTestContext();
+        const gl = getTestContext() as IRenderingContext;
 
         generateProgram(gl, shader.program);
 
@@ -209,7 +210,7 @@ describe('UniformBuffer', function ()
 
     it('should write arrays types to buffer correctly', () =>
     {
-        const gl = getTestContext();
+        const gl = getTestContext() as IRenderingContext;
 
         [
             {
@@ -547,7 +548,7 @@ describe('UniformBuffer', function ()
                 ])
 
             },
-        ].forEach((toTest, i) =>
+        ].forEach((toTest) =>
         {
             const fragmentSrc = `
             #version 300 es

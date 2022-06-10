@@ -5,14 +5,16 @@ import { expect } from 'chai';
 
 import '@pixi/canvas-display';
 
-describe('InteractionData', function ()
+describe('InteractionData', () =>
 {
-    describe('getLocalPosition', function ()
+    describe('getLocalPosition', () =>
     {
-        it('should populate second parameter with result', function ()
+        it('should populate second parameter with result', () =>
         {
             const data = new InteractionData();
+            // @ts-expect-error - instantiating DisplayObject
             const stage = new DisplayObject();
+            // @ts-expect-error - instantiating DisplayObject
             const displayObject = new DisplayObject();
             const point = new Point();
 

@@ -2,11 +2,11 @@ import { ObservablePoint, Point } from '@pixi/math';
 import { expect } from 'chai';
 import '@pixi/math-extras';
 
-describe('Point', function ()
+describe('Point', () =>
 {
-    describe('add', function ()
+    describe('add', () =>
     {
-        it('should add component-wise', function ()
+        it('should add component-wise', () =>
         {
             // Point
             const a = new Point(1, 2);
@@ -25,7 +25,7 @@ describe('Point', function ()
             expect(oc.y).to.equal(6);
         });
 
-        it('should return the same reference given', function ()
+        it('should return the same reference given', () =>
         {
             // Point
             const a = new Point(1, 2);
@@ -42,7 +42,7 @@ describe('Point', function ()
             expect(oc).to.equal(oa);
         });
 
-        it('can output into any IPointData given', function ()
+        it('can output into any IPointData given', () =>
         {
             // Point
             const a = new Point(1, 2);
@@ -61,7 +61,7 @@ describe('Point', function ()
             expect(oc.y).to.equal(6);
         });
 
-        it('can take any IPointData as other input', function ()
+        it('can take any IPointData as other input', () =>
         {
             // Point
             const a = new Point(1, 2);
@@ -79,9 +79,9 @@ describe('Point', function ()
         });
     });
 
-    describe('subtract', function ()
+    describe('subtract', () =>
     {
-        it('should subtract component-wise', function ()
+        it('should subtract component-wise', () =>
         {
             // Point
             const a = new Point(1, 2);
@@ -100,7 +100,7 @@ describe('Point', function ()
             expect(oc.y).to.equal(-2);
         });
 
-        it('should return the same reference given', function ()
+        it('should return the same reference given', () =>
         {
             // Point
             const a = new Point(1, 2);
@@ -117,7 +117,7 @@ describe('Point', function ()
             expect(oc).to.equal(oa);
         });
 
-        it('can output into any IPointData given', function ()
+        it('can output into any IPointData given', () =>
         {
             // Point
             const a = new Point(1, 2);
@@ -136,7 +136,7 @@ describe('Point', function ()
             expect(oc.y).to.equal(-2);
         });
 
-        it('can take any IPointData as other input', function ()
+        it('can take any IPointData as other input', () =>
         {
             // Point
             const a = new Point(1, 2);
@@ -154,9 +154,9 @@ describe('Point', function ()
         });
     });
 
-    describe('multiply', function ()
+    describe('multiply', () =>
     {
-        it('should multiply component-wise', function ()
+        it('should multiply component-wise', () =>
         {
             // Point
             const a = new Point(1, 2);
@@ -175,7 +175,7 @@ describe('Point', function ()
             expect(oc.y).to.equal(8);
         });
 
-        it('should return the same reference given', function ()
+        it('should return the same reference given', () =>
         {
             // Point
             const a = new Point(1, 2);
@@ -192,7 +192,7 @@ describe('Point', function ()
             expect(oc).to.equal(oa);
         });
 
-        it('can output into any IPointData given', function ()
+        it('can output into any IPointData given', () =>
         {
             // Point
             const a = new Point(1, 2);
@@ -211,7 +211,7 @@ describe('Point', function ()
             expect(oc.y).to.equal(8);
         });
 
-        it('can take any IPointData as other input', function ()
+        it('can take any IPointData as other input', () =>
         {
             // Point
             const a = new Point(1, 2);
@@ -229,9 +229,9 @@ describe('Point', function ()
         });
     });
 
-    describe('multiplyScalar', function ()
+    describe('multiplyScalar', () =>
     {
-        it('should multiply both components by a scalar', function ()
+        it('should multiply both components by a scalar', () =>
         {
             // Point
             const a = new Point(1, 2);
@@ -248,7 +248,7 @@ describe('Point', function ()
             expect(oc.y).to.equal(6);
         });
 
-        it('should return the same reference given', function ()
+        it('should return the same reference given', () =>
         {
             // Point
             const a = new Point(1, 2);
@@ -263,7 +263,7 @@ describe('Point', function ()
             expect(oc).to.equal(oa);
         });
 
-        it('can output into any IPointData given', function ()
+        it('can output into any IPointData given', () =>
         {
             // Point
             const a = new Point(1, 2);
@@ -281,9 +281,9 @@ describe('Point', function ()
         });
     });
 
-    describe('dot', function ()
+    describe('dot', () =>
     {
-        it('should multiply component-wise and then add both components', function ()
+        it('should multiply component-wise and then add both components', () =>
         {
             // Point
             const a = new Point(1, 2);
@@ -301,9 +301,9 @@ describe('Point', function ()
         });
     });
 
-    describe('cross', function ()
+    describe('cross', () =>
     {
-        it('should return the magnitude of the result of a cross product', function ()
+        it('should return the magnitude of the result of a cross product', () =>
         {
             // Point
             const a = new Point(1, 2);
@@ -321,9 +321,9 @@ describe('Point', function ()
         });
     });
 
-    describe('normalize', function ()
+    describe('normalize', () =>
     {
-        it('magnitude should be 1', function ()
+        it('magnitude should be 1', () =>
         {
             // Point
             const a = new Point(3, 4);
@@ -342,7 +342,7 @@ describe('Point', function ()
             expect(omagnitude).to.be.closeTo(1, 0.001);
         });
 
-        it('should return the same reference given', function ()
+        it('should return the same reference given', () =>
         {
             // Point
             const a = new Point(3, 4);
@@ -357,7 +357,7 @@ describe('Point', function ()
             expect(oc).to.equal(oa);
         });
 
-        it('can output into any IPointData given', function ()
+        it('can output into any IPointData given', () =>
         {
             // Point
             const a = new Point(1, 2);
@@ -377,9 +377,9 @@ describe('Point', function ()
         });
     });
 
-    describe('magnitude', function ()
+    describe('magnitude', () =>
     {
-        it('should return the square root of the sum of the squares of each component', function ()
+        it('should return the square root of the sum of the squares of each component', () =>
         {
             const expectedMagnitude = Math.sqrt((3 * 3) + (4 * 4));
             // Point
@@ -395,7 +395,7 @@ describe('Point', function ()
             expect(oc).to.be.closeTo(expectedMagnitude, 0.001);
         });
 
-        it('should return the sum of the squares of each component', function ()
+        it('should return the sum of the squares of each component', () =>
         {
             const expectedMagnitudeSquared = (3 * 3) + (4 * 4);
             // Point
@@ -412,9 +412,9 @@ describe('Point', function ()
         });
     });
 
-    describe('project', function ()
+    describe('project', () =>
     {
-        it('should return the vector projection of a vector onto another nonzero vector', function ()
+        it('should return the vector projection of a vector onto another nonzero vector', () =>
         {
             // Point
             const a = new Point(1, 2);
@@ -433,7 +433,7 @@ describe('Point', function ()
             expect(oc.y).to.be.closeTo(44 / 25, 0.001);
         });
 
-        it('should return the same reference given', function ()
+        it('should return the same reference given', () =>
         {
             // Point
             const a = new Point(1, 2);
@@ -450,7 +450,7 @@ describe('Point', function ()
             expect(oc).to.equal(oa);
         });
 
-        it('can output into any IPointData given', function ()
+        it('can output into any IPointData given', () =>
         {
             // Point
             const a = new Point(1, 2);
@@ -469,7 +469,7 @@ describe('Point', function ()
             expect(oc.y).to.be.closeTo(44 / 25, 0.001);
         });
 
-        it('can take any IPointData as other input', function ()
+        it('can take any IPointData as other input', () =>
         {
             // Point
             const a = new Point(1, 2);
@@ -487,9 +487,9 @@ describe('Point', function ()
         });
     });
 
-    describe('reflect', function ()
+    describe('reflect', () =>
     {
-        it('should return the specular reflect vector', function ()
+        it('should return the specular reflect vector', () =>
         {
             // Point
             const a = new Point(1, 2);
@@ -508,7 +508,7 @@ describe('Point', function ()
             expect(oc.y).to.equal(-86);
         });
 
-        it('should return the same reference given', function ()
+        it('should return the same reference given', () =>
         {
             // Point
             const a = new Point(1, 2);
@@ -525,7 +525,7 @@ describe('Point', function ()
             expect(oc).to.equal(oa);
         });
 
-        it('can output into any IPointData given', function ()
+        it('can output into any IPointData given', () =>
         {
             // Point
             const a = new Point(1, 2);
@@ -544,7 +544,7 @@ describe('Point', function ()
             expect(oc.y).to.equal(-86);
         });
 
-        it('can take any IPointData as other input', function ()
+        it('can take any IPointData as other input', () =>
         {
             // Point
             const a = new Point(1, 2);

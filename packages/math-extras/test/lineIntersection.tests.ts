@@ -2,10 +2,10 @@ import { Point } from '@pixi/math';
 import { lineIntersection } from '@pixi/math-extras';
 import { expect } from 'chai';
 
-describe('lineIntersection', function ()
+describe('lineIntersection', () =>
 {
     it('should return the point where the lines intersect',
-        function ()
+        () =>
         {
             const aStart = new Point(1, 2);
             const aEnd = new Point(3, 4);
@@ -19,7 +19,7 @@ describe('lineIntersection', function ()
         });
 
     it('should return NaN if the lines are parallel',
-        function ()
+        () =>
         {
             const aStart = new Point(1, 2);
             const aEnd = new Point(3, 4);
@@ -31,7 +31,7 @@ describe('lineIntersection', function ()
             expect(parallel.x).to.be.NaN;
             expect(parallel.y).to.be.NaN;
         });
-    it('should return the same reference given', function ()
+    it('should return the same reference given', () =>
     {
         // Point
         const aStart = new Point(1, 2);
@@ -44,7 +44,7 @@ describe('lineIntersection', function ()
         expect(intersect).to.equal(outValue);
     });
 
-    it('can output into any IPointData given', function ()
+    it('can output into any IPointData given', () =>
     {
         const aStart = new Point(1, 2);
         const aEnd = new Point(3, 4);
@@ -58,7 +58,7 @@ describe('lineIntersection', function ()
         expect(outValue.y).to.equal(7.25);
     });
 
-    it('can take any IPointData as input', function ()
+    it('can take any IPointData as input', () =>
     {
         const aStart = { x: 1, y: 2 };
         const aEnd = { x: 3, y: 4 };
