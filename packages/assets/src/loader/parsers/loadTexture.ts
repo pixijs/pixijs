@@ -1,5 +1,6 @@
 import { BaseTexture, Texture } from '@pixi/core';
 import { getResolutionOfUrl } from '@pixi/utils';
+import { LoadAsset } from '../Loader';
 
 import type { LoaderParser } from './LoaderParser';
 import { WorkerManager } from './WorkerManager';
@@ -40,7 +41,7 @@ export const loadTextures = {
         return validImages.includes(extension);
     },
 
-    async load(url: string): Promise<Texture>
+    async load(url: string, asset: LoadAsset): Promise<Texture>
     {
         let src: any = null;
 
@@ -80,6 +81,7 @@ export const loadTextures = {
         const base = new BaseTexture(src, {
             // TODO - use the parsed resolution if it exists!
             resolution: getResolutionOfUrl(url),
+            ...asset.data,
         });
 
         base.resource.src = url;

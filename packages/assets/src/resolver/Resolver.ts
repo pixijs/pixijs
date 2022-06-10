@@ -263,11 +263,21 @@ export class Resolver
      * resolver.add(['foo', 'boo'], ['bar.png', 'bar.webp']);
      * resolver.resolveUrl('foo') // => 'bar.png'
      *
+     * // add custom data attached to the resolver
+     *
+     * Resolver.add(
+     *     'bunnyBooBooSmooth',
+     *     'bunny{png,webp}`,
+     *     {scaleMode:SCALE_MODES.NEAREST} // base texture options
+     * );
+     *
+     * resolver.resolve('bunnyBooBooSmooth') // => {src: 'bunny.png', data: {scaleMode: SCALE_MODES.NEAREST}}
      * ```
      * @param keysIn - the keys to map, can be an array or a single key
      * @param assetsIn - the assets to associate with the key(s)
+     * @param data - the data that will be attached to the object that resolved object.
      */
-    public add(keysIn: string | string[], assetsIn: string | (ResolveAsset | string)[]): void
+    public add(keysIn: string | string[], assetsIn: string | ResolveAsset | (ResolveAsset | string)[], data?: unknown): void
     {
         const keys: string[] = (typeof keysIn === 'string') ? [keysIn] : keysIn;
 
@@ -278,6 +288,18 @@ export class Resolver
                 console.warn(`[Resolver] already has key: ${key} overwriting`);
             }
         });
+
+        if (!Array.isArray(assetsIn))
+        {
+            if (typeof assetsIn === 'string')
+            {
+                assetsIn = createStringVariations(assetsIn);
+            }
+            else
+            {
+                assetsIn = [assetsIn];
+            }
+        }
 
         const assets =  (typeof assetsIn === 'string') ? createStringVariations(assetsIn) : assetsIn;
 
@@ -326,6 +348,8 @@ export class Resolver
             {
                 formattedAsset.src = makeAbsoluteUrl(formattedAsset.src, this._basePath);
             }
+
+            formattedAsset.data = formattedAsset.data ?? data;
 
             return formattedAsset;
         });

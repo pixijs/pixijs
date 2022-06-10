@@ -4,6 +4,7 @@ import { Texture } from '@pixi/core';
 import { BackgroundLoader } from './BackgroundLoader';
 import { Cache } from './cache/Cache';
 import type {
+    LoadAsset,
     LoaderParser } from './loader';
 import {
     Loader,
@@ -313,6 +314,13 @@ export class AssetsClass
      * const bunny = await Asset.load('burger');
      * const bunny2 = await Asset.load('chicken');
      *
+     * // passing options to to the object
+     * Assets.add(
+     *     'bunnyBooBooSmooth',
+     *     'bunny{png,webp}`,
+     *     {scaleMode:SCALE_MODES.NEAREST} // base texture options
+     * );
+     *
      * // multiple assets,
      *
      * // the following all do the same thing:
@@ -339,10 +347,12 @@ export class AssetsClass
      * ```
      * @param keysIn - the key or keys that you will reference when loading this asset
      * @param assetsIn - the asset or assets that will be chosen from when loading via the specified key
+     * @param data - asset specific data that will be passed to the loaders
+     * - Useful for if you want to initiate loaded objects with specific data
      */
-    public add(keysIn: string | string[], assetsIn: string | (ResolveAsset | string)[]): void
+    public add(keysIn: string | string[], assetsIn: string | (ResolveAsset | string)[], data?: unknown): void
     {
-        this.resolver.add(keysIn, assetsIn);
+        this.resolver.add(keysIn, assetsIn, data);
     }
 
     /**
@@ -374,7 +384,7 @@ export class AssetsClass
      * @returns - the assets that were loaded, either a single asset or a hash of assets
      */
     public async load<T=any>(
-        urls: string | string[],
+        urls: string | string[] | LoadAsset | LoadAsset[],
         onProgress?: ProgressCallback,
     ): Promise<T | Record<string, T>>
     {
@@ -385,21 +395,38 @@ export class AssetsClass
 
         let singleAsset = false;
 
-        if (typeof urls === 'string')
+        let urlArray: (string | LoadAsset)[];
+
+        if (!Array.isArray(urls))
         {
             singleAsset = true;
-            urls = [urls];
+            urlArray = [urls];
+        }
+        else
+        {
+            urlArray = urls;
         }
 
-        // check cache first...
+        urlArray = urlArray.map((url) =>
+        {
+            if (typeof url !== 'string')
+            {
+                this.resolver.add(url.src as string, url);
 
-        const resolveResults = this.resolver.resolve(urls);
+                return url.src;
+            }
+
+            return url;
+        });
+
+        // check cache first...
+        const resolveResults = this.resolver.resolve(urlArray as string[]);
 
         // remap to the keys used..
 
         const out: Record<string, T> = await this._mapLoadToResolve<T>(resolveResults, onProgress);
 
-        return singleAsset ? out[urls[0]] : out;
+        return singleAsset ? out[urlArray[0] as string] : out;
     }
 
     /**
