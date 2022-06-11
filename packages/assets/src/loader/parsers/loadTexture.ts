@@ -1,6 +1,6 @@
 import { BaseTexture, Texture } from '@pixi/core';
 import { getResolutionOfUrl } from '@pixi/utils';
-import { LoadAsset } from '../Loader';
+import { LoadAsset, Loader } from '../Loader';
 
 import type { LoaderParser } from './LoaderParser';
 import { WorkerManager } from './WorkerManager';
@@ -41,7 +41,7 @@ export const loadTextures = {
         return validImages.includes(extension);
     },
 
-    async load(url: string, asset: LoadAsset): Promise<Texture>
+    async load(url: string, asset: LoadAsset, loader: Loader): Promise<Texture>
     {
         let src: any = null;
 
@@ -87,6 +87,12 @@ export const loadTextures = {
         base.resource.src = url;
 
         const texture = new Texture(base);
+
+        // make sure to nuke the promise if a texture is destroyed..
+        texture.baseTexture.on('dispose', () =>
+        {
+            delete loader.promiseCache[url];
+        });
 
         return texture;
     },
