@@ -6,7 +6,8 @@ import type { BaseTexture, Renderer } from '@pixi/core';
 import type { ParticleBuffer } from './ParticleBuffer';
 import type { IDestroyOptions } from '@pixi/display';
 
-export interface IParticleProperties {
+export interface IParticleProperties
+{
     vertices?: boolean;
     position?: boolean;
     rotation?: boolean;
@@ -38,31 +39,77 @@ export interface IParticleProperties {
  * ```
  *
  * And here you have a hundred sprites that will be rendered at the speed of light.
- *
- * @class
- * @extends PIXI.Container
  * @memberof PIXI
  */
 export class ParticleContainer extends Container
 {
-    public readonly blendMode: BLEND_MODES;
+    /**
+     * The blend mode to be applied to the sprite. Apply a value of `PIXI.BLEND_MODES.NORMAL`
+     * to reset the blend mode.
+     * @default PIXI.BLEND_MODES.NORMAL
+     */
+    public blendMode: BLEND_MODES;
+
+    /**
+     * If true, container allocates more batches in case there are more than `maxSize` particles.
+     * @default false
+     */
     public autoResize: boolean;
+
+    /**
+     * If true PixiJS will Math.floor() x/y values when rendering, stopping pixel interpolation.
+     * Advantages can include sharper image quality (like text) and faster rendering on canvas.
+     * The main disadvantage is movement of objects may appear less smooth.
+     * Default to true here as performance is usually the priority for particles.
+     * @default true
+     */
     public roundPixels: boolean;
+
+    /**
+     * The texture used to render the children.
+     * @readonly
+     */
     public baseTexture: BaseTexture;
     public tintRgb: Float32Array;
 
+    /** @private */
     _maxSize: number;
+
+    /** @private */
     _buffers: ParticleBuffer[];
+
+    /** @private */
     _batchSize: number;
+
+    /**
+     * Set properties to be dynamic (true) / static (false).
+     * @private
+     */
     _properties: boolean[];
+
+    /**
+     * For every batch, stores _updateID corresponding to the last change in that batch.
+     * @private
+     */
     _bufferUpdateIDs: number[];
+
+    /**
+     * When child inserted, removed or changes position this number goes up.
+     * @private
+     */
     _updateID: number;
+
+    /**
+     * The tint applied to the container.
+     * This is a hex value. A value of 0xFFFFFF will remove any tint effect.
+     * @default 0xFFFFFF
+     */
     private _tint: number;
 
     /**
-     * @param {number} [maxSize=1500] - The maximum number of particles that can be rendered by the container.
+     * @param maxSize - The maximum number of particles that can be rendered by the container.
      *  Affects size of allocated buffers.
-     * @param {object} [properties] - The properties of children that should be uploaded to the gpu and applied.
+     * @param properties - The properties of children that should be uploaded to the gpu and applied.
      * @param {boolean} [properties.vertices=false] - When true, vertices be uploaded and applied.
      *                  if sprite's ` scale/anchor/trim/frame/orig` is dynamic, please set `true`.
      * @param {boolean} [properties.position=true] - When true, position be uploaded and applied.
@@ -73,7 +120,7 @@ export class ParticleContainer extends Container
      * @param {boolean} [autoResize=false] - If true, container allocates more batches in case
      *  there are more than `maxSize` particles.
      */
-    constructor(maxSize = 1500, properties: IParticleProperties, batchSize = 16384, autoResize = false)
+    constructor(maxSize = 1500, properties?: IParticleProperties, batchSize = 16384, autoResize = false)
     {
         super();
 
@@ -87,98 +134,21 @@ export class ParticleContainer extends Container
             batchSize = maxBatchSize;
         }
 
-        /**
-         * Set properties to be dynamic (true) / static (false)
-         *
-         * @member {boolean[]}
-         * @private
-         */
         this._properties = [false, true, false, false, false];
-
-        /**
-         * @member {number}
-         * @private
-         */
         this._maxSize = maxSize;
-
-        /**
-         * @member {number}
-         * @private
-         */
         this._batchSize = batchSize;
-
-        /**
-         * @member {Array<PIXI.Buffer>}
-         * @private
-         */
         this._buffers = null;
-
-        /**
-         * for every batch stores _updateID corresponding to the last change in that batch
-         * @member {number[]}
-         * @private
-         */
         this._bufferUpdateIDs = [];
-
-        /**
-         * when child inserted, removed or changes position this number goes up
-         * @member {number[]}
-         * @private
-         */
         this._updateID = 0;
 
-        /**
-         * @member {boolean}
-         *
-         */
         this.interactiveChildren = false;
-
-        /**
-         * The blend mode to be applied to the sprite. Apply a value of `PIXI.BLEND_MODES.NORMAL`
-         * to reset the blend mode.
-         *
-         * @member {number}
-         * @default PIXI.BLEND_MODES.NORMAL
-         * @see PIXI.BLEND_MODES
-         */
         this.blendMode = BLEND_MODES.NORMAL;
-
-        /**
-         * If true, container allocates more batches in case there are more than `maxSize` particles.
-         * @member {boolean}
-         * @default false
-         */
         this.autoResize = autoResize;
-
-        /**
-         * If true PixiJS will Math.floor() x/y values when rendering, stopping pixel interpolation.
-         * Advantages can include sharper image quality (like text) and faster rendering on canvas.
-         * The main disadvantage is movement of objects may appear less smooth.
-         * Default to true here as performance is usually the priority for particles.
-         *
-         * @member {boolean}
-         * @default true
-         */
         this.roundPixels = true;
-
-        /**
-         * The texture used to render the children.
-         *
-         * @readonly
-         * @member {PIXI.BaseTexture}
-         */
         this.baseTexture = null;
 
         this.setProperties(properties);
 
-        /**
-         * The tint applied to the container.
-         * This is a hex value. A value of 0xFFFFFF will remove any tint effect.
-         *
-         * @private
-         * @member {number}
-         * @default 0xFFFFFF
-         */
         this._tint = 0;
         this.tintRgb = new Float32Array(4);
         this.tint = 0xFFFFFF;
@@ -186,8 +156,7 @@ export class ParticleContainer extends Container
 
     /**
      * Sets the private properties array to dynamic / static based on the passed properties object
-     *
-     * @param {object} properties - The properties to be uploaded
+     * @param properties - The properties to be uploaded
      */
     public setProperties(properties: IParticleProperties): void
     {
@@ -203,11 +172,6 @@ export class ParticleContainer extends Container
         }
     }
 
-    /**
-     * Updates the object transform for rendering
-     *
-     * @private
-     */
     updateTransform(): void
     {
         // TODO don't need to!
@@ -217,8 +181,7 @@ export class ParticleContainer extends Container
     /**
      * The tint applied to the container. This is a hex value.
      * A value of 0xFFFFFF will remove any tint effect.
-     ** IMPORTANT: This is a WebGL only feature and will be ignored by the canvas renderer.
-     * @member {number}
+     * IMPORTANT: This is a WebGL only feature and will be ignored by the canvas renderer.
      * @default 0xFFFFFF
      */
     get tint(): number
@@ -233,10 +196,8 @@ export class ParticleContainer extends Container
     }
 
     /**
-     * Renders the container using the WebGL renderer
-     *
-     * @private
-     * @param {PIXI.Renderer} renderer - The webgl renderer
+     * Renders the container using the WebGL renderer.
+     * @param renderer - The WebGL renderer.
      */
     public render(renderer: Renderer): void
     {
@@ -260,9 +221,7 @@ export class ParticleContainer extends Container
 
     /**
      * Set the flag that static data should be updated to true
-     *
-     * @private
-     * @param {number} smallestChildIndex - The smallest child index
+     * @param smallestChildIndex - The smallest child index.
      */
     protected onChildrenChange(smallestChildIndex: number): void
     {
@@ -290,8 +249,7 @@ export class ParticleContainer extends Container
 
     /**
      * Destroys the container
-     *
-     * @param {object|boolean} [options] - Options parameter. A boolean will act as if all options
+     * @param options - Options parameter. A boolean will act as if all options
      *  have been set to that value
      * @param {boolean} [options.children=false] - if set to true, all the children will have their
      *  destroy method called as well. 'options' will be passed on to those calls.
@@ -300,7 +258,7 @@ export class ParticleContainer extends Container
      * @param {boolean} [options.baseTexture=false] - Only used for child Sprites if options.children is set to true
      *  Should it destroy the base texture of the child sprite
      */
-    public destroy(options?: IDestroyOptions|boolean): void
+    public destroy(options?: IDestroyOptions | boolean): void
     {
         super.destroy(options);
 

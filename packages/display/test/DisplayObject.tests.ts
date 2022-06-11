@@ -3,12 +3,13 @@ import { RAD_TO_DEG, DEG_TO_RAD } from '@pixi/math';
 import sinon from 'sinon';
 import { expect } from 'chai';
 
-describe('DisplayObject', function ()
+describe('DisplayObject', () =>
 {
-    describe('constructor', function ()
+    describe('constructor', () =>
     {
-        it('should initialise properties', function ()
+        it('should initialise properties', () =>
         {
+            // @ts-expect-error - instantiating DisplayOBject
             const object = new DisplayObject();
 
             expect(object.alpha).to.equal(1);
@@ -18,10 +19,11 @@ describe('DisplayObject', function ()
         });
     });
 
-    describe('setParent', function ()
+    describe('setParent', () =>
     {
-        it('should add itself to a Container', function ()
+        it('should add itself to a Container', () =>
         {
+            // @ts-expect-error - instantiating DisplayOBject
             const child = new DisplayObject();
             const container = new Container();
 
@@ -31,8 +33,9 @@ describe('DisplayObject', function ()
             expect(child.parent).to.equal(container);
         });
 
-        it('should throw if not Container', function ()
+        it('should throw if not Container', () =>
         {
+            // @ts-expect-error - instantiating DisplayOBject
             const child = new DisplayObject();
             const notAContainer = {};
 
@@ -41,10 +44,11 @@ describe('DisplayObject', function ()
         });
     });
 
-    describe('setTransform', function ()
+    describe('setTransform', () =>
     {
-        it('should set correct properties', function ()
+        it('should set correct properties', () =>
         {
+            // @ts-expect-error - instantiating DisplayOBject
             const object = new DisplayObject();
 
             object.setTransform(1, 2, 3, 4, 5, 6, 7, 8, 9);
@@ -60,8 +64,9 @@ describe('DisplayObject', function ()
             expect(object.pivot.y).to.be.equal(9);
         });
 
-        it('should convert zero scale to one', function ()
+        it('should convert zero scale to one', () =>
         {
+            // @ts-expect-error - instantiating DisplayOBject
             const object = new DisplayObject();
 
             object.setTransform(1, 1, 0, 0, 1, 1, 1, 1, 1);
@@ -71,12 +76,13 @@ describe('DisplayObject', function ()
         });
     });
 
-    describe('worldVisible', function ()
+    describe('worldVisible', () =>
     {
-        it('should traverse parents', function ()
+        it('should traverse parents', () =>
         {
             const grandParent = new Container();
             const parent = new Container();
+            // @ts-expect-error - instantiating DisplayOBject
             const child = new DisplayObject();
 
             grandParent.addChild(parent);
@@ -90,10 +96,11 @@ describe('DisplayObject', function ()
         });
     });
 
-    describe('rotation', function ()
+    describe('rotation', () =>
     {
-        it('rotation and angle are different units of the same transformation', function ()
+        it('rotation and angle are different units of the same transformation', () =>
         {
+            // @ts-expect-error - instantiating DisplayOBject
             const object = new DisplayObject();
 
             expect(object.rotation).to.be.equal(0);
@@ -111,10 +118,11 @@ describe('DisplayObject', function ()
         });
     });
 
-    describe('enableTempParent', function ()
+    describe('enableTempParent', () =>
     {
-        it('should allow to recalc children transform', function ()
+        it('should allow to recalc children transform', () =>
         {
+            // @ts-expect-error - instantiating DisplayOBject
             const child = new DisplayObject();
             const container = new Container();
 
@@ -146,11 +154,91 @@ describe('DisplayObject', function ()
         });
     });
 
-    describe('remove', function ()
+    describe('mask', () =>
     {
-        it('should trigger removed listeners', function ()
+        it('should set isMask and renderable properties correctly even if the same mask is used by multiple objects',
+            () =>
+            {
+                // @ts-expect-error - instantiating DisplayOBject
+                const mask1 = new DisplayObject();
+                // @ts-expect-error - instantiating DisplayOBject
+                const mask2 = new DisplayObject();
+                const container1 = new Container();
+                const container2 = new Container();
+
+                expect(mask1.isMask).to.be.false;
+                expect(mask1.renderable).to.be.true;
+                expect(mask2.isMask).to.be.false;
+                expect(mask2.renderable).to.be.true;
+
+                container1.mask = mask1;
+
+                expect(mask1.isMask).to.be.true;
+                expect(mask1.renderable).to.be.false;
+                expect(mask2.isMask).to.be.false;
+                expect(mask2.renderable).to.be.true;
+
+                container1.mask = mask1;
+
+                expect(mask1.isMask).to.be.true;
+                expect(mask1.renderable).to.be.false;
+                expect(mask2.isMask).to.be.false;
+                expect(mask2.renderable).to.be.true;
+
+                container2.mask = mask1;
+
+                expect(mask1.isMask).to.be.true;
+                expect(mask2.isMask).to.be.false;
+                expect(mask1.renderable).to.be.false;
+                expect(mask2.renderable).to.be.true;
+
+                container1.mask = mask2;
+
+                expect(mask1.isMask).to.be.true;
+                expect(mask1.renderable).to.be.false;
+                expect(mask2.isMask).to.be.true;
+                expect(mask2.renderable).to.be.false;
+
+                container2.mask = mask2;
+
+                expect(mask1.isMask).to.be.false;
+                expect(mask1.renderable).to.be.true;
+                expect(mask2.isMask).to.be.true;
+                expect(mask2.renderable).to.be.false;
+
+                container1.mask = null;
+
+                expect(mask1.isMask).to.be.false;
+                expect(mask1.renderable).to.be.true;
+                expect(mask2.isMask).to.be.true;
+                expect(mask2.renderable).to.be.false;
+
+                container2.mask = null;
+
+                expect(mask1.isMask).to.be.false;
+                expect(mask1.renderable).to.be.true;
+                expect(mask2.isMask).to.be.false;
+                expect(mask2.renderable).to.be.true;
+
+                container1.mask = mask1;
+
+                expect(mask1.isMask).to.be.true;
+                expect(mask1.renderable).to.be.false;
+
+                container1.destroy();
+
+                expect(mask1.isMask).to.be.false;
+                expect(mask1.renderable).to.be.true;
+            }
+        );
+    });
+
+    describe('remove', () =>
+    {
+        it('should trigger removed listeners', () =>
         {
             const listener = sinon.spy();
+            // @ts-expect-error - instantiating DisplayOBject
             const child = new DisplayObject();
             const container = new Container();
 
@@ -168,11 +256,12 @@ describe('DisplayObject', function ()
         });
     });
 
-    describe('destroy', function ()
+    describe('destroy', () =>
     {
-        it('should trigger destroyed listeners', function ()
+        it('should trigger destroyed listeners', () =>
         {
             const listener = sinon.spy();
+            // @ts-expect-error - instantiating DisplayOBject
             const child = new DisplayObject();
             const container = new Container();
 
@@ -187,6 +276,31 @@ describe('DisplayObject', function ()
             child.destroy();
 
             expect(listener.calledOnce).to.be.true;
+        });
+
+        it('should trigger destroyed listeners once destruction is complete', () =>
+        {
+            let listenerCallCount = 0;
+            // @ts-expect-error - instantiating DisplayOBject
+            const child = new DisplayObject();
+            const container = new Container();
+
+            child.on('destroyed', () =>
+            {
+                listenerCallCount++;
+                expect(child.destroyed).to.be.true;
+                expect(child.parent).to.be.null;
+            });
+
+            container.addChild(child);
+            container.removeChild(child);
+
+            expect(listenerCallCount).to.equal(0);
+
+            container.addChild(child);
+            child.destroy();
+
+            expect(listenerCallCount).to.equal(1);
         });
     });
 });

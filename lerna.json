@@ -1,5 +1,5 @@
 {
-  "lerna": "3.8.5",
+  "lerna": "4.0.0",
   "useWorkspaces": true,
-  "version": "6.1.0-rc.5"
+  "version": "6.4.2"
 }

@@ -26,30 +26,45 @@ export interface NineSlicePlane extends GlobalMixins.NineSlicePlane {}
  *    +---+----------------------+---+
  *  D | 7 |          8           | 9 |
  *    +---+----------------------+---+
-
  *  When changing this objects width and/or height:
  *     areas 1 3 7 and 9 will remain unscaled.
  *     areas 2 and 8 will be stretched horizontally
  *     areas 4 and 6 will be stretched vertically
  *     area 5 will be stretched both horizontally and vertically
  * </pre>
- *
- * @class
- * @extends PIXI.SimplePlane
  * @memberof PIXI
- *
  */
 export class NineSlicePlane extends SimplePlane
 {
     private _origWidth: number;
     private _origHeight: number;
+
+    /**
+     * The width of the left column (a).
+     * @private
+     */
     _leftWidth: number;
+
+    /**
+     * The width of the right column (b)
+     * @private
+     */
     _rightWidth: number;
+
+    /**
+     * The height of the top row (c)
+     * @private
+     */
     _topHeight: number;
+
+    /**
+     * The height of the bottom row (d)
+     * @private
+     */
     _bottomHeight: number;
 
     /**
-     * @param {PIXI.Texture} texture - The texture to use on the NineSlicePlane.
+     * @param texture - The texture to use on the NineSlicePlane.
      * @param {number} [leftWidth=10] - size of the left vertical bar (A)
      * @param {number} [topHeight=10] - size of the top horizontal bar (C)
      * @param {number} [rightWidth=10] - size of the right vertical bar (B)
@@ -68,52 +83,15 @@ export class NineSlicePlane extends SimplePlane
         this._origWidth = texture.orig.width;
         this._origHeight = texture.orig.height;
 
-        /**
-         * The width of the NineSlicePlane, setting this will actually modify the vertices and UV's of this plane
-         *
-         * @member {number}
-         * @override
-         */
+        /** The width of the NineSlicePlane, setting this will actually modify the vertices and UV's of this plane. */
         this._width = this._origWidth;
 
-        /**
-         * The height of the NineSlicePlane, setting this will actually modify the vertices and UV's of this plane
-         *
-         * @member {number}
-         * @override
-         */
+        /** The height of the NineSlicePlane, setting this will actually modify the vertices and UV's of this plane. */
         this._height = this._origHeight;
 
-        /**
-         * The width of the left column (a)
-         *
-         * @member {number}
-         * @private
-         */
         this._leftWidth = leftWidth;
-
-        /**
-         * The width of the right column (b)
-         *
-         * @member {number}
-         * @private
-         */
         this._rightWidth = rightWidth;
-
-        /**
-         * The height of the top row (c)
-         *
-         * @member {number}
-         * @private
-         */
         this._topHeight = topHeight;
-
-        /**
-         * The height of the bottom row (d)
-         *
-         * @member {number}
-         * @private
-         */
         this._bottomHeight = bottomHeight;
 
         // lets call the setter to ensure all necessary updates are performed
@@ -136,10 +114,7 @@ export class NineSlicePlane extends SimplePlane
         this.geometry.getBuffer('aVertexPosition').data = value;
     }
 
-    /**
-     * Updates the horizontal vertices.
-     *
-     */
+    /** Updates the horizontal vertices. */
     public updateHorizontalVertices(): void
     {
         const vertices = this.vertices;
@@ -151,10 +126,7 @@ export class NineSlicePlane extends SimplePlane
         vertices[25] = vertices[27] = vertices[29] = vertices[31] = this._height;
     }
 
-    /**
-     * Updates the vertical vertices.
-     *
-     */
+    /** Updates the vertical vertices. */
     public updateVerticalVertices(): void
     {
         const vertices = this.vertices;
@@ -168,9 +140,7 @@ export class NineSlicePlane extends SimplePlane
 
     /**
      * Returns the smaller of a set of vertical and horizontal scale of nine slice corners.
-     *
-     * @return {number} Smaller number of vertical and horizontal scale.
-     * @private
+     * @returns Smaller number of vertical and horizontal scale.
      */
     private _getMinScale(): number
     {
@@ -185,11 +155,7 @@ export class NineSlicePlane extends SimplePlane
         return scale;
     }
 
-    /**
-     * The width of the NineSlicePlane, setting this will actually modify the vertices and UV's of this plane
-     *
-     * @member {number}
-     */
+    /** The width of the NineSlicePlane, setting this will actually modify the vertices and UV's of this plane. */
     get width(): number
     {
         return this._width;
@@ -201,11 +167,7 @@ export class NineSlicePlane extends SimplePlane
         this._refresh();
     }
 
-    /**
-     * The height of the NineSlicePlane, setting this will actually modify the vertices and UV's of this plane
-     *
-     * @member {number}
-     */
+    /** The height of the NineSlicePlane, setting this will actually modify the vertices and UV's of this plane. */
     get height(): number
     {
         return this._height;
@@ -217,11 +179,7 @@ export class NineSlicePlane extends SimplePlane
         this._refresh();
     }
 
-    /**
-     * The width of the left column
-     *
-     * @member {number}
-     */
+    /** The width of the left column. */
     get leftWidth(): number
     {
         return this._leftWidth;
@@ -233,11 +191,7 @@ export class NineSlicePlane extends SimplePlane
         this._refresh();
     }
 
-    /**
-     * The width of the right column
-     *
-     * @member {number}
-     */
+    /** The width of the right column. */
     get rightWidth(): number
     {
         return this._rightWidth;
@@ -249,11 +203,7 @@ export class NineSlicePlane extends SimplePlane
         this._refresh();
     }
 
-    /**
-     * The height of the top row
-     *
-     * @member {number}
-     */
+    /** The height of the top row. */
     get topHeight(): number
     {
         return this._topHeight;
@@ -265,11 +215,7 @@ export class NineSlicePlane extends SimplePlane
         this._refresh();
     }
 
-    /**
-     * The height of the bottom row
-     *
-     * @member {number}
-     */
+    /** The height of the bottom row. */
     get bottomHeight(): number
     {
         return this._bottomHeight;
@@ -281,9 +227,7 @@ export class NineSlicePlane extends SimplePlane
         this._refresh();
     }
 
-    /**
-     * Refreshes NineSlicePlane coords. All of them.
-     */
+    /** Refreshes NineSlicePlane coords. All of them. */
     private _refresh(): void
     {
         const texture = this.texture;

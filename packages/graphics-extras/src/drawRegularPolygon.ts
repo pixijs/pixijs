@@ -4,14 +4,14 @@ import type { Graphics } from '@pixi/graphics';
  * Draw a regular polygon where all sides are the same length.
  *
  * _Note: Only available with **@pixi/graphics-extras**._
- *
  * @method PIXI.Graphics#drawRegularPolygon
+ * @param this
  * @param {number} x - X position
  * @param {number} y - Y position
  * @param {number} radius - Polygon radius
  * @param {number} sides - Minimum value is 3
  * @param {number} rotation - Starting rotation values in radians..
- * @return {PIXI.Graphics}
+ * @returns {PIXI.Graphics} This Graphics object. Good for chaining method calls
  */
 export function drawRegularPolygon(this: Graphics,
     x: number,

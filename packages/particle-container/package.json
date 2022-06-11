@@ -1,9 +1,22 @@
 {
   "name": "@pixi/particle-container",
-  "version": "6.1.0-rc.5",
+  "version": "6.4.2",
   "main": "dist/cjs/particle-container.js",
   "module": "dist/esm/particle-container.js",
   "bundle": "dist/browser/particle-container.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./index.d.ts",
+        "default": "./dist/esm/particle-container.js"
+      },
+      "require": {
+        "types": "./index.d.ts",
+        "default": "./dist/cjs/particle-container.js"
+      }
+    }
+  },
   "description": "Render many sprite particles as efficiently as possible",
   "author": "Mat Groves",
   "contributors": [
@@ -25,10 +38,10 @@
     "*.d.ts"
   ],
   "peerDependencies": {
-    "@pixi/constants": "6.1.0-rc.5",
-    "@pixi/core": "6.1.0-rc.5",
-    "@pixi/display": "6.1.0-rc.5",
-    "@pixi/math": "6.1.0-rc.5",
-    "@pixi/utils": "6.1.0-rc.5"
+    "@pixi/constants": "6.4.2",
+    "@pixi/core": "6.4.2",
+    "@pixi/display": "6.4.2",
+    "@pixi/math": "6.4.2",
+    "@pixi/utils": "6.4.2"
   }
 }

@@ -7,7 +7,8 @@ import vertex from './shader/mesh.vert';
 import type { Texture } from '@pixi/core';
 import type { Dict } from '@pixi/utils';
 
-export interface IMeshMaterialOptions {
+export interface IMeshMaterialOptions
+{
     alpha?: number;
     tint?: number;
     pluginName?: string;
@@ -20,27 +21,43 @@ export interface MeshMaterial extends GlobalMixins.MeshMaterial {}
 
 /**
  * Slightly opinionated default shader for PixiJS 2D objects.
- * @class
  * @memberof PIXI
- * @extends PIXI.Shader
  */
 export class MeshMaterial extends Shader
 {
+    /**
+     * TextureMatrix instance for this Mesh, used to track Texture changes.
+     * @readonly
+     */
     public readonly uvMatrix: TextureMatrix;
 
+    /**
+     * `true` if shader can be batch with the renderer's batch system.
+     * @default true
+     */
     public batchable: boolean;
+
+    /**
+     * Renderer plugin for batching.
+     * @default 'batch'
+     */
     public pluginName: string;
 
     // Internal-only properties
     _tintRGB: number;
 
+    /**
+     * Only do update if tint or alpha changes.
+     * @private
+     * @default false
+     */
     private _colorDirty: boolean;
     private _alpha: number;
     private _tint: number;
 
     /**
-     * @param {PIXI.Texture} uSampler - Texture that material uses to render.
-     * @param {object} [options] - Additional options
+     * @param uSampler - Texture that material uses to render.
+     * @param options - Additional options
      * @param {number} [options.alpha=1] - Default alpha.
      * @param {number} [options.tint=0xFFFFFF] - Default tint.
      * @param {string} [options.pluginName='batch'] - Renderer plugin for batching.
@@ -70,45 +87,17 @@ export class MeshMaterial extends Shader
 
         super(options.program || Program.from(vertex, fragment), uniforms);
 
-        /**
-         * Only do update if tint or alpha changes.
-         * @member {boolean}
-         * @private
-         * @default false
-         */
         this._colorDirty = false;
 
-        /**
-         * TextureMatrix instance for this Mesh, used to track Texture changes
-         *
-         * @member {PIXI.TextureMatrix}
-         * @readonly
-         */
         this.uvMatrix = new TextureMatrix(uSampler);
-
-        /**
-         * `true` if shader can be batch with the renderer's batch system.
-         * @member {boolean}
-         * @default true
-         */
         this.batchable = options.program === undefined;
-
-        /**
-         * Renderer plugin for batching
-         *
-         * @member {string}
-         * @default 'batch'
-         */
         this.pluginName = options.pluginName;
 
         this.tint = options.tint;
         this.alpha = options.alpha;
     }
 
-    /**
-     * Reference to the texture being rendered.
-     * @member {PIXI.Texture}
-     */
+    /** Reference to the texture being rendered. */
     get texture(): Texture
     {
         return this.uniforms.uSampler;
@@ -117,6 +106,11 @@ export class MeshMaterial extends Shader
     {
         if (this.uniforms.uSampler !== value)
         {
+            if (!this.uniforms.uSampler.baseTexture.alphaMode !== !value.baseTexture.alphaMode)
+            {
+                this._colorDirty = true;
+            }
+
             this.uniforms.uSampler = value;
             this.uvMatrix.texture = value;
         }
@@ -124,9 +118,7 @@ export class MeshMaterial extends Shader
 
     /**
      * This gets automatically set by the object using this.
-     *
      * @default 1
-     * @member {number}
      */
     set alpha(value: number)
     {
@@ -142,7 +134,6 @@ export class MeshMaterial extends Shader
 
     /**
      * Multiply tint for the material.
-     * @member {number}
      * @default 0xFFFFFF
      */
     set tint(value: number)
@@ -158,10 +149,7 @@ export class MeshMaterial extends Shader
         return this._tint;
     }
 
-    /**
-     * Gets called automatically by the Mesh. Intended to be overridden for custom
-     * MeshMaterial objects.
-     */
+    /** Gets called automatically by the Mesh. Intended to be overridden for custom {@link MeshMaterial} objects. */
     public update(): void
     {
         if (this._colorDirty)

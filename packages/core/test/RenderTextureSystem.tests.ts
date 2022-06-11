@@ -2,42 +2,44 @@ import { Renderer } from '@pixi/core';
 import { Rectangle } from '@pixi/math';
 import { expect } from 'chai';
 
-describe('RenderTextureSystem', function ()
+describe('RenderTextureSystem', () =>
 {
-    before(function ()
+    let renderer: Renderer;
+
+    before(() =>
     {
-        this.renderer = new Renderer({ resolution: 4, width: 1024, height: 1024 });
+        renderer = new Renderer({ resolution: 4, width: 1024, height: 1024 });
     });
 
-    after(function ()
+    after(() =>
     {
-        this.renderer = null;
+        renderer = null;
     });
 
-    it('the default viewport should have a width/height equal to that of the renderer', function ()
+    it('the default viewport should have a width/height equal to that of the renderer', () =>
     {
-        this.renderer.renderTexture.bind();
+        renderer.renderTexture.bind();
 
-        const viewport = this.renderer.framebuffer.viewport;
+        const viewport = renderer.framebuffer.viewport;
 
         expect(viewport.x).to.equal(0);
         expect(viewport.y).to.equal(0);
-        expect(viewport.width).to.equal(this.renderer.width);
-        expect(viewport.height).to.equal(this.renderer.height);
+        expect(viewport.width).to.equal(renderer.width);
+        expect(viewport.height).to.equal(renderer.height);
 
-        const destinationFrame = this.renderer.renderTexture.destinationFrame;
+        const destinationFrame = renderer.renderTexture.destinationFrame;
 
         expect(destinationFrame.x).to.equal(0);
         expect(destinationFrame.y).to.equal(0);
-        expect(destinationFrame.width).to.equal(this.renderer.width / this.renderer.resolution);
-        expect(destinationFrame.height).to.equal(this.renderer.height / this.renderer.resolution);
+        expect(destinationFrame.width).to.equal(renderer.width / renderer.resolution);
+        expect(destinationFrame.height).to.equal(renderer.height / renderer.resolution);
     });
 
-    it('rebinding with the same source & destination frame should change nothing', function ()
+    it('rebinding with the same source & destination frame should change nothing', () =>
     {
         const sourceFrame = new Rectangle(16, 16, 512, 512);
         const destinationFrame = new Rectangle(24, 24, 64, 64);
-        const renderTextureSystem = this.renderer.renderTexture;
+        const renderTextureSystem = renderer.renderTexture;
 
         renderTextureSystem.bind(null, sourceFrame, destinationFrame);
         renderTextureSystem.bind(null, renderTextureSystem.sourceFrame, renderTextureSystem.destinationFrame);

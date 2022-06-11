@@ -9,6 +9,7 @@ import type { FilterSystem } from '../FilterSystem';
 import type { IMaskTarget } from '../../mask/MaskData';
 import type { Texture } from '../../textures/Texture';
 import type { RenderTexture } from '../../renderTexture/RenderTexture';
+import type { Dict } from '@pixi/utils';
 
 export interface ISpriteMaskTarget extends IMaskTarget
 {
@@ -17,54 +18,85 @@ export interface ISpriteMaskTarget extends IMaskTarget
     anchor: Point;
 }
 
+export interface ISpriteMaskFilter extends Filter
+{
+    maskSprite: IMaskTarget;
+}
+
 /**
  * This handles a Sprite acting as a mask, as opposed to a Graphic.
  *
  * WebGL only.
- *
- * @class
- * @extends PIXI.Filter
  * @memberof PIXI
  */
 export class SpriteMaskFilter extends Filter
 {
-    maskSprite: IMaskTarget;
+    /** @private */
+    _maskSprite: IMaskTarget;
+
+    /** Mask matrix */
     maskMatrix: Matrix;
+
     /**
-     * @param {PIXI.Sprite} sprite - the target sprite
+     * @param {PIXI.Sprite} sprite - The target sprite.
      */
-    constructor(sprite: IMaskTarget)
+    constructor(sprite: IMaskTarget);
+
+    /**
+     * @param vertexSrc - The source of the vertex shader.
+     * @param fragmentSrc - The source of the fragment shader.
+     * @param uniforms - Custom uniforms to use to augment the built-in ones.
+     */
+    constructor(vertexSrc?: string, fragmentSrc?: string, uniforms?: Dict<any>);
+
+    /** @ignore */
+    constructor(vertexSrc?: string | IMaskTarget, fragmentSrc?: string, uniforms?: Dict<any>)
     {
-        const maskMatrix = new Matrix();
+        let sprite = null;
 
-        super(vertex, fragment);
+        if (typeof vertexSrc !== 'string' && fragmentSrc === undefined && uniforms === undefined)
+        {
+            sprite = vertexSrc as IMaskTarget;
+            vertexSrc = undefined;
+            fragmentSrc = undefined;
+            uniforms = undefined;
+        }
 
-        sprite.renderable = false;
+        super(vertexSrc as string || vertex, fragmentSrc || fragment, uniforms);
 
-        /**
-         * Sprite mask
-         * @member {PIXI.Sprite}
-         */
         this.maskSprite = sprite;
+        this.maskMatrix = new Matrix();
+    }
 
-        /**
-         * Mask matrix
-         * @member {PIXI.Matrix}
-         */
-        this.maskMatrix = maskMatrix;
+    /**
+     * Sprite mask
+     * @type {PIXI.DisplayObject}
+     */
+    get maskSprite(): IMaskTarget
+    {
+        return this._maskSprite;
+    }
+
+    set maskSprite(value: IMaskTarget)
+    {
+        this._maskSprite = value;
+
+        if (this._maskSprite)
+        {
+            this._maskSprite.renderable = false;
+        }
     }
 
     /**
      * Applies the filter
-     *
-     * @param {PIXI.FilterSystem} filterManager - The renderer to retrieve the filter from
-     * @param {PIXI.RenderTexture} input - The input render target.
-     * @param {PIXI.RenderTexture} output - The target to output to.
-     * @param {PIXI.CLEAR_MODES} clearMode - Should the output be cleared before rendering to it.
+     * @param filterManager - The renderer to retrieve the filter from
+     * @param input - The input render target.
+     * @param output - The target to output to.
+     * @param clearMode - Should the output be cleared before rendering to it.
      */
     apply(filterManager: FilterSystem, input: RenderTexture, output: RenderTexture, clearMode: CLEAR_MODES): void
     {
-        const maskSprite = this.maskSprite as ISpriteMaskTarget;
+        const maskSprite = this._maskSprite as ISpriteMaskTarget;
         const tex = maskSprite._texture;
 
         if (!tex.valid)

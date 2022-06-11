@@ -11,21 +11,20 @@ import type { GLTexture } from '../GLTexture';
 
 /**
  * Buffer resource with data of typed array.
- * @class
- * @extends PIXI.Resource
  * @memberof PIXI
  */
 export class BufferResource extends Resource
 {
-    data: Float32Array|Uint8Array|Uint16Array|Uint32Array;
+    /** Source array Cannot be {@code ClampedUint8Array} because it cant be uploaded to WebGL */
+    data: Float32Array | Uint8Array | Uint16Array | Int32Array | Uint32Array;
 
     /**
-     * @param {Float32Array|Uint8Array|Uint32Array} source - Source buffer
-     * @param {object} options - Options
+     * @param source - Source buffer
+     * @param options - Options
      * @param {number} options.width - Width of the texture
      * @param {number} options.height - Height of the texture
      */
-    constructor(source: Float32Array|Uint8Array|Uint16Array|Uint32Array, options: ISize)
+    constructor(source: Float32Array | Uint8Array | Uint16Array | Int32Array | Uint32Array, options: ISize)
     {
         const { width, height } = options || {};
 
@@ -36,21 +35,15 @@ export class BufferResource extends Resource
 
         super(width, height);
 
-        /**
-         * Source array
-         * Cannot be ClampedUint8Array because it cant be uploaded to WebGL
-         *
-         * @member {Float32Array|Uint8Array|Uint32Array}
-         */
         this.data = source;
     }
 
     /**
      * Upload the texture to the GPU.
-     * @param {PIXI.Renderer} renderer - Upload to the renderer
-     * @param {PIXI.BaseTexture} baseTexture - Reference to parent texture
-     * @param {PIXI.GLTexture} glTexture - glTexture
-     * @returns {boolean} true is success
+     * @param renderer - Upload to the renderer
+     * @param baseTexture - Reference to parent texture
+     * @param glTexture - glTexture
+     * @returns - true is success
      */
     upload(renderer: Renderer, baseTexture: BaseTexture, glTexture: GLTexture): boolean
     {
@@ -96,10 +89,7 @@ export class BufferResource extends Resource
         return true;
     }
 
-    /**
-     * Destroy and don't use after this
-     * @override
-     */
+    /** Destroy and don't use after this. */
     dispose(): void
     {
         this.data = null;
@@ -107,12 +97,10 @@ export class BufferResource extends Resource
 
     /**
      * Used to auto-detect the type of resource.
-     *
-     * @static
      * @param {*} source - The source object
-     * @return {boolean} `true` if <canvas>
+     * @returns {boolean} `true` if <canvas>
      */
-    static test(source: unknown): source is Float32Array|Uint8Array|Uint32Array
+    static test(source: unknown): source is Float32Array | Uint8Array | Uint32Array
     {
         return source instanceof Float32Array
             || source instanceof Uint8Array

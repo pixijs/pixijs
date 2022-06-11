@@ -1,17 +1,13 @@
 import { Texture } from '@pixi/core';
 import { LoaderResource } from './LoaderResource';
-import { ILoaderPlugin } from './Loader';
 
 /**
  * Loader plugin for handling Texture resources.
- *
  * @memberof PIXI
  */
-export class TextureLoader implements ILoaderPlugin
+export class TextureLoader
 {
-    /**
-     * Handle SVG elements a text, render with SVGResource.
-     */
+    /** Handle SVG elements a text, render with SVGResource. */
     public static add(): void
     {
         LoaderResource.setExtensionLoadType('svg', LoaderResource.LOAD_TYPE.XHR);
@@ -22,7 +18,7 @@ export class TextureLoader implements ILoaderPlugin
      * Called after a resource is loaded.
      * @see PIXI.Loader.loaderMiddleware
      * @param resource
-     * @param {function} next
+     * @param {Function} next
      */
     public static use(resource: LoaderResource, next: (...args: any[]) => void): void
     {

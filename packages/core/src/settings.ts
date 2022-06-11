@@ -11,7 +11,6 @@ import { isMobile } from '@pixi/utils';
  *
  * Due to {@link https://bugs.chromium.org/p/chromium/issues/detail?id=934823|bug in chromium}
  * we disable webgl2 by default for all non-apple mobile devices.
- *
  * @static
  * @name PREFER_ENV
  * @memberof PIXI.settings
@@ -29,7 +28,6 @@ settings.PREFER_ENV = isMobile.any ? ENV.WEBGL : ENV.WEBGL2;
  * Otherwise, these `from` calls throw an exception. Using this property
  * can be useful if you want to enforce preloading all assets with
  * {@link PIXI.Loader Loader}.
- *
  * @static
  * @name STRICT_TEXTURE_CACHE
  * @memberof PIXI.settings

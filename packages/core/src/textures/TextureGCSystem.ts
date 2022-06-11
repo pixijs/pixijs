@@ -6,7 +6,8 @@ import type { Renderer } from '../Renderer';
 import type { Texture } from './Texture';
 import type { RenderTexture } from '../renderTexture/RenderTexture';
 
-export interface IUnloadableTexture {
+export interface IUnloadableTexture
+{
     _texture: Texture | RenderTexture;
     children: IUnloadableTexture[];
 }
@@ -14,60 +15,50 @@ export interface IUnloadableTexture {
 /**
  * System plugin to the renderer to manage texture garbage collection on the GPU,
  * ensuring that it does not get clogged up with textures that are no longer being used.
- *
- * @class
  * @memberof PIXI
- * @extends PIXI.System
  */
 export class TextureGCSystem implements ISystem
 {
+    /**
+     * Count
+     * @readonly
+     */
     public count: number;
+
+    /**
+     * Check count
+     * @readonly
+     */
     public checkCount: number;
+
+    /**
+     * Maximum idle time, in seconds
+     * @see PIXI.settings.GC_MAX_IDLE
+     */
     public maxIdle: number;
+
+    /**
+     * Maximum number of item to check
+     * @see PIXI.settings.GC_MAX_CHECK_COUNT
+     */
     public checkCountMax: number;
+
+    /**
+     * Current garbage collection mode
+     * @see PIXI.settings.GC_MODE
+     */
     public mode: GC_MODES;
     private renderer: Renderer;
 
-    /**
-     * @param {PIXI.Renderer} renderer - The renderer this System works for.
-     */
+    /** @param renderer - The renderer this System works for. */
     constructor(renderer: Renderer)
     {
         this.renderer = renderer;
 
-        /**
-         * Count
-         * @member {number}
-         * @readonly
-         */
         this.count = 0;
-
-        /**
-         * Check count
-         * @member {number}
-         * @readonly
-         */
         this.checkCount = 0;
-
-        /**
-         * Maximum idle time, in seconds
-         * @member {number}
-         * @see PIXI.settings.GC_MAX_IDLE
-         */
         this.maxIdle = settings.GC_MAX_IDLE;
-
-        /**
-         * Maximum number of item to check
-         * @member {number}
-         * @see PIXI.settings.GC_MAX_CHECK_COUNT
-         */
         this.checkCountMax = settings.GC_MAX_CHECK_COUNT;
-
-        /**
-         * Current garbage collection mode
-         * @member {PIXI.GC_MODES}
-         * @see PIXI.settings.GC_MODE
-         */
         this.mode = settings.GC_MODE;
     }
 
@@ -140,7 +131,6 @@ export class TextureGCSystem implements ISystem
 
     /**
      * Removes all the textures within the specified displayObject and its children from the GPU
-     *
      * @param {PIXI.DisplayObject} displayObject - the displayObject to remove the textures from.
      */
     unload(displayObject: IUnloadableTexture): void
@@ -160,9 +150,6 @@ export class TextureGCSystem implements ISystem
         }
     }
 
-    /**
-     * @ignore
-     */
     destroy(): void
     {
         this.renderer = null;

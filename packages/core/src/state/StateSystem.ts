@@ -14,68 +14,71 @@ const DEPTH_MASK = 5;
 
 /**
  * System plugin to the renderer to manage WebGL state machines.
- *
- * @class
- * @extends PIXI.System
  * @memberof PIXI
  */
 export class StateSystem implements ISystem
 {
+    /**
+     * State ID
+     * @readonly
+     */
     public stateId: number;
+
+    /**
+     * Polygon offset
+     * @readonly
+     */
     public polygonOffset: number;
+
+    /**
+     * Blend mode
+     * @default PIXI.BLEND_MODES.NONE
+     * @readonly
+     */
     public blendMode: BLEND_MODES;
+
+    /** Whether current blend equation is different */
     protected _blendEq: boolean;
+
+    /**
+     * GL context
+     * @member {WebGLRenderingContext}
+     * @readonly
+     */
     protected gl: IRenderingContext;
+
     protected blendModes: number[][];
+
+    /**
+     * Collection of calls
+     * @member {Function[]}
+     */
     protected readonly map: Array<(value: boolean) => void>;
+
+    /**
+     * Collection of check calls
+     * @member {Function[]}
+     */
     protected readonly checks: Array<(system: this, state: State) => void>;
+
+    /**
+     * Default WebGL State
+     * @readonly
+     */
     protected defaultState: State;
+
     constructor()
     {
-        /**
-         * GL context
-         * @member {WebGLRenderingContext}
-         * @readonly
-         */
         this.gl = null;
 
-        /**
-         * State ID
-         * @member {number}
-         * @readonly
-         */
         this.stateId = 0;
-
-        /**
-         * Polygon offset
-         * @member {number}
-         * @readonly
-         */
         this.polygonOffset = 0;
-
-        /**
-         * Blend mode
-         * @member {number}
-         * @default PIXI.BLEND_MODES.NONE
-         * @readonly
-         */
         this.blendMode = BLEND_MODES.NONE;
 
-        /**
-         * Whether current blend equation is different
-         * @member {boolean}
-         * @protected
-         */
         this._blendEq = false;
 
-        /**
-         * Collection of calls
-         * @member {function[]}
-         * @readonly
-         */
-        this.map = [];
-
         // map functions for when we set state..
+        this.map = [];
         this.map[BLEND] = this.setBlend;
         this.map[OFFSET] = this.setOffset;
         this.map[CULLING] = this.setCullFace;
@@ -83,18 +86,8 @@ export class StateSystem implements ISystem
         this.map[WINDING] = this.setFrontFace;
         this.map[DEPTH_MASK] = this.setDepthMask;
 
-        /**
-         * Collection of check calls
-         * @member {function[]}
-         * @readonly
-         */
         this.checks = [];
 
-        /**
-         * Default WebGL State
-         * @member {PIXI.State}
-         * @readonly
-         */
         this.defaultState = new State();
         this.defaultState.blend = true;
     }
@@ -112,7 +105,6 @@ export class StateSystem implements ISystem
 
     /**
      * Sets the current state
-     *
      * @param {*} state - The state to set.
      */
     set(state: State): void
@@ -151,8 +143,7 @@ export class StateSystem implements ISystem
     }
 
     /**
-     * Sets the state, when previous state is unknown
-     *
+     * Sets the state, when previous state is unknown.
      * @param {*} state - The state to set
      */
     forceState(state: State): void
@@ -171,9 +162,8 @@ export class StateSystem implements ISystem
     }
 
     /**
-     * Enables or disabled blending.
-     *
-     * @param {boolean} value - Turn on or off webgl blending.
+     * Sets whether to enable or disable blending.
+     * @param value - Turn on or off WebGl blending.
      */
     setBlend(value: boolean): void
     {
@@ -183,9 +173,8 @@ export class StateSystem implements ISystem
     }
 
     /**
-     * Enables or disable polygon offset fill
-     *
-     * @param {boolean} value - Turn on or off webgl polygon offset testing.
+     * Sets whether to enable or disable polygon offset fill.
+     * @param value - Turn on or off webgl polygon offset testing.
      */
     setOffset(value: boolean): void
     {
@@ -196,8 +185,7 @@ export class StateSystem implements ISystem
 
     /**
      * Sets whether to enable or disable depth test.
-     *
-     * @param {boolean} value - Turn on or off webgl depth testing.
+     * @param value - Turn on or off webgl depth testing.
      */
     setDepthTest(value: boolean): void
     {
@@ -206,8 +194,7 @@ export class StateSystem implements ISystem
 
     /**
      * Sets whether to enable or disable depth mask.
-     *
-     * @param {boolean} value - Turn on or off webgl depth mask.
+     * @param value - Turn on or off webgl depth mask.
      */
     setDepthMask(value: boolean): void
     {
@@ -216,7 +203,6 @@ export class StateSystem implements ISystem
 
     /**
      * Sets whether to enable or disable cull face.
-     *
      * @param {boolean} value - Turn on or off webgl cull face.
      */
     setCullFace(value: boolean): void
@@ -226,7 +212,6 @@ export class StateSystem implements ISystem
 
     /**
      * Sets the gl front face.
-     *
      * @param {boolean} value - true is clockwise and false is counter-clockwise
      */
     setFrontFace(value: boolean): void
@@ -236,7 +221,6 @@ export class StateSystem implements ISystem
 
     /**
      * Sets the blend mode.
-     *
      * @param {number} value - The blend mode to set to.
      */
     setBlendMode(value: number): void
@@ -273,7 +257,6 @@ export class StateSystem implements ISystem
 
     /**
      * Sets the polygon offset.
-     *
      * @param {number} value - the polygon offset
      * @param {number} scale - the polygon offset scale
      */
@@ -283,9 +266,7 @@ export class StateSystem implements ISystem
     }
 
     // used
-    /**
-     * Resets all the logic and disables the vaos
-     */
+    /** Resets all the logic and disables the VAOs. */
     reset(): void
     {
         this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, false);
@@ -298,13 +279,13 @@ export class StateSystem implements ISystem
     }
 
     /**
-     * checks to see which updates should be checked based on which settings have been activated.
+     * Checks to see which updates should be checked based on which settings have been activated.
+     *
      * For example, if blend is enabled then we should check the blend modes each time the state is changed
      * or if polygon fill is activated then we need to check if the polygon offset changes.
      * The idea is that we only check what we have too.
-     *
-     * @param {Function} func - the checking function to add or remove
-     * @param {boolean} value - should the check function be added or removed.
+     * @param func - the checking function to add or remove
+     * @param value - should the check function be added or removed.
      */
     updateCheck(func: (system: this, state: State) => void, value: boolean): void
     {
@@ -322,26 +303,20 @@ export class StateSystem implements ISystem
 
     /**
      * A private little wrapper function that we call to check the blend mode.
-     *
-     * @static
-     * @private
-     * @param {PIXI.StateSystem} System - the System to perform the state check on
-     * @param {PIXI.State} state - the state that the blendMode will pulled from
+     * @param system - the System to perform the state check on
+     * @param state - the state that the blendMode will pulled from
      */
-    static checkBlendMode(system: StateSystem, state: State): void
+    private static checkBlendMode(system: StateSystem, state: State): void
     {
         system.setBlendMode(state.blendMode);
     }
 
     /**
      * A private little wrapper function that we call to check the polygon offset.
-     *
-     * @static
-     * @private
-     * @param {PIXI.StateSystem} System - the System to perform the state check on
-     * @param {PIXI.State} state - the state that the blendMode will pulled from
+     * @param system - the System to perform the state check on
+     * @param state - the state that the blendMode will pulled from
      */
-    static checkPolygonOffset(system: StateSystem, state: State): void
+    private static checkPolygonOffset(system: StateSystem, state: State): void
     {
         system.setPolygonOffset(1, state.polygonOffset);
     }

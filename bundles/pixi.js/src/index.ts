@@ -46,7 +46,6 @@ Application.registerPlugin(AppLoaderPlugin);
 
 /**
  * String of the current PIXI version.
- *
  * @static
  * @constant
  * @memberof PIXI
@@ -68,7 +67,6 @@ export const VERSION = '$_VERSION';
  * PixiJS Filters repository.
  *
  * All filters must extend {@link PIXI.Filter}.
- *
  * @example
  * // Create a new application
  * const app = new PIXI.Application();

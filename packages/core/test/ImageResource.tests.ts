@@ -3,14 +3,16 @@ import { settings } from '@pixi/settings';
 import path from 'path';
 import { expect } from 'chai';
 
-describe('ImageResource', function ()
+describe('ImageResource', () =>
 {
-    before(function ()
+    let slugUrl: string;
+
+    before(() =>
     {
-        this.slugUrl = path.resolve(__dirname, 'resources', 'slug.png');
+        slugUrl = path.resolve(__dirname, 'resources', 'slug.png');
     });
 
-    it('should create new dimension-less resource', function ()
+    it('should create new dimension-less resource', () =>
     {
         const image = new Image();
 
@@ -24,7 +26,7 @@ describe('ImageResource', function ()
         resource.destroy();
     });
 
-    it('should destroy resource multiple times', function ()
+    it('should destroy resource multiple times', () =>
     {
         const resource = new ImageResource(new Image());
 
@@ -32,11 +34,11 @@ describe('ImageResource', function ()
         resource.destroy();
     });
 
-    it('should create new valid resource from HTMLImageElement', function ()
+    it('should create new valid resource from HTMLImageElement', () =>
     {
         const image = new Image();
 
-        image.src = this.slugUrl;
+        image.src = slugUrl;
 
         const resource = new ImageResource(image);
 
@@ -48,11 +50,11 @@ describe('ImageResource', function ()
         resource.destroy();
     });
 
-    it('should handle the loaded event with createBitmapImage', function ()
+    it('should handle the loaded event with createBitmapImage', () =>
     {
         const image = new Image();
 
-        image.src = this.slugUrl;
+        image.src = slugUrl;
 
         const resource = new ImageResource(image, {
             autoLoad: false,
@@ -69,11 +71,11 @@ describe('ImageResource', function ()
         });
     });
 
-    it('should handle the loaded event with no createBitmapImage', function ()
+    it('should handle the loaded event with no createBitmapImage', () =>
     {
         const image = new Image();
 
-        image.src = this.slugUrl;
+        image.src = slugUrl;
 
         const resource = new ImageResource(image, {
             autoLoad: false,
@@ -90,7 +92,7 @@ describe('ImageResource', function ()
         });
     });
 
-    it('should handle error when resource is broken', function ()
+    it('should handle error when resource is broken', () =>
     {
         const image = new Image();
 
@@ -107,13 +109,13 @@ describe('ImageResource', function ()
         });
     });
 
-    it('should handle the loaded event with createBitmapImage using global setting', function ()
+    it('should handle the loaded event with createBitmapImage using global setting', () =>
     {
         const old = settings.CREATE_IMAGE_BITMAP;
         const image = new Image();
 
         settings.CREATE_IMAGE_BITMAP = true;
-        image.src = this.slugUrl;
+        image.src = slugUrl;
 
         const resource = new ImageResource(image, { autoLoad: false });
 
@@ -129,13 +131,13 @@ describe('ImageResource', function ()
         });
     });
 
-    it('should handle the loaded event with no createBitmapImage using global setting', function ()
+    it('should handle the loaded event with no createBitmapImage using global setting', () =>
     {
         const old = settings.CREATE_IMAGE_BITMAP;
         const image = new Image();
 
         settings.CREATE_IMAGE_BITMAP = false;
-        image.src = this.slugUrl;
+        image.src = slugUrl;
 
         const resource = new ImageResource(image, { autoLoad: false });
 
@@ -151,35 +153,37 @@ describe('ImageResource', function ()
         });
     });
 
-    describe('alphaMode behaviour', function ()
+    describe('alphaMode behaviour', () =>
     {
-        before(function ()
+        let renderer: Renderer;
+
+        before(() =>
         {
-            this.renderer = new Renderer();
+            renderer = new Renderer();
         });
 
-        after(function ()
+        after(() =>
         {
-            this.renderer.destroy();
-            this.renderer = null;
+            renderer.destroy();
+            renderer = null;
         });
 
-        it('should override BaseTexture alphaMode if specified', function ()
+        it('should override BaseTexture alphaMode if specified', () =>
         {
             const image = new Image();
             const resource = new ImageResource(image, { autoLoad: false, alphaMode: 2 });
             const baseTexture = new BaseTexture(resource);
 
-            image.src = this.slugUrl;
+            image.src = slugUrl;
 
             return resource.load(false).then(() =>
             {
-                this.renderer.texture.bind(baseTexture);
+                renderer.texture.bind(baseTexture);
                 expect(baseTexture.alphaMode).to.equal(2);
             });
         });
 
-        it('should not override BaseTexture alphaMode if not specified', function ()
+        it('should not override BaseTexture alphaMode if not specified', () =>
         {
             const image = new Image();
             const resource = new ImageResource(image, { autoLoad: false });
@@ -188,11 +192,11 @@ describe('ImageResource', function ()
             baseTexture.alphaMode = 2;
             expect(resource.alphaMode).to.be.null;
 
-            image.src = this.slugUrl;
+            image.src = slugUrl;
 
             return resource.load(false).then(() =>
             {
-                this.renderer.texture.bind(baseTexture);
+                renderer.texture.bind(baseTexture);
                 expect(baseTexture.alphaMode).to.equal(2);
             });
         });

@@ -3,7 +3,7 @@ PixiJS — The HTML5 Creation Engine
 
 ![pixi.js logo](https://pixijs.download/pixijs-banner-no-version.png)
 
-[<img src="https://img.shields.io/badge/slack/pixijs-gray.svg?logo=slack">](https://join.slack.com/t/pixijs/shared_invite/zt-dcem1map-uVuVGC7pZ0trF8SrcA2p9g)
+[![Discord](https://badgen.net/badge/icon/discord?icon=discord&label)](https://discord.gg/QrnxmQUPGV)
 [![npm version](https://badge.fury.io/js/pixi.js.svg)](https://badge.fury.io/js/pixi.js)
 [![Node.js CI](https://github.com/pixijs/pixi.js/workflows/Node.js%20CI/badge.svg)](https://github.com/pixi.js/pixi.js/actions?query=workflow%3A%22Node.js+CI%22)
 
@@ -11,9 +11,8 @@ The aim of this project is to provide a fast lightweight 2D library that works
 across all devices. The PixiJS renderer allows everyone to enjoy the power of
 hardware acceleration without prior knowledge of WebGL. Also, it's fast. Really fast.
 
-If you want to keep up to date with the latest PixiJS news then feel free to follow us on twitter
-([@doormat23](https://twitter.com/doormat23), [@rolnaaba](https://twitter.com/rolnaaba), [@bigtimebuddy](https://twitter.com/bigtimebuddy), [@ivanpopelyshev](https://twitter.com/ivanpopelyshev))
-and we will keep you posted! You can also check back on [our site](http://www.pixijs.com)
+If you want to keep up to date with the latest PixiJS news then feel free to follow us on Twitter [@PixiJS](https://twitter.com/PixiJS)
+and we will keep you posted! You can also check back on [our site](https://www.pixijs.com)
 as any breakthroughs will be posted up there too!
 
 **We are now a part of the [Open Collective](https://opencollective.com/pixijs) and with your support you can help us make PixiJS even better. To make a donation, simply click the button below and we'll love you forever!**
@@ -33,17 +32,17 @@ PixiJS has full [WebGL](https://en.wikipedia.org/wiki/WebGL) support and seamles
 **Boost your development and feel free to use your imagination!**
 
 ### Learn ###
-- Website: Find out more about PixiJS on the [official website](http://www.pixijs.com/).
+- Website: Find out more about PixiJS on the [official website](https://www.pixijs.com/).
 - Getting started: Check out @kittykatattack's comprehensive [tutorial](https://github.com/kittykatattack/learningPixi).
-- Examples: Get stuck right in and play around with PixiJS code and features right [here](http://pixijs.github.io/examples/)!
-- Docs: Get to know the PixiJS API by checking out the [docs](https://pixijs.github.io/docs/).
-- Wiki: Other misc tutorials and resources are [on the Wiki](https://github.com/pixijs/pixi.js/wiki).
+- Examples: Get stuck right in and play around with PixiJS code and features right [here](https://pixijs.io/examples/)!
+- Docs: Get to know the PixiJS API by checking out the [docs](https://pixijs.io/docs/).
+- Guide: Supplementary guide to the API documentation [here](https://pixijs.io/guides/).
+- Wiki: Other misc tutorials and resources are [on the Wiki](https://github.com/pixijs/pixijs/wiki).
 
 ### Community ###
-- Forums: Check out the [forum](http://www.html5gamedevs.com/forum/15-pixijs/) and [Stackoverflow](http://stackoverflow.com/search?q=pixi.js), both friendly places to ask your PixiJS questions.
-- Inspiration: Check out the [gallery](http://www.pixijs.com/gallery) to see some of the amazing things people have created!
-- Chat: You can join us on [Gitter](https://gitter.im/pixijs/pixi.js) To chat about PixiJS. We also now have a Slack channel. If you would like to join it please Send me an email (mat@goodboydigital.com) and I will invite you in.
-
+- Forums: Check out the [forum](https://www.html5gamedevs.com/forum/15-pixijs/) and [Stackoverflow](http://stackoverflow.com/search?q=pixi.js), both friendly places to ask your PixiJS questions.
+- Inspiration: Check out the [gallery](https://www.pixijs.com/gallery) to see some of the amazing things people have created!
+- Chat: You can join us on [Discord](https://discord.gg/QrnxmQUPGV) to chat about PixiJS.
 
 ### Setup ###
 
@@ -115,7 +114,7 @@ before submitting changes.
 - Primitive Drawing
 - Masking
 - Filters
-- [User Plugins](https://github.com/pixijs/pixi.js/wiki/v5-Resources)
+- [User Plugins](https://github.com/pixijs/pixijs/wiki/v6-Resources)
 
 ### Basic Usage Example ###
 
@@ -158,7 +157,7 @@ app.loader.add('bunny', 'bunny.png').load((loader, resources) => {
 ### How to build ###
 
 Note that for most users you don't need to build this project. If all you want is to use PixiJS, then
-just download one of our [prebuilt releases](https://github.com/pixijs/pixi.js/releases). Really
+just download one of our [prebuilt releases](https://github.com/pixijs/pixijs/releases). Really
 the only time you should need to build PixiJS is if you are developing it.
 
 If you don't already have Node.js and NPM, go install them. Then, in the folder where you have cloned

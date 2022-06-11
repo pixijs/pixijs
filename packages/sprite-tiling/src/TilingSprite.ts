@@ -12,81 +12,57 @@ export interface TilingSprite extends GlobalMixins.TilingSprite {}
 
 /**
  * A tiling sprite is a fast way of rendering a tiling image.
- *
- * @class
- * @extends PIXI.Sprite
  * @memberof PIXI
  */
 export class TilingSprite extends Sprite
 {
+    /** Tile transform */
     public tileTransform: Transform;
+
+    /** Matrix that is applied to UV to get the coords in Texture normalized space to coords in BaseTexture space. */
     public uvMatrix: TextureMatrix;
+
+    /**
+     * Flags whether the tiling pattern should originate from the origin instead of the top-left corner in
+     * local space.
+     *
+     * This will make the texture coordinates assigned to each vertex dependent on the value of the anchor. Without
+     * this, the top-left corner always gets the (0, 0) texture coordinate.
+     * @default false
+     */
     public uvRespectAnchor: boolean;
 
     /**
-     * @param {PIXI.Texture} texture - the texture of the tiling sprite
-     * @param {number} [width=100] - the width of the tiling sprite
-     * @param {number} [height=100] - the height of the tiling sprite
+     * @param texture - The texture of the tiling sprite.
+     * @param width - The width of the tiling sprite.
+     * @param height - The height of the tiling sprite.
      */
     constructor(texture: Texture, width = 100, height = 100)
     {
         super(texture);
 
-        /**
-         * Tile transform
-         *
-         * @member {PIXI.Transform}
-         */
         this.tileTransform = new Transform();
 
-        /**
-         * The with of the tiling sprite
-         *
-         * @member {number}
-         * @private
-         */
+        // The width of the tiling sprite
         this._width = width;
 
-        /**
-         * The height of the tiling sprite
-         *
-         * @member {number}
-         * @private
-         */
+        // The height of the tiling sprite
         this._height = height;
 
-        /**
-         * matrix that is applied to UV to get the coords in Texture normalized space to coords in BaseTexture space
-         *
-         * @member {PIXI.TextureMatrix}
-         */
         this.uvMatrix = this.texture.uvMatrix || new TextureMatrix(texture);
 
         /**
          * Plugin that is responsible for rendering this element.
          * Allows to customize the rendering process without overriding '_render' method.
-         *
-         * @member {string}
          * @default 'tilingSprite'
          */
         this.pluginName = 'tilingSprite';
 
-        /**
-         * Flags whether the tiling pattern should originate from the origin instead of the top-left corner in
-         * local space.
-         *
-         * This will make the texture coordinates assigned to each vertex dependent on the value of the anchor. Without
-         * this, the top-left corner always gets the (0, 0) texture coordinate.
-         *
-         * @member {boolean}
-         * @default false
-         */
         this.uvRespectAnchor = false;
     }
     /**
      * Changes frame clamping in corresponding textureTransform, shortcut
      * Change to -0.5 to add a pixel to the edge, recommended for transparent trimmed textures in atlas
-     *
      * @default 0.5
      * @member {number}
      */
@@ -101,26 +77,18 @@ export class TilingSprite extends Sprite
         this.uvMatrix.update(true);
     }
 
-    /**
-     * The scaling of the image that is being tiled
-     *
-     * @member {PIXI.ObservablePoint}
-     */
+    /** The scaling of the image that is being tiled. */
     get tileScale(): ObservablePoint
     {
         return this.tileTransform.scale;
     }
 
-    set tileScale(value: ObservablePoint)
+    set tileScale(value: IPointData)
     {
         this.tileTransform.scale.copyFrom(value as IPoint);
     }
 
-    /**
-     * The offset of the image that is being tiled
-     *
-     * @member {PIXI.ObservablePoint}
-     */
+    /** The offset of the image that is being tiled. */
     get tilePosition(): ObservablePoint
     {
         return this.tileTransform.position;
@@ -145,9 +113,7 @@ export class TilingSprite extends Sprite
 
     /**
      * Renders the object using the WebGL renderer
-     *
-     * @protected
-     * @param {PIXI.Renderer} renderer - The renderer
+     * @param renderer - The renderer
      */
     protected _render(renderer: Renderer): void
     {
@@ -166,11 +132,7 @@ export class TilingSprite extends Sprite
         renderer.plugins[this.pluginName].render(this);
     }
 
-    /**
-     * Updates the bounds of the tiling sprite.
-     *
-     * @protected
-     */
+    /** Updates the bounds of the tiling sprite. */
     protected _calculateBounds(): void
     {
         const minX = this._width * -this._anchor._x;
@@ -183,9 +145,8 @@ export class TilingSprite extends Sprite
 
     /**
      * Gets the local bounds of the sprite object.
-     *
-     * @param {PIXI.Rectangle} [rect] - Optional output rectangle.
-     * @return {PIXI.Rectangle} The bounds.
+     * @param rect - Optional output rectangle.
+     * @returns The bounds.
      */
     public getLocalBounds(rect?: Rectangle): Rectangle
     {
@@ -215,9 +176,8 @@ export class TilingSprite extends Sprite
 
     /**
      * Checks if a point is inside this tiling sprite.
-     *
-     * @param {PIXI.IPointData} point - the point to check
-     * @return {boolean} Whether or not the sprite contains the point.
+     * @param point - The point to check.
+     * @returns Whether or not the sprite contains the point.
      */
     public containsPoint(point: IPointData): boolean
     {
@@ -242,7 +202,6 @@ export class TilingSprite extends Sprite
 
     /**
      * Destroys this sprite and optionally its texture and children
-     *
      * @param {object|boolean} [options] - Options parameter. A boolean will act as if all options
      *  have been set to that value
      * @param {boolean} [options.children=false] - if set to true, all the children will have their destroy
@@ -250,7 +209,7 @@ export class TilingSprite extends Sprite
      * @param {boolean} [options.texture=false] - Should it destroy the current texture of the sprite as well
      * @param {boolean} [options.baseTexture=false] - Should it destroy the base texture of the sprite as well
      */
-    public destroy(options?: IDestroyOptions|boolean): void
+    public destroy(options?: IDestroyOptions | boolean): void
     {
         super.destroy(options);
 
@@ -261,15 +220,14 @@ export class TilingSprite extends Sprite
     /**
      * Helper function that creates a new tiling sprite based on the source you provide.
      * The source can be - frame id, image url, video url, canvas element, video element, base texture
-     *
      * @static
      * @param {string|PIXI.Texture|HTMLCanvasElement|HTMLVideoElement} source - Source to create texture from
-     * @param {Object} options - See {@link PIXI.BaseTexture}'s constructor for options.
+     * @param {object} options - See {@link PIXI.BaseTexture}'s constructor for options.
      * @param {number} options.width - required width of the tiling sprite
      * @param {number} options.height - required height of the tiling sprite
-     * @return {PIXI.TilingSprite} The newly created texture
+     * @returns {PIXI.TilingSprite} The newly created texture
      */
-    static from(source: TextureSource, options: ISize & IBaseTextureOptions): TilingSprite
+    static from(source: TextureSource | Texture, options: ISize & IBaseTextureOptions): TilingSprite
     {
         const texture = (source instanceof Texture)
             ? source
@@ -282,11 +240,7 @@ export class TilingSprite extends Sprite
         );
     }
 
-    /**
-     * The width of the sprite, setting this will actually modify the scale to achieve the value set
-     *
-     * @member {number}
-     */
+    /** The width of the sprite, setting this will actually modify the scale to achieve the value set. */
     get width(): number
     {
         return this._width;
@@ -297,11 +251,7 @@ export class TilingSprite extends Sprite
         this._width = value;
     }
 
-    /**
-     * The height of the TilingSprite, setting this will actually modify the scale to achieve the value set
-     *
-     * @member {number}
-     */
+    /** The height of the TilingSprite, setting this will actually modify the scale to achieve the value set. */
     get height(): number
     {
         return this._height;

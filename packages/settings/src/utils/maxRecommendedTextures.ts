@@ -8,10 +8,9 @@ import { isMobile } from './isMobile';
  *
  * In v4, all mobile devices were limited to 4 texture units because for this.
  * In v5, we allow all texture units to be used on modern Apple or Android devices.
- *
  * @private
  * @param {number} max
- * @returns {number}
+ * @returns {number} The maximum recommended texture units to use.
  */
 export function maxRecommendedTextures(max: number): number
 {

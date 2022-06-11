@@ -4,7 +4,8 @@ import { canUploadSameBuffer } from './utils/canUploadSameBuffer';
 import { GC_MODES, MIPMAP_MODES, MSAA_QUALITY, PRECISION, SCALE_MODES, WRAP_MODES } from '@pixi/constants';
 import type { ENV } from '@pixi/constants';
 
-export interface IRenderOptions {
+export interface IRenderOptions
+{
     view: HTMLCanvasElement;
     antialias: boolean;
     autoDensity: boolean;
@@ -18,7 +19,8 @@ export interface IRenderOptions {
     legacy: boolean;
 }
 
-export interface ISettings {
+export interface ISettings
+{
     MIPMAP_TEXTURES: MIPMAP_MODES;
     ANISOTROPIC_LEVEL: number;
     RESOLUTION: number;
@@ -64,7 +66,6 @@ export const settings: ISettings = {
     /**
      * If set to true WebGL will attempt make textures mimpaped by default.
      * Mipmapping will only succeed if the base texture uploaded has power of two dimensions.
-     *
      * @static
      * @name MIPMAP_TEXTURES
      * @memberof PIXI.settings
@@ -76,7 +77,6 @@ export const settings: ISettings = {
     /**
      * Default anisotropic filtering level of textures.
      * Usually from 0 to 16
-     *
      * @static
      * @name ANISOTROPIC_LEVEL
      * @memberof PIXI.settings
@@ -87,7 +87,6 @@ export const settings: ISettings = {
 
     /**
      * Default resolution / device pixel ratio of the renderer.
-     *
      * @static
      * @name RESOLUTION
      * @memberof PIXI.settings
@@ -98,7 +97,6 @@ export const settings: ISettings = {
 
     /**
      * Default filter resolution.
-     *
      * @static
      * @name FILTER_RESOLUTION
      * @memberof PIXI.settings
@@ -109,7 +107,6 @@ export const settings: ISettings = {
 
     /**
      * Default filter samples.
-     *
      * @static
      * @name FILTER_MULTISAMPLE
      * @memberof PIXI.settings
@@ -120,7 +117,6 @@ export const settings: ISettings = {
 
     /**
      * The maximum textures that this device supports.
-     *
      * @static
      * @name SPRITE_MAX_TEXTURES
      * @memberof PIXI.settings
@@ -136,7 +132,6 @@ export const settings: ISettings = {
      * The default sprite batch size.
      *
      * The default aims to balance desktop and mobile devices.
-     *
      * @static
      * @name SPRITE_BATCH_SIZE
      * @memberof PIXI.settings
@@ -148,22 +143,21 @@ export const settings: ISettings = {
     /**
      * The default render options if none are supplied to {@link PIXI.Renderer}
      * or {@link PIXI.CanvasRenderer}.
-     *
      * @static
      * @name RENDER_OPTIONS
      * @memberof PIXI.settings
      * @type {object}
-     * @property {HTMLCanvasElement} view=null
-     * @property {boolean} antialias=false
-     * @property {boolean} autoDensity=false
-     * @property {boolean} useContextAlpha=true
-     * @property {number} backgroundColor=0x000000
-     * @property {number} backgroundAlpha=1
-     * @property {boolean} clearBeforeRender=true
-     * @property {boolean} preserveDrawingBuffer=false
-     * @property {number} width=800
-     * @property {number} height=600
-     * @property {boolean} legacy=false
+     * @property {HTMLCanvasElement} [view=null] -
+     * @property {boolean} [antialias=false] -
+     * @property {boolean} [autoDensity=false] -
+     * @property {boolean} [useContextAlpha=true]  -
+     * @property {number} [backgroundColor=0x000000] -
+     * @property {number} [backgroundAlpha=1] -
+     * @property {boolean} [clearBeforeRender=true] -
+     * @property {boolean} [preserveDrawingBuffer=false] -
+     * @property {number} [width=800] -
+     * @property {number} [height=600] -
+     * @property {boolean} [legacy=false] -
      */
     RENDER_OPTIONS: {
         view: null,
@@ -181,7 +175,6 @@ export const settings: ISettings = {
 
     /**
      * Default Garbage Collection mode.
-     *
      * @static
      * @name GC_MODE
      * @memberof PIXI.settings
@@ -192,7 +185,6 @@ export const settings: ISettings = {
 
     /**
      * Default Garbage Collection max idle.
-     *
      * @static
      * @name GC_MAX_IDLE
      * @memberof PIXI.settings
@@ -203,7 +195,6 @@ export const settings: ISettings = {
 
     /**
      * Default Garbage Collection maximum check count.
-     *
      * @static
      * @name GC_MAX_CHECK_COUNT
      * @memberof PIXI.settings
@@ -214,7 +205,6 @@ export const settings: ISettings = {
 
     /**
      * Default wrap modes that are supported by pixi.
-     *
      * @static
      * @name WRAP_MODE
      * @memberof PIXI.settings
@@ -225,7 +215,6 @@ export const settings: ISettings = {
 
     /**
      * Default scale mode for textures.
-     *
      * @static
      * @name SCALE_MODE
      * @memberof PIXI.settings
@@ -236,7 +225,6 @@ export const settings: ISettings = {
 
     /**
      * Default specify float precision in vertex shader.
-     *
      * @static
      * @name PRECISION_VERTEX
      * @memberof PIXI.settings
@@ -248,7 +236,6 @@ export const settings: ISettings = {
     /**
      * Default specify float precision in fragment shader.
      * iOS is best set at highp due to https://github.com/pixijs/pixi.js/issues/3742
-     *
      * @static
      * @name PRECISION_FRAGMENT
      * @memberof PIXI.settings
@@ -259,7 +246,6 @@ export const settings: ISettings = {
 
     /**
      * Can we upload the same buffer in a single frame?
-     *
      * @static
      * @name CAN_UPLOAD_SAME_BUFFER
      * @memberof PIXI.settings
@@ -269,7 +255,6 @@ export const settings: ISettings = {
 
     /**
      * Enables bitmap creation before image load. This feature is experimental.
-     *
      * @static
      * @name CREATE_IMAGE_BITMAP
      * @memberof PIXI.settings
@@ -282,7 +267,6 @@ export const settings: ISettings = {
      * If true PixiJS will Math.floor() x/y values when rendering, stopping pixel interpolation.
      * Advantages can include sharper image quality (like text) and faster rendering on canvas.
      * The main disadvantage is movement of objects may appear less smooth.
-     *
      * @static
      * @constant
      * @memberof PIXI.settings

@@ -42,20 +42,21 @@ export interface BaseRenderTexture extends GlobalMixins.BaseRenderTexture, BaseT
  *
  * renderer.render(sprite, {renderTexture});  // Renders to center of RenderTexture
  * ```
- *
- * @class
- * @extends PIXI.BaseTexture
  * @memberof PIXI
  */
 export class BaseRenderTexture extends BaseTexture
 {
     public clearColor: number[];
     public framebuffer: Framebuffer;
+
+    /** The data structure for the stencil masks. */
     maskStack: Array<MaskData>;
+
+    /** The data structure for the filters. */
     filterStack: Array<any>;
 
     /**
-     * @param {object} [options]
+     * @param options
      * @param {number} [options.width=100] - The width of the base render texture.
      * @param {number} [options.height=100] - The height of the base render texture.
      * @param {PIXI.SCALE_MODES} [options.scaleMode=PIXI.settings.SCALE_MODE] - See {@link PIXI.SCALE_MODES}
@@ -64,7 +65,7 @@ export class BaseRenderTexture extends BaseTexture
      *   of the texture being generated.
      * @param {PIXI.MSAA_QUALITY} [options.multisample=PIXI.MSAA_QUALITY.NONE] - The number of samples of the frame buffer.
      */
-    constructor(options?: IBaseTextureOptions)
+    constructor(options: IBaseTextureOptions = {})
     {
         if (typeof options === 'number')
         {
@@ -96,27 +97,14 @@ export class BaseRenderTexture extends BaseTexture
         this.framebuffer.multisample = options.multisample;
 
         // TODO - could this be added the systems?
-
-        /**
-         * The data structure for the stencil masks.
-         *
-         * @member {PIXI.MaskData[]}
-         */
         this.maskStack = [];
-
-        /**
-         * The data structure for the filters.
-         *
-         * @member {Object[]}
-         */
         this.filterStack = [{}];
     }
 
     /**
      * Resizes the BaseRenderTexture.
-     *
-     * @param {number} desiredWidth - The desired width to resize to.
-     * @param {number} desiredHeight - The desired height to resize to.
+     * @param desiredWidth - The desired width to resize to.
+     * @param desiredHeight - The desired height to resize to.
      */
     resize(desiredWidth: number, desiredHeight: number): void
     {
@@ -128,7 +116,6 @@ export class BaseRenderTexture extends BaseTexture
      * Frees the texture and framebuffer from WebGL memory without destroying this texture object.
      * This means you can still use the texture later which will upload it to GPU
      * memory again.
-     *
      * @fires PIXI.BaseTexture#dispose
      */
     dispose(): void
@@ -138,9 +125,7 @@ export class BaseRenderTexture extends BaseTexture
         super.dispose();
     }
 
-    /**
-     * Destroys this texture.
-     */
+    /** Destroys this texture. */
     destroy(): void
     {
         super.destroy();

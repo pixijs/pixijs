@@ -2,9 +2,9 @@ import { CanvasResource, BaseTexture } from '@pixi/core';
 import sinon from 'sinon';
 import { expect } from 'chai';
 
-describe('CanvasResource', function ()
+describe('CanvasResource', () =>
 {
-    it('should create new dimension-less resource', function ()
+    it('should create new dimension-less resource', () =>
     {
         const canvas = document.createElement('canvas');
 
@@ -17,7 +17,7 @@ describe('CanvasResource', function ()
         resource.destroy();
     });
 
-    it('should create new valid resource', function ()
+    it('should create new valid resource', () =>
     {
         const canvas = document.createElement('canvas');
 
@@ -33,27 +33,27 @@ describe('CanvasResource', function ()
         resource.destroy();
     });
 
-    it('should fire resize event on bind', function ()
+    it('should fire resize event on bind', () =>
     {
         const canvas = document.createElement('canvas');
         const resource = new CanvasResource(canvas);
         const baseTexture = { setRealSize: sinon.stub() };
 
-        resource.bind(baseTexture);
+        resource.bind(baseTexture as unknown as BaseTexture);
 
         expect(baseTexture.setRealSize.calledOnce).to.be.true;
 
-        resource.unbind(baseTexture);
+        resource.unbind(baseTexture as unknown as BaseTexture);
         resource.destroy();
     });
 
-    it('should fire manual update event', function ()
+    it('should fire manual update event', () =>
     {
         const canvas = document.createElement('canvas');
         const resource = new CanvasResource(canvas);
         const baseTexture = { update: sinon.stub() };
 
-        resource.bind(baseTexture);
+        resource.bind(baseTexture as unknown as BaseTexture);
 
         expect(baseTexture.update.called).to.be.false;
 
@@ -61,11 +61,11 @@ describe('CanvasResource', function ()
 
         expect(baseTexture.update.calledOnce).to.be.true;
 
-        resource.unbind(baseTexture);
+        resource.unbind(baseTexture as unknown as BaseTexture);
         resource.destroy();
     });
 
-    it('should change BaseTexture size on update', function ()
+    it('should change BaseTexture size on update', () =>
     {
         const canvas = document.createElement('canvas');
 

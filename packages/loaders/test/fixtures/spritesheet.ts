@@ -22,7 +22,7 @@ function dirname(path: string)
     if (dir)
     {
         // It has a dirname, strip trailing slash
-        dir = dir.substr(0, dir.length - 1);
+        dir = dir.slice(0, -1);
     }
 
     return root + dir;

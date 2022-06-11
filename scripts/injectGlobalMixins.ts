@@ -1,12 +1,8 @@
-import { getPackages } from '@lerna/project';
-import batchPackages from '@lerna/batch-packages';
-import filterPackages from '@lerna/filter-packages';
+import workspacesRun from 'workspaces-run';
 import path from 'path';
 import fs from 'fs';
 
-/**
- * simplified interface for a package.json
- */
+/** simplified interface for a package.json */
 interface SimplePackageJson
 {
     location: string
@@ -15,20 +11,9 @@ interface SimplePackageJson
 }
 
 /**
- * Gets all the non-private packages package.json data
- */
-async function getSortedPackages(): Promise<SimplePackageJson[]>
-{
-    const packages = await getPackages(process.cwd());
-
-    const filtered = filterPackages(packages, undefined, undefined, false);
-
-    return batchPackages(filtered)
-        .reduce((arr: SimplePackageJson[], batch: SimplePackageJson[]) => arr.concat(batch), []);
-}
-
-/**
  * Adds global reference to the start of a packages `index.d.ts` file
+ * @param basePath
+ * @param dataToWrite
  */
 function writeToIndex(basePath: string, dataToWrite: string): void
 {
@@ -37,6 +22,24 @@ function writeToIndex(basePath: string, dataToWrite: string): void
 
     file.unshift(dataToWrite);
     fs.writeFileSync(indexDtsPath, file.join('\n'));
+}
+
+/**
+ * Collect the list of packages in the project
+ * @param result
+ */
+async function getPackages(result: SimplePackageJson[] = []): Promise<SimplePackageJson[]>
+{
+    await workspacesRun({ cwd: process.cwd() }, async (pkg) =>
+    {
+        result.push({
+            location: pkg.dir,
+            name: pkg.name,
+            dependencies: pkg.config.dependencies,
+        });
+    });
+
+    return result;
 }
 
 /**
@@ -52,7 +55,7 @@ async function start(): Promise<void>
     let pixiGlobalMixins = '';
     let pixiLegacyGlobalMixins = '';
 
-    const packages = await getSortedPackages();
+    const packages = await getPackages();
     const legacyPackages = Object.keys(packages.find((pkg) => pkg.name === 'pixi.js-legacy').dependencies);
     const pixiPackages = Object.keys(packages.find((pkg) => pkg.name === 'pixi.js').dependencies);
 

@@ -5,9 +5,6 @@ import type { Container, DisplayObject } from '@pixi/display';
 
 /**
  * Strategy how to search through stage tree for interactive objects
- *
- * @private
- * @class
  * @memberof PIXI
  */
 export class TreeSearch
@@ -21,17 +18,16 @@ export class TreeSearch
 
     /**
      * Recursive implementation for findHit
-     *
      * @private
-     * @param {PIXI.InteractionEvent} interactionEvent - event containing the point that
+     * @param interactionEvent - event containing the point that
      *  is tested for collision
-     * @param {PIXI.Container|PIXI.Sprite|PIXI.TilingSprite} displayObject - the displayObject
+     * @param displayObject - the displayObject
      *  that will be hit test (recursively crawls its children)
-     * @param {Function} [func] - the function that will be called on each interactive object. The
+     * @param func - the function that will be called on each interactive object. The
      *  interactionEvent, displayObject and hit will be passed to the function
-     * @param {boolean} [hitTest] - this indicates if the objects inside should be hit test against the point
-     * @param {boolean} [interactive] - Whether the displayObject is interactive
-     * @return {boolean} returns true if the displayObject hit the point
+     * @param hitTest - this indicates if the objects inside should be hit test against the point
+     * @param interactive - Whether the displayObject is interactive
+     * @returns - Returns true if the displayObject hit the point
      */
     public recursiveFindHit(interactionEvent: InteractionEvent, displayObject: DisplayObject,
         func?: InteractionCallback, hitTest?: boolean, interactive?: boolean
@@ -182,16 +178,15 @@ export class TreeSearch
      * This function is provides a neat way of crawling through the scene graph and running a
      * specified function on all interactive objects it finds. It will also take care of hit
      * testing the interactive objects and passes the hit across in the function.
-     *
      * @private
-     * @param {PIXI.InteractionEvent} interactionEvent - event containing the point that
+     * @param interactionEvent - event containing the point that
      *  is tested for collision
-     * @param {PIXI.Container|PIXI.Sprite|PIXI.TilingSprite} displayObject - the displayObject
+     * @param displayObject - the displayObject
      *  that will be hit test (recursively crawls its children)
-     * @param {Function} [func] - the function that will be called on each interactive object. The
+     * @param func - the function that will be called on each interactive object. The
      *  interactionEvent, displayObject and hit will be passed to the function
-     * @param {boolean} [hitTest] - this indicates if the objects inside should be hit test against the point
-     * @return {boolean} returns true if the displayObject hit the point
+     * @param hitTest - this indicates if the objects inside should be hit test against the point
+     * @returns - Returns true if the displayObject hit the point
      */
     public findHit(interactionEvent: InteractionEvent, displayObject: DisplayObject,
         func?: InteractionCallback, hitTest?: boolean

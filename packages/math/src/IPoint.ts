@@ -17,7 +17,6 @@ export interface IPoint extends IPointData
 /**
  * Sets the point to a new x and y position.
  * If y is omitted, both x and y will be set to x.
- *
  * @method set
  * @memberof PIXI.IPoint#
  * @param {number} [x=0] - position of the point on the x axis
@@ -42,7 +41,6 @@ export interface IPoint extends IPointData
 
 /**
  * Returns true if the given point is equal to this point
- *
  * @method equals
  * @memberof PIXI.IPoint#
  * @param {PIXI.IPointData} p - The point to check

@@ -2,66 +2,11 @@ import { Rectangle } from '@pixi/math';
 import { expect } from 'chai';
 import '@pixi/math-extras';
 
-describe('Rectangle', function ()
+describe('Rectangle', () =>
 {
-    describe('intersects', function ()
+    describe('containsRect', () =>
     {
-        it('should return true if the area of the intersection > 0', function ()
-        {
-            /*
-            ! SHARING A SIDE IS NOT INTERSECTING !
-                +--------+--------+
-                |   A    |    B   |
-                |    +---+--+     |
-                |    |  E|  |     |
-                +----|---+--|-----+
-                |    |   |  |     |
-                |  C +---+--+ D   |
-                |        | 🄵      |
-                +--------+--------+
-            */
-            const a = new Rectangle(0, 0, 100, 100);
-            const b = new Rectangle(100, 0, 100, 100);
-            const c = new Rectangle(0, 100, 100, 100);
-            const d = new Rectangle(100, 100, 100, 100);
-            const e = new Rectangle(50, 50, 100, 100);
-            const f = new Rectangle(150, 175, 0, 0);
-
-            // e intersects a,b,c,d
-            expect(e.intersects(a)).to.equal(true);
-            expect(e.intersects(b)).to.equal(true);
-            expect(e.intersects(c)).to.equal(true);
-            expect(e.intersects(d)).to.equal(true);
-
-            // works the other way arround
-            expect(a.intersects(e)).to.equal(true);
-            expect(b.intersects(e)).to.equal(true);
-            expect(c.intersects(e)).to.equal(true);
-            expect(d.intersects(e)).to.equal(true);
-
-            // none of the other intersect (sharing a side it is NOT intersecting!)
-            expect(a.intersects(b)).to.equal(false); // share Y side
-            expect(b.intersects(d)).to.equal(false); // share X side
-            expect(c.intersects(b)).to.equal(false); // share single point
-
-            // Since F has no area, the intersection with D it's 0 so it's false.
-            expect(f.intersects(d)).to.equal(false);
-
-            // Any rectangle with area intersects itself
-            expect(a.intersects(a.clone())).to.equal(true);
-            expect(b.intersects(b.clone())).to.equal(true);
-            expect(c.intersects(c.clone())).to.equal(true);
-            expect(d.intersects(d.clone())).to.equal(true);
-            expect(e.intersects(e.clone())).to.equal(true);
-
-            // A point without area can't have an intersection, thus it can't even intersect itself
-            expect(f.intersects(f.clone())).to.equal(false);
-        });
-    });
-
-    describe('containsRect', function ()
-    {
-        it('should return true if all four corners are inside or on the edge of the rectangle', function ()
+        it('should return true if all four corners are inside or on the edge of the rectangle', () =>
         {
             /*
                 +-----------------+-----------------+
@@ -100,9 +45,9 @@ describe('Rectangle', function ()
         });
     });
 
-    describe('equals', function ()
+    describe('equals', () =>
     {
-        it('should return true x, y, width and height match', function ()
+        it('should return true x, y, width and height match', () =>
         {
             const a = new Rectangle(0, 0, 100, 100);
             const b = new Rectangle(0, 0, 100, 100);
@@ -122,10 +67,10 @@ describe('Rectangle', function ()
             expect(c.equals(c.clone())).to.equal(true);
         });
     });
-    describe('intersection', function ()
+    describe('intersection', () =>
     {
         it('should return a rectangle with the intersection if the area is > 0, otherwise an empty rectangle',
-            function ()
+            () =>
             {
                 /*
                 +--------+
@@ -175,7 +120,7 @@ describe('Rectangle', function ()
                 expect(emptyIntersectsItself.height).to.equal(0);
             });
 
-        it('should return the same reference given', function ()
+        it('should return the same reference given', () =>
         {
             const a = new Rectangle(0, 0, 100, 100);
             const b = new Rectangle(50, 50, 100, 100);
@@ -185,10 +130,10 @@ describe('Rectangle', function ()
         });
     });
 
-    describe('union', function ()
+    describe('union', () =>
     {
         it('should return a rectangle that includes both rectangles (similar to enlarge)',
-            function ()
+            () =>
             {
                 const a = new Rectangle(0, 0, 100, 100);
                 const b = new Rectangle(50, 50, 100, 100);
@@ -200,7 +145,7 @@ describe('Rectangle', function ()
                 expect(c.height).to.equal(150);
             });
 
-        it('should return the same reference given', function ()
+        it('should return the same reference given', () =>
         {
             const a = new Rectangle(0, 0, 100, 100);
             const b = new Rectangle(50, 50, 100, 100);
@@ -210,7 +155,7 @@ describe('Rectangle', function ()
         });
 
         it('should return the same values as enalrge()',
-            function ()
+            () =>
             {
                 const enlarged = new Rectangle(0, 0, 100, 100);
                 const a = new Rectangle(0, 0, 100, 100);

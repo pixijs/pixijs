@@ -1,9 +1,22 @@
 {
   "name": "@pixi/core",
-  "version": "6.1.0-rc.5",
+  "version": "6.4.2",
   "main": "dist/cjs/core.js",
   "module": "dist/esm/core.js",
   "bundle": "dist/browser/core.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./index.d.ts",
+        "default": "./dist/esm/core.js"
+      },
+      "require": {
+        "types": "./index.d.ts",
+        "default": "./dist/cjs/core.js"
+      }
+    }
+  },
   "description": "Core PixiJS",
   "author": "Mat Groves",
   "contributors": [
@@ -28,12 +41,15 @@
     "type": "opencollective",
     "url": "https://opencollective.com/pixijs"
   },
+  "dependencies": {
+    "@types/offscreencanvas": "^2019.6.4"
+  },
   "peerDependencies": {
-    "@pixi/constants": "6.1.0-rc.5",
-    "@pixi/math": "6.1.0-rc.5",
-    "@pixi/runner": "6.1.0-rc.5",
-    "@pixi/settings": "6.1.0-rc.5",
-    "@pixi/ticker": "6.1.0-rc.5",
-    "@pixi/utils": "6.1.0-rc.5"
+    "@pixi/constants": "6.4.2",
+    "@pixi/math": "6.4.2",
+    "@pixi/runner": "6.4.2",
+    "@pixi/settings": "6.4.2",
+    "@pixi/ticker": "6.4.2",
+    "@pixi/utils": "6.4.2"
   }
 }

@@ -4,38 +4,20 @@ import { LINE_JOIN, LINE_CAP } from '../const';
 /**
  * Represents the line style for Graphics.
  * @memberof PIXI
- * @class
- * @extends PIXI.FillStyle
  */
 export class LineStyle extends FillStyle
 {
-    /**
-     * The width (thickness) of any lines drawn.
-     *
-     * @member {number}
-     * @default 0
-     */
+    /** The width (thickness) of any lines drawn. */
     public width = 0;
 
-    /**
-     * The alignment of any lines drawn (0.5 = middle, 1 = outer, 0 = inner). WebGL only.
-     *
-     * @member {number}
-     * @default 0.5
-     */
+    /** The alignment of any lines drawn (0.5 = middle, 1 = outer, 0 = inner). WebGL only. */
     public alignment = 0.5;
 
-    /**
-     * If true the lines will be draw using LINES instead of TRIANGLE_STRIP
-     *
-     * @member {boolean}
-     * @default false
-     */
+    /** If true the lines will be draw using LINES instead of TRIANGLE_STRIP. */
     public native = false;
 
     /**
      * Line cap style.
-     *
      * @member {PIXI.LINE_CAP}
      * @default PIXI.LINE_CAP.BUTT
      */
@@ -43,25 +25,15 @@ export class LineStyle extends FillStyle
 
     /**
      * Line join style.
-     *
      * @member {PIXI.LINE_JOIN}
      * @default PIXI.LINE_JOIN.MITER
      */
     public join = LINE_JOIN.MITER;
 
-    /**
-     * Miter limit.
-     *
-     * @member {number}
-     * @default 10
-     */
+    /** Miter limit. */
     public miterLimit = 10;
 
-    /**
-     * Clones the object
-     *
-     * @return {PIXI.LineStyle}
-     */
+    /** Clones the object. */
     public clone(): LineStyle
     {
         const obj = new LineStyle();
@@ -81,9 +53,7 @@ export class LineStyle extends FillStyle
         return obj;
     }
 
-    /**
-     * Reset the line style to default.
-     */
+    /** Reset the line style to default. */
     public reset(): void
     {
         super.reset();

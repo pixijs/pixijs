@@ -2,7 +2,6 @@ import { GRAPHICS_CURVES } from '../const';
 
 /**
  * Utilities for bezier curves
- * @class
  * @private
  */
 export class BezierUtils
@@ -11,17 +10,16 @@ export class BezierUtils
      * Calculate length of bezier curve.
      * Analytical solution is impossible, since it involves an integral that does not integrate in general.
      * Therefore numerical solution is used.
-     *
      * @private
-     * @param {number} fromX - Starting point x
-     * @param {number} fromY - Starting point y
-     * @param {number} cpX - Control point x
-     * @param {number} cpY - Control point y
-     * @param {number} cpX2 - Second Control point x
-     * @param {number} cpY2 - Second Control point y
-     * @param {number} toX - Destination point x
-     * @param {number} toY - Destination point y
-     * @return {number} Length of bezier curve
+     * @param fromX - Starting point x
+     * @param fromY - Starting point y
+     * @param cpX - Control point x
+     * @param cpY - Control point y
+     * @param cpX2 - Second Control point x
+     * @param cpY2 - Second Control point y
+     * @param toX - Destination point x
+     * @param toY - Destination point y
+     * @returns - Length of bezier curve
      */
     static curveLength(
         fromX: number, fromY: number,
@@ -70,15 +68,14 @@ export class BezierUtils
      * Calculate the points for a bezier curve and then draws it.
      *
      * Ignored from docs since it is not directly exposed.
-     *
      * @ignore
-     * @param {number} cpX - Control point x
-     * @param {number} cpY - Control point y
-     * @param {number} cpX2 - Second Control point x
-     * @param {number} cpY2 - Second Control point y
-     * @param {number} toX - Destination point x
-     * @param {number} toY - Destination point y
-     * @param {number[]} points - Path array to push points into
+     * @param cpX - Control point x
+     * @param cpY - Control point y
+     * @param cpX2 - Second Control point x
+     * @param cpY2 - Second Control point y
+     * @param toX - Destination point x
+     * @param toY - Destination point y
+     * @param points - Path array to push points into
      */
     static curveTo(
         cpX: number, cpY: number,

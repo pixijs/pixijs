@@ -2,8 +2,6 @@ import { Geometry } from '../geometry/Geometry';
 
 /**
  * Helper class to create a quad
- *
- * @class
  * @memberof PIXI
  */
 export class Quad extends Geometry

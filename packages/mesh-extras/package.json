@@ -1,9 +1,22 @@
 {
   "name": "@pixi/mesh-extras",
-  "version": "6.1.0-rc.5",
+  "version": "6.4.2",
   "main": "dist/cjs/mesh-extras.js",
   "module": "dist/esm/mesh-extras.js",
   "bundle": "dist/browser/mesh-extras.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./index.d.ts",
+        "default": "./dist/esm/mesh-extras.js"
+      },
+      "require": {
+        "types": "./index.d.ts",
+        "default": "./dist/cjs/mesh-extras.js"
+      }
+    }
+  },
   "description": "Custom Mesh display objects, like Rope and SimplePlane",
   "author": "Mat Groves",
   "contributors": [
@@ -25,13 +38,10 @@
     "*.d.ts"
   ],
   "peerDependencies": {
-    "@pixi/constants": "6.1.0-rc.5",
-    "@pixi/core": "6.1.0-rc.5",
-    "@pixi/math": "6.1.0-rc.5",
-    "@pixi/mesh": "6.1.0-rc.5",
-    "@pixi/utils": "6.1.0-rc.5"
-  },
-  "devDependencies": {
-    "@pixi/loaders": "6.1.0-rc.5"
+    "@pixi/constants": "6.4.2",
+    "@pixi/core": "6.4.2",
+    "@pixi/math": "6.4.2",
+    "@pixi/mesh": "6.4.2",
+    "@pixi/utils": "6.4.2"
   }
 }

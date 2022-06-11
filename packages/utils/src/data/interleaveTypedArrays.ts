@@ -3,7 +3,7 @@ import { getBufferType } from './getBufferType';
 /* eslint-disable object-shorthand */
 const map = { Float32Array: Float32Array, Uint32Array: Uint32Array, Int32Array: Int32Array, Uint8Array: Uint8Array };
 
-type PackedArray = Float32Array|Uint32Array|Int32Array|Uint8Array;
+type PackedArray = Float32Array | Uint32Array | Int32Array | Uint8Array;
 
 export function interleaveTypedArrays(arrays: PackedArray[], sizes: number[]): Float32Array
 {

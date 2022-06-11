@@ -1,48 +1,55 @@
+import { Renderer } from '@pixi/core';
 import { Container, DisplayObject } from '@pixi/display';
+import { AlphaFilter } from '@pixi/filter-alpha';
+import { Graphics } from '@pixi/graphics';
+import { Rectangle } from '@pixi/math';
 import sinon from 'sinon';
 import { expect } from 'chai';
 
-function testAddChild(fn)
+function testAddChild(fn: any)
 {
-    return function ()
+    return () =>
     {
-        fn(function (container, obj)
+        fn((container: Container, obj: Container) =>
         {
             container.addChild(obj);
         });
-        fn(function (container, obj)
+        fn((container: Container, obj: Container) =>
         {
+            // TODO: is this used?
+            // @ts-expect-error - legacy test
             container.addChildAt(obj);
         });
     };
 }
 
-function testRemoveChild(fn)
+function testRemoveChild(fn: any)
 {
-    return function ()
+    return () =>
     {
-        fn(function (container, obj)
+        fn((container: Container, obj: Container) =>
         {
             container.removeChild(obj);
         });
-        fn(function (container, obj)
+        fn((container: Container, obj: Container) =>
         {
             container.removeChildAt(container.children.indexOf(obj));
         });
-        fn(function (container, obj)
+        fn((container: Container, obj: Container) =>
         {
             container.removeChildren(container.children.indexOf(obj), container.children.indexOf(obj) + 1);
         });
     };
 }
 
-describe('Container', function ()
+describe('Container', () =>
 {
-    describe('parent', function ()
+    describe('parent', () =>
     {
-        it('should be present when adding children to Container', function ()
+        it('should be present when adding children to Container', () =>
         {
             const container = new Container();
+            // @ts-expect-error - instantiating DisplayObject
             const child = new DisplayObject();
 
             expect(container.children.length).to.be.equals(0);
@@ -52,24 +59,25 @@ describe('Container', function ()
         });
     });
 
-    describe('events', function ()
+    describe('events', () =>
     {
-        it('should trigger "added", "removed", "childAdded", and "childRemoved" events on itself and children', function ()
+        it('should trigger "added", "removed", "childAdded", and "childRemoved" events on itself and children', () =>
         {
             const container = new Container();
+            // @ts-expect-error - instantiating DisplayObject
             const child = new DisplayObject();
             let triggeredAdded = false;
             let triggeredRemoved = false;
             let triggeredChildAdded = false;
             let triggeredChildRemoved = false;
 
-            child.on('added', (to) =>
+            child.on('added', (to: Container) =>
             {
                 triggeredAdded = true;
                 expect(container.children.length).to.be.equals(1);
                 expect(child.parent).to.be.equals(to);
             });
-            child.on('removed', (from) =>
+            child.on('removed', (from: Container) =>
             {
                 triggeredRemoved = true;
                 expect(container.children.length).to.be.equals(0);
@@ -104,22 +112,24 @@ describe('Container', function ()
         });
     });
 
-    describe('addChild', function ()
+    describe('addChild', () =>
     {
-        it('should remove from current parent', function ()
+        it('should remove from current parent', () =>
         {
             const parent = new Container();
             const container = new Container();
+            // @ts-expect-error - instantiating DisplayObject
             const child = new DisplayObject();
 
             assertRemovedFromParent(parent, container, child, () => { container.addChild(child); });
         });
 
-        it('should call onChildrenChange', function ()
+        it('should call onChildrenChange', () =>
         {
             const container = new Container();
+            // @ts-expect-error - instantiating DisplayObject
             const child = new DisplayObject();
-            const spy = sinon.spy(container, 'onChildrenChange');
+            const spy = sinon.spy(container, 'onChildrenChange' as keyof Container);
 
             container.addChild(child);
 
@@ -127,42 +137,45 @@ describe('Container', function ()
             expect(spy).to.have.been.calledWith(0);
         });
 
-        it('should flag child transform and container bounds for recalculation', testAddChild(function (mockAddChild)
-        {
-            const container = new Container();
-            const child = new Container();
+        it('should flag child transform and container bounds for recalculation', testAddChild(
+            (mockAddChild: (container: Container, child: Container) => void) =>
+            {
+                const container = new Container();
+                const child = new Container();
 
-            container.getBounds();
-            child.getBounds();
+                container.getBounds();
+                child.getBounds();
 
-            const boundsID = container._boundsID;
-            const childParentID = child.transform._parentID;
+                const boundsID = container['_boundsID'];
+                const childParentID = child.transform._parentID;
 
-            mockAddChild(container, child);
+                mockAddChild(container, child);
 
-            expect(boundsID).to.not.be.equals(container._boundsID);
-            expect(childParentID).to.not.be.equals(child.transform._parentID);
-        }));
+                expect(boundsID).to.not.be.equals(container['_boundsID']);
+                expect(childParentID).to.not.be.equals(child.transform._parentID);
+            }));
     });
 
-    describe('removeChildAt', function ()
+    describe('removeChildAt', () =>
     {
-        it('should remove from current parent', function ()
+        it('should remove from current parent', () =>
         {
             const parent = new Container();
+            // @ts-expect-error - instantiating DisplayObject
             const child = new DisplayObject();
 
             assertRemovedFromParent(parent, null, child, () => { parent.removeChildAt(0); });
         });
 
-        it('should call onChildrenChange', function ()
+        it('should call onChildrenChange', () =>
         {
             const container = new Container();
+            // @ts-expect-error - instantiating DisplayObject
             const child = new DisplayObject();
 
             container.addChild(child);
 
-            const spy = sinon.spy(container, 'onChildrenChange');
+            const spy = sinon.spy(container, 'onChildrenChange' as keyof Container);
 
             container.removeChildAt(0);
             expect(spy).to.have.been.called;
@@ -170,13 +183,15 @@ describe('Container', function ()
         });
     });
 
-    describe('addChildAt', function ()
+    describe('addChildAt', () =>
     {
-        it('should allow placements at start', function ()
+        it('should allow placements at start', () =>
         {
             const container = new Container();
+            // @ts-expect-error - instantiating DisplayObject
             const child = new DisplayObject();
 
+            // @ts-expect-error - instantiating DisplayObject
             container.addChild(new DisplayObject());
             container.addChildAt(child, 0);
 
@@ -184,11 +199,13 @@ describe('Container', function ()
             expect(container.children[0]).to.be.equals(child);
         });
 
-        it('should allow placements at end', function ()
+        it('should allow placements at end', () =>
         {
             const container = new Container();
+            // @ts-expect-error - instantiating DisplayObject
             const child = new DisplayObject();
 
+            // @ts-expect-error - instantiating DisplayObject
             container.addChild(new DisplayObject());
             container.addChildAt(child, 1);
 
@@ -196,34 +213,39 @@ describe('Container', function ()
             expect(container.children[1]).to.be.equals(child);
         });
 
-        it('should throw on out-of-bounds', function ()
+        it('should throw on out-of-bounds', () =>
         {
             const container = new Container();
+            // @ts-expect-error - instantiating DisplayObject
             const child = new DisplayObject();
 
+            // @ts-expect-error - instantiating DisplayObject
             container.addChild(new DisplayObject());
 
             expect(() => container.addChildAt(child, -1)).to.throw('The index -1 supplied is out of bounds 1');
             expect(() => container.addChildAt(child, 2)).to.throw('The index 2 supplied is out of bounds 1');
         });
 
-        it('should remove from current parent', function ()
+        it('should remove from current parent', () =>
         {
             const parent = new Container();
             const container = new Container();
+            // @ts-expect-error - instantiating DisplayObject
             const child = new DisplayObject();
 
             assertRemovedFromParent(parent, container, child, () => { container.addChildAt(child, 0); });
         });
 
-        it('should call onChildrenChange', function ()
+        it('should call onChildrenChange', () =>
         {
             const container = new Container();
+            // @ts-expect-error - instantiating DisplayObject
             const child = new DisplayObject();
 
+            // @ts-expect-error - instantiating DisplayObject
             container.addChild(new DisplayObject());
 
-            const spy = sinon.spy(container, 'onChildrenChange');
+            const spy = sinon.spy(container, 'onChildrenChange' as keyof Container);
 
             container.addChildAt(child, 0);
 
@@ -232,24 +254,28 @@ describe('Container', function ()
         });
     });
 
-    describe('removeChild', function ()
+    describe('removeChild', () =>
     {
-        it('should ignore non-children', function ()
+        it('should ignore non-children', () =>
         {
             const container = new Container();
+            // @ts-expect-error - instantiating DisplayObject
             const child = new DisplayObject();
 
             container.addChild(child);
 
+            // @ts-expect-error - instantiating DisplayObject
             container.removeChild(new DisplayObject());
 
             expect(container.children.length).to.be.equals(1);
         });
 
-        it('should remove all children supplied', function ()
+        it('should remove all children supplied', () =>
         {
             const container = new Container();
+            // @ts-expect-error - instantiating DisplayObject
             const child1 = new DisplayObject();
+            // @ts-expect-error - instantiating DisplayObject
             const child2 = new DisplayObject();
 
             container.addChild(child1, child2);
@@ -261,14 +287,15 @@ describe('Container', function ()
             expect(container.children.length).to.be.equals(0);
         });
 
-        it('should call onChildrenChange', function ()
+        it('should call onChildrenChange', () =>
         {
             const container = new Container();
+            // @ts-expect-error - instantiating DisplayObject
             const child = new DisplayObject();
 
             container.addChild(child);
 
-            const spy = sinon.spy(container, 'onChildrenChange');
+            const spy = sinon.spy(container, 'onChildrenChange' as keyof Container);
 
             container.removeChild(child);
 
@@ -276,39 +303,43 @@ describe('Container', function ()
             expect(spy).to.have.been.calledWith(0);
         });
 
-        it('should flag transform for recalculation', testRemoveChild(function (mockRemoveChild)
-        {
-            const container = new Container();
-            const child = new Container();
+        it('should flag transform for recalculation', testRemoveChild(
+            (mockRemoveChild: (c: Container, b: Container) => void) =>
+            {
+                const container = new Container();
+                const child = new Container();
 
-            container.addChild(child);
-            container.getBounds();
+                container.addChild(child);
+                container.getBounds();
 
-            const childParentID = child.transform._parentID;
-            const boundsID = container._boundsID;
+                const childParentID = child.transform._parentID;
+                const boundsID = container['_boundsID'];
 
-            mockRemoveChild(container, child);
+                mockRemoveChild(container, child);
 
-            expect(childParentID).to.not.be.equals(child.transform._parentID);
-            expect(boundsID).to.not.be.equals(container._boundsID);
-        }));
+                expect(childParentID).to.not.be.equals(child.transform._parentID);
+                expect(boundsID).to.not.be.equals(container['_boundsID']);
+            }));
     });
 
-    describe('getChildIndex', function ()
+    describe('getChildIndex', () =>
     {
-        it('should return the correct index', function ()
+        it('should return the correct index', () =>
         {
             const container = new Container();
+            // @ts-expect-error - instantiating DisplayObject
             const child = new DisplayObject();
 
+            // @ts-expect-error - instantiating DisplayObject
             container.addChild(new DisplayObject(), child, new DisplayObject());
 
             expect(container.getChildIndex(child)).to.be.equals(1);
         });
 
-        it('should throw when child does not exist', function ()
+        it('should throw when child does not exist', () =>
         {
             const container = new Container();
+            // @ts-expect-error - instantiating DisplayObject
             const child = new DisplayObject();
 
             expect(() => container.getChildIndex(child))
@@ -316,9 +347,9 @@ describe('Container', function ()
         });
     });
 
-    describe('getChildAt', function ()
+    describe('getChildAt', () =>
     {
-        it('should throw when out-of-bounds', function ()
+        it('should throw when out-of-bounds', () =>
         {
             const container = new Container();
 
@@ -327,11 +358,12 @@ describe('Container', function ()
         });
     });
 
-    describe('setChildIndex', function ()
+    describe('setChildIndex', () =>
     {
-        it('should throw on out-of-bounds', function ()
+        it('should throw on out-of-bounds', () =>
         {
             const container = new Container();
+            // @ts-expect-error - instantiating DisplayObject
             const child = new DisplayObject();
 
             container.addChild(child);
@@ -340,22 +372,26 @@ describe('Container', function ()
             expect(() => container.setChildIndex(child, 1)).to.throw('The index 1 supplied is out of bounds 1');
         });
 
-        it('should throw when child does not belong', function ()
+        it('should throw when child does not belong', () =>
         {
             const container = new Container();
+            // @ts-expect-error - instantiating DisplayObject
             const child = new DisplayObject();
 
+            // @ts-expect-error - instantiating DisplayObject
             container.addChild(new DisplayObject());
 
             expect(() => container.setChildIndex(child, 0))
                 .to.throw('The supplied DisplayObject must be a child of the caller');
         });
 
-        it('should set index', function ()
+        it('should set index', () =>
         {
             const container = new Container();
+            // @ts-expect-error - instantiating DisplayObject
             const child = new DisplayObject();
 
+            // @ts-expect-error - instantiating DisplayObject
             container.addChild(child, new DisplayObject(), new DisplayObject());
             expect(container.children.indexOf(child)).to.be.equals(0);
 
@@ -369,14 +405,16 @@ describe('Container', function ()
             expect(container.children.indexOf(child)).to.be.equals(0);
         });
 
-        it('should call onChildrenChange', function ()
+        it('should call onChildrenChange', () =>
         {
             const container = new Container();
+            // @ts-expect-error - instantiating DisplayObject
             const child = new DisplayObject();
 
+            // @ts-expect-error - instantiating DisplayObject
             container.addChild(child, new DisplayObject());
 
-            const spy = sinon.spy(container, 'onChildrenChange');
+            const spy = sinon.spy(container, 'onChildrenChange' as keyof Container);
 
             container.setChildIndex(child, 1);
 
@@ -385,17 +423,19 @@ describe('Container', function ()
         });
     });
 
-    describe('swapChildren', function ()
+    describe('swapChildren', () =>
     {
-        it('should call onChildrenChange', function ()
+        it('should call onChildrenChange', () =>
         {
             const container = new Container();
+            // @ts-expect-error - instantiating DisplayObject
             const child1 = new DisplayObject();
+            // @ts-expect-error - instantiating DisplayObject
             const child2 = new DisplayObject();
 
             container.addChild(child1, child2);
 
-            const spy = sinon.spy(container, 'onChildrenChange');
+            const spy = sinon.spy(container, 'onChildrenChange' as keyof Container);
 
             container.swapChildren(child1, child2);
             expect(spy).to.have.been.called;
@@ -407,37 +447,44 @@ describe('Container', function ()
             expect(spy).to.have.been.calledWith(0);
         });
 
-        it('should not call onChildrenChange if supplied children are equal', function ()
+        it('should not call onChildrenChange if supplied children are equal', () =>
         {
             const container = new Container();
+            // @ts-expect-error - instantiating DisplayObject
             const child = new DisplayObject();
 
+            // @ts-expect-error - instantiating DisplayObject
             container.addChild(child, new DisplayObject());
 
-            const spy = sinon.spy(container, 'onChildrenChange');
+            const spy = sinon.spy(container, 'onChildrenChange' as keyof Container);
 
             container.swapChildren(child, child);
 
             expect(spy).to.not.have.been.called;
         });
 
-        it('should throw if children do not belong', function ()
+        it('should throw if children do not belong', () =>
         {
             const container = new Container();
             const child = new Container();
 
+            // @ts-expect-error - instantiating DisplayObject
             container.addChild(child, new DisplayObject());
 
+            // @ts-expect-error - instantiating DisplayObject
             expect(() => container.swapChildren(child, new DisplayObject()))
                 .to.throw('The supplied DisplayObject must be a child of the caller');
+            // @ts-expect-error - instantiating DisplayObject
             expect(() => container.swapChildren(new DisplayObject(), child))
                 .to.throw('The supplied DisplayObject must be a child of the caller');
         });
 
-        it('should result in swapped child positions', function ()
+        it('should result in swapped child positions', () =>
         {
             const container = new Container();
+            // @ts-expect-error - instantiating DisplayObject
             const child1 = new DisplayObject();
+            // @ts-expect-error - instantiating DisplayObject
             const child2 = new DisplayObject();
 
             container.addChild(child1, child2);
@@ -452,9 +499,9 @@ describe('Container', function ()
         });
     });
 
-    describe('updateTransform', function ()
+    describe('updateTransform', () =>
     {
-        it('should call sortChildren if sortDirty and sortableChildren are true', function ()
+        it('should call sortChildren if sortDirty and sortableChildren are true', () =>
         {
             const parent = new Container();
             const container = new Container();
@@ -472,7 +519,7 @@ describe('Container', function ()
             expect(canvasSpy).to.have.been.called;
         });
 
-        it('should not call sortChildren if sortDirty is false', function ()
+        it('should not call sortChildren if sortDirty is false', () =>
         {
             const parent = new Container();
             const container = new Container();
@@ -490,7 +537,7 @@ describe('Container', function ()
             expect(canvasSpy).to.not.have.been.called;
         });
 
-        it('should not call sortChildren if sortableChildren is false', function ()
+        it('should not call sortChildren if sortableChildren is false', () =>
         {
             const parent = new Container();
             const container = new Container();
@@ -509,61 +556,62 @@ describe('Container', function ()
         });
     });
 
-    describe('render', function ()
+    describe('render', () =>
     {
-        it('should not render when object not visible', function ()
+        it('should not render when object not visible', () =>
         {
             const container = new Container();
-            const webGLSpy = sinon.spy(container._render);
+            const webGLSpy = sinon.spy(container['_render']);
 
             container.visible = false;
 
-            container.render();
+            container.render(undefined);
             expect(webGLSpy).to.not.have.been.called;
         });
 
-        it('should not render when alpha is zero', function ()
+        it('should not render when alpha is zero', () =>
         {
             const container = new Container();
-            const webGLSpy = sinon.spy(container._render);
+            const webGLSpy = sinon.spy(container['_render']);
 
             container.worldAlpha = 0;
 
-            container.render();
+            container.render(undefined);
             expect(webGLSpy).to.not.have.been.called;
         });
 
-        it('should not render when object not renderable', function ()
+        it('should not render when object not renderable', () =>
         {
             const container = new Container();
-            const webGLSpy = sinon.spy(container._render);
+            const webGLSpy = sinon.spy(container['_render']);
 
             container.renderable = false;
 
-            container.render();
+            container.render(undefined);
             expect(webGLSpy).to.not.have.been.called;
         });
 
-        it('should render children', function ()
+        it('should render children', () =>
         {
             const container = new Container();
             const child = new Container();
-            const webGLSpy = sinon.spy(child, '_render');
+            const webGLSpy = sinon.spy(child, '_render' as keyof Container);
 
             container.addChild(child);
 
-            container.render();
+            container.render(undefined);
             expect(webGLSpy).to.have.been.called;
         });
     });
 
-    describe('removeChildren', function ()
+    describe('removeChildren', () =>
     {
-        it('should remove all children when no arguments supplied', function ()
+        it('should remove all children when no arguments supplied', () =>
         {
             const container = new Container();
             let removed = [];
 
+            // @ts-expect-error - instantiating DisplayObject
             container.addChild(new DisplayObject(), new DisplayObject(), new DisplayObject());
 
             expect(container.children.length).to.be.equals(3);
@@ -574,7 +622,7 @@ describe('Container', function ()
             expect(removed.length).to.be.equals(3);
         });
 
-        it('should return empty array if no children', function ()
+        it('should return empty array if no children', () =>
         {
             const container = new Container();
             const removed = container.removeChildren();
@@ -582,21 +630,23 @@ describe('Container', function ()
             expect(removed.length).to.be.equals(0);
         });
 
-        it('should handle a range greater than length', function ()
+        it('should handle a range greater than length', () =>
         {
             const container = new Container();
             let removed = [];
 
+            // @ts-expect-error - instantiating DisplayObject
             container.addChild(new DisplayObject());
 
             removed = container.removeChildren(0, 2);
             expect(removed.length).to.be.equals(1);
         });
 
-        it('should throw outside acceptable range', function ()
+        it('should throw outside acceptable range', () =>
         {
             const container = new Container();
 
+            // @ts-expect-error - instantiating DisplayObject
             container.addChild(new DisplayObject());
 
             expect(() => container.removeChildren(2))
@@ -608,11 +658,12 @@ describe('Container', function ()
         });
     });
 
-    describe('destroy', function ()
+    describe('destroy', () =>
     {
-        it('should not destroy children by default', function ()
+        it('should not destroy children by default', () =>
         {
             const container = new Container();
+            // @ts-expect-error - instantiating DisplayObject
             const child = new DisplayObject();
 
             container.addChild(child);
@@ -622,9 +673,10 @@ describe('Container', function ()
             expect(child.transform).to.not.be.null;
         });
 
-        it('should allow children destroy', function ()
+        it('should allow children destroy', () =>
         {
             let container = new Container();
+            // @ts-expect-error - instantiating DisplayObject
             let child = new DisplayObject();
 
             container.addChild(child);
@@ -635,6 +687,7 @@ describe('Container', function ()
             expect(child.transform).to.be.null;
 
             container = new Container();
+            // @ts-expect-error - instantiating DisplayObject
             child = new DisplayObject();
 
             container.addChild(child);
@@ -646,9 +699,9 @@ describe('Container', function ()
         });
     });
 
-    describe('getLocalBounds', function ()
+    describe('getLocalBounds', () =>
     {
-        it('should recalculate children transform by default', function ()
+        it('should recalculate children transform by default', () =>
         {
             const root = new Container();
             const container = new Container();
@@ -667,14 +720,15 @@ describe('Container', function ()
             expect(child.transform.worldTransform.ty).to.equal(40);
         });
 
-        it('should recalculate bounds if children position was changed', function ()
+        it('should recalculate bounds if children position was changed', () =>
         {
             const root = new Container();
             const container = new Container();
             const child = new Container();
             let bounds = null;
 
-            child._calculateBounds = function ()
+            // eslint-disable-next-line func-names
+            child['_calculateBounds'] = function ()
             {
                 this._bounds.addFrame(this.transform, 0, 0, 1, 1);
             };
@@ -695,9 +749,9 @@ describe('Container', function ()
         });
     });
 
-    describe('width', function ()
+    describe('width', () =>
     {
-        it('should reset scale', function ()
+        it('should reset scale', () =>
         {
             const container = new Container();
 
@@ -709,9 +763,9 @@ describe('Container', function ()
         });
     });
 
-    describe('height', function ()
+    describe('height', () =>
     {
-        it('should reset scale', function ()
+        it('should reset scale', () =>
         {
             const container = new Container();
 
@@ -723,11 +777,12 @@ describe('Container', function ()
         });
     });
 
-    describe('sortDirty', function ()
+    describe('sortDirty', () =>
     {
-        it('should set sortDirty flag to true when adding a new child', function ()
+        it('should set sortDirty flag to true when adding a new child', () =>
         {
             const parent = new Container();
+            // @ts-expect-error - instantiating DisplayObject
             const child = new DisplayObject();
 
             expect(parent.sortDirty).to.be.false;
@@ -737,9 +792,10 @@ describe('Container', function ()
             expect(parent.sortDirty).to.be.true;
         });
 
-        it('should set sortDirty flag to true when changing a child zIndex', function ()
+        it('should set sortDirty flag to true when changing a child zIndex', () =>
         {
             const parent = new Container();
+            // @ts-expect-error - instantiating DisplayObject
             const child = new DisplayObject();
 
             parent.addChild(child);
@@ -752,9 +808,9 @@ describe('Container', function ()
         });
     });
 
-    describe('sortChildren', function ()
+    describe('sortChildren', () =>
     {
-        it('should reset sortDirty flag', function ()
+        it('should reset sortDirty flag', () =>
         {
             const container = new Container();
 
@@ -765,10 +821,12 @@ describe('Container', function ()
             expect(container.sortDirty).to.be.false;
         });
 
-        it('should call sort when at least one child has a zIndex', function ()
+        it('should call sort when at least one child has a zIndex', () =>
         {
             const container = new Container();
+            // @ts-expect-error - instantiating DisplayObject
             const child1 = new DisplayObject();
+            // @ts-expect-error - instantiating DisplayObject
             const child2 = new DisplayObject();
             const spy = sinon.spy(container.children, 'sort');
 
@@ -780,10 +838,12 @@ describe('Container', function ()
             expect(spy).to.have.been.called;
         });
 
-        it('should not call sort when children have no zIndex', function ()
+        it('should not call sort when children have no zIndex', () =>
         {
             const container = new Container();
+            // @ts-expect-error - instantiating DisplayObject
             const child1 = new DisplayObject();
+            // @ts-expect-error - instantiating DisplayObject
             const child2 = new DisplayObject();
             const spy = sinon.spy(container.children, 'sort');
 
@@ -794,12 +854,16 @@ describe('Container', function ()
             expect(spy).to.not.have.been.called;
         });
 
-        it('should sort children by zIndex value', function ()
+        it('should sort children by zIndex value', () =>
         {
             const container = new Container();
+            // @ts-expect-error - instantiating DisplayObject
             const child1 = new DisplayObject();
+            // @ts-expect-error - instantiating DisplayObject
             const child2 = new DisplayObject();
+            // @ts-expect-error - instantiating DisplayObject
             const child3 = new DisplayObject();
+            // @ts-expect-error - instantiating DisplayObject
             const child4 = new DisplayObject();
 
             child1.zIndex = 20;
@@ -821,12 +885,16 @@ describe('Container', function ()
             expect(container.children.indexOf(child4)).to.be.equals(0);
         });
 
-        it('should sort children by current array order if zIndex values match', function ()
+        it('should sort children by current array order if zIndex values match', () =>
         {
             const container = new Container();
+            // @ts-expect-error - instantiating DisplayObject
             const child1 = new DisplayObject();
+            // @ts-expect-error - instantiating DisplayObject
             const child2 = new DisplayObject();
+            // @ts-expect-error - instantiating DisplayObject
             const child3 = new DisplayObject();
+            // @ts-expect-error - instantiating DisplayObject
             const child4 = new DisplayObject();
 
             child1.zIndex = 20;
@@ -854,12 +922,16 @@ describe('Container', function ()
             expect(container.children.indexOf(child4)).to.be.equals(1);
         });
 
-        it('should sort children in the same way despite being called multiple times', function ()
+        it('should sort children in the same way despite being called multiple times', () =>
         {
             const container = new Container();
+            // @ts-expect-error - instantiating DisplayObject
             const child1 = new DisplayObject();
+            // @ts-expect-error - instantiating DisplayObject
             const child2 = new DisplayObject();
+            // @ts-expect-error - instantiating DisplayObject
             const child3 = new DisplayObject();
+            // @ts-expect-error - instantiating DisplayObject
             const child4 = new DisplayObject();
 
             child1.zIndex = 10;
@@ -901,12 +973,16 @@ describe('Container', function ()
             expect(container.children.indexOf(child4)).to.be.equals(0);
         });
 
-        it('should sort new children added correctly', function ()
+        it('should sort new children added correctly', () =>
         {
             const container = new Container();
+            // @ts-expect-error - instantiating DisplayObject
             const child1 = new DisplayObject();
+            // @ts-expect-error - instantiating DisplayObject
             const child2 = new DisplayObject();
+            // @ts-expect-error - instantiating DisplayObject
             const child3 = new DisplayObject();
+            // @ts-expect-error - instantiating DisplayObject
             const child4 = new DisplayObject();
 
             child1.zIndex = 20;
@@ -940,12 +1016,16 @@ describe('Container', function ()
             expect(container.children.indexOf(child4)).to.be.equals(0);
         });
 
-        it('should sort children after a removal correctly', function ()
+        it('should sort children after a removal correctly', () =>
         {
             const container = new Container();
+            // @ts-expect-error - instantiating DisplayObject
             const child1 = new DisplayObject();
+            // @ts-expect-error - instantiating DisplayObject
             const child2 = new DisplayObject();
+            // @ts-expect-error - instantiating DisplayObject
             const child3 = new DisplayObject();
+            // @ts-expect-error - instantiating DisplayObject
             const child4 = new DisplayObject();
 
             child1.zIndex = 20;
@@ -980,7 +1060,7 @@ describe('Container', function ()
         });
     });
 
-    function assertRemovedFromParent(parent, container, child, functionToAssert)
+    function assertRemovedFromParent(parent: Container, container: Container, child: Container, functionToAssert: () => void)
     {
         parent.addChild(child);
 
@@ -992,4 +1072,193 @@ describe('Container', function ()
         expect(parent.children.length).to.be.equals(0);
         expect(child.parent).to.be.equals(container);
     }
+
+    describe('culling', () =>
+    {
+        let renderer: Renderer;
+        let filterPush: sinon.SinonSpy;
+
+        before(() =>
+        {
+            renderer = new Renderer({ width: 100, height: 100 });
+            filterPush = sinon.spy(renderer.filter, 'push');
+        });
+
+        after(() =>
+        {
+            renderer.destroy();
+            renderer = null;
+            filterPush = null;
+        });
+
+        afterEach(() =>
+        {
+            filterPush.resetHistory();
+        });
+
+        it('noncullable container should always be rendered even if bounds do not intersect the frame', () =>
+        {
+            const container = new Container();
+            const graphics = container.addChild(new Graphics().beginFill().drawRect(0, 0, 10, 10).endFill());
+
+            container.cullable = false;
+            graphics.x = -1000;
+            graphics.y = -1000;
+
+            const _renderContainer = sinon.spy(container, '_render' as keyof Container);
+            const _renderGraphics = sinon.spy(graphics, '_render' as keyof Graphics);
+
+            renderer.render(container);
+
+            expect(_renderContainer).to.have.been.called;
+            expect(_renderGraphics).to.have.been.called;
+        });
+
+        it('cullable container should not be rendered if bounds do not intersect the frame', () =>
+        {
+            const container = new Container();
+            const graphics = container.addChild(new Graphics().beginFill().drawRect(0, 0, 10, 10).endFill());
+
+            container.cullable = true;
+            graphics.x = 0;
+            graphics.y = -10;
+
+            const _renderContainer = sinon.spy(container, '_render' as keyof Container);
+            const _renderGraphics = sinon.spy(graphics, '_render' as keyof Graphics);
+
+            renderer.render(container);
+
+            expect(_renderContainer).to.not.have.been.called;
+            expect(_renderGraphics).to.not.have.been.called;
+        });
+
+        it('cullable container should be rendered if bounds intersects the frame', () =>
+        {
+            const container = new Container();
+            const graphics = container.addChild(new Graphics().beginFill().drawRect(0, 0, 10, 10).endFill());
+
+            container.cullable = true;
+            graphics.x = 0;
+            graphics.y = -9;
+
+            const _renderContainer = sinon.spy(container, '_render' as keyof Container);
+            const _renderGraphics = sinon.spy(graphics, '_render' as keyof Graphics);
+
+            renderer.render(container);
+
+            expect(_renderContainer).to.have.been.called;
+            expect(_renderGraphics).to.have.been.called;
+        });
+
+        it('cullable container that contains a child with a padded filter (autoFit=true) '
+            + 'such that the child in out of frame but the filter padding intersects the frame '
+            + 'should render the filter padding but not the container or child', () =>
+        {
+            const container = new Container();
+            const graphics = container.addChild(new Graphics().beginFill().drawRect(0, 0, 10, 10).endFill());
+            const filter = new AlphaFilter();
+
+            filter.padding = 30;
+            filter.autoFit = true;
+
+            container.cullable = true;
+            graphics.filters = [filter];
+            graphics.x = 0;
+            graphics.y = -15;
+
+            const _renderContainer = sinon.spy(container, '_render' as keyof Container);
+            const _renderGraphics = sinon.spy(graphics, '_render' as keyof Graphics);
+
+            renderer.render(container);
+
+            expect(_renderContainer).to.not.have.been.called;
+            expect(_renderGraphics).to.not.have.been.called;
+            expect(filterPush).to.have.been.called;
+        });
+
+        it('cullable container that contains a child with a padded filter (autoFit=false) '
+            + 'such that the child in out of frame but the filter padding intersects the frame '
+            + 'should render the filtered child but not the container', () =>
+        {
+            const container = new Container();
+            const graphics = container.addChild(new Graphics().beginFill().drawRect(0, 0, 10, 10).endFill());
+            const filter = new AlphaFilter();
+
+            filter.padding = 30;
+            filter.autoFit = false;
+
+            container.cullable = true;
+            graphics.filters = [filter];
+            graphics.x = 0;
+            graphics.y = -15;
+
+            const _renderContainer = sinon.spy(container, '_render' as keyof Container);
+            const _renderGraphics = sinon.spy(graphics, '_render' as keyof Graphics);
+
+            renderer.render(container);
+
+            expect(_renderContainer).to.not.have.been.called;
+            expect(_renderGraphics).to.have.been.called;
+            expect(filterPush).to.have.been.called;
+        });
+
+        it('cullable container with a filter (autoFit=true) should not render the container or children '
+            + 'if the bounds as well as the filter padding do no intersect the frame', () =>
+        {
+            const container = new Container();
+            const graphics = container.addChild(new Graphics().beginFill().drawRect(0, 0, 10, 10).endFill());
+            const filter = new AlphaFilter();
+
+            filter.padding = 5;
+            filter.autoFit = true;
+
+            container.cullable = true;
+            container.filters = [filter];
+            graphics.x = 0;
+            graphics.y = -15;
+
+            const _renderContainer = sinon.spy(container, '_render' as keyof Container);
+            const renderGraphics = sinon.spy(graphics, 'render');
+
+            renderer.render(container);
+
+            expect(_renderContainer).to.not.have.been.called;
+            expect(renderGraphics).to.not.have.been.called;
+            expect(filterPush).to.have.been.called;
+        });
+
+        it('cullable container with cullArea should be rendered if the bounds intersect the frame', () =>
+        {
+            const container = new Container();
+            const graphics = container.addChild(new Graphics().beginFill().drawRect(0, 0, 10, 10).endFill());
+
+            container.cullable = true;
+            container.cullArea = new Rectangle(-10, -10, 10, 10);
+            container.x = container.y = 107.07;
+            container.rotation = Math.PI / 4;
+
+            const _renderGraphics = sinon.spy(graphics, '_render' as keyof Graphics);
+
+            renderer.render(container);
+
+            expect(_renderGraphics).to.have.been.called;
+        });
+
+        it('cullable container with cullArea should not be rendered if the bounds do not intersect the frame', () =>
+        {
+            const container = new Container();
+            const graphics = container.addChild(new Graphics().beginFill().drawRect(0, 0, 10, 10).endFill());
+
+            container.cullable = true;
+            container.cullArea = new Rectangle(-10, -10, 10, 10);
+            container.x = container.y = 107.08;
+            container.rotation = Math.PI / 4;
+
+            const renderGraphics = sinon.spy(graphics, 'render');
+
+            renderer.render(container);
+
+            expect(renderGraphics).to.not.have.been.called;
+        });
+    });
 });

@@ -3,10 +3,25 @@ import { Rectangle } from '@pixi/math';
 import { RenderTexture } from '@pixi/core';
 
 import type { Renderer, IRendererPlugin } from '@pixi/core';
-import type { DisplayObject } from '@pixi/display';
+import { DisplayObject } from '@pixi/display';
 
 const TEMP_RECT = new Rectangle();
 const BYTES_PER_PIXEL = 4;
+
+/**
+ * this interface is used to extract only  a single pixel of Render Texture or Display Object
+ * if you use this Interface all fields is required
+ * @example
+ * test: PixelExtractOptions = { x: 15, y: 20, resolution: 4, width: 10, height: 10 }
+ */
+export interface PixelExtractOptions
+{
+    x: number,
+    y: number,
+    height: number,
+    resolution: number,
+    width: number
+}
 
 /**
  * This class provides renderer-specific plugins for exporting content from a renderer.
@@ -26,15 +41,15 @@ const BYTES_PER_PIXEL = 4;
  * // Render the graphics as an HTMLImageElement
  * const image = app.renderer.plugins.extract.image(graphics);
  * document.body.appendChild(image);
- * @class
  * @memberof PIXI
  */
+
 export class Extract implements IRendererPlugin
 {
     private renderer: Renderer;
 
     /**
-     * @param {PIXI.Renderer} renderer - A reference to the current renderer
+     * @param renderer - A reference to the current renderer
      */
     constructor(renderer: Renderer)
     {
@@ -43,14 +58,13 @@ export class Extract implements IRendererPlugin
 
     /**
      * Will return a HTML Image of the target
-     *
-     * @param {PIXI.DisplayObject|PIXI.RenderTexture} target - A displayObject or renderTexture
+     * @param target - A displayObject or renderTexture
      *  to convert. If left empty will use the main renderer
-     * @param {string} [format] - Image format, e.g. "image/jpeg" or "image/webp".
-     * @param {number} [quality] - JPEG or Webp compression from 0 to 1. Default is 0.92.
-     * @return {HTMLImageElement} HTML Image of the target
+     * @param format - Image format, e.g. "image/jpeg" or "image/webp".
+     * @param quality - JPEG or Webp compression from 0 to 1. Default is 0.92.
+     * @returns - HTML Image of the target
      */
-    public image(target: DisplayObject|RenderTexture, format?: string, quality?: number): HTMLImageElement
+    public image(target: DisplayObject | RenderTexture, format?: string, quality?: number): HTMLImageElement
     {
         const image = new Image();
 
@@ -60,28 +74,26 @@ export class Extract implements IRendererPlugin
     }
 
     /**
-     * Will return a a base64 encoded string of this target. It works by calling
+     * Will return a base64 encoded string of this target. It works by calling
      *  `Extract.getCanvas` and then running toDataURL on that.
-     *
-     * @param {PIXI.DisplayObject|PIXI.RenderTexture} target - A displayObject or renderTexture
+     * @param target - A displayObject or renderTexture
      *  to convert. If left empty will use the main renderer
-     * @param {string} [format] - Image format, e.g. "image/jpeg" or "image/webp".
-     * @param {number} [quality] - JPEG or Webp compression from 0 to 1. Default is 0.92.
-     * @return {string} A base64 encoded string of the texture.
+     * @param format - Image format, e.g. "image/jpeg" or "image/webp".
+     * @param quality - JPEG or Webp compression from 0 to 1. Default is 0.92.
+     * @returns - A base64 encoded string of the texture.
      */
-    public base64(target: DisplayObject|RenderTexture, format?: string, quality?: number): string
+    public base64(target: DisplayObject | RenderTexture, format?: string, quality?: number): string
     {
         return this.canvas(target).toDataURL(format, quality);
     }
 
     /**
      * Creates a Canvas element, renders this target to it and then returns it.
-     *
-     * @param {PIXI.DisplayObject|PIXI.RenderTexture} target - A displayObject or renderTexture
+     * @param target - A displayObject or renderTexture
      *  to convert. If left empty will use the main renderer
-     * @return {HTMLCanvasElement} A Canvas element with the texture rendered on.
+     * @returns - A Canvas element with the texture rendered on.
      */
-    public canvas(target: DisplayObject|RenderTexture): HTMLCanvasElement
+    public canvas(target: DisplayObject | RenderTexture): HTMLCanvasElement
     {
         const renderer = this.renderer;
         let resolution;
@@ -176,12 +188,12 @@ export class Extract implements IRendererPlugin
     /**
      * Will return a one-dimensional array containing the pixel data of the entire texture in RGBA
      * order, with integer values between 0 and 255 (included).
-     *
-     * @param {PIXI.DisplayObject|PIXI.RenderTexture} target - A displayObject or renderTexture
+     * @param target - A displayObject or renderTexture
      *  to convert. If left empty will use the main renderer
-     * @return {Uint8Array} One-dimensional array containing the pixel data of the entire texture
+     * @param options
+     * @returns - One-dimensional array containing the pixel data of the entire texture
      */
-    public pixels(target: DisplayObject|RenderTexture): Uint8Array
+    public pixels(target?: DisplayObject | RenderTexture, options?: PixelExtractOptions): Uint8Array
     {
         const renderer = this.renderer;
         let resolution;
@@ -195,7 +207,7 @@ export class Extract implements IRendererPlugin
             {
                 renderTexture = target;
             }
-            else
+            else if (target instanceof DisplayObject)
             {
                 renderTexture = this.renderer.generateTexture(target);
                 generated = true;
@@ -204,11 +216,31 @@ export class Extract implements IRendererPlugin
 
         if (renderTexture)
         {
-            resolution = renderTexture.baseTexture.resolution;
-            frame = renderTexture.frame;
+            if (options)
+            {
+                resolution = options.resolution;
+                frame = renderTexture.frame;
 
-            // bind the buffer
-            renderer.renderTexture.bind(renderTexture);
+                // bind the buffer
+                renderer.renderTexture.bind(renderTexture);
+            }
+            else
+            {
+                resolution = renderTexture.baseTexture.resolution;
+                frame = renderTexture.frame;
+
+                // bind the buffer
+                renderer.renderTexture.bind(renderTexture);
+            }
+        }
+        else if (options)
+        {
+            resolution = options.resolution;
+
+            frame = TEMP_RECT;
+            frame.width = options.width;
+            frame.height = options.height;
+            renderer.renderTexture.bind(null);
         }
         else
         {
@@ -249,10 +281,7 @@ export class Extract implements IRendererPlugin
         return webglPixels;
     }
 
-    /**
-     * Destroys the extract
-     *
-     */
+    /** Destroys the extract. */
     public destroy(): void
     {
         this.renderer = null;
@@ -260,10 +289,9 @@ export class Extract implements IRendererPlugin
 
     /**
      * Takes premultiplied pixel data and produces regular pixel data
-     *
      * @private
-     * @param {number[] | Uint8Array | Uint8ClampedArray} pixels - array of pixel data
-     * @param {number[] | Uint8Array | Uint8ClampedArray} out - output array
+     * @param pixels - array of pixel data
+     * @param out - output array
      */
     static arrayPostDivide(
         pixels: number[] | Uint8Array | Uint8ClampedArray, out: number[] | Uint8Array | Uint8ClampedArray

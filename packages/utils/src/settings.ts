@@ -2,7 +2,6 @@ import { settings } from '@pixi/settings';
 
 /**
  * The prefix that denotes a URL is for a retina asset.
- *
  * @static
  * @name RETINA_PREFIX
  * @memberof PIXI.settings
@@ -31,7 +30,6 @@ settings.RETINA_PREFIX = /@([0-9\.]+)x/;
  *    renderer, and show an error message to the user if the function returns false, explaining that their device & browser
  *    combination does not support high performance WebGL.
  *    This is a much better strategy than trying to create a PixiJS renderer and finding it then fails.
- *
  * @static
  * @name FAIL_IF_MAJOR_PERFORMANCE_CAVEAT
  * @memberof PIXI.settings

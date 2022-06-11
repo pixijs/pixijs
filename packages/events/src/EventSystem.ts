@@ -3,6 +3,7 @@ import { FederatedMouseEvent } from './FederatedMouseEvent';
 import { FederatedPointerEvent } from './FederatedPointerEvent';
 import { FederatedWheelEvent } from './FederatedWheelEvent';
 
+import type { IRenderableObject } from '@pixi/core';
 import type { DisplayObject } from '@pixi/display';
 import type { IPointData } from '@pixi/math';
 
@@ -17,7 +18,7 @@ const TOUCH_TO_POINTER: Record<string, string> = {
 
 interface Renderer
 {
-    _lastObjectRendered: DisplayObject;
+    _lastObjectRendered: IRenderableObject;
     view: HTMLCanvasElement;
     resolution: number;
     plugins: Record<string, any>;
@@ -25,7 +26,6 @@ interface Renderer
 
 /**
  * The system for handling UI events.
- *
  * @memberof PIXI
  */
 export class EventSystem
@@ -42,24 +42,17 @@ export class EventSystem
      */
     public readonly rootBoundary: EventBoundary;
 
-    /**
-     * Does the device support touch events
-     * https://www.w3.org/TR/touch-events/
-     */
-    public readonly supportsTouchEvents = 'ontouchstart' in self;
+    /** Does the device support touch events https://www.w3.org/TR/touch-events/ */
+    public readonly supportsTouchEvents = 'ontouchstart' in globalThis;
 
-    /**
-     * Does the device support pointer events
-     * https://www.w3.org/Submission/pointer-events/
-     */
-    public readonly supportsPointerEvents = !!self.PointerEvent;
+    /** Does the device support pointer events https://www.w3.org/Submission/pointer-events/ */
+    public readonly supportsPointerEvents = !!globalThis.PointerEvent;
 
     /**
      * Should default browser actions automatically be prevented.
      * Does not apply to pointer events for backwards compatibility
      * preventDefault on pointer events stops mouse events from firing
      * Thus, for every pointer event, there will always be either a mouse of touch event alongside it.
-     *
      * @default true
      */
     public autoPreventDefault: boolean;
@@ -69,8 +62,7 @@ export class EventSystem
      * values, objects are handled as dictionaries of CSS values for {@code domElement},
      * and functions are called instead of changing the CSS.
      * Default CSS cursor values are provided for 'default' and 'pointer' modes.
-     *
-     * @member {Object.<string, string | ((mode: string) => void) | CSSStyleDeclaration>}
+     * @member {Object<string, string | ((mode: string) => void) | CSSStyleDeclaration>}
      */
     public cursorStyles: Record<string, string | ((mode: string) => void) | CSSStyleDeclaration>;
 
@@ -80,14 +72,10 @@ export class EventSystem
      */
     public domElement: HTMLElement;
 
-    /**
-     * The resolution used to convert between the DOM client space into world space.
-     */
+    /** The resolution used to convert between the DOM client space into world space. */
     public resolution = 1;
 
-    /**
-     * The renderer managing this {@link EventSystem}.
-     */
+    /** The renderer managing this {@link EventSystem}. */
     public renderer: Renderer;
 
     private currentCursor: string;
@@ -130,9 +118,7 @@ export class EventSystem
         this.resolution = this.renderer.resolution;
     }
 
-    /**
-     * Destroys all event listeners and detaches the renderer.
-     */
+    /** Destroys all event listeners and detaches the renderer. */
     destroy(): void
     {
         this.setTargetElement(null);
@@ -141,7 +127,6 @@ export class EventSystem
 
     /**
      * Sets the current cursor mode, handling any callbacks or CSS style changes.
-     *
      * @param mode - cursor mode, a key from the cursorStyles dictionary
      */
     public setCursor(mode: string): void
@@ -151,7 +136,7 @@ export class EventSystem
 
         // offscreen canvas does not support setting styles, but cursor modes can be functions,
         // in order to handle pixi rendered cursors, so we can't bail
-        if (self.OffscreenCanvas && this.domElement instanceof OffscreenCanvas)
+        if (globalThis.OffscreenCanvas && this.domElement instanceof OffscreenCanvas)
         {
             applyStyles = false;
         }
@@ -199,7 +184,6 @@ export class EventSystem
 
     /**
      * Event handler for pointer down events on {@link PIXI.EventSystem#domElement this.domElement}.
-     *
      * @param nativeEvent - The native mouse/pointer/touch event.
      */
     private onPointerDown(nativeEvent: MouseEvent | PointerEvent | TouchEvent): void
@@ -242,7 +226,6 @@ export class EventSystem
 
     /**
      * Event handler for pointer move events on on {@link PIXI.EventSystem#domElement this.domElement}.
-     *
      * @param nativeEvent - The native mouse/pointer/touch events.
      */
     private onPointerMove(nativeEvent: MouseEvent | PointerEvent | TouchEvent): void
@@ -266,7 +249,6 @@ export class EventSystem
 
     /**
      * Event handler for pointer up events on {@link PIXI.EventSystem#domElement this.domElement}.
-     *
      * @param nativeEvent - The native mouse/pointer/touch event.
      */
     private onPointerUp(nativeEvent: MouseEvent | PointerEvent | TouchEvent): void
@@ -293,7 +275,6 @@ export class EventSystem
 
     /**
      * Event handler for pointer over & out events on {@link PIXI.EventSystem#domElement this.domElement}.
-     *
      * @param nativeEvent - The native mouse/pointer/touch event.
      */
     private onPointerOverOut(nativeEvent: MouseEvent | PointerEvent | TouchEvent): void
@@ -317,7 +298,6 @@ export class EventSystem
 
     /**
      * Passive handler for `wheel` events on {@link EventSystem.domElement this.domElement}.
-     *
      * @param nativeEvent - The native wheel event.
      */
     protected onWheel(nativeEvent: WheelEvent): void
@@ -332,7 +312,6 @@ export class EventSystem
      * Sets the {@link PIXI.EventSystem#domElement domElement} and binds event listeners.
      *
      * To deregister the current DOM element without setting a new one, pass {@code null}.
-     *
      * @param element - The new DOM element.
      */
     public setTargetElement(element: HTMLElement): void
@@ -342,9 +321,7 @@ export class EventSystem
         this.addEvents();
     }
 
-    /**
-     * Register event listeners on {@link PIXI.Renderer#domElement this.domElement}.
-     */
+    /** Register event listeners on {@link PIXI.Renderer#domElement this.domElement}. */
     private addEvents(): void
     {
         if (this.eventsAdded || !this.domElement)
@@ -354,7 +331,7 @@ export class EventSystem
 
         const style = this.domElement.style as CrossCSSStyleDeclaration;
 
-        if (self.navigator.msPointerEnabled)
+        if ((globalThis.navigator as any).msPointerEnabled)
         {
             style.msContentZooming = 'none';
             style.msTouchAction = 'none';
@@ -370,23 +347,23 @@ export class EventSystem
          */
         if (this.supportsPointerEvents)
         {
-            self.document.addEventListener('pointermove', this.onPointerMove, true);
+            globalThis.document.addEventListener('pointermove', this.onPointerMove, true);
             this.domElement.addEventListener('pointerdown', this.onPointerDown, true);
             // pointerout is fired in addition to pointerup (for touch events) and pointercancel
             // we already handle those, so for the purposes of what we do in onPointerOut, we only
             // care about the pointerleave event
             this.domElement.addEventListener('pointerleave', this.onPointerOverOut, true);
             this.domElement.addEventListener('pointerover', this.onPointerOverOut, true);
-            // self.addEventListener('pointercancel', this.onPointerCancel, true);
-            self.addEventListener('pointerup', this.onPointerUp, true);
+            // globalThis.addEventListener('pointercancel', this.onPointerCancel, true);
+            globalThis.addEventListener('pointerup', this.onPointerUp, true);
         }
         else
         {
-            self.document.addEventListener('mousemove', this.onPointerMove, true);
+            globalThis.document.addEventListener('mousemove', this.onPointerMove, true);
             this.domElement.addEventListener('mousedown', this.onPointerDown, true);
             this.domElement.addEventListener('mouseout', this.onPointerOverOut, true);
             this.domElement.addEventListener('mouseover', this.onPointerOverOut, true);
-            self.addEventListener('mouseup', this.onPointerUp, true);
+            globalThis.addEventListener('mouseup', this.onPointerUp, true);
         }
 
         // Always look directly for touch events so that we can provide original data
@@ -408,9 +385,7 @@ export class EventSystem
         this.eventsAdded = true;
     }
 
-    /**
-     * Unregister event listeners on {@link PIXI.EventSystem#domElement this.domElement}.
-     */
+    /** Unregister event listeners on {@link PIXI.EventSystem#domElement this.domElement}. */
     private removeEvents(): void
     {
         if (!this.eventsAdded || !this.domElement)
@@ -420,7 +395,7 @@ export class EventSystem
 
         const style = this.domElement.style as CrossCSSStyleDeclaration;
 
-        if (self.navigator.msPointerEnabled)
+        if ((globalThis.navigator as any).msPointerEnabled)
         {
             style.msContentZooming = '';
             style.msTouchAction = '';
@@ -432,20 +407,20 @@ export class EventSystem
 
         if (this.supportsPointerEvents)
         {
-            self.document.removeEventListener('pointermove', this.onPointerMove, true);
+            globalThis.document.removeEventListener('pointermove', this.onPointerMove, true);
             this.domElement.removeEventListener('pointerdown', this.onPointerDown, true);
             this.domElement.removeEventListener('pointerleave', this.onPointerOverOut, true);
             this.domElement.removeEventListener('pointerover', this.onPointerOverOut, true);
-            // self.removeEventListener('pointercancel', this.onPointerCancel, true);
-            self.removeEventListener('pointerup', this.onPointerUp, true);
+            // globalThis.removeEventListener('pointercancel', this.onPointerCancel, true);
+            globalThis.removeEventListener('pointerup', this.onPointerUp, true);
         }
         else
         {
-            self.document.removeEventListener('mousemove', this.onPointerMove, true);
+            globalThis.document.removeEventListener('mousemove', this.onPointerMove, true);
             this.domElement.removeEventListener('mousedown', this.onPointerDown, true);
             this.domElement.removeEventListener('mouseout', this.onPointerOverOut, true);
             this.domElement.removeEventListener('mouseover', this.onPointerOverOut, true);
-            self.removeEventListener('mouseup', this.onPointerUp, true);
+            globalThis.removeEventListener('mouseup', this.onPointerUp, true);
         }
 
         if (this.supportsTouchEvents)
@@ -459,13 +434,13 @@ export class EventSystem
         this.domElement.removeEventListener('wheel', this.onWheel, true);
 
         this.domElement = null;
+        this.eventsAdded = false;
     }
 
     /**
      * Maps x and y coords from a DOM object and maps them correctly to the PixiJS view. The
      * resulting value is stored in the point. This takes into account the fact that the DOM
      * element could be scaled and positioned anywhere on the screen.
-     *
      * @param  {PIXI.IPointData} point - the point that the result will be stored in
      * @param  {number} x - the x coord of the position to map
      * @param  {number} y - the y coord of the position to map
@@ -499,12 +474,11 @@ export class EventSystem
 
     /**
      * Ensures that the original event object contains all data that a regular pointer event would have
-     *
      * @param event - The original event data from a touch or mouse event
-     * @return An array containing a single normalized pointer event, in the case of a pointer
+     * @returns An array containing a single normalized pointer event, in the case of a pointer
      *  or mouse event, or a multiple normalized pointer events if there are multiple changed touches
      */
-    private normalizeToPointerData(event: TouchEvent|MouseEvent|PointerEvent): PointerEvent[]
+    private normalizeToPointerData(event: TouchEvent | MouseEvent | PointerEvent): PointerEvent[]
     {
         const normalizedEvents = [];
 
@@ -544,8 +518,8 @@ export class EventSystem
             }
         }
         // apparently PointerEvent subclasses MouseEvent, so yay
-        else if (!self.MouseEvent
-            || (event instanceof MouseEvent && (!this.supportsPointerEvents || !(event instanceof self.PointerEvent))))
+        else if (!globalThis.MouseEvent
+            || (event instanceof MouseEvent && (!this.supportsPointerEvents || !(event instanceof globalThis.PointerEvent))))
         {
             const tempEvent = event as PixiPointerEvent;
 
@@ -578,9 +552,8 @@ export class EventSystem
      *
      * The returned {@link PIXI.FederatedWheelEvent} is a shared instance. It will not persist across
      * multiple native wheel events.
-     *
      * @param nativeEvent - The native wheel event that occurred on the canvas.
-     * @return A federated wheel event.
+     * @returns A federated wheel event.
      */
     protected normalizeWheelEvent(nativeEvent: WheelEvent): FederatedWheelEvent
     {
@@ -605,7 +578,6 @@ export class EventSystem
 
     /**
      * Normalizes the {@code nativeEvent} into a federateed {@code FederatedPointerEvent}.
-     *
      * @param event
      * @param nativeEvent
      */
@@ -649,7 +621,6 @@ export class EventSystem
 
     /**
      * Transfers base & mouse event data from the {@code nativeEvent} to the federated event.
-     *
      * @param event
      * @param nativeEvent
      */

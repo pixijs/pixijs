@@ -1,11 +1,8 @@
 import { LoaderResource } from '../LoaderResource';
 import { encodeBinary } from '../base/encodeBinary';
 
-const Url = self.URL || self.webkitURL;
-
 /**
  * A middleware for transforming XHR loaded Blobs into more useful objects
- *
  * @ignore
  * @function parsing
  * @example
@@ -55,6 +52,7 @@ export function parsing(resource: LoaderResource, next: (...args: any) => void):
         // if content type says this is an image, then we should transform the blob into an Image object
         else if (resource.data.type.indexOf('image') === 0)
         {
+            const Url = globalThis.URL || globalThis.webkitURL;
             const src = Url.createObjectURL(resource.data);
 
             resource.blob = resource.data;

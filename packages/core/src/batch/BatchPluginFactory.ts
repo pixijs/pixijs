@@ -15,11 +15,7 @@ export interface IBatchFactoryOptions
     vertexSize?: number;
 }
 
-/**
- * @class
- * @memberof PIXI
- * @hideconstructor
- */
+/** @memberof PIXI */
 export class BatchPluginFactory
 {
     /**
@@ -42,14 +38,12 @@ export class BatchPluginFactory
      * PIXI.Renderer.registerPlugin('invert', InvertBatchRenderer);
      * const sprite = new PIXI.Sprite();
      * sprite.pluginName = 'invert';
-     *
-     * @static
      * @param {object} [options]
      * @param {string} [options.vertex=PIXI.BatchPluginFactory.defaultVertexSrc] - Vertex shader source
      * @param {string} [options.fragment=PIXI.BatchPluginFactory.defaultFragmentTemplate] - Fragment shader template
      * @param {number} [options.vertexSize=6] - Vertex size
      * @param {object} [options.geometryClass=PIXI.BatchGeometry]
-     * @return {*} New batch renderer plugin
+     * @returns {*} New batch renderer plugin
      */
     static create(options?: IBatchFactoryOptions): typeof AbstractBatchRenderer
     {
@@ -75,10 +69,7 @@ export class BatchPluginFactory
 
     /**
      * The default vertex shader source
-     *
-     * @static
-     * @type {string}
-     * @constant
+     * @readonly
      */
     static get defaultVertexSrc(): string
     {
@@ -87,10 +78,7 @@ export class BatchPluginFactory
 
     /**
      * The default fragment shader source
-     *
-     * @static
-     * @type {string}
-     * @constant
+     * @readonly
      */
     static get defaultFragmentTemplate(): string
     {

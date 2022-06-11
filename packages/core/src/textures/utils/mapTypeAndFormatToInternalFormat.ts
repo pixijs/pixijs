@@ -2,19 +2,18 @@ import { FORMATS, TYPES } from '@pixi/constants';
 
 /**
  * Returns a lookup table that maps each type-format pair to a compatible internal format.
- *
  * @memberof PIXI
  * @function mapTypeAndFormatToInternalFormat
  * @private
  * @param {WebGLRenderingContext} gl - The rendering context.
- * @return {{ [type: number]: { [format: number]: number } }} Lookup table.
+ * @returns Lookup table.
  */
 export function mapTypeAndFormatToInternalFormat(gl: WebGLRenderingContextBase):
-    { [type: number]: { [format: number]: number } }
+{ [type: number]: { [format: number]: number } }
 {
     let table;
 
-    if ('WebGL2RenderingContext' in self && gl instanceof self.WebGL2RenderingContext)
+    if ('WebGL2RenderingContext' in globalThis && gl instanceof globalThis.WebGL2RenderingContext)
     {
         table = {
             [TYPES.UNSIGNED_BYTE]: {

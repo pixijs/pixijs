@@ -40,7 +40,6 @@
  *
  * myGame.update.emit(time);
  * ```
- * @class
  * @memberof PIXI
  */
 export class Runner
@@ -50,7 +49,7 @@ export class Runner
     private _aliasCount: number;
 
     /**
-     *  @param {string} name - the function name that will be executed on the listeners added to this Runner.
+     * @param name - The function name that will be executed on the listeners added to this Runner.
      */
     constructor(name: string)
     {
@@ -59,11 +58,12 @@ export class Runner
         this._aliasCount = 0;
     }
 
+    /* eslint-disable jsdoc/require-param, jsdoc/check-param-names */
     /**
      * Dispatch/Broadcast Runner to all listeners added to the queue.
-     * @param {...any} params - optional parameters to pass to each listener
-     * @return {PIXI.Runner}
+     * @param {...any} params - (optional) parameters to pass to each listener
      */
+    /*  eslint-enable jsdoc/require-param, jsdoc/check-param-names */
     public emit(a0?: unknown, a1?: unknown, a2?: unknown, a3?: unknown,
         a4?: unknown, a5?: unknown, a6?: unknown, a7?: unknown): this
     {
@@ -114,9 +114,7 @@ export class Runner
      * ```
      *
      * The scope used will be the object itself.
-     *
      * @param {any} item - The object that will be listening.
-     * @return {PIXI.Runner}
      */
     public add(item: unknown): this
     {
@@ -133,7 +131,6 @@ export class Runner
     /**
      * Remove a single listener from the dispatch queue.
      * @param {any} item - The listener that you would like to remove.
-     * @return {PIXI.Runner}
      */
     public remove(item: unknown): this
     {
@@ -157,10 +154,7 @@ export class Runner
         return this.items.indexOf(item) !== -1;
     }
 
-    /**
-     * Remove all listeners from the Runner
-     * @return {PIXI.Runner}
-     */
+    /** Remove all listeners from the Runner */
     public removeAll(): this
     {
         this.ensureNonAliasedItems();
@@ -169,9 +163,7 @@ export class Runner
         return this;
     }
 
-    /**
-     * Remove all references, don't use after this.
-     */
+    /** Remove all references, don't use after this. */
     public destroy(): void
     {
         this.removeAll();
@@ -181,8 +173,6 @@ export class Runner
 
     /**
      * `true` if there are no this Runner contains no listeners
-     *
-     * @member {boolean}
      * @readonly
      */
     public get empty(): boolean
@@ -192,8 +182,6 @@ export class Runner
 
     /**
      * The name of the runner.
-     *
-     * @member {string}
      * @readonly
      */
     public get name(): string

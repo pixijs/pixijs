@@ -1,6 +1,5 @@
 /**
  * Remove items from a javascript array without generating garbage
- *
  * @function removeItems
  * @memberof PIXI.utils
  * @param {Array<any>} arr - Array to remove elements from

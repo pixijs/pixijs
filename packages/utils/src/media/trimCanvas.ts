@@ -1,4 +1,5 @@
-interface Inset {
+interface Inset
+{
     top?: number;
     left?: number;
     right?: number;
@@ -7,7 +8,6 @@ interface Inset {
 
 /**
  * Trim transparent borders from a canvas
- *
  * @memberof PIXI.utils
  * @function trimCanvas
  * @param {HTMLCanvasElement} canvas - the canvas to trim

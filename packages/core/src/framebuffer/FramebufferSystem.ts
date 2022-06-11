@@ -12,13 +12,11 @@ const tempRectangle = new Rectangle();
 
 /**
  * System plugin to the renderer to manage framebuffers.
- *
- * @class
- * @extends PIXI.System
  * @memberof PIXI
  */
 export class FramebufferSystem implements ISystem
 {
+    /** A list of managed framebuffers. */
     public readonly managedFramebuffers: Array<Framebuffer>;
     public current: Framebuffer;
     public viewport: Rectangle;
@@ -26,37 +24,25 @@ export class FramebufferSystem implements ISystem
     public writeDepthTexture: boolean;
     protected CONTEXT_UID: number;
     protected gl: IRenderingContext;
+
+    /** Framebuffer value that shows that we don't know what is bound. */
     protected unknownFramebuffer: Framebuffer;
     protected msaaSamples: Array<number>;
     public renderer: Renderer;
 
     /**
-     * @param {PIXI.Renderer} renderer - The renderer this System works for.
+     * @param renderer - The renderer this System works for.
      */
     constructor(renderer: Renderer)
     {
         this.renderer = renderer;
-
-        /**
-         * A list of managed framebuffers
-         * @member {PIXI.Framebuffer[]}
-         * @readonly
-         */
         this.managedFramebuffers = [];
-
-        /**
-         * Framebuffer value that shows that we don't know what is bound
-         * @member {Framebuffer}
-         * @readonly
-         */
         this.unknownFramebuffer = new Framebuffer(10, 10);
 
         this.msaaSamples = null;
     }
 
-    /**
-     * Sets up the renderer context and necessary buffers.
-     */
+    /** Sets up the renderer context and necessary buffers. */
     protected contextChange(): void
     {
         const gl = this.gl = this.renderer.gl;
@@ -110,11 +96,10 @@ export class FramebufferSystem implements ISystem
     }
 
     /**
-     * Bind a framebuffer
-     *
-     * @param {PIXI.Framebuffer} [framebuffer]
-     * @param {PIXI.Rectangle} [frame] - frame, default is framebuffer size
-     * @param {number} [mipLevel] - optional mip level to set on the framebuffer - defaults to 0
+     * Bind a framebuffer.
+     * @param framebuffer
+     * @param frame - frame, default is framebuffer size
+     * @param mipLevel - optional mip level to set on the framebuffer - defaults to 0
      */
     bind(framebuffer?: Framebuffer, frame?: Rectangle, mipLevel = 0): void
     {
@@ -213,11 +198,10 @@ export class FramebufferSystem implements ISystem
 
     /**
      * Set the WebGLRenderingContext's viewport.
-     *
-     * @param {Number} x - X position of viewport
-     * @param {Number} y - Y position of viewport
-     * @param {Number} width - Width of viewport
-     * @param {Number} height - Height of viewport
+     * @param x - X position of viewport
+     * @param y - Y position of viewport
+     * @param width - Width of viewport
+     * @param height - Height of viewport
      */
     setViewport(x: number, y: number, width: number, height: number): void
     {
@@ -241,8 +225,6 @@ export class FramebufferSystem implements ISystem
 
     /**
      * Get the size of the current width and height. Returns object with `width` and `height` values.
-     *
-     * @member {object}
      * @readonly
      */
     get size(): { x: number; y: number; width: number; height: number }
@@ -258,11 +240,10 @@ export class FramebufferSystem implements ISystem
 
     /**
      * Clear the color of the context
-     *
-     * @param {Number} r - Red value from 0 to 1
-     * @param {Number} g - Green value from 0 to 1
-     * @param {Number} b - Blue value from 0 to 1
-     * @param {Number} a - Alpha value from 0 to 1
+     * @param r - Red value from 0 to 1
+     * @param g - Green value from 0 to 1
+     * @param b - Blue value from 0 to 1
+     * @param a - Alpha value from 0 to 1
      * @param {PIXI.BUFFER_BITS} [mask=BUFFER_BITS.COLOR | BUFFER_BITS.DEPTH] - Bitwise OR of masks
      *  that indicate the buffers to be cleared, by default COLOR and DEPTH buffers.
      */
@@ -277,10 +258,9 @@ export class FramebufferSystem implements ISystem
 
     /**
      * Initialize framebuffer for this context
-     *
      * @protected
-     * @param {PIXI.Framebuffer} framebuffer
-     * @returns {PIXI.GLFramebuffer} created GLFramebuffer
+     * @param framebuffer
+     * @returns - created GLFramebuffer
      */
     initFramebuffer(framebuffer: Framebuffer): GLFramebuffer
     {
@@ -298,9 +278,8 @@ export class FramebufferSystem implements ISystem
 
     /**
      * Resize the framebuffer
-     *
+     * @param framebuffer
      * @protected
-     * @param {PIXI.Framebuffer} framebuffer
      */
     resizeFramebuffer(framebuffer: Framebuffer): void
     {
@@ -355,10 +334,9 @@ export class FramebufferSystem implements ISystem
 
     /**
      * Update the framebuffer
-     *
+     * @param framebuffer
+     * @param mipLevel
      * @protected
-     * @param {PIXI.Framebuffer} framebuffer
-     * @param {number} mipLevel
      */
     updateFramebuffer(framebuffer: Framebuffer, mipLevel: number): void
     {
@@ -384,6 +362,12 @@ export class FramebufferSystem implements ISystem
         {
             gl.deleteRenderbuffer(fbo.msaaBuffer);
             fbo.msaaBuffer = null;
+
+            if (fbo.blitFramebuffer)
+            {
+                fbo.blitFramebuffer.dispose();
+                fbo.blitFramebuffer = null;
+            }
         }
 
         const activeTextures = [];
@@ -463,10 +447,8 @@ export class FramebufferSystem implements ISystem
     }
 
     /**
-     * Returns true if the frame buffer can be multisampled
-     *
-     * @protected
-     * @param {PIXI.Framebuffer} framebuffer
+     * Returns true if the frame buffer can be multisampled.
+     * @param framebuffer
      */
     protected canMultisampleFramebuffer(framebuffer: Framebuffer): boolean
     {
@@ -476,14 +458,13 @@ export class FramebufferSystem implements ISystem
 
     /**
      * Detects number of samples that is not more than a param but as close to it as possible
-     *
-     * @param {PIXI.MSAA_QUALITY} samples - number of samples
-     * @returns {PIXI.MSAA_QUALITY} - recommended number of samples
+     * @param samples - number of samples
+     * @returns - recommended number of samples
      */
     protected detectSamples(samples: MSAA_QUALITY): MSAA_QUALITY
     {
         const { msaaSamples } = this;
-        let res = MSAA_QUALITY.NONE;
+        let res: number = MSAA_QUALITY.NONE;
 
         if (samples <= 1 || msaaSamples === null)
         {
@@ -513,10 +494,9 @@ export class FramebufferSystem implements ISystem
      * after that target framebuffer is bound
      *
      * Fails with WebGL warning if blits multisample framebuffer to different size
-     *
-     * @param {PIXI.Framebuffer} [framebuffer] - by default it blits "into itself", from renderBuffer to texture.
-     * @param {PIXI.Rectangle} [sourcePixels] - source rectangle in pixels
-     * @param {PIXI.Rectangle} [destPixels] - dest rectangle in pixels, assumed to be the same as sourcePixels
+     * @param framebuffer - by default it blits "into itself", from renderBuffer to texture.
+     * @param sourcePixels - source rectangle in pixels
+     * @param destPixels - dest rectangle in pixels, assumed to be the same as sourcePixels
      */
     public blit(framebuffer?: Framebuffer, sourcePixels?: Rectangle, destPixels?: Rectangle): void
     {
@@ -543,14 +523,36 @@ export class FramebufferSystem implements ISystem
             {
                 return;
             }
+
+            const colorTexture = current.colorTextures[0];
+
+            if (!colorTexture)
+            {
+                return;
+            }
+
             if (!fbo.blitFramebuffer)
             {
                 fbo.blitFramebuffer = new Framebuffer(current.width, current.height);
-                fbo.blitFramebuffer.addColorTexture(0, current.colorTextures[0]);
+                fbo.blitFramebuffer.addColorTexture(0, colorTexture);
             }
+
             framebuffer = fbo.blitFramebuffer;
-            framebuffer.width = current.width;
-            framebuffer.height = current.height;
+
+            if (framebuffer.colorTextures[0] !== colorTexture)
+            {
+                framebuffer.colorTextures[0] = colorTexture;
+                framebuffer.dirtyId++;
+                framebuffer.dirtyFormat++;
+            }
+
+            if (framebuffer.width !== current.width || framebuffer.height !== current.height)
+            {
+                framebuffer.width = current.width;
+                framebuffer.height = current.height;
+                framebuffer.dirtyId++;
+                framebuffer.dirtySize++;
+            }
         }
 
         if (!sourcePixels)
@@ -568,16 +570,17 @@ export class FramebufferSystem implements ISystem
 
         this.bind(framebuffer);
         gl.bindFramebuffer(gl.READ_FRAMEBUFFER, fbo.framebuffer);
-        gl.blitFramebuffer(sourcePixels.x, sourcePixels.y, sourcePixels.width, sourcePixels.height,
-            destPixels.x, destPixels.y, destPixels.width, destPixels.height,
+        gl.blitFramebuffer(
+            sourcePixels.left, sourcePixels.top, sourcePixels.right, sourcePixels.bottom,
+            destPixels.left, destPixels.top, destPixels.right, destPixels.bottom,
             gl.COLOR_BUFFER_BIT, sameSize ? gl.NEAREST : gl.LINEAR
         );
     }
 
     /**
-     * Disposes framebuffer
-     * @param {PIXI.Framebuffer} framebuffer - framebuffer that has to be disposed of
-     * @param {boolean} [contextLost=false] - If context was lost, we suppress all delete function calls
+     * Disposes framebuffer.
+     * @param framebuffer - framebuffer that has to be disposed of
+     * @param contextLost - If context was lost, we suppress all delete function calls
      */
     disposeFramebuffer(framebuffer: Framebuffer, contextLost?: boolean): void
     {
@@ -614,11 +617,16 @@ export class FramebufferSystem implements ISystem
                 gl.deleteRenderbuffer(fbo.stencil);
             }
         }
+
+        if (fbo.blitFramebuffer)
+        {
+            fbo.blitFramebuffer.dispose();
+        }
     }
 
     /**
-     * Disposes all framebuffers, but not textures bound to them
-     * @param {boolean} [contextLost=false] - If context was lost, we suppress all delete function calls
+     * Disposes all framebuffers, but not textures bound to them.
+     * @param [contextLost=false] - If context was lost, we suppress all delete function calls
      */
     disposeAll(contextLost?: boolean): void
     {
@@ -637,7 +645,6 @@ export class FramebufferSystem implements ISystem
      * Used by MaskSystem, when its time to use stencil mask for Graphics element.
      *
      * Its an alternative for public lazy `framebuffer.enableStencil`, in case we need stencil without rebind.
-     *
      * @private
      */
     forceStencil(): void
@@ -678,20 +685,13 @@ export class FramebufferSystem implements ISystem
         gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, stencil);
     }
 
-    /**
-     * resets framebuffer stored state, binds screen framebuffer
-     *
-     * should be called before renderTexture reset()
-     */
+    /** Resets framebuffer stored state, binds screen framebuffer. Should be called before renderTexture reset(). */
     reset(): void
     {
         this.current = this.unknownFramebuffer;
         this.viewport = new Rectangle();
     }
 
-    /**
-     * @ignore
-     */
     destroy(): void
     {
         this.renderer = null;

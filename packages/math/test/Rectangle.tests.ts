@@ -1,9 +1,9 @@
-import { Rectangle } from '@pixi/math';
+import { Rectangle, Matrix } from '@pixi/math';
 import { expect } from 'chai';
 
-describe('Rectangle', function ()
+describe('Rectangle', () =>
 {
-    it('should create a new rectangle', function ()
+    it('should create a new rectangle', () =>
     {
         const rect = new Rectangle(5, 5, 1, 1);
 
@@ -13,7 +13,7 @@ describe('Rectangle', function ()
         expect(rect.bottom).to.equal(6);
     });
 
-    it('should cast quantities to number types', function ()
+    it('should cast quantities to number types', () =>
     {
         const rect = new Rectangle('5', '5', '1', '1');
 
@@ -23,7 +23,7 @@ describe('Rectangle', function ()
         expect(rect.bottom).to.equal(6);
     });
 
-    it('should clone a new rectangle', function ()
+    it('should clone a new rectangle', () =>
     {
         const rect1 = new Rectangle(10, 10, 10, 10);
 
@@ -41,7 +41,7 @@ describe('Rectangle', function ()
         expect(rect1).to.not.equal(rect2);
     });
 
-    it('should copy from one rectangle to another', function ()
+    it('should copy from one rectangle to another', () =>
     {
         const rect1 = new Rectangle(10, 10, 10, 10);
         const rect2 = new Rectangle(2, 2, 5, 5);
@@ -54,7 +54,7 @@ describe('Rectangle', function ()
         expect(rect1.height).to.equal(5);
     });
 
-    it('should check if point is within rectangle', function ()
+    it('should check if point is within rectangle', () =>
     {
         const rect1 = new Rectangle(10, 10, 10, 10);
 
@@ -78,7 +78,7 @@ describe('Rectangle', function ()
         expect(rect2.contains(21, 21)).to.be.false;
     });
 
-    it('should enlarge rectangle', function ()
+    it('should enlarge rectangle', () =>
     {
         const rect1 = new Rectangle(10, 10, 10, 10);
         const rect2 = new Rectangle(15, 15, 10, 10);
@@ -101,7 +101,7 @@ describe('Rectangle', function ()
         expect(rect4.bottom).to.equal(20);
     });
 
-    it('should pad a rectangle', function ()
+    it('should pad a rectangle', () =>
     {
         // Pad with X & Y
         const rect = new Rectangle(10, 10, 10, 10);
@@ -144,7 +144,7 @@ describe('Rectangle', function ()
         expect(rect3.bottom).to.equal(30);
     });
 
-    it('should fit a rectangle', function ()
+    it('should fit a rectangle', () =>
     {
         const rect1 = new Rectangle(0, 0, 10, 10);
         const rect2 = new Rectangle(-10, -10, 5, 5);
@@ -187,7 +187,7 @@ describe('Rectangle', function ()
         expect(rect7.bottom).to.equal(19);
     });
 
-    it('should generate an empty rectangle', function ()
+    it('should generate an empty rectangle', () =>
     {
         const rect = Rectangle.EMPTY;
 
@@ -195,5 +195,107 @@ describe('Rectangle', function ()
         expect(rect.top).to.equal(0);
         expect(rect.right).to.equal(0);
         expect(rect.bottom).to.equal(0);
+    });
+
+    it('should return true if the area of the intersection > 0', () =>
+    {
+        /*
+        ! SHARING A SIDE IS NOT INTERSECTING !
+            +--------+--------+
+            |   A    |    B   |
+            |    +---+--+     |
+            |    |  E|  |     |
+            +----|---+--|-----+
+            |    |   |  |     |
+            |  C +---+--+ D   |
+            |        | 🄵      |
+            +--------+--------+
+        */
+        const a = new Rectangle(0, 0, 100, 100);
+        const b = new Rectangle(100, 0, 100, 100);
+        const c = new Rectangle(0, 100, 100, 100);
+        const d = new Rectangle(100, 100, 100, 100);
+        const e = new Rectangle(50, 50, 100, 100);
+        const f = new Rectangle(150, 175, 0, 0);
+
+        // e intersects a,b,c,d
+        expect(e.intersects(a)).to.equal(true);
+        expect(e.intersects(b)).to.equal(true);
+        expect(e.intersects(c)).to.equal(true);
+        expect(e.intersects(d)).to.equal(true);
+
+        expect(e.intersects(a, new Matrix())).to.equal(true);
+        expect(e.intersects(b, new Matrix())).to.equal(true);
+        expect(e.intersects(c, new Matrix())).to.equal(true);
+        expect(e.intersects(d, new Matrix())).to.equal(true);
+
+        // works the other way arround
+        expect(a.intersects(e)).to.equal(true);
+        expect(b.intersects(e)).to.equal(true);
+        expect(c.intersects(e)).to.equal(true);
+        expect(d.intersects(e)).to.equal(true);
+
+        expect(a.intersects(e, new Matrix())).to.equal(true);
+        expect(b.intersects(e, new Matrix())).to.equal(true);
+        expect(c.intersects(e, new Matrix())).to.equal(true);
+        expect(d.intersects(e, new Matrix())).to.equal(true);
+
+        // none of the other intersect (sharing a side it is NOT intersecting!)
+        expect(a.intersects(b)).to.equal(false); // share Y side
+        expect(b.intersects(d)).to.equal(false); // share X side
+        expect(c.intersects(b)).to.equal(false); // share single point
+
+        expect(a.intersects(b, new Matrix())).to.equal(false); // share Y side
+        expect(b.intersects(d, new Matrix())).to.equal(false); // share X side
+        expect(c.intersects(b, new Matrix())).to.equal(false); // share single point
+
+        // Since F has no area, the intersection with D it's 0 so it's false.
+        expect(f.intersects(d)).to.equal(false);
+
+        expect(f.intersects(d, new Matrix())).to.equal(false);
+
+        // Any rectangle with area intersects itself
+        expect(a.intersects(a.clone())).to.equal(true);
+        expect(b.intersects(b.clone())).to.equal(true);
+        expect(c.intersects(c.clone())).to.equal(true);
+        expect(d.intersects(d.clone())).to.equal(true);
+        expect(e.intersects(e.clone())).to.equal(true);
+
+        expect(a.intersects(a.clone(), new Matrix())).to.equal(true);
+        expect(b.intersects(b.clone(), new Matrix())).to.equal(true);
+        expect(c.intersects(c.clone(), new Matrix())).to.equal(true);
+        expect(d.intersects(d.clone(), new Matrix())).to.equal(true);
+        expect(e.intersects(e.clone(), new Matrix())).to.equal(true);
+
+        // A point without area can't have an intersection, thus it can't even intersect itself
+        expect(f.intersects(f.clone())).to.equal(false);
+
+        expect(f.intersects(f.clone(), new Matrix())).to.equal(false);
+
+        // No intersection if the transform is degenerate
+        expect(a.intersects(a.clone(), new Matrix().scale(0, 1))).to.equal(false);
+
+        expect(a.intersects(a.clone(), new Matrix().scale(0.5, 0.5))).to.equal(true);
+        expect(a.intersects(a.clone(), new Matrix().scale(2, 2))).to.equal(true);
+
+        const m = new Matrix().translate(-50, -50).rotate(Math.PI / 4);
+
+        expect(a.intersects(a.clone(), m.clone().translate(-35, -35))).to.equal(true);
+        expect(a.intersects(a.clone(), m.clone().translate(-36, -36))).to.equal(false);
+        expect(a.intersects(a.clone(), m.clone().translate(135, -35))).to.equal(true);
+        expect(a.intersects(a.clone(), m.clone().translate(136, -36))).to.equal(false);
+        expect(a.intersects(a.clone(), m.clone().translate(-35, 135))).to.equal(true);
+        expect(a.intersects(a.clone(), m.clone().translate(-36, 136))).to.equal(false);
+        expect(a.intersects(a.clone(), m.clone().translate(135, 135))).to.equal(true);
+        expect(a.intersects(a.clone(), m.clone().translate(136, 136))).to.equal(false);
+
+        expect(a.intersects(a.clone(), m.clone().scale(-1, +1).translate(-35, -35))).to.equal(true);
+        expect(a.intersects(a.clone(), m.clone().scale(-1, +1).translate(-36, -36))).to.equal(false);
+        expect(a.intersects(a.clone(), m.clone().scale(-1, +1).translate(135, -35))).to.equal(true);
+        expect(a.intersects(a.clone(), m.clone().scale(-1, +1).translate(136, -36))).to.equal(false);
+        expect(a.intersects(a.clone(), m.clone().scale(-1, +1).translate(-35, 135))).to.equal(true);
+        expect(a.intersects(a.clone(), m.clone().scale(-1, +1).translate(-36, 136))).to.equal(false);
+        expect(a.intersects(a.clone(), m.clone().scale(-1, +1).translate(135, 135))).to.equal(true);
+        expect(a.intersects(a.clone(), m.clone().scale(-1, +1).translate(136, 136))).to.equal(false);
     });
 });

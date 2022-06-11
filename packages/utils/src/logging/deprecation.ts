@@ -7,7 +7,6 @@ const warnings: Dict<boolean> = {};
  * Helper for warning developers about deprecated features & settings.
  * A stack track for warnings is given; useful for tracking-down where
  * deprecated methods/properties/classes are being used within the code.
- *
  * @memberof PIXI.utils
  * @function deprecation
  * @param {string} version - The version where the feature became deprecated

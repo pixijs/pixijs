@@ -12,7 +12,8 @@ npm install @pixi/events
 ## Usage
 
 ```ts
-import { Application, Renderer } from '@pixi/core';
+import { Renderer } from '@pixi/core';
+import { Application } from '@pixi/app';
 import { EventSystem } from '@pixi/events';
 
 // If you are using the pixi.js/pixi.js-legacy bundles, you'll need to remove the interaction
@@ -20,7 +21,7 @@ import { EventSystem } from '@pixi/events';
 delete Renderer.__plugins.interaction;
 
 const app = new PIXI.Application();
-const { renderer} = app;
+const { renderer } = app;
 
 document.body.appendChild(app.view);
 

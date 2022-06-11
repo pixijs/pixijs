@@ -1,9 +1,22 @@
 {
   "name": "@pixi/interaction",
-  "version": "6.1.0-rc.5",
+  "version": "6.4.2",
   "main": "dist/cjs/interaction.js",
   "module": "dist/esm/interaction.js",
   "bundle": "dist/browser/interaction.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./index.d.ts",
+        "default": "./dist/esm/interaction.js"
+      },
+      "require": {
+        "types": "./index.d.ts",
+        "default": "./dist/cjs/interaction.js"
+      }
+    }
+  },
   "description": "Plugin for handling mouse, touch and pointer events",
   "author": "Mat Groves",
   "contributors": [
@@ -25,18 +38,10 @@
     "*.d.ts"
   ],
   "peerDependencies": {
-    "@pixi/core": "6.1.0-rc.5",
-    "@pixi/display": "6.1.0-rc.5",
-    "@pixi/math": "6.1.0-rc.5",
-    "@pixi/ticker": "6.1.0-rc.5",
-    "@pixi/utils": "6.1.0-rc.5"
-  },
-  "devDependencies": {
-    "@pixi/canvas-display": "6.1.0-rc.5",
-    "@pixi/canvas-graphics": "6.1.0-rc.5",
-    "@pixi/canvas-renderer": "6.1.0-rc.5",
-    "@pixi/canvas-sprite": "6.1.0-rc.5",
-    "@pixi/graphics": "6.1.0-rc.5",
-    "@pixi/sprite": "6.1.0-rc.5"
+    "@pixi/core": "6.4.2",
+    "@pixi/display": "6.4.2",
+    "@pixi/math": "6.4.2",
+    "@pixi/ticker": "6.4.2",
+    "@pixi/utils": "6.4.2"
   }
 }

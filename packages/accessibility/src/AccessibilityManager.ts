@@ -4,8 +4,7 @@ import { accessibleTarget } from './accessibleTarget';
 
 import type { Rectangle } from '@pixi/math';
 import type { Container } from '@pixi/display';
-import type { Renderer } from '@pixi/core';
-import type { CanvasRenderer } from '@pixi/canvas-renderer';
+import type { Renderer, AbstractRenderer } from '@pixi/core';
 import type { IAccessibleHTMLElement } from './accessibleTarget';
 
 // add some extra variables to the container..
@@ -31,7 +30,6 @@ const DIV_HOOK_ZINDEX = 2;
  * events as if the mouse was being used, minimizing the effort required to implement.
  *
  * An instance of this class is automatically created by default, and can be found at `renderer.plugins.accessibility`
- *
  * @class
  * @memberof PIXI
  */
@@ -42,10 +40,9 @@ export class AccessibilityManager
 
     /**
      * The renderer this accessibility manager works for.
-     *
      * @type {PIXI.CanvasRenderer|PIXI.Renderer}
      */
-    public renderer: CanvasRenderer|Renderer;
+    public renderer: AbstractRenderer | Renderer;
 
     /** Internal variable, see isActive getter. */
     private _isActive = false;
@@ -77,7 +74,7 @@ export class AccessibilityManager
     /**
      * @param {PIXI.CanvasRenderer|PIXI.Renderer} renderer - A reference to the current renderer
      */
-    constructor(renderer: CanvasRenderer|Renderer)
+    constructor(renderer: AbstractRenderer | Renderer)
     {
         this._hookDiv = null;
 
@@ -101,7 +98,6 @@ export class AccessibilityManager
 
         /**
          * pre-bind the functions
-         *
          * @type {Function}
          * @private
          */
@@ -109,14 +105,13 @@ export class AccessibilityManager
 
         /**
          * pre-bind the functions
-         *
          * @type {Function}
          * @private
          */
         this._onMouseMove = this._onMouseMove.bind(this);
 
         // let listen for tab.. once pressed we can fire up and show the accessibility layer
-        self.addEventListener('keydown', this._onKeyDown, false);
+        globalThis.addEventListener('keydown', this._onKeyDown, false);
     }
 
     /**
@@ -141,7 +136,6 @@ export class AccessibilityManager
 
     /**
      * Creates the touch hooks.
-     *
      * @private
      */
     private createTouchHook(): void
@@ -170,7 +164,6 @@ export class AccessibilityManager
 
     /**
      * Destroys the touch hooks.
-     *
      * @private
      */
     private destroyTouchHook(): void
@@ -186,7 +179,6 @@ export class AccessibilityManager
     /**
      * Activating will cause the Accessibility layer to be shown.
      * This is called when a user presses the tab key.
-     *
      * @private
      */
     private activate(): void
@@ -198,8 +190,8 @@ export class AccessibilityManager
 
         this._isActive = true;
 
-        self.document.addEventListener('mousemove', this._onMouseMove, true);
-        self.removeEventListener('keydown', this._onKeyDown, false);
+        globalThis.document.addEventListener('mousemove', this._onMouseMove, true);
+        globalThis.removeEventListener('keydown', this._onKeyDown, false);
 
         this.renderer.on('postrender', this.update, this);
         this.renderer.view.parentNode?.appendChild(this.div);
@@ -208,7 +200,6 @@ export class AccessibilityManager
     /**
      * Deactivating will cause the Accessibility layer to be hidden.
      * This is called when a user moves the mouse.
-     *
      * @private
      */
     private deactivate(): void
@@ -220,8 +211,8 @@ export class AccessibilityManager
 
         this._isActive = false;
 
-        self.document.removeEventListener('mousemove', this._onMouseMove, true);
-        self.addEventListener('keydown', this._onKeyDown, false);
+        globalThis.document.removeEventListener('mousemove', this._onMouseMove, true);
+        globalThis.addEventListener('keydown', this._onKeyDown, false);
 
         this.renderer.off('postrender', this.update);
         this.div.parentNode?.removeChild(this.div);
@@ -229,7 +220,6 @@ export class AccessibilityManager
 
     /**
      * This recursive function will run through the scene graph and add any new accessible objects to the DOM layer.
-     *
      * @private
      * @param {PIXI.Container} displayObject - The DisplayObject to check.
      */
@@ -252,15 +242,17 @@ export class AccessibilityManager
 
         const children = displayObject.children;
 
-        for (let i = 0; i < children.length; i++)
+        if (children)
         {
-            this.updateAccessibleObjects(children[i] as Container);
+            for (let i = 0; i < children.length; i++)
+            {
+                this.updateAccessibleObjects(children[i] as Container);
+            }
         }
     }
 
     /**
      * Before each render this function will ensure that all divs are mapped correctly to their DisplayObjects.
-     *
      * @private
      */
     private update(): void
@@ -373,8 +365,7 @@ export class AccessibilityManager
     /**
      * private function that will visually add the information to the
      * accessability div
-     *
-     * @param {HTMLElement} div
+     * @param {HTMLElement} div -
      */
     public updateDebugHTML(div: IAccessibleHTMLElement): void
     {
@@ -383,7 +374,6 @@ export class AccessibilityManager
 
     /**
      * Adjust the hit area based on the bounds of a display object
-     *
      * @param {PIXI.Rectangle} hitArea - Bounds of the child
      */
     public capHitArea(hitArea: Rectangle): void
@@ -415,7 +405,6 @@ export class AccessibilityManager
 
     /**
      * Adds a DisplayObject to the accessibility manager
-     *
      * @private
      * @param {PIXI.DisplayObject} displayObject - The child to make accessible.
      */
@@ -497,7 +486,6 @@ export class AccessibilityManager
 
     /**
      * Maps the div button press to pixi's InteractionManager (click)
-     *
      * @private
      * @param {MouseEvent} e - The click event.
      */
@@ -514,7 +502,6 @@ export class AccessibilityManager
 
     /**
      * Maps the div focus events to pixi's InteractionManager (mouseover)
-     *
      * @private
      * @param {FocusEvent} e - The focus event.
      */
@@ -534,7 +521,6 @@ export class AccessibilityManager
 
     /**
      * Maps the div focus events to pixi's InteractionManager (mouseout)
-     *
      * @private
      * @param {FocusEvent} e - The focusout event.
      */
@@ -554,7 +540,6 @@ export class AccessibilityManager
 
     /**
      * Is called when a key is pressed
-     *
      * @private
      * @param {KeyboardEvent} e - The keydown event.
      */
@@ -570,7 +555,6 @@ export class AccessibilityManager
 
     /**
      * Is called when the mouse moves across the renderer element
-     *
      * @private
      * @param {MouseEvent} e - The mouse event.
      */
@@ -584,17 +568,14 @@ export class AccessibilityManager
         this.deactivate();
     }
 
-    /**
-     * Destroys the accessibility manager
-     *
-     */
+    /** Destroys the accessibility manager */
     public destroy(): void
     {
         this.destroyTouchHook();
         this.div = null;
 
-        self.document.removeEventListener('mousemove', this._onMouseMove, true);
-        self.removeEventListener('keydown', this._onKeyDown);
+        globalThis.document.removeEventListener('mousemove', this._onMouseMove, true);
+        globalThis.removeEventListener('keydown', this._onKeyDown);
 
         this.pool = null;
         this.children = null;

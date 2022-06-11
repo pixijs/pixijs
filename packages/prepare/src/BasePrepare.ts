@@ -7,32 +7,34 @@ import { CountLimiter } from './CountLimiter';
 
 import type { AbstractRenderer } from '@pixi/core';
 
-interface IArrowFunction {
+interface IArrowFunction
+{
     (): void;
 }
-interface IUploadHook {
+interface IUploadHook
+{
     (helper: AbstractRenderer | BasePrepare, item: IDisplayObjectExtended): boolean;
 }
 
-interface IFindHook {
+interface IFindHook
+{
     (item: any, queue: Array<any>): boolean;
 }
 
-export interface IDisplayObjectExtended extends DisplayObject {
+export interface IDisplayObjectExtended extends DisplayObject
+{
     _textures?: Array<Texture>;
     _texture?: Texture;
-    style?: TextStyle|Partial<TextStyle>;
+    style?: TextStyle | Partial<TextStyle>;
 }
 
 /**
  * Built-in hook to find multiple textures from objects like AnimatedSprites.
- *
  * @private
- * @param {PIXI.DisplayObject} item - Display object to check
- * @param {Array<*>} queue - Collection of items to upload
- * @return {boolean} if a PIXI.Texture object was found.
+ * @param item - Display object to check
+ * @param queue - Collection of items to upload
+ * @returns If a PIXI.Texture object was found.
  */
-
 function findMultipleBaseTextures(item: IDisplayObjectExtended, queue: Array<any>): boolean
 {
     let result = false;
@@ -60,11 +62,10 @@ function findMultipleBaseTextures(item: IDisplayObjectExtended, queue: Array<any
 
 /**
  * Built-in hook to find BaseTextures from Texture.
- *
  * @private
- * @param {PIXI.Texture} item - Display object to check
- * @param {Array<*>} queue - Collection of items to upload
- * @return {boolean} if a PIXI.Texture object was found.
+ * @param item - Display object to check
+ * @param queue - Collection of items to upload
+ * @returns If a PIXI.Texture object was found.
  */
 function findBaseTexture(item: Texture, queue: Array<any>): boolean
 {
@@ -85,11 +86,10 @@ function findBaseTexture(item: Texture, queue: Array<any>): boolean
 
 /**
  * Built-in hook to find textures from objects.
- *
  * @private
- * @param {PIXI.DisplayObject} item - Display object to check
- * @param {Array<*>} queue - Collection of items to upload
- * @return {boolean} if a PIXI.Texture object was found.
+ * @param item - Display object to check
+ * @param queue - Collection of items to upload
+ * @returns If a PIXI.Texture object was found.
  */
 function findTexture(item: IDisplayObjectExtended, queue: Array<any>): boolean
 {
@@ -110,11 +110,10 @@ function findTexture(item: IDisplayObjectExtended, queue: Array<any>): boolean
 
 /**
  * Built-in hook to draw PIXI.Text to its texture.
- *
  * @private
- * @param {PIXI.AbstractRenderer|PIXI.BasePrepare} helper - Not used by this upload handler
- * @param {PIXI.DisplayObject} item - Item to check
- * @return {boolean} If item was uploaded.
+ * @param _helper - Not used by this upload handler
+ * @param item - Item to check
+ * @returns If item was uploaded.
  */
 function drawText(_helper: AbstractRenderer | BasePrepare, item: IDisplayObjectExtended): boolean
 {
@@ -131,11 +130,10 @@ function drawText(_helper: AbstractRenderer | BasePrepare, item: IDisplayObjectE
 
 /**
  * Built-in hook to calculate a text style for a PIXI.Text object.
- *
  * @private
- * @param {PIXI.AbstractRenderer|PIXI.BasePrepare} helper - Not used by this upload handler
- * @param {PIXI.DisplayObject} item - Item to check
- * @return {boolean} If item was uploaded.
+ * @param _helper - Not used by this upload handler
+ * @param item - Item to check
+ * @returns If item was uploaded.
  */
 function calculateTextStyle(_helper: AbstractRenderer | BasePrepare, item: IDisplayObjectExtended): boolean
 {
@@ -153,11 +151,10 @@ function calculateTextStyle(_helper: AbstractRenderer | BasePrepare, item: IDisp
 
 /**
  * Built-in hook to find Text objects.
- *
  * @private
- * @param {PIXI.DisplayObject} item - Display object to check
- * @param {Array<*>} queue - Collection of items to upload
- * @return {boolean} if a PIXI.Text object was found.
+ * @param item - Display object to check
+ * @param queue - Collection of items to upload
+ * @returns if a PIXI.Text object was found.
  */
 function findText(item: IDisplayObjectExtended, queue: Array<any>): boolean
 {
@@ -189,11 +186,10 @@ function findText(item: IDisplayObjectExtended, queue: Array<any>): boolean
 
 /**
  * Built-in hook to find TextStyle objects.
- *
  * @private
- * @param {PIXI.TextStyle} item - Display object to check
- * @param {Array<*>} queue - Collection of items to upload
- * @return {boolean} if a PIXI.TextStyle object was found.
+ * @param item - Display object to check
+ * @param queue - Collection of items to upload
+ * @returns If a PIXI.TextStyle object was found.
  */
 function findTextStyle(item: TextStyle, queue: Array<any>): boolean
 {
@@ -216,7 +212,6 @@ function findTextStyle(item: TextStyle, queue: Array<any>): boolean
  * BasePrepare handles basic queuing functionality and is extended by
  * {@link PIXI.Prepare} and {@link PIXI.CanvasPrepare}
  * to provide preparation capabilities specific to their respective renderers.
- *
  * @example
  * // Create a sprite
  * const sprite = PIXI.Sprite.from('something.png');
@@ -228,88 +223,72 @@ function findTextStyle(item: TextStyle, queue: Array<any>): boolean
  *     app.stage.addChild(sprite);
  *
  * })
- *
  * @abstract
- * @class
  * @memberof PIXI
  */
 export class BasePrepare
 {
+    /**
+     * The limiter to be used to control how quickly items are prepared.
+     * @type {PIXI.CountLimiter|PIXI.TimeLimiter}
+     */
     private limiter: CountLimiter;
+
+    /** Reference to the renderer. */
     protected renderer: AbstractRenderer;
+
+    /**
+     * The only real difference between CanvasPrepare and Prepare is what they pass
+     * to upload hooks. That different parameter is stored here.
+     */
     protected uploadHookHelper: any;
+
+    /** Collection of items to uploads at once. */
     protected queue: Array<any>;
+
+    /**
+     * Collection of additional hooks for finding assets.
+     * @type {Array<Function>}
+     */
     public addHooks: Array<any>;
+
+    /**
+     * Collection of additional hooks for processing assets.
+     * @type {Array<Function>}
+     */
     public uploadHooks: Array<any>;
+
+    /**
+     * Callback to call after completed.
+     * @type {Array<Function>}
+     */
     public completes: Array<any>;
+
+    /**
+     * If prepare is ticking (running).
+     * @type {boolean}
+     */
     public ticking: boolean;
+
+    /**
+     * 'bound' call for prepareItems().
+     * @type {Function}
+     */
     private delayedTick: IArrowFunction;
+
     /**
      * @param {PIXI.AbstractRenderer} renderer - A reference to the current renderer
      */
     constructor(renderer: AbstractRenderer)
     {
-        /**
-         * The limiter to be used to control how quickly items are prepared.
-         * @type {PIXI.CountLimiter|PIXI.TimeLimiter}
-         */
         this.limiter = new CountLimiter(settings.UPLOADS_PER_FRAME);
-
-        /**
-         * Reference to the renderer.
-         * @type {PIXI.AbstractRenderer}
-         * @protected
-         */
         this.renderer = renderer;
-
-        /**
-         * The only real difference between CanvasPrepare and Prepare is what they pass
-         * to upload hooks. That different parameter is stored here.
-         * @type {object}
-         * @protected
-         */
         this.uploadHookHelper = null;
-
-        /**
-         * Collection of items to uploads at once.
-         * @type {Array<*>}
-         * @private
-         */
         this.queue = [];
-
-        /**
-         * Collection of additional hooks for finding assets.
-         * @type {Array<Function>}
-         * @private
-         */
         this.addHooks = [];
-
-        /**
-         * Collection of additional hooks for processing assets.
-         * @type {Array<Function>}
-         * @private
-         */
         this.uploadHooks = [];
-
-        /**
-         * Callback to call after completed.
-         * @type {Array<Function>}
-         * @private
-         */
         this.completes = [];
-
-        /**
-         * If prepare is ticking (running).
-         * @type {boolean}
-         * @private
-         */
         this.ticking = false;
-
-        /**
-         * 'bound' call for prepareItems().
-         * @type {Function}
-         * @private
-         */
         this.delayedTick = (): void =>
         {
             // unlikely, but in case we were destroyed between tick() and delayedTick()
@@ -334,13 +313,12 @@ export class BasePrepare
 
     /**
      * Upload all the textures and graphics to the GPU.
-     *
      * @param {Function|PIXI.DisplayObject|PIXI.Container|PIXI.BaseTexture|PIXI.Texture|PIXI.Graphics|PIXI.Text} item -
      *        Either the container or display object to search for items to upload, the items to upload themselves,
      *        or the callback function, if items have been added using `prepare.add`.
      * @param {Function} [done] - Optional callback when all queued uploads have completed
      */
-    upload(item: IDisplayObjectExtended | IUploadHook | IFindHook | (() => void), done?: () => void): void
+    upload(item: IDisplayObjectExtended | Container | BaseTexture | Texture | (() => void), done?: () => void): void
     {
         if (typeof item === 'function')
         {
@@ -352,7 +330,7 @@ export class BasePrepare
         // that we could upload
         if (item)
         {
-            this.add(item as IDisplayObjectExtended | IUploadHook | IFindHook);
+            this.add(item as IDisplayObjectExtended | Container | BaseTexture | Texture);
         }
 
         // Get the items for upload from the display
@@ -377,7 +355,6 @@ export class BasePrepare
 
     /**
      * Handle tick update
-     *
      * @private
      */
     tick(): void
@@ -388,7 +365,6 @@ export class BasePrepare
     /**
      * Actually prepare items. This is handled outside of the tick because it will take a while
      * and we do NOT want to block the current animation frame from rendering.
-     *
      * @private
      */
     prepareItems(): void
@@ -442,10 +418,9 @@ export class BasePrepare
 
     /**
      * Adds hooks for finding items.
-     *
      * @param {Function} addHook - Function call that takes two parameters: `item:*, queue:Array`
      *          function must return `true` if it was able to add item to the queue.
-     * @return {this} Instance of plugin for chaining.
+     * @returns Instance of plugin for chaining.
      */
     registerFindHook(addHook: IFindHook): this
     {
@@ -459,10 +434,9 @@ export class BasePrepare
 
     /**
      * Adds hooks for uploading items.
-     *
      * @param {Function} uploadHook - Function call that takes two parameters: `prepare:CanvasPrepare, item:*` and
      *          function must return `true` if it was able to handle upload of item.
-     * @return {this} Instance of plugin for chaining.
+     * @returns Instance of plugin for chaining.
      */
     registerUploadHook(uploadHook: IUploadHook): this
     {
@@ -476,12 +450,11 @@ export class BasePrepare
 
     /**
      * Manually add an item to the uploading queue.
-     *
      * @param {PIXI.DisplayObject|PIXI.Container|PIXI.BaseTexture|PIXI.Texture|PIXI.Graphics|PIXI.Text|*} item - Object to
      *        add to the queue
-     * @return {this} Instance of plugin for chaining.
+     * @returns Instance of plugin for chaining.
      */
-    add(item: IDisplayObjectExtended | IUploadHook | IFindHook): this
+    add(item: IDisplayObjectExtended | Container | BaseTexture | Texture): this
     {
         // Add additional hooks for finding elements on special
         // types of objects that
@@ -505,10 +478,7 @@ export class BasePrepare
         return this;
     }
 
-    /**
-     * Destroys the plugin, don't use after this.
-     *
-     */
+    /** Destroys the plugin, don't use after this. */
     destroy(): void
     {
         if (this.ticking)

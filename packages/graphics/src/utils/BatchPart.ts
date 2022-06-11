@@ -3,7 +3,6 @@ import type { FillStyle } from '../styles/FillStyle';
 
 /**
  * A structure to hold interim batch objects for Graphics.
- * @class
  * @memberof PIXI.graphicsUtils
  */
 export class BatchPart
@@ -20,11 +19,10 @@ export class BatchPart
     }
 
     /**
-     * Begin batch part
-     *
-     * @param {PIXI.FillStyle | PIXI.LineStyle} style
-     * @param {number} startIndex
-     * @param {number} attribStart
+     * Begin batch part.
+     * @param style
+     * @param startIndex
+     * @param attribStart
      */
     public begin(style: LineStyle | FillStyle, startIndex: number, attribStart: number): void
     {
@@ -35,10 +33,9 @@ export class BatchPart
     }
 
     /**
-     * End batch part
-     *
-     * @param {number} endIndex
-     * @param {number} endAttrib
+     * End batch part.
+     * @param endIndex
+     * @param endAttrib
      */
     public end(endIndex: number, endAttrib: number): void
     {

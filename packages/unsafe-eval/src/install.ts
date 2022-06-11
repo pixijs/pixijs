@@ -2,7 +2,8 @@ import { syncUniforms } from './syncUniforms';
 
 import type { ShaderSystem, Program, UniformGroup } from '@pixi/core';
 
-interface PIXICore {
+interface PIXICore
+{
     ShaderSystem: typeof ShaderSystem;
 }
 
