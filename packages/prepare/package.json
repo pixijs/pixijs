@@ -43,6 +43,7 @@
     "@pixi/graphics": "6.4.2",
     "@pixi/settings": "6.4.2",
     "@pixi/text": "6.4.2",
-    "@pixi/ticker": "6.4.2"
+    "@pixi/ticker": "6.4.2",
+    "@pixi/utils": "6.4.2"
   }
 }
