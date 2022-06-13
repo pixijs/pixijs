@@ -12,7 +12,7 @@ export interface IMaskTarget extends IFilterTarget
     isSprite?: boolean;
     worldTransform: Matrix;
     isFastRect?(): boolean;
-    getBounds(skipUpdate?: boolean): Rectangle;
+    getBounds(skipUpdate?: boolean, rect?: Rectangle): Rectangle;
     render(renderer: Renderer): void;
 }
 /**
