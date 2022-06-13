@@ -16,7 +16,6 @@ const DDS_MAGIC = 0x20534444;
 
 /**
  * DWORD offsets of the DDS file header fields (relative to file start).
- *
  * @ignore
  */
 const DDS_FIELDS = {
@@ -30,7 +29,6 @@ const DDS_FIELDS = {
 
 /**
  * DWORD offsets of the DDS PIXEL_FORMAT fields.
- *
  * @ignore
  */
 const DDS_PF_FIELDS = {
@@ -46,7 +44,6 @@ const DDS_PF_FIELDS = {
 
 /**
  * DWORD offsets of the DDS_HEADER_DX10 fields.
- *
  * @ignore
  */
 const DDS_DX10_FIELDS = {
@@ -63,7 +60,8 @@ const DDS_DX10_FIELDS = {
  */
 // This is way over-blown for us! Lend us a hand, and remove the ones that aren't used (but set the remaining
 // ones to their correct value)
-enum DXGI_FORMAT {
+enum DXGI_FORMAT
+    {
     DXGI_FORMAT_UNKNOWN,
     DXGI_FORMAT_R32G32B32A32_TYPELESS,
     DXGI_FORMAT_R32G32B32A32_FLOAT,
@@ -190,10 +188,10 @@ enum DXGI_FORMAT {
 
 /**
  * Possible values of the field {@link DDS_DX10_FIELDS.RESOURCE_DIMENSION}
- *
  * @ignore
  */
-enum D3D10_RESOURCE_DIMENSION {
+enum D3D10_RESOURCE_DIMENSION
+    {
     DDS_DIMENSION_TEXTURE1D = 2,
     DDS_DIMENSION_TEXTURE2D = 3,
     DDS_DIMENSION_TEXTURE3D = 6
@@ -219,7 +217,6 @@ const DDS_RESOURCE_MISC_TEXTURECUBE = 0x4;
 
 /**
  * Maps `FOURCC_*` formats to internal formats (see {@link PIXI.INTERNAL_FORMATS}).
- *
  * @ignore
  */
 const FOURCC_TO_FORMAT: { [id: number]: number } = {
@@ -230,7 +227,6 @@ const FOURCC_TO_FORMAT: { [id: number]: number } = {
 
 /**
  * Maps {@link DXGI_FORMAT} to types/internal-formats (see {@link PIXI.TYPES}, {@link PIXI.INTERNAL_FORMATS})
- *
  * @ignore
  */
 const DXGI_TO_FORMAT: { [id: number]: number } = {
@@ -251,7 +247,7 @@ const DXGI_TO_FORMAT: { [id: number]: number } = {
 /**
  * @class
  * @memberof PIXI
- * @implements PIXI.ILoaderPlugin
+ * @implements {PIXI.ILoaderPlugin}
  * @see https://docs.microsoft.com/en-us/windows/win32/direct3ddds/dx-graphics-dds-pguide
  */
 export class DDSLoader

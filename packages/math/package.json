@@ -1,9 +1,22 @@
 {
   "name": "@pixi/math",
-  "version": "6.3.2",
+  "version": "6.4.2",
   "main": "dist/cjs/math.js",
   "module": "dist/esm/math.js",
   "bundle": "dist/browser/math.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./index.d.ts",
+        "default": "./dist/esm/math.js"
+      },
+      "require": {
+        "types": "./index.d.ts",
+        "default": "./dist/cjs/math.js"
+      }
+    }
+  },
   "description": "Collection of math utilities",
   "author": "Mat Groves",
   "contributors": [

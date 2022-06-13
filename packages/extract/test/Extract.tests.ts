@@ -6,15 +6,15 @@ import { Extract, PixelExtractOptions } from '@pixi/extract';
 
 skipHello();
 
-describe('Extract', function ()
+describe('Extract', () =>
 {
-    before(function ()
+    before(() =>
     {
         Renderer.registerPlugin('extract', Extract);
         Renderer.registerPlugin('batch', BatchRenderer);
     });
 
-    it('should access extract on renderer', function ()
+    it('should access extract on renderer', () =>
     {
         const renderer = new Renderer();
 
@@ -23,7 +23,7 @@ describe('Extract', function ()
         renderer.destroy();
     });
 
-    it('should extract an sprite', function ()
+    it('should extract an sprite', () =>
     {
         const renderer = new Renderer();
         const sprite = new Sprite(Texture.WHITE);
@@ -38,20 +38,20 @@ describe('Extract', function ()
         sprite.destroy();
     });
 
-    it('should extract with no arguments', function ()
+    it('should extract with no arguments', () =>
     {
         const renderer = new Renderer();
         const extract = renderer.plugins.extract as Extract;
 
-        expect(extract.canvas()).to.be.an.instanceof(HTMLCanvasElement);
-        expect(extract.base64()).to.be.a('string');
+        expect(extract.canvas(undefined)).to.be.an.instanceof(HTMLCanvasElement);
+        expect(extract.base64(undefined)).to.be.a('string');
         expect(extract.pixels()).to.be.instanceOf(Uint8Array);
-        expect(extract.image()).to.be.instanceOf(HTMLImageElement);
+        expect(extract.image(undefined)).to.be.instanceOf(HTMLImageElement);
 
         renderer.destroy();
     });
 
-    it('should extract a render texture', function ()
+    it('should extract a render texture', () =>
     {
         const renderer = new Renderer();
         const extract = renderer.plugins.extract as Extract;

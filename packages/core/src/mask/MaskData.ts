@@ -19,7 +19,6 @@ export interface IMaskTarget extends IFilterTarget
  * Component for masked elements.
  *
  * Holds mask mode and temporary data about current mask.
- *
  * @memberof PIXI
  */
 export class MaskData
@@ -80,16 +79,10 @@ export class MaskData
      */
     _scissorCounter: number;
 
-    /**
-     * Scissor operation above the mask in stack.
-     * Null if _scissorCounter is zero, rectangle instance if positive.
-     */
+    /** Scissor operation above the mask in stack. Null if _scissorCounter is zero, rectangle instance if positive. */
     _scissorRect: Rectangle;
 
-    /**
-     * pre-computed scissor rect
-     * does become _scissorRect when mask is actually pushed
-     */
+    /** pre-computed scissor rect does become _scissorRect when mask is actually pushed */
     _scissorRectLocal: Rectangle;
 
     /**
@@ -101,7 +94,6 @@ export class MaskData
 
     /**
      * Create MaskData
-     *
      * @param {PIXI.DisplayObject} [maskObject=null] - object that describes the mask
      */
     constructor(maskObject: IMaskTarget = null)
@@ -167,7 +159,10 @@ export class MaskData
         this._scissorRectLocal = null;
     }
 
-    /** Copies counters from maskData above, called from pushMask(). */
+    /**
+     * Copies counters from maskData above, called from pushMask().
+     * @param maskAbove
+     */
     copyCountersOrReset(maskAbove?: MaskData): void
     {
         if (maskAbove)

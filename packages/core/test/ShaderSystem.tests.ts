@@ -4,7 +4,7 @@ import { expect } from 'chai';
 
 skipHello();
 
-describe('ShaderSystem', function ()
+describe('ShaderSystem', () =>
 {
     const vertexSrc = `
 attribute vec2 aVertexPosition;
@@ -34,7 +34,7 @@ void main() {
 
 }`;
 
-    function createTexture(w, h)
+    function createTexture(w: number, h: number)
     {
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d');
@@ -47,20 +47,21 @@ void main() {
         return new BaseTexture(new CanvasResource(canvas));
     }
 
-    before(function ()
+    let renderer: Renderer;
+
+    before(() =>
     {
-        this.renderer = new Renderer();
+        renderer = new Renderer();
     });
 
-    after(function ()
+    after(() =>
     {
-        this.renderer.destroy();
-        this.renderer = null;
+        renderer.destroy();
+        renderer = null;
     });
 
-    it('should set textures in different groups to different locations', function ()
+    it('should set textures in different groups to different locations', () =>
     {
-        const renderer = this.renderer;
         const texture1 = createTexture(10, 10);
         const texture2 = createTexture(20, 20);
 

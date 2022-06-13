@@ -40,7 +40,6 @@
  *
  * myGame.update.emit(time);
  * ```
- *
  * @memberof PIXI
  */
 export class Runner
@@ -59,11 +58,12 @@ export class Runner
         this._aliasCount = 0;
     }
 
+    /* eslint-disable jsdoc/require-param, jsdoc/check-param-names */
     /**
      * Dispatch/Broadcast Runner to all listeners added to the queue.
-     *
      * @param {...any} params - (optional) parameters to pass to each listener
      */
+    /*  eslint-enable jsdoc/require-param, jsdoc/check-param-names */
     public emit(a0?: unknown, a1?: unknown, a2?: unknown, a3?: unknown,
         a4?: unknown, a5?: unknown, a6?: unknown, a7?: unknown): this
     {
@@ -114,7 +114,6 @@ export class Runner
      * ```
      *
      * The scope used will be the object itself.
-     *
      * @param {any} item - The object that will be listening.
      */
     public add(item: unknown): this
@@ -131,7 +130,6 @@ export class Runner
 
     /**
      * Remove a single listener from the dispatch queue.
-     *
      * @param {any} item - The listener that you would like to remove.
      */
     public remove(item: unknown): this
@@ -149,7 +147,6 @@ export class Runner
 
     /**
      * Check to see if the listener is already in the Runner
-     *
      * @param {any} item - The listener that you would like to check.
      */
     public contains(item: unknown): boolean
@@ -176,7 +173,6 @@ export class Runner
 
     /**
      * `true` if there are no this Runner contains no listeners
-     *
      * @readonly
      */
     public get empty(): boolean
@@ -186,7 +182,6 @@ export class Runner
 
     /**
      * The name of the runner.
-     *
      * @readonly
      */
     public get name(): string

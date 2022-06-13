@@ -92,7 +92,8 @@ const GLSL_TO_STD40_SIZE: Dict<number> = {
     mat4:     16 * 4,
 };
 
-interface UBOElement {
+interface UBOElement
+{
     data: IUniformData
     offset: number,
     dataLen: number,
@@ -100,11 +101,9 @@ interface UBOElement {
 }
 
 /**
- * @ignore
- *
  * logic originally from here: https://github.com/sketchpunk/FunWithWebGL2/blob/master/lesson_022/Shaders.js
  * rewrote it, but this was a great starting point to get a solid understanding of whats going on :)
- *
+ * @ignore
  * @param uniformData
  */
 export function createUBOElements(uniformData: IUniformData[]): {uboElements: UBOElement[], size: number}

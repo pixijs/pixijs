@@ -179,7 +179,6 @@ import type { Dict } from '@pixi/utils';
  *
  * Since PixiJS only had a handful of built-in filters, additional filters can be downloaded
  * {@link https://github.com/pixijs/pixi-filters here} from the PixiJS Filters repository.
- *
  * @memberof PIXI
  */
 export class Filter extends Shader
@@ -200,14 +199,12 @@ export class Filter extends Shader
     /**
      * If enabled, PixiJS will fit the filter area into boundaries for better performance.
      * Switch it off if it does not work for specific shader.
-     *
      * @default true
      */
     public autoFit: boolean;
 
     /**
      * Legacy filters use position and uvs from attributes (set by filter system)
-     *
      * @readonly
      */
     public legacy: boolean;
@@ -239,12 +236,11 @@ export class Filter extends Shader
 
     /**
      * Applies the filter
-     *
      * @param {PIXI.FilterSystem} filterManager - The renderer to retrieve the filter from
      * @param {PIXI.RenderTexture} input - The input render target.
      * @param {PIXI.RenderTexture} output - The target to output to.
      * @param {PIXI.CLEAR_MODES} [clearMode] - Should the output be cleared before rendering to it.
-     * @param {object} [currentState] - It's current state of filter.
+     * @param {object} [_currentState] - It's current state of filter.
      *        There are some useful properties in the currentState :
      *        target, filters, sourceFrame, destinationFrame, renderTarget, resolution
      */
@@ -260,7 +256,6 @@ export class Filter extends Shader
 
     /**
      * Sets the blend mode of the filter.
-     *
      * @default PIXI.BLEND_MODES.NORMAL
      */
     get blendMode(): BLEND_MODES
@@ -289,7 +284,6 @@ export class Filter extends Shader
 
     /**
      * The default vertex shader source
-     *
      * @constant
      */
     static get defaultVertexSrc(): string
@@ -299,7 +293,6 @@ export class Filter extends Shader
 
     /**
      * The default fragment shader source
-     *
      * @constant
      */
     static get defaultFragmentSrc(): string

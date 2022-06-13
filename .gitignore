@@ -42,5 +42,8 @@ packages/**/index.d.ts
 .vscode
 pixi.code-workspace
 
+# IntelliJ
+*.iml
+
 # webdoc api
 dist/docs/pixi.api.json

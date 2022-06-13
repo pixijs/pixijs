@@ -1,9 +1,9 @@
 import { CountLimiter } from '@pixi/prepare';
 import { expect } from 'chai';
 
-describe('CountLimiter', function ()
+describe('CountLimiter', () =>
 {
-    it('should limit to specified number per beginFrame()', function ()
+    it('should limit to specified number per beginFrame()', () =>
     {
         const limit = new CountLimiter(3);
 

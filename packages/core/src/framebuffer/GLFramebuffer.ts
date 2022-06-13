@@ -4,7 +4,6 @@ import type { Framebuffer } from './Framebuffer';
 
 /**
  * Internal framebuffer for WebGL context.
- *
  * @memberof PIXI
  */
 export class GLFramebuffer

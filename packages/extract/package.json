@@ -1,9 +1,22 @@
 {
   "name": "@pixi/extract",
-  "version": "6.3.2",
+  "version": "6.4.2",
   "main": "dist/cjs/extract.js",
   "module": "dist/esm/extract.js",
   "bundle": "dist/browser/extract.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./index.d.ts",
+        "default": "./dist/esm/extract.js"
+      },
+      "require": {
+        "types": "./index.d.ts",
+        "default": "./dist/cjs/extract.js"
+      }
+    }
+  },
   "description": "Extract raw graphics data from renderer",
   "author": "Mat Groves",
   "contributors": [
@@ -25,8 +38,8 @@
     "*.d.ts"
   ],
   "peerDependencies": {
-    "@pixi/core": "6.3.2",
-    "@pixi/math": "6.3.2",
-    "@pixi/utils": "6.3.2"
+    "@pixi/core": "6.4.2",
+    "@pixi/math": "6.4.2",
+    "@pixi/utils": "6.4.2"
   }
 }

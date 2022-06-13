@@ -1,9 +1,22 @@
 {
   "name": "@pixi/text",
-  "version": "6.3.2",
+  "version": "6.4.2",
   "main": "dist/cjs/text.js",
   "module": "dist/esm/text.js",
   "bundle": "dist/browser/text.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./index.d.ts",
+        "default": "./dist/esm/text.js"
+      },
+      "require": {
+        "types": "./index.d.ts",
+        "default": "./dist/cjs/text.js"
+      }
+    }
+  },
   "description": "Text via the Canvas API",
   "author": "Mat Groves",
   "contributors": [
@@ -25,10 +38,10 @@
     "*.d.ts"
   ],
   "peerDependencies": {
-    "@pixi/core": "6.3.2",
-    "@pixi/math": "6.3.2",
-    "@pixi/settings": "6.3.2",
-    "@pixi/sprite": "6.3.2",
-    "@pixi/utils": "6.3.2"
+    "@pixi/core": "6.4.2",
+    "@pixi/math": "6.4.2",
+    "@pixi/settings": "6.4.2",
+    "@pixi/sprite": "6.4.2",
+    "@pixi/utils": "6.4.2"
   }
 }

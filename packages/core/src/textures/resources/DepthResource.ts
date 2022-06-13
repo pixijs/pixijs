@@ -7,18 +7,16 @@ import type { GLTexture } from '../GLTexture';
 
 /**
  * Resource type for DepthTexture.
- *
  * @memberof PIXI
  */
 export class DepthResource extends BufferResource
 {
     /**
      * Upload the texture to the GPU.
-     *
      * @param renderer - Upload to the renderer
      * @param baseTexture - Reference to parent texture
      * @param glTexture - glTexture
-     * @return - true is success
+     * @returns - true is success
      */
     upload(renderer: Renderer, baseTexture: BaseTexture, glTexture: GLTexture): boolean
     {

@@ -1,9 +1,9 @@
 import { Rectangle, Matrix } from '@pixi/math';
 import { expect } from 'chai';
 
-describe('Rectangle', function ()
+describe('Rectangle', () =>
 {
-    it('should create a new rectangle', function ()
+    it('should create a new rectangle', () =>
     {
         const rect = new Rectangle(5, 5, 1, 1);
 
@@ -13,7 +13,7 @@ describe('Rectangle', function ()
         expect(rect.bottom).to.equal(6);
     });
 
-    it('should cast quantities to number types', function ()
+    it('should cast quantities to number types', () =>
     {
         const rect = new Rectangle('5', '5', '1', '1');
 
@@ -23,7 +23,7 @@ describe('Rectangle', function ()
         expect(rect.bottom).to.equal(6);
     });
 
-    it('should clone a new rectangle', function ()
+    it('should clone a new rectangle', () =>
     {
         const rect1 = new Rectangle(10, 10, 10, 10);
 
@@ -41,7 +41,7 @@ describe('Rectangle', function ()
         expect(rect1).to.not.equal(rect2);
     });
 
-    it('should copy from one rectangle to another', function ()
+    it('should copy from one rectangle to another', () =>
     {
         const rect1 = new Rectangle(10, 10, 10, 10);
         const rect2 = new Rectangle(2, 2, 5, 5);
@@ -54,7 +54,7 @@ describe('Rectangle', function ()
         expect(rect1.height).to.equal(5);
     });
 
-    it('should check if point is within rectangle', function ()
+    it('should check if point is within rectangle', () =>
     {
         const rect1 = new Rectangle(10, 10, 10, 10);
 
@@ -78,7 +78,7 @@ describe('Rectangle', function ()
         expect(rect2.contains(21, 21)).to.be.false;
     });
 
-    it('should enlarge rectangle', function ()
+    it('should enlarge rectangle', () =>
     {
         const rect1 = new Rectangle(10, 10, 10, 10);
         const rect2 = new Rectangle(15, 15, 10, 10);
@@ -101,7 +101,7 @@ describe('Rectangle', function ()
         expect(rect4.bottom).to.equal(20);
     });
 
-    it('should pad a rectangle', function ()
+    it('should pad a rectangle', () =>
     {
         // Pad with X & Y
         const rect = new Rectangle(10, 10, 10, 10);
@@ -144,7 +144,7 @@ describe('Rectangle', function ()
         expect(rect3.bottom).to.equal(30);
     });
 
-    it('should fit a rectangle', function ()
+    it('should fit a rectangle', () =>
     {
         const rect1 = new Rectangle(0, 0, 10, 10);
         const rect2 = new Rectangle(-10, -10, 5, 5);
@@ -187,7 +187,7 @@ describe('Rectangle', function ()
         expect(rect7.bottom).to.equal(19);
     });
 
-    it('should generate an empty rectangle', function ()
+    it('should generate an empty rectangle', () =>
     {
         const rect = Rectangle.EMPTY;
 
@@ -197,7 +197,7 @@ describe('Rectangle', function ()
         expect(rect.bottom).to.equal(0);
     });
 
-    it('should return true if the area of the intersection > 0', function ()
+    it('should return true if the area of the intersection > 0', () =>
     {
         /*
         ! SHARING A SIDE IS NOT INTERSECTING !

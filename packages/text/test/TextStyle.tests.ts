@@ -1,9 +1,9 @@
 import { TextStyle } from '@pixi/text';
 import { expect } from 'chai';
 
-describe('TextStyle', function ()
+describe('TextStyle', () =>
 {
-    it('reset reverts style to default', function ()
+    it('reset reverts style to default', () =>
     {
         const textStyle = new TextStyle();
         const defaultFontSize = textStyle.fontSize;
@@ -15,7 +15,7 @@ describe('TextStyle', function ()
         expect(textStyle.fontSize).to.equal(defaultFontSize);
     });
 
-    it('should clone correctly', function ()
+    it('should clone correctly', () =>
     {
         const textStyle = new TextStyle({ fontSize: 1000 });
 
@@ -25,7 +25,7 @@ describe('TextStyle', function ()
         expect(clonedTextStyle.fontSize).to.equal(textStyle.fontSize);
     });
 
-    it('should assume pixel fonts', function ()
+    it('should assume pixel fonts', () =>
     {
         const style = new TextStyle({ fontSize: 72 });
         const font = style.toFontString();
@@ -34,7 +34,7 @@ describe('TextStyle', function ()
         expect(font).to.have.string(' 72px ');
     });
 
-    it('should handle multiple fonts as array', function ()
+    it('should handle multiple fonts as array', () =>
     {
         const style = new TextStyle({
             fontFamily: ['Georgia', 'Arial', 'sans-serif'],
@@ -43,7 +43,7 @@ describe('TextStyle', function ()
         expect(style.toFontString()).to.have.string('"Georgia","Arial",sans-serif');
     });
 
-    it('should handle multiple fonts as string', function ()
+    it('should handle multiple fonts as string', () =>
     {
         const style = new TextStyle({
             fontFamily: 'Georgia, "Arial", sans-serif',
@@ -52,7 +52,7 @@ describe('TextStyle', function ()
         expect(style.toFontString()).to.have.string('"Georgia","Arial",sans-serif');
     });
 
-    it('should not shared array / object references between different instances', function ()
+    it('should not shared array / object references between different instances', () =>
     {
         const defaultStyle = new TextStyle();
         const style = new TextStyle();
@@ -62,7 +62,7 @@ describe('TextStyle', function ()
         expect(defaultStyle.fillGradientStops.length).to.not.equal(style.fillGradientStops.length);
     });
 
-    it('should not quote generic font families when calling toFontString', function ()
+    it('should not quote generic font families when calling toFontString', () =>
     {
         // Should match the list in TextStyle
         const genericFontFamilies = [

@@ -6,7 +6,6 @@ import { BaseImageResource } from './BaseImageResource';
 
 /**
  * Resource type for HTMLCanvasElement.
- *
  * @memberof PIXI
  */
 export class CanvasResource extends BaseImageResource
@@ -22,11 +21,10 @@ export class CanvasResource extends BaseImageResource
 
     /**
      * Used to auto-detect the type of resource.
-     *
      * @param {*} source - The source object
-     * @return {boolean} `true` if source is HTMLCanvasElement or OffscreenCanvas
+     * @returns {boolean} `true` if source is HTMLCanvasElement or OffscreenCanvas
      */
-    static test(source: unknown): source is OffscreenCanvas|HTMLCanvasElement
+    static test(source: unknown): source is OffscreenCanvas | HTMLCanvasElement
     {
         const { OffscreenCanvas } = globalThis;
 

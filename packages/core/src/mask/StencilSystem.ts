@@ -5,7 +5,6 @@ import type { IMaskTarget, MaskData } from './MaskData';
 
 /**
  * System plugin to the renderer to manage stencils (used for masks).
- *
  * @memberof PIXI
  */
 export class StencilSystem extends AbstractMaskSystem
@@ -34,7 +33,6 @@ export class StencilSystem extends AbstractMaskSystem
 
     /**
      * Applies the Mask and adds it to the current stencil stack.
-     *
      * @param maskData - The mask data
      */
     push(maskData: MaskData): void
@@ -69,7 +67,6 @@ export class StencilSystem extends AbstractMaskSystem
 
     /**
      * Pops stencil mask. MaskData is already removed from stack
-     *
      * @param {PIXI.DisplayObject} maskObject - object of popped mask data
      */
     pop(maskObject: IMaskTarget): void

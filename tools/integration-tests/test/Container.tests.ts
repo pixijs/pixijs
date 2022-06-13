@@ -6,11 +6,11 @@ import { expect } from 'chai';
 
 import '@pixi/canvas-display';
 
-describe('Container', function ()
+describe('Container', () =>
 {
-    describe('addChild', function ()
+    describe('addChild', () =>
     {
-        it('should recalculate added child correctly', function ()
+        it('should recalculate added child correctly', () =>
         {
             const parent = new Container();
             const container = new Container();
@@ -39,9 +39,9 @@ describe('Container', function ()
         });
     });
 
-    describe('removeChild', function ()
+    describe('removeChild', () =>
     {
-        it('should recalculate removed child correctly', function ()
+        it('should recalculate removed child correctly', () =>
         {
             const parent = new Container();
             const container = new Container();
@@ -63,9 +63,9 @@ describe('Container', function ()
         });
     });
 
-    describe('width', function ()
+    describe('width', () =>
     {
-        it('should reflect scale', function ()
+        it('should reflect scale', () =>
         {
             const container = new Container();
             const graphics = new Graphics();
@@ -79,7 +79,7 @@ describe('Container', function ()
             expect(container.width).to.be.equals(20);
         });
 
-        it('should adjust scale', function ()
+        it('should adjust scale', () =>
         {
             const container = new Container();
             const graphics = new Graphics();
@@ -96,9 +96,9 @@ describe('Container', function ()
         });
     });
 
-    describe('height', function ()
+    describe('height', () =>
     {
-        it('should reflect scale', function ()
+        it('should reflect scale', () =>
         {
             const container = new Container();
             const graphics = new Graphics();
@@ -112,7 +112,7 @@ describe('Container', function ()
             expect(container.height).to.be.equals(20);
         });
 
-        it('should adjust scale', function ()
+        it('should adjust scale', () =>
         {
             const container = new Container();
             const graphics = new Graphics();
@@ -129,13 +129,14 @@ describe('Container', function ()
         });
     });
 
-    describe('calculateBounds', function ()
+    describe('calculateBounds', () =>
     {
-        function createSquareContainer(x1, y1, x2, y2)
+        function createSquareContainer(x1: number, y1: number, x2: number, y2: number)
         {
             const container = new Container();
 
-            container._calculateBounds = function ()
+            // eslint-disable-next-line func-names
+            container['_calculateBounds'] = function ()
             {
                 this._bounds.addFrame(Transform.IDENTITY, x1, y1, x2, y2);
             };
@@ -143,7 +144,7 @@ describe('Container', function ()
             return container;
         }
 
-        it('should take into account mask bounds after mask is set', function ()
+        it('should take into account mask bounds after mask is set', () =>
         {
             const maskedObject = createSquareContainer(1, 15, 11, 31);
             const parentContainer = new Container();

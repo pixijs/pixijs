@@ -3,10 +3,11 @@ import { expect } from 'chai';
 
 import '@pixi/mixin-get-child-by-name';
 
-describe('DisplayObject#name', function ()
+describe('DisplayObject#name', () =>
 {
-    it('should contain property', function ()
+    it('should contain property', () =>
     {
+        // @ts-expect-error - instantiating DisplayObject
         const obj = new DisplayObject();
 
         expect(obj.name).to.be.not.undefined;
@@ -14,9 +15,9 @@ describe('DisplayObject#name', function ()
     });
 });
 
-describe('Container#getChildByName', function ()
+describe('Container#getChildByName', () =>
 {
-    it('should exist', function ()
+    it('should exist', () =>
     {
         const parent = new Container();
 
@@ -24,8 +25,9 @@ describe('Container#getChildByName', function ()
         expect(parent.getChildByName).to.be.a('function');
     });
 
-    it('should correctly find a child by its name', function ()
+    it('should correctly find a child by its name', () =>
     {
+        // @ts-expect-error - instantiating DisplayObject
         const obj = new DisplayObject();
         const parent = new Container();
 
@@ -35,8 +37,9 @@ describe('Container#getChildByName', function ()
         expect(parent.getChildByName('foo')).to.equal(obj);
     });
 
-    it('should correctly find a indirect child by its name in deep search', function ()
+    it('should correctly find a indirect child by its name in deep search', () =>
     {
+        // @ts-expect-error - instantiating DisplayObject
         const obj = new DisplayObject();
         const parent = new Container();
         const grandParent = new Container();
@@ -48,21 +51,25 @@ describe('Container#getChildByName', function ()
         expect(grandParent.getChildByName('foo', true)).to.equal(obj);
     });
 
-    it('should return null if name does not exist', function ()
+    it('should return null if name does not exist', () =>
     {
         const root = new Container();
-        const displayObject = root.addChild(new DisplayObject());
-        const container = root.addChild(new Container());
+
+        // @ts-expect-error - instantiating DisplayObject
+        root.addChild(new DisplayObject());
+        root.addChild(new Container());
 
         expect(root.getChildByName('mock-name', true)).to.equal(null);
     });
 
-    it('should return the match highest in the hierarchy', function ()
+    it('should return the match highest in the hierarchy', () =>
     {
         const stage = new Container();
         const root = stage.addChild(new Container());
         const parent = root.addChild(new Container());
+        // @ts-expect-error - instantiating DisplayObject
         const uncle = root.addChild(new DisplayObject());
+        // @ts-expect-error - instantiating DisplayObject
         const target = new DisplayObject();
 
         parent.name = 'mock-parent';

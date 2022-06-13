@@ -5,7 +5,6 @@ import { Matrix } from '@pixi/math';
 
 /**
  * Helper that generates batching multi-texture shader. Use it with your new BatchRenderer
- *
  * @memberof PIXI
  */
 export class BatchShaderGenerator

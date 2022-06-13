@@ -1,9 +1,9 @@
 import { Circle } from '@pixi/math';
 import { expect } from 'chai';
 
-describe('Circle', function ()
+describe('Circle', () =>
 {
-    it('should create a new circle', function ()
+    it('should create a new circle', () =>
     {
         const circ1 = new Circle();
 
@@ -18,7 +18,7 @@ describe('Circle', function ()
         expect(circ2.radius).to.equal(5);
     });
 
-    it('should clone a new circle', function ()
+    it('should clone a new circle', () =>
     {
         const circ1 = new Circle(10, 10, 5);
 
@@ -34,7 +34,7 @@ describe('Circle', function ()
         expect(circ1).to.not.equal(circ2);
     });
 
-    it('should check if point is within circle', function ()
+    it('should check if point is within circle', () =>
     {
         const circ1 = new Circle(10, 10, 5);
 
@@ -60,7 +60,7 @@ describe('Circle', function ()
         expect(circ2.contains(10, 10)).to.be.false;
     });
 
-    it('should return framing rectangle', function ()
+    it('should return framing rectangle', () =>
     {
         const circ1 = new Circle(10, 10, 5);
         const rect1 = circ1.getBounds();

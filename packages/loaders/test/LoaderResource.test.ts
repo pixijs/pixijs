@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import sinon from 'sinon';
-import { LoaderResource } from '@pixi/loaders';
+import { IResourceMetadata, LoaderResource } from '@pixi/loaders';
 import { expect } from 'chai';
 import { fixtureData } from './fixtures/data';
 
 describe('LoaderResource', () =>
 {
     let request: any;
-    let res: LoaderResource;
+    let res: any;
     let xhr: any;
     let clock: any;
     const name = 'test-resource';
@@ -59,7 +59,7 @@ describe('LoaderResource', () =>
             crossOrigin: true,
             loadType: LoaderResource.LOAD_TYPE.IMAGE,
             xhrType: LoaderResource.XHR_RESPONSE_TYPE.BLOB,
-            metadata: meta,
+            metadata: meta as IResourceMetadata,
         });
 
         expect(res).to.have.property('name', name);
@@ -139,7 +139,7 @@ describe('LoaderResource', () =>
 
             res.xhr.abort = sinon.spy();
 
-            res.abort();
+            res.abort(undefined);
 
             expect(res.xhr.abort).to.have.been.calledOnce;
         });
@@ -153,7 +153,7 @@ describe('LoaderResource', () =>
 
             expect(res.data.src).to.equal(fixtureData.url);
 
-            res.abort();
+            res.abort(undefined);
 
             expect(res.data.src).to.equal(LoaderResource.EMPTY_GIF);
         });
@@ -165,7 +165,7 @@ describe('LoaderResource', () =>
 
             expect(res.data.firstChild).to.exist;
 
-            res.abort();
+            res.abort(undefined);
 
             expect(res.data.firstChild).to.not.exist;
         });
@@ -177,7 +177,7 @@ describe('LoaderResource', () =>
 
             expect(res.data.firstChild).to.exist;
 
-            res.abort();
+            res.abort(undefined);
 
             expect(res.data.firstChild).to.not.exist;
         });
@@ -475,7 +475,7 @@ describe('LoaderResource', () =>
             xhr.responseText = 'I am loaded resource';
 
             res.xhr = xhr;
-            res._xhrOnLoad();
+            res['_xhrOnLoad']();
 
             expect(res.isComplete).to.equal(true);
         });
@@ -485,7 +485,7 @@ describe('LoaderResource', () =>
             xhr.responseType = LoaderResource.XHR_RESPONSE_TYPE.BUFFER;
 
             res.xhr = xhr;
-            res._xhrOnLoad();
+            res['_xhrOnLoad']();
 
             expect(res.isComplete).to.equal(true);
         });
@@ -568,35 +568,35 @@ describe('LoaderResource', () =>
         it('should return the proper extension', () =>
         {
             res.url = 'http://www.google.com/image.png';
-            expect(res._getExtension()).to.equal('png');
+            expect(res['_getExtension']()).to.equal('png');
 
             res.url = 'http://domain.net/really/deep/path/that/goes/for/a/while/movie.wmv';
-            expect(res._getExtension()).to.equal('wmv');
+            expect(res['_getExtension']()).to.equal('wmv');
 
             res.url = 'http://somewhere.io/path.with.dots/and_a-bunch_of.symbols/data.txt';
-            expect(res._getExtension()).to.equal('txt');
+            expect(res['_getExtension']()).to.equal('txt');
 
             res.url = 'http://nowhere.me/image.jpg?query=true&string=false&name=real';
-            expect(res._getExtension()).to.equal('jpg');
+            expect(res['_getExtension']()).to.equal('jpg');
 
             res.url = 'http://nowhere.me/image.jpeg?query=movie.wmv&file=data.json';
-            expect(res._getExtension()).to.equal('jpeg');
+            expect(res['_getExtension']()).to.equal('jpeg');
 
             res.url = 'http://nowhere.me/image.jpeg?query=movie.wmv&file=data.json';
-            expect(res._getExtension()).to.equal('jpeg');
+            expect(res['_getExtension']()).to.equal('jpeg');
 
             res.url = 'http://nowhere.me/image.jpeg?query=movie.wmv&file=data.json#/derp.mp3';
-            expect(res._getExtension()).to.equal('jpeg');
+            expect(res['_getExtension']()).to.equal('jpeg');
 
             res.url = 'http://nowhere.me/image.jpeg?query=movie.wmv&file=data.json#/derp.mp3&?me=two';
-            expect(res._getExtension()).to.equal('jpeg');
+            expect(res['_getExtension']()).to.equal('jpeg');
 
             res.url = 'http://nowhere.me/image.jpeg#nothing-to-see-here?query=movie.wmv&file=data.json#/derp.mp3&?me=two'; // eslint-disable-line max-len
-            expect(res._getExtension()).to.equal('jpeg');
+            expect(res['_getExtension']()).to.equal('jpeg');
 
-            res._setFlag(LoaderResource.STATUS_FLAGS.DATA_URL, true);
+            res['_setFlag'](LoaderResource.STATUS_FLAGS.DATA_URL, true);
             res.url = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAMSURBVBhXY2BgYAAAAAQAAVzN/2kAAAAASUVORK5CYII='; // eslint-disable-line max-len
-            expect(res._getExtension()).to.equal('png');
+            expect(res['_getExtension']()).to.equal('png');
         });
     });
 
@@ -605,63 +605,63 @@ describe('LoaderResource', () =>
         it('Should return the correct src url', () =>
         {
             res.url = 'http://www.google.com/audio.mp3';
-            expect(res._createSource('audio', res.url)).to.have.property('src', res.url);
+            expect(res['_createSource']('audio', res.url)).to.have.property('src', res.url);
 
             res.url = 'http://domain.net/really/deep/path/that/goes/for/a/while/movie.wmv';
-            expect(res._createSource('video', res.url)).to.have.property('src', res.url);
+            expect(res['_createSource']('video', res.url)).to.have.property('src', res.url);
 
             res.url = 'http://somewhere.io/path.with.dots/and_a-bunch_of.symbols/audio.mp3';
-            expect(res._createSource('audio', res.url)).to.have.property('src', res.url);
+            expect(res['_createSource']('audio', res.url)).to.have.property('src', res.url);
 
             res.url = 'http://nowhere.me/audio.mp3?query=true&string=false&name=real';
-            expect(res._createSource('audio', res.url)).to.have.property('src', res.url);
+            expect(res['_createSource']('audio', res.url)).to.have.property('src', res.url);
 
             res.url = 'http://nowhere.me/audio.mp3?query=movie.wmv&file=data.json';
-            expect(res._createSource('audio', res.url)).to.have.property('src', res.url);
+            expect(res['_createSource']('audio', res.url)).to.have.property('src', res.url);
 
             res.url = 'http://nowhere.me/audio.mp3?query=movie.wmv&file=data.json';
-            expect(res._createSource('audio', res.url)).to.have.property('src', res.url);
+            expect(res['_createSource']('audio', res.url)).to.have.property('src', res.url);
 
             res.url = 'http://nowhere.me/audio.mp3?query=movie.wmv&file=data.json#/derp.mp3&?me=two';
-            expect(res._createSource('audio', res.url)).to.have.property('src', res.url);
+            expect(res['_createSource']('audio', res.url)).to.have.property('src', res.url);
 
             res.url = 'http://nowhere.me/audio.mp3#nothing-to-see-here?query=movie.wmv&file=data.json#/derp.mp3&?me=two'; // eslint-disable-line max-len
-            expect(res._createSource('audio', res.url)).to.have.property('src', res.url);
+            expect(res['_createSource']('audio', res.url)).to.have.property('src', res.url);
 
-            res._setFlag(LoaderResource.STATUS_FLAGS.DATA_URL, true);
+            res['_setFlag'](LoaderResource.STATUS_FLAGS.DATA_URL, true);
             res.url = 'data:audio/wave;base64,UklGRjIAAABXQVZFZm10IBIAAAABAAEAQB8AAEAfAAABAAgAAABmYWN0BAAAAAAAAABkYXRhAAAAAA=='; // eslint-disable-line max-len
-            expect(res._createSource('audio', res.url)).to.have.property('src', res.url);
+            expect(res['_createSource']('audio', res.url)).to.have.property('src', res.url);
         });
 
         it('Should correctly auto-detect the mime type', () =>
         {
             res.url = 'http://www.google.com/audio.mp3';
-            expect(res._createSource('audio', res.url)).to.have.property('type', 'audio/mp3');
+            expect(res['_createSource']('audio', res.url)).to.have.property('type', 'audio/mp3');
 
             res.url = 'http://domain.net/really/deep/path/that/goes/for/a/while/movie.wmv';
-            expect(res._createSource('video', res.url)).to.have.property('type', 'video/wmv');
+            expect(res['_createSource']('video', res.url)).to.have.property('type', 'video/wmv');
 
             res.url = 'http://somewhere.io/path.with.dots/and_a-bunch_of.symbols/audio.mp3';
-            expect(res._createSource('audio', res.url)).to.have.property('type', 'audio/mp3');
+            expect(res['_createSource']('audio', res.url)).to.have.property('type', 'audio/mp3');
 
             res.url = 'http://nowhere.me/audio.mp3?query=true&string=false&name=real';
-            expect(res._createSource('audio', res.url)).to.have.property('type', 'audio/mp3');
+            expect(res['_createSource']('audio', res.url)).to.have.property('type', 'audio/mp3');
 
             res.url = 'http://nowhere.me/audio.mp3?query=movie.wmv&file=data.json';
-            expect(res._createSource('audio', res.url)).to.have.property('type', 'audio/mp3');
+            expect(res['_createSource']('audio', res.url)).to.have.property('type', 'audio/mp3');
 
             res.url = 'http://nowhere.me/audio.mp3?query=movie.wmv&file=data.json';
-            expect(res._createSource('audio', res.url)).to.have.property('type', 'audio/mp3');
+            expect(res['_createSource']('audio', res.url)).to.have.property('type', 'audio/mp3');
 
             res.url = 'http://nowhere.me/audio.mp3?query=movie.wmv&file=data.json#/derp.mp3&?me=two';
-            expect(res._createSource('audio', res.url)).to.have.property('type', 'audio/mp3');
+            expect(res['_createSource']('audio', res.url)).to.have.property('type', 'audio/mp3');
 
             res.url = 'http://nowhere.me/audio.mp3#nothing-to-see-here?query=movie.wmv&file=data.json#/derp.mp3&?me=two'; // eslint-disable-line max-len
-            expect(res._createSource('audio', res.url)).to.have.property('type', 'audio/mp3');
+            expect(res['_createSource']('audio', res.url)).to.have.property('type', 'audio/mp3');
 
-            res._setFlag(LoaderResource.STATUS_FLAGS.DATA_URL, true);
+            res['_setFlag'](LoaderResource.STATUS_FLAGS.DATA_URL, true);
             res.url = 'data:audio/wave;base64,UklGRjIAAABXQVZFZm10IBIAAAABAAEAQB8AAEAfAAABAAgAAABmYWN0BAAAAAAAAABkYXRhAAAAAA=='; // eslint-disable-line max-len
-            expect(res._createSource('audio', res.url)).to.have.property('type', 'audio/wave');
+            expect(res['_createSource']('audio', res.url)).to.have.property('type', 'audio/wave');
         });
     });
 });

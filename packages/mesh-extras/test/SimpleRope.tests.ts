@@ -7,14 +7,14 @@ import { expect } from 'chai';
 
 skipHello();
 
-describe('SimpleRope', function ()
+describe('SimpleRope', () =>
 {
-    it('should create a rope from an external image', function (done: () => void)
+    it('should create a rope from an external image', (done: () => void) =>
     {
         const loader = new Loader();
 
         loader.add('testBitmap', `file://${__dirname}/resources/bitmap-1.png`)
-            .load(function (loader, resources)
+            .load((loader, resources) =>
             {
                 const rope = new SimpleRope(resources.testBitmap.texture, [new Point(0, 0), new Point(0, 1)]);
 
@@ -30,7 +30,7 @@ describe('SimpleRope', function ()
             });
     });
 
-    it('should render the rope', function ()
+    it('should render the rope', () =>
     {
         Renderer.registerPlugin('batch', BatchRenderer);
 

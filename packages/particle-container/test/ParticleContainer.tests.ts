@@ -3,9 +3,9 @@ import { Sprite } from '@pixi/sprite';
 import { Texture } from '@pixi/core';
 import { expect } from 'chai';
 
-describe('ParticleContainer', function ()
+describe('ParticleContainer', () =>
 {
-    it('should construct a container', function ()
+    it('should construct a container', () =>
     {
         const container = new ParticleContainer();
 
@@ -15,7 +15,7 @@ describe('ParticleContainer', function ()
         container.destroy();
     });
 
-    it('should add a child', function ()
+    it('should add a child', () =>
     {
         const container = new ParticleContainer();
         const child = new Sprite(Texture.WHITE);

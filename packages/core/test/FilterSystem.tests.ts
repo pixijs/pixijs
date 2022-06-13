@@ -1,12 +1,12 @@
-import { CLEAR_MODES, BLEND_MODES } from '@pixi/constants';
-import { Rectangle, Matrix } from '@pixi/math';
-import { Renderer, Filter } from '@pixi/core';
-import sinon from 'sinon';
+import { CLEAR_MODES } from '@pixi/constants';
+import { Filter, IFilterTarget, Renderer } from '@pixi/core';
+import { Matrix, Rectangle } from '@pixi/math';
 import { expect } from 'chai';
+import sinon from 'sinon';
 
-describe('FilterSystem', function ()
+describe('FilterSystem', () =>
 {
-    function onePixelObject(worldTransform, size = 1)
+    function onePixelObject(worldTransform?: Matrix, size = 1)
     {
         const mat = worldTransform || Matrix.IDENTITY;
 
@@ -15,27 +15,29 @@ describe('FilterSystem', function ()
             worldTransform: mat,
             getBounds() { return new Rectangle(mat.tx, mat.ty, size, size); },
             render() { /* nothing*/ },
-        };
+        } as unknown as IFilterTarget;
     }
 
-    before(function ()
+    let renderer: Renderer;
+
+    before(() =>
     {
-        this.renderer = new Renderer();
+        renderer = new Renderer();
     });
 
-    after(function ()
+    after(() =>
     {
-        this.renderer.destroy();
-        this.renderer = null;
+        renderer.destroy();
+        renderer = null;
     });
 
-    it('should support clearMode', function ()
+    it('should support clearMode', () =>
     {
         const innerFilter = new Filter();
         const filter = new Filter();
-        const clearSpy = sinon.spy(this.renderer.framebuffer, 'clear');
+        const clearSpy = sinon.spy(renderer.framebuffer, 'clear');
         const obj = onePixelObject();
-        const filterSystem = this.renderer.filter;
+        const filterSystem = renderer.filter;
 
         innerFilter.state.blend = false;
 
@@ -52,7 +54,7 @@ describe('FilterSystem', function ()
 
         let prevCalls = 0;
 
-        function render(clearMode, forceClear)
+        function render(clearMode: CLEAR_MODES, forceClear: boolean)
         {
             clearModeValue = clearMode;
             filterSystem.forceClear = forceClear;
@@ -81,15 +83,14 @@ describe('FilterSystem', function ()
         expect(filterSystem.texturePool.texturePool[65537].length).to.equal(2);
     });
 
-    function rectToString(rect)
+    function rectToString(rect: Rectangle)
     {
         return `(${rect.x}, ${rect.y}, ${rect.width}, ${rect.height})`;
     }
 
-    it('should account autoFit for global projection transform and rounding', function ()
+    it('should account autoFit for global projection transform and rounding', () =>
     {
         const obj = onePixelObject(new Matrix().translate(20, 10), 10);
-        const { renderer } = this;
         const src = new Rectangle(9, 10, 100, 100);
         const dst = new Rectangle(0, 0, 50, 50);
         const trans = new Matrix().translate(-14, -5);
@@ -125,13 +126,12 @@ describe('FilterSystem', function ()
         renderer.projection.transform = null;
     });
 
-    it('should round the source frame in screen space even when rotated by 90°', function ()
+    it('should round the source frame in screen space even when rotated by 90°', () =>
     {
         const obj = {
             getBounds() { return new Rectangle(0.1, 0.1, 100, 100); },
             render() { /* Mock */ },
-        };
-        const { renderer } = this;
+        } as unknown as IFilterTarget;
         const src = new Rectangle(0, 0, 101, 101);
         const dst = new Rectangle(0, 0, 50, 50);
         const transform = new Matrix()
@@ -147,7 +147,6 @@ describe('FilterSystem', function ()
         renderer.filter.push(obj, filters);
 
         const newSrc = renderer.projection.sourceFrame;
-        const newDst = renderer.projection.destinationFrame;
 
         // Coords are shifted by 2x (0.1, 0.1)
         expect(newSrc.x).to.be.closeTo(-0.9, 1e-5);

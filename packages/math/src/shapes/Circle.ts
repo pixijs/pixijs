@@ -3,7 +3,6 @@ import { Rectangle } from './Rectangle';
 
 /**
  * The Circle object is used to help draw graphics and can also be used to specify a hit area for displayObjects.
- *
  * @memberof PIXI
  */
 export class Circle
@@ -19,7 +18,6 @@ export class Circle
 
     /**
      * The type of the object, mainly used to avoid `instanceof` checks
-     *
      * @default PIXI.SHAPES.CIRC
      * @see PIXI.SHAPES
      */
@@ -41,8 +39,7 @@ export class Circle
 
     /**
      * Creates a clone of this Circle instance
-     *
-     * @return A copy of the Circle
+     * @returns A copy of the Circle
      */
     clone(): Circle
     {
@@ -51,10 +48,9 @@ export class Circle
 
     /**
      * Checks whether the x and y coordinates given are contained within this circle
-     *
      * @param x - The X coordinate of the point to test
      * @param y - The Y coordinate of the point to test
-     * @return Whether the x/y coordinates are within this Circle
+     * @returns Whether the x/y coordinates are within this Circle
      */
     contains(x: number, y: number): boolean
     {
@@ -74,10 +70,9 @@ export class Circle
     }
 
     /**
-    * Returns the framing rectangle of the circle as a Rectangle object
-    *
-    * @return The framing rectangle
-    */
+     * Returns the framing rectangle of the circle as a Rectangle object
+     * @returns The framing rectangle
+     */
     getBounds(): Rectangle
     {
         return new Rectangle(this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius * 2);

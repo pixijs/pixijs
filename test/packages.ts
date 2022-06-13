@@ -2,7 +2,8 @@ import path from 'path';
 import fs from 'fs';
 import workspacesRun from 'workspaces-run';
 
-interface PackageResult {
+interface PackageResult
+{
     name: string;
     location: string;
     tests: string;

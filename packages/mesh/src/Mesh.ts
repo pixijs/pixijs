@@ -29,7 +29,6 @@ export interface Mesh extends GlobalMixins.Mesh {}
  * - State - This is the state of WebGL required to render the mesh.
  *
  * Through a combination of the above elements you can render anything you want, 2D or 3D!
- *
  * @memberof PIXI
  */
 export class Mesh<T extends Shader = MeshMaterial> extends Container
@@ -37,7 +36,6 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
     /**
      * Represents the vertex and fragment shaders that processes the geometry and runs on the GPU.
      * Can be shared between multiple Mesh objects.
-     *
      * @type {PIXI.Shader|PIXI.MeshMaterial}
      */
     public shader: T;
@@ -53,14 +51,12 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
 
     /**
      * Typically the index of the IndexBuffer where to start drawing.
-     *
      * @default 0
      */
     public start: number;
 
     /**
      * How much of the geometry to draw, by default `0` renders everything.
-     *
      * @default 0
      */
     public size: number;
@@ -70,10 +66,7 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
     /** This is the caching layer used by the batcher. */
     private vertexData: Float32Array;
 
-    /**
-     * If geometry is changed used to decide to re-transform
-     * the vertexData.
-     */
+    /** If geometry is changed used to decide to re-transform the vertexData. */
     private vertexDirty: number;
     private _transformID: number;
 
@@ -86,14 +79,12 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
     // Internal-only properties
     /**
      * These are used as easy access for batching.
-     *
      * @private
      */
     uvs: Float32Array;
 
     /**
      * These are used as easy access for batching.
-     *
      * @private
      */
     indices: Uint16Array;
@@ -167,7 +158,6 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
 
     /**
      * To change mesh uv's, change its uvBuffer data and increment its _updateID.
-     *
      * @readonly
      */
     get uvBuffer(): Buffer
@@ -178,7 +168,6 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
     /**
      * To change mesh vertices, change its uvBuffer data and increment its _updateID.
      * Incrementing _updateID is optional because most of Mesh objects do it anyway.
-     *
      * @readonly
      */
     get verticesBuffer(): Buffer
@@ -200,7 +189,6 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
     /**
      * The blend mode to be applied to the Mesh. Apply a value of
      * `PIXI.BLEND_MODES.NORMAL` to reset the blend mode.
-     *
      * @default PIXI.BLEND_MODES.NORMAL;
      */
     set blendMode(value: BLEND_MODES)
@@ -218,7 +206,6 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
      * Advantages can include sharper image quality (like text) and faster rendering on canvas.
      * The main disadvantage is movement of objects may appear less smooth.
      * To set the global default, change {@link PIXI.settings.ROUND_PIXELS}
-     *
      * @default false
      */
     set roundPixels(value: boolean)
@@ -240,7 +227,6 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
      * `0xFFFFFF` will remove any tint effect.
      *
      * Null for non-MeshMaterial shaders
-     *
      * @default 0xFFFFFF
      */
     get tint(): number
@@ -253,11 +239,7 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
         (this.shader as unknown as MeshMaterial).tint = value;
     }
 
-    /**
-     * The texture that the Mesh uses.
-     *
-     * Null for non-MeshMaterial shaders
-     */
+    /** The texture that the Mesh uses. Null for non-MeshMaterial shaders */
     get texture(): Texture
     {
         return 'texture' in this.shader ? (this.shader as unknown as MeshMaterial).texture : null;
@@ -270,7 +252,6 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
 
     /**
      * Standard renderer draw.
-     *
      * @param renderer - Instance to renderer.
      */
     protected _render(renderer: Renderer): void
@@ -297,7 +278,6 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
 
     /**
      * Standard non-batching way of rendering.
-     *
      * @param renderer - Instance to renderer.
      */
     protected _renderDefault(renderer: Renderer): void
@@ -328,7 +308,6 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
 
     /**
      * Rendering by using the Batch system.
-     *
      * @param renderer - Instance to renderer.
      */
     protected _renderToBatch(renderer: Renderer): void
@@ -440,9 +419,8 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
 
     /**
      * Tests if a point is inside this mesh. Works only for PIXI.DRAW_MODES.TRIANGLES.
-     *
      * @param point - The point to test.
-     * @return - The result of the test.
+     * @returns - The result of the test.
      */
     public containsPoint(point: IPointData): boolean
     {
@@ -482,7 +460,7 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
         return false;
     }
 
-    public destroy(options?: IDestroyOptions|boolean): void
+    public destroy(options?: IDestroyOptions | boolean): void
     {
         super.destroy(options);
 
@@ -500,9 +478,6 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
         this.vertexData = null;
     }
 
-    /**
-     * The maximum number of vertices to consider batchable. Generally, the complexity
-     * of the geometry.
-     */
+    /** The maximum number of vertices to consider batchable. Generally, the complexity of the geometry. */
     public static BATCHABLE_SIZE = 100;
 }
