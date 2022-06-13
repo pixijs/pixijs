@@ -109,7 +109,7 @@ export class SpritesheetLoader
                 resource.url
             );
 
-            spritesheet.parse(() =>
+            spritesheet.parse().then(() =>
             {
                 resource.spritesheet = spritesheet;
                 resource.textures = spritesheet.textures;
