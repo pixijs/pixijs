@@ -500,7 +500,7 @@ export class EventBoundary
             const maskObject = ((displayObject._mask as any).isMaskData
                 ? (displayObject._mask as any).maskObject : displayObject._mask);
 
-            if (maskObject && !(maskObject.containsPoint && maskObject.containsPoint(location)))
+            if (maskObject && !maskObject.containsPoint?.(location))
             {
                 return true;
             }
