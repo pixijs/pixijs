@@ -16,7 +16,7 @@ import {
 } from '@pixi/core';
 
 import { DRAW_MODES, WRAP_MODES } from '@pixi/constants';
-import { SHAPES, Point, Matrix } from '@pixi/math';
+import { Point, Matrix } from '@pixi/math';
 import { GraphicsData } from './GraphicsData';
 import { premultiplyTint } from '@pixi/utils';
 import { Bounds } from '@pixi/display';
@@ -32,7 +32,6 @@ import type { LineStyle } from './styles/LineStyle';
 type IShape = Circle | Ellipse | Polygon | Rectangle | RoundedRectangle;
 
 const tmpPoint = new Point();
-const tmpBounds = new Bounds();
 
 /**
  * The Graphics class contains methods used to draw primitive shapes such as lines, circles and
@@ -128,6 +127,8 @@ export class GraphicsGeometry extends BatchGeometry
      */
     public get bounds(): Bounds
     {
+        this.updateBatches();
+
         if (this.boundsDirty !== this.dirty)
         {
             this.boundsDirty = this.dirty;
@@ -326,9 +327,8 @@ export class GraphicsGeometry extends BatchGeometry
     /**
      * Generates intermediate batch data. Either gets converted to drawCalls
      * or used to convert to batch objects directly by the Graphics object.
-     * @param allow32Indices - Allow using 32-bit indices for preventing artifacts when more that 65535 vertices
      */
-    updateBatches(allow32Indices?: boolean): void
+    updateBatches(): void
     {
         if (!this.graphicsData.length)
         {
@@ -439,16 +439,16 @@ export class GraphicsGeometry extends BatchGeometry
             return;
         }
 
+        const need32 = attrib > 0xffff;
+
         // prevent allocation when length is same as buffer
-        if (this.indicesUint16 && this.indices.length === this.indicesUint16.length)
+        if (this.indicesUint16 && this.indices.length === this.indicesUint16.length
+            && need32 === (this.indicesUint16.BYTES_PER_ELEMENT > 2))
         {
             this.indicesUint16.set(this.indices);
         }
         else
         {
-            const need32
-                = attrib > 0xffff && allow32Indices;
-
             this.indicesUint16 = need32 ? new Uint32Array(this.indices) : new Uint16Array(this.indices);
         }
 
@@ -770,80 +770,9 @@ export class GraphicsGeometry extends BatchGeometry
     protected calculateBounds(): void
     {
         const bounds = this._bounds;
-        const sequenceBounds = tmpBounds;
-        let curMatrix = Matrix.IDENTITY;
 
-        this._bounds.clear();
-        sequenceBounds.clear();
-
-        for (let i = 0; i < this.graphicsData.length; i++)
-        {
-            const data = this.graphicsData[i];
-            const shape = data.shape;
-            const type = data.type;
-            const lineStyle = data.lineStyle;
-            const nextMatrix = data.matrix || Matrix.IDENTITY;
-            let lineWidth = 0.0;
-
-            if (lineStyle && lineStyle.visible)
-            {
-                lineWidth = lineStyle.width;
-
-                if (type !== SHAPES.POLY || data.fillStyle.visible)
-                {
-                    lineWidth *= Math.max(0, lineStyle.alignment);
-                }
-                else
-                {
-                    lineWidth *= Math.max(lineStyle.alignment, 1 - lineStyle.alignment);
-                }
-            }
-
-            if (curMatrix !== nextMatrix)
-            {
-                if (!sequenceBounds.isEmpty())
-                {
-                    bounds.addBoundsMatrix(sequenceBounds, curMatrix);
-                    sequenceBounds.clear();
-                }
-                curMatrix = nextMatrix;
-            }
-
-            if (type === SHAPES.RECT || type === SHAPES.RREC)
-            {
-                const rect = shape as Rectangle | RoundedRectangle;
-
-                sequenceBounds.addFramePad(rect.x, rect.y, rect.x + rect.width, rect.y + rect.height,
-                    lineWidth, lineWidth);
-            }
-            else if (type === SHAPES.CIRC)
-            {
-                const circle = shape as Circle;
-
-                sequenceBounds.addFramePad(circle.x, circle.y, circle.x, circle.y,
-                    circle.radius + lineWidth, circle.radius + lineWidth);
-            }
-            else if (type === SHAPES.ELIP)
-            {
-                const ellipse = shape as Ellipse;
-
-                sequenceBounds.addFramePad(ellipse.x, ellipse.y, ellipse.x, ellipse.y,
-                    ellipse.width + lineWidth, ellipse.height + lineWidth);
-            }
-            else
-            {
-                const poly = shape as Polygon;
-                // adding directly to the bounds
-
-                bounds.addVerticesMatrix(curMatrix, (poly.points as any), 0, poly.points.length, lineWidth, lineWidth);
-            }
-        }
-
-        if (!sequenceBounds.isEmpty())
-        {
-            bounds.addBoundsMatrix(sequenceBounds, curMatrix);
-        }
-
+        bounds.clear();
+        bounds.addVertexData((this.points as any), 0, this.points.length);
         bounds.pad(this.boundsPadding, this.boundsPadding);
     }
 
