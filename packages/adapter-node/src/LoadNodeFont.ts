@@ -21,9 +21,9 @@ export const loadNodeFont = {
     async load(url: string, asset: any): Promise<void>
     {
         registerFont(url, {
-            family: asset.data.family ?? getFontFamilyName(url),
-            weight: asset.data.weight ?? 'normal',
-            style: asset.data.style ?? 'normal',
+            family: asset.data?.family ?? getFontFamilyName(url),
+            weight: asset.data?.weight ?? 'normal',
+            style: asset.data?.style ?? 'normal',
         });
     },
 };

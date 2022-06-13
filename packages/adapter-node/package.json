@@ -3,7 +3,6 @@
   "version": "6.4.2",
   "main": "dist/cjs/adapter-node.js",
   "module": "dist/esm/adapter-node.js",
-  "bundle": "dist/browser/adapter-node.js",
   "types": "index.d.ts",
   "exports": {
     ".": {

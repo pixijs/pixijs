@@ -12,11 +12,6 @@
   "standalone": true,
   "main": "dist/cjs/pixi.js-node",
   "module": "dist/esm/pixi.js-node",
-  "bundle": "dist/browser/pixi.js-node",
-  "bundleModule": "dist/browser/pixi.mjs",
-  "bundleOutput": {
-    "name": "PIXI"
-  },
   "types": "index.d.ts",
   "exports": {
     ".": {
