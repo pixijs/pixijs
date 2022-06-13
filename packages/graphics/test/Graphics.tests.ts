@@ -1,5 +1,5 @@
 import { Renderer, BatchRenderer, Texture } from '@pixi/core';
-import { Graphics, GRAPHICS_CURVES, FillStyle, LineStyle, graphicsUtils, LINE_CAP } from '@pixi/graphics';
+import { Graphics, GRAPHICS_CURVES, FillStyle, LineStyle, graphicsUtils, GraphicsGeometry, LINE_CAP } from '@pixi/graphics';
 const { FILL_COMMANDS, buildLine } = graphicsUtils;
 
 import { BLEND_MODES } from '@pixi/constants';
