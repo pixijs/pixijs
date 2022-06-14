@@ -12,7 +12,7 @@ describe('getBounds', () =>
     it('should register correct width/height with a LOADED Sprite', () =>
     {
         const parent = new Container();
-        const texture = RenderTexture.create(10, 10);
+        const texture = RenderTexture.create({ width: 10, height: 10 });
 
         const sprite = new Sprite(texture);
 
@@ -127,7 +127,7 @@ describe('getBounds', () =>
 
         const graphics = new Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10);
 
-        const texture = RenderTexture.create(10, 10);
+        const texture = RenderTexture.create({ width: 10, height: 10 });
         const sprite = new Sprite(texture);
 
         container.addChild(sprite);
@@ -198,7 +198,7 @@ describe('getBounds', () =>
     {
         const parent = new Container();
 
-        const texture = RenderTexture.create(10, 10);
+        const texture = RenderTexture.create({ width: 10, height: 10 });
 
         const plane = new SimplePlane(texture);
 
@@ -234,7 +234,7 @@ describe('getBounds', () =>
 
         const graphics = new Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10);
 
-        const texture = RenderTexture.create(10, 10);
+        const texture = RenderTexture.create({ width: 10, height: 10 });
         const sprite = new Sprite(texture);
 
         container.addChild(sprite);
@@ -279,7 +279,7 @@ describe('getBounds', () =>
 
         const container = new Container();
 
-        const texture = RenderTexture.create(10, 10);
+        const texture = RenderTexture.create({ width: 10, height: 10 });
         const sprite = new Sprite(texture);
 
         container.addChild(sprite);
@@ -305,7 +305,7 @@ describe('getBounds', () =>
 
         const graphics = new Graphics().beginFill(0xFF0000).drawRect(0, 0, 10, 10);
 
-        const texture = RenderTexture.create(10, 10);
+        const texture = RenderTexture.create({ width: 10, height: 10 });
         const sprite = new Sprite(texture);
 
         container.addChild(sprite);
@@ -390,7 +390,7 @@ describe('getBounds', () =>
     it('should return a different rectangle if getting local bounds after global bounds ', () =>
     {
         const parent = new Container();
-        const texture = RenderTexture.create(10, 10);
+        const texture = RenderTexture.create({ width: 10, height: 10 });
         const sprite = new Sprite(texture);
 
         sprite.position.x = 20;
