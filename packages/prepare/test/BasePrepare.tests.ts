@@ -63,11 +63,10 @@ describe('BasePrepare', () =>
 
             return true;
         });
-        const complete = sinon.spy(() => { /* empty */ });
 
         prep.registerFindHook(addHook);
         prep.registerUploadHook(uploadHook);
-        prep.upload(uploadItem, complete);
+        prep.upload(uploadItem);
 
         expect(prep['queue']).to.contain(uploadItem);
 
@@ -75,12 +74,11 @@ describe('BasePrepare', () =>
 
         expect(addHook.calledOnce).to.be.true;
         expect(uploadHook.calledOnce).to.be.true;
-        expect(complete.calledOnce).to.be.true;
 
         prep.destroy();
     });
 
-    it('should call complete if no queue', () =>
+    it('should call complete if no queue', async () =>
     {
         const renderer = {} as AbstractRenderer;
         const prep = new BasePrepare(renderer);
@@ -92,7 +90,7 @@ describe('BasePrepare', () =>
         const complete = sinon.spy(() => { /* empty */ });
 
         prep.registerFindHook(addHook);
-        prep.upload({} as DisplayObject, complete);
+        await prep.upload({} as DisplayObject).then(complete);
 
         expect(complete.calledOnce).to.be.true;
 
@@ -112,11 +110,10 @@ describe('BasePrepare', () =>
         });
         const uploadHook = sinon.spy(() =>
             false);
-        const complete = sinon.spy(() => { /* empty */ });
 
         prep.registerFindHook(addHook);
         prep.registerUploadHook(uploadHook);
-        prep.upload({} as DisplayObject, complete);
+        prep.upload({} as DisplayObject);
 
         expect(prep['queue']).to.have.lengthOf(1);
 
@@ -125,7 +122,6 @@ describe('BasePrepare', () =>
         expect(prep['queue']).to.be.empty;
         expect(addHook.calledOnce).to.be.true;
         expect(uploadHook.calledOnce).to.be.true;
-        expect(complete.calledOnce).to.be.true;
 
         prep.destroy();
     });
@@ -143,13 +139,12 @@ describe('BasePrepare', () =>
         });
         const uploadHook = sinon.spy(() =>
             false);
-        const complete = sinon.spy(() => { /* empty */ });
 
         prep.registerFindHook(addHook);
         prep.registerUploadHook(uploadHook);
         const item = {} as DisplayObject;
 
-        prep.upload(item, complete);
+        prep.upload(item);
 
         expect(prep['queue']).to.have.lengthOf(1);
 
@@ -159,12 +154,11 @@ describe('BasePrepare', () =>
         expect(prep['queue']).to.be.empty;
         expect(addHook.calledOnce).to.be.true;
         expect(uploadHook.called).to.be.false;
-        expect(complete.calledOnce).to.be.true;
 
         prep.destroy();
     });
 
-    it('should attach to the system ticker', (done) =>
+    it('should attach to the system ticker', async () =>
     {
         const renderer = {} as AbstractRenderer;
         const prep = new BasePrepare(renderer);
@@ -177,24 +171,14 @@ describe('BasePrepare', () =>
         });
         const uploadHook = sinon.spy(() => true);
 
-        const complete = sinon.spy(() =>
-        {
-            expect(prep['queue']).to.be.empty;
-            expect(addHook.calledOnce).to.be.true;
-            expect(uploadHook.calledOnce).to.be.true;
-
-            prep.destroy();
-
-            done();
-        });
-
         prep.registerFindHook(addHook);
         prep.registerUploadHook(uploadHook);
-        prep.upload({} as DisplayObject, complete);
+        await prep.upload({} as DisplayObject);
 
-        expect(prep['queue']).to.have.lengthOf(1);
-        expect(addHook.called).to.be.true;
-        expect(uploadHook.called).to.be.false;
-        expect(complete.called).to.not.be.ok;
+        expect(prep['queue']).to.be.empty;
+        expect(addHook.calledOnce).to.be.true;
+        expect(uploadHook.calledOnce).to.be.true;
+
+        prep.destroy();
     });
 });
