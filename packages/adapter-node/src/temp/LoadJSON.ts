@@ -1,10 +1,14 @@
-import { extname } from './misc';
+import path from 'path';
+import { URL } from 'url';
 
 /** simple loader plugin for loading json data */
 export const loadJSON = {
     test(url: string): boolean
     {
-        return (extname(url).includes('.json'));
+        const tempUrl = new URL(url);
+        const extension = path.extname(tempUrl.pathname);
+
+        return extension.includes('json');
     },
 
     async load<T>(url: string): Promise<T>

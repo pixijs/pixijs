@@ -1,7 +1,7 @@
 {
   "name": "pixi.js-node",
   "version": "6.4.2",
-  "description": "PixiJS without the CanvasRenderer fallback, modern browsers only",
+  "description": "PixiJS with support for NodeJS",
   "author": "Mat Groves",
   "contributors": [
     "Ivan Popelyshev <ivan.popelyshev@gmail.com>",
@@ -10,21 +10,8 @@
     "Richard Davey <rdavey@gmail.com>"
   ],
   "standalone": true,
-  "main": "dist/cjs/pixi.js-node",
-  "module": "dist/esm/pixi.js-node",
+  "main": "dist/cjs/pixi-node.js",
   "types": "index.d.ts",
-  "exports": {
-    ".": {
-      "import": {
-        "types": "./index.d.ts",
-        "default": "./dist/esm/pixi.js-node"
-      },
-      "require": {
-        "types": "./index.d.ts",
-        "default": "./dist/cjs/pixi.js-node"
-      }
-    }
-  },
   "homepage": "http://www.pixijs.com/",
   "bugs": "https://github.com/pixijs/pixi.js/issues",
   "license": "MIT",

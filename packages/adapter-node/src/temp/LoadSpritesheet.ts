@@ -1,8 +1,9 @@
 import type { ISpritesheetData } from '@pixi/spritesheet';
 import { Spritesheet } from '@pixi/spritesheet';
 import { TextureCache } from '@pixi/utils';
-import { loadNodeTexture } from '../LoadNodeTexture';
-import { dirname, extname } from './misc';
+import { loadNodeTexture } from '../loadNodeTexture';
+import path from 'path';
+import { URL } from 'url';
 
 export interface SpriteSheetJson extends ISpritesheetData
 {
@@ -18,12 +19,15 @@ export interface SpriteSheetJson extends ISpritesheetData
 const loadSpritesheet = {
     testParse(asset: SpriteSheetJson, options: any): boolean
     {
-        return (extname(options.src).includes('.json') && !!asset.frames);
+        const tempUrl = new URL(options.src);
+        const extension = path.extname(tempUrl.pathname);
+
+        return (extension.includes('.json') && !!asset.frames);
     },
 
     async parse(asset: SpriteSheetJson, options: any): Promise<Spritesheet>
     {
-        let basePath = dirname(options.src);
+        let basePath = path.dirname(options.src);
 
         if (basePath && basePath.lastIndexOf('/') !== (basePath.length - 1))
         {

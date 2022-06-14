@@ -1,13 +1,11 @@
+/* eslint-disable dot-notation */
 /* eslint-disable func-names */
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 
 import { Canvas, CanvasRenderingContext2D, Image, NodeCanvasRenderingContext2DSettings } from 'canvas';
-import EventEmitter from 'events';
+import { EventEmitter } from '@pixi/utils';
 import createGLContext from 'gl';
-import { ContextIds } from 'pixi.js';
-
-const _ctx = Symbol('ctx');
+import { ContextIds } from '@pixi/settings';
 
 function putImageData(gl: WebGLRenderingContext, canvas: NodeCanvasElement)
 {
@@ -42,95 +40,103 @@ function putImageData(gl: WebGLRenderingContext, canvas: NodeCanvasElement)
 
     return ctx;
 }
+
+type TempCtx = WebGLRenderingContext & {
+    canvas: NodeCanvasElement
+};
+
 export class NodeCanvasElement extends Canvas
 {
-    private __event__: EventEmitter;
-    private __gl__: WebGLRenderingContext;
-    private __contextType__: ContextIds;
+    public _gl: WebGLRenderingContext;
     public style: Record<string, any>;
+    private _event: EventEmitter;
+    private _contextType: ContextIds;
+    private _ctx: CanvasRenderingContext2D | WebGLRenderingContext;
 
     constructor(width = 1, height = 1, type?: 'image' | 'pdf' | 'svg')
     {
         super(width, height, type);
-        this.__event__ = new EventEmitter();
+        this._event = new EventEmitter();
         this.style = {};
     }
 
+    // @ts-expect-error - overriding width to be a getter/setter
     get width()
     {
-        return super.width;
+        return super['width'];
     }
 
     set width(value)
     {
-        if (this.__gl__)
+        if (this._gl)
         {
-            const ext = this.__gl__.getExtension('STACKGL_resize_drawingbuffer');
+            const ext = this._gl.getExtension('STACKGL_resize_drawingbuffer');
 
             ext.resize(value, this.height);
         }
-        super.width = value;
+        super['width'] = value;
     }
 
+    // @ts-expect-error - overriding height to be a getter/setter
     get height()
     {
-        return super.height;
+        return super['height'];
     }
 
     set height(value)
     {
-        if (this.__gl__)
+        if (this._gl)
         {
-            const ext = this.__gl__.getExtension('STACKGL_resize_drawingbuffer');
+            const ext = this._gl.getExtension('STACKGL_resize_drawingbuffer');
 
             ext.resize(this.width, value);
         }
-        super.height = value;
+        super['height'] = value;
     }
 
     get clientWidth()
     {
-        return super.width;
+        return super['width'];
     }
 
     get clientHeight()
     {
-        return super.height;
+        return super['height'];
     }
 
-    get __ctx__()
+    public _updateCtx()
     {
-        const gl = this.__gl__;
+        const gl = this._gl;
 
         if (gl)
         {
             putImageData(gl, this);
         }
 
-        return this[_ctx];
+        return this._ctx;
     }
 
     override getContext(
         type: ContextIds,
-        options?: NodeCanvasRenderingContext2DSettings | WebGLRenderingContext
+        options?: NodeCanvasRenderingContext2DSettings | WebGLContextAttributes
     ): CanvasRenderingContext2D | WebGLRenderingContext
     {
         if (type === 'webgl2') return undefined;
-        if (this.__contextType__ && this.__contextType__ !== type) return null;
-        if (this.__gl__) return this.__gl__;
-        this.__contextType__ = type;
+        if (this._contextType && this._contextType !== type) return null;
+        if (this._gl) return this._gl;
+        this._contextType = type;
         if (type === 'experimental-webgl' || type === 'webgl')
         {
             const { width, height } = this;
 
-            this[_ctx] = super.getContext('2d', options as NodeCanvasRenderingContext2DSettings);
-            const ctx = createGLContext(width, height, options as WebGLContextAttributes);
+            this._ctx = super.getContext('2d', options as NodeCanvasRenderingContext2DSettings);
+            const ctx = createGLContext(width, height, options as WebGLContextAttributes) as TempCtx;
             const _getUniformLocation = ctx.getUniformLocation;
 
             // Temporary fix https://github.com/stackgl/headless-gl/issues/170
             ctx.getUniformLocation = function (program, name)
             {
-                if (program._uniforms && !(/\[\d+\]$/).test(name))
+                if (program['_uniforms'] && !(/\[\d+\]$/).test(name))
                 {
                     const reg = new RegExp(`${name}\\[\\d+\\]$`);
 
@@ -148,10 +154,10 @@ export class NodeCanvasElement extends Canvas
                 return _getUniformLocation.call(this, program, name);
             };
 
-            ctx.canvas = this;
-            const _tetImage2D = ctx.texImage2D;
+            ctx.canvas = this as NodeCanvasElement;
+            const _texImage2D = ctx.texImage2D;
 
-            ctx.texImage2D = function (...args)
+            ctx.texImage2D = function (...args: any)
             {
                 let pixels = args[args.length - 1];
 
@@ -164,11 +170,11 @@ export class NodeCanvasElement extends Canvas
                     args[args.length - 1] = canvas;
                 }
 
-                return _tetImage2D.apply(this, args);
+                return _texImage2D.apply(this, args);
             };
-            this.__gl__ = ctx;
+            this._gl = ctx;
 
-            return this.__gl__;
+            return this._gl;
         }
 
         return super.getContext(type, options as NodeCanvasRenderingContext2DSettings);
@@ -176,7 +182,7 @@ export class NodeCanvasElement extends Canvas
 
     toBuffer(...args: any)
     {
-        const gl = this.__gl__;
+        const gl = this._gl;
 
         if (gl)
         {
@@ -188,7 +194,7 @@ export class NodeCanvasElement extends Canvas
 
     toDataURL(...args: any)
     {
-        const gl = this.__gl__;
+        const gl = this._gl;
 
         if (gl)
         {
@@ -200,23 +206,36 @@ export class NodeCanvasElement extends Canvas
 
     addEventListener(type: string, listener: (...args: any[]) => void)
     {
-        return this.__event__.addListener(type, listener);
+        return this._event.addListener(type, listener);
     }
 
     removeEventListener(type: string, listener: (...args: any[]) => void)
     {
         if (listener)
         {
-            return this.__event__.removeListener(type, listener);
+            return this._event.removeListener(type, listener);
         }
 
-        return this.__event__.removeAllListeners(type);
+        return this._event.removeAllListeners(type);
     }
 
     dispatchEvent(event: {type: string, [key: string]: any})
     {
         event.target = this;
 
-        return this.__event__.emit(event.type, event);
+        return this._event.emit(event.type, event);
     }
 }
+
+const _drawImage = CanvasRenderingContext2D.prototype.drawImage;
+
+// eslint-disable-next-line func-names
+CanvasRenderingContext2D.prototype.drawImage = function (img: Canvas, ...args: any)
+{
+    const _img = img as NodeCanvasElement;
+
+    // call ctx to sync image data
+    if (img instanceof Canvas && _img._gl) _img._updateCtx();
+
+    return _drawImage.call(this, img, ...args);
+};

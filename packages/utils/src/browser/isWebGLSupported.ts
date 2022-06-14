@@ -21,7 +21,7 @@ export function isWebGLSupported(): boolean
 
             try
             {
-                if (!globalThis.WebGLRenderingContext)
+                if (!settings.ADAPTER.getWebGLRenderingContext())
                 {
                     return false;
                 }

@@ -2,20 +2,7 @@
   "name": "@pixi/adapter-node",
   "version": "6.4.2",
   "main": "dist/cjs/adapter-node.js",
-  "module": "dist/esm/adapter-node.js",
   "types": "index.d.ts",
-  "exports": {
-    ".": {
-      "import": {
-        "types": "./index.d.ts",
-        "default": "./dist/esm/adapter-node.js"
-      },
-      "require": {
-        "types": "./index.d.ts",
-        "default": "./dist/cjs/adapter-node.js"
-      }
-    }
-  },
   "description": "Adapter for NodeJS environments",
   "author": "Mat Groves",
   "contributors": [
@@ -43,6 +30,7 @@
     "cross-fetch": "^3.1.5"
   },
   "peerDependencies": {
+      "@pixi/app": "^6.4.2",
       "@pixi/core": "^6.4.2",
       "@pixi/settings": "^6.4.2",
       "@pixi/spritesheet": "^6.4.2",

@@ -2,6 +2,8 @@ import { Texture } from '@pixi/core';
 import { getResolutionOfUrl } from '@pixi/utils';
 import { CanvasRenderingContext2D, loadImage } from 'canvas';
 import { NodeCanvasElement } from './NodeCanvasElement';
+import { URL } from 'url';
+import path from 'path';
 
 const validImages = ['jpg', 'png', 'jpeg'];
 
@@ -14,8 +16,8 @@ const validImages = ['jpg', 'png', 'jpeg'];
 export const loadNodeTexture = {
     test(url: string): boolean
     {
-        const tempURL = url.split('?')[0];
-        const extension = tempURL.split('.').pop();
+        const tempUrl = new URL(url);
+        const extension = path.extname(tempUrl.pathname);
 
         return validImages.includes(extension);
     },

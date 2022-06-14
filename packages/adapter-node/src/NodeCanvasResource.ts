@@ -1,34 +1,48 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
-
-import type { BaseTexture, GLTexture, Renderer } from 'pixi.js';
-import { ALPHA_MODES, BaseImageResource } from 'pixi.js';
+import { ALPHA_MODES } from '@pixi/constants';
+import { BaseTexture, GLTexture, Renderer, Resource } from '@pixi/core';
+import { determineCrossOrigin } from '@pixi/utils';
 
 import { NodeCanvasElement } from './NodeCanvasElement';
 
-export class NodeCanvasResource extends BaseImageResource
+export class NodeCanvasResource extends Resource
 {
     /**
-     * @param source - Canvas element to use
+     * The source element.
+     * @member {HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|SVGElement}
+     * @readonly
      */
-    // eslint-disable-next-line @typescript-eslint/no-useless-constructor
+    public source: NodeCanvasElement;
+
+    /**
+     * If set to `true`, will force `texImage2D` over `texSubImage2D` for uploading.
+     * Certain types of media (e.g. video) using `texImage2D` is more performant.
+     * @default false
+     * @private
+     */
+    public noSubImage: boolean;
+
+    /**
+     * @param {HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|SVGElement} source
+     */
     constructor(source: NodeCanvasElement)
     {
-        super(source);
+        const sourceAny = source as any;
+        const width = sourceAny.naturalWidth || sourceAny.videoWidth || sourceAny.width;
+        const height = sourceAny.naturalHeight || sourceAny.videoHeight || sourceAny.height;
+
+        super(width, height);
+
+        this.source = source;
+        this.noSubImage = false;
     }
 
-    static override test(source: unknown): source is NodeCanvasElement
-    {
-        return source instanceof NodeCanvasElement;
-    }
-
-    override upload(renderer: Renderer, baseTexture: BaseTexture, glTexture: GLTexture, source?: NodeCanvasElement): boolean
+    override upload(renderer: Renderer, baseTexture: BaseTexture, glTexture: GLTexture, source?: HTMLCanvasElement): boolean
     {
         const gl = renderer.gl;
         const width = baseTexture.realWidth;
         const height = baseTexture.realHeight;
 
-        source = source || this.source;
+        source = (source || this.source) as unknown as HTMLCanvasElement;
 
         gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, baseTexture.alphaMode === ALPHA_MODES.UNPACK);
 
@@ -48,5 +62,54 @@ export class NodeCanvasResource extends BaseImageResource
         }
 
         return true;
+    }
+
+    /**
+     * Checks if source width/height was changed, resize can cause extra baseTexture update.
+     * Triggers one update in any case.
+     */
+    update(): void
+    {
+        if (this.destroyed)
+        {
+            return;
+        }
+
+        const source = this.source as any;
+
+        const width = source.naturalWidth || source.videoWidth || source.width;
+        const height = source.naturalHeight || source.videoHeight || source.height;
+
+        this.resize(width, height);
+
+        super.update();
+    }
+
+    dispose(): void
+    {
+        this.source = null;
+    }
+
+    static override test(source: unknown): source is NodeCanvasElement
+    {
+        return source instanceof NodeCanvasElement;
+    }
+
+    /**
+     * Set cross origin based detecting the url and the crossorigin
+     * @param element - Element to apply crossOrigin
+     * @param url - URL to check
+     * @param crossorigin - Cross origin value to use
+     */
+    static crossOrigin(element: HTMLImageElement | HTMLVideoElement, url: string, crossorigin?: boolean | string): void
+    {
+        if (crossorigin === undefined && url.indexOf('data:') !== 0)
+        {
+            element.crossOrigin = determineCrossOrigin(url);
+        }
+        else if (crossorigin !== false)
+        {
+            element.crossOrigin = typeof crossorigin === 'string' ? crossorigin : 'anonymous';
+        }
     }
 }
