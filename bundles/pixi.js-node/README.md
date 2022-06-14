@@ -1,5 +1,4 @@
-PixiJS — The HTML5 Creation Engine
-=============
+# PixiJS — The HTML5 Creation Engine
 
 ![pixi.js logo](https://pixijs.download/pixijs-banner-no-version.png)
 
@@ -18,11 +17,13 @@ PixiJS can be installed with [npm](https://docs.npmjs.com/getting-started/what-i
 ```
 npm install pixi.js
 ```
+
 There is no default export. The correct way to import PixiJS is:
 
 ```js
-import * as PIXI from 'pixi.js'
+import * as PIXI from "@pixi/node";
 ```
+
 ### Basic Usage Example
 
 ```js
@@ -31,33 +32,39 @@ import * as PIXI from 'pixi.js'
 // and the root stage PIXI.Container.
 const app = new PIXI.Application();
 
-// The application will create a canvas element for you that you
-// can then insert into the DOM.
-document.body.appendChild(app.view);
+// TODO: this will be replaced with the new `Assets` package
+// load a sprite
+const bunnyTexture = await PIXI.loadNodeTexture.load('assets/bunny.png');
+// create sprite from texture
+const bunny = PIXI.Sprite.from(bunnyTexture);
 
-// load the texture we need
-app.loader.add('bunny', 'bunny.png').load((loader, resources) => {
+// Setup the position of the bunny
+bunny.x = app.renderer.width / 2;
+bunny.y = app.renderer.height / 2;
 
-    // This creates a texture from a 'bunny.png' image.
-    const bunny = new PIXI.Sprite(resources.bunny.texture);
+// Rotate around the center
+bunny.anchor.x = 0.5;
+bunny.anchor.y = 0.5;
 
-    // Setup the position of the bunny
-    bunny.x = app.renderer.width / 2;
-    bunny.y = app.renderer.height / 2;
+// Add the bunny to the scene we are building.
+app.stage.addChild(bunny);
 
-    // Rotate around the center
-    bunny.anchor.x = 0.5;
-    bunny.anchor.y = 0.5;
-
-    // Add the bunny to the scene we are building.
-    app.stage.addChild(bunny);
-
-    // Listen for frame updates
-    app.ticker.add(() => {
-         // each frame we spin the bunny around a bit
-        bunny.rotation += 0.01;
-    });
+// Listen for frame updates
+app.ticker.add(() => {
+        // each frame we spin the bunny around a bit
+    bunny.rotation += 0.01;
 });
+
+// extract and save the stage
+app.renderer.render(stage);
+const base64Image = app.renderer.plugins.extract
+    .canvas(stage)
+    .toDataURL('image/png');
+
+const base64Data = base64Image.replace(/^data:image\/png;base64,/, '');
+const output = `./test.png`;
+
+writeFileSync(output, base64Data, 'base64');
 ```
 
 ### License

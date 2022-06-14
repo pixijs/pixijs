@@ -1,5 +1,5 @@
 {
-  "name": "pixi.js-node",
+  "name": "@pixi/node",
   "version": "6.4.2",
   "description": "PixiJS with support for NodeJS",
   "author": "Mat Groves",
