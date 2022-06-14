@@ -14,7 +14,7 @@ describe('Spritesheet', () =>
         resources = path.join(__dirname, 'resources');
         validate = (spritesheet: Spritesheet, done) =>
         {
-            spritesheet.parse((textures) =>
+            spritesheet.parse().then((textures) =>
             {
                 const id = 'goldmine_10_5.png';
                 const width = Math.floor(spritesheet.data.frames[id].frame.w);
@@ -56,7 +56,7 @@ describe('Spritesheet', () =>
 
             const sheet = new Spritesheet(baseTexture, data);
 
-            sheet.parse(() =>
+            sheet.parse().then(() =>
             {
                 const { frame } = sheet.textures;
 
