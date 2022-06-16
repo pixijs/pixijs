@@ -1224,7 +1224,6 @@ export class InteractionManager extends EventEmitter
 
         // if the event wasn't targeting our canvas, then consider it to be pointerupoutside
         // in all cases (unless it was a pointercancel)
-        // for shadow dom use composedPath()
         const target = originalEvent.composedPath() ? originalEvent.composedPath()[0] : originalEvent.target;
         const eventAppend = target !== this.interactionDOMElement ? 'outside' : '';
 
