@@ -163,7 +163,7 @@ export class CanvasSpriteRenderer
                 Math.floor(dx * renderer.resolution),
                 Math.floor(dy * renderer.resolution),
                 Math.floor(destWidth * renderer.resolution),
-                Math.floor(destWidth * renderer.resolution)
+                Math.floor(destHeight * renderer.resolution)
             );
         }
         else
