@@ -1,22 +1,15 @@
-import path from 'path';
-import { execFileSync } from 'child_process';
-import chai from 'chai';
-import sinonChai from 'sinon-chai';
+import { exec, execFileSync } from 'child_process';
 import fs from 'fs';
-import type { FlossOptions } from 'floss';
+import path from 'path';
 import type { PackageResult } from './packages';
-
-// Support for global otpions
-declare global
-{
-    let options: FlossOptions;
-}
 
 // Support for the tsconfig path aliasing
 import 'tsconfig-paths/register';
+import parse from 'yargs-parser';
 
-// We only need to do this one time
-chai.use(sinonChai);
+const args = parse(process.argv, {
+    array: ['packages']
+});
 
 const requireAsStrings = (module: any, filename: string) =>
 {
@@ -36,9 +29,7 @@ const packagesBuffer = execFileSync(cmd, [script]).toString();
 const packages = JSON.parse(packagesBuffer) as PackageResult[];
 
 // Filter any packages from the commandline options
-const onlyPackages = options.args
-    .filter((arg) => arg.startsWith('--package='))
-    .map((arg) => arg.replace('--package=', ''));
+const onlyPackages = args.packages as string[] || [];
 
 // Filter the tests in case we have options to narrow scope
 const scopedPackages = !onlyPackages.length ? packages
@@ -56,14 +47,8 @@ if (!availableSuites.length)
     console.log(`WARNING: Invalid package name${invalidNames.length > 1 ? 's' : ''}:`, `"${invalidNames.join('", "')}"`);
 }
 
-for (const pkg of availableSuites)
-{
-    describe(pkg.name, () =>
-    {
-        fs.readdirSync(pkg.tests)
-            .filter((file) => file.endsWith('.tests.ts'))
-            .map((file) => path.join(pkg.tests, file))
-            // eslint-disable-next-line global-require
-            .forEach((file) => require(file));
-    });
-}
+const tests = availableSuites.map((pkg) => pkg.tests).join(' ');
+const out = exec(`jest ${tests} --colors`);
+
+out.stdout.pipe(process.stdout);
+out.stderr.pipe(process.stderr);
