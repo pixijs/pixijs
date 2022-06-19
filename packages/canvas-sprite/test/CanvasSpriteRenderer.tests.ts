@@ -1,10 +1,14 @@
-import { Texture } from '@pixi/core';
+import { BatchRenderer, extensions, Texture } from '@pixi/core';
 import { Sprite } from '@pixi/sprite';
 import { CanvasRenderer } from '@pixi/canvas-renderer';
 import { expect } from 'chai';
+import { CanvasSpriteRenderer } from '@pixi/canvas-sprite';
 
 describe('CanvasSpriteRenderer', () =>
 {
+    before(() => extensions.add(CanvasSpriteRenderer, BatchRenderer));
+    after(() => extensions.remove(CanvasSpriteRenderer, BatchRenderer));
+
     it('should still render a sprite after texture is destroyed', () =>
     {
         const renderer = new CanvasRenderer({ width: 1, height: 1 });

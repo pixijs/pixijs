@@ -1,11 +1,14 @@
 import { Prepare } from '@pixi/prepare';
-import { Renderer, Texture } from '@pixi/core';
+import { BatchRenderer, extensions, Renderer, Texture } from '@pixi/core';
 import { Container } from '@pixi/display';
 import { Graphics } from '@pixi/graphics';
 import { expect } from 'chai';
 
 describe('Prepare', () =>
 {
+    before(() => extensions.add(BatchRenderer));
+    after(() => extensions.remove(BatchRenderer));
+
     it('should upload graphics vao and textures', () =>
     {
         const renderer = new Renderer({ width: 1, height: 1 });

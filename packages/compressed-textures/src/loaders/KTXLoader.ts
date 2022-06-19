@@ -1,5 +1,5 @@
 import { ALPHA_MODES, FORMATS, MIPMAP_MODES, TYPES } from '@pixi/constants';
-import { BaseTexture, BufferResource, Texture } from '@pixi/core';
+import { BaseTexture, BufferResource, ExtensionMetadata, ExtensionType, Texture } from '@pixi/core';
 import { CompressedLevelBuffer, CompressedTextureResource } from '../resources/CompressedTextureResource';
 import { LoaderResource } from '@pixi/loaders';
 import { INTERNAL_FORMAT_TO_BYTES_PER_PIXEL } from '../const';
@@ -105,6 +105,9 @@ export const TYPES_TO_BYTES_PER_PIXEL: { [id: number]: number } = {
  */
 export class KTXLoader
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = ExtensionType.Loader;
+
     /**
      * If set to `true`, {@link PIXI.KTXLoader} will parse key-value data in KTX textures. This feature relies
      * on the [Encoding Standard]{@link https://encoding.spec.whatwg.org}.

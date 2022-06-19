@@ -10,7 +10,7 @@ npm install @pixi/canvas-mesh
 
 ```js
 import { CanvasMeshRenderer } from '@pixi/canvas-mesh';
-import { CanvasRenderer } from '@pixi/canvas-renderer';
+import { extensions } from '@pixi/core';
 
-CanvasRenderer.registerPlugin('mesh', CanvasMeshRenderer);
+extensions.add(CanvasMeshRenderer);
 ```

@@ -1,5 +1,5 @@
 import { Container } from '@pixi/display';
-import { RenderTexture } from '@pixi/core';
+import { BatchRenderer, extensions, RenderTexture } from '@pixi/core';
 import { CanvasRenderer } from '@pixi/canvas-renderer';
 import { Sprite } from '@pixi/sprite';
 import { CanvasSpriteRenderer } from '@pixi/canvas-sprite';
@@ -13,10 +13,6 @@ import { expect } from 'chai';
 import '@pixi/canvas-display';
 import '@pixi/canvas-text';
 
-CanvasRenderer.registerPlugin('sprite', CanvasSpriteRenderer);
-CanvasRenderer.registerPlugin('graphics', CanvasGraphicsRenderer);
-CanvasRenderer.registerPlugin('mesh', CanvasMeshRenderer);
-
 function withGL(fn: () => void)
 {
     return !process.env.DISABLE_WEBGL ? fn : undefined;
@@ -24,6 +20,19 @@ function withGL(fn: () => void)
 
 describe('getLocalBounds', () =>
 {
+    before(() => extensions.add(
+        BatchRenderer,
+        CanvasSpriteRenderer,
+        CanvasGraphicsRenderer,
+        CanvasMeshRenderer
+    ));
+    after(() => extensions.remove(
+        BatchRenderer,
+        CanvasSpriteRenderer,
+        CanvasGraphicsRenderer,
+        CanvasMeshRenderer
+    ));
+    
     it('should register correct local-bounds with a LOADED Sprite', () =>
     {
         const parent = new Container();

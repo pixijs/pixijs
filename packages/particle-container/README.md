@@ -10,7 +10,7 @@ npm install @pixi/particle-container
 
 ```js
 import {ParticleRenderer} from '@pixi/particle-container';
-import {Renderer} from '@pixi/core';
+import {extensions} from '@pixi/core';
 
-Renderer.registerPlugin('particle', ParticleRenderer);
+extensions.add(ParticleRenderer);
 ```

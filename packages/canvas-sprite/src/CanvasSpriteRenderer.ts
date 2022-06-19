@@ -3,6 +3,7 @@ import { Matrix, groupD8 } from '@pixi/math';
 import { canvasUtils } from '@pixi/canvas-renderer';
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
 import type { Sprite } from '@pixi/sprite';
+import { ExtensionMetadata, ExtensionType } from '@pixi/core';
 
 const canvasRenderWorldTransform = new Matrix();
 
@@ -32,6 +33,12 @@ const canvasRenderWorldTransform = new Matrix();
  */
 export class CanvasSpriteRenderer
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        name: 'sprite',
+        type: ExtensionType.CanvasRendererPlugin,
+    };
+
     /** A reference to the current renderer */
     protected renderer: CanvasRenderer;
 

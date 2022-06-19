@@ -1,5 +1,5 @@
 import { TYPES, MIPMAP_MODES, ALPHA_MODES, FORMATS } from '@pixi/constants';
-import { BaseTexture, BufferResource, Texture } from '@pixi/core';
+import { BaseTexture, BufferResource, ExtensionMetadata, ExtensionType, Texture } from '@pixi/core';
 import { CompressedTextureResource, INTERNAL_FORMATS } from '@pixi/compressed-textures';
 import {
     BASIS_FORMATS,
@@ -64,6 +64,9 @@ LoaderResource.setExtensionXhrType('basis', LoaderResource.XHR_RESPONSE_TYPE.BUF
  */
 export class BasisLoader
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = ExtensionType.Loader;
+
     private static basisBinding: BasisBinding;
     private static defaultRGBFormat: { basisFormat: BASIS_FORMATS, textureFormat: INTERNAL_FORMATS | TYPES };
     private static defaultRGBAFormat: { basisFormat: BASIS_FORMATS, textureFormat: INTERNAL_FORMATS | TYPES };

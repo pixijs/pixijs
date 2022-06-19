@@ -27,6 +27,7 @@ import type { IRendererOptions, IRendererPlugins, IRendererRenderOptions,
 import type { ISystemConstructor } from './ISystem';
 import type { IRenderingContext } from './IRenderingContext';
 import type { IRenderableObject } from './IRenderableObject';
+import { ExtensionClass, extensions, ExtensionType } from './extensions';
 
 export interface IRendererPluginConstructor
 {
@@ -618,16 +619,30 @@ export class Renderer extends AbstractRenderer
      * @property {PIXI.BatchRenderer} batch Batching of Sprite, Graphics and Mesh objects.
      * @property {PIXI.TilingSpriteRenderer} tilingSprite Renderer for TilingSprite objects.
      */
-    static __plugins: IRendererPlugins;
+    static __plugins: IRendererPlugins = {};
 
     /**
-     * Adds a plugin to the renderer.
+     * Use the {@link PIXI.extensions.add} API to register plugins.
+     * @deprecated since 6.5.0
      * @param pluginName - The name of the plugin.
      * @param ctor - The constructor function or class for the plugin.
      */
     static registerPlugin(pluginName: string, ctor: IRendererPluginConstructor): void
     {
-        Renderer.__plugins = Renderer.__plugins || {};
-        Renderer.__plugins[pluginName] = ctor;
+        // #if _DEBUG
+        deprecation('6.5.0', 'Renderer.registerPlugin() has been deprecated, please use extensions.add() instead.');
+        // #endif
+        extensions.add({
+            name: pluginName,
+            type: ExtensionType.RendererPlugin,
+            ref: ctor as unknown as ExtensionClass
+        });
     }
 }
+
+/** Handle registration of extensions */
+extensions.handle(
+    ExtensionType.RendererPlugin,
+    (extension) => { Renderer.__plugins[extension.name] = extension.ref; },
+    (extension) => { delete Renderer.__plugins[extension.name]; }
+);

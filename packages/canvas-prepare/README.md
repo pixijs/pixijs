@@ -10,7 +10,7 @@ npm install @pixi/canvas-prepare
 
 ```js
 import { CanvasPrepare } from '@pixi/canvas-prepare';
-import { CanvasRenderer } from '@pixi/canvas-renderer';
+import { extensions } from '@pixi/core';
 
-CanvasRenderer.registerPlugin('prepare', CanvasPrepare);
+extensions.add(CanvasPrepare);
 ```

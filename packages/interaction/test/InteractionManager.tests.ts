@@ -3,23 +3,29 @@ import { Container } from '@pixi/display';
 import { Ticker } from '@pixi/ticker';
 import { Graphics } from '@pixi/graphics';
 import { Point, Rectangle } from '@pixi/math';
-import { CanvasRenderer } from '@pixi/canvas-renderer';
 import { InteractionManager } from '@pixi/interaction';
 import { CanvasGraphicsRenderer } from '@pixi/canvas-graphics';
 import { CanvasSpriteRenderer } from '@pixi/canvas-sprite';
 import { Sprite } from '@pixi/sprite';
 import sinon from 'sinon';
 import { expect } from 'chai';
-
 import '@pixi/canvas-display';
-import { Texture } from '@pixi/core';
-
-CanvasRenderer.registerPlugin('interaction', InteractionManager);
-CanvasRenderer.registerPlugin('graphics', CanvasGraphicsRenderer);
-CanvasRenderer.registerPlugin('sprite', CanvasSpriteRenderer);
+import { extensions, Texture } from '@pixi/core';
 
 describe('InteractionManager', () =>
 {
+    before(() => extensions.add(
+        InteractionManager,
+        CanvasGraphicsRenderer,
+        CanvasSpriteRenderer
+    ));
+
+    after(() => extensions.remove(
+        InteractionManager,
+        CanvasGraphicsRenderer,
+        CanvasSpriteRenderer
+    ));
+
     let pointer: MockPointer;
 
     afterEach(() =>

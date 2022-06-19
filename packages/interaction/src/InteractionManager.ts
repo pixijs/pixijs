@@ -7,7 +7,7 @@ import { TreeSearch } from './TreeSearch';
 import { EventEmitter } from '@pixi/utils';
 import { interactiveTarget } from './interactiveTarget';
 
-import type { AbstractRenderer } from '@pixi/core';
+import { AbstractRenderer, ExtensionMetadata, ExtensionType } from '@pixi/core';
 import type { Point, IPointData } from '@pixi/math';
 import type { Dict } from '@pixi/utils';
 
@@ -63,6 +63,15 @@ interface CrossCSSStyleDeclaration extends CSSStyleDeclaration
  */
 export class InteractionManager extends EventEmitter
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        name: 'interaction',
+        type: [
+            ExtensionType.RendererPlugin,
+            ExtensionType.CanvasRendererPlugin,
+        ],
+    };
+
     /**
      * Actively tracked InteractionData
      * @private
