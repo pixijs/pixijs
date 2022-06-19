@@ -27,7 +27,7 @@ import type { IRendererOptions, IRendererPlugins, IRendererRenderOptions,
 import type { ISystemConstructor } from './ISystem';
 import type { IRenderingContext } from './IRenderingContext';
 import type { IRenderableObject } from './IRenderableObject';
-import { ExtensionClass, extensions, ExtensionType } from './extensions';
+import { extensions, ExtensionType } from './extensions';
 
 export interface IRendererPluginConstructor
 {
@@ -635,12 +635,12 @@ export class Renderer extends AbstractRenderer
         extensions.add({
             name: pluginName,
             type: ExtensionType.RendererPlugin,
-            ref: ctor as unknown as ExtensionClass
+            ref: ctor,
         });
     }
 }
 
-/** Handle registration of extensions */
+// Handle registration of extensions
 extensions.handle(
     ExtensionType.RendererPlugin,
     (extension) => { Renderer.__plugins[extension.name] = extension.ref; },

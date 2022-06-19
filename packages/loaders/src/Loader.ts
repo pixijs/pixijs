@@ -3,7 +3,7 @@ import { parseUri } from './base/parseUri';
 import { IResourceMetadata, LoaderResource } from './LoaderResource';
 import { AsyncQueue } from './base/AsyncQueue';
 import { deprecation, Dict } from '@pixi/utils';
-import { ExtensionClass, extensions, ExtensionType } from '@pixi/core';
+import { extensions, ExtensionType } from '@pixi/core';
 
 // some constants
 const MAX_PROGRESS = 100;
@@ -635,7 +635,7 @@ class Loader
 
         extensions.add({
             type: ExtensionType.Loader,
-            ref: plugin as unknown as ExtensionClass,
+            ref: plugin,
         });
 
         return Loader;

@@ -4,8 +4,7 @@ import {
     RenderTexture,
     BaseRenderTexture,
     extensions,
-    ExtensionType,
-    ExtensionClass } from '@pixi/core';
+    ExtensionType } from '@pixi/core';
 import { CanvasRenderTarget, sayHello, rgb2hex, hex2string, deprecation } from '@pixi/utils';
 import { CanvasMaskManager } from './utils/CanvasMaskManager';
 import { mapCanvasBlendModesToPixi } from './utils/mapCanvasBlendModesToPixi';
@@ -492,7 +491,7 @@ export class CanvasRenderer extends AbstractRenderer
         extensions.add({
             name: pluginName,
             type: ExtensionType.CanvasRendererPlugin,
-            ref: ctor as unknown as ExtensionClass,
+            ref: ctor,
         });
     }
 }

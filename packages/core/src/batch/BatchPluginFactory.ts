@@ -96,8 +96,8 @@ export class BatchPluginFactory
 export const BatchRenderer = BatchPluginFactory.create();
 
 Object.assign(BatchRenderer, {
-    extension: <ExtensionMetadata>{
+    extension: {
         name: 'batch',
         type: ExtensionType.RendererPlugin,
-    },
+    } as ExtensionMetadata,
 });

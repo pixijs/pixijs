@@ -1,5 +1,5 @@
 import { Container } from '@pixi/display';
-import { autoDetectRenderer, ExtensionClass, extensions, ExtensionType } from '@pixi/core';
+import { autoDetectRenderer, extensions, ExtensionType } from '@pixi/core';
 
 import type { Rectangle } from '@pixi/math';
 import type { Renderer, IRendererOptionsAuto, AbstractRenderer } from '@pixi/core';
@@ -123,7 +123,7 @@ export class Application
         // #endif
         extensions.add({
             type: ExtensionType.Application,
-            ref: plugin as unknown as ExtensionClass
+            ref: plugin,
         });
     }
 

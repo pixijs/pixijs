@@ -1,3 +1,11 @@
+/**
+ * Collection of valid extension types.
+ * @memberof PIXI
+ * @property {string} Application - Application plugins
+ * @property {string} RendererPlugin - Plugins for Renderer
+ * @property {string} CanvasRendererPlugin - Plugins for CanvasRenderer
+ * @property {string} Loader - Plugins to use with Loader
+ */
 enum ExtensionType
 // eslint-disable-next-line @typescript-eslint/indent
 {
@@ -5,12 +13,6 @@ enum ExtensionType
     RendererPlugin = 'renderer-webgl-plugin',
     CanvasRendererPlugin = 'renderer-canvas-plugin',
     Loader = 'loader',
-}
-
-interface ExtensionClass
-{
-    new (): any;
-    extension: ExtensionMetadata;
 }
 
 interface ExtensionMetadataDetails
@@ -21,18 +23,30 @@ interface ExtensionMetadataDetails
 
 type ExtensionMetadata = ExtensionType | ExtensionMetadataDetails;
 
+/**
+ * Format when registering an extension. Generally, the extension
+ * should have these values as `extension` static property,
+ * but you can override name or type by providing an object.
+ * @memberof PIXI
+ */
 interface ExtensionFormatLoose
 {
+    /** The extension type, can be multiple types */
     type: ExtensionType | ExtensionType[];
+    /** Optional. Some plugins provide an API name/property, such as Renderer plugins */
     name?: string;
-    ref: ExtensionClass;
+    /** Reference to the plugin object/class */
+    ref: any;
 }
 
-interface ExtensionFormat
+/**
+ * Strict extension format that is used internally for registrations.
+ * @memberof PIXI
+ */
+interface ExtensionFormat extends ExtensionFormatLoose
 {
+    /** The extension type, always expressed as multiple, even if a single */
     type: ExtensionType[];
-    name?: string;
-    ref: ExtensionClass;
 }
 
 type ExtensionHandler = (extension: ExtensionFormat) => void;
@@ -41,7 +55,7 @@ type ExtensionHandler = (extension: ExtensionFormat) => void;
  * Convert input into extension format data.
  * @ignore
  */
-const normalizeExtension = (ext: ExtensionClass | ExtensionFormatLoose | any): ExtensionFormat =>
+const normalizeExtension = (ext: ExtensionFormatLoose | any): ExtensionFormat =>
 {
     // Class submission, use extension object
     if (typeof ext === 'function')
@@ -77,7 +91,8 @@ const normalizeExtension = (ext: ExtensionClass | ExtensionFormatLoose | any): E
 
 /**
  * Global registration of all PixiJS extensions. One-stop-shop for extensibility.
- * @namespace PIXI.extensions
+ * @memberof PIXI
+ * @namespace extensions
  */
 const extensions = {
 
@@ -94,7 +109,7 @@ const extensions = {
      * Remove extensions from PixiJS.
      * @param extensions - Extensions to be removed.
      */
-    remove(...extensions: Array<ExtensionFormatLoose | ExtensionClass | any>)
+    remove(...extensions: Array<ExtensionFormatLoose | any>)
     {
         extensions.map(normalizeExtension).forEach((ext) =>
         {
@@ -106,7 +121,7 @@ const extensions = {
      * Register new extensions with PixiJS.
      * @param extensions - The spread of extensions to add to PixiJS.
      */
-    add(...extensions: Array<ExtensionFormatLoose | ExtensionClass | any>)
+    add(...extensions: Array<ExtensionFormatLoose | any>)
     {
         // Handle any extensions either passed as class w/ data or as data
         extensions.map(normalizeExtension).forEach((ext) =>
@@ -132,8 +147,8 @@ const extensions = {
     /**
      * Internal method to handle extensions by name.
      * @param type - The extension type.
-     * @param onAdd - Function for handling extensions.
-     * @param onRemove
+     * @param onAdd  - Function for handling when extensions are added/registered passes {@link PIXI.ExtensionFormat}.
+     * @param onRemove  - Function for handling when extensions are removed/unregistered passes {@link PIXI.ExtensionFormat}.
      */
     handle(type: ExtensionType, onAdd: ExtensionHandler, onRemove: ExtensionHandler)
     {
@@ -169,6 +184,6 @@ export {
 export type {
     ExtensionHandler,
     ExtensionMetadata,
+    ExtensionFormatLoose,
     ExtensionFormat,
-    ExtensionClass,
 };
