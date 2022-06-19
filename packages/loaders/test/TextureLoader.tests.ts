@@ -9,12 +9,12 @@ describe('TextureLoader', () =>
     it('should exist and return a function', () =>
     {
         expect(TextureLoader).to.not.be.undefined;
-        expect(TextureLoader.use).to.be.a('function');
+        expect(TextureLoader.use).toBeInstanceOf(Function);
     });
 
     it('should do nothing if the resource is not an image', () =>
     {
-        const spy = sinon.spy();
+        const spy = jest.fn();
         const res = {} as LoaderResource;
 
         TextureLoader.use(res, spy);

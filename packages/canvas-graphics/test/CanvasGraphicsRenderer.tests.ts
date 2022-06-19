@@ -21,7 +21,7 @@ describe('CanvasGraphicsRenderer', () =>
         try
         {
             renderer.render(graphics);
-            expect(Texture.WHITE.patternCache).to.be.null;
+            expect(Texture.WHITE.patternCache).toBeNull();
         }
         finally
         {

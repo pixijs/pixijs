@@ -52,8 +52,8 @@ function createScene()
 
 describe('EventSystem', () =>
 {
-    before(() => extensions.add(BatchRenderer));
-    after(() => extensions.remove(BatchRenderer));
+    beforeAll(() => extensions.add(BatchRenderer));
+    afterAll(() => extensions.remove(BatchRenderer));
 
     // Share WebGL context for performance
     const view = document.createElement('canvas');
@@ -140,13 +140,13 @@ describe('EventSystem', () =>
                 clientX = clientX || 25;
                 clientY = clientY || 25;
 
-                const eventSpy = sinon.spy();
+                const eventSpy = jest.fn();
                 const handler = handlers[(native || type) as keyof typeof handlers];
 
                 graphics.on(type, function testEvent(e)
                 {
-                    expect(e.nativeEvent.clientX).to.equal(clientX);
-                    expect(e.nativeEvent.clientY).to.equal(clientY);
+                    expect(e.nativeEvent.clientX).toEqual(clientX);
+                    expect(e.nativeEvent.clientY).toEqual(clientY);
                     eventSpy();
                 });
 
@@ -197,9 +197,9 @@ describe('EventSystem', () =>
             })
         );
 
-        expect(renderer.view.style.cursor).to.equal('copy');
+        expect(renderer.view.style.cursor).toEqual('copy');
 
-        const eventSpy = sinon.spy();
+        const eventSpy = jest.fn();
 
         graphics.on('mousemove', eventSpy);
         renderer['events'].onPointerMove(
@@ -211,7 +211,7 @@ describe('EventSystem', () =>
         );
 
         expect(eventSpy).to.not.have.been.called;
-        expect(renderer.view.style.cursor).to.equal('inherit');
+        expect(renderer.view.style.cursor).toEqual('inherit');
     });
 
     it('should dispatch synthetic over/out events on pointermove', () =>
@@ -227,45 +227,45 @@ describe('EventSystem', () =>
         renderer.render(stage);
         second.interactive = true;
 
-        const primaryOverSpy = sinon.spy();
-        const primaryOutSpy = sinon.spy();
-        const primaryMoveSpy = sinon.spy();
+        const primaryOverSpy = jest.fn();
+        const primaryOutSpy = jest.fn();
+        const primaryMoveSpy = jest.fn();
 
         let callCount = 0;
 
         graphics.on('pointerover', () =>
         {
-            expect(callCount).to.equal(0);
+            expect(callCount).toEqual(0);
             primaryOverSpy();
             ++callCount;
         });
         graphics.on('pointermove', () =>
         {
-            expect(callCount).to.equal(1);
+            expect(callCount).toEqual(1);
             primaryMoveSpy();
             ++callCount;
         });
         graphics.on('pointerout', () =>
         {
-            expect(callCount).to.equal(2);
+            expect(callCount).toEqual(2);
             primaryOutSpy();
             ++callCount;
         });
 
-        const secondaryOverSpy = sinon.spy();
-        const secondaryOutSpy = sinon.spy();
-        const secondaryMoveSpy = sinon.spy();
+        const secondaryOverSpy = jest.fn();
+        const secondaryOutSpy = jest.fn();
+        const secondaryMoveSpy = jest.fn();
 
         second.on('pointerover', () =>
         {
-            expect(callCount).to.equal(3);
+            expect(callCount).toEqual(3);
             secondaryOverSpy();
             ++callCount;
         });
         second.on('pointerout', secondaryOutSpy);
         second.on('pointermove', () =>
         {
-            expect(callCount).to.equal(4);
+            expect(callCount).toEqual(4);
             secondaryMoveSpy();
             ++callCount;
         });
@@ -289,13 +289,13 @@ describe('EventSystem', () =>
     {
         const renderer = createRenderer();
         const [stage, graphics] = createScene();
-        const eventSpy = sinon.spy();
+        const eventSpy = jest.fn();
 
         renderer.render(stage);
 
         graphics.addEventListener('pointertap', (e) =>
         {
-            expect(e.type).to.equal('click');
+            expect(e.type).toEqual('click');
             eventSpy();
         });
 
@@ -318,7 +318,7 @@ describe('EventSystem', () =>
     {
         const renderer = createRenderer();
         const [stage, graphics] = createScene();
-        const eventSpy = sinon.spy();
+        const eventSpy = jest.fn();
         let clickCount = 0;
 
         renderer.render(stage);
@@ -326,7 +326,7 @@ describe('EventSystem', () =>
         graphics.addEventListener('pointertap', (e) =>
         {
             ++clickCount;
-            expect((e as PointerEvent).detail).to.equal(clickCount);
+            expect((e as PointerEvent).detail).toEqual(clickCount);
             eventSpy();
         });
 
@@ -349,11 +349,11 @@ describe('EventSystem', () =>
 
         graphics.removeAllListeners();
 
-        const newSpy = sinon.spy();
+        const newSpy = jest.fn();
 
         graphics.addEventListener('pointertap', (e) =>
         {
-            expect((e as PointerEvent).detail).to.equal(1);
+            expect((e as PointerEvent).detail).toEqual(1);
             newSpy();
         });
 

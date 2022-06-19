@@ -44,8 +44,8 @@ function testRemoveChild(fn: any)
 
 describe('Container', () =>
 {
-    before(() => extensions.add(BatchRenderer));
-    after(() => extensions.remove(BatchRenderer));
+    beforeAll(() => extensions.add(BatchRenderer));
+    afterAll(() => extensions.remove(BatchRenderer));
 
     describe('parent', () =>
     {
@@ -84,7 +84,7 @@ describe('Container', () =>
             {
                 triggeredRemoved = true;
                 expect(container.children.length).to.be.equals(0);
-                expect(child.parent).to.be.null;
+                expect(child.parent).toBeNull();
                 expect(container).to.be.equals(from);
             });
 
@@ -104,14 +104,14 @@ describe('Container', () =>
             });
 
             container.addChild(child);
-            expect(triggeredAdded).to.be.true;
-            expect(triggeredRemoved).to.be.false;
-            expect(triggeredChildAdded).to.be.true;
-            expect(triggeredChildRemoved).to.be.false;
+            expect(triggeredAdded).toBe(true);
+            expect(triggeredRemoved).toBe(false);
+            expect(triggeredChildAdded).toBe(true);
+            expect(triggeredChildRemoved).toBe(false);
 
             container.removeChild(child);
-            expect(triggeredRemoved).to.be.true;
-            expect(triggeredChildRemoved).to.be.true;
+            expect(triggeredRemoved).toBe(true);
+            expect(triggeredChildRemoved).toBe(true);
         });
     });
 
@@ -673,7 +673,7 @@ describe('Container', () =>
             container.destroy();
 
             expect(container.children.length).to.be.equals(0);
-            expect(child.transform).to.not.be.null;
+            expect(child.transform).not.toBeNull();
         });
 
         it('should allow children destroy', () =>
@@ -686,8 +686,8 @@ describe('Container', () =>
             container.destroy({ children: true });
 
             expect(container.children.length).to.be.equals(0);
-            expect(container.transform).to.be.null;
-            expect(child.transform).to.be.null;
+            expect(container.transform).toBeNull();
+            expect(child.transform).toBeNull();
 
             container = new Container();
             // @ts-expect-error - instantiating DisplayObject
@@ -697,8 +697,8 @@ describe('Container', () =>
             container.destroy(true);
 
             expect(container.children.length).to.be.equals(0);
-            expect(container.transform).to.be.null;
-            expect(child.transform).to.be.null;
+            expect(container.transform).toBeNull();
+            expect(child.transform).toBeNull();
         });
     });
 
@@ -719,8 +719,8 @@ describe('Container', () =>
             container.updateTransform();
             container.getLocalBounds();
 
-            expect(child.transform.worldTransform.tx).to.equal(30);
-            expect(child.transform.worldTransform.ty).to.equal(40);
+            expect(child.transform.worldTransform.tx).toEqual(30);
+            expect(child.transform.worldTransform.ty).toEqual(40);
         });
 
         it('should recalculate bounds if children position was changed', () =>
@@ -743,12 +743,12 @@ describe('Container', () =>
 
             child.position.set(20, 30);
             bounds = container.getLocalBounds();
-            expect(bounds.x).to.equal(20);
-            expect(bounds.y).to.equal(30);
+            expect(bounds.x).toEqual(20);
+            expect(bounds.y).toEqual(30);
             child.position.set(5, 5);
             bounds = container.getLocalBounds();
-            expect(bounds.x).to.equal(5);
-            expect(bounds.y).to.equal(5);
+            expect(bounds.x).toEqual(5);
+            expect(bounds.y).toEqual(5);
         });
     });
 
@@ -788,11 +788,11 @@ describe('Container', () =>
             // @ts-expect-error - instantiating DisplayObject
             const child = new DisplayObject();
 
-            expect(parent.sortDirty).to.be.false;
+            expect(parent.sortDirty).toBe(false);
 
             parent.addChild(child);
 
-            expect(parent.sortDirty).to.be.true;
+            expect(parent.sortDirty).toBe(true);
         });
 
         it('should set sortDirty flag to true when changing a child zIndex', () =>
@@ -807,7 +807,7 @@ describe('Container', () =>
 
             child.zIndex = 10;
 
-            expect(parent.sortDirty).to.be.true;
+            expect(parent.sortDirty).toBe(true);
         });
     });
 
@@ -821,7 +821,7 @@ describe('Container', () =>
 
             container.sortChildren();
 
-            expect(container.sortDirty).to.be.false;
+            expect(container.sortDirty).toBe(false);
         });
 
         it('should call sort when at least one child has a zIndex', () =>
@@ -1081,13 +1081,13 @@ describe('Container', () =>
         let renderer: Renderer;
         let filterPush: sinon.SinonSpy;
 
-        before(() =>
+        beforeAll(() =>
         {
             renderer = new Renderer({ width: 100, height: 100 });
             filterPush = sinon.spy(renderer.filter, 'push');
         });
 
-        after(() =>
+        afterAll(() =>
         {
             renderer.destroy();
             renderer = null;

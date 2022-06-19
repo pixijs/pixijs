@@ -11,9 +11,9 @@ describe('ImageBitmapResource', () =>
         const bitmap = await createImageBitmap(canvas);
         const resource = new ImageBitmapResource(bitmap);
 
-        expect(resource.width).to.equal(canvas.width);
-        expect(resource.height).to.equal(canvas.height);
-        expect(resource.valid).to.be.true;
+        expect(resource.width).toEqual(canvas.width);
+        expect(resource.height).toEqual(canvas.height);
+        expect(resource.valid).toBe(true);
 
         resource.destroy();
     });
@@ -28,9 +28,9 @@ describe('ImageBitmapResource', () =>
         const bitmap = await createImageBitmap(canvas);
         const resource = new ImageBitmapResource(bitmap);
 
-        expect(resource.width).to.equal(100);
-        expect(resource.height).to.equal(200);
-        expect(resource.valid).to.be.true;
+        expect(resource.width).toEqual(100);
+        expect(resource.height).toEqual(200);
+        expect(resource.valid).toBe(true);
 
         resource.destroy();
     });
@@ -44,7 +44,7 @@ describe('ImageBitmapResource', () =>
 
         resource.bind(baseTexture as unknown as BaseTexture);
 
-        expect(baseTexture.setRealSize.calledOnce).to.be.true;
+        expect(baseTexture.setRealSize.calledOnce).toBe(true);
 
         resource.unbind(baseTexture as unknown as BaseTexture);
         resource.destroy();
@@ -59,11 +59,11 @@ describe('ImageBitmapResource', () =>
 
         resource.bind(baseTexture as unknown as BaseTexture);
 
-        expect(baseTexture.update.called).to.be.false;
+        expect(baseTexture.update.called).toBe(false);
 
         resource.update();
 
-        expect(baseTexture.update.calledOnce).to.be.true;
+        expect(baseTexture.update.calledOnce).toBe(true);
 
         resource.unbind(baseTexture as unknown as BaseTexture);
         resource.destroy();

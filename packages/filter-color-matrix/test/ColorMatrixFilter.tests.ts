@@ -7,12 +7,12 @@ describe('ColorMatrixFilter', () =>
     {
         const filter = new ColorMatrixFilter();
 
-        expect(filter).to.be.instanceOf(ColorMatrixFilter);
-        expect(filter.alpha).to.equal(1);
+        expect(filter).toBeInstanceOf(ColorMatrixFilter);
+        expect(filter.alpha).toEqual(1);
 
         filter.alpha = 0.5;
 
-        expect(filter.alpha).to.equal(0.5);
+        expect(filter.alpha).toEqual(0.5);
         expect(filter.matrix).to.deep.eq(new Float32Array(
             [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0]
         ));

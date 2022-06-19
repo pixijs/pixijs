@@ -154,17 +154,17 @@ describe('Container', () =>
 
             maskedObject.mask = new MaskData(createSquareContainer(5, 10, 35, 29));
             bounds = parentContainer.getBounds();
-            expect(bounds.x).to.equal(5);
-            expect(bounds.y).to.equal(15);
-            expect(bounds.width).to.equal(6);
-            expect(bounds.height).to.equal(14);
+            expect(bounds.x).toEqual(5);
+            expect(bounds.y).toEqual(15);
+            expect(bounds.width).toEqual(6);
+            expect(bounds.height).toEqual(14);
 
             maskedObject.mask = createSquareContainer(4, 9, 34, 32);
             bounds = parentContainer.getBounds();
-            expect(bounds.x).to.equal(4);
-            expect(bounds.y).to.equal(15);
-            expect(bounds.width).to.equal(7);
-            expect(bounds.height).to.equal(16);
+            expect(bounds.x).toEqual(4);
+            expect(bounds.y).toEqual(15);
+            expect(bounds.width).toEqual(7);
+            expect(bounds.height).toEqual(16);
         });
     });
 });

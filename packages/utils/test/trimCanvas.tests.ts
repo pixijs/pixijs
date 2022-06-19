@@ -16,8 +16,8 @@ describe('trimCanvas', () =>
 
         const trimmedImageData = trimCanvas(canvas);
 
-        expect(trimmedImageData.width).to.equal(9);
-        expect(trimmedImageData.height).to.equal(5);
-        expect(trimmedImageData.data).to.be.instanceOf(ImageData);
+        expect(trimmedImageData.width).toEqual(9);
+        expect(trimmedImageData.height).toEqual(5);
+        expect(trimmedImageData.data).toBeInstanceOf(ImageData);
     });
 });

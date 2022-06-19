@@ -204,7 +204,7 @@ describe('UniformBuffer', () =>
             0, 0, 33, 33
         ]);
 
-        expect(size).to.equal(96);
+        expect(size).toEqual(96);
         expect(buffer.data).to.deep.equal(expectedBufferValue);
     });
 

@@ -10,9 +10,9 @@ describe('TextStyle', () =>
 
         textStyle.fontSize = 1000;
 
-        expect(textStyle.fontSize).to.equal(1000);
+        expect(textStyle.fontSize).toEqual(1000);
         textStyle.reset();
-        expect(textStyle.fontSize).to.equal(defaultFontSize);
+        expect(textStyle.fontSize).toEqual(defaultFontSize);
     });
 
     it('should clone correctly', () =>
@@ -21,8 +21,8 @@ describe('TextStyle', () =>
 
         const clonedTextStyle = textStyle.clone();
 
-        expect(textStyle.fontSize).to.equal(1000);
-        expect(clonedTextStyle.fontSize).to.equal(textStyle.fontSize);
+        expect(textStyle.fontSize).toEqual(1000);
+        expect(clonedTextStyle.fontSize).toEqual(textStyle.fontSize);
     });
 
     it('should assume pixel fonts', () =>
@@ -57,7 +57,7 @@ describe('TextStyle', () =>
         const defaultStyle = new TextStyle();
         const style = new TextStyle();
 
-        expect(defaultStyle.fillGradientStops.length).to.equal(style.fillGradientStops.length);
+        expect(defaultStyle.fillGradientStops.length).toEqual(style.fillGradientStops.length);
         style.fillGradientStops.push(0);
         expect(defaultStyle.fillGradientStops.length).to.not.equal(style.fillGradientStops.length);
     });
@@ -87,7 +87,7 @@ describe('TextStyle', () =>
             const regex = new RegExp(incorrectRegexTemplate.replace('FAMILY', genericFamily));
             const result = style.toFontString().match(regex);
 
-            expect(result).to.be.null;
+            expect(result).toBeNull();
         }
     });
 });

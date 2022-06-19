@@ -56,9 +56,9 @@ describe('Geometry', () =>
 
             geometry1.destroy();
             expect(indices.data).to.be.not.null;
-            expect(Object.keys(indices._glBuffers).length).to.equal(1);
+            expect(Object.keys(indices._glBuffers).length).toEqual(1);
             geometry2.destroy();
-            expect(Object.keys(indices._glBuffers).length).to.equal(0);
+            expect(Object.keys(indices._glBuffers).length).toEqual(0);
         }
         finally
         {
@@ -87,15 +87,15 @@ describe('Geometry', () =>
             renderer.geometry.bind(geometry, shader2);
 
             // 2 signatures and 2 by shader-ids
-            expect(Object.keys(geometry.glVertexArrayObjects).length).to.equal(1);
-            expect(Object.keys(geometry.glVertexArrayObjects[renderer.CONTEXT_UID]).length).to.equal(4);
-            expect(Object.keys(renderer.geometry.managedGeometries).length).to.equal(1);
-            expect(Object.keys(indices._glBuffers).length).to.equal(1);
-            expect(indices._glBuffers[renderer.CONTEXT_UID].refCount).to.equal(1);
+            expect(Object.keys(geometry.glVertexArrayObjects).length).toEqual(1);
+            expect(Object.keys(geometry.glVertexArrayObjects[renderer.CONTEXT_UID]).length).toEqual(4);
+            expect(Object.keys(renderer.geometry.managedGeometries).length).toEqual(1);
+            expect(Object.keys(indices._glBuffers).length).toEqual(1);
+            expect(indices._glBuffers[renderer.CONTEXT_UID].refCount).toEqual(1);
             geometry.dispose();
-            expect(Object.keys(geometry.glVertexArrayObjects).length).to.equal(0);
-            expect(Object.keys(renderer.geometry.managedGeometries).length).to.equal(0);
-            expect(Object.keys(indices._glBuffers).length).to.equal(0);
+            expect(Object.keys(geometry.glVertexArrayObjects).length).toEqual(0);
+            expect(Object.keys(renderer.geometry.managedGeometries).length).toEqual(0);
+            expect(Object.keys(indices._glBuffers).length).toEqual(0);
             geometry.destroy();
         }
         finally
@@ -181,7 +181,7 @@ describe('Geometry', () =>
 
             const vao2 = renderer.geometry['_activeVao'];
 
-            expect(vao1).to.equal(vao2);
+            expect(vao1).toEqual(vao2);
 
             geometry.destroy();
         }

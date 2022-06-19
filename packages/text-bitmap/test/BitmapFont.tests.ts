@@ -29,14 +29,14 @@ describe('BitmapFont', () =>
 
             const font = BitmapFont.from('foo');
 
-            expect(BitmapFont.available.foo).to.equal(font);
+            expect(BitmapFont.available.foo).toEqual(font);
         });
 
         it('should draw all characters in a provided range', () =>
         {
             const font = BitmapFont.from('foo', {}, { chars: [['a', 'z']] });
 
-            expect(Object.keys(font.chars).length).to.equal(26);
+            expect(Object.keys(font.chars).length).toEqual(26);
         });
 
         it('should draw emojis', () =>
@@ -44,7 +44,7 @@ describe('BitmapFont', () =>
             const emojis = ['🔥', '🌏', '😀'];
             const font = BitmapFont.from('foo', {}, { chars: [emojis.join('')] });
 
-            expect(Object.keys(font.chars).length).to.equal(emojis.length);
+            expect(Object.keys(font.chars).length).toEqual(emojis.length);
             for (const emoji of emojis)
             {
                 const char = String(emoji.codePointAt(0));
@@ -71,8 +71,8 @@ describe('BitmapFont', () =>
             // BitmapFont.from IDs are charCodes
             const id = 'a'.charCodeAt(0);
 
-            expect(fontRes1.chars[id].texture.baseTexture.resolution).to.equal(1);
-            expect(fontRes2.chars[id].texture.baseTexture.resolution).to.equal(2);
+            expect(fontRes1.chars[id].texture.baseTexture.resolution).toEqual(1);
+            expect(fontRes2.chars[id].texture.baseTexture.resolution).toEqual(2);
         });
 
         it('should override and replace font', () =>
@@ -80,10 +80,10 @@ describe('BitmapFont', () =>
             const id = 'a'.charCodeAt(0);
 
             BitmapFont.from('foo', {}, { chars: 'a' });
-            expect(Object.keys(BitmapFont.available.foo.chars).length).to.equal(1);
+            expect(Object.keys(BitmapFont.available.foo.chars).length).toEqual(1);
 
             BitmapFont.from('foo', {}, { chars: 'bc' });
-            expect(Object.keys(BitmapFont.available.foo.chars).length).to.equal(2);
+            expect(Object.keys(BitmapFont.available.foo.chars).length).toEqual(2);
             expect(BitmapFont.available.foo.chars[id]).to.be.undefined;
         });
 

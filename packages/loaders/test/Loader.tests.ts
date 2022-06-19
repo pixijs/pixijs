@@ -14,13 +14,13 @@ describe('Loader', () =>
     let server: Server;
     let baseUrl: string;
 
-    before(() =>
+    beforeAll(() =>
     {
         server = createServer(8125);
         baseUrl = 'http://localhost:8125';
     });
 
-    after(() =>
+    afterAll(() =>
     {
         server.close();
         server = null;
@@ -29,13 +29,13 @@ describe('Loader', () =>
 
     it('should exist', () =>
     {
-        expect(Loader).to.be.a('function');
+        expect(Loader).toBeInstanceOf(Function);
     });
 
     it('should have shared loader', () =>
     {
         expect(Loader.shared).to.not.be.undefined;
-        expect(Loader.shared).to.be.instanceof(Loader);
+        expect(Loader.shared).toBeInstanceOf(Loader);
     });
 
     it('should basic load an image using the TextureLoader', (done) =>
@@ -48,12 +48,12 @@ describe('Loader', () =>
         loader.load((ldr, resources) =>
         {
             expect(ldr).equals(loader);
-            expect(name in resources).to.be.ok;
+            expect(name in resources).toBeTruthy();
 
             const texture = resources[name].texture as Texture<ImageResource>;
 
             expect(texture).instanceof(Texture);
-            expect(texture.baseTexture.valid).to.be.true;
+            expect(texture.baseTexture.valid).toBe(true);
             expect(texture.baseTexture.resource).instanceof(ImageResource);
             expect(texture.baseTexture.resource.url).equals(url);
             expect(TextureCache[name]).equals(texture);
@@ -81,7 +81,7 @@ describe('Loader', () =>
 
             expect(typeof data).equals('string');
             expect(baseTexture.resource).instanceof(SVGResource);
-            expect(baseTexture.valid).to.be.true;
+            expect(baseTexture.valid).toBe(true);
             expect(baseTexture.width).equals(512);
             expect(baseTexture.height).equals(512);
             loader.reset();

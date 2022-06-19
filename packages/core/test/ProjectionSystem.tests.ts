@@ -6,12 +6,12 @@ describe('ProjectionSystem', () =>
 {
     let renderer: Renderer;
 
-    before(() =>
+    beforeAll(() =>
     {
         renderer = new Renderer();
     });
 
-    after(() =>
+    afterAll(() =>
     {
         renderer = null;
     });
@@ -25,13 +25,13 @@ describe('ProjectionSystem', () =>
         const sourceOrigin = new Point(16, 16);
         const clipOrigin = renderer.projection.projectionMatrix.apply(sourceOrigin);
 
-        expect(clipOrigin.x).to.equal(-1);
-        expect(clipOrigin.y).to.equal(1);
+        expect(clipOrigin.x).toEqual(-1);
+        expect(clipOrigin.y).toEqual(1);
 
         const sourceCorner = new Point(1040, 1040);
         const clipCorner = renderer.projection.projectionMatrix.apply(sourceCorner);
 
-        expect(clipCorner.x).to.equal(1);
-        expect(clipCorner.y).to.equal(-1);
+        expect(clipCorner.x).toEqual(1);
+        expect(clipCorner.y).toEqual(-1);
     });
 });

@@ -62,7 +62,7 @@ describe('CanvasMaskManager', () =>
 
         expect(() => { renderer.render(cont); }).to.not.throw();
         expect(transformSpy).to.calledThrice;
-        expect(transformSpy.args[1][0]).to.equal(2.0);
-        expect(transformSpy.args[2][0]).to.equal(3.0);
+        expect(transformSpy.args[1][0]).toEqual(2.0);
+        expect(transformSpy.args[2][0]).toEqual(3.0);
     });
 });

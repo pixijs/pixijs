@@ -17,14 +17,14 @@ void main() {
     let renderer: Renderer;
     let geometry: Geometry;
 
-    before(() =>
+    beforeAll(() =>
     {
         renderer = new Renderer();
         geometry = new Geometry()
             .addAttribute('aVertexPosition', [-100, -100, 100, -100, 100, 100], 2);
     });
 
-    after(() =>
+    afterAll(() =>
     {
         renderer.destroy();
         renderer = null;

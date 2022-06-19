@@ -28,8 +28,8 @@ describe('Transform', () =>
             expect(position.y).to.be.closeTo(10, eps);
             expect(scale.x).to.be.closeTo(2, eps);
             expect(scale.y).to.be.closeTo(3, eps);
-            expect(skew.x).to.equal(0);
-            expect(skew.y).to.equal(0);
+            expect(skew.x).toEqual(0);
+            expect(skew.y).toEqual(0);
             expect(otherTransform.rotation).to.be.closeTo(-5 * Math.PI / 6, eps);
         });
 
@@ -58,7 +58,7 @@ describe('Transform', () =>
             expect(scale.y).to.be.closeTo(3, eps);
             expect(skew.x).to.be.closeTo(5 * Math.PI / 6, eps);
             expect(skew.y).to.be.closeTo(Math.PI / 6, eps);
-            expect(otherTransform.rotation).to.equal(0);
+            expect(otherTransform.rotation).toEqual(0);
         });
 
         it('should apply skew before scale, like in adobe animate and spine', () =>

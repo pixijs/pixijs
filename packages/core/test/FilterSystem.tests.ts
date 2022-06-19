@@ -20,12 +20,12 @@ describe('FilterSystem', () =>
 
     let renderer: Renderer;
 
-    before(() =>
+    beforeAll(() =>
     {
         renderer = new Renderer();
     });
 
-    after(() =>
+    afterAll(() =>
     {
         renderer.destroy();
         renderer = null;
@@ -69,18 +69,18 @@ describe('FilterSystem', () =>
             return clears;
         }
 
-        expect(render(CLEAR_MODES.BLEND, false)).to.equal(0);
-        expect(render(CLEAR_MODES.BLEND, true)).to.equal(0);
-        expect(render(CLEAR_MODES.CLEAR, false)).to.equal(1);
-        expect(render(CLEAR_MODES.CLEAR, true)).to.equal(1);
-        expect(render(CLEAR_MODES.AUTO, false)).to.equal(0);
-        expect(render(CLEAR_MODES.AUTO, true)).to.equal(1);
+        expect(render(CLEAR_MODES.BLEND, false)).toEqual(0);
+        expect(render(CLEAR_MODES.BLEND, true)).toEqual(0);
+        expect(render(CLEAR_MODES.CLEAR, false)).toEqual(1);
+        expect(render(CLEAR_MODES.CLEAR, true)).toEqual(1);
+        expect(render(CLEAR_MODES.AUTO, false)).toEqual(0);
+        expect(render(CLEAR_MODES.AUTO, true)).toEqual(1);
 
         // check that there are two temp textures of same size
         const keys = Object.keys(filterSystem.texturePool.texturePool);
 
         expect(keys.sort()).to.deep.eq(['65537']);
-        expect(filterSystem.texturePool.texturePool[65537].length).to.equal(2);
+        expect(filterSystem.texturePool.texturePool[65537].length).toEqual(2);
     });
 
     function rectToString(rect: Rectangle)
@@ -103,7 +103,7 @@ describe('FilterSystem', () =>
 
         renderer.filter.push(obj, filters);
 
-        expect(renderer.projection.transform).to.be.null;
+        expect(renderer.projection.transform).toBeNull();
 
         const newSrc = renderer.projection.sourceFrame;
         const newDst = renderer.projection.destinationFrame;
@@ -120,7 +120,7 @@ describe('FilterSystem', () =>
         expect(newDst.width).equal(8);
         expect(newDst.height).equal(6);
         renderer.filter.pop();
-        expect(renderer.projection.transform).to.equal(trans);
+        expect(renderer.projection.transform).toEqual(trans);
         expect(rectToString(renderer.projection.sourceFrame)).equal(rectToString(src));
         expect(rectToString(renderer.projection.destinationFrame)).equal(rectToString(dst));
         renderer.projection.transform = null;

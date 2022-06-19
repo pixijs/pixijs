@@ -7,12 +7,12 @@ describe('FramebufferSystem', () =>
 {
     let renderer: Renderer;
 
-    before(() =>
+    beforeAll(() =>
     {
         renderer = new Renderer();
     });
 
-    after(() =>
+    afterAll(() =>
     {
         renderer.destroy();
         renderer = null;
@@ -24,18 +24,18 @@ describe('FramebufferSystem', () =>
 
         // chrome, general
         framebuffer['msaaSamples'] = [8, 4, 1];
-        expect(framebuffer['detectSamples'](1)).to.equal(0);
-        expect(framebuffer['detectSamples'](4)).to.equal(4);
-        expect(framebuffer['detectSamples'](8)).to.equal(8);
+        expect(framebuffer['detectSamples'](1)).toEqual(0);
+        expect(framebuffer['detectSamples'](4)).toEqual(4);
+        expect(framebuffer['detectSamples'](8)).toEqual(8);
         // some mobile devices
         framebuffer['msaaSamples'] = [4, 1];
-        expect(framebuffer['detectSamples'](8)).to.equal(4);
+        expect(framebuffer['detectSamples'](8)).toEqual(4);
         // firefox on mac
         framebuffer['msaaSamples'] = [8, 4];
-        expect(framebuffer['detectSamples'](1)).to.equal(0);
+        expect(framebuffer['detectSamples'](1)).toEqual(0);
         // no MSAA
         framebuffer['msaaSamples'] = null;
-        expect(framebuffer['detectSamples'](8)).to.equal(0);
+        expect(framebuffer['detectSamples'](8)).toEqual(0);
     });
 
     it('should render to mip levels', () =>
@@ -46,13 +46,13 @@ describe('FramebufferSystem', () =>
 
         renderer.framebuffer.bind(framebuffer, null, 1);
 
-        expect(framebuffer.glFramebuffers[CONTEXT_UID].mipLevel).to.equal(1);
+        expect(framebuffer.glFramebuffers[CONTEXT_UID].mipLevel).toEqual(1);
 
         expect(Array.from(gl.getParameter(gl.VIEWPORT))).to.deep.equal([0, 0, 2, 2]);
 
         renderer.framebuffer.bind(framebuffer, null, 0);
 
-        expect(framebuffer.glFramebuffers[CONTEXT_UID].mipLevel).to.equal(0);
+        expect(framebuffer.glFramebuffers[CONTEXT_UID].mipLevel).toEqual(0);
 
         expect(Array.from(gl.getParameter(gl.VIEWPORT))).to.deep.equal([0, 0, 4, 4]);
     });
@@ -84,7 +84,7 @@ describe('FramebufferSystem', () =>
 
         renderer.framebuffer.bind(framebuffer);
 
-        expect(gl.checkFramebufferStatus(gl.FRAMEBUFFER)).to.equal(gl.FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT);
+        expect(gl.checkFramebufferStatus(gl.FRAMEBUFFER)).toEqual(gl.FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT);
     });
 
     it('should create a complete framebuffer with a color texture attachment', () =>
@@ -104,10 +104,10 @@ describe('FramebufferSystem', () =>
 
         const fbo = framebuffer.glFramebuffers[CONTEXT_UID];
 
-        expect(gl.checkFramebufferStatus(gl.FRAMEBUFFER)).to.equal(gl.FRAMEBUFFER_COMPLETE);
-        expect(fbo.multisample).to.equal(0);
-        expect(fbo.msaaBuffer).to.be.null;
-        expect(fbo.stencil).to.be.null;
+        expect(gl.checkFramebufferStatus(gl.FRAMEBUFFER)).toEqual(gl.FRAMEBUFFER_COMPLETE);
+        expect(fbo.multisample).toEqual(0);
+        expect(fbo.msaaBuffer).toBeNull();
+        expect(fbo.stencil).toBeNull();
     });
 
     // eslint-disable-next-line func-names
@@ -134,14 +134,14 @@ describe('FramebufferSystem', () =>
 
         const fbo = framebuffer.glFramebuffers[CONTEXT_UID];
 
-        expect(gl.checkFramebufferStatus(gl.FRAMEBUFFER)).to.equal(gl.FRAMEBUFFER_COMPLETE);
-        expect(fbo.multisample).to.equal(0);
-        expect(fbo.msaaBuffer).to.be.null;
+        expect(gl.checkFramebufferStatus(gl.FRAMEBUFFER)).toEqual(gl.FRAMEBUFFER_COMPLETE);
+        expect(fbo.multisample).toEqual(0);
+        expect(fbo.msaaBuffer).toBeNull();
         expect(fbo.stencil).to.be.not.null;
 
         gl.bindRenderbuffer(gl.RENDERBUFFER, fbo.stencil);
 
-        expect(gl.getRenderbufferParameter(gl.RENDERBUFFER, gl.RENDERBUFFER_SAMPLES)).to.equal(fbo.multisample);
+        expect(gl.getRenderbufferParameter(gl.RENDERBUFFER, gl.RENDERBUFFER_SAMPLES)).toEqual(fbo.multisample);
     });
 
     // eslint-disable-next-line func-names
@@ -167,14 +167,14 @@ describe('FramebufferSystem', () =>
 
         const fbo = framebuffer.glFramebuffers[CONTEXT_UID];
 
-        expect(gl.checkFramebufferStatus(gl.FRAMEBUFFER)).to.equal(gl.FRAMEBUFFER_COMPLETE);
+        expect(gl.checkFramebufferStatus(gl.FRAMEBUFFER)).toEqual(gl.FRAMEBUFFER_COMPLETE);
         expect(fbo.multisample).to.be.greaterThan(1);
         expect(fbo.msaaBuffer).to.be.not.null;
-        expect(fbo.stencil).to.be.null;
+        expect(fbo.stencil).toBeNull();
 
         gl.bindRenderbuffer(gl.RENDERBUFFER, fbo.msaaBuffer);
 
-        expect(gl.getRenderbufferParameter(gl.RENDERBUFFER, gl.RENDERBUFFER_SAMPLES)).to.equal(fbo.multisample);
+        expect(gl.getRenderbufferParameter(gl.RENDERBUFFER, gl.RENDERBUFFER_SAMPLES)).toEqual(fbo.multisample);
     });
 
     // eslint-disable-next-line func-names
@@ -201,18 +201,18 @@ describe('FramebufferSystem', () =>
 
         const fbo = framebuffer.glFramebuffers[CONTEXT_UID];
 
-        expect(gl.checkFramebufferStatus(gl.FRAMEBUFFER)).to.equal(gl.FRAMEBUFFER_COMPLETE);
+        expect(gl.checkFramebufferStatus(gl.FRAMEBUFFER)).toEqual(gl.FRAMEBUFFER_COMPLETE);
         expect(fbo.multisample).to.be.greaterThan(1);
         expect(fbo.msaaBuffer).to.be.not.null;
         expect(fbo.stencil).to.be.not.null;
 
         gl.bindRenderbuffer(gl.RENDERBUFFER, fbo.msaaBuffer);
 
-        expect(gl.getRenderbufferParameter(gl.RENDERBUFFER, gl.RENDERBUFFER_SAMPLES)).to.equal(fbo.multisample);
+        expect(gl.getRenderbufferParameter(gl.RENDERBUFFER, gl.RENDERBUFFER_SAMPLES)).toEqual(fbo.multisample);
 
         gl.bindRenderbuffer(gl.RENDERBUFFER, fbo.stencil);
 
-        expect(gl.getRenderbufferParameter(gl.RENDERBUFFER, gl.RENDERBUFFER_SAMPLES)).to.equal(fbo.multisample);
+        expect(gl.getRenderbufferParameter(gl.RENDERBUFFER, gl.RENDERBUFFER_SAMPLES)).toEqual(fbo.multisample);
     });
 
     it('should not create an incomplete framebuffer if it has multiple color attachments and multisampling is requested',
@@ -234,9 +234,9 @@ describe('FramebufferSystem', () =>
 
             const fbo = framebuffer.glFramebuffers[CONTEXT_UID];
 
-            expect(gl.checkFramebufferStatus(gl.FRAMEBUFFER)).to.equal(gl.FRAMEBUFFER_COMPLETE);
-            expect(fbo.msaaBuffer).to.be.null;
-            expect(fbo.stencil).to.be.null;
+            expect(gl.checkFramebufferStatus(gl.FRAMEBUFFER)).toEqual(gl.FRAMEBUFFER_COMPLETE);
+            expect(fbo.msaaBuffer).toBeNull();
+            expect(fbo.stencil).toBeNull();
         });
 
     it('should not create an incomplete framebuffer if it has depth texture and multisampling is requested',
@@ -263,9 +263,9 @@ describe('FramebufferSystem', () =>
 
             const fbo = framebuffer.glFramebuffers[CONTEXT_UID];
 
-            expect(gl.checkFramebufferStatus(gl.FRAMEBUFFER)).to.equal(gl.FRAMEBUFFER_COMPLETE);
-            expect(fbo.msaaBuffer).to.be.null;
-            expect(fbo.stencil).to.be.null;
+            expect(gl.checkFramebufferStatus(gl.FRAMEBUFFER)).toEqual(gl.FRAMEBUFFER_COMPLETE);
+            expect(fbo.msaaBuffer).toBeNull();
+            expect(fbo.stencil).toBeNull();
         });
 
     it('should succeed to resize framebuffer', () =>
@@ -284,31 +284,31 @@ describe('FramebufferSystem', () =>
 
         const fbo = framebuffer.glFramebuffers[CONTEXT_UID];
 
-        expect(gl.checkFramebufferStatus(gl.FRAMEBUFFER)).to.equal(gl.FRAMEBUFFER_COMPLETE);
-        expect(fbo.multisample).to.equal(0);
-        expect(fbo.msaaBuffer).to.be.null;
+        expect(gl.checkFramebufferStatus(gl.FRAMEBUFFER)).toEqual(gl.FRAMEBUFFER_COMPLETE);
+        expect(fbo.multisample).toEqual(0);
+        expect(fbo.msaaBuffer).toBeNull();
         expect(fbo.stencil).to.be.not.null;
 
         gl.bindRenderbuffer(gl.RENDERBUFFER, fbo.stencil);
 
-        expect(gl.getRenderbufferParameter(gl.RENDERBUFFER, gl.RENDERBUFFER_SAMPLES)).to.equal(fbo.multisample);
-        expect(gl.getRenderbufferParameter(gl.RENDERBUFFER, gl.RENDERBUFFER_WIDTH)).to.equal(4);
-        expect(gl.getRenderbufferParameter(gl.RENDERBUFFER, gl.RENDERBUFFER_HEIGHT)).to.equal(8);
+        expect(gl.getRenderbufferParameter(gl.RENDERBUFFER, gl.RENDERBUFFER_SAMPLES)).toEqual(fbo.multisample);
+        expect(gl.getRenderbufferParameter(gl.RENDERBUFFER, gl.RENDERBUFFER_WIDTH)).toEqual(4);
+        expect(gl.getRenderbufferParameter(gl.RENDERBUFFER, gl.RENDERBUFFER_HEIGHT)).toEqual(8);
 
         framebuffer.resize(16, 32);
 
         renderer.framebuffer.bind(framebuffer);
 
-        expect(gl.checkFramebufferStatus(gl.FRAMEBUFFER)).to.equal(gl.FRAMEBUFFER_COMPLETE);
-        expect(fbo.multisample).to.equal(0);
-        expect(fbo.msaaBuffer).to.be.null;
+        expect(gl.checkFramebufferStatus(gl.FRAMEBUFFER)).toEqual(gl.FRAMEBUFFER_COMPLETE);
+        expect(fbo.multisample).toEqual(0);
+        expect(fbo.msaaBuffer).toBeNull();
         expect(fbo.stencil).to.be.not.null;
 
         gl.bindRenderbuffer(gl.RENDERBUFFER, fbo.stencil);
 
-        expect(gl.getRenderbufferParameter(gl.RENDERBUFFER, gl.RENDERBUFFER_SAMPLES)).to.equal(fbo.multisample);
-        expect(gl.getRenderbufferParameter(gl.RENDERBUFFER, gl.RENDERBUFFER_WIDTH)).to.equal(16);
-        expect(gl.getRenderbufferParameter(gl.RENDERBUFFER, gl.RENDERBUFFER_HEIGHT)).to.equal(32);
+        expect(gl.getRenderbufferParameter(gl.RENDERBUFFER, gl.RENDERBUFFER_SAMPLES)).toEqual(fbo.multisample);
+        expect(gl.getRenderbufferParameter(gl.RENDERBUFFER, gl.RENDERBUFFER_WIDTH)).toEqual(16);
+        expect(gl.getRenderbufferParameter(gl.RENDERBUFFER, gl.RENDERBUFFER_HEIGHT)).toEqual(32);
     });
 
     // eslint-disable-next-line func-names
@@ -335,42 +335,42 @@ describe('FramebufferSystem', () =>
 
         const fbo = framebuffer.glFramebuffers[CONTEXT_UID];
 
-        expect(gl.checkFramebufferStatus(gl.FRAMEBUFFER)).to.equal(gl.FRAMEBUFFER_COMPLETE);
+        expect(gl.checkFramebufferStatus(gl.FRAMEBUFFER)).toEqual(gl.FRAMEBUFFER_COMPLETE);
         expect(fbo.multisample).to.be.greaterThan(1);
         expect(fbo.msaaBuffer).to.be.not.null;
         expect(fbo.stencil).to.be.not.null;
 
         gl.bindRenderbuffer(gl.RENDERBUFFER, fbo.msaaBuffer);
 
-        expect(gl.getRenderbufferParameter(gl.RENDERBUFFER, gl.RENDERBUFFER_SAMPLES)).to.equal(fbo.multisample);
-        expect(gl.getRenderbufferParameter(gl.RENDERBUFFER, gl.RENDERBUFFER_WIDTH)).to.equal(4);
-        expect(gl.getRenderbufferParameter(gl.RENDERBUFFER, gl.RENDERBUFFER_HEIGHT)).to.equal(8);
+        expect(gl.getRenderbufferParameter(gl.RENDERBUFFER, gl.RENDERBUFFER_SAMPLES)).toEqual(fbo.multisample);
+        expect(gl.getRenderbufferParameter(gl.RENDERBUFFER, gl.RENDERBUFFER_WIDTH)).toEqual(4);
+        expect(gl.getRenderbufferParameter(gl.RENDERBUFFER, gl.RENDERBUFFER_HEIGHT)).toEqual(8);
 
         gl.bindRenderbuffer(gl.RENDERBUFFER, fbo.stencil);
 
-        expect(gl.getRenderbufferParameter(gl.RENDERBUFFER, gl.RENDERBUFFER_SAMPLES)).to.equal(fbo.multisample);
-        expect(gl.getRenderbufferParameter(gl.RENDERBUFFER, gl.RENDERBUFFER_WIDTH)).to.equal(4);
-        expect(gl.getRenderbufferParameter(gl.RENDERBUFFER, gl.RENDERBUFFER_HEIGHT)).to.equal(8);
+        expect(gl.getRenderbufferParameter(gl.RENDERBUFFER, gl.RENDERBUFFER_SAMPLES)).toEqual(fbo.multisample);
+        expect(gl.getRenderbufferParameter(gl.RENDERBUFFER, gl.RENDERBUFFER_WIDTH)).toEqual(4);
+        expect(gl.getRenderbufferParameter(gl.RENDERBUFFER, gl.RENDERBUFFER_HEIGHT)).toEqual(8);
 
         framebuffer.resize(16, 32);
 
         renderer.framebuffer.bind(framebuffer);
 
-        expect(gl.checkFramebufferStatus(gl.FRAMEBUFFER)).to.equal(gl.FRAMEBUFFER_COMPLETE);
+        expect(gl.checkFramebufferStatus(gl.FRAMEBUFFER)).toEqual(gl.FRAMEBUFFER_COMPLETE);
         expect(fbo.multisample).to.be.greaterThan(1);
         expect(fbo.msaaBuffer).to.be.not.null;
         expect(fbo.stencil).to.be.not.null;
 
         gl.bindRenderbuffer(gl.RENDERBUFFER, fbo.msaaBuffer);
 
-        expect(gl.getRenderbufferParameter(gl.RENDERBUFFER, gl.RENDERBUFFER_SAMPLES)).to.equal(fbo.multisample);
-        expect(gl.getRenderbufferParameter(gl.RENDERBUFFER, gl.RENDERBUFFER_WIDTH)).to.equal(16);
-        expect(gl.getRenderbufferParameter(gl.RENDERBUFFER, gl.RENDERBUFFER_HEIGHT)).to.equal(32);
+        expect(gl.getRenderbufferParameter(gl.RENDERBUFFER, gl.RENDERBUFFER_SAMPLES)).toEqual(fbo.multisample);
+        expect(gl.getRenderbufferParameter(gl.RENDERBUFFER, gl.RENDERBUFFER_WIDTH)).toEqual(16);
+        expect(gl.getRenderbufferParameter(gl.RENDERBUFFER, gl.RENDERBUFFER_HEIGHT)).toEqual(32);
 
         gl.bindRenderbuffer(gl.RENDERBUFFER, fbo.stencil);
 
-        expect(gl.getRenderbufferParameter(gl.RENDERBUFFER, gl.RENDERBUFFER_SAMPLES)).to.equal(fbo.multisample);
-        expect(gl.getRenderbufferParameter(gl.RENDERBUFFER, gl.RENDERBUFFER_WIDTH)).to.equal(16);
-        expect(gl.getRenderbufferParameter(gl.RENDERBUFFER, gl.RENDERBUFFER_HEIGHT)).to.equal(32);
+        expect(gl.getRenderbufferParameter(gl.RENDERBUFFER, gl.RENDERBUFFER_SAMPLES)).toEqual(fbo.multisample);
+        expect(gl.getRenderbufferParameter(gl.RENDERBUFFER, gl.RENDERBUFFER_WIDTH)).toEqual(16);
+        expect(gl.getRenderbufferParameter(gl.RENDERBUFFER, gl.RENDERBUFFER_HEIGHT)).toEqual(32);
     });
 });

@@ -25,34 +25,34 @@ describe('async', () =>
 
             q.push(1, (err, arg) =>
             {
-                expect(err).to.equal('error');
-                expect(arg).to.equal('arg');
-                expect(q.length()).to.equal(1);
+                expect(err).toEqual('error');
+                expect(arg).toEqual('arg');
+                expect(q.length()).toEqual(1);
                 callOrder.push('callback 1');
             });
             q.push(2, (err, arg) =>
             {
-                expect(err).to.equal('error');
-                expect(arg).to.equal('arg');
-                expect(q.length()).to.equal(2);
+                expect(err).toEqual('error');
+                expect(arg).toEqual('arg');
+                expect(q.length()).toEqual(2);
                 callOrder.push('callback 2');
             });
             q.push(3, (err, arg) =>
             {
-                expect(err).to.equal('error');
-                expect(arg).to.equal('arg');
-                expect(q.length()).to.equal(0);
+                expect(err).toEqual('error');
+                expect(arg).toEqual('arg');
+                expect(q.length()).toEqual(0);
                 callOrder.push('callback 3');
             });
             q.push(4, (err, arg) =>
             {
-                expect(err).to.equal('error');
-                expect(arg).to.equal('arg');
-                expect(q.length()).to.equal(0);
+                expect(err).toEqual('error');
+                expect(arg).toEqual('arg');
+                expect(q.length()).toEqual(0);
                 callOrder.push('callback 4');
             });
-            expect(q.length()).to.equal(4);
-            expect(q.concurrency).to.equal(2);
+            expect(q.length()).toEqual(4);
+            expect(q.concurrency).toEqual(2);
 
             q.drain = () =>
             {
@@ -62,8 +62,8 @@ describe('async', () =>
                     'process 4', 'callback 4',
                     'process 3', 'callback 3',
                 ]);
-                expect(q.concurrency).to.equal(2);
-                expect(q.length()).to.equal(0);
+                expect(q.concurrency).toEqual(2);
+                expect(q.length()).toEqual(0);
                 done();
             };
         });
@@ -86,34 +86,34 @@ describe('async', () =>
 
             q.push(1, (err, arg) =>
             {
-                expect(err).to.equal('error');
-                expect(arg).to.equal('arg');
-                expect(q.length()).to.equal(3);
+                expect(err).toEqual('error');
+                expect(arg).toEqual('arg');
+                expect(q.length()).toEqual(3);
                 callOrder.push('callback 1');
             });
             q.push(2, (err, arg) =>
             {
-                expect(err).to.equal('error');
-                expect(arg).to.equal('arg');
-                expect(q.length()).to.equal(2);
+                expect(err).toEqual('error');
+                expect(arg).toEqual('arg');
+                expect(q.length()).toEqual(2);
                 callOrder.push('callback 2');
             });
             q.push(3, (err, arg) =>
             {
-                expect(err).to.equal('error');
-                expect(arg).to.equal('arg');
-                expect(q.length()).to.equal(1);
+                expect(err).toEqual('error');
+                expect(arg).toEqual('arg');
+                expect(q.length()).toEqual(1);
                 callOrder.push('callback 3');
             });
             q.push(4, (err, arg) =>
             {
-                expect(err).to.equal('error');
-                expect(arg).to.equal('arg');
-                expect(q.length()).to.equal(0);
+                expect(err).toEqual('error');
+                expect(arg).toEqual('arg');
+                expect(q.length()).toEqual(0);
                 callOrder.push('callback 4');
             });
-            expect(q.length()).to.equal(4);
-            expect(q.concurrency).to.equal(1);
+            expect(q.length()).toEqual(4);
+            expect(q.concurrency).toEqual(1);
 
             q.drain = () =>
             {
@@ -123,8 +123,8 @@ describe('async', () =>
                     'process 3', 'callback 3',
                     'process 4', 'callback 4',
                 ]);
-                expect(q.concurrency).to.equal(1);
-                expect(q.length()).to.equal(0);
+                expect(q.concurrency).toEqual(1);
+                expect(q.length()).toEqual(0);
                 done();
             };
         });
@@ -193,8 +193,8 @@ describe('async', () =>
             q.error = (error, task) =>
             {
                 expect(error).to.exist;
-                expect(error.message).to.equal('fooError');
-                expect(task.name).to.equal('foo');
+                expect(error.message).toEqual('fooError');
+                expect(task.name).toEqual('foo');
                 results.push('fooError');
             };
 
@@ -241,15 +241,15 @@ describe('async', () =>
 
             setTimeout(() =>
             {
-                expect(q.concurrency).to.equal(1);
+                expect(q.concurrency).toEqual(1);
                 q.concurrency = 2;
                 setTimeout(() =>
                 {
-                    expect(q.running()).to.equal(2);
+                    expect(q.running()).toEqual(2);
                     q.concurrency = 5;
                     setTimeout(() =>
                     {
-                        expect(q.running()).to.equal(5);
+                        expect(q.running()).toEqual(5);
                     }, 40);
                 }, 40);
             }, 40);
@@ -344,12 +344,12 @@ describe('async', () =>
             const q = async.queue((_task: any, callback: (...args: any) => void): void =>
             {
                 // Queue is busy when workers are running
-                expect(q.idle()).to.equal(false);
+                expect(q.idle()).toEqual(false);
                 callback();
             }, 1);
 
             // Queue is idle before anything added
-            expect(q.idle()).to.equal(true);
+            expect(q.idle()).toEqual(true);
 
             q.unshift(4);
             q.unshift(3);
@@ -357,12 +357,12 @@ describe('async', () =>
             q.unshift(1);
 
             // Queue is busy when tasks added
-            expect(q.idle()).to.equal(false);
+            expect(q.idle()).toEqual(false);
 
             q.drain = () =>
             {
                 // Queue is idle after drain
-                expect(q.idle()).to.equal(true);
+                expect(q.idle()).toEqual(true);
                 done();
             };
         });
@@ -409,13 +409,13 @@ describe('async', () =>
             setTimeout(() =>
             {
                 q.pause();
-                expect(q.paused).to.equal(true);
+                expect(q.paused).toEqual(true);
             }, pauseTimeout);
 
             setTimeout(() =>
             {
                 q.resume();
-                expect(q.paused).to.equal(false);
+                expect(q.paused).toEqual(false);
             }, resumeTimeout);
 
             setTimeout(() =>
@@ -500,18 +500,18 @@ describe('async', () =>
             setTimeout(() =>
             {
                 q.pause();
-                expect(q.paused).to.equal(true);
+                expect(q.paused).toEqual(true);
             }, pauseTimeout);
 
             setTimeout(() =>
             {
                 q.resume();
-                expect(q.paused).to.equal(false);
+                expect(q.paused).toEqual(false);
             }, resumeTimeout);
 
             setTimeout(() =>
             {
-                expect(q.running()).to.equal(2);
+                expect(q.running()).toEqual(2);
             }, resumeTimeout + 10);
 
             setTimeout(() =>
@@ -551,8 +551,8 @@ describe('async', () =>
 
             setTimeout(() =>
             {
-                expect(q._tasks.length).to.equal(1);
-                expect(q.running()).to.equal(2);
+                expect(q._tasks.length).toEqual(1);
+                expect(q.running()).toEqual(2);
                 q.resume();
             }, 15);
 
@@ -583,7 +583,7 @@ describe('async', () =>
 
             setTimeout(() =>
             {
-                expect(q.length()).to.equal(0);
+                expect(q.length()).toEqual(0);
                 done();
             }, 40);
         });
@@ -602,18 +602,18 @@ describe('async', () =>
 
             q.saturated = () =>
             {
-                expect(q.running()).to.equal(3, 'queue should be saturated now');
+                expect(q.running()).toEqual(3, 'queue should be saturated now');
                 calls.push('saturated');
             };
             q.empty = () =>
             {
-                expect(q.length()).to.equal(0, 'queue should be empty now');
+                expect(q.length()).toEqual(0, 'queue should be empty now');
                 calls.push('empty');
             };
             q.drain = () =>
             {
                 expect(q.length() === 0 && q.running() === 0)
-                    .to.equal(true, 'queue should be empty now and no more workers should be running');
+                    .toEqual(true, 'queue should be empty now and no more workers should be running');
                 calls.push('drain');
                 expect(calls).to.eql([
                     'process foo',
@@ -654,7 +654,7 @@ describe('async', () =>
             q.drain = () =>
             {
                 expect(q.length() === 0 && q.running() === 0)
-                    .to.equal(true, 'queue should be empty now and no more workers should be running');
+                    .toEqual(true, 'queue should be empty now and no more workers should be running');
                 calls.push('drain');
                 expect(calls).to.eql([
                     'drain',
@@ -678,7 +678,7 @@ describe('async', () =>
             };
             q.drain = () =>
             {
-                expect(saturatedCalled).to.equal(true, 'saturated not called');
+                expect(saturatedCalled).toEqual(true, 'saturated not called');
                 done();
             };
 
@@ -695,9 +695,9 @@ describe('async', () =>
                 cb(null, task);
             });
 
-            expect(q.started).to.equal(false);
+            expect(q.started).toEqual(false);
             q.push(undefined);
-            expect(q.started).to.equal(true);
+            expect(q.started).toEqual(true);
             done();
         });
 
@@ -758,7 +758,7 @@ describe('async', () =>
                     setTimeout(cb, 1);
                 }, 10);
 
-                expect(q.buffer).to.equal(2.5);
+                expect(q.buffer).toEqual(2.5);
                 done();
             });
             it('should allow a user to change the buffer property', (done: () => void) =>
@@ -773,7 +773,7 @@ describe('async', () =>
 
                 q.buffer = 4;
                 expect(q.buffer).to.not.equal(2.5);
-                expect(q.buffer).to.equal(4);
+                expect(q.buffer).toEqual(4);
                 done();
             });
             it('should call the unsaturated callback if tasks length is less than concurrency minus buffer',
@@ -837,7 +837,7 @@ describe('async', () =>
 
         function eachNoCallbackIteratee(done: () => void, x: number, callback: () => void)
         {
-            expect(x).to.equal(1);
+            expect(x).toEqual(1);
             callback();
             done();
         }
@@ -848,7 +848,7 @@ describe('async', () =>
 
             async.eachSeries([1, 3, 2], eachIteratee.bind({ }, args), (err) =>
             {
-                expect(err).to.equal(undefined, `${err} passed instead of 'null'`);
+                expect(err).toEqual(undefined, `${err} passed instead of 'null'`);
                 expect(args).to.eql([1, 3, 2]);
                 done();
             });
@@ -858,7 +858,7 @@ describe('async', () =>
         {
             async.eachSeries([], (_x: number, callback: () => void) =>
             {
-                expect(false).to.equal(true, 'iteratee should not be called');
+                expect(false).toEqual(true, 'iteratee should not be called');
                 callback();
             }, (err) =>
             {
@@ -867,7 +867,7 @@ describe('async', () =>
                     throw err;
                 }
 
-                expect(true).to.equal(true, 'should call callback');
+                expect(true).toEqual(true, 'should call callback');
             });
             setTimeout(done, 25);
         });
@@ -881,7 +881,7 @@ describe('async', () =>
                 setTimeout(callback, 1);
             }, () =>
             {
-                expect(true).to.equal(true, 'should call callback');
+                expect(true).toEqual(true, 'should call callback');
             });
 
             arr.pop();
@@ -903,7 +903,7 @@ describe('async', () =>
                 },
                 () =>
                 {
-                    expect(sync).to.equal(true, 'callback not called on same tick');
+                    expect(sync).toEqual(true, 'callback not called on same tick');
                 }
             );
             sync = false;
@@ -923,7 +923,7 @@ describe('async', () =>
                 },
                 () =>
                 {
-                    expect(sync).to.equal(true, 'callback not called on same tick');
+                    expect(sync).toEqual(true, 'callback not called on same tick');
                 }
             );
             sync = false;
@@ -944,7 +944,7 @@ describe('async', () =>
                 (err: string) =>
                 {
                     expect(callOrder).to.eql([1]);
-                    expect(err).to.equal('error');
+                    expect(err).toEqual('error');
                 }
             );
             setTimeout(done, 50);

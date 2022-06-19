@@ -19,9 +19,9 @@ describe('EventBoundary', () =>
             new Graphics().drawRect(150, 0, 100, 100)
         );
         const event = new FederatedPointerEvent(boundary);
-        const eventSpy = sinon.spy();
-        const captureSpy = sinon.spy();
-        const stageSpy = sinon.spy();
+        const eventSpy = jest.fn();
+        const captureSpy = jest.fn();
+        const stageSpy = jest.fn();
 
         target.interactive = true;
         container.interactive = true;
@@ -35,7 +35,7 @@ describe('EventBoundary', () =>
             handleEvent(e)
             {
                 expect(this).to.not.be.undefined;
-                expect(e.eventPhase).to.equal(e.AT_TARGET);
+                expect(e.eventPhase).toEqual(e.AT_TARGET);
 
                 eventSpy();
             }
@@ -62,7 +62,7 @@ describe('EventBoundary', () =>
 
         const hitTestTarget = boundary.hitTest(50, 50);
 
-        expect(hitTestTarget).to.equal(container);
+        expect(hitTestTarget).toEqual(container);
     });
 
     it('should fire pointerupoutside only on relevant & still mounted targets', () =>
@@ -74,10 +74,10 @@ describe('EventBoundary', () =>
 
         stage.addChild(new Graphics().beginFill(0).drawRect(100, 0, 100, 100));
 
-        const eventSpy = sinon.spy();
-        const containerSpy = sinon.spy();
-        const stageSpy = sinon.spy();
-        const stageOutsideSpy = sinon.spy();
+        const eventSpy = jest.fn();
+        const containerSpy = jest.fn();
+        const stageSpy = jest.fn();
+        const stageOutsideSpy = jest.fn();
 
         stage.interactive = true;
         container.interactive = true;
@@ -102,7 +102,7 @@ describe('EventBoundary', () =>
         off.global.set(150, 50);
 
         boundary.mapEvent(on);
-        expect(boundary['trackingData'](1).pressTargetsByButton[1][2]).to.equal(pressed);
+        expect(boundary['trackingData'](1).pressTargetsByButton[1][2]).toEqual(pressed);
 
         pressed.destroy();
         boundary.mapEvent(off);
@@ -127,22 +127,22 @@ describe('EventBoundary', () =>
         const over = container.addChild(new Graphics().beginFill(0).drawRect(0, 0, 100, 100));
         const to = stage.addChild(new Graphics().beginFill(0).drawRect(100, 0, 100, 100));
 
-        const orgOverSpy = sinon.spy();
-        const orgContainerOverSpy = sinon.spy();
-        const outSpy = sinon.spy();
-        const containerOutSpy = sinon.spy();
-        const toOverSpy = sinon.spy();
+        const orgOverSpy = jest.fn();
+        const orgContainerOverSpy = jest.fn();
+        const outSpy = jest.fn();
+        const containerOutSpy = jest.fn();
+        const toOverSpy = jest.fn();
 
         over.addEventListener('pointerover', orgOverSpy);
         container.addEventListener('pointerover', (e) =>
         {
-            expect(e.target).to.equal(over);
+            expect(e.target).toEqual(over);
             orgContainerOverSpy();
         });
         over.addEventListener('pointerout', outSpy);
         container.addEventListener('pointerout', (e) =>
         {
-            expect(e.target).to.equal(container);
+            expect(e.target).toEqual(container);
             containerOutSpy();
         });
         to.addEventListener('pointerover', toOverSpy);

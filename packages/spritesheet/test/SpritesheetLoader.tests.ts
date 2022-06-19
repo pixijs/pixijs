@@ -8,13 +8,13 @@ import { expect } from 'chai';
 
 describe('SpritesheetLoader', () =>
 {
-    before(() => extensions.add(SpritesheetLoader));
-    after(() => extensions.remove(SpritesheetLoader));
+    beforeAll(() => extensions.add(SpritesheetLoader));
+    afterAll(() => extensions.remove(SpritesheetLoader));
 
     it('should exist and return a function', () =>
     {
         expect(SpritesheetLoader).to.not.be.undefined;
-        expect(SpritesheetLoader.use).to.be.a('function');
+        expect(SpritesheetLoader.use).toBeInstanceOf(Function);
     });
 
     it('should install middleware', (done) =>
@@ -26,11 +26,11 @@ describe('SpritesheetLoader', () =>
         loader.add('building1', path.join(__dirname, 'resources/building1.json'));
         loader.load((loader, resources) =>
         {
-            expect(resources.building1).to.be.instanceof(LoaderResource);
-            expect(resources.building1.spritesheet).to.be.instanceof(Spritesheet);
+            expect(resources.building1).toBeInstanceOf(LoaderResource);
+            expect(resources.building1.spritesheet).toBeInstanceOf(Spritesheet);
             resources.building1.spritesheet.destroy(true);
-            expect(Object.keys(BaseTextureCache).length).to.equal(baseTextures);
-            expect(Object.keys(TextureCache).length).to.equal(textures);
+            expect(Object.keys(BaseTextureCache).length).toEqual(baseTextures);
+            expect(Object.keys(TextureCache).length).toEqual(textures);
             loader.reset();
             done();
         });
@@ -38,7 +38,7 @@ describe('SpritesheetLoader', () =>
 
     it('should do nothing if the resource is not JSON', () =>
     {
-        const spy = sinon.spy();
+        const spy = jest.fn();
         const res = {} as LoaderResource;
 
         SpritesheetLoader.use(res, spy);
@@ -49,7 +49,7 @@ describe('SpritesheetLoader', () =>
 
     it('should do nothing if the resource is JSON, but improper format', () =>
     {
-        const spy = sinon.spy();
+        const spy = jest.fn();
         const res = createMockResource(LoaderResource.TYPE.JSON, {});
 
         SpritesheetLoader.use(res, spy);
@@ -82,18 +82,18 @@ describe('SpritesheetLoader', () =>
                 .and.has.property('0.png')
                 .that.is.an.instanceof(Texture);
 
-            expect(res.textures['0.png'].frame.x).to.equal(14);
-            expect(res.textures['0.png'].frame.y).to.equal(28);
-            expect(res.textures['0.png'].defaultAnchor.x).to.equal(0.3);
-            expect(res.textures['0.png'].defaultAnchor.y).to.equal(0.4);
-            expect(res.textures['1.png'].defaultAnchor.x).to.equal(0.0); // default of defaultAnchor is 0,0
-            expect(res.textures['1.png'].defaultAnchor.y).to.equal(0.0);
+            expect(res.textures['0.png'].frame.x).toEqual(14);
+            expect(res.textures['0.png'].frame.y).toEqual(28);
+            expect(res.textures['0.png'].defaultAnchor.x).toEqual(0.3);
+            expect(res.textures['0.png'].defaultAnchor.y).toEqual(0.4);
+            expect(res.textures['1.png'].defaultAnchor.x).toEqual(0.0); // default of defaultAnchor is 0,0
+            expect(res.textures['1.png'].defaultAnchor.y).toEqual(0.0);
 
             expect(res).to.have.property('spritesheet')
                 .to.have.property('animations')
                 .to.have.property('png123');
-            expect(res.spritesheet.animations.png123.length).to.equal(3);
-            expect(res.spritesheet.animations.png123[0]).to.equal(res.textures['1.png']);
+            expect(res.spritesheet.animations.png123.length).toEqual(3);
+            expect(res.spritesheet.animations.png123[0]).toEqual(res.textures['1.png']);
             next();
         });
     });
@@ -116,7 +116,7 @@ describe('SpritesheetLoader', () =>
             .add(`atlas`, path.join(__dirname, 'resources', 'building1.json'))
             .load((loader, resources) =>
             {
-                expect(resources.atlas_image.data).to.be.instanceof(HTMLImageElement);
+                expect(resources.atlas_image.data).toBeInstanceOf(HTMLImageElement);
                 expect(resources.atlas_crn_image.data).to.not.be.instanceof(HTMLImageElement);
                 loader.reset();
                 done();
@@ -127,8 +127,8 @@ describe('SpritesheetLoader', () =>
     {
         const spy = sinon.spy((error, _ldr, res) =>
         {
-            expect(res.name).to.equal('atlas_error_image');
-            expect(res.error).to.equal(error);
+            expect(res.name).toEqual('atlas_error_image');
+            expect(res.error).toEqual(error);
             expect(error.toString()).to.have.string('Failed to load element using: IMG');
         });
         const loader = new Loader();
@@ -137,8 +137,8 @@ describe('SpritesheetLoader', () =>
         loader.onError.add(spy);
         loader.load((loader, resources) =>
         {
-            expect(resources.atlas_error_image.error).to.be.instanceof(Error);
-            expect(spy.calledOnce).to.be.true;
+            expect(resources.atlas_error_image.error).toBeInstanceOf(Error);
+            expect(spy).toBeCalledTimes(1);
             loader.reset();
             done();
         });
@@ -214,7 +214,7 @@ describe('SpritesheetLoader', () =>
         loader.add('atlas_multi_child_check', path.join(__dirname, 'resources', 'building1-0.json'));
         loader.load((loader, resources) =>
         {
-            expect(resources.atlas_multi_child_check.children.some((r) => r.url.includes('building1-1.json'))).to.be.true;
+            expect(resources.atlas_multi_child_check.children.some((r) => r.url.includes('building1-1.json'))).toBe(true);
             loader.reset();
             done();
         });

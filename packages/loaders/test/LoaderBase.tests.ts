@@ -12,12 +12,12 @@ describe('Loader', () =>
 {
     let server: Server;
 
-    before(() =>
+    beforeAll(() =>
     {
         server = createServer(8126);
     });
 
-    after(() =>
+    afterAll(() =>
     {
         server.close();
         server = null;
@@ -62,7 +62,7 @@ describe('Loader', () =>
         {
             loader.add(name, fixtureData.url, options, callback);
 
-            expect(loader['_queue'].length()).to.equal(1);
+            expect(loader['_queue'].length()).toEqual(1);
 
             const res = loader['_queue']._tasks[0].data;
 
@@ -75,14 +75,14 @@ describe('Loader', () =>
 
             expect(res.onAfterMiddleware.handlers())
                 .to.not.be.empty
-                .and.to.equal([callback]);
+                .and.toEqual([callback]);
         });
 
         it('creates a resource with just name, url, and options', () =>
         {
             loader.add(name, fixtureData.url, options);
 
-            expect(loader['_queue'].length()).to.equal(1);
+            expect(loader['_queue'].length()).toEqual(1);
 
             const res = loader['_queue']._tasks[0].data;
 
@@ -98,7 +98,7 @@ describe('Loader', () =>
         {
             loader.add(name, fixtureData.url, callback);
 
-            expect(loader['_queue'].length()).to.equal(1);
+            expect(loader['_queue'].length()).toEqual(1);
 
             const res = loader['_queue']._tasks[0].data;
 
@@ -108,14 +108,14 @@ describe('Loader', () =>
 
             expect(res.onAfterMiddleware.handlers())
                 .to.not.be.empty
-                .and.to.equal([callback]);
+                .and.toEqual([callback]);
         });
 
         it('creates a resource with just name and url', () =>
         {
             loader.add(name, fixtureData.url);
 
-            expect(loader['_queue'].length()).to.equal(1);
+            expect(loader['_queue'].length()).toEqual(1);
 
             const res = loader['_queue']._tasks[0].data;
 
@@ -128,7 +128,7 @@ describe('Loader', () =>
         {
             loader.add(fixtureData.url, options, callback);
 
-            expect(loader['_queue'].length()).to.equal(1);
+            expect(loader['_queue'].length()).toEqual(1);
 
             const res = loader['_queue']._tasks[0].data;
 
@@ -141,14 +141,14 @@ describe('Loader', () =>
 
             expect(res.onAfterMiddleware.handlers())
                 .to.not.be.empty
-                .and.to.equal([callback]);
+                .and.toEqual([callback]);
         });
 
         it('creates a resource with just url and options', () =>
         {
             loader.add(fixtureData.url, options);
 
-            expect(loader['_queue'].length()).to.equal(1);
+            expect(loader['_queue'].length()).toEqual(1);
 
             const res = loader['_queue']._tasks[0].data;
 
@@ -164,7 +164,7 @@ describe('Loader', () =>
         {
             loader.add(fixtureData.url, callback);
 
-            expect(loader['_queue'].length()).to.equal(1);
+            expect(loader['_queue'].length()).toEqual(1);
 
             const res = loader['_queue']._tasks[0].data;
 
@@ -174,14 +174,14 @@ describe('Loader', () =>
 
             expect(res.onAfterMiddleware.handlers())
                 .to.not.be.empty
-                .and.to.equal([callback]);
+                .and.toEqual([callback]);
         });
 
         it('creates a resource with just url', () =>
         {
             loader.add(fixtureData.url);
 
-            expect(loader['_queue'].length()).to.equal(1);
+            expect(loader['_queue'].length()).toEqual(1);
 
             const res = loader['_queue']._tasks[0].data;
 
@@ -194,7 +194,7 @@ describe('Loader', () =>
         {
             loader.add({ name, url: fixtureData.url }, callback);
 
-            expect(loader['_queue'].length()).to.equal(1);
+            expect(loader['_queue'].length()).toEqual(1);
 
             const res = loader['_queue']._tasks[0].data;
 
@@ -204,14 +204,14 @@ describe('Loader', () =>
 
             expect(res.onAfterMiddleware.handlers())
                 .to.not.be.empty
-                .and.to.equal([callback]);
+                .and.toEqual([callback]);
         });
 
         it('creates a resource with just an object (name/url/callback keys)', () =>
         {
             loader.add({ name, url: fixtureData.url, onComplete: callback });
 
-            expect(loader['_queue'].length()).to.equal(1);
+            expect(loader['_queue'].length()).toEqual(1);
 
             const res = loader['_queue']._tasks[0].data;
 
@@ -221,14 +221,14 @@ describe('Loader', () =>
 
             expect(res.onAfterMiddleware.handlers())
                 .to.not.be.empty
-                .and.to.equal([callback]);
+                .and.toEqual([callback]);
         });
 
         it('creates a resource with just an object (url/callback keys)', () =>
         {
             loader.add({ url: fixtureData.url, onComplete: callback });
 
-            expect(loader['_queue'].length()).to.equal(1);
+            expect(loader['_queue'].length()).toEqual(1);
 
             const res = loader['_queue']._tasks[0].data;
 
@@ -238,7 +238,7 @@ describe('Loader', () =>
 
             expect(res.onAfterMiddleware.handlers())
                 .to.not.be.empty
-                .and.to.equal([callback]);
+                .and.toEqual([callback]);
         });
 
         it('throws an error if url isn\'t passed', () =>
@@ -284,30 +284,30 @@ describe('Loader', () =>
         it('should reset the loading state of the loader', () =>
         {
             loader.loading = true;
-            expect(loader.loading).to.equal(true);
+            expect(loader.loading).toEqual(true);
 
             loader.reset();
-            expect(loader.loading).to.equal(false);
+            expect(loader.loading).toEqual(false);
         });
 
         it('should reset the progress of the loader', () =>
         {
             loader.progress = 100;
-            expect(loader.progress).to.equal(100);
+            expect(loader.progress).toEqual(100);
 
             loader.reset();
-            expect(loader.progress).to.equal(0);
+            expect(loader.progress).toEqual(0);
         });
 
         it('should reset the queue/buffer of the loader', () =>
         {
             loader['_queue'].push('me');
-            expect(loader['_queue'].length()).to.equal(1);
-            expect(loader['_queue'].started).to.equal(true);
+            expect(loader['_queue'].length()).toEqual(1);
+            expect(loader['_queue'].started).toEqual(true);
 
             loader.reset();
-            expect(loader['_queue'].length()).to.equal(0);
-            expect(loader['_queue'].started).to.equal(false);
+            expect(loader['_queue'].length()).toEqual(0);
+            expect(loader['_queue'].started).toEqual(false);
         });
 
         it('should reset the resources of the loader', () =>
@@ -327,7 +327,7 @@ describe('Loader', () =>
 
             setTimeout(() =>
             {
-                const spy = sinon.spy();
+                const spy = jest.fn();
 
                 loader.reset();
                 loader.add('hud2.json', spy).load(() =>
@@ -343,8 +343,8 @@ describe('Loader', () =>
     {
         it('should call start/complete when add was not called', (done: () => void) =>
         {
-            const spy = sinon.spy();
-            const spy2 = sinon.spy();
+            const spy = jest.fn();
+            const spy2 = jest.fn();
 
             loader.onStart.add(spy);
             loader.onComplete.add(spy2);
@@ -359,8 +359,8 @@ describe('Loader', () =>
 
         it('should call start/complete when given an empty set of resources', (done: () => void) =>
         {
-            const spy = sinon.spy();
-            const spy2 = sinon.spy();
+            const spy = jest.fn();
+            const spy2 = jest.fn();
 
             loader.onStart.add(spy);
             loader.onComplete.add(spy2);
@@ -457,13 +457,13 @@ describe('Loader', () =>
             const spy = sinon.spy((loader: Loader, resources: Dict<LoaderResource>) =>
             {
                 expect(spy).to.have.been.calledOnce;
-                expect(loader.progress).to.equal(100);
-                expect(loader.loading).to.equal(false);
-                expect(loader.resources).to.equal(resources);
+                expect(loader.progress).toEqual(100);
+                expect(loader.loading).toEqual(false);
+                expect(loader.resources).toEqual(resources);
 
                 expect(resources).to.not.be.empty;
-                expect(resources.res).to.be.ok;
-                expect(resources.res.isComplete).to.be.true;
+                expect(resources.res).toBeTruthy();
+                expect(resources.res.isComplete).toBe(true);
 
                 done();
             });
@@ -483,10 +483,10 @@ describe('Loader', () =>
             const u3 = '//myshare/image.png';
             const u4 = '//myshare/image.png?v=1#me';
 
-            expect(loader['_prepareUrl'](u1)).to.equal(u1);
-            expect(loader['_prepareUrl'](u2)).to.equal(u2);
-            expect(loader['_prepareUrl'](u3)).to.equal(u3);
-            expect(loader['_prepareUrl'](u4)).to.equal(u4);
+            expect(loader['_prepareUrl'](u1)).toEqual(u1);
+            expect(loader['_prepareUrl'](u2)).toEqual(u2);
+            expect(loader['_prepareUrl'](u3)).toEqual(u3);
+            expect(loader['_prepareUrl'](u4)).toEqual(u4);
         });
 
         it('should add the baseUrl for relative urls (no trailing slash on baseUrl)', () =>
@@ -497,10 +497,10 @@ describe('Loader', () =>
             const u3 = 'image.png?v=1';
             const u4 = '/image.png?v=1#me';
 
-            expect(loader['_prepareUrl'](u1)).to.equal(`${b}/${u1}`);
-            expect(loader['_prepareUrl'](u2)).to.equal(`${b}${u2}`);
-            expect(loader['_prepareUrl'](u3)).to.equal(`${b}/${u3}`);
-            expect(loader['_prepareUrl'](u4)).to.equal(`${b}${u4}`);
+            expect(loader['_prepareUrl'](u1)).toEqual(`${b}/${u1}`);
+            expect(loader['_prepareUrl'](u2)).toEqual(`${b}${u2}`);
+            expect(loader['_prepareUrl'](u3)).toEqual(`${b}/${u3}`);
+            expect(loader['_prepareUrl'](u4)).toEqual(`${b}${u4}`);
         });
 
         it('should add the baseUrl for relative urls (yes trailing slash on baseUrl)', () =>
@@ -511,10 +511,10 @@ describe('Loader', () =>
             const u3 = 'image.png?v=1';
             const u4 = '/image.png?v=1#me';
 
-            expect(loader['_prepareUrl'](u1)).to.equal(`${b}${u1}`);
-            expect(loader['_prepareUrl'](u2)).to.equal(`${b}${u2}`);
-            expect(loader['_prepareUrl'](u3)).to.equal(`${b}${u3}`);
-            expect(loader['_prepareUrl'](u4)).to.equal(`${b}${u4}`);
+            expect(loader['_prepareUrl'](u1)).toEqual(`${b}${u1}`);
+            expect(loader['_prepareUrl'](u2)).toEqual(`${b}${u2}`);
+            expect(loader['_prepareUrl'](u3)).toEqual(`${b}${u3}`);
+            expect(loader['_prepareUrl'](u4)).toEqual(`${b}${u4}`);
         });
 
         it('should add the queryString when set', () =>
@@ -526,10 +526,10 @@ describe('Loader', () =>
             loader.defaultQueryString = 'u=me&p=secret';
 
             expect(loader['_prepareUrl'](u1))
-                .to.equal(`${b}/${u1}?${loader.defaultQueryString}`);
+                .toEqual(`${b}/${u1}?${loader.defaultQueryString}`);
 
             expect(loader['_prepareUrl'](u2))
-                .to.equal(`${b}${u2}?${loader.defaultQueryString}`);
+                .toEqual(`${b}${u2}?${loader.defaultQueryString}`);
         });
 
         it('should add the defaultQueryString when set', () =>
@@ -541,10 +541,10 @@ describe('Loader', () =>
             loader.defaultQueryString = 'u=me&p=secret';
 
             expect(loader['_prepareUrl'](u1))
-                .to.equal(`${b}/${u1}?${loader.defaultQueryString}`);
+                .toEqual(`${b}/${u1}?${loader.defaultQueryString}`);
 
             expect(loader['_prepareUrl'](u2))
-                .to.equal(`${b}${u2}?${loader.defaultQueryString}`);
+                .toEqual(`${b}${u2}?${loader.defaultQueryString}`);
         });
 
         it('should add the defaultQueryString when if querystring already exists', () =>
@@ -555,7 +555,7 @@ describe('Loader', () =>
             loader.defaultQueryString = 'u=me&p=secret';
 
             expect(loader['_prepareUrl'](u1))
-                .to.equal(`${b}/${u1}&${loader.defaultQueryString}`);
+                .toEqual(`${b}/${u1}&${loader.defaultQueryString}`);
         });
 
         it('should add the defaultQueryString when hash exists', () =>
@@ -565,7 +565,7 @@ describe('Loader', () =>
             loader.defaultQueryString = 'u=me&p=secret';
 
             expect(loader['_prepareUrl']('/image.png#me'))
-                .to.equal(`${b}/image.png?${loader.defaultQueryString}#me`);
+                .toEqual(`${b}/image.png?${loader.defaultQueryString}#me`);
         });
 
         it('should add the defaultQueryString when querystring and hash exists', () =>
@@ -575,7 +575,7 @@ describe('Loader', () =>
             loader.defaultQueryString = 'u=me&p=secret';
 
             expect(loader['_prepareUrl']('/image.png?v=1#me'))
-                .to.equal(`${b}/image.png?v=1&${loader.defaultQueryString}#me`);
+                .toEqual(`${b}/image.png?v=1&${loader.defaultQueryString}#me`);
         });
     });
 
@@ -583,7 +583,7 @@ describe('Loader', () =>
     {
         it('should run the before middleware before loading the resource', (done: () => void) =>
         {
-            const spy = sinon.spy();
+            const spy = jest.fn();
             const res = {} as LoaderResource;
 
             loader.pre(spy);
@@ -604,7 +604,7 @@ describe('Loader', () =>
         {
             const res = new LoaderResource('mock', fixtureData.url);
 
-            res.load = sinon.spy();
+            res.load = jest.fn();
 
             loader['_loadResource'](res, null);
 
@@ -618,7 +618,7 @@ describe('Loader', () =>
         {
             loader.onStart.add((_l) =>
             {
-                expect(_l).to.equal(loader);
+                expect(_l).toEqual(loader);
 
                 done();
             });
@@ -633,8 +633,8 @@ describe('Loader', () =>
         {
             loader.onComplete.add((_l, resources) =>
             {
-                expect(_l).to.equal(loader);
-                expect(resources).to.equal(loader.resources);
+                expect(_l).toEqual(loader);
+                expect(resources).toEqual(loader.resources);
 
                 done();
             });
@@ -648,9 +648,9 @@ describe('Loader', () =>
         it('should emit the `progress` event', () =>
         {
             const res = new LoaderResource('mock', fixtureData.url);
-            const spy = sinon.spy();
+            const spy = jest.fn();
 
-            res._dequeue = sinon.spy();
+            res._dequeue = jest.fn();
 
             loader.onProgress.once(spy);
 
@@ -662,9 +662,9 @@ describe('Loader', () =>
         it('should emit the `error` event when the resource has an error', () =>
         {
             const res = new LoaderResource('mock', fixtureData.url);
-            const spy = sinon.spy();
+            const spy = jest.fn();
 
-            res._dequeue = sinon.spy();
+            res._dequeue = jest.fn();
 
             res.error = new Error('mock error');
 
@@ -678,9 +678,9 @@ describe('Loader', () =>
         it('should emit the `load` event when the resource loads successfully', () =>
         {
             const res = new LoaderResource('mock', fixtureData.url);
-            const spy = sinon.spy();
+            const spy = jest.fn();
 
-            res._dequeue = sinon.spy();
+            res._dequeue = jest.fn();
 
             loader.onLoad.once(spy);
 
@@ -691,10 +691,10 @@ describe('Loader', () =>
 
         it('should run the after middleware', (done: () => void) =>
         {
-            const spy = sinon.spy();
+            const spy = jest.fn();
             const res: any = {};
 
-            res._dequeue = sinon.spy();
+            res._dequeue = jest.fn();
 
             loader.use(spy);
 
@@ -722,7 +722,7 @@ describe('Loader', () =>
                     { name: 'hud2', url: 'hud2.png' },
                 ]);
 
-                const spy = sinon.spy();
+                const spy = jest.fn();
 
                 loader.onProgress.add(spy);
 
@@ -742,7 +742,7 @@ describe('Loader', () =>
                     { name: 'hud2', url: 'hud2.png' },
                 ]);
 
-                const spy = sinon.spy();
+                const spy = jest.fn();
 
                 loader.onProgress.add(spy);
 
@@ -812,7 +812,7 @@ describe('Loader', () =>
 
                 loader.use(spritesheetMiddleware());
 
-                const spy = sinon.spy();
+                const spy = jest.fn();
 
                 loader.onProgress.add(spy);
 
@@ -834,7 +834,7 @@ describe('Loader', () =>
 
                 loader.use(spritesheetMiddleware());
 
-                const spy = sinon.spy();
+                const spy = jest.fn();
 
                 loader.onProgress.add(spy);
 
@@ -897,7 +897,7 @@ describe('Loader', () =>
 
                 loader.use(spritesheetMiddleware());
 
-                const spy = sinon.spy();
+                const spy = jest.fn();
 
                 loader.onProgress.add(spy);
 

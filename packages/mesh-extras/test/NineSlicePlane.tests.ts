@@ -28,13 +28,13 @@ describe('NineSlicePlane', () =>
 
         plane.width = 100;
         plane.height = 100;
-        expect(plane['_getMinScale']()).to.equal(1);
+        expect(plane['_getMinScale']()).toEqual(1);
         plane.width = 10;
         plane.height = 100;
-        expect(plane['_getMinScale']()).to.equal(0.5);
+        expect(plane['_getMinScale']()).toEqual(0.5);
         plane.width = 100;
         plane.height = 10;
-        expect(plane['_getMinScale']()).to.equal(0.5);
+        expect(plane['_getMinScale']()).toEqual(0.5);
 
         plane.destroy();
     });

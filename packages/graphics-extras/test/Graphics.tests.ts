@@ -8,12 +8,12 @@ describe('Graphics', () =>
     {
         const g = new Graphics();
 
-        expect(g.drawChamferRect).to.be.ok;
-        expect(g.drawFilletRect).to.be.ok;
-        expect(g.drawRegularPolygon).to.be.ok;
-        expect(g.drawRoundedPolygon).to.be.ok;
-        expect(g.drawStar).to.be.ok;
-        expect(g.drawTorus).to.be.ok;
+        expect(g.drawChamferRect).toBeTruthy();
+        expect(g.drawFilletRect).toBeTruthy();
+        expect(g.drawRegularPolygon).toBeTruthy();
+        expect(g.drawRoundedPolygon).toBeTruthy();
+        expect(g.drawStar).toBeTruthy();
+        expect(g.drawTorus).toBeTruthy();
 
         g.destroy();
     });

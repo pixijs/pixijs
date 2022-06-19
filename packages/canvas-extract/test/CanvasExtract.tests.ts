@@ -12,8 +12,8 @@ skipHello();
 
 describe('CanvasExtract', () =>
 {
-    before(() => extensions.add(CanvasExtract, CanvasSpriteRenderer));
-    after(() => extensions.remove(CanvasExtract, CanvasSpriteRenderer));
+    beforeAll(() => extensions.add(CanvasExtract, CanvasSpriteRenderer));
+    afterAll(() => extensions.remove(CanvasExtract, CanvasSpriteRenderer));
 
     it('should access extract on renderer', () =>
     {
@@ -32,8 +32,8 @@ describe('CanvasExtract', () =>
 
         expect(extract.canvas(sprite)).to.be.an.instanceof(HTMLCanvasElement);
         expect(extract.base64(sprite)).to.be.a('string');
-        expect(extract.pixels(sprite)).to.be.instanceOf(Uint8ClampedArray);
-        expect(extract.image(sprite)).to.be.instanceOf(HTMLImageElement);
+        expect(extract.pixels(sprite)).toBeInstanceOf(Uint8ClampedArray);
+        expect(extract.image(sprite)).toBeInstanceOf(HTMLImageElement);
 
         renderer.destroy();
         sprite.destroy();
@@ -46,8 +46,8 @@ describe('CanvasExtract', () =>
 
         expect(extract.canvas()).to.be.an.instanceof(HTMLCanvasElement);
         expect(extract.base64()).to.be.a('string');
-        expect(extract.pixels()).to.be.instanceOf(Uint8ClampedArray);
-        expect(extract.image()).to.be.instanceOf(HTMLImageElement);
+        expect(extract.pixels()).toBeInstanceOf(Uint8ClampedArray);
+        expect(extract.image()).toBeInstanceOf(HTMLImageElement);
 
         renderer.destroy();
     });
@@ -63,8 +63,8 @@ describe('CanvasExtract', () =>
 
         expect(extract.canvas(renderTexture)).to.be.an.instanceof(HTMLCanvasElement);
         expect(extract.base64(renderTexture)).to.be.a('string');
-        expect(extract.pixels(renderTexture)).to.be.instanceOf(Uint8ClampedArray);
-        expect(extract.image(renderTexture)).to.be.instanceOf(HTMLImageElement);
+        expect(extract.pixels(renderTexture)).toBeInstanceOf(Uint8ClampedArray);
+        expect(extract.image(renderTexture)).toBeInstanceOf(HTMLImageElement);
 
         renderer.destroy();
         renderTexture.destroy();

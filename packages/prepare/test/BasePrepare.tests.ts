@@ -11,8 +11,8 @@ describe('BasePrepare', () =>
         const renderer = {} as AbstractRenderer;
         const prep = new BasePrepare(renderer);
 
-        expect(prep['renderer']).to.equal(renderer);
-        expect(prep['uploadHookHelper']).to.be.null;
+        expect(prep['renderer']).toEqual(renderer);
+        expect(prep['uploadHookHelper']).toBeNull();
         expect(prep['queue']).to.be.empty;
         expect(prep.addHooks).to.have.lengthOf(5);
         expect(prep.uploadHooks).to.have.lengthOf(2);
@@ -50,16 +50,16 @@ describe('BasePrepare', () =>
 
         const addHook = sinon.spy((item, queue) =>
         {
-            expect(item).to.equal(uploadItem);
-            expect(queue).to.equal(prep['queue']);
+            expect(item).toEqual(uploadItem);
+            expect(queue).toEqual(prep['queue']);
             queue.push(item);
 
             return true;
         });
         const uploadHook = sinon.spy((helper, item) =>
         {
-            expect(helper).to.equal(uploadHelper);
-            expect(item).to.equal(uploadItem);
+            expect(helper).toEqual(uploadHelper);
+            expect(item).toEqual(uploadItem);
 
             return true;
         });
@@ -72,8 +72,8 @@ describe('BasePrepare', () =>
 
         prep.prepareItems();
 
-        expect(addHook.calledOnce).to.be.true;
-        expect(uploadHook.calledOnce).to.be.true;
+        expect(addHook.calledOnce).toBe(true);
+        expect(uploadHook.calledOnce).toBe(true);
 
         prep.destroy();
     });
@@ -92,7 +92,7 @@ describe('BasePrepare', () =>
         prep.registerFindHook(addHook);
         await prep.upload({} as DisplayObject).then(complete);
 
-        expect(complete.calledOnce).to.be.true;
+        expect(complete.calledOnce).toBe(true);
 
         prep.destroy();
     });
@@ -120,8 +120,8 @@ describe('BasePrepare', () =>
         prep.prepareItems();
 
         expect(prep['queue']).to.be.empty;
-        expect(addHook.calledOnce).to.be.true;
-        expect(uploadHook.calledOnce).to.be.true;
+        expect(addHook.calledOnce).toBe(true);
+        expect(uploadHook.calledOnce).toBe(true);
 
         prep.destroy();
     });
@@ -152,8 +152,8 @@ describe('BasePrepare', () =>
         prep.prepareItems();
 
         expect(prep['queue']).to.be.empty;
-        expect(addHook.calledOnce).to.be.true;
-        expect(uploadHook.called).to.be.false;
+        expect(addHook.calledOnce).toBe(true);
+        expect(uploadHook.called).toBe(false);
 
         prep.destroy();
     });
@@ -176,8 +176,8 @@ describe('BasePrepare', () =>
         await prep.upload({} as DisplayObject);
 
         expect(prep['queue']).to.be.empty;
-        expect(addHook.calledOnce).to.be.true;
-        expect(uploadHook.calledOnce).to.be.true;
+        expect(addHook.calledOnce).toBe(true);
+        expect(uploadHook.calledOnce).toBe(true);
 
         prep.destroy();
     });

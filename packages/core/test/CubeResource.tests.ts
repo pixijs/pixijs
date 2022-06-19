@@ -6,7 +6,7 @@ describe('CubeResource', () =>
 {
     let baseTexUrl: string;
 
-    before(() =>
+    beforeAll(() =>
     {
         baseTexUrl = path.resolve(__dirname, 'resources', 'slug.png');
     });
@@ -25,6 +25,6 @@ describe('CubeResource', () =>
         const path1 = baseTexUrl;
         const baseTex = BaseTexture.from([path1, path1, path1, path1, path1, path1]);
 
-        expect(baseTex.resource).to.be.instanceof(CubeResource);
+        expect(baseTex.resource).toBeInstanceOf(CubeResource);
     });
 });

@@ -14,13 +14,13 @@ import { extensions, Texture } from '@pixi/core';
 
 describe('InteractionManager', () =>
 {
-    before(() => extensions.add(
+    beforeAll(() => extensions.add(
         InteractionManager,
         CanvasGraphicsRenderer,
         CanvasSpriteRenderer
     ));
 
-    after(() => extensions.remove(
+    afterAll(() => extensions.remove(
         InteractionManager,
         CanvasGraphicsRenderer,
         CanvasSpriteRenderer
@@ -44,7 +44,7 @@ describe('InteractionManager', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
-            const eventSpy = sinon.spy();
+            const eventSpy = jest.fn();
 
             pointer = new MockPointer(stage);
 
@@ -63,7 +63,7 @@ describe('InteractionManager', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
-            const eventSpy = sinon.spy();
+            const eventSpy = jest.fn();
 
             pointer = new MockPointer(stage);
 
@@ -82,7 +82,7 @@ describe('InteractionManager', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
-            const eventSpy = sinon.spy();
+            const eventSpy = jest.fn();
 
             pointer = new MockPointer(stage);
 
@@ -102,7 +102,7 @@ describe('InteractionManager', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
-            const eventSpy = sinon.spy();
+            const eventSpy = jest.fn();
 
             pointer = new MockPointer(stage);
 
@@ -122,7 +122,7 @@ describe('InteractionManager', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
-            const eventSpy = sinon.spy();
+            const eventSpy = jest.fn();
 
             pointer = new MockPointer(stage);
 
@@ -141,7 +141,7 @@ describe('InteractionManager', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
-            const eventSpy = sinon.spy();
+            const eventSpy = jest.fn();
 
             pointer = new MockPointer(stage);
 
@@ -163,11 +163,11 @@ describe('InteractionManager', () =>
             const graphicsA = new Graphics();
             const graphicsB = new Graphics();
 
-            const mouseOverSpyA = sinon.spy();
-            const mouseOutSpyA = sinon.spy();
+            const mouseOverSpyA = jest.fn();
+            const mouseOutSpyA = jest.fn();
 
-            const mouseOverSpyB = sinon.spy();
-            const mouseOutSpyB = sinon.spy();
+            const mouseOverSpyB = jest.fn();
+            const mouseOutSpyB = jest.fn();
 
             pointer = new MockPointer(stage);
 
@@ -213,7 +213,7 @@ describe('InteractionManager', () =>
             pointer = new MockPointer(stage);
 
             const mouseDownChild = sinon.spy((evt) => evt.stopPropagation());
-            const mouseDownParent = sinon.spy();
+            const mouseDownParent = jest.fn();
 
             stage.addChild(parent);
             parent.addChild(graphics);
@@ -245,8 +245,8 @@ describe('InteractionManager', () =>
             const mouseMoveChild = sinon.spy((evt) => evt.stopPropagation());
             const mouseOverChild = sinon.spy((evt) => evt.stopPropagation());
 
-            const mouseMoveParent = sinon.spy();
-            const mouseOverParent = sinon.spy();
+            const mouseMoveParent = jest.fn();
+            const mouseOverParent = jest.fn();
 
             stage.addChild(parent);
             parent.addChild(graphics);
@@ -279,11 +279,11 @@ describe('InteractionManager', () =>
 
             pointer = new MockPointer(stage);
 
-            const mouseMoveChild = sinon.spy();
+            const mouseMoveChild = jest.fn();
             const mouseMoveParent = sinon.spy((evt) => evt.stopPropagation());
 
-            const mouseOverChild = sinon.spy();
-            const mouseOverParent = sinon.spy();
+            const mouseOverChild = jest.fn();
+            const mouseOverParent = jest.fn();
 
             stage.addChild(parent);
             parent.addChild(graphics);
@@ -406,12 +406,12 @@ describe('InteractionManager', () =>
     {
         let stub: sinon.SinonStub;
 
-        before(() =>
+        beforeAll(() =>
         {
             stub = sinon.stub(InteractionManager.prototype, 'setTargetElement');
         });
 
-        after(() =>
+        afterAll(() =>
         {
             stub.restore();
         });
@@ -701,27 +701,27 @@ describe('InteractionManager', () =>
 
             manager['addTickerListener']();
 
-            expect(Ticker.system.count).to.equal(listenerCount + 1);
+            expect(Ticker.system.count).toEqual(listenerCount + 1);
 
             manager.useSystemTicker = false;
 
-            expect(Ticker.system.count).to.equal(listenerCount);
+            expect(Ticker.system.count).toEqual(listenerCount);
 
             manager.useSystemTicker = true;
 
-            expect(Ticker.system.count).to.equal(listenerCount + 1);
+            expect(Ticker.system.count).toEqual(listenerCount + 1);
 
             manager['removeTickerListener']();
 
-            expect(Ticker.system.count).to.equal(listenerCount);
+            expect(Ticker.system.count).toEqual(listenerCount);
 
             manager.useSystemTicker = false;
 
-            expect(Ticker.system.count).to.equal(listenerCount);
+            expect(Ticker.system.count).toEqual(listenerCount);
 
             manager['addTickerListener']();
 
-            expect(Ticker.system.count).to.equal(listenerCount);
+            expect(Ticker.system.count).toEqual(listenerCount);
         });
     });
 
@@ -731,7 +731,7 @@ describe('InteractionManager', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
-            const clickSpy = sinon.spy();
+            const clickSpy = jest.fn();
 
             pointer = new MockPointer(stage);
 
@@ -750,7 +750,7 @@ describe('InteractionManager', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
-            const clickSpy = sinon.spy();
+            const clickSpy = jest.fn();
 
             pointer = new MockPointer(stage);
 
@@ -769,7 +769,7 @@ describe('InteractionManager', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
-            const clickSpy = sinon.spy();
+            const clickSpy = jest.fn();
             const pointer = new MockPointer(stage);
 
             stage.addChild(graphics);
@@ -795,7 +795,7 @@ describe('InteractionManager', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
-            const clickSpy = sinon.spy();
+            const clickSpy = jest.fn();
 
             pointer = new MockPointer(stage);
 
@@ -814,7 +814,7 @@ describe('InteractionManager', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
-            const clickSpy = sinon.spy();
+            const clickSpy = jest.fn();
 
             pointer = new MockPointer(stage);
 
@@ -834,9 +834,9 @@ describe('InteractionManager', () =>
             const stage = new Container();
             const graphics = new Graphics();
             const graphics2 = new Graphics();
-            const clickSpy = sinon.spy();
-            const overSpy = sinon.spy();
-            const endSpy = sinon.spy();
+            const clickSpy = jest.fn();
+            const overSpy = jest.fn();
+            const endSpy = jest.fn();
 
             pointer = new MockPointer(stage);
 
@@ -870,7 +870,7 @@ describe('InteractionManager', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
-            const clickSpy = sinon.spy();
+            const clickSpy = jest.fn();
 
             pointer = new MockPointer(stage);
 
@@ -889,7 +889,7 @@ describe('InteractionManager', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
-            const clickSpy = sinon.spy();
+            const clickSpy = jest.fn();
 
             pointer = new MockPointer(stage);
 
@@ -909,9 +909,9 @@ describe('InteractionManager', () =>
             const stage = new Container();
             const graphics = new Graphics();
             const graphics2 = new Graphics();
-            const overSpy = sinon.spy();
-            const upSpy = sinon.spy();
-            const clickSpy = sinon.spy();
+            const overSpy = jest.fn();
+            const upSpy = jest.fn();
+            const clickSpy = jest.fn();
 
             pointer = new MockPointer(stage);
 
@@ -943,9 +943,9 @@ describe('InteractionManager', () =>
             const stage = new Container();
             const graphics = new Graphics();
             const graphics2 = new Graphics();
-            const overSpy = sinon.spy();
-            const upSpy = sinon.spy();
-            const clickSpy = sinon.spy();
+            const overSpy = jest.fn();
+            const upSpy = jest.fn();
+            const clickSpy = jest.fn();
 
             pointer = new MockPointer(stage);
 
@@ -977,9 +977,9 @@ describe('InteractionManager', () =>
             const stage = new Container();
             const graphics = new Graphics();
             const graphics2 = new Graphics();
-            const moveSpy = sinon.spy();
-            const upSpy = sinon.spy();
-            const clickSpy = sinon.spy();
+            const moveSpy = jest.fn();
+            const upSpy = jest.fn();
+            const clickSpy = jest.fn();
 
             pointer = new MockPointer(stage);
 
@@ -1561,7 +1561,7 @@ describe('InteractionManager', () =>
             const pointer = new MockPointer(stage);
             const graphics = new Graphics();
             const mask = new Graphics();
-            const spy = sinon.spy();
+            const spy = jest.fn();
 
             graphics.interactive = true;
             graphics.beginFill(0xFF0000);
@@ -1583,7 +1583,7 @@ describe('InteractionManager', () =>
             const pointer = new MockPointer(stage);
             const graphics = new Graphics();
             const mask = new Graphics();
-            const spy = sinon.spy();
+            const spy = jest.fn();
 
             graphics.interactive = true;
             graphics.beginFill(0xFF0000);
@@ -1606,7 +1606,7 @@ describe('InteractionManager', () =>
             const pointer = new MockPointer(stage);
             const graphics = new Graphics();
             const mask = new Graphics();
-            const spy = sinon.spy();
+            const spy = jest.fn();
 
             graphics.interactive = true;
             graphics.beginFill(0xFF0000);
@@ -1630,7 +1630,7 @@ describe('InteractionManager', () =>
             const pointer = new MockPointer(stage);
             const graphics = new Graphics();
             const mask = new Graphics();
-            const spy = sinon.spy();
+            const spy = jest.fn();
 
             graphics.interactive = true;
             graphics.beginFill(0xFF0000);
@@ -1653,7 +1653,7 @@ describe('InteractionManager', () =>
             const pointer = new MockPointer(stage);
             const graphics = new Graphics();
             const mask = new Graphics();
-            const spy = sinon.spy();
+            const spy = jest.fn();
 
             graphics.interactive = true;
             graphics.beginFill(0xFF0000);
@@ -1674,7 +1674,7 @@ describe('InteractionManager', () =>
             const pointer = new MockPointer(stage);
             const graphics = new Graphics();
             const mask = new Graphics();
-            const spy = sinon.spy();
+            const spy = jest.fn();
 
             graphics.interactive = true;
             graphics.beginFill(0xFF0000);
@@ -1696,7 +1696,7 @@ describe('InteractionManager', () =>
             const pointer = new MockPointer(stage);
             const graphics = new Graphics();
             const mask = new Graphics();
-            const spy = sinon.spy();
+            const spy = jest.fn();
 
             graphics.interactive = true;
             graphics.beginFill(0xFF0000);
@@ -1719,7 +1719,7 @@ describe('InteractionManager', () =>
             const stage = new Container();
             const pointer = new MockPointer(stage);
             const graphics = new Graphics();
-            const spy = sinon.spy();
+            const spy = jest.fn();
 
             graphics.interactive = true;
             graphics.beginFill(0xFF0000);
@@ -1738,7 +1738,7 @@ describe('InteractionManager', () =>
             const stage = new Container();
             const pointer = new MockPointer(stage);
             const graphics = new Graphics();
-            const spy = sinon.spy();
+            const spy = jest.fn();
 
             graphics.interactive = true;
             graphics.beginFill(0xFF0000);
@@ -1758,7 +1758,7 @@ describe('InteractionManager', () =>
             const parent = new Container();
             const pointer = new MockPointer(stage);
             const graphics = new Graphics();
-            const spy = sinon.spy();
+            const spy = jest.fn();
 
             graphics.interactive = true;
             graphics.beginFill(0xFF0000);
@@ -1779,7 +1779,7 @@ describe('InteractionManager', () =>
             const parent = new Container();
             const pointer = new MockPointer(stage);
             const graphics = new Graphics();
-            const spy = sinon.spy();
+            const spy = jest.fn();
 
             graphics.interactive = true;
             graphics.beginFill(0xFF0000);
@@ -1813,7 +1813,7 @@ describe('InteractionManager', () =>
 
             pointer.mousemove(10, 10);
 
-            expect(pointer.renderer.view.style.cursor).to.equal('help');
+            expect(pointer.renderer.view.style.cursor).toEqual('help');
         });
 
         it('should return cursor to default on mouseout', () =>
@@ -1833,7 +1833,7 @@ describe('InteractionManager', () =>
             pointer.mousemove(10, 10);
             pointer.mousemove(60, 60);
 
-            expect(pointer.renderer.view.style.cursor).to.equal(pointer.interaction.cursorStyles.default);
+            expect(pointer.renderer.view.style.cursor).toEqual(pointer.interaction.cursorStyles.default);
         });
 
         it('should still be the over cursor after a click', () =>
@@ -1853,7 +1853,7 @@ describe('InteractionManager', () =>
             pointer.mousemove(10, 10);
             pointer.click(10, 10);
 
-            expect(pointer.renderer.view.style.cursor).to.equal('help');
+            expect(pointer.renderer.view.style.cursor).toEqual('help');
         });
 
         it('should return cursor to default when mouse leaves renderer', () =>
@@ -1873,15 +1873,15 @@ describe('InteractionManager', () =>
             pointer.mousemove(10, 10);
             pointer.mousemove(-10, 60);
 
-            expect(pointer.renderer.view.style.cursor).to.equal(pointer.interaction.cursorStyles.default);
+            expect(pointer.renderer.view.style.cursor).toEqual(pointer.interaction.cursorStyles.default);
         });
 
         it('cursor callback should be called', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
-            const overSpy = sinon.spy();
-            const defaultSpy = sinon.spy();
+            const overSpy = jest.fn();
+            const defaultSpy = jest.fn();
 
             pointer = new MockPointer(stage);
 
@@ -1904,7 +1904,7 @@ describe('InteractionManager', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
-            const defaultSpy = sinon.spy();
+            const defaultSpy = jest.fn();
 
             pointer = new MockPointer(stage);
 
@@ -1940,8 +1940,8 @@ describe('InteractionManager', () =>
 
             pointer.mousemove(10, 10);
 
-            expect(pointer.renderer.view.style.cursor).to.equal('none');
-            expect(pointer.renderer.view.style.display).to.equal('none');
+            expect(pointer.renderer.view.style.cursor).toEqual('none');
+            expect(pointer.renderer.view.style.display).toEqual('none');
         });
 
         it('should not change cursor style if null cursor style provided', () =>
@@ -1960,10 +1960,10 @@ describe('InteractionManager', () =>
             pointer.interaction.cursorStyles.default = null;
 
             pointer.mousemove(10, 10);
-            expect(pointer.renderer.view.style.cursor).to.equal('');
+            expect(pointer.renderer.view.style.cursor).toEqual('');
 
             pointer.mousemove(60, 60);
-            expect(pointer.renderer.view.style.cursor).to.equal('');
+            expect(pointer.renderer.view.style.cursor).toEqual('');
         });
 
         it('should use cursor property as css if no style entry', () =>
@@ -1980,7 +1980,7 @@ describe('InteractionManager', () =>
             graphics.cursor = 'text';
 
             pointer.mousemove(10, 10);
-            expect(pointer.renderer.view.style.cursor).to.equal('text');
+            expect(pointer.renderer.view.style.cursor).toEqual('text');
         });
     });
 
@@ -2075,8 +2075,8 @@ describe('InteractionManager', () =>
 
             pointer.mousemove(20, 10, true);
 
-            expect(pointer.interaction.mouse.global.x).to.equal(20);
-            expect(pointer.interaction.mouse.global.y).to.equal(10);
+            expect(pointer.interaction.mouse.global.x).toEqual(20);
+            expect(pointer.interaction.mouse.global.y).toEqual(10);
         });
     });
 
@@ -2120,7 +2120,7 @@ describe('InteractionManager', () =>
             pointer.render();
             const hit = pointer.interaction.hitTest(new Point(10, 10));
 
-            expect(hit).to.equal(graphics);
+            expect(hit).toEqual(graphics);
         });
 
         it('should return null if not hit', () =>
@@ -2138,7 +2138,7 @@ describe('InteractionManager', () =>
             pointer.render();
             const hit = pointer.interaction.hitTest(new Point(60, 60));
 
-            expect(hit).to.be.null;
+            expect(hit).toBeNull();
         });
 
         it('should return top thing that was hit', () =>
@@ -2161,7 +2161,7 @@ describe('InteractionManager', () =>
             pointer.render();
             const hit = pointer.interaction.hitTest(new Point(10, 10));
 
-            expect(hit).to.equal(graphics);
+            expect(hit).toEqual(graphics);
         });
 
         it('should return hit when passing in root', () =>
@@ -2184,7 +2184,7 @@ describe('InteractionManager', () =>
             pointer.render();
             const hit = pointer.interaction.hitTest(new Point(10, 10), behind);
 
-            expect(hit).to.equal(behind);
+            expect(hit).toEqual(behind);
         });
     });
 
@@ -2205,17 +2205,17 @@ describe('InteractionManager', () =>
             pointer.touchstart(10, 10, 1);
             expect(pointer.interaction.activeInteractionData[1]).to.exist;
             expect(pointer.interaction.activeInteractionData[1].isPrimary,
-                'first touch should be primary on touch start').to.be.true;
+                'first touch should be primary on touch start').toBe(true);
             pointer.touchstart(13, 9, 2);
             expect(pointer.interaction.activeInteractionData[2].isPrimary,
-                'second touch should not be primary').to.be.false;
+                'second touch should not be primary').toBe(false);
             pointer.touchmove(10, 20, 1);
             expect(pointer.interaction.activeInteractionData[1].isPrimary,
-                'first touch should still be primary after move').to.be.true;
+                'first touch should still be primary after move').toBe(true);
             pointer.touchend(10, 10, 1);
             pointer.touchmove(13, 29, 2);
             expect(pointer.interaction.activeInteractionData[2].isPrimary,
-                'second touch should still not be primary after first is done').to.be.false;
+                'second touch should still not be primary after first is done').toBe(false);
         });
     });
 
@@ -2225,7 +2225,7 @@ describe('InteractionManager', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
-            const eventSpy = sinon.spy();
+            const eventSpy = jest.fn();
 
             pointer = new MockPointer(stage, null, null, true);
 
@@ -2244,7 +2244,7 @@ describe('InteractionManager', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
-            const eventSpy = sinon.spy();
+            const eventSpy = jest.fn();
 
             pointer = new MockPointer(stage, null, null, true);
 
@@ -2263,7 +2263,7 @@ describe('InteractionManager', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
-            const eventSpy = sinon.spy();
+            const eventSpy = jest.fn();
 
             pointer = new MockPointer(stage, null, null, true);
 

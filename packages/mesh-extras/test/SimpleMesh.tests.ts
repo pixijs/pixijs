@@ -11,8 +11,8 @@ describe('SimpleMesh', () =>
     {
         const mesh = new SimpleMesh();
 
-        expect(mesh).to.be.instanceOf(SimpleMesh);
-        expect(mesh.autoUpdate).to.be.true;
+        expect(mesh).toBeInstanceOf(SimpleMesh);
+        expect(mesh.autoUpdate).toBe(true);
 
         mesh.destroy();
     });

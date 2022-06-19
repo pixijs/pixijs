@@ -9,7 +9,7 @@ describe('Spritesheet', () =>
     let validate: (spritesheet: Spritesheet, done: () => void) => void;
     let parseFrame: (frameData: ISpritesheetFrameData, cb: (frame: Texture) => void) => void;
 
-    before(() =>
+    beforeAll(() =>
     {
         resources = path.join(__dirname, 'resources');
         validate = (spritesheet: Spritesheet, done) =>
@@ -20,23 +20,23 @@ describe('Spritesheet', () =>
                 const width = Math.floor(spritesheet.data.frames[id].frame.w);
                 const height = Math.floor(spritesheet.data.frames[id].frame.h);
 
-                expect(Object.keys(textures).length).to.equal(5);
-                expect(Object.keys(spritesheet.textures).length).to.equal(5);
+                expect(Object.keys(textures).length).toEqual(5);
+                expect(Object.keys(spritesheet.textures).length).toEqual(5);
                 expect(textures[id]).to.be.an.instanceof(Texture);
-                expect(textures[id].width).to.equal(width / spritesheet.resolution);
-                expect(textures[id].height).to.equal(height / spritesheet.resolution);
-                expect(textures[id].defaultAnchor.x).to.equal(0);
-                expect(textures[id].defaultAnchor.y).to.equal(0);
-                expect(textures[id].textureCacheIds.indexOf(id)).to.equal(0);
+                expect(textures[id].width).toEqual(width / spritesheet.resolution);
+                expect(textures[id].height).toEqual(height / spritesheet.resolution);
+                expect(textures[id].defaultAnchor.x).toEqual(0);
+                expect(textures[id].defaultAnchor.y).toEqual(0);
+                expect(textures[id].textureCacheIds.indexOf(id)).toEqual(0);
 
                 expect(spritesheet.animations).to.have.property('star').that.is.an('array');
-                expect(spritesheet.animations.star.length).to.equal(4);
-                expect(spritesheet.animations.star[0].defaultAnchor.x).to.equal(0.5);
-                expect(spritesheet.animations.star[0].defaultAnchor.y).to.equal(0.5);
+                expect(spritesheet.animations.star.length).toEqual(4);
+                expect(spritesheet.animations.star[0].defaultAnchor.x).toEqual(0.5);
+                expect(spritesheet.animations.star[0].defaultAnchor.y).toEqual(0.5);
 
                 spritesheet.destroy(true);
-                expect(spritesheet.textures).to.be.null;
-                expect(spritesheet.baseTexture).to.be.null;
+                expect(spritesheet.textures).toBeNull();
+                expect(spritesheet.baseTexture).toBeNull();
                 done();
             });
         };
@@ -60,7 +60,7 @@ describe('Spritesheet', () =>
             {
                 const { frame } = sheet.textures;
 
-                expect(frame).to.be.instanceof(Texture);
+                expect(frame).toBeInstanceOf(Texture);
 
                 callback(frame);
 
@@ -71,7 +71,7 @@ describe('Spritesheet', () =>
 
     it('should exist on PIXI', () =>
     {
-        expect(Spritesheet).to.be.a('function');
+        expect(Spritesheet).toBeInstanceOf(Function);
         expect(Spritesheet.BATCH_SIZE).to.be.a('number');
     });
 
@@ -85,9 +85,9 @@ describe('Spritesheet', () =>
 
         const spritesheet = new Spritesheet(baseTexture, data);
 
-        expect(spritesheet.data).to.equal(data);
-        expect(spritesheet.baseTexture).to.equal(baseTexture);
-        expect(spritesheet.resolution).to.equal(1);
+        expect(spritesheet.data).toEqual(data);
+        expect(spritesheet.baseTexture).toEqual(baseTexture);
+        expect(spritesheet.resolution).toEqual(1);
 
         spritesheet.destroy(true);
     });
@@ -105,8 +105,8 @@ describe('Spritesheet', () =>
             const spritesheet = new Spritesheet(baseTexture, data);
 
             expect(data).to.be.an('object');
-            expect(data.meta.image).to.equal('building1.png');
-            expect(spritesheet.resolution).to.equal(0.5);
+            expect(data.meta.image).toEqual('building1.png');
+            expect(spritesheet.resolution).toEqual(0.5);
             validate(spritesheet, done);
         };
     });
@@ -119,8 +119,8 @@ describe('Spritesheet', () =>
         const spritesheet = new Spritesheet(baseTexture, data);
 
         expect(data).to.be.an('object');
-        expect(data.meta.image).to.equal('building1.png');
-        expect(spritesheet.resolution).to.equal(0.5);
+        expect(data.meta.image).toEqual('building1.png');
+        expect(spritesheet.resolution).toEqual(0.5);
 
         validate(spritesheet, done);
     });
@@ -139,8 +139,8 @@ describe('Spritesheet', () =>
             const spritesheet = new Spritesheet(baseTexture, data, uri);
 
             expect(data).to.be.an('object');
-            expect(data.meta.image).to.equal('building1@2x.png');
-            expect(spritesheet.resolution).to.equal(2);
+            expect(data.meta.image).toEqual('building1@2x.png');
+            expect(spritesheet.resolution).toEqual(2);
 
             validate(spritesheet, done);
         };
@@ -158,8 +158,8 @@ describe('Spritesheet', () =>
 
         parseFrame(data, (texture) =>
         {
-            expect(texture.width).to.equal(14);
-            expect(texture.height).to.equal(16);
+            expect(texture.width).toEqual(14);
+            expect(texture.height).toEqual(16);
             done();
         });
     });
@@ -176,8 +176,8 @@ describe('Spritesheet', () =>
 
         parseFrame(data, (texture) =>
         {
-            expect(texture.width).to.equal(40);
-            expect(texture.height).to.equal(20);
+            expect(texture.width).toEqual(40);
+            expect(texture.height).toEqual(20);
             done();
         });
     });
@@ -188,8 +188,8 @@ describe('Spritesheet', () =>
 
         parseFrame(data, (texture) =>
         {
-            expect(texture.width).to.equal(14);
-            expect(texture.height).to.equal(14);
+            expect(texture.width).toEqual(14);
+            expect(texture.height).toEqual(14);
             done();
         });
     });
@@ -205,8 +205,8 @@ describe('Spritesheet', () =>
 
         parseFrame(data, (texture) =>
         {
-            expect(texture.width).to.equal(14);
-            expect(texture.height).to.equal(14);
+            expect(texture.width).toEqual(14);
+            expect(texture.height).toEqual(14);
             done();
         });
     });
@@ -222,8 +222,8 @@ describe('Spritesheet', () =>
 
         parseFrame(data, (texture) =>
         {
-            expect(texture.width).to.equal(120);
-            expect(texture.height).to.equal(100);
+            expect(texture.width).toEqual(120);
+            expect(texture.height).toEqual(100);
             done();
         });
     });

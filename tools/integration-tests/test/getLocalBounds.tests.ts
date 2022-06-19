@@ -20,19 +20,19 @@ function withGL(fn: () => void)
 
 describe('getLocalBounds', () =>
 {
-    before(() => extensions.add(
+    beforeAll(() => extensions.add(
         BatchRenderer,
         CanvasSpriteRenderer,
         CanvasGraphicsRenderer,
         CanvasMeshRenderer
     ));
-    after(() => extensions.remove(
+    afterAll(() => extensions.remove(
         BatchRenderer,
         CanvasSpriteRenderer,
         CanvasGraphicsRenderer,
         CanvasMeshRenderer
     ));
-    
+
     it('should register correct local-bounds with a LOADED Sprite', () =>
     {
         const parent = new Container();
@@ -44,10 +44,10 @@ describe('getLocalBounds', () =>
 
         let bounds = sprite.getLocalBounds();
 
-        expect(bounds.x).to.equal(0);
-        expect(bounds.y).to.equal(0);
-        expect(bounds.width).to.equal(10);
-        expect(bounds.height).to.equal(10);
+        expect(bounds.x).toEqual(0);
+        expect(bounds.y).toEqual(0);
+        expect(bounds.width).toEqual(10);
+        expect(bounds.height).toEqual(10);
 
         sprite.position.x = 20;
         sprite.position.y = 20;
@@ -57,10 +57,10 @@ describe('getLocalBounds', () =>
 
         bounds = sprite.getLocalBounds();
 
-        expect(bounds.x).to.equal(0);
-        expect(bounds.y).to.equal(0);
-        expect(bounds.width).to.equal(10);
-        expect(bounds.height).to.equal(10);
+        expect(bounds.x).toEqual(0);
+        expect(bounds.y).toEqual(0);
+        expect(bounds.width).toEqual(10);
+        expect(bounds.height).toEqual(10);
     });
 
     it('should register correct local-bounds with Graphics', () =>
@@ -75,10 +75,10 @@ describe('getLocalBounds', () =>
 
         const bounds = graphics.getLocalBounds();
 
-        expect(bounds.x).to.equal(-10);
-        expect(bounds.y).to.equal(-10);
-        expect(bounds.width).to.equal(20);
-        expect(bounds.height).to.equal(20);
+        expect(bounds.x).toEqual(-10);
+        expect(bounds.y).toEqual(-10);
+        expect(bounds.width).toEqual(20);
+        expect(bounds.height).toEqual(20);
     });
 
     it('should register correct local-bounds with Graphics after clear', () =>
@@ -93,10 +93,10 @@ describe('getLocalBounds', () =>
 
         let bounds = graphics.getLocalBounds();
 
-        expect(bounds.x).to.equal(0);
-        expect(bounds.y).to.equal(0);
-        expect(bounds.width).to.equal(20);
-        expect(bounds.height).to.equal(20);
+        expect(bounds.x).toEqual(0);
+        expect(bounds.y).toEqual(0);
+        expect(bounds.width).toEqual(20);
+        expect(bounds.height).toEqual(20);
 
         graphics.clear();
         graphics.beginFill(0xFF, 1);
@@ -105,10 +105,10 @@ describe('getLocalBounds', () =>
 
         bounds = graphics.getLocalBounds();
 
-        expect(bounds.x).to.equal(0);
-        expect(bounds.y).to.equal(0);
-        expect(bounds.width).to.equal(10);
-        expect(bounds.height).to.equal(10);
+        expect(bounds.x).toEqual(0);
+        expect(bounds.y).toEqual(0);
+        expect(bounds.width).toEqual(10);
+        expect(bounds.height).toEqual(10);
     });
 
     it('should register correct local-bounds with Graphics after generateCanvasTexture and clear', () =>
@@ -125,10 +125,10 @@ describe('getLocalBounds', () =>
 
         graphics.generateCanvasTexture();
 
-        expect(bounds.x).to.equal(0);
-        expect(bounds.y).to.equal(0);
-        expect(bounds.width).to.equal(20);
-        expect(bounds.height).to.equal(20);
+        expect(bounds.x).toEqual(0);
+        expect(bounds.y).toEqual(0);
+        expect(bounds.width).toEqual(20);
+        expect(bounds.height).toEqual(20);
 
         graphics.clear();
         graphics.beginFill(0xFF, 1);
@@ -137,10 +137,10 @@ describe('getLocalBounds', () =>
 
         bounds = graphics.getLocalBounds();
 
-        expect(bounds.x).to.equal(0);
-        expect(bounds.y).to.equal(0);
-        expect(bounds.width).to.equal(10);
-        expect(bounds.height).to.equal(10);
+        expect(bounds.x).toEqual(0);
+        expect(bounds.y).toEqual(0);
+        expect(bounds.width).toEqual(10);
+        expect(bounds.height).toEqual(10);
     });
 
     it('should register correct local-bounds with an empty Container', () =>
@@ -153,10 +153,10 @@ describe('getLocalBounds', () =>
 
         const bounds = container.getLocalBounds();
 
-        expect(bounds.x).to.equal(0);
-        expect(bounds.y).to.equal(0);
-        expect(bounds.width).to.equal(0);
-        expect(bounds.height).to.equal(0);
+        expect(bounds.x).toEqual(0);
+        expect(bounds.y).toEqual(0);
+        expect(bounds.width).toEqual(0);
+        expect(bounds.height).toEqual(0);
     });
 
     it('should register correct local-bounds with an item that has already had its parent Container transformed', () =>
@@ -175,10 +175,10 @@ describe('getLocalBounds', () =>
 
         const bounds = container.getLocalBounds();
 
-        expect(bounds.x).to.equal(0);
-        expect(bounds.y).to.equal(0);
-        expect(bounds.width).to.equal(10);
-        expect(bounds.height).to.equal(10);
+        expect(bounds.x).toEqual(0);
+        expect(bounds.y).toEqual(0);
+        expect(bounds.width).toEqual(10);
+        expect(bounds.height).toEqual(10);
     });
 
     it('should register correct local-bounds with a Mesh', withGL(() =>
@@ -196,10 +196,10 @@ describe('getLocalBounds', () =>
 
         const bounds = plane.getLocalBounds();
 
-        expect(bounds.x).to.equal(0);
-        expect(bounds.y).to.equal(0);
-        expect(bounds.width).to.equal(10);
-        expect(bounds.height).to.equal(10);
+        expect(bounds.x).toEqual(0);
+        expect(bounds.y).toEqual(0);
+        expect(bounds.width).toEqual(10);
+        expect(bounds.height).toEqual(10);
     }));
 
     it('should register correct local-bounds with a cachAsBitmap item inside after a render', () =>
@@ -226,10 +226,10 @@ describe('getLocalBounds', () =>
 
         const bounds = parent.getLocalBounds();
 
-        expect(bounds.x).to.equal(0);
-        expect(bounds.y).to.equal(0);
-        expect(bounds.width).to.equal(100);
-        expect(bounds.height).to.equal(100);
+        expect(bounds.x).toEqual(0);
+        expect(bounds.y).toEqual(0);
+        expect(bounds.width).toEqual(100);
+        expect(bounds.height).toEqual(100);
     });
 
     it('should register correct local-bounds with a Text', () =>

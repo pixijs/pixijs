@@ -7,8 +7,8 @@ describe('AlphaFilter', () =>
     {
         const filter = new AlphaFilter();
 
-        expect(filter).to.be.instanceOf(AlphaFilter);
-        expect(filter.alpha).to.equal(1);
+        expect(filter).toBeInstanceOf(AlphaFilter);
+        expect(filter.alpha).toEqual(1);
 
         filter.destroy();
     });
@@ -19,7 +19,7 @@ describe('AlphaFilter', () =>
 
         filter.alpha = 0.5;
 
-        expect(filter.alpha).to.equal(0.5);
+        expect(filter.alpha).toEqual(0.5);
 
         filter.destroy();
     });

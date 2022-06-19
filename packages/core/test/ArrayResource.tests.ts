@@ -8,7 +8,7 @@ describe('ArrayResource', () =>
     let basePath: string;
     let imageUrl: string;
 
-    before(() =>
+    beforeAll(() =>
     {
         basePath = join(__dirname, 'resources');
         imageUrl = join(basePath, 'slug.png');
@@ -19,7 +19,7 @@ describe('ArrayResource', () =>
         const resource = new ArrayResource(5, { width: 100, height: 100 });
 
         resource.destroy();
-        expect(resource.destroyed).to.be.true;
+        expect(resource.destroyed).toBe(true);
     });
 
     it('should error on out of bound', () =>
@@ -54,16 +54,16 @@ describe('ArrayResource', () =>
 
         return resource.load().then((res) =>
         {
-            expect(res).to.equal(resource);
+            expect(res).toEqual(resource);
             // @ts-expect-error - issue with sinon typings
-            expect(baseTexture.setRealSize.calledOnce).to.be.true;
+            expect(baseTexture.setRealSize.calledOnce).toBe(true);
             for (let i = 0; i < images.length; i++)
             {
                 const item = resource.items[i].resource;
 
-                expect(item.valid).to.be.true;
-                expect(item.width).to.equal(100);
-                expect(item.height).to.equal(100);
+                expect(item.valid).toBe(true);
+                expect(item.width).toEqual(100);
+                expect(item.height).toEqual(100);
             }
             resource.unbind(baseTexture);
             resource.destroy();

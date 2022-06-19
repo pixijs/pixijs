@@ -118,10 +118,10 @@ describe('TextMetrics', () =>
 
             expect(metrics.width).to.be.above(style.wordWrapWidth);
 
-            expect(metrics.lines[0][0]).to.equal(' ', '1st line should start with a space');
-            expect(metrics.lines[4][0]).to.equal(' ', '5th line should start with 3 spaces (1)');
-            expect(metrics.lines[4][1]).to.equal(' ', '5th line should start with 3 spaces (2)');
-            expect(metrics.lines[4][2]).to.equal(' ', '5th line should start with 3 spaces (3)');
+            expect(metrics.lines[0][0]).toEqual(' ', '1st line should start with a space');
+            expect(metrics.lines[4][0]).toEqual(' ', '5th line should start with 3 spaces (1)');
+            expect(metrics.lines[4][1]).toEqual(' ', '5th line should start with 3 spaces (2)');
+            expect(metrics.lines[4][2]).toEqual(' ', '5th line should start with 3 spaces (3)');
             expect(metrics.lines[4][3]).to.not.equal(' ', '5th line should not have a space as the 4th char');
 
             metrics.lines.forEach((line, i) =>
@@ -138,7 +138,7 @@ describe('TextMetrics', () =>
         {
             const metrics = TextMetrics.measureText(longText, new TextStyle(defaultStyle), false);
 
-            expect(metrics.lines.length).to.equal(1);
+            expect(metrics.lines.length).toEqual(1);
         });
     });
 
@@ -200,7 +200,7 @@ describe('TextMetrics', () =>
 
             const lines = metrics.lines.reduce((accumulator, line) => accumulator + line);
 
-            expect(lines).to.equal(intergityText, 'should have the same chars as the original text');
+            expect(lines).toEqual(intergityText, 'should have the same chars as the original text');
         });
 
         it('width should not be greater than wordWrapWidth and should format correct spaces', () =>
@@ -211,10 +211,10 @@ describe('TextMetrics', () =>
 
             expect(metrics.width).to.be.below(style.wordWrapWidth);
 
-            expect(metrics.lines[0][0]).to.equal(' ', '1st line should start with a space');
-            expect(metrics.lines[4][0]).to.equal(' ', '5th line should start with 3 spaces (1)');
-            expect(metrics.lines[4][1]).to.equal(' ', '5th line should start with 3 spaces (2)');
-            expect(metrics.lines[4][2]).to.equal(' ', '5th line should start with 3 spaces (3)');
+            expect(metrics.lines[0][0]).toEqual(' ', '1st line should start with a space');
+            expect(metrics.lines[4][0]).toEqual(' ', '5th line should start with 3 spaces (1)');
+            expect(metrics.lines[4][1]).toEqual(' ', '5th line should start with 3 spaces (2)');
+            expect(metrics.lines[4][2]).toEqual(' ', '5th line should start with 3 spaces (3)');
             expect(metrics.lines[4][3]).to.not.equal(' ', '5th line should not have a space as the 4th char');
 
             metrics.lines.forEach((line, i) =>
@@ -244,15 +244,15 @@ describe('TextMetrics', () =>
             TextMetrics.wordWrapSplit = (token) =>
             {
                 wasSplitCalled = true;
-                expect(token).to.equal('testword1234567890abcd!');
+                expect(token).toEqual('testword1234567890abcd!');
 
                 return ['s', 'p', 'l', 'i', 't'];
             };
 
             const brokenText = TextMetrics['wordWrap']('testword1234567890abcd!', new TextStyle(defaultStyle));
 
-            expect(wasSplitCalled).to.equal(true);
-            expect(brokenText).to.equal('split');
+            expect(wasSplitCalled).toEqual(true);
+            expect(brokenText).toEqual('split');
         });
     });
 
@@ -288,11 +288,11 @@ describe('TextMetrics', () =>
 
             const metrics = TextMetrics.measureText(spaceNewLineText, new TextStyle(style));
 
-            expect(metrics.lines[0][0]).to.equal('S', '1st line should not start with a space');
-            expect(metrics.lines[4][0]).to.equal('m', '5th line should not start with 3 spaces (1)');
-            expect(metrics.lines[4][1]).to.equal('o', '5th line should not start with 3 spaces (2)');
-            expect(metrics.lines[4][2]).to.equal('r', '5th line should not start with 3 spaces (3)');
-            expect(metrics.lines[17][0]).to.equal('a', '17th line should not have wrapped');
+            expect(metrics.lines[0][0]).toEqual('S', '1st line should not start with a space');
+            expect(metrics.lines[4][0]).toEqual('m', '5th line should not start with 3 spaces (1)');
+            expect(metrics.lines[4][1]).toEqual('o', '5th line should not start with 3 spaces (2)');
+            expect(metrics.lines[4][2]).toEqual('r', '5th line should not start with 3 spaces (3)');
+            expect(metrics.lines[17][0]).toEqual('a', '17th line should not have wrapped');
         });
     });
 
@@ -306,11 +306,11 @@ describe('TextMetrics', () =>
 
             expect(metrics.width).to.be.above(style.wordWrapWidth);
 
-            expect(metrics.lines[0][0]).to.equal('S', '1st line should not start with a space');
-            expect(metrics.lines[4][0]).to.equal('A', '5th line should not start with 3 spaces (1)');
-            expect(metrics.lines[4][1]).to.equal('n', '5th line should not start with 3 spaces (2)');
-            expect(metrics.lines[4][2]).to.equal('d', '5th line should not start with 3 spaces (3)');
-            expect(metrics.lines[17][0]).to.equal('t', '17th line should have wrapped');
+            expect(metrics.lines[0][0]).toEqual('S', '1st line should not start with a space');
+            expect(metrics.lines[4][0]).toEqual('A', '5th line should not start with 3 spaces (1)');
+            expect(metrics.lines[4][1]).toEqual('n', '5th line should not start with 3 spaces (2)');
+            expect(metrics.lines[4][2]).toEqual('d', '5th line should not start with 3 spaces (3)');
+            expect(metrics.lines[17][0]).toEqual('t', '17th line should have wrapped');
 
             metrics.lines.forEach((line) =>
             {
@@ -352,11 +352,11 @@ describe('TextMetrics', () =>
 
             const metrics = TextMetrics.measureText(spaceNewLineText, new TextStyle(style));
 
-            expect(metrics.lines[0][0]).to.equal('S', '1st line should not start with a space');
-            expect(metrics.lines[4][0]).to.equal('m', '5th line should not start with 3 spaces (1)');
-            expect(metrics.lines[4][1]).to.equal('o', '5th line should not start with 3 spaces (2)');
-            expect(metrics.lines[4][2]).to.equal('r', '5th line should not start with 3 spaces (3)');
-            expect(metrics.lines[17][0]).to.equal('a', '17th line should not have wrapped');
+            expect(metrics.lines[0][0]).toEqual('S', '1st line should not start with a space');
+            expect(metrics.lines[4][0]).toEqual('m', '5th line should not start with 3 spaces (1)');
+            expect(metrics.lines[4][1]).toEqual('o', '5th line should not start with 3 spaces (2)');
+            expect(metrics.lines[4][2]).toEqual('r', '5th line should not start with 3 spaces (3)');
+            expect(metrics.lines[17][0]).toEqual('a', '17th line should not have wrapped');
         });
     });
 
@@ -370,11 +370,11 @@ describe('TextMetrics', () =>
 
             expect(metrics.width).to.be.below(style.wordWrapWidth);
 
-            expect(metrics.lines[0][0]).to.equal('S', '1st line should not start with a space');
-            expect(metrics.lines[4][0]).to.equal('A', '5th line should not start with 3 spaces (1)');
-            expect(metrics.lines[4][1]).to.equal('n', '5th line should not start with 3 spaces (2)');
-            expect(metrics.lines[4][2]).to.equal('d', '5th line should not start with 3 spaces (3)');
-            expect(metrics.lines[17][0]).to.equal('t', '17th line should have wrapped');
+            expect(metrics.lines[0][0]).toEqual('S', '1st line should not start with a space');
+            expect(metrics.lines[4][0]).toEqual('A', '5th line should not start with 3 spaces (1)');
+            expect(metrics.lines[4][1]).toEqual('n', '5th line should not start with 3 spaces (2)');
+            expect(metrics.lines[4][2]).toEqual('d', '5th line should not start with 3 spaces (3)');
+            expect(metrics.lines[17][0]).toEqual('t', '17th line should have wrapped');
 
             metrics.lines.forEach((line) =>
             {
@@ -390,28 +390,28 @@ describe('TextMetrics', () =>
         {
             const text = TextMetrics['trimRight']('remove white spaces to the right');
 
-            expect(text).to.equal('remove white spaces to the right');
+            expect(text).toEqual('remove white spaces to the right');
         });
 
         it('string with whitespaces to trim', () =>
         {
             const text = TextMetrics['trimRight']('remove white spaces to the right   ');
 
-            expect(text).to.equal('remove white spaces to the right');
+            expect(text).toEqual('remove white spaces to the right');
         });
 
         it('string with strange unicode whitespaces to trim', () =>
         {
             const text = TextMetrics['trimRight']('remove white spaces to the right\u0009\u0020\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2008\u2009\u200A\u205F\u3000');
 
-            expect(text).to.equal('remove white spaces to the right');
+            expect(text).toEqual('remove white spaces to the right');
         });
 
         it('empty string', () =>
         {
             const text = TextMetrics['trimRight']('');
 
-            expect(text).to.equal('');
+            expect(text).toEqual('');
         });
 
         it('non-string input', () =>
@@ -419,7 +419,7 @@ describe('TextMetrics', () =>
             // @ts-expect-error - should return false on non-string input
             const text = TextMetrics['trimRight']({});
 
-            expect(text).to.equal('');
+            expect(text).toEqual('');
         });
     });
 
@@ -429,21 +429,21 @@ describe('TextMetrics', () =>
         {
             const bool = TextMetrics['isNewline']('\n');
 
-            expect(bool).to.equal(true);
+            expect(bool).toEqual(true);
         });
 
         it('carriage return', () =>
         {
             const bool = TextMetrics['isNewline']('\r');
 
-            expect(bool).to.equal(true);
+            expect(bool).toEqual(true);
         });
 
         it('newline char', () =>
         {
             const bool = TextMetrics['isNewline']('A');
 
-            expect(bool).to.equal(false);
+            expect(bool).toEqual(false);
         });
 
         it('non string', () =>
@@ -451,7 +451,7 @@ describe('TextMetrics', () =>
             // @ts-expect-error - should return false on non-string input
             const bool = TextMetrics['isNewline']({});
 
-            expect(bool).to.equal(false);
+            expect(bool).toEqual(false);
         });
     });
 
@@ -463,7 +463,7 @@ describe('TextMetrics', () =>
             {
                 const bool = TextMetrics.isBreakingSpace(char);
 
-                expect(bool).to.equal(true);
+                expect(bool).toEqual(true);
             });
         });
 
@@ -481,7 +481,7 @@ describe('TextMetrics', () =>
         {
             const bool = TextMetrics.isBreakingSpace('A');
 
-            expect(bool).to.equal(false);
+            expect(bool).toEqual(false);
         });
 
         it('non string', () =>
@@ -489,7 +489,7 @@ describe('TextMetrics', () =>
             // @ts-expect-error - should return false on non-string input
             const bool = TextMetrics.isBreakingSpace({});
 
-            expect(bool).to.equal(false);
+            expect(bool).toEqual(false);
         });
 
         it('overridable breaking spaces', () =>
@@ -515,7 +515,7 @@ describe('TextMetrics', () =>
             {
                 const bool = TextMetrics.isBreakingSpace(char, 'あ');
 
-                expect(bool).to.equal(false);
+                expect(bool).toEqual(false);
             });
 
             // reset the override breakingSpace
@@ -530,7 +530,7 @@ describe('TextMetrics', () =>
             const arr = TextMetrics['tokenize'](spaceNewLineText);
 
             expect(arr).to.be.an('array');
-            expect(arr.length).to.equal(146);
+            expect(arr.length).toEqual(146);
             expect(arr).to.not.contain('');
             expect(arr).to.not.contain(null);
         });
@@ -540,7 +540,7 @@ describe('TextMetrics', () =>
             const arr = TextMetrics['tokenize']('');
 
             expect(arr).to.be.an('array');
-            expect(arr.length).to.equal(0);
+            expect(arr.length).toEqual(0);
         });
 
         it('single char', () =>
@@ -548,7 +548,7 @@ describe('TextMetrics', () =>
             const arr = TextMetrics['tokenize']('A');
 
             expect(arr).to.be.an('array');
-            expect(arr.length).to.equal(1);
+            expect(arr.length).toEqual(1);
         });
 
         it('newline char', () =>
@@ -556,7 +556,7 @@ describe('TextMetrics', () =>
             const arr = TextMetrics['tokenize']('\n');
 
             expect(arr).to.be.an('array');
-            expect(arr.length).to.equal(1);
+            expect(arr.length).toEqual(1);
         });
 
         it('breakingSpaces', () =>
@@ -564,7 +564,7 @@ describe('TextMetrics', () =>
             const arr = TextMetrics['tokenize'](breakingSpaces.join(''));
 
             expect(arr).to.be.an('array');
-            expect(arr.length).to.equal(breakingSpaces.length);
+            expect(arr.length).toEqual(breakingSpaces.length);
         });
 
         it('non string', () =>
@@ -573,7 +573,7 @@ describe('TextMetrics', () =>
             const arr = TextMetrics['tokenize']({});
 
             expect(arr).to.be.an('array');
-            expect(arr.length).to.equal(0);
+            expect(arr.length).toEqual(0);
         });
     });
 
@@ -583,21 +583,21 @@ describe('TextMetrics', () =>
         {
             const bool = TextMetrics['collapseSpaces']('pre');
 
-            expect(bool).to.equal(false);
+            expect(bool).toEqual(false);
         });
 
         it('normal', () =>
         {
             const bool = TextMetrics['collapseSpaces']('normal');
 
-            expect(bool).to.equal(true);
+            expect(bool).toEqual(true);
         });
 
         it('pre-line', () =>
         {
             const bool = TextMetrics['collapseSpaces']('pre-line');
 
-            expect(bool).to.equal(true);
+            expect(bool).toEqual(true);
         });
 
         it('non matching string', () =>
@@ -605,7 +605,7 @@ describe('TextMetrics', () =>
             // @ts-expect-error - should return false on non matching string
             const bool = TextMetrics['collapseSpaces']('bull');
 
-            expect(bool).to.equal(false);
+            expect(bool).toEqual(false);
         });
 
         it('non string', () =>
@@ -613,7 +613,7 @@ describe('TextMetrics', () =>
             // @ts-expect-error - should return false on non-string input
             const bool = TextMetrics['collapseSpaces']({});
 
-            expect(bool).to.equal(false);
+            expect(bool).toEqual(false);
         });
     });
 
@@ -623,21 +623,21 @@ describe('TextMetrics', () =>
         {
             const bool = TextMetrics['collapseNewlines']('pre');
 
-            expect(bool).to.equal(false);
+            expect(bool).toEqual(false);
         });
 
         it('normal', () =>
         {
             const bool = TextMetrics['collapseNewlines']('normal');
 
-            expect(bool).to.equal(true);
+            expect(bool).toEqual(true);
         });
 
         it('pre-line', () =>
         {
             const bool = TextMetrics['collapseNewlines']('pre-line');
 
-            expect(bool).to.equal(false);
+            expect(bool).toEqual(false);
         });
 
         it('non matching string', () =>
@@ -645,7 +645,7 @@ describe('TextMetrics', () =>
             // @ts-expect-error - should return false on non matching string
             const bool = TextMetrics['collapseNewlines']('bull');
 
-            expect(bool).to.equal(false);
+            expect(bool).toEqual(false);
         });
 
         it('non string', () =>
@@ -653,7 +653,7 @@ describe('TextMetrics', () =>
             // @ts-expect-error - should return false on non-string input
             const bool = TextMetrics['collapseNewlines']({});
 
-            expect(bool).to.equal(false);
+            expect(bool).toEqual(false);
         });
     });
 
@@ -663,14 +663,14 @@ describe('TextMetrics', () =>
         {
             const bool = TextMetrics.canBreakWords('text', true);
 
-            expect(bool).to.equal(true);
+            expect(bool).toEqual(true);
         });
 
         it('breakWords: false', () =>
         {
             const bool = TextMetrics.canBreakWords('text', false);
 
-            expect(bool).to.equal(false);
+            expect(bool).toEqual(false);
         });
     });
 
@@ -681,7 +681,7 @@ describe('TextMetrics', () =>
             // @ts-expect-error - function is meant to be overridden
             const bool = TextMetrics['canBreakChars']();
 
-            expect(bool).to.equal(true);
+            expect(bool).toEqual(true);
         });
 
         it('should prevent breaking for all numbers', () =>
@@ -713,8 +713,8 @@ describe('TextMetrics', () =>
 
             const metrics = TextMetrics.measureText(str, style);
 
-            expect(metrics.lines[0]).to.equal('-------0000,1111,');
-            expect(metrics.lines[1]).to.equal('9999------');
+            expect(metrics.lines[0]).toEqual('-------0000,1111,');
+            expect(metrics.lines[1]).toEqual('9999------');
         });
     });
 });

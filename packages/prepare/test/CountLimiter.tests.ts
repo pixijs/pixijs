@@ -8,15 +8,15 @@ describe('CountLimiter', () =>
         const limit = new CountLimiter(3);
 
         limit.beginFrame();
-        expect(limit.allowedToUpload()).to.be.true;
-        expect(limit.allowedToUpload()).to.be.true;
-        expect(limit.allowedToUpload()).to.be.true;
-        expect(limit.allowedToUpload()).to.be.false;
+        expect(limit.allowedToUpload()).toBe(true);
+        expect(limit.allowedToUpload()).toBe(true);
+        expect(limit.allowedToUpload()).toBe(true);
+        expect(limit.allowedToUpload()).toBe(false);
 
         limit.beginFrame();
-        expect(limit.allowedToUpload()).to.be.true;
-        expect(limit.allowedToUpload()).to.be.true;
-        expect(limit.allowedToUpload()).to.be.true;
-        expect(limit.allowedToUpload()).to.be.false;
+        expect(limit.allowedToUpload()).toBe(true);
+        expect(limit.allowedToUpload()).toBe(true);
+        expect(limit.allowedToUpload()).toBe(true);
+        expect(limit.allowedToUpload()).toBe(false);
     });
 });

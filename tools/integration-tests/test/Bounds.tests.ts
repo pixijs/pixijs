@@ -20,10 +20,10 @@ describe('getBounds', () =>
 
         let bounds = sprite.getBounds();
 
-        expect(bounds.x).to.equal(0);
-        expect(bounds.y).to.equal(0);
-        expect(bounds.width).to.equal(10);
-        expect(bounds.height).to.equal(10);
+        expect(bounds.x).toEqual(0);
+        expect(bounds.y).toEqual(0);
+        expect(bounds.width).toEqual(10);
+        expect(bounds.height).toEqual(10);
 
         sprite.position.x = 20;
         sprite.position.y = 20;
@@ -33,17 +33,17 @@ describe('getBounds', () =>
 
         bounds = sprite.getBounds();
 
-        expect(bounds.x).to.equal(20);
-        expect(bounds.y).to.equal(20);
-        expect(bounds.width).to.equal(20);
-        expect(bounds.height).to.equal(20);
+        expect(bounds.x).toEqual(20);
+        expect(bounds.y).toEqual(20);
+        expect(bounds.width).toEqual(20);
+        expect(bounds.height).toEqual(20);
 
         bounds = sprite.getBounds(true);
 
-        expect(bounds.x).to.equal(20);
-        expect(bounds.y).to.equal(20);
-        expect(bounds.width).to.equal(20);
-        expect(bounds.height).to.equal(20);
+        expect(bounds.x).toEqual(20);
+        expect(bounds.y).toEqual(20);
+        expect(bounds.width).toEqual(20);
+        expect(bounds.height).toEqual(20);
     });
 
     it('should register correct width/height with Graphics', () =>
@@ -53,10 +53,10 @@ describe('getBounds', () =>
 
         let bounds = graphics.getBounds();
 
-        expect(bounds.x).to.equal(0);
-        expect(bounds.y).to.equal(0);
-        expect(bounds.width).to.equal(0);
-        expect(bounds.height).to.equal(0);
+        expect(bounds.x).toEqual(0);
+        expect(bounds.y).toEqual(0);
+        expect(bounds.width).toEqual(0);
+        expect(bounds.height).toEqual(0);
 
         graphics.beginFill(0xFF0000).drawCircle(0, 0, 10);
 
@@ -64,10 +64,10 @@ describe('getBounds', () =>
 
         bounds = graphics.getBounds();
 
-        expect(bounds.x).to.equal(-10);
-        expect(bounds.y).to.equal(-10);
-        expect(bounds.width).to.equal(20);
-        expect(bounds.height).to.equal(20);
+        expect(bounds.x).toEqual(-10);
+        expect(bounds.y).toEqual(-10);
+        expect(bounds.width).toEqual(20);
+        expect(bounds.height).toEqual(20);
 
         graphics.position.x = 20;
         graphics.position.y = 20;
@@ -77,17 +77,17 @@ describe('getBounds', () =>
 
         bounds = graphics.getBounds();
 
-        expect(bounds.x).to.equal(0);
-        expect(bounds.y).to.equal(0);
-        expect(bounds.width).to.equal(40);
-        expect(bounds.height).to.equal(40);
+        expect(bounds.x).toEqual(0);
+        expect(bounds.y).toEqual(0);
+        expect(bounds.width).toEqual(40);
+        expect(bounds.height).toEqual(40);
 
         bounds = graphics.getBounds(true);
 
-        expect(bounds.x).to.equal(0);
-        expect(bounds.y).to.equal(0);
-        expect(bounds.width).to.equal(40);
-        expect(bounds.height).to.equal(40);
+        expect(bounds.x).toEqual(0);
+        expect(bounds.y).toEqual(0);
+        expect(bounds.width).toEqual(40);
+        expect(bounds.height).toEqual(40);
     });
 
     it('should register correct width/height with an empty Container', () =>
@@ -100,10 +100,10 @@ describe('getBounds', () =>
 
         let bounds = container.getBounds();
 
-        expect(bounds.x).to.equal(0);
-        expect(bounds.y).to.equal(0);
-        expect(bounds.width).to.equal(0);
-        expect(bounds.height).to.equal(0);
+        expect(bounds.x).toEqual(0);
+        expect(bounds.y).toEqual(0);
+        expect(bounds.width).toEqual(0);
+        expect(bounds.height).toEqual(0);
 
         container.position.x = 20;
         container.position.y = 20;
@@ -113,10 +113,10 @@ describe('getBounds', () =>
 
         bounds = container.getBounds();
 
-        expect(bounds.x).to.equal(0);
-        expect(bounds.y).to.equal(0);
-        expect(bounds.width).to.equal(0);
-        expect(bounds.height).to.equal(0);
+        expect(bounds.x).toEqual(0);
+        expect(bounds.y).toEqual(0);
+        expect(bounds.width).toEqual(0);
+        expect(bounds.height).toEqual(0);
     });
 
     it('should register correct width/height with a Container', () =>
@@ -142,26 +142,26 @@ describe('getBounds', () =>
 
         let bounds = container.getBounds();
 
-        expect(bounds.x).to.equal(30);
-        expect(bounds.y).to.equal(20);
-        expect(bounds.width).to.equal(80);
-        expect(bounds.height).to.equal(90);
+        expect(bounds.x).toEqual(30);
+        expect(bounds.y).toEqual(20);
+        expect(bounds.width).toEqual(80);
+        expect(bounds.height).toEqual(90);
 
         container.rotation = 0.1;
 
         bounds = container.getBounds();
 
-        expect(bounds.x | 0).to.equal(26);
-        expect(bounds.y | 0).to.equal(22);
-        expect(bounds.width | 0).to.equal(73);
-        expect(bounds.height | 0).to.equal(97);
+        expect(bounds.x | 0).toEqual(26);
+        expect(bounds.y | 0).toEqual(22);
+        expect(bounds.width | 0).toEqual(73);
+        expect(bounds.height | 0).toEqual(97);
 
         bounds = container.getBounds(true);
 
-        expect(bounds.x | 0).to.equal(26);
-        expect(bounds.y | 0).to.equal(22);
-        expect(bounds.width | 0).to.equal(73);
-        expect(bounds.height | 0).to.equal(97);
+        expect(bounds.x | 0).toEqual(26);
+        expect(bounds.y | 0).toEqual(22);
+        expect(bounds.width | 0).toEqual(73);
+        expect(bounds.height | 0).toEqual(97);
     });
 
     it('should register correct width/height with an item that has already had its parent Container transformed', () =>
@@ -180,17 +180,17 @@ describe('getBounds', () =>
 
         let bounds = container.getBounds();
 
-        expect(bounds.x).to.equal(100);
-        expect(bounds.y).to.equal(100);
-        expect(bounds.width).to.equal(10);
-        expect(bounds.height).to.equal(10);
+        expect(bounds.x).toEqual(100);
+        expect(bounds.y).toEqual(100);
+        expect(bounds.width).toEqual(10);
+        expect(bounds.height).toEqual(10);
 
         bounds = graphics.getBounds(true);
 
-        expect(bounds.x).to.equal(100);
-        expect(bounds.y).to.equal(100);
-        expect(bounds.width).to.equal(10);
-        expect(bounds.height).to.equal(10);
+        expect(bounds.x).toEqual(100);
+        expect(bounds.y).toEqual(100);
+        expect(bounds.width).toEqual(10);
+        expect(bounds.height).toEqual(10);
     });
 
     /*
@@ -209,20 +209,20 @@ describe('getBounds', () =>
 
         let bounds = plane.getBounds();
 
-        expect(bounds.x).to.equal(20);
-        expect(bounds.y).to.equal(20);
-        expect(bounds.width).to.equal(10);
-        expect(bounds.height).to.equal(10);
+        expect(bounds.x).toEqual(20);
+        expect(bounds.y).toEqual(20);
+        expect(bounds.width).toEqual(10);
+        expect(bounds.height).toEqual(10);
 
         plane.scale.x = 2;
         plane.scale.y = 2;
 
         bounds = plane.getBounds();
 
-        expect(bounds.x).to.equal(20);
-        expect(bounds.y).to.equal(20);
-        expect(bounds.width).to.equal(20);
-        expect(bounds.height).to.equal(20);
+        expect(bounds.x).toEqual(20);
+        expect(bounds.y).toEqual(20);
+        expect(bounds.width).toEqual(20);
+        expect(bounds.height).toEqual(20);
     });
     */
 
@@ -251,26 +251,26 @@ describe('getBounds', () =>
 
         let bounds = container.getBounds();
 
-        expect(bounds.x).to.equal(30);
-        expect(bounds.y).to.equal(20);
-        expect(bounds.width).to.equal(10);
-        expect(bounds.height).to.equal(10);
+        expect(bounds.x).toEqual(30);
+        expect(bounds.y).toEqual(20);
+        expect(bounds.width).toEqual(10);
+        expect(bounds.height).toEqual(10);
 
         sprite.renderable = false;
 
         bounds = container.getBounds();
 
-        expect(bounds.x).to.equal(0);
-        expect(bounds.y).to.equal(0);
-        expect(bounds.width).to.equal(0);
-        expect(bounds.height).to.equal(0);
+        expect(bounds.x).toEqual(0);
+        expect(bounds.y).toEqual(0);
+        expect(bounds.width).toEqual(0);
+        expect(bounds.height).toEqual(0);
 
         bounds = sprite.getBounds();
 
-        expect(bounds.x).to.equal(30);
-        expect(bounds.y).to.equal(20);
-        expect(bounds.width).to.equal(10);
-        expect(bounds.height).to.equal(10);
+        expect(bounds.x).toEqual(30);
+        expect(bounds.y).toEqual(20);
+        expect(bounds.width).toEqual(10);
+        expect(bounds.height).toEqual(10);
     });
 
     it('should register correct bounds of invisible Container', () =>
@@ -291,10 +291,10 @@ describe('getBounds', () =>
 
         const bounds = container.getBounds();
 
-        expect(bounds.x).to.equal(130);
-        expect(bounds.y).to.equal(120);
-        expect(bounds.width).to.equal(10);
-        expect(bounds.height).to.equal(10);
+        expect(bounds.x).toEqual(130);
+        expect(bounds.y).toEqual(120);
+        expect(bounds.width).toEqual(10);
+        expect(bounds.height).toEqual(10);
     });
 
     it('should register correct width/height with Container masked child', () =>
@@ -321,17 +321,17 @@ describe('getBounds', () =>
 
         let bounds = graphics.getBounds();
 
-        expect(bounds.x).to.equal(32);
-        expect(bounds.y).to.equal(23);
-        expect(bounds.width).to.equal(10);
-        expect(bounds.height).to.equal(10);
+        expect(bounds.x).toEqual(32);
+        expect(bounds.y).toEqual(23);
+        expect(bounds.width).toEqual(10);
+        expect(bounds.height).toEqual(10);
 
         bounds = container.getBounds();
 
-        expect(bounds.x).to.equal(32);
-        expect(bounds.y).to.equal(23);
-        expect(bounds.width).to.equal(8);
-        expect(bounds.height).to.equal(7);
+        expect(bounds.x).toEqual(32);
+        expect(bounds.y).toEqual(23);
+        expect(bounds.width).toEqual(8);
+        expect(bounds.height).toEqual(7);
     });
 
     it('should register correct width/height with an a DisplayObject parent has moved', () =>
@@ -353,10 +353,10 @@ describe('getBounds', () =>
 
         const bounds = graphics.getBounds();
 
-        expect(bounds.x).to.equal(-110);
-        expect(bounds.y).to.equal(-110);
-        expect(bounds.width).to.equal(20);
-        expect(bounds.height).to.equal(20);
+        expect(bounds.x).toEqual(-110);
+        expect(bounds.y).toEqual(-110);
+        expect(bounds.width).toEqual(20);
+        expect(bounds.height).toEqual(20);
     });
 
     it('should register correct width/height with a Text Object', () =>
@@ -374,8 +374,8 @@ describe('getBounds', () =>
         let bounds = text.getBounds();
         const bx = bounds.width;
 
-        expect(bounds.x).to.equal(0);
-        expect(bounds.y).to.equal(0);
+        expect(bounds.x).toEqual(0);
+        expect(bounds.y).toEqual(0);
         expect(bounds.width).to.be.greaterThan(0);
         expect(bounds.height).to.greaterThan(0);
 
@@ -403,17 +403,17 @@ describe('getBounds', () =>
 
         const bounds = sprite.getBounds();
 
-        expect(bounds.x).to.equal(20);
-        expect(bounds.y).to.equal(20);
-        expect(bounds.width).to.equal(20);
-        expect(bounds.height).to.equal(20);
+        expect(bounds.x).toEqual(20);
+        expect(bounds.y).toEqual(20);
+        expect(bounds.width).toEqual(20);
+        expect(bounds.height).toEqual(20);
 
         const localBounds = sprite.getLocalBounds();
 
-        expect(localBounds.x).to.equal(0);
-        expect(localBounds.y).to.equal(0);
-        expect(localBounds.width).to.equal(10);
-        expect(localBounds.height).to.equal(10);
+        expect(localBounds.x).toEqual(0);
+        expect(localBounds.y).toEqual(0);
+        expect(localBounds.width).toEqual(10);
+        expect(localBounds.height).toEqual(10);
     });
 
     it('should ensure bounds respect the trim of a texture ', () =>
@@ -439,9 +439,9 @@ describe('getBounds', () =>
 
         const bounds = sprite.getBounds();
 
-        expect(bounds.x).to.equal(20);
-        expect(bounds.y).to.equal(20);
-        expect(bounds.width).to.equal(100);
-        expect(bounds.height).to.equal(50);
+        expect(bounds.x).toEqual(20);
+        expect(bounds.y).toEqual(20);
+        expect(bounds.width).toEqual(100);
+        expect(bounds.height).toEqual(50);
     });
 });

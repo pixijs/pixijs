@@ -68,8 +68,8 @@ describe('BatchRenderer', () =>
             batchRenderer.MAX_TEXTURES = 2;
             batchRenderer.start();
             elements.forEach((element) => batchRenderer.render(element));
-            expect(batchRenderer['_bufferedElements'].length).to.equal(8);
-            expect(batchRenderer['_bufferedTextures'].length).to.equal(8);
+            expect(batchRenderer['_bufferedElements'].length).toEqual(8);
+            expect(batchRenderer['_bufferedTextures'].length).toEqual(8);
             batchRenderer.flush();
             expect(batchRenderer['_bufferedElements']).to.eql(nullArray);
             expect(batchRenderer['_bufferedTextures']).to.eql(nullArray);
@@ -78,7 +78,7 @@ describe('BatchRenderer', () =>
 
             // first number is start * 2, second is size
             expect(drawCalls).to.eql([0, 18, 36, 6, 48, 11, 70, 12]);
-            expect(attrCount).to.equal(198);
+            expect(attrCount).toEqual(198);
             // eslint-disable-next-line no-console
 
             const attr = [0x0, 0x0, 0x0, 0x0, 0xffffffff, 0x0,
@@ -162,10 +162,10 @@ describe('BatchRenderer', () =>
             elements.forEach((element) => batchRenderer.render(element));
             batchRenderer.flush();
 
-            expect(glDisable.calledOnce).to.be.true;
-            expect(glDisable.args[0][0]).to.equal(gl.BLEND);
-            expect(glEnable.calledOnce).to.be.true;
-            expect(glEnable.args[0][0]).to.equal(gl.BLEND);
+            expect(glDisable.calledOnce).toBe(true);
+            expect(glDisable.args[0][0]).toEqual(gl.BLEND);
+            expect(glEnable.calledOnce).toBe(true);
+            expect(glEnable.args[0][0]).toEqual(gl.BLEND);
         }
         finally
         {

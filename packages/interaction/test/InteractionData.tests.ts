@@ -23,8 +23,8 @@ describe('InteractionData', () =>
             displayObject.parent = stage;
             displayObject.displayObjectUpdateTransform();
             data.getLocalPosition(displayObject, point);
-            expect(point.x).to.equal(5);
-            expect(point.y).to.equal(7);
+            expect(point.x).toEqual(5);
+            expect(point.y).toEqual(7);
         });
     });
 });

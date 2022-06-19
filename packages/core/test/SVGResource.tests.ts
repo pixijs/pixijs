@@ -7,7 +7,7 @@ describe('SVGResource', () =>
 {
     let resources: string;
 
-    before(() =>
+    beforeAll(() =>
     {
         resources = path.join(__dirname, 'resources');
     });
@@ -20,12 +20,12 @@ describe('SVGResource', () =>
             const buffer = fs.readFileSync(url, 'utf8');
             const resource = new SVGResource(buffer, { autoLoad: false });
 
-            expect(resource.valid).to.equal(false);
+            expect(resource.valid).toEqual(false);
             resource.load().then(() =>
             {
-                expect(resource.valid).to.equal(true);
-                expect(resource.width).to.equal(100);
-                expect(resource.height).to.equal(100);
+                expect(resource.valid).toEqual(true);
+                expect(resource.width).toEqual(100);
+                expect(resource.height).toEqual(100);
 
                 done();
             });
@@ -37,12 +37,12 @@ describe('SVGResource', () =>
             const buffer = fs.readFileSync(url, 'utf8');
             const resource = new SVGResource(buffer, { autoLoad: false });
 
-            expect(resource.valid).to.equal(false);
+            expect(resource.valid).toEqual(false);
             resource.load().then(() =>
             {
-                expect(resource.valid).to.equal(true);
-                expect(resource.width).to.equal(100);
-                expect(resource.height).to.equal(100);
+                expect(resource.valid).toEqual(true);
+                expect(resource.width).toEqual(100);
+                expect(resource.height).toEqual(100);
 
                 done();
             });
@@ -55,12 +55,12 @@ describe('SVGResource', () =>
                 { autoLoad: false }
             );
 
-            expect(resource.valid).to.equal(false);
+            expect(resource.valid).toEqual(false);
             resource.load().then(() =>
             {
-                expect(resource.valid).to.equal(true);
-                expect(resource.width).to.equal(100);
-                expect(resource.height).to.equal(100);
+                expect(resource.valid).toEqual(true);
+                expect(resource.width).toEqual(100);
+                expect(resource.height).toEqual(100);
 
                 done();
             });
@@ -78,8 +78,8 @@ describe('SVGResource', () =>
 
             resource.load().then(() =>
             {
-                expect(resource.width).to.equal(212);
-                expect(resource.height).to.equal(212);
+                expect(resource.width).toEqual(212);
+                expect(resource.height).toEqual(212);
 
                 done();
             });
@@ -97,8 +97,8 @@ describe('SVGResource', () =>
 
             resource.load().then(() =>
             {
-                expect(resource.width).to.equal(10);
-                expect(resource.height).to.equal(10);
+                expect(resource.width).toEqual(10);
+                expect(resource.height).toEqual(10);
 
                 done();
             });
@@ -117,8 +117,8 @@ describe('SVGResource', () =>
 
             resource.load().then(() =>
             {
-                expect(resource.width).to.equal(10);
-                expect(resource.height).to.equal(10);
+                expect(resource.width).toEqual(10);
+                expect(resource.height).toEqual(10);
 
                 done();
             });
@@ -130,12 +130,12 @@ describe('SVGResource', () =>
             const buffer = fs.readFileSync(url, 'utf8');
             const resource = new SVGResource(buffer, { autoLoad: false });
 
-            expect(resource.valid).to.equal(false);
+            expect(resource.valid).toEqual(false);
             resource.load().then(() =>
             {
-                expect(resource.valid).to.equal(true);
-                expect(resource.width).to.equal(100);
-                expect(resource.height).to.equal(100);
+                expect(resource.valid).toEqual(true);
+                expect(resource.width).toEqual(100);
+                expect(resource.height).toEqual(100);
 
                 done();
             });
@@ -147,13 +147,13 @@ describe('SVGResource', () =>
             const buffer = fs.readFileSync(url, 'utf8');
             const resource = new SVGResource(buffer, { autoLoad: false });
 
-            expect(buffer.startsWith('<?xml')).to.equal(true);
-            expect(resource.valid).to.equal(false);
+            expect(buffer.startsWith('<?xml')).toEqual(true);
+            expect(resource.valid).toEqual(false);
             resource.load().then(() =>
             {
-                expect(resource.valid).to.equal(true);
-                expect(resource.width).to.equal(48);
-                expect(resource.height).to.equal(48);
+                expect(resource.valid).toEqual(true);
+                expect(resource.width).toEqual(48);
+                expect(resource.height).toEqual(48);
 
                 done();
             });
@@ -165,7 +165,7 @@ describe('SVGResource', () =>
         it('should exist', () =>
         {
             expect(SVGResource.getSize)
-                .to.be.a('function');
+                .toBeInstanceOf(Function);
         });
 
         it('should return a size object with width and height from an SVG string', () =>
@@ -175,9 +175,9 @@ describe('SVGResource', () =>
             expect(svgSize)
                 .to.be.an('object');
             expect(svgSize.width)
-                .to.equal(64);
+                .toEqual(64);
             expect(svgSize.height)
-                .to.equal(32);
+                .toEqual(32);
         });
 
         it('should return a size object from an SVG string with inverted quotes', () =>
@@ -187,9 +187,9 @@ describe('SVGResource', () =>
             expect(svgSize)
                 .to.be.an('object');
             expect(svgSize.width)
-                .to.equal(64);
+                .toEqual(64);
             expect(svgSize.height)
-                .to.equal(32);
+                .toEqual(32);
         });
 
         it('should work with px values', () =>
@@ -199,9 +199,9 @@ describe('SVGResource', () =>
             expect(svgSize)
                 .to.be.an('object');
             expect(svgSize.width)
-                .to.equal(64);
+                .toEqual(64);
             expect(svgSize.height)
-                .to.equal(32);
+                .toEqual(32);
         });
 
         it('should return an empty object when width and/or height is missing', () =>
@@ -209,7 +209,7 @@ describe('SVGResource', () =>
             const svgSize = SVGResource.getSize('<svg width="64"></svg>');
 
             expect(Object.keys(svgSize).length)
-                .to.equal(0);
+                .toEqual(0);
         });
     });
 
@@ -219,7 +219,7 @@ describe('SVGResource', () =>
         {
             const didPass = SVGResource.test(`<svg></svg>`, 'xml');
 
-            expect(didPass).to.equal(true);
+            expect(didPass).toEqual(true);
         });
 
         it('should pass SVG document with prolog', () =>
@@ -230,7 +230,7 @@ describe('SVGResource', () =>
                 <svg>Hello world</svg>
             `, 'xml');
 
-            expect(didPass).to.equal(true);
+            expect(didPass).toEqual(true);
         });
 
         it('should pass SVG document with only prolog, no comments', () =>
@@ -239,7 +239,7 @@ describe('SVGResource', () =>
                 `<?xml version="1.0" encoding="utf-8" ?><svg>Hello world</svg>`,
                 'xml');
 
-            expect(didPass).to.equal(true);
+            expect(didPass).toEqual(true);
         });
 
         it('should not pass HTML fragment', () =>
@@ -248,7 +248,7 @@ describe('SVGResource', () =>
                 `<html><body>This is a mistake</body></html>`,
                 'xml');
 
-            expect(didPass).to.equal(false);
+            expect(didPass).toEqual(false);
         });
     });
 });

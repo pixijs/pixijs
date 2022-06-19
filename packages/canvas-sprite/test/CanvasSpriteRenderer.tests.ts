@@ -6,8 +6,8 @@ import { CanvasSpriteRenderer } from '@pixi/canvas-sprite';
 
 describe('CanvasSpriteRenderer', () =>
 {
-    before(() => extensions.add(CanvasSpriteRenderer, BatchRenderer));
-    after(() => extensions.remove(CanvasSpriteRenderer, BatchRenderer));
+    beforeAll(() => extensions.add(CanvasSpriteRenderer, BatchRenderer));
+    afterAll(() => extensions.remove(CanvasSpriteRenderer, BatchRenderer));
 
     it('should still render a sprite after texture is destroyed', () =>
     {

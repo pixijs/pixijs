@@ -17,11 +17,11 @@ describe('AnimatedSprite', () =>
         afterEach(() =>
         {
             expect(sprite.animationSpeed).to.be.equal(1);
-            expect(sprite.loop).to.be.true;
-            expect(sprite.onComplete).to.be.null;
-            expect(sprite.onFrameChange).to.be.null;
-            expect(sprite.onLoop).to.be.null;
-            expect(sprite.playing).to.be.false;
+            expect(sprite.loop).toBe(true);
+            expect(sprite.onComplete).toBeNull();
+            expect(sprite.onFrameChange).toBeNull();
+            expect(sprite.onLoop).toBeNull();
+            expect(sprite.playing).toBe(false);
 
             sprite.destroy();
             sprite = null;
@@ -30,21 +30,21 @@ describe('AnimatedSprite', () =>
         it('should be correct with default options', () =>
         {
             sprite = new AnimatedSprite(textures);
-            expect(sprite['_autoUpdate']).to.be.true;
+            expect(sprite['_autoUpdate']).toBe(true);
         });
 
         it('should be correct with autoUpdate=false', () =>
         {
             sprite = new AnimatedSprite(textures, false);
-            expect(sprite['_autoUpdate']).to.be.false;
+            expect(sprite['_autoUpdate']).toBe(false);
         });
 
         it('should be correct with autoUpdate=true but then turned off via setter', () =>
         {
             sprite = new AnimatedSprite(textures, true);
-            expect(sprite['_autoUpdate']).to.be.true;
+            expect(sprite['_autoUpdate']).toBe(true);
             sprite.autoUpdate = false;
-            expect(sprite['_autoUpdate']).to.be.false;
+            expect(sprite['_autoUpdate']).toBe(false);
         });
     });
 
@@ -52,12 +52,12 @@ describe('AnimatedSprite', () =>
     {
         let sprite: AnimatedSprite;
 
-        before(() =>
+        beforeAll(() =>
         {
             sprite = new AnimatedSprite([Texture.EMPTY], false);
         });
 
-        after(() =>
+        afterAll(() =>
         {
             sprite.destroy();
             sprite = null;
@@ -66,7 +66,7 @@ describe('AnimatedSprite', () =>
         afterEach(() =>
         {
             sprite.stop();
-            expect(sprite.playing).to.be.false;
+            expect(sprite.playing).toBe(false);
         });
 
         it('should stop playing if it is playing', () =>
@@ -84,12 +84,12 @@ describe('AnimatedSprite', () =>
     {
         let sprite: AnimatedSprite;
 
-        before(() =>
+        beforeAll(() =>
         {
             sprite = new AnimatedSprite([Texture.EMPTY], false);
         });
 
-        after(() =>
+        afterAll(() =>
         {
             sprite.destroy();
             sprite = null;
@@ -98,7 +98,7 @@ describe('AnimatedSprite', () =>
         afterEach(() =>
         {
             sprite.play();
-            expect(sprite.playing).to.be.true;
+            expect(sprite.playing).toBe(true);
         });
 
         it('should start playing if it is not playing', () =>
@@ -116,14 +116,14 @@ describe('AnimatedSprite', () =>
     {
         let sprite: AnimatedSprite;
 
-        before(() =>
+        beforeAll(() =>
         {
             sprite = new AnimatedSprite([Texture.WHITE, Texture.WHITE, Texture.EMPTY]);
             sprite.animationSpeed = 0.5;
             sprite.loop = false;
         });
 
-        after(() =>
+        afterAll(() =>
         {
             sprite.destroy();
             sprite = null;
@@ -142,7 +142,7 @@ describe('AnimatedSprite', () =>
                 done();
             };
             sprite.play();
-            expect(sprite.playing).to.be.true;
+            expect(sprite.playing).toBe(true);
         });
 
         it('should the current texture be the last item in textures', (done) =>
@@ -150,7 +150,7 @@ describe('AnimatedSprite', () =>
             sprite.play();
             sprite.onComplete = () =>
             {
-                expect(sprite.texture === sprite.textures[sprite.currentFrame]).to.be.true;
+                expect(sprite.texture === sprite.textures[sprite.currentFrame]).toBe(true);
                 sprite.onComplete = null;
                 done();
             };
@@ -161,14 +161,14 @@ describe('AnimatedSprite', () =>
     {
         let sprite: AnimatedSprite;
 
-        before(() =>
+        beforeAll(() =>
         {
             sprite = new AnimatedSprite([Texture.EMPTY, Texture.EMPTY, Texture.EMPTY]);
             sprite.animationSpeed = 0.5;
             sprite.loop = false;
         });
 
-        after(() =>
+        afterAll(() =>
         {
             sprite.destroy();
             sprite = null;
@@ -181,7 +181,7 @@ describe('AnimatedSprite', () =>
             sprite.onComplete = () =>
             {
                 expect(frameIds).to.deep.equal([1, 2]);
-                expect(sprite.playing).to.be.false;
+                expect(sprite.playing).toBe(false);
                 sprite.onComplete = null;
                 sprite.onFrameChange = null;
                 done();
@@ -191,7 +191,7 @@ describe('AnimatedSprite', () =>
                 frameIds.push(frame);
             };
             sprite.gotoAndPlay(1);
-            expect(sprite.playing).to.be.true;
+            expect(sprite.playing).toBe(true);
         });
     });
 
@@ -199,14 +199,14 @@ describe('AnimatedSprite', () =>
     {
         let sprite: AnimatedSprite;
 
-        before(() =>
+        beforeAll(() =>
         {
             sprite = new AnimatedSprite([Texture.EMPTY, Texture.EMPTY, Texture.EMPTY]);
             sprite.animationSpeed = 0.5;
             sprite.loop = false;
         });
 
-        after(() =>
+        afterAll(() =>
         {
             sprite.destroy();
             sprite = null;
@@ -223,14 +223,14 @@ describe('AnimatedSprite', () =>
 
             sprite.onFrameChange = (frame) =>
             {
-                expect(frame).to.equal(targetFrame);
-                expect(sprite.playing).to.be.false;
+                expect(frame).toEqual(targetFrame);
+                expect(sprite.playing).toBe(false);
                 sprite.onComplete = null;
                 sprite.onFrameChange = null;
                 done();
             };
             sprite.gotoAndStop(targetFrame);
-            expect(sprite.playing).to.be.false;
+            expect(sprite.playing).toBe(false);
         });
 
         it('should not fire onFrameChange on target frame if current is already target', () =>
@@ -245,8 +245,8 @@ describe('AnimatedSprite', () =>
                 fired = true;
             };
             sprite.gotoAndStop(targetFrame);
-            expect(sprite.playing).to.be.false;
-            expect(fired).to.be.false;
+            expect(sprite.playing).toBe(false);
+            expect(fired).toBe(false);
         });
     });
 
@@ -254,14 +254,14 @@ describe('AnimatedSprite', () =>
     {
         let sprite: AnimatedSprite;
 
-        before(() =>
+        beforeAll(() =>
         {
             sprite = new AnimatedSprite([Texture.EMPTY, Texture.WHITE, Texture.EMPTY]);
             sprite.animationSpeed = 0.5;
             sprite.loop = false;
         });
 
-        after(() =>
+        afterAll(() =>
         {
             sprite.destroy();
             sprite = null;
@@ -280,7 +280,7 @@ describe('AnimatedSprite', () =>
             sprite.onComplete = () =>
             {
                 expect(frameIds).to.deep.equal([1, 2]); // from 0 to 2, triggers onFrameChange at 1,2.
-                expect(sprite.currentFrame).to.equal(2);
+                expect(sprite.currentFrame).toEqual(2);
                 sprite.onComplete = null;
                 sprite.onFrameChange = null;
                 done();
@@ -290,7 +290,7 @@ describe('AnimatedSprite', () =>
                 frameIds.push(frame);
             };
             sprite.play();
-            expect(sprite.playing).to.be.true;
+            expect(sprite.playing).toBe(true);
         });
 
         it('should fire every frame(except current) during one play - reverse', (done) =>
@@ -302,7 +302,7 @@ describe('AnimatedSprite', () =>
             sprite.onComplete = () =>
             {
                 expect(frameIds).to.deep.equal([1, 0]); // from 2 to 0, triggers onFrameChange at 1,0.
-                expect(sprite.currentFrame).to.equal(0);
+                expect(sprite.currentFrame).toEqual(0);
                 sprite.onComplete = null;
                 sprite.onFrameChange = null;
                 done();
@@ -312,7 +312,7 @@ describe('AnimatedSprite', () =>
                 frameIds.push(frame);
             };
             sprite.play();
-            expect(sprite.playing).to.be.true;
+            expect(sprite.playing).toBe(true);
         });
 
         it('should fire every frame(except current) during one play - from not start/end', (done) =>
@@ -324,7 +324,7 @@ describe('AnimatedSprite', () =>
             sprite.onComplete = () =>
             {
                 expect(frameIds).to.deep.equal([0]); // from 1 to 0, triggers onFrameChange at 0.
-                expect(sprite.currentFrame).to.equal(0);
+                expect(sprite.currentFrame).toEqual(0);
                 sprite.onComplete = null;
                 sprite.onFrameChange = null;
                 done();
@@ -334,7 +334,7 @@ describe('AnimatedSprite', () =>
                 frameIds.push(frame);
             };
             sprite.play();
-            expect(sprite.playing).to.be.true;
+            expect(sprite.playing).toBe(true);
         });
     });
 
@@ -360,8 +360,8 @@ describe('AnimatedSprite', () =>
 
                 sprite.textures = [frame1, frame2, frame3];
 
-                expect(sprite.currentFrame).to.equal(0);
-                expect(sprite._texture).to.equal(frame1);
+                expect(sprite.currentFrame).toEqual(0);
+                expect(sprite._texture).toEqual(frame1);
 
                 done();
             };

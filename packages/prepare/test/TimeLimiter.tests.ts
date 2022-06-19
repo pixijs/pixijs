@@ -13,16 +13,16 @@ describe('TimeLimiter', () =>
         limit.beginFrame();
         for (let i = 0; i < 20; ++i)
         {
-            expect(limit.allowedToUpload()).to.be.true;
+            expect(limit.allowedToUpload()).toBe(true);
         }
 
         setTimeout(() =>
         {
-            expect(limit.allowedToUpload()).to.be.false;
+            expect(limit.allowedToUpload()).toBe(false);
 
             limit.beginFrame();
 
-            expect(limit.allowedToUpload()).to.be.true;
+            expect(limit.allowedToUpload()).toBe(true);
 
             done();
         }, 200);

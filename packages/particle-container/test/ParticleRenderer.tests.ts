@@ -9,15 +9,15 @@ skipHello();
 
 describe('ParticleRenderer', () =>
 {
-    before(() => extensions.add(ParticleRenderer));
-    after(() => extensions.remove(ParticleRenderer));
+    beforeAll(() => extensions.add(ParticleRenderer));
+    afterAll(() => extensions.remove(ParticleRenderer));
 
     it('should render a particle container with no children', () =>
     {
         const renderer = new Renderer();
         const container = new ParticleContainer();
 
-        expect(container.children.length).to.equal(0);
+        expect(container.children.length).toEqual(0);
 
         renderer.render(container);
         container.destroy();
@@ -44,7 +44,7 @@ describe('ParticleRenderer', () =>
 
         const child = Sprite.from(image);
 
-        expect(child.texture.baseTexture.valid).to.be.false;
+        expect(child.texture.baseTexture.valid).toBe(false);
 
         const container = new ParticleContainer();
         const renderer = new Renderer();

@@ -16,8 +16,8 @@ describe('toLocal', () =>
 
         let localPoint = container.toLocal(point);
 
-        expect(localPoint.x).to.equal(100);
-        expect(localPoint.y).to.equal(100);
+        expect(localPoint.x).toEqual(100);
+        expect(localPoint.y).toEqual(100);
 
         container.position.x = 20;
         container.position.y = 20;
@@ -27,8 +27,8 @@ describe('toLocal', () =>
 
         localPoint = container.toLocal(point);
 
-        expect(localPoint.x).to.equal(40);
-        expect(localPoint.y).to.equal(40);
+        expect(localPoint.x).toEqual(40);
+        expect(localPoint.y).toEqual(40);
     });
 
     it('should map the correct local cordinates of a displayObject to another', () =>
@@ -51,7 +51,7 @@ describe('toLocal', () =>
 
         const localPoint = container.toLocal(point, container2);
 
-        expect(localPoint.x).to.equal(100);
-        expect(localPoint.y).to.equal(100);
+        expect(localPoint.x).toEqual(100);
+        expect(localPoint.y).toEqual(100);
     });
 });

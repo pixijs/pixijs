@@ -10,13 +10,13 @@ describe('autoDetectResource', () =>
 {
     it('should have api', () =>
     {
-        expect(autoDetectResource).to.be.a('function');
+        expect(autoDetectResource).toBeInstanceOf(Function);
     });
 
     it('should have installed resources', () =>
     {
         expect(INSTALLED).to.be.an('array');
-        expect(INSTALLED.length).to.equal(8);
+        expect(INSTALLED.length).toEqual(8);
     });
 
     it('should auto-detect canvas element', () =>
@@ -29,8 +29,8 @@ describe('autoDetectResource', () =>
         const resource = autoDetectResource(canvas);
 
         expect(resource).is.instanceOf(CanvasResource);
-        expect(resource.width).to.equal(200);
-        expect(resource.height).to.equal(100);
+        expect(resource.width).toEqual(200);
+        expect(resource.height).toEqual(100);
     });
 
     it('should auto-detect video element', () =>
@@ -77,7 +77,7 @@ describe('autoDetectResource', () =>
     {
         const resource = autoDetectResource(null);
 
-        expect(resource).to.equal(null);
+        expect(resource).toEqual(null);
     });
 
     it('should throw for unknown types', () =>

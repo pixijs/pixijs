@@ -8,7 +8,7 @@ describe('utils', () =>
         it('should exist', () =>
         {
             expect(utils.uid)
-                .to.be.a('function');
+                .toBeInstanceOf(Function);
         });
 
         it('should return a number', () =>
@@ -23,7 +23,7 @@ describe('utils', () =>
         it('should exist', () =>
         {
             expect(utils.hex2rgb)
-                .to.be.a('function');
+                .toBeInstanceOf(Function);
         });
 
         // it('should properly convert number to rgb array');
@@ -34,7 +34,7 @@ describe('utils', () =>
         it('should exist', () =>
         {
             expect(utils.hex2string)
-                .to.be.a('function');
+                .toBeInstanceOf(Function);
         });
 
         const testCases = [
@@ -56,7 +56,7 @@ describe('utils', () =>
         {
             it(`should properly convert number 0x${num.toString(16)} to hex color string #${result}`, () =>
             {
-                expect(utils.hex2string(num as number)).to.equals(result);
+                expect(utils.hex2string(num as number)).toEquals(result);
             });
         });
     });
@@ -66,12 +66,12 @@ describe('utils', () =>
         it('should exist', () =>
         {
             expect(utils.rgb2hex)
-                .to.be.a('function');
+                .toBeInstanceOf(Function);
         });
 
         it('should calculate correctly', () =>
         {
-            expect(utils.rgb2hex([0.3, 0.2, 0.1])).to.equals(0x4c3319);
+            expect(utils.rgb2hex([0.3, 0.2, 0.1])).toEquals(0x4c3319);
         });
 
         // it('should properly convert rgb array to hex color string');
@@ -82,7 +82,7 @@ describe('utils', () =>
         it('should exist', () =>
         {
             expect(utils.getResolutionOfUrl)
-                .to.be.a('function');
+                .toBeInstanceOf(Function);
         });
 
         // it('should return the correct resolution based on a URL');
@@ -93,7 +93,7 @@ describe('utils', () =>
         it('should exist', () =>
         {
             expect(utils.decomposeDataUri)
-                .to.be.a('function');
+                .toBeInstanceOf(Function);
         });
 
         it('should decompose a data URI', () =>
@@ -103,15 +103,15 @@ describe('utils', () =>
             expect(dataUri)
                 .to.be.an('object');
             expect(dataUri.mediaType)
-                .to.equal('image');
+                .toEqual('image');
             expect(dataUri.subType)
-                .to.equal('png');
+                .toEqual('png');
             expect(dataUri.charset)
                 .to.be.an('undefined');
             expect(dataUri.encoding)
-                .to.equal('base64');
+                .toEqual('base64');
             expect(dataUri.data)
-                .to.equal('94Z9RWUN77ZW');
+                .toEqual('94Z9RWUN77ZW');
         });
 
         it('should decompose a data URI with charset', () =>
@@ -121,15 +121,15 @@ describe('utils', () =>
             expect(dataUri)
                 .to.be.an('object');
             expect(dataUri.mediaType)
-                .to.equal('image');
+                .toEqual('image');
             expect(dataUri.subType)
-                .to.equal('svg+xml');
+                .toEqual('svg+xml');
             expect(dataUri.charset)
-                .to.equal('utf8');
+                .toEqual('utf8');
             expect(dataUri.encoding)
-                .to.equal('base64');
+                .toEqual('base64');
             expect(dataUri.data)
-                .to.equal('PGRpdiB4bWxucz0Pg==');
+                .toEqual('PGRpdiB4bWxucz0Pg==');
         });
 
         it('should decompose a data URI with charset without encoding', () =>
@@ -139,15 +139,15 @@ describe('utils', () =>
             expect(dataUri)
                 .to.be.an('object');
             expect(dataUri.mediaType)
-                .to.equal('image');
+                .toEqual('image');
             expect(dataUri.subType)
-                .to.equal('svg+xml');
+                .toEqual('svg+xml');
             expect(dataUri.charset)
-                .to.equal('utf8');
+                .toEqual('utf8');
             expect(dataUri.encoding)
                 .to.be.an('undefined');
             expect(dataUri.data)
-                .to.equal('PGRpdiB4bWxucz0Pg==');
+                .toEqual('PGRpdiB4bWxucz0Pg==');
         });
 
         it('should return undefined for anything else', () =>
@@ -164,7 +164,7 @@ describe('utils', () =>
         it('should exist', () =>
         {
             expect(utils.sayHello)
-                .to.be.a('function');
+                .toBeInstanceOf(Function);
         });
     });
 
@@ -173,7 +173,7 @@ describe('utils', () =>
         it('should exist', () =>
         {
             expect(utils.isWebGLSupported)
-                .to.be.a('function');
+                .toBeInstanceOf(Function);
         });
     });
 
@@ -208,7 +208,7 @@ describe('utils', () =>
     {
         it('should exist', () =>
         {
-            expect(utils.removeItems).to.be.a('function');
+            expect(utils.removeItems).toBeInstanceOf(Function);
         });
 
         it('should return if the start index is greater than or equal to the length of the array', () =>
@@ -216,7 +216,7 @@ describe('utils', () =>
             const arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
             utils.removeItems(arr, arr.length + 1, 5);
-            expect(arr.length).to.equal(10);
+            expect(arr.length).toEqual(10);
         });
 
         it('should return if the remove count is 0', () =>
@@ -224,7 +224,7 @@ describe('utils', () =>
             const arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
             utils.removeItems(arr, 2, 0);
-            expect(arr.length).to.equal(10);
+            expect(arr.length).toEqual(10);
         });
 
         it('should remove the number of elements specified from the array, starting from the start index', () =>
@@ -248,7 +248,7 @@ describe('utils', () =>
     {
         it('should exist', () =>
         {
-            expect(utils.EventEmitter).to.be.a('function');
+            expect(utils.EventEmitter).toBeInstanceOf(Function);
         });
     });
 
@@ -269,7 +269,7 @@ describe('utils', () =>
     {
         it('should exist', () =>
         {
-            expect(utils.earcut).to.be.a('function');
+            expect(utils.earcut).toBeInstanceOf(Function);
         });
     });
 });

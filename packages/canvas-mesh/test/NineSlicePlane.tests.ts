@@ -11,13 +11,13 @@ describe('NineSlicePlane', () =>
 {
     let renderer: CanvasRenderer;
 
-    before(() =>
+    beforeAll(() =>
     {
         extensions.add(CanvasSpriteRenderer, CanvasMeshRenderer, BatchRenderer);
         renderer = new CanvasRenderer();
     });
 
-    after(() =>
+    afterAll(() =>
     {
         extensions.remove(CanvasSpriteRenderer, CanvasMeshRenderer, BatchRenderer);
         renderer.destroy();
