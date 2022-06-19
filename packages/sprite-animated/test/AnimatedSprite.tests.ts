@@ -131,10 +131,7 @@ describe('AnimatedSprite', () =>
         // eslint-disable-next-line func-names
         it('should fire onComplete', (done) =>
         {
-            jest.setTimeout((
-                sprite.textures.length * 1000 / 60 / sprite.animationSpeed)
-                + (1000 / 60 / sprite.animationSpeed * 0.9)
-            );
+            jest.setTimeout(5000);
             sprite.onComplete = () =>
             {
                 sprite.onComplete = null;
@@ -146,6 +143,7 @@ describe('AnimatedSprite', () =>
 
         it('should the current texture be the last item in textures', (done) =>
         {
+            jest.setTimeout(5000);
             sprite.play();
             sprite.onComplete = () =>
             {
@@ -175,6 +173,7 @@ describe('AnimatedSprite', () =>
 
         it('should fire frame after start frame during one play and fire onComplete', (done) =>
         {
+            jest.setTimeout(5000);
             const frameIds = [] as number[];
 
             sprite.onComplete = () =>

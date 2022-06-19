@@ -1,3 +1,5 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import sinon from 'sinon';
 import { IResourceMetadata, LoaderResource } from '@pixi/loaders';

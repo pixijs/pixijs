@@ -6,6 +6,11 @@ import { isMobile } from '@pixi/utils';
 
 describe('AccessibilityManager', () =>
 {
+    beforeAll(() =>
+    {
+        extensions.add(AccessibilityManager);
+    });
+
     it('should exist', () =>
     {
         expect(AccessibilityManager).toBeDefined();
@@ -52,9 +57,12 @@ describe('AccessibilityManager', () =>
         const manager = new AccessibilityManager(renderer);
 
         globalThis.dispatchEvent(new KeyboardEvent('keydown', { keyCode: 9, key: 'tab' }));
-        expect(manager.isActive).toBe(true);
-        globalThis.document.dispatchEvent(new MouseEvent('mousemove', { movementX: 10, movementY: 10 }));
-        expect(manager.isActive).toBe(false);
+        setTimeout(() =>
+        {
+            expect(manager.isActive).toBe(true);
+            globalThis.document.dispatchEvent(new MouseEvent('mousemove', { movementX: 10, movementY: 10 }));
+            expect(manager.isActive).toBe(false);
+        }, 0);
     });
 
     it('should not crash when scene graph contains DisplayObjects without children', () =>
@@ -73,6 +81,9 @@ describe('AccessibilityManager', () =>
         globalThis.dispatchEvent(new KeyboardEvent('keydown', { keyCode: 9, key: 'tab' }));
 
         expect(() => renderer.render(stage)).not.toThrowError();
-        expect(manager.isActive).toBe(true);
+        setTimeout(() =>
+        {
+            expect(manager.isActive).toBe(true);
+        }, 0);
     });
 });
