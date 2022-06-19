@@ -5,8 +5,6 @@ import { BaseTextureCache, TextureCache } from '@pixi/utils';
 import { Texture, BaseTexture, ImageResource } from '@pixi/core';
 import { ISpritesheetData, Spritesheet } from '@pixi/spritesheet';
 import { BitmapFont, BitmapFontLoader } from '@pixi/text-bitmap';
-import sinon from 'sinon';
-import { expect } from 'chai';
 
 describe('BitmapFontLoader', () =>
 {

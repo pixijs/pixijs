@@ -2,7 +2,6 @@ import { Prepare } from '@pixi/prepare';
 import { BatchRenderer, extensions, Renderer, Texture } from '@pixi/core';
 import { Container } from '@pixi/display';
 import { Graphics } from '@pixi/graphics';
-import { expect } from 'chai';
 
 describe('Prepare', () =>
 {

@@ -1,5 +1,4 @@
 import * as lib from '@pixi/constants';
-import { expect } from 'chai';
 
 describe('Constants', () =>
 {

@@ -1,6 +1,4 @@
 import { Ticker, TickerPlugin, UPDATE_PRIORITY } from '@pixi/ticker';
-import { expect } from 'chai';
-import sinon from 'sinon';
 
 describe('TickerPlugin', () =>
 {

@@ -1,7 +1,6 @@
 import { Mesh, MeshGeometry, MeshMaterial } from '@pixi/mesh';
 import { skipHello } from '@pixi/utils';
-import sinon from 'sinon';
-import { expect } from 'chai';
+
 import { Texture } from '@pixi/core';
 
 skipHello();

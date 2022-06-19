@@ -3,8 +3,6 @@ import { Container, DisplayObject } from '@pixi/display';
 import { AlphaFilter } from '@pixi/filter-alpha';
 import { Graphics } from '@pixi/graphics';
 import { Rectangle } from '@pixi/math';
-import sinon from 'sinon';
-import { expect } from 'chai';
 
 function testAddChild(fn: any)
 {

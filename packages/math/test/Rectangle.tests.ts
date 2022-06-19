@@ -1,5 +1,4 @@
 import { Rectangle, Matrix } from '@pixi/math';
-import { expect } from 'chai';
 
 describe('Rectangle', () =>
 {

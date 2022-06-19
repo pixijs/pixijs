@@ -1,8 +1,6 @@
 import { Renderer, BatchRenderer, CanvasResource, Texture, BaseTexture, IBatchableElement } from '@pixi/core';
 import { skipHello } from '@pixi/utils';
 import { BLEND_MODES } from '@pixi/constants';
-import sinon from 'sinon';
-import { expect } from 'chai';
 
 skipHello();
 

@@ -1,5 +1,4 @@
 import { Buffer, Geometry, Program, Renderer, Shader, Texture } from '@pixi/core';
-import { expect } from 'chai';
 
 const vert = `
 attribute vec2 aVertexPosition;

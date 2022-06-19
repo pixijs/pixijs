@@ -1,6 +1,5 @@
 import { Texture, BaseTexture } from '@pixi/core';
 import { TextureCache, destroyTextureCache, clearTextureCache, BaseTextureCache } from '@pixi/utils';
-import { expect } from 'chai';
 
 describe('TextureCache', () =>
 {

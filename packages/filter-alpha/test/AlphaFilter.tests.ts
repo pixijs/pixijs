@@ -1,5 +1,4 @@
 import { AlphaFilter } from '@pixi/filter-alpha';
-import { expect } from 'chai';
 
 describe('AlphaFilter', () =>
 {

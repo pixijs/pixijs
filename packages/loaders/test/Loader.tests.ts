@@ -4,7 +4,6 @@ import { TextureCache } from '@pixi/utils';
 import { SCALE_MODES } from '@pixi/constants';
 import { createServer } from './resources';
 
-import { expect } from 'chai';
 import { Server } from 'http';
 
 const createRandomName = () => `image${(Math.random() * 10000) | 0}`;

@@ -1,5 +1,4 @@
 import { Point } from '@pixi/math';
-import { expect } from 'chai';
 
 describe('Point', () =>
 {

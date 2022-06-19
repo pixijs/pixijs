@@ -2,8 +2,6 @@ import { Container } from '@pixi/display';
 import { Graphics } from '@pixi/graphics';
 import { Sprite } from '@pixi/sprite';
 import { CanvasRenderer } from '@pixi/canvas-renderer';
-import sinon from 'sinon';
-import { expect } from 'chai';
 
 describe('CanvasMaskManager', () =>
 {

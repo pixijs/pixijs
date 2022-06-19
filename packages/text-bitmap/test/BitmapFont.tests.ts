@@ -1,5 +1,4 @@
 import { BitmapFont } from '@pixi/text-bitmap';
-import { expect } from 'chai';
 
 describe('BitmapFont', () =>
 {

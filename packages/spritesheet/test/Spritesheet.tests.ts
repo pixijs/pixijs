@@ -1,7 +1,6 @@
 import { ISpritesheetData, ISpritesheetFrameData, Spritesheet } from '@pixi/spritesheet';
 import { BaseTexture, ImageResource, Texture } from '@pixi/core';
 import path from 'path';
-import { expect } from 'chai';
 
 describe('Spritesheet', () =>
 {

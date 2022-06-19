@@ -1,8 +1,6 @@
 import { CLEAR_MODES } from '@pixi/constants';
 import { Filter, IFilterTarget, Renderer } from '@pixi/core';
 import { Matrix, Rectangle } from '@pixi/math';
-import { expect } from 'chai';
-import sinon from 'sinon';
 
 describe('FilterSystem', () =>
 {

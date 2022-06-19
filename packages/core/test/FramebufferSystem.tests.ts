@@ -1,7 +1,6 @@
 import { Renderer, Framebuffer } from '@pixi/core';
 import { MSAA_QUALITY } from '@pixi/constants';
 import { Rectangle } from '@pixi/math';
-import { expect } from 'chai';
 
 describe('FramebufferSystem', () =>
 {

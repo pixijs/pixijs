@@ -3,8 +3,6 @@ import { IAddOptions, Loader, LoaderResource } from '@pixi/loaders';
 import { Texture, BaseTexture, extensions } from '@pixi/core';
 import { BaseTextureCache, TextureCache, url, clearTextureCache } from '@pixi/utils';
 import { SpritesheetLoader, Spritesheet } from '@pixi/spritesheet';
-import sinon from 'sinon';
-import { expect } from 'chai';
 
 describe('SpritesheetLoader', () =>
 {

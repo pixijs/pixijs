@@ -1,4 +1,3 @@
-import { expect } from 'chai';
 import { floatEqual } from '@pixi/math-extras';
 
 describe('floatEqual', () =>

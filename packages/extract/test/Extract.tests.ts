@@ -1,5 +1,5 @@
 import { Sprite } from '@pixi/sprite';
-import { expect } from 'chai';
+
 import { skipHello } from '@pixi/utils';
 import { Texture, RenderTexture, BatchRenderer, Renderer, extensions } from '@pixi/core';
 import { Extract } from '@pixi/extract';

@@ -1,5 +1,4 @@
 import { DisplayObject, Container } from '@pixi/display';
-import { expect } from 'chai';
 
 import '@pixi/mixin-get-child-by-name';
 

@@ -2,7 +2,7 @@ import { BaseTextureCache, TextureCache } from '@pixi/utils';
 import { Rectangle, Point } from '@pixi/math';
 import { BaseTexture, ImageResource, Texture } from '@pixi/core';
 import { settings } from '@pixi/settings';
-import { expect } from 'chai';
+
 import path from 'path';
 
 const URL = 'foo.png';

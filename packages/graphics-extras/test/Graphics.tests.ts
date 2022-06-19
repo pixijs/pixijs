@@ -1,5 +1,5 @@
 import { Graphics } from '@pixi/graphics';
-import { expect } from 'chai';
+
 import '@pixi/graphics-extras';
 
 describe('Graphics', () =>

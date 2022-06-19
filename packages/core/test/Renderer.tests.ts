@@ -3,8 +3,6 @@ import { Graphics } from '@pixi/graphics';
 import { settings } from '@pixi/settings';
 import { ENV, MSAA_QUALITY } from '@pixi/constants';
 import { skipHello } from '@pixi/utils';
-import sinon from 'sinon';
-import { expect } from 'chai';
 
 skipHello();
 

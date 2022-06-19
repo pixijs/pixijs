@@ -1,6 +1,5 @@
 import { CanvasRenderTarget } from '@pixi/utils';
 import { settings } from '@pixi/settings';
-import { expect } from 'chai';
 
 describe('CanvasRenderTarget', () =>
 {

@@ -1,7 +1,6 @@
 import { SimpleMesh } from '@pixi/mesh-extras';
 import { skipHello } from '@pixi/utils';
 import { Renderer, BatchRenderer, extensions } from '@pixi/core';
-import { expect } from 'chai';
 
 skipHello();
 

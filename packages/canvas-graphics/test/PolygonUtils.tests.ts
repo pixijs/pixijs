@@ -1,5 +1,4 @@
 import { PolygonUtils } from '../src/utils/PolygonUtils';
-import { expect } from 'chai';
 
 describe('PolygonUtils', () =>
 {

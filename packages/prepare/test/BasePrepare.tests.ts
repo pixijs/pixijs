@@ -1,6 +1,5 @@
 import { BasePrepare } from '@pixi/prepare';
-import sinon from 'sinon';
-import { expect } from 'chai';
+
 import { AbstractRenderer } from '@pixi/core';
 import { DisplayObject } from '@pixi/display';
 

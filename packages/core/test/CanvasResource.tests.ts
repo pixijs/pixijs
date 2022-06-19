@@ -1,6 +1,4 @@
 import { CanvasResource, BaseTexture } from '@pixi/core';
-import sinon from 'sinon';
-import { expect } from 'chai';
 
 describe('CanvasResource', () =>
 {

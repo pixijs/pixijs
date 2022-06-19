@@ -9,7 +9,7 @@ import {
     getTestContext,
     IRenderingContext,
 } from '@pixi/core';
-import { expect } from 'chai';
+
 import { skipHello } from '@pixi/utils';
 import { Matrix, Rectangle, Point } from '@pixi/math';
 

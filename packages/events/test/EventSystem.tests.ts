@@ -2,8 +2,6 @@ import { BatchRenderer, extensions, Renderer } from '@pixi/core';
 import { Container } from '@pixi/display';
 import { EventSystem } from '@pixi/events';
 import { Graphics } from '@pixi/graphics';
-import sinon from 'sinon';
-import { expect } from 'chai';
 
 function createRenderer(view?: HTMLCanvasElement, supportsPointerEvents?: boolean)
 {

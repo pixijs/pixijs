@@ -3,7 +3,6 @@ import { Graphics } from '@pixi/graphics';
 import { Container } from '@pixi/display';
 import { MSAA_QUALITY } from '@pixi/constants';
 import { AlphaFilter } from '@pixi/filter-alpha';
-import { expect } from 'chai';
 
 describe('RenderTexture', () =>
 {

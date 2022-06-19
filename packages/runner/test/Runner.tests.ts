@@ -1,6 +1,4 @@
 import { Runner } from '@pixi/runner';
-import sinon from 'sinon';
-import { expect } from 'chai';
 
 describe('Runner', () =>
 {

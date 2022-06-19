@@ -1,7 +1,6 @@
 import { DisplayObject, Container } from '@pixi/display';
 import { Renderer, Filter, extensions, BatchRenderer } from '@pixi/core';
 import { Rectangle } from '@pixi/math';
-import { expect } from 'chai';
 
 import '@pixi/mixin-cache-as-bitmap';
 

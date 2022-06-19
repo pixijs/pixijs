@@ -1,5 +1,5 @@
 import { Point } from '@pixi/math';
-import { expect } from 'chai';
+
 import { segmentIntersection } from '@pixi/math-extras';
 
 describe('segmentIntersection', () =>

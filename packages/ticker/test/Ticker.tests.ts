@@ -1,6 +1,4 @@
 import { Ticker, UPDATE_PRIORITY } from '@pixi/ticker';
-import sinon from 'sinon';
-import { expect } from 'chai';
 
 const { shared, system } = Ticker;
 

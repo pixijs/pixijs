@@ -5,7 +5,6 @@ import { NineSlicePlane } from '@pixi/mesh-extras';
 import '@pixi/canvas-display';
 import { CanvasSpriteRenderer } from '@pixi/canvas-sprite';
 import { CanvasMeshRenderer } from '@pixi/canvas-mesh';
-import { expect } from 'chai';
 
 describe('NineSlicePlane', () =>
 {

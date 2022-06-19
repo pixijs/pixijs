@@ -1,6 +1,5 @@
 import { AnimatedSprite } from '@pixi/sprite-animated';
 import { Texture } from '@pixi/core';
-import { expect } from 'chai';
 
 describe('AnimatedSprite', () =>
 {

@@ -1,5 +1,4 @@
 import { ITextStyle, TextMetrics, TextStyle } from '@pixi/text';
-import { expect } from 'chai';
 
 /**
  * Fonts render slightly differently between platforms so tests that depend on a specific

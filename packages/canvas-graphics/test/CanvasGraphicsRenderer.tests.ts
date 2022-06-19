@@ -2,7 +2,6 @@ import { BaseTexture, Texture } from '@pixi/core';
 import { Graphics } from '@pixi/graphics';
 import { CanvasRenderer } from '@pixi/canvas-renderer';
 import { CanvasGraphicsRenderer } from '@pixi/canvas-graphics';
-import { expect } from 'chai';
 
 describe('CanvasGraphicsRenderer', () =>
 {

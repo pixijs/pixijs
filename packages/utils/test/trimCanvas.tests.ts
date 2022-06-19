@@ -1,5 +1,4 @@
 import { trimCanvas } from '@pixi/utils';
-import { expect } from 'chai';
 
 describe('trimCanvas', () =>
 {

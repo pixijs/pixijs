@@ -1,7 +1,6 @@
 import { ParticleContainer } from '@pixi/particle-container';
 import { Sprite } from '@pixi/sprite';
 import { Texture } from '@pixi/core';
-import { expect } from 'chai';
 
 describe('ParticleContainer', () =>
 {

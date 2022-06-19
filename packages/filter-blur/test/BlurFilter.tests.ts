@@ -1,5 +1,4 @@
 import { BlurFilter } from '@pixi/filter-blur';
-import { expect } from 'chai';
 
 describe('BlurFilter', () =>
 {

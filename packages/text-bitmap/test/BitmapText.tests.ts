@@ -3,8 +3,7 @@ import fs from 'fs';
 import { BitmapText, BitmapFont } from '@pixi/text-bitmap';
 import { settings } from '@pixi/settings';
 import { Texture, Renderer } from '@pixi/core';
-import sinon from 'sinon';
-import { expect } from 'chai';
+
 import { Container } from '@pixi/display';
 
 describe('BitmapText', () =>

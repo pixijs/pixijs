@@ -2,7 +2,7 @@ import { ParticleContainer, ParticleRenderer } from '@pixi/particle-container';
 import { Texture, Renderer, extensions } from '@pixi/core';
 import { skipHello } from '@pixi/utils';
 import { Sprite } from '@pixi/sprite';
-import { expect } from 'chai';
+
 import path from 'path';
 
 skipHello();

@@ -1,5 +1,4 @@
 import { RenderTexturePool } from '@pixi/core';
-import { expect } from 'chai';
 
 describe('RenderTexturePool', () =>
 {

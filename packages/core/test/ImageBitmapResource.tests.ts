@@ -1,6 +1,4 @@
 import { BaseTexture, ImageBitmapResource } from '@pixi/core';
-import sinon from 'sinon';
-import { expect } from 'chai';
 
 describe('ImageBitmapResource', () =>
 {

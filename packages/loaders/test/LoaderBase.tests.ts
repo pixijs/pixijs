@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import sinon from 'sinon';
+
 import { Loader, LoaderResource } from '@pixi/loaders';
-import { expect } from 'chai';
+
 import { fixtureData } from './fixtures/data';
 import { spritesheetMiddleware } from './fixtures/spritesheet';
 import { Dict } from '@pixi/utils/src';

@@ -1,5 +1,5 @@
 import { Rectangle } from '@pixi/math';
-import { expect } from 'chai';
+
 import '@pixi/math-extras';
 
 describe('Rectangle', () =>

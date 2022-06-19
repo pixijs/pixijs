@@ -1,7 +1,6 @@
 import { InteractionData } from '@pixi/interaction';
 import { DisplayObject } from '@pixi/display';
 import { Point } from '@pixi/math';
-import { expect } from 'chai';
 
 import '@pixi/canvas-display';
 

@@ -1,5 +1,4 @@
 import { CountLimiter } from '@pixi/prepare';
-import { expect } from 'chai';
 
 describe('CountLimiter', () =>
 {

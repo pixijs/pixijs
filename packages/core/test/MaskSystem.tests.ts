@@ -16,8 +16,6 @@ import {
 import { Graphics } from '@pixi/graphics';
 import { Matrix, Rectangle } from '@pixi/math';
 import { Sprite } from '@pixi/sprite';
-import { expect } from 'chai';
-import sinon from 'sinon';
 
 describe('MaskSystem', () =>
 {

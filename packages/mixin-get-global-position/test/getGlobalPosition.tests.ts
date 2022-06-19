@@ -1,5 +1,4 @@
 import { Container, DisplayObject } from '@pixi/display';
-import { expect } from 'chai';
 
 import '@pixi/mixin-get-global-position';
 

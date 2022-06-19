@@ -1,5 +1,4 @@
 import { ColorMatrixFilter } from '@pixi/filter-color-matrix';
-import { expect } from 'chai';
 
 describe('ColorMatrixFilter', () =>
 {

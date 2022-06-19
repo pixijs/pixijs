@@ -1,7 +1,7 @@
 import { BatchRenderer, extensions, Texture } from '@pixi/core';
 import { Sprite } from '@pixi/sprite';
 import { CanvasRenderer } from '@pixi/canvas-renderer';
-import { expect } from 'chai';
+
 import { CanvasSpriteRenderer } from '@pixi/canvas-sprite';
 
 describe('CanvasSpriteRenderer', () =>
