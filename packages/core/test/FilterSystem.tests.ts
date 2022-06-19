@@ -33,7 +33,7 @@ describe('FilterSystem', () =>
     {
         const innerFilter = new Filter();
         const filter = new Filter();
-        const clearSpy = sinon.spy(renderer.framebuffer, 'clear');
+        const clearSpy = jest.spyOn(renderer.framebuffer, 'clear');
         const obj = onePixelObject();
         const filterSystem = renderer.filter;
 
@@ -59,7 +59,7 @@ describe('FilterSystem', () =>
             filterSystem.push(obj, [filter]);
             filterSystem.pop();
 
-            const val = clearSpy.callCount;
+            const val = clearSpy.mock.calls.length;
             const clears = val - prevCalls - 1;
 
             prevCalls = val;
@@ -77,7 +77,7 @@ describe('FilterSystem', () =>
         // check that there are two temp textures of same size
         const keys = Object.keys(filterSystem.texturePool.texturePool);
 
-        expect(keys.sort()).to.deep.eq(['65537']);
+        expect(keys.sort()).toEqual(['65537']);
         expect(filterSystem.texturePool.texturePool[65537].length).toEqual(2);
     });
 
@@ -107,20 +107,20 @@ describe('FilterSystem', () =>
         const newDst = renderer.projection.destinationFrame;
 
         // coords are cut to left-top corner of src, moved by inverse of transform
-        expect(newSrc.x).equal(23);
-        expect(newSrc.y).equal(15);
+        expect(newSrc.x).toEqual(23);
+        expect(newSrc.y).toEqual(15);
         // 20-14 = 6, but left pixel start at 9, so we cut 3 pixels, making width=10-3=7,
         //  but round it to 8 because we scale it down 2 times in src->dst
-        expect(newSrc.width).equal(8);
+        expect(newSrc.width).toEqual(8);
         // cut 5 pixels from height, 10-5=5, rounded up to 6 to match resulting pixel grid
-        expect(newSrc.height).equal(6);
+        expect(newSrc.height).toEqual(6);
         // destination has the same size
-        expect(newDst.width).equal(8);
-        expect(newDst.height).equal(6);
+        expect(newDst.width).toEqual(8);
+        expect(newDst.height).toEqual(6);
         renderer.filter.pop();
         expect(renderer.projection.transform).toEqual(trans);
-        expect(rectToString(renderer.projection.sourceFrame)).equal(rectToString(src));
-        expect(rectToString(renderer.projection.destinationFrame)).equal(rectToString(dst));
+        expect(rectToString(renderer.projection.sourceFrame)).toEqual(rectToString(src));
+        expect(rectToString(renderer.projection.destinationFrame)).toEqual(rectToString(dst));
         renderer.projection.transform = null;
     });
 
@@ -147,9 +147,9 @@ describe('FilterSystem', () =>
         const newSrc = renderer.projection.sourceFrame;
 
         // Coords are shifted by 2x (0.1, 0.1)
-        expect(newSrc.x).to.be.closeTo(-0.9, 1e-5);
-        expect(newSrc.y).to.be.closeTo(-0.9, 1e-5);
-        expect(newSrc.width).to.closeTo(101, 1e-5);
-        expect(newSrc.height).to.closeTo(101, 1e-5);
+        expect(newSrc.x).toBeCloseTo(-0.9, 1e-5);
+        expect(newSrc.y).toBeCloseTo(-0.9, 1e-5);
+        expect(newSrc.width).toBeCloseTo(101, 1e-5);
+        expect(newSrc.height).toBeCloseTo(101, 1e-5);
     });
 });

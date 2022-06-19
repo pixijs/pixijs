@@ -11,7 +11,7 @@ describe('TextureCache', () =>
 
     it('should exist', () =>
     {
-        expect(TextureCache).to.be.an('object');
+        expect(TextureCache).toBeObject();
     });
 
     describe('destroyTextureCache', () =>

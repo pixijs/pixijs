@@ -29,8 +29,8 @@ describe('TextStyle', () =>
         const style = new TextStyle({ fontSize: 72 });
         const font = style.toFontString();
 
-        expect(font).to.be.a.string;
-        expect(font).to.have.string(' 72px ');
+        expect(font).toBeString();
+        expect(font).toContain(' 72px ');
     });
 
     it('should handle multiple fonts as array', () =>
@@ -39,7 +39,7 @@ describe('TextStyle', () =>
             fontFamily: ['Georgia', 'Arial', 'sans-serif'],
         });
 
-        expect(style.toFontString()).to.have.string('"Georgia","Arial",sans-serif');
+        expect(style.toFontString()).toContain('"Georgia","Arial",sans-serif');
     });
 
     it('should handle multiple fonts as string', () =>
@@ -48,7 +48,7 @@ describe('TextStyle', () =>
             fontFamily: 'Georgia, "Arial", sans-serif',
         });
 
-        expect(style.toFontString()).to.have.string('"Georgia","Arial",sans-serif');
+        expect(style.toFontString()).toContain('"Georgia","Arial",sans-serif');
     });
 
     it('should not shared array / object references between different instances', () =>
@@ -58,7 +58,7 @@ describe('TextStyle', () =>
 
         expect(defaultStyle.fillGradientStops.length).toEqual(style.fillGradientStops.length);
         style.fillGradientStops.push(0);
-        expect(defaultStyle.fillGradientStops.length).to.not.equal(style.fillGradientStops.length);
+        expect(defaultStyle.fillGradientStops.length).not.toEqual(style.fillGradientStops.length);
     });
 
     it('should not quote generic font families when calling toFontString', () =>

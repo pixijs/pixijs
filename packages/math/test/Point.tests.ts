@@ -21,7 +21,7 @@ describe('Point', () =>
 
         expect(p2.x).toEqual(10);
         expect(p2.y).toEqual(20);
-        expect(p1).to.not.equal(p2);
+        expect(p1).not.toBe(p2);
         expect(p1.equals(p2)).toBe(true);
     });
 

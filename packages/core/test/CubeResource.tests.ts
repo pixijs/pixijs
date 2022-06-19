@@ -17,7 +17,7 @@ describe('CubeResource', () =>
             // @ts-expect-error - using an invalid length
             // eslint-disable-next-line no-new
             new CubeResource([null, null, null, null, null, null, null, null]);
-        }).to.throw(Error, /invalid length/i);
+        }).toThrowWithMessage(Error, 'Invalid length. Got 8, expected 6');
     });
     it('should be created through BaseTexture.from()', () =>
     {

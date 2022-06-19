@@ -104,7 +104,7 @@ describe('ImageResource', () =>
 
         return resource.load().catch((error) =>
         {
-            expect(error).to.be.not.null;
+            expect(error).not.toBeNull();
         });
     });
 

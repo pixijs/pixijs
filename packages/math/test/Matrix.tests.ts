@@ -64,7 +64,7 @@ describe('Matrix', () =>
 
         const m2 = matrix.clone();
 
-        expect(m2).to.not.equal(matrix);
+        expect(m2).not.toBe(matrix);
         expect(m2.a).toEqual(2);
         expect(m2.b).toEqual(0);
         expect(m2.c).toEqual(0);
@@ -75,7 +75,8 @@ describe('Matrix', () =>
         matrix.setTransform(14, 15, 0, 0, 4, 2, 0, 0, 0);
         expect(matrix.a).toEqual(4);
         expect(matrix.b).toEqual(0);
-        expect(matrix.c).toEqual(0);
+        // Object.is cant distinguish between 0 and -0
+        expect(Math.abs(matrix.c)).toEqual(0);
         expect(matrix.d).toEqual(2);
         expect(matrix.tx).toEqual(14);
         expect(matrix.ty).toEqual(15);
@@ -192,12 +193,12 @@ describe('Matrix', () =>
             transformInitial.updateLocalTransform();
             transformDecomposed.updateLocalTransform();
 
-            expect(transformInitial.localTransform.a).to.be.closeTo(transformDecomposed.localTransform.a, 0.0001);
-            expect(transformInitial.localTransform.b).to.be.closeTo(transformDecomposed.localTransform.b, 0.0001);
-            expect(transformInitial.localTransform.c).to.be.closeTo(transformDecomposed.localTransform.c, 0.0001);
-            expect(transformInitial.localTransform.d).to.be.closeTo(transformDecomposed.localTransform.d, 0.0001);
-            expect(transformInitial.localTransform.tx).to.be.closeTo(transformDecomposed.localTransform.tx, 0.0001);
-            expect(transformInitial.localTransform.ty).to.be.closeTo(transformDecomposed.localTransform.ty, 0.0001);
+            expect(transformInitial.localTransform.a).toBeCloseTo(transformDecomposed.localTransform.a, 0.0001);
+            expect(transformInitial.localTransform.b).toBeCloseTo(transformDecomposed.localTransform.b, 0.0001);
+            expect(transformInitial.localTransform.c).toBeCloseTo(transformDecomposed.localTransform.c, 0.0001);
+            expect(transformInitial.localTransform.d).toBeCloseTo(transformDecomposed.localTransform.d, 0.0001);
+            expect(transformInitial.localTransform.tx).toBeCloseTo(transformDecomposed.localTransform.tx, 0.0001);
+            expect(transformInitial.localTransform.ty).toBeCloseTo(transformDecomposed.localTransform.ty, 0.0001);
         }
     });
 
@@ -214,10 +215,10 @@ describe('Matrix', () =>
         matrix.decompose(transform);
         transform.updateLocalTransform();
 
-        expect(result.a).to.closeTo(matrix.a, 0.001);
-        expect(result.b).to.closeTo(matrix.b, 0.001);
-        expect(result.c).to.closeTo(matrix.c, 0.001);
-        expect(result.d).to.closeTo(matrix.d, 0.001);
+        expect(result.a).toBeCloseTo(matrix.a, 0.001);
+        expect(result.b).toBeCloseTo(matrix.b, 0.001);
+        expect(result.c).toBeCloseTo(matrix.c, 0.001);
+        expect(result.d).toBeCloseTo(matrix.d, 0.001);
     });
 
     describe('decompose', () =>
@@ -234,12 +235,12 @@ describe('Matrix', () =>
 
             const localTransform = transform.localTransform;
 
-            expect(localTransform.a).to.closeTo(matrix.a, 0.001);
-            expect(localTransform.b).to.closeTo(matrix.b, 0.001);
-            expect(localTransform.c).to.closeTo(matrix.c, 0.001);
-            expect(localTransform.d).to.closeTo(matrix.d, 0.001);
-            expect(localTransform.tx).to.closeTo(matrix.tx, 0.001);
-            expect(localTransform.ty).to.closeTo(matrix.ty, 0.001);
+            expect(localTransform.a).toBeCloseTo(matrix.a, 0.001);
+            expect(localTransform.b).toBeCloseTo(matrix.b, 0.001);
+            expect(localTransform.c).toBeCloseTo(matrix.c, 0.001);
+            expect(localTransform.d).toBeCloseTo(matrix.d, 0.001);
+            expect(localTransform.tx).toBeCloseTo(matrix.tx, 0.001);
+            expect(localTransform.ty).toBeCloseTo(matrix.ty, 0.001);
         });
     });
 });

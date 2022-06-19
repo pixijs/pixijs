@@ -104,7 +104,7 @@ describe('Text', () =>
         {
             const text = new Text('foo');
 
-            expect(text.anchor).to.not.equal(null);
+            expect(text.anchor).not.toEqual(null);
             text.destroy();
             expect(text.anchor).toEqual(null);
         });
@@ -113,7 +113,7 @@ describe('Text', () =>
         {
             const text = new Text('foo');
 
-            expect(text.style).to.not.equal(null);
+            expect(text.style).not.toEqual(null);
             text.destroy();
             expect(text.style).toEqual(null);
         });
@@ -153,7 +153,7 @@ describe('Text', () =>
 
             text.addChild(child);
             text.destroy({ children: true, texture: true });
-            expect(childDestroyOpts).to.deep.equal({ children: true, texture: true, baseTexture: true });
+            expect(childDestroyOpts).toEqual({ children: true, texture: true, baseTexture: true });
         });
     });
 
@@ -207,12 +207,12 @@ describe('Text', () =>
 
             text.updateText(undefined);
 
-            expect(text.canvas.width).to.be.above(1);
-            expect(text.canvas.height).to.be.above(1);
+            expect(text.canvas.width).toBeGreaterThan(1);
+            expect(text.canvas.height).toBeGreaterThan(1);
 
             text.text = '\n';
 
-            expect(text.canvas.width).to.be.above(0);
+            expect(text.canvas.width).toBeGreaterThan(0);
         });
     });
 });

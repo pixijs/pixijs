@@ -38,11 +38,11 @@ describe('ImageBitmapResource', () =>
         const canvas = document.createElement('canvas');
         const bitmap = await createImageBitmap(canvas);
         const resource = new ImageBitmapResource(bitmap);
-        const baseTexture = { setRealSize: sinon.stub() };
+        const baseTexture = { setRealSize: jest.fn() };
 
         resource.bind(baseTexture as unknown as BaseTexture);
 
-        expect(baseTexture.setRealSize.calledOnce).toBe(true);
+        expect(baseTexture.setRealSize).toBeCalledTimes(1);
 
         resource.unbind(baseTexture as unknown as BaseTexture);
         resource.destroy();
@@ -53,15 +53,15 @@ describe('ImageBitmapResource', () =>
         const canvas = document.createElement('canvas');
         const bitmap = await createImageBitmap(canvas);
         const resource = new ImageBitmapResource(bitmap);
-        const baseTexture = { update: sinon.stub() };
+        const baseTexture = { update: jest.fn() };
 
         resource.bind(baseTexture as unknown as BaseTexture);
 
-        expect(baseTexture.update.called).toBe(false);
+        expect(baseTexture.update).not.toHaveBeenCalled();
 
         resource.update();
 
-        expect(baseTexture.update.calledOnce).toBe(true);
+        expect(baseTexture.update).toBeCalledTimes(1);
 
         resource.unbind(baseTexture as unknown as BaseTexture);
         resource.destroy();

@@ -19,22 +19,6 @@ function cleanCache()
 
 describe('BaseTexture', () =>
 {
-    /*
-    describe('updateImageType', () =>
-    {
-        it('should allow no extension', () =>
-        {
-            cleanCache();
-
-            const baseTexture = new BaseTexture();
-
-            baseTexture.imageUrl = 'http://some.domain.org/100/100';
-            baseTexture._updateImageType();
-
-            expect(baseTexture.imageType).to.be.equals('png');
-        });
-    });
-    */
     interface PixiCanvas extends HTMLCanvasElement
     {
         _pixiId: string;
@@ -50,7 +34,7 @@ describe('BaseTexture', () =>
         baseTexture.once('error', (baseTexture, event) =>
         {
             expect(baseTexture.resource).toBeInstanceOf(ImageResource);
-            expect(baseTexture.resource.url).contains(invalidFile);
+            expect(baseTexture.resource.url).toInclude(invalidFile);
             expect(event.type).toEqual('error');
             baseTexture.destroy();
             done();
@@ -67,7 +51,7 @@ describe('BaseTexture', () =>
         baseTexture.once('error', (baseTexture, event) =>
         {
             expect(baseTexture.resource).toBeInstanceOf(SVGResource);
-            expect(baseTexture.resource.svg).contains(invalidFile);
+            expect(baseTexture.resource.svg).toInclude(invalidFile);
             expect(event.type).toEqual('error');
             baseTexture.destroy();
             done();
@@ -84,7 +68,7 @@ describe('BaseTexture', () =>
         baseTexture.once('error', (baseTexture, event) =>
         {
             expect(baseTexture.resource).toBeInstanceOf(VideoResource);
-            expect(baseTexture.resource.source.firstChild.src).contains(invalidFile);
+            expect(baseTexture.resource.source.firstChild.src).toInclude(invalidFile);
             expect(event.type).toEqual('error');
             baseTexture.destroy();
             done();
@@ -263,9 +247,9 @@ describe('BaseTexture', () =>
     {
         const id = 'baz';
 
-        expect(() => BaseTexture.from(id, {}, true)).to.throw(`The cacheId "${id}" does not exist in BaseTextureCache.`);
+        expect(() => BaseTexture.from(id, {}, true)).toThrowError(`The cacheId "${id}" does not exist in BaseTextureCache.`);
         settings.STRICT_TEXTURE_CACHE = true;
-        expect(() => BaseTexture.from(id)).to.throw(`The cacheId "${id}" does not exist in BaseTextureCache.`);
+        expect(() => BaseTexture.from(id)).toThrowError(`The cacheId "${id}" does not exist in BaseTextureCache.`);
         settings.STRICT_TEXTURE_CACHE = false;
     });
 });

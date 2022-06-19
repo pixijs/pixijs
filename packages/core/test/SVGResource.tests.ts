@@ -172,7 +172,7 @@ describe('SVGResource', () =>
             const svgSize = SVGResource.getSize('<svg height="32" width="64"></svg>');
 
             expect(svgSize)
-                .to.be.an('object');
+                .toBeObject();
             expect(svgSize.width)
                 .toEqual(64);
             expect(svgSize.height)
@@ -184,7 +184,7 @@ describe('SVGResource', () =>
             const svgSize = SVGResource.getSize('<svg height=\'32\' width=\'64\'></svg>'); // eslint-disable-line quotes
 
             expect(svgSize)
-                .to.be.an('object');
+                .toBeObject();
             expect(svgSize.width)
                 .toEqual(64);
             expect(svgSize.height)
@@ -196,7 +196,7 @@ describe('SVGResource', () =>
             const svgSize = SVGResource.getSize('<svg height="32px" width="64px"></svg>');
 
             expect(svgSize)
-                .to.be.an('object');
+                .toBeObject();
             expect(svgSize.width)
                 .toEqual(64);
             expect(svgSize.height)

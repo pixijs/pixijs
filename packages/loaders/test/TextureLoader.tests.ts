@@ -6,7 +6,7 @@ describe('TextureLoader', () =>
 {
     it('should exist and return a function', () =>
     {
-        expect(TextureLoader).to.not.be.undefined;
+        expect(TextureLoader).toBeDefined();
         expect(TextureLoader.use).toBeInstanceOf(Function);
     });
 
@@ -17,8 +17,8 @@ describe('TextureLoader', () =>
 
         TextureLoader.use(res, spy);
 
-        expect(spy).to.have.been.calledOnce;
-        expect(res.texture).to.be.undefined;
+        expect(spy).toHaveBeenCalledOnce();
+        expect(res.texture).toBeUndefined();
     });
 
     it('should create a texture if resource is an image', (done) =>
@@ -35,13 +35,13 @@ describe('TextureLoader', () =>
 
         TextureLoader.use(res, () =>
         {
-            expect(res.texture).to.be.an.instanceof(Texture);
+            expect(res.texture).toBeInstanceOf(Texture);
 
-            expect(BaseTextureCache).to.have.property(res.name, res.texture.baseTexture);
-            expect(BaseTextureCache).to.have.property(res.url, res.texture.baseTexture);
+            expect(BaseTextureCache).toHaveProperty(res.name, res.texture.baseTexture);
+            expect(BaseTextureCache).toHaveProperty(res.url, res.texture.baseTexture);
 
-            expect(TextureCache).to.have.property(res.name, res.texture);
-            expect(TextureCache).to.have.property(res.url, res.texture);
+            expect(TextureCache).toHaveProperty(res.name, res.texture);
+            expect(TextureCache).toHaveProperty(res.url, res.texture);
 
             done();
         });

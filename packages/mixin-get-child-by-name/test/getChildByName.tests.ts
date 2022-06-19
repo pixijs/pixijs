@@ -9,7 +9,7 @@ describe('DisplayObject#name', () =>
         // @ts-expect-error - instantiating DisplayObject
         const obj = new DisplayObject();
 
-        expect(obj.name).to.be.not.undefined;
+        expect(obj.name).toBeDefined();
         expect(obj.name).toBeNull();
     });
 });
@@ -20,7 +20,7 @@ describe('Container#getChildByName', () =>
     {
         const parent = new Container();
 
-        expect(parent.getChildByName).to.be.not.undefined;
+        expect(parent.getChildByName).toBeDefined();
         expect(parent.getChildByName).toBeInstanceOf(Function);
     });
 

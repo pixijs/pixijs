@@ -15,7 +15,7 @@ describe('AnimatedSprite', () =>
 
         afterEach(() =>
         {
-            expect(sprite.animationSpeed).to.be.equal(1);
+            expect(sprite.animationSpeed).toEqual(1);
             expect(sprite.loop).toBe(true);
             expect(sprite.onComplete).toBeNull();
             expect(sprite.onFrameChange).toBeNull();
@@ -129,9 +129,9 @@ describe('AnimatedSprite', () =>
         });
 
         // eslint-disable-next-line func-names
-        it('should fire onComplete', function (done)
+        it('should fire onComplete', (done) =>
         {
-            this.timeout((
+            jest.setTimeout((
                 sprite.textures.length * 1000 / 60 / sprite.animationSpeed)
                 + (1000 / 60 / sprite.animationSpeed * 0.9)
             );
@@ -179,7 +179,7 @@ describe('AnimatedSprite', () =>
 
             sprite.onComplete = () =>
             {
-                expect(frameIds).to.deep.equal([1, 2]);
+                expect(frameIds).toEqual(expect.arrayContaining([1, 2]));
                 expect(sprite.playing).toBe(false);
                 sprite.onComplete = null;
                 sprite.onFrameChange = null;
@@ -253,32 +253,28 @@ describe('AnimatedSprite', () =>
     {
         let sprite: AnimatedSprite;
 
-        beforeAll(() =>
+        beforeEach(() =>
         {
             sprite = new AnimatedSprite([Texture.EMPTY, Texture.WHITE, Texture.EMPTY]);
             sprite.animationSpeed = 0.5;
             sprite.loop = false;
         });
 
-        afterAll(() =>
+        afterEach(() =>
         {
             sprite.destroy();
             sprite = null;
         });
 
-        beforeEach(() =>
-        {
-            sprite['_playing'] = false;
-        });
-
         it('should fire every frame(except current) during one play', (done) =>
         {
+            jest.setTimeout(10000);
             const frameIds = [] as number[];
 
             sprite.gotoAndStop(0);
             sprite.onComplete = () =>
             {
-                expect(frameIds).to.deep.equal([1, 2]); // from 0 to 2, triggers onFrameChange at 1,2.
+                expect(frameIds).toEqual(expect.arrayContaining([1, 2])); // from 0 to 2, triggers onFrameChange at 1,2.
                 expect(sprite.currentFrame).toEqual(2);
                 sprite.onComplete = null;
                 sprite.onFrameChange = null;
@@ -288,19 +284,27 @@ describe('AnimatedSprite', () =>
             {
                 frameIds.push(frame);
             };
+            sprite.autoUpdate = false;
             sprite.play();
             expect(sprite.playing).toBe(true);
+            sprite.update(1);
+            sprite.update(1);
+            sprite.update(1);
+            sprite.update(1);
+            sprite.update(1);
+            sprite.update(1);
         });
 
         it('should fire every frame(except current) during one play - reverse', (done) =>
         {
+            jest.setTimeout(10000);
             const frameIds = [] as number[];
 
             sprite.gotoAndStop(2);
-            sprite.animationSpeed = -0.5;
+            sprite.animationSpeed = -1;
             sprite.onComplete = () =>
             {
-                expect(frameIds).to.deep.equal([1, 0]); // from 2 to 0, triggers onFrameChange at 1,0.
+                expect(frameIds).toEqual(expect.arrayContaining([1, 0])); // from 2 to 0, triggers onFrameChange at 1,0.
                 expect(sprite.currentFrame).toEqual(0);
                 sprite.onComplete = null;
                 sprite.onFrameChange = null;
@@ -310,19 +314,24 @@ describe('AnimatedSprite', () =>
             {
                 frameIds.push(frame);
             };
+            sprite.autoUpdate = false;
             sprite.play();
             expect(sprite.playing).toBe(true);
+            sprite.update(1);
+            sprite.update(1);
+            sprite.update(1);
         });
 
         it('should fire every frame(except current) during one play - from not start/end', (done) =>
         {
+            jest.setTimeout(10000);
             const frameIds = [] as number[];
 
             sprite.gotoAndStop(1);
-            sprite.animationSpeed = -0.5;
+            sprite.animationSpeed = -1;
             sprite.onComplete = () =>
             {
-                expect(frameIds).to.deep.equal([0]); // from 1 to 0, triggers onFrameChange at 0.
+                expect(frameIds).toEqual(expect.arrayContaining([0])); // from 1 to 0, triggers onFrameChange at 0.
                 expect(sprite.currentFrame).toEqual(0);
                 sprite.onComplete = null;
                 sprite.onFrameChange = null;
@@ -332,8 +341,12 @@ describe('AnimatedSprite', () =>
             {
                 frameIds.push(frame);
             };
+            sprite.autoUpdate = false;
             sprite.play();
             expect(sprite.playing).toBe(true);
+            sprite.update(1);
+            sprite.update(1);
+            sprite.update(1);
         });
     });
 

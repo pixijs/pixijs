@@ -25,7 +25,7 @@ describe('ArrayResource', () =>
         const resource = new ArrayResource(5, { width: 100, height: 100 });
         const image = new ImageResource(imageUrl);
 
-        expect(() => resource.addResourceAt(image, 10)).to.throw(Error, /out of bounds/);
+        expect(() => resource.addResourceAt(image, 10)).toThrowWithMessage(Error, 'Index 10 is out of bounds');
 
         resource.destroy();
     });
@@ -44,8 +44,8 @@ describe('ArrayResource', () =>
             height: 100,
         });
         const baseTexture = {
-            setRealSize: sinon.stub(),
-            update: sinon.stub(),
+            setRealSize: jest.fn(),
+            update: jest.fn(),
         } as unknown as BaseTexture;
 
         resource.bind(baseTexture);
@@ -53,8 +53,7 @@ describe('ArrayResource', () =>
         return resource.load().then((res) =>
         {
             expect(res).toEqual(resource);
-            // @ts-expect-error - issue with sinon typings
-            expect(baseTexture.setRealSize.calledOnce).toBe(true);
+            expect(baseTexture.setRealSize).toBeCalledTimes(1);
             for (let i = 0; i < images.length; i++)
             {
                 const item = resource.items[i].resource;

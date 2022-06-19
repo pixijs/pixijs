@@ -14,7 +14,7 @@ describe('ObservablePoint', () =>
         expect(pt.x).toEqual(2);
         expect(pt.y).toEqual(5);
 
-        expect(cb.called).toBe(true);
+        expect(cb).toBeCalled();
 
         pt.set(2, 6);
         expect(pt.x).toEqual(2);
@@ -28,7 +28,7 @@ describe('ObservablePoint', () =>
         expect(pt.x).toEqual(0);
         expect(pt.y).toEqual(0);
 
-        expect(cb.callCount).toEqual(4);
+        expect(cb.mock.calls).toHaveLength(4);
     });
 
     it('should copy a new observable point', () =>

@@ -33,6 +33,6 @@ describe('NineSlicePlane', () =>
 
         const nineSlicePlane = new NineSlicePlane(rt, 1, 1, 1, 1);
 
-        expect(() => { renderer.render(nineSlicePlane); }).to.not.throw();
+        expect(() => { renderer.render(nineSlicePlane); }).not.toThrowError();
     });
 });

@@ -9,7 +9,7 @@ describe('DisplayObject#getGlobalPosition', () =>
         // @ts-expect-error - instantiating DisplayObject
         const obj = new DisplayObject();
 
-        expect(obj.getGlobalPosition).to.be.not.undefined;
+        expect(obj.getGlobalPosition).toBeDefined();
         expect(obj.getGlobalPosition).toBeInstanceOf(Function);
     });
 

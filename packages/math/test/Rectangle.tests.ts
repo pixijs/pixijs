@@ -37,7 +37,7 @@ describe('Rectangle', () =>
         expect(rect2.y).toEqual(10);
         expect(rect2.width).toEqual(10);
         expect(rect2.height).toEqual(10);
-        expect(rect1).to.not.equal(rect2);
+        expect(rect1).not.toBe(rect2);
     });
 
     it('should copy from one rectangle to another', () =>

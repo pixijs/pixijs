@@ -12,7 +12,7 @@ describe('ColorMatrixFilter', () =>
         filter.alpha = 0.5;
 
         expect(filter.alpha).toEqual(0.5);
-        expect(filter.matrix).to.deep.eq(new Float32Array(
+        expect(filter.matrix).toEqual(new Float32Array(
             [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0]
         ));
 

@@ -30,7 +30,7 @@ describe('RoundedRectangle', () =>
         expect(rrect2.width).toEqual(100);
         expect(rrect2.height).toEqual(100);
         expect(rrect2.radius).toEqual(40);
-        expect(rrect1).to.not.equal(rrect2);
+        expect(rrect1).not.toBe(rrect2);
     });
 
     it('should check if point is within rounded rectangle', () =>

@@ -138,7 +138,7 @@ describe('MaskSystem', () =>
 
         const maskData = renderer.mask['maskDataPool'][0];
 
-        expect(maskData).to.exist;
+        expect(maskData).toBeDefined();
         expect(maskData._scissorCounter).toEqual(1);
     });
 
@@ -186,7 +186,7 @@ describe('MaskSystem', () =>
         renderer.resize(30, 30);
 
         const rt = RenderTexture.create({ width: 20, height: 20, resolution: 3 });
-        const scissor = sinon.spy(renderer.gl, 'scissor');
+        const scissor = jest.spyOn(renderer.gl, 'scissor');
 
         renderer.projection.transform = new Matrix(1, 0, 0, 1, 0.5, 1);
         renderer.mask.push(context, maskObject);
@@ -198,11 +198,11 @@ describe('MaskSystem', () =>
         renderer.mask.push(context, maskObject);
         renderer.mask.pop(context);
 
-        expect(scissor.calledTwice).toBe(true);
+        expect(scissor).toBeCalledTimes(2);
         // result Y is 2 because after transform y=8 h=10 and renderer H=60 is inverted , 8-18 becomes 52-42, e.g. Y=2
-        expect(scissor.args[0]).to.eql([Math.round(5), Math.round(42), Math.round(12), Math.round(10)]);
+        expect(scissor.mock.calls[0]).toEqual([Math.round(5), Math.round(42), Math.round(12), Math.round(10)]);
         // resolution is 3 , and Y is not reversed
-        expect(scissor.args[1]).to.eql([Math.round(7.5), Math.round(12), Math.round(18), Math.round(15)]);
+        expect(scissor.mock.calls[1]).toEqual([Math.round(7.5), Math.round(12), Math.round(18), Math.round(15)]);
 
         rt.destroy(true);
         renderer.projection.transform = null;
@@ -213,7 +213,7 @@ describe('MaskSystem', () =>
     it('should correctly calculate alpha mask area if filter is present', function ()
     {
         // fixes slow runs on CI #6604
-        this.timeout(5000);
+        jest.setTimeout(5000);
         // the bug was fixed in #5444
         renderer.resize(10, 10);
 
@@ -241,13 +241,13 @@ describe('MaskSystem', () =>
             maskSystem.push(filteredObject as IMaskTarget, maskObject);
             expect(maskSystem['maskStack'].length).toEqual(1);
             expect(maskSystem['maskStack'][0].type).toEqual(MASK_TYPES.SPRITE);
-            expect(renderer.renderTexture.current).to.exist;
+            expect(renderer.renderTexture.current).toBeDefined();
 
             const filterArea = renderer.renderTexture.current.filterFrame;
             const expected = maskBounds.clone().ceil();
 
             expected.fit(filteredObject.getBounds());
-            expect(filterArea).to.exist;
+            expect(filterArea).toBeDefined();
             expect(filterArea.x).toEqual(expected.x);
             expect(filterArea.y).toEqual(expected.y);
             expect(filterArea.width).toEqual(expected.width);

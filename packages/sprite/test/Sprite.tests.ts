@@ -14,9 +14,9 @@ describe('Sprite', () =>
             const sprite = new Sprite();
 
             sprite.width = 100;
-            expect(sprite.width).to.be.at.least(0);
+            expect(sprite.width).toBeGreaterThanOrEqual(0);
             sprite.scale.x = -1;
-            expect(sprite.width).to.be.at.least(0);
+            expect(sprite.width).toBeGreaterThanOrEqual(0);
         });
 
         it('should not change sign of scale.x', () =>
@@ -28,12 +28,12 @@ describe('Sprite', () =>
             sprite.scale.x = 1;
             sprite.width = 50;
 
-            expect(sprite.scale.x).to.be.above(0);
+            expect(sprite.scale.x).toBeGreaterThan(0);
 
             sprite.scale.x = -1;
             sprite.width = 75;
 
-            expect(sprite.scale.x).to.be.below(0);
+            expect(sprite.scale.x).toBeLessThan(0);
         });
     });
 
@@ -44,9 +44,9 @@ describe('Sprite', () =>
             const sprite = new Sprite();
 
             sprite.height = 100;
-            expect(sprite.height).to.be.at.least(0);
+            expect(sprite.height).toBeGreaterThanOrEqual(0);
             sprite.scale.y = -1;
-            expect(sprite.height).to.be.at.least(0);
+            expect(sprite.height).toBeGreaterThanOrEqual(0);
         });
 
         it('should not change sign of scale.y', () =>
@@ -58,12 +58,12 @@ describe('Sprite', () =>
             sprite.scale.y = 1;
             sprite.height = 50;
 
-            expect(sprite.scale.y).to.be.above(0);
+            expect(sprite.scale.y).toBeGreaterThan(0);
 
             sprite.scale.y = -1;
             sprite.height = 75;
 
-            expect(sprite.scale.y).to.be.below(0);
+            expect(sprite.scale.y).toBeLessThan(0);
         });
     });
 
@@ -121,21 +121,21 @@ describe('Sprite', () =>
 
             let bounds = sprite.getBounds(false);
 
-            expect(bounds.x).toEqual(0);
+            expect(Math.abs(bounds.x)).toEqual(0);
             expect(bounds.y).toEqual(-5);
             expect(bounds.width).toEqual(40);
             expect(bounds.height).toEqual(30);
 
             bounds = sprite.getLocalBounds();
 
-            expect(bounds.x).toEqual(0);
-            expect(bounds.y).toEqual(0);
+            expect(Math.abs(bounds.x)).toEqual(0);
+            expect(Math.abs(bounds.y)).toEqual(0);
             expect(bounds.width).toEqual(20);
             expect(bounds.height).toEqual(30);
 
             bounds = sprite.getBounds(true);
 
-            expect(bounds.x).toEqual(0);
+            expect(Math.abs(bounds.x)).toEqual(0);
             expect(bounds.y).toEqual(-5);
             expect(bounds.width).toEqual(40);
             expect(bounds.height).toEqual(30);

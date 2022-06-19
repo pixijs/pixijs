@@ -331,7 +331,7 @@ describe('Point', () =>
 
             const magnitude = Math.sqrt((c.x * c.x) + (c.y * c.y));
 
-            expect(magnitude).to.be.closeTo(1, 0.001);
+            expect(magnitude).toBeCloseTo(1, 0.001);
 
             // ObservablePoint
             const oa = new ObservablePoint(() => { /* empty */ }, {}, 3, 4);
@@ -339,7 +339,7 @@ describe('Point', () =>
 
             const omagnitude = Math.sqrt((oc.x * oc.x) + (oc.y * oc.y));
 
-            expect(omagnitude).to.be.closeTo(1, 0.001);
+            expect(omagnitude).toBeCloseTo(1, 0.001);
         });
 
         it('should return the same reference given', () =>
@@ -365,7 +365,7 @@ describe('Point', () =>
 
             const magnitude = Math.sqrt((c.x * c.x) + (c.y * c.y));
 
-            expect(magnitude).to.be.closeTo(1, 0.001);
+            expect(magnitude).toBeCloseTo(1, 0.001);
 
             // ObservablePoint
             const oa = new ObservablePoint(() => { /* empty */ }, {}, 1, 2);
@@ -373,7 +373,7 @@ describe('Point', () =>
 
             const omagnitude = Math.sqrt((oc.x * oc.x) + (oc.y * oc.y));
 
-            expect(omagnitude).to.be.closeTo(1, 0.001);
+            expect(omagnitude).toBeCloseTo(1, 0.001);
         });
     });
 
@@ -386,13 +386,13 @@ describe('Point', () =>
             const a = new Point(3, 4);
             const c = a.magnitude();
 
-            expect(c).to.be.closeTo(expectedMagnitude, 0.001);
+            expect(c).toBeCloseTo(expectedMagnitude, 0.001);
 
             // ObservablePoint
             const oa = new ObservablePoint(() => { /* empty */ }, {}, 3, 4);
             const oc = oa.magnitude();
 
-            expect(oc).to.be.closeTo(expectedMagnitude, 0.001);
+            expect(oc).toBeCloseTo(expectedMagnitude, 0.001);
         });
 
         it('should return the sum of the squares of each component', () =>
@@ -402,7 +402,7 @@ describe('Point', () =>
             const a = new Point(3, 4);
             const c = a.magnitudeSquared();
 
-            expect(c).to.be.closeTo(expectedMagnitudeSquared, 0.001);
+            expect(c).toBeCloseTo(expectedMagnitudeSquared, 0.001);
 
             // ObservablePoint
             const oa = new ObservablePoint(() => { /* empty */ }, {}, 3, 4);
@@ -421,16 +421,16 @@ describe('Point', () =>
             const b = new Point(3, 4);
             const c = a.project(b);
 
-            expect(c.x).to.be.closeTo(33 / 25, 0.001);
-            expect(c.y).to.be.closeTo(44 / 25, 0.001);
+            expect(c.x).toBeCloseTo(33 / 25, 0.001);
+            expect(c.y).toBeCloseTo(44 / 25, 0.001);
 
             // ObservablePoint
             const oa = new ObservablePoint(() => { /* empty */ }, {}, 1, 2);
             const ob = new ObservablePoint(() => { /* empty */ }, {}, 3, 4);
             const oc = oa.project(ob);
 
-            expect(oc.x).to.be.closeTo(33 / 25, 0.001);
-            expect(oc.y).to.be.closeTo(44 / 25, 0.001);
+            expect(oc.x).toBeCloseTo(33 / 25, 0.001);
+            expect(oc.y).toBeCloseTo(44 / 25, 0.001);
         });
 
         it('should return the same reference given', () =>
@@ -457,16 +457,16 @@ describe('Point', () =>
             const b = new Point(3, 4);
             const c = a.project(b, { x: 0, y: 0 });
 
-            expect(c.x).to.be.closeTo(33 / 25, 0.001);
-            expect(c.y).to.be.closeTo(44 / 25, 0.001);
+            expect(c.x).toBeCloseTo(33 / 25, 0.001);
+            expect(c.y).toBeCloseTo(44 / 25, 0.001);
 
             // ObservablePoint
             const oa = new ObservablePoint(() => { /* empty */ }, {}, 1, 2);
             const ob = new ObservablePoint(() => { /* empty */ }, {}, 3, 4);
             const oc = oa.project(ob, { x: 0, y: 0 });
 
-            expect(oc.x).to.be.closeTo(33 / 25, 0.001);
-            expect(oc.y).to.be.closeTo(44 / 25, 0.001);
+            expect(oc.x).toBeCloseTo(33 / 25, 0.001);
+            expect(oc.y).toBeCloseTo(44 / 25, 0.001);
         });
 
         it('can take any IPointData as other input', () =>
@@ -475,15 +475,15 @@ describe('Point', () =>
             const a = new Point(1, 2);
             const c = a.project({ x: 3, y: 4 });
 
-            expect(c.x).to.be.closeTo(33 / 25, 0.001);
-            expect(c.y).to.be.closeTo(44 / 25, 0.001);
+            expect(c.x).toBeCloseTo(33 / 25, 0.001);
+            expect(c.y).toBeCloseTo(44 / 25, 0.001);
 
             // ObservablePoint
             const oa = new ObservablePoint(() => { /* empty */ }, {}, 1, 2);
             const oc = oa.project({ x: 3, y: 4 });
 
-            expect(oc.x).to.be.closeTo(33 / 25, 0.001);
-            expect(oc.y).to.be.closeTo(44 / 25, 0.001);
+            expect(oc.x).toBeCloseTo(33 / 25, 0.001);
+            expect(oc.y).toBeCloseTo(44 / 25, 0.001);
         });
     });
 

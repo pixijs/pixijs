@@ -37,8 +37,8 @@ describe('DisplayObject', () =>
             const child = new DisplayObject();
             const notAContainer = {};
 
-            expect(() => child.setParent()).to.throw('setParent: Argument must be a Container');
-            expect(() => child.setParent(notAContainer)).to.throw('setParent: Argument must be a Container');
+            expect(() => child.setParent()).toThrowError('setParent: Argument must be a Container');
+            expect(() => child.setParent(notAContainer)).toThrowError('setParent: Argument must be a Container');
         });
     });
 
@@ -51,15 +51,15 @@ describe('DisplayObject', () =>
 
             object.setTransform(1, 2, 3, 4, 5, 6, 7, 8, 9);
 
-            expect(object.position.x).to.be.equal(1);
-            expect(object.position.y).to.be.equal(2);
-            expect(object.scale.x).to.be.equal(3);
-            expect(object.scale.y).to.be.equal(4);
-            expect(object.rotation).to.be.equal(5);
-            expect(object.skew.x).to.be.equal(6);
-            expect(object.skew.y).to.be.equal(7);
-            expect(object.pivot.x).to.be.equal(8);
-            expect(object.pivot.y).to.be.equal(9);
+            expect(object.position.x).toEqual(1);
+            expect(object.position.y).toEqual(2);
+            expect(object.scale.x).toEqual(3);
+            expect(object.scale.y).toEqual(4);
+            expect(object.rotation).toEqual(5);
+            expect(object.skew.x).toEqual(6);
+            expect(object.skew.y).toEqual(7);
+            expect(object.pivot.x).toEqual(8);
+            expect(object.pivot.y).toEqual(9);
         });
 
         it('should convert zero scale to one', () =>
@@ -69,8 +69,8 @@ describe('DisplayObject', () =>
 
             object.setTransform(1, 1, 0, 0, 1, 1, 1, 1, 1);
 
-            expect(object.scale.x).to.be.equal(1);
-            expect(object.scale.y).to.be.equal(1);
+            expect(object.scale.x).toEqual(1);
+            expect(object.scale.y).toEqual(1);
         });
     });
 
@@ -101,18 +101,18 @@ describe('DisplayObject', () =>
             // @ts-expect-error - instantiating DisplayOBject
             const object = new DisplayObject();
 
-            expect(object.rotation).to.be.equal(0);
-            expect(object.angle).to.be.equal(0);
+            expect(object.rotation).toEqual(0);
+            expect(object.angle).toEqual(0);
 
             object.rotation = 2;
 
-            expect(object.rotation).to.be.equal(2);
-            expect(object.angle).to.be.equal(2 * RAD_TO_DEG);
+            expect(object.rotation).toEqual(2);
+            expect(object.angle).toEqual(2 * RAD_TO_DEG);
 
             object.angle = 180;
 
-            expect(object.rotation).to.be.equal(180 * DEG_TO_RAD);
-            expect(object.angle).to.be.equal(180);
+            expect(object.rotation).toEqual(180 * DEG_TO_RAD);
+            expect(object.angle).toEqual(180);
         });
     });
 
@@ -245,12 +245,12 @@ describe('DisplayObject', () =>
             container.addChild(child);
             container.removeChild(child);
 
-            expect(listener.calledOnce).toBe(true);
+            expect(listener).toBeCalledTimes(1);
 
             container.addChild(child);
             child.destroy();
 
-            expect(listener.calledTwice).toBe(true);
+            expect(listener).toBeCalledTimes(2);
         });
     });
 
@@ -268,12 +268,12 @@ describe('DisplayObject', () =>
             container.addChild(child);
             container.removeChild(child);
 
-            expect(listener.notCalled).toBe(true);
+            expect(listener).not.toBeCalled();
 
             container.addChild(child);
             child.destroy();
 
-            expect(listener.calledOnce).toBe(true);
+            expect(listener).toBeCalledTimes(1);
         });
 
         it('should trigger destroyed listeners once destruction is complete', () =>

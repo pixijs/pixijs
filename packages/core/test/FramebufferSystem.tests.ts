@@ -47,13 +47,13 @@ describe('FramebufferSystem', () =>
 
         expect(framebuffer.glFramebuffers[CONTEXT_UID].mipLevel).toEqual(1);
 
-        expect(Array.from(gl.getParameter(gl.VIEWPORT))).to.deep.equal([0, 0, 2, 2]);
+        expect(Array.from(gl.getParameter(gl.VIEWPORT))).toEqual([0, 0, 2, 2]);
 
         renderer.framebuffer.bind(framebuffer, null, 0);
 
         expect(framebuffer.glFramebuffers[CONTEXT_UID].mipLevel).toEqual(0);
 
-        expect(Array.from(gl.getParameter(gl.VIEWPORT))).to.deep.equal([0, 0, 4, 4]);
+        expect(Array.from(gl.getParameter(gl.VIEWPORT))).toEqual([0, 0, 4, 4]);
     });
 
     it('should render to with correct frame', () =>
@@ -66,7 +66,7 @@ describe('FramebufferSystem', () =>
 
         renderer.framebuffer.bind(framebuffer, frame, 0);
 
-        expect(Array.from(gl.getParameter(gl.VIEWPORT))).to.deep.equal([2, 2, 2, 2]);
+        expect(Array.from(gl.getParameter(gl.VIEWPORT))).toEqual([2, 2, 2, 2]);
     });
 
     it('should create an incomplete framebuffer if it has no attachments', () =>
@@ -118,7 +118,7 @@ describe('FramebufferSystem', () =>
             || renderer.framebuffer['msaaSamples'] === null
             || renderer.framebuffer['msaaSamples'].every((x) => x <= 1))
         {
-            this.skip();
+            return;
         }
 
         const { gl, CONTEXT_UID } = renderer;
@@ -136,7 +136,7 @@ describe('FramebufferSystem', () =>
         expect(gl.checkFramebufferStatus(gl.FRAMEBUFFER)).toEqual(gl.FRAMEBUFFER_COMPLETE);
         expect(fbo.multisample).toEqual(0);
         expect(fbo.msaaBuffer).toBeNull();
-        expect(fbo.stencil).to.be.not.null;
+        expect(fbo.stencil).not.toBeNull();
 
         gl.bindRenderbuffer(gl.RENDERBUFFER, fbo.stencil);
 
@@ -152,7 +152,7 @@ describe('FramebufferSystem', () =>
             || renderer.framebuffer['msaaSamples'] === null
             || renderer.framebuffer['msaaSamples'].every((x) => x <= 1))
         {
-            this.skip();
+            return;
         }
         const { gl, CONTEXT_UID } = renderer;
 
@@ -167,8 +167,8 @@ describe('FramebufferSystem', () =>
         const fbo = framebuffer.glFramebuffers[CONTEXT_UID];
 
         expect(gl.checkFramebufferStatus(gl.FRAMEBUFFER)).toEqual(gl.FRAMEBUFFER_COMPLETE);
-        expect(fbo.multisample).to.be.greaterThan(1);
-        expect(fbo.msaaBuffer).to.be.not.null;
+        expect(fbo.multisample).toBeGreaterThan(1);
+        expect(fbo.msaaBuffer).not.toBeNull();
         expect(fbo.stencil).toBeNull();
 
         gl.bindRenderbuffer(gl.RENDERBUFFER, fbo.msaaBuffer);
@@ -185,7 +185,7 @@ describe('FramebufferSystem', () =>
             || renderer.framebuffer['msaaSamples'] === null
             || renderer.framebuffer['msaaSamples'].every((x) => x <= 1))
         {
-            this.skip();
+            return;
         }
 
         const { gl, CONTEXT_UID } = renderer;
@@ -201,9 +201,9 @@ describe('FramebufferSystem', () =>
         const fbo = framebuffer.glFramebuffers[CONTEXT_UID];
 
         expect(gl.checkFramebufferStatus(gl.FRAMEBUFFER)).toEqual(gl.FRAMEBUFFER_COMPLETE);
-        expect(fbo.multisample).to.be.greaterThan(1);
-        expect(fbo.msaaBuffer).to.be.not.null;
-        expect(fbo.stencil).to.be.not.null;
+        expect(fbo.multisample).toBeGreaterThan(1);
+        expect(fbo.msaaBuffer).not.toBeNull();
+        expect(fbo.stencil).not.toBeNull();
 
         gl.bindRenderbuffer(gl.RENDERBUFFER, fbo.msaaBuffer);
 
@@ -246,7 +246,7 @@ describe('FramebufferSystem', () =>
 
             if (!renderer.framebuffer.writeDepthTexture)
             {
-                this.skip();
+                return;
             }
 
             const { gl, CONTEXT_UID } = renderer;
@@ -286,7 +286,7 @@ describe('FramebufferSystem', () =>
         expect(gl.checkFramebufferStatus(gl.FRAMEBUFFER)).toEqual(gl.FRAMEBUFFER_COMPLETE);
         expect(fbo.multisample).toEqual(0);
         expect(fbo.msaaBuffer).toBeNull();
-        expect(fbo.stencil).to.be.not.null;
+        expect(fbo.stencil).not.toBeNull();
 
         gl.bindRenderbuffer(gl.RENDERBUFFER, fbo.stencil);
 
@@ -301,7 +301,7 @@ describe('FramebufferSystem', () =>
         expect(gl.checkFramebufferStatus(gl.FRAMEBUFFER)).toEqual(gl.FRAMEBUFFER_COMPLETE);
         expect(fbo.multisample).toEqual(0);
         expect(fbo.msaaBuffer).toBeNull();
-        expect(fbo.stencil).to.be.not.null;
+        expect(fbo.stencil).not.toBeNull();
 
         gl.bindRenderbuffer(gl.RENDERBUFFER, fbo.stencil);
 
@@ -319,7 +319,7 @@ describe('FramebufferSystem', () =>
             || renderer.framebuffer['msaaSamples'] === null
             || renderer.framebuffer['msaaSamples'].every((x) => x <= 1))
         {
-            this.skip();
+            return;
         }
 
         const { gl, CONTEXT_UID } = renderer;
@@ -335,9 +335,9 @@ describe('FramebufferSystem', () =>
         const fbo = framebuffer.glFramebuffers[CONTEXT_UID];
 
         expect(gl.checkFramebufferStatus(gl.FRAMEBUFFER)).toEqual(gl.FRAMEBUFFER_COMPLETE);
-        expect(fbo.multisample).to.be.greaterThan(1);
-        expect(fbo.msaaBuffer).to.be.not.null;
-        expect(fbo.stencil).to.be.not.null;
+        expect(fbo.multisample).toBeGreaterThan(1);
+        expect(fbo.msaaBuffer).not.toBeNull();
+        expect(fbo.stencil).not.toBeNull();
 
         gl.bindRenderbuffer(gl.RENDERBUFFER, fbo.msaaBuffer);
 
@@ -356,9 +356,9 @@ describe('FramebufferSystem', () =>
         renderer.framebuffer.bind(framebuffer);
 
         expect(gl.checkFramebufferStatus(gl.FRAMEBUFFER)).toEqual(gl.FRAMEBUFFER_COMPLETE);
-        expect(fbo.multisample).to.be.greaterThan(1);
-        expect(fbo.msaaBuffer).to.be.not.null;
-        expect(fbo.stencil).to.be.not.null;
+        expect(fbo.multisample).toBeGreaterThan(1);
+        expect(fbo.msaaBuffer).not.toBeNull();
+        expect(fbo.stencil).not.toBeNull();
 
         gl.bindRenderbuffer(gl.RENDERBUFFER, fbo.msaaBuffer);
 

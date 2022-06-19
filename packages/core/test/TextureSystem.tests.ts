@@ -37,7 +37,7 @@ describe('TextureSystem', () =>
 
         const glTex = baseTex._glTextures[renderer.CONTEXT_UID];
 
-        expect(glTex).to.exist;
+        expect(glTex).toBeDefined();
         expect(glTex.wrapMode).toEqual(WRAP_MODES.REPEAT);
     });
 
@@ -51,7 +51,7 @@ describe('TextureSystem', () =>
 
         const glTex = baseTex._glTextures[renderer.CONTEXT_UID];
 
-        expect(glTex).to.exist;
+        expect(glTex).toBeDefined();
         expect(glTex.wrapMode).toEqual(WRAP_MODES.CLAMP);
     });
 

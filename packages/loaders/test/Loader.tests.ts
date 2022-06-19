@@ -33,7 +33,7 @@ describe('Loader', () =>
 
     it('should have shared loader', () =>
     {
-        expect(Loader.shared).to.not.be.undefined;
+        expect(Loader.shared).toBeDefined();
         expect(Loader.shared).toBeInstanceOf(Loader);
     });
 
@@ -46,22 +46,22 @@ describe('Loader', () =>
         loader.add(name, url);
         loader.load((ldr, resources) =>
         {
-            expect(ldr).equals(loader);
+            expect(ldr).toEqual(loader);
             expect(name in resources).toBeTruthy();
 
             const texture = resources[name].texture as Texture<ImageResource>;
 
-            expect(texture).instanceof(Texture);
+            expect(texture).toBeInstanceOf(Texture);
             expect(texture.baseTexture.valid).toBe(true);
-            expect(texture.baseTexture.resource).instanceof(ImageResource);
-            expect(texture.baseTexture.resource.url).equals(url);
-            expect(TextureCache[name]).equals(texture);
-            expect(TextureCache[url]).equals(texture);
+            expect(texture.baseTexture.resource).toBeInstanceOf(ImageResource);
+            expect(texture.baseTexture.resource.url).toEqual(url);
+            expect(TextureCache[name]).toEqual(texture);
+            expect(TextureCache[url]).toEqual(texture);
             loader.reset();
             texture.destroy(true);
-            expect(loader.resources[name]).to.be.undefined;
-            expect(TextureCache[name]).to.be.undefined;
-            expect(TextureCache[url]).to.be.undefined;
+            expect(loader.resources[name]).toBeUndefined();
+            expect(TextureCache[name]).toBeUndefined();
+            expect(TextureCache[url]).toBeUndefined();
             done();
         });
     });
@@ -78,11 +78,11 @@ describe('Loader', () =>
             const { texture, data } = loader.resources[name];
             const { baseTexture } = texture;
 
-            expect(typeof data).equals('string');
-            expect(baseTexture.resource).instanceof(SVGResource);
+            expect(typeof data).toEqual('string');
+            expect(baseTexture.resource).toBeInstanceOf(SVGResource);
             expect(baseTexture.valid).toBe(true);
-            expect(baseTexture.width).equals(512);
-            expect(baseTexture.height).equals(512);
+            expect(baseTexture.width).toEqual(512);
+            expect(baseTexture.height).toEqual(512);
             loader.reset();
             texture.destroy(true);
             done();
@@ -105,8 +105,8 @@ describe('Loader', () =>
             const { texture } = loader.resources[name];
             const { scaleMode, resolution } = texture.baseTexture;
 
-            expect(scaleMode).equals(SCALE_MODES.NEAREST);
-            expect(resolution).equals(2);
+            expect(scaleMode).toEqual(SCALE_MODES.NEAREST);
+            expect(resolution).toEqual(2);
             loader.reset();
             texture.destroy(true);
             done();
@@ -131,8 +131,8 @@ describe('Loader', () =>
             const { texture } = loader.resources[name];
             const { width, height } = texture.baseTexture;
 
-            expect(width).equals(128);
-            expect(height).equals(256);
+            expect(width).toEqual(128);
+            expect(height).toEqual(256);
             loader.reset();
             texture.destroy(true);
             done();
@@ -156,8 +156,8 @@ describe('Loader', () =>
             const { texture } = loader.resources[name];
             const { width, height } = texture.baseTexture;
 
-            expect(width).equals(256);
-            expect(height).equals(256);
+            expect(width).toEqual(256);
+            expect(height).toEqual(256);
             loader.reset();
             texture.destroy(true);
             done();

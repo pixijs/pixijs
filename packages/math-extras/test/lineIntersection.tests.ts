@@ -27,8 +27,8 @@ describe('lineIntersection', () =>
 
             const parallel = lineIntersection(aStart, aEnd, parallelStart, parallelEnd);
 
-            expect(parallel.x).to.be.NaN;
-            expect(parallel.y).to.be.NaN;
+            expect(parallel.x).toBeNaN();
+            expect(parallel.y).toBeNaN();
         });
     it('should return the same reference given', () =>
     {

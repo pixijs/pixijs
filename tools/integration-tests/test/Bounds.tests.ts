@@ -4,8 +4,6 @@ import { Sprite } from '@pixi/sprite';
 import { Rectangle } from '@pixi/math';
 import { Graphics } from '@pixi/graphics';
 import { Text } from '@pixi/text';
-// import { SimplePlane } from '@pixi/mesh-extras';
-
 
 describe('getBounds', () =>
 {
@@ -376,15 +374,15 @@ describe('getBounds', () =>
 
         expect(bounds.x).toEqual(0);
         expect(bounds.y).toEqual(0);
-        expect(bounds.width).to.be.greaterThan(0);
-        expect(bounds.height).to.greaterThan(0);
+        expect(bounds.width).toBeGreaterThan(0);
+        expect(bounds.height).toBeGreaterThan(0);
 
         text.text = 'hello!';
 
         bounds = text.getBounds();
 
         // this variable seems to be different on different devices. a font thing?
-        expect(bounds.width).to.not.equal(bx);
+        expect(bounds.width).not.toEqual(bx);
     });
 
     it('should return a different rectangle if getting local bounds after global bounds ', () =>
@@ -410,8 +408,8 @@ describe('getBounds', () =>
 
         const localBounds = sprite.getLocalBounds();
 
-        expect(localBounds.x).toEqual(0);
-        expect(localBounds.y).toEqual(0);
+        expect(Math.abs(localBounds.x)).toEqual(0);
+        expect(Math.abs(localBounds.y)).toEqual(0);
         expect(localBounds.width).toEqual(10);
         expect(localBounds.height).toEqual(10);
     });

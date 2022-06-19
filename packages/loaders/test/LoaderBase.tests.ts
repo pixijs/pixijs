@@ -34,17 +34,22 @@ describe('Loader', () =>
 
     it('should have correct properties', () =>
     {
-        expect(loader).to.have.property('baseUrl', fixtureData.baseUrl);
-        expect(loader).to.have.property('progress', 0);
+        expect(loader).toHaveProperty('baseUrl', fixtureData.baseUrl);
+        expect(loader).toHaveProperty('progress', 0);
     });
 
     it('should have correct public methods', () =>
     {
-        expect(loader).to.have.property('add').instanceOf(Function);
-        expect(loader).to.have.property('pre').instanceOf(Function);
-        expect(loader).to.have.property('use').instanceOf(Function);
-        expect(loader).to.have.property('reset').instanceOf(Function);
-        expect(loader).to.have.property('load').instanceOf(Function);
+        expect(loader).toHaveProperty('add');
+        expect(loader['add']).toBeInstanceOf(Function);
+        expect(loader).toHaveProperty('pre');
+        expect(loader['pre']).toBeInstanceOf(Function);
+        expect(loader).toHaveProperty('use');
+        expect(loader['use']).toBeInstanceOf(Function);
+        expect(loader).toHaveProperty('reset');
+        expect(loader['reset']).toBeInstanceOf(Function);
+        expect(loader).toHaveProperty('load');
+        expect(loader['load']).toBeInstanceOf(Function);
     });
 
     describe('#add', () =>
@@ -66,16 +71,15 @@ describe('Loader', () =>
 
             const res = loader['_queue']._tasks[0].data;
 
-            expect(res).to.be.an.instanceOf(LoaderResource);
-            expect(res).to.have.property('name', name);
-            expect(res).to.have.property('url', fixtureData.url);
-            expect(res).to.have.property('crossOrigin', options.crossOrigin ? 'anonymous' : null);
-            expect(res).to.have.property('loadType', options.loadType);
-            expect(res).to.have.property('xhrType', options.xhrType);
+            expect(res).toBeInstanceOf(LoaderResource);
+            expect(res).toHaveProperty('name', name);
+            expect(res).toHaveProperty('url', fixtureData.url);
+            expect(res).toHaveProperty('crossOrigin', options.crossOrigin ? 'anonymous' : null);
+            expect(res).toHaveProperty('loadType', options.loadType);
+            expect(res).toHaveProperty('xhrType', options.xhrType);
 
-            expect(res.onAfterMiddleware.handlers())
-                .to.not.be.empty
-                .and.toEqual([callback]);
+            expect(res.onAfterMiddleware.handlers()).not.toHaveLength(0);
+            expect(res.onAfterMiddleware.handlers()[0]['_fn']).toEqual(callback);
         });
 
         it('creates a resource with just name, url, and options', () =>
@@ -86,12 +90,12 @@ describe('Loader', () =>
 
             const res = loader['_queue']._tasks[0].data;
 
-            expect(res).to.be.an.instanceOf(LoaderResource);
-            expect(res).to.have.property('name', name);
-            expect(res).to.have.property('url', fixtureData.url);
-            expect(res).to.have.property('crossOrigin', options.crossOrigin ? 'anonymous' : null);
-            expect(res).to.have.property('loadType', options.loadType);
-            expect(res).to.have.property('xhrType', options.xhrType);
+            expect(res).toBeInstanceOf(LoaderResource);
+            expect(res).toHaveProperty('name', name);
+            expect(res).toHaveProperty('url', fixtureData.url);
+            expect(res).toHaveProperty('crossOrigin', options.crossOrigin ? 'anonymous' : null);
+            expect(res).toHaveProperty('loadType', options.loadType);
+            expect(res).toHaveProperty('xhrType', options.xhrType);
         });
 
         it('creates a resource with just name, url, and a callback', () =>
@@ -102,13 +106,12 @@ describe('Loader', () =>
 
             const res = loader['_queue']._tasks[0].data;
 
-            expect(res).to.be.an.instanceOf(LoaderResource);
-            expect(res).to.have.property('name', name);
-            expect(res).to.have.property('url', fixtureData.url);
+            expect(res).toBeInstanceOf(LoaderResource);
+            expect(res).toHaveProperty('name', name);
+            expect(res).toHaveProperty('url', fixtureData.url);
 
-            expect(res.onAfterMiddleware.handlers())
-                .to.not.be.empty
-                .and.toEqual([callback]);
+            expect(res.onAfterMiddleware.handlers()).not.toHaveLength(0);
+            expect(res.onAfterMiddleware.handlers()[0]['_fn']).toEqual(callback);
         });
 
         it('creates a resource with just name and url', () =>
@@ -119,9 +122,9 @@ describe('Loader', () =>
 
             const res = loader['_queue']._tasks[0].data;
 
-            expect(res).to.be.an.instanceOf(LoaderResource);
-            expect(res).to.have.property('name', name);
-            expect(res).to.have.property('url', fixtureData.url);
+            expect(res).toBeInstanceOf(LoaderResource);
+            expect(res).toHaveProperty('name', name);
+            expect(res).toHaveProperty('url', fixtureData.url);
         });
 
         it('creates a resource with just url, options, and a callback', () =>
@@ -132,16 +135,15 @@ describe('Loader', () =>
 
             const res = loader['_queue']._tasks[0].data;
 
-            expect(res).to.be.an.instanceOf(LoaderResource);
-            expect(res).to.have.property('name', fixtureData.url);
-            expect(res).to.have.property('url', fixtureData.url);
-            expect(res).to.have.property('crossOrigin', options.crossOrigin ? 'anonymous' : null);
-            expect(res).to.have.property('loadType', options.loadType);
-            expect(res).to.have.property('xhrType', options.xhrType);
+            expect(res).toBeInstanceOf(LoaderResource);
+            expect(res).toHaveProperty('name', fixtureData.url);
+            expect(res).toHaveProperty('url', fixtureData.url);
+            expect(res).toHaveProperty('crossOrigin', options.crossOrigin ? 'anonymous' : null);
+            expect(res).toHaveProperty('loadType', options.loadType);
+            expect(res).toHaveProperty('xhrType', options.xhrType);
 
-            expect(res.onAfterMiddleware.handlers())
-                .to.not.be.empty
-                .and.toEqual([callback]);
+            expect(res.onAfterMiddleware.handlers()).not.toHaveLength(0);
+            expect(res.onAfterMiddleware.handlers()[0]['_fn']).toEqual(callback);
         });
 
         it('creates a resource with just url and options', () =>
@@ -152,12 +154,12 @@ describe('Loader', () =>
 
             const res = loader['_queue']._tasks[0].data;
 
-            expect(res).to.be.an.instanceOf(LoaderResource);
-            expect(res).to.have.property('name', fixtureData.url);
-            expect(res).to.have.property('url', fixtureData.url);
-            expect(res).to.have.property('crossOrigin', options.crossOrigin ? 'anonymous' : null);
-            expect(res).to.have.property('loadType', options.loadType);
-            expect(res).to.have.property('xhrType', options.xhrType);
+            expect(res).toBeInstanceOf(LoaderResource);
+            expect(res).toHaveProperty('name', fixtureData.url);
+            expect(res).toHaveProperty('url', fixtureData.url);
+            expect(res).toHaveProperty('crossOrigin', options.crossOrigin ? 'anonymous' : null);
+            expect(res).toHaveProperty('loadType', options.loadType);
+            expect(res).toHaveProperty('xhrType', options.xhrType);
         });
 
         it('creates a resource with just url and a callback', () =>
@@ -168,13 +170,12 @@ describe('Loader', () =>
 
             const res = loader['_queue']._tasks[0].data;
 
-            expect(res).to.be.an.instanceOf(LoaderResource);
-            expect(res).to.have.property('name', fixtureData.url);
-            expect(res).to.have.property('url', fixtureData.url);
+            expect(res).toBeInstanceOf(LoaderResource);
+            expect(res).toHaveProperty('name', fixtureData.url);
+            expect(res).toHaveProperty('url', fixtureData.url);
 
-            expect(res.onAfterMiddleware.handlers())
-                .to.not.be.empty
-                .and.toEqual([callback]);
+            expect(res.onAfterMiddleware.handlers()).not.toHaveLength(0);
+            expect(res.onAfterMiddleware.handlers()[0]['_fn']).toEqual(callback);
         });
 
         it('creates a resource with just url', () =>
@@ -185,9 +186,9 @@ describe('Loader', () =>
 
             const res = loader['_queue']._tasks[0].data;
 
-            expect(res).to.be.an.instanceOf(LoaderResource);
-            expect(res).to.have.property('name', fixtureData.url);
-            expect(res).to.have.property('url', fixtureData.url);
+            expect(res).toBeInstanceOf(LoaderResource);
+            expect(res).toHaveProperty('name', fixtureData.url);
+            expect(res).toHaveProperty('url', fixtureData.url);
         });
 
         it('creates a resource with just an object (name/url keys) and callback param', () =>
@@ -198,13 +199,12 @@ describe('Loader', () =>
 
             const res = loader['_queue']._tasks[0].data;
 
-            expect(res).to.be.an.instanceOf(LoaderResource);
-            expect(res).to.have.property('name', name);
-            expect(res).to.have.property('url', fixtureData.url);
+            expect(res).toBeInstanceOf(LoaderResource);
+            expect(res).toHaveProperty('name', name);
+            expect(res).toHaveProperty('url', fixtureData.url);
 
-            expect(res.onAfterMiddleware.handlers())
-                .to.not.be.empty
-                .and.toEqual([callback]);
+            expect(res.onAfterMiddleware.handlers()).not.toHaveLength(0);
+            expect(res.onAfterMiddleware.handlers()[0]['_fn']).toEqual(callback);
         });
 
         it('creates a resource with just an object (name/url/callback keys)', () =>
@@ -215,13 +215,12 @@ describe('Loader', () =>
 
             const res = loader['_queue']._tasks[0].data;
 
-            expect(res).to.be.an.instanceOf(LoaderResource);
-            expect(res).to.have.property('name', name);
-            expect(res).to.have.property('url', fixtureData.url);
+            expect(res).toBeInstanceOf(LoaderResource);
+            expect(res).toHaveProperty('name', name);
+            expect(res).toHaveProperty('url', fixtureData.url);
 
-            expect(res.onAfterMiddleware.handlers())
-                .to.not.be.empty
-                .and.toEqual([callback]);
+            expect(res.onAfterMiddleware.handlers()).not.toHaveLength(0);
+            expect(res.onAfterMiddleware.handlers()[0]['_fn']).toEqual(callback);
         });
 
         it('creates a resource with just an object (url/callback keys)', () =>
@@ -232,21 +231,20 @@ describe('Loader', () =>
 
             const res = loader['_queue']._tasks[0].data;
 
-            expect(res).to.be.an.instanceOf(LoaderResource);
-            expect(res).to.have.property('name', fixtureData.url);
-            expect(res).to.have.property('url', fixtureData.url);
+            expect(res).toBeInstanceOf(LoaderResource);
+            expect(res).toHaveProperty('name', fixtureData.url);
+            expect(res).toHaveProperty('url', fixtureData.url);
 
-            expect(res.onAfterMiddleware.handlers())
-                .to.not.be.empty
-                .and.toEqual([callback]);
+            expect(res.onAfterMiddleware.handlers()).not.toHaveLength(0);
+            expect(res.onAfterMiddleware.handlers()[0]['_fn']).toEqual(callback);
         });
 
         it('throws an error if url isn\'t passed', () =>
         {
-            expect(loader.add).to.throw(Error);
-            expect(() => loader.add(options)).to.throw(Error);
-            expect(() => loader.add(callback as any)).to.throw(Error);
-            expect(() => loader.add(options, callback)).to.throw(Error);
+            expect(loader.add).toThrow(Error);
+            expect(() => loader.add(options)).toThrow(Error);
+            expect(() => loader.add(callback as any)).toThrow(Error);
+            expect(() => loader.add(options, callback)).toThrow(Error);
         });
 
         it('throws an error if we are already loading and you have no parent resource', () =>
@@ -255,7 +253,7 @@ describe('Loader', () =>
 
             loader.load();
 
-            expect(() => loader.add(fixtureData.dataUrlGif)).to.throw(Error);
+            expect(() => loader.add(fixtureData.dataUrlGif)).toThrow(Error);
         });
     });
 
@@ -265,7 +263,7 @@ describe('Loader', () =>
         {
             loader.pre(() => { /* empty */ });
 
-            expect(loader['_beforeMiddleware']).to.have.length(1);
+            expect(loader['_beforeMiddleware']).toHaveLength(1);
         });
     });
 
@@ -275,7 +273,7 @@ describe('Loader', () =>
         {
             loader.use(() => { /* empty */ });
 
-            expect(loader['_afterMiddleware']).to.have.length(1);
+            expect(loader['_afterMiddleware']).toHaveLength(1);
         });
     });
 
@@ -313,10 +311,10 @@ describe('Loader', () =>
         it('should reset the resources of the loader', () =>
         {
             loader.add(fixtureData.url);
-            expect(loader.resources).to.not.be.empty;
+            expect(loader.resources).not.toBeEmpty();
 
             loader.reset();
-            expect(loader.resources).to.be.empty;
+            expect(loader.resources).toBeEmpty();
         });
 
         it('with unloaded items continues to work', (done: () => void) =>
@@ -332,7 +330,7 @@ describe('Loader', () =>
                 loader.reset();
                 loader.add('hud2.json', spy).load(() =>
                 {
-                    expect(spy).to.have.been.calledOnce;
+                    expect(spy).toHaveBeenCalledOnce();
                     done();
                 });
             }, 0);
@@ -351,8 +349,8 @@ describe('Loader', () =>
 
             loader.load(() =>
             {
-                expect(spy).to.have.been.calledOnce;
-                expect(spy2).to.have.been.calledOnce;
+                expect(spy).toHaveBeenCalledOnce();
+                expect(spy2).toHaveBeenCalledOnce();
                 done();
             });
         });
@@ -367,16 +365,16 @@ describe('Loader', () =>
 
             loader.add([]).load(() =>
             {
-                expect(spy).to.have.been.calledOnce;
-                expect(spy2).to.have.been.calledOnce;
+                expect(spy).toHaveBeenCalledOnce();
+                expect(spy2).toHaveBeenCalledOnce();
                 done();
             });
         });
 
         it('should run the `before` middleware, before loading a resource', (done: () => void) =>
         {
-            const spy = sinon.spy((_res: any, next: any) => next());
-            const spy2 = sinon.spy((_res: any, next: any) => next());
+            const spy = jest.fn((_res: any, next: any) => next());
+            const spy2 = jest.fn((_res: any, next: any) => next());
 
             loader.pre(spy);
             loader.pre(spy2);
@@ -385,20 +383,20 @@ describe('Loader', () =>
 
             loader.load(() =>
             {
-                expect(spy).to.have.been.calledOnce;
-                expect(spy2).to.have.been.calledOnce;
+                expect(spy).toHaveBeenCalledOnce();
+                expect(spy2).toHaveBeenCalledOnce();
                 done();
             });
         });
 
         it('should stop running the `before` middleware when one calls complete()', (done: () => void) =>
         {
-            const spy = sinon.spy((res: any, next: any) =>
+            const spy = jest.fn((res: any, next: any) =>
             {
                 res.complete();
                 next();
             });
-            const spy2 = sinon.spy((_res: any, next: any) => next());
+            const spy2 = jest.fn((_res: any, next: any) => next());
 
             loader.pre(spy);
             loader.pre(spy2);
@@ -407,16 +405,16 @@ describe('Loader', () =>
 
             loader.load(() =>
             {
-                expect(spy).to.have.been.calledOnce;
-                expect(spy2).to.have.not.been.called;
+                expect(spy).toHaveBeenCalledOnce();
+                expect(spy2).not.toHaveBeenCalled();
                 done();
             });
         });
 
         it('should run the `after` middleware, after loading a resource', (done: () => void) =>
         {
-            const spy = sinon.spy((_res: any, next: any) => next());
-            const spy2 = sinon.spy((_res: any, next: any) => next());
+            const spy = jest.fn((_res: any, next: any) => next());
+            const spy2 = jest.fn((_res: any, next: any) => next());
 
             loader.use(spy);
             loader.use(spy2);
@@ -425,8 +423,8 @@ describe('Loader', () =>
 
             loader.load(() =>
             {
-                expect(spy).to.have.been.calledOnce;
-                expect(spy2).to.have.been.calledOnce;
+                expect(spy).toHaveBeenCalledOnce();
+                expect(spy2).toHaveBeenCalledOnce();
                 done();
             });
         });
@@ -434,7 +432,7 @@ describe('Loader', () =>
         it('should run `after` middleware for resources that have been completed in `before` middleware',
             (done: () => void) =>
             {
-                const spy = sinon.spy((_res: any, next: any) => next());
+                const spy = jest.fn((_res: any, next: any) => next());
 
                 loader
                     .pre((res, next) =>
@@ -447,21 +445,21 @@ describe('Loader', () =>
                     .add(fixtureData.url)
                     .load(() =>
                     {
-                        expect(spy).to.have.been.calledTwice;
+                        expect(spy).toBeCalledTimes(2);
                         done();
                     });
             });
 
         it('should properly load the resource', (done: () => void) =>
         {
-            const spy = sinon.spy((loader: Loader, resources: Dict<LoaderResource>) =>
+            const spy = jest.fn((loader: Loader, resources: Dict<LoaderResource>) =>
             {
-                expect(spy).to.have.been.calledOnce;
+                expect(spy).toHaveBeenCalledOnce();
                 expect(loader.progress).toEqual(100);
                 expect(loader.loading).toEqual(false);
                 expect(loader.resources).toEqual(resources);
 
-                expect(resources).to.not.be.empty;
+                expect(resources).not.toBeEmpty();
                 expect(resources.res).toBeTruthy();
                 expect(resources.res.isComplete).toBe(true);
 
@@ -592,9 +590,8 @@ describe('Loader', () =>
 
             setTimeout(() =>
             {
-                expect(spy).to.have.been.calledOnce
-                    .and.calledOn(loader)
-                    .and.calledWith(res);
+                expect(spy).toBeCalledTimes(1);
+                expect(spy.mock.calls[0][0]).toBe(res);
 
                 done();
             }, 16);
@@ -608,7 +605,7 @@ describe('Loader', () =>
 
             loader['_loadResource'](res, null);
 
-            expect(res.load).to.have.been.calledOnce;
+            expect(res.load).toHaveBeenCalledOnce();
         });
     });
 
@@ -656,7 +653,7 @@ describe('Loader', () =>
 
             loader['_onLoad'](res);
 
-            expect(spy).to.have.been.calledOnce;
+            expect(spy).toHaveBeenCalledOnce();
         });
 
         it('should emit the `error` event when the resource has an error', () =>
@@ -672,7 +669,7 @@ describe('Loader', () =>
 
             loader['_onLoad'](res);
 
-            expect(spy).to.have.been.calledOnce;
+            expect(spy).toHaveBeenCalledOnce();
         });
 
         it('should emit the `load` event when the resource loads successfully', () =>
@@ -686,7 +683,7 @@ describe('Loader', () =>
 
             loader['_onLoad'](res);
 
-            expect(spy).to.have.been.calledOnce;
+            expect(spy).toHaveBeenCalledOnce();
         });
 
         it('should run the after middleware', (done: () => void) =>
@@ -702,9 +699,8 @@ describe('Loader', () =>
 
             setTimeout(() =>
             {
-                expect(spy).to.have.been.calledOnce
-                    .and.calledOn(loader)
-                    .and.calledWith(res);
+                expect(spy).toBeCalledTimes(1);
+                expect(spy.mock.calls[0][0]).toBe(res);
 
                 done();
             }, 16);
@@ -728,7 +724,7 @@ describe('Loader', () =>
 
                 loader.load(() =>
                 {
-                    expect(spy).to.have.been.calledTwice;
+                    expect(spy).toBeCalledTimes(2);
                     done();
                 });
             });
@@ -748,7 +744,7 @@ describe('Loader', () =>
 
                 loader.load(() =>
                 {
-                    expect(spy).to.have.been.calledTwice;
+                    expect(spy).toBeCalledTimes(2);
                     done();
                 });
             });
@@ -768,20 +764,20 @@ describe('Loader', () =>
                 loader.onProgress.add((loader) =>
                 {
                     i++;
-                    expect(loader.progress).to.be.above(0);
+                    expect(loader.progress).toBeGreaterThan(0);
                     if (i === total)
                     {
-                        expect(loader.progress).to.be.at.most(100);
+                        expect(loader.progress).toBeLessThanOrEqual(100);
                     }
                     else
                     {
-                        expect(loader.progress).to.be.below(100);
+                        expect(loader.progress).toBeLessThan(100);
                     }
                 });
 
                 loader.load(() =>
                 {
-                    expect(loader).to.have.property('progress', 100);
+                    expect(loader).toHaveProperty('progress', 100);
                     done();
                 });
             });
@@ -795,7 +791,7 @@ describe('Loader', () =>
 
                 loader.load(() =>
                 {
-                    expect(loader).to.have.property('progress', 100);
+                    expect(loader).toHaveProperty('progress', 100);
                     done();
                 });
             });
@@ -818,7 +814,7 @@ describe('Loader', () =>
 
                 loader.load(() =>
                 {
-                    expect(spy).to.have.been.calledThrice;
+                    expect(spy).toBeCalledTimes(3);
                     done();
                 });
             });
@@ -840,7 +836,7 @@ describe('Loader', () =>
 
                 loader.load(() =>
                 {
-                    expect(spy).to.have.been.calledThrice;
+                    expect(spy).toBeCalledTimes(3);
                     done();
                 });
             });
@@ -859,12 +855,12 @@ describe('Loader', () =>
 
                 loader.onProgress.add((loader) =>
                 {
-                    expect(loader).to.have.property('progress', expectedProgressValues[i++]);
+                    expect(loader).toHaveProperty('progress', expectedProgressValues[i++]);
                 });
 
                 loader.load(() =>
                 {
-                    expect(loader).to.have.property('progress', 100);
+                    expect(loader).toHaveProperty('progress', 100);
                     done();
                 });
             });
@@ -880,7 +876,7 @@ describe('Loader', () =>
 
                 loader.load(() =>
                 {
-                    expect(loader).to.have.property('progress', 100);
+                    expect(loader).toHaveProperty('progress', 100);
                     done();
                 });
             });
@@ -903,7 +899,7 @@ describe('Loader', () =>
 
                 loader.load(() =>
                 {
-                    expect(spy).to.have.callCount(4);
+                    expect(spy).toBeCalledTimes(4);
                     done();
                 });
             });
@@ -922,12 +918,12 @@ describe('Loader', () =>
 
                 loader.onProgress.add((loader) =>
                 {
-                    expect(loader).to.have.property('progress', expectedProgressValues[i++]);
+                    expect(loader).toHaveProperty('progress', expectedProgressValues[i++]);
                 });
 
                 loader.load(() =>
                 {
-                    expect(loader).to.have.property('progress', 100);
+                    expect(loader).toHaveProperty('progress', 100);
                     done();
                 });
             });
@@ -943,7 +939,7 @@ describe('Loader', () =>
 
                 loader.load(() =>
                 {
-                    expect(loader).to.have.property('progress', 100);
+                    expect(loader).toHaveProperty('progress', 100);
                     done();
                 });
             });

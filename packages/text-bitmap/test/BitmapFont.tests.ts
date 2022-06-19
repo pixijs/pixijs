@@ -15,16 +15,15 @@ describe('BitmapFont', () =>
         it('should throw for missing name', () =>
         {
             // @ts-expect-error - testing for error
-            expect(() => BitmapFont.from()).to.throw;
+            expect(() => BitmapFont.from()).toThrow();
         });
 
         // eslint-disable-next-line func-names
         it('should register the font if a name is provided', function ()
         {
-            this.timeout(8000);
-            this.slow(4000);
+            jest.setTimeout(8000);
 
-            expect(BitmapFont.available.foo).to.be.undefined;
+            expect(BitmapFont.available.foo).toBeUndefined();
 
             const font = BitmapFont.from('foo');
 
@@ -48,18 +47,18 @@ describe('BitmapFont', () =>
             {
                 const char = String(emoji.codePointAt(0));
 
-                expect(font.chars).to.have.property(char);
+                expect(font.chars).toHaveProperty(char);
             }
         });
 
         it('should throw an error when an invalid range is given', () =>
         {
-            expect(() => BitmapFont.from('foo', {}, { chars: [['l', 'i', 'm']] })).to.throw;
+            expect(() => BitmapFont.from('foo', {}, { chars: [['l', 'i', 'm']] })).toThrow();
         });
 
         it('should throw an error when an invalid start/end of range', () =>
         {
-            expect(() => BitmapFont.from('foo', {}, { chars: [['z', 'a']] })).to.throw;
+            expect(() => BitmapFont.from('foo', {}, { chars: [['z', 'a']] })).toThrow();
         });
 
         it('should render resolution with proportional size', () =>
@@ -83,12 +82,12 @@ describe('BitmapFont', () =>
 
             BitmapFont.from('foo', {}, { chars: 'bc' });
             expect(Object.keys(BitmapFont.available.foo.chars).length).toEqual(2);
-            expect(BitmapFont.available.foo.chars[id]).to.be.undefined;
+            expect(BitmapFont.available.foo.chars[id]).toBeUndefined();
         });
 
         it('should throw an error when no characters are passed', () =>
         {
-            expect(() => BitmapFont.from('foo', {}, { chars: [] })).to.throw;
+            expect(() => BitmapFont.from('foo', {}, { chars: [] })).toThrow();
         });
     });
 });

@@ -28,8 +28,8 @@ describe('segmentIntersection', () =>
 
             const parallel = segmentIntersection(aStart, aEnd, parallelStart, parallelEnd);
 
-            expect(parallel.x).to.be.NaN;
-            expect(parallel.y).to.be.NaN;
+            expect(parallel.x).toBeNaN();
+            expect(parallel.y).toBeNaN();
         });
     it('should return NaN if the segments dont intersect',
         () =>
@@ -41,8 +41,8 @@ describe('segmentIntersection', () =>
 
             const parallel = segmentIntersection(aStart, aEnd, bStart, bEnd);
 
-            expect(parallel.x).to.be.NaN;
-            expect(parallel.y).to.be.NaN;
+            expect(parallel.x).toBeNaN();
+            expect(parallel.y).toBeNaN();
         });
     it('should return the same reference given', () =>
     {

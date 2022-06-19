@@ -14,8 +14,8 @@ describe('DisplayObject#cacheAsBitmap', () =>
         // @ts-expect-error - instantiating DisplayObject
         const obj = new DisplayObject();
 
-        expect(obj.cacheAsBitmap).to.be.not.undefined;
-        expect(obj.cacheAsBitmap).to.be.a('boolean');
+        expect(obj.cacheAsBitmap).toBeDefined();
+        expect(obj.cacheAsBitmap).toBeBoolean();
         expect(obj.cacheAsBitmap).toBe(false);
     });
 
@@ -97,7 +97,7 @@ describe('DisplayObject#cacheAsBitmap', () =>
             {
                 renderer.destroy();
             }
-        }).to.not.throw();
+        }).not.toThrowError();
     });
 
     it('should respect projection', () =>

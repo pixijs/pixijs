@@ -1,5 +1,5 @@
 import { BatchRenderer, Texture, extensions } from '@pixi/core';
-import { Graphics, GRAPHICS_CURVES, FillStyle, LineStyle, graphicsUtils, GraphicsGeometry, LINE_CAP } from '@pixi/graphics';
+import { Graphics, GRAPHICS_CURVES, FillStyle, LineStyle, graphicsUtils, LINE_CAP } from '@pixi/graphics';
 const { FILL_COMMANDS, buildLine } = graphicsUtils;
 
 import { BLEND_MODES } from '@pixi/constants';
@@ -19,12 +19,12 @@ describe('Graphics', () =>
         {
             const graphics = new Graphics();
 
-            expect(graphics.fill.color).to.be.equals(0xFFFFFF);
-            expect(graphics.fill.alpha).to.be.equals(1);
-            expect(graphics.line.width).to.be.equals(0);
-            expect(graphics.line.color).to.be.equals(0);
-            expect(graphics.tint).to.be.equals(0xFFFFFF);
-            expect(graphics.blendMode).to.be.equals(BLEND_MODES.NORMAL);
+            expect(graphics.fill.color).toEqual(0xFFFFFF);
+            expect(graphics.fill.alpha).toEqual(1);
+            expect(graphics.line.width).toEqual(0);
+            expect(graphics.line.color).toEqual(0);
+            expect(graphics.tint).toEqual(0xFFFFFF);
+            expect(graphics.blendMode).toEqual(BLEND_MODES.NORMAL);
         });
     });
 
@@ -186,11 +186,11 @@ describe('Graphics', () =>
             const data = geometry.graphicsData[0];
 
             // native = false
-            expect(() => { buildLine(data, geometry); }).to.not.throw();
+            expect(() => { buildLine(data, geometry); }).not.toThrowError();
 
             data.lineStyle.native = true;
             // native = true
-            expect(() => { buildLine(data, geometry); }).to.not.throw();
+            expect(() => { buildLine(data, geometry); }).not.toThrowError();
         });
     });
 
@@ -204,8 +204,8 @@ describe('Graphics', () =>
             graphics.moveTo(0, 0);
             graphics.lineTo(0, 10);
 
-            expect(graphics.width).to.be.closeTo(1, 0.0001);
-            expect(graphics.height).to.be.closeTo(11, 0.0001);
+            expect(graphics.width).toBeCloseTo(1, 0.0001);
+            expect(graphics.height).toBeCloseTo(11, 0.0001);
         });
 
         it('should return correct bounds - south', () =>
@@ -216,8 +216,8 @@ describe('Graphics', () =>
             graphics.lineStyle({ width: 1, cap: LINE_CAP.SQUARE });
             graphics.lineTo(0, -10);
 
-            expect(graphics.width).to.be.closeTo(1, 0.0001);
-            expect(graphics.height).to.be.closeTo(11, 0.0001);
+            expect(graphics.width).toBeCloseTo(1, 0.0001);
+            expect(graphics.height).toBeCloseTo(11, 0.0001);
         });
 
         it('should return correct bounds - east', () =>
@@ -228,8 +228,8 @@ describe('Graphics', () =>
             graphics.lineStyle({ width: 1, cap: LINE_CAP.SQUARE });
             graphics.lineTo(10, 0);
 
-            expect(graphics.height).to.be.closeTo(1, 0.0001);
-            expect(graphics.width).to.be.closeTo(11, 0.0001);
+            expect(graphics.height).toBeCloseTo(1, 0.0001);
+            expect(graphics.width).toBeCloseTo(11, 0.0001);
         });
 
         it('should return correct bounds - west', () =>
@@ -240,8 +240,8 @@ describe('Graphics', () =>
             graphics.lineStyle({ width: 1, cap: LINE_CAP.SQUARE });
             graphics.lineTo(-10, 0);
 
-            expect(graphics.height).to.be.closeTo(1, 0.0001);
-            expect(graphics.width).to.be.closeTo(11, 0.0001);
+            expect(graphics.height).toBeCloseTo(1, 0.0001);
+            expect(graphics.width).toBeCloseTo(11, 0.0001);
         });
 
         it('should return correct bounds when stacked with circle', () =>
@@ -252,15 +252,15 @@ describe('Graphics', () =>
             graphics.drawCircle(50, 50, 50);
             graphics.endFill();
 
-            expect(graphics.width).to.be.equals(100);
-            expect(graphics.height).to.be.equals(100);
+            expect(graphics.width).toEqual(100);
+            expect(graphics.height).toEqual(100);
 
             graphics.lineStyle(20, 0);
             graphics.moveTo(25, 50);
             graphics.lineTo(75, 50);
 
-            expect(graphics.width).to.be.equals(100);
-            expect(graphics.height).to.be.equals(100);
+            expect(graphics.width).toEqual(100);
+            expect(graphics.height).toEqual(100);
         });
 
         it('should return correct bounds when square', () =>
@@ -274,8 +274,8 @@ describe('Graphics', () =>
             graphics.lineTo(0, 50);
             graphics.lineTo(0, 0);
 
-            expect(graphics.width).to.be.equals(70);
-            expect(graphics.height).to.be.equals(70);
+            expect(graphics.width).toEqual(70);
+            expect(graphics.height).toEqual(70);
         });
 
         it('should ignore duplicate calls', () =>
@@ -287,7 +287,7 @@ describe('Graphics', () =>
             graphics.lineTo(10, 0);
             graphics.lineTo(10, 0);
 
-            expect(graphics.currentPath.points).to.deep.equal([0, 0, 10, 0]);
+            expect(graphics.currentPath.points).toEqual([0, 0, 10, 0]);
         });
     });
 
@@ -458,7 +458,7 @@ describe('Graphics', () =>
                 .drawPolygon([1, 1, 1, 1, 1, 1])
                 .clear();
 
-            expect(graphics).to.be.not.null;
+            expect(graphics).not.toBeNull();
         });
     });
 
@@ -483,11 +483,11 @@ describe('Graphics', () =>
 
             graphics.drawPolygon(poly);
 
-            expect(graphics.geometry.graphicsData[0]).to.be.not.null;
+            expect(graphics.geometry.graphicsData[0]).not.toBeNull();
 
             const result = (graphics.geometry.graphicsData[0].shape as Polygon).points;
 
-            expect(result).to.deep.equals(numbers);
+            expect(result).toEqual(numbers);
         });
 
         it('should support array of numbers', () =>
@@ -498,11 +498,11 @@ describe('Graphics', () =>
 
             graphics.drawPolygon(numbers);
 
-            expect(graphics.geometry.graphicsData[0]).to.be.not.null;
+            expect(graphics.geometry.graphicsData[0]).not.toBeNull();
 
             const result = (graphics.geometry.graphicsData[0].shape as Polygon).points;
 
-            expect(result).to.deep.equals(numbers);
+            expect(result).toEqual(numbers);
         });
 
         it('should support array of points', () =>
@@ -511,11 +511,11 @@ describe('Graphics', () =>
 
             graphics.drawPolygon(points);
 
-            expect(graphics.geometry.graphicsData[0]).to.be.not.null;
+            expect(graphics.geometry.graphicsData[0]).not.toBeNull();
 
             const result = (graphics.geometry.graphicsData[0].shape as Polygon).points;
 
-            expect(result).to.deep.equals(numbers);
+            expect(result).toEqual(numbers);
         });
 
         it('should support flat arguments of numbers', () =>
@@ -526,11 +526,11 @@ describe('Graphics', () =>
 
             graphics.drawPolygon(...numbers);
 
-            expect(graphics.geometry.graphicsData[0]).to.be.not.null;
+            expect(graphics.geometry.graphicsData[0]).not.toBeNull();
 
             const result = (graphics.geometry.graphicsData[0].shape as Polygon).points;
 
-            expect(result).to.deep.equals(numbers);
+            expect(result).toEqual(numbers);
         });
 
         it('should support flat arguments of points', () =>
@@ -541,11 +541,11 @@ describe('Graphics', () =>
 
             graphics.drawPolygon(...points);
 
-            expect(graphics.geometry.graphicsData[0]).to.be.not.null;
+            expect(graphics.geometry.graphicsData[0]).not.toBeNull();
 
             const result = (graphics.geometry.graphicsData[0].shape as Polygon).points;
 
-            expect(result).to.deep.equals(numbers);
+            expect(result).toEqual(numbers);
         });
     });
 
@@ -609,9 +609,9 @@ describe('Graphics', () =>
 
             expect(graphics.currentPath).toBeNull();
 
-            expect(() => graphics.arc(100, 30, 20, 0, Math.PI)).to.not.throw();
+            expect(() => graphics.arc(100, 30, 20, 0, Math.PI)).not.toThrowError();
 
-            expect(graphics.currentPath).to.be.not.null;
+            expect(graphics.currentPath).not.toBeNull();
         });
 
         it('should not throw with other shapes', () =>
@@ -638,7 +638,7 @@ describe('Graphics', () =>
             graphics.beginFill();
             graphics.lineStyle(4, 0x00ff00, 1);
 
-            expect(() => graphics.arc(300, 100, 20, 0, Math.PI)).to.not.throw();
+            expect(() => graphics.arc(300, 100, 20, 0, Math.PI)).not.toThrowError();
         });
 
         it('should do nothing when startAngle and endAngle are equal', () =>
@@ -674,30 +674,30 @@ describe('Graphics', () =>
             graphics.drawRect(0, 0, 10, 10);
             graphics.endFill();
 
-            const spy = sinon.spy(graphics.geometry, 'calculateBounds' as keyof GraphicsGeometry);
+            const spy = jest.spyOn(graphics.geometry, 'calculateBounds' as any);
 
             graphics['_calculateBounds']();
 
-            expect(spy).to.have.been.calledOnce;
+            expect(spy).toHaveBeenCalledOnce();
 
             graphics['_calculateBounds']();
 
-            expect(spy).to.have.been.calledOnce;
+            expect(spy).toHaveBeenCalledOnce();
         });
 
         it('should not call updateLocalBounds when empty', () =>
         {
             const graphics = new Graphics();
 
-            const spy = sinon.spy(graphics.geometry, 'calculateBounds' as keyof GraphicsGeometry);
+            const spy = jest.spyOn(graphics.geometry, 'calculateBounds' as any);
 
             graphics['_calculateBounds']();
 
-            expect(spy).to.not.have.been.called;
+            expect(spy).not.toBeCalled();
 
             graphics['_calculateBounds']();
 
-            expect(spy).to.not.have.been.called;
+            expect(spy).not.toBeCalled();
         });
     });
 
@@ -804,9 +804,9 @@ describe('Graphics', () =>
 
             const data = graphics.geometry.graphicsData;
 
-            expect(data.length).toEquals(2);
-            expect((data[0].shape as Polygon).points).to.eql([50, 50, 250, 50, 100, 100, 50, 50]);
-            expect((data[1].shape as Polygon).points).to.eql([250, 50, 450, 50, 300, 100, 250, 50]);
+            expect(data.length).toEqual(2);
+            expect((data[0].shape as Polygon).points).toEqual([50, 50, 250, 50, 100, 100, 50, 50]);
+            expect((data[1].shape as Polygon).points).toEqual([250, 50, 450, 50, 300, 100, 250, 50]);
         });
 
         it('should honor lineStyle break', () =>
@@ -823,9 +823,9 @@ describe('Graphics', () =>
 
             const data = graphics.geometry.graphicsData;
 
-            expect(data.length).toEquals(2);
-            expect((data[0].shape as Polygon).points).to.eql([50, 50, 250, 50]);
-            expect((data[1].shape as Polygon).points).to.eql([250, 50, 100, 100, 50, 50]);
+            expect(data.length).toEqual(2);
+            expect((data[0].shape as Polygon).points).toEqual([50, 50, 250, 50]);
+            expect((data[1].shape as Polygon).points).toEqual([250, 50, 100, 100, 50, 50]);
         });
     });
 
@@ -847,7 +847,7 @@ describe('Graphics', () =>
         const arcLen = Math.PI / 2 * Math.sqrt(200);
         const estimate = Math.ceil(arcLen / myMaxLen) + 1;
 
-        expect(pointsLen).to.be.closeTo(estimate, 2.0);
+        expect(pointsLen).toBeCloseTo(estimate, 2.0);
 
         GRAPHICS_CURVES.adaptive = defMode;
         GRAPHICS_CURVES.maxLength = defMaxLen;
@@ -932,7 +932,7 @@ describe('Graphics', () =>
             const geometry = graphics.geometry;
 
             geometry.updateBatches();
-            expect(geometry.batches).to.have.lengthOf(1);
+            expect(geometry.batches).toHaveLength(1);
         });
 
         it('should be 2 batches for 2 different styles', () =>
@@ -953,7 +953,7 @@ describe('Graphics', () =>
             const geometry = graphics.geometry;
 
             geometry.updateBatches();
-            expect(geometry.batches).to.have.lengthOf(2);
+            expect(geometry.batches).toHaveLength(2);
         });
 
         it('should be 1 batch if fill and line are the same', () =>
@@ -968,7 +968,7 @@ describe('Graphics', () =>
             const geometry = graphics.geometry;
 
             geometry.updateBatches();
-            expect(geometry.batches).to.have.lengthOf(1);
+            expect(geometry.batches).toHaveLength(1);
         });
 
         it('should not use fill if triangulation does nothing', () =>
@@ -985,10 +985,10 @@ describe('Graphics', () =>
             const geometry = graphics.geometry;
 
             geometry.updateBatches();
-            expect(geometry.batches).to.have.lengthOf(2);
-            expect(geometry.batches[0].style.color).toEquals(0xff0000);
+            expect(geometry.batches).toHaveLength(2);
+            expect(geometry.batches[0].style.color).toEqual(0xff0000);
             expect(geometry.batches[0].size).toEqual(6);
-            expect(geometry.batches[1].style.color).toEquals(0x00ff00);
+            expect(geometry.batches[1].style.color).toEqual(0x00ff00);
             expect(geometry.batches[1].size).toEqual(30);
         });
     });

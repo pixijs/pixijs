@@ -21,14 +21,14 @@ describe('Spritesheet', () =>
 
                 expect(Object.keys(textures).length).toEqual(5);
                 expect(Object.keys(spritesheet.textures).length).toEqual(5);
-                expect(textures[id]).to.be.an.instanceof(Texture);
+                expect(textures[id]).toBeInstanceOf(Texture);
                 expect(textures[id].width).toEqual(width / spritesheet.resolution);
                 expect(textures[id].height).toEqual(height / spritesheet.resolution);
                 expect(textures[id].defaultAnchor.x).toEqual(0);
                 expect(textures[id].defaultAnchor.y).toEqual(0);
                 expect(textures[id].textureCacheIds.indexOf(id)).toEqual(0);
 
-                expect(spritesheet.animations).to.have.property('star').that.is.an('array');
+                expect(spritesheet.animations.star).toBeArray();
                 expect(spritesheet.animations.star.length).toEqual(4);
                 expect(spritesheet.animations.star[0].defaultAnchor.x).toEqual(0.5);
                 expect(spritesheet.animations.star[0].defaultAnchor.y).toEqual(0.5);
@@ -71,7 +71,7 @@ describe('Spritesheet', () =>
     it('should exist on PIXI', () =>
     {
         expect(Spritesheet).toBeInstanceOf(Function);
-        expect(Spritesheet.BATCH_SIZE).to.be.a('number');
+        expect(Spritesheet.BATCH_SIZE).toBeNumber();
     });
 
     it('should create an instance', () =>
@@ -93,6 +93,7 @@ describe('Spritesheet', () =>
 
     it('should create instance with scale resolution', (done) =>
     {
+        jest.setTimeout(10000);
         // eslint-disable-next-line @typescript-eslint/no-var-requires, global-require
         const data = require(path.resolve(resources, 'building1.json'));
         const image = new Image();
@@ -103,7 +104,7 @@ describe('Spritesheet', () =>
             const baseTexture = new BaseTexture(image, null);
             const spritesheet = new Spritesheet(baseTexture, data);
 
-            expect(data).to.be.an('object');
+            expect(data).toBeObject();
             expect(data.meta.image).toEqual('building1.png');
             expect(spritesheet.resolution).toEqual(0.5);
             validate(spritesheet, done);
@@ -117,7 +118,7 @@ describe('Spritesheet', () =>
         const baseTexture = BaseTexture.from(data.meta.image);// , undefined, undefined, 1.5);
         const spritesheet = new Spritesheet(baseTexture, data);
 
-        expect(data).to.be.an('object');
+        expect(data).toBeObject();
         expect(data.meta.image).toEqual('building1.png');
         expect(spritesheet.resolution).toEqual(0.5);
 
@@ -137,7 +138,7 @@ describe('Spritesheet', () =>
             const baseTexture = new BaseTexture(image, { resolution: 1 });
             const spritesheet = new Spritesheet(baseTexture, data, uri);
 
-            expect(data).to.be.an('object');
+            expect(data).toBeObject();
             expect(data.meta.image).toEqual('building1@2x.png');
             expect(spritesheet.resolution).toEqual(2);
 

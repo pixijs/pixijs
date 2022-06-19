@@ -1,8 +1,8 @@
 import { BatchRenderer, extensions, Texture } from '@pixi/core';
 import { Sprite } from '@pixi/sprite';
 import { CanvasRenderer } from '@pixi/canvas-renderer';
-
 import { CanvasSpriteRenderer } from '@pixi/canvas-sprite';
+import '@pixi/canvas-display';
 
 describe('CanvasSpriteRenderer', () =>
 {
@@ -20,7 +20,7 @@ describe('CanvasSpriteRenderer', () =>
 
         try
         {
-            expect(() => { renderer.render(sprite); }).to.not.throw();
+            expect(() => { renderer.render(sprite); }).not.toThrowError();
         }
         finally
         {

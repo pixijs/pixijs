@@ -36,9 +36,9 @@ describe('Prepare', () =>
             prepare.add(container);
             prepare.prepareItems();
 
-            expect(Object.keys(texture.baseTexture._glTextures)).to.eql([`${CONTEXT_UID}`]);
+            expect(Object.keys(texture.baseTexture._glTextures)).toEqual([`${CONTEXT_UID}`]);
             expect(graphics.geometry.batches.length).toEqual(2);
-            expect(vaos[CONTEXT_UID]).to.exist;
+            expect(vaos[CONTEXT_UID]).toBeDefined();
             expect(Object.keys(vaos[CONTEXT_UID]).length).toEqual(2); // [shader_id] and [signature]
         }
         finally

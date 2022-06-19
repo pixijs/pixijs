@@ -54,7 +54,7 @@ describe('Geometry', () =>
             renderer.geometry.bind(geometry2, shader);
 
             geometry1.destroy();
-            expect(indices.data).to.be.not.null;
+            expect(indices.data).not.toBeNull();
             expect(Object.keys(indices._glBuffers).length).toEqual(1);
             geometry2.destroy();
             expect(Object.keys(indices._glBuffers).length).toEqual(0);
@@ -114,7 +114,7 @@ describe('Geometry', () =>
 
         const geom = Geometry.merge([geom0, geom1]);
 
-        expect([...(geom.getIndex().data) as unknown as number[]]).to.have.members([0, 1, 2, 3, 4, 5, 6]);
+        expect([...(geom.getIndex().data) as unknown as number[]]).toEqual(expect.arrayContaining([0, 1, 2, 3, 4, 5, 6]));
     });
 
     it('should create one VAO for shaders with the same attributes and same location specifiers', () =>
@@ -253,7 +253,7 @@ describe('Geometry', () =>
 
             const vao2 = renderer.geometry['_activeVao'];
 
-            expect(vao1).to.not.equal(vao2);
+            expect(vao1).not.toBe(vao2);
 
             geometry.destroy();
         }
@@ -323,7 +323,7 @@ describe('Geometry', () =>
 
             const vao2 = renderer.geometry['_activeVao'];
 
-            expect(vao1).to.not.equal(vao2);
+            expect(vao1).not.toBe(vao2);
 
             geometry.destroy();
         }

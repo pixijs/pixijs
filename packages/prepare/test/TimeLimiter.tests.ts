@@ -5,8 +5,6 @@ describe('TimeLimiter', () =>
     // eslint-disable-next-line func-names
     it('should limit to stop after time from beginFrame()', function (done)
     {
-        this.slow(500);
-
         const limit = new TimeLimiter(100);
 
         limit.beginFrame();

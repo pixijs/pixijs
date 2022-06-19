@@ -69,13 +69,13 @@ describe('BatchRenderer', () =>
             expect(batchRenderer['_bufferedElements'].length).toEqual(8);
             expect(batchRenderer['_bufferedTextures'].length).toEqual(8);
             batchRenderer.flush();
-            expect(batchRenderer['_bufferedElements']).to.eql(nullArray);
-            expect(batchRenderer['_bufferedTextures']).to.eql(nullArray);
+            expect(batchRenderer['_bufferedElements']).toEqual(nullArray);
+            expect(batchRenderer['_bufferedTextures']).toEqual(nullArray);
 
             const attrCount = batchRenderer['_aIndex'];
 
             // first number is start * 2, second is size
-            expect(drawCalls).to.eql([0, 18, 36, 6, 48, 11, 70, 12]);
+            expect(drawCalls).toEqual([0, 18, 36, 6, 48, 11, 70, 12]);
             expect(attrCount).toEqual(198);
             // eslint-disable-next-line no-console
 
@@ -124,8 +124,8 @@ describe('BatchRenderer', () =>
             batchRenderer['_attributeBuffer'].uint32View.slice(0, 198).forEach((x) => { resultAttr.push(x); });
             batchRenderer['_indexBuffer'].slice(0, 47).forEach((x) => { resultInd.push(x); });
 
-            expect(resultAttr).to.eql(attr);
-            expect(resultInd).to.eql(ind);
+            expect(resultAttr).toEqual(attr);
+            expect(resultInd).toEqual(ind);
         }
         finally
         {
@@ -154,16 +154,16 @@ describe('BatchRenderer', () =>
             batchRenderer.MAX_TEXTURES = 2;
             batchRenderer.start();
 
-            const glEnable = sinon.spy(gl, 'enable');
-            const glDisable = sinon.spy(gl, 'disable');
+            const glEnable = jest.spyOn(gl, 'enable');
+            const glDisable = jest.spyOn(gl, 'disable');
 
             elements.forEach((element) => batchRenderer.render(element));
             batchRenderer.flush();
 
-            expect(glDisable.calledOnce).toBe(true);
-            expect(glDisable.args[0][0]).toEqual(gl.BLEND);
-            expect(glEnable.calledOnce).toBe(true);
-            expect(glEnable.args[0][0]).toEqual(gl.BLEND);
+            expect(glDisable).toBeCalledTimes(1);
+            expect(glDisable).toBeCalledWith(gl.BLEND);
+            expect(glEnable).toBeCalledTimes(1);
+            expect(glEnable).toBeCalledWith(gl.BLEND);
         }
         finally
         {

@@ -47,7 +47,7 @@ describe('VideoResource', () =>
         });
 
         // @ts-expect-error ---
-        expect(resource.source.firstChild.type).to.be.equals('video/webm');
+        expect(resource.source.firstChild.type).toEqual('video/webm');
 
         resource.destroy();
     });
@@ -60,7 +60,7 @@ describe('VideoResource', () =>
         });
 
         // @ts-expect-error ---
-        expect(resource.source.firstChild.type).to.be.equals('video/mp4');
+        expect(resource.source.firstChild.type).toEqual('video/mp4');
 
         resource.destroy();
     });

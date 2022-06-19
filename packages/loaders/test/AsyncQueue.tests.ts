@@ -55,7 +55,7 @@ describe('async', () =>
 
             q.drain = () =>
             {
-                expect(callOrder).to.eql([
+                expect(callOrder).toEqual([
                     'process 2', 'callback 2',
                     'process 1', 'callback 1',
                     'process 4', 'callback 4',
@@ -116,7 +116,7 @@ describe('async', () =>
 
             q.drain = () =>
             {
-                expect(callOrder).to.eql([
+                expect(callOrder).toEqual([
                     'process 1', 'callback 1',
                     'process 2', 'callback 2',
                     'process 3', 'callback 3',
@@ -136,7 +136,7 @@ describe('async', () =>
                 {
                     callback(null, task);
                 }, 0);
-            }).to.throw();
+            }).toThrow();
             done();
         });
 
@@ -151,7 +151,7 @@ describe('async', () =>
 
             q.drain = () =>
             {
-                expect(results).to.eql(['bar', 'fooError']);
+                expect(results).toEqual(['bar', 'fooError']);
                 done();
             };
 
@@ -191,7 +191,7 @@ describe('async', () =>
 
             q.error = (error, task) =>
             {
-                expect(error).to.exist;
+                expect(error).toBeDefined();
                 expect(error.message).toEqual('fooError');
                 expect(task.name).toEqual('foo');
                 results.push('fooError');
@@ -199,7 +199,7 @@ describe('async', () =>
 
             q.drain = () =>
             {
-                expect(results).to.eql(['fooError', 'bar']);
+                expect(results).toEqual(['fooError', 'bar']);
                 done();
             };
 
@@ -207,7 +207,7 @@ describe('async', () =>
 
             q.push({ name: 'bar' }, (err) =>
             {
-                expect(err).to.not.exist;
+                expect(err).toBeFalsy();
                 results.push('bar');
             });
         });
@@ -279,7 +279,7 @@ describe('async', () =>
 
             q.drain = () =>
             {
-                expect(callOrder).to.eql([
+                expect(callOrder).toEqual([
                     'process 2',
                     'process 1',
                     'process 4',
@@ -297,7 +297,7 @@ describe('async', () =>
             {
                 // @ts-expect-error - testing for error
                 q.push({}, 1);
-            }).to.throw();
+            }).toThrow();
             done();
         });
 
@@ -318,7 +318,7 @@ describe('async', () =>
 
             setTimeout(() =>
             {
-                expect(queueOrder).to.eql([1, 2, 3, 4]);
+                expect(queueOrder).toEqual([1, 2, 3, 4]);
                 done();
             }, 100);
         });
@@ -331,7 +331,7 @@ describe('async', () =>
                 expect(() =>
                 {
                     callback();
-                }).to.throw();
+                }).toThrow();
                 done();
             }, 2);
 
@@ -419,7 +419,7 @@ describe('async', () =>
 
             setTimeout(() =>
             {
-                expect(callOrder).to.eql([
+                expect(callOrder).toEqual([
                     'process 1', `timeout ${taskTimeout}`,
                     'process 2', `timeout ${(taskTimeout * 2)}`,
                     'process 3', `timeout ${(taskTimeout * 5)}`,
@@ -461,7 +461,7 @@ describe('async', () =>
 
             q.drain = () =>
             {
-                expect(callOrder).to.eql([1, 2, 3, 4, 5]);
+                expect(callOrder).toEqual([1, 2, 3, 4, 5]);
                 done();
             };
         });
@@ -515,7 +515,7 @@ describe('async', () =>
 
             setTimeout(() =>
             {
-                expect(callOrder).to.eql([
+                expect(callOrder).toEqual([
                     'process 1', `timeout ${taskTimeout}`,
                     'process 2', `timeout ${taskTimeout}`,
                     'process 3', `timeout ${(taskTimeout * 4)}`,
@@ -601,20 +601,20 @@ describe('async', () =>
 
             q.saturated = () =>
             {
-                expect(q.running()).toEqual(3, 'queue should be saturated now');
+                expect(q.running()).toEqual(3);
                 calls.push('saturated');
             };
             q.empty = () =>
             {
-                expect(q.length()).toEqual(0, 'queue should be empty now');
+                expect(q.length()).toEqual(0);
                 calls.push('empty');
             };
             q.drain = () =>
             {
                 expect(q.length() === 0 && q.running() === 0)
-                    .toEqual(true, 'queue should be empty now and no more workers should be running');
+                    .toEqual(true);
                 calls.push('drain');
-                expect(calls).to.eql([
+                expect(calls).toEqual([
                     'process foo',
                     'process bar',
                     'saturated',
@@ -653,9 +653,9 @@ describe('async', () =>
             q.drain = () =>
             {
                 expect(q.length() === 0 && q.running() === 0)
-                    .toEqual(true, 'queue should be empty now and no more workers should be running');
+                    .toEqual(true);
                 calls.push('drain');
-                expect(calls).to.eql([
+                expect(calls).toEqual([
                     'drain',
                 ]);
                 done();
@@ -677,7 +677,7 @@ describe('async', () =>
             };
             q.drain = () =>
             {
-                expect(saturatedCalled).toEqual(true, 'saturated not called');
+                expect(saturatedCalled).toEqual(true);
                 done();
             };
 
@@ -700,7 +700,7 @@ describe('async', () =>
             done();
         });
 
-        context('q.saturated(): ', () =>
+        describe('q.saturated(): ', () =>
         {
             it('should call the saturated callback if tasks length is concurrency', (done: () => void) =>
             {
@@ -717,10 +717,10 @@ describe('async', () =>
                 };
                 q.empty = () =>
                 {
-                    expect(calls.indexOf('saturated')).to.be.above(-1);
+                    expect(calls.indexOf('saturated')).toBeGreaterThan(-1);
                     setTimeout(() =>
                     {
-                        expect(calls).eql([
+                        expect(calls).toEqual([
                             'process foo0',
                             'process foo1',
                             'process foo2',
@@ -745,7 +745,7 @@ describe('async', () =>
             });
         });
 
-        context('q.unsaturated(): ', () =>
+        describe('q.unsaturated(): ', () =>
         {
             it('should have a default buffer property that equals 25% of the concurrenct rate', (done: () => void) =>
             {
@@ -771,7 +771,7 @@ describe('async', () =>
                 }, 10);
 
                 q.buffer = 4;
-                expect(q.buffer).to.not.equal(2.5);
+                expect(q.buffer).not.toEqual(2.5);
                 expect(q.buffer).toEqual(4);
                 done();
             });
@@ -791,10 +791,10 @@ describe('async', () =>
                     };
                     q.empty = () =>
                     {
-                        expect(calls.indexOf('unsaturated')).to.be.above(-1);
+                        expect(calls.indexOf('unsaturated')).toBeGreaterThan(-1);
                         setTimeout(() =>
                         {
-                            expect(calls).eql([
+                            expect(calls).toEqual([
                                 'process foo0',
                                 'process foo1',
                                 'process foo2',
@@ -847,8 +847,8 @@ describe('async', () =>
 
             async.eachSeries([1, 3, 2], eachIteratee.bind({ }, args), (err) =>
             {
-                expect(err).toEqual(undefined, `${err} passed instead of 'null'`);
-                expect(args).to.eql([1, 3, 2]);
+                expect(err).toEqual(undefined);
+                expect(args).toEqual([1, 3, 2]);
                 done();
             });
         });
@@ -857,7 +857,7 @@ describe('async', () =>
         {
             async.eachSeries([], (_x: number, callback: () => void) =>
             {
-                expect(false).toEqual(true, 'iteratee should not be called');
+                expect(false).toEqual(true);
                 callback();
             }, (err) =>
             {
@@ -866,7 +866,7 @@ describe('async', () =>
                     throw err;
                 }
 
-                expect(true).toEqual(true, 'should call callback');
+                expect(true).toEqual(true);
             });
             setTimeout(done, 25);
         });
@@ -880,7 +880,7 @@ describe('async', () =>
                 setTimeout(callback, 1);
             }, () =>
             {
-                expect(true).toEqual(true, 'should call callback');
+                expect(true).toEqual(true);
             });
 
             arr.pop();
@@ -902,7 +902,7 @@ describe('async', () =>
                 },
                 () =>
                 {
-                    expect(sync).toEqual(true, 'callback not called on same tick');
+                    expect(sync).toEqual(true);
                 }
             );
             sync = false;
@@ -922,7 +922,7 @@ describe('async', () =>
                 },
                 () =>
                 {
-                    expect(sync).toEqual(true, 'callback not called on same tick');
+                    expect(sync).toEqual(true);
                 }
             );
             sync = false;
@@ -942,7 +942,7 @@ describe('async', () =>
                 },
                 (err: string) =>
                 {
-                    expect(callOrder).to.eql([1]);
+                    expect(callOrder).toEqual([1]);
                     expect(err).toEqual('error');
                 }
             );

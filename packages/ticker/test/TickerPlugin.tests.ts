@@ -58,14 +58,11 @@ describe('TickerPlugin', () =>
             app.ticker = ticker as unknown as Ticker;
 
             expect(_ticker.remove).toHaveBeenCalledOnce();
-            expect(_ticker.remove.args[0][0]).to.be.equal(app.render);
-            expect(_ticker.remove.args[0][1]).to.be.equal(app);
+            expect(_ticker.remove).toBeCalledWith(app.render, app);
 
-            expect(app._ticker).to.be.equal(ticker);
+            expect(app._ticker).toEqual(ticker);
             expect(ticker.add).toHaveBeenCalledOnce();
-            expect(ticker.add.args[0][0]).to.be.equal(app.render);
-            expect(ticker.add.args[0][1]).to.be.equal(app);
-            expect(ticker.add.args[0][2]).to.be.equal(UPDATE_PRIORITY.LOW);
+            expect(ticker.add).toBeCalledWith(app.render, app, UPDATE_PRIORITY.LOW);
         });
 
         it('should assign ticker if no ticker', () =>
@@ -75,11 +72,9 @@ describe('TickerPlugin', () =>
             app._ticker = null;
             app.ticker = ticker as unknown as Ticker;
 
-            expect(app._ticker).to.be.equal(ticker);
+            expect(app._ticker).toEqual(ticker);
             expect(ticker.add).toHaveBeenCalledOnce();
-            expect(ticker.add.args[0][0]).to.be.equal(app.render);
-            expect(ticker.add.args[0][1]).to.be.equal(app);
-            expect(ticker.add.args[0][2]).to.be.equal(UPDATE_PRIORITY.LOW);
+            expect(ticker.add).toBeCalledWith(app.render, app, UPDATE_PRIORITY.LOW);
         });
 
         it('should assign null ticker', () =>
@@ -90,8 +85,7 @@ describe('TickerPlugin', () =>
             app.ticker = null;
 
             expect(_ticker.remove).toHaveBeenCalledOnce();
-            expect(_ticker.remove.args[0][0]).to.be.equal(app.render);
-            expect(_ticker.remove.args[0][1]).to.be.equal(app);
+            expect(_ticker.remove).toBeCalledWith(app.render, app);
 
             expect(app._ticker).toBeNull();
         });

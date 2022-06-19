@@ -185,11 +185,11 @@ describe('Texture', () =>
         const toJSON = ({ x, y, width, height }: any) => ({ x, y, width, height });
 
         expect(clone.baseTexture).toEqual(baseTexture);
-        expect(clone.frame).to.not.equal(texture.frame);
-        expect(toJSON(clone.frame)).to.deep.equal(toJSON(texture.frame));
-        expect(clone.trim).to.be.undefined;
-        expect(clone.orig).to.not.equal(texture.orig);
-        expect(toJSON(clone.orig)).to.deep.equal(toJSON(texture.orig));
+        expect(clone.frame).not.toBe(texture.frame);
+        expect(toJSON(clone.frame)).toEqual(toJSON(texture.frame));
+        expect(clone.trim).toBeUndefined();
+        expect(clone.orig).not.toBe(texture.orig);
+        expect(toJSON(clone.orig)).toEqual(toJSON(texture.orig));
         expect(clone.frame === clone.orig).toEqual(texture.frame === texture.orig);
         expect(clone.noFrame).toEqual(texture.noFrame);
 
@@ -210,15 +210,15 @@ describe('Texture', () =>
         const toJSON = ({ x, y, width, height }: any) => ({ x, y, width, height });
 
         expect(clone.baseTexture).toEqual(baseTexture);
-        expect(clone.defaultAnchor).to.not.equal(texture.defaultAnchor);
+        expect(clone.defaultAnchor).not.toBe(texture.defaultAnchor);
         expect(clone.defaultAnchor.x).toEqual(texture.defaultAnchor.x);
         expect(clone.defaultAnchor.y).toEqual(texture.defaultAnchor.y);
-        expect(clone.frame).to.not.equal(texture.frame);
-        expect(toJSON(clone.frame)).to.deep.equal(toJSON(texture.frame));
-        expect(clone.trim).to.not.equal(texture.trim);
-        expect(toJSON(clone.trim)).to.deep.equal(toJSON(texture.trim));
-        expect(clone.orig).to.not.equal(texture.orig);
-        expect(toJSON(clone.orig)).to.deep.equal(toJSON(texture.orig));
+        expect(clone.frame).not.toBe(texture.frame);
+        expect(toJSON(clone.frame)).toEqual(toJSON(texture.frame));
+        expect(clone.trim).not.toBe(texture.trim);
+        expect(toJSON(clone.trim)).toEqual(toJSON(texture.trim));
+        expect(clone.orig).not.toBe(texture.orig);
+        expect(toJSON(clone.orig)).toEqual(toJSON(texture.orig));
         expect(clone.rotate).toEqual(texture.rotate);
         expect(clone.frame === clone.orig).toEqual(texture.frame === texture.orig);
         expect(clone.noFrame).toEqual(texture.noFrame);
@@ -295,9 +295,9 @@ describe('Texture', () =>
     {
         const id = 'baz';
 
-        expect(() => Texture.from(id, {}, true)).to.throw(`The cacheId "${id}" does not exist in TextureCache.`);
+        expect(() => Texture.from(id, {}, true)).toThrowError(`The cacheId "${id}" does not exist in TextureCache.`);
         settings.STRICT_TEXTURE_CACHE = true;
-        expect(() => Texture.from(id)).to.throw(`The cacheId "${id}" does not exist in TextureCache.`);
+        expect(() => Texture.from(id)).toThrowError(`The cacheId "${id}" does not exist in TextureCache.`);
         settings.STRICT_TEXTURE_CACHE = false;
     });
 
@@ -327,18 +327,20 @@ describe('Texture', () =>
                 path.join(resources, 'cube-face.jpg'),
                 path.join(resources, 'cube-face.jpg')]);
 
-            expect(texture).not.toBeNull()
-                .and.to.not.be.undefined;
+            expect(texture).not.toBeNull();
+            expect(texture).toBeDefined();
 
-            expect(texture).to.be.an.instanceof(Texture);
+            expect(texture).toBeInstanceOf(Texture);
         });
     });
 
     describe('Texture.fromURL', () =>
     {
-        it('should handle loading an invalid URL', () =>
+        it('should handle loading an invalid URL', async () =>
         {
-            expect(() => Texture.fromURL('invalid/image.png')).throws;
+            const throwingFunction = () => Texture.fromURL('invalid/image.png');
+
+            await throwingFunction().catch((e) => expect(e).toBeInstanceOf(Event));
         });
 
         it('should handle loading an cached URL', async () =>
@@ -351,7 +353,7 @@ describe('Texture', () =>
 
             const texture = await Texture.fromURL(url);
 
-            expect(texture).equals(Texture.WHITE);
+            expect(texture).toEqual(Texture.WHITE);
             delete TextureCache[url];
         });
 
@@ -367,10 +369,9 @@ describe('Texture', () =>
                 path.join(resources, 'cube-face.jpg'),
                 path.join(resources, 'cube-face.jpg')]);
 
-            expect(texture).not.toBeNull()
-                .and.to.not.be.undefined;
-
-            expect(texture).to.be.an.instanceof(Texture);
+            expect(texture).not.toBeNull();
+            expect(texture).toBeDefined();
+            expect(texture).toBeInstanceOf(Texture);
         });
     });
 });

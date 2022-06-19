@@ -4,7 +4,7 @@ describe('Runner', () =>
 {
     it('should should exist', () =>
     {
-        expect(Runner).to.be.not.undefined;
+        expect(Runner).toBeDefined();
         expect(typeof Runner).toEqual('function');
     });
 
@@ -17,12 +17,12 @@ describe('Runner', () =>
 
         complete.add({ complete: callback });
         complete.emit();
-        expect(callback.called).toBe(true);
-        expect(callback.calledOnce).toBe(true);
+        expect(callback).toBeCalled();
+        expect(callback).toBeCalledTimes(1);
         complete.emit();
-        expect(callback.calledTwice).toBe(true);
+        expect(callback).toBeCalledTimes(2);
         complete.emit();
-        expect(callback.calledThrice).toBe(true);
+        expect(callback).toBeCalledTimes(3);
         complete.destroy();
         expect(!complete.items).toBe(true);
         expect(!complete.name).toBe(true);
@@ -32,7 +32,7 @@ describe('Runner', () =>
     {
         const update = new Runner('update');
         // eslint-disable-next-line func-names
-        const callback = sinon.spy(function (time, delta)
+        const callback = jest.fn(function (time, delta)
         {
             let len = 0;
             // Count the number of non-undefined arguments
@@ -52,8 +52,8 @@ describe('Runner', () =>
 
         update.add({ update: callback });
         update.emit(1, 2);
-        expect(callback.called).toBe(true);
-        expect(callback.calledOnce).toBe(true);
+        expect(callback).toBeCalled();
+        expect(callback).toBeCalledTimes(1);
     });
 
     it('should throw an error with too many arguments', () =>
@@ -91,10 +91,10 @@ describe('Runner', () =>
         complete.emit();
         expect(!complete.empty).toBe(true);
         expect(complete.items.length).toEqual(2);
-        expect(obj.complete.called).toBe(true);
-        expect(obj.complete.calledOnce).toBe(true);
-        expect(obj2.complete.called).toBe(true);
-        expect(obj2.complete.calledOnce).toBe(true);
+        expect(obj.complete).toBeCalled();
+        expect(obj.complete).toBeCalledTimes(1);
+        expect(obj2.complete).toBeCalled();
+        expect(obj2.complete).toBeCalledTimes(1);
         complete.remove(obj);
         expect(complete.items.length).toEqual(1);
         complete.remove(obj2);

@@ -71,8 +71,8 @@ describe('BitmapText', () =>
         texture = Texture.from(fontImage);
         font = BitmapFont.install(fontXML, texture);
         font2 = BitmapFont.install(font2XML, texture);
-        expect(font).instanceof(BitmapFont);
-        expect(font2).instanceof(BitmapFont);
+        expect(font).toBeInstanceOf(BitmapFont);
+        expect(font2).toBeInstanceOf(BitmapFont);
         expect(BitmapFont.available[font.font]).toEqual(font);
         expect(BitmapFont.available[font2.font]).toEqual(font2);
     });
@@ -88,23 +88,23 @@ describe('BitmapText', () =>
             fontName: 'testFont',
         });
 
-        const listener = sinon.spy(text, 'addChild');
+        const listener = jest.spyOn(text, 'addChild');
 
         text.updateText();
 
-        expect(listener.callCount).toEqual(1);
+        expect(listener.mock.calls).toHaveLength(1);
         expect(text.children.length).toEqual(1);
 
         text.updateText();
 
-        expect(listener.callCount).toEqual(1);
+        expect(listener.mock.calls).toHaveLength(1);
         expect(text.children.length).toEqual(1);
 
         text.text = 'hiya';
 
         text.updateText();
 
-        expect(listener.callCount).toEqual(1);
+        expect(listener.mock.calls).toHaveLength(1);
         expect(text.children.length).toEqual(1);
     });
 
@@ -141,13 +141,13 @@ describe('BitmapText', () =>
         bmpText.text = 'A A A A A A A ';
         bmpText.updateText();
 
-        expect(bmpText.textWidth).to.be.at.most(bmpText.maxWidth);
+        expect(bmpText.textWidth).toBeLessThanOrEqual(bmpText.maxWidth);
 
         bmpText.maxWidth = 40;
         bmpText.text = 'A A A A A A A';
         bmpText.updateText();
 
-        expect(bmpText.textWidth).to.be.at.most(bmpText.maxWidth);
+        expect(bmpText.textWidth).toBeLessThanOrEqual(bmpText.maxWidth);
     });
     it('letterSpacing should add extra space between characters', () =>
     {
@@ -184,7 +184,7 @@ describe('BitmapText', () =>
             fontName: font.font,
         });
 
-        expect(() => text.updateText()).to.not.throw();
+        expect(() => text.updateText()).not.toThrowError();
 
         text = new BitmapText('not undefined', {
             fontName: font.font,
@@ -192,7 +192,7 @@ describe('BitmapText', () =>
 
         text.text = undefined;
 
-        expect(() => text.updateText()).to.not.throw();
+        expect(() => text.updateText()).not.toThrowError();
     });
 
     it('should set the text resolution to match the resolution setting when constructed time', () =>

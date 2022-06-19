@@ -137,7 +137,7 @@ describe('BitmapFontLoader', () =>
 
     it('should exist and return a function', () =>
     {
-        expect(BitmapFontLoader).to.not.be.undefined;
+        expect(BitmapFontLoader).toBeDefined();
         expect(BitmapFontLoader.use).toBeInstanceOf(Function);
     });
 
@@ -160,8 +160,8 @@ describe('BitmapFontLoader', () =>
         // @ts-expect-error ---
         BitmapFontLoader.use(res, spy);
 
-        expect(spy).to.have.been.calledOnce;
-        expect(res.textures).to.be.undefined;
+        expect(spy).toHaveBeenCalledOnce();
+        expect(res.textures).toBeUndefined();
     });
 
     it('should do nothing if the resource is not properly formatted XML', () =>
@@ -172,8 +172,8 @@ describe('BitmapFontLoader', () =>
         // @ts-expect-error ---
         BitmapFontLoader.use(res, spy);
 
-        expect(spy).to.have.been.calledOnce;
-        expect(res.textures).to.be.undefined;
+        expect(spy).toHaveBeenCalledOnce();
+        expect(res.textures).toBeUndefined();
     });
 
     it('should do nothing if the resource is not properly formatted TXT', () =>
@@ -184,8 +184,8 @@ describe('BitmapFontLoader', () =>
         // @ts-expect-error ---
         BitmapFontLoader.use(res, spy);
 
-        expect(spy).to.have.been.calledOnce;
-        expect(res.textures).to.be.undefined;
+        expect(spy).toHaveBeenCalledOnce();
+        expect(res.textures).toBeUndefined();
     });
 
     // TODO: Test the texture cache code path.
@@ -197,13 +197,13 @@ describe('BitmapFontLoader', () =>
         const texture = Texture.from(fontImage);
         const font = BitmapFont.install(fontXML, texture);
 
-        expect(font).to.be.an('object');
+        expect(font).toBeObject();
         expect(BitmapFont.available.font).toEqual(font);
-        expect(font).to.have.property('chars');
+        expect(font).toHaveProperty('chars');
         const charA = font.chars['A'.charCodeAt(0)];
         const charATexture = charA.texture as Texture<ImageResource>;
 
-        expect(charA).to.exist;
+        expect(charA).toBeDefined();
         expect(charATexture.baseTexture.resource.source).toEqual(fontImage);
         expect(charATexture.frame.x).toEqual(2);
         expect(charATexture.frame.y).toEqual(2);
@@ -212,7 +212,7 @@ describe('BitmapFontLoader', () =>
         const charB = font.chars['B'.charCodeAt(0)];
         const charBTexture = charB.texture as Texture<ImageResource>;
 
-        expect(charB).to.exist;
+        expect(charB).toBeDefined();
         expect(charBTexture.baseTexture.resource.source).toEqual(fontImage);
         expect(charBTexture.frame.x).toEqual(2);
         expect(charBTexture.frame.y).toEqual(24);
@@ -221,7 +221,7 @@ describe('BitmapFontLoader', () =>
         const charC = font.chars['C'.charCodeAt(0)];
         const charCTexture = charC.texture as Texture<ImageResource>;
 
-        expect(charC).to.exist;
+        expect(charC).toBeDefined();
         expect(charCTexture.baseTexture.resource.source).toEqual(fontImage);
         expect(charCTexture.frame.x).toEqual(23);
         expect(charCTexture.frame.y).toEqual(2);
@@ -230,7 +230,7 @@ describe('BitmapFontLoader', () =>
         const charD = font.chars['D'.charCodeAt(0)];
         const charDTexture = charD.texture as Texture<ImageResource>;
 
-        expect(charD).to.exist;
+        expect(charD).toBeDefined();
         expect(charDTexture.baseTexture.resource.source).toEqual(fontImage);
         expect(charDTexture.frame.x).toEqual(19);
         expect(charDTexture.frame.y).toEqual(24);
@@ -238,7 +238,7 @@ describe('BitmapFontLoader', () =>
         expect(charDTexture.frame.height).toEqual(20);
         const charE = font.chars['E'.charCodeAt(0)];
 
-        expect(charE).to.be.undefined;
+        expect(charE).toBeUndefined();
         done();
     });
 
@@ -247,13 +247,13 @@ describe('BitmapFontLoader', () =>
         const texture = Texture.from(fontTXTImage);
         const font = BitmapFont.install(fontTXT, texture);
 
-        expect(font).to.be.an('object');
-        expect(font).to.have.property('chars');
+        expect(font).toBeObject();
+        expect(font).toHaveProperty('chars');
 
         const charA = font.chars['A'.charCodeAt(0)];
         const charATexture = charA.texture as Texture<ImageResource>;
 
-        expect(charA).to.exist;
+        expect(charA).toBeDefined();
         expect(charATexture.baseTexture.resource.source).toEqual(fontTXTImage);
         expect(charATexture.frame.x).toEqual(1);
         expect(charATexture.frame.y).toEqual(179);
@@ -262,7 +262,7 @@ describe('BitmapFontLoader', () =>
         const charB = font.chars['B'.charCodeAt(0)];
         const charBTexture = charB.texture as Texture<ImageResource>;
 
-        expect(charB).to.exist;
+        expect(charB).toBeDefined();
         expect(charBTexture.baseTexture.resource.source).toEqual(fontTXTImage);
         expect(charBTexture.frame.x).toEqual(52);
         expect(charBTexture.frame.y).toEqual(146);
@@ -271,7 +271,7 @@ describe('BitmapFontLoader', () =>
         const charC = font.chars['C'.charCodeAt(0)];
         const charCTexture = charC.texture as Texture<ImageResource>;
 
-        expect(charC).to.exist;
+        expect(charC).toBeDefined();
         expect(charCTexture.baseTexture.resource.source).toEqual(fontTXTImage);
         expect(charCTexture.frame.x).toEqual(52);
         expect(charCTexture.frame.y).toEqual(117);
@@ -280,7 +280,7 @@ describe('BitmapFontLoader', () =>
         const charD = font.chars['D'.charCodeAt(0)];
         const charDTexture = charD.texture as Texture<ImageResource>;
 
-        expect(charD).to.exist;
+        expect(charD).toBeDefined();
         expect(charDTexture.baseTexture.resource.source).toEqual(fontTXTImage);
         expect(charDTexture.frame.x).toEqual(52);
         expect(charDTexture.frame.y).toEqual(88);
@@ -288,7 +288,7 @@ describe('BitmapFontLoader', () =>
         expect(charDTexture.frame.height).toEqual(28);
         const charUndefined = font.chars['£'.charCodeAt(0)];
 
-        expect(charUndefined).to.be.undefined;
+        expect(charUndefined).toBeUndefined();
         done();
     });
 
@@ -301,13 +301,13 @@ describe('BitmapFontLoader', () =>
         const texture = new Texture(baseTexture);
         const font = BitmapFont.install(fontScaledXML, texture);
 
-        expect(font).to.be.an('object');
+        expect(font).toBeObject();
         expect(BitmapFont.available.font).toEqual(font);
-        expect(font).to.have.property('chars');
+        expect(font).toHaveProperty('chars');
         const charA = font.chars['A'.charCodeAt(0)];
         const charATexture = charA.texture as Texture<ImageResource>;
 
-        expect(charA).to.exist;
+        expect(charA).toBeDefined();
         expect(charATexture.baseTexture.resource.source).toEqual(fontScaledImage);
         expect(charATexture.frame.x).toEqual(4); // 2 / 0.5
         expect(charATexture.frame.y).toEqual(4); // 2 / 0.5
@@ -316,7 +316,7 @@ describe('BitmapFontLoader', () =>
         const charB = font.chars['B'.charCodeAt(0)];
         const charBTexture = charB.texture as Texture<ImageResource>;
 
-        expect(charB).to.exist;
+        expect(charB).toBeDefined();
         expect(charBTexture.baseTexture.resource.source).toEqual(fontScaledImage);
         expect(charBTexture.frame.x).toEqual(4); // 2 / 0.5
         expect(charBTexture.frame.y).toEqual(48); // 24 / 0.5
@@ -325,7 +325,7 @@ describe('BitmapFontLoader', () =>
         const charC = font.chars['C'.charCodeAt(0)];
         const charCTexture = charC.texture as Texture<ImageResource>;
 
-        expect(charC).to.exist;
+        expect(charC).toBeDefined();
         expect(charCTexture.baseTexture.resource.source).toEqual(fontScaledImage);
         expect(charCTexture.frame.x).toEqual(46); // 23 / 0.5
         expect(charCTexture.frame.y).toEqual(4); // 2 / 0.5
@@ -334,7 +334,7 @@ describe('BitmapFontLoader', () =>
         const charD = font.chars['D'.charCodeAt(0)];
         const charDTexture = charD.texture as Texture<ImageResource>;
 
-        expect(charD).to.exist;
+        expect(charD).toBeDefined();
         expect(charDTexture.baseTexture.resource.source).toEqual(fontScaledImage);
         expect(charDTexture.frame.x).toEqual(38); // 19 / 0.5
         expect(charDTexture.frame.y).toEqual(48); // 24 / 0.5
@@ -342,7 +342,7 @@ describe('BitmapFontLoader', () =>
         expect(charDTexture.frame.height).toEqual(40); // 20 / 0.5
         const charE = font.chars['E'.charCodeAt(0)];
 
-        expect(charE).to.be.undefined;
+        expect(charE).toBeUndefined();
         done();
     });
 
@@ -358,13 +358,13 @@ describe('BitmapFontLoader', () =>
             const fontX = 158; // bare value from spritesheet frame
             const fontY = 2; // bare value from spritesheet frame
 
-            expect(font).to.be.an('object');
+            expect(font).toBeObject();
             expect(BitmapFont.available.font).toEqual(font);
-            expect(font).to.have.property('chars');
+            expect(font).toHaveProperty('chars');
             const charA = font.chars['A'.charCodeAt(0)];
             const charATexture = charA.texture as Texture<ImageResource>;
 
-            expect(charA).to.exist;
+            expect(charA).toBeDefined();
             expect(charATexture.baseTexture.resource.source).toEqual(atlasImage);
             expect(charATexture.frame.x).toEqual(fontX + 2);
             expect(charATexture.frame.y).toEqual(fontY + 2);
@@ -373,7 +373,7 @@ describe('BitmapFontLoader', () =>
             const charB = font.chars['B'.charCodeAt(0)];
             const charBTexture = charB.texture as Texture<ImageResource>;
 
-            expect(charB).to.exist;
+            expect(charB).toBeDefined();
             expect(charBTexture.baseTexture.resource.source).toEqual(atlasImage);
             expect(charBTexture.frame.x).toEqual(fontX + 2);
             expect(charBTexture.frame.y).toEqual(fontY + 24);
@@ -382,7 +382,7 @@ describe('BitmapFontLoader', () =>
             const charC = font.chars['C'.charCodeAt(0)];
             const charCTexture = charC.texture as Texture<ImageResource>;
 
-            expect(charC).to.exist;
+            expect(charC).toBeDefined();
             expect(charCTexture.baseTexture.resource.source).toEqual(atlasImage);
             expect(charCTexture.frame.x).toEqual(fontX + 23);
             expect(charCTexture.frame.y).toEqual(fontY + 2);
@@ -391,7 +391,7 @@ describe('BitmapFontLoader', () =>
             const charD = font.chars['D'.charCodeAt(0)];
             const charDTexture = charD.texture as Texture<ImageResource>;
 
-            expect(charD).to.exist;
+            expect(charD).toBeDefined();
             expect(charDTexture.baseTexture.resource.source).toEqual(atlasImage);
             expect(charDTexture.frame.x).toEqual(fontX + 19);
             expect(charDTexture.frame.y).toEqual(fontY + 24);
@@ -399,7 +399,7 @@ describe('BitmapFontLoader', () =>
             expect(charDTexture.frame.height).toEqual(20);
             const charE = font.chars['E'.charCodeAt(0)];
 
-            expect(charE).to.be.undefined;
+            expect(charE).toBeUndefined();
             done();
         });
     });
@@ -418,13 +418,13 @@ describe('BitmapFontLoader', () =>
             const fontX = 158; // bare value from spritesheet frame
             const fontY = 2; // bare value from spritesheet frame
 
-            expect(font).to.be.an('object');
+            expect(font).toBeObject();
             expect(BitmapFont.available.font).toEqual(font);
-            expect(font).to.have.property('chars');
+            expect(font).toHaveProperty('chars');
             const charA = font.chars['A'.charCodeAt(0)];
             const charATexture = charA.texture as Texture<ImageResource>;
 
-            expect(charA).to.exist;
+            expect(charA).toBeDefined();
             expect(charATexture.baseTexture.resource.source).toEqual(atlasScaledImage);
             expect(charATexture.frame.x).toEqual(fontX + 2);
             expect(charATexture.frame.y).toEqual(fontY + 2);
@@ -433,7 +433,7 @@ describe('BitmapFontLoader', () =>
             const charB = font.chars['B'.charCodeAt(0)];
             const charBTexture = charB.texture as Texture<ImageResource>;
 
-            expect(charB).to.exist;
+            expect(charB).toBeDefined();
             expect(charBTexture.baseTexture.resource.source).toEqual(atlasScaledImage);
             expect(charBTexture.frame.x).toEqual(fontX + 2);
             expect(charBTexture.frame.y).toEqual(fontY + 24);
@@ -442,7 +442,7 @@ describe('BitmapFontLoader', () =>
             const charC = font.chars['C'.charCodeAt(0)];
             const charCTexture = charC.texture as Texture<ImageResource>;
 
-            expect(charC).to.exist;
+            expect(charC).toBeDefined();
             expect(charCTexture.baseTexture.resource.source).toEqual(atlasScaledImage);
             expect(charCTexture.frame.x).toEqual(fontX + 23);
             expect(charCTexture.frame.y).toEqual(fontY + 2);
@@ -451,7 +451,7 @@ describe('BitmapFontLoader', () =>
             const charD = font.chars['D'.charCodeAt(0)];
             const charDTexture = charD.texture as Texture<ImageResource>;
 
-            expect(charD).to.exist;
+            expect(charD).toBeDefined();
             expect(charDTexture.baseTexture.resource.source).toEqual(atlasScaledImage);
             expect(charDTexture.frame.x).toEqual(fontX + 19);
             expect(charDTexture.frame.y).toEqual(fontY + 24);
@@ -459,7 +459,7 @@ describe('BitmapFontLoader', () =>
             expect(charDTexture.frame.height).toEqual(20);
             const charE = font.chars['E'.charCodeAt(0)];
 
-            expect(charE).to.be.undefined;
+            expect(charE).toBeUndefined();
             done();
         });
     });
@@ -474,13 +474,13 @@ describe('BitmapFontLoader', () =>
         {
             const font = BitmapFont.available.split_font;
 
-            expect(font).to.be.an('object');
+            expect(font).toBeObject();
             expect(BitmapFont.available.split_font).toEqual(font);
-            expect(font).to.have.property('chars');
+            expect(font).toHaveProperty('chars');
             const charA = font.chars['A'.charCodeAt(0)];
             const charATexture = charA.texture as Texture<ImageResource>;
 
-            expect(charA).to.exist;
+            expect(charA).toBeDefined();
             let src = charATexture.baseTexture.resource.url;
 
             src = src.substring(src.length - 17);
@@ -492,7 +492,7 @@ describe('BitmapFontLoader', () =>
             const charB = font.chars['B'.charCodeAt(0)];
             const charBTexture = charB.texture as Texture<ImageResource>;
 
-            expect(charB).to.exist;
+            expect(charB).toBeDefined();
             src = charBTexture.baseTexture.resource.url;
 
             src = src.substring(src.length - 17);
@@ -504,7 +504,7 @@ describe('BitmapFontLoader', () =>
             const charC = font.chars['C'.charCodeAt(0)];
             const charCTexture = charC.texture as Texture<ImageResource>;
 
-            expect(charC).to.exist;
+            expect(charC).toBeDefined();
             src = charCTexture.baseTexture.resource.url;
 
             src = src.substring(src.length - 17);
@@ -516,7 +516,7 @@ describe('BitmapFontLoader', () =>
             const charD = font.chars['D'.charCodeAt(0)];
             const charDTexture = charD.texture as Texture<ImageResource>;
 
-            expect(charD).to.exist;
+            expect(charD).toBeDefined();
             src = charDTexture.baseTexture.resource.url;
 
             src = src.substring(src.length - 17);
@@ -527,7 +527,7 @@ describe('BitmapFontLoader', () =>
             expect(charDTexture.frame.height).toEqual(20);
             const charE = font.chars['E'.charCodeAt(0)];
 
-            expect(charE).to.be.undefined;
+            expect(charE).toBeUndefined();
             done();
         });
     });
@@ -585,16 +585,16 @@ describe('BitmapFontLoader', () =>
         const fontPath = path.join(resources, 'font.fnt');
         const textureCount = Object.keys(TextureCache).length;
 
-        expect(BitmapFont.available.font).to.be.undefined;
+        expect(BitmapFont.available.font).toBeUndefined();
 
         loader.use(BitmapFontLoader.use);
         loader.add('font', fontPath);
         loader.load(() =>
         {
-            expect(BitmapFont.available.font).to.not.be.undefined;
+            expect(BitmapFont.available.font).toBeDefined();
             BitmapFont.uninstall('font');
-            expect(BitmapFont.available.font).to.be.undefined;
-            expect(Object.keys(TextureCache).length - textureCount).equals(0);
+            expect(BitmapFont.available.font).toBeUndefined();
+            expect(Object.keys(TextureCache).length - textureCount).toEqual(0);
 
             done();
         });
@@ -606,12 +606,12 @@ describe('BitmapFontLoader', () =>
         const texture = Texture.from(fontImage);
         const font = BitmapFont.install(fontText, texture);
 
-        expect(BitmapFont.available.fontText).equals(font);
+        expect(BitmapFont.available.fontText).toEqual(font);
 
         BitmapFont.uninstall('fontText');
 
-        expect(BitmapFont.available.fontText).to.be.undefined;
-        expect(Object.keys(TextureCache).length - textureCount).equals(1);
+        expect(BitmapFont.available.fontText).toBeUndefined();
+        expect(Object.keys(TextureCache).length - textureCount).toEqual(1);
 
         texture.destroy(true);
     });
@@ -621,13 +621,13 @@ describe('BitmapFontLoader', () =>
         const texture = Texture.from(fontImage);
         const font = BitmapFont.install(fontText, texture);
 
-        expect(font).to.be.an('object');
+        expect(font).toBeObject();
         expect(BitmapFont.available.fontText).toEqual(font);
-        expect(font).to.have.property('chars');
+        expect(font).toHaveProperty('chars');
         const charA = font.chars['A'.charCodeAt(0)];
         const charATexture = charA.texture as Texture<ImageResource>;
 
-        expect(charA).to.exist;
+        expect(charA).toBeDefined();
         expect(charATexture.baseTexture.resource.source).toEqual(fontImage);
         expect(charATexture.frame.x).toEqual(2);
         expect(charATexture.frame.y).toEqual(2);
@@ -636,7 +636,7 @@ describe('BitmapFontLoader', () =>
         const charB = font.chars['B'.charCodeAt(0)];
         const charBTexture = charB.texture as Texture<ImageResource>;
 
-        expect(charB).to.exist;
+        expect(charB).toBeDefined();
         expect(charBTexture.baseTexture.resource.source).toEqual(fontImage);
         expect(charBTexture.frame.x).toEqual(2);
         expect(charBTexture.frame.y).toEqual(24);
@@ -645,7 +645,7 @@ describe('BitmapFontLoader', () =>
         const charC = font.chars['C'.charCodeAt(0)];
         const charCTexture = charC.texture as Texture<ImageResource>;
 
-        expect(charC).to.exist;
+        expect(charC).toBeDefined();
         expect(charCTexture.baseTexture.resource.source).toEqual(fontImage);
         expect(charCTexture.frame.x).toEqual(23);
         expect(charCTexture.frame.y).toEqual(2);
@@ -654,7 +654,7 @@ describe('BitmapFontLoader', () =>
         const charD = font.chars['D'.charCodeAt(0)];
         const charDTexture = charD.texture as Texture<ImageResource>;
 
-        expect(charD).to.exist;
+        expect(charD).toBeDefined();
         expect(charDTexture.baseTexture.resource.source).toEqual(fontImage);
         expect(charDTexture.frame.x).toEqual(19);
         expect(charDTexture.frame.y).toEqual(24);
@@ -662,7 +662,7 @@ describe('BitmapFontLoader', () =>
         expect(charDTexture.frame.height).toEqual(20);
         const charE = font.chars['E'.charCodeAt(0)];
 
-        expect(charE).to.be.undefined;
+        expect(charE).toBeUndefined();
         done();
     });
 
@@ -677,7 +677,7 @@ describe('BitmapFontLoader', () =>
 
         expect(sdfFont.chars['A'.charCodeAt(0)].texture.baseTexture.alphaMode).toEqual(0);
         expect(msdfFont.chars['A'.charCodeAt(0)].texture.baseTexture.alphaMode).toEqual(0);
-        expect(regularFont.chars['A'.charCodeAt(0)].texture.baseTexture.alphaMode).to.not.equal(0);
+        expect(regularFont.chars['A'.charCodeAt(0)].texture.baseTexture.alphaMode).not.toEqual(0);
 
         done();
     });
@@ -703,13 +703,13 @@ describe('BitmapFontLoader', () =>
         const texture = Texture.from(fontImage);
         const font = BitmapFont.install(fontRandomArgs, texture);
 
-        expect(font).to.be.an('object');
+        expect(font).toBeObject();
         expect(BitmapFont.available.font).toEqual(font);
-        expect(font).to.have.property('chars');
+        expect(font).toHaveProperty('chars');
         const charA = font.chars['A'.charCodeAt(0)];
         const charATexture = charA.texture as Texture<ImageResource>;
 
-        expect(charA).to.exist;
+        expect(charA).toBeDefined();
         expect(charATexture.baseTexture.resource.source).toEqual(fontImage);
         expect(charATexture.frame.x).toEqual(2);
         expect(charATexture.frame.y).toEqual(2);

@@ -14,7 +14,7 @@ describe('autoDetectResource', () =>
 
     it('should have installed resources', () =>
     {
-        expect(INSTALLED).to.be.an('array');
+        expect(INSTALLED).toBeArray();
         expect(INSTALLED.length).toEqual(8);
     });
 
@@ -27,7 +27,7 @@ describe('autoDetectResource', () =>
 
         const resource = autoDetectResource(canvas);
 
-        expect(resource).is.instanceOf(CanvasResource);
+        expect(resource).toBeInstanceOf(CanvasResource);
         expect(resource.width).toEqual(200);
         expect(resource.height).toEqual(100);
     });
@@ -37,7 +37,7 @@ describe('autoDetectResource', () =>
         const video = document.createElement('video');
         const resource = autoDetectResource(video);
 
-        expect(resource).is.instanceOf(VideoResource);
+        expect(resource).toBeInstanceOf(VideoResource);
     });
 
     it('should auto-detect image element', () =>
@@ -45,7 +45,7 @@ describe('autoDetectResource', () =>
         const img = new Image();
         const resource = autoDetectResource(img);
 
-        expect(resource).is.instanceOf(ImageResource);
+        expect(resource).toBeInstanceOf(ImageResource);
     });
 
     it('should auto-detect image string', () =>
@@ -53,7 +53,7 @@ describe('autoDetectResource', () =>
         const img = 'foo.png';
         const resource = autoDetectResource(img);
 
-        expect(resource).is.instanceOf(ImageResource);
+        expect(resource).toBeInstanceOf(ImageResource);
     });
 
     it('should auto-detect svg string', () =>
@@ -61,7 +61,7 @@ describe('autoDetectResource', () =>
         const svg = 'foo.svg';
         const resource = autoDetectResource(svg);
 
-        expect(resource).is.instanceOf(SVGResource);
+        expect(resource).toBeInstanceOf(SVGResource);
     });
 
     it('should auto-detect video Url', () =>
@@ -69,7 +69,7 @@ describe('autoDetectResource', () =>
         const video = 'foo.mp4';
         const resource = autoDetectResource(video);
 
-        expect(resource).is.instanceOf(VideoResource);
+        expect(resource).toBeInstanceOf(VideoResource);
     });
 
     it('should pass null', () =>
@@ -81,9 +81,9 @@ describe('autoDetectResource', () =>
 
     it('should throw for unknown types', () =>
     {
-        expect(() => autoDetectResource({})).throws;
-        expect(() => autoDetectResource(document.createElement('input'))).throws;
-        expect(() => autoDetectResource(2)).throws;
-        expect(() => autoDetectResource(true)).throws;
+        expect(() => autoDetectResource({})).toThrow();
+        expect(() => autoDetectResource(document.createElement('input'))).toThrow();
+        expect(() => autoDetectResource(2)).toThrow();
+        expect(() => autoDetectResource(true)).toThrow();
     });
 });

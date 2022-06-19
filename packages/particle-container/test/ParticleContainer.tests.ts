@@ -8,8 +8,8 @@ describe('ParticleContainer', () =>
     {
         const container = new ParticleContainer();
 
-        expect(container).to.be.an.instanceOf(ParticleContainer);
-        expect(container.children).to.have.length(0);
+        expect(container).toBeInstanceOf(ParticleContainer);
+        expect(container.children).toHaveLength(0);
 
         container.destroy();
     });

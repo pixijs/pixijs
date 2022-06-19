@@ -30,7 +30,7 @@ describe('Circle', () =>
         expect(circ2.x).toEqual(10);
         expect(circ2.y).toEqual(10);
         expect(circ2.radius).toEqual(5);
-        expect(circ1).to.not.equal(circ2);
+        expect(circ1).not.toBe(circ2);
     });
 
     it('should check if point is within circle', () =>

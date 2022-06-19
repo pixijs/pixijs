@@ -16,7 +16,6 @@ describe('Renderer', () =>
         try
         {
             expect(renderer.geometry.hasVao).toEqual(false);
-            // expect(renderer.plugins.sprite.MAX_TEXTURES).toEqual(1);
         }
         finally
         {
@@ -48,8 +47,7 @@ describe('Renderer', () =>
         renderer.resize(2, 4);
 
         expect(spy).toBeCalledTimes(1);
-        expect(spy.firstCall.args[0]).toEqual(2);
-        expect(spy.firstCall.args[1]).toEqual(4);
+        expect(spy).toHaveBeenCalledWith(2, 4);
 
         renderer.destroy();
     });
@@ -92,16 +90,16 @@ describe('Renderer', () =>
         {
             renderer.batch.setObjectRenderer(objRenderer);
             expect(curRenderer.stop).toHaveBeenCalledOnce();
-            expect(renderer.batch.currentRenderer).to.be.equal(objRenderer);
+            expect(renderer.batch.currentRenderer).toEqual(objRenderer);
             expect(objRenderer.start).toHaveBeenCalledOnce();
         });
 
         it('should do nothing if objectRenderer is already used as current', () =>
         {
             renderer.batch.setObjectRenderer(curRenderer);
-            expect(renderer.batch.currentRenderer).to.be.equal(curRenderer);
-            expect(curRenderer.stop).to.not.be.called;
-            expect(curRenderer.start).to.not.be.called;
+            expect(renderer.batch.currentRenderer).toEqual(curRenderer);
+            expect(curRenderer.stop).not.toBeCalled();
+            expect(curRenderer.start).not.toBeCalled();
         });
 
         it('should generate a multisampled texture', () =>

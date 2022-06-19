@@ -8,7 +8,7 @@ describe('AppLoaderPlugin', () =>
 
         AppLoaderPlugin.init.call(obj);
 
-        expect(obj.loader).to.be.not.undefined;
+        expect(obj.loader).toBeDefined();
         expect(obj.loader).toBeInstanceOf(Loader);
 
         AppLoaderPlugin.destroy.call(obj);
@@ -22,7 +22,7 @@ describe('AppLoaderPlugin', () =>
 
         AppLoaderPlugin.init.call(obj, { sharedLoader: true });
 
-        expect(obj.loader).to.be.not.undefined;
+        expect(obj.loader).toBeDefined();
         expect(obj.loader).toBeInstanceOf(Loader);
         expect(obj.loader).toEqual(Loader.shared);
 

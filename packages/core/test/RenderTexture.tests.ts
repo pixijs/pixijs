@@ -35,7 +35,7 @@ describe('RenderTexture', () =>
 
         renderer.renderTexture.bind(renderTexture);
 
-        expect(depthTexture._glTextures[renderer.CONTEXT_UID]).to.not.equal(undefined);
+        expect(depthTexture._glTextures[renderer.CONTEXT_UID]).not.toEqual(undefined);
         renderTexture.destroy(true);
         expect(depthTexture._glTextures[renderer.CONTEXT_UID]).toEqual(undefined);
     });

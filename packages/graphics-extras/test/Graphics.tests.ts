@@ -22,19 +22,19 @@ describe('Graphics', () =>
     {
         const g = new Graphics();
 
-        expect(g.drawChamferRect(0, 0, 100, 100, 5)).equals(g);
-        expect(g.drawChamferRect(0, 0, 100, 100, 0)).equals(g);
-        expect(g.drawFilletRect(0, 0, 100, 100, -5)).equals(g);
-        expect(g.drawFilletRect(0, 0, 100, 100, 5)).equals(g);
-        expect(g.drawFilletRect(0, 0, 100, 100, 0)).equals(g);
-        expect(g.drawRegularPolygon(0, 0, 100, 5, 0)).equals(g);
-        expect(g.drawRoundedPolygon(0, 0, 100, 5, 10, 0)).equals(g);
-        expect(g.drawRoundedPolygon(0, 0, 100, 5, 10)).equals(g);
-        expect(g.drawRoundedPolygon(0, 0, 100, 5, 0)).equals(g);
-        expect(g.drawStar(0, 0, 5, 100, 50, 0)).equals(g);
-        expect(g.drawTorus(0, 0, 50, 100)).equals(g);
-        expect(g.drawTorus(0, 0, 50, 100, 0, Math.PI * 2)).equals(g);
-        expect(g.drawTorus(0, 0, 50, 100, 0.2, Math.PI)).equals(g);
+        expect(g.drawChamferRect(0, 0, 100, 100, 5)).toEqual(g);
+        expect(g.drawChamferRect(0, 0, 100, 100, 0)).toEqual(g);
+        expect(g.drawFilletRect(0, 0, 100, 100, -5)).toEqual(g);
+        expect(g.drawFilletRect(0, 0, 100, 100, 5)).toEqual(g);
+        expect(g.drawFilletRect(0, 0, 100, 100, 0)).toEqual(g);
+        expect(g.drawRegularPolygon(0, 0, 100, 5, 0)).toEqual(g);
+        expect(g.drawRoundedPolygon(0, 0, 100, 5, 10, 0)).toEqual(g);
+        expect(g.drawRoundedPolygon(0, 0, 100, 5, 10)).toEqual(g);
+        expect(g.drawRoundedPolygon(0, 0, 100, 5, 0)).toEqual(g);
+        expect(g.drawStar(0, 0, 5, 100, 50, 0)).toEqual(g);
+        expect(g.drawTorus(0, 0, 50, 100)).toEqual(g);
+        expect(g.drawTorus(0, 0, 50, 100, 0, Math.PI * 2)).toEqual(g);
+        expect(g.drawTorus(0, 0, 50, 100, 0.2, Math.PI)).toEqual(g);
 
         g.destroy();
     });

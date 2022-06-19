@@ -9,7 +9,6 @@ import { Text } from '@pixi/text';
 import { SimplePlane } from '@pixi/mesh-extras';
 import { CanvasMeshRenderer } from '@pixi/canvas-mesh';
 
-
 import '@pixi/canvas-display';
 import '@pixi/canvas-text';
 
@@ -44,8 +43,8 @@ describe('getLocalBounds', () =>
 
         let bounds = sprite.getLocalBounds();
 
-        expect(bounds.x).toEqual(0);
-        expect(bounds.y).toEqual(0);
+        expect(Math.abs(bounds.x)).toEqual(0);
+        expect(Math.abs(bounds.y)).toEqual(0);
         expect(bounds.width).toEqual(10);
         expect(bounds.height).toEqual(10);
 
@@ -57,8 +56,8 @@ describe('getLocalBounds', () =>
 
         bounds = sprite.getLocalBounds();
 
-        expect(bounds.x).toEqual(0);
-        expect(bounds.y).toEqual(0);
+        expect(Math.abs(bounds.x)).toEqual(0);
+        expect(Math.abs(bounds.y)).toEqual(0);
         expect(bounds.width).toEqual(10);
         expect(bounds.height).toEqual(10);
     });
@@ -93,8 +92,8 @@ describe('getLocalBounds', () =>
 
         let bounds = graphics.getLocalBounds();
 
-        expect(bounds.x).toEqual(0);
-        expect(bounds.y).toEqual(0);
+        expect(Math.abs(bounds.x)).toEqual(0);
+        expect(Math.abs(bounds.y)).toEqual(0);
         expect(bounds.width).toEqual(20);
         expect(bounds.height).toEqual(20);
 
@@ -105,8 +104,8 @@ describe('getLocalBounds', () =>
 
         bounds = graphics.getLocalBounds();
 
-        expect(bounds.x).toEqual(0);
-        expect(bounds.y).toEqual(0);
+        expect(Math.abs(bounds.x)).toEqual(0);
+        expect(Math.abs(bounds.y)).toEqual(0);
         expect(bounds.width).toEqual(10);
         expect(bounds.height).toEqual(10);
     });
@@ -125,8 +124,8 @@ describe('getLocalBounds', () =>
 
         graphics.generateCanvasTexture();
 
-        expect(bounds.x).toEqual(0);
-        expect(bounds.y).toEqual(0);
+        expect(Math.abs(bounds.x)).toEqual(0);
+        expect(Math.abs(bounds.y)).toEqual(0);
         expect(bounds.width).toEqual(20);
         expect(bounds.height).toEqual(20);
 
@@ -137,8 +136,8 @@ describe('getLocalBounds', () =>
 
         bounds = graphics.getLocalBounds();
 
-        expect(bounds.x).toEqual(0);
-        expect(bounds.y).toEqual(0);
+        expect(Math.abs(bounds.x)).toEqual(0);
+        expect(Math.abs(bounds.y)).toEqual(0);
         expect(bounds.width).toEqual(10);
         expect(bounds.height).toEqual(10);
     });
@@ -153,10 +152,10 @@ describe('getLocalBounds', () =>
 
         const bounds = container.getLocalBounds();
 
-        expect(bounds.x).toEqual(0);
-        expect(bounds.y).toEqual(0);
-        expect(bounds.width).toEqual(0);
-        expect(bounds.height).toEqual(0);
+        expect(Math.abs(bounds.x)).toEqual(0);
+        expect(Math.abs(bounds.y)).toEqual(0);
+        expect(Math.abs(bounds.width)).toEqual(0);
+        expect(Math.abs(bounds.height)).toEqual(0);
     });
 
     it('should register correct local-bounds with an item that has already had its parent Container transformed', () =>
@@ -175,8 +174,8 @@ describe('getLocalBounds', () =>
 
         const bounds = container.getLocalBounds();
 
-        expect(bounds.x).toEqual(0);
-        expect(bounds.y).toEqual(0);
+        expect(Math.abs(bounds.x)).toEqual(0);
+        expect(Math.abs(bounds.y)).toEqual(0);
         expect(bounds.width).toEqual(10);
         expect(bounds.height).toEqual(10);
     });
@@ -196,8 +195,8 @@ describe('getLocalBounds', () =>
 
         const bounds = plane.getLocalBounds();
 
-        expect(bounds.x).toEqual(0);
-        expect(bounds.y).toEqual(0);
+        expect(Math.abs(bounds.x)).toEqual(0);
+        expect(Math.abs(bounds.y)).toEqual(0);
         expect(bounds.width).toEqual(10);
         expect(bounds.height).toEqual(10);
     }));
@@ -226,8 +225,8 @@ describe('getLocalBounds', () =>
 
         const bounds = parent.getLocalBounds();
 
-        expect(bounds.x).toEqual(0);
-        expect(bounds.y).toEqual(0);
+        expect(Math.abs(bounds.x)).toEqual(0);
+        expect(Math.abs(bounds.y)).toEqual(0);
         expect(bounds.width).toEqual(100);
         expect(bounds.height).toEqual(100);
     });
@@ -237,7 +236,7 @@ describe('getLocalBounds', () =>
         const text = new Text('hello');
         const bounds = text.getLocalBounds();
 
-        expect(bounds.width).to.not.equal(0);
-        expect(bounds.height).to.not.equal(0);
+        expect(bounds.width).not.toEqual(0);
+        expect(bounds.height).not.toEqual(0);
     });
 });

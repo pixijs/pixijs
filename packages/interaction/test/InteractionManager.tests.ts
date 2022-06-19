@@ -55,7 +55,7 @@ describe('InteractionManager', () =>
 
             pointer.mousedown(10, 10);
 
-            expect(eventSpy).to.have.been.calledOnce;
+            expect(eventSpy).toHaveBeenCalledOnce();
         });
 
         it('should call mouseup handler', () =>
@@ -74,7 +74,7 @@ describe('InteractionManager', () =>
 
             pointer.click(10, 10);
 
-            expect(eventSpy).to.have.been.called;
+            expect(eventSpy).toBeCalled();
         });
 
         it('should call mouseupoutside handler', () =>
@@ -94,7 +94,7 @@ describe('InteractionManager', () =>
             pointer.mousedown(10, 10);
             pointer.mouseup(60, 60);
 
-            expect(eventSpy).to.have.been.called;
+            expect(eventSpy).toBeCalled();
         });
 
         it('should call mouseupoutside handler on mouseup on different elements', () =>
@@ -114,7 +114,7 @@ describe('InteractionManager', () =>
             pointer.mousedown(10, 10);
             pointer.mouseup(10, 10, false);
 
-            expect(eventSpy).to.have.been.called;
+            expect(eventSpy).toBeCalled();
         });
 
         it('should call mouseover handler', () =>
@@ -133,7 +133,7 @@ describe('InteractionManager', () =>
 
             pointer.mousemove(10, 10);
 
-            expect(eventSpy).to.have.been.called;
+            expect(eventSpy).toBeCalled();
         });
 
         it('should call mouseout handler', () =>
@@ -153,7 +153,7 @@ describe('InteractionManager', () =>
             pointer.mousemove(10, 10);
             pointer.mousemove(60, 60);
 
-            expect(eventSpy).to.have.been.called;
+            expect(eventSpy).toBeCalled();
         });
 
         it('should always call mouseout before mouseover', () =>
@@ -189,15 +189,15 @@ describe('InteractionManager', () =>
 
             pointer.mousemove(10, 10);
 
-            expect(mouseOverSpyA).to.have.been.called;
+            expect(mouseOverSpyA).toBeCalled();
 
             pointer.mousemove(40, 10);
 
-            expect(mouseOutSpyA).to.have.been.calledImmediatelyBefore(mouseOverSpyB);
+            expect(mouseOutSpyA.mock.invocationCallOrder[0]).toBeLessThan(mouseOverSpyB.mock.invocationCallOrder[0]);
 
             pointer.mousemove(10, 10);
 
-            expect(mouseOutSpyB).to.have.been.calledImmediatelyBefore(mouseOverSpyA);
+            expect(mouseOutSpyB.mock.invocationCallOrder[0]).toBeLessThan(mouseOverSpyA.mock.invocationCallOrder[1]);
         });
     });
 
@@ -211,7 +211,7 @@ describe('InteractionManager', () =>
 
             pointer = new MockPointer(stage);
 
-            const mouseDownChild = sinon.spy((evt) => evt.stopPropagation());
+            const mouseDownChild = jest.fn((evt) => evt.stopPropagation());
             const mouseDownParent = jest.fn();
 
             stage.addChild(parent);
@@ -228,8 +228,8 @@ describe('InteractionManager', () =>
 
             pointer.mousedown(10, 10);
 
-            expect(mouseDownChild).to.have.been.called;
-            expect(mouseDownParent).to.not.have.been.called;
+            expect(mouseDownChild).toBeCalled();
+            expect(mouseDownParent).not.toBeCalled();
         });
 
         it('should not stop events on the same object from happening', () =>
@@ -241,8 +241,8 @@ describe('InteractionManager', () =>
             pointer = new MockPointer(stage);
 
             // Neither of these should stop the other from firing
-            const mouseMoveChild = sinon.spy((evt) => evt.stopPropagation());
-            const mouseOverChild = sinon.spy((evt) => evt.stopPropagation());
+            const mouseMoveChild = jest.fn((evt) => evt.stopPropagation());
+            const mouseOverChild = jest.fn((evt) => evt.stopPropagation());
 
             const mouseMoveParent = jest.fn();
             const mouseOverParent = jest.fn();
@@ -263,11 +263,11 @@ describe('InteractionManager', () =>
 
             pointer.mousemove(10, 10);
 
-            expect(mouseOverChild).to.have.been.called;
-            expect(mouseMoveChild).to.have.been.called;
+            expect(mouseOverChild).toBeCalled();
+            expect(mouseMoveChild).toBeCalled();
 
-            expect(mouseOverParent).to.not.have.been.called;
-            expect(mouseMoveParent).to.not.have.been.called;
+            expect(mouseOverParent).not.toBeCalled();
+            expect(mouseMoveParent).not.toBeCalled();
         });
 
         it('should not stop events on children of an object from happening', () =>
@@ -279,7 +279,7 @@ describe('InteractionManager', () =>
             pointer = new MockPointer(stage);
 
             const mouseMoveChild = jest.fn();
-            const mouseMoveParent = sinon.spy((evt) => evt.stopPropagation());
+            const mouseMoveParent = jest.fn((evt) => evt.stopPropagation());
 
             const mouseOverChild = jest.fn();
             const mouseOverParent = jest.fn();
@@ -300,11 +300,11 @@ describe('InteractionManager', () =>
 
             pointer.mousemove(10, 10);
 
-            expect(mouseMoveChild).to.have.been.called;
-            expect(mouseOverChild).to.have.been.called;
+            expect(mouseMoveChild).toBeCalled();
+            expect(mouseOverChild).toBeCalled();
 
-            expect(mouseMoveParent).to.have.been.called;
-            expect(mouseOverParent).to.have.been.called;
+            expect(mouseMoveParent).toBeCalled();
+            expect(mouseOverParent).toBeCalled();
         });
     });
 
@@ -314,8 +314,8 @@ describe('InteractionManager', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
-            const touchSpy = sinon.spy(function touchListen() { /* noop */ });
-            const pointerSpy = sinon.spy(function pointerListen() { /* noop */ });
+            const touchSpy = jest.fn(function touchListen() { /* noop */ });
+            const pointerSpy = jest.fn(function pointerListen() { /* noop */ });
 
             pointer = new MockPointer(stage, null, null, true);
 
@@ -328,16 +328,16 @@ describe('InteractionManager', () =>
 
             pointer.touchstart(10, 10);
 
-            expect(touchSpy).to.have.been.calledOnce;
-            expect(pointerSpy).to.have.been.calledOnce;
+            expect(touchSpy).toHaveBeenCalledOnce();
+            expect(pointerSpy).toHaveBeenCalledOnce();
         });
 
         it('should not call touchstart or pointerdown when pointer event and touch supported', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
-            const touchSpy = sinon.spy(function touchListen() { /* noop */ });
-            const pointerSpy = sinon.spy(function pointerListen() { /* noop */ });
+            const touchSpy = jest.fn(function touchListen() { /* noop */ });
+            const pointerSpy = jest.fn(function pointerListen() { /* noop */ });
 
             pointer = new MockPointer(stage, null, null, true);
 
@@ -350,16 +350,16 @@ describe('InteractionManager', () =>
 
             pointer.touchstart(10, 10, 0, true);
 
-            expect(touchSpy).to.not.have.been.called;
-            expect(pointerSpy).to.not.have.been.called;
+            expect(touchSpy).not.toBeCalled();
+            expect(pointerSpy).not.toBeCalled();
         });
 
         it('should call touchstart and pointerdown when touch event and pointer not supported', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
-            const touchSpy = sinon.spy(function touchListen() { /* noop */ });
-            const pointerSpy = sinon.spy(function pointerListen() { /* noop */ });
+            const touchSpy = jest.fn(function touchListen() { /* noop */ });
+            const pointerSpy = jest.fn(function pointerListen() { /* noop */ });
 
             pointer = new MockPointer(stage, null, null, false);
 
@@ -372,16 +372,16 @@ describe('InteractionManager', () =>
 
             pointer.touchstart(10, 10);
 
-            expect(touchSpy).to.have.been.calledOnce;
-            expect(pointerSpy).to.have.been.calledOnce;
+            expect(touchSpy).toHaveBeenCalledOnce();
+            expect(pointerSpy).toHaveBeenCalledOnce();
         });
 
         it('should call touchstart and pointerdown when pointer event and touch not supported', () =>
         {
             const stage = new Container();
             const graphics = new Graphics();
-            const touchSpy = sinon.spy(function touchListen() { /* noop */ });
-            const pointerSpy = sinon.spy(function pointerListen() { /* noop */ });
+            const touchSpy = jest.fn(function touchListen() { /* noop */ });
+            const pointerSpy = jest.fn(function pointerListen() { /* noop */ });
 
             pointer = new MockPointer(stage, null, null, true);
 
@@ -396,93 +396,99 @@ describe('InteractionManager', () =>
 
             pointer.touchstart(10, 10, 0, true);
 
-            expect(touchSpy).to.have.been.calledOnce;
-            expect(pointerSpy).to.have.been.calledOnce;
+            expect(touchSpy).toHaveBeenCalledOnce();
+            expect(pointerSpy).toHaveBeenCalledOnce();
         });
     });
 
     describe('add/remove events and ticker', () =>
     {
-        let stub: sinon.SinonStub;
+        let stub: jest.SpyInstance;
 
         beforeAll(() =>
         {
-            stub = sinon.stub(InteractionManager.prototype, 'setTargetElement');
+            stub = jest.spyOn(InteractionManager.prototype, 'setTargetElement');
         });
 
         afterAll(() =>
         {
-            stub.restore();
+            stub.mockClear();
         });
 
         it('should add and remove pointer events to document', () =>
         {
-            const manager = new InteractionManager(sinon.stub() as any);
-            const addSpy = sinon.spy(window.document, 'addEventListener');
-            const removeSpy = sinon.spy(window.document, 'removeEventListener');
+            const manager = new InteractionManager(jest.fn() as any);
+            const addSpy = jest.spyOn(window.document, 'addEventListener');
+            const removeSpy = jest.spyOn(window.document, 'removeEventListener');
+
+            addSpy.mockReset();
+            removeSpy.mockReset();
 
             manager['interactionDOMElement'] = {
                 style: {},
-                addEventListener: sinon.stub(),
-                removeEventListener: sinon.stub()
+                addEventListener: jest.fn(),
+                removeEventListener: jest.fn()
             } as unknown as HTMLElement;
             // @ts-expect-error - overriding readonly prop
             manager['supportsPointerEvents'] = true;
 
             manager['addEvents']();
 
-            expect(addSpy).to.have.been.calledOnce;
-            expect(addSpy).to.have.been.calledWith('pointermove');
+            expect(addSpy).toHaveBeenCalledOnce();
+            expect(addSpy.mock.calls[0][0]).toEqual('pointermove');
 
             manager['removeEvents']();
 
-            expect(removeSpy).to.have.been.calledOnce;
-            expect(removeSpy).to.have.been.calledWith('pointermove');
+            expect(removeSpy).toHaveBeenCalledOnce();
+            expect(removeSpy.mock.calls[0][0]).toEqual('pointermove');
 
-            addSpy.restore();
-            removeSpy.restore();
+            addSpy.mockClear();
+            removeSpy.mockClear();
         });
 
         it('should add and remove pointer events to window', () =>
         {
-            const manager = new InteractionManager(sinon.stub() as any);
-            const addSpy = sinon.spy(window, 'addEventListener');
-            const removeSpy = sinon.spy(window, 'removeEventListener');
+            const manager = new InteractionManager(jest.fn() as any);
+            const addSpy = jest.spyOn(window, 'addEventListener');
+            const removeSpy = jest.spyOn(window, 'removeEventListener');
+
+            addSpy.mockReset();
+            removeSpy.mockReset();
 
             manager['interactionDOMElement'] = {
                 style: {},
-                addEventListener: sinon.stub(),
-                removeEventListener: sinon.stub()
+                addEventListener: jest.fn(),
+                removeEventListener: jest.fn()
             } as unknown as HTMLElement;
             // @ts-expect-error - overriding readonly prop
             manager['supportsPointerEvents'] = true;
 
             manager['addEvents']();
 
-            expect(addSpy).to.have.been.calledTwice;
-            expect(addSpy).to.have.been.calledWith('pointercancel');
-            expect(addSpy).to.have.been.calledWith('pointerup');
+            expect(addSpy).toBeCalledTimes(2);
+            expect(addSpy.mock.calls[0][0]).toEqual('pointercancel');
+            expect(addSpy.mock.calls[1][0]).toEqual('pointerup');
 
             manager['removeEvents']();
 
-            expect(removeSpy).to.have.been.calledTwice;
-            expect(removeSpy).to.have.been.calledWith('pointercancel');
-            expect(removeSpy).to.have.been.calledWith('pointerup');
+            expect(removeSpy).toBeCalledTimes(2);
+            expect(removeSpy.mock.calls[0][0]).toEqual('pointercancel');
+            expect(removeSpy.mock.calls[1][0]).toEqual('pointerup');
 
-            addSpy.restore();
-            removeSpy.restore();
+            addSpy.mockClear();
+            removeSpy.mockClear();
         });
 
         it('should add and remove pointer events to element seven times when touch events are supported', () =>
         {
-            const manager = new InteractionManager(sinon.stub() as any);
+            const manager = new InteractionManager(jest.fn() as any);
             const element = {
                 style: {},
-                addEventListener: sinon.stub(),
-                removeEventListener: sinon.stub()
-            } as unknown as HTMLElement;
+                addEventListener: jest.fn(),
+                removeEventListener: jest.fn()
+            };
 
-            manager['interactionDOMElement'] = element;
+            manager['interactionDOMElement'] = element as unknown as HTMLElement;
             // @ts-expect-error - overriding readonly prop
             manager['supportsPointerEvents'] = true;
             // @ts-expect-error - overriding readonly prop
@@ -490,39 +496,39 @@ describe('InteractionManager', () =>
 
             manager['addEvents']();
 
-            expect(element.addEventListener).to.have.been.callCount(7);
-            expect(element.addEventListener).to.have.been.calledWith('pointerdown');
-            expect(element.addEventListener).to.have.been.calledWith('pointerleave');
-            expect(element.addEventListener).to.have.been.calledWith('pointerover');
+            expect(element.addEventListener).toBeCalledTimes(7);
+            expect(element.addEventListener.mock.calls[0][0]).toEqual('pointerdown');
+            expect(element.addEventListener.mock.calls[1][0]).toEqual('pointerleave');
+            expect(element.addEventListener.mock.calls[2][0]).toEqual('pointerover');
 
-            expect(element.addEventListener).to.have.been.calledWith('touchstart');
-            expect(element.addEventListener).to.have.been.calledWith('touchcancel');
-            expect(element.addEventListener).to.have.been.calledWith('touchend');
-            expect(element.addEventListener).to.have.been.calledWith('touchmove');
+            expect(element.addEventListener.mock.calls[3][0]).toEqual('touchstart');
+            expect(element.addEventListener.mock.calls[4][0]).toEqual('touchcancel');
+            expect(element.addEventListener.mock.calls[5][0]).toEqual('touchend');
+            expect(element.addEventListener.mock.calls[6][0]).toEqual('touchmove');
 
             manager['removeEvents']();
 
-            expect(element.removeEventListener).to.have.been.callCount(7);
-            expect(element.removeEventListener).to.have.been.calledWith('pointerdown');
-            expect(element.removeEventListener).to.have.been.calledWith('pointerleave');
-            expect(element.removeEventListener).to.have.been.calledWith('pointerover');
+            expect(element.removeEventListener).toBeCalledTimes(7);
+            expect(element.removeEventListener.mock.calls[0][0]).toEqual('pointerdown');
+            expect(element.removeEventListener.mock.calls[1][0]).toEqual('pointerleave');
+            expect(element.removeEventListener.mock.calls[2][0]).toEqual('pointerover');
 
-            expect(element.removeEventListener).to.have.been.calledWith('touchstart');
-            expect(element.removeEventListener).to.have.been.calledWith('touchcancel');
-            expect(element.removeEventListener).to.have.been.calledWith('touchend');
-            expect(element.removeEventListener).to.have.been.calledWith('touchmove');
+            expect(element.removeEventListener.mock.calls[3][0]).toEqual('touchstart');
+            expect(element.removeEventListener.mock.calls[4][0]).toEqual('touchcancel');
+            expect(element.removeEventListener.mock.calls[5][0]).toEqual('touchend');
+            expect(element.removeEventListener.mock.calls[6][0]).toEqual('touchmove');
         });
 
         it('should add and remove pointer events to element three times when touch events are not supported', () =>
         {
-            const manager = new InteractionManager(sinon.stub() as any);
+            const manager = new InteractionManager(jest.fn() as any);
             const element = {
                 style: {},
-                addEventListener: sinon.stub(),
-                removeEventListener: sinon.stub()
-            } as unknown as HTMLElement;
+                addEventListener: jest.fn(),
+                removeEventListener: jest.fn()
+            };
 
-            manager['interactionDOMElement'] = element;
+            manager['interactionDOMElement'] = element as unknown as HTMLElement;
             // @ts-expect-error - overriding readonly prop
             manager['supportsPointerEvents'] = true;
             // @ts-expect-error - overriding readonly prop
@@ -530,85 +536,91 @@ describe('InteractionManager', () =>
 
             manager['addEvents']();
 
-            expect(element.addEventListener).to.have.been.calledThrice;
-            expect(element.addEventListener).to.have.been.calledWith('pointerdown');
-            expect(element.addEventListener).to.have.been.calledWith('pointerleave');
-            expect(element.addEventListener).to.have.been.calledWith('pointerover');
+            expect(element.addEventListener).toBeCalledTimes(3);
+            expect(element.addEventListener.mock.calls[0][0]).toEqual('pointerdown');
+            expect(element.addEventListener.mock.calls[1][0]).toEqual('pointerleave');
+            expect(element.addEventListener.mock.calls[2][0]).toEqual('pointerover');
 
             manager['removeEvents']();
 
-            expect(element.removeEventListener).to.have.been.calledThrice;
-            expect(element.removeEventListener).to.have.been.calledWith('pointerdown');
-            expect(element.removeEventListener).to.have.been.calledWith('pointerleave');
-            expect(element.removeEventListener).to.have.been.calledWith('pointerover');
+            expect(element.removeEventListener).toBeCalledTimes(3);
+            expect(element.removeEventListener.mock.calls[0][0]).toEqual('pointerdown');
+            expect(element.removeEventListener.mock.calls[1][0]).toEqual('pointerleave');
+            expect(element.removeEventListener.mock.calls[2][0]).toEqual('pointerover');
         });
 
         it('should add and remove mouse events to document', () =>
         {
-            const manager = new InteractionManager(sinon.stub() as any);
-            const addSpy = sinon.spy(window.document, 'addEventListener');
-            const removeSpy = sinon.spy(window.document, 'removeEventListener');
+            const manager = new InteractionManager(jest.fn() as any);
+            const addSpy = jest.spyOn(window.document, 'addEventListener');
+            const removeSpy = jest.spyOn(window.document, 'removeEventListener');
+
+            addSpy.mockReset();
+            removeSpy.mockReset();
 
             manager['interactionDOMElement'] = {
                 style: {},
-                addEventListener: sinon.stub(),
-                removeEventListener: sinon.stub()
+                addEventListener: jest.fn(),
+                removeEventListener: jest.fn()
             } as unknown as HTMLElement;
             // @ts-expect-error - overriding readonly prop
             manager['supportsPointerEvents'] = false;
 
             manager['addEvents']();
 
-            expect(addSpy).to.have.been.calledOnce;
-            expect(addSpy).to.have.been.calledWith('mousemove');
+            expect(addSpy).toHaveBeenCalledOnce();
+            expect(addSpy.mock.calls[0][0]).toEqual('mousemove');
 
             manager['removeEvents']();
 
-            expect(removeSpy).to.have.been.calledOnce;
-            expect(removeSpy).to.have.been.calledWith('mousemove');
+            expect(removeSpy).toHaveBeenCalledOnce();
+            expect(removeSpy.mock.calls[0][0]).toEqual('mousemove');
 
-            addSpy.restore();
-            removeSpy.restore();
+            addSpy.mockClear();
+            removeSpy.mockClear();
         });
 
         it('should add and remove mouse events to window', () =>
         {
-            const manager = new InteractionManager(sinon.stub() as any);
-            const addSpy = sinon.spy(window, 'addEventListener');
-            const removeSpy = sinon.spy(window, 'removeEventListener');
+            const manager = new InteractionManager(jest.fn() as any);
+            const addSpy = jest.spyOn(window, 'addEventListener');
+            const removeSpy = jest.spyOn(window, 'removeEventListener');
+
+            addSpy.mockReset();
+            removeSpy.mockReset();
 
             manager['interactionDOMElement'] = {
                 style: {},
-                addEventListener: sinon.stub(),
-                removeEventListener: sinon.stub()
+                addEventListener: jest.fn(),
+                removeEventListener: jest.fn()
             } as unknown as HTMLElement;
             // @ts-expect-error - overriding readonly prop
             manager['supportsPointerEvents'] = false;
 
             manager['addEvents']();
 
-            expect(addSpy).to.have.been.calledOnce;
-            expect(addSpy).to.have.been.calledWith('mouseup');
+            expect(addSpy).toHaveBeenCalledOnce();
+            expect(addSpy.mock.calls[0][0]).toEqual('mouseup');
 
             manager['removeEvents']();
 
-            expect(removeSpy).to.have.been.calledOnce;
-            expect(removeSpy).to.have.been.calledWith('mouseup');
+            expect(removeSpy).toHaveBeenCalledOnce();
+            expect(removeSpy.mock.calls[0][0]).toEqual('mouseup');
 
-            addSpy.restore();
-            removeSpy.restore();
+            addSpy.mockClear();
+            removeSpy.mockClear();
         });
 
         it('should add and remove mouse events to element', () =>
         {
-            const manager = new InteractionManager(sinon.stub() as any);
+            const manager = new InteractionManager(jest.fn() as any);
             const element = {
                 style: {},
-                addEventListener: sinon.stub(),
-                removeEventListener: sinon.stub()
-            } as unknown as HTMLElement;
+                addEventListener: jest.fn(),
+                removeEventListener: jest.fn()
+            };
 
-            manager['interactionDOMElement'] = element;
+            manager['interactionDOMElement'] = element as unknown as HTMLElement;
             // @ts-expect-error - overriding readonly prop
             manager['supportsPointerEvents'] = false;
             // @ts-expect-error - overriding readonly prop
@@ -616,29 +628,29 @@ describe('InteractionManager', () =>
 
             manager['addEvents']();
 
-            expect(element.addEventListener).to.have.been.calledThrice;
-            expect(element.addEventListener).to.have.been.calledWith('mousedown');
-            expect(element.addEventListener).to.have.been.calledWith('mouseout');
-            expect(element.addEventListener).to.have.been.calledWith('mouseover');
+            expect(element.addEventListener).toBeCalledTimes(3);
+            expect(element.addEventListener.mock.calls[0][0]).toEqual('mousedown');
+            expect(element.addEventListener.mock.calls[1][0]).toEqual('mouseout');
+            expect(element.addEventListener.mock.calls[2][0]).toEqual('mouseover');
 
             manager['removeEvents']();
 
-            expect(element.removeEventListener).to.have.been.calledThrice;
-            expect(element.removeEventListener).to.have.been.calledWith('mousedown');
-            expect(element.removeEventListener).to.have.been.calledWith('mouseout');
-            expect(element.removeEventListener).to.have.been.calledWith('mouseover');
+            expect(element.removeEventListener).toBeCalledTimes(3);
+            expect(element.removeEventListener.mock.calls[0][0]).toEqual('mousedown');
+            expect(element.removeEventListener.mock.calls[1][0]).toEqual('mouseout');
+            expect(element.removeEventListener.mock.calls[2][0]).toEqual('mouseover');
         });
 
         it('should add and remove touch events to element without pointer events', () =>
         {
-            const manager = new InteractionManager(sinon.stub() as any);
+            const manager = new InteractionManager(jest.fn() as any);
             const element = {
                 style: {},
-                addEventListener: sinon.stub(),
-                removeEventListener: sinon.stub()
-            } as unknown as HTMLElement;
+                addEventListener: jest.fn(),
+                removeEventListener: jest.fn()
+            };
 
-            manager['interactionDOMElement'] = element;
+            manager['interactionDOMElement'] = element as unknown as HTMLElement;
             // @ts-expect-error - overriding readonly prop
             manager['supportsPointerEvents'] = false;
             // @ts-expect-error - overriding readonly prop
@@ -646,29 +658,29 @@ describe('InteractionManager', () =>
 
             manager['addEvents']();
 
-            expect(element.addEventListener).to.have.been.calledWith('touchstart');
-            expect(element.addEventListener).to.have.been.calledWith('touchcancel');
-            expect(element.addEventListener).to.have.been.calledWith('touchend');
-            expect(element.addEventListener).to.have.been.calledWith('touchmove');
+            expect(element.addEventListener.mock.calls[3][0]).toEqual('touchstart');
+            expect(element.addEventListener.mock.calls[4][0]).toEqual('touchcancel');
+            expect(element.addEventListener.mock.calls[5][0]).toEqual('touchend');
+            expect(element.addEventListener.mock.calls[6][0]).toEqual('touchmove');
 
             manager['removeEvents']();
 
-            expect(element.removeEventListener).to.have.been.calledWith('touchstart');
-            expect(element.removeEventListener).to.have.been.calledWith('touchcancel');
-            expect(element.removeEventListener).to.have.been.calledWith('touchend');
-            expect(element.removeEventListener).to.have.been.calledWith('touchmove');
+            expect(element.removeEventListener.mock.calls[3][0]).toEqual('touchstart');
+            expect(element.removeEventListener.mock.calls[4][0]).toEqual('touchcancel');
+            expect(element.removeEventListener.mock.calls[5][0]).toEqual('touchend');
+            expect(element.removeEventListener.mock.calls[6][0]).toEqual('touchmove');
         });
 
         it('should add and remove touch events to element with pointer events', () =>
         {
-            const manager = new InteractionManager(sinon.stub() as any);
+            const manager = new InteractionManager(jest.fn() as any);
             const element = {
                 style: {},
-                addEventListener: sinon.stub(),
-                removeEventListener: sinon.stub()
-            } as unknown as HTMLElement;
+                addEventListener: jest.fn(),
+                removeEventListener: jest.fn()
+            };
 
-            manager['interactionDOMElement'] = element;
+            manager['interactionDOMElement'] = element as unknown as HTMLElement;
             // @ts-expect-error - overriding readonly prop
             manager['supportsPointerEvents'] = true;
             // @ts-expect-error - overriding readonly prop
@@ -676,25 +688,25 @@ describe('InteractionManager', () =>
 
             manager['addEvents']();
 
-            expect(element.addEventListener).to.have.been.calledWith('touchstart');
-            expect(element.addEventListener).to.have.been.calledWith('touchcancel');
-            expect(element.addEventListener).to.have.been.calledWith('touchend');
-            expect(element.addEventListener).to.have.been.calledWith('touchmove');
+            expect(element.addEventListener.mock.calls[3][0]).toEqual('touchstart');
+            expect(element.addEventListener.mock.calls[4][0]).toEqual('touchcancel');
+            expect(element.addEventListener.mock.calls[5][0]).toEqual('touchend');
+            expect(element.addEventListener.mock.calls[6][0]).toEqual('touchmove');
 
             manager['removeEvents']();
 
-            expect(element.removeEventListener).to.have.been.calledWith('touchstart');
-            expect(element.removeEventListener).to.have.been.calledWith('touchcancel');
-            expect(element.removeEventListener).to.have.been.calledWith('touchend');
-            expect(element.removeEventListener).to.have.been.calledWith('touchmove');
+            expect(element.removeEventListener.mock.calls[3][0]).toEqual('touchstart');
+            expect(element.removeEventListener.mock.calls[4][0]).toEqual('touchcancel');
+            expect(element.removeEventListener.mock.calls[5][0]).toEqual('touchend');
+            expect(element.removeEventListener.mock.calls[6][0]).toEqual('touchmove');
         });
 
         it('should add and remove Ticker.system listener', () =>
         {
-            const manager = new InteractionManager(sinon.stub() as any);
-            const element = {} as unknown as HTMLElement;
+            const manager = new InteractionManager(jest.fn() as any);
+            const element = {};
 
-            manager['interactionDOMElement'] = element;
+            manager['interactionDOMElement'] = element as unknown as HTMLElement;
 
             const listenerCount = Ticker.system.count;
 
@@ -742,7 +754,7 @@ describe('InteractionManager', () =>
 
             pointer.click(10, 10);
 
-            expect(clickSpy).to.have.been.calledOnce;
+            expect(clickSpy).toHaveBeenCalledOnce();
         });
 
         it('should not call handler when outside', () =>
@@ -761,7 +773,7 @@ describe('InteractionManager', () =>
 
             pointer.click(60, 60);
 
-            expect(clickSpy).to.not.have.been.called;
+            expect(clickSpy).not.toBeCalled();
         });
 
         it('should not call handler when mousedown not received', () =>
@@ -779,12 +791,12 @@ describe('InteractionManager', () =>
 
             pointer.mouseup(10, 10);
 
-            expect(clickSpy, 'click should not happen on first mouseup').to.not.have.been.called;
+            expect(clickSpy).not.toBeCalled();
 
             // test again, just because it was a bug that was reported
             pointer.mouseup(20, 20);
 
-            expect(clickSpy, 'click should not happen on second mouseup').to.not.have.been.called;
+            expect(clickSpy).not.toBeCalled();
         });
     });
 
@@ -806,7 +818,7 @@ describe('InteractionManager', () =>
 
             pointer.tap(10, 10);
 
-            expect(clickSpy).to.have.been.calledOnce;
+            expect(clickSpy).toHaveBeenCalledOnce();
         });
 
         it('should not call handler when outside', () =>
@@ -825,7 +837,7 @@ describe('InteractionManager', () =>
 
             pointer.tap(60, 60);
 
-            expect(clickSpy).to.not.have.been.called;
+            expect(clickSpy).not.toBeCalled();
         });
 
         it('should not call handler when moved to other sprite', () =>
@@ -857,9 +869,9 @@ describe('InteractionManager', () =>
             pointer.touchmove(80, 80, 3);
             pointer.touchend(80, 80, 3);
 
-            expect(overSpy).to.have.been.called;
-            expect(endSpy).to.have.been.called;
-            expect(clickSpy).to.not.have.been.called;
+            expect(overSpy).toBeCalled();
+            expect(endSpy).toBeCalled();
+            expect(clickSpy).not.toBeCalled();
         });
     });
 
@@ -881,7 +893,7 @@ describe('InteractionManager', () =>
 
             pointer.click(10, 10, true);
 
-            expect(clickSpy).to.have.been.calledOnce;
+            expect(clickSpy).toHaveBeenCalledOnce();
         });
 
         it('should not call handler when outside', () =>
@@ -900,7 +912,7 @@ describe('InteractionManager', () =>
 
             pointer.click(60, 60, true);
 
-            expect(clickSpy).to.not.have.been.called;
+            expect(clickSpy).not.toBeCalled();
         });
 
         it('with mouse events, should not call handler when moved to other sprite', () =>
@@ -932,9 +944,9 @@ describe('InteractionManager', () =>
             pointer.mousemove(80, 80);
             pointer.mouseup(80, 80);
 
-            expect(overSpy).to.have.been.called;
-            expect(upSpy).to.have.been.called;
-            expect(clickSpy).to.not.have.been.called;
+            expect(overSpy).toBeCalled();
+            expect(upSpy).toBeCalled();
+            expect(clickSpy).not.toBeCalled();
         });
 
         it('with pointer events, should not call handler when moved to other sprite', () =>
@@ -966,9 +978,9 @@ describe('InteractionManager', () =>
             pointer.mousemove(80, 80, true);
             pointer.mouseup(80, 80, true);
 
-            expect(overSpy).to.have.been.called;
-            expect(upSpy).to.have.been.called;
-            expect(clickSpy).to.not.have.been.called;
+            expect(overSpy).toBeCalled();
+            expect(upSpy).toBeCalled();
+            expect(clickSpy).not.toBeCalled();
         });
 
         it('with touch events, should not call handler when moved to other sprite', () =>
@@ -1000,9 +1012,9 @@ describe('InteractionManager', () =>
             pointer.touchmove(80, 80, true);
             pointer.touchend(80, 80, true);
 
-            expect(moveSpy).to.have.been.called;
-            expect(upSpy).to.have.been.called;
-            expect(clickSpy).to.not.have.been.called;
+            expect(moveSpy).toBeCalled();
+            expect(upSpy).toBeCalled();
+            expect(clickSpy).not.toBeCalled();
         });
     });
 
@@ -1013,13 +1025,13 @@ describe('InteractionManager', () =>
             const behindChild = new Graphics();
             const frontChild = new Graphics();
             const parent = new Container();
-            const behindChildCallback = sinon.spy(function behindSpy() { /* no op*/ });
-            const frontChildCallback = sinon.spy(function frontSpy() { /* no op*/ });
-            const parentCallback = sinon.spy(function parentSpy() { /* no op*/ });
+            const behindChildCallback = jest.fn(function behindSpy() { /* no op*/ });
+            const frontChildCallback = jest.fn(function frontSpy() { /* no op*/ });
+            const parentCallback = jest.fn(function parentSpy() { /* no op*/ });
             let behindParent: Container;
             let frontParent: Container;
-            let behindParentCallback: sinon.SinonSpy;
-            let frontParentCallback: sinon.SinonSpy;
+            let behindParentCallback: jest.Mock;
+            let frontParentCallback: jest.Mock;
 
             behindChild.beginFill(0xFF);
             behindChild.drawRect(0, 0, 50, 50);
@@ -1033,8 +1045,8 @@ describe('InteractionManager', () =>
             {
                 behindParent = new Container();
                 frontParent = new Container();
-                behindParentCallback = sinon.spy(function behindParentSpy() { /* no op*/ });
-                frontParentCallback = sinon.spy(function frontParentSpy() { /* no op*/ });
+                behindParentCallback = jest.fn(function behindParentSpy() { /* no op*/ });
+                frontParentCallback = jest.fn(function frontParentSpy() { /* no op*/ });
                 behindParent.on(callbackEventName, behindParentCallback);
                 frontParent.on(callbackEventName, frontParentCallback);
 
@@ -1080,9 +1092,9 @@ describe('InteractionManager', () =>
                     stage.addChild(scene.parent);
                     pointer.click(10, 10);
 
-                    expect(scene.behindChildCallback).to.not.have.been.called;
-                    expect(scene.frontChildCallback).to.have.been.calledOnce;
-                    expect(scene.parentCallback).to.not.have.been.called;
+                    expect(scene.behindChildCallback).not.toBeCalled();
+                    expect(scene.frontChildCallback).toHaveBeenCalledOnce();
+                    expect(scene.parentCallback).not.toBeCalled();
                 });
 
                 it('should callback front child when clicking overlap', () =>
@@ -1099,9 +1111,9 @@ describe('InteractionManager', () =>
                     stage.addChild(scene.parent);
                     pointer.click(40, 10);
 
-                    expect(scene.behindChildCallback).to.not.have.been.called;
-                    expect(scene.frontChildCallback).to.have.been.calledOnce;
-                    expect(scene.parentCallback).to.not.have.been.called;
+                    expect(scene.behindChildCallback).not.toBeCalled();
+                    expect(scene.frontChildCallback).toHaveBeenCalledOnce();
+                    expect(scene.parentCallback).not.toBeCalled();
                 });
 
                 it('should callback behind child when clicking behind child', () =>
@@ -1118,9 +1130,9 @@ describe('InteractionManager', () =>
                     stage.addChild(scene.parent);
                     pointer.click(60, 10);
 
-                    expect(scene.frontChildCallback).to.not.have.been.called;
-                    expect(scene.behindChildCallback).to.have.been.calledOnce;
-                    expect(scene.parentCallback).to.not.have.been.called;
+                    expect(scene.frontChildCallback).not.toBeCalled();
+                    expect(scene.behindChildCallback).toHaveBeenCalledOnce();
+                    expect(scene.parentCallback).not.toBeCalled();
                 });
 
                 it('should callback front child of different non-interactive parents when clicking overlap', () =>
@@ -1137,11 +1149,11 @@ describe('InteractionManager', () =>
                     stage.addChild(scene.parent);
                     pointer.click(40, 10);
 
-                    expect(scene.behindChildCallback).to.not.have.been.called;
-                    expect(scene.frontChildCallback).to.have.been.calledOnce;
-                    expect(scene.parentCallback).to.not.have.been.called;
-                    expect(scene.behindParentCallback).to.not.have.been.called;
-                    expect(scene.frontParentCallback).to.not.have.been.called;
+                    expect(scene.behindChildCallback).not.toBeCalled();
+                    expect(scene.frontChildCallback).toHaveBeenCalledOnce();
+                    expect(scene.parentCallback).not.toBeCalled();
+                    expect(scene.behindParentCallback).not.toBeCalled();
+                    expect(scene.frontParentCallback).not.toBeCalled();
                 });
 
                 it('should callback front child of different interactive parents when clicking overlap', () =>
@@ -1160,11 +1172,11 @@ describe('InteractionManager', () =>
                     stage.addChild(scene.parent);
                     pointer.click(40, 10);
 
-                    expect(scene.behindChildCallback).to.not.have.been.called;
-                    expect(scene.frontChildCallback).to.have.been.calledOnce;
-                    expect(scene.parentCallback).to.not.have.been.called;
-                    expect(scene.behindParentCallback).to.not.have.been.called;
-                    expect(scene.frontParentCallback).to.have.been.calledOnce;
+                    expect(scene.behindChildCallback).not.toBeCalled();
+                    expect(scene.frontChildCallback).toHaveBeenCalledOnce();
+                    expect(scene.parentCallback).not.toBeCalled();
+                    expect(scene.behindParentCallback).not.toBeCalled();
+                    expect(scene.frontParentCallback).toHaveBeenCalledOnce();
                 });
             });
 
@@ -1183,9 +1195,9 @@ describe('InteractionManager', () =>
                     stage.addChild(scene.parent);
                     pointer.click(10, 10);
 
-                    expect(scene.behindChildCallback).to.not.have.been.called;
-                    expect(scene.frontChildCallback).to.not.have.been.called;
-                    expect(scene.parentCallback).to.not.have.been.called;
+                    expect(scene.behindChildCallback).not.toBeCalled();
+                    expect(scene.frontChildCallback).not.toBeCalled();
+                    expect(scene.parentCallback).not.toBeCalled();
                 });
 
                 it('should callback behind child when clicking overlap', () =>
@@ -1201,9 +1213,9 @@ describe('InteractionManager', () =>
                     stage.addChild(scene.parent);
                     pointer.click(40, 10);
 
-                    expect(scene.behindChildCallback).to.have.been.calledOnce;
-                    expect(scene.frontChildCallback).to.not.have.been.called;
-                    expect(scene.parentCallback).to.not.have.been.called;
+                    expect(scene.behindChildCallback).toHaveBeenCalledOnce();
+                    expect(scene.frontChildCallback).not.toBeCalled();
+                    expect(scene.parentCallback).not.toBeCalled();
                 });
 
                 it('should callback behind child when clicking behind child', () =>
@@ -1219,9 +1231,9 @@ describe('InteractionManager', () =>
                     stage.addChild(scene.parent);
                     pointer.click(60, 10);
 
-                    expect(scene.frontChildCallback).to.not.have.been.called;
-                    expect(scene.behindChildCallback).to.have.been.calledOnce;
-                    expect(scene.parentCallback).to.not.have.been.called;
+                    expect(scene.frontChildCallback).not.toBeCalled();
+                    expect(scene.behindChildCallback).toHaveBeenCalledOnce();
+                    expect(scene.parentCallback).not.toBeCalled();
                 });
             });
 
@@ -1240,9 +1252,9 @@ describe('InteractionManager', () =>
                     stage.addChild(scene.parent);
                     pointer.click(10, 10);
 
-                    expect(scene.behindChildCallback).to.not.have.been.called;
-                    expect(scene.frontChildCallback).to.have.been.calledOnce;
-                    expect(scene.parentCallback).to.not.have.been.called;
+                    expect(scene.behindChildCallback).not.toBeCalled();
+                    expect(scene.frontChildCallback).toHaveBeenCalledOnce();
+                    expect(scene.parentCallback).not.toBeCalled();
                 });
 
                 it('should callback front child when clicking overlap', () =>
@@ -1258,9 +1270,9 @@ describe('InteractionManager', () =>
                     stage.addChild(scene.parent);
                     pointer.click(40, 10);
 
-                    expect(scene.behindChildCallback).to.not.have.been.called;
-                    expect(scene.frontChildCallback).to.have.been.calledOnce;
-                    expect(scene.parentCallback).to.not.have.been.called;
+                    expect(scene.behindChildCallback).not.toBeCalled();
+                    expect(scene.frontChildCallback).toHaveBeenCalledOnce();
+                    expect(scene.parentCallback).not.toBeCalled();
                 });
 
                 it('should not callback when clicking behind child', () =>
@@ -1276,9 +1288,9 @@ describe('InteractionManager', () =>
                     stage.addChild(scene.parent);
                     pointer.click(60, 10);
 
-                    expect(scene.frontChildCallback).to.not.have.been.called;
-                    expect(scene.behindChildCallback).to.not.have.been.called;
-                    expect(scene.parentCallback).to.not.have.been.called;
+                    expect(scene.frontChildCallback).not.toBeCalled();
+                    expect(scene.behindChildCallback).not.toBeCalled();
+                    expect(scene.parentCallback).not.toBeCalled();
                 });
             });
         });
@@ -1302,9 +1314,9 @@ describe('InteractionManager', () =>
                     stage.addChild(scene.parent);
                     pointer.click(10, 10);
 
-                    expect(scene.behindChildCallback).to.not.have.been.called;
-                    expect(scene.frontChildCallback).to.have.been.calledOnce;
-                    expect(scene.parentCallback).to.have.been.calledOnce;
+                    expect(scene.behindChildCallback).not.toBeCalled();
+                    expect(scene.frontChildCallback).toHaveBeenCalledOnce();
+                    expect(scene.parentCallback).toHaveBeenCalledOnce();
                 });
 
                 it('should callback parent and front child when clicking overlap', () =>
@@ -1322,9 +1334,9 @@ describe('InteractionManager', () =>
                     stage.addChild(scene.parent);
                     pointer.click(40, 10);
 
-                    expect(scene.behindChildCallback).to.not.have.been.called;
-                    expect(scene.frontChildCallback).to.have.been.calledOnce;
-                    expect(scene.parentCallback).to.have.been.calledOnce;
+                    expect(scene.behindChildCallback).not.toBeCalled();
+                    expect(scene.frontChildCallback).toHaveBeenCalledOnce();
+                    expect(scene.parentCallback).toHaveBeenCalledOnce();
                 });
 
                 it('should callback parent and behind child when clicking behind child', () =>
@@ -1342,9 +1354,9 @@ describe('InteractionManager', () =>
                     stage.addChild(scene.parent);
                     pointer.click(60, 10);
 
-                    expect(scene.frontChildCallback).to.not.have.been.called;
-                    expect(scene.behindChildCallback).to.have.been.calledOnce;
-                    expect(scene.parentCallback).to.have.been.calledOnce;
+                    expect(scene.frontChildCallback).not.toBeCalled();
+                    expect(scene.behindChildCallback).toHaveBeenCalledOnce();
+                    expect(scene.parentCallback).toHaveBeenCalledOnce();
                 });
 
                 it('should callback front child of different non-interactive parents when clicking overlap', () =>
@@ -1362,11 +1374,11 @@ describe('InteractionManager', () =>
                     stage.addChild(scene.parent);
                     pointer.click(40, 10);
 
-                    expect(scene.behindChildCallback).to.not.have.been.called;
-                    expect(scene.frontChildCallback).to.have.been.calledOnce;
-                    expect(scene.parentCallback).to.have.been.calledOnce;
-                    expect(scene.behindParentCallback).to.not.have.been.called;
-                    expect(scene.frontParentCallback).to.not.have.been.called;
+                    expect(scene.behindChildCallback).not.toBeCalled();
+                    expect(scene.frontChildCallback).toHaveBeenCalledOnce();
+                    expect(scene.parentCallback).toHaveBeenCalledOnce();
+                    expect(scene.behindParentCallback).not.toBeCalled();
+                    expect(scene.frontParentCallback).not.toBeCalled();
                 });
 
                 it('should callback front child of different interactive parents when clicking overlap', () =>
@@ -1386,11 +1398,11 @@ describe('InteractionManager', () =>
                     stage.addChild(scene.parent);
                     pointer.click(40, 10);
 
-                    expect(scene.behindChildCallback).to.not.have.been.called;
-                    expect(scene.frontChildCallback).to.have.been.calledOnce;
-                    expect(scene.parentCallback).to.have.been.calledOnce;
-                    expect(scene.behindParentCallback).to.not.have.been.called;
-                    expect(scene.frontParentCallback).to.have.been.calledOnce;
+                    expect(scene.behindChildCallback).not.toBeCalled();
+                    expect(scene.frontChildCallback).toHaveBeenCalledOnce();
+                    expect(scene.parentCallback).toHaveBeenCalledOnce();
+                    expect(scene.behindParentCallback).not.toBeCalled();
+                    expect(scene.frontParentCallback).toHaveBeenCalledOnce();
                 });
             });
 
@@ -1410,9 +1422,9 @@ describe('InteractionManager', () =>
                     stage.addChild(scene.parent);
                     pointer.click(10, 10);
 
-                    expect(scene.behindChildCallback).to.not.have.been.called;
-                    expect(scene.frontChildCallback).to.not.have.been.called;
-                    expect(scene.parentCallback).to.have.been.calledOnce;
+                    expect(scene.behindChildCallback).not.toBeCalled();
+                    expect(scene.frontChildCallback).not.toBeCalled();
+                    expect(scene.parentCallback).toHaveBeenCalledOnce();
                 });
 
                 it('should callback parent and behind child when clicking overlap', () =>
@@ -1429,9 +1441,9 @@ describe('InteractionManager', () =>
                     stage.addChild(scene.parent);
                     pointer.click(40, 10);
 
-                    expect(scene.behindChildCallback).to.have.been.calledOnce;
-                    expect(scene.frontChildCallback).to.not.have.been.called;
-                    expect(scene.parentCallback).to.have.been.calledOnce;
+                    expect(scene.behindChildCallback).toHaveBeenCalledOnce();
+                    expect(scene.frontChildCallback).not.toBeCalled();
+                    expect(scene.parentCallback).toHaveBeenCalledOnce();
                 });
 
                 it('should callback parent and behind child when clicking behind child', () =>
@@ -1448,9 +1460,9 @@ describe('InteractionManager', () =>
                     stage.addChild(scene.parent);
                     pointer.click(60, 10);
 
-                    expect(scene.frontChildCallback).to.not.have.been.called;
-                    expect(scene.behindChildCallback).to.have.been.calledOnce;
-                    expect(scene.parentCallback).to.have.been.calledOnce;
+                    expect(scene.frontChildCallback).not.toBeCalled();
+                    expect(scene.behindChildCallback).toHaveBeenCalledOnce();
+                    expect(scene.parentCallback).toHaveBeenCalledOnce();
                 });
             });
 
@@ -1470,9 +1482,9 @@ describe('InteractionManager', () =>
                     stage.addChild(scene.parent);
                     pointer.click(10, 10);
 
-                    expect(scene.behindChildCallback).to.not.have.been.called;
-                    expect(scene.frontChildCallback).to.have.been.calledOnce;
-                    expect(scene.parentCallback).to.have.been.calledOnce;
+                    expect(scene.behindChildCallback).not.toBeCalled();
+                    expect(scene.frontChildCallback).toHaveBeenCalledOnce();
+                    expect(scene.parentCallback).toHaveBeenCalledOnce();
                 });
 
                 it('should callback parent and front child when clicking overlap', () =>
@@ -1489,9 +1501,9 @@ describe('InteractionManager', () =>
                     stage.addChild(scene.parent);
                     pointer.click(40, 10);
 
-                    expect(scene.behindChildCallback).to.not.have.been.called;
-                    expect(scene.frontChildCallback).to.have.been.calledOnce;
-                    expect(scene.parentCallback).to.have.been.calledOnce;
+                    expect(scene.behindChildCallback).not.toBeCalled();
+                    expect(scene.frontChildCallback).toHaveBeenCalledOnce();
+                    expect(scene.parentCallback).toHaveBeenCalledOnce();
                 });
 
                 it('should callback parent when clicking behind child', () =>
@@ -1508,9 +1520,9 @@ describe('InteractionManager', () =>
                     stage.addChild(scene.parent);
                     pointer.click(60, 10);
 
-                    expect(scene.frontChildCallback).to.not.have.been.called;
-                    expect(scene.behindChildCallback).to.not.have.been.called;
-                    expect(scene.parentCallback).to.have.been.calledOnce;
+                    expect(scene.frontChildCallback).not.toBeCalled();
+                    expect(scene.behindChildCallback).not.toBeCalled();
+                    expect(scene.parentCallback).toHaveBeenCalledOnce();
                 });
             });
         });
@@ -1523,8 +1535,8 @@ describe('InteractionManager', () =>
             const behindParent = new Container();
             const subParent = new Container();
             const behindChild = new Graphics();
-            const behindCallback = sinon.spy(function behindSpy() { /* no op*/ });
-            const frontCallback = sinon.spy(function frontSpy() { /* no op*/ });
+            const behindCallback = jest.fn(function behindSpy() { /* no op*/ });
+            const frontCallback = jest.fn(function frontSpy() { /* no op*/ });
 
             behindChild.beginFill(0xFF);
             behindChild.drawRect(0, 0, 50, 50);
@@ -1547,8 +1559,8 @@ describe('InteractionManager', () =>
 
             pointer.click(40, 10);
 
-            expect(behindCallback).to.not.have.been.called;
-            expect(frontCallback).to.have.been.calledOnce;
+            expect(behindCallback).not.toBeCalled();
+            expect(frontCallback).toHaveBeenCalledOnce();
         });
     });
 
@@ -1573,7 +1585,7 @@ describe('InteractionManager', () =>
 
             pointer.click(10, 10);
 
-            expect(spy).to.have.been.calledOnce;
+            expect(spy).toHaveBeenCalledOnce();
         });
 
         it('should trigger interaction callback when mask uses beginFill', () =>
@@ -1595,7 +1607,7 @@ describe('InteractionManager', () =>
 
             pointer.click(10, 10);
 
-            expect(spy).to.have.been.calledOnce;
+            expect(spy).toHaveBeenCalledOnce();
         });
 
         it('should trigger interaction callback on child when inside of parents mask', () =>
@@ -1619,7 +1631,7 @@ describe('InteractionManager', () =>
 
             pointer.click(10, 10);
 
-            expect(spy).to.have.been.calledOnce;
+            expect(spy).toHaveBeenCalledOnce();
         });
 
         it('should not trigger interaction callback on child when outside of parents mask', () =>
@@ -1643,7 +1655,7 @@ describe('InteractionManager', () =>
 
             pointer.click(30, 30);
 
-            expect(spy).to.have.not.been.calledOnce;
+            expect(spy).not.toBeCalledTimes(1);
         });
 
         it('should not trigger interaction callback when mask doesn\'t use beginFill', () =>
@@ -1664,7 +1676,7 @@ describe('InteractionManager', () =>
 
             pointer.click(10, 10);
 
-            expect(spy).to.have.not.been.called;
+            expect(spy).not.toBeCalled();
         });
 
         it('should trigger interaction callback when mask doesn\'t use beginFill but hitArea is defined', () =>
@@ -1686,7 +1698,7 @@ describe('InteractionManager', () =>
 
             pointer.click(10, 10);
 
-            expect(spy).to.have.been.calledOnce;
+            expect(spy).toHaveBeenCalledOnce();
         });
 
         it('should trigger interaction callback when mask is a sprite', () =>
@@ -1707,7 +1719,7 @@ describe('InteractionManager', () =>
 
             pointer.click(10, 10);
 
-            expect(spy).to.have.been.calledOnce;
+            expect(spy).toHaveBeenCalledOnce();
         });
     });
 
@@ -1729,7 +1741,7 @@ describe('InteractionManager', () =>
 
             pointer.click(10, 10);
 
-            expect(spy).to.have.been.calledOnce;
+            expect(spy).toHaveBeenCalledOnce();
         });
 
         it('should not trigger interaction callback when not within hitArea', () =>
@@ -1748,7 +1760,7 @@ describe('InteractionManager', () =>
 
             pointer.click(30, 30);
 
-            expect(spy).to.have.not.been.calledOnce;
+            expect(spy).not.toBeCalledTimes(1);
         });
 
         it('should trigger interaction callback on child when inside of parents hitArea', () =>
@@ -1769,7 +1781,7 @@ describe('InteractionManager', () =>
 
             pointer.click(10, 10);
 
-            expect(spy).to.have.been.calledOnce;
+            expect(spy).toHaveBeenCalledOnce();
         });
 
         it('should not trigger interaction callback on child when outside of parents hitArea', () =>
@@ -1790,7 +1802,7 @@ describe('InteractionManager', () =>
 
             pointer.click(30, 30);
 
-            expect(spy).to.have.not.been.calledOnce;
+            expect(spy).not.toBeCalledTimes(1);
         });
     });
 
@@ -1895,8 +1907,8 @@ describe('InteractionManager', () =>
             pointer.mousemove(10, 10);
             pointer.mousemove(60, 60);
 
-            expect(overSpy).to.have.been.called;
-            expect(defaultSpy).to.have.been.called;
+            expect(overSpy).toBeCalled();
+            expect(defaultSpy).toBeCalled();
         });
 
         it('cursor callback should only be called if the cursor actually changed', () =>
@@ -1917,7 +1929,7 @@ describe('InteractionManager', () =>
             pointer.mousemove(10, 10);
             pointer.mousemove(20, 20);
 
-            expect(defaultSpy).to.have.been.calledOnce;
+            expect(defaultSpy).toHaveBeenCalledOnce();
         });
 
         it('cursor style object should be fully applied', () =>
@@ -2018,9 +2030,9 @@ describe('InteractionManager', () =>
                 const scene = getScene();
 
                 pointer = new MockPointer(scene.stage);
-                const frontHitTest = sinon.spy(scene.frontChild, 'containsPoint');
-                const middleHitTest = sinon.spy(scene.middleChild, 'containsPoint');
-                const behindHitTest = sinon.spy(scene.behindChild, 'containsPoint');
+                const frontHitTest = jest.spyOn(scene.frontChild, 'containsPoint');
+                const middleHitTest = jest.spyOn(scene.middleChild, 'containsPoint');
+                const behindHitTest = jest.spyOn(scene.behindChild, 'containsPoint');
 
                 scene.frontChild.interactive = true;
                 scene.middleChild.interactive = true;
@@ -2028,9 +2040,9 @@ describe('InteractionManager', () =>
 
                 pointer.mousedown(25, 25);
 
-                expect(frontHitTest).to.have.been.calledOnce;
-                expect(middleHitTest).to.not.have.been.called;
-                expect(behindHitTest).to.not.have.been.called;
+                expect(frontHitTest).toHaveBeenCalledOnce();
+                expect(middleHitTest).not.toBeCalled();
+                expect(behindHitTest).not.toBeCalled();
             });
         });
 
@@ -2041,9 +2053,9 @@ describe('InteractionManager', () =>
                 const scene = getScene();
 
                 pointer = new MockPointer(scene.stage);
-                const frontHitTest = sinon.spy(scene.frontChild, 'containsPoint');
-                const middleHitTest = sinon.spy(scene.middleChild, 'containsPoint');
-                const behindHitTest = sinon.spy(scene.behindChild, 'containsPoint');
+                const frontHitTest = jest.spyOn(scene.frontChild, 'containsPoint');
+                const middleHitTest = jest.spyOn(scene.middleChild, 'containsPoint');
+                const behindHitTest = jest.spyOn(scene.behindChild, 'containsPoint');
 
                 scene.frontChild.interactive = false;
                 scene.middleChild.interactive = true;
@@ -2051,9 +2063,9 @@ describe('InteractionManager', () =>
 
                 pointer.mousedown(25, 25);
 
-                expect(frontHitTest).to.not.have.been.called;
-                expect(middleHitTest).to.have.been.calledOnce;
-                expect(behindHitTest).to.not.have.been.called;
+                expect(frontHitTest).not.toBeCalled();
+                expect(middleHitTest).toHaveBeenCalledOnce();
+                expect(behindHitTest).not.toBeCalled();
             });
         });
     });
@@ -2094,11 +2106,11 @@ describe('InteractionManager', () =>
             graphics.interactive = true;
 
             pointer.touchstart(10, 10, 42);
-            expect(pointer.interaction.activeInteractionData[42]).to.exist;
+            expect(pointer.interaction.activeInteractionData[42]).toBeDefined();
             pointer.touchend(10, 10, 42);
-            expect(pointer.interaction.activeInteractionData[42]).to.be.undefined;
+            expect(pointer.interaction.activeInteractionData[42]).toBeUndefined();
             pointer.touchleave(10, 10, 42);
-            expect(pointer.interaction.activeInteractionData[42]).to.be.undefined;
+            expect(pointer.interaction.activeInteractionData[42]).toBeUndefined();
         });
     });
 
@@ -2202,19 +2214,19 @@ describe('InteractionManager', () =>
             graphics.interactive = true;
 
             pointer.touchstart(10, 10, 1);
-            expect(pointer.interaction.activeInteractionData[1]).to.exist;
-            expect(pointer.interaction.activeInteractionData[1].isPrimary,
-                'first touch should be primary on touch start').toBe(true);
+            expect(pointer.interaction.activeInteractionData[1]).toBeDefined();
+            // 'first touch should be primary on touch start'
+            expect(pointer.interaction.activeInteractionData[1].isPrimary).toBe(true);
             pointer.touchstart(13, 9, 2);
-            expect(pointer.interaction.activeInteractionData[2].isPrimary,
-                'second touch should not be primary').toBe(false);
+            // 'second touch should not be primary'
+            expect(pointer.interaction.activeInteractionData[2].isPrimary).toBe(false);
             pointer.touchmove(10, 20, 1);
-            expect(pointer.interaction.activeInteractionData[1].isPrimary,
-                'first touch should still be primary after move').toBe(true);
+            // 'first touch should still be primary after move'
+            expect(pointer.interaction.activeInteractionData[1].isPrimary).toBe(true);
             pointer.touchend(10, 10, 1);
             pointer.touchmove(13, 29, 2);
-            expect(pointer.interaction.activeInteractionData[2].isPrimary,
-                'second touch should still not be primary after first is done').toBe(false);
+            'second touch should still not be primary after first is done';
+            expect(pointer.interaction.activeInteractionData[2].isPrimary).toBe(false);
         });
     });
 
@@ -2236,7 +2248,7 @@ describe('InteractionManager', () =>
 
             pointer.pendown(10, 10);
 
-            expect(eventSpy).to.have.been.calledOnce;
+            expect(eventSpy).toHaveBeenCalledOnce();
         });
 
         it('should call mousemove handler', () =>
@@ -2255,7 +2267,7 @@ describe('InteractionManager', () =>
 
             pointer.penmove(10, 10);
 
-            expect(eventSpy).to.have.been.calledOnce;
+            expect(eventSpy).toHaveBeenCalledOnce();
         });
 
         it('should call mouseup handler', () =>
@@ -2274,7 +2286,7 @@ describe('InteractionManager', () =>
 
             pointer.penup(10, 10);
 
-            expect(eventSpy).to.have.been.calledOnce;
+            expect(eventSpy).toHaveBeenCalledOnce();
         });
     });
 });

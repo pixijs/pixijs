@@ -20,7 +20,7 @@ describe('BlurFilter', () =>
         const filter = new BlurFilter();
 
         expect(filter.repeatEdgePixels).toBe(false);
-        expect(filter.padding).to.be.greaterThan(0);
+        expect(filter.padding).toBeGreaterThan(0);
 
         filter.repeatEdgePixels = true;
 

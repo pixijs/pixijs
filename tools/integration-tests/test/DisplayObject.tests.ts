@@ -1,7 +1,6 @@
 import { DisplayObject } from '@pixi/display';
 import { MaskData } from '@pixi/core';
 
-
 import '@pixi/canvas-display';
 
 describe('DisplayObject', () =>

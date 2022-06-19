@@ -10,13 +10,13 @@ describe('NineSlicePlane', () =>
     {
         const plane = new NineSlicePlane(Texture.WHITE);
 
-        expect(plane).to.be.an.instanceOf(NineSlicePlane);
-        expect(plane.leftWidth).equals(10);
-        expect(plane.rightWidth).equals(10);
-        expect(plane.topHeight).equals(10);
-        expect(plane.bottomHeight).equals(10);
-        expect(plane.width).equals(Texture.WHITE.width);
-        expect(plane.height).equals(Texture.WHITE.height);
+        expect(plane).toBeInstanceOf(NineSlicePlane);
+        expect(plane.leftWidth).toEqual(10);
+        expect(plane.rightWidth).toEqual(10);
+        expect(plane.topHeight).toEqual(10);
+        expect(plane.bottomHeight).toEqual(10);
+        expect(plane.width).toEqual(Texture.WHITE.width);
+        expect(plane.height).toEqual(Texture.WHITE.height);
 
         plane.destroy();
     });

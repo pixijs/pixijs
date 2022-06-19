@@ -174,7 +174,7 @@ describe('EventSystem', () =>
 
                 renderer['events'][handler](event);
 
-                expect(eventSpy).to.have.been.calledOnce;
+                expect(eventSpy).toHaveBeenCalledOnce();
             });
         });
     });
@@ -208,7 +208,7 @@ describe('EventSystem', () =>
             })
         );
 
-        expect(eventSpy).to.not.have.been.called;
+        expect(eventSpy).not.toBeCalled();
         expect(renderer.view.style.cursor).toEqual('inherit');
     });
 
@@ -271,16 +271,16 @@ describe('EventSystem', () =>
         renderer['events'].onPointerMove(
             new PointerEvent('pointermove', { clientX: 25, clientY: 25 })
         );
-        expect(primaryOverSpy).to.have.been.calledOnce;
-        expect(primaryMoveSpy).to.have.been.calledOnce;
+        expect(primaryOverSpy).toHaveBeenCalledOnce();
+        expect(primaryMoveSpy).toHaveBeenCalledOnce();
 
         renderer['events'].onPointerMove(
             new PointerEvent('pointermove', { clientX: 125, clientY: 25 })
         );
-        expect(primaryOutSpy).to.have.been.calledOnce;
-        expect(secondaryOverSpy).to.have.been.calledOnce;
-        expect(secondaryMoveSpy).to.have.been.calledOnce;
-        expect(secondaryOutSpy).to.not.have.been.calledOnce;
+        expect(primaryOutSpy).toHaveBeenCalledOnce();
+        expect(secondaryOverSpy).toHaveBeenCalledOnce();
+        expect(secondaryMoveSpy).toHaveBeenCalledOnce();
+        expect(secondaryOutSpy).not.toBeCalledTimes(1);
     });
 
     it('should dispatch click events', () =>
@@ -309,7 +309,7 @@ describe('EventSystem', () =>
         });
         renderer['events'].onPointerUp(e);
 
-        expect(eventSpy).to.have.been.calledOnce;
+        expect(eventSpy).toHaveBeenCalledOnce();
     });
 
     it('should set the detail of click events to the click count', (done) =>
@@ -343,7 +343,7 @@ describe('EventSystem', () =>
             renderer['events'].onPointerUp(e);
         }
 
-        expect(eventSpy).to.have.been.calledThrice;
+        expect(eventSpy).toBeCalledTimes(3);
 
         graphics.removeAllListeners();
 
@@ -369,7 +369,7 @@ describe('EventSystem', () =>
             });
             renderer['events'].onPointerUp(e);
 
-            expect(newSpy).to.have.been.calledOnce;
+            expect(newSpy).toHaveBeenCalledOnce();
             done();
         }, 800);
     });
