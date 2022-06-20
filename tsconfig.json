@@ -1,6 +1,7 @@
 {
     "compilerOptions": {
         "target": "es5",
+        "lib": ["ES2021", "DOM"],
         "allowJs": false,
         "sourceMap": true,
         "removeComments": false,

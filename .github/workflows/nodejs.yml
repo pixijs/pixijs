@@ -40,6 +40,11 @@ jobs:
         run: npm run coverage:ci
       env:
         NODE_ENV: production
+    - name: Upload Test Artifacts
+      - uses: actions/upload-artifact@v3
+      with:
+        name: test-artifacts
+        path: .artifacts/
 
     - name: Report Code Coverage
       if: env.CODECOV_TOKEN != ''

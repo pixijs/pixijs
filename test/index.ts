@@ -1,4 +1,4 @@
-import { exec, execFileSync } from 'child_process';
+import { exec, execFileSync, ChildProcess } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import type { PackageResult } from './packages';
@@ -47,8 +47,25 @@ if (!availableSuites.length)
     console.log(`WARNING: Invalid package name${invalidNames.length > 1 ? 's' : ''}:`, `"${invalidNames.join('", "')}"`);
 }
 
-const tests = availableSuites.map((pkg) => pkg.tests).join(' ');
-const out = exec(`jest ${tests} --colors`);
+let out: ChildProcess;
+
+if (args.scenes)
+{
+    const tests = availableSuites.map((pkg) => pkg.tests).join(',');
+
+    out = exec(`jest --testMatch "**/?(*.)+(visuals.test).[tj]s?(x)" --colors`, {
+        env: {
+            ...process.env,
+            TEST_SUITES: tests
+        }
+    });
+}
+else
+{
+    const tests = availableSuites.map((pkg) => pkg.tests).join(' ');
+
+    out = exec(`jest ${tests} --colors`);
+}
 
 out.stdout.pipe(process.stdout);
 out.stderr.pipe(process.stderr);
