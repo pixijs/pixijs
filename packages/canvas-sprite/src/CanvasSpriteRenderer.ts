@@ -64,8 +64,8 @@ export class CanvasSpriteRenderer
 
         if (texture.trim)
         {
-                destWidth = texture.trim.width;
-                destHeight = texture.trim.height;
+            destWidth = texture.trim.width;
+            destHeight = texture.trim.height;
         }
 
         let wt = sprite.transform.worldTransform;
@@ -138,8 +138,8 @@ export class CanvasSpriteRenderer
             context.rect(
                 dx * renderer.resolution,
                 dy * renderer.resolution,
-                width * renderer.resolution,
-                height * renderer.resolution
+                destWidth * renderer.resolution,
+                destHeight * renderer.resolution
             );
             context.clip();
         }
