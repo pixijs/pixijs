@@ -1,4 +1,4 @@
-import { Texture } from '@pixi/core';
+import { ExtensionMetadata, ExtensionType, Texture } from '@pixi/core';
 import { SHAPES, Matrix } from '@pixi/math';
 import { canvasUtils, CrossPlatformCanvasRenderingContext2D } from '@pixi/canvas-renderer';
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
@@ -26,6 +26,12 @@ import { PolygonUtils } from './utils/PolygonUtils';
  */
 export class CanvasGraphicsRenderer
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        name: 'graphics',
+        type: ExtensionType.CanvasRendererPlugin,
+    };
+
     /** A reference to the current renderer */
     public renderer: CanvasRenderer;
     private _svgMatrix: DOMMatrix | boolean = null;

@@ -1,6 +1,6 @@
 import { CanvasRenderTarget } from '@pixi/utils';
 import { Rectangle } from '@pixi/math';
-import { RenderTexture } from '@pixi/core';
+import { ExtensionMetadata, ExtensionType, RenderTexture } from '@pixi/core';
 
 import type { Renderer, IRendererPlugin } from '@pixi/core';
 import { DisplayObject } from '@pixi/display';
@@ -47,6 +47,12 @@ export interface PixelExtractOptions
 
 export class Extract implements IRendererPlugin
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        name: 'extract',
+        type: ExtensionType.RendererPlugin,
+    };
+
     private renderer: Renderer;
 
     /**

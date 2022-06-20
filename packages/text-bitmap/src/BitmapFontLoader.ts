@@ -4,7 +4,7 @@ import { BitmapFont } from './BitmapFont';
 
 import type { Loader } from '@pixi/loaders';
 import type { Dict } from '@pixi/utils';
-import type { Texture } from '@pixi/core';
+import { ExtensionMetadata, ExtensionType, Texture } from '@pixi/core';
 
 /**
  * {@link PIXI.Loader Loader} middleware for loading
@@ -13,9 +13,12 @@ import type { Texture } from '@pixi/core';
  */
 export class BitmapFontLoader
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = ExtensionType.Loader;
+
     /**
      * Called when the plugin is installed.
-     * @see PIXI.Loader.registerPlugin
+     * @see PIXI.extensions.add
      */
     public static add(): void
     {

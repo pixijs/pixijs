@@ -1,7 +1,7 @@
 import { Sprite } from '@pixi/sprite';
 import { expect } from 'chai';
 import { skipHello } from '@pixi/utils';
-import { Texture, RenderTexture, BatchRenderer, Renderer } from '@pixi/core';
+import { Texture, RenderTexture, BatchRenderer, Renderer, extensions } from '@pixi/core';
 import { Extract } from '@pixi/extract';
 import { Rectangle } from '@pixi/math';
 
@@ -9,11 +9,8 @@ skipHello();
 
 describe('Extract', () =>
 {
-    before(() =>
-    {
-        Renderer.registerPlugin('extract', Extract);
-        Renderer.registerPlugin('batch', BatchRenderer);
-    });
+    before(() => extensions.add(Extract, BatchRenderer));
+    after(() => extensions.remove(Extract, BatchRenderer));
 
     it('should access extract on renderer', () =>
     {

@@ -2,7 +2,7 @@ import { PlaneGeometry, SimplePlane } from '@pixi/mesh-extras';
 import { skipHello } from '@pixi/utils';
 import { Loader } from '@pixi/loaders';
 import { Point } from '@pixi/math';
-import { Renderer, BatchRenderer, RenderTexture, Texture } from '@pixi/core';
+import { Renderer, BatchRenderer, RenderTexture, Texture, extensions } from '@pixi/core';
 import { expect } from 'chai';
 
 skipHello();
@@ -56,7 +56,7 @@ describe('SimplePlane', () =>
 
     it('should render the plane', () =>
     {
-        Renderer.registerPlugin('batch', BatchRenderer);
+        extensions.add(BatchRenderer);
 
         const renderer = new Renderer();
         const plane = new SimplePlane(Texture.WHITE, 100, 100);
@@ -65,5 +65,7 @@ describe('SimplePlane', () =>
 
         plane.destroy();
         renderer.destroy();
+
+        extensions.remove(BatchRenderer);
     });
 });

@@ -1,6 +1,6 @@
 import path from 'path';
 import { IAddOptions, Loader, LoaderResource } from '@pixi/loaders';
-import { Texture, BaseTexture } from '@pixi/core';
+import { Texture, BaseTexture, extensions } from '@pixi/core';
 import { BaseTextureCache, TextureCache, url, clearTextureCache } from '@pixi/utils';
 import { SpritesheetLoader, Spritesheet } from '@pixi/spritesheet';
 import sinon from 'sinon';
@@ -8,6 +8,9 @@ import { expect } from 'chai';
 
 describe('SpritesheetLoader', () =>
 {
+    before(() => extensions.add(SpritesheetLoader));
+    after(() => extensions.remove(SpritesheetLoader));
+
     it('should exist and return a function', () =>
     {
         expect(SpritesheetLoader).to.not.be.undefined;
@@ -16,8 +19,6 @@ describe('SpritesheetLoader', () =>
 
     it('should install middleware', (done) =>
     {
-        Loader.registerPlugin(SpritesheetLoader);
-
         const loader = new Loader();
         const baseTextures = Object.keys(BaseTextureCache).length;
         const textures = Object.keys(TextureCache).length;

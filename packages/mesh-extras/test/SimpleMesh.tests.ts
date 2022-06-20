@@ -1,6 +1,6 @@
 import { SimpleMesh } from '@pixi/mesh-extras';
 import { skipHello } from '@pixi/utils';
-import { Renderer, BatchRenderer } from '@pixi/core';
+import { Renderer, BatchRenderer, extensions } from '@pixi/core';
 import { expect } from 'chai';
 
 skipHello();
@@ -19,7 +19,7 @@ describe('SimpleMesh', () =>
 
     it('should render the rope', () =>
     {
-        Renderer.registerPlugin('batch', BatchRenderer);
+        extensions.add(BatchRenderer);
 
         const renderer = new Renderer();
         const mesh = new SimpleMesh();
@@ -28,5 +28,7 @@ describe('SimpleMesh', () =>
 
         mesh.destroy();
         renderer.destroy();
+
+        extensions.remove(BatchRenderer);
     });
 });

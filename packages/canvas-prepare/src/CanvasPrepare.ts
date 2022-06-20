@@ -1,4 +1,4 @@
-import { BaseTexture } from '@pixi/core';
+import { BaseTexture, ExtensionMetadata, ExtensionType } from '@pixi/core';
 import { BasePrepare } from '@pixi/prepare';
 
 import type { AbstractRenderer } from '@pixi/core';
@@ -55,6 +55,12 @@ function uploadBaseTextures(prepare: AbstractRenderer | BasePrepare, item: IDisp
  */
 export class CanvasPrepare extends BasePrepare
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        name: 'prepare',
+        type: ExtensionType.CanvasRendererPlugin,
+    };
+
     /**
      * An offline canvas to render textures to
      * @internal

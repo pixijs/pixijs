@@ -10,7 +10,7 @@ npm install @pixi/prepare
 
 ```js
 import { Prepare } from '@pixi/canvas-prepare';
-import { Renderer } from '@pixi/core';
+import { extensions } from '@pixi/core';
 
-Renderer.registerPlugin('prepare', Prepare);
+extensions.add(Prepare);
 ```

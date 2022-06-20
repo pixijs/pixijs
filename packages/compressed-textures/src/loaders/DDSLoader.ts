@@ -2,6 +2,7 @@ import { CompressedTextureResource } from '../resources';
 import { INTERNAL_FORMATS, INTERNAL_FORMAT_TO_BYTES_PER_PIXEL } from '../const';
 import { LoaderResource } from '@pixi/loaders';
 import { registerCompressedTextures } from './registerCompressedTextures';
+import { ExtensionMetadata, ExtensionType } from '@pixi/core';
 
 // Set DDS files to be loaded as an ArrayBuffer
 LoaderResource.setExtensionXhrType('dds', LoaderResource.XHR_RESPONSE_TYPE.BUFFER);
@@ -252,6 +253,9 @@ const DXGI_TO_FORMAT: { [id: number]: number } = {
  */
 export class DDSLoader
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = ExtensionType.Loader;
+
     /**
      * Registers a DDS compressed texture
      * @see PIXI.Loader.loaderMiddleware

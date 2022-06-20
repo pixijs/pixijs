@@ -3,7 +3,7 @@ import { CanvasRenderer } from '@pixi/canvas-renderer';
 import { Sprite } from '@pixi/sprite';
 import { expect } from 'chai';
 import { skipHello } from '@pixi/utils';
-import { Texture, RenderTexture } from '@pixi/core';
+import { Texture, RenderTexture, extensions } from '@pixi/core';
 import { CanvasSpriteRenderer } from '@pixi/canvas-sprite';
 
 import '@pixi/canvas-display';
@@ -12,11 +12,8 @@ skipHello();
 
 describe('CanvasExtract', () =>
 {
-    before(() =>
-    {
-        CanvasRenderer.registerPlugin('extract', CanvasExtract);
-        CanvasRenderer.registerPlugin('sprite', CanvasSpriteRenderer);
-    });
+    before(() => extensions.add(CanvasExtract, CanvasSpriteRenderer));
+    after(() => extensions.remove(CanvasExtract, CanvasSpriteRenderer));
 
     it('should access extract on renderer', () =>
     {

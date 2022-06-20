@@ -1,4 +1,10 @@
-import { AbstractRenderer, CanvasResource, RenderTexture, BaseRenderTexture } from '@pixi/core';
+import {
+    AbstractRenderer,
+    CanvasResource,
+    RenderTexture,
+    BaseRenderTexture,
+    extensions,
+    ExtensionType } from '@pixi/core';
 import { CanvasRenderTarget, sayHello, rgb2hex, hex2string, deprecation } from '@pixi/utils';
 import { CanvasMaskManager } from './utils/CanvasMaskManager';
 import { mapCanvasBlendModesToPixi } from './utils/mapCanvasBlendModesToPixi';
@@ -457,7 +463,7 @@ export class CanvasRenderer extends AbstractRenderer
         this._activeBlendMode = this.blendModes.indexOf(this.context.globalCompositeOperation);
     }
 
-    static __plugins: IRendererPlugins;
+    static __plugins: IRendererPlugins = {};
 
     /**
      * Collection of installed plugins. These are included by default in PIXI, but can be excluded
@@ -472,13 +478,26 @@ export class CanvasRenderer extends AbstractRenderer
      */
 
     /**
-     * Adds a plugin to the renderer.
+     * Use the {@link PIXI.extensions.add} API to register plugins.
+     * @deprecated since 6.5.0
      * @param pluginName - The name of the plugin.
      * @param ctor - The constructor function or class for the plugin.
      */
     static registerPlugin(pluginName: string, ctor: ICanvasRendererPluginConstructor): void
     {
-        CanvasRenderer.__plugins = CanvasRenderer.__plugins || {};
-        CanvasRenderer.__plugins[pluginName] = ctor;
+        // #if _DEBUG
+        deprecation('6.5.0', 'CanvasRenderer.registerPlugin() has been deprecated, please use extensions.add() instead.');
+        // #endif
+        extensions.add({
+            name: pluginName,
+            type: ExtensionType.CanvasRendererPlugin,
+            ref: ctor,
+        });
     }
 }
+
+extensions.handle(
+    ExtensionType.CanvasRendererPlugin,
+    (extension) => { CanvasRenderer.__plugins[extension.name] = extension.ref; },
+    (extension) => { delete CanvasRenderer.__plugins[extension.name]; }
+);

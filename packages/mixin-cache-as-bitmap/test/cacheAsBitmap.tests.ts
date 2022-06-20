@@ -1,5 +1,5 @@
 import { DisplayObject, Container } from '@pixi/display';
-import { Renderer, Filter } from '@pixi/core';
+import { Renderer, Filter, extensions, BatchRenderer } from '@pixi/core';
 import { Rectangle } from '@pixi/math';
 import { expect } from 'chai';
 
@@ -7,6 +7,9 @@ import '@pixi/mixin-cache-as-bitmap';
 
 describe('DisplayObject#cacheAsBitmap', () =>
 {
+    before(() => extensions.add(BatchRenderer));
+    after(() => extensions.remove(BatchRenderer));
+
     it('should contain property', () =>
     {
         // @ts-expect-error - instantiating DisplayObject
