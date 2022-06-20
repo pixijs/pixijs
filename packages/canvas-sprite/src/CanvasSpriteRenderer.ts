@@ -113,6 +113,7 @@ export class CanvasSpriteRenderer
             dy = 0;
 
             const h = destWidth;
+
             destWidth = destHeight;
             destHeight = h;
         }
