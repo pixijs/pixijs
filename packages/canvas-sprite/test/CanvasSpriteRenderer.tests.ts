@@ -29,42 +29,44 @@ describe('CanvasSpriteRenderer', () =>
 
     it('should scale the base texture correctly using a trimmed rect', () =>
     {
-        //create 2x1 texture, left pixel red, right pixel green
+        // create 2x1 texture, left pixel red, right pixel green
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d');
 
         canvas.width = 2;
         canvas.height = 1;
 
-        context.fillStyle = "#ff0000";
+        context.fillStyle = '#ff0000';
         context.fillRect(0, 0, 1, 1);
 
-        context.fillStyle = "#00ff00";
+        context.fillStyle = '#00ff00';
         context.fillRect(1, 0, 1, 1);
 
         const baseTexture = new BaseTexture(new CanvasResource(canvas), {
-            mipmap: MIPMAP_MODES.OFF, 
+            mipmap: MIPMAP_MODES.OFF,
             scaleMode: SCALE_MODES.NEAREST
         });
 
-        //set a scale value to orig and trim rectangle to scale the texture
+        // set a scale value to orig and trim rectangle to scale the texture
         const scale = 2;
 
-        const frame = new Rectangle(0, 0, baseTexture.width,         baseTexture.height);
+        const frame = new Rectangle(0, 0, baseTexture.width, baseTexture.height);
         const orig  = new Rectangle(0, 0, baseTexture.width * scale, baseTexture.height * scale);
         const trim  = new Rectangle(0, 0, baseTexture.width * scale, baseTexture.height * scale);
 
-        let testSprite = new Sprite(new Texture(baseTexture, frame, orig, trim));
+        const testSprite = new Sprite(new Texture(baseTexture, frame, orig, trim));
 
-        let stage = new Container();
+        const stage = new Container();
+
         stage.addChild(testSprite);
 
-        let renderer = new CanvasRenderer();
+        const renderer = new CanvasRenderer();
+
         renderer.render(stage);
 
-        let ctx = renderer.view.getContext("2d");
+        const ctx = renderer.view.getContext('2d');
 
-        let pixels = ctx.getImageData(0, 0, 2 * scale, 1 * scale).data;
+        const pixels = ctx.getImageData(0, 0, 2 * scale, Number(scale)).data;
 
         expect(pixels[0]).to.equal(255);
         expect(pixels[1]).to.equal(0);
@@ -75,7 +77,5 @@ describe('CanvasSpriteRenderer', () =>
         expect(pixels[9]).to.equal(255);
         expect(pixels[10]).to.equal(0);
         expect(pixels[11]).to.equal(255);
-
     });
-
 });
