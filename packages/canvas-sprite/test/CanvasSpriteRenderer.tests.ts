@@ -1,4 +1,4 @@
-import { BatchRenderer, CanvasResource, extensions, Texture } from '@pixi/core';
+import { BatchRenderer, CanvasResource, extensions, Texture, BaseTexture } from '@pixi/core';
 import { Sprite } from '@pixi/sprite';
 import { CanvasRenderer } from '@pixi/canvas-renderer';
 import { expect } from 'chai';
