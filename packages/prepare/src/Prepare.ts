@@ -1,4 +1,4 @@
-import { BaseTexture } from '@pixi/core';
+import { BaseTexture, ExtensionMetadata, ExtensionType } from '@pixi/core';
 import { Graphics } from '@pixi/graphics';
 import { BasePrepare, IDisplayObjectExtended } from './BasePrepare';
 
@@ -120,6 +120,12 @@ function findGraphics(item: IDisplayObjectExtended, queue: Array<any>): boolean
  */
 export class Prepare extends BasePrepare
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        name: 'prepare',
+        type: ExtensionType.RendererPlugin,
+    };
+
     /**
      * @param {PIXI.Renderer} renderer - A reference to the current renderer
      */

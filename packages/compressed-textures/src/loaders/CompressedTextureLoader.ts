@@ -3,6 +3,7 @@ import { url } from '@pixi/utils';
 
 import type { Loader } from '@pixi/loaders';
 import type { INTERNAL_FORMATS } from '../const';
+import { ExtensionMetadata, ExtensionType } from '@pixi/core';
 
 /**
  * Schema for compressed-texture manifests
@@ -37,6 +38,9 @@ export type CompressedTextureExtensionRef = keyof CompressedTextureExtensions;
  */
 export class CompressedTextureLoader
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = ExtensionType.Loader;
+
     /**  Map of available texture extensions. */
     private static _textureExtensions: Partial<CompressedTextureExtensions>;
 

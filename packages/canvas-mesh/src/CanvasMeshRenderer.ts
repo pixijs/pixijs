@@ -1,4 +1,4 @@
-import { Texture } from '@pixi/core';
+import { ExtensionMetadata, ExtensionType, Texture } from '@pixi/core';
 import { DRAW_MODES } from '@pixi/constants';
 import { canvasUtils } from '@pixi/canvas-renderer';
 
@@ -13,6 +13,12 @@ import type { Mesh } from '@pixi/mesh';
  */
 export class CanvasMeshRenderer
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        name: 'mesh',
+        type: ExtensionType.CanvasRendererPlugin,
+    };
+
     /** A reference to the current renderer */
     public renderer: CanvasRenderer;
 

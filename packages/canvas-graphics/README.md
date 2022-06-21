@@ -10,7 +10,7 @@ npm install @pixi/canvas-graphics
 
 ```js
 import { CanvasGraphicsRenderer } from '@pixi/canvas-graphics';
-import { CanvasRenderer } from '@pixi/canvas-renderer';
+import { extensions } from '@pixi/core';
 
-CanvasRenderer.registerPlugin('graphics', CanvasGraphicsRenderer);
+extensions.add(CanvasGraphicsRenderer);
 ```

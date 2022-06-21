@@ -258,7 +258,15 @@ export class EventSystem
         // if we support touch events, then only use those for touch events, not pointer events
         if (this.supportsTouchEvents && (nativeEvent as PointerEvent).pointerType === 'touch') return;
 
-        const outside = nativeEvent.target !== this.domElement ? 'outside' : '';
+        let target = nativeEvent.target;
+
+        // if in shadow DOM use composedPath to access target
+        if (nativeEvent.composedPath && nativeEvent.composedPath().length > 0)
+        {
+            target = nativeEvent.composedPath()[0];
+        }
+
+        const outside = target !== this.domElement ? 'outside' : '';
         const normalizedEvents = this.normalizeToPointerData(nativeEvent);
 
         for (let i = 0, j = normalizedEvents.length; i < j; i++)

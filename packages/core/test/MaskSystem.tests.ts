@@ -1,7 +1,9 @@
 import { MASK_TYPES } from '@pixi/constants';
 import {
     BaseTexture,
+    BatchRenderer,
     CanvasResource,
+    extensions,
     Filter,
     IFilterTarget,
     IMaskTarget,
@@ -19,6 +21,9 @@ import sinon from 'sinon';
 
 describe('MaskSystem', () =>
 {
+    before(() => extensions.add(BatchRenderer));
+    after(() => extensions.remove(BatchRenderer));
+
     function onePixelMask(worldTransform: Matrix | Record<string, number>): IMaskTarget
     {
         return {

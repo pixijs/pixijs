@@ -4,6 +4,7 @@ import { accessibleTarget } from './accessibleTarget';
 
 import type { Rectangle } from '@pixi/math';
 import type { Container } from '@pixi/display';
+import { ExtensionMetadata, ExtensionType } from '@pixi/core';
 import type { IAccessibleHTMLElement } from './accessibleTarget';
 import type { IRenderer } from '@pixi/core';
 
@@ -35,6 +36,15 @@ const DIV_HOOK_ZINDEX = 2;
  */
 export class AccessibilityManager
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        name: 'accessibility',
+        type: [
+            ExtensionType.RendererPlugin,
+            ExtensionType.CanvasRendererPlugin,
+        ],
+    };
+
     /** Setting this to true will visually show the divs. */
     public debug = false;
 

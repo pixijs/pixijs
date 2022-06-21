@@ -1,5 +1,5 @@
 import { ParticleContainer, ParticleRenderer } from '@pixi/particle-container';
-import { Texture, Renderer } from '@pixi/core';
+import { Texture, Renderer, extensions } from '@pixi/core';
 import { skipHello } from '@pixi/utils';
 import { Sprite } from '@pixi/sprite';
 import { expect } from 'chai';
@@ -9,15 +9,8 @@ skipHello();
 
 describe('ParticleRenderer', () =>
 {
-    beforeEach(() =>
-    {
-        Renderer.registerPlugin('particle', ParticleRenderer);
-    });
-
-    afterEach(() =>
-    {
-        delete Renderer.__plugins.particle;
-    });
+    before(() => extensions.add(ParticleRenderer));
+    after(() => extensions.remove(ParticleRenderer));
 
     it('should render a particle container with no children', () =>
     {

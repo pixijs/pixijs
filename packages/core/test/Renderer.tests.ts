@@ -1,4 +1,4 @@
-import { Renderer, Framebuffer, ObjectRenderer } from '@pixi/core';
+import { Renderer, Framebuffer, ObjectRenderer, extensions, BatchRenderer } from '@pixi/core';
 import { Graphics } from '@pixi/graphics';
 import { settings } from '@pixi/settings';
 import { ENV, MSAA_QUALITY } from '@pixi/constants';
@@ -64,6 +64,7 @@ describe('Renderer', () =>
 
         before(() =>
         {
+            extensions.add(BatchRenderer);
             renderer = new Renderer();
         });
 
@@ -82,6 +83,7 @@ describe('Renderer', () =>
 
         after(() =>
         {
+            extensions.remove(BatchRenderer);
             renderer.destroy();
             renderer = null;
             curRenderer = null;

@@ -10,7 +10,7 @@ npm install @pixi/canvas-sprite
 
 ```js
 import { CanvasSpriteRenderer } from '@pixi/canvas-sprite';
-import { CanvasRenderer } from '@pixi/canvas-renderer';
+import { extensions } from '@pixi/core';
 
-CanvasRenderer.registerPlugin('sprite', CanvasSpriteRenderer);
+extensions.add(CanvasSpriteRenderer);
 ```

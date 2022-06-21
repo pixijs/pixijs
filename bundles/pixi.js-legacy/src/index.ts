@@ -1,4 +1,4 @@
-import { AccessibilityManager, InteractionManager } from 'pixi.js';
+import { extensions } from 'pixi.js';
 import { CanvasRenderer, canvasUtils } from '@pixi/canvas-renderer';
 import { CanvasMeshRenderer } from '@pixi/canvas-mesh';
 import { CanvasGraphicsRenderer } from '@pixi/canvas-graphics';
@@ -10,13 +10,13 @@ import '@pixi/canvas-particle-container';
 import '@pixi/canvas-display';
 import '@pixi/canvas-text';
 
-CanvasRenderer.registerPlugin('accessibility', AccessibilityManager);
-CanvasRenderer.registerPlugin('extract', CanvasExtract);
-CanvasRenderer.registerPlugin('graphics', CanvasGraphicsRenderer);
-CanvasRenderer.registerPlugin('interaction', InteractionManager);
-CanvasRenderer.registerPlugin('mesh', CanvasMeshRenderer);
-CanvasRenderer.registerPlugin('prepare', CanvasPrepare);
-CanvasRenderer.registerPlugin('sprite', CanvasSpriteRenderer);
+extensions.add(
+    CanvasExtract,
+    CanvasGraphicsRenderer,
+    CanvasMeshRenderer,
+    CanvasPrepare,
+    CanvasSpriteRenderer
+);
 
 // Export ES for those importing specifically by name,
 // e.g., `import {autoDetectRenderer} from 'pixi.js-legacy'`

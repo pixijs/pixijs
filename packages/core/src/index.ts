@@ -1,5 +1,6 @@
 import './settings';
 
+export * from './extensions';
 export * from './textures/resources';
 export * from './systems';
 export * from './IRenderer';

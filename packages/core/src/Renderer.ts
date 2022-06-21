@@ -18,9 +18,8 @@ import { UniformGroup } from './shader/UniformGroup';
 import { Matrix, Rectangle } from '@pixi/math';
 import { BufferSystem } from './geometry/BufferSystem';
 import { RenderTexture } from './renderTexture/RenderTexture';
-
 import type { SCALE_MODES } from '@pixi/constants';
-
+import { extensions, ExtensionType } from './extensions';
 import { IRendererPluginConstructor, IRendererPlugins, PluginSystem } from './plugin/PluginSystem';
 import { MultisampleSystem } from './framebuffer/MultisampleSystem';
 import { GenerateTextureSystem, IGenerateTextureOptions } from './renderTexture/GenerateTextureSystem';
@@ -730,16 +729,30 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      * @property {PIXI.BatchRenderer} batch Batching of Sprite, Graphics and Mesh objects.
      * @property {PIXI.TilingSpriteRenderer} tilingSprite Renderer for TilingSprite objects.
      */
-    static __plugins: IRendererPlugins;
+    static __plugins: IRendererPlugins = {};
 
     /**
-     * Adds a plugin to the renderer.
+     * Use the {@link PIXI.extensions.add} API to register plugins.
+     * @deprecated since 6.5.0
      * @param pluginName - The name of the plugin.
      * @param ctor - The constructor function or class for the plugin.
      */
     static registerPlugin(pluginName: string, ctor: IRendererPluginConstructor): void
     {
-        Renderer.__plugins = Renderer.__plugins || {};
-        Renderer.__plugins[pluginName] = ctor;
+        // #if _DEBUG
+        deprecation('6.5.0', 'Renderer.registerPlugin() has been deprecated, please use extensions.add() instead.');
+        // #endif
+        extensions.add({
+            name: pluginName,
+            type: ExtensionType.RendererPlugin,
+            ref: ctor,
+        });
     }
 }
+
+// Handle registration of extensions
+extensions.handle(
+    ExtensionType.RendererPlugin,
+    (extension) => { Renderer.__plugins[extension.name] = extension.ref; },
+    (extension) => { delete Renderer.__plugins[extension.name]; }
+);

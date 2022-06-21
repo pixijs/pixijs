@@ -2,16 +2,17 @@ import { Text } from '@pixi/text';
 import { Sprite } from '@pixi/sprite';
 import { skipHello } from '@pixi/utils';
 import { settings } from '@pixi/settings';
-import { Renderer, BatchRenderer } from '@pixi/core';
+import { Renderer, BatchRenderer, extensions } from '@pixi/core';
 import { expect } from 'chai';
 import { IDestroyOptions } from '@pixi/display';
 
 skipHello();
 
-Renderer.registerPlugin('batch', BatchRenderer);
-
 describe('Text', () =>
 {
+    before(() => extensions.add(BatchRenderer));
+    after(() => extensions.remove(BatchRenderer));
+
     describe('properties', () =>
     {
         it('should modify the height of the object when setting height', () =>

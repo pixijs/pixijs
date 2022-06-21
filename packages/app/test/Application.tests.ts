@@ -1,4 +1,5 @@
 import { Application } from '@pixi/app';
+import { extensions, ExtensionType } from '@pixi/core';
 import { Container } from '@pixi/display';
 import { skipHello } from '@pixi/utils';
 import { expect } from 'chai';
@@ -28,8 +29,9 @@ describe('Application', () =>
             init: sinon.spy(),
             destroy: sinon.spy(),
         };
+        const extension = { type: ExtensionType.Application, ref: plugin };
 
-        Application.registerPlugin(plugin);
+        extensions.add(extension);
 
         const app = new Application();
 
@@ -38,7 +40,7 @@ describe('Application', () =>
         expect(plugin.init).to.be.calledOnce;
         expect(plugin.destroy).to.be.calledOnce;
 
-        Application['_plugins'].pop();
+        extensions.remove(extension);
     });
 
     it('should remove canvas when destroyed', () =>

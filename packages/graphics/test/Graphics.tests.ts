@@ -1,5 +1,5 @@
-import { Renderer, BatchRenderer, Texture } from '@pixi/core';
-import { Graphics, GRAPHICS_CURVES, FillStyle, LineStyle, graphicsUtils, GraphicsGeometry } from '@pixi/graphics';
+import { BatchRenderer, Texture, extensions } from '@pixi/core';
+import { Graphics, GRAPHICS_CURVES, FillStyle, LineStyle, graphicsUtils, GraphicsGeometry, LINE_CAP } from '@pixi/graphics';
 const { FILL_COMMANDS, buildLine } = graphicsUtils;
 
 import { BLEND_MODES } from '@pixi/constants';
@@ -8,12 +8,13 @@ import { skipHello } from '@pixi/utils';
 import sinon from 'sinon';
 import { expect } from 'chai';
 
-Renderer.registerPlugin('batch', BatchRenderer);
-
 skipHello();
 
 describe('Graphics', () =>
 {
+    before(() => extensions.add(BatchRenderer));
+    after(() => extensions.remove(BatchRenderer));
+
     describe('constructor', () =>
     {
         it('should set defaults', () =>
@@ -201,7 +202,7 @@ describe('Graphics', () =>
         {
             const graphics = new Graphics();
 
-            graphics.lineStyle(1);
+            graphics.lineStyle({ width: 1, cap: LINE_CAP.SQUARE });
             graphics.moveTo(0, 0);
             graphics.lineTo(0, 10);
 
@@ -214,7 +215,7 @@ describe('Graphics', () =>
             const graphics = new Graphics();
 
             graphics.moveTo(0, 0);
-            graphics.lineStyle(1);
+            graphics.lineStyle({ width: 1, cap: LINE_CAP.SQUARE });
             graphics.lineTo(0, -10);
 
             expect(graphics.width).to.be.closeTo(1, 0.0001);
@@ -226,7 +227,7 @@ describe('Graphics', () =>
             const graphics = new Graphics();
 
             graphics.moveTo(0, 0);
-            graphics.lineStyle(1);
+            graphics.lineStyle({ width: 1, cap: LINE_CAP.SQUARE });
             graphics.lineTo(10, 0);
 
             expect(graphics.height).to.be.closeTo(1, 0.0001);
@@ -238,7 +239,7 @@ describe('Graphics', () =>
             const graphics = new Graphics();
 
             graphics.moveTo(0, 0);
-            graphics.lineStyle(1);
+            graphics.lineStyle({ width: 1, cap: LINE_CAP.SQUARE });
             graphics.lineTo(-10, 0);
 
             expect(graphics.height).to.be.closeTo(1, 0.0001);
@@ -671,7 +672,9 @@ describe('Graphics', () =>
         {
             const graphics = new Graphics();
 
+            graphics.beginFill();
             graphics.drawRect(0, 0, 10, 10);
+            graphics.endFill();
 
             const spy = sinon.spy(graphics.geometry, 'calculateBounds' as keyof GraphicsGeometry);
 

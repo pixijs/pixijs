@@ -1,5 +1,5 @@
 import { TYPES } from '@pixi/constants';
-import { ObjectRenderer, Shader, State } from '@pixi/core';
+import { ExtensionMetadata, ExtensionType, ObjectRenderer, Shader, State } from '@pixi/core';
 import { Matrix } from '@pixi/math';
 import { correctBlendMode, premultiplyRgba, premultiplyTint } from '@pixi/utils';
 import { ParticleBuffer } from './ParticleBuffer';
@@ -37,6 +37,12 @@ export interface IParticleRendererProperty
  */
 export class ParticleRenderer extends ObjectRenderer
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        name: 'particle',
+        type: ExtensionType.RendererPlugin,
+    };
+
     /** The WebGL state in which this renderer will work. */
     public readonly state: State;
 

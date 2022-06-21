@@ -161,7 +161,7 @@ export class MaskSystem implements ISystem
             switch (maskData.type)
             {
                 case MASK_TYPES.SCISSOR:
-                    this.renderer.scissor.pop();
+                    this.renderer.scissor.pop(maskData);
                     break;
                 case MASK_TYPES.STENCIL:
                     this.renderer.stencil.pop(maskData.maskObject);

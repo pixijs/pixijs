@@ -637,6 +637,10 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
      * @param width - Width of the resource
      * @param height - Height of the resource
      * @param options - See {@link PIXI.BaseTexture}'s constructor for options.
+     *        Default properties are different from the constructor's defaults.
+     * @param {PIXI.FORMATS} [options.format=PIXI.FORMATS.RGBA] - GL format type
+     * @param {PIXI.ALPHA_MODES} [options.alphaMode=PIXI.ALPHA_MODES.NPM] - Image alpha, not premultiplied by default
+     * @param {PIXI.SCALE_MODES} [options.scaleMode=PIXI.SCALE_MODES.NEAREST] - Scale mode, pixelating by default
      * @returns - The resulting new BaseTexture
      */
     static fromBuffer(buffer: Float32Array | Uint8Array,

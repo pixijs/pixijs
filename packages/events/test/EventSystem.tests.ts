@@ -1,4 +1,4 @@
-import { Renderer } from '@pixi/core';
+import { BatchRenderer, extensions, Renderer } from '@pixi/core';
 import { Container } from '@pixi/display';
 import { EventSystem } from '@pixi/events';
 import { Graphics } from '@pixi/graphics';
@@ -52,6 +52,9 @@ function createScene()
 
 describe('EventSystem', () =>
 {
+    before(() => extensions.add(BatchRenderer));
+    after(() => extensions.remove(BatchRenderer));
+
     // Share WebGL context for performance
     const view = document.createElement('canvas');
 

@@ -353,7 +353,7 @@ describe('BitmapFontLoader', () =>
         const baseTexture = new BaseTexture(atlasImage);
         const spritesheet = new Spritesheet(baseTexture, atlasJSON);
 
-        spritesheet.parse(() =>
+        spritesheet.parse().then(() =>
         {
             const fontTexture  = Texture.from('resources/font.png');
             const font =  BitmapFont.install(fontXML, fontTexture);
@@ -413,7 +413,7 @@ describe('BitmapFontLoader', () =>
 
         spritesheet.resolution = 1;
 
-        spritesheet.parse(() =>
+        spritesheet.parse().then(() =>
         {
             const fontTexture  = Texture.from('resources/font.png');
             const font =  BitmapFont.install(fontXML, fontTexture);

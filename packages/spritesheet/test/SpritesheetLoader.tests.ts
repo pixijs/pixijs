@@ -1,6 +1,6 @@
 import path from 'path';
 import { IAddOptions, Loader, LoaderResource } from '@pixi/loaders';
-import { Texture, BaseTexture } from '@pixi/core';
+import { Texture, BaseTexture, extensions } from '@pixi/core';
 import { BaseTextureCache, TextureCache, url, clearTextureCache } from '@pixi/utils';
 import { SpritesheetLoader, Spritesheet } from '@pixi/spritesheet';
 import sinon from 'sinon';
@@ -8,6 +8,9 @@ import { expect } from 'chai';
 
 describe('SpritesheetLoader', () =>
 {
+    before(() => extensions.add(SpritesheetLoader));
+    after(() => extensions.remove(SpritesheetLoader));
+
     it('should exist and return a function', () =>
     {
         expect(SpritesheetLoader).to.not.be.undefined;
@@ -16,8 +19,6 @@ describe('SpritesheetLoader', () =>
 
     it('should install middleware', (done) =>
     {
-        Loader.registerPlugin(SpritesheetLoader);
-
         const loader = new Loader();
         const baseTextures = Object.keys(BaseTextureCache).length;
         const textures = Object.keys(TextureCache).length;
@@ -57,9 +58,8 @@ describe('SpritesheetLoader', () =>
         expect(res.textures).to.be.undefined;
     });
 
-    it('should load the image & create textures if json is properly formatted', () =>
+    it('should load the image & create textures if json is properly formatted', (next) =>
     {
-        const spy = sinon.spy();
         const res = createMockResource(LoaderResource.TYPE.JSON, getJsonSpritesheet());
         const loader = new Loader();
         const addStub = sinon.stub(loader, 'add');
@@ -69,33 +69,33 @@ describe('SpritesheetLoader', () =>
 
         addStub.yields(imgRes);
 
-        SpritesheetLoader.use.call(loader, res, spy);
+        SpritesheetLoader.use.call(loader, res, () =>
+        {
+            addStub.restore();
+            expect(addStub).to.have.been.calledWith(
+                `${res.name}_image`,
+                `${path.dirname(res.url)}/${res.data.meta.image}`
+            );
+            expect(res).to.have.property('textures')
+                .that.is.an('object')
+                .with.keys(Object.keys(getJsonSpritesheet().frames))
+                .and.has.property('0.png')
+                .that.is.an.instanceof(Texture);
 
-        addStub.restore();
+            expect(res.textures['0.png'].frame.x).to.equal(14);
+            expect(res.textures['0.png'].frame.y).to.equal(28);
+            expect(res.textures['0.png'].defaultAnchor.x).to.equal(0.3);
+            expect(res.textures['0.png'].defaultAnchor.y).to.equal(0.4);
+            expect(res.textures['1.png'].defaultAnchor.x).to.equal(0.0); // default of defaultAnchor is 0,0
+            expect(res.textures['1.png'].defaultAnchor.y).to.equal(0.0);
 
-        expect(spy).to.have.been.calledOnce;
-        expect(addStub).to.have.been.calledWith(
-            `${res.name}_image`,
-            `${path.dirname(res.url)}/${res.data.meta.image}`
-        );
-        expect(res).to.have.property('textures')
-            .that.is.an('object')
-            .with.keys(Object.keys(getJsonSpritesheet().frames))
-            .and.has.property('0.png')
-            .that.is.an.instanceof(Texture);
-
-        expect(res.textures['0.png'].frame.x).to.equal(14);
-        expect(res.textures['0.png'].frame.y).to.equal(28);
-        expect(res.textures['0.png'].defaultAnchor.x).to.equal(0.3);
-        expect(res.textures['0.png'].defaultAnchor.y).to.equal(0.4);
-        expect(res.textures['1.png'].defaultAnchor.x).to.equal(0.0); // default of defaultAnchor is 0,0
-        expect(res.textures['1.png'].defaultAnchor.y).to.equal(0.0);
-
-        expect(res).to.have.property('spritesheet')
-            .to.have.property('animations')
-            .to.have.property('png123');
-        expect(res.spritesheet.animations.png123.length).to.equal(3);
-        expect(res.spritesheet.animations.png123[0]).to.equal(res.textures['1.png']);
+            expect(res).to.have.property('spritesheet')
+                .to.have.property('animations')
+                .to.have.property('png123');
+            expect(res.spritesheet.animations.png123.length).to.equal(3);
+            expect(res.spritesheet.animations.png123[0]).to.equal(res.textures['1.png']);
+            next();
+        });
     });
 
     it('should not load binary images as an image loader type', (done) =>

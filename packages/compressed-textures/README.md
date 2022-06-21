@@ -18,9 +18,11 @@ npm install @pixi/compressed-textures
 
 ```js
 import { CompressedTextureLoader, DDSLoader, KTXLoader } from '@pixi/compressed-textures';
-import { Loader } from '@pixi/loaders';
+import { extensions } from '@pixi/core';
 
-Loader.registerPlugin(CompressedTextureLoader);
-Loader.registerPlugin(DDSLoader);
-Loader.registerPlugin(KTXLoader);
+extensions.add(
+    CompressedTextureLoader,
+    DDSLoader,
+    KTXLoader
+);
 ```

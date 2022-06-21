@@ -1,6 +1,6 @@
 {
   "name": "@pixi/canvas-mesh",
-  "version": "6.4.0",
+  "version": "6.4.2",
   "main": "dist/cjs/canvas-mesh.js",
   "module": "dist/esm/canvas-mesh.js",
   "bundle": "dist/browser/canvas-mesh.js",
@@ -8,12 +8,12 @@
   "exports": {
     ".": {
       "import": {
-        "default": "./dist/cjs/canvas-mesh.js",
-        "types": "./index.d.ts"
+        "types": "./index.d.ts",
+        "default": "./dist/esm/canvas-mesh.js"
       },
       "require": {
-        "default": "./dist/esm/canvas-mesh.js",
-        "types": "./index.d.ts"
+        "types": "./index.d.ts",
+        "default": "./dist/cjs/canvas-mesh.js"
       }
     }
   },
@@ -38,11 +38,11 @@
     "*.d.ts"
   ],
   "peerDependencies": {
-    "@pixi/canvas-display": "6.4.0",
-    "@pixi/canvas-renderer": "6.4.0",
-    "@pixi/constants": "6.4.0",
-    "@pixi/mesh": "6.4.0",
-    "@pixi/mesh-extras": "6.4.0",
-    "@pixi/settings": "6.4.0"
+    "@pixi/canvas-display": "6.4.2",
+    "@pixi/canvas-renderer": "6.4.2",
+    "@pixi/constants": "6.4.2",
+    "@pixi/mesh": "6.4.2",
+    "@pixi/mesh-extras": "6.4.2",
+    "@pixi/settings": "6.4.2"
   }
 }

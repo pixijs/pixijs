@@ -1,14 +1,14 @@
 import { Container } from '@pixi/display';
-import { autoDetectRenderer } from '@pixi/core';
+import { autoDetectRenderer, extensions, ExtensionType } from '@pixi/core';
 
 import type { Rectangle } from '@pixi/math';
 import type {  IRendererOptionsAuto, IRenderer } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
+import { deprecation } from '@pixi/utils';
 
 /**
  * Any plugin that's usable for Application should contain these methods.
  * @memberof PIXI
- * @see {@link PIXI.Application.registerPlugin}
  */
 export interface IApplicationPlugin
 {
@@ -47,7 +47,7 @@ export interface Application extends GlobalMixins.Application {}
 export class Application
 {
     /** Collection of installed plugins. */
-    private static _plugins: IApplicationPlugin[] = [];
+    static _plugins: IApplicationPlugin[] = [];
 
     /**
      * The root display container that's rendered.
@@ -111,13 +111,20 @@ export class Application
     }
 
     /**
-     * Register a middleware plugin for the application
+     * Use the {@link PIXI.extensions.add} API to register plugins.
+     * @deprecated since 6.5.0
      * @static
      * @param {PIXI.IApplicationPlugin} plugin - Plugin being installed
      */
     static registerPlugin(plugin: IApplicationPlugin): void
     {
-        Application._plugins.push(plugin);
+        // #if _DEBUG
+        deprecation('6.5.0', 'Application.registerPlugin() is deprecated, use extensions.add()');
+        // #endif
+        extensions.add({
+            type: ExtensionType.Application,
+            ref: plugin,
+        });
     }
 
     /** Render the current stage. */
@@ -177,3 +184,28 @@ export class Application
         this.renderer = null;
     }
 }
+
+extensions.handle(
+    ExtensionType.Application,
+    (extension) =>
+    {
+        const plugins = Application._plugins;
+        const plugin = extension.ref as unknown as IApplicationPlugin;
+
+        if (!plugins.includes(plugin))
+        {
+            plugins.push(plugin);
+        }
+    },
+    (extension) =>
+    {
+        const plugins = Application._plugins;
+        const plugin = extension.ref as unknown as IApplicationPlugin;
+        const index = plugins.indexOf(plugin);
+
+        if (index !== -1)
+        {
+            plugins.splice(index, 1);
+        }
+    }
+);
