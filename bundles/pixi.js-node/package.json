@@ -1,39 +1,46 @@
 {
   "name": "@pixi/node",
   "version": "6.4.2",
-  "description": "PixiJS with support for NodeJS",
-  "author": "Mat Groves",
-  "contributors": [
-    "Ivan Popelyshev <ivan.popelyshev@gmail.com>",
-    "Matt Karl <matt@mattkarl.com>",
-    "Chad Engler <chad@pantherdev.com>",
-    "Richard Davey <rdavey@gmail.com>"
-  ],
-  "standalone": true,
-  "main": "dist/cjs/pixi-node.js",
-  "types": "index.d.ts",
-  "homepage": "http://www.pixijs.com/",
+  "description": "Bundle for PixiJS with support for NodeJS",
+  "homepage": "http://pixijs.com/",
   "bugs": "https://github.com/pixijs/pixi.js/issues",
-  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/pixijs/pixi.js.git"
   },
-  "scripts": {
-    "test": "floss --path test"
+  "license": "MIT",
+  "author": "PixiJS Team",
+  "main": "dist/cjs/node.js",
+  "module": "dist/esm/node.js",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./index.d.ts",
+        "default": "./dist/esm/node.mjs"
+      },
+      "require": {
+        "types": "./index.d.ts",
+        "default": "./dist/cjs/node.cjs"
+      }
+    }
   },
+  "types": "index.d.ts",
   "files": [
-    "lib/",
-    "dist/",
+    "lib",
+    "dist",
     "*.d.ts"
   ],
-  "funding": {
-    "type": "opencollective",
-    "url": "https://opencollective.com/pixijs"
+  "engines": {
+    "node": ">=16"
   },
   "dependencies": {
+    "@types/gl": "^4.1.0",
+    "canvas": "^2.9.1",
+    "cross-fetch": "^3.1.5",
+    "gl": "^5.0.0"
+  },
+  "peerDependencies": {
     "@pixi/app": "6.4.2",
-    "@pixi/adapter-node": "6.4.2",
     "@pixi/compressed-textures": "6.4.2",
     "@pixi/constants": "6.4.2",
     "@pixi/core": "6.4.2",
@@ -51,7 +58,6 @@
     "@pixi/mixin-get-child-by-name": "6.4.2",
     "@pixi/mixin-get-global-position": "6.4.2",
     "@pixi/particle-container": "6.4.2",
-    "@pixi/polyfill": "6.4.2",
     "@pixi/prepare": "6.4.2",
     "@pixi/runner": "6.4.2",
     "@pixi/settings": "6.4.2",
@@ -63,5 +69,8 @@
     "@pixi/text-bitmap": "6.4.2",
     "@pixi/ticker": "6.4.2",
     "@pixi/utils": "6.4.2"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

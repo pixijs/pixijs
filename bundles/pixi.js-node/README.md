@@ -24,6 +24,13 @@ There is no default export. The correct way to import PixiJS is:
 import * as PIXI from "@pixi/node";
 ```
 
+#### Apple Silicon Users
+
+The [canvas](https://www.npmjs.com/package/canvas) library currently being used does not have a pre-built version for Apple Silicon.
+You will need to run the following command and then reinstall.
+
+`brew install pkg-config cairo pango libpng jpeg giflib librsvg`
+
 ### Basic Usage Example
 
 ```js

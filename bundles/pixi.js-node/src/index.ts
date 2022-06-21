@@ -1,5 +1,4 @@
-import '@pixi/polyfill';
-import '@pixi/adapter-node';
+import './adapter';
 import { Application } from '@pixi/app';
 import { BatchRenderer, Renderer } from '@pixi/core';
 import { Extract } from '@pixi/extract';
@@ -79,8 +78,8 @@ export const filters = {
 };
 
 // Export ES for those importing specifically by name,
+export * from './adapter';
 export * from '@pixi/app';
-export * from '@pixi/adapter-node';
 export * from '@pixi/compressed-textures';
 export * from '@pixi/constants';
 export * from '@pixi/core';
@@ -102,4 +101,3 @@ export * from '@pixi/text';
 export * from '@pixi/text-bitmap';
 export * from '@pixi/ticker';
 export { utils };
-
