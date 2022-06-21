@@ -1,7 +1,5 @@
 import { DisplayObject, Container } from '@pixi/display';
 import { RAD_TO_DEG, DEG_TO_RAD } from '@pixi/math';
-import sinon from 'sinon';
-import { expect } from 'chai';
 
 describe('DisplayObject', () =>
 {
@@ -12,10 +10,10 @@ describe('DisplayObject', () =>
             // @ts-expect-error - instantiating DisplayOBject
             const object = new DisplayObject();
 
-            expect(object.alpha).to.equal(1);
-            expect(object.worldAlpha).to.equal(1);
-            expect(object.renderable).to.be.true;
-            expect(object.visible).to.be.true;
+            expect(object.alpha).toEqual(1);
+            expect(object.worldAlpha).toEqual(1);
+            expect(object.renderable).toBe(true);
+            expect(object.visible).toBe(true);
         });
     });
 
@@ -27,10 +25,10 @@ describe('DisplayObject', () =>
             const child = new DisplayObject();
             const container = new Container();
 
-            expect(container.children.length).to.equal(0);
+            expect(container.children.length).toEqual(0);
             child.setParent(container);
-            expect(container.children.length).to.equal(1);
-            expect(child.parent).to.equal(container);
+            expect(container.children.length).toEqual(1);
+            expect(child.parent).toEqual(container);
         });
 
         it('should throw if not Container', () =>
@@ -39,8 +37,8 @@ describe('DisplayObject', () =>
             const child = new DisplayObject();
             const notAContainer = {};
 
-            expect(() => child.setParent()).to.throw('setParent: Argument must be a Container');
-            expect(() => child.setParent(notAContainer)).to.throw('setParent: Argument must be a Container');
+            expect(() => child.setParent()).toThrowError('setParent: Argument must be a Container');
+            expect(() => child.setParent(notAContainer)).toThrowError('setParent: Argument must be a Container');
         });
     });
 
@@ -53,15 +51,15 @@ describe('DisplayObject', () =>
 
             object.setTransform(1, 2, 3, 4, 5, 6, 7, 8, 9);
 
-            expect(object.position.x).to.be.equal(1);
-            expect(object.position.y).to.be.equal(2);
-            expect(object.scale.x).to.be.equal(3);
-            expect(object.scale.y).to.be.equal(4);
-            expect(object.rotation).to.be.equal(5);
-            expect(object.skew.x).to.be.equal(6);
-            expect(object.skew.y).to.be.equal(7);
-            expect(object.pivot.x).to.be.equal(8);
-            expect(object.pivot.y).to.be.equal(9);
+            expect(object.position.x).toEqual(1);
+            expect(object.position.y).toEqual(2);
+            expect(object.scale.x).toEqual(3);
+            expect(object.scale.y).toEqual(4);
+            expect(object.rotation).toEqual(5);
+            expect(object.skew.x).toEqual(6);
+            expect(object.skew.y).toEqual(7);
+            expect(object.pivot.x).toEqual(8);
+            expect(object.pivot.y).toEqual(9);
         });
 
         it('should convert zero scale to one', () =>
@@ -71,8 +69,8 @@ describe('DisplayObject', () =>
 
             object.setTransform(1, 1, 0, 0, 1, 1, 1, 1, 1);
 
-            expect(object.scale.x).to.be.equal(1);
-            expect(object.scale.y).to.be.equal(1);
+            expect(object.scale.x).toEqual(1);
+            expect(object.scale.y).toEqual(1);
         });
     });
 
@@ -88,11 +86,11 @@ describe('DisplayObject', () =>
             grandParent.addChild(parent);
             parent.addChild(child);
 
-            expect(child.worldVisible).to.be.true;
+            expect(child.worldVisible).toBe(true);
 
             grandParent.visible = false;
 
-            expect(child.worldVisible).to.be.false;
+            expect(child.worldVisible).toBe(false);
         });
     });
 
@@ -103,18 +101,18 @@ describe('DisplayObject', () =>
             // @ts-expect-error - instantiating DisplayOBject
             const object = new DisplayObject();
 
-            expect(object.rotation).to.be.equal(0);
-            expect(object.angle).to.be.equal(0);
+            expect(object.rotation).toEqual(0);
+            expect(object.angle).toEqual(0);
 
             object.rotation = 2;
 
-            expect(object.rotation).to.be.equal(2);
-            expect(object.angle).to.be.equal(2 * RAD_TO_DEG);
+            expect(object.rotation).toEqual(2);
+            expect(object.angle).toEqual(2 * RAD_TO_DEG);
 
             object.angle = 180;
 
-            expect(object.rotation).to.be.equal(180 * DEG_TO_RAD);
-            expect(object.angle).to.be.equal(180);
+            expect(object.rotation).toEqual(180 * DEG_TO_RAD);
+            expect(object.angle).toEqual(180);
         });
     });
 
@@ -134,23 +132,23 @@ describe('DisplayObject', () =>
             container.updateTransform();
             container.disableTempParent(null);
 
-            expect(child.worldTransform.tx).to.equal(25);
-            expect(child.worldTransform.ty).to.equal(20);
+            expect(child.worldTransform.tx).toEqual(25);
+            expect(child.worldTransform.ty).toEqual(20);
 
             const cacheParent = child.enableTempParent();
 
             child.updateTransform();
             child.disableTempParent(cacheParent);
 
-            expect(cacheParent).to.equal(container);
-            expect(child.parent).to.equal(container);
-            expect(child.worldTransform.tx).to.equal(15);
-            expect(child.worldTransform.ty).to.equal(10);
+            expect(cacheParent).toEqual(container);
+            expect(child.parent).toEqual(container);
+            expect(child.worldTransform.tx).toEqual(15);
+            expect(child.worldTransform.ty).toEqual(10);
 
             child.updateTransform();
 
-            expect(child.worldTransform.tx).to.equal(25);
-            expect(child.worldTransform.ty).to.equal(20);
+            expect(child.worldTransform.tx).toEqual(25);
+            expect(child.worldTransform.ty).toEqual(20);
         });
     });
 
@@ -166,69 +164,69 @@ describe('DisplayObject', () =>
                 const container1 = new Container();
                 const container2 = new Container();
 
-                expect(mask1.isMask).to.be.false;
-                expect(mask1.renderable).to.be.true;
-                expect(mask2.isMask).to.be.false;
-                expect(mask2.renderable).to.be.true;
+                expect(mask1.isMask).toBe(false);
+                expect(mask1.renderable).toBe(true);
+                expect(mask2.isMask).toBe(false);
+                expect(mask2.renderable).toBe(true);
 
                 container1.mask = mask1;
 
-                expect(mask1.isMask).to.be.true;
-                expect(mask1.renderable).to.be.false;
-                expect(mask2.isMask).to.be.false;
-                expect(mask2.renderable).to.be.true;
+                expect(mask1.isMask).toBe(true);
+                expect(mask1.renderable).toBe(false);
+                expect(mask2.isMask).toBe(false);
+                expect(mask2.renderable).toBe(true);
 
                 container1.mask = mask1;
 
-                expect(mask1.isMask).to.be.true;
-                expect(mask1.renderable).to.be.false;
-                expect(mask2.isMask).to.be.false;
-                expect(mask2.renderable).to.be.true;
+                expect(mask1.isMask).toBe(true);
+                expect(mask1.renderable).toBe(false);
+                expect(mask2.isMask).toBe(false);
+                expect(mask2.renderable).toBe(true);
 
                 container2.mask = mask1;
 
-                expect(mask1.isMask).to.be.true;
-                expect(mask2.isMask).to.be.false;
-                expect(mask1.renderable).to.be.false;
-                expect(mask2.renderable).to.be.true;
+                expect(mask1.isMask).toBe(true);
+                expect(mask2.isMask).toBe(false);
+                expect(mask1.renderable).toBe(false);
+                expect(mask2.renderable).toBe(true);
 
                 container1.mask = mask2;
 
-                expect(mask1.isMask).to.be.true;
-                expect(mask1.renderable).to.be.false;
-                expect(mask2.isMask).to.be.true;
-                expect(mask2.renderable).to.be.false;
+                expect(mask1.isMask).toBe(true);
+                expect(mask1.renderable).toBe(false);
+                expect(mask2.isMask).toBe(true);
+                expect(mask2.renderable).toBe(false);
 
                 container2.mask = mask2;
 
-                expect(mask1.isMask).to.be.false;
-                expect(mask1.renderable).to.be.true;
-                expect(mask2.isMask).to.be.true;
-                expect(mask2.renderable).to.be.false;
+                expect(mask1.isMask).toBe(false);
+                expect(mask1.renderable).toBe(true);
+                expect(mask2.isMask).toBe(true);
+                expect(mask2.renderable).toBe(false);
 
                 container1.mask = null;
 
-                expect(mask1.isMask).to.be.false;
-                expect(mask1.renderable).to.be.true;
-                expect(mask2.isMask).to.be.true;
-                expect(mask2.renderable).to.be.false;
+                expect(mask1.isMask).toBe(false);
+                expect(mask1.renderable).toBe(true);
+                expect(mask2.isMask).toBe(true);
+                expect(mask2.renderable).toBe(false);
 
                 container2.mask = null;
 
-                expect(mask1.isMask).to.be.false;
-                expect(mask1.renderable).to.be.true;
-                expect(mask2.isMask).to.be.false;
-                expect(mask2.renderable).to.be.true;
+                expect(mask1.isMask).toBe(false);
+                expect(mask1.renderable).toBe(true);
+                expect(mask2.isMask).toBe(false);
+                expect(mask2.renderable).toBe(true);
 
                 container1.mask = mask1;
 
-                expect(mask1.isMask).to.be.true;
-                expect(mask1.renderable).to.be.false;
+                expect(mask1.isMask).toBe(true);
+                expect(mask1.renderable).toBe(false);
 
                 container1.destroy();
 
-                expect(mask1.isMask).to.be.false;
-                expect(mask1.renderable).to.be.true;
+                expect(mask1.isMask).toBe(false);
+                expect(mask1.renderable).toBe(true);
             }
         );
     });
@@ -237,7 +235,7 @@ describe('DisplayObject', () =>
     {
         it('should trigger removed listeners', () =>
         {
-            const listener = sinon.spy();
+            const listener = jest.fn();
             // @ts-expect-error - instantiating DisplayOBject
             const child = new DisplayObject();
             const container = new Container();
@@ -247,12 +245,12 @@ describe('DisplayObject', () =>
             container.addChild(child);
             container.removeChild(child);
 
-            expect(listener.calledOnce).to.be.true;
+            expect(listener).toBeCalledTimes(1);
 
             container.addChild(child);
             child.destroy();
 
-            expect(listener.calledTwice).to.be.true;
+            expect(listener).toBeCalledTimes(2);
         });
     });
 
@@ -260,7 +258,7 @@ describe('DisplayObject', () =>
     {
         it('should trigger destroyed listeners', () =>
         {
-            const listener = sinon.spy();
+            const listener = jest.fn();
             // @ts-expect-error - instantiating DisplayOBject
             const child = new DisplayObject();
             const container = new Container();
@@ -270,12 +268,12 @@ describe('DisplayObject', () =>
             container.addChild(child);
             container.removeChild(child);
 
-            expect(listener.notCalled).to.be.true;
+            expect(listener).not.toBeCalled();
 
             container.addChild(child);
             child.destroy();
 
-            expect(listener.calledOnce).to.be.true;
+            expect(listener).toBeCalledTimes(1);
         });
 
         it('should trigger destroyed listeners once destruction is complete', () =>
@@ -288,19 +286,19 @@ describe('DisplayObject', () =>
             child.on('destroyed', () =>
             {
                 listenerCallCount++;
-                expect(child.destroyed).to.be.true;
-                expect(child.parent).to.be.null;
+                expect(child.destroyed).toBe(true);
+                expect(child.parent).toBeNull();
             });
 
             container.addChild(child);
             container.removeChild(child);
 
-            expect(listenerCallCount).to.equal(0);
+            expect(listenerCallCount).toEqual(0);
 
             container.addChild(child);
             child.destroy();
 
-            expect(listenerCallCount).to.equal(1);
+            expect(listenerCallCount).toEqual(1);
         });
     });
 });

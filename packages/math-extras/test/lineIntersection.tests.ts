@@ -1,6 +1,5 @@
 import { Point } from '@pixi/math';
 import { lineIntersection } from '@pixi/math-extras';
-import { expect } from 'chai';
 
 describe('lineIntersection', () =>
 {
@@ -14,8 +13,8 @@ describe('lineIntersection', () =>
 
             const intersect = lineIntersection(aStart, aEnd, bStart, bEnd);
 
-            expect(intersect.x).to.equal(6.25);
-            expect(intersect.y).to.equal(7.25);
+            expect(intersect.x).toEqual(6.25);
+            expect(intersect.y).toEqual(7.25);
         });
 
     it('should return NaN if the lines are parallel',
@@ -28,8 +27,8 @@ describe('lineIntersection', () =>
 
             const parallel = lineIntersection(aStart, aEnd, parallelStart, parallelEnd);
 
-            expect(parallel.x).to.be.NaN;
-            expect(parallel.y).to.be.NaN;
+            expect(parallel.x).toBeNaN();
+            expect(parallel.y).toBeNaN();
         });
     it('should return the same reference given', () =>
     {
@@ -41,7 +40,7 @@ describe('lineIntersection', () =>
         const outValue = new Point();
         const intersect = lineIntersection(aStart, aEnd, bStart, bEnd, outValue);
 
-        expect(intersect).to.equal(outValue);
+        expect(intersect).toEqual(outValue);
     });
 
     it('can output into any IPointData given', () =>
@@ -54,8 +53,8 @@ describe('lineIntersection', () =>
 
         lineIntersection(aStart, aEnd, bStart, bEnd, outValue);
 
-        expect(outValue.x).to.equal(6.25);
-        expect(outValue.y).to.equal(7.25);
+        expect(outValue.x).toEqual(6.25);
+        expect(outValue.y).toEqual(7.25);
     });
 
     it('can take any IPointData as input', () =>
@@ -67,7 +66,7 @@ describe('lineIntersection', () =>
 
         const intersect = lineIntersection(aStart, aEnd, bStart, bEnd);
 
-        expect(intersect.x).to.equal(6.25);
-        expect(intersect.y).to.equal(7.25);
+        expect(intersect.x).toEqual(6.25);
+        expect(intersect.y).toEqual(7.25);
     });
 });

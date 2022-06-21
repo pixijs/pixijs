@@ -1,4 +1,4 @@
-import { RenderTexture } from '@pixi/core';
+import { ExtensionMetadata, ExtensionType, RenderTexture } from '@pixi/core';
 import { CanvasRenderTarget } from '@pixi/utils';
 import { Rectangle } from '@pixi/math';
 import { CanvasRenderer } from '@pixi/canvas-renderer';
@@ -16,6 +16,12 @@ const TEMP_RECT = new Rectangle();
  */
 export class CanvasExtract
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        name: 'extract',
+        type: ExtensionType.CanvasRendererPlugin,
+    };
+
     /** A reference to the current renderer */
     public renderer: CanvasRenderer;
 
@@ -62,14 +68,14 @@ export class CanvasExtract
      * Creates a Canvas element, renders this target to it and then returns it.
      * @param target - A displayObject or renderTexture
      *  to convert. If left empty will use the main renderer
+     * @param frame - The frame the extraction is restricted to.
      * @returns A Canvas element with the texture rendered on.
      */
-    public canvas(target?: DisplayObject | RenderTexture): HTMLCanvasElement
+    public canvas(target?: DisplayObject | RenderTexture, frame?: Rectangle): HTMLCanvasElement
     {
         const renderer = this.renderer;
         let context;
         let resolution;
-        let frame;
         let renderTexture;
 
         if (target)
@@ -88,22 +94,28 @@ export class CanvasExtract
         {
             context = (renderTexture.baseTexture as BaseRenderTexture)._canvasRenderTarget.context;
             resolution = (renderTexture.baseTexture as BaseRenderTexture)._canvasRenderTarget.resolution;
-            frame = renderTexture.frame;
+            frame = frame ?? renderTexture.frame;
         }
         else
         {
             context = renderer.rootContext;
             resolution = renderer.resolution;
-            frame = TEMP_RECT;
-            frame.width = this.renderer.width;
-            frame.height = this.renderer.height;
+
+            if (!frame)
+            {
+                frame = TEMP_RECT;
+                frame.width = renderer.width;
+                frame.height = renderer.height;
+            }
         }
 
-        const width = Math.floor((frame.width * resolution) + 1e-4);
-        const height = Math.floor((frame.height * resolution) + 1e-4);
+        const x = Math.round(frame.x * resolution);
+        const y = Math.round(frame.y * resolution);
+        const width = Math.round(frame.width * resolution);
+        const height = Math.round(frame.height * resolution);
 
         const canvasBuffer = new CanvasRenderTarget(width, height, 1);
-        const canvasData = context.getImageData(frame.x * resolution, frame.y * resolution, width, height);
+        const canvasData = context.getImageData(x, y, width, height);
 
         canvasBuffer.context.putImageData(canvasData, 0, 0);
 
@@ -116,14 +128,14 @@ export class CanvasExtract
      * order, with integer values between 0 and 255 (included).
      * @param target - A displayObject or renderTexture
      *  to convert. If left empty will use the main renderer
+     * @param frame - The frame the extraction is restricted to.
      * @returns One-dimensional array containing the pixel data of the entire texture
      */
-    public pixels(target?: DisplayObject | RenderTexture): Uint8ClampedArray
+    public pixels(target?: DisplayObject | RenderTexture, frame?: Rectangle): Uint8ClampedArray
     {
         const renderer = this.renderer;
         let context;
         let resolution;
-        let frame;
         let renderTexture;
 
         if (target)
@@ -142,21 +154,25 @@ export class CanvasExtract
         {
             context = (renderTexture.baseTexture as BaseRenderTexture)._canvasRenderTarget.context;
             resolution = (renderTexture.baseTexture as BaseRenderTexture)._canvasRenderTarget.resolution;
-            frame = renderTexture.frame;
+            frame = frame ?? renderTexture.frame;
         }
         else
         {
             context = renderer.rootContext;
             resolution = renderer.resolution;
-            frame = TEMP_RECT;
-            frame.width = renderer.width;
-            frame.height = renderer.height;
+
+            if (!frame)
+            {
+                frame = TEMP_RECT;
+                frame.width = renderer.width;
+                frame.height = renderer.height;
+            }
         }
 
-        const x = frame.x * resolution;
-        const y = frame.y * resolution;
-        const width = frame.width * resolution;
-        const height = frame.height * resolution;
+        const x = Math.round(frame.x * resolution);
+        const y = Math.round(frame.y * resolution);
+        const width = Math.round(frame.width * resolution);
+        const height = Math.round(frame.height * resolution);
 
         return context.getImageData(x, y, width, height).data;
     }

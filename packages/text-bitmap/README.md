@@ -10,6 +10,7 @@ npm install @pixi/text-bitmap
 
 ```js
 import { BitmapFontLoader } from '@pixi/text-bitmap';
-import { Loader } from '@pixi/loaders';
-Loader.registerPlugin(BitmapFontLoader);
+import { extensions } from '@pixi/core';
+
+extensions.add(BitmapFontLoader);
 ```

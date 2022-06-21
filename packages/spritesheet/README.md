@@ -10,6 +10,7 @@ npm install @pixi/spritesheet
 
 ```js
 import { SpritesheetLoader } from '@pixi/spritesheet';
-import { Loader } from '@pixi/loaders';
-Loader.registerPlugin(SpritesheetLoader);
+import { extensions } from '@pixi/core';
+
+extensions.add(SpritesheetLoader);
 ```

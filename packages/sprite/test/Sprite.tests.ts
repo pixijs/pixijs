@@ -2,7 +2,6 @@ import { Sprite } from '@pixi/sprite';
 import { Texture, BaseTexture, RenderTexture } from '@pixi/core';
 import { Container } from '@pixi/display';
 import { Point } from '@pixi/math';
-import { expect } from 'chai';
 
 import path from 'path';
 
@@ -15,9 +14,9 @@ describe('Sprite', () =>
             const sprite = new Sprite();
 
             sprite.width = 100;
-            expect(sprite.width).to.be.at.least(0);
+            expect(sprite.width).toBeGreaterThanOrEqual(0);
             sprite.scale.x = -1;
-            expect(sprite.width).to.be.at.least(0);
+            expect(sprite.width).toBeGreaterThanOrEqual(0);
         });
 
         it('should not change sign of scale.x', () =>
@@ -29,12 +28,12 @@ describe('Sprite', () =>
             sprite.scale.x = 1;
             sprite.width = 50;
 
-            expect(sprite.scale.x).to.be.above(0);
+            expect(sprite.scale.x).toBeGreaterThan(0);
 
             sprite.scale.x = -1;
             sprite.width = 75;
 
-            expect(sprite.scale.x).to.be.below(0);
+            expect(sprite.scale.x).toBeLessThan(0);
         });
     });
 
@@ -45,9 +44,9 @@ describe('Sprite', () =>
             const sprite = new Sprite();
 
             sprite.height = 100;
-            expect(sprite.height).to.be.at.least(0);
+            expect(sprite.height).toBeGreaterThanOrEqual(0);
             sprite.scale.y = -1;
-            expect(sprite.height).to.be.at.least(0);
+            expect(sprite.height).toBeGreaterThanOrEqual(0);
         });
 
         it('should not change sign of scale.y', () =>
@@ -59,12 +58,12 @@ describe('Sprite', () =>
             sprite.scale.y = 1;
             sprite.height = 50;
 
-            expect(sprite.scale.y).to.be.above(0);
+            expect(sprite.scale.y).toBeGreaterThan(0);
 
             sprite.scale.y = -1;
             sprite.height = 75;
 
-            expect(sprite.scale.y).to.be.below(0);
+            expect(sprite.scale.y).toBeLessThan(0);
         });
     });
 
@@ -88,10 +87,10 @@ describe('Sprite', () =>
 
             const bounds = sprite.getBounds();
 
-            expect(bounds.x).to.equal(-150);
-            expect(bounds.y).to.equal(-260);
-            expect(bounds.width).to.equal(400);
-            expect(bounds.height).to.equal(600);
+            expect(bounds.x).toEqual(-150);
+            expect(bounds.y).toEqual(-260);
+            expect(bounds.width).toEqual(400);
+            expect(bounds.height).toEqual(600);
         });
     });
 
@@ -106,10 +105,10 @@ describe('Sprite', () =>
 
             const bounds = sprite.getLocalBounds();
 
-            expect(bounds.x).to.equal(-10);
-            expect(bounds.y).to.equal(-15);
-            expect(bounds.width).to.equal(20);
-            expect(bounds.height).to.equal(30);
+            expect(bounds.x).toEqual(-10);
+            expect(bounds.y).toEqual(-15);
+            expect(bounds.width).toEqual(20);
+            expect(bounds.height).toEqual(30);
         });
 
         it('should not corrupt bounds', () =>
@@ -122,24 +121,24 @@ describe('Sprite', () =>
 
             let bounds = sprite.getBounds(false);
 
-            expect(bounds.x).to.equal(0);
-            expect(bounds.y).to.equal(-5);
-            expect(bounds.width).to.equal(40);
-            expect(bounds.height).to.equal(30);
+            expect(Math.abs(bounds.x)).toEqual(0);
+            expect(bounds.y).toEqual(-5);
+            expect(bounds.width).toEqual(40);
+            expect(bounds.height).toEqual(30);
 
             bounds = sprite.getLocalBounds();
 
-            expect(bounds.x).to.equal(0);
-            expect(bounds.y).to.equal(0);
-            expect(bounds.width).to.equal(20);
-            expect(bounds.height).to.equal(30);
+            expect(Math.abs(bounds.x)).toEqual(0);
+            expect(Math.abs(bounds.y)).toEqual(0);
+            expect(bounds.width).toEqual(20);
+            expect(bounds.height).toEqual(30);
 
             bounds = sprite.getBounds(true);
 
-            expect(bounds.x).to.equal(0);
-            expect(bounds.y).to.equal(-5);
-            expect(bounds.width).to.equal(40);
-            expect(bounds.height).to.equal(30);
+            expect(Math.abs(bounds.x)).toEqual(0);
+            expect(bounds.y).toEqual(-5);
+            expect(bounds.width).toEqual(40);
+            expect(bounds.height).toEqual(30);
         });
     });
 
@@ -152,28 +151,28 @@ describe('Sprite', () =>
         {
             const point = new Point(10, 10);
 
-            expect(sprite.containsPoint(point)).to.be.true;
+            expect(sprite.containsPoint(point)).toBe(true);
         });
 
         it('should return true when point on left edge', () =>
         {
             const point = new Point(0, 15);
 
-            expect(sprite.containsPoint(point)).to.be.true;
+            expect(sprite.containsPoint(point)).toBe(true);
         });
 
         it('should return true when point on top edge', () =>
         {
             const point = new Point(10, 0);
 
-            expect(sprite.containsPoint(point)).to.be.true;
+            expect(sprite.containsPoint(point)).toBe(true);
         });
 
         it('should return false when point outside', () =>
         {
             const point = new Point(100, 100);
 
-            expect(sprite.containsPoint(point)).to.be.false;
+            expect(sprite.containsPoint(point)).toBe(false);
         });
     });
 
@@ -191,13 +190,13 @@ describe('Sprite', () =>
 
             const sprite = new Sprite(texture);
 
-            expect(texture['_eventsCount']).to.equal(1);
-            expect(texture2['_eventsCount']).to.equal(0);
+            expect(texture['_eventsCount']).toEqual(1);
+            expect(texture2['_eventsCount']).toEqual(0);
 
             sprite.texture = texture2;
 
-            expect(texture['_eventsCount']).to.equal(0);
-            expect(texture2['_eventsCount']).to.equal(1);
+            expect(texture['_eventsCount']).toEqual(0);
+            expect(texture2['_eventsCount']).toEqual(1);
 
             sprite.destroy();
             texture.destroy(true);
@@ -212,11 +211,11 @@ describe('Sprite', () =>
             const texture = Texture.from(path.resolve(__dirname, 'resources', 'building1.png')) as EETexture;
             const sprite = new Sprite(texture);
 
-            expect(texture['_eventsCount']).to.equal(1);
+            expect(texture['_eventsCount']).toEqual(1);
 
             sprite.destroy();
 
-            expect(texture['_eventsCount']).to.equal(0);
+            expect(texture['_eventsCount']).toEqual(0);
 
             texture.emit('update', texture);
             texture.destroy(true);

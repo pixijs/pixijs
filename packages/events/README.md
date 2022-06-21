@@ -12,15 +12,14 @@ npm install @pixi/events
 ## Usage
 
 ```ts
-import { Renderer } from '@pixi/core';
-import { Application } from '@pixi/app';
+import { extensions, Application, InteractionManager } from 'pixi.js';
 import { EventSystem } from '@pixi/events';
 
 // If you are using the pixi.js/pixi.js-legacy bundles, you'll need to remove the interaction
 // plugin. This is not needed when using the scoped (@pixi/) packages directly.
-delete Renderer.__plugins.interaction;
+extensions.remove(InteractionManager);
 
-const app = new PIXI.Application();
+const app = new Application();
 const { renderer } = app;
 
 document.body.appendChild(app.view);

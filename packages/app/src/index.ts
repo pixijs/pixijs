@@ -1,6 +1,6 @@
-import { Application } from './Application';
 import { ResizePlugin } from './ResizePlugin';
+import { extensions } from '@pixi/core';
 
-Application.registerPlugin(ResizePlugin);
+extensions.add(ResizePlugin);
 
 export * from './Application';

@@ -7,7 +7,7 @@ import { TreeSearch } from './TreeSearch';
 import { EventEmitter } from '@pixi/utils';
 import { interactiveTarget } from './interactiveTarget';
 
-import type { AbstractRenderer } from '@pixi/core';
+import { AbstractRenderer, ExtensionMetadata, ExtensionType } from '@pixi/core';
 import type { Point, IPointData } from '@pixi/math';
 import type { Dict } from '@pixi/utils';
 
@@ -63,6 +63,15 @@ interface CrossCSSStyleDeclaration extends CSSStyleDeclaration
  */
 export class InteractionManager extends EventEmitter
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        name: 'interaction',
+        type: [
+            ExtensionType.RendererPlugin,
+            ExtensionType.CanvasRendererPlugin,
+        ],
+    };
+
     /**
      * Actively tracked InteractionData
      * @private
@@ -1224,7 +1233,15 @@ export class InteractionManager extends EventEmitter
 
         // if the event wasn't targeting our canvas, then consider it to be pointerupoutside
         // in all cases (unless it was a pointercancel)
-        const eventAppend = originalEvent.target !== this.interactionDOMElement ? 'outside' : '';
+        let target = originalEvent.target;
+
+        // if in shadow DOM use composedPath to access target
+        if (originalEvent.composedPath && originalEvent.composedPath().length > 0)
+        {
+            target = originalEvent.composedPath()[0];
+        }
+
+        const eventAppend = target !== this.interactionDOMElement ? 'outside' : '';
 
         for (let i = 0; i < eventLen; i++)
         {

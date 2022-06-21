@@ -1,3 +1,4 @@
+import { ExtensionMetadata, ExtensionType } from '@pixi/core';
 import { UPDATE_PRIORITY } from './const';
 import { Ticker } from './Ticker';
 
@@ -6,12 +7,16 @@ import { Ticker } from './Ticker';
  * @example
  * import {TickerPlugin} from '@pixi/ticker';
  * import {Application} from '@pixi/app';
- * Application.registerPlugin(TickerPlugin);
+ * import {extensions} from '@pixi/core';
+ * extensions.add(TickerPlugin);
  * @class
  * @memberof PIXI
  */
 export class TickerPlugin
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = ExtensionType.Application;
+
     static start: () => void;
     static stop: () => void;
     static _ticker: Ticker;

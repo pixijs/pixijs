@@ -1,4 +1,4 @@
-import { ObjectRenderer, Shader, State, QuadUv } from '@pixi/core';
+import { ObjectRenderer, Shader, State, QuadUv, ExtensionMetadata, ExtensionType } from '@pixi/core';
 import { WRAP_MODES } from '@pixi/constants';
 import { Matrix } from '@pixi/math';
 import { premultiplyTintToRgba, correctBlendMode } from '@pixi/utils';
@@ -22,6 +22,12 @@ const tempMat = new Matrix();
  */
 export class TilingSpriteRenderer extends ObjectRenderer
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        name: 'tilingSprite',
+        type: ExtensionType.RendererPlugin,
+    };
+
     public shader: Shader;
     public simpleShader: Shader;
     public quad: QuadUv;
