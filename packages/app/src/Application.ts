@@ -4,7 +4,6 @@ import { autoDetectRenderer, extensions, ExtensionType } from '@pixi/core';
 import type { Rectangle } from '@pixi/math';
 import type {  IRendererOptionsAuto, IRenderer } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
-import { deprecation } from '@pixi/utils';
 
 /**
  * Any plugin that's usable for Application should contain these methods.
@@ -107,23 +106,6 @@ export class Application
         Application._plugins.forEach((plugin) =>
         {
             plugin.init.call(this, options);
-        });
-    }
-
-    /**
-     * Use the {@link PIXI.extensions.add} API to register plugins.
-     * @deprecated since 6.5.0
-     * @static
-     * @param {PIXI.IApplicationPlugin} plugin - Plugin being installed
-     */
-    static registerPlugin(plugin: IApplicationPlugin): void
-    {
-        // #if _DEBUG
-        deprecation('6.5.0', 'Application.registerPlugin() is deprecated, use extensions.add()');
-        // #endif
-        extensions.add({
-            type: ExtensionType.Application,
-            ref: plugin,
         });
     }
 
