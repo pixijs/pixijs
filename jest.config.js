@@ -20,9 +20,8 @@ module.exports = {
                 module: 'ESNext',
                 esModuleInterop: true,
             },
-            diagnostics: {
-                warnOnly: true,
-            },
+            include: ['packages/**/*.ts'],
+            diagnostics: false,
         },
     },
     collectCoverageFrom: [
