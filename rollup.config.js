@@ -1,5 +1,4 @@
 import path from 'path';
-import transpile from '@rollup/plugin-buble';
 import resolve from '@rollup/plugin-node-resolve';
 import { string } from 'rollup-plugin-string';
 import sourcemaps from 'rollup-plugin-sourcemaps';
@@ -58,7 +57,6 @@ async function main()
                 '**/*.vert',
             ],
         }),
-        transpile(),
     ];
 
     const plugins = [
@@ -209,7 +207,7 @@ async function main()
             let footer;
             let nsBanner = banner;
 
-            // Ignore self-contained packages like polyfills and unsafe-eval
+            // Ignore self-contained packages like unsafe-eval
             // as well as the bundles pixi.js and pixi.js-legacy
             if (!standalone)
             {

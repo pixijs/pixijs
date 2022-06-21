@@ -52,9 +52,6 @@
     "include": [
       "packages/**/src/**"
     ],
-    "exclude": [
-      "packages/polyfill/src**"
-    ],
     "report-dir": "dist/coverage"
   },
   "devDependencies": {
@@ -64,7 +61,6 @@
     "@pixi/eslint-config": "^4.0.1",
     "@pixi/webdoc-template": "^1.5.3",
     "@rollup/plugin-alias": "^3.1.1",
-    "@rollup/plugin-buble": "^0.21.3",
     "@rollup/plugin-commonjs": "^15.1.0",
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^9.0.0",
