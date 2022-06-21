@@ -1,5 +1,5 @@
 import { Spritesheet } from '@pixi/spritesheet';
-import { Texture } from '@pixi/core';
+import { BaseTexture, Texture } from '@pixi/core';
 
 import { Assets } from '../src/Assets';
 
@@ -221,7 +221,7 @@ describe('Assets', () =>
         // wait a bit...
         await wait();
 
-        const asset = Assets.loader.cache[`http://localhost:8080/bunny.png`];
+        const asset = await Assets.loader.promiseCache[`http://localhost:8080/bunny.png`];
 
         expect(asset).toBeInstanceOf(Texture);
         // TODO - this src will be added in the future..
@@ -242,13 +242,20 @@ describe('Assets', () =>
         // wait a bit...
         await wait();
 
-        const lc = Assets.loader.cache;
+        const expectTypes = {
+            'http://localhost:8080/asset-manifest-2.json': Object,
+            'http://localhost:8080/bunny.png': Texture,
+            'http://localhost:8080/profile-abel@2x.webp': Texture,
+            'http://localhost:8080/spritesheet.json': Spritesheet,
+            'http://localhost:8080/spritesheet.png': Texture,
+        };
 
-        expect(lc['http://localhost:8080/asset-manifest-2.json']).toBeInstanceOf(Object);
-        expect(lc['http://localhost:8080/bunny.png']).toBeInstanceOf(Texture);
-        expect(lc['http://localhost:8080/profile-abel@2x.webp']).toBeInstanceOf(Texture);
-        expect(lc['http://localhost:8080/spritesheet.json']).toBeInstanceOf(Spritesheet);
-        expect(lc['http://localhost:8080/spritesheet.png']).toBeInstanceOf(Texture);
+        for (const [key, type] of Object.entries(expectTypes))
+        {
+            const asset = await Assets.loader.promiseCache[key];
+
+            expect(asset).toBeInstanceOf(type);
+        }
     });
 
     it('should error out if loader fails', async () =>
@@ -278,13 +285,13 @@ describe('Assets', () =>
             basePath: 'http://localhost:8080/',
         });
 
-        const bunny: Texture = await Assets.load('bunny.png');
+        const bunny = await Assets.load('bunny.png') as Texture;
 
         bunny.destroy(true);
 
         expect(bunny.baseTexture).toBe(null);
 
-        const bunnyReloaded: Texture = await Assets.load('bunny.png');
+        const bunnyReloaded = await Assets.load('bunny.png') as Texture;
 
         expect(bunnyReloaded.baseTexture).toBeInstanceOf(BaseTexture);
     });

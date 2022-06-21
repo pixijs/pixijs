@@ -3,8 +3,7 @@ import { Texture } from '@pixi/core';
 import { BitmapFont } from '@pixi/text-bitmap';
 
 import type { LoaderParser } from '../src/loader';
-import { Loader, loadJson, loadSpritesheet, loadTextures, loadWebFont } from '../src/loader';
-import { loadBitmapFont } from '../src/loader/plugins/loadBitmapFont';
+import { Loader, loadJson, loadSpritesheet, loadTextures, loadWebFont, loadBitmapFont } from '../src/loader';
 
 const dummyPlugin: LoaderParser = {
     async load(url: string): Promise<string>
@@ -23,11 +22,11 @@ describe('Loader', () =>
 
         loader.addParser(dummyPlugin);
 
-        expect(loader.plugins).toHaveLength(1);
+        expect(loader.parsers).toHaveLength(1);
 
         loader.removeParser(dummyPlugin);
 
-        expect(loader.plugins).toHaveLength(0);
+        expect(loader.parsers).toHaveLength(0);
     });
 
     it('should load a single image', async () =>
@@ -138,7 +137,17 @@ describe('Loader', () =>
 
         await loader.load(`${serverPath}outfit.woff2`);
 
-        expect(document.fonts.check('1em Outfit')).toBe(true);
+        let foundFont = false;
+
+        document.fonts.forEach((f: FontFace) =>
+        {
+            if (f.family === 'Outfit.woff2')
+            {
+                foundFont = true;
+            }
+        });
+
+        expect(foundFont).toBe(true);
     });
 
     it('should load a specific weight web font', async () =>

@@ -16,7 +16,7 @@ function getImagePath(url: string): string
 }
 
 /** simple loader plugin for loading in bitmap fonts! */
-const loadBitmapFont = {
+export const loadBitmapFont = {
     test(url: string): boolean
     {
         return (extname(url).includes('.xml'));
@@ -48,6 +48,3 @@ const loadBitmapFont = {
         return BitmapFont.install(data, textures, true);
     },
 } as LoaderParser;
-
-export { loadBitmapFont };
-

@@ -1,4 +1,4 @@
-// export * from './loadBitmapFont';
+export * from './loadBitmapFont';
 export * from './LoaderParser';
 export * from './loadJson';
 export * from './loadSpritesheet';
