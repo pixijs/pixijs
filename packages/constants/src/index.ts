@@ -386,7 +386,6 @@ export enum ALPHA_MODES
     PMA = 2,
     NO_PREMULTIPLIED_ALPHA = 0,
     PREMULTIPLY_ON_UPLOAD = 1,
-    PREMULTIPLY_ALPHA = 2, // deprecated, undocumented
     PREMULTIPLIED_ALPHA = 2,
 }
 

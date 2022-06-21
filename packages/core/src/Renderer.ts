@@ -18,9 +18,8 @@ import { UniformGroup } from './shader/UniformGroup';
 import { Matrix, Rectangle } from '@pixi/math';
 import { BufferSystem } from './geometry/BufferSystem';
 import { RenderTexture } from './renderTexture/RenderTexture';
-import type { SCALE_MODES } from '@pixi/constants';
 import { extensions, ExtensionType } from './extensions';
-import { IRendererPluginConstructor, IRendererPlugins, PluginSystem } from './plugin/PluginSystem';
+import { IRendererPlugins, PluginSystem } from './plugin/PluginSystem';
 import { MultisampleSystem } from './framebuffer/MultisampleSystem';
 import { GenerateTextureSystem, IGenerateTextureOptions } from './renderTexture/GenerateTextureSystem';
 import { BackgroundSystem } from './background/BackgroundSystem';
@@ -359,7 +358,6 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
                 alpha: options.backgroundAlpha,
                 color: options.backgroundColor,
                 clearBeforeRender: options.clearBeforeRender,
-                transparent: options.transparent,
             },
             _view: {
                 height: options.height,
@@ -390,41 +388,8 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      * @param {PIXI.Matrix} [options.transform] - A transform to apply to the render texture before rendering.
      * @param {boolean} [options.skipUpdateTransform=false] - Should we skip the update transform pass?
      */
-    render(displayObject: IRenderableObject, options?: IRendererRenderOptions): void;
-
-    /**
-     * Please use the `option` render arguments instead.
-     * @deprecated Since 6.0.0
-     * @param displayObject
-     * @param renderTexture
-     * @param clear
-     * @param transform
-     * @param skipUpdateTransform
-     */
-    render(displayObject: IRenderableObject, renderTexture?: RenderTexture,
-        clear?: boolean, transform?: Matrix, skipUpdateTransform?: boolean): void;
-
-    /**
-     * @ignore
-     */
-    render(displayObject: IRenderableObject, options?: IRendererRenderOptions | RenderTexture): void
+    render(displayObject: IRenderableObject, options?: IRendererRenderOptions): void
     {
-        if (options instanceof RenderTexture)
-        {
-            // #if _DEBUG
-            deprecation('6.0.0', 'Renderer#render arguments changed, use options instead.');
-            // #endif
-
-            /* eslint-disable prefer-rest-params */
-            options = {
-                renderTexture: options,
-                clear: arguments[2],
-                transform: arguments[3],
-                skipUpdateTransform: arguments[4]
-            };
-            /* eslint-enable prefer-rest-params */
-        }
-
         this.objectRenderer.render(displayObject, options);
     }
 
@@ -470,21 +435,6 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
         });
 
         super.destroy();
-    }
-
-    /**
-     * Please use `plugins.extract` instead.
-     * @member {PIXI.Extract} extract
-     * @deprecated since 6.0.0
-     * @readonly
-     */
-    public get extract(): any
-    {
-        // #if _DEBUG
-        deprecation('6.0.0', 'Renderer#extract has been deprecated, please use Renderer#plugins.extract instead.');
-        // #endif
-
-        return this.plugins.extract;
     }
 
     /** Collection of plugins */
@@ -566,12 +516,15 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
         return `WebGL ${this.context.webGLVersion}`;
     }
 
-    /** this sets weather the screen is totally cleared between each frame withthe background color and alpha */
+    /**
+     * This sets weather the screen is totally cleared between each frame withthe background color and alpha
+     * @deprecated since 7.0.0
+     */
     get clearBeforeRender(): boolean
     {
         // #if _DEBUG
         // eslint-disable-next-line max-len
-        deprecation('6.4.0', 'renderer.useContextAlpha has been deprecated, please use renderer.background.clearBeforeRender instead.');
+        deprecation('7.0.0', 'renderer.useContextAlpha has been deprecated, please use renderer.background.clearBeforeRender instead.');
         // #endif
 
         return this.background.clearBeforeRender;
@@ -580,13 +533,14 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
     /**
      * Pass-thru setting for the canvas' context `alpha` property. This is typically
      * not something you need to fiddle with. If you want transparency, use `backgroundAlpha`.
+     * @deprecated since 7.0.0
      * @member {boolean}
      */
     get useContextAlpha(): boolean | 'notMultiplied'
     {
         // #if _DEBUG
         // eslint-disable-next-line max-len
-        deprecation('6.4.0', 'Renderer#useContextAlpha has been deprecated, please use Renderer#context.premultipliedAlpha instead.');
+        deprecation('7.0.0', 'Renderer#useContextAlpha has been deprecated, please use Renderer#context.premultipliedAlpha instead.');
         // #endif
 
         return this.context.useContextAlpha;
@@ -595,13 +549,13 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
     /**
      * readonly drawing buffer preservation
      * we can only know this if Pixi created the context
-     * @deprecated since 6.4.0
+     * @deprecated since 7.0.0
      */
     get preserveDrawingBuffer(): boolean
     {
         // #if _DEBUG
         // eslint-disable-next-line max-len
-        deprecation('6.4.0', 'renderer.preserveDrawingBuffer has been deprecated, we cannot truly know this unless pixi created the context');
+        deprecation('7.0.0', 'renderer.preserveDrawingBuffer has been deprecated, we cannot truly know this unless pixi created the context');
         // #endif
 
         return this.context.preserveDrawingBuffer;
@@ -610,13 +564,13 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
     /**
      * The background color to fill if not transparent
      * @member {number}
-     * @deprecated since 6.4.0
+     * @deprecated since 7.0.0
      */
     get backgroundColor(): number
     {
         // #if _DEBUG
         // eslint-disable-next-line max-len
-        deprecation('6.4.0', 'renderer.backgroundColor has been deprecated, use renderer.background.color instead.');
+        deprecation('7.0.0', 'renderer.backgroundColor has been deprecated, use renderer.background.color instead.');
         // #endif
 
         return this.background.color;
@@ -625,7 +579,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
     set backgroundColor(value: number)
     {
         // #if _DEBUG
-        deprecation('6.4.0', 'renderer.backgroundColor has been deprecated, use renderer.background.color instead.');
+        deprecation('7.0.0', 'renderer.backgroundColor has been deprecated, use renderer.background.color instead.');
         // #endif
 
         this.background.color = value;
@@ -634,33 +588,39 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
     /**
      * The background color alpha. Setting this to 0 will make the canvas transparent.
      * @member {number}
-     * @deprecated since 6.4.0
+     * @deprecated since 7.0.0
      */
     get backgroundAlpha(): number
     {
         // #if _DEBUG
         // eslint-disable-next-line max-len
-        deprecation('6.4.0', 'renderer.backgroundAlpha has been deprecated, use renderer.background.alpha instead.');
+        deprecation('7.0.0', 'renderer.backgroundAlpha has been deprecated, use renderer.background.alpha instead.');
         // #endif
 
         return this.background.color;
     }
 
+    /**
+     * @deprecated since 7.0.0
+     */
     set backgroundAlpha(value: number)
     {
         // #if _DEBUG
         // eslint-disable-next-line max-len
-        deprecation('6.4.0', 'renderer.backgroundAlpha has been deprecated, use renderer.background.alpha instead.');
+        deprecation('7.0.0', 'renderer.backgroundAlpha has been deprecated, use renderer.background.alpha instead.');
         // #endif
 
         this.background.alpha = value;
     }
 
+    /**
+     * @deprecated since 7.0.0
+     */
     get powerPreference(): WebGLPowerPreference
     {
         // #if _DEBUG
         // eslint-disable-next-line max-len
-        deprecation('6.4.0', 'renderer.powerPreference has been deprecated, we can only know this if pixi creates the context');
+        deprecation('7.0.0', 'renderer.powerPreference has been deprecated, we can only know this if pixi creates the context');
         // #endif
 
         return this.context.powerPreference;
@@ -678,41 +638,8 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      * @param {PIXI.MSAA_QUALITY} options.multisample - The number of samples of the frame buffer.
      * @returns A texture of the graphics object.
      */
-    generateTexture(displayObject: IRenderableObject, options?: IGenerateTextureOptions): RenderTexture;
-
-    /**
-     * Please use the options argument instead.
-     * @deprecated Since 6.1.0
-     * @param displayObject - The displayObject the object will be generated from.
-     * @param scaleMode - The scale mode of the texture.
-     * @param resolution - The resolution / device pixel ratio of the texture being generated.
-     * @param region - The region of the displayObject, that shall be rendered,
-     *        if no region is specified, defaults to the local bounds of the displayObject.
-     * @returns A texture of the graphics object.
-     */
-    generateTexture(
-        displayObject: IRenderableObject,
-        scaleMode?: SCALE_MODES,
-        resolution?: number,
-        region?: Rectangle): RenderTexture;
-
-    /**
-     * @ignore
-     */
-    generateTexture(displayObject: IRenderableObject,
-        options: IGenerateTextureOptions | SCALE_MODES = {},
-        resolution?: number, region?: Rectangle): RenderTexture
+    generateTexture(displayObject: IRenderableObject, options?: IGenerateTextureOptions): RenderTexture
     {
-        // @deprecated parameters spread, use options instead
-        if (typeof options === 'number')
-        {
-            // #if _DEBUG
-            deprecation('6.1.0', 'generateTexture options (scaleMode, resolution, region) are now object options.');
-            // #endif
-
-            options = { scaleMode: options, resolution, region };
-        }
-
         return this.textureGenerator.generateTexture(displayObject, options);
     }
 
@@ -730,24 +657,6 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      * @property {PIXI.TilingSpriteRenderer} tilingSprite Renderer for TilingSprite objects.
      */
     static __plugins: IRendererPlugins = {};
-
-    /**
-     * Use the {@link PIXI.extensions.add} API to register plugins.
-     * @deprecated since 6.5.0
-     * @param pluginName - The name of the plugin.
-     * @param ctor - The constructor function or class for the plugin.
-     */
-    static registerPlugin(pluginName: string, ctor: IRendererPluginConstructor): void
-    {
-        // #if _DEBUG
-        deprecation('6.5.0', 'Renderer.registerPlugin() has been deprecated, please use extensions.add() instead.');
-        // #endif
-        extensions.add({
-            name: pluginName,
-            type: ExtensionType.RendererPlugin,
-            ref: ctor,
-        });
-    }
 }
 
 // Handle registration of extensions

@@ -5,7 +5,6 @@ import { Container, DisplayObject } from '@pixi/display';
 import { Text, TextStyle, TextMetrics } from '@pixi/text';
 import { CountLimiter } from './CountLimiter';
 import type { IRenderer } from '@pixi/core';
-import { deprecation } from '@pixi/utils';
 
 interface IArrowFunction
 {
@@ -318,44 +317,8 @@ export class BasePrepare
      *        Container or display object to search for items to upload or the items to upload themselves,
      *        or optionally ommitted, if items have been added using {@link PIXI.BasePrepare#add `prepare.add`}.
      */
-    upload(item?: IDisplayObjectExtended | Container | BaseTexture | Texture): Promise<void>;
-
-    /**
-     * Use the Promise-based API instead.
-     * @method PIXI.BasePrepare#upload
-     * @deprecated since version 6.5.0
-     * @param {PIXI.DisplayObject|PIXI.Container|PIXI.BaseTexture|PIXI.Texture|PIXI.Graphics|PIXI.Text} item -
-     *        Item to upload.
-     * @param {Function} [done] - Callback when completed.
-     */
-    upload(item?: IDisplayObjectExtended | Container | BaseTexture | Texture, done?: () => void): void;
-
-    /**
-     * Use the Promise-based API instead.
-     * @method PIXI.BasePrepare#upload
-     * @deprecated since version 6.5.0
-     * @param {Function} [done] - Callback when completed.
-     */
-    upload(done?: () => void): void;
-
-    /** @ignore */
-    upload(
-        item?: IDisplayObjectExtended | Container | BaseTexture | Texture | (() => void),
-        done?: () => void): Promise<void>
+    upload(item?: IDisplayObjectExtended | Container | BaseTexture | Texture): Promise<void>
     {
-        if (typeof item === 'function')
-        {
-            done = item as () => void;
-            item = null;
-        }
-
-        // #if _DEBUG
-        if (done)
-        {
-            deprecation('6.5.0', 'BasePrepare.upload callback is deprecated, use the return Promise instead.');
-        }
-        // #endif
-
         return new Promise((resolve) =>
         {
             // If a display object, search for items
@@ -365,17 +328,10 @@ export class BasePrepare
                 this.add(item as IDisplayObjectExtended | Container | BaseTexture | Texture);
             }
 
-            // TODO: remove done callback and just use resolve
-            const complete = () =>
-            {
-                done?.();
-                resolve();
-            };
-
             // Get the items for upload from the display
             if (this.queue.length)
             {
-                this.completes.push(complete);
+                this.completes.push(resolve);
 
                 if (!this.ticking)
                 {
@@ -385,7 +341,7 @@ export class BasePrepare
             }
             else
             {
-                complete();
+                resolve();
             }
         });
     }
