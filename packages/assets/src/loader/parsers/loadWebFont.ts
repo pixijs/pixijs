@@ -1,18 +1,6 @@
 import { basename, extname } from '../../utils/path';
 import type { LoaderParser } from './LoaderParser';
 
-// FontFaceSet alias
-type FontFaceSet = any;
-
-// Extend document type that might have FontFaceSet available in 'fonts'
-declare global
-{
-    interface Document
-    {
-        fonts?: FontFaceSet;
-    }
-}
-
 const validWeights = ['normal', 'bold',
     '100', '200', '300', '400', '500', '600', '700', '800', '900',
 ];
