@@ -234,14 +234,14 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
         this.resolution = resolution || settings.RESOLUTION;
         this.width = Math.round((width || 0) * this.resolution) / this.resolution;
         this.height = Math.round((height || 0) * this.resolution) / this.resolution;
-        this._mipmap = mipmap !== undefined ? mipmap : settings.MIPMAP_TEXTURES;
-        this.anisotropicLevel = anisotropicLevel !== undefined ? anisotropicLevel : settings.ANISOTROPIC_LEVEL;
+        this._mipmap = mipmap ?? settings.MIPMAP_TEXTURES;
+        this.anisotropicLevel = anisotropicLevel ?? settings.ANISOTROPIC_LEVEL;
         this._wrapMode = wrapMode || settings.WRAP_MODE;
-        this._scaleMode = scaleMode !== undefined ? scaleMode : settings.SCALE_MODE;
+        this._scaleMode = scaleMode ?? settings.SCALE_MODE;
         this.format = format || FORMATS.RGBA;
         this.type = type || TYPES.UNSIGNED_BYTE;
         this.target = target || TARGETS.TEXTURE_2D;
-        this.alphaMode = alphaMode !== undefined ? alphaMode : ALPHA_MODES.UNPACK;
+        this.alphaMode = alphaMode ?? ALPHA_MODES.UNPACK;
 
         this.uid = uid();
         this.touched = 0;
@@ -603,7 +603,7 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
         {
             if (!(source as any)._pixiId)
             {
-                const prefix = (options && options.pixiIdPrefix) || 'pixiid';
+                const prefix = options?.pixiIdPrefix || 'pixiid';
 
                 (source as any)._pixiId = `${prefix}_${uid()}`;
             }
@@ -703,7 +703,7 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
                 return baseTextureFromCache;
             }
         }
-        else if (baseTexture && baseTexture.textureCacheIds)
+        else if (baseTexture?.textureCacheIds)
         {
             for (let i = 0; i < baseTexture.textureCacheIds.length; ++i)
             {

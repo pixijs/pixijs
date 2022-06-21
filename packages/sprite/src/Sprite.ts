@@ -471,11 +471,11 @@ export class Sprite extends Container
 
         this._anchor = null;
 
-        const destroyTexture = typeof options === 'boolean' ? options : options && options.texture;
+        const destroyTexture = typeof options === 'boolean' ? options : options?.texture;
 
         if (destroyTexture)
         {
-            const destroyBaseTexture = typeof options === 'boolean' ? options : options && options.baseTexture;
+            const destroyBaseTexture = typeof options === 'boolean' ? options : options?.baseTexture;
 
             this._texture.destroy(!!destroyBaseTexture);
         }

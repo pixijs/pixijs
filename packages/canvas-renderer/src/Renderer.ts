@@ -14,7 +14,7 @@ const parentCreate = Renderer.create;
  */
 Renderer.create = function create(options: IRendererOptionsAuto): IRenderer
 {
-    const forceCanvas = options && options.forceCanvas;
+    const forceCanvas = options?.forceCanvas;
 
     if (!forceCanvas)
     {

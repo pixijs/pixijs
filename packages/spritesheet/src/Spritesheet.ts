@@ -168,7 +168,7 @@ export class Spritesheet
         if (resolution === null)
         {
             // Use the scale value or default to 1
-            resolution = scale !== undefined ? parseFloat(scale) : 1;
+            resolution = parseFloat(scale ?? '1');
         }
 
         // For non-1 resolutions, update baseTexture

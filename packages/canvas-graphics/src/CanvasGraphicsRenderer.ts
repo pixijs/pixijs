@@ -596,7 +596,7 @@ export class CanvasGraphicsRenderer
         {
             const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
 
-            if (svg && svg.createSVGMatrix)
+            if (svg?.createSVGMatrix)
             {
                 this._svgMatrix = svg.createSVGMatrix();
             }

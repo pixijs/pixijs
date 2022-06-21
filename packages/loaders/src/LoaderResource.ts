@@ -27,7 +27,7 @@ function _noop(): void { /* empty */ }
  */
 function setExtMap(map: Dict<any>, extname: string, val: number)
 {
-    if (extname && extname.startsWith('.'))
+    if (extname?.startsWith('.'))
     {
         extname = extname.substring(1);
     }
@@ -626,7 +626,7 @@ class LoaderResource
     {
         clearTimeout(this._elementTimer);
 
-        if (this.data && this.data.removeEventListener)
+        if (this.data?.removeEventListener)
         {
             this.data.removeEventListener('error', this._boundOnError, false);
             this.data.removeEventListener('load', this._boundComplete, false);
@@ -892,7 +892,7 @@ class LoaderResource
      */
     private _onProgress(event: ProgressEvent): void
     {
-        if (event && event.lengthComputable)
+        if (event?.lengthComputable)
         {
             this.onProgress.dispatch(this, event.loaded / event.total);
         }

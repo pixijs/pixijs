@@ -64,7 +64,7 @@ export abstract class BlobResource extends BufferResource
         {
             this.load();
         }
-        if (data && data.length)
+        if (data?.length)
         {
             this.loaded = true;
             this.onBlobLoaded(this.buffer.rawBinaryData);

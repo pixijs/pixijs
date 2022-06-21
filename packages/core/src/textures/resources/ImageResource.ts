@@ -105,8 +105,7 @@ export class ImageResource extends BaseImageResource
         this._process = null;
 
         this.preserveBitmap = false;
-        this.createBitmap = (options.createBitmap !== undefined
-            ? options.createBitmap : settings.CREATE_IMAGE_BITMAP) && !!globalThis.createImageBitmap;
+        this.createBitmap = (options.createBitmap ?? settings.CREATE_IMAGE_BITMAP) && !!globalThis.createImageBitmap;
         this.alphaMode = typeof options.alphaMode === 'number' ? options.alphaMode : null;
         this.bitmap = null;
 
