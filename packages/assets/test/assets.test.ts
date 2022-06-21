@@ -95,7 +95,24 @@ describe('Assets', () =>
         expect(bunny.baseTexture.resource.src).toBe('http://localhost:8080/profile-abel@2x.jpg');
     });
 
-    it('should load a bundle', async () =>
+    it('should add and load bundle', async () =>
+    {
+        await Assets.init({
+            basePath: 'http://localhost:8080/',
+        });
+
+        Assets.addBundle('testBundle', {
+            bunny: 'bunny.{png,web}',
+            spritesheet: 'spritesheet.json',
+        });
+
+        const assets = await Assets.loadBundle('testBundle');
+
+        expect(assets.bunny).toBeInstanceOf(Texture);
+        expect(assets.spritesheet).toBeInstanceOf(Spritesheet);
+    });
+
+    it('should load a bundle found in the manifest', async () =>
     {
         await Assets.init({
             basePath: 'http://localhost:8080/',
@@ -156,7 +173,7 @@ describe('Assets', () =>
         expect(bunny.baseTexture.resource.src).toBe('http://localhost:8080/bunny.webp');
     });
 
-    it('should getTexture correctly', async () =>
+    it('should getTextureSync correctly', async () =>
     {
         await Assets.init({
             basePath: 'http://localhost:8080/',
@@ -169,7 +186,27 @@ describe('Assets', () =>
         await Assets.load('bunny.png');
 
         // TODO - this src will be added in the future..
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        expect(bunny.baseTexture.resource.src).toBe('http://localhost:8080/bunny.png');
+    });
 
+    it('should return the same texture when calling getTextureSync', async () =>
+    {
+        await Assets.init({
+            basePath: 'http://localhost:8080/',
+        });
+
+        const bunny = Assets.getTextureSync('bunny.png');
+        const bunny2 = Assets.getTextureSync('bunny.png');
+
+        expect(bunny2).toBe(bunny);
+
+        await Assets.load('bunny.png');
+
+        // TODO - this src will be added in the future..
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         expect(bunny.baseTexture.resource.src).toBe('http://localhost:8080/bunny.png');
     });
 
@@ -187,9 +224,9 @@ describe('Assets', () =>
         const asset = Assets.loader.cache[`http://localhost:8080/bunny.png`];
 
         expect(asset).toBeInstanceOf(Texture);
-
         // TODO - this src will be added in the future..
-
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         expect(asset.baseTexture.resource.src).toBe('http://localhost:8080/bunny.png');
     });
 
@@ -233,5 +270,22 @@ describe('Assets', () =>
         const texture = Assets.get('pic-sensei.jpg');
 
         expect(texture).toBeInstanceOf(Texture);
+    });
+
+    it('should dispose of a texture correctly', async () =>
+    {
+        await Assets.init({
+            basePath: 'http://localhost:8080/',
+        });
+
+        const bunny: Texture = await Assets.load('bunny.png');
+
+        bunny.destroy(true);
+
+        expect(bunny.baseTexture).toBe(null);
+
+        const bunnyReloaded: Texture = await Assets.load('bunny.png');
+
+        expect(bunnyReloaded.baseTexture).toBeInstanceOf(BaseTexture);
     });
 });
