@@ -440,7 +440,7 @@ export class AssetsClass
      *    thumper: 'thumper.png',
      *  });
      *
-     * const assets = await Assets.loadBundle('preloaded');
+     * const assets = await Assets.loadBundle('animals');
      *
      * ```
      * @param bundleId - the id of the bundle to add
