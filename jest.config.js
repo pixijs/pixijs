@@ -25,4 +25,10 @@ module.exports = {
             },
         },
     },
+    collectCoverageFrom: [
+        '<rootDir>/packages/**/*.ts',
+        '!<rootDir>/packages/**/*.d.ts',
+        '!<rootDir>/packages/polyfill/**/*.ts',
+    ],
+    coverageDirectory: '<rootDir>/dist/coverage',
 };
