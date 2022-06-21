@@ -74,7 +74,7 @@ class Loader
             if (parser.load && parser.test?.(url, data, this))
             {
                 didParse = true;
-                asset = await parser?.load(url, data, this);
+                asset = await parser.load(url, data, this);
             }
         }
 

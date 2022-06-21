@@ -111,8 +111,6 @@ class WorkerManagerClass
         this.next();
 
         return promise;
-
-        Promise.resolve(null);
     }
 
     private next(): void
