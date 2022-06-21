@@ -20,7 +20,7 @@
     "test": "run-s test:main test:scene",
     "test:debug": "cross-env DEBUG_MODE=1 npx jest",
     "precoverage": "run-s lint",
-    "coverage": "npm run test -- --coverage",
+    "coverage": "npm run test:main -- --coverage",
     "docs": "mkdirp dist && webdoc -R README.md",
     "lint": "eslint --ext .js --ext .ts test bundles packages scripts --ignore-path .gitignore --max-warnings 0",
     "lintfix": "run-s \"lint -- --fix\"",
