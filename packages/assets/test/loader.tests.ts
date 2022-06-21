@@ -14,7 +14,8 @@ const dummyPlugin: LoaderParser = {
     },
 } as LoaderParser<string, string>;
 
-const serverPath = 'http://localhost:8080/';
+// eslint-disable-next-line max-len
+const serverPath = 'https://raw.githubusercontent.com/pixijs/pixijs/864d41d92e987da1d2da2bf893c67d14a731763a/packages/assets/test/assets/';
 
 describe('Loader', () =>
 {

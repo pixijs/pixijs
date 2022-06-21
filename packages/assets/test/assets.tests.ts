@@ -5,6 +5,9 @@ import { exec, ChildProcess } from 'child_process';
 
 import { Assets } from '../src/Assets';
 
+// eslint-disable-next-line max-len
+const basePath = 'https://raw.githubusercontent.com/pixijs/pixijs/864d41d92e987da1d2da2bf893c67d14a731763a/packages/assets/test/assets/';
+
 function wait(value = 500)
 {
     // wait a bit...
@@ -34,7 +37,7 @@ describe('Assets', () =>
     it('should load assets', async () =>
     {
         await Assets.init({
-            basePath: 'http://localhost:8080/',
+            basePath,
         });
 
         const bunny = await Assets.load('bunny.png');
@@ -45,7 +48,7 @@ describe('Assets', () =>
     it('should get assets once loaded', async () =>
     {
         await Assets.init({
-            basePath: 'http://localhost:8080/',
+            basePath,
         });
 
         Assets.add('test', 'bunny.png');
@@ -66,7 +69,7 @@ describe('Assets', () =>
     it('should load a webp if available by default', async () =>
     {
         await Assets.init({
-            basePath: 'http://localhost:8080/',
+            basePath,
             texturePreference: {
                 resolution: 2,
             },
@@ -88,7 +91,7 @@ describe('Assets', () =>
     it('should load a correct texture based on preference', async () =>
     {
         await Assets.init({
-            basePath: 'http://localhost:8080/',
+            basePath,
             texturePreference: {
                 format: 'jpg',
                 resolution: 2,
@@ -111,7 +114,7 @@ describe('Assets', () =>
     it('should add and load bundle', async () =>
     {
         await Assets.init({
-            basePath: 'http://localhost:8080/',
+            basePath,
         });
 
         Assets.addBundle('testBundle', {
@@ -128,7 +131,7 @@ describe('Assets', () =>
     it('should load a bundle found in the manifest', async () =>
     {
         await Assets.init({
-            basePath: 'http://localhost:8080/',
+            basePath,
             manifest: 'asset-manifest-2.json',
         });
 
@@ -142,7 +145,7 @@ describe('Assets', () =>
     it('should load multiple bundles', async () =>
     {
         await Assets.init({
-            basePath: 'http://localhost:8080/',
+            basePath,
             manifest: 'asset-manifest-2.json',
         });
 
@@ -159,7 +162,7 @@ describe('Assets', () =>
     it('should map all names', async () =>
     {
         Assets.init({
-            basePath: 'http://localhost:8080/',
+            basePath,
         });
 
         Assets.add(['fish', 'chicken'], 'bunny.png');
@@ -176,7 +179,7 @@ describe('Assets', () =>
     it('should split url versions correctly', async () =>
     {
         await Assets.init({
-            basePath: 'http://localhost:8080/',
+            basePath,
         });
 
         Assets.add('fish', 'bunny.{png,webp}');
@@ -189,7 +192,7 @@ describe('Assets', () =>
     it('should getTextureSync correctly', async () =>
     {
         await Assets.init({
-            basePath: 'http://localhost:8080/',
+            basePath,
         });
 
         const bunny = Assets.getTextureSync('bunny.png');
@@ -207,7 +210,7 @@ describe('Assets', () =>
     it('should return the same texture when calling getTextureSync', async () =>
     {
         await Assets.init({
-            basePath: 'http://localhost:8080/',
+            basePath,
         });
 
         const bunny = Assets.getTextureSync('bunny.png');
@@ -226,7 +229,7 @@ describe('Assets', () =>
     it('should background load correctly', async () =>
     {
         await Assets.init({
-            basePath: 'http://localhost:8080/',
+            basePath,
         });
 
         Assets.backgroundLoad(['bunny.png']);
@@ -246,7 +249,7 @@ describe('Assets', () =>
     it('should background load bundles', async () =>
     {
         await Assets.init({
-            basePath: 'http://localhost:8080/',
+            basePath,
             manifest: 'asset-manifest-2.json',
         });
 
@@ -282,7 +285,7 @@ describe('Assets', () =>
     it('should add sprite textures to the cache', async () =>
     {
         await Assets.init({
-            basePath: 'http://localhost:8080/',
+            basePath,
         });
 
         await Assets.load('spritesheet.json');
@@ -295,7 +298,7 @@ describe('Assets', () =>
     it('should dispose of a texture correctly', async () =>
     {
         await Assets.init({
-            basePath: 'http://localhost:8080/',
+            basePath,
         });
 
         const bunny = await Assets.load('bunny.png') as Texture;
