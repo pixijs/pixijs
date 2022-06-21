@@ -1,5 +1,5 @@
 import { Container } from '@pixi/display';
-import { BatchRenderer, extensions, RenderTexture } from '@pixi/core';
+import { extensions, RenderTexture } from '@pixi/core';
 import { CanvasRenderer } from '@pixi/canvas-renderer';
 import { Sprite } from '@pixi/sprite';
 import { CanvasSpriteRenderer } from '@pixi/canvas-sprite';
@@ -21,13 +21,11 @@ function withGL(fn: () => void)
 describe('getLocalBounds', () =>
 {
     before(() => extensions.add(
-        BatchRenderer,
         CanvasSpriteRenderer,
         CanvasGraphicsRenderer,
         CanvasMeshRenderer
     ));
     after(() => extensions.remove(
-        BatchRenderer,
         CanvasSpriteRenderer,
         CanvasGraphicsRenderer,
         CanvasMeshRenderer

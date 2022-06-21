@@ -6,7 +6,7 @@ import defaultVertex from './texture.vert';
 import defaultFragment from './texture.frag';
 
 import type { Renderer } from '../Renderer';
-import { ExtensionMetadata, ExtensionType } from '../extensions';
+import { ExtensionMetadata, extensions, ExtensionType } from '../extensions';
 
 export interface IBatchFactoryOptions
 {
@@ -101,3 +101,6 @@ Object.assign(BatchRenderer, {
         type: ExtensionType.RendererPlugin,
     } as ExtensionMetadata,
 });
+
+// Install BatchRenderer as default
+extensions.add(BatchRenderer);

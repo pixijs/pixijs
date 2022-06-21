@@ -1,4 +1,4 @@
-import { Texture, RenderTexture, extensions, BatchRenderer } from '@pixi/core';
+import { Texture, RenderTexture, extensions } from '@pixi/core';
 import { Sprite } from '@pixi/sprite';
 import { CanvasRenderer } from '@pixi/canvas-renderer';
 import { NineSlicePlane } from '@pixi/mesh-extras';
@@ -13,13 +13,13 @@ describe('NineSlicePlane', () =>
 
     before(() =>
     {
-        extensions.add(CanvasSpriteRenderer, CanvasMeshRenderer, BatchRenderer);
+        extensions.add(CanvasSpriteRenderer, CanvasMeshRenderer);
         renderer = new CanvasRenderer();
     });
 
     after(() =>
     {
-        extensions.remove(CanvasSpriteRenderer, CanvasMeshRenderer, BatchRenderer);
+        extensions.remove(CanvasSpriteRenderer, CanvasMeshRenderer);
         renderer.destroy();
         renderer = null;
     });

@@ -1,4 +1,4 @@
-import { BatchRenderer, extensions, Renderer } from '@pixi/core';
+import { Renderer } from '@pixi/core';
 import { Container, DisplayObject } from '@pixi/display';
 import { AlphaFilter } from '@pixi/filter-alpha';
 import { Graphics } from '@pixi/graphics';
@@ -44,9 +44,6 @@ function testRemoveChild(fn: any)
 
 describe('Container', () =>
 {
-    before(() => extensions.add(BatchRenderer));
-    after(() => extensions.remove(BatchRenderer));
-
     describe('parent', () =>
     {
         it('should be present when adding children to Container', () =>
