@@ -85,7 +85,7 @@ describe('Assets', () =>
         // not loaded yet!
         const bunny = await Assets.load('test');
 
-        expect(bunny.baseTexture.resource.src).toBe('http://localhost:8080/profile-abel@2x.webp');
+        expect(bunny.baseTexture.resource.src).toBe(`${basePath}profile-abel@2x.webp`);
     });
 
     it('should load a correct texture based on preference', async () =>
@@ -108,7 +108,7 @@ describe('Assets', () =>
         // not loaded yet!
         const bunny = await Assets.load('test');
 
-        expect(bunny.baseTexture.resource.src).toBe('http://localhost:8080/profile-abel@2x.jpg');
+        expect(bunny.baseTexture.resource.src).toBe(`${basePath}profile-abel@2x.jpg`);
     });
 
     it('should add and load bundle', async () =>
@@ -186,7 +186,7 @@ describe('Assets', () =>
 
         const bunny = await Assets.load('fish');
 
-        expect(bunny.baseTexture.resource.src).toBe('http://localhost:8080/bunny.webp');
+        expect(bunny.baseTexture.resource.src).toBe(`${basePath}bunny.webp`);
     });
 
     it('should getTextureSync correctly', async () =>
@@ -204,7 +204,7 @@ describe('Assets', () =>
         // TODO - this src will be added in the future..
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        expect(bunny.baseTexture.resource.src).toBe('http://localhost:8080/bunny.png');
+        expect(bunny.baseTexture.resource.src).toBe(`${basePath}bunny.png`);
     });
 
     it('should return the same texture when calling getTextureSync', async () =>
@@ -223,7 +223,7 @@ describe('Assets', () =>
         // TODO - this src will be added in the future..
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        expect(bunny.baseTexture.resource.src).toBe('http://localhost:8080/bunny.png');
+        expect(bunny.baseTexture.resource.src).toBe(`${basePath}bunny.png`);
     });
 
     it('should background load correctly', async () =>
@@ -237,13 +237,13 @@ describe('Assets', () =>
         // wait a bit...
         await wait();
 
-        const asset = await Assets.loader.promiseCache[`http://localhost:8080/bunny.png`];
+        const asset = await Assets.loader.promiseCache[`${basePath}bunny.png`];
 
         expect(asset).toBeInstanceOf(Texture);
         // TODO - this src will be added in the future..
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        expect(asset.baseTexture.resource.src).toBe('http://localhost:8080/bunny.png');
+        expect(asset.baseTexture.resource.src).toBe(`${basePath}bunny.png`);
     });
 
     it('should background load bundles', async () =>
@@ -259,16 +259,16 @@ describe('Assets', () =>
         await wait();
 
         const expectTypes = {
-            'http://localhost:8080/asset-manifest-2.json': Object,
-            'http://localhost:8080/bunny.png': Texture,
-            'http://localhost:8080/profile-abel@2x.webp': Texture,
-            'http://localhost:8080/spritesheet.json': Spritesheet,
-            'http://localhost:8080/spritesheet.png': Texture,
+            'asset-manifest-2.json': Object,
+            'bunny.png': Texture,
+            'profile-abel@2x.webp': Texture,
+            'spritesheet.json': Spritesheet,
+            'spritesheet.png': Texture,
         };
 
         for (const [key, type] of Object.entries(expectTypes))
         {
-            const asset = await Assets.loader.promiseCache[key];
+            const asset = await Assets.loader.promiseCache[basePath + key];
 
             expect(asset).toBeInstanceOf(type);
         }
