@@ -6,10 +6,9 @@ import { InteractionTrackingData } from './InteractionTrackingData';
 import { TreeSearch } from './TreeSearch';
 import { EventEmitter } from '@pixi/utils';
 import { interactiveTarget } from './interactiveTarget';
-import { ExtensionMetadata, ExtensionType } from '@pixi/core';
+import { IRenderer, ExtensionMetadata, ExtensionType } from '@pixi/core';
 import type { Point, IPointData } from '@pixi/math';
 import type { Dict } from '@pixi/utils';
-import { IRenderer } from '@pixi/core';
 
 // Mix interactiveTarget into DisplayObject.prototype
 DisplayObject.mixin(interactiveTarget);
