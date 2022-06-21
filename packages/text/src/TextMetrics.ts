@@ -457,7 +457,7 @@ export class TextMetrics
             return false;
         }
 
-        return (TextMetrics._newlines.indexOf(char.charCodeAt(0)) >= 0);
+        return TextMetrics._newlines.includes(char.charCodeAt(0));
     }
 
     /**
@@ -477,7 +477,7 @@ export class TextMetrics
             return false;
         }
 
-        return (TextMetrics._breakingSpaces.indexOf(char.charCodeAt(0)) >= 0);
+        return TextMetrics._breakingSpaces.includes(char.charCodeAt(0));
     }
 
     /**

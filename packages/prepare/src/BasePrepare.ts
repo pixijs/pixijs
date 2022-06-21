@@ -47,7 +47,7 @@ function findMultipleBaseTextures(item: IDisplayObjectExtended, queue: Array<any
             {
                 const baseTexture = item._textures[i].baseTexture;
 
-                if (queue.indexOf(baseTexture) === -1)
+                if (!queue.includes(baseTexture))
                 {
                     queue.push(baseTexture);
                     result = true;
@@ -72,7 +72,7 @@ function findBaseTexture(item: Texture, queue: Array<any>): boolean
     {
         const texture = item.baseTexture;
 
-        if (queue.indexOf(texture) === -1)
+        if (!queue.includes(texture))
         {
             queue.push(texture);
         }
@@ -96,7 +96,7 @@ function findTexture(item: IDisplayObjectExtended, queue: Array<any>): boolean
     {
         const texture = item._texture.baseTexture;
 
-        if (queue.indexOf(texture) === -1)
+        if (!queue.includes(texture))
         {
             queue.push(texture);
         }
@@ -160,19 +160,19 @@ function findText(item: IDisplayObjectExtended, queue: Array<any>): boolean
     if (item instanceof Text)
     {
         // push the text style to prepare it - this can be really expensive
-        if (queue.indexOf(item.style) === -1)
+        if (!queue.includes(item.style))
         {
             queue.push(item.style);
         }
         // also push the text object so that we can render it (to canvas/texture) if needed
-        if (queue.indexOf(item) === -1)
+        if (!queue.includes(item))
         {
             queue.push(item);
         }
         // also push the Text's texture for upload to GPU
         const texture = item._texture.baseTexture;
 
-        if (queue.indexOf(texture) === -1)
+        if (!queue.includes(texture))
         {
             queue.push(texture);
         }
@@ -194,7 +194,7 @@ function findTextStyle(item: TextStyle, queue: Array<any>): boolean
 {
     if (item instanceof TextStyle)
     {
-        if (queue.indexOf(item) === -1)
+        if (!queue.includes(item))
         {
             queue.push(item);
         }

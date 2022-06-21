@@ -27,7 +27,7 @@ function _noop(): void { /* empty */ }
  */
 function setExtMap(map: Dict<any>, extname: string, val: number)
 {
-    if (extname && extname.indexOf('.') === 0)
+    if (extname && extname.startsWith('.'))
     {
         extname = extname.substring(1);
     }
@@ -330,7 +330,7 @@ class LoaderResource
         this._flags = 0;
 
         // set data url flag, needs to be set early for some _determineX checks to work.
-        this._setFlag(LoaderResource.STATUS_FLAGS.DATA_URL, url.indexOf('data:') === 0);
+        this._setFlag(LoaderResource.STATUS_FLAGS.DATA_URL, url.startsWith('data:'));
 
         this.name = name;
 
@@ -1036,7 +1036,7 @@ class LoaderResource
     _determineCrossOrigin(url: string, loc?: any): string
     {
         // data: and javascript: urls are considered same-origin
-        if (url.indexOf('data:') === 0)
+        if (url.startsWith('data:'))
         {
             return '';
         }

@@ -511,7 +511,7 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
     {
         if (id)
         {
-            if (texture.textureCacheIds.indexOf(id) === -1)
+            if (!texture.textureCacheIds.includes(id))
             {
                 texture.textureCacheIds.push(id);
             }

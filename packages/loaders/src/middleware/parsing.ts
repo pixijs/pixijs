@@ -30,7 +30,7 @@ export function parsing(resource: LoaderResource, next: (...args: any) => void):
             const type = resource.xhr.getResponseHeader('content-type');
 
             // this is an image, convert the binary string into a data url
-            if (type && type.indexOf('image') === 0)
+            if (type && type.startsWith('image'))
             {
                 resource.data = new Image();
                 resource.data.src = `data:${type};base64,${encodeBinary(resource.xhr.responseText)}`;
@@ -50,7 +50,7 @@ export function parsing(resource: LoaderResource, next: (...args: any) => void):
             }
         }
         // if content type says this is an image, then we should transform the blob into an Image object
-        else if (resource.data.type.indexOf('image') === 0)
+        else if (resource.data.type.startsWith('image'))
         {
             const Url = globalThis.URL || globalThis.webkitURL;
             const src = Url.createObjectURL(resource.data);

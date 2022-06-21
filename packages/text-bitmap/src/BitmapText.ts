@@ -443,7 +443,7 @@ export class BitmapText extends Container
         // the updated text (if any), removed and return them to the pool.
         for (let i = 0; i < activePagesMeshData.length; i++)
         {
-            if (newPagesMeshData.indexOf(activePagesMeshData[i]) === -1)
+            if (!newPagesMeshData.includes(activePagesMeshData[i]))
             {
                 this.removeChild(activePagesMeshData[i].mesh);
             }

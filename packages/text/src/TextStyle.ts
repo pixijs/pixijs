@@ -719,7 +719,7 @@ export class TextStyle implements ITextStyle
             let fontFamily = fontFamilies[i].trim();
 
             // Check if font already contains strings
-            if (!(/([\"\'])[^\'\"]+\1/).test(fontFamily) && genericFontFamilies.indexOf(fontFamily) < 0)
+            if (!(/([\"\'])[^\'\"]+\1/).test(fontFamily) && !genericFontFamilies.includes(fontFamily))
             {
                 fontFamily = `"${fontFamily}"`;
             }
@@ -744,7 +744,7 @@ function getSingleColor(color: string|number): string
     }
     else if (typeof color === 'string')
     {
-        if ( color.indexOf('0x') === 0 )
+        if ( color.startsWith('0x'))
         {
             color = color.replace('0x', '#');
         }
