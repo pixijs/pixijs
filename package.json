@@ -84,8 +84,5 @@
     "typescript": "~4.3.0",
     "workspaces-run": "^1.0.1",
     "yargs-parser": "^21.0.1"
-  },
-  "dependencies": {
-    "http-server": "^14.1.1"
   }
 }

@@ -5,8 +5,6 @@ import { BitmapFont } from '@pixi/text-bitmap';
 import type { LoaderParser } from '../src/loader';
 import { Loader, loadJson, loadSpritesheet, loadTextures, loadWebFont, loadBitmapFont } from '../src/loader';
 
-import { exec, ChildProcess } from 'child_process';
-
 const dummyPlugin: LoaderParser = {
     async load(url: string): Promise<string>
     {
@@ -19,17 +17,6 @@ const serverPath = 'https://raw.githubusercontent.com/pixijs/pixijs/864d41d92e98
 
 describe('Loader', () =>
 {
-    let server: ChildProcess;
-
-    beforeAll(() =>
-    {
-        server = exec(`npx http-server ./assets`);
-    });
-    afterAll(() =>
-    {
-        server.kill();
-    });
-
     it('should add and remove a plugin', () =>
     {
         const loader = new Loader();

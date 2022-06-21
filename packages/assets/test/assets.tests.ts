@@ -1,8 +1,6 @@
 import { Spritesheet } from '@pixi/spritesheet';
 import { BaseTexture, Texture } from '@pixi/core';
 
-import { exec, ChildProcess } from 'child_process';
-
 import { Assets } from '../src/Assets';
 
 // eslint-disable-next-line max-len
@@ -17,17 +15,6 @@ function wait(value = 500)
 
 describe('Assets', () =>
 {
-    let server: ChildProcess;
-
-    beforeAll(() =>
-    {
-        server = exec(`npx http-server ./assets`);
-    });
-    afterAll(() =>
-    {
-        server.kill();
-    });
-
     beforeEach(() =>
     {
         // reset the loader
