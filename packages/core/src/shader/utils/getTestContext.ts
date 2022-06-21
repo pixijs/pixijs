@@ -12,7 +12,7 @@ let context: WebGLRenderingContext | WebGL2RenderingContext = unknownContext as 
  */
 export function getTestContext(): WebGLRenderingContext | WebGL2RenderingContext
 {
-    if (context === unknownContext || (context && context.isContextLost()))
+    if (context === unknownContext || context?.isContextLost())
     {
         const canvas = document.createElement('canvas');
 

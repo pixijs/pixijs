@@ -111,7 +111,7 @@ export class CanvasObjectRendererSystem implements ISystem
         _context._outerBlend = false;
         context2D.globalCompositeOperation = _context.blendModes[BLEND_MODES.NORMAL];
 
-        if (clear !== undefined ? clear : renderer.background.clearBeforeRender)
+        if (clear ?? renderer.background.clearBeforeRender)
         {
             if (this.renderingToScreen)
             {

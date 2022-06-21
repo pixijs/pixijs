@@ -237,7 +237,7 @@ DisplayObject.prototype._renderCached = function _renderCached(renderer: Rendere
  */
 DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayObject(renderer: Renderer): void
 {
-    if (this._cacheData && this._cacheData.sprite)
+    if (this._cacheData?.sprite)
     {
         return;
     }
@@ -258,7 +258,7 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
     const bounds = (this as Container).getLocalBounds(null, true).clone();
 
     // add some padding!
-    if (this.filters && this.filters.length)
+    if (this.filters?.length)
     {
         const padding = this.filters[0].padding;
 
@@ -377,7 +377,7 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDis
     renderer: CanvasRenderer
 ): void
 {
-    if (this._cacheData && this._cacheData.sprite)
+    if (this._cacheData?.sprite)
     {
         return;
     }

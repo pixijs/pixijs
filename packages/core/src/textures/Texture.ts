@@ -263,7 +263,7 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
 
                 // delete the texture if it exists in the texture cache..
                 // this only needs to be removed if the base texture is actually destroyed too..
-                if (resource && resource.url && TextureCache[resource.url])
+                if (resource?.url && TextureCache[resource.url])
                 {
                     Texture.removeFromCache(resource.url);
                 }
@@ -299,7 +299,7 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
         const clonedTexture = new Texture(this.baseTexture,
             !this.noFrame && clonedFrame,
             clonedOrig,
-            this.trim && this.trim.clone(),
+            this.trim?.clone(),
             this.rotate,
             this.defaultAnchor
         );
@@ -353,7 +353,7 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
         {
             if (!source.cacheId)
             {
-                const prefix = (options && options.pixiIdPrefix) || 'pixiid';
+                const prefix = options?.pixiIdPrefix || 'pixiid';
 
                 source.cacheId = `${prefix}-${uid()}`;
                 BaseTexture.addToCache(source, source.cacheId);
@@ -365,7 +365,7 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
         {
             if (!(source as any)._pixiId)
             {
-                const prefix = (options && options.pixiIdPrefix) || 'pixiid';
+                const prefix = options?.pixiIdPrefix || 'pixiid';
 
                 (source as any)._pixiId = `${prefix}_${uid()}`;
             }
@@ -551,7 +551,7 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
                 return textureFromCache;
             }
         }
-        else if (texture && texture.textureCacheIds)
+        else if (texture?.textureCacheIds)
         {
             for (let i = 0; i < texture.textureCacheIds.length; ++i)
             {

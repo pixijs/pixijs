@@ -30,7 +30,7 @@ export function parsing(resource: LoaderResource, next: (...args: any) => void):
             const type = resource.xhr.getResponseHeader('content-type');
 
             // this is an image, convert the binary string into a data url
-            if (type && type.startsWith('image'))
+            if (type?.startsWith('image'))
             {
                 resource.data = new Image();
                 resource.data.src = `data:${type};base64,${encodeBinary(resource.xhr.responseText)}`;

@@ -716,7 +716,7 @@ export class TextMetrics
                 const c = new OffscreenCanvas(0, 0);
                 const context = c.getContext('2d');
 
-                if (context && context.measureText)
+                if (context?.measureText)
                 {
                     TextMetrics.__canvas = c;
 

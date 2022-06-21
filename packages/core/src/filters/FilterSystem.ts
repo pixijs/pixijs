@@ -382,7 +382,7 @@ export class FilterSystem implements ISystem
             this.renderer.projection.transform = null;
         }
 
-        if (filterTexture && filterTexture.filterFrame)
+        if (filterTexture?.filterFrame)
         {
             const destinationFrame = this.tempRect;
 

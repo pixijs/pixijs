@@ -39,7 +39,7 @@ function findMultipleBaseTextures(item: IDisplayObjectExtended, queue: Array<any
     let result = false;
 
     // Objects with multiple textures
-    if (item && item._textures && item._textures.length)
+    if (item?._textures?.length)
     {
         for (let i = 0; i < item._textures.length; i++)
         {
