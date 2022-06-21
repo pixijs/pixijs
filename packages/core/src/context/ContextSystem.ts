@@ -18,7 +18,7 @@ export interface ContextOptions
     context?: IRenderingContext;
     /**
      * Use premultipliedAlpha instead
-     * @deprecated
+     * @deprecated since 7.0.0
      */
     useContextAlpha?: boolean | 'notMultiplied';
     premultipliedAlpha?: boolean;
@@ -54,7 +54,7 @@ export class ContextSystem implements ISystem
      * Pass-thru setting for the canvas' context `alpha` property. This is typically
      * not something you need to fiddle with. If you want transparency, use `backgroundAlpha`.
      * @member {boolean}
-     * @deprecated since 6.4.0
+     * @deprecated since 7.0.0
      */
     useContextAlpha: boolean | 'notMultiplied';
 

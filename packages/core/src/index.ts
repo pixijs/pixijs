@@ -49,4 +49,3 @@ export * from './geometry/Attribute';
 export * from './geometry/Buffer';
 export * from './geometry/Geometry';
 export * from './geometry/ViewableBuffer';
-export * from './deprecations';

@@ -1,6 +1,6 @@
 import { Rectangle } from '@pixi/math';
 import { Texture, BaseTexture } from '@pixi/core';
-import { deprecation, getResolutionOfUrl } from '@pixi/utils';
+import { getResolutionOfUrl } from '@pixi/utils';
 import type { Dict } from '@pixi/utils';
 import type { ImageResource } from '@pixi/core';
 import type { IPointData } from '@pixi/math';
@@ -185,34 +185,11 @@ export class Spritesheet
      * to prevent creating too many Texture within a single process.
      * @method PIXI.Spritesheet#parse
      */
-    public parse(): Promise<Dict<Texture>>;
-
-    /**
-     * Please use the Promise-based version of this function.
-     * @method PIXI.Spritesheet#parse
-     * @deprecated since version 6.5.0
-     * @param {Function} callback - Callback when complete returns
-     *        a map of the Textures for this spritesheet.
-     */
-    public parse(callback?: (textures?: Dict<Texture>) => void): void;
-
-    /** @ignore */
-    public parse(callback?: (textures?: Dict<Texture>) => void): Promise<Dict<Texture>>
+    public parse(): Promise<Dict<Texture>>
     {
-        // #if _DEBUG
-        if (callback)
-        {
-            deprecation('6.5.0', 'Spritesheet.parse callback is deprecated, use the return Promise instead.');
-        }
-        // #endif
-
         return new Promise((resolve) =>
         {
-            this._callback = (textures: Dict<Texture>) =>
-            {
-                callback?.(textures);
-                resolve(textures);
-            };
+            this._callback = resolve;
             this._batchIndex = 0;
 
             if (this._frameKeys.length <= Spritesheet.BATCH_SIZE)
