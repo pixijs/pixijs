@@ -1,6 +1,5 @@
 import {
     RenderTexture,
-    BaseRenderTexture,
     IRenderableObject,
     GenerateTextureSystem,
     SystemManager, IRenderer,
@@ -14,7 +13,7 @@ import {
     ExtensionType
 } from '@pixi/core';
 import { CanvasMaskSystem } from './CanvasMaskSystem';
-import { BLEND_MODES, RENDERER_TYPE, SCALE_MODES } from '@pixi/constants';
+import { BLEND_MODES, RENDERER_TYPE } from '@pixi/constants';
 import { Matrix, Rectangle } from '@pixi/math';
 import type { DisplayObject } from '@pixi/display';
 import type {
@@ -214,41 +213,8 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
      * @param {PIXI.MSAA_QUALITY} options.multisample - The number of samples of the frame buffer.
      * @returns A texture of the graphics object.
      */
-    generateTexture(displayObject: IRenderableObject, options?: IGenerateTextureOptions): RenderTexture;
-
-    /**
-     * Please use the options argument instead.
-     * @deprecated Since 6.1.0
-     * @param displayObject - The displayObject the object will be generated from.
-     * @param scaleMode - The scale mode of the texture.
-     * @param resolution - The resolution / device pixel ratio of the texture being generated.
-     * @param region - The region of the displayObject, that shall be rendered,
-     *        if no region is specified, defaults to the local bounds of the displayObject.
-     * @returns A texture of the graphics object.
-     */
-    generateTexture(
-        displayObject: IRenderableObject,
-        scaleMode?: SCALE_MODES,
-        resolution?: number,
-        region?: Rectangle): RenderTexture;
-
-    /**
-     * @ignore
-     */
-    generateTexture(displayObject: IRenderableObject,
-        options: IGenerateTextureOptions | SCALE_MODES = {},
-        resolution?: number, region?: Rectangle): RenderTexture
+    generateTexture(displayObject: IRenderableObject, options?: IGenerateTextureOptions): RenderTexture
     {
-        // @deprecated parameters spread, use options instead
-        if (typeof options === 'number')
-        {
-            // #if _DEBUG
-            deprecation('6.1.0', 'generateTexture options (scaleMode, resolution, region) are now object options.');
-            // #endif
-
-            options = { scaleMode: options, resolution, region };
-        }
-
         return this.textureGenerator.generateTexture(displayObject, options);
     }
 
@@ -266,22 +232,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
      * @param {PIXI.Matrix} [options.transform] - A transform to apply to the render texture before rendering.
      * @param {boolean} [options.skipUpdateTransform=false] - Should we skip the update transform pass?
      */
-    render(displayObject: DisplayObject, options?: IRendererRenderOptions): void;
-
-    /**
-     * Please use the `option` render arguments instead.
-     * @deprecated Since 6.0.0
-     * @param displayObject - The object to be rendered.
-     * @param renderTexture - The render texture to render to.
-     * @param clear - Should the canvas be cleared before the new render.
-     * @param transform - A transform to apply to the render texture before rendering.
-     * @param skipUpdateTransform - Should we skip the update transform pass?
-     */
-    render(displayObject: DisplayObject, renderTexture?: RenderTexture | BaseRenderTexture,
-        clear?: boolean, transform?: Matrix, skipUpdateTransform?: boolean): void;
-
-    /** @ignore */
-    public render(displayObject: DisplayObject, options?: IRendererRenderOptions | RenderTexture | BaseRenderTexture): void
+    render(displayObject: DisplayObject, options?: IRendererRenderOptions): void
     {
         this.objectRenderer.render(displayObject, options);
     }
@@ -400,13 +351,13 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
 
     /**
      * Tracks the blend modes useful for this renderer.
-     * @deprecated since 6.4.0 use `renderer.canvasContext.blendModes` instead
+     * @deprecated since 7.0.0 use `renderer.canvasContext.blendModes` instead
      */
     get blendModes(): string[]
     {
         // #if _DEBUG
         // eslint-disable-next-line max-len
-        deprecation('6.4.0', 'renderer.blendModes has been deprecated, please use renderer.canvasContext.blendModes instead');
+        deprecation('7.0.0', 'renderer.blendModes has been deprecated, please use renderer.canvasContext.blendModes instead');
         // #endif
 
         return this.canvasContext.blendModes;
@@ -414,23 +365,23 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
 
     /**
      * system that manages canvas masks
-     * @deprecated since 6.4.0 use `renderer.canvasContext.mask`
+     * @deprecated since 7.0.0 use `renderer.canvasContext.mask`
      */
     get maskManager(): CanvasMaskSystem
     {
-        deprecation('6.4.0', 'renderer.maskManager has been deprecated, please use renderer.mask instead');
+        deprecation('7.0.0', 'renderer.maskManager has been deprecated, please use renderer.mask instead');
 
         return this.mask;
     }
 
     /**
      * Boolean flag controlling canvas refresh.
-     * @deprecated since 6.4.0
+     * @deprecated since 7.0.0
      */
     get refresh(): boolean
     {
         // #if _DEBUG
-        deprecation('6.4.0', 'renderer.refresh has been deprecated');
+        deprecation('7.0.0', 'renderer.refresh has been deprecated');
         // #endif
 
         return true;
@@ -438,13 +389,13 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
 
     /**
      * The root canvas 2d context that everything is drawn with.
-     * @deprecated since 6.4.0 Use `renderer.canvasContext.rootContext instead
+     * @deprecated since 7.0.0 Use `renderer.canvasContext.rootContext instead
      */
     get rootContext(): CanvasRenderingContext2D
     {
         // #if _DEBUG
         // eslint-disable-next-line max-len
-        deprecation('6.4.0', 'renderer.rootContext has been deprecated, please use renderer.canvasContext.rootContext instead');
+        deprecation('7.0.0', 'renderer.rootContext has been deprecated, please use renderer.canvasContext.rootContext instead');
         // #endif
 
         return this.canvasContext.rootContext;
@@ -452,13 +403,13 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
 
     /**
      * The currently active canvas 2d context (could change with renderTextures)
-     * @deprecated since 6.4.0 Use `renderer.canvasContext.activeContext instead
+     * @deprecated since 7.0.0 Use `renderer.canvasContext.activeContext instead
      */
     get context(): CanvasRenderingContext2D
     {
         // #if _DEBUG
         // eslint-disable-next-line max-len
-        deprecation('6.4.0', 'renderer.context has been deprecated, please use renderer.canvasContext.activeContext instead');
+        deprecation('7.0.0', 'renderer.context has been deprecated, please use renderer.canvasContext.activeContext instead');
         // #endif
 
         return this.canvasContext.activeContext;
@@ -466,13 +417,13 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
 
     /**
      * The canvas property used to set the canvas smoothing property.
-     * @deprecated since 6.4.0 Use `renderer.canvasContext.smoothProperty` instead.
+     * @deprecated since 7.0.0 Use `renderer.canvasContext.smoothProperty` instead.
      */
     get smoothProperty(): SmoothingEnabledProperties
     {
         // #if _DEBUG
         // eslint-disable-next-line max-len
-        deprecation('6.4.0', 'renderer.smoothProperty has been deprecated, please use renderer.canvasContext.smoothProperty instead');
+        deprecation('7.0.0', 'renderer.smoothProperty has been deprecated, please use renderer.canvasContext.smoothProperty instead');
         // #endif
 
         return this.canvasContext.smoothProperty;
@@ -483,12 +434,12 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
      * @param {number} blendMode - See {@link PIXI.BLEND_MODES} for valid values.
      * @param {boolean} [readyForOuterBlend=false] - Some blendModes are dangerous, they affect outer space of sprite.
      * Pass `true` only if you are ready to use them.
-     * @deprecated since 6.4.0 Use `renderer.canvasContext.setBlendMode` instead.
+     * @deprecated since 7.0.0 Use `renderer.canvasContext.setBlendMode` instead.
      */
     setBlendMode(blendMode: BLEND_MODES, readyForOuterBlend?: boolean): void
     {
         // #if _DEBUG
-        deprecation('6.4.0', 'renderer.setBlendMode has been deprecated, use renderer.canvasContext.setBlendMode instead');
+        deprecation('7.0.0', 'renderer.setBlendMode has been deprecated, use renderer.canvasContext.setBlendMode instead');
         // #endif
 
         this.canvasContext.setBlendMode(blendMode, readyForOuterBlend);
@@ -496,13 +447,13 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
 
     /**
      * Checks if blend mode has changed.
-     * @deprecated since 6.4.0 Use `renderer.canvasContext.invalidateBlendMode` instead.
+     * @deprecated since 7.0.0 Use `renderer.canvasContext.invalidateBlendMode` instead.
      */
     invalidateBlendMode(): void
     {
         // #if _DEBUG
         // eslint-disable-next-line max-len
-        deprecation('6.4.0', 'renderer.invalidateBlendMode has been deprecated, use renderer.canvasContext.invalidateBlendMode instead');
+        deprecation('7.0.0', 'renderer.invalidateBlendMode has been deprecated, use renderer.canvasContext.invalidateBlendMode instead');
         // #endif
 
         this.canvasContext.invalidateBlendMode();
@@ -515,13 +466,13 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
      * @param transform - world matrix of current element
      * @param roundPixels - whether to round (tx,ty) coords
      * @param localResolution - If specified, used instead of `renderer.resolution` for local scaling
-     * @deprecated since 6.4.0 - Use `renderer.canvasContext.setContextTransform` instead.
+     * @deprecated since 7.0.0 - Use `renderer.canvasContext.setContextTransform` instead.
      */
     setContextTransform(transform: Matrix, roundPixels?: boolean, localResolution?: number): void
     {
         // #if _DEBUG
         // eslint-disable-next-line max-len
-        deprecation('6.4.0', 'renderer.setContextTransform has been deprecated, use renderer.canvasContext.setContextTransform instead');
+        deprecation('7.0.0', 'renderer.setContextTransform has been deprecated, use renderer.canvasContext.setContextTransform instead');
         // #endif
 
         this.canvasContext.setContextTransform(transform, roundPixels, localResolution);
@@ -529,23 +480,25 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
 
     /**
      * The background color to fill if not transparent
-     * @member {number}
-     * @deprecated since 6.4.0
+     * @deprecated since 7.0.0
      */
     get backgroundColor(): number
     {
         // #if _DEBUG
         // eslint-disable-next-line max-len
-        deprecation('6.4.0', 'renderer.backgroundColor has been deprecated, use renderer.background.color instead.');
+        deprecation('7.0.0', 'renderer.backgroundColor has been deprecated, use renderer.background.color instead.');
         // #endif
 
         return this.background.color;
     }
 
+    /**
+     * @deprecated since 7.0.0
+     */
     set backgroundColor(value: number)
     {
         // #if _DEBUG
-        deprecation('6.4.0', 'renderer.backgroundColor has been deprecated, use renderer.background.color instead.');
+        deprecation('7.0.0', 'renderer.backgroundColor has been deprecated, use renderer.background.color instead.');
         // #endif
 
         this.background.color = value;
@@ -554,23 +507,26 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
     /**
      * The background color alpha. Setting this to 0 will make the canvas transparent.
      * @member {number}
-     * @deprecated since 6.4.0
+     * @deprecated since 7.0.0
      */
     get backgroundAlpha(): number
     {
         // #if _DEBUG
         // eslint-disable-next-line max-len
-        deprecation('6.4.0', 'renderer.backgroundAlpha has been deprecated, use renderer.background.alpha instead.');
+        deprecation('7.0.0', 'renderer.backgroundAlpha has been deprecated, use renderer.background.alpha instead.');
         // #endif
 
         return this.background.color;
     }
 
+    /**
+     * @deprecated since 7.0.0
+     */
     set backgroundAlpha(value: number)
     {
         // #if _DEBUG
         // eslint-disable-next-line max-len
-        deprecation('6.4.0', 'renderer.backgroundAlpha has been deprecated, use renderer.background.alpha instead.');
+        deprecation('7.0.0', 'renderer.backgroundAlpha has been deprecated, use renderer.background.alpha instead.');
         // #endif
 
         this.background.alpha = value;
@@ -578,12 +534,12 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
 
     /**
      * old abstract function not used by canvas renderer
-     * @deprecated since 6.4.0
+     * @deprecated since 7.0.0
      */
     get preserveDrawingBuffer(): boolean
     {
         // #if _DEBUG
-        deprecation('6.4.0', 'renderer.preserveDrawingBuffer has been deprecated');
+        deprecation('7.0.0', 'renderer.preserveDrawingBuffer has been deprecated');
         // #endif
 
         return false;
@@ -591,12 +547,12 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
 
     /**
      * old abstract function not used by canvas renderer
-     * @deprecated since 6.4.0
+     * @deprecated since 7.0.0
      */
     get useContextAlpha(): boolean
     {
         // #if _DEBUG
-        deprecation('6.4.0', 'renderer.useContextAlpha has been deprecated');
+        deprecation('7.0.0', 'renderer.useContextAlpha has been deprecated');
         // #endif
 
         return false;
@@ -615,24 +571,6 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
      * @property {PIXI.InteractionManager} interaction Handles mouse, touch and pointer events.
      * @property {PIXI.CanvasPrepare} prepare Pre-render display objects.
      */
-
-    /**
-     * Use the {@link PIXI.extensions.add} API to register plugins.
-     * @deprecated since 6.5.0
-     * @param pluginName - The name of the plugin.
-     * @param ctor - The constructor function or class for the plugin.
-     */
-    static registerPlugin(pluginName: string, ctor: ICanvasRendererPluginConstructor): void
-    {
-        // #if _DEBUG
-        deprecation('6.5.0', 'CanvasRenderer.registerPlugin() has been deprecated, please use extensions.add() instead.');
-        // #endif
-        extensions.add({
-            name: pluginName,
-            type: ExtensionType.CanvasRendererPlugin,
-            ref: ctor,
-        });
-    }
 }
 
 extensions.handle(

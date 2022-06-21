@@ -9,5 +9,3 @@ declare module '*.vert' {
 
     export default value;
 }
-
-declare module 'es6-promise-polyfill'

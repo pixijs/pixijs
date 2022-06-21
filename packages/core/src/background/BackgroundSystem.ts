@@ -1,4 +1,4 @@
-import { deprecation, hex2rgb, hex2string } from '@pixi/utils';
+import { hex2rgb, hex2string } from '@pixi/utils';
 import { ISystem } from '../system/ISystem';
 
 export interface BackgroundOptions
@@ -8,9 +8,7 @@ export interface BackgroundOptions
     /** the main canvas background color. */
     color: number,
     /** sets if the renderer will clear the canvas or not before the new render pass. */
-    clearBeforeRender: boolean
-    /** @deprecated The method should not be used */
-    transparent?: boolean
+    clearBeforeRender: boolean,
 }
 
 /**
@@ -54,15 +52,6 @@ export class BackgroundSystem implements ISystem
      */
     init(options: BackgroundOptions): void
     {
-        if (options.transparent !== undefined)
-        {
-            // #if _DEBUG
-            deprecation('6.0.0', 'Option transparent is deprecated, please use backgroundAlpha instead.');
-            // #endif
-
-            options.alpha = options.transparent ? 0 : 1;
-        }
-
         this.clearBeforeRender = options.clearBeforeRender;
         this.color = options.color || this._backgroundColor; // run bg color setter
         this.alpha = options.alpha;

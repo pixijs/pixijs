@@ -2,7 +2,7 @@ import { Signal } from './base/Signal';
 import { parseUri } from './base/parseUri';
 import { IResourceMetadata, LoaderResource } from './LoaderResource';
 import { AsyncQueue } from './base/AsyncQueue';
-import { deprecation, Dict } from '@pixi/utils';
+import { Dict } from '@pixi/utils';
 import { extensions, ExtensionType } from '@pixi/core';
 
 // some constants
@@ -619,26 +619,6 @@ class Loader
         }
 
         return shared;
-    }
-
-    /**
-     * Use the {@link PIXI.extensions.add} API to register plugins.
-     * @deprecated since 6.5.0
-     * @param plugin - The plugin to add
-     * @returns Reference to PIXI.Loader for chaining
-     */
-    public static registerPlugin(plugin: ILoaderPlugin): typeof Loader
-    {
-        // #if _DEBUG
-        deprecation('6.5.0', 'Loader.registerPlugin() is deprecated, use extensions.add() instead.');
-        // #endif
-
-        extensions.add({
-            type: ExtensionType.Loader,
-            ref: plugin,
-        });
-
-        return Loader;
     }
 }
 
