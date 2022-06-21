@@ -56,6 +56,7 @@
     "@rollup/plugin-node-resolve": "^9.0.0",
     "@rollup/plugin-typescript": "^6.0.0",
     "@types/chai": "^4.3.1",
+    "@types/css-font-loading-module": "^0.0.7",
     "@types/jest": "^26.0.0",
     "@webdoc/cli": "^1.5.5",
     "copyfiles": "^2.1.0",
