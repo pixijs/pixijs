@@ -15,7 +15,7 @@ let tempAnchor: HTMLAnchorElement | undefined;
 export function determineCrossOrigin(url: string, loc: Location = globalThis.location): string
 {
     // data: and javascript: urls are considered same-origin
-    if (url.indexOf('data:') === 0)
+    if (url.startsWith('data:'))
     {
         return '';
     }

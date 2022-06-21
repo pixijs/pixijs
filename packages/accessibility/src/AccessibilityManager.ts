@@ -436,7 +436,7 @@ export class AccessibilityManager
             div.style.borderStyle = 'none';
 
             // ARIA attributes ensure that button title and hint updates are announced properly
-            if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1)
+            if (navigator.userAgent.toLowerCase().includes('chrome'))
             {
                 // Chrome doesn't need aria-live to work as intended; in fact it just gets more confused.
                 div.setAttribute('aria-live', 'off');

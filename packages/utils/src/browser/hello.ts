@@ -27,7 +27,7 @@ export function sayHello(type: string): void
         return;
     }
 
-    if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1)
+    if (navigator.userAgent.toLowerCase().includes('chrome'))
     {
         const args = [
             `\n %c %c %c PixiJS ${VERSION} - ✰ ${type} ✰  %c  %c  http://www.pixijs.com/  %c %c ♥%c♥%c♥ \n\n`,

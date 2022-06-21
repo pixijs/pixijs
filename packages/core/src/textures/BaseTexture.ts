@@ -663,7 +663,7 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
     {
         if (id)
         {
-            if (baseTexture.textureCacheIds.indexOf(id) === -1)
+            if (!baseTexture.textureCacheIds.includes(id))
             {
                 baseTexture.textureCacheIds.push(id);
             }

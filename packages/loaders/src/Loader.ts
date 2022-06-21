@@ -450,7 +450,7 @@ class Loader
         let result;
 
         // absolute url, just use it as is.
-        if (parsedUrl.protocol || !parsedUrl.path || url.indexOf('//') === 0)
+        if (parsedUrl.protocol || !parsedUrl.path || url.startsWith('//'))
         {
             result = url;
         }
@@ -474,7 +474,7 @@ class Loader
 
             result = result.slice(0, result.length - hash.length);
 
-            if (result.indexOf('?') !== -1)
+            if (result.includes('?'))
             {
                 result += `&${this.defaultQueryString}`;
             }
