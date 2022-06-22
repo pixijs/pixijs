@@ -4,19 +4,22 @@ import { BaseTexture } from '../textures/BaseTexture';
 import { ObjectRenderer } from './ObjectRenderer';
 import { State } from '../state/State';
 import { ViewableBuffer } from '../geometry/ViewableBuffer';
-
+import { BatchShaderGenerator } from './BatchShaderGenerator';
 import { checkMaxIfStatementsInShader } from '../shader/utils/checkMaxIfStatementsInShader';
 
 import { settings } from '@pixi/settings';
 import { premultiplyBlendMode, premultiplyTint, nextPow2, log2 } from '@pixi/utils';
 import { ENV } from '@pixi/constants';
+import { BatchGeometry } from './BatchGeometry';
+
+import defaultVertex from './texture.vert';
+import defaultFragment from './texture.frag';
 
 import type { Renderer } from '../Renderer';
 import type { Shader } from '../shader/Shader';
-import type { BatchShaderGenerator } from './BatchShaderGenerator';
-import type { BatchGeometry } from './BatchGeometry';
 import type { Texture } from '../textures/Texture';
 import type { BLEND_MODES } from '@pixi/constants';
+import { ExtensionMetadata, ExtensionType } from '../extensions';
 
 /**
  * Interface for elements like Sprite, Mesh etc. for batching.
@@ -42,8 +45,14 @@ export interface IBatchableElement
  * reduce to the number of draw calls.
  * @memberof PIXI
  */
-export class AbstractBatchRenderer extends ObjectRenderer
+export class BatchRenderer extends ObjectRenderer
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        name: 'batch',
+        type: ExtensionType.RendererPlugin,
+    };
+
     /** The WebGL state in which this renderer will work. */
     public readonly state: State;
 
@@ -58,7 +67,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
      * Maximum number of textures that can be uploaded to
      * the GPU under the current context. It is initialized
      * properly in `this.contextChange`.
-     * @see PIXI.AbstractBatchRenderer#contextChange
+     * @see PIXI.BatchRenderer#contextChange
      * @readonly
      */
     public MAX_TEXTURES: number;
@@ -94,7 +103,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
      * | aTextureCoords  | 2 |
      * | aColor          | 1 |
      * | aTextureId      | 1 |
-     * @readonly
+     * @default 6
      */
     protected vertexSize: number;
 
@@ -148,7 +157,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
      * The first buffer has a size of 8; each subsequent
      * buffer has double capacity of its previous.
      * @member {PIXI.ViewableBuffer[]}
-     * @see PIXI.AbstractBatchRenderer#getAttributeBuffer
+     * @see PIXI.BatchRenderer#getAttributeBuffer
      */
     protected _aBuffers: Array<ViewableBuffer>;
 
@@ -161,7 +170,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
      * The first buffer has a size of 12; each subsequent
      * buffer has double capacity of its previous.
      * @member {Uint16Array[]}
-     * @see PIXI.AbstractBatchRenderer#getIndexBuffer
+     * @see PIXI.BatchRenderer#getIndexBuffer
      */
     protected _iBuffers: Array<Uint16Array>;
     protected _dcIndex: number;
@@ -180,7 +189,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
      * context change occurs; however, the pool may
      * be expanded if required.
      * @member {PIXI.Geometry[]}
-     * @see PIXI.AbstractBatchRenderer.contextChange
+     * @see PIXI.BatchRenderer.contextChange
      */
     private _packedGeometries: Array<BatchGeometry>;
 
@@ -200,9 +209,9 @@ export class AbstractBatchRenderer extends ObjectRenderer
     {
         super(renderer);
 
-        this.shaderGenerator = null;
-        this.geometryClass = null;
-        this.vertexSize = null;
+        this.setShaderGenerator();
+        this.geometryClass = BatchGeometry;
+        this.vertexSize = 6;
         this.state = State.for2d();
         this.size = settings.SPRITE_BATCH_SIZE * 4;
         this._vertexCount = 0;
@@ -228,6 +237,38 @@ export class AbstractBatchRenderer extends ObjectRenderer
         this._attributeBuffer = null;
         this._indexBuffer = null;
         this._tempBoundTextures = [];
+    }
+
+    /**
+     * The default vertex shader source
+     * @readonly
+     */
+    static get defaultVertexSrc(): string
+    {
+        return defaultVertex;
+    }
+
+    /**
+     * The default fragment shader source
+     * @readonly
+     */
+    static get defaultFragmentTemplate(): string
+    {
+        return defaultFragment;
+    }
+
+    /**
+     * Set the shader generator.
+     * @param {object} [options]
+     * @param {string} [options.vertex=PIXI.BatchRenderer.defaultVertexSrc] - Vertex shader source
+     * @param {string} [options.fragment=PIXI.BatchRenderer.defaultFragmentTemplate] - Fragment shader template
+     */
+    public setShaderGenerator({
+        vertex = BatchRenderer.defaultVertexSrc,
+        fragment = BatchRenderer.defaultFragmentTemplate
+    }: { vertex?: string, fragment?: string } = {}): void
+    {
+        this.shaderGenerator = new BatchShaderGenerator(vertex, fragment);
     }
 
     /**
@@ -274,7 +315,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
         const {
             _drawCallPool,
             _textureArrayPool,
-        } = AbstractBatchRenderer;
+        } = BatchRenderer;
         // max draw calls
         const MAX_SPRITES = this.size / 4;
         // max texture arrays
@@ -329,7 +370,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
             _bufferedTextures: textures,
             MAX_TEXTURES,
         } = this;
-        const textureArrays = AbstractBatchRenderer._textureArrayPool;
+        const textureArrays = BatchRenderer._textureArrayPool;
         const batch = this.renderer.batch;
         const boundTextures = this._tempBoundTextures;
         const touch = this.renderer.textureGC.count;
@@ -396,7 +437,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
             _indexBuffer,
             vertexSize,
         } = this;
-        const drawCalls = AbstractBatchRenderer._drawCallPool;
+        const drawCalls = BatchRenderer._drawCallPool;
 
         let dcIndex = this._dcIndex;
         let aIndex = this._aIndex;
@@ -497,7 +538,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
     {
         const dcCount = this._dcIndex;
         const { gl, state: stateSystem } = this.renderer;
-        const drawCalls = AbstractBatchRenderer._drawCallPool;
+        const drawCalls = BatchRenderer._drawCallPool;
 
         let curTexArray = null;
 
@@ -564,7 +605,7 @@ export class AbstractBatchRenderer extends ObjectRenderer
         this.flush();
     }
 
-    /** Destroys this `AbstractBatchRenderer`. It cannot be used again. */
+    /** Destroys this `BatchRenderer`. It cannot be used again. */
     destroy(): void
     {
         for (let i = 0; i < this._packedGeometryPoolSize; i++)
