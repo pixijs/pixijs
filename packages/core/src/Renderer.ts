@@ -318,35 +318,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
 
         const systemConfig = {
             runners: ['init', 'destroy', 'contextChange', 'reset', 'update', 'postrender', 'prerender', 'resize'],
-            systems: {
-                // systems shared by all renderers..
-                textureGenerator: GenerateTextureSystem,
-                background: BackgroundSystem,
-                _view: ViewSystem,
-                _plugin: PluginSystem,
-                startup: StartupSystem,
-
-                // low level WebGL systems
-                context: ContextSystem,
-                state: StateSystem,
-                shader: ShaderSystem,
-                texture: TextureSystem,
-                buffer: BufferSystem,
-                geometry: GeometrySystem,
-                framebuffer: FramebufferSystem,
-
-                // high level pixi specific rendering
-                mask: MaskSystem,
-                scissor: ScissorSystem,
-                stencil: StencilSystem,
-                projection: ProjectionSystem,
-                textureGC: TextureGCSystem,
-                filter: FilterSystem,
-                renderTexture: RenderTextureSystem,
-                batch: BatchSystem,
-                objectRenderer: ObjectRendererSystem,
-                _multisample: MultisampleSystem,
-            }
+            systems: Renderer.__systems,
         };
 
         this.setup(systemConfig);
@@ -647,16 +619,15 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      * Collection of installed plugins. These are included by default in PIXI, but can be excluded
      * by creating a custom build. Consult the README for more information about creating custom
      * builds and excluding plugins.
-     * @readonly
-     * @property {PIXI.AccessibilityManager} accessibility Support tabbing interactive elements.
-     * @property {PIXI.Extract} extract Extract image data from renderer.
-     * @property {PIXI.InteractionManager} interaction Handles mouse, touch and pointer events.
-     * @property {PIXI.ParticleRenderer} particle Renderer for ParticleContainer objects.
-     * @property {PIXI.Prepare} prepare Pre-render display objects.
-     * @property {PIXI.BatchRenderer} batch Batching of Sprite, Graphics and Mesh objects.
-     * @property {PIXI.TilingSpriteRenderer} tilingSprite Renderer for TilingSprite objects.
+     * @private
      */
-    static __plugins: IRendererPlugins = {};
+    static readonly __plugins: IRendererPlugins = {};
+
+    /**
+     * The collection of installed systems.
+     * @private
+     */
+    static readonly __systems: Record<string, any> = {};
 }
 
 // Handle registration of extensions
@@ -664,4 +635,36 @@ extensions.handle(
     ExtensionType.RendererPlugin,
     (extension) => { Renderer.__plugins[extension.name] = extension.ref; },
     (extension) => { delete Renderer.__plugins[extension.name]; }
+);
+extensions.handle(
+    ExtensionType.RendererSystem,
+    (extension) => { Renderer.__systems[extension.name] = extension.ref; },
+    (extension) => { delete Renderer.__systems[extension.name]; }
+);
+
+extensions.add(
+    GenerateTextureSystem,
+    BackgroundSystem,
+    ViewSystem,
+    PluginSystem,
+    StartupSystem,
+    // low level WebGL systems
+    ContextSystem,
+    StateSystem,
+    ShaderSystem,
+    TextureSystem,
+    BufferSystem,
+    GeometrySystem,
+    FramebufferSystem,
+    // high level pixi specific rendering
+    MaskSystem,
+    ScissorSystem,
+    StencilSystem,
+    ProjectionSystem,
+    TextureGCSystem,
+    FilterSystem,
+    RenderTextureSystem,
+    BatchSystem,
+    ObjectRendererSystem,
+    MultisampleSystem
 );

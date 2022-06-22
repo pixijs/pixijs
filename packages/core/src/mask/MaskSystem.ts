@@ -5,6 +5,7 @@ import { MASK_TYPES } from '@pixi/constants';
 import type { ISystem } from '../system/ISystem';
 import type { IMaskTarget } from './MaskData';
 import type { Renderer } from '../Renderer';
+import { ExtensionMetadata, ExtensionType } from '../extensions';
 
 /**
  * System plugin to the renderer to manage masks.
@@ -31,6 +32,12 @@ import type { Renderer } from '../Renderer';
  */
 export class MaskSystem implements ISystem
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        type: ExtensionType.RendererSystem,
+        name: 'mask',
+    };
+
     /**
      * Flag to enable scissor masking.
      * @default true

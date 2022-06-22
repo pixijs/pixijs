@@ -2,6 +2,7 @@ import { AbstractMaskSystem } from './AbstractMaskSystem';
 
 import type { Renderer } from '../Renderer';
 import type { IMaskTarget, MaskData } from './MaskData';
+import { ExtensionMetadata, ExtensionType } from '../extensions';
 
 /**
  * System plugin to the renderer to manage stencils (used for masks).
@@ -9,6 +10,12 @@ import type { IMaskTarget, MaskData } from './MaskData';
  */
 export class StencilSystem extends AbstractMaskSystem
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        type: ExtensionType.RendererSystem,
+        name: 'stencil',
+    };
+
     /**
      * @param renderer - The renderer this System works for.
      */

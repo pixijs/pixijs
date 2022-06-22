@@ -12,6 +12,7 @@ import { generateUniformBufferSync } from './utils/generateUniformBufferSync';
 
 import { generateProgram } from './utils/generateProgram';
 import { IRenderingContext } from '../IRenderer';
+import { ExtensionMetadata, ExtensionType } from '../extensions';
 
 let UID = 0;
 // default sync data so we don't create a new one each time!
@@ -23,6 +24,12 @@ const defaultSyncData = { textureCount: 0, uboCount: 0 };
  */
 export class ShaderSystem implements ISystem
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        type: ExtensionType.RendererSystem,
+        name: 'shader',
+    };
+
     /**
      * The current WebGL rendering context.
      * @member {WebGLRenderingContext}

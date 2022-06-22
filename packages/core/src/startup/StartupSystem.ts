@@ -5,6 +5,7 @@ import type { IRendererPlugins } from '../plugin/PluginSystem';
 import { IRenderer } from '../IRenderer';
 import { ISystem } from '../system/ISystem';
 import { ContextOptions } from '../systems';
+import { ExtensionMetadata, ExtensionType } from '../extensions';
 
 // TODO this can be infered by good use of generics in the future..
 export interface StartupOptions extends Record<string, unknown>
@@ -20,6 +21,15 @@ export interface StartupOptions extends Record<string, unknown>
  * @memberof PIXI
  */export class StartupSystem implements ISystem
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        type: [
+            ExtensionType.RendererSystem,
+            ExtensionType.CanvasRendererSystem
+        ],
+        name: 'startup',
+    };
+
     readonly renderer: IRenderer;
 
     constructor(renderer: IRenderer)

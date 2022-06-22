@@ -1,7 +1,14 @@
 import { Matrix } from '@pixi/math';
 
 import type { CanvasRenderer } from './CanvasRenderer';
-import { BaseRenderTexture, CanvasResource, IRendererRenderOptions, ISystem, RenderTexture } from '@pixi/core';
+import {
+    BaseRenderTexture,
+    CanvasResource,
+    ExtensionMetadata,
+    ExtensionType,
+    IRendererRenderOptions,
+    ISystem,
+    RenderTexture } from '@pixi/core';
 import { BLEND_MODES } from '@pixi/constants';
 import { CanvasRenderTarget, hex2string, rgb2hex } from '@pixi/utils';
 import { DisplayObject } from 'pixi.js';
@@ -14,6 +21,12 @@ import { CrossPlatformCanvasRenderingContext2D } from './CanvasContextSystem';
  */
 export class CanvasObjectRendererSystem implements ISystem
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        type:  ExtensionType.CanvasRendererSystem,
+        name: 'objectRenderer',
+    };
+
     /** A reference to the current renderer */
     private renderer: CanvasRenderer;
     renderingToScreen: boolean;

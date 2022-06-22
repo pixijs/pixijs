@@ -1,5 +1,6 @@
 import { Rectangle } from '@pixi/math';
 import { settings } from '@pixi/settings';
+import { ExtensionMetadata, ExtensionType } from '../extensions';
 import { IRenderer } from '../IRenderer';
 import { ISystem } from '../system/ISystem';
 
@@ -28,6 +29,15 @@ export interface ViewOptions
  */
 export class ViewSystem implements ISystem
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        type: [
+            ExtensionType.RendererSystem,
+            ExtensionType.CanvasRendererSystem
+        ],
+        name: '_view',
+    };
+
     private renderer: IRenderer;
 
     /**

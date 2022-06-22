@@ -4,6 +4,7 @@ import type { ISystem } from '../system/ISystem';
 import type { Renderer } from '../Renderer';
 import type { BaseTexture } from '../textures/BaseTexture';
 import type { BatchTextureArray } from './BatchTextureArray';
+import { ExtensionMetadata, ExtensionType } from '../extensions';
 
 /**
  * System plugin to the renderer to manage batching.
@@ -11,6 +12,12 @@ import type { BatchTextureArray } from './BatchTextureArray';
  */
 export class BatchSystem implements ISystem
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        type: ExtensionType.RendererSystem,
+        name: 'batch',
+    };
+
     /** An empty renderer. */
     public readonly emptyRenderer: ObjectRenderer;
 

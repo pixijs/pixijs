@@ -2,6 +2,7 @@ import { MSAA_QUALITY } from '@pixi/constants';
 import { ISystem } from '../system/ISystem';
 import { Renderer } from '../Renderer';
 import { IRenderingContext } from '../IRenderer';
+import { ExtensionMetadata, ExtensionType } from '../extensions';
 
 /**
  * System that manages the multisample property on the WebGL renderer
@@ -9,6 +10,12 @@ import { IRenderingContext } from '../IRenderer';
  */
 export class MultisampleSystem implements ISystem
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        type: ExtensionType.RendererSystem,
+        name: '_multisample',
+    };
+
     /**
      * The number of msaa samples of the canvas.
      * @readonly

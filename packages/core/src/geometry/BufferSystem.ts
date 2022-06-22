@@ -4,6 +4,7 @@ import type { Renderer } from '../Renderer';
 import type { Buffer } from './Buffer';
 import type { ISystem } from '../system/ISystem';
 import { IRenderingContext } from '../IRenderer';
+import { ExtensionMetadata, ExtensionType } from '../extensions';
 
 /**
  * System plugin to the renderer to manage buffers.
@@ -24,6 +25,12 @@ import { IRenderingContext } from '../IRenderer';
  */
 export class BufferSystem implements ISystem
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        type: ExtensionType.RendererSystem,
+        name: 'buffer',
+    };
+
     CONTEXT_UID: number;
     gl: IRenderingContext;
 

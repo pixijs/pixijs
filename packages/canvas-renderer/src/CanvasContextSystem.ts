@@ -1,7 +1,7 @@
 import { Matrix } from '@pixi/math';
 
 import type { CanvasRenderer } from './CanvasRenderer';
-import type { ISystem } from '@pixi/core';
+import { ExtensionMetadata, ExtensionType, ISystem } from '@pixi/core';
 import { mapCanvasBlendModesToPixi } from './utils/mapCanvasBlendModesToPixi';
 import { BLEND_MODES, SCALE_MODES } from '@pixi/constants';
 import { settings } from '@pixi/settings';
@@ -38,6 +38,12 @@ export type SmoothingEnabledProperties =
  */
 export class CanvasContextSystem implements ISystem
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        type:  ExtensionType.CanvasRendererSystem,
+        name: 'canvasContext',
+    };
+
     /** A reference to the current renderer */
     private renderer: CanvasRenderer;
 

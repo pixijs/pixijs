@@ -2,7 +2,7 @@ import { Polygon, SHAPES } from '@pixi/math';
 
 import type { CanvasRenderer } from './CanvasRenderer';
 import type { Graphics } from '@pixi/graphics';
-import type { ISystem, MaskData } from '@pixi/core';
+import { ExtensionMetadata, ExtensionType, ISystem, MaskData } from '@pixi/core';
 import type { Container } from '@pixi/display';
 
 /**
@@ -14,6 +14,12 @@ import type { Container } from '@pixi/display';
  */
 export class CanvasMaskSystem implements ISystem
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        type:  ExtensionType.CanvasRendererSystem,
+        name: 'mask',
+    };
+
     /** A reference to the current renderer */
     private renderer: CanvasRenderer;
     private _foundShapes: Array<Graphics> = [];

@@ -7,6 +7,7 @@ import { GLFramebuffer } from './GLFramebuffer';
 import type { ISystem } from '../system/ISystem';
 import type { Renderer } from '../Renderer';
 import { IRenderingContext } from '../IRenderer';
+import { ExtensionMetadata, ExtensionType } from '../extensions';
 
 const tempRectangle = new Rectangle();
 
@@ -16,6 +17,12 @@ const tempRectangle = new Rectangle();
  */
 export class FramebufferSystem implements ISystem
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        type: ExtensionType.RendererSystem,
+        name: 'framebuffer',
+    };
+
     /** A list of managed framebuffers. */
     public readonly managedFramebuffers: Array<Framebuffer>;
     public current: Framebuffer;
