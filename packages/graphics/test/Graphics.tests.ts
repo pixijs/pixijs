@@ -1,4 +1,4 @@
-import { BatchRenderer, Texture, extensions } from '@pixi/core';
+import { Texture } from '@pixi/core';
 import { Graphics, GRAPHICS_CURVES, FillStyle, LineStyle, graphicsUtils, GraphicsGeometry, LINE_CAP } from '@pixi/graphics';
 const { FILL_COMMANDS, buildLine } = graphicsUtils;
 
@@ -12,9 +12,6 @@ skipHello();
 
 describe('Graphics', () =>
 {
-    before(() => extensions.add(BatchRenderer));
-    after(() => extensions.remove(BatchRenderer));
-
     describe('constructor', () =>
     {
         it('should set defaults', () =>

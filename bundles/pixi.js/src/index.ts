@@ -1,7 +1,7 @@
 import * as utils from '@pixi/utils';
 import { AccessibilityManager } from '@pixi/accessibility';
 import { InteractionManager } from '@pixi/interaction';
-import { BatchRenderer, extensions } from '@pixi/core';
+import { extensions } from '@pixi/core';
 import { Extract } from '@pixi/extract';
 import { AppLoaderPlugin } from '@pixi/loaders';
 import { CompressedTextureLoader, DDSLoader, KTXLoader } from '@pixi/compressed-textures';
@@ -28,7 +28,6 @@ extensions.add(
     InteractionManager,
     ParticleRenderer,
     Prepare,
-    BatchRenderer,
     TilingSpriteRenderer,
 
     // Install loader plugins

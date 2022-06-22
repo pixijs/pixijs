@@ -2,7 +2,7 @@ import { SimpleRope } from '@pixi/mesh-extras';
 import { skipHello } from '@pixi/utils';
 import { Loader } from '@pixi/loaders';
 import { Point } from '@pixi/math';
-import { Renderer, Texture, BatchRenderer, extensions } from '@pixi/core';
+import { Renderer, Texture } from '@pixi/core';
 import { expect } from 'chai';
 
 skipHello();
@@ -32,8 +32,6 @@ describe('SimpleRope', () =>
 
     it('should render the rope', () =>
     {
-        extensions.add(BatchRenderer);
-
         const renderer = new Renderer();
         const rope = new SimpleRope(Texture.WHITE, [new Point(0, 0), new Point(0, 1)]);
 
@@ -41,7 +39,5 @@ describe('SimpleRope', () =>
 
         rope.destroy();
         renderer.destroy();
-
-        extensions.remove(BatchRenderer);
     });
 });
