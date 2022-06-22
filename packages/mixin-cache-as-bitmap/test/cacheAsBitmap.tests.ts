@@ -1,7 +1,6 @@
 import { DisplayObject, Container } from '@pixi/display';
 import { Renderer, Filter } from '@pixi/core';
 import { Rectangle } from '@pixi/math';
-import { expect } from 'chai';
 
 import '@pixi/mixin-cache-as-bitmap';
 
@@ -12,9 +11,9 @@ describe('DisplayObject#cacheAsBitmap', () =>
         // @ts-expect-error - instantiating DisplayObject
         const obj = new DisplayObject();
 
-        expect(obj.cacheAsBitmap).to.be.not.undefined;
-        expect(obj.cacheAsBitmap).to.be.a('boolean');
-        expect(obj.cacheAsBitmap).to.be.false;
+        expect(obj.cacheAsBitmap).toBeDefined();
+        expect(obj.cacheAsBitmap).toBeBoolean();
+        expect(obj.cacheAsBitmap).toBe(false);
     });
 
     it('should enable cacheAsBitmap', () =>
@@ -55,18 +54,18 @@ describe('DisplayObject#cacheAsBitmap', () =>
             let src = renderer.renderTexture.sourceFrame;
             let dest = renderer.renderTexture.destinationFrame;
 
-            expect(src.toString()).to.equal(srcExpected.toString());
-            expect(dest.toString()).to.equal(destExpected.toString());
+            expect(src.toString()).toEqual(srcExpected.toString());
+            expect(dest.toString()).toEqual(destExpected.toString());
 
             obj.render(renderer);
 
             src = renderer.renderTexture.sourceFrame;
             dest = renderer.renderTexture.destinationFrame;
 
-            expect(obj._cacheData.sprite.width).to.equal(10);
-            expect(obj._cacheData.sprite.height).to.equal(11);
-            expect(src.toString()).to.equal(srcExpected.toString());
-            expect(dest.toString()).to.equal(destExpected.toString());
+            expect(obj._cacheData.sprite.width).toEqual(10);
+            expect(obj._cacheData.sprite.height).toEqual(11);
+            expect(src.toString()).toEqual(srcExpected.toString());
+            expect(dest.toString()).toEqual(destExpected.toString());
         }
         finally
         {
@@ -95,7 +94,7 @@ describe('DisplayObject#cacheAsBitmap', () =>
             {
                 renderer.destroy();
             }
-        }).to.not.throw();
+        }).not.toThrowError();
     });
 
     it('should respect projection', () =>
@@ -130,10 +129,10 @@ describe('DisplayObject#cacheAsBitmap', () =>
             const src = renderer.renderTexture.sourceFrame;
             const dest = renderer.renderTexture.destinationFrame;
 
-            expect(obj._cacheData.sprite.width).to.equal(10);
-            expect(obj._cacheData.sprite.height).to.equal(11);
-            expect(src.toString()).to.equal(srcExpected.toString());
-            expect(dest.toString()).to.equal(destExpected.toString());
+            expect(obj._cacheData.sprite.width).toEqual(10);
+            expect(obj._cacheData.sprite.height).toEqual(11);
+            expect(src.toString()).toEqual(srcExpected.toString());
+            expect(dest.toString()).toEqual(destExpected.toString());
         }
         finally
         {

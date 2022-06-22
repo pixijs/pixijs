@@ -1,7 +1,6 @@
 import { InteractionData } from '@pixi/interaction';
 import { DisplayObject } from '@pixi/display';
 import { Point } from '@pixi/math';
-import { expect } from 'chai';
 
 import '@pixi/canvas-display';
 
@@ -23,8 +22,8 @@ describe('InteractionData', () =>
             displayObject.parent = stage;
             displayObject.displayObjectUpdateTransform();
             data.getLocalPosition(displayObject, point);
-            expect(point.x).to.equal(5);
-            expect(point.y).to.equal(7);
+            expect(point.x).toEqual(5);
+            expect(point.y).toEqual(7);
         });
     });
 });

@@ -1,5 +1,4 @@
 import { TextStyle } from '@pixi/text';
-import { expect } from 'chai';
 
 describe('TextStyle', () =>
 {
@@ -10,9 +9,9 @@ describe('TextStyle', () =>
 
         textStyle.fontSize = 1000;
 
-        expect(textStyle.fontSize).to.equal(1000);
+        expect(textStyle.fontSize).toEqual(1000);
         textStyle.reset();
-        expect(textStyle.fontSize).to.equal(defaultFontSize);
+        expect(textStyle.fontSize).toEqual(defaultFontSize);
     });
 
     it('should clone correctly', () =>
@@ -21,8 +20,8 @@ describe('TextStyle', () =>
 
         const clonedTextStyle = textStyle.clone();
 
-        expect(textStyle.fontSize).to.equal(1000);
-        expect(clonedTextStyle.fontSize).to.equal(textStyle.fontSize);
+        expect(textStyle.fontSize).toEqual(1000);
+        expect(clonedTextStyle.fontSize).toEqual(textStyle.fontSize);
     });
 
     it('should assume pixel fonts', () =>
@@ -30,8 +29,8 @@ describe('TextStyle', () =>
         const style = new TextStyle({ fontSize: 72 });
         const font = style.toFontString();
 
-        expect(font).to.be.a.string;
-        expect(font).to.have.string(' 72px ');
+        expect(font).toBeString();
+        expect(font).toContain(' 72px ');
     });
 
     it('should handle multiple fonts as array', () =>
@@ -40,7 +39,7 @@ describe('TextStyle', () =>
             fontFamily: ['Georgia', 'Arial', 'sans-serif'],
         });
 
-        expect(style.toFontString()).to.have.string('"Georgia","Arial",sans-serif');
+        expect(style.toFontString()).toContain('"Georgia","Arial",sans-serif');
     });
 
     it('should handle multiple fonts as string', () =>
@@ -49,7 +48,7 @@ describe('TextStyle', () =>
             fontFamily: 'Georgia, "Arial", sans-serif',
         });
 
-        expect(style.toFontString()).to.have.string('"Georgia","Arial",sans-serif');
+        expect(style.toFontString()).toContain('"Georgia","Arial",sans-serif');
     });
 
     it('should not shared array / object references between different instances', () =>
@@ -57,9 +56,9 @@ describe('TextStyle', () =>
         const defaultStyle = new TextStyle();
         const style = new TextStyle();
 
-        expect(defaultStyle.fillGradientStops.length).to.equal(style.fillGradientStops.length);
+        expect(defaultStyle.fillGradientStops.length).toEqual(style.fillGradientStops.length);
         style.fillGradientStops.push(0);
-        expect(defaultStyle.fillGradientStops.length).to.not.equal(style.fillGradientStops.length);
+        expect(defaultStyle.fillGradientStops.length).not.toEqual(style.fillGradientStops.length);
     });
 
     it('should not quote generic font families when calling toFontString', () =>
@@ -87,7 +86,7 @@ describe('TextStyle', () =>
             const regex = new RegExp(incorrectRegexTemplate.replace('FAMILY', genericFamily));
             const result = style.toFontString().match(regex);
 
-            expect(result).to.be.null;
+            expect(result).toBeNull();
         }
     });
 });

@@ -1,6 +1,4 @@
 import { DisplayObject } from '@pixi/display';
-import { expect } from 'chai';
-
 import '@pixi/accessibility';
 
 describe('accessibleTarget', () =>
@@ -10,10 +8,10 @@ describe('accessibleTarget', () =>
         // @ts-expect-error ---
         const obj = new DisplayObject();
 
-        expect(obj.accessible).to.be.a('boolean');
-        expect(obj.accessible).to.be.false;
-        expect(obj.accessibleTitle).to.be.null;
-        expect(obj.accessibleHint).to.be.null;
-        expect(obj.tabIndex).to.equal(0);
+        expect(obj.accessible).toBeBoolean();
+        expect(obj.accessible).toBe(false);
+        expect(obj.accessibleTitle).toBeNull();
+        expect(obj.accessibleHint).toBeNull();
+        expect(obj.tabIndex).toEqual(0);
     });
 });

@@ -3,8 +3,6 @@ import { Container, DisplayObject } from '@pixi/display';
 import { AlphaFilter } from '@pixi/filter-alpha';
 import { Graphics } from '@pixi/graphics';
 import { Rectangle } from '@pixi/math';
-import sinon from 'sinon';
-import { expect } from 'chai';
 
 function testAddChild(fn: any)
 {
@@ -52,10 +50,10 @@ describe('Container', () =>
             // @ts-expect-error - instantiating DisplayObject
             const child = new DisplayObject();
 
-            expect(container.children.length).to.be.equals(0);
+            expect(container.children.length).toEqual(0);
             container.addChild(child);
-            expect(container.children.length).to.be.equals(1);
-            expect(child.parent).to.be.equals(container);
+            expect(container.children.length).toEqual(1);
+            expect(child.parent).toEqual(container);
         });
     });
 
@@ -74,41 +72,41 @@ describe('Container', () =>
             child.on('added', (to: Container) =>
             {
                 triggeredAdded = true;
-                expect(container.children.length).to.be.equals(1);
-                expect(child.parent).to.be.equals(to);
+                expect(container.children.length).toEqual(1);
+                expect(child.parent).toEqual(to);
             });
             child.on('removed', (from: Container) =>
             {
                 triggeredRemoved = true;
-                expect(container.children.length).to.be.equals(0);
-                expect(child.parent).to.be.null;
-                expect(container).to.be.equals(from);
+                expect(container.children.length).toEqual(0);
+                expect(child.parent).toBeNull();
+                expect(container).toEqual(from);
             });
 
             container.on('childAdded', (childAdded, containerFrom, index) =>
             {
                 triggeredChildAdded = true;
-                expect(child).to.be.equals(childAdded);
-                expect(container).to.be.equals(containerFrom);
-                expect(index).to.be.equals(0);
+                expect(child).toEqual(childAdded);
+                expect(container).toEqual(containerFrom);
+                expect(index).toEqual(0);
             });
             container.on('childRemoved', (childRemoved, containerFrom, index) =>
             {
                 triggeredChildRemoved = true;
-                expect(child).to.be.equals(childRemoved);
-                expect(container).to.be.equals(containerFrom);
-                expect(index).to.be.equals(0);
+                expect(child).toEqual(childRemoved);
+                expect(container).toEqual(containerFrom);
+                expect(index).toEqual(0);
             });
 
             container.addChild(child);
-            expect(triggeredAdded).to.be.true;
-            expect(triggeredRemoved).to.be.false;
-            expect(triggeredChildAdded).to.be.true;
-            expect(triggeredChildRemoved).to.be.false;
+            expect(triggeredAdded).toBe(true);
+            expect(triggeredRemoved).toBe(false);
+            expect(triggeredChildAdded).toBe(true);
+            expect(triggeredChildRemoved).toBe(false);
 
             container.removeChild(child);
-            expect(triggeredRemoved).to.be.true;
-            expect(triggeredChildRemoved).to.be.true;
+            expect(triggeredRemoved).toBe(true);
+            expect(triggeredChildRemoved).toBe(true);
         });
     });
 
@@ -129,12 +127,12 @@ describe('Container', () =>
             const container = new Container();
             // @ts-expect-error - instantiating DisplayObject
             const child = new DisplayObject();
-            const spy = sinon.spy(container, 'onChildrenChange' as keyof Container);
+            const spy = jest.spyOn(container, 'onChildrenChange' as any);
 
             container.addChild(child);
 
-            expect(spy).to.have.been.called;
-            expect(spy).to.have.been.calledWith(0);
+            expect(spy).toBeCalled();
+            expect(spy).toBeCalledWith(0);
         });
 
         it('should flag child transform and container bounds for recalculation', testAddChild(
@@ -151,8 +149,8 @@ describe('Container', () =>
 
                 mockAddChild(container, child);
 
-                expect(boundsID).to.not.be.equals(container['_boundsID']);
-                expect(childParentID).to.not.be.equals(child.transform._parentID);
+                expect(boundsID).not.toEqual(container['_boundsID']);
+                expect(childParentID).not.toEqual(child.transform._parentID);
             }));
     });
 
@@ -175,11 +173,11 @@ describe('Container', () =>
 
             container.addChild(child);
 
-            const spy = sinon.spy(container, 'onChildrenChange' as keyof Container);
+            const spy = jest.spyOn(container, 'onChildrenChange' as any);
 
             container.removeChildAt(0);
-            expect(spy).to.have.been.called;
-            expect(spy).to.have.been.calledWith(0);
+            expect(spy).toBeCalled();
+            expect(spy).toBeCalledWith(0);
         });
     });
 
@@ -195,8 +193,8 @@ describe('Container', () =>
             container.addChild(new DisplayObject());
             container.addChildAt(child, 0);
 
-            expect(container.children.length).to.be.equals(2);
-            expect(container.children[0]).to.be.equals(child);
+            expect(container.children.length).toEqual(2);
+            expect(container.children[0]).toEqual(child);
         });
 
         it('should allow placements at end', () =>
@@ -209,8 +207,8 @@ describe('Container', () =>
             container.addChild(new DisplayObject());
             container.addChildAt(child, 1);
 
-            expect(container.children.length).to.be.equals(2);
-            expect(container.children[1]).to.be.equals(child);
+            expect(container.children.length).toEqual(2);
+            expect(container.children[1]).toEqual(child);
         });
 
         it('should throw on out-of-bounds', () =>
@@ -222,8 +220,8 @@ describe('Container', () =>
             // @ts-expect-error - instantiating DisplayObject
             container.addChild(new DisplayObject());
 
-            expect(() => container.addChildAt(child, -1)).to.throw('The index -1 supplied is out of bounds 1');
-            expect(() => container.addChildAt(child, 2)).to.throw('The index 2 supplied is out of bounds 1');
+            expect(() => container.addChildAt(child, -1)).toThrowError('The index -1 supplied is out of bounds 1');
+            expect(() => container.addChildAt(child, 2)).toThrowError('The index 2 supplied is out of bounds 1');
         });
 
         it('should remove from current parent', () =>
@@ -245,12 +243,12 @@ describe('Container', () =>
             // @ts-expect-error - instantiating DisplayObject
             container.addChild(new DisplayObject());
 
-            const spy = sinon.spy(container, 'onChildrenChange' as keyof Container);
+            const spy = jest.spyOn(container, 'onChildrenChange' as any);
 
             container.addChildAt(child, 0);
 
-            expect(spy).to.have.been.called;
-            expect(spy).to.have.been.calledWith(0);
+            expect(spy).toBeCalled();
+            expect(spy).toBeCalledWith(0);
         });
     });
 
@@ -267,7 +265,7 @@ describe('Container', () =>
             // @ts-expect-error - instantiating DisplayObject
             container.removeChild(new DisplayObject());
 
-            expect(container.children.length).to.be.equals(1);
+            expect(container.children.length).toEqual(1);
         });
 
         it('should remove all children supplied', () =>
@@ -280,11 +278,11 @@ describe('Container', () =>
 
             container.addChild(child1, child2);
 
-            expect(container.children.length).to.be.equals(2);
+            expect(container.children.length).toEqual(2);
 
             container.removeChild(child1, child2);
 
-            expect(container.children.length).to.be.equals(0);
+            expect(container.children.length).toEqual(0);
         });
 
         it('should call onChildrenChange', () =>
@@ -295,12 +293,12 @@ describe('Container', () =>
 
             container.addChild(child);
 
-            const spy = sinon.spy(container, 'onChildrenChange' as keyof Container);
+            const spy = jest.spyOn(container, 'onChildrenChange' as any);
 
             container.removeChild(child);
 
-            expect(spy).to.have.been.called;
-            expect(spy).to.have.been.calledWith(0);
+            expect(spy).toBeCalled();
+            expect(spy).toBeCalledWith(0);
         });
 
         it('should flag transform for recalculation', testRemoveChild(
@@ -317,8 +315,8 @@ describe('Container', () =>
 
                 mockRemoveChild(container, child);
 
-                expect(childParentID).to.not.be.equals(child.transform._parentID);
-                expect(boundsID).to.not.be.equals(container['_boundsID']);
+                expect(childParentID).not.toEqual(child.transform._parentID);
+                expect(boundsID).not.toEqual(container['_boundsID']);
             }));
     });
 
@@ -333,7 +331,7 @@ describe('Container', () =>
             // @ts-expect-error - instantiating DisplayObject
             container.addChild(new DisplayObject(), child, new DisplayObject());
 
-            expect(container.getChildIndex(child)).to.be.equals(1);
+            expect(container.getChildIndex(child)).toEqual(1);
         });
 
         it('should throw when child does not exist', () =>
@@ -343,7 +341,7 @@ describe('Container', () =>
             const child = new DisplayObject();
 
             expect(() => container.getChildIndex(child))
-                .to.throw('The supplied DisplayObject must be a child of the caller');
+                .toThrowError('The supplied DisplayObject must be a child of the caller');
         });
     });
 
@@ -353,8 +351,8 @@ describe('Container', () =>
         {
             const container = new Container();
 
-            expect(() => container.getChildAt(-1)).to.throw('getChildAt: Index (-1) does not exist.');
-            expect(() => container.getChildAt(1)).to.throw('getChildAt: Index (1) does not exist.');
+            expect(() => container.getChildAt(-1)).toThrowError('getChildAt: Index (-1) does not exist.');
+            expect(() => container.getChildAt(1)).toThrowError('getChildAt: Index (1) does not exist.');
         });
     });
 
@@ -368,8 +366,8 @@ describe('Container', () =>
 
             container.addChild(child);
 
-            expect(() => container.setChildIndex(child, -1)).to.throw('The index -1 supplied is out of bounds 1');
-            expect(() => container.setChildIndex(child, 1)).to.throw('The index 1 supplied is out of bounds 1');
+            expect(() => container.setChildIndex(child, -1)).toThrowError('The index -1 supplied is out of bounds 1');
+            expect(() => container.setChildIndex(child, 1)).toThrowError('The index 1 supplied is out of bounds 1');
         });
 
         it('should throw when child does not belong', () =>
@@ -382,7 +380,7 @@ describe('Container', () =>
             container.addChild(new DisplayObject());
 
             expect(() => container.setChildIndex(child, 0))
-                .to.throw('The supplied DisplayObject must be a child of the caller');
+                .toThrowError('The supplied DisplayObject must be a child of the caller');
         });
 
         it('should set index', () =>
@@ -393,16 +391,16 @@ describe('Container', () =>
 
             // @ts-expect-error - instantiating DisplayObject
             container.addChild(child, new DisplayObject(), new DisplayObject());
-            expect(container.children.indexOf(child)).to.be.equals(0);
+            expect(container.children.indexOf(child)).toEqual(0);
 
             container.setChildIndex(child, 1);
-            expect(container.children.indexOf(child)).to.be.equals(1);
+            expect(container.children.indexOf(child)).toEqual(1);
 
             container.setChildIndex(child, 2);
-            expect(container.children.indexOf(child)).to.be.equals(2);
+            expect(container.children.indexOf(child)).toEqual(2);
 
             container.setChildIndex(child, 0);
-            expect(container.children.indexOf(child)).to.be.equals(0);
+            expect(container.children.indexOf(child)).toEqual(0);
         });
 
         it('should call onChildrenChange', () =>
@@ -414,12 +412,12 @@ describe('Container', () =>
             // @ts-expect-error - instantiating DisplayObject
             container.addChild(child, new DisplayObject());
 
-            const spy = sinon.spy(container, 'onChildrenChange' as keyof Container);
+            const spy = jest.spyOn(container, 'onChildrenChange' as any);
 
             container.setChildIndex(child, 1);
 
-            expect(spy).to.have.been.called;
-            expect(spy).to.have.been.calledWith(1);
+            expect(spy).toBeCalled();
+            expect(spy).toBeCalledWith(1);
         });
     });
 
@@ -435,16 +433,16 @@ describe('Container', () =>
 
             container.addChild(child1, child2);
 
-            const spy = sinon.spy(container, 'onChildrenChange' as keyof Container);
+            const spy = jest.spyOn(container, 'onChildrenChange' as any);
 
             container.swapChildren(child1, child2);
-            expect(spy).to.have.been.called;
-            expect(spy).to.have.been.calledWith(0);
+            expect(spy).toBeCalled();
+            expect(spy).toBeCalledWith(0);
 
             // second call required to complete returned index coverage
             container.swapChildren(child1, child2);
-            expect(spy).to.have.been.calledTwice;
-            expect(spy).to.have.been.calledWith(0);
+            expect(spy).toBeCalledTimes(2);
+            expect(spy).toBeCalledWith(0);
         });
 
         it('should not call onChildrenChange if supplied children are equal', () =>
@@ -456,11 +454,11 @@ describe('Container', () =>
             // @ts-expect-error - instantiating DisplayObject
             container.addChild(child, new DisplayObject());
 
-            const spy = sinon.spy(container, 'onChildrenChange' as keyof Container);
+            const spy = jest.spyOn(container, 'onChildrenChange' as any);
 
             container.swapChildren(child, child);
 
-            expect(spy).to.not.have.been.called;
+            expect(spy).not.toBeCalled();
         });
 
         it('should throw if children do not belong', () =>
@@ -473,10 +471,10 @@ describe('Container', () =>
 
             // @ts-expect-error - instantiating DisplayObject
             expect(() => container.swapChildren(child, new DisplayObject()))
-                .to.throw('The supplied DisplayObject must be a child of the caller');
+                .toThrowError('The supplied DisplayObject must be a child of the caller');
             // @ts-expect-error - instantiating DisplayObject
             expect(() => container.swapChildren(new DisplayObject(), child))
-                .to.throw('The supplied DisplayObject must be a child of the caller');
+                .toThrowError('The supplied DisplayObject must be a child of the caller');
         });
 
         it('should result in swapped child positions', () =>
@@ -489,13 +487,13 @@ describe('Container', () =>
 
             container.addChild(child1, child2);
 
-            expect(container.children.indexOf(child1)).to.be.equals(0);
-            expect(container.children.indexOf(child2)).to.be.equals(1);
+            expect(container.children.indexOf(child1)).toEqual(0);
+            expect(container.children.indexOf(child2)).toEqual(1);
 
             container.swapChildren(child1, child2);
 
-            expect(container.children.indexOf(child2)).to.be.equals(0);
-            expect(container.children.indexOf(child1)).to.be.equals(1);
+            expect(container.children.indexOf(child2)).toEqual(0);
+            expect(container.children.indexOf(child1)).toEqual(1);
         });
     });
 
@@ -506,7 +504,7 @@ describe('Container', () =>
             const parent = new Container();
             const container = new Container();
             const child = new Container();
-            const canvasSpy = sinon.spy(container, 'sortChildren');
+            const canvasSpy = jest.spyOn(container, 'sortChildren');
 
             parent.addChild(container);
             container.addChild(child);
@@ -516,7 +514,7 @@ describe('Container', () =>
 
             container.updateTransform();
 
-            expect(canvasSpy).to.have.been.called;
+            expect(canvasSpy).toBeCalled();
         });
 
         it('should not call sortChildren if sortDirty is false', () =>
@@ -524,7 +522,7 @@ describe('Container', () =>
             const parent = new Container();
             const container = new Container();
             const child = new Container();
-            const canvasSpy = sinon.spy(container, 'sortChildren');
+            const canvasSpy = jest.spyOn(container, 'sortChildren');
 
             parent.addChild(container);
             container.addChild(child);
@@ -534,7 +532,7 @@ describe('Container', () =>
 
             container.updateTransform();
 
-            expect(canvasSpy).to.not.have.been.called;
+            expect(canvasSpy).not.toBeCalled();
         });
 
         it('should not call sortChildren if sortableChildren is false', () =>
@@ -542,7 +540,7 @@ describe('Container', () =>
             const parent = new Container();
             const container = new Container();
             const child = new Container();
-            const canvasSpy = sinon.spy(container, 'sortChildren');
+            const canvasSpy = jest.spyOn(container, 'sortChildren');
 
             parent.addChild(container);
             container.addChild(child);
@@ -552,7 +550,7 @@ describe('Container', () =>
 
             container.updateTransform();
 
-            expect(canvasSpy).to.not.have.been.called;
+            expect(canvasSpy).not.toBeCalled();
         });
     });
 
@@ -561,46 +559,46 @@ describe('Container', () =>
         it('should not render when object not visible', () =>
         {
             const container = new Container();
-            const webGLSpy = sinon.spy(container['_render']);
+            const webGLSpy = jest.spyOn(container, '_render' as any);
 
             container.visible = false;
 
             container.render(undefined);
-            expect(webGLSpy).to.not.have.been.called;
+            expect(webGLSpy).not.toBeCalled();
         });
 
         it('should not render when alpha is zero', () =>
         {
             const container = new Container();
-            const webGLSpy = sinon.spy(container['_render']);
+            const webGLSpy = jest.spyOn(container, '_render' as any);
 
             container.worldAlpha = 0;
 
             container.render(undefined);
-            expect(webGLSpy).to.not.have.been.called;
+            expect(webGLSpy).not.toBeCalled();
         });
 
         it('should not render when object not renderable', () =>
         {
             const container = new Container();
-            const webGLSpy = sinon.spy(container['_render']);
+            const webGLSpy = jest.spyOn(container, '_render' as any);
 
             container.renderable = false;
 
             container.render(undefined);
-            expect(webGLSpy).to.not.have.been.called;
+            expect(webGLSpy).not.toBeCalled();
         });
 
         it('should render children', () =>
         {
             const container = new Container();
             const child = new Container();
-            const webGLSpy = sinon.spy(child, '_render' as keyof Container);
+            const webGLSpy = jest.spyOn(child, '_render' as any);
 
             container.addChild(child);
 
             container.render(undefined);
-            expect(webGLSpy).to.have.been.called;
+            expect(webGLSpy).toBeCalled();
         });
     });
 
@@ -614,12 +612,12 @@ describe('Container', () =>
             // @ts-expect-error - instantiating DisplayObject
             container.addChild(new DisplayObject(), new DisplayObject(), new DisplayObject());
 
-            expect(container.children.length).to.be.equals(3);
+            expect(container.children.length).toEqual(3);
 
             removed = container.removeChildren();
 
-            expect(container.children.length).to.be.equals(0);
-            expect(removed.length).to.be.equals(3);
+            expect(container.children.length).toEqual(0);
+            expect(removed.length).toEqual(3);
         });
 
         it('should return empty array if no children', () =>
@@ -627,7 +625,7 @@ describe('Container', () =>
             const container = new Container();
             const removed = container.removeChildren();
 
-            expect(removed.length).to.be.equals(0);
+            expect(removed.length).toEqual(0);
         });
 
         it('should handle a range greater than length', () =>
@@ -639,7 +637,7 @@ describe('Container', () =>
             container.addChild(new DisplayObject());
 
             removed = container.removeChildren(0, 2);
-            expect(removed.length).to.be.equals(1);
+            expect(removed.length).toEqual(1);
         });
 
         it('should throw outside acceptable range', () =>
@@ -650,11 +648,11 @@ describe('Container', () =>
             container.addChild(new DisplayObject());
 
             expect(() => container.removeChildren(2))
-                .to.throw('removeChildren: numeric values are outside the acceptable range.');
+                .toThrowError('removeChildren: numeric values are outside the acceptable range.');
             expect(() => container.removeChildren(-1))
-                .to.throw('removeChildren: numeric values are outside the acceptable range.');
+                .toThrowError('removeChildren: numeric values are outside the acceptable range.');
             expect(() => container.removeChildren(-1, 1))
-                .to.throw('removeChildren: numeric values are outside the acceptable range.');
+                .toThrowError('removeChildren: numeric values are outside the acceptable range.');
         });
     });
 
@@ -669,8 +667,8 @@ describe('Container', () =>
             container.addChild(child);
             container.destroy();
 
-            expect(container.children.length).to.be.equals(0);
-            expect(child.transform).to.not.be.null;
+            expect(container.children.length).toEqual(0);
+            expect(child.transform).not.toBeNull();
         });
 
         it('should allow children destroy', () =>
@@ -682,9 +680,9 @@ describe('Container', () =>
             container.addChild(child);
             container.destroy({ children: true });
 
-            expect(container.children.length).to.be.equals(0);
-            expect(container.transform).to.be.null;
-            expect(child.transform).to.be.null;
+            expect(container.children.length).toEqual(0);
+            expect(container.transform).toBeNull();
+            expect(child.transform).toBeNull();
 
             container = new Container();
             // @ts-expect-error - instantiating DisplayObject
@@ -693,9 +691,9 @@ describe('Container', () =>
             container.addChild(child);
             container.destroy(true);
 
-            expect(container.children.length).to.be.equals(0);
-            expect(container.transform).to.be.null;
-            expect(child.transform).to.be.null;
+            expect(container.children.length).toEqual(0);
+            expect(container.transform).toBeNull();
+            expect(child.transform).toBeNull();
         });
     });
 
@@ -716,8 +714,8 @@ describe('Container', () =>
             container.updateTransform();
             container.getLocalBounds();
 
-            expect(child.transform.worldTransform.tx).to.equal(30);
-            expect(child.transform.worldTransform.ty).to.equal(40);
+            expect(child.transform.worldTransform.tx).toEqual(30);
+            expect(child.transform.worldTransform.ty).toEqual(40);
         });
 
         it('should recalculate bounds if children position was changed', () =>
@@ -740,12 +738,12 @@ describe('Container', () =>
 
             child.position.set(20, 30);
             bounds = container.getLocalBounds();
-            expect(bounds.x).to.equal(20);
-            expect(bounds.y).to.equal(30);
+            expect(bounds.x).toEqual(20);
+            expect(bounds.y).toEqual(30);
             child.position.set(5, 5);
             bounds = container.getLocalBounds();
-            expect(bounds.x).to.equal(5);
-            expect(bounds.y).to.equal(5);
+            expect(bounds.x).toEqual(5);
+            expect(bounds.y).toEqual(5);
         });
     });
 
@@ -758,8 +756,8 @@ describe('Container', () =>
             container.scale.x = 2;
             container.width = 5;
 
-            expect(container.width).to.be.equals(0);
-            expect(container.scale.x).to.be.equals(1);
+            expect(container.width).toEqual(0);
+            expect(container.scale.x).toEqual(1);
         });
     });
 
@@ -772,8 +770,8 @@ describe('Container', () =>
             container.scale.y = 2;
             container.height = 5;
 
-            expect(container.height).to.be.equals(0);
-            expect(container.scale.y).to.be.equals(1);
+            expect(container.height).toEqual(0);
+            expect(container.scale.y).toEqual(1);
         });
     });
 
@@ -785,11 +783,11 @@ describe('Container', () =>
             // @ts-expect-error - instantiating DisplayObject
             const child = new DisplayObject();
 
-            expect(parent.sortDirty).to.be.false;
+            expect(parent.sortDirty).toBe(false);
 
             parent.addChild(child);
 
-            expect(parent.sortDirty).to.be.true;
+            expect(parent.sortDirty).toBe(true);
         });
 
         it('should set sortDirty flag to true when changing a child zIndex', () =>
@@ -804,7 +802,7 @@ describe('Container', () =>
 
             child.zIndex = 10;
 
-            expect(parent.sortDirty).to.be.true;
+            expect(parent.sortDirty).toBe(true);
         });
     });
 
@@ -818,7 +816,7 @@ describe('Container', () =>
 
             container.sortChildren();
 
-            expect(container.sortDirty).to.be.false;
+            expect(container.sortDirty).toBe(false);
         });
 
         it('should call sort when at least one child has a zIndex', () =>
@@ -828,14 +826,14 @@ describe('Container', () =>
             const child1 = new DisplayObject();
             // @ts-expect-error - instantiating DisplayObject
             const child2 = new DisplayObject();
-            const spy = sinon.spy(container.children, 'sort');
+            const spy = jest.spyOn(container.children, 'sort' as any);
 
             child1.zIndex = 5;
             container.addChild(child1, child2);
 
             container.sortChildren();
 
-            expect(spy).to.have.been.called;
+            expect(spy).toBeCalled();
         });
 
         it('should not call sort when children have no zIndex', () =>
@@ -845,13 +843,13 @@ describe('Container', () =>
             const child1 = new DisplayObject();
             // @ts-expect-error - instantiating DisplayObject
             const child2 = new DisplayObject();
-            const spy = sinon.spy(container.children, 'sort');
+            const spy = jest.spyOn(container.children, 'sort' as any);
 
             container.addChild(child1, child2);
 
             container.sortChildren();
 
-            expect(spy).to.not.have.been.called;
+            expect(spy).not.toBeCalled();
         });
 
         it('should sort children by zIndex value', () =>
@@ -872,17 +870,17 @@ describe('Container', () =>
 
             container.addChild(child1, child2, child3, child4);
 
-            expect(container.children.indexOf(child1)).to.be.equals(0);
-            expect(container.children.indexOf(child2)).to.be.equals(1);
-            expect(container.children.indexOf(child3)).to.be.equals(2);
-            expect(container.children.indexOf(child4)).to.be.equals(3);
+            expect(container.children.indexOf(child1)).toEqual(0);
+            expect(container.children.indexOf(child2)).toEqual(1);
+            expect(container.children.indexOf(child3)).toEqual(2);
+            expect(container.children.indexOf(child4)).toEqual(3);
 
             container.sortChildren();
 
-            expect(container.children.indexOf(child1)).to.be.equals(3);
-            expect(container.children.indexOf(child2)).to.be.equals(1);
-            expect(container.children.indexOf(child3)).to.be.equals(2);
-            expect(container.children.indexOf(child4)).to.be.equals(0);
+            expect(container.children.indexOf(child1)).toEqual(3);
+            expect(container.children.indexOf(child2)).toEqual(1);
+            expect(container.children.indexOf(child3)).toEqual(2);
+            expect(container.children.indexOf(child4)).toEqual(0);
         });
 
         it('should sort children by current array order if zIndex values match', () =>
@@ -904,22 +902,22 @@ describe('Container', () =>
 
             container.addChild(child1, child2, child3, child4);
 
-            expect(container.children.indexOf(child1)).to.be.equals(0);
-            expect(container.children.indexOf(child2)).to.be.equals(1);
-            expect(container.children.indexOf(child3)).to.be.equals(2);
-            expect(container.children.indexOf(child4)).to.be.equals(3);
+            expect(container.children.indexOf(child1)).toEqual(0);
+            expect(container.children.indexOf(child2)).toEqual(1);
+            expect(container.children.indexOf(child3)).toEqual(2);
+            expect(container.children.indexOf(child4)).toEqual(3);
 
             container.sortChildren();
 
-            expect(child1._lastSortedIndex).to.be.equals(0);
-            expect(child2._lastSortedIndex).to.be.equals(1);
-            expect(child3._lastSortedIndex).to.be.equals(2);
-            expect(child4._lastSortedIndex).to.be.equals(3);
+            expect(child1._lastSortedIndex).toEqual(0);
+            expect(child2._lastSortedIndex).toEqual(1);
+            expect(child3._lastSortedIndex).toEqual(2);
+            expect(child4._lastSortedIndex).toEqual(3);
 
-            expect(container.children.indexOf(child1)).to.be.equals(2);
-            expect(container.children.indexOf(child2)).to.be.equals(3);
-            expect(container.children.indexOf(child3)).to.be.equals(0);
-            expect(container.children.indexOf(child4)).to.be.equals(1);
+            expect(container.children.indexOf(child1)).toEqual(2);
+            expect(container.children.indexOf(child2)).toEqual(3);
+            expect(container.children.indexOf(child3)).toEqual(0);
+            expect(container.children.indexOf(child4)).toEqual(1);
         });
 
         it('should sort children in the same way despite being called multiple times', () =>
@@ -941,24 +939,24 @@ describe('Container', () =>
 
             container.addChild(child1, child2, child3, child4);
 
-            expect(container.children.indexOf(child1)).to.be.equals(0);
-            expect(container.children.indexOf(child2)).to.be.equals(1);
-            expect(container.children.indexOf(child3)).to.be.equals(2);
-            expect(container.children.indexOf(child4)).to.be.equals(3);
+            expect(container.children.indexOf(child1)).toEqual(0);
+            expect(container.children.indexOf(child2)).toEqual(1);
+            expect(container.children.indexOf(child3)).toEqual(2);
+            expect(container.children.indexOf(child4)).toEqual(3);
 
             container.sortChildren();
 
-            expect(container.children.indexOf(child1)).to.be.equals(2);
-            expect(container.children.indexOf(child2)).to.be.equals(3);
-            expect(container.children.indexOf(child3)).to.be.equals(1);
-            expect(container.children.indexOf(child4)).to.be.equals(0);
+            expect(container.children.indexOf(child1)).toEqual(2);
+            expect(container.children.indexOf(child2)).toEqual(3);
+            expect(container.children.indexOf(child3)).toEqual(1);
+            expect(container.children.indexOf(child4)).toEqual(0);
 
             container.sortChildren();
 
-            expect(container.children.indexOf(child1)).to.be.equals(2);
-            expect(container.children.indexOf(child2)).to.be.equals(3);
-            expect(container.children.indexOf(child3)).to.be.equals(1);
-            expect(container.children.indexOf(child4)).to.be.equals(0);
+            expect(container.children.indexOf(child1)).toEqual(2);
+            expect(container.children.indexOf(child2)).toEqual(3);
+            expect(container.children.indexOf(child3)).toEqual(1);
+            expect(container.children.indexOf(child4)).toEqual(0);
 
             child1.zIndex = 1;
             child2.zIndex = 1;
@@ -967,10 +965,10 @@ describe('Container', () =>
 
             container.sortChildren();
 
-            expect(container.children.indexOf(child1)).to.be.equals(2);
-            expect(container.children.indexOf(child2)).to.be.equals(3);
-            expect(container.children.indexOf(child3)).to.be.equals(1);
-            expect(container.children.indexOf(child4)).to.be.equals(0);
+            expect(container.children.indexOf(child1)).toEqual(2);
+            expect(container.children.indexOf(child2)).toEqual(3);
+            expect(container.children.indexOf(child3)).toEqual(1);
+            expect(container.children.indexOf(child4)).toEqual(0);
         });
 
         it('should sort new children added correctly', () =>
@@ -991,29 +989,29 @@ describe('Container', () =>
 
             container.addChild(child1, child2, child3);
 
-            expect(container.children.indexOf(child1)).to.be.equals(0);
-            expect(container.children.indexOf(child2)).to.be.equals(1);
-            expect(container.children.indexOf(child3)).to.be.equals(2);
+            expect(container.children.indexOf(child1)).toEqual(0);
+            expect(container.children.indexOf(child2)).toEqual(1);
+            expect(container.children.indexOf(child3)).toEqual(2);
 
             container.sortChildren();
 
-            expect(container.children.indexOf(child1)).to.be.equals(2);
-            expect(container.children.indexOf(child2)).to.be.equals(0);
-            expect(container.children.indexOf(child3)).to.be.equals(1);
+            expect(container.children.indexOf(child1)).toEqual(2);
+            expect(container.children.indexOf(child2)).toEqual(0);
+            expect(container.children.indexOf(child3)).toEqual(1);
 
             container.addChild(child4);
 
-            expect(container.children.indexOf(child1)).to.be.equals(2);
-            expect(container.children.indexOf(child2)).to.be.equals(0);
-            expect(container.children.indexOf(child3)).to.be.equals(1);
-            expect(container.children.indexOf(child4)).to.be.equals(3);
+            expect(container.children.indexOf(child1)).toEqual(2);
+            expect(container.children.indexOf(child2)).toEqual(0);
+            expect(container.children.indexOf(child3)).toEqual(1);
+            expect(container.children.indexOf(child4)).toEqual(3);
 
             container.sortChildren();
 
-            expect(container.children.indexOf(child1)).to.be.equals(3);
-            expect(container.children.indexOf(child2)).to.be.equals(1);
-            expect(container.children.indexOf(child3)).to.be.equals(2);
-            expect(container.children.indexOf(child4)).to.be.equals(0);
+            expect(container.children.indexOf(child1)).toEqual(3);
+            expect(container.children.indexOf(child2)).toEqual(1);
+            expect(container.children.indexOf(child3)).toEqual(2);
+            expect(container.children.indexOf(child4)).toEqual(0);
         });
 
         it('should sort children after a removal correctly', () =>
@@ -1034,29 +1032,29 @@ describe('Container', () =>
 
             container.addChild(child1, child2, child3, child4);
 
-            expect(container.children.indexOf(child1)).to.be.equals(0);
-            expect(container.children.indexOf(child2)).to.be.equals(1);
-            expect(container.children.indexOf(child3)).to.be.equals(2);
-            expect(container.children.indexOf(child4)).to.be.equals(3);
+            expect(container.children.indexOf(child1)).toEqual(0);
+            expect(container.children.indexOf(child2)).toEqual(1);
+            expect(container.children.indexOf(child3)).toEqual(2);
+            expect(container.children.indexOf(child4)).toEqual(3);
 
             container.sortChildren();
 
-            expect(container.children.indexOf(child1)).to.be.equals(3);
-            expect(container.children.indexOf(child2)).to.be.equals(1);
-            expect(container.children.indexOf(child3)).to.be.equals(2);
-            expect(container.children.indexOf(child4)).to.be.equals(0);
+            expect(container.children.indexOf(child1)).toEqual(3);
+            expect(container.children.indexOf(child2)).toEqual(1);
+            expect(container.children.indexOf(child3)).toEqual(2);
+            expect(container.children.indexOf(child4)).toEqual(0);
 
             container.removeChild(child3);
 
-            expect(container.children.indexOf(child1)).to.be.equals(2);
-            expect(container.children.indexOf(child2)).to.be.equals(1);
-            expect(container.children.indexOf(child4)).to.be.equals(0);
+            expect(container.children.indexOf(child1)).toEqual(2);
+            expect(container.children.indexOf(child2)).toEqual(1);
+            expect(container.children.indexOf(child4)).toEqual(0);
 
             container.sortChildren();
 
-            expect(container.children.indexOf(child1)).to.be.equals(2);
-            expect(container.children.indexOf(child2)).to.be.equals(1);
-            expect(container.children.indexOf(child4)).to.be.equals(0);
+            expect(container.children.indexOf(child1)).toEqual(2);
+            expect(container.children.indexOf(child2)).toEqual(1);
+            expect(container.children.indexOf(child4)).toEqual(0);
         });
     });
 
@@ -1064,27 +1062,27 @@ describe('Container', () =>
     {
         parent.addChild(child);
 
-        expect(parent.children.length).to.be.equals(1);
-        expect(child.parent).to.be.equals(parent);
+        expect(parent.children.length).toEqual(1);
+        expect(child.parent).toEqual(parent);
 
         functionToAssert();
 
-        expect(parent.children.length).to.be.equals(0);
-        expect(child.parent).to.be.equals(container);
+        expect(parent.children.length).toEqual(0);
+        expect(child.parent).toEqual(container);
     }
 
     describe('culling', () =>
     {
         let renderer: Renderer;
-        let filterPush: sinon.SinonSpy;
+        let filterPush: jest.SpyInstance;
 
-        before(() =>
+        beforeAll(() =>
         {
             renderer = new Renderer({ width: 100, height: 100 });
-            filterPush = sinon.spy(renderer.filter, 'push');
+            filterPush = jest.spyOn(renderer.filter, 'push');
         });
 
-        after(() =>
+        afterAll(() =>
         {
             renderer.destroy();
             renderer = null;
@@ -1093,7 +1091,7 @@ describe('Container', () =>
 
         afterEach(() =>
         {
-            filterPush.resetHistory();
+            filterPush.mockClear();
         });
 
         it('noncullable container should always be rendered even if bounds do not intersect the frame', () =>
@@ -1105,13 +1103,13 @@ describe('Container', () =>
             graphics.x = -1000;
             graphics.y = -1000;
 
-            const _renderContainer = sinon.spy(container, '_render' as keyof Container);
-            const _renderGraphics = sinon.spy(graphics, '_render' as keyof Graphics);
+            const _renderContainer = jest.spyOn(container, '_render' as any);
+            const _renderGraphics = jest.spyOn(graphics, '_render' as any);
 
             renderer.render(container);
 
-            expect(_renderContainer).to.have.been.called;
-            expect(_renderGraphics).to.have.been.called;
+            expect(_renderContainer).toBeCalled();
+            expect(_renderGraphics).toBeCalled();
         });
 
         it('cullable container should not be rendered if bounds do not intersect the frame', () =>
@@ -1123,13 +1121,13 @@ describe('Container', () =>
             graphics.x = 0;
             graphics.y = -10;
 
-            const _renderContainer = sinon.spy(container, '_render' as keyof Container);
-            const _renderGraphics = sinon.spy(graphics, '_render' as keyof Graphics);
+            const _renderContainer = jest.spyOn(container, '_render' as any);
+            const _renderGraphics = jest.spyOn(graphics, '_render' as any);
 
             renderer.render(container);
 
-            expect(_renderContainer).to.not.have.been.called;
-            expect(_renderGraphics).to.not.have.been.called;
+            expect(_renderContainer).not.toBeCalled();
+            expect(_renderGraphics).not.toBeCalled();
         });
 
         it('cullable container should be rendered if bounds intersects the frame', () =>
@@ -1141,13 +1139,13 @@ describe('Container', () =>
             graphics.x = 0;
             graphics.y = -9;
 
-            const _renderContainer = sinon.spy(container, '_render' as keyof Container);
-            const _renderGraphics = sinon.spy(graphics, '_render' as keyof Graphics);
+            const _renderContainer = jest.spyOn(container, '_render' as any);
+            const _renderGraphics = jest.spyOn(graphics, '_render' as any);
 
             renderer.render(container);
 
-            expect(_renderContainer).to.have.been.called;
-            expect(_renderGraphics).to.have.been.called;
+            expect(_renderContainer).toBeCalled();
+            expect(_renderGraphics).toBeCalled();
         });
 
         it('cullable container that contains a child with a padded filter (autoFit=true) '
@@ -1166,14 +1164,14 @@ describe('Container', () =>
             graphics.x = 0;
             graphics.y = -15;
 
-            const _renderContainer = sinon.spy(container, '_render' as keyof Container);
-            const _renderGraphics = sinon.spy(graphics, '_render' as keyof Graphics);
+            const _renderContainer = jest.spyOn(container, '_render' as any);
+            const _renderGraphics = jest.spyOn(graphics, '_render' as any);
 
             renderer.render(container);
 
-            expect(_renderContainer).to.not.have.been.called;
-            expect(_renderGraphics).to.not.have.been.called;
-            expect(filterPush).to.have.been.called;
+            expect(_renderContainer).not.toBeCalled();
+            expect(_renderGraphics).not.toBeCalled();
+            expect(filterPush).toBeCalled();
         });
 
         it('cullable container that contains a child with a padded filter (autoFit=false) '
@@ -1192,14 +1190,14 @@ describe('Container', () =>
             graphics.x = 0;
             graphics.y = -15;
 
-            const _renderContainer = sinon.spy(container, '_render' as keyof Container);
-            const _renderGraphics = sinon.spy(graphics, '_render' as keyof Graphics);
+            const _renderContainer = jest.spyOn(container, '_render' as any);
+            const _renderGraphics = jest.spyOn(graphics, '_render' as any);
 
             renderer.render(container);
 
-            expect(_renderContainer).to.not.have.been.called;
-            expect(_renderGraphics).to.have.been.called;
-            expect(filterPush).to.have.been.called;
+            expect(_renderContainer).not.toBeCalled();
+            expect(_renderGraphics).toBeCalled();
+            expect(filterPush).toBeCalled();
         });
 
         it('cullable container with a filter (autoFit=true) should not render the container or children '
@@ -1217,14 +1215,14 @@ describe('Container', () =>
             graphics.x = 0;
             graphics.y = -15;
 
-            const _renderContainer = sinon.spy(container, '_render' as keyof Container);
-            const renderGraphics = sinon.spy(graphics, 'render');
+            const _renderContainer = jest.spyOn(container, '_render' as any);
+            const renderGraphics = jest.spyOn(graphics, 'render');
 
             renderer.render(container);
 
-            expect(_renderContainer).to.not.have.been.called;
-            expect(renderGraphics).to.not.have.been.called;
-            expect(filterPush).to.have.been.called;
+            expect(_renderContainer).not.toBeCalled();
+            expect(renderGraphics).not.toBeCalled();
+            expect(filterPush).toBeCalled();
         });
 
         it('cullable container with cullArea should be rendered if the bounds intersect the frame', () =>
@@ -1237,11 +1235,11 @@ describe('Container', () =>
             container.x = container.y = 107.07;
             container.rotation = Math.PI / 4;
 
-            const _renderGraphics = sinon.spy(graphics, '_render' as keyof Graphics);
+            const _renderGraphics = jest.spyOn(graphics, '_render' as any);
 
             renderer.render(container);
 
-            expect(_renderGraphics).to.have.been.called;
+            expect(_renderGraphics).toBeCalled();
         });
 
         it('cullable container with cullArea should not be rendered if the bounds do not intersect the frame', () =>
@@ -1254,11 +1252,11 @@ describe('Container', () =>
             container.x = container.y = 107.08;
             container.rotation = Math.PI / 4;
 
-            const renderGraphics = sinon.spy(graphics, 'render');
+            const renderGraphics = jest.spyOn(graphics, 'render');
 
             renderer.render(container);
 
-            expect(renderGraphics).to.not.have.been.called;
+            expect(renderGraphics).not.toBeCalled();
         });
     });
 });

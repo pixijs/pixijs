@@ -2,7 +2,6 @@ import { Container } from '@pixi/display';
 import { Graphics } from '@pixi/graphics';
 import { Transform } from '@pixi/math';
 import { MaskData } from '@pixi/core';
-import { expect } from 'chai';
 
 import '@pixi/canvas-display';
 
@@ -32,10 +31,10 @@ describe('Container', () =>
 
             const bounds = graphics.getBounds();
 
-            expect(bounds.x).to.be.equal(100);
-            expect(bounds.y).to.be.equal(200);
-            expect(bounds.width).to.be.equal(10);
-            expect(bounds.height).to.be.equal(10);
+            expect(bounds.x).toEqual(100);
+            expect(bounds.y).toEqual(200);
+            expect(bounds.width).toEqual(10);
+            expect(bounds.height).toEqual(10);
         });
     });
 
@@ -58,8 +57,8 @@ describe('Container', () =>
 
             const bounds = graphics.getBounds();
 
-            expect(bounds.x).to.be.equal(0);
-            expect(bounds.y).to.be.equal(0);
+            expect(bounds.x).toEqual(0);
+            expect(bounds.y).toEqual(0);
         });
     });
 
@@ -76,7 +75,7 @@ describe('Container', () =>
             container.addChild(graphics);
             container.scale.x = 2;
 
-            expect(container.width).to.be.equals(20);
+            expect(container.width).toEqual(20);
         });
 
         it('should adjust scale', () =>
@@ -91,8 +90,8 @@ describe('Container', () =>
 
             container.width = 20;
 
-            expect(container.width).to.be.equals(20);
-            expect(container.scale.x).to.be.equals(2);
+            expect(container.width).toEqual(20);
+            expect(container.scale.x).toEqual(2);
         });
     });
 
@@ -109,7 +108,7 @@ describe('Container', () =>
             container.addChild(graphics);
             container.scale.y = 2;
 
-            expect(container.height).to.be.equals(20);
+            expect(container.height).toEqual(20);
         });
 
         it('should adjust scale', () =>
@@ -124,8 +123,8 @@ describe('Container', () =>
 
             container.height = 20;
 
-            expect(container.height).to.be.equals(20);
-            expect(container.scale.y).to.be.equals(2);
+            expect(container.height).toEqual(20);
+            expect(container.scale.y).toEqual(2);
         });
     });
 
@@ -154,17 +153,17 @@ describe('Container', () =>
 
             maskedObject.mask = new MaskData(createSquareContainer(5, 10, 35, 29));
             bounds = parentContainer.getBounds();
-            expect(bounds.x).to.equal(5);
-            expect(bounds.y).to.equal(15);
-            expect(bounds.width).to.equal(6);
-            expect(bounds.height).to.equal(14);
+            expect(bounds.x).toEqual(5);
+            expect(bounds.y).toEqual(15);
+            expect(bounds.width).toEqual(6);
+            expect(bounds.height).toEqual(14);
 
             maskedObject.mask = createSquareContainer(4, 9, 34, 32);
             bounds = parentContainer.getBounds();
-            expect(bounds.x).to.equal(4);
-            expect(bounds.y).to.equal(15);
-            expect(bounds.width).to.equal(7);
-            expect(bounds.height).to.equal(16);
+            expect(bounds.x).toEqual(4);
+            expect(bounds.y).toEqual(15);
+            expect(bounds.width).toEqual(7);
+            expect(bounds.height).toEqual(16);
         });
     });
 });
