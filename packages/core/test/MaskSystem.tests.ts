@@ -441,14 +441,14 @@ describe('MaskSystem', () =>
 
         const renderTexture = renderer.generateTexture(stage, { region: new Rectangle(0, 0, 2, 1) });
 
-        expect(renderTexture.width).to.equal(2);
-        expect(renderTexture.height).to.equal(1);
+        expect(renderTexture.width).toEqual(2);
+        expect(renderTexture.height).toEqual(1);
 
-        expect(stage.mask.type).to.equal(MASK_TYPES.COLOR);
-        expect(container1.mask.type).to.equal(MASK_TYPES.STENCIL);
-        expect(container2.mask.type).to.equal(MASK_TYPES.STENCIL);
-        expect(graphics.mask.type).to.equal(MASK_TYPES.COLOR);
-        expect(mask.mask.type).to.equal(MASK_TYPES.COLOR);
+        expect(stage.mask.type).toEqual(MASK_TYPES.COLOR);
+        expect(container1.mask.type).toEqual(MASK_TYPES.STENCIL);
+        expect(container2.mask.type).toEqual(MASK_TYPES.STENCIL);
+        expect(graphics.mask.type).toEqual(MASK_TYPES.COLOR);
+        expect(mask.mask.type).toEqual(MASK_TYPES.COLOR);
 
         stage.destroy(true);
 
@@ -468,14 +468,14 @@ describe('MaskSystem', () =>
         // -------
         //   G   A
 
-        expect(r1).to.equal(0x00);
-        expect(g1).to.equal(0x00);
-        expect(b1).to.equal(0x00);
-        expect(a1).to.equal(0x00);
-        expect(r2).to.equal(0x00);
-        expect(g2).to.equal(0xff);
-        expect(b2).to.equal(0x00);
-        expect(a2).to.equal(0xff);
+        expect(r1).toEqual(0x00);
+        expect(g1).toEqual(0x00);
+        expect(b1).toEqual(0x00);
+        expect(a1).toEqual(0x00);
+        expect(r2).toEqual(0x00);
+        expect(g2).toEqual(0xff);
+        expect(b2).toEqual(0x00);
+        expect(a2).toEqual(0xff);
     });
 
     it('should render overlapping objects with color masks correctly', () =>
@@ -495,11 +495,11 @@ describe('MaskSystem', () =>
 
         const renderTexture = renderer.generateTexture(stage);
 
-        expect(renderTexture.width).to.equal(3);
-        expect(renderTexture.height).to.equal(1);
+        expect(renderTexture.width).toEqual(3);
+        expect(renderTexture.height).toEqual(1);
 
-        expect(graphics1.mask.type).to.equal(MASK_TYPES.COLOR);
-        expect(graphics2.mask.type).to.equal(MASK_TYPES.COLOR);
+        expect(graphics1.mask.type).toEqual(MASK_TYPES.COLOR);
+        expect(graphics2.mask.type).toEqual(MASK_TYPES.COLOR);
 
         stage.destroy(true);
 
@@ -514,17 +514,17 @@ describe('MaskSystem', () =>
 
         const [r1, g1, b1, a1, r2, g2, b2, a2, r3, g3, b3, a3] = pixels;
 
-        expect(r1).to.equal(0xff);
-        expect(g1).to.equal(0x00);
-        expect(b1).to.equal(0x00);
-        expect(a1).to.equal(0xff);
-        expect(r2).to.equal(0xff);
-        expect(g2).to.equal(0xff);
-        expect(b2).to.equal(0x00);
-        expect(a2).to.equal(0xff);
-        expect(r3).to.equal(0x00);
-        expect(g3).to.equal(0xff);
-        expect(b3).to.equal(0x00);
-        expect(a3).to.equal(0xff);
+        expect(r1).toEqual(0xff);
+        expect(g1).toEqual(0x00);
+        expect(b1).toEqual(0x00);
+        expect(a1).toEqual(0xff);
+        expect(r2).toEqual(0xff);
+        expect(g2).toEqual(0xff);
+        expect(b2).toEqual(0x00);
+        expect(a2).toEqual(0xff);
+        expect(r3).toEqual(0x00);
+        expect(g3).toEqual(0xff);
+        expect(b3).toEqual(0x00);
+        expect(a3).toEqual(0xff);
     });
 });
