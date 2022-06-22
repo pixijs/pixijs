@@ -3,7 +3,6 @@ import { skipHello } from '@pixi/utils';
 import { Loader } from '@pixi/loaders';
 import { Point } from '@pixi/math';
 import { Renderer, Texture } from '@pixi/core';
-import { expect } from 'chai';
 
 skipHello();
 
@@ -18,8 +17,8 @@ describe('SimpleRope', () =>
             {
                 const rope = new SimpleRope(resources.testBitmap.texture, [new Point(0, 0), new Point(0, 1)]);
 
-                expect(rope).to.be.instanceof(SimpleRope);
-                expect(rope.autoUpdate).to.be.true;
+                expect(rope).toBeInstanceOf(SimpleRope);
+                expect(rope.autoUpdate).toBe(true);
 
                 rope.destroy();
                 resources.testBitmap.texture.destroy(true);

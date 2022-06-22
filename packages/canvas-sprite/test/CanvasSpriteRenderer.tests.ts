@@ -1,16 +1,16 @@
-import { CanvasResource, extensions, Texture, BaseTexture } from '@pixi/core';
-import { Sprite } from '@pixi/sprite';
+import '@pixi/canvas-display';
 import { CanvasRenderer } from '@pixi/canvas-renderer';
-import { expect } from 'chai';
 import { CanvasSpriteRenderer } from '@pixi/canvas-sprite';
-import { Container } from '@pixi/display';
 import { MIPMAP_MODES, SCALE_MODES } from '@pixi/constants';
+import { BaseTexture, CanvasResource, extensions, Texture } from '@pixi/core';
+import { Container } from '@pixi/display';
 import { Rectangle } from '@pixi/math';
+import { Sprite } from '@pixi/sprite';
 
 describe('CanvasSpriteRenderer', () =>
 {
-    before(() => extensions.add(CanvasSpriteRenderer));
-    after(() => extensions.remove(CanvasSpriteRenderer));
+    beforeAll(() => extensions.add(CanvasSpriteRenderer));
+    afterAll(() => extensions.remove(CanvasSpriteRenderer));
 
     it('should still render a sprite after texture is destroyed', () =>
     {
@@ -23,7 +23,7 @@ describe('CanvasSpriteRenderer', () =>
 
         try
         {
-            expect(() => { renderer.render(sprite); }).to.not.throw();
+            expect(() => { renderer.render(sprite); }).not.toThrowError();
         }
         finally
         {
@@ -72,14 +72,14 @@ describe('CanvasSpriteRenderer', () =>
 
         const pixels = ctx.getImageData(0, 0, 2 * scale, Number(scale)).data;
 
-        expect(pixels[0]).to.equal(255);
-        expect(pixels[1]).to.equal(0);
-        expect(pixels[2]).to.equal(0);
-        expect(pixels[3]).to.equal(255);
+        expect(pixels[0]).toEqual(255);
+        expect(pixels[1]).toEqual(0);
+        expect(pixels[2]).toEqual(0);
+        expect(pixels[3]).toEqual(255);
 
-        expect(pixels[8]).to.equal(0);
-        expect(pixels[9]).to.equal(255);
-        expect(pixels[10]).to.equal(0);
-        expect(pixels[11]).to.equal(255);
+        expect(pixels[8]).toEqual(0);
+        expect(pixels[9]).toEqual(255);
+        expect(pixels[10]).toEqual(0);
+        expect(pixels[11]).toEqual(255);
     });
 });

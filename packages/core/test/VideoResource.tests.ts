@@ -1,12 +1,11 @@
 import { VideoResource } from '@pixi/core';
 import path from 'path';
-import { expect } from 'chai';
 
 describe('VideoResource', () =>
 {
     let videoUrl: string;
 
-    before(() =>
+    beforeAll(() =>
     {
         videoUrl = path.resolve(__dirname, 'resources', 'small.mp4');
     });
@@ -15,10 +14,10 @@ describe('VideoResource', () =>
     {
         const resource = new VideoResource(videoUrl, { autoLoad: false });
 
-        expect(resource.width).to.equal(0);
-        expect(resource.height).to.equal(0);
-        expect(resource.valid).to.be.false;
-        expect(resource.source).to.be.instanceof(HTMLVideoElement);
+        expect(resource.width).toEqual(0);
+        expect(resource.height).toEqual(0);
+        expect(resource.valid).toBe(false);
+        expect(resource.source).toBeInstanceOf(HTMLVideoElement);
 
         resource.destroy();
     });
@@ -32,10 +31,10 @@ describe('VideoResource', () =>
 
         return resource.load().then((res) =>
         {
-            expect(res).to.equal(resource);
-            expect(res.width).to.equal(560);
-            expect(res.height).to.equal(320);
-            expect(res.valid).to.be.true;
+            expect(res).toEqual(resource);
+            expect(res.width).toEqual(560);
+            expect(res.height).toEqual(320);
+            expect(res.valid).toBe(true);
             resource.destroy();
         });
     });
@@ -48,7 +47,7 @@ describe('VideoResource', () =>
         });
 
         // @ts-expect-error ---
-        expect(resource.source.firstChild.type).to.be.equals('video/webm');
+        expect(resource.source.firstChild.type).toEqual('video/webm');
 
         resource.destroy();
     });
@@ -61,7 +60,7 @@ describe('VideoResource', () =>
         });
 
         // @ts-expect-error ---
-        expect(resource.source.firstChild.type).to.be.equals('video/mp4');
+        expect(resource.source.firstChild.type).toEqual('video/mp4');
 
         resource.destroy();
     });
@@ -76,10 +75,10 @@ describe('VideoResource', () =>
 
         return resource.load().then((res) =>
         {
-            expect(res).to.equal(resource);
-            expect(res.updateFPS).to.equal(30);
+            expect(res).toEqual(resource);
+            expect(res.updateFPS).toEqual(30);
             res.updateFPS = 20;
-            expect(res.updateFPS).to.equal(20);
+            expect(res.updateFPS).toEqual(20);
             resource.destroy();
         });
     });

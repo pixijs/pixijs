@@ -5,19 +5,18 @@ import { NineSlicePlane } from '@pixi/mesh-extras';
 import '@pixi/canvas-display';
 import { CanvasSpriteRenderer } from '@pixi/canvas-sprite';
 import { CanvasMeshRenderer } from '@pixi/canvas-mesh';
-import { expect } from 'chai';
 
 describe('NineSlicePlane', () =>
 {
     let renderer: CanvasRenderer;
 
-    before(() =>
+    beforeAll(() =>
     {
         extensions.add(CanvasSpriteRenderer, CanvasMeshRenderer);
         renderer = new CanvasRenderer();
     });
 
-    after(() =>
+    afterAll(() =>
     {
         extensions.remove(CanvasSpriteRenderer, CanvasMeshRenderer);
         renderer.destroy();
@@ -34,6 +33,6 @@ describe('NineSlicePlane', () =>
 
         const nineSlicePlane = new NineSlicePlane(rt, 1, 1, 1, 1);
 
-        expect(() => { renderer.render(nineSlicePlane); }).to.not.throw();
+        expect(() => { renderer.render(nineSlicePlane); }).not.toThrowError();
     });
 });

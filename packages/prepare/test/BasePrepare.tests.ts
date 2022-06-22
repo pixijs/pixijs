@@ -1,6 +1,4 @@
 import { BasePrepare } from '@pixi/prepare';
-import sinon from 'sinon';
-import { expect } from 'chai';
 import { DisplayObject } from '@pixi/display';
 import { IRenderer } from '@pixi/core';
 
@@ -11,12 +9,12 @@ describe('BasePrepare', () =>
         const renderer = {} as IRenderer;
         const prep = new BasePrepare(renderer);
 
-        expect(prep['renderer']).to.equal(renderer);
-        expect(prep['uploadHookHelper']).to.be.null;
-        expect(prep['queue']).to.be.empty;
-        expect(prep.addHooks).to.have.lengthOf(5);
-        expect(prep.uploadHooks).to.have.lengthOf(2);
-        expect(prep.completes).to.be.empty;
+        expect(prep['renderer']).toEqual(renderer);
+        expect(prep['uploadHookHelper']).toBeNull();
+        expect(prep['queue']).toBeEmpty();
+        expect(prep.addHooks).toHaveLength(5);
+        expect(prep.uploadHooks).toHaveLength(2);
+        expect(prep.completes).toBeEmpty();
 
         prep.destroy();
     });
@@ -31,10 +29,10 @@ describe('BasePrepare', () =>
         prep.registerFindHook(addHook);
         prep.registerUploadHook(uploadHook);
 
-        expect(prep.addHooks).to.contain(addHook);
-        expect(prep.addHooks).to.have.lengthOf(6);
-        expect(prep.uploadHooks).to.contain(uploadHook);
-        expect(prep.uploadHooks).to.have.lengthOf(3);
+        expect(prep.addHooks).toEqual(expect.arrayContaining([addHook]));
+        expect(prep.addHooks).toHaveLength(6);
+        expect(prep.uploadHooks).toEqual(expect.arrayContaining([uploadHook]));
+        expect(prep.uploadHooks).toHaveLength(3);
 
         prep.destroy();
     });
@@ -48,18 +46,18 @@ describe('BasePrepare', () =>
 
         prep['uploadHookHelper'] = uploadHelper;
 
-        const addHook = sinon.spy((item, queue) =>
+        const addHook = jest.fn((item, queue) =>
         {
-            expect(item).to.equal(uploadItem);
-            expect(queue).to.equal(prep['queue']);
+            expect(item).toEqual(uploadItem);
+            expect(queue).toEqual(prep['queue']);
             queue.push(item);
 
             return true;
         });
-        const uploadHook = sinon.spy((helper, item) =>
+        const uploadHook = jest.fn((helper, item) =>
         {
-            expect(helper).to.equal(uploadHelper);
-            expect(item).to.equal(uploadItem);
+            expect(helper).toEqual(uploadHelper);
+            expect(item).toEqual(uploadItem);
 
             return true;
         });
@@ -68,12 +66,12 @@ describe('BasePrepare', () =>
         prep.registerUploadHook(uploadHook);
         prep.upload(uploadItem);
 
-        expect(prep['queue']).to.contain(uploadItem);
+        expect(prep['queue']).toEqual(expect.arrayContaining([uploadItem]));
 
         prep.prepareItems();
 
-        expect(addHook.calledOnce).to.be.true;
-        expect(uploadHook.calledOnce).to.be.true;
+        expect(addHook).toBeCalledTimes(1);
+        expect(uploadHook).toBeCalledTimes(1);
 
         prep.destroy();
     });
@@ -87,12 +85,12 @@ describe('BasePrepare', () =>
         {
             return false;
         }
-        const complete = sinon.spy(() => { /* empty */ });
+        const complete = jest.fn(() => { /* empty */ });
 
         prep.registerFindHook(addHook);
         await prep.upload({} as DisplayObject).then(complete);
 
-        expect(complete.calledOnce).to.be.true;
+        expect(complete).toBeCalledTimes(1);
 
         prep.destroy();
     });
@@ -102,26 +100,26 @@ describe('BasePrepare', () =>
         const renderer = {} as IRenderer;
         const prep = new BasePrepare(renderer);
 
-        const addHook = sinon.spy((item, queue) =>
+        const addHook = jest.fn((item, queue) =>
         {
             queue.push(item);
 
             return true;
         });
-        const uploadHook = sinon.spy(() =>
+        const uploadHook = jest.fn(() =>
             false);
 
         prep.registerFindHook(addHook);
         prep.registerUploadHook(uploadHook);
         prep.upload({} as DisplayObject);
 
-        expect(prep['queue']).to.have.lengthOf(1);
+        expect(prep['queue']).toHaveLength(1);
 
         prep.prepareItems();
 
-        expect(prep['queue']).to.be.empty;
-        expect(addHook.calledOnce).to.be.true;
-        expect(uploadHook.calledOnce).to.be.true;
+        expect(prep['queue']).toBeEmpty();
+        expect(addHook).toBeCalledTimes(1);
+        expect(uploadHook).toBeCalledTimes(1);
 
         prep.destroy();
     });
@@ -131,13 +129,13 @@ describe('BasePrepare', () =>
         const renderer = {} as IRenderer;
         const prep = new BasePrepare(renderer);
 
-        const addHook = sinon.spy((item, queue) =>
+        const addHook = jest.fn((item, queue) =>
         {
             queue.push(item);
 
             return true;
         });
-        const uploadHook = sinon.spy(() =>
+        const uploadHook = jest.fn(() =>
             false);
 
         prep.registerFindHook(addHook);
@@ -146,14 +144,14 @@ describe('BasePrepare', () =>
 
         prep.upload(item);
 
-        expect(prep['queue']).to.have.lengthOf(1);
+        expect(prep['queue']).toHaveLength(1);
 
         item['_destroyed'] = true;
         prep.prepareItems();
 
-        expect(prep['queue']).to.be.empty;
-        expect(addHook.calledOnce).to.be.true;
-        expect(uploadHook.called).to.be.false;
+        expect(prep['queue']).toBeEmpty();
+        expect(addHook).toBeCalledTimes(1);
+        expect(uploadHook).not.toHaveBeenCalled();
 
         prep.destroy();
     });
@@ -163,21 +161,21 @@ describe('BasePrepare', () =>
         const renderer = {} as IRenderer;
         const prep = new BasePrepare(renderer);
 
-        const addHook = sinon.spy((item, queue) =>
+        const addHook = jest.fn((item, queue) =>
         {
             queue.push(item);
 
             return true;
         });
-        const uploadHook = sinon.spy(() => true);
+        const uploadHook = jest.fn(() => true);
 
         prep.registerFindHook(addHook);
         prep.registerUploadHook(uploadHook);
         await prep.upload({} as DisplayObject);
 
-        expect(prep['queue']).to.be.empty;
-        expect(addHook.calledOnce).to.be.true;
-        expect(uploadHook.calledOnce).to.be.true;
+        expect(prep['queue']).toBeEmpty();
+        expect(addHook).toBeCalledTimes(1);
+        expect(uploadHook).toBeCalledTimes(1);
 
         prep.destroy();
     });

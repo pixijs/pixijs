@@ -1,6 +1,5 @@
 import { DisplayObject } from '@pixi/display';
 import { MaskData } from '@pixi/core';
-import { expect } from 'chai';
 
 import '@pixi/canvas-display';
 
@@ -16,9 +15,9 @@ describe('DisplayObject', () =>
             const maskObject = new DisplayObject();
 
             maskedObject.mask = new MaskData(maskObject);
-            expect(maskObject.renderable).to.be.false;
+            expect(maskObject.renderable).toBe(false);
             maskedObject.mask = null;
-            expect(maskObject.renderable).to.be.true;
+            expect(maskObject.renderable).toBe(true);
         });
     });
 });

@@ -1,26 +1,24 @@
 import { TextureLoader, LoaderResource } from '@pixi/loaders';
 import { Texture } from '@pixi/core';
 import { BaseTextureCache, TextureCache } from '@pixi/utils';
-import sinon from 'sinon';
-import { expect } from 'chai';
 
 describe('TextureLoader', () =>
 {
     it('should exist and return a function', () =>
     {
-        expect(TextureLoader).to.not.be.undefined;
-        expect(TextureLoader.use).to.be.a('function');
+        expect(TextureLoader).toBeDefined();
+        expect(TextureLoader.use).toBeInstanceOf(Function);
     });
 
     it('should do nothing if the resource is not an image', () =>
     {
-        const spy = sinon.spy();
+        const spy = jest.fn();
         const res = {} as LoaderResource;
 
         TextureLoader.use(res, spy);
 
-        expect(spy).to.have.been.calledOnce;
-        expect(res.texture).to.be.undefined;
+        expect(spy).toHaveBeenCalledOnce();
+        expect(res.texture).toBeUndefined();
     });
 
     it('should create a texture if resource is an image', (done) =>
@@ -37,13 +35,13 @@ describe('TextureLoader', () =>
 
         TextureLoader.use(res, () =>
         {
-            expect(res.texture).to.be.an.instanceof(Texture);
+            expect(res.texture).toBeInstanceOf(Texture);
 
-            expect(BaseTextureCache).to.have.property(res.name, res.texture.baseTexture);
-            expect(BaseTextureCache).to.have.property(res.url, res.texture.baseTexture);
+            expect(BaseTextureCache).toHaveProperty(res.name, res.texture.baseTexture);
+            expect(BaseTextureCache).toHaveProperty(res.url, res.texture.baseTexture);
 
-            expect(TextureCache).to.have.property(res.name, res.texture);
-            expect(TextureCache).to.have.property(res.url, res.texture);
+            expect(TextureCache).toHaveProperty(res.name, res.texture);
+            expect(TextureCache).toHaveProperty(res.url, res.texture);
 
             done();
         });

@@ -3,8 +3,6 @@ import { Graphics } from '@pixi/graphics';
 import { settings } from '@pixi/settings';
 import { ENV, MSAA_QUALITY } from '@pixi/constants';
 import { skipHello } from '@pixi/utils';
-import sinon from 'sinon';
-import { expect } from 'chai';
 
 skipHello();
 
@@ -17,8 +15,7 @@ describe('Renderer', () =>
 
         try
         {
-            expect(renderer.geometry.hasVao).to.equal(false);
-            // expect(renderer.plugins.sprite.MAX_TEXTURES).to.equal(1);
+            expect(renderer.geometry.hasVao).toEqual(false);
         }
         finally
         {
@@ -44,14 +41,13 @@ describe('Renderer', () =>
     it('should emit resize event', () =>
     {
         const renderer = new Renderer({ width: 1, height: 1 });
-        const spy = sinon.spy();
+        const spy = jest.fn();
 
         renderer.on('resize', spy);
         renderer.resize(2, 4);
 
-        expect(spy.calledOnce).to.be.true;
-        expect(spy.firstCall.args[0]).to.equal(2);
-        expect(spy.firstCall.args[1]).to.equal(4);
+        expect(spy).toBeCalledTimes(1);
+        expect(spy).toHaveBeenCalledWith(2, 4);
 
         renderer.destroy();
     });
@@ -62,7 +58,7 @@ describe('Renderer', () =>
         let curRenderer: ObjectRenderer;
         let objRenderer: ObjectRenderer;
 
-        before(() =>
+        beforeAll(() =>
         {
             renderer = new Renderer();
         });
@@ -70,17 +66,17 @@ describe('Renderer', () =>
         beforeEach(() =>
         {
             curRenderer = {
-                start: sinon.spy(),
-                stop: sinon.spy(),
+                start: jest.fn(),
+                stop: jest.fn(),
             } as unknown as ObjectRenderer;
             objRenderer = {
-                start: sinon.spy(),
-                stop: sinon.spy(),
+                start: jest.fn(),
+                stop: jest.fn(),
             } as unknown as ObjectRenderer;
             renderer.batch.currentRenderer = curRenderer;
         });
 
-        after(() =>
+        afterAll(() =>
         {
             renderer.destroy();
             renderer = null;
@@ -91,17 +87,17 @@ describe('Renderer', () =>
         it('should set objectRenderer as new current renderer', () =>
         {
             renderer.batch.setObjectRenderer(objRenderer);
-            expect(curRenderer.stop).to.be.calledOnce;
-            expect(renderer.batch.currentRenderer).to.be.equal(objRenderer);
-            expect(objRenderer.start).to.be.calledOnce;
+            expect(curRenderer.stop).toHaveBeenCalledOnce();
+            expect(renderer.batch.currentRenderer).toEqual(objRenderer);
+            expect(objRenderer.start).toHaveBeenCalledOnce();
         });
 
         it('should do nothing if objectRenderer is already used as current', () =>
         {
             renderer.batch.setObjectRenderer(curRenderer);
-            expect(renderer.batch.currentRenderer).to.be.equal(curRenderer);
-            expect(curRenderer.stop).to.not.be.called;
-            expect(curRenderer.start).to.not.be.called;
+            expect(renderer.batch.currentRenderer).toEqual(curRenderer);
+            expect(curRenderer.stop).not.toBeCalled();
+            expect(curRenderer.start).not.toBeCalled();
         });
 
         it('should generate a multisampled texture', () =>
@@ -126,10 +122,10 @@ describe('Renderer', () =>
 
             gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixel);
 
-            expect(pixel[0]).to.equal(0xff);
-            expect(pixel[1]).to.equal(0xff);
-            expect(pixel[2]).to.equal(0xff);
-            expect(pixel[3]).to.equal(0xff);
+            expect(pixel[0]).toEqual(0xff);
+            expect(pixel[1]).toEqual(0xff);
+            expect(pixel[2]).toEqual(0xff);
+            expect(pixel[3]).toEqual(0xff);
         });
     });
 });

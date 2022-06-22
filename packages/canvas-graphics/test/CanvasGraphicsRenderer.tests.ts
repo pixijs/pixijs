@@ -2,7 +2,7 @@ import { BaseTexture, Texture } from '@pixi/core';
 import { Graphics } from '@pixi/graphics';
 import { CanvasRenderer } from '@pixi/canvas-renderer';
 import { CanvasGraphicsRenderer } from '@pixi/canvas-graphics';
-import { expect } from 'chai';
+import '@pixi/canvas-display';
 
 describe('CanvasGraphicsRenderer', () =>
 {
@@ -21,7 +21,7 @@ describe('CanvasGraphicsRenderer', () =>
         try
         {
             renderer.render(graphics);
-            expect(Texture.WHITE.patternCache).to.be.null;
+            expect(Texture.WHITE.patternCache).toBeNull();
         }
         finally
         {
@@ -50,7 +50,7 @@ describe('CanvasGraphicsRenderer', () =>
         try
         {
             renderer.render(graphics);
-            expect(Object.keys(myTex.patternCache).length).equal(1);
+            expect(Object.keys(myTex.patternCache).length).toEqual(1);
         }
         finally
         {

@@ -1,7 +1,7 @@
 import { Container } from '@pixi/display';
 import { Matrix } from '@pixi/math';
 import { CanvasRenderer } from '@pixi/canvas-renderer';
-import { expect } from 'chai';
+import '@pixi/canvas-display';
 
 describe('CanvasRenderer', () =>
 {
@@ -11,7 +11,7 @@ describe('CanvasRenderer', () =>
 
         try
         {
-            expect(renderer.canvasContext.activeContext).to.equal(renderer.canvasContext.activeContext);
+            expect(renderer.canvasContext.activeContext).toEqual(renderer.canvasContext.rootContext);
         }
         finally
         {
@@ -44,15 +44,15 @@ describe('CanvasRenderer', () =>
         par.addChild(cont);
 
         renderer.render(cont, { transform: new Matrix().translate(10, 20) });
-        expect(cont.worldTransform.tx).to.equal(0);
-        expect(cont.worldTransform.ty).to.equal(0);
+        expect(cont.worldTransform.tx).toEqual(0);
+        expect(cont.worldTransform.ty).toEqual(0);
 
         renderer.render(par);
-        expect(cont.worldTransform.tx).to.equal(5);
-        expect(cont.worldTransform.ty).to.equal(10);
+        expect(cont.worldTransform.tx).toEqual(5);
+        expect(cont.worldTransform.ty).toEqual(10);
 
         renderer.render(cont, { transform: new Matrix().translate(-20, 30) });
-        expect(cont.worldTransform.tx).to.equal(0);
-        expect(cont.worldTransform.ty).to.equal(0);
+        expect(cont.worldTransform.tx).toEqual(0);
+        expect(cont.worldTransform.ty).toEqual(0);
     });
 });

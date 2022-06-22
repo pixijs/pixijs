@@ -1,5 +1,4 @@
 import { AppLoaderPlugin, Loader } from '@pixi/loaders';
-import { expect } from 'chai';
 
 describe('AppLoaderPlugin', () =>
 {
@@ -9,12 +8,12 @@ describe('AppLoaderPlugin', () =>
 
         AppLoaderPlugin.init.call(obj);
 
-        expect(obj.loader).to.be.not.undefined;
-        expect(obj.loader).to.be.instanceof(Loader);
+        expect(obj.loader).toBeDefined();
+        expect(obj.loader).toBeInstanceOf(Loader);
 
         AppLoaderPlugin.destroy.call(obj);
 
-        expect(obj.loader).to.be.null;
+        expect(obj.loader).toBeNull();
     });
 
     it('should use sharedLoader option', () =>
@@ -23,12 +22,12 @@ describe('AppLoaderPlugin', () =>
 
         AppLoaderPlugin.init.call(obj, { sharedLoader: true });
 
-        expect(obj.loader).to.be.not.undefined;
-        expect(obj.loader).to.be.instanceof(Loader);
-        expect(obj.loader).to.equal(Loader.shared);
+        expect(obj.loader).toBeDefined();
+        expect(obj.loader).toBeInstanceOf(Loader);
+        expect(obj.loader).toEqual(Loader.shared);
 
         AppLoaderPlugin.destroy.call(obj);
 
-        expect(obj.loader).to.be.null;
+        expect(obj.loader).toBeNull();
     });
 });

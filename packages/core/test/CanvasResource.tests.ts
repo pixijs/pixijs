@@ -1,6 +1,4 @@
 import { CanvasResource, BaseTexture } from '@pixi/core';
-import sinon from 'sinon';
-import { expect } from 'chai';
 
 describe('CanvasResource', () =>
 {
@@ -10,9 +8,9 @@ describe('CanvasResource', () =>
 
         const resource = new CanvasResource(canvas);
 
-        expect(resource.width).to.equal(canvas.width);
-        expect(resource.height).to.equal(canvas.height);
-        expect(resource.valid).to.be.true;
+        expect(resource.width).toEqual(canvas.width);
+        expect(resource.height).toEqual(canvas.height);
+        expect(resource.valid).toBe(true);
 
         resource.destroy();
     });
@@ -26,9 +24,9 @@ describe('CanvasResource', () =>
 
         const resource = new CanvasResource(canvas);
 
-        expect(resource.width).to.equal(100);
-        expect(resource.height).to.equal(200);
-        expect(resource.valid).to.be.true;
+        expect(resource.width).toEqual(100);
+        expect(resource.height).toEqual(200);
+        expect(resource.valid).toBe(true);
 
         resource.destroy();
     });
@@ -37,11 +35,11 @@ describe('CanvasResource', () =>
     {
         const canvas = document.createElement('canvas');
         const resource = new CanvasResource(canvas);
-        const baseTexture = { setRealSize: sinon.stub() };
+        const baseTexture = { setRealSize: jest.fn() };
 
         resource.bind(baseTexture as unknown as BaseTexture);
 
-        expect(baseTexture.setRealSize.calledOnce).to.be.true;
+        expect(baseTexture.setRealSize).toBeCalledTimes(1);
 
         resource.unbind(baseTexture as unknown as BaseTexture);
         resource.destroy();
@@ -51,15 +49,15 @@ describe('CanvasResource', () =>
     {
         const canvas = document.createElement('canvas');
         const resource = new CanvasResource(canvas);
-        const baseTexture = { update: sinon.stub() };
+        const baseTexture = { update: jest.fn() };
 
         resource.bind(baseTexture as unknown as BaseTexture);
 
-        expect(baseTexture.update.called).to.be.false;
+        expect(baseTexture.update).not.toHaveBeenCalled();
 
         resource.update();
 
-        expect(baseTexture.update.calledOnce).to.be.true;
+        expect(baseTexture.update).toBeCalledTimes(1);
 
         resource.unbind(baseTexture as unknown as BaseTexture);
         resource.destroy();
@@ -75,13 +73,13 @@ describe('CanvasResource', () =>
         const resource = new CanvasResource(canvas);
         const baseTexture = new BaseTexture(resource);
 
-        expect(baseTexture.width).to.equal(50);
+        expect(baseTexture.width).toEqual(50);
         canvas.width = 100;
         resource.update();
-        expect(baseTexture.width).to.equal(100);
+        expect(baseTexture.width).toEqual(100);
         canvas.height = 70;
         resource.update();
-        expect(baseTexture.height).to.equal(70);
+        expect(baseTexture.height).toEqual(70);
         resource.destroy();
     });
 });
