@@ -9,7 +9,6 @@ import type { Renderer } from '../Renderer';
  *
  * The `projectionMatrix` is a global uniform provided to all shaders. It is used to transform points in world space to
  * normalized device coordinates.
- *
  * @memberof PIXI
  */
 export class ProjectionSystem implements ISystem
@@ -28,7 +27,6 @@ export class ProjectionSystem implements ISystem
      * The destination frame's dimensions (width,height) should be equal to the source frame. This is because,
      * otherwise, the contents will be scaled to fill the destination frame. Similarly, the destination frame's (x,y)
      * coordinates are (0,0) unless you know what you're doing.
-     *
      * @readonly
      */
     public destinationFrame: Rectangle;
@@ -37,7 +35,6 @@ export class ProjectionSystem implements ISystem
      * The source frame used to calculate the current projection matrix.
      *
      * The source frame is the rectangle in world space containing the contents to be rendered.
-     *
      * @readonly
      */
     public sourceFrame: Rectangle;
@@ -47,7 +44,6 @@ export class ProjectionSystem implements ISystem
      *
      * This is not used internally. It is not advised to use this feature specifically unless you know what
      * you're doing. The `update` method will default to this frame if you do not pass the destination frame.
-     *
      * @readonly
      */
     public defaultFrame: Rectangle;
@@ -60,7 +56,6 @@ export class ProjectionSystem implements ISystem
      *
      * The renderer's `globalUniforms` keeps a reference to this, and so it is available for all shaders to use as a
      * uniform.
-     *
      * @readonly
      */
     public projectionMatrix: Matrix;
@@ -70,7 +65,6 @@ export class ProjectionSystem implements ISystem
      *
      * This can be used to transform points in world-space one last time before they are outputted by the shader. You can
      * use to rotate the whole scene, for example. Remember to clear it once you've rendered everything.
-     *
      * @member {PIXI.Matrix}
      */
     public transform: Matrix;
@@ -97,7 +91,6 @@ export class ProjectionSystem implements ISystem
      *
      * NOTE-2: {@link RenderTextureSystem#bind} updates the projection-matrix when you bind a render-texture. It is expected
      * that you dirty the current bindings when calling this manually.
-     *
      * @param destinationFrame - The rectangle in the render-target to render the contents into. If rendering to the canvas,
      *  the origin is on the top-left; if rendering to a render-texture, the origin is on the bottom-left.
      * @param sourceFrame - The rectangle in world space that contains the contents being rendered.
@@ -134,10 +127,9 @@ export class ProjectionSystem implements ISystem
 
     /**
      * Calculates the `projectionMatrix` to map points inside `sourceFrame` to inside `destinationFrame`.
-     *
-     * @param destinationFrame - The destination frame in the render-target.
+     * @param _destinationFrame - The destination frame in the render-target.
      * @param sourceFrame - The source frame in world space.
-     * @param resolution - The render-target's resolution, i.e. ratio of CSS to physical pixels.
+     * @param _resolution - The render-target's resolution, i.e. ratio of CSS to physical pixels.
      * @param root - Whether rendering into the screen. Otherwise, if rendering to a framebuffer, the projection
      *  is y-flipped.
      */
@@ -157,8 +149,7 @@ export class ProjectionSystem implements ISystem
 
     /**
      * Sets the transform of the active render target to the given matrix.
-     *
-     * @param matrix - The transformation matrix
+     * @param _matrix - The transformation matrix
      */
     setTransform(_matrix: Matrix): void
     {

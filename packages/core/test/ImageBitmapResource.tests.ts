@@ -1,10 +1,10 @@
-import { ImageBitmapResource } from '@pixi/core';
+import { BaseTexture, ImageBitmapResource } from '@pixi/core';
 import sinon from 'sinon';
 import { expect } from 'chai';
 
-describe('ImageBitmapResource', function ()
+describe('ImageBitmapResource', () =>
 {
-    it('should create new dimension-less resource', async function ()
+    it('should create new dimension-less resource', async () =>
     {
         const canvas = document.createElement('canvas');
 
@@ -18,7 +18,7 @@ describe('ImageBitmapResource', function ()
         resource.destroy();
     });
 
-    it('should create new valid resource', async function ()
+    it('should create new valid resource', async () =>
     {
         const canvas = document.createElement('canvas');
 
@@ -35,29 +35,29 @@ describe('ImageBitmapResource', function ()
         resource.destroy();
     });
 
-    it('should fire resize event on bind', async function ()
+    it('should fire resize event on bind', async () =>
     {
         const canvas = document.createElement('canvas');
         const bitmap = await createImageBitmap(canvas);
         const resource = new ImageBitmapResource(bitmap);
         const baseTexture = { setRealSize: sinon.stub() };
 
-        resource.bind(baseTexture);
+        resource.bind(baseTexture as unknown as BaseTexture);
 
         expect(baseTexture.setRealSize.calledOnce).to.be.true;
 
-        resource.unbind(baseTexture);
+        resource.unbind(baseTexture as unknown as BaseTexture);
         resource.destroy();
     });
 
-    it('should fire manual update event', async function ()
+    it('should fire manual update event', async () =>
     {
         const canvas = document.createElement('canvas');
         const bitmap = await createImageBitmap(canvas);
         const resource = new ImageBitmapResource(bitmap);
         const baseTexture = { update: sinon.stub() };
 
-        resource.bind(baseTexture);
+        resource.bind(baseTexture as unknown as BaseTexture);
 
         expect(baseTexture.update.called).to.be.false;
 
@@ -65,7 +65,7 @@ describe('ImageBitmapResource', function ()
 
         expect(baseTexture.update.calledOnce).to.be.true;
 
-        resource.unbind(baseTexture);
+        resource.unbind(baseTexture as unknown as BaseTexture);
         resource.destroy();
     });
 });

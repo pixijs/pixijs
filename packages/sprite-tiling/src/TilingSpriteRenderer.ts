@@ -1,4 +1,4 @@
-import { ObjectRenderer, Shader, State, QuadUv } from '@pixi/core';
+import { ObjectRenderer, Shader, State, QuadUv, ExtensionMetadata, ExtensionType } from '@pixi/core';
 import { WRAP_MODES } from '@pixi/constants';
 import { Matrix } from '@pixi/math';
 import { premultiplyTintToRgba, correctBlendMode } from '@pixi/utils';
@@ -16,13 +16,18 @@ const tempMat = new Matrix();
 
 /**
  * WebGL renderer plugin for tiling sprites
- *
  * @class
  * @memberof PIXI
  * @extends PIXI.ObjectRenderer
  */
 export class TilingSpriteRenderer extends ObjectRenderer
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        name: 'tilingSprite',
+        type: ExtensionType.RendererPlugin,
+    };
+
     public shader: Shader;
     public simpleShader: Shader;
     public quad: QuadUv;
@@ -30,7 +35,6 @@ export class TilingSpriteRenderer extends ObjectRenderer
 
     /**
      * constructor for renderer
-     *
      * @param {PIXI.Renderer} renderer - The renderer this tiling awesomeness works for.
      */
     constructor(renderer: Renderer)
@@ -44,16 +48,13 @@ export class TilingSpriteRenderer extends ObjectRenderer
 
         /**
          * The WebGL state in which this renderer will work.
-         *
          * @member {PIXI.State}
          * @readonly
          */
         this.state = State.for2d();
     }
 
-    /**
-     * Creates shaders when context is initialized.
-     */
+    /** Creates shaders when context is initialized. */
     contextChange(): void
     {
         const renderer = this.renderer;

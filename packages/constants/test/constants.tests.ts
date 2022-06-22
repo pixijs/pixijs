@@ -1,69 +1,69 @@
 import * as lib from '@pixi/constants';
 import { expect } from 'chai';
 
-describe('Constants', function ()
+describe('Constants', () =>
 {
-    it('should have ENV', function ()
+    it('should have ENV', () =>
     {
         expect(lib.ENV).to.be.an('object');
     });
 
-    it('should have RENDERER_TYPE', function ()
+    it('should have RENDERER_TYPE', () =>
     {
         expect(lib.RENDERER_TYPE).to.be.an('object');
     });
 
-    it('should have BLEND_MODES', function ()
+    it('should have BLEND_MODES', () =>
     {
         expect(lib.RENDERER_TYPE).to.be.an('object');
     });
 
-    it('should have DRAW_MODES', function ()
+    it('should have DRAW_MODES', () =>
     {
         expect(lib.DRAW_MODES).to.be.an('object');
     });
 
-    it('should have FORMATS', function ()
+    it('should have FORMATS', () =>
     {
         expect(lib.FORMATS).to.be.an('object');
     });
 
-    it('should have TARGETS', function ()
+    it('should have TARGETS', () =>
     {
         expect(lib.TARGETS).to.be.an('object');
     });
 
-    it('should have TYPES', function ()
+    it('should have TYPES', () =>
     {
         expect(lib.TYPES).to.be.an('object');
     });
 
-    it('should have SCALE_MODES', function ()
+    it('should have SCALE_MODES', () =>
     {
         expect(lib.SCALE_MODES).to.be.an('object');
     });
 
-    it('should have WRAP_MODES', function ()
+    it('should have WRAP_MODES', () =>
     {
         expect(lib.WRAP_MODES).to.be.an('object');
     });
 
-    it('should have MIPMAP_MODES', function ()
+    it('should have MIPMAP_MODES', () =>
     {
         expect(lib.MIPMAP_MODES).to.be.an('object');
     });
 
-    it('should have ALPHA_MODES', function ()
+    it('should have ALPHA_MODES', () =>
     {
         expect(lib.ALPHA_MODES).to.be.an('object');
     });
 
-    it('should have GC_MODES', function ()
+    it('should have GC_MODES', () =>
     {
         expect(lib.GC_MODES).to.be.an('object');
     });
 
-    it('should have PRECISION', function ()
+    it('should have PRECISION', () =>
     {
         expect(lib.PRECISION).to.be.an('object');
     });

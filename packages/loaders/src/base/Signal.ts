@@ -16,7 +16,7 @@ export class SignalBinding<CbType>
      * SignalBinding constructor.
      * @constructs SignalBinding
      * @param {Function} fn - Event handler to be called.
-     * @param {Boolean} [once=false] - Should this listener be removed after dispatch
+     * @param {boolean} [once=false] - Should this listener be removed after dispatch
      * @param {object} [thisArg] - The context of the callback function.
      * @api private
      */
@@ -39,6 +39,8 @@ export class SignalBinding<CbType>
 }
 
 /**
+ * @param self
+ * @param node
  * @private
  */
 function _addSignalBinding<CbType>(self: Signal<CbType>, node: SignalBinding<CbType>)
@@ -83,9 +85,8 @@ export class Signal<CbType = (...args: any) => void>
 
     /**
      * Return an array of attached SignalBinding.
-     *
-     * @param {Boolean} [exists=false] - We only need to know if there are handlers.
-     * @returns {PIXI.SignalBinding[]|Boolean} Array of attached SignalBinding or Boolean if called with exists = true
+     * @param {boolean} [exists=false] - We only need to know if there are handlers.
+     * @returns {PIXI.SignalBinding[] | boolean} Array of attached SignalBinding or Boolean if called with exists = true
      * @api public
      */
     handlers(exists = false): Array<SignalBinding<CbType>> | boolean
@@ -107,9 +108,8 @@ export class Signal<CbType = (...args: any) => void>
 
     /**
      * Return true if node is a SignalBinding attached to this MiniSignal
-     *
      * @param {PIXI.SignalBinding} node - Node to check.
-     * @returns {Boolean} True if node is attache to mini-signal
+     * @returns {boolean} True if node is attache to mini-signal
      */
     has(node: SignalBinding<CbType>): boolean
     {
@@ -123,8 +123,8 @@ export class Signal<CbType = (...args: any) => void>
 
     /**
      * Dispaches a signal to all registered listeners.
-     *
-     * @returns {Boolean} Indication if we've emitted an event.
+     * @param {...any} args
+     * @returns {boolean} Indication if we've emitted an event.
      */
     dispatch(...args: any[]): boolean
     {
@@ -144,7 +144,6 @@ export class Signal<CbType = (...args: any) => void>
 
     /**
      * Register a new listener.
-     *
      * @param {Function} fn - Callback function.
      * @param {object} [thisArg] - The context of the callback function.
      * @returns {PIXI.SignalBinding} The SignalBinding node that was added.
@@ -161,7 +160,6 @@ export class Signal<CbType = (...args: any) => void>
 
     /**
      * Register a new listener that will be executed only once.
-     *
      * @param {Function} fn - Callback function.
      * @param {object} [thisArg] - The context of the callback function.
      * @returns {PIXI.SignalBinding} The SignalBinding node that was added.
@@ -178,10 +176,9 @@ export class Signal<CbType = (...args: any) => void>
 
     /**
      * Remove binding object.
-     *
      * @param {PIXI.SignalBinding} node - The binding node that will be removed.
      * @returns {Signal} The instance on which this method was called.
-     * @api public */
+      @api public */
     detach(node: SignalBinding<CbType>): this
     {
         if (!(node instanceof SignalBinding))
@@ -214,7 +211,6 @@ export class Signal<CbType = (...args: any) => void>
 
     /**
      * Detach all listeners.
-     *
      * @returns {Signal} The instance on which this method was called.
      */
     detachAll(): this

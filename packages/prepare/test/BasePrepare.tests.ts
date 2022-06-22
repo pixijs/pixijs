@@ -1,17 +1,19 @@
 import { BasePrepare } from '@pixi/prepare';
 import sinon from 'sinon';
 import { expect } from 'chai';
+import { AbstractRenderer } from '@pixi/core';
+import { DisplayObject } from '@pixi/display';
 
-describe('BasePrepare', function ()
+describe('BasePrepare', () =>
 {
-    it('should create a new, empty, BasePrepare', function ()
+    it('should create a new, empty, BasePrepare', () =>
     {
-        const renderer = {};
+        const renderer = {} as AbstractRenderer;
         const prep = new BasePrepare(renderer);
 
-        expect(prep.renderer).to.equal(renderer);
-        expect(prep.uploadHookHelper).to.be.null;
-        expect(prep.queue).to.be.empty;
+        expect(prep['renderer']).to.equal(renderer);
+        expect(prep['uploadHookHelper']).to.be.null;
+        expect(prep['queue']).to.be.empty;
         expect(prep.addHooks).to.have.lengthOf(5);
         expect(prep.uploadHooks).to.have.lengthOf(2);
         expect(prep.completes).to.be.empty;
@@ -19,11 +21,12 @@ describe('BasePrepare', function ()
         prep.destroy();
     });
 
-    it('should add hooks', function ()
+    it('should add hooks', () =>
     {
-        function addHook() { /* empty */ }
-        function uploadHook() { /* empty */ }
-        const prep = new BasePrepare();
+        function addHook() { return true; }
+        function uploadHook() { return true; }
+        const renderer = {} as AbstractRenderer;
+        const prep = new BasePrepare(renderer);
 
         prep.registerFindHook(addHook);
         prep.registerUploadHook(uploadHook);
@@ -36,164 +39,146 @@ describe('BasePrepare', function ()
         prep.destroy();
     });
 
-    it('should call hooks and complete', function ()
+    it('should call hooks and complete', () =>
     {
-        const prep = new BasePrepare();
-        const uploadItem = {};
+        const renderer = {} as AbstractRenderer;
+        const prep = new BasePrepare(renderer);
+        const uploadItem = {} as DisplayObject;
         const uploadHelper = {};
 
-        prep.uploadHookHelper = uploadHelper;
+        prep['uploadHookHelper'] = uploadHelper;
 
-        const addHook = sinon.spy(function (item, queue)
+        const addHook = sinon.spy((item, queue) =>
         {
             expect(item).to.equal(uploadItem);
-            expect(queue).to.equal(prep.queue);
+            expect(queue).to.equal(prep['queue']);
             queue.push(item);
 
             return true;
         });
-        const uploadHook = sinon.spy(function (helper, item)
+        const uploadHook = sinon.spy((helper, item) =>
         {
             expect(helper).to.equal(uploadHelper);
             expect(item).to.equal(uploadItem);
 
             return true;
         });
-        const complete = sinon.spy(function () { /* empty */ });
 
         prep.registerFindHook(addHook);
         prep.registerUploadHook(uploadHook);
-        prep.upload(uploadItem, complete);
+        prep.upload(uploadItem);
 
-        expect(prep.queue).to.contain(uploadItem);
+        expect(prep['queue']).to.contain(uploadItem);
 
         prep.prepareItems();
 
         expect(addHook.calledOnce).to.be.true;
         expect(uploadHook.calledOnce).to.be.true;
-        expect(complete.calledOnce).to.be.true;
 
         prep.destroy();
     });
 
-    it('should call complete if no queue', function ()
+    it('should call complete if no queue', async () =>
     {
-        const prep = new BasePrepare();
+        const renderer = {} as AbstractRenderer;
+        const prep = new BasePrepare(renderer);
 
         function addHook()
         {
             return false;
         }
-        const complete = sinon.spy(function () { /* empty */ });
+        const complete = sinon.spy(() => { /* empty */ });
 
         prep.registerFindHook(addHook);
-        prep.upload({}, complete);
+        await prep.upload({} as DisplayObject).then(complete);
 
         expect(complete.calledOnce).to.be.true;
 
         prep.destroy();
     });
 
-    it('should remove un-preparable items from queue', function ()
+    it('should remove un-preparable items from queue', () =>
     {
-        const prep = new BasePrepare();
+        const renderer = {} as AbstractRenderer;
+        const prep = new BasePrepare(renderer);
 
-        const addHook = sinon.spy(function (item, queue)
+        const addHook = sinon.spy((item, queue) =>
         {
             queue.push(item);
 
             return true;
         });
-        const uploadHook = sinon.spy(function ()
-        {
-            return false;
-        });
-        const complete = sinon.spy(function () { /* empty */ });
+        const uploadHook = sinon.spy(() =>
+            false);
 
         prep.registerFindHook(addHook);
         prep.registerUploadHook(uploadHook);
-        prep.upload({}, complete);
+        prep.upload({} as DisplayObject);
 
-        expect(prep.queue).to.have.lengthOf(1);
+        expect(prep['queue']).to.have.lengthOf(1);
 
         prep.prepareItems();
 
-        expect(prep.queue).to.be.empty;
+        expect(prep['queue']).to.be.empty;
         expect(addHook.calledOnce).to.be.true;
         expect(uploadHook.calledOnce).to.be.true;
-        expect(complete.calledOnce).to.be.true;
 
         prep.destroy();
     });
 
-    it('should remove destroyed items from queue', function ()
+    it('should remove destroyed items from queue', () =>
     {
-        const prep = new BasePrepare();
+        const renderer = {} as AbstractRenderer;
+        const prep = new BasePrepare(renderer);
 
-        const addHook = sinon.spy(function (item, queue)
+        const addHook = sinon.spy((item, queue) =>
         {
             queue.push(item);
 
             return true;
         });
-        const uploadHook = sinon.spy(function ()
-        {
-            return false;
-        });
-        const complete = sinon.spy(function () { /* empty */ });
+        const uploadHook = sinon.spy(() =>
+            false);
 
         prep.registerFindHook(addHook);
         prep.registerUploadHook(uploadHook);
-        const item = {};
+        const item = {} as DisplayObject;
 
-        prep.upload(item, complete);
+        prep.upload(item);
 
-        expect(prep.queue).to.have.lengthOf(1);
+        expect(prep['queue']).to.have.lengthOf(1);
 
-        item._destroyed = true;
+        item['_destroyed'] = true;
         prep.prepareItems();
 
-        expect(prep.queue).to.be.empty;
+        expect(prep['queue']).to.be.empty;
         expect(addHook.calledOnce).to.be.true;
         expect(uploadHook.called).to.be.false;
-        expect(complete.calledOnce).to.be.true;
 
         prep.destroy();
     });
 
-    it('should attach to the system ticker', function (done)
+    it('should attach to the system ticker', async () =>
     {
-        const prep = new BasePrepare();
+        const renderer = {} as AbstractRenderer;
+        const prep = new BasePrepare(renderer);
 
-        const addHook = sinon.spy(function (item, queue)
+        const addHook = sinon.spy((item, queue) =>
         {
             queue.push(item);
 
             return true;
         });
-        const uploadHook = sinon.spy(function ()
-        {
-            return true;
-        });
-
-        function complete()
-        {
-            expect(prep.queue).to.be.empty;
-            expect(addHook.calledOnce).to.be.true;
-            expect(uploadHook.calledOnce).to.be.true;
-
-            prep.destroy();
-
-            done();
-        }
+        const uploadHook = sinon.spy(() => true);
 
         prep.registerFindHook(addHook);
         prep.registerUploadHook(uploadHook);
-        prep.upload({}, complete);
+        await prep.upload({} as DisplayObject);
 
-        expect(prep.queue).to.have.lengthOf(1);
-        expect(addHook.called).to.be.true;
-        expect(uploadHook.called).to.be.false;
-        expect(complete.called).to.not.be.ok;
+        expect(prep['queue']).to.be.empty;
+        expect(addHook.calledOnce).to.be.true;
+        expect(uploadHook.calledOnce).to.be.true;
+
+        prep.destroy();
     });
 });

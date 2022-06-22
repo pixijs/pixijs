@@ -4,20 +4,21 @@ import { BitmapFont } from './BitmapFont';
 
 import type { Loader } from '@pixi/loaders';
 import type { Dict } from '@pixi/utils';
-import type { Texture } from '@pixi/core';
+import { ExtensionMetadata, ExtensionType, Texture } from '@pixi/core';
 
 /**
  * {@link PIXI.Loader Loader} middleware for loading
  * bitmap-based fonts suitable for using with {@link PIXI.BitmapText}.
- *
  * @memberof PIXI
  */
 export class BitmapFontLoader
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = ExtensionType.Loader;
+
     /**
      * Called when the plugin is installed.
-     *
-     * @see PIXI.Loader.registerPlugin
+     * @see PIXI.extensions.add
      */
     public static add(): void
     {
@@ -26,10 +27,10 @@ export class BitmapFontLoader
 
     /**
      * Called after a resource is loaded.
-     *
      * @see PIXI.Loader.loaderMiddleware
+     * @param this
      * @param {PIXI.LoaderResource} resource
-     * @param {function} next
+     * @param {Function} next
      */
     static use(this: Loader, resource: LoaderResource, next: (...args: any[]) => void): void
     {
@@ -108,7 +109,11 @@ export class BitmapFontLoader
         }
     }
 
-    /** Get folder path from a resource. */
+    /**
+     * Get folder path from a resource.
+     * @param loader
+     * @param resource
+     */
     private static getBaseUrl(loader: Loader, resource: LoaderResource): string
     {
         let resUrl = !resource.isDataUrl ? BitmapFontLoader.dirname(resource.url) : '';
@@ -144,7 +149,6 @@ export class BitmapFontLoader
 
     /**
      * Replacement for NodeJS's path.dirname
-     *
      * @param {string} url - Path to get directory for
      */
     private static dirname(url: string): string

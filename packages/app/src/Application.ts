@@ -1,25 +1,24 @@
 import { Container } from '@pixi/display';
-import { autoDetectRenderer } from '@pixi/core';
+import { autoDetectRenderer, extensions, ExtensionType } from '@pixi/core';
 
 import type { Rectangle } from '@pixi/math';
 import type { Renderer, IRendererOptionsAuto, AbstractRenderer } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
+import { deprecation } from '@pixi/utils';
 
 /**
  * Any plugin that's usable for Application should contain these methods.
  * @memberof PIXI
- * @see {@link PIXI.Application.registerPlugin}
  */
-export interface IApplicationPlugin {
+export interface IApplicationPlugin
+{
     /**
      * Called when Application is constructed, scoped to Application instance.
      * Passes in `options` as the only argument, which are Application constructor options.
      * @param {object} options - Application options.
      */
     init(options: IApplicationOptions): void;
-    /**
-     * Called when destroying Application, scoped to Application instance.
-     */
+    /** Called when destroying Application, scoped to Application instance. */
     destroy(): void;
 }
 
@@ -33,7 +32,6 @@ export interface Application extends GlobalMixins.Application {}
  * Convenience class to create a new PIXI application.
  *
  * This class automatically creates the renderer, ticker and root container.
- *
  * @example
  * // Create the application
  * const app = new PIXI.Application();
@@ -43,14 +41,13 @@ export interface Application extends GlobalMixins.Application {}
  *
  * // ex, add display objects
  * app.stage.addChild(PIXI.Sprite.from('something.png'));
- *
  * @class
  * @memberof PIXI
  */
 export class Application
 {
     /** Collection of installed plugins. */
-    private static _plugins: IApplicationPlugin[] = [];
+    static _plugins: IApplicationPlugin[] = [];
 
     /**
      * The root display container that's rendered.
@@ -62,7 +59,7 @@ export class Application
      * WebGL renderer if available, otherwise CanvasRenderer.
      * @member {PIXI.Renderer|PIXI.CanvasRenderer}
      */
-    public renderer: Renderer|AbstractRenderer;
+    public renderer: Renderer | AbstractRenderer;
 
     /**
      * @param {object} [options] - The optional renderer parameters.
@@ -114,18 +111,23 @@ export class Application
     }
 
     /**
-     * Register a middleware plugin for the application
+     * Use the {@link PIXI.extensions.add} API to register plugins.
+     * @deprecated since 6.5.0
      * @static
      * @param {PIXI.IApplicationPlugin} plugin - Plugin being installed
      */
     static registerPlugin(plugin: IApplicationPlugin): void
     {
-        Application._plugins.push(plugin);
+        // #if _DEBUG
+        deprecation('6.5.0', 'Application.registerPlugin() is deprecated, use extensions.add()');
+        // #endif
+        extensions.add({
+            type: ExtensionType.Application,
+            ref: plugin,
+        });
     }
 
-    /**
-     * Render the current stage.
-     */
+    /** Render the current stage. */
     public render(): void
     {
         this.renderer.render(this.stage);
@@ -153,7 +155,7 @@ export class Application
 
     /**
      * Destroy and don't use after this.
-     * @param {Boolean} [removeView=false] - Automatically remove canvas from DOM.
+     * @param {boolean} [removeView=false] - Automatically remove canvas from DOM.
      * @param {object|boolean} [stageOptions] - Options parameter. A boolean will act as if all options
      *  have been set to that value
      * @param {boolean} [stageOptions.children=false] - if set to true, all the children will have their destroy
@@ -163,7 +165,7 @@ export class Application
      * @param {boolean} [stageOptions.baseTexture=false] - Only used for child Sprites if stageOptions.children is set
      *  to true. Should it destroy the base texture of the child sprite
      */
-    public destroy(removeView?: boolean, stageOptions?: IDestroyOptions|boolean): void
+    public destroy(removeView?: boolean, stageOptions?: IDestroyOptions | boolean): void
     {
         // Destroy plugins in the opposite order
         // which they were constructed
@@ -182,3 +184,28 @@ export class Application
         this.renderer = null;
     }
 }
+
+extensions.handle(
+    ExtensionType.Application,
+    (extension) =>
+    {
+        const plugins = Application._plugins;
+        const plugin = extension.ref as unknown as IApplicationPlugin;
+
+        if (!plugins.includes(plugin))
+        {
+            plugins.push(plugin);
+        }
+    },
+    (extension) =>
+    {
+        const plugins = Application._plugins;
+        const plugin = extension.ref as unknown as IApplicationPlugin;
+        const index = plugins.indexOf(plugin);
+
+        if (index !== -1)
+        {
+            plugins.splice(index, 1);
+        }
+    }
+);

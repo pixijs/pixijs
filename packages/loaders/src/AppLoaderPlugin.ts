@@ -1,3 +1,4 @@
+import { ExtensionMetadata, ExtensionType } from '@pixi/core';
 import { Loader } from './Loader';
 
 /**
@@ -5,12 +6,15 @@ import { Loader } from './Loader';
  * is not necessary if using **pixi.js** or **pixi.js-legacy**.
  * @example
  * import {AppLoaderPlugin} from '@pixi/loaders';
- * import {Application} from '@pixi/app';
- * Application.registerPlugin(AppLoaderPlugin);
+ * import {extensions} from '@pixi/core';
+ * extensions.add(AppLoaderPlugin);
  * @memberof PIXI
  */
 export class AppLoaderPlugin
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = ExtensionType.Application;
+
     /**
      * Loader instance to help with asset loading.
      * @memberof PIXI.Application#
@@ -20,7 +24,7 @@ export class AppLoaderPlugin
 
     /**
      * Called on application constructor
-     *
+     * @param options
      * @private
      */
     static init(options?: GlobalMixins.IApplicationOptions): void
@@ -34,7 +38,6 @@ export class AppLoaderPlugin
 
     /**
      * Called when application destroyed
-     *
      * @private
      */
     static destroy(): void

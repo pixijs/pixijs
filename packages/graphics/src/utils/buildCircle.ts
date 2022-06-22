@@ -8,7 +8,6 @@ import type { IShapeBuildCommand } from './IShapeBuildCommand';
  * Builds a circle to draw
  *
  * Ignored from docs since it is not directly exposed.
- *
  * @ignore
  * @private
  * @param {PIXI.WebGLGraphicsData} graphicsData - The graphics object to draw
@@ -59,6 +58,13 @@ export const buildCircle: IShapeBuildCommand = {
             rx = ry = Math.max(0, Math.min(roundedRect.radius, Math.min(halfWidth, halfHeight)));
             dx = halfWidth - rx;
             dy = halfHeight - ry;
+        }
+
+        if (!(rx >= 0 && ry >= 0 && dx >= 0 && dy >= 0))
+        {
+            points.length = 0;
+
+            return;
         }
 
         // Choose a number of segments such that the maximum absolute deviation from the circle is approximately 0.029
@@ -159,6 +165,11 @@ export const buildCircle: IShapeBuildCommand = {
         const points = graphicsData.points;
         const verts = graphicsGeometry.points;
         const indices = graphicsGeometry.indices;
+
+        if (points.length === 0)
+        {
+            return;
+        }
 
         let vertPos = verts.length / 2;
         const center = vertPos;

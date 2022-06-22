@@ -16,7 +16,6 @@ import type { IArrayBuffer } from '@pixi/core';
  * geometry.addIndex([0,1,2,1,3,2]);
  *
  * ```
- *
  * @memberof PIXI
  */
 export class MeshGeometry extends Geometry
@@ -26,7 +25,6 @@ export class MeshGeometry extends Geometry
      * Dirty flag to limit update calls on Mesh. For example,
      * limiting updates on a single Mesh instance with a shared Geometry
      * within the render loop.
-     *
      * @private
      * @default -1
      */
@@ -54,7 +52,6 @@ export class MeshGeometry extends Geometry
 
     /**
      * If the vertex position is updated.
-     *
      * @readonly
      * @private
      */

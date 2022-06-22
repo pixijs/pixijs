@@ -7,7 +7,6 @@ import { TYPES } from '@pixi/constants';
  *
  * This does not contain the actual data, but instead has a buffer id that maps to a {@link PIXI.Buffer}
  * This can include anything from positions, uvs, normals, colors etc.
- *
  * @memberof PIXI
  */
 export class Attribute
@@ -48,7 +47,6 @@ export class Attribute
 
     /**
      * Helper function that creates an Attribute based on the information provided
-     *
      * @param buffer - the id of the buffer that this attribute will look for
      * @param [size=0] - the size of the attribute. If you have 2 floats per vertex (eg position x and y) this would be 2
      * @param [normalized=false] - should the data be normalized.

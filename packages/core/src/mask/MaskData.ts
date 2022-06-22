@@ -13,14 +13,13 @@ export interface IMaskTarget extends IFilterTarget
     isSprite?: boolean;
     worldTransform: Matrix;
     isFastRect?(): boolean;
-    getBounds(skipUpdate?: boolean): Rectangle;
+    getBounds(skipUpdate?: boolean, rect?: Rectangle): Rectangle;
     render(renderer: Renderer): void;
 }
 /**
  * Component for masked elements.
  *
  * Holds mask mode and temporary data about current mask.
- *
  * @memberof PIXI
  */
 export class MaskData
@@ -113,7 +112,6 @@ export class MaskData
 
     /**
      * Create MaskData
-     *
      * @param {PIXI.DisplayObject} [maskObject=null] - object that describes the mask
      */
     constructor(maskObject: IMaskTarget = null)
@@ -181,7 +179,10 @@ export class MaskData
         this._scissorRectLocal = null;
     }
 
-    /** Copies counters from maskData above, called from pushMask(). */
+    /**
+     * Copies counters from maskData above, called from pushMask().
+     * @param maskAbove
+     */
     copyCountersOrReset(maskAbove?: MaskData): void
     {
         if (maskAbove)

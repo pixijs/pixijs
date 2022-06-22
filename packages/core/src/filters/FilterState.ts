@@ -7,7 +7,6 @@ import type { RenderTexture } from '../renderTexture/RenderTexture';
 
 /**
  * System plugin to the renderer to manage filter states.
- *
  * @ignore
  */
 export class FilterState

@@ -2,7 +2,6 @@ import type { TextureMatrix, Buffer } from '@pixi/core';
 
 /**
  * Class controls cache for UV mapping from Texture normal space to BaseTexture normal space.
- *
  * @memberof PIXI
  */
 export class MeshBatchUvs
@@ -39,7 +38,6 @@ export class MeshBatchUvs
 
     /**
      * Updates
-     *
      * @param forceUpdate - force the update
      */
     public update(forceUpdate?: boolean): void

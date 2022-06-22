@@ -3,10 +3,10 @@ import { url } from '@pixi/utils';
 
 import type { Loader } from '@pixi/loaders';
 import type { INTERNAL_FORMATS } from '../const';
+import { ExtensionMetadata, ExtensionType } from '@pixi/core';
 
 /**
  * Schema for compressed-texture manifests
- *
  * @ignore
  * @see PIXI.CompressedTextureLoader
  */
@@ -16,9 +16,7 @@ export type CompressedTextureManifest = {
 };
 
 // Missing typings? - https://github.com/microsoft/TypeScript/issues/39655
-/**
- * Compressed texture extensions
- */
+/** Compressed texture extensions */
 /* eslint-disable camelcase */
 export type CompressedTextureExtensions = {
     s3tc?: WEBGL_compressed_texture_s3tc,
@@ -34,13 +32,15 @@ export type CompressedTextureExtensionRef = keyof CompressedTextureExtensions;
 
 /**
  * Loader plugin for handling compressed textures for all platforms.
- *
  * @class
  * @memberof PIXI
- * @implements PIXI.ILoaderPlugin
+ * @implements {PIXI.ILoaderPlugin}
  */
 export class CompressedTextureLoader
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = ExtensionType.Loader;
+
     /**  Map of available texture extensions. */
     private static _textureExtensions: Partial<CompressedTextureExtensions>;
 

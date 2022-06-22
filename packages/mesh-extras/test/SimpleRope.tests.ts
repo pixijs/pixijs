@@ -2,19 +2,19 @@ import { SimpleRope } from '@pixi/mesh-extras';
 import { skipHello } from '@pixi/utils';
 import { Loader } from '@pixi/loaders';
 import { Point } from '@pixi/math';
-import { Renderer, Texture, BatchRenderer } from '@pixi/core';
+import { Renderer, Texture, BatchRenderer, extensions } from '@pixi/core';
 import { expect } from 'chai';
 
 skipHello();
 
-describe('SimpleRope', function ()
+describe('SimpleRope', () =>
 {
-    it('should create a rope from an external image', function (done: () => void)
+    it('should create a rope from an external image', (done: () => void) =>
     {
         const loader = new Loader();
 
         loader.add('testBitmap', `file://${__dirname}/resources/bitmap-1.png`)
-            .load(function (loader, resources)
+            .load((loader, resources) =>
             {
                 const rope = new SimpleRope(resources.testBitmap.texture, [new Point(0, 0), new Point(0, 1)]);
 
@@ -30,9 +30,9 @@ describe('SimpleRope', function ()
             });
     });
 
-    it('should render the rope', function ()
+    it('should render the rope', () =>
     {
-        Renderer.registerPlugin('batch', BatchRenderer);
+        extensions.add(BatchRenderer);
 
         const renderer = new Renderer();
         const rope = new SimpleRope(Texture.WHITE, [new Point(0, 0), new Point(0, 1)]);
@@ -41,5 +41,7 @@ describe('SimpleRope', function ()
 
         rope.destroy();
         renderer.destroy();
+
+        extensions.remove(BatchRenderer);
     });
 });

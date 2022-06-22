@@ -3,11 +3,10 @@ import { Point } from '@pixi/math';
 
 /**
  * A {@link PIXI.FederatedEvent} for mouse events.
- *
  * @memberof PIXI
  */
 export class FederatedMouseEvent extends FederatedEvent<
-    MouseEvent | PointerEvent | TouchEvent
+MouseEvent | PointerEvent | TouchEvent
 > implements MouseEvent
 {
     /** Whether the "alt" key was pressed when this mouse event occurred. */
@@ -31,9 +30,7 @@ export class FederatedMouseEvent extends FederatedEvent<
     /** Whether the "shift" key was pressed when this mouse event occurred. */
     shiftKey: boolean;
 
-    /**
-     * The coordinates of the mouse event relative to the canvas.
-     */
+    /** The coordinates of the mouse event relative to the canvas. */
     public client: Point = new Point();
 
     /** @readonly */
@@ -44,26 +41,20 @@ export class FederatedMouseEvent extends FederatedEvent<
 
     /**
      * Alias for {@link FederatedMouseEvent.clientX this.clientX}.
-     *
      * @readonly
      */
     get x(): number { return this.clientX; }
 
     /**
      * Alias for {@link FederatedMouseEvent.clientY this.clientY}.
-     *
      * @readonly
      */
     get y(): number { return this.clientY; }
 
-    /**
-     * This is the number of clicks that occurs in 200ms/click of each other.
-     */
+    /** This is the number of clicks that occurs in 200ms/click of each other. */
     public detail: number;
 
-    /**
-     * The movement in this pointer relative to the last `mousemove` event.
-     */
+    /** The movement in this pointer relative to the last `mousemove` event. */
     public movement: Point = new Point();
 
     /** @readonly */
@@ -84,9 +75,7 @@ export class FederatedMouseEvent extends FederatedEvent<
     /** @readonly */
     get offsetY(): number { return this.offset.y; }
 
-    /**
-     * The pointer coordinates in world space.
-     */
+    /** The pointer coordinates in world space. */
     public global: Point = new Point();
 
     /** @readonly */
@@ -103,21 +92,18 @@ export class FederatedMouseEvent extends FederatedEvent<
 
     /**
      * The pointer coordinates in the renderer's screen. Alias for {@code screen.x}.
-     *
      * @readonly
      */
     get screenX(): number { return this.screen.x; }
 
     /**
      * The pointer coordinates in the renderer's screen. Alias for {@code screen.y}.
-     *
      * @readonly
      */
     get screenY(): number { return this.screen.y; }
 
     /**
      * Whether the modifier key was pressed when this event natively occurred.
-     *
      * @param key - The modifier key.
      */
     getModifierState(key: string): boolean
@@ -127,7 +113,21 @@ export class FederatedMouseEvent extends FederatedEvent<
 
     /**
      * Not supported.
-     *
+     * @param _typeArg
+     * @param _canBubbleArg
+     * @param _cancelableArg
+     * @param _viewArg
+     * @param _detailArg
+     * @param _screenXArg
+     * @param _screenYArg
+     * @param _clientXArg
+     * @param _clientYArg
+     * @param _ctrlKeyArg
+     * @param _altKeyArg
+     * @param _shiftKeyArg
+     * @param _metaKeyArg
+     * @param _buttonArg
+     * @param _relatedTargetArg
      * @deprecated
      */
     // eslint-disable-next-line max-params

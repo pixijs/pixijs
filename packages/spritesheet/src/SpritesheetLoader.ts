@@ -2,6 +2,7 @@ import { url } from '@pixi/utils';
 import { Spritesheet } from './Spritesheet';
 import { LoaderResource } from '@pixi/loaders';
 import type { Loader } from '@pixi/loaders';
+import { ExtensionMetadata, ExtensionType } from '@pixi/core';
 
 /**
  * {@link PIXI.Loader} middleware for loading texture atlases that have been created with
@@ -15,21 +16,21 @@ import type { Loader } from '@pixi/loaders';
  * The Loader's image Resource name is automatically appended with `"_image"`.
  * If a Resource with this name is already loaded, the Loader will skip parsing the
  * Spritesheet. The code below will generate an internal Loader Resource called `"myatlas_image"`.
- *
  * @example
  * loader.add('myatlas', 'path/to/myatlas.json');
  * loader.load(() => {
  *   loader.resources.myatlas; // atlas JSON resource
  *   loader.resources.myatlas_image; // atlas Image resource
  * });
- *
  * @memberof PIXI
  */
 export class SpritesheetLoader
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = ExtensionType.Loader;
+
     /**
      * Called after a resource is loaded.
-     *
      * @see PIXI.Loader.loaderMiddleware
      * @param resource
      * @param next
@@ -112,7 +113,7 @@ export class SpritesheetLoader
                 resource.url
             );
 
-            spritesheet.parse(() =>
+            spritesheet.parse().then(() =>
             {
                 resource.spritesheet = spritesheet;
                 resource.textures = spritesheet.textures;
@@ -123,7 +124,6 @@ export class SpritesheetLoader
 
     /**
      * Get the spritesheets root path
-     *
      * @param resource - Resource to check path
      * @param baseUrl - Base root url
      */

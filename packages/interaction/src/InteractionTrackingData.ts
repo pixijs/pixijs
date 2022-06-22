@@ -8,7 +8,6 @@ export interface InteractionTrackingFlags
 
 /**
  * DisplayObjects with the {@link PIXI.interactiveTarget} mixin use this class to track interactions
- *
  * @class
  * @private
  * @memberof PIXI
@@ -55,7 +54,6 @@ export class InteractionTrackingData
 
     /**
      * Unique pointer id of the event
-     *
      * @readonly
      * @private
      * @member {number}
@@ -67,7 +65,6 @@ export class InteractionTrackingData
 
     /**
      * State of the tracking data, expressed as bit flags
-     *
      * @private
      * @member {number}
      */
@@ -83,7 +80,6 @@ export class InteractionTrackingData
 
     /**
      * Is the tracked event inactive (not over or down)?
-     *
      * @private
      * @member {number}
      */
@@ -94,7 +90,6 @@ export class InteractionTrackingData
 
     /**
      * Is the tracked event over the DisplayObject?
-     *
      * @private
      * @member {boolean}
      */
@@ -110,7 +105,6 @@ export class InteractionTrackingData
 
     /**
      * Did the right mouse button come down in the DisplayObject?
-     *
      * @private
      * @member {boolean}
      */
@@ -126,7 +120,6 @@ export class InteractionTrackingData
 
     /**
      * Did the left mouse button come down in the DisplayObject?
-     *
      * @private
      * @member {boolean}
      */

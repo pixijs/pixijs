@@ -22,8 +22,9 @@ Use as an Application plugin:
 ```js
 import { TickerPlugin } from '@pixi/ticker';
 import { Application } from '@pixi/app';
+import { extensions } from '@pixi/core';
 
-Application.registerPlugin(TickerPlugin);
+extensions.add(TickerPlugin);
 
 const app = new Application();
 app.ticker.start();

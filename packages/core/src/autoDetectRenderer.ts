@@ -9,7 +9,6 @@ export interface IRendererOptionsAuto extends IRendererOptions
  * This helper function will automatically detect which renderer you should be using.
  * WebGL is the preferred renderer as it is a lot faster. If WebGL is not supported by
  * the browser then this function will return a canvas renderer
- *
  * @memberof PIXI
  * @function autoDetectRenderer
  * @param {object} [options] - The optional renderer parameters
@@ -35,7 +34,7 @@ export interface IRendererOptionsAuto extends IRendererOptions
  *   it is ignored.
  * @param {string} [options.powerPreference] - Parameter passed to webgl context, set to "high-performance"
  *  for devices with dual graphics card **webgl only**
- * @return {PIXI.Renderer|PIXI.CanvasRenderer} Returns WebGL renderer if available, otherwise CanvasRenderer
+ * @returns {PIXI.Renderer|PIXI.CanvasRenderer} Returns WebGL renderer if available, otherwise CanvasRenderer
  */
 export function autoDetectRenderer(options?: IRendererOptionsAuto): AbstractRenderer
 {

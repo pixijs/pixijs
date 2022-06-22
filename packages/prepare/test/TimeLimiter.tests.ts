@@ -1,8 +1,9 @@
 import { TimeLimiter } from '@pixi/prepare';
 import { expect } from 'chai';
 
-describe('TimeLimiter', function ()
+describe('TimeLimiter', () =>
 {
+    // eslint-disable-next-line func-names
     it('should limit to stop after time from beginFrame()', function (done)
     {
         this.slow(500);
@@ -15,7 +16,7 @@ describe('TimeLimiter', function ()
             expect(limit.allowedToUpload()).to.be.true;
         }
 
-        setTimeout(function ()
+        setTimeout(() =>
         {
             expect(limit.allowedToUpload()).to.be.false;
 

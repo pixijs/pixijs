@@ -10,10 +10,10 @@ npm install @pixi/mesh-extras
 
 ```js
 import { MeshRenderer } from '@pixi/mesh';
-import { Renderer } from '@pixi/core';
+import { extensions } from '@pixi/core';
 import { Rope } from '@pixi/mesh-extras';
 
-Renderer.registerPlugin('mesh', MeshRenderer);
+extensions.add('mesh', MeshRenderer);
 
 const rope = new Rope();
 ```

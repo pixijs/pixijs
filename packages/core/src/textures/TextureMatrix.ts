@@ -14,7 +14,6 @@ const tempMat = new Matrix();
  *
  * Takes track of Texture changes through `_lastTextureID` private field.
  * Use `update()` method call to track it from outside.
- *
  * @see PIXI.Texture
  * @see PIXI.Mesh
  * @see PIXI.TilingSprite
@@ -24,7 +23,6 @@ export class TextureMatrix
 {
     /**
      * Matrix operation that converts texture region coords to texture coords
-     *
      * @readonly
      */
     public mapCoord: Matrix;
@@ -33,7 +31,6 @@ export class TextureMatrix
      * Changes frame clamping
      * Works with TilingSprite and Mesh
      * Change to 1.5 if you texture has repeated right and bottom lines, that leads to smoother borders
-     *
      * @default 0
      */
     public clampOffset: number;
@@ -42,7 +39,6 @@ export class TextureMatrix
      * Changes frame clamping
      * Works with TilingSprite and Mesh
      * Change to -0.5 to add a pixel to the edge, recommended for transparent trimmed textures in atlas
-     *
      * @default 0.5
      */
     public clampMargin: number;
@@ -53,22 +49,17 @@ export class TextureMatrix
      */
     readonly uClampFrame: Float32Array;
 
-    /**
-     * Normalized clamp offset.
-     * Calculated based on clampOffset.
-     */
+    /** Normalized clamp offset. Calculated based on clampOffset. */
     readonly uClampOffset: Float32Array;
 
     /**
      * Tracks Texture frame changes.
-     *
      * @protected
      */
     _textureID: number;
 
     /**
      * Tracks Texture frame changes.
-     *
      * @protected
      */
     _updateID: number;
@@ -76,7 +67,6 @@ export class TextureMatrix
 
     /**
      * If texture size is the same as baseTexture.
-     *
      * @default false
      * @readonly
      */
@@ -115,7 +105,6 @@ export class TextureMatrix
 
     /**
      * Multiplies uvs array to transform
-     *
      * @param uvs - mesh uvs
      * @param [out=uvs] - output
      * @returns - output
@@ -143,7 +132,6 @@ export class TextureMatrix
 
     /**
      * Updates matrices if texture was changed.
-     *
      * @param [forceUpdate=false] - if true, matrices will be updated any case
      * @returns - Whether or not it was updated
      */

@@ -3,12 +3,11 @@ export * from './LoaderResource';
 export * from './Loader';
 export * from './TextureLoader';
 
-import { parsing } from './middleware';
-import { Loader } from './Loader';
+import { ParsingLoader } from './ParsingLoader';
 import { TextureLoader } from './TextureLoader';
+import { extensions } from '@pixi/core';
 
-// parse any blob into more usable objects (e.g. Image)
-Loader.registerPlugin({ use: parsing });
-
-// parse any Image objects into textures
-Loader.registerPlugin(TextureLoader);
+extensions.add(
+    TextureLoader,
+    ParsingLoader
+);

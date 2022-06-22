@@ -1,4 +1,4 @@
-import { BaseTexture } from '@pixi/core';
+import { BaseTexture, ExtensionMetadata, ExtensionType } from '@pixi/core';
 import { Graphics } from '@pixi/graphics';
 import { BasePrepare, IDisplayObjectExtended } from './BasePrepare';
 
@@ -6,11 +6,10 @@ import type { AbstractRenderer, Renderer } from '@pixi/core';
 
 /**
  * Built-in hook to upload PIXI.Texture objects to the GPU.
- *
  * @private
  * @param renderer - instance of the webgl renderer
  * @param item - Item to check
- * @return If item was uploaded.
+ * @returns If item was uploaded.
  */
 function uploadBaseTextures(renderer: AbstractRenderer | BasePrepare, item: IDisplayObjectExtended | BaseTexture): boolean
 {
@@ -32,11 +31,10 @@ function uploadBaseTextures(renderer: AbstractRenderer | BasePrepare, item: IDis
 
 /**
  * Built-in hook to upload PIXI.Graphics to the GPU.
- *
  * @private
  * @param renderer - instance of the webgl renderer
  * @param item - Item to check
- * @return If item was uploaded.
+ * @returns If item was uploaded.
  */
 function uploadGraphics(renderer: AbstractRenderer | BasePrepare, item: IDisplayObjectExtended): boolean
 {
@@ -75,11 +73,10 @@ function uploadGraphics(renderer: AbstractRenderer | BasePrepare, item: IDisplay
 
 /**
  * Built-in hook to find graphics.
- *
  * @private
  * @param item - Display object to check
  * @param queue - Collection of items to upload
- * @return if a PIXI.Graphics object was found.
+ * @returns if a PIXI.Graphics object was found.
  */
 function findGraphics(item: IDisplayObjectExtended, queue: Array<any>): boolean
 {
@@ -119,12 +116,16 @@ function findGraphics(item: IDisplayObjectExtended, queue: Array<any>): boolean
  * app.renderer.plugins.prepare.upload(app.stage, () => {
  *     app.start();
  * });
- *
- *
  * @memberof PIXI
  */
 export class Prepare extends BasePrepare
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        name: 'prepare',
+        type: ExtensionType.RendererPlugin,
+    };
+
     /**
      * @param {PIXI.Renderer} renderer - A reference to the current renderer
      */

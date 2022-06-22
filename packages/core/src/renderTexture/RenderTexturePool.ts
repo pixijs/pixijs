@@ -13,7 +13,6 @@ import type { ISize } from '@pixi/math';
  *
  * If you use custom RenderTexturePool for your filters, you can use methods
  * `getFilterTexture` and `returnFilterTexture` same as in
- *
  * @memberof PIXI
  */
 export class RenderTexturePool
@@ -24,11 +23,10 @@ export class RenderTexturePool
      * Allow renderTextures of the same size as screen, not just pow2
      *
      * Automatically sets to true after `setScreenSize`
-     *
      * @default false
      */
     public enableFullScreen: boolean;
-    texturePool: {[x in string|number]: RenderTexture[]};
+    texturePool: {[x in string | number]: RenderTexture[]};
     private _pixelsWidth: number;
     private _pixelsHeight: number;
 
@@ -48,7 +46,6 @@ export class RenderTexturePool
 
     /**
      * Creates texture with params that were specified in pool constructor.
-     *
      * @param realWidth - Width of texture in pixels.
      * @param realHeight - Height of texture in pixels.
      * @param multisample - Number of samples of the framebuffer.
@@ -67,12 +64,11 @@ export class RenderTexturePool
 
     /**
      * Gets a Power-of-Two render texture or fullScreen texture
-     *
      * @param minWidth - The minimum width of the render texture.
      * @param minHeight - The minimum height of the render texture.
      * @param resolution - The resolution of the render texture.
      * @param multisample - Number of samples of the render texture.
-     * @return The new render texture.
+     * @returns The new render texture.
      */
     getOptimalTexture(minWidth: number, minHeight: number, resolution = 1, multisample = MSAA_QUALITY.NONE): RenderTexture
     {
@@ -119,12 +115,10 @@ export class RenderTexturePool
      * Gets extra texture of the same size as input renderTexture
      *
      * `getFilterTexture(input, 0.5)` or `getFilterTexture(0.5, input)`
-     *
      * @param input - renderTexture from which size and resolution will be copied
      * @param resolution - override resolution of the renderTexture
      *  It overrides, it does not multiply
      * @param multisample - number of samples of the renderTexture
-     * @returns
      */
     getFilterTexture(input: RenderTexture, resolution?: number, multisample?: MSAA_QUALITY): RenderTexture
     {
@@ -138,7 +132,6 @@ export class RenderTexturePool
 
     /**
      * Place a render texture back into the pool.
-     *
      * @param renderTexture - The renderTexture to free
      */
     returnTexture(renderTexture: RenderTexture): void
@@ -151,7 +144,6 @@ export class RenderTexturePool
 
     /**
      * Alias for returnTexture, to be compliant with FilterSystem interface.
-     *
      * @param renderTexture - The renderTexture to free
      */
     returnFilterTexture(renderTexture: RenderTexture): void
@@ -161,7 +153,6 @@ export class RenderTexturePool
 
     /**
      * Clears the pool.
-     *
      * @param destroyTextures - Destroy all stored textures.
      */
     clear(destroyTextures?: boolean): void
@@ -191,7 +182,6 @@ export class RenderTexturePool
      * sets new screen size, sets `enableFullScreen` to true
      *
      * Size is measured in pixels, `renderer.view` can be passed here, not `renderer.screen`
-     *
      * @param size - Initial size of screen.
      */
     setScreenSize(size: ISize): void
@@ -230,7 +220,6 @@ export class RenderTexturePool
 
     /**
      * Key that is used to store fullscreen renderTextures in a pool
-     *
      * @constant
      */
     static SCREEN_KEY = -1;

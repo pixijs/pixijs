@@ -2,7 +2,6 @@ import { BaseImageResource } from './BaseImageResource';
 
 /**
  * Resource type for ImageBitmap.
- *
  * @memberof PIXI
  */
 export class ImageBitmapResource extends BaseImageResource
@@ -18,9 +17,8 @@ export class ImageBitmapResource extends BaseImageResource
 
     /**
      * Used to auto-detect the type of resource.
-     *
      * @param {*} source - The source object
-     * @return {boolean} `true` if source is an ImageBitmap
+     * @returns {boolean} `true` if source is an ImageBitmap
      */
     static test(source: unknown): source is ImageBitmap
     {

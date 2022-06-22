@@ -5,7 +5,6 @@ import type { Dict } from '@pixi/utils';
 
 /**
  * A helper class for shaders.
- *
  * @memberof PIXI
  */
 export class Shader
@@ -80,7 +79,6 @@ export class Shader
 
     /**
      * Shader uniform values, shortcut for `uniformGroup.uniforms`.
-     *
      * @readonly
      */
     get uniforms(): Dict<any>
@@ -90,7 +88,6 @@ export class Shader
 
     /**
      * A short hand function to create a shader based of a vertex and fragment shader.
-     *
      * @param vertexSrc - The source of the vertex shader.
      * @param fragmentSrc - The source of the fragment shader.
      * @param uniforms - Custom uniforms to use to augment the built-in ones.

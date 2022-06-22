@@ -1,19 +1,22 @@
+import { ExtensionMetadata, ExtensionType } from '@pixi/core';
 import { UPDATE_PRIORITY } from './const';
 import { Ticker } from './Ticker';
 
 /**
  * Middleware for for Application Ticker.
- *
  * @example
  * import {TickerPlugin} from '@pixi/ticker';
  * import {Application} from '@pixi/app';
- * Application.registerPlugin(TickerPlugin);
- *
+ * import {extensions} from '@pixi/core';
+ * extensions.add(TickerPlugin);
  * @class
  * @memberof PIXI
  */
 export class TickerPlugin
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = ExtensionType.Application;
+
     static start: () => void;
     static stop: () => void;
     static _ticker: Ticker;
@@ -21,7 +24,6 @@ export class TickerPlugin
 
     /**
      * Initialize the plugin with scope of application instance
-     *
      * @static
      * @private
      * @param {object} [options] - See application options
@@ -57,7 +59,6 @@ export class TickerPlugin
 
         /**
          * Convenience method for stopping the render.
-         *
          * @method
          * @memberof PIXI.Application
          * @instance
@@ -69,7 +70,6 @@ export class TickerPlugin
 
         /**
          * Convenience method for starting the render.
-         *
          * @method
          * @memberof PIXI.Application
          * @instance
@@ -81,7 +81,6 @@ export class TickerPlugin
 
         /**
          * Internal reference to the ticker.
-         *
          * @type {PIXI.Ticker}
          * @name _ticker
          * @memberof PIXI.Application#
@@ -91,7 +90,6 @@ export class TickerPlugin
 
         /**
          * Ticker for doing render updates.
-         *
          * @type {PIXI.Ticker}
          * @name ticker
          * @memberof PIXI.Application#
@@ -108,7 +106,6 @@ export class TickerPlugin
 
     /**
      * Clean up the ticker, scoped to application.
-     *
      * @static
      * @private
      */

@@ -10,7 +10,7 @@ npm install @pixi/interaction
 
 ```js
 import { InteractionManager } from '@pixi/interaction';
-import { Renderer } from '@pixi/core';
+import { extensions } from '@pixi/core';
 
-Renderer.registerPlugin('interaction', InteractionManager);
+extensions.add(InteractionManager);
 ```

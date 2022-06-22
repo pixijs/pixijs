@@ -1,26 +1,26 @@
 import * as utils from '@pixi/utils';
 import { expect } from 'chai';
 
-describe('utils', function ()
+describe('utils', () =>
 {
-    describe('uid', function ()
+    describe('uid', () =>
     {
-        it('should exist', function ()
+        it('should exist', () =>
         {
             expect(utils.uid)
                 .to.be.a('function');
         });
 
-        it('should return a number', function ()
+        it('should return a number', () =>
         {
             expect(utils.uid())
                 .to.be.a('number');
         });
     });
 
-    describe('hex2rgb', function ()
+    describe('hex2rgb', () =>
     {
-        it('should exist', function ()
+        it('should exist', () =>
         {
             expect(utils.hex2rgb)
                 .to.be.a('function');
@@ -29,9 +29,9 @@ describe('utils', function ()
         // it('should properly convert number to rgb array');
     });
 
-    describe('hex2string', function ()
+    describe('hex2string', () =>
     {
-        it('should exist', function ()
+        it('should exist', () =>
         {
             expect(utils.hex2string)
                 .to.be.a('function');
@@ -56,20 +56,20 @@ describe('utils', function ()
         {
             it(`should properly convert number 0x${num.toString(16)} to hex color string #${result}`, () =>
             {
-                expect(utils.hex2string(num)).to.equals(result);
+                expect(utils.hex2string(num as number)).to.equals(result);
             });
         });
     });
 
-    describe('rgb2hex', function ()
+    describe('rgb2hex', () =>
     {
-        it('should exist', function ()
+        it('should exist', () =>
         {
             expect(utils.rgb2hex)
                 .to.be.a('function');
         });
 
-        it('should calculate correctly', function ()
+        it('should calculate correctly', () =>
         {
             expect(utils.rgb2hex([0.3, 0.2, 0.1])).to.equals(0x4c3319);
         });
@@ -77,9 +77,9 @@ describe('utils', function ()
         // it('should properly convert rgb array to hex color string');
     });
 
-    describe('getResolutionOfUrl', function ()
+    describe('getResolutionOfUrl', () =>
     {
-        it('should exist', function ()
+        it('should exist', () =>
         {
             expect(utils.getResolutionOfUrl)
                 .to.be.a('function');
@@ -88,15 +88,15 @@ describe('utils', function ()
         // it('should return the correct resolution based on a URL');
     });
 
-    describe('decomposeDataUri', function ()
+    describe('decomposeDataUri', () =>
     {
-        it('should exist', function ()
+        it('should exist', () =>
         {
             expect(utils.decomposeDataUri)
                 .to.be.a('function');
         });
 
-        it('should decompose a data URI', function ()
+        it('should decompose a data URI', () =>
         {
             const dataUri = utils.decomposeDataUri('data:image/png;base64,94Z9RWUN77ZW');
 
@@ -114,7 +114,7 @@ describe('utils', function ()
                 .to.equal('94Z9RWUN77ZW');
         });
 
-        it('should decompose a data URI with charset', function ()
+        it('should decompose a data URI with charset', () =>
         {
             const dataUri = utils.decomposeDataUri('data:image/svg+xml;charset=utf8;base64,PGRpdiB4bWxucz0Pg==');
 
@@ -132,7 +132,7 @@ describe('utils', function ()
                 .to.equal('PGRpdiB4bWxucz0Pg==');
         });
 
-        it('should decompose a data URI with charset without encoding', function ()
+        it('should decompose a data URI with charset without encoding', () =>
         {
             const dataUri = utils.decomposeDataUri('data:image/svg+xml;charset=utf8,PGRpdiB4bWxucz0Pg==');
 
@@ -150,7 +150,7 @@ describe('utils', function ()
                 .to.equal('PGRpdiB4bWxucz0Pg==');
         });
 
-        it('should return undefined for anything else', function ()
+        it('should return undefined for anything else', () =>
         {
             const dataUri = utils.decomposeDataUri('foo');
 
@@ -159,33 +159,33 @@ describe('utils', function ()
         });
     });
 
-    describe('sayHello', function ()
+    describe('sayHello', () =>
     {
-        it('should exist', function ()
+        it('should exist', () =>
         {
             expect(utils.sayHello)
                 .to.be.a('function');
         });
     });
 
-    describe('isWebGLSupported', function ()
+    describe('isWebGLSupported', () =>
     {
-        it('should exist', function ()
+        it('should exist', () =>
         {
             expect(utils.isWebGLSupported)
                 .to.be.a('function');
         });
     });
 
-    describe('sign', function ()
+    describe('sign', () =>
     {
-        it('should return 0 for 0', function ()
+        it('should return 0 for 0', () =>
         {
             expect(utils.sign(0))
                 .to.be.equal(0);
         });
 
-        it('should return -1 for negative numbers', function ()
+        it('should return -1 for negative numbers', () =>
         {
             for (let i = 0; i < 10; i += 1)
             {
@@ -194,7 +194,7 @@ describe('utils', function ()
             }
         });
 
-        it('should return 1 for positive numbers', function ()
+        it('should return 1 for positive numbers', () =>
         {
             for (let i = 0; i < 10; i += 1)
             {
@@ -204,14 +204,14 @@ describe('utils', function ()
         });
     });
 
-    describe('.removeItems', function ()
+    describe('.removeItems', () =>
     {
-        it('should exist', function ()
+        it('should exist', () =>
         {
             expect(utils.removeItems).to.be.a('function');
         });
 
-        it('should return if the start index is greater than or equal to the length of the array', function ()
+        it('should return if the start index is greater than or equal to the length of the array', () =>
         {
             const arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
@@ -219,7 +219,7 @@ describe('utils', function ()
             expect(arr.length).to.equal(10);
         });
 
-        it('should return if the remove count is 0', function ()
+        it('should return if the remove count is 0', () =>
         {
             const arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
@@ -227,7 +227,7 @@ describe('utils', function ()
             expect(arr.length).to.equal(10);
         });
 
-        it('should remove the number of elements specified from the array, starting from the start index', function ()
+        it('should remove the number of elements specified from the array, starting from the start index', () =>
         {
             const arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
@@ -235,7 +235,7 @@ describe('utils', function ()
             expect(arr).to.deep.equal([1, 2, 3, 8, 9, 10]);
         });
 
-        it('should remove other elements if delete count is > than the number of elements after start index', function ()
+        it('should remove other elements if delete count is > than the number of elements after start index', () =>
         {
             const arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
@@ -244,30 +244,30 @@ describe('utils', function ()
         });
     });
 
-    describe('EventEmitter', function ()
+    describe('EventEmitter', () =>
     {
-        it('should exist', function ()
+        it('should exist', () =>
         {
             expect(utils.EventEmitter).to.be.a('function');
         });
     });
 
-    describe('isMobile', function ()
+    describe('isMobile', () =>
     {
-        it('should exist', function ()
+        it('should exist', () =>
         {
             expect(utils.isMobile).to.be.an('object');
         });
 
-        it('should return a boolean for .any', function ()
+        it('should return a boolean for .any', () =>
         {
             expect(utils.isMobile.any).to.be.a('boolean');
         });
     });
 
-    describe('earcut', function ()
+    describe('earcut', () =>
     {
-        it('should exist', function ()
+        it('should exist', () =>
         {
             expect(utils.earcut).to.be.a('function');
         });
