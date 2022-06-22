@@ -1,4 +1,4 @@
-import { MASK_TYPES, MSAA_QUALITY, COLOR_MASK_BITS } from '@pixi/constants';
+import { MASK_TYPES, COLOR_MASK_BITS } from '@pixi/constants';
 import {
     BaseTexture,
     BatchRenderer,
@@ -420,7 +420,7 @@ describe('MaskSystem', () =>
         renderTexture.destroy(true);
     });
 
-    it('should render correctly with nested color and stencil masks', function ()
+    it('should render correctly with nested color and stencil masks', () =>
     {
         const stage = new Container();
         const container1 = new Container();
@@ -441,7 +441,7 @@ describe('MaskSystem', () =>
         graphics.mask = new MaskData();
         graphics.mask.colorMask = COLOR_MASK_BITS.GREEN | COLOR_MASK_BITS.BLUE | COLOR_MASK_BITS.ALPHA;
 
-        const renderTexture = this.renderer.generateTexture(stage, { region: new Rectangle(0, 0, 2, 1) });
+        const renderTexture = renderer.generateTexture(stage, { region: new Rectangle(0, 0, 2, 1) });
 
         expect(renderTexture.width).to.equal(2);
         expect(renderTexture.height).to.equal(1);
@@ -454,10 +454,10 @@ describe('MaskSystem', () =>
 
         stage.destroy(true);
 
-        this.renderer.renderTexture.bind(renderTexture);
+        renderer.renderTexture.bind(renderTexture);
 
         const pixels = new Uint8Array(8);
-        const gl = this.renderer.gl;
+        const gl = renderer.gl;
 
         gl.readPixels(0, 0, 2, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
@@ -480,7 +480,7 @@ describe('MaskSystem', () =>
         expect(a2).to.equal(0xff);
     });
 
-    it('should render overlapping objects with color masks correctly', function ()
+    it('should render overlapping objects with color masks correctly', () =>
     {
         const stage = new Container();
         const graphics1 = new Graphics().beginFill(0xffffff, 1.0).drawRect(0, 0, 2, 1).endFill();
@@ -495,7 +495,7 @@ describe('MaskSystem', () =>
         graphics2.mask = new MaskData();
         graphics2.mask.colorMask = COLOR_MASK_BITS.GREEN | COLOR_MASK_BITS.BLUE | COLOR_MASK_BITS.ALPHA;
 
-        const renderTexture = this.renderer.generateTexture(stage);
+        const renderTexture = renderer.generateTexture(stage);
 
         expect(renderTexture.width).to.equal(3);
         expect(renderTexture.height).to.equal(1);
@@ -505,10 +505,10 @@ describe('MaskSystem', () =>
 
         stage.destroy(true);
 
-        this.renderer.renderTexture.bind(renderTexture);
+        renderer.renderTexture.bind(renderTexture);
 
         const pixels = new Uint8Array(12);
-        const gl = this.renderer.gl;
+        const gl = renderer.gl;
 
         gl.readPixels(0, 0, 3, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 

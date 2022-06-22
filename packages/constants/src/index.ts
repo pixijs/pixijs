@@ -486,7 +486,6 @@ export enum MASK_TYPES
 
 /**
  * Bitwise OR of masks that indicate the color channels that are rendered to.
- *
  * @static
  * @memberof PIXI
  * @name COLOR_MASK_BITS
@@ -496,7 +495,9 @@ export enum MASK_TYPES
  * @property {number} BLUE - Blue channel.
  * @property {number} ALPHA - Alpha channel.
  */
-export enum COLOR_MASK_BITS {
+export enum COLOR_MASK_BITS
+// eslint-disable-next-line @typescript-eslint/indent
+{
     RED = 0x1,
     GREEN = 0x2,
     BLUE = 0x4,

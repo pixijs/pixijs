@@ -301,7 +301,6 @@ export class MaskSystem implements ISystem
 
     /**
      * Pushes the color mask.
-     *
      * @param maskData - The mask data
      */
     pushColorMask(maskData: MaskData): void
@@ -322,7 +321,6 @@ export class MaskSystem implements ISystem
 
     /**
      * Pops the color mask.
-     *
      * @param maskData - The mask data
      */
     popColorMask(maskData: MaskData): void
