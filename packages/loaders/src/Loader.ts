@@ -11,9 +11,6 @@ const rgxExtractUrlHash = /(#[\w-]+)?$/;
 
 export type ILoaderMiddleware = (resource: LoaderResource, next: (...args: any[]) => void) => void;
 
-// used to make sure we don't spam the user with deprecation messages.
-let showDeprecation = true;
-
 export interface ILoaderAdd
 {
     (this: Loader, name: string, url: string, callback?: LoaderResource.OnCompleteSignal): Loader;
@@ -391,11 +388,9 @@ class Loader
      */
     load(cb?: Loader.OnCompleteSignal): this
     {
-        if (showDeprecation)
-        {
-            showDeprecation = false;
-            console.warn('[Loader] As of version 7, Loader is being removed in favour of PixiJS\'s new Assets');
-        }
+        // #if _DEBUG
+        deprecation('6.5.0', '@pixi/loaders is being replaced with @pixi/assets in the next major release.');
+        // #endif
 
         // register complete callback if they pass one
         if (typeof cb === 'function')
