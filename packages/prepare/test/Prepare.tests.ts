@@ -2,12 +2,11 @@ import { Prepare } from '@pixi/prepare';
 import { BatchRenderer, extensions, Renderer, Texture } from '@pixi/core';
 import { Container } from '@pixi/display';
 import { Graphics } from '@pixi/graphics';
-import { expect } from 'chai';
 
 describe('Prepare', () =>
 {
-    before(() => extensions.add(BatchRenderer));
-    after(() => extensions.remove(BatchRenderer));
+    beforeAll(() => extensions.add(BatchRenderer));
+    afterAll(() => extensions.remove(BatchRenderer));
 
     it('should upload graphics vao and textures', () =>
     {
@@ -37,10 +36,10 @@ describe('Prepare', () =>
             prepare.add(container);
             prepare.prepareItems();
 
-            expect(Object.keys(texture.baseTexture._glTextures)).to.eql([`${CONTEXT_UID}`]);
-            expect(graphics.geometry.batches.length).to.equal(2);
-            expect(vaos[CONTEXT_UID]).to.exist;
-            expect(Object.keys(vaos[CONTEXT_UID]).length).to.equal(2); // [shader_id] and [signature]
+            expect(Object.keys(texture.baseTexture._glTextures)).toEqual([`${CONTEXT_UID}`]);
+            expect(graphics.geometry.batches.length).toEqual(2);
+            expect(vaos[CONTEXT_UID]).toBeDefined();
+            expect(Object.keys(vaos[CONTEXT_UID]).length).toEqual(2); // [shader_id] and [signature]
         }
         finally
         {

@@ -3,7 +3,6 @@ import { skipHello } from '@pixi/utils';
 import { Loader } from '@pixi/loaders';
 import { Point } from '@pixi/math';
 import { Renderer, BatchRenderer, RenderTexture, Texture, extensions } from '@pixi/core';
-import { expect } from 'chai';
 
 skipHello();
 
@@ -19,8 +18,8 @@ describe('SimplePlane', () =>
             {
                 const plane = new SimplePlane(resources.testBitmap.texture, 100, 100);
 
-                expect((plane.geometry as PlaneGeometry).segWidth).to.equal(100);
-                expect((plane.geometry as PlaneGeometry).segHeight).to.equal(100);
+                expect((plane.geometry as PlaneGeometry).segWidth).toEqual(100);
+                expect((plane.geometry as PlaneGeometry).segHeight).toEqual(100);
                 done();
             });
     });
@@ -29,8 +28,8 @@ describe('SimplePlane', () =>
     {
         const plane = new SimplePlane(Texture.EMPTY, 100, 100);
 
-        expect((plane.geometry as PlaneGeometry).segWidth).to.equal(100);
-        expect((plane.geometry as PlaneGeometry).segHeight).to.equal(100);
+        expect((plane.geometry as PlaneGeometry).segWidth).toEqual(100);
+        expect((plane.geometry as PlaneGeometry).segHeight).toEqual(100);
     });
 
     describe('containsPoint', () =>
@@ -41,7 +40,7 @@ describe('SimplePlane', () =>
             const texture = RenderTexture.create({ width: 20, height: 30 });
             const plane = new SimplePlane(texture, 100, 100);
 
-            expect(plane.containsPoint(point)).to.be.true;
+            expect(plane.containsPoint(point)).toBe(true);
         });
 
         it('should return false when point outside', () =>
@@ -50,7 +49,7 @@ describe('SimplePlane', () =>
             const texture = RenderTexture.create({ width: 20, height: 30 });
             const plane = new SimplePlane(texture, 100, 100);
 
-            expect(plane.containsPoint(point)).to.be.false;
+            expect(plane.containsPoint(point)).toBe(false);
         });
     });
 

@@ -17,13 +17,11 @@ import { Container } from '@pixi/display';
 import { Graphics } from '@pixi/graphics';
 import { Matrix, Rectangle } from '@pixi/math';
 import { Sprite } from '@pixi/sprite';
-import { expect } from 'chai';
-import sinon from 'sinon';
 
 describe('MaskSystem', () =>
 {
-    before(() => extensions.add(BatchRenderer));
-    after(() => extensions.remove(BatchRenderer));
+    beforeAll(() => extensions.add(BatchRenderer));
+    afterAll(() => extensions.remove(BatchRenderer));
 
     function onePixelMask(worldTransform: Matrix | Record<string, number>): IMaskTarget
     {
@@ -55,7 +53,7 @@ describe('MaskSystem', () =>
     let textureGreen: Texture;
     let spriteMaskFilterGreen: SpriteMaskFilter;
 
-    before(() =>
+    beforeAll(() =>
     {
         renderer = new Renderer();
         renderer.mask.enableScissor = true;
@@ -90,7 +88,7 @@ describe('MaskSystem', () =>
             }`);
     });
 
-    after(() =>
+    afterAll(() =>
     {
         renderer.destroy();
         renderer = null;
@@ -104,7 +102,7 @@ describe('MaskSystem', () =>
 
     it('should have scissor-masks enabled', () =>
     {
-        expect(renderer.mask.enableScissor).to.equal(true);
+        expect(renderer.mask.enableScissor).toEqual(true);
     });
 
     it('should use scissor masks with axis aligned squares', () =>
@@ -115,19 +113,19 @@ describe('MaskSystem', () =>
 
         renderer.mask.push(context, maskObject);
 
-        expect(renderer.scissor.getStackLength()).to.equal(1);
+        expect(renderer.scissor.getStackLength()).toEqual(1);
 
         renderer.mask.push(context, maskObject2);
 
-        expect(renderer.scissor.getStackLength()).to.equal(2);
+        expect(renderer.scissor.getStackLength()).toEqual(2);
 
         renderer.mask.pop(context);
 
-        expect(renderer.scissor.getStackLength()).to.equal(1);
+        expect(renderer.scissor.getStackLength()).toEqual(1);
 
         renderer.mask.pop(context);
 
-        expect(renderer.scissor.getStackLength()).to.equal(0);
+        expect(renderer.scissor.getStackLength()).toEqual(0);
     });
 
     it('should return maskData to pool if it does not belong in the object', () =>
@@ -141,8 +139,8 @@ describe('MaskSystem', () =>
 
         const maskData = renderer.mask['maskDataPool'][0];
 
-        expect(maskData).to.exist;
-        expect(maskData._scissorCounter).to.equal(1);
+        expect(maskData).toBeDefined();
+        expect(maskData._scissorCounter).toEqual(1);
     });
 
     it('should not put maskData to pool if it belongs to object', () =>
@@ -158,8 +156,8 @@ describe('MaskSystem', () =>
             renderer.mask.push(context, maskData);
             renderer.mask.pop(context);
 
-            expect(maskData._scissorCounter).to.equal(1);
-            expect(renderer.mask['maskDataPool'].length).to.equal(0);
+            expect(maskData._scissorCounter).toEqual(1);
+            expect(renderer.mask['maskDataPool'].length).toEqual(0);
         }
     });
 
@@ -170,7 +168,7 @@ describe('MaskSystem', () =>
 
         renderer.mask.push(context, maskObject);
 
-        expect(renderer.scissor.getStackLength()).to.equal(0);
+        expect(renderer.scissor.getStackLength()).toEqual(0);
 
         renderer.mask.pop(context);
     });
@@ -189,7 +187,7 @@ describe('MaskSystem', () =>
         renderer.resize(30, 30);
 
         const rt = RenderTexture.create({ width: 20, height: 20, resolution: 3 });
-        const scissor = sinon.spy(renderer.gl, 'scissor');
+        const scissor = jest.spyOn(renderer.gl, 'scissor');
 
         renderer.projection.transform = new Matrix(1, 0, 0, 1, 0.5, 1);
         renderer.mask.push(context, maskObject);
@@ -201,11 +199,11 @@ describe('MaskSystem', () =>
         renderer.mask.push(context, maskObject);
         renderer.mask.pop(context);
 
-        expect(scissor.calledTwice).to.be.true;
+        expect(scissor).toBeCalledTimes(2);
         // result Y is 2 because after transform y=8 h=10 and renderer H=60 is inverted , 8-18 becomes 52-42, e.g. Y=2
-        expect(scissor.args[0]).to.eql([Math.round(5), Math.round(42), Math.round(12), Math.round(10)]);
+        expect(scissor.mock.calls[0]).toEqual([Math.round(5), Math.round(42), Math.round(12), Math.round(10)]);
         // resolution is 3 , and Y is not reversed
-        expect(scissor.args[1]).to.eql([Math.round(7.5), Math.round(12), Math.round(18), Math.round(15)]);
+        expect(scissor.mock.calls[1]).toEqual([Math.round(7.5), Math.round(12), Math.round(18), Math.round(15)]);
 
         rt.destroy(true);
         renderer.projection.transform = null;
@@ -216,7 +214,7 @@ describe('MaskSystem', () =>
     it('should correctly calculate alpha mask area if filter is present', function ()
     {
         // fixes slow runs on CI #6604
-        this.timeout(5000);
+        jest.setTimeout(5000);
         // the bug was fixed in #5444
         renderer.resize(10, 10);
 
@@ -242,24 +240,24 @@ describe('MaskSystem', () =>
         {
             renderer.filter.push(filteredObject, filters);
             maskSystem.push(filteredObject as IMaskTarget, maskObject);
-            expect(maskSystem['maskStack'].length).to.equal(1);
-            expect(maskSystem['maskStack'][0].type).to.equal(MASK_TYPES.SPRITE);
-            expect(renderer.renderTexture.current).to.exist;
+            expect(maskSystem['maskStack'].length).toEqual(1);
+            expect(maskSystem['maskStack'][0].type).toEqual(MASK_TYPES.SPRITE);
+            expect(renderer.renderTexture.current).toBeDefined();
 
             const filterArea = renderer.renderTexture.current.filterFrame;
             const expected = maskBounds.clone().ceil();
 
             expected.fit(filteredObject.getBounds());
-            expect(filterArea).to.exist;
-            expect(filterArea.x).to.equal(expected.x);
-            expect(filterArea.y).to.equal(expected.y);
-            expect(filterArea.width).to.equal(expected.width);
-            expect(filterArea.height).to.equal(expected.height);
+            expect(filterArea).toBeDefined();
+            expect(filterArea.x).toEqual(expected.x);
+            expect(filterArea.y).toEqual(expected.y);
+            expect(filterArea.width).toEqual(expected.width);
+            expect(filterArea.height).toEqual(expected.height);
 
             maskSystem.pop(filteredObject as IMaskTarget);
             renderer.filter.pop();
-            expect(maskSystem['maskStack'].length).to.equal(0);
-            expect(renderer.renderTexture.current).to.be.null;
+            expect(maskSystem['maskStack'].length).toEqual(0);
+            expect(renderer.renderTexture.current).toBeNull();
 
             maskBounds.x += 1.0;
             maskBounds.y += 0.5;
@@ -287,10 +285,10 @@ describe('MaskSystem', () =>
 
         const [r, g, b, a] = pixel;
 
-        expect(r).to.equal(0xff);
-        expect(g).to.equal(0xff);
-        expect(b).to.equal(0xff);
-        expect(a).to.equal(0xff);
+        expect(r).toEqual(0xff);
+        expect(g).toEqual(0xff);
+        expect(b).toEqual(0xff);
+        expect(a).toEqual(0xff);
     });
 
     it('should render correctly without a custom sprite mask filter and a green texture sprite mask', () =>
@@ -314,10 +312,10 @@ describe('MaskSystem', () =>
 
         const [r, g, b, a] = pixel;
 
-        expect(r).to.equal(0x00);
-        expect(g).to.equal(0x00);
-        expect(b).to.equal(0x00);
-        expect(a).to.equal(0x00);
+        expect(r).toEqual(0x00);
+        expect(g).toEqual(0x00);
+        expect(b).toEqual(0x00);
+        expect(a).toEqual(0x00);
     });
 
     it('should render correctly with acustom sprite mask filter and a red texture sprite mask', () =>
@@ -342,10 +340,10 @@ describe('MaskSystem', () =>
 
         const [r, g, b, a] = pixel;
 
-        expect(r).to.equal(0x00);
-        expect(g).to.equal(0x00);
-        expect(b).to.equal(0x00);
-        expect(a).to.equal(0x00);
+        expect(r).toEqual(0x00);
+        expect(g).toEqual(0x00);
+        expect(b).toEqual(0x00);
+        expect(a).toEqual(0x00);
     });
 
     it('should render correctly with a custom sprite mask filter and a green texture sprite mask', () =>
@@ -370,10 +368,10 @@ describe('MaskSystem', () =>
 
         const [r, g, b, a] = pixel;
 
-        expect(r).to.equal(0xff);
-        expect(g).to.equal(0xff);
-        expect(b).to.equal(0xff);
-        expect(a).to.equal(0xff);
+        expect(r).toEqual(0xff);
+        expect(g).toEqual(0xff);
+        expect(b).toEqual(0xff);
+        expect(a).toEqual(0xff);
     });
 
     it('should restore sprite of current sprite mask filter after pop', () =>
@@ -394,28 +392,28 @@ describe('MaskSystem', () =>
         maskData1.filter = spriteMaskFilterGreen;
         maskData2.filter = spriteMaskFilterGreen;
 
-        expect(maskData1.filter.maskSprite).to.be.null;
-        expect(maskData2.filter.maskSprite).to.be.null;
+        expect(maskData1.filter.maskSprite).toBeNull();
+        expect(maskData2.filter.maskSprite).toBeNull();
 
         graphics1.mask = maskData1;
         graphics2.mask = maskData2;
 
         renderer.mask.push(graphics1, maskData1);
 
-        expect(maskData1.filter.maskSprite).to.equal(sprite1);
+        expect(maskData1.filter.maskSprite).toEqual(sprite1);
 
         renderer.mask.push(graphics2, maskData2);
 
-        expect(maskData2.filter.maskSprite).to.equal(sprite2);
+        expect(maskData2.filter.maskSprite).toEqual(sprite2);
 
         renderer.mask.pop(graphics2);
 
-        expect(maskData1.filter.maskSprite).to.equal(sprite1);
+        expect(maskData1.filter.maskSprite).toEqual(sprite1);
 
         renderer.mask.pop(graphics1);
 
-        expect(maskData1.filter.maskSprite).to.be.null;
-        expect(maskData2.filter.maskSprite).to.be.null;
+        expect(maskData1.filter.maskSprite).toBeNull();
+        expect(maskData2.filter.maskSprite).toBeNull();
 
         renderTexture.destroy(true);
     });

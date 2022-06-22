@@ -1,7 +1,6 @@
 import { SimpleMesh } from '@pixi/mesh-extras';
 import { skipHello } from '@pixi/utils';
 import { Renderer, BatchRenderer, extensions } from '@pixi/core';
-import { expect } from 'chai';
 
 skipHello();
 
@@ -11,8 +10,8 @@ describe('SimpleMesh', () =>
     {
         const mesh = new SimpleMesh();
 
-        expect(mesh).to.be.instanceOf(SimpleMesh);
-        expect(mesh.autoUpdate).to.be.true;
+        expect(mesh).toBeInstanceOf(SimpleMesh);
+        expect(mesh.autoUpdate).toBe(true);
 
         mesh.destroy();
     });

@@ -1,5 +1,4 @@
 import { Transform } from '@pixi/math';
-import { expect } from 'chai';
 
 describe('Transform', () =>
 {
@@ -24,13 +23,13 @@ describe('Transform', () =>
             const scale = otherTransform.scale;
             const skew = otherTransform.skew;
 
-            expect(position.x).to.be.closeTo(20, eps);
-            expect(position.y).to.be.closeTo(10, eps);
-            expect(scale.x).to.be.closeTo(2, eps);
-            expect(scale.y).to.be.closeTo(3, eps);
-            expect(skew.x).to.equal(0);
-            expect(skew.y).to.equal(0);
-            expect(otherTransform.rotation).to.be.closeTo(-5 * Math.PI / 6, eps);
+            expect(position.x).toBeCloseTo(20, eps);
+            expect(position.y).toBeCloseTo(10, eps);
+            expect(scale.x).toBeCloseTo(2, eps);
+            expect(scale.y).toBeCloseTo(3, eps);
+            expect(skew.x).toEqual(0);
+            expect(skew.y).toEqual(0);
+            expect(otherTransform.rotation).toBeCloseTo(-5 * Math.PI / 6, eps);
         });
 
         it('should decompose mirror into skew', () =>
@@ -52,13 +51,13 @@ describe('Transform', () =>
             const scale = otherTransform.scale;
             const skew = otherTransform.skew;
 
-            expect(position.x).to.be.closeTo(20, eps);
-            expect(position.y).to.be.closeTo(10, eps);
-            expect(scale.x).to.be.closeTo(2, eps);
-            expect(scale.y).to.be.closeTo(3, eps);
-            expect(skew.x).to.be.closeTo(5 * Math.PI / 6, eps);
-            expect(skew.y).to.be.closeTo(Math.PI / 6, eps);
-            expect(otherTransform.rotation).to.equal(0);
+            expect(position.x).toBeCloseTo(20, eps);
+            expect(position.y).toBeCloseTo(10, eps);
+            expect(scale.x).toBeCloseTo(2, eps);
+            expect(scale.y).toBeCloseTo(3, eps);
+            expect(skew.x).toBeCloseTo(5 * Math.PI / 6, eps);
+            expect(skew.y).toBeCloseTo(Math.PI / 6, eps);
+            expect(otherTransform.rotation).toEqual(0);
         });
 
         it('should apply skew before scale, like in adobe animate and spine', () =>
@@ -78,12 +77,12 @@ describe('Transform', () =>
 
             const mat = transform.worldTransform;
 
-            expect(mat.a).to.be.closeTo(0.563, eps);
-            expect(mat.b).to.be.closeTo(0.100, eps);
-            expect(mat.c).to.be.closeTo(-3.142, eps);
-            expect(mat.d).to.be.closeTo(2.635, eps);
-            expect(mat.tx).to.be.closeTo(387.8, eps);
-            expect(mat.ty).to.be.closeTo(313.95, eps);
+            expect(mat.a).toBeCloseTo(0.563, eps);
+            expect(mat.b).toBeCloseTo(0.100, eps);
+            expect(mat.c).toBeCloseTo(-3.142, eps);
+            expect(mat.d).toBeCloseTo(2.635, eps);
+            expect(mat.tx).toBeCloseTo(387.8, eps);
+            expect(mat.ty).toBeCloseTo(313.95, eps);
 
             otherTransform.setFromMatrix(transform.worldTransform);
 
@@ -91,13 +90,13 @@ describe('Transform', () =>
             const scale = otherTransform.scale;
             const skew = otherTransform.skew;
 
-            expect(position.x).to.be.closeTo(387.8, eps);
-            expect(position.y).to.be.closeTo(313.95, eps);
-            expect(scale.x).to.be.closeTo(0.572, eps);
-            expect(scale.y).to.be.closeTo(4.101, eps);
-            expect(skew.x).to.be.closeTo(-0.873, eps);
-            expect(skew.y).to.be.closeTo(0.175, eps);
-            expect(otherTransform.rotation).to.be.equal(0);
+            expect(position.x).toBeCloseTo(387.8, eps);
+            expect(position.y).toBeCloseTo(313.95, eps);
+            expect(scale.x).toBeCloseTo(0.572, eps);
+            expect(scale.y).toBeCloseTo(4.101, eps);
+            expect(skew.x).toBeCloseTo(-0.873, eps);
+            expect(skew.y).toBeCloseTo(0.175, eps);
+            expect(otherTransform.rotation).toEqual(0);
         });
     });
 });

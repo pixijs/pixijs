@@ -1,7 +1,6 @@
 import { CanvasExtract } from '@pixi/canvas-extract';
 import { CanvasRenderer } from '@pixi/canvas-renderer';
 import { Sprite } from '@pixi/sprite';
-import { expect } from 'chai';
 import { skipHello } from '@pixi/utils';
 import { Texture, RenderTexture, extensions } from '@pixi/core';
 import { CanvasSpriteRenderer } from '@pixi/canvas-sprite';
@@ -12,14 +11,14 @@ skipHello();
 
 describe('CanvasExtract', () =>
 {
-    before(() => extensions.add(CanvasExtract, CanvasSpriteRenderer));
-    after(() => extensions.remove(CanvasExtract, CanvasSpriteRenderer));
+    beforeAll(() => extensions.add(CanvasExtract, CanvasSpriteRenderer));
+    afterAll(() => extensions.remove(CanvasExtract, CanvasSpriteRenderer));
 
     it('should access extract on renderer', () =>
     {
         const renderer = new CanvasRenderer();
 
-        expect(renderer.plugins.extract).to.be.an.instanceof(CanvasExtract);
+        expect(renderer.plugins.extract).toBeInstanceOf(CanvasExtract);
 
         renderer.destroy();
     });
@@ -30,10 +29,10 @@ describe('CanvasExtract', () =>
         const sprite = new Sprite(Texture.WHITE);
         const extract = renderer.plugins.extract as CanvasExtract;
 
-        expect(extract.canvas(sprite)).to.be.an.instanceof(HTMLCanvasElement);
-        expect(extract.base64(sprite)).to.be.a('string');
-        expect(extract.pixels(sprite)).to.be.instanceOf(Uint8ClampedArray);
-        expect(extract.image(sprite)).to.be.instanceOf(HTMLImageElement);
+        expect(extract.canvas(sprite)).toBeInstanceOf(HTMLCanvasElement);
+        expect(extract.base64(sprite)).toBeString();
+        expect(extract.pixels(sprite)).toBeInstanceOf(Uint8ClampedArray);
+        expect(extract.image(sprite)).toBeInstanceOf(HTMLImageElement);
 
         renderer.destroy();
         sprite.destroy();
@@ -44,10 +43,10 @@ describe('CanvasExtract', () =>
         const renderer = new CanvasRenderer();
         const extract = renderer.plugins.extract as CanvasExtract;
 
-        expect(extract.canvas()).to.be.an.instanceof(HTMLCanvasElement);
-        expect(extract.base64()).to.be.a('string');
-        expect(extract.pixels()).to.be.instanceOf(Uint8ClampedArray);
-        expect(extract.image()).to.be.instanceOf(HTMLImageElement);
+        expect(extract.canvas()).toBeInstanceOf(HTMLCanvasElement);
+        expect(extract.base64()).toBeString();
+        expect(extract.pixels()).toBeInstanceOf(Uint8ClampedArray);
+        expect(extract.image()).toBeInstanceOf(HTMLImageElement);
 
         renderer.destroy();
     });
@@ -61,10 +60,10 @@ describe('CanvasExtract', () =>
 
         renderer.render(sprite, { renderTexture });
 
-        expect(extract.canvas(renderTexture)).to.be.an.instanceof(HTMLCanvasElement);
-        expect(extract.base64(renderTexture)).to.be.a('string');
-        expect(extract.pixels(renderTexture)).to.be.instanceOf(Uint8ClampedArray);
-        expect(extract.image(renderTexture)).to.be.instanceOf(HTMLImageElement);
+        expect(extract.canvas(renderTexture)).toBeInstanceOf(HTMLCanvasElement);
+        expect(extract.base64(renderTexture)).toBeString();
+        expect(extract.pixels(renderTexture)).toBeInstanceOf(Uint8ClampedArray);
+        expect(extract.image(renderTexture)).toBeInstanceOf(HTMLImageElement);
 
         renderer.destroy();
         renderTexture.destroy();
