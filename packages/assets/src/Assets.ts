@@ -94,8 +94,8 @@ export interface AssetInitOptions
  * for example:
  *
  * ```
- * promise1 = Asset.load('bunny.png)
- * promise2 = Asset.load('bunny.png)
+ * promise1 = Assets.load('bunny.png)
+ * promise2 = Assets.load('bunny.png)
  *
  * //promise1 === promise2
  * ```
@@ -139,7 +139,7 @@ export interface AssetInitOptions
  *
  * ```
  * // load specific weights..
- * await loader.load({
+ * await Assets.load({
  *    data: {
  *      weights: ['normal'], // only loads the weight
  *    },
@@ -147,7 +147,7 @@ export interface AssetInitOptions
  * });
  *
  * // load everything...
- * await loader.load(`outfit.woff2`);
+ * await Assets.load(`outfit.woff2`);
  * ```
  * ### Background Loading
  * Background loading will load stuff for you passively behind the scenes. To minimse jank,
@@ -204,7 +204,7 @@ export interface AssetInitOptions
  * gameScreenAssets = await Assets.loadBundle('game-screen');
  * ```
  * @example
- * const bunny = await Asset.load('bunny.png');
+ * const bunny = await Assets.load('bunny.png');
  */
 export class AssetsClass
 {
@@ -313,13 +313,13 @@ export class AssetsClass
      * @example
      * // simple
      * Assets.add('bunnyBooBoo', 'bunny.png`);
-     * const bunny = await Asset.load('bunnyBooBoo');
+     * const bunny = await Assets.load('bunnyBooBoo');
      *
      * // multiple keys:
      * Assets.add(['burger', 'chicken'], 'bunny.png`);
      *
-     * const bunny = await Asset.load('burger');
-     * const bunny2 = await Asset.load('chicken');
+     * const bunny = await Assets.load('burger');
+     * const bunny2 = await Assets.load('chicken');
      *
      * // passing options to to the object
      * Assets.add(
@@ -350,7 +350,7 @@ export class AssetsClass
      *    }
      * ]);
      *
-     * const bunny = await Asset.load('bunnyBooBoo'); // will try to load webp if available
+     * const bunny = await Assets.load('bunnyBooBoo'); // will try to load webp if available
      * @param keysIn - the key or keys that you will reference when loading this asset
      * @param assetsIn - the asset or assets that will be chosen from when loading via the specified key
      * @param data - asset specific data that will be passed to the loaders
@@ -542,7 +542,7 @@ export class AssetsClass
      * Assets.backgroundLoad('bunny.png');
      *
      * // later on in your app...
-     * await Asset.loadBundle('bunny.png'); // will resolve quicker as loading may have completed!
+     * await Assets.loadBundle('bunny.png'); // will resolve quicker as loading may have completed!
      * @param urls - the url / urls you want to background load
      */
     public async backgroundLoad(urls: string | string[]): Promise<void>
@@ -580,7 +580,7 @@ export class AssetsClass
      * Assets.backgroundLoadBundle('load-screen');
      *
      * // later on in your app...
-     * await Asset.loadBundle('load-screen'); // will resolve quicker as loading may have completed!
+     * await Assets.loadBundle('load-screen'); // will resolve quicker as loading may have completed!
      * @param bundleIds - the bundleId / bundleIds you want to background load
      */
     public async backgroundLoadBundle(bundleIds: string | string[]): Promise<void>
@@ -631,7 +631,7 @@ export class AssetsClass
 
     /**
      * Instantly gets an asset already loaded from the cache. If the asset has not yet been loaded,
-     * it will return undefined. So its on you! When in doubt just use Asset.load instead.
+     * it will return undefined. So its on you! When in doubt just use Assets.load instead.
      * (remember, the loader will never load things more than once!)
      * @param keys - the key or keys for the assets that you want to access
      * @returns - the assets or hash off assets requested
