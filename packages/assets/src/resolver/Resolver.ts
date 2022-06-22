@@ -1,7 +1,10 @@
 import { createStringVariations } from '../utils/createStringVariations';
 import { getBaseUrl, makeAbsoluteUrl } from '../utils/makeAbsoluteUrl';
 
-/** a prefer order lets the resolver know which assets to prefere depending on the various parameters passed to it. */
+/**
+ * A prefer order lets the resolver know which assets to prefere depending on the various parameters passed to it.
+ * @memberof PIXI
+ */
 export interface PreferOrder
 {
     /** the importance order of the params */
@@ -15,6 +18,7 @@ export interface PreferOrder
 /**
  * the object returned when a key is resolved to an asset.
  * it will contain any additional information passed in the asset was added.
+ * @memberof PIXI
  */
 export interface ResolveAsset extends Record<string, any>
 {
@@ -29,20 +33,29 @@ export type ResolverAssetsArray = {
 
 export type ResolverAssetsObject = Record<string, (string | ResolveAsset)>;
 
-/** structure of a bundle found in a manfest file */
+/**
+ * Structure of a bundle found in a manfest file
+ * @memberof PIXI
+ */
 export interface ResolverBundle
 {
     name: string;
     assets: ResolverAssetsArray | ResolverAssetsObject
 }
 
-/** the expected format of a manifest. This would normally be auto generated ar made by the developer */
+/**
+ * The expected format of a manifest. This would normally be auto generated ar made by the developer
+ * @memberof PIXI
+ */
 export type ResolverManifest = {
     // room for more props as we go!
     bundles: ResolverBundle[];
 };
 
-/** format for url parser, will test a string and if it pass will then parse it, turning it into an ResolveAsset */
+/**
+ * Format for url parser, will test a string and if it pass will then parse it, turning it into an ResolveAsset
+ * @memberof PIXI
+ */
 export interface ResolveURLParser
 {
     /** the test to perform on the url to determin if it should be parsed */
@@ -83,6 +96,7 @@ export interface ResolveURLParser
  *
  * It is not intended that this class is created by developers - its part of the Asset class
  * This is the third major system of PixiJS' main Assets class
+ * @memberof PIXI
  */
 export class Resolver
 {
@@ -97,25 +111,19 @@ export class Resolver
     private _bundles: Record<string, string[]> = {};
 
     /**
-     * let the resolver know which assets you prefer to use when resolving assets
-     *
-     * example:
-     * ```
-     *  resolver.prefer({
-     *      // first look for something with the correct format, and then then correct resolution
-     *      priority: ['format', 'resolution`],
-     *      params:{
-     *          format:'webp', // prefer webp images
-     *          resolution: 2, // prefer a resolution of 2
-     *      }
-     *  })
-     *
-     *  resolver.add('foo`, ['bar@2x.webp', 'bar@2x.png', 'bar.webp', 'bar.png']);
-     *
-     *  resolver.resolveUrl('foo`) // => 'bar@2x.webp`
-     * ```
-     *
+     * Let the resolver know which assets you prefer to use when resolving assets.
      * Multiple prefer user defined rules can be added.
+     * @example
+     * resolver.prefer({
+     *     // first look for something with the correct format, and then then correct resolution
+     *     priority: ['format', 'resolution`],
+     *     params:{
+     *         format:'webp', // prefer webp images
+     *         resolution: 2, // prefer a resolution of 2
+     *     }
+     * })
+     * resolver.add('foo`, ['bar@2x.webp', 'bar@2x.png', 'bar.webp', 'bar.png']);
+     * resolver.resolveUrl('foo`) // => 'bar@2x.webp`
      * @param preferOrders - the prefer options
      */
     public prefer(...preferOrders: PreferOrder[]): void
@@ -135,16 +143,11 @@ export class Resolver
     }
 
     /**
-     * set the base path to append to all urls when resolving
-     *
-     * example:
-     * ```
-     *  resolver.basePath = 'https://home.com/';
-     *
-     *  resolver.add('foo`, 'bar.ong`);
-     *
-     *  resolver.resolveUrl('foo`, 'bar.png`); // => 'https://home.com/bar.png`
-     * ```
+     * Set the base path to append to all urls when resolving
+     * @example
+     * resolver.basePath = 'https://home.com/';
+     * resolver.add('foo`, 'bar.ong`);
+     * resolver.resolveUrl('foo`, 'bar.png`); // => 'https://home.com/bar.png`
      */
     public set basePath(basePath: string)
     {
@@ -170,11 +173,7 @@ export class Resolver
 
     /**
      * A url parser helps the parser to extract information and create an asset object based on parsing the url itself.
-     *
-     * example:
-     *
-     * ```
-     *
+     * @example
      * resolver.add('foo', [
      *    {
      *      resolution:2,
@@ -206,8 +205,6 @@ export class Resolver
      *    'image@2x.png'
      *    'image.png'
      * ]);
-     *
-     * ```
      * @param urlParsers - the url parser that you want to add to the resolver
      */
     public addUrlParser(...urlParsers: ResolveURLParser[]): void
@@ -244,7 +241,6 @@ export class Resolver
      * This adds a bundle of assets in one go so that you can resolve them as a group.
      * For example you could add a bundle for each screen in you pixi app
      * @example
-     * ```
      *  resolver.addBundle('animals', {
      *    bunny: 'bunny.png',
      *    chicken: 'chicken.png',
@@ -252,8 +248,6 @@ export class Resolver
      *  });
      *
      * const resolvedAssets = await resolver.resolveBundle('preloaded');
-     *
-     * ```
      * @param bundleId - the id of the bundle to add
      * @param assets - a record of the the asset or assets that will be chosen from when loading via the specified key
      */
@@ -292,28 +286,21 @@ export class Resolver
     /**
      * The most important thing the resolver does. this function will tell the resolver
      * what keys are associated with witch asset.
-     *
-     * example:
-     *
-     * ```
+     * @example
      * // single key, single asset:
-     *
      * resolver.add('foo', 'bar.png');
      * resolver.resolveUrl('foo') // => 'bar.png'
      *
      * // multiple keys, single asset:
-     *
      * resolver.add(['foo', 'boo'], 'bar.png');
      * resolver.resolveUrl('foo') // => 'bar.png'
      * resolver.resolveUrl('boo') // => 'bar.png'
      *
      * // multiple keys, multiple assets:
-     *
      * resolver.add(['foo', 'boo'], ['bar.png', 'bar.webp']);
      * resolver.resolveUrl('foo') // => 'bar.png'
      *
      * // add custom data attached to the resolver
-     *
      * Resolver.add(
      *     'bunnyBooBooSmooth',
      *     'bunny{png,webp}`,
@@ -321,7 +308,6 @@ export class Resolver
      * );
      *
      * resolver.resolve('bunnyBooBooSmooth') // => {src: 'bunny.png', data: {scaleMode: SCALE_MODES.NEAREST}}
-     * ```
      * @param keysIn - the keys to map, can be an array or a single key
      * @param assetsIn - the assets to associate with the key(s)
      * @param data - the data that will be attached to the object that resolved object.
@@ -413,8 +399,6 @@ export class Resolver
      * If the resolver has had a manifest set via setManifest, this will return the assets urls for
      * a given bundleId or bundleIds.
      * @example
-     *
-     * ```
      * // manifest example
      * const manifest = {
      *   bundles:[{
@@ -444,12 +428,8 @@ export class Resolver
      *      ]
      *   }]
      * }}
-     *
      * resolver.setManifest(manifest);
-     *
      * const resolved = resolver.resolveBundle('load-screen');
-     *
-     * ```
      * @param bundleIds - the bundle ids to resolve
      * @returns all the bundles assets or a hash of assets for each bundle specified
      */
@@ -509,15 +489,12 @@ export class Resolver
      * of finding which asset to return based on any preferences set using the `prefer` function
      * by default the same key passed in will be returned if nothing is matched by the resolver.
      * @example
-     * ```
      * resolver.add('boo', 'bunny.png');
      *
      * resolver.resolve('boo') // => {src:'bunny.png'}
      *
      * // will return the same string as no key was added for this value..
      * resolver.resolve('another-thing.png') // => {src:'another-thing.png'}
-     *
-     * ```
      * @param keys - key or keys to resolve
      * @returns - the resolve asset or a hash of resolve assets for each key specified
      */

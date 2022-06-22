@@ -15,6 +15,8 @@ export interface LoadAsset<T=any>
  *
  * It is not intended that this class is created by developers - its part of the Asset class
  * This is the second major system of PixiJS' main Assets class
+ * @memberof PIXI
+ * @class AssetLoader
  */
 class Loader
 {
@@ -107,20 +109,13 @@ class Loader
      * The only function you need! will load your assets :D
      * Add parsers to make this thing understand how to actually load stuff!
      * @example
-     *
-     * single asset:
-     *
-     * ```
+     * // single asset:
      * const asset = await Loader.load('cool.png');
-     *
      * console.log(asset);
-     * ```
-     * multiple assets:
-     * ```
+     * @example
+     * // multiple assets:
      * const assets = await  Loader.load(['cool.png', 'cooler.png']);
-     *
      * console.log(assets);
-     * ```
      * @param assetsToLoadIn - a bunch of urls that you want to load, or a single one!
      * @param onProgress - a progress function that gets called when progress happens
      */

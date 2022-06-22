@@ -23,7 +23,10 @@ import { textureUrlParser } from './utils/textureUrlParser';
 
 type ProgressCallback = (progress: number) => void;
 
-/** initiation options object for Asset Class. */
+/**
+ * Initialization options object for Asset Class.
+ * @memberof PIXI
+ */
 export interface AssetInitOptions
 {
     // basic...
@@ -72,10 +75,8 @@ export interface AssetInitOptions
 /**
  * A one stop shop for all Pixi resource management!
  * Super modern and easy to use (1 line!), with enough flexibility to customize and do what you need!
- * @example
- * ```
- * const bunny = await Asset.load('bunny.png');
- * ```
+ * @memberof PIXI
+ * @namespace Assets
  *
  * Only one Asset Class exists accessed via the Global Asset object.
  *
@@ -101,17 +102,15 @@ export interface AssetInitOptions
  * here both promises will be the same. Once resolved.. forever resolved! It makes for really easy resource management!
  *
  * Out of the box it supports the following files:
- * - textures (avif, webp, png, jpg, gif)
- * - sprite sheets (json)
- * - bitmap fonts (xml)
- * - fonts (woff2, woff2)
- * - json files (json)
+ * * textures (avif, webp, png, jpg, gif)
+ * * sprite sheets (json)
+ * * bitmap fonts (xml)
+ * * fonts (woff2, woff2)
+ * * json files (json)
  *
- * more can be added fairly easily by creating loader parsers
+ * More types can be added fairly easily by creating additional loader parsers.
  *
- * notes:
- *
- * // Textures
+ * ### Textures
  * - Textures are loaded as ImageBitmap on a worker thread where possible.
  * Leading to much less janky load + parse times.
  * - By default we will prefer to load avif and webp image files if you specify them.
@@ -134,8 +133,8 @@ export interface AssetInitOptions
  * this is optional! you can just load a sprite sheet as normal,
  * this is only useful if you have a bunch of different res / formatted spritesheets
  *
- * // fonts
- * - Web fonts by can default will load all available weights.
+ * ### Fonts
+ * * Web fonts by can default will load all available weights.
  * it is possible to load only specific weights by doing the following:
  *
  * ```
@@ -150,7 +149,7 @@ export interface AssetInitOptions
  * // load everything...
  * await loader.load(`outfit.woff2`);
  * ```
- * // Background loading
+ * ### Background Loading
  * Background loading will load stuff for you passively behind the scenes. To minimse jank,
  * it will only load one asset at a time. As soon as a developer calls 'Assets.load(...)' the
  * back ground loader is paused and requested assets are loaded as a priority.
@@ -160,7 +159,7 @@ export interface AssetInitOptions
  * Its just that this promise will resolve instantly if the asset
  * has already been loaded.
  *
- * // Manifest and Bundles
+ * ### Manifest and Bundles
  * - Manifest is a json file that contains a list of all assets and their properties.
  * - Bundles are a way to group assets together.
  *
@@ -194,7 +193,7 @@ export interface AssetInitOptions
  *      ]
  *   }]
  * }}
- * ```
+ *
  * await Asset.init({
  *  manifest
  * });
@@ -203,14 +202,23 @@ export interface AssetInitOptions
  * loadScreenAssets = await Assets.loadBundle('load-screen');
  * // load another..
  * gameScreenAssets = await Assets.loadBundle('game-screen');
+ * ```
+ * @example
+ * const bunny = await Asset.load('bunny.png');
  */
 export class AssetsClass
 {
     /** the resolver to map various urls */
     public resolver: Resolver;
-    /** the loader, loads stuff! */
+    /**
+     * The loader, loads stuff!
+     * @type {PIXI.AssetLoader}
+     */
     public loader: Loader;
-    /** the global cache of all assets within PixiJS */
+    /**
+     * The global cache of all assets within PixiJS
+     * @type {PIXI.Cache}
+     */
     public cache: typeof Cache;
 
     /** takes care of loading assets in the background */
@@ -303,7 +311,6 @@ export class AssetsClass
      * Allows you to specify how to resolve any assets load requests.
      * There are a few ways to add things here as shown below:
      * @example
-     *```
      * // simple
      * Assets.add('bunnyBooBoo', 'bunny.png`);
      * const bunny = await Asset.load('bunnyBooBoo');
@@ -344,7 +351,6 @@ export class AssetsClass
      * ]);
      *
      * const bunny = await Asset.load('bunnyBooBoo'); // will try to load webp if available
-     * ```
      * @param keysIn - the key or keys that you will reference when loading this asset
      * @param assetsIn - the asset or assets that will be chosen from when loading via the specified key
      * @param data - asset specific data that will be passed to the loaders
@@ -363,8 +369,6 @@ export class AssetsClass
      * once and the same promise reused behind the scenes so you can safely call this function multiple
      * times with the same key and it will always return the same asset.
      * @example
-     * ```
-     *
      * // load a url:
      * const myImageTexture = await Assets.load('http://some.url.com/image.png'); // => returns a texture
      *
@@ -373,10 +377,6 @@ export class AssetsClass
      *
      * // load multiple assets:
      * const textures = await Assets.load(['thumper', 'chicko']); // => {thumper: Texture, chicko: Texture}
-     *
-     * // measure progress:
-     * await Assets.load(
-     * ```
      * @param urls - the urls to load
      * @param onProgress - optional function that is called when progress on asset loading is made.
      * The function is passed a single parameter, `progress`, which represents the percentage
@@ -433,7 +433,6 @@ export class AssetsClass
      * This adds a bundle of assets in one go so that you can load them as a group.
      * For example you could add a bundle for each screen in you pixi app
      * @example
-     * ```
      *  Assets.addBundle('animals', {
      *    bunny: 'bunny.png',
      *    chicken: 'chicken.png',
@@ -441,8 +440,6 @@ export class AssetsClass
      *  });
      *
      * const assets = await Assets.loadBundle('animals');
-     *
-     * ```
      * @param bundleId - the id of the bundle to add
      * @param assets - a record of the the asset or assets that will be chosen from when loading via the specified key
      */
@@ -455,8 +452,6 @@ export class AssetsClass
      * If a manifest has been provided to the init function then you can load a bundle, or bundles.
      * Bundles are a way to load multiple assets at once.
      * @example
-     *
-     * ```
      * // manifest example
      * const manifest = {
      *   bundles:[{
@@ -495,7 +490,6 @@ export class AssetsClass
      * loadScreenAssets = await Assets.loadBundle('load-screen');
      * // load another..
      * gameScreenAssets = await Assets.loadBundle('game-screen');
-     * ```
      * @param bundleIds - the bundle id or ids to load
      * @param onProgress - optional function that is called when progress on asset loading is made.
      * The function is passed a single parameter, `progress`, which represents the percentage (0.0 - 1.0)
@@ -545,12 +539,10 @@ export class AssetsClass
      * then when you got to actually load your game screen assets when a player goes to the game - the loading
      * would already have stared or may even be complete, saving you having to show an interim load bar.
      *  @example
-     * ```
      * Assets.backgroundLoad('bunny.png');
      *
      * // later on in your app...
      * await Asset.loadBundle('bunny.png'); // will resolve quicker as loading may have completed!
-     * ```
      * @param urls - the url / urls you want to background load
      */
     public async backgroundLoad(urls: string | string[]): Promise<void>
@@ -574,7 +566,6 @@ export class AssetsClass
      * Initiate a background of a bundle, works exactly like backgroundLoad but for bundles.
      * this can only be used if the loader has been initiated with a manifest
      * @example
-     * ```
      * await Assets.init({
      *    manifest: {
      *       bundles: [
@@ -590,7 +581,6 @@ export class AssetsClass
      *
      * // later on in your app...
      * await Asset.loadBundle('load-screen'); // will resolve quicker as loading may have completed!
-     * ```
      * @param bundleIds - the bundleId / bundleIds you want to background load
      */
     public async backgroundLoadBundle(bundleIds: string | string[]): Promise<void>
@@ -742,5 +732,4 @@ export class AssetsClass
     }
 }
 
-// like the highlander, there can be only one!
 export const Assets = new AssetsClass();
