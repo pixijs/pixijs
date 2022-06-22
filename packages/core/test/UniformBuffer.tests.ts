@@ -9,7 +9,7 @@ import {
     getTestContext,
     IRenderingContext,
 } from '@pixi/core';
-import { expect } from 'chai';
+
 import { skipHello } from '@pixi/utils';
 import { Matrix, Rectangle, Point } from '@pixi/math';
 
@@ -84,7 +84,7 @@ describe('UniformBuffer', () =>
             value: 0,
         }];
 
-        expect(usedUniformData).to.deep.equal(expectedResult);
+        expect(usedUniformData).toEqual(expectedResult);
 
         const group2 = UniformGroup.uboFrom({
             uAlpha: 1,
@@ -93,7 +93,7 @@ describe('UniformBuffer', () =>
 
         const usedUniformData2 = getUBOData(group2.uniforms, uniformData);
 
-        expect(usedUniformData2).to.deep.equal(expectedResult);
+        expect(usedUniformData2).toEqual(expectedResult);
 
         const group3 = UniformGroup.uboFrom({
             uAlpha: 1,
@@ -103,7 +103,7 @@ describe('UniformBuffer', () =>
 
         const usedUniformData3 = getUBOData(group3.uniforms, uniformData);
 
-        expect(usedUniformData3).to.deep.equal(expectedResult);
+        expect(usedUniformData3).toEqual(expectedResult);
     });
 
     it('should generate correct UBO elements', () =>
@@ -146,7 +146,7 @@ describe('UniformBuffer', () =>
             size: 16
         };
 
-        expect(uboData).to.deep.equal(expectedObject);
+        expect(uboData).toEqual(expectedObject);
     });
 
     it('should generate the correct update function using the parsers', () =>
@@ -204,8 +204,8 @@ describe('UniformBuffer', () =>
             0, 0, 33, 33
         ]);
 
-        expect(size).to.equal(96);
-        expect(buffer.data).to.deep.equal(expectedBufferValue);
+        expect(size).toEqual(96);
+        expect(buffer.data).toEqual(expectedBufferValue);
     });
 
     it('should write arrays types to buffer correctly', () =>
@@ -587,7 +587,7 @@ describe('UniformBuffer', () =>
             //     console.log('actual  ', buffer.data);
             // }
 
-            expect(buffer.data).to.deep.equal(toTest.expectedBuffer);
+            expect(buffer.data).toEqual(toTest.expectedBuffer);
         });
     });
 });

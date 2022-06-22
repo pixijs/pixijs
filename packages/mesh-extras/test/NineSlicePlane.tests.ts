@@ -1,7 +1,6 @@
 import { NineSlicePlane } from '@pixi/mesh-extras';
 import { skipHello } from '@pixi/utils';
 import { Texture } from '@pixi/core';
-import { expect } from 'chai';
 
 skipHello();
 
@@ -11,13 +10,13 @@ describe('NineSlicePlane', () =>
     {
         const plane = new NineSlicePlane(Texture.WHITE);
 
-        expect(plane).to.be.an.instanceOf(NineSlicePlane);
-        expect(plane.leftWidth).equals(10);
-        expect(plane.rightWidth).equals(10);
-        expect(plane.topHeight).equals(10);
-        expect(plane.bottomHeight).equals(10);
-        expect(plane.width).equals(Texture.WHITE.width);
-        expect(plane.height).equals(Texture.WHITE.height);
+        expect(plane).toBeInstanceOf(NineSlicePlane);
+        expect(plane.leftWidth).toEqual(10);
+        expect(plane.rightWidth).toEqual(10);
+        expect(plane.topHeight).toEqual(10);
+        expect(plane.bottomHeight).toEqual(10);
+        expect(plane.width).toEqual(Texture.WHITE.width);
+        expect(plane.height).toEqual(Texture.WHITE.height);
 
         plane.destroy();
     });
@@ -28,13 +27,13 @@ describe('NineSlicePlane', () =>
 
         plane.width = 100;
         plane.height = 100;
-        expect(plane['_getMinScale']()).to.equal(1);
+        expect(plane['_getMinScale']()).toEqual(1);
         plane.width = 10;
         plane.height = 100;
-        expect(plane['_getMinScale']()).to.equal(0.5);
+        expect(plane['_getMinScale']()).toEqual(0.5);
         plane.width = 100;
         plane.height = 10;
-        expect(plane['_getMinScale']()).to.equal(0.5);
+        expect(plane['_getMinScale']()).toEqual(0.5);
 
         plane.destroy();
     });

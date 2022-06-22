@@ -1,5 +1,4 @@
 import { RenderTexturePool } from '@pixi/core';
-import { expect } from 'chai';
 
 describe('RenderTexturePool', () =>
 {
@@ -9,23 +8,23 @@ describe('RenderTexturePool', () =>
 
         renderTexturePool.setScreenSize({ width: 100, height: 100 });
 
-        expect(renderTexturePool.enableFullScreen).to.be.true;
+        expect(renderTexturePool.enableFullScreen).toBe(true);
 
         const renderTexture = renderTexturePool.getOptimalTexture(100, 100);
         const baseRenderTexture = renderTexture.baseTexture;
 
-        expect(renderTexturePool.texturePool[RenderTexturePool.SCREEN_KEY]?.length ?? 0).to.equal(0);
+        expect(renderTexturePool.texturePool[RenderTexturePool.SCREEN_KEY]?.length ?? 0).toEqual(0);
 
         renderTexturePool.returnTexture(renderTexture);
 
-        expect(renderTexturePool.texturePool[RenderTexturePool.SCREEN_KEY]?.length ?? 0).to.equal(1);
+        expect(renderTexturePool.texturePool[RenderTexturePool.SCREEN_KEY]?.length ?? 0).toEqual(1);
 
         renderTexturePool.setScreenSize({ width: 50, height: 50 });
 
-        expect(renderTexturePool.texturePool[RenderTexturePool.SCREEN_KEY]?.length ?? 0).to.equal(0);
+        expect(renderTexturePool.texturePool[RenderTexturePool.SCREEN_KEY]?.length ?? 0).toEqual(0);
 
-        expect(renderTexture.baseTexture).to.be.null;
-        expect(baseRenderTexture.destroyed).to.be.true;
+        expect(renderTexture.baseTexture).toBeNull();
+        expect(baseRenderTexture.destroyed).toBe(true);
 
         renderTexturePool.clear(true);
     });
@@ -38,27 +37,27 @@ describe('RenderTexturePool', () =>
         const screenWidth = viewWidth / resolution;
         const screenHeight = viewHeight / resolution;
 
-        expect(screenWidth * resolution).to.equal(1419.0000000000002);
-        expect(screenHeight * resolution).to.equal(982.9999999999999);
+        expect(screenWidth * resolution).toEqual(1419.0000000000002);
+        expect(screenHeight * resolution).toEqual(982.9999999999999);
 
         const renderTexturePool = new RenderTexturePool();
 
         renderTexturePool.setScreenSize({ width: viewWidth, height: viewHeight });
 
-        expect(renderTexturePool.enableFullScreen).to.be.true;
+        expect(renderTexturePool.enableFullScreen).toBe(true);
 
         const renderTexture = renderTexturePool.getOptimalTexture(screenWidth, screenHeight, resolution);
         const baseRenderTexture = renderTexture.baseTexture;
 
-        expect(baseRenderTexture.width).to.equal(screenWidth);
-        expect(baseRenderTexture.height).to.equal(screenHeight);
-        expect(baseRenderTexture.realWidth).to.equal(viewWidth);
-        expect(baseRenderTexture.realHeight).to.equal(viewHeight);
-        expect(renderTexturePool.texturePool[RenderTexturePool.SCREEN_KEY]?.length ?? 0).to.equal(0);
+        expect(baseRenderTexture.width).toEqual(screenWidth);
+        expect(baseRenderTexture.height).toEqual(screenHeight);
+        expect(baseRenderTexture.realWidth).toEqual(viewWidth);
+        expect(baseRenderTexture.realHeight).toEqual(viewHeight);
+        expect(renderTexturePool.texturePool[RenderTexturePool.SCREEN_KEY]?.length ?? 0).toEqual(0);
 
         renderTexturePool.returnTexture(renderTexture);
 
-        expect(renderTexturePool.texturePool[RenderTexturePool.SCREEN_KEY]?.length ?? 0).to.equal(1);
+        expect(renderTexturePool.texturePool[RenderTexturePool.SCREEN_KEY]?.length ?? 0).toEqual(1);
 
         renderTexturePool.clear(true);
     });

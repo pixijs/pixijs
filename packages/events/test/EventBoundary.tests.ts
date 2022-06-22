@@ -1,8 +1,6 @@
 import { Container } from '@pixi/display';
 import { FederatedPointerEvent, EventBoundary } from '@pixi/events';
 import { Graphics } from '@pixi/graphics';
-import sinon from 'sinon';
-import { expect } from 'chai';
 
 describe('EventBoundary', () =>
 {
@@ -19,9 +17,9 @@ describe('EventBoundary', () =>
             new Graphics().drawRect(150, 0, 100, 100)
         );
         const event = new FederatedPointerEvent(boundary);
-        const eventSpy = sinon.spy();
-        const captureSpy = sinon.spy();
-        const stageSpy = sinon.spy();
+        const eventSpy = jest.fn();
+        const captureSpy = jest.fn();
+        const stageSpy = jest.fn();
 
         target.interactive = true;
         container.interactive = true;
@@ -34,8 +32,8 @@ describe('EventBoundary', () =>
         target.addEventListener('click', {
             handleEvent(e)
             {
-                expect(this).to.not.be.undefined;
-                expect(e.eventPhase).to.equal(e.AT_TARGET);
+                expect(this).toBeDefined();
+                expect(e.eventPhase).toEqual(e.AT_TARGET);
 
                 eventSpy();
             }
@@ -44,10 +42,10 @@ describe('EventBoundary', () =>
         stage.addEventListener('click', stageSpy);
         boundary.dispatchEvent(event);
 
-        expect(eventSpy).to.have.been.calledTwice;
-        expect(captureSpy).to.have.been.calledOnce;
-        expect(captureSpy).to.have.been.calledBefore(eventSpy);
-        expect(stageSpy).to.have.been.calledOnce;
+        expect(eventSpy).toBeCalledTimes(2);
+        expect(captureSpy).toHaveBeenCalledOnce();
+        expect(captureSpy).toHaveBeenCalledBefore(eventSpy);
+        expect(stageSpy).toHaveBeenCalledOnce();
     });
 
     it('should set hit-test target to most specific ancestor if hit object is not interactive', () =>
@@ -62,7 +60,7 @@ describe('EventBoundary', () =>
 
         const hitTestTarget = boundary.hitTest(50, 50);
 
-        expect(hitTestTarget).to.equal(container);
+        expect(hitTestTarget).toEqual(container);
     });
 
     it('should fire pointerupoutside only on relevant & still mounted targets', () =>
@@ -74,10 +72,10 @@ describe('EventBoundary', () =>
 
         stage.addChild(new Graphics().beginFill(0).drawRect(100, 0, 100, 100));
 
-        const eventSpy = sinon.spy();
-        const containerSpy = sinon.spy();
-        const stageSpy = sinon.spy();
-        const stageOutsideSpy = sinon.spy();
+        const eventSpy = jest.fn();
+        const containerSpy = jest.fn();
+        const stageSpy = jest.fn();
+        const stageOutsideSpy = jest.fn();
 
         stage.interactive = true;
         container.interactive = true;
@@ -102,21 +100,21 @@ describe('EventBoundary', () =>
         off.global.set(150, 50);
 
         boundary.mapEvent(on);
-        expect(boundary['trackingData'](1).pressTargetsByButton[1][2]).to.equal(pressed);
+        expect(boundary['trackingData'](1).pressTargetsByButton[1][2]).toEqual(pressed);
 
         pressed.destroy();
         boundary.mapEvent(off);
 
         // "pressed" unmounted so it shouldn't get a pointerupoutside
-        expect(eventSpy).to.not.have.been.called;
+        expect(eventSpy).not.toBeCalled();
 
         // "container" still mounted so it should get pointerupoutside
-        expect(containerSpy).to.have.been.calledOnce;
+        expect(containerSpy).toHaveBeenCalledOnce();
 
         // "stage" still ancestor of the hit "outside" on pointerup, so it get pointerup instead
-        expect(stageOutsideSpy).to.not.have.been.called;
+        expect(stageOutsideSpy).not.toBeCalled();
         // not a "pointerupoutside"
-        expect(stageSpy).to.have.been.calledOnce;
+        expect(stageSpy).toHaveBeenCalledOnce();
     });
 
     it('should fire pointerout on the most specific mounted ancestor of pointerover target', () =>
@@ -127,22 +125,22 @@ describe('EventBoundary', () =>
         const over = container.addChild(new Graphics().beginFill(0).drawRect(0, 0, 100, 100));
         const to = stage.addChild(new Graphics().beginFill(0).drawRect(100, 0, 100, 100));
 
-        const orgOverSpy = sinon.spy();
-        const orgContainerOverSpy = sinon.spy();
-        const outSpy = sinon.spy();
-        const containerOutSpy = sinon.spy();
-        const toOverSpy = sinon.spy();
+        const orgOverSpy = jest.fn();
+        const orgContainerOverSpy = jest.fn();
+        const outSpy = jest.fn();
+        const containerOutSpy = jest.fn();
+        const toOverSpy = jest.fn();
 
         over.addEventListener('pointerover', orgOverSpy);
         container.addEventListener('pointerover', (e) =>
         {
-            expect(e.target).to.equal(over);
+            expect(e.target).toEqual(over);
             orgContainerOverSpy();
         });
         over.addEventListener('pointerout', outSpy);
         container.addEventListener('pointerout', (e) =>
         {
-            expect(e.target).to.equal(container);
+            expect(e.target).toEqual(container);
             containerOutSpy();
         });
         to.addEventListener('pointerover', toOverSpy);
@@ -164,14 +162,14 @@ describe('EventBoundary', () =>
 
         boundary.mapEvent(on);
 
-        expect(orgOverSpy).to.have.been.calledOnce;
-        expect(orgContainerOverSpy).to.have.been.calledOnce;
+        expect(orgOverSpy).toHaveBeenCalledOnce();
+        expect(orgContainerOverSpy).toHaveBeenCalledOnce();
 
         over.destroy();
         boundary.mapEvent(off);
 
-        expect(outSpy).to.not.have.been.called;
-        expect(containerOutSpy).to.have.been.calledOnce;
-        expect(toOverSpy).to.have.been.calledOnce;
+        expect(outSpy).not.toBeCalled();
+        expect(containerOutSpy).toHaveBeenCalledOnce();
+        expect(toOverSpy).toHaveBeenCalledOnce();
     });
 });

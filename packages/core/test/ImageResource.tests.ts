@@ -1,13 +1,12 @@
 import { ImageResource, BaseTexture, Renderer } from '@pixi/core';
 import { settings } from '@pixi/settings';
 import path from 'path';
-import { expect } from 'chai';
 
 describe('ImageResource', () =>
 {
     let slugUrl: string;
 
-    before(() =>
+    beforeAll(() =>
     {
         slugUrl = path.resolve(__dirname, 'resources', 'slug.png');
     });
@@ -18,10 +17,10 @@ describe('ImageResource', () =>
 
         const resource = new ImageResource(image);
 
-        expect(resource.width).to.equal(0);
-        expect(resource.height).to.equal(0);
-        expect(resource.valid).to.be.false;
-        expect(resource.url).to.equal('');
+        expect(resource.width).toEqual(0);
+        expect(resource.height).toEqual(0);
+        expect(resource.valid).toBe(false);
+        expect(resource.url).toEqual('');
 
         resource.destroy();
     });
@@ -42,10 +41,10 @@ describe('ImageResource', () =>
 
         const resource = new ImageResource(image);
 
-        expect(resource.width).to.equal(0);
-        expect(resource.height).to.equal(0);
-        expect(resource.valid).to.be.false;
-        expect(resource.url).to.equal(image.src);
+        expect(resource.width).toEqual(0);
+        expect(resource.height).toEqual(0);
+        expect(resource.valid).toBe(false);
+        expect(resource.url).toEqual(image.src);
 
         resource.destroy();
     });
@@ -63,11 +62,11 @@ describe('ImageResource', () =>
 
         return resource.load().then((res) =>
         {
-            expect(res).to.equal(resource);
-            expect(resource.width).to.equal(100);
-            expect(resource.height).to.equal(100);
-            expect(resource.valid).to.be.true;
-            expect(resource.bitmap).to.be.instanceof(ImageBitmap);
+            expect(res).toEqual(resource);
+            expect(resource.width).toEqual(100);
+            expect(resource.height).toEqual(100);
+            expect(resource.valid).toBe(true);
+            expect(resource.bitmap).toBeInstanceOf(ImageBitmap);
         });
     });
 
@@ -84,11 +83,11 @@ describe('ImageResource', () =>
 
         return resource.load().then((res) =>
         {
-            expect(res).to.equal(resource);
-            expect(resource.width).to.equal(100);
-            expect(resource.height).to.equal(100);
-            expect(resource.valid).to.be.true;
-            expect(resource.bitmap).to.be.null;
+            expect(res).toEqual(resource);
+            expect(resource.width).toEqual(100);
+            expect(resource.height).toEqual(100);
+            expect(resource.valid).toBe(true);
+            expect(resource.bitmap).toBeNull();
         });
     });
 
@@ -105,7 +104,7 @@ describe('ImageResource', () =>
 
         return resource.load().catch((error) =>
         {
-            expect(error).to.be.not.null;
+            expect(error).not.toBeNull();
         });
     });
 
@@ -121,12 +120,12 @@ describe('ImageResource', () =>
 
         return resource.load().then((res) =>
         {
-            expect(res).to.equal(resource);
-            expect(resource.createBitmap).to.equal(true);
-            expect(resource.width).to.equal(100);
-            expect(resource.height).to.equal(100);
-            expect(resource.valid).to.be.true;
-            expect(resource.bitmap).to.be.instanceof(ImageBitmap);
+            expect(res).toEqual(resource);
+            expect(resource.createBitmap).toEqual(true);
+            expect(resource.width).toEqual(100);
+            expect(resource.height).toEqual(100);
+            expect(resource.valid).toBe(true);
+            expect(resource.bitmap).toBeInstanceOf(ImageBitmap);
             settings.CREATE_IMAGE_BITMAP = old;
         });
     });
@@ -143,12 +142,12 @@ describe('ImageResource', () =>
 
         return resource.load().then((res) =>
         {
-            expect(res).to.equal(resource);
-            expect(resource.createBitmap).to.equal(false);
-            expect(resource.width).to.equal(100);
-            expect(resource.height).to.equal(100);
-            expect(resource.valid).to.be.true;
-            expect(resource.bitmap).to.be.null;
+            expect(res).toEqual(resource);
+            expect(resource.createBitmap).toEqual(false);
+            expect(resource.width).toEqual(100);
+            expect(resource.height).toEqual(100);
+            expect(resource.valid).toBe(true);
+            expect(resource.bitmap).toBeNull();
             settings.CREATE_IMAGE_BITMAP = old;
         });
     });
@@ -157,12 +156,12 @@ describe('ImageResource', () =>
     {
         let renderer: Renderer;
 
-        before(() =>
+        beforeAll(() =>
         {
             renderer = new Renderer();
         });
 
-        after(() =>
+        afterAll(() =>
         {
             renderer.destroy();
             renderer = null;
@@ -179,7 +178,7 @@ describe('ImageResource', () =>
             return resource.load(false).then(() =>
             {
                 renderer.texture.bind(baseTexture);
-                expect(baseTexture.alphaMode).to.equal(2);
+                expect(baseTexture.alphaMode).toEqual(2);
             });
         });
 
@@ -190,14 +189,14 @@ describe('ImageResource', () =>
             const baseTexture = new BaseTexture(resource);
 
             baseTexture.alphaMode = 2;
-            expect(resource.alphaMode).to.be.null;
+            expect(resource.alphaMode).toBeNull();
 
             image.src = slugUrl;
 
             return resource.load(false).then(() =>
             {
                 renderer.texture.bind(baseTexture);
-                expect(baseTexture.alphaMode).to.equal(2);
+                expect(baseTexture.alphaMode).toEqual(2);
             });
         });
     });

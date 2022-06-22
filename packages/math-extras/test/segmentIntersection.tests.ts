@@ -1,5 +1,5 @@
 import { Point } from '@pixi/math';
-import { expect } from 'chai';
+
 import { segmentIntersection } from '@pixi/math-extras';
 
 describe('segmentIntersection', () =>
@@ -14,8 +14,8 @@ describe('segmentIntersection', () =>
 
             const intersect = segmentIntersection(aStart, aEnd, bStart, bEnd);
 
-            expect(intersect.x).to.equal(6.25);
-            expect(intersect.y).to.equal(7.25);
+            expect(intersect.x).toEqual(6.25);
+            expect(intersect.y).toEqual(7.25);
         });
 
     it('should return NaN if the segments are parallel',
@@ -28,8 +28,8 @@ describe('segmentIntersection', () =>
 
             const parallel = segmentIntersection(aStart, aEnd, parallelStart, parallelEnd);
 
-            expect(parallel.x).to.be.NaN;
-            expect(parallel.y).to.be.NaN;
+            expect(parallel.x).toBeNaN();
+            expect(parallel.y).toBeNaN();
         });
     it('should return NaN if the segments dont intersect',
         () =>
@@ -41,8 +41,8 @@ describe('segmentIntersection', () =>
 
             const parallel = segmentIntersection(aStart, aEnd, bStart, bEnd);
 
-            expect(parallel.x).to.be.NaN;
-            expect(parallel.y).to.be.NaN;
+            expect(parallel.x).toBeNaN();
+            expect(parallel.y).toBeNaN();
         });
     it('should return the same reference given', () =>
     {
@@ -54,7 +54,7 @@ describe('segmentIntersection', () =>
         const outValue = new Point();
         const intersect = segmentIntersection(aStart, aEnd, bStart, bEnd, outValue);
 
-        expect(intersect).to.equal(outValue);
+        expect(intersect).toEqual(outValue);
     });
 
     it('can output into any IPointData given', () =>
@@ -67,8 +67,8 @@ describe('segmentIntersection', () =>
 
         segmentIntersection(aStart, aEnd, bStart, bEnd, outValue);
 
-        expect(outValue.x).to.equal(6.25);
-        expect(outValue.y).to.equal(7.25);
+        expect(outValue.x).toEqual(6.25);
+        expect(outValue.y).toEqual(7.25);
     });
 
     it('can take any IPointData as input', () =>
@@ -80,7 +80,7 @@ describe('segmentIntersection', () =>
 
         const intersect = segmentIntersection(aStart, aEnd, bStart, bEnd);
 
-        expect(intersect.x).to.equal(6.25);
-        expect(intersect.y).to.equal(7.25);
+        expect(intersect.x).toEqual(6.25);
+        expect(intersect.y).toEqual(7.25);
     });
 });
