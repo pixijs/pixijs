@@ -3,7 +3,7 @@ import { Matrix } from '@pixi/math';
 import type { CanvasRenderer } from './CanvasRenderer';
 import { BaseRenderTexture, CanvasResource, IRendererRenderOptions, ISystem, RenderTexture } from '@pixi/core';
 import { BLEND_MODES } from '@pixi/constants';
-import { CanvasRenderTarget, deprecation, hex2string, rgb2hex } from '@pixi/utils';
+import { CanvasRenderTarget, hex2string, rgb2hex } from '@pixi/utils';
 import { DisplayObject } from 'pixi.js';
 import { CrossPlatformCanvasRenderingContext2D } from './CanvasContextSystem';
 
@@ -30,7 +30,7 @@ export class CanvasObjectRendererSystem implements ISystem
      * @param displayObject - The object to be rendered.
      * @param options - the options to be passed to the renderer
      */
-    public render(displayObject: DisplayObject, options?: IRendererRenderOptions | RenderTexture | BaseRenderTexture): void
+    public render(displayObject: DisplayObject, options?: IRendererRenderOptions): void
     {
         const renderer = this.renderer;
 
@@ -48,26 +48,10 @@ export class CanvasObjectRendererSystem implements ISystem
 
         if (options)
         {
-            if (options instanceof RenderTexture || options instanceof BaseRenderTexture)
-            {
-                // #if _DEBUG
-                deprecation('6.0.0', 'CanvasRenderer#render arguments changed, use options instead.');
-                // #endif
-
-                /* eslint-disable prefer-rest-params */
-                renderTexture = options;
-                clear = arguments[2];
-                transform = arguments[3];
-                skipUpdateTransform = arguments[4];
-                /* eslint-enable prefer-rest-params */
-            }
-            else
-            {
-                renderTexture = options.renderTexture;
-                clear = options.clear;
-                transform = options.transform;
-                skipUpdateTransform = options.skipUpdateTransform;
-            }
+            renderTexture = options.renderTexture;
+            clear = options.clear;
+            transform = options.transform;
+            skipUpdateTransform = options.skipUpdateTransform;
         }
 
         // can be handy to know!
@@ -127,7 +111,7 @@ export class CanvasObjectRendererSystem implements ISystem
         _context._outerBlend = false;
         context2D.globalCompositeOperation = _context.blendModes[BLEND_MODES.NORMAL];
 
-        if (clear !== undefined ? clear : renderer.background.clearBeforeRender)
+        if (clear ?? renderer.background.clearBeforeRender)
         {
             if (this.renderingToScreen)
             {

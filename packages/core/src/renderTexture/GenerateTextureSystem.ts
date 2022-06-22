@@ -46,9 +46,9 @@ export class GenerateTextureSystem implements ISystem
      * @param {IGenerateTextureOptions} options - Generate texture options.
      * @returns a shiny new texture of the display object passed in
      */
-    generateTexture(displayObject: IRenderableObject, options: IGenerateTextureOptions): RenderTexture
+    generateTexture(displayObject: IRenderableObject, options?: IGenerateTextureOptions): RenderTexture
     {
-        const { region: manualRegion, ...textureOptions } = options;
+        const { region: manualRegion, ...textureOptions } = options || {};
 
         const region = manualRegion || (displayObject as IRenderableContainer).getLocalBounds(null, true);
 

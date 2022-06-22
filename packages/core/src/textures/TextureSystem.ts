@@ -135,7 +135,7 @@ export class TextureSystem implements ISystem
 
         // cannot bind partial texture
         // TODO: report a warning
-        if (texture && texture.valid && !texture.parentTextureArray)
+        if (texture?.valid && !texture.parentTextureArray)
         {
             texture.touched = this.renderer.textureGC.count;
 
@@ -312,7 +312,7 @@ export class TextureSystem implements ISystem
 
         this.initTextureType(texture, glTexture);
 
-        if (texture.resource && texture.resource.upload(renderer, texture, glTexture))
+        if (texture.resource?.upload(renderer, texture, glTexture))
         {
             // texture is uploaded, dont do anything!
             if (glTexture.samplerType !== SAMPLER_TYPES.FLOAT)
@@ -418,7 +418,7 @@ export class TextureSystem implements ISystem
             glTexture.wrapMode = texture.wrapMode;
         }
 
-        if (texture.resource && texture.resource.style(this.renderer, texture, glTexture))
+        if (texture.resource?.style(this.renderer, texture, glTexture))
         {
             // style is set, dont do anything!
         }

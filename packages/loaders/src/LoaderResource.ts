@@ -27,7 +27,7 @@ function _noop(): void { /* empty */ }
  */
 function setExtMap(map: Dict<any>, extname: string, val: number)
 {
-    if (extname && extname.indexOf('.') === 0)
+    if (extname?.startsWith('.'))
     {
         extname = extname.substring(1);
     }
@@ -81,7 +81,7 @@ export interface IResourceMetadata extends GlobalMixins.IResourceMetadata, IBase
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface LoaderResource extends GlobalMixins.LoaderResource, GlobalMixins.ILoaderResource {}
+interface LoaderResource extends GlobalMixins.LoaderResource {}
 
 /**
  * Manages the state and loading of a resource and all child resources.
@@ -330,7 +330,7 @@ class LoaderResource
         this._flags = 0;
 
         // set data url flag, needs to be set early for some _determineX checks to work.
-        this._setFlag(LoaderResource.STATUS_FLAGS.DATA_URL, url.indexOf('data:') === 0);
+        this._setFlag(LoaderResource.STATUS_FLAGS.DATA_URL, url.startsWith('data:'));
 
         this.name = name;
 
@@ -626,7 +626,7 @@ class LoaderResource
     {
         clearTimeout(this._elementTimer);
 
-        if (this.data && this.data.removeEventListener)
+        if (this.data?.removeEventListener)
         {
             this.data.removeEventListener('error', this._boundOnError, false);
             this.data.removeEventListener('load', this._boundComplete, false);
@@ -892,7 +892,7 @@ class LoaderResource
      */
     private _onProgress(event: ProgressEvent): void
     {
-        if (event && event.lengthComputable)
+        if (event?.lengthComputable)
         {
             this.onProgress.dispatch(this, event.loaded / event.total);
         }
@@ -1036,7 +1036,7 @@ class LoaderResource
     _determineCrossOrigin(url: string, loc?: any): string
     {
         // data: and javascript: urls are considered same-origin
-        if (url.indexOf('data:') === 0)
+        if (url.startsWith('data:'))
         {
             return '';
         }
@@ -1342,6 +1342,3 @@ namespace LoaderResource
 }
 
 export { LoaderResource };
-
-/** @deprecated - Use LoaderResource instead */
-export type ILoaderResource = LoaderResource;

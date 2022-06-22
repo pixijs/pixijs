@@ -194,7 +194,7 @@ export class Geometry
 
         this.indexBuffer = buffer;
 
-        if (this.buffers.indexOf(buffer) === -1)
+        if (!this.buffers.includes(buffer))
         {
             this.buffers.push(buffer);
         }

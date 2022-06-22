@@ -5,7 +5,6 @@ import { Container, DisplayObject } from '@pixi/display';
 import { Text, TextStyle, TextMetrics } from '@pixi/text';
 import { CountLimiter } from './CountLimiter';
 import type { IRenderer } from '@pixi/core';
-import { deprecation } from '@pixi/utils';
 
 interface IArrowFunction
 {
@@ -40,7 +39,7 @@ function findMultipleBaseTextures(item: IDisplayObjectExtended, queue: Array<any
     let result = false;
 
     // Objects with multiple textures
-    if (item && item._textures && item._textures.length)
+    if (item?._textures?.length)
     {
         for (let i = 0; i < item._textures.length; i++)
         {
@@ -48,7 +47,7 @@ function findMultipleBaseTextures(item: IDisplayObjectExtended, queue: Array<any
             {
                 const baseTexture = item._textures[i].baseTexture;
 
-                if (queue.indexOf(baseTexture) === -1)
+                if (!queue.includes(baseTexture))
                 {
                     queue.push(baseTexture);
                     result = true;
@@ -73,7 +72,7 @@ function findBaseTexture(item: Texture, queue: Array<any>): boolean
     {
         const texture = item.baseTexture;
 
-        if (queue.indexOf(texture) === -1)
+        if (!queue.includes(texture))
         {
             queue.push(texture);
         }
@@ -97,7 +96,7 @@ function findTexture(item: IDisplayObjectExtended, queue: Array<any>): boolean
     {
         const texture = item._texture.baseTexture;
 
-        if (queue.indexOf(texture) === -1)
+        if (!queue.includes(texture))
         {
             queue.push(texture);
         }
@@ -161,19 +160,19 @@ function findText(item: IDisplayObjectExtended, queue: Array<any>): boolean
     if (item instanceof Text)
     {
         // push the text style to prepare it - this can be really expensive
-        if (queue.indexOf(item.style) === -1)
+        if (!queue.includes(item.style))
         {
             queue.push(item.style);
         }
         // also push the text object so that we can render it (to canvas/texture) if needed
-        if (queue.indexOf(item) === -1)
+        if (!queue.includes(item))
         {
             queue.push(item);
         }
         // also push the Text's texture for upload to GPU
         const texture = item._texture.baseTexture;
 
-        if (queue.indexOf(texture) === -1)
+        if (!queue.includes(texture))
         {
             queue.push(texture);
         }
@@ -195,7 +194,7 @@ function findTextStyle(item: TextStyle, queue: Array<any>): boolean
 {
     if (item instanceof TextStyle)
     {
-        if (queue.indexOf(item) === -1)
+        if (!queue.includes(item))
         {
             queue.push(item);
         }
@@ -318,44 +317,8 @@ export class BasePrepare
      *        Container or display object to search for items to upload or the items to upload themselves,
      *        or optionally ommitted, if items have been added using {@link PIXI.BasePrepare#add `prepare.add`}.
      */
-    upload(item?: IDisplayObjectExtended | Container | BaseTexture | Texture): Promise<void>;
-
-    /**
-     * Use the Promise-based API instead.
-     * @method PIXI.BasePrepare#upload
-     * @deprecated since version 6.5.0
-     * @param {PIXI.DisplayObject|PIXI.Container|PIXI.BaseTexture|PIXI.Texture|PIXI.Graphics|PIXI.Text} item -
-     *        Item to upload.
-     * @param {Function} [done] - Callback when completed.
-     */
-    upload(item?: IDisplayObjectExtended | Container | BaseTexture | Texture, done?: () => void): void;
-
-    /**
-     * Use the Promise-based API instead.
-     * @method PIXI.BasePrepare#upload
-     * @deprecated since version 6.5.0
-     * @param {Function} [done] - Callback when completed.
-     */
-    upload(done?: () => void): void;
-
-    /** @ignore */
-    upload(
-        item?: IDisplayObjectExtended | Container | BaseTexture | Texture | (() => void),
-        done?: () => void): Promise<void>
+    upload(item?: IDisplayObjectExtended | Container | BaseTexture | Texture): Promise<void>
     {
-        if (typeof item === 'function')
-        {
-            done = item as () => void;
-            item = null;
-        }
-
-        // #if _DEBUG
-        if (done)
-        {
-            deprecation('6.5.0', 'BasePrepare.upload callback is deprecated, use the return Promise instead.');
-        }
-        // #endif
-
         return new Promise((resolve) =>
         {
             // If a display object, search for items
@@ -365,17 +328,10 @@ export class BasePrepare
                 this.add(item as IDisplayObjectExtended | Container | BaseTexture | Texture);
             }
 
-            // TODO: remove done callback and just use resolve
-            const complete = () =>
-            {
-                done?.();
-                resolve();
-            };
-
             // Get the items for upload from the display
             if (this.queue.length)
             {
-                this.completes.push(complete);
+                this.completes.push(resolve);
 
                 if (!this.ticking)
                 {
@@ -385,7 +341,7 @@ export class BasePrepare
             }
             else
             {
-                complete();
+                resolve();
             }
         });
     }

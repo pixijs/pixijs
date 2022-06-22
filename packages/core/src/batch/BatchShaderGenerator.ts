@@ -30,12 +30,12 @@ export class BatchShaderGenerator
         this.programCache = {};
         this.defaultGroupCache = {};
 
-        if (fragTemplate.indexOf('%count%') < 0)
+        if (!fragTemplate.includes('%count%'))
         {
             throw new Error('Fragment template must contain "%count%".');
         }
 
-        if (fragTemplate.indexOf('%forloop%') < 0)
+        if (!fragTemplate.includes('%forloop%'))
         {
             throw new Error('Fragment template must contain "%forloop%".');
         }

@@ -622,7 +622,7 @@ export class Container extends DisplayObject
         }
 
         // do a quick check to see if this element has a mask or a filter.
-        if (this._mask || (this.filters && this.filters.length))
+        if (this._mask || this.filters?.length)
         {
             this.renderAdvanced(renderer);
         }
@@ -669,7 +669,7 @@ export class Container extends DisplayObject
             }
         }
 
-        const flush = (filters && this._enabledFilters && this._enabledFilters.length)
+        const flush = (filters && this._enabledFilters?.length)
             || (mask && (!mask.isMaskData
                 || (mask.enabled && (mask.autoDetect || mask.type !== MASK_TYPES.NONE))));
 
@@ -678,7 +678,7 @@ export class Container extends DisplayObject
             renderer.batch.flush();
         }
 
-        if (filters && this._enabledFilters && this._enabledFilters.length)
+        if (filters && this._enabledFilters?.length)
         {
             renderer.filter.push(this, this._enabledFilters);
         }
@@ -712,7 +712,7 @@ export class Container extends DisplayObject
             renderer.mask.pop(this);
         }
 
-        if (filters && this._enabledFilters && this._enabledFilters.length)
+        if (filters && this._enabledFilters?.length)
         {
             renderer.filter.pop();
         }
@@ -745,7 +745,7 @@ export class Container extends DisplayObject
 
         this.sortDirty = false;
 
-        const destroyChildren = typeof options === 'boolean' ? options : options && options.children;
+        const destroyChildren = typeof options === 'boolean' ? options : options?.children;
 
         const oldChildren = this.removeChildren(0, this.children.length);
 

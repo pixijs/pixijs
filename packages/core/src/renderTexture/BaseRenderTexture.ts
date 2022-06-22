@@ -82,7 +82,7 @@ export class BaseRenderTexture extends BaseTexture
 
         options.width = options.width || 100;
         options.height = options.height || 100;
-        options.multisample = options.multisample !== undefined ? options.multisample : MSAA_QUALITY.NONE;
+        options.multisample ??= MSAA_QUALITY.NONE;
 
         super(null, options);
 

@@ -50,14 +50,9 @@ export interface IRendererOptions extends GlobalMixins.IRendererOptions
     view?: HTMLCanvasElement;
     /**
      * Use premultipliedAlpha and backgroundAlpha instead
-     * @deprecated
+     * @deprecated since 7.0.0
      */
     useContextAlpha?: boolean | 'notMultiplied';
-    /**
-     * Use `backgroundAlpha` instead.
-     * @deprecated
-     */
-    transparent?: boolean;
     autoDensity?: boolean;
     antialias?: boolean;
     resolution?: number;

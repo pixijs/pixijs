@@ -13,7 +13,7 @@ export class FederatedEvent<N extends UIEvent = UIEvent> implements UIEvent
     /** Flags whether this event bubbles. This will take effect only if it is set before propagation. */
     public bubbles = true;
 
-    /** @deprecated */
+    /** @deprecated since 7.0.0 */
     public cancelBubble = true;
 
     /**
@@ -44,10 +44,10 @@ export class FederatedEvent<N extends UIEvent = UIEvent> implements UIEvent
     /** Flags whether this is a user-trusted event */
     public isTrusted: boolean;
 
-    /** @deprecated */
+    /** @deprecated since 7.0.0 */
     public returnValue: boolean;
 
-    /** @deprecated */
+    /** @deprecated since 7.0.0 */
     public srcElement: EventTarget;
 
     /** The event target that this will be dispatched to. */
@@ -85,7 +85,7 @@ export class FederatedEvent<N extends UIEvent = UIEvent> implements UIEvent
 
     /**
      * Not supported.
-     * @deprecated
+     * @deprecated since 7.0.0
      */
     public which: number;
 
@@ -118,7 +118,7 @@ export class FederatedEvent<N extends UIEvent = UIEvent> implements UIEvent
 
     /**
      * Fallback for the deprecated {@link PIXI.InteractionEvent.data}.
-     * @deprecated
+     * @deprecated since 7.0.0
      */
     get data(): this
     {

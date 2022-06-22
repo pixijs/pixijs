@@ -200,7 +200,7 @@ export class InteractionManager extends EventEmitter
         options = options || {};
 
         this.renderer = renderer;
-        this.autoPreventDefault = options.autoPreventDefault !== undefined ? options.autoPreventDefault : true;
+        this.autoPreventDefault = options.autoPreventDefault ?? true;
         this.interactionFrequency = options.interactionFrequency || 10;
         this.mouse = new InteractionData();
         this.mouse.identifier = MOUSE_POINTER_ID;
@@ -651,7 +651,7 @@ export class InteractionManager extends EventEmitter
          * @param {PIXI.InteractionEvent} event - Interaction event
          */
 
-        this._useSystemTicker = options.useSystemTicker !== undefined ? options.useSystemTicker : true;
+        this._useSystemTicker = options.useSystemTicker ?? true;
 
         this.setTargetElement(this.renderer.view, this.renderer.resolution);
     }
@@ -1407,7 +1407,7 @@ export class InteractionManager extends EventEmitter
             if (isTouch) this.dispatchEvent(displayObject, 'touchendoutside', interactionEvent);
         }
         // Only remove the tracking data if there is no over/down state still associated with it
-        if (trackingData && trackingData.none)
+        if (trackingData?.none)
         {
             delete displayObject.trackedPointers[id];
         }

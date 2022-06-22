@@ -50,7 +50,7 @@ export class BaseImageResource extends Resource
      */
     static crossOrigin(element: HTMLImageElement | HTMLVideoElement, url: string, crossorigin?: boolean | string): void
     {
-        if (crossorigin === undefined && url.indexOf('data:') !== 0)
+        if (crossorigin === undefined && !url.startsWith('data:'))
         {
             element.crossOrigin = determineCrossOrigin(url);
         }

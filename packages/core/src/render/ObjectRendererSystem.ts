@@ -87,7 +87,7 @@ export class ObjectRendererSystem implements ISystem
         renderer.renderTexture.bind(renderTexture);
         renderer.batch.currentRenderer.start();
 
-        if (clear !== undefined ? clear : renderer.background.clearBeforeRender)
+        if (clear ?? renderer.background.clearBeforeRender)
         {
             renderer.renderTexture.clear();
         }
