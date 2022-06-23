@@ -1,4 +1,6 @@
+import { convertToList } from '../utils/convertToList';
 import { createStringVariations } from '../utils/createStringVariations';
+import { isSingleItem } from '../utils/isSingleItem';
 import { getBaseUrl, makeAbsoluteUrl } from '../utils/makeAbsoluteUrl';
 
 /**
@@ -314,7 +316,7 @@ export class Resolver
      */
     public add(keysIn: string | string[], assetsIn: string | ResolveAsset | (ResolveAsset | string)[], data?: unknown): void
     {
-        const keys: string[] = (typeof keysIn === 'string') ? [keysIn] : keysIn;
+        const keys: string[] = convertToList<string>(keysIn);
 
         keys.forEach((key) =>
         {
@@ -336,9 +338,7 @@ export class Resolver
             }
         }
 
-        const assets =  (typeof assetsIn === 'string') ? createStringVariations(assetsIn) : assetsIn;
-
-        const assetMap: ResolveAsset[] = assets.map((asset): ResolveAsset =>
+        const assetMap: ResolveAsset[] = assetsIn.map((asset): ResolveAsset =>
         {
             let formattedAsset = asset as ResolveAsset;
 
@@ -436,13 +436,9 @@ export class Resolver
     public resolveBundle(bundleIds: string | string[]):
     Record<string, ResolveAsset> | Record<string, Record<string, ResolveAsset>>
     {
-        let singleAsset = false;
+        const singleAsset = isSingleItem(bundleIds);
 
-        if (typeof bundleIds === 'string')
-        {
-            singleAsset = true;
-            bundleIds = [bundleIds];
-        }
+        bundleIds = convertToList<string>(bundleIds);
 
         const out: Record<string, Record<string, ResolveAsset>> = {};
 
@@ -500,13 +496,9 @@ export class Resolver
      */
     public resolve(keys: string | string[]): ResolveAsset | Record<string, ResolveAsset>
     {
-        let singleAsset = false;
+        const singleAsset = isSingleItem(keys);
 
-        if (typeof keys === 'string')
-        {
-            singleAsset = true;
-            keys = [keys];
-        }
+        keys = convertToList<string>(keys);
 
         const result: Record<string, {src: string}> = {};
 

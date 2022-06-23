@@ -40,7 +40,7 @@ export const loadWebFont = {
         return validFonts.includes(extension);
     },
 
-    async load(url: string, options?: {data: {weights: string[]}}): Promise<void>
+    async load(url: string, options?: {data: {weights: string[]}}): Promise<FontFace>
     {
         // Prevent loading font if navigator is not online
         if (!window.navigator.onLine)
@@ -67,11 +67,21 @@ export const loadWebFont = {
                 await font.load();
 
                 document.fonts.add(font);
+
+                return font;
             }
         }
         else
         {
             console.warn('[loadWebFont] FontFace API is not supported. Skipping loading font');
         }
+
+        return null;
     },
-} as LoaderParser;
+
+    unload(font: FontFace): void
+    {
+        document.fonts.delete(font);
+    }
+
+} as LoaderParser<FontFace>;

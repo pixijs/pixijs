@@ -47,4 +47,9 @@ export const loadBitmapFont = {
 
         return BitmapFont.install(data, textures, true);
     },
+
+    unload(bitmapFont: Texture): void
+    {
+        bitmapFont.destroy(true);
+    }
 } as LoaderParser;

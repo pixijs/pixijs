@@ -96,5 +96,11 @@ export const loadTextures = {
 
         return texture;
     },
+
+    unload(texture: Texture): void
+    {
+        texture.destroy(true);
+    }
+
 } as LoaderParser<Texture, {baseTexture: BaseTexture}>;
 

@@ -105,7 +105,7 @@ describe('Assets', () =>
         });
 
         Assets.addBundle('testBundle', {
-            bunny: 'bunny.{png,web}',
+            bunny: 'bunny.{png,webp}',
             spritesheet: 'spritesheet.json',
         });
 
@@ -224,7 +224,7 @@ describe('Assets', () =>
         // wait a bit...
         await wait();
 
-        const asset = await Assets.loader.promiseCache[`${basePath}bunny.png`];
+        const asset = await Assets.loader.promiseCache[`${basePath}bunny.png`].promise;
 
         expect(asset).toBeInstanceOf(Texture);
         // TODO - this src will be added in the future..
@@ -255,7 +255,7 @@ describe('Assets', () =>
 
         for (const [key, type] of Object.entries(expectTypes))
         {
-            const asset = await Assets.loader.promiseCache[basePath + key];
+            const asset = await Assets.loader.promiseCache[basePath + key].promise;
 
             expect(asset).toBeInstanceOf(type);
         }
@@ -297,5 +297,39 @@ describe('Assets', () =>
         const bunnyReloaded = await Assets.load('bunny.png') as Texture;
 
         expect(bunnyReloaded.baseTexture).toBeInstanceOf(BaseTexture);
+    });
+
+    it('should unload assets correctly', async () =>
+    {
+        await Assets.init({
+            basePath,
+        });
+
+        const bunny = await Assets.load('bunny.png') as Texture;
+
+        await Assets.unload('bunny.png');
+
+        expect(bunny.baseTexture).toBe(null);
+    });
+
+    it('should unload bundles correctly', async () =>
+    {
+        await Assets.init({
+            basePath,
+        });
+
+        Assets.addBundle('testBundle', {
+            bunny: 'bunny.{png,webp}',
+            spritesheet: 'spritesheet.json',
+        });
+
+        const assets = await Assets.loadBundle('testBundle');
+
+        expect(assets.bunny).toBeInstanceOf(Texture);
+        expect(assets.spritesheet).toBeInstanceOf(Spritesheet);
+
+        await Assets.unloadBundle('testBundle');
+
+        expect(assets.bunny.baseTexture).toBe(null);
     });
 });

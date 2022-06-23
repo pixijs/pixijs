@@ -1,5 +1,3 @@
-// PreferOptions
-
 import { BaseTexture, Texture } from '@pixi/core';
 import { BackgroundLoader } from './BackgroundLoader';
 import { Cache } from './cache/Cache';
@@ -16,8 +14,10 @@ import {
 import { loadBitmapFont } from './loader/parsers/loadBitmapFont';
 import type { PreferOrder, ResolveAsset, ResolverBundle, ResolverManifest, ResolveURLParser } from './resolver/Resolver';
 import { Resolver } from './resolver/Resolver';
+import { convertToList } from './utils/convertToList';
 import { DetectAvif } from './utils/DetectAvif';
 import { DetectWebp } from './utils/DetectWebp';
+import { isSingleItem } from './utils/isSingleItem';
 import { spriteSheetUrlParser } from './utils/spriteSheetUrlParser';
 import { textureUrlParser } from './utils/textureUrlParser';
 
@@ -393,37 +393,25 @@ export class AssetsClass
             await this.init();
         }
 
-        let singleAsset = false;
+        const singleAsset = isSingleItem(urls);
 
-        let urlArray: (string | LoadAsset)[];
-
-        if (!Array.isArray(urls))
-        {
-            singleAsset = true;
-            urlArray = [urls];
-        }
-        else
-        {
-            urlArray = urls;
-        }
-
-        urlArray = urlArray.map((url) =>
-        {
-            if (typeof url !== 'string')
+        const urlArray = convertToList<ResolveAsset>(urls)
+            .map((url) =>
             {
-                this.resolver.add(url.src as string, url);
+                if (typeof url !== 'string')
+                {
+                    this.resolver.add(url.src as string, url);
 
-                return url.src;
-            }
+                    return url.src;
+                }
 
-            return url;
-        });
+                return url;
+            });
 
         // check cache first...
-        const resolveResults = this.resolver.resolve(urlArray as string[]);
+        const resolveResults = this.resolver.resolve(urlArray);
 
         // remap to the keys used..
-
         const out: Record<string, T> = await this._mapLoadToResolve<T>(resolveResults, onProgress);
 
         return singleAsset ? out[urlArray[0] as string] : out;
@@ -449,8 +437,9 @@ export class AssetsClass
     }
 
     /**
-     * If a manifest has been provided to the init function then you can load a bundle, or bundles.
      * Bundles are a way to load multiple assets at once.
+     * If a manifest has been provided to the init function then you can load a bundle, or bundles.
+     * you can also add bundles via `addBundle`
      * @example
      * // manifest example
      * const manifest = {
@@ -729,6 +718,100 @@ export class AssetsClass
         });
 
         return out;
+    }
+
+    /**
+     * Unload an asset or assets. As the Assets class is responsible for creating the assets via the `load` function
+     * this will make sure to destroy any assets and release them from memory.
+     * Once unloaded, you will need to load the asset again.
+     *
+     * Use this to help manage assets if you find that you have a large app and you want to free up memory.
+     *
+     * *its up to you as the developer to make sure that textures are not actively being used when you unload them,
+     * Pixi won't break but you will end up with missing assets. Not a good look for the user!
+     * @example
+     * ```
+     * // load a url:
+     * const myImageTexture = await Assets.load('http://some.url.com/image.png'); // => returns a texture
+     *
+     * await Assets.unload('http://some.url.com/image.png')
+     *
+     * myImageTexture <-- will now be destroyed.
+     *
+     * // unload multiple assets:
+     * const textures = await Assets.unload(['thumper', 'chicko']);
+     *
+     * ```
+     * @param urls - the urls to unload
+     */
+    public async unload(
+        urls: string | string[] | LoadAsset | LoadAsset[]
+    ): Promise<void>
+    {
+        if (!this._initialized)
+        {
+            await this.init();
+        }
+
+        const urlArray = convertToList<string | LoadAsset>(urls)
+            .map((url) =>
+                ((typeof url !== 'string') ? url.src : url));
+
+        // check cache first...
+        const resolveResults = this.resolver.resolve(urlArray);
+
+        await this._unloadFromResolved(resolveResults);
+    }
+
+    /**
+     * Bundles are a way to manage multiple assets at once.
+     * this will unload all files in a bundle.
+     *
+     * once a bundle has been unloaded, you need to load it again to have access to the assets.
+     * @example
+     * ```
+     * Assets.addBundle({
+     *   'thumper': 'http://some.url.com/thumper.png',
+     * })
+     *
+     * const assets = await Assets.loadBundle('thumper');
+     *
+     * // now to unload..
+     *
+     * await await Assets.unloadBundle('thumper');
+     *
+     * // all assets in the assets object will now hav been destroyed and purged from the cache
+     *
+     * ```
+     * @param bundleIds - the bundle id or ids to unload
+     */
+    public async unloadBundle(bundleIds: string | string[]): Promise<void>
+    {
+        if (!this._initialized)
+        {
+            await this.init();
+        }
+
+        bundleIds = convertToList<string>(bundleIds);
+
+        const resolveResults = this.resolver.resolveBundle(bundleIds);
+
+        const promises = Object.keys(resolveResults).map((bundleId) =>
+            this._unloadFromResolved(resolveResults[bundleId]));
+
+        await Promise.all(promises);
+    }
+
+    private async _unloadFromResolved(resolveResult: ResolveAsset | Record<string, ResolveAsset>)
+    {
+        const resolveArray = Object.values(resolveResult);
+
+        resolveArray.forEach((resolveResult) =>
+        {
+            Cache.remove(resolveResult.src);
+        });
+
+        await this.loader.unload(resolveArray);
     }
 }
 

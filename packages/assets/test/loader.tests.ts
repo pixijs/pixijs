@@ -136,7 +136,7 @@ describe('Loader', () =>
 
         loader.addParser(loadWebFont);
 
-        await loader.load(`${serverPath}outfit.woff2`);
+        const font = await loader.load(`${serverPath}outfit.woff2`);
 
         let foundFont = false;
 
@@ -148,6 +148,8 @@ describe('Loader', () =>
             }
         });
 
+        document.fonts.delete(font);
+
         expect(foundFont).toBe(true);
     });
 
@@ -158,7 +160,7 @@ describe('Loader', () =>
         await document.fonts.clear();
         loader.addParser(loadWebFont);
 
-        await loader.load({
+        const font = await loader.load({
             data: {
                 weights: ['normal'],
             },
@@ -172,6 +174,8 @@ describe('Loader', () =>
             count++;
             expect(f.weight).toBe('normal');
         });
+
+        document.fonts.delete(font);
 
         expect(count).toBe(1);
     });
@@ -192,5 +196,74 @@ describe('Loader', () =>
         });
 
         expect(sillyID).toBe(`${serverPath}bunny.png23`);
+    });
+
+    it('should unload a texture', async () =>
+    {
+        const loader = new Loader();
+
+        loader.addParser(loadTextures);
+
+        const texture: Texture = await loader.load(`${serverPath}bunny.png`);
+
+        expect(texture.baseTexture.destroyed).toBe(false);
+
+        const baseTexture =  texture.baseTexture;
+
+        await loader.unload(`${serverPath}bunny.png`);
+
+        expect(texture.baseTexture).toBe(null);
+        expect(baseTexture.destroyed).toBe(true);
+    });
+
+    it('should unload a spritesheet', async () =>
+    {
+        const loader = new Loader();
+
+        loader.addParser(loadJson, loadTextures, loadSpritesheet);
+
+        const spriteSheet: Spritesheet = await loader.load(`${serverPath}spritesheet.json`);
+
+        await loader.unload(`${serverPath}spritesheet.json`);
+
+        expect(spriteSheet.baseTexture).toBe(null);
+    });
+
+    it('should unload a bitmap font', async () =>
+    {
+        const loader = new Loader();
+
+        loader.addParser(loadTextures, loadBitmapFont);
+
+        const bitmapFont: BitmapFont = await loader.load(`${serverPath}bitmap-font/desyrel.xml`);
+
+        expect(bitmapFont).toBeInstanceOf(BitmapFont);
+
+        await loader.unload(`${serverPath}bitmap-font/desyrel.xml`);
+
+        expect(bitmapFont.pageTextures).toBe(null);
+    });
+
+    it('should unload a web font', async () =>
+    {
+        const loader = new Loader();
+
+        loader.addParser(loadWebFont);
+
+        await loader.load(`${serverPath}outfit.woff2`);
+
+        await loader.unload(`${serverPath}outfit.woff2`);
+
+        let foundFont = false;
+
+        document.fonts.forEach((f: FontFace) =>
+        {
+            if (f.family === 'Outfit.woff2')
+            {
+                foundFont = true;
+            }
+        });
+
+        expect(foundFont).toBe(false);
     });
 });

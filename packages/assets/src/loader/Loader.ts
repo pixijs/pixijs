@@ -1,3 +1,5 @@
+import { convertToList } from '../utils/convertToList';
+import { isSingleItem } from '../utils/isSingleItem';
 import { makeAbsoluteUrl } from '../utils/makeAbsoluteUrl';
 import type { LoaderParser } from './parsers/LoaderParser';
 
@@ -5,6 +7,12 @@ export interface LoadAsset<T=any>
 {
     src: string;
     data?: T;
+}
+
+interface PromiseAndParser
+{
+    promise: Promise<any>
+    parser: LoaderParser
 }
 
 /**
@@ -24,7 +32,7 @@ class Loader
     public parsers: LoaderParser[] = [];
 
     /** Cache loading promises that ae currently active */
-    public promiseCache: Record<string, Promise<any>> = {};
+    public promiseCache: Record<string, PromiseAndParser> = {};
 
     /** function used for testing */
     public reset(): void
@@ -64,45 +72,60 @@ class Loader
      * @param data - any custom additional information relevant to the asset being loaded
      * @returns - a promise the will resolve to a Asset for example a Texture of a JSON object
      */
-    private async _getLoadPromise(url: string, data?: any): Promise<any>
+    private _getLoadPromiseAndParser(url: string, data?: any): PromiseAndParser
     {
-        let asset = null;
-        let didParse = false;
+        const result: PromiseAndParser = {
+            promise: null,
+            parser: null
+        };
 
-        for (let i = 0; i < this.parsers.length; i++)
+        result.promise = (async () =>
         {
-            const parser = this.parsers[i];
+            let asset = null;
 
-            if (parser.load && parser.test?.(url, data, this))
+            for (let i = 0; i < this.parsers.length; i++)
             {
-                didParse = true;
-                asset = await parser.load(url, data, this);
-            }
-        }
+                const parser = this.parsers[i];
 
-        if (!didParse)
-        {
-            // eslint-disable-next-line max-len
-            console.warn(`[Assets] ${url} could not be loaded as we don't know how to parse it, ensure the correct parser has being added`);
-
-            return null;
-        }
-
-        for (let i = 0; i < this.parsers.length; i++)
-        {
-            const parser = this.parsers[i];
-
-            if (parser.parse)
-            {
-                if (!parser.testParse || parser.testParse(asset, data, this))
+                if (parser.load && parser.test?.(url, data, this))
                 {
-                // transform the asset..
-                    asset = await parser.parse(asset, data, this) || asset;
+                    asset = await parser.load(url, data, this);
+                    result.parser = parser;
+
+                    break;
                 }
             }
-        }
 
-        return asset;
+            if (!result.parser)
+            {
+                // eslint-disable-next-line max-len
+                console.warn(`[Assets] ${url} could not be loaded as we don't know how to parse it, ensure the correct parser has being added`);
+
+                return null;
+            }
+
+            for (let i = 0; i < this.parsers.length; i++)
+            {
+                const parser = this.parsers[i];
+
+                if (parser.parse)
+                {
+                    //
+
+                    if (parser.parse && parser.testParse?.(asset, data, this))
+                    {
+                        // transform the asset..
+                        asset = await parser.parse(asset, data, this) || asset;
+
+                        result.parser = parser;
+                    }
+                }
+            }
+
+            return asset;
+        })();
+
+        return result;
     }
 
     /**
@@ -128,18 +151,11 @@ class Loader
 
         const assets: Record<string, Promise<any>> = {};
 
-        let singleAsset = false;
+        const singleAsset = isSingleItem(assetsToLoadIn);
 
-        if (!Array.isArray(assetsToLoadIn))
-        {
-            singleAsset = true;
-            assetsToLoadIn = [assetsToLoadIn as LoadAsset];
-        }
-
-        const assetsToLoad: LoadAsset[] = (assetsToLoadIn as (string | LoadAsset)[]).map((assetUrl): LoadAsset =>
-            ((typeof assetUrl === 'string') ? {
-                src: assetUrl,
-            } : assetUrl));
+        const assetsToLoad = convertToList<LoadAsset>(assetsToLoadIn, (item) => ({
+            src: item,
+        }));
 
         const total = assetsToLoad.length;
 
@@ -153,10 +169,10 @@ class Loader
                 {
                     if (!this.promiseCache[url])
                     {
-                        this.promiseCache[url] = this._getLoadPromise(url, asset);
+                        this.promiseCache[url] = this._getLoadPromiseAndParser(url, asset);
                     }
 
-                    assets[asset.src] = await this.promiseCache[url];
+                    assets[asset.src] = await this.promiseCache[url].promise;
 
                     // Only progress if nothing goes wrong
                     if (onProgress) onProgress(++count / total);
@@ -177,6 +193,48 @@ class Loader
         await Promise.all(promises);
 
         return singleAsset ? assets[assetsToLoad[0].src] : assets;
+    }
+
+    /**
+     * The opposite of the load function! this will unload your assets!
+     * unloaded assets are destroyed. A great way to free up memory for you app.
+     * The parser that created the asset, will be the one that unloads it.
+     * @example
+     * ```
+     * // single asset:
+     * const asset = await Loader.load('cool.png');
+     *
+     * await Loader.unload('cool.png');
+     *
+     * console.log(asset.destroyed); // true
+     * ```
+     * @param assetsToUnloadIn - a bunch of urls that you want to unload, or a single one!
+     */
+    public async unload(
+        assetsToUnloadIn: string | string[] | LoadAsset | LoadAsset[],
+    ): Promise<void>
+    {
+        const assetsToUnload = convertToList<LoadAsset>(assetsToUnloadIn, (item) => ({
+            src: item,
+        }));
+
+        const promises: Promise<void>[] = assetsToUnload.map(async (asset: LoadAsset) =>
+        {
+            const url = makeAbsoluteUrl(asset.src);
+
+            const loadPromise = this.promiseCache[url];
+
+            if (loadPromise)
+            {
+                const loadedAsset = await loadPromise.promise;
+
+                loadPromise.parser?.unload?.(loadedAsset, asset, this);
+
+                delete this.promiseCache[url];
+            }
+        });
+
+        await Promise.all(promises);
     }
 }
 

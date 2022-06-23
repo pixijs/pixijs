@@ -58,6 +58,16 @@ const loadSpritesheet = {
         return spritesheet;
     },
 
+    unload(spritesheet: Spritesheet)
+    {
+        // TODO.. probably want to move this to be somewhere different, but works ok for now...
+        Object.keys(spritesheet.textures).forEach((key) =>
+        {
+            Cache.remove(key);
+        });
+
+        spritesheet.destroy(true);
+    }
 } as LoaderParser;
 
 export { loadSpritesheet };

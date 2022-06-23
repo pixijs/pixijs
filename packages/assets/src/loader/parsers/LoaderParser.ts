@@ -35,7 +35,8 @@ export interface LoaderParser<ASSET = any, META_DATA = any>
      * this function is used to test if the parse function should be run on the asset
      * If this returns true then parse is called with the asset
      * @param asset - the asset loaded
-     * @param url - the assets url
+     * @param loadAsset - the full LoadAsset
+     * @param loader - the loader that is loading the asset
      */
     testParse?: (asset: ASSET, loadAsset?: LoadAsset<META_DATA>, loader?: Loader) => boolean;
 
@@ -45,4 +46,13 @@ export interface LoaderParser<ASSET = any, META_DATA = any>
      * @param url - the assets url
      */
     parse?: <T>(asset: ASSET, loadAsset?: LoadAsset<META_DATA>, loader?: Loader) => Promise<T>;
+
+    /**
+     * if an asset is parsed using this parser, the unload function will be called when the user requests an asset
+     * to be unloaded. This is useful for things like sounds or textures that can be unloaded from memory
+     * @param asset - the asset to unload / destroy
+     * @param loadAsset - the full LoadAsset
+     * @param loader - the loader that is loading the asset
+     */
+    unload?: (asset: ASSET, loadAsset?: LoadAsset<META_DATA>, loader?: Loader) => void;
 }
