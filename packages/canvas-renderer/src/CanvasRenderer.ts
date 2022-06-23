@@ -33,6 +33,9 @@ export interface ICanvasRendererPluginConstructor
     new (renderer: CanvasRenderer, options?: any): IRendererPlugin;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface CanvasRenderer extends GlobalMixins.CanvasRenderer {}
+
 /**
  * The CanvasRenderer draws the scene and all its content onto a 2d canvas.
  *
@@ -560,7 +563,6 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
      * @readonly
      * @property {PIXI.AccessibilityManager} accessibility Support tabbing interactive elements.
      * @property {PIXI.CanvasExtract} extract Extract image data from renderer.
-     * @property {PIXI.InteractionManager} interaction Handles mouse, touch and pointer events.
      * @property {PIXI.CanvasPrepare} prepare Pre-render display objects.
      */
 }

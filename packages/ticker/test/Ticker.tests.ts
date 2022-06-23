@@ -158,10 +158,8 @@ describe('Ticker', () =>
         const listener1 = jest.fn();
         const listener2 = jest.fn();
         const listener3 = jest.fn();
-        const listener4 = jest.fn();
 
         shared.add(listener1, null, UPDATE_PRIORITY.LOW)
-            .add(listener4, null, UPDATE_PRIORITY.INTERACTION)
             .add(listener3, null, UPDATE_PRIORITY.HIGH)
             .add(listener2, null, UPDATE_PRIORITY.NORMAL);
 
@@ -169,19 +167,16 @@ describe('Ticker', () =>
 
         expect(length()).toEqual(len + 4);
 
-        const l4 = listener4.mock.invocationCallOrder[0];
         const l3 = listener3.mock.invocationCallOrder[0];
         const l2 = listener2.mock.invocationCallOrder[0];
         const l1 = listener1.mock.invocationCallOrder[0];
 
-        expect(l4).toBeLessThan(l3);
         expect(l3).toBeLessThan(l2);
         expect(l2).toBeLessThan(l1);
 
         shared.remove(listener1)
             .remove(listener2)
-            .remove(listener3)
-            .remove(listener4);
+            .remove(listener3);
 
         expect(length()).toEqual(len);
     });

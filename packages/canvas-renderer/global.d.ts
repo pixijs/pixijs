@@ -30,6 +30,12 @@ declare namespace GlobalMixins
     {
         forceCanvas?: boolean;
     }
+
+    // eslint-disable-next-line @typescript-eslint/no-empty-interface
+    interface CanvasRenderer
+    {
+
+    }
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface

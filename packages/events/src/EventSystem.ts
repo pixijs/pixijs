@@ -2,6 +2,7 @@ import { EventBoundary } from './EventBoundary';
 import { FederatedMouseEvent } from './FederatedMouseEvent';
 import { FederatedPointerEvent } from './FederatedPointerEvent';
 import { FederatedWheelEvent } from './FederatedWheelEvent';
+import { ExtensionMetadata, ExtensionType } from '@pixi/core';
 
 import type { IRenderableObject } from '@pixi/core';
 import type { DisplayObject } from '@pixi/display';
@@ -30,6 +31,15 @@ interface Renderer
  */
 export class EventSystem
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        name: 'events',
+        type: [
+            ExtensionType.RendererSystem,
+            ExtensionType.CanvasRendererSystem
+        ],
+    };
+
     /**
      * The {@link PIXI.EventBoundary} for the stage.
      *
@@ -88,11 +98,6 @@ export class EventSystem
      */
     constructor(renderer: Renderer)
     {
-        if (renderer.plugins.interaction)
-        {
-            throw new Error('EventSystem cannot initialize with the InteractionManager installed!');
-        }
-
         this.renderer = renderer;
         this.rootBoundary = new EventBoundary(null);
 
