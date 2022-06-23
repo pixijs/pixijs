@@ -18,7 +18,7 @@ describe('CanvasExtract', () =>
     {
         const renderer = new CanvasRenderer();
 
-        expect(renderer.plugins.extract).toBeInstanceOf(CanvasExtract);
+        expect(renderer.extract).toBeInstanceOf(CanvasExtract);
 
         renderer.destroy();
     });
@@ -27,7 +27,7 @@ describe('CanvasExtract', () =>
     {
         const renderer = new CanvasRenderer();
         const sprite = new Sprite(Texture.WHITE);
-        const extract = renderer.plugins.extract as CanvasExtract;
+        const extract = renderer.extract as CanvasExtract;
 
         expect(extract.canvas(sprite)).toBeInstanceOf(HTMLCanvasElement);
         expect(extract.base64(sprite)).toBeString();
@@ -41,7 +41,7 @@ describe('CanvasExtract', () =>
     it('should extract with no arguments', () =>
     {
         const renderer = new CanvasRenderer();
-        const extract = renderer.plugins.extract as CanvasExtract;
+        const extract = renderer.extract as CanvasExtract;
 
         expect(extract.canvas()).toBeInstanceOf(HTMLCanvasElement);
         expect(extract.base64()).toBeString();
@@ -54,7 +54,7 @@ describe('CanvasExtract', () =>
     it('should extract a render texture', () =>
     {
         const renderer = new CanvasRenderer();
-        const extract = renderer.plugins.extract as CanvasExtract;
+        const extract = renderer.extract as CanvasExtract;
         const renderTexture = RenderTexture.create({ width: 10, height: 10 });
         const sprite = new Sprite(Texture.WHITE);
 

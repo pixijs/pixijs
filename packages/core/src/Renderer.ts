@@ -30,6 +30,9 @@ import { SystemManager } from './system/SystemManager';
 import { IRenderableObject, IRenderer, IRendererOptions, IRendererRenderOptions, IRenderingContext } from './IRenderer';
 import { StartupOptions, StartupSystem } from './startup/StartupSystem';
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface Renderer extends GlobalMixins.Renderer {}
+
 /**
  * The Renderer draws the scene and all its content onto a WebGL enabled canvas.
  *
@@ -63,9 +66,9 @@ import { StartupOptions, StartupSystem } from './startup/StartupSystem';
  * | {@link PIXI.TextureGCSystem}         | This will automatically remove textures from the GPU if they are not used.    |
  * | {@link PIXI.MultisampleSystem}       | This manages the multisample const on the WEbGL Renderer                      |
  *
- * | Pixi high level Systems              | Set of Pixi specific systems designed to work with Pixi objects               |
+ * | PixiJS High-Level Systems            | Set of specific systems designed to work with PixiJS objects                  |
  * | ------------------------------------ | ----------------------------------------------------------------------------- |
- * | {@link PIXI.RenderSystem}          | This adds the ability to render a PIXI.DisplayObject                          |
+ * | {@link PIXI.RenderSystem}            | This adds the ability to render a PIXI.DisplayObject                          |
  * | {@link PIXI.GenerateTextureSystem}   | This adds the ability to generate textures from any PIXI.DisplayObject        |
  * | {@link PIXI.ProjectionSystem}        | This manages the `projectionMatrix`, used by shaders to get NDC coordinates.  |
  * | {@link PIXI.RenderTextureSystem}     | This manages render-textures, which are an abstraction over framebuffers.     |
@@ -74,6 +77,8 @@ import { StartupOptions, StartupSystem } from './startup/StartupSystem';
  * | {@link PIXI.StencilSystem}           | This handles stencil masking, and is used internally by {@link MaskSystem}    |
  * | {@link PIXI.FilterSystem}            | This manages the filtering pipeline for post-processing effects.              |
  * | {@link PIXI.BatchSystem}             | This manages object renderers that defer rendering until a flush.             |
+ * | {@link PIXI.Prepare}                 | This manages uploading assets to the GPU.                                     |
+ * | {@link PIXI.Extract}                 | This extracts image data from display objects.                                |
  *
  * The breadth of the API surface provided by the renderer is contained within these systems.
  * @memberof PIXI
