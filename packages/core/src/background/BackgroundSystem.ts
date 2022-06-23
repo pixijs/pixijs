@@ -1,4 +1,5 @@
 import { hex2rgb, hex2string } from '@pixi/utils';
+import { ExtensionMetadata, ExtensionType } from '../extensions';
 import { ISystem } from '../system/ISystem';
 
 export interface BackgroundOptions
@@ -17,6 +18,15 @@ export interface BackgroundOptions
  */
 export class BackgroundSystem implements ISystem
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        type: [
+            ExtensionType.RendererSystem,
+            ExtensionType.CanvasRendererSystem
+        ],
+        name: 'background',
+    };
+
     /**
      * This sets if the CanvasRenderer will clear the canvas or not before the new render pass.
      * If the scene is NOT transparent PixiJS will use a canvas sized fillRect operation every

@@ -3,6 +3,7 @@ import { Matrix } from '@pixi/math';
 import type { ISystem } from '../system/ISystem';
 import type { Rectangle } from '@pixi/math';
 import type { Renderer } from '../Renderer';
+import { ExtensionMetadata, ExtensionType } from '../extensions';
 
 /**
  * System plugin to the renderer to manage the projection matrix.
@@ -13,6 +14,12 @@ import type { Renderer } from '../Renderer';
  */
 export class ProjectionSystem implements ISystem
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        type: ExtensionType.RendererSystem,
+        name: 'projection',
+    };
+
     /**
      * The destination frame used to calculate the current projection matrix.
      *

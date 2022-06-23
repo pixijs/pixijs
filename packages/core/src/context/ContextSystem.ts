@@ -5,6 +5,7 @@ import type { ISystem } from '../system/ISystem';
 import type { Renderer } from '../Renderer';
 import type { WebGLExtensions } from './WebGLExtensions';
 import { IRenderingContext } from '../IRenderer';
+import { ExtensionMetadata, ExtensionType } from '../extensions';
 
 let CONTEXT_UID_COUNTER = 0;
 
@@ -33,6 +34,12 @@ export interface ContextOptions
  */
 export class ContextSystem implements ISystem
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        type: ExtensionType.RendererSystem,
+        name: 'context',
+    };
+
     /**
      * Either 1 or 2 to reflect the WebGL version being used.
      * @readonly

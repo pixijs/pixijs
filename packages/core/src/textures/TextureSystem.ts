@@ -9,6 +9,7 @@ import type { Texture } from './Texture';
 
 import type { Renderer } from '../Renderer';
 import { IRenderingContext } from '../IRenderer';
+import { ExtensionMetadata, ExtensionType } from '../extensions';
 
 /**
  * System plugin to the renderer to manage textures.
@@ -16,6 +17,12 @@ import { IRenderingContext } from '../IRenderer';
  */
 export class TextureSystem implements ISystem
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        type: ExtensionType.RendererSystem,
+        name: 'texture',
+    };
+
     /**
      * Bound textures.
      * @readonly

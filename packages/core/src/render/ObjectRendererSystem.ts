@@ -3,6 +3,7 @@ import { IRenderableObject, IRendererRenderOptions } from '../IRenderer';
 import { ISystem } from '../system/ISystem';
 import { Renderer } from '../Renderer';
 import { RenderTexture } from '../renderTexture/RenderTexture';
+import { ExtensionMetadata, ExtensionType } from '../extensions';
 
 /**
  * system that provides a render function that focussing on rendering Pixi Scene Graph objects
@@ -11,6 +12,12 @@ import { RenderTexture } from '../renderTexture/RenderTexture';
  */
 export class ObjectRendererSystem implements ISystem
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        type: ExtensionType.RendererSystem,
+        name: 'objectRenderer',
+    };
+
     renderer: Renderer;
 
     /**

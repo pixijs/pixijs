@@ -1,5 +1,6 @@
 import { MSAA_QUALITY, SCALE_MODES } from '@pixi/constants';
 import { Matrix, Rectangle, Transform } from '@pixi/math';
+import { ExtensionMetadata, ExtensionType } from '../extensions';
 import { IRenderer, IRenderableContainer, IRenderableObject } from '../IRenderer';
 import { ISystem } from '../system/ISystem';
 import { RenderTexture } from './RenderTexture';
@@ -28,6 +29,15 @@ export interface IGenerateTextureOptions
  */
 export class GenerateTextureSystem implements ISystem
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        type: [
+            ExtensionType.RendererSystem,
+            ExtensionType.CanvasRendererSystem
+        ],
+        name: 'textureGenerator',
+    };
+
     renderer: IRenderer;
 
     private readonly _tempMatrix: Matrix;

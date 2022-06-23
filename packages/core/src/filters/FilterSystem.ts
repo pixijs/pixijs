@@ -12,6 +12,7 @@ import type { IFilterTarget } from './IFilterTarget';
 import type { ISpriteMaskTarget } from './spriteMask/SpriteMaskFilter';
 import type { RenderTexture } from '../renderTexture/RenderTexture';
 import type { Renderer } from '../Renderer';
+import { ExtensionMetadata, ExtensionType } from '../extensions';
 
 const tempPoints = [new Point(), new Point(), new Point(), new Point()];
 const tempMatrix = new Matrix();
@@ -43,6 +44,12 @@ const tempMatrix = new Matrix();
  */
 export class FilterSystem implements ISystem
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        type: ExtensionType.RendererSystem,
+        name: 'filter',
+    };
+
     /**
      * List of filters for the FilterSystem
      * @member {object[]}

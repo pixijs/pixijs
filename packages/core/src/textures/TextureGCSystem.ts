@@ -5,6 +5,7 @@ import type { ISystem } from '../system/ISystem';
 import type { Renderer } from '../Renderer';
 import type { Texture } from './Texture';
 import type { RenderTexture } from '../renderTexture/RenderTexture';
+import { ExtensionMetadata, ExtensionType } from '../extensions';
 
 export interface IUnloadableTexture
 {
@@ -19,6 +20,12 @@ export interface IUnloadableTexture
  */
 export class TextureGCSystem implements ISystem
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        type: ExtensionType.RendererSystem,
+        name: 'textureGC',
+    };
+
     /**
      * Count
      * @readonly

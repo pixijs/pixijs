@@ -4,6 +4,7 @@ import { BLEND_MODES } from '@pixi/constants';
 
 import type { ISystem } from '../system/ISystem';
 import { IRenderingContext } from '../IRenderer';
+import { ExtensionMetadata, ExtensionType } from '../extensions';
 
 const BLEND = 0;
 const OFFSET = 1;
@@ -18,6 +19,12 @@ const DEPTH_MASK = 5;
  */
 export class StateSystem implements ISystem
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        type: ExtensionType.RendererSystem,
+        name: 'state',
+    };
+
     /**
      * State ID
      * @readonly

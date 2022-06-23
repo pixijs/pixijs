@@ -165,19 +165,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
 
         const systemConfig = {
             runners: ['init', 'destroy', 'contextChange', 'reset', 'update', 'postrender', 'prerender', 'resize'],
-            systems: {
-                // systems shared by all renderers..
-                textureGenerator: GenerateTextureSystem,
-                background: BackgroundSystem,
-                _view: ViewSystem,
-                _plugin: PluginSystem,
-                startup: StartupSystem,
-
-                // canvas systems..
-                mask: CanvasMaskSystem,
-                canvasContext: CanvasContextSystem,
-                objectRenderer: CanvasObjectRendererSystem,
-            }
+            systems: CanvasRenderer.__systems,
         };
 
         this.setup(systemConfig);
@@ -558,7 +546,11 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
         return false;
     }
 
-    static __plugins: IRendererPlugins = {};
+    /** @private */
+    static readonly __plugins: IRendererPlugins = {};
+
+    /** @private */
+    static readonly __systems: Record<string, any> = {};
 
     /**
      * Collection of installed plugins. These are included by default in PIXI, but can be excluded
@@ -577,4 +569,15 @@ extensions.handle(
     ExtensionType.CanvasRendererPlugin,
     (extension) => { CanvasRenderer.__plugins[extension.name] = extension.ref; },
     (extension) => { delete CanvasRenderer.__plugins[extension.name]; }
+);
+extensions.handle(
+    ExtensionType.CanvasRendererSystem,
+    (extension) => { CanvasRenderer.__systems[extension.name] = extension.ref; },
+    (extension) => { delete CanvasRenderer.__systems[extension.name]; }
+);
+
+extensions.add(
+    CanvasMaskSystem,
+    CanvasContextSystem,
+    CanvasObjectRendererSystem
 );

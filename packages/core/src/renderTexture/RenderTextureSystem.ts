@@ -7,6 +7,7 @@ import type { RenderTexture } from './RenderTexture';
 import type { BaseRenderTexture } from './BaseRenderTexture';
 import type { MaskData } from '../mask/MaskData';
 import type { ISize } from '@pixi/math';
+import { ExtensionMetadata, ExtensionType } from '../extensions';
 
 // Temporary rectangle for assigned sourceFrame or destinationFrame
 const tempRect = new Rectangle();
@@ -34,7 +35,13 @@ const tempRect2 = new Rectangle();
  */
 export class RenderTextureSystem implements ISystem
 {
-/* eslint-enable max-len */
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        type: ExtensionType.RendererSystem,
+        name: 'renderTexture',
+    };
+
+    /* eslint-enable max-len */
 
     /**
      * List of masks for the {@link PIXI.StencilSystem}.

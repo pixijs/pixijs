@@ -3,6 +3,7 @@ import { AbstractMaskSystem } from './AbstractMaskSystem';
 import type { Renderer } from '../Renderer';
 import type { MaskData } from './MaskData';
 import { Matrix, Rectangle } from '@pixi/math';
+import { ExtensionMetadata, ExtensionType } from '../extensions';
 
 const tempMatrix = new Matrix();
 const rectPool: Rectangle[] = [];
@@ -17,6 +18,12 @@ const rectPool: Rectangle[] = [];
  */
 export class ScissorSystem extends AbstractMaskSystem
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        type: ExtensionType.RendererSystem,
+        name: 'scissor',
+    };
+
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */

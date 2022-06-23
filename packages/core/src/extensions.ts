@@ -10,7 +10,9 @@ enum ExtensionType
 // eslint-disable-next-line @typescript-eslint/indent
 {
     Application = 'application',
+    RendererSystem = 'renderer-webgl-system',
     RendererPlugin = 'renderer-webgl-plugin',
+    CanvasRendererSystem = 'renderer-canvas-system',
     CanvasRendererPlugin = 'renderer-canvas-plugin',
     Loader = 'loader',
 }

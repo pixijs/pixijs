@@ -1,3 +1,4 @@
+import { ExtensionMetadata, ExtensionType } from '../extensions';
 import { IRenderer } from '../IRenderer';
 import { Renderer } from '../Renderer';
 import { ISystem } from '../system/ISystem';
@@ -23,6 +24,15 @@ export interface IRendererPluginConstructor<R extends IRenderer = Renderer>
  */
 export class PluginSystem implements ISystem
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        type: [
+            ExtensionType.RendererSystem,
+            ExtensionType.CanvasRendererSystem
+        ],
+        name: '_plugin',
+    };
+
     /**
      * Collection of plugins.
      * @readonly
