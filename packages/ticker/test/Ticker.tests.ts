@@ -165,7 +165,7 @@ describe('Ticker', () =>
 
         shared.update();
 
-        expect(length()).toEqual(len + 4);
+        expect(length()).toEqual(len + 3);
 
         const l3 = listener3.mock.invocationCallOrder[0];
         const l2 = listener2.mock.invocationCallOrder[0];
