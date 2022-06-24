@@ -1,7 +1,7 @@
 import type { Dict } from '@pixi/utils';
 import { mapSize } from '../utils';
-import { IUniformData } from '../Program';
-import { UniformGroup } from '../UniformGroup';
+import type { IUniformData } from '../Program';
+import type { UniformGroup } from '../UniformGroup';
 import { uniformParsers } from './uniformParsers';
 import type { Renderer } from '../../Renderer';
 import type { Buffer } from '../../geometry/Buffer';

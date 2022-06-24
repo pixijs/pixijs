@@ -2,7 +2,8 @@
 // @ts-nocheck
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import sinon from 'sinon';
-import { IResourceMetadata, LoaderResource } from '@pixi/loaders';
+import type { IResourceMetadata } from '@pixi/loaders';
+import { LoaderResource } from '@pixi/loaders';
 import { expect } from 'chai';
 import { fixtureData } from './fixtures/data';
 

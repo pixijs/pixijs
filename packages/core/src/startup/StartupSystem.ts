@@ -2,10 +2,11 @@ import { sayHello } from '@pixi/utils';
 import type { BackgroundOptions } from '../background/BackgroundSystem';
 import type { ViewOptions } from '../view/ViewSystem';
 import type { IRendererPlugins } from '../plugin/PluginSystem';
-import { IRenderer } from '../IRenderer';
-import { ISystem } from '../system/ISystem';
-import { ContextOptions } from '../systems';
-import { ExtensionMetadata, ExtensionType } from '../extensions';
+import type { IRenderer } from '../IRenderer';
+import type { ISystem } from '../system/ISystem';
+import type { ContextOptions } from '../systems';
+import type { ExtensionMetadata } from '../extensions';
+import { ExtensionType } from '../extensions';
 
 // TODO this can be infered by good use of generics in the future..
 export interface StartupOptions extends Record<string, unknown>

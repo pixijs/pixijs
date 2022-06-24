@@ -1,7 +1,8 @@
 import { Matrix } from '@pixi/math';
 
 import type { CanvasRenderer } from './CanvasRenderer';
-import { ExtensionMetadata, ExtensionType, ISystem } from '@pixi/core';
+import type { ExtensionMetadata, ISystem } from '@pixi/core';
+import { ExtensionType } from '@pixi/core';
 import { mapCanvasBlendModesToPixi } from './utils/mapCanvasBlendModesToPixi';
 import { BLEND_MODES, SCALE_MODES } from '@pixi/constants';
 import { settings } from '@pixi/settings';

@@ -1,16 +1,18 @@
-import { MASK_TYPES } from '@pixi/constants';
+import { MASK_TYPES, COLOR_MASK_BITS } from '@pixi/constants';
+import type {
+    IFilterTarget,
+    IMaskTarget } from '@pixi/core';
 import {
     BaseTexture,
     CanvasResource,
     Filter,
-    IFilterTarget,
-    IMaskTarget,
     MaskData,
     Renderer,
     RenderTexture,
     SpriteMaskFilter,
     Texture
 } from '@pixi/core';
+import { Container } from '@pixi/display';
 import { Graphics } from '@pixi/graphics';
 import { Matrix, Rectangle } from '@pixi/math';
 import { Sprite } from '@pixi/sprite';
@@ -411,5 +413,115 @@ describe('MaskSystem', () =>
         expect(maskData2.filter.maskSprite).toBeNull();
 
         renderTexture.destroy(true);
+    });
+
+    it('should render correctly with nested color and stencil masks', () =>
+    {
+        const stage = new Container();
+        const container1 = new Container();
+        const container2 = new Container();
+        const graphics = new Graphics().beginFill(0xffffff, 1.0).drawRect(0, 0, 2, 1).endFill();
+        const mask = new Graphics().beginFill(0xffffff, 1.0).drawPolygon(1, 0, 2, 0, 2, 1, 1, 1).endFill();
+
+        stage.addChild(container1, mask);
+        container1.addChild(container2);
+        container2.addChild(graphics);
+
+        stage.mask = new MaskData();
+        stage.mask.colorMask = COLOR_MASK_BITS.RED | COLOR_MASK_BITS.GREEN | COLOR_MASK_BITS.ALPHA;
+        mask.mask = new MaskData();
+        mask.mask.colorMask = COLOR_MASK_BITS.RED | COLOR_MASK_BITS.ALPHA;
+        container1.mask = new MaskData(mask);
+        container2.mask = new MaskData(mask);
+        graphics.mask = new MaskData();
+        graphics.mask.colorMask = COLOR_MASK_BITS.GREEN | COLOR_MASK_BITS.BLUE | COLOR_MASK_BITS.ALPHA;
+
+        const renderTexture = renderer.generateTexture(stage, { region: new Rectangle(0, 0, 2, 1) });
+
+        expect(renderTexture.width).toEqual(2);
+        expect(renderTexture.height).toEqual(1);
+
+        expect(stage.mask.type).toEqual(MASK_TYPES.COLOR);
+        expect(container1.mask.type).toEqual(MASK_TYPES.STENCIL);
+        expect(container2.mask.type).toEqual(MASK_TYPES.STENCIL);
+        expect(graphics.mask.type).toEqual(MASK_TYPES.COLOR);
+        expect(mask.mask.type).toEqual(MASK_TYPES.COLOR);
+
+        stage.destroy(true);
+
+        renderer.renderTexture.bind(renderTexture);
+
+        const pixels = new Uint8Array(8);
+        const gl = renderer.gl;
+
+        gl.readPixels(0, 0, 2, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+
+        renderTexture.destroy(true);
+
+        const [r1, g1, b1, a1, r2, g2, b2, a2] = pixels;
+
+        // R   B A
+        //   G B A
+        // -------
+        //   G   A
+
+        expect(r1).toEqual(0x00);
+        expect(g1).toEqual(0x00);
+        expect(b1).toEqual(0x00);
+        expect(a1).toEqual(0x00);
+        expect(r2).toEqual(0x00);
+        expect(g2).toEqual(0xff);
+        expect(b2).toEqual(0x00);
+        expect(a2).toEqual(0xff);
+    });
+
+    it('should render overlapping objects with color masks correctly', () =>
+    {
+        const stage = new Container();
+        const graphics1 = new Graphics().beginFill(0xffffff, 1.0).drawRect(0, 0, 2, 1).endFill();
+        const graphics2 = new Graphics().beginFill(0xffffff, 1.0).drawRect(1, 0, 2, 1).endFill();
+
+        stage.addChild(graphics1, graphics2);
+
+        stage.mask = new MaskData();
+        stage.mask.colorMask = COLOR_MASK_BITS.RED | COLOR_MASK_BITS.GREEN | COLOR_MASK_BITS.ALPHA;
+        graphics1.mask = new MaskData();
+        graphics1.mask.colorMask = COLOR_MASK_BITS.RED | COLOR_MASK_BITS.BLUE | COLOR_MASK_BITS.ALPHA;
+        graphics2.mask = new MaskData();
+        graphics2.mask.colorMask = COLOR_MASK_BITS.GREEN | COLOR_MASK_BITS.BLUE | COLOR_MASK_BITS.ALPHA;
+
+        const renderTexture = renderer.generateTexture(stage);
+
+        expect(renderTexture.width).toEqual(3);
+        expect(renderTexture.height).toEqual(1);
+
+        expect(graphics1.mask.type).toEqual(MASK_TYPES.COLOR);
+        expect(graphics2.mask.type).toEqual(MASK_TYPES.COLOR);
+
+        stage.destroy(true);
+
+        renderer.renderTexture.bind(renderTexture);
+
+        const pixels = new Uint8Array(12);
+        const gl = renderer.gl;
+
+        gl.readPixels(0, 0, 3, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+
+        renderTexture.destroy(true);
+
+        const [r1, g1, b1, a1, r2, g2, b2, a2, r3, g3, b3, a3] = pixels;
+
+        expect(r1).toEqual(0xff);
+        expect(g1).toEqual(0x00);
+        expect(b1).toEqual(0x00);
+        expect(a1).toEqual(0xff);
+        expect(r2).toEqual(0xff);
+        expect(g2).toEqual(0xff);
+        expect(b2).toEqual(0x00);
+        expect(a2).toEqual(0xff);
+        expect(r3).toEqual(0x00);
+        expect(g3).toEqual(0xff);
+        expect(b3).toEqual(0x00);
+        expect(a3).toEqual(0xff);
     });
 });

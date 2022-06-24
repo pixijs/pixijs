@@ -1,4 +1,5 @@
-import { ArrayResource, BaseTexture, ImageResource } from '@pixi/core';
+import type { BaseTexture } from '@pixi/core';
+import { ArrayResource, ImageResource } from '@pixi/core';
 import { join } from 'path';
 
 describe('ArrayResource', () =>

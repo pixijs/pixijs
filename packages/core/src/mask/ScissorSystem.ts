@@ -3,7 +3,8 @@ import { AbstractMaskSystem } from './AbstractMaskSystem';
 import type { Renderer } from '../Renderer';
 import type { MaskData } from './MaskData';
 import { Matrix, Rectangle } from '@pixi/math';
-import { ExtensionMetadata, ExtensionType } from '../extensions';
+import type { ExtensionMetadata } from '../extensions';
+import { ExtensionType } from '../extensions';
 
 const tempMatrix = new Matrix();
 const rectPool: Rectangle[] = [];

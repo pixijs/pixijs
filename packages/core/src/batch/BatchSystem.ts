@@ -4,7 +4,8 @@ import type { ISystem } from '../system/ISystem';
 import type { Renderer } from '../Renderer';
 import type { BaseTexture } from '../textures/BaseTexture';
 import type { BatchTextureArray } from './BatchTextureArray';
-import { ExtensionMetadata, ExtensionType } from '../extensions';
+import type { ExtensionMetadata } from '../extensions';
+import { ExtensionType } from '../extensions';
 
 /**
  * System plugin to the renderer to manage batching.

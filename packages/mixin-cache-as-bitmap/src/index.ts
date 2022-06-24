@@ -1,7 +1,10 @@
-import { Texture, BaseTexture, RenderTexture, Renderer, MaskData, IRenderer } from '@pixi/core';
+import type { Renderer, MaskData, IRenderer } from '@pixi/core';
+import { Texture, BaseTexture, RenderTexture } from '@pixi/core';
 import { Sprite } from '@pixi/sprite';
-import { Container, DisplayObject, IDestroyOptions } from '@pixi/display';
-import { IPointData, Matrix, Rectangle } from '@pixi/math';
+import type { Container, IDestroyOptions } from '@pixi/display';
+import { DisplayObject } from '@pixi/display';
+import type { IPointData, Rectangle } from '@pixi/math';
+import { Matrix } from '@pixi/math';
 import { uid } from '@pixi/utils';
 import { settings } from '@pixi/settings';
 import { MSAA_QUALITY } from '@pixi/constants';

@@ -3,7 +3,7 @@ import { Rectangle } from '@pixi/math';
 import { ExtensionType, RenderTexture } from '@pixi/core';
 
 import type { Renderer, ISystem, ExtensionMetadata } from '@pixi/core';
-import { DisplayObject } from '@pixi/display';
+import type { DisplayObject } from '@pixi/display';
 
 const TEMP_RECT = new Rectangle();
 const BYTES_PER_PIXEL = 4;

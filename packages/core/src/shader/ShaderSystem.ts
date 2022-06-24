@@ -1,4 +1,4 @@
-import { GLProgram } from './GLProgram';
+import type { GLProgram } from './GLProgram';
 import { generateUniformsSync, unsafeEvalSupported } from './utils';
 
 import type { ISystem } from '../system/ISystem';
@@ -11,8 +11,9 @@ import type { UniformsSyncCallback } from './utils';
 import { generateUniformBufferSync } from './utils/generateUniformBufferSync';
 
 import { generateProgram } from './utils/generateProgram';
-import { IRenderingContext } from '../IRenderer';
-import { ExtensionMetadata, ExtensionType } from '../extensions';
+import type { IRenderingContext } from '../IRenderer';
+import type { ExtensionMetadata } from '../extensions';
+import { ExtensionType } from '../extensions';
 
 let UID = 0;
 // default sync data so we don't create a new one each time!

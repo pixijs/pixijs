@@ -1,5 +1,5 @@
 import { EventBoundary } from './EventBoundary';
-import { FederatedMouseEvent } from './FederatedMouseEvent';
+import type { FederatedMouseEvent } from './FederatedMouseEvent';
 import { FederatedPointerEvent } from './FederatedPointerEvent';
 import { FederatedWheelEvent } from './FederatedWheelEvent';
 

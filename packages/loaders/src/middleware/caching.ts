@@ -1,5 +1,5 @@
-import { Dict } from '@pixi/utils';
-import { LoaderResource } from '../LoaderResource';
+import type { Dict } from '@pixi/utils';
+import type { LoaderResource } from '../LoaderResource';
 
 // a simple in-memory cache for resources
 const cache: Dict<any> = {};

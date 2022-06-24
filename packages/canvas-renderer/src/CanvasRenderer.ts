@@ -1,28 +1,29 @@
 import {
-    RenderTexture,
-    IRenderableObject,
-    GenerateTextureSystem,
-    SystemManager, IRenderer,
-    BackgroundSystem,
-    ViewSystem,
-    PluginSystem,
-    StartupSystem,
-    StartupOptions,
-    IGenerateTextureOptions,
+    SystemManager,
     extensions,
     ExtensionType
 } from '@pixi/core';
 import { CanvasMaskSystem } from './CanvasMaskSystem';
-import { BLEND_MODES, RENDERER_TYPE } from '@pixi/constants';
-import { Matrix, Rectangle } from '@pixi/math';
+import type { BLEND_MODES, RENDERER_TYPE } from '@pixi/constants';
+import type { Matrix, Rectangle } from '@pixi/math';
 import type { DisplayObject } from '@pixi/display';
 import type {
     IRendererOptions,
     IRendererPlugins,
     IRendererRenderOptions
-} from '@pixi/core';
+    ,
+    RenderTexture,
+    IRenderableObject,
+    GenerateTextureSystem, IRenderer,
+    BackgroundSystem,
+    ViewSystem,
+    PluginSystem,
+    StartupSystem,
+    StartupOptions,
+    IGenerateTextureOptions } from '@pixi/core';
 
-import { CanvasContextSystem, SmoothingEnabledProperties } from './CanvasContextSystem';
+import type { SmoothingEnabledProperties } from './CanvasContextSystem';
+import { CanvasContextSystem } from './CanvasContextSystem';
 import { CanvasObjectRendererSystem } from './CanvasObjectRendererSystem';
 import { settings } from '@pixi/settings';
 import { deprecation } from '@pixi/utils';
