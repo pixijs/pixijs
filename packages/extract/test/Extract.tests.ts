@@ -40,7 +40,7 @@ describe('Extract', () =>
     it('should extract with no arguments', () =>
     {
         const renderer = new Renderer();
-        const extract = renderer.extract as Extract;
+        const extract = renderer.extract;
 
         expect(extract.canvas(undefined)).toBeInstanceOf(HTMLCanvasElement);
         expect(extract.base64(undefined)).toBeString();
