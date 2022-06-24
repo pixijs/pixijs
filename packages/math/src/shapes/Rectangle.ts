@@ -1,5 +1,5 @@
 import { SHAPES } from '../const';
-import { Matrix } from '../Matrix';
+import type { Matrix } from '../Matrix';
 import { Point } from '../Point';
 
 const tempPoints = [new Point(), new Point(), new Point(), new Point()];

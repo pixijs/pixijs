@@ -1,4 +1,5 @@
-import { Polygon, SHAPES } from '@pixi/math';
+import type { Polygon } from '@pixi/math';
+import { SHAPES } from '@pixi/math';
 
 import type { CanvasRenderer } from '../CanvasRenderer';
 import type { Graphics } from '@pixi/graphics';

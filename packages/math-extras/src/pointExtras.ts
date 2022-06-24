@@ -1,4 +1,5 @@
-import { Point, IPointData, ObservablePoint } from '@pixi/math';
+import type { IPointData } from '@pixi/math';
+import { Point, ObservablePoint } from '@pixi/math';
 
 const mixins: any = {
     /**
