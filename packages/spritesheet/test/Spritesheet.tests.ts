@@ -1,5 +1,7 @@
-import { ISpritesheetData, ISpritesheetFrameData, Spritesheet } from '@pixi/spritesheet';
-import { BaseTexture, ImageResource, Texture } from '@pixi/core';
+import type { ISpritesheetData, ISpritesheetFrameData } from '@pixi/spritesheet';
+import { Spritesheet } from '@pixi/spritesheet';
+import type { ImageResource } from '@pixi/core';
+import { BaseTexture, Texture } from '@pixi/core';
 import path from 'path';
 
 describe('Spritesheet', () =>

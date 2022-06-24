@@ -1,6 +1,6 @@
 import { MASK_TYPES } from '@pixi/constants';
 import { settings } from '@pixi/settings';
-import { ISpriteMaskFilter } from '@pixi/core';
+import type { ISpriteMaskFilter } from '@pixi/core';
 
 import type { COLOR_MASK_BITS, MSAA_QUALITY } from '@pixi/constants';
 import type { Rectangle, Matrix } from '@pixi/math';

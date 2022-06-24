@@ -1,6 +1,6 @@
 import { AbstractMultiResource } from './AbstractMultiResource';
 import { TARGETS } from '@pixi/constants';
-import { BaseTexture } from '../BaseTexture';
+import type { BaseTexture } from '../BaseTexture';
 
 import type { BaseImageResource } from './BaseImageResource';
 import type { Renderer } from '../../Renderer';

@@ -1,13 +1,16 @@
 import { Ticker, UPDATE_PRIORITY } from '@pixi/ticker';
 import { DisplayObject, TemporaryDisplayObject } from '@pixi/display';
-import { InteractionData, InteractivePointerEvent } from './InteractionData';
-import { InteractionEvent, InteractionCallback } from './InteractionEvent';
+import type { InteractivePointerEvent } from './InteractionData';
+import { InteractionData } from './InteractionData';
+import type { InteractionCallback } from './InteractionEvent';
+import { InteractionEvent } from './InteractionEvent';
 import { InteractionTrackingData } from './InteractionTrackingData';
 import { TreeSearch } from './TreeSearch';
 import { EventEmitter } from '@pixi/utils';
 import { interactiveTarget } from './interactiveTarget';
 
-import { AbstractRenderer, ExtensionMetadata, ExtensionType } from '@pixi/core';
+import type { AbstractRenderer, ExtensionMetadata } from '@pixi/core';
+import { ExtensionType } from '@pixi/core';
 import type { Point, IPointData } from '@pixi/math';
 import type { Dict } from '@pixi/utils';
 

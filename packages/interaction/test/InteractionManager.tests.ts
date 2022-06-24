@@ -9,7 +9,8 @@ import { CanvasSpriteRenderer } from '@pixi/canvas-sprite';
 import { Sprite } from '@pixi/sprite';
 
 import '@pixi/canvas-display';
-import { extensions, Texture } from '@pixi/core';
+import type { Texture } from '@pixi/core';
+import { extensions } from '@pixi/core';
 
 describe('InteractionManager', () =>
 {

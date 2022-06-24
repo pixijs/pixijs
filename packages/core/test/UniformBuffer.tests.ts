@@ -1,3 +1,5 @@
+import type {
+    IRenderingContext } from '@pixi/core';
 import {
     Shader,
     createUBOElements,
@@ -6,8 +8,7 @@ import {
     Buffer,
     UniformGroup,
     generateProgram,
-    getTestContext,
-    IRenderingContext,
+    getTestContext
 } from '@pixi/core';
 
 import { skipHello } from '@pixi/utils';

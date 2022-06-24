@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { CanvasRenderer } from '@pixi/canvas-renderer';
 import { Ticker } from '@pixi/ticker';
-import { Point, Rectangle } from '@pixi/math';
-import { Container } from '@pixi/display';
+import type { Point } from '@pixi/math';
+import { Rectangle } from '@pixi/math';
+import type { Container } from '@pixi/display';
 
 const { system } = Ticker;
 
