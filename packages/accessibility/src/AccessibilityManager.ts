@@ -4,9 +4,9 @@ import { accessibleTarget } from './accessibleTarget';
 
 import type { Rectangle } from '@pixi/math';
 import type { Container } from '@pixi/display';
-import { ExtensionMetadata, ExtensionType } from '@pixi/core';
+import { ExtensionType } from '@pixi/core';
 import type { IAccessibleHTMLElement } from './accessibleTarget';
-import type { IRenderer } from '@pixi/core';
+import type { IRenderer, ExtensionMetadata } from '@pixi/core';
 
 // add some extra variables to the container..
 DisplayObject.mixin(accessibleTarget);

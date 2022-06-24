@@ -1,4 +1,5 @@
-import { Loader, LoaderResource } from '@pixi/loaders';
+import type { Loader } from '@pixi/loaders';
+import { LoaderResource } from '@pixi/loaders';
 
 const splitPathRe = /^(\/?|)([\s\S]*?)((?:\.{1,2}|[^/]+?|)(\.[^./]*|))(?:[/]*)$/;
 

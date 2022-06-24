@@ -1,4 +1,5 @@
-import { ExtensionMetadata, ExtensionType } from '@pixi/core';
+import type { ExtensionMetadata } from '@pixi/core';
+import { ExtensionType } from '@pixi/core';
 import { UPDATE_PRIORITY } from './const';
 import { Ticker } from './Ticker';
 

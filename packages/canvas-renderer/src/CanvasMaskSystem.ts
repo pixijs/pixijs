@@ -1,8 +1,10 @@
-import { Polygon, SHAPES } from '@pixi/math';
+import type { Polygon } from '@pixi/math';
+import { SHAPES } from '@pixi/math';
 
 import type { CanvasRenderer } from './CanvasRenderer';
 import type { Graphics } from '@pixi/graphics';
-import { ExtensionMetadata, ExtensionType, ISystem, MaskData } from '@pixi/core';
+import type { ExtensionMetadata, ISystem, MaskData } from '@pixi/core';
+import { ExtensionType } from '@pixi/core';
 import type { Container } from '@pixi/display';
 
 /**

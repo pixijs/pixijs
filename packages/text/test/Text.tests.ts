@@ -3,7 +3,7 @@ import { Sprite } from '@pixi/sprite';
 import { skipHello } from '@pixi/utils';
 import { settings } from '@pixi/settings';
 import { Renderer } from '@pixi/core';
-import { IDestroyOptions } from '@pixi/display';
+import type { IDestroyOptions } from '@pixi/display';
 
 skipHello();
 

@@ -1,6 +1,7 @@
 import { BaseTexture, ExtensionType } from '@pixi/core';
 import { Graphics } from '@pixi/graphics';
-import { BasePrepare, IDisplayObjectExtended } from './BasePrepare';
+import type { IDisplayObjectExtended } from './BasePrepare';
+import { BasePrepare } from './BasePrepare';
 
 import type { Renderer, IRenderer, ISystem, ExtensionMetadata } from '@pixi/core';
 

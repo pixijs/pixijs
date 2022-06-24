@@ -23,10 +23,10 @@ export * from './QuadraticUtils';
 export * from './BatchPart';
 
 // for type only
-import { BatchPart } from './BatchPart';
+import type { BatchPart } from './BatchPart';
 import { SHAPES } from '@pixi/math';
-import { BatchDrawCall } from '@pixi/core';
-import { IShapeBuildCommand } from './IShapeBuildCommand';
+import type { BatchDrawCall } from '@pixi/core';
+import type { IShapeBuildCommand } from './IShapeBuildCommand';
 
 /**
  * Map of fill commands for each shape type.

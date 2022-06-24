@@ -1,5 +1,6 @@
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
-import { ExtensionMetadata, ExtensionType, Renderer } from '@pixi/core';
+import type { ExtensionMetadata, Renderer } from '@pixi/core';
+import { ExtensionType } from '@pixi/core';
 import type { IApplicationOptions } from './Application';
 
 /**

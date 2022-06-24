@@ -19,7 +19,8 @@ import type { Renderer } from '../Renderer';
 import type { Shader } from '../shader/Shader';
 import type { Texture } from '../textures/Texture';
 import type { BLEND_MODES } from '@pixi/constants';
-import { ExtensionMetadata, extensions, ExtensionType } from '../extensions';
+import type { ExtensionMetadata } from '../extensions';
+import { extensions, ExtensionType } from '../extensions';
 
 /**
  * Interface for elements like Sprite, Mesh etc. for batching.

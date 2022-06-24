@@ -1,4 +1,4 @@
-import { Program } from '../Program';
+import type { Program } from '../Program';
 import type { IGLUniformData } from '../GLProgram';
 import { GLProgram } from '../GLProgram';
 import { compileShader } from './compileShader';
@@ -6,7 +6,7 @@ import { defaultValue } from './defaultValue';
 import { getAttributeData } from './getAttributeData';
 import { getUniformData } from './getUniformData';
 import { logProgramError } from './logProgramError';
-import { IRenderingContext } from '../../IRenderer';
+import type { IRenderingContext } from '../../IRenderer';
 
 /**
  * generates a WebGL Program object from a high level Pixi Program.

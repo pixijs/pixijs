@@ -1,10 +1,10 @@
-import { DEG_TO_RAD, Matrix, Point, RAD_TO_DEG, Rectangle, Transform } from '@pixi/math';
+import { DEG_TO_RAD, RAD_TO_DEG, Rectangle, Transform } from '@pixi/math';
 import { EventEmitter } from '@pixi/utils';
 import { Bounds } from './Bounds';
 
 import type { Container } from './Container';
 import type { Filter, MaskData, Renderer } from '@pixi/core';
-import type { IPointData, ObservablePoint } from '@pixi/math';
+import type { IPointData, ObservablePoint, Matrix, Point } from '@pixi/math';
 import type { Dict } from '@pixi/utils';
 
 export interface IDestroyOptions
@@ -965,14 +965,18 @@ export abstract class DisplayObject extends EventEmitter
 
         if (this._mask)
         {
-            const maskObject = ((this._mask as MaskData).maskObject || this._mask) as Container;
+            const maskObject = ((this._mask as MaskData).isMaskData
+                ? (this._mask as MaskData).maskObject : this._mask) as Container;
 
-            maskObject._maskRefCount--;
-
-            if (maskObject._maskRefCount === 0)
+            if (maskObject)
             {
-                maskObject.renderable = true;
-                maskObject.isMask = false;
+                maskObject._maskRefCount--;
+
+                if (maskObject._maskRefCount === 0)
+                {
+                    maskObject.renderable = true;
+                    maskObject.isMask = false;
+                }
             }
         }
 
@@ -980,15 +984,19 @@ export abstract class DisplayObject extends EventEmitter
 
         if (this._mask)
         {
-            const maskObject = ((this._mask as MaskData).maskObject || this._mask) as Container;
+            const maskObject = ((this._mask as MaskData).isMaskData
+                ? (this._mask as MaskData).maskObject : this._mask) as Container;
 
-            if (maskObject._maskRefCount === 0)
+            if (maskObject)
             {
-                maskObject.renderable = false;
-                maskObject.isMask = true;
-            }
+                if (maskObject._maskRefCount === 0)
+                {
+                    maskObject.renderable = false;
+                    maskObject.isMask = true;
+                }
 
-            maskObject._maskRefCount++;
+                maskObject._maskRefCount++;
+            }
         }
     }
 }

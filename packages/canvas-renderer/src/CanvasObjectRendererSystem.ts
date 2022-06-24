@@ -1,18 +1,19 @@
-import { Matrix } from '@pixi/math';
+import type { Matrix } from '@pixi/math';
 
 import type { CanvasRenderer } from './CanvasRenderer';
-import {
+import type {
     BaseRenderTexture,
-    CanvasResource,
     ExtensionMetadata,
-    ExtensionType,
     IRendererRenderOptions,
     ISystem,
     RenderTexture } from '@pixi/core';
+import {
+    CanvasResource,
+    ExtensionType } from '@pixi/core';
 import { BLEND_MODES } from '@pixi/constants';
 import { CanvasRenderTarget, hex2string, rgb2hex } from '@pixi/utils';
-import { DisplayObject } from 'pixi.js';
-import { CrossPlatformCanvasRenderingContext2D } from './CanvasContextSystem';
+import type { DisplayObject } from 'pixi.js';
+import type { CrossPlatformCanvasRenderingContext2D } from './CanvasContextSystem';
 
 /**
  * system that provides a render function that focussing on rendering Pixi Scene Graph objects

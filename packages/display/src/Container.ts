@@ -1,7 +1,7 @@
 import { settings } from '@pixi/settings';
 import { removeItems } from '@pixi/utils';
 import { DisplayObject } from './DisplayObject';
-import { Matrix, Rectangle } from '@pixi/math';
+import type { Matrix, Rectangle } from '@pixi/math';
 import { MASK_TYPES } from '@pixi/constants';
 
 import type { MaskData, Renderer } from '@pixi/core';
@@ -467,10 +467,18 @@ export class Container extends DisplayObject
             // TODO: filter+mask, need to mask both somehow
             if (child._mask)
             {
-                const maskObject = ((child._mask as MaskData).maskObject || child._mask) as Container;
+                const maskObject = ((child._mask as MaskData).isMaskData
+                    ? (child._mask as MaskData).maskObject : child._mask) as Container;
 
-                maskObject.calculateBounds();
-                this._bounds.addBoundsMask(child._bounds, maskObject._bounds);
+                if (maskObject)
+                {
+                    maskObject.calculateBounds();
+                    this._bounds.addBoundsMask(child._bounds, maskObject._bounds);
+                }
+                else
+                {
+                    this._bounds.addBounds(child._bounds);
+                }
             }
             else if (child.filterArea)
             {

@@ -1,4 +1,4 @@
-import { BitmapFontData } from '../BitmapFontData';
+import type { BitmapFontData } from '../BitmapFontData';
 import { XMLFormat } from './XMLFormat';
 
 /**
