@@ -1,5 +1,5 @@
 import { TYPES } from '@pixi/constants';
-import { ExtensionMetadata, ExtensionType, ObjectRenderer, Shader, State } from '@pixi/core';
+import { ExtensionType, ObjectRenderer, Shader, State } from '@pixi/core';
 import { Matrix } from '@pixi/math';
 import { correctBlendMode, premultiplyRgba, premultiplyTint } from '@pixi/utils';
 import { ParticleBuffer } from './ParticleBuffer';
@@ -8,7 +8,7 @@ import vertex from './particles.vert';
 
 import type { DisplayObject } from '@pixi/display';
 import type { ParticleContainer } from './ParticleContainer';
-import type { Renderer } from '@pixi/core';
+import type { Renderer, ExtensionMetadata } from '@pixi/core';
 import type { Sprite } from '@pixi/sprite';
 
 export interface IParticleRendererProperty

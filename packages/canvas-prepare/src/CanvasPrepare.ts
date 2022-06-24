@@ -1,7 +1,7 @@
-import { BaseTexture, ExtensionMetadata, ExtensionType } from '@pixi/core';
+import { BaseTexture, ExtensionType } from '@pixi/core';
 import { BasePrepare } from '@pixi/prepare';
 
-import type { AbstractRenderer } from '@pixi/core';
+import type { AbstractRenderer, ExtensionMetadata } from '@pixi/core';
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
 import type { IDisplayObjectExtended } from '@pixi/prepare';
 

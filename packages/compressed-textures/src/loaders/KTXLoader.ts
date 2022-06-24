@@ -1,6 +1,8 @@
 import { ALPHA_MODES, FORMATS, MIPMAP_MODES, TYPES } from '@pixi/constants';
-import { BaseTexture, BufferResource, ExtensionMetadata, ExtensionType, Texture } from '@pixi/core';
-import { CompressedLevelBuffer, CompressedTextureResource } from '../resources/CompressedTextureResource';
+import type { ExtensionMetadata } from '@pixi/core';
+import { BaseTexture, BufferResource, ExtensionType, Texture } from '@pixi/core';
+import type { CompressedLevelBuffer } from '../resources/CompressedTextureResource';
+import { CompressedTextureResource } from '../resources/CompressedTextureResource';
 import { LoaderResource } from '@pixi/loaders';
 import { INTERNAL_FORMAT_TO_BYTES_PER_PIXEL } from '../const';
 import { registerCompressedTextures } from './registerCompressedTextures';

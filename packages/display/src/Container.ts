@@ -1,7 +1,7 @@
 import { settings } from '@pixi/settings';
 import { removeItems } from '@pixi/utils';
 import { DisplayObject } from './DisplayObject';
-import { Matrix, Rectangle } from '@pixi/math';
+import type { Matrix, Rectangle } from '@pixi/math';
 import { MASK_TYPES } from '@pixi/constants';
 
 import type { MaskData, Renderer } from '@pixi/core';

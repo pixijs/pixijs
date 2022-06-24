@@ -2,7 +2,8 @@ import { CompressedTextureResource } from '../resources';
 import { INTERNAL_FORMATS, INTERNAL_FORMAT_TO_BYTES_PER_PIXEL } from '../const';
 import { LoaderResource } from '@pixi/loaders';
 import { registerCompressedTextures } from './registerCompressedTextures';
-import { ExtensionMetadata, ExtensionType } from '@pixi/core';
+import type { ExtensionMetadata } from '@pixi/core';
+import { ExtensionType } from '@pixi/core';
 
 // Set DDS files to be loaded as an ArrayBuffer
 LoaderResource.setExtensionXhrType('dds', LoaderResource.XHR_RESPONSE_TYPE.BUFFER);

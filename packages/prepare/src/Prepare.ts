@@ -1,8 +1,9 @@
-import { BaseTexture, ExtensionMetadata, ExtensionType } from '@pixi/core';
+import { BaseTexture, ExtensionType } from '@pixi/core';
 import { Graphics } from '@pixi/graphics';
-import { BasePrepare, IDisplayObjectExtended } from './BasePrepare';
+import type { IDisplayObjectExtended } from './BasePrepare';
+import { BasePrepare } from './BasePrepare';
 
-import type { AbstractRenderer, Renderer } from '@pixi/core';
+import type { AbstractRenderer, Renderer, ExtensionMetadata } from '@pixi/core';
 
 /**
  * Built-in hook to upload PIXI.Texture objects to the GPU.

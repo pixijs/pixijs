@@ -1,12 +1,13 @@
 import { MASK_TYPES, COLOR_MASK_BITS } from '@pixi/constants';
+import type {
+    IFilterTarget,
+    IMaskTarget } from '@pixi/core';
 import {
     BaseTexture,
     BatchRenderer,
     CanvasResource,
     extensions,
     Filter,
-    IFilterTarget,
-    IMaskTarget,
     MaskData,
     Renderer,
     RenderTexture,

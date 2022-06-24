@@ -1,4 +1,5 @@
-import { Bounds, Container } from '@pixi/display';
+import type { Bounds } from '@pixi/display';
+import { Container } from '@pixi/display';
 import { Texture, BaseTexture } from '@pixi/core';
 import { Point, Rectangle } from '@pixi/math';
 import { Sprite } from '@pixi/sprite';

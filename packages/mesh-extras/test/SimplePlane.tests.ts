@@ -1,4 +1,5 @@
-import { PlaneGeometry, SimplePlane } from '@pixi/mesh-extras';
+import type { PlaneGeometry } from '@pixi/mesh-extras';
+import { SimplePlane } from '@pixi/mesh-extras';
 import { skipHello } from '@pixi/utils';
 import { Loader } from '@pixi/loaders';
 import { Point } from '@pixi/math';

@@ -1,4 +1,4 @@
-import { IAttributeData } from '../Program';
+import type { IAttributeData } from '../Program';
 import { mapSize } from './mapSize';
 import { mapType } from './mapType';
 

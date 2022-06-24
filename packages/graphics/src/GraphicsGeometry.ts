@@ -7,21 +7,22 @@ import {
     DRAW_CALL_POOL,
 } from './utils';
 
+import type {
+    Texture } from '@pixi/core';
 import {
     BatchGeometry,
     BatchDrawCall,
     BatchTextureArray,
-    BaseTexture,
-    Texture,
+    BaseTexture
 } from '@pixi/core';
 
 import { DRAW_MODES, WRAP_MODES } from '@pixi/constants';
-import { Point, Matrix } from '@pixi/math';
+import { Point } from '@pixi/math';
 import { GraphicsData } from './GraphicsData';
 import { premultiplyTint } from '@pixi/utils';
 import { Bounds } from '@pixi/display';
 
-import type { Circle, Ellipse, Polygon, Rectangle, RoundedRectangle, IPointData } from '@pixi/math';
+import type { Circle, Ellipse, Polygon, Rectangle, RoundedRectangle, IPointData, Matrix } from '@pixi/math';
 import type { FillStyle } from './styles/FillStyle';
 import type { LineStyle } from './styles/LineStyle';
 

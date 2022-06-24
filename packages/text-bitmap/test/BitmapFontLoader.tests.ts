@@ -1,9 +1,12 @@
 import path from 'path';
 import fs from 'fs';
-import { Loader, LoaderResource } from '@pixi/loaders';
+import type { LoaderResource } from '@pixi/loaders';
+import { Loader } from '@pixi/loaders';
 import { BaseTextureCache, TextureCache } from '@pixi/utils';
-import { Texture, BaseTexture, ImageResource } from '@pixi/core';
-import { ISpritesheetData, Spritesheet } from '@pixi/spritesheet';
+import type { ImageResource } from '@pixi/core';
+import { Texture, BaseTexture } from '@pixi/core';
+import type { ISpritesheetData } from '@pixi/spritesheet';
+import { Spritesheet } from '@pixi/spritesheet';
 import { BitmapFont, BitmapFontLoader } from '@pixi/text-bitmap';
 
 describe('BitmapFontLoader', () =>

@@ -1,4 +1,4 @@
-import { GLProgram } from './GLProgram';
+import type { GLProgram } from './GLProgram';
 import { generateUniformsSync, unsafeEvalSupported } from './utils';
 
 import type { ISystem } from '../ISystem';
