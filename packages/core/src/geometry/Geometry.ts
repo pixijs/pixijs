@@ -4,7 +4,8 @@ import { interleaveTypedArrays } from './utils/interleaveTypedArrays';
 import { getBufferType } from '@pixi/utils';
 import { Runner } from '@pixi/runner';
 
-import { BUFFER_TYPE, TYPES } from '@pixi/constants';
+import type { TYPES } from '@pixi/constants';
+import { BUFFER_TYPE } from '@pixi/constants';
 import type { IArrayBuffer } from './Buffer';
 import type { Dict } from '@pixi/utils';
 

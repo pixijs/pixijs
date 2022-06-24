@@ -1,4 +1,4 @@
-import { TextStyle, TextStyleWhiteSpace } from './TextStyle';
+import type { TextStyle, TextStyleWhiteSpace } from './TextStyle';
 
 interface IFontMetrics
 {

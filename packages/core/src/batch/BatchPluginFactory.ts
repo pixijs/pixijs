@@ -6,7 +6,8 @@ import defaultVertex from './texture.vert';
 import defaultFragment from './texture.frag';
 
 import type { Renderer } from '../Renderer';
-import { ExtensionMetadata, ExtensionType } from '../extensions';
+import type { ExtensionMetadata } from '../extensions';
+import { ExtensionType } from '../extensions';
 
 export interface IBatchFactoryOptions
 {

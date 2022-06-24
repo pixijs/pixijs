@@ -1,4 +1,4 @@
-import { Dict } from '@pixi/utils';
+import type { Dict } from '@pixi/utils';
 import { Signal } from './base/Signal';
 import { parseUri } from './base/parseUri';
 import type { IBaseTextureOptions, Texture } from '@pixi/core';

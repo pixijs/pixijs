@@ -1,4 +1,5 @@
-import { Renderer, Framebuffer, ObjectRenderer, extensions, BatchRenderer } from '@pixi/core';
+import type { ObjectRenderer } from '@pixi/core';
+import { Renderer, Framebuffer, extensions, BatchRenderer } from '@pixi/core';
 import { Graphics } from '@pixi/graphics';
 import { settings } from '@pixi/settings';
 import { ENV, MSAA_QUALITY } from '@pixi/constants';

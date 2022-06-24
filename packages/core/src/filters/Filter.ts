@@ -1,16 +1,15 @@
-import { Shader } from '../shader/Shader';
-import { Program } from '../shader/Program';
-import { State } from '../state/State';
 import { settings } from '@pixi/settings';
-import { MSAA_QUALITY } from '@pixi/constants';
-import defaultVertex from './defaultFilter.vert';
+import { Program } from '../shader/Program';
+import { Shader } from '../shader/Shader';
+import { State } from '../state/State';
 import defaultFragment from './defaultFilter.frag';
+import defaultVertex from './defaultFilter.vert';
 
-import type { RenderTexture } from '../renderTexture/RenderTexture';
-import type { FilterSystem } from './FilterSystem';
-import type { FilterState } from './FilterState';
-import type { BLEND_MODES, CLEAR_MODES } from '@pixi/constants';
+import type { MSAA_QUALITY, BLEND_MODES, CLEAR_MODES } from '@pixi/constants';
 import type { Dict } from '@pixi/utils';
+import type { RenderTexture } from '../renderTexture/RenderTexture';
+import type { FilterState } from './FilterState';
+import type { FilterSystem } from './FilterSystem';
 
 /**
  * A filter is a special shader that applies post-processing effects to an input texture and writes into an output
