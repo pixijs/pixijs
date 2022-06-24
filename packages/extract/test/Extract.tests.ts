@@ -26,7 +26,7 @@ describe('Extract', () =>
     {
         const renderer = new Renderer();
         const sprite = new Sprite(Texture.WHITE);
-        const extract = renderer.extract as Extract;
+        const extract = renderer.extract;
 
         expect(extract.canvas(sprite)).toBeInstanceOf(HTMLCanvasElement);
         expect(extract.base64(sprite)).toBeString();
