@@ -200,14 +200,12 @@ class Loader
      * unloaded assets are destroyed. A great way to free up memory for you app.
      * The parser that created the asset, will be the one that unloads it.
      * @example
-     * ```
      * // single asset:
      * const asset = await Loader.load('cool.png');
      *
      * await Loader.unload('cool.png');
      *
      * console.log(asset.destroyed); // true
-     * ```
      * @param assetsToUnloadIn - a bunch of urls that you want to unload, or a single one!
      */
     public async unload(

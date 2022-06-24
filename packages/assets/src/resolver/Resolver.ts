@@ -71,8 +71,8 @@ export interface ResolveURLParser
  * At its most basic is can be used for Aliases:
  *
  * ```
- * resolver.add('foo`, 'bar`);
- * resolver.resolveUrl('foo`) // => 'bar`
+ * resolver.add('foo', 'bar');
+ * resolver.resolveUrl('foo') // => 'bar'
  * ```
  *
  * It can also be used to resolve the most appropriate asset for a given url:
@@ -85,9 +85,9 @@ export interface ResolveURLParser
  *      }
  *  })
  *
- *  resolver.add('foo`, ['bar@2x.webp', 'bar@2x.png', 'bar.webp', 'bar.png']);
+ *  resolver.add('foo', ['bar@2x.webp', 'bar@2x.png', 'bar.webp', 'bar.png']);
  *
- *  resolver.resolveUrl('foo`) // => 'bar@2x.webp`
+ *  resolver.resolveUrl('foo') // => 'bar@2x.webp'
  * ```
  * Other features include:
  * - ability to process a manifest file to get the correct understanding of how to resolve all assets
@@ -118,14 +118,14 @@ export class Resolver
      * @example
      * resolver.prefer({
      *     // first look for something with the correct format, and then then correct resolution
-     *     priority: ['format', 'resolution`],
+     *     priority: ['format', 'resolution'],
      *     params:{
      *         format:'webp', // prefer webp images
      *         resolution: 2, // prefer a resolution of 2
      *     }
      * })
-     * resolver.add('foo`, ['bar@2x.webp', 'bar@2x.png', 'bar.webp', 'bar.png']);
-     * resolver.resolveUrl('foo`) // => 'bar@2x.webp`
+     * resolver.add('foo', ['bar@2x.webp', 'bar@2x.png', 'bar.webp', 'bar.png']);
+     * resolver.resolveUrl('foo') // => 'bar@2x.webp'
      * @param preferOrders - the prefer options
      */
     public prefer(...preferOrders: PreferOrder[]): void
@@ -148,8 +148,8 @@ export class Resolver
      * Set the base path to append to all urls when resolving
      * @example
      * resolver.basePath = 'https://home.com/';
-     * resolver.add('foo`, 'bar.ong`);
-     * resolver.resolveUrl('foo`, 'bar.png`); // => 'https://home.com/bar.png`
+     * resolver.add('foo', 'bar.ong');
+     * resolver.resolveUrl('foo', 'bar.png'); // => 'https://home.com/bar.png'
      */
     public set basePath(basePath: string)
     {
@@ -305,7 +305,7 @@ export class Resolver
      * // add custom data attached to the resolver
      * Resolver.add(
      *     'bunnyBooBooSmooth',
-     *     'bunny{png,webp}`,
+     *     'bunny{png,webp}',
      *     {scaleMode:SCALE_MODES.NEAREST} // base texture options
      * );
      *
