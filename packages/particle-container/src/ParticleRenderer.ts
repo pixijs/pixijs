@@ -143,7 +143,7 @@ export class ParticleRenderer extends ObjectRenderer
         }
 
         const baseTexture = children[0]._texture.baseTexture;
-        const premultiplied = !!baseTexture.alphaMode;
+        const premultiplied = baseTexture.alphaMode > 0;
 
         // if the uvs have not updated then no point rendering just yet!
         this.state.blendMode = correctBlendMode(container.blendMode, premultiplied);
