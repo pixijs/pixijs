@@ -1,4 +1,4 @@
-export async function DetectAvif(): Promise<boolean>
+export async function detectAvif(): Promise<boolean>
 {
     if (!self.createImageBitmap) return false;
 

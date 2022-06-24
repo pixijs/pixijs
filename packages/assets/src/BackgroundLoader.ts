@@ -1,4 +1,5 @@
-import type { LoadAsset, Loader } from './loader';
+import type { LoadAsset } from './loader';
+import type { Loader } from './loader/Loader';
 
 /**
  * Quietly Loads assets in the background.

@@ -3,23 +3,23 @@ import { BackgroundLoader } from './BackgroundLoader';
 import { Cache } from './cache/Cache';
 import type {
     LoadAsset,
-    LoaderParser } from './loader';
+    LoaderParser
+} from './loader';
 import {
-    Loader,
     loadJson,
     loadSpritesheet,
     loadTextures,
-    loadWebFont,
+    loadWebFont
 } from './loader';
+import { Loader } from './loader/Loader';
 import { loadBitmapFont } from './loader/parsers/loadBitmapFont';
-import type { PreferOrder, ResolveAsset, ResolverBundle, ResolverManifest, ResolveURLParser } from './resolver/Resolver';
+import type { PreferOrder, ResolveAsset, ResolverBundle, ResolverManifest, ResolveURLParser } from './resolver';
+import { spriteSheetUrlParser, textureUrlParser } from './resolver';
 import { Resolver } from './resolver/Resolver';
 import { convertToList } from './utils/convertToList';
-import { DetectAvif } from './utils/DetectAvif';
-import { DetectWebp } from './utils/DetectWebp';
+import { detectAvif } from './utils/detections/detectAvif';
+import { detectWebp } from './utils/detections/detectWebp';
 import { isSingleItem } from './utils/isSingleItem';
-import { spriteSheetUrlParser } from './utils/spriteSheetUrlParser';
-import { textureUrlParser } from './utils/textureUrlParser';
 
 type ProgressCallback = (progress: number) => void;
 
@@ -289,12 +289,12 @@ export class AssetsClass
             format = ['avif', 'webp', 'png', 'jpg', 'jpeg'];
         }
 
-        if (!(await DetectWebp()))
+        if (!(await detectWebp()))
         {
             format = format.filter((format) => format !== 'webp');
         }
 
-        if (!(await DetectAvif()))
+        if (!(await detectAvif()))
         {
             format = format.filter((format) => format !== 'avif');
         }

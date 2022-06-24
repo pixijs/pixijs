@@ -1,19 +1,6 @@
-import { convertToList } from '../utils/convertToList';
-import { isSingleItem } from '../utils/isSingleItem';
-import { makeAbsoluteUrl } from '../utils/makeAbsoluteUrl';
+import { convertToList, isSingleItem, makeAbsoluteUrl } from '../utils';
 import type { LoaderParser } from './parsers/LoaderParser';
-
-export interface LoadAsset<T=any>
-{
-    src: string;
-    data?: T;
-}
-
-interface PromiseAndParser
-{
-    promise: Promise<any>
-    parser: LoaderParser
-}
+import { PromiseAndParser, LoadAsset } from './types';
 
 /**
  * The Loader is responsible for loading all assets, such as images, spritesheets, audio files, etc.
@@ -26,7 +13,7 @@ interface PromiseAndParser
  * @memberof PIXI
  * @class AssetLoader
  */
-class Loader
+export class Loader
 {
     /** All loader parsers registered */
     public parsers: LoaderParser[] = [];
@@ -235,5 +222,3 @@ class Loader
         await Promise.all(promises);
     }
 }
-
-export { Loader };

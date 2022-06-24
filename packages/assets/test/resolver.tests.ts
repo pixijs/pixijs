@@ -1,6 +1,6 @@
 import { Resolver } from '../src/resolver/Resolver';
-import { spriteSheetUrlParser } from '../src/utils/spriteSheetUrlParser';
-import { textureUrlParser } from '../src/utils/textureUrlParser';
+import { spriteSheetUrlParser } from '../src/resolver/parsers/spriteSheetUrlParser';
+import { textureUrlParser } from '../src/resolver';
 import { manifest } from './sampleManifest';
 
 describe('Resolver', () =>

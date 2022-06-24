@@ -1,70 +1,8 @@
 import { convertToList } from '../utils/convertToList';
 import { createStringVariations } from '../utils/createStringVariations';
 import { isSingleItem } from '../utils/isSingleItem';
-import { getBaseUrl, makeAbsoluteUrl } from '../utils/makeAbsoluteUrl';
-
-/**
- * A prefer order lets the resolver know which assets to prefere depending on the various parameters passed to it.
- * @memberof PIXI
- */
-export interface PreferOrder
-{
-    /** the importance order of the params */
-    priority?: string[];
-    // TODO @bigtimebuddy -need a better name than prepare..
-    params: {
-        [key: string]: any;
-    };
-}
-
-/**
- * the object returned when a key is resolved to an asset.
- * it will contain any additional information passed in the asset was added.
- * @memberof PIXI
- */
-export interface ResolveAsset extends Record<string, any>
-{
-    alias?: string[];
-    src: string;
-}
-
-export type ResolverAssetsArray = {
-    name: string | string[];
-    srcs: string | ResolveAsset[];
-}[];
-
-export type ResolverAssetsObject = Record<string, (string | ResolveAsset)>;
-
-/**
- * Structure of a bundle found in a manfest file
- * @memberof PIXI
- */
-export interface ResolverBundle
-{
-    name: string;
-    assets: ResolverAssetsArray | ResolverAssetsObject
-}
-
-/**
- * The expected format of a manifest. This would normally be auto generated ar made by the developer
- * @memberof PIXI
- */
-export type ResolverManifest = {
-    // room for more props as we go!
-    bundles: ResolverBundle[];
-};
-
-/**
- * Format for url parser, will test a string and if it pass will then parse it, turning it into an ResolveAsset
- * @memberof PIXI
- */
-export interface ResolveURLParser
-{
-    /** the test to perform on the url to determin if it should be parsed */
-    test: (url: string) => boolean;
-    /** the function that will convert the url into an object */
-    parse: (value: string) => ResolveAsset;
-}
+import { getBaseUrl, makeAbsoluteUrl } from '../utils/url/makeAbsoluteUrl';
+import { ResolveAsset, PreferOrder, ResolveURLParser, ResolverManifest, ResolverBundle } from './types';
 
 /**
  * A class that is responsible for resolving mapping asset urls to keys.
@@ -191,7 +129,6 @@ export class Resolver
      *
      *
      * // with a url parser the information such as resolution and file format could extracted from the url itself:
-     *
      * resolver.addUrlParser({
      *     test: loadTextures.test, // test if url ends in an image
      *     parse: (value: string) =>
@@ -217,6 +154,24 @@ export class Resolver
 
             this._parsers.push(parser);
         });
+    }
+
+    /**
+     * Remove a url parser from the resolver
+     * @param urlParsers - the url parser that you want to remove from the resolver
+     */
+    public removeURLParser(...urlParsers: ResolveURLParser[]): void
+    {
+        for (let i = urlParsers.length - 1; i >= 0; i--)
+        {
+            const parser = urlParsers[i];
+            const index = this._parsers.indexOf(parser);
+
+            if (index !== -1)
+            {
+                this._parsers.splice(index, 1);
+            }
+        }
     }
 
     /**
