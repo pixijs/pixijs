@@ -6,7 +6,6 @@ import { ParticleBuffer } from './ParticleBuffer';
 import fragment from './particles.frag';
 import vertex from './particles.vert';
 
-import type { DisplayObject } from '@pixi/display';
 import type { ParticleContainer } from './ParticleContainer';
 import type { Renderer, ExtensionMetadata } from '@pixi/core';
 import type { Sprite } from '@pixi/sprite';
@@ -237,7 +236,7 @@ export class ParticleRenderer extends ObjectRenderer
 
     /**
      * Uploads the vertices.
-     * @param children - the array of display objects to render
+     * @param children - the array of sprites to render
      * @param startIndex - the index to start from in the children array
      * @param amount - the amount of children that will have their vertices uploaded
      * @param array - The vertices to upload.
@@ -245,7 +244,7 @@ export class ParticleRenderer extends ObjectRenderer
      * @param offset - Offset to start at.
      */
     public uploadVertices(
-        children: DisplayObject[], startIndex: number, amount: number,
+        children: Sprite[], startIndex: number, amount: number,
         array: number[], stride: number, offset: number
     ): void
     {
@@ -256,7 +255,7 @@ export class ParticleRenderer extends ObjectRenderer
 
         for (let i = 0; i < amount; ++i)
         {
-            const sprite = children[startIndex + i] as Sprite;
+            const sprite = children[startIndex + i];
             const texture = sprite._texture;
             const sx = sprite.scale.x;
             const sy = sprite.scale.y;
@@ -300,7 +299,7 @@ export class ParticleRenderer extends ObjectRenderer
 
     /**
      * Uploads the position.
-     * @param children - the array of display objects to render
+     * @param children - the array of sprites to render
      * @param startIndex - the index to start from in the children array
      * @param amount - the amount of children that will have their positions uploaded
      * @param array - The vertices to upload.
@@ -308,7 +307,7 @@ export class ParticleRenderer extends ObjectRenderer
      * @param offset - Offset to start at.
      */
     public uploadPosition(
-        children: DisplayObject[], startIndex: number, amount: number,
+        children: Sprite[], startIndex: number, amount: number,
         array: number[], stride: number, offset: number
     ): void
     {
@@ -334,7 +333,7 @@ export class ParticleRenderer extends ObjectRenderer
 
     /**
      * Uploads the rotation.
-     * @param children - the array of display objects to render
+     * @param children - the array of sprites to render
      * @param startIndex - the index to start from in the children array
      * @param amount - the amount of children that will have their rotation uploaded
      * @param array - The vertices to upload.
@@ -342,7 +341,7 @@ export class ParticleRenderer extends ObjectRenderer
      * @param offset - Offset to start at.
      */
     public uploadRotation(
-        children: DisplayObject[], startIndex: number, amount: number,
+        children: Sprite[], startIndex: number, amount: number,
         array: number[], stride: number, offset: number
     ): void
     {
@@ -361,7 +360,7 @@ export class ParticleRenderer extends ObjectRenderer
 
     /**
      * Uploads the UVs.
-     * @param children - the array of display objects to render
+     * @param children - the array of sprites to render
      * @param startIndex - the index to start from in the children array
      * @param amount - the amount of children that will have their rotation uploaded
      * @param array - The vertices to upload.
@@ -369,13 +368,13 @@ export class ParticleRenderer extends ObjectRenderer
      * @param offset - Offset to start at.
      */
     public uploadUvs(
-        children: DisplayObject[], startIndex: number, amount: number,
+        children: Sprite[], startIndex: number, amount: number,
         array: number[], stride: number, offset: number
     ): void
     {
         for (let i = 0; i < amount; ++i)
         {
-            const textureUvs = (children[startIndex + i] as Sprite)._texture._uvs;
+            const textureUvs = children[startIndex + i]._texture._uvs;
 
             if (textureUvs)
             {
@@ -415,7 +414,7 @@ export class ParticleRenderer extends ObjectRenderer
 
     /**
      * Uploads the tint.
-     * @param children - the array of display objects to render
+     * @param children - the array of sprites to render
      * @param startIndex - the index to start from in the children array
      * @param amount - the amount of children that will have their rotation uploaded
      * @param array - The vertices to upload.
@@ -423,13 +422,13 @@ export class ParticleRenderer extends ObjectRenderer
      * @param offset - Offset to start at.
      */
     public uploadTint(
-        children: DisplayObject[], startIndex: number, amount: number,
+        children: Sprite[], startIndex: number, amount: number,
         array: number[], stride: number, offset: number
     ): void
     {
         for (let i = 0; i < amount; ++i)
         {
-            const sprite = children[startIndex + i] as Sprite;
+            const sprite = children[startIndex + i];
             const premultiplied = sprite._texture.baseTexture.alphaMode > 0;
             const alpha = sprite.alpha;
 
