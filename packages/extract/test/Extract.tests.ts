@@ -53,7 +53,7 @@ describe('Extract', () =>
     it('should extract a render texture', () =>
     {
         const renderer = new Renderer();
-        const extract = renderer.extract as Extract;
+        const extract = renderer.extract;
         const renderTexture = RenderTexture.create({ width: 10, height: 10 });
         const sprite = new Sprite(Texture.WHITE);
         const frame = new Rectangle(1, 2, 5, 6);
