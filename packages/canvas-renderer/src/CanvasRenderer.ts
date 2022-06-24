@@ -18,7 +18,6 @@ import { Matrix, Rectangle } from '@pixi/math';
 import type { DisplayObject } from '@pixi/display';
 import type {
     IRendererOptions,
-    IRendererPlugin,
     IRendererPlugins,
     IRendererRenderOptions
 } from '@pixi/core';
@@ -28,10 +27,8 @@ import { CanvasObjectRendererSystem } from './CanvasObjectRendererSystem';
 import { settings } from '@pixi/settings';
 import { deprecation } from '@pixi/utils';
 
-export interface ICanvasRendererPluginConstructor
-{
-    new (renderer: CanvasRenderer, options?: any): IRendererPlugin;
-}
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface CanvasRenderer extends GlobalMixins.CanvasRenderer {}
 
 /**
  * The CanvasRenderer draws the scene and all its content onto a 2d canvas.
@@ -56,11 +53,13 @@ export interface ICanvasRendererPluginConstructor
  * | {@link PIXI.EventSystem}             | This manages UI events.                                                       |
  * | {@link PIXI.GenerateTextureSystem}   | This adds the ability to generate textures from any PIXI.DisplayObject        |
  *
- * | Pixi high level Systems              | Set of Pixi specific systems designed to work with Pixi objects               |
+ * | PixiJS High-Level Systems            | Set of specific systems designed to work with PixiJS objects                  |
  * | ------------------------------------ | ----------------------------------------------------------------------------- |
  * | {@link PIXI.CanvasContextSystem}     | This manages the canvas `2d` contexts and their state                         |
  * | {@link PIXI.CanvasMaskSystem}        | This manages masking operations.                                              |
  * | {@link PIXI.CanvasRenderSystem}      | This adds the ability to render a PIXI.DisplayObject                          |
+ * | {@link PIXI.CanvasExtract}           | This extracts image data from a PIXI.DisplayObject                            |
+ * | {@link PIXI.CanvasPrepare}           | This prepares a PIXI.DisplayObject async for rendering                        |
  *
  * The breadth of the API surface provided by the renderer is contained within these systems.
  * @class
@@ -559,9 +558,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
      * @member {object} plugins
      * @readonly
      * @property {PIXI.AccessibilityManager} accessibility Support tabbing interactive elements.
-     * @property {PIXI.CanvasExtract} extract Extract image data from renderer.
      * @property {PIXI.InteractionManager} interaction Handles mouse, touch and pointer events.
-     * @property {PIXI.CanvasPrepare} prepare Pre-render display objects.
      */
 }
 

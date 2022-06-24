@@ -1,9 +1,9 @@
-import { ExtensionMetadata, ExtensionType, RenderTexture } from '@pixi/core';
+import { ExtensionType, RenderTexture } from '@pixi/core';
 import { CanvasRenderTarget } from '@pixi/utils';
 import { Rectangle } from '@pixi/math';
 import { CanvasRenderer } from '@pixi/canvas-renderer';
 import type { DisplayObject } from '@pixi/display';
-import type { BaseRenderTexture } from '@pixi/core';
+import type { BaseRenderTexture, ISystem, ExtensionMetadata } from '@pixi/core';
 
 const TEMP_RECT = new Rectangle();
 
@@ -14,12 +14,12 @@ const TEMP_RECT = new Rectangle();
  * @class
  * @memberof PIXI
  */
-export class CanvasExtract
+export class CanvasExtract implements ISystem
 {
     /** @ignore */
     static extension: ExtensionMetadata = {
         name: 'extract',
-        type: ExtensionType.CanvasRendererPlugin,
+        type: ExtensionType.CanvasRendererSystem,
     };
 
     /** A reference to the current renderer */
