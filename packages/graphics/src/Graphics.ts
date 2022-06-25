@@ -155,7 +155,7 @@ export class Graphics extends Container
     }
 
     /**
-     * @param geometry - Geometry to use, if omitted will create a new GraphicsGeometry instance.
+     * @param [geometry] - Geometry to use, if omitted will create a new GraphicsGeometry instance.
      */
     constructor(geometry: GraphicsGeometry = null)
     {
