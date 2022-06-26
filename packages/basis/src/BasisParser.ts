@@ -13,12 +13,6 @@ import { TranscoderWorker } from './TranscoderWorker';
 
 import type { CompressedLevelBuffer } from '@pixi/compressed-textures';
 
-export interface TranscodedResources
-{
-    resources: CompressedTextureResource[] | BufferResource[]
-    basisFormat: BASIS_FORMATS,
-}
-
 export type TranscodedResourcesArray = (Array<CompressedTextureResource> | Array<BufferResource>) & {
     basisFormat: BASIS_FORMATS
 };
