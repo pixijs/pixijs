@@ -121,5 +121,6 @@ export * from '@pixi/text';
 export * from '@pixi/text-bitmap';
 export * from '@pixi/ticker';
 export * from '@pixi/settings';
+export * from '@pixi/assets';
 
 export { utils };
