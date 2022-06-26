@@ -37,29 +37,32 @@ export const loadBasis = {
         const type: TYPES = BASIS_FORMAT_TO_TYPE[resources.basisFormat];
         const format: FORMATS = resources.basisFormat !== BASIS_FORMATS.cTFRGBA32 ? FORMATS.RGB : FORMATS.RGBA;
 
-        const textures = resources.map((resource) =>
+        if (resources.length > 1)
         {
-            const texture =  new Texture(new BaseTexture(resource, {
-                mipmap: resource instanceof CompressedTextureResource && resource.levels > 1
-                    ? MIPMAP_MODES.ON_MANUAL
-                    : MIPMAP_MODES.OFF,
-                alphaMode: ALPHA_MODES.NO_PREMULTIPLIED_ALPHA,
-                type,
-                format,
-                ...asset.data,
-            }));
-
-            // make sure to nuke the promise if a texture is destroyed..
-            texture.baseTexture.on('dispose', () =>
-            {
-                delete loader.promiseCache[url];
-            });
-
-            return texture;
+            console.warn('[PixiJS - loadBasis] Basis contains more than one image. Only the first one will be loaded.');
         }
-        );
 
-        return textures[0];
+        const resource = resources[0];
+
+        const base = new BaseTexture(resource, {
+            mipmap: resource instanceof CompressedTextureResource && resource.levels > 1
+                ? MIPMAP_MODES.ON_MANUAL
+                : MIPMAP_MODES.OFF,
+            alphaMode: ALPHA_MODES.NO_PREMULTIPLIED_ALPHA,
+            type,
+            format,
+            ...asset.data,
+        });
+
+        const texture =  new Texture(base);
+
+        // make sure to nuke the promise if a texture is destroyed..
+        texture.baseTexture.on('dispose', () =>
+        {
+            delete loader.promiseCache[url];
+        });
+
+        return texture;
     },
 
     unload(texture: Texture): void

@@ -32,59 +32,44 @@ export const loadKTX = {
 
         const { compressed, uncompressed, kvData } = parseKTX(url, arrayBuffer);
 
-        if (compressed)
+        const resources = compressed ?? uncompressed;
+
+        const options = {
+            mipmap: MIPMAP_MODES.OFF,
+            alphaMode: ALPHA_MODES.NO_PREMULTIPLIED_ALPHA,
+            resolution: getResolutionOfUrl(url),
+            ...asset.data,
+        };
+
+        // TODO - currently if this is larger than 1, we should be doing parsing the
+        // textures as either a textureArray or a cubemap.
+        if (resources.length > 1)
         {
-            const textures = compressed.map((resource) =>
-            {
-                const base = new BaseTexture(resource, Object.assign({
-                    mipmap: MIPMAP_MODES.OFF,
-                    alphaMode: ALPHA_MODES.NO_PREMULTIPLIED_ALPHA,
-                    resolution: getResolutionOfUrl(url),
-                    ...asset.data,
-                }));
-
-                base.ktxKeyValueData = kvData;
-
-                const texture = new Texture(base);
-
-                texture.baseTexture.on('dispose', () =>
-                {
-                    delete loader.promiseCache[url];
-                });
-
-                return texture;
-            });
-
-            return textures[0];
-        }
-        else if (uncompressed)
-        {
-            const textures = uncompressed.map((resource) =>
-            {
-                const base = new BaseTexture(resource, Object.assign({
-                    mipmap: MIPMAP_MODES.OFF,
-                    alphaMode: ALPHA_MODES.NO_PREMULTIPLIED_ALPHA,
-                    ...asset.data,
-                }));
-
-                base.ktxKeyValueData = kvData;
-
-                const texture = new Texture(base);
-
-                // make sure to nuke the promise if a texture is destroyed..
-
-                texture.baseTexture.on('dispose', () =>
-                {
-                    delete loader.promiseCache[url];
-                });
-
-                return texture;
-            });
-
-            return textures[0];
+            console.warn('[PixiJS - loadKTX] KTX contains more than one image. Only the first one will be loaded.');
         }
 
-        return null;
+        const resource = resources[0];
+
+        if (resources === uncompressed)
+        {
+            Object.assign(options, {
+                type: (resource as typeof uncompressed[0]).type,
+                format: (resource as typeof uncompressed[0]).format,
+            });
+        }
+
+        const base = new BaseTexture(resource, options);
+
+        base.ktxKeyValueData = kvData;
+
+        const texture = new Texture(base);
+
+        texture.baseTexture.on('dispose', () =>
+        {
+            delete loader.promiseCache[url];
+        });
+
+        return texture;
     },
 
     unload(texture: Texture): void

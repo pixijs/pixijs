@@ -33,26 +33,30 @@ export const loadDDS = {
 
         const compressed = parseDDS(arrayBuffer);
 
-        const textures = compressed.map((resource) =>
+        // TODO - currently if this is larger than 1, we should be doing parsing the
+        // textures as either a textureArray or a cubemap.
+        if (compressed.length > 1)
         {
-            const base = new BaseTexture(resource, Object.assign({
-                mipmap: MIPMAP_MODES.OFF,
-                alphaMode: ALPHA_MODES.NO_PREMULTIPLIED_ALPHA,
-                resolution: getResolutionOfUrl(url),
-                ...asset.data,
-            }));
+            console.warn('[PixiJS - loadDDS] DDS contains more than one image. Only the first one will be loaded.');
+        }
 
-            const texture = new Texture(base);
+        const resource = compressed[0];
 
-            texture.baseTexture.on('dispose', () =>
-            {
-                delete loader.promiseCache[url];
-            });
-
-            return texture;
+        const base = new BaseTexture(resource, {
+            mipmap: MIPMAP_MODES.OFF,
+            alphaMode: ALPHA_MODES.NO_PREMULTIPLIED_ALPHA,
+            resolution: getResolutionOfUrl(url),
+            ...asset.data,
         });
 
-        return textures[0];
+        const texture = new Texture(base);
+
+        texture.baseTexture.on('dispose', () =>
+        {
+            delete loader.promiseCache[url];
+        });
+
+        return texture;
     },
 
     unload(texture: Texture): void
