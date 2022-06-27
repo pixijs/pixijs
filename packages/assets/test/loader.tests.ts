@@ -3,7 +3,8 @@ import type { Spritesheet } from '@pixi/spritesheet';
 import { BitmapFont } from '@pixi/text-bitmap';
 
 import { Cache } from '../src/cache';
-import { loadBitmapFont, LoaderParser, loadJson, loadSpritesheet, loadTextures, loadTxt, loadWebFont } from '../src/loader';
+import type { LoaderParser } from '../src/loader';
+import { loadBitmapFont, loadJson, loadSpritesheet, loadTextures, loadTxt, loadWebFont } from '../src/loader';
 import { Loader } from '../src/loader/Loader';
 
 const dummyPlugin: LoaderParser = {
@@ -13,8 +14,9 @@ const dummyPlugin: LoaderParser = {
     },
 } as LoaderParser<string, string>;
 
-// eslint-disable-next-line max-len
-const serverPath = process.env.LOCAL ? 'http://localhost:8080/' : 'https://raw.githubusercontent.com/pixijs/pixijs/864d41d92e987da1d2da2bf893c67d14a731763a/packages/assets/test/assets/';
+const serverPath = process.env.GITHUB_ACTIONS
+    ? 'https://raw.githubusercontent.com/pixijs/pixijs/b58c97671a15001c120ba0513bb2114ce2c2fcdb/packages/assets/test/assets/'
+    : 'http://localhost:8080/';
 
 describe('Loader', () =>
 {
