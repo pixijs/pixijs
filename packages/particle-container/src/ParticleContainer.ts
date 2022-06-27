@@ -5,6 +5,7 @@ import { hex2rgb } from '@pixi/utils';
 import type { BaseTexture, Renderer } from '@pixi/core';
 import type { ParticleBuffer } from './ParticleBuffer';
 import type { IDestroyOptions } from '@pixi/display';
+import type { Sprite } from '@pixi/sprite';
 
 export interface IParticleProperties
 {
@@ -41,7 +42,7 @@ export interface IParticleProperties
  * And here you have a hundred sprites that will be rendered at the speed of light.
  * @memberof PIXI
  */
-export class ParticleContainer extends Container
+export class ParticleContainer extends Container<Sprite>
 {
     /**
      * The blend mode to be applied to the sprite. Apply a value of `PIXI.BLEND_MODES.NORMAL`
@@ -208,7 +209,7 @@ export class ParticleContainer extends Container
 
         if (!this.baseTexture)
         {
-            this.baseTexture = (this.children[0] as any)._texture.baseTexture;
+            this.baseTexture = this.children[0]._texture.baseTexture;
             if (!this.baseTexture.valid)
             {
                 this.baseTexture.once('update', () => this.onChildrenChange(0));

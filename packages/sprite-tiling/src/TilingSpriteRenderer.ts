@@ -97,6 +97,7 @@ export class TilingSpriteRenderer extends ObjectRenderer
 
         const tex = ts._texture;
         const baseTex = tex.baseTexture;
+        const premultiplied = baseTex.alphaMode > 0;
         const lt = ts.tileTransform.localTransform;
         const uv = ts.uvMatrix;
         let isSimple = baseTex.isPowerOfTwo
@@ -152,14 +153,14 @@ export class TilingSpriteRenderer extends ObjectRenderer
 
         shader.uniforms.uTransform = tempMat.toArray(true);
         shader.uniforms.uColor = premultiplyTintToRgba(ts.tint, ts.worldAlpha,
-            shader.uniforms.uColor, baseTex.alphaMode as any);
+            shader.uniforms.uColor, premultiplied);
         shader.uniforms.translationMatrix = ts.transform.worldTransform.toArray(true);
         shader.uniforms.uSampler = tex;
 
         renderer.shader.bind(shader);
         renderer.geometry.bind(quad);
 
-        this.state.blendMode = correctBlendMode(ts.blendMode, baseTex.alphaMode as any);
+        this.state.blendMode = correctBlendMode(ts.blendMode, premultiplied);
         renderer.state.set(this.state);
         renderer.geometry.draw(this.renderer.gl.TRIANGLES, 6, 0);
     }
