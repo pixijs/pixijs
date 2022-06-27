@@ -6,6 +6,8 @@ import { Cache } from '../src/cache';
 import type { LoaderParser } from '../src/loader';
 import { loadBitmapFont, loadJson, loadSpritesheet, loadTextures, loadTxt, loadWebFont } from '../src/loader';
 import { Loader } from '../src/loader/Loader';
+import { exec, ChildProcess } from 'child_process';
+import path from 'path';
 
 const dummyPlugin: LoaderParser = {
     async load(url: string): Promise<string>
@@ -14,12 +16,25 @@ const dummyPlugin: LoaderParser = {
     },
 } as LoaderParser<string, string>;
 
-const serverPath = process.env.GITHUB_ACTIONS
-    ? 'https://raw.githubusercontent.com/pixijs/pixijs/b58c97671a15001c120ba0513bb2114ce2c2fcdb/packages/assets/test/assets/'
-    : 'http://localhost:8080/';
-
 describe('Loader', () =>
 {
+    const serverPath = process.env.GITHUB_ACTIONS
+        ? `https://raw.githubusercontent.com/pixijs/pixijs/${process.env.GITHUB_SHA}/packages/assets/test/assets/`
+        : 'http://localhost:8080/';
+    let server: ChildProcess;
+
+    beforeAll(() =>
+    {
+        if (!process.env.GITHUB_ACTIONS)
+        {
+            server = exec(`http-server ${path.join(process.cwd(), './packages/assets/test/assets')}`);
+        }
+    });
+    afterAll(() =>
+    {
+        server?.kill();
+    });
+
     it('should add and remove a plugin', () =>
     {
         const loader = new Loader();
