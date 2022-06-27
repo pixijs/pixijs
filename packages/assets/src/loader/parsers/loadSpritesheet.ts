@@ -56,8 +56,8 @@ export const loadSpritesheet = {
 
                 const itemUrl = basePath + item;
 
-                // Check if the file wasn't already added as multipacks are redundant
-                if (options.data?.noMultiPack)
+                // Check if the file wasn't already added as multipack
+                if (options.data?.ignoreMultiPack)
                 {
                     continue;
                 }
@@ -65,7 +65,7 @@ export const loadSpritesheet = {
                 promises.push(loader.load({
                     src: itemUrl,
                     data: {
-                        noMultiPack: true,
+                        ignoreMultiPack: true,
                     }
                 }));
             }
