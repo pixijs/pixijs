@@ -1,9 +1,9 @@
-import type { Spritesheet } from '@pixi/spritesheet';
 import { Texture } from '@pixi/core';
+import type { Spritesheet } from '@pixi/spritesheet';
 import { BitmapFont } from '@pixi/text-bitmap';
 
-import type { LoaderParser } from '../src/loader';
-import { loadJson, loadSpritesheet, loadTextures, loadWebFont, loadBitmapFont } from '../src/loader';
+import { Cache } from '../src/cache';
+import { loadBitmapFont, LoaderParser, loadJson, loadSpritesheet, loadTextures, loadTxt, loadWebFont } from '../src/loader';
 import { Loader } from '../src/loader/Loader';
 
 const dummyPlugin: LoaderParser = {
@@ -14,7 +14,7 @@ const dummyPlugin: LoaderParser = {
 } as LoaderParser<string, string>;
 
 // eslint-disable-next-line max-len
-const serverPath = 'https://raw.githubusercontent.com/pixijs/pixijs/864d41d92e987da1d2da2bf893c67d14a731763a/packages/assets/test/assets/';
+const serverPath = process.env.LOCAL ? 'http://localhost:8080/' : 'https://raw.githubusercontent.com/pixijs/pixijs/864d41d92e987da1d2da2bf893c67d14a731763a/packages/assets/test/assets/';
 
 describe('Loader', () =>
 {
@@ -37,7 +37,7 @@ describe('Loader', () =>
 
         loader.addParser(loadTextures);
 
-        const texture: Texture = await loader.load(`${serverPath}bunny.png`);
+        const texture: Texture = await loader.load(`${serverPath}textures/bunny.png`);
 
         expect(texture.baseTexture.valid).toBe(true);
         expect(texture.width).toBe(26);
@@ -54,7 +54,7 @@ describe('Loader', () =>
 
         for (let i = 0; i < 10; i++)
         {
-            texturesPromises.push(loader.load(`${serverPath}bunny.png`));
+            texturesPromises.push(loader.load(`${serverPath}textures/bunny.png`));
         }
 
         const textures = await Promise.all(texturesPromises);
@@ -73,12 +73,12 @@ describe('Loader', () =>
 
         loader.addParser(loadTextures);
 
-        const assetsUrls = [`${serverPath}bunny.png`, `${serverPath}bunny-2.png`];
+        const assetsUrls = [`${serverPath}textures/bunny.png`, `${serverPath}textures/bunny-2.png`];
 
         const textures = await loader.load(assetsUrls);
 
-        expect(textures[`${serverPath}bunny.png`]).toBeInstanceOf(Texture);
-        expect(textures[`${serverPath}bunny-2.png`]).toBeInstanceOf(Texture);
+        expect(textures[`${serverPath}textures/bunny.png`]).toBeInstanceOf(Texture);
+        expect(textures[`${serverPath}textures/bunny-2.png`]).toBeInstanceOf(Texture);
     });
 
     it('should load json file', async () =>
@@ -87,7 +87,7 @@ describe('Loader', () =>
 
         loader.addParser(loadJson);
 
-        const json = await loader.load(`${serverPath}test.json`);
+        const json = await loader.load(`${serverPath}json/test.json`);
 
         expect(json).toEqual({
             testNumber: 23,
@@ -101,7 +101,7 @@ describe('Loader', () =>
 
         loader.addParser(loadJson, loadTextures, loadSpritesheet);
 
-        const spriteSheet: Spritesheet = await loader.load(`${serverPath}spritesheet.json`);
+        const spriteSheet: Spritesheet = await loader.load(`${serverPath}spritesheet/spritesheet.json`);
 
         const bunnyTexture = spriteSheet.textures['bunny.png'];
         const senseiTexture = spriteSheet.textures['pic-sensei.jpg'];
@@ -120,6 +120,29 @@ describe('Loader', () =>
         expect(senseiTexture.height).toBe(125);
     });
 
+    it('should load a multi packed spritesheet', async () =>
+    {
+        const loader = new Loader();
+
+        loader.addParser(loadJson, loadTextures, loadSpritesheet);
+
+        await loader.load(`${serverPath}spritesheet/multi-pack-0.json`);
+
+        const pack0 = Cache.get('star1.png');
+        const pack1 = Cache.get('goldmine_10_5.png');
+
+        expect(pack0).toBeInstanceOf(Texture);
+        expect(pack1).toBeInstanceOf(Texture);
+
+        expect(pack0.baseTexture.valid).toBe(true);
+        expect(pack0.width).toBe(64);
+        expect(pack0.height).toBe(64);
+
+        expect(pack1.baseTexture.valid).toBe(true);
+        expect(pack1.width).toBe(190);
+        expect(pack1.height).toBe(229);
+    });
+
     it('should load a bitmap font', async () =>
     {
         const loader = new Loader();
@@ -127,6 +150,45 @@ describe('Loader', () =>
         loader.addParser(loadTextures, loadBitmapFont);
 
         const bitmapFont: BitmapFont = await loader.load(`${serverPath}bitmap-font/desyrel.xml`);
+        const bitmapFont2: BitmapFont = await loader.load(`${serverPath}bitmap-font/font.fnt`);
+
+        expect(bitmapFont).toBeInstanceOf(BitmapFont);
+        expect(bitmapFont2).toBeInstanceOf(BitmapFont);
+    });
+
+    it('should load a bitmap font text file', async () =>
+    {
+        const loader = new Loader();
+
+        loader.addParser(loadTxt, loadTextures, loadBitmapFont);
+
+        const bitmapFont: BitmapFont = await loader.load(`${serverPath}bitmap-font/bmtxt-test.txt`);
+
+        expect(bitmapFont).toBeInstanceOf(BitmapFont);
+    });
+
+    it('should load a bitmap font sdf / msdf', async () =>
+    {
+        const loader = new Loader();
+
+        loader.addParser(loadTextures, loadBitmapFont);
+
+        const bitmapFont: BitmapFont = await loader.load(`${serverPath}bitmap-font/msdf.fnt`);
+        const bitmapFont2: BitmapFont = await loader.load(`${serverPath}bitmap-font/sdf.fnt`);
+
+        expect(bitmapFont).toBeInstanceOf(BitmapFont);
+        expect(bitmapFont2).toBeInstanceOf(BitmapFont);
+        expect(bitmapFont.distanceFieldType).toEqual('msdf');
+        expect(bitmapFont2.distanceFieldType).toEqual('sdf');
+    });
+
+    it('should load a split bitmap font', async () =>
+    {
+        const loader = new Loader();
+
+        loader.addParser(loadTextures, loadBitmapFont);
+
+        const bitmapFont: BitmapFont = await loader.load(`${serverPath}bitmap-font/split_font.fnt`);
 
         expect(bitmapFont).toBeInstanceOf(BitmapFont);
     });
@@ -137,7 +199,7 @@ describe('Loader', () =>
 
         loader.addParser(loadWebFont);
 
-        const font = await loader.load(`${serverPath}outfit.woff2`);
+        const font = await loader.load(`${serverPath}fonts/outfit.woff2`);
 
         let foundFont = false;
 
@@ -154,18 +216,20 @@ describe('Loader', () =>
         expect(foundFont).toBe(true);
     });
 
-    it('should load a specific weight web font', async () =>
+    it('should load a web font with custom attributes', async () =>
     {
         const loader = new Loader();
 
-        await document.fonts.clear();
+        document.fonts.clear();
         loader.addParser(loadWebFont);
 
         const font = await loader.load({
             data: {
+                family: 'Overridden',
+                style: 'italic',
                 weights: ['normal'],
             },
-            src: `${serverPath}outfit.woff2`,
+            src: `${serverPath}fonts/outfit.woff2`,
         });
 
         let count = 0;
@@ -173,7 +237,9 @@ describe('Loader', () =>
         document.fonts.forEach((f: FontFace) =>
         {
             count++;
+            expect(f.family).toBe('Overridden');
             expect(f.weight).toBe('normal');
+            expect(f.style).toBe('italic');
         });
 
         document.fonts.delete(font);
@@ -192,11 +258,11 @@ describe('Loader', () =>
         } as LoaderParser<string>);
 
         const sillyID: string = await loader.load({
-            src: `${serverPath}bunny.png`,
+            src: `${serverPath}textures/bunny.png`,
             data: { whatever: 23 },
         });
 
-        expect(sillyID).toBe(`${serverPath}bunny.png23`);
+        expect(sillyID).toBe(`${serverPath}textures/bunny.png23`);
     });
 
     it('should unload a texture', async () =>
@@ -205,13 +271,13 @@ describe('Loader', () =>
 
         loader.addParser(loadTextures);
 
-        const texture: Texture = await loader.load(`${serverPath}bunny.png`);
+        const texture: Texture = await loader.load(`${serverPath}textures/bunny.png`);
 
         expect(texture.baseTexture.destroyed).toBe(false);
 
         const baseTexture =  texture.baseTexture;
 
-        await loader.unload(`${serverPath}bunny.png`);
+        await loader.unload(`${serverPath}textures/bunny.png`);
 
         expect(texture.baseTexture).toBe(null);
         expect(baseTexture.destroyed).toBe(true);
@@ -223,9 +289,9 @@ describe('Loader', () =>
 
         loader.addParser(loadJson, loadTextures, loadSpritesheet);
 
-        const spriteSheet: Spritesheet = await loader.load(`${serverPath}spritesheet.json`);
+        const spriteSheet: Spritesheet = await loader.load(`${serverPath}spritesheet/spritesheet.json`);
 
-        await loader.unload(`${serverPath}spritesheet.json`);
+        await loader.unload(`${serverPath}spritesheet/spritesheet.json`);
 
         expect(spriteSheet.baseTexture).toBe(null);
     });
@@ -251,9 +317,9 @@ describe('Loader', () =>
 
         loader.addParser(loadWebFont);
 
-        await loader.load(`${serverPath}outfit.woff2`);
+        await loader.load(`${serverPath}fonts/outfit.woff2`);
 
-        await loader.unload(`${serverPath}outfit.woff2`);
+        await loader.unload(`${serverPath}fonts/outfit.woff2`);
 
         let foundFont = false;
 

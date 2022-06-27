@@ -45,11 +45,13 @@ export const loadBitmapFont = {
 
     async parse(asset: string, data: LoadAsset, loader: Loader): Promise<BitmapFont>
     {
-        const isText = TextFormat.test(data);
+        const isText = TextFormat.test(asset);
 
         if (isText)
         {
-            return await _loadBitmap(data.src, TextFormat.parse(asset), loader);
+            const parsed = TextFormat.parse(asset);
+
+            return await _loadBitmap(data.src, parsed, loader);
         }
 
         return await _loadBitmap(data.src, XMLStringFormat.parse(asset), loader);

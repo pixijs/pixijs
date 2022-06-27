@@ -9,7 +9,12 @@ import type { LoaderParser } from './LoaderParser';
 
 export interface SpriteSheetJson extends ISpritesheetData
 {
-    meta: {image: string; scale: string};
+    meta: {
+        image: string;
+        scale: string;
+        // eslint-disable-next-line camelcase
+        related_multi_packs: string[];
+    };
 }
 
 /**
@@ -33,6 +38,41 @@ export const loadSpritesheet = {
             basePath += '/';
         }
 
+        // Check and add the multi atlas
+        // Heavily influenced and based on https://github.com/rocket-ua/pixi-tps-loader/blob/master/src/ResourceLoader.js
+        // eslint-disable-next-line camelcase
+        const multiPacks = asset?.meta?.related_multi_packs;
+
+        if (Array.isArray(multiPacks))
+        {
+            const promises = [];
+
+            for (const item of multiPacks)
+            {
+                if (typeof item !== 'string')
+                {
+                    continue;
+                }
+
+                const itemUrl = basePath + item;
+
+                // Check if the file wasn't already added as multipacks are redundant
+                if (options.data?.noMultiPack)
+                {
+                    continue;
+                }
+
+                promises.push(loader.load({
+                    src: itemUrl,
+                    data: {
+                        noMultiPack: true,
+                    }
+                }));
+            }
+
+            await Promise.all(promises);
+        }
+
         const imagePath = basePath + asset.meta.image;
 
         const assets = await loader.load([imagePath]);
@@ -45,10 +85,7 @@ export const loadSpritesheet = {
             options.src,
         );
 
-        await new Promise((r) =>
-        {
-            spritesheet.parse(r as () => void);
-        });
+        await spritesheet.parse();
 
         // TODO.. probably want to move this to be somewhere different, but works ok for now...
         Object.keys(spritesheet.textures).forEach((key) =>

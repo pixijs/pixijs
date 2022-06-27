@@ -97,8 +97,6 @@ export class Loader
 
                 if (parser.parse)
                 {
-                    //
-
                     if (parser.parse && parser.testParse?.(asset, data, this))
                     {
                         // transform the asset..

@@ -1,9 +1,22 @@
 import { basename, extname } from '../../utils/path';
+import { LoadAsset } from '../types';
 import type { LoaderParser } from './LoaderParser';
 
 const validWeights = ['normal', 'bold',
     '100', '200', '300', '400', '500', '600', '700', '800', '900',
 ];
+const validFonts = ['woff', 'woff2', 'ttf', 'otf'];
+
+export type LoadFontData = {
+    family: string;
+    display: string;
+    featureSettings: string;
+    stretch: string;
+    style: string;
+    unicodeRange: string;
+    variant: string;
+    weights: string[];
+};
 
 /**
  * Return font face name from a file name
@@ -27,10 +40,7 @@ export function getFontFamilyName(url: string): string
     return nameTitleCase;
 }
 
-const validFonts = ['woff', 'woff2', 'ttf', 'otf'];
-
 /** Web font loader plugin */
-
 export const loadWebFont = {
     test(url: string): boolean
     {
@@ -40,7 +50,7 @@ export const loadWebFont = {
         return validFonts.includes(extension);
     },
 
-    async load(url: string, options?: {data: {weights: string[]}}): Promise<FontFace>
+    async load(url: string, options?: LoadAsset<LoadFontData>): Promise<FontFace>
     {
         // Prevent loading font if navigator is not online
         if (!window.navigator.onLine)
@@ -50,7 +60,7 @@ export const loadWebFont = {
 
         if ('FontFace' in window)
         {
-            const name = getFontFamilyName(url);
+            const name = options.data?.family ?? getFontFamilyName(url);
             const weights = options.data?.weights?.filter((weight) =>
                 validWeights.includes(weight)) ?? ['normal'];
 
@@ -58,10 +68,14 @@ export const loadWebFont = {
             {
                 const weight = weights[i];
 
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
                 const font = new FontFace(name, `url(${url})`, {
                     weight,
+                    variant: options.data?.variant,
+                    stretch: options.data?.stretch,
+                    style: options.data?.style,
+                    unicodeRange: options.data?.unicodeRange,
+                    featureSettings: options.data?.featureSettings,
+                    display: options.data?.display,
                 });
 
                 await font.load();
