@@ -921,10 +921,8 @@ export class EventBoundary
             {
                 this.dispatchEvent(clickEvent, 'tap');
             }
-            else
-            {
-                this.dispatchEvent(clickEvent, 'pointertap');
-            }
+
+            this.dispatchEvent(clickEvent, 'pointertap');
 
             this.freeEvent(clickEvent);
         }
