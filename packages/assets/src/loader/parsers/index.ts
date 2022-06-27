@@ -4,4 +4,5 @@ export * from './loadJson';
 export * from './loadSpritesheet';
 export * from './loadTexture';
 export * from './loadWebFont';
+export * from './loadBasis';
 
