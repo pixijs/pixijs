@@ -1,19 +1,6 @@
-import { convertToList } from '../utils/convertToList';
-import { isSingleItem } from '../utils/isSingleItem';
-import { makeAbsoluteUrl } from '../utils/makeAbsoluteUrl';
+import { convertToList, isSingleItem, makeAbsoluteUrl } from '../utils';
 import type { LoaderParser } from './parsers/LoaderParser';
-
-export interface LoadAsset<T=any>
-{
-    src: string;
-    data?: T;
-}
-
-interface PromiseAndParser
-{
-    promise: Promise<any>
-    parser: LoaderParser
-}
+import { PromiseAndParser, LoadAsset } from './types';
 
 /**
  * The Loader is responsible for loading all assets, such as images, spritesheets, audio files, etc.
@@ -26,7 +13,7 @@ interface PromiseAndParser
  * @memberof PIXI
  * @class AssetLoader
  */
-class Loader
+export class Loader
 {
     /** All loader parsers registered */
     public parsers: LoaderParser[] = [];
@@ -200,14 +187,12 @@ class Loader
      * unloaded assets are destroyed. A great way to free up memory for you app.
      * The parser that created the asset, will be the one that unloads it.
      * @example
-     * ```
      * // single asset:
      * const asset = await Loader.load('cool.png');
      *
      * await Loader.unload('cool.png');
      *
      * console.log(asset.destroyed); // true
-     * ```
      * @param assetsToUnloadIn - a bunch of urls that you want to unload, or a single one!
      */
     public async unload(
@@ -237,5 +222,3 @@ class Loader
         await Promise.all(promises);
     }
 }
-
-export { Loader };

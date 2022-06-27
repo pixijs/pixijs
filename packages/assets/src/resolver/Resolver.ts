@@ -1,78 +1,16 @@
 import { convertToList } from '../utils/convertToList';
 import { createStringVariations } from '../utils/createStringVariations';
 import { isSingleItem } from '../utils/isSingleItem';
-import { getBaseUrl, makeAbsoluteUrl } from '../utils/makeAbsoluteUrl';
-
-/**
- * A prefer order lets the resolver know which assets to prefere depending on the various parameters passed to it.
- * @memberof PIXI
- */
-export interface PreferOrder
-{
-    /** the importance order of the params */
-    priority?: string[];
-    // TODO @bigtimebuddy -need a better name than prepare..
-    params: {
-        [key: string]: any;
-    };
-}
-
-/**
- * the object returned when a key is resolved to an asset.
- * it will contain any additional information passed in the asset was added.
- * @memberof PIXI
- */
-export interface ResolveAsset extends Record<string, any>
-{
-    alias?: string[];
-    src: string;
-}
-
-export type ResolverAssetsArray = {
-    name: string | string[];
-    srcs: string | ResolveAsset[];
-}[];
-
-export type ResolverAssetsObject = Record<string, (string | ResolveAsset)>;
-
-/**
- * Structure of a bundle found in a manfest file
- * @memberof PIXI
- */
-export interface ResolverBundle
-{
-    name: string;
-    assets: ResolverAssetsArray | ResolverAssetsObject
-}
-
-/**
- * The expected format of a manifest. This would normally be auto generated ar made by the developer
- * @memberof PIXI
- */
-export type ResolverManifest = {
-    // room for more props as we go!
-    bundles: ResolverBundle[];
-};
-
-/**
- * Format for url parser, will test a string and if it pass will then parse it, turning it into an ResolveAsset
- * @memberof PIXI
- */
-export interface ResolveURLParser
-{
-    /** the test to perform on the url to determin if it should be parsed */
-    test: (url: string) => boolean;
-    /** the function that will convert the url into an object */
-    parse: (value: string) => ResolveAsset;
-}
+import { getBaseUrl, makeAbsoluteUrl } from '../utils/url/makeAbsoluteUrl';
+import { ResolveAsset, PreferOrder, ResolveURLParser, ResolverManifest, ResolverBundle } from './types';
 
 /**
  * A class that is responsible for resolving mapping asset urls to keys.
  * At its most basic is can be used for Aliases:
  *
  * ```
- * resolver.add('foo`, 'bar`);
- * resolver.resolveUrl('foo`) // => 'bar`
+ * resolver.add('foo', 'bar');
+ * resolver.resolveUrl('foo') // => 'bar'
  * ```
  *
  * It can also be used to resolve the most appropriate asset for a given url:
@@ -85,9 +23,9 @@ export interface ResolveURLParser
  *      }
  *  })
  *
- *  resolver.add('foo`, ['bar@2x.webp', 'bar@2x.png', 'bar.webp', 'bar.png']);
+ *  resolver.add('foo', ['bar@2x.webp', 'bar@2x.png', 'bar.webp', 'bar.png']);
  *
- *  resolver.resolveUrl('foo`) // => 'bar@2x.webp`
+ *  resolver.resolveUrl('foo') // => 'bar@2x.webp'
  * ```
  * Other features include:
  * - ability to process a manifest file to get the correct understanding of how to resolve all assets
@@ -118,14 +56,14 @@ export class Resolver
      * @example
      * resolver.prefer({
      *     // first look for something with the correct format, and then then correct resolution
-     *     priority: ['format', 'resolution`],
+     *     priority: ['format', 'resolution'],
      *     params:{
      *         format:'webp', // prefer webp images
      *         resolution: 2, // prefer a resolution of 2
      *     }
      * })
-     * resolver.add('foo`, ['bar@2x.webp', 'bar@2x.png', 'bar.webp', 'bar.png']);
-     * resolver.resolveUrl('foo`) // => 'bar@2x.webp`
+     * resolver.add('foo', ['bar@2x.webp', 'bar@2x.png', 'bar.webp', 'bar.png']);
+     * resolver.resolveUrl('foo') // => 'bar@2x.webp'
      * @param preferOrders - the prefer options
      */
     public prefer(...preferOrders: PreferOrder[]): void
@@ -148,8 +86,8 @@ export class Resolver
      * Set the base path to append to all urls when resolving
      * @example
      * resolver.basePath = 'https://home.com/';
-     * resolver.add('foo`, 'bar.ong`);
-     * resolver.resolveUrl('foo`, 'bar.png`); // => 'https://home.com/bar.png`
+     * resolver.add('foo', 'bar.ong');
+     * resolver.resolveUrl('foo', 'bar.png'); // => 'https://home.com/bar.png'
      */
     public set basePath(basePath: string)
     {
@@ -191,7 +129,6 @@ export class Resolver
      *
      *
      * // with a url parser the information such as resolution and file format could extracted from the url itself:
-     *
      * resolver.addUrlParser({
      *     test: loadTextures.test, // test if url ends in an image
      *     parse: (value: string) =>
@@ -217,6 +154,24 @@ export class Resolver
 
             this._parsers.push(parser);
         });
+    }
+
+    /**
+     * Remove a url parser from the resolver
+     * @param urlParsers - the url parser that you want to remove from the resolver
+     */
+    public removeURLParser(...urlParsers: ResolveURLParser[]): void
+    {
+        for (let i = urlParsers.length - 1; i >= 0; i--)
+        {
+            const parser = urlParsers[i];
+            const index = this._parsers.indexOf(parser);
+
+            if (index !== -1)
+            {
+                this._parsers.splice(index, 1);
+            }
+        }
     }
 
     /**
@@ -305,7 +260,7 @@ export class Resolver
      * // add custom data attached to the resolver
      * Resolver.add(
      *     'bunnyBooBooSmooth',
-     *     'bunny{png,webp}`,
+     *     'bunny{png,webp}',
      *     {scaleMode:SCALE_MODES.NEAREST} // base texture options
      * );
      *

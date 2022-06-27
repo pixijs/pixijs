@@ -1,4 +1,4 @@
-import type {  ResolverManifest } from '../src/resolver/Resolver';
+import type {  ResolverManifest } from '../src/resolver/types';
 
 export const manifest: ResolverManifest = {
     bundles: [

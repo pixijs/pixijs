@@ -3,7 +3,8 @@ import { Spritesheet } from '@pixi/spritesheet';
 
 import { Cache } from '../../cache/Cache';
 import { dirname, extname } from '../../utils/path';
-import type { LoadAsset, Loader } from '../Loader';
+import type { Loader } from '../Loader';
+import { LoadAsset } from '../types';
 import type { LoaderParser } from './LoaderParser';
 
 export interface SpriteSheetJson extends ISpritesheetData

@@ -1,5 +1,5 @@
 import { settings } from '@pixi/settings';
-import { ResolveAsset } from '../resolver/Resolver';
+import { ResolveAsset } from '../types';
 
 const validImages = ['jpg', 'png', 'jpeg', 'avif', 'webp'];
 
