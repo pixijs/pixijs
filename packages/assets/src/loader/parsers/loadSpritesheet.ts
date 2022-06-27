@@ -18,7 +18,7 @@ export interface SpriteSheetJson extends ISpritesheetData
  * if it is, we load the spritesheets image and parse the data into PIXI.Spritesheet
  * All textures in the sprite sheet are then added to the cache
  */
-const loadSpritesheet = {
+export const loadSpritesheet = {
     testParse(asset: SpriteSheetJson, options: LoadAsset): boolean
     {
         return (extname(options.src).includes('.json') && !!asset.frames);
@@ -70,6 +70,3 @@ const loadSpritesheet = {
         spritesheet.destroy(true);
     }
 } as LoaderParser;
-
-export { loadSpritesheet };
-

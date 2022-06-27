@@ -83,5 +83,4 @@ export const loadWebFont = {
     {
         document.fonts.delete(font);
     }
-
 } as LoaderParser<FontFace>;

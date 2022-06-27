@@ -2,18 +2,18 @@ import { extname } from '../../utils/path';
 import type { LoaderParser } from './LoaderParser';
 
 /** simple loader plugin for loading json data */
-export const loadJson = {
+export const loadTxt = {
     test(url: string): boolean
     {
-        return (extname(url).includes('.json'));
+        return (extname(url).includes('.txt'));
     },
 
-    async load<T>(url: string): Promise<T>
+    async load(url: string): Promise<string>
     {
         const response = await fetch(url);
 
-        const json = await response.json();
+        const txt = await response.text();
 
-        return json as T;
+        return txt;
     },
 } as LoaderParser;
