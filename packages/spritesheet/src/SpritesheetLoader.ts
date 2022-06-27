@@ -2,7 +2,8 @@ import { url } from '@pixi/utils';
 import { Spritesheet } from './Spritesheet';
 import { LoaderResource } from '@pixi/loaders';
 import type { Loader } from '@pixi/loaders';
-import { ExtensionMetadata, ExtensionType } from '@pixi/core';
+import type { ExtensionMetadata } from '@pixi/core';
+import { ExtensionType } from '@pixi/core';
 
 /**
  * {@link PIXI.Loader} middleware for loading texture atlases that have been created with

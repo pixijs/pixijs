@@ -1,4 +1,4 @@
-import { Program } from '../Program';
+import type { Program } from '../Program';
 import type { IRenderingContext } from '../../IRenderingContext';
 import type { IGLUniformData } from '../GLProgram';
 import { GLProgram } from '../GLProgram';

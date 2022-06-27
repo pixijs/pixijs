@@ -1,10 +1,10 @@
-import { DEG_TO_RAD, Matrix, Point, RAD_TO_DEG, Rectangle, Transform } from '@pixi/math';
+import { DEG_TO_RAD, RAD_TO_DEG, Rectangle, Transform } from '@pixi/math';
 import { EventEmitter } from '@pixi/utils';
 import { Bounds } from './Bounds';
 
 import type { Container } from './Container';
 import type { Filter, MaskData, Renderer } from '@pixi/core';
-import type { IPointData, ObservablePoint } from '@pixi/math';
+import type { IPointData, ObservablePoint, Matrix, Point } from '@pixi/math';
 import type { Dict } from '@pixi/utils';
 
 export interface IDestroyOptions

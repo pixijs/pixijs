@@ -1,6 +1,7 @@
 import { Runner } from '@pixi/runner';
-import { BASIS_FORMATS } from './Basis';
-import { ITranscodeResponse, TranscoderWorkerWrapper } from './TranscoderWorkerWrapper';
+import type { BASIS_FORMATS } from './Basis';
+import type { ITranscodeResponse } from './TranscoderWorkerWrapper';
+import { TranscoderWorkerWrapper } from './TranscoderWorkerWrapper';
 
 /**
  * Worker class for transcoding *.basis files in background threads.

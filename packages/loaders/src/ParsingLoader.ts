@@ -1,5 +1,6 @@
 import { parsing } from './middleware';
-import { ExtensionMetadata, ExtensionType } from '@pixi/core';
+import type { ExtensionMetadata } from '@pixi/core';
+import { ExtensionType } from '@pixi/core';
 
 /**
  * Parse any blob into more usable objects (e.g. Image).
