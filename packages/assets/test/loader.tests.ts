@@ -3,7 +3,8 @@ import { Texture } from '@pixi/core';
 import { BitmapFont } from '@pixi/text-bitmap';
 
 import type { LoaderParser } from '../src/loader';
-import { Loader, loadJson, loadSpritesheet, loadTextures, loadWebFont, loadBitmapFont } from '../src/loader';
+import { loadJson, loadSpritesheet, loadTextures, loadWebFont, loadBitmapFont } from '../src/loader';
+import { Loader } from '../src/loader/Loader';
 
 const dummyPlugin: LoaderParser = {
     async load(url: string): Promise<string>

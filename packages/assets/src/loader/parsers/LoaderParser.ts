@@ -1,4 +1,5 @@
-import type { LoadAsset, Loader } from '../Loader';
+import type { Loader } from '../Loader';
+import { LoadAsset } from '../types';
 
 /**
  * All function are optional here. The flow:

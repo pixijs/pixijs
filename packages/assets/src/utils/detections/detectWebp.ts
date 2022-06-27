@@ -1,4 +1,4 @@
-export async function DetectWebp(): Promise<boolean>
+export async function detectWebp(): Promise<boolean>
 {
     if (!self.createImageBitmap) return false;
 

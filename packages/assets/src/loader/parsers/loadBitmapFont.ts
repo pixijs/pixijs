@@ -2,7 +2,8 @@ import type { Texture } from '@pixi/core';
 import { BitmapFont } from '@pixi/text-bitmap';
 import { dirname, extname, join } from '../../utils/path';
 
-import type { LoadAsset, Loader } from '../Loader';
+import type { Loader } from '../Loader';
+import { LoadAsset } from '../types';
 
 import type { LoaderParser } from './LoaderParser';
 
@@ -11,8 +12,6 @@ function getImagePath(url: string): string
     const imagePath = url.replace('.xml', '.png');
 
     return imagePath;
-
-    return null;
 }
 
 /** simple loader plugin for loading in bitmap fonts! */

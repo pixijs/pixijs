@@ -8,7 +8,7 @@ import { BaseTexture, Texture } from '@pixi/core';
  * @memberof PIXI
  * @class Cache
  */
-export class CacheClass
+class CacheClass
 {
     private readonly _cache: Map<string, any> = new Map();
 
