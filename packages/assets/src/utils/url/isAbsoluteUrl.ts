@@ -1,11 +1,11 @@
 /**
- * this function exists as path.isAbsolute tests if a path is an absolute file path...
- * rather than a url!
+ * Used to check whether the given URL is an absolute URL or not.
+ * An absolute URL is defined as a URL that contains the complete details needed to locate a file
  *
- * taken directly from here: https://github.com/sindresorhus/is-absolute-url/blob/master/index.js
+ * Taken directly from here: https://github.com/sindresorhus/is-absolute-url/blob/master/index.js
  *
- * returns true if the url is absolute, false if relative.
- * @param url - the url to test
+ * returns true if the URL is absolute, false if relative.
+ * @param url - The URL to test
  */
 export function isAbsoluteUrl(url: string): boolean
 {

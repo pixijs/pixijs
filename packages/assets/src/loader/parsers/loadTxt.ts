@@ -1,7 +1,7 @@
 import { extname } from '../../utils/path';
 import type { LoaderParser } from './LoaderParser';
 
-/** simple loader plugin for loading text data */
+/** Simple loader plugin for loading text data */
 export const loadTxt = {
     test(url: string): boolean
     {

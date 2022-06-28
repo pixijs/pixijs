@@ -2,14 +2,14 @@ import type { Loader } from '../Loader';
 import { LoadAsset } from '../types';
 
 /**
- * All function are optional here. The flow:
+ * All functions are optional here. The flow:
  *
  * for every asset,
  *
- * 1. Test the asset url.
- * 2. If test passes call the load function with the url
- * 3. Test to see if the asset should be parsed by the plugin
- * 4. If test is parsed, then run the parse function on the asset.
+ * 1. `parser.test()`: Test the asset url.
+ * 2. `parser.load()`: If test passes call the load function with the url
+ * 3. `parser.testParse()`: Test to see if the asset should be parsed by the plugin
+ * 4. `parse.parse()`: If test is parsed, then run the parse function on the asset.
  *
  * some plugins may only be used for parsing,
  * some only for loading
@@ -17,43 +17,51 @@ import { LoadAsset } from '../types';
  */
 export interface LoaderParser<ASSET = any, META_DATA = any>
 {
+    /** A simple config object to adjust the behavior of the parser. */
+    config: Record<string, any>;
+
     /**
-     * each url to load will be tested here,
-     * if the test is passed the the assets is loaded using the load function below.
+     * each URL to load will be tested here,
+     * if the test is passed the assets are loaded using the load function below.
      * Good place to test for things like file extensions!
-     * @param url - the url to test
+     * @param url - The URL to test
+     * @param loadAsset - Any custom additional information relevant to the asset being loaded
+     * @param loader - The loader instance
      */
     test?: (url: string, loadAsset?: LoadAsset<META_DATA>, loader?: Loader) => boolean;
 
     /**
-     * This is the promise that loads the url provided
-     * resolves with a loaded asset if
-     * @param url - the url to load
+     * This is the promise that loads the URL provided
+     * resolves with a loaded asset if returned by the parser.
+     * @param url - The URL to load
+     * @param loadAsset - Any custom additional information relevant to the asset being loaded
+     * @param loader - The loader instance
      */
     load?: <T>(url: string, loadAsset?: LoadAsset<META_DATA>, loader?: Loader) => Promise<T>;
 
     /**
-     * this function is used to test if the parse function should be run on the asset
+     * This function is used to test if the parse function should be run on the asset
      * If this returns true then parse is called with the asset
-     * @param asset - the asset loaded
-     * @param loadAsset - the full LoadAsset
-     * @param loader - the loader that is loading the asset
+     * @param asset - The loaded asset data
+     * @param loadAsset - Any custom additional information relevant to the asset being loaded
+     * @param loader - The loader instance
      */
     testParse?: (asset: ASSET, loadAsset?: LoadAsset<META_DATA>, loader?: Loader) => boolean;
 
     /**
-     * gets called on the asset it testParse passes. Useful to convert a raw asset into something more useful than
-     * @param asset - the asset to parse and do something with!
-     * @param url - the assets url
+     * Gets called on the asset it testParse passes. Useful to convert a raw asset into something more useful than
+     * @param asset - The loaded asset data
+     * @param loadAsset - Any custom additional information relevant to the asset being loaded
+     * @param loader - The loader instance
      */
     parse?: <T>(asset: ASSET, loadAsset?: LoadAsset<META_DATA>, loader?: Loader) => Promise<T>;
 
     /**
-     * if an asset is parsed using this parser, the unload function will be called when the user requests an asset
+     * If an asset is parsed using this parser, the unload function will be called when the user requests an asset
      * to be unloaded. This is useful for things like sounds or textures that can be unloaded from memory
-     * @param asset - the asset to unload / destroy
-     * @param loadAsset - the full LoadAsset
-     * @param loader - the loader that is loading the asset
+     * @param asset - The asset to unload/destroy
+     * @param loadAsset - Any custom additional information relevant to the asset being loaded
+     * @param loader - The loader instance
      */
     unload?: (asset: ASSET, loadAsset?: LoadAsset<META_DATA>, loader?: Loader) => void;
 }

@@ -1,7 +1,7 @@
 import { BaseTexture, Texture } from '@pixi/core';
 
 /**
- * Super simple Cache for all assets... key value pairs.. that's it!
+ * Super simple Cache for all assets... key-value pairs.. that's it!
  *
  * It is not intended that this class is created by developers - it is part of the Asset package.
  * This is the first major system of PixiJS' main Assets class.
@@ -19,8 +19,8 @@ class CacheClass
     }
 
     /**
-     * Check if key exists
-     * @param key
+     * Check if the key exists
+     * @param key - The key to check
      */
     public has(key: string): boolean
     {
@@ -29,7 +29,7 @@ class CacheClass
 
     /**
      * Fetch entry by key
-     * @param key
+     * @param key - The key of the entry to get
      */
     public get<T = any>(key: string): T
     {
@@ -45,8 +45,8 @@ class CacheClass
 
     /**
      * Set a value by key name
-     * @param key
-     * @param value
+     * @param key - The key to set
+     * @param value - The value to set
      */
     public set(key: string, value: unknown): void
     {
@@ -56,7 +56,6 @@ class CacheClass
         }
 
         // temporary to keep compatible with existing texture caching.. until we remove them!
-
         if (value instanceof Texture)
         {
             const texture: Texture = value;
@@ -68,7 +67,6 @@ class CacheClass
 
             Texture.addToCache(texture, key);
         }
-
         //
 
         this._cache.set(key, value);
@@ -76,7 +74,7 @@ class CacheClass
 
     /**
      * Remove entry by key
-     * @param key
+     * @param key - The key of the entry to remove
      */
     public remove(key: string): void
     {

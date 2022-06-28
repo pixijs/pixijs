@@ -7,7 +7,7 @@ import type { Loader } from '../Loader';
 import { LoadAsset } from '../types';
 import type { LoaderParser } from './LoaderParser';
 
-export interface SpriteSheetJson extends ISpritesheetData
+interface SpriteSheetJson extends ISpritesheetData
 {
     meta: {
         image: string;
@@ -18,9 +18,9 @@ export interface SpriteSheetJson extends ISpritesheetData
 }
 
 /**
- * loader plugin that parses sprite sheets!
- * once the json has been loaded this checks to see if the json is spritesheet data.
- * if it is, we load the spritesheets image and parse the data into PIXI.Spritesheet
+ * Loader plugin that parses sprite sheets!
+ * once the JSON has been loaded this checks to see if the JSON is spritesheet data.
+ * If it is, we load the spritesheets image and parse the data into PIXI.Spritesheet
  * All textures in the sprite sheet are then added to the cache
  */
 export const loadSpritesheet = {

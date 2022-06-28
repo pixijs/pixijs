@@ -61,21 +61,16 @@ export const loadWebFont = {
         if ('FontFace' in window)
         {
             const name = options.data?.family ?? getFontFamilyName(url);
-            const weights = options.data?.weights?.filter((weight) =>
-                validWeights.includes(weight)) ?? ['normal'];
+            const weights = options.data?.weights?.filter((weight) => validWeights.includes(weight)) ?? ['normal'];
+            const data = options.data ?? {};
 
             for (let i = 0; i < weights.length; i++)
             {
                 const weight = weights[i];
 
                 const font = new FontFace(name, `url(${url})`, {
+                    ...data,
                     weight,
-                    variant: options.data?.variant,
-                    stretch: options.data?.stretch,
-                    style: options.data?.style,
-                    unicodeRange: options.data?.unicodeRange,
-                    featureSettings: options.data?.featureSettings,
-                    display: options.data?.display,
                 });
 
                 await font.load();
