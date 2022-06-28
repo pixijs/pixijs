@@ -1,11 +1,11 @@
 import { BaseTexture, Texture } from '@pixi/core';
 import { getResolutionOfUrl } from '@pixi/utils';
 import { parseDDS } from '@pixi/compressed-textures';
-import { LoadAsset, Loader } from '../Loader';
+import { Loader } from '../Loader';
 
 import type { LoaderParser } from './LoaderParser';
-
-import { ALPHA_MODES, MIPMAP_MODES } from 'pixi.js';
+import { LoadAsset } from '../types';
+import { ALPHA_MODES, MIPMAP_MODES } from '@pixi/constants';
 
 const validImages = ['dds'];
 
@@ -24,45 +24,48 @@ export const loadDDS = {
         return validImages.includes(extension.toLowerCase());
     },
 
-    async load(url: string, asset: LoadAsset, loader: Loader): Promise<Texture>
+    async load(url: string, asset: LoadAsset, loader: Loader): Promise<Texture | Texture[]>
     {
         // get an array buffer...
         const response = await fetch(url);
 
         const arrayBuffer = await response.arrayBuffer();
 
-        const compressed = parseDDS(arrayBuffer);
+        const resources = parseDDS(arrayBuffer);
 
-        // TODO - currently if this is larger than 1, we should be doing parsing the
-        // textures as either a textureArray or a cubemap.
-        if (compressed.length > 1)
+        const textures = resources.map((resource) =>
         {
-            console.warn('[PixiJS - loadDDS] DDS contains more than one image. Only the first one will be loaded.');
-        }
+            const base = new BaseTexture(resource, {
+                mipmap: MIPMAP_MODES.OFF,
+                alphaMode: ALPHA_MODES.NO_PREMULTIPLIED_ALPHA,
+                resolution: getResolutionOfUrl(url),
+                ...asset.data,
+            });
 
-        const resource = compressed[0];
+            const texture = new Texture(base);
 
-        const base = new BaseTexture(resource, {
-            mipmap: MIPMAP_MODES.OFF,
-            alphaMode: ALPHA_MODES.NO_PREMULTIPLIED_ALPHA,
-            resolution: getResolutionOfUrl(url),
-            ...asset.data,
+            texture.baseTexture.on('dispose', () =>
+            {
+                delete loader.promiseCache[url];
+            });
+
+            return texture;
         });
 
-        const texture = new Texture(base);
-
-        texture.baseTexture.on('dispose', () =>
-        {
-            delete loader.promiseCache[url];
-        });
-
-        return texture;
+        return textures.length === 1 ? textures[0] : textures;
     },
 
-    unload(texture: Texture): void
+    unload(texture: Texture | Texture[]): void
     {
-        texture.destroy(true);
+        if (Array.isArray(texture))
+        {
+            texture.forEach((t) => t.destroy(true));
+        }
+        else
+        {
+            texture.destroy(true);
+        }
     }
 
-} as LoaderParser<Texture, {baseTexture: BaseTexture}>;
+} as LoaderParser<Texture | Texture[], {baseTexture: BaseTexture}>;
 

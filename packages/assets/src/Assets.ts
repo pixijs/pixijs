@@ -1,6 +1,8 @@
 import { BaseTexture, Texture } from '@pixi/core';
 import { BackgroundLoader } from './BackgroundLoader';
 import { Cache } from './cache/Cache';
+import { cacheTextureArray } from './cache/parsers/cacheTextureArray';
+import { cacheSpritesheet } from './cache/parsers/cacheSpriteSheet';
 import type {
     LoadAsset,
     LoaderParser
@@ -611,9 +613,16 @@ export class AssetsClass
             loadWebFont,
         );
 
+        this.cache.addParser(
+            cacheSpritesheet,
+            cacheTextureArray
+        );
+
         // allows us to pass resolution based on strings
-        this.resolver.addUrlParser(textureUrlParser);
-        this.resolver.addUrlParser(spriteSheetUrlParser);
+        this.resolver.addUrlParser(
+            textureUrlParser,
+            spriteSheetUrlParser
+        );
 
         this._initialized = false;
     }
@@ -707,14 +716,16 @@ export class AssetsClass
         {
             const asset = loadedAssets[resolveResult.src];
 
-            resolveResult.alias?.forEach((key: string) =>
-            {
-                Cache.set(key, asset);
-            });
+            const keys = [resolveResult.src];
 
-            Cache.set(resolveResult.src, asset);
+            if (resolveResult.alias)
+            {
+                keys.push(...resolveResult.alias);
+            }
 
             out[resolveKeys[i]] = asset;
+
+            Cache.set(keys, asset);
         });
 
         return out;

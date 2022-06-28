@@ -299,6 +299,48 @@ describe('Assets', () =>
         expect(bunnyReloaded.baseTexture).toBeInstanceOf(BaseTexture);
     });
 
+    it('should load texture array correctly', async () =>
+    {
+        await Assets.init({
+            basePath,
+        });
+
+        Assets.addBundle('testBundle', {
+            bunny: 'bunny.{png,webp}',
+            spritesheet: 'spritesheet.json',
+        });
+
+        const assets = await Assets.loadBundle('testBundle');
+
+        expect(assets.bunny).toBeInstanceOf(Texture);
+        expect(assets.spritesheet).toBeInstanceOf(Spritesheet);
+
+        await Assets.unloadBundle('testBundle');
+
+        expect(assets.bunny.baseTexture).toBe(null);
+    });
+
+    it('should unload and remove from the cache correctly', async () =>
+    {
+        await Assets.init({
+            basePath,
+        });
+
+        Assets.add(['chickenSheet', 'alias'], 'spritesheet.json');
+
+        await Assets.load('chickenSheet');
+
+        const texture = Assets.get('pic-sensei.jpg');
+
+        expect(texture).toBeInstanceOf(Texture);
+
+        await Assets.unload('chickenSheet');
+
+        const texture2 = Assets.get('pic-sensei.jpg');
+
+        expect(texture2).toBe(undefined);
+    });
+
     it('should unload assets correctly', async () =>
     {
         await Assets.init({

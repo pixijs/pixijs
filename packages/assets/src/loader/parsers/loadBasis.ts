@@ -1,10 +1,11 @@
 import { BaseTexture, Texture } from '@pixi/core';
-import { LoadAsset, Loader } from '../Loader';
 
 import type { LoaderParser } from './LoaderParser';
 import { BasisParser, BASIS_FORMATS, BASIS_FORMAT_TO_TYPE,  TranscoderWorker } from '@pixi/basis';
 import { ALPHA_MODES, FORMATS, MIPMAP_MODES, TYPES } from '@pixi/constants';
 import { CompressedTextureResource } from '@pixi/compressed-textures';
+import { LoadAsset } from '../types';
+import { Loader } from '../Loader';
 
 const validImages = ['basis'];
 
@@ -23,7 +24,7 @@ export const loadBasis = {
         return validImages.includes(extension.toLowerCase());
     },
 
-    async load(url: string, asset: LoadAsset, loader: Loader): Promise<Texture>
+    async load(url: string, asset: LoadAsset, loader: Loader): Promise<Texture | Texture[]>
     {
         await TranscoderWorker.onTranscoderInitialized;
 
@@ -37,38 +38,43 @@ export const loadBasis = {
         const type: TYPES = BASIS_FORMAT_TO_TYPE[resources.basisFormat];
         const format: FORMATS = resources.basisFormat !== BASIS_FORMATS.cTFRGBA32 ? FORMATS.RGB : FORMATS.RGBA;
 
-        if (resources.length > 1)
+        const textures = resources.map((resource) =>
         {
-            console.warn('[PixiJS - loadBasis] Basis contains more than one image. Only the first one will be loaded.');
-        }
+            const base = new BaseTexture(resource, {
+                mipmap: resource instanceof CompressedTextureResource && resource.levels > 1
+                    ? MIPMAP_MODES.ON_MANUAL
+                    : MIPMAP_MODES.OFF,
+                alphaMode: ALPHA_MODES.NO_PREMULTIPLIED_ALPHA,
+                type,
+                format,
+                ...asset.data,
+            });
 
-        const resource = resources[0];
+            const texture =  new Texture(base);
 
-        const base = new BaseTexture(resource, {
-            mipmap: resource instanceof CompressedTextureResource && resource.levels > 1
-                ? MIPMAP_MODES.ON_MANUAL
-                : MIPMAP_MODES.OFF,
-            alphaMode: ALPHA_MODES.NO_PREMULTIPLIED_ALPHA,
-            type,
-            format,
-            ...asset.data,
+            // make sure to nuke the promise if a texture is destroyed..
+            texture.baseTexture.on('dispose', () =>
+            {
+                delete loader.promiseCache[url];
+            });
+
+            return texture;
         });
 
-        const texture =  new Texture(base);
-
-        // make sure to nuke the promise if a texture is destroyed..
-        texture.baseTexture.on('dispose', () =>
-        {
-            delete loader.promiseCache[url];
-        });
-
-        return texture;
+        return textures.length === 1 ? textures[0] : textures;
     },
 
-    unload(texture: Texture): void
+    unload(texture): void
     {
-        texture.destroy(true);
+        if (Array.isArray(texture))
+        {
+            texture.forEach((t) => t.destroy(true));
+        }
+        else
+        {
+            texture.destroy(true);
+        }
     }
 
-} as LoaderParser<Texture, {baseTexture: BaseTexture}>;
+} as LoaderParser<Texture | Texture[], {baseTexture: BaseTexture}>;
 

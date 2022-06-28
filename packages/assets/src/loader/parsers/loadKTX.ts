@@ -1,10 +1,12 @@
 import { BaseTexture, Texture } from '@pixi/core';
 import { parseKTX } from '@pixi/compressed-textures';
-import { LoadAsset, Loader } from '../Loader';
+import { Loader } from '../Loader';
 
 import type { LoaderParser } from './LoaderParser';
-import { ALPHA_MODES, MIPMAP_MODES } from 'pixi.js';
+
 import { getResolutionOfUrl } from '@pixi/utils';
+import { LoadAsset } from '../types';
+import { ALPHA_MODES, MIPMAP_MODES } from '@pixi/constants';
 
 const validImages = ['ktx'];
 
@@ -23,7 +25,7 @@ export const loadKTX = {
         return validImages.includes(extension.toLowerCase());
     },
 
-    async load(url: string, asset: LoadAsset, loader: Loader): Promise<Texture>
+    async load(url: string, asset: LoadAsset, loader: Loader): Promise<Texture | Texture[]>
     {
         // get an array buffer...
         const response = await fetch(url);
@@ -41,41 +43,44 @@ export const loadKTX = {
             ...asset.data,
         };
 
-        // TODO - currently if this is larger than 1, we should be doing parsing the
-        // textures as either a textureArray or a cubemap.
-        if (resources.length > 1)
+        const textures = resources.map((resource) =>
         {
-            console.warn('[PixiJS - loadKTX] KTX contains more than one image. Only the first one will be loaded.');
-        }
+            if (resources === uncompressed)
+            {
+                Object.assign(options, {
+                    type: (resource as typeof uncompressed[0]).type,
+                    format: (resource as typeof uncompressed[0]).format,
+                });
+            }
 
-        const resource = resources[0];
+            const base = new BaseTexture(resource, options);
 
-        if (resources === uncompressed)
-        {
-            Object.assign(options, {
-                type: (resource as typeof uncompressed[0]).type,
-                format: (resource as typeof uncompressed[0]).format,
+            base.ktxKeyValueData = kvData;
+
+            const texture = new Texture(base);
+
+            texture.baseTexture.on('dispose', () =>
+            {
+                delete loader.promiseCache[url];
             });
-        }
 
-        const base = new BaseTexture(resource, options);
-
-        base.ktxKeyValueData = kvData;
-
-        const texture = new Texture(base);
-
-        texture.baseTexture.on('dispose', () =>
-        {
-            delete loader.promiseCache[url];
+            return texture;
         });
 
-        return texture;
+        return textures.length === 1 ? textures[0] : textures;
     },
 
-    unload(texture: Texture): void
+    unload(texture: Texture | Texture[]): void
     {
-        texture.destroy(true);
+        if (Array.isArray(texture))
+        {
+            texture.forEach((t) => t.destroy(true));
+        }
+        else
+        {
+            texture.destroy(true);
+        }
     }
 
-} as LoaderParser<Texture, {baseTexture: BaseTexture}>;
+} as LoaderParser<Texture | Texture[], {baseTexture: BaseTexture}>;
 
