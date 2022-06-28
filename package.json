@@ -2,9 +2,21 @@
   "name": "@pixi/gif",
   "version": "1.0.4",
   "description": "Animated GIF Runtime for PixiJS",
-  "main": "dist/pixi-gif.cjs.js",
-  "module": "dist/pixi-gif.esm.js",
-  "types": "index.d.ts",
+  "main": "./dist/pixi-gif.cjs.js",
+  "module": "./dist/pixi-gif.esm.js",
+  "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./index.d.ts",
+        "default": "./dist/pixi-gif.esm.js"
+      },
+      "require": {
+        "types": "./index.d.ts",
+        "default": "./dist/pixi-gif.cjs.js"
+      }
+    }
+  },
   "scripts": {
     "test": "floss -p test --require ts-node/register",
     "coverage": "nyc floss -p test --require ts-node/register",
