@@ -18,7 +18,7 @@ import { LoadAsset } from '../types';
 export interface LoaderParser<ASSET = any, META_DATA = any>
 {
     /** A simple config object to adjust the behavior of the parser. */
-    config: Record<string, any>;
+    config?: Record<string, any>;
 
     /**
      * each URL to load will be tested here,

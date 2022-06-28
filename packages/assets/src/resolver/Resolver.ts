@@ -161,7 +161,7 @@ export class Resolver
      * Remove a URL parser from the resolver
      * @param urlParsers - the URL parser that you want to remove from the resolver
      */
-    public removeURLParser(...urlParsers: ResolveURLParser[]): void
+    public removeUrlParser(...urlParsers: ResolveURLParser[]): void
     {
         for (let i = urlParsers.length - 1; i >= 0; i--)
         {
