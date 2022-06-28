@@ -6,24 +6,29 @@ import { Ticker, UPDATE_PRIORITY } from '@pixi/ticker';
 import { parseGIF, decompressFrames } from 'gifuct-js';
 
 /**
- * Frame object.
+ * Represents a single frame of a GIF. Includes image and timing data.
+ * @memberof PIXI.gif
  */
 interface FrameObject {
     /** Image data for the current frame */
     imageData: ImageData;
     /** The start of the current frame, in milliseconds */
     start: number;
-    /** How long this frame lasts, in milliseconds */
+    /** The end of the current frame, in milliseconds */
     end: number;
 }
 
 /**
  * Default options for all AnimatedGIF objects.
+ * @memberof PIXI.gif
  */
-interface DefaultOptions {
+interface AnimatedGIFOptions {
     /** Whether to start playing right away */
     autoPlay: boolean;
-    /** Scale Mode to use for the texture */
+    /**
+     * Scale Mode to use for the texture
+     * @type {PIXI.SCALE_MODES}
+     */
     scaleMode: SCALE_MODES;
     /** To enable looping */
     loop: boolean;
@@ -43,8 +48,9 @@ interface DefaultOptions {
 
 /**
  * Options for the AnimatedGIF constructor.
+ * @memberof PIXI.gif
  */
-interface AnimatedGIFOptions extends Partial<DefaultOptions> {
+interface AnimatedGIFSize {
     /** Width of the GIF image */
     width: number;
     /** Height of the GIF image */
@@ -61,16 +67,17 @@ class AnimatedGIF extends Sprite
 {
     /**
      * Default options for all AnimatedGIF objects.
-     * @property [scaleMode=SCALE_MODES.LINEAR] {SCALE_MODES} - Scale mode to use for the texture.
-     * @property [loop=true] {boolean} - To enable looping.
-     * @property [animationSpeed=1] {number} - Speed of the animation.
-     * @property [autoUpdate=true] {boolean} - Set to `false` to manage updates yourself.
-     * @property [autoPlay=true] {boolean} - To start playing right away.
-     * @property [onComplete=null] {function} - The completed callback, optional.
-     * @property [onLoop=null] {function} - The loop callback, optional.
-     * @property [onFrameChange=null] {function} - The frame callback, optional.
+     * @property {PIXI.SCALE_MODES} [scaleMode=PIXI.SCALE_MODES.LINEAR] - Scale mode to use for the texture.
+     * @property {boolean} [loop=true] - To enable looping.
+     * @property {number} [animationSpeed=1] - Speed of the animation.
+     * @property {boolean} [autoUpdate=true] - Set to `false` to manage updates yourself.
+     * @property {boolean} [autoPlay=true] - To start playing right away.
+     * @property {Function} [onComplete=null] - The completed callback, optional.
+     * @property {Function} [onLoop=null] - The loop callback, optional.
+     * @property {Function} [onFrameChange=null] - The frame callback, optional.
+     * @property {number} [fps=PIXI.Ticker.shared.FPS] - Default FPS.
      */
-    public static defaultOptions: DefaultOptions = {
+    public static defaultOptions: AnimatedGIFOptions = {
         scaleMode: SCALE_MODES.LINEAR,
         fps: Ticker.shared.FPS,
         loop: true,
@@ -170,7 +177,7 @@ class AnimatedGIF extends Sprite
      * @param options - Options to use.
      * @returns
      */
-    static fromBuffer(buffer: ArrayBuffer, options?: Partial<Omit<AnimatedGIFOptions, 'width'|'height'>>): AnimatedGIF
+    static fromBuffer(buffer: ArrayBuffer, options?: Partial<AnimatedGIFOptions>): AnimatedGIF
     {
         if (!buffer || buffer.byteLength === 0)
         {
@@ -229,28 +236,16 @@ class AnimatedGIF extends Sprite
         // clear the canvases
         canvas.width = canvas.height = 0;
         patchCanvas.width = patchCanvas.height = 0;
+        const { width, height } = gif.lsd;
 
-        return new AnimatedGIF(frames, Object.assign({
-            width: gif.lsd.width,
-            height: gif.lsd.height
-        }, options));
+        return new AnimatedGIF(frames, { width, height, ...options });
     }
 
     /**
      * @param frames - Data of the GIF image.
      * @param options - Options for the AnimatedGIF
-     * @param [options.scaleMode=SCALE_MODES.LINEAR] - How to scale the image.
-     * @param [options.loop=true] - Whether to loop the animation.
-     * @param [options.animationSpeed=1] - The speed that the animation will play at.
-     * @param [options.width=number] - Width of the GIF image.
-     * @param [options.height=number] - Height of the GIF image.
-     * @param [options.autoPlay=true] - Whether to start playing the animation right away.
-     * @param [options.autoUpdate=true] - Whether to use PIXI.Ticker.shared to auto update animation time.
-     * @param [options.onComplete=null] - Function to call when the animation finishes playing.
-     * @param [options.onFrameChange=null] - Function to call when the frame changes.
-     * @param [options.onLoop=null] - Function to call when the animation loops.
      */
-    constructor(frames: FrameObject[], options?: AnimatedGIFOptions)
+    constructor(frames: FrameObject[], options: Partial<AnimatedGIFOptions> & AnimatedGIFSize)
     {
         // Get the options, apply defaults
         const { scaleMode, width, height, ...rest } = Object.assign({},

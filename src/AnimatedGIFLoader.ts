@@ -29,7 +29,7 @@ declare global {
  */
 const AnimatedGIFLoader: ILoaderPlugin = {
     /** For loading methods */
-    add()
+    add(): void
     {
         LoaderResource.setExtensionXhrType(
             GIF_EXTENSION,
