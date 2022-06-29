@@ -1,3 +1,3 @@
-export * from './cacheSpriteSheet';
+export * from './cacheSpritesheet';
 export * from './cacheTextureArray';
 

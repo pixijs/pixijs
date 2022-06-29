@@ -1,6 +1,7 @@
 import { BaseTexture, Texture } from '@pixi/core';
 import { BackgroundLoader } from './BackgroundLoader';
-import { Cache, cacheSpritesheet, cacheTextureArray } from './cache';
+import { Cache } from './cache/Cache';
+import { cacheSpritesheet, cacheTextureArray } from './cache/parsers';
 import {
     LoadAsset,
     LoaderParser,
