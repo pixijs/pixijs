@@ -1,8 +1,8 @@
 import type { ISpritesheetData } from '@pixi/spritesheet';
 import { Spritesheet } from '@pixi/spritesheet';
 
-import { Cache } from '../../cache/Cache';
 import { dirname, extname } from '../../utils/path';
+
 import type { Loader } from '../Loader';
 import { LoadAsset } from '../types';
 import type { LoaderParser } from './LoaderParser';
@@ -87,23 +87,12 @@ export const loadSpritesheet = {
 
         await spritesheet.parse();
 
-        // TODO.. probably want to move this to be somewhere different, but works ok for now...
-        Object.keys(spritesheet.textures).forEach((key) =>
-        {
-            Cache.set(key, spritesheet.textures[key]);
-        });
-
         return spritesheet;
     },
 
     unload(spritesheet: Spritesheet)
     {
-        // TODO.. probably want to move this to be somewhere different, but works ok for now...
-        Object.keys(spritesheet.textures).forEach((key) =>
-        {
-            Cache.remove(key);
-        });
-
         spritesheet.destroy(true);
-    }
+    },
+
 } as LoaderParser;

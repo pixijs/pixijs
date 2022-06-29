@@ -1,20 +1,62 @@
 import { BaseTexture, Texture } from '@pixi/core';
+import { convertToList } from '../utils';
+import { CacheParser } from './CacheParser';
 
 /**
- * Super simple Cache for all assets... key-value pairs.. that's it!
+ * A single Cache for all assets.
+ *
+ * When assets are added to the cache via set they normally are added to the cache as key-value pairs.
+ *
+ * With this cache, you can add parsers that will take the object and convert it to a list of assets that can be cached.
+ * for example a cacheSprite Sheet parser will add all of the textures found within its sprite sheet directly to the cache.
+ *
+ * This gives devs the flexibility to cache any type of object however we want.
  *
  * It is not intended that this class is created by developers - it is part of the Asset package.
  * This is the first major system of PixiJS' main Assets class.
+ *
+ * This cache
  * @memberof PIXI
  * @class Cache
  */
 class CacheClass
 {
+    /** All loader parsers registered */
+    public parsers: CacheParser[] = [];
+
     private readonly _cache: Map<string, any> = new Map();
+    private readonly _cacheMap: Map<string, {
+        keys: string[],
+        cacheKeys: string[],
+    }> = new Map();
+
+    /**
+     * Use this to add any parsers to the `cache.set` function to
+     * @param newParsers - An array of parsers to add to the cache or just a single one
+     */
+    public addParser(...newParsers: CacheParser[]): void
+    {
+        this.parsers.push(...newParsers);
+    }
+
+    /**
+     * For exceptional situations where a cache parser might be causing some trouble,
+     * @param parsersToRemove - An array of parsers to remove from the cache, or just a single one
+     */
+    public removeParser(...parsersToRemove: CacheParser[]): void
+    {
+        for (const parser of parsersToRemove)
+        {
+            const index = this.parsers.indexOf(parser);
+
+            if (index >= 0) this.parsers.splice(index, 1);
+        }
+    }
 
     /** Clear all entries. */
     public reset(): void
     {
+        this.parsers.length = 0;
         this._cache.clear();
     }
 
@@ -44,41 +86,109 @@ class CacheClass
     }
 
     /**
-     * Set a value by key name
-     * @param key - The key to set
-     * @param value - The value to set
+     * Set a value by key or keys name
+     * @param key - The key or keys to set
+     * @param value - The value to store in the cache or from which cacheable assets will be derived.
      */
-    public set(key: string, value: unknown): void
+    public set(key: string | string[], value: unknown): void
     {
-        if (this._cache.has(key) && this._cache.get(key) !== value)
+        const keys = convertToList<string>(key);
+
+        let cacheableAssets: Record<string, any>;
+
+        for (let i = 0; i < this.parsers.length; i++)
         {
-            console.warn('[Cache] already has key:', key);
+            const parser = this.parsers[i];
+
+            if (parser.test(value))
+            {
+                cacheableAssets = parser.getCacheableAssets(keys, value);
+
+                break;
+            }
         }
+
+        if (!cacheableAssets)
+        {
+            cacheableAssets = {};
+
+            keys.forEach((key) =>
+            {
+                cacheableAssets[key] = value;
+            });
+        }
+
+        const cacheKeys = Object.keys(cacheableAssets);
+
+        const cachedAssets = {
+            cacheKeys,
+            keys
+        };
+
+        // this is so we can remove them later..
+        keys.forEach((key) =>
+        {
+            this._cacheMap.set(key, cachedAssets);
+        });
+
+        cacheKeys.forEach((key) =>
+        {
+            if (this._cache.has(key) && this._cache.get(key) !== value)
+            {
+                console.warn('[Cache] already has key:', key);
+            }
+
+            this._cache.set(key, cacheableAssets[key]);
+        });
 
         // temporary to keep compatible with existing texture caching.. until we remove them!
         if (value instanceof Texture)
         {
             const texture: Texture = value;
 
-            if (texture.baseTexture !== Texture.EMPTY.baseTexture)
+            keys.forEach((key) =>
             {
-                BaseTexture.addToCache(texture.baseTexture, key);
-            }
+                if (texture.baseTexture !== Texture.EMPTY.baseTexture)
+                {
+                    BaseTexture.addToCache(texture.baseTexture, key);
+                }
 
-            Texture.addToCache(texture, key);
+                Texture.addToCache(texture, key);
+            });
         }
         //
-
-        this._cache.set(key, value);
     }
 
     /**
      * Remove entry by key
+     *
+     * This function will also remove any associated alias from the cache also.
      * @param key - The key of the entry to remove
      */
     public remove(key: string): void
     {
-        this._cache.delete(key);
+        this._cacheMap.get(key);
+
+        if (!this._cacheMap.has(key))
+        {
+            console.warn(`[Assets] Asset id ${key} was not found in the Cache`);
+
+            return;
+        }
+
+        const cacheMap = this._cacheMap.get(key);
+
+        const cacheKeys = cacheMap.cacheKeys;
+
+        cacheKeys.forEach((key) =>
+        {
+            this._cache.delete(key);
+        });
+
+        cacheMap.keys.forEach((key: string) =>
+        {
+            this._cacheMap.delete(key);
+        });
     }
 }
 

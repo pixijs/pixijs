@@ -1,6 +1,6 @@
 import { BaseTexture, Texture } from '@pixi/core';
 import { BackgroundLoader } from './BackgroundLoader';
-import { Cache } from './cache/Cache';
+import { Cache, cacheSpritesheet, cacheTextureArray } from './cache';
 import {
     LoadAsset,
     LoaderParser,
@@ -32,8 +32,8 @@ export interface AssetInitOptions
     /** a base path for any assets loaded */
     basePath?: string;
     /**
-     * a manifest to tell the asset loader upfront what all you assets are
-     * this can be the manifest object itself, or a url to the manifest.
+     * a manifest to tell the asset loader upfront what all your assets are
+     * this can be the manifest object itself, or a URL to the manifest.
      */
     manifest?: string | ResolverManifest;
     /**
@@ -58,15 +58,15 @@ export interface AssetInitOptions
     /** resolver specific options */
     resolver?: {
         /**
-         * a list of urlParsers, these can read the url and pick put the various options.
-         * for example there is a texture url parser that picks our resolution and file format.
-         * You can add custom ways to read urls and extract information here.
+         * a list of urlParsers, these can read the URL and pick put the various options.
+         * for example there is a texture URL parser that picks our resolution and file format.
+         * You can add custom ways to read URLs and extract information here.
          */
         urlParsers?: ResolveURLParser[];
         /**
          * a list of preferOrders that let the resolver know which asset to pick.
-         * already built in we have a texture preferOrders that let the resolve know which asset to prefer
-         * if it has multiple assets to pick from (resolution / formats etc)
+         * already built-in we have a texture preferOrders that let the resolve know which asset to prefer
+         * if it has multiple assets to pick from (resolution/formats etc)
          */
         preferOrders?: PreferOrder[];
     };
@@ -616,9 +616,16 @@ export class AssetsClass
             loadWebFont,
         );
 
+        this.cache.addParser(
+            cacheSpritesheet,
+            cacheTextureArray
+        );
+
         // allows us to pass resolution based on strings
-        this.resolver.addUrlParser(textureUrlParser);
-        this.resolver.addUrlParser(spriteSheetUrlParser);
+        this.resolver.addUrlParser(
+            textureUrlParser,
+            spriteSheetUrlParser
+        );
 
         this._initialized = false;
     }
@@ -628,7 +635,7 @@ export class AssetsClass
      * it will return undefined. So it's on you! When in doubt just use `PIXI.Assets.load` instead.
      * (remember, the loader will never load things more than once!)
      * @param keys - The key or keys for the assets that you want to access
-     * @returns - The assets or hash off assets requested
+     * @returns - The assets or hash of assets requested
      */
     public get<T=any>(keys: string | string[]): T | Record<string, T>
     {
@@ -712,14 +719,16 @@ export class AssetsClass
         {
             const asset = loadedAssets[resolveResult.src];
 
-            resolveResult.alias?.forEach((key: string) =>
-            {
-                Cache.set(key, asset);
-            });
+            const keys = [resolveResult.src];
 
-            Cache.set(resolveResult.src, asset);
+            if (resolveResult.alias)
+            {
+                keys.push(...resolveResult.alias);
+            }
 
             out[resolveKeys[i]] = asset;
+
+            Cache.set(keys, asset);
         });
 
         return out;
