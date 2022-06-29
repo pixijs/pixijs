@@ -1,6 +1,5 @@
+import { spriteSheetUrlParser, textureUrlParser } from '@pixi/assets';
 import { Resolver } from '../src/resolver/Resolver';
-import { spriteSheetUrlParser } from '../src/resolver/parsers/spriteSheetUrlParser';
-import { textureUrlParser } from '../src/resolver';
 import { manifest } from './sampleManifest';
 
 describe('Resolver', () =>

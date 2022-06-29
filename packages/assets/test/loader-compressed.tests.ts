@@ -1,8 +1,6 @@
 import { Texture } from '@pixi/core';
 import { Loader } from '../src/loader/Loader';
-
-import { loadDDS } from '../src/loader/parsers/loadDDS';
-import { loadKTX } from '../src/loader/parsers/loadKTX';
+import { loadDDS, loadKTX } from '@pixi/assets';
 
 describe('Compressed Loader', () =>
 {

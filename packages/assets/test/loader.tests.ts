@@ -2,8 +2,8 @@ import type { Spritesheet } from '@pixi/spritesheet';
 import { Texture } from '@pixi/core';
 import { BitmapFont } from '@pixi/text-bitmap';
 
-import type { LoaderParser } from '../src/loader';
-import { loadJson, loadSpritesheet, loadTextures, loadWebFont, loadBitmapFont } from '../src/loader';
+import type { LoaderParser } from '@pixi/assets';
+import { loadJson, loadSpritesheet, loadTextures, loadWebFont, loadBitmapFont } from '@pixi/assets';
 import { Loader } from '../src/loader/Loader';
 
 const dummyPlugin: LoaderParser = {

@@ -1,7 +1,7 @@
 import { Spritesheet } from '@pixi/spritesheet';
 import { BaseTexture, Texture } from '@pixi/core';
 
-import { Assets } from '../src/Assets';
+import { Assets } from '@pixi/assets';
 
 // eslint-disable-next-line max-len
 const basePath = 'https://raw.githubusercontent.com/pixijs/pixijs/864d41d92e987da1d2da2bf893c67d14a731763a/packages/assets/test/assets/';
