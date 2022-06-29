@@ -90,7 +90,7 @@ export const loadSpritesheet = {
             spritesheet.linkedSheets = res;
             res.forEach((item) =>
             {
-                item.linkedSheets = [spritesheet, ...spritesheet.linkedSheets.filter((sp) => (sp !== item))];
+                item.linkedSheets = [spritesheet].concat(spritesheet.linkedSheets.filter((sp) => (sp !== item)));
             });
         }
 
