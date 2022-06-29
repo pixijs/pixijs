@@ -156,8 +156,6 @@ class CacheClass
                 Texture.addToCache(texture, key);
             });
         }
-
-        //
     }
 
     /**
