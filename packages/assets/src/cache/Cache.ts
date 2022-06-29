@@ -14,8 +14,6 @@ import { CacheParser } from './CacheParser';
  *
  * It is not intended that this class is created by developers - it is part of the Asset package.
  * This is the first major system of PixiJS' main Assets class.
- *
- * This cache
  * @memberof PIXI
  * @class Cache
  */
@@ -57,6 +55,7 @@ class CacheClass
     public reset(): void
     {
         this.parsers.length = 0;
+        this._cacheMap.clear();
         this._cache.clear();
     }
 
