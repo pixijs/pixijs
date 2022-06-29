@@ -1,5 +1,4 @@
-import { Cache } from '../src/cache';
-import { CacheParser } from '../src/cache/CacheParser';
+import { Cache, CacheParser } from '@pixi/assets';
 
 const testParser = {
     test: (asset: string) => typeof asset === 'string',
@@ -18,10 +17,9 @@ const testParser = {
 
 describe('Cache', () =>
 {
-    afterEach(() =>
+    beforeEach(() =>
     {
         Cache.reset();
-        // add a test!
     });
 
     it('should add and remove a plugin', () =>
@@ -46,7 +44,7 @@ describe('Cache', () =>
         expect(out).toBe('hello-test');
     });
 
-    it('should process multiple keys with a custom parsers correctly', () =>
+    it('should process multiple keys with a custom parser correctly', () =>
     {
         Cache.addParser(testParser);
 
@@ -74,7 +72,7 @@ describe('Cache', () =>
         expect(out).toBe(undefined);
     });
 
-    it('should remove multiple keys with a custom parsers correctly', () =>
+    it('should remove multiple keys with a custom parser correctly', () =>
     {
         Cache.addParser(testParser);
 

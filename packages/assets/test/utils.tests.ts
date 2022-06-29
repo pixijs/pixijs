@@ -1,4 +1,4 @@
-import { createStringVariations } from '../src/utils/createStringVariations';
+import { createStringVariations } from '@pixi/assets';
 
 describe('Utils', () =>
 {

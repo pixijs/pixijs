@@ -2,12 +2,18 @@ import { Texture } from '@pixi/core';
 import type { Spritesheet } from '@pixi/spritesheet';
 import { BitmapFont } from '@pixi/text-bitmap';
 
-import { Cache } from '../src/cache';
-import type { LoaderParser } from '../src/loader';
-import { loadBitmapFont, loadJson, loadSpritesheet, loadTextures, loadTxt, loadWebFont } from '../src/loader';
+import {
+    Cache,
+    cacheSpritesheet,
+    loadBitmapFont,
+    LoaderParser,
+    loadJson,
+    loadSpritesheet,
+    loadTextures,
+    loadTxt,
+    loadWebFont
+} from '@pixi/assets';
 import { Loader } from '../src/loader/Loader';
-import { exec, ChildProcess } from 'child_process';
-import path from 'path';
 
 const dummyPlugin: LoaderParser = {
     async load(url: string): Promise<string>
@@ -20,19 +26,11 @@ describe('Loader', () =>
 {
     const serverPath = process.env.GITHUB_ACTIONS
         ? `https://raw.githubusercontent.com/pixijs/pixijs/${process.env.GITHUB_SHA}/packages/assets/test/assets/`
-        : 'http://localhost:8080/';
-    let server: ChildProcess;
+        : 'http://localhost:8080/assets/test/assets/';
 
-    beforeAll(() =>
+    beforeEach(() =>
     {
-        if (!process.env.GITHUB_ACTIONS)
-        {
-            server = exec(`http-server ${path.join(process.cwd(), './packages/assets/test/assets')}`);
-        }
-    });
-    afterAll(() =>
-    {
-        server?.kill();
+        Cache.reset();
     });
 
     it('should add and remove a plugin', () =>
@@ -141,9 +139,13 @@ describe('Loader', () =>
     {
         const loader = new Loader();
 
+        Cache.addParser(cacheSpritesheet);
+
         loader.addParser(loadJson, loadTextures, loadSpritesheet);
 
-        await loader.load(`${serverPath}spritesheet/multi-pack-0.json`);
+        const spritesheet = await loader.load(`${serverPath}spritesheet/multi-pack-0.json`) as Spritesheet;
+
+        Cache.set('spritesheet/multi-pack-0.json', spritesheet);
 
         const pack0 = Cache.get('star1.png');
         const pack1 = Cache.get('goldmine_10_5.png');

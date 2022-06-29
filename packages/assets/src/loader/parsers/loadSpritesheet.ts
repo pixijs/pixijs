@@ -1,3 +1,4 @@
+import { Texture } from '@pixi/core';
 import type { ISpritesheetData } from '@pixi/spritesheet';
 import { Spritesheet } from '@pixi/spritesheet';
 
@@ -13,7 +14,7 @@ interface SpriteSheetJson extends ISpritesheetData
         image: string;
         scale: string;
         // eslint-disable-next-line camelcase
-        related_multi_packs: string[];
+        related_multi_packs?: string[];
     };
 }
 
@@ -38,6 +39,20 @@ export const loadSpritesheet = {
             basePath += '/';
         }
 
+        const imagePath = basePath + asset.meta.image;
+
+        const assets = await loader.load([imagePath]) as Record<string, Texture>;
+
+        const texture = assets[imagePath];
+
+        const spritesheet = new Spritesheet(
+            texture.baseTexture,
+            asset,
+            options.src,
+        );
+
+        await spritesheet.parse();
+
         // Check and add the multi atlas
         // Heavily influenced and based on https://github.com/rocket-ua/pixi-tps-loader/blob/master/src/ResourceLoader.js
         // eslint-disable-next-line camelcase
@@ -45,7 +60,7 @@ export const loadSpritesheet = {
 
         if (Array.isArray(multiPacks))
         {
-            const promises = [];
+            const promises: Promise<Spritesheet>[] = [];
 
             for (const item of multiPacks)
             {
@@ -70,22 +85,14 @@ export const loadSpritesheet = {
                 }));
             }
 
-            await Promise.all(promises);
+            const res = await Promise.all(promises);
+
+            spritesheet.linkedSheets = res;
+            res.forEach((item) =>
+            {
+                item.linkedSheets = [spritesheet, ...spritesheet.linkedSheets.filter((sp) => (sp !== item))];
+            });
         }
-
-        const imagePath = basePath + asset.meta.image;
-
-        const assets = await loader.load([imagePath]);
-
-        const texture = assets[imagePath];
-
-        const spritesheet = new Spritesheet(
-            texture.baseTexture,
-            asset,
-            options.src,
-        );
-
-        await spritesheet.parse();
 
         return spritesheet;
     },
