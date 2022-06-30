@@ -2,10 +2,11 @@ import { BaseTexture, Texture } from '@pixi/core';
 
 import type { LoaderParser } from './LoaderParser';
 import { BasisParser, BASIS_FORMATS, BASIS_FORMAT_TO_TYPE,  TranscoderWorker } from '@pixi/basis';
-import { ALPHA_MODES, FORMATS, MIPMAP_MODES, TYPES } from '@pixi/constants';
+import type { TYPES } from '@pixi/constants';
+import { ALPHA_MODES, FORMATS, MIPMAP_MODES } from '@pixi/constants';
 import { CompressedTextureResource } from '@pixi/compressed-textures';
-import { LoadAsset } from '../types';
-import { Loader } from '../Loader';
+import type { LoadAsset } from '../types';
+import type { Loader } from '../Loader';
 
 const validImages = ['basis'];
 

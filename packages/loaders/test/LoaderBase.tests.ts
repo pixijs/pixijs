@@ -4,9 +4,9 @@ import { Loader, LoaderResource } from '@pixi/loaders';
 
 import { fixtureData } from './fixtures/data';
 import { spritesheetMiddleware } from './fixtures/spritesheet';
-import { Dict } from '@pixi/utils/src';
+import type { Dict } from '@pixi/utils/src';
 import { createServer } from './resources';
-import { Server } from 'http';
+import type { Server } from 'http';
 
 describe('Loader', () =>
 {

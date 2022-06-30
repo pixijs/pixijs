@@ -1,5 +1,5 @@
 import { Texture } from '@pixi/core';
-import { CacheParser } from '../CacheParser';
+import type { CacheParser } from '../CacheParser';
 
 export const cacheTextureArray: CacheParser<Texture[]> = {
 

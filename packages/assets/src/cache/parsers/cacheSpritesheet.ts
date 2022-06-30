@@ -1,6 +1,6 @@
 import { Spritesheet } from '@pixi/spritesheet';
 import { dirname } from '../../utils';
-import { CacheParser } from '../CacheParser';
+import type { CacheParser } from '../CacheParser';
 
 function getCacheableAssets(keys: string[], asset: Spritesheet, ignoreMultiPack: boolean)
 {

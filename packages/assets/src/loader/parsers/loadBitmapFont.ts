@@ -1,9 +1,10 @@
 import type { Texture } from '@pixi/core';
-import { BitmapFont, BitmapFontData, TextFormat, XMLFormat, XMLStringFormat } from '@pixi/text-bitmap';
+import type { BitmapFontData } from '@pixi/text-bitmap';
+import { BitmapFont, TextFormat, XMLFormat, XMLStringFormat } from '@pixi/text-bitmap';
 import { dirname, extname, join } from '../../utils/path';
 
 import type { Loader } from '../Loader';
-import { LoadAsset } from '../types';
+import type { LoadAsset } from '../types';
 
 import type { LoaderParser } from './LoaderParser';
 

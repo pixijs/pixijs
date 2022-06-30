@@ -1,5 +1,5 @@
 import { basename, extname } from '../../utils/path';
-import { LoadAsset } from '../types';
+import type { LoadAsset } from '../types';
 import type { LoaderParser } from './LoaderParser';
 
 const validWeights = ['normal', 'bold',

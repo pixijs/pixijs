@@ -1,7 +1,7 @@
 import { settings } from '@pixi/settings';
 
 import { loadTextures } from '../../loader';
-import { ResolveAsset } from '../types';
+import type { ResolveAsset } from '../types';
 
 export const textureUrlParser = {
     test: loadTextures.test,

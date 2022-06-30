@@ -1,4 +1,4 @@
-import { Texture } from '@pixi/core';
+import type { Texture } from '@pixi/core';
 import { Loader } from '../src/loader/Loader';
 import { loadDDS, loadKTX } from '@pixi/assets';
 

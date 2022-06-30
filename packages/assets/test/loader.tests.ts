@@ -2,11 +2,12 @@ import { Texture } from '@pixi/core';
 import type { Spritesheet } from '@pixi/spritesheet';
 import { BitmapFont } from '@pixi/text-bitmap';
 
+import type {
+    LoaderParser } from '@pixi/assets';
 import {
     Cache,
     cacheSpritesheet,
     loadBitmapFont,
-    LoaderParser,
     loadJson,
     loadSpritesheet,
     loadTextures,

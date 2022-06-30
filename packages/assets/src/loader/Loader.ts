@@ -1,6 +1,6 @@
 import { convertToList, isSingleItem, makeAbsoluteUrl } from '../utils';
 import type { LoaderParser } from './parsers/LoaderParser';
-import { PromiseAndParser, LoadAsset } from './types';
+import type { PromiseAndParser, LoadAsset } from './types';
 
 /**
  * The Loader is responsible for loading all assets, such as images, spritesheets, audio files, etc.

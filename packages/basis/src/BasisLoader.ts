@@ -1,16 +1,20 @@
-import { TYPES, MIPMAP_MODES, ALPHA_MODES, FORMATS } from '@pixi/constants';
-import { BaseTexture, BufferResource, ExtensionMetadata, ExtensionType, Texture } from '@pixi/core';
+import type { TYPES } from '@pixi/constants';
+import { MIPMAP_MODES, ALPHA_MODES, FORMATS } from '@pixi/constants';
+import type { BufferResource, ExtensionMetadata } from '@pixi/core';
+import { BaseTexture, ExtensionType, Texture } from '@pixi/core';
 import { CompressedTextureResource } from '@pixi/compressed-textures';
+import type {
+    BasisBinding } from './Basis';
 import {
     BASIS_FORMATS,
-    BasisBinding,
     BASIS_FORMAT_TO_TYPE,
 } from './Basis';
 import { TranscoderWorker } from './TranscoderWorker';
 import { LoaderResource } from '@pixi/loaders';
 
 import type { IResourceMetadata } from '@pixi/loaders';
-import { BasisParser, TranscodedResourcesArray } from './BasisParser';
+import type { TranscodedResourcesArray } from './BasisParser';
+import { BasisParser } from './BasisParser';
 
 /**
  * Result when calling registerCompressedTextures.

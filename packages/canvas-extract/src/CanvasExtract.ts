@@ -1,9 +1,9 @@
-import { ExtensionMetadata, ExtensionType, RenderTexture } from '@pixi/core';
+import { ExtensionType, RenderTexture } from '@pixi/core';
 import { CanvasRenderTarget } from '@pixi/utils';
 import { Rectangle } from '@pixi/math';
-import { CanvasRenderer } from '@pixi/canvas-renderer';
+import type { CanvasRenderer } from '@pixi/canvas-renderer';
 import type { DisplayObject } from '@pixi/display';
-import type { BaseRenderTexture } from '@pixi/core';
+import type { BaseRenderTexture, ExtensionMetadata } from '@pixi/core';
 
 const TEMP_RECT = new Rectangle();
 

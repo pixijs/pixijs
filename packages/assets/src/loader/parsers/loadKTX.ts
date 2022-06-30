@@ -1,11 +1,11 @@
 import { BaseTexture, Texture } from '@pixi/core';
 import { parseKTX } from '@pixi/compressed-textures';
-import { Loader } from '../Loader';
+import type { Loader } from '../Loader';
 
 import type { LoaderParser } from './LoaderParser';
 
 import { getResolutionOfUrl } from '@pixi/utils';
-import { LoadAsset } from '../types';
+import type { LoadAsset } from '../types';
 import { ALPHA_MODES, MIPMAP_MODES } from '@pixi/constants';
 
 const validImages = ['ktx'];

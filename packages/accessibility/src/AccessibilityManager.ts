@@ -4,7 +4,8 @@ import { accessibleTarget } from './accessibleTarget';
 
 import type { Rectangle } from '@pixi/math';
 import type { Container } from '@pixi/display';
-import { Renderer, AbstractRenderer, ExtensionMetadata, ExtensionType } from '@pixi/core';
+import type { Renderer, AbstractRenderer, ExtensionMetadata } from '@pixi/core';
+import { ExtensionType } from '@pixi/core';
 import type { IAccessibleHTMLElement } from './accessibleTarget';
 
 // add some extra variables to the container..

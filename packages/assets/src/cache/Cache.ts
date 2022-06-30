@@ -1,6 +1,6 @@
 import { BaseTexture, Texture } from '@pixi/core';
 import { convertToList } from '../utils';
-import { CacheParser } from './CacheParser';
+import type { CacheParser } from './CacheParser';
 
 /**
  * A single Cache for all assets.

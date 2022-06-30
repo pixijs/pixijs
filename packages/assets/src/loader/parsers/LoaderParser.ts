@@ -1,5 +1,5 @@
 import type { Loader } from '../Loader';
-import { LoadAsset } from '../types';
+import type { LoadAsset } from '../types';
 
 /**
  * All functions are optional here. The flow:

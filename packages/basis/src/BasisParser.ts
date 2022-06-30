@@ -1,17 +1,19 @@
 import { TYPES } from '@pixi/constants';
-import { BufferResource, ExtensionMetadata, ExtensionType } from '@pixi/core';
-import { CompressedTextureResource, INTERNAL_FORMATS } from '@pixi/compressed-textures';
+import type { ExtensionMetadata } from '@pixi/core';
+import { BufferResource, ExtensionType } from '@pixi/core';
+import { CompressedTextureResource } from '@pixi/compressed-textures';
+import type {
+    BasisTextureExtensions,
+    BasisBinding } from './Basis';
 import {
     BASIS_FORMATS,
     BASIS_FORMAT_TO_INTERNAL_FORMAT,
     INTERNAL_FORMAT_TO_BASIS_FORMAT,
-    BASIS_FORMATS_ALPHA,
-    BasisTextureExtensions,
-    BasisBinding,
+    BASIS_FORMATS_ALPHA
 } from './Basis';
 import { TranscoderWorker } from './TranscoderWorker';
 
-import type { CompressedLevelBuffer } from '@pixi/compressed-textures';
+import type { CompressedLevelBuffer, INTERNAL_FORMATS } from '@pixi/compressed-textures';
 
 export type TranscodedResourcesArray = (Array<CompressedTextureResource> | Array<BufferResource>) & {
     basisFormat: BASIS_FORMATS

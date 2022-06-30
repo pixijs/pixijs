@@ -1,6 +1,7 @@
 import { LoaderResource } from '@pixi/loaders';
 import { registerCompressedTextures } from './registerCompressedTextures';
-import { ExtensionMetadata, ExtensionType } from '@pixi/core';
+import type { ExtensionMetadata } from '@pixi/core';
+import { ExtensionType } from '@pixi/core';
 import { parseDDS } from '../parsers';
 
 // Set DDS files to be loaded as an ArrayBuffer

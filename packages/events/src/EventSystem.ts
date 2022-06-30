@@ -1,5 +1,5 @@
 import { EventBoundary } from './EventBoundary';
-import { FederatedMouseEvent } from './FederatedMouseEvent';
+import type { FederatedMouseEvent } from './FederatedMouseEvent';
 import { FederatedPointerEvent } from './FederatedPointerEvent';
 import { FederatedWheelEvent } from './FederatedWheelEvent';
 
@@ -496,8 +496,8 @@ export class EventSystem
             {
                 const touch = event.changedTouches[i] as PixiTouch;
 
-                if (typeof touch.button === 'undefined') touch.button = event.touches.length ? 1 : 0;
-                if (typeof touch.buttons === 'undefined') touch.buttons = event.touches.length ? 1 : 0;
+                if (typeof touch.button === 'undefined') touch.button = 0;
+                if (typeof touch.buttons === 'undefined') touch.buttons = 1;
                 if (typeof touch.isPrimary === 'undefined')
                 {
                     touch.isPrimary = event.touches.length === 1 && event.type === 'touchstart';

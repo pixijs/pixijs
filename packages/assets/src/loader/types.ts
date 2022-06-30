@@ -1,4 +1,4 @@
-import { LoaderParser } from './parsers';
+import type { LoaderParser } from './parsers';
 
 export interface LoadAsset<T=any>
 {

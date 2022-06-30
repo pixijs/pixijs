@@ -2,7 +2,7 @@ import { convertToList } from '../utils/convertToList';
 import { createStringVariations } from '../utils/createStringVariations';
 import { isSingleItem } from '../utils/isSingleItem';
 import { getBaseUrl, makeAbsoluteUrl } from '../utils/url/makeAbsoluteUrl';
-import { ResolveAsset, PreferOrder, ResolveURLParser, ResolverManifest, ResolverBundle } from './types';
+import type { ResolveAsset, PreferOrder, ResolveURLParser, ResolverManifest, ResolverBundle } from './types';
 
 /**
  * A class that is responsible for resolving mapping asset URLs to keys.

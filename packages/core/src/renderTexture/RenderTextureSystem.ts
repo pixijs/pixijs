@@ -1,5 +1,5 @@
 import { Rectangle } from '@pixi/math';
-import { BUFFER_BITS } from '@pixi/constants';
+import type { BUFFER_BITS } from '@pixi/constants';
 
 import type { ISystem } from '../ISystem';
 import type { Renderer } from '../Renderer';

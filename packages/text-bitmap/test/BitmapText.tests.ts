@@ -4,7 +4,7 @@ import { BitmapText, BitmapFont } from '@pixi/text-bitmap';
 import { settings } from '@pixi/settings';
 import { Texture, Renderer } from '@pixi/core';
 
-import { Container } from '@pixi/display';
+import type { Container } from '@pixi/display';
 
 describe('BitmapText', () =>
 {

@@ -1,11 +1,11 @@
-import { Texture } from '@pixi/core';
+import type { Texture } from '@pixi/core';
 import type { ISpritesheetData } from '@pixi/spritesheet';
 import { Spritesheet } from '@pixi/spritesheet';
 
 import { dirname, extname } from '../../utils/path';
 
 import type { Loader } from '../Loader';
-import { LoadAsset } from '../types';
+import type { LoadAsset } from '../types';
 import type { LoaderParser } from './LoaderParser';
 
 interface SpriteSheetJson extends ISpritesheetData

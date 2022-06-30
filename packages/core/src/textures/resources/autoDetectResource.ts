@@ -1,4 +1,4 @@
-import { Resource } from './Resource';
+import type { Resource } from './Resource';
 
 import type { IImageResourceOptions } from './ImageResource';
 import type { ISize } from '@pixi/math';

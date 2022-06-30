@@ -1,7 +1,7 @@
 import { BaseTexture, Texture } from '@pixi/core';
 import { getResolutionOfUrl } from '@pixi/utils';
-import { Loader } from '../Loader';
-import { LoadAsset } from '../types';
+import type { Loader } from '../Loader';
+import type { LoadAsset } from '../types';
 
 import type { LoaderParser } from './LoaderParser';
 import { WorkerManager } from './WorkerManager';
