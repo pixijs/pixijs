@@ -17,7 +17,7 @@ module.exports = {
     globals: {
         'ts-jest': {
             tsconfig: {
-                module: 'ES2020',
+                module: 'ESNext',
                 esModuleInterop: true,
             },
             diagnostics: false,
