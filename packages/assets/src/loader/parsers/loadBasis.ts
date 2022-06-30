@@ -9,12 +9,7 @@ import { Loader } from '../Loader';
 
 const validImages = ['basis'];
 
-/**
- * loads our textures!
- * this makes use of imageBitmaps where available.
- * We load the ImageBitmap on a different thread using CentralDispatch
- * We can then use the ImageBitmap as a source for a Pixi Texture
- */
+/** Load BASIS textures! */
 export const loadBasis = {
     test(url: string): boolean
     {

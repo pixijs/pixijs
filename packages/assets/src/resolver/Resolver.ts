@@ -5,15 +5,15 @@ import { getBaseUrl, makeAbsoluteUrl } from '../utils/url/makeAbsoluteUrl';
 import { ResolveAsset, PreferOrder, ResolveURLParser, ResolverManifest, ResolverBundle } from './types';
 
 /**
- * A class that is responsible for resolving mapping asset urls to keys.
- * At its most basic is can be used for Aliases:
+ * A class that is responsible for resolving mapping asset URLs to keys.
+ * At its most basic it can be used for Aliases:
  *
  * ```
  * resolver.add('foo', 'bar');
  * resolver.resolveUrl('foo') // => 'bar'
  * ```
  *
- * It can also be used to resolve the most appropriate asset for a given url:
+ * It can also be used to resolve the most appropriate asset for a given URL:
  *
  * ```
  *  resolver.prefer({
@@ -28,11 +28,11 @@ import { ResolveAsset, PreferOrder, ResolveURLParser, ResolverManifest, Resolver
  *  resolver.resolveUrl('foo') // => 'bar@2x.webp'
  * ```
  * Other features include:
- * - ability to process a manifest file to get the correct understanding of how to resolve all assets
- * - ability to add custom parsers for specific file types
- * - ability to add custom prefer rules
+ * - Ability to process a manifest file to get the correct understanding of how to resolve all assets
+ * - Ability to add custom parsers for specific file types
+ * - Ability to add custom prefer rules
  *
- * This class only cares about the url, not the loading of the asset itself.
+ * This class only cares about the URL, not the loading of the asset itself.
  *
  * It is not intended that this class is created by developers - its part of the Asset class
  * This is the third major system of PixiJS' main Assets class
@@ -45,7 +45,7 @@ export class Resolver
 
     private _parsers: ResolveURLParser[] = [];
 
-    private _resolverHash: Record<string, {src: string}> = {};
+    private _resolverHash: Record<string, ResolveAsset> = {};
     private _basePath: string;
     private _manifest: ResolverManifest;
     private _bundles: Record<string, string[]> = {};
@@ -88,6 +88,7 @@ export class Resolver
      * resolver.basePath = 'https://home.com/';
      * resolver.add('foo', 'bar.ong');
      * resolver.resolveUrl('foo', 'bar.png'); // => 'https://home.com/bar.png'
+     * @param basePath - the base path to use
      */
     public set basePath(basePath: string)
     {
@@ -99,7 +100,7 @@ export class Resolver
         return this._basePath;
     }
 
-    /** used for testing, this resets the resolver to its initial state */
+    /** Used for testing, this resets the resolver to its initial state */
     public reset(): void
     {
         this._parsers = [];
@@ -112,7 +113,7 @@ export class Resolver
     }
 
     /**
-     * A url parser helps the parser to extract information and create an asset object based on parsing the url itself.
+     * A URL parser helps the parser to extract information and create an asset object-based on parsing the URL itself.
      * @example
      * resolver.add('foo', [
      *    {
@@ -144,7 +145,7 @@ export class Resolver
      *    'image@2x.png'
      *    'image.png'
      * ]);
-     * @param urlParsers - the url parser that you want to add to the resolver
+     * @param urlParsers - The URL parser that you want to add to the resolver
      */
     public addUrlParser(...urlParsers: ResolveURLParser[]): void
     {
@@ -157,10 +158,10 @@ export class Resolver
     }
 
     /**
-     * Remove a url parser from the resolver
-     * @param urlParsers - the url parser that you want to remove from the resolver
+     * Remove a URL parser from the resolver
+     * @param urlParsers - the URL parser that you want to remove from the resolver
      */
-    public removeURLParser(...urlParsers: ResolveURLParser[]): void
+    public removeUrlParser(...urlParsers: ResolveURLParser[]): void
     {
         for (let i = urlParsers.length - 1; i >= 0; i--)
         {
@@ -204,9 +205,9 @@ export class Resolver
      *    thumper: 'thumper.png',
      *  });
      *
-     * const resolvedAssets = await resolver.resolveBundle('preloaded');
-     * @param bundleId - the id of the bundle to add
-     * @param assets - a record of the the asset or assets that will be chosen from when loading via the specified key
+     * const resolvedAssets = await resolver.resolveBundle('animals');
+     * @param bundleId - The id of the bundle to add
+     * @param assets - A record of the asset or assets that will be chosen from when loading via the specified key
      */
     public addBundle(bundleId: string, assets: ResolverBundle['assets']): void
     {
@@ -241,8 +242,8 @@ export class Resolver
     }
 
     /**
-     * The most important thing the resolver does. this function will tell the resolver
-     * what keys are associated with witch asset.
+     * Tells the resolver what keys are associated with witch asset.
+     * The most important thing the resolver does
      * @example
      * // single key, single asset:
      * resolver.add('foo', 'bar.png');
@@ -265,9 +266,9 @@ export class Resolver
      * );
      *
      * resolver.resolve('bunnyBooBooSmooth') // => {src: 'bunny.png', data: {scaleMode: SCALE_MODES.NEAREST}}
-     * @param keysIn - the keys to map, can be an array or a single key
-     * @param assetsIn - the assets to associate with the key(s)
-     * @param data - the data that will be attached to the object that resolved object.
+     * @param keysIn - The keys to map, can be an array or a single key
+     * @param assetsIn - The assets to associate with the key(s)
+     * @param data - The data that will be attached to the object that resolved object.
      */
     public add(keysIn: string | string[], assetsIn: string | ResolveAsset | (ResolveAsset | string)[], data?: unknown): void
     {
@@ -385,8 +386,8 @@ export class Resolver
      * }}
      * resolver.setManifest(manifest);
      * const resolved = resolver.resolveBundle('load-screen');
-     * @param bundleIds - the bundle ids to resolve
-     * @returns all the bundles assets or a hash of assets for each bundle specified
+     * @param bundleIds - The bundle ids to resolve
+     * @returns All the bundles assets or a hash of assets for each bundle specified
      */
     public resolveBundle(bundleIds: string | string[]):
     Record<string, ResolveAsset> | Record<string, Record<string, ResolveAsset>>
@@ -411,9 +412,9 @@ export class Resolver
     }
 
     /**
-     * Does exactly what resolve does, but returns just the url rather than the whole asset object
-     * @param key - the key or keys to resolve
-     * @returns - the urls associate with the key(s)
+     * Does exactly what resolve does, but returns just the URL rather than the whole asset object
+     * @param key - The key or keys to resolve
+     * @returns - The URLs associated with the key(s)
      */
     public resolveUrl(key: string | string[]): string | Record<string, string>
     {
@@ -435,8 +436,8 @@ export class Resolver
     }
 
     /**
-     * Another key function of the resolver! To.. resolve!
-     * avder adding all the various key/asset pairs. this will run the logic
+     * Resolves each key in the list to an asset object.
+     * Another key function of the resolver! After adding all the various key/asset pairs. this will run the logic
      * of finding which asset to return based on any preferences set using the `prefer` function
      * by default the same key passed in will be returned if nothing is matched by the resolver.
      * @example
@@ -455,7 +456,7 @@ export class Resolver
 
         keys = convertToList<string>(keys);
 
-        const result: Record<string, {src: string}> = {};
+        const result: Record<string, ResolveAsset> = {};
 
         keys.forEach((key) =>
         {
@@ -515,7 +516,7 @@ export class Resolver
     }
 
     /**
-     * internal function for figuring out what prefer criteria an asset should use.
+     * Internal function for figuring out what prefer criteria an asset should use.
      * @param assets
      */
     private _getPreferredOrder(assets: ResolveAsset[]): PreferOrder

@@ -104,4 +104,3 @@ export const loadTextures = {
     }
 
 } as LoaderParser<Texture, {baseTexture: BaseTexture}>;
-

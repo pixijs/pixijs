@@ -5,12 +5,12 @@ import { CacheParser } from './CacheParser';
 /**
  * A single Cache for all assets.
  *
- * When assets are added to the cache via set they normally are added to the cache as key value pairs.
+ * When assets are added to the cache via set they normally are added to the cache as key-value pairs.
  *
- * With this cache you can add parsers that will take the object and convert it to a list of assets that can be cached.
- * for example a cacheSprite Sheet parser will add al of the textures found with in its sprite sheet directly to the cache.
+ * With this cache, you can add parsers that will take the object and convert it to a list of assets that can be cached.
+ * for example a cacheSprite Sheet parser will add all of the textures found within its sprite sheet directly to the cache.
  *
- * This give devs the flexibility to cache any type of object how every we want.
+ * This gives devs the flexibility to cache any type of object however we want.
  *
  * It is not intended that this class is created by developers - it is part of the Asset package.
  * This is the first major system of PixiJS' main Assets class.
@@ -30,7 +30,7 @@ class CacheClass
 
     /**
      * Use this to add any parsers to the `cache.set` function to
-     * @param newParsers - a array of parsers to add to the cache, or just a single one
+     * @param newParsers - An array of parsers to add to the cache or just a single one
      */
     public addParser(...newParsers: CacheParser[]): void
     {
@@ -39,7 +39,7 @@ class CacheClass
 
     /**
      * For exceptional situations where a cache parser might be causing some trouble,
-     * @param parsersToRemove - a array of parsers to remove from cache, or just a single one
+     * @param parsersToRemove - An array of parsers to remove from the cache, or just a single one
      */
     public removeParser(...parsersToRemove: CacheParser[]): void
     {
@@ -60,8 +60,8 @@ class CacheClass
     }
 
     /**
-     * Check if key exists
-     * @param key
+     * Check if the key exists
+     * @param key - The key to check
      */
     public has(key: string): boolean
     {
@@ -70,7 +70,7 @@ class CacheClass
 
     /**
      * Fetch entry by key
-     * @param key
+     * @param key - The key of the entry to get
      */
     public get<T = any>(key: string): T
     {
@@ -86,8 +86,8 @@ class CacheClass
 
     /**
      * Set a value by key or keys name
-     * @param key - the key or keys to set
-     * @param value - the value to store in the cache or from which cacheable assets will be derived.
+     * @param key - The key or keys to set
+     * @param value - The value to store in the cache or from which cacheable assets will be derived.
      */
     public set(key: string | string[], value: unknown): void
     {
@@ -141,7 +141,6 @@ class CacheClass
         });
 
         // temporary to keep compatible with existing texture caching.. until we remove them!
-
         if (value instanceof Texture)
         {
             const texture: Texture = value;
@@ -162,7 +161,7 @@ class CacheClass
      * Remove entry by key
      *
      * This function will also remove any associated alias from the cache also.
-     * @param key
+     * @param key - The key of the entry to remove
      */
     public remove(key: string): void
     {

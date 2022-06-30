@@ -1,3 +1,4 @@
+import { Texture } from '@pixi/core';
 import type { ISpritesheetData } from '@pixi/spritesheet';
 import { Spritesheet } from '@pixi/spritesheet';
 
@@ -7,18 +8,23 @@ import type { Loader } from '../Loader';
 import { LoadAsset } from '../types';
 import type { LoaderParser } from './LoaderParser';
 
-export interface SpriteSheetJson extends ISpritesheetData
+interface SpriteSheetJson extends ISpritesheetData
 {
-    meta: {image: string; scale: string};
+    meta: {
+        image: string;
+        scale: string;
+        // eslint-disable-next-line camelcase
+        related_multi_packs?: string[];
+    };
 }
 
 /**
- * loader plugin that parses sprite sheets!
- * once the json has been loaded this checks to see if the json is spritesheet data.
- * if it is, we load the spritesheets image and parse the data into PIXI.Spritesheet
+ * Loader plugin that parses sprite sheets!
+ * once the JSON has been loaded this checks to see if the JSON is spritesheet data.
+ * If it is, we load the spritesheets image and parse the data into PIXI.Spritesheet
  * All textures in the sprite sheet are then added to the cache
  */
-const loadSpritesheet = {
+export const loadSpritesheet = {
     testParse(asset: SpriteSheetJson, options: LoadAsset): boolean
     {
         return (extname(options.src).includes('.json') && !!asset.frames);
@@ -35,7 +41,7 @@ const loadSpritesheet = {
 
         const imagePath = basePath + asset.meta.image;
 
-        const assets = await loader.load([imagePath]);
+        const assets = await loader.load([imagePath]) as Record<string, Texture>;
 
         const texture = assets[imagePath];
 
@@ -45,10 +51,48 @@ const loadSpritesheet = {
             options.src,
         );
 
-        await new Promise((r) =>
+        await spritesheet.parse();
+
+        // Check and add the multi atlas
+        // Heavily influenced and based on https://github.com/rocket-ua/pixi-tps-loader/blob/master/src/ResourceLoader.js
+        // eslint-disable-next-line camelcase
+        const multiPacks = asset?.meta?.related_multi_packs;
+
+        if (Array.isArray(multiPacks))
         {
-            spritesheet.parse(r as () => void);
-        });
+            const promises: Promise<Spritesheet>[] = [];
+
+            for (const item of multiPacks)
+            {
+                if (typeof item !== 'string')
+                {
+                    continue;
+                }
+
+                const itemUrl = basePath + item;
+
+                // Check if the file wasn't already added as multipack
+                if (options.data?.ignoreMultiPack)
+                {
+                    continue;
+                }
+
+                promises.push(loader.load({
+                    src: itemUrl,
+                    data: {
+                        ignoreMultiPack: true,
+                    }
+                }));
+            }
+
+            const res = await Promise.all(promises);
+
+            spritesheet.linkedSheets = res;
+            res.forEach((item) =>
+            {
+                item.linkedSheets = [spritesheet].concat(spritesheet.linkedSheets.filter((sp) => (sp !== item)));
+            });
+        }
 
         return spritesheet;
     },
@@ -59,6 +103,3 @@ const loadSpritesheet = {
     },
 
 } as LoaderParser;
-
-export { loadSpritesheet };
-

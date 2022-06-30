@@ -1,15 +1,14 @@
 import { BaseTexture, Texture } from '@pixi/core';
 import { BackgroundLoader } from './BackgroundLoader';
-import { Cache, cacheSpritesheet, cacheTextureArray } from './cache';
-
-import type {
-    LoadAsset,
-    LoaderParser
-} from './loader';
+import { Cache } from './cache/Cache';
+import { cacheSpritesheet, cacheTextureArray } from './cache/parsers';
 import {
+    LoadAsset,
+    LoaderParser,
     loadJson,
     loadSpritesheet,
     loadTextures,
+    loadTxt,
     loadWebFont
 } from './loader';
 import { Loader } from './loader/Loader';
@@ -22,7 +21,7 @@ import { detectAvif } from './utils/detections/detectAvif';
 import { detectWebp } from './utils/detections/detectWebp';
 import { isSingleItem } from './utils/isSingleItem';
 
-type ProgressCallback = (progress: number) => void;
+export type ProgressCallback = (progress: number) => void;
 
 /**
  * Initialization options object for Asset Class.
@@ -34,8 +33,8 @@ export interface AssetInitOptions
     /** a base path for any assets loaded */
     basePath?: string;
     /**
-     * a manifest to tell the asset loader upfront what all you assets are
-     * this can be the manifest object itself, or a url to the manifest.
+     * a manifest to tell the asset loader upfront what all your assets are
+     * this can be the manifest object itself, or a URL to the manifest.
      */
     manifest?: string | ResolverManifest;
     /**
@@ -60,37 +59,41 @@ export interface AssetInitOptions
     /** resolver specific options */
     resolver?: {
         /**
-         * a list of urlParsers, these can read the url and pick put the various options.
-         * for example there is a texture url parser that picks our resolution and file format.
-         * You can add custom ways to read urls and extract information here.
+         * a list of urlParsers, these can read the URL and pick put the various options.
+         * for example there is a texture URL parser that picks our resolution and file format.
+         * You can add custom ways to read URLs and extract information here.
          */
         urlParsers?: ResolveURLParser[];
         /**
          * a list of preferOrders that let the resolver know which asset to pick.
-         * already built in we have a texture preferOrders that let the resolve know which asset to prefer
-         * if it has multiple assets to pick from (resolution / formats etc)
+         * already built-in we have a texture preferOrders that let the resolve know which asset to prefer
+         * if it has multiple assets to pick from (resolution/formats etc)
          */
         preferOrders?: PreferOrder[];
     };
 }
+
 /**
  * A one stop shop for all Pixi resource management!
- * Super modern and easy to use (1 line!), with enough flexibility to customize and do what you need!
+ * Super modern and easy to use, with enough flexibility to customize and do what you need!
  * @memberof PIXI
  * @namespace Assets
  *
  * Only one Asset Class exists accessed via the Global Asset object.
  *
- * It has three main responsibilities:
- * 1. to allow users to map urls to keys and (for example) resolve according to the users browser capabilities
- * 2. loads the resources and transforms them into assets that developers understand.
- * 3. caches the assets and provides a way to access them.
- * 4. allow developer to provide a manifest upfront of all assets and help manage them via 'bundles'
- * 5. allow users to background load assets. Shortening (or eliminating) load times and improving UX. With this feature,
- * in game load bars can be a thing of the past!
+ * It has four main responsibilities:
+ * 1. Allows users to map URLs to keys and resolve them according to the user's browser capabilities
+ * 2. Loads the resources and transforms them into assets that developers understand.
+ * 3. Caches the assets and provides a way to access them.
+ * 4: Allow developers to unload assets and clear the cache.
+ *
+ * It also has a few advanced features:
+ * 1. Allows developers to provide a manifest upfront of all assets and help manage them via 'bundles'
+ * 2. Allows users to background load assets. Shortening (or eliminating) load times and improving UX. With this feature,
+ * in-game loading bars can be a thing of the past!
  *
  *
- * Do not be afraid to load things multiple times - under the hood it will NEVER load anything more than once.
+ * Do not be afraid to load things multiple times - under the hood, it will NEVER load anything more than once.
  *
  * for example:
  *
@@ -105,37 +108,38 @@ export interface AssetInitOptions
  * Out of the box it supports the following files:
  * * textures (avif, webp, png, jpg, gif)
  * * sprite sheets (json)
- * * bitmap fonts (xml)
- * * fonts (woff2, woff2)
+ * * bitmap fonts (xml, fnt, txt)
+ * * web fonts (ttf, woff, woff2)
  * * json files (json)
+ * * text files (txt)
  *
  * More types can be added fairly easily by creating additional loader parsers.
  *
  * ### Textures
  * - Textures are loaded as ImageBitmap on a worker thread where possible.
  * Leading to much less janky load + parse times.
- * - By default we will prefer to load avif and webp image files if you specify them.
- * But if the browser doesn't support avif or webp we will fall back to png and jpg.
- * - Textures can also be accessed via Texture.from(...) and now use this asset manager under th hood!
+ * - By default, we will prefer to load AVIF and WebP image files if you specify them.
+ * But if the browser doesn't support AVIF or WebP we will fall back to png and jpg.
+ * - Textures can also be accessed via Texture.from(...) and now use this asset manager under the hood!
  * - Don't worry if you set preferences for textures that don't exist (for example you prefer 2x resolutions images
  *  but only 1x is available for that texture, the Asset manager will pick that up as a fallback automatically)
- * // Sprite sheets
- * - its hard to know what resolution a sprite sheet is without loading it first, to address this
- * there is a naming convention we have added that will let pixi understand the image format and resolution
+ * #### Sprite sheets
+ * - it's hard to know what resolution a sprite sheet is without loading it first, to address this
+ * there is a naming convention we have added that will let Pixi understand the image format and resolution
  * of the spritesheet via its file name:
  *
  * `my-spritesheet{resolution}.{imageFormat}.json`
  *
  * for example:
  *
- * `my-spritesheet@2x.webp.json` // 2x resolution, webp sprite sheet
+ * `my-spritesheet@2x.webp.json` // 2x resolution, WebP sprite sheet
  * `my-spritesheet@0.5x.png.json` // 0.5x resolution, png sprite sheet
  *
- * this is optional! you can just load a sprite sheet as normal,
- * this is only useful if you have a bunch of different res / formatted spritesheets
+ * This is optional! you can just load a sprite sheet as normal,
+ * This is only useful if you have a bunch of different res / formatted spritesheets
  *
  * ### Fonts
- * * Web fonts by can default will load all available weights.
+ * * Web fonts will be loaded with all weights.
  * it is possible to load only specific weights by doing the following:
  *
  * ```
@@ -151,17 +155,17 @@ export interface AssetInitOptions
  * await PIXI.Assets.load(`outfit.woff2`);
  * ```
  * ### Background Loading
- * Background loading will load stuff for you passively behind the scenes. To minimse jank,
+ * Background loading will load stuff for you passively behind the scenes. To minimize jank,
  * it will only load one asset at a time. As soon as a developer calls `PIXI.Assets.load(...)` the
- * back ground loader is paused and requested assets are loaded as a priority.
+ * background loader is paused and requested assets are loaded as a priority.
  * Don't worry if something is in there that's already loaded, it will just get skipped!
  *
  * You still need to call `PIXI.Assets.load(...)` to get an asset that has been loaded in the background.
- * Its just that this promise will resolve instantly if the asset
+ * It's just that this promise will resolve instantly if the asset
  * has already been loaded.
  *
  * ### Manifest and Bundles
- * - Manifest is a json file that contains a list of all assets and their properties.
+ * - Manifest is a JSON file that contains a list of all assets and their properties.
  * - Bundles are a way to group assets together.
  *
  * ```
@@ -351,11 +355,11 @@ export class AssetsClass
      *    }
      * ]);
      *
-     * const bunny = await PIXI.Assets.load('bunnyBooBoo'); // will try to load webp if available
+     * const bunny = await PIXI.Assets.load('bunnyBooBoo'); // will try to load WebP if available
      * @param keysIn - the key or keys that you will reference when loading this asset
      * @param assetsIn - the asset or assets that will be chosen from when loading via the specified key
-     * @param data - asset specific data that will be passed to the loaders
-     * - Useful for if you want to initiate loaded objects with specific data
+     * @param data - asset-specific data that will be passed to the loaders
+     * - Useful if you want to initiate loaded objects with specific data
      */
     public add(keysIn: string | string[], assetsIn: string | (ResolveAsset | string)[], data?: unknown): void
     {
@@ -363,14 +367,14 @@ export class AssetsClass
     }
 
     /**
-     * The main event, loads stuff! You pass in a key or url and it will return a promise that
-     * resolves to the loaded asset. If multiple assets a requested, it will return an hash of assets.
+     * Loads your assets! You pass in a key or URL and it will return a promise that
+     * resolves to the loaded asset. If multiple assets a requested, it will return a hash of assets.
      *
-     * Dont worry about loading things multiple times, behind the scenes assets are only ever loaded
+     * Don't worry about loading things multiple times, behind the scenes assets are only ever loaded
      * once and the same promise reused behind the scenes so you can safely call this function multiple
      * times with the same key and it will always return the same asset.
      * @example
-     * // load a url:
+     * // load a URL:
      * const myImageTexture = await PIXI.Assets.load('http://some.url.com/image.png'); // => returns a texture
      *
      * PIXI.Assets.add('thumper', 'bunny.png');
@@ -430,7 +434,7 @@ export class AssetsClass
      *
      * const assets = await PIXI.Assets.loadBundle('animals');
      * @param bundleId - the id of the bundle to add
-     * @param assets - a record of the the asset or assets that will be chosen from when loading via the specified key
+     * @param assets - a record of the asset or assets that will be chosen from when loading via the specified key
      */
     public addBundle(bundleId: string, assets: ResolverBundle['assets']): void
     {
@@ -594,8 +598,8 @@ export class AssetsClass
     }
 
     /**
-     * really only intended for development purposes.
-     * this will wipe the resolver and caches.
+     * Only intended for development purposes.
+     * This will wipe the resolver and caches.
      * You will need to reinitialize the Asset
      */
     public reset(): void
@@ -606,6 +610,7 @@ export class AssetsClass
 
         this.loader.addParser(
             loadTextures,
+            loadTxt,
             loadJson,
             loadSpritesheet,
             loadBitmapFont,
@@ -628,10 +633,10 @@ export class AssetsClass
 
     /**
      * Instantly gets an asset already loaded from the cache. If the asset has not yet been loaded,
-     * it will return undefined. So its on you! When in doubt just use `PIXI.Assets.load` instead.
+     * it will return undefined. So it's on you! When in doubt just use `PIXI.Assets.load` instead.
      * (remember, the loader will never load things more than once!)
-     * @param keys - the key or keys for the assets that you want to access
-     * @returns - the assets or hash off assets requested
+     * @param keys - The key or keys for the assets that you want to access
+     * @returns - The assets or hash of assets requested
      */
     public get<T=any>(keys: string | string[]): T | Record<string, T>
     {
@@ -651,11 +656,11 @@ export class AssetsClass
     }
 
     /**
-     * A special function specifically for getting textures. This is a syncroness function
-     * so a texture will be returned immediately. It can be used, but wont render until it has fully loaded.
+     * A special function specifically for getting textures. This is a synchronous function
+     * so a texture will be returned immediately. It can be used, but won't render until it has fully loaded.
      * If the texture has previously already been loaded, the texture will be ready
-     * @param key - the key of the texture that you want get.
-     * @returns - the Texture you requested
+     * @param key - The key of the texture that you want to get.
+     * @returns - The Texture you requested
      */
     public getTextureSync(key: string): Texture
     // TODO @bigtimebuddy - can you help us with a better name pls?
@@ -688,8 +693,8 @@ export class AssetsClass
 
     /**
      * helper function to map resolved assets back to loaded assets
-     * @param resolveResults
-     * @param onProgress
+     * @param resolveResults - the resolve results from the resolver
+     * @param onProgress - the progress callback
      */
     private async _mapLoadToResolve<T>(
         resolveResults: ResolveAsset | Record<string, ResolveAsset>,
@@ -737,10 +742,10 @@ export class AssetsClass
      *
      * Use this to help manage assets if you find that you have a large app and you want to free up memory.
      *
-     * *its up to you as the developer to make sure that textures are not actively being used when you unload them,
+     * * it's up to you as the developer to make sure that textures are not actively being used when you unload them,
      * Pixi won't break but you will end up with missing assets. Not a good look for the user!
      * @example
-     * // load a url:
+     * // load a URL:
      * const myImageTexture = await PIXI.Assets.load('http://some.url.com/image.png'); // => returns a texture
      *
      * await PIXI.Assets.unload('http://some.url.com/image.png')
@@ -786,7 +791,7 @@ export class AssetsClass
      *
      * await await PIXI.Assets.unloadBundle('thumper');
      *
-     * // all assets in the assets object will now hav been destroyed and purged from the cache
+     * // all assets in the assets object will now have been destroyed and purged from the cache
      * @param bundleIds - the bundle id or ids to unload
      */
     public async unloadBundle(bundleIds: string | string[]): Promise<void>

@@ -11,11 +11,12 @@ export function getBaseUrl(url: string): string
 const baseUrl = getBaseUrl(document.baseURI ?? window.location.href);
 
 /**
- * When loading from a webworker, we must use absolute paths.
- * If the url is already absolute we return it as is
- * If its not, we convert it
- * @param url - the url to test
- * @param customBaseUrl
+ * Converts URL to an absolute path.
+ * When loading from a Web Worker, we must use absolute paths.
+ * If the URL is already absolute we return it as is
+ * If it's not, we convert it
+ * @param url - The URL to test
+ * @param customBaseUrl - The base URL to use
  */
 export function makeAbsoluteUrl(url: string, customBaseUrl?: string): string
 {

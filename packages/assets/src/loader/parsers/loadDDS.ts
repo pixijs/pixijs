@@ -9,12 +9,7 @@ import { ALPHA_MODES, MIPMAP_MODES } from '@pixi/constants';
 
 const validImages = ['dds'];
 
-/**
- * loads our textures!
- * this makes use of imageBitmaps where available.
- * We load the ImageBitmap on a different thread using CentralDispatch
- * We can then use the ImageBitmap as a source for a Pixi Texture
- */
+/** Load our DDS textures! */
 export const loadDDS = {
     test(url: string): boolean
     {

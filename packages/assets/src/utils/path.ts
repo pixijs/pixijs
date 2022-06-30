@@ -13,6 +13,11 @@ function splitPath(filename: string): string[]
     return splitPathRe.exec(filename).slice(1);
 }
 
+/**
+ * Returns the last portion of a path
+ * @param path - The path to get the last portion of
+ * @param ext - An optional extension to add to the end of the path
+ */
 export function basename(path: string, ext: string): string
 {
     let f = splitPath(path)[2];
@@ -25,11 +30,21 @@ export function basename(path: string, ext: string): string
     return f;
 }
 
+/**
+ * Returns the extension of the path, from the last occurrence of the . (period) character
+ * to end of the string in the last portion of the path
+ * @param path - The path to get the extension of
+ */
 export function extname(path: string): string
 {
     return splitPath(path)[3];
 }
 
+/**
+ * Returns the extension of the path, from the last occurrence of the . (period) character to the end of
+ * string in the last portion of the path.
+ * @param parts - The path parts to join
+ */
 export function join(...parts: string[]): string
 {
     let path = '';
@@ -54,6 +69,10 @@ export function join(...parts: string[]): string
     return normalize(path);
 }
 
+/**
+ * Returns the directory name of a path
+ * @param path - The path to resolve.
+ */
 export function dirname(path: string): string
 {
     const result = splitPath(path);
