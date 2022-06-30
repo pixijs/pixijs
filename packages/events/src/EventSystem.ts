@@ -2,9 +2,9 @@ import { EventBoundary } from './EventBoundary';
 import type { FederatedMouseEvent } from './FederatedMouseEvent';
 import { FederatedPointerEvent } from './FederatedPointerEvent';
 import { FederatedWheelEvent } from './FederatedWheelEvent';
-import { ExtensionMetadata, ExtensionType } from '@pixi/core';
+import { ExtensionType } from '@pixi/core';
 
-import type { IRenderableObject } from '@pixi/core';
+import type { IRenderableObject, ExtensionMetadata } from '@pixi/core';
 import type { DisplayObject } from '@pixi/display';
 import type { IPointData } from '@pixi/math';
 
