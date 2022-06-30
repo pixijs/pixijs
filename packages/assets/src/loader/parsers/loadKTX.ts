@@ -1,4 +1,4 @@
-import { BaseTexture, Texture } from '@pixi/core';
+import { BaseTexture, ExtensionType, Texture } from '@pixi/core';
 import { parseKTX } from '@pixi/compressed-textures';
 import type { Loader } from '../Loader';
 
@@ -7,11 +7,14 @@ import type { LoaderParser } from './LoaderParser';
 import { getResolutionOfUrl } from '@pixi/utils';
 import type { LoadAsset } from '../types';
 import { ALPHA_MODES, MIPMAP_MODES } from '@pixi/constants';
+import type { LoadTextureData } from './loadTexture';
 
 const validImages = ['ktx'];
 
 /** Loads KTX textures! */
 export const loadKTX = {
+    extension: ExtensionType.LoadParser,
+
     test(url: string): boolean
     {
         const tempURL = url.split('?')[0];
@@ -77,5 +80,5 @@ export const loadKTX = {
         }
     }
 
-} as LoaderParser<Texture | Texture[], {baseTexture: BaseTexture}>;
+} as LoaderParser<Texture | Texture[], LoadTextureData>;
 

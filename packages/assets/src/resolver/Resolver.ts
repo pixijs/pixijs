@@ -103,7 +103,6 @@ export class Resolver
     /** Used for testing, this resets the resolver to its initial state */
     public reset(): void
     {
-        this._parsers = [];
         this._preferredOrder = [];
 
         this._resolverHash = {};

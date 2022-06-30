@@ -1,3 +1,5 @@
+import type { ExtensionMetadata } from '@pixi/core';
+
 /**
  * A prefer order lets the resolver know which assets to prefere depending on the various parameters passed to it.
  * @memberof PIXI
@@ -6,7 +8,6 @@ export interface PreferOrder
 {
     /** the importance order of the params */
     priority?: string[];
-    // TODO @bigtimebuddy -need a better name than prepare..
     params: {
         [key: string]: any;
     };
@@ -55,6 +56,9 @@ export type ResolverManifest = {
  */
 export interface ResolveURLParser
 {
+    extension?: ExtensionMetadata;
+    /** A config to adjust the parser */
+    config?: Record<string, any>
     /** the test to perform on the url to determin if it should be parsed */
     test: (url: string) => boolean;
     /** the function that will convert the url into an object */

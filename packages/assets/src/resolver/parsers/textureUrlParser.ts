@@ -1,9 +1,11 @@
+import { ExtensionType } from '@pixi/core';
 import { settings } from '@pixi/settings';
 
 import { loadTextures } from '../../loader';
-import type { ResolveAsset } from '../types';
+import type { ResolveAsset, ResolveURLParser } from '../types';
 
 export const textureUrlParser = {
+    extension: ExtensionType.ResolveParser,
     test: loadTextures.test,
     parse: (value: string): ResolveAsset =>
         ({
@@ -11,4 +13,4 @@ export const textureUrlParser = {
             format: value.split('.').pop(),
             src: value,
         }),
-};
+} as ResolveURLParser;

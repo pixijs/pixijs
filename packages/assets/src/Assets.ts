@@ -1,4 +1,4 @@
-import { BaseTexture, Texture } from '@pixi/core';
+import { BaseTexture, extensions, ExtensionType, Texture } from '@pixi/core';
 import { BackgroundLoader } from './BackgroundLoader';
 import { Cache } from './cache/Cache';
 import { cacheSpritesheet, cacheTextureArray } from './cache/parsers';
@@ -609,26 +609,6 @@ export class AssetsClass
         this.loader.reset();
         this.cache.reset();
 
-        this.loader.addParser(
-            loadTextures,
-            loadTxt,
-            loadJson,
-            loadSpritesheet,
-            loadBitmapFont,
-            loadWebFont,
-        );
-
-        this.cache.addParser(
-            cacheSpritesheet,
-            cacheTextureArray
-        );
-
-        // allows us to pass resolution based on strings
-        this.resolver.addUrlParser(
-            textureUrlParser,
-            spriteSheetUrlParser
-        );
-
         this._initialized = false;
     }
 
@@ -664,14 +644,11 @@ export class AssetsClass
      * @returns - The Texture you requested
      */
     public getTextureSync(key: string): Texture
-    // TODO @bigtimebuddy - can you help us with a better name pls?
     {
         if (Cache.has(key))
         {
             return Cache.get(key);
         }
-
-        // TODO make sure sprite sheets textures get added to cache!
 
         // add it to a cache..
         const url = this.resolver.resolveUrl(key) as string;
@@ -826,3 +803,37 @@ export class AssetsClass
 }
 
 export const Assets = new AssetsClass();
+
+// Handle registration of extensions
+extensions.handle(
+    ExtensionType.LoadParser,
+    (extension) => { Assets.loader.addParser(extension.ref); },
+    (extension) => { Assets.loader.removeParser(extension.ref); }
+);
+extensions.handle(
+    ExtensionType.ResolveParser,
+    (extension) => { Assets.resolver.addUrlParser(extension.ref); },
+    (extension) => { Assets.resolver.removeUrlParser(extension.ref); }
+);
+extensions.handle(
+    ExtensionType.CacheParser,
+    (extension) => { Assets.cache.addParser(extension.ref); },
+    (extension) => { Assets.cache.removeParser(extension.ref); }
+);
+
+extensions.add(
+    loadTextures,
+    loadTxt,
+    loadJson,
+    loadSpritesheet,
+    loadBitmapFont,
+    loadWebFont,
+
+    // cache extensions
+    cacheSpritesheet,
+    cacheTextureArray,
+
+    // resolve extensions
+    textureUrlParser,
+    spriteSheetUrlParser
+);

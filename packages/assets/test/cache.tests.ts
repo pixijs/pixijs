@@ -21,17 +21,18 @@ describe('Cache', () =>
     beforeEach(() =>
     {
         Cache.reset();
+        Cache.removeParser(testParser);
     });
 
     it('should add and remove a plugin', () =>
     {
         Cache.addParser(testParser);
 
-        expect(Cache.parsers).toHaveLength(1);
+        expect(Cache.parsers).toHaveLength(3);
 
         Cache.removeParser(testParser);
 
-        expect(Cache.parsers).toHaveLength(0);
+        expect(Cache.parsers).toHaveLength(2);
     });
 
     it('should process a custom parsers correctly', () =>

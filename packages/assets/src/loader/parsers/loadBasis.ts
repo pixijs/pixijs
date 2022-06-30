@@ -1,4 +1,4 @@
-import { BaseTexture, Texture } from '@pixi/core';
+import { BaseTexture, ExtensionType, Texture } from '@pixi/core';
 
 import type { LoaderParser } from './LoaderParser';
 import { BasisParser, BASIS_FORMATS, BASIS_FORMAT_TO_TYPE,  TranscoderWorker } from '@pixi/basis';
@@ -7,11 +7,14 @@ import { ALPHA_MODES, FORMATS, MIPMAP_MODES } from '@pixi/constants';
 import { CompressedTextureResource } from '@pixi/compressed-textures';
 import type { LoadAsset } from '../types';
 import type { Loader } from '../Loader';
+import type { LoadTextureData } from './loadTexture';
 
 const validImages = ['basis'];
 
 /** Load BASIS textures! */
 export const loadBasis = {
+    extension: ExtensionType.LoadParser,
+
     test(url: string): boolean
     {
         const tempURL = url.split('?')[0];
@@ -72,5 +75,5 @@ export const loadBasis = {
         }
     }
 
-} as LoaderParser<Texture | Texture[], {baseTexture: BaseTexture}>;
+} as LoaderParser<Texture | Texture[], LoadTextureData>;
 

@@ -1,4 +1,5 @@
 import type { Texture } from '@pixi/core';
+import { ExtensionType } from '@pixi/core';
 import type { ISpritesheetData } from '@pixi/spritesheet';
 import { Spritesheet } from '@pixi/spritesheet';
 
@@ -25,6 +26,8 @@ interface SpriteSheetJson extends ISpritesheetData
  * All textures in the sprite sheet are then added to the cache
  */
 export const loadSpritesheet = {
+    extension: ExtensionType.LoadParser,
+
     testParse(asset: SpriteSheetJson, options: LoadAsset): boolean
     {
         return (extname(options.src).includes('.json') && !!asset.frames);

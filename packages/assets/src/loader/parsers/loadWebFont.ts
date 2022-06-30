@@ -1,3 +1,4 @@
+import { ExtensionType } from '@pixi/core';
 import { basename, extname } from '../../utils/path';
 import type { LoadAsset } from '../types';
 import type { LoaderParser } from './LoaderParser';
@@ -42,6 +43,8 @@ export function getFontFamilyName(url: string): string
 
 /** Web font loader plugin */
 export const loadWebFont = {
+    extension: ExtensionType.LoadParser,
+
     test(url: string): boolean
     {
         const tempURL = url.split('?')[0];
