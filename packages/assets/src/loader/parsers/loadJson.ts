@@ -2,7 +2,7 @@ import { extname } from '../../utils/path';
 import type { LoaderParser } from './LoaderParser';
 
 /** simple loader plugin for loading json data */
-const loadJson = {
+export const loadJson = {
     test(url: string): boolean
     {
         return (extname(url).includes('.json'));
@@ -17,6 +17,3 @@ const loadJson = {
         return json as T;
     },
 } as LoaderParser;
-
-export { loadJson };
-

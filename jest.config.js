@@ -6,6 +6,8 @@ module.exports = {
     setupFilesAfterEnv: [
         'jest-extended/all',
     ],
+    globalSetup: '<rootDir>/test/jest-global-setup.ts',
+    globalTeardown: '<rootDir>/test/jest-global-teardown.ts',
     transform: {
         '\\.vert$': 'jest-raw-loader',
         '\\.frag$': 'jest-raw-loader',

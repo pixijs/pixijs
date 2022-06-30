@@ -1,10 +1,7 @@
-import { Spritesheet } from '@pixi/spritesheet';
 import { BaseTexture, Texture } from '@pixi/core';
+import { Spritesheet } from '@pixi/spritesheet';
 
-import { Assets } from '../src/Assets';
-
-// eslint-disable-next-line max-len
-const basePath = 'https://raw.githubusercontent.com/pixijs/pixijs/864d41d92e987da1d2da2bf893c67d14a731763a/packages/assets/test/assets/';
+import { Assets } from '@pixi/assets';
 
 function wait(value = 500)
 {
@@ -15,6 +12,10 @@ function wait(value = 500)
 
 describe('Assets', () =>
 {
+    const basePath = process.env.GITHUB_ACTIONS
+        ? `https://raw.githubusercontent.com/pixijs/pixijs/${process.env.GITHUB_SHA}/packages/assets/test/assets/`
+        : 'http://localhost:8080/assets/test/assets/';
+
     beforeEach(() =>
     {
         // reset the loader
@@ -27,7 +28,7 @@ describe('Assets', () =>
             basePath,
         });
 
-        const bunny = await Assets.load('bunny.png');
+        const bunny = await Assets.load('textures/bunny.png');
 
         expect(bunny).toBeInstanceOf(Texture);
     });
@@ -38,7 +39,7 @@ describe('Assets', () =>
             basePath,
         });
 
-        Assets.add('test', 'bunny.png');
+        Assets.add('test', 'textures/bunny.png');
 
         // not loaded yet!
         const bunny0 = Assets.get('test');
@@ -63,16 +64,16 @@ describe('Assets', () =>
         });
 
         Assets.add('test', [
-            'profile-abel@0.5x.jpg',
-            'profile-abel@2x.jpg',
-            'profile-abel@0.5x.webp',
-            'profile-abel@2x.webp',
+            'textures/profile-abel@0.5x.jpg',
+            'textures/profile-abel@2x.jpg',
+            'textures/profile-abel@0.5x.webp',
+            'textures/profile-abel@2x.webp',
         ]);
 
         // not loaded yet!
         const bunny = await Assets.load('test');
 
-        expect(bunny.baseTexture.resource.src).toBe(`${basePath}profile-abel@2x.webp`);
+        expect(bunny.baseTexture.resource.src).toBe(`${basePath}textures/profile-abel@2x.webp`);
     });
 
     it('should load a correct texture based on preference', async () =>
@@ -86,16 +87,16 @@ describe('Assets', () =>
         });
 
         Assets.add('test', [
-            'profile-abel@0.5x.jpg',
-            'profile-abel@2x.jpg',
-            'profile-abel@0.5x.webp',
-            'profile-abel@2x.webp',
+            'textures/profile-abel@0.5x.jpg',
+            'textures/profile-abel@2x.jpg',
+            'textures/profile-abel@0.5x.webp',
+            'textures/profile-abel@2x.webp',
         ]);
 
         // not loaded yet!
         const bunny = await Assets.load('test');
 
-        expect(bunny.baseTexture.resource.src).toBe(`${basePath}profile-abel@2x.jpg`);
+        expect(bunny.baseTexture.resource.src).toBe(`${basePath}textures/profile-abel@2x.jpg`);
     });
 
     it('should add and load bundle', async () =>
@@ -105,8 +106,8 @@ describe('Assets', () =>
         });
 
         Assets.addBundle('testBundle', {
-            bunny: 'bunny.{png,webp}',
-            spritesheet: 'spritesheet.json',
+            bunny: 'textures/bunny.{png,webp}',
+            spritesheet: 'spritesheet/spritesheet.json',
         });
 
         const assets = await Assets.loadBundle('testBundle');
@@ -119,7 +120,7 @@ describe('Assets', () =>
     {
         await Assets.init({
             basePath,
-            manifest: 'asset-manifest-2.json',
+            manifest: 'json/asset-manifest-2.json',
         });
 
         const assets = await Assets.loadBundle('default');
@@ -133,7 +134,7 @@ describe('Assets', () =>
     {
         await Assets.init({
             basePath,
-            manifest: 'asset-manifest-2.json',
+            manifest: 'json/asset-manifest-2.json',
         });
 
         // TODO if its an array of one.. return the single object
@@ -152,7 +153,7 @@ describe('Assets', () =>
             basePath,
         });
 
-        Assets.add(['fish', 'chicken'], 'bunny.png');
+        Assets.add(['fish', 'chicken'], 'textures/bunny.png');
 
         const bunny = await Assets.load('fish');
 
@@ -169,11 +170,11 @@ describe('Assets', () =>
             basePath,
         });
 
-        Assets.add('fish', 'bunny.{png,webp}');
+        Assets.add('fish', 'textures/bunny.{png,webp}');
 
         const bunny = await Assets.load('fish');
 
-        expect(bunny.baseTexture.resource.src).toBe(`${basePath}bunny.webp`);
+        expect(bunny.baseTexture.resource.src).toBe(`${basePath}textures/bunny.webp`);
     });
 
     it('should getTextureSync correctly', async () =>
@@ -182,16 +183,16 @@ describe('Assets', () =>
             basePath,
         });
 
-        const bunny = Assets.getTextureSync('bunny.png');
+        const bunny = Assets.getTextureSync('textures/bunny.png');
 
         expect(bunny.baseTexture).toBe(Texture.EMPTY.baseTexture);
 
-        await Assets.load('bunny.png');
+        await Assets.load('textures/bunny.png');
 
         // TODO - this src will be added in the future..
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        expect(bunny.baseTexture.resource.src).toBe(`${basePath}bunny.png`);
+        expect(bunny.baseTexture.resource.src).toBe(`${basePath}textures/bunny.png`);
     });
 
     it('should return the same texture when calling getTextureSync', async () =>
@@ -200,17 +201,17 @@ describe('Assets', () =>
             basePath,
         });
 
-        const bunny = Assets.getTextureSync('bunny.png');
-        const bunny2 = Assets.getTextureSync('bunny.png');
+        const bunny = Assets.getTextureSync('textures/bunny.png');
+        const bunny2 = Assets.getTextureSync('textures/bunny.png');
 
         expect(bunny2).toBe(bunny);
 
-        await Assets.load('bunny.png');
+        await Assets.load('textures/bunny.png');
 
         // TODO - this src will be added in the future..
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        expect(bunny.baseTexture.resource.src).toBe(`${basePath}bunny.png`);
+        expect(bunny.baseTexture.resource.src).toBe(`${basePath}textures/bunny.png`);
     });
 
     it('should background load correctly', async () =>
@@ -219,25 +220,25 @@ describe('Assets', () =>
             basePath,
         });
 
-        Assets.backgroundLoad(['bunny.png']);
+        Assets.backgroundLoad(['textures/bunny.png']);
 
         // wait a bit...
         await wait();
 
-        const asset = await Assets.loader.promiseCache[`${basePath}bunny.png`].promise;
+        const asset = await Assets.loader.promiseCache[`${basePath}textures/bunny.png`].promise;
 
         expect(asset).toBeInstanceOf(Texture);
         // TODO - this src will be added in the future..
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        expect(asset.baseTexture.resource.src).toBe(`${basePath}bunny.png`);
+        expect(asset.baseTexture.resource.src).toBe(`${basePath}textures/bunny.png`);
     });
 
     it('should background load bundles', async () =>
     {
         await Assets.init({
             basePath,
-            manifest: 'asset-manifest-2.json',
+            manifest: 'json/asset-manifest-2.json',
         });
 
         Assets.backgroundLoadBundle('default');
@@ -246,11 +247,11 @@ describe('Assets', () =>
         await wait();
 
         const expectTypes = {
-            'asset-manifest-2.json': Object,
-            'bunny.png': Texture,
-            'profile-abel@2x.webp': Texture,
-            'spritesheet.json': Spritesheet,
-            'spritesheet.png': Texture,
+            'json/asset-manifest-2.json': Object,
+            'textures/bunny.png': Texture,
+            'textures/profile-abel@2x.webp': Texture,
+            'spritesheet/spritesheet.json': Spritesheet,
+            'spritesheet/spritesheet.png': Texture,
         };
 
         for (const [key, type] of Object.entries(expectTypes))
@@ -275,7 +276,7 @@ describe('Assets', () =>
             basePath,
         });
 
-        await Assets.load('spritesheet.json');
+        await Assets.load('spritesheet/spritesheet.json');
 
         const texture = Assets.get('pic-sensei.jpg');
 
@@ -288,15 +289,57 @@ describe('Assets', () =>
             basePath,
         });
 
-        const bunny = await Assets.load('bunny.png') as Texture;
+        const bunny = await Assets.load('textures/bunny.png') as Texture;
 
         bunny.destroy(true);
 
         expect(bunny.baseTexture).toBe(null);
 
-        const bunnyReloaded = await Assets.load('bunny.png') as Texture;
+        const bunnyReloaded = await Assets.load('textures/bunny.png') as Texture;
 
         expect(bunnyReloaded.baseTexture).toBeInstanceOf(BaseTexture);
+    });
+
+    it('should load texture array correctly', async () =>
+    {
+        await Assets.init({
+            basePath,
+        });
+
+        Assets.addBundle('testBundle', {
+            bunny: 'textures/bunny.{png,webp}',
+            spritesheet: 'spritesheet/spritesheet.json',
+        });
+
+        const assets = await Assets.loadBundle('testBundle');
+
+        expect(assets.bunny).toBeInstanceOf(Texture);
+        expect(assets.spritesheet).toBeInstanceOf(Spritesheet);
+
+        await Assets.unloadBundle('testBundle');
+
+        expect(assets.bunny.baseTexture).toBe(null);
+    });
+
+    it('should unload and remove from the cache correctly', async () =>
+    {
+        await Assets.init({
+            basePath,
+        });
+
+        Assets.add(['chickenSheet', 'alias'], 'spritesheet/spritesheet.json');
+
+        await Assets.load('chickenSheet');
+
+        const texture = Assets.get('pic-sensei.jpg');
+
+        expect(texture).toBeInstanceOf(Texture);
+
+        await Assets.unload('chickenSheet');
+
+        const texture2 = Assets.get('pic-sensei.jpg');
+
+        expect(texture2).toBe(undefined);
     });
 
     it('should unload assets correctly', async () =>
@@ -305,9 +348,9 @@ describe('Assets', () =>
             basePath,
         });
 
-        const bunny = await Assets.load('bunny.png') as Texture;
+        const bunny = await Assets.load('textures/bunny.png') as Texture;
 
-        await Assets.unload('bunny.png');
+        await Assets.unload('textures/bunny.png');
 
         expect(bunny.baseTexture).toBe(null);
     });
@@ -319,8 +362,8 @@ describe('Assets', () =>
         });
 
         Assets.addBundle('testBundle', {
-            bunny: 'bunny.{png,webp}',
-            spritesheet: 'spritesheet.json',
+            bunny: 'textures/bunny.{png,webp}',
+            spritesheet: 'spritesheet/spritesheet.json',
         });
 
         const assets = await Assets.loadBundle('testBundle');

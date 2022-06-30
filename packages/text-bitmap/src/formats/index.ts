@@ -27,3 +27,5 @@ export function autoDetectFormat(data: unknown): typeof formats[number] | null
 
     return null;
 }
+
+export { TextFormat, XMLFormat, XMLStringFormat };

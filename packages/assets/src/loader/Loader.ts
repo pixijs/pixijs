@@ -4,8 +4,8 @@ import { PromiseAndParser, LoadAsset } from './types';
 
 /**
  * The Loader is responsible for loading all assets, such as images, spritesheets, audio files, etc.
- * It does not do anything clever with urls - it just loads stuff!
- * Behind the scenes all things are cached using promises. This means its impossible to load an asset more than once.
+ * It does not do anything clever with URLs - it just loads stuff!
+ * Behind the scenes all things are cached using promises. This means it's impossible to load an asset more than once.
  * Through the use of LoaderParsers, the loader can understand how to load any kind of file!
  *
  * It is not intended that this class is created by developers - its part of the Asset class
@@ -31,7 +31,7 @@ export class Loader
 
     /**
      * Use this to add any parsers to the loadAssets function to use
-     * @param newParsers - a array of parsers to add to the loader, or just a single one
+     * @param newParsers - An array of parsers to add to the loader, or just a single one
      */
     public addParser(...newParsers: LoaderParser[]): void
     {
@@ -39,9 +39,8 @@ export class Loader
     }
 
     /**
-     * For exceptional situations where a loader parser might be causing some trouble,
-     * like loadAtlas parser broken with the latest version of pixi-spine
-     * @param parsersToRemove - a array of parsers to remove from loader, or just a single one
+     * Use this to remove any parsers you've added or any of the default ones.
+     * @param parsersToRemove - An array of parsers to remove from the loader, or just a single one
      */
     public removeParser(...parsersToRemove: LoaderParser[]): void
     {
@@ -55,11 +54,11 @@ export class Loader
 
     /**
      * Used internally to generate a promise for the asset to be loaded.
-     * @param url - the url to be loaded
+     * @param url - The URL to be loaded
      * @param data - any custom additional information relevant to the asset being loaded
-     * @returns - a promise the will resolve to a Asset for example a Texture of a JSON object
+     * @returns - a promise that will resolve to an Asset for example a Texture of a JSON object
      */
-    private _getLoadPromiseAndParser(url: string, data?: any): PromiseAndParser
+    private _getLoadPromiseAndParser(url: string, data?: LoadAsset): PromiseAndParser
     {
         const result: PromiseAndParser = {
             promise: null,
@@ -97,8 +96,6 @@ export class Loader
 
                 if (parser.parse)
                 {
-                    //
-
                     if (parser.parse && parser.testParse?.(asset, data, this))
                     {
                         // transform the asset..
@@ -116,8 +113,7 @@ export class Loader
     }
 
     /**
-     * The only function you need! will load your assets :D
-     * Add parsers to make this thing understand how to actually load stuff!
+     * Loads an asset(s) using the parsers added to the Loader.
      * @example
      * // single asset:
      * const asset = await Loader.load('cool.png');
@@ -126,8 +122,8 @@ export class Loader
      * // multiple assets:
      * const assets = await  Loader.load(['cool.png', 'cooler.png']);
      * console.log(assets);
-     * @param assetsToLoadIn - a bunch of urls that you want to load, or a single one!
-     * @param onProgress - a progress function that gets called when progress happens
+     * @param assetsToLoadIn - urls that you want to load, or a single one!
+     * @param onProgress - a function that gets called when the progress changes
      */
     public async load(
         assetsToLoadIn: string | string[] | LoadAsset | LoadAsset[],
@@ -183,8 +179,7 @@ export class Loader
     }
 
     /**
-     * The opposite of the load function! this will unload your assets!
-     * unloaded assets are destroyed. A great way to free up memory for you app.
+     * Unloads an asset(s). Any unloaded assets will be destroyed, freeing up memory for your app.
      * The parser that created the asset, will be the one that unloads it.
      * @example
      * // single asset:
@@ -193,7 +188,7 @@ export class Loader
      * await Loader.unload('cool.png');
      *
      * console.log(asset.destroyed); // true
-     * @param assetsToUnloadIn - a bunch of urls that you want to unload, or a single one!
+     * @param assetsToUnloadIn - urls that you want to unload, or a single one!
      */
     public async unload(
         assetsToUnloadIn: string | string[] | LoadAsset | LoadAsset[],

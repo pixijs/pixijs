@@ -57,7 +57,7 @@ export class BackgroundLoader
     }
 
     /**
-     * Loads the next set of assets. Will try to load as many as it can at the same time.
+     * Loads the next set of assets. Will try to load as many assets as it can at the same time.
      *
      * The max assets it will try to load at one time will be 4.
      */
