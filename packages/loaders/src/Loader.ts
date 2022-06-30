@@ -1,8 +1,9 @@
 import { Signal } from './base/Signal';
 import { parseUri } from './base/parseUri';
-import { IResourceMetadata, LoaderResource } from './LoaderResource';
+import type { IResourceMetadata } from './LoaderResource';
+import { LoaderResource } from './LoaderResource';
 import { AsyncQueue } from './base/AsyncQueue';
-import { Dict } from '@pixi/utils';
+import type { Dict } from '@pixi/utils';
 import { extensions, ExtensionType } from '@pixi/core';
 
 // some constants

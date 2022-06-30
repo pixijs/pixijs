@@ -3,7 +3,8 @@ import { Matrix } from '@pixi/math';
 import type { ISystem } from '../system/ISystem';
 import type { Rectangle } from '@pixi/math';
 import type { Renderer } from '../Renderer';
-import { ExtensionMetadata, ExtensionType } from '../extensions';
+import type { ExtensionMetadata } from '../extensions';
+import { ExtensionType } from '../extensions';
 
 /**
  * System plugin to the renderer to manage the projection matrix.

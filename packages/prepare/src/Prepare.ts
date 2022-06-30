@@ -1,8 +1,9 @@
-import { BaseTexture, ExtensionMetadata, ExtensionType } from '@pixi/core';
+import { BaseTexture, ExtensionType } from '@pixi/core';
 import { Graphics } from '@pixi/graphics';
-import { BasePrepare, IDisplayObjectExtended } from './BasePrepare';
+import type { IDisplayObjectExtended } from './BasePrepare';
+import { BasePrepare } from './BasePrepare';
 
-import type { Renderer, IRenderer } from '@pixi/core';
+import type { Renderer, IRenderer, ISystem, ExtensionMetadata } from '@pixi/core';
 
 /**
  * Built-in hook to upload PIXI.Texture objects to the GPU.
@@ -118,12 +119,12 @@ function findGraphics(item: IDisplayObjectExtended, queue: Array<any>): boolean
  * });
  * @memberof PIXI
  */
-export class Prepare extends BasePrepare
+export class Prepare extends BasePrepare implements ISystem
 {
     /** @ignore */
     static extension: ExtensionMetadata = {
         name: 'prepare',
-        type: ExtensionType.RendererPlugin,
+        type: ExtensionType.RendererSystem,
     };
 
     /**

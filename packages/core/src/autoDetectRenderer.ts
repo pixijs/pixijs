@@ -1,4 +1,4 @@
-import { IRenderer, IRendererOptions } from './IRenderer';
+import type { IRenderer, IRendererOptions } from './IRenderer';
 import { Renderer } from './Renderer';
 
 export interface IRendererOptionsAuto extends IRendererOptions

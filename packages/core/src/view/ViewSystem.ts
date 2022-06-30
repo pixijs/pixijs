@@ -1,8 +1,9 @@
 import { Rectangle } from '@pixi/math';
 import { settings } from '@pixi/settings';
-import { ExtensionMetadata, ExtensionType } from '../extensions';
-import { IRenderer } from '../IRenderer';
-import { ISystem } from '../system/ISystem';
+import type { ExtensionMetadata } from '../extensions';
+import { ExtensionType } from '../extensions';
+import type { IRenderer } from '../IRenderer';
+import type { ISystem } from '../system/ISystem';
 
 /**
  * Options passed to the ViewSystem

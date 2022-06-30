@@ -1,7 +1,7 @@
 import { settings } from '@pixi/settings';
 import { removeItems } from '@pixi/utils';
 import { DisplayObject } from './DisplayObject';
-import { Matrix, Rectangle } from '@pixi/math';
+import type { Matrix, Rectangle } from '@pixi/math';
 import { MASK_TYPES } from '@pixi/constants';
 
 import type { MaskData, Renderer } from '@pixi/core';
@@ -53,13 +53,13 @@ export interface Container extends GlobalMixins.Container, DisplayObject {}
  * ```
  * @memberof PIXI
  */
-export class Container extends DisplayObject
+export class Container<T extends DisplayObject = DisplayObject> extends DisplayObject
 {
     /**
      * The array of children of this container.
      * @readonly
      */
-    public readonly children: DisplayObject[];
+    public readonly children: T[];
 
     /**
      * If set to true, the container will sort its children by zIndex value
@@ -128,7 +128,7 @@ export class Container extends DisplayObject
      * @param {...PIXI.DisplayObject} children - The DisplayObject(s) to add to the container
      * @returns {PIXI.DisplayObject} - The first child that was added.
      */
-    addChild<T extends DisplayObject[]>(...children: T): T[0]
+    addChild<U extends T[]>(...children: U): U[0]
     {
         // if there is only one argument we can bypass looping through the them
         if (children.length > 1)
@@ -176,7 +176,7 @@ export class Container extends DisplayObject
      * @param {number} index - The index to place the child in
      * @returns {PIXI.DisplayObject} The child that was added.
      */
-    addChildAt<T extends DisplayObject>(child: T, index: number): T
+    addChildAt<U extends T>(child: U, index: number): U
     {
         if (index < 0 || index > this.children.length)
         {
@@ -212,7 +212,7 @@ export class Container extends DisplayObject
      * @param child - First display object to swap
      * @param child2 - Second display object to swap
      */
-    swapChildren(child: DisplayObject, child2: DisplayObject): void
+    swapChildren(child: T, child2: T): void
     {
         if (child === child2)
         {
@@ -232,7 +232,7 @@ export class Container extends DisplayObject
      * @param child - The DisplayObject instance to identify
      * @returns - The index position of the child display object to identify
      */
-    getChildIndex(child: DisplayObject): number
+    getChildIndex(child: T): number
     {
         const index = this.children.indexOf(child);
 
@@ -249,7 +249,7 @@ export class Container extends DisplayObject
      * @param child - The child DisplayObject instance for which you want to change the index number
      * @param index - The resulting index number for the child display object
      */
-    setChildIndex(child: DisplayObject, index: number): void
+    setChildIndex(child: T, index: number): void
     {
         if (index < 0 || index >= this.children.length)
         {
@@ -269,7 +269,7 @@ export class Container extends DisplayObject
      * @param index - The index to get the child at
      * @returns - The child at the given index, if any.
      */
-    getChildAt(index: number): DisplayObject
+    getChildAt(index: number): T
     {
         if (index < 0 || index >= this.children.length)
         {
@@ -284,7 +284,7 @@ export class Container extends DisplayObject
      * @param {...PIXI.DisplayObject} children - The DisplayObject(s) to remove
      * @returns {PIXI.DisplayObject} The first child that was removed.
      */
-    removeChild<T extends DisplayObject[]>(...children: T): T[0]
+    removeChild<U extends T[]>(...children: U): U[0]
     {
         // if there is only one argument we can bypass looping through the them
         if (children.length > 1)
@@ -324,7 +324,7 @@ export class Container extends DisplayObject
      * @param index - The index to get the child from
      * @returns The child that was removed.
      */
-    removeChildAt(index: number): DisplayObject
+    removeChildAt(index: number): T
     {
         const child = this.getChildAt(index);
 
@@ -350,7 +350,7 @@ export class Container extends DisplayObject
      * @param endIndex - The ending position. Default value is size of the container.
      * @returns - List of removed children
      */
-    removeChildren(beginIndex = 0, endIndex = this.children.length): DisplayObject[]
+    removeChildren(beginIndex = 0, endIndex = this.children.length): T[]
     {
         const begin = beginIndex;
         const end = endIndex;
@@ -467,10 +467,18 @@ export class Container extends DisplayObject
             // TODO: filter+mask, need to mask both somehow
             if (child._mask)
             {
-                const maskObject = ((child._mask as MaskData).maskObject || child._mask) as Container;
+                const maskObject = ((child._mask as MaskData).isMaskData
+                    ? (child._mask as MaskData).maskObject : child._mask) as Container;
 
-                maskObject.calculateBounds();
-                this._bounds.addBoundsMask(child._bounds, maskObject._bounds);
+                if (maskObject)
+                {
+                    maskObject.calculateBounds();
+                    this._bounds.addBoundsMask(child._bounds, maskObject._bounds);
+                }
+                else
+                {
+                    this._bounds.addBounds(child._bounds);
+                }
             }
             else if (child.filterArea)
             {

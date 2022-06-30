@@ -1,37 +1,35 @@
 import {
+    SystemManager,
+    extensions,
+    ExtensionType
+} from '@pixi/core';
+import { CanvasMaskSystem } from './CanvasMaskSystem';
+import type { BLEND_MODES, RENDERER_TYPE } from '@pixi/constants';
+import type { Matrix, Rectangle } from '@pixi/math';
+import type { DisplayObject } from '@pixi/display';
+import type {
+    IRendererOptions,
+    IRendererPlugins,
+    IRendererRenderOptions
+    ,
     RenderTexture,
     IRenderableObject,
-    GenerateTextureSystem,
-    SystemManager, IRenderer,
+    GenerateTextureSystem, IRenderer,
     BackgroundSystem,
     ViewSystem,
     PluginSystem,
     StartupSystem,
     StartupOptions,
-    IGenerateTextureOptions,
-    extensions,
-    ExtensionType
-} from '@pixi/core';
-import { CanvasMaskSystem } from './CanvasMaskSystem';
-import { BLEND_MODES, RENDERER_TYPE } from '@pixi/constants';
-import { Matrix, Rectangle } from '@pixi/math';
-import type { DisplayObject } from '@pixi/display';
-import type {
-    IRendererOptions,
-    IRendererPlugin,
-    IRendererPlugins,
-    IRendererRenderOptions
-} from '@pixi/core';
+    IGenerateTextureOptions } from '@pixi/core';
 
-import { CanvasContextSystem, SmoothingEnabledProperties } from './CanvasContextSystem';
+import type { SmoothingEnabledProperties } from './CanvasContextSystem';
+import { CanvasContextSystem } from './CanvasContextSystem';
 import { CanvasObjectRendererSystem } from './CanvasObjectRendererSystem';
 import { settings } from '@pixi/settings';
 import { deprecation } from '@pixi/utils';
 
-export interface ICanvasRendererPluginConstructor
-{
-    new (renderer: CanvasRenderer, options?: any): IRendererPlugin;
-}
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface CanvasRenderer extends GlobalMixins.CanvasRenderer {}
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface CanvasRenderer extends GlobalMixins.CanvasRenderer {}
@@ -59,11 +57,13 @@ export interface CanvasRenderer extends GlobalMixins.CanvasRenderer {}
  * | {@link PIXI.EventSystem}             | This manages UI events.                                                       |
  * | {@link PIXI.GenerateTextureSystem}   | This adds the ability to generate textures from any PIXI.DisplayObject        |
  *
- * | Pixi high level Systems              | Set of Pixi specific systems designed to work with Pixi objects               |
+ * | PixiJS High-Level Systems            | Set of specific systems designed to work with PixiJS objects                  |
  * | ------------------------------------ | ----------------------------------------------------------------------------- |
  * | {@link PIXI.CanvasContextSystem}     | This manages the canvas `2d` contexts and their state                         |
  * | {@link PIXI.CanvasMaskSystem}        | This manages masking operations.                                              |
  * | {@link PIXI.CanvasRenderSystem}      | This adds the ability to render a PIXI.DisplayObject                          |
+ * | {@link PIXI.CanvasExtract}           | This extracts image data from a PIXI.DisplayObject                            |
+ * | {@link PIXI.CanvasPrepare}           | This prepares a PIXI.DisplayObject async for rendering                        |
  *
  * The breadth of the API surface provided by the renderer is contained within these systems.
  * @class
@@ -562,8 +562,6 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
      * @member {object} plugins
      * @readonly
      * @property {PIXI.AccessibilityManager} accessibility Support tabbing interactive elements.
-     * @property {PIXI.CanvasExtract} extract Extract image data from renderer.
-     * @property {PIXI.CanvasPrepare} prepare Pre-render display objects.
      */
 }
 

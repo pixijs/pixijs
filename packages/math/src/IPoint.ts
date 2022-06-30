@@ -1,4 +1,4 @@
-import { IPointData } from './IPointData';
+import type { IPointData } from './IPointData';
 
 export interface IPoint extends IPointData
 {

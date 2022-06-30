@@ -1,6 +1,7 @@
 import { BaseTextureCache, TextureCache } from '@pixi/utils';
 import { Rectangle, Point } from '@pixi/math';
-import { BaseTexture, ImageResource, Texture } from '@pixi/core';
+import type { ImageResource } from '@pixi/core';
+import { BaseTexture, Texture } from '@pixi/core';
 import { settings } from '@pixi/settings';
 
 import path from 'path';

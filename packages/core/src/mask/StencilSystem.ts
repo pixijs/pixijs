@@ -2,7 +2,8 @@ import { AbstractMaskSystem } from './AbstractMaskSystem';
 
 import type { Renderer } from '../Renderer';
 import type { IMaskTarget, MaskData } from './MaskData';
-import { ExtensionMetadata, ExtensionType } from '../extensions';
+import type { ExtensionMetadata } from '../extensions';
+import { ExtensionType } from '../extensions';
 
 /**
  * System plugin to the renderer to manage stencils (used for masks).
@@ -59,8 +60,15 @@ export class StencilSystem extends AbstractMaskSystem
 
         maskData._stencilCounter++;
 
+        const colorMask = maskData._colorMask;
+
+        if (colorMask !== 0)
+        {
+            maskData._colorMask = 0;
+            gl.colorMask(false, false, false, false);
+        }
+
         // Increment the reference stencil value where the new mask overlaps with the old ones.
-        gl.colorMask(false, false, false, false);
         gl.stencilFunc(gl.EQUAL, prevMaskCount, 0xFFFFFFFF);
         gl.stencilOp(gl.KEEP, gl.KEEP, gl.INCR);
 
@@ -68,6 +76,17 @@ export class StencilSystem extends AbstractMaskSystem
         maskObject.render(this.renderer);
         this.renderer.batch.flush();
         maskObject.renderable = false;
+
+        if (colorMask !== 0)
+        {
+            maskData._colorMask = colorMask;
+            gl.colorMask(
+                (colorMask & 1) !== 0,
+                (colorMask & 2) !== 0,
+                (colorMask & 4) !== 0,
+                (colorMask & 8) !== 0
+            );
+        }
 
         this._useCurrent();
     }
@@ -87,14 +106,33 @@ export class StencilSystem extends AbstractMaskSystem
         }
         else
         {
+            const maskData = this.maskStack.length !== 0 ? this.maskStack[this.maskStack.length - 1] : null;
+            const colorMask = maskData ? maskData._colorMask : 0xf;
+
+            if (colorMask !== 0)
+            {
+                maskData._colorMask = 0;
+                gl.colorMask(false, false, false, false);
+            }
+
             // Decrement the reference stencil value where the popped mask overlaps with the other ones
-            gl.colorMask(false, false, false, false);
             gl.stencilOp(gl.KEEP, gl.KEEP, gl.DECR);
 
             maskObject.renderable = true;
             maskObject.render(this.renderer);
             this.renderer.batch.flush();
             maskObject.renderable = false;
+
+            if (colorMask !== 0)
+            {
+                maskData._colorMask = colorMask;
+                gl.colorMask(
+                    (colorMask & 0x1) !== 0,
+                    (colorMask & 0x2) !== 0,
+                    (colorMask & 0x4) !== 0,
+                    (colorMask & 0x8) !== 0
+                );
+            }
 
             this._useCurrent();
         }
@@ -108,7 +146,6 @@ export class StencilSystem extends AbstractMaskSystem
     {
         const gl = this.renderer.gl;
 
-        gl.colorMask(true, true, true, true);
         gl.stencilFunc(gl.EQUAL, this.getStackLength(), 0xFFFFFFFF);
         gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
     }

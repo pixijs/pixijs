@@ -1,21 +1,12 @@
-import { ExtensionMetadata, ExtensionType } from '../extensions';
-import { IRenderer } from '../IRenderer';
-import { Renderer } from '../Renderer';
-import { ISystem } from '../system/ISystem';
+import { deprecation } from '@pixi/utils';
+import type { ExtensionMetadata } from '../extensions';
+import { ExtensionType } from '../extensions';
+import type { IRenderer } from '../IRenderer';
+import type { ISystem } from '../system/ISystem';
 
-export interface IRendererPlugin
-{
-    destroy(): void;
-}
-
-export interface IRendererPlugins
+export interface IRendererPlugins extends GlobalMixins.IRendererPlugins
 {
     [key: string]: any;
-}
-
-export interface IRendererPluginConstructor<R extends IRenderer = Renderer>
-{
-    new (renderer: R, options?: any): IRendererPlugin;
 }
 
 /**
@@ -51,6 +42,29 @@ export class PluginSystem implements ISystem
          * @member {object}
          */
         this.plugins = {};
+
+        // #if _DEBUG
+        Object.defineProperties(this.plugins, {
+            extract: {
+                enumerable: false,
+                get()
+                {
+                    deprecation('7.0.0', 'renderer.plugins.extract has moved to renderer.extract');
+
+                    return (renderer as any).extract;
+                },
+            },
+            prepare: {
+                enumerable: false,
+                get()
+                {
+                    deprecation('7.0.0', 'renderer.plugins.prepare has moved to renderer.prepare');
+
+                    return (renderer as any).prepare;
+                },
+            },
+        });
+        // #endif
     }
 
     /**

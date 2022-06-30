@@ -3,8 +3,9 @@ import { GLBuffer } from './GLBuffer';
 import type { Renderer } from '../Renderer';
 import type { Buffer } from './Buffer';
 import type { ISystem } from '../system/ISystem';
-import { IRenderingContext } from '../IRenderer';
-import { ExtensionMetadata, ExtensionType } from '../extensions';
+import type { IRenderingContext } from '../IRenderer';
+import type { ExtensionMetadata } from '../extensions';
+import { ExtensionType } from '../extensions';
 
 /**
  * System plugin to the renderer to manage buffers.

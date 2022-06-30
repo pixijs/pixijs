@@ -1,6 +1,7 @@
-import { BaseTexture, IRenderer, ExtensionMetadata, ExtensionType } from '@pixi/core';
+import { BaseTexture, ExtensionType } from '@pixi/core';
 import { BasePrepare } from '@pixi/prepare';
 
+import type { ISystem, ExtensionMetadata, IRenderer } from '@pixi/core';
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
 import type { IDisplayObjectExtended } from '@pixi/prepare';
 
@@ -52,12 +53,12 @@ function uploadBaseTextures(prepare: IRenderer | BasePrepare, item: IDisplayObje
  * @extends PIXI.BasePrepare
  * @memberof PIXI
  */
-export class CanvasPrepare extends BasePrepare
+export class CanvasPrepare extends BasePrepare implements ISystem
 {
     /** @ignore */
     static extension: ExtensionMetadata = {
         name: 'prepare',
-        type: ExtensionType.CanvasRendererPlugin,
+        type: ExtensionType.CanvasRendererSystem,
     };
 
     /**

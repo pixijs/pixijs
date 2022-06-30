@@ -13,22 +13,29 @@ import { ShaderSystem } from './shader/ShaderSystem';
 import { ContextSystem } from './context/ContextSystem';
 import { BatchSystem } from './batch/BatchSystem';
 import { TextureGCSystem } from './textures/TextureGCSystem';
-import { MSAA_QUALITY, RENDERER_TYPE } from '@pixi/constants';
+import type { MSAA_QUALITY, RENDERER_TYPE } from '@pixi/constants';
 import { UniformGroup } from './shader/UniformGroup';
-import { Matrix, Rectangle } from '@pixi/math';
+import type { Rectangle } from '@pixi/math';
+import { Matrix } from '@pixi/math';
 import { BufferSystem } from './geometry/BufferSystem';
-import { RenderTexture } from './renderTexture/RenderTexture';
+import type { RenderTexture } from './renderTexture/RenderTexture';
 import { extensions, ExtensionType } from './extensions';
-import { IRendererPlugins, PluginSystem } from './plugin/PluginSystem';
+import type { IRendererPlugins } from './plugin/PluginSystem';
+import { PluginSystem } from './plugin/PluginSystem';
 import { MultisampleSystem } from './framebuffer/MultisampleSystem';
-import { GenerateTextureSystem, IGenerateTextureOptions } from './renderTexture/GenerateTextureSystem';
+import type { IGenerateTextureOptions } from './renderTexture/GenerateTextureSystem';
+import { GenerateTextureSystem } from './renderTexture/GenerateTextureSystem';
 import { BackgroundSystem } from './background/BackgroundSystem';
 import { ViewSystem } from './view/ViewSystem';
 import { ObjectRendererSystem } from './render/ObjectRendererSystem';
 import { settings } from '@pixi/settings';
 import { SystemManager } from './system/SystemManager';
-import { IRenderableObject, IRenderer, IRendererOptions, IRendererRenderOptions, IRenderingContext } from './IRenderer';
-import { StartupOptions, StartupSystem } from './startup/StartupSystem';
+import type { IRenderableObject, IRenderer, IRendererOptions, IRendererRenderOptions, IRenderingContext } from './IRenderer';
+import type { StartupOptions } from './startup/StartupSystem';
+import { StartupSystem } from './startup/StartupSystem';
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface Renderer extends GlobalMixins.Renderer {}
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface Renderer extends GlobalMixins.Renderer {}
@@ -66,9 +73,9 @@ export interface Renderer extends GlobalMixins.Renderer {}
  * | {@link PIXI.TextureGCSystem}         | This will automatically remove textures from the GPU if they are not used.    |
  * | {@link PIXI.MultisampleSystem}       | This manages the multisample const on the WEbGL Renderer                      |
  *
- * | Pixi high level Systems              | Set of Pixi specific systems designed to work with Pixi objects               |
+ * | PixiJS High-Level Systems            | Set of specific systems designed to work with PixiJS objects                  |
  * | ------------------------------------ | ----------------------------------------------------------------------------- |
- * | {@link PIXI.RenderSystem}          | This adds the ability to render a PIXI.DisplayObject                          |
+ * | {@link PIXI.RenderSystem}            | This adds the ability to render a PIXI.DisplayObject                          |
  * | {@link PIXI.GenerateTextureSystem}   | This adds the ability to generate textures from any PIXI.DisplayObject        |
  * | {@link PIXI.ProjectionSystem}        | This manages the `projectionMatrix`, used by shaders to get NDC coordinates.  |
  * | {@link PIXI.RenderTextureSystem}     | This manages render-textures, which are an abstraction over framebuffers.     |
@@ -77,6 +84,8 @@ export interface Renderer extends GlobalMixins.Renderer {}
  * | {@link PIXI.StencilSystem}           | This handles stencil masking, and is used internally by {@link MaskSystem}    |
  * | {@link PIXI.FilterSystem}            | This manages the filtering pipeline for post-processing effects.              |
  * | {@link PIXI.BatchSystem}             | This manages object renderers that defer rendering until a flush.             |
+ * | {@link PIXI.Prepare}                 | This manages uploading assets to the GPU.                                     |
+ * | {@link PIXI.Extract}                 | This extracts image data from display objects.                                |
  *
  * The breadth of the API surface provided by the renderer is contained within these systems.
  * @memberof PIXI

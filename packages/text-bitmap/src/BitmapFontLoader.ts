@@ -4,7 +4,8 @@ import { BitmapFont } from './BitmapFont';
 
 import type { Loader } from '@pixi/loaders';
 import type { Dict } from '@pixi/utils';
-import { ExtensionMetadata, ExtensionType, Texture } from '@pixi/core';
+import type { ExtensionMetadata, Texture } from '@pixi/core';
+import { ExtensionType } from '@pixi/core';
 
 /**
  * {@link PIXI.Loader Loader} middleware for loading
