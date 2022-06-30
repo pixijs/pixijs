@@ -123,7 +123,7 @@ describe('Assets', () =>
             manifest: 'json/asset-manifest-2.json',
         });
 
-        const assets = await Assets.loadBundle('default');
+        const assets = await Assets.loadBundle(['default']);
 
         expect(assets.bunny).toBeInstanceOf(Texture);
         expect(assets['profile-abel']).toBeInstanceOf(Texture);
@@ -137,7 +137,6 @@ describe('Assets', () =>
             manifest: 'json/asset-manifest-2.json',
         });
 
-        // TODO if its an array of one.. return the single object
         const assets = await Assets.loadBundle(['default', 'data']);
 
         expect(assets.default.bunny).toBeInstanceOf(Texture);
@@ -189,9 +188,6 @@ describe('Assets', () =>
 
         await Assets.load('textures/bunny.png');
 
-        // TODO - this src will be added in the future..
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
         expect(bunny.baseTexture.resource.src).toBe(`${basePath}textures/bunny.png`);
     });
 
@@ -208,9 +204,6 @@ describe('Assets', () =>
 
         await Assets.load('textures/bunny.png');
 
-        // TODO - this src will be added in the future..
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
         expect(bunny.baseTexture.resource.src).toBe(`${basePath}textures/bunny.png`);
     });
 
@@ -228,9 +221,6 @@ describe('Assets', () =>
         const asset = await Assets.loader.promiseCache[`${basePath}textures/bunny.png`].promise;
 
         expect(asset).toBeInstanceOf(Texture);
-        // TODO - this src will be added in the future..
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
         expect(asset.baseTexture.resource.src).toBe(`${basePath}textures/bunny.png`);
     });
 

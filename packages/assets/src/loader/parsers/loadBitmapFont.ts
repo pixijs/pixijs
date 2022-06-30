@@ -1,4 +1,5 @@
 import type { Texture } from '@pixi/core';
+import { ExtensionType } from '@pixi/core';
 import type { BitmapFontData } from '@pixi/text-bitmap';
 import { BitmapFont, TextFormat, XMLFormat, XMLStringFormat } from '@pixi/text-bitmap';
 import { dirname, extname, join } from '../../utils/path';
@@ -31,6 +32,8 @@ const validExtensions = ['.xml', '.fnt'];
 
 /** simple loader plugin for loading in bitmap fonts! */
 export const loadBitmapFont = {
+    extension: ExtensionType.LoadParser,
+
     test(url: string): boolean
     {
         return validExtensions.includes(extname(url));

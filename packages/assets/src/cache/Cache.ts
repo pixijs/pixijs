@@ -54,7 +54,6 @@ class CacheClass
     /** Clear all entries. */
     public reset(): void
     {
-        this.parsers.length = 0;
         this._cacheMap.clear();
         this._cache.clear();
     }
