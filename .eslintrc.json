@@ -1,9 +1,6 @@
 {
     "extends": ["@pixi/eslint-config"],
     "plugins": ["jsdoc"],
-    "parserOptions": {
-        "project": ["./tsconfig.eslint.json"]
-    },
     "ignorePatterns": ["**/*.index.d.ts"],
     "settings": {
         "jsdoc": {
