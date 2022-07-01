@@ -184,7 +184,26 @@ class AnimatedGIF extends Sprite
             throw new Error('Invalid buffer');
         }
 
+        // fix https://github.com/matt-way/gifuct-js/issues/30
+        const validateAndFix = (gif: any): void =>
+        {
+            let currentGce = null;
+
+            for (const frame of gif.frames)
+            {
+                currentGce = frame.gce ?? currentGce;
+
+                // fix loosing graphic control extension for same frames
+                if ('image' in frame && !('gce' in frame))
+                {
+                    frame.gce = currentGce;
+                }
+            }
+        };
+
         const gif = parseGIF(buffer);
+
+        validateAndFix(gif);
         const gifFrames = decompressFrames(gif, true);
         const frames: FrameObject[] = [];
 
