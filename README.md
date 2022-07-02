@@ -34,10 +34,14 @@ app.loader.load((loader, resources) => {
 To use a gif without Loader:
 
 ```ts
+import { Application } from 'pixi.js';
 import { AnimatedGIF } from '@pixi/gif';
 
-const url = 'path/to/animation.gif';
-const anim = await fetch(url)
+const app = new Application();
+fetch('image.gif')
     .then(res => res.arrayBuffer())
-    .then(buffer => AnimatedGIF.fromBuffer(buffer));
+    .then(buffer => {
+        const image = AnimatedGIF.fromBuffer(buffer);
+        app.stage.addChild(image);
+    });
 ```
