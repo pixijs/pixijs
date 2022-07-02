@@ -40,8 +40,6 @@ import { AnimatedGIF } from '@pixi/gif';
 const app = new Application();
 fetch('image.gif')
     .then(res => res.arrayBuffer())
-    .then(buffer => {
-        const image = AnimatedGIF.fromBuffer(buffer);
-        app.stage.addChild(image);
-    });
+    .then(AnimatedGIF.fromBuffer)
+    .then(image => app.stage.addChild(image));
 ```
