@@ -18,7 +18,7 @@ import { Loader } from '@pixi/loaders';
 Loader.registerPlugin(AnimatedGIFLoader);
 ```
 
-Load an animated GIF image.
+Load an animated GIF image:
 
 ```ts
 import { Application } from 'pixi.js';
@@ -29,4 +29,15 @@ app.loader.load((loader, resources) => {
     const image = resources.image.animation;
     app.stage.addChild(image);
 });
+```
+
+To use a gif without Loader:
+
+```ts
+import { AnimatedGIF } from '@pixi/gif';
+
+const url = 'path/to/animation.gif';
+const anim = await fetch(url)
+    .then(res => res.arrayBuffer())
+    .then(buffer => AnimatedGIF.fromBuffer(buffer));
 ```
