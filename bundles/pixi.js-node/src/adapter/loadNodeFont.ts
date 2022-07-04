@@ -1,5 +1,6 @@
 import type { LoadAsset, LoaderParser, LoadFontData } from '@pixi/assets';
 import { getFontFamilyName } from '@pixi/assets';
+import { ExtensionType } from '@pixi/core';
 import { registerFont } from 'canvas';
 
 const validWeights = [
@@ -9,6 +10,8 @@ const validFonts = ['woff', 'woff2', 'ttf', 'otf'];
 
 /** loads a font from a file */
 export const loadNodeFont = {
+    extension: ExtensionType.LoadParser,
+
     test(url: string): boolean
     {
         const tempURL = url.split('?')[0];

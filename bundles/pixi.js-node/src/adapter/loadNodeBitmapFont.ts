@@ -1,9 +1,10 @@
 import type { LoadAsset, Loader, LoaderParser } from '@pixi/assets';
 import { dirname, extname, join } from '@pixi/assets';
 import type { Texture } from '@pixi/core';
+import { ExtensionType } from '@pixi/core';
+import type { IBitmapFontRawData } from '@pixi/text-bitmap';
 import { BitmapFont, BitmapFontData, TextFormat, XMLStringFormat } from '@pixi/text-bitmap';
 import fetch from 'cross-fetch';
-import type { IBitmapFontRawData } from 'packages/text-bitmap/src/formats/TextFormat';
 import { parseStringPromise } from 'xml2js';
 
 interface XMLRawJson
@@ -132,6 +133,8 @@ const validExtensions = ['.xml', '.fnt'];
 
 /** simple loader plugin for loading in bitmap fonts! */
 export const loadNodeBitmapFont = {
+    extension: ExtensionType.LoadParser,
+
     test(url: string): boolean
     {
         return validExtensions.includes(extname(url));

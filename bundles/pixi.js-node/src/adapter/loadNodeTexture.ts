@@ -1,4 +1,4 @@
-import { Texture } from '@pixi/core';
+import { ExtensionType, Texture } from '@pixi/core';
 import { getResolutionOfUrl } from '@pixi/utils';
 import type { CanvasRenderingContext2D } from 'canvas';
 import { loadImage } from 'canvas';
@@ -15,6 +15,8 @@ const validImages = ['jpg', 'png', 'jpeg', 'svg'];
  * We can then use the ImageBitmap as a source for a Pixi Texture
  */
 export const loadNodeTexture = {
+    extension: ExtensionType.LoadParser,
+
     test(url: string): boolean
     {
         const tempUrl = new URL(url);
