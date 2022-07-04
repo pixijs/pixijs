@@ -1,5 +1,6 @@
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
-import type { Renderer } from '@pixi/core';
+import type { ExtensionMetadata, Renderer } from '@pixi/core';
+import { ExtensionType } from '@pixi/core';
 import type { IApplicationOptions } from './Application';
 
 /**
@@ -9,6 +10,9 @@ import type { IApplicationOptions } from './Application';
  */
 export class ResizePlugin
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = ExtensionType.Application;
+
     public static resizeTo: Window | HTMLElement;
     public static resize: () => void;
     public static renderer: Renderer | CanvasRenderer;

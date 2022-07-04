@@ -1,6 +1,7 @@
 import type { ENV } from '@pixi/constants';
 import { GC_MODES, MIPMAP_MODES, MSAA_QUALITY, PRECISION, SCALE_MODES, WRAP_MODES } from '@pixi/constants';
-import { BrowserAdapter, IAdapter } from './adapter';
+import type { IAdapter } from './adapter';
+import { BrowserAdapter } from './adapter';
 import { canUploadSameBuffer } from './utils/canUploadSameBuffer';
 import { isMobile } from './utils/isMobile';
 import { maxRecommendedTextures } from './utils/maxRecommendedTextures';

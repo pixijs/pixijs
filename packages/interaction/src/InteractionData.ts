@@ -1,4 +1,5 @@
-import { Point, IPointData } from '@pixi/math';
+import type { IPointData } from '@pixi/math';
+import { Point } from '@pixi/math';
 
 import type { DisplayObject } from '@pixi/display';
 

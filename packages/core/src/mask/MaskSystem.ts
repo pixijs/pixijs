@@ -101,6 +101,7 @@ export class MaskSystem implements ISystem
         const maskAbove = this.maskStack.length !== 0 ? this.maskStack[this.maskStack.length - 1] : null;
 
         maskData.copyCountersOrReset(maskAbove);
+        maskData._colorMask = maskAbove ? maskAbove._colorMask : 0xf;
 
         if (maskData.autoDetect)
         {
@@ -127,6 +128,9 @@ export class MaskSystem implements ISystem
                 case MASK_TYPES.SPRITE:
                     maskData.copyCountersOrReset(null);
                     this.pushSpriteMask(maskData);
+                    break;
+                case MASK_TYPES.COLOR:
+                    this.pushColorMask(maskData);
                     break;
                 default:
                     break;
@@ -161,13 +165,16 @@ export class MaskSystem implements ISystem
             switch (maskData.type)
             {
                 case MASK_TYPES.SCISSOR:
-                    this.renderer.scissor.pop();
+                    this.renderer.scissor.pop(maskData);
                     break;
                 case MASK_TYPES.STENCIL:
                     this.renderer.stencil.pop(maskData.maskObject);
                     break;
                 case MASK_TYPES.SPRITE:
                     this.popSpriteMask(maskData);
+                    break;
+                case MASK_TYPES.COLOR:
+                    this.popColorMask(maskData);
                     break;
                 default:
                     break;
@@ -200,7 +207,11 @@ export class MaskSystem implements ISystem
     {
         const maskObject = maskData.maskObject;
 
-        if (maskObject.isSprite)
+        if (!maskObject)
+        {
+            maskData.type = MASK_TYPES.COLOR;
+        }
+        else if (maskObject.isSprite)
         {
             maskData.type = MASK_TYPES.SPRITE;
         }
@@ -285,6 +296,47 @@ export class MaskSystem implements ISystem
         {
             this.alphaMaskIndex--;
             this.alphaMaskPool[this.alphaMaskIndex][0].maskSprite = null;
+        }
+    }
+
+    /**
+     * Pushes the color mask.
+     * @param maskData - The mask data
+     */
+    pushColorMask(maskData: MaskData): void
+    {
+        const currColorMask = maskData._colorMask;
+        const nextColorMask = maskData._colorMask = currColorMask & maskData.colorMask;
+
+        if (nextColorMask !== currColorMask)
+        {
+            this.renderer.gl.colorMask(
+                (nextColorMask & 0x1) !== 0,
+                (nextColorMask & 0x2) !== 0,
+                (nextColorMask & 0x4) !== 0,
+                (nextColorMask & 0x8) !== 0
+            );
+        }
+    }
+
+    /**
+     * Pops the color mask.
+     * @param maskData - The mask data
+     */
+    popColorMask(maskData: MaskData): void
+    {
+        const currColorMask = maskData._colorMask;
+        const nextColorMask = this.maskStack.length > 0
+            ? this.maskStack[this.maskStack.length - 1]._colorMask : 0xf;
+
+        if (nextColorMask !== currColorMask)
+        {
+            this.renderer.gl.colorMask(
+                (nextColorMask & 0x1) !== 0,
+                (nextColorMask & 0x2) !== 0,
+                (nextColorMask & 0x4) !== 0,
+                (nextColorMask & 0x8) !== 0
+            );
         }
     }
 

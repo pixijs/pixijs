@@ -1,6 +1,5 @@
 import { Texture, BaseTexture } from '@pixi/core';
 import { TextureCache, destroyTextureCache, clearTextureCache, BaseTextureCache } from '@pixi/utils';
-import { expect } from 'chai';
 
 describe('TextureCache', () =>
 {
@@ -12,7 +11,7 @@ describe('TextureCache', () =>
 
     it('should exist', () =>
     {
-        expect(TextureCache).to.be.an('object');
+        expect(TextureCache).toBeObject();
     });
 
     describe('destroyTextureCache', () =>
@@ -28,20 +27,20 @@ describe('TextureCache', () =>
             BaseTextureCache.foo = foo.baseTexture;
             BaseTextureCache.bar = bar.baseTexture;
 
-            expect(Object.keys(TextureCache).length).to.equal(2);
-            expect(Object.keys(BaseTextureCache).length).to.equal(2);
+            expect(Object.keys(TextureCache).length).toEqual(2);
+            expect(Object.keys(BaseTextureCache).length).toEqual(2);
 
             destroyTextureCache();
 
-            expect(Object.keys(TextureCache).length).to.equal(2);
-            expect(Object.keys(BaseTextureCache).length).to.equal(2);
-            expect(foo.baseTexture).to.be.null;
-            expect(bar.baseTexture).to.be.null;
+            expect(Object.keys(TextureCache).length).toEqual(2);
+            expect(Object.keys(BaseTextureCache).length).toEqual(2);
+            expect(foo.baseTexture).toBeNull();
+            expect(bar.baseTexture).toBeNull();
 
             clearTextureCache();
 
-            expect(Object.keys(TextureCache).length).to.equal(0);
-            expect(Object.keys(BaseTextureCache).length).to.equal(0);
+            expect(Object.keys(TextureCache).length).toEqual(0);
+            expect(Object.keys(BaseTextureCache).length).toEqual(0);
         });
     });
 
@@ -58,15 +57,15 @@ describe('TextureCache', () =>
             BaseTextureCache.foo = foo.baseTexture;
             BaseTextureCache.bar = bar.baseTexture;
 
-            expect(Object.keys(TextureCache).length).to.equal(2);
-            expect(Object.keys(BaseTextureCache).length).to.equal(2);
+            expect(Object.keys(TextureCache).length).toEqual(2);
+            expect(Object.keys(BaseTextureCache).length).toEqual(2);
 
             clearTextureCache();
 
-            expect(Object.keys(TextureCache).length).to.equal(0);
-            expect(Object.keys(BaseTextureCache).length).to.equal(0);
-            expect(foo.baseTexture).to.be.instanceOf(BaseTexture);
-            expect(bar.baseTexture).to.be.instanceOf(BaseTexture);
+            expect(Object.keys(TextureCache).length).toEqual(0);
+            expect(Object.keys(BaseTextureCache).length).toEqual(0);
+            expect(foo.baseTexture).toBeInstanceOf(BaseTexture);
+            expect(bar.baseTexture).toBeInstanceOf(BaseTexture);
 
             foo.destroy(true);
             bar.destroy(true);

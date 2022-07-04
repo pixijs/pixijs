@@ -6,6 +6,7 @@ import { Matrix, Rectangle } from '@pixi/math';
 import { settings } from '@pixi/settings';
 
 const tempMatrix = new Matrix();
+const rectPool: Rectangle[] = [];
 
 /**
  * System plugin to the renderer to manage scissor masking.
@@ -54,18 +55,13 @@ export class ScissorSystem extends AbstractMaskSystem
         const { maskObject } = maskData;
         const { renderer } = this;
         const renderTextureSystem = renderer.renderTexture;
-
-        maskObject.renderable = true;
-
-        const rect = maskObject.getBounds();
+        const rect = maskObject.getBounds(true, rectPool.pop() ?? new Rectangle());
 
         this.roundFrameToPixels(rect,
             renderTextureSystem.current ? renderTextureSystem.current.resolution : renderer.resolution,
             renderTextureSystem.sourceFrame,
             renderTextureSystem.destinationFrame,
             renderer.projection.transform);
-
-        maskObject.renderable = false;
 
         if (prevData)
         {
@@ -180,10 +176,16 @@ export class ScissorSystem extends AbstractMaskSystem
      * last mask in the stack.
      *
      * This can also be called when you directly modify the scissor box and want to restore PixiJS state.
+     * @param maskData - The mask data.
      */
-    pop(): void
+    pop(maskData?: MaskData): void
     {
         const { gl } = this.renderer;
+
+        if (maskData)
+        {
+            rectPool.push(maskData._scissorRectLocal);
+        }
 
         if (this.getStackLength() > 0)
         {

@@ -1,11 +1,11 @@
 import { BaseTextureCache, EventEmitter, isPow2, TextureCache, uid } from '@pixi/utils';
-import { FORMATS, SCALE_MODES, TARGETS, TYPES, ALPHA_MODES, MIPMAP_MODES, WRAP_MODES } from '@pixi/constants';
+import { FORMATS, SCALE_MODES, TARGETS, TYPES, ALPHA_MODES } from '@pixi/constants';
 import { Resource } from './resources/Resource';
 import { BufferResource } from './resources/BufferResource';
 import { autoDetectResource } from './resources/autoDetectResource';
 import { settings } from '@pixi/settings';
 
-import type { MSAA_QUALITY } from '@pixi/constants';
+import type { MSAA_QUALITY, MIPMAP_MODES, WRAP_MODES } from '@pixi/constants';
 import type { IAutoDetectOptions } from './resources/autoDetectResource';
 import type { GLTexture } from './GLTexture';
 
@@ -637,6 +637,10 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
      * @param width - Width of the resource
      * @param height - Height of the resource
      * @param options - See {@link PIXI.BaseTexture}'s constructor for options.
+     *        Default properties are different from the constructor's defaults.
+     * @param {PIXI.FORMATS} [options.format=PIXI.FORMATS.RGBA] - GL format type
+     * @param {PIXI.ALPHA_MODES} [options.alphaMode=PIXI.ALPHA_MODES.NPM] - Image alpha, not premultiplied by default
+     * @param {PIXI.SCALE_MODES} [options.scaleMode=PIXI.SCALE_MODES.NEAREST] - Scale mode, pixelating by default
      * @returns - The resulting new BaseTexture
      */
     static fromBuffer(buffer: Float32Array | Uint8Array,

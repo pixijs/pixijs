@@ -1,11 +1,13 @@
 import { Texture, BaseTexture } from '@pixi/core';
 import { Ticker, UPDATE_PRIORITY } from '@pixi/ticker';
 import { settings } from '@pixi/settings';
-import { Container, DisplayObject } from '@pixi/display';
+import type { DisplayObject } from '@pixi/display';
+import { Container } from '@pixi/display';
 import { Text, TextStyle, TextMetrics } from '@pixi/text';
 import { CountLimiter } from './CountLimiter';
 
 import type { AbstractRenderer } from '@pixi/core';
+import { deprecation } from '@pixi/utils';
 
 interface IArrowFunction
 {
@@ -313,12 +315,35 @@ export class BasePrepare
 
     /**
      * Upload all the textures and graphics to the GPU.
-     * @param {Function|PIXI.DisplayObject|PIXI.Container|PIXI.BaseTexture|PIXI.Texture|PIXI.Graphics|PIXI.Text} item -
-     *        Either the container or display object to search for items to upload, the items to upload themselves,
-     *        or the callback function, if items have been added using `prepare.add`.
-     * @param {Function} [done] - Optional callback when all queued uploads have completed
+     * @method PIXI.BasePrepare#upload
+     * @param {PIXI.DisplayObject|PIXI.Container|PIXI.BaseTexture|PIXI.Texture|PIXI.Graphics|PIXI.Text} [item] -
+     *        Container or display object to search for items to upload or the items to upload themselves,
+     *        or optionally ommitted, if items have been added using {@link PIXI.BasePrepare#add `prepare.add`}.
      */
-    upload(item: IDisplayObjectExtended | Container | BaseTexture | Texture | (() => void), done?: () => void): void
+    upload(item?: IDisplayObjectExtended | Container | BaseTexture | Texture): Promise<void>;
+
+    /**
+     * Use the Promise-based API instead.
+     * @method PIXI.BasePrepare#upload
+     * @deprecated since version 6.5.0
+     * @param {PIXI.DisplayObject|PIXI.Container|PIXI.BaseTexture|PIXI.Texture|PIXI.Graphics|PIXI.Text} item -
+     *        Item to upload.
+     * @param {Function} [done] - Callback when completed.
+     */
+    upload(item?: IDisplayObjectExtended | Container | BaseTexture | Texture, done?: () => void): void;
+
+    /**
+     * Use the Promise-based API instead.
+     * @method PIXI.BasePrepare#upload
+     * @deprecated since version 6.5.0
+     * @param {Function} [done] - Callback when completed.
+     */
+    upload(done?: () => void): void;
+
+    /** @ignore */
+    upload(
+        item?: IDisplayObjectExtended | Container | BaseTexture | Texture | (() => void),
+        done?: () => void): Promise<void>
     {
         if (typeof item === 'function')
         {
@@ -326,31 +351,45 @@ export class BasePrepare
             item = null;
         }
 
-        // If a display object, search for items
-        // that we could upload
-        if (item)
+        // #if _DEBUG
+        if (done)
         {
-            this.add(item as IDisplayObjectExtended | Container | BaseTexture | Texture);
+            deprecation('6.5.0', 'BasePrepare.upload callback is deprecated, use the return Promise instead.');
         }
+        // #endif
 
-        // Get the items for upload from the display
-        if (this.queue.length)
+        return new Promise((resolve) =>
         {
-            if (done)
+            // If a display object, search for items
+            // that we could upload
+            if (item)
             {
-                this.completes.push(done);
+                this.add(item as IDisplayObjectExtended | Container | BaseTexture | Texture);
             }
 
-            if (!this.ticking)
+            // TODO: remove done callback and just use resolve
+            const complete = () =>
             {
-                this.ticking = true;
-                Ticker.system.addOnce(this.tick, this, UPDATE_PRIORITY.UTILITY);
+                done?.();
+                resolve();
+            };
+
+            // Get the items for upload from the display
+            if (this.queue.length)
+            {
+                this.completes.push(complete);
+
+                if (!this.ticking)
+                {
+                    this.ticking = true;
+                    Ticker.system.addOnce(this.tick, this, UPDATE_PRIORITY.UTILITY);
+                }
             }
-        }
-        else if (done)
-        {
-            done();
-        }
+            else
+            {
+                complete();
+            }
+        });
     }
 
     /**

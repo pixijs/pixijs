@@ -2,8 +2,7 @@ import { SimpleRope } from '@pixi/mesh-extras';
 import { skipHello } from '@pixi/utils';
 import { Loader } from '@pixi/loaders';
 import { Point } from '@pixi/math';
-import { Renderer, Texture, BatchRenderer } from '@pixi/core';
-import { expect } from 'chai';
+import { Renderer, Texture, BatchRenderer, extensions } from '@pixi/core';
 
 skipHello();
 
@@ -18,8 +17,8 @@ describe('SimpleRope', () =>
             {
                 const rope = new SimpleRope(resources.testBitmap.texture, [new Point(0, 0), new Point(0, 1)]);
 
-                expect(rope).to.be.instanceof(SimpleRope);
-                expect(rope.autoUpdate).to.be.true;
+                expect(rope).toBeInstanceOf(SimpleRope);
+                expect(rope.autoUpdate).toBe(true);
 
                 rope.destroy();
                 resources.testBitmap.texture.destroy(true);
@@ -32,7 +31,7 @@ describe('SimpleRope', () =>
 
     it('should render the rope', () =>
     {
-        Renderer.registerPlugin('batch', BatchRenderer);
+        extensions.add(BatchRenderer);
 
         const renderer = new Renderer();
         const rope = new SimpleRope(Texture.WHITE, [new Point(0, 0), new Point(0, 1)]);
@@ -41,5 +40,7 @@ describe('SimpleRope', () =>
 
         rope.destroy();
         renderer.destroy();
+
+        extensions.remove(BatchRenderer);
     });
 });

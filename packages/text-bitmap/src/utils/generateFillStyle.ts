@@ -1,4 +1,5 @@
-import { TextStyle, TextMetrics, TEXT_GRADIENT } from '@pixi/text';
+import type { TextStyle, TextMetrics } from '@pixi/text';
+import { TEXT_GRADIENT } from '@pixi/text';
 
 // TODO: Prevent code duplication b/w generateFillStyle & Text#generateFillStyle
 

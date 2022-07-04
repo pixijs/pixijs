@@ -1,5 +1,5 @@
 import { EventBoundary } from './EventBoundary';
-import { FederatedMouseEvent } from './FederatedMouseEvent';
+import type { FederatedMouseEvent } from './FederatedMouseEvent';
 import { FederatedPointerEvent } from './FederatedPointerEvent';
 import { FederatedWheelEvent } from './FederatedWheelEvent';
 
@@ -258,7 +258,15 @@ export class EventSystem
         // if we support touch events, then only use those for touch events, not pointer events
         if (this.supportsTouchEvents && (nativeEvent as PointerEvent).pointerType === 'touch') return;
 
-        const outside = nativeEvent.target !== this.domElement ? 'outside' : '';
+        let target = nativeEvent.target;
+
+        // if in shadow DOM use composedPath to access target
+        if (nativeEvent.composedPath && nativeEvent.composedPath().length > 0)
+        {
+            target = nativeEvent.composedPath()[0];
+        }
+
+        const outside = target !== this.domElement ? 'outside' : '';
         const normalizedEvents = this.normalizeToPointerData(nativeEvent);
 
         for (let i = 0, j = normalizedEvents.length; i < j; i++)
@@ -488,8 +496,8 @@ export class EventSystem
             {
                 const touch = event.changedTouches[i] as PixiTouch;
 
-                if (typeof touch.button === 'undefined') touch.button = event.touches.length ? 1 : 0;
-                if (typeof touch.buttons === 'undefined') touch.buttons = event.touches.length ? 1 : 0;
+                if (typeof touch.button === 'undefined') touch.button = 0;
+                if (typeof touch.buttons === 'undefined') touch.buttons = 1;
                 if (typeof touch.isPrimary === 'undefined')
                 {
                     touch.isPrimary = event.touches.length === 1 && event.type === 'touchstart';

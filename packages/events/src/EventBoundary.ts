@@ -497,9 +497,10 @@ export class EventBoundary
 
         if (displayObject._mask)
         {
-            const mask = displayObject._mask as any;
+            const maskObject = ((displayObject._mask as any).isMaskData
+                ? (displayObject._mask as any).maskObject : displayObject._mask);
 
-            if (!(mask.containsPoint && mask.containsPoint(location)))
+            if (maskObject && !maskObject.containsPoint?.(location))
             {
                 return true;
             }
@@ -920,10 +921,8 @@ export class EventBoundary
             {
                 this.dispatchEvent(clickEvent, 'tap');
             }
-            else
-            {
-                this.dispatchEvent(clickEvent, 'pointertap');
-            }
+
+            this.dispatchEvent(clickEvent, 'pointertap');
 
             this.freeEvent(clickEvent);
         }

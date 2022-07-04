@@ -1,5 +1,6 @@
 import { ALPHA_MODES } from '@pixi/constants';
-import { BaseTexture, GLTexture, Renderer, Resource } from '@pixi/core';
+import type { BaseTexture, GLTexture, Renderer } from '@pixi/core';
+import { Resource } from '@pixi/core';
 import { determineCrossOrigin } from '@pixi/utils';
 
 import { NodeCanvasElement } from './NodeCanvasElement';

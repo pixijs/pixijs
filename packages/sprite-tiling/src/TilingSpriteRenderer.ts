@@ -1,4 +1,4 @@
-import { ObjectRenderer, Shader, State, QuadUv } from '@pixi/core';
+import { ObjectRenderer, Shader, State, QuadUv, ExtensionType } from '@pixi/core';
 import { WRAP_MODES } from '@pixi/constants';
 import { Matrix } from '@pixi/math';
 import { premultiplyTintToRgba, correctBlendMode } from '@pixi/utils';
@@ -9,7 +9,7 @@ import gl1FragmentSrc from './sprite-tiling-fallback.frag';
 import gl2VertexSrc from './sprite-tiling.vert';
 import gl2FragmentSrc from './sprite-tiling.frag';
 
-import type { Renderer } from '@pixi/core';
+import type { Renderer, ExtensionMetadata } from '@pixi/core';
 import type { TilingSprite } from './TilingSprite';
 
 const tempMat = new Matrix();
@@ -22,6 +22,12 @@ const tempMat = new Matrix();
  */
 export class TilingSpriteRenderer extends ObjectRenderer
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        name: 'tilingSprite',
+        type: ExtensionType.RendererPlugin,
+    };
+
     public shader: Shader;
     public simpleShader: Shader;
     public quad: QuadUv;
@@ -91,6 +97,7 @@ export class TilingSpriteRenderer extends ObjectRenderer
 
         const tex = ts._texture;
         const baseTex = tex.baseTexture;
+        const premultiplied = baseTex.alphaMode > 0;
         const lt = ts.tileTransform.localTransform;
         const uv = ts.uvMatrix;
         let isSimple = baseTex.isPowerOfTwo
@@ -146,14 +153,14 @@ export class TilingSpriteRenderer extends ObjectRenderer
 
         shader.uniforms.uTransform = tempMat.toArray(true);
         shader.uniforms.uColor = premultiplyTintToRgba(ts.tint, ts.worldAlpha,
-            shader.uniforms.uColor, baseTex.alphaMode as any);
+            shader.uniforms.uColor, premultiplied);
         shader.uniforms.translationMatrix = ts.transform.worldTransform.toArray(true);
         shader.uniforms.uSampler = tex;
 
         renderer.shader.bind(shader);
         renderer.geometry.bind(quad);
 
-        this.state.blendMode = correctBlendMode(ts.blendMode, baseTex.alphaMode as any);
+        this.state.blendMode = correctBlendMode(ts.blendMode, premultiplied);
         renderer.state.set(this.state);
         renderer.geometry.draw(this.renderer.gl.TRIANGLES, 6, 0);
     }

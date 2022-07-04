@@ -10,7 +10,8 @@ import {
     SHAPES,
 } from '@pixi/math';
 
-import { Texture, UniformGroup, State, Renderer, BatchDrawCall, Shader } from '@pixi/core';
+import type { Renderer, BatchDrawCall } from '@pixi/core';
+import { Texture, UniformGroup, State, Shader } from '@pixi/core';
 import { BezierUtils, QuadraticUtils, ArcUtils } from './utils';
 import { hex2rgb } from '@pixi/utils';
 import { GraphicsGeometry } from './GraphicsGeometry';
@@ -826,11 +827,10 @@ export class Graphics extends Container
         this.finishPoly();
 
         const geometry = this._geometry;
-        const hasuint32 = renderer.context.supports.uint32Indices;
         // batch part..
         // batch it!
 
-        geometry.updateBatches(hasuint32);
+        geometry.updateBatches();
 
         if (geometry.batchable)
         {

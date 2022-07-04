@@ -1,4 +1,5 @@
-import { Texture } from '@pixi/core';
+import type { ExtensionMetadata } from '@pixi/core';
+import { ExtensionType, Texture } from '@pixi/core';
 import { LoaderResource } from './LoaderResource';
 
 /**
@@ -7,6 +8,9 @@ import { LoaderResource } from './LoaderResource';
  */
 export class TextureLoader
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = ExtensionType.Loader;
+
     /** Handle SVG elements a text, render with SVGResource. */
     public static add(): void
     {

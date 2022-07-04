@@ -1,0 +1,40 @@
+{
+  "name": "@pixi/assets",
+  "version": "6.4.2",
+  "description": "Asset manager for PixiJS, loading resolving and Cacheing",
+  "keywords": [
+    "pixi",
+    "caching",
+    "resolving",
+    "loaders"
+  ],
+  "author": "Mat Groves <mat.groves@play.co>",
+  "homepage": "https://github.com/pixijs/pixi.js#readme",
+  "license": "MIT",
+  "main": "dist/cjs/assets.js",
+  "module": "dist/esm/assets.js",
+  "bundle": "dist/browser/assets.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "*.d.ts"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pixijs/pixi.js.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/pixijs/pixi.js/issues"
+  },
+  "peerDependencies": {
+    "@pixi/core": "6.4.2",
+    "@pixi/settings": "6.4.2",
+    "@pixi/text-bitmap": "6.4.2",
+    "@pixi/spritesheet": "6.4.2"
+  }
+}

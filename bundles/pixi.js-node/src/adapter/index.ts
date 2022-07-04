@@ -1,6 +1,7 @@
 import { Application } from '@pixi/app';
 import { INSTALLED } from '@pixi/core';
-import { ContextAttributes, ContextIds, IAdapter, settings } from '@pixi/settings';
+import type { ContextAttributes, ContextIds, IAdapter } from '@pixi/settings';
+import { settings } from '@pixi/settings';
 import gl from 'gl';
 import { loadNodeFont } from './loadNodeFont';
 import { loadNodeTexture } from './loadNodeTexture';

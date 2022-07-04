@@ -2,6 +2,8 @@ import { url } from '@pixi/utils';
 import { Spritesheet } from './Spritesheet';
 import { LoaderResource } from '@pixi/loaders';
 import type { Loader } from '@pixi/loaders';
+import type { ExtensionMetadata } from '@pixi/core';
+import { ExtensionType } from '@pixi/core';
 
 /**
  * {@link PIXI.Loader} middleware for loading texture atlases that have been created with
@@ -25,6 +27,9 @@ import type { Loader } from '@pixi/loaders';
  */
 export class SpritesheetLoader
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = ExtensionType.Loader;
+
     /**
      * Called after a resource is loaded.
      * @see PIXI.Loader.loaderMiddleware
@@ -109,7 +114,7 @@ export class SpritesheetLoader
                 resource.url
             );
 
-            spritesheet.parse(() =>
+            spritesheet.parse().then(() =>
             {
                 resource.spritesheet = spritesheet;
                 resource.textures = spritesheet.textures;

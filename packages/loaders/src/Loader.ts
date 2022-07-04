@@ -1,8 +1,11 @@
 import { Signal } from './base/Signal';
 import { parseUri } from './base/parseUri';
-import { IResourceMetadata, LoaderResource } from './LoaderResource';
+import type { IResourceMetadata } from './LoaderResource';
+import { LoaderResource } from './LoaderResource';
 import { AsyncQueue } from './base/AsyncQueue';
-import { Dict } from '@pixi/utils';
+import type { Dict } from '@pixi/utils';
+import { deprecation } from '@pixi/utils';
+import { extensions, ExtensionType } from '@pixi/core';
 
 // some constants
 const MAX_PROGRESS = 100;
@@ -387,6 +390,10 @@ class Loader
      */
     load(cb?: Loader.OnCompleteSignal): this
     {
+        // #if _DEBUG
+        deprecation('6.5.0', '@pixi/loaders is being replaced with @pixi/assets in the next major release.');
+        // #endif
+
         // register complete callback if they pass one
         if (typeof cb === 'function')
         {
@@ -588,7 +595,7 @@ class Loader
         );
     }
 
-    private static _plugins: Array<ILoaderPlugin> = [];
+    static _plugins: Array<ILoaderPlugin> = [];
     private static _shared: Loader;
     /**
      * If this loader cannot be destroyed.
@@ -621,23 +628,47 @@ class Loader
     }
 
     /**
-     * Adds a Loader plugin for the global shared loader and all
-     * new Loader instances created.
+     * Use the {@link PIXI.extensions.add} API to register plugins.
+     * @deprecated since 6.5.0
      * @param plugin - The plugin to add
      * @returns Reference to PIXI.Loader for chaining
      */
     public static registerPlugin(plugin: ILoaderPlugin): typeof Loader
     {
-        Loader._plugins.push(plugin);
+        // #if _DEBUG
+        deprecation('6.5.0', 'Loader.registerPlugin() is deprecated, use extensions.add() instead.');
+        // #endif
 
-        if (plugin.add)
-        {
-            plugin.add();
-        }
+        extensions.add({
+            type: ExtensionType.Loader,
+            ref: plugin,
+        });
 
         return Loader;
     }
 }
+
+extensions.handle(
+    ExtensionType.Loader,
+    (extension) =>
+    {
+        const plugin = extension.ref as unknown as ILoaderPlugin;
+
+        Loader._plugins.push(plugin);
+        plugin.add?.();
+    },
+    (extension) =>
+    {
+        const plugins = Loader._plugins;
+        const plugin = extension.ref as unknown as ILoaderPlugin;
+        const index = plugins.indexOf(plugin);
+
+        if (index !== -1)
+        {
+            plugins.splice(index, 1);
+        }
+    }
+);
 
 Loader.prototype.add = function add(this: Loader, name: any, url?: any, options?: any, callback?: any): Loader
 {

@@ -1,8 +1,7 @@
-import { Renderer, BatchRenderer, CanvasResource, Texture, BaseTexture, IBatchableElement } from '@pixi/core';
+import type { IBatchableElement } from '@pixi/core';
+import { Renderer, BatchRenderer, CanvasResource, Texture, BaseTexture } from '@pixi/core';
 import { skipHello } from '@pixi/utils';
 import { BLEND_MODES } from '@pixi/constants';
-import sinon from 'sinon';
-import { expect } from 'chai';
 
 skipHello();
 
@@ -68,17 +67,17 @@ describe('BatchRenderer', () =>
             batchRenderer.MAX_TEXTURES = 2;
             batchRenderer.start();
             elements.forEach((element) => batchRenderer.render(element));
-            expect(batchRenderer['_bufferedElements'].length).to.equal(8);
-            expect(batchRenderer['_bufferedTextures'].length).to.equal(8);
+            expect(batchRenderer['_bufferedElements'].length).toEqual(8);
+            expect(batchRenderer['_bufferedTextures'].length).toEqual(8);
             batchRenderer.flush();
-            expect(batchRenderer['_bufferedElements']).to.eql(nullArray);
-            expect(batchRenderer['_bufferedTextures']).to.eql(nullArray);
+            expect(batchRenderer['_bufferedElements']).toEqual(nullArray);
+            expect(batchRenderer['_bufferedTextures']).toEqual(nullArray);
 
             const attrCount = batchRenderer['_aIndex'];
 
             // first number is start * 2, second is size
-            expect(drawCalls).to.eql([0, 18, 36, 6, 48, 11, 70, 12]);
-            expect(attrCount).to.equal(198);
+            expect(drawCalls).toEqual([0, 18, 36, 6, 48, 11, 70, 12]);
+            expect(attrCount).toEqual(198);
             // eslint-disable-next-line no-console
 
             const attr = [0x0, 0x0, 0x0, 0x0, 0xffffffff, 0x0,
@@ -126,8 +125,8 @@ describe('BatchRenderer', () =>
             batchRenderer['_attributeBuffer'].uint32View.slice(0, 198).forEach((x) => { resultAttr.push(x); });
             batchRenderer['_indexBuffer'].slice(0, 47).forEach((x) => { resultInd.push(x); });
 
-            expect(resultAttr).to.eql(attr);
-            expect(resultInd).to.eql(ind);
+            expect(resultAttr).toEqual(attr);
+            expect(resultInd).toEqual(ind);
         }
         finally
         {
@@ -156,16 +155,16 @@ describe('BatchRenderer', () =>
             batchRenderer.MAX_TEXTURES = 2;
             batchRenderer.start();
 
-            const glEnable = sinon.spy(gl, 'enable');
-            const glDisable = sinon.spy(gl, 'disable');
+            const glEnable = jest.spyOn(gl, 'enable');
+            const glDisable = jest.spyOn(gl, 'disable');
 
             elements.forEach((element) => batchRenderer.render(element));
             batchRenderer.flush();
 
-            expect(glDisable.calledOnce).to.be.true;
-            expect(glDisable.args[0][0]).to.equal(gl.BLEND);
-            expect(glEnable.calledOnce).to.be.true;
-            expect(glEnable.args[0][0]).to.equal(gl.BLEND);
+            expect(glDisable).toBeCalledTimes(1);
+            expect(glDisable).toBeCalledWith(gl.BLEND);
+            expect(glEnable).toBeCalledTimes(1);
+            expect(glEnable).toBeCalledWith(gl.BLEND);
         }
         finally
         {

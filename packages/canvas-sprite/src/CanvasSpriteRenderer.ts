@@ -3,6 +3,8 @@ import { Matrix, groupD8 } from '@pixi/math';
 import { canvasUtils } from '@pixi/canvas-renderer';
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
 import type { Sprite } from '@pixi/sprite';
+import type { ExtensionMetadata } from '@pixi/core';
+import { ExtensionType } from '@pixi/core';
 
 const canvasRenderWorldTransform = new Matrix();
 
@@ -32,6 +34,12 @@ const canvasRenderWorldTransform = new Matrix();
  */
 export class CanvasSpriteRenderer
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        name: 'sprite',
+        type: ExtensionType.CanvasRendererPlugin,
+    };
+
     /** A reference to the current renderer */
     protected renderer: CanvasRenderer;
 
@@ -56,8 +64,17 @@ export class CanvasSpriteRenderer
             return;
         }
 
-        const width = texture._frame.width;
-        const height = texture._frame.height;
+        const sourceWidth = texture._frame.width;
+        const sourceHeight = texture._frame.height;
+
+        let destWidth = texture._frame.width;
+        let destHeight = texture._frame.height;
+
+        if (texture.trim)
+        {
+            destWidth = texture.trim.width;
+            destHeight = texture.trim.height;
+        }
 
         let wt = sprite.transform.worldTransform;
         let dx = 0;
@@ -102,10 +119,15 @@ export class CanvasSpriteRenderer
             // the anchor has already been applied above, so lets set it to zero
             dx = 0;
             dy = 0;
+
+            const h = destWidth;
+
+            destWidth = destHeight;
+            destHeight = h;
         }
 
-        dx -= width / 2;
-        dy -= height / 2;
+        dx -= destWidth / 2;
+        dy -= destHeight / 2;
 
         renderer.setContextTransform(wt, sprite.roundPixels, 1);
         // Allow for pixel rounding
@@ -125,8 +147,8 @@ export class CanvasSpriteRenderer
             context.rect(
                 dx * renderer.resolution,
                 dy * renderer.resolution,
-                width * renderer.resolution,
-                height * renderer.resolution
+                destWidth * renderer.resolution,
+                destHeight * renderer.resolution
             );
             context.clip();
         }
@@ -145,12 +167,12 @@ export class CanvasSpriteRenderer
                 sprite._tintedCanvas,
                 0,
                 0,
-                Math.floor(width * resolution),
-                Math.floor(height * resolution),
+                Math.floor(sourceWidth * resolution),
+                Math.floor(sourceHeight * resolution),
                 Math.floor(dx * renderer.resolution),
                 Math.floor(dy * renderer.resolution),
-                Math.floor(width * renderer.resolution),
-                Math.floor(height * renderer.resolution)
+                Math.floor(destWidth * renderer.resolution),
+                Math.floor(destHeight * renderer.resolution)
             );
         }
         else
@@ -159,12 +181,12 @@ export class CanvasSpriteRenderer
                 source,
                 texture._frame.x * resolution,
                 texture._frame.y * resolution,
-                Math.floor(width * resolution),
-                Math.floor(height * resolution),
+                Math.floor(sourceWidth * resolution),
+                Math.floor(sourceHeight * resolution),
                 Math.floor(dx * renderer.resolution),
                 Math.floor(dy * renderer.resolution),
-                Math.floor(width * renderer.resolution),
-                Math.floor(height * renderer.resolution)
+                Math.floor(destWidth * renderer.resolution),
+                Math.floor(destHeight * renderer.resolution)
             );
         }
 

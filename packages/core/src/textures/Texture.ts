@@ -1,6 +1,6 @@
 import { BaseTexture } from './BaseTexture';
 import { ImageResource } from './resources/ImageResource';
-import { CanvasResource } from './resources/CanvasResource';
+import type { CanvasResource } from './resources/CanvasResource';
 import { TextureUvs } from './TextureUvs';
 import { settings } from '@pixi/settings';
 import { Rectangle, Point } from '@pixi/math';

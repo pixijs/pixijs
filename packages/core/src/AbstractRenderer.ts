@@ -1,10 +1,10 @@
 import { hex2string, hex2rgb, EventEmitter, deprecation } from '@pixi/utils';
 import { Matrix, Rectangle } from '@pixi/math';
-import { MSAA_QUALITY, RENDERER_TYPE } from '@pixi/constants';
+import { RENDERER_TYPE } from '@pixi/constants';
 import { settings } from '@pixi/settings';
 import { RenderTexture } from './renderTexture/RenderTexture';
 
-import type { SCALE_MODES } from '@pixi/constants';
+import type { SCALE_MODES, MSAA_QUALITY } from '@pixi/constants';
 import type { ISystemConstructor } from './ISystem';
 import type { IRenderingContext } from './IRenderingContext';
 import type { IRenderableContainer, IRenderableObject } from './IRenderableObject';

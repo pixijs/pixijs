@@ -2,10 +2,11 @@
 /* eslint-disable func-names */
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 
-import { Canvas, CanvasRenderingContext2D, Image, NodeCanvasRenderingContext2DSettings } from 'canvas';
+import type { NodeCanvasRenderingContext2DSettings } from 'canvas';
+import { Canvas, CanvasRenderingContext2D, Image } from 'canvas';
 import { EventEmitter } from '@pixi/utils';
 import createGLContext from 'gl';
-import { ContextIds } from '@pixi/settings';
+import type { ContextIds } from '@pixi/settings';
 
 function putImageData(gl: WebGLRenderingContext, canvas: NodeCanvasElement)
 {

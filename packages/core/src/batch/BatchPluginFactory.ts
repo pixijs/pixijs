@@ -6,6 +6,8 @@ import defaultVertex from './texture.vert';
 import defaultFragment from './texture.frag';
 
 import type { Renderer } from '../Renderer';
+import type { ExtensionMetadata } from '../extensions';
+import { ExtensionType } from '../extensions';
 
 export interface IBatchFactoryOptions
 {
@@ -35,7 +37,11 @@ export class BatchPluginFactory
      * }
      * `;
      * const InvertBatchRenderer = PIXI.BatchPluginFactory.create({ fragment });
-     * PIXI.Renderer.registerPlugin('invert', InvertBatchRenderer);
+     * PIXI.extensions.add({
+     *  name: 'invert',
+     *  ref: InvertBatchRenderer,
+     *  type: PIXI.ExtensionType.RendererPlugin,
+     * });
      * const sprite = new PIXI.Sprite();
      * sprite.pluginName = 'invert';
      * @param {object} [options]
@@ -89,3 +95,10 @@ export class BatchPluginFactory
 // Setup the default BatchRenderer plugin, this is what
 // we'll actually export at the root level
 export const BatchRenderer = BatchPluginFactory.create();
+
+Object.assign(BatchRenderer, {
+    extension: {
+        name: 'batch',
+        type: ExtensionType.RendererPlugin,
+    } as ExtensionMetadata,
+});

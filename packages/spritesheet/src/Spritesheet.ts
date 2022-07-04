@@ -1,6 +1,6 @@
 import { Rectangle } from '@pixi/math';
 import { Texture, BaseTexture } from '@pixi/core';
-import { getResolutionOfUrl } from '@pixi/utils';
+import { deprecation, getResolutionOfUrl } from '@pixi/utils';
 import type { Dict } from '@pixi/utils';
 import type { ImageResource } from '@pixi/core';
 import type { IPointData } from '@pixi/math';
@@ -34,6 +34,8 @@ export interface ISpritesheetData
     animations?: Dict<string[]>;
     meta: {
         scale: string;
+        // eslint-disable-next-line camelcase
+        related_multi_packs?: string[];
     };
 }
 
@@ -55,7 +57,8 @@ export interface ISpritesheetData
  * Alternately, you may circumvent the loader by instantiating the Spritesheet directly:
  * ```js
  * const sheet = new PIXI.Spritesheet(texture, spritesheetData);
- * sheet.parse(() => console.log('Spritesheet ready to use!'));
+ * await sheet.parse();
+ * console.log('Spritesheet ready to use!');
  * ```
  *
  * With the `sheet.textures` you can create Sprite objects,`sheet.animations` can be used to create an AnimatedSprite.
@@ -70,6 +73,9 @@ export class Spritesheet
 {
     /** The maximum number of Textures to build per process. */
     static readonly BATCH_SIZE = 1000;
+
+    /** For multi-packed spritesheets, this contains a reference to all the other spritesheets it depends on. */
+    public linkedSheets: Spritesheet[] = [];
 
     /** Reference to ths source texture. */
     public baseTexture: BaseTexture;
@@ -182,24 +188,49 @@ export class Spritesheet
     /**
      * Parser spritesheet from loaded data. This is done asynchronously
      * to prevent creating too many Texture within a single process.
+     * @method PIXI.Spritesheet#parse
+     */
+    public parse(): Promise<Dict<Texture>>;
+
+    /**
+     * Please use the Promise-based version of this function.
+     * @method PIXI.Spritesheet#parse
+     * @deprecated since version 6.5.0
      * @param {Function} callback - Callback when complete returns
      *        a map of the Textures for this spritesheet.
      */
-    public parse(callback: (textures?: Dict<Texture>) => void): void
-    {
-        this._batchIndex = 0;
-        this._callback = callback;
+    public parse(callback?: (textures?: Dict<Texture>) => void): void;
 
-        if (this._frameKeys.length <= Spritesheet.BATCH_SIZE)
+    /** @ignore */
+    public parse(callback?: (textures?: Dict<Texture>) => void): Promise<Dict<Texture>>
+    {
+        // #if _DEBUG
+        if (callback)
         {
-            this._processFrames(0);
-            this._processAnimations();
-            this._parseComplete();
+            deprecation('6.5.0', 'Spritesheet.parse callback is deprecated, use the return Promise instead.');
         }
-        else
+        // #endif
+
+        return new Promise((resolve) =>
         {
-            this._nextBatch();
-        }
+            this._callback = (textures: Dict<Texture>) =>
+            {
+                callback?.(textures);
+                resolve(textures);
+            };
+            this._batchIndex = 0;
+
+            if (this._frameKeys.length <= Spritesheet.BATCH_SIZE)
+            {
+                this._processFrames(0);
+                this._processAnimations();
+                this._parseComplete();
+            }
+            else
+            {
+                this._nextBatch();
+            }
+        });
     }
 
     /**
@@ -345,6 +376,7 @@ export class Spritesheet
         }
         this._texture = null;
         this.baseTexture = null;
+        this.linkedSheets = [];
     }
 }
 

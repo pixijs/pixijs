@@ -3,10 +3,9 @@ import '@pixi/polyfill';
 import * as utils from '@pixi/utils';
 import { AccessibilityManager } from '@pixi/accessibility';
 import { InteractionManager } from '@pixi/interaction';
-import { Application } from '@pixi/app';
-import { Renderer, BatchRenderer } from '@pixi/core';
+import { BatchRenderer, extensions } from '@pixi/core';
 import { Extract } from '@pixi/extract';
-import { Loader, AppLoaderPlugin } from '@pixi/loaders';
+import { AppLoaderPlugin } from '@pixi/loaders';
 import { CompressedTextureLoader, DDSLoader, KTXLoader } from '@pixi/compressed-textures';
 import { ParticleRenderer } from '@pixi/particle-container';
 import { Prepare } from '@pixi/prepare';
@@ -20,29 +19,32 @@ import { ColorMatrixFilter } from '@pixi/filter-color-matrix';
 import { DisplacementFilter } from '@pixi/filter-displacement';
 import { FXAAFilter } from '@pixi/filter-fxaa';
 import { NoiseFilter } from '@pixi/filter-noise';
+
 import '@pixi/mixin-cache-as-bitmap';
 import '@pixi/mixin-get-child-by-name';
 import '@pixi/mixin-get-global-position';
 
-// Install renderer plugins
-Renderer.registerPlugin('accessibility', AccessibilityManager);
-Renderer.registerPlugin('extract', Extract);
-Renderer.registerPlugin('interaction', InteractionManager);
-Renderer.registerPlugin('particle', ParticleRenderer);
-Renderer.registerPlugin('prepare', Prepare);
-Renderer.registerPlugin('batch', BatchRenderer);
-Renderer.registerPlugin('tilingSprite', TilingSpriteRenderer);
+extensions.add(
+    // Install renderer plugins
+    AccessibilityManager,
+    Extract,
+    InteractionManager,
+    ParticleRenderer,
+    Prepare,
+    BatchRenderer,
+    TilingSpriteRenderer,
 
-// Install loader plugins
-Loader.registerPlugin(BitmapFontLoader);
-Loader.registerPlugin(CompressedTextureLoader);
-Loader.registerPlugin(DDSLoader);
-Loader.registerPlugin(KTXLoader);
-Loader.registerPlugin(SpritesheetLoader);
+    // Install loader plugins
+    BitmapFontLoader,
+    CompressedTextureLoader,
+    DDSLoader,
+    KTXLoader,
+    SpritesheetLoader,
 
-// Install application plugins
-Application.registerPlugin(TickerPlugin);
-Application.registerPlugin(AppLoaderPlugin);
+    // Install application plugins
+    TickerPlugin,
+    AppLoaderPlugin
+);
 
 /**
  * String of the current PIXI version.
@@ -119,4 +121,5 @@ export * from '@pixi/text';
 export * from '@pixi/text-bitmap';
 export * from '@pixi/ticker';
 export * from '@pixi/settings';
+
 export { utils };

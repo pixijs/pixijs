@@ -1,23 +1,23 @@
 import path from 'path';
-import { IAddOptions, Loader, LoaderResource } from '@pixi/loaders';
-import { Texture, BaseTexture } from '@pixi/core';
+import type { IAddOptions } from '@pixi/loaders';
+import { Loader, LoaderResource } from '@pixi/loaders';
+import { Texture, BaseTexture, extensions } from '@pixi/core';
 import { BaseTextureCache, TextureCache, url, clearTextureCache } from '@pixi/utils';
 import { SpritesheetLoader, Spritesheet } from '@pixi/spritesheet';
-import sinon from 'sinon';
-import { expect } from 'chai';
 
 describe('SpritesheetLoader', () =>
 {
+    beforeAll(() => extensions.add(SpritesheetLoader));
+    afterAll(() => extensions.remove(SpritesheetLoader));
+
     it('should exist and return a function', () =>
     {
-        expect(SpritesheetLoader).to.not.be.undefined;
-        expect(SpritesheetLoader.use).to.be.a('function');
+        expect(SpritesheetLoader).toBeDefined();
+        expect(SpritesheetLoader.use).toBeInstanceOf(Function);
     });
 
     it('should install middleware', (done) =>
     {
-        Loader.registerPlugin(SpritesheetLoader);
-
         const loader = new Loader();
         const baseTextures = Object.keys(BaseTextureCache).length;
         const textures = Object.keys(TextureCache).length;
@@ -25,11 +25,11 @@ describe('SpritesheetLoader', () =>
         loader.add('building1', path.join(__dirname, 'resources/building1.json'));
         loader.load((loader, resources) =>
         {
-            expect(resources.building1).to.be.instanceof(LoaderResource);
-            expect(resources.building1.spritesheet).to.be.instanceof(Spritesheet);
+            expect(resources.building1).toBeInstanceOf(LoaderResource);
+            expect(resources.building1.spritesheet).toBeInstanceOf(Spritesheet);
             resources.building1.spritesheet.destroy(true);
-            expect(Object.keys(BaseTextureCache).length).to.equal(baseTextures);
-            expect(Object.keys(TextureCache).length).to.equal(textures);
+            expect(Object.keys(BaseTextureCache).length).toEqual(baseTextures);
+            expect(Object.keys(TextureCache).length).toEqual(textures);
             loader.reset();
             done();
         });
@@ -37,65 +37,65 @@ describe('SpritesheetLoader', () =>
 
     it('should do nothing if the resource is not JSON', () =>
     {
-        const spy = sinon.spy();
+        const spy = jest.fn();
         const res = {} as LoaderResource;
 
         SpritesheetLoader.use(res, spy);
 
-        expect(spy).to.have.been.calledOnce;
-        expect(res.textures).to.be.undefined;
+        expect(spy).toHaveBeenCalledOnce();
+        expect(res.textures).toBeUndefined();
     });
 
     it('should do nothing if the resource is JSON, but improper format', () =>
     {
-        const spy = sinon.spy();
+        const spy = jest.fn();
         const res = createMockResource(LoaderResource.TYPE.JSON, {});
 
         SpritesheetLoader.use(res, spy);
 
-        expect(spy).to.have.been.calledOnce;
-        expect(res.textures).to.be.undefined;
+        expect(spy).toHaveBeenCalledOnce();
+        expect(res.textures).toBeUndefined();
     });
 
-    it('should load the image & create textures if json is properly formatted', () =>
+    it('should load the image & create textures if json is properly formatted', async () =>
     {
-        const spy = sinon.spy();
+        jest.setTimeout(10000);
         const res = createMockResource(LoaderResource.TYPE.JSON, getJsonSpritesheet());
         const loader = new Loader();
-        const addStub = sinon.stub(loader, 'add');
         const imgRes = createMockResource(LoaderResource.TYPE.IMAGE, new Image());
+        const addStub = jest.fn((_0, _1, _2, callback) =>
+        {
+            callback(imgRes);
+        });
+
+        loader.add = addStub as any;
 
         imgRes.texture = new Texture(new BaseTexture(imgRes.data));
 
-        addStub.yields(imgRes);
+        await new Promise<void>((resolve) =>
+        {
+            SpritesheetLoader.use.call(loader, res, () =>
+            {
+                resolve();
+            });
+        });
 
-        SpritesheetLoader.use.call(loader, res, spy);
+        expect(res).toHaveProperty('textures');
+        expect(Object.keys(res.textures)).toEqual(Object.keys(getJsonSpritesheet().frames));
+        expect(res.textures['0.png']).toBeInstanceOf(Texture);
 
-        addStub.restore();
+        expect(res.textures['0.png'].frame.x).toEqual(14);
+        expect(res.textures['0.png'].frame.y).toEqual(28);
+        expect(res.textures['0.png'].defaultAnchor.x).toEqual(0.3);
+        expect(res.textures['0.png'].defaultAnchor.y).toEqual(0.4);
+        expect(res.textures['1.png'].defaultAnchor.x).toEqual(0.0); // default of defaultAnchor is 0,0
+        expect(res.textures['1.png'].defaultAnchor.y).toEqual(0.0);
 
-        expect(spy).to.have.been.calledOnce;
-        expect(addStub).to.have.been.calledWith(
-            `${res.name}_image`,
-            `${path.dirname(res.url)}/${res.data.meta.image}`
-        );
-        expect(res).to.have.property('textures')
-            .that.is.an('object')
-            .with.keys(Object.keys(getJsonSpritesheet().frames))
-            .and.has.property('0.png')
-            .that.is.an.instanceof(Texture);
-
-        expect(res.textures['0.png'].frame.x).to.equal(14);
-        expect(res.textures['0.png'].frame.y).to.equal(28);
-        expect(res.textures['0.png'].defaultAnchor.x).to.equal(0.3);
-        expect(res.textures['0.png'].defaultAnchor.y).to.equal(0.4);
-        expect(res.textures['1.png'].defaultAnchor.x).to.equal(0.0); // default of defaultAnchor is 0,0
-        expect(res.textures['1.png'].defaultAnchor.y).to.equal(0.0);
-
-        expect(res).to.have.property('spritesheet')
-            .to.have.property('animations')
-            .to.have.property('png123');
-        expect(res.spritesheet.animations.png123.length).to.equal(3);
-        expect(res.spritesheet.animations.png123[0]).to.equal(res.textures['1.png']);
+        expect(res).toHaveProperty('spritesheet');
+        expect(res.spritesheet).toHaveProperty('animations');
+        expect(res.spritesheet.animations).toHaveProperty('png123');
+        expect(res.spritesheet.animations.png123.length).toEqual(3);
+        expect(res.spritesheet.animations.png123[0]).toEqual(res.textures['1.png']);
     });
 
     it('should not load binary images as an image loader type', (done) =>
@@ -116,8 +116,8 @@ describe('SpritesheetLoader', () =>
             .add(`atlas`, path.join(__dirname, 'resources', 'building1.json'))
             .load((loader, resources) =>
             {
-                expect(resources.atlas_image.data).to.be.instanceof(HTMLImageElement);
-                expect(resources.atlas_crn_image.data).to.not.be.instanceof(HTMLImageElement);
+                expect(resources.atlas_image.data).toBeInstanceOf(HTMLImageElement);
+                expect(resources.atlas_crn_image.data).not.toBeInstanceOf(HTMLImageElement);
                 loader.reset();
                 done();
             });
@@ -125,11 +125,11 @@ describe('SpritesheetLoader', () =>
 
     it('should dispatch an error failing to load spritesheet image', (done) =>
     {
-        const spy = sinon.spy((error, _ldr, res) =>
+        const spy = jest.fn((error, _ldr, res) =>
         {
-            expect(res.name).to.equal('atlas_error_image');
-            expect(res.error).to.equal(error);
-            expect(error.toString()).to.have.string('Failed to load element using: IMG');
+            expect(res.name).toEqual('atlas_error_image');
+            expect(res.error).toEqual(error);
+            expect(error.toString()).toContain('Failed to load element using: IMG');
         });
         const loader = new Loader();
 
@@ -137,8 +137,8 @@ describe('SpritesheetLoader', () =>
         loader.onError.add(spy);
         loader.load((loader, resources) =>
         {
-            expect(resources.atlas_error_image.error).to.be.instanceof(Error);
-            expect(spy.calledOnce).to.be.true;
+            expect(resources.atlas_error_image.error).toBeInstanceOf(Error);
+            expect(spy).toBeCalledTimes(1);
             loader.reset();
             done();
         });
@@ -159,28 +159,28 @@ describe('SpritesheetLoader', () =>
 
         let result = getPath('http://some.com/spritesheet.json', 'img.png');
 
-        expect(result).to.be.equals('http://some.com/img.png');
+        expect(result).toEqual('http://some.com/img.png');
 
         result = getPath('http://some.com/some/dir/spritesheet.json', 'img.png');
-        expect(result).to.be.equals('http://some.com/some/dir/img.png');
+        expect(result).toEqual('http://some.com/some/dir/img.png');
 
         result = getPath('http://some.com/some/dir/spritesheet.json', './img.png');
-        expect(result).to.be.equals('http://some.com/some/dir/img.png');
+        expect(result).toEqual('http://some.com/some/dir/img.png');
 
         result = getPath('http://some.com/some/dir/spritesheet.json', '../img.png');
-        expect(result).to.be.equals('http://some.com/some/img.png');
+        expect(result).toEqual('http://some.com/some/img.png');
 
         result = getPath('/spritesheet.json', 'img.png');
-        expect(result).to.be.equals('/img.png');
+        expect(result).toEqual('/img.png');
 
         result = getPath('/some/dir/spritesheet.json', 'img.png');
-        expect(result).to.be.equals('/some/dir/img.png');
+        expect(result).toEqual('/some/dir/img.png');
 
         result = getPath('/some/dir/spritesheet.json', './img.png');
-        expect(result).to.be.equals('/some/dir/img.png');
+        expect(result).toEqual('/some/dir/img.png');
 
         result = getPath('/some/dir/spritesheet.json', '../img.png');
-        expect(result).to.be.equals('/some/img.png');
+        expect(result).toEqual('/some/img.png');
     });
 
     // TODO: Test that rectangles are created correctly.
@@ -198,7 +198,7 @@ describe('SpritesheetLoader', () =>
         loader.add('atlas_multi_self', path.join(__dirname, 'resources', 'building1-0.json'));
         loader.load((loader, resources) =>
         {
-            expect(Object.values(resources).filter((r) => r.url.includes('building1-0.json')).length).to.be.equals(1);
+            expect(Object.values(resources).filter((r) => r.url.includes('building1-0.json')).length).toEqual(1);
             loader.reset();
             done();
         });
@@ -214,7 +214,7 @@ describe('SpritesheetLoader', () =>
         loader.add('atlas_multi_child_check', path.join(__dirname, 'resources', 'building1-0.json'));
         loader.load((loader, resources) =>
         {
-            expect(resources.atlas_multi_child_check.children.some((r) => r.url.includes('building1-1.json'))).to.be.true;
+            expect(resources.atlas_multi_child_check.children.some((r) => r.url.includes('building1-1.json'))).toBe(true);
             loader.reset();
             done();
         });
@@ -232,9 +232,9 @@ describe('SpritesheetLoader', () =>
         loader.add('atlas_multipack_wrong_array', path.join(__dirname, 'resources', 'atlas-multipack-wrong-array.json'));
         loader.load((loader, resources) =>
         {
-            expect(resources.atlas_no_multipack.children.length).to.be.equals(1);
-            expect(resources.atlas_multipack_wrong_type.children.length).to.be.equals(1);
-            expect(resources.atlas_multipack_wrong_array.children.length).to.be.equals(1);
+            expect(resources.atlas_no_multipack.children.length).toEqual(1);
+            expect(resources.atlas_multipack_wrong_type.children.length).toEqual(1);
+            expect(resources.atlas_multipack_wrong_array.children.length).toEqual(1);
             loader.reset();
             done();
         });
@@ -244,28 +244,28 @@ describe('SpritesheetLoader', () =>
     {
         let result = url.resolve('http://some.com/spritesheet.json', 'spritesheet-1.json');
 
-        expect(result).to.be.equals('http://some.com/spritesheet-1.json');
+        expect(result).toEqual('http://some.com/spritesheet-1.json');
 
         result = url.resolve('http://some.com/some/dir/spritesheet.json', 'spritesheet-1.json');
-        expect(result).to.be.equals('http://some.com/some/dir/spritesheet-1.json');
+        expect(result).toEqual('http://some.com/some/dir/spritesheet-1.json');
 
         result = url.resolve('http://some.com/some/dir/spritesheet.json', './spritesheet-1.json');
-        expect(result).to.be.equals('http://some.com/some/dir/spritesheet-1.json');
+        expect(result).toEqual('http://some.com/some/dir/spritesheet-1.json');
 
         result = url.resolve('http://some.com/some/dir/spritesheet.json', '../spritesheet-1.json');
-        expect(result).to.be.equals('http://some.com/some/spritesheet-1.json');
+        expect(result).toEqual('http://some.com/some/spritesheet-1.json');
 
         result = url.resolve('/spritesheet.json', 'spritesheet-1.json');
-        expect(result).to.be.equals('/spritesheet-1.json');
+        expect(result).toEqual('/spritesheet-1.json');
 
         result = url.resolve('/some/dir/spritesheet.json', 'spritesheet-1.json');
-        expect(result).to.be.equals('/some/dir/spritesheet-1.json');
+        expect(result).toEqual('/some/dir/spritesheet-1.json');
 
         result = url.resolve('/some/dir/spritesheet.json', './spritesheet-1.json');
-        expect(result).to.be.equals('/some/dir/spritesheet-1.json');
+        expect(result).toEqual('/some/dir/spritesheet-1.json');
 
         result = url.resolve('/some/dir/spritesheet.json', '../spritesheet-1.json');
-        expect(result).to.be.equals('/some/spritesheet-1.json');
+        expect(result).toEqual('/some/spritesheet-1.json');
     });
 
     it('should use metadata to load all multipack resources', (done) =>
@@ -279,8 +279,8 @@ describe('SpritesheetLoader', () =>
         loader.add('building1-0', path.join(__dirname, 'resources', 'building1-0.json'), { metadata } as IAddOptions);
         loader.load((_loader, resources) =>
         {
-            expect(resources['building1-0'].metadata).to.be.equals(metadata);
-            expect(resources['building1-1'].metadata).to.be.equals(metadata);
+            expect(resources['building1-0'].metadata).toEqual(metadata);
+            expect(resources['building1-1'].metadata).toEqual(metadata);
 
             done();
         });

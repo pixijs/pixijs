@@ -1,6 +1,7 @@
 import { Texture } from '@pixi/core';
 import { getResolutionOfUrl } from '@pixi/utils';
-import { CanvasRenderingContext2D, loadImage } from 'canvas';
+import type { CanvasRenderingContext2D } from 'canvas';
+import { loadImage } from 'canvas';
 import { NodeCanvasElement } from './NodeCanvasElement';
 import path from 'path';
 

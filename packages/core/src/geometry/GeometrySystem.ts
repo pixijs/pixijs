@@ -1,4 +1,4 @@
-import { GLBuffer } from './GLBuffer';
+import type { GLBuffer } from './GLBuffer';
 import { ENV } from '@pixi/constants';
 import { settings } from '../settings';
 
