@@ -38,7 +38,6 @@
     "url": "https://github.com/pixijs/pixi.js.git"
   },
   "files": [
-    "lib/",
     "dist/",
     "*.d.ts"
   ],
