@@ -1,0 +1,7 @@
+{
+    "extends": "./tsconfig.build.json",
+    "compilerOptions": {
+        "importHelpers": true,
+        "target": "es6"
+    },
+}

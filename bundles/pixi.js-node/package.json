@@ -10,8 +10,9 @@
   },
   "license": "MIT",
   "author": "PixiJS Team",
-  "main": "dist/cjs/node.js",
-  "module": "dist/esm/node.js",
+  "main": "dist/cjs/node.cjs",
+  "module": "dist/esm/node.mjs",
+  "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
@@ -24,7 +25,6 @@
       }
     }
   },
-  "types": "index.d.ts",
   "files": [
     "lib",
     "dist",
@@ -35,9 +35,11 @@
   },
   "dependencies": {
     "@types/gl": "^4.1.0",
+    "@types/xml2js": "^0.4.11",
     "canvas": "^2.9.1",
     "cross-fetch": "^3.1.5",
-    "gl": "^5.0.0"
+    "gl": "^5.0.0",
+    "xml2js": "^0.4.23"
   },
   "peerDependencies": {
     "@pixi/app": "6.4.2",
@@ -72,5 +74,6 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "transpile": "es6"
 }

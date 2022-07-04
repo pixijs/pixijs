@@ -2,10 +2,9 @@ import { Texture } from '@pixi/core';
 import { getResolutionOfUrl } from '@pixi/utils';
 import { CanvasRenderingContext2D, loadImage } from 'canvas';
 import { NodeCanvasElement } from './NodeCanvasElement';
-import { URL } from 'url';
 import path from 'path';
 
-const validImages = ['jpg', 'png', 'jpeg'];
+const validImages = ['jpg', 'png', 'jpeg', 'svg'];
 
 /**
  * loads our textures!

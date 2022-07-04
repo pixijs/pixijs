@@ -121,7 +121,9 @@ async function main()
             standalone,
             version,
             dependencies,
-            peerDependencies } = pkg.config;
+            peerDependencies,
+            transpile
+        } = pkg.config;
 
         const banner = [
             `/*!`,
@@ -139,6 +141,27 @@ async function main()
         const basePath = path.relative(__dirname, pkg.dir);
         const input = path.join(basePath, 'src/index.ts');
         const freeze = false;
+
+        const tempPlugins = [...plugins];
+        const tempProdPlugins = [...prodPlugins];
+        const tempBundlePlugins = [...prodBundlePlugins];
+
+        if (transpile === 'es6')
+        {
+            const ts = typescript({
+                tsconfig: path.resolve(__dirname, 'tsconfig.build.es6.json'),
+            });
+
+            tempPlugins.splice(5, 1);
+            tempPlugins.splice(5, 0, ts);
+            tempPlugins.pop();
+            tempProdPlugins.splice(5, 1);
+            tempProdPlugins.splice(5, 0, ts);
+            tempProdPlugins.splice(tempProdPlugins.length - 2, 1);
+            tempBundlePlugins.splice(6, 1);
+            tempBundlePlugins.splice(6, 0, ts);
+            tempBundlePlugins.splice(tempBundlePlugins.length - 2, 1);
+        }
 
         results.push({
             input,
@@ -159,7 +182,7 @@ async function main()
                 },
             ],
             external,
-            plugins,
+            plugins: tempPlugins,
         });
 
         if (isProduction)
@@ -183,7 +206,7 @@ async function main()
                     },
                 ],
                 external,
-                plugins: prodPlugins,
+                plugins: tempProdPlugins,
             });
         }
 
@@ -251,7 +274,7 @@ async function main()
                     }] : []
                 ],
                 treeshake: false,
-                plugins,
+                plugins: tempPlugins,
             });
 
             if (isProduction)
@@ -279,7 +302,7 @@ async function main()
                         }] : []
                     ],
                     treeshake: false,
-                    plugins: prodBundlePlugins,
+                    plugins: tempBundlePlugins,
                 });
             }
         }

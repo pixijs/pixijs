@@ -3,7 +3,6 @@ import { Spritesheet } from '@pixi/spritesheet';
 import { TextureCache } from '@pixi/utils';
 import { loadNodeTexture } from '../loadNodeTexture';
 import path from 'path';
-import { URL } from 'url';
 
 export interface SpriteSheetJson extends ISpritesheetData
 {

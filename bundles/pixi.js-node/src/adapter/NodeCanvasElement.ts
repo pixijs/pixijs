@@ -11,7 +11,7 @@ function putImageData(gl: WebGLRenderingContext, canvas: NodeCanvasElement)
 {
     const { width, height } = canvas;
 
-    const ctx = canvas[_ctx] as CanvasRenderingContext2D;
+    const ctx = canvas['_ctx'] as CanvasRenderingContext2D;
 
     const data = ctx.getImageData(0, 0, width, height);
 
@@ -116,6 +116,7 @@ export class NodeCanvasElement extends Canvas
         return this._ctx;
     }
 
+    // @ts-expect-error - overriding getContext
     override getContext(
         type: ContextIds,
         options?: NodeCanvasRenderingContext2DSettings | WebGLContextAttributes
@@ -133,10 +134,11 @@ export class NodeCanvasElement extends Canvas
             const ctx = createGLContext(width, height, options as WebGLContextAttributes) as TempCtx;
             const _getUniformLocation = ctx.getUniformLocation;
 
+            type Program = WebGLProgram & {_uniforms: any[]};
             // Temporary fix https://github.com/stackgl/headless-gl/issues/170
-            ctx.getUniformLocation = function (program, name)
+            ctx.getUniformLocation = function (program: Program, name)
             {
-                if (program['_uniforms'] && !(/\[\d+\]$/).test(name))
+                if (program._uniforms && !(/\[\d+\]$/).test(name))
                 {
                     const reg = new RegExp(`${name}\\[\\d+\\]$`);
 
@@ -154,7 +156,7 @@ export class NodeCanvasElement extends Canvas
                 return _getUniformLocation.call(this, program, name);
             };
 
-            ctx.canvas = this as NodeCanvasElement;
+            (ctx as any).canvas = this as NodeCanvasElement;
             const _texImage2D = ctx.texImage2D;
 
             ctx.texImage2D = function (...args: any)
@@ -189,6 +191,7 @@ export class NodeCanvasElement extends Canvas
             putImageData(gl, this);
         }
 
+        // @ts-expect-error - overriding toBuffer
         return super.toBuffer(...args);
     }
 
@@ -201,6 +204,7 @@ export class NodeCanvasElement extends Canvas
             putImageData(gl, this);
         }
 
+        // @ts-expect-error - overriding toDataURL
         return super.toDataURL(...args);
     }
 

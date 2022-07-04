@@ -1,15 +1,16 @@
 import { Application } from '@pixi/app';
 import { INSTALLED } from '@pixi/core';
 import { ContextAttributes, ContextIds, IAdapter, settings } from '@pixi/settings';
-import 'cross-fetch/polyfill';
 import gl from 'gl';
 import { loadNodeFont } from './loadNodeFont';
 import { loadNodeTexture } from './loadNodeTexture';
+import { loadNodeBitmapFont } from './loadNodeBitmapFont';
 import { NodeCanvasElement } from './NodeCanvasElement';
 import { NodeCanvasResource } from './NodeCanvasResource';
 import './requestAnimationFrame';
 import { loadJSON } from './temp/loadJSON';
 import { loadSpritesheet } from './temp/loadSpritesheet';
+import { loadTxt } from './temp/loadTxt';
 
 INSTALLED.length = 0;
 INSTALLED.push(NodeCanvasResource);
@@ -31,5 +32,5 @@ export * from './NodeCanvasElement';
 export * from './NodeCanvasResource';
 export { settings };
 // TODO: replace with new asset loader
-export { loadNodeTexture, loadNodeFont, loadJSON, loadSpritesheet };
+export { loadNodeTexture, loadNodeFont, loadJSON, loadSpritesheet, loadNodeBitmapFont, loadTxt };
 
