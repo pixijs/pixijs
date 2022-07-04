@@ -1,23 +1,15 @@
 import { Application } from '@pixi/app';
-import { INSTALLED } from '@pixi/core';
+import { loadBitmapFont, loadTextures, loadWebFont } from '@pixi/assets';
+import { extensions, INSTALLED } from '@pixi/core';
 import type { ContextAttributes, ContextIds, IAdapter } from '@pixi/settings';
 import { settings } from '@pixi/settings';
 import gl from 'gl';
+import { loadNodeBitmapFont } from './loadNodeBitmapFont';
 import { loadNodeFont } from './loadNodeFont';
 import { loadNodeTexture } from './loadNodeTexture';
-import { loadNodeBitmapFont } from './loadNodeBitmapFont';
 import { NodeCanvasElement } from './NodeCanvasElement';
 import { NodeCanvasResource } from './NodeCanvasResource';
-import './requestAnimationFrame';
-import { loadJSON } from './temp/loadJSON';
-import { loadSpritesheet } from './temp/loadSpritesheet';
-import { loadTxt } from './temp/loadTxt';
-
-INSTALLED.length = 0;
-INSTALLED.push(NodeCanvasResource);
-// Remove resize plugin
-// eslint-disable-next-line dot-notation
-Application['_plugins'].shift();
+import './polyfills';
 
 export const NodeAdapter = {
     createCanvas: (width?: number, height?: number) => new NodeCanvasElement(width, height) as unknown as HTMLCanvasElement,
@@ -32,6 +24,20 @@ settings.ADAPTER = NodeAdapter;
 export * from './NodeCanvasElement';
 export * from './NodeCanvasResource';
 export { settings };
-// TODO: replace with new asset loader
-export { loadNodeTexture, loadNodeFont, loadJSON, loadSpritesheet, loadNodeBitmapFont, loadTxt };
 
+INSTALLED.length = 0;
+INSTALLED.push(NodeCanvasResource);
+// Remove resize plugin
+// eslint-disable-next-line dot-notation
+Application['_plugins'].shift();
+
+extensions.remove(
+    loadTextures,
+    loadWebFont,
+    loadBitmapFont
+);
+extensions.add(
+    loadNodeTexture,
+    loadNodeFont,
+    loadNodeBitmapFont
+);

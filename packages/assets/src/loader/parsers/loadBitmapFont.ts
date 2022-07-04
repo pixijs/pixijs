@@ -39,7 +39,7 @@ export const loadBitmapFont = {
         return validExtensions.includes(extname(url));
     },
 
-    testParse(data: string): boolean
+    async testParse(data: string): Promise<boolean>
     {
         const isText = TextFormat.test(data);
         const isXMLText = XMLStringFormat.test(data);
@@ -72,8 +72,8 @@ export const loadBitmapFont = {
         return await _loadBitmap(url, XMLFormat.parse(data), loader);
     },
 
-    unload(bitmapFont: Texture): void
+    unload(bitmapFont: BitmapFont): void
     {
-        bitmapFont.destroy(true);
+        bitmapFont.destroy();
     }
-} as LoaderParser;
+} as LoaderParser<BitmapFont | string>;

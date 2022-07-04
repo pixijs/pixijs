@@ -4,6 +4,7 @@ import type { CanvasRenderingContext2D } from 'canvas';
 import { loadImage } from 'canvas';
 import { NodeCanvasElement } from './NodeCanvasElement';
 import path from 'path';
+import type { LoadAsset, LoaderParser } from '@pixi/assets';
 
 const validImages = ['jpg', 'png', 'jpeg', 'svg'];
 
@@ -22,7 +23,7 @@ export const loadNodeTexture = {
         return validImages.includes(extension);
     },
 
-    async load(url: string, asset: any): Promise<Texture>
+    async load(url: string, asset: LoadAsset): Promise<Texture>
     {
         const image = await loadImage(url);
         const canvas = new NodeCanvasElement(image.width, image.height);
@@ -36,5 +37,10 @@ export const loadNodeTexture = {
 
         return texture;
     },
-};
+
+    unload(texture: Texture): void
+    {
+        texture.destroy(true);
+    }
+} as LoaderParser<Texture>;
 

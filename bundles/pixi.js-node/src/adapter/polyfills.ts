@@ -1,3 +1,7 @@
+import fetch from 'cross-fetch';
+
+globalThis.fetch = fetch;
+
 globalThis.requestAnimationFrame = function requestAnimationFrame(fn)
 {
     return setTimeout(fn, 1000 / 60);

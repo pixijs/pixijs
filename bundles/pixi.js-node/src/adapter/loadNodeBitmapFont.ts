@@ -1,10 +1,10 @@
+import type { LoadAsset, Loader, LoaderParser } from '@pixi/assets';
+import { dirname, extname, join } from '@pixi/assets';
 import type { Texture } from '@pixi/core';
-import { BitmapFont, BitmapFontData, TextFormat } from '@pixi/text-bitmap';
-import path from 'path';
-import { loadNodeTexture } from './loadNodeTexture';
-import { parseStringPromise } from 'xml2js';
+import { BitmapFont, BitmapFontData, TextFormat, XMLStringFormat } from '@pixi/text-bitmap';
 import fetch from 'cross-fetch';
 import type { IBitmapFontRawData } from 'packages/text-bitmap/src/formats/TextFormat';
+import { parseStringPromise } from 'xml2js';
 
 interface XMLRawJson
 {
@@ -97,57 +97,69 @@ function xmlJsonParser(xml: XMLRawJson)
     return data;
 }
 
+async function _loadBitmap(src: string, data: BitmapFontData, loader: Loader)
+{
+    const pages = data.page;
+
+    const textureUrls = [];
+
+    for (let i = 0; i < pages.length; ++i)
+    {
+        const pageFile = pages[i].file;
+        const imagePath = join(dirname(src), pageFile);
+
+        textureUrls.push(imagePath);
+    }
+
+    const textures: Texture[] = Object.values(await loader.load(textureUrls));
+
+    return BitmapFont.install(data, textures, true);
+}
+
+async function xmlStringFormatTest(data: string): Promise<boolean>
+{
+    if (typeof data === 'string' && data.indexOf('<font>') > -1)
+    {
+        const xml = xmlJsonParser(await parseStringPromise(data));
+
+        return xml.page.length > 0 && xml.info[0].face !== null;
+    }
+
+    return false;
+}
+
 const validExtensions = ['.xml', '.fnt'];
 
 /** simple loader plugin for loading in bitmap fonts! */
 export const loadNodeBitmapFont = {
     test(url: string): boolean
     {
-        const tempUrl = new URL(url);
-        const extension = path.extname(tempUrl.pathname);
-
-        return validExtensions.includes(extension);
+        return validExtensions.includes(extname(url));
     },
 
-    testParse(data: string): boolean
+    async testParse(data: string): Promise<boolean>
     {
-        return typeof data === 'string' && data.indexOf('info face=') === 0;
+        const isText = TextFormat.test(data);
+        const isXMLText = await xmlStringFormatTest(data);
+
+        return isText || isXMLText;
     },
 
-    async _load(url: string, data: BitmapFontData)
+    async parse(asset: string, data: LoadAsset, loader: Loader): Promise<BitmapFont>
     {
-        const pages = data.page;
+        const isText = TextFormat.test(asset);
 
-        const textureUrls = [];
-
-        for (let i = 0; i < pages.length; ++i)
+        if (isText)
         {
-            const pageFile = pages[i].file;
-            const pageUrl = new URL(pageFile, url);
+            const parsed = TextFormat.parse(asset);
 
-            const imagePath = pageUrl;
-
-            textureUrls.push(imagePath.href);
+            return await _loadBitmap(data.src, parsed, loader);
         }
 
-        const textures: Texture[] = [];
-
-        for (let i = 0; i < textureUrls.length; i++)
-        {
-            const url = textureUrls[i];
-
-            textures.push(await loadNodeTexture.load(url, { data: {} }));
-        }
-
-        return BitmapFont.install(data, textures, true);
+        return await _loadBitmap(data.src, XMLStringFormat.parse(asset), loader);
     },
 
-    async parse(url: string, asset: string): Promise<BitmapFont>
-    {
-        return await this._load(url, TextFormat.parse(asset));
-    },
-
-    async load(url: string): Promise<BitmapFont>
+    async load(url: string, _asset: LoadAsset, loader: Loader): Promise<BitmapFont>
     {
         const response = await fetch(url);
 
@@ -155,6 +167,11 @@ export const loadNodeBitmapFont = {
 
         const data = xmlJsonParser(await parseStringPromise(text));
 
-        return await this._load(url, data);
+        return await _loadBitmap(url, data, loader);
     },
-};
+
+    unload(bitmapFont: BitmapFont): void
+    {
+        bitmapFont.destroy();
+    }
+} as LoaderParser<BitmapFont | string>;

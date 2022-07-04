@@ -1,6 +1,5 @@
-import './adapter';
-import { Application } from '@pixi/app';
-import { BatchRenderer, Renderer } from '@pixi/core';
+import '@pixi/assets';
+import { BatchRenderer, extensions } from '@pixi/core';
 import { Extract } from '@pixi/extract';
 import { AlphaFilter } from '@pixi/filter-alpha';
 import { BlurFilter, BlurFilterPass } from '@pixi/filter-blur';
@@ -16,16 +15,19 @@ import { Prepare } from '@pixi/prepare';
 import { TilingSpriteRenderer } from '@pixi/sprite-tiling';
 import { TickerPlugin } from '@pixi/ticker';
 import * as utils from '@pixi/utils';
+import './adapter';
 
-// Install renderer plugins
-Renderer.registerPlugin('extract', Extract);
-Renderer.registerPlugin('particle', ParticleRenderer);
-Renderer.registerPlugin('prepare', Prepare);
-Renderer.registerPlugin('batch', BatchRenderer);
-Renderer.registerPlugin('tilingSprite', TilingSpriteRenderer);
+extensions.add(
+    // Install renderer plugins
+    Extract,
+    ParticleRenderer,
+    Prepare,
+    BatchRenderer,
+    TilingSpriteRenderer,
 
-// Install application plugins
-Application.registerPlugin(TickerPlugin);
+    // Install application plugins
+    TickerPlugin,
+);
 
 /**
  * String of the current PIXI version.
@@ -78,7 +80,6 @@ export const filters = {
 };
 
 // Export ES for those importing specifically by name,
-export * from './adapter';
 export * from '@pixi/app';
 export * from '@pixi/compressed-textures';
 export * from '@pixi/constants';
@@ -100,4 +101,6 @@ export * from '@pixi/spritesheet';
 export * from '@pixi/text';
 export * from '@pixi/text-bitmap';
 export * from '@pixi/ticker';
+export * from './adapter';
 export { utils };
+

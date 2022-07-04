@@ -26,7 +26,6 @@
     }
   },
   "files": [
-    "lib",
     "dist",
     "*.d.ts"
   ],
@@ -43,6 +42,7 @@
   },
   "peerDependencies": {
     "@pixi/app": "6.4.2",
+    "@pixi/assets": "6.4.2",
     "@pixi/compressed-textures": "6.4.2",
     "@pixi/constants": "6.4.2",
     "@pixi/core": "6.4.2",

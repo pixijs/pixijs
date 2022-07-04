@@ -28,7 +28,7 @@ interface SpriteSheetJson extends ISpritesheetData
 export const loadSpritesheet = {
     extension: ExtensionType.LoadParser,
 
-    testParse(asset: SpriteSheetJson, options: LoadAsset): boolean
+    async testParse(asset: SpriteSheetJson, options: LoadAsset): Promise<boolean>
     {
         return (extname(options.src).includes('.json') && !!asset.frames);
     },
