@@ -49,9 +49,7 @@ async function main()
         }),
         commonjs(),
         json(),
-        typescript({
-            tsconfig: path.resolve(__dirname, 'tsconfig.build.json'),
-        }),
+        typescript({ downlevelIteration: false }),
         string({
             include: [
                 '**/*.frag',
