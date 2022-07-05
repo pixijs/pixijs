@@ -1,3 +1,5 @@
+import type { ExtensionMetadata } from '@pixi/core';
+
 /**
  * For every asset that is cached, it will call the parsers test function
  * the flow is as follows:
@@ -10,6 +12,11 @@
  */
 export interface CacheParser<T=any>
 {
+    extension?: ExtensionMetadata;
+
+    /** A config to adjust the parser */
+    config?: Record<string, any>
+
     /**
      * Gets called by the cache when a dev caches an asset
      * @param asset - the asset to test

@@ -1,3 +1,4 @@
+import { ExtensionType } from '@pixi/core';
 import { basename, extname } from '../../utils/path';
 import type { LoadAsset } from '../types';
 import type { LoaderParser } from './LoaderParser';
@@ -42,6 +43,8 @@ export function getFontFamilyName(url: string): string
 
 /** Web font loader plugin */
 export const loadWebFont = {
+    extension: ExtensionType.LoadParser,
+
     test(url: string): boolean
     {
         const tempURL = url.split('?')[0];
@@ -50,7 +53,7 @@ export const loadWebFont = {
         return validFonts.includes(extension);
     },
 
-    async load(url: string, options?: LoadAsset<LoadFontData>): Promise<FontFace>
+    async load(url: string, options?: LoadAsset<LoadFontData>): Promise<FontFace | FontFace[]>
     {
         // Prevent loading font if navigator is not online
         if (!window.navigator.onLine)
@@ -60,6 +63,7 @@ export const loadWebFont = {
 
         if ('FontFace' in window)
         {
+            const fontFaces: FontFace[] = [];
             const name = options.data?.family ?? getFontFamilyName(url);
             const weights = options.data?.weights?.filter((weight) => validWeights.includes(weight)) ?? ['normal'];
             const data = options.data ?? {};
@@ -77,19 +81,20 @@ export const loadWebFont = {
 
                 document.fonts.add(font);
 
-                return font;
+                fontFaces.push(font);
             }
+
+            return fontFaces.length === 1 ? fontFaces[0] : fontFaces;
         }
-        else
-        {
-            console.warn('[loadWebFont] FontFace API is not supported. Skipping loading font');
-        }
+
+        console.warn('[loadWebFont] FontFace API is not supported. Skipping loading font');
 
         return null;
     },
 
-    unload(font: FontFace): void
+    unload(font: FontFace | FontFace[]): void
     {
-        document.fonts.delete(font);
+        (Array.isArray(font) ? font : [font])
+            .forEach((t) => document.fonts.delete(t));
     }
-} as LoaderParser<FontFace>;
+} as LoaderParser<FontFace | FontFace[]>;

@@ -1,9 +1,12 @@
+import { ExtensionType } from '@pixi/core';
 import { settings } from '@pixi/settings';
-import type { ResolveAsset } from '../types';
+import type { ResolveAsset, ResolveURLParser } from '../types';
 
 const validImages = ['jpg', 'png', 'jpeg', 'avif', 'webp'];
 
 export const spriteSheetUrlParser = {
+    extension: ExtensionType.ResolveParser,
+
     test: (value: string): boolean =>
     {
         const tempURL = value.split('?')[0];
@@ -25,4 +28,4 @@ export const spriteSheetUrlParser = {
             src: value,
         };
     },
-};
+} as ResolveURLParser;

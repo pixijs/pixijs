@@ -25,8 +25,6 @@ export class Loader
     public reset(): void
     {
         this.promiseCache = {};
-
-        this.parsers.length = 0;
     }
 
     /**

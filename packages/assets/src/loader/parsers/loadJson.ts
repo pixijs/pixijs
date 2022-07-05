@@ -1,8 +1,11 @@
+import { ExtensionType } from '@pixi/core';
 import { extname } from '../../utils/path';
 import type { LoaderParser } from './LoaderParser';
 
 /** simple loader plugin for loading json data */
 export const loadJson = {
+    extension: ExtensionType.LoadParser,
+
     test(url: string): boolean
     {
         return (extname(url).includes('.json'));

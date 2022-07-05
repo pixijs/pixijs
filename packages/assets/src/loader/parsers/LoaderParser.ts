@@ -1,3 +1,4 @@
+import type { ExtensionMetadata } from '@pixi/core';
 import type { Loader } from '../Loader';
 import type { LoadAsset } from '../types';
 
@@ -17,6 +18,10 @@ import type { LoadAsset } from '../types';
  */
 export interface LoaderParser<ASSET = any, META_DATA = any>
 {
+    extension?: ExtensionMetadata;
+
+    /** A config to adjust the parser */
+    config?: Record<string, any>
     /**
      * each URL to load will be tested here,
      * if the test is passed the assets are loaded using the load function below.

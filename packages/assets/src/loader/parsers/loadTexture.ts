@@ -1,4 +1,4 @@
-import { BaseTexture, Texture } from '@pixi/core';
+import { BaseTexture, ExtensionType, Texture } from '@pixi/core';
 import { getResolutionOfUrl } from '@pixi/utils';
 import type { Loader } from '../Loader';
 import type { LoadAsset } from '../types';
@@ -8,32 +8,38 @@ import { WorkerManager } from './WorkerManager';
 
 const validImages = ['jpg', 'png', 'jpeg', 'avif', 'webp'];
 
-const preferWorkers = true;
-
 /**
  * Returns a promise that resolves an ImageBitmaps.
- * This function is designed to be used in a worker.
- * Part of CentralDispatch!
- * @param url - the image to load an image bitmap for
+ * This function is designed to be used by a worker.
+ * Part of WorkerManager!
+ * @param url - The image to load an image bitmap for
  */
 export async function loadImageBitmap(url: string): Promise<ImageBitmap>
 {
     const response = await fetch(url);
-
     const imageBlob =  await response.blob();
-
     const imageBitmap = await createImageBitmap(imageBlob);
 
     return imageBitmap;
 }
 
+export type LoadTextureData = {
+    baseTexture: BaseTexture;
+};
+
 /**
- * loads our textures!
+ * Loads our textures!
  * this makes use of imageBitmaps where available.
- * We load the ImageBitmap on a different thread using CentralDispatch
+ * We load the ImageBitmap on a different thread using the WorkerManager
  * We can then use the ImageBitmap as a source for a Pixi Texture
  */
 export const loadTextures = {
+    extension: ExtensionType.LoadParser,
+
+    config: {
+        preferWorkers: true,
+    },
+
     test(url: string): boolean
     {
         const tempURL = url.split('?')[0];
@@ -42,20 +48,13 @@ export const loadTextures = {
         return validImages.includes(extension);
     },
 
-    async load(url: string, asset: LoadAsset, loader: Loader): Promise<Texture>
+    async load(url: string, asset: LoadAsset<LoadTextureData>, loader: Loader): Promise<Texture>
     {
         let src: any = null;
 
         if (window.createImageBitmap)
         {
-            if (preferWorkers)
-            {
-                src = await WorkerManager.loadImageBitmap(url);
-            }
-            else
-            {
-                src = await loadImageBitmap(url);
-            }
+            src = this.config.preferWorkers ? await WorkerManager.loadImageBitmap(url) : await loadImageBitmap(url);
         }
         else
         {
@@ -80,7 +79,6 @@ export const loadTextures = {
         }
 
         const base = new BaseTexture(src, {
-            // TODO - use the parsed resolution if it exists!
             resolution: getResolutionOfUrl(url),
             ...asset.data,
         });
@@ -103,4 +101,4 @@ export const loadTextures = {
         texture.destroy(true);
     }
 
-} as LoaderParser<Texture, {baseTexture: BaseTexture}>;
+} as LoaderParser<Texture, LoadTextureData>;
