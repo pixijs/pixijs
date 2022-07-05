@@ -1,4 +1,4 @@
-import { TextFormat, IBitmapFontRawData } from './TextFormat';
+import { TextFormat } from './TextFormat';
 import { XMLFormat } from './XMLFormat';
 import { XMLStringFormat } from './XMLStringFormat';
 
@@ -28,4 +28,5 @@ export function autoDetectFormat(data: unknown): typeof formats[number] | null
     return null;
 }
 
-export { TextFormat, XMLFormat, XMLStringFormat, IBitmapFontRawData };
+export type { IBitmapFontRawData } from './TextFormat';
+export { TextFormat, XMLFormat, XMLStringFormat };

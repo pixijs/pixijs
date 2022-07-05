@@ -1,3 +1,4 @@
+import { settings } from '@pixi/settings';
 import { isAbsoluteUrl } from './isAbsoluteUrl';
 import { urlJoin } from './urlJoin';
 
@@ -8,7 +9,7 @@ export function getBaseUrl(url: string): string
     return re.exec(url.split('?')[0])[0].replace(new RegExp(/#\/|#/), '');
 }
 
-const baseUrl = getBaseUrl(document.baseURI ?? window.location.href);
+let baseUrl: string;
 
 /**
  * Converts URL to an absolute path.
@@ -20,6 +21,11 @@ const baseUrl = getBaseUrl(document.baseURI ?? window.location.href);
  */
 export function makeAbsoluteUrl(url: string, customBaseUrl?: string): string
 {
+    if (!baseUrl)
+    {
+        baseUrl = getBaseUrl(settings.ADAPTER.getBaseUrl());
+    }
+
     const base = customBaseUrl !== undefined ? getBaseUrl(customBaseUrl) : baseUrl;
     const absolutePath = isAbsoluteUrl(url) ? url : urlJoin(base, url);
 

@@ -1,5 +1,7 @@
-import '@pixi/assets';
-import { BatchRenderer, extensions } from '@pixi/core';
+import './adapter';
+
+import { Application } from '@pixi/app';
+import { BatchRenderer, extensions, INSTALLED } from '@pixi/core';
 import { Extract } from '@pixi/extract';
 import { AlphaFilter } from '@pixi/filter-alpha';
 import { BlurFilter, BlurFilterPass } from '@pixi/filter-blur';
@@ -15,8 +17,16 @@ import { Prepare } from '@pixi/prepare';
 import { TilingSpriteRenderer } from '@pixi/sprite-tiling';
 import { TickerPlugin } from '@pixi/ticker';
 import * as utils from '@pixi/utils';
-import './adapter';
+// eslint-disable-next-line @typescript-eslint/no-duplicate-imports
+import { loadNodeBitmapFont, loadNodeFont, loadNodeTexture, NodeCanvasResource } from './adapter';
+import { loadBitmapFont, loadTextures, loadWebFont } from '@pixi/assets';
 
+// Remove the default loader plugins
+extensions.remove(
+    loadTextures,
+    loadWebFont,
+    loadBitmapFont,
+);
 extensions.add(
     // Install renderer plugins
     Extract,
@@ -27,7 +37,18 @@ extensions.add(
 
     // Install application plugins
     TickerPlugin,
+
+    // Install loader plugins
+    loadNodeTexture,
+    loadNodeFont,
+    loadNodeBitmapFont
 );
+
+INSTALLED.length = 0;
+INSTALLED.push(NodeCanvasResource);
+// Remove resize plugin
+// eslint-disable-next-line dot-notation
+Application['_plugins'].shift();
 
 /**
  * String of the current PIXI version.
@@ -81,7 +102,8 @@ export const filters = {
 
 // Export ES for those importing specifically by name,
 export * from '@pixi/app';
-export * from '@pixi/compressed-textures';
+export * from './adapter';
+export * from '@pixi/assets';
 export * from '@pixi/constants';
 export * from '@pixi/core';
 export * from '@pixi/display';
@@ -101,6 +123,5 @@ export * from '@pixi/spritesheet';
 export * from '@pixi/text';
 export * from '@pixi/text-bitmap';
 export * from '@pixi/ticker';
-export * from './adapter';
 export { utils };
 

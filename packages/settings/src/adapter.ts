@@ -11,6 +11,7 @@ export interface IAdapter
     createCanvas: (width?: number, height?: number) => HTMLCanvasElement;
     getWebGLRenderingContext: () => typeof WebGLRenderingContext;
     getNavigator: () => Navigator;
+    getBaseUrl: () => string;
 }
 
 export const BrowserAdapter = {
@@ -30,5 +31,6 @@ export const BrowserAdapter = {
         return canvas.getContext(contextId, contextAttributes) as Context;
     },
     getWebGLRenderingContext: () => WebGLRenderingContext,
-    getNavigator: () => navigator
+    getNavigator: () => navigator,
+    getBaseUrl: () => document.baseURI ?? window.location.href,
 } as IAdapter;

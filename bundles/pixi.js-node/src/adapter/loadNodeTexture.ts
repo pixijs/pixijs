@@ -1,12 +1,12 @@
+import type { LoadAsset, LoaderParser } from '@pixi/assets';
 import { ExtensionType, Texture } from '@pixi/core';
 import { getResolutionOfUrl } from '@pixi/utils';
 import type { CanvasRenderingContext2D } from 'canvas';
 import { loadImage } from 'canvas';
-import { NodeCanvasElement } from './NodeCanvasElement';
 import path from 'path';
-import type { LoadAsset, LoaderParser } from '@pixi/assets';
+import { NodeCanvasElement } from './NodeCanvasElement';
 
-const validImages = ['jpg', 'png', 'jpeg', 'svg'];
+const validImages = ['.jpg', '.png', '.jpeg', '.svg'];
 
 /**
  * loads our textures!
@@ -19,10 +19,7 @@ export const loadNodeTexture = {
 
     test(url: string): boolean
     {
-        const tempUrl = new URL(url);
-        const extension = path.extname(tempUrl.pathname);
-
-        return validImages.includes(extension);
+        return validImages.includes(path.extname(url));
     },
 
     async load(url: string, asset: LoadAsset): Promise<Texture>

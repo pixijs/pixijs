@@ -2,11 +2,12 @@ import type { LoadAsset, LoaderParser, LoadFontData } from '@pixi/assets';
 import { getFontFamilyName } from '@pixi/assets';
 import { ExtensionType } from '@pixi/core';
 import { registerFont } from 'canvas';
+import path from 'path';
 
 const validWeights = [
     'normal', 'bold', '100', '200', '300', '400', '500', '600', '700', '800', '900',
 ];
-const validFonts = ['woff', 'woff2', 'ttf', 'otf'];
+const validFonts = ['.woff', '.woff2', '.ttf', '.otf'];
 
 /** loads a font from a file */
 export const loadNodeFont = {
@@ -14,10 +15,7 @@ export const loadNodeFont = {
 
     test(url: string): boolean
     {
-        const tempURL = url.split('?')[0];
-        const extension = tempURL.split('.').pop();
-
-        return validFonts.includes(extension);
+        return validFonts.includes(path.extname(url));
     },
 
     async load(url: string, options: LoadAsset<LoadFontData>): Promise<void>
