@@ -92,7 +92,7 @@ export const loadWebFont = {
         return null;
     },
 
-    unload(font: FontFace[]): void
+    unload(font: FontFace | FontFace[]): void
     {
         (Array.isArray(font) ? font : [font])
             .forEach((t) => document.fonts.delete(t));
