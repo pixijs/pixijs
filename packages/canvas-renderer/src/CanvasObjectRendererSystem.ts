@@ -6,13 +6,13 @@ import type {
     ExtensionMetadata,
     IRendererRenderOptions,
     ISystem,
+    IRenderableObject,
     RenderTexture } from '@pixi/core';
 import {
     CanvasResource,
     ExtensionType } from '@pixi/core';
 import { BLEND_MODES } from '@pixi/constants';
 import { CanvasRenderTarget, hex2string, rgb2hex } from '@pixi/utils';
-import type { DisplayObject } from 'pixi.js';
 import type { CrossPlatformCanvasRenderingContext2D } from './CanvasContextSystem';
 
 /**
@@ -31,7 +31,7 @@ export class CanvasObjectRendererSystem implements ISystem
     /** A reference to the current renderer */
     private renderer: CanvasRenderer;
     renderingToScreen: boolean;
-    lastObjectRendered: DisplayObject;
+    lastObjectRendered: IRenderableObject;
 
     /** @param renderer - A reference to the current renderer */
     constructor(renderer: CanvasRenderer)
@@ -44,7 +44,7 @@ export class CanvasObjectRendererSystem implements ISystem
      * @param displayObject - The object to be rendered.
      * @param options - the options to be passed to the renderer
      */
-    public render(displayObject: DisplayObject, options?: IRendererRenderOptions): void
+    public render(displayObject: IRenderableObject, options?: IRendererRenderOptions): void
     {
         const renderer = this.renderer;
 
