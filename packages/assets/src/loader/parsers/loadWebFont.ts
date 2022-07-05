@@ -94,13 +94,7 @@ export const loadWebFont = {
 
     unload(font: FontFace[]): void
     {
-        if (Array.isArray(font))
-        {
-            font.forEach((t) => document.fonts.delete(t));
-        }
-        else
-        {
-            document.fonts.delete(font);
-        }
+        (Array.isArray(font) ? font : [font])
+            .forEach((t) => document.fonts.delete(t));
     }
 } as LoaderParser<FontFace | FontFace[]>;
