@@ -21,11 +21,6 @@ declare namespace GlobalMixins
         tintId?: number;
     }
 
-    interface DisplayObject
-    {
-        renderCanvas?(renderer: import('@pixi/canvas-renderer').CanvasRenderer): void;
-    }
-
     interface IRendererOptions
     {
         forceCanvas?: boolean;
@@ -35,6 +30,11 @@ declare namespace GlobalMixins
     interface CanvasRenderer
     {
 
+    }
+
+    interface IRenderableObject
+    {
+        renderCanvas?(renderer: import('@pixi/canvas-renderer').CanvasRenderer): void;
     }
 }
 
