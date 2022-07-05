@@ -147,7 +147,7 @@ async function main()
         if (transpile === 'es6')
         {
             const ts = typescript({
-                tsconfig: path.resolve(__dirname, 'tsconfig.build.es6.json'),
+                tsconfig: path.resolve(__dirname, 'tsconfig.node.json'),
             });
 
             tempPlugins.splice(5, 1);

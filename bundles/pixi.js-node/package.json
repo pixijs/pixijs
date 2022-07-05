@@ -10,18 +10,18 @@
   },
   "license": "MIT",
   "author": "PixiJS Team",
-  "main": "dist/cjs/node.js",
-  "module": "dist/esm/node.js",
+  "main": "dist/cjs/node.cjs",
+  "module": "dist/esm/node.mjs",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/node.js"
+        "default": "./dist/esm/node.mjs"
       },
       "require": {
         "types": "./index.d.ts",
-        "default": "./dist/cjs/node.js"
+        "default": "./dist/cjs/node.cjs"
       }
     }
   },

@@ -11,9 +11,9 @@
   </a>
 </div>
 
-### Setup
+## Setup
 
-#### Install
+### Install
 
 ```
 npm install @pixi/node
@@ -25,14 +25,16 @@ There is no default export. The correct way to import PixiJS is:
 import * as PIXI from "@pixi/node";
 ```
 
-#### Apple Silicon Users
+### Error installing canvas package
 
-The [canvas](https://www.npmjs.com/package/canvas) library currently being used does not have a pre-built version for Apple Silicon.
-You will need to run the following command and then reinstall.
+The [canvas](https://www.npmjs.com/package/canvas) library currently being used does not have a pre-built version for every environment.
+When the package detects an unsupported environment, it will try to build from source.
+
+To build from source you will need to make sure you have the following dependencies installed and then reinstall:
 
 `brew install pkg-config cairo pango libpng jpeg giflib librsvg`
 
-### Basic Usage Example
+## Basic Usage Example
 This example uses `express`, however, you can use any framework you like.
 
 ```js
@@ -57,7 +59,6 @@ await PIXI.Assets.init({
 // and the root stage PIXI.Container.
 const app = new PIXI.Application();
 
-// TODO: this will be replaced with the new `Assets` package
 // load a sprite
 const bunnyTexture = await PIXI.Assets.load('assets/bunny.png');
 // create sprite from texture

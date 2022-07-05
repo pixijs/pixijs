@@ -123,7 +123,7 @@ describe('Assets', () =>
             manifest: 'json/asset-manifest-2.json',
         });
 
-        const assets = await Assets.loadBundle(['default']);
+        const assets = await Assets.loadBundle('default');
 
         expect(assets.bunny).toBeInstanceOf(Texture);
         expect(assets['profile-abel']).toBeInstanceOf(Texture);

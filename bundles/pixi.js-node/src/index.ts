@@ -44,11 +44,10 @@ extensions.add(
     loadNodeBitmapFont
 );
 
+// reset installed resources and remove resize plugin from Application
 INSTALLED.length = 0;
 INSTALLED.push(NodeCanvasResource);
-// Remove resize plugin
-// eslint-disable-next-line dot-notation
-Application['_plugins'].shift();
+Application['_plugins'].shift(); // eslint-disable-line dot-notation
 
 /**
  * String of the current PIXI version.
