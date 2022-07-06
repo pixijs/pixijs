@@ -77,7 +77,9 @@ class CacheClass
 
         if (!result)
         {
+            // #if _DEBUG
             console.warn(`[Assets] Asset id ${key} was not found in the Cache`);
+            // #endif
         }
 
         return result as T;
@@ -133,7 +135,9 @@ class CacheClass
         {
             if (this._cache.has(key) && this._cache.get(key) !== value)
             {
+                // #if _DEBUG
                 console.warn('[Cache] already has key:', key);
+                // #endif
             }
 
             this._cache.set(key, cacheableAssets[key]);
@@ -168,7 +172,9 @@ class CacheClass
 
         if (!this._cacheMap.has(key))
         {
+            // #if _DEBUG
             console.warn(`[Assets] Asset id ${key} was not found in the Cache`);
+            // #endif
 
             return;
         }

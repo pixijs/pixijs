@@ -32,7 +32,7 @@ export type ResolverAssetsArray = {
 export type ResolverAssetsObject = Record<string, (string | ResolveAsset)>;
 
 /**
- * Structure of a bundle found in a manifest file
+ * Structure of a bundle found in a manfest file
  * @memberof PIXI
  */
 export interface ResolverBundle
