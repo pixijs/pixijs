@@ -1,4 +1,3 @@
-import { Runner } from '@pixi/runner';
 import type { BASIS_FORMATS } from './Basis';
 import type { ITranscodeResponse } from './TranscoderWorkerWrapper';
 import { TranscoderWorkerWrapper } from './TranscoderWorkerWrapper';
@@ -22,7 +21,13 @@ export class TranscoderWorker
     static jsSource: string;
     static wasmSource: ArrayBuffer;
 
-    public static onTranscoderInitialized = new Runner('onTranscoderInitialized');
+    private static _onTranscoderInitializedResolve: () => void;
+
+    /** a promise that when reslved means the transcoder is ready to be used */
+    public static onTranscoderInitialized = new Promise<void>((resolve) =>
+    {
+        TranscoderWorker._onTranscoderInitializedResolve = resolve;
+    });
 
     isInit: boolean;
     load: number;
@@ -175,8 +180,9 @@ export class TranscoderWorker
             .then((arrayBuffer: ArrayBuffer) => { TranscoderWorker.wasmSource = arrayBuffer; });
 
         return Promise.all([jsPromise, wasmPromise]).then((data) =>
+
         {
-            TranscoderWorker.onTranscoderInitialized.emit();
+            this._onTranscoderInitializedResolve();
 
             return data;
         });

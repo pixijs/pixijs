@@ -13,6 +13,9 @@ enum ExtensionType
     RendererPlugin = 'renderer-webgl-plugin',
     CanvasRendererPlugin = 'renderer-canvas-plugin',
     Loader = 'loader',
+    LoadParser = 'load-parser',
+    ResolveParser = 'resolve-parser',
+    CacheParser = 'cache-parser',
 }
 
 interface ExtensionMetadataDetails
@@ -57,8 +60,8 @@ type ExtensionHandler = (extension: ExtensionFormat) => void;
  */
 const normalizeExtension = (ext: ExtensionFormatLoose | any): ExtensionFormat =>
 {
-    // Class submission, use extension object
-    if (typeof ext === 'function')
+    // Class/Object submission, use extension object
+    if (typeof ext === 'function' || (typeof ext === 'object' && ext.extension))
     {
         // #if _DEBUG
         if (!ext.extension)
