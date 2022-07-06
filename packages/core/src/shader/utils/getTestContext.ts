@@ -26,7 +26,7 @@ export function getTestContext(): WebGLRenderingContext | WebGL2RenderingContext
         if (!gl)
         {
             gl = (canvas.getContext('webgl', {})
-                || (canvas.getContext('experimental-webgl', {})));
+                || (canvas.getContext('experimental-webgl', {}) as WebGLRenderingContext));
 
             if (!gl)
             {
