@@ -80,7 +80,7 @@ export class EventSystem
      * The DOM element to which the root event listeners are bound. This is automatically set to
      * the renderer's {@link PIXI.Renderer#view view}.
      */
-    public domElement: HTMLElement;
+    public domElement: HTMLElement = null;
 
     /** The resolution used to convert between the DOM client space into world space. */
     public resolution = 1;
@@ -111,16 +111,24 @@ export class EventSystem
             default: 'inherit',
             pointer: 'pointer',
         };
-        this.domElement = renderer.view;
 
         this.onPointerDown = this.onPointerDown.bind(this);
         this.onPointerMove = this.onPointerMove.bind(this);
         this.onPointerUp = this.onPointerUp.bind(this);
         this.onPointerOverOut = this.onPointerOverOut.bind(this);
         this.onWheel = this.onWheel.bind(this);
+    }
 
-        this.setTargetElement(this.domElement);
-        this.resolution = this.renderer.resolution;
+    /**
+     * Runner init called, view is available at this point.
+     * @ignore
+     */
+    init(): void
+    {
+        const { view, resolution } = this.renderer;
+
+        this.setTargetElement(view);
+        this.resolution = resolution;
     }
 
     /** Destroys all event listeners and detaches the renderer. */
