@@ -176,37 +176,6 @@ describe('Assets', () =>
         expect(bunny.baseTexture.resource.src).toBe(`${basePath}textures/bunny.webp`);
     });
 
-    it('should getTextureSync correctly', async () =>
-    {
-        await Assets.init({
-            basePath,
-        });
-
-        const bunny = Assets.getTextureSync('textures/bunny.png');
-
-        expect(bunny.baseTexture).toBe(Texture.EMPTY.baseTexture);
-
-        await Assets.load('textures/bunny.png');
-
-        expect(bunny.baseTexture.resource.src).toBe(`${basePath}textures/bunny.png`);
-    });
-
-    it('should return the same texture when calling getTextureSync', async () =>
-    {
-        await Assets.init({
-            basePath,
-        });
-
-        const bunny = Assets.getTextureSync('textures/bunny.png');
-        const bunny2 = Assets.getTextureSync('textures/bunny.png');
-
-        expect(bunny2).toBe(bunny);
-
-        await Assets.load('textures/bunny.png');
-
-        expect(bunny.baseTexture.resource.src).toBe(`${basePath}textures/bunny.png`);
-    });
-
     it('should background load correctly', async () =>
     {
         await Assets.init({
