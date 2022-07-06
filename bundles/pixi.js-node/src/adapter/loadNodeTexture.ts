@@ -9,7 +9,7 @@ import { NodeCanvasElement } from './NodeCanvasElement';
 const validImages = ['.jpg', '.png', '.jpeg', '.svg'];
 const validMimes = ['image/png', 'image/jpg', 'image/jpeg', 'image/svg'];
 
-function isSupportedDataURL(url)
+function isSupportedDataURL(url: string): boolean
 {
     const match = url.match(/^data:([^;]+);base64,/);
 
