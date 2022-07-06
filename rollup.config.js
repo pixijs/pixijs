@@ -147,7 +147,8 @@ async function main()
         if (transpile === 'es6')
         {
             const ts = typescript({
-                tsconfig: path.resolve(__dirname, 'tsconfig.node.json'),
+                importHelpers: true,
+                target: 'ES2020',
             });
 
             tempPlugins.splice(5, 1);

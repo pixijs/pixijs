@@ -1,7 +1,4 @@
-<div align="center">
-  <h1>@pixi/node</h1>
-</div>
-<br>
+# @pixi/node
 
 **We are now a part of the [Open Collective](https://opencollective.com/pixijs) and with your support you can help us make PixiJS even better. To make a donation, simply click the button below and we'll love you forever!**
 
@@ -39,7 +36,7 @@ This example uses `express`, however, you can use any framework you like.
 
 ```js
 import express from 'express';
-import * as PIXI from '@pixi/node';
+import { Application, Sprite, Assets } from '@pixi/node';
 
 const app = express();
 const port = 3000;

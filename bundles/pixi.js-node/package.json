@@ -38,9 +38,7 @@
     "canvas": "^2.9.1",
     "cross-fetch": "^3.1.5",
     "gl": "^5.0.0",
-    "xml2js": "^0.4.23"
-  },
-  "peerDependencies": {
+    "xml2js": "^0.4.23",
     "@pixi/app": "6.4.2",
     "@pixi/assets": "6.4.2",
     "@pixi/constants": "6.4.2",

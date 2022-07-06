@@ -49,46 +49,8 @@ INSTALLED.length = 0;
 INSTALLED.push(NodeCanvasResource);
 Application['_plugins'].shift(); // eslint-disable-line dot-notation
 
-/**
- * String of the current PIXI version.
- * @static
- * @constant
- * @memberof PIXI
- * @name VERSION
- * @type {string}
- */
 export const VERSION = '$_VERSION';
 
-/**
- * @namespace PIXI
- */
-
-/**
- * This namespace contains WebGL-only display filters that can be applied
- * to DisplayObjects using the {@link PIXI.DisplayObject#filters filters} property.
- *
- * Since PixiJS only had a handful of built-in filters, additional filters
- * can be downloaded {@link https://github.com/pixijs/pixi-filters here} from the
- * PixiJS Filters repository.
- *
- * All filters must extend {@link PIXI.Filter}.
- * @example
- * // Create a new application
- * const app = new PIXI.Application();
- *
- * // Draw a green rectangle
- * const rect = new PIXI.Graphics()
- *     .beginFill(0x00ff00)
- *     .drawRect(40, 40, 200, 200);
- *
- * // Add a blur filter
- * rect.filters = [new PIXI.filters.BlurFilter()];
- *
- * // Display rectangle
- * app.stage.addChild(rect);
- * document.body.appendChild(app.view);
- * @namespace PIXI.filters
- */
 export const filters = {
     AlphaFilter,
     BlurFilter,
