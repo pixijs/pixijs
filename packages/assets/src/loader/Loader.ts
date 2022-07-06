@@ -217,4 +217,3 @@ export class Loader
         await Promise.all(promises);
     }
 }
-

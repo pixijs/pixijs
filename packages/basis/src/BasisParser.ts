@@ -444,4 +444,3 @@ export class BasisParser
         }
     }
 }
-

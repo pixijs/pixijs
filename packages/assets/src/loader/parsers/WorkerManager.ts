@@ -153,4 +153,3 @@ const WorkerManager = new WorkerManagerClass();
 export {
     WorkerManager,
 };
-

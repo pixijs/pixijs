@@ -37,4 +37,3 @@ export const loadNodeTexture = {
         texture.destroy(true);
     }
 } as LoaderParser<Texture>;
-

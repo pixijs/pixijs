@@ -31,4 +31,3 @@ export function makeAbsoluteUrl(url: string, customBaseUrl?: string): string
 
     return absolutePath;
 }
-
