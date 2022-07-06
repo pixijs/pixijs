@@ -10,7 +10,7 @@ import type { SystemManager } from './system/SystemManager';
  * The minimum APIs needed to implement a renderable object.
  * @memberof PIXI
  */
-export interface IRenderableObject
+export interface IRenderableObject extends GlobalMixins.IRenderableObject
 {
     /** Object must have a parent container */
     parent: IRenderableContainer;
