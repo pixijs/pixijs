@@ -1,4 +1,4 @@
-import { BaseTexture, extensions, ExtensionType, Texture } from '@pixi/core';
+import { extensions, ExtensionType } from '@pixi/core';
 import { BackgroundLoader } from './BackgroundLoader';
 import { Cache } from './cache/Cache';
 import { cacheSpritesheet, cacheTextureArray } from './cache/parsers';
@@ -255,7 +255,9 @@ export class AssetsClass
     {
         if (this._initialized)
         {
+            // #if _DEBUG
             console.warn('[Assets]AssetManager already initialized, did you load before calling this Asset.init()?');
+            // #endif
 
             return;
         }
@@ -634,39 +636,6 @@ export class AssetsClass
         }
 
         return assets;
-    }
-
-    /**
-     * A special function specifically for getting textures. This is a synchronous function
-     * so a texture will be returned immediately. It can be used, but won't render until it has fully loaded.
-     * If the texture has previously already been loaded, the texture will be ready
-     * @param key - The key of the texture that you want to get.
-     * @returns - The Texture you requested
-     */
-    public getTextureSync(key: string): Texture
-    {
-        if (Cache.has(key))
-        {
-            return Cache.get(key);
-        }
-
-        // add it to a cache..
-        const url = this.resolver.resolveUrl(key) as string;
-
-        const texture = new Texture(Texture.EMPTY.baseTexture);
-
-        Cache.set(key, texture);
-
-        this.loader.load(url).then((loadedTexture) =>
-        {
-            // to preserve backwards compatibility
-            BaseTexture.addToCache(texture.baseTexture, key);
-
-            texture.baseTexture = loadedTexture.baseTexture;
-            texture.onBaseTextureUpdated(texture.baseTexture);
-        });
-
-        return texture;
     }
 
     /**

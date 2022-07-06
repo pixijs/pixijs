@@ -183,7 +183,9 @@ export class Resolver
     {
         if (this._manifest)
         {
+            // #if _DEBUG
             console.warn('[Resolver] Manifest already exists, this will be overwritten');
+            // #endif
         }
 
         this._manifest = manifest;
@@ -277,7 +279,9 @@ export class Resolver
         {
             if (this._assetMap[key])
             {
+                // #if _DEBUG
                 console.warn(`[Resolver] already has key: ${key} overwriting`);
+                // #endif
             }
         });
 
