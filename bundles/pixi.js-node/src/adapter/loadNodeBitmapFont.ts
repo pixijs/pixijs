@@ -19,6 +19,10 @@ interface XMLRawJson
     }
 }
 
+/**
+ * Parses a xml json into a BitmapFontData object.
+ * @param xml - The xml data to parse.
+ */
 function xmlJsonParser(xml: XMLRawJson)
 {
     const data = new BitmapFontData();
@@ -98,6 +102,12 @@ function xmlJsonParser(xml: XMLRawJson)
     return data;
 }
 
+/**
+ * Does the actual loading of the bitmap font data.
+ * @param src - The url of the font file.
+ * @param data - The bitmap font data for the file.
+ * @param loader - The loader instance.
+ */
 async function _loadBitmap(src: string, data: BitmapFontData, loader: Loader)
 {
     const pages = data.page;
@@ -116,6 +126,11 @@ async function _loadBitmap(src: string, data: BitmapFontData, loader: Loader)
     return BitmapFont.install(data, textures, true);
 }
 
+/**
+ * Checks if the given string is an xml string.
+ * Performs the same check as the XMLStringFormat/XMLFormat class.
+ * @param data - the string data to test.
+ */
 async function xmlStringFormatTest(data: string): Promise<boolean>
 {
     if (typeof data === 'string' && data.indexOf('<font>') > -1)

@@ -303,7 +303,7 @@ export class BasisParser
         if (!extensions)
         {
             const canvas = settings.ADAPTER.createCanvas();
-            const gl = settings.ADAPTER.getContext(canvas, 'webgl') as WebGLRenderingContext;
+            const gl = canvas.getContext('webgl');
 
             if (!gl)
             {

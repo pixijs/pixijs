@@ -20,13 +20,13 @@ export function getTestContext(): WebGLRenderingContext | WebGL2RenderingContext
 
         if (settings.PREFER_ENV >= ENV.WEBGL2)
         {
-            gl = settings.ADAPTER.getContext(canvas, 'webgl2', {}) as WebGL2RenderingContext;
+            gl = canvas.getContext('webgl2', {});
         }
 
         if (!gl)
         {
-            gl = (settings.ADAPTER.getContext(canvas, 'webgl', {})
-                || (settings.ADAPTER.getContext(canvas, 'experimental-webgl', {}))) as WebGLRenderingContext;
+            gl = (canvas.getContext('webgl', {})
+                || (canvas.getContext('experimental-webgl', {})));
 
             if (!gl)
             {

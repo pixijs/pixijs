@@ -682,7 +682,7 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
         if (!Texture._WHITE)
         {
             const canvas = settings.ADAPTER.createCanvas(16, 16);
-            const context = settings.ADAPTER.getContext(canvas, '2d') as CanvasRenderingContext2D;
+            const context = canvas.getContext('2d');
 
             canvas.width = 16;
             canvas.height = 16;

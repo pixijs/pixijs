@@ -116,7 +116,7 @@ export class TextMetrics
             fontProperties.ascent = style.fontSize as number;
         }
 
-        const context = settings.ADAPTER.getContext(canvas as HTMLCanvasElement, '2d') as CanvasRenderingContext2D;
+        const context = canvas.getContext('2d');
 
         context.font = font;
 
@@ -745,10 +745,7 @@ export class TextMetrics
     {
         if (!TextMetrics.__context)
         {
-            TextMetrics.__context = settings.ADAPTER.getContext(
-                TextMetrics._canvas as HTMLCanvasElement,
-                '2d'
-            ) as CanvasRenderingContext2D;
+            TextMetrics.__context = TextMetrics._canvas.getContext('2d');
         }
 
         return TextMetrics.__context;

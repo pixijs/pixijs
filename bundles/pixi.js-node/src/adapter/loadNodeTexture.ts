@@ -8,12 +8,7 @@ import { NodeCanvasElement } from './NodeCanvasElement';
 
 const validImages = ['.jpg', '.png', '.jpeg', '.svg'];
 
-/**
- * loads our textures!
- * this makes use of imageBitmaps where available.
- * We load the ImageBitmap on a different thread using CentralDispatch
- * We can then use the ImageBitmap as a source for a Pixi Texture
- */
+/** loads our textures into a node canvas */
 export const loadNodeTexture = {
     extension: ExtensionType.LoadParser,
 

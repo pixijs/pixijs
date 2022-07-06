@@ -138,7 +138,7 @@ export class ContextSystem implements ISystem
 
         if (settings.PREFER_ENV >= ENV.WEBGL2)
         {
-            gl = settings.ADAPTER.getContext(canvas, 'webgl2', options);
+            gl = canvas.getContext('webgl2', options);
         }
 
         if (gl)
@@ -149,8 +149,7 @@ export class ContextSystem implements ISystem
         {
             this.webGLVersion = 1;
 
-            gl = settings.ADAPTER.getContext(canvas, 'webgl', options)
-            || settings.ADAPTER.getContext(canvas, 'experimental-webgl', options);
+            gl = canvas.getContext('webgl', options) || canvas.getContext('experimental-webgl', options);
 
             if (!gl)
             {

@@ -2,7 +2,7 @@
 /* eslint-disable func-names */
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 
-import type { NodeCanvasRenderingContext2DSettings } from 'canvas';
+import type { JpegConfig, NodeCanvasRenderingContext2DSettings, PdfConfig, PngConfig } from 'canvas';
 import { Canvas, CanvasRenderingContext2D, Image } from 'canvas';
 import { EventEmitter } from '@pixi/utils';
 import createGLContext from 'gl';
@@ -46,10 +46,17 @@ type TempCtx = WebGLRenderingContext & {
     canvas: NodeCanvasElement
 };
 
+/**
+ * A node implementation of a canvas element.
+ * Uses node-canvas and gl packages to provide the same
+ * functionality as a normal HTMLCanvasElement.
+ * @class
+ * @memberof PIXI
+ */
 export class NodeCanvasElement extends Canvas
 {
-    public _gl: WebGLRenderingContext;
     public style: Record<string, any>;
+    private _gl: WebGLRenderingContext;
     private _event: EventEmitter;
     private _contextType: ContextIds;
     private _ctx: CanvasRenderingContext2D | WebGLRenderingContext;
@@ -105,6 +112,10 @@ export class NodeCanvasElement extends Canvas
         return super['height'];
     }
 
+    /**
+     * Internal method to update the context before drawing.
+     * @private
+     */
     public _updateCtx()
     {
         const gl = this._gl;
@@ -183,7 +194,34 @@ export class NodeCanvasElement extends Canvas
         return super.getContext(type, options as NodeCanvasRenderingContext2DSettings);
     }
 
-    toBuffer(...args: any)
+    /**
+     * For image canvases, encodes the canvas as a PNG. For PDF canvases,
+     * encodes the canvas as a PDF. For SVG canvases, encodes the canvas as an
+     * SVG.
+     */
+    toBuffer(cb: (err: Error | null, result: Buffer) => void): void;
+    toBuffer(cb: (err: Error | null, result: Buffer) => void, mimeType: 'image/png', config?: PngConfig): void;
+    toBuffer(cb: (err: Error | null, result: Buffer) => void, mimeType: 'image/jpeg', config?: JpegConfig): void;
+    /**
+     * For image canvases, encodes the canvas as a PNG. For PDF canvases,
+     * encodes the canvas as a PDF. For SVG canvases, encodes the canvas as an
+     * SVG.
+     */
+    toBuffer(): Buffer;
+    toBuffer(mimeType: 'image/png', config?: PngConfig): Buffer;
+    toBuffer(mimeType: 'image/jpeg', config?: JpegConfig): Buffer;
+    toBuffer(mimeType: 'application/pdf', config?: PdfConfig): Buffer;
+    /**
+     * Returns the unencoded pixel data, top-to-bottom. On little-endian (most)
+     * systems, the array will be ordered BGRA; on big-endian systems, it will
+     * be ARGB.
+     */
+    toBuffer(mimeType: 'raw'): Buffer;
+    /**
+     * Returns a buffer of the canvas contents.
+     * @param args - the arguments to pass to the toBuffer method
+     */
+    public toBuffer(...args: any): Buffer
     {
         const gl = this._gl;
 
@@ -196,7 +234,25 @@ export class NodeCanvasElement extends Canvas
         return super.toBuffer(...args);
     }
 
-    toDataURL(...args: any)
+    /** Defaults to PNG image. */
+    toDataURL(): string;
+    toDataURL(mimeType: 'image/png'): string;
+    toDataURL(mimeType: 'image/jpeg', quality?: number): string;
+    /** _Non-standard._ Defaults to PNG image. */
+    toDataURL(cb: (err: Error | null, result: string) => void): void;
+    /** _Non-standard._ */
+    toDataURL(mimeType: 'image/png', cb: (err: Error | null, result: string) => void): void;
+    /** _Non-standard._ */
+    toDataURL(mimeType: 'image/jpeg', cb: (err: Error | null, result: string) => void): void;
+    /** _Non-standard._ */
+    toDataURL(mimeType: 'image/jpeg', config: JpegConfig, cb: (err: Error | null, result: string) => void): void;
+    /** _Non-standard._ */
+    toDataURL(mimeType: 'image/jpeg', quality: number, cb: (err: Error | null, result: string) => void): void;
+    /**
+     * Returns a base64 encoded string representation of the canvas.
+     * @param args - The arguments to pass to the toDataURL method.
+     */
+    public toDataURL(...args: any): string
     {
         const gl = this._gl;
 
@@ -209,11 +265,21 @@ export class NodeCanvasElement extends Canvas
         return super.toDataURL(...args);
     }
 
+    /**
+     * Adds the listener for the specified event.
+     * @param type - The type of event to listen for.
+     * @param listener - The callback to invoke when the event is fired.
+     */
     addEventListener(type: string, listener: (...args: any[]) => void)
     {
         return this._event.addListener(type, listener);
     }
 
+    /**
+     * Removes the listener for the specified event.
+     * @param type - The type of event to listen for.
+     * @param listener - The callback to invoke when the event is fired.
+     */
     removeEventListener(type: string, listener: (...args: any[]) => void)
     {
         if (listener)
@@ -224,6 +290,11 @@ export class NodeCanvasElement extends Canvas
         return this._event.removeAllListeners(type);
     }
 
+    /**
+     * Dispatches the specified event.
+     * @param event - The event to emit.
+     * @param event.type - The type of event.
+     */
     dispatchEvent(event: {type: string, [key: string]: any})
     {
         event.target = this;
@@ -234,13 +305,14 @@ export class NodeCanvasElement extends Canvas
 
 const _drawImage = CanvasRenderingContext2D.prototype.drawImage;
 
+// We hack the drawImage method to make it work with our custom Canvas, ensuring that the context is updated before we draw
 // eslint-disable-next-line func-names
 CanvasRenderingContext2D.prototype.drawImage = function (img: Canvas, ...args: any)
 {
     const _img = img as NodeCanvasElement;
 
     // call ctx to sync image data
-    if (img instanceof Canvas && _img._gl) _img._updateCtx();
+    if (img instanceof Canvas && _img['_gl']) _img._updateCtx();
 
     return _drawImage.call(this, img, ...args);
 };

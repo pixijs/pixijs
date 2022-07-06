@@ -28,7 +28,7 @@ export class CanvasRenderTarget
     {
         this.canvas = settings.ADAPTER.createCanvas();
 
-        this.context = settings.ADAPTER.getContext(this.canvas, '2d') as CanvasRenderingContext2D;
+        this.context = this.canvas.getContext('2d');
 
         this.resolution = resolution || settings.RESOLUTION;
 

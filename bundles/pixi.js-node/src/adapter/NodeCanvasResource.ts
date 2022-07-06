@@ -5,6 +5,11 @@ import { determineCrossOrigin } from '@pixi/utils';
 
 import { NodeCanvasElement } from './NodeCanvasElement';
 
+/**
+ * A canvas resource using node-canvas
+ * used for images, svg, and bitmap text
+ * @memberof PIXI
+ */
 export class NodeCanvasResource extends Resource
 {
     /**
@@ -22,9 +27,6 @@ export class NodeCanvasResource extends Resource
      */
     public noSubImage: boolean;
 
-    /**
-     * @param {HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|SVGElement} source
-     */
     constructor(source: NodeCanvasElement)
     {
         const sourceAny = source as any;

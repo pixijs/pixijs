@@ -402,7 +402,7 @@ export class BitmapFont
                 canvas.width = textureWidth;
                 canvas.height = textureHeight;
 
-                context = settings.ADAPTER.getContext(canvas, '2d') as CanvasRenderingContext2D;
+                context = canvas.getContext('2d');
                 baseTexture = new BaseTexture(canvas, { resolution });
 
                 baseTextures.push(baseTexture);
