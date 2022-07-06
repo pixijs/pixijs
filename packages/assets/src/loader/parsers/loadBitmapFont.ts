@@ -6,7 +6,6 @@ import { dirname, extname, join } from '../../utils/path';
 
 import type { Loader } from '../Loader';
 import type { LoadAsset } from '../types';
-
 import type { LoaderParser } from './LoaderParser';
 
 async function _loadBitmap(src: string, data: BitmapFontData, loader: Loader): Promise<BitmapFont>
