@@ -63,6 +63,15 @@ export class PluginSystem implements ISystem
                     return (renderer as any).prepare;
                 },
             },
+            interaction: {
+                enumerable: false,
+                get()
+                {
+                    deprecation('7.0.0', 'renderer.plugins.interaction has been deprecated, use renderer.events');
+
+                    return (renderer as any).events;
+                },
+            },
         });
         // #endif
     }
