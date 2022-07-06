@@ -6,7 +6,8 @@ import type { Rectangle } from '@pixi/math';
 import type { Container } from '@pixi/display';
 import { ExtensionType } from '@pixi/core';
 import type { IAccessibleHTMLElement } from './accessibleTarget';
-import type { IRenderer, ExtensionMetadata } from '@pixi/core';
+import type { IRenderer, ExtensionMetadata, Renderer } from '@pixi/core';
+import { FederatedEvent } from '@pixi/events';
 
 // add some extra variables to the container..
 DisplayObject.mixin(accessibleTarget);
@@ -495,23 +496,33 @@ export class AccessibilityManager
     }
 
     /**
-     * Maps the div button press to pixi's InteractionManager (click)
+     * Dispatch events with the EventSystem.
+     * @param e
+     * @param type
+     * @private
+     */
+    private _dispatchEvent(e: UIEvent, type: string[]): void
+    {
+        const { displayObject: target } = e.target as IAccessibleHTMLElement;
+        const boundry = (this.renderer as Renderer).events.rootBoundary;
+        const event: FederatedEvent = Object.assign(new FederatedEvent(boundry), { target });
+
+        boundry.rootTarget = this.renderer.lastObjectRendered as DisplayObject;
+        type.forEach((type) => boundry.dispatchEvent(event, type));
+    }
+
+    /**
+     * Maps the div button press to pixi's EventSystem (click)
      * @private
      * @param {MouseEvent} e - The click event.
      */
     private _onClick(e: MouseEvent): void
     {
-        const interactionManager = this.renderer.plugins.interaction;
-        const { displayObject } = e.target as IAccessibleHTMLElement;
-        const { eventData } = interactionManager;
-
-        interactionManager.dispatchEvent(displayObject, 'click', eventData);
-        interactionManager.dispatchEvent(displayObject, 'pointertap', eventData);
-        interactionManager.dispatchEvent(displayObject, 'tap', eventData);
+        this._dispatchEvent(e, ['click', 'pointertap', 'tap']);
     }
 
     /**
-     * Maps the div focus events to pixi's InteractionManager (mouseover)
+     * Maps the div focus events to pixi's EventSystem (mouseover)
      * @private
      * @param {FocusEvent} e - The focus event.
      */
@@ -522,15 +533,11 @@ export class AccessibilityManager
             (e.target as Element).setAttribute('aria-live', 'assertive');
         }
 
-        const interactionManager = this.renderer.plugins.interaction;
-        const { displayObject } = e.target as IAccessibleHTMLElement;
-        const { eventData } = interactionManager;
-
-        interactionManager.dispatchEvent(displayObject, 'mouseover', eventData);
+        this._dispatchEvent(e, ['mouseover']);
     }
 
     /**
-     * Maps the div focus events to pixi's InteractionManager (mouseout)
+     * Maps the div focus events to pixi's EventSystem (mouseout)
      * @private
      * @param {FocusEvent} e - The focusout event.
      */
@@ -541,11 +548,7 @@ export class AccessibilityManager
             (e.target as Element).setAttribute('aria-live', 'polite');
         }
 
-        const interactionManager = this.renderer.plugins.interaction;
-        const { displayObject } = e.target as IAccessibleHTMLElement;
-        const { eventData } = interactionManager;
-
-        interactionManager.dispatchEvent(displayObject, 'mouseout', eventData);
+        this._dispatchEvent(e, ['mouseout']);
     }
 
     /**
