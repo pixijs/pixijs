@@ -34,6 +34,8 @@ export interface ISpritesheetData
     animations?: Dict<string[]>;
     meta: {
         scale: string;
+        // eslint-disable-next-line camelcase
+        related_multi_packs?: string[];
     };
 }
 
@@ -71,6 +73,9 @@ export class Spritesheet
 {
     /** The maximum number of Textures to build per process. */
     static readonly BATCH_SIZE = 1000;
+
+    /** For multi-packed spritesheets, this contains a reference to all the other spritesheets it depends on. */
+    public linkedSheets: Spritesheet[] = [];
 
     /** Reference to ths source texture. */
     public baseTexture: BaseTexture;
@@ -348,6 +353,7 @@ export class Spritesheet
         }
         this._texture = null;
         this.baseTexture = null;
+        this.linkedSheets = [];
     }
 }
 

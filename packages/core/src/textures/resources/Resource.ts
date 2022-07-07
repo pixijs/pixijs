@@ -12,6 +12,9 @@ import type { GLTexture } from '../GLTexture';
  */
 export abstract class Resource
 {
+    /** The url of the resource */
+    public src: string;
+
     /**
      * If resource has been destroyed.
      * @readonly

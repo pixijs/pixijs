@@ -25,9 +25,9 @@ as any breakthroughs will be posted up there too!
 
 ### What to Use PixiJS for and When to Use It
 
-PixiJS is a rendering library that will allow you to create rich, interactive graphics, cross platform applications, and games without having to dive into the WebGL API or deal with browser and device compatibility.
+PixiJS is a rendering library that will allow you to create rich, interactive graphics, cross-platform applications, and games without having to dive into the WebGL API or deal with browser and device compatibility.
 
-PixiJS has full [WebGL](https://en.wikipedia.org/wiki/WebGL) support and seamlessly falls back to HTML5's [canvas](https://en.wikipedia.org/wiki/Canvas_element) if needed. As a framework, PixiJS is a fantastic tool for authoring interactive content, *especially with the move away from Adobe Flash in recent years*. Use it for your graphics rich, interactive websites, applications, and HTML5 games.  Out of the box cross-platform compatibility and graceful degradation mean you have less work to do and have more fun doing it! If you want to create polished and refined experiences relatively quickly, without delving into dense, low level code, all while avoiding the headaches of browser inconsistencies, then sprinkle your next project with some PixiJS magic!
+PixiJS has full [WebGL](https://en.wikipedia.org/wiki/WebGL) support and seamlessly falls back to HTML5's [canvas](https://en.wikipedia.org/wiki/Canvas_element) if needed. As a framework, PixiJS is a fantastic tool for authoring interactive content, *especially with the move away from Adobe Flash in recent years*. Use it for your graphics rich, interactive websites, applications, and HTML5 games.  Out of the box, cross-platform compatibility and graceful degradation mean you have less work to do and have more fun doing it! If you want to create polished and refined experiences relatively quickly, without delving into dense, low-level code, all while avoiding the headaches of browser inconsistencies, then sprinkle your next project with some PixiJS magic!
 
 **Boost your development and feel free to use your imagination!**
 
@@ -186,5 +186,3 @@ The documentation uses [webdoc](https://github.com/webdoc-labs/webdoc) in combin
 ### License ###
 
 This content is released under the (http://opensource.org/licenses/MIT) MIT License.
-
-[![Analytics](https://ga-beacon.appspot.com/UA-39213431-2/pixi.js/index)](https://github.com/igrigorik/ga-beacon)
