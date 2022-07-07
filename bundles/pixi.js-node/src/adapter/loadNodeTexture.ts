@@ -7,6 +7,18 @@ import path from 'path';
 import { NodeCanvasElement } from './NodeCanvasElement';
 
 const validImages = ['.jpg', '.png', '.jpeg', '.svg'];
+const validMimes = ['image/png', 'image/jpg', 'image/jpeg', 'image/svg'];
+
+function isSupportedDataURL(url: string): boolean
+{
+    const match = url.match(/^data:([^;]+);base64,/);
+
+    if (!match) return false;
+
+    const mimeType = match[1];
+
+    return validMimes.includes(mimeType);
+}
 
 /** loads our textures into a node canvas */
 export const loadNodeTexture = {
@@ -14,7 +26,7 @@ export const loadNodeTexture = {
 
     test(url: string): boolean
     {
-        return validImages.includes(path.extname(url));
+        return validImages.includes(path.extname(url)) || isSupportedDataURL(url);
     },
 
     async load(url: string, asset: LoadAsset): Promise<Texture>
