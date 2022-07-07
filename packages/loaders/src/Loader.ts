@@ -5,6 +5,7 @@ import { LoaderResource } from './LoaderResource';
 import { AsyncQueue } from './base/AsyncQueue';
 import type { Dict } from '@pixi/utils';
 import { extensions, ExtensionType } from '@pixi/core';
+import { deprecation } from '@pixi/utils';
 
 // some constants
 const MAX_PROGRESS = 100;
