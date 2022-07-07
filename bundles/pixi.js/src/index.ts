@@ -1,6 +1,6 @@
 import * as utils from '@pixi/utils';
 import { AccessibilityManager } from '@pixi/accessibility';
-import { InteractionManager } from '@pixi/interaction';
+import { EventSystem } from '@pixi/events';
 import { extensions } from '@pixi/core';
 import { Extract } from '@pixi/extract';
 import { AppLoaderPlugin } from '@pixi/loaders';
@@ -22,10 +22,12 @@ import '@pixi/mixin-get-child-by-name';
 import '@pixi/mixin-get-global-position';
 
 extensions.add(
+    // Systems
+    EventSystem,
+
     // Install renderer plugins
     AccessibilityManager,
     Extract,
-    InteractionManager,
     ParticleRenderer,
     Prepare,
     TilingSpriteRenderer,
@@ -99,10 +101,10 @@ export * from '@pixi/constants';
 export * from '@pixi/compressed-textures';
 export * from '@pixi/core';
 export * from '@pixi/display';
+export * from '@pixi/events';
 export * from '@pixi/extract';
 export * from '@pixi/graphics';
 export * from '@pixi/loaders';
-export * from '@pixi/interaction';
 export * from '@pixi/math';
 export * from '@pixi/mesh';
 export * from '@pixi/mesh-extras';

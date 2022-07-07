@@ -37,6 +37,9 @@ import { StartupSystem } from './startup/StartupSystem';
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface Renderer extends GlobalMixins.Renderer {}
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface Renderer extends GlobalMixins.Renderer {}
+
 /**
  * The Renderer draws the scene and all its content onto a WebGL enabled canvas.
  *

@@ -40,6 +40,7 @@
   "peerDependencies": {
     "@pixi/core": "6.4.2",
     "@pixi/display": "6.4.2",
+    "@pixi/events": "6.4.2",
     "@pixi/utils": "6.4.2"
   }
 }
