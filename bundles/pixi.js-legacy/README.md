@@ -7,13 +7,21 @@ The aim of this project is to provide a fast lightweight 2D library that works
 across all devices. The PixiJS renderer allows everyone to enjoy the power of
 hardware acceleration without prior knowledge of WebGL. Also, it's fast. Really fast.
 
-**Your support helps us make PixiJS even better. Make your pledge on [Patreon](https://www.patreon.com/user?u=2384552&ty=h&u=2384552) and we'll love you forever!**
+**We are now a part of the [Open Collective](https://opencollective.com/pixijs) and with your support you can help us make PixiJS even better. To make a donation, simply click the button below and we'll love you forever!**
+
+<br>
+<div align="center">
+  <a href="https://opencollective.com/pixijs/donate" target="_blank">
+    <img src="https://opencollective.com/pixijs/donate/button@2x.png?color=blue" width=250 />
+  </a>
+</div>
+<br>
 
 This package is the same as **pixi.js**, but provides fallback support for browsers that do not support WebGL or more modern JavaScript features.
 
 ### Setup
 
-PixiJS can be installed with [npm](https://docs.npmjs.com/getting-started/what-is-npm) to integration with [Webpack](https://webpack.js.org/), [Browserify](http://browserify.org/), [Rollup](https://rollupjs.org/), [Electron](https://electron.atom.io/), [NW.js](https://nwjs.io/) or other module backed environments.
+PixiJS can be installed with [npm](https://docs.npmjs.com/getting-started/what-is-npm) to integrate with [Webpack](https://webpack.js.org/)](https://webpack.js.org/), [Browserify](http://browserify.org/), [Rollup](https://rollupjs.org/), [Electron](https://electron.atom.io/), [NW.js](https://nwjs.io/) or other module backed environments.
 
 #### Install
 
@@ -65,5 +73,3 @@ app.loader.add('bunny', 'bunny.png').load((loader, resources) => {
 ### License
 
 This content is released under the (http://opensource.org/licenses/MIT) MIT License.
-
-[![Analytics](https://ga-beacon.appspot.com/UA-39213431-2/pixi.js/index)](https://github.com/igrigorik/ga-beacon)

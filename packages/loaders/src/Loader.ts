@@ -389,6 +389,10 @@ class Loader
      */
     load(cb?: Loader.OnCompleteSignal): this
     {
+        // #if _DEBUG
+        deprecation('6.5.0', '@pixi/loaders is being replaced with @pixi/assets in the next major release.');
+        // #endif
+
         // register complete callback if they pass one
         if (typeof cb === 'function')
         {
