@@ -117,7 +117,7 @@ export class ViewSystem implements ISystem
          * @param {number} screenHeight - The new height of the screen.
          */
         this.renderer.emit('resize', screenWidth, screenHeight);
-        this.renderer.runners.resize.emit(this.screen.height, this.screen.width);
+        this.renderer.runners.resize.emit(this.screen.width, this.screen.height);
     }
 
     /**
