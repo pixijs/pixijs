@@ -2,10 +2,9 @@ import path from 'path';
 import resolve from '@rollup/plugin-node-resolve';
 import { string } from 'rollup-plugin-string';
 import sourcemaps from 'rollup-plugin-sourcemaps';
-import typescript from 'rollup-plugin-typescript';
+import esbuild from 'rollup-plugin-esbuild';
 import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
-import { terser } from 'rollup-plugin-terser';
 import jscc from 'rollup-plugin-jscc';
 import alias from '@rollup/plugin-alias';
 import workspacesRun from 'workspaces-run';
@@ -13,6 +12,8 @@ import repo from './lerna.json';
 import fs from 'fs';
 
 const isProduction = process.env.NODE_ENV === 'production';
+const bundleTarget = 'es2017';
+const moduleTarget = 'es2020';
 
 /**
  * Get the JSCC plugin for preprocessing code.
@@ -48,7 +49,6 @@ async function main()
         }),
         commonjs(),
         json(),
-        typescript({ downlevelIteration: false }),
         string({
             include: [
                 '**/*.frag',
@@ -59,17 +59,27 @@ async function main()
 
     const plugins = [
         preprocessPlugin(true),
+        esbuild({
+            target: moduleTarget,
+        }),
+        ...commonPlugins
+    ];
+
+    const bundlePlugins = [
+        preprocessPlugin(true),
+        esbuild({
+            target: bundleTarget,
+        }),
         ...commonPlugins
     ];
 
     const prodPlugins = [
         preprocessPlugin(false),
+        esbuild({
+            target: moduleTarget,
+            minify: true,
+        }),
         ...commonPlugins,
-        terser({
-            output: {
-                comments: (node, comment) => comment.line === 1,
-            },
-        })
     ];
 
     const prodBundlePlugins = [
@@ -79,7 +89,12 @@ async function main()
                 replacement: '$1/dist/esm/$2.min.js',
             }]
         }),
-        ...prodPlugins
+        preprocessPlugin(false),
+        esbuild({
+            target: bundleTarget,
+            minify: true,
+        }),
+        ...commonPlugins,
     ];
 
     const compiled = (new Date()).toUTCString().replace(/GMT/g, 'UTC');
@@ -247,7 +262,7 @@ async function main()
                     }] : []
                 ],
                 treeshake: false,
-                plugins,
+                plugins: bundlePlugins,
             });
 
             if (isProduction)
