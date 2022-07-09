@@ -20,6 +20,7 @@ import type {
     PluginSystem,
     StartupSystem,
     StartupOptions,
+    ExtensionMetadata,
     IGenerateTextureOptions } from '@pixi/core';
 
 import type { SmoothingEnabledProperties } from './CanvasContextSystem';
@@ -27,7 +28,6 @@ import { CanvasContextSystem } from './CanvasContextSystem';
 import { CanvasObjectRendererSystem } from './CanvasObjectRendererSystem';
 import { settings } from '@pixi/settings';
 import { deprecation } from '@pixi/utils';
-import type { ExtensionMetadata } from 'packages/core/src/extensions';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface CanvasRenderer extends GlobalMixins.CanvasRenderer {}
