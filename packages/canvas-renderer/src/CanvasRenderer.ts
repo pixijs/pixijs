@@ -10,11 +10,11 @@ import type { DisplayObject } from '@pixi/display';
 import type {
     IRendererOptions,
     IRendererPlugins,
-    IRendererRenderOptions
-    ,
+    IRendererRenderOptions,
     RenderTexture,
     IRenderableObject,
-    GenerateTextureSystem, IRenderer,
+    GenerateTextureSystem,
+    IRenderer,
     BackgroundSystem,
     ViewSystem,
     PluginSystem,
@@ -27,6 +27,7 @@ import { CanvasContextSystem } from './CanvasContextSystem';
 import { CanvasObjectRendererSystem } from './CanvasObjectRendererSystem';
 import { settings } from '@pixi/settings';
 import { deprecation } from '@pixi/utils';
+import type { ExtensionMetadata } from 'packages/core/src/extensions';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface CanvasRenderer extends GlobalMixins.CanvasRenderer {}
@@ -71,6 +72,21 @@ export interface CanvasRenderer extends GlobalMixins.CanvasRenderer {}
  */
 export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRenderer
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        type: ExtensionType.AutoDetect,
+        priority: 0,
+    };
+
+    /**
+     * Used with autoDetectRenderer, this is always supported for any environment, so return true.
+     * @ignore
+     */
+    static test(): boolean
+    {
+        return true;
+    }
+
     /**
      * Fired after rendering finishes.
      * @event PIXI.CanvasRenderer#postrender
@@ -577,6 +593,7 @@ extensions.handle(
 );
 
 extensions.add(
+    CanvasRenderer,
     CanvasMaskSystem,
     CanvasContextSystem,
     CanvasObjectRendererSystem

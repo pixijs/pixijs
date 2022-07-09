@@ -19,6 +19,7 @@ import type { Rectangle } from '@pixi/math';
 import { Matrix } from '@pixi/math';
 import { BufferSystem } from './geometry/BufferSystem';
 import type { RenderTexture } from './renderTexture/RenderTexture';
+import type { ExtensionMetadata } from './extensions';
 import { extensions, ExtensionType } from './extensions';
 import type { IRendererPlugins } from './plugin/PluginSystem';
 import { PluginSystem } from './plugin/PluginSystem';
@@ -92,6 +93,12 @@ export interface Renderer extends GlobalMixins.Renderer {}
  */
 export class Renderer extends SystemManager<Renderer> implements IRenderer
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        type: ExtensionType.AutoDetect,
+        priority: 1,
+    };
+
     /**
      * The type of the renderer. will be PIXI.RENDERER_TYPE.CANVAS
      * @member {number}
@@ -276,14 +283,14 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      * @param options
      * @private
      */
-    static create(options?: IRendererOptions): IRenderer
+    static test(options?: IRendererOptions): boolean
     {
-        if (isWebGLSupported())
+        if (options?.forceCanvas)
         {
-            return new Renderer(options);
+            return false;
         }
 
-        throw new Error('WebGL unsupported in this browser, use "pixi.js-legacy" for fallback canvas2d support.');
+        return isWebGLSupported();
     }
 
     /**
@@ -655,6 +662,7 @@ extensions.handle(
 );
 
 extensions.add(
+    Renderer,
     GenerateTextureSystem,
     BackgroundSystem,
     ViewSystem,

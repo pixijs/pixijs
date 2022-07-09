@@ -1,10 +1,33 @@
+import type { ExtensionFormat } from './extensions';
+import { extensions, ExtensionType } from './extensions';
 import type { IRenderer, IRendererOptions } from './IRenderer';
-import { Renderer } from './Renderer';
 
 export interface IRendererOptionsAuto extends IRendererOptions
 {
     forceCanvas?: boolean;
 }
+
+/**
+ * Collection of installed Renderers.
+ * @ignore
+ */
+const renderers: ExtensionFormat[] = [];
+
+extensions.handle(ExtensionType.AutoDetect,
+    (extension) =>
+    {
+        renderers.push(extension);
+        renderers.sort((a, b) => a.priority - b.priority);
+    },
+    (extension) =>
+    {
+        if (renderers.includes(extension))
+        {
+            renderers.splice(renderers.indexOf(extension), 1);
+        }
+    }
+);
+
 /**
  * This helper function will automatically detect which renderer you should be using.
  * WebGL is the preferred renderer as it is a lot faster. If WebGL is not supported by
@@ -38,5 +61,13 @@ export interface IRendererOptionsAuto extends IRendererOptions
  */
 export function autoDetectRenderer(options?: IRendererOptionsAuto): IRenderer
 {
-    return Renderer.create(options);
+    for (const renderer of renderers)
+    {
+        if (renderer.ref.test(options))
+        {
+            return new renderer.ref(options) as IRenderer;
+        }
+    }
+
+    throw new Error('Unable to auto-detect a suitable renderer.');
 }
