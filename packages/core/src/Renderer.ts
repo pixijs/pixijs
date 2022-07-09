@@ -95,7 +95,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
 {
     /** @ignore */
     static extension: ExtensionMetadata = {
-        type: ExtensionType.AutoDetect,
+        type: ExtensionType.Renderer,
         priority: 1,
     };
 

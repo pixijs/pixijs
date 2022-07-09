@@ -9,7 +9,7 @@
 enum ExtensionType
 // eslint-disable-next-line @typescript-eslint/indent
 {
-    AutoDetect = 'auto-detect',
+    Renderer = 'renderer',
     Application = 'application',
     RendererSystem = 'renderer-webgl-system',
     RendererPlugin = 'renderer-webgl-plugin',

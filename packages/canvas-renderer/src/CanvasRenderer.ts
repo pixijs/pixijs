@@ -74,7 +74,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
 {
     /** @ignore */
     static extension: ExtensionMetadata = {
-        type: ExtensionType.AutoDetect,
+        type: ExtensionType.Renderer,
         priority: 0,
     };
 

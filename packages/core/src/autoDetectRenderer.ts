@@ -13,7 +13,7 @@ export interface IRendererOptionsAuto extends IRendererOptions
  */
 const renderers: ExtensionFormat[] = [];
 
-extensions.handle(ExtensionType.AutoDetect,
+extensions.handle(ExtensionType.Renderer,
     (extension) =>
     {
         renderers.push(extension);
