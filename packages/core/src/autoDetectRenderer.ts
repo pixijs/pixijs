@@ -17,7 +17,7 @@ extensions.handle(ExtensionType.AutoDetect,
     (extension) =>
     {
         renderers.push(extension);
-        renderers.sort((a, b) => a.priority - b.priority);
+        renderers.sort((a, b) => b.priority - a.priority); // highest priority first
     },
     (extension) =>
     {
