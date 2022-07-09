@@ -78,7 +78,7 @@ export interface IRendererRenderOptions
  * Starard Interface for a Pixi renderer.
  * @memberof PIXI
  */
-export interface IRenderer extends SystemManager
+export interface IRenderer extends SystemManager, GlobalMixins.IRenderer
 {
 
     resize(width: number, height: number): void;

@@ -37,6 +37,12 @@ declare namespace GlobalMixins
     }
 
     // eslint-disable-next-line @typescript-eslint/no-empty-interface
+    interface IRenderer
+    {
+
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-empty-interface
     interface IRendererPlugins
     {
 
