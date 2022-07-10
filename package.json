@@ -58,7 +58,7 @@
     "@types/chai": "^4.3.1",
     "@types/css-font-loading-module": "^0.0.7",
     "@types/jest": "^26.0.0",
-    "@webdoc/cli": "^1.5.5",
+    "@webdoc/cli": "~1.5.5",
     "copyfiles": "^2.1.0",
     "cross-env": "^5.2.0",
     "electron": "^12.0.0",
@@ -86,5 +86,9 @@
     "typescript": "~4.3.0",
     "workspaces-run": "^1.0.1",
     "yargs-parser": "^21.0.1"
+  },
+  "overrides": {
+    "@webdoc/parser": "~1.5.5",
+    "@webdoc/model": "~1.5.5"
   }
 }
