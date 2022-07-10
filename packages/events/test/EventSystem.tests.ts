@@ -11,7 +11,7 @@ function createRenderer(view?: HTMLCanvasElement, supportsPointerEvents?: boolea
         events: any
     }
 
-    const renderer = Renderer.create({
+    const renderer = new Renderer({
         width: 100,
         height: 100,
         view,

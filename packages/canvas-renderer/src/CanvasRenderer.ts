@@ -10,16 +10,17 @@ import type { DisplayObject } from '@pixi/display';
 import type {
     IRendererOptions,
     IRendererPlugins,
-    IRendererRenderOptions
-    ,
+    IRendererRenderOptions,
     RenderTexture,
     IRenderableObject,
-    GenerateTextureSystem, IRenderer,
+    GenerateTextureSystem,
+    IRenderer,
     BackgroundSystem,
     ViewSystem,
     PluginSystem,
     StartupSystem,
     StartupOptions,
+    ExtensionMetadata,
     IGenerateTextureOptions } from '@pixi/core';
 
 import type { SmoothingEnabledProperties } from './CanvasContextSystem';
@@ -71,6 +72,21 @@ export interface CanvasRenderer extends GlobalMixins.CanvasRenderer {}
  */
 export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRenderer
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        type: ExtensionType.Renderer,
+        priority: 0,
+    };
+
+    /**
+     * Used with autoDetectRenderer, this is always supported for any environment, so return true.
+     * @ignore
+     */
+    static test(): boolean
+    {
+        return true;
+    }
+
     /**
      * Fired after rendering finishes.
      * @event PIXI.CanvasRenderer#postrender
@@ -577,6 +593,7 @@ extensions.handle(
 );
 
 extensions.add(
+    CanvasRenderer,
     CanvasMaskSystem,
     CanvasContextSystem,
     CanvasObjectRendererSystem

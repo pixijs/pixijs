@@ -9,6 +9,7 @@
 enum ExtensionType
 // eslint-disable-next-line @typescript-eslint/indent
 {
+    Renderer = 'renderer',
     Application = 'application',
     RendererSystem = 'renderer-webgl-system',
     RendererPlugin = 'renderer-webgl-plugin',
@@ -24,6 +25,7 @@ interface ExtensionMetadataDetails
 {
     type: ExtensionType | ExtensionType[];
     name?: string;
+    priority?: number;
 }
 
 type ExtensionMetadata = ExtensionType | ExtensionMetadataDetails;
@@ -40,6 +42,8 @@ interface ExtensionFormatLoose
     type: ExtensionType | ExtensionType[];
     /** Optional. Some plugins provide an API name/property, such as Renderer plugins */
     name?: string;
+    /** Optional, used for sorting the plugins in a particular order */
+    priority?: number;
     /** Reference to the plugin object/class */
     ref: any;
 }
