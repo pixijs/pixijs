@@ -6,7 +6,7 @@ import type { Rectangle } from '@pixi/math';
 import type { Container } from '@pixi/display';
 import { ExtensionType } from '@pixi/core';
 import type { IAccessibleHTMLElement } from './accessibleTarget';
-import type { IRenderer, ExtensionMetadata, Renderer } from '@pixi/core';
+import type { IRenderer, ExtensionMetadata } from '@pixi/core';
 import { FederatedEvent } from '@pixi/events';
 
 // add some extra variables to the container..
@@ -504,7 +504,7 @@ export class AccessibilityManager
     private _dispatchEvent(e: UIEvent, type: string[]): void
     {
         const { displayObject: target } = e.target as IAccessibleHTMLElement;
-        const boundry = (this.renderer as Renderer).events.rootBoundary;
+        const boundry = this.renderer.events.rootBoundary;
         const event: FederatedEvent = Object.assign(new FederatedEvent(boundry), { target });
 
         boundry.rootTarget = this.renderer.lastObjectRendered as DisplayObject;
