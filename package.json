@@ -31,7 +31,7 @@
     "prerelease": "run-s clean:build test",
     "postversion": "run-s lint types build:prod build:types",
     "release": "lerna version --exact --force-publish",
-    "version": "ts-node scripts/fixPeerVersions.ts && npx --yes npm@7.20.2 i --package-lock-only && git add package-lock.json",
+    "version": "ts-node scripts/fixPeerVersions.ts",
     "prepublish-ci": "run-s build:types",
     "publish-ci": "lerna publish from-package --yes --no-verify-access",
     "webdoc": "webdoc"
@@ -70,7 +70,7 @@
     "jest-electron": "^0.1.12",
     "jest-extended": "^1.2.1",
     "jest-raw-loader": "^1.0.1",
-    "lerna": "^4.0.0",
+    "lerna": "^5.0.0",
     "npm-run-all": "^4.1.5",
     "pre-commit": "^1.2.2",
     "rimraf": "^2.6.3",
