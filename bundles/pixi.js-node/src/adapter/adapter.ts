@@ -21,7 +21,7 @@ export const NodeAdapter = {
     getNavigator: () => ({ userAgent: 'node' }),
     /** Returns an empty base url */
     getBaseUrl: () => ('/'),
-    fetch: (url: RequestInfo | URL, options?: RequestInit) =>
+    fetch: (url: RequestInfo, options?: RequestInit) =>
     {
         const request = new Request(url, options);
 
