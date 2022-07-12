@@ -15,6 +15,7 @@ export interface IAdapter
     getNavigator: () => { userAgent: string };
     /** Returns the current base URL For browser environments this is either the document.baseURI or window.location.href */
     getBaseUrl: () => string;
+    fetch: (url: RequestInfo | URL, options?: RequestInit) => Promise<Response>;
 }
 
 export const BrowserAdapter = {
@@ -36,4 +37,5 @@ export const BrowserAdapter = {
     getWebGLRenderingContext: () => WebGLRenderingContext,
     getNavigator: () => navigator,
     getBaseUrl: () => document.baseURI ?? window.location.href,
+    fetch: (url: RequestInfo | URL, options?: RequestInit) => fetch(url, options),
 } as IAdapter;

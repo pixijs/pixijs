@@ -1,5 +1,6 @@
 import type { Texture } from '@pixi/core';
 import { ExtensionType } from '@pixi/core';
+import { settings } from '@pixi/settings';
 import type { BitmapFontData } from '@pixi/text-bitmap';
 import { BitmapFont, TextFormat, XMLFormat, XMLStringFormat } from '@pixi/text-bitmap';
 import { dirname, extname, join } from '../../utils/path';
@@ -62,7 +63,7 @@ export const loadBitmapFont = {
 
     async load(url: string, _options: LoadAsset, loader: Loader): Promise<BitmapFont>
     {
-        const response = await fetch(url);
+        const response = await settings.ADAPTER.fetch(url);
 
         const text = await response.text();
 

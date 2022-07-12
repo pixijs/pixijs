@@ -1,5 +1,6 @@
 import type { LoadAsset, LoaderParser } from '@pixi/assets';
 import { ExtensionType, Texture } from '@pixi/core';
+import { settings } from '@pixi/settings';
 import { getResolutionOfUrl } from '@pixi/utils';
 import type { CanvasRenderingContext2D } from 'canvas';
 import { loadImage } from 'canvas';
@@ -31,7 +32,7 @@ export const loadNodeTexture = {
 
     async load(url: string, asset: LoadAsset): Promise<Texture>
     {
-        const data = await fetch(url);
+        const data = await settings.ADAPTER.fetch(url);
         const image = await loadImage(Buffer.from(await data.arrayBuffer()));
         const canvas = new NodeCanvasElement(image.width, image.height);
         const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
