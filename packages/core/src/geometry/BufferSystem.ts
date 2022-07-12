@@ -84,7 +84,36 @@ export class BufferSystem implements ISystem
      * @param buffer - the buffer to bind
      * @param index - the base index to bind it to.
      */
-    bindBufferBase(buffer: Buffer, index: number): void
+    bindUniformBufferBase(buffer: Buffer, index: number): void
+    {
+        const { gl } = this;
+
+        this.bindBufferBase(gl.UNIFORM_BUFFER, buffer, index);
+    }
+
+    /**
+     * Binds an transform feedback buffer to at the given index.
+     *
+     * A cache is used so a buffer will not be bound again if already bound.
+     * @param buffer - the buffer to bind
+     * @param index - the base index to bind it to.
+     */
+    bindTransformFeedbackBufferBase(buffer: Buffer, index: number): void
+    {
+        const { gl } = this;
+
+        this.bindBufferBase(gl.TRANSFORM_FEEDBACK_BUFFER, buffer, index);
+    }
+
+    /**
+     * Binds an buffer base to at the given index.
+     *
+     * A cache is used so a buffer will not be bound again if already bound.
+     * @param target - the target to bind
+     * @param buffer - the buffer to bind
+     * @param index - the base index to bind it to.
+     */
+    protected bindBufferBase(target: number, buffer: Buffer, index: number): void
     {
         const { gl, CONTEXT_UID } = this;
 
@@ -94,7 +123,7 @@ export class BufferSystem implements ISystem
 
             this.boundBufferBases[index] = buffer;
 
-            gl.bindBufferBase(gl.UNIFORM_BUFFER, index, glBuffer.buffer);
+            gl.bindBufferBase(target, index, glBuffer.buffer);
         }
     }
 
