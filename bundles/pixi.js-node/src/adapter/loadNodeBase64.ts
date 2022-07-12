@@ -3,10 +3,8 @@ import { ExtensionType, Texture } from '@pixi/core';
 import { getResolutionOfUrl } from '@pixi/utils';
 import type { CanvasRenderingContext2D } from 'canvas';
 import { loadImage } from 'canvas';
-import path from 'path';
 import { NodeCanvasElement } from './NodeCanvasElement';
 
-const validImages = ['.jpg', '.png', '.jpeg', '.svg'];
 const validMimes = ['image/png', 'image/jpg', 'image/jpeg', 'image/svg'];
 
 function isSupportedDataURL(url: string): boolean
@@ -21,18 +19,17 @@ function isSupportedDataURL(url: string): boolean
 }
 
 /** loads our textures into a node canvas */
-export const loadNodeTexture = {
+export const loadNodeBase64 = {
     extension: ExtensionType.LoadParser,
 
     test(url: string): boolean
     {
-        return validImages.includes(path.extname(url)) || isSupportedDataURL(url);
+        return isSupportedDataURL(url);
     },
 
     async load(url: string, asset: LoadAsset): Promise<Texture>
     {
-        const data = await fetch(url);
-        const image = await loadImage(Buffer.from(await data.arrayBuffer()));
+        const image = await loadImage(url);
         const canvas = new NodeCanvasElement(image.width, image.height);
         const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 

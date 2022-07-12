@@ -1,6 +1,5 @@
 import './adapter';
 
-import { Application } from '@pixi/app';
 import { BatchRenderer, extensions, INSTALLED } from '@pixi/core';
 import { Extract } from '@pixi/extract';
 import { AlphaFilter } from '@pixi/filter-alpha';
@@ -18,14 +17,16 @@ import { TilingSpriteRenderer } from '@pixi/sprite-tiling';
 import { TickerPlugin } from '@pixi/ticker';
 import * as utils from '@pixi/utils';
 // eslint-disable-next-line @typescript-eslint/no-duplicate-imports
-import { loadNodeBitmapFont, loadNodeFont, loadNodeTexture, NodeCanvasResource } from './adapter';
+import { loadNodeBase64, loadNodeBitmapFont, loadNodeFont, loadNodeTexture, NodeCanvasResource } from './adapter';
 import { loadBitmapFont, loadTextures, loadWebFont } from '@pixi/assets';
+import { ResizePlugin } from '@pixi/app';
 
 // Remove the default loader plugins
 extensions.remove(
     loadTextures,
     loadWebFont,
     loadBitmapFont,
+    ResizePlugin
 );
 extensions.add(
     // Install renderer plugins
@@ -40,6 +41,7 @@ extensions.add(
 
     // Install loader plugins
     loadNodeTexture,
+    loadNodeBase64,
     loadNodeFont,
     loadNodeBitmapFont
 );
@@ -47,7 +49,6 @@ extensions.add(
 // reset installed resources and remove resize plugin from Application
 INSTALLED.length = 0;
 INSTALLED.push(NodeCanvasResource);
-Application['_plugins'].shift(); // eslint-disable-line dot-notation
 
 export const VERSION = '$_VERSION';
 

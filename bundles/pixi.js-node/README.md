@@ -32,32 +32,21 @@ To build from source you will need to make sure you have the following dependenc
 `brew install pkg-config cairo pango libpng jpeg giflib librsvg`
 
 ## Basic Usage Example
-This example uses `express`, however, you can use any framework you like.
 
 ```js
-import express from 'express';
 import { Application, Sprite, Assets } from '@pixi/node';
-
-const app = express();
-const port = 3000;
-
-app.use(express.static(__dirname))
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
+import path from 'path';
 
 // This package requires the new asset loader to be used.
 // Initialize the new assets loader
-await PIXI.Assets.init({
-    basePath: 'http://localhost:3000/'
-});
+await PIXI.Assets.init();
 
 // The application will create a renderer using WebGL. It will also setup the ticker
 // and the root stage PIXI.Container.
 const app = new PIXI.Application();
 
 // load a sprite
-const bunnyTexture = await PIXI.Assets.load('assets/bunny.png');
+const bunnyTexture = await PIXI.Assets.load(path.join(process.cwd(), 'assets/bunny.png'));
 // create sprite from texture
 const bunny = PIXI.Sprite.from(bunnyTexture);
 

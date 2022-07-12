@@ -3,7 +3,6 @@ import type { Texture } from '@pixi/core';
 import { ExtensionType } from '@pixi/core';
 import type { IBitmapFontRawData } from '@pixi/text-bitmap';
 import { BitmapFont, BitmapFontData, TextFormat, XMLStringFormat } from '@pixi/text-bitmap';
-import fetch from 'cross-fetch';
 import path from 'path';
 import { parseStringPromise } from 'xml2js';
 
@@ -117,8 +116,9 @@ async function _loadBitmap(src: string, data: BitmapFontData, loader: Loader)
     for (let i = 0; i < pages.length; ++i)
     {
         const pageFile = pages[i].file;
+        const url = path.join(path.dirname(src), pageFile);
 
-        textureUrls.push(new URL(pageFile, src).href);
+        textureUrls.push(url);
     }
 
     const textures: Texture[] = Object.values(await loader.load(textureUrls));

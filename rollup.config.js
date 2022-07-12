@@ -41,7 +41,7 @@ function prodName(name)
 
 async function main()
 {
-    const commonPlugins = [
+    let commonPlugins = [
         sourcemaps(),
         resolve({
             browser: true,
@@ -59,12 +59,12 @@ async function main()
         transpile(),
     ];
 
-    const plugins = [
+    let plugins = [
         preprocessPlugin(true),
         ...commonPlugins
     ];
 
-    const prodPlugins = [
+    let prodPlugins = [
         preprocessPlugin(false),
         ...commonPlugins,
         terser({
@@ -120,6 +120,8 @@ async function main()
             version,
             dependencies,
             peerDependencies,
+            // TODO: remove this in v7, along with the declaration in the package.json
+            // This is a temporary fix to skip transpiling on the @pixi/node package
             transpile
         } = pkg.config;
 
@@ -140,26 +142,45 @@ async function main()
         const input = path.join(basePath, 'src/index.ts');
         const freeze = false;
 
-        const tempPlugins = [...plugins];
-        const tempProdPlugins = [...prodPlugins];
-        const tempBundlePlugins = [...prodBundlePlugins];
-
         if (transpile === 'es6')
         {
-            const ts = typescript({
-                importHelpers: true,
-                target: 'ES2020',
-            });
+            // TODO: this hack is for the @pixi/node package to skip transpiling.
+            // This can be removed in v7 where transpiling is no longer required.
+            commonPlugins = [
+                sourcemaps(),
+                resolve({
+                    browser: true,
+                    preferBuiltins: false,
+                }),
+                commonjs(),
+                json(),
+                // TODO: We do still need to keep this plugin for the @pixi/node package as `importHelpers` is required
+                typescript({
+                    importHelpers: true,
+                    target: 'ES2020',
+                }),
+                string({
+                    include: [
+                        '**/*.frag',
+                        '**/*.vert',
+                    ],
+                }),
+            ];
 
-            tempPlugins.splice(5, 1);
-            tempPlugins.splice(5, 0, ts);
-            tempPlugins.pop();
-            tempProdPlugins.splice(5, 1);
-            tempProdPlugins.splice(5, 0, ts);
-            tempProdPlugins.splice(tempProdPlugins.length - 2, 1);
-            tempBundlePlugins.splice(6, 1);
-            tempBundlePlugins.splice(6, 0, ts);
-            tempBundlePlugins.splice(tempBundlePlugins.length - 2, 1);
+            plugins = [
+                preprocessPlugin(true),
+                ...commonPlugins
+            ];
+
+            prodPlugins = [
+                preprocessPlugin(false),
+                ...commonPlugins,
+                terser({
+                    output: {
+                        comments: (node, comment) => comment.line === 1,
+                    },
+                })
+            ];
         }
 
         results.push({
@@ -181,7 +202,7 @@ async function main()
                 },
             ],
             external,
-            plugins: tempPlugins,
+            plugins,
         });
 
         if (isProduction)
@@ -205,7 +226,7 @@ async function main()
                     },
                 ],
                 external,
-                plugins: tempProdPlugins,
+                plugins: prodPlugins,
             });
         }
 
@@ -273,7 +294,7 @@ async function main()
                     }] : []
                 ],
                 treeshake: false,
-                plugins: tempPlugins,
+                plugins,
             });
 
             if (isProduction)
@@ -301,7 +322,7 @@ async function main()
                         }] : []
                     ],
                     treeshake: false,
-                    plugins: tempBundlePlugins,
+                    plugins: prodBundlePlugins,
                 });
             }
         }
