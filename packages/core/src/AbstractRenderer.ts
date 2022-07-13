@@ -135,7 +135,7 @@ export abstract class AbstractRenderer extends EventEmitter
          * The canvas element that everything is drawn to.
          * @member {HTMLCanvasElement}
          */
-        this.view = options.view || document.createElement('canvas');
+        this.view = options.view || settings.ADAPTER.createCanvas();
 
         /**
          * The resolution / device pixel ratio of the renderer.

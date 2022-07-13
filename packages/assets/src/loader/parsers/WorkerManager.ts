@@ -1,5 +1,5 @@
 let UUID = 0;
-const MAX_WORKERS = navigator.hardwareConcurrency || 4;
+let MAX_WORKERS: number;
 
 const workerCode = {
     id: 'loadImageBitmap',
@@ -8,12 +8,12 @@ const workerCode = {
 
         async function loadImageBitmap(url)
         {
-            const response = await fetch(url); 
+            const response = await fetch(url);
             const imageBlob =  await response.blob();
             const imageBitmap = await createImageBitmap(imageBlob);
             return imageBitmap;
         }
-  
+
         loadImageBitmap(event.data.data[0]).then(imageBitmap => {
             self.postMessage({
                 data: imageBitmap,
@@ -26,12 +26,11 @@ const workerCode = {
                 uuid: event.data.uuid,
                 id: event.data.id,
             });
-        }); 
+        });
     }`,
 };
 
-const blob = new Blob([workerCode.code], { type: 'application/javascript' });
-const workerURL = URL.createObjectURL(blob);
+let workerURL: string;
 
 class WorkerManagerClass
 {
@@ -64,10 +63,19 @@ class WorkerManagerClass
 
     private getWorker(): Worker
     {
+        if (MAX_WORKERS === undefined)
+        {
+            MAX_WORKERS = navigator.hardwareConcurrency || 4;
+        }
         let worker = this.workerPool.pop();
 
         if (!worker && this._createdWorkers < MAX_WORKERS)
         {
+            if (!workerURL)
+            {
+                workerURL = URL.createObjectURL(new Blob([workerCode.code], { type: 'application/javascript' }));
+            }
+
             // only create as many as MAX_WORKERS allows..
             this._createdWorkers++;
             worker = new Worker(workerURL);

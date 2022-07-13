@@ -14,6 +14,7 @@ import {
 import { TranscoderWorker } from './TranscoderWorker';
 
 import type { CompressedLevelBuffer, INTERNAL_FORMATS } from '@pixi/compressed-textures';
+import { settings } from '@pixi/settings';
 
 export type TranscodedResourcesArray = (Array<CompressedTextureResource> | Array<BufferResource>) & {
     basisFormat: BASIS_FORMATS
@@ -92,6 +93,11 @@ export class BasisParser
      */
     public static async transcodeAsync(arrayBuffer: ArrayBuffer): Promise<TranscodedResourcesArray>
     {
+        if (!BasisParser.defaultRGBAFormat && !BasisParser.defaultRGBFormat)
+        {
+            BasisParser.autoDetectFormats();
+        }
+
         const workerPool = BasisParser.workerPool;
 
         let leastLoad = 0x10000000;
@@ -170,6 +176,11 @@ export class BasisParser
      */
     public static transcodeSync(arrayBuffer: ArrayBuffer): TranscodedResourcesArray
     {
+        if (!BasisParser.defaultRGBAFormat && !BasisParser.defaultRGBFormat)
+        {
+            BasisParser.autoDetectFormats();
+        }
+
         const BASIS = BasisParser.basisBinding;
 
         const data = new Uint8Array(arrayBuffer);
@@ -291,7 +302,7 @@ export class BasisParser
         // Auto-detect WebGL compressed-texture extensions
         if (!extensions)
         {
-            const canvas = document.createElement('canvas');
+            const canvas = settings.ADAPTER.createCanvas();
             const gl = canvas.getContext('webgl');
 
             if (!gl)
@@ -433,6 +444,3 @@ export class BasisParser
         }
     }
 }
-
-// Auto-detect compressed texture formats once @pixi/basis is imported!
-BasisParser.autoDetectFormats();

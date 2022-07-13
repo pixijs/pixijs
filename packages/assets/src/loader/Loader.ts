@@ -96,7 +96,7 @@ export class Loader
 
                 if (parser.parse)
                 {
-                    if (parser.parse && parser.testParse?.(asset, data, this))
+                    if (parser.parse && await parser.testParse?.(asset, data, this))
                     {
                         // transform the asset..
                         asset = await parser.parse(asset, data, this) || asset;

@@ -1,0 +1,78 @@
+{
+  "name": "@pixi/node",
+  "version": "6.4.2",
+  "description": "Bundle for PixiJS with support for NodeJS",
+  "homepage": "http://pixijs.com/",
+  "bugs": "https://github.com/pixijs/pixi.js/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pixijs/pixi.js.git"
+  },
+  "license": "MIT",
+  "author": "PixiJS Team",
+  "main": "dist/cjs/node.cjs",
+  "module": "dist/esm/node.mjs",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./index.d.ts",
+        "default": "./dist/esm/node.mjs"
+      },
+      "require": {
+        "types": "./index.d.ts",
+        "default": "./dist/cjs/node.cjs"
+      }
+    }
+  },
+  "files": [
+    "dist",
+    "*.d.ts"
+  ],
+  "engines": {
+    "node": ">=16"
+  },
+  "dependencies": {
+    "@types/gl": "^4.1.0",
+    "@types/xml2js": "^0.4.11",
+    "canvas": "^2.9.1",
+    "cross-fetch": "^3.1.5",
+    "gl": "^5.0.0",
+    "xml2js": "^0.4.23",
+    "@pixi/app": "6.4.2",
+    "@pixi/assets": "6.4.2",
+    "@pixi/constants": "6.4.2",
+    "@pixi/core": "6.4.2",
+    "@pixi/display": "6.4.2",
+    "@pixi/extract": "6.4.2",
+    "@pixi/filter-alpha": "6.4.2",
+    "@pixi/filter-blur": "6.4.2",
+    "@pixi/filter-color-matrix": "6.4.2",
+    "@pixi/filter-displacement": "6.4.2",
+    "@pixi/filter-fxaa": "6.4.2",
+    "@pixi/filter-noise": "6.4.2",
+    "@pixi/graphics": "6.4.2",
+    "@pixi/math": "6.4.2",
+    "@pixi/mesh": "6.4.2",
+    "@pixi/mesh-extras": "6.4.2",
+    "@pixi/mixin-cache-as-bitmap": "6.4.2",
+    "@pixi/mixin-get-child-by-name": "6.4.2",
+    "@pixi/mixin-get-global-position": "6.4.2",
+    "@pixi/particle-container": "6.4.2",
+    "@pixi/prepare": "6.4.2",
+    "@pixi/runner": "6.4.2",
+    "@pixi/settings": "6.4.2",
+    "@pixi/sprite": "6.4.2",
+    "@pixi/sprite-animated": "6.4.2",
+    "@pixi/sprite-tiling": "6.4.2",
+    "@pixi/spritesheet": "6.4.2",
+    "@pixi/text": "6.4.2",
+    "@pixi/text-bitmap": "6.4.2",
+    "@pixi/ticker": "6.4.2",
+    "@pixi/utils": "6.4.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "transpile": "es6"
+}

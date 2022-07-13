@@ -149,8 +149,7 @@ export class ContextSystem implements ISystem
         {
             this.webGLVersion = 1;
 
-            gl = canvas.getContext('webgl', options)
-            || canvas.getContext('experimental-webgl', options);
+            gl = canvas.getContext('webgl', options) || canvas.getContext('experimental-webgl', options);
 
             if (!gl)
             {
