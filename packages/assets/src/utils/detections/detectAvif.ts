@@ -1,12 +1,20 @@
+import { ExtensionType } from '@pixi/core';
 import { settings } from '@pixi/settings';
+import type { FormatDetection } from '../../Assets';
+import { addFormat, removeFormat } from './detectUtils';
 
-export async function detectAvif(): Promise<boolean>
-{
-    if (!globalThis.createImageBitmap) return false;
+export const detectAvif: FormatDetection = {
+    extension: ExtensionType.DetectionParser,
+    test: async (): Promise<boolean> =>
+    {
+        if (!globalThis.createImageBitmap) return false;
 
-    // eslint-disable-next-line max-len
-    const avifData = 'data:image/avif;base64,AAAAIGZ0eXBhdmlmAAAAAGF2aWZtaWYxbWlhZk1BMUIAAADybWV0YQAAAAAAAAAoaGRscgAAAAAAAAAAcGljdAAAAAAAAAAAAAAAAGxpYmF2aWYAAAAADnBpdG0AAAAAAAEAAAAeaWxvYwAAAABEAAABAAEAAAABAAABGgAAAB0AAAAoaWluZgAAAAAAAQAAABppbmZlAgAAAAABAABhdjAxQ29sb3IAAAAAamlwcnAAAABLaXBjbwAAABRpc3BlAAAAAAAAAAIAAAACAAAAEHBpeGkAAAAAAwgICAAAAAxhdjFDgQ0MAAAAABNjb2xybmNseAACAAIAAYAAAAAXaXBtYQAAAAAAAAABAAEEAQKDBAAAACVtZGF0EgAKCBgANogQEAwgMg8f8D///8WfhwB8+ErK42A=';
-    const blob = await settings.ADAPTER.fetch(avifData).then((r) => r.blob());
+        // eslint-disable-next-line max-len
+        const avifData = 'data:image/avif;base64,AAAAIGZ0eXBhdmlmAAAAAGF2aWZtaWYxbWlhZk1BMUIAAADybWV0YQAAAAAAAAAoaGRscgAAAAAAAAAAcGljdAAAAAAAAAAAAAAAAGxpYmF2aWYAAAAADnBpdG0AAAAAAAEAAAAeaWxvYwAAAABEAAABAAEAAAABAAABGgAAAB0AAAAoaWluZgAAAAAAAQAAABppbmZlAgAAAAABAABhdjAxQ29sb3IAAAAAamlwcnAAAABLaXBjbwAAABRpc3BlAAAAAAAAAAIAAAACAAAAEHBpeGkAAAAAAwgICAAAAAxhdjFDgQ0MAAAAABNjb2xybmNseAACAAIAAYAAAAAXaXBtYQAAAAAAAAABAAEEAQKDBAAAACVtZGF0EgAKCBgANogQEAwgMg8f8D///8WfhwB8+ErK42A=';
+        const blob = await settings.ADAPTER.fetch(avifData).then((r) => r.blob());
 
-    return createImageBitmap(blob).then(() => true, () => false);
-}
+        return createImageBitmap(blob).then(() => true, () => false);
+    },
+    add: addFormat('avif'),
+    remove: removeFormat('avif')
+};

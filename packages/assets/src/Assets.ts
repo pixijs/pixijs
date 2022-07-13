@@ -1,10 +1,12 @@
+import type { ExtensionMetadata } from '@pixi/core';
 import { extensions, ExtensionType } from '@pixi/core';
 import { BackgroundLoader } from './BackgroundLoader';
 import { Cache } from './cache/Cache';
 import { cacheSpritesheet, cacheTextureArray } from './cache/parsers';
 import type {
     LoadAsset,
-    LoaderParser } from './loader';
+    LoaderParser
+} from './loader';
 import {
     loadJson,
     loadSpritesheet,
@@ -73,6 +75,13 @@ export interface AssetInitOptions
         preferOrders?: PreferOrder[];
     };
 }
+
+export type FormatDetection = {
+    extension?: ExtensionMetadata;
+    test: () => Promise<boolean>,
+    add: (formats: string[]) => Promise<string[]>,
+    remove: (formats: string[]) => Promise<string[]>,
+};
 
 /**
  * A one stop shop for all Pixi resource management!
@@ -230,6 +239,8 @@ export class AssetsClass
     /** takes care of loading assets in the background */
     private readonly _backgroundLoader: BackgroundLoader;
 
+    private _detections: FormatDetection[] = [];
+
     private _initialized = false;
 
     constructor()
@@ -284,32 +295,40 @@ export class AssetsClass
         const resolutionPref =  options.texturePreference?.resolution ?? 1;
         const resolution = (typeof resolutionPref === 'number') ? [resolutionPref] : resolutionPref;
 
-        let format: string[];
+        let formats: string[];
 
         if (options.texturePreference?.format)
         {
             const formatPref = options.texturePreference?.format;
 
-            format = (typeof formatPref === 'string') ? [formatPref] : formatPref;
+            formats = (typeof formatPref === 'string') ? [formatPref] : formatPref;
+
+            // we should remove any formats that are not supported by the browser
+            for (const detection of this._detections)
+            {
+                if (!await detection.test())
+                {
+                    formats = await detection.remove(formats);
+                }
+            }
         }
         else
         {
-            format = ['avif', 'webp', 'png', 'jpg', 'jpeg'];
-        }
+            formats = ['png', 'jpg', 'jpeg'];
 
-        if (!(await detectWebp()))
-        {
-            format = format.filter((format) => format !== 'webp');
-        }
-
-        if (!(await detectAvif()))
-        {
-            format = format.filter((format) => format !== 'avif');
+            // we should add any formats that are supported by the browser
+            for (const detection of this._detections)
+            {
+                if (await detection.test())
+                {
+                    formats = await detection.add(formats);
+                }
+            }
         }
 
         this.resolver.prefer({
             params: {
-                format,
+                format: formats,
                 resolution,
             },
         });
@@ -789,6 +808,13 @@ extensions.handle(
     (extension) => { Assets.cache.addParser(extension.ref); },
     (extension) => { Assets.cache.removeParser(extension.ref); }
 );
+extensions.handle(
+    ExtensionType.DetectionParser,
+    /* eslint-disable dot-notation */
+    (extension) => { Assets['_detections'].push(extension.ref); },
+    (extension) => { Assets['_detections'].splice(Assets['_detections'].indexOf(extension.ref), 1); }
+    /* eslint-enable dot-notation */
+);
 
 extensions.add(
     loadTextures,
@@ -804,5 +830,9 @@ extensions.add(
 
     // resolve extensions
     resolveTextureUrl,
-    resolveSpriteSheetUrl
+    resolveSpriteSheetUrl,
+
+    // detection extensions
+    detectWebp,
+    detectAvif
 );

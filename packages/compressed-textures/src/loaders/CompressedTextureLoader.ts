@@ -1,10 +1,16 @@
+/* eslint-disable camelcase */
 import { LoaderResource } from '@pixi/loaders';
 import { url } from '@pixi/utils';
 
-import type { Loader } from '@pixi/loaders';
-import type { INTERNAL_FORMATS } from '../const';
 import type { ExtensionMetadata } from '@pixi/core';
 import { ExtensionType } from '@pixi/core';
+import type { Loader } from '@pixi/loaders';
+import type {
+    WEBGL_compressed_texture_atc,
+    WEBGL_compressed_texture_etc,
+    WEBGL_compressed_texture_pvrtc
+} from 'packages/core/src/context/WebGLExtensions';
+import type { INTERNAL_FORMATS } from '../const';
 
 /**
  * Schema for compressed-texture manifests
@@ -16,16 +22,15 @@ export type CompressedTextureManifest = {
     cacheID: string;
 };
 
-// Missing typings? - https://github.com/microsoft/TypeScript/issues/39655
 /** Compressed texture extensions */
 /* eslint-disable camelcase */
 export type CompressedTextureExtensions = {
     s3tc?: WEBGL_compressed_texture_s3tc,
     s3tc_sRGB: WEBGL_compressed_texture_s3tc_srgb,
-    etc: any,
-    etc1: any,
-    pvrtc: any,
-    atc: any,
+    etc: WEBGL_compressed_texture_etc,
+    etc1: WEBGL_compressed_texture_etc1,
+    pvrtc: WEBGL_compressed_texture_pvrtc,
+    atc: WEBGL_compressed_texture_atc,
     astc: WEBGL_compressed_texture_astc
 };
 export type CompressedTextureExtensionRef = keyof CompressedTextureExtensions;
