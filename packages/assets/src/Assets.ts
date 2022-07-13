@@ -774,21 +774,10 @@ export class AssetsClass
 export const Assets = new AssetsClass();
 
 // Handle registration of extensions
-extensions.handle(
-    ExtensionType.LoadParser,
-    (extension) => { Assets.loader.addParser(extension.ref); },
-    (extension) => { Assets.loader.removeParser(extension.ref); }
-);
-extensions.handle(
-    ExtensionType.ResolveParser,
-    (extension) => { Assets.resolver.addUrlParser(extension.ref); },
-    (extension) => { Assets.resolver.removeUrlParser(extension.ref); }
-);
-extensions.handle(
-    ExtensionType.CacheParser,
-    (extension) => { Assets.cache.addParser(extension.ref); },
-    (extension) => { Assets.cache.removeParser(extension.ref); }
-);
+extensions
+    .handleByList(ExtensionType.LoadParser, Assets.loader.parsers)
+    .handleByList(ExtensionType.ResolveParser, Assets.resolver.parsers)
+    .handleByList(ExtensionType.CacheParser, Assets.cache.parsers);
 
 extensions.add(
     loadTextures,

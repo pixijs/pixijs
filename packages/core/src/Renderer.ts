@@ -642,8 +642,4 @@ export class Renderer extends AbstractRenderer
 }
 
 // Handle registration of extensions
-extensions.handle(
-    ExtensionType.RendererPlugin,
-    (extension) => { Renderer.__plugins[extension.name] = extension.ref; },
-    (extension) => { delete Renderer.__plugins[extension.name]; }
-);
+extensions.handleByMap(ExtensionType.RendererPlugin, Renderer.__plugins);

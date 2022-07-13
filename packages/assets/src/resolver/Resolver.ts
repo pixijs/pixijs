@@ -100,6 +100,11 @@ export class Resolver
         return this._basePath;
     }
 
+    public get parsers(): ResolveURLParser[]
+    {
+        return this._parsers;
+    }
+
     /** Used for testing, this resets the resolver to its initial state */
     public reset(): void
     {
