@@ -1,4 +1,4 @@
-import { spriteSheetUrlParser, textureUrlParser } from '@pixi/assets';
+import { resolveSpriteSheetUrl, resolveTextureUrl } from '@pixi/assets';
 import { Resolver } from '../src/resolver/Resolver';
 import { manifest } from './sampleManifest';
 
@@ -104,7 +104,7 @@ describe('Resolver', () =>
             },
         });
 
-        resolver.addUrlParser(textureUrlParser);
+        resolver.addUrlParser(resolveTextureUrl);
 
         resolver.add('test', [
             'profile-abel@0.5x.jpg',
@@ -277,7 +277,7 @@ describe('Resolver', () =>
             },
         });
 
-        resolver.addUrlParser(textureUrlParser);
+        resolver.addUrlParser(resolveTextureUrl);
 
         resolver.add('test', [
             'my-image@4x.webp',
@@ -452,13 +452,13 @@ describe('Resolver', () =>
             },
         ].forEach((toTest) =>
         {
-            const pass = spriteSheetUrlParser.test(toTest.url);
+            const pass = resolveSpriteSheetUrl.test(toTest.url);
 
             expect(pass).toBe(toTest.pass);
 
             if (pass)
             {
-                expect(spriteSheetUrlParser.parse(toTest.url)).toEqual(toTest.result);
+                expect(resolveSpriteSheetUrl.parse(toTest.url)).toEqual(toTest.result);
             }
         });
     });
