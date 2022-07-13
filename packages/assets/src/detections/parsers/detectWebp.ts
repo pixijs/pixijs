@@ -1,7 +1,7 @@
 import { ExtensionType } from '@pixi/core';
 import { settings } from '@pixi/settings';
-import type { FormatDetection } from '../../Assets';
-import { addFormat, removeFormat } from './detectUtils';
+import type { FormatDetectionParser } from '..';
+import { addFormat, removeFormat } from '../utils/detectUtils';
 
 export const detectWebp = {
     extension: ExtensionType.DetectionParser,
@@ -16,4 +16,4 @@ export const detectWebp = {
     },
     add: addFormat('webp'),
     remove: removeFormat('webp')
-} as FormatDetection;
+} as FormatDetectionParser;

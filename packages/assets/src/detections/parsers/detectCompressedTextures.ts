@@ -1,6 +1,6 @@
 import type { CompressedTextureExtensionRef, CompressedTextureExtensions } from '@pixi/compressed-textures';
 import { ExtensionType } from '@pixi/core';
-import type { FormatDetection } from '../../Assets';
+import type { FormatDetectionParser } from '..';
 
 let storedGl: WebGLRenderingContext;
 let extensions: Partial<CompressedTextureExtensions>;
@@ -69,4 +69,4 @@ export const detectCompressedTextures = {
 
         return formats.filter((f) => !(f in extensions));
     },
-} as FormatDetection;
+} as FormatDetectionParser;

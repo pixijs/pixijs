@@ -1,8 +1,9 @@
-import type { ExtensionMetadata } from '@pixi/core';
 import { extensions, ExtensionType } from '@pixi/core';
 import { BackgroundLoader } from './BackgroundLoader';
 import { Cache } from './cache/Cache';
 import { cacheSpritesheet, cacheTextureArray } from './cache/parsers';
+import type { FormatDetectionParser } from './detections';
+import { detectAvif, detectWebp } from './detections';
 import type {
     LoadAsset,
     LoaderParser
@@ -20,8 +21,6 @@ import type { PreferOrder, ResolveAsset, ResolverBundle, ResolverManifest, Resol
 import { resolveSpriteSheetUrl, resolveTextureUrl } from './resolver';
 import { Resolver } from './resolver/Resolver';
 import { convertToList } from './utils/convertToList';
-import { detectAvif } from './utils/detections/detectAvif';
-import { detectWebp } from './utils/detections/detectWebp';
 import { isSingleItem } from './utils/isSingleItem';
 
 export type ProgressCallback = (progress: number) => void;
@@ -75,13 +74,6 @@ export interface AssetInitOptions
         preferOrders?: PreferOrder[];
     };
 }
-
-export type FormatDetection = {
-    extension?: ExtensionMetadata;
-    test: () => Promise<boolean>,
-    add: (formats: string[]) => Promise<string[]>,
-    remove: (formats: string[]) => Promise<string[]>,
-};
 
 /**
  * A one stop shop for all Pixi resource management!
@@ -239,7 +231,7 @@ export class AssetsClass
     /** takes care of loading assets in the background */
     private readonly _backgroundLoader: BackgroundLoader;
 
-    private _detections: FormatDetection[] = [];
+    private _detections: FormatDetectionParser[] = [];
 
     private _initialized = false;
 
