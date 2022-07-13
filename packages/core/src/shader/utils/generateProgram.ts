@@ -23,6 +23,26 @@ export function generateProgram(gl: IRenderingContext, program: Program): GLProg
     gl.attachShader(webGLProgram, glVertShader);
     gl.attachShader(webGLProgram, glFragShader);
 
+    const transformFeedbackVaryings = program.extra?.transformFeedbackVaryings;
+
+    if (transformFeedbackVaryings)
+    {
+        if (typeof gl.transformFeedbackVaryings !== 'function')
+        {
+            console.warn(`TransformFeedback is not supported but TransformFeedbackVaryings are given.`);
+        }
+        else
+        {
+            gl.transformFeedbackVaryings(
+                webGLProgram,
+                transformFeedbackVaryings.names,
+                transformFeedbackVaryings.bufferMode === 'seperate'
+                    ? gl.SEPARATE_ATTRIBS
+                    : gl.INTERLEAVED_ATTRIBS
+            );
+        }
+    }
+
     gl.linkProgram(webGLProgram);
 
     if (!gl.getProgramParameter(webGLProgram, gl.LINK_STATUS))

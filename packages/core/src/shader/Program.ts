@@ -30,6 +30,14 @@ export interface IUniformData
     name: string;
 }
 
+export interface IProgramExtraData
+{
+    transformFeedbackVaryings?: {
+        names: string[],
+        bufferMode: 'seperate' | 'interleaved'
+    }
+}
+
 /**
  * Helper class to create a shader program.
  * @memberof PIXI
@@ -54,12 +62,15 @@ export class Program
     /** Assigned when a program is first bound to the shader system. */
     uniformData: {[key: string]: IUniformData};
 
+    extra: IProgramExtraData = {};
+
     /**
      * @param vertexSrc - The source of the vertex shader.
      * @param fragmentSrc - The source of the fragment shader.
      * @param name - Name for shader
+     * @param extra - Extra data for shader
      */
-    constructor(vertexSrc?: string, fragmentSrc?: string, name = 'pixi-shader')
+    constructor(vertexSrc?: string, fragmentSrc?: string, name = 'pixi-shader', extra: IProgramExtraData = {})
     {
         this.id = UID++;
         this.vertexSrc = vertexSrc || Program.defaultVertexSrc;
@@ -67,6 +78,8 @@ export class Program
 
         this.vertexSrc = this.vertexSrc.trim();
         this.fragmentSrc = this.fragmentSrc.trim();
+
+        this.extra = extra;
 
         if (this.vertexSrc.substring(0, 8) !== '#version')
         {
