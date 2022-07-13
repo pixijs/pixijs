@@ -15,7 +15,7 @@ import {
 import { Loader } from './loader/Loader';
 import { loadBitmapFont } from './loader/parsers/loadBitmapFont';
 import type { PreferOrder, ResolveAsset, ResolverBundle, ResolverManifest, ResolveURLParser } from './resolver';
-import { spriteSheetUrlParser, textureUrlParser } from './resolver';
+import { resolveSpriteSheetUrl, resolveTextureUrl } from './resolver';
 import { Resolver } from './resolver/Resolver';
 import { convertToList } from './utils/convertToList';
 import { detectAvif } from './utils/detections/detectAvif';
@@ -803,6 +803,6 @@ extensions.add(
     cacheTextureArray,
 
     // resolve extensions
-    textureUrlParser,
-    spriteSheetUrlParser
+    resolveTextureUrl,
+    resolveSpriteSheetUrl
 );
