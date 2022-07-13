@@ -14,7 +14,7 @@ export function getTestContext(): WebGLRenderingContext | WebGL2RenderingContext
 {
     if (context === unknownContext || (context && context.isContextLost()))
     {
-        const canvas = document.createElement('canvas');
+        const canvas = settings.ADAPTER.createCanvas();
 
         let gl: WebGLRenderingContext | WebGL2RenderingContext;
 
@@ -25,8 +25,8 @@ export function getTestContext(): WebGLRenderingContext | WebGL2RenderingContext
 
         if (!gl)
         {
-            gl = canvas.getContext('webgl', {})
-            || (canvas.getContext('experimental-webgl', {}) as WebGLRenderingContext);
+            gl = (canvas.getContext('webgl', {})
+                || (canvas.getContext('experimental-webgl', {}) as WebGLRenderingContext));
 
             if (!gl)
             {

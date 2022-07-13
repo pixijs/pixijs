@@ -8,6 +8,7 @@ import { CompressedTextureResource } from '@pixi/compressed-textures';
 import type { LoadAsset } from '../types';
 import type { Loader } from '../Loader';
 import type { LoadTextureData } from './loadTexture';
+import { settings } from '@pixi/settings';
 
 const validImages = ['basis'];
 
@@ -28,7 +29,7 @@ export const loadBasis = {
         await TranscoderWorker.onTranscoderInitialized;
 
         // get an array buffer...
-        const response = await fetch(url);
+        const response = await settings.ADAPTER.fetch(url);
 
         const arrayBuffer = await response.arrayBuffer();
 

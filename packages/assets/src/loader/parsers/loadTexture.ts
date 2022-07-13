@@ -1,4 +1,5 @@
 import { BaseTexture, ExtensionType, Texture } from '@pixi/core';
+import { settings } from '@pixi/settings';
 import { getResolutionOfUrl } from '@pixi/utils';
 import type { Loader } from '../Loader';
 import type { LoadAsset } from '../types';
@@ -16,7 +17,7 @@ const validImages = ['jpg', 'png', 'jpeg', 'avif', 'webp'];
  */
 export async function loadImageBitmap(url: string): Promise<ImageBitmap>
 {
-    const response = await fetch(url);
+    const response = await settings.ADAPTER.fetch(url);
     const imageBlob =  await response.blob();
     const imageBitmap = await createImageBitmap(imageBlob);
 

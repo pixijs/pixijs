@@ -1,6 +1,6 @@
 import { BaseTexture } from './BaseTexture';
 import { ImageResource } from './resources/ImageResource';
-import { CanvasResource } from './resources/CanvasResource';
+import type { CanvasResource } from './resources/CanvasResource';
 import { TextureUvs } from './TextureUvs';
 import { settings } from '@pixi/settings';
 import { Rectangle, Point } from '@pixi/math';
@@ -681,7 +681,7 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
     {
         if (!Texture._WHITE)
         {
-            const canvas = document.createElement('canvas');
+            const canvas = settings.ADAPTER.createCanvas(16, 16);
             const context = canvas.getContext('2d');
 
             canvas.width = 16;
@@ -689,7 +689,7 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
             context.fillStyle = 'white';
             context.fillRect(0, 0, 16, 16);
 
-            Texture._WHITE = new Texture(new BaseTexture(new CanvasResource(canvas)));
+            Texture._WHITE = new Texture(BaseTexture.from(canvas));
             removeAllHandlers(Texture._WHITE);
             removeAllHandlers(Texture._WHITE.baseTexture);
         }

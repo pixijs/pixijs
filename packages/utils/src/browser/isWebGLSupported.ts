@@ -21,12 +21,12 @@ export function isWebGLSupported(): boolean
 
             try
             {
-                if (!globalThis.WebGLRenderingContext)
+                if (!settings.ADAPTER.getWebGLRenderingContext())
                 {
                     return false;
                 }
 
-                const canvas = document.createElement('canvas');
+                const canvas = settings.ADAPTER.createCanvas();
                 let gl = (
                     canvas.getContext('webgl', contextOptions)
                     || canvas.getContext('experimental-webgl', contextOptions)
