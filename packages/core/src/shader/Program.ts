@@ -34,7 +34,7 @@ export interface IProgramExtraData
 {
     transformFeedbackVaryings?: {
         names: string[],
-        bufferMode: 'seperate' | 'interleaved'
+        bufferMode: 'separate' | 'interleaved'
     }
 }
 

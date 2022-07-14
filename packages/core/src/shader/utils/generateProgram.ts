@@ -38,7 +38,7 @@ export function generateProgram(gl: IRenderingContext, program: Program): GLProg
             gl.transformFeedbackVaryings(
                 webGLProgram,
                 transformFeedbackVaryings.names,
-                transformFeedbackVaryings.bufferMode === 'seperate'
+                transformFeedbackVaryings.bufferMode === 'separate'
                     ? gl.SEPARATE_ATTRIBS
                     : gl.INTERLEAVED_ATTRIBS
             );
