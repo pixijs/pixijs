@@ -5,6 +5,7 @@ import { Runner } from '@pixi/runner';
  * A TransformFeedback object wrapping GLTransformFeedback object.
  *
  * For example you can use TransformFeedback object to feed-back buffer data from Shader having TransformFeedbackVaryings.
+ * @memberof PIXI
  */
 export class TransformFeedback
 {
