@@ -195,7 +195,7 @@ export class ShaderSystem implements ISystem
             );
         }
 
-        this.renderer.buffer.bindUniformBufferBase(group.buffer, glProgram.uniformBufferBindings[name]);
+        this.renderer.buffer.bindBufferBase(group.buffer, glProgram.uniformBufferBindings[name]);
     }
 
     /**
