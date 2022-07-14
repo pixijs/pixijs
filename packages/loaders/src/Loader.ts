@@ -648,27 +648,7 @@ class Loader
     }
 }
 
-extensions.handle(
-    ExtensionType.Loader,
-    (extension) =>
-    {
-        const plugin = extension.ref as unknown as ILoaderPlugin;
-
-        Loader._plugins.push(plugin);
-        plugin.add?.();
-    },
-    (extension) =>
-    {
-        const plugins = Loader._plugins;
-        const plugin = extension.ref as unknown as ILoaderPlugin;
-        const index = plugins.indexOf(plugin);
-
-        if (index !== -1)
-        {
-            plugins.splice(index, 1);
-        }
-    }
-);
+extensions.handleByList(ExtensionType.Loader, Loader._plugins);
 
 Loader.prototype.add = function add(this: Loader, name: any, url?: any, options?: any, callback?: any): Loader
 {

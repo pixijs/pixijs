@@ -185,27 +185,4 @@ export class Application
     }
 }
 
-extensions.handle(
-    ExtensionType.Application,
-    (extension) =>
-    {
-        const plugins = Application._plugins;
-        const plugin = extension.ref as unknown as IApplicationPlugin;
-
-        if (!plugins.includes(plugin))
-        {
-            plugins.push(plugin);
-        }
-    },
-    (extension) =>
-    {
-        const plugins = Application._plugins;
-        const plugin = extension.ref as unknown as IApplicationPlugin;
-        const index = plugins.indexOf(plugin);
-
-        if (index !== -1)
-        {
-            plugins.splice(index, 1);
-        }
-    }
-);
+extensions.handleByList(ExtensionType.Application, Application._plugins);

@@ -496,8 +496,4 @@ export class CanvasRenderer extends AbstractRenderer
     }
 }
 
-extensions.handle(
-    ExtensionType.CanvasRendererPlugin,
-    (extension) => { CanvasRenderer.__plugins[extension.name] = extension.ref; },
-    (extension) => { delete CanvasRenderer.__plugins[extension.name]; }
-);
+extensions.handleByMap(ExtensionType.CanvasRendererPlugin, CanvasRenderer.__plugins);

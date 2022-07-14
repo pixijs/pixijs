@@ -5,6 +5,9 @@
  * @property {string} RendererPlugin - Plugins for Renderer
  * @property {string} CanvasRendererPlugin - Plugins for CanvasRenderer
  * @property {string} Loader - Plugins to use with Loader
+ * @property {string} LoadParser - Parsers for Assets loader.
+ * @property {string} ResolveParser - Parsers for Assets resolvers.
+ * @property {string} CacheParser - Parsers for Assets cache.
  */
 enum ExtensionType
 // eslint-disable-next-line @typescript-eslint/indent
@@ -112,6 +115,7 @@ const extensions = {
     /**
      * Remove extensions from PixiJS.
      * @param extensions - Extensions to be removed.
+     * @returns {PIXI.extensions} For chaining.
      */
     remove(...extensions: Array<ExtensionFormatLoose | any>)
     {
@@ -119,11 +123,14 @@ const extensions = {
         {
             ext.type.forEach((type) => this._removeHandlers[type]?.(ext));
         });
+
+        return this;
     },
 
     /**
      * Register new extensions with PixiJS.
      * @param extensions - The spread of extensions to add to PixiJS.
+     * @returns {PIXI.extensions} For chaining.
      */
     add(...extensions: Array<ExtensionFormatLoose | any>)
     {
@@ -146,6 +153,8 @@ const extensions = {
                 }
             });
         });
+
+        return this;
     },
 
     /**
@@ -153,6 +162,7 @@ const extensions = {
      * @param type - The extension type.
      * @param onAdd  - Function for handling when extensions are added/registered passes {@link PIXI.ExtensionFormat}.
      * @param onRemove  - Function for handling when extensions are removed/unregistered passes {@link PIXI.ExtensionFormat}.
+     * @returns {PIXI.extensions} For chaining.
      */
     handle(type: ExtensionType, onAdd: ExtensionHandler, onRemove: ExtensionHandler)
     {
@@ -178,6 +188,56 @@ const extensions = {
             queue[type].forEach((ext) => onAdd(ext));
             delete queue[type];
         }
+
+        return this;
+    },
+
+    /**
+     * Handle a type, but using a map by `name` property.
+     * @param type - Type of extension to handle.
+     * @param map - The object map of named extensions.
+     * @returns {PIXI.extensions} For chaining.
+     */
+    handleByMap(type: ExtensionType, map: Record<string, any>)
+    {
+        return this.handle(type,
+            (extension) =>
+            {
+                map[extension.name] = extension.ref;
+            },
+            (extension) =>
+            {
+                delete map[extension.name];
+            }
+        );
+    },
+
+    /**
+     * Handle a type, but using a list of extensions.
+     * @param type - Type of extension to handle.
+     * @param list - The list of extensions.
+     * @returns {PIXI.extensions} For chaining.
+     */
+    handleByList(type: ExtensionType, list: any[])
+    {
+        return this.handle(
+            type,
+            (extension) =>
+            {
+                list.push(extension.ref);
+                // TODO: remove me later, only added for @pixi/loaders
+                extension.ref.add?.();
+            },
+            (extension) =>
+            {
+                const index = list.indexOf(extension.ref);
+
+                if (index !== -1)
+                {
+                    list.splice(index, 1);
+                }
+            }
+        );
     },
 };
 
