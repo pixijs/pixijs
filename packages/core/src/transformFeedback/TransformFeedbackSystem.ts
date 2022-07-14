@@ -165,5 +165,6 @@ export class TransformFeedbackSystem implements ISystem
     destroy(): void
     {
         // @TODO: Destroy managed TransformFeedbacks
+        this.renderer = null;
     }
 }
