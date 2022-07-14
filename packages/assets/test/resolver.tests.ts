@@ -8,7 +8,7 @@ describe('Resolver', () =>
     {
         const resolver = new Resolver();
 
-        resolver.addUrlParser(resolveCompressedTextureUrl);
+        resolver['_parsers'].push(resolveCompressedTextureUrl);
 
         resolver.prefer({
             priority: ['format'],
