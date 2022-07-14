@@ -6,6 +6,9 @@ import type { TransformFeedback } from './TransformFeedback';
  * TransformFeedbackSystem provides TransformFeedback of WebGL2
  * https://developer.mozilla.org/en-US/docs/Web/API/WebGLTransformFeedback
  *
+ * For example, you can use TransformFeedbackSystem to implement GPU Particle or
+ * general purpose computing on GPU (aka GPGPU).
+ *
  * It also manages a lifetime of GLTransformFeedback object
  */
 export class TransformFeedbackSystem implements ISystem
