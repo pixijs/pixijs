@@ -1,7 +1,7 @@
 import { ExtensionType } from '@pixi/core';
 import { settings } from '@pixi/settings';
 import type { FormatDetectionParser } from '..';
-import { addFormat, removeFormat } from '../utils/detectUtils';
+import { addFormats, removeFormats } from '../utils/detectUtils';
 
 export const detectWebp = {
     extension: ExtensionType.DetectionParser,
@@ -14,6 +14,6 @@ export const detectWebp = {
 
         return createImageBitmap(blob).then(() => true, () => false);
     },
-    add: addFormat('webp'),
-    remove: removeFormat('webp')
+    add: addFormats('webp'),
+    remove: removeFormats('webp')
 } as FormatDetectionParser;
