@@ -12,3 +12,4 @@ export * from './shader/ShaderSystem';
 export * from './state/StateSystem';
 export * from './textures/TextureGCSystem';
 export * from './textures/TextureSystem';
+export * from './transformFeedback/TransformFeedbackSystem';

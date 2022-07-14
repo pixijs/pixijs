@@ -4,6 +4,7 @@ import type { Renderer } from '../Renderer';
 import type { IRenderingContext } from '../IRenderingContext';
 import type { Buffer } from './Buffer';
 import type { ISystem } from '../ISystem';
+import type { BUFFER_TYPE } from '@pixi/constants';
 
 /**
  * System plugin to the renderer to manage buffers.
@@ -77,6 +78,13 @@ export class BufferSystem implements ISystem
         gl.bindBuffer(buffer.type, glBuffer.buffer);
     }
 
+    unbind(type: BUFFER_TYPE): void
+    {
+        const { gl } = this;
+
+        gl.bindBuffer(type, null);
+    }
+
     /**
      * Binds an uniform buffer to at the given index.
      *
@@ -89,20 +97,6 @@ export class BufferSystem implements ISystem
         const { gl } = this;
 
         this.bindBufferBase(gl.UNIFORM_BUFFER, buffer, index);
-    }
-
-    /**
-     * Binds an transform feedback buffer to at the given index.
-     *
-     * A cache is used so a buffer will not be bound again if already bound.
-     * @param buffer - the buffer to bind
-     * @param index - the base index to bind it to.
-     */
-    bindTransformFeedbackBufferBase(buffer: Buffer, index: number): void
-    {
-        const { gl } = this;
-
-        this.bindBufferBase(gl.TRANSFORM_FEEDBACK_BUFFER, buffer, index);
     }
 
     /**
@@ -153,7 +147,7 @@ export class BufferSystem implements ISystem
     {
         const { gl, CONTEXT_UID } = this;
 
-        const glBuffer = buffer._glBuffers[CONTEXT_UID];
+        const glBuffer = buffer._glBuffers[CONTEXT_UID] || this.createGLBuffer(buffer);
 
         if (buffer._updateID === glBuffer.updateID)
         {

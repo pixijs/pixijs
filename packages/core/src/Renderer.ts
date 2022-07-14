@@ -29,6 +29,7 @@ import type { ISystemConstructor } from './ISystem';
 import type { IRenderingContext } from './IRenderingContext';
 import type { IRenderableObject } from './IRenderableObject';
 import { extensions, ExtensionType } from './extensions';
+import { TransformFeedbackSystem } from './transformFeedback/transformFeedbackSystem';
 
 export interface IRendererPluginConstructor
 {
@@ -136,6 +137,12 @@ export class Renderer extends AbstractRenderer
      * @readonly
      */
     public buffer: BufferSystem;
+
+    /**
+     * TransformFeedback system instance
+     * @readonly
+     */
+    public transformFeedback: TransformFeedbackSystem;
 
     /**
      * Geometry system instance
@@ -284,6 +291,7 @@ export class Renderer extends AbstractRenderer
             .addSystem(ShaderSystem, 'shader')
             .addSystem(TextureSystem, 'texture')
             .addSystem(BufferSystem, 'buffer')
+            .addSystem(TransformFeedbackSystem, 'transformFeedback')
             .addSystem(GeometrySystem, 'geometry')
             .addSystem(FramebufferSystem, 'framebuffer')
             .addSystem(ScissorSystem, 'scissor')
