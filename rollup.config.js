@@ -119,6 +119,7 @@ async function main()
             standalone,
             version,
             dependencies,
+            nodeDependencies,
             peerDependencies,
             // TODO: remove this in v7, along with the declaration in the package.json
             // This is a temporary fix to skip transpiling on the @pixi/node package
@@ -137,7 +138,8 @@ async function main()
 
         // Check for bundle folder
         const external = Object.keys(dependencies || [])
-            .concat(Object.keys(peerDependencies || []));
+            .concat(Object.keys(peerDependencies || []))
+            .concat(nodeDependencies || []);
         const basePath = path.relative(__dirname, pkg.dir);
         const input = path.join(basePath, 'src/index.ts');
         const freeze = false;
