@@ -39,16 +39,16 @@ import path from 'path';
 
 // This package requires the new asset loader to be used.
 // Initialize the new assets loader
-await PIXI.Assets.init();
+await Assets.init();
 
 // The application will create a renderer using WebGL. It will also setup the ticker
-// and the root stage PIXI.Container.
-const app = new PIXI.Application();
+// and the root stage Container.
+const app = new Application();
 
 // load a sprite
-const bunnyTexture = await PIXI.Assets.load(path.join(process.cwd(), 'assets/bunny.png'));
+const bunnyTexture = await Assets.load(path.join(process.cwd(), 'assets/bunny.png'));
 // create sprite from texture
-const bunny = PIXI.Sprite.from(bunnyTexture);
+const bunny = Sprite.from(bunnyTexture);
 
 // Setup the position of the bunny
 bunny.x = app.renderer.width / 2;
