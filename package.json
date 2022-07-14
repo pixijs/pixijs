@@ -9,6 +9,7 @@
   "scripts": {
     "start": "run-s watch",
     "clean:build": "rimraf \"{bundles,packages,out}/*/dist\"",
+    "clean:types": "rimraf \"{bundles,packages}/*/index.d.ts\"",
     "clean:dist": "rimraf dist/*",
     "clean:modules": "lerna clean --yes",
     "clean": "run-s clean:*",
