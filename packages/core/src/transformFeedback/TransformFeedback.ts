@@ -1,6 +1,12 @@
+import type { Buffer } from '@pixi/core';
 import { Runner } from '@pixi/runner';
-import type { Buffer } from 'pixi.js';
 
+/**
+ * A TransformFeedback object wrapping GLTransformFeedback object.
+ *
+ * For example you can use TransformFeedback object to feed-back buffer data from Shader having TransformFeedbackVaryings.
+ * TransformFeedbackSystem manages creating/destroying GLTransformFeedback
+ */
 export class TransformFeedback
 {
     _glTransformFeedbacks: {[key: number]: WebGLTransformFeedback};
@@ -16,6 +22,11 @@ export class TransformFeedback
         this.disposeRunner = new Runner('disposeTransformFeedback');
     }
 
+    /**
+     * Bind buffer to TransformFeedback
+     * @param index index to bind
+     * @param buffer buffer to bind
+     */
     bindBuffer(index: number, buffer: Buffer)
     {
         this.buffers[index] = buffer;
