@@ -42,7 +42,6 @@ export class Resolver
 {
     private _assetMap: Record<string, ResolveAsset[]> = {};
     private _preferredOrder: PreferOrder[] = [];
-
     private _parsers: ResolveURLParser[] = [];
 
     private _resolverHash: Record<string, ResolveAsset> = {};
@@ -100,24 +99,11 @@ export class Resolver
         return this._basePath;
     }
 
-    public get parsers(): ResolveURLParser[]
-    {
-        return this._parsers;
-    }
-
-    /** Used for testing, this resets the resolver to its initial state */
-    public reset(): void
-    {
-        this._preferredOrder = [];
-
-        this._resolverHash = {};
-        this._assetMap = {};
-        this._basePath = null;
-        this._manifest = null;
-    }
-
     /**
-     * A URL parser helps the parser to extract information and create an asset object-based on parsing the URL itself.
+     * All the active URL parsers that help the parser to extract information and create
+     * an asset object-based on parsing the URL itself.
+     *
+     * Can be added using the extensions API
      * @example
      * resolver.add('foo', [
      *    {
@@ -132,9 +118,9 @@ export class Resolver
      *    }
      * ]);
      *
-     *
      * // with a url parser the information such as resolution and file format could extracted from the url itself:
-     * resolver.addUrlParser({
+     * extensions.add({
+     *     extension: ExtensionType.ResolveParser,
      *     test: loadTextures.test, // test if url ends in an image
      *     parse: (value: string) =>
      *     ({
@@ -149,34 +135,22 @@ export class Resolver
      *    'image@2x.png'
      *    'image.png'
      * ]);
-     * @param urlParsers - The URL parser that you want to add to the resolver
+     * @
      */
-    public addUrlParser(...urlParsers: ResolveURLParser[]): void
+    public get parsers(): ResolveURLParser[]
     {
-        urlParsers.forEach((parser) =>
-        {
-            if (this._parsers.includes(parser)) return;
-
-            this._parsers.push(parser);
-        });
+        return this._parsers;
     }
 
-    /**
-     * Remove a URL parser from the resolver
-     * @param urlParsers - the URL parser that you want to remove from the resolver
-     */
-    public removeUrlParser(...urlParsers: ResolveURLParser[]): void
+    /** Used for testing, this resets the resolver to its initial state */
+    public reset(): void
     {
-        for (let i = urlParsers.length - 1; i >= 0; i--)
-        {
-            const parser = urlParsers[i];
-            const index = this._parsers.indexOf(parser);
+        this._preferredOrder = [];
 
-            if (index !== -1)
-            {
-                this._parsers.splice(index, 1);
-            }
-        }
+        this._resolverHash = {};
+        this._assetMap = {};
+        this._basePath = null;
+        this._manifest = null;
     }
 
     /**

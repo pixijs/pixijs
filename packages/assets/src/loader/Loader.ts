@@ -15,8 +15,7 @@ import type { PromiseAndParser, LoadAsset } from './types';
  */
 export class Loader
 {
-    /** All loader parsers registered */
-    public parsers: LoaderParser[] = [];
+    private _parsers: LoaderParser[] = [];
 
     /** Cache loading promises that ae currently active */
     public promiseCache: Record<string, PromiseAndParser> = {};
@@ -25,29 +24,6 @@ export class Loader
     public reset(): void
     {
         this.promiseCache = {};
-    }
-
-    /**
-     * Use this to add any parsers to the loadAssets function to use
-     * @param newParsers - An array of parsers to add to the loader, or just a single one
-     */
-    public addParser(...newParsers: LoaderParser[]): void
-    {
-        this.parsers.push(...newParsers);
-    }
-
-    /**
-     * Use this to remove any parsers you've added or any of the default ones.
-     * @param parsersToRemove - An array of parsers to remove from the loader, or just a single one
-     */
-    public removeParser(...parsersToRemove: LoaderParser[]): void
-    {
-        for (const parser of parsersToRemove)
-        {
-            const index = this.parsers.indexOf(parser);
-
-            if (index >= 0) this.parsers.splice(index, 1);
-        }
     }
 
     /**
@@ -215,5 +191,11 @@ export class Loader
         });
 
         await Promise.all(promises);
+    }
+
+    /** All loader parsers registered */
+    public get parsers(): LoaderParser[]
+    {
+        return this._parsers;
     }
 }

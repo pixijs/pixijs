@@ -104,7 +104,7 @@ describe('Resolver', () =>
             },
         });
 
-        resolver.addUrlParser(resolveTextureUrl);
+        resolver['_parsers'].push(resolveTextureUrl);
 
         resolver.add('test', [
             'profile-abel@0.5x.jpg',
@@ -277,7 +277,7 @@ describe('Resolver', () =>
             },
         });
 
-        resolver.addUrlParser(resolveTextureUrl);
+        resolver['_parsers'].push(resolveTextureUrl);
 
         resolver.add('test', [
             'my-image@4x.webp',

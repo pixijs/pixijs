@@ -16,13 +16,6 @@ import {
 } from '@pixi/assets';
 import { Loader } from '../src/loader/Loader';
 
-const dummyPlugin: LoaderParser = {
-    async load(url: string): Promise<string>
-    {
-        return url;
-    },
-} as LoaderParser<string, string>;
-
 describe('Loader', () =>
 {
     const serverPath = process.env.GITHUB_ACTIONS
@@ -34,24 +27,11 @@ describe('Loader', () =>
         Cache.reset();
     });
 
-    it('should add and remove a plugin', () =>
-    {
-        const loader = new Loader();
-
-        loader.addParser(dummyPlugin);
-
-        expect(loader.parsers).toHaveLength(1);
-
-        loader.removeParser(dummyPlugin);
-
-        expect(loader.parsers).toHaveLength(0);
-    });
-
     it('should load a single image', async () =>
     {
         const loader = new Loader();
 
-        loader.addParser(loadTextures);
+        loader['_parsers'].push(loadTextures);
 
         const texture: Texture = await loader.load(`${serverPath}textures/bunny.png`);
 
@@ -64,7 +44,7 @@ describe('Loader', () =>
     {
         const loader = new Loader();
 
-        loader.addParser(loadTextures);
+        loader['_parsers'].push(loadTextures);
 
         const texturesPromises = [];
 
@@ -87,7 +67,7 @@ describe('Loader', () =>
     {
         const loader = new Loader();
 
-        loader.addParser(loadTextures);
+        loader['_parsers'].push(loadTextures);
 
         const assetsUrls = [`${serverPath}textures/bunny.png`, `${serverPath}textures/bunny-2.png`];
 
@@ -101,7 +81,7 @@ describe('Loader', () =>
     {
         const loader = new Loader();
 
-        loader.addParser(loadJson);
+        loader['_parsers'].push(loadJson);
 
         const json = await loader.load(`${serverPath}json/test.json`);
 
@@ -115,7 +95,7 @@ describe('Loader', () =>
     {
         const loader = new Loader();
 
-        loader.addParser(loadJson, loadTextures, loadSpritesheet);
+        loader['_parsers'].push(loadJson, loadTextures, loadSpritesheet);
 
         const spriteSheet: Spritesheet = await loader.load(`${serverPath}spritesheet/spritesheet.json`);
 
@@ -140,9 +120,9 @@ describe('Loader', () =>
     {
         const loader = new Loader();
 
-        Cache.addParser(cacheSpritesheet);
+        Cache['_parsers'].push(cacheSpritesheet);
 
-        loader.addParser(loadJson, loadTextures, loadSpritesheet);
+        loader['_parsers'].push(loadJson, loadTextures, loadSpritesheet);
 
         const spritesheet = await loader.load(`${serverPath}spritesheet/multi-pack-0.json`) as Spritesheet;
 
@@ -167,7 +147,7 @@ describe('Loader', () =>
     {
         const loader = new Loader();
 
-        loader.addParser(loadTextures, loadBitmapFont);
+        loader['_parsers'].push(loadTextures, loadBitmapFont);
 
         const bitmapFont: BitmapFont = await loader.load(`${serverPath}bitmap-font/desyrel.xml`);
         const bitmapFont2: BitmapFont = await loader.load(`${serverPath}bitmap-font/font.fnt`);
@@ -180,7 +160,7 @@ describe('Loader', () =>
     {
         const loader = new Loader();
 
-        loader.addParser(loadTxt, loadTextures, loadBitmapFont);
+        loader['_parsers'].push(loadTxt, loadTextures, loadBitmapFont);
 
         const bitmapFont: BitmapFont = await loader.load(`${serverPath}bitmap-font/bmtxt-test.txt`);
 
@@ -191,7 +171,7 @@ describe('Loader', () =>
     {
         const loader = new Loader();
 
-        loader.addParser(loadTextures, loadBitmapFont);
+        loader['_parsers'].push(loadTextures, loadBitmapFont);
 
         const bitmapFont: BitmapFont = await loader.load(`${serverPath}bitmap-font/msdf.fnt`);
         const bitmapFont2: BitmapFont = await loader.load(`${serverPath}bitmap-font/sdf.fnt`);
@@ -206,7 +186,7 @@ describe('Loader', () =>
     {
         const loader = new Loader();
 
-        loader.addParser(loadTextures, loadBitmapFont);
+        loader['_parsers'].push(loadTextures, loadBitmapFont);
 
         const bitmapFont: BitmapFont = await loader.load(`${serverPath}bitmap-font/split_font.fnt`);
 
@@ -217,7 +197,7 @@ describe('Loader', () =>
     {
         const loader = new Loader();
 
-        loader.addParser(loadWebFont);
+        loader['_parsers'].push(loadWebFont);
 
         const font = await loader.load(`${serverPath}fonts/outfit.woff2`);
 
@@ -241,7 +221,7 @@ describe('Loader', () =>
         const loader = new Loader();
 
         document.fonts.clear();
-        loader.addParser(loadWebFont);
+        loader['_parsers'].push(loadWebFont);
 
         const font = await loader.load({
             data: {
@@ -271,7 +251,7 @@ describe('Loader', () =>
     {
         const loader = new Loader();
 
-        loader.addParser({
+        loader['_parsers'].push({
             test: () => true,
             load: async (url, options) =>
                 url + options.data.whatever,
@@ -289,7 +269,7 @@ describe('Loader', () =>
     {
         const loader = new Loader();
 
-        loader.addParser(loadTextures);
+        loader['_parsers'].push(loadTextures);
 
         const texture: Texture = await loader.load(`${serverPath}textures/bunny.png`);
 
@@ -307,7 +287,7 @@ describe('Loader', () =>
     {
         const loader = new Loader();
 
-        loader.addParser(loadJson, loadTextures, loadSpritesheet);
+        loader['_parsers'].push(loadJson, loadTextures, loadSpritesheet);
 
         const spriteSheet: Spritesheet = await loader.load(`${serverPath}spritesheet/spritesheet.json`);
 
@@ -320,7 +300,7 @@ describe('Loader', () =>
     {
         const loader = new Loader();
 
-        loader.addParser(loadTextures, loadBitmapFont);
+        loader['_parsers'].push(loadTextures, loadBitmapFont);
 
         const bitmapFont: BitmapFont = await loader.load(`${serverPath}bitmap-font/desyrel.xml`);
 
@@ -335,7 +315,7 @@ describe('Loader', () =>
     {
         const loader = new Loader();
 
-        loader.addParser(loadWebFont);
+        loader['_parsers'].push(loadWebFont);
 
         await loader.load(`${serverPath}fonts/outfit.woff2`);
 
