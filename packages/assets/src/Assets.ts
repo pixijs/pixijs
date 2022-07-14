@@ -2,9 +2,12 @@ import { extensions, ExtensionType } from '@pixi/core';
 import { BackgroundLoader } from './BackgroundLoader';
 import { Cache } from './cache/Cache';
 import { cacheSpritesheet, cacheTextureArray } from './cache/parsers';
+import type { FormatDetectionParser } from './detections';
+import { detectAvif, detectWebp } from './detections';
 import type {
     LoadAsset,
-    LoaderParser } from './loader';
+    LoaderParser
+} from './loader';
 import {
     loadJson,
     loadSpritesheet,
@@ -18,8 +21,6 @@ import type { PreferOrder, ResolveAsset, ResolverBundle, ResolverManifest, Resol
 import { resolveSpriteSheetUrl, resolveTextureUrl } from './resolver';
 import { Resolver } from './resolver/Resolver';
 import { convertToList } from './utils/convertToList';
-import { detectAvif } from './utils/detections/detectAvif';
-import { detectWebp } from './utils/detections/detectWebp';
 import { isSingleItem } from './utils/isSingleItem';
 
 export type ProgressCallback = (progress: number) => void;
@@ -230,6 +231,8 @@ export class AssetsClass
     /** takes care of loading assets in the background */
     private readonly _backgroundLoader: BackgroundLoader;
 
+    private _detections: FormatDetectionParser[] = [];
+
     private _initialized = false;
 
     constructor()
@@ -284,32 +287,40 @@ export class AssetsClass
         const resolutionPref =  options.texturePreference?.resolution ?? 1;
         const resolution = (typeof resolutionPref === 'number') ? [resolutionPref] : resolutionPref;
 
-        let format: string[];
+        let formats: string[];
 
         if (options.texturePreference?.format)
         {
             const formatPref = options.texturePreference?.format;
 
-            format = (typeof formatPref === 'string') ? [formatPref] : formatPref;
+            formats = (typeof formatPref === 'string') ? [formatPref] : formatPref;
+
+            // we should remove any formats that are not supported by the browser
+            for (const detection of this._detections)
+            {
+                if (!await detection.test())
+                {
+                    formats = await detection.remove(formats);
+                }
+            }
         }
         else
         {
-            format = ['avif', 'webp', 'png', 'jpg', 'jpeg'];
-        }
+            formats = ['png', 'jpg', 'jpeg'];
 
-        if (!(await detectWebp()))
-        {
-            format = format.filter((format) => format !== 'webp');
-        }
-
-        if (!(await detectAvif()))
-        {
-            format = format.filter((format) => format !== 'avif');
+            // we should add any formats that are supported by the browser
+            for (const detection of this._detections)
+            {
+                if (await detection.test())
+                {
+                    formats = await detection.add(formats);
+                }
+            }
         }
 
         this.resolver.prefer({
             params: {
-                format,
+                format: formats,
                 resolution,
             },
         });
@@ -769,6 +780,12 @@ export class AssetsClass
 
         await this.loader.unload(resolveArray);
     }
+
+    /** All the detection parsers currently added to the Assets class. */
+    public get detections(): FormatDetectionParser[]
+    {
+        return this._detections;
+    }
 }
 
 export const Assets = new AssetsClass();
@@ -777,7 +794,8 @@ export const Assets = new AssetsClass();
 extensions
     .handleByList(ExtensionType.LoadParser, Assets.loader.parsers)
     .handleByList(ExtensionType.ResolveParser, Assets.resolver.parsers)
-    .handleByList(ExtensionType.CacheParser, Assets.cache.parsers);
+    .handleByList(ExtensionType.CacheParser, Assets.cache.parsers)
+    .handleByList(ExtensionType.DetectionParser, Assets.detections);
 
 extensions.add(
     loadTextures,
@@ -793,5 +811,9 @@ extensions.add(
 
     // resolve extensions
     resolveTextureUrl,
-    resolveSpriteSheetUrl
+    resolveSpriteSheetUrl,
+
+    // detection extensions
+    detectWebp,
+    detectAvif
 );

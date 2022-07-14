@@ -19,6 +19,7 @@ enum ExtensionType
     LoadParser = 'load-parser',
     ResolveParser = 'resolve-parser',
     CacheParser = 'cache-parser',
+    DetectionParser = 'detection-parser',
 }
 
 interface ExtensionMetadataDetails
