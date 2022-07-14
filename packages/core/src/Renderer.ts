@@ -29,7 +29,7 @@ import type { ISystemConstructor } from './ISystem';
 import type { IRenderingContext } from './IRenderingContext';
 import type { IRenderableObject } from './IRenderableObject';
 import { extensions, ExtensionType } from './extensions';
-import { TransformFeedbackSystem } from './transformFeedback/transformFeedbackSystem';
+import { TransformFeedbackSystem } from './transformFeedback/TransformFeedbackSystem';
 
 export interface IRendererPluginConstructor
 {
