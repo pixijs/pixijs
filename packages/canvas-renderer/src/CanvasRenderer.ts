@@ -581,11 +581,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
      */
 }
 
-extensions.handle(
-    ExtensionType.CanvasRendererPlugin,
-    (extension) => { CanvasRenderer.__plugins[extension.name] = extension.ref; },
-    (extension) => { delete CanvasRenderer.__plugins[extension.name]; }
-);
+extensions.handleByMap(ExtensionType.CanvasRendererPlugin, CanvasRenderer.__plugins);
 extensions.handle(
     ExtensionType.CanvasRendererSystem,
     (extension) => { CanvasRenderer.__systems[extension.name] = extension.ref; },

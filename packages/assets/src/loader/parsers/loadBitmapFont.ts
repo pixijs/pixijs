@@ -1,12 +1,12 @@
 import type { Texture } from '@pixi/core';
 import { ExtensionType } from '@pixi/core';
+import { settings } from '@pixi/settings';
 import type { BitmapFontData } from '@pixi/text-bitmap';
 import { BitmapFont, TextFormat, XMLFormat, XMLStringFormat } from '@pixi/text-bitmap';
 import { dirname, extname, join } from '../../utils/path';
 
 import type { Loader } from '../Loader';
 import type { LoadAsset } from '../types';
-
 import type { LoaderParser } from './LoaderParser';
 
 async function _loadBitmap(src: string, data: BitmapFontData, loader: Loader): Promise<BitmapFont>
@@ -39,7 +39,7 @@ export const loadBitmapFont = {
         return validExtensions.includes(extname(url));
     },
 
-    testParse(data: string): boolean
+    async testParse(data: string): Promise<boolean>
     {
         const isText = TextFormat.test(data);
         const isXMLText = XMLStringFormat.test(data);
@@ -63,7 +63,7 @@ export const loadBitmapFont = {
 
     async load(url: string, _options: LoadAsset, loader: Loader): Promise<BitmapFont>
     {
-        const response = await fetch(url);
+        const response = await settings.ADAPTER.fetch(url);
 
         const text = await response.text();
 
@@ -72,8 +72,8 @@ export const loadBitmapFont = {
         return await _loadBitmap(url, XMLFormat.parse(data), loader);
     },
 
-    unload(bitmapFont: Texture): void
+    unload(bitmapFont: BitmapFont): void
     {
-        bitmapFont.destroy(true);
+        bitmapFont.destroy();
     }
-} as LoaderParser;
+} as LoaderParser<BitmapFont | string>;

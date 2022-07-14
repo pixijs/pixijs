@@ -1,3 +1,4 @@
+import { settings } from '@pixi/settings';
 import type { TextStyle, TextStyleWhiteSpace } from './TextStyle';
 
 interface IFontMetrics
@@ -723,11 +724,11 @@ export class TextMetrics
                     return c;
                 }
 
-                canvas = document.createElement('canvas');
+                canvas = settings.ADAPTER.createCanvas();
             }
             catch (ex)
             {
-                canvas = document.createElement('canvas');
+                canvas = settings.ADAPTER.createCanvas();
             }
             canvas.width = canvas.height = 10;
             TextMetrics.__canvas = canvas;

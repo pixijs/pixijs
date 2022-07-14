@@ -8,6 +8,7 @@ import { getResolutionOfUrl } from '@pixi/utils';
 import type { LoadAsset } from '../types';
 import { ALPHA_MODES, MIPMAP_MODES } from '@pixi/constants';
 import type { LoadTextureData } from './loadTexture';
+import { settings } from '@pixi/settings';
 
 const validImages = ['ktx'];
 
@@ -26,7 +27,7 @@ export const loadKTX = {
     async load(url: string, asset: LoadAsset, loader: Loader): Promise<Texture | Texture[]>
     {
         // get an array buffer...
-        const response = await fetch(url);
+        const response = await settings.ADAPTER.fetch(url);
 
         const arrayBuffer = await response.arrayBuffer();
 

@@ -148,7 +148,7 @@ describe('Assets', () =>
 
     it('should map all names', async () =>
     {
-        Assets.init({
+        await Assets.init({
             basePath,
         });
 

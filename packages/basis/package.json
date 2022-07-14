@@ -50,6 +50,7 @@
     "@pixi/constants": "6.4.2",
     "@pixi/core": "6.4.2",
     "@pixi/loaders": "6.4.2",
-    "@pixi/runner": "6.4.2"
+    "@pixi/runner": "6.4.2",
+    "@pixi/settings": "6.4.2"
   }
 }

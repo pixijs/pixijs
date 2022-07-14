@@ -1,4 +1,5 @@
 import { ExtensionType } from '@pixi/core';
+import { settings } from '@pixi/settings';
 import { extname } from '../../utils/path';
 import type { LoaderParser } from './LoaderParser';
 
@@ -13,7 +14,7 @@ export const loadTxt = {
 
     async load(url: string): Promise<string>
     {
-        const response = await fetch(url);
+        const response = await settings.ADAPTER.fetch(url);
 
         const txt = await response.text();
 

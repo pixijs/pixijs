@@ -1,3 +1,5 @@
+import { settings } from '@pixi/settings';
+
 let saidHello = false;
 const VERSION = '$_VERSION';
 
@@ -27,7 +29,7 @@ export function sayHello(type: string): void
         return;
     }
 
-    if (navigator.userAgent.toLowerCase().includes('chrome'))
+    if (settings.ADAPTER.getNavigator().userAgent.toLowerCase().indexOf('chrome') > -1)
     {
         const args = [
             `\n %c %c %c PixiJS ${VERSION} - ✰ ${type} ✰  %c  %c  http://www.pixijs.com/  %c %c ♥%c♥%c♥ \n\n`,
