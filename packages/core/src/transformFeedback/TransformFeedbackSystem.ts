@@ -10,6 +10,7 @@ import type { TransformFeedback } from './TransformFeedback';
  * general purpose computing on GPU (aka GPGPU).
  *
  * It also manages a lifetime of GLTransformFeedback object
+ * @memberof PIXI
  */
 export class TransformFeedbackSystem implements ISystem
 {
