@@ -780,6 +780,12 @@ export class AssetsClass
 
         await this.loader.unload(resolveArray);
     }
+
+    /** All the detection parsers currently added to the Assets class. */
+    public get detections(): FormatDetectionParser[]
+    {
+        return this._detections;
+    }
 }
 
 export const Assets = new AssetsClass();
@@ -788,14 +794,8 @@ export const Assets = new AssetsClass();
 extensions
     .handleByList(ExtensionType.LoadParser, Assets.loader.parsers)
     .handleByList(ExtensionType.ResolveParser, Assets.resolver.parsers)
-    .handleByList(ExtensionType.CacheParser, Assets.cache.parsers);
-extensions.handle(
-    ExtensionType.DetectionParser,
-    /* eslint-disable dot-notation */
-    (extension) => { Assets['_detections'].splice(Assets['_detections'].indexOf(extension.ref), 1); },
-    (extension) => { Assets['_detections'].push(extension.ref); },
-    /* eslint-enable dot-notation */
-);
+    .handleByList(ExtensionType.CacheParser, Assets.cache.parsers)
+    .handleByList(ExtensionType.DetectionParser, Assets.detections);
 
 extensions.add(
     loadTextures,
