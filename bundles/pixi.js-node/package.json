@@ -71,6 +71,7 @@
     "gl": "^5.0.0",
     "xml2js": "^0.4.23"
   },
+  "nodeDependencies": ["fs", "path"],
   "publishConfig": {
     "access": "public"
   },
