@@ -2,6 +2,12 @@ import type { ISystem, IRenderingContext, Renderer, Shader } from '@pixi/core';
 import type { DRAW_MODES } from '@pixi/constants';
 import type { TransformFeedback } from './TransformFeedback';
 
+/**
+ * TransformFeedbackSystem provides TransformFeedback of WebGL2
+ * https://developer.mozilla.org/en-US/docs/Web/API/WebGLTransformFeedback
+ *
+ * It also manages a lifetime of GLTransformFeedback object
+ */
 export class TransformFeedbackSystem implements ISystem
 {
     CONTEXT_UID: number;
@@ -27,7 +33,7 @@ export class TransformFeedbackSystem implements ISystem
     }
 
     /**
-     * Bind TransformFeedback and bindBufferBase
+     * Bind TransformFeedback and buffers
      * @param transformFeedback TransformFeedback to bind
      */
     bind(transformFeedback: TransformFeedback)
