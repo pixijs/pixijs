@@ -20,7 +20,7 @@ export class TransformFeedbackSystem implements ISystem
     private renderer: Renderer;
 
     /**
-     * @param {PIXI.Renderer} renderer - The renderer this System works for.
+     * @param renderer - The renderer this System works for.
      */
     constructor(renderer: Renderer)
     {
