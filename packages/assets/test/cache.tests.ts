@@ -21,23 +21,12 @@ describe('Cache', () =>
     beforeEach(() =>
     {
         Cache.reset();
-        Cache.removeParser(testParser);
-    });
-
-    it('should add and remove a plugin', () =>
-    {
-        Cache.addParser(testParser);
-
-        expect(Cache.parsers).toHaveLength(3);
-
-        Cache.removeParser(testParser);
-
-        expect(Cache.parsers).toHaveLength(2);
+        Cache['_parsers'] = [];
     });
 
     it('should process a custom parsers correctly', () =>
     {
-        Cache.addParser(testParser);
+        Cache['_parsers'].push(testParser);
 
         Cache.set('test', 'hello');
 
@@ -48,7 +37,7 @@ describe('Cache', () =>
 
     it('should process multiple keys with a custom parser correctly', () =>
     {
-        Cache.addParser(testParser);
+        Cache['_parsers'].push(testParser);
 
         Cache.set(['test', 'chicken'], 'hello');
 
@@ -63,7 +52,7 @@ describe('Cache', () =>
 
     it('should remove keys with a custom parsers correctly', () =>
     {
-        Cache.addParser(testParser);
+        Cache['_parsers'].push(testParser);
 
         Cache.set('test', 'hello');
 
@@ -76,7 +65,7 @@ describe('Cache', () =>
 
     it('should remove multiple keys with a custom parser correctly', () =>
     {
-        Cache.addParser(testParser);
+        Cache['_parsers'].push(testParser);
 
         Cache.set(['test', 'chicken'], 'hello');
 

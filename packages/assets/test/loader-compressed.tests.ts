@@ -8,7 +8,7 @@ describe('Compressed Loader', () =>
     {
         const loader = new Loader();
 
-        loader.addParser(loadKTX);
+        loader['_parsers'].push(loadKTX);
 
         // eslint-disable-next-line max-len
         const texture: Texture = await loader.load(`https://pixijs.io/compressed-textures-example/images/PixiJS-Logo_PNG_BC3_KTX.KTX`);
@@ -22,7 +22,7 @@ describe('Compressed Loader', () =>
     {
         const loader = new Loader();
 
-        loader.addParser(loadDDS);
+        loader['_parsers'].push(loadDDS);
 
         // eslint-disable-next-line max-len
         const texture: Texture = await loader.load(`https://pixijs.io/compressed-textures-example/images/airplane-boeing_JPG_BC3_1.DDS`);
@@ -43,7 +43,7 @@ describe('Compressed Loader', () =>
     //     //  console.log('DOING!!');
     //     const loader = new Loader();
 
-    //     loader.addParser(loadBasis);
+    //     loader['_parsers'].push(loadBasis);
 
     //     const texture: Texture = await loader.load(`https://pixijs.io/compressed-textures-example/images/kodim20.basis`);
 
