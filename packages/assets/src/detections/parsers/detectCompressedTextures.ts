@@ -1,5 +1,6 @@
 import type { CompressedTextureExtensionRef, CompressedTextureExtensions } from '@pixi/compressed-textures';
 import { ExtensionType } from '@pixi/core';
+import { settings } from '@pixi/settings';
 import type { FormatDetectionParser } from '..';
 
 let storedGl: WebGLRenderingContext;
@@ -24,7 +25,7 @@ export const detectCompressedTextures = {
     test: async (): Promise<boolean> =>
     {
         // Auto-detect WebGL compressed-texture extensions
-        const canvas = document.createElement('canvas');
+        const canvas = settings.ADAPTER.createCanvas();
         const gl = canvas.getContext('webgl');
 
         if (!gl)
