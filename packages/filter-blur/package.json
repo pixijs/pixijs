@@ -1,6 +1,6 @@
 {
   "name": "@pixi/filter-blur",
-  "version": "6.5.0-rc",
+  "version": "6.5.0-rc.2",
   "main": "dist/cjs/filter-blur.js",
   "module": "dist/esm/filter-blur.js",
   "bundle": "dist/browser/filter-blur.js",
@@ -39,7 +39,7 @@
     "*.d.ts"
   ],
   "peerDependencies": {
-    "@pixi/core": "6.5.0-rc",
-    "@pixi/settings": "6.5.0-rc"
+    "@pixi/core": "6.5.0-rc.2",
+    "@pixi/settings": "6.5.0-rc.2"
   }
 }
