@@ -36,6 +36,7 @@ To build from source you will need to make sure you have the following dependenc
 ```js
 import { Application, Sprite, Assets } from '@pixi/node';
 import path from 'path';
+import { writeFileSync } from 'fs';
 
 // This package requires the new asset loader to be used.
 // Initialize the new assets loader
@@ -68,9 +69,9 @@ app.ticker.add(() => {
 });
 
 // extract and save the stage
-app.renderer.render(stage);
+app.renderer.render(app.stage);
 const base64Image = app.renderer.plugins.extract
-    .canvas(stage)
+    .canvas(app.stage)
     .toDataURL('image/png');
 
 const base64Data = base64Image.replace(/^data:image\/png;base64,/, '');

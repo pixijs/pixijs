@@ -226,7 +226,10 @@ const extensions = {
             {
                 list.push(extension.ref);
                 // TODO: remove me later, only added for @pixi/loaders
-                extension.ref.add?.();
+                if (type === ExtensionType.Loader)
+                {
+                    extension.ref.add?.();
+                }
             },
             (extension) =>
             {
