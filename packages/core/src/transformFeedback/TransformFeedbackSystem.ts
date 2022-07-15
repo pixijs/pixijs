@@ -60,14 +60,17 @@ export class TransformFeedbackSystem implements ISystem
 
     /**
      * Begin TransformFeedback
-     * @param shader A Shader used by TransformFeedback
      * @param drawMode DrawMode for TransformFeedback
+     * @param shader A Shader used by TransformFeedback. Current bound shader will be used if not provided.
      */
-    beginTransfromFeedback(shader: Shader, drawMode: DRAW_MODES)
+    beginTransfromFeedback(drawMode: DRAW_MODES, shader?: Shader)
     {
         const { gl, renderer } = this;
 
-        renderer.shader.bind(shader);
+        if (shader)
+        {
+            renderer.shader.bind(shader);
+        }
 
         gl.beginTransformFeedback(drawMode);
     }
