@@ -51,14 +51,6 @@ interface ModernContext2D extends CanvasRenderingContext2D
 export class Text extends Sprite
 {
     /**
-     * New behavior for `lineHeight` that's meant to mimic HTML text. A value of `true` will
-     * make sure the first baseline is offset by the `lineHeight` value if it is greater than `fontSize`.
-     * A value of `false` will use the legacy behavior and not change the baseline of the first line.
-     * In the next major release, we'll enable this by default.
-     */
-    public static nextLineHeightBehavior = false;
-
-    /**
      * New rendering behavior for letter-spacing which uses Chrome's new native API. This will
      * lead to more accurate letter-spacing results because it does not try to manually draw
      * each character. However, this Chrome API is experimental and may not serve all cases yet.
@@ -263,7 +255,7 @@ export class Text extends Sprite
 
             let linePositionYShift = (lineHeight - fontProperties.fontSize) / 2;
 
-            if (!Text.nextLineHeightBehavior || lineHeight - fontProperties.fontSize < 0)
+            if (lineHeight - fontProperties.fontSize < 0)
             {
                 linePositionYShift = 0;
             }
