@@ -14,6 +14,18 @@
   "main": "dist/cjs/assets.js",
   "module": "dist/esm/assets.js",
   "bundle": "dist/browser/assets.js",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./index.d.ts",
+        "default": "./dist/esm/assets.js"
+      },
+      "require": {
+        "types": "./index.d.ts",
+        "default": "./dist/cjs/assets.js"
+      }
+    }
+  },
   "publishConfig": {
     "access": "public"
   },
