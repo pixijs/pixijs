@@ -2,14 +2,14 @@
   "name": "@pixi/sprite-tiling",
   "version": "6.5.0-rc.2",
   "main": "dist/cjs/sprite-tiling.js",
-  "module": "dist/esm/sprite-tiling.js",
+  "module": "dist/esm/sprite-tiling.mjs",
   "bundle": "dist/browser/sprite-tiling.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/sprite-tiling.js"
+        "default": "./dist/esm/sprite-tiling.mjs"
       },
       "require": {
         "types": "./index.d.ts",

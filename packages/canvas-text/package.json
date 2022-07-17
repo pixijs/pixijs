@@ -2,14 +2,14 @@
   "name": "@pixi/canvas-text",
   "version": "6.5.0-rc.2",
   "main": "dist/cjs/canvas-text.js",
-  "module": "dist/esm/canvas-text.js",
+  "module": "dist/esm/canvas-text.mjs",
   "bundle": "dist/browser/canvas-text.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/canvas-text.js"
+        "default": "./dist/esm/canvas-text.mjs"
       },
       "require": {
         "types": "./index.d.ts",

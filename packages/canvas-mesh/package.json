@@ -2,14 +2,14 @@
   "name": "@pixi/canvas-mesh",
   "version": "6.5.0-rc.2",
   "main": "dist/cjs/canvas-mesh.js",
-  "module": "dist/esm/canvas-mesh.js",
+  "module": "dist/esm/canvas-mesh.mjs",
   "bundle": "dist/browser/canvas-mesh.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/canvas-mesh.js"
+        "default": "./dist/esm/canvas-mesh.mjs"
       },
       "require": {
         "types": "./index.d.ts",

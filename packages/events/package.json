@@ -2,14 +2,14 @@
   "name": "@pixi/events",
   "version": "6.5.0-rc.2",
   "main": "dist/cjs/events.js",
-  "module": "dist/esm/events.js",
+  "module": "dist/esm/events.mjs",
   "bundle": "dist/browser/events.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/events.js"
+        "default": "./dist/esm/events.mjs"
       },
       "require": {
         "types": "./index.d.ts",

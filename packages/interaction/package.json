@@ -2,14 +2,14 @@
   "name": "@pixi/interaction",
   "version": "6.5.0-rc.2",
   "main": "dist/cjs/interaction.js",
-  "module": "dist/esm/interaction.js",
+  "module": "dist/esm/interaction.mjs",
   "bundle": "dist/browser/interaction.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/interaction.js"
+        "default": "./dist/esm/interaction.mjs"
       },
       "require": {
         "types": "./index.d.ts",

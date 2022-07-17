@@ -2,14 +2,14 @@
   "name": "@pixi/canvas-sprite",
   "version": "6.5.0-rc.2",
   "main": "dist/cjs/canvas-sprite.js",
-  "module": "dist/esm/canvas-sprite.js",
+  "module": "dist/esm/canvas-sprite.mjs",
   "bundle": "dist/browser/canvas-sprite.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/canvas-sprite.js"
+        "default": "./dist/esm/canvas-sprite.mjs"
       },
       "require": {
         "types": "./index.d.ts",

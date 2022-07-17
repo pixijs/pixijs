@@ -2,14 +2,14 @@
   "name": "@pixi/mesh-extras",
   "version": "6.5.0-rc.2",
   "main": "dist/cjs/mesh-extras.js",
-  "module": "dist/esm/mesh-extras.js",
+  "module": "dist/esm/mesh-extras.mjs",
   "bundle": "dist/browser/mesh-extras.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/mesh-extras.js"
+        "default": "./dist/esm/mesh-extras.mjs"
       },
       "require": {
         "types": "./index.d.ts",

@@ -2,14 +2,14 @@
   "name": "@pixi/loaders",
   "version": "6.5.0-rc.2",
   "main": "dist/cjs/loaders.js",
-  "module": "dist/esm/loaders.js",
+  "module": "dist/esm/loaders.mjs",
   "bundle": "dist/browser/loaders.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/loaders.js"
+        "default": "./dist/esm/loaders.mjs"
       },
       "require": {
         "types": "./index.d.ts",

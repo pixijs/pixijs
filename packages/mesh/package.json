@@ -2,14 +2,14 @@
   "name": "@pixi/mesh",
   "version": "6.5.0-rc.2",
   "main": "dist/cjs/mesh.js",
-  "module": "dist/esm/mesh.js",
+  "module": "dist/esm/mesh.mjs",
   "bundle": "dist/browser/mesh.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/mesh.js"
+        "default": "./dist/esm/mesh.mjs"
       },
       "require": {
         "types": "./index.d.ts",

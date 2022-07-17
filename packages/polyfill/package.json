@@ -2,14 +2,14 @@
   "name": "@pixi/polyfill",
   "version": "6.5.0-rc.2",
   "main": "dist/cjs/polyfill.js",
-  "module": "dist/esm/polyfill.js",
+  "module": "dist/esm/polyfill.mjs",
   "bundle": "dist/browser/polyfill.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/polyfill.js"
+        "default": "./dist/esm/polyfill.mjs"
       },
       "require": {
         "types": "./index.d.ts",

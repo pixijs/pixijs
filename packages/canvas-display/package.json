@@ -2,14 +2,14 @@
   "name": "@pixi/canvas-display",
   "version": "6.5.0-rc.2",
   "main": "dist/cjs/canvas-display.js",
-  "module": "dist/esm/canvas-display.js",
+  "module": "dist/esm/canvas-display.mjs",
   "bundle": "dist/browser/canvas-display.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/canvas-display.js"
+        "default": "./dist/esm/canvas-display.mjs"
       },
       "require": {
         "types": "./index.d.ts",

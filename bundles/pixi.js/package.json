@@ -11,7 +11,7 @@
   ],
   "standalone": true,
   "main": "dist/cjs/pixi.js",
-  "module": "dist/esm/pixi.js",
+  "module": "dist/esm/pixi.mjs",
   "bundle": "dist/browser/pixi.js",
   "bundleModule": "dist/browser/pixi.mjs",
   "bundleOutput": {
@@ -22,7 +22,7 @@
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/pixi.js"
+        "default": "./dist/esm/pixi.mjs"
       },
       "require": {
         "types": "./index.d.ts",

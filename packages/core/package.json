@@ -2,14 +2,14 @@
   "name": "@pixi/core",
   "version": "6.5.0-rc.2",
   "main": "dist/cjs/core.js",
-  "module": "dist/esm/core.js",
+  "module": "dist/esm/core.mjs",
   "bundle": "dist/browser/core.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/core.js"
+        "default": "./dist/esm/core.mjs"
       },
       "require": {
         "types": "./index.d.ts",

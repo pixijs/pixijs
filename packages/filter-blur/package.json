@@ -2,14 +2,14 @@
   "name": "@pixi/filter-blur",
   "version": "6.5.0-rc.2",
   "main": "dist/cjs/filter-blur.js",
-  "module": "dist/esm/filter-blur.js",
+  "module": "dist/esm/filter-blur.mjs",
   "bundle": "dist/browser/filter-blur.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/filter-blur.js"
+        "default": "./dist/esm/filter-blur.mjs"
       },
       "require": {
         "types": "./index.d.ts",

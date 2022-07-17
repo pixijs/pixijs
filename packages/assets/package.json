@@ -12,7 +12,7 @@
   "homepage": "https://github.com/pixijs/pixi.js#readme",
   "license": "MIT",
   "main": "dist/cjs/assets.js",
-  "module": "dist/esm/assets.js",
+  "module": "dist/esm/assets.mjs",
   "bundle": "dist/browser/assets.js",
   "publishConfig": {
     "access": "public"

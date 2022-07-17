@@ -2,14 +2,14 @@
   "name": "@pixi/graphics-extras",
   "version": "6.5.0-rc.2",
   "main": "dist/cjs/graphics-extras.js",
-  "module": "dist/esm/graphics-extras.js",
+  "module": "dist/esm/graphics-extras.mjs",
   "bundle": "dist/browser/graphics-extras.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/graphics-extras.js"
+        "default": "./dist/esm/graphics-extras.mjs"
       },
       "require": {
         "types": "./index.d.ts",
