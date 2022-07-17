@@ -78,7 +78,7 @@ async function main()
         alias({
             entries: [{
                 find: /^(@pixi\/([^\/]+))$/,
-                replacement: '$1/dist/esm/$2.min.js',
+                replacement: '$1/dist/esm/$2.min.mjs',
             }]
         }),
         ...prodPlugins
