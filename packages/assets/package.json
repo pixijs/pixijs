@@ -1,6 +1,6 @@
 {
   "name": "@pixi/assets",
-  "version": "6.5.0-rc.3",
+  "version": "6.5.0-rc.4",
   "description": "Asset manager for PixiJS, loading resolving and Cacheing",
   "keywords": [
     "pixi",
@@ -45,13 +45,13 @@
     "url": "https://github.com/pixijs/pixi.js/issues"
   },
   "peerDependencies": {
-    "@pixi/basis": "6.5.0-rc.3",
-    "@pixi/compressed-textures": "6.5.0-rc.3",
-    "@pixi/constants": "6.5.0-rc.3",
-    "@pixi/core": "6.5.0-rc.3",
-    "@pixi/settings": "6.5.0-rc.3",
-    "@pixi/spritesheet": "6.5.0-rc.3",
-    "@pixi/text-bitmap": "6.5.0-rc.3",
-    "@pixi/utils": "6.5.0-rc.3"
+    "@pixi/basis": "6.5.0-rc.4",
+    "@pixi/compressed-textures": "6.5.0-rc.4",
+    "@pixi/constants": "6.5.0-rc.4",
+    "@pixi/core": "6.5.0-rc.4",
+    "@pixi/settings": "6.5.0-rc.4",
+    "@pixi/spritesheet": "6.5.0-rc.4",
+    "@pixi/text-bitmap": "6.5.0-rc.4",
+    "@pixi/utils": "6.5.0-rc.4"
   }
 }
