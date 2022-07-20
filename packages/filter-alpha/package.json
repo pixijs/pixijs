@@ -2,14 +2,14 @@
   "name": "@pixi/filter-alpha",
   "version": "6.5.0-rc.2",
   "main": "dist/cjs/filter-alpha.js",
-  "module": "dist/esm/filter-alpha.js",
+  "module": "dist/esm/filter-alpha.mjs",
   "bundle": "dist/browser/filter-alpha.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/filter-alpha.js"
+        "default": "./dist/esm/filter-alpha.mjs"
       },
       "require": {
         "types": "./index.d.ts",

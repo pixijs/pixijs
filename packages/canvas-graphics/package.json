@@ -2,14 +2,14 @@
   "name": "@pixi/canvas-graphics",
   "version": "6.5.0-rc.2",
   "main": "dist/cjs/canvas-graphics.js",
-  "module": "dist/esm/canvas-graphics.js",
+  "module": "dist/esm/canvas-graphics.mjs",
   "bundle": "dist/browser/canvas-graphics.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/canvas-graphics.js"
+        "default": "./dist/esm/canvas-graphics.mjs"
       },
       "require": {
         "types": "./index.d.ts",

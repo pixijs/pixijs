@@ -2,14 +2,14 @@
   "name": "@pixi/text",
   "version": "6.5.0-rc.2",
   "main": "dist/cjs/text.js",
-  "module": "dist/esm/text.js",
+  "module": "dist/esm/text.mjs",
   "bundle": "dist/browser/text.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/text.js"
+        "default": "./dist/esm/text.mjs"
       },
       "require": {
         "types": "./index.d.ts",

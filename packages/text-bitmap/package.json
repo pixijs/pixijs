@@ -2,14 +2,14 @@
   "name": "@pixi/text-bitmap",
   "version": "6.5.0-rc.2",
   "main": "dist/cjs/text-bitmap.js",
-  "module": "dist/esm/text-bitmap.js",
+  "module": "dist/esm/text-bitmap.mjs",
   "bundle": "dist/browser/text-bitmap.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/text-bitmap.js"
+        "default": "./dist/esm/text-bitmap.mjs"
       },
       "require": {
         "types": "./index.d.ts",

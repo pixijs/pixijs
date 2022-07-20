@@ -2,14 +2,14 @@
   "name": "@pixi/canvas-renderer",
   "version": "6.5.0-rc.2",
   "main": "dist/cjs/canvas-renderer.js",
-  "module": "dist/esm/canvas-renderer.js",
+  "module": "dist/esm/canvas-renderer.mjs",
   "bundle": "dist/browser/canvas-renderer.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/canvas-renderer.js"
+        "default": "./dist/esm/canvas-renderer.mjs"
       },
       "require": {
         "types": "./index.d.ts",

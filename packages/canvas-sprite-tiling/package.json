@@ -2,14 +2,14 @@
   "name": "@pixi/canvas-sprite-tiling",
   "version": "6.5.0-rc.2",
   "main": "dist/cjs/canvas-sprite-tiling.js",
-  "module": "dist/esm/canvas-sprite-tiling.js",
+  "module": "dist/esm/canvas-sprite-tiling.mjs",
   "bundle": "dist/browser/canvas-sprite-tiling.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/canvas-sprite-tiling.js"
+        "default": "./dist/esm/canvas-sprite-tiling.mjs"
       },
       "require": {
         "types": "./index.d.ts",

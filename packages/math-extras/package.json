@@ -2,14 +2,14 @@
   "name": "@pixi/math-extras",
   "version": "6.5.0-rc.2",
   "main": "dist/cjs/math-extras.js",
-  "module": "dist/esm/math-extras.js",
+  "module": "dist/esm/math-extras.mjs",
   "bundle": "dist/browser/math-extras.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/math-extras.js"
+        "default": "./dist/esm/math-extras.mjs"
       },
       "require": {
         "types": "./index.d.ts",

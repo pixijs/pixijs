@@ -2,14 +2,14 @@
   "name": "@pixi/canvas-extract",
   "version": "6.5.0-rc.2",
   "main": "dist/cjs/canvas-extract.js",
-  "module": "dist/esm/canvas-extract.js",
+  "module": "dist/esm/canvas-extract.mjs",
   "bundle": "dist/browser/canvas-extract.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/canvas-extract.js"
+        "default": "./dist/esm/canvas-extract.mjs"
       },
       "require": {
         "types": "./index.d.ts",

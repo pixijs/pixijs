@@ -2,14 +2,14 @@
   "name": "@pixi/spritesheet",
   "version": "6.5.0-rc.2",
   "main": "dist/cjs/spritesheet.js",
-  "module": "dist/esm/spritesheet.js",
+  "module": "dist/esm/spritesheet.mjs",
   "bundle": "dist/browser/spritesheet.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/spritesheet.js"
+        "default": "./dist/esm/spritesheet.mjs"
       },
       "require": {
         "types": "./index.d.ts",

@@ -2,14 +2,14 @@
   "name": "@pixi/display",
   "version": "6.5.0-rc.2",
   "main": "dist/cjs/display.js",
-  "module": "dist/esm/display.js",
+  "module": "dist/esm/display.mjs",
   "bundle": "dist/browser/display.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/display.js"
+        "default": "./dist/esm/display.mjs"
       },
       "require": {
         "types": "./index.d.ts",

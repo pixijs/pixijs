@@ -2,14 +2,14 @@
   "name": "@pixi/mixin-cache-as-bitmap",
   "version": "6.5.0-rc.2",
   "main": "dist/cjs/mixin-cache-as-bitmap.js",
-  "module": "dist/esm/mixin-cache-as-bitmap.js",
+  "module": "dist/esm/mixin-cache-as-bitmap.mjs",
   "bundle": "dist/browser/mixin-cache-as-bitmap.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/mixin-cache-as-bitmap.js"
+        "default": "./dist/esm/mixin-cache-as-bitmap.mjs"
       },
       "require": {
         "types": "./index.d.ts",

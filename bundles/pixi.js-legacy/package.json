@@ -11,7 +11,7 @@
   ],
   "standalone": true,
   "main": "dist/cjs/pixi-legacy.js",
-  "module": "dist/esm/pixi-legacy.js",
+  "module": "dist/esm/pixi-legacy.mjs",
   "bundle": "dist/browser/pixi-legacy.js",
   "bundleModule": "dist/browser/pixi-legacy.mjs",
   "bundleOutput": {
@@ -22,7 +22,7 @@
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/pixi-legacy.js"
+        "default": "./dist/esm/pixi-legacy.mjs"
       },
       "require": {
         "types": "./index.d.ts",

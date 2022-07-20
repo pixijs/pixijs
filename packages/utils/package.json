@@ -2,14 +2,14 @@
   "name": "@pixi/utils",
   "version": "6.5.0-rc.2",
   "main": "dist/cjs/utils.js",
-  "module": "dist/esm/utils.js",
+  "module": "dist/esm/utils.mjs",
   "bundle": "dist/browser/utils.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/utils.js"
+        "default": "./dist/esm/utils.mjs"
       },
       "require": {
         "types": "./index.d.ts",

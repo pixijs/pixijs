@@ -2,14 +2,14 @@
   "name": "@pixi/filter-noise",
   "version": "6.5.0-rc.2",
   "main": "dist/cjs/filter-noise.js",
-  "module": "dist/esm/filter-noise.js",
+  "module": "dist/esm/filter-noise.mjs",
   "bundle": "dist/browser/filter-noise.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/filter-noise.js"
+        "default": "./dist/esm/filter-noise.mjs"
       },
       "require": {
         "types": "./index.d.ts",
