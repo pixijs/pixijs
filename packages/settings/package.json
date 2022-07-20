@@ -37,7 +37,7 @@
     "dist",
     "*.d.ts"
   ],
-  "dependencies": {
+  "devDependencies": {
     "ismobilejs": "^1.1.0"
   }
 }
