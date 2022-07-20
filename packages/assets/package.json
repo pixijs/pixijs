@@ -19,7 +19,7 @@
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/assets.js"
+        "default": "./dist/esm/assets.mjs"
       },
       "require": {
         "types": "./index.d.ts",
