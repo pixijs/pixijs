@@ -1,6 +1,6 @@
 {
   "name": "@pixi/ticker",
-  "version": "6.5.0-rc.2",
+  "version": "6.5.0-rc.3",
   "main": "dist/cjs/ticker.js",
   "module": "dist/esm/ticker.mjs",
   "bundle": "dist/browser/ticker.js",
@@ -38,6 +38,6 @@
     "*.d.ts"
   ],
   "peerDependencies": {
-    "@pixi/settings": "6.5.0-rc.2"
+    "@pixi/settings": "6.5.0-rc.3"
   }
 }

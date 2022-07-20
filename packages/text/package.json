@@ -1,6 +1,6 @@
 {
   "name": "@pixi/text",
-  "version": "6.5.0-rc.2",
+  "version": "6.5.0-rc.3",
   "main": "dist/cjs/text.js",
   "module": "dist/esm/text.mjs",
   "bundle": "dist/browser/text.js",
@@ -38,10 +38,10 @@
     "*.d.ts"
   ],
   "peerDependencies": {
-    "@pixi/core": "6.5.0-rc.2",
-    "@pixi/math": "6.5.0-rc.2",
-    "@pixi/settings": "6.5.0-rc.2",
-    "@pixi/sprite": "6.5.0-rc.2",
-    "@pixi/utils": "6.5.0-rc.2"
+    "@pixi/core": "6.5.0-rc.3",
+    "@pixi/math": "6.5.0-rc.3",
+    "@pixi/settings": "6.5.0-rc.3",
+    "@pixi/sprite": "6.5.0-rc.3",
+    "@pixi/utils": "6.5.0-rc.3"
   }
 }
