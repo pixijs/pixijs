@@ -1,31 +1,28 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
-/* eslint-disable @typescript-eslint/no-unused-expressions */
-import sinon from 'sinon';
 import type { IResourceMetadata } from '@pixi/loaders';
+import type { SinonFakeXMLHttpRequest, SinonFakeXMLHttpRequestStatic, SinonFakeTimers } from 'sinon';
 import { LoaderResource } from '@pixi/loaders';
-import { expect } from 'chai';
+import sinon from 'sinon';
 import { fixtureData } from './fixtures/data';
 
 describe('LoaderResource', () =>
 {
-    let request: any;
-    let res: any;
-    let xhr: any;
-    let clock: any;
+    let request: SinonFakeXMLHttpRequest;
+    let res: LoaderResource;
+    let xhr: SinonFakeXMLHttpRequestStatic;
+    let clock: SinonFakeTimers;
     const name = 'test-resource';
 
-    before(() =>
+    beforeAll(() =>
     {
         xhr = sinon.useFakeXMLHttpRequest();
-        xhr.onCreate = (req: any) =>
+        xhr.onCreate = (req) =>
         {
             request = req;
         };
         clock = sinon.useFakeTimers();
     });
 
-    after(() =>
+    afterAll(() =>
     {
         xhr.restore();
         clock.restore();
@@ -34,25 +31,26 @@ describe('LoaderResource', () =>
     beforeEach(() =>
     {
         res = new LoaderResource(name, fixtureData.url);
-        request = null;
+        request = undefined;
     });
 
     it('should construct properly with only a URL passed', () =>
     {
-        expect(res).to.have.property('name', name);
-        expect(res).to.have.property('type', LoaderResource.TYPE.UNKNOWN);
-        expect(res).to.have.property('url', fixtureData.url);
-        expect(res).to.have.property('data', null);
-        expect(res).to.have.property('crossOrigin', undefined);
-        expect(res).to.have.property('loadType', LoaderResource.LOAD_TYPE.XHR);
-        expect(res).to.have.property('xhrType', undefined);
-        expect(res).to.have.property('metadata').that.is.eql({});
-        expect(res).to.have.property('error', null);
-        expect(res).to.have.property('xhr', null);
+        expect(res).toHaveProperty('name', name);
+        expect(res).toHaveProperty('type', LoaderResource.TYPE.UNKNOWN);
+        expect(res).toHaveProperty('url', fixtureData.url);
+        expect(res).toHaveProperty('data', null);
+        expect(res).toHaveProperty('crossOrigin', undefined);
+        expect(res).toHaveProperty('loadType', LoaderResource.LOAD_TYPE.IMAGE);
+        expect(res).toHaveProperty('xhrType', undefined);
+        expect(res).toHaveProperty('metadata');
+        expect(res.metadata).toEqual({});
+        expect(res).toHaveProperty('error', null);
+        expect(res).toHaveProperty('xhr', null);
 
-        expect(res).to.have.property('isDataUrl', false);
-        expect(res).to.have.property('isComplete', false);
-        expect(res).to.have.property('isLoading', false);
+        expect(res).toHaveProperty('isDataUrl', false);
+        expect(res).toHaveProperty('isComplete', false);
+        expect(res).toHaveProperty('isLoading', false);
     });
 
     it('should construct properly with options passed', () =>
@@ -65,72 +63,74 @@ describe('LoaderResource', () =>
             metadata: meta as IResourceMetadata,
         });
 
-        expect(res).to.have.property('name', name);
-        expect(res).to.have.property('type', LoaderResource.TYPE.UNKNOWN);
-        expect(res).to.have.property('url', fixtureData.url);
-        expect(res).to.have.property('data', null);
-        expect(res).to.have.property('crossOrigin', 'anonymous');
-        expect(res).to.have.property('loadType', LoaderResource.LOAD_TYPE.IMAGE);
-        expect(res).to.have.property('xhrType', LoaderResource.XHR_RESPONSE_TYPE.BLOB);
-        expect(res).to.have.property('metadata', meta);
-        expect(res).to.have.property('error', null);
-        expect(res).to.have.property('xhr', null);
+        expect(res).toHaveProperty('name', name);
+        expect(res).toHaveProperty('type', LoaderResource.TYPE.UNKNOWN);
+        expect(res).toHaveProperty('url', fixtureData.url);
+        expect(res).toHaveProperty('data', null);
+        expect(res).toHaveProperty('crossOrigin', 'anonymous');
+        expect(res).toHaveProperty('loadType', LoaderResource.LOAD_TYPE.IMAGE);
+        expect(res).toHaveProperty('xhrType', LoaderResource.XHR_RESPONSE_TYPE.BLOB);
+        expect(res).toHaveProperty('metadata', meta);
+        expect(res).toHaveProperty('error', null);
+        expect(res).toHaveProperty('xhr', null);
 
-        expect(res).to.have.property('isDataUrl', false);
-        expect(res).to.have.property('isComplete', false);
-        expect(res).to.have.property('isLoading', false);
+        expect(res).toHaveProperty('isDataUrl', false);
+        expect(res).toHaveProperty('isComplete', false);
+        expect(res).toHaveProperty('isLoading', false);
     });
 
     describe('#complete', () =>
     {
         it('should emit the `complete` event', () =>
         {
-            const spy = sinon.spy();
+            const spy = jest.fn();
 
             res.onComplete.add(spy);
 
             res.complete();
 
-            expect(spy).to.have.been.calledWith(res);
+            expect(spy).toHaveBeenCalledWith(res);
         });
 
         it('should remove events from the data element', () =>
         {
             const data = {
-                addEventListener: () => { /* empty */ },
-                removeEventListener: () => { /* empty */ },
+                addEventListener: jest.fn(),
+                removeEventListener: jest.fn(),
             };
-            const mock = sinon.mock(data);
 
-            mock.expects('removeEventListener').once().withArgs('error');
-            mock.expects('removeEventListener').once().withArgs('load');
-            mock.expects('removeEventListener').once().withArgs('progress');
-            mock.expects('removeEventListener').once().withArgs('canplaythrough');
+            jest.spyOn(data, 'removeEventListener');
 
             res.data = data;
             res.complete();
 
-            mock.verify();
+            expect(data.removeEventListener.mock.calls[0][0]).toEqual('error');
+            expect(data.removeEventListener.mock.calls[1][0]).toEqual('load');
+            expect(data.removeEventListener.mock.calls[2][0]).toEqual('progress');
+            expect(data.removeEventListener.mock.calls[3][0]).toEqual('canplaythrough');
+
+            jest.clearAllMocks();
         });
 
         it('should remove events from the xhr element', () =>
         {
-            const data: any = {
-                addEventListener: () => { /* empty */ },
-                removeEventListener: () => { /* empty */ },
+            const data = {
+                addEventListener: jest.fn(),
+                removeEventListener: jest.fn(),
             };
-            const mock = sinon.mock(data);
 
-            mock.expects('removeEventListener').once().withArgs('error');
-            mock.expects('removeEventListener').once().withArgs('timeout');
-            mock.expects('removeEventListener').once().withArgs('abort');
-            mock.expects('removeEventListener').once().withArgs('progress');
-            mock.expects('removeEventListener').once().withArgs('load');
+            jest.spyOn(data, 'removeEventListener');
 
-            res.xhr = data;
+            (res as any).xhr = data;
             res.complete();
 
-            mock.verify();
+            expect(data.removeEventListener.mock.calls[0][0]).toEqual('error');
+            expect(data.removeEventListener.mock.calls[1][0]).toEqual('timeout');
+            expect(data.removeEventListener.mock.calls[2][0]).toEqual('abort');
+            expect(data.removeEventListener.mock.calls[3][0]).toEqual('progress');
+            expect(data.removeEventListener.mock.calls[4][0]).toEqual('load');
+
+            jest.clearAllMocks();
         });
     });
 
@@ -140,25 +140,25 @@ describe('LoaderResource', () =>
         {
             res.load();
 
-            res.xhr.abort = sinon.spy();
+            (res as any).xhr = {
+                abort: jest.fn(),
+            };
 
             res.abort(undefined);
 
-            expect(res.xhr.abort).to.have.been.calledOnce;
+            expect(res.xhr.abort).toHaveBeenCalledOnce();
         });
-
-        it('should abort in-flight XDR requests');
 
         it('should abort in-flight Image requests', () =>
         {
             res.data = new Image();
             res.data.src = fixtureData.url;
 
-            expect(res.data.src).to.equal(fixtureData.url);
+            expect(res.data.src).toEqual(fixtureData.url);
 
             res.abort(undefined);
 
-            expect(res.data.src).to.equal(LoaderResource.EMPTY_GIF);
+            expect(res.data.src).toEqual(LoaderResource.EMPTY_GIF);
         });
 
         it('should abort in-flight Video requests', () =>
@@ -166,11 +166,11 @@ describe('LoaderResource', () =>
             res.data = document.createElement('video');
             res.data.appendChild(document.createElement('source'));
 
-            expect(res.data.firstChild).to.exist;
+            expect(res.data.firstChild).toBeDefined();
 
             res.abort(undefined);
 
-            expect(res.data.firstChild).to.not.exist;
+            expect(res.data.firstChild).toBeNull();
         });
 
         it('should abort in-flight Audio requests', () =>
@@ -178,11 +178,11 @@ describe('LoaderResource', () =>
             res.data = document.createElement('audio');
             res.data.appendChild(document.createElement('source'));
 
-            expect(res.data.firstChild).to.exist;
+            expect(res.data.firstChild).toBeDefined();
 
             res.abort(undefined);
 
-            expect(res.data.firstChild).to.not.exist;
+            expect(res.data.firstChild).toBeNull();
         });
     });
 
@@ -190,19 +190,23 @@ describe('LoaderResource', () =>
     {
         it('should emit the start event', () =>
         {
-            const spy = sinon.spy();
+            const res = new LoaderResource(name, fixtureData.baseUrl);
+
+            const spy = jest.fn();
 
             res.onStart.add(spy);
 
             res.load();
 
-            expect(request).to.exist;
-            expect(spy).to.have.been.calledWith(res);
+            expect(request).toBeDefined();
+            expect(spy).toHaveBeenCalledWith(res);
         });
 
         it('should emit the complete event', () =>
         {
-            const spy = sinon.spy();
+            const res = new LoaderResource(name, fixtureData.baseUrl);
+
+            const spy = jest.fn();
 
             res.onComplete.add(spy);
 
@@ -210,21 +214,21 @@ describe('LoaderResource', () =>
 
             request.respond(200, fixtureData.dataJsonHeaders, fixtureData.dataJson);
 
-            expect(request).to.exist;
-            expect(spy).to.have.been.calledWith(res);
+            expect(request).toBeDefined();
+            expect(spy).toHaveBeenCalledWith(res);
         });
 
         it('should not load and emit a complete event if complete is called before load', () =>
         {
-            const spy = sinon.spy();
+            const spy = jest.fn();
 
             res.onComplete.add(spy);
 
             res.complete();
             res.load();
 
-            expect(request).not.to.exist;
-            expect(spy).to.have.been.calledWith(res);
+            expect(request).toBeUndefined();
+            expect(spy).toHaveBeenCalledWith(res);
         });
 
         it('should throw an error if complete is called twice', () =>
@@ -234,8 +238,8 @@ describe('LoaderResource', () =>
                 res.complete();
             }
 
-            expect(fn).to.not.throw(Error);
-            expect(fn).to.throw(Error);
+            expect(fn).not.toThrow(Error);
+            expect(fn).toThrow(Error);
         });
 
         it('should load using a data url', (done) =>
@@ -244,9 +248,11 @@ describe('LoaderResource', () =>
 
             res.onComplete.add(() =>
             {
-                expect(res).to.have.property('data').instanceOf(Image)
-                    .and.is.an.instanceOf(HTMLImageElement)
-                    .and.have.property('src', fixtureData.dataUrlGif);
+                expect(res).toHaveProperty('data');
+                expect(res.data).toBeInstanceOf(Image);
+                expect(res.data).toBeInstanceOf(HTMLImageElement);
+                expect(res.data).toHaveProperty('src');
+                expect(res.data.src).toEqual(fixtureData.dataUrlGif);
 
                 done();
             });
@@ -260,9 +266,11 @@ describe('LoaderResource', () =>
 
             res.onComplete.add(() =>
             {
-                expect(res).to.have.property('data').instanceOf(Image)
-                    .and.is.an.instanceOf(HTMLImageElement)
-                    .and.have.property('src', fixtureData.dataUrlSvg);
+                expect(res).toHaveProperty('data');
+                expect(res.data).toBeInstanceOf(Image);
+                expect(res.data).toBeInstanceOf(HTMLImageElement);
+                expect(res.data).toHaveProperty('src');
+                expect(res.data.src).toEqual(fixtureData.dataUrlSvg);
 
                 done();
             });
@@ -272,15 +280,18 @@ describe('LoaderResource', () =>
 
         it('should load using XHR', (done) =>
         {
+            const res = new LoaderResource(name, fixtureData.baseUrl);
+
             res.onComplete.add(() =>
             {
-                expect(res).to.have.property('data', fixtureData.dataJson);
+                expect(res).toHaveProperty('data');
+                expect(res.data).toEqual(fixtureData.dataJson);
                 done();
             });
 
             res.load();
 
-            expect(request).to.exist;
+            expect(request).toBeDefined();
 
             request.respond(200, fixtureData.dataJsonHeaders, fixtureData.dataJson);
         });
@@ -291,11 +302,13 @@ describe('LoaderResource', () =>
 
             res.load();
 
-            expect(request).to.not.exist;
+            expect(request).toBeUndefined();
 
-            expect(res).to.have.property('data').instanceOf(Image)
-                .and.is.an.instanceOf(HTMLImageElement)
-                .and.have.property('src', fixtureData.url);
+            expect(res).toHaveProperty('data');
+            expect(res.data).toBeInstanceOf(Image);
+            expect(res.data).toBeInstanceOf(HTMLImageElement);
+            expect(res.data).toHaveProperty('src');
+            expect(res.data.src).toEqual(fixtureData.url);
         });
 
         it('should load using Audio', () =>
@@ -304,12 +317,13 @@ describe('LoaderResource', () =>
 
             res.load();
 
-            expect(request).to.not.exist;
+            expect(request).toBeUndefined();
 
-            expect(res).to.have.property('data').instanceOf(HTMLAudioElement);
+            expect(res).toHaveProperty('data');
+            expect(res.data).toBeInstanceOf(HTMLAudioElement);
 
-            expect(res.data.children).to.have.length(1);
-            expect(res.data.children[0]).to.have.property('src', fixtureData.url);
+            expect(res.data.children).toHaveLength(1);
+            expect(res.data.children[0]).toHaveProperty('src', fixtureData.url);
         });
 
         it('should load using Video', () =>
@@ -318,18 +332,19 @@ describe('LoaderResource', () =>
 
             res.load();
 
-            expect(request).to.not.exist;
+            expect(request).toBeUndefined();
 
-            expect(res).to.have.property('data').instanceOf(HTMLVideoElement);
+            expect(res).toHaveProperty('data');
+            expect(res.data).toBeInstanceOf(HTMLVideoElement);
 
-            expect(res.data.children).to.have.length(1);
-            expect(res.data.children[0]).to.have.property('src', fixtureData.url);
+            expect(res.data.children).toHaveLength(1);
+            expect(res.data.children[0]).toHaveProperty('src', fixtureData.url);
         });
 
         it('should used the passed element for loading', () =>
         {
             const img = new Image();
-            const spy = sinon.spy(img, 'addEventListener');
+            const spy = jest.spyOn(img, 'addEventListener');
             const res = new LoaderResource(name, fixtureData.url, {
                 loadType: LoaderResource.LOAD_TYPE.IMAGE,
                 metadata: { loadElement: img },
@@ -337,16 +352,16 @@ describe('LoaderResource', () =>
 
             res.load();
 
-            expect(spy).to.have.been.calledThrice;
-            expect(img).to.have.property('src', fixtureData.url);
+            expect(spy).toHaveBeenCalledTimes(3);
+            expect(img).toHaveProperty('src', fixtureData.url);
 
-            spy.restore();
+            jest.resetAllMocks();
         });
 
         it('should used the passed element for loading, and skip assigning src', () =>
         {
             const img = new Image();
-            const spy = sinon.spy(img, 'addEventListener');
+            const spy = jest.spyOn(img, 'addEventListener');
             const res = new LoaderResource(name, fixtureData.url, {
                 loadType: LoaderResource.LOAD_TYPE.IMAGE,
                 metadata: { loadElement: img, skipSource: true },
@@ -354,10 +369,10 @@ describe('LoaderResource', () =>
 
             res.load();
 
-            expect(spy).to.have.been.calledThrice;
-            expect(img).to.have.property('src', '');
+            expect(spy).toHaveBeenCalledTimes(3);
+            expect(img).toHaveProperty('src', '');
 
-            spy.restore();
+            jest.resetAllMocks();
         });
 
         it('should set withCredentials for XHR when crossOrigin specified', () =>
@@ -370,7 +385,7 @@ describe('LoaderResource', () =>
 
             res.load();
 
-            expect(request.withCredentials).to.equal(true);
+            expect(request.withCredentials).toEqual(true);
         });
     });
 
@@ -382,15 +397,18 @@ describe('LoaderResource', () =>
 
             res.onComplete.add(() =>
             {
-                expect(res).to.have.property('error').instanceOf(Error);
-                expect(res).to.have.property('data').equal(null);
+                expect(res).toHaveProperty('error');
+                expect(res.error).toBeInstanceOf(Error);
+                expect(res).toHaveProperty('data');
+                expect(res.data).toEqual(null);
                 done();
             });
 
             res.load();
 
-            expect(request).to.exist;
-            request.triggerTimeout();
+            expect(request).toBeDefined();
+
+            clock.tick(200);
         });
 
         it('should abort Image loads', (done) =>
@@ -400,21 +418,27 @@ describe('LoaderResource', () =>
 
             res.onComplete.add(() =>
             {
-                expect(res).to.have.property('error').instanceOf(Error);
+                expect(res).toHaveProperty('error');
+                expect(res.error).toBeInstanceOf(Error);
 
-                expect(res).to.have.property('data').instanceOf(Image)
-                    .and.is.an.instanceOf(HTMLImageElement)
-                    .and.have.property('src', LoaderResource.EMPTY_GIF);
+                expect(res).toHaveProperty('data');
+                expect(res.data).toBeInstanceOf(Image);
+                expect(res.data).toBeInstanceOf(HTMLImageElement);
+                expect(res.data).toHaveProperty('src');
+                expect(res.data.src).toEqual(LoaderResource.EMPTY_GIF);
+
                 done();
             });
 
             res.load();
 
-            expect(request).to.not.exist;
+            expect(request).toBeUndefined();
 
-            expect(res).to.have.property('data').instanceOf(Image)
-                .and.is.an.instanceOf(HTMLImageElement)
-                .and.have.property('src', fixtureData.url);
+            expect(res).toHaveProperty('data');
+            expect(res.data).toBeInstanceOf(Image);
+            expect(res.data).toBeInstanceOf(HTMLImageElement);
+            expect(res.data).toHaveProperty('src');
+            expect(res.data.src).toEqual(fixtureData.url);
 
             clock.tick(1100);
         });
@@ -426,18 +450,20 @@ describe('LoaderResource', () =>
 
             res.onComplete.add(() =>
             {
-                expect(res).to.have.property('error').instanceOf(Error);
-                expect(res.data.children).to.have.length(0);
+                expect(res).toHaveProperty('error');
+                expect(res.error).toBeInstanceOf(Error);
+                expect(res.data.children).toHaveLength(0);
                 done();
             });
 
             res.load();
 
-            expect(request).to.not.exist;
+            expect(request).toBeUndefined();
 
-            expect(res).to.have.property('data').instanceOf(HTMLAudioElement);
-            expect(res.data.children).to.have.length(1);
-            expect(res.data.children[0]).to.have.property('src', fixtureData.url);
+            expect(res).toHaveProperty('data');
+            expect(res.data).toBeInstanceOf(HTMLAudioElement);
+            expect(res.data.children).toHaveLength(1);
+            expect(res.data.children[0]).toHaveProperty('src', fixtureData.url);
 
             clock.tick(1100);
         });
@@ -449,18 +475,21 @@ describe('LoaderResource', () =>
 
             res.onComplete.add(() =>
             {
-                expect(res).to.have.property('error').instanceOf(Error);
-                expect(res.data.children).to.have.length(0);
+                expect(res).toHaveProperty('error');
+                expect(res.error).toBeInstanceOf(Error);
+                expect(res.data.children).toHaveLength(0);
                 done();
             });
 
             res.load();
 
-            expect(request).to.not.exist;
+            expect(request).toBeUndefined();
 
-            expect(res).to.have.property('data').instanceOf(HTMLVideoElement);
-            expect(res.data.children).to.have.length(1);
-            expect(res.data.children[0]).to.have.property('src', fixtureData.url);
+            expect(res).toHaveProperty('data');
+            expect(res.data).toBeInstanceOf(HTMLVideoElement);
+            expect(res.data.children).toHaveLength(1);
+            expect(res.data.children[0]).toHaveProperty('src');
+            expect(res.data.children[0].src).toEqual(fixtureData.url);
 
             clock.tick(1100);
         });
@@ -470,27 +499,27 @@ describe('LoaderResource', () =>
     {
         beforeEach(() =>
         {
-            xhr.status = 0;
+            (xhr as any).status = 0;
         });
 
         it('should load resource even if the status is 0', () =>
         {
-            xhr.responseText = 'I am loaded resource';
+            (xhr as any).responseText = 'I am loaded resource';
 
-            res.xhr = xhr;
+            res.xhr = xhr as any;
             res['_xhrOnLoad']();
 
-            expect(res.isComplete).to.equal(true);
+            expect(res.isComplete).toEqual(true);
         });
 
         it('should load resource with array buffer data', () =>
         {
-            xhr.responseType = LoaderResource.XHR_RESPONSE_TYPE.BUFFER;
+            (xhr as any).responseType = LoaderResource.XHR_RESPONSE_TYPE.BUFFER;
 
-            res.xhr = xhr;
+            res.xhr = xhr as any;
             res['_xhrOnLoad']();
 
-            expect(res.isComplete).to.equal(true);
+            expect(res.isComplete).toEqual(true);
         });
     });
 
@@ -501,7 +530,7 @@ describe('LoaderResource', () =>
             expect(res._determineCrossOrigin(
                 'https://google.com',
                 { hostname: 'google.com', port: '', protocol: 'https:' }
-            )).to.equal('');
+            )).toEqual('');
         });
 
         it('should properly detect same-origin requests (#2)', () =>
@@ -509,7 +538,7 @@ describe('LoaderResource', () =>
             expect(res._determineCrossOrigin(
                 'https://google.com:443',
                 { hostname: 'google.com', port: '', protocol: 'https:' }
-            )).to.equal('');
+            )).toEqual('');
         });
 
         it('should properly detect same-origin requests (#3)', () =>
@@ -517,7 +546,7 @@ describe('LoaderResource', () =>
             expect(res._determineCrossOrigin(
                 'http://www.google.com:5678',
                 { hostname: 'www.google.com', port: '5678', protocol: 'http:' }
-            )).to.equal('');
+            )).toEqual('');
         });
 
         it('should properly detect cross-origin requests (#1)', () =>
@@ -525,7 +554,7 @@ describe('LoaderResource', () =>
             expect(res._determineCrossOrigin(
                 'https://google.com',
                 { hostname: 'google.com', port: '123', protocol: 'https:' }
-            )).to.equal('anonymous');
+            )).toEqual('anonymous');
         });
 
         it('should properly detect cross-origin requests (#2)', () =>
@@ -533,7 +562,7 @@ describe('LoaderResource', () =>
             expect(res._determineCrossOrigin(
                 'https://google.com',
                 { hostname: 'google.com', port: '', protocol: 'http:' }
-            )).to.equal('anonymous');
+            )).toEqual('anonymous');
         });
 
         it('should properly detect cross-origin requests (#3)', () =>
@@ -541,7 +570,7 @@ describe('LoaderResource', () =>
             expect(res._determineCrossOrigin(
                 'https://google.com',
                 { hostname: 'googles.com', port: '', protocol: 'https:' }
-            )).to.equal('anonymous');
+            )).toEqual('anonymous');
         });
 
         it('should properly detect cross-origin requests (#4)', () =>
@@ -549,7 +578,7 @@ describe('LoaderResource', () =>
             expect(res._determineCrossOrigin(
                 'https://google.com',
                 { hostname: 'www.google.com', port: '123', protocol: 'https:' }
-            )).to.equal('anonymous');
+            )).toEqual('anonymous');
         });
         it('should properly detect cross-origin requests (#5) - sandboxed iframe', () =>
         {
@@ -560,7 +589,7 @@ describe('LoaderResource', () =>
             expect(res._determineCrossOrigin(
                 'http://www.google.com:5678',
                 { hostname: 'www.google.com', port: '5678', protocol: 'http:' }
-            )).to.equal('anonymous');
+            )).toEqual('anonymous');
             // Restore origin to prevent test leakage.
             (window as any).origin = originalOrigin;
         });
@@ -570,36 +599,38 @@ describe('LoaderResource', () =>
     {
         it('should return the proper extension', () =>
         {
-            res.url = 'http://www.google.com/image.png';
-            expect(res['_getExtension']()).to.equal('png');
+            let res;
 
-            res.url = 'http://domain.net/really/deep/path/that/goes/for/a/while/movie.wmv';
-            expect(res['_getExtension']()).to.equal('wmv');
+            res = new LoaderResource(name, 'http://www.google.com/image.png');
+            expect(res['_getExtension']()).toEqual('png');
 
-            res.url = 'http://somewhere.io/path.with.dots/and_a-bunch_of.symbols/data.txt';
-            expect(res['_getExtension']()).to.equal('txt');
+            res = new LoaderResource(name, 'http://domain.net/really/deep/path/that/goes/for/a/while/movie.wmv');
+            expect(res['_getExtension']()).toEqual('wmv');
 
-            res.url = 'http://nowhere.me/image.jpg?query=true&string=false&name=real';
-            expect(res['_getExtension']()).to.equal('jpg');
+            res = new LoaderResource(name, 'http://somewhere.io/path.with.dots/and_a-bunch_of.symbols/data.txt');
+            expect(res['_getExtension']()).toEqual('txt');
 
-            res.url = 'http://nowhere.me/image.jpeg?query=movie.wmv&file=data.json';
-            expect(res['_getExtension']()).to.equal('jpeg');
+            res = new LoaderResource(name, 'http://nowhere.me/image.jpg?query=true&string=false&name=real');
+            expect(res['_getExtension']()).toEqual('jpg');
 
-            res.url = 'http://nowhere.me/image.jpeg?query=movie.wmv&file=data.json';
-            expect(res['_getExtension']()).to.equal('jpeg');
+            res = new LoaderResource(name, 'http://nowhere.me/image.jpeg?query=movie.wmv&file=data.json');
+            expect(res['_getExtension']()).toEqual('jpeg');
 
-            res.url = 'http://nowhere.me/image.jpeg?query=movie.wmv&file=data.json#/derp.mp3';
-            expect(res['_getExtension']()).to.equal('jpeg');
+            res = new LoaderResource(name, 'http://nowhere.me/image.jpeg?query=movie.wmv&file=data.json');
+            expect(res['_getExtension']()).toEqual('jpeg');
 
-            res.url = 'http://nowhere.me/image.jpeg?query=movie.wmv&file=data.json#/derp.mp3&?me=two';
-            expect(res['_getExtension']()).to.equal('jpeg');
+            res = new LoaderResource(name, 'http://nowhere.me/image.jpeg?query=movie.wmv&file=data.json#/derp.mp3');
+            expect(res['_getExtension']()).toEqual('jpeg');
 
-            res.url = 'http://nowhere.me/image.jpeg#nothing-to-see-here?query=movie.wmv&file=data.json#/derp.mp3&?me=two'; // eslint-disable-line max-len
-            expect(res['_getExtension']()).to.equal('jpeg');
+            res = new LoaderResource(name, 'http://nowhere.me/image.jpeg?query=movie.wmv&file=data.json#/derp.mp3&?me=two');
+            expect(res['_getExtension']()).toEqual('jpeg');
+
+            res = new LoaderResource(name, 'http://nowhere.me/image.jpeg#nothing-to-see-here?query=movie.wmv&file=data.json#/derp.mp3&?me=two'); // eslint-disable-line max-len
+            expect(res['_getExtension']()).toEqual('jpeg');
 
             res['_setFlag'](LoaderResource.STATUS_FLAGS.DATA_URL, true);
-            res.url = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAMSURBVBhXY2BgYAAAAAQAAVzN/2kAAAAASUVORK5CYII='; // eslint-disable-line max-len
-            expect(res['_getExtension']()).to.equal('png');
+            res = new LoaderResource(name, 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAMSURBVBhXY2BgYAAAAAQAAVzN/2kAAAAASUVORK5CYII='); // eslint-disable-line max-len
+            expect(res['_getExtension']()).toEqual('png');
         });
     });
 
@@ -607,64 +638,68 @@ describe('LoaderResource', () =>
     {
         it('Should return the correct src url', () =>
         {
-            res.url = 'http://www.google.com/audio.mp3';
-            expect(res['_createSource']('audio', res.url)).to.have.property('src', res.url);
+            let res;
 
-            res.url = 'http://domain.net/really/deep/path/that/goes/for/a/while/movie.wmv';
-            expect(res['_createSource']('video', res.url)).to.have.property('src', res.url);
+            res = new LoaderResource(name, 'http://www.google.com/audio.mp3');
+            expect(res['_createSource']('audio', res.url, '')).toHaveProperty('src', res.url);
 
-            res.url = 'http://somewhere.io/path.with.dots/and_a-bunch_of.symbols/audio.mp3';
-            expect(res['_createSource']('audio', res.url)).to.have.property('src', res.url);
+            res = new LoaderResource(name, 'http://domain.net/really/deep/path/that/goes/for/a/while/movie.wmv');
+            expect(res['_createSource']('video', res.url, '')).toHaveProperty('src', res.url);
 
-            res.url = 'http://nowhere.me/audio.mp3?query=true&string=false&name=real';
-            expect(res['_createSource']('audio', res.url)).to.have.property('src', res.url);
+            res = new LoaderResource(name, 'http://somewhere.io/path.with.dots/and_a-bunch_of.symbols/audio.mp3');
+            expect(res['_createSource']('audio', res.url, '')).toHaveProperty('src', res.url);
 
-            res.url = 'http://nowhere.me/audio.mp3?query=movie.wmv&file=data.json';
-            expect(res['_createSource']('audio', res.url)).to.have.property('src', res.url);
+            res = new LoaderResource(name, 'http://nowhere.me/audio.mp3?query=true&string=false&name=real');
+            expect(res['_createSource']('audio', res.url, '')).toHaveProperty('src', res.url);
 
-            res.url = 'http://nowhere.me/audio.mp3?query=movie.wmv&file=data.json';
-            expect(res['_createSource']('audio', res.url)).to.have.property('src', res.url);
+            res = new LoaderResource(name, 'http://nowhere.me/audio.mp3?query=movie.wmv&file=data.json');
+            expect(res['_createSource']('audio', res.url, '')).toHaveProperty('src', res.url);
 
-            res.url = 'http://nowhere.me/audio.mp3?query=movie.wmv&file=data.json#/derp.mp3&?me=two';
-            expect(res['_createSource']('audio', res.url)).to.have.property('src', res.url);
+            res = new LoaderResource(name, 'http://nowhere.me/audio.mp3?query=movie.wmv&file=data.json');
+            expect(res['_createSource']('audio', res.url, '')).toHaveProperty('src', res.url);
 
-            res.url = 'http://nowhere.me/audio.mp3#nothing-to-see-here?query=movie.wmv&file=data.json#/derp.mp3&?me=two'; // eslint-disable-line max-len
-            expect(res['_createSource']('audio', res.url)).to.have.property('src', res.url);
+            res = new LoaderResource(name, 'http://nowhere.me/audio.mp3?query=movie.wmv&file=data.json#/derp.mp3&?me=two');
+            expect(res['_createSource']('audio', res.url, '')).toHaveProperty('src', res.url);
+
+            res = new LoaderResource(name, 'http://nowhere.me/audio.mp3#nothing-to-see-here?query=movie.wmv&file=data.json#/derp.mp3&?me=two'); // eslint-disable-line max-len
+            expect(res['_createSource']('audio', res.url, '')).toHaveProperty('src', res.url);
 
             res['_setFlag'](LoaderResource.STATUS_FLAGS.DATA_URL, true);
-            res.url = 'data:audio/wave;base64,UklGRjIAAABXQVZFZm10IBIAAAABAAEAQB8AAEAfAAABAAgAAABmYWN0BAAAAAAAAABkYXRhAAAAAA=='; // eslint-disable-line max-len
-            expect(res['_createSource']('audio', res.url)).to.have.property('src', res.url);
+            res = new LoaderResource(name, 'data:audio/wave;base64,UklGRjIAAABXQVZFZm10IBIAAAABAAEAQB8AAEAfAAABAAgAAABmYWN0BAAAAAAAAABkYXRhAAAAAA=='); // eslint-disable-line max-len
+            expect(res['_createSource']('audio', res.url, '')).toHaveProperty('src', res.url);
         });
 
         it('Should correctly auto-detect the mime type', () =>
         {
-            res.url = 'http://www.google.com/audio.mp3';
-            expect(res['_createSource']('audio', res.url)).to.have.property('type', 'audio/mp3');
+            let res;
 
-            res.url = 'http://domain.net/really/deep/path/that/goes/for/a/while/movie.wmv';
-            expect(res['_createSource']('video', res.url)).to.have.property('type', 'video/wmv');
+            res = new LoaderResource(name, 'http://www.google.com/audio.mp3');
+            expect(res['_createSource']('audio', res.url, '')).toHaveProperty('type', 'audio/mp3');
 
-            res.url = 'http://somewhere.io/path.with.dots/and_a-bunch_of.symbols/audio.mp3';
-            expect(res['_createSource']('audio', res.url)).to.have.property('type', 'audio/mp3');
+            res = new LoaderResource(name, 'http://domain.net/really/deep/path/that/goes/for/a/while/movie.wmv');
+            expect(res['_createSource']('video', res.url, '')).toHaveProperty('type', 'video/wmv');
 
-            res.url = 'http://nowhere.me/audio.mp3?query=true&string=false&name=real';
-            expect(res['_createSource']('audio', res.url)).to.have.property('type', 'audio/mp3');
+            res = new LoaderResource(name, 'http://somewhere.io/path.with.dots/and_a-bunch_of.symbols/audio.mp3');
+            expect(res['_createSource']('audio', res.url, '')).toHaveProperty('type', 'audio/mp3');
 
-            res.url = 'http://nowhere.me/audio.mp3?query=movie.wmv&file=data.json';
-            expect(res['_createSource']('audio', res.url)).to.have.property('type', 'audio/mp3');
+            res = new LoaderResource(name, 'http://nowhere.me/audio.mp3?query=true&string=false&name=real');
+            expect(res['_createSource']('audio', res.url, '')).toHaveProperty('type', 'audio/mp3');
 
-            res.url = 'http://nowhere.me/audio.mp3?query=movie.wmv&file=data.json';
-            expect(res['_createSource']('audio', res.url)).to.have.property('type', 'audio/mp3');
+            res = new LoaderResource(name, 'http://nowhere.me/audio.mp3?query=movie.wmv&file=data.json');
+            expect(res['_createSource']('audio', res.url, '')).toHaveProperty('type', 'audio/mp3');
 
-            res.url = 'http://nowhere.me/audio.mp3?query=movie.wmv&file=data.json#/derp.mp3&?me=two';
-            expect(res['_createSource']('audio', res.url)).to.have.property('type', 'audio/mp3');
+            res = new LoaderResource(name, 'http://nowhere.me/audio.mp3?query=movie.wmv&file=data.json');
+            expect(res['_createSource']('audio', res.url, '')).toHaveProperty('type', 'audio/mp3');
 
-            res.url = 'http://nowhere.me/audio.mp3#nothing-to-see-here?query=movie.wmv&file=data.json#/derp.mp3&?me=two'; // eslint-disable-line max-len
-            expect(res['_createSource']('audio', res.url)).to.have.property('type', 'audio/mp3');
+            res = new LoaderResource(name, 'http://nowhere.me/audio.mp3?query=movie.wmv&file=data.json#/derp.mp3&?me=two');
+            expect(res['_createSource']('audio', res.url, '')).toHaveProperty('type', 'audio/mp3');
+
+            res = new LoaderResource(name, 'http://nowhere.me/audio.mp3#nothing-to-see-here?query=movie.wmv&file=data.json#/derp.mp3&?me=two'); // eslint-disable-line max-len
+            expect(res['_createSource']('audio', res.url, '')).toHaveProperty('type', 'audio/mp3');
 
             res['_setFlag'](LoaderResource.STATUS_FLAGS.DATA_URL, true);
-            res.url = 'data:audio/wave;base64,UklGRjIAAABXQVZFZm10IBIAAAABAAEAQB8AAEAfAAABAAgAAABmYWN0BAAAAAAAAABkYXRhAAAAAA=='; // eslint-disable-line max-len
-            expect(res['_createSource']('audio', res.url)).to.have.property('type', 'audio/wave');
+            res = new LoaderResource(name, 'data:audio/wave;base64,UklGRjIAAABXQVZFZm10IBIAAAABAAEAQB8AAEAfAAABAAgAAABmYWN0BAAAAAAAAABkYXRhAAAAAA=='); // eslint-disable-line max-len
+            expect(res['_createSource']('audio', res.url, '')).toHaveProperty('type', 'audio/wave');
         });
     });
 });

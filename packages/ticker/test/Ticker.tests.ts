@@ -228,7 +228,7 @@ describe('Ticker', () =>
         expect(length()).toEqual(len);
     });
 
-    it.skip('should remove once listener in a stack', () =>
+    it('should remove once listener in a stack', () =>
     {
         const len = length();
         const listener1 = jest.fn();
@@ -333,7 +333,7 @@ describe('Ticker', () =>
         expect(length()).toEqual(len);
     });
 
-    it.skip('should remove itself before, still calling new item', () =>
+    it('should remove itself before, still calling new item', () =>
     {
         const len = length();
         const listener2 = jest.fn();
@@ -365,7 +365,7 @@ describe('Ticker', () =>
         expect(length()).toEqual(len);
     });
 
-    it.skip('should remove items before and after current priority', () =>
+    it('should remove items before and after current priority', () =>
     {
         const len = length();
         const listener2 = jest.fn();
