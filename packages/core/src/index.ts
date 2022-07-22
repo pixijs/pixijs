@@ -1,5 +1,15 @@
 import './settings';
 
+/**
+ * @namespace PIXI
+ */
+
+/**
+ * String of the current PIXI version.
+ * @memberof PIXI
+ */
+export const VERSION = '$_VERSION';
+
 export * from './extensions';
 export * from './textures/resources';
 export * from './systems';

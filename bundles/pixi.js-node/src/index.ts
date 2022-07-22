@@ -50,8 +50,6 @@ extensions.add(
 INSTALLED.length = 0;
 INSTALLED.push(NodeCanvasResource);
 
-export const VERSION = '$_VERSION';
-
 export const filters = {
     AlphaFilter,
     BlurFilter,
