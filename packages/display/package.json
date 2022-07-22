@@ -1,6 +1,6 @@
 {
   "name": "@pixi/display",
-  "version": "6.5.0-rc.4",
+  "version": "6.5.0",
   "main": "dist/cjs/display.js",
   "module": "dist/esm/display.mjs",
   "bundle": "dist/browser/display.js",
@@ -38,8 +38,8 @@
     "*.d.ts"
   ],
   "peerDependencies": {
-    "@pixi/math": "6.5.0-rc.4",
-    "@pixi/settings": "6.5.0-rc.4",
-    "@pixi/utils": "6.5.0-rc.4"
+    "@pixi/math": "6.5.0",
+    "@pixi/settings": "6.5.0",
+    "@pixi/utils": "6.5.0"
   }
 }
