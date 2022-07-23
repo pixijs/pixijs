@@ -1,15 +1,15 @@
 {
   "name": "@pixi/math",
-  "version": "6.4.2",
+  "version": "6.5.0",
   "main": "dist/cjs/math.js",
-  "module": "dist/esm/math.js",
+  "module": "dist/esm/math.mjs",
   "bundle": "dist/browser/math.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/math.js"
+        "default": "./dist/esm/math.mjs"
       },
       "require": {
         "types": "./index.d.ts",

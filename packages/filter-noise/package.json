@@ -1,15 +1,15 @@
 {
   "name": "@pixi/filter-noise",
-  "version": "6.4.2",
+  "version": "6.5.0",
   "main": "dist/cjs/filter-noise.js",
-  "module": "dist/esm/filter-noise.js",
+  "module": "dist/esm/filter-noise.mjs",
   "bundle": "dist/browser/filter-noise.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/filter-noise.js"
+        "default": "./dist/esm/filter-noise.mjs"
       },
       "require": {
         "types": "./index.d.ts",
@@ -39,6 +39,6 @@
     "*.d.ts"
   ],
   "peerDependencies": {
-    "@pixi/core": "6.4.2"
+    "@pixi/core": "6.5.0"
   }
 }

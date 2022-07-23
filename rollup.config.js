@@ -41,7 +41,7 @@ function prodName(name)
 
 async function main()
 {
-    const commonPlugins = [
+    let commonPlugins = [
         sourcemaps(),
         resolve({
             browser: true,
@@ -57,7 +57,7 @@ async function main()
         }),
     ];
 
-    const plugins = [
+    let plugins = [
         preprocessPlugin(true),
         esbuild({
             target: moduleTarget,
@@ -73,7 +73,7 @@ async function main()
         ...commonPlugins
     ];
 
-    const prodPlugins = [
+    let prodPlugins = [
         preprocessPlugin(false),
         esbuild({
             target: moduleTarget,
@@ -86,7 +86,7 @@ async function main()
         alias({
             entries: [{
                 find: /^(@pixi\/([^\/]+))$/,
-                replacement: '$1/dist/esm/$2.min.js',
+                replacement: '$1/dist/esm/$2.min.mjs',
             }]
         }),
         preprocessPlugin(false),
@@ -132,7 +132,12 @@ async function main()
             standalone,
             version,
             dependencies,
-            peerDependencies } = pkg.config;
+            nodeDependencies,
+            peerDependencies,
+            // TODO: remove this in v7, along with the declaration in the package.json
+            // This is a temporary fix to skip transpiling on the @pixi/node package
+            transpile
+        } = pkg.config;
 
         const banner = [
             `/*!`,
@@ -146,10 +151,52 @@ async function main()
 
         // Check for bundle folder
         const external = Object.keys(dependencies || [])
-            .concat(Object.keys(peerDependencies || []));
+            .concat(Object.keys(peerDependencies || []))
+            .concat(nodeDependencies || []);
         const basePath = path.relative(__dirname, pkg.dir);
         const input = path.join(basePath, 'src/index.ts');
         const freeze = false;
+
+        if (transpile === 'es6')
+        {
+            // TODO: this hack is for the @pixi/node package to skip transpiling.
+            // This can be removed in v7 where transpiling is no longer required.
+            commonPlugins = [
+                sourcemaps(),
+                resolve({
+                    browser: true,
+                    preferBuiltins: false,
+                }),
+                commonjs(),
+                json(),
+                // TODO: We do still need to keep this plugin for the @pixi/node package as `importHelpers` is required
+                typescript({
+                    importHelpers: true,
+                    target: 'ES2020',
+                }),
+                string({
+                    include: [
+                        '**/*.frag',
+                        '**/*.vert',
+                    ],
+                }),
+            ];
+
+            plugins = [
+                preprocessPlugin(true),
+                ...commonPlugins
+            ];
+
+            prodPlugins = [
+                preprocessPlugin(false),
+                ...commonPlugins,
+                terser({
+                    output: {
+                        comments: (node, comment) => comment.line === 1,
+                    },
+                })
+            ];
+        }
 
         results.push({
             input,

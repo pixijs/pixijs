@@ -1,15 +1,15 @@
 {
   "name": "@pixi/accessibility",
-  "version": "6.4.2",
+  "version": "6.5.0",
   "main": "dist/cjs/accessibility.js",
-  "module": "dist/esm/accessibility.js",
+  "module": "dist/esm/accessibility.mjs",
   "bundle": "dist/browser/accessibility.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/accessibility.js"
+        "default": "./dist/esm/accessibility.mjs"
       },
       "require": {
         "types": "./index.d.ts",
@@ -38,9 +38,9 @@
     "*.d.ts"
   ],
   "peerDependencies": {
-    "@pixi/core": "6.4.2",
-    "@pixi/display": "6.4.2",
-    "@pixi/events": "6.4.2",
-    "@pixi/utils": "6.4.2"
+    "@pixi/core": "6.5.0",
+    "@pixi/display": "6.5.0",
+    "@pixi/events": "6.5.0",
+    "@pixi/utils": "6.5.0"
   }
 }

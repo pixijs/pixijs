@@ -116,7 +116,7 @@ export class Text extends Sprite
 
         if (!canvas)
         {
-            canvas = document.createElement('canvas');
+            canvas = settings.ADAPTER.createCanvas();
             ownCanvas = true;
         }
 
@@ -132,7 +132,7 @@ export class Text extends Sprite
 
         this._ownCanvas = ownCanvas;
         this.canvas = canvas;
-        this.context = this.canvas.getContext('2d');
+        this.context = canvas.getContext('2d') as CanvasRenderingContext2D;
 
         this._resolution = settings.RESOLUTION;
         this._autoResolution = true;

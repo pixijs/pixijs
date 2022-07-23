@@ -1,15 +1,15 @@
 {
   "name": "@pixi/graphics-extras",
-  "version": "6.4.2",
+  "version": "6.5.0",
   "main": "dist/cjs/graphics-extras.js",
-  "module": "dist/esm/graphics-extras.js",
+  "module": "dist/esm/graphics-extras.mjs",
   "bundle": "dist/browser/graphics-extras.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/graphics-extras.js"
+        "default": "./dist/esm/graphics-extras.mjs"
       },
       "require": {
         "types": "./index.d.ts",
@@ -36,7 +36,7 @@
     "*.d.ts"
   ],
   "peerDependencies": {
-    "@pixi/graphics": "6.4.2",
-    "@pixi/math": "6.4.2"
+    "@pixi/graphics": "6.5.0",
+    "@pixi/math": "6.5.0"
   }
 }

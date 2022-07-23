@@ -45,20 +45,6 @@ extensions.add(
 );
 
 /**
- * String of the current PIXI version.
- * @static
- * @constant
- * @memberof PIXI
- * @name VERSION
- * @type {string}
- */
-export const VERSION = '$_VERSION';
-
-/**
- * @namespace PIXI
- */
-
-/**
  * This namespace contains WebGL-only display filters that can be applied
  * to DisplayObjects using the {@link PIXI.DisplayObject#filters filters} property.
  *

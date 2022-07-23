@@ -366,7 +366,7 @@ describe('async', () =>
             };
         });
 
-        it.skip('pause', (done: () => void) =>
+        it('pause', (done: () => void) =>
         {
             const callOrder: Array<string> = [];
             const taskTimeout = 80;

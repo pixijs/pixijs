@@ -1,15 +1,15 @@
 {
   "name": "@pixi/canvas-sprite-tiling",
-  "version": "6.4.2",
+  "version": "6.5.0",
   "main": "dist/cjs/canvas-sprite-tiling.js",
-  "module": "dist/esm/canvas-sprite-tiling.js",
+  "module": "dist/esm/canvas-sprite-tiling.mjs",
   "bundle": "dist/browser/canvas-sprite-tiling.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/canvas-sprite-tiling.js"
+        "default": "./dist/esm/canvas-sprite-tiling.mjs"
       },
       "require": {
         "types": "./index.d.ts",
@@ -39,10 +39,10 @@
     "*.d.ts"
   ],
   "peerDependencies": {
-    "@pixi/canvas-renderer": "6.4.2",
-    "@pixi/canvas-sprite": "6.4.2",
-    "@pixi/math": "6.4.2",
-    "@pixi/sprite-tiling": "6.4.2",
-    "@pixi/utils": "6.4.2"
+    "@pixi/canvas-renderer": "6.5.0",
+    "@pixi/canvas-sprite": "6.5.0",
+    "@pixi/math": "6.5.0",
+    "@pixi/sprite-tiling": "6.5.0",
+    "@pixi/utils": "6.5.0"
   }
 }

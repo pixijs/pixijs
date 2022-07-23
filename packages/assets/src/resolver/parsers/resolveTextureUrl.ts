@@ -4,7 +4,7 @@ import { settings } from '@pixi/settings';
 import { loadTextures } from '../../loader';
 import type { ResolveAsset, ResolveURLParser } from '../types';
 
-export const textureUrlParser = {
+export const resolveTextureUrl = {
     extension: ExtensionType.ResolveParser,
     test: loadTextures.test,
     parse: (value: string): ResolveAsset =>

@@ -1,15 +1,15 @@
 {
   "name": "@pixi/text",
-  "version": "6.4.2",
+  "version": "6.5.0",
   "main": "dist/cjs/text.js",
-  "module": "dist/esm/text.js",
+  "module": "dist/esm/text.mjs",
   "bundle": "dist/browser/text.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/text.js"
+        "default": "./dist/esm/text.mjs"
       },
       "require": {
         "types": "./index.d.ts",
@@ -38,10 +38,10 @@
     "*.d.ts"
   ],
   "peerDependencies": {
-    "@pixi/core": "6.4.2",
-    "@pixi/math": "6.4.2",
-    "@pixi/settings": "6.4.2",
-    "@pixi/sprite": "6.4.2",
-    "@pixi/utils": "6.4.2"
+    "@pixi/core": "6.5.0",
+    "@pixi/math": "6.5.0",
+    "@pixi/settings": "6.5.0",
+    "@pixi/sprite": "6.5.0",
+    "@pixi/utils": "6.5.0"
   }
 }

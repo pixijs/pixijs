@@ -1,15 +1,15 @@
 {
   "name": "@pixi/unsafe-eval",
-  "version": "6.4.2",
+  "version": "6.5.0",
   "main": "dist/cjs/unsafe-eval.js",
-  "module": "dist/esm/unsafe-eval.js",
+  "module": "dist/esm/unsafe-eval.mjs",
   "bundle": "dist/browser/unsafe-eval.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/unsafe-eval.js"
+        "default": "./dist/esm/unsafe-eval.mjs"
       },
       "require": {
         "types": "./index.d.ts",
@@ -36,6 +36,6 @@
     "*.d.ts"
   ],
   "peerDependencies": {
-    "@pixi/core": "6.4.2"
+    "@pixi/core": "6.5.0"
   }
 }

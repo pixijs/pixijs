@@ -19,37 +19,13 @@ import type { CacheParser } from './CacheParser';
  */
 class CacheClass
 {
-    /** All loader parsers registered */
-    public parsers: CacheParser[] = [];
+    private _parsers: CacheParser[] = [];
 
     private readonly _cache: Map<string, any> = new Map();
     private readonly _cacheMap: Map<string, {
         keys: string[],
         cacheKeys: string[],
     }> = new Map();
-
-    /**
-     * Use this to add any parsers to the `cache.set` function to
-     * @param newParsers - An array of parsers to add to the cache or just a single one
-     */
-    public addParser(...newParsers: CacheParser[]): void
-    {
-        this.parsers.push(...newParsers);
-    }
-
-    /**
-     * For exceptional situations where a cache parser might be causing some trouble,
-     * @param parsersToRemove - An array of parsers to remove from the cache, or just a single one
-     */
-    public removeParser(...parsersToRemove: CacheParser[]): void
-    {
-        for (const parser of parsersToRemove)
-        {
-            const index = this.parsers.indexOf(parser);
-
-            if (index >= 0) this.parsers.splice(index, 1);
-        }
-    }
 
     /** Clear all entries. */
     public reset(): void
@@ -192,6 +168,12 @@ class CacheClass
         {
             this._cacheMap.delete(key);
         });
+    }
+
+    /** All loader parsers registered */
+    public get parsers(): CacheParser[]
+    {
+        return this._parsers;
     }
 }
 

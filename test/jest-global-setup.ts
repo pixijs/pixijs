@@ -1,19 +1,30 @@
-import { exec } from 'child_process';
-import path from 'path';
+import { spawn } from 'child_process';
+import { join } from 'path';
 
 // eslint-disable-next-line func-names
 module.exports = async function ()
 {
     if (!process.env.GITHUB_ACTIONS)
     {
+        const httpServerProcess = spawn('http-server', ['-c-1', `${join(process.cwd(), './packages')}`]);
+
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        globalThis.__SERVER__ = exec(`http-server -c-1 ${path.join(process.cwd(), './packages')}`);
-    }
+        globalThis.__SERVER__ = httpServerProcess;
 
-    await new Promise((resolve) =>
-    {
         // give the server time to start
-        setTimeout(resolve, 1000);
-    });
+        await new Promise<void>((resolve) =>
+        {
+            let data = '';
+
+            httpServerProcess.stdout.on('data', (chunk) =>
+            {
+                data += chunk;
+                if (data.includes('Hit CTRL-C to stop the server'))
+                {
+                    resolve();
+                }
+            });
+        });
+    }
 };

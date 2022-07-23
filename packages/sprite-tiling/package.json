@@ -1,15 +1,15 @@
 {
   "name": "@pixi/sprite-tiling",
-  "version": "6.4.2",
+  "version": "6.5.0",
   "main": "dist/cjs/sprite-tiling.js",
-  "module": "dist/esm/sprite-tiling.js",
+  "module": "dist/esm/sprite-tiling.mjs",
   "bundle": "dist/browser/sprite-tiling.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/sprite-tiling.js"
+        "default": "./dist/esm/sprite-tiling.mjs"
       },
       "require": {
         "types": "./index.d.ts",
@@ -38,11 +38,11 @@
     "*.d.ts"
   ],
   "peerDependencies": {
-    "@pixi/constants": "6.4.2",
-    "@pixi/core": "6.4.2",
-    "@pixi/display": "6.4.2",
-    "@pixi/math": "6.4.2",
-    "@pixi/sprite": "6.4.2",
-    "@pixi/utils": "6.4.2"
+    "@pixi/constants": "6.5.0",
+    "@pixi/core": "6.5.0",
+    "@pixi/display": "6.5.0",
+    "@pixi/math": "6.5.0",
+    "@pixi/sprite": "6.5.0",
+    "@pixi/utils": "6.5.0"
   }
 }

@@ -650,17 +650,8 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
 }
 
 // Handle registration of extensions
-extensions.handle(
-    ExtensionType.RendererPlugin,
-    (extension) => { Renderer.__plugins[extension.name] = extension.ref; },
-    (extension) => { delete Renderer.__plugins[extension.name]; }
-);
-extensions.handle(
-    ExtensionType.RendererSystem,
-    (extension) => { Renderer.__systems[extension.name] = extension.ref; },
-    (extension) => { delete Renderer.__systems[extension.name]; }
-);
-
+extensions.handleByMap(ExtensionType.RendererPlugin, Renderer.__plugins);
+extensions.handleByMap(ExtensionType.RendererSystem, Renderer.__systems);
 extensions.add(
     Renderer,
     GenerateTextureSystem,

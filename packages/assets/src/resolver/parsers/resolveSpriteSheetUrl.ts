@@ -4,7 +4,7 @@ import type { ResolveAsset, ResolveURLParser } from '../types';
 
 const validImages = ['jpg', 'png', 'jpeg', 'avif', 'webp'];
 
-export const spriteSheetUrlParser = {
+export const resolveSpriteSheetUrl = {
     extension: ExtensionType.ResolveParser,
 
     test: (value: string): boolean =>

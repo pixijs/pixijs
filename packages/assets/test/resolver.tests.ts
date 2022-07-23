@@ -1,9 +1,45 @@
-import { spriteSheetUrlParser, textureUrlParser } from '@pixi/assets';
+import { resolveCompressedTextureUrl, resolveSpriteSheetUrl, resolveTextureUrl } from '@pixi/assets';
 import { Resolver } from '../src/resolver/Resolver';
 import { manifest } from './sampleManifest';
 
 describe('Resolver', () =>
 {
+    it('should resolve asset', () =>
+    {
+        const resolver = new Resolver();
+
+        resolver['_parsers'].push(resolveCompressedTextureUrl);
+
+        resolver.prefer({
+            priority: ['format'],
+            params: {
+                format: ['s3tc', 's3tc_sRGB', 'png', 'webp'],
+                resolution: 1
+            }
+        });
+
+        resolver.add('test', [
+            {
+                resolution: 1,
+                format: 'png',
+                src: 'my-image.png',
+            },
+            {
+                resolution: 1,
+                format: 'webp',
+                src: 'my-image.webp',
+            },
+            {
+                resolution: 1,
+                format: 's3tc',
+                src: 'my-image.s3tc.ktx',
+            },
+        ]);
+
+        const asset = resolver.resolveUrl('test');
+
+        expect(asset).toEqual('my-image.s3tc.ktx');
+    });
     it('should resolve asset', () =>
     {
         const resolver = new Resolver();
@@ -104,7 +140,7 @@ describe('Resolver', () =>
             },
         });
 
-        resolver.addUrlParser(textureUrlParser);
+        resolver['_parsers'].push(resolveTextureUrl);
 
         resolver.add('test', [
             'profile-abel@0.5x.jpg',
@@ -277,7 +313,7 @@ describe('Resolver', () =>
             },
         });
 
-        resolver.addUrlParser(textureUrlParser);
+        resolver['_parsers'].push(resolveTextureUrl);
 
         resolver.add('test', [
             'my-image@4x.webp',
@@ -452,13 +488,13 @@ describe('Resolver', () =>
             },
         ].forEach((toTest) =>
         {
-            const pass = spriteSheetUrlParser.test(toTest.url);
+            const pass = resolveSpriteSheetUrl.test(toTest.url);
 
             expect(pass).toBe(toTest.pass);
 
             if (pass)
             {
-                expect(spriteSheetUrlParser.parse(toTest.url)).toEqual(toTest.result);
+                expect(resolveSpriteSheetUrl.parse(toTest.url)).toEqual(toTest.result);
             }
         });
     });

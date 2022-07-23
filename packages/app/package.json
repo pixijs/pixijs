@@ -1,15 +1,15 @@
 {
   "name": "@pixi/app",
-  "version": "6.4.2",
+  "version": "6.5.0",
   "main": "dist/cjs/app.js",
-  "module": "dist/esm/app.js",
+  "module": "dist/esm/app.mjs",
   "bundle": "dist/browser/app.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/app.js"
+        "default": "./dist/esm/app.mjs"
       },
       "require": {
         "types": "./index.d.ts",
@@ -38,7 +38,7 @@
     "*.d.ts"
   ],
   "peerDependencies": {
-    "@pixi/core": "6.4.2",
-    "@pixi/display": "6.4.2"
+    "@pixi/core": "6.5.0",
+    "@pixi/display": "6.5.0"
   }
 }

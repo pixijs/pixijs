@@ -1,15 +1,15 @@
 {
   "name": "@pixi/canvas-extract",
-  "version": "6.4.2",
+  "version": "6.5.0",
   "main": "dist/cjs/canvas-extract.js",
-  "module": "dist/esm/canvas-extract.js",
+  "module": "dist/esm/canvas-extract.mjs",
   "bundle": "dist/browser/canvas-extract.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/canvas-extract.js"
+        "default": "./dist/esm/canvas-extract.mjs"
       },
       "require": {
         "types": "./index.d.ts",
@@ -38,10 +38,10 @@
     "*.d.ts"
   ],
   "peerDependencies": {
-    "@pixi/canvas-renderer": "6.4.2",
-    "@pixi/core": "6.4.2",
-    "@pixi/display": "6.4.2",
-    "@pixi/math": "6.4.2",
-    "@pixi/utils": "6.4.2"
+    "@pixi/canvas-renderer": "6.5.0",
+    "@pixi/core": "6.5.0",
+    "@pixi/display": "6.5.0",
+    "@pixi/math": "6.5.0",
+    "@pixi/utils": "6.5.0"
   }
 }
