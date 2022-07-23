@@ -1,4 +1,5 @@
 import { hex2rgb, rgb2hex } from '@pixi/utils';
+import { settings } from '@pixi/settings';
 import { canUseNewCanvasBlendModes } from './utils/canUseNewCanvasBlendModes';
 
 import type { Texture } from '@pixi/core';
@@ -47,7 +48,7 @@ export const canvasUtils = {
         }
         else
         {
-            canvas = document.createElement('canvas');
+            canvas = settings.ADAPTER.createCanvas();
         }
 
         canvasUtils.tintMethod(texture, color, canvas);
@@ -94,7 +95,7 @@ export const canvasUtils = {
         }
         if (!canvasUtils.canvas)
         {
-            canvasUtils.canvas = document.createElement('canvas');
+            canvasUtils.canvas = settings.ADAPTER.createCanvas();
         }
         canvasUtils.tintMethod(texture, color, canvasUtils.canvas);
         pattern = canvasUtils.canvas.getContext('2d').createPattern(canvasUtils.canvas, 'repeat');

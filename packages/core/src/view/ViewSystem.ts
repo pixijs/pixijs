@@ -81,7 +81,7 @@ export class ViewSystem implements ISystem
     {
         this.screen = new Rectangle(0, 0, options.width, options.height);
 
-        this.element = options.view || document.createElement('canvas');
+        this.element = options.view || settings.ADAPTER.createCanvas();
 
         this.resolution = options.resolution || settings.RESOLUTION;
 

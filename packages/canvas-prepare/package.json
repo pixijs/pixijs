@@ -40,6 +40,7 @@
   "peerDependencies": {
     "@pixi/canvas-renderer": "6.5.0",
     "@pixi/core": "6.5.0",
-    "@pixi/prepare": "6.5.0"
+    "@pixi/prepare": "6.5.0",
+    "@pixi/settings": "6.5.0"
   }
 }
