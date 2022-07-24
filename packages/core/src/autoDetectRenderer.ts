@@ -1,5 +1,5 @@
-import type { ExtensionFormat } from './extensions';
-import { extensions, ExtensionType } from './extensions';
+import type { ExtensionFormat } from '@pixi/extensions';
+import { extensions, ExtensionType } from '@pixi/extensions';
 import type { IRenderer, IRendererOptions } from './IRenderer';
 
 export interface IRendererOptionsAuto extends IRendererOptions

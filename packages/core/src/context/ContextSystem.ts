@@ -5,8 +5,8 @@ import type { ISystem } from '../system/ISystem';
 import type { Renderer } from '../Renderer';
 import type { WebGLExtensions } from './WebGLExtensions';
 import type { IRenderingContext } from '../IRenderer';
-import type { ExtensionMetadata } from '../extensions';
-import { ExtensionType } from '../extensions';
+import type { ExtensionMetadata } from '@pixi/extensions';
+import { ExtensionType } from '@pixi/extensions';
 
 let CONTEXT_UID_COUNTER = 0;
 

@@ -1,7 +1,7 @@
 import { Rectangle } from '@pixi/math';
 import { settings } from '@pixi/settings';
-import type { ExtensionMetadata } from '../extensions';
-import { ExtensionType } from '../extensions';
+import type { ExtensionMetadata } from '@pixi/extensions';
+import { ExtensionType } from '@pixi/extensions';
 import type { IRenderer } from '../IRenderer';
 import type { ISystem } from '../system/ISystem';
 

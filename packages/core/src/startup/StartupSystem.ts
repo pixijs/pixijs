@@ -5,8 +5,8 @@ import type { IRendererPlugins } from '../plugin/PluginSystem';
 import type { IRenderer } from '../IRenderer';
 import type { ISystem } from '../system/ISystem';
 import type { ContextOptions } from '../systems';
-import type { ExtensionMetadata } from '../extensions';
-import { ExtensionType } from '../extensions';
+import type { ExtensionMetadata } from '@pixi/extensions';
+import { ExtensionType } from '@pixi/extensions';
 
 // TODO this can be infered by good use of generics in the future..
 export interface StartupOptions extends Record<string, unknown>

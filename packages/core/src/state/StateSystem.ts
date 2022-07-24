@@ -4,8 +4,8 @@ import { BLEND_MODES } from '@pixi/constants';
 
 import type { ISystem } from '../system/ISystem';
 import type { IRenderingContext } from '../IRenderer';
-import type { ExtensionMetadata } from '../extensions';
-import { ExtensionType } from '../extensions';
+import type { ExtensionMetadata } from '@pixi/extensions';
+import { ExtensionType } from '@pixi/extensions';
 
 const BLEND = 0;
 const OFFSET = 1;
