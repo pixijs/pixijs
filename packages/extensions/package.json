@@ -1,0 +1,38 @@
+{
+    "name": "@pixi/extensions",
+    "version": "6.5.0",
+    "main": "dist/cjs/extensions.js",
+    "module": "dist/esm/extensions.mjs",
+    "bundle": "dist/browser/extensions.js",
+    "types": "index.d.ts",
+    "exports": {
+      ".": {
+        "import": {
+          "types": "./index.d.ts",
+          "default": "./dist/esm/extensions.mjs"
+        },
+        "require": {
+          "types": "./index.d.ts",
+          "default": "./dist/cjs/extensions.js"
+        }
+      }
+    },
+    "description": "Installing and uninstalling extensions for PixiJS",
+    "author": "Matt Karl <matt@mattkarl.com>",
+    "homepage": "http://pixijs.com/",
+    "bugs": "https://github.com/pixijs/pixi.js/issues",
+    "license": "MIT",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/pixijs/pixi.js.git"
+    },
+    "publishConfig": {
+      "access": "public"
+    },
+    "files": [
+      "lib",
+      "dist",
+      "*.d.ts"
+    ]
+  }
+  

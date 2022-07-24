@@ -38,6 +38,7 @@
     "@pixi/constants": "6.5.0",
     "@pixi/core": "6.5.0",
     "@pixi/display": "6.5.0",
+    "@pixi/extensions": "6.5.0",
     "@pixi/extract": "6.5.0",
     "@pixi/filter-alpha": "6.5.0",
     "@pixi/filter-blur": "6.5.0",
