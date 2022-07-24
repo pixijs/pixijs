@@ -38,6 +38,7 @@
     "*.d.ts"
   ],
   "peerDependencies": {
+    "@pixi/core": "6.5.0",
     "@pixi/settings": "6.5.0"
   }
 }
