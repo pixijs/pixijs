@@ -1,5 +1,5 @@
-import type { ExtensionMetadata, ExtensionType } from '@pixi/core';
-import { extensions } from '@pixi/core';
+import type { ExtensionMetadata, ExtensionType } from '@pixi/extensions';
+import { extensions } from '@pixi/extensions';
 
 const exampleType = 'test-extension' as ExtensionType;
 const exampleType2 = 'test-extension2' as ExtensionType;
