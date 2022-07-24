@@ -41,6 +41,7 @@
     "@pixi/canvas-display": "6.5.0",
     "@pixi/canvas-renderer": "6.5.0",
     "@pixi/constants": "6.5.0",
+    "@pixi/core": "6.5.0",
     "@pixi/math": "6.5.0",
     "@pixi/sprite": "6.5.0",
     "@pixi/utils": "6.5.0"

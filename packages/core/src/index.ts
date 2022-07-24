@@ -10,7 +10,7 @@ import './settings';
  */
 export const VERSION = '$_VERSION';
 
-export * from './extensions';
+export * from '@pixi/extensions';
 export * from './textures/resources';
 export * from './systems';
 export * from './IRenderingContext';

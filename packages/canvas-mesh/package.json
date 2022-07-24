@@ -38,6 +38,7 @@
     "*.d.ts"
   ],
   "peerDependencies": {
+    "@pixi/core": "6.5.0",
     "@pixi/canvas-display": "6.5.0",
     "@pixi/canvas-renderer": "6.5.0",
     "@pixi/constants": "6.5.0",

@@ -28,7 +28,7 @@ import type { IRendererOptions, IRendererPlugins, IRendererRenderOptions,
 import type { ISystemConstructor } from './ISystem';
 import type { IRenderingContext } from './IRenderingContext';
 import type { IRenderableObject } from './IRenderableObject';
-import { extensions, ExtensionType } from './extensions';
+import { extensions, ExtensionType } from '@pixi/extensions';
 
 export interface IRendererPluginConstructor
 {

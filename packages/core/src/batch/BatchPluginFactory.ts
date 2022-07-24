@@ -6,8 +6,8 @@ import defaultVertex from './texture.vert';
 import defaultFragment from './texture.frag';
 
 import type { Renderer } from '../Renderer';
-import type { ExtensionMetadata } from '../extensions';
-import { ExtensionType } from '../extensions';
+import type { ExtensionMetadata } from '@pixi/extensions';
+import { ExtensionType } from '@pixi/extensions';
 
 export interface IBatchFactoryOptions
 {
