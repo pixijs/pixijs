@@ -1,3 +1,5 @@
+import { settings } from '@pixi/settings';
+
 /**
  * Creates a little colored canvas
  * @ignore
@@ -6,11 +8,7 @@
  */
 function createColoredCanvas(color: string): HTMLCanvasElement
 {
-    const canvas = document.createElement('canvas');
-
-    canvas.width = 6;
-    canvas.height = 1;
-
+    const canvas = settings.ADAPTER.createCanvas(6, 1);
     const context = canvas.getContext('2d');
 
     context.fillStyle = color;
@@ -34,11 +32,7 @@ export function canUseNewCanvasBlendModes(): boolean
     const magenta = createColoredCanvas('#ff00ff');
     const yellow = createColoredCanvas('#ffff00');
 
-    const canvas = document.createElement('canvas');
-
-    canvas.width = 6;
-    canvas.height = 1;
-
+    const canvas = settings.ADAPTER.createCanvas(6, 1);
     const context = canvas.getContext('2d');
 
     context.globalCompositeOperation = 'multiply';
