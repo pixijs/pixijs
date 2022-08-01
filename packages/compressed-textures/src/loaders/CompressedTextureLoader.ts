@@ -1,5 +1,6 @@
 import { LoaderResource } from '@pixi/loaders';
 import { url } from '@pixi/utils';
+import { settings } from '@pixi/settings';
 
 import type { Loader } from '@pixi/loaders';
 import type { INTERNAL_FORMATS } from '../const';
@@ -167,7 +168,7 @@ export class CompressedTextureLoader
         if (!CompressedTextureLoader._textureExtensions)
         {
             // Auto-detect WebGL compressed-texture extensions
-            const canvas = document.createElement('canvas');
+            const canvas = settings.ADAPTER.createCanvas();
             const gl = canvas.getContext('webgl');
 
             if (!gl)

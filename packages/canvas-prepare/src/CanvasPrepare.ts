@@ -1,5 +1,6 @@
 import { BaseTexture, ExtensionType } from '@pixi/core';
 import { BasePrepare } from '@pixi/prepare';
+import { settings } from '@pixi/settings';
 
 import type { AbstractRenderer, ExtensionMetadata } from '@pixi/core';
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
@@ -81,9 +82,10 @@ export class CanvasPrepare extends BasePrepare
 
         this.uploadHookHelper = this;
 
-        this.canvas = document.createElement('canvas');
-        this.canvas.width = CANVAS_START_SIZE;
-        this.canvas.height = CANVAS_START_SIZE;
+        this.canvas = settings.ADAPTER.createCanvas(
+            CANVAS_START_SIZE,
+            CANVAS_START_SIZE
+        );
 
         this.ctx = this.canvas.getContext('2d');
 
