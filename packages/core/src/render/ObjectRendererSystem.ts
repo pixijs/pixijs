@@ -3,8 +3,8 @@ import type { IRenderableObject, IRendererRenderOptions } from '../IRenderer';
 import type { ISystem } from '../system/ISystem';
 import type { Renderer } from '../Renderer';
 import type { RenderTexture } from '../renderTexture/RenderTexture';
-import type { ExtensionMetadata } from '../extensions';
-import { ExtensionType } from '../extensions';
+import type { ExtensionMetadata } from '@pixi/extensions';
+import { ExtensionType } from '@pixi/extensions';
 
 /**
  * system that provides a render function that focussing on rendering Pixi Scene Graph objects

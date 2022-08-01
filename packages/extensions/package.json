@@ -1,25 +1,24 @@
 {
-  "name": "@pixi/canvas-text",
+  "name": "@pixi/extensions",
   "version": "6.5.1",
-  "main": "dist/cjs/canvas-text.js",
-  "module": "dist/esm/canvas-text.mjs",
-  "bundle": "dist/browser/canvas-text.js",
+  "main": "dist/cjs/extensions.js",
+  "module": "dist/esm/extensions.mjs",
+  "bundle": "dist/browser/extensions.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/canvas-text.mjs"
+        "default": "./dist/esm/extensions.mjs"
       },
       "require": {
         "types": "./index.d.ts",
-        "default": "./dist/cjs/canvas-text.js"
+        "default": "./dist/cjs/extensions.js"
       }
     }
   },
-  "bundleNoExports": true,
-  "description": "Canvas mixin for the text package",
-  "author": "Dave Moore",
+  "description": "Installing and uninstalling extensions for PixiJS",
+  "author": "Matt Karl <matt@mattkarl.com>",
   "homepage": "http://pixijs.com/",
   "bugs": "https://github.com/pixijs/pixi.js/issues",
   "license": "MIT",
@@ -34,10 +33,5 @@
     "lib",
     "dist",
     "*.d.ts"
-  ],
-  "peerDependencies": {
-    "@pixi/canvas-sprite": "6.5.1",
-    "@pixi/sprite": "6.5.1",
-    "@pixi/text": "6.5.1"
-  }
+  ]
 }

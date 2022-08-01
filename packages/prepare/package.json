@@ -1,6 +1,6 @@
 {
   "name": "@pixi/prepare",
-  "version": "6.5.0",
+  "version": "6.5.1",
   "main": "dist/cjs/prepare.js",
   "module": "dist/esm/prepare.mjs",
   "bundle": "dist/browser/prepare.js",
@@ -38,12 +38,12 @@
     "*.d.ts"
   ],
   "peerDependencies": {
-    "@pixi/core": "6.5.0",
-    "@pixi/display": "6.5.0",
-    "@pixi/graphics": "6.5.0",
-    "@pixi/settings": "6.5.0",
-    "@pixi/text": "6.5.0",
-    "@pixi/ticker": "6.5.0",
-    "@pixi/utils": "6.5.0"
+    "@pixi/core": "6.5.1",
+    "@pixi/display": "6.5.1",
+    "@pixi/graphics": "6.5.1",
+    "@pixi/settings": "6.5.1",
+    "@pixi/text": "6.5.1",
+    "@pixi/ticker": "6.5.1",
+    "@pixi/utils": "6.5.1"
   }
 }

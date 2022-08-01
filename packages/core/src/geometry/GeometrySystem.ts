@@ -10,8 +10,8 @@ import type { Shader } from '../shader/Shader';
 import type { Program } from '../shader/Program';
 import type { Dict } from '@pixi/utils';
 import type { IRenderingContext } from '../IRenderer';
-import type { ExtensionMetadata } from '../extensions';
-import { ExtensionType } from '../extensions';
+import type { ExtensionMetadata } from '@pixi/extensions';
+import { ExtensionType } from '@pixi/extensions';
 
 const byteSizeMap: {[key: number]: number} = { 5126: 4, 5123: 2, 5121: 1 };
 

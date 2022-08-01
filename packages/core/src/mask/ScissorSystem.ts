@@ -3,8 +3,8 @@ import { AbstractMaskSystem } from './AbstractMaskSystem';
 import type { Renderer } from '../Renderer';
 import type { MaskData } from './MaskData';
 import { Matrix, Rectangle } from '@pixi/math';
-import type { ExtensionMetadata } from '../extensions';
-import { ExtensionType } from '../extensions';
+import type { ExtensionMetadata } from '@pixi/extensions';
+import { ExtensionType } from '@pixi/extensions';
 import { settings } from '@pixi/settings';
 
 const tempMatrix = new Matrix();
