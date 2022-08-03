@@ -6,7 +6,7 @@ import type { Renderer } from '../Renderer';
 import type { Texture } from './Texture';
 import type { RenderTexture } from '../renderTexture/RenderTexture';
 import type { ExtensionMetadata } from '@pixi/extensions';
-import { ExtensionType } from '@pixi/extensions';
+import { extensions, ExtensionType } from '@pixi/extensions';
 
 export interface IUnloadableTexture
 {
@@ -163,3 +163,5 @@ export class TextureGCSystem implements ISystem
         this.renderer = null;
     }
 }
+
+extensions.add(TextureGCSystem);

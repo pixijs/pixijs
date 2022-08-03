@@ -4,7 +4,7 @@ import type { ISystem } from '../system/ISystem';
 import type { Rectangle } from '@pixi/math';
 import type { Renderer } from '../Renderer';
 import type { ExtensionMetadata } from '@pixi/extensions';
-import { ExtensionType } from '@pixi/extensions';
+import { extensions, ExtensionType } from '@pixi/extensions';
 
 /**
  * System plugin to the renderer to manage the projection matrix.
@@ -169,3 +169,5 @@ export class ProjectionSystem implements ISystem
         this.renderer = null;
     }
 }
+
+extensions.add(ProjectionSystem);

@@ -1,7 +1,7 @@
 import type { TYPES } from '@pixi/constants';
 import { MIPMAP_MODES, ALPHA_MODES, FORMATS } from '@pixi/constants';
 import type { BufferResource, ExtensionMetadata } from '@pixi/core';
-import { BaseTexture, ExtensionType, Texture } from '@pixi/core';
+import { extensions, BaseTexture, ExtensionType, Texture } from '@pixi/core';
 import { CompressedTextureResource } from '@pixi/compressed-textures';
 import type {
     BasisBinding } from './Basis';
@@ -207,3 +207,4 @@ export class BasisLoader
     }
 }
 
+extensions.add(BasisLoader);

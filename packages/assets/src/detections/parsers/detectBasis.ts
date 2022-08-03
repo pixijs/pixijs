@@ -1,5 +1,5 @@
 import { BasisParser } from '@pixi/basis';
-import { ExtensionType } from '@pixi/core';
+import { extensions, ExtensionType } from '@pixi/core';
 import type { FormatDetectionParser } from '..';
 import { addFormats, removeFormats } from '../utils/detectUtils';
 
@@ -9,3 +9,5 @@ export const detectBasis = {
     add: addFormats('basis'),
     remove: removeFormats('basis')
 } as FormatDetectionParser;
+
+extensions.add(detectBasis);

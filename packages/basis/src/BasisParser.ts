@@ -1,6 +1,6 @@
 import { TYPES } from '@pixi/constants';
 import type { ExtensionMetadata } from '@pixi/core';
-import { BufferResource, ExtensionType } from '@pixi/core';
+import { extensions, BufferResource, ExtensionType } from '@pixi/core';
 import { CompressedTextureResource } from '@pixi/compressed-textures';
 import type {
     BasisTextureExtensions,
@@ -444,3 +444,5 @@ export class BasisParser
         }
     }
 }
+
+extensions.add(BasisParser);

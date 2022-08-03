@@ -1,5 +1,5 @@
 import type { ExtensionMetadata } from '@pixi/core';
-import { ExtensionType } from '@pixi/core';
+import { extensions, ExtensionType } from '@pixi/core';
 import { Loader } from './Loader';
 
 /**
@@ -50,3 +50,5 @@ export class AppLoaderPlugin
         }
     }
 }
+
+extensions.add(AppLoaderPlugin);

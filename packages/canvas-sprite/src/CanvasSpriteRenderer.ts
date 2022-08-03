@@ -4,7 +4,7 @@ import { canvasUtils } from '@pixi/canvas-renderer';
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
 import type { Sprite } from '@pixi/sprite';
 import type { ExtensionMetadata } from '@pixi/core';
-import { ExtensionType } from '@pixi/core';
+import { extensions, ExtensionType } from '@pixi/core';
 
 const canvasRenderWorldTransform = new Matrix();
 
@@ -207,3 +207,5 @@ export class CanvasSpriteRenderer
         this.renderer = null;
     }
 }
+
+extensions.add(CanvasSpriteRenderer);

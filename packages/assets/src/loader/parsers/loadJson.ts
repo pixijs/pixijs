@@ -1,4 +1,4 @@
-import { ExtensionType } from '@pixi/core';
+import { extensions, ExtensionType } from '@pixi/core';
 import { settings } from '@pixi/settings';
 import { extname } from '../../utils/path';
 import type { LoaderParser } from './LoaderParser';
@@ -21,3 +21,5 @@ export const loadJson = {
         return json as T;
     },
 } as LoaderParser;
+
+extensions.add(loadJson);

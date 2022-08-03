@@ -1,4 +1,4 @@
-import { ExtensionType } from '@pixi/core';
+import { extensions, ExtensionType } from '@pixi/core';
 import { settings } from '@pixi/settings';
 import type { FormatDetectionParser } from '..';
 import { addFormats, removeFormats } from '../utils/detectUtils';
@@ -18,3 +18,5 @@ export const detectAvif: FormatDetectionParser = {
     add: addFormats('avif'),
     remove: removeFormats('avif')
 };
+
+extensions.add(detectAvif);

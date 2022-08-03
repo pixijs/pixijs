@@ -1,39 +1,36 @@
 import { isWebGLSupported, deprecation } from '@pixi/utils';
-import { MaskSystem } from './mask/MaskSystem';
-import { StencilSystem } from './mask/StencilSystem';
-import { ScissorSystem } from './mask/ScissorSystem';
-import { FilterSystem } from './filters/FilterSystem';
-import { FramebufferSystem } from './framebuffer/FramebufferSystem';
-import { RenderTextureSystem } from './renderTexture/RenderTextureSystem';
-import { TextureSystem } from './textures/TextureSystem';
-import { ProjectionSystem } from './projection/ProjectionSystem';
-import { StateSystem } from './state/StateSystem';
-import { GeometrySystem } from './geometry/GeometrySystem';
-import { ShaderSystem } from './shader/ShaderSystem';
-import { ContextSystem } from './context/ContextSystem';
-import { BatchSystem } from './batch/BatchSystem';
-import { TextureGCSystem } from './textures/TextureGCSystem';
+import type { MaskSystem } from './mask/MaskSystem';
+import type { StencilSystem } from './mask/StencilSystem';
+import type { ScissorSystem } from './mask/ScissorSystem';
+import type { FilterSystem } from './filters/FilterSystem';
+import type { FramebufferSystem } from './framebuffer/FramebufferSystem';
+import type { RenderTextureSystem } from './renderTexture/RenderTextureSystem';
+import type { TextureSystem } from './textures/TextureSystem';
+import type { ProjectionSystem } from './projection/ProjectionSystem';
+import type { StateSystem } from './state/StateSystem';
+import type { GeometrySystem } from './geometry/GeometrySystem';
+import type { ShaderSystem } from './shader/ShaderSystem';
+import type { ContextSystem } from './context/ContextSystem';
+import type { BatchSystem } from './batch/BatchSystem';
+import type { TextureGCSystem } from './textures/TextureGCSystem';
 import type { MSAA_QUALITY, RENDERER_TYPE } from '@pixi/constants';
 import { UniformGroup } from './shader/UniformGroup';
 import type { Rectangle } from '@pixi/math';
 import { Matrix } from '@pixi/math';
-import { BufferSystem } from './geometry/BufferSystem';
+import type { BufferSystem } from './geometry/BufferSystem';
 import type { RenderTexture } from './renderTexture/RenderTexture';
 import type { ExtensionMetadata } from '@pixi/extensions';
 import { extensions, ExtensionType } from '@pixi/extensions';
-import type { IRendererPlugins } from './plugin/PluginSystem';
-import { PluginSystem } from './plugin/PluginSystem';
-import { MultisampleSystem } from './framebuffer/MultisampleSystem';
-import type { IGenerateTextureOptions } from './renderTexture/GenerateTextureSystem';
-import { GenerateTextureSystem } from './renderTexture/GenerateTextureSystem';
-import { BackgroundSystem } from './background/BackgroundSystem';
-import { ViewSystem } from './view/ViewSystem';
-import { ObjectRendererSystem } from './render/ObjectRendererSystem';
+import type { PluginSystem, IRendererPlugins } from './plugin/PluginSystem';
+import type { MultisampleSystem } from './framebuffer/MultisampleSystem';
+import type { IGenerateTextureOptions, GenerateTextureSystem } from './renderTexture/GenerateTextureSystem';
+import type { BackgroundSystem } from './background/BackgroundSystem';
+import type { ViewSystem } from './view/ViewSystem';
+import type { ObjectRendererSystem } from './render/ObjectRendererSystem';
 import { settings } from '@pixi/settings';
 import { SystemManager } from './system/SystemManager';
 import type { IRenderableObject, IRenderer, IRendererOptions, IRendererRenderOptions, IRenderingContext } from './IRenderer';
-import type { StartupOptions } from './startup/StartupSystem';
-import { StartupSystem } from './startup/StartupSystem';
+import type { StartupSystem, StartupOptions } from './startup/StartupSystem';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface Renderer extends GlobalMixins.Renderer {}
@@ -338,6 +335,31 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
         const systemConfig = {
             runners: ['init', 'destroy', 'contextChange', 'reset', 'update', 'postrender', 'prerender', 'resize'],
             systems: Renderer.__systems,
+            priority: [
+                '_view',
+                'textureGenerator',
+                'background',
+                '_plugin',
+                'startup',
+                // low level WebGL systems
+                'context',
+                'state',
+                'texture',
+                'buffer',
+                'geometry',
+                'framebuffer',
+                // high level pixi specific rendering
+                'mask',
+                'scissor',
+                'stencil',
+                'projection',
+                'textureGC',
+                'filter',
+                'renderTexture',
+                'batch',
+                'objectRenderer',
+                '_multisample'
+            ],
         };
 
         this.setup(systemConfig);
@@ -652,30 +674,4 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
 // Handle registration of extensions
 extensions.handleByMap(ExtensionType.RendererPlugin, Renderer.__plugins);
 extensions.handleByMap(ExtensionType.RendererSystem, Renderer.__systems);
-extensions.add(
-    Renderer,
-    GenerateTextureSystem,
-    BackgroundSystem,
-    ViewSystem,
-    PluginSystem,
-    StartupSystem,
-    // low level WebGL systems
-    ContextSystem,
-    StateSystem,
-    ShaderSystem,
-    TextureSystem,
-    BufferSystem,
-    GeometrySystem,
-    FramebufferSystem,
-    // high level pixi specific rendering
-    MaskSystem,
-    ScissorSystem,
-    StencilSystem,
-    ProjectionSystem,
-    TextureGCSystem,
-    FilterSystem,
-    RenderTextureSystem,
-    BatchSystem,
-    ObjectRendererSystem,
-    MultisampleSystem
-);
+extensions.add(Renderer);

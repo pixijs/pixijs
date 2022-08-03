@@ -1,4 +1,4 @@
-import { BaseTexture, ExtensionType, Texture } from '@pixi/core';
+import { BaseTexture, extensions, ExtensionType, Texture } from '@pixi/core';
 import { parseKTX } from '@pixi/compressed-textures';
 import type { Loader } from '../Loader';
 
@@ -83,3 +83,4 @@ export const loadKTX = {
 
 } as LoaderParser<Texture | Texture[], LoadTextureData>;
 
+extensions.add(loadKTX);

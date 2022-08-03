@@ -13,7 +13,7 @@ import type { ISpriteMaskTarget } from './spriteMask/SpriteMaskFilter';
 import type { RenderTexture } from '../renderTexture/RenderTexture';
 import type { Renderer } from '../Renderer';
 import type { ExtensionMetadata } from '@pixi/extensions';
-import { ExtensionType } from '@pixi/extensions';
+import { extensions, ExtensionType } from '@pixi/extensions';
 
 const tempPoints = [new Point(), new Point(), new Point(), new Point()];
 const tempMatrix = new Matrix();
@@ -645,3 +645,5 @@ export class FilterSystem implements ISystem
         this.transformAABB(transform.invert(), frame);
     }
 }
+
+extensions.add(FilterSystem);

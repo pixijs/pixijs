@@ -1,5 +1,5 @@
 import type { Texture } from '@pixi/core';
-import { ExtensionType } from '@pixi/core';
+import { extensions, ExtensionType } from '@pixi/core';
 import { settings } from '@pixi/settings';
 import type { BitmapFontData } from '@pixi/text-bitmap';
 import { BitmapFont, TextFormat, XMLFormat, XMLStringFormat } from '@pixi/text-bitmap';
@@ -77,3 +77,5 @@ export const loadBitmapFont = {
         bitmapFont.destroy();
     }
 } as LoaderParser<BitmapFont | string>;
+
+extensions.add(loadBitmapFont);

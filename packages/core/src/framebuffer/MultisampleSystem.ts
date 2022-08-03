@@ -3,7 +3,7 @@ import type { ISystem } from '../system/ISystem';
 import type { Renderer } from '../Renderer';
 import type { IRenderingContext } from '../IRenderer';
 import type { ExtensionMetadata } from '@pixi/extensions';
-import { ExtensionType } from '@pixi/extensions';
+import { extensions, ExtensionType } from '@pixi/extensions';
 
 /**
  * System that manages the multisample property on the WebGL renderer
@@ -78,3 +78,5 @@ export class MultisampleSystem implements ISystem
         // ka boom!
     }
 }
+
+extensions.add(MultisampleSystem);

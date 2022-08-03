@@ -6,7 +6,7 @@ import type { IRenderer } from '../IRenderer';
 import type { ISystem } from '../system/ISystem';
 import type { ContextOptions } from '../systems';
 import type { ExtensionMetadata } from '@pixi/extensions';
-import { ExtensionType } from '@pixi/extensions';
+import { extensions, ExtensionType } from '@pixi/extensions';
 
 // TODO this can be infered by good use of generics in the future..
 export interface StartupOptions extends Record<string, unknown>
@@ -58,3 +58,5 @@ export interface StartupOptions extends Record<string, unknown>
         // ka pow!
     }
 }
+
+extensions.add(StartupSystem);

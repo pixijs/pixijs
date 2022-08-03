@@ -13,7 +13,7 @@ import { generateUniformBufferSync } from './utils/generateUniformBufferSync';
 import { generateProgram } from './utils/generateProgram';
 import type { IRenderingContext } from '../IRenderer';
 import type { ExtensionMetadata } from '@pixi/extensions';
-import { ExtensionType } from '@pixi/extensions';
+import { extensions, ExtensionType } from '@pixi/extensions';
 
 let UID = 0;
 // default sync data so we don't create a new one each time!
@@ -325,3 +325,5 @@ export class ShaderSystem implements ISystem
         this.destroyed = true;
     }
 }
+
+extensions.add(ShaderSystem);

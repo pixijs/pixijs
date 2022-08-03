@@ -10,7 +10,7 @@ import type { Texture } from './Texture';
 import type { Renderer } from '../Renderer';
 import type { IRenderingContext } from '../IRenderer';
 import type { ExtensionMetadata } from '@pixi/extensions';
-import { ExtensionType } from '@pixi/extensions';
+import { extensions, ExtensionType } from '@pixi/extensions';
 
 /**
  * System plugin to the renderer to manage textures.
@@ -484,3 +484,5 @@ export class TextureSystem implements ISystem
         this.renderer = null;
     }
 }
+
+extensions.add(TextureSystem);

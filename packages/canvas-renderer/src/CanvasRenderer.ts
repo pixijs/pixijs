@@ -3,7 +3,7 @@ import {
     extensions,
     ExtensionType
 } from '@pixi/core';
-import { CanvasMaskSystem } from './CanvasMaskSystem';
+import type { CanvasMaskSystem } from './CanvasMaskSystem';
 import type { BLEND_MODES, RENDERER_TYPE } from '@pixi/constants';
 import type { Matrix, Rectangle } from '@pixi/math';
 import type { DisplayObject } from '@pixi/display';
@@ -23,9 +23,8 @@ import type {
     ExtensionMetadata,
     IGenerateTextureOptions } from '@pixi/core';
 
-import type { SmoothingEnabledProperties } from './CanvasContextSystem';
-import { CanvasContextSystem } from './CanvasContextSystem';
-import { CanvasObjectRendererSystem } from './CanvasObjectRendererSystem';
+import type { CanvasContextSystem, SmoothingEnabledProperties } from './CanvasContextSystem';
+import type { CanvasObjectRendererSystem } from './CanvasObjectRendererSystem';
 import { settings } from '@pixi/settings';
 import { deprecation } from '@pixi/utils';
 
@@ -185,6 +184,16 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
         const systemConfig = {
             runners: ['init', 'destroy', 'contextChange', 'reset', 'update', 'postrender', 'prerender', 'resize'],
             systems: CanvasRenderer.__systems,
+            priority: [
+                '_view',
+                'textureGenerator',
+                'background',
+                '_plugin',
+                'startup',
+                'mask',
+                'canvasContext',
+                'objectRenderer'
+            ],
         };
 
         this.setup(systemConfig);
@@ -583,9 +592,4 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
 
 extensions.handleByMap(ExtensionType.CanvasRendererPlugin, CanvasRenderer.__plugins);
 extensions.handleByMap(ExtensionType.CanvasRendererSystem, CanvasRenderer.__systems);
-extensions.add(
-    CanvasRenderer,
-    CanvasMaskSystem,
-    CanvasContextSystem,
-    CanvasObjectRendererSystem
-);
+extensions.add(CanvasRenderer);

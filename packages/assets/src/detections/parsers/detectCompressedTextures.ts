@@ -1,5 +1,5 @@
 import type { CompressedTextureExtensionRef, CompressedTextureExtensions } from '@pixi/compressed-textures';
-import { ExtensionType } from '@pixi/core';
+import { extensions as ext, ExtensionType } from '@pixi/core';
 import { settings } from '@pixi/settings';
 import type { FormatDetectionParser } from '..';
 
@@ -71,3 +71,5 @@ export const detectCompressedTextures = {
         return formats.filter((f) => !(f in extensions));
     },
 } as FormatDetectionParser;
+
+ext.add(detectCompressedTextures);

@@ -1,7 +1,7 @@
 import { Sprite } from '@pixi/sprite';
 
 import { skipHello } from '@pixi/utils';
-import { Texture, RenderTexture, Renderer, extensions } from '@pixi/core';
+import { Texture, RenderTexture, Renderer } from '@pixi/core';
 import { Extract } from '@pixi/extract';
 import { Rectangle } from '@pixi/math';
 
@@ -9,9 +9,6 @@ skipHello();
 
 describe('Extract', () =>
 {
-    beforeAll(() => extensions.add(Extract));
-    afterAll(() => extensions.remove(Extract));
-
     it('should access extract on renderer', () =>
     {
         const renderer = new Renderer();

@@ -8,7 +8,7 @@ import type { ISystem } from '../system/ISystem';
 import type { Renderer } from '../Renderer';
 import type { IRenderingContext } from '../IRenderer';
 import type { ExtensionMetadata } from '@pixi/extensions';
-import { ExtensionType } from '@pixi/extensions';
+import { extensions, ExtensionType } from '@pixi/extensions';
 
 const tempRectangle = new Rectangle();
 
@@ -704,3 +704,5 @@ export class FramebufferSystem implements ISystem
         this.renderer = null;
     }
 }
+
+extensions.add(FramebufferSystem);

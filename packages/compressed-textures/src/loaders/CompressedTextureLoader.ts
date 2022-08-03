@@ -5,7 +5,7 @@ import { settings } from '@pixi/settings';
 import type { Loader } from '@pixi/loaders';
 import type { INTERNAL_FORMATS } from '../const';
 import type { ExtensionMetadata } from '@pixi/core';
-import { ExtensionType } from '@pixi/core';
+import { extensions, ExtensionType } from '@pixi/core';
 
 /**
  * Schema for compressed-texture manifests
@@ -225,3 +225,5 @@ export class CompressedTextureLoader
         return CompressedTextureLoader._textureFormats;
     }
 }
+
+extensions.add(CompressedTextureLoader);

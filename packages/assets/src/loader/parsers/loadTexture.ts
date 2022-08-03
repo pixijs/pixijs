@@ -1,4 +1,4 @@
-import { BaseTexture, ExtensionType, Texture } from '@pixi/core';
+import { BaseTexture, extensions, ExtensionType, Texture } from '@pixi/core';
 import { settings } from '@pixi/settings';
 import { getResolutionOfUrl } from '@pixi/utils';
 import type { Loader } from '../Loader';
@@ -103,3 +103,5 @@ export const loadTextures = {
     }
 
 } as LoaderParser<Texture, LoadTextureData>;
+
+extensions.add(loadTextures);

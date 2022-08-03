@@ -3,7 +3,7 @@ import { Spritesheet } from './Spritesheet';
 import { LoaderResource } from '@pixi/loaders';
 import type { Loader } from '@pixi/loaders';
 import type { ExtensionMetadata } from '@pixi/core';
-import { ExtensionType } from '@pixi/core';
+import { extensions, ExtensionType } from '@pixi/core';
 
 /**
  * {@link PIXI.Loader} middleware for loading texture atlases that have been created with
@@ -139,3 +139,5 @@ export class SpritesheetLoader
         return url.resolve(resource.url.replace(baseUrl, ''), resource.data.meta.image);
     }
 }
+
+extensions.add(SpritesheetLoader);

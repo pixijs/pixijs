@@ -1,4 +1,4 @@
-import { ExtensionType, RenderTexture } from '@pixi/core';
+import { extensions, ExtensionType, RenderTexture } from '@pixi/core';
 import { CanvasRenderTarget } from '@pixi/utils';
 import { Rectangle } from '@pixi/math';
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
@@ -183,3 +183,5 @@ export class CanvasExtract implements ISystem
         this.renderer = null;
     }
 }
+
+extensions.add(CanvasExtract);

@@ -6,6 +6,7 @@ interface ISystemConfig<R>
 {
     runners: string[],
     systems: Record<string, ISystemConstructor<R>>
+    priority: string[];
 }
 
 /**
@@ -29,11 +30,18 @@ export class SystemManager<R=IRenderer> extends EventEmitter
     {
         this.addRunners(...config.runners);
 
-        let i: keyof typeof config.systems;
+        // Remove keys that aren't available
+        const priority = (config.priority ?? []).filter((key) => config.systems[key]);
 
-        for (i in config.systems)
+        // Order the systems by priority
+        const orderByPriority = [
+            ...priority,
+            ...Object.keys(config.systems)
+                .filter((key) => !priority.includes(key))
+        ];
+
+        for (const i of orderByPriority)
         {
-            // @zyie not sure about the TS here..
             this.addSystem(config.systems[i], i);
         }
     }

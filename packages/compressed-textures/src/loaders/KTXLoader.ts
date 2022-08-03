@@ -1,6 +1,6 @@
 import { ALPHA_MODES, MIPMAP_MODES } from '@pixi/constants';
 import type { ExtensionMetadata } from '@pixi/core';
-import { BaseTexture, ExtensionType, Texture } from '@pixi/core';
+import { extensions, BaseTexture, ExtensionType, Texture } from '@pixi/core';
 import { LoaderResource } from '@pixi/loaders';
 import { registerCompressedTextures } from './registerCompressedTextures';
 import { parseKTX } from '../parsers';
@@ -122,3 +122,5 @@ export class KTXLoader
         next();
     }
 }
+
+extensions.add(KTXLoader);

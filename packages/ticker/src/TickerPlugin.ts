@@ -1,5 +1,5 @@
 import type { ExtensionMetadata } from '@pixi/extensions';
-import { ExtensionType } from '@pixi/extensions';
+import { extensions, ExtensionType } from '@pixi/extensions';
 import { UPDATE_PRIORITY } from './const';
 import { Ticker } from './Ticker';
 
@@ -121,3 +121,5 @@ export class TickerPlugin
         }
     }
 }
+
+extensions.add(TickerPlugin);

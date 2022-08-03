@@ -4,7 +4,7 @@ import { SHAPES } from '@pixi/math';
 import type { CanvasRenderer } from './CanvasRenderer';
 import type { Graphics } from '@pixi/graphics';
 import type { ExtensionMetadata, ISystem, MaskData } from '@pixi/core';
-import { ExtensionType } from '@pixi/core';
+import { extensions, ExtensionType } from '@pixi/core';
 import type { Container } from '@pixi/display';
 
 /**
@@ -268,3 +268,5 @@ export class CanvasMaskSystem implements ISystem
         /* empty */
     }
 }
+
+extensions.add(CanvasMaskSystem);

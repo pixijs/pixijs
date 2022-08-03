@@ -1,16 +1,11 @@
 import { AccessibilityManager } from '@pixi/accessibility';
 import { CanvasRenderer } from '@pixi/canvas-renderer';
 import { DisplayObject, Container } from '@pixi/display';
-import { extensions, Renderer } from '@pixi/core';
+import { Renderer } from '@pixi/core';
 import { isMobile } from '@pixi/utils';
 
 describe('AccessibilityManager', () =>
 {
-    beforeAll(() =>
-    {
-        extensions.add(AccessibilityManager);
-    });
-
     it('should exist', () =>
     {
         expect(AccessibilityManager).toBeDefined();
@@ -26,14 +21,10 @@ describe('AccessibilityManager', () =>
 
     it('should be plugin for renderer', () =>
     {
-        extensions.add(AccessibilityManager);
-
         const renderer = new CanvasRenderer();
 
         expect(renderer.plugins.accessibility).toBeInstanceOf(AccessibilityManager);
         renderer.destroy();
-
-        extensions.remove(AccessibilityManager);
     });
 
     it('should remove touch hook when destroyed', () =>
