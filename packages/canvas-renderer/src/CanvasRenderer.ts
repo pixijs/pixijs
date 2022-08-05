@@ -185,9 +185,9 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
             runners: ['init', 'destroy', 'contextChange', 'reset', 'update', 'postrender', 'prerender', 'resize'],
             systems: CanvasRenderer.__systems,
             priority: [
-                '_view',
                 'textureGenerator',
                 'background',
+                '_view',
                 '_plugin',
                 'startup',
                 'mask',
