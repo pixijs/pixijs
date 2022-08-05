@@ -43,7 +43,7 @@ const banner = `/*!
  */
 export default [
     {
-        input: "src/index.ts",
+        input: pkg.source,
         external,
         plugins,
         output: [
@@ -52,28 +52,28 @@ export default [
                 freeze: false,
                 sourcemap,
                 format: "cjs",
-                file: "dist/pixi-gif.cjs.js",
+                file: pkg.main,
             },
             {
                 banner,
                 freeze: false,
                 sourcemap,
                 format: "esm",
-                file: "dist/pixi-gif.esm.js",
+                file: pkg.module,
             },
         ],
     },
     {
-        input: "src/index.ts",
+        input: pkg.source,
         external,
         plugins,
         output: {
             banner,
             freeze: false,
             format: "iife",
-            name: "PIXI.gif",
+            name: pkg.namespace,
             sourcemap,
-            file: "dist/pixi-gif.js",
+            file: pkg.bundle,
             globals: {
                 "@pixi/loaders": "PIXI",
                 "@pixi/core": "PIXI",

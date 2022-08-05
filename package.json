@@ -2,19 +2,17 @@
   "name": "@pixi/gif",
   "version": "1.1.1",
   "description": "Animated GIF Runtime for PixiJS",
+  "source": "./src/index.ts",
   "main": "./dist/pixi-gif.cjs.js",
-  "module": "./dist/pixi-gif.esm.js",
+  "module": "./dist/pixi-gif.esm.mjs",
+  "bundle": "./dist/pixi-gif.js",
   "types": "./index.d.ts",
+  "namespace": "PIXI.gif",
   "exports": {
     ".": {
-      "import": {
-        "types": "./index.d.ts",
-        "default": "./dist/pixi-gif.esm.js"
-      },
-      "require": {
-        "types": "./index.d.ts",
-        "default": "./dist/pixi-gif.cjs.js"
-      }
+      "import": "./dist/pixi-gif.esm.mjs",
+      "require": "./dist/pixi-gif.cjs.js",
+      "types": "./index.d.ts"
     }
   },
   "scripts": {
@@ -88,7 +86,8 @@
       "engines",
       "pre-commit",
       "devDependencies",
-      "eslintConfig"
+      "eslintConfig",
+      "source"
     ]
   },
   "devDependencies": {
