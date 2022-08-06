@@ -46,7 +46,7 @@ export const loadTextures = {
         const tempURL = url.split('?')[0];
         const extension = tempURL.split('.').pop();
 
-        return url.includes("data:image") || validImages.includes(extension);
+        return url.includes('data:image') || validImages.includes(extension);
     },
 
     async load(url: string, asset: LoadAsset<LoadTextureData>, loader: Loader): Promise<Texture>
