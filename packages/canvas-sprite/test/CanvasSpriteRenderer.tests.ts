@@ -5,6 +5,7 @@ import { BaseTexture, CanvasResource, Texture } from '@pixi/core';
 import { Container } from '@pixi/display';
 import { Rectangle } from '@pixi/math';
 import { Sprite } from '@pixi/sprite';
+import '@pixi/canvas-sprite';
 
 describe('CanvasSpriteRenderer', () =>
 {

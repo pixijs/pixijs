@@ -12,8 +12,5 @@ npm install @pixi/events
 ## Usage
 
 ```js
-import { EventSystem } from '@pixi/events';
-import { extensions } from '@pixi/core';
-
-extensions.add(EventSystem);
+import '@pixi/events';
 ```
