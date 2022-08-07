@@ -15,10 +15,9 @@ const validImages = ['jpg', 'png', 'jpeg', 'avif', 'webp'];
  * Part of WorkerManager!
  * @param url - The image to load an image bitmap for
  */
-export async function loadImageBitmap(url: string): Promise<ImageBitmap>
-{
+export async function loadImageBitmap(url: string): Promise<ImageBitmap> {
     const response = await settings.ADAPTER.fetch(url);
-    const imageBlob =  await response.blob();
+    const imageBlob = await response.blob();
     const imageBitmap = await createImageBitmap(imageBlob);
 
     return imageBitmap;
@@ -41,38 +40,38 @@ export const loadTextures = {
         preferWorkers: true,
     },
 
-    test(url: string): boolean
-    {
+    test(url: string): boolean {
         const tempURL = url.split('?')[0];
         const extension = tempURL.split('.').pop();
 
-        return url.includes('data:image') || validImages.includes(extension);
+        let isValidBase64Suffix: boolean;
+        for (let i = 0; i < validImages.length; i++) {
+            if (url.indexOf('data:image/' + validImages[i]) === 0) {
+                isValidBase64Suffix = true;
+                break;
+            }
+        }
+
+        return isValidBase64Suffix || validImages.includes(extension);
     },
 
-    async load(url: string, asset: LoadAsset<LoadTextureData>, loader: Loader): Promise<Texture>
-    {
+    async load(url: string, asset: LoadAsset<LoadTextureData>, loader: Loader): Promise<Texture> {
         let src: any = null;
 
-        if (window.createImageBitmap)
-        {
+        if (window.createImageBitmap) {
             src = this.config.preferWorkers ? await WorkerManager.loadImageBitmap(url) : await loadImageBitmap(url);
         }
-        else
-        {
-            src = await new Promise((resolve) =>
-            {
+        else {
+            src = await new Promise((resolve) => {
                 src = new Image();
                 src.crossOrigin = 'anonymous';
 
                 src.src = url;
-                if (src.complete)
-                {
+                if (src.complete) {
                     resolve(src);
                 }
-                else
-                {
-                    src.onload = (): void =>
-                    {
+                else {
+                    src.onload = (): void => {
                         resolve(src);
                     };
                 }
@@ -89,16 +88,14 @@ export const loadTextures = {
         const texture = new Texture(base);
 
         // make sure to nuke the promise if a texture is destroyed..
-        texture.baseTexture.on('dispose', () =>
-        {
+        texture.baseTexture.on('dispose', () => {
             delete loader.promiseCache[url];
         });
 
         return texture;
     },
 
-    unload(texture: Texture): void
-    {
+    unload(texture: Texture): void {
         texture.destroy(true);
     }
 
