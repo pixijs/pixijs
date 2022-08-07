@@ -3,23 +3,27 @@ import { Spritesheet } from '@pixi/spritesheet';
 
 import { Assets } from '@pixi/assets';
 
-function wait(value = 500) {
+function wait(value = 500)
+{
     // wait a bit...
     return new Promise<void>((resolve) =>
         setTimeout(() => resolve(), value));
 }
 
-describe('Assets', () => {
+describe('Assets', () =>
+{
     const basePath = process.env.GITHUB_ACTIONS
         ? `https://raw.githubusercontent.com/pixijs/pixijs/${process.env.GITHUB_SHA}/packages/assets/test/assets/`
         : 'http://localhost:8080/assets/test/assets/';
 
-    beforeEach(() => {
+    beforeEach(() =>
+    {
         // reset the loader
         Assets.reset();
     });
 
-    it('should load assets', async () => {
+    it('should load assets', async () =>
+    {
         await Assets.init({
             basePath,
         });
@@ -29,7 +33,8 @@ describe('Assets', () => {
         expect(bunny).toBeInstanceOf(Texture);
     });
 
-    it('should get assets once loaded', async () => {
+    it('should get assets once loaded', async () =>
+    {
         await Assets.init({
             basePath,
         });
@@ -49,7 +54,8 @@ describe('Assets', () => {
         expect(bunny2).toBe(bunny);
     });
 
-    it('should load a webp if available by default', async () => {
+    it('should load a webp if available by default', async () =>
+    {
         await Assets.init({
             basePath,
             texturePreference: {
@@ -70,7 +76,8 @@ describe('Assets', () => {
         expect(bunny.baseTexture.resource.src).toBe(`${basePath}textures/profile-abel@2x.webp`);
     });
 
-    it('should load a correct texture based on preference', async () => {
+    it('should load a correct texture based on preference', async () =>
+    {
         await Assets.init({
             basePath,
             texturePreference: {
@@ -92,7 +99,8 @@ describe('Assets', () => {
         expect(bunny.baseTexture.resource.src).toBe(`${basePath}textures/profile-abel@2x.jpg`);
     });
 
-    it('should add and load bundle', async () => {
+    it('should add and load bundle', async () =>
+    {
         await Assets.init({
             basePath,
         });
@@ -108,7 +116,8 @@ describe('Assets', () => {
         expect(assets.spritesheet).toBeInstanceOf(Spritesheet);
     });
 
-    it('should load a bundle found in the manifest', async () => {
+    it('should load a bundle found in the manifest', async () =>
+    {
         await Assets.init({
             basePath,
             manifest: 'json/asset-manifest-2.json',
@@ -121,7 +130,8 @@ describe('Assets', () => {
         expect(assets.spritesheet).toBeInstanceOf(Spritesheet);
     });
 
-    it('should load multiple bundles', async () => {
+    it('should load multiple bundles', async () =>
+    {
         await Assets.init({
             basePath,
             manifest: 'json/asset-manifest-2.json',
@@ -136,7 +146,8 @@ describe('Assets', () => {
         expect(assets.data[`test.json`]).toEqual({ testNumber: 23, testString: 'Test String 23' });
     });
 
-    it('should map all names', async () => {
+    it('should map all names', async () =>
+    {
         await Assets.init({
             basePath,
         });
@@ -152,7 +163,8 @@ describe('Assets', () => {
         expect(bunny).toBe(bunny2);
     });
 
-    it('should split url versions correctly', async () => {
+    it('should split url versions correctly', async () =>
+    {
         await Assets.init({
             basePath,
         });
@@ -164,7 +176,8 @@ describe('Assets', () => {
         expect(bunny.baseTexture.resource.src).toBe(`${basePath}textures/bunny.webp`);
     });
 
-    it('should background load correctly', async () => {
+    it('should background load correctly', async () =>
+    {
         await Assets.init({
             basePath,
         });
@@ -180,7 +193,8 @@ describe('Assets', () => {
         expect(asset.baseTexture.resource.src).toBe(`${basePath}textures/bunny.png`);
     });
 
-    it('should background load bundles', async () => {
+    it('should background load bundles', async () =>
+    {
         await Assets.init({
             basePath,
             manifest: 'json/asset-manifest-2.json',
@@ -199,20 +213,24 @@ describe('Assets', () => {
             'spritesheet/spritesheet.png': Texture,
         };
 
-        for (const [key, type] of Object.entries(expectTypes)) {
+        for (const [key, type] of Object.entries(expectTypes))
+        {
             const asset = await Assets.loader.promiseCache[basePath + key].promise;
 
             expect(asset).toBeInstanceOf(type);
         }
     });
 
-    it('should error out if loader fails', async () => {
-        Assets.load('chickenSandwich.png').catch((e) => {
+    it('should error out if loader fails', async () =>
+    {
+        Assets.load('chickenSandwich.png').catch((e) =>
+        {
             expect(e).toBeInstanceOf(Error);
         });
     });
 
-    it('should add sprite textures to the cache', async () => {
+    it('should add sprite textures to the cache', async () =>
+    {
         await Assets.init({
             basePath,
         });
@@ -224,7 +242,8 @@ describe('Assets', () => {
         expect(texture).toBeInstanceOf(Texture);
     });
 
-    it('should dispose of a texture correctly', async () => {
+    it('should dispose of a texture correctly', async () =>
+    {
         await Assets.init({
             basePath,
         });
@@ -240,7 +259,8 @@ describe('Assets', () => {
         expect(bunnyReloaded.baseTexture).toBeInstanceOf(BaseTexture);
     });
 
-    it('should load texture array correctly', async () => {
+    it('should load texture array correctly', async () =>
+    {
         await Assets.init({
             basePath,
         });
@@ -260,7 +280,8 @@ describe('Assets', () => {
         expect(assets.bunny.baseTexture).toBe(null);
     });
 
-    it('should unload and remove from the cache correctly', async () => {
+    it('should unload and remove from the cache correctly', async () =>
+    {
         await Assets.init({
             basePath,
         });
@@ -280,7 +301,8 @@ describe('Assets', () => {
         expect(texture2).toBe(undefined);
     });
 
-    it('should unload assets correctly', async () => {
+    it('should unload assets correctly', async () =>
+    {
         await Assets.init({
             basePath,
         });
@@ -292,7 +314,8 @@ describe('Assets', () => {
         expect(bunny.baseTexture).toBe(null);
     });
 
-    it('should unload bundles correctly', async () => {
+    it('should unload bundles correctly', async () =>
+    {
         await Assets.init({
             basePath,
         });
@@ -312,53 +335,14 @@ describe('Assets', () => {
         expect(assets.bunny.baseTexture).toBe(null);
     });
 
-    it('should load JPG base64 assets', async () => {
+    it('should load PNG base64 assets', async () =>
+    {
+        // Other formats (JPG, JPEG, WEBP, AVIF) can be added similarly.
+        const squareBase64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAQMAAABJtOi3AAAAA1BMVEUDDhLIBt9FAAC';
 
-        const bunnyBase64 = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAkGBggGBQkIBwgKCQkKDRYODQwMDRoTFBAWHxwhIB8cHh4jJzIqIyUvJR4eKzssLzM1ODg4ISo9QTw2QTI3ODX/2wBDAQkKCg0LDRkODhk1JB4kNTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTX/wgARCAAlABoDAREAAhEBAxEB/8QAFwABAQEBAAAAAAAAAAAAAAAABgUHBP/EABkBAAMBAQEAAAAAAAAAAAAAAAIDBAUBBv/aAAwDAQACEAMQAAAAfoMjG9G5byxWYwUHfPaNTTmebMAqZ1zJphvFntQwkNP49fdWrUdeIEs1xcBAWmGH/8QANRAAAQMCBAQDAg8AAAAAAAAAAgEDBAURAAYSEwcUIWEQFSIxUjI0NkJFVFVicXWBoqTCw//aAAgBAQABPwDiRsHGobM3rBfqoBKb+abaNOlYk/Eb4qz8Cmee0mhjsQpnJIwywC7J6XV5nsl27It/h4y6xSIHEFlnLjLLEN+mPG8DCaBMxcZ037oh+Gd810nMgQIlIkrKciTleds0aBoRp0LoappLqSexcMsTtp0xjPSmWiu6+KtiLaGSoKKikirbsmMpVFqhV2NLqLjpgEN5g3WoxuKpkTCp6ARVS+2eEz7lv7bgB9x19AMeyivVFxxGyrScswoE6jxliPvz9o7PHo0K06VkBV0j1HFAybCqFGalSTdU3evpW1sUygRJ+fjo07dditRX3LA8bSqYG0KLcFRfYZYHIGWg+g4B93GdZfqS9Vxxk+T9J/M/8H8QuKjNBY5BX4jmz7xpcMZCqPm3EMZmtHN+myTund1jw4zhbIwzvqEsH9Hv3Qm/74oFO8oy5TqfubvKRWmNdratIoN7YyRTdji/mj1/E9f8lxHv228P/8QAHxEAAgIDAAMBAQAAAAAAAAAAAQIAAwQREgUQIRRR/9oACAECAQE/AL2CoWJi5VfJJaY1osJ0dzqZ1qikgwVJYpcHWp426sM4Hydj+zMrU0kzGwBbV0TPHY6qz7nCzL+0tqUfqRNBfk8cGBfv1YNrqARF0xPr/8QAHhEAAgICAwEBAAAAAAAAAAAAAQIAAxESBBAhMTL/2gAIAQMBAT8AQEnAgqckSxWA9646HfML6kLOUjEAzQyh23xLeQVbAl9hKjE3Mp/Yli1M32cnGAB0h9hhPnX/2Q==";
+        Assets.add('square', squareBase64);
+        const square = await Assets.load('square');
 
-        Assets.add("bunny", bunnyBase64);
-        const bunny = await Assets.load("bunny");
-
-        expect(bunny).toBeInstanceOf(Texture);
-    });
-
-    it('should load JPEG base64 assets', async () => {
-
-        const bunnyBase64 = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAkGBggGBQkIBwgKCQkKDRYODQwMDRoTFBAWHxwhIB8cHh4jJzIqIyUvJR4eKzssLzM1ODg4ISo9QTw2QTI3ODX/2wBDAQkKCg0LDRkODhk1JB4kNTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTX/wgARCAAlABoDAREAAhEBAxEB/8QAFwABAQEBAAAAAAAAAAAAAAAABgUHBP/EABkBAAMBAQEAAAAAAAAAAAAAAAIDBAUBBv/aAAwDAQACEAMQAAAAfoMjG9G5byxWYwUHfPaNTTmebMAqZ1zJphvFntQwkNP49fdWrUdeIEs1xcBAWmGH/8QANRAAAQMCBAQDAg8AAAAAAAAAAgEDBAURAAYSEwcUIWEQFSIxUjI0NkJFVFVicXWBoqTCw//aAAgBAQABPwDiRsHGobM3rBfqoBKb+abaNOlYk/Eb4qz8Cmee0mhjsQpnJIwywC7J6XV5nsl27It/h4y6xSIHEFlnLjLLEN+mPG8DCaBMxcZ037oh+Gd810nMgQIlIkrKciTleds0aBoRp0LoappLqSexcMsTtp0xjPSmWiu6+KtiLaGSoKKikirbsmMpVFqhV2NLqLjpgEN5g3WoxuKpkTCp6ARVS+2eEz7lv7bgB9x19AMeyivVFxxGyrScswoE6jxliPvz9o7PHo0K06VkBV0j1HFAybCqFGalSTdU3evpW1sUygRJ+fjo07dditRX3LA8bSqYG0KLcFRfYZYHIGWg+g4B93GdZfqS9Vxxk+T9J/M/8H8QuKjNBY5BX4jmz7xpcMZCqPm3EMZmtHN+myTund1jw4zhbIwzvqEsH9Hv3Qm/74oFO8oy5TqfubvKRWmNdratIoN7YyRTdji/mj1/E9f8lxHv228P/8QAHxEAAgIDAAMBAQAAAAAAAAAAAQIAAwQREgUQIRRR/9oACAECAQE/AL2CoWJi5VfJJaY1osJ0dzqZ1qikgwVJYpcHWp426sM4Hydj+zMrU0kzGwBbV0TPHY6qz7nCzL+0tqUfqRNBfk8cGBfv1YNrqARF0xPr/8QAHhEAAgICAwEBAAAAAAAAAAAAAQIAAxESBBAhMTL/2gAIAQMBAT8AQEnAgqckSxWA9646HfML6kLOUjEAzQyh23xLeQVbAl9hKjE3Mp/Yli1M32cnGAB0h9hhPnX/2Q==";
-
-        Assets.add("bunny", bunnyBase64);
-        const bunny = await Assets.load("bunny");
-
-        expect(bunny).toBeInstanceOf(Texture);
-    });
-
-    it('should load PNG base64 assets', async () => {
-
-        const bunnyBase64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAlBAMAAACuSOSFAAAAElBMVEUAAAC4gwQAAAD///+FXgPrpgWZcO/zAAAAAXRSTlMAQObYZgAAAI5JREFUKM+tz2EKwyAMBeDgDWLn/xq6A4zQAwi5wBze/yp7aHUbo9BCHyj5ICGEEJGZnAjVuFAy3UuZmybNFHU9JP8lfrDwFLpqDskD8Vd7c15ik0PBrHgZpyyWNuEUyLjHo3NJWy110tBUmFE3vVTLUFDV9TqNDc+m/+01Qzez9JEhQ14El3S1S86KZPxvPOEpAfy/wkgAAAAASUVORK5CYII=";
-
-        Assets.add("bunny", bunnyBase64);
-        const bunny = await Assets.load("bunny");
-
-        expect(bunny).toBeInstanceOf(Texture);
-    });
-
-    it('should load WEBP base64 assets', async () => {
-
-        const bunnyBase64 = "data:image/webp;base64,UklGRrAAAABXRUJQVlA4TKQAAAAvGQAJEC9AkG0zf5FBLWe5hkCA8P/mxAMhQWLy/2PmPyDQj22SwEFsW3HzcMAfUPATA8nHAO1DQJfvXwxLVwER/Z8AACIBUQR9LJZwmIXBrglVz2/IK7xQuJfJ8Bsyyfqm4UKWOohSSSrJJOHmbVIs3dw5z1FubZQlANFZzMgADDZVmxVVPf8IN9XrQjHjwnD2dG8L7u6zLCK3NgkAon8XBL0AAA==";
-
-        Assets.add("bunny", bunnyBase64);
-        const bunny = await Assets.load("bunny");
-
-        expect(bunny).toBeInstanceOf(Texture);
-    });
-
-    it('should load AVIF base64 assets', async () => {
-
-        const bunnyBase64 = "data:image/avif;base64,AAAAHGZ0eXBtaWYxAAAAAG1pZjFhdmlmbWlhZgAAAPJtZXRhAAAAAAAAACFoZGxyAAAAAAAAAABwaWN0AAAAAAAAAAAAAAAAAAAAAA5waXRtAAAAAAABAAAAHmlsb2MAAAAABEAAAQABAAAAAAEWAAEAAAEMAAAAKGlpbmYAAAAAAAEAAAAaaW5mZQIAAAAAAQAAYXYwMUltYWdlAAAAAHFpcHJwAAAAUmlwY28AAAAUaXNwZQAAAAAAAAAaAAAAJQAAABBwYXNwAAAAAQAAAAEAAAAWYXYxQ4EgAAAKCDgRcyNICGgBAAAAEHBpeGkAAAAAAwgICAAAABdpcG1hAAAAAAAAAAEAAQQBAoOEAAABFG1kYXQKCDgRcyNICGgBMv8BRZAAABIBdOqJiZamtwNbZBDSykRegazSU00RVwhT5k66u6qcycVOI40yDcOSBzV0UbNO7T1k/aTOBG05HMLDcSNmSwFLVp1yb7rG04NeUBbpgTBOAqoMgznLCAKfslzSefTtHIXiylhXeARBQf6pfdB3jpvX8yus+DopeZYnpBhJC0SjL6d7kjp3Qxco27Kp5ap1Asq9g3nifiD52U0LyxM6US8WcAYReE10+VbzgUJlUW3ozxcW8Cm/ho+6L17XbLQwB99WqwGtsze0lczQmf/7D7HijZ3ixeAD/wVx9mL3cncht7dI3gOpA5kDs/bGomfUpRRqYPX63vx4FyjQ";
-
-        Assets.add("bunny", bunnyBase64);
-        const bunny = await Assets.load("bunny");
-
-        expect(bunny).toBeInstanceOf(Texture);
+        expect(square).toBeInstanceOf(Texture);
     });
 });
