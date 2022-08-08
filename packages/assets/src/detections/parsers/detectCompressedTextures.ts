@@ -21,7 +21,10 @@ function getCompressedTextureExtensions()
 }
 
 export const detectCompressedTextures = {
-    extension: ExtensionType.DetectionParser,
+    extension: {
+        type: ExtensionType.DetectionParser,
+        priority: 2,
+    },
     test: async (): Promise<boolean> =>
     {
         // Auto-detect WebGL compressed-texture extensions

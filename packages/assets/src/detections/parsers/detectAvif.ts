@@ -4,7 +4,10 @@ import type { FormatDetectionParser } from '..';
 import { addFormats, removeFormats } from '../utils/detectUtils';
 
 export const detectAvif: FormatDetectionParser = {
-    extension: ExtensionType.DetectionParser,
+    extension: {
+        type: ExtensionType.DetectionParser,
+        priority: 1,
+    },
     test: async (): Promise<boolean> =>
     {
         if (!globalThis.createImageBitmap) return false;

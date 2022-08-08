@@ -4,7 +4,10 @@ import type { FormatDetectionParser } from '..';
 import { addFormats, removeFormats } from '../utils/detectUtils';
 
 export const detectWebp = {
-    extension: ExtensionType.DetectionParser,
+    extension: {
+        type: ExtensionType.DetectionParser,
+        priority: 0,
+    },
     test: async (): Promise<boolean> =>
     {
         if (!globalThis.createImageBitmap) return false;

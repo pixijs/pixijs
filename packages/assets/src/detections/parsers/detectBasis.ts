@@ -4,7 +4,10 @@ import type { FormatDetectionParser } from '..';
 import { addFormats, removeFormats } from '../utils/detectUtils';
 
 export const detectBasis = {
-    extension: ExtensionType.DetectionParser,
+    extension: {
+        type: ExtensionType.DetectionParser,
+        priority: 3,
+    },
     test: async (): Promise<boolean> => !!(BasisParser.basisBinding && BasisParser.TranscoderWorker.wasmSource),
     add: addFormats('basis'),
     remove: removeFormats('basis')

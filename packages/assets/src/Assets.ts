@@ -276,7 +276,7 @@ export class AssetsClass
         const resolutionPref =  options.texturePreference?.resolution ?? 1;
         const resolution = (typeof resolutionPref === 'number') ? [resolutionPref] : resolutionPref;
 
-        let formats: string[];
+        let formats: string[] = [];
 
         if (options.texturePreference?.format)
         {
@@ -295,8 +295,6 @@ export class AssetsClass
         }
         else
         {
-            formats = ['png', 'jpg', 'jpeg'];
-
             // we should add any formats that are supported by the browser
             for (const detection of this._detections)
             {

@@ -15,7 +15,7 @@ describe('Detections', () =>
         detectCompressedTextures.test = jest.fn(async () => false);
         await Assets.init();
         expect(Assets.resolver['_preferredOrder'][0].params.format).toEqual(
-            ['webp', 'avif', 'png', 'jpg', 'jpeg']
+            ['avif', 'webp', 'png', 'jpg', 'jpeg']
         );
     });
 });

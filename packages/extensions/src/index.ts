@@ -236,6 +236,7 @@ const extensions = {
                 {
                     extension.ref.add?.();
                 }
+                list.sort((a, b) => (b.priority ?? -1) - (a.priority ?? -1));
             },
             (extension) =>
             {

@@ -1,4 +1,3 @@
-import type { ExtensionFormat } from '@pixi/extensions';
 import { extensions, ExtensionType } from '@pixi/extensions';
 import type { IRenderer, IRendererOptions } from './IRenderer';
 
@@ -7,26 +6,19 @@ export interface IRendererOptionsAuto extends IRendererOptions
     forceCanvas?: boolean;
 }
 
+export interface IRendererConstructor
+{
+    test(options?: IRendererOptionsAuto): boolean;
+    new (options?: IRendererOptionsAuto): IRenderer;
+}
+
 /**
  * Collection of installed Renderers.
  * @ignore
  */
-const renderers: ExtensionFormat[] = [];
+const renderers: IRendererConstructor[] = [];
 
-extensions.handle(ExtensionType.Renderer,
-    (extension) =>
-    {
-        renderers.push(extension);
-        renderers.sort((a, b) => b.priority - a.priority); // highest priority first
-    },
-    (extension) =>
-    {
-        if (renderers.includes(extension))
-        {
-            renderers.splice(renderers.indexOf(extension), 1);
-        }
-    }
-);
+extensions.handleByList(ExtensionType.Renderer, renderers);
 
 /**
  * This helper function will automatically detect which renderer you should be using.
@@ -61,11 +53,11 @@ extensions.handle(ExtensionType.Renderer,
  */
 export function autoDetectRenderer(options?: IRendererOptionsAuto): IRenderer
 {
-    for (const renderer of renderers)
+    for (const RendererType of renderers)
     {
-        if (renderer.ref.test(options))
+        if (RendererType.test(options))
         {
-            return new renderer.ref(options) as IRenderer;
+            return new RendererType(options);
         }
     }
 
