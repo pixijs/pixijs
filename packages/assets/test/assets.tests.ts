@@ -338,11 +338,11 @@ describe('Assets', () =>
     it('should load PNG base64 assets', async () =>
     {
         // Other formats (JPG, JPEG, WEBP, AVIF) can be added similarly.
-        const squareBase64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAQMAAABJtOi3AAAAA1BMVEUDDhLIBt9FAAC';
+        const bunnyBase64 = 'data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAkGBggGBQkIBwgKCQkKDRYODQwMDRoTFBAWHxwhIB8cHh4jJzIqIyUvJR4eKzssLzM1ODg4ISo9QTw2QTI3ODX/2wBDAQkKCg0LDRkODhk1JB4kNTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTU1NTX/wgARCAAlABoDAREAAhEBAxEB/8QAFwABAQEBAAAAAAAAAAAAAAAABgUHBP/EABkBAAMBAQEAAAAAAAAAAAAAAAIDBAUBBv/aAAwDAQACEAMQAAAAfoMjG9G5byxWYwUHfPaNTTmebMAqZ1zJphvFntQwkNP49fdWrUdeIEs1xcBAWmGH/8QANRAAAQMCBAQDAg8AAAAAAAAAAgEDBAURAAYSEwcUIWEQFSIxUjI0NkJFVFVicXWBoqTCw//aAAgBAQABPwDiRsHGobM3rBfqoBKb+abaNOlYk/Eb4qz8Cmee0mhjsQpnJIwywC7J6XV5nsl27It/h4y6xSIHEFlnLjLLEN+mPG8DCaBMxcZ037oh+Gd810nMgQIlIkrKciTleds0aBoRp0LoappLqSexcMsTtp0xjPSmWiu6+KtiLaGSoKKikirbsmMpVFqhV2NLqLjpgEN5g3WoxuKpkTCp6ARVS+2eEz7lv7bgB9x19AMeyivVFxxGyrScswoE6jxliPvz9o7PHo0K06VkBV0j1HFAybCqFGalSTdU3evpW1sUygRJ+fjo07dditRX3LA8bSqYG0KLcFRfYZYHIGWg+g4B93GdZfqS9Vxxk+T9J/M/8H8QuKjNBY5BX4jmz7xpcMZCqPm3EMZmtHN+myTund1jw4zhbIwzvqEsH9Hv3Qm/74oFO8oy5TqfubvKRWmNdratIoN7YyRTdji/mj1/E9f8lxHv228P/8QAHxEAAgIDAAMBAQAAAAAAAAAAAQIAAwQREgUQIRRR/9oACAECAQE/AL2CoWJi5VfJJaY1osJ0dzqZ1qikgwVJYpcHWp426sM4Hydj+zMrU0kzGwBbV0TPHY6qz7nCzL+0tqUfqRNBfk8cGBfv1YNrqARF0xPr/8QAHhEAAgICAwEBAAAAAAAAAAAAAQIAAxESBBAhMTL/2gAIAQMBAT8AQEnAgqckSxWA9646HfML6kLOUjEAzQyh23xLeQVbAl9hKjE3Mp/Yli1M32cnGAB0h9hhPnX/2Q==';
 
-        Assets.add('square', squareBase64);
-        const square = await Assets.load('square');
+        Assets.add('bunny', bunnyBase64);
+        const bunny = await Assets.load('bunny');
 
-        expect(square).toBeInstanceOf(Texture);
+        expect(bunny).toBeInstanceOf(Texture);
     });
 });
