@@ -21,7 +21,7 @@ const validImages = ['jpg', 'png', 'jpeg', 'avif', 'webp'];
 export async function loadImageBitmap(url: string): Promise<ImageBitmap>
 {
     const response = await settings.ADAPTER.fetch(url);
-    const imageBlob =  await response.blob();
+    const imageBlob = await response.blob();
     const imageBitmap = await createImageBitmap(imageBlob);
 
     return imageBitmap;
@@ -42,7 +42,18 @@ export const loadTextures = {
 
     test(url: string): boolean
     {
-        return checkExtension(url, validImages);
+        let isValidBase64Suffix: boolean;
+
+        for (let i = 0; i < validImages.length; i++)
+        {
+            if (url.indexOf(`data:image/${validImages[i]}`) === 0)
+            {
+                isValidBase64Suffix = true;
+                break;
+            }
+        }
+
+        return isValidBase64Suffix || checkExtension(url, validImages);
     },
 
     async load(url: string, asset: LoadAsset<IBaseTextureOptions>, loader: Loader): Promise<Texture>
