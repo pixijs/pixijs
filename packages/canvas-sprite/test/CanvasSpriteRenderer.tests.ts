@@ -1,17 +1,14 @@
 import '@pixi/canvas-display';
 import { CanvasRenderer } from '@pixi/canvas-renderer';
-import { CanvasSpriteRenderer } from '@pixi/canvas-sprite';
 import { MIPMAP_MODES, SCALE_MODES } from '@pixi/constants';
-import { BaseTexture, CanvasResource, extensions, Texture } from '@pixi/core';
+import { BaseTexture, CanvasResource, Texture } from '@pixi/core';
 import { Container } from '@pixi/display';
 import { Rectangle } from '@pixi/math';
 import { Sprite } from '@pixi/sprite';
+import '@pixi/canvas-sprite';
 
 describe('CanvasSpriteRenderer', () =>
 {
-    beforeAll(() => extensions.add(CanvasSpriteRenderer));
-    afterAll(() => extensions.remove(CanvasSpriteRenderer));
-
     it('should still render a sprite after texture is destroyed', () =>
     {
         const renderer = new CanvasRenderer({ width: 1, height: 1 });

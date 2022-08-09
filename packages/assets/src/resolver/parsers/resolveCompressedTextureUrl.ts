@@ -1,4 +1,4 @@
-import { ExtensionType } from '@pixi/core';
+import { extensions, ExtensionType } from '@pixi/core';
 import { settings } from '@pixi/settings';
 
 import type { ResolveAsset, ResolveURLParser } from '../types';
@@ -47,3 +47,5 @@ export const resolveCompressedTextureUrl = {
         };
     },
 } as ResolveURLParser;
+
+extensions.add(resolveCompressedTextureUrl);

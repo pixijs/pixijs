@@ -1,4 +1,4 @@
-import { BaseTexture, ExtensionType } from '@pixi/core';
+import { BaseTexture, extensions, ExtensionType } from '@pixi/core';
 import { BasePrepare } from '@pixi/prepare';
 import { settings } from '@pixi/settings';
 
@@ -101,3 +101,5 @@ export class CanvasPrepare extends BasePrepare implements ISystem
         this.canvas = null;
     }
 }
+
+extensions.add(CanvasPrepare);

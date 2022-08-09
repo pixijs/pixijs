@@ -1,5 +1,5 @@
 import type { CompressedTextureExtensionRef, CompressedTextureExtensions } from '@pixi/compressed-textures';
-import { ExtensionType } from '@pixi/core';
+import { extensions as ext, ExtensionType } from '@pixi/core';
 import { settings } from '@pixi/settings';
 import type { FormatDetectionParser } from '..';
 
@@ -21,7 +21,10 @@ function getCompressedTextureExtensions()
 }
 
 export const detectCompressedTextures = {
-    extension: ExtensionType.DetectionParser,
+    extension: {
+        type: ExtensionType.DetectionParser,
+        priority: 2,
+    },
     test: async (): Promise<boolean> =>
     {
         // Auto-detect WebGL compressed-texture extensions
@@ -71,3 +74,5 @@ export const detectCompressedTextures = {
         return formats.filter((f) => !(f in extensions));
     },
 } as FormatDetectionParser;
+
+ext.add(detectCompressedTextures);

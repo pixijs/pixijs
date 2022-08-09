@@ -6,7 +6,7 @@ import type { Renderer } from '../Renderer';
 import type { WebGLExtensions } from './WebGLExtensions';
 import type { IRenderingContext } from '../IRenderer';
 import type { ExtensionMetadata } from '@pixi/extensions';
-import { ExtensionType } from '@pixi/extensions';
+import { extensions, ExtensionType } from '@pixi/extensions';
 
 let CONTEXT_UID_COUNTER = 0;
 
@@ -350,3 +350,5 @@ export class ContextSystem implements ISystem
         }
     }
 }
+
+extensions.add(ContextSystem);

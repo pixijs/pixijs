@@ -11,8 +11,5 @@ npm install @pixi/core
 ## Usage
 
 ```js
-import { BasisLoader } from '@pixi/basis';
-import { extensions } from '@pixi/core';
-
-extensions.add(BasisLoader);
+import '@pixi/basis';
 ```

@@ -5,7 +5,7 @@ import { BitmapFont } from './BitmapFont';
 import type { Loader } from '@pixi/loaders';
 import type { Dict } from '@pixi/utils';
 import type { ExtensionMetadata, Texture } from '@pixi/core';
-import { ExtensionType } from '@pixi/core';
+import { extensions, ExtensionType } from '@pixi/core';
 
 /**
  * {@link PIXI.Loader Loader} middleware for loading
@@ -173,3 +173,5 @@ export class BitmapFontLoader
         return dir;
     }
 }
+
+extensions.add(BitmapFontLoader);

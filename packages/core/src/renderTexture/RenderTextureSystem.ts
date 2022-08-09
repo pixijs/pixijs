@@ -8,7 +8,7 @@ import type { BaseRenderTexture } from './BaseRenderTexture';
 import type { MaskData } from '../mask/MaskData';
 import type { ISize } from '@pixi/math';
 import type { ExtensionMetadata } from '@pixi/extensions';
-import { ExtensionType } from '@pixi/extensions';
+import { extensions, ExtensionType } from '@pixi/extensions';
 
 // Temporary rectangle for assigned sourceFrame or destinationFrame
 const tempRect = new Rectangle();
@@ -247,3 +247,5 @@ export class RenderTextureSystem implements ISystem
         this.renderer = null;
     }
 }
+
+extensions.add(RenderTextureSystem);

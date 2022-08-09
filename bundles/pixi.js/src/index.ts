@@ -1,16 +1,4 @@
 import * as utils from '@pixi/utils';
-import { AccessibilityManager } from '@pixi/accessibility';
-import { EventSystem } from '@pixi/events';
-import { extensions } from '@pixi/core';
-import { Extract } from '@pixi/extract';
-import { AppLoaderPlugin } from '@pixi/loaders';
-import { CompressedTextureLoader, DDSLoader, KTXLoader } from '@pixi/compressed-textures';
-import { ParticleRenderer } from '@pixi/particle-container';
-import { Prepare } from '@pixi/prepare';
-import { SpritesheetLoader } from '@pixi/spritesheet';
-import { TilingSpriteRenderer } from '@pixi/sprite-tiling';
-import { BitmapFontLoader } from '@pixi/text-bitmap';
-import { TickerPlugin } from '@pixi/ticker';
 import { AlphaFilter } from '@pixi/filter-alpha';
 import { BlurFilter, BlurFilterPass } from '@pixi/filter-blur';
 import { ColorMatrixFilter } from '@pixi/filter-color-matrix';
@@ -20,29 +8,6 @@ import { NoiseFilter } from '@pixi/filter-noise';
 import '@pixi/mixin-cache-as-bitmap';
 import '@pixi/mixin-get-child-by-name';
 import '@pixi/mixin-get-global-position';
-
-extensions.add(
-    // Systems
-    EventSystem,
-
-    // Install renderer plugins
-    AccessibilityManager,
-    Extract,
-    ParticleRenderer,
-    Prepare,
-    TilingSpriteRenderer,
-
-    // Install loader plugins
-    BitmapFontLoader,
-    CompressedTextureLoader,
-    DDSLoader,
-    KTXLoader,
-    SpritesheetLoader,
-
-    // Install application plugins
-    TickerPlugin,
-    AppLoaderPlugin
-);
 
 /**
  * This namespace contains WebGL-only display filters that can be applied

@@ -21,11 +21,8 @@ loader.load(() => {});
 Using the loader as an Application plugin:
 
 ```js 
-import { AppLoaderPlugin } from '@pixi/loaders';
+import '@pixi/loaders';
 import { Application } from '@pixi/app';
-import { extensions } from '@pixi/core';
-
-extensions.add(AppLoaderPlugin);
 
 const app = new Application();
 app.loader.add('path/to/file.jpg');

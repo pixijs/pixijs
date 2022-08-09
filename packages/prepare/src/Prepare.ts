@@ -1,4 +1,4 @@
-import { BaseTexture, ExtensionType } from '@pixi/core';
+import { BaseTexture, extensions, ExtensionType } from '@pixi/core';
 import { Graphics } from '@pixi/graphics';
 import type { IDisplayObjectExtended } from './BasePrepare';
 import { BasePrepare } from './BasePrepare';
@@ -142,3 +142,5 @@ export class Prepare extends BasePrepare implements ISystem
         this.registerUploadHook(uploadGraphics);
     }
 }
+
+extensions.add(Prepare);

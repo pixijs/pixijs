@@ -5,7 +5,7 @@ import type { Buffer } from './Buffer';
 import type { ISystem } from '../system/ISystem';
 import type { IRenderingContext } from '../IRenderer';
 import type { ExtensionMetadata } from '@pixi/extensions';
-import { ExtensionType } from '@pixi/extensions';
+import { extensions, ExtensionType } from '@pixi/extensions';
 
 /**
  * System plugin to the renderer to manage buffers.
@@ -221,3 +221,5 @@ export class BufferSystem implements ISystem
         return buffer._glBuffers[CONTEXT_UID];
     }
 }
+
+extensions.add(BufferSystem);

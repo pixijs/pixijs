@@ -1,4 +1,4 @@
-import { ExtensionType } from '@pixi/core';
+import { extensions, ExtensionType } from '@pixi/core';
 import { basename, extname } from '../../utils/path';
 import type { LoadAsset } from '../types';
 import type { LoaderParser } from './LoaderParser';
@@ -100,3 +100,5 @@ export const loadWebFont = {
             .forEach((t) => document.fonts.delete(t));
     }
 } as LoaderParser<FontFace | FontFace[]>;
+
+extensions.add(loadWebFont);

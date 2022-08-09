@@ -1,5 +1,5 @@
 import type { Texture } from '@pixi/core';
-import { ExtensionType } from '@pixi/core';
+import { extensions, ExtensionType } from '@pixi/core';
 import type { ISpritesheetData } from '@pixi/spritesheet';
 import { Spritesheet } from '@pixi/spritesheet';
 import { dirname, extname } from '../../utils/path';
@@ -104,3 +104,5 @@ export const loadSpritesheet = {
     },
 
 } as LoaderParser;
+
+extensions.add(loadSpritesheet);

@@ -9,6 +9,7 @@ import type {
     IRenderableObject,
     RenderTexture } from '@pixi/core';
 import {
+    extensions,
     CanvasResource,
     ExtensionType } from '@pixi/core';
 import { BLEND_MODES } from '@pixi/constants';
@@ -179,3 +180,5 @@ export class CanvasObjectRendererSystem implements ISystem
         this.render = null;
     }
 }
+
+extensions.add(CanvasObjectRendererSystem);

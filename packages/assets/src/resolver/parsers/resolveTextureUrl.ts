@@ -1,4 +1,4 @@
-import { ExtensionType } from '@pixi/core';
+import { extensions, ExtensionType } from '@pixi/core';
 import { settings } from '@pixi/settings';
 
 import { loadTextures } from '../../loader';
@@ -14,3 +14,5 @@ export const resolveTextureUrl = {
             src: value,
         }),
 } as ResolveURLParser;
+
+extensions.add(resolveTextureUrl);

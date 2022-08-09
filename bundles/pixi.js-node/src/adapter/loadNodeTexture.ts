@@ -1,5 +1,5 @@
 import type { LoadAsset, LoaderParser } from '@pixi/assets';
-import { ExtensionType, Texture } from '@pixi/core';
+import { extensions, ExtensionType, Texture } from '@pixi/core';
 import { settings } from '@pixi/settings';
 import { getResolutionOfUrl } from '@pixi/utils';
 import type { CanvasRenderingContext2D } from 'canvas';
@@ -51,3 +51,5 @@ export const loadNodeTexture = {
         texture.destroy(true);
     }
 } as LoaderParser<Texture>;
+
+extensions.add(loadNodeTexture);

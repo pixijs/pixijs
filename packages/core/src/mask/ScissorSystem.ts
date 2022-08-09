@@ -4,7 +4,7 @@ import type { Renderer } from '../Renderer';
 import type { MaskData } from './MaskData';
 import { Matrix, Rectangle } from '@pixi/math';
 import type { ExtensionMetadata } from '@pixi/extensions';
-import { ExtensionType } from '@pixi/extensions';
+import { extensions, ExtensionType } from '@pixi/extensions';
 import { settings } from '@pixi/settings';
 
 const tempMatrix = new Matrix();
@@ -227,3 +227,5 @@ export class ScissorSystem extends AbstractMaskSystem
         this.renderer.gl.scissor(rect.x, y, rect.width, rect.height);
     }
 }
+
+extensions.add(ScissorSystem);

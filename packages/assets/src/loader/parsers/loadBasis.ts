@@ -1,4 +1,4 @@
-import { BaseTexture, ExtensionType, Texture } from '@pixi/core';
+import { BaseTexture, extensions, ExtensionType, Texture } from '@pixi/core';
 
 import type { LoaderParser } from './LoaderParser';
 import { BasisParser, BASIS_FORMATS, BASIS_FORMAT_TO_TYPE,  TranscoderWorker } from '@pixi/basis';
@@ -78,3 +78,4 @@ export const loadBasis = {
 
 } as LoaderParser<Texture | Texture[], LoadTextureData>;
 
+extensions.add(loadBasis);

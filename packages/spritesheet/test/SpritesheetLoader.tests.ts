@@ -1,15 +1,12 @@
 import path from 'path';
 import type { IAddOptions } from '@pixi/loaders';
 import { Loader, LoaderResource } from '@pixi/loaders';
-import { Texture, BaseTexture, extensions } from '@pixi/core';
+import { Texture, BaseTexture } from '@pixi/core';
 import { BaseTextureCache, TextureCache, url, clearTextureCache } from '@pixi/utils';
 import { SpritesheetLoader, Spritesheet } from '@pixi/spritesheet';
 
 describe('SpritesheetLoader', () =>
 {
-    beforeAll(() => extensions.add(SpritesheetLoader));
-    afterAll(() => extensions.remove(SpritesheetLoader));
-
     it('should exist and return a function', () =>
     {
         expect(SpritesheetLoader).toBeDefined();

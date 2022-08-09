@@ -5,7 +5,7 @@ import type { Renderer } from '../Renderer';
 import type { BaseTexture } from '../textures/BaseTexture';
 import type { BatchTextureArray } from './BatchTextureArray';
 import type { ExtensionMetadata } from '@pixi/extensions';
-import { ExtensionType } from '@pixi/extensions';
+import { extensions, ExtensionType } from '@pixi/extensions';
 
 /**
  * System plugin to the renderer to manage batching.
@@ -142,3 +142,5 @@ export class BatchSystem implements ISystem
         this.renderer = null;
     }
 }
+
+extensions.add(BatchSystem);

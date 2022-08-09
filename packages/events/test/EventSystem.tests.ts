@@ -1,7 +1,7 @@
-import { Renderer, extensions } from '@pixi/core';
+import { Renderer } from '@pixi/core';
 import { Container } from '@pixi/display';
-import { EventSystem } from '@pixi/events';
 import { Graphics } from '@pixi/graphics';
+import '@pixi/events';
 
 function createRenderer(view?: HTMLCanvasElement, supportsPointerEvents?: boolean)
 {
@@ -45,16 +45,6 @@ function createScene()
 
 describe('EventSystem', () =>
 {
-    beforeAll(() =>
-    {
-        extensions.add(EventSystem);
-    });
-
-    afterAll(() =>
-    {
-        extensions.remove(EventSystem);
-    });
-
     // Share WebGL context for performance
     const view = document.createElement('canvas');
 

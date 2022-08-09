@@ -3,7 +3,7 @@ import { AbstractMaskSystem } from './AbstractMaskSystem';
 import type { Renderer } from '../Renderer';
 import type { IMaskTarget, MaskData } from './MaskData';
 import type { ExtensionMetadata } from '@pixi/extensions';
-import { ExtensionType } from '@pixi/extensions';
+import { extensions, ExtensionType } from '@pixi/extensions';
 import { settings } from '@pixi/settings';
 
 /**
@@ -151,3 +151,5 @@ export class StencilSystem extends AbstractMaskSystem
         gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
     }
 }
+
+extensions.add(StencilSystem);

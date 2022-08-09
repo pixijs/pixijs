@@ -4,7 +4,7 @@ import { accessibleTarget } from './accessibleTarget';
 
 import type { Rectangle } from '@pixi/math';
 import type { Container } from '@pixi/display';
-import { ExtensionType } from '@pixi/core';
+import { ExtensionType, extensions } from '@pixi/core';
 import type { IAccessibleHTMLElement } from './accessibleTarget';
 import type { IRenderer, ExtensionMetadata } from '@pixi/core';
 import { FederatedEvent } from '@pixi/events';
@@ -595,3 +595,5 @@ export class AccessibilityManager
         this.renderer = null;
     }
 }
+
+extensions.add(AccessibilityManager);

@@ -1,24 +1,13 @@
 import { extensions, ExtensionType } from '@pixi/core';
 import { BackgroundLoader } from './BackgroundLoader';
 import { Cache } from './cache/Cache';
-import { cacheSpritesheet, cacheTextureArray } from './cache/parsers';
 import type { FormatDetectionParser } from './detections';
-import { detectAvif, detectWebp } from './detections';
 import type {
     LoadAsset,
     LoaderParser
 } from './loader';
-import {
-    loadJson,
-    loadSpritesheet,
-    loadTextures,
-    loadTxt,
-    loadWebFont
-} from './loader';
 import { Loader } from './loader/Loader';
-import { loadBitmapFont } from './loader/parsers/loadBitmapFont';
 import type { PreferOrder, ResolveAsset, ResolverBundle, ResolverManifest, ResolveURLParser } from './resolver';
-import { resolveSpriteSheetUrl, resolveTextureUrl } from './resolver';
 import { Resolver } from './resolver/Resolver';
 import { convertToList } from './utils/convertToList';
 import { isSingleItem } from './utils/isSingleItem';
@@ -287,7 +276,7 @@ export class AssetsClass
         const resolutionPref =  options.texturePreference?.resolution ?? 1;
         const resolution = (typeof resolutionPref === 'number') ? [resolutionPref] : resolutionPref;
 
-        let formats: string[];
+        let formats: string[] = [];
 
         if (options.texturePreference?.format)
         {
@@ -306,8 +295,6 @@ export class AssetsClass
         }
         else
         {
-            formats = ['png', 'jpg', 'jpeg'];
-
             // we should add any formats that are supported by the browser
             for (const detection of this._detections)
             {
@@ -796,24 +783,3 @@ extensions
     .handleByList(ExtensionType.ResolveParser, Assets.resolver.parsers)
     .handleByList(ExtensionType.CacheParser, Assets.cache.parsers)
     .handleByList(ExtensionType.DetectionParser, Assets.detections);
-
-extensions.add(
-    loadTextures,
-    loadTxt,
-    loadJson,
-    loadSpritesheet,
-    loadBitmapFont,
-    loadWebFont,
-
-    // cache extensions
-    cacheSpritesheet,
-    cacheTextureArray,
-
-    // resolve extensions
-    resolveTextureUrl,
-    resolveSpriteSheetUrl,
-
-    // detection extensions
-    detectWebp,
-    detectAvif
-);

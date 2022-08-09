@@ -110,10 +110,10 @@ const normalizeExtension = (ext: ExtensionFormatLoose | any): ExtensionFormat =>
 const extensions = {
 
     /** @ignore */
-    _addHandlers: null as Record<ExtensionType, ExtensionHandler>,
+    _addHandlers: {} as Record<ExtensionType, ExtensionHandler>,
 
     /** @ignore */
-    _removeHandlers: null as Record<ExtensionType, ExtensionHandler>,
+    _removeHandlers: {} as Record<ExtensionType, ExtensionHandler>,
 
     /** @ignore */
     _queue: {} as Record<ExtensionType, ExtensionFormat[]>,
@@ -172,8 +172,8 @@ const extensions = {
      */
     handle(type: ExtensionType, onAdd: ExtensionHandler, onRemove: ExtensionHandler)
     {
-        const addHandlers = this._addHandlers = this._addHandlers || {} as Record<ExtensionType, ExtensionHandler>;
-        const removeHandlers = this._removeHandlers = this._removeHandlers || {} as Record<ExtensionType, ExtensionHandler>;
+        const addHandlers = this._addHandlers;
+        const removeHandlers = this._removeHandlers;
 
         // #if _DEBUG
         if (addHandlers[type] || removeHandlers[type])
@@ -236,6 +236,7 @@ const extensions = {
                 {
                     extension.ref.add?.();
                 }
+                list.sort((a, b) => (b.priority ?? -1) - (a.priority ?? -1));
             },
             (extension) =>
             {

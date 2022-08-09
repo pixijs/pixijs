@@ -11,7 +11,7 @@ import type { Program } from '../shader/Program';
 import type { Dict } from '@pixi/utils';
 import type { IRenderingContext } from '../IRenderer';
 import type { ExtensionMetadata } from '@pixi/extensions';
-import { ExtensionType } from '@pixi/extensions';
+import { extensions, ExtensionType } from '@pixi/extensions';
 
 const byteSizeMap: {[key: number]: number} = { 5126: 4, 5123: 2, 5121: 1 };
 
@@ -589,3 +589,5 @@ export class GeometrySystem implements ISystem
         this.renderer = null;
     }
 }
+
+extensions.add(GeometrySystem);

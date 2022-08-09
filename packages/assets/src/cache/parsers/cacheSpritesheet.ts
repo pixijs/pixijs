@@ -1,4 +1,4 @@
-import { ExtensionType } from '@pixi/core';
+import { extensions, ExtensionType } from '@pixi/core';
 import { Spritesheet } from '@pixi/spritesheet';
 import { dirname } from '../../utils';
 import type { CacheParser } from '../CacheParser';
@@ -37,3 +37,5 @@ export const cacheSpritesheet: CacheParser<Spritesheet> = {
     test: (asset: Spritesheet) => asset instanceof Spritesheet,
     getCacheableAssets: (keys: string[], asset: Spritesheet) => getCacheableAssets(keys, asset, false)
 };
+
+extensions.add(cacheSpritesheet);

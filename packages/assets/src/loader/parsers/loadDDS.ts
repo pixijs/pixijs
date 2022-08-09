@@ -1,4 +1,4 @@
-import { BaseTexture, ExtensionType, Texture } from '@pixi/core';
+import { BaseTexture, extensions, ExtensionType, Texture } from '@pixi/core';
 import { getResolutionOfUrl } from '@pixi/utils';
 import { parseDDS } from '@pixi/compressed-textures';
 import type { Loader } from '../Loader';
@@ -68,3 +68,4 @@ export const loadDDS: LoaderParser = {
 
 } as LoaderParser<Texture | Texture[], LoadTextureData>;
 
+extensions.add(loadDDS);

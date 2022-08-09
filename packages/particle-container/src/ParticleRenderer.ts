@@ -1,5 +1,5 @@
 import { TYPES } from '@pixi/constants';
-import { ExtensionType, ObjectRenderer, Shader, State } from '@pixi/core';
+import { extensions, ExtensionType, ObjectRenderer, Shader, State } from '@pixi/core';
 import { Matrix } from '@pixi/math';
 import { correctBlendMode, premultiplyRgba, premultiplyTint } from '@pixi/utils';
 import { ParticleBuffer } from './ParticleBuffer';
@@ -459,3 +459,5 @@ export class ParticleRenderer extends ObjectRenderer
         this.tempMatrix = null;
     }
 }
+
+extensions.add(ParticleRenderer);

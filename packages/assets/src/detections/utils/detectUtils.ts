@@ -2,7 +2,7 @@ export function addFormats(...format: string[]): (formats: string[]) => Promise<
 {
     return async (formats: string[]) =>
     {
-        formats.unshift(...format);
+        formats.push(...format);
 
         return formats;
     };

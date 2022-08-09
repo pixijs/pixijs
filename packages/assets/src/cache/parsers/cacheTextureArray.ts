@@ -1,4 +1,4 @@
-import { ExtensionType, Texture } from '@pixi/core';
+import { extensions, ExtensionType, Texture } from '@pixi/core';
 import type { CacheParser } from '../CacheParser';
 
 export const cacheTextureArray: CacheParser<Texture[]> = {
@@ -21,3 +21,5 @@ export const cacheTextureArray: CacheParser<Texture[]> = {
         return out;
     }
 };
+
+extensions.add(cacheTextureArray);

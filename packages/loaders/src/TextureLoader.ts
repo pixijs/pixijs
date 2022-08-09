@@ -1,5 +1,5 @@
 import type { ExtensionMetadata } from '@pixi/core';
-import { ExtensionType, Texture } from '@pixi/core';
+import { extensions, ExtensionType, Texture } from '@pixi/core';
 import { LoaderResource } from './LoaderResource';
 
 /**
@@ -46,3 +46,5 @@ export class TextureLoader
         }
     }
 }
+
+extensions.add(TextureLoader);

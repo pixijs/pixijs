@@ -1,6 +1,6 @@
 import { hex2rgb, hex2string } from '@pixi/utils';
 import type { ExtensionMetadata } from '@pixi/extensions';
-import { ExtensionType } from '@pixi/extensions';
+import { extensions, ExtensionType } from '@pixi/extensions';
 import type { ISystem } from '../system/ISystem';
 
 export interface BackgroundOptions
@@ -123,3 +123,5 @@ export class BackgroundSystem implements ISystem
         // ka boom!
     }
 }
+
+extensions.add(BackgroundSystem);

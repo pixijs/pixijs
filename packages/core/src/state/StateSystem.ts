@@ -5,7 +5,7 @@ import { BLEND_MODES } from '@pixi/constants';
 import type { ISystem } from '../system/ISystem';
 import type { IRenderingContext } from '../IRenderer';
 import type { ExtensionMetadata } from '@pixi/extensions';
-import { ExtensionType } from '@pixi/extensions';
+import { extensions, ExtensionType } from '@pixi/extensions';
 
 const BLEND = 0;
 const OFFSET = 1;
@@ -337,3 +337,5 @@ export class StateSystem implements ISystem
         this.gl = null;
     }
 }
+
+extensions.add(StateSystem);

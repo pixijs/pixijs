@@ -1,6 +1,6 @@
 import type { LoadAsset, LoaderParser, LoadFontData } from '@pixi/assets';
 import { getFontFamilyName } from '@pixi/assets';
-import { ExtensionType } from '@pixi/core';
+import { extensions, ExtensionType } from '@pixi/core';
 import { registerFont } from 'canvas';
 import path from 'path';
 
@@ -36,3 +36,5 @@ export const loadNodeFont = {
         }
     },
 } as LoaderParser;
+
+extensions.add(loadNodeFont);

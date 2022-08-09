@@ -1,5 +1,5 @@
 import type { ExtensionMetadata } from '@pixi/core';
-import { ExtensionType, Texture } from '@pixi/core';
+import { extensions, ExtensionType, Texture } from '@pixi/core';
 import { SHAPES, Matrix } from '@pixi/math';
 import { canvasUtils } from '@pixi/canvas-renderer';
 import type { CanvasRenderer, CrossPlatformCanvasRenderingContext2D } from '@pixi/canvas-renderer';
@@ -626,3 +626,5 @@ export class CanvasGraphicsRenderer
         this._tempMatrix = null;
     }
 }
+
+extensions.add(CanvasGraphicsRenderer);

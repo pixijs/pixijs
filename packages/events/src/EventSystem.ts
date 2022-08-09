@@ -2,7 +2,7 @@ import { EventBoundary } from './EventBoundary';
 import type { FederatedMouseEvent } from './FederatedMouseEvent';
 import { FederatedPointerEvent } from './FederatedPointerEvent';
 import { FederatedWheelEvent } from './FederatedWheelEvent';
-import { ExtensionType } from '@pixi/core';
+import { extensions, ExtensionType } from '@pixi/core';
 
 import type { IRenderableObject, ExtensionMetadata } from '@pixi/core';
 import type { DisplayObject } from '@pixi/display';
@@ -710,3 +710,5 @@ interface PixiTouch extends Touch
     isNormalized: boolean;
     type: string;
 }
+
+extensions.add(EventSystem);
