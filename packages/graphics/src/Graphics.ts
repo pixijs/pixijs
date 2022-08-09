@@ -720,17 +720,17 @@ export class Graphics extends Container
         return this.drawShape(new Ellipse(x, y, width, height));
     }
 
-    public drawPolygon(...path: Array<number> | Array<Point>): this;
-    public drawPolygon(path: Array<number> | Array<Point> | Polygon): this;
+    public drawPolygon(...path: Array<number> | Array<IPointData>): this;
+    public drawPolygon(path: Array<number> | Array<IPointData> | Polygon): this;
 
     /**
      * Draws a polygon using the given path.
-     * @param {number[]|PIXI.Point[]|PIXI.Polygon} path - The path data used to construct the polygon.
+     * @param {number[]|PIXI.IPointData[]|PIXI.Polygon} path - The path data used to construct the polygon.
      * @returns - This Graphics object. Good for chaining method calls
      */
     public drawPolygon(...path: any[]): this
     {
-        let points: Array<number> | Array<Point>;
+        let points: Array<number> | Array<IPointData>;
         let closeStroke = true;// !!this._fillStyle;
 
         const poly = path[0] as Polygon;
