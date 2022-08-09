@@ -528,7 +528,7 @@ export class AssetsClass
         let total = 0;
         const _onProgress = () =>
         {
-            if (onProgress) onProgress(++count / total);
+            onProgress?.(++count / total);
         };
         const promises = keys.map((bundleId) =>
         {
