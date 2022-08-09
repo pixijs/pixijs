@@ -523,13 +523,17 @@ export class AssetsClass
 
         const out: Record<string, Record<string, any>> = {};
 
-        const promises = Object.keys(resolveResults).map((bundleId) =>
+        const keys = Object.keys(resolveResults);
+        let count = 0;
+        const total = keys.length;
+        const promises = keys.map((bundleId) =>
         {
             const resolveResult = resolveResults[bundleId];
 
-            return this._mapLoadToResolve(resolveResult, onProgress)
+            return this._mapLoadToResolve(resolveResult)
                 .then((resolveResult) =>
                 {
+                    if (onProgress) onProgress(++count / total);
                     out[bundleId] = resolveResult;
                 });
         });
