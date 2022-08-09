@@ -46,7 +46,18 @@ export const loadTextures = {
         const tempURL = url.split('?')[0];
         const extension = tempURL.split('.').pop();
 
-        return validImages.includes(extension);
+        let isValidBase64Suffix: boolean;
+
+        for (let i = 0; i < validImages.length; i++)
+        {
+            if (url.indexOf(`data:image/${validImages[i]}`) === 0)
+            {
+                isValidBase64Suffix = true;
+                break;
+            }
+        }
+
+        return isValidBase64Suffix || validImages.includes(extension);
     },
 
     async load(url: string, asset: LoadAsset<LoadTextureData>, loader: Loader): Promise<Texture>
