@@ -173,6 +173,23 @@ Then, to build the source, run:
 npm run build
 ```
 
+#### Error installing gl package
+
+In most cases installing `gl` from npm should just work. However, if you run into problems you might need to adjust your system configuration and make sure all your dependencies are up to date
+
+Please refer to the [gl installation guide](https://www.npmjs.com/package/gl/v/4.5.3-win64.0#system-dependencies) for more information.
+
+#### Error installing canvas package
+
+The [canvas](https://www.npmjs.com/package/canvas) library currently being used does not have a pre-built version for every environment.
+When the package detects an unsupported environment, it will try to build from source.
+
+To build from source you will need to make sure you have the following dependencies installed and then reinstall:
+
+`brew install pkg-config cairo pango libpng jpeg giflib librsvg`
+
+For non-mac users, please refer to the [canvas installation guide](https://www.npmjs.com/package/canvas#compiling) for more information.
+
 ### How to generate the documentation ###
 
 The docs can be generated using npm:
