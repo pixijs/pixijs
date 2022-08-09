@@ -141,8 +141,8 @@ describe('Assets', () =>
 
         const assets = await Assets.loadBundle(['default', 'data'], progressMock);
 
-        expect(progressMock).toHaveBeenCalledTimes(2);
-        expect(progressMock.mock.calls).toEqual([0.5, 1]);
+        expect(progressMock).toHaveBeenCalledTimes(4);
+        expect(progressMock.mock.calls).toEqual([[0.25], [0.5], [0.75], [1]]);
         expect(assets.default.bunny).toBeInstanceOf(Texture);
         expect(assets.default['profile-abel']).toBeInstanceOf(Texture);
         expect(assets.default.spritesheet).toBeInstanceOf(Spritesheet);

@@ -525,15 +525,20 @@ export class AssetsClass
 
         const keys = Object.keys(resolveResults);
         let count = 0;
-        const total = keys.length;
+        let total = 0;
+        const _onProgress = () =>
+        {
+            if (onProgress) onProgress(++count / total);
+        };
         const promises = keys.map((bundleId) =>
         {
             const resolveResult = resolveResults[bundleId];
 
-            return this._mapLoadToResolve(resolveResult)
+            total += Object.keys(resolveResult).length;
+
+            return this._mapLoadToResolve(resolveResult, _onProgress)
                 .then((resolveResult) =>
                 {
-                    if (onProgress) onProgress(++count / total);
                     out[bundleId] = resolveResult;
                 });
         });
