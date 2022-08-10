@@ -1,5 +1,4 @@
 import { extensions, ExtensionType } from '@pixi/core';
-import { loadBitmapFont } from '..';
 import { BackgroundLoader } from './BackgroundLoader';
 import { Cache } from './cache/Cache';
 import { cacheSpritesheet, cacheTextureArray } from './cache/parsers';
@@ -7,6 +6,7 @@ import type { FormatDetectionParser } from './detections';
 import { detectAvif, detectWebp } from './detections';
 import type { LoadAsset, LoaderParser } from './loader';
 import {
+    loadBitmapFont,
     loadJson,
     loadSpritesheet,
     loadSVG,
