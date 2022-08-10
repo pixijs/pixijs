@@ -2,32 +2,13 @@ import type { Texture } from '@pixi/core';
 import { extensions, ExtensionType } from '@pixi/core';
 import { settings } from '@pixi/settings';
 import type { BitmapFontData } from '@pixi/text-bitmap';
-import { BitmapFont, TextFormat, XMLFormat, XMLStringFormat } from '@pixi/text-bitmap';
+import { BitmapFont, TextFormat, XMLStringFormat } from '@pixi/text-bitmap';
 import { dirname, extname, join } from '../../utils/path';
 
 import type { Loader } from '../Loader';
 import type { LoadAsset } from '../types';
 import type { LoaderParser } from './LoaderParser';
 
-async function _loadBitmap(src: string, data: BitmapFontData, loader: Loader): Promise<BitmapFont>
-{
-    const pages = data.page;
-
-    const textureUrls = [];
-
-    for (let i = 0; i < pages.length; ++i)
-    {
-        const pageFile = pages[i].file;
-
-        const imagePath = join(dirname(src), pageFile);
-
-        textureUrls.push(imagePath);
-    }
-
-    const textures: Texture[] = Object.values(await loader.load(textureUrls));
-
-    return BitmapFont.install(data, textures, true);
-}
 const validExtensions = ['.xml', '.fnt'];
 
 /** simple loader plugin for loading in bitmap fonts! */
@@ -41,35 +22,37 @@ export const loadBitmapFont = {
 
     async testParse(data: string): Promise<boolean>
     {
-        const isText = TextFormat.test(data);
-        const isXMLText = XMLStringFormat.test(data);
-
-        return isText || isXMLText;
+        return TextFormat.test(data) || XMLStringFormat.test(data);
     },
 
     async parse(asset: string, data: LoadAsset, loader: Loader): Promise<BitmapFont>
     {
-        const isText = TextFormat.test(asset);
+        const fontData: BitmapFontData = TextFormat.test(asset)
+            ? TextFormat.parse(asset)
+            : XMLStringFormat.parse(asset);
 
-        if (isText)
+        const { src } = data;
+        const { page: pages } = fontData;
+        const textureUrls = [];
+
+        for (let i = 0; i < pages.length; ++i)
         {
-            const parsed = TextFormat.parse(asset);
+            const pageFile = pages[i].file;
+            const imagePath = join(dirname(src), pageFile);
 
-            return await _loadBitmap(data.src, parsed, loader);
+            textureUrls.push(imagePath);
         }
 
-        return await _loadBitmap(data.src, XMLStringFormat.parse(asset), loader);
+        const textures: Texture[] = Object.values(await loader.load(textureUrls));
+
+        return BitmapFont.install(fontData, textures, true);
     },
 
-    async load(url: string, _options: LoadAsset, loader: Loader): Promise<BitmapFont>
+    async load(url: string, _options: LoadAsset): Promise<string>
     {
         const response = await settings.ADAPTER.fetch(url);
 
-        const text = await response.text();
-
-        const data = new window.DOMParser().parseFromString(text, 'text/xml');
-
-        return await _loadBitmap(url, XMLFormat.parse(data), loader);
+        return response.text();
     },
 
     unload(bitmapFont: BitmapFont): void

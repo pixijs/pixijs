@@ -82,7 +82,7 @@ export class Resolver
     }
 
     /**
-     * Set the base path to append to all urls when resolving
+     * Set the base path to prepend to all urls when resolving
      * @example
      * resolver.basePath = 'https://home.com/';
      * resolver.add('foo', 'bar.ong');

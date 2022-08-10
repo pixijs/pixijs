@@ -300,7 +300,8 @@ export class BitmapText extends Container
 
             chars.push(charRenderData);
 
-            lastLineWidth = charRenderData.position.x + Math.max(charData.xAdvance, charData.texture.orig.width);
+            lastLineWidth = charRenderData.position.x
+                + Math.max(charData.xAdvance - charData.xOffset, charData.texture.orig.width);
             pos.x += charData.xAdvance + this._letterSpacing;
             maxLineHeight = Math.max(maxLineHeight, (charData.yOffset + charData.texture.height));
             prevCharCode = charCode;
