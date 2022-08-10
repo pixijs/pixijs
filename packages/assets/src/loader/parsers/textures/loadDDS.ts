@@ -1,15 +1,15 @@
-import { BaseTexture, ExtensionType, Texture } from '@pixi/core';
-import { getResolutionOfUrl } from '@pixi/utils';
 import { parseDDS } from '@pixi/compressed-textures';
-import type { Loader } from '../Loader';
+import type { IBaseTextureOptions, Texture } from '@pixi/core';
+import { BaseTexture, ExtensionType } from '@pixi/core';
+import { getResolutionOfUrl } from '@pixi/utils';
+import type { Loader } from '../../Loader';
 
-import type { LoaderParser } from './LoaderParser';
-import type { LoadAsset } from '../types';
 import { ALPHA_MODES, MIPMAP_MODES } from '@pixi/constants';
-import type { LoadTextureData } from './loadTexture';
 import { settings } from '@pixi/settings';
-
-const validImages = ['dds'];
+import type { LoadAsset } from '../../types';
+import type { LoaderParser } from '../LoaderParser';
+import { checkExtension } from './utils/checkExtension';
+import { createTexture } from './utils/createTexture';
 
 /** Load our DDS textures! */
 export const loadDDS: LoaderParser = {
@@ -17,10 +17,7 @@ export const loadDDS: LoaderParser = {
 
     test(url: string): boolean
     {
-        const tempURL = url.split('?')[0];
-        const extension = tempURL.split('.').pop();
-
-        return validImages.includes(extension.toLowerCase());
+        return checkExtension(url, 'dds');
     },
 
     async load(url: string, asset: LoadAsset, loader: Loader): Promise<Texture | Texture[]>
@@ -41,14 +38,7 @@ export const loadDDS: LoaderParser = {
                 ...asset.data,
             });
 
-            const texture = new Texture(base);
-
-            texture.baseTexture.on('dispose', () =>
-            {
-                delete loader.promiseCache[url];
-            });
-
-            return texture;
+            return createTexture(base, loader, url);
         });
 
         return textures.length === 1 ? textures[0] : textures;
@@ -66,5 +56,5 @@ export const loadDDS: LoaderParser = {
         }
     }
 
-} as LoaderParser<Texture | Texture[], LoadTextureData>;
+} as LoaderParser<Texture | Texture[], IBaseTextureOptions>;
 
