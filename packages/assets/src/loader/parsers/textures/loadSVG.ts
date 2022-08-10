@@ -1,4 +1,4 @@
-import type { ISVGResourceOptions, Texture } from '@pixi/core';
+import type { IBaseTextureOptions, Texture } from '@pixi/core';
 import { BaseTexture, ExtensionType, SVGResource } from '@pixi/core';
 import { settings } from '@pixi/settings';
 import { getResolutionOfUrl } from '@pixi/utils';
@@ -9,11 +9,6 @@ import type { LoadAsset } from '../../types';
 import type { LoaderParser } from '../LoaderParser';
 import { loadTextures } from './loadTexture';
 import { createTexture } from './utils/createTexture';
-
-export type SVGTextureData = {
-    baseTexture: BaseTexture;
-    svgResource: ISVGResourceOptions;
-};
 
 /** Loads SVG's into Textures */
 export const loadSVG = {
@@ -29,20 +24,20 @@ export const loadSVG = {
         return SVGResource.test(data);
     },
 
-    async parse(asset: string, data: LoadAsset<SVGTextureData>, loader: Loader): Promise<Texture>
+    async parse(asset: string, data: LoadAsset<IBaseTextureOptions>, loader: Loader): Promise<Texture>
     {
-        const src = new SVGResource(asset, data?.data?.svgResource);
+        const src = new SVGResource(asset, data?.data?.resourceOptions);
 
         const base = new BaseTexture(src, {
             resolution: getResolutionOfUrl(asset),
-            ...data?.data?.baseTexture,
+            ...data?.data,
         });
 
         base.resource.src = asset;
 
         const texture = createTexture(base, loader, asset);
 
-        if (!data?.data?.svgResource?.autoLoad)
+        if (!data?.data?.resourceOptions?.autoLoad)
         {
             await src.load();
         }
@@ -59,4 +54,4 @@ export const loadSVG = {
 
     unload: loadTextures.unload,
 
-} as LoaderParser<Texture | string, SVGTextureData>;
+} as LoaderParser<Texture | string, IBaseTextureOptions>;

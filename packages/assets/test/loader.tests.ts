@@ -62,7 +62,7 @@ describe('Loader', () =>
 
         const texture: Texture = await loader.load({
             data: {
-                svgResource: {
+                resourceOptions: {
                     width: 128,
                     height: 256,
                 }
