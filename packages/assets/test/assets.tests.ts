@@ -137,8 +137,12 @@ describe('Assets', () =>
             manifest: 'json/asset-manifest-2.json',
         });
 
-        const assets = await Assets.loadBundle(['default', 'data']);
+        const progressMock = jest.fn();
 
+        const assets = await Assets.loadBundle(['default', 'data'], progressMock);
+
+        expect(progressMock).toHaveBeenCalledTimes(4);
+        expect(progressMock.mock.calls).toEqual([[0.25], [0.5], [0.75], [1]]);
         expect(assets.default.bunny).toBeInstanceOf(Texture);
         expect(assets.default['profile-abel']).toBeInstanceOf(Texture);
         expect(assets.default.spritesheet).toBeInstanceOf(Spritesheet);
