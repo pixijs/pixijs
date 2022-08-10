@@ -1,11 +1,14 @@
-import { BaseTexture, ExtensionType, Texture } from '@pixi/core';
+import type { IBaseTextureOptions, Texture } from '@pixi/core';
+import { BaseTexture, ExtensionType } from '@pixi/core';
 import { settings } from '@pixi/settings';
 import { getResolutionOfUrl } from '@pixi/utils';
-import type { Loader } from '../Loader';
-import type { LoadAsset } from '../types';
+import type { Loader } from '../../Loader';
+import type { LoadAsset } from '../../types';
 
-import type { LoaderParser } from './LoaderParser';
-import { WorkerManager } from './WorkerManager';
+import type { LoaderParser } from '../LoaderParser';
+import { WorkerManager } from '../WorkerManager';
+import { checkExtension } from './utils/checkExtension';
+import { createTexture } from './utils/createTexture';
 
 const validImages = ['jpg', 'png', 'jpeg', 'avif', 'webp'];
 
@@ -24,10 +27,6 @@ export async function loadImageBitmap(url: string): Promise<ImageBitmap>
     return imageBitmap;
 }
 
-export type LoadTextureData = {
-    baseTexture: BaseTexture;
-};
-
 /**
  * Loads our textures!
  * this makes use of imageBitmaps where available.
@@ -43,13 +42,10 @@ export const loadTextures = {
 
     test(url: string): boolean
     {
-        const tempURL = url.split('?')[0];
-        const extension = tempURL.split('.').pop();
-
-        return validImages.includes(extension);
+        return checkExtension(url, validImages);
     },
 
-    async load(url: string, asset: LoadAsset<LoadTextureData>, loader: Loader): Promise<Texture>
+    async load(url: string, asset: LoadAsset<IBaseTextureOptions>, loader: Loader): Promise<Texture>
     {
         let src: any = null;
 
@@ -86,15 +82,7 @@ export const loadTextures = {
 
         base.resource.src = url;
 
-        const texture = new Texture(base);
-
-        // make sure to nuke the promise if a texture is destroyed..
-        texture.baseTexture.on('dispose', () =>
-        {
-            delete loader.promiseCache[url];
-        });
-
-        return texture;
+        return createTexture(base, loader, url);
     },
 
     unload(texture: Texture): void
@@ -102,4 +90,4 @@ export const loadTextures = {
         texture.destroy(true);
     }
 
-} as LoaderParser<Texture, LoadTextureData>;
+} as LoaderParser<Texture, IBaseTextureOptions>;

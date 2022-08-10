@@ -1,22 +1,20 @@
 import { extensions, ExtensionType } from '@pixi/core';
+import { loadBitmapFont } from '..';
 import { BackgroundLoader } from './BackgroundLoader';
 import { Cache } from './cache/Cache';
 import { cacheSpritesheet, cacheTextureArray } from './cache/parsers';
 import type { FormatDetectionParser } from './detections';
 import { detectAvif, detectWebp } from './detections';
-import type {
-    LoadAsset,
-    LoaderParser
-} from './loader';
+import type { LoadAsset, LoaderParser } from './loader';
 import {
     loadJson,
     loadSpritesheet,
+    loadSVG,
     loadTextures,
     loadTxt,
     loadWebFont
 } from './loader';
 import { Loader } from './loader/Loader';
-import { loadBitmapFont } from './loader/parsers/loadBitmapFont';
 import type { PreferOrder, ResolveAsset, ResolverBundle, ResolverManifest, ResolveURLParser } from './resolver';
 import { resolveSpriteSheetUrl, resolveTextureUrl } from './resolver';
 import { Resolver } from './resolver/Resolver';
@@ -799,6 +797,7 @@ extensions
 
 extensions.add(
     loadTextures,
+    loadSVG,
     loadTxt,
     loadJson,
     loadSpritesheet,
