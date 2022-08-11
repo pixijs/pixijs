@@ -35,7 +35,7 @@ PixiJS has full [WebGL](https://en.wikipedia.org/wiki/WebGL) support and seamles
 - Website: Find out more about PixiJS on the [official website](https://www.pixijs.com/).
 - Getting started:
     - Check out @kittykatattack's comprehensive [tutorial](https://github.com/kittykatattack/learningPixi).
-    - also check out @miltoncandelero tutorial with PixiJS recipes, best practices and typescript setup [here](https://www.pixijselementals.com/)
+    - Also check out @miltoncandelero's tutorials with PixiJS recipes, best practices and TypeScript setup [here](https://www.pixijselementals.com/)
 - Examples: Get stuck right in and play around with PixiJS code and features right [here](https://pixijs.io/examples/)!
 - Docs: Get to know the PixiJS API by checking out the [docs](https://pixijs.io/docs/).
 - Guide: Supplementary guide to the API documentation [here](https://pixijs.io/guides/).
