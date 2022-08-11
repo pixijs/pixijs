@@ -2,6 +2,7 @@ import { extensions, ExtensionType } from '@pixi/core';
 import { basename, extname } from '../../utils/path';
 import type { LoadAsset } from '../types';
 import type { LoaderParser } from './LoaderParser';
+import { LoaderParserPriority } from './LoaderParser';
 
 const validWeights = ['normal', 'bold',
     '100', '200', '300', '400', '500', '600', '700', '800', '900',
@@ -43,7 +44,10 @@ export function getFontFamilyName(url: string): string
 
 /** Web font loader plugin */
 export const loadWebFont = {
-    extension: ExtensionType.LoadParser,
+    extension: {
+        type: ExtensionType.LoadParser,
+        priority: LoaderParserPriority.Low,
+    },
 
     test(url: string): boolean
     {

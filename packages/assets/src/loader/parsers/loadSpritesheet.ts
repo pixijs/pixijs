@@ -6,6 +6,7 @@ import { dirname, extname } from '../../utils/path';
 import type { Loader } from '../Loader';
 import type { LoadAsset } from '../types';
 import type { LoaderParser } from './LoaderParser';
+import { LoaderParserPriority } from './LoaderParser';
 
 interface SpriteSheetJson extends ISpritesheetData
 {
@@ -24,7 +25,10 @@ interface SpriteSheetJson extends ISpritesheetData
  * All textures in the sprite sheet are then added to the cache
  */
 export const loadSpritesheet = {
-    extension: ExtensionType.LoadParser,
+    extension: {
+        type: ExtensionType.LoadParser,
+        priority: LoaderParserPriority.Normal,
+    },
 
     async testParse(asset: SpriteSheetJson, options: LoadAsset): Promise<boolean>
     {

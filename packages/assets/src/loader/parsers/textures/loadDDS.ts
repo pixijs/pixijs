@@ -8,12 +8,16 @@ import { ALPHA_MODES, MIPMAP_MODES } from '@pixi/constants';
 import { settings } from '@pixi/settings';
 import type { LoadAsset } from '../../types';
 import type { LoaderParser } from '../LoaderParser';
+import { LoaderParserPriority } from '../LoaderParser';
 import { checkExtension } from './utils/checkExtension';
 import { createTexture } from './utils/createTexture';
 
 /** Load our DDS textures! */
 export const loadDDS: LoaderParser = {
-    extension: ExtensionType.LoadParser,
+    extension: {
+        type: ExtensionType.LoadParser,
+        priority: LoaderParserPriority.High,
+    },
 
     test(url: string): boolean
     {

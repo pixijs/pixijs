@@ -2,10 +2,14 @@ import { extensions, ExtensionType } from '@pixi/core';
 import { settings } from '@pixi/settings';
 import { extname } from '../../utils/path';
 import type { LoaderParser } from './LoaderParser';
+import { LoaderParserPriority } from './LoaderParser';
 
 /** simple loader plugin for loading json data */
 export const loadJson = {
-    extension: ExtensionType.LoadParser,
+    extension: {
+        type: ExtensionType.LoadParser,
+        priority: LoaderParserPriority.Low,
+    },
 
     test(url: string): boolean
     {

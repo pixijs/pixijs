@@ -7,12 +7,16 @@ import type { Loader } from '../../Loader';
 import type { LoadAsset } from '../../types';
 
 import type { LoaderParser } from '../LoaderParser';
+import { LoaderParserPriority } from '../LoaderParser';
 import { loadTextures } from './loadTexture';
 import { createTexture } from './utils/createTexture';
 
 /** Loads SVG's into Textures */
 export const loadSVG = {
-    extension: ExtensionType.LoadParser,
+    extension: {
+        type: ExtensionType.LoadParser,
+        priority: LoaderParserPriority.High,
+    },
 
     test(url: string): boolean
     {

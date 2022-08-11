@@ -8,12 +8,16 @@ import { dirname, extname, join } from '../../utils/path';
 import type { Loader } from '../Loader';
 import type { LoadAsset } from '../types';
 import type { LoaderParser } from './LoaderParser';
+import { LoaderParserPriority } from './LoaderParser';
 
 const validExtensions = ['.xml', '.fnt'];
 
 /** simple loader plugin for loading in bitmap fonts! */
 export const loadBitmapFont = {
-    extension: ExtensionType.LoadParser,
+    extension: {
+        type: ExtensionType.LoadParser,
+        priority: LoaderParserPriority.Normal,
+    },
 
     test(url: string): boolean
     {
