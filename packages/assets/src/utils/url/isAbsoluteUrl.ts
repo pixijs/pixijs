@@ -10,7 +10,7 @@
 export function isAbsoluteUrl(url: string): boolean
 {
     // Don't match Windows paths `c:\`
-    if ((/^[a-zA-Z]:\\/).test(url))
+    if ((/^[a-zA-Z]:(\\|\/)/).test(url))
     {
         return false;
     }

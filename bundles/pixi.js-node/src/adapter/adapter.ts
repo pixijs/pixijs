@@ -6,6 +6,7 @@ import { NodeCanvasElement } from './NodeCanvasElement';
 
 import fs from 'fs';
 import path from 'path';
+import { isAbsoluteUrl } from '@pixi/assets';
 
 export const NodeAdapter = {
     /**
@@ -20,44 +21,47 @@ export const NodeAdapter = {
     /** Returns the fake user agent string of `node` */
     getNavigator: () => ({ userAgent: 'node' }),
     /** Returns an empty base url */
-    getBaseUrl: () => ('/'),
+    getBaseUrl: () => '',
+    getRootUrl: () =>
+    {
+        if (process.platform === 'win32')
+        {
+            return `${process.cwd().split('\\')[0]}\\`;
+        }
+
+        return '';
+    },
     fetch: (url: RequestInfo, options?: RequestInit) =>
     {
         const request = new Request(url, options);
 
-        // if url is not absolute path then use fs to attempt to read the url
-        try
+        if (isAbsoluteUrl(request.url))
         {
-            // eslint-disable-next-line no-new
-            new URL(request.url);
-
             return fetch(url, request);
         }
-        catch (error)
+
+        return new Promise((resolve, reject) =>
         {
-            return new Promise((resolve, reject) =>
+            const filePath = path.normalize(request.url);
+
+            if (!fs.existsSync(filePath))
             {
-                const filePath = path.normalize(request.url);
+                reject(`File not found: ${filePath}`);
+            }
+            const readStream = fs.createReadStream(filePath);
 
-                if (!fs.existsSync(filePath))
-                {
-                    reject(`File not found: ${filePath}`);
-                }
-                const readStream = fs.createReadStream(filePath);
-
-                // eslint-disable-next-line func-names
-                readStream.on('open', function ()
-                {
-                    resolve(new Response(readStream as unknown as ReadableStream, {
-                        url: request.url,
-                        status: 200,
-                        statusText: 'OK',
-                        size: fs.statSync(filePath).size,
-                        timeout: (request as any).timeout
-                    } as unknown as ResponseInit));
-                });
+            // eslint-disable-next-line func-names
+            readStream.on('open', function ()
+            {
+                resolve(new Response(readStream as unknown as ReadableStream, {
+                    url: request.url,
+                    status: 200,
+                    statusText: 'OK',
+                    size: fs.statSync(filePath).size,
+                    timeout: (request as any).timeout
+                } as unknown as ResponseInit));
             });
-        }
+        });
     },
 } as IAdapter;
 

@@ -1,7 +1,7 @@
 import { convertToList } from '../utils/convertToList';
 import { createStringVariations } from '../utils/createStringVariations';
 import { isSingleItem } from '../utils/isSingleItem';
-import { getBaseUrl, makeAbsoluteUrl } from '../utils/url/makeAbsoluteUrl';
+import { convertToBaseUrl, makeAbsoluteUrl } from '../utils/url/makeAbsoluteUrl';
 import type { ResolveAsset, PreferOrder, ResolveURLParser, ResolverManifest, ResolverBundle } from './types';
 
 /**
@@ -91,7 +91,7 @@ export class Resolver
      */
     public set basePath(basePath: string)
     {
-        this._basePath = getBaseUrl(basePath);
+        this._basePath = convertToBaseUrl(basePath);
     }
 
     public get basePath(): string

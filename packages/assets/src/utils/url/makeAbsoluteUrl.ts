@@ -2,8 +2,9 @@ import { settings } from '@pixi/settings';
 import { isAbsoluteUrl } from './isAbsoluteUrl';
 import { urlJoin } from './urlJoin';
 
-export function getBaseUrl(url: string): string
+export function convertToBaseUrl(url: string): string
 {
+    if (url.length === 0) return url;
     const re = new RegExp(/^.*\//);
 
     return re.exec(url.split('?')[0])[0].replace(new RegExp(/#\/|#/), '');
@@ -23,10 +24,15 @@ export function makeAbsoluteUrl(url: string, customBaseUrl?: string): string
 {
     if (!baseUrl)
     {
-        baseUrl = getBaseUrl(settings.ADAPTER.getBaseUrl());
+        baseUrl = convertToBaseUrl(settings.ADAPTER.getBaseUrl());
     }
 
-    const base = customBaseUrl !== undefined ? getBaseUrl(customBaseUrl) : baseUrl;
+    if (url.startsWith('/'))
+    {
+        return settings.ADAPTER.getBaseUrl() + url;
+    }
+
+    const base = customBaseUrl !== undefined ? convertToBaseUrl(customBaseUrl) : baseUrl;
     const absolutePath = isAbsoluteUrl(url) ? url : urlJoin(base, url);
 
     return absolutePath;
