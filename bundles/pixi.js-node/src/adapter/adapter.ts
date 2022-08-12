@@ -36,7 +36,7 @@ export const NodeAdapter = {
         const request = new Request(url, options);
 
         // check if urls starts with http(s) as only these are supported by node-fetch
-        if ((/^http(s)*:/).test(request.url))
+        if ((/^https?:/).test(request.url))
         {
             return fetch(url, request);
         }
