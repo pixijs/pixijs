@@ -4,6 +4,7 @@ import { BaseTexture, ExtensionType, extensions } from '@pixi/core';
 import type { Loader } from '../../Loader';
 
 import type { LoaderParser } from '../LoaderParser';
+import { LoaderParserPriority } from '../LoaderParser';
 
 import { ALPHA_MODES, MIPMAP_MODES } from '@pixi/constants';
 import { settings } from '@pixi/settings';
@@ -14,7 +15,10 @@ import { createTexture } from './utils/createTexture';
 
 /** Loads KTX textures! */
 export const loadKTX = {
-    extension: ExtensionType.LoadParser,
+    extension: {
+        type: ExtensionType.LoadParser,
+        priority: LoaderParserPriority.High,
+    },
 
     test(url: string): boolean
     {

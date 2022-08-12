@@ -12,10 +12,14 @@ import { settings } from '@pixi/settings';
 import type { Loader } from '../../Loader';
 import type { LoadAsset } from '../../types';
 import type { LoaderParser } from '../LoaderParser';
+import { LoaderParserPriority } from '../LoaderParser';
 
 /** Load BASIS textures! */
 export const loadBasis = {
-    extension: ExtensionType.LoadParser,
+    extension: {
+        type: ExtensionType.LoadParser,
+        priority: LoaderParserPriority.High,
+    },
 
     test(url: string): boolean
     {

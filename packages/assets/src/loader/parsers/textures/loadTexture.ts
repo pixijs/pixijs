@@ -6,6 +6,7 @@ import type { Loader } from '../../Loader';
 import type { LoadAsset } from '../../types';
 
 import type { LoaderParser } from '../LoaderParser';
+import { LoaderParserPriority } from '../LoaderParser';
 import { WorkerManager } from '../WorkerManager';
 import { checkExtension } from './utils/checkExtension';
 import { createTexture } from './utils/createTexture';
@@ -34,7 +35,10 @@ export async function loadImageBitmap(url: string): Promise<ImageBitmap>
  * We can then use the ImageBitmap as a source for a Pixi Texture
  */
 export const loadTextures = {
-    extension: ExtensionType.LoadParser,
+    extension: {
+        type: ExtensionType.LoadParser,
+        priority: LoaderParserPriority.High,
+    },
 
     config: {
         preferWorkers: true,
