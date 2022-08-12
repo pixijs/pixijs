@@ -1,7 +1,7 @@
 import { convertToList } from '../utils/convertToList';
 import { createStringVariations } from '../utils/createStringVariations';
 import { isSingleItem } from '../utils/isSingleItem';
-import { convertToBaseUrl, makeAbsoluteUrl } from '../utils/url/makeAbsoluteUrl';
+import { removeUrlParams, makeAbsoluteUrl } from '../utils/url/makeAbsoluteUrl';
 import type { ResolveAsset, PreferOrder, ResolveURLParser, ResolverManifest, ResolverBundle } from './types';
 
 /**
@@ -45,6 +45,7 @@ export class Resolver
     private _parsers: ResolveURLParser[] = [];
 
     private _resolverHash: Record<string, ResolveAsset> = {};
+    private _rootPath: string;
     private _basePath: string;
     private _manifest: ResolverManifest;
     private _bundles: Record<string, string[]> = {};
@@ -91,12 +92,32 @@ export class Resolver
      */
     public set basePath(basePath: string)
     {
-        this._basePath = convertToBaseUrl(basePath);
+        this._basePath = removeUrlParams(basePath);
     }
 
     public get basePath(): string
     {
         return this._basePath;
+    }
+
+    /**
+     * Set the root path for root-relative URLs. Default value for browsers is `window.location.origin`
+     * @example
+     * // Application hosted on https://home.com/some-path/index.html
+     * resolver.basePath = 'https://home.com/some-path/';
+     * resolver.rootPath = 'https://home.com/';
+     * resolver.add('foo', '/bar.png');
+     * resolver.resolveUrl('foo', '/bar.png'); // => 'https://home.com/bar.png'
+     * @param rootPath - the root path to use
+     */
+    public set rootPath(rootPath: string)
+    {
+        this._rootPath = removeUrlParams(rootPath);
+    }
+
+    public get rootPath(): string
+    {
+        return this._rootPath;
     }
 
     /**
@@ -149,6 +170,7 @@ export class Resolver
 
         this._resolverHash = {};
         this._assetMap = {};
+        this._rootPath = null;
         this._basePath = null;
         this._manifest = null;
     }
@@ -317,9 +339,9 @@ export class Resolver
                 formattedAsset.alias = keys;
             }
 
-            if (this._basePath)
+            if (this._basePath || this._rootPath)
             {
-                formattedAsset.src = makeAbsoluteUrl(formattedAsset.src, this._basePath);
+                formattedAsset.src = makeAbsoluteUrl(formattedAsset.src, this._basePath, this._rootPath);
             }
 
             formattedAsset.data = formattedAsset.data ?? data;

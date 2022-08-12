@@ -6,7 +6,6 @@ import { NodeCanvasElement } from './NodeCanvasElement';
 
 import fs from 'fs';
 import path from 'path';
-import { isAbsoluteUrl } from '@pixi/assets';
 
 export const NodeAdapter = {
     /**
@@ -20,8 +19,9 @@ export const NodeAdapter = {
     getWebGLRenderingContext: () => gl as unknown as typeof WebGLRenderingContext,
     /** Returns the fake user agent string of `node` */
     getNavigator: () => ({ userAgent: 'node' }),
-    /** Returns an empty base url */
-    getBaseUrl: () => '',
+    /** Returns the path from which the process is being run */
+    getBaseUrl: () => process.cwd(),
+    /** Returns the root of the path from which the process is being run */
     getRootUrl: () =>
     {
         if (process.platform === 'win32')
@@ -35,7 +35,8 @@ export const NodeAdapter = {
     {
         const request = new Request(url, options);
 
-        if (isAbsoluteUrl(request.url))
+        // check if urls starts with http(s) as only these are supported by node-fetch
+        if ((/^http(s)*:/).test(request.url))
         {
             return fetch(url, request);
         }
