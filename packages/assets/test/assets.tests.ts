@@ -269,19 +269,14 @@ describe('Assets', () =>
             basePath,
         });
 
-        Assets.addBundle('testBundle', {
-            bunny: 'textures/bunny.{png,webp}',
-            spritesheet: 'spritesheet/spritesheet.json',
-        });
+        const pathsToLoad = ['textures/bunny.png', 'textures/profile-abel@2x.jpg'];
 
-        const assets = await Assets.loadBundle('testBundle');
+        const assets = await Assets.load(pathsToLoad);
 
-        expect(assets.bunny).toBeInstanceOf(Texture);
-        expect(assets.spritesheet).toBeInstanceOf(Spritesheet);
-
-        await Assets.unloadBundle('testBundle');
-
-        expect(assets.bunny.baseTexture).toBe(null);
+        for (const path of pathsToLoad)
+        {
+            expect(assets[path]).toBeInstanceOf(Texture);
+        }
     });
 
     it('should unload and remove from the cache correctly', async () =>
