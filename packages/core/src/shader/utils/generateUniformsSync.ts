@@ -247,9 +247,8 @@ export function generateUniformsSync(group: UniformGroup, uniformData: Dict<any>
 
         if (!parsed)
         {
-            const templateType = (data.size === 1) ? GLSL_TO_SINGLE_SETTERS_CACHED : GLSL_TO_ARRAY_SETTERS;
-
-            const template =  templateType[data.type].replace('location', `ud["${i}"].location`);
+            const templateType = data.size === 1 && !data.isArray ? GLSL_TO_SINGLE_SETTERS_CACHED : GLSL_TO_ARRAY_SETTERS;
+            const template = templateType[data.type].replace('location', `ud["${i}"].location`);
 
             funcFragments.push(`
             cu = ud["${i}"];
