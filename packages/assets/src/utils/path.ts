@@ -41,13 +41,14 @@ export function extname(path: string): string
 }
 
 /**
- * Returns the extension of the path, from the last occurrence of the . (period) character to the end of
- * string in the last portion of the path.
+ * Joins together parts of a URL or file path.
  * @param parts - The path parts to join
  */
 export function join(...parts: string[]): string
 {
     let path = '';
+    let protocol = '';
+    const protocolDelim = '://';
 
     for (let i = 0; i < parts.length; i++)
     {
@@ -57,6 +58,22 @@ export function join(...parts: string[]): string
         {
             if (!path)
             {
+                if (i === 0)
+                {
+                    // if the first part of the path has a URL protocol, extract it so it's not passed
+                    // to the normalize function
+                    const protocolIndex = segment.indexOf(protocolDelim);
+
+                    if (protocolIndex !== -1)
+                    {
+                        const protocolEnd = protocolIndex + protocolDelim.length;
+
+                        protocol = segment.substring(0, protocolEnd);
+                        path += segment.substring(protocolEnd);
+
+                        continue;
+                    }
+                }
                 path += segment;
             }
             else
@@ -66,7 +83,7 @@ export function join(...parts: string[]): string
         }
     }
 
-    return normalize(path);
+    return protocol + normalize(path);
 }
 
 /**
