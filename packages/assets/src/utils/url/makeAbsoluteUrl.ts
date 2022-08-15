@@ -26,11 +26,11 @@ export function makeAbsoluteUrl(url: string, customBaseUrl?: string, customRootU
 {
     if (!baseUrl)
     {
-        baseUrl = removeUrlParams(settings.ADAPTER.getBaseUrl());
+        baseUrl = settings.ADAPTER.getBaseUrl();
     }
     if (!rootUrl)
     {
-        rootUrl = removeUrlParams(settings.ADAPTER.getRootUrl());
+        rootUrl = settings.ADAPTER.getRootUrl();
     }
 
     if (url.startsWith('/'))

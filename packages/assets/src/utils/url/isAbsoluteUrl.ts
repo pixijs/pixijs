@@ -14,6 +14,7 @@ export function isAbsoluteUrl(url: string): boolean
     // If running in node then an absolute URL will start will either a `/` on unix or disk drive on windows
     if (settings.ADAPTER.getNavigator().userAgent === 'node')
     {
+        if ((/^[a-zA-Z][a-zA-Z\d+\-.]*:/).test(url)) return true;
         if (process.platform === 'win32') return (/^[a-zA-Z]:(\\|\/)/).test(url);
 
         return url.startsWith('/');
