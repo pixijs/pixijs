@@ -1,7 +1,7 @@
+import { path } from '@pixi/utils';
 import { convertToList } from '../utils/convertToList';
 import { createStringVariations } from '../utils/createStringVariations';
 import { isSingleItem } from '../utils/isSingleItem';
-import { removeUrlParams, makeAbsoluteUrl } from '../utils/url/makeAbsoluteUrl';
 import type { ResolveAsset, PreferOrder, ResolveURLParser, ResolverManifest, ResolverBundle } from './types';
 
 /**
@@ -92,7 +92,7 @@ export class Resolver
      */
     public set basePath(basePath: string)
     {
-        this._basePath = removeUrlParams(basePath);
+        this._basePath = basePath;
     }
 
     public get basePath(): string
@@ -101,7 +101,8 @@ export class Resolver
     }
 
     /**
-     * Set the root path for root-relative URLs. Default value for browsers is `window.location.origin`
+     * Set the root path for root-relative URLs. By default the `basePath`'s root is used. If no `basePath` is set, then the
+     * default value for browsers is `window.location.origin`
      * @example
      * // Application hosted on https://home.com/some-path/index.html
      * resolver.basePath = 'https://home.com/some-path/';
@@ -112,7 +113,7 @@ export class Resolver
      */
     public set rootPath(rootPath: string)
     {
-        this._rootPath = removeUrlParams(rootPath);
+        this._rootPath = rootPath;
     }
 
     public get rootPath(): string
@@ -341,7 +342,7 @@ export class Resolver
 
             if (this._basePath || this._rootPath)
             {
-                formattedAsset.src = makeAbsoluteUrl(formattedAsset.src, this._basePath, this._rootPath);
+                formattedAsset.src = path.toAbsolute(formattedAsset.src, this._basePath, this._rootPath);
             }
 
             formattedAsset.data = formattedAsset.data ?? data;
@@ -501,9 +502,9 @@ export class Resolver
                 {
                     let src = key;
 
-                    if (this._basePath)
+                    if (this._basePath || this._rootPath)
                     {
-                        src = makeAbsoluteUrl(src, this._basePath);
+                        src = path.toAbsolute(src, this._basePath, this._rootPath);
                     }
 
                     // if the resolver fails we just pass back the key assuming its a url

@@ -18,7 +18,7 @@ export const loadKTX = {
 
     test(url: string): boolean
     {
-        return checkExtension(url, 'ktx');
+        return checkExtension(url, '.ktx');
     },
 
     async load(url: string, asset: LoadAsset, loader: Loader): Promise<Texture | Texture[]>

@@ -19,7 +19,7 @@ export const loadBasis = {
 
     test(url: string): boolean
     {
-        return checkExtension(url, 'basis');
+        return checkExtension(url, '.basis');
     },
 
     async load(url: string, asset: LoadAsset, loader: Loader): Promise<Texture | Texture[]>

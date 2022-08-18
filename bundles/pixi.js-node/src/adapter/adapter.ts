@@ -5,7 +5,7 @@ import gl from 'gl';
 import { NodeCanvasElement } from './NodeCanvasElement';
 
 import fs from 'fs';
-import path from 'path';
+import { path } from '@pixi/utils';
 
 export const NodeAdapter = {
     /**
@@ -21,22 +21,12 @@ export const NodeAdapter = {
     getNavigator: () => ({ userAgent: 'node' }),
     /** Returns the path from which the process is being run */
     getBaseUrl: () => process.cwd(),
-    /** Returns the root of the path from which the process is being run */
-    getRootUrl: () =>
-    {
-        if (process.platform === 'win32')
-        {
-            return `${process.cwd().split('\\')[0]}\\`;
-        }
-
-        return '';
-    },
     fetch: (url: RequestInfo, options?: RequestInit) =>
     {
         const request = new Request(url, options);
 
         // check if urls starts with http(s) as only these are supported by node-fetch
-        if ((/^https?:/).test(request.url))
+        if (path.isUrl(request.url))
         {
             return fetch(url, request);
         }
