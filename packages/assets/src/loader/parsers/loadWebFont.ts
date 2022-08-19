@@ -1,5 +1,5 @@
 import { extensions, ExtensionType } from '@pixi/core';
-import { basename, extname } from '../../utils/path';
+import { path } from '@pixi/utils';
 import type { LoadAsset } from '../types';
 import type { LoaderParser } from './LoaderParser';
 import { LoaderParserPriority } from './LoaderParser';
@@ -27,8 +27,8 @@ export type LoadFontData = {
  */
 export function getFontFamilyName(url: string): string
 {
-    const ext = extname(url);
-    const name = basename(url, ext);
+    const ext = path.extname(url);
+    const name = path.basename(url, ext);
 
     // Replace dashes by white spaces
     const nameWithSpaces = name.replace(/(-|_)/g, ' ');

@@ -3,7 +3,7 @@ import { extensions, ExtensionType } from '@pixi/core';
 import { settings } from '@pixi/settings';
 import type { BitmapFontData } from '@pixi/text-bitmap';
 import { BitmapFont, TextFormat, XMLStringFormat } from '@pixi/text-bitmap';
-import { dirname, extname, join } from '../../utils/path';
+import { path } from '@pixi/utils';
 
 import type { Loader } from '../Loader';
 import type { LoadAsset } from '../types';
@@ -21,7 +21,7 @@ export const loadBitmapFont = {
 
     test(url: string): boolean
     {
-        return validExtensions.includes(extname(url));
+        return validExtensions.includes(path.extname(url));
     },
 
     async testParse(data: string): Promise<boolean>
@@ -42,7 +42,7 @@ export const loadBitmapFont = {
         for (let i = 0; i < pages.length; ++i)
         {
             const pageFile = pages[i].file;
-            const imagePath = join(dirname(src), pageFile);
+            const imagePath = path.join(path.dirname(src), pageFile);
 
             textureUrls.push(imagePath);
         }
