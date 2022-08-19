@@ -38,10 +38,10 @@
     "*.d.ts"
   ],
   "peerDependencies": {
+    "@pixi/assets": "6.5.1",
     "@pixi/constants": "6.5.1",
     "@pixi/core": "6.5.1",
     "@pixi/display": "6.5.1",
-    "@pixi/loaders": "6.5.1",
     "@pixi/math": "6.5.1",
     "@pixi/mesh": "6.5.1",
     "@pixi/settings": "6.5.1",

@@ -65,7 +65,6 @@
     "@pixi/filter-fxaa": "6.5.1",
     "@pixi/filter-noise": "6.5.1",
     "@pixi/graphics": "6.5.1",
-    "@pixi/loaders": "6.5.1",
     "@pixi/math": "6.5.1",
     "@pixi/mesh": "6.5.1",
     "@pixi/mesh-extras": "6.5.1",
