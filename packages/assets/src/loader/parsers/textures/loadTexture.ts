@@ -10,7 +10,7 @@ import { WorkerManager } from '../WorkerManager';
 import { checkExtension } from './utils/checkExtension';
 import { createTexture } from './utils/createTexture';
 
-const validImages = ['jpg', 'png', 'jpeg', 'avif', 'webp'];
+const validImages = ['.jpg', '.png', '.jpeg', '.avif', '.webp'];
 
 /**
  * Returns a promise that resolves an ImageBitmaps.
@@ -42,11 +42,11 @@ export const loadTextures = {
 
     test(url: string): boolean
     {
-        let isValidBase64Suffix: boolean;
+        let isValidBase64Suffix = false;
 
         for (let i = 0; i < validImages.length; i++)
         {
-            if (url.indexOf(`data:image/${validImages[i]}`) === 0)
+            if (url.indexOf(`data:image/${validImages[i].slice(1)}`) === 0)
             {
                 isValidBase64Suffix = true;
                 break;

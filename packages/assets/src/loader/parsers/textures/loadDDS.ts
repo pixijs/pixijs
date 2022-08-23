@@ -17,7 +17,7 @@ export const loadDDS: LoaderParser = {
 
     test(url: string): boolean
     {
-        return checkExtension(url, 'dds');
+        return checkExtension(url, '.dds');
     },
 
     async load(url: string, asset: LoadAsset, loader: Loader): Promise<Texture | Texture[]>

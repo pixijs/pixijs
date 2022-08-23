@@ -4,7 +4,7 @@ import { ExtensionType } from '@pixi/core';
 import { settings } from '@pixi/settings';
 import type { IBitmapFontRawData } from '@pixi/text-bitmap';
 import { BitmapFont, BitmapFontData, TextFormat, XMLStringFormat } from '@pixi/text-bitmap';
-import path from 'path';
+import { path } from '@pixi/utils';
 import { parseStringPromise } from 'xml2js';
 
 interface XMLRawJson

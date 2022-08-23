@@ -241,7 +241,7 @@ describe('Loader', () =>
 
         document.fonts.forEach((f: FontFace) =>
         {
-            if (f.family === 'Outfit.woff2')
+            if (f.family === 'Outfit')
             {
                 foundFont = true;
             }
@@ -361,7 +361,7 @@ describe('Loader', () =>
 
         document.fonts.forEach((f: FontFace) =>
         {
-            if (f.family === 'Outfit.woff2')
+            if (f.family === 'Outfit')
             {
                 foundFont = true;
             }
