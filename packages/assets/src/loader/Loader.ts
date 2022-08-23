@@ -1,4 +1,5 @@
-import { convertToList, isSingleItem, makeAbsoluteUrl } from '../utils';
+import { path } from '@pixi/utils';
+import { convertToList, isSingleItem } from '../utils';
 import type { LoaderParser } from './parsers/LoaderParser';
 import type { PromiseAndParser, LoadAsset } from './types';
 
@@ -120,7 +121,7 @@ export class Loader
 
         const promises: Promise<void>[] = assetsToLoad.map(async (asset: LoadAsset) =>
         {
-            const url = makeAbsoluteUrl(asset.src);
+            const url = path.toAbsolute(asset.src);
 
             if (!assets[asset.src])
             {
@@ -176,7 +177,7 @@ export class Loader
 
         const promises: Promise<void>[] = assetsToUnload.map(async (asset: LoadAsset) =>
         {
-            const url = makeAbsoluteUrl(asset.src);
+            const url = path.toAbsolute(asset.src);
 
             const loadPromise = this.promiseCache[url];
 

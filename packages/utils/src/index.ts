@@ -76,6 +76,14 @@ export { default as earcut } from 'earcut';
  * @member {object}
  */
 export * from './url';
+/**
+ * Browser and Node.js compatible path utilities.
+ * All paths that are passed in will become normalized to have posix separators.
+ * @memberof PIXI.utils
+ * @name path
+ * @member {object}
+ */
+export * from './path';
 
 import './settings';
 

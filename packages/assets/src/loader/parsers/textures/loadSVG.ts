@@ -1,8 +1,7 @@
 import type { IBaseTextureOptions, Texture } from '@pixi/core';
 import { BaseTexture, ExtensionType, SVGResource } from '@pixi/core';
 import { settings } from '@pixi/settings';
-import { getResolutionOfUrl } from '@pixi/utils';
-import { extname } from '../../../utils';
+import { getResolutionOfUrl, path } from '@pixi/utils';
 import type { Loader } from '../../Loader';
 import type { LoadAsset } from '../../types';
 
@@ -20,7 +19,7 @@ export const loadSVG = {
 
     test(url: string): boolean
     {
-        return (extname(url).includes('.svg'));
+        return (path.extname(url).includes('.svg'));
     },
 
     async testParse(data: string): Promise<boolean>
