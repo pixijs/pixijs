@@ -1,16 +1,17 @@
-import { BaseTexture, ExtensionType, Texture } from '@pixi/core';
+import { checkExtension } from './utils/checkExtension';
+import { createTexture } from './utils/createTexture';
 
-import type { LoaderParser } from './LoaderParser';
-import { BasisParser, BASIS_FORMATS, BASIS_FORMAT_TO_TYPE,  TranscoderWorker } from '@pixi/basis';
+import type { IBaseTextureOptions, Texture } from '@pixi/core';
+import { BaseTexture, ExtensionType } from '@pixi/core';
+
+import { BasisParser, BASIS_FORMATS, BASIS_FORMAT_TO_TYPE, TranscoderWorker } from '@pixi/basis';
+import { CompressedTextureResource } from '@pixi/compressed-textures';
 import type { TYPES } from '@pixi/constants';
 import { ALPHA_MODES, FORMATS, MIPMAP_MODES } from '@pixi/constants';
-import { CompressedTextureResource } from '@pixi/compressed-textures';
-import type { LoadAsset } from '../types';
-import type { Loader } from '../Loader';
-import type { LoadTextureData } from './loadTexture';
 import { settings } from '@pixi/settings';
-
-const validImages = ['basis'];
+import type { Loader } from '../../Loader';
+import type { LoadAsset } from '../../types';
+import type { LoaderParser } from '../LoaderParser';
 
 /** Load BASIS textures! */
 export const loadBasis = {
@@ -18,10 +19,7 @@ export const loadBasis = {
 
     test(url: string): boolean
     {
-        const tempURL = url.split('?')[0];
-        const extension = tempURL.split('.').pop();
-
-        return validImages.includes(extension.toLowerCase());
+        return checkExtension(url, '.basis');
     },
 
     async load(url: string, asset: LoadAsset, loader: Loader): Promise<Texture | Texture[]>
@@ -50,15 +48,7 @@ export const loadBasis = {
                 ...asset.data,
             });
 
-            const texture =  new Texture(base);
-
-            // make sure to nuke the promise if a texture is destroyed..
-            texture.baseTexture.on('dispose', () =>
-            {
-                delete loader.promiseCache[url];
-            });
-
-            return texture;
+            return createTexture(base, loader, url);
         });
 
         return textures.length === 1 ? textures[0] : textures;
@@ -76,5 +66,5 @@ export const loadBasis = {
         }
     }
 
-} as LoaderParser<Texture | Texture[], LoadTextureData>;
+} as LoaderParser<Texture | Texture[], IBaseTextureOptions>;
 

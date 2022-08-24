@@ -1,6 +1,6 @@
 import { ExtensionType } from '@pixi/core';
 import { settings } from '@pixi/settings';
-import { extname } from '../../utils/path';
+import { path } from '@pixi/utils';
 import type { LoaderParser } from './LoaderParser';
 
 /** simple loader plugin for loading json data */
@@ -9,7 +9,7 @@ export const loadJson = {
 
     test(url: string): boolean
     {
-        return (extname(url).includes('.json'));
+        return (path.extname(url).includes('.json'));
     },
 
     async load<T>(url: string): Promise<T>

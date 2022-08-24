@@ -33,7 +33,9 @@ PixiJS has full [WebGL](https://en.wikipedia.org/wiki/WebGL) support and seamles
 
 ### Learn ###
 - Website: Find out more about PixiJS on the [official website](https://www.pixijs.com/).
-- Getting started: Check out @kittykatattack's comprehensive [tutorial](https://github.com/kittykatattack/learningPixi).
+- Getting started:
+    - Check out @kittykatattack's comprehensive [tutorial](https://github.com/kittykatattack/learningPixi).
+    - Also check out @miltoncandelero's PixiJS tutorials aimed toward videogames with recipes, best practices and TypeScript / npm / webpack setup [here](https://www.pixijselementals.com/)
 - Examples: Get stuck right in and play around with PixiJS code and features right [here](https://pixijs.io/examples/)!
 - Docs: Get to know the PixiJS API by checking out the [docs](https://pixijs.io/docs/).
 - Guide: Supplementary guide to the API documentation [here](https://pixijs.io/guides/).
@@ -172,6 +174,23 @@ Then, to build the source, run:
 ```sh
 npm run build
 ```
+
+#### Error installing gl package
+
+In most cases installing `gl` from npm should just work. However, if you run into problems you might need to adjust your system configuration and make sure all your dependencies are up to date
+
+Please refer to the [gl installation guide](https://www.npmjs.com/package/gl/v/4.5.3-win64.0#system-dependencies) for more information.
+
+#### Error installing canvas package
+
+The [canvas](https://www.npmjs.com/package/canvas) library currently being used does not have a pre-built version for every environment.
+When the package detects an unsupported environment, it will try to build from source.
+
+To build from source you will need to make sure you have the following dependencies installed and then reinstall:
+
+`brew install pkg-config cairo pango libpng jpeg giflib librsvg`
+
+For non-mac users, please refer to the [canvas installation guide](https://www.npmjs.com/package/canvas#compiling) for more information.
 
 ### How to generate the documentation ###
 

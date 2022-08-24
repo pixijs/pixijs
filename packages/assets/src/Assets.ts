@@ -4,19 +4,17 @@ import { Cache } from './cache/Cache';
 import { cacheSpritesheet, cacheTextureArray } from './cache/parsers';
 import type { FormatDetectionParser } from './detections';
 import { detectAvif, detectWebp } from './detections';
-import type {
-    LoadAsset,
-    LoaderParser
-} from './loader';
+import type { LoadAsset, LoaderParser } from './loader';
 import {
+    loadBitmapFont,
     loadJson,
     loadSpritesheet,
+    loadSVG,
     loadTextures,
     loadTxt,
     loadWebFont
 } from './loader';
 import { Loader } from './loader/Loader';
-import { loadBitmapFont } from './loader/parsers/loadBitmapFont';
 import type { PreferOrder, ResolveAsset, ResolverBundle, ResolverManifest, ResolveURLParser } from './resolver';
 import { resolveSpriteSheetUrl, resolveTextureUrl } from './resolver';
 import { Resolver } from './resolver/Resolver';
@@ -523,11 +521,20 @@ export class AssetsClass
 
         const out: Record<string, Record<string, any>> = {};
 
-        const promises = Object.keys(resolveResults).map((bundleId) =>
+        const keys = Object.keys(resolveResults);
+        let count = 0;
+        let total = 0;
+        const _onProgress = () =>
+        {
+            onProgress?.(++count / total);
+        };
+        const promises = keys.map((bundleId) =>
         {
             const resolveResult = resolveResults[bundleId];
 
-            return this._mapLoadToResolve(resolveResult, onProgress)
+            total += Object.keys(resolveResult).length;
+
+            return this._mapLoadToResolve(resolveResult, _onProgress)
                 .then((resolveResult) =>
                 {
                     out[bundleId] = resolveResult;
@@ -799,6 +806,7 @@ extensions
 
 extensions.add(
     loadTextures,
+    loadSVG,
     loadTxt,
     loadJson,
     loadSpritesheet,

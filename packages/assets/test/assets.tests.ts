@@ -137,8 +137,12 @@ describe('Assets', () =>
             manifest: 'json/asset-manifest-2.json',
         });
 
-        const assets = await Assets.loadBundle(['default', 'data']);
+        const progressMock = jest.fn();
 
+        const assets = await Assets.loadBundle(['default', 'data'], progressMock);
+
+        expect(progressMock).toHaveBeenCalledTimes(4);
+        expect(progressMock.mock.calls).toEqual([[0.25], [0.5], [0.75], [1]]);
         expect(assets.default.bunny).toBeInstanceOf(Texture);
         expect(assets.default['profile-abel']).toBeInstanceOf(Texture);
         expect(assets.default.spritesheet).toBeInstanceOf(Spritesheet);
@@ -265,19 +269,14 @@ describe('Assets', () =>
             basePath,
         });
 
-        Assets.addBundle('testBundle', {
-            bunny: 'textures/bunny.{png,webp}',
-            spritesheet: 'spritesheet/spritesheet.json',
-        });
+        const pathsToLoad = ['textures/bunny.png', 'textures/profile-abel@2x.jpg'];
 
-        const assets = await Assets.loadBundle('testBundle');
+        const assets = await Assets.load(pathsToLoad);
 
-        expect(assets.bunny).toBeInstanceOf(Texture);
-        expect(assets.spritesheet).toBeInstanceOf(Spritesheet);
-
-        await Assets.unloadBundle('testBundle');
-
-        expect(assets.bunny.baseTexture).toBe(null);
+        for (const path of pathsToLoad)
+        {
+            expect(assets[path]).toBeInstanceOf(Texture);
+        }
     });
 
     it('should unload and remove from the cache correctly', async () =>

@@ -36,6 +36,6 @@ export const BrowserAdapter = {
     },
     getWebGLRenderingContext: () => WebGLRenderingContext,
     getNavigator: () => navigator,
-    getBaseUrl: () => document.baseURI ?? window.location.href,
+    getBaseUrl: () => (document.baseURI ?? window.location.href),
     fetch: (url: RequestInfo, options?: RequestInit) => fetch(url, options),
 } as IAdapter;

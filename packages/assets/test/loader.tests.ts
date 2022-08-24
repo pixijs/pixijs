@@ -12,7 +12,8 @@ import {
     loadSpritesheet,
     loadTextures,
     loadTxt,
-    loadWebFont
+    loadWebFont,
+    loadSVG
 } from '@pixi/assets';
 import { Loader } from '../src/loader/Loader';
 
@@ -38,6 +39,41 @@ describe('Loader', () =>
         expect(texture.baseTexture.valid).toBe(true);
         expect(texture.width).toBe(26);
         expect(texture.height).toBe(37);
+    });
+
+    it('should load an svg', async () =>
+    {
+        const loader = new Loader();
+
+        loader['_parsers'].push(loadSVG);
+
+        const texture: Texture = await loader.load(`${serverPath}svg/logo.svg`);
+
+        expect(texture.baseTexture.valid).toBe(true);
+        expect(texture.width).toBe(512);
+        expect(texture.height).toBe(512);
+    });
+
+    it('should allow setting SVG width/height through metadata', async () =>
+    {
+        const loader = new Loader();
+
+        loader['_parsers'].push(loadSVG);
+
+        const texture: Texture = await loader.load({
+            data: {
+                resourceOptions: {
+                    width: 128,
+                    height: 256,
+                }
+            },
+            src: `${serverPath}svg/logo.svg`,
+        });
+
+        const { width, height } = texture.baseTexture;
+
+        expect(width).toEqual(128);
+        expect(height).toEqual(256);
     });
 
     it('should load a single image one after multiple loads', async () =>
@@ -205,7 +241,7 @@ describe('Loader', () =>
 
         document.fonts.forEach((f: FontFace) =>
         {
-            if (f.family === 'Outfit.woff2')
+            if (f.family === 'Outfit')
             {
                 foundFont = true;
             }
@@ -325,7 +361,7 @@ describe('Loader', () =>
 
         document.fonts.forEach((f: FontFace) =>
         {
-            if (f.family === 'Outfit.woff2')
+            if (f.family === 'Outfit')
             {
                 foundFont = true;
             }
