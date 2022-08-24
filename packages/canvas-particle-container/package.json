@@ -1,6 +1,6 @@
 {
   "name": "@pixi/canvas-particle-container",
-  "version": "6.5.1",
+  "version": "6.5.2",
   "main": "dist/cjs/canvas-particle-container.js",
   "module": "dist/esm/canvas-particle-container.mjs",
   "bundle": "dist/browser/canvas-particle-container.js",
@@ -39,6 +39,6 @@
     "*.d.ts"
   ],
   "peerDependencies": {
-    "@pixi/particle-container": "6.5.1"
+    "@pixi/particle-container": "6.5.2"
   }
 }
