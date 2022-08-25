@@ -1,28 +1,40 @@
 import type { PlaneGeometry } from '@pixi/mesh-extras';
 import { SimplePlane } from '@pixi/mesh-extras';
 import { skipHello } from '@pixi/utils';
-import { Loader } from '@pixi/loaders';
 import { Point } from '@pixi/math';
 import { Renderer, RenderTexture, Texture } from '@pixi/core';
+import { Cache, loadTextures } from '@pixi/assets';
+import { Loader } from '../../assets/src/loader/Loader';
 
 skipHello();
 
-// TODO: fix with webglrenderer
 describe('SimplePlane', () =>
 {
-    it('should create a plane from an external image', (done) =>
+    let loader: Loader;
+    const serverPath = process.env.GITHUB_ACTIONS
+        ? `https://raw.githubusercontent.com/pixijs/pixijs/${process.env.GITHUB_SHA}/packages/mesh-extras/test/resources/`
+        : 'http://localhost:8080/mesh-extras/test/resources/';
+
+    beforeEach(() =>
     {
-        const loader = new Loader();
+        Cache.reset();
+        loader.reset();
+    });
 
-        loader.add('testBitmap', `file://${__dirname}/resources/bitmap-1.png`)
-            .load((_loader, resources) =>
-            {
-                const plane = new SimplePlane(resources.testBitmap.texture, 100, 100);
+    beforeAll(() =>
+    {
+        loader = new Loader();
+        loader['_parsers'].push(loadTextures);
+    });
 
-                expect((plane.geometry as PlaneGeometry).segWidth).toEqual(100);
-                expect((plane.geometry as PlaneGeometry).segHeight).toEqual(100);
-                done();
-            });
+    it('should create a plane from an external image', async () =>
+    {
+        const texture = await loader.load(`${serverPath}bitmap-1.png`);
+
+        const plane = new SimplePlane(texture, 100, 100);
+
+        expect((plane.geometry as PlaneGeometry).segWidth).toEqual(100);
+        expect((plane.geometry as PlaneGeometry).segHeight).toEqual(100);
     });
 
     it('should create a new empty textured SimplePlane', () =>

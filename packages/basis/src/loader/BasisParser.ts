@@ -1,15 +1,12 @@
-import { TYPES } from '@pixi/constants';
-import type { ExtensionMetadata } from '@pixi/core';
-import { extensions, BufferResource, ExtensionType } from '@pixi/core';
 import { CompressedTextureResource } from '@pixi/compressed-textures';
-import type {
-    BasisTextureExtensions,
-    BasisBinding } from '../Basis';
+import { TYPES } from '@pixi/constants';
+import { BufferResource } from '@pixi/core';
+import type { BasisBinding, BasisTextureExtensions } from '../Basis';
 import {
     BASIS_FORMATS,
+    BASIS_FORMATS_ALPHA,
     BASIS_FORMAT_TO_INTERNAL_FORMAT,
-    INTERNAL_FORMAT_TO_BASIS_FORMAT,
-    BASIS_FORMATS_ALPHA
+    INTERNAL_FORMAT_TO_BASIS_FORMAT
 } from '../Basis';
 import { TranscoderWorker } from '../TranscoderWorker';
 
@@ -56,9 +53,6 @@ export type TranscodedResourcesArray = (Array<CompressedTextureResource> | Array
  */
 export class BasisParser
 {
-    /** @ignore */
-    static extension: ExtensionMetadata = ExtensionType.Loader;
-
     public static basisBinding: BasisBinding;
     private static defaultRGBFormat: { basisFormat: BASIS_FORMATS, textureFormat: INTERNAL_FORMATS | TYPES };
     private static defaultRGBAFormat: { basisFormat: BASIS_FORMATS, textureFormat: INTERNAL_FORMATS | TYPES };
@@ -385,7 +379,6 @@ export class BasisParser
      *
      * ```js
      * import { BasisParser } from '@pixi/basis';
-     * import { Loader } from '@pixi/loaders';
      *
      * // window.BASIS() returns a Promise-like object
      * window.BASIS().then((basisLibrary) =>
@@ -444,5 +437,3 @@ export class BasisParser
         }
     }
 }
-
-extensions.add(BasisParser);

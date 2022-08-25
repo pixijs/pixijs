@@ -1,9 +1,13 @@
+import { Assets } from '@pixi/assets';
 import type { Texture } from '@pixi/core';
-import { Loader } from 'packages/assets/src/loader/Loader';
-import { loadDDS, loadKTX } from '../src/loaders';
+import { Loader } from '../../assets/src/loader/Loader';
+import { Resolver } from '../../assets/src/resolver/Resolver';
+import { detectCompressedTextures, loadDDS, loadKTX, resolveCompressedTextureUrl } from '../src/loaders';
 
 describe('Compressed Loader', () =>
 {
+    beforeEach(() => Assets.reset());
+
     it('should load a ktx image', async () =>
     {
         const loader = new Loader();
@@ -30,5 +34,57 @@ describe('Compressed Loader', () =>
         expect(texture.baseTexture.valid).toBe(true);
         expect(texture.width).toBe(1000);
         expect(texture.height).toBe(664);
+    });
+
+    it('should resolve asset', () =>
+    {
+        const resolver = new Resolver();
+
+        resolver['_parsers'].push(resolveCompressedTextureUrl);
+
+        resolver.prefer({
+            priority: ['format'],
+            params: {
+                format: ['s3tc', 's3tc_sRGB', 'png', 'webp'],
+                resolution: 1
+            }
+        });
+
+        resolver.add('test', [
+            {
+                resolution: 1,
+                format: 'png',
+                src: 'my-image.png',
+            },
+            {
+                resolution: 1,
+                format: 'webp',
+                src: 'my-image.webp',
+            },
+            {
+                resolution: 1,
+                format: 's3tc',
+                src: 'my-image.s3tc.ktx',
+            },
+        ]);
+
+        const asset = resolver.resolveUrl('test');
+
+        expect(asset).toEqual('my-image.s3tc.ktx');
+    });
+
+    it('should add compressed texture formats', async () =>
+    {
+        await Assets.init();
+        expect((Assets.resolver['_preferredOrder'][0].params.format as string[]).includes('s3tc')).toBe(true);
+    });
+
+    it('should remove any unsupported formats', async () =>
+    {
+        detectCompressedTextures.test = jest.fn(async () => false);
+        await Assets.init();
+        expect(Assets.resolver['_preferredOrder'][0].params.format).toEqual(
+            ['avif', 'webp', 'png', 'jpg', 'jpeg']
+        );
     });
 });

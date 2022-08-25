@@ -1,6 +1,6 @@
 import { Cache, loadJson, loadTextures } from '@pixi/assets';
 import { Texture } from '@pixi/core';
-import { cacheSpritesheet, loadSpritesheet, Spritesheet } from '@pixi/spritesheet';
+import { cacheSpritesheet, loadSpritesheet, resolveSpriteSheetUrl, Spritesheet } from '@pixi/spritesheet';
 import { clearTextureCache } from '@pixi/utils';
 import { Loader } from '../../assets/src/loader/Loader';
 
@@ -100,8 +100,50 @@ describe('SpritesheetLoader', () =>
     {
         const spriteSheet: Spritesheet = await loader.load(`${serverPath}spritesheet.json`);
 
-        await loader.unload(`${serverPath}spritesheet/spritesheet.json`);
+        await loader.unload(`${serverPath}spritesheet.json`);
 
         expect(spriteSheet.baseTexture).toBe(null);
+    });
+
+    it('should parse a string sprite sheet correctly', () =>
+    {
+        [
+            {
+                url: 'my-sprite-sheet.json',
+                pass: false,
+            },
+            {
+                url: 'my-sprite-sheet@0.5x.webp.json',
+                pass: true,
+                result: {
+                    format: 'webp',
+                    resolution: 0.5,
+                    src: 'my-sprite-sheet@0.5x.webp.json',
+                },
+            },
+            {
+                url: 'my-sprite-sheet@2x.png.json',
+                pass: true,
+                result: {
+                    format: 'png',
+                    resolution: 2,
+                    src: 'my-sprite-sheet@2x.png.json',
+                },
+            },
+            {
+                url: 'my-sprite-sheet@2x.json',
+                pass: false,
+            },
+        ].forEach((toTest) =>
+        {
+            const pass = resolveSpriteSheetUrl.test(toTest.url);
+
+            expect(pass).toBe(toTest.pass);
+
+            if (pass)
+            {
+                expect(resolveSpriteSheetUrl.parse(toTest.url)).toEqual(toTest.result);
+            }
+        });
     });
 });
