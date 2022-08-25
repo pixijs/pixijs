@@ -362,4 +362,19 @@ describe('BitmapFontLoader', () =>
         expect(charATexture.frame.width).toEqual(19);
         expect(charATexture.frame.height).toEqual(20);
     });
+
+    it('should unload a bitmap font', async () =>
+    {
+        const loader = new Loader();
+
+        loader['_parsers'].push(loadTextures, loadBitmapFont);
+
+        const bitmapFont: BitmapFont = await loader.load(`${serverPath}desyrel.xml`);
+
+        expect(bitmapFont).toBeInstanceOf(BitmapFont);
+
+        await loader.unload(`${serverPath}desyrel.xml`);
+
+        expect(bitmapFont.pageTextures).toBe(null);
+    });
 });

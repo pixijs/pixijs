@@ -1,17 +1,7 @@
 import { Texture } from '@pixi/core';
-import type { Spritesheet } from '@pixi/spritesheet';
-import { BitmapFont } from '@pixi/text-bitmap';
 
-import type {
-    LoaderParser
-} from '@pixi/assets';
-import {
-    Cache,
-    cacheSpritesheet,
-    loadBitmapFont,
-    loadJson,
-    loadSpritesheet, loadSVG, loadTextures, loadWebFont
-} from '@pixi/assets';
+import type { LoaderParser } from '@pixi/assets';
+import { Cache, loadJson, loadSVG, loadTextures, loadWebFont } from '@pixi/assets';
 import { Loader } from '../src/loader/Loader';
 
 describe('Loader', () =>
@@ -124,58 +114,6 @@ describe('Loader', () =>
         });
     });
 
-    it('should load a spritesheet', async () =>
-    {
-        const loader = new Loader();
-
-        loader['_parsers'].push(loadJson, loadTextures, loadSpritesheet);
-
-        const spriteSheet: Spritesheet = await loader.load(`${serverPath}spritesheet/spritesheet.json`);
-
-        const bunnyTexture = spriteSheet.textures['bunny.png'];
-        const senseiTexture = spriteSheet.textures['pic-sensei.jpg'];
-
-        expect(bunnyTexture).toBeInstanceOf(Texture);
-        expect(senseiTexture).toBeInstanceOf(Texture);
-
-        expect(bunnyTexture.baseTexture).toBe(senseiTexture.baseTexture);
-
-        expect(bunnyTexture.baseTexture.valid).toBe(true);
-        expect(bunnyTexture.width).toBe(7);
-        expect(bunnyTexture.height).toBe(10);
-
-        expect(senseiTexture.baseTexture.valid).toBe(true);
-        expect(senseiTexture.width).toBe(125);
-        expect(senseiTexture.height).toBe(125);
-    });
-
-    it('should load a multi packed spritesheet', async () =>
-    {
-        const loader = new Loader();
-
-        Cache['_parsers'].push(cacheSpritesheet);
-
-        loader['_parsers'].push(loadJson, loadTextures, loadSpritesheet);
-
-        const spritesheet = await loader.load(`${serverPath}spritesheet/multi-pack-0.json`) as Spritesheet;
-
-        Cache.set('spritesheet/multi-pack-0.json', spritesheet);
-
-        const pack0 = Cache.get('star1.png');
-        const pack1 = Cache.get('goldmine_10_5.png');
-
-        expect(pack0).toBeInstanceOf(Texture);
-        expect(pack1).toBeInstanceOf(Texture);
-
-        expect(pack0.baseTexture.valid).toBe(true);
-        expect(pack0.width).toBe(64);
-        expect(pack0.height).toBe(64);
-
-        expect(pack1.baseTexture.valid).toBe(true);
-        expect(pack1.width).toBe(190);
-        expect(pack1.height).toBe(229);
-    });
-
     it('should load a web font', async () =>
     {
         const loader = new Loader();
@@ -264,34 +202,6 @@ describe('Loader', () =>
 
         expect(texture.baseTexture).toBe(null);
         expect(baseTexture.destroyed).toBe(true);
-    });
-
-    it('should unload a spritesheet', async () =>
-    {
-        const loader = new Loader();
-
-        loader['_parsers'].push(loadJson, loadTextures, loadSpritesheet);
-
-        const spriteSheet: Spritesheet = await loader.load(`${serverPath}spritesheet/spritesheet.json`);
-
-        await loader.unload(`${serverPath}spritesheet/spritesheet.json`);
-
-        expect(spriteSheet.baseTexture).toBe(null);
-    });
-
-    it('should unload a bitmap font', async () =>
-    {
-        const loader = new Loader();
-
-        loader['_parsers'].push(loadTextures, loadBitmapFont);
-
-        const bitmapFont: BitmapFont = await loader.load(`${serverPath}bitmap-font/desyrel.xml`);
-
-        expect(bitmapFont).toBeInstanceOf(BitmapFont);
-
-        await loader.unload(`${serverPath}bitmap-font/desyrel.xml`);
-
-        expect(bitmapFont.pageTextures).toBe(null);
     });
 
     it('should unload a web font', async () =>
