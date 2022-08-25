@@ -3,17 +3,14 @@ import type { Spritesheet } from '@pixi/spritesheet';
 import { BitmapFont } from '@pixi/text-bitmap';
 
 import type {
-    LoaderParser } from '@pixi/assets';
+    LoaderParser
+} from '@pixi/assets';
 import {
     Cache,
     cacheSpritesheet,
     loadBitmapFont,
     loadJson,
-    loadSpritesheet,
-    loadTextures,
-    loadTxt,
-    loadWebFont,
-    loadSVG
+    loadSpritesheet, loadSVG, loadTextures, loadWebFont
 } from '@pixi/assets';
 import { Loader } from '../src/loader/Loader';
 
@@ -177,56 +174,6 @@ describe('Loader', () =>
         expect(pack1.baseTexture.valid).toBe(true);
         expect(pack1.width).toBe(190);
         expect(pack1.height).toBe(229);
-    });
-
-    it('should load a bitmap font', async () =>
-    {
-        const loader = new Loader();
-
-        loader['_parsers'].push(loadTextures, loadBitmapFont);
-
-        const bitmapFont: BitmapFont = await loader.load(`${serverPath}bitmap-font/desyrel.xml`);
-        const bitmapFont2: BitmapFont = await loader.load(`${serverPath}bitmap-font/font.fnt`);
-
-        expect(bitmapFont).toBeInstanceOf(BitmapFont);
-        expect(bitmapFont2).toBeInstanceOf(BitmapFont);
-    });
-
-    it('should load a bitmap font text file', async () =>
-    {
-        const loader = new Loader();
-
-        loader['_parsers'].push(loadTxt, loadTextures, loadBitmapFont);
-
-        const bitmapFont: BitmapFont = await loader.load(`${serverPath}bitmap-font/bmtxt-test.txt`);
-
-        expect(bitmapFont).toBeInstanceOf(BitmapFont);
-    });
-
-    it('should load a bitmap font sdf / msdf', async () =>
-    {
-        const loader = new Loader();
-
-        loader['_parsers'].push(loadTextures, loadBitmapFont);
-
-        const bitmapFont: BitmapFont = await loader.load(`${serverPath}bitmap-font/msdf.fnt`);
-        const bitmapFont2: BitmapFont = await loader.load(`${serverPath}bitmap-font/sdf.fnt`);
-
-        expect(bitmapFont).toBeInstanceOf(BitmapFont);
-        expect(bitmapFont2).toBeInstanceOf(BitmapFont);
-        expect(bitmapFont.distanceFieldType).toEqual('msdf');
-        expect(bitmapFont2.distanceFieldType).toEqual('sdf');
-    });
-
-    it('should load a split bitmap font', async () =>
-    {
-        const loader = new Loader();
-
-        loader['_parsers'].push(loadTextures, loadBitmapFont);
-
-        const bitmapFont: BitmapFont = await loader.load(`${serverPath}bitmap-font/split_font.fnt`);
-
-        expect(bitmapFont).toBeInstanceOf(BitmapFont);
     });
 
     it('should load a web font', async () =>
