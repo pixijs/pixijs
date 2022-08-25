@@ -46,7 +46,8 @@ export const loadBitmapFont = {
             textureUrls.push(imagePath);
         }
 
-        const textures: Texture[] = Object.values(await loader.load(textureUrls));
+        const loadedTextures = await loader.load(textureUrls) as Record<string, Texture>;
+        const textures = textureUrls.map((url) => loadedTextures[url]);
 
         return BitmapFont.install(fontData, textures, true);
     },

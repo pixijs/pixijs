@@ -308,6 +308,21 @@ describe('BitmapFontLoader', () =>
         expect(charE).toBeUndefined();
     });
 
+    it('should split fonts if page IDs are in chronological order', async () =>
+    {
+        const font = await loader.load(`${serverPath}split_font2.fnt`);
+
+        const charA = font.chars['A'.charCodeAt(0)];
+        const charC = font.chars['C'.charCodeAt(0)];
+        const charATexture = charA.texture as Texture<ImageResource>;
+        const charCTexture = charC.texture as Texture<ImageResource>;
+
+        expect(charA.page).toEqual(0);
+        expect(charC.page).toEqual(1);
+        expect(charATexture.baseTexture.resource.src).toEqual(`${serverPath}split_font_ab.png`);
+        expect(charCTexture.baseTexture.resource.src).toEqual(`${serverPath}split_font_cd.png`);
+    });
+
     it('should set the texture to NPM on SDF fonts', async () =>
     {
         const sdfFont = await loader.load(`${serverPath}sdf.fnt`);
