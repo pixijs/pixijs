@@ -117,8 +117,8 @@ export class InteractionManager extends EventEmitter
 
     /**
      * Should default browser actions automatically be prevented.
-     * Does not apply to pointer events for backwards compatibility
-     * preventDefault on pointer events stops mouse events from firing
+     * Does not apply to pointer events for backwards compatibility as
+     * preventDefault on pointer events stops mouse events from firing.
      * Thus, for every pointer event, there will always be either a mouse of touch event alongside it.
      * @default true
      */
