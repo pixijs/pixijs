@@ -375,9 +375,9 @@ describe('Loader', () =>
     {
         const loader = new Loader();
 
-        loader['_parsers'].push(loadJson, loadTextures, loadSpritesheet);
+        loader['_parsers'].push(loadTextures, loadBitmapFont);
 
-        const font = await loader.load(`${serverPath}bitmap-fonts/split_font2.fnt`);
+        const font = await loader.load(`${serverPath}bitmap-font/split_font2.fnt`);
 
         const charA = font.chars['A'.charCodeAt(0)];
         const charC = font.chars['C'.charCodeAt(0)];
@@ -386,7 +386,7 @@ describe('Loader', () =>
 
         expect(charA.page).toEqual(0);
         expect(charC.page).toEqual(1);
-        expect(charATexture.baseTexture.resource.src).toEqual(`${serverPath}bitmap-fonts/split_font_ab.png`);
-        expect(charCTexture.baseTexture.resource.src).toEqual(`${serverPath}bitmap-fonts/split_font_cd.png`);
+        expect(charATexture.baseTexture.resource.src).toEqual(`${serverPath}bitmap-font/split_font_ab.png`);
+        expect(charCTexture.baseTexture.resource.src).toEqual(`${serverPath}bitmap-font/split_font_cd.png`);
     });
 });
