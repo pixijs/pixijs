@@ -51,6 +51,7 @@
   "dependencies": {
     "@pixi/accessibility": "6.5.2",
     "@pixi/app": "6.5.2",
+    "@pixi/assets": "6.5.2",
     "@pixi/compressed-textures": "6.5.2",
     "@pixi/constants": "6.5.2",
     "@pixi/core": "6.5.2",
