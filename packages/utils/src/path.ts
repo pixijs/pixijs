@@ -8,6 +8,13 @@ function assertPath(path: string)
     }
 }
 
+function removeUrlParams(url: string): string
+{
+    const re = url.split('?')[0];
+
+    return re.split('#')[0];
+}
+
 function escapeRegExp(string: string)
 {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
@@ -209,8 +216,8 @@ export const path: Path = {
     {
         if (this.isDataUrl(url)) return url;
 
-        const baseUrl = this.toPosix(customBaseUrl ?? settings.ADAPTER.getBaseUrl());
-        const rootUrl = this.toPosix(customRootUrl ?? this.rootname(baseUrl));
+        const baseUrl = removeUrlParams(this.toPosix(customBaseUrl ?? settings.ADAPTER.getBaseUrl()));
+        const rootUrl = removeUrlParams(this.toPosix(customRootUrl ?? this.rootname(baseUrl)));
 
         assertPath(url);
         url = this.toPosix(url);
@@ -291,7 +298,19 @@ export const path: Path = {
             if (arg.length > 0)
             {
                 if (joined === undefined) joined = arg;
-                else joined += `/${arg}`;
+                else
+                {
+                    const prevArg = segments[i - 1] ?? '';
+
+                    if (this.extname(prevArg))
+                    {
+                        joined += `/../${arg}`;
+                    }
+                    else
+                    {
+                        joined += `/${arg}`;
+                    }
+                }
             }
         }
         if (joined === undefined) { return '.'; }
