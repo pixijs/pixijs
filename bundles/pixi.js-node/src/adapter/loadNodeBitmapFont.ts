@@ -122,7 +122,8 @@ async function _loadBitmap(src: string, data: BitmapFontData, loader: Loader)
         textureUrls.push(url);
     }
 
-    const textures: Texture[] = Object.values(await loader.load(textureUrls));
+    const loadedTextures = await loader.load(textureUrls) as Record<string, Texture>;
+    const textures = textureUrls.map((url) => loadedTextures[url]);
 
     return BitmapFont.install(data, textures, true);
 }
