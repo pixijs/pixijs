@@ -1,6 +1,4 @@
-import { CanvasRenderTarget } from '@pixi/utils';
-import { Rectangle } from '@pixi/math';
-import { extensions, ExtensionType, RenderTexture } from '@pixi/core';
+import { Rectangle, utils, extensions, ExtensionType, RenderTexture } from '@pixi/core';
 
 import type { Renderer, ISystem, ExtensionMetadata } from '@pixi/core';
 import type { DisplayObject } from '@pixi/display';
@@ -131,7 +129,7 @@ export class Extract implements ISystem
         const width = Math.round(frame.width * resolution);
         const height = Math.round(frame.height * resolution);
 
-        let canvasBuffer = new CanvasRenderTarget(width, height, 1);
+        let canvasBuffer = new utils.CanvasRenderTarget(width, height, 1);
 
         const webglPixels = new Uint8Array(BYTES_PER_PIXEL * width * height);
 
@@ -158,7 +156,7 @@ export class Extract implements ISystem
         // pulling pixels
         if (flipY)
         {
-            const target = new CanvasRenderTarget(canvasBuffer.width, canvasBuffer.height, 1);
+            const target = new utils.CanvasRenderTarget(canvasBuffer.width, canvasBuffer.height, 1);
 
             target.context.scale(1, -1);
 

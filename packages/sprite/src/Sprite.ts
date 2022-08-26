@@ -1,13 +1,8 @@
-import { BLEND_MODES } from '@pixi/constants';
-import { Texture } from '@pixi/core';
 import { Bounds, Container } from '@pixi/display';
-import { ObservablePoint, Point, Rectangle } from '@pixi/math';
-import { settings } from '@pixi/settings';
-import { sign } from '@pixi/utils';
+import { BLEND_MODES, Texture, settings, utils, ObservablePoint, Point, Rectangle } from '@pixi/core';
 
-import type { IBaseTextureOptions, Renderer, TextureSource } from '@pixi/core';
+import type { IPointData, IBaseTextureOptions, Renderer, TextureSource } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
-import type { IPointData } from '@pixi/math';
 
 const tempPoint = new Point();
 const indices = new Uint16Array([0, 1, 2, 0, 2, 3]);
@@ -200,12 +195,12 @@ export class Sprite extends Container
         // so if _width is 0 then width was not set..
         if (this._width)
         {
-            this.scale.x = sign(this.scale.x) * this._width / this._texture.orig.width;
+            this.scale.x = utils.sign(this.scale.x) * this._width / this._texture.orig.width;
         }
 
         if (this._height)
         {
-            this.scale.y = sign(this.scale.y) * this._height / this._texture.orig.height;
+            this.scale.y = utils.sign(this.scale.y) * this._height / this._texture.orig.height;
         }
     }
 
@@ -532,7 +527,7 @@ export class Sprite extends Container
 
     set width(value: number)
     {
-        const s = sign(this.scale.x) || 1;
+        const s = utils.sign(this.scale.x) || 1;
 
         this.scale.x = s * value / this._texture.orig.width;
         this._width = value;
@@ -546,7 +541,7 @@ export class Sprite extends Container
 
     set height(value: number)
     {
-        const s = sign(this.scale.y) || 1;
+        const s = utils.sign(this.scale.y) || 1;
 
         this.scale.y = s * value / this._texture.orig.height;
         this._height = value;

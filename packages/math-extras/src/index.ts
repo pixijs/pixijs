@@ -1,8 +1,8 @@
 import './pointExtras';
 import './rectangleExtras';
 
-import type { IPointData } from '@pixi/math';
-import { Point } from '@pixi/math';
+import type { IPointData } from '@pixi/core';
+import { Point } from '@pixi/core';
 
 /**
  * The idea of a relative epsilon comparison is to find the difference between the two numbers,

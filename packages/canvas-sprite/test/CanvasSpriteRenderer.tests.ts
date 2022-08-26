@@ -1,9 +1,7 @@
 import '@pixi/canvas-display';
 import { CanvasRenderer } from '@pixi/canvas-renderer';
-import { MIPMAP_MODES, SCALE_MODES } from '@pixi/constants';
-import { BaseTexture, CanvasResource, Texture } from '@pixi/core';
+import { MIPMAP_MODES, SCALE_MODES, Rectangle, BaseTexture, CanvasResource, Texture } from '@pixi/core';
 import { Container } from '@pixi/display';
-import { Rectangle } from '@pixi/math';
 import { Sprite } from '@pixi/sprite';
 import '@pixi/canvas-sprite';
 

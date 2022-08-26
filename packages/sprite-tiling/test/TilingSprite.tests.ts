@@ -1,7 +1,6 @@
 import type { Bounds } from '@pixi/display';
 import { Container } from '@pixi/display';
-import { Texture, BaseTexture } from '@pixi/core';
-import { Point, Rectangle } from '@pixi/math';
+import { Point, Rectangle, Texture, BaseTexture } from '@pixi/core';
 import { Sprite } from '@pixi/sprite';
 import { TilingSprite } from '@pixi/sprite-tiling';
 

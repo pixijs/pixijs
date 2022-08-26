@@ -7,22 +7,21 @@ import {
     DRAW_CALL_POOL,
 } from './utils';
 
-import type {
-    Texture } from '@pixi/core';
 import {
     BatchGeometry,
     BatchDrawCall,
     BatchTextureArray,
-    BaseTexture
+    BaseTexture,
+    DRAW_MODES,
+    WRAP_MODES,
+    Point,
+    utils,
 } from '@pixi/core';
 
-import { DRAW_MODES, WRAP_MODES } from '@pixi/constants';
-import { Point } from '@pixi/math';
 import { GraphicsData } from './GraphicsData';
-import { premultiplyTint } from '@pixi/utils';
 import { Bounds } from '@pixi/display';
 
-import type { Circle, Ellipse, Polygon, Rectangle, RoundedRectangle, IPointData, Matrix } from '@pixi/math';
+import type { Texture, Circle, Ellipse, Polygon, Rectangle, RoundedRectangle, IPointData, Matrix } from '@pixi/core';
 import type { FillStyle } from './styles/FillStyle';
 import type { LineStyle } from './styles/LineStyle';
 
@@ -812,7 +811,7 @@ export class GraphicsGeometry extends BatchGeometry
         // TODO use the premultiply bits Ivan added
         const rgb = (color >> 16) + (color & 0xff00) + ((color & 0xff) << 16);
 
-        const rgba =  premultiplyTint(rgb, alpha);
+        const rgba = utils.premultiplyTint(rgb, alpha);
 
         colors.length = Math.max(colors.length, offset + size);
 

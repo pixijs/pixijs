@@ -40,6 +40,6 @@
     "*.d.ts"
   ],
   "peerDependencies": {
-    "@pixi/math": "6.5.2"
+    "@pixi/core": "6.5.2"
   }
 }

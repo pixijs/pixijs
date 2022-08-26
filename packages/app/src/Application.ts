@@ -1,8 +1,7 @@
 import { Container } from '@pixi/display';
 import { autoDetectRenderer, extensions, ExtensionType } from '@pixi/core';
 
-import type { Rectangle } from '@pixi/math';
-import type {  IRendererOptionsAuto, IRenderer } from '@pixi/core';
+import type { Rectangle, IRendererOptionsAuto, IRenderer } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
 
 /**

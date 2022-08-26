@@ -1,11 +1,9 @@
 import { Sprite } from '@pixi/sprite';
 
-import { skipHello } from '@pixi/utils';
-import { Texture, RenderTexture, Renderer } from '@pixi/core';
+import { Rectangle, utils, Texture, RenderTexture, Renderer } from '@pixi/core';
 import { Extract } from '@pixi/extract';
-import { Rectangle } from '@pixi/math';
 
-skipHello();
+utils.skipHello();
 
 describe('Extract', () =>
 {

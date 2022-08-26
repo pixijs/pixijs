@@ -8,21 +8,23 @@ import {
     RoundedRectangle,
     Matrix,
     SHAPES,
-} from '@pixi/math';
+    BLEND_MODES,
+    Texture,
+    UniformGroup,
+    State,
+    Shader,
+    utils
+} from '@pixi/core';
 
-import type { Renderer, BatchDrawCall } from '@pixi/core';
-import { Texture, UniformGroup, State, Shader } from '@pixi/core';
 import { BezierUtils, QuadraticUtils, ArcUtils } from './utils';
-import { hex2rgb } from '@pixi/utils';
 import { GraphicsGeometry } from './GraphicsGeometry';
 import { FillStyle } from './styles/FillStyle';
 import { LineStyle } from './styles/LineStyle';
-import { BLEND_MODES } from '@pixi/constants';
 import { Container } from '@pixi/display';
-
-import type { IShape, IPointData } from '@pixi/math';
-import type { IDestroyOptions } from '@pixi/display';
 import { LINE_JOIN, LINE_CAP } from './const';
+
+import type { IShape, IPointData, Renderer, BatchDrawCall } from '@pixi/core';
+import type { IDestroyOptions } from '@pixi/display';
 
 /** Batch element computed from Graphics geometry */
 export interface IGraphicsBatchElement
@@ -879,7 +881,7 @@ export class Graphics extends Container
                 blendMode,
                 indices,
                 uvs,
-                _batchRGB: hex2rgb(color) as Array<number>,
+                _batchRGB: utils.hex2rgb(color) as Array<number>,
                 _tintRGB: color,
                 _texture: gI.style.texture,
                 alpha: gI.style.alpha,
@@ -1053,7 +1055,7 @@ export class Graphics extends Container
         {
             this.batchTint = this.tint;
 
-            const tintRGB = hex2rgb(this.tint, temp);
+            const tintRGB = utils.hex2rgb(this.tint, temp);
 
             for (let i = 0; i < this.batches.length; i++)
             {

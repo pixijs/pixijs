@@ -1,12 +1,11 @@
-import type { PlaneGeometry } from '@pixi/mesh-extras';
 import { SimplePlane } from '@pixi/mesh-extras';
-import { skipHello } from '@pixi/utils';
-import { Point } from '@pixi/math';
-import { Renderer, RenderTexture, Texture } from '@pixi/core';
+import { Point, Renderer, RenderTexture, Texture, utils } from '@pixi/core';
 import { Cache, loadTextures } from '@pixi/assets';
 import { Loader } from '../../assets/src/loader/Loader';
 
-skipHello();
+import type { PlaneGeometry } from '@pixi/mesh-extras';
+
+utils.skipHello();
 
 describe('SimplePlane', () =>
 {

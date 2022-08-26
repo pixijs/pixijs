@@ -1,15 +1,13 @@
-import type { IBaseTextureOptions, Texture } from '@pixi/core';
-import { BaseTexture, extensions, ExtensionType } from '@pixi/core';
-import { settings } from '@pixi/settings';
-import { getResolutionOfUrl } from '@pixi/utils';
+import { BaseTexture, extensions, ExtensionType, settings, utils } from '@pixi/core';
 import type { Loader } from '../../Loader';
 import type { LoadAsset } from '../../types';
-
-import type { LoaderParser } from '../LoaderParser';
 import { LoaderParserPriority } from '../LoaderParser';
 import { WorkerManager } from '../WorkerManager';
 import { checkExtension } from './utils/checkExtension';
 import { createTexture } from './utils/createTexture';
+
+import type { IBaseTextureOptions, Texture } from '@pixi/core';
+import type { LoaderParser } from '../LoaderParser';
 
 const validImages = ['.jpg', '.png', '.jpeg', '.avif', '.webp'];
 
@@ -91,7 +89,7 @@ export const loadTextures = {
         }
 
         const base = new BaseTexture(src, {
-            resolution: getResolutionOfUrl(url),
+            resolution: utils.getResolutionOfUrl(url),
             ...asset.data,
         });
 

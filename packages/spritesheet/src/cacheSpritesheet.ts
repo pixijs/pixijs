@@ -1,6 +1,5 @@
-import { extensions, ExtensionType } from '@pixi/core';
+import { extensions, ExtensionType, utils } from '@pixi/core';
 import { Spritesheet } from './Spritesheet';
-import { path } from '@pixi/utils';
 import type { CacheParser } from '@pixi/assets';
 
 function getCacheableAssets(keys: string[], asset: Spritesheet, ignoreMultiPack: boolean)
@@ -19,7 +18,7 @@ function getCacheableAssets(keys: string[], asset: Spritesheet, ignoreMultiPack:
 
     if (!ignoreMultiPack)
     {
-        const basePath = path.dirname(keys[0]);
+        const basePath = utils.path.dirname(keys[0]);
 
         asset.linkedSheets.forEach((item: Spritesheet, i) =>
         {

@@ -1,9 +1,9 @@
 import { Filter, defaultFilterVertex } from '@pixi/core';
 import fragment from './colorMatrix.frag';
 
-import type { ArrayFixed } from '@pixi/utils';
+import type { utils } from '@pixi/core';
 
-export type ColorMatrix = ArrayFixed<number, 20>;
+export type ColorMatrix = utils.ArrayFixed<number, 20>;
 
 /**
  * The ColorMatrixFilter class lets you apply a 5x4 matrix transformation on the RGBA

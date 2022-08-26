@@ -1,6 +1,4 @@
-import { createIndicesForQuads } from '@pixi/utils';
-import { Geometry, Buffer } from '@pixi/core';
-import { TYPES } from '@pixi/constants';
+import { Geometry, Buffer, TYPES, utils } from '@pixi/core';
 
 import type { Sprite } from '@pixi/sprite';
 import type { IParticleRendererProperty } from './ParticleRenderer';
@@ -108,7 +106,7 @@ export class ParticleBuffer
 
         let dynamicOffset = 0;
 
-        this.indexBuffer = new Buffer(createIndicesForQuads(this.size), true, true);
+        this.indexBuffer = new Buffer(utils.createIndicesForQuads(this.size), true, true);
         geometry.addIndex(this.indexBuffer);
 
         this.dynamicStride = 0;

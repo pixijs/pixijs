@@ -1,9 +1,5 @@
-import { Rectangle } from '@pixi/math';
-import { Texture, BaseTexture } from '@pixi/core';
-import { getResolutionOfUrl } from '@pixi/utils';
-import type { Dict } from '@pixi/utils';
-import type { ImageResource } from '@pixi/core';
-import type { IPointData } from '@pixi/math';
+import { Texture, BaseTexture, utils, Rectangle } from '@pixi/core';
+import type { ImageResource, IPointData } from '@pixi/core';
 
 /** Represents the JSON data for a spritesheet atlas. */
 export interface ISpritesheetFrameData
@@ -30,8 +26,8 @@ export interface ISpritesheetFrameData
 /** Atlas format. */
 export interface ISpritesheetData
 {
-    frames: Dict<ISpritesheetFrameData>;
-    animations?: Dict<string[]>;
+    frames: utils.Dict<ISpritesheetFrameData>;
+    animations?: utils.Dict<string[]>;
     meta: {
         scale: string;
         // eslint-disable-next-line camelcase
@@ -87,7 +83,7 @@ export class Spritesheet
      * new PIXI.Sprite(sheet.textures["image.png"]);
      * ```
      */
-    public textures: Dict<Texture>;
+    public textures: utils.Dict<Texture>;
 
     /**
      * A map containing the textures for each animation.
@@ -96,7 +92,7 @@ export class Spritesheet
      * new PIXI.AnimatedSprite(sheet.animations["anim_name"])
      * ```
      */
-    public animations: Dict<Texture[]>;
+    public animations: utils.Dict<Texture[]>;
 
     /**
      * Reference to the original JSON data.
@@ -117,7 +113,7 @@ export class Spritesheet
      * Map of spritesheet frames.
      * @type {object}
      */
-    private _frames: Dict<ISpritesheetFrameData>;
+    private _frames: utils.Dict<ISpritesheetFrameData>;
 
     /** Collection of frame names. */
     private _frameKeys: string[];
@@ -129,7 +125,7 @@ export class Spritesheet
      * Callback when parse is completed.
      * @type {Function}
      */
-    private _callback: (textures: Dict<Texture>) => void;
+    private _callback: (textures: utils.Dict<Texture>) => void;
 
     /**
      * @param texture - Reference to the source BaseTexture object.
@@ -167,7 +163,7 @@ export class Spritesheet
         const { scale } = this.data.meta;
 
         // Use a defaultValue of `null` to check if a url-based resolution is set
-        let resolution = getResolutionOfUrl(resolutionFilename, null);
+        let resolution = utils.getResolutionOfUrl(resolutionFilename, null);
 
         // No resolution found via URL
         if (resolution === null)
@@ -190,7 +186,7 @@ export class Spritesheet
      * to prevent creating too many Texture within a single process.
      * @method PIXI.Spritesheet#parse
      */
-    public parse(): Promise<Dict<Texture>>
+    public parse(): Promise<utils.Dict<Texture>>
     {
         return new Promise((resolve) =>
         {

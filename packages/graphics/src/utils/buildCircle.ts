@@ -1,7 +1,7 @@
 // for type only
-import { SHAPES } from '@pixi/math';
+import { SHAPES } from '@pixi/core';
 
-import type { Circle, Ellipse, RoundedRectangle } from '@pixi/math';
+import type { Circle, Ellipse, RoundedRectangle } from '@pixi/core';
 import type { IShapeBuildCommand } from './IShapeBuildCommand';
 
 /**

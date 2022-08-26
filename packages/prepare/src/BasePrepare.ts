@@ -1,6 +1,4 @@
-import { Texture, BaseTexture } from '@pixi/core';
-import { Ticker, UPDATE_PRIORITY } from '@pixi/ticker';
-import { settings } from '@pixi/settings';
+import { Ticker, UPDATE_PRIORITY, settings, Texture, BaseTexture } from '@pixi/core';
 import type { DisplayObject } from '@pixi/display';
 import { Container } from '@pixi/display';
 import { Text, TextStyle, TextMetrics } from '@pixi/text';

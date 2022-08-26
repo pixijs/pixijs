@@ -2,7 +2,7 @@
 /* eslint-disable */
 
 import { TEXT_GRADIENT } from './const';
-import { hex2string } from '@pixi/utils';
+import { utils } from '@pixi/core';
 
 export type TextStyleAlign = 'left'|'center'|'right'|'justify';
 export type TextStyleFill = string|string[]|number|number[]|CanvasGradient|CanvasPattern;
@@ -740,7 +740,7 @@ function getSingleColor(color: string|number): string
 {
     if (typeof color === 'number')
     {
-        return hex2string(color);
+        return utils.hex2string(color);
     }
     else if (typeof color === 'string')
     {

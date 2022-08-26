@@ -1,7 +1,4 @@
-import { TYPES } from '@pixi/constants';
-import { extensions, ExtensionType, ObjectRenderer, Shader, State } from '@pixi/core';
-import { Matrix } from '@pixi/math';
-import { correctBlendMode, premultiplyRgba, premultiplyTint } from '@pixi/utils';
+import { TYPES, Matrix, extensions, ExtensionType, ObjectRenderer, Shader, State, utils } from '@pixi/core';
 import { ParticleBuffer } from './ParticleBuffer';
 import fragment from './particles.frag';
 import vertex from './particles.vert';
@@ -145,7 +142,7 @@ export class ParticleRenderer extends ObjectRenderer
         const premultiplied = baseTexture.alphaMode > 0;
 
         // if the uvs have not updated then no point rendering just yet!
-        this.state.blendMode = correctBlendMode(container.blendMode, premultiplied);
+        this.state.blendMode = utils.correctBlendMode(container.blendMode, premultiplied);
         renderer.state.set(this.state);
 
         const gl = renderer.gl;
@@ -156,7 +153,7 @@ export class ParticleRenderer extends ObjectRenderer
 
         this.shader.uniforms.translationMatrix = m.toArray(true);
 
-        this.shader.uniforms.uColor = premultiplyRgba(container.tintRgb,
+        this.shader.uniforms.uColor = utils.premultiplyRgba(container.tintRgb,
             container.worldAlpha, this.shader.uniforms.uColor, premultiplied);
 
         this.shader.uniforms.uSampler = baseTexture;
@@ -434,7 +431,7 @@ export class ParticleRenderer extends ObjectRenderer
 
             // we dont call extra function if alpha is 1.0, that's faster
             const argb = alpha < 1.0 && premultiplied
-                ? premultiplyTint(sprite._tintRGB, alpha) : sprite._tintRGB + (alpha * 255 << 24);
+                ? utils.premultiplyTint(sprite._tintRGB, alpha) : sprite._tintRGB + (alpha * 255 << 24);
 
             array[offset] = argb;
             array[offset + stride] = argb;

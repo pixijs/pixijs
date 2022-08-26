@@ -1,13 +1,9 @@
-import type { Renderer, MaskData, IRenderer } from '@pixi/core';
-import { Texture, BaseTexture, RenderTexture } from '@pixi/core';
+import { Texture, BaseTexture, RenderTexture, Matrix, utils, MSAA_QUALITY, settings } from '@pixi/core';
 import { Sprite } from '@pixi/sprite';
-import type { Container, IDestroyOptions } from '@pixi/display';
 import { DisplayObject } from '@pixi/display';
-import type { IPointData, Rectangle } from '@pixi/math';
-import { Matrix } from '@pixi/math';
-import { uid } from '@pixi/utils';
-import { settings } from '@pixi/settings';
-import { MSAA_QUALITY } from '@pixi/constants';
+
+import type { Renderer, MaskData, IRenderer, IPointData, Rectangle } from '@pixi/core';
+import type { Container, IDestroyOptions } from '@pixi/display';
 
 // Don't import CanvasRender to remove dependency on this optional package
 // this type should satisify these requirements for cacheAsBitmap types
@@ -288,7 +284,7 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
         multisample: this.cacheAsBitmapMultisample ?? renderer.multisample,
     });
 
-    const textureCacheId = `cacheAsBitmap_${uid()}`;
+    const textureCacheId = `cacheAsBitmap_${utils.uid()}`;
 
     this._cacheData.textureCacheId = textureCacheId;
 
@@ -399,7 +395,7 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDis
 
     const renderTexture = RenderTexture.create({ width: bounds.width, height: bounds.height });
 
-    const textureCacheId = `cacheAsBitmap_${uid()}`;
+    const textureCacheId = `cacheAsBitmap_${utils.uid()}`;
 
     this._cacheData.textureCacheId = textureCacheId;
 

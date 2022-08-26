@@ -42,9 +42,7 @@
     "url": "https://opencollective.com/pixijs"
   },
   "dependencies": {
-    "@types/offscreencanvas": "^2019.6.4"
-  },
-  "peerDependencies": {
+    "@types/offscreencanvas": "^2019.6.4",
     "@pixi/constants": "6.5.2",
     "@pixi/extensions": "6.5.2",
     "@pixi/math": "6.5.2",

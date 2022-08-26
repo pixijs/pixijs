@@ -40,10 +40,8 @@
   "peerDependencies": {
     "@pixi/canvas-display": "6.5.2",
     "@pixi/canvas-renderer": "6.5.2",
-    "@pixi/constants": "6.5.2",
     "@pixi/core": "6.5.2",
     "@pixi/mesh": "6.5.2",
-    "@pixi/mesh-extras": "6.5.2",
-    "@pixi/settings": "6.5.2"
+    "@pixi/mesh-extras": "6.5.2"
   }
 }
