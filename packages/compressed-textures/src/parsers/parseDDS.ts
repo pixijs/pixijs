@@ -51,10 +51,10 @@ const DDS_DX10_FIELDS = {
 
 /**
  * @see https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format
+ * This is way over-blown for us! Lend us a hand, and remove the ones that aren't used (but set the remaining
+ * ones to their correct value)
  * @ignore
  */
-// This is way over-blown for us! Lend us a hand, and remove the ones that aren't used (but set the remaining
-// ones to their correct value)
 enum DXGI_FORMAT
     {
     DXGI_FORMAT_UNKNOWN,
@@ -240,14 +240,10 @@ const DXGI_TO_FORMAT: { [id: number]: number } = {
 };
 
 /**
- * @class
- * @memberof PIXI
- * @implements {PIXI.ILoaderPlugin}
- * @see https://docs.microsoft.com/en-us/windows/win32/direct3ddds/dx-graphics-dds-pguide
- */
-/**
  * Parses the DDS file header, generates base-textures, and puts them into the texture cache.
+ * @see https://docs.microsoft.com/en-us/windows/win32/direct3ddds/dx-graphics-dds-pguide
  * @param arrayBuffer
+ * @memberof PIXI
  */
 export function parseDDS(arrayBuffer: ArrayBuffer): CompressedTextureResource[]
 {

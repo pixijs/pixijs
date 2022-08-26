@@ -7,7 +7,7 @@ import { TranscoderWorkerWrapper } from './TranscoderWorkerWrapper';
  *
  * To enable asynchronous transcoding, you need to provide the URL to the basis_universal transcoding
  * library.
- * @memberof PIXI.BasisLoader
+ * @memberof PIXI.BasisParser
  */
 export class TranscoderWorker
 {

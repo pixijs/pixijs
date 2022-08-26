@@ -356,17 +356,3 @@ export class Spritesheet
         this.linkedSheets = [];
     }
 }
-
-/**
- * Reference to Spritesheet object created.
- * @member {PIXI.Spritesheet} spritesheet
- * @memberof PIXI.LoaderResource
- * @instance
- */
-
-/**
- * Dictionary of textures from Spritesheet.
- * @member {Object<string, PIXI.Texture>} textures
- * @memberof PIXI.LoaderResource
- * @instance
- */

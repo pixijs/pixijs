@@ -13,8 +13,9 @@ import '@pixi/mixin-get-global-position';
 import * as utils from '@pixi/utils';
 // eslint-disable-next-line @typescript-eslint/no-duplicate-imports
 import {  NodeCanvasResource } from './adapter';
-import { loadBitmapFont, loadTextures, loadWebFont } from '@pixi/assets';
+import { loadTextures, loadWebFont } from '@pixi/assets';
 import { ResizePlugin } from '@pixi/app';
+import { loadBitmapFont } from '@pixi/text-bitmap';
 
 // Remove the default loader plugins
 extensions.remove(

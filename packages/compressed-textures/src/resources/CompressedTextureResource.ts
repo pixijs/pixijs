@@ -5,9 +5,9 @@ import type { Renderer, BaseTexture, GLTexture } from '@pixi/core';
 import type { INTERNAL_FORMATS } from '../const';
 
 /**
+ * Used in parseKTX
  * @ignore
  */
-// Used in PIXI.KTXLoader
 export type CompressedLevelBuffer = {
     levelID: number,
     levelWidth: number,
@@ -35,15 +35,16 @@ export interface ICompressedTextureResourceOptions
  * more detail in the same amount of memory.
  *
  * For most developers, container file formats are a better abstraction instead of directly handling raw texture
- * data. PixiJS provides native support for the following texture file formats (via {@link PIXI.Loader}):
+ * data. PixiJS provides native support for the following texture file formats
+ * (via {@link PIXI.loadBasis}, {@link PIXI.loadKTX}, and {@link PIXI.loadDDS}):
  *
- * **.dds** - the DirectDraw Surface file format stores DXTn (DXT-1,3,5) data. See {@link PIXI.DDSLoader}
+ * **.dds** - the DirectDraw Surface file format stores DXTn (DXT-1,3,5) data. See {@link PIXI.parseDDS}
  * **.ktx** - the Khronos Texture Container file format supports storing all the supported WebGL compression formats.
- *  See {@link PIXI.KTXLoader}.
+ *  See {@link PIXI.parseKTX}.
  * **.basis** - the BASIS supercompressed file format stores texture data in an internal format that is transcoded
  *  to the compression format supported on the device at _runtime_. It also supports transcoding into a uncompressed
  *  format as a fallback; you must install the `@pixi/basis-loader`, `@pixi/basis-transcoder` packages separately to
- *  use these files. See {@link PIXI.BasisLoader}.
+ *  use these files. See {@link PIXI.BasisParser}.
  *
  * The loaders for the aforementioned formats use `CompressedTextureResource` internally. It is strongly suggested that
  * they be used instead.

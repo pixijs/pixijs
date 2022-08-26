@@ -48,6 +48,7 @@ export const filters = {
 // Export ES for those importing specifically by name,
 export * from '@pixi/accessibility';
 export * from '@pixi/app';
+export * from '@pixi/assets';
 export * from '@pixi/constants';
 export * from '@pixi/compressed-textures';
 export * from '@pixi/core';
@@ -55,7 +56,6 @@ export * from '@pixi/display';
 export * from '@pixi/events';
 export * from '@pixi/extract';
 export * from '@pixi/graphics';
-export * from '@pixi/loaders';
 export * from '@pixi/math';
 export * from '@pixi/mesh';
 export * from '@pixi/mesh-extras';

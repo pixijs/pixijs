@@ -18,7 +18,6 @@ enum ExtensionType
     RendererPlugin = 'renderer-webgl-plugin',
     CanvasRendererSystem = 'renderer-canvas-system',
     CanvasRendererPlugin = 'renderer-canvas-plugin',
-    Loader = 'loader',
     LoadParser = 'load-parser',
     ResolveParser = 'resolve-parser',
     CacheParser = 'cache-parser',
@@ -231,11 +230,6 @@ const extensions = {
             (extension) =>
             {
                 list.push(extension.ref);
-                // TODO: remove me later, only added for @pixi/loaders
-                if (type === ExtensionType.Loader)
-                {
-                    extension.ref.add?.();
-                }
                 list.sort((a, b) => (b.priority ?? -1) - (a.priority ?? -1));
             },
             (extension) =>

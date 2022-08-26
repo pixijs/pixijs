@@ -1,2 +1,4 @@
+export * from './loadSpritesheet';
 export * from './Spritesheet';
-export * from './SpritesheetLoader';
+export * from './cacheSpritesheet';
+export * from './resolveSpriteSheetUrl';
