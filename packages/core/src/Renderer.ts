@@ -257,23 +257,6 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
     public readonly startup: StartupSystem;
 
     /**
-     * Internal signal instances of **runner**, these
-     * are assigned to each system created.
-     * @see PIXI.Runner
-     * @name runners
-     * @private
-     * @type {object}
-     * @readonly
-     * @property {PIXI.Runner} destroy - Destroy runner
-     * @property {PIXI.Runner} contextChange - Context change runner
-     * @property {PIXI.Runner} reset - Reset runner
-     * @property {PIXI.Runner} update - Update runner
-     * @property {PIXI.Runner} postrender - Post-render runner
-     * @property {PIXI.Runner} prerender - Pre-render runner
-     * @property {PIXI.Runner} resize - Resize runner
-     */
-
-    /**
      * Create renderer if WebGL is available. Overrideable
      * by the **@pixi/canvas-renderer** package to allow fallback.
      * throws error if WebGL is not available.

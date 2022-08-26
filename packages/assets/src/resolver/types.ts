@@ -1,7 +1,7 @@
 import type { ExtensionMetadata } from '@pixi/core';
 
 /**
- * A prefer order lets the resolver know which assets to prefere depending on the various parameters passed to it.
+ * A prefer order lets the resolver know which assets to prefer depending on the various parameters passed to it.
  * @memberof PIXI
  */
 export interface PreferOrder
