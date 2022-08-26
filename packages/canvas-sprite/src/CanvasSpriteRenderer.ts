@@ -121,11 +121,6 @@ export class CanvasSpriteRenderer
             // the anchor has already been applied above, so lets set it to zero
             dx = 0;
             dy = 0;
-
-            const h = destWidth;
-
-            destWidth = destHeight;
-            destHeight = h;
         }
 
         dx -= destWidth / 2;
