@@ -91,7 +91,7 @@ export class AccessibilityManager
         {
             throw new Error('AccessibilityManager is only supported in browser main thread');
         }
-        if (typeof HTMLCanvasElement === 'undefined' || !(renderer.view instanceof HTMLCanvasElement))
+        if (typeof HTMLCanvasElement === 'undefined' || (renderer && !(renderer.view instanceof HTMLCanvasElement)))
         {
             throw new Error('AccessibilityManager is only supported on HTMLCanvasElement');
         }
