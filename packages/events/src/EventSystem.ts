@@ -4,7 +4,7 @@ import { FederatedPointerEvent } from './FederatedPointerEvent';
 import { FederatedWheelEvent } from './FederatedWheelEvent';
 import { extensions, ExtensionType } from '@pixi/core';
 
-import type { IRenderableObject, ExtensionMetadata } from '@pixi/core';
+import type { ExtensionMetadata, ICanvas, IRenderableObject } from '@pixi/core';
 import type { DisplayObject } from '@pixi/display';
 import type { IPointData } from '@pixi/math';
 
@@ -20,7 +20,7 @@ const TOUCH_TO_POINTER: Record<string, string> = {
 interface Renderer
 {
     lastObjectRendered: IRenderableObject;
-    view: HTMLCanvasElement;
+    view: ICanvas;
     resolution: number;
     plugins: Record<string, any>;
 }
@@ -127,7 +127,7 @@ export class EventSystem
     {
         const { view, resolution } = this.renderer;
 
-        this.setTargetElement(view);
+        this.setTargetElement(view as HTMLCanvasElement);
         this.resolution = resolution;
     }
 

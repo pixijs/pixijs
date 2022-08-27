@@ -1,11 +1,14 @@
 import { BaseImageResource } from './BaseImageResource';
 
+import type { ImageSource } from './../BaseTexture';
+import type { ICanvas } from '../../ICanvas';
+
 /**
  * @interface OffscreenCanvas
  */
 
 /**
- * Resource type for HTMLCanvasElement.
+ * Resource type for HTMLCanvasElement and OffscreenCanvas.
  * @memberof PIXI
  */
 export class CanvasResource extends BaseImageResource
@@ -14,9 +17,9 @@ export class CanvasResource extends BaseImageResource
      * @param source - Canvas element to use
      */
     // eslint-disable-next-line @typescript-eslint/no-useless-constructor
-    constructor(source: HTMLCanvasElement)
+    constructor(source: ICanvas)
     {
-        super(source);
+        super(source as ImageSource);
     }
 
     /**

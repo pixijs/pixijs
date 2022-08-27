@@ -125,7 +125,7 @@ export class ArrayResource extends AbstractMultiResource
                         1,
                         texture.format,
                         glTexture.type,
-                        (item.resource as BaseImageResource).source
+                        (item.resource as BaseImageResource).source as TexImageSource | OffscreenCanvas
                     );
                 }
             }

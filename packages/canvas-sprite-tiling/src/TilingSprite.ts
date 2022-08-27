@@ -4,6 +4,7 @@ import { CanvasRenderTarget } from '@pixi/utils';
 import { Matrix, Point } from '@pixi/math';
 
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
+import type { ICanvas } from '@pixi/core';
 
 const worldMatrix = new Matrix();
 const patternMatrix = new Matrix();
@@ -43,8 +44,8 @@ TilingSprite.prototype._renderCanvas = function _renderCanvas(renderer: CanvasRe
         // Tint the tiling sprite
         if (this.tint !== 0xFFFFFF)
         {
-            this._tintedCanvas = canvasUtils.getTintedCanvas(this, this.tint) as HTMLCanvasElement;
-            tempCanvas.context.drawImage(this._tintedCanvas, 0, 0);
+            this._tintedCanvas = canvasUtils.getTintedCanvas(this, this.tint) as ICanvas;
+            tempCanvas.context.drawImage(this._tintedCanvas as CanvasImageSource, 0, 0);
         }
         else
         {
@@ -52,7 +53,7 @@ TilingSprite.prototype._renderCanvas = function _renderCanvas(renderer: CanvasRe
                 -texture._frame.x * baseTextureResolution, -texture._frame.y * baseTextureResolution);
         }
         this._cachedTint = this.tint;
-        this._canvasPattern = tempCanvas.context.createPattern(tempCanvas.canvas, 'repeat');
+        this._canvasPattern = tempCanvas.context.createPattern(tempCanvas.canvas as CanvasImageSource, 'repeat');
     }
 
     // set context state..

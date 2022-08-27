@@ -1,12 +1,14 @@
 import { settings } from '@pixi/settings';
 
+import type { ICanvas } from '@pixi/core';
+
 /**
  * Creates a little colored canvas
  * @ignore
  * @param {string} color - The color to make the canvas
- * @returns {HTMLCanvasElement} a small canvas element
+ * @returns {ICanvas} a small canvas element
  */
-function createColoredCanvas(color: string): HTMLCanvasElement
+function createColoredCanvas(color: string): ICanvas
 {
     const canvas = settings.ADAPTER.createCanvas(6, 1);
     const context = canvas.getContext('2d');
@@ -36,8 +38,8 @@ export function canUseNewCanvasBlendModes(): boolean
     const context = canvas.getContext('2d');
 
     context.globalCompositeOperation = 'multiply';
-    context.drawImage(magenta, 0, 0);
-    context.drawImage(yellow, 2, 0);
+    context.drawImage(magenta as CanvasImageSource, 0, 0);
+    context.drawImage(yellow as CanvasImageSource, 2, 0);
 
     const imageData = context.getImageData(2, 0, 1, 1);
 

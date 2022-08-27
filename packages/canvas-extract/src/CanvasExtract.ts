@@ -1,9 +1,10 @@
 import { extensions, ExtensionType, RenderTexture } from '@pixi/core';
 import { CanvasRenderTarget } from '@pixi/utils';
 import { Rectangle } from '@pixi/math';
+
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
+import type { BaseRenderTexture, ExtensionMetadata, ICanvas, ISystem } from '@pixi/core';
 import type { DisplayObject } from '@pixi/display';
-import type { BaseRenderTexture, ISystem, ExtensionMetadata } from '@pixi/core';
 
 const TEMP_RECT = new Rectangle();
 
@@ -61,7 +62,13 @@ export class CanvasExtract implements ISystem
      */
     public base64(target?: DisplayObject | RenderTexture, format?: string, quality?: number): string
     {
-        return this.canvas(target).toDataURL(format, quality);
+        const canvas = this.canvas(target);
+
+        if (typeof HTMLCanvasElement !== 'undefined' && canvas instanceof HTMLCanvasElement)
+        {
+            return canvas.toDataURL(format, quality);
+        }
+        throw new Error('TODO: base64 for OffscreenCanvas');
     }
 
     /**
@@ -71,7 +78,7 @@ export class CanvasExtract implements ISystem
      * @param frame - The frame the extraction is restricted to.
      * @returns A Canvas element with the texture rendered on.
      */
-    public canvas(target?: DisplayObject | RenderTexture, frame?: Rectangle): HTMLCanvasElement
+    public canvas(target?: DisplayObject | RenderTexture, frame?: Rectangle): ICanvas
     {
         const renderer = this.renderer;
         let context;

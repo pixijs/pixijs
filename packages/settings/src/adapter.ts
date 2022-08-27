@@ -1,3 +1,5 @@
+import type { ICanvas } from './canvas';
+
 export type ContextIds = '2d' | 'webgl' | 'experimental-webgl' | 'webgl2';
 
 /**
@@ -8,7 +10,7 @@ export type ContextIds = '2d' | 'webgl' | 'experimental-webgl' | 'webgl2';
 export interface IAdapter
 {
     /** Returns a canvas object that can be used to create a webgl context. */
-    createCanvas: (width?: number, height?: number) => HTMLCanvasElement;
+    createCanvas: (width?: number, height?: number) => ICanvas;
     /** Returns a webgl rendering context. */
     getWebGLRenderingContext: () => typeof WebGLRenderingContext;
     /** Returns a partial implementation of the browsers window.navigator */
@@ -37,5 +39,20 @@ export const BrowserAdapter = {
     getWebGLRenderingContext: () => WebGLRenderingContext,
     getNavigator: () => navigator,
     getBaseUrl: () => (document.baseURI ?? window.location.href),
+    fetch: (url: RequestInfo, options?: RequestInit) => fetch(url, options),
+} as IAdapter;
+
+export const WebWorkerAdapter = {
+    /**
+     * Creates a canvas element of the given size.
+     * This canvas is created using the browser's OffscreenCanvas.
+     * @param width - width of the canvas
+     * @param height - height of the canvas
+     */
+    createCanvas: (width: number, height: number): OffscreenCanvas =>
+        new OffscreenCanvas(width || 0, height || 0),
+    getWebGLRenderingContext: () => WebGLRenderingContext,
+    getNavigator: () => navigator,
+    getBaseUrl: () => self.location.href,
     fetch: (url: RequestInfo, options?: RequestInit) => fetch(url, options),
 } as IAdapter;

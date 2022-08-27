@@ -2,7 +2,7 @@ import { CanvasRenderTarget } from '@pixi/utils';
 import { Rectangle } from '@pixi/math';
 import { extensions, ExtensionType, RenderTexture } from '@pixi/core';
 
-import type { Renderer, ISystem, ExtensionMetadata } from '@pixi/core';
+import type { ICanvas, ISystem, ExtensionMetadata, Renderer } from '@pixi/core';
 import type { DisplayObject } from '@pixi/display';
 
 const TEMP_RECT = new Rectangle();
@@ -75,7 +75,13 @@ export class Extract implements ISystem
      */
     public base64(target: DisplayObject | RenderTexture, format?: string, quality?: number): string
     {
-        return this.canvas(target).toDataURL(format, quality);
+        const canvas = this.canvas(target);
+
+        if (typeof HTMLCanvasElement !== 'undefined' && canvas instanceof HTMLCanvasElement)
+        {
+            return canvas.toDataURL(format, quality);
+        }
+        throw new Error('TODO: base64 for OffscreenCanvas');
     }
 
     /**
@@ -85,7 +91,7 @@ export class Extract implements ISystem
      * @param frame - The frame the extraction is restricted to.
      * @returns - A Canvas element with the texture rendered on.
      */
-    public canvas(target: DisplayObject | RenderTexture, frame?: Rectangle): HTMLCanvasElement
+    public canvas(target: DisplayObject | RenderTexture, frame?: Rectangle): ICanvas
     {
         const renderer = this.renderer;
         let resolution;
@@ -163,7 +169,7 @@ export class Extract implements ISystem
             target.context.scale(1, -1);
 
             // we can't render to itself because we should be empty before render.
-            target.context.drawImage(canvasBuffer.canvas, 0, -height);
+            target.context.drawImage(canvasBuffer.canvas as CanvasImageSource, 0, -height);
 
             canvasBuffer.destroy();
             canvasBuffer = target;

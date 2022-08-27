@@ -1,14 +1,17 @@
-import type { ENV } from '@pixi/constants';
 import { GC_MODES, MIPMAP_MODES, MSAA_QUALITY, PRECISION, SCALE_MODES, WRAP_MODES } from '@pixi/constants';
-import type { IAdapter } from './adapter';
-import { BrowserAdapter } from './adapter';
+import { BrowserAdapter, WebWorkerAdapter } from './adapter';
 import { canUploadSameBuffer } from './utils/canUploadSameBuffer';
+import { environment } from './utils/environment';
 import { isMobile } from './utils/isMobile';
 import { maxRecommendedTextures } from './utils/maxRecommendedTextures';
 
+import type { ENV } from '@pixi/constants';
+import type { ICanvas } from '@pixi/core';
+import type { IAdapter } from './adapter';
+
 export interface IRenderOptions
 {
-    view: HTMLCanvasElement;
+    view: ICanvas;
     antialias: boolean;
     autoDensity: boolean;
     backgroundColor: number;
@@ -76,9 +79,9 @@ export const settings: ISettings = {
      * @name ADAPTER
      * @memberof PIXI.settings
      * @type {PIXI.IAdapter}
-     * @default PIXI.BrowserAdapter
+     * @default PIXI.BrowserAdapter for browser main thread, PIXI.WebWorkerAdapter for worker thread
      */
-    ADAPTER: BrowserAdapter,
+    ADAPTER: environment.webworker ? WebWorkerAdapter : BrowserAdapter,
     /**
      * If set to true WebGL will attempt make textures mimpaped by default.
      * Mipmapping will only succeed if the base texture uploaded has power of two dimensions.
@@ -163,7 +166,7 @@ export const settings: ISettings = {
      * @name RENDER_OPTIONS
      * @memberof PIXI.settings
      * @type {object}
-     * @property {HTMLCanvasElement} [view=null] -
+     * @property {ICanvas} [view=null] -
      * @property {boolean} [antialias=false] -
      * @property {boolean} [autoDensity=false] -
      * @property {boolean} [useContextAlpha=true]  -

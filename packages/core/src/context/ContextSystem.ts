@@ -1,6 +1,7 @@
 import { ENV } from '@pixi/constants';
 import { settings } from '../settings';
 
+import type { ICanvas } from '../ICanvas';
 import type { ISystem } from '../system/ISystem';
 import type { Renderer } from '../Renderer';
 import type { WebGLExtensions } from './WebGLExtensions';
@@ -194,7 +195,7 @@ export class ContextSystem implements ISystem
      * @see https://developer.mozilla.org/en/docs/Web/API/HTMLCanvasElement/getContext
      * @returns {WebGLRenderingContext} the WebGL context
      */
-    createContext(canvas: HTMLCanvasElement, options: WebGLContextAttributes): IRenderingContext
+    createContext(canvas: ICanvas, options: WebGLContextAttributes): IRenderingContext
     {
         let gl;
 

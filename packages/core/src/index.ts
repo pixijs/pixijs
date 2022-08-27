@@ -13,8 +13,8 @@ export const VERSION = '$_VERSION';
 export * from '@pixi/extensions';
 export * from './textures/resources';
 export * from './systems';
+export * from './ICanvas';
 export * from './IRenderer';
-
 export * from './autoDetectRenderer';
 export * from './fragments';
 export * from './system/ISystem';

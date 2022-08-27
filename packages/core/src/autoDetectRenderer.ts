@@ -29,7 +29,7 @@ extensions.handleByList(ExtensionType.Renderer, renderers);
  * @param {object} [options] - The optional renderer parameters
  * @param {number} [options.width=800] - the width of the renderers view
  * @param {number} [options.height=600] - the height of the renderers view
- * @param {HTMLCanvasElement} [options.view] - the canvas to use as a view, optional
+ * @param {PIXI.ICanvas} [options.view] - the canvas to use as a view, optional
  * @param {boolean} [options.useContextAlpha=true] - Pass-through value for canvas' context `alpha` property.
  *   If you want to set transparency, please use `backgroundAlpha`. This option is for cases where the
  *   canvas needs to be opaque, possibly for performance reasons on some older devices.

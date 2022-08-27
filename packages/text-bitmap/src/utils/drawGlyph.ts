@@ -1,5 +1,7 @@
-import { generateFillStyle } from './generateFillStyle';
 import { hex2rgb, string2hex } from '@pixi/utils';
+import { generateFillStyle } from './generateFillStyle';
+
+import type { ICanvas } from '@pixi/core';
 import type { TextMetrics, TextStyle } from '@pixi/text';
 
 // TODO: Prevent code duplication b/w drawGlyph & Text#updateText
@@ -9,7 +11,7 @@ import type { TextMetrics, TextStyle } from '@pixi/text';
  *
  * Ignored because not directly exposed.
  * @ignore
- * @param {HTMLCanvasElement} canvas
+ * @param {ICanvas} canvas
  * @param {CanvasRenderingContext2D} context
  * @param {TextMetrics} metrics
  * @param {number} x
@@ -18,8 +20,8 @@ import type { TextMetrics, TextStyle } from '@pixi/text';
  * @param {TextStyle} style
  */
 export function drawGlyph(
-    canvas: HTMLCanvasElement,
-    context: CanvasRenderingContext2D,
+    canvas: ICanvas,
+    context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D,
     metrics: TextMetrics,
     x: number,
     y: number,

@@ -46,6 +46,17 @@
  */
 export { isMobile } from '@pixi/settings';
 
+/**
+ * Execution environment detection.
+ * @memberof PIXI.utils
+ * @name environment
+ * @member {object}
+ * @property {boolean} browser - `true` if current environment is browser main thread
+ * @property {boolean} webworker - `true` if current environment is browser worker thread
+ * @property {boolean} phone - `true` if current environment is Node.js
+ */
+export { environment } from '@pixi/settings';
+
 import EventEmitter from 'eventemitter3';
 
 /**

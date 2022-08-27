@@ -2,7 +2,7 @@ import { Container } from '@pixi/display';
 import { autoDetectRenderer, extensions, ExtensionType } from '@pixi/core';
 
 import type { Rectangle } from '@pixi/math';
-import type {  IRendererOptionsAuto, IRenderer } from '@pixi/core';
+import type { ICanvas, IRenderer, IRendererOptionsAuto } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
 
 /**
@@ -67,7 +67,7 @@ export class Application
      *     options.sharedTicker to true in case that it is already started. Stop it by your own.
      * @param {number} [options.width=800] - The width of the renderers view.
      * @param {number} [options.height=600] - The height of the renderers view.
-     * @param {HTMLCanvasElement} [options.view] - The canvas to use as a view, optional.
+     * @param {ICanvas} [options.view] - The canvas to use as a view, optional.
      * @param {boolean} [options.useContextAlpha=true] - Pass-through value for canvas' context `alpha` property.
      *   If you want to set transparency, please use `backgroundAlpha`. This option is for cases where the
      *   canvas needs to be opaque, possibly for performance reasons on some older devices.
@@ -117,10 +117,10 @@ export class Application
 
     /**
      * Reference to the renderer's canvas element.
-     * @member {HTMLCanvasElement}
+     * @member {ICanvas}
      * @readonly
      */
-    get view(): HTMLCanvasElement
+    get view(): ICanvas
     {
         return this.renderer.view;
     }

@@ -331,7 +331,7 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
     /**
      * Helper function that creates a new Texture based on the source you provide.
      * The source can be - frame id, image url, video url, canvas element, video element, base texture
-     * @param {string|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|PIXI.BaseTexture} source -
+     * @param {string|HTMLImageElement|HTMLVideoElement|HTMLCanvasElement|OffscreenCanvas|PIXI.BaseTexture} source -
      *        Source or array of sources to create texture from
      * @param options - See {@link PIXI.BaseTexture}'s constructor for options.
      * @param {string} [options.pixiIdPrefix=pixiid] - If a source has no id, this is the prefix of the generated id
@@ -448,14 +448,14 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
 
     /**
      * Create a texture from a source and add to the cache.
-     * @param {HTMLImageElement|HTMLCanvasElement|string} source - The input source.
+     * @param {HTMLImageElement|HTMLCanvasElement|OffscreenCanvas|string} source - The input source.
      * @param imageUrl - File name of texture, for cache and resolving resolution.
      * @param name - Human readable name for the texture cache. If no name is
      *        specified, only `imageUrl` will be used as the cache ID.
      * @param options
      * @returns - Output texture
      */
-    static fromLoader<R extends Resource = Resource>(source: HTMLImageElement | HTMLCanvasElement | string,
+    static fromLoader<R extends Resource = Resource>(source: HTMLImageElement | HTMLCanvasElement | OffscreenCanvas | string,
         imageUrl: string, name?: string, options?: IBaseTextureOptions): Promise<Texture<R>>
     {
         const baseTexture = new BaseTexture<R>(source, Object.assign({
@@ -689,7 +689,7 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
             context.fillStyle = 'white';
             context.fillRect(0, 0, 16, 16);
 
-            Texture._WHITE = new Texture(BaseTexture.from(canvas));
+            Texture._WHITE = new Texture(BaseTexture.from(canvas as ImageSource));
             removeAllHandlers(Texture._WHITE);
             removeAllHandlers(Texture._WHITE.baseTexture);
         }

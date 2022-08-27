@@ -1,5 +1,7 @@
-import type { TextStyle, TextMetrics } from '@pixi/text';
 import { TEXT_GRADIENT } from '@pixi/text';
+
+import type { ICanvas } from '@pixi/core';
+import type { TextStyle, TextMetrics } from '@pixi/text';
 
 // TODO: Prevent code duplication b/w generateFillStyle & Text#generateFillStyle
 
@@ -15,8 +17,8 @@ import { TEXT_GRADIENT } from '@pixi/text';
  * @returns {string|number|CanvasGradient} The fill style
  */
 export function generateFillStyle(
-    canvas: HTMLCanvasElement,
-    context: CanvasRenderingContext2D,
+    canvas: ICanvas,
+    context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D,
     style: TextStyle,
     resolution: number,
     lines: string[],

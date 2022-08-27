@@ -1,15 +1,15 @@
 /* eslint max-depth: [2, 8] */
-import { Sprite } from '@pixi/sprite';
-import { Texture  } from '@pixi/core';
-import { settings } from '@pixi/settings';
+import { Texture } from '@pixi/core';
 import { Rectangle } from '@pixi/math';
+import { settings } from '@pixi/settings';
+import { Sprite } from '@pixi/sprite';
 import { sign, trimCanvas, hex2rgb, string2hex } from '@pixi/utils';
 import { TEXT_GRADIENT } from './const';
 import { TextStyle } from './TextStyle';
 import { TextMetrics } from './TextMetrics';
 
+import type { ICanvas, ImageSource, Renderer } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
-import type { Renderer } from '@pixi/core';
 import type { ITextStyle } from './TextStyle';
 
 const defaultDestroyOptions: IDestroyOptions = {
@@ -58,7 +58,7 @@ export class Text extends Sprite
     public static experimentalLetterSpacing = false;
 
     /** The canvas element that everything is drawn to. */
-    public canvas: HTMLCanvasElement;
+    public canvas: ICanvas;
     /** The canvas 2d context that everything is drawn with. */
     public context: ModernContext2D;
     public localStyleID: number;
@@ -110,7 +110,7 @@ export class Text extends Sprite
      * @param {object|PIXI.TextStyle} [style] - The style parameters
      * @param canvas - The canvas element for drawing text
      */
-    constructor(text?: string | number, style?: Partial<ITextStyle> | TextStyle, canvas?: HTMLCanvasElement)
+    constructor(text?: string | number, style?: Partial<ITextStyle> | TextStyle, canvas?: ICanvas)
     {
         let ownCanvas = false;
 
@@ -123,7 +123,7 @@ export class Text extends Sprite
         canvas.width = 3;
         canvas.height = 3;
 
-        const texture = Texture.from(canvas);
+        const texture = Texture.from(canvas as ImageSource);
 
         texture.orig = new Rectangle();
         texture.trim = new Rectangle();

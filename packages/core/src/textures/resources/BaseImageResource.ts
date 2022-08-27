@@ -14,7 +14,7 @@ export class BaseImageResource extends Resource
 {
     /**
      * The source element.
-     * @member {HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|SVGElement}
+     * @member {HTMLImageElement|HTMLVideoElement|HTMLCanvasElement|OffscreenCanvas|SVGElement}
      * @readonly
      */
     public source: ImageSource;
@@ -28,7 +28,7 @@ export class BaseImageResource extends Resource
     public noSubImage: boolean;
 
     /**
-     * @param {HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|SVGElement} source
+     * @param {HTMLImageElement|HTMLVideoElement|HTMLCanvasElement|OffscreenCanvas|SVGElement} source
      */
     constructor(source: ImageSource)
     {
@@ -76,14 +76,14 @@ export class BaseImageResource extends Resource
 
         source = source || this.source;
 
-        if (source instanceof HTMLImageElement)
+        if (typeof HTMLImageElement !== 'undefined' && source instanceof HTMLImageElement)
         {
             if (!source.complete || source.naturalWidth === 0)
             {
                 return false;
             }
         }
-        else if (source instanceof HTMLVideoElement)
+        else if (typeof HTMLVideoElement !== 'undefined' && source instanceof HTMLVideoElement)
         {
             if (source.readyState <= 1)
             {
@@ -98,14 +98,16 @@ export class BaseImageResource extends Resource
             && glTexture.width === width
             && glTexture.height === height)
         {
-            gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, baseTexture.format, glTexture.type, source);
+            gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, baseTexture.format, glTexture.type,
+                source as TexImageSource | OffscreenCanvas);
         }
         else
         {
             glTexture.width = width;
             glTexture.height = height;
 
-            gl.texImage2D(baseTexture.target, 0, glTexture.internalFormat, baseTexture.format, glTexture.type, source);
+            gl.texImage2D(baseTexture.target, 0, glTexture.internalFormat, baseTexture.format, glTexture.type,
+                source as TexImageSource | OffscreenCanvas);
         }
 
         return true;

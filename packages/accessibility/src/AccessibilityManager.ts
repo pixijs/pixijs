@@ -1,13 +1,13 @@
+import { ExtensionType, extensions } from '@pixi/core';
 import { DisplayObject } from '@pixi/display';
-import { isMobile, removeItems } from '@pixi/utils';
+import { FederatedEvent } from '@pixi/events';
+import { environment, isMobile, removeItems } from '@pixi/utils';
 import { accessibleTarget } from './accessibleTarget';
 
-import type { Rectangle } from '@pixi/math';
-import type { Container } from '@pixi/display';
-import { ExtensionType, extensions } from '@pixi/core';
-import type { IAccessibleHTMLElement } from './accessibleTarget';
 import type { IRenderer, ExtensionMetadata } from '@pixi/core';
-import { FederatedEvent } from '@pixi/events';
+import type { Container } from '@pixi/display';
+import type { Rectangle } from '@pixi/math';
+import type { IAccessibleHTMLElement } from './accessibleTarget';
 
 // add some extra variables to the container..
 DisplayObject.mixin(accessibleTarget);
@@ -87,6 +87,15 @@ export class AccessibilityManager
      */
     constructor(renderer: IRenderer)
     {
+        if (!environment.browser)
+        {
+            throw new Error('AccessibilityManager is only supported in browser main thread');
+        }
+        if (typeof HTMLCanvasElement === 'undefined' || !(renderer.view instanceof HTMLCanvasElement))
+        {
+            throw new Error('AccessibilityManager is only supported on HTMLCanvasElement');
+        }
+
         this._hookDiv = null;
 
         if (isMobile.tablet || isMobile.phone)
@@ -292,7 +301,7 @@ export class AccessibilityManager
             this.updateAccessibleObjects(this.renderer.lastObjectRendered as Container);
         }
 
-        const { left, top, width, height } = this.renderer.view.getBoundingClientRect();
+        const { left, top, width, height } = (this.renderer.view as HTMLCanvasElement).getBoundingClientRect();
         const { width: viewWidth, height: viewHeight, resolution } = this.renderer;
 
         const sx = (width / viewWidth) * resolution;
@@ -596,4 +605,7 @@ export class AccessibilityManager
     }
 }
 
-extensions.add(AccessibilityManager);
+if (environment.browser)
+{
+    extensions.add(AccessibilityManager);
+}

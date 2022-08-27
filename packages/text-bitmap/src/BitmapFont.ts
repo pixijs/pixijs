@@ -1,15 +1,16 @@
-import { getResolutionOfUrl } from '@pixi/utils';
-import { Rectangle } from '@pixi/math';
 import { Texture, BaseTexture } from '@pixi/core';
+import { Rectangle } from '@pixi/math';
 import { TextStyle, TextMetrics } from '@pixi/text';
+import { getResolutionOfUrl } from '@pixi/utils';
 import { autoDetectFormat } from './formats';
 import { BitmapFontData } from './BitmapFontData';
 import { resolveCharacters, drawGlyph, extractCharCode } from './utils';
 
-import type { Dict } from '@pixi/utils';
-import type { ITextStyle } from '@pixi/text';
+import type { ICanvas } from '@pixi/core';
 import { ALPHA_MODES } from '@pixi/constants';
 import { settings } from '@pixi/settings';
+import type { ITextStyle } from '@pixi/text';
+import type { Dict } from '@pixi/utils';
 
 export interface IBitmapFontCharacter
 {
@@ -387,8 +388,8 @@ export class BitmapFont
         let positionX = 0;
         let positionY = 0;
 
-        let canvas: HTMLCanvasElement;
-        let context: CanvasRenderingContext2D;
+        let canvas: ICanvas;
+        let context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
         let baseTexture: BaseTexture;
         let maxCharHeight = 0;
         const baseTextures: BaseTexture[] = [];

@@ -6,7 +6,7 @@ declare namespace GlobalMixins
         _canvasPadding: number;
         canvasPadding: number;
         _cachedTint: number;
-        _tintedCanvas: HTMLCanvasElement;
+        _tintedCanvas: import('@pixi/core').ICanvas;
         _cachedTexture: import('@pixi/core').Texture;
     }
 
@@ -18,7 +18,7 @@ declare namespace GlobalMixins
     interface NineSlicePlane
     {
         _cachedTint: number;
-        _tintedCanvas: HTMLCanvasElement;
+        _tintedCanvas: import('@pixi/core').ICanvas;
         _canvasUvs: number[];
     }
 }
