@@ -1,12 +1,13 @@
 import { ENV } from '@pixi/constants';
+import { extensions, ExtensionType } from '@pixi/extensions';
 import { settings } from '../settings';
 
+import type { ExtensionMetadata } from '@pixi/extensions';
+import type { ICanvas } from '@pixi/settings';
 import type { ISystem } from '../system/ISystem';
 import type { Renderer } from '../Renderer';
 import type { WebGLExtensions } from './WebGLExtensions';
 import type { IRenderingContext } from '../IRenderer';
-import type { ExtensionMetadata } from '@pixi/extensions';
-import { extensions, ExtensionType } from '@pixi/extensions';
 
 let CONTEXT_UID_COUNTER = 0;
 
@@ -170,7 +171,7 @@ export class ContextSystem implements ISystem
         this.renderer.runners.contextChange.emit(gl);
 
         (this.renderer.view as any).addEventListener('webglcontextlost', this.handleContextLost, false);
-        this.renderer.view.addEventListener('webglcontextrestored', this.handleContextRestored, false);
+        (this.renderer.view as any).addEventListener('webglcontextrestored', this.handleContextRestored, false);
     }
 
     /**
@@ -194,7 +195,7 @@ export class ContextSystem implements ISystem
      * @see https://developer.mozilla.org/en/docs/Web/API/HTMLCanvasElement/getContext
      * @returns {WebGLRenderingContext} the WebGL context
      */
-    createContext(canvas: HTMLCanvasElement, options: WebGLContextAttributes): IRenderingContext
+    createContext(canvas: ICanvas, options: WebGLContextAttributes): IRenderingContext
     {
         let gl;
 
@@ -296,7 +297,7 @@ export class ContextSystem implements ISystem
 
         // remove listeners
         (view as any).removeEventListener('webglcontextlost', this.handleContextLost);
-        view.removeEventListener('webglcontextrestored', this.handleContextRestored);
+        (view as any).removeEventListener('webglcontextrestored', this.handleContextRestored);
 
         this.gl.useProgram(null);
 

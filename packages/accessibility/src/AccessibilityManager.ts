@@ -1,11 +1,11 @@
+import { ExtensionType, extensions, utils } from '@pixi/core';
 import { DisplayObject } from '@pixi/display';
+import { FederatedEvent } from '@pixi/events';
 import { accessibleTarget } from './accessibleTarget';
 
-import type { Container } from '@pixi/display';
-import { ExtensionType, extensions, utils } from '@pixi/core';
-import type { IAccessibleHTMLElement } from './accessibleTarget';
 import type { Rectangle, IRenderer, ExtensionMetadata } from '@pixi/core';
-import { FederatedEvent } from '@pixi/events';
+import type { Container } from '@pixi/display';
+import type { IAccessibleHTMLElement } from './accessibleTarget';
 
 // add some extra variables to the container..
 DisplayObject.mixin(accessibleTarget);
@@ -203,7 +203,7 @@ export class AccessibilityManager
         globalThis.removeEventListener('keydown', this._onKeyDown, false);
 
         this.renderer.on('postrender', this.update, this);
-        this.renderer.view.parentNode?.appendChild(this.div);
+        (this.renderer.view as HTMLCanvasElement).parentNode?.appendChild(this.div);
     }
 
     /**
@@ -290,7 +290,7 @@ export class AccessibilityManager
             this.updateAccessibleObjects(this.renderer.lastObjectRendered as Container);
         }
 
-        const { left, top, width, height } = this.renderer.view.getBoundingClientRect();
+        const { left, top, width, height } = (this.renderer.view as HTMLCanvasElement).getBoundingClientRect();
         const { width: viewWidth, height: viewHeight, resolution } = this.renderer;
 
         const sx = (width / viewWidth) * resolution;

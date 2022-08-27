@@ -9,7 +9,7 @@ const canvasRenderWorldTransform = new Matrix();
 
 /**
  * Types that can be passed to drawImage
- * @typedef {HTMLImageElement | HTMLCanvasElement | HTMLVideoElement | ImageBitmap} ICanvasImageSource
+ * @typedef {HTMLImageElement | HTMLVideoElement | HTMLCanvasElement | OffscreenCanvas | ImageBitmap} ICanvasImageSource
  * @memberof PIXI
  */
 
@@ -152,7 +152,8 @@ export class CanvasSpriteRenderer
 
         if (sprite.tint !== 0xFFFFFF)
         {
-            if (sprite._cachedTint !== sprite.tint || sprite._tintedCanvas.tintId !== sprite._texture._updateID)
+            if (sprite._cachedTint !== sprite.tint
+                || (sprite._tintedCanvas as GlobalMixins.GlobalTintable).tintId !== sprite._texture._updateID)
             {
                 sprite._cachedTint = sprite.tint;
 
@@ -161,7 +162,7 @@ export class CanvasSpriteRenderer
             }
 
             context.drawImage(
-                sprite._tintedCanvas,
+                sprite._tintedCanvas as CanvasImageSource,
                 0,
                 0,
                 Math.floor(sourceWidth * resolution),

@@ -482,7 +482,7 @@ export class Sprite extends Container
     /**
      * Helper function that creates a new sprite based on the source you provide.
      * The source can be - frame id, image url, video url, canvas element, video element, base texture
-     * @param {string|PIXI.Texture|HTMLCanvasElement|HTMLVideoElement} source - Source to create texture from
+     * @param {string|PIXI.Texture|HTMLVideoElement|HTMLCanvasElement|OffscreenCanvas} source - Source to create texture from
      * @param {object} [options] - See {@link PIXI.BaseTexture}'s constructor for options.
      * @returns The newly created sprite
      */

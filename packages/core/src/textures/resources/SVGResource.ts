@@ -3,6 +3,7 @@ import { BaseImageResource } from './BaseImageResource';
 import { settings } from '@pixi/settings';
 
 import type { ISize } from '@pixi/math';
+import type { ImageSource } from '../BaseTexture';
 
 export interface ISVGResourceOptions
 {
@@ -52,7 +53,7 @@ export class SVGResource extends BaseImageResource
     {
         options = options || {};
 
-        super(settings.ADAPTER.createCanvas());
+        super(settings.ADAPTER.createCanvas() as ImageSource);
         this._width = 0;
         this._height = 0;
 

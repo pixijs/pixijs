@@ -78,7 +78,7 @@ export class ImageResource extends BaseImageResource
     {
         options = options || {};
 
-        if (!(source instanceof HTMLImageElement))
+        if (typeof source === 'string')
         {
             const imageElement = new Image();
 

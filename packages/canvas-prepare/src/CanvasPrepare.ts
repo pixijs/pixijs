@@ -1,9 +1,10 @@
 import { settings, BaseTexture, extensions, ExtensionType } from '@pixi/core';
 import { BasePrepare } from '@pixi/prepare';
 
-import type { ISystem, ExtensionMetadata, IRenderer } from '@pixi/core';
+import type { ExtensionMetadata, IRenderer, ISystem } from '@pixi/core';
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
 import type { IDisplayObjectExtended } from '@pixi/prepare';
+import type { ICanvas, ICanvasRenderingContext2D } from '@pixi/settings';
 
 const CANVAS_START_SIZE = 16;
 
@@ -65,12 +66,12 @@ export class CanvasPrepare extends BasePrepare implements ISystem
      * An offline canvas to render textures to
      * @internal
      */
-    canvas: HTMLCanvasElement;
+    canvas: ICanvas;
     /**
      * The context to the canvas
      * @internal
      */
-    ctx: CanvasRenderingContext2D;
+    ctx: ICanvasRenderingContext2D;
 
     /**
      * @param renderer - A reference to the current renderer

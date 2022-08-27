@@ -1,5 +1,6 @@
 import type { RENDERER_TYPE } from '@pixi/constants';
 import type { Matrix, Rectangle, Transform } from '@pixi/math';
+import type { ICanvas } from '@pixi/settings';
 import type { IGenerateTextureOptions } from './renderTexture/GenerateTextureSystem';
 import type { IRendererPlugins } from './plugin/PluginSystem';
 import type { RenderTexture } from './renderTexture/RenderTexture';
@@ -47,7 +48,7 @@ export interface IRendererOptions extends GlobalMixins.IRendererOptions
 {
     width?: number;
     height?: number;
-    view?: HTMLCanvasElement;
+    view?: ICanvas;
     /**
      * Use premultipliedAlpha and backgroundAlpha instead
      * @deprecated since 7.0.0
@@ -98,7 +99,7 @@ export interface IRenderer extends SystemManager, GlobalMixins.IRenderer
     readonly rendererLogId: string
 
     /** The canvas element that everything is drawn to.*/
-    readonly view: HTMLCanvasElement
+    readonly view: ICanvas
     /** Flag if we are rendering to the screen vs renderTexture */
     readonly renderingToScreen: boolean
     /** The resolution / device pixel ratio of the renderer. */

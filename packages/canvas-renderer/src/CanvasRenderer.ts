@@ -6,8 +6,6 @@ import {
     utils
 } from '@pixi/core';
 
-import type { CanvasMaskSystem } from './CanvasMaskSystem';
-import type { DisplayObject } from '@pixi/display';
 import type {
     BLEND_MODES,
     RENDERER_TYPE,
@@ -27,7 +25,10 @@ import type {
     StartupOptions,
     ExtensionMetadata,
     IGenerateTextureOptions } from '@pixi/core';
+import type { DisplayObject } from '@pixi/display';
+import type { ICanvas, ICanvasRenderingContext2D } from '@pixi/settings';
 import type { CanvasContextSystem, SmoothingEnabledProperties } from './CanvasContextSystem';
+import type { CanvasMaskSystem } from './CanvasMaskSystem';
 import type { CanvasObjectRendererSystem } from './CanvasObjectRendererSystem';
 
 const { deprecation } = utils;
@@ -162,7 +163,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
      * @param options - The optional renderer parameters
      * @param {number} [options.width=800] - the width of the screen
      * @param {number} [options.height=600] - the height of the screen
-     * @param {HTMLCanvasElement} [options.view] - the canvas to use as a view, optional
+     * @param {PIXI.ICanvas} [options.view] - the canvas to use as a view, optional
      * @param {boolean} [options.useContextAlpha=true] - Pass-through value for canvas' context `alpha` property.
      *   If you want to set transparency, please use `backgroundAlpha`. This option is for cases where the
      *   canvas needs to be opaque, possibly for performance reasons on some older devices.
@@ -171,7 +172,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
      * @param {boolean} [options.antialias=false] - sets antialias
      * @param {number} [options.resolution=PIXI.settings.RESOLUTION] - The resolution / device pixel ratio of the renderer.
      * @param {boolean} [options.preserveDrawingBuffer=false] - enables drawing buffer preservation,
-     *  enable this if you need to call toDataUrl on the webgl context.
+     *  enable this if you need to call toDataURL on the webgl context.
      * @param {boolean} [options.clearBeforeRender=true] - This sets if the renderer will clear the canvas or
      *      not before the new render pass.
      * @param {number} [options.backgroundColor=0x000000] - The background color of the rendered area
@@ -329,7 +330,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
     }
 
     /** The canvas element that everything is drawn to.*/
-    get view(): HTMLCanvasElement
+    get view(): ICanvas
     {
         return this._view.element;
     }
@@ -411,7 +412,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
      * The root canvas 2d context that everything is drawn with.
      * @deprecated since 7.0.0 Use `renderer.canvasContext.rootContext instead
      */
-    get rootContext(): CanvasRenderingContext2D
+    get rootContext(): ICanvasRenderingContext2D
     {
         // #if _DEBUG
         // eslint-disable-next-line max-len
@@ -425,7 +426,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
      * The currently active canvas 2d context (could change with renderTextures)
      * @deprecated since 7.0.0 Use `renderer.canvasContext.activeContext instead
      */
-    get context(): CanvasRenderingContext2D
+    get context(): ICanvasRenderingContext2D
     {
         // #if _DEBUG
         // eslint-disable-next-line max-len
