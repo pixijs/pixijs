@@ -48,8 +48,6 @@
   "peerDependencies": {
     "@pixi/assets": "6.5.2",
     "@pixi/compressed-textures": "6.5.2",
-    "@pixi/constants": "6.5.2",
-    "@pixi/core": "6.5.2",
-    "@pixi/settings": "6.5.2"
+    "@pixi/core": "6.5.2"
   }
 }

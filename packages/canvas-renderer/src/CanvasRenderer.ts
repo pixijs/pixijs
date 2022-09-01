@@ -1,13 +1,18 @@
 import {
     SystemManager,
     extensions,
-    ExtensionType
+    ExtensionType,
+    settings,
+    utils
 } from '@pixi/core';
+
 import type { CanvasMaskSystem } from './CanvasMaskSystem';
-import type { BLEND_MODES, RENDERER_TYPE } from '@pixi/constants';
-import type { Matrix, Rectangle } from '@pixi/math';
 import type { DisplayObject } from '@pixi/display';
 import type {
+    BLEND_MODES,
+    RENDERER_TYPE,
+    Matrix,
+    Rectangle,
     IRendererOptions,
     IRendererPlugins,
     IRendererRenderOptions,
@@ -22,11 +27,10 @@ import type {
     StartupOptions,
     ExtensionMetadata,
     IGenerateTextureOptions } from '@pixi/core';
-
 import type { CanvasContextSystem, SmoothingEnabledProperties } from './CanvasContextSystem';
 import type { CanvasObjectRendererSystem } from './CanvasObjectRendererSystem';
-import { settings } from '@pixi/settings';
-import { deprecation } from '@pixi/utils';
+
+const { deprecation } = utils;
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface CanvasRenderer extends GlobalMixins.CanvasRenderer {}

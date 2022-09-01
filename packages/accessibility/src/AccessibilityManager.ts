@@ -1,12 +1,10 @@
 import { DisplayObject } from '@pixi/display';
-import { isMobile, removeItems } from '@pixi/utils';
 import { accessibleTarget } from './accessibleTarget';
 
-import type { Rectangle } from '@pixi/math';
 import type { Container } from '@pixi/display';
-import { ExtensionType, extensions } from '@pixi/core';
+import { ExtensionType, extensions, utils } from '@pixi/core';
 import type { IAccessibleHTMLElement } from './accessibleTarget';
-import type { IRenderer, ExtensionMetadata } from '@pixi/core';
+import type { Rectangle, IRenderer, ExtensionMetadata } from '@pixi/core';
 import { FederatedEvent } from '@pixi/events';
 
 // add some extra variables to the container..
@@ -89,7 +87,7 @@ export class AccessibilityManager
     {
         this._hookDiv = null;
 
-        if (isMobile.tablet || isMobile.phone)
+        if (utils.isMobile.tablet || utils.isMobile.phone)
         {
             this.createTouchHook();
         }
@@ -274,7 +272,7 @@ export class AccessibilityManager
         */
         const now = performance.now();
 
-        if (isMobile.android.device && now < this.androidUpdateCount)
+        if (utils.isMobile.android.device && now < this.androidUpdateCount)
         {
             return;
         }
@@ -313,7 +311,7 @@ export class AccessibilityManager
             {
                 child._accessibleActive = false;
 
-                removeItems(this.children, i, 1);
+                utils.removeItems(this.children, i, 1);
                 this.div.removeChild(child._accessibleDiv);
                 this.pool.push(child._accessibleDiv);
                 child._accessibleDiv = null;

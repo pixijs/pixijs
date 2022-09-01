@@ -1,5 +1,4 @@
-import { hex2rgb, rgb2hex } from '@pixi/utils';
-import { settings } from '@pixi/settings';
+import { settings, utils } from '@pixi/core';
 import { canUseNewCanvasBlendModes } from './utils/canUseNewCanvasBlendModes';
 
 import type { Texture } from '@pixi/core';
@@ -242,7 +241,7 @@ export const canvasUtils = {
         );
         context.restore();
 
-        const rgbValues = hex2rgb(color);
+        const rgbValues = utils.hex2rgb(color);
         const r = rgbValues[0];
         const g = rgbValues[1];
         const b = rgbValues[2];
@@ -271,13 +270,13 @@ export const canvasUtils = {
     {
         const step = canvasUtils.cacheStepsPerColorChannel;
 
-        const rgbValues = hex2rgb(color);
+        const rgbValues = utils.hex2rgb(color);
 
         rgbValues[0] = Math.min(255, (rgbValues[0] / step) * step);
         rgbValues[1] = Math.min(255, (rgbValues[1] / step) * step);
         rgbValues[2] = Math.min(255, (rgbValues[2] / step) * step);
 
-        return rgb2hex(rgbValues);
+        return utils.rgb2hex(rgbValues);
     },
 
     /**

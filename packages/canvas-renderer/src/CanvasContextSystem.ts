@@ -1,11 +1,8 @@
-import { Matrix } from '@pixi/math';
+import { BLEND_MODES, SCALE_MODES, settings, Matrix, extensions, ExtensionType } from '@pixi/core';
+import { mapCanvasBlendModesToPixi } from './utils/mapCanvasBlendModesToPixi';
 
 import type { CanvasRenderer } from './CanvasRenderer';
 import type { ExtensionMetadata, ISystem } from '@pixi/core';
-import { extensions, ExtensionType } from '@pixi/core';
-import { mapCanvasBlendModesToPixi } from './utils/mapCanvasBlendModesToPixi';
-import { BLEND_MODES, SCALE_MODES } from '@pixi/constants';
-import { settings } from '@pixi/settings';
 
 const tempMatrix = new Matrix();
 

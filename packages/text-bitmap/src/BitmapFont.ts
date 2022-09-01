@@ -1,15 +1,10 @@
-import { getResolutionOfUrl } from '@pixi/utils';
-import { Rectangle } from '@pixi/math';
-import { Texture, BaseTexture } from '@pixi/core';
+import { ALPHA_MODES, settings, Texture, BaseTexture, Rectangle, utils } from '@pixi/core';
 import { TextStyle, TextMetrics } from '@pixi/text';
 import { autoDetectFormat } from './formats';
 import { BitmapFontData } from './BitmapFontData';
 import { resolveCharacters, drawGlyph, extractCharCode } from './utils';
 
-import type { Dict } from '@pixi/utils';
 import type { ITextStyle } from '@pixi/text';
-import { ALPHA_MODES } from '@pixi/constants';
-import { settings } from '@pixi/settings';
 
 export interface IBitmapFontCharacter
 {
@@ -18,7 +13,7 @@ export interface IBitmapFontCharacter
     xAdvance: number;
     texture: Texture;
     page: number;
-    kerning: Dict<number>;
+    kerning: utils.Dict<number>;
 }
 
 /** @memberof PIXI */
@@ -108,7 +103,7 @@ export class BitmapFont
     };
 
     /** Collection of available/installed fonts. */
-    public static readonly available: Dict<BitmapFont> = {};
+    public static readonly available: utils.Dict<BitmapFont> = {};
 
     /** The name of the font face. */
     public readonly font: string;
@@ -120,10 +115,10 @@ export class BitmapFont
     public readonly lineHeight: number;
 
     /** The map of characters by character code. */
-    public readonly chars: Dict<IBitmapFontCharacter>;
+    public readonly chars: utils.Dict<IBitmapFontCharacter>;
 
     /** The map of base page textures (i.e., sheets of glyphs). */
-    public readonly pageTextures: Dict<Texture>;
+    public readonly pageTextures: utils.Dict<Texture>;
 
     /** The range of the distance field in pixels. */
     public readonly distanceFieldRange: number;
@@ -139,14 +134,14 @@ export class BitmapFont
      * @param ownsTextures - Setting to `true` will destroy page textures
      *        when the font is uninstalled.
      */
-    constructor(data: BitmapFontData, textures: Texture[] | Dict<Texture>, ownsTextures?: boolean)
+    constructor(data: BitmapFontData, textures: Texture[] | utils.Dict<Texture>, ownsTextures?: boolean)
     {
         const [info] = data.info;
         const [common] = data.common;
         const [page] = data.page;
         const [distanceField] = data.distanceField;
-        const res = getResolutionOfUrl(page.file);
-        const pageTextures: Dict<Texture> = {};
+        const res = utils.getResolutionOfUrl(page.file);
+        const pageTextures: utils.Dict<Texture> = {};
 
         this._ownsTextures = ownsTextures;
         this.font = info.face;
@@ -262,7 +257,7 @@ export class BitmapFont
      */
     public static install(
         data: string | XMLDocument | BitmapFontData,
-        textures: Texture | Texture[] | Dict<Texture>,
+        textures: Texture | Texture[] | utils.Dict<Texture>,
         ownsTextures?: boolean
     ): BitmapFont
     {

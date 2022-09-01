@@ -1,8 +1,7 @@
 import { SimpleMesh } from '@pixi/mesh-extras';
-import { skipHello } from '@pixi/utils';
-import { Renderer } from '@pixi/core';
+import { Renderer, utils } from '@pixi/core';
 
-skipHello();
+utils.skipHello();
 
 describe('SimpleMesh', () =>
 {

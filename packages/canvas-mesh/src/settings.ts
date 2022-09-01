@@ -1,4 +1,4 @@
-import { settings } from '@pixi/settings';
+import { settings } from '@pixi/core';
 
 /**
  * Default `canvasPadding` for canvas-based Mesh rendering.

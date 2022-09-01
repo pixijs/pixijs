@@ -1,8 +1,7 @@
-import { extensions, ExtensionType } from '@pixi/core';
-import { settings } from '@pixi/settings';
-import { path } from '@pixi/utils';
-import type { LoaderParser } from './LoaderParser';
+import { settings, utils, extensions, ExtensionType } from '@pixi/core';
 import { LoaderParserPriority } from './LoaderParser';
+
+import type { LoaderParser } from './LoaderParser';
 
 /** Simple loader plugin for loading text data */
 export const loadTxt = {
@@ -13,7 +12,7 @@ export const loadTxt = {
 
     test(url: string): boolean
     {
-        return (path.extname(url).includes('.txt'));
+        return (utils.path.extname(url).includes('.txt'));
     },
 
     async load(url: string): Promise<string>

@@ -1,7 +1,6 @@
 import { TilingSprite } from '@pixi/sprite-tiling';
 import { canvasUtils } from '@pixi/canvas-renderer';
-import { CanvasRenderTarget } from '@pixi/utils';
-import { Matrix, Point } from '@pixi/math';
+import { Matrix, Point, utils } from '@pixi/core';
 
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
 
@@ -36,7 +35,7 @@ TilingSprite.prototype._renderCanvas = function _renderCanvas(renderer: CanvasRe
     {
         this._textureID = this._texture._updateID;
         // cut an object from a spritesheet..
-        const tempCanvas = new CanvasRenderTarget(texture._frame.width,
+        const tempCanvas = new utils.CanvasRenderTarget(texture._frame.width,
             texture._frame.height,
             baseTextureResolution);
 

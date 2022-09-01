@@ -1,9 +1,6 @@
 /* eslint max-depth: [2, 8] */
 import { Sprite } from '@pixi/sprite';
-import { Texture  } from '@pixi/core';
-import { settings } from '@pixi/settings';
-import { Rectangle } from '@pixi/math';
-import { sign, trimCanvas, hex2rgb, string2hex } from '@pixi/utils';
+import { Texture, settings, Rectangle, utils } from '@pixi/core';
 import { TEXT_GRADIENT } from './const';
 import { TextStyle } from './TextStyle';
 import { TextMetrics } from './TextMetrics';
@@ -229,7 +226,9 @@ export class Text extends Sprite
                 context.strokeStyle = 'black';
 
                 const dropShadowColor = style.dropShadowColor;
-                const rgb = hex2rgb(typeof dropShadowColor === 'number' ? dropShadowColor : string2hex(dropShadowColor));
+                const rgb = utils.hex2rgb(typeof dropShadowColor === 'number'
+                    ? dropShadowColor
+                    : utils.string2hex(dropShadowColor));
                 const dropShadowBlur = style.dropShadowBlur * this._resolution;
                 const dropShadowDistance = style.dropShadowDistance * this._resolution;
 
@@ -386,7 +385,7 @@ export class Text extends Sprite
 
         if (this._style.trim)
         {
-            const trimmed = trimCanvas(canvas);
+            const trimmed = utils.trimCanvas(canvas);
 
             if (trimmed.data)
             {
@@ -677,7 +676,7 @@ export class Text extends Sprite
     {
         this.updateText(true);
 
-        const s = sign(this.scale.x) || 1;
+        const s = utils.sign(this.scale.x) || 1;
 
         this.scale.x = s * value / this._texture.orig.width;
         this._width = value;
@@ -695,7 +694,7 @@ export class Text extends Sprite
     {
         this.updateText(true);
 
-        const s = sign(this.scale.y) || 1;
+        const s = utils.sign(this.scale.y) || 1;
 
         this.scale.y = s * value / this._texture.orig.height;
         this._height = value;

@@ -1,5 +1,5 @@
 import { Texture } from '@pixi/core';
-import type { Matrix } from '@pixi/math';
+import type { Matrix } from '@pixi/core';
 
 /**
  * Fill style object for Graphics.

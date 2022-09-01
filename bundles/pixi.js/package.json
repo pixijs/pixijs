@@ -53,7 +53,6 @@
     "@pixi/app": "6.5.2",
     "@pixi/assets": "6.5.2",
     "@pixi/compressed-textures": "6.5.2",
-    "@pixi/constants": "6.5.2",
     "@pixi/core": "6.5.2",
     "@pixi/display": "6.5.2",
     "@pixi/extensions": "6.5.2",
@@ -66,7 +65,6 @@
     "@pixi/filter-fxaa": "6.5.2",
     "@pixi/filter-noise": "6.5.2",
     "@pixi/graphics": "6.5.2",
-    "@pixi/math": "6.5.2",
     "@pixi/mesh": "6.5.2",
     "@pixi/mesh-extras": "6.5.2",
     "@pixi/mixin-cache-as-bitmap": "6.5.2",
@@ -74,15 +72,11 @@
     "@pixi/mixin-get-global-position": "6.5.2",
     "@pixi/particle-container": "6.5.2",
     "@pixi/prepare": "6.5.2",
-    "@pixi/runner": "6.5.2",
-    "@pixi/settings": "6.5.2",
     "@pixi/sprite": "6.5.2",
     "@pixi/sprite-animated": "6.5.2",
     "@pixi/sprite-tiling": "6.5.2",
     "@pixi/spritesheet": "6.5.2",
     "@pixi/text": "6.5.2",
-    "@pixi/text-bitmap": "6.5.2",
-    "@pixi/ticker": "6.5.2",
-    "@pixi/utils": "6.5.2"
+    "@pixi/text-bitmap": "6.5.2"
   }
 }

@@ -39,7 +39,6 @@
   ],
   "peerDependencies": {
     "@pixi/core": "6.5.2",
-    "@pixi/sprite": "6.5.2",
-    "@pixi/ticker": "6.5.2"
+    "@pixi/sprite": "6.5.2"
   }
 }

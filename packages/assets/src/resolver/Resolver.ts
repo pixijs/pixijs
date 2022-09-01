@@ -1,4 +1,4 @@
-import { path } from '@pixi/utils';
+import { utils } from '@pixi/core';
 import { convertToList } from '../utils/convertToList';
 import { createStringVariations } from '../utils/createStringVariations';
 import { isSingleItem } from '../utils/isSingleItem';
@@ -342,7 +342,7 @@ export class Resolver
 
             if (this._basePath || this._rootPath)
             {
-                formattedAsset.src = path.toAbsolute(formattedAsset.src, this._basePath, this._rootPath);
+                formattedAsset.src = utils.path.toAbsolute(formattedAsset.src, this._basePath, this._rootPath);
             }
 
             formattedAsset.data = formattedAsset.data ?? data;
@@ -504,7 +504,7 @@ export class Resolver
 
                     if (this._basePath || this._rootPath)
                     {
-                        src = path.toAbsolute(src, this._basePath, this._rootPath);
+                        src = utils.path.toAbsolute(src, this._basePath, this._rootPath);
                     }
 
                     // if the resolver fails we just pass back the key assuming its a url

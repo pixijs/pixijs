@@ -5,11 +5,6 @@ import { Ticker } from './Ticker';
 
 /**
  * Middleware for for Application Ticker.
- * @example
- * import {TickerPlugin} from '@pixi/ticker';
- * import {Application} from '@pixi/app';
- * import {extensions} from '@pixi/extensions';
- * extensions.add(TickerPlugin);
  * @class
  * @memberof PIXI
  */

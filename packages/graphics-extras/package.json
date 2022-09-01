@@ -36,7 +36,7 @@
     "*.d.ts"
   ],
   "peerDependencies": {
-    "@pixi/graphics": "6.5.2",
-    "@pixi/math": "6.5.2"
+    "@pixi/core": "6.5.2",
+    "@pixi/graphics": "6.5.2"
   }
 }

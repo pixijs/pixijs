@@ -1,6 +1,5 @@
-import { BaseTexture, extensions, ExtensionType } from '@pixi/core';
+import { settings, BaseTexture, extensions, ExtensionType } from '@pixi/core';
 import { BasePrepare } from '@pixi/prepare';
-import { settings } from '@pixi/settings';
 
 import type { ISystem, ExtensionMetadata, IRenderer } from '@pixi/core';
 import type { CanvasRenderer } from '@pixi/canvas-renderer';

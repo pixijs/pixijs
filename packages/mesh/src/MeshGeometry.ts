@@ -1,5 +1,4 @@
-import { TYPES } from '@pixi/constants';
-import { Buffer, Geometry } from '@pixi/core';
+import { Buffer, Geometry, TYPES } from '@pixi/core';
 
 import type { IArrayBuffer } from '@pixi/core';
 

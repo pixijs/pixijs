@@ -1,9 +1,8 @@
 import { Application } from '@pixi/app';
-import { extensions, ExtensionType } from '@pixi/core';
+import { extensions, ExtensionType, utils } from '@pixi/core';
 import { Container } from '@pixi/display';
-import { skipHello } from '@pixi/utils';
 
-skipHello();
+utils.skipHello();
 
 describe('Application', () =>
 {

@@ -1,5 +1,5 @@
 import { Container } from '@pixi/display';
-import { Matrix } from '@pixi/math';
+import { Matrix } from '@pixi/core';
 import { CanvasRenderer } from '@pixi/canvas-renderer';
 import '@pixi/canvas-display';
 

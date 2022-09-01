@@ -41,8 +41,7 @@
   "peerDependencies": {
     "@pixi/canvas-renderer": "6.5.2",
     "@pixi/canvas-sprite": "6.5.2",
-    "@pixi/math": "6.5.2",
-    "@pixi/sprite-tiling": "6.5.2",
-    "@pixi/utils": "6.5.2"
+    "@pixi/core": "6.5.2",
+    "@pixi/sprite-tiling": "6.5.2"
   }
 }

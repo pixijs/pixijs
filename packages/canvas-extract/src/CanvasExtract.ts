@@ -1,6 +1,5 @@
-import { extensions, ExtensionType, RenderTexture } from '@pixi/core';
-import { CanvasRenderTarget } from '@pixi/utils';
-import { Rectangle } from '@pixi/math';
+import { Rectangle, extensions, ExtensionType, RenderTexture, utils } from '@pixi/core';
+
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
 import type { DisplayObject } from '@pixi/display';
 import type { BaseRenderTexture, ISystem, ExtensionMetadata } from '@pixi/core';
@@ -114,7 +113,7 @@ export class CanvasExtract implements ISystem
         const width = Math.round(frame.width * resolution);
         const height = Math.round(frame.height * resolution);
 
-        const canvasBuffer = new CanvasRenderTarget(width, height, 1);
+        const canvasBuffer = new utils.CanvasRenderTarget(width, height, 1);
         const canvasData = context.getImageData(x, y, width, height);
 
         canvasBuffer.context.putImageData(canvasData, 0, 0);

@@ -1,12 +1,9 @@
-import type { IBaseTextureOptions, Texture } from '@pixi/core';
-import { BaseTexture, extensions, ExtensionType } from '@pixi/core';
-import { getResolutionOfUrl } from '@pixi/utils';
-
-import type { LoadAsset, Loader, LoaderParser } from '@pixi/assets';
+import { BaseTexture, extensions, ExtensionType, settings, utils, ALPHA_MODES, MIPMAP_MODES } from '@pixi/core';
 import { checkExtension, createTexture, LoaderParserPriority } from '@pixi/assets';
-import { ALPHA_MODES, MIPMAP_MODES } from '@pixi/constants';
-import { settings } from '@pixi/settings';
 import { parseDDS } from '../parsers';
+
+import type { IBaseTextureOptions, Texture } from '@pixi/core';
+import type { LoadAsset, Loader, LoaderParser } from '@pixi/assets';
 
 /** Load our DDS textures! */
 export const loadDDS: LoaderParser = {
@@ -34,7 +31,7 @@ export const loadDDS: LoaderParser = {
             const base = new BaseTexture(resource, {
                 mipmap: MIPMAP_MODES.OFF,
                 alphaMode: ALPHA_MODES.NO_PREMULTIPLIED_ALPHA,
-                resolution: getResolutionOfUrl(url),
+                resolution: utils.getResolutionOfUrl(url),
                 ...asset.data,
             });
 

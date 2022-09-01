@@ -1,4 +1,4 @@
-import { settings } from '@pixi/settings';
+import { settings } from '@pixi/core';
 import type { TextStyle, TextStyleWhiteSpace } from './TextStyle';
 
 interface IFontMetrics

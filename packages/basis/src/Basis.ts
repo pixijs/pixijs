@@ -1,4 +1,4 @@
-import { TYPES } from '@pixi/constants';
+import { TYPES } from '@pixi/core';
 import { INTERNAL_FORMATS } from '@pixi/compressed-textures';
 
 /**

@@ -1,8 +1,7 @@
-import type { ExtensionMetadata } from '@pixi/core';
-import { extensions, ExtensionType, Texture } from '@pixi/core';
-import { DRAW_MODES } from '@pixi/constants';
+import { DRAW_MODES, extensions, ExtensionType, Texture } from '@pixi/core';
 import { canvasUtils } from '@pixi/canvas-renderer';
 
+import type { ExtensionMetadata } from '@pixi/core';
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
 import type { Mesh } from '@pixi/mesh';
 

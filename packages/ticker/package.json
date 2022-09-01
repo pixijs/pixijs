@@ -37,7 +37,7 @@
     "dist",
     "*.d.ts"
   ],
-  "peerDependencies": {
+  "dependencies": {
     "@pixi/extensions": "6.5.2",
     "@pixi/settings": "6.5.2"
   }

@@ -1,19 +1,19 @@
-import type { Matrix } from '@pixi/math';
+import {
+    BLEND_MODES,
+    utils,
+    extensions,
+    CanvasResource,
+    ExtensionType } from '@pixi/core';
 
 import type { CanvasRenderer } from './CanvasRenderer';
 import type {
+    Matrix,
     BaseRenderTexture,
     ExtensionMetadata,
     IRendererRenderOptions,
     ISystem,
     IRenderableObject,
     RenderTexture } from '@pixi/core';
-import {
-    extensions,
-    CanvasResource,
-    ExtensionType } from '@pixi/core';
-import { BLEND_MODES } from '@pixi/constants';
-import { CanvasRenderTarget, hex2string, rgb2hex } from '@pixi/utils';
 import type { CrossPlatformCanvasRenderingContext2D } from './CanvasContextSystem';
 
 /**
@@ -82,7 +82,7 @@ export class CanvasObjectRendererSystem implements ISystem
 
             if (!renderTexture._canvasRenderTarget)
             {
-                renderTexture._canvasRenderTarget = new CanvasRenderTarget(
+                renderTexture._canvasRenderTarget = new utils.CanvasRenderTarget(
                     renderTexture.width,
                     renderTexture.height,
                     renderTexture.resolution
@@ -152,7 +152,7 @@ export class CanvasObjectRendererSystem implements ISystem
                 if (clearColor[3] > 0)
                 {
                     context2D.globalAlpha = clearColor[3] ?? 1;
-                    context2D.fillStyle = hex2string(rgb2hex(clearColor));
+                    context2D.fillStyle = utils.hex2string(utils.rgb2hex(clearColor));
                     context2D.fillRect(0, 0, renderTexture.realWidth, renderTexture.realHeight);
                     context2D.globalAlpha = 1;
                 }

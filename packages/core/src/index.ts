@@ -10,7 +10,16 @@ import './settings';
  */
 export const VERSION = '$_VERSION';
 
+/** Export dependencies */
+export * from '@pixi/constants';
 export * from '@pixi/extensions';
+export * from '@pixi/math';
+export * from '@pixi/runner';
+export * from '@pixi/settings';
+export * from '@pixi/ticker';
+import * as utils from '@pixi/utils';
+export { utils };
+
 export * from './textures/resources';
 export * from './systems';
 export * from './IRenderer';

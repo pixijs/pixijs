@@ -1,10 +1,7 @@
-import { settings } from '@pixi/settings';
-import { removeItems } from '@pixi/utils';
+import { MASK_TYPES, settings, utils } from '@pixi/core';
 import { DisplayObject } from './DisplayObject';
-import type { Matrix, Rectangle } from '@pixi/math';
-import { MASK_TYPES } from '@pixi/constants';
 
-import type { MaskData, Renderer } from '@pixi/core';
+import type { MaskData, Renderer, Matrix, Rectangle } from '@pixi/core';
 import type { IDestroyOptions } from './DisplayObject';
 
 function sortChildren(a: DisplayObject, b: DisplayObject): number
@@ -258,7 +255,7 @@ export class Container<T extends DisplayObject = DisplayObject> extends DisplayO
 
         const currentIndex = this.getChildIndex(child);
 
-        removeItems(this.children, currentIndex, 1); // remove from old position
+        utils.removeItems(this.children, currentIndex, 1); // remove from old position
         this.children.splice(index, 0, child); // add at new position
 
         this.onChildrenChange(index);
@@ -305,7 +302,7 @@ export class Container<T extends DisplayObject = DisplayObject> extends DisplayO
             child.parent = null;
             // ensure child transform will be recalculated
             child.transform._parentID = -1;
-            removeItems(this.children, index, 1);
+            utils.removeItems(this.children, index, 1);
 
             // ensure bounds will be recalculated
             this._boundsID++;
@@ -331,7 +328,7 @@ export class Container<T extends DisplayObject = DisplayObject> extends DisplayO
         // ensure child transform will be recalculated..
         child.parent = null;
         child.transform._parentID = -1;
-        removeItems(this.children, index, 1);
+        utils.removeItems(this.children, index, 1);
 
         // ensure bounds will be recalculated
         this._boundsID++;

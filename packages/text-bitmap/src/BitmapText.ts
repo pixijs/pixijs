@@ -1,19 +1,14 @@
-import { ObservablePoint, Point } from '@pixi/math';
-import { settings } from '@pixi/settings';
 import { Mesh, MeshGeometry, MeshMaterial } from '@pixi/mesh';
-import { removeItems } from '@pixi/utils';
 import { BitmapFont } from './BitmapFont';
 import { splitTextToCharacters, extractCharCode } from './utils';
 import msdfFrag from './shader/msdf.frag';
 import msdfVert from './shader/msdf.vert';
-import type { Rectangle } from '@pixi/math';
-import type { Renderer } from '@pixi/core';
-import { Program, Texture } from '@pixi/core';
+import type { Renderer, Rectangle } from '@pixi/core';
+import { Program, Texture, BLEND_MODES, settings, utils, ObservablePoint, Point } from '@pixi/core';
 import type { IBitmapTextStyle } from './BitmapTextStyle';
 import type { TextStyleAlign } from '@pixi/text';
 import { Container } from '@pixi/display';
 import type { IDestroyOptions } from '@pixi/display';
-import { BLEND_MODES } from '@pixi/constants';
 
 interface PageMeshData
 {
@@ -309,7 +304,7 @@ export class BitmapText extends Container
             if (lastBreakPos !== -1 && maxWidth > 0 && pos.x > maxWidth)
             {
                 ++spacesRemoved;
-                removeItems(chars, 1 + lastBreakPos - spacesRemoved, 1 + i - lastBreakPos);
+                utils.removeItems(chars, 1 + lastBreakPos - spacesRemoved, 1 + i - lastBreakPos);
                 i = lastBreakPos;
                 lastBreakPos = -1;
 

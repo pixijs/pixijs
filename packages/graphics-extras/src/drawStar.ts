@@ -1,5 +1,5 @@
 import type { Graphics } from '@pixi/graphics';
-import { Polygon, PI_2 } from '@pixi/math';
+import { Polygon, PI_2 } from '@pixi/core';
 
 /**
  * Draw a star shape with an arbitrary number of points.
