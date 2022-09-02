@@ -16,7 +16,6 @@
       }
     }
   },
-  "bundleNoExports": true,
   "description": "Useful methods for some math structures",
   "author": "Milton Candelero",
   "contributors": [

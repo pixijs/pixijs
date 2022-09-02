@@ -16,7 +16,6 @@
       }
     }
   },
-  "bundleNoExports": true,
   "description": "Mixin to allow caching container and its children to a bitmap texture",
   "author": "Mat Groves",
   "contributors": [

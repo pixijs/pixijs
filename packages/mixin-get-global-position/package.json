@@ -16,7 +16,6 @@
       }
     }
   },
-  "bundleNoExports": true,
   "description": "Mixin to find the global position of a DisplayObject",
   "author": "Mat Groves",
   "contributors": [

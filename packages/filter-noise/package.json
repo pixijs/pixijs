@@ -16,7 +16,6 @@
       }
     }
   },
-  "namespace": "PIXI.filters",
   "description": "Filter that applies noise to a display object",
   "author": "Mat Groves",
   "contributors": [

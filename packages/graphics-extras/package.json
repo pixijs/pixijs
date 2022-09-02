@@ -16,7 +16,6 @@
       }
     }
   },
-  "bundleNoExports": true,
   "description": "Additional Graphics functions for drawing special shapes.",
   "author": "Matt Karl <matt@mattkarl.com>",
   "homepage": "http://pixijs.com/",

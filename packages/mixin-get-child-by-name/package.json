@@ -16,7 +16,6 @@
       }
     }
   },
-  "bundleNoExports": true,
   "description": "Mixin function to find a child DisplayObject by name",
   "author": "Mat Groves",
   "contributors": [

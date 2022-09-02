@@ -16,7 +16,6 @@
       }
     }
   },
-  "namespace": "PIXI.filters",
   "description": "Filter that blurs the display object",
   "author": "Mat Groves",
   "contributors": [

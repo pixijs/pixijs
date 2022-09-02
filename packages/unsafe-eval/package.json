@@ -16,7 +16,6 @@
       }
     }
   },
-  "bundleInput": "src/bundle.ts",
   "standalone": true,
   "description": "Adds support for environments that disallow support of new Function",
   "author": "Matt Karl <matt@mattkarl.com>",

@@ -16,7 +16,6 @@
       }
     }
   },
-  "namespace": "PIXI.filters",
   "description": "Filter for fast approximate anti-aliasing",
   "author": "Mat Groves",
   "contributors": [

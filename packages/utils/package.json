@@ -16,7 +16,6 @@
       }
     }
   },
-  "namespace": "PIXI.utils",
   "description": "Collection of utilities used by PixiJS",
   "author": "Mat Groves",
   "contributors": [
