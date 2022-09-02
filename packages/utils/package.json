@@ -3,7 +3,6 @@
   "version": "6.5.2",
   "main": "dist/cjs/utils.js",
   "module": "dist/esm/utils.mjs",
-  "bundle": "dist/browser/utils.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
@@ -34,7 +33,6 @@
     "access": "public"
   },
   "files": [
-    "lib",
     "dist",
     "*.d.ts"
   ],

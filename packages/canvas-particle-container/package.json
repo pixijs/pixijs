@@ -3,7 +3,6 @@
   "version": "6.5.2",
   "main": "dist/cjs/canvas-particle-container.js",
   "module": "dist/esm/canvas-particle-container.mjs",
-  "bundle": "dist/browser/canvas-particle-container.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
@@ -34,7 +33,6 @@
     "access": "public"
   },
   "files": [
-    "lib",
     "dist",
     "*.d.ts"
   ],

@@ -3,7 +3,6 @@
   "version": "6.5.2",
   "main": "dist/cjs/constants.js",
   "module": "dist/esm/constants.mjs",
-  "bundle": "dist/browser/constants.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
@@ -33,7 +32,6 @@
     "access": "public"
   },
   "files": [
-    "lib",
     "dist",
     "*.d.ts"
   ]

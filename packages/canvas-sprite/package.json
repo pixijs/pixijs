@@ -3,7 +3,6 @@
   "version": "6.5.2",
   "main": "dist/cjs/canvas-sprite.js",
   "module": "dist/esm/canvas-sprite.mjs",
-  "bundle": "dist/browser/canvas-sprite.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
@@ -33,7 +32,6 @@
     "access": "public"
   },
   "files": [
-    "lib",
     "dist",
     "*.d.ts"
   ],

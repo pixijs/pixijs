@@ -3,7 +3,6 @@
   "version": "6.5.2",
   "main": "dist/cjs/math-extras.js",
   "module": "dist/esm/math-extras.mjs",
-  "bundle": "dist/browser/math-extras.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
@@ -35,7 +34,6 @@
     "access": "public"
   },
   "files": [
-    "lib",
     "dist",
     "*.d.ts"
   ],

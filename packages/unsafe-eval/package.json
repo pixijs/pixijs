@@ -3,7 +3,6 @@
   "version": "6.5.2",
   "main": "dist/cjs/unsafe-eval.js",
   "module": "dist/esm/unsafe-eval.mjs",
-  "bundle": "dist/browser/unsafe-eval.js",
   "types": "index.d.ts",
   "exports": {
     ".": {

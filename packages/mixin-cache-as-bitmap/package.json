@@ -3,7 +3,6 @@
   "version": "6.5.2",
   "main": "dist/cjs/mixin-cache-as-bitmap.js",
   "module": "dist/esm/mixin-cache-as-bitmap.mjs",
-  "bundle": "dist/browser/mixin-cache-as-bitmap.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
@@ -34,7 +33,6 @@
     "access": "public"
   },
   "files": [
-    "lib",
     "dist",
     "*.d.ts"
   ],

@@ -3,7 +3,6 @@
   "version": "6.5.2",
   "main": "dist/cjs/filter-noise.js",
   "module": "dist/esm/filter-noise.mjs",
-  "bundle": "dist/browser/filter-noise.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
@@ -34,7 +33,6 @@
     "access": "public"
   },
   "files": [
-    "lib",
     "dist",
     "*.d.ts"
   ],
