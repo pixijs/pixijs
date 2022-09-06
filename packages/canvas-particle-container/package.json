@@ -38,7 +38,7 @@
     "dist",
     "*.d.ts"
   ],
-  "peerDependencies": {
-    "@pixi/particle-container": "6.5.2"
-  }
+  "pixiRequirements": [
+    "@pixi/particle-container"
+  ]
 }

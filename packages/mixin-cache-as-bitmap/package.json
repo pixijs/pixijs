@@ -38,9 +38,9 @@
     "dist",
     "*.d.ts"
   ],
-  "peerDependencies": {
-    "@pixi/core": "6.5.2",
-    "@pixi/display": "6.5.2",
-    "@pixi/sprite": "6.5.2"
-  }
+  "pixiRequirements": [
+    "@pixi/core",
+    "@pixi/display",
+    "@pixi/sprite"
+  ]
 }

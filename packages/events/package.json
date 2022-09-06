@@ -44,8 +44,8 @@
   "bugs": {
     "url": "https://github.com/pixijs/pixi.js/issues"
   },
-  "peerDependencies": {
-    "@pixi/core": "6.5.2",
-    "@pixi/display": "6.5.2"
-  }
+  "pixiRequirements": [
+    "@pixi/core",
+    "@pixi/display"
+  ]
 }

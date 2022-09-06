@@ -38,7 +38,7 @@
     "dist",
     "*.d.ts"
   ],
-  "peerDependencies": {
-    "@pixi/display": "6.5.2"
-  }
+  "pixiRequirements": [
+    "@pixi/display"
+  ]
 }
