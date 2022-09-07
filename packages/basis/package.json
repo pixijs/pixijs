@@ -13,7 +13,6 @@
   "license": "MIT",
   "main": "dist/cjs/basis.js",
   "module": "dist/esm/basis.mjs",
-  "bundle": "dist/browser/basis.js",
   "types": "index.d.ts",
   "exports": {
     ".": {

@@ -3,7 +3,6 @@
   "version": "6.5.2",
   "main": "dist/cjs/unsafe-eval.js",
   "module": "dist/esm/unsafe-eval.mjs",
-  "bundle": "dist/browser/unsafe-eval.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
@@ -17,7 +16,6 @@
       }
     }
   },
-  "bundleInput": "src/bundle.ts",
   "standalone": true,
   "description": "Adds support for environments that disallow support of new Function",
   "author": "Matt Karl <matt@mattkarl.com>",

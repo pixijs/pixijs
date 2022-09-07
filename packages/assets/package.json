@@ -13,7 +13,6 @@
   "license": "MIT",
   "main": "dist/cjs/assets.js",
   "module": "dist/esm/assets.mjs",
-  "bundle": "dist/browser/assets.js",
   "types": "index.d.ts",
   "exports": {
     ".": {

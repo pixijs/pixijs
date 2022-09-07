@@ -3,7 +3,6 @@
   "version": "6.5.2",
   "main": "dist/cjs/math-extras.js",
   "module": "dist/esm/math-extras.mjs",
-  "bundle": "dist/browser/math-extras.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
@@ -17,7 +16,6 @@
       }
     }
   },
-  "bundleNoExports": true,
   "description": "Useful methods for some math structures",
   "author": "Milton Candelero",
   "contributors": [
@@ -35,7 +33,6 @@
     "access": "public"
   },
   "files": [
-    "lib",
     "dist",
     "*.d.ts"
   ],

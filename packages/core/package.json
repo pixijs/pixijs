@@ -3,7 +3,6 @@
   "version": "6.5.2",
   "main": "dist/cjs/core.js",
   "module": "dist/esm/core.mjs",
-  "bundle": "dist/browser/core.js",
   "types": "index.d.ts",
   "exports": {
     ".": {

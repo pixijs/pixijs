@@ -3,7 +3,6 @@
   "version": "6.5.2",
   "main": "dist/cjs/mixin-get-child-by-name.js",
   "module": "dist/esm/mixin-get-child-by-name.mjs",
-  "bundle": "dist/browser/mixin-get-child-by-name.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
@@ -17,7 +16,6 @@
       }
     }
   },
-  "bundleNoExports": true,
   "description": "Mixin function to find a child DisplayObject by name",
   "author": "Mat Groves",
   "contributors": [
@@ -34,7 +32,6 @@
     "access": "public"
   },
   "files": [
-    "lib",
     "dist",
     "*.d.ts"
   ],
