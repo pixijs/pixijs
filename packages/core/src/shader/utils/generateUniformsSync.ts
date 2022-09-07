@@ -158,9 +158,27 @@ const GLSL_TO_SINGLE_SETTERS_CACHED: Dict<string> = {
     mat3:     'gl.uniformMatrix3fv(location, false, v)',
     mat4:     'gl.uniformMatrix4fv(location, false, v)',
 
-    sampler2D:      'gl.uniform1i(location, v)',
-    samplerCube:    'gl.uniform1i(location, v)',
-    sampler2DArray: 'gl.uniform1i(location, v)',
+    sampler2D: `
+    if (cv !== v)
+    {
+        cu.value = v;
+
+        gl.uniform1i(location, v);
+    }`,
+    samplerCube: `
+    if (cv !== v)
+    {
+        cu.value = v;
+
+        gl.uniform1i(location, v);
+    }`,
+    sampler2DArray: `
+    if (cv !== v)
+    {
+        cu.value = v;
+
+        gl.uniform1i(location, v);
+    }`,
 };
 
 const GLSL_TO_ARRAY_SETTERS: Dict<string> = {

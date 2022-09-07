@@ -39,9 +39,9 @@ export const uniformParsers: IUniformParser[] = [
     },
     // handling samplers
     {
-        test: (data: any): boolean =>
-            // eslint-disable-next-line max-len
-            (data.type === 'sampler2D' || data.type === 'samplerCube' || data.type === 'sampler2DArray') && data.size === 1 && !data.isArray,
+        test: (data: any, uniform: any): boolean =>
+            // eslint-disable-next-line max-len,no-eq-null,eqeqeq
+            (data.type === 'sampler2D' || data.type === 'samplerCube' || data.type === 'sampler2DArray') && data.size === 1 && !data.isArray && (uniform == null || uniform.castToBaseTexture !== undefined),
         code: (name: string): string => `t = syncData.textureCount++;
 
             renderer.texture.bind(uv["${name}"], t);
