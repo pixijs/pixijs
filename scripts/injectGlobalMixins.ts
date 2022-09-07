@@ -50,30 +50,23 @@ async function getPackages(result: SimplePackageJson[] = []): Promise<SimplePack
  */
 async function start(): Promise<void>
 {
-    let pixiLocation: string;
-    let pixiLegacyLocation: string;
-    let pixiGlobalMixins = '';
-    let pixiLegacyGlobalMixins = '';
-
     const packages = await getPackages();
-    const legacyPackages = Object.keys(packages.find((pkg) => pkg.name === 'pixi.js-legacy').dependencies);
-    const pixiPackages = Object.keys(packages.find((pkg) => pkg.name === 'pixi.js').dependencies);
+    const bundles = [
+        'pixi.js',
+        'pixi.js-legacy',
+        '@pixi/node'
+    ];
+    const locations = Array(bundles.length).fill('');
+    const mixins = Array(bundles.length).fill('');
+    const pkgs = bundles.map((bundle) => Object.keys(packages.find((pkg) => pkg.name === bundle).dependencies));
 
     packages.forEach((pkg) =>
     {
         const basePath = path.relative(process.cwd(), pkg.location);
 
-        if (pkg.name === 'pixi.js')
+        if (bundles.includes(pkg.name))
         {
-            pixiLocation = pkg.location;
-
-            return;
-        }
-        if (pkg.name === 'pixi.js-legacy')
-        {
-            pixiLegacyLocation = pkg.location;
-
-            return;
+            locations[bundles.indexOf(pkg.name)] = pkg.location;
         }
 
         const globalDtsPath = path.resolve(basePath, './global.d.ts');
@@ -83,25 +76,24 @@ async function start(): Promise<void>
             const pixiTypeData = `/// <reference types="${pkg.name}" />\n`;
             const packageTypeData = `/// <reference path="./global.d.ts" />\n`;
 
-            if (pixiPackages.includes(pkg.name))
+            pkgs.forEach((pixiPkgs, index) =>
             {
-                pixiGlobalMixins += pixiTypeData;
-            }
-            else if (legacyPackages.includes(pkg.name))
-            {
-                pixiLegacyGlobalMixins += pixiTypeData;
-            }
+                if (pixiPkgs.includes(pkg.name))
+                {
+                    mixins[index] += pixiTypeData;
+                }
+            });
 
             writeToIndex(basePath, packageTypeData);
         }
     });
 
-    // write the total types to the main packages
-    let basePath = path.relative(process.cwd(), pixiLocation);
+    locations.forEach((location, index) =>
+    {
+        const basePath = path.relative(process.cwd(), location);
 
-    writeToIndex(basePath, pixiGlobalMixins);
-    basePath = path.relative(process.cwd(), pixiLegacyLocation);
-    writeToIndex(basePath, pixiLegacyGlobalMixins);
+        writeToIndex(basePath, mixins[index]);
+    });
 }
 
 start();
