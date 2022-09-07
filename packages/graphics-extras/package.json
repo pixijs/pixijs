@@ -3,7 +3,6 @@
   "version": "6.5.2",
   "main": "dist/cjs/graphics-extras.js",
   "module": "dist/esm/graphics-extras.mjs",
-  "bundle": "dist/browser/graphics-extras.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
@@ -17,7 +16,6 @@
       }
     }
   },
-  "bundleNoExports": true,
   "description": "Additional Graphics functions for drawing special shapes.",
   "author": "Matt Karl <matt@mattkarl.com>",
   "homepage": "http://pixijs.com/",
@@ -31,7 +29,6 @@
     "access": "public"
   },
   "files": [
-    "lib",
     "dist",
     "*.d.ts"
   ],

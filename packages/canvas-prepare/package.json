@@ -3,7 +3,6 @@
   "version": "6.5.2",
   "main": "dist/cjs/canvas-prepare.js",
   "module": "dist/esm/canvas-prepare.mjs",
-  "bundle": "dist/browser/canvas-prepare.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
@@ -33,7 +32,6 @@
     "access": "public"
   },
   "files": [
-    "lib",
     "dist",
     "*.d.ts"
   ],

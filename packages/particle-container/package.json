@@ -3,7 +3,6 @@
   "version": "6.5.2",
   "main": "dist/cjs/particle-container.js",
   "module": "dist/esm/particle-container.mjs",
-  "bundle": "dist/browser/particle-container.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
@@ -33,7 +32,6 @@
     "access": "public"
   },
   "files": [
-    "lib",
     "dist",
     "*.d.ts"
   ],

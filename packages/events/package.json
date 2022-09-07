@@ -3,7 +3,6 @@
   "version": "6.5.2",
   "main": "dist/cjs/events.js",
   "module": "dist/esm/events.mjs",
-  "bundle": "dist/browser/events.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
@@ -30,7 +29,6 @@
   "homepage": "https://github.com/pixijs/pixi.js#readme",
   "license": "MIT",
   "files": [
-    "lib",
     "dist",
     "*.d.ts"
   ],

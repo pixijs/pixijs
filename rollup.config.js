@@ -110,14 +110,6 @@ async function main()
         }
     });
 
-    const namespaces = {};
-
-    // Create a map of globals to use for bundled packages
-    packages.forEach((pkg) =>
-    {
-        namespaces[pkg.name] = pkg.config.namespace || 'PIXI';
-    });
-
     packages.forEach((pkg) =>
     {
         const {
@@ -125,10 +117,6 @@ async function main()
             module,
             bundle,
             bundleModule,
-            bundleInput,
-            bundleOutput,
-            bundleNoExports,
-            standalone,
             version,
             dependencies,
             nodeDependencies,
@@ -205,56 +193,30 @@ async function main()
         // this will package all dependencies
         if (bundle)
         {
-            const input = path.join(basePath, bundleInput || 'src/index.ts');
+            const input = path.join(basePath, 'src/index.ts');
             const file = path.join(basePath, bundle);
             const moduleFile = bundleModule ? path.join(basePath, bundleModule) : '';
-            const external = standalone ? null : Object.keys(namespaces);
-            const globals = standalone ? null : namespaces;
-            const ns = namespaces[pkg.name];
-            const name = pkg.name.replace(/[^a-z]+/g, '_');
             let footer;
-            let nsBanner = banner;
-
-            // Ignore self-contained packages like unsafe-eval
-            // as well as the bundles pixi.js and pixi.js-legacy
-            if (!standalone)
-            {
-                if (bundleNoExports !== true)
-                {
-                    footer = `Object.assign(this.${ns}, ${name});`;
-                }
-
-                if (ns.includes('.'))
-                {
-                    const base = ns.split('.')[0];
-
-                    nsBanner += `\nthis.${base} = this.${base} || {};`;
-                }
-
-                nsBanner += `\nthis.${ns} = this.${ns} || {};`;
-            }
 
             results.push({
                 input,
-                external,
                 output: [
-                    Object.assign({
-                        banner: nsBanner,
+                    {
+                        name: 'PIXI',
+                        banner,
                         file,
                         format: 'iife',
                         freeze,
-                        globals,
-                        name,
                         footer,
                         sourcemap,
-                    }, bundleOutput),
-                    ...moduleFile ? [{
+                    },
+                    {
                         banner,
                         file: moduleFile,
                         format: 'esm',
                         freeze,
                         sourcemap,
-                    }] : []
+                    }
                 ],
                 treeshake: false,
                 plugins: bundlePlugins,
@@ -264,25 +226,23 @@ async function main()
             {
                 results.push({
                     input,
-                    external,
                     output: [
-                        Object.assign({
-                            banner: nsBanner,
+                        {
+                            name: 'PIXI',
+                            banner,
                             file: prodName(file),
                             format: 'iife',
                             freeze,
-                            globals,
-                            name,
                             footer,
                             sourcemap,
-                        }, bundleOutput),
-                        ...moduleFile ? [{
+                        },
+                        {
                             banner,
                             file: prodName(moduleFile),
                             format: 'esm',
                             freeze,
                             sourcemap,
-                        }] : []
+                        }
                     ],
                     treeshake: false,
                     plugins: prodBundlePlugins,

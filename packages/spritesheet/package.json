@@ -3,7 +3,6 @@
   "version": "6.5.2",
   "main": "dist/cjs/spritesheet.js",
   "module": "dist/esm/spritesheet.mjs",
-  "bundle": "dist/browser/spritesheet.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
@@ -33,7 +32,6 @@
     "access": "public"
   },
   "files": [
-    "lib",
     "dist",
     "*.d.ts"
   ],

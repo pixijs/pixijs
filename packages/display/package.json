@@ -3,7 +3,6 @@
   "version": "6.5.2",
   "main": "dist/cjs/display.js",
   "module": "dist/esm/display.mjs",
-  "bundle": "dist/browser/display.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
@@ -33,7 +32,6 @@
     "access": "public"
   },
   "files": [
-    "lib",
     "dist",
     "*.d.ts"
   ],

@@ -3,7 +3,6 @@
   "version": "6.5.2",
   "main": "dist/cjs/runner.js",
   "module": "dist/esm/runner.mjs",
-  "bundle": "dist/browser/runner.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
@@ -48,7 +47,6 @@
     "benchmark": "cd benchmark && npm start"
   },
   "files": [
-    "lib",
     "dist",
     "*.d.ts"
   ]

@@ -3,7 +3,6 @@
   "version": "6.5.2",
   "main": "dist/cjs/canvas-extract.js",
   "module": "dist/esm/canvas-extract.mjs",
-  "bundle": "dist/browser/canvas-extract.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
@@ -33,7 +32,6 @@
     "access": "public"
   },
   "files": [
-    "lib",
     "dist",
     "*.d.ts"
   ],

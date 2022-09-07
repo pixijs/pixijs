@@ -3,7 +3,6 @@
   "version": "6.5.2",
   "main": "dist/cjs/extensions.js",
   "module": "dist/esm/extensions.mjs",
-  "bundle": "dist/browser/extensions.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
@@ -30,7 +29,6 @@
     "access": "public"
   },
   "files": [
-    "lib",
     "dist",
     "*.d.ts"
   ]
