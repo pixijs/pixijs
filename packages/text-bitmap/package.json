@@ -35,11 +35,11 @@
     "dist",
     "*.d.ts"
   ],
-  "peerDependencies": {
-    "@pixi/assets": "6.5.2",
-    "@pixi/core": "6.5.2",
-    "@pixi/display": "6.5.2",
-    "@pixi/mesh": "6.5.2",
-    "@pixi/text": "6.5.2"
-  }
+  "pixiRequirements": [
+    "@pixi/assets",
+    "@pixi/core",
+    "@pixi/display",
+    "@pixi/mesh",
+    "@pixi/text"
+  ]
 }

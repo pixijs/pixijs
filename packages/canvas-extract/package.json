@@ -35,9 +35,9 @@
     "dist",
     "*.d.ts"
   ],
-  "peerDependencies": {
-    "@pixi/canvas-renderer": "6.5.2",
-    "@pixi/core": "6.5.2",
-    "@pixi/display": "6.5.2"
-  }
+  "pixiRequirements": [
+    "@pixi/canvas-renderer",
+    "@pixi/core",
+    "@pixi/display"
+  ]
 }
