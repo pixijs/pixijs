@@ -51,11 +51,7 @@ async function getPackages(result: SimplePackageJson[] = []): Promise<SimplePack
 async function start(): Promise<void>
 {
     const packages = await getPackages();
-    const bundles = [
-        'pixi.js',
-        'pixi.js-legacy',
-        '@pixi/node'
-    ];
+    const bundles = packages.filter(p => p.location.includes('bundles')).map(p => p.name);
     const locations = Array(bundles.length).fill('');
     const mixins = Array(bundles.length).fill('');
     const pkgs = bundles.map((bundle) => Object.keys(packages.find((pkg) => pkg.name === bundle).dependencies));
