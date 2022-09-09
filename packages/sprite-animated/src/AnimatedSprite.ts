@@ -63,7 +63,7 @@ export class AnimatedSprite extends Sprite
     /**
      * User-assigned function to call when an AnimatedSprite finishes playing.
      * @example
-     * animation.onComplete = function () {
+     * animation.onComplete = () => {
      *   // finished!
      * };
      */
@@ -72,7 +72,7 @@ export class AnimatedSprite extends Sprite
     /**
      * User-assigned function to call when an AnimatedSprite changes which texture is being rendered.
      * @example
-     * animation.onFrameChange = function () {
+     * animation.onFrameChange = () => {
      *   // updated!
      * };
      */
@@ -82,7 +82,7 @@ export class AnimatedSprite extends Sprite
      * User-assigned function to call when `loop` is true, and an AnimatedSprite is played and
      * loops around to start again.
      * @example
-     * animation.onLoop = function () {
+     * animation.onLoop = () => {
      *   // looped!
      * };
      */

@@ -538,18 +538,16 @@ export class Ticker
      * const renderer = autoDetectRenderer();
      * const stage = new Container();
      * document.body.appendChild(renderer.view);
-     * ticker.add(function (time) {
-     *     renderer.render(stage);
-     * });
+     * ticker.add((time) => renderer.render(stage));
      * @example
      * // Or you can just update it manually.
      * ticker.autoStart = false;
      * ticker.stop();
-     * function animate(time) {
+     * const animate = (time) => {
      *     ticker.update(time);
      *     renderer.render(stage);
      *     requestAnimationFrame(animate);
-     * }
+     * };
      * animate(performance.now());
      * @member {PIXI.Ticker}
      * @static
