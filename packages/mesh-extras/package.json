@@ -1,6 +1,6 @@
 {
   "name": "@pixi/mesh-extras",
-  "version": "6.5.2",
+  "version": "6.5.3",
   "main": "dist/cjs/mesh-extras.js",
   "module": "dist/esm/mesh-extras.mjs",
   "types": "index.d.ts",

@@ -1,6 +1,6 @@
 {
   "name": "@pixi/spritesheet",
-  "version": "6.5.2",
+  "version": "6.5.3",
   "main": "dist/cjs/spritesheet.js",
   "module": "dist/esm/spritesheet.mjs",
   "types": "index.d.ts",

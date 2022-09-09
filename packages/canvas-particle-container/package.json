@@ -1,6 +1,6 @@
 {
   "name": "@pixi/canvas-particle-container",
-  "version": "6.5.2",
+  "version": "6.5.3",
   "main": "dist/cjs/canvas-particle-container.js",
   "module": "dist/esm/canvas-particle-container.mjs",
   "types": "index.d.ts",

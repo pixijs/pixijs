@@ -1,6 +1,6 @@
 {
   "name": "@pixi/events",
-  "version": "6.5.2",
+  "version": "6.5.3",
   "main": "dist/cjs/events.js",
   "module": "dist/esm/events.mjs",
   "types": "index.d.ts",

@@ -1,6 +1,6 @@
 {
   "name": "@pixi/filter-alpha",
-  "version": "6.5.2",
+  "version": "6.5.3",
   "main": "dist/cjs/filter-alpha.js",
   "module": "dist/esm/filter-alpha.mjs",
   "types": "index.d.ts",

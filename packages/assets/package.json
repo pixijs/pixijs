@@ -1,6 +1,6 @@
 {
   "name": "@pixi/assets",
-  "version": "6.5.2",
+  "version": "6.5.3",
   "description": "Asset manager for PixiJS, loading resolving and Cacheing",
   "keywords": [
     "pixi",

@@ -1,6 +1,6 @@
 {
   "name": "@pixi/utils",
-  "version": "6.5.2",
+  "version": "6.5.3",
   "main": "dist/cjs/utils.js",
   "module": "dist/esm/utils.mjs",
   "types": "index.d.ts",
@@ -36,8 +36,8 @@
     "*.d.ts"
   ],
   "dependencies": {
-    "@pixi/constants": "6.5.2",
-    "@pixi/settings": "6.5.2",
+    "@pixi/constants": "6.5.3",
+    "@pixi/settings": "6.5.3",
     "@types/earcut": "^2.1.0",
     "earcut": "^2.2.4",
     "eventemitter3": "^3.1.0",

@@ -1,6 +1,6 @@
 {
   "name": "@pixi/sprite-tiling",
-  "version": "6.5.2",
+  "version": "6.5.3",
   "main": "dist/cjs/sprite-tiling.js",
   "module": "dist/esm/sprite-tiling.mjs",
   "types": "index.d.ts",

@@ -1,6 +1,6 @@
 {
   "name": "@pixi/mesh",
-  "version": "6.5.2",
+  "version": "6.5.3",
   "main": "dist/cjs/mesh.js",
   "module": "dist/esm/mesh.mjs",
   "types": "index.d.ts",

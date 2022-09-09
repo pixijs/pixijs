@@ -1,6 +1,6 @@
 {
   "name": "@pixi/filter-blur",
-  "version": "6.5.2",
+  "version": "6.5.3",
   "main": "dist/cjs/filter-blur.js",
   "module": "dist/esm/filter-blur.mjs",
   "types": "index.d.ts",

@@ -1,6 +1,6 @@
 {
   "name": "@pixi/mixin-get-child-by-name",
-  "version": "6.5.2",
+  "version": "6.5.3",
   "main": "dist/cjs/mixin-get-child-by-name.js",
   "module": "dist/esm/mixin-get-child-by-name.mjs",
   "types": "index.d.ts",
