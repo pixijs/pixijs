@@ -13,11 +13,13 @@ const BYTES_PER_PIXEL = 4;
  * Do not instantiate these plugins directly. It is available from the `renderer.plugins` property.
  * See {@link PIXI.CanvasRenderer#plugins} or {@link PIXI.Renderer#plugins}.
  * @example
+ * import { Application, Graphics } from 'pixi.js';
+ *
  * // Create a new app (will auto-add extract plugin to renderer)
- * const app = new PIXI.Application();
+ * const app = new Application();
  *
  * // Draw a red circle
- * const graphics = new PIXI.Graphics()
+ * const graphics = new Graphics()
  *     .beginFill(0xFF0000)
  *     .drawCircle(0, 0, 50);
  *

@@ -12,11 +12,16 @@ type CharacterWidthCache = { [key: string]: number };
 
 /**
  * The TextMetrics object represents the measurement of a block of text with a specified style.
+ * @example
+ * import { TextStyle, TextMetrics } from 'pixi.js';
  *
- * ```js
- * let style = new PIXI.TextStyle({fontFamily : 'Arial', fontSize: 24, fill : 0xff1010, align : 'center'})
- * let textMetrics = PIXI.TextMetrics.measureText('Your text', style)
- * ```
+ * const style = new TextStyle({
+ *   fontFamily: 'Arial',
+ *   fontSize: 24,
+ *   fill: 0xff1010,
+ *   align: 'center',
+ * });
+ * const textMetrics = TextMetrics.measureText('Your text', style);
  * @memberof PIXI
  */
 export class TextMetrics

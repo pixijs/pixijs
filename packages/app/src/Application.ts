@@ -27,18 +27,20 @@ export interface IApplicationOptions extends IRendererOptionsAuto, GlobalMixins.
 export interface Application extends GlobalMixins.Application {}
 
 /**
- * Convenience class to create a new PIXI application.
+ * Convenience class to create a new PixiJS application.
  *
  * This class automatically creates the renderer, ticker and root container.
  * @example
+ * import { Application, Sprite } from 'pixi.js';
+ *
  * // Create the application
- * const app = new PIXI.Application();
+ * const app = new Application();
  *
  * // Add the view to the DOM
  * document.body.appendChild(app.view);
  *
  * // ex, add display objects
- * app.stage.addChild(PIXI.Sprite.from('something.png'));
+ * app.stage.addChild(Sprite.from('something.png'));
  * @class
  * @memberof PIXI
  */

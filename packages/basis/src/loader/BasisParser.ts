@@ -374,12 +374,11 @@ export class BasisParser
 
     /**
      * Binds the basis_universal transcoder to decompress *.basis files. You must initialize the transcoder library yourself.
-     *
-     * ```js
+     * @example
      * import { BasisParser } from '@pixi/basis';
      *
-     * // window.BASIS() returns a Promise-like object
-     * window.BASIS().then((basisLibrary) =>
+     * // BASIS() returns a Promise-like object
+     * globalThis.BASIS().then((basisLibrary) =>
      * {
      *     // Initialize basis-library; otherwise, transcoded results maybe corrupt!
      *     basisLibrary.initializeBasis();
@@ -387,7 +386,6 @@ export class BasisParser
      *     // Bind BasisParser to the transcoder
      *     BasisParser.bindTranscoder(basisLibrary);
      * });
-     * ```
      * @param basisLibrary - the initialized transcoder library
      * @private
      */

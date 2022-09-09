@@ -42,17 +42,16 @@ export interface ISpritesheetData
  * To access a sprite sheet from your code you may pass its JSON data file to Pixi's loader:
  *
  * ```js
- * PIXI.Loader.shared.add("images/spritesheet.json").load(setup);
+ * import { Assets } from 'pixi.js';
  *
- * function setup() {
- *   let sheet = PIXI.Loader.shared.resources["images/spritesheet.json"].spritesheet;
- *   ...
- * }
+ * const sheet = await Assets.load("images/spritesheet.json");
  * ```
  *
  * Alternately, you may circumvent the loader by instantiating the Spritesheet directly:
  * ```js
- * const sheet = new PIXI.Spritesheet(texture, spritesheetData);
+ * import { Spritesheet } from 'pixi.js';
+ *
+ * const sheet = new Spritesheet(texture, spritesheetData);
  * await sheet.parse();
  * console.log('Spritesheet ready to use!');
  * ```
@@ -79,18 +78,20 @@ export class Spritesheet
     /**
      * A map containing all textures of the sprite sheet.
      * Can be used to create a {@link PIXI.Sprite|Sprite}:
-     * ```js
-     * new PIXI.Sprite(sheet.textures["image.png"]);
-     * ```
+     * @example
+     * import { Sprite } from 'pixi.js';
+     *
+     * new Sprite(sheet.textures["image.png"]);
      */
     public textures: utils.Dict<Texture>;
 
     /**
      * A map containing the textures for each animation.
      * Can be used to create an {@link PIXI.AnimatedSprite|AnimatedSprite}:
-     * ```js
-     * new PIXI.AnimatedSprite(sheet.animations["anim_name"])
-     * ```
+     * @example
+     * import { AnimatedSprite } from 'pixi.js';
+     *
+     * new AnimatedSprite(sheet.animations["anim_name"])
      */
     public animations: utils.Dict<Texture[]>;
 

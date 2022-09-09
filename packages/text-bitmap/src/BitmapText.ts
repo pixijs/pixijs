@@ -55,15 +55,15 @@ const charRenderDataPool: CharRenderData[] = [];
  * https://github.com/Chlumsky/msdf-atlas-gen for SDF, MSDF and MTSDF json files
  *
  * A BitmapText can only be created when the font is loaded.
+ * @example
+ * import { BitmapText } from 'pixi.js';
  *
- * ```js
  * // in this case the font is in a file called 'desyrel.fnt'
- * let bitmapText = new PIXI.BitmapText("text using a fancy font!", {
+ * const bitmapText = new BitmapText("text using a fancy font!", {
  *   fontName: "Desyrel",
  *   fontSize: 35,
  *   align: "right"
  * });
- * ```
  * @memberof PIXI
  */
 export class BitmapText extends Container

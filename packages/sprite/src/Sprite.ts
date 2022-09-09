@@ -17,20 +17,19 @@ export interface Sprite extends GlobalMixins.Sprite, Container {}
  * A sprite can be created directly from an image like this:
  *
  * ```js
- * let sprite = PIXI.Sprite.from('assets/image.png');
+ * import {  Sprite } from 'pixi.js';
+ *
+ * const sprite = Sprite.from('assets/image.png');
  * ```
  *
  * The more efficient way to create sprites is using a {@link PIXI.Spritesheet},
  * as swapping base textures when rendering to the screen is inefficient.
  *
  * ```js
- * PIXI.Loader.shared.add("assets/spritesheet.json").load(setup);
+ * import { Assets, Sprite } from 'pixi.js';
  *
- * function setup() {
- *   let sheet = PIXI.Loader.shared.resources["assets/spritesheet.json"].spritesheet;
- *   let sprite = new PIXI.Sprite(sheet.textures["image.png"]);
- *   ...
- * }
+ * const sheet = await Assets.load("assets/spritesheet.json");
+ * const sprite = new Sprite(sheet.textures["image.png"]);
  * ```
  * @memberof PIXI
  */
@@ -559,7 +558,9 @@ export class Sprite extends Container
      *
      * If you pass only single parameter, it will set both x and y to the same value as shown in the example below.
      * @example
-     * const sprite = new PIXI.Sprite(texture);
+     * import { Sprite } from 'pixi.js';
+     *
+     * const sprite = new Sprite(Texture.WHITE);
      * sprite.anchor.set(0.5); // This will set the origin to center. (0.5) is same as (0.5, 0.5).
      */
     get anchor(): ObservablePoint

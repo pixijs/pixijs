@@ -939,14 +939,16 @@ export abstract class DisplayObject extends utils.EventEmitter
      *
      * For sprite mask both alpha and red channel are used. Black mask is the same as transparent mask.
      * @example
-     * const graphics = new PIXI.Graphics();
+     * import { Graphics, Sprite } from 'pixi.js';
+     *
+     * const graphics = new Graphics();
      * graphics.beginFill(0xFF3300);
      * graphics.drawRect(50, 250, 100, 100);
      * graphics.endFill();
      *
-     * const sprite = new PIXI.Sprite(texture);
+     * const sprite = new Sprite(texture);
      * sprite.mask = graphics;
-     * @todo At the moment, PIXI.CanvasRenderer doesn't support PIXI.Sprite as mask.
+     * @todo At the moment, CanvasRenderer doesn't support Sprite as mask.
      */
     get mask(): Container | MaskData | null
     {

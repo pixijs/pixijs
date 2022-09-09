@@ -8,7 +8,7 @@ import type { IPointData } from './IPointData';
  * The PixiJS Matrix as a class makes it a lot faster.
  *
  * Here is a representation of it:
- * ```js
+ * ```
  * | a | c | tx|
  * | b | d | ty|
  * | 0 | 0 | 1 |

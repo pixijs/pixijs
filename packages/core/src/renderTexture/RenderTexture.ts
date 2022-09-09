@@ -16,11 +16,12 @@ import type { MSAA_QUALITY } from '@pixi/constants';
  * You shouldn't create renderTextures each frame just to delete them after, try to reuse them.
  *
  * A RenderTexture takes a snapshot of any Display Object given to its render method. For example:
+ * @example
+ * import { autoDetectRenderer, RenderTexture, Sprite } from 'pixi.js';
  *
- * ```js
- * let renderer = PIXI.autoDetectRenderer();
- * let renderTexture = PIXI.RenderTexture.create({ width: 800, height: 600 });
- * let sprite = PIXI.Sprite.from("spinObj_01.png");
+ * const renderer = autoDetectRenderer();
+ * const renderTexture = RenderTexture.create({ width: 800, height: 600 });
+ * const sprite = Sprite.from("spinObj_01.png");
  *
  * sprite.position.x = 800/2;
  * sprite.position.y = 600/2;
@@ -28,20 +29,16 @@ import type { MSAA_QUALITY } from '@pixi/constants';
  * sprite.anchor.y = 0.5;
  *
  * renderer.render(sprite, {renderTexture});
- * ```
- * Note that you should not create a new renderer, but reuse the same one as the rest of the application.
  *
- * The Sprite in this case will be rendered using its local transform. To render this sprite at 0,0
- * you can clear the transform
+ * // Note that you should not create a new renderer, but reuse the same one as the rest of the application.
+ * // The Sprite in this case will be rendered using its local transform. To render this sprite at 0,0
+ * // you can clear the transform
  *
- * ```js
+ * sprite.setTransform();
  *
- * sprite.setTransform()
- *
- * let renderTexture = new PIXI.RenderTexture.create({ width: 100, height: 100 });
+ * const renderTexture = new RenderTexture.create({ width: 100, height: 100 });
  *
  * renderer.render(sprite, {renderTexture});  // Renders to center of RenderTexture
- * ```
  * @memberof PIXI
  */
 export class RenderTexture extends Texture
