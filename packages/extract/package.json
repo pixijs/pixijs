@@ -1,6 +1,6 @@
 {
   "name": "@pixi/extract",
-  "version": "6.5.3",
+  "version": "7.0.0-alpha",
   "main": "dist/cjs/extract.js",
   "module": "dist/esm/extract.mjs",
   "types": "index.d.ts",

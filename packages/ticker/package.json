@@ -1,6 +1,6 @@
 {
   "name": "@pixi/ticker",
-  "version": "6.5.3",
+  "version": "7.0.0-alpha",
   "main": "dist/cjs/ticker.js",
   "module": "dist/esm/ticker.mjs",
   "types": "index.d.ts",
@@ -36,7 +36,7 @@
     "*.d.ts"
   ],
   "dependencies": {
-    "@pixi/extensions": "6.5.3",
-    "@pixi/settings": "6.5.3"
+    "@pixi/extensions": "7.0.0-alpha",
+    "@pixi/settings": "7.0.0-alpha"
   }
 }
