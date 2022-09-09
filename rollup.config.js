@@ -121,6 +121,7 @@ async function main()
             dependencies,
             nodeDependencies,
             peerDependencies,
+            pixiRequirements,
         } = pkg.config;
 
         const banner = [
@@ -136,7 +137,8 @@ async function main()
         // Check for bundle folder
         const external = Object.keys(dependencies || [])
             .concat(Object.keys(peerDependencies || []))
-            .concat(nodeDependencies || []);
+            .concat(nodeDependencies || [])
+            .concat(pixiRequirements || []);
         const basePath = path.relative(__dirname, pkg.dir);
         const input = path.join(basePath, 'src/index.ts');
         const freeze = false;
