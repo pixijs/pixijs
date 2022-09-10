@@ -406,10 +406,7 @@ export class AnimatedSprite extends Sprite
         this.updateTexture();
     }
 
-    /**
-     * The AnimatedSprites current frame index.
-     * @readonly
-     */
+    /** The AnimatedSprites current frame index. */
     get currentFrame(): number
     {
         let currentFrame = Math.floor(this._currentTime) % this._textures.length;
@@ -420,6 +417,18 @@ export class AnimatedSprite extends Sprite
         }
 
         return currentFrame;
+    }
+
+    set currentFrame(value: number)
+    {
+        const previousFrame = this.currentFrame;
+
+        this._currentTime = value;
+
+        if (previousFrame !== this.currentFrame)
+        {
+            this.updateTexture();
+        }
     }
 
     /**
