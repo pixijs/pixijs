@@ -1372,7 +1372,7 @@ export class EventBoundary
  * Capture phase equivalent of {@code mouseup}.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- * @event PIXI.DisplayObject#mouseupcature
+ * @event PIXI.DisplayObject#mouseupcapture
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
 
@@ -1491,7 +1491,7 @@ export class EventBoundary
  * Capture phase equivalent of {@code mousemove}.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- * @event PIXI.DisplayObject#mousemovecature
+ * @event PIXI.DisplayObject#mousemovecapture
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
 
