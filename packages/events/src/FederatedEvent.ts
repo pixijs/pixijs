@@ -140,6 +140,7 @@ export class FederatedEvent<N extends UIEvent = UIEvent> implements UIEvent
 
     /**
      * Unimplemented method included for implementing the DOM interface {@code Event}. It will throw an {@code Error}.
+     * @deprecated
      * @param _type
      * @param _bubbles
      * @param _cancelable
@@ -147,6 +148,21 @@ export class FederatedEvent<N extends UIEvent = UIEvent> implements UIEvent
     initEvent(_type: string, _bubbles?: boolean, _cancelable?: boolean): void
     {
         throw new Error('initEvent() is a legacy DOM API. It is not implemented in the Federated Events API.');
+    }
+
+    /**
+     * Unimplemented method included for implementing the DOM interface {@code UIEvent}. It will throw an {@code Error}.
+     * @deprecated
+     * @param _typeArg
+     * @param _bubblesArg
+     * @param _cancelableArg
+     * @param _viewArg
+     * @param _detailArg
+     */
+    initUIEvent(_typeArg: string, _bubblesArg?: boolean, _cancelableArg?: boolean, _viewArg?: Window | null,
+        _detailArg?: number): void
+    {
+        throw new Error('initUIEvent() is a legacy DOM API. It is not implemented in the Federated Events API.');
     }
 
     /** Prevent default behavior of PixiJS and the user agent. */
