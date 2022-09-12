@@ -89,8 +89,10 @@ export interface AssetInitOptions
  * for example:
  *
  * ```
- * promise1 = PIXI.Assets.load('bunny.png')
- * promise2 = PIXI.Assets.load('bunny.png')
+ * import { Assets } from 'pixi.js';
+ *
+ * promise1 = Assets.load('bunny.png')
+ * promise2 = Assets.load('bunny.png')
  *
  * //promise1 === promise2
  * ```
@@ -134,8 +136,10 @@ export interface AssetInitOptions
  * it is possible to load only specific weights by doing the following:
  *
  * ```
+ * import { Assets } from 'pixi.js';
+ *
  * // load specific weights..
- * await PIXI.Assets.load({
+ * await Assets.load({
  *    data: {
  *      weights: ['normal'], // only loads the weight
  *    },
@@ -143,15 +147,15 @@ export interface AssetInitOptions
  * });
  *
  * // load everything...
- * await PIXI.Assets.load(`outfit.woff2`);
+ * await Assets.load(`outfit.woff2`);
  * ```
  * ### Background Loading
  * Background loading will load stuff for you passively behind the scenes. To minimize jank,
- * it will only load one asset at a time. As soon as a developer calls `PIXI.Assets.load(...)` the
+ * it will only load one asset at a time. As soon as a developer calls `Assets.load(...)` the
  * background loader is paused and requested assets are loaded as a priority.
  * Don't worry if something is in there that's already loaded, it will just get skipped!
  *
- * You still need to call `PIXI.Assets.load(...)` to get an asset that has been loaded in the background.
+ * You still need to call `Assets.load(...)` to get an asset that has been loaded in the background.
  * It's just that this promise will resolve instantly if the asset
  * has already been loaded.
  *
@@ -160,6 +164,8 @@ export interface AssetInitOptions
  * - Bundles are a way to group assets together.
  *
  * ```
+ * import { Assets } from 'pixi.js';
+ *
  * // manifest example
  * const manifest = {
  *   bundles:[{
@@ -190,17 +196,19 @@ export interface AssetInitOptions
  *   }]
  * }}
  *
- * await PIXI.Asset.init({
+ * await Asset.init({
  *  manifest
  * });
  *
  * // load a bundle..
- * loadScreenAssets = await PIXI.Assets.loadBundle('load-screen');
+ * loadScreenAssets = await Assets.loadBundle('load-screen');
  * // load another..
- * gameScreenAssets = await PIXI.Assets.loadBundle('game-screen');
+ * gameScreenAssets = await Assets.loadBundle('game-screen');
  * ```
  * @example
- * const bunny = await PIXI.Assets.load('bunny.png');
+ * import { Assets } from 'pixi.js';
+ *
+ * const bunny = await Assets.load('bunny.png');
  */
 export class AssetsClass
 {
@@ -317,18 +325,20 @@ export class AssetsClass
      * Allows you to specify how to resolve any assets load requests.
      * There are a few ways to add things here as shown below:
      * @example
+     * import { Assets } from 'pixi.js';
+     *
      * // simple
-     * PIXI.Assets.add('bunnyBooBoo', 'bunny.png');
-     * const bunny = await PIXI.Assets.load('bunnyBooBoo');
+     * Assets.add('bunnyBooBoo', 'bunny.png');
+     * const bunny = await Assets.load('bunnyBooBoo');
      *
      * // multiple keys:
-     * PIXI.Assets.add(['burger', 'chicken'], 'bunny.png');
+     * Assets.add(['burger', 'chicken'], 'bunny.png');
      *
-     * const bunny = await PIXI.Assets.load('burger');
-     * const bunny2 = await PIXI.Assets.load('chicken');
+     * const bunny = await Assets.load('burger');
+     * const bunny2 = await Assets.load('chicken');
      *
      * // passing options to to the object
-     * PIXI.Assets.add(
+     * Assets.add(
      *     'bunnyBooBooSmooth',
      *     'bunny{png,webp}',
      *     {scaleMode:SCALE_MODES.NEAREST} // base texture options
@@ -338,14 +348,14 @@ export class AssetsClass
      *
      * // the following all do the same thing:
      *
-     * PIXI.Assets.add('bunnyBooBoo', 'bunny{png,webp}');
+     * Assets.add('bunnyBooBoo', 'bunny{png,webp}');
      *
-     * PIXI.Assets.add('bunnyBooBoo', [
+     * Assets.add('bunnyBooBoo', [
      * 'bunny.png',
      * 'bunny.webp'
      * ]);
      *
-     * PIXI.Assets.add('bunnyBooBoo', [
+     * Assets.add('bunnyBooBoo', [
      *    {
      *       format:'png',
      *       src:'bunny.png',
@@ -356,7 +366,7 @@ export class AssetsClass
      *    }
      * ]);
      *
-     * const bunny = await PIXI.Assets.load('bunnyBooBoo'); // will try to load WebP if available
+     * const bunny = await Assets.load('bunnyBooBoo'); // will try to load WebP if available
      * @param keysIn - the key or keys that you will reference when loading this asset
      * @param assetsIn - the asset or assets that will be chosen from when loading via the specified key
      * @param data - asset-specific data that will be passed to the loaders
@@ -375,14 +385,16 @@ export class AssetsClass
      * once and the same promise reused behind the scenes so you can safely call this function multiple
      * times with the same key and it will always return the same asset.
      * @example
-     * // load a URL:
-     * const myImageTexture = await PIXI.Assets.load('http://some.url.com/image.png'); // => returns a texture
+     * import { Assets } from 'pixi.js';
      *
-     * PIXI.Assets.add('thumper', 'bunny.png');
-     * PIXI.Assets.add('chicko', 'chicken.png');
+     * // load a URL:
+     * const myImageTexture = await Assets.load('http://some.url.com/image.png'); // => returns a texture
+     *
+     * Assets.add('thumper', 'bunny.png');
+     * Assets.add('chicko', 'chicken.png');
      *
      * // load multiple assets:
-     * const textures = await PIXI.Assets.load(['thumper', 'chicko']); // => {thumper: Texture, chicko: Texture}
+     * const textures = await Assets.load(['thumper', 'chicko']); // => {thumper: Texture, chicko: Texture}
      * @param urls - the urls to load
      * @param onProgress - optional function that is called when progress on asset loading is made.
      * The function is passed a single parameter, `progress`, which represents the percentage
@@ -699,15 +711,17 @@ export class AssetsClass
      * * it's up to you as the developer to make sure that textures are not actively being used when you unload them,
      * Pixi won't break but you will end up with missing assets. Not a good look for the user!
      * @example
-     * // load a URL:
-     * const myImageTexture = await PIXI.Assets.load('http://some.url.com/image.png'); // => returns a texture
+     * import { Assets } from 'pixi.js';
      *
-     * await PIXI.Assets.unload('http://some.url.com/image.png')
+     * // load a URL:
+     * const myImageTexture = await Assets.load('http://some.url.com/image.png'); // => returns a texture
+     *
+     * await Assets.unload('http://some.url.com/image.png')
      *
      * myImageTexture <-- will now be destroyed.
      *
      * // unload multiple assets:
-     * const textures = await PIXI.Assets.unload(['thumper', 'chicko']);
+     * const textures = await Assets.unload(['thumper', 'chicko']);
      * @param urls - the urls to unload
      */
     public async unload(

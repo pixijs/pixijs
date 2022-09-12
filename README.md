@@ -121,7 +121,7 @@ before submitting changes.
 ### Basic Usage Example ###
 
 ```js
-import { Application, Sprite } from 'pixi.js';
+import { Application, Sprite, Assets } from 'pixi.js';
 
 // The application will create a renderer using WebGL, if possible,
 // with a fallback to a canvas render. It will also setup the ticker
