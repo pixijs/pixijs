@@ -26,13 +26,13 @@ export class Framebuffer
      * Experimental WebGL2 feature, allows to use antialiasing in individual renderTextures.
      * Antialiasing is the same as for main buffer with renderer `antialias:true` options.
      * Seriously affects GPU memory consumption and GPU performance.
+     * @example
+     * import { MSAA_QUALITY } from 'pixi.js';
      *
-     *```js
-     * renderTexture.framebuffer.multisample = PIXI.MSAA_QUALITY.HIGH;
+     * renderTexture.framebuffer.multisample = MSAA_QUALITY.HIGH;
      * //...
      * renderer.render(myContainer, {renderTexture});
      * renderer.framebuffer.blit(); // copies data from MSAA framebuffer to texture
-     *  ```
      * @default PIXI.MSAA_QUALITY.NONE
      */
     public multisample: MSAA_QUALITY;

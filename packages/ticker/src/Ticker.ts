@@ -518,32 +518,36 @@ export class Ticker
      * The property {@link PIXI.Ticker#autoStart} is set to `true` for this instance.
      * Please follow the examples for usage, including how to opt-out of auto-starting the shared ticker.
      * @example
-     * let ticker = PIXI.Ticker.shared;
+     * import { Ticker } from 'pixi.js';
+     *
+     * const ticker = Ticker.shared;
      * // Set this to prevent starting this ticker when listeners are added.
      * // By default this is true only for the PIXI.Ticker.shared instance.
      * ticker.autoStart = false;
+     *
      * // FYI, call this to ensure the ticker is stopped. It should be stopped
      * // if you have not attempted to render anything yet.
      * ticker.stop();
+     *
      * // Call this when you are ready for a running shared ticker.
      * ticker.start();
      * @example
+     * import { autoDetectRenderer, Container } from 'pixi.js';
+     *
      * // You may use the shared ticker to render...
-     * let renderer = PIXI.autoDetectRenderer();
-     * let stage = new PIXI.Container();
+     * const renderer = autoDetectRenderer();
+     * const stage = new Container();
      * document.body.appendChild(renderer.view);
-     * ticker.add(function (time) {
-     *     renderer.render(stage);
-     * });
+     * ticker.add((time) => renderer.render(stage));
      * @example
      * // Or you can just update it manually.
      * ticker.autoStart = false;
      * ticker.stop();
-     * function animate(time) {
+     * const animate = (time) => {
      *     ticker.update(time);
      *     renderer.render(stage);
      *     requestAnimationFrame(animate);
-     * }
+     * };
      * animate(performance.now());
      * @member {PIXI.Ticker}
      * @static

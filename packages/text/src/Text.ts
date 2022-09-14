@@ -39,10 +39,15 @@ interface ModernContext2D extends CanvasRenderingContext2D
  *
  * A Text can be created directly from a string and a style object,
  * which can be generated [here](https://pixijs.io/pixi-text-style).
+ * @example
+ * import { Text } from 'pixi.js';
  *
- * ```js
- * let text = new PIXI.Text('This is a PixiJS text',{fontFamily : 'Arial', fontSize: 24, fill : 0xff1010, align : 'center'});
- * ```
+ * const text = new Text('This is a PixiJS text', {
+ *   fontFamily : 'Arial',
+ *   fontSize: 24,
+ *   fill : 0xff1010,
+ *   align : 'center',
+ * });
  * @memberof PIXI
  */
 export class Text extends Sprite

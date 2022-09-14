@@ -53,27 +53,28 @@ export interface ICompressedTextureResourceOptions
  *
  * Since `CompressedTextureResource` inherits `BlobResource`, you can provide it a URL pointing to a file containing
  * the raw texture data (with no file headers!):
+ * @example
+ * import { CompressedTextureResource, INTERNAL_FORMATS } from '@pixi/compressed-textures';
+ * import { BaseTexture, Texture, ALPHA_MODES } from 'pixi.js';
  *
- * ```js
  * // The resource backing the texture data for your textures.
  * // NOTE: You can also provide a ArrayBufferView instead of a URL. This is used when loading data from a container file
  * //   format such as KTX, DDS, or BASIS.
- * const compressedResource = new PIXI.CompressedTextureResource("bunny.dxt5", {
- *   format: PIXI.INTERNAL_FORMATS.COMPRESSED_RGBA_S3TC_DXT5_EXT,
+ * const compressedResource = new CompressedTextureResource("bunny.dxt5", {
+ *   format: INTERNAL_FORMATS.COMPRESSED_RGBA_S3TC_DXT5_EXT,
  *   width: 256,
  *   height: 256
  * });
  *
  * // You can create a base-texture to the cache, so that future `Texture`s can be created using the `Texture.from` API.
- * const baseTexture = new PIXI.BaseTexture(compressedResource, { pmaMode: PIXI.ALPHA_MODES.NPM });
+ * const baseTexture = new BaseTexture(compressedResource, { pmaMode: ALPHA_MODES.NPM });
  *
  * // Create a Texture to add to the TextureCache
- * const texture = new PIXI.Texture(baseTexture);
+ * const texture = new Texture(baseTexture);
  *
  * // Add baseTexture & texture to the global texture cache
- * PIXI.BaseTexture.addToCache(baseTexture, "bunny.dxt5");
- * PIXI.Texture.addToCache(texture, "bunny.dxt5");
- * ```
+ * BaseTexture.addToCache(baseTexture, "bunny.dxt5");
+ * Texture.addToCache(texture, "bunny.dxt5");
  * @memberof PIXI
  */
 export class CompressedTextureResource extends BlobResource

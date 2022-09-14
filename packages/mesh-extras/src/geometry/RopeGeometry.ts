@@ -3,13 +3,13 @@ import type { IPoint } from '@pixi/core';
 
 /**
  * RopeGeometry allows you to draw a geometry across several points and then manipulate these points.
+ * @example
+ * import { RopeGeometry, Point } from 'pixi.js';
  *
- * ```js
  * for (let i = 0; i < 20; i++) {
- *     points.push(new PIXI.Point(i * 50, 0));
+ *     points.push(new Point(i * 50, 0));
  * };
- * const rope = new PIXI.RopeGeometry(100, points);
- * ```
+ * const rope = new RopeGeometry(100, points);
  * @memberof PIXI
  */
 export class RopeGeometry extends MeshGeometry

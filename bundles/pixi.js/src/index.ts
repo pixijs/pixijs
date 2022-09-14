@@ -18,16 +18,18 @@ import '@pixi/mixin-get-global-position';
  *
  * All filters must extend {@link PIXI.Filter}.
  * @example
+ * import { Application, Graphics, filters } from 'pixi.js';
+ *
  * // Create a new application
- * const app = new PIXI.Application();
+ * const app = new Application();
  *
  * // Draw a green rectangle
- * const rect = new PIXI.Graphics()
+ * const rect = new Graphics()
  *     .beginFill(0x00ff00)
  *     .drawRect(40, 40, 200, 200);
  *
  * // Add a blur filter
- * rect.filters = [new PIXI.filters.BlurFilter()];
+ * rect.filters = [new filters.BlurFilter()];
  *
  * // Display rectangle
  * app.stage.addChild(rect);

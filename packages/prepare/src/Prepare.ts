@@ -98,15 +98,17 @@ function findGraphics(item: IDisplayObjectExtended, queue: Array<any>): boolean
  * Do not instantiate this plugin directly. It is available from the `renderer.plugins` property.
  * See {@link PIXI.CanvasRenderer#plugins} or {@link PIXI.Renderer#plugins}.
  * @example
+ * import { Application, Graphics } from 'pixi.js';
+ *
  * // Create a new application
- * const app = new PIXI.Application();
+ * const app = new Application();
  * document.body.appendChild(app.view);
  *
  * // Don't start rendering right away
  * app.stop();
  *
  * // create a display object
- * const rect = new PIXI.Graphics()
+ * const rect = new Graphics()
  *     .beginFill(0x00ff00)
  *     .drawRect(40, 40, 200, 200);
  *

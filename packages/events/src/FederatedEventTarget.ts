@@ -79,7 +79,9 @@ FederatedEventTarget,
      * Enable interaction events for the DisplayObject. Touch, pointer and mouse
      * events will not be emitted unless `interactive` is set to `true`.
      * @example
-     * const sprite = new PIXI.Sprite(texture);
+     * import { Sprite } from 'pixi.js';
+     *
+     * const sprite = new Sprite(texture);
      * sprite.interactive = true;
      * sprite.on('tap', (event) => {
      *    //handle event
@@ -99,9 +101,11 @@ FederatedEventTarget,
      * Interaction shape. Children will be hit first, then this shape will be checked.
      * Setting this will cause this shape to be checked in hit tests rather than the displayObject's bounds.
      * @example
-     * const sprite = new PIXI.Sprite(texture);
+     * import { Sprite, Rectangle } from 'pixi.js';
+     *
+     * const sprite = new Sprite(texture);
      * sprite.interactive = true;
-     * sprite.hitArea = new PIXI.Rectangle(0, 0, 100, 100);
+     * sprite.hitArea = new Rectangle(0, 0, 100, 100);
      * @member {PIXI.IHitArea}
      * @memberof PIXI.DisplayObject#
      */

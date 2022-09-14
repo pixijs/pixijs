@@ -12,9 +12,6 @@ export interface NineSlicePlane extends GlobalMixins.NineSlicePlane {}
  * The NineSlicePlane allows you to stretch a texture using 9-slice scaling. The corners will remain unscaled (useful
  * for buttons with rounded corners for example) and the other areas will be scaled horizontally and or vertically
  *
- *```js
- * let Plane9 = new PIXI.NineSlicePlane(PIXI.Texture.from('BoxWithRoundedCorners.png'), 15, 15, 15, 15);
- *  ```
  * <pre>
  *      A                          B
  *    +---+----------------------+---+
@@ -32,6 +29,10 @@ export interface NineSlicePlane extends GlobalMixins.NineSlicePlane {}
  *     areas 4 and 6 will be stretched vertically
  *     area 5 will be stretched both horizontally and vertically
  * </pre>
+ * @example
+ * import { NineSlicePlane, Texture } from 'pixi.js';
+ *
+ * const Plane9 = new NineSlicePlane(Texture.from('BoxWithRoundedCorners.png'), 15, 15, 15, 15);
  * @memberof PIXI
  */
 export class NineSlicePlane extends SimplePlane
