@@ -54,7 +54,6 @@
     "@rollup/plugin-commonjs": "^15.1.0",
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^9.0.0",
-    "@types/css-font-loading-module": "^0.0.7",
     "@types/jest": "^26.0.0",
     "@webdoc/cli": "^2.0.0",
     "copyfiles": "^2.1.0",
