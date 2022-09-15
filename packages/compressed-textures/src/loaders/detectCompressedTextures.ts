@@ -63,9 +63,7 @@ export const detectCompressedTextures = {
             textureFormats.push(extensionName);
         }
 
-        formats.unshift(...textureFormats);
-
-        return formats;
+        return [...textureFormats, ...formats];
     },
     remove: async (formats: string[]): Promise<string[]> =>
     {
