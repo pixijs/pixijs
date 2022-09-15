@@ -629,7 +629,8 @@ export class BitmapText extends Container
 
             for (const mesh of this._activePagesMeshData)
             {
-                mesh.mesh.shader.uniforms.uFWidth = worldScale * distanceFieldRange * fontScale * this._resolution;
+                mesh.mesh.shader.uniforms.uFWidth = Math.min(
+                    worldScale * distanceFieldRange * fontScale * this._resolution, 1.0);
             }
         }
 

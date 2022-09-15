@@ -8,7 +8,7 @@ import { resolveCharacters, drawGlyph, extractCharCode } from './utils';
 
 import type { Dict } from '@pixi/utils';
 import type { ITextStyle } from '@pixi/text';
-import { ALPHA_MODES } from '@pixi/constants';
+import { ALPHA_MODES, MIPMAP_MODES } from '@pixi/constants';
 import { settings } from '@pixi/settings';
 
 export interface IBitmapFontCharacter
@@ -168,6 +168,7 @@ export class BitmapFont
             if (distanceField?.fieldType && distanceField.fieldType !== 'none')
             {
                 pageTextures[id].baseTexture.alphaMode = ALPHA_MODES.NO_PREMULTIPLIED_ALPHA;
+                pageTextures[id].baseTexture.mipmap = MIPMAP_MODES.OFF;
             }
         }
 
