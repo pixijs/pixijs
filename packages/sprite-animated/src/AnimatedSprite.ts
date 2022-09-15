@@ -178,15 +178,7 @@ export class AnimatedSprite extends Sprite
     public gotoAndStop(frameNumber: number): void
     {
         this.stop();
-
-        const previousFrame = this.currentFrame;
-
-        this._currentTime = frameNumber;
-
-        if (previousFrame !== this.currentFrame)
-        {
-            this.updateTexture();
-        }
+        this.currentFrame = frameNumber;
     }
 
     /**
@@ -195,15 +187,7 @@ export class AnimatedSprite extends Sprite
      */
     public gotoAndPlay(frameNumber: number): void
     {
-        const previousFrame = this.currentFrame;
-
-        this._currentTime = frameNumber;
-
-        if (previousFrame !== this.currentFrame)
-        {
-            this.updateTexture();
-        }
-
+        this.currentFrame = frameNumber;
         this.play();
     }
 
@@ -408,10 +392,7 @@ export class AnimatedSprite extends Sprite
         this.updateTexture();
     }
 
-    /**
-     * The AnimatedSprites current frame index.
-     * @readonly
-     */
+    /** The AnimatedSprites current frame index. */
     get currentFrame(): number
     {
         let currentFrame = Math.floor(this._currentTime) % this._textures.length;
@@ -422,6 +403,24 @@ export class AnimatedSprite extends Sprite
         }
 
         return currentFrame;
+    }
+
+    set currentFrame(value: number)
+    {
+        if (value < 0 || value > this.totalFrames - 1)
+        {
+            throw new Error(`[AnimatedSprite]: Invalid frame index value ${value}, `
+                + `expected to be between 0 and totalFrames ${this.totalFrames}.`);
+        }
+
+        const previousFrame = this.currentFrame;
+
+        this._currentTime = value;
+
+        if (previousFrame !== this.currentFrame)
+        {
+            this.updateTexture();
+        }
     }
 
     /**
