@@ -1,16 +1,15 @@
-import type { IBaseTextureOptions, Texture } from '@pixi/core';
-import { BaseTexture, ExtensionType } from '@pixi/core';
-import { settings } from '@pixi/settings';
-import { getResolutionOfUrl } from '@pixi/utils';
+import { BaseTexture, extensions, ExtensionType, settings, utils } from '@pixi/core';
 import type { Loader } from '../../Loader';
 import type { LoadAsset } from '../../types';
-
-import type { LoaderParser } from '../LoaderParser';
+import { LoaderParserPriority } from '../LoaderParser';
 import { WorkerManager } from '../WorkerManager';
 import { checkExtension } from './utils/checkExtension';
 import { createTexture } from './utils/createTexture';
 
-const validImages = ['jpg', 'png', 'jpeg', 'avif', 'webp'];
+import type { IBaseTextureOptions, Texture } from '@pixi/core';
+import type { LoaderParser } from '../LoaderParser';
+
+const validImages = ['.jpg', '.png', '.jpeg', '.avif', '.webp'];
 
 /**
  * Returns a promise that resolves an ImageBitmaps.
@@ -21,7 +20,7 @@ const validImages = ['jpg', 'png', 'jpeg', 'avif', 'webp'];
 export async function loadImageBitmap(url: string): Promise<ImageBitmap>
 {
     const response = await settings.ADAPTER.fetch(url);
-    const imageBlob =  await response.blob();
+    const imageBlob = await response.blob();
     const imageBitmap = await createImageBitmap(imageBlob);
 
     return imageBitmap;
@@ -34,7 +33,10 @@ export async function loadImageBitmap(url: string): Promise<ImageBitmap>
  * We can then use the ImageBitmap as a source for a Pixi Texture
  */
 export const loadTextures = {
-    extension: ExtensionType.LoadParser,
+    extension: {
+        type: ExtensionType.LoadParser,
+        priority: LoaderParserPriority.High,
+    },
 
     config: {
         preferWorkers: true,
@@ -42,7 +44,18 @@ export const loadTextures = {
 
     test(url: string): boolean
     {
-        return checkExtension(url, validImages);
+        let isValidBase64Suffix = false;
+
+        for (let i = 0; i < validImages.length; i++)
+        {
+            if (url.indexOf(`data:image/${validImages[i].slice(1)}`) === 0)
+            {
+                isValidBase64Suffix = true;
+                break;
+            }
+        }
+
+        return isValidBase64Suffix || checkExtension(url, validImages);
     },
 
     async load(url: string, asset: LoadAsset<IBaseTextureOptions>, loader: Loader): Promise<Texture>
@@ -76,7 +89,7 @@ export const loadTextures = {
         }
 
         const base = new BaseTexture(src, {
-            resolution: getResolutionOfUrl(url),
+            resolution: utils.getResolutionOfUrl(url),
             ...asset.data,
         });
 
@@ -89,5 +102,6 @@ export const loadTextures = {
     {
         texture.destroy(true);
     }
-
 } as LoaderParser<Texture, IBaseTextureOptions>;
+
+extensions.add(loadTextures);

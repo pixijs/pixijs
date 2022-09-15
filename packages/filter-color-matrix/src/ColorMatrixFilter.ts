@@ -1,20 +1,20 @@
 import { Filter, defaultFilterVertex } from '@pixi/core';
 import fragment from './colorMatrix.frag';
 
-import type { ArrayFixed } from '@pixi/utils';
+import type { utils } from '@pixi/core';
 
-export type ColorMatrix = ArrayFixed<number, 20>;
+export type ColorMatrix = utils.ArrayFixed<number, 20>;
 
 /**
  * The ColorMatrixFilter class lets you apply a 5x4 matrix transformation on the RGBA
  * color and alpha values of every pixel on your displayObject to produce a result
  * with a new set of RGBA color and alpha values. It's pretty powerful!
+ * @example
+ * import { filters } from 'pixi.js';
  *
- * ```js
- *  let colorMatrix = new PIXI.filters.ColorMatrixFilter();
- *  container.filters = [colorMatrix];
- *  colorMatrix.contrast(2);
- * ```
+ * const colorMatrix = new filters.ColorMatrixFilter();
+ * container.filters = [colorMatrix];
+ * colorMatrix.contrast(2);
  * @author Clément Chenebault <clement@goodboydigital.com>
  * @memberof PIXI.filters
  */

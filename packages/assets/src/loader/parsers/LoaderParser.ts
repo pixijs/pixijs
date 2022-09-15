@@ -3,6 +3,22 @@ import type { Loader } from '../Loader';
 import type { LoadAsset } from '../types';
 
 /**
+ * The extension priority for loader parsers.
+ * Helpful when managing multiple parsers that share the same extension
+ * test. The higher priority parsers will be checked first.
+ */
+export enum LoaderParserPriority
+// eslint-disable-next-line @typescript-eslint/indent
+{
+    /** Generic parsers: txt, json, webfonts */
+    Low = 0,
+    /** PixiJS assets with generic extensions: spritesheets, bitmapfonts  */
+    Normal = 1,
+    /** Specific texture types: svg, png, ktx, dds, basis */
+    High = 2,
+}
+
+/**
  * All functions are optional here. The flow:
  *
  * for every asset,

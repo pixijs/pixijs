@@ -1,4 +1,4 @@
-import { settings } from '@pixi/settings';
+import { settings } from '@pixi/core';
 import type { TextStyle, TextStyleWhiteSpace } from './TextStyle';
 
 interface IFontMetrics
@@ -12,11 +12,16 @@ type CharacterWidthCache = { [key: string]: number };
 
 /**
  * The TextMetrics object represents the measurement of a block of text with a specified style.
+ * @example
+ * import { TextStyle, TextMetrics } from 'pixi.js';
  *
- * ```js
- * let style = new PIXI.TextStyle({fontFamily : 'Arial', fontSize: 24, fill : 0xff1010, align : 'center'})
- * let textMetrics = PIXI.TextMetrics.measureText('Your text', style)
- * ```
+ * const style = new TextStyle({
+ *   fontFamily: 'Arial',
+ *   fontSize: 24,
+ *   fill: 0xff1010,
+ *   align: 'center',
+ * });
+ * const textMetrics = TextMetrics.measureText('Your text', style);
  * @memberof PIXI
  */
 export class TextMetrics
@@ -458,7 +463,7 @@ export class TextMetrics
             return false;
         }
 
-        return (TextMetrics._newlines.indexOf(char.charCodeAt(0)) >= 0);
+        return TextMetrics._newlines.includes(char.charCodeAt(0));
     }
 
     /**
@@ -478,7 +483,7 @@ export class TextMetrics
             return false;
         }
 
-        return (TextMetrics._breakingSpaces.indexOf(char.charCodeAt(0)) >= 0);
+        return TextMetrics._breakingSpaces.includes(char.charCodeAt(0));
     }
 
     /**
@@ -717,7 +722,7 @@ export class TextMetrics
                 const c = new OffscreenCanvas(0, 0);
                 const context = c.getContext('2d');
 
-                if (context && context.measureText)
+                if (context?.measureText)
                 {
                     TextMetrics.__canvas = c;
 

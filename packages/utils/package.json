@@ -1,9 +1,8 @@
 {
   "name": "@pixi/utils",
-  "version": "6.5.1",
+  "version": "7.0.0-alpha",
   "main": "dist/cjs/utils.js",
   "module": "dist/esm/utils.mjs",
-  "bundle": "dist/browser/utils.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
@@ -17,7 +16,6 @@
       }
     }
   },
-  "namespace": "PIXI.utils",
   "description": "Collection of utilities used by PixiJS",
   "author": "Mat Groves",
   "contributors": [
@@ -34,19 +32,16 @@
     "access": "public"
   },
   "files": [
-    "lib",
     "dist",
     "*.d.ts"
   ],
   "dependencies": {
+    "@pixi/constants": "7.0.0-alpha",
+    "@pixi/settings": "7.0.0-alpha",
     "@types/earcut": "^2.1.0",
     "earcut": "^2.2.4",
     "eventemitter3": "^3.1.0",
     "url": "^0.11.0"
-  },
-  "peerDependencies": {
-    "@pixi/constants": "6.5.1",
-    "@pixi/settings": "6.5.1"
   },
   "devDependencies": {
     "css-color-names": "^1.0.1"

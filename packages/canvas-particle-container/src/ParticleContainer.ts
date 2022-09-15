@@ -15,7 +15,7 @@ ParticleContainer.prototype.renderCanvas = function renderCanvas(renderer: Canva
         return;
     }
 
-    const context = renderer.context;
+    const context = renderer.canvasContext.activeContext;
     const transform = this.worldTransform;
     let isRotated = true;
 
@@ -25,7 +25,7 @@ ParticleContainer.prototype.renderCanvas = function renderCanvas(renderer: Canva
     let finalWidth = 0;
     let finalHeight = 0;
 
-    renderer.setBlendMode(this.blendMode);
+    renderer.canvasContext.setBlendMode(this.blendMode);
 
     context.globalAlpha = this.worldAlpha;
 
@@ -54,7 +54,7 @@ ParticleContainer.prototype.renderCanvas = function renderCanvas(renderer: Canva
             // this is the fastest  way to optimise! - if rotation is 0 then we can avoid any kind of setTransform call
             if (isRotated)
             {
-                renderer.setContextTransform(transform, false, 1);
+                renderer.canvasContext.setContextTransform(transform, false, 1);
                 isRotated = false;
             }
 
@@ -75,7 +75,7 @@ ParticleContainer.prototype.renderCanvas = function renderCanvas(renderer: Canva
 
             const childTransform = child.worldTransform;
 
-            renderer.setContextTransform(childTransform, this.roundPixels, 1);
+            renderer.canvasContext.setContextTransform(childTransform, this.roundPixels, 1);
 
             positionX = ((child.anchor.x) * (-frame.width)) + 0.5;
             positionY = ((child.anchor.y) * (-frame.height)) + 0.5;
@@ -85,6 +85,7 @@ ParticleContainer.prototype.renderCanvas = function renderCanvas(renderer: Canva
         }
 
         const resolution = child._texture.baseTexture.resolution;
+        const contextResolution = renderer.canvasContext.activeResolution;
 
         context.drawImage(
             child._texture.baseTexture.getDrawableSource(),
@@ -92,10 +93,10 @@ ParticleContainer.prototype.renderCanvas = function renderCanvas(renderer: Canva
             frame.y * resolution,
             frame.width * resolution,
             frame.height * resolution,
-            positionX * renderer.resolution,
-            positionY * renderer.resolution,
-            finalWidth * renderer.resolution,
-            finalHeight * renderer.resolution
+            positionX * contextResolution,
+            positionY * contextResolution,
+            finalWidth * contextResolution,
+            finalHeight * contextResolution
         );
     }
 };

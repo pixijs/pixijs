@@ -1,4 +1,4 @@
-import { Rectangle } from '@pixi/math';
+import { Rectangle } from '@pixi/core';
 
 import '@pixi/math-extras';
 

@@ -1,7 +1,7 @@
 import { DisplayObject } from '@pixi/display';
 import { FederatedEvent } from './FederatedEvent';
 
-import type { EventEmitter } from '@pixi/utils';
+import type { utils } from '@pixi/core';
 
 export type Cursor = 'auto'
 | 'default'
@@ -50,7 +50,7 @@ export interface IHitArea
  * Describes the shape for a {@link FederatedEvent}'s' `eventTarget`.
  * @memberof PIXI
  */
-export interface FederatedEventTarget extends EventEmitter, EventTarget
+export interface FederatedEventTarget extends utils.EventEmitter, EventTarget
 {
     /** The cursor preferred when the mouse pointer is hovering over. */
     cursor: Cursor | string;
@@ -73,13 +73,15 @@ export interface FederatedEventTarget extends EventEmitter, EventTarget
 
 export const FederatedDisplayObject: Omit<
 FederatedEventTarget,
-'parent' | 'children' | keyof EventEmitter | 'cursor'
+'parent' | 'children' | keyof utils.EventEmitter | 'cursor'
 > = {
     /**
      * Enable interaction events for the DisplayObject. Touch, pointer and mouse
      * events will not be emitted unless `interactive` is set to `true`.
      * @example
-     * const sprite = new PIXI.Sprite(texture);
+     * import { Sprite } from 'pixi.js';
+     *
+     * const sprite = new Sprite(texture);
      * sprite.interactive = true;
      * sprite.on('tap', (event) => {
      *    //handle event
@@ -99,9 +101,11 @@ FederatedEventTarget,
      * Interaction shape. Children will be hit first, then this shape will be checked.
      * Setting this will cause this shape to be checked in hit tests rather than the displayObject's bounds.
      * @example
-     * const sprite = new PIXI.Sprite(texture);
+     * import { Sprite, Rectangle } from 'pixi.js';
+     *
+     * const sprite = new Sprite(texture);
      * sprite.interactive = true;
-     * sprite.hitArea = new PIXI.Rectangle(0, 0, 100, 100);
+     * sprite.hitArea = new Rectangle(0, 0, 100, 100);
      * @member {PIXI.IHitArea}
      * @memberof PIXI.DisplayObject#
      */
@@ -153,7 +157,7 @@ FederatedEventTarget,
         type = capture ? `${type}capture` : type;
         listener = typeof listener === 'function' ? listener : listener.handleEvent;
 
-        (this as unknown as EventEmitter).on(type, listener, context);
+        (this as unknown as utils.EventEmitter).on(type, listener, context);
     },
 
     /**
@@ -178,7 +182,7 @@ FederatedEventTarget,
         type = capture ? `${type}capture` : type;
         listener = typeof listener === 'function' ? listener : listener.handleEvent;
 
-        (this as unknown as EventEmitter).off(type, listener, context);
+        (this as unknown as utils.EventEmitter).off(type, listener, context);
     },
 
     /**

@@ -1,9 +1,7 @@
-import { Texture, TextureMatrix } from '@pixi/core';
-import { Point, Rectangle, Transform  } from '@pixi/math';
+import { Point, Rectangle, Transform, Texture, TextureMatrix } from '@pixi/core';
 import { Sprite } from '@pixi/sprite';
-import type { Renderer, IBaseTextureOptions, TextureSource } from '@pixi/core';
+import type { IPoint, IPointData, ISize, ObservablePoint, Renderer, IBaseTextureOptions, TextureSource } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
-import type { IPoint, IPointData, ISize, ObservablePoint } from '@pixi/math';
 
 const tempPoint = new Point();
 

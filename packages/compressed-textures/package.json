@@ -1,6 +1,6 @@
 {
   "name": "@pixi/compressed-textures",
-  "version": "6.5.1",
+  "version": "7.0.0-alpha",
   "description": "Loaders for compressed texture file formats",
   "keywords": [
     "pixi.js",
@@ -15,7 +15,6 @@
   "license": "MIT",
   "main": "dist/cjs/compressed-textures.js",
   "module": "dist/esm/compressed-textures.mjs",
-  "bundle": "dist/browser/compressed-textures.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
@@ -47,11 +46,8 @@
   "bugs": {
     "url": "https://github.com/pixijs/pixi.js/issues"
   },
-  "peerDependencies": {
-    "@pixi/constants": "6.5.1",
-    "@pixi/core": "6.5.1",
-    "@pixi/loaders": "6.5.1",
-    "@pixi/settings": "6.5.1",
-    "@pixi/utils": "6.5.1"
-  }
+  "pixiRequirements": [
+    "@pixi/assets",
+    "@pixi/core"
+  ]
 }

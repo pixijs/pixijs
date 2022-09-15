@@ -2,14 +2,16 @@ import type { GLBuffer } from './GLBuffer';
 import { ENV } from '@pixi/constants';
 import { settings } from '../settings';
 
-import type { ISystem } from '../ISystem';
+import type { ISystem } from '../system/ISystem';
 import type { DRAW_MODES } from '@pixi/constants';
 import type { Renderer } from '../Renderer';
-import type { IRenderingContext } from '../IRenderingContext';
 import type { Geometry } from './Geometry';
 import type { Shader } from '../shader/Shader';
 import type { Program } from '../shader/Program';
 import type { Dict } from '@pixi/utils';
+import type { IRenderingContext } from '../IRenderer';
+import type { ExtensionMetadata } from '@pixi/extensions';
+import { extensions, ExtensionType } from '@pixi/extensions';
 
 const byteSizeMap: {[key: number]: number} = { 5126: 4, 5123: 2, 5121: 1 };
 
@@ -19,6 +21,12 @@ const byteSizeMap: {[key: number]: number} = { 5126: 4, 5123: 2, 5121: 1 };
  */
 export class GeometrySystem implements ISystem
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        type: ExtensionType.RendererSystem,
+        name: 'geometry',
+    };
+
     /**
      * `true` if we has `*_vertex_array_object` extension.
      * @readonly
@@ -581,3 +589,5 @@ export class GeometrySystem implements ISystem
         this.renderer = null;
     }
 }
+
+extensions.add(GeometrySystem);

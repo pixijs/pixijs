@@ -1,9 +1,8 @@
 {
   "name": "@pixi/text-bitmap",
-  "version": "6.5.1",
+  "version": "7.0.0-alpha",
   "main": "dist/cjs/text-bitmap.js",
   "module": "dist/esm/text-bitmap.mjs",
-  "bundle": "dist/browser/text-bitmap.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
@@ -33,19 +32,14 @@
     "access": "public"
   },
   "files": [
-    "lib",
     "dist",
     "*.d.ts"
   ],
-  "peerDependencies": {
-    "@pixi/constants": "6.5.1",
-    "@pixi/core": "6.5.1",
-    "@pixi/display": "6.5.1",
-    "@pixi/loaders": "6.5.1",
-    "@pixi/math": "6.5.1",
-    "@pixi/mesh": "6.5.1",
-    "@pixi/settings": "6.5.1",
-    "@pixi/text": "6.5.1",
-    "@pixi/utils": "6.5.1"
-  }
+  "pixiRequirements": [
+    "@pixi/assets",
+    "@pixi/core",
+    "@pixi/display",
+    "@pixi/mesh",
+    "@pixi/text"
+  ]
 }

@@ -1,5 +1,5 @@
 module.exports = {
-    testPathIgnorePatterns: ['/node_modules/', '/src/', '/dist/', '/lib/'],
+    testPathIgnorePatterns: ['/node_modules/', '/src/', '/dist/', '/lib/', '/out/'],
     preset: 'ts-jest/presets/js-with-ts',
     runner: 'jest-electron/runner',
     testEnvironment: 'jest-electron/environment',

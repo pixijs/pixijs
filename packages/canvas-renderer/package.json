@@ -1,9 +1,8 @@
 {
   "name": "@pixi/canvas-renderer",
-  "version": "6.5.1",
+  "version": "7.0.0-alpha",
   "main": "dist/cjs/canvas-renderer.js",
   "module": "dist/esm/canvas-renderer.mjs",
-  "bundle": "dist/browser/canvas-renderer.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
@@ -33,15 +32,10 @@
     "access": "public"
   },
   "files": [
-    "lib",
     "dist",
     "*.d.ts"
   ],
-  "peerDependencies": {
-    "@pixi/constants": "6.5.1",
-    "@pixi/core": "6.5.1",
-    "@pixi/math": "6.5.1",
-    "@pixi/settings": "6.5.1",
-    "@pixi/utils": "6.5.1"
-  }
+  "pixiRequirements": [
+    "@pixi/core"
+  ]
 }

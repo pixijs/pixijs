@@ -4,10 +4,13 @@ import { GLTexture } from './GLTexture';
 import { removeItems } from '@pixi/utils';
 import { MIPMAP_MODES, WRAP_MODES, SCALE_MODES, TYPES, SAMPLER_TYPES } from '@pixi/constants';
 
-import type { ISystem } from '../ISystem';
+import type { ISystem } from '../system/ISystem';
 import type { Texture } from './Texture';
-import type { IRenderingContext } from '../IRenderingContext';
+
 import type { Renderer } from '../Renderer';
+import type { IRenderingContext } from '../IRenderer';
+import type { ExtensionMetadata } from '@pixi/extensions';
+import { extensions, ExtensionType } from '@pixi/extensions';
 
 /**
  * System plugin to the renderer to manage textures.
@@ -15,6 +18,12 @@ import type { Renderer } from '../Renderer';
  */
 export class TextureSystem implements ISystem
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        type: ExtensionType.RendererSystem,
+        name: 'texture',
+    };
+
     /**
      * Bound textures.
      * @readonly
@@ -134,7 +143,7 @@ export class TextureSystem implements ISystem
 
         // cannot bind partial texture
         // TODO: report a warning
-        if (texture && texture.valid && !texture.parentTextureArray)
+        if (texture?.valid && !texture.parentTextureArray)
         {
             texture.touched = this.renderer.textureGC.count;
 
@@ -311,7 +320,7 @@ export class TextureSystem implements ISystem
 
         this.initTextureType(texture, glTexture);
 
-        if (texture.resource && texture.resource.upload(renderer, texture, glTexture))
+        if (texture.resource?.upload(renderer, texture, glTexture))
         {
             // texture is uploaded, dont do anything!
             if (glTexture.samplerType !== SAMPLER_TYPES.FLOAT)
@@ -417,7 +426,7 @@ export class TextureSystem implements ISystem
             glTexture.wrapMode = texture.wrapMode;
         }
 
-        if (texture.resource && texture.resource.style(this.renderer, texture, glTexture))
+        if (texture.resource?.style(this.renderer, texture, glTexture))
         {
             // style is set, dont do anything!
         }
@@ -475,3 +484,5 @@ export class TextureSystem implements ISystem
         this.renderer = null;
     }
 }
+
+extensions.add(TextureSystem);

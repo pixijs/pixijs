@@ -56,7 +56,7 @@ export class TextFormat
      */
     static test(data: unknown): boolean
     {
-        return typeof data === 'string' && data.indexOf('info face=') === 0;
+        return typeof data === 'string' && data.startsWith('info face=');
     }
 
     /**

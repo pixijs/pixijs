@@ -24,7 +24,7 @@ export * from './BatchPart';
 
 // for type only
 import type { BatchPart } from './BatchPart';
-import { SHAPES } from '@pixi/math';
+import { SHAPES } from '@pixi/core';
 import type { BatchDrawCall } from '@pixi/core';
 import type { IShapeBuildCommand } from './IShapeBuildCommand';
 

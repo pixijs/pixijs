@@ -1,6 +1,6 @@
 {
   "name": "@pixi/assets",
-  "version": "6.5.1",
+  "version": "7.0.0-alpha",
   "description": "Asset manager for PixiJS, loading resolving and Cacheing",
   "keywords": [
     "pixi",
@@ -13,7 +13,6 @@
   "license": "MIT",
   "main": "dist/cjs/assets.js",
   "module": "dist/esm/assets.mjs",
-  "bundle": "dist/browser/assets.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
@@ -44,14 +43,7 @@
   "bugs": {
     "url": "https://github.com/pixijs/pixi.js/issues"
   },
-  "peerDependencies": {
-    "@pixi/basis": "6.5.1",
-    "@pixi/compressed-textures": "6.5.1",
-    "@pixi/constants": "6.5.1",
-    "@pixi/core": "6.5.1",
-    "@pixi/settings": "6.5.1",
-    "@pixi/spritesheet": "6.5.1",
-    "@pixi/text-bitmap": "6.5.1",
-    "@pixi/utils": "6.5.1"
-  }
+  "pixiRequirements": [
+    "@pixi/core"
+  ]
 }

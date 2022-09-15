@@ -1,36 +1,37 @@
-import { Texture } from '@pixi/core';
 import { Sprite } from '@pixi/sprite';
-import { Ticker, UPDATE_PRIORITY } from '@pixi/ticker';
+import { Texture, Ticker, UPDATE_PRIORITY } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
 
 /**
  * An AnimatedSprite is a simple way to display an animation depicted by a list of textures.
  *
  * ```js
- * let alienImages = ["image_sequence_01.png","image_sequence_02.png","image_sequence_03.png","image_sequence_04.png"];
- * let textureArray = [];
+ * import { Texture, AnimatedSprite } from 'pixi.js';
  *
- * for (let i=0; i < 4; i++)
+ * const alienImages = [
+ *   "image_sequence_01.png",
+ *   "image_sequence_02.png",
+ *   "image_sequence_03.png",
+ *   "image_sequence_04.png"
+ * ];
+ * const textureArray = [];
+ *
+ * for (let i = 0; i < 4; i++)
  * {
- *      let texture = PIXI.Texture.from(alienImages[i]);
+ *      const texture = Texture.from(alienImages[i]);
  *      textureArray.push(texture);
  * };
  *
- * let animatedSprite = new PIXI.AnimatedSprite(textureArray);
+ * const animatedSprite = new AnimatedSprite(textureArray);
  * ```
  *
  * The more efficient and simpler way to create an animated sprite is using a {@link PIXI.Spritesheet}
  * containing the animation definitions:
+ * @example
+ * import { Assets, AnimatedSprite } from 'pixi.js';
  *
- * ```js
- * PIXI.Loader.shared.add("assets/spritesheet.json").load(setup);
- *
- * function setup() {
- *   let sheet = PIXI.Loader.shared.resources["assets/spritesheet.json"].spritesheet;
- *   animatedSprite = new PIXI.AnimatedSprite(sheet.animations["image_sequence"]);
- *   ...
- * }
- * ```
+ * const sheet = await Assets.load("assets/spritesheet.json");
+ * animatedSprite = new AnimatedSprite(sheet.animations["image_sequence"]);
  * @memberof PIXI
  */
 export class AnimatedSprite extends Sprite
@@ -62,7 +63,7 @@ export class AnimatedSprite extends Sprite
     /**
      * User-assigned function to call when an AnimatedSprite finishes playing.
      * @example
-     * animation.onComplete = function () {
+     * animation.onComplete = () => {
      *   // finished!
      * };
      */
@@ -71,7 +72,7 @@ export class AnimatedSprite extends Sprite
     /**
      * User-assigned function to call when an AnimatedSprite changes which texture is being rendered.
      * @example
-     * animation.onFrameChange = function () {
+     * animation.onFrameChange = () => {
      *   // updated!
      * };
      */
@@ -81,7 +82,7 @@ export class AnimatedSprite extends Sprite
      * User-assigned function to call when `loop` is true, and an AnimatedSprite is played and
      * loops around to start again.
      * @example
-     * animation.onLoop = function () {
+     * animation.onLoop = () => {
      *   // looped!
      * };
      */

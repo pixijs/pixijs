@@ -1,9 +1,8 @@
 {
   "name": "@pixi/canvas-display",
-  "version": "6.5.1",
+  "version": "7.0.0-alpha",
   "main": "dist/cjs/canvas-display.js",
   "module": "dist/esm/canvas-display.mjs",
-  "bundle": "dist/browser/canvas-display.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
@@ -17,7 +16,6 @@
       }
     }
   },
-  "bundleNoExports": true,
   "description": "Canvas mixin for the display package",
   "author": "Mat Groves",
   "contributors": [
@@ -34,11 +32,10 @@
     "access": "public"
   },
   "files": [
-    "lib",
     "dist",
     "*.d.ts"
   ],
-  "peerDependencies": {
-    "@pixi/display": "6.5.1"
-  }
+  "pixiRequirements": [
+    "@pixi/display"
+  ]
 }

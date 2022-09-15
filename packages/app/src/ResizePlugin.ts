@@ -1,5 +1,5 @@
 import type { ExtensionMetadata, Renderer } from '@pixi/core';
-import { ExtensionType } from '@pixi/core';
+import { extensions, ExtensionType } from '@pixi/core';
 import type { IApplicationOptions } from './Application';
 
 type ResizeableRenderer = Pick<Renderer, 'resize'>;
@@ -149,3 +149,5 @@ export class ResizePlugin
         this.resize = null;
     }
 }
+
+extensions.add(ResizePlugin);

@@ -1,10 +1,9 @@
-import { SCALE_MODES, BLEND_MODES } from '@pixi/constants';
-import { Matrix, groupD8 } from '@pixi/math';
+import { SCALE_MODES, BLEND_MODES, extensions, ExtensionType, Matrix, groupD8 } from '@pixi/core';
 import { canvasUtils } from '@pixi/canvas-renderer';
+
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
 import type { Sprite } from '@pixi/sprite';
 import type { ExtensionMetadata } from '@pixi/core';
-import { ExtensionType } from '@pixi/core';
 
 const canvasRenderWorldTransform = new Matrix();
 
@@ -57,7 +56,8 @@ export class CanvasSpriteRenderer
     {
         const texture = sprite._texture;
         const renderer = this.renderer;
-        const context = renderer.context;
+        const context = renderer.canvasContext.activeContext;
+        const activeResolution = renderer.canvasContext.activeResolution;
 
         if (!texture.valid)
         {
@@ -87,17 +87,18 @@ export class CanvasSpriteRenderer
             return;
         }
 
-        renderer.setBlendMode(sprite.blendMode, true);
+        renderer.canvasContext.setBlendMode(sprite.blendMode, true);
 
-        renderer.context.globalAlpha = sprite.worldAlpha;
+        context.globalAlpha = sprite.worldAlpha;
 
         // If smoothingEnabled is supported and we need to change the smoothing property for sprite texture
         const smoothingEnabled = texture.baseTexture.scaleMode === SCALE_MODES.LINEAR;
+        const smoothProperty = renderer.canvasContext.smoothProperty;
 
-        if (renderer.smoothProperty
-            && renderer.context[renderer.smoothProperty] !== smoothingEnabled)
+        if (smoothProperty
+            && context[smoothProperty] !== smoothingEnabled)
         {
-            context[renderer.smoothProperty] = smoothingEnabled;
+            context[smoothProperty] = smoothingEnabled;
         }
 
         if (texture.trim)
@@ -119,17 +120,12 @@ export class CanvasSpriteRenderer
             // the anchor has already been applied above, so lets set it to zero
             dx = 0;
             dy = 0;
-
-            const h = destWidth;
-
-            destWidth = destHeight;
-            destHeight = h;
         }
 
         dx -= destWidth / 2;
         dy -= destHeight / 2;
 
-        renderer.setContextTransform(wt, sprite.roundPixels, 1);
+        renderer.canvasContext.setContextTransform(wt, sprite.roundPixels, 1);
         // Allow for pixel rounding
         if (sprite.roundPixels)
         {
@@ -138,17 +134,18 @@ export class CanvasSpriteRenderer
         }
 
         const resolution = texture.baseTexture.resolution;
-        const outerBlend = renderer._outerBlend;
+
+        const outerBlend = renderer.canvasContext._outerBlend;
 
         if (outerBlend)
         {
             context.save();
             context.beginPath();
             context.rect(
-                dx * renderer.resolution,
-                dy * renderer.resolution,
-                destWidth * renderer.resolution,
-                destHeight * renderer.resolution
+                dx * activeResolution,
+                dy * activeResolution,
+                destWidth * activeResolution,
+                destHeight * activeResolution
             );
             context.clip();
         }
@@ -169,10 +166,10 @@ export class CanvasSpriteRenderer
                 0,
                 Math.floor(sourceWidth * resolution),
                 Math.floor(sourceHeight * resolution),
-                Math.floor(dx * renderer.resolution),
-                Math.floor(dy * renderer.resolution),
-                Math.floor(destWidth * renderer.resolution),
-                Math.floor(destHeight * renderer.resolution)
+                Math.floor(dx * activeResolution),
+                Math.floor(dy * activeResolution),
+                Math.floor(destWidth * activeResolution),
+                Math.floor(destHeight * activeResolution)
             );
         }
         else
@@ -183,10 +180,10 @@ export class CanvasSpriteRenderer
                 texture._frame.y * resolution,
                 Math.floor(sourceWidth * resolution),
                 Math.floor(sourceHeight * resolution),
-                Math.floor(dx * renderer.resolution),
-                Math.floor(dy * renderer.resolution),
-                Math.floor(destWidth * renderer.resolution),
-                Math.floor(destHeight * renderer.resolution)
+                Math.floor(dx * activeResolution),
+                Math.floor(dy * activeResolution),
+                Math.floor(destWidth * activeResolution),
+                Math.floor(destHeight * activeResolution)
             );
         }
 
@@ -195,7 +192,7 @@ export class CanvasSpriteRenderer
             context.restore();
         }
         // just in case, leaking outer blend here will be catastrophic!
-        renderer.setBlendMode(BLEND_MODES.NORMAL);
+        renderer.canvasContext.setBlendMode(BLEND_MODES.NORMAL);
     }
 
     /** destroy the sprite object */
@@ -204,3 +201,5 @@ export class CanvasSpriteRenderer
         this.renderer = null;
     }
 }
+
+extensions.add(CanvasSpriteRenderer);

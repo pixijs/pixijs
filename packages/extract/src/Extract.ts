@@ -1,28 +1,10 @@
-import { CanvasRenderTarget } from '@pixi/utils';
-import { Rectangle } from '@pixi/math';
-import { ExtensionType, RenderTexture } from '@pixi/core';
+import { Rectangle, utils, extensions, ExtensionType, RenderTexture } from '@pixi/core';
 
-import type { Renderer, IRendererPlugin, ExtensionMetadata } from '@pixi/core';
+import type { Renderer, ISystem, ExtensionMetadata } from '@pixi/core';
 import type { DisplayObject } from '@pixi/display';
 
 const TEMP_RECT = new Rectangle();
 const BYTES_PER_PIXEL = 4;
-
-/**
- * this interface is used to extract only  a single pixel of Render Texture or Display Object
- * if you use this Interface all fields is required
- * @deprecated
- * @example
- * test: PixelExtractOptions = { x: 15, y: 20, resolution: 4, width: 10, height: 10 }
- */
-export interface PixelExtractOptions
-{
-    x: number,
-    y: number,
-    height: number,
-    resolution: number,
-    width: number
-}
 
 /**
  * This class provides renderer-specific plugins for exporting content from a renderer.
@@ -31,11 +13,13 @@ export interface PixelExtractOptions
  * Do not instantiate these plugins directly. It is available from the `renderer.plugins` property.
  * See {@link PIXI.CanvasRenderer#plugins} or {@link PIXI.Renderer#plugins}.
  * @example
+ * import { Application, Graphics } from 'pixi.js';
+ *
  * // Create a new app (will auto-add extract plugin to renderer)
- * const app = new PIXI.Application();
+ * const app = new Application();
  *
  * // Draw a red circle
- * const graphics = new PIXI.Graphics()
+ * const graphics = new Graphics()
  *     .beginFill(0xFF0000)
  *     .drawCircle(0, 0, 50);
  *
@@ -45,12 +29,12 @@ export interface PixelExtractOptions
  * @memberof PIXI
  */
 
-export class Extract implements IRendererPlugin
+export class Extract implements ISystem
 {
     /** @ignore */
     static extension: ExtensionMetadata = {
         name: 'extract',
-        type: ExtensionType.RendererPlugin,
+        type: ExtensionType.RendererSystem,
     };
 
     private renderer: Renderer;
@@ -147,7 +131,7 @@ export class Extract implements IRendererPlugin
         const width = Math.round(frame.width * resolution);
         const height = Math.round(frame.height * resolution);
 
-        let canvasBuffer = new CanvasRenderTarget(width, height, 1);
+        let canvasBuffer = new utils.CanvasRenderTarget(width, height, 1);
 
         const webglPixels = new Uint8Array(BYTES_PER_PIXEL * width * height);
 
@@ -174,7 +158,7 @@ export class Extract implements IRendererPlugin
         // pulling pixels
         if (flipY)
         {
-            const target = new CanvasRenderTarget(canvasBuffer.width, canvasBuffer.height, 1);
+            const target = new utils.CanvasRenderTarget(canvasBuffer.width, canvasBuffer.height, 1);
 
             target.context.scale(1, -1);
 
@@ -202,7 +186,7 @@ export class Extract implements IRendererPlugin
      * @param frame - The frame the extraction is restricted to.
      * @returns - One-dimensional array containing the pixel data of the entire texture
      */
-    public pixels(target?: DisplayObject | RenderTexture, frame?: Rectangle | PixelExtractOptions): Uint8Array
+    public pixels(target?: DisplayObject | RenderTexture, frame?: Rectangle): Uint8Array
     {
         const renderer = this.renderer;
         let resolution;
@@ -305,3 +289,5 @@ export class Extract implements IRendererPlugin
         }
     }
 }
+
+extensions.add(Extract);

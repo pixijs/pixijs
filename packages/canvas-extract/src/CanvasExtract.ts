@@ -1,9 +1,8 @@
-import { ExtensionType, RenderTexture } from '@pixi/core';
-import { CanvasRenderTarget } from '@pixi/utils';
-import { Rectangle } from '@pixi/math';
+import { Rectangle, extensions, ExtensionType, RenderTexture, utils } from '@pixi/core';
+
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
 import type { DisplayObject } from '@pixi/display';
-import type { BaseRenderTexture, ExtensionMetadata } from '@pixi/core';
+import type { BaseRenderTexture, ISystem, ExtensionMetadata } from '@pixi/core';
 
 const TEMP_RECT = new Rectangle();
 
@@ -14,12 +13,12 @@ const TEMP_RECT = new Rectangle();
  * @class
  * @memberof PIXI
  */
-export class CanvasExtract
+export class CanvasExtract implements ISystem
 {
     /** @ignore */
     static extension: ExtensionMetadata = {
         name: 'extract',
-        type: ExtensionType.CanvasRendererPlugin,
+        type: ExtensionType.CanvasRendererSystem,
     };
 
     /** A reference to the current renderer */
@@ -98,8 +97,8 @@ export class CanvasExtract
         }
         else
         {
-            context = renderer.rootContext;
-            resolution = renderer.resolution;
+            context = renderer.canvasContext.rootContext;
+            resolution = renderer._view.resolution;
 
             if (!frame)
             {
@@ -114,7 +113,7 @@ export class CanvasExtract
         const width = Math.round(frame.width * resolution);
         const height = Math.round(frame.height * resolution);
 
-        const canvasBuffer = new CanvasRenderTarget(width, height, 1);
+        const canvasBuffer = new utils.CanvasRenderTarget(width, height, 1);
         const canvasData = context.getImageData(x, y, width, height);
 
         canvasBuffer.context.putImageData(canvasData, 0, 0);
@@ -158,7 +157,7 @@ export class CanvasExtract
         }
         else
         {
-            context = renderer.rootContext;
+            context = renderer.canvasContext.rootContext;
             resolution = renderer.resolution;
 
             if (!frame)
@@ -183,3 +182,5 @@ export class CanvasExtract
         this.renderer = null;
     }
 }
+
+extensions.add(CanvasExtract);

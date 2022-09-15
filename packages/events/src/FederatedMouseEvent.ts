@@ -1,5 +1,5 @@
 import { FederatedEvent } from './FederatedEvent';
-import { Point } from '@pixi/math';
+import { Point } from '@pixi/core';
 
 /**
  * A {@link PIXI.FederatedEvent} for mouse events.
@@ -128,7 +128,7 @@ MouseEvent | PointerEvent | TouchEvent
      * @param _metaKeyArg
      * @param _buttonArg
      * @param _relatedTargetArg
-     * @deprecated
+     * @deprecated since 7.0.0
      */
     // eslint-disable-next-line max-params
     initMouseEvent(

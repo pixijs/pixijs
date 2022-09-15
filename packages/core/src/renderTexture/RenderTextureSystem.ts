@@ -1,12 +1,14 @@
 import { Rectangle } from '@pixi/math';
 import type { BUFFER_BITS } from '@pixi/constants';
 
-import type { ISystem } from '../ISystem';
+import type { ISystem } from '../system/ISystem';
 import type { Renderer } from '../Renderer';
 import type { RenderTexture } from './RenderTexture';
 import type { BaseRenderTexture } from './BaseRenderTexture';
 import type { MaskData } from '../mask/MaskData';
 import type { ISize } from '@pixi/math';
+import type { ExtensionMetadata } from '@pixi/extensions';
+import { extensions, ExtensionType } from '@pixi/extensions';
 
 // Temporary rectangle for assigned sourceFrame or destinationFrame
 const tempRect = new Rectangle();
@@ -34,10 +36,13 @@ const tempRect2 = new Rectangle();
  */
 export class RenderTextureSystem implements ISystem
 {
-/* eslint-enable max-len */
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        type: ExtensionType.RendererSystem,
+        name: 'renderTexture',
+    };
 
-    /** The clear background color as RGBA. */
-    public clearColor: number[];
+    /* eslint-enable max-len */
 
     /**
      * List of masks for the {@link PIXI.StencilSystem}.
@@ -81,7 +86,6 @@ export class RenderTextureSystem implements ISystem
     {
         this.renderer = renderer;
 
-        this.clearColor = renderer._backgroundColorRgba;
         this.defaultMaskStack = [];
         this.current = null;
         this.sourceFrame = new Rectangle();
@@ -137,8 +141,8 @@ export class RenderTextureSystem implements ISystem
 
             if (!sourceFrame)
             {
-                tempRect.width = renderer.screen.width;
-                tempRect.height = renderer.screen.height;
+                tempRect.width = renderer._view.screen.width;
+                tempRect.height = renderer._view.screen.height;
 
                 sourceFrame = tempRect;
             }
@@ -196,11 +200,11 @@ export class RenderTextureSystem implements ISystem
         }
         else
         {
-            clearColor = clearColor || this.clearColor;
+            clearColor = clearColor || this.renderer.background.colorRgba;
         }
 
         const destinationFrame = this.destinationFrame;
-        const baseFrame: ISize = this.current ? this.current.baseTexture : this.renderer.screen;
+        const baseFrame: ISize = this.current ? this.current.baseTexture : this.renderer._view.screen;
         const clearMask = destinationFrame.width !== baseFrame.width || destinationFrame.height !== baseFrame.height;
 
         if (clearMask)
@@ -243,3 +247,5 @@ export class RenderTextureSystem implements ISystem
         this.renderer = null;
     }
 }
+
+extensions.add(RenderTextureSystem);

@@ -1,9 +1,8 @@
 {
   "name": "@pixi/sprite-animated",
-  "version": "6.5.1",
+  "version": "7.0.0-alpha",
   "main": "dist/cjs/sprite-animated.js",
   "module": "dist/esm/sprite-animated.mjs",
-  "bundle": "dist/browser/sprite-animated.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
@@ -33,13 +32,11 @@
     "access": "public"
   },
   "files": [
-    "lib",
     "dist",
     "*.d.ts"
   ],
-  "peerDependencies": {
-    "@pixi/core": "6.5.1",
-    "@pixi/sprite": "6.5.1",
-    "@pixi/ticker": "6.5.1"
-  }
+  "pixiRequirements": [
+    "@pixi/core",
+    "@pixi/sprite"
+  ]
 }

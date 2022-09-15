@@ -1,8 +1,7 @@
-import { BaseTexture, ExtensionType } from '@pixi/core';
+import { settings, BaseTexture, extensions, ExtensionType } from '@pixi/core';
 import { BasePrepare } from '@pixi/prepare';
-import { settings } from '@pixi/settings';
 
-import type { AbstractRenderer, ExtensionMetadata } from '@pixi/core';
+import type { ISystem, ExtensionMetadata, IRenderer } from '@pixi/core';
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
 import type { IDisplayObjectExtended } from '@pixi/prepare';
 
@@ -15,7 +14,7 @@ const CANVAS_START_SIZE = 16;
  * @param item - Item to check
  * @returns If item was uploaded.
  */
-function uploadBaseTextures(prepare: AbstractRenderer | BasePrepare, item: IDisplayObjectExtended): boolean
+function uploadBaseTextures(prepare: IRenderer | BasePrepare, item: IDisplayObjectExtended): boolean
 {
     const tempPrepare = prepare as CanvasPrepare;
 
@@ -54,12 +53,12 @@ function uploadBaseTextures(prepare: AbstractRenderer | BasePrepare, item: IDisp
  * @extends PIXI.BasePrepare
  * @memberof PIXI
  */
-export class CanvasPrepare extends BasePrepare
+export class CanvasPrepare extends BasePrepare implements ISystem
 {
     /** @ignore */
     static extension: ExtensionMetadata = {
         name: 'prepare',
-        type: ExtensionType.CanvasRendererPlugin,
+        type: ExtensionType.CanvasRendererSystem,
     };
 
     /**
@@ -101,3 +100,5 @@ export class CanvasPrepare extends BasePrepare
         this.canvas = null;
     }
 }
+
+extensions.add(CanvasPrepare);

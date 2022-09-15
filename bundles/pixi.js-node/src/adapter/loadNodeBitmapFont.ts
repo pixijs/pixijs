@@ -1,10 +1,10 @@
 import type { LoadAsset, Loader, LoaderParser } from '@pixi/assets';
 import type { Texture } from '@pixi/core';
-import { ExtensionType } from '@pixi/core';
+import { extensions, ExtensionType } from '@pixi/core';
 import { settings } from '@pixi/settings';
 import type { IBitmapFontRawData } from '@pixi/text-bitmap';
 import { BitmapFont, BitmapFontData, TextFormat, XMLStringFormat } from '@pixi/text-bitmap';
-import path from 'path';
+import { path } from '@pixi/utils';
 import { parseStringPromise } from 'xml2js';
 
 interface XMLRawJson
@@ -122,7 +122,8 @@ async function _loadBitmap(src: string, data: BitmapFontData, loader: Loader)
         textureUrls.push(url);
     }
 
-    const textures: Texture[] = Object.values(await loader.load(textureUrls));
+    const loadedTextures = await loader.load(textureUrls) as Record<string, Texture>;
+    const textures = textureUrls.map((url) => loadedTextures[url]);
 
     return BitmapFont.install(data, textures, true);
 }
@@ -193,3 +194,5 @@ export const loadNodeBitmapFont = {
         bitmapFont.destroy();
     }
 } as LoaderParser<BitmapFont | string>;
+
+extensions.add(loadNodeBitmapFont);

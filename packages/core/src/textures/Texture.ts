@@ -39,9 +39,11 @@ function removeAllHandlers(tex: any): void
  * You can directly create a texture from an image and then reuse it multiple times like this :
  *
  * ```js
- * let texture = PIXI.Texture.from('assets/image.png');
- * let sprite1 = new PIXI.Sprite(texture);
- * let sprite2 = new PIXI.Sprite(texture);
+ * import { Texture, Sprite } from 'pixi.js';
+ *
+ * const texture = Texture.from('assets/image.png');
+ * const sprite1 = new Sprite(texture);
+ * const sprite2 = new Sprite(texture);
  * ```
  *
  * If you didnt pass the texture frame to constructor, it enables `noFrame` mode:
@@ -50,8 +52,10 @@ function removeAllHandlers(tex: any): void
  * Textures made from SVGs, loaded or not, cannot be used before the file finishes processing.
  * You can check for this by checking the sprite's _textureID property.
  * ```js
- * var texture = PIXI.Texture.from('assets/image.svg');
- * var sprite1 = new PIXI.Sprite(texture);
+ * import { Texture, Sprite } from 'pixi.js';
+ *
+ * const texture = Texture.from('assets/image.svg');
+ * const sprite1 = new Sprite(texture);
  * //sprite1._textureID should not be undefined if the texture has finished processing the SVG file
  * ```
  * You can use a ticker or rAF to ensure your sprites load the finished textures after processing. See issue #3068.
@@ -85,11 +89,9 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
      * Beware, after loading or resize of baseTexture event can fired two times!
      * If you want more control, subscribe on baseTexture itself.
      *
-     * ```js
-     * texture.on('update', () => {});
-     * ```
-     *
      * Any assignment of `frame` switches off `noFrame` mode.
+     * @example
+     * texture.on('update', () => {});
      */
     public noFrame: boolean;
 
@@ -263,7 +265,7 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
 
                 // delete the texture if it exists in the texture cache..
                 // this only needs to be removed if the base texture is actually destroyed too..
-                if (resource && resource.url && TextureCache[resource.url])
+                if (resource?.url && TextureCache[resource.url])
                 {
                     Texture.removeFromCache(resource.url);
                 }
@@ -299,7 +301,7 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
         const clonedTexture = new Texture(this.baseTexture,
             !this.noFrame && clonedFrame,
             clonedOrig,
-            this.trim && this.trim.clone(),
+            this.trim?.clone(),
             this.rotate,
             this.defaultAnchor
         );
@@ -353,7 +355,7 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
         {
             if (!source.cacheId)
             {
-                const prefix = (options && options.pixiIdPrefix) || 'pixiid';
+                const prefix = options?.pixiIdPrefix || 'pixiid';
 
                 source.cacheId = `${prefix}-${uid()}`;
                 BaseTexture.addToCache(source, source.cacheId);
@@ -365,7 +367,7 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
         {
             if (!(source as any)._pixiId)
             {
-                const prefix = (options && options.pixiIdPrefix) || 'pixiid';
+                const prefix = options?.pixiIdPrefix || 'pixiid';
 
                 (source as any)._pixiId = `${prefix}_${uid()}`;
             }
@@ -511,7 +513,7 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
     {
         if (id)
         {
-            if (texture.textureCacheIds.indexOf(id) === -1)
+            if (!texture.textureCacheIds.includes(id))
             {
                 texture.textureCacheIds.push(id);
             }
@@ -551,7 +553,7 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
                 return textureFromCache;
             }
         }
-        else if (texture && texture.textureCacheIds)
+        else if (texture?.textureCacheIds)
         {
             for (let i = 0; i < texture.textureCacheIds.length; ++i)
             {

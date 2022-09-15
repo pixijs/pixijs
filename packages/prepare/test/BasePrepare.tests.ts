@@ -1,13 +1,12 @@
 import { BasePrepare } from '@pixi/prepare';
-
-import type { AbstractRenderer } from '@pixi/core';
 import type { DisplayObject } from '@pixi/display';
+import type { IRenderer } from '@pixi/core';
 
 describe('BasePrepare', () =>
 {
     it('should create a new, empty, BasePrepare', () =>
     {
-        const renderer = {} as AbstractRenderer;
+        const renderer = {} as IRenderer;
         const prep = new BasePrepare(renderer);
 
         expect(prep['renderer']).toEqual(renderer);
@@ -24,7 +23,7 @@ describe('BasePrepare', () =>
     {
         function addHook() { return true; }
         function uploadHook() { return true; }
-        const renderer = {} as AbstractRenderer;
+        const renderer = {} as IRenderer;
         const prep = new BasePrepare(renderer);
 
         prep.registerFindHook(addHook);
@@ -40,7 +39,7 @@ describe('BasePrepare', () =>
 
     it('should call hooks and complete', () =>
     {
-        const renderer = {} as AbstractRenderer;
+        const renderer = {} as IRenderer;
         const prep = new BasePrepare(renderer);
         const uploadItem = {} as DisplayObject;
         const uploadHelper = {};
@@ -79,7 +78,7 @@ describe('BasePrepare', () =>
 
     it('should call complete if no queue', async () =>
     {
-        const renderer = {} as AbstractRenderer;
+        const renderer = {} as IRenderer;
         const prep = new BasePrepare(renderer);
 
         function addHook()
@@ -98,7 +97,7 @@ describe('BasePrepare', () =>
 
     it('should remove un-preparable items from queue', () =>
     {
-        const renderer = {} as AbstractRenderer;
+        const renderer = {} as IRenderer;
         const prep = new BasePrepare(renderer);
 
         const addHook = jest.fn((item, queue) =>
@@ -127,7 +126,7 @@ describe('BasePrepare', () =>
 
     it('should remove destroyed items from queue', () =>
     {
-        const renderer = {} as AbstractRenderer;
+        const renderer = {} as IRenderer;
         const prep = new BasePrepare(renderer);
 
         const addHook = jest.fn((item, queue) =>
@@ -159,7 +158,7 @@ describe('BasePrepare', () =>
 
     it('should attach to the system ticker', async () =>
     {
-        const renderer = {} as AbstractRenderer;
+        const renderer = {} as IRenderer;
         const prep = new BasePrepare(renderer);
 
         const addHook = jest.fn((item, queue) =>

@@ -1,9 +1,6 @@
 /* eslint max-depth: [2, 8] */
 import { Sprite } from '@pixi/sprite';
-import { Texture  } from '@pixi/core';
-import { settings } from '@pixi/settings';
-import { Rectangle } from '@pixi/math';
-import { sign, trimCanvas, hex2rgb, string2hex } from '@pixi/utils';
+import { Texture, settings, Rectangle, utils } from '@pixi/core';
 import { TEXT_GRADIENT } from './const';
 import { TextStyle } from './TextStyle';
 import { TextMetrics } from './TextMetrics';
@@ -42,22 +39,19 @@ interface ModernContext2D extends CanvasRenderingContext2D
  *
  * A Text can be created directly from a string and a style object,
  * which can be generated [here](https://pixijs.io/pixi-text-style).
+ * @example
+ * import { Text } from 'pixi.js';
  *
- * ```js
- * let text = new PIXI.Text('This is a PixiJS text',{fontFamily : 'Arial', fontSize: 24, fill : 0xff1010, align : 'center'});
- * ```
+ * const text = new Text('This is a PixiJS text', {
+ *   fontFamily : 'Arial',
+ *   fontSize: 24,
+ *   fill : 0xff1010,
+ *   align : 'center',
+ * });
  * @memberof PIXI
  */
 export class Text extends Sprite
 {
-    /**
-     * New behavior for `lineHeight` that's meant to mimic HTML text. A value of `true` will
-     * make sure the first baseline is offset by the `lineHeight` value if it is greater than `fontSize`.
-     * A value of `false` will use the legacy behavior and not change the baseline of the first line.
-     * In the next major release, we'll enable this by default.
-     */
-    public static nextLineHeightBehavior = false;
-
     /**
      * New rendering behavior for letter-spacing which uses Chrome's new native API. This will
      * lead to more accurate letter-spacing results because it does not try to manually draw
@@ -237,7 +231,9 @@ export class Text extends Sprite
                 context.strokeStyle = 'black';
 
                 const dropShadowColor = style.dropShadowColor;
-                const rgb = hex2rgb(typeof dropShadowColor === 'number' ? dropShadowColor : string2hex(dropShadowColor));
+                const rgb = utils.hex2rgb(typeof dropShadowColor === 'number'
+                    ? dropShadowColor
+                    : utils.string2hex(dropShadowColor));
                 const dropShadowBlur = style.dropShadowBlur * this._resolution;
                 const dropShadowDistance = style.dropShadowDistance * this._resolution;
 
@@ -263,7 +259,7 @@ export class Text extends Sprite
 
             let linePositionYShift = (lineHeight - fontProperties.fontSize) / 2;
 
-            if (!Text.nextLineHeightBehavior || lineHeight - fontProperties.fontSize < 0)
+            if (lineHeight - fontProperties.fontSize < 0)
             {
                 linePositionYShift = 0;
             }
@@ -394,7 +390,7 @@ export class Text extends Sprite
 
         if (this._style.trim)
         {
-            const trimmed = trimCanvas(canvas);
+            const trimmed = utils.trimCanvas(canvas);
 
             if (trimmed.data)
             {
@@ -685,7 +681,7 @@ export class Text extends Sprite
     {
         this.updateText(true);
 
-        const s = sign(this.scale.x) || 1;
+        const s = utils.sign(this.scale.x) || 1;
 
         this.scale.x = s * value / this._texture.orig.width;
         this._width = value;
@@ -703,7 +699,7 @@ export class Text extends Sprite
     {
         this.updateText(true);
 
-        const s = sign(this.scale.y) || 1;
+        const s = utils.sign(this.scale.y) || 1;
 
         this.scale.y = s * value / this._texture.orig.height;
         this._height = value;

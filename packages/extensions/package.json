@@ -1,9 +1,8 @@
 {
   "name": "@pixi/extensions",
-  "version": "6.5.1",
+  "version": "7.0.0-alpha",
   "main": "dist/cjs/extensions.js",
   "module": "dist/esm/extensions.mjs",
-  "bundle": "dist/browser/extensions.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
@@ -30,7 +29,6 @@
     "access": "public"
   },
   "files": [
-    "lib",
     "dist",
     "*.d.ts"
   ]

@@ -1,9 +1,8 @@
 {
   "name": "@pixi/text",
-  "version": "6.5.1",
+  "version": "7.0.0-alpha",
   "main": "dist/cjs/text.js",
   "module": "dist/esm/text.mjs",
-  "bundle": "dist/browser/text.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
@@ -33,15 +32,11 @@
     "access": "public"
   },
   "files": [
-    "lib",
     "dist",
     "*.d.ts"
   ],
-  "peerDependencies": {
-    "@pixi/core": "6.5.1",
-    "@pixi/math": "6.5.1",
-    "@pixi/settings": "6.5.1",
-    "@pixi/sprite": "6.5.1",
-    "@pixi/utils": "6.5.1"
-  }
+  "pixiRequirements": [
+    "@pixi/core",
+    "@pixi/sprite"
+  ]
 }

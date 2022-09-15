@@ -12,10 +12,12 @@
 enum ExtensionType
 // eslint-disable-next-line @typescript-eslint/indent
 {
+    Renderer = 'renderer',
     Application = 'application',
+    RendererSystem = 'renderer-webgl-system',
     RendererPlugin = 'renderer-webgl-plugin',
+    CanvasRendererSystem = 'renderer-canvas-system',
     CanvasRendererPlugin = 'renderer-canvas-plugin',
-    Loader = 'loader',
     LoadParser = 'load-parser',
     ResolveParser = 'resolve-parser',
     CacheParser = 'cache-parser',
@@ -26,6 +28,7 @@ interface ExtensionMetadataDetails
 {
     type: ExtensionType | ExtensionType[];
     name?: string;
+    priority?: number;
 }
 
 type ExtensionMetadata = ExtensionType | ExtensionMetadataDetails;
@@ -42,6 +45,8 @@ interface ExtensionFormatLoose
     type: ExtensionType | ExtensionType[];
     /** Optional. Some plugins provide an API name/property, such as Renderer plugins */
     name?: string;
+    /** Optional, used for sorting the plugins in a particular order */
+    priority?: number;
     /** Reference to the plugin object/class */
     ref: any;
 }
@@ -104,10 +109,10 @@ const normalizeExtension = (ext: ExtensionFormatLoose | any): ExtensionFormat =>
 const extensions = {
 
     /** @ignore */
-    _addHandlers: null as Record<ExtensionType, ExtensionHandler>,
+    _addHandlers: {} as Record<ExtensionType, ExtensionHandler>,
 
     /** @ignore */
-    _removeHandlers: null as Record<ExtensionType, ExtensionHandler>,
+    _removeHandlers: {} as Record<ExtensionType, ExtensionHandler>,
 
     /** @ignore */
     _queue: {} as Record<ExtensionType, ExtensionFormat[]>,
@@ -166,8 +171,8 @@ const extensions = {
      */
     handle(type: ExtensionType, onAdd: ExtensionHandler, onRemove: ExtensionHandler)
     {
-        const addHandlers = this._addHandlers = this._addHandlers || {} as Record<ExtensionType, ExtensionHandler>;
-        const removeHandlers = this._removeHandlers = this._removeHandlers || {} as Record<ExtensionType, ExtensionHandler>;
+        const addHandlers = this._addHandlers;
+        const removeHandlers = this._removeHandlers;
 
         // #if _DEBUG
         if (addHandlers[type] || removeHandlers[type])
@@ -225,11 +230,7 @@ const extensions = {
             (extension) =>
             {
                 list.push(extension.ref);
-                // TODO: remove me later, only added for @pixi/loaders
-                if (type === ExtensionType.Loader)
-                {
-                    extension.ref.add?.();
-                }
+                list.sort((a, b) => (b.priority ?? -1) - (a.priority ?? -1));
             },
             (extension) =>
             {

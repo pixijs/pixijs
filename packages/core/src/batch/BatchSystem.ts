@@ -1,9 +1,11 @@
 import { ObjectRenderer } from './ObjectRenderer';
 
-import type { ISystem } from '../ISystem';
+import type { ISystem } from '../system/ISystem';
 import type { Renderer } from '../Renderer';
 import type { BaseTexture } from '../textures/BaseTexture';
 import type { BatchTextureArray } from './BatchTextureArray';
+import type { ExtensionMetadata } from '@pixi/extensions';
+import { extensions, ExtensionType } from '@pixi/extensions';
 
 /**
  * System plugin to the renderer to manage batching.
@@ -11,6 +13,12 @@ import type { BatchTextureArray } from './BatchTextureArray';
  */
 export class BatchSystem implements ISystem
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        type: ExtensionType.RendererSystem,
+        name: 'batch',
+    };
+
     /** An empty renderer. */
     public readonly emptyRenderer: ObjectRenderer;
 
@@ -134,3 +142,5 @@ export class BatchSystem implements ISystem
         this.renderer = null;
     }
 }
+
+extensions.add(BatchSystem);

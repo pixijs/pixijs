@@ -1,6 +1,5 @@
-import { BLEND_MODES } from '@pixi/constants';
+import { BLEND_MODES, utils } from '@pixi/core';
 import { Container } from '@pixi/display';
-import { hex2rgb } from '@pixi/utils';
 
 import type { BaseTexture, Renderer } from '@pixi/core';
 import type { ParticleBuffer } from './ParticleBuffer';
@@ -28,18 +27,17 @@ export interface IParticleProperties
  *
  * Other more advanced functionality like masking, children, filters, etc will not work on sprites in this batch.
  *
- * It's extremely easy to use:
- * ```js
- * let container = new ParticleContainer();
+ * It's extremely easy to use. And here you have a hundred sprites that will be rendered at the speed of light.
+ * @example
+ * import { ParticleContainer, Sprite } from 'pixi.js';
+ *
+ * const container = new ParticleContainer();
  *
  * for (let i = 0; i < 100; ++i)
  * {
- *     let sprite = PIXI.Sprite.from("myImage.png");
+ *     let sprite = Sprite.from("myImage.png");
  *     container.addChild(sprite);
  * }
- * ```
- *
- * And here you have a hundred sprites that will be rendered at the speed of light.
  * @memberof PIXI
  */
 export class ParticleContainer extends Container<Sprite>
@@ -193,7 +191,7 @@ export class ParticleContainer extends Container<Sprite>
     set tint(value: number)
     {
         this._tint = value;
-        hex2rgb(value, this.tintRgb);
+        utils.hex2rgb(value, this.tintRgb);
     }
 
     /**

@@ -1,4 +1,4 @@
-import { settings } from '@pixi/settings';
+import { settings } from '@pixi/core';
 
 /**
  * Creates a little colored canvas

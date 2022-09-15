@@ -1,10 +1,12 @@
 import { GC_MODES } from '@pixi/constants';
 import { settings } from '@pixi/settings';
 
-import type { ISystem } from '../ISystem';
+import type { ISystem } from '../system/ISystem';
 import type { Renderer } from '../Renderer';
 import type { Texture } from './Texture';
 import type { RenderTexture } from '../renderTexture/RenderTexture';
+import type { ExtensionMetadata } from '@pixi/extensions';
+import { extensions, ExtensionType } from '@pixi/extensions';
 
 export interface IUnloadableTexture
 {
@@ -19,6 +21,12 @@ export interface IUnloadableTexture
  */
 export class TextureGCSystem implements ISystem
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        type: ExtensionType.RendererSystem,
+        name: 'textureGC',
+    };
+
     /**
      * Count
      * @readonly
@@ -68,7 +76,7 @@ export class TextureGCSystem implements ISystem
      */
     protected postrender(): void
     {
-        if (!this.renderer.renderingToScreen)
+        if (!this.renderer.objectRenderer.renderingToScreen)
         {
             return;
         }
@@ -155,3 +163,5 @@ export class TextureGCSystem implements ISystem
         this.renderer = null;
     }
 }
+
+extensions.add(TextureGCSystem);

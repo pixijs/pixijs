@@ -1,24 +1,19 @@
 import { CanvasExtract } from '@pixi/canvas-extract';
 import { CanvasRenderer } from '@pixi/canvas-renderer';
 import { Sprite } from '@pixi/sprite';
-import { skipHello } from '@pixi/utils';
-import { Texture, RenderTexture, extensions } from '@pixi/core';
-import { CanvasSpriteRenderer } from '@pixi/canvas-sprite';
+import { Texture, RenderTexture, utils } from '@pixi/core';
 
 import '@pixi/canvas-display';
 
-skipHello();
+utils.skipHello();
 
 describe('CanvasExtract', () =>
 {
-    beforeAll(() => extensions.add(CanvasExtract, CanvasSpriteRenderer));
-    afterAll(() => extensions.remove(CanvasExtract, CanvasSpriteRenderer));
-
     it('should access extract on renderer', () =>
     {
         const renderer = new CanvasRenderer();
 
-        expect(renderer.plugins.extract).toBeInstanceOf(CanvasExtract);
+        expect(renderer.extract).toBeInstanceOf(CanvasExtract);
 
         renderer.destroy();
     });
@@ -27,7 +22,7 @@ describe('CanvasExtract', () =>
     {
         const renderer = new CanvasRenderer();
         const sprite = new Sprite(Texture.WHITE);
-        const extract = renderer.plugins.extract as CanvasExtract;
+        const extract = renderer.extract as CanvasExtract;
 
         expect(extract.canvas(sprite)).toBeInstanceOf(HTMLCanvasElement);
         expect(extract.base64(sprite)).toBeString();
@@ -41,7 +36,7 @@ describe('CanvasExtract', () =>
     it('should extract with no arguments', () =>
     {
         const renderer = new CanvasRenderer();
-        const extract = renderer.plugins.extract as CanvasExtract;
+        const extract = renderer.extract as CanvasExtract;
 
         expect(extract.canvas()).toBeInstanceOf(HTMLCanvasElement);
         expect(extract.base64()).toBeString();
@@ -54,7 +49,7 @@ describe('CanvasExtract', () =>
     it('should extract a render texture', () =>
     {
         const renderer = new CanvasRenderer();
-        const extract = renderer.plugins.extract as CanvasExtract;
+        const extract = renderer.extract as CanvasExtract;
         const renderTexture = RenderTexture.create({ width: 10, height: 10 });
         const sprite = new Sprite(Texture.WHITE);
 

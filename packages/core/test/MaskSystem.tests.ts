@@ -4,9 +4,7 @@ import type {
     IMaskTarget } from '@pixi/core';
 import {
     BaseTexture,
-    BatchRenderer,
     CanvasResource,
-    extensions,
     Filter,
     MaskData,
     Renderer,
@@ -21,9 +19,6 @@ import { Sprite } from '@pixi/sprite';
 
 describe('MaskSystem', () =>
 {
-    beforeAll(() => extensions.add(BatchRenderer));
-    afterAll(() => extensions.remove(BatchRenderer));
-
     function onePixelMask(worldTransform: Matrix | Record<string, number>): IMaskTarget
     {
         return {
@@ -184,7 +179,7 @@ describe('MaskSystem', () =>
             render() { /* nothing*/ },
         } as unknown as IMaskTarget;
 
-        renderer.resolution = 2;
+        renderer._view.resolution = 2;
         renderer.resize(30, 30);
 
         const rt = RenderTexture.create({ width: 20, height: 20, resolution: 3 });
@@ -207,8 +202,9 @@ describe('MaskSystem', () =>
         expect(scissor.mock.calls[1]).toEqual([Math.round(7.5), Math.round(12), Math.round(18), Math.round(15)]);
 
         rt.destroy(true);
+
         renderer.projection.transform = null;
-        renderer.resolution = 1;
+        renderer._view.resolution = 1;
     });
 
     // eslint-disable-next-line func-names

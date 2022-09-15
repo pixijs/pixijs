@@ -21,14 +21,20 @@ declare namespace GlobalMixins
         tintId?: number;
     }
 
-    interface DisplayObject
-    {
-        renderCanvas?(renderer: import('@pixi/canvas-renderer').CanvasRenderer): void;
-    }
-
     interface IRendererOptions
     {
         forceCanvas?: boolean;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-empty-interface
+    interface CanvasRenderer
+    {
+
+    }
+
+    interface IRenderableObject
+    {
+        renderCanvas?(renderer: import('@pixi/canvas-renderer').CanvasRenderer): void;
     }
 }
 

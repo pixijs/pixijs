@@ -25,8 +25,9 @@ import type { FilterSystem } from './FilterSystem';
  * Multiple filters can be added to the `filters` array property and stacked on each other.
  *
  * ```
- * const filter = new PIXI.Filter(myShaderVert, myShaderFrag, { myUniform: 0.5 });
- * const container = new PIXI.Container();
+ * import { Filter, Container } from 'pixi.js';
+ * const filter = new Filter(myShaderVert, myShaderFrag, { myUniform: 0.5 });
+ * const container = new Container();
  * container.filters = [filter];
  * ```
  *
@@ -94,6 +95,7 @@ import type { FilterSystem } from './FilterSystem';
  * Use it to sample the input.
  *
  * ```
+ * import { Filter } from 'pixi.js';
  * const fragment = `
  * varying vec2 vTextureCoord;
  * uniform sampler2D uSampler;
@@ -103,7 +105,7 @@ import type { FilterSystem } from './FilterSystem';
  * }
  * `;
  *
- * const myFilter = new PIXI.Filter(null, fragment);
+ * const myFilter = new Filter(null, fragment);
  * ```
  *
  * This filter is just one uniform less than {@link PIXI.filters.AlphaFilter AlphaFilter}.

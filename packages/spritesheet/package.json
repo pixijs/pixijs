@@ -1,9 +1,8 @@
 {
   "name": "@pixi/spritesheet",
-  "version": "6.5.1",
+  "version": "7.0.0-alpha",
   "main": "dist/cjs/spritesheet.js",
   "module": "dist/esm/spritesheet.mjs",
-  "bundle": "dist/browser/spritesheet.js",
   "types": "index.d.ts",
   "exports": {
     ".": {
@@ -33,14 +32,11 @@
     "access": "public"
   },
   "files": [
-    "lib",
     "dist",
     "*.d.ts"
   ],
-  "peerDependencies": {
-    "@pixi/core": "6.5.1",
-    "@pixi/loaders": "6.5.1",
-    "@pixi/math": "6.5.1",
-    "@pixi/utils": "6.5.1"
-  }
+  "pixiRequirements": [
+    "@pixi/assets",
+    "@pixi/core"
+  ]
 }

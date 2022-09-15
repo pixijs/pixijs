@@ -1,10 +1,25 @@
-import { Renderer } from './Renderer';
-import type { AbstractRenderer, IRendererOptions } from './AbstractRenderer';
+import { extensions, ExtensionType } from '@pixi/extensions';
+import type { IRenderer, IRendererOptions } from './IRenderer';
 
 export interface IRendererOptionsAuto extends IRendererOptions
 {
     forceCanvas?: boolean;
 }
+
+export interface IRendererConstructor
+{
+    test(options?: IRendererOptionsAuto): boolean;
+    new (options?: IRendererOptionsAuto): IRenderer;
+}
+
+/**
+ * Collection of installed Renderers.
+ * @ignore
+ */
+const renderers: IRendererConstructor[] = [];
+
+extensions.handleByList(ExtensionType.Renderer, renderers);
+
 /**
  * This helper function will automatically detect which renderer you should be using.
  * WebGL is the preferred renderer as it is a lot faster. If WebGL is not supported by
@@ -36,7 +51,15 @@ export interface IRendererOptionsAuto extends IRendererOptions
  *  for devices with dual graphics card **webgl only**
  * @returns {PIXI.Renderer|PIXI.CanvasRenderer} Returns WebGL renderer if available, otherwise CanvasRenderer
  */
-export function autoDetectRenderer(options?: IRendererOptionsAuto): AbstractRenderer
+export function autoDetectRenderer(options?: IRendererOptionsAuto): IRenderer
 {
-    return Renderer.create(options);
+    for (const RendererType of renderers)
+    {
+        if (RendererType.test(options))
+        {
+            return new RendererType(options);
+        }
+    }
+
+    throw new Error('Unable to auto-detect a suitable renderer.');
 }

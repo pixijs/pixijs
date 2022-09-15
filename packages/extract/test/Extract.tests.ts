@@ -1,22 +1,18 @@
 import { Sprite } from '@pixi/sprite';
 
-import { skipHello } from '@pixi/utils';
-import { Texture, RenderTexture, BatchRenderer, Renderer, extensions } from '@pixi/core';
+import { Rectangle, utils, Texture, RenderTexture, Renderer } from '@pixi/core';
 import { Extract } from '@pixi/extract';
-import { Rectangle } from '@pixi/math';
 
-skipHello();
+utils.skipHello();
 
 describe('Extract', () =>
 {
-    beforeAll(() => extensions.add(Extract, BatchRenderer));
-    afterAll(() => extensions.remove(Extract, BatchRenderer));
-
     it('should access extract on renderer', () =>
     {
         const renderer = new Renderer();
 
         expect(renderer.plugins.extract).toBeInstanceOf(Extract);
+        expect(renderer.extract).toBeInstanceOf(Extract);
 
         renderer.destroy();
     });
@@ -25,7 +21,7 @@ describe('Extract', () =>
     {
         const renderer = new Renderer();
         const sprite = new Sprite(Texture.WHITE);
-        const extract = renderer.plugins.extract as Extract;
+        const extract = renderer.extract;
 
         expect(extract.canvas(sprite)).toBeInstanceOf(HTMLCanvasElement);
         expect(extract.base64(sprite)).toBeString();
@@ -39,7 +35,7 @@ describe('Extract', () =>
     it('should extract with no arguments', () =>
     {
         const renderer = new Renderer();
-        const extract = renderer.plugins.extract as Extract;
+        const extract = renderer.extract;
 
         expect(extract.canvas(undefined)).toBeInstanceOf(HTMLCanvasElement);
         expect(extract.base64(undefined)).toBeString();
@@ -52,7 +48,7 @@ describe('Extract', () =>
     it('should extract a render texture', () =>
     {
         const renderer = new Renderer();
-        const extract = renderer.plugins.extract as Extract;
+        const extract = renderer.extract;
         const renderTexture = RenderTexture.create({ width: 10, height: 10 });
         const sprite = new Sprite(Texture.WHITE);
         const frame = new Rectangle(1, 2, 5, 6);

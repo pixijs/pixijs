@@ -1,8 +1,7 @@
-import type { ExtensionMetadata } from '@pixi/core';
-import { ExtensionType, Texture } from '@pixi/core';
-import { DRAW_MODES } from '@pixi/constants';
+import { DRAW_MODES, extensions, ExtensionType, Texture } from '@pixi/core';
 import { canvasUtils } from '@pixi/canvas-renderer';
 
+import type { ExtensionMetadata } from '@pixi/core';
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
 import type { Mesh } from '@pixi/mesh';
 
@@ -38,9 +37,9 @@ export class CanvasMeshRenderer
         const renderer = this.renderer;
         const transform = mesh.worldTransform;
 
-        renderer.context.globalAlpha = mesh.worldAlpha;
-        renderer.setBlendMode(mesh.blendMode);
-        renderer.setContextTransform(transform, mesh.roundPixels);
+        renderer.canvasContext.activeContext.globalAlpha = mesh.worldAlpha;
+        renderer.canvasContext.setBlendMode(mesh.blendMode);
+        renderer.canvasContext.setContextTransform(transform, mesh.roundPixels);
 
         if (mesh.drawMode !== DRAW_MODES.TRIANGLES)
         {
@@ -103,7 +102,7 @@ export class CanvasMeshRenderer
      */
     private _renderDrawTriangle(mesh: Mesh, index0: number, index1: number, index2: number): void
     {
-        const context = this.renderer.context;
+        const context = this.renderer.canvasContext.activeContext;
         const vertices = mesh.geometry.buffers[0].data;
         const { uvs, texture } = mesh;
 
@@ -145,7 +144,7 @@ export class CanvasMeshRenderer
         let y1 = vertices[index1 + 1];
         let y2 = vertices[index2 + 1];
 
-        const screenPadding = mesh.canvasPadding / this.renderer.resolution;
+        const screenPadding = mesh.canvasPadding / this.renderer.canvasContext.activeResolution;
 
         if (screenPadding > 0)
         {
@@ -235,7 +234,7 @@ export class CanvasMeshRenderer
         );
 
         context.restore();
-        this.renderer.invalidateBlendMode();
+        this.renderer.canvasContext.invalidateBlendMode();
     }
 
     /**
@@ -245,7 +244,7 @@ export class CanvasMeshRenderer
      */
     renderMeshFlat(mesh: Mesh): void
     {
-        const context = this.renderer.context;
+        const context = this.renderer.canvasContext.activeContext;
         const vertices = mesh.geometry.getBuffer('aVertexPosition').data;
         const length = vertices.length / 2;
 
@@ -283,3 +282,5 @@ export class CanvasMeshRenderer
         this.renderer = null;
     }
 }
+
+extensions.add(CanvasMeshRenderer);

@@ -1,18 +1,3 @@
-import '@pixi/polyfill';
-
-import * as utils from '@pixi/utils';
-import { AccessibilityManager } from '@pixi/accessibility';
-import { InteractionManager } from '@pixi/interaction';
-import { BatchRenderer, extensions } from '@pixi/core';
-import { Extract } from '@pixi/extract';
-import { AppLoaderPlugin } from '@pixi/loaders';
-import { CompressedTextureLoader, DDSLoader, KTXLoader } from '@pixi/compressed-textures';
-import { ParticleRenderer } from '@pixi/particle-container';
-import { Prepare } from '@pixi/prepare';
-import { SpritesheetLoader } from '@pixi/spritesheet';
-import { TilingSpriteRenderer } from '@pixi/sprite-tiling';
-import { BitmapFontLoader } from '@pixi/text-bitmap';
-import { TickerPlugin } from '@pixi/ticker';
 import { AlphaFilter } from '@pixi/filter-alpha';
 import { BlurFilter, BlurFilterPass } from '@pixi/filter-blur';
 import { ColorMatrixFilter } from '@pixi/filter-color-matrix';
@@ -22,28 +7,6 @@ import { NoiseFilter } from '@pixi/filter-noise';
 import '@pixi/mixin-cache-as-bitmap';
 import '@pixi/mixin-get-child-by-name';
 import '@pixi/mixin-get-global-position';
-
-extensions.add(
-    // Install renderer plugins
-    AccessibilityManager,
-    Extract,
-    InteractionManager,
-    ParticleRenderer,
-    Prepare,
-    BatchRenderer,
-    TilingSpriteRenderer,
-
-    // Install loader plugins
-    BitmapFontLoader,
-    CompressedTextureLoader,
-    DDSLoader,
-    KTXLoader,
-    SpritesheetLoader,
-
-    // Install application plugins
-    TickerPlugin,
-    AppLoaderPlugin
-);
 
 /**
  * This namespace contains WebGL-only display filters that can be applied
@@ -55,16 +18,18 @@ extensions.add(
  *
  * All filters must extend {@link PIXI.Filter}.
  * @example
+ * import { Application, Graphics, filters } from 'pixi.js';
+ *
  * // Create a new application
- * const app = new PIXI.Application();
+ * const app = new Application();
  *
  * // Draw a green rectangle
- * const rect = new PIXI.Graphics()
+ * const rect = new Graphics()
  *     .beginFill(0x00ff00)
  *     .drawRect(40, 40, 200, 200);
  *
  * // Add a blur filter
- * rect.filters = [new PIXI.filters.BlurFilter()];
+ * rect.filters = [new filters.BlurFilter()];
  *
  * // Display rectangle
  * app.stage.addChild(rect);
@@ -84,26 +49,20 @@ export const filters = {
 // Export ES for those importing specifically by name,
 export * from '@pixi/accessibility';
 export * from '@pixi/app';
-export * from '@pixi/constants';
+export * from '@pixi/assets';
 export * from '@pixi/compressed-textures';
 export * from '@pixi/core';
 export * from '@pixi/display';
+export * from '@pixi/events';
 export * from '@pixi/extract';
 export * from '@pixi/graphics';
-export * from '@pixi/loaders';
-export * from '@pixi/interaction';
-export * from '@pixi/math';
 export * from '@pixi/mesh';
 export * from '@pixi/mesh-extras';
 export * from '@pixi/particle-container';
 export * from '@pixi/prepare';
-export * from '@pixi/runner';
 export * from '@pixi/sprite';
 export * from '@pixi/spritesheet';
 export * from '@pixi/sprite-animated';
 export * from '@pixi/sprite-tiling';
 export * from '@pixi/text';
 export * from '@pixi/text-bitmap';
-export * from '@pixi/ticker';
-export * from '@pixi/settings';
-export { utils };

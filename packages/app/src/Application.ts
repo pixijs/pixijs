@@ -1,10 +1,8 @@
 import { Container } from '@pixi/display';
 import { autoDetectRenderer, extensions, ExtensionType } from '@pixi/core';
 
-import type { Rectangle } from '@pixi/math';
-import type { Renderer, IRendererOptionsAuto, AbstractRenderer } from '@pixi/core';
+import type { Rectangle, IRendererOptionsAuto, IRenderer } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
-import { deprecation } from '@pixi/utils';
 
 /**
  * Any plugin that's usable for Application should contain these methods.
@@ -29,18 +27,20 @@ export interface IApplicationOptions extends IRendererOptionsAuto, GlobalMixins.
 export interface Application extends GlobalMixins.Application {}
 
 /**
- * Convenience class to create a new PIXI application.
+ * Convenience class to create a new PixiJS application.
  *
  * This class automatically creates the renderer, ticker and root container.
  * @example
+ * import { Application, Sprite } from 'pixi.js';
+ *
  * // Create the application
- * const app = new PIXI.Application();
+ * const app = new Application();
  *
  * // Add the view to the DOM
  * document.body.appendChild(app.view);
  *
  * // ex, add display objects
- * app.stage.addChild(PIXI.Sprite.from('something.png'));
+ * app.stage.addChild(Sprite.from('something.png'));
  * @class
  * @memberof PIXI
  */
@@ -59,7 +59,7 @@ export class Application
      * WebGL renderer if available, otherwise CanvasRenderer.
      * @member {PIXI.Renderer|PIXI.CanvasRenderer}
      */
-    public renderer: Renderer | AbstractRenderer;
+    public renderer: IRenderer;
 
     /**
      * @param {object} [options] - The optional renderer parameters.
@@ -107,23 +107,6 @@ export class Application
         Application._plugins.forEach((plugin) =>
         {
             plugin.init.call(this, options);
-        });
-    }
-
-    /**
-     * Use the {@link PIXI.extensions.add} API to register plugins.
-     * @deprecated since 6.5.0
-     * @static
-     * @param {PIXI.IApplicationPlugin} plugin - Plugin being installed
-     */
-    static registerPlugin(plugin: IApplicationPlugin): void
-    {
-        // #if _DEBUG
-        deprecation('6.5.0', 'Application.registerPlugin() is deprecated, use extensions.add()');
-        // #endif
-        extensions.add({
-            type: ExtensionType.Application,
-            ref: plugin,
         });
     }
 

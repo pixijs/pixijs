@@ -1,12 +1,14 @@
+import { utils } from '@pixi/core';
+
 export function checkExtension(url: string, extension: string | string[]): boolean
 {
     const tempURL = url.split('?')[0];
-    const extensionSplit = tempURL.split('.').pop();
+    const ext = utils.path.extname(tempURL).toLowerCase();
 
     if (Array.isArray(extension))
     {
-        return extension.includes(extensionSplit.toLowerCase());
+        return extension.includes(ext.toLowerCase());
     }
 
-    return extensionSplit.toLowerCase() === extension;
+    return ext.toLowerCase() === extension;
 }

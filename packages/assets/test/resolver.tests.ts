@@ -1,45 +1,9 @@
-import { resolveCompressedTextureUrl, resolveSpriteSheetUrl, resolveTextureUrl } from '@pixi/assets';
+import { resolveTextureUrl } from '@pixi/assets';
 import { Resolver } from '../src/resolver/Resolver';
 import { manifest } from './sampleManifest';
 
 describe('Resolver', () =>
 {
-    it('should resolve asset', () =>
-    {
-        const resolver = new Resolver();
-
-        resolver['_parsers'].push(resolveCompressedTextureUrl);
-
-        resolver.prefer({
-            priority: ['format'],
-            params: {
-                format: ['s3tc', 's3tc_sRGB', 'png', 'webp'],
-                resolution: 1
-            }
-        });
-
-        resolver.add('test', [
-            {
-                resolution: 1,
-                format: 'png',
-                src: 'my-image.png',
-            },
-            {
-                resolution: 1,
-                format: 'webp',
-                src: 'my-image.webp',
-            },
-            {
-                resolution: 1,
-                format: 's3tc',
-                src: 'my-image.s3tc.ktx',
-            },
-        ]);
-
-        const asset = resolver.resolveUrl('test');
-
-        expect(asset).toEqual('my-image.s3tc.ktx');
-    });
     it('should resolve asset', () =>
     {
         const resolver = new Resolver();
@@ -454,48 +418,6 @@ describe('Resolver', () =>
             levelData: 'levelData.json',
             spriteSheet1: 'my-sprite-sheet.json',
             spriteSheet2: 'my-sprite-sheet-2.json',
-        });
-    });
-
-    it('should parse a string sprite sheet correctly', () =>
-    {
-        [
-            {
-                url: 'my-sprite-sheet.json',
-                pass: false,
-            },
-            {
-                url: 'my-sprite-sheet@0.5x.webp.json',
-                pass: true,
-                result: {
-                    format: 'webp',
-                    resolution: 0.5,
-                    src: 'my-sprite-sheet@0.5x.webp.json',
-                },
-            },
-            {
-                url: 'my-sprite-sheet@2x.png.json',
-                pass: true,
-                result: {
-                    format: 'png',
-                    resolution: 2,
-                    src: 'my-sprite-sheet@2x.png.json',
-                },
-            },
-            {
-                url: 'my-sprite-sheet@2x.json',
-                pass: false,
-            },
-        ].forEach((toTest) =>
-        {
-            const pass = resolveSpriteSheetUrl.test(toTest.url);
-
-            expect(pass).toBe(toTest.pass);
-
-            if (pass)
-            {
-                expect(resolveSpriteSheetUrl.parse(toTest.url)).toEqual(toTest.result);
-            }
         });
     });
 

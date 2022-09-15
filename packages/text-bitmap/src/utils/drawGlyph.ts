@@ -1,5 +1,5 @@
 import { generateFillStyle } from './generateFillStyle';
-import { hex2rgb, string2hex } from '@pixi/utils';
+import { utils } from '@pixi/core';
 import type { TextMetrics, TextStyle } from '@pixi/text';
 
 // TODO: Prevent code duplication b/w drawGlyph & Text#updateText
@@ -49,7 +49,7 @@ export function drawGlyph(
     if (style.dropShadow)
     {
         const dropShadowColor = style.dropShadowColor;
-        const rgb = hex2rgb(typeof dropShadowColor === 'number' ? dropShadowColor : string2hex(dropShadowColor));
+        const rgb = utils.hex2rgb(typeof dropShadowColor === 'number' ? dropShadowColor : utils.string2hex(dropShadowColor));
         const dropShadowBlur = style.dropShadowBlur * resolution;
         const dropShadowDistance = style.dropShadowDistance * resolution;
 
