@@ -1,6 +1,7 @@
 import { extensions, ExtensionType } from '@pixi/core';
 import type { FormatDetectionParser } from '..';
-import { addFormats, removeFormats } from '../utils/detectUtils';
+
+const imageFormats = ['png', 'jpg', 'jpeg'];
 
 export const detectDefaults = {
     extension: {
@@ -8,8 +9,8 @@ export const detectDefaults = {
         priority: -1,
     },
     test: (): Promise<boolean> => Promise.resolve(true),
-    add: addFormats('png', 'jpg', 'jpeg'),
-    remove: removeFormats('png', 'jpg', 'jpeg')
+    add: async (formats) => [...formats, ...imageFormats],
+    remove: async (formats) => formats.filter((f) => !imageFormats.includes(f)),
 } as FormatDetectionParser;
 
 extensions.add(detectDefaults);
