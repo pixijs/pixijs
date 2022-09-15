@@ -1,7 +1,7 @@
 import type { IAdapter } from '@pixi/settings';
 import { settings } from '@pixi/settings';
 import { fetch, Request, Response } from 'cross-fetch';
-import gl from 'gl';
+import createContext from 'gl';
 import { NodeCanvasElement } from './NodeCanvasElement';
 
 import fs from 'fs';
@@ -16,7 +16,7 @@ export const NodeAdapter = {
      */
     createCanvas: (width?: number, height?: number) => new NodeCanvasElement(width, height) as unknown as HTMLCanvasElement,
     /** Returns a webgl rendering context using the gl package. */
-    getWebGLRenderingContext: () => gl as unknown as typeof WebGLRenderingContext,
+    getWebGLRenderingContext: () => createContext(1, 1) as unknown as typeof WebGLRenderingContext,
     /** Returns the fake user agent string of `node` */
     getNavigator: () => ({ userAgent: 'node' }),
     /** Returns the path from which the process is being run */
