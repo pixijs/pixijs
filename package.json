@@ -56,7 +56,6 @@
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^9.0.0",
     "@rollup/plugin-typescript": "^6.0.0",
-    "@types/css-font-loading-module": "^0.0.7",
     "@types/jest": "^26.0.0",
     "@types/sinon": "^10.0.13",
     "@webdoc/cli": "^1.5.5",

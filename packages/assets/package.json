@@ -53,5 +53,8 @@
     "@pixi/spritesheet": "6.5.3",
     "@pixi/text-bitmap": "6.5.3",
     "@pixi/utils": "6.5.3"
+  },
+  "dependencies": {
+    "@types/css-font-loading-module": "^0.0.7"
   }
 }
