@@ -27,4 +27,3 @@ export interface FormatDetectionParser
 }
 
 export * from './parsers';
-export * from './utils';

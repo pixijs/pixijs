@@ -1,6 +1,5 @@
 import { settings, extensions, ExtensionType } from '@pixi/core';
 import type { FormatDetectionParser } from '..';
-import { addFormats, removeFormats } from '../utils/detectUtils';
 
 export const detectAvif: FormatDetectionParser = {
     extension: {
@@ -17,8 +16,8 @@ export const detectAvif: FormatDetectionParser = {
 
         return createImageBitmap(blob).then(() => true, () => false);
     },
-    add: addFormats('avif'),
-    remove: removeFormats('avif')
+    add: async (formats) => [...formats, 'avif'],
+    remove: async (formats) => formats.filter((f) => f !== 'avif'),
 };
 
 extensions.add(detectAvif);

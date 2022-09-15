@@ -1,6 +1,5 @@
 import { extensions, ExtensionType } from '@pixi/core';
 import type { FormatDetectionParser } from '@pixi/assets';
-import { addFormats, removeFormats } from '@pixi/assets';
 import { BasisParser } from './BasisParser';
 
 export const detectBasis = {
@@ -9,8 +8,8 @@ export const detectBasis = {
         priority: 3,
     },
     test: async (): Promise<boolean> => !!(BasisParser.basisBinding && BasisParser.TranscoderWorker.wasmSource),
-    add: addFormats('basis'),
-    remove: removeFormats('basis')
+    add: async (formats) => [...formats, 'basis'],
+    remove: async (formats) => formats.filter((f) => f !== 'basis'),
 } as FormatDetectionParser;
 
 extensions.add(detectBasis);
