@@ -18,6 +18,7 @@ enum ExtensionType
     RendererPlugin = 'renderer-webgl-plugin',
     CanvasRendererSystem = 'renderer-canvas-system',
     CanvasRendererPlugin = 'renderer-canvas-plugin',
+    Asset = 'asset',
     LoadParser = 'load-parser',
     ResolveParser = 'resolve-parser',
     CacheParser = 'cache-parser',
