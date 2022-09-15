@@ -1,4 +1,4 @@
-import { ALPHA_MODES, settings, Texture, BaseTexture, Rectangle, utils } from '@pixi/core';
+import { ALPHA_MODES, MIPMAP_MODES, settings, Texture, BaseTexture, Rectangle, utils } from '@pixi/core';
 import { TextStyle, TextMetrics } from '@pixi/text';
 import { autoDetectFormat } from './formats';
 import { BitmapFontData } from './BitmapFontData';
@@ -163,6 +163,7 @@ export class BitmapFont
             if (distanceField?.fieldType && distanceField.fieldType !== 'none')
             {
                 pageTextures[id].baseTexture.alphaMode = ALPHA_MODES.NO_PREMULTIPLIED_ALPHA;
+                pageTextures[id].baseTexture.mipmap = MIPMAP_MODES.OFF;
             }
         }
 
