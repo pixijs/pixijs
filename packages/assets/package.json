@@ -43,6 +43,9 @@
   "bugs": {
     "url": "https://github.com/pixijs/pixi.js/issues"
   },
+  "dependencies": {
+    "@types/css-font-loading-module": "^0.0.7"
+  },
   "pixiRequirements": [
     "@pixi/core"
   ]
