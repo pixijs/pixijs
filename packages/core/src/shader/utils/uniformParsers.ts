@@ -27,7 +27,7 @@ export const uniformParsers: IUniformParser[] = [
     // a float cache layer
     {
         test: (data: any): boolean =>
-            data.type === 'float' && data.size === 1,
+            data.type === 'float' && data.size === 1 && !data.isArray,
         code: (name: string): string =>
             `
             if(uv["${name}"] !== ud["${name}"].value)
@@ -55,7 +55,7 @@ export const uniformParsers: IUniformParser[] = [
     // uploading pixi matrix object to mat3
     {
         test: (data: any, uniform: any): boolean =>
-            data.type === 'mat3' && data.size === 1 && uniform.a !== undefined,
+            data.type === 'mat3' && data.size === 1 && !data.isArray && uniform.a !== undefined,
         code: (name: string): string =>
 
             // TODO and some smart caching dirty ids here!
@@ -84,7 +84,7 @@ export const uniformParsers: IUniformParser[] = [
     // uploading a pixi point as a vec2 with caching layer
     {
         test: (data: any, uniform: any): boolean =>
-            data.type === 'vec2' && data.size === 1 && uniform.x !== undefined,
+            data.type === 'vec2' && data.size === 1 && !data.isArray && uniform.x !== undefined,
         code: (name: string): string =>
             `
                 cv = ud["${name}"].value;
@@ -107,7 +107,7 @@ export const uniformParsers: IUniformParser[] = [
     // caching layer for a vec2
     {
         test: (data: any): boolean =>
-            data.type === 'vec2' && data.size === 1,
+            data.type === 'vec2' && data.size === 1 && !data.isArray,
         code: (name: string): string =>
             `
                 cv = ud["${name}"].value;
@@ -124,7 +124,7 @@ export const uniformParsers: IUniformParser[] = [
     // upload a pixi rectangle as a vec4 with caching layer
     {
         test: (data: any, uniform: any): boolean =>
-            data.type === 'vec4' && data.size === 1 && uniform.width !== undefined,
+            data.type === 'vec4' && data.size === 1 && !data.isArray && uniform.width !== undefined,
 
         code: (name: string): string =>
             `
@@ -152,7 +152,7 @@ export const uniformParsers: IUniformParser[] = [
     // a caching layer for vec4 uploading
     {
         test: (data: any): boolean =>
-            data.type === 'vec4' && data.size === 1,
+            data.type === 'vec4' && data.size === 1 && !data.isArray,
         code: (name: string): string =>
             `
                 cv = ud["${name}"].value;
