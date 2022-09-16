@@ -1,10 +1,11 @@
+import type { CacheParser } from '@pixi/assets';
 import { Cache, loadJson, loadTextures } from '@pixi/assets';
 import { Texture } from '@pixi/core';
-import { cacheSpritesheet, loadSpritesheet, resolveSpriteSheetUrl, Spritesheet } from '@pixi/spritesheet';
+import { spritesheetAsset, Spritesheet } from '@pixi/spritesheet';
 import { clearTextureCache } from '@pixi/utils';
 import { Loader } from '../../assets/src/loader/Loader';
 
-describe('SpritesheetLoader', () =>
+describe('spritesheetAsset', () =>
 {
     let loader: Loader;
     const serverPath = process.env.GITHUB_ACTIONS
@@ -20,7 +21,7 @@ describe('SpritesheetLoader', () =>
     beforeAll(() =>
     {
         loader = new Loader();
-        loader['_parsers'].push(loadJson, loadTextures, loadSpritesheet);
+        loader['_parsers'].push(loadJson, loadTextures, spritesheetAsset.loader);
     });
 
     it('should load a spritesheet', async () =>
@@ -61,7 +62,7 @@ describe('SpritesheetLoader', () =>
 
     it('should load a multi packed spritesheet', async () =>
     {
-        Cache['_parsers'].push(cacheSpritesheet);
+        Cache['_parsers'].push(spritesheetAsset.cache as CacheParser);
 
         const spritesheet = await loader.load(`${serverPath}multi-pack-0.json`) as Spritesheet;
 
@@ -136,13 +137,13 @@ describe('SpritesheetLoader', () =>
             },
         ].forEach((toTest) =>
         {
-            const pass = resolveSpriteSheetUrl.test(toTest.url);
+            const pass = spritesheetAsset.resolver.test(toTest.url);
 
             expect(pass).toBe(toTest.pass);
 
             if (pass)
             {
-                expect(resolveSpriteSheetUrl.parse(toTest.url)).toEqual(toTest.result);
+                expect(spritesheetAsset.resolver.parse(toTest.url)).toEqual(toTest.result);
             }
         });
     });
