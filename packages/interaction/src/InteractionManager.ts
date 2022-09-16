@@ -1596,6 +1596,8 @@ export class InteractionManager extends EventEmitter
      */
     private onPointerOver(originalEvent: InteractivePointerEvent): void
     {
+        if (this.supportsTouchEvents && (originalEvent as PointerEvent).pointerType === 'touch') return;
+
         const events = this.normalizeToPointerData(originalEvent);
 
         // Only mouse and pointer can call onPointerOver, so events will always be length 1
