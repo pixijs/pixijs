@@ -1,6 +1,6 @@
 {
   "name": "@pixi/mixin-cache-as-bitmap",
-  "version": "7.0.0-alpha",
+  "version": "7.0.0-alpha.2",
   "main": "dist/cjs/mixin-cache-as-bitmap.js",
   "module": "dist/esm/mixin-cache-as-bitmap.mjs",
   "types": "index.d.ts",

@@ -1,6 +1,6 @@
 {
   "name": "@pixi/constants",
-  "version": "7.0.0-alpha",
+  "version": "7.0.0-alpha.2",
   "main": "dist/cjs/constants.js",
   "module": "dist/esm/constants.mjs",
   "types": "index.d.ts",

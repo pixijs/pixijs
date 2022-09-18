@@ -1,6 +1,6 @@
 {
   "name": "@pixi/mixin-get-global-position",
-  "version": "7.0.0-alpha",
+  "version": "7.0.0-alpha.2",
   "main": "dist/cjs/mixin-get-global-position.js",
   "module": "dist/esm/mixin-get-global-position.mjs",
   "types": "index.d.ts",
