@@ -169,6 +169,10 @@ export class TextureSystem implements ISystem
                 }
                 this.updateTexture(texture);
             }
+            else if (glTexture.dirtyStyleId !== texture.dirtyStyleId)
+            {
+                this.updateTextureStyle(texture);
+            }
 
             this.boundTextures[location] = texture;
         }
