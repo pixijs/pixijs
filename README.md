@@ -5,7 +5,7 @@ PixiJS — The HTML5 Creation Engine
 
 [![Discord](https://badgen.net/badge/icon/discord?icon=discord&label)](https://discord.gg/QrnxmQUPGV)
 [![npm version](https://badge.fury.io/js/pixi.js.svg)](https://badge.fury.io/js/pixi.js)
-[![Node.js CI](https://github.com/pixijs/pixi.js/workflows/Node.js%20CI/badge.svg)](https://github.com/pixi.js/pixi.js/actions?query=workflow%3A%22Node.js+CI%22)
+[![Node.js CI](https://github.com/pixijs/pixijs/workflows/Node.js%20CI/badge.svg)](https://github.com/pixijs/pixijs/actions?query=workflow%3A%22Node.js+CI%22)
 
 The aim of this project is to provide a fast lightweight 2D library that works
 across all devices. The PixiJS renderer allows everyone to enjoy the power of
