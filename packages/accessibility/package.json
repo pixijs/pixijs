@@ -1,6 +1,6 @@
 {
   "name": "@pixi/accessibility",
-  "version": "6.5.3",
+  "version": "6.5.4",
   "main": "dist/cjs/accessibility.js",
   "module": "dist/esm/accessibility.mjs",
   "bundle": "dist/browser/accessibility.js",
@@ -38,8 +38,8 @@
     "*.d.ts"
   ],
   "peerDependencies": {
-    "@pixi/core": "6.5.3",
-    "@pixi/display": "6.5.3",
-    "@pixi/utils": "6.5.3"
+    "@pixi/core": "6.5.4",
+    "@pixi/display": "6.5.4",
+    "@pixi/utils": "6.5.4"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@pixi/extensions",
-  "version": "6.5.3",
+  "version": "6.5.4",
   "main": "dist/cjs/extensions.js",
   "module": "dist/esm/extensions.mjs",
   "bundle": "dist/browser/extensions.js",

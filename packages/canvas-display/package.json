@@ -1,6 +1,6 @@
 {
   "name": "@pixi/canvas-display",
-  "version": "6.5.3",
+  "version": "6.5.4",
   "main": "dist/cjs/canvas-display.js",
   "module": "dist/esm/canvas-display.mjs",
   "bundle": "dist/browser/canvas-display.js",
@@ -39,6 +39,6 @@
     "*.d.ts"
   ],
   "peerDependencies": {
-    "@pixi/display": "6.5.3"
+    "@pixi/display": "6.5.4"
   }
 }
