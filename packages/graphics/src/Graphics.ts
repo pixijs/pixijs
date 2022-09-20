@@ -608,7 +608,8 @@ export class Graphics extends Container
     }
 
     /**
-     * Begin the texture fill
+     * Begin the texture fill.
+     * Note: The wrap mode of the texture is forced to REPEAT on render.
      * @param options - Object object.
      * @param {PIXI.Texture} [options.texture=PIXI.Texture.WHITE] - Texture to fill
      * @param {number} [options.color=0xffffff] - Background to fill behind texture
