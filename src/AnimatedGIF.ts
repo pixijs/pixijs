@@ -1,8 +1,5 @@
 import { Sprite } from '@pixi/sprite';
-import { Texture, Renderer } from '@pixi/core';
-import { settings } from '@pixi/settings';
-import { SCALE_MODES } from '@pixi/constants';
-import { Ticker, UPDATE_PRIORITY } from '@pixi/ticker';
+import { Texture, Renderer, settings, SCALE_MODES, Ticker, UPDATE_PRIORITY } from '@pixi/core';
 import { parseGIF, decompressFrames } from 'gifuct-js';
 
 /**

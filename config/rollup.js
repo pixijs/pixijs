@@ -1,5 +1,4 @@
-import typescript from "@rollup/plugin-typescript";
-import { terser } from "rollup-plugin-terser";
+import esbuild from "rollup-plugin-esbuild";
 import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import pkg from "../package.json";
@@ -7,23 +6,11 @@ import pkg from "../package.json";
 const plugins = [
     commonjs(),
     resolve(),
-    typescript()
+    esbuild({
+        target: "ES2017",
+        minify: process.env.NODE_ENV === "production",
+    })
 ];
-
-// Disabling minification makes faster
-// watch and better coverage debugging
-if (process.env.NODE_ENV === "production") {
-    plugins.push(terser({
-        output: {
-            comments(node, comment) {
-                return comment.line === 1;
-            },
-        },
-        compress: {
-            drop_console: true,
-        },
-    }));
-}
 
 const sourcemap = true;
 const external = Object.keys(pkg.peerDependencies);
@@ -75,12 +62,9 @@ export default [
             sourcemap,
             file: pkg.bundle,
             globals: {
-                "@pixi/loaders": "PIXI",
+                "@pixi/assets": "PIXI",
                 "@pixi/core": "PIXI",
-                "@pixi/ticker": "PIXI",
-                "@pixi/settings": "PIXI",
                 "@pixi/sprite": "PIXI",
-                "@pixi/constants": "PIXI",
             },
         }
     }

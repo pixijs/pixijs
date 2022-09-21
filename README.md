@@ -9,29 +9,18 @@ Plugin to support playback of animated GIF images in PixiJS. Unlike normal GIF p
 
 ## Usage
 
-Install the loader for handle GIF images.
+Load an animated GIF image with Assets:
 
 ```ts
-import { AnimatedGIFLoader } from '@pixi/gif';
-import { Loader } from '@pixi/loaders';
-
-Loader.registerPlugin(AnimatedGIFLoader);
-```
-
-Load an animated GIF image:
-
-```ts
-import { Application } from 'pixi.js';
+import '@pixi/gif';
+import { Assets } from 'pixi.js';
 
 const app = new Application();
-app.loader.add('image', 'image.gif');
-app.loader.load((loader, resources) => {
-    const image = resources.image.animation;
-    app.stage.addChild(image);
-});
+const image = await Assets.load('image.gif');
+app.stage.addChild(image);
 ```
 
-To use a gif without Loader:
+To use a gif without Assets:
 
 ```ts
 import { Application } from 'pixi.js';

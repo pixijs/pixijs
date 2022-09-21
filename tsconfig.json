@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "moduleResolution": "node",
-        "target": "es5",
+        "target": "ES2017",
         "noImplicitThis": true,
         "removeComments": false,
         "strictFunctionTypes": true,

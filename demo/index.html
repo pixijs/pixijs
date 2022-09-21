@@ -12,7 +12,7 @@
             gtag('js', new Date());
             gtag('config', 'UA-103772589-10');
         </script>
-        <script src="https://pixijs.download/v6.x/pixi-legacy.min.js"></script>
+        <script src="https://pixijs.download/dev/pixi-legacy.min.js"></script>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" />
         <script src="../dist/pixi-gif.js"></script>
         <style>
@@ -75,9 +75,6 @@
             const $slider = $('#slider');
             const $fileInput = $('#file-input');
 
-            // Install the plugin
-            PIXI.Loader.registerPlugin(PIXI.gif.AnimatedGIFLoader);
-
             // Boilerplate create application
             const app = new PIXI.Application({
                 width: 476,
@@ -88,7 +85,6 @@
             
             let currentAnimation = null;
             const sources = $buttons.map(i => i.dataset.src);
-            sources.forEach(src => app.loader.add(src));
 
             const animations = {};
             let customImageUrl;
@@ -108,19 +104,6 @@
                     oldAnimation?.destroy();
                 }
                 $fileInput.value = '';
-            });
-            
-            app.loader.load((loader) => {
-                $buttons.forEach($button =>
-                    $button.addEventListener('click', () => playAnimation($button.dataset.src), false));
-                $play.addEventListener('click', () => currentAnimation.play(), false);
-                $stop.addEventListener('click', () => currentAnimation.stop(), false);
-                $loop.addEventListener('change', () => currentAnimation.loop = $loop.checked);
-                $slider.addEventListener('input', () => currentAnimation.currentFrame = slider.value);
-                for (const name in loader.resources) {
-                    animations[name] = loader.resources[name].animation;
-                }
-                playAnimation(sources[0]);
             });
 
             function playAnimation(imageName, imagePath) {
@@ -148,6 +131,22 @@
                     currentAnimation = null;
                 }
             }
+
+            const main = async () => {
+                const resources = await PIXI.Assets.load(sources);
+                $buttons.forEach($button =>
+                    $button.addEventListener('click', () => playAnimation($button.dataset.src), false));
+                $play.addEventListener('click', () => currentAnimation.play(), false);
+                $stop.addEventListener('click', () => currentAnimation.stop(), false);
+                $loop.addEventListener('change', () => currentAnimation.loop = $loop.checked);
+                $slider.addEventListener('input', () => currentAnimation.currentFrame = slider.value);
+                for (const name in resources) {
+                    animations[name] = resources[name];
+                }
+                playAnimation(sources[0]);
+            };
+
+            main();
 
         </script>
     </body>

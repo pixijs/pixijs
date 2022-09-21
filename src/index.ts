@@ -5,5 +5,5 @@
  * @namespace PIXI.gif
  */
 
-export * from './AnimatedGIFLoader';
+export * from './AnimatedGIFAsset';
 export * from './AnimatedGIF';
