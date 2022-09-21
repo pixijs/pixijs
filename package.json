@@ -119,7 +119,7 @@
     "rollup": "^2.0.0",
     "rollup-plugin-esbuild": "^4.10.1",
     "ts-node": "^9.1.1",
-    "typescript": "^4.0.0"
+    "typescript": "^4.8.0"
   },
   "peerDependencies": {
     "@pixi/core": "^7.0.0-X",

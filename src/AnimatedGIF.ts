@@ -1,6 +1,6 @@
 import { Sprite } from '@pixi/sprite';
 import { Texture, Renderer, settings, SCALE_MODES, Ticker, UPDATE_PRIORITY } from '@pixi/core';
-import { parseGIF, decompressFrames } from 'gifuct-js';
+import { parseGIF, decompressFrames, ParsedFrame } from 'gifuct-js';
 
 /**
  * Represents a single frame of a GIF. Includes image and timing data.
@@ -34,11 +34,11 @@ interface AnimatedGIFOptions {
     /** Set to `false` to manage updates yourself */
     autoUpdate: boolean;
     /** The completed callback, optional */
-    onComplete: () => void;
+    onComplete: null | (() => void);
     /** The loop callback, optional */
-    onLoop: () => void;
+    onLoop: null | (() => void);
     /** The frame callback, optional */
-    onFrameChange: (currentFrame: number) => void;
+    onFrameChange: null | ((currentFrame: number) => void);
     /** Fallback FPS if GIF contains no time information */
     fps?: number;
 }
@@ -90,13 +90,13 @@ class AnimatedGIF extends Sprite
      * The speed that the animation will play at. Higher is faster, lower is slower.
      * @default 1
      */
-    public animationSpeed: number;
+    public animationSpeed = 1;
 
     /**
      * Whether or not the animate sprite repeats after playing.
      * @default true
      */
-    public loop: boolean;
+    public loop = true;
 
     /**
      * User-assigned function to call when animation finishes playing. This only happens
@@ -131,10 +131,10 @@ class AnimatedGIF extends Sprite
     public onLoop?: () => void;
 
     /** The total duration of animation in milliseconds. */
-    public readonly duration: number;
+    public readonly duration: number = 0;
 
     /** Whether to play the animation after constructing. */
-    public readonly autoPlay: boolean;
+    public readonly autoPlay: boolean = true;
 
     /** Collection of frame to render. */
     private _frames: FrameObject[];
@@ -143,22 +143,22 @@ class AnimatedGIF extends Sprite
     private _context: CanvasRenderingContext2D;
 
     /** Dirty means the image needs to be redrawn. Set to `true` to force redraw. */
-    public dirty: boolean;
+    public dirty = false;
 
     /** The current frame number (zero-based index). */
-    private _currentFrame: number;
+    private _currentFrame = 0;
 
     /** `true` uses PIXI.Ticker.shared to auto update animation time.*/
-    private _autoUpdate: boolean;
+    private _autoUpdate = false;
 
     /** `true` if the instance is currently connected to PIXI.Ticker.shared to auto update animation time. */
-    private _isConnectedToTicker: boolean;
+    private _isConnectedToTicker = false;
 
     /** If animation is currently playing. */
-    private _playing: boolean;
+    private _playing = false;
 
     /** Current playback position in milliseconds. */
-    private _currentTime: number;
+    private _currentTime = 0;
 
     /**
      * Create an animated GIF animation from a GIF image's ArrayBuffer. The easiest way to get
@@ -206,9 +206,9 @@ class AnimatedGIF extends Sprite
 
         // Temporary canvases required for compositing frames
         const canvas = document.createElement('canvas');
-        const context = canvas.getContext('2d');
+        const context = canvas.getContext('2d') as CanvasRenderingContext2D;
         const patchCanvas = document.createElement('canvas');
-        const patchContext = patchCanvas.getContext('2d');
+        const patchContext = patchCanvas.getContext('2d') as CanvasRenderingContext2D;
 
         canvas.width = gif.lsd.width;
         canvas.height = gif.lsd.height;
@@ -217,13 +217,18 @@ class AnimatedGIF extends Sprite
 
         // Some GIFs have a non-zero frame delay, so we need to calculate the fallback
         const { fps } = Object.assign({}, AnimatedGIF.defaultOptions, options);
-        const defaultDelay = 1000 / fps;
+        const defaultDelay = 1000 / (fps as number);
 
         // Precompute each frame and store as ImageData
         for (let i = 0; i < gifFrames.length; i++)
         {
             // Some GIF's omit the disposalType, so let's assume clear if missing
-            const { disposalType = 2, delay = defaultDelay, patch, dims: { width, height, left, top } } = gifFrames[i];
+            const {
+                disposalType = 2,
+                delay = defaultDelay,
+                patch,
+                dims: { width, height, left, top },
+            } = gifFrames[i] as ParsedFrame;
 
             patchCanvas.width = width;
             patchCanvas.height = height;
@@ -263,6 +268,8 @@ class AnimatedGIF extends Sprite
      */
     constructor(frames: FrameObject[], options: Partial<AnimatedGIFOptions> & AnimatedGIFSize)
     {
+        super(Texture.EMPTY);
+
         // Get the options, apply defaults
         const { scaleMode, width, height, ...rest } = Object.assign({},
             AnimatedGIF.defaultOptions,
@@ -271,14 +278,14 @@ class AnimatedGIF extends Sprite
 
         // Create the texture
         const canvas = document.createElement('canvas');
-        const context = canvas.getContext('2d');
+        const context = canvas.getContext('2d') as CanvasRenderingContext2D;
 
         canvas.width = width;
         canvas.height = height;
 
-        super(Texture.from(canvas, { scaleMode }));
+        this.texture = Texture.from(canvas, { scaleMode });
 
-        this.duration = frames[frames.length - 1].end;
+        this.duration = (frames[frames.length - 1] as FrameObject).end;
         this._frames = frames;
         this._context = context;
         this._playing = false;
@@ -288,7 +295,7 @@ class AnimatedGIF extends Sprite
 
         // Draw the first frame
         this.currentFrame = 0;
-        if (this.autoPlay)
+        if (rest.autoPlay)
         {
             this.play();
         }
@@ -360,7 +367,7 @@ class AnimatedGIF extends Sprite
             return;
         }
 
-        const elapsed = this.animationSpeed * deltaTime / settings.TARGET_FPMS;
+        const elapsed = this.animationSpeed * deltaTime / (settings.TARGET_FPMS as number);
         const currentTime = this._currentTime + elapsed;
         const localTime = currentTime % this.duration;
 
@@ -401,7 +408,7 @@ class AnimatedGIF extends Sprite
         }
 
         // Update the current frame
-        const { imageData } = this._frames[this._currentFrame];
+        const { imageData } = this._frames[this._currentFrame] as FrameObject;
 
         this._context.putImageData(imageData, 0, 0);
 
@@ -482,7 +489,7 @@ class AnimatedGIF extends Sprite
     set currentFrame(value: number)
     {
         this.updateFrameIndex(value);
-        this._currentTime = this._frames[value].start;
+        this._currentTime = (this._frames[value] as FrameObject).start;
     }
 
     /** Internally handle updating the frame index */
@@ -513,11 +520,14 @@ class AnimatedGIF extends Sprite
     {
         this.stop();
         super.destroy(true);
-        this._context = null;
-        this._frames = null;
-        this.onComplete = null;
-        this.onFrameChange = null;
-        this.onLoop = null;
+
+        const forceClear = null as any;
+
+        this._context = forceClear;
+        this._frames = forceClear;
+        this.onComplete = forceClear;
+        this.onFrameChange = forceClear;
+        this.onLoop = forceClear;
     }
 
     /**

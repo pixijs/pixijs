@@ -22,7 +22,7 @@ const AnimatedGIFAsset = {
             const response = await settings.ADAPTER.fetch(url);
             const buffer = await response.arrayBuffer();
 
-            return AnimatedGIF.fromBuffer(buffer, asset.data);
+            return AnimatedGIF.fromBuffer(buffer, asset?.data);
         },
         unload: async (asset) =>
         {
