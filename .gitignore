@@ -7,5 +7,5 @@ node_modules
 .DS_Store
 .nyc_output
 .types_output
-/example.api.json
+/example.api.json*
 index.d.ts
