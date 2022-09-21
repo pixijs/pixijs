@@ -14,7 +14,7 @@ const createServer = (port: number) =>
 {
     const server = http.createServer((request, response) =>
     {
-        const filePath = path.join(__dirname, request.url);
+        const filePath = path.join(__dirname, request.url ?? '');
         const extname = path.extname(filePath);
         const contentType = mimeTypes[extname] || 'text/html';
 
