@@ -1,2 +1,2 @@
 import './AnimatedGIF.tests';
-import './AnimatedGIFLoader.tests';
+import './AnimatedGIFAsset.tests';

@@ -23,7 +23,11 @@ const AnimatedGIFAsset = {
             const buffer = await response.arrayBuffer();
 
             return AnimatedGIF.fromBuffer(buffer, asset.data);
-        }
+        },
+        unload: async (asset) =>
+        {
+            asset.destroy();
+        },
     }
 } as AssetExtension<AnimatedGIF, AnimatedGIFOptions>;
 
