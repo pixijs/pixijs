@@ -125,12 +125,12 @@
     "typescript": "^4.0.0"
   },
   "peerDependencies": {
-    "@pixi/constants": ">=5",
-    "@pixi/core": ">=5",
-    "@pixi/loaders": ">=5",
-    "@pixi/settings": ">=5",
-    "@pixi/sprite": ">=5",
-    "@pixi/ticker": ">=5"
+    "@pixi/constants": ">=5 <7",
+    "@pixi/core": ">=5 <7",
+    "@pixi/loaders": ">=5 <7",
+    "@pixi/settings": ">=5 <7",
+    "@pixi/sprite": ">=5 <7",
+    "@pixi/ticker": ">=5 <7"
   },
   "eslintConfig": {
     "extends": [
