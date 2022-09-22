@@ -62,11 +62,11 @@ class AnimatedGIF extends Sprite
      * @property {Function} [onComplete=null] - The completed callback, optional.
      * @property {Function} [onLoop=null] - The loop callback, optional.
      * @property {Function} [onFrameChange=null] - The frame callback, optional.
-     * @property {number} [fps=PIXI.Ticker.shared.maxFPS] - Default FPS.
+     * @property {number} [fps=30] - Fallback FPS if GIF contains no time information.
      */
     public static defaultOptions: AnimatedGIFOptions = {
         scaleMode: SCALE_MODES.LINEAR,
-        fps: Ticker.shared.maxFPS,
+        fps: 30,
         loop: true,
         animationSpeed: 1,
         autoPlay: true,
