@@ -2,10 +2,7 @@ import { Sprite } from '@pixi/sprite';
 import { Texture, Renderer, settings, SCALE_MODES, Ticker, UPDATE_PRIORITY } from '@pixi/core';
 import { parseGIF, decompressFrames, ParsedFrame } from 'gifuct-js';
 
-/**
- * Represents a single frame of a GIF. Includes image and timing data.
- * @memberof PIXI.gif
- */
+/** Represents a single frame of a GIF. Includes image and timing data. */
 interface FrameObject {
     /** Image data for the current frame */
     imageData: ImageData;
@@ -15,10 +12,7 @@ interface FrameObject {
     end: number;
 }
 
-/**
- * Default options for all AnimatedGIF objects.
- * @memberof PIXI.gif
- */
+/** Default options for all AnimatedGIF objects. */
 interface AnimatedGIFOptions {
     /** Whether to start playing right away */
     autoPlay: boolean;
@@ -43,10 +37,7 @@ interface AnimatedGIFOptions {
     fps?: number;
 }
 
-/**
- * Options for the AnimatedGIF constructor.
- * @memberof PIXI.gif
- */
+/** Options for the AnimatedGIF constructor. */
 interface AnimatedGIFSize {
     /** Width of the GIF image */
     width: number;
@@ -57,7 +48,6 @@ interface AnimatedGIFSize {
 /**
  * Runtime object to play animated GIFs. This object is similar to an AnimatedSprite.
  * It support playback (seek, play, stop) as well as animation speed and looping.
- * @memberof PIXI.gif
  * @see Thanks to {@link https://github.com/matt-way/gifuct-js/ gifuct-js}
  */
 class AnimatedGIF extends Sprite
@@ -72,11 +62,11 @@ class AnimatedGIF extends Sprite
      * @property {Function} [onComplete=null] - The completed callback, optional.
      * @property {Function} [onLoop=null] - The loop callback, optional.
      * @property {Function} [onFrameChange=null] - The frame callback, optional.
-     * @property {number} [fps=PIXI.Ticker.shared.FPS] - Default FPS.
+     * @property {number} [fps=PIXI.Ticker.shared.maxFPS] - Default FPS.
      */
     public static defaultOptions: AnimatedGIFOptions = {
         scaleMode: SCALE_MODES.LINEAR,
-        fps: Ticker.shared.FPS,
+        fps: Ticker.shared.maxFPS,
         loop: true,
         animationSpeed: 1,
         autoPlay: true,
