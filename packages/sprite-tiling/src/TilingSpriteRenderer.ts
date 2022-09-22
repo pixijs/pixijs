@@ -1,4 +1,4 @@
-import { ObjectRenderer, Shader, State, QuadUv, ExtensionType, WRAP_MODES, Matrix, utils } from '@pixi/core';
+import { ObjectRenderer, Shader, State, QuadUv, ExtensionType, WRAP_MODES, Matrix, utils, extensions } from '@pixi/core';
 
 import fragmentSimpleSrc from './sprite-tiling-simple.frag';
 import gl1VertexSrc from './sprite-tiling-fallback.vert';
@@ -162,3 +162,5 @@ export class TilingSpriteRenderer extends ObjectRenderer
         renderer.geometry.draw(this.renderer.gl.TRIANGLES, 6, 0);
     }
 }
+
+extensions.add(TilingSpriteRenderer);
