@@ -60,6 +60,7 @@ describe('AnimatedGIFLoader', function ()
         const url = `${this.baseUrl}/example.gif`;
 
         const data = { loop: false, autoUpdate: false, animationSpeed: 2 };
+
         Assets.add('test1', url, data);
         const test = await Assets.load('test1');
 

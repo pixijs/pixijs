@@ -156,7 +156,7 @@ class AnimatedGIF extends Sprite
      * @example
      * import { Assets } from 'pixi.js';
      * import '@pixi/gif';
-     * 
+     *
      * const gif = await Assets.load('file.gif');
      * @param buffer - GIF image arraybuffer from Assets.
      * @param options - Options to use.
