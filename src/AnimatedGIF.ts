@@ -152,15 +152,13 @@ class AnimatedGIF extends Sprite
 
     /**
      * Create an animated GIF animation from a GIF image's ArrayBuffer. The easiest way to get
-     * the buffer is to use the Loader.
+     * the buffer is to use Assets.
      * @example
-     * const loader = new PIXI.Loader();
-     * loader.add('myFile', 'file.gif');
-     * loader.load((loader, resources) => {
-     *    const gif = resources.myFile.animation;
-     *    // add to the stage...
-     * });
-     * @param buffer - GIF image arraybuffer from loader.
+     * import { Assets } from 'pixi.js';
+     * import '@pixi/gif';
+     * 
+     * const gif = await Assets.load('file.gif');
+     * @param buffer - GIF image arraybuffer from Assets.
      * @param options - Options to use.
      * @returns
      */
