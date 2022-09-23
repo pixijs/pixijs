@@ -1,6 +1,6 @@
 {
   "name": "@pixi/filter-noise",
-  "version": "7.0.0-alpha.2",
+  "version": "7.0.0-alpha.3",
   "main": "dist/cjs/filter-noise.js",
   "module": "dist/esm/filter-noise.mjs",
   "types": "index.d.ts",

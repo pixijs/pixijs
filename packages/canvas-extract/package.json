@@ -1,6 +1,6 @@
 {
   "name": "@pixi/canvas-extract",
-  "version": "7.0.0-alpha.2",
+  "version": "7.0.0-alpha.3",
   "main": "dist/cjs/canvas-extract.js",
   "module": "dist/esm/canvas-extract.mjs",
   "types": "index.d.ts",

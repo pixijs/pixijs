@@ -1,6 +1,6 @@
 {
   "name": "@pixi/canvas-sprite",
-  "version": "7.0.0-alpha.2",
+  "version": "7.0.0-alpha.3",
   "main": "dist/cjs/canvas-sprite.js",
   "module": "dist/esm/canvas-sprite.mjs",
   "types": "index.d.ts",

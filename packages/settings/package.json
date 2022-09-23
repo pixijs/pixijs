@@ -1,6 +1,6 @@
 {
   "name": "@pixi/settings",
-  "version": "7.0.0-alpha.2",
+  "version": "7.0.0-alpha.3",
   "main": "dist/cjs/settings.js",
   "module": "dist/esm/settings.mjs",
   "types": "index.d.ts",
