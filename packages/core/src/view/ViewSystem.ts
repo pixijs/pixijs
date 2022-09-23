@@ -28,7 +28,7 @@ export interface ViewOptions
  * This main role is to deal with how the holding the view reference and dealing with how it is resized.
  * @memberof PIXI
  */
-export class ViewSystem implements ISystem
+export class ViewSystem implements ISystem<ViewOptions, boolean>
 {
     /** @ignore */
     static extension: ExtensionMetadata = {

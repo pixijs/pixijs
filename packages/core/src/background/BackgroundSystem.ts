@@ -17,7 +17,7 @@ export interface BackgroundOptions
  * The background system manages the background color and alpha of the main view.
  * @memberof PIXI
  */
-export class BackgroundSystem implements ISystem
+export class BackgroundSystem implements ISystem<BackgroundOptions>
 {
     /** @ignore */
     static extension: ExtensionMetadata = {
