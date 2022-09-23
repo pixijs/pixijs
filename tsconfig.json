@@ -3,7 +3,6 @@
         "moduleResolution": "node",
         "target": "ES2017",
         "strict": true,
-        "skipLibCheck": true,
         "removeComments": false,
         "sourceMap": true,
         "inlineSources": true,

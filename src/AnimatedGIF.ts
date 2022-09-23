@@ -3,7 +3,8 @@ import { Texture, Renderer, settings, SCALE_MODES, Ticker, UPDATE_PRIORITY } fro
 import { parseGIF, decompressFrames, ParsedFrame } from 'gifuct-js';
 
 /** Represents a single frame of a GIF. Includes image and timing data. */
-interface FrameObject {
+interface FrameObject
+{
     /** Image data for the current frame */
     imageData: ImageData;
     /** The start of the current frame, in milliseconds */
@@ -13,7 +14,8 @@ interface FrameObject {
 }
 
 /** Default options for all AnimatedGIF objects. */
-interface AnimatedGIFOptions {
+interface AnimatedGIFOptions
+{
     /** Whether to start playing right away */
     autoPlay: boolean;
     /**
@@ -38,7 +40,8 @@ interface AnimatedGIFOptions {
 }
 
 /** Options for the AnimatedGIF constructor. */
-interface AnimatedGIFSize {
+interface AnimatedGIFSize
+{
     /** Width of the GIF image */
     width: number;
     /** Height of the GIF image */
