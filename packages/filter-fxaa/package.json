@@ -1,6 +1,6 @@
 {
   "name": "@pixi/filter-fxaa",
-  "version": "7.0.0-alpha",
+  "version": "7.0.0-alpha.3",
   "main": "dist/cjs/filter-fxaa.js",
   "module": "dist/esm/filter-fxaa.mjs",
   "types": "index.d.ts",

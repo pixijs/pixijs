@@ -34,7 +34,7 @@ export interface ContextOptions
  * System plugin to the renderer to manage the context.
  * @memberof PIXI
  */
-export class ContextSystem implements ISystem
+export class ContextSystem implements ISystem<ContextOptions>
 {
     /** @ignore */
     static extension: ExtensionMetadata = {

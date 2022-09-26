@@ -1,6 +1,6 @@
 {
   "name": "@pixi/canvas-text",
-  "version": "7.0.0-alpha",
+  "version": "7.0.0-alpha.3",
   "main": "dist/cjs/canvas-text.js",
   "module": "dist/esm/canvas-text.mjs",
   "types": "index.d.ts",

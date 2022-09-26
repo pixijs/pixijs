@@ -20,6 +20,7 @@ export class SimpleRope extends Mesh
     public autoUpdate: boolean;
 
     /**
+     * Note: The wrap mode of the texture is set to REPEAT if `textureScale` is positive.
      * @param texture - The texture to use on the rope.
      * @param points - An array of {@link PIXI.Point} objects to construct this rope.
      * @param {number} textureScale - Optional. Positive values scale rope texture

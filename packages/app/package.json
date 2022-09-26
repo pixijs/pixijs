@@ -1,6 +1,6 @@
 {
   "name": "@pixi/app",
-  "version": "7.0.0-alpha",
+  "version": "7.0.0-alpha.3",
   "main": "dist/cjs/app.js",
   "module": "dist/esm/app.mjs",
   "types": "index.d.ts",

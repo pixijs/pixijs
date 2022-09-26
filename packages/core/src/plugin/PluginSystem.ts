@@ -13,7 +13,7 @@ export interface IRendererPlugins extends GlobalMixins.IRendererPlugins
  * Manages the functionality that allows users to extend pixi functionality via additional plugins.
  * @memberof PIXI
  */
-export class PluginSystem implements ISystem
+export class PluginSystem implements ISystem<IRendererPlugins>
 {
     /** @ignore */
     static extension: ExtensionMetadata = {
