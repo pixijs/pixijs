@@ -72,8 +72,16 @@ export class CanvasSpriteRenderer
 
         if (texture.trim)
         {
-            destWidth = texture.trim.width;
-            destHeight = texture.trim.height;
+            if (texture.rotate)
+            {
+                destWidth = texture.trim.height;
+                destHeight = texture.trim.width;
+            }
+            else
+            {
+                destWidth = texture.trim.width;
+                destHeight = texture.trim.height;
+            }
         }
 
         let wt = sprite.transform.worldTransform;
