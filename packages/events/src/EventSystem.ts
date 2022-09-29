@@ -651,6 +651,7 @@ export class EventSystem
         event.page.x = nativeEvent.pageX;
         event.page.y = nativeEvent.pageY;
         event.relatedTarget = null;
+        event.shiftKey = nativeEvent.shiftKey;
     }
 }
 
