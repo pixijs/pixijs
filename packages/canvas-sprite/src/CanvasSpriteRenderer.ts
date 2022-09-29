@@ -72,7 +72,7 @@ export class CanvasSpriteRenderer
 
         if (texture.trim)
         {
-            if (texture.rotate)
+            if (groupD8.isVertical(texture.rotate))
             {
                 destWidth = texture.trim.height;
                 destHeight = texture.trim.width;
