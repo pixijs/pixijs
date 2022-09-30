@@ -33,7 +33,6 @@
     "postversion": "run-s lint types build:prod build:types",
     "release": "lerna version --exact --force-publish",
     "version": "ts-node scripts/fixPeerVersions.ts && npx --yes npm@7.20.2 i --package-lock-only && git add package-lock.json",
-    "prepublish-ci": "run-s build:types",
     "publish-ci": "lerna publish from-package --yes --no-verify-access",
     "webdoc": "webdoc"
   },
