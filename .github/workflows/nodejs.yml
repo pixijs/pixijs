@@ -74,21 +74,12 @@ jobs:
       env:
         DEST_DIR: ${{ github.event.release.tag_name }}
 
-    # Same release from previous deployed into s3://bucket-name/release/
-    - name: Deploy Latest Release
-      uses: jakejarvis/s3-sync-action@master
-      if: github.event_name == 'release' && github.event.release.prerelease == false && env.AWS_ACCESS_KEY_ID != ''
-      with:
-        args: --acl public-read --follow-symlinks --delete --cache-control "max-age=1209600"
-      env:
-        DEST_DIR: 'release'
-
     # Publish to NPM
     - name: Publish Latest Release
       if: github.event_name == 'release' && github.event.release.prerelease == false && env.NODE_AUTH_TOKEN != ''
-      run: npm run publish-ci
+      run: npm run publish-ci -- --dist-tag latest-6.x
 
     # Publish to NPM with prerelease dist-tag
     - name: Publish Latest Prerelease
       if: github.event_name == 'release' && github.event.release.prerelease && env.NODE_AUTH_TOKEN != ''
-      run: npm run publish-ci -- --dist-tag prerelease
+      run: npm run publish-ci -- --dist-tag prerelease-6.x
