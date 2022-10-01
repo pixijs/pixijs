@@ -74,6 +74,7 @@ export enum INTERNAL_FORMATS
     COMPRESSED_RGBA_ATC_INTERPOLATED_ALPHA_WEBGL = 0x87EE,
 
     // WEBGL_compressed_texture_astc
+    /* eslint-disable-next-line camelcase */
     COMPRESSED_RGBA_ASTC_4x4_KHR = 0x93B0,
 }
 
