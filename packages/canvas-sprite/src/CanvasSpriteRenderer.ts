@@ -162,7 +162,7 @@ export class CanvasSpriteRenderer
             }
 
             context.drawImage(
-                sprite._tintedCanvas as CanvasImageSource,
+                sprite._tintedCanvas,
                 0,
                 0,
                 Math.floor(sourceWidth * resolution),

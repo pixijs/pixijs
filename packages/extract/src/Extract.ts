@@ -170,7 +170,7 @@ export class Extract implements ISystem
             target.context.scale(1, -1);
 
             // we can't render to itself because we should be empty before render.
-            target.context.drawImage(canvasBuffer.canvas as CanvasImageSource, 0, -height);
+            target.context.drawImage(canvasBuffer.canvas, 0, -height);
 
             canvasBuffer.destroy();
             canvasBuffer = target;

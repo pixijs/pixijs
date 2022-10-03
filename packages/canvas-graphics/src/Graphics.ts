@@ -43,7 +43,7 @@ Graphics.prototype.generateCanvasTexture = function generateCanvasTexture(scaleM
     canvasRenderer.render(this, { renderTexture: canvasBuffer, clear: true, transform: tempMatrix });
 
     const texture = Texture.from(
-        (canvasBuffer.baseTexture as BaseRenderTexture)._canvasRenderTarget.canvas as HTMLCanvasElement | OffscreenCanvas,
+        (canvasBuffer.baseTexture as BaseRenderTexture)._canvasRenderTarget.canvas,
         { scaleMode });
 
     texture.baseTexture.setResolution(resolution);

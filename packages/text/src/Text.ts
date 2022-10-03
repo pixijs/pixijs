@@ -5,7 +5,7 @@ import { TEXT_GRADIENT } from './const';
 import { TextStyle } from './TextStyle';
 import { TextMetrics } from './TextMetrics';
 
-import type { ImageSource, Renderer } from '@pixi/core';
+import type { Renderer } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
 import type { ICanvas, ICanvasRenderingContext2D } from '@pixi/settings';
 import type { ITextStyle } from './TextStyle';
@@ -126,7 +126,7 @@ export class Text extends Sprite
         canvas.width = 3;
         canvas.height = 3;
 
-        const texture = Texture.from(canvas as ImageSource);
+        const texture = Texture.from(canvas);
 
         texture.orig = new Rectangle();
         texture.trim = new Rectangle();

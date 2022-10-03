@@ -16,7 +16,7 @@ Mesh.prototype._cachedTint = 0xFFFFFF;
 /**
  * Cached tinted texture.
  * @memberof PIXI.Mesh#
- * @member {PIXI.ICanvas} _tintedCanvas
+ * @member {PIXI.ICanvas | HTMLImageElement} _tintedCanvas
  * @protected
  */
 Mesh.prototype._tintedCanvas = null;

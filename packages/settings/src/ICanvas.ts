@@ -5,11 +5,19 @@ export type ContextIds = '2d' | 'bitmaprenderer' | 'webgl' | 'experimental-webgl
 type RenderingContext =
     ICanvasRenderingContext2D | ImageBitmapRenderingContext | WebGLRenderingContext | WebGL2RenderingContext;
 
+interface WebGLContextEventMap
+{
+    'webglcontextlost': WebGLContextEvent;
+    'webglcontextrestore': WebGLContextEvent;
+}
+
 /**
  * Common interface for HTMLCanvasElement, OffscreenCanvas, and other custom canvas classes.
  * @memberof PIXI
+ * @extends GlobalMixins.ICanvas
+ * @extends Partial<EventTarget>
  */
-export interface ICanvas
+export interface ICanvas extends GlobalMixins.ICanvas, Partial<EventTarget>
 {
     /** Width of the canvas. */
     width: number;
@@ -39,4 +47,42 @@ export interface ICanvas
      * @returns {string} The content of the canvas as data URL.
      */
     toDataURL?(type?: string, options?: any): string;
+
+    /**
+     * Adds the listener for the specified event.
+     * @param {string} type - The type of event to listen for.
+     * @param {EventListenerOrEventListenerObject} listener - The callback to invoke when the event is fired.
+     * @param {boolean | AddEventListenerOptions} options - The options for adding event listener.
+     */
+    addEventListener?(
+        type: string,
+        listener: EventListenerOrEventListenerObject,
+        options?: boolean | AddEventListenerOptions): void;
+    addEventListener?<K extends keyof WebGLContextEventMap>(
+        type: K,
+        listener: (this: ICanvas, ev: WebGLContextEventMap[K]) => any,
+        options?: boolean | AddEventListenerOptions): void;
+
+    /**
+     * Removes the listener for the specified event.
+     * @param {string} type - The type of event to listen for.
+     * @param {EventListenerOrEventListenerObject} listener - The callback to invoke when the event is fired.
+     * @param {boolean | EventListenerOptions} options - The options for removing event listener.
+     */
+    removeEventListener?(
+        type: string,
+        listener: EventListenerOrEventListenerObject,
+        options?: boolean | EventListenerOptions): void;
+    removeEventListener?<K extends keyof WebGLContextEventMap>(
+        type: K,
+        listener: (this: ICanvas, ev: WebGLContextEventMap[K]) => any,
+        options?: boolean | EventListenerOptions): void;
+
+    /**
+     * Dispatches a event.
+     * @param {Event} event - The Event object to dispatch. Its Event.target property will be set to the current EventTarget.
+     * @returns {boolean} Returns false if event is cancelable, and at least one of the event handlers which received event
+     *                    called Event.preventDefault(). Otherwise true.
+     */
+    dispatchEvent(event: Event): boolean;
 }

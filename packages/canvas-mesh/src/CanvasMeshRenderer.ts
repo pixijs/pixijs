@@ -4,7 +4,6 @@ import { canvasUtils } from '@pixi/canvas-renderer';
 import type { ExtensionMetadata } from '@pixi/core';
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
 import type { Mesh } from '@pixi/mesh';
-import type { ICanvas } from '@pixi/settings';
 
 /**
  * Renderer dedicated to meshes.
@@ -125,7 +124,7 @@ export class CanvasMeshRenderer
                 mesh._tintedCanvas = canvasUtils.getTintedCanvas(
                     { texture: mesh._cachedTexture },
                     mesh.tint
-                ) as ICanvas;
+                );
             }
         }
 
@@ -223,7 +222,7 @@ export class CanvasMeshRenderer
         );
 
         context.drawImage(
-            textureSource as CanvasImageSource,
+            textureSource,
             0,
             0,
             textureWidth * base.resolution,

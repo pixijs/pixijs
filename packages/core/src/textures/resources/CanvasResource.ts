@@ -1,7 +1,6 @@
 import { BaseImageResource } from './BaseImageResource';
 
 import type { ICanvas } from '@pixi/settings';
-import type { ImageSource } from './../BaseTexture';
 
 /**
  * @interface OffscreenCanvas
@@ -19,7 +18,7 @@ export class CanvasResource extends BaseImageResource
     // eslint-disable-next-line @typescript-eslint/no-useless-constructor
     constructor(source: ICanvas)
     {
-        super(source as ImageSource);
+        super(source);
     }
 
     /**

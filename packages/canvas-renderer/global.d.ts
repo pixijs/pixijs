@@ -21,6 +21,12 @@ declare namespace GlobalMixins
         tintId?: number;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-empty-interface
+    interface ICanvas extends GlobalTintable
+    {
+
+    }
+
     interface IRendererOptions
     {
         forceCanvas?: boolean;
@@ -40,12 +46,6 @@ declare namespace GlobalMixins
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 declare interface CanvasPattern extends GlobalMixins.GlobalTintable
-{
-
-}
-
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-declare interface ICanvas extends GlobalMixins.GlobalTintable
 {
 
 }

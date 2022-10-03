@@ -6,6 +6,7 @@ import { autoDetectResource } from './resources/autoDetectResource';
 import { settings } from '@pixi/settings';
 
 import type { MSAA_QUALITY, MIPMAP_MODES, WRAP_MODES } from '@pixi/constants';
+import type { ICanvas } from '@pixi/settings';
 import type { IAutoDetectOptions } from './resources/autoDetectResource';
 import type { GLTexture } from './GLTexture';
 
@@ -15,7 +16,7 @@ const defaultBufferOptions = {
     alphaMode: ALPHA_MODES.NPM,
 };
 
-export type ImageSource = HTMLImageElement | HTMLVideoElement | HTMLCanvasElement | OffscreenCanvas | ImageBitmap;
+export type ImageSource = HTMLImageElement | HTMLVideoElement | ImageBitmap | ICanvas;
 
 export interface IBaseTextureOptions<RO = any>
 {

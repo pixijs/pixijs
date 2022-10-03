@@ -38,8 +38,8 @@ export function canUseNewCanvasBlendModes(): boolean
     const context = canvas.getContext('2d');
 
     context.globalCompositeOperation = 'multiply';
-    context.drawImage(magenta as CanvasImageSource, 0, 0);
-    context.drawImage(yellow as CanvasImageSource, 2, 0);
+    context.drawImage(magenta, 0, 0);
+    context.drawImage(yellow, 2, 0);
 
     const imageData = context.getImageData(2, 0, 1, 1);
 

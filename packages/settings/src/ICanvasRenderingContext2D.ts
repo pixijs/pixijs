@@ -1,3 +1,5 @@
+import type { ICanvas } from './ICanvas';
+
 /**
  * Common interface for CanvasRenderingContext2D, OffscreenCanvasRenderingContext2D, and other custom canvas 2D context.
  * @memberof PIXI
@@ -18,4 +20,11 @@ export interface ICanvasRenderingContext2D extends
     CanvasPathDrawingStyles,
     CanvasTextDrawingStyles,
     CanvasPath
-{}
+{
+    createPattern(image: CanvasImageSource | ICanvas, repetition: string | null): CanvasPattern | null;
+
+    drawImage(image: CanvasImageSource | OffscreenCanvas | ICanvas, dx: number, dy: number): void;
+    drawImage(image: CanvasImageSource | OffscreenCanvas | ICanvas, dx: number, dy: number, dw: number, dh: number): void;
+    drawImage(image: CanvasImageSource | OffscreenCanvas | ICanvas, sx: number, sy: number, sw: number, sh: number,
+        dx: number, dy: number, dw: number, dh: number): void;
+}

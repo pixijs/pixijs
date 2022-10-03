@@ -691,7 +691,7 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
             context.fillStyle = 'white';
             context.fillRect(0, 0, 16, 16);
 
-            Texture._WHITE = new Texture(BaseTexture.from(canvas as ImageSource));
+            Texture._WHITE = new Texture(BaseTexture.from(canvas));
             removeAllHandlers(Texture._WHITE);
             removeAllHandlers(Texture._WHITE.baseTexture);
         }

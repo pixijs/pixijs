@@ -170,8 +170,13 @@ export class ContextSystem implements ISystem<ContextOptions>
         this.renderer.CONTEXT_UID = CONTEXT_UID_COUNTER++;
         this.renderer.runners.contextChange.emit(gl);
 
-        (this.renderer.view as any).addEventListener('webglcontextlost', this.handleContextLost, false);
-        (this.renderer.view as any).addEventListener('webglcontextrestored', this.handleContextRestored, false);
+        const view = this.renderer.view;
+
+        if (view.addEventListener !== undefined)
+        {
+            view.addEventListener('webglcontextlost', this.handleContextLost, false);
+            view.addEventListener('webglcontextrestored', this.handleContextRestored, false);
+        }
     }
 
     /**
@@ -296,8 +301,11 @@ export class ContextSystem implements ISystem<ContextOptions>
         this.renderer = null;
 
         // remove listeners
-        (view as any).removeEventListener('webglcontextlost', this.handleContextLost);
-        (view as any).removeEventListener('webglcontextrestored', this.handleContextRestored);
+        if (view.removeEventListener !== undefined)
+        {
+            view.removeEventListener('webglcontextlost', this.handleContextLost);
+            view.removeEventListener('webglcontextrestored', this.handleContextRestored);
+        }
 
         this.gl.useProgram(null);
 

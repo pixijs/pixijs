@@ -39,7 +39,7 @@ export const canvasUtils = {
 
         if (cachedCanvas)
         {
-            if ((cachedCanvas as GlobalMixins.GlobalTintable).tintId === texture._updateID)
+            if (cachedCanvas.tintId === texture._updateID)
             {
                 return texture.tintCache[stringColor];
             }
@@ -53,7 +53,7 @@ export const canvasUtils = {
 
         canvasUtils.tintMethod(texture, color, canvas);
 
-        (canvas as GlobalMixins.GlobalTintable).tintId = texture._updateID;
+        canvas.tintId = texture._updateID;
 
         if (canvasUtils.convertTintToImage)
         {
@@ -105,7 +105,7 @@ export const canvasUtils = {
             canvasUtils.canvas = settings.ADAPTER.createCanvas();
         }
         canvasUtils.tintMethod(texture, color, canvasUtils.canvas);
-        pattern = canvasUtils.canvas.getContext('2d').createPattern(canvasUtils.canvas as CanvasImageSource, 'repeat');
+        pattern = canvasUtils.canvas.getContext('2d').createPattern(canvasUtils.canvas, 'repeat');
         pattern.tintId = texture._updateID;
         texture.patternCache[stringColor] = pattern;
 

@@ -3,7 +3,7 @@ import { BaseImageResource } from './BaseImageResource';
 import { settings } from '@pixi/settings';
 
 import type { ISize } from '@pixi/math';
-import type { ImageSource } from '../BaseTexture';
+import type { ICanvas } from '@pixi/settings';
 
 export interface ISVGResourceOptions
 {
@@ -53,7 +53,7 @@ export class SVGResource extends BaseImageResource
     {
         options = options || {};
 
-        super(settings.ADAPTER.createCanvas() as ImageSource);
+        super(settings.ADAPTER.createCanvas());
         this._width = 0;
         this._height = 0;
 
@@ -151,7 +151,7 @@ export class SVGResource extends BaseImageResource
             height = Math.round(height);
 
             // Create a canvas element
-            const canvas = this.source as HTMLCanvasElement;
+            const canvas = this.source as ICanvas;
 
             canvas.width = width;
             canvas.height = height;
