@@ -7,7 +7,7 @@ PixiJS — The HTML5 Creation Engine
 [![npm version](https://badge.fury.io/js/pixi.js.svg)](https://badge.fury.io/js/pixi.js)
 [![Node.js CI](https://github.com/pixijs/pixijs/workflows/Node.js%20CI/badge.svg)](https://github.com/pixijs/pixijs/actions?query=workflow%3A%22Node.js+CI%22)
 
-The aim of this project is to provide a fast lightweight 2D library that works
+This project aims to provide a fast lightweight 2D library that works
 across all devices. The PixiJS renderer allows everyone to enjoy the power of
 hardware acceleration without prior knowledge of WebGL. Also, it's fast. Really fast.
 
@@ -27,7 +27,7 @@ as any breakthroughs will be posted up there too!
 
 PixiJS is a rendering library that will allow you to create rich, interactive graphics, cross-platform applications, and games without having to dive into the WebGL API or deal with browser and device compatibility.
 
-PixiJS has full [WebGL](https://en.wikipedia.org/wiki/WebGL) support and seamlessly falls back to HTML5's [canvas](https://en.wikipedia.org/wiki/Canvas_element) if needed. As a framework, PixiJS is a fantastic tool for authoring interactive content, *especially with the move away from Adobe Flash in recent years*. Use it for your graphics rich, interactive websites, applications, and HTML5 games.  Out of the box, cross-platform compatibility and graceful degradation mean you have less work to do and have more fun doing it! If you want to create polished and refined experiences relatively quickly, without delving into dense, low-level code, all while avoiding the headaches of browser inconsistencies, then sprinkle your next project with some PixiJS magic!
+PixiJS has full [WebGL](https://en.wikipedia.org/wiki/WebGL) support and seamlessly falls back to HTML5's [canvas](https://en.wikipedia.org/wiki/Canvas_element) if needed. As a framework, PixiJS is a fantastic tool for authoring interactive content, *especially with the move away from Adobe Flash in recent years*. Use it for your graphics-rich, interactive websites, applications, and HTML5 games.  Out of the box, cross-platform compatibility and graceful degradation mean you have less work to do and have more fun doing it! If you want to create polished and refined experiences relatively quickly, without delving into dense, low-level code, all while avoiding the headaches of browser inconsistencies, then sprinkle your next project with some PixiJS magic!
 
 **Boost your development and feel free to use your imagination!**
 
@@ -159,8 +159,8 @@ app.loader.add('bunny', 'bunny.png').load((loader, resources) => {
 ### How to build ###
 
 Note that for most users you don't need to build this project. If all you want is to use PixiJS, then
-just download one of our [prebuilt releases](https://github.com/pixijs/pixijs/releases). Really
-the only time you should need to build PixiJS is if you are developing it.
+just download one of our [prebuilt releases](https://github.com/pixijs/pixijs/releases). 
+The only time you should need to build PixiJS is if you are developing it.
 
 If you don't already have Node.js and NPM, go install them. Then, in the folder where you have cloned
 the repository, install the build dependencies using npm:
