@@ -1,9 +1,9 @@
 import { ALPHA_MODES } from '@pixi/constants';
-import type { BaseTexture, GLTexture, Renderer } from '@pixi/core';
 import { Resource } from '@pixi/core';
 import { determineCrossOrigin } from '@pixi/utils';
-
 import { NodeCanvasElement } from './NodeCanvasElement';
+
+import type { BaseTexture, GLTexture, Renderer } from '@pixi/core';
 
 /**
  * A canvas resource using node-canvas
@@ -14,7 +14,7 @@ export class NodeCanvasResource extends Resource
 {
     /**
      * The source element.
-     * @member {HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|SVGElement}
+     * @member {NodeCanvasElement}
      * @readonly
      */
     public source: NodeCanvasElement;
@@ -45,7 +45,7 @@ export class NodeCanvasResource extends Resource
         const width = baseTexture.realWidth;
         const height = baseTexture.realHeight;
 
-        source = (source || this.source) as unknown as HTMLCanvasElement;
+        source = (source || this.source) as HTMLCanvasElement;
 
         gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, baseTexture.alphaMode === ALPHA_MODES.UNPACK);
 

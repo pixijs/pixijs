@@ -108,10 +108,8 @@ export class ViewSystem implements ISystem<ViewOptions, boolean>
 
         if (this.autoDensity)
         {
-            const element = this.element as HTMLCanvasElement;
-
-            element.style.width = `${screenWidth}px`;
-            element.style.height = `${screenHeight}px`;
+            this.element.style.width = `${screenWidth}px`;
+            this.element.style.height = `${screenHeight}px`;
         }
 
         /**
@@ -130,12 +128,10 @@ export class ViewSystem implements ISystem<ViewOptions, boolean>
      */
     destroy(removeView: boolean): void
     {
-        const element = this.element as HTMLCanvasElement;
-
         // ka boom!
-        if (removeView && element.parentNode)
+        if (removeView)
         {
-            element.parentNode.removeChild(element);
+            this.element.parentNode?.removeChild(this.element);
         }
 
         this.renderer = null;

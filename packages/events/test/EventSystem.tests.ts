@@ -152,7 +152,7 @@ describe('EventSystem', () =>
                         changedTouches: [
                             new Touch({
                                 identifier: 0,
-                                target: renderer.view as HTMLCanvasElement,
+                                target: renderer.view as EventTarget,
                                 clientX,
                                 clientY,
                             }),
@@ -175,7 +175,6 @@ describe('EventSystem', () =>
     {
         const renderer = createRenderer();
         const [stage, graphics] = createScene();
-        const view = renderer.view as HTMLCanvasElement;
 
         renderer.render(stage);
         graphics.cursor = 'copy';
@@ -188,7 +187,7 @@ describe('EventSystem', () =>
             })
         );
 
-        expect(view.style.cursor).toEqual('copy');
+        expect(renderer.view.style.cursor).toEqual('copy');
 
         const eventSpy = jest.fn();
 
@@ -202,7 +201,7 @@ describe('EventSystem', () =>
         );
 
         expect(eventSpy).not.toBeCalled();
-        expect(view.style.cursor).toEqual('inherit');
+        expect(renderer.view.style.cursor).toEqual('inherit');
     });
 
     it('should dispatch synthetic over/out events on pointermove', () =>

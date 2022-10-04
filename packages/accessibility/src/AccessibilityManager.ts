@@ -203,7 +203,7 @@ export class AccessibilityManager
         globalThis.removeEventListener('keydown', this._onKeyDown, false);
 
         this.renderer.on('postrender', this.update, this);
-        (this.renderer.view as HTMLCanvasElement).parentNode?.appendChild(this.div);
+        this.renderer.view.parentNode?.appendChild(this.div);
     }
 
     /**
@@ -290,7 +290,7 @@ export class AccessibilityManager
             this.updateAccessibleObjects(this.renderer.lastObjectRendered as Container);
         }
 
-        const { left, top, width, height } = (this.renderer.view as HTMLCanvasElement).getBoundingClientRect();
+        const { x, y, width, height } = this.renderer.view.getBoundingClientRect();
         const { width: viewWidth, height: viewHeight, resolution } = this.renderer;
 
         const sx = (width / viewWidth) * resolution;
@@ -298,8 +298,8 @@ export class AccessibilityManager
 
         let div = this.div;
 
-        div.style.left = `${left}px`;
-        div.style.top = `${top}px`;
+        div.style.left = `${x}px`;
+        div.style.top = `${y}px`;
         div.style.width = `${viewWidth}px`;
         div.style.height = `${viewHeight}px`;
 

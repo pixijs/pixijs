@@ -1,10 +1,12 @@
-import type { LoadAsset, LoaderParser } from '@pixi/assets';
+import { loadImage } from 'canvas';
 import { extensions, ExtensionType, Texture } from '@pixi/core';
 import { settings } from '@pixi/settings';
 import { getResolutionOfUrl, path } from '@pixi/utils';
-import type { CanvasRenderingContext2D } from 'canvas';
-import { loadImage } from 'canvas';
 import { NodeCanvasElement } from './NodeCanvasElement';
+
+import type { CanvasRenderingContext2D } from 'canvas';
+import type { LoadAsset, LoaderParser } from '@pixi/assets';
+import type { ICanvas } from '@pixi/settings';
 
 const validImages = ['.jpg', '.png', '.jpeg', '.svg'];
 const validMimes = ['image/png', 'image/jpg', 'image/jpeg', 'image/svg'];
@@ -37,7 +39,7 @@ export const loadNodeTexture = {
         const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 
         ctx.drawImage(image, 0, 0);
-        const texture = Texture.from(canvas as unknown as HTMLCanvasElement, {
+        const texture = Texture.from(canvas as unknown as ICanvas, {
             resolution: getResolutionOfUrl(url),
             ...asset.data
         });

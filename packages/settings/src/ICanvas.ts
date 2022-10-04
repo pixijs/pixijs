@@ -85,4 +85,32 @@ export interface ICanvas extends GlobalMixins.ICanvas, Partial<EventTarget>
      *                    called Event.preventDefault(). Otherwise true.
      */
     dispatchEvent(event: Event): boolean;
+
+    /** Parent node of the canvas. */
+    readonly parentNode?: {
+        appendChild(element: HTMLElement): void;
+        removeChild(element: HTMLElement): void;
+        removeChild(element: ICanvas): void;
+    };
+
+    /** Style of the canvas. */
+    readonly style?: {
+        width?: string;
+        height?: string;
+        cursor?: string;
+        touchAction?: string;
+        msTouchAction?: string;
+        msContentZooming?: string;
+    };
+
+    /**
+     * Get the position and the size of the canvas.
+     * @returns The smallest rectangle which contains the entire canvas.
+     */
+    getBoundingClientRect?(): {
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+    };
 }
