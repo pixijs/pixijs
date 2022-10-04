@@ -17,35 +17,35 @@ describe('Extract', () =>
         renderer.destroy();
     });
 
-    it('should extract an sprite', () =>
+    it('should extract an sprite', async () =>
     {
         const renderer = new Renderer();
         const sprite = new Sprite(Texture.WHITE);
         const extract = renderer.extract;
 
         expect(extract.canvas(sprite)).toBeInstanceOf(HTMLCanvasElement);
-        expect(extract.base64(sprite)).toBeString();
+        expect(await extract.base64(sprite)).toBeString();
         expect(extract.pixels(sprite)).toBeInstanceOf(Uint8Array);
-        expect(extract.image(sprite)).toBeInstanceOf(HTMLImageElement);
+        expect(await extract.image(sprite)).toBeInstanceOf(HTMLImageElement);
 
         renderer.destroy();
         sprite.destroy();
     });
 
-    it('should extract with no arguments', () =>
+    it('should extract with no arguments', async () =>
     {
         const renderer = new Renderer();
         const extract = renderer.extract;
 
         expect(extract.canvas(undefined)).toBeInstanceOf(HTMLCanvasElement);
-        expect(extract.base64(undefined)).toBeString();
+        expect(await extract.base64(undefined)).toBeString();
         expect(extract.pixels()).toBeInstanceOf(Uint8Array);
-        expect(extract.image(undefined)).toBeInstanceOf(HTMLImageElement);
+        expect(await extract.image(undefined)).toBeInstanceOf(HTMLImageElement);
 
         renderer.destroy();
     });
 
-    it('should extract a render texture', () =>
+    it('should extract a render texture', async () =>
     {
         const renderer = new Renderer();
         const extract = renderer.extract;
@@ -56,9 +56,9 @@ describe('Extract', () =>
         renderer.render(sprite, { renderTexture });
 
         expect(extract.canvas(renderTexture)).toBeInstanceOf(HTMLCanvasElement);
-        expect(extract.base64(renderTexture)).toBeString();
+        expect(await extract.base64(renderTexture)).toBeString();
         expect(extract.pixels(renderTexture, frame)).toBeInstanceOf(Uint8Array);
-        expect(extract.image(renderTexture)).toBeInstanceOf(HTMLImageElement);
+        expect(await extract.image(renderTexture)).toBeInstanceOf(HTMLImageElement);
 
         renderer.destroy();
         renderTexture.destroy();

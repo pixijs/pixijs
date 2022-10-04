@@ -56,11 +56,11 @@ export class Extract implements ISystem
      * @param quality - JPEG or Webp compression from 0 to 1. Default is 0.92.
      * @returns - HTML Image of the target
      */
-    public image(target: DisplayObject | RenderTexture, format?: string, quality?: number): HTMLImageElement
+    public async image(target: DisplayObject | RenderTexture, format?: string, quality?: number): Promise<HTMLImageElement>
     {
         const image = new Image();
 
-        image.src = this.base64(target, format, quality);
+        image.src = await this.base64(target, format, quality);
 
         return image;
     }
@@ -74,7 +74,7 @@ export class Extract implements ISystem
      * @param quality - JPEG or Webp compression from 0 to 1. Default is 0.92.
      * @returns - A base64 encoded string of the texture.
      */
-    public base64(target: DisplayObject | RenderTexture, format?: string, quality?: number): string
+    public async base64(target: DisplayObject | RenderTexture, format?: string, quality?: number): Promise<string>
     {
         const canvas = this.canvas(target);
 
@@ -82,7 +82,20 @@ export class Extract implements ISystem
         {
             return canvas.toDataURL(format, quality);
         }
-        throw new Error('TODO: base64 for OffscreenCanvas');
+        if (canvas.convertToBlob !== undefined)
+        {
+            const blob = await canvas.convertToBlob({ type: format, quality });
+
+            return await new Promise<string>((resolve) =>
+            {
+                const reader = new FileReader();
+
+                reader.onload = () => resolve(reader.result as string);
+                reader.readAsDataURL(blob);
+            });
+        }
+
+        throw new Error('Extract.base64() requires ICanvas.toDataURL or ICanvas.convertToBlob to be implemented');
     }
 
     /**
