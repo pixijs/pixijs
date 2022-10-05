@@ -55,19 +55,13 @@ export const canvasUtils = {
 
         canvas.tintId = texture._updateID;
 
-        if (canvasUtils.convertTintToImage)
+        // Convert tint to image only if ICanvas.toDataURL exists (e.g. OffscreenCanvas don't have toDataURL)
+        if (canvasUtils.convertTintToImage && canvas.toDataURL !== undefined)
         {
             // is this better?
             const tintImage = new Image();
 
-            if (canvas.toDataURL !== undefined)
-            {
-                tintImage.src = canvas.toDataURL();
-            }
-            else
-            {
-                throw Error('TODO: Convert OffscreenCanvas to Image');
-            }
+            tintImage.src = canvas.toDataURL();
 
             texture.tintCache[stringColor] = tintImage;
         }
