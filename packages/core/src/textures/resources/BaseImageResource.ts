@@ -1,9 +1,9 @@
-import { Resource } from './Resource';
-import { determineCrossOrigin } from '@pixi/utils';
 import { ALPHA_MODES } from '@pixi/constants';
+import { determineCrossOrigin } from '@pixi/utils';
+import { Resource } from './Resource';
 
-import type { BaseTexture, ImageSource } from '../BaseTexture';
 import type { Renderer } from '../../Renderer';
+import type { BaseTexture, ImageSource } from '../BaseTexture';
 import type { GLTexture } from '../GLTexture';
 
 /**
@@ -14,7 +14,7 @@ export class BaseImageResource extends Resource
 {
     /**
      * The source element.
-     * @member {HTMLImageElement|HTMLVideoElement|HTMLCanvasElement|OffscreenCanvas|SVGElement}
+     * @member {HTMLImageElement|HTMLVideoElement|ImageBitmap|PIXI.ICanvas}
      * @readonly
      */
     public source: ImageSource;
@@ -28,7 +28,7 @@ export class BaseImageResource extends Resource
     public noSubImage: boolean;
 
     /**
-     * @param {HTMLImageElement|HTMLVideoElement|HTMLCanvasElement|OffscreenCanvas|SVGElement} source
+     * @param {HTMLImageElement|HTMLVideoElement|ImageBitmap|PIXI.ICanvas} source
      */
     constructor(source: ImageSource)
     {
@@ -65,7 +65,7 @@ export class BaseImageResource extends Resource
      * @param renderer - Upload to the renderer
      * @param baseTexture - Reference to parent texture
      * @param glTexture
-     * @param {HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|SVGElement} [source] - (optional)
+     * @param {HTMLImageElement|HTMLVideoElement|ImageBitmap|PIXI.ICanvas} [source] - (optional)
      * @returns - true is success
      */
     upload(renderer: Renderer, baseTexture: BaseTexture, glTexture: GLTexture, source?: ImageSource): boolean
@@ -98,16 +98,14 @@ export class BaseImageResource extends Resource
             && glTexture.width === width
             && glTexture.height === height)
         {
-            gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, baseTexture.format, glTexture.type,
-                source as TexImageSource | OffscreenCanvas);
+            gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, baseTexture.format, glTexture.type, source);
         }
         else
         {
             glTexture.width = width;
             glTexture.height = height;
 
-            gl.texImage2D(baseTexture.target, 0, glTexture.internalFormat, baseTexture.format, glTexture.type,
-                source as TexImageSource | OffscreenCanvas);
+            gl.texImage2D(baseTexture.target, 0, glTexture.internalFormat, baseTexture.format, glTexture.type, source);
         }
 
         return true;

@@ -1,14 +1,14 @@
-import { BaseTexture } from './BaseTexture';
-import { ImageResource } from './resources/ImageResource';
-import type { CanvasResource } from './resources/CanvasResource';
-import { TextureUvs } from './TextureUvs';
+import { Point, Rectangle } from '@pixi/math';
 import { settings } from '@pixi/settings';
-import { Rectangle, Point } from '@pixi/math';
 import { uid, TextureCache, getResolutionOfUrl, EventEmitter } from '@pixi/utils';
+import { ImageResource } from './resources/ImageResource';
+import { BaseTexture } from './BaseTexture';
+import { TextureUvs } from './TextureUvs';
 
-import type { Resource } from './resources/Resource';
-import type { BufferResource } from './resources/BufferResource';
 import type { IPointData, ISize } from '@pixi/math';
+import type { BufferResource } from './resources/BufferResource';
+import type { CanvasResource } from './resources/CanvasResource';
+import type { Resource } from './resources/Resource';
 import type { IBaseTextureOptions, ImageSource } from './BaseTexture';
 import type { TextureMatrix } from './TextureMatrix';
 
@@ -333,7 +333,7 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
     /**
      * Helper function that creates a new Texture based on the source you provide.
      * The source can be - frame id, image url, video url, canvas element, video element, base texture
-     * @param {string|HTMLImageElement|HTMLVideoElement|HTMLCanvasElement|OffscreenCanvas|PIXI.BaseTexture} source -
+     * @param {string|PIXI.BaseTexture|HTMLImageElement|HTMLVideoElement|ImageBitmap|PIXI.ICanvas} source -
      *        Source or array of sources to create texture from
      * @param options - See {@link PIXI.BaseTexture}'s constructor for options.
      * @param {string} [options.pixiIdPrefix=pixiid] - If a source has no id, this is the prefix of the generated id
@@ -450,14 +450,14 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
 
     /**
      * Create a texture from a source and add to the cache.
-     * @param {HTMLImageElement|HTMLCanvasElement|OffscreenCanvas|string} source - The input source.
+     * @param {HTMLImageElement|HTMLVideoElement|ImageBitmap|PIXI.ICanvas|string} source - The input source.
      * @param imageUrl - File name of texture, for cache and resolving resolution.
      * @param name - Human readable name for the texture cache. If no name is
      *        specified, only `imageUrl` will be used as the cache ID.
      * @param options
      * @returns - Output texture
      */
-    static fromLoader<R extends Resource = Resource>(source: HTMLImageElement | HTMLCanvasElement | OffscreenCanvas | string,
+    static fromLoader<R extends Resource = Resource>(source: ImageSource | string,
         imageUrl: string, name?: string, options?: IBaseTextureOptions): Promise<Texture<R>>
     {
         const baseTexture = new BaseTexture<R>(source, Object.assign({

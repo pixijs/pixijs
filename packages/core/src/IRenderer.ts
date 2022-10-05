@@ -1,10 +1,11 @@
 import type { RENDERER_TYPE } from '@pixi/constants';
 import type { Matrix, Rectangle, Transform } from '@pixi/math';
 import type { ICanvas } from '@pixi/settings';
-import type { IGenerateTextureOptions } from './renderTexture/GenerateTextureSystem';
 import type { IRendererPlugins } from './plugin/PluginSystem';
+import type { IGenerateTextureOptions } from './renderTexture/GenerateTextureSystem';
 import type { RenderTexture } from './renderTexture/RenderTexture';
 import type { SystemManager } from './system/SystemManager';
+import type { ImageSource } from './textures/BaseTexture';
 
 /**
  * Interface for DisplayObject to interface with Renderer.
@@ -41,7 +42,36 @@ export interface IRenderableContainer extends IRenderableObject
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface IRenderingContext extends WebGL2RenderingContext
 {
+    texImage2D(target: GLenum, level: GLint, internalformat: GLint, width: GLsizei, height: GLsizei, border: GLint,
+        format: GLenum, type: GLenum, pixels: ArrayBufferView | null): void;
+    texImage2D(target: GLenum, level: GLint, internalformat: GLint, format: GLenum, type: GLenum,
+        source: TexImageSource | ImageSource): void;
+    texImage2D(target: GLenum, level: GLint, internalformat: GLint, width: GLsizei, height: GLsizei, border: GLint,
+        format: GLenum, type: GLenum, pboOffset: GLintptr): void;
+    texImage2D(target: GLenum, level: GLint, internalformat: GLint, width: GLsizei, height: GLsizei, border: GLint,
+        format: GLenum, type: GLenum, source: TexImageSource | ImageSource): void;
+    texImage2D(target: GLenum, level: GLint, internalformat: GLint, width: GLsizei, height: GLsizei, border: GLint,
+        format: GLenum, type: GLenum, srcData: ArrayBufferView, srcOffset: GLuint): void;
 
+    texSubImage2D(target: GLenum, level: GLint, xoffset: GLint, yoffset: GLint, width: GLsizei, height: GLsizei,
+        format: GLenum, type: GLenum, pixels: ArrayBufferView | null): void;
+    texSubImage2D(target: GLenum, level: GLint, xoffset: GLint, yoffset: GLint, format: GLenum, type: GLenum,
+        source: TexImageSource | ImageSource): void;
+    texSubImage2D(target: GLenum, level: GLint, xoffset: GLint, yoffset: GLint, width: GLsizei, height: GLsizei,
+        format: GLenum, type: GLenum, pboOffset: GLintptr): void;
+    texSubImage2D(target: GLenum, level: GLint, xoffset: GLint, yoffset: GLint, width: GLsizei, height: GLsizei,
+        format: GLenum, type: GLenum, source: TexImageSource | ImageSource): void;
+    texSubImage2D(target: GLenum, level: GLint, xoffset: GLint, yoffset: GLint, width: GLsizei, height: GLsizei,
+        format: GLenum, type: GLenum, srcData: ArrayBufferView, srcOffset: GLuint): void;
+
+    texSubImage3D(target: GLenum, level: GLint, xoffset: GLint, yoffset: GLint, zoffset: GLint,
+        width: GLsizei, height: GLsizei, depth: GLsizei, format: GLenum, type: GLenum, pboOffset: GLintptr): void;
+    texSubImage3D(target: GLenum, level: GLint, xoffset: GLint, yoffset: GLint, zoffset: GLint,
+        width: GLsizei, height: GLsizei, depth: GLsizei, format: GLenum, type: GLenum,
+        source: TexImageSource | ImageSource): void;
+    texSubImage3D(target: GLenum, level: GLint, xoffset: GLint, yoffset: GLint, zoffset: GLint,
+        width: GLsizei, height: GLsizei, depth: GLsizei, format: GLenum, type: GLenum,
+        srcData: ArrayBufferView | null, srcOffset?: GLuint): void;
 }
 
 export interface IRendererOptions extends GlobalMixins.IRendererOptions

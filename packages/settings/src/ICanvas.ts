@@ -78,10 +78,10 @@ export interface ICanvas extends GlobalMixins.ICanvas, Partial<EventTarget>
     /**
      * Get the content of the canvas as Blob.
      * @param {object} options - The options for creating Blob.
-     * @param {string} options.type -
-     *     The MIME type for the image format to return. If not specify, the default value is image/png.
-     * @param {string} options.quality -
-     *     The image quality to be used when creating images using file formats that support lossy compression.
+     * @param {string} options.type
+     *     - The MIME type for the image format to return. If not specify, the default value is image/png.
+     * @param {string} options.quality
+     *     - The image quality to be used when creating images using file formats that support lossy compression.
      * @returns {Promise<Blob>} The content of the canvas as Blob.
      */
     convertToBlob?(options?: { type?: string, quality?: number }): Promise<Blob>;

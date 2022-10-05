@@ -23,8 +23,8 @@ export interface ICanvasRenderingContext2D extends
 {
     createPattern(image: CanvasImageSource | ICanvas, repetition: string | null): CanvasPattern | null;
 
-    drawImage(image: CanvasImageSource | OffscreenCanvas | ICanvas, dx: number, dy: number): void;
-    drawImage(image: CanvasImageSource | OffscreenCanvas | ICanvas, dx: number, dy: number, dw: number, dh: number): void;
-    drawImage(image: CanvasImageSource | OffscreenCanvas | ICanvas, sx: number, sy: number, sw: number, sh: number,
+    drawImage(image: CanvasImageSource | ICanvas, dx: number, dy: number): void;
+    drawImage(image: CanvasImageSource | ICanvas, dx: number, dy: number, dw: number, dh: number): void;
+    drawImage(image: CanvasImageSource | ICanvas, sx: number, sy: number, sw: number, sh: number,
         dx: number, dy: number, dw: number, dh: number): void;
 }
