@@ -30,6 +30,7 @@
  * @property {number} [COMPRESSED_RGB_ATC_WEBGL=0x8C92] -
  * @property {number} [COMPRESSED_RGBA_ATC_EXPLICIT_ALPHA_WEBGL=0x8C92] -
  * @property {number} [COMPRESSED_RGBA_ATC_INTERPOLATED_ALPHA_WEBGL=0x87EE] -
+ * @property {number} [COMPRESSED_RGBA_ASTC_4x4_KHR=0x93B0] -
  */
 export enum INTERNAL_FORMATS
 // eslint-disable-next-line @typescript-eslint/indent
@@ -71,6 +72,10 @@ export enum INTERNAL_FORMATS
     COMPRESSED_RGB_ATC_WEBGL = 0x8C92,
     COMPRESSED_RGBA_ATC_EXPLICIT_ALPHA_WEBGL = 0x8C92, // TODO: Probably a bug on the MDN site
     COMPRESSED_RGBA_ATC_INTERPOLATED_ALPHA_WEBGL = 0x87EE,
+
+    // WEBGL_compressed_texture_astc
+    /* eslint-disable-next-line camelcase */
+    COMPRESSED_RGBA_ASTC_4x4_KHR = 0x93B0,
 }
 
 /**
@@ -118,5 +123,10 @@ export const INTERNAL_FORMAT_TO_BYTES_PER_PIXEL: { [id: number]: number } = {
     // WEBGL_compressed_texture_atc
     [INTERNAL_FORMATS.COMPRESSED_RGB_ATC_WEBGL]: 0.5,
     [INTERNAL_FORMATS.COMPRESSED_RGBA_ATC_EXPLICIT_ALPHA_WEBGL]: 1,
-    [INTERNAL_FORMATS.COMPRESSED_RGBA_ATC_INTERPOLATED_ALPHA_WEBGL]: 1
+    [INTERNAL_FORMATS.COMPRESSED_RGBA_ATC_INTERPOLATED_ALPHA_WEBGL]: 1,
+
+    // @see https://registry.khronos.org/OpenGL/extensions/KHR/KHR_texture_compression_astc_hdr.txt
+    // WEBGL_compressed_texture_astc
+    /* eslint-disable-next-line camelcase */
+    [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_4x4_KHR]: 1,
 };
