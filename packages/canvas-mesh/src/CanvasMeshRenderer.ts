@@ -124,7 +124,7 @@ export class CanvasMeshRenderer
                 mesh._tintedCanvas = canvasUtils.getTintedCanvas(
                     { texture: mesh._cachedTexture },
                     mesh.tint
-                ) as HTMLCanvasElement;
+                );
             }
         }
 

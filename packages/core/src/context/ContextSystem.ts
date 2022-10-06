@@ -1,12 +1,13 @@
 import { ENV } from '@pixi/constants';
+import { extensions, ExtensionType } from '@pixi/extensions';
 import { settings } from '../settings';
 
+import type { ExtensionMetadata } from '@pixi/extensions';
+import type { ICanvas } from '@pixi/settings';
 import type { ISystem } from '../system/ISystem';
 import type { Renderer } from '../Renderer';
 import type { WebGLExtensions } from './WebGLExtensions';
 import type { IRenderingContext } from '../IRenderer';
-import type { ExtensionMetadata } from '@pixi/extensions';
-import { extensions, ExtensionType } from '@pixi/extensions';
 
 let CONTEXT_UID_COUNTER = 0;
 
@@ -169,8 +170,13 @@ export class ContextSystem implements ISystem<ContextOptions>
         this.renderer.CONTEXT_UID = CONTEXT_UID_COUNTER++;
         this.renderer.runners.contextChange.emit(gl);
 
-        (this.renderer.view as any).addEventListener('webglcontextlost', this.handleContextLost, false);
-        this.renderer.view.addEventListener('webglcontextrestored', this.handleContextRestored, false);
+        const view = this.renderer.view;
+
+        if (view.addEventListener !== undefined)
+        {
+            view.addEventListener('webglcontextlost', this.handleContextLost, false);
+            view.addEventListener('webglcontextrestored', this.handleContextRestored, false);
+        }
     }
 
     /**
@@ -194,7 +200,7 @@ export class ContextSystem implements ISystem<ContextOptions>
      * @see https://developer.mozilla.org/en/docs/Web/API/HTMLCanvasElement/getContext
      * @returns {WebGLRenderingContext} the WebGL context
      */
-    createContext(canvas: HTMLCanvasElement, options: WebGLContextAttributes): IRenderingContext
+    createContext(canvas: ICanvas, options: WebGLContextAttributes): IRenderingContext
     {
         let gl;
 
@@ -295,8 +301,11 @@ export class ContextSystem implements ISystem<ContextOptions>
         this.renderer = null;
 
         // remove listeners
-        (view as any).removeEventListener('webglcontextlost', this.handleContextLost);
-        view.removeEventListener('webglcontextrestored', this.handleContextRestored);
+        if (view.removeEventListener !== undefined)
+        {
+            view.removeEventListener('webglcontextlost', this.handleContextLost);
+            view.removeEventListener('webglcontextrestored', this.handleContextRestored);
+        }
 
         this.gl.useProgram(null);
 

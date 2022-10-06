@@ -1,14 +1,15 @@
-export type ContextIds = '2d' | 'webgl' | 'experimental-webgl' | 'webgl2';
+import type { ICanvas } from './ICanvas';
 
 /**
- * This interface describes all the DOM dependent calls that Pixi makes throughout its codebase
- * Implementations of this interface can be used to make sure Pixi will work in any environment
- * such as browser, web workers, and node
+ * This interface describes all the DOM dependent calls that Pixi makes throughout its codebase.
+ * Implementations of this interface can be used to make sure Pixi will work in any environment,
+ * such as browser, Web Workers, and Node.js.
+ * @memberof PIXI
  */
 export interface IAdapter
 {
     /** Returns a canvas object that can be used to create a webgl context. */
-    createCanvas: (width?: number, height?: number) => HTMLCanvasElement;
+    createCanvas: (width?: number, height?: number) => ICanvas;
     /** Returns a webgl rendering context. */
     getWebGLRenderingContext: () => typeof WebGLRenderingContext;
     /** Returns a partial implementation of the browsers window.navigator */

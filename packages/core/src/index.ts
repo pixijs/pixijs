@@ -23,7 +23,6 @@ export { utils };
 export * from './textures/resources';
 export * from './systems';
 export * from './IRenderer';
-
 export * from './autoDetectRenderer';
 export * from './fragments';
 export * from './system/ISystem';

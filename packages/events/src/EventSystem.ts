@@ -4,8 +4,9 @@ import { FederatedPointerEvent } from './FederatedPointerEvent';
 import { FederatedWheelEvent } from './FederatedWheelEvent';
 import { extensions, ExtensionType } from '@pixi/core';
 
-import type { DisplayObject } from '@pixi/display';
 import type { IRenderableObject, ExtensionMetadata, IPointData } from '@pixi/core';
+import type { DisplayObject } from '@pixi/display';
+import type { ICanvas } from '@pixi/settings';
 
 const MOUSE_POINTER_ID = 1;
 const TOUCH_TO_POINTER: Record<string, string> = {
@@ -19,7 +20,7 @@ const TOUCH_TO_POINTER: Record<string, string> = {
 interface Renderer
 {
     lastObjectRendered: IRenderableObject;
-    view: HTMLCanvasElement;
+    view: ICanvas;
     resolution: number;
     plugins: Record<string, any>;
 }
@@ -126,7 +127,7 @@ export class EventSystem
     {
         const { view, resolution } = this.renderer;
 
-        this.setTargetElement(view);
+        this.setTargetElement(view as HTMLCanvasElement);
         this.resolution = resolution;
     }
 
@@ -351,14 +352,17 @@ export class EventSystem
 
         const style = this.domElement.style as CrossCSSStyleDeclaration;
 
-        if ((globalThis.navigator as any).msPointerEnabled)
+        if (style)
         {
-            style.msContentZooming = 'none';
-            style.msTouchAction = 'none';
-        }
-        else if (this.supportsPointerEvents)
-        {
-            style.touchAction = 'none';
+            if ((globalThis.navigator as any).msPointerEnabled)
+            {
+                style.msContentZooming = 'none';
+                style.msTouchAction = 'none';
+            }
+            else if (this.supportsPointerEvents)
+            {
+                style.touchAction = 'none';
+            }
         }
 
         /*

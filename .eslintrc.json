@@ -38,6 +38,9 @@
             {
                 "definedTypes": [
                     "PIXI",
+                    "AddEventListenerOptions",
+                    "EventListenerOptions",
+                    "EventListenerOrEventListenerObject",
                     "WEBGL_draw_buffers",
                     "WEBGL_depth_texture",
                     "OES_texture_float",

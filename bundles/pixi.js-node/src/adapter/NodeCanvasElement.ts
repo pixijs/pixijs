@@ -2,11 +2,12 @@
 /* eslint-disable func-names */
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 
-import type { JpegConfig, NodeCanvasRenderingContext2DSettings, PdfConfig, PngConfig } from 'canvas';
 import { Canvas, CanvasRenderingContext2D, Image } from 'canvas';
-import { EventEmitter } from '@pixi/utils';
 import createGLContext from 'gl';
-import type { ContextIds } from '@pixi/settings';
+import { EventEmitter } from '@pixi/utils';
+
+import type { JpegConfig, NodeCanvasRenderingContext2DSettings, PdfConfig, PngConfig } from 'canvas';
+import type { ContextIds, ICanvas } from '@pixi/settings';
 
 function putImageData(gl: WebGLRenderingContext, canvas: NodeCanvasElement)
 {
@@ -53,7 +54,7 @@ type TempCtx = WebGLRenderingContext & {
  * @class
  * @memberof PIXI
  */
-export class NodeCanvasElement extends Canvas
+export class NodeCanvasElement extends Canvas implements ICanvas
 {
     public style: Record<string, any>;
     private _gl: WebGLRenderingContext;
@@ -132,66 +133,79 @@ export class NodeCanvasElement extends Canvas
     override getContext(
         type: ContextIds,
         options?: NodeCanvasRenderingContext2DSettings | WebGLContextAttributes
-    ): CanvasRenderingContext2D | WebGLRenderingContext
+    ): CanvasRenderingContext2D | WebGLRenderingContext | null
     {
-        if (type === 'webgl2') return undefined;
-        if (this._contextType && this._contextType !== type) return null;
-        if (this._gl) return this._gl;
-        this._contextType = type;
-        if (type === 'experimental-webgl' || type === 'webgl')
+        switch (type)
         {
-            const { width, height } = this;
-
-            this._ctx = super.getContext('2d', options as NodeCanvasRenderingContext2DSettings);
-            const ctx = createGLContext(width, height, options as WebGLContextAttributes) as TempCtx;
-            const _getUniformLocation = ctx.getUniformLocation;
-
-            type Program = WebGLProgram & {_uniforms: any[]};
-            // Temporary fix https://github.com/stackgl/headless-gl/issues/170
-            ctx.getUniformLocation = function (program: Program, name)
+            case '2d':
             {
-                if (program._uniforms && !(/\[\d+\]$/).test(name))
+                if (this._contextType && this._contextType !== '2d') return null;
+                if (this._ctx) return this._ctx;
+
+                this._ctx = super.getContext('2d', options as NodeCanvasRenderingContext2DSettings);
+                this._contextType = '2d';
+
+                return this._ctx;
+            }
+            case 'webgl':
+            case 'experimental-webgl':
+            {
+                if (this._contextType && this._contextType !== 'webgl') return null;
+                if (this._gl) return this._gl;
+
+                const { width, height } = this;
+
+                this._ctx = super.getContext('2d', options as NodeCanvasRenderingContext2DSettings);
+                const ctx = createGLContext(width, height, options as WebGLContextAttributes) as TempCtx;
+                const _getUniformLocation = ctx.getUniformLocation;
+
+                type Program = WebGLProgram & {_uniforms: any[]};
+                // Temporary fix https://github.com/stackgl/headless-gl/issues/170
+                ctx.getUniformLocation = function (program: Program, name)
                 {
-                    const reg = new RegExp(`${name}\\[\\d+\\]$`);
-
-                    for (let i = 0; i < program._uniforms.length; i++)
+                    if (program._uniforms && !(/\[\d+\]$/).test(name))
                     {
-                        const _name = program._uniforms[i].name;
+                        const reg = new RegExp(`${name}\\[\\d+\\]$`);
 
-                        if (reg.test(_name))
+                        for (let i = 0; i < program._uniforms.length; i++)
                         {
-                            name = _name;
+                            const _name = program._uniforms[i].name;
+
+                            if (reg.test(_name))
+                            {
+                                name = _name;
+                            }
                         }
                     }
-                }
 
-                return _getUniformLocation.call(this, program, name);
-            };
+                    return _getUniformLocation.call(this, program, name);
+                };
 
-            (ctx as any).canvas = this as NodeCanvasElement;
-            const _texImage2D = ctx.texImage2D;
+                (ctx as any).canvas = this as NodeCanvasElement;
+                const _texImage2D = ctx.texImage2D;
 
-            ctx.texImage2D = function (...args: any)
-            {
-                let pixels = args[args.length - 1];
-
-                if (pixels && pixels._image) pixels = pixels._image;
-                if (pixels instanceof Image)
+                ctx.texImage2D = function (...args: any)
                 {
-                    const canvas = new Canvas(pixels.width, pixels.height);
+                    let pixels = args[args.length - 1];
 
-                    canvas.getContext('2d').drawImage(pixels, 0, 0);
-                    args[args.length - 1] = canvas;
-                }
+                    if (pixels && pixels._image) pixels = pixels._image;
+                    if (pixels instanceof Image)
+                    {
+                        const canvas = new Canvas(pixels.width, pixels.height);
 
-                return _texImage2D.apply(this, args);
-            };
-            this._gl = ctx;
+                        canvas.getContext('2d').drawImage(pixels, 0, 0);
+                        args[args.length - 1] = canvas;
+                    }
 
-            return this._gl;
+                    return _texImage2D.apply(this, args);
+                };
+                this._gl = ctx;
+                this._contextType = 'webgl';
+
+                return this._gl;
+            }
+            default: return null;
         }
-
-        return super.getContext(type, options as NodeCanvasRenderingContext2DSettings);
     }
 
     /**

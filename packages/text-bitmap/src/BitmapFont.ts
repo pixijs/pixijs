@@ -4,6 +4,7 @@ import { autoDetectFormat } from './formats';
 import { BitmapFontData } from './BitmapFontData';
 import { resolveCharacters, drawGlyph, extractCharCode } from './utils';
 
+import type { ICanvas, ICanvasRenderingContext2D } from '@pixi/settings';
 import type { ITextStyle } from '@pixi/text';
 
 export interface IBitmapFontCharacter
@@ -385,8 +386,8 @@ export class BitmapFont
         let positionX = 0;
         let positionY = 0;
 
-        let canvas: HTMLCanvasElement;
-        let context: CanvasRenderingContext2D;
+        let canvas: ICanvas;
+        let context: ICanvasRenderingContext2D;
         let baseTexture: BaseTexture;
         let maxCharHeight = 0;
         const baseTextures: BaseTexture[] = [];

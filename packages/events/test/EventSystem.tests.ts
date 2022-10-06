@@ -152,7 +152,7 @@ describe('EventSystem', () =>
                         changedTouches: [
                             new Touch({
                                 identifier: 0,
-                                target: renderer.view,
+                                target: renderer.view as EventTarget,
                                 clientX,
                                 clientY,
                             }),

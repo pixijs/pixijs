@@ -42,7 +42,7 @@ TilingSprite.prototype._renderCanvas = function _renderCanvas(renderer: CanvasRe
         // Tint the tiling sprite
         if (this.tint !== 0xFFFFFF)
         {
-            this._tintedCanvas = canvasUtils.getTintedCanvas(this, this.tint) as HTMLCanvasElement;
+            this._tintedCanvas = canvasUtils.getTintedCanvas(this, this.tint);
             tempCanvas.context.drawImage(this._tintedCanvas, 0, 0);
         }
         else

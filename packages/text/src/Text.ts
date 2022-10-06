@@ -5,8 +5,9 @@ import { TEXT_GRADIENT } from './const';
 import { TextStyle } from './TextStyle';
 import { TextMetrics } from './TextMetrics';
 
-import type { IDestroyOptions } from '@pixi/display';
 import type { Renderer } from '@pixi/core';
+import type { IDestroyOptions } from '@pixi/display';
+import type { ICanvas, ICanvasRenderingContext2D } from '@pixi/settings';
 import type { ITextStyle } from './TextStyle';
 
 const defaultDestroyOptions: IDestroyOptions = {
@@ -15,7 +16,7 @@ const defaultDestroyOptions: IDestroyOptions = {
     baseTexture: true,
 };
 
-interface ModernContext2D extends CanvasRenderingContext2D
+interface ModernContext2D extends ICanvasRenderingContext2D
 {
     // for chrome less 94
     textLetterSpacing?: number;
@@ -60,7 +61,7 @@ export class Text extends Sprite
     public static experimentalLetterSpacing = false;
 
     /** The canvas element that everything is drawn to. */
-    public canvas: HTMLCanvasElement;
+    public canvas: ICanvas;
     /** The canvas 2d context that everything is drawn with. */
     public context: ModernContext2D;
     public localStyleID: number;
@@ -112,7 +113,7 @@ export class Text extends Sprite
      * @param {object|PIXI.TextStyle} [style] - The style parameters
      * @param canvas - The canvas element for drawing text
      */
-    constructor(text?: string | number, style?: Partial<ITextStyle> | TextStyle, canvas?: HTMLCanvasElement)
+    constructor(text?: string | number, style?: Partial<ITextStyle> | TextStyle, canvas?: ICanvas)
     {
         let ownCanvas = false;
 
@@ -134,7 +135,7 @@ export class Text extends Sprite
 
         this._ownCanvas = ownCanvas;
         this.canvas = canvas;
-        this.context = canvas.getContext('2d') as CanvasRenderingContext2D;
+        this.context = canvas.getContext('2d');
 
         this._resolution = settings.RESOLUTION;
         this._autoResolution = true;

@@ -1,12 +1,14 @@
 import { settings } from '@pixi/core';
 
+import type { ICanvas } from '@pixi/settings';
+
 /**
  * Creates a little colored canvas
  * @ignore
  * @param {string} color - The color to make the canvas
- * @returns {HTMLCanvasElement} a small canvas element
+ * @returns {PIXI.ICanvas} a small canvas element
  */
-function createColoredCanvas(color: string): HTMLCanvasElement
+function createColoredCanvas(color: string): ICanvas
 {
     const canvas = settings.ADAPTER.createCanvas(6, 1);
     const context = canvas.getContext('2d');

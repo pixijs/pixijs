@@ -28,6 +28,7 @@ import type { BackgroundSystem } from './background/BackgroundSystem';
 import type { ViewSystem } from './view/ViewSystem';
 import type { ObjectRendererSystem } from './render/ObjectRendererSystem';
 import { settings } from '@pixi/settings';
+import type { ICanvas } from '@pixi/settings';
 import { SystemManager } from './system/SystemManager';
 import type { IRenderableObject, IRenderer, IRendererOptions, IRendererRenderOptions, IRenderingContext } from './IRenderer';
 import type { StartupSystem, StartupOptions } from './startup/StartupSystem';
@@ -277,7 +278,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      * @param [options] - The optional renderer parameters.
      * @param {number} [options.width=800] - The width of the screen.
      * @param {number} [options.height=600] - The height of the screen.
-     * @param {HTMLCanvasElement} [options.view] - The canvas to use as a view, optional.
+     * @param {PIXI.ICanvas} [options.view] - The canvas to use as a view, optional.
      * @param {boolean} [options.useContextAlpha=true] - Pass-through value for canvas' context `alpha` property.
      *   If you want to set transparency, please use `backgroundAlpha`. This option is for cases where the
      *   canvas needs to be opaque, possibly for performance reasons on some older devices.
@@ -290,7 +291,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      *  the canvas or not before the new render pass. If you wish to set this to false, you *must* set
      *  preserveDrawingBuffer to `true`.
      * @param {boolean} [options.preserveDrawingBuffer=false] - Enables drawing buffer preservation,
-     *  enable this if you need to call toDataUrl on the WebGL context.
+     *  enable this if you need to call toDataURL on the WebGL context.
      * @param {number} [options.backgroundColor=0x000000] - The background color of the rendered area
      *  (shown if not transparent).
      * @param {number} [options.backgroundAlpha=1] - Value from 0 (fully transparent) to 1 (fully opaque).
@@ -478,7 +479,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
     }
 
     /** The canvas element that everything is drawn to.*/
-    get view(): HTMLCanvasElement
+    get view(): ICanvas
     {
         return this._view.element;
     }

@@ -1,11 +1,11 @@
+import { ExtensionType, extensions, utils } from '@pixi/core';
 import { DisplayObject } from '@pixi/display';
+import { FederatedEvent } from '@pixi/events';
 import { accessibleTarget } from './accessibleTarget';
 
-import type { Container } from '@pixi/display';
-import { ExtensionType, extensions, utils } from '@pixi/core';
-import type { IAccessibleHTMLElement } from './accessibleTarget';
 import type { Rectangle, IRenderer, ExtensionMetadata } from '@pixi/core';
-import { FederatedEvent } from '@pixi/events';
+import type { Container } from '@pixi/display';
+import type { IAccessibleHTMLElement } from './accessibleTarget';
 
 // add some extra variables to the container..
 DisplayObject.mixin(accessibleTarget);
@@ -290,7 +290,7 @@ export class AccessibilityManager
             this.updateAccessibleObjects(this.renderer.lastObjectRendered as Container);
         }
 
-        const { left, top, width, height } = this.renderer.view.getBoundingClientRect();
+        const { x, y, width, height } = this.renderer.view.getBoundingClientRect();
         const { width: viewWidth, height: viewHeight, resolution } = this.renderer;
 
         const sx = (width / viewWidth) * resolution;
@@ -298,8 +298,8 @@ export class AccessibilityManager
 
         let div = this.div;
 
-        div.style.left = `${left}px`;
-        div.style.top = `${top}px`;
+        div.style.left = `${x}px`;
+        div.style.top = `${y}px`;
         div.style.width = `${viewWidth}px`;
         div.style.height = `${viewHeight}px`;
 

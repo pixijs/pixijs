@@ -1,11 +1,11 @@
-import type { IAdapter } from '@pixi/settings';
-import { settings } from '@pixi/settings';
 import { fetch, Request, Response } from 'cross-fetch';
+import fs from 'fs';
 import createContext from 'gl';
+import { settings } from '@pixi/settings';
+import { path } from '@pixi/utils';
 import { NodeCanvasElement } from './NodeCanvasElement';
 
-import fs from 'fs';
-import { path } from '@pixi/utils';
+import type { IAdapter, ICanvas } from '@pixi/settings';
 
 export const NodeAdapter = {
     /**
@@ -14,7 +14,7 @@ export const NodeAdapter = {
      * @param width - width of the canvas
      * @param height - height of the canvas
      */
-    createCanvas: (width?: number, height?: number) => new NodeCanvasElement(width, height) as unknown as HTMLCanvasElement,
+    createCanvas: (width?: number, height?: number) => new NodeCanvasElement(width, height) as unknown as ICanvas,
     /** Returns a webgl rendering context using the gl package. */
     getWebGLRenderingContext: () => createContext(1, 1) as unknown as typeof WebGLRenderingContext,
     /** Returns the fake user agent string of `node` */

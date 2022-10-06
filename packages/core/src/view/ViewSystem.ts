@@ -1,7 +1,9 @@
+import { extensions, ExtensionType } from '@pixi/extensions';
 import { Rectangle } from '@pixi/math';
 import { settings } from '@pixi/settings';
+
 import type { ExtensionMetadata } from '@pixi/extensions';
-import { extensions, ExtensionType } from '@pixi/extensions';
+import type { ICanvas } from '@pixi/settings';
 import type { IRenderer } from '../IRenderer';
 import type { ISystem } from '../system/ISystem';
 
@@ -16,7 +18,7 @@ export interface ViewOptions
     /** The height of the screen. */
     height: number
     /** The canvas to use as a view, optional. */
-    view?: HTMLCanvasElement;
+    view?: ICanvas;
     /** Resizes renderer view in CSS pixels to allow for resolutions other than 1. */
     autoDensity?: boolean
     /** The resolution / device pixel ratio of the renderer. */
@@ -58,9 +60,9 @@ export class ViewSystem implements ISystem<ViewOptions, boolean>
 
     /**
      * The canvas element that everything is drawn to.
-     * @member {HTMLCanvasElement}
+     * @member {PIXI.ICanvas}
      */
-    public element: HTMLCanvasElement;
+    public element: ICanvas;
 
     /**
      * Whether CSS dimensions of canvas view should be resized to screen dimensions automatically.
@@ -81,7 +83,7 @@ export class ViewSystem implements ISystem<ViewOptions, boolean>
     {
         this.screen = new Rectangle(0, 0, options.width, options.height);
 
-        this.element = options.view || settings.ADAPTER.createCanvas();
+        this.element = options.view || settings.ADAPTER.createCanvas() as ICanvas;
 
         this.resolution = options.resolution || settings.RESOLUTION;
 
@@ -127,9 +129,9 @@ export class ViewSystem implements ISystem<ViewOptions, boolean>
     destroy(removeView: boolean): void
     {
         // ka boom!
-        if (removeView && this.element.parentNode)
+        if (removeView)
         {
-            this.element.parentNode.removeChild(this.element);
+            this.element.parentNode?.removeChild(this.element);
         }
 
         this.renderer = null;

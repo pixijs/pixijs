@@ -9,7 +9,7 @@ const canvasRenderWorldTransform = new Matrix();
 
 /**
  * Types that can be passed to drawImage
- * @typedef {HTMLImageElement | HTMLCanvasElement | HTMLVideoElement | ImageBitmap} ICanvasImageSource
+ * @typedef {HTMLImageElement|HTMLVideoElement|HTMLCanvasElement|ImageBitmap} ICanvasImageSource
  * @memberof PIXI
  */
 

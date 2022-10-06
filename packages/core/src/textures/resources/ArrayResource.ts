@@ -1,11 +1,11 @@
-import { AbstractMultiResource } from './AbstractMultiResource';
 import { TARGETS } from '@pixi/constants';
-import type { BaseTexture } from '../BaseTexture';
+import { AbstractMultiResource } from './AbstractMultiResource';
 
-import type { BaseImageResource } from './BaseImageResource';
-import type { Renderer } from '../../Renderer';
-import type { GLTexture } from '../GLTexture';
 import type { ISize } from '@pixi/math';
+import type { Renderer } from '../../Renderer';
+import type { BaseTexture } from '../BaseTexture';
+import type { GLTexture } from '../GLTexture';
+import type { BaseImageResource } from './BaseImageResource';
 
 /**
  * A resource that contains a number of sources.

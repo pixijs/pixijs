@@ -129,4 +129,14 @@ describe('Renderer', () =>
             expect(pixel[3]).toEqual(0xff);
         });
     });
+
+    it('should support OffscreenCanvas', () =>
+    {
+        const view = new OffscreenCanvas(1, 1);
+        const renderer = new Renderer({ view, width: 1, height: 1 });
+
+        expect(renderer.view).toBeInstanceOf(OffscreenCanvas);
+
+        renderer.destroy();
+    });
 });

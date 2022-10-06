@@ -43,7 +43,7 @@ describe('Application', () =>
     it('should remove canvas when destroyed', () =>
     {
         const app = new Application();
-        const view = app.view;
+        const view = app.view as HTMLCanvasElement;
 
         expect(view).toBeInstanceOf(HTMLCanvasElement);
         document.body.appendChild(view);
@@ -207,5 +207,15 @@ describe('Application', () =>
             expect(app.view.style.height).toEqual(div.style.height);
             app.destroy();
         });
+    });
+
+    it('should support OffscreenCanvas', () =>
+    {
+        const view = new OffscreenCanvas(1, 1);
+        const app = new Application({ view, width: 1, height: 1 });
+
+        expect(app.view).toBeInstanceOf(OffscreenCanvas);
+
+        app.destroy();
     });
 });

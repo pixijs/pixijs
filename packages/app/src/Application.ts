@@ -1,8 +1,9 @@
-import { Container } from '@pixi/display';
 import { autoDetectRenderer, extensions, ExtensionType } from '@pixi/core';
+import { Container } from '@pixi/display';
 
 import type { Rectangle, IRendererOptionsAuto, IRenderer } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
+import type { ICanvas } from '@pixi/settings';
 
 /**
  * Any plugin that's usable for Application should contain these methods.
@@ -68,7 +69,7 @@ export class Application
      *     options.sharedTicker to true in case that it is already started. Stop it by your own.
      * @param {number} [options.width=800] - The width of the renderers view.
      * @param {number} [options.height=600] - The height of the renderers view.
-     * @param {HTMLCanvasElement} [options.view] - The canvas to use as a view, optional.
+     * @param {PIXI.ICanvas} [options.view] - The canvas to use as a view, optional.
      * @param {boolean} [options.useContextAlpha=true] - Pass-through value for canvas' context `alpha` property.
      *   If you want to set transparency, please use `backgroundAlpha`. This option is for cases where the
      *   canvas needs to be opaque, possibly for performance reasons on some older devices.
@@ -76,7 +77,7 @@ export class Application
      *   resolutions other than 1.
      * @param {boolean} [options.antialias=false] - Sets antialias
      * @param {boolean} [options.preserveDrawingBuffer=false] - Enables drawing buffer preservation, enable this if you
-     *  need to call toDataUrl on the WebGL context.
+     *  need to call toDataURL on the WebGL context.
      * @param {number} [options.resolution=PIXI.settings.RESOLUTION] - The resolution / device pixel ratio of the renderer.
      * @param {boolean} [options.forceCanvas=false] - prevents selection of WebGL renderer, even if such is present, this
      *   option only is available when using **pixi.js-legacy** or **@pixi/canvas-renderer** modules, otherwise
@@ -118,10 +119,10 @@ export class Application
 
     /**
      * Reference to the renderer's canvas element.
-     * @member {HTMLCanvasElement}
+     * @member {PIXI.ICanvas}
      * @readonly
      */
-    get view(): HTMLCanvasElement
+    get view(): ICanvas
     {
         return this.renderer.view;
     }

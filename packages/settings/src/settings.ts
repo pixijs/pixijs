@@ -1,14 +1,16 @@
-import type { ENV } from '@pixi/constants';
 import { GC_MODES, MIPMAP_MODES, MSAA_QUALITY, PRECISION, SCALE_MODES, WRAP_MODES } from '@pixi/constants';
-import type { IAdapter } from './adapter';
 import { BrowserAdapter } from './adapter';
 import { canUploadSameBuffer } from './utils/canUploadSameBuffer';
 import { isMobile } from './utils/isMobile';
 import { maxRecommendedTextures } from './utils/maxRecommendedTextures';
 
+import type { ENV } from '@pixi/constants';
+import type { ICanvas } from '@pixi/settings';
+import type { IAdapter } from './adapter';
+
 export interface IRenderOptions
 {
-    view: HTMLCanvasElement;
+    view: ICanvas;
     antialias: boolean;
     autoDensity: boolean;
     backgroundColor: number;
@@ -163,7 +165,7 @@ export const settings: ISettings = {
      * @name RENDER_OPTIONS
      * @memberof PIXI.settings
      * @type {object}
-     * @property {HTMLCanvasElement} [view=null] -
+     * @property {PIXI.ICanvas} [view=null] -
      * @property {boolean} [antialias=false] -
      * @property {boolean} [autoDensity=false] -
      * @property {boolean} [useContextAlpha=true]  -

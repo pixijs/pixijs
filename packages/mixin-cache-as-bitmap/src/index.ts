@@ -4,13 +4,14 @@ import { DisplayObject } from '@pixi/display';
 
 import type { Renderer, MaskData, IRenderer, IPointData, Rectangle } from '@pixi/core';
 import type { Container, IDestroyOptions } from '@pixi/display';
+import type { ICanvasRenderingContext2D } from '@pixi/settings';
 
 // Don't import CanvasRender to remove dependency on this optional package
 // this type should satisify these requirements for cacheAsBitmap types
 interface CanvasRenderer extends IRenderer
 {
     canvasContext: {
-        activeContext: CanvasRenderingContext2D;
+        activeContext: ICanvasRenderingContext2D;
     }
 }
 

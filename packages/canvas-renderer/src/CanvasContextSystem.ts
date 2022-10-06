@@ -1,8 +1,9 @@
 import { BLEND_MODES, SCALE_MODES, settings, Matrix, extensions, ExtensionType } from '@pixi/core';
 import { mapCanvasBlendModesToPixi } from './utils/mapCanvasBlendModesToPixi';
 
-import type { CanvasRenderer } from './CanvasRenderer';
 import type { ExtensionMetadata, ISystem } from '@pixi/core';
+import type { ICanvasRenderingContext2D } from '@pixi/settings';
+import type { CanvasRenderer } from './CanvasRenderer';
 
 const tempMatrix = new Matrix();
 
@@ -11,7 +12,7 @@ const tempMatrix = new Matrix();
  * properties that are not included in the spec for CanvasRenderingContext2D
  * @private
  */
-export interface CrossPlatformCanvasRenderingContext2D extends CanvasRenderingContext2D
+export interface CrossPlatformCanvasRenderingContext2D extends ICanvasRenderingContext2D
 {
     webkitImageSmoothingEnabled: boolean;
     mozImageSmoothingEnabled: boolean;

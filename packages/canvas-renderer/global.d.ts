@@ -8,7 +8,7 @@ declare namespace GlobalMixins
     interface Texture
     {
         patternCache?: { [key: string]: CanvasPattern };
-        tintCache?: { [key: string]: HTMLCanvasElement | HTMLImageElement };
+        tintCache?: { [key: string]: import('@pixi/settings').ICanvas | HTMLImageElement };
     }
 
     interface BaseRenderTexture
@@ -19,6 +19,12 @@ declare namespace GlobalMixins
     interface GlobalTintable
     {
         tintId?: number;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-empty-interface
+    interface ICanvas extends GlobalTintable
+    {
+
     }
 
     interface IRendererOptions
@@ -40,12 +46,6 @@ declare namespace GlobalMixins
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 declare interface CanvasPattern extends GlobalMixins.GlobalTintable
-{
-
-}
-
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-declare interface HTMLCanvasElement extends GlobalMixins.GlobalTintable
 {
 
 }

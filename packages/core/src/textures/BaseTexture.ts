@@ -6,6 +6,7 @@ import { autoDetectResource } from './resources/autoDetectResource';
 import { settings } from '@pixi/settings';
 
 import type { MSAA_QUALITY, MIPMAP_MODES, WRAP_MODES } from '@pixi/constants';
+import type { ICanvas } from '@pixi/settings';
 import type { IAutoDetectOptions } from './resources/autoDetectResource';
 import type { GLTexture } from './GLTexture';
 
@@ -15,7 +16,7 @@ const defaultBufferOptions = {
     alphaMode: ALPHA_MODES.NPM,
 };
 
-export type ImageSource = HTMLImageElement | HTMLCanvasElement | HTMLVideoElement | ImageBitmap;
+export type ImageSource = HTMLImageElement | HTMLVideoElement | ImageBitmap | ICanvas;
 
 export interface IBaseTextureOptions<RO = any>
 {
@@ -197,7 +198,7 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
     private _wrapMode?: WRAP_MODES;
 
     /**
-     * @param {PIXI.Resource|string|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement} [resource=null] -
+     * @param {PIXI.Resource|HTMLImageElement|HTMLVideoElement|ImageBitmap|ICanvas|string} [resource=null] -
      *        The current resource to use, for things that aren't Resource objects, will be converted
      *        into a Resource.
      * @param options - Collection of options
@@ -582,7 +583,7 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
      * source is an image url or an image element and not in the base texture
      * cache, it will be created and loaded.
      * @static
-     * @param {string|string[]|HTMLImageElement|HTMLCanvasElement|SVGElement|HTMLVideoElement} source - The
+     * @param {HTMLImageElement|HTMLVideoElement|ImageBitmap|PIXI.ICanvas|string|string[]} source - The
      *        source to create base texture from.
      * @param options - See {@link PIXI.BaseTexture}'s constructor for options.
      * @param {string} [options.pixiIdPrefix=pixiid] - If a source has no id, this is the prefix of the generated id

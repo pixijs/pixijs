@@ -4,7 +4,7 @@ import type { CanvasRenderer } from '@pixi/canvas-renderer';
 /**
  * Cached tinted texture.
  * @memberof PIXI.Sprite#
- * @member {HTMLCanvasElement} _tintedCanvas
+ * @member {PIXI.ICanvas | HTMLImageElement} _tintedCanvas
  * @protected
  */
 Sprite.prototype._tintedCanvas = null;

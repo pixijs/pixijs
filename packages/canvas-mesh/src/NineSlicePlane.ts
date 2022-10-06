@@ -14,7 +14,7 @@ NineSlicePlane.prototype._cachedTint = 0xFFFFFF;
 /**
  * Cached tinted texture.
  * @memberof PIXI.NineSlicePlane#
- * @member {HTMLCanvasElement} _tintedCanvas
+ * @member {PIXI.ICanvas | HTMLImageElement} _tintedCanvas
  * @protected
  */
 NineSlicePlane.prototype._tintedCanvas = null;
@@ -55,7 +55,7 @@ NineSlicePlane.prototype._renderCanvas = function _renderCanvas(renderer: Canvas
 
             this._cachedTint = this.tint;
 
-            this._tintedCanvas = canvasUtils.getTintedCanvas(this, this.tint) as HTMLCanvasElement;
+            this._tintedCanvas = canvasUtils.getTintedCanvas(this, this.tint);
         }
     }
 
