@@ -21,6 +21,7 @@ export const NodeAdapter = {
     getNavigator: () => ({ userAgent: 'node' }),
     /** Returns the path from which the process is being run */
     getBaseUrl: () => process.cwd(),
+    getFontFaceSet: () => null,
     fetch: (url: RequestInfo, options?: RequestInit) =>
     {
         const request = new Request(url, options);
