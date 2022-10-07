@@ -1,5 +1,7 @@
 import type { ISystem, IRenderingContext, Renderer, Shader } from '@pixi/core';
 import type { DRAW_MODES } from '@pixi/constants';
+import type { ExtensionMetadata } from '@pixi/extensions';
+import { extensions, ExtensionType } from '@pixi/extensions';
 import type { TransformFeedback } from './TransformFeedback';
 
 /**
@@ -14,6 +16,12 @@ import type { TransformFeedback } from './TransformFeedback';
  */
 export class TransformFeedbackSystem implements ISystem
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        type:  ExtensionType.RendererSystem,
+        name: 'transformFeedback',
+    };
+
     CONTEXT_UID: number;
     gl: IRenderingContext;
 
@@ -63,7 +71,7 @@ export class TransformFeedbackSystem implements ISystem
      * @param drawMode DrawMode for TransformFeedback
      * @param shader A Shader used by TransformFeedback. Current bound shader will be used if not provided.
      */
-    beginTransfromFeedback(drawMode: DRAW_MODES, shader?: Shader)
+    beginTransformFeedback(drawMode: DRAW_MODES, shader?: Shader)
     {
         const { gl, renderer } = this;
 
@@ -172,3 +180,5 @@ export class TransformFeedbackSystem implements ISystem
         this.renderer = null;
     }
 }
+
+extensions.add(TransformFeedbackSystem);
