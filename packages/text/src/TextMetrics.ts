@@ -745,7 +745,7 @@ export class TextMetrics
     {
         if (!TextMetrics.__context)
         {
-            TextMetrics.__context = TextMetrics._canvas.getContext('2d');
+            TextMetrics.__context = TextMetrics._canvas.getContext('2d', { willReadFrequently: true });
         }
 
         return TextMetrics.__context;
