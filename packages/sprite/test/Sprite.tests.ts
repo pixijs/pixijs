@@ -1,7 +1,6 @@
 import { Sprite } from '@pixi/sprite';
-import { Texture, BaseTexture, RenderTexture } from '@pixi/core';
+import { Point, Texture, BaseTexture, RenderTexture } from '@pixi/core';
 import { Container } from '@pixi/display';
-import { Point } from '@pixi/math';
 
 import path from 'path';
 

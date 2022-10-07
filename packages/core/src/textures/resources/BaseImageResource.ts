@@ -1,9 +1,9 @@
-import { Resource } from './Resource';
-import { determineCrossOrigin } from '@pixi/utils';
 import { ALPHA_MODES } from '@pixi/constants';
+import { determineCrossOrigin } from '@pixi/utils';
+import { Resource } from './Resource';
 
-import type { BaseTexture, ImageSource } from '../BaseTexture';
 import type { Renderer } from '../../Renderer';
+import type { BaseTexture, ImageSource } from '../BaseTexture';
 import type { GLTexture } from '../GLTexture';
 
 /**
@@ -14,7 +14,7 @@ export class BaseImageResource extends Resource
 {
     /**
      * The source element.
-     * @member {HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|SVGElement}
+     * @member {HTMLImageElement|HTMLVideoElement|ImageBitmap|PIXI.ICanvas}
      * @readonly
      */
     public source: ImageSource;
@@ -28,7 +28,7 @@ export class BaseImageResource extends Resource
     public noSubImage: boolean;
 
     /**
-     * @param {HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|SVGElement} source
+     * @param {HTMLImageElement|HTMLVideoElement|ImageBitmap|PIXI.ICanvas} source
      */
     constructor(source: ImageSource)
     {
@@ -50,7 +50,7 @@ export class BaseImageResource extends Resource
      */
     static crossOrigin(element: HTMLImageElement | HTMLVideoElement, url: string, crossorigin?: boolean | string): void
     {
-        if (crossorigin === undefined && url.indexOf('data:') !== 0)
+        if (crossorigin === undefined && !url.startsWith('data:'))
         {
             element.crossOrigin = determineCrossOrigin(url);
         }
@@ -65,7 +65,7 @@ export class BaseImageResource extends Resource
      * @param renderer - Upload to the renderer
      * @param baseTexture - Reference to parent texture
      * @param glTexture
-     * @param {HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|SVGElement} [source] - (optional)
+     * @param {HTMLImageElement|HTMLVideoElement|ImageBitmap|PIXI.ICanvas} [source] - (optional)
      * @returns - true is success
      */
     upload(renderer: Renderer, baseTexture: BaseTexture, glTexture: GLTexture, source?: ImageSource): boolean
@@ -76,14 +76,14 @@ export class BaseImageResource extends Resource
 
         source = source || this.source;
 
-        if (source instanceof HTMLImageElement)
+        if (typeof HTMLImageElement !== 'undefined' && source instanceof HTMLImageElement)
         {
             if (!source.complete || source.naturalWidth === 0)
             {
                 return false;
             }
         }
-        else if (source instanceof HTMLVideoElement)
+        else if (typeof HTMLVideoElement !== 'undefined' && source instanceof HTMLVideoElement)
         {
             if (source.readyState <= 1)
             {

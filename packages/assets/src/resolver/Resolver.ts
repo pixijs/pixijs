@@ -1,7 +1,7 @@
+import { utils } from '@pixi/core';
 import { convertToList } from '../utils/convertToList';
 import { createStringVariations } from '../utils/createStringVariations';
 import { isSingleItem } from '../utils/isSingleItem';
-import { getBaseUrl, makeAbsoluteUrl } from '../utils/url/makeAbsoluteUrl';
 import type { ResolveAsset, PreferOrder, ResolveURLParser, ResolverManifest, ResolverBundle } from './types';
 
 /**
@@ -42,10 +42,10 @@ export class Resolver
 {
     private _assetMap: Record<string, ResolveAsset[]> = {};
     private _preferredOrder: PreferOrder[] = [];
-
     private _parsers: ResolveURLParser[] = [];
 
     private _resolverHash: Record<string, ResolveAsset> = {};
+    private _rootPath: string;
     private _basePath: string;
     private _manifest: ResolverManifest;
     private _bundles: Record<string, string[]> = {};
@@ -83,7 +83,7 @@ export class Resolver
     }
 
     /**
-     * Set the base path to append to all urls when resolving
+     * Set the base path to prepend to all urls when resolving
      * @example
      * resolver.basePath = 'https://home.com/';
      * resolver.add('foo', 'bar.ong');
@@ -92,7 +92,7 @@ export class Resolver
      */
     public set basePath(basePath: string)
     {
-        this._basePath = getBaseUrl(basePath);
+        this._basePath = basePath;
     }
 
     public get basePath(): string
@@ -100,19 +100,32 @@ export class Resolver
         return this._basePath;
     }
 
-    /** Used for testing, this resets the resolver to its initial state */
-    public reset(): void
+    /**
+     * Set the root path for root-relative URLs. By default the `basePath`'s root is used. If no `basePath` is set, then the
+     * default value for browsers is `window.location.origin`
+     * @example
+     * // Application hosted on https://home.com/some-path/index.html
+     * resolver.basePath = 'https://home.com/some-path/';
+     * resolver.rootPath = 'https://home.com/';
+     * resolver.add('foo', '/bar.png');
+     * resolver.resolveUrl('foo', '/bar.png'); // => 'https://home.com/bar.png'
+     * @param rootPath - the root path to use
+     */
+    public set rootPath(rootPath: string)
     {
-        this._preferredOrder = [];
+        this._rootPath = rootPath;
+    }
 
-        this._resolverHash = {};
-        this._assetMap = {};
-        this._basePath = null;
-        this._manifest = null;
+    public get rootPath(): string
+    {
+        return this._rootPath;
     }
 
     /**
-     * A URL parser helps the parser to extract information and create an asset object-based on parsing the URL itself.
+     * All the active URL parsers that help the parser to extract information and create
+     * an asset object-based on parsing the URL itself.
+     *
+     * Can be added using the extensions API
      * @example
      * resolver.add('foo', [
      *    {
@@ -127,9 +140,9 @@ export class Resolver
      *    }
      * ]);
      *
-     *
      * // with a url parser the information such as resolution and file format could extracted from the url itself:
-     * resolver.addUrlParser({
+     * extensions.add({
+     *     extension: ExtensionType.ResolveParser,
      *     test: loadTextures.test, // test if url ends in an image
      *     parse: (value: string) =>
      *     ({
@@ -144,34 +157,23 @@ export class Resolver
      *    'image@2x.png'
      *    'image.png'
      * ]);
-     * @param urlParsers - The URL parser that you want to add to the resolver
+     * @
      */
-    public addUrlParser(...urlParsers: ResolveURLParser[]): void
+    public get parsers(): ResolveURLParser[]
     {
-        urlParsers.forEach((parser) =>
-        {
-            if (this._parsers.includes(parser)) return;
-
-            this._parsers.push(parser);
-        });
+        return this._parsers;
     }
 
-    /**
-     * Remove a URL parser from the resolver
-     * @param urlParsers - the URL parser that you want to remove from the resolver
-     */
-    public removeUrlParser(...urlParsers: ResolveURLParser[]): void
+    /** Used for testing, this resets the resolver to its initial state */
+    public reset(): void
     {
-        for (let i = urlParsers.length - 1; i >= 0; i--)
-        {
-            const parser = urlParsers[i];
-            const index = this._parsers.indexOf(parser);
+        this._preferredOrder = [];
 
-            if (index !== -1)
-            {
-                this._parsers.splice(index, 1);
-            }
-        }
+        this._resolverHash = {};
+        this._assetMap = {};
+        this._rootPath = null;
+        this._basePath = null;
+        this._manifest = null;
     }
 
     /**
@@ -338,9 +340,9 @@ export class Resolver
                 formattedAsset.alias = keys;
             }
 
-            if (this._basePath)
+            if (this._basePath || this._rootPath)
             {
-                formattedAsset.src = makeAbsoluteUrl(formattedAsset.src, this._basePath);
+                formattedAsset.src = utils.path.toAbsolute(formattedAsset.src, this._basePath, this._rootPath);
             }
 
             formattedAsset.data = formattedAsset.data ?? data;
@@ -500,9 +502,9 @@ export class Resolver
                 {
                     let src = key;
 
-                    if (this._basePath)
+                    if (this._basePath || this._rootPath)
                     {
-                        src = makeAbsoluteUrl(src, this._basePath);
+                        src = utils.path.toAbsolute(src, this._basePath, this._rootPath);
                     }
 
                     // if the resolver fails we just pass back the key assuming its a url

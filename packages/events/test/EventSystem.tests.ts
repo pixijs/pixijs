@@ -1,7 +1,7 @@
-import { BatchRenderer, extensions, Renderer } from '@pixi/core';
+import { Renderer } from '@pixi/core';
 import { Container } from '@pixi/display';
-import { EventSystem } from '@pixi/events';
 import { Graphics } from '@pixi/graphics';
+import '@pixi/events';
 
 function createRenderer(view?: HTMLCanvasElement, supportsPointerEvents?: boolean)
 {
@@ -11,25 +11,20 @@ function createRenderer(view?: HTMLCanvasElement, supportsPointerEvents?: boolea
         events: any
     }
 
-    const renderer = Renderer.create({
+    const renderer = new Renderer({
         width: 100,
         height: 100,
         view,
     }) as EERenderer;
 
-    if (!renderer['events'])
-    {
-        renderer.addSystem(EventSystem, 'events');
-    }
-
     if (supportsPointerEvents === false)
     {
-        renderer['events'].removeEvents();
-        renderer['events'].supportsPointerEvents = false;
-        renderer['events'].setTargetElement(renderer.view);
+        renderer.events.removeEvents();
+        renderer.events.supportsPointerEvents = false;
+        renderer.events.setTargetElement(renderer.view);
     }
 
-    renderer['events'].supportsTouchEvents = true;
+    renderer.events.supportsTouchEvents = true;
 
     return renderer;
 }
@@ -50,9 +45,6 @@ function createScene()
 
 describe('EventSystem', () =>
 {
-    beforeAll(() => extensions.add(BatchRenderer));
-    afterAll(() => extensions.remove(BatchRenderer));
-
     // Share WebGL context for performance
     const view = document.createElement('canvas');
 
@@ -160,7 +152,7 @@ describe('EventSystem', () =>
                         changedTouches: [
                             new Touch({
                                 identifier: 0,
-                                target: renderer.view,
+                                target: renderer.view as EventTarget,
                                 clientX,
                                 clientY,
                             }),
@@ -172,7 +164,7 @@ describe('EventSystem', () =>
                     event = new MouseEvent(native || type, { clientX, clientY });
                 }
 
-                renderer['events'][handler](event);
+                renderer.events[handler](event);
 
                 expect(eventSpy).toHaveBeenCalledOnce();
             });
@@ -187,7 +179,7 @@ describe('EventSystem', () =>
         renderer.render(stage);
         graphics.cursor = 'copy';
 
-        renderer['events'].onPointerMove(
+        renderer.events.onPointerMove(
             new PointerEvent('pointermove', {
                 clientX: 40,
                 clientY: 40,
@@ -200,7 +192,7 @@ describe('EventSystem', () =>
         const eventSpy = jest.fn();
 
         graphics.on('mousemove', eventSpy);
-        renderer['events'].onPointerMove(
+        renderer.events.onPointerMove(
             new PointerEvent('pointermove', {
                 clientX: 60,
                 clientY: 60,
@@ -268,13 +260,13 @@ describe('EventSystem', () =>
             ++callCount;
         });
 
-        renderer['events'].onPointerMove(
+        renderer.events.onPointerMove(
             new PointerEvent('pointermove', { clientX: 25, clientY: 25 })
         );
         expect(primaryOverSpy).toHaveBeenCalledOnce();
         expect(primaryMoveSpy).toHaveBeenCalledOnce();
 
-        renderer['events'].onPointerMove(
+        renderer.events.onPointerMove(
             new PointerEvent('pointermove', { clientX: 125, clientY: 25 })
         );
         expect(primaryOutSpy).toHaveBeenCalledOnce();
@@ -297,7 +289,7 @@ describe('EventSystem', () =>
             eventSpy();
         });
 
-        renderer['events'].onPointerDown(
+        renderer.events.onPointerDown(
             new PointerEvent('pointerdown', { clientX: 25, clientY: 25 })
         );
         const e = new PointerEvent('pointerup', { clientX: 30, clientY: 20 });
@@ -307,7 +299,7 @@ describe('EventSystem', () =>
             writable: false,
             value: renderer.view
         });
-        renderer['events'].onPointerUp(e);
+        renderer.events.onPointerUp(e);
 
         expect(eventSpy).toHaveBeenCalledOnce();
     });
@@ -330,7 +322,7 @@ describe('EventSystem', () =>
 
         for (let i = 0; i < 3; i++)
         {
-            renderer['events'].onPointerDown(
+            renderer.events.onPointerDown(
                 new PointerEvent('pointerdown', { clientX: 25, clientY: 25 })
             );
             const e = new PointerEvent('pointerup', { clientX: 30, clientY: 20 });
@@ -340,7 +332,7 @@ describe('EventSystem', () =>
                 writable: false,
                 value: renderer.view
             });
-            renderer['events'].onPointerUp(e);
+            renderer.events.onPointerUp(e);
         }
 
         expect(eventSpy).toBeCalledTimes(3);
@@ -357,7 +349,7 @@ describe('EventSystem', () =>
 
         setTimeout(() =>
         {
-            renderer['events'].onPointerDown(
+            renderer.events.onPointerDown(
                 new PointerEvent('pointerdown', { clientX: 25, clientY: 25 })
             );
             const e = new PointerEvent('pointerup', { clientX: 30, clientY: 20 });
@@ -367,7 +359,7 @@ describe('EventSystem', () =>
                 writable: false,
                 value: renderer.view
             });
-            renderer['events'].onPointerUp(e);
+            renderer.events.onPointerUp(e);
 
             expect(newSpy).toHaveBeenCalledOnce();
             done();

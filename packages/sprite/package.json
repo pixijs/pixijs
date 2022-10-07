@@ -1,15 +1,14 @@
 {
   "name": "@pixi/sprite",
-  "version": "6.4.2",
+  "version": "7.0.0-alpha.3",
   "main": "dist/cjs/sprite.js",
-  "module": "dist/esm/sprite.js",
-  "bundle": "dist/browser/sprite.js",
+  "module": "dist/esm/sprite.mjs",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/sprite.js"
+        "default": "./dist/esm/sprite.mjs"
       },
       "require": {
         "types": "./index.d.ts",
@@ -33,16 +32,11 @@
     "access": "public"
   },
   "files": [
-    "lib",
     "dist",
     "*.d.ts"
   ],
-  "peerDependencies": {
-    "@pixi/constants": "6.4.2",
-    "@pixi/core": "6.4.2",
-    "@pixi/display": "6.4.2",
-    "@pixi/math": "6.4.2",
-    "@pixi/settings": "6.4.2",
-    "@pixi/utils": "6.4.2"
-  }
+  "pixiRequirements": [
+    "@pixi/core",
+    "@pixi/display"
+  ]
 }

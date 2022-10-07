@@ -1,4 +1,4 @@
-import { Point } from '@pixi/math';
+import { Point } from '@pixi/core';
 import { lineIntersection } from '@pixi/math-extras';
 
 describe('lineIntersection', () =>

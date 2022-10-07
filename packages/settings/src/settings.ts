@@ -1,12 +1,16 @@
+import { GC_MODES, MIPMAP_MODES, MSAA_QUALITY, PRECISION, SCALE_MODES, WRAP_MODES } from '@pixi/constants';
+import { BrowserAdapter } from './adapter';
+import { canUploadSameBuffer } from './utils/canUploadSameBuffer';
 import { isMobile } from './utils/isMobile';
 import { maxRecommendedTextures } from './utils/maxRecommendedTextures';
-import { canUploadSameBuffer } from './utils/canUploadSameBuffer';
-import { GC_MODES, MIPMAP_MODES, MSAA_QUALITY, PRECISION, SCALE_MODES, WRAP_MODES } from '@pixi/constants';
+
 import type { ENV } from '@pixi/constants';
+import type { ICanvas } from '@pixi/settings';
+import type { IAdapter } from './adapter';
 
 export interface IRenderOptions
 {
-    view: HTMLCanvasElement;
+    view: ICanvas;
     antialias: boolean;
     autoDensity: boolean;
     backgroundColor: number;
@@ -21,6 +25,7 @@ export interface IRenderOptions
 
 export interface ISettings
 {
+    ADAPTER: IAdapter;
     MIPMAP_TEXTURES: MIPMAP_MODES;
     ANISOTROPIC_LEVEL: number;
     RESOLUTION: number;
@@ -63,6 +68,19 @@ export interface ISettings
  */
 export const settings: ISettings = {
 
+    /**
+     * This adapter is used to call methods that are platform dependent.
+     * For example `document.createElement` only runs on the web but fails in node environments.
+     * This allows us to support more platforms by abstracting away specific implementations per platform.
+     *
+     * By default the adapter is set to work in the browser. However you can create your own
+     * by implementing the `IAdapter` interface. See `IAdapter` for more information.
+     * @name ADAPTER
+     * @memberof PIXI.settings
+     * @type {PIXI.IAdapter}
+     * @default PIXI.BrowserAdapter
+     */
+    ADAPTER: BrowserAdapter,
     /**
      * If set to true WebGL will attempt make textures mimpaped by default.
      * Mipmapping will only succeed if the base texture uploaded has power of two dimensions.
@@ -147,7 +165,7 @@ export const settings: ISettings = {
      * @name RENDER_OPTIONS
      * @memberof PIXI.settings
      * @type {object}
-     * @property {HTMLCanvasElement} [view=null] -
+     * @property {PIXI.ICanvas} [view=null] -
      * @property {boolean} [antialias=false] -
      * @property {boolean} [autoDensity=false] -
      * @property {boolean} [useContextAlpha=true]  -

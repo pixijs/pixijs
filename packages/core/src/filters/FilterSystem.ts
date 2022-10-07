@@ -6,12 +6,14 @@ import { UniformGroup } from '../shader/UniformGroup';
 import { DRAW_MODES, CLEAR_MODES, MSAA_QUALITY } from '@pixi/constants';
 import { FilterState } from './FilterState';
 
-import type { ISystem } from '../ISystem';
+import type { ISystem } from '../system/ISystem';
 import type { Filter } from './Filter';
 import type { IFilterTarget } from './IFilterTarget';
 import type { ISpriteMaskTarget } from './spriteMask/SpriteMaskFilter';
 import type { RenderTexture } from '../renderTexture/RenderTexture';
 import type { Renderer } from '../Renderer';
+import type { ExtensionMetadata } from '@pixi/extensions';
+import { extensions, ExtensionType } from '@pixi/extensions';
 
 const tempPoints = [new Point(), new Point(), new Point(), new Point()];
 const tempMatrix = new Matrix();
@@ -43,6 +45,12 @@ const tempMatrix = new Matrix();
  */
 export class FilterSystem implements ISystem
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        type: ExtensionType.RendererSystem,
+        name: 'filter',
+    };
+
     /**
      * List of filters for the FilterSystem
      * @member {object[]}
@@ -103,7 +111,7 @@ export class FilterSystem implements ISystem
         this.defaultFilterStack = [{}] as any;
 
         this.texturePool = new RenderTexturePool();
-        this.texturePool.setScreenSize(renderer.view);
+
         this.statePool = [];
 
         this.quad = new Quad();
@@ -125,6 +133,11 @@ export class FilterSystem implements ISystem
 
         this.forceClear = false;
         this.useMaxPadding = false;
+    }
+
+    init(): void
+    {
+        this.texturePool.setScreenSize(this.renderer.view);
     }
 
     /**
@@ -377,7 +390,7 @@ export class FilterSystem implements ISystem
             this.renderer.projection.transform = null;
         }
 
-        if (filterTexture && filterTexture.filterFrame)
+        if (filterTexture?.filterFrame)
         {
             const destinationFrame = this.tempRect;
 
@@ -632,3 +645,5 @@ export class FilterSystem implements ISystem
         this.transformAABB(transform.invert(), frame);
     }
 }
+
+extensions.add(FilterSystem);

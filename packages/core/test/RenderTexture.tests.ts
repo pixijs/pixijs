@@ -1,4 +1,4 @@
-import { RenderTexture, autoDetectRenderer, Framebuffer, Renderer, BatchRenderer, extensions } from '@pixi/core';
+import { RenderTexture, autoDetectRenderer, Framebuffer, Renderer } from '@pixi/core';
 import { Graphics } from '@pixi/graphics';
 import { Container } from '@pixi/display';
 import { MSAA_QUALITY } from '@pixi/constants';
@@ -10,13 +10,11 @@ describe('RenderTexture', () =>
 
     beforeAll(() =>
     {
-        extensions.add(BatchRenderer);
         renderer = new Renderer();
     });
 
     afterAll(() =>
     {
-        extensions.remove(BatchRenderer);
         renderer.destroy();
         renderer = null;
     });

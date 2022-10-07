@@ -1,15 +1,14 @@
 {
   "name": "@pixi/spritesheet",
-  "version": "6.4.2",
+  "version": "7.0.0-alpha.3",
   "main": "dist/cjs/spritesheet.js",
-  "module": "dist/esm/spritesheet.js",
-  "bundle": "dist/browser/spritesheet.js",
+  "module": "dist/esm/spritesheet.mjs",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/spritesheet.js"
+        "default": "./dist/esm/spritesheet.mjs"
       },
       "require": {
         "types": "./index.d.ts",
@@ -33,14 +32,11 @@
     "access": "public"
   },
   "files": [
-    "lib",
     "dist",
     "*.d.ts"
   ],
-  "peerDependencies": {
-    "@pixi/core": "6.4.2",
-    "@pixi/loaders": "6.4.2",
-    "@pixi/math": "6.4.2",
-    "@pixi/utils": "6.4.2"
-  }
+  "pixiRequirements": [
+    "@pixi/assets",
+    "@pixi/core"
+  ]
 }

@@ -1,38 +1,42 @@
+import { Cache, loadTextures } from '@pixi/assets';
+import { Renderer, Texture, Point, utils } from '@pixi/core';
 import { SimpleRope } from '@pixi/mesh-extras';
-import { skipHello } from '@pixi/utils';
-import { Loader } from '@pixi/loaders';
-import { Point } from '@pixi/math';
-import { Renderer, Texture, BatchRenderer, extensions } from '@pixi/core';
+import { Loader } from '../../assets/src/loader/Loader';
 
-skipHello();
+utils.skipHello();
 
 describe('SimpleRope', () =>
 {
-    it('should create a rope from an external image', (done: () => void) =>
+    let loader: Loader;
+    const serverPath = process.env.GITHUB_ACTIONS
+        ? `https://raw.githubusercontent.com/pixijs/pixijs/${process.env.GITHUB_SHA}/packages/mesh-extras/test/resources/`
+        : 'http://localhost:8080/mesh-extras/test/resources/';
+
+    beforeEach(() =>
     {
-        const loader = new Loader();
+        Cache.reset();
+        loader.reset();
+    });
 
-        loader.add('testBitmap', `file://${__dirname}/resources/bitmap-1.png`)
-            .load((loader, resources) =>
-            {
-                const rope = new SimpleRope(resources.testBitmap.texture, [new Point(0, 0), new Point(0, 1)]);
+    beforeAll(() =>
+    {
+        loader = new Loader();
+        loader['_parsers'].push(loadTextures);
+    });
+    it('should create a rope from an external image', async () =>
+    {
+        const texture = await loader.load(`${serverPath}bitmap-1.png`);
+        const rope = new SimpleRope(texture, [new Point(0, 0), new Point(0, 1)]);
 
-                expect(rope).toBeInstanceOf(SimpleRope);
-                expect(rope.autoUpdate).toBe(true);
+        expect(rope).toBeInstanceOf(SimpleRope);
+        expect(rope.autoUpdate).toBe(true);
 
-                rope.destroy();
-                resources.testBitmap.texture.destroy(true);
-
-                loader.reset();
-
-                done();
-            });
+        rope.destroy();
+        texture.destroy(true);
     });
 
     it('should render the rope', () =>
     {
-        extensions.add(BatchRenderer);
-
         const renderer = new Renderer();
         const rope = new SimpleRope(Texture.WHITE, [new Point(0, 0), new Point(0, 1)]);
 
@@ -40,7 +44,5 @@ describe('SimpleRope', () =>
 
         rope.destroy();
         renderer.destroy();
-
-        extensions.remove(BatchRenderer);
     });
 });

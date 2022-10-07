@@ -1,10 +1,25 @@
-import { Renderer } from './Renderer';
-import type { AbstractRenderer, IRendererOptions } from './AbstractRenderer';
+import { extensions, ExtensionType } from '@pixi/extensions';
+import type { IRenderer, IRendererOptions } from './IRenderer';
 
 export interface IRendererOptionsAuto extends IRendererOptions
 {
     forceCanvas?: boolean;
 }
+
+export interface IRendererConstructor
+{
+    test(options?: IRendererOptionsAuto): boolean;
+    new (options?: IRendererOptionsAuto): IRenderer;
+}
+
+/**
+ * Collection of installed Renderers.
+ * @ignore
+ */
+const renderers: IRendererConstructor[] = [];
+
+extensions.handleByList(ExtensionType.Renderer, renderers);
+
 /**
  * This helper function will automatically detect which renderer you should be using.
  * WebGL is the preferred renderer as it is a lot faster. If WebGL is not supported by
@@ -14,7 +29,7 @@ export interface IRendererOptionsAuto extends IRendererOptions
  * @param {object} [options] - The optional renderer parameters
  * @param {number} [options.width=800] - the width of the renderers view
  * @param {number} [options.height=600] - the height of the renderers view
- * @param {HTMLCanvasElement} [options.view] - the canvas to use as a view, optional
+ * @param {PIXI.ICanvas} [options.view] - the canvas to use as a view, optional
  * @param {boolean} [options.useContextAlpha=true] - Pass-through value for canvas' context `alpha` property.
  *   If you want to set transparency, please use `backgroundAlpha`. This option is for cases where the
  *   canvas needs to be opaque, possibly for performance reasons on some older devices.
@@ -36,7 +51,15 @@ export interface IRendererOptionsAuto extends IRendererOptions
  *  for devices with dual graphics card **webgl only**
  * @returns {PIXI.Renderer|PIXI.CanvasRenderer} Returns WebGL renderer if available, otherwise CanvasRenderer
  */
-export function autoDetectRenderer(options?: IRendererOptionsAuto): AbstractRenderer
+export function autoDetectRenderer(options?: IRendererOptionsAuto): IRenderer
 {
-    return Renderer.create(options);
+    for (const RendererType of renderers)
+    {
+        if (RendererType.test(options))
+        {
+            return new RendererType(options);
+        }
+    }
+
+    throw new Error('Unable to auto-detect a suitable renderer.');
 }

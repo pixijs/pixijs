@@ -1,7 +1,4 @@
-import { ObjectRenderer, Shader, State, QuadUv, ExtensionType } from '@pixi/core';
-import { WRAP_MODES } from '@pixi/constants';
-import { Matrix } from '@pixi/math';
-import { premultiplyTintToRgba, correctBlendMode } from '@pixi/utils';
+import { ObjectRenderer, Shader, State, QuadUv, ExtensionType, WRAP_MODES, Matrix, utils, extensions } from '@pixi/core';
 
 import fragmentSimpleSrc from './sprite-tiling-simple.frag';
 import gl1VertexSrc from './sprite-tiling-fallback.vert';
@@ -152,7 +149,7 @@ export class TilingSpriteRenderer extends ObjectRenderer
         }
 
         shader.uniforms.uTransform = tempMat.toArray(true);
-        shader.uniforms.uColor = premultiplyTintToRgba(ts.tint, ts.worldAlpha,
+        shader.uniforms.uColor = utils.premultiplyTintToRgba(ts.tint, ts.worldAlpha,
             shader.uniforms.uColor, premultiplied);
         shader.uniforms.translationMatrix = ts.transform.worldTransform.toArray(true);
         shader.uniforms.uSampler = tex;
@@ -160,8 +157,10 @@ export class TilingSpriteRenderer extends ObjectRenderer
         renderer.shader.bind(shader);
         renderer.geometry.bind(quad);
 
-        this.state.blendMode = correctBlendMode(ts.blendMode, premultiplied);
+        this.state.blendMode = utils.correctBlendMode(ts.blendMode, premultiplied);
         renderer.state.set(this.state);
         renderer.geometry.draw(this.renderer.gl.TRIANGLES, 6, 0);
     }
 }
+
+extensions.add(TilingSpriteRenderer);

@@ -1,3 +1,6 @@
+import { settings } from '@pixi/core';
+
+import type { ICanvas, ICanvasRenderingContext2D } from '@pixi/settings';
 import type { TextStyle, TextStyleWhiteSpace } from './TextStyle';
 
 interface IFontMetrics
@@ -11,11 +14,16 @@ type CharacterWidthCache = { [key: string]: number };
 
 /**
  * The TextMetrics object represents the measurement of a block of text with a specified style.
+ * @example
+ * import { TextStyle, TextMetrics } from 'pixi.js';
  *
- * ```js
- * let style = new PIXI.TextStyle({fontFamily : 'Arial', fontSize: 24, fill : 0xff1010, align : 'center'})
- * let textMetrics = PIXI.TextMetrics.measureText('Your text', style)
- * ```
+ * const style = new TextStyle({
+ *   fontFamily: 'Arial',
+ *   fontSize: 24,
+ *   fill: 0xff1010,
+ *   align: 'center',
+ * });
+ * const textMetrics = TextMetrics.measureText('Your text', style);
  * @memberof PIXI
  */
 export class TextMetrics
@@ -55,8 +63,8 @@ export class TextMetrics
     public static BASELINE_MULTIPLIER: number;
     public static HEIGHT_MULTIPLIER: number;
 
-    private static __canvas: HTMLCanvasElement | OffscreenCanvas;
-    private static __context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
+    private static __canvas: ICanvas;
+    private static __context: ICanvasRenderingContext2D;
 
     // TODO: These should be protected but they're initialized outside of the class.
     public static _fonts: { [font: string]: IFontMetrics };
@@ -100,7 +108,7 @@ export class TextMetrics
         text: string,
         style: TextStyle,
         wordWrap?: boolean,
-        canvas: HTMLCanvasElement | OffscreenCanvas = TextMetrics._canvas
+        canvas: ICanvas = TextMetrics._canvas
     ): TextMetrics
     {
         wordWrap = (wordWrap === undefined || wordWrap === null) ? style.wordWrap : wordWrap;
@@ -171,7 +179,7 @@ export class TextMetrics
     private static wordWrap(
         text: string,
         style: TextStyle,
-        canvas: HTMLCanvasElement | OffscreenCanvas = TextMetrics._canvas
+        canvas: ICanvas = TextMetrics._canvas
     ): string
     {
         const context = canvas.getContext('2d');
@@ -383,7 +391,7 @@ export class TextMetrics
      * @returns The from cache.
      */
     private static getFromCache(key: string, letterSpacing: number, cache: CharacterWidthCache,
-        context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D): number
+        context: ICanvasRenderingContext2D): number
     {
         let width = cache[key];
 
@@ -457,7 +465,7 @@ export class TextMetrics
             return false;
         }
 
-        return (TextMetrics._newlines.indexOf(char.charCodeAt(0)) >= 0);
+        return TextMetrics._newlines.includes(char.charCodeAt(0));
     }
 
     /**
@@ -477,7 +485,7 @@ export class TextMetrics
             return false;
         }
 
-        return (TextMetrics._breakingSpaces.indexOf(char.charCodeAt(0)) >= 0);
+        return TextMetrics._breakingSpaces.includes(char.charCodeAt(0));
     }
 
     /**
@@ -704,11 +712,11 @@ export class TextMetrics
      * TODO: this should be private, but isn't because of backward compat, will fix later.
      * @ignore
      */
-    public static get _canvas(): HTMLCanvasElement | OffscreenCanvas
+    public static get _canvas(): ICanvas
     {
         if (!TextMetrics.__canvas)
         {
-            let canvas: HTMLCanvasElement | OffscreenCanvas;
+            let canvas: ICanvas;
 
             try
             {
@@ -716,18 +724,18 @@ export class TextMetrics
                 const c = new OffscreenCanvas(0, 0);
                 const context = c.getContext('2d');
 
-                if (context && context.measureText)
+                if (context?.measureText)
                 {
                     TextMetrics.__canvas = c;
 
                     return c;
                 }
 
-                canvas = document.createElement('canvas');
+                canvas = settings.ADAPTER.createCanvas();
             }
             catch (ex)
             {
-                canvas = document.createElement('canvas');
+                canvas = settings.ADAPTER.createCanvas();
             }
             canvas.width = canvas.height = 10;
             TextMetrics.__canvas = canvas;
@@ -740,7 +748,7 @@ export class TextMetrics
      * TODO: this should be private, but isn't because of backward compat, will fix later.
      * @ignore
      */
-    public static get _context(): CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D
+    public static get _context(): ICanvasRenderingContext2D
     {
         if (!TextMetrics.__context)
         {

@@ -1,9 +1,39 @@
-// The ESM/CJS versions of ismobilejs only
-// exports the function for executing
-// designed for Node-only environments
 import isMobileCall from 'ismobilejs';
-import type { isMobileResult } from 'ismobilejs';
 
-const isMobile: isMobileResult = isMobileCall(globalThis.navigator);
+type isMobileResult = {
+    apple: {
+        phone: boolean;
+        ipod: boolean;
+        tablet: boolean;
+        universal: boolean;
+        device: boolean;
+    };
+    amazon: {
+        phone: boolean;
+        tablet: boolean;
+        device: boolean;
+    };
+    android: {
+        phone: boolean;
+        tablet: boolean;
+        device: boolean;
+    };
+    windows: {
+        phone: boolean;
+        tablet: boolean;
+        device: boolean;
+    };
+    other: {
+        blackberry: boolean;
+        blackberry10: boolean;
+        opera: boolean;
+        firefox: boolean;
+        chrome: boolean;
+        device: boolean;
+    };
+    phone: boolean;
+    tablet: boolean;
+    any: boolean;
+};
 
-export { isMobile };
+export const isMobile: isMobileResult = isMobileCall(globalThis.navigator);

@@ -378,4 +378,60 @@ describe('AnimatedSprite', () =>
             };
         });
     });
+
+    describe('.currentFrame', () =>
+    {
+        let sprite: AnimatedSprite;
+
+        beforeAll(() =>
+        {
+            sprite = new AnimatedSprite([Texture.EMPTY, Texture.EMPTY, Texture.EMPTY]);
+            sprite.animationSpeed = 0.5;
+            sprite.loop = false;
+        });
+
+        afterAll(() =>
+        {
+            sprite.destroy();
+            sprite = null;
+        });
+
+        it('should get the same value after setting the value', () =>
+        {
+            sprite.currentFrame = 1;
+            expect(sprite.currentFrame).toBe(1);
+        });
+
+        it('should throw on out-of-bounds', (done) =>
+        {
+            jest.setTimeout(10000);
+
+            const notExistIndexes = [-1, 3];
+
+            notExistIndexes.forEach((i) =>
+            {
+                expect(() =>
+                {
+                    sprite.currentFrame = i;
+                }).toThrowError();
+
+                expect(() =>
+                {
+                    sprite.gotoAndPlay(i);
+                }).toThrowError();
+
+                expect(() =>
+                {
+                    sprite.gotoAndStop(i);
+                }).toThrowError();
+            });
+
+            sprite.onComplete = () =>
+            {
+                sprite.onComplete = null;
+                done();
+            };
+            sprite.play();
+        });
+    });
 });

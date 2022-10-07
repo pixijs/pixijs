@@ -1,15 +1,14 @@
 {
   "name": "@pixi/filter-color-matrix",
-  "version": "6.4.2",
+  "version": "7.0.0-alpha.3",
   "main": "dist/cjs/filter-color-matrix.js",
-  "module": "dist/esm/filter-color-matrix.js",
-  "bundle": "dist/browser/filter-color-matrix.js",
+  "module": "dist/esm/filter-color-matrix.mjs",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/filter-color-matrix.js"
+        "default": "./dist/esm/filter-color-matrix.mjs"
       },
       "require": {
         "types": "./index.d.ts",
@@ -17,7 +16,6 @@
       }
     }
   },
-  "namespace": "PIXI.filters",
   "description": "Filter that lets you change RGBA via a 5x4 matrix transformation",
   "author": "Mat Groves",
   "contributors": [
@@ -34,11 +32,10 @@
     "access": "public"
   },
   "files": [
-    "lib",
     "dist",
     "*.d.ts"
   ],
-  "peerDependencies": {
-    "@pixi/core": "6.4.2"
-  }
+  "pixiRequirements": [
+    "@pixi/core"
+  ]
 }

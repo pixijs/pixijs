@@ -1,10 +1,9 @@
-import { Container } from '@pixi/display';
 import { autoDetectRenderer, extensions, ExtensionType } from '@pixi/core';
+import { Container } from '@pixi/display';
 
-import type { Rectangle } from '@pixi/math';
-import type { Renderer, IRendererOptionsAuto, AbstractRenderer } from '@pixi/core';
+import type { Rectangle, IRendererOptionsAuto, IRenderer } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
-import { deprecation } from '@pixi/utils';
+import type { ICanvas } from '@pixi/settings';
 
 /**
  * Any plugin that's usable for Application should contain these methods.
@@ -29,18 +28,20 @@ export interface IApplicationOptions extends IRendererOptionsAuto, GlobalMixins.
 export interface Application extends GlobalMixins.Application {}
 
 /**
- * Convenience class to create a new PIXI application.
+ * Convenience class to create a new PixiJS application.
  *
  * This class automatically creates the renderer, ticker and root container.
  * @example
+ * import { Application, Sprite } from 'pixi.js';
+ *
  * // Create the application
- * const app = new PIXI.Application();
+ * const app = new Application();
  *
  * // Add the view to the DOM
  * document.body.appendChild(app.view);
  *
  * // ex, add display objects
- * app.stage.addChild(PIXI.Sprite.from('something.png'));
+ * app.stage.addChild(Sprite.from('something.png'));
  * @class
  * @memberof PIXI
  */
@@ -59,7 +60,7 @@ export class Application
      * WebGL renderer if available, otherwise CanvasRenderer.
      * @member {PIXI.Renderer|PIXI.CanvasRenderer}
      */
-    public renderer: Renderer | AbstractRenderer;
+    public renderer: IRenderer;
 
     /**
      * @param {object} [options] - The optional renderer parameters.
@@ -68,7 +69,7 @@ export class Application
      *     options.sharedTicker to true in case that it is already started. Stop it by your own.
      * @param {number} [options.width=800] - The width of the renderers view.
      * @param {number} [options.height=600] - The height of the renderers view.
-     * @param {HTMLCanvasElement} [options.view] - The canvas to use as a view, optional.
+     * @param {PIXI.ICanvas} [options.view] - The canvas to use as a view, optional.
      * @param {boolean} [options.useContextAlpha=true] - Pass-through value for canvas' context `alpha` property.
      *   If you want to set transparency, please use `backgroundAlpha`. This option is for cases where the
      *   canvas needs to be opaque, possibly for performance reasons on some older devices.
@@ -76,7 +77,7 @@ export class Application
      *   resolutions other than 1.
      * @param {boolean} [options.antialias=false] - Sets antialias
      * @param {boolean} [options.preserveDrawingBuffer=false] - Enables drawing buffer preservation, enable this if you
-     *  need to call toDataUrl on the WebGL context.
+     *  need to call toDataURL on the WebGL context.
      * @param {number} [options.resolution=PIXI.settings.RESOLUTION] - The resolution / device pixel ratio of the renderer.
      * @param {boolean} [options.forceCanvas=false] - prevents selection of WebGL renderer, even if such is present, this
      *   option only is available when using **pixi.js-legacy** or **@pixi/canvas-renderer** modules, otherwise
@@ -110,23 +111,6 @@ export class Application
         });
     }
 
-    /**
-     * Use the {@link PIXI.extensions.add} API to register plugins.
-     * @deprecated since 6.5.0
-     * @static
-     * @param {PIXI.IApplicationPlugin} plugin - Plugin being installed
-     */
-    static registerPlugin(plugin: IApplicationPlugin): void
-    {
-        // #if _DEBUG
-        deprecation('6.5.0', 'Application.registerPlugin() is deprecated, use extensions.add()');
-        // #endif
-        extensions.add({
-            type: ExtensionType.Application,
-            ref: plugin,
-        });
-    }
-
     /** Render the current stage. */
     public render(): void
     {
@@ -135,10 +119,10 @@ export class Application
 
     /**
      * Reference to the renderer's canvas element.
-     * @member {HTMLCanvasElement}
+     * @member {PIXI.ICanvas}
      * @readonly
      */
-    get view(): HTMLCanvasElement
+    get view(): ICanvas
     {
         return this.renderer.view;
     }
@@ -185,27 +169,4 @@ export class Application
     }
 }
 
-extensions.handle(
-    ExtensionType.Application,
-    (extension) =>
-    {
-        const plugins = Application._plugins;
-        const plugin = extension.ref as unknown as IApplicationPlugin;
-
-        if (!plugins.includes(plugin))
-        {
-            plugins.push(plugin);
-        }
-    },
-    (extension) =>
-    {
-        const plugins = Application._plugins;
-        const plugin = extension.ref as unknown as IApplicationPlugin;
-        const index = plugins.indexOf(plugin);
-
-        if (index !== -1)
-        {
-            plugins.splice(index, 1);
-        }
-    }
-);
+extensions.handleByList(ExtensionType.Application, Application._plugins);

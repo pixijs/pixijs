@@ -1,7 +1,7 @@
-import { ExtensionType } from '@pixi/core';
-import { basename, extname } from '../../utils/path';
+import { extensions, ExtensionType, utils } from '@pixi/core';
 import type { LoadAsset } from '../types';
 import type { LoaderParser } from './LoaderParser';
+import { LoaderParserPriority } from './LoaderParser';
 
 const validWeights = ['normal', 'bold',
     '100', '200', '300', '400', '500', '600', '700', '800', '900',
@@ -26,8 +26,8 @@ export type LoadFontData = {
  */
 export function getFontFamilyName(url: string): string
 {
-    const ext = extname(url);
-    const name = basename(url, ext);
+    const ext = utils.path.extname(url);
+    const name = utils.path.basename(url, ext);
 
     // Replace dashes by white spaces
     const nameWithSpaces = name.replace(/(-|_)/g, ' ');
@@ -43,7 +43,10 @@ export function getFontFamilyName(url: string): string
 
 /** Web font loader plugin */
 export const loadWebFont = {
-    extension: ExtensionType.LoadParser,
+    extension: {
+        type: ExtensionType.LoadParser,
+        priority: LoaderParserPriority.Low,
+    },
 
     test(url: string): boolean
     {
@@ -100,3 +103,5 @@ export const loadWebFont = {
             .forEach((t) => document.fonts.delete(t));
     }
 } as LoaderParser<FontFace | FontFace[]>;
+
+extensions.add(loadWebFont);

@@ -1,2 +1,1 @@
-export * from './spriteSheetUrlParser';
-export * from './textureUrlParser';
+export * from './resolveTextureUrl';

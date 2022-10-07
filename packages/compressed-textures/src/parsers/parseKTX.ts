@@ -1,5 +1,4 @@
-import { FORMATS, TYPES } from '@pixi/constants';
-import { BufferResource } from '@pixi/core';
+import { BufferResource, FORMATS, TYPES } from '@pixi/core';
 
 import { INTERNAL_FORMAT_TO_BYTES_PER_PIXEL } from '../const';
 import type { CompressedLevelBuffer } from '../resources';

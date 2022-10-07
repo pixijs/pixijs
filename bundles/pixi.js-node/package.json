@@ -1,0 +1,76 @@
+{
+  "name": "@pixi/node",
+  "version": "7.0.0-alpha.3",
+  "description": "Bundle for PixiJS with support for NodeJS",
+  "homepage": "http://pixijs.com/",
+  "bugs": "https://github.com/pixijs/pixi.js/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pixijs/pixi.js.git"
+  },
+  "license": "MIT",
+  "author": "PixiJS Team",
+  "main": "dist/cjs/node.cjs",
+  "module": "dist/esm/node.mjs",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./index.d.ts",
+        "default": "./dist/esm/node.mjs"
+      },
+      "require": {
+        "types": "./index.d.ts",
+        "default": "./dist/cjs/node.cjs"
+      }
+    }
+  },
+  "files": [
+    "dist",
+    "*.d.ts"
+  ],
+  "engines": {
+    "node": ">=16"
+  },
+  "dependencies": {
+    "@pixi/app": "7.0.0-alpha.3",
+    "@pixi/assets": "7.0.0-alpha.3",
+    "@pixi/core": "7.0.0-alpha.3",
+    "@pixi/display": "7.0.0-alpha.3",
+    "@pixi/extensions": "7.0.0-alpha.3",
+    "@pixi/extract": "7.0.0-alpha.3",
+    "@pixi/filter-alpha": "7.0.0-alpha.3",
+    "@pixi/filter-blur": "7.0.0-alpha.3",
+    "@pixi/filter-color-matrix": "7.0.0-alpha.3",
+    "@pixi/filter-displacement": "7.0.0-alpha.3",
+    "@pixi/filter-fxaa": "7.0.0-alpha.3",
+    "@pixi/filter-noise": "7.0.0-alpha.3",
+    "@pixi/graphics": "7.0.0-alpha.3",
+    "@pixi/mesh": "7.0.0-alpha.3",
+    "@pixi/mesh-extras": "7.0.0-alpha.3",
+    "@pixi/mixin-cache-as-bitmap": "7.0.0-alpha.3",
+    "@pixi/mixin-get-child-by-name": "7.0.0-alpha.3",
+    "@pixi/mixin-get-global-position": "7.0.0-alpha.3",
+    "@pixi/particle-container": "7.0.0-alpha.3",
+    "@pixi/prepare": "7.0.0-alpha.3",
+    "@pixi/sprite": "7.0.0-alpha.3",
+    "@pixi/sprite-animated": "7.0.0-alpha.3",
+    "@pixi/sprite-tiling": "7.0.0-alpha.3",
+    "@pixi/spritesheet": "7.0.0-alpha.3",
+    "@pixi/text": "7.0.0-alpha.3",
+    "@pixi/text-bitmap": "7.0.0-alpha.3",
+    "@types/gl": "^4.1.0",
+    "@types/xml2js": "^0.4.11",
+    "canvas": "^2.9.1",
+    "cross-fetch": "^3.1.5",
+    "gl": "^5.0.0",
+    "xml2js": "^0.4.23"
+  },
+  "nodeDependencies": [
+    "fs",
+    "path"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}

@@ -1,4 +1,5 @@
-import { convertToList, isSingleItem, makeAbsoluteUrl } from '../utils';
+import { utils } from '@pixi/core';
+import { convertToList, isSingleItem } from '../utils';
 import type { LoaderParser } from './parsers/LoaderParser';
 import type { PromiseAndParser, LoadAsset } from './types';
 
@@ -15,8 +16,7 @@ import type { PromiseAndParser, LoadAsset } from './types';
  */
 export class Loader
 {
-    /** All loader parsers registered */
-    public parsers: LoaderParser[] = [];
+    private _parsers: LoaderParser[] = [];
 
     /** Cache loading promises that ae currently active */
     public promiseCache: Record<string, PromiseAndParser> = {};
@@ -25,29 +25,6 @@ export class Loader
     public reset(): void
     {
         this.promiseCache = {};
-    }
-
-    /**
-     * Use this to add any parsers to the loadAssets function to use
-     * @param newParsers - An array of parsers to add to the loader, or just a single one
-     */
-    public addParser(...newParsers: LoaderParser[]): void
-    {
-        this.parsers.push(...newParsers);
-    }
-
-    /**
-     * Use this to remove any parsers you've added or any of the default ones.
-     * @param parsersToRemove - An array of parsers to remove from the loader, or just a single one
-     */
-    public removeParser(...parsersToRemove: LoaderParser[]): void
-    {
-        for (const parser of parsersToRemove)
-        {
-            const index = this.parsers.indexOf(parser);
-
-            if (index >= 0) this.parsers.splice(index, 1);
-        }
     }
 
     /**
@@ -96,7 +73,7 @@ export class Loader
 
                 if (parser.parse)
                 {
-                    if (parser.parse && parser.testParse?.(asset, data, this))
+                    if (parser.parse && await parser.testParse?.(asset, data, this))
                     {
                         // transform the asset..
                         asset = await parser.parse(asset, data, this) || asset;
@@ -144,7 +121,7 @@ export class Loader
 
         const promises: Promise<void>[] = assetsToLoad.map(async (asset: LoadAsset) =>
         {
-            const url = makeAbsoluteUrl(asset.src);
+            const url = utils.path.toAbsolute(asset.src);
 
             if (!assets[asset.src])
             {
@@ -200,7 +177,7 @@ export class Loader
 
         const promises: Promise<void>[] = assetsToUnload.map(async (asset: LoadAsset) =>
         {
-            const url = makeAbsoluteUrl(asset.src);
+            const url = utils.path.toAbsolute(asset.src);
 
             const loadPromise = this.promiseCache[url];
 
@@ -215,5 +192,11 @@ export class Loader
         });
 
         await Promise.all(promises);
+    }
+
+    /** All loader parsers registered */
+    public get parsers(): LoaderParser[]
+    {
+        return this._parsers;
     }
 }

@@ -1,14 +1,14 @@
 import { Container } from '@pixi/display';
-import { BatchRenderer, extensions, RenderTexture } from '@pixi/core';
+import { RenderTexture } from '@pixi/core';
 import { CanvasRenderer } from '@pixi/canvas-renderer';
 import { Sprite } from '@pixi/sprite';
-import { CanvasSpriteRenderer } from '@pixi/canvas-sprite';
 import { Graphics } from '@pixi/graphics';
-import { CanvasGraphicsRenderer } from '@pixi/canvas-graphics';
 import { Text } from '@pixi/text';
 import { SimplePlane } from '@pixi/mesh-extras';
-import { CanvasMeshRenderer } from '@pixi/canvas-mesh';
 
+import '@pixi/canvas-sprite';
+import '@pixi/canvas-graphics';
+import '@pixi/canvas-mesh';
 import '@pixi/canvas-display';
 import '@pixi/canvas-text';
 
@@ -19,19 +19,6 @@ function withGL(fn: () => void)
 
 describe('getLocalBounds', () =>
 {
-    beforeAll(() => extensions.add(
-        BatchRenderer,
-        CanvasSpriteRenderer,
-        CanvasGraphicsRenderer,
-        CanvasMeshRenderer
-    ));
-    afterAll(() => extensions.remove(
-        BatchRenderer,
-        CanvasSpriteRenderer,
-        CanvasGraphicsRenderer,
-        CanvasMeshRenderer
-    ));
-
     it('should register correct local-bounds with a LOADED Sprite', () =>
     {
         const parent = new Container();

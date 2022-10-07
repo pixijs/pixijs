@@ -1,15 +1,34 @@
 import './settings';
 
-export * from './extensions';
+/**
+ * @namespace PIXI
+ */
+
+/**
+ * String of the current PIXI version.
+ * @memberof PIXI
+ */
+export const VERSION = '$_VERSION';
+
+/** Export dependencies */
+export * from '@pixi/constants';
+export * from '@pixi/extensions';
+export * from '@pixi/math';
+export * from '@pixi/runner';
+export * from '@pixi/settings';
+export * from '@pixi/ticker';
+import * as utils from '@pixi/utils';
+export { utils };
+
 export * from './textures/resources';
 export * from './systems';
-export * from './IRenderingContext';
-export * from './IRenderableObject';
+export * from './IRenderer';
 export * from './autoDetectRenderer';
 export * from './fragments';
-export * from './ISystem';
+export * from './system/ISystem';
+export * from './IRenderer';
+export * from './plugin/PluginSystem';
 export * from './Renderer';
-export * from './AbstractRenderer';
 export * from './framebuffer/Framebuffer';
 export * from './framebuffer/GLFramebuffer';
 export * from './textures/Texture';
@@ -22,8 +41,7 @@ export * from './renderTexture/BaseRenderTexture';
 export * from './textures/TextureUvs';
 export * from './state/State';
 export * from './batch/ObjectRenderer';
-export * from './batch/AbstractBatchRenderer';
-export * from './batch/BatchPluginFactory';
+export * from './batch/BatchRenderer';
 export * from './batch/BatchShaderGenerator';
 export * from './batch/BatchGeometry';
 export * from './batch/BatchDrawCall';
@@ -49,4 +67,28 @@ export * from './geometry/Buffer';
 export * from './geometry/Geometry';
 export * from './geometry/ViewableBuffer';
 export * from './transformFeedback/TransformFeedback';
-export * from './deprecations';
+
+export * from './mask/MaskSystem';
+export * from './mask/StencilSystem';
+export * from './mask/ScissorSystem';
+export * from './filters/FilterSystem';
+export * from './framebuffer/FramebufferSystem';
+export * from './renderTexture/RenderTextureSystem';
+export * from './textures/TextureSystem';
+export * from './projection/ProjectionSystem';
+export * from './state/StateSystem';
+export * from './geometry/GeometrySystem';
+export * from './shader/ShaderSystem';
+export * from './context/ContextSystem';
+export * from './batch/BatchSystem';
+export * from './textures/TextureGCSystem';
+export * from './geometry/BufferSystem';
+export * from './plugin/PluginSystem';
+export * from './framebuffer/MultisampleSystem';
+export * from './renderTexture/GenerateTextureSystem';
+export * from './renderTexture/GenerateTextureSystem';
+export * from './background/BackgroundSystem';
+export * from './view/ViewSystem';
+export * from './render/ObjectRendererSystem';
+export * from './startup/StartupSystem';
+export * from './transformFeedback/TransformFeedbackSystem';

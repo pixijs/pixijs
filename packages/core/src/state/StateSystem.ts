@@ -2,8 +2,10 @@ import { mapWebGLBlendModesToPixi } from './utils/mapWebGLBlendModesToPixi';
 import { State } from './State';
 import { BLEND_MODES } from '@pixi/constants';
 
-import type { ISystem } from '../ISystem';
-import type { IRenderingContext } from '../IRenderingContext';
+import type { ISystem } from '../system/ISystem';
+import type { IRenderingContext } from '../IRenderer';
+import type { ExtensionMetadata } from '@pixi/extensions';
+import { extensions, ExtensionType } from '@pixi/extensions';
 
 const BLEND = 0;
 const OFFSET = 1;
@@ -18,6 +20,12 @@ const DEPTH_MASK = 5;
  */
 export class StateSystem implements ISystem
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        type: ExtensionType.RendererSystem,
+        name: 'state',
+    };
+
     /**
      * State ID
      * @readonly
@@ -329,3 +337,5 @@ export class StateSystem implements ISystem
         this.gl = null;
     }
 }
+
+extensions.add(StateSystem);

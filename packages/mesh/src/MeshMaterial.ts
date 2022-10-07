@@ -1,11 +1,8 @@
-import { Program, Shader, TextureMatrix } from '@pixi/core';
-import { Matrix } from '@pixi/math';
-import { premultiplyTintToRgba } from '@pixi/utils';
+import { Matrix, utils, Program, Shader, TextureMatrix } from '@pixi/core';
 import fragment from './shader/mesh.frag';
 import vertex from './shader/mesh.vert';
 
 import type { Texture } from '@pixi/core';
-import type { Dict } from '@pixi/utils';
 
 export interface IMeshMaterialOptions
 {
@@ -13,7 +10,7 @@ export interface IMeshMaterialOptions
     tint?: number;
     pluginName?: string;
     program?: Program;
-    uniforms?: Dict<unknown>;
+    uniforms?: utils.Dict<unknown>;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -157,7 +154,7 @@ export class MeshMaterial extends Shader
             this._colorDirty = false;
             const baseTexture = this.texture.baseTexture;
 
-            premultiplyTintToRgba(
+            utils.premultiplyTintToRgba(
                 this._tint, this._alpha, this.uniforms.uColor, (baseTexture.alphaMode as unknown as boolean)
             );
         }

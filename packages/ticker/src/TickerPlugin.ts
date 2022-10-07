@@ -1,15 +1,10 @@
-import type { ExtensionMetadata } from '@pixi/core';
-import { ExtensionType } from '@pixi/core';
+import type { ExtensionMetadata } from '@pixi/extensions';
+import { extensions, ExtensionType } from '@pixi/extensions';
 import { UPDATE_PRIORITY } from './const';
 import { Ticker } from './Ticker';
 
 /**
  * Middleware for for Application Ticker.
- * @example
- * import {TickerPlugin} from '@pixi/ticker';
- * import {Application} from '@pixi/app';
- * import {extensions} from '@pixi/core';
- * extensions.add(TickerPlugin);
  * @class
  * @memberof PIXI
  */
@@ -121,3 +116,5 @@ export class TickerPlugin
         }
     }
 }
+
+extensions.add(TickerPlugin);

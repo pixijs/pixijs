@@ -1,8 +1,7 @@
-import { BatchRenderer, extensions, Renderer } from '@pixi/core';
+import { Renderer, Rectangle } from '@pixi/core';
 import { Container, DisplayObject } from '@pixi/display';
 import { AlphaFilter } from '@pixi/filter-alpha';
 import { Graphics } from '@pixi/graphics';
-import { Rectangle } from '@pixi/math';
 
 function testAddChild(fn: any)
 {
@@ -42,9 +41,6 @@ function testRemoveChild(fn: any)
 
 describe('Container', () =>
 {
-    beforeAll(() => extensions.add(BatchRenderer));
-    afterAll(() => extensions.remove(BatchRenderer));
-
     describe('parent', () =>
     {
         it('should be present when adding children to Container', () =>

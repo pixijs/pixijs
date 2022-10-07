@@ -1,18 +1,12 @@
 import { Text } from '@pixi/text';
 import { Sprite } from '@pixi/sprite';
-import { skipHello } from '@pixi/utils';
-import { settings } from '@pixi/settings';
-import { Renderer, BatchRenderer, extensions } from '@pixi/core';
-
+import { settings, Renderer, utils } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
 
-skipHello();
+utils.skipHello();
 
 describe('Text', () =>
 {
-    beforeAll(() => extensions.add(BatchRenderer));
-    afterAll(() => extensions.remove(BatchRenderer));
-
     describe('properties', () =>
     {
         it('should modify the height of the object when setting height', () =>

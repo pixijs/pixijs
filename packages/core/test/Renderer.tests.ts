@@ -1,5 +1,5 @@
 import type { ObjectRenderer } from '@pixi/core';
-import { Renderer, Framebuffer, extensions, BatchRenderer } from '@pixi/core';
+import { Renderer, Framebuffer } from '@pixi/core';
 import { Graphics } from '@pixi/graphics';
 import { settings } from '@pixi/settings';
 import { ENV, MSAA_QUALITY } from '@pixi/constants';
@@ -61,7 +61,6 @@ describe('Renderer', () =>
 
         beforeAll(() =>
         {
-            extensions.add(BatchRenderer);
             renderer = new Renderer();
         });
 
@@ -80,7 +79,6 @@ describe('Renderer', () =>
 
         afterAll(() =>
         {
-            extensions.remove(BatchRenderer);
             renderer.destroy();
             renderer = null;
             curRenderer = null;
@@ -130,5 +128,15 @@ describe('Renderer', () =>
             expect(pixel[2]).toEqual(0xff);
             expect(pixel[3]).toEqual(0xff);
         });
+    });
+
+    it('should support OffscreenCanvas', () =>
+    {
+        const view = new OffscreenCanvas(1, 1);
+        const renderer = new Renderer({ view, width: 1, height: 1 });
+
+        expect(renderer.view).toBeInstanceOf(OffscreenCanvas);
+
+        renderer.destroy();
     });
 });

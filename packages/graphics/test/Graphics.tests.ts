@@ -1,18 +1,11 @@
-import { BatchRenderer, Texture, extensions } from '@pixi/core';
+import { Texture, BLEND_MODES, Point, Matrix, SHAPES, Polygon, utils } from '@pixi/core';
 import { Graphics, GRAPHICS_CURVES, FillStyle, LineStyle, graphicsUtils, LINE_CAP } from '@pixi/graphics';
 const { FILL_COMMANDS, buildLine } = graphicsUtils;
 
-import { BLEND_MODES } from '@pixi/constants';
-import { Point, Matrix, SHAPES, Polygon } from '@pixi/math';
-import { skipHello } from '@pixi/utils';
-
-skipHello();
+utils.skipHello();
 
 describe('Graphics', () =>
 {
-    beforeAll(() => extensions.add(BatchRenderer));
-    afterAll(() => extensions.remove(BatchRenderer));
-
     describe('constructor', () =>
     {
         it('should set defaults', () =>

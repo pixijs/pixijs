@@ -1,10 +1,7 @@
-import { settings } from '@pixi/settings';
-import { removeItems } from '@pixi/utils';
+import { MASK_TYPES, settings, utils } from '@pixi/core';
 import { DisplayObject } from './DisplayObject';
-import type { Matrix, Rectangle } from '@pixi/math';
-import { MASK_TYPES } from '@pixi/constants';
 
-import type { MaskData, Renderer } from '@pixi/core';
+import type { MaskData, Renderer, Matrix, Rectangle } from '@pixi/core';
 import type { IDestroyOptions } from './DisplayObject';
 
 function sortChildren(a: DisplayObject, b: DisplayObject): number
@@ -25,15 +22,14 @@ export interface Container extends GlobalMixins.Container, DisplayObject {}
  *
  * It is the base class of all display objects that act as a container for other objects, including Graphics
  * and Sprite.
- *
- * ```js
+ * @example
  * import { BlurFilter } from '@pixi/filter-blur';
  * import { Container } from '@pixi/display';
  * import { Graphics } from '@pixi/graphics';
  * import { Sprite } from '@pixi/sprite';
  *
- * let container = new Container();
- * let sprite = Sprite.from("https://s3-us-west-2.amazonaws.com/s.cdpn.io/693612/IaUrttj.png");
+ * const container = new Container();
+ * const sprite = Sprite.from("https://s3-us-west-2.amazonaws.com/s.cdpn.io/693612/IaUrttj.png");
  *
  * sprite.width = 512;
  * sprite.height = 512;
@@ -50,7 +46,6 @@ export interface Container extends GlobalMixins.Container, DisplayObject {}
  *  .beginFill(0xffffff)
  *  .drawCircle(sprite.width / 2, sprite.height / 2, Math.min(sprite.width, sprite.height) / 2)
  *  .endFill();
- * ```
  * @memberof PIXI
  */
 export class Container<T extends DisplayObject = DisplayObject> extends DisplayObject
@@ -105,9 +100,9 @@ export class Container<T extends DisplayObject = DisplayObject> extends DisplayO
 
         /**
          * Fired when a DisplayObject is removed from this Container.
-         * @event PIXI.DisplayObject#removedFrom
+         * @event PIXI.DisplayObject#childRemoved
          * @param {PIXI.DisplayObject} child - The child removed from the Container.
-         * @param {PIXI.Container} container - The container that removed removed the child.
+         * @param {PIXI.Container} container - The container that removed the child.
          * @param {number} index - The former children's index of the removed child
          */
     }
@@ -258,7 +253,7 @@ export class Container<T extends DisplayObject = DisplayObject> extends DisplayO
 
         const currentIndex = this.getChildIndex(child);
 
-        removeItems(this.children, currentIndex, 1); // remove from old position
+        utils.removeItems(this.children, currentIndex, 1); // remove from old position
         this.children.splice(index, 0, child); // add at new position
 
         this.onChildrenChange(index);
@@ -305,7 +300,7 @@ export class Container<T extends DisplayObject = DisplayObject> extends DisplayO
             child.parent = null;
             // ensure child transform will be recalculated
             child.transform._parentID = -1;
-            removeItems(this.children, index, 1);
+            utils.removeItems(this.children, index, 1);
 
             // ensure bounds will be recalculated
             this._boundsID++;
@@ -331,7 +326,7 @@ export class Container<T extends DisplayObject = DisplayObject> extends DisplayO
         // ensure child transform will be recalculated..
         child.parent = null;
         child.transform._parentID = -1;
-        removeItems(this.children, index, 1);
+        utils.removeItems(this.children, index, 1);
 
         // ensure bounds will be recalculated
         this._boundsID++;
@@ -630,7 +625,7 @@ export class Container<T extends DisplayObject = DisplayObject> extends DisplayO
         }
 
         // do a quick check to see if this element has a mask or a filter.
-        if (this._mask || (this.filters && this.filters.length))
+        if (this._mask || this.filters?.length)
         {
             this.renderAdvanced(renderer);
         }
@@ -677,7 +672,7 @@ export class Container<T extends DisplayObject = DisplayObject> extends DisplayO
             }
         }
 
-        const flush = (filters && this._enabledFilters && this._enabledFilters.length)
+        const flush = (filters && this._enabledFilters?.length)
             || (mask && (!mask.isMaskData
                 || (mask.enabled && (mask.autoDetect || mask.type !== MASK_TYPES.NONE))));
 
@@ -686,7 +681,7 @@ export class Container<T extends DisplayObject = DisplayObject> extends DisplayO
             renderer.batch.flush();
         }
 
-        if (filters && this._enabledFilters && this._enabledFilters.length)
+        if (filters && this._enabledFilters?.length)
         {
             renderer.filter.push(this, this._enabledFilters);
         }
@@ -720,7 +715,7 @@ export class Container<T extends DisplayObject = DisplayObject> extends DisplayO
             renderer.mask.pop(this);
         }
 
-        if (filters && this._enabledFilters && this._enabledFilters.length)
+        if (filters && this._enabledFilters?.length)
         {
             renderer.filter.pop();
         }
@@ -753,7 +748,7 @@ export class Container<T extends DisplayObject = DisplayObject> extends DisplayO
 
         this.sortDirty = false;
 
-        const destroyChildren = typeof options === 'boolean' ? options : options && options.children;
+        const destroyChildren = typeof options === 'boolean' ? options : options?.children;
 
         const oldChildren = this.removeChildren(0, this.children.length);
 

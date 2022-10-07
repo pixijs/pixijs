@@ -10,7 +10,7 @@ describe('CanvasMaskManager', () =>
     {
         const renderer = new CanvasRenderer({ width: 1, height: 1 });
         const shapeSpy = jest.spyOn(renderer.maskManager, 'renderGraphicsShape');
-        const contextPath = jest.spyOn(renderer.context, 'closePath');
+        const contextPath = jest.spyOn(renderer.canvasContext.activeContext, 'closePath');
         const cont = new Container();
 
         cont.mask = new Sprite();
@@ -42,7 +42,7 @@ describe('CanvasMaskManager', () =>
     it('should set correct transform for graphics', () =>
     {
         const renderer = new CanvasRenderer({ width: 1, height: 1 });
-        const transformSpy = jest.spyOn(renderer.context, 'setTransform');
+        const transformSpy = jest.spyOn(renderer.canvasContext.activeContext, 'setTransform');
         const cont = new Container();
         const graphics1 = new Graphics();
         const graphics2 = new Graphics();

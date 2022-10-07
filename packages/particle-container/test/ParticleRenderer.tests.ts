@@ -1,17 +1,13 @@
-import { ParticleContainer, ParticleRenderer } from '@pixi/particle-container';
-import { Texture, Renderer, extensions } from '@pixi/core';
-import { skipHello } from '@pixi/utils';
+import { ParticleContainer } from '@pixi/particle-container';
+import { Texture, Renderer, utils } from '@pixi/core';
 import { Sprite } from '@pixi/sprite';
 
 import path from 'path';
 
-skipHello();
+utils.skipHello();
 
 describe('ParticleRenderer', () =>
 {
-    beforeAll(() => extensions.add(ParticleRenderer));
-    afterAll(() => extensions.remove(ParticleRenderer));
-
     it('should render a particle container with no children', () =>
     {
         const renderer = new Renderer();

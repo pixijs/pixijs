@@ -8,7 +8,7 @@ declare namespace GlobalMixins
     interface Texture
     {
         patternCache?: { [key: string]: CanvasPattern };
-        tintCache?: { [key: string]: HTMLCanvasElement | HTMLImageElement };
+        tintCache?: { [key: string]: import('@pixi/settings').ICanvas | HTMLImageElement };
     }
 
     interface BaseRenderTexture
@@ -21,25 +21,31 @@ declare namespace GlobalMixins
         tintId?: number;
     }
 
-    interface DisplayObject
+    // eslint-disable-next-line @typescript-eslint/no-empty-interface
+    interface ICanvas extends GlobalTintable
     {
-        renderCanvas?(renderer: import('@pixi/canvas-renderer').CanvasRenderer): void;
+
     }
 
     interface IRendererOptions
     {
         forceCanvas?: boolean;
     }
+
+    // eslint-disable-next-line @typescript-eslint/no-empty-interface
+    interface CanvasRenderer
+    {
+
+    }
+
+    interface IRenderableObject
+    {
+        renderCanvas?(renderer: import('@pixi/canvas-renderer').CanvasRenderer): void;
+    }
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 declare interface CanvasPattern extends GlobalMixins.GlobalTintable
-{
-
-}
-
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-declare interface HTMLCanvasElement extends GlobalMixins.GlobalTintable
 {
 
 }

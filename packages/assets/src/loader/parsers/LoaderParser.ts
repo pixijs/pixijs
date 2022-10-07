@@ -3,6 +3,22 @@ import type { Loader } from '../Loader';
 import type { LoadAsset } from '../types';
 
 /**
+ * The extension priority for loader parsers.
+ * Helpful when managing multiple parsers that share the same extension
+ * test. The higher priority parsers will be checked first.
+ */
+export enum LoaderParserPriority
+// eslint-disable-next-line @typescript-eslint/indent
+{
+    /** Generic parsers: txt, json, webfonts */
+    Low = 0,
+    /** PixiJS assets with generic extensions: spritesheets, bitmapfonts  */
+    Normal = 1,
+    /** Specific texture types: svg, png, ktx, dds, basis */
+    High = 2,
+}
+
+/**
  * All functions are optional here. The flow:
  *
  * for every asset,
@@ -48,7 +64,7 @@ export interface LoaderParser<ASSET = any, META_DATA = any>
      * @param loadAsset - Any custom additional information relevant to the asset being loaded
      * @param loader - The loader instance
      */
-    testParse?: (asset: ASSET, loadAsset?: LoadAsset<META_DATA>, loader?: Loader) => boolean;
+    testParse?: (asset: ASSET, loadAsset?: LoadAsset<META_DATA>, loader?: Loader) => Promise<boolean>;
 
     /**
      * Gets called on the asset it testParse passes. Useful to convert a raw asset into something more useful than

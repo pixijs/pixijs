@@ -1,15 +1,14 @@
 {
   "name": "@pixi/settings",
-  "version": "6.4.2",
+  "version": "7.0.0-alpha.3",
   "main": "dist/cjs/settings.js",
-  "module": "dist/esm/settings.js",
-  "bundle": "dist/browser/settings.js",
+  "module": "dist/esm/settings.mjs",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/settings.js"
+        "default": "./dist/esm/settings.mjs"
       },
       "require": {
         "types": "./index.d.ts",
@@ -33,11 +32,10 @@
     "access": "public"
   },
   "files": [
-    "lib",
     "dist",
     "*.d.ts"
   ],
-  "dependencies": {
+  "devDependencies": {
     "ismobilejs": "^1.1.0"
   }
 }

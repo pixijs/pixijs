@@ -1,4 +1,4 @@
-import { spriteSheetUrlParser, textureUrlParser } from '@pixi/assets';
+import { resolveTextureUrl } from '@pixi/assets';
 import { Resolver } from '../src/resolver/Resolver';
 import { manifest } from './sampleManifest';
 
@@ -104,7 +104,7 @@ describe('Resolver', () =>
             },
         });
 
-        resolver.addUrlParser(textureUrlParser);
+        resolver['_parsers'].push(resolveTextureUrl);
 
         resolver.add('test', [
             'profile-abel@0.5x.jpg',
@@ -277,7 +277,7 @@ describe('Resolver', () =>
             },
         });
 
-        resolver.addUrlParser(textureUrlParser);
+        resolver['_parsers'].push(resolveTextureUrl);
 
         resolver.add('test', [
             'my-image@4x.webp',
@@ -418,48 +418,6 @@ describe('Resolver', () =>
             levelData: 'levelData.json',
             spriteSheet1: 'my-sprite-sheet.json',
             spriteSheet2: 'my-sprite-sheet-2.json',
-        });
-    });
-
-    it('should parse a string sprite sheet correctly', () =>
-    {
-        [
-            {
-                url: 'my-sprite-sheet.json',
-                pass: false,
-            },
-            {
-                url: 'my-sprite-sheet@0.5x.webp.json',
-                pass: true,
-                result: {
-                    format: 'webp',
-                    resolution: 0.5,
-                    src: 'my-sprite-sheet@0.5x.webp.json',
-                },
-            },
-            {
-                url: 'my-sprite-sheet@2x.png.json',
-                pass: true,
-                result: {
-                    format: 'png',
-                    resolution: 2,
-                    src: 'my-sprite-sheet@2x.png.json',
-                },
-            },
-            {
-                url: 'my-sprite-sheet@2x.json',
-                pass: false,
-            },
-        ].forEach((toTest) =>
-        {
-            const pass = spriteSheetUrlParser.test(toTest.url);
-
-            expect(pass).toBe(toTest.pass);
-
-            if (pass)
-            {
-                expect(spriteSheetUrlParser.parse(toTest.url)).toEqual(toTest.result);
-            }
         });
     });
 

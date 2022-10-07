@@ -1,11 +1,10 @@
+import { ExtensionType, extensions, utils } from '@pixi/core';
 import { DisplayObject } from '@pixi/display';
-import { isMobile, removeItems } from '@pixi/utils';
+import { FederatedEvent } from '@pixi/events';
 import { accessibleTarget } from './accessibleTarget';
 
-import type { Rectangle } from '@pixi/math';
+import type { Rectangle, IRenderer, ExtensionMetadata } from '@pixi/core';
 import type { Container } from '@pixi/display';
-import type { Renderer, AbstractRenderer, ExtensionMetadata } from '@pixi/core';
-import { ExtensionType } from '@pixi/core';
 import type { IAccessibleHTMLElement } from './accessibleTarget';
 
 // add some extra variables to the container..
@@ -52,7 +51,7 @@ export class AccessibilityManager
      * The renderer this accessibility manager works for.
      * @type {PIXI.CanvasRenderer|PIXI.Renderer}
      */
-    public renderer: AbstractRenderer | Renderer;
+    public renderer: IRenderer;
 
     /** Internal variable, see isActive getter. */
     private _isActive = false;
@@ -84,11 +83,11 @@ export class AccessibilityManager
     /**
      * @param {PIXI.CanvasRenderer|PIXI.Renderer} renderer - A reference to the current renderer
      */
-    constructor(renderer: AbstractRenderer | Renderer)
+    constructor(renderer: IRenderer)
     {
         this._hookDiv = null;
 
-        if (isMobile.tablet || isMobile.phone)
+        if (utils.isMobile.tablet || utils.isMobile.phone)
         {
             this.createTouchHook();
         }
@@ -273,25 +272,25 @@ export class AccessibilityManager
         */
         const now = performance.now();
 
-        if (isMobile.android.device && now < this.androidUpdateCount)
+        if (utils.isMobile.android.device && now < this.androidUpdateCount)
         {
             return;
         }
 
         this.androidUpdateCount = now + this.androidUpdateFrequency;
 
-        if (!(this.renderer as Renderer).renderingToScreen)
+        if (!this.renderer.renderingToScreen)
         {
             return;
         }
 
         // update children...
-        if (this.renderer._lastObjectRendered)
+        if (this.renderer.lastObjectRendered)
         {
-            this.updateAccessibleObjects(this.renderer._lastObjectRendered as Container);
+            this.updateAccessibleObjects(this.renderer.lastObjectRendered as Container);
         }
 
-        const { left, top, width, height } = this.renderer.view.getBoundingClientRect();
+        const { x, y, width, height } = this.renderer.view.getBoundingClientRect();
         const { width: viewWidth, height: viewHeight, resolution } = this.renderer;
 
         const sx = (width / viewWidth) * resolution;
@@ -299,8 +298,8 @@ export class AccessibilityManager
 
         let div = this.div;
 
-        div.style.left = `${left}px`;
-        div.style.top = `${top}px`;
+        div.style.left = `${x}px`;
+        div.style.top = `${y}px`;
         div.style.width = `${viewWidth}px`;
         div.style.height = `${viewHeight}px`;
 
@@ -312,7 +311,7 @@ export class AccessibilityManager
             {
                 child._accessibleActive = false;
 
-                removeItems(this.children, i, 1);
+                utils.removeItems(this.children, i, 1);
                 this.div.removeChild(child._accessibleDiv);
                 this.pool.push(child._accessibleDiv);
                 child._accessibleDiv = null;
@@ -436,7 +435,7 @@ export class AccessibilityManager
             div.style.borderStyle = 'none';
 
             // ARIA attributes ensure that button title and hint updates are announced properly
-            if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1)
+            if (navigator.userAgent.toLowerCase().includes('chrome'))
             {
                 // Chrome doesn't need aria-live to work as intended; in fact it just gets more confused.
                 div.setAttribute('aria-live', 'off');
@@ -495,23 +494,33 @@ export class AccessibilityManager
     }
 
     /**
-     * Maps the div button press to pixi's InteractionManager (click)
+     * Dispatch events with the EventSystem.
+     * @param e
+     * @param type
+     * @private
+     */
+    private _dispatchEvent(e: UIEvent, type: string[]): void
+    {
+        const { displayObject: target } = e.target as IAccessibleHTMLElement;
+        const boundry = this.renderer.events.rootBoundary;
+        const event: FederatedEvent = Object.assign(new FederatedEvent(boundry), { target });
+
+        boundry.rootTarget = this.renderer.lastObjectRendered as DisplayObject;
+        type.forEach((type) => boundry.dispatchEvent(event, type));
+    }
+
+    /**
+     * Maps the div button press to pixi's EventSystem (click)
      * @private
      * @param {MouseEvent} e - The click event.
      */
     private _onClick(e: MouseEvent): void
     {
-        const interactionManager = this.renderer.plugins.interaction;
-        const { displayObject } = e.target as IAccessibleHTMLElement;
-        const { eventData } = interactionManager;
-
-        interactionManager.dispatchEvent(displayObject, 'click', eventData);
-        interactionManager.dispatchEvent(displayObject, 'pointertap', eventData);
-        interactionManager.dispatchEvent(displayObject, 'tap', eventData);
+        this._dispatchEvent(e, ['click', 'pointertap', 'tap']);
     }
 
     /**
-     * Maps the div focus events to pixi's InteractionManager (mouseover)
+     * Maps the div focus events to pixi's EventSystem (mouseover)
      * @private
      * @param {FocusEvent} e - The focus event.
      */
@@ -522,15 +531,11 @@ export class AccessibilityManager
             (e.target as Element).setAttribute('aria-live', 'assertive');
         }
 
-        const interactionManager = this.renderer.plugins.interaction;
-        const { displayObject } = e.target as IAccessibleHTMLElement;
-        const { eventData } = interactionManager;
-
-        interactionManager.dispatchEvent(displayObject, 'mouseover', eventData);
+        this._dispatchEvent(e, ['mouseover']);
     }
 
     /**
-     * Maps the div focus events to pixi's InteractionManager (mouseout)
+     * Maps the div focus events to pixi's EventSystem (mouseout)
      * @private
      * @param {FocusEvent} e - The focusout event.
      */
@@ -541,11 +546,7 @@ export class AccessibilityManager
             (e.target as Element).setAttribute('aria-live', 'polite');
         }
 
-        const interactionManager = this.renderer.plugins.interaction;
-        const { displayObject } = e.target as IAccessibleHTMLElement;
-        const { eventData } = interactionManager;
-
-        interactionManager.dispatchEvent(displayObject, 'mouseout', eventData);
+        this._dispatchEvent(e, ['mouseout']);
     }
 
     /**
@@ -592,3 +593,5 @@ export class AccessibilityManager
         this.renderer = null;
     }
 }
+
+extensions.add(AccessibilityManager);

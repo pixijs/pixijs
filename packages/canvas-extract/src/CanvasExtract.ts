@@ -1,9 +1,9 @@
-import { ExtensionType, RenderTexture } from '@pixi/core';
-import { CanvasRenderTarget } from '@pixi/utils';
-import { Rectangle } from '@pixi/math';
+import { Rectangle, extensions, ExtensionType, RenderTexture, utils } from '@pixi/core';
+
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
+import type { BaseRenderTexture, ExtensionMetadata, ISystem } from '@pixi/core';
 import type { DisplayObject } from '@pixi/display';
-import type { BaseRenderTexture, ExtensionMetadata } from '@pixi/core';
+import type { ICanvas } from '@pixi/settings';
 
 const TEMP_RECT = new Rectangle();
 
@@ -14,12 +14,12 @@ const TEMP_RECT = new Rectangle();
  * @class
  * @memberof PIXI
  */
-export class CanvasExtract
+export class CanvasExtract implements ISystem
 {
     /** @ignore */
     static extension: ExtensionMetadata = {
         name: 'extract',
-        type: ExtensionType.CanvasRendererPlugin,
+        type: ExtensionType.CanvasRendererSystem,
     };
 
     /** A reference to the current renderer */
@@ -41,11 +41,11 @@ export class CanvasExtract
      * @param quality - JPEG or Webp compression from 0 to 1. Default is 0.92.
      * @returns HTML Image of the target
      */
-    public image(target?: DisplayObject | RenderTexture, format?: string, quality?: number): HTMLImageElement
+    public async image(target?: DisplayObject | RenderTexture, format?: string, quality?: number): Promise<HTMLImageElement>
     {
         const image = new Image();
 
-        image.src = this.base64(target, format, quality);
+        image.src = await this.base64(target, format, quality);
 
         return image;
     }
@@ -59,9 +59,28 @@ export class CanvasExtract
      * @param quality - JPEG or Webp compression from 0 to 1. Default is 0.92.
      * @returns A base64 encoded string of the texture.
      */
-    public base64(target?: DisplayObject | RenderTexture, format?: string, quality?: number): string
+    public async base64(target?: DisplayObject | RenderTexture, format?: string, quality?: number): Promise<string>
     {
-        return this.canvas(target).toDataURL(format, quality);
+        const canvas = this.canvas(target);
+
+        if (canvas.toDataURL !== undefined)
+        {
+            return canvas.toDataURL(format, quality);
+        }
+        if (canvas.convertToBlob !== undefined)
+        {
+            const blob = await canvas.convertToBlob({ type: format, quality });
+
+            return await new Promise<string>((resolve) =>
+            {
+                const reader = new FileReader();
+
+                reader.onload = () => resolve(reader.result as string);
+                reader.readAsDataURL(blob);
+            });
+        }
+
+        throw new Error('CanvasExtract.base64() requires ICanvas.toDataURL or ICanvas.convertToBlob to be implemented');
     }
 
     /**
@@ -71,7 +90,7 @@ export class CanvasExtract
      * @param frame - The frame the extraction is restricted to.
      * @returns A Canvas element with the texture rendered on.
      */
-    public canvas(target?: DisplayObject | RenderTexture, frame?: Rectangle): HTMLCanvasElement
+    public canvas(target?: DisplayObject | RenderTexture, frame?: Rectangle): ICanvas
     {
         const renderer = this.renderer;
         let context;
@@ -98,8 +117,8 @@ export class CanvasExtract
         }
         else
         {
-            context = renderer.rootContext;
-            resolution = renderer.resolution;
+            context = renderer.canvasContext.rootContext;
+            resolution = renderer._view.resolution;
 
             if (!frame)
             {
@@ -114,7 +133,7 @@ export class CanvasExtract
         const width = Math.round(frame.width * resolution);
         const height = Math.round(frame.height * resolution);
 
-        const canvasBuffer = new CanvasRenderTarget(width, height, 1);
+        const canvasBuffer = new utils.CanvasRenderTarget(width, height, 1);
         const canvasData = context.getImageData(x, y, width, height);
 
         canvasBuffer.context.putImageData(canvasData, 0, 0);
@@ -158,7 +177,7 @@ export class CanvasExtract
         }
         else
         {
-            context = renderer.rootContext;
+            context = renderer.canvasContext.rootContext;
             resolution = renderer.resolution;
 
             if (!frame)
@@ -183,3 +202,5 @@ export class CanvasExtract
         this.renderer = null;
     }
 }
+
+extensions.add(CanvasExtract);

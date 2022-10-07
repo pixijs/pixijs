@@ -1,2 +1,2 @@
 export * from './Spritesheet';
-export * from './SpritesheetLoader';
+export * from './spritesheetAsset';

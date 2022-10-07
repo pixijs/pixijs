@@ -1,10 +1,8 @@
 import { Graphics } from '@pixi/graphics';
 import { CanvasRenderer } from '@pixi/canvas-renderer';
-import { RenderTexture, Texture } from '@pixi/core';
-import { Matrix } from '@pixi/math';
+import { Matrix, RenderTexture, Texture } from '@pixi/core';
 
-import type { SCALE_MODES } from '@pixi/constants';
-import type { BaseRenderTexture } from '@pixi/core';
+import type { SCALE_MODES, BaseRenderTexture } from '@pixi/core';
 
 let canvasRenderer: CanvasRenderer;
 const tempMatrix = new Matrix();
@@ -44,9 +42,9 @@ Graphics.prototype.generateCanvasTexture = function generateCanvasTexture(scaleM
 
     canvasRenderer.render(this, { renderTexture: canvasBuffer, clear: true, transform: tempMatrix });
 
-    const texture = Texture.from((canvasBuffer.baseTexture as BaseRenderTexture)._canvasRenderTarget.canvas, {
-        scaleMode,
-    });
+    const texture = Texture.from(
+        (canvasBuffer.baseTexture as BaseRenderTexture)._canvasRenderTarget.canvas,
+        { scaleMode });
 
     texture.baseTexture.setResolution(resolution);
 
