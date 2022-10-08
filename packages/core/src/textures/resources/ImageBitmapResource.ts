@@ -61,7 +61,7 @@ export class ImageBitmapResource extends BaseImageResource
 
         if (typeof source === 'string')
         {
-            super(ImageBitmapResource._DUMMY);
+            super(ImageBitmapResource.EMPTY);
 
             this.url = source;
         }
@@ -183,14 +183,21 @@ export class ImageBitmapResource extends BaseImageResource
             && (typeof source === 'string' || source instanceof ImageBitmap);
     }
 
-    private static __DUMMY: ICanvas;
+    /**
+     * Cached empty placeholder canvas.
+     * @see EMPTY
+     */
+    private static _EMPTY: ICanvas;
 
-    private static get _DUMMY(): ICanvas
+    /**
+     * ImageBitmap cannot be created synchronously, so a empty placeholder canvas is needed when loading from URLs.
+     * Only for internal usage.
+     * @returns The cached placeholder canvas.
+     */
+    private static get EMPTY(): ICanvas
     {
-        if (ImageBitmapResource.__DUMMY) return ImageBitmapResource.__DUMMY;
+        ImageBitmapResource._EMPTY = ImageBitmapResource._EMPTY ?? settings.ADAPTER.createCanvas(0, 0);
 
-        ImageBitmapResource.__DUMMY = settings.ADAPTER.createCanvas(0, 0);
-
-        return ImageBitmapResource.__DUMMY;
+        return ImageBitmapResource._EMPTY;
     }
 }
