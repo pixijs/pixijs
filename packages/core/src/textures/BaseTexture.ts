@@ -651,7 +651,7 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
         const resource = new BufferResource(buffer, { width, height });
         const type = buffer instanceof Float32Array ? TYPES.FLOAT : TYPES.UNSIGNED_BYTE;
 
-        return new BaseTexture(resource, Object.assign(defaultBufferOptions, options || { width, height, type }));
+        return new BaseTexture(resource, Object.assign({}, defaultBufferOptions, options || { width, height, type }));
     }
 
     /**
