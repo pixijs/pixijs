@@ -1,7 +1,8 @@
-import { extensions, ExtensionType, utils } from '@pixi/core';
+import { extensions, ExtensionType, settings, utils } from '@pixi/core';
+import { LoaderParserPriority } from './LoaderParser';
+
 import type { LoadAsset } from '../types';
 import type { LoaderParser } from './LoaderParser';
-import { LoaderParserPriority } from './LoaderParser';
 
 const validWeights = ['normal', 'bold',
     '100', '200', '300', '400', '500', '600', '700', '800', '900',
@@ -59,12 +60,14 @@ export const loadWebFont = {
     async load(url: string, options?: LoadAsset<LoadFontData>): Promise<FontFace | FontFace[]>
     {
         // Prevent loading font if navigator is not online
-        if (!window.navigator.onLine)
+        if (!globalThis.navigator.onLine)
         {
             throw new Error('[loadWebFont] Cannot load font - navigator is offline');
         }
 
-        if ('FontFace' in window)
+        const fonts = settings.ADAPTER.getFontFaceSet();
+
+        if (fonts)
         {
             const fontFaces: FontFace[] = [];
             const name = options.data?.family ?? getFontFamilyName(url);
@@ -82,7 +85,7 @@ export const loadWebFont = {
 
                 await font.load();
 
-                document.fonts.add(font);
+                fonts.add(font);
 
                 fontFaces.push(font);
             }
@@ -100,7 +103,7 @@ export const loadWebFont = {
     unload(font: FontFace | FontFace[]): void
     {
         (Array.isArray(font) ? font : [font])
-            .forEach((t) => document.fonts.delete(t));
+            .forEach((t) => settings.ADAPTER.getFontFaceSet().delete(t));
     }
 } as LoaderParser<FontFace | FontFace[]>;
 
