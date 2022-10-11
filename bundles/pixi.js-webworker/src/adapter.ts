@@ -1,6 +1,6 @@
-import { settings } from '@pixi/settings';
+import { settings } from '@pixi/core';
 
-import type { IAdapter } from '@pixi/settings';
+import type { IAdapter } from '@pixi/core';
 
 export const WebWorkerAdapter = {
     /**
