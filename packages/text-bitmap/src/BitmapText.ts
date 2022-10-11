@@ -369,10 +369,7 @@ export class BitmapText extends Container
 
         const activePagesMeshData = this._activePagesMeshData;
 
-        for (let i = 0; i < activePagesMeshData.length; i++)
-        {
-            pageMeshDataPool.push(activePagesMeshData[i]);
-        }
+        pageMeshDataPool.push(...activePagesMeshData);
 
         for (let i = 0; i < lenChars; i++)
         {
@@ -901,6 +898,9 @@ export class BitmapText extends Container
         const data = BitmapFont.available[this._fontName];
         const pageMeshDataPool = data.distanceFieldType === 'none'
             ? pageMeshDataDefaultPageMeshData : pageMeshDataMSDFPageMeshData;
+
+        pageMeshDataPool.push(...this._activePagesMeshData);
+        this._activePagesMeshData = [];
 
         // Release references to any cached textures in page pool
         pageMeshDataPool
