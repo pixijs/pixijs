@@ -1,6 +1,6 @@
 {
   "name": "@pixi/filter-displacement",
-  "version": "7.0.0-beta",
+  "version": "7.0.0-beta.2",
   "main": "dist/cjs/filter-displacement.js",
   "module": "dist/esm/filter-displacement.mjs",
   "types": "index.d.ts",

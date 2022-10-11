@@ -1,6 +1,6 @@
 {
   "name": "@pixi/runner",
-  "version": "7.0.0-beta",
+  "version": "7.0.0-beta.2",
   "main": "dist/cjs/runner.js",
   "module": "dist/esm/runner.mjs",
   "types": "index.d.ts",

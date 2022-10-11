@@ -1,6 +1,6 @@
 {
   "name": "@pixi/filter-color-matrix",
-  "version": "7.0.0-beta",
+  "version": "7.0.0-beta.2",
   "main": "dist/cjs/filter-color-matrix.js",
   "module": "dist/esm/filter-color-matrix.mjs",
   "types": "index.d.ts",

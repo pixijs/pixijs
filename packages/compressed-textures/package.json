@@ -1,6 +1,6 @@
 {
   "name": "@pixi/compressed-textures",
-  "version": "7.0.0-beta",
+  "version": "7.0.0-beta.2",
   "description": "Loaders for compressed texture file formats",
   "keywords": [
     "pixi.js",
