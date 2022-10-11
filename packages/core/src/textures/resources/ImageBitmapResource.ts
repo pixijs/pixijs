@@ -1,5 +1,4 @@
-import { ALPHA_MODES } from '@pixi/constants';
-import { settings } from '@pixi/settings';
+import { ALPHA_MODES, settings } from '@pixi/core';
 import { BaseImageResource } from './BaseImageResource';
 
 import type { ICanvas } from '@pixi/settings';
