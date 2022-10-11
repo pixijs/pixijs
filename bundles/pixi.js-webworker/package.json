@@ -62,5 +62,8 @@
     "@pixi/spritesheet": "7.0.0-beta",
     "@pixi/text": "7.0.0-beta",
     "@pixi/text-bitmap": "7.0.0-beta"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
