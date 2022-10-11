@@ -898,6 +898,17 @@ export class BitmapText extends Container
     destroy(options?: boolean | IDestroyOptions): void
     {
         const { _textureCache } = this;
+        const data = BitmapFont.available[this._fontName];
+        const pageMeshDataPool = data.distanceFieldType === 'none'
+            ? pageMeshDataDefaultPageMeshData : pageMeshDataMSDFPageMeshData;
+
+        // Release references to any cached textures in page pool
+        pageMeshDataPool
+            .filter((page) => _textureCache[page.mesh.texture.baseTexture.uid])
+            .forEach((page) =>
+            {
+                page.mesh.texture = Texture.EMPTY;
+            });
 
         for (const id in _textureCache)
         {
