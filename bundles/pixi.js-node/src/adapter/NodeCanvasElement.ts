@@ -2,12 +2,14 @@
 /* eslint-disable func-names */
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 
-import { Canvas, CanvasRenderingContext2D, Image } from 'canvas';
+import canvasModule from 'canvas';
 import createGLContext from 'gl';
-import { EventEmitter } from '@pixi/utils';
+import { utils } from '@pixi/core';
 
 import type { JpegConfig, NodeCanvasRenderingContext2DSettings, PdfConfig, PngConfig } from 'canvas';
-import type { ContextIds, ICanvas } from '@pixi/settings';
+import type { ContextIds, ICanvas } from '@pixi/core';
+
+const { Canvas, CanvasRenderingContext2D, Image } = canvasModule;
 
 function putImageData(gl: WebGLRenderingContext, canvas: NodeCanvasElement)
 {
@@ -54,18 +56,18 @@ type TempCtx = WebGLRenderingContext & {
  * @class
  * @memberof PIXI
  */
-export class NodeCanvasElement extends Canvas implements ICanvas
+export class NodeCanvasElement extends canvasModule.Canvas implements ICanvas
 {
     public style: Record<string, any>;
     private _gl: WebGLRenderingContext;
-    private _event: EventEmitter;
+    private _event: utils.EventEmitter;
     private _contextType: ContextIds;
     private _ctx: CanvasRenderingContext2D | WebGLRenderingContext;
 
     constructor(width = 1, height = 1, type?: 'image' | 'pdf' | 'svg')
     {
         super(width, height, type);
-        this._event = new EventEmitter();
+        this._event = new utils.EventEmitter();
         this.style = {};
     }
 
@@ -321,7 +323,7 @@ const _drawImage = CanvasRenderingContext2D.prototype.drawImage;
 
 // We hack the drawImage method to make it work with our custom Canvas, ensuring that the context is updated before we draw
 // eslint-disable-next-line func-names
-CanvasRenderingContext2D.prototype.drawImage = function (img: Canvas, ...args: any)
+CanvasRenderingContext2D.prototype.drawImage = function (img: any, ...args: any)
 {
     const _img = img as NodeCanvasElement;
 

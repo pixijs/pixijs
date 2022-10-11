@@ -36,7 +36,7 @@ import * as PIXI from 'pixi.js-legacy'
 ### Basic Usage Example
 
 ```js
-import { Application, Sprite, Assets } from 'pixi.js-legacy';
+import { Application, Assets, Sprite } from 'pixi.js-legacy';
 
 // The application will create a renderer using WebGL, if possible,
 // with a fallback to a canvas render. It will also setup the ticker

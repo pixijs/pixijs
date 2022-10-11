@@ -1,5 +1,5 @@
 import type { GLBuffer } from './GLBuffer';
-import { ENV } from '@pixi/constants';
+import { BUFFER_TYPE, ENV } from '@pixi/constants';
 import { settings } from '../settings';
 
 import type { ISystem } from '../system/ISystem';
@@ -341,6 +341,7 @@ export class GeometrySystem implements ISystem
             }
         }
 
+        // @TODO: We don't know if VAO is supported.
         vao = gl.createVertexArray();
 
         gl.bindVertexArray(vao);
@@ -364,11 +365,12 @@ export class GeometrySystem implements ISystem
 
         this.activateVao(geometry, program);
 
-        this._activeVao = vao;
-
         // add it to the cache!
         vaoObjectHash[program.id] = vao;
         vaoObjectHash[signature] = vao;
+
+        gl.bindVertexArray(null);
+        bufferSystem.unbind(BUFFER_TYPE.ARRAY_BUFFER);
 
         return vao;
     }

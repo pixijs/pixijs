@@ -32,6 +32,7 @@ import type { ICanvas } from '@pixi/settings';
 import { SystemManager } from './system/SystemManager';
 import type { IRenderableObject, IRenderer, IRendererOptions, IRendererRenderOptions, IRenderingContext } from './IRenderer';
 import type { StartupSystem, StartupOptions } from './startup/StartupSystem';
+import type { TransformFeedbackSystem } from './transformFeedback/TransformFeedbackSystem';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface Renderer extends GlobalMixins.Renderer {}
@@ -160,6 +161,12 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      * @readonly
      */
     public readonly buffer: BufferSystem;
+
+    /**
+     * TransformFeedback system instance
+     * @readonly
+     */
+    public transformFeedback: TransformFeedbackSystem;
 
     /**
      * Geometry system instance
@@ -333,6 +340,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
                 'buffer',
                 'geometry',
                 'framebuffer',
+                'transformFeedback',
                 // high level pixi specific rendering
                 'mask',
                 'scissor',

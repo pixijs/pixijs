@@ -364,10 +364,7 @@ export class BitmapText extends Container
 
         const activePagesMeshData = this._activePagesMeshData;
 
-        for (let i = 0; i < activePagesMeshData.length; i++)
-        {
-            pageMeshDataPool.push(activePagesMeshData[i]);
-        }
+        pageMeshDataPool.push(...activePagesMeshData);
 
         for (let i = 0; i < lenChars; i++)
         {
@@ -895,6 +892,20 @@ export class BitmapText extends Container
     destroy(options?: boolean | IDestroyOptions): void
     {
         const { _textureCache } = this;
+        const data = BitmapFont.available[this._fontName];
+        const pageMeshDataPool = data.distanceFieldType === 'none'
+            ? pageMeshDataDefaultPageMeshData : pageMeshDataMSDFPageMeshData;
+
+        pageMeshDataPool.push(...this._activePagesMeshData);
+        this._activePagesMeshData = [];
+
+        // Release references to any cached textures in page pool
+        pageMeshDataPool
+            .filter((page) => _textureCache[page.mesh.texture.baseTexture.uid])
+            .forEach((page) =>
+            {
+                page.mesh.texture = Texture.EMPTY;
+            });
 
         for (const id in _textureCache)
         {

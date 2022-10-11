@@ -1,7 +1,7 @@
 {
-  "name": "@pixi/node",
+  "name": "@pixi/webworker",
   "version": "7.0.0-alpha.3",
-  "description": "Bundle for PixiJS with support for NodeJS",
+  "description": "Bundle for PixiJS with support for Web Workers",
   "homepage": "http://pixijs.com/",
   "bugs": "https://github.com/pixijs/pixi.js/issues",
   "repository": {
@@ -10,18 +10,23 @@
   },
   "license": "MIT",
   "author": "PixiJS Team",
-  "main": "dist/cjs/node.cjs",
-  "module": "dist/esm/node.mjs",
+  "main": "dist/cjs/webworker.cjs",
+  "module": "dist/esm/webworker.mjs",
+  "bundle": "dist/browser/webworker.js",
+  "bundleModule": "dist/browser/webworker.mjs",
+  "bundleOutput": {
+    "name": "PIXI"
+  },
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/node.mjs"
+        "default": "./dist/esm/webworker.mjs"
       },
       "require": {
         "types": "./index.d.ts",
-        "default": "./dist/cjs/node.cjs"
+        "default": "./dist/cjs/webworker.cjs"
       }
     }
   },
@@ -29,17 +34,10 @@
     "dist",
     "*.d.ts"
   ],
-  "engines": {
-    "node": ">=16"
-  },
-  "scripts": {
-    "test:import": "node test/import.mjs",
-    "test:require": "node test/require.cjs",
-    "test": "run-s test:*"
-  },
   "dependencies": {
     "@pixi/app": "7.0.0-alpha.3",
     "@pixi/assets": "7.0.0-alpha.3",
+    "@pixi/compressed-textures": "7.0.0-alpha.3",
     "@pixi/core": "7.0.0-alpha.3",
     "@pixi/display": "7.0.0-alpha.3",
     "@pixi/extensions": "7.0.0-alpha.3",
@@ -63,19 +61,6 @@
     "@pixi/sprite-tiling": "7.0.0-alpha.3",
     "@pixi/spritesheet": "7.0.0-alpha.3",
     "@pixi/text": "7.0.0-alpha.3",
-    "@pixi/text-bitmap": "7.0.0-alpha.3",
-    "@types/gl": "^4.1.0",
-    "@types/xml2js": "^0.4.11",
-    "canvas": "^2.9.1",
-    "cross-fetch": "^3.1.5",
-    "gl": "^5.0.0",
-    "xml2js": "^0.4.23"
-  },
-  "nodeDependencies": [
-    "fs",
-    "path"
-  ],
-  "publishConfig": {
-    "access": "public"
+    "@pixi/text-bitmap": "7.0.0-alpha.3"
   }
 }

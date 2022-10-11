@@ -28,6 +28,7 @@
     "build:types": "rimraf out && tsc && api-extractor-lerna-monorepo && rimraf out && ts-node-script ./scripts/injectGlobalMixins.ts",
     "watch": "rollup -cw",
     "dist": "run-s lint types build:prod build:types docs",
+    "dist-validate": "workspaces-run --only=\"@pixi/node\" -- npm test",
     "postdist": "copyfiles -f bundles/*/dist/browser/* dist",
     "prerelease": "run-s clean:build test",
     "postversion": "run-s lint types build:prod build:types",

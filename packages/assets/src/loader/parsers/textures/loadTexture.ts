@@ -1,12 +1,12 @@
 import { BaseTexture, extensions, ExtensionType, settings, utils } from '@pixi/core';
-import type { Loader } from '../../Loader';
-import type { LoadAsset } from '../../types';
 import { LoaderParserPriority } from '../LoaderParser';
 import { WorkerManager } from '../WorkerManager';
 import { checkExtension } from './utils/checkExtension';
 import { createTexture } from './utils/createTexture';
 
 import type { IBaseTextureOptions, Texture } from '@pixi/core';
+import type { Loader } from '../../Loader';
+import type { LoadAsset } from '../../types';
 import type { LoaderParser } from '../LoaderParser';
 
 const validImages = ['.jpg', '.png', '.jpeg', '.avif', '.webp'];
@@ -62,7 +62,7 @@ export const loadTextures = {
     {
         let src: any = null;
 
-        if (window.createImageBitmap)
+        if (globalThis.createImageBitmap)
         {
             src = this.config.preferWorkers ? await WorkerManager.loadImageBitmap(url) : await loadImageBitmap(url);
         }
