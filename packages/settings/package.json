@@ -35,6 +35,9 @@
     "dist",
     "*.d.ts"
   ],
+  "dependencies": {
+    "@pixi/constants": "7.0.0-alpha.3"
+  },
   "devDependencies": {
     "ismobilejs": "^1.1.0"
   }

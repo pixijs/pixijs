@@ -22,6 +22,8 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
+    - name: Install Canvas Dependencies
+      run: sudo apt-get install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
     - name: Use Node.js
       uses: actions/setup-node@v2
       with:
@@ -52,6 +54,11 @@ jobs:
 
     - name: Build for Distribution
       run: npm run dist
+
+    - name: Validate Build for Distribution
+      uses: GabrielBB/xvfb-action@v1.0
+      with:
+        run: npm run dist-validate
 
     # Examples:
     # 1) PR feature/acme merged into dev
