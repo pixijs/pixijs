@@ -18,3 +18,4 @@ export * from './view/ViewSystem';
 export * from './plugin/PluginSystem';
 export * from './system/SystemManager';
 export * from './startup/StartupSystem';
+export * from './transformFeedback/TransformFeedbackSystem';
