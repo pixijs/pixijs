@@ -1,6 +1,6 @@
 {
   "name": "@pixi/sprite-animated",
-  "version": "7.0.0-alpha.3",
+  "version": "7.0.0-beta",
   "main": "dist/cjs/sprite-animated.js",
   "module": "dist/esm/sprite-animated.mjs",
   "types": "index.d.ts",

@@ -1,6 +1,6 @@
 {
   "name": "@pixi/settings",
-  "version": "7.0.0-alpha.3",
+  "version": "7.0.0-beta",
   "main": "dist/cjs/settings.js",
   "module": "dist/esm/settings.mjs",
   "types": "index.d.ts",
@@ -36,7 +36,7 @@
     "*.d.ts"
   ],
   "dependencies": {
-    "@pixi/constants": "7.0.0-alpha.3"
+    "@pixi/constants": "7.0.0-beta"
   },
   "devDependencies": {
     "ismobilejs": "^1.1.0"

@@ -1,6 +1,6 @@
 {
   "name": "@pixi/canvas-sprite-tiling",
-  "version": "7.0.0-alpha.3",
+  "version": "7.0.0-beta",
   "main": "dist/cjs/canvas-sprite-tiling.js",
   "module": "dist/esm/canvas-sprite-tiling.mjs",
   "types": "index.d.ts",
