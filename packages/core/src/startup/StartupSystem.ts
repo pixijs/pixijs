@@ -51,7 +51,7 @@ export interface StartupOptions extends Record<string, unknown>
         if (options.debug)
         {
             /* eslint-disable no-console */
-            console.groupCollapsed(`PixiJS ${'$_VERSION'} - ${renderer.rendererLogId} - http://www.pixijs.com/`);
+            console.groupCollapsed(`PixiJS ${'$_VERSION'} - ${renderer.rendererLogId} - https://pixijs.com`);
             console.log(JSON.stringify(options, null, '  '));
             console.groupEnd();
             /* eslint-enable no-console */
