@@ -1,9 +1,7 @@
 import { Cache, loadTextures } from '@pixi/assets';
-import { Renderer, Texture, Point, utils } from '@pixi/core';
+import { Renderer, Texture, Point } from '@pixi/core';
 import { SimpleRope } from '@pixi/mesh-extras';
 import { Loader } from '../../assets/src/loader/Loader';
-
-utils.skipHello();
 
 describe('SimpleRope', () =>
 {

@@ -178,6 +178,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
      * @param {number} [options.backgroundColor=0x000000] - The background color of the rendered area
      *  (shown if not transparent).
      * @param {number} [options.backgroundAlpha=1] - Value from 0 (fully transparent) to 1 (fully opaque).
+     * @param {boolean} [options.debug=false] - Logs renderer type and options to console.
      */
     constructor(options?: IRendererOptions)
     {
@@ -205,6 +206,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
 
         // convert our big blob of options into system specific ones..
         const startupOptions: StartupOptions = {
+            debug: options.debug,
             _plugin: CanvasRenderer.__plugins,
             background: {
                 alpha: options.backgroundAlpha,

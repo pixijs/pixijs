@@ -94,6 +94,7 @@ export class Application
      *  The system ticker will always run before both the shared ticker and the app ticker.
      * @param {boolean} [options.sharedLoader=false] - `true` to use PIXI.Loader.shared, `false` to create new Loader.
      * @param {Window|HTMLElement} [options.resizeTo] - Element to automatically resize stage to.
+     * @param {boolean} [options.debug=false] - Logs renderer type and options to console.
      */
     constructor(options?: IApplicationOptions)
     {

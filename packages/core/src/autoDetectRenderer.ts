@@ -49,6 +49,7 @@ extensions.handleByList(ExtensionType.Renderer, renderers);
  *   it is ignored.
  * @param {string} [options.powerPreference] - Parameter passed to webgl context, set to "high-performance"
  *  for devices with dual graphics card **webgl only**
+ * @param {boolean} [options.debug=false] - Logs renderer type and options to console.
  * @returns {PIXI.Renderer|PIXI.CanvasRenderer} Returns WebGL renderer if available, otherwise CanvasRenderer
  */
 export function autoDetectRenderer(options?: IRendererOptionsAuto): IRenderer

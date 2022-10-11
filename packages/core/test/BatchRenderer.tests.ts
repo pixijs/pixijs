@@ -1,9 +1,6 @@
 import type { IBatchableElement } from '@pixi/core';
 import { Renderer, BatchRenderer, CanvasResource, Texture, BaseTexture } from '@pixi/core';
-import { skipHello } from '@pixi/utils';
 import { BLEND_MODES } from '@pixi/constants';
-
-skipHello();
 
 describe('BatchRenderer', () =>
 {
