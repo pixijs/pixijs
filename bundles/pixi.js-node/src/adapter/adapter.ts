@@ -1,11 +1,10 @@
 import { fetch, Request, Response } from 'cross-fetch';
 import fs from 'fs';
 import createContext from 'gl';
-import { settings } from '@pixi/settings';
-import { path } from '@pixi/utils';
+import { settings, utils } from '@pixi/core';
 import { NodeCanvasElement } from './NodeCanvasElement';
 
-import type { IAdapter, ICanvas } from '@pixi/settings';
+import type { IAdapter, ICanvas } from '@pixi/core';
 
 export const NodeAdapter = {
     /**
@@ -26,14 +25,14 @@ export const NodeAdapter = {
         const request = new Request(url, options);
 
         // check if urls starts with http(s) as only these are supported by node-fetch
-        if (path.isUrl(request.url))
+        if (utils.path.isUrl(request.url))
         {
             return fetch(url, request);
         }
 
         return new Promise((resolve, reject) =>
         {
-            const filePath = path.normalize(request.url);
+            const filePath = utils.path.normalize(request.url);
 
             if (!fs.existsSync(filePath))
             {

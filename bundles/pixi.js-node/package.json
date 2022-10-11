@@ -32,6 +32,11 @@
   "engines": {
     "node": ">=16"
   },
+  "scripts": {
+    "test:import": "node test/import.mjs",
+    "test:require": "node test/require.cjs",
+    "test": "run-s test:*"
+  },
   "dependencies": {
     "@pixi/app": "7.0.0-alpha.3",
     "@pixi/assets": "7.0.0-alpha.3",

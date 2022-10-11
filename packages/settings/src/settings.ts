@@ -5,7 +5,7 @@ import { isMobile } from './utils/isMobile';
 import { maxRecommendedTextures } from './utils/maxRecommendedTextures';
 
 import type { ENV } from '@pixi/constants';
-import type { ICanvas } from '@pixi/settings';
+import type { ICanvas } from './ICanvas';
 import type { IAdapter } from './adapter';
 
 export interface IRenderOptions
