@@ -94,7 +94,7 @@ export interface IRendererOptions extends GlobalMixins.IRendererOptions
     premultipliedAlpha?: boolean;
     powerPreference?: WebGLPowerPreference;
     context?: IRenderingContext;
-    debug?: boolean;
+    hello?: boolean;
 }
 
 export interface IRendererRenderOptions

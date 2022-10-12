@@ -206,7 +206,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
 
         // convert our big blob of options into system specific ones..
         const startupOptions: StartupOptions = {
-            debug: options.debug,
+            hello: options.hello,
             _plugin: CanvasRenderer.__plugins,
             background: {
                 alpha: options.backgroundAlpha,

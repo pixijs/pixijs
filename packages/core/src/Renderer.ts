@@ -359,7 +359,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
 
         // new options!
         const startupOptions: StartupOptions = {
-            debug: options.debug,
+            hello: options.hello,
             _plugin: Renderer.__plugins,
             background: {
                 alpha: options.backgroundAlpha,

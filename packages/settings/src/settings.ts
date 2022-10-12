@@ -21,7 +21,7 @@ export interface IRenderOptions
     width: number;
     height: number;
     legacy: boolean;
-    debug: boolean;
+    hello: boolean;
 }
 
 export interface ISettings
@@ -191,7 +191,7 @@ export const settings: ISettings = {
         width: 800,
         height: 600,
         legacy: false,
-        debug: false,
+        hello: false,
     },
 
     /**
