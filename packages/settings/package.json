@@ -1,6 +1,6 @@
 {
   "name": "@pixi/settings",
-  "version": "7.0.0-alpha.3",
+  "version": "7.0.0-beta.2",
   "main": "dist/cjs/settings.js",
   "module": "dist/esm/settings.mjs",
   "types": "index.d.ts",
@@ -36,7 +36,8 @@
     "*.d.ts"
   ],
   "dependencies": {
-    "@pixi/constants": "7.0.0-alpha.3"
+    "@pixi/constants": "7.0.0-beta.2",
+    "@types/css-font-loading-module": "^0.0.7"
   },
   "devDependencies": {
     "ismobilejs": "^1.1.0"

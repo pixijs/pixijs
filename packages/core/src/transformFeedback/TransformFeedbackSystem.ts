@@ -46,7 +46,7 @@ export class TransformFeedbackSystem implements ISystem
 
     /**
      * Bind TransformFeedback and buffers
-     * @param transformFeedback TransformFeedback to bind
+     * @param transformFeedback - TransformFeedback to bind
      */
     bind(transformFeedback: TransformFeedback)
     {
@@ -68,8 +68,8 @@ export class TransformFeedbackSystem implements ISystem
 
     /**
      * Begin TransformFeedback
-     * @param drawMode DrawMode for TransformFeedback
-     * @param shader A Shader used by TransformFeedback. Current bound shader will be used if not provided.
+     * @param drawMode - DrawMode for TransformFeedback
+     * @param shader - A Shader used by TransformFeedback. Current bound shader will be used if not provided.
      */
     beginTransformFeedback(drawMode: DRAW_MODES, shader?: Shader)
     {
@@ -93,7 +93,7 @@ export class TransformFeedbackSystem implements ISystem
 
     /**
      * Create TransformFeedback and bind buffers
-     * @param tf TransformFeedback
+     * @param tf - TransformFeedback
      * @returns WebGLTransformFeedback
      */
     protected createGLTransformFeedback(tf: TransformFeedback)

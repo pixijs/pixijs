@@ -1,6 +1,6 @@
 {
   "name": "@pixi/text",
-  "version": "7.0.0-alpha.3",
+  "version": "7.0.0-beta.2",
   "main": "dist/cjs/text.js",
   "module": "dist/esm/text.mjs",
   "types": "index.d.ts",

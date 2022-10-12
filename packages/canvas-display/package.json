@@ -1,6 +1,6 @@
 {
   "name": "@pixi/canvas-display",
-  "version": "7.0.0-alpha.3",
+  "version": "7.0.0-beta.2",
   "main": "dist/cjs/canvas-display.js",
   "module": "dist/esm/canvas-display.mjs",
   "types": "index.d.ts",

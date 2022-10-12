@@ -1,6 +1,6 @@
 {
   "name": "@pixi/canvas-renderer",
-  "version": "7.0.0-alpha.3",
+  "version": "7.0.0-beta.2",
   "main": "dist/cjs/canvas-renderer.js",
   "module": "dist/esm/canvas-renderer.mjs",
   "types": "index.d.ts",

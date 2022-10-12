@@ -1,6 +1,6 @@
 {
   "name": "@pixi/accessibility",
-  "version": "7.0.0-alpha.3",
+  "version": "7.0.0-beta.2",
   "main": "dist/cjs/accessibility.js",
   "module": "dist/esm/accessibility.mjs",
   "types": "index.d.ts",

@@ -1,6 +1,6 @@
 {
   "name": "@pixi/prepare",
-  "version": "7.0.0-alpha.3",
+  "version": "7.0.0-beta.2",
   "main": "dist/cjs/prepare.js",
   "module": "dist/esm/prepare.mjs",
   "types": "index.d.ts",

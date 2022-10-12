@@ -1,6 +1,6 @@
 {
   "name": "@pixi/graphics-extras",
-  "version": "7.0.0-alpha.3",
+  "version": "7.0.0-beta.2",
   "main": "dist/cjs/graphics-extras.js",
   "module": "dist/esm/graphics-extras.mjs",
   "types": "index.d.ts",
