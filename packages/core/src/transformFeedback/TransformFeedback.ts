@@ -24,8 +24,8 @@ export class TransformFeedback
 
     /**
      * Bind buffer to TransformFeedback
-     * @param index index to bind
-     * @param buffer buffer to bind
+     * @param index - index to bind
+     * @param buffer - buffer to bind
      */
     bindBuffer(index: number, buffer: Buffer)
     {
