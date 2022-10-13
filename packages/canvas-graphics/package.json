@@ -1,6 +1,6 @@
 {
   "name": "@pixi/canvas-graphics",
-  "version": "7.0.0-beta.2",
+  "version": "7.0.0-beta.3",
   "main": "dist/cjs/canvas-graphics.js",
   "module": "dist/esm/canvas-graphics.mjs",
   "types": "index.d.ts",

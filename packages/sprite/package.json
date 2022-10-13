@@ -1,6 +1,6 @@
 {
   "name": "@pixi/sprite",
-  "version": "7.0.0-beta.2",
+  "version": "7.0.0-beta.3",
   "main": "dist/cjs/sprite.js",
   "module": "dist/esm/sprite.mjs",
   "types": "index.d.ts",

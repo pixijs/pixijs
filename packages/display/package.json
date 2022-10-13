@@ -1,6 +1,6 @@
 {
   "name": "@pixi/display",
-  "version": "7.0.0-beta.2",
+  "version": "7.0.0-beta.3",
   "main": "dist/cjs/display.js",
   "module": "dist/esm/display.mjs",
   "types": "index.d.ts",
