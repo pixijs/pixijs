@@ -13,7 +13,8 @@ export interface IRenderOptions
     view: ICanvas;
     antialias: boolean;
     autoDensity: boolean;
-    backgroundColor: number;
+    backgroundColor: number | string;
+    background?: number | string;
     backgroundAlpha: number;
     useContextAlpha: boolean | 'notMultiplied';
     clearBeforeRender: boolean;

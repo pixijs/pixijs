@@ -139,4 +139,13 @@ describe('Renderer', () =>
 
         renderer.destroy();
     });
+
+    it('should support natural language color names', () =>
+    {
+        const renderer = new Renderer({ background: 'white' });
+
+        expect(renderer.background.color).toEqual(0xffffff);
+
+        renderer.destroy();
+    });
 });
