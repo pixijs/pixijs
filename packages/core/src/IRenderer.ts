@@ -89,7 +89,8 @@ export interface IRendererOptions extends GlobalMixins.IRendererOptions
     resolution?: number;
     preserveDrawingBuffer?: boolean;
     clearBeforeRender?: boolean;
-    backgroundColor?: number;
+    backgroundColor?: number | string;
+    background?: number | string;
     backgroundAlpha?: number;
     premultipliedAlpha?: boolean;
     powerPreference?: WebGLPowerPreference;

@@ -40,10 +40,12 @@ export function hex2string(hex: number): string
 /**
  * Converts a string to a hexadecimal color number.
  * It can handle:
- *  hex strings starting with #: "#ffffff"
- *  hex strings starting with 0x: "0xffffff"
- *  hex strings without prefix: "ffffff"
- *  css colors: "black"
+ *  - hex strings starting with #: "#ffffff"
+ *  - hex strings starting with 0x: "0xffffff"
+ *  - hex strings without prefix: "ffffff"
+ *  - hex strings (3 characters) with #: "#fff"
+ *  - hex strings (3 characters) without prefix: "fff"
+ *  - css colors: "black"
  * @example
  * PIXI.utils.string2hex("#ffffff"); // returns 0xffffff
  * @memberof PIXI.utils
@@ -60,6 +62,14 @@ export function string2hex(string: string): number
         if (string[0] === '#')
         {
             string = string.slice(1);
+        }
+
+        // Add support for shorthand hex colors
+        if (string.length === 3)
+        {
+            const [r, g, b] = string;
+
+            string = r + r + g + g + b + b;
         }
     }
 

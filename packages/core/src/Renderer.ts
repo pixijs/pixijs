@@ -299,8 +299,9 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      *  preserveDrawingBuffer to `true`.
      * @param {boolean} [options.preserveDrawingBuffer=false] - Enables drawing buffer preservation,
      *  enable this if you need to call toDataURL on the WebGL context.
-     * @param {number} [options.backgroundColor=0x000000] - The background color of the rendered area
-     *  (shown if not transparent).
+     * @param {number|string} [options.backgroundColor=0x000000] - The background color of the rendered area
+     *  (shown if not transparent). Also, accepts hex strings or color names (e.g., 'white').
+     * @param {number|string} [options.background] - Alias for `options.backgroundColor`.
      * @param {number} [options.backgroundAlpha=1] - Value from 0 (fully transparent) to 1 (fully opaque).
      * @param {string} [options.powerPreference] - Parameter passed to WebGL context, set to "high-performance"
      *  for devices with dual graphics card.
@@ -363,7 +364,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
             _plugin: Renderer.__plugins,
             background: {
                 alpha: options.backgroundAlpha,
-                color: options.backgroundColor,
+                color: options.background ?? options.backgroundColor,
                 clearBeforeRender: options.clearBeforeRender,
             },
             _view: {
