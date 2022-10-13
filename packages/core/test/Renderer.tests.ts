@@ -3,9 +3,6 @@ import { Renderer, Framebuffer } from '@pixi/core';
 import { Graphics } from '@pixi/graphics';
 import { settings } from '@pixi/settings';
 import { ENV, MSAA_QUALITY } from '@pixi/constants';
-import { skipHello } from '@pixi/utils';
-
-skipHello();
 
 describe('Renderer', () =>
 {

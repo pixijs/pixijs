@@ -22,6 +22,7 @@ export interface IRenderOptions
     width: number;
     height: number;
     legacy: boolean;
+    hello: boolean;
 }
 
 export interface ISettings
@@ -177,6 +178,7 @@ export const settings: ISettings = {
      * @property {number} [width=800] -
      * @property {number} [height=600] -
      * @property {boolean} [legacy=false] -
+     * @property {boolean} [debug=false] -
      */
     RENDER_OPTIONS: {
         view: null,
@@ -190,6 +192,7 @@ export const settings: ISettings = {
         width: 800,
         height: 600,
         legacy: false,
+        hello: false,
     },
 
     /**

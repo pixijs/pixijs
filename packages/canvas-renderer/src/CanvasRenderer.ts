@@ -179,6 +179,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
      *  (shown if not transparent). Also, accepts hex strings or color names (e.g., 'white').
      * @param {number|string} [options.background] - Alias for `options.backgroundColor`.
      * @param {number} [options.backgroundAlpha=1] - Value from 0 (fully transparent) to 1 (fully opaque).
+     * @param {boolean} [options.hello=false] - Logs renderer type and version.
      */
     constructor(options?: IRendererOptions)
     {
@@ -206,6 +207,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
 
         // convert our big blob of options into system specific ones..
         const startupOptions: StartupOptions = {
+            hello: options.hello,
             _plugin: CanvasRenderer.__plugins,
             background: {
                 alpha: options.backgroundAlpha,
