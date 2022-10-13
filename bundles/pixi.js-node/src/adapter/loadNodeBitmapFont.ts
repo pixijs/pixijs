@@ -133,7 +133,7 @@ async function _loadBitmap(src: string, data: BitmapFontData, loader: Loader)
  */
 async function xmlStringFormatTest(data: string): Promise<boolean>
 {
-    if (typeof data === 'string' && data.indexOf('<font>') > -1)
+    if (typeof data === 'string' && data.includes('<font>'))
     {
         const xml = xmlJsonParser(await parseStringPromise(data));
 
