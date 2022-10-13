@@ -691,7 +691,7 @@ export abstract class DisplayObject extends utils.EventEmitter
      */
     destroy(_options?: IDestroyOptions | boolean): void
     {
-        this.parent?.removeChild(this);
+        this.removeFromParent();
 
         this._destroyed = true;
         this.transform = null;
