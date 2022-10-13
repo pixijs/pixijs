@@ -73,22 +73,46 @@ describe('utils', () =>
 
     describe('string2hex', () =>
     {
-        it('should handle short-hand colors', () =>
+        it('should handle short-hand hex colors', () =>
+        {
+            expect(utils.string2hex('fff')).toEqual(0xffffff);
+            expect(utils.string2hex('f00')).toEqual(0xff0000);
+            expect(utils.string2hex('000')).toEqual(0);
+        });
+
+        it('should handle short-hand hex colors with hash', () =>
         {
             expect(utils.string2hex('#fff')).toEqual(0xffffff);
+            expect(utils.string2hex('#f00')).toEqual(0xff0000);
             expect(utils.string2hex('#000')).toEqual(0);
         });
 
         it('should handle color names', () =>
         {
             expect(utils.string2hex('white')).toEqual(0xffffff);
+            expect(utils.string2hex('red')).toEqual(0xff0000);
             expect(utils.string2hex('black')).toEqual(0);
         });
 
-        it('should handle color names', () =>
+        it('should handle hex colors with hash prefix', () =>
         {
             expect(utils.string2hex('#ffffff')).toEqual(0xffffff);
+            expect(utils.string2hex('#ff0000')).toEqual(0xff0000);
             expect(utils.string2hex('#000000')).toEqual(0);
+        });
+
+        it('should handle hex colors', () =>
+        {
+            expect(utils.string2hex('ffffff')).toEqual(0xffffff);
+            expect(utils.string2hex('ff0000')).toEqual(0xff0000);
+            expect(utils.string2hex('000000')).toEqual(0);
+        });
+
+        it('should handle hex with hexadecimal prefix', () =>
+        {
+            expect(utils.string2hex('0xffffff')).toEqual(0xffffff);
+            expect(utils.string2hex('0xff0000')).toEqual(0xff0000);
+            expect(utils.string2hex('0x000000')).toEqual(0);
         });
     });
 
