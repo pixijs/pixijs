@@ -197,7 +197,9 @@ class AnimatedGIF extends Sprite
 
         // Temporary canvases required for compositing frames
         const canvas = document.createElement('canvas');
-        const context = canvas.getContext('2d') as CanvasRenderingContext2D;
+        const context = canvas.getContext('2d', {
+            willReadFrequently: true,
+        }) as CanvasRenderingContext2D;
         const patchCanvas = document.createElement('canvas');
         const patchContext = patchCanvas.getContext('2d') as CanvasRenderingContext2D;
 
