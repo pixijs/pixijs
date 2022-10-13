@@ -71,6 +71,27 @@ describe('utils', () =>
         // it('should properly convert rgb array to hex color string');
     });
 
+    describe('string2hex', () =>
+    {
+        it('should handle short-hand colors', () =>
+        {
+            expect(utils.string2hex('#fff')).toEqual(0xffffff);
+            expect(utils.string2hex('#000')).toEqual(0);
+        });
+
+        it('should handle color names', () =>
+        {
+            expect(utils.string2hex('white')).toEqual(0xffffff);
+            expect(utils.string2hex('black')).toEqual(0);
+        });
+
+        it('should handle color names', () =>
+        {
+            expect(utils.string2hex('#ffffff')).toEqual(0xffffff);
+            expect(utils.string2hex('#000000')).toEqual(0);
+        });
+    });
+
     describe('getResolutionOfUrl', () =>
     {
         it('should exist', () =>

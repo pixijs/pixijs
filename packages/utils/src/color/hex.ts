@@ -60,6 +60,14 @@ export function string2hex(string: string): number
         if (string[0] === '#')
         {
             string = string.slice(1);
+
+            // Add support for shorthand hex colors
+            if (string.length === 3)
+            {
+                const [r, g, b] = string;
+
+                string = r + r + g + g + b + b;
+            }
         }
     }
 
