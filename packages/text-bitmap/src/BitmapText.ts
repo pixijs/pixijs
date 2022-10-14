@@ -900,6 +900,10 @@ export class BitmapText extends Container
             ? pageMeshDataDefaultPageMeshData : pageMeshDataMSDFPageMeshData;
 
         pageMeshDataPool.push(...this._activePagesMeshData);
+        for (const data of this._activePagesMeshData)
+        {
+            this.removeChild(data.mesh);
+        }
         this._activePagesMeshData = [];
 
         // Release references to any cached textures in page pool
