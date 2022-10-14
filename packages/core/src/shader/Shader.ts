@@ -77,11 +77,12 @@ export class Shader
 
     destroy(): void
     {
-        this.disposeRunner.emit(this, false);
-
         // usage count on programs?
         // remove if not used!
         this.uniformGroup = null;
+
+        this.disposeRunner.emit(this);
+        this.disposeRunner.destroy();
     }
 
     /**
