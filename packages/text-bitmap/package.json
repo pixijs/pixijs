@@ -1,6 +1,6 @@
 {
   "name": "@pixi/text-bitmap",
-  "version": "7.0.0-alpha.3",
+  "version": "7.0.0-beta.3",
   "main": "dist/cjs/text-bitmap.js",
   "module": "dist/esm/text-bitmap.mjs",
   "types": "index.d.ts",

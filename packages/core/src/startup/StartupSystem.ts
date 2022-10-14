@@ -1,4 +1,3 @@
-import { sayHello } from '@pixi/utils';
 import type { BackgroundOptions } from '../background/BackgroundSystem';
 import type { ViewOptions } from '../view/ViewSystem';
 import type { IRendererPlugins } from '../plugin/PluginSystem';
@@ -11,6 +10,7 @@ import { extensions, ExtensionType } from '@pixi/extensions';
 // TODO this can be infered by good use of generics in the future..
 export interface StartupOptions extends Record<string, unknown>
 {
+    hello: boolean;
     _plugin: IRendererPlugins,
     background: BackgroundOptions,
     _view: ViewOptions,
@@ -48,7 +48,11 @@ export interface StartupOptions extends Record<string, unknown>
 
         renderer.emitWithCustomOptions(renderer.runners.init, options);
 
-        sayHello(renderer.rendererLogId);
+        if (options.hello)
+        {
+            // eslint-disable-next-line no-console
+            console.log(`PixiJS ${'$_VERSION'} - ${renderer.rendererLogId} - https://pixijs.com`);
+        }
 
         renderer.resize(this.renderer.screen.width, this.renderer.screen.height);
     }

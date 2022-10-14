@@ -125,7 +125,7 @@ export interface ICanvas extends GlobalMixins.ICanvas, Partial<EventTarget>
     dispatchEvent(event: Event): boolean;
 
     /** Parent node of the canvas. */
-    readonly parentNode?: ICanvasParentNode;
+    readonly parentNode?: ICanvasParentNode | null;
 
     /** Style of the canvas. */
     readonly style?: ICanvasStyle;

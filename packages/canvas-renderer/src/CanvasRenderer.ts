@@ -175,9 +175,11 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
      *  enable this if you need to call toDataURL on the webgl context.
      * @param {boolean} [options.clearBeforeRender=true] - This sets if the renderer will clear the canvas or
      *      not before the new render pass.
-     * @param {number} [options.backgroundColor=0x000000] - The background color of the rendered area
-     *  (shown if not transparent).
+     * @param {number|string} [options.backgroundColor=0x000000] - The background color of the rendered area
+     *  (shown if not transparent). Also, accepts hex strings or color names (e.g., 'white').
+     * @param {number|string} [options.background] - Alias for `options.backgroundColor`.
      * @param {number} [options.backgroundAlpha=1] - Value from 0 (fully transparent) to 1 (fully opaque).
+     * @param {boolean} [options.hello=false] - Logs renderer type and version.
      */
     constructor(options?: IRendererOptions)
     {
@@ -205,10 +207,11 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
 
         // convert our big blob of options into system specific ones..
         const startupOptions: StartupOptions = {
+            hello: options.hello,
             _plugin: CanvasRenderer.__plugins,
             background: {
                 alpha: options.backgroundAlpha,
-                color: options.backgroundColor,
+                color: options.background ?? options.backgroundColor,
                 clearBeforeRender: options.clearBeforeRender,
             },
             _view: {

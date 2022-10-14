@@ -1,9 +1,7 @@
 import { Text } from '@pixi/text';
 import { Sprite } from '@pixi/sprite';
-import { settings, Renderer, utils } from '@pixi/core';
+import { settings, Renderer } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
-
-utils.skipHello();
 
 describe('Text', () =>
 {

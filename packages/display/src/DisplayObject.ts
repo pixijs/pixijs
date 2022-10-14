@@ -648,6 +648,12 @@ export abstract class DisplayObject extends utils.EventEmitter
         return container;
     }
 
+    /** Remove the DisplayObject from its parent Container. If the DisplayObject has no parent, do nothing. */
+    removeFromParent()
+    {
+        this.parent?.removeChild(this);
+    }
+
     /**
      * Convenience function to set the position, scale, skew and pivot at once.
      * @param x - The X position
@@ -685,10 +691,8 @@ export abstract class DisplayObject extends utils.EventEmitter
      */
     destroy(_options?: IDestroyOptions | boolean): void
     {
-        if (this.parent)
-        {
-            this.parent.removeChild(this);
-        }
+        this.removeFromParent();
+
         this._destroyed = true;
         this.transform = null;
 

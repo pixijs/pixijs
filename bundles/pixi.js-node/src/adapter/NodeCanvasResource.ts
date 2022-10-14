@@ -1,6 +1,4 @@
-import { ALPHA_MODES } from '@pixi/constants';
-import { Resource } from '@pixi/core';
-import { determineCrossOrigin } from '@pixi/utils';
+import { Resource, utils, ALPHA_MODES } from '@pixi/core';
 import { NodeCanvasElement } from './NodeCanvasElement';
 
 import type { BaseTexture, GLTexture, Renderer } from '@pixi/core';
@@ -108,7 +106,7 @@ export class NodeCanvasResource extends Resource
     {
         if (crossorigin === undefined && url.indexOf('data:') !== 0)
         {
-            element.crossOrigin = determineCrossOrigin(url);
+            element.crossOrigin = utils.determineCrossOrigin(url);
         }
         else if (crossorigin !== false)
         {

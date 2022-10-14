@@ -1,8 +1,6 @@
-import { Texture, BLEND_MODES, Point, Matrix, SHAPES, Polygon, utils } from '@pixi/core';
+import { Texture, BLEND_MODES, Point, Matrix, SHAPES, Polygon } from '@pixi/core';
 import { Graphics, GRAPHICS_CURVES, FillStyle, LineStyle, graphicsUtils, LINE_CAP } from '@pixi/graphics';
 const { FILL_COMMANDS, buildLine } = graphicsUtils;
-
-utils.skipHello();
 
 describe('Graphics', () =>
 {

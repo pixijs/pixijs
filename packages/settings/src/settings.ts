@@ -5,7 +5,7 @@ import { isMobile } from './utils/isMobile';
 import { maxRecommendedTextures } from './utils/maxRecommendedTextures';
 
 import type { ENV } from '@pixi/constants';
-import type { ICanvas } from '@pixi/settings';
+import type { ICanvas } from './ICanvas';
 import type { IAdapter } from './adapter';
 
 export interface IRenderOptions
@@ -13,7 +13,8 @@ export interface IRenderOptions
     view: ICanvas;
     antialias: boolean;
     autoDensity: boolean;
-    backgroundColor: number;
+    backgroundColor: number | string;
+    background?: number | string;
     backgroundAlpha: number;
     useContextAlpha: boolean | 'notMultiplied';
     clearBeforeRender: boolean;
@@ -21,6 +22,7 @@ export interface IRenderOptions
     width: number;
     height: number;
     legacy: boolean;
+    hello: boolean;
 }
 
 export interface ISettings
@@ -176,6 +178,7 @@ export const settings: ISettings = {
      * @property {number} [width=800] -
      * @property {number} [height=600] -
      * @property {boolean} [legacy=false] -
+     * @property {boolean} [debug=false] -
      */
     RENDER_OPTIONS: {
         view: null,
@@ -189,6 +192,7 @@ export const settings: ISettings = {
         width: 800,
         height: 600,
         legacy: false,
+        hello: false,
     },
 
     /**

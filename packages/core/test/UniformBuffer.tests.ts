@@ -11,10 +11,7 @@ import {
     getTestContext
 } from '@pixi/core';
 
-import { skipHello } from '@pixi/utils';
 import { Matrix, Rectangle, Point } from '@pixi/math';
-
-skipHello();
 
 const vertexSrc = `
 #version 300 es
