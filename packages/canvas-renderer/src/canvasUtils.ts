@@ -90,7 +90,7 @@ export const canvasUtils = {
 
         let pattern = texture.patternCache[stringColor];
 
-        if (pattern && pattern.tintId === texture._updateID)
+        if (pattern?.tintId === texture._updateID)
         {
             return pattern;
         }

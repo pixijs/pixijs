@@ -48,7 +48,7 @@ export const loadTextures = {
 
         for (let i = 0; i < validImages.length; i++)
         {
-            if (url.indexOf(`data:image/${validImages[i].slice(1)}`) === 0)
+            if (url.startsWith(`data:image/${validImages[i].slice(1)}`))
             {
                 isValidBase64Suffix = true;
                 break;
