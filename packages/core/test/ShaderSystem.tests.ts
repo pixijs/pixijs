@@ -78,7 +78,8 @@ void main() {
         expect(renderer.texture.boundTextures[1]).toEqual(texture1);
     });
 
-    it('should unbind shader if the shader is destroyed.', () => {
+    it('should unbind shader if the shader is destroyed.', () =>
+    {
         const shader = Shader.from(vertexSrc, fragmentSrc);
 
         renderer.shader.bind(shader);
