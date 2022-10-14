@@ -1287,6 +1287,7 @@ namespace LoaderResource
         tiff: LoaderResource.LOAD_TYPE.IMAGE,
         webp: LoaderResource.LOAD_TYPE.IMAGE,
         tga: LoaderResource.LOAD_TYPE.IMAGE,
+        avif: LoaderResource.LOAD_TYPE.IMAGE,
         svg: LoaderResource.LOAD_TYPE.IMAGE,
         'svg+xml': LoaderResource.LOAD_TYPE.IMAGE, // for SVG data urls
 
@@ -1324,6 +1325,7 @@ namespace LoaderResource
         tiff: LoaderResource.XHR_RESPONSE_TYPE.BLOB,
         webp: LoaderResource.XHR_RESPONSE_TYPE.BLOB,
         tga: LoaderResource.XHR_RESPONSE_TYPE.BLOB,
+        avif: LoaderResource.XHR_RESPONSE_TYPE.BLOB,
 
         // json
         json: LoaderResource.XHR_RESPONSE_TYPE.JSON,
