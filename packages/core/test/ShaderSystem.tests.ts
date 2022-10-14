@@ -1,7 +1,4 @@
 import { Renderer, Shader, CanvasResource, Geometry, UniformGroup, BaseTexture } from '@pixi/core';
-import { skipHello } from '@pixi/utils';
-
-skipHello();
 
 describe('ShaderSystem', () =>
 {

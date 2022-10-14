@@ -22,6 +22,11 @@ void main(void) {
 
   float screenPxDistance = uFWidth * (median - 0.5);
   float alpha = clamp(screenPxDistance + 0.5, 0.0, 1.0);
+  if (median < 0.01) {
+    alpha = 0.0;
+  } else if (median > 0.99) {
+    alpha = 1.0;
+  }
 
   // NPM Textures, NPM outputs
   gl_FragColor = vec4(uColor.rgb, uColor.a * alpha);

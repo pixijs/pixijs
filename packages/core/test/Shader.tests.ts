@@ -1,7 +1,4 @@
 import { Renderer, Shader, Geometry } from '@pixi/core';
-import { skipHello } from '@pixi/utils';
-
-skipHello();
 
 describe('Shader', () =>
 {

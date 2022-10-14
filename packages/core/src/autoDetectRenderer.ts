@@ -38,8 +38,9 @@ extensions.handleByList(ExtensionType.Renderer, renderers);
  * @param {boolean} [options.antialias=false] - sets antialias
  * @param {boolean} [options.preserveDrawingBuffer=false] - enables drawing buffer preservation, enable this if you
  *  need to call toDataUrl on the webgl context
- * @param {number} [options.backgroundColor=0x000000] - The background color of the rendered area
- *  (shown if not transparent).
+ * @param {number|string} [options.backgroundColor=0x000000] - The background color of the rendered area
+ *  (shown if not transparent). Also, accepts hex strings or color names (e.g., 'white').
+ * @param {number|string} [options.background] - Alias for `options.backgroundColor`.
  * @param {number} [options.backgroundAlpha=1] - Value from 0 (fully transparent) to 1 (fully opaque).
  * @param {boolean} [options.clearBeforeRender=true] - This sets if the renderer will clear the canvas or
  *   not before the new render pass.
@@ -49,6 +50,7 @@ extensions.handleByList(ExtensionType.Renderer, renderers);
  *   it is ignored.
  * @param {string} [options.powerPreference] - Parameter passed to webgl context, set to "high-performance"
  *  for devices with dual graphics card **webgl only**
+ * @param {boolean} [options.hello=false] - Logs renderer type and version.
  * @returns {PIXI.Renderer|PIXI.CanvasRenderer} Returns WebGL renderer if available, otherwise CanvasRenderer
  */
 export function autoDetectRenderer(options?: IRendererOptionsAuto): IRenderer

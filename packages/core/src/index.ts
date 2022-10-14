@@ -66,6 +66,7 @@ export * from './geometry/Attribute';
 export * from './geometry/Buffer';
 export * from './geometry/Geometry';
 export * from './geometry/ViewableBuffer';
+export * from './transformFeedback/TransformFeedback';
 
 export * from './mask/MaskSystem';
 export * from './mask/StencilSystem';
@@ -90,3 +91,4 @@ export * from './background/BackgroundSystem';
 export * from './view/ViewSystem';
 export * from './render/ObjectRendererSystem';
 export * from './startup/StartupSystem';
+export * from './transformFeedback/TransformFeedbackSystem';

@@ -1,4 +1,4 @@
-import { hex2rgb, hex2string } from '@pixi/utils';
+import { hex2rgb, hex2string, string2hex } from '@pixi/utils';
 import type { ExtensionMetadata } from '@pixi/extensions';
 import { extensions, ExtensionType } from '@pixi/extensions';
 import type { ISystem } from '../system/ISystem';
@@ -8,7 +8,7 @@ export interface BackgroundOptions
     /** the main canvas background alpha. From 0 (fully transparent) to 1 (fully opaque). */
     alpha: number,
     /** the main canvas background color. */
-    color: number,
+    color: number | string,
     /** sets if the renderer will clear the canvas or not before the new render pass. */
     clearBeforeRender: boolean,
 }
@@ -64,7 +64,14 @@ export class BackgroundSystem implements ISystem<BackgroundOptions>
     init(options: BackgroundOptions): void
     {
         this.clearBeforeRender = options.clearBeforeRender;
-        this.color = options.color || this._backgroundColor; // run bg color setter
+
+        if (options.color)
+        {
+            this.color = typeof options.color === 'string'
+                ? string2hex(options.color)
+                : options.color;
+        }
+
         this.alpha = options.alpha;
     }
 

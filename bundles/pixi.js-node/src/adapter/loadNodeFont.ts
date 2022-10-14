@@ -1,9 +1,9 @@
 import type { LoadAsset, LoaderParser, LoadFontData } from '@pixi/assets';
 import { getFontFamilyName } from '@pixi/assets';
-import { extensions, ExtensionType } from '@pixi/core';
-import { registerFont } from 'canvas';
-import { path } from '@pixi/utils';
+import { extensions, ExtensionType, utils } from '@pixi/core';
+import canvasModule from 'canvas';
 
+const { registerFont } = canvasModule;
 const validWeights = [
     'normal', 'bold', '100', '200', '300', '400', '500', '600', '700', '800', '900',
 ];
@@ -15,7 +15,7 @@ export const loadNodeFont = {
 
     test(url: string): boolean
     {
-        return validFonts.includes(path.extname(url));
+        return validFonts.includes(utils.path.extname(url));
     },
 
     async load(url: string, options: LoadAsset<LoadFontData>): Promise<void>

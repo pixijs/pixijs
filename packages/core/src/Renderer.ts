@@ -32,6 +32,7 @@ import type { ICanvas } from '@pixi/settings';
 import { SystemManager } from './system/SystemManager';
 import type { IRenderableObject, IRenderer, IRendererOptions, IRendererRenderOptions, IRenderingContext } from './IRenderer';
 import type { StartupSystem, StartupOptions } from './startup/StartupSystem';
+import type { TransformFeedbackSystem } from './transformFeedback/TransformFeedbackSystem';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface Renderer extends GlobalMixins.Renderer {}
@@ -160,6 +161,12 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      * @readonly
      */
     public readonly buffer: BufferSystem;
+
+    /**
+     * TransformFeedback system instance
+     * @readonly
+     */
+    public transformFeedback: TransformFeedbackSystem;
 
     /**
      * Geometry system instance
@@ -292,14 +299,16 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      *  preserveDrawingBuffer to `true`.
      * @param {boolean} [options.preserveDrawingBuffer=false] - Enables drawing buffer preservation,
      *  enable this if you need to call toDataURL on the WebGL context.
-     * @param {number} [options.backgroundColor=0x000000] - The background color of the rendered area
-     *  (shown if not transparent).
+     * @param {number|string} [options.backgroundColor=0x000000] - The background color of the rendered area
+     *  (shown if not transparent). Also, accepts hex strings or color names (e.g., 'white').
+     * @param {number|string} [options.background] - Alias for `options.backgroundColor`.
      * @param {number} [options.backgroundAlpha=1] - Value from 0 (fully transparent) to 1 (fully opaque).
      * @param {string} [options.powerPreference] - Parameter passed to WebGL context, set to "high-performance"
      *  for devices with dual graphics card.
      * @param {object} [options.context] - If WebGL context already exists, all parameters must be taken from it.
      * @param {object} [options.blit] - if rendering to a renderTexture, set to true if you want to run blit after
      * the render. defaults to false.
+     * @param {boolean} [options.hello=false] - Logs renderer type and version.
      */
     constructor(options?: IRendererOptions)
     {
@@ -332,6 +341,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
                 'buffer',
                 'geometry',
                 'framebuffer',
+                'transformFeedback',
                 // high level pixi specific rendering
                 'mask',
                 'scissor',
@@ -350,10 +360,11 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
 
         // new options!
         const startupOptions: StartupOptions = {
+            hello: options.hello,
             _plugin: Renderer.__plugins,
             background: {
                 alpha: options.backgroundAlpha,
-                color: options.backgroundColor,
+                color: options.background ?? options.backgroundColor,
                 clearBeforeRender: options.clearBeforeRender,
             },
             _view: {

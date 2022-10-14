@@ -1,11 +1,9 @@
 import { CanvasExtract } from '@pixi/canvas-extract';
 import { CanvasRenderer } from '@pixi/canvas-renderer';
 import { Sprite } from '@pixi/sprite';
-import { Texture, RenderTexture, utils } from '@pixi/core';
+import { Texture, RenderTexture } from '@pixi/core';
 
 import '@pixi/canvas-display';
-
-utils.skipHello();
 
 describe('CanvasExtract', () =>
 {

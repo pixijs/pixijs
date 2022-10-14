@@ -1,12 +1,12 @@
-import { loadImage } from 'canvas';
-import { extensions, ExtensionType, Texture } from '@pixi/core';
-import { getResolutionOfUrl } from '@pixi/utils';
+import canvasModule from 'canvas';
+import { extensions, ExtensionType, Texture, utils } from '@pixi/core';
 import { NodeCanvasElement } from './NodeCanvasElement';
 
 import type { CanvasRenderingContext2D } from 'canvas';
 import type { LoadAsset, LoaderParser } from '@pixi/assets';
-import type { ICanvas } from '@pixi/settings';
+import type { ICanvas } from '@pixi/core';
 
+const { loadImage } = canvasModule;
 const validMimes = ['image/png', 'image/jpg', 'image/jpeg', 'image/svg'];
 
 function isSupportedDataURL(url: string): boolean
@@ -37,7 +37,7 @@ export const loadNodeBase64 = {
 
         ctx.drawImage(image, 0, 0);
         const texture = Texture.from(canvas as unknown as ICanvas, {
-            resolution: getResolutionOfUrl(url),
+            resolution: utils.getResolutionOfUrl(url),
             ...asset.data
         });
 

@@ -11,7 +11,7 @@ import '@pixi/mixin-cache-as-bitmap';
 import '@pixi/mixin-get-child-by-name';
 import '@pixi/mixin-get-global-position';
 // eslint-disable-next-line @typescript-eslint/no-duplicate-imports
-import {  NodeCanvasResource } from './adapter';
+import { NodeCanvasResource } from './adapter';
 import { loadTextures, loadWebFont } from '@pixi/assets';
 import { ResizePlugin } from '@pixi/app';
 import { loadBitmapFont } from '@pixi/text-bitmap';
@@ -56,4 +56,3 @@ export * from '@pixi/sprite-tiling';
 export * from '@pixi/spritesheet';
 export * from '@pixi/text';
 export * from '@pixi/text-bitmap';
-

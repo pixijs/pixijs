@@ -42,7 +42,7 @@ For non-mac users, please refer to the [canvas installation guide](https://www.n
 ## Basic Usage Example
 
 ```js
-import { Application, Sprite, Assets } from '@pixi/node';
+import { Application, Assets, Sprite } from '@pixi/node';
 import path from 'path';
 import { writeFileSync } from 'fs';
 

@@ -3,9 +3,6 @@ import { Renderer, Framebuffer } from '@pixi/core';
 import { Graphics } from '@pixi/graphics';
 import { settings } from '@pixi/settings';
 import { ENV, MSAA_QUALITY } from '@pixi/constants';
-import { skipHello } from '@pixi/utils';
-
-skipHello();
 
 describe('Renderer', () =>
 {
@@ -136,6 +133,15 @@ describe('Renderer', () =>
         const renderer = new Renderer({ view, width: 1, height: 1 });
 
         expect(renderer.view).toBeInstanceOf(OffscreenCanvas);
+
+        renderer.destroy();
+    });
+
+    it('should support natural language color names', () =>
+    {
+        const renderer = new Renderer({ background: 'white' });
+
+        expect(renderer.background.color).toEqual(0xffffff);
 
         renderer.destroy();
     });
