@@ -75,15 +75,9 @@ export class Shader
         return false;
     }
 
-    /** Disposes WebGL resources that are connected to this shader. */
-    dispose(): void
-    {
-        this.disposeRunner.emit(this, false);
-    }
-
     destroy(): void
     {
-        this.dispose();
+        this.disposeRunner.emit(this, false);
 
         // usage count on programs?
         // remove if not used!
