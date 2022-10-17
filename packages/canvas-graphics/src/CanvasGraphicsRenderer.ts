@@ -1,10 +1,10 @@
-import { Texture } from '@pixi/core';
-import { SHAPES, Matrix } from '@pixi/math';
-import { canvasUtils, CrossPlatformCanvasRenderingContext2D } from '@pixi/canvas-renderer';
-import type { CanvasRenderer } from '@pixi/canvas-renderer';
-import type { FillStyle, Graphics, GraphicsData, LineStyle } from '@pixi/graphics';
-import type { Circle, Ellipse, Polygon, Rectangle, RoundedRectangle } from '@pixi/math';
+import { SHAPES, Matrix, extensions, ExtensionType, Texture } from '@pixi/core';
+import { canvasUtils } from '@pixi/canvas-renderer';
 import { PolygonUtils } from './utils/PolygonUtils';
+
+import type { CanvasRenderer, CrossPlatformCanvasRenderingContext2D } from '@pixi/canvas-renderer';
+import type { FillStyle, Graphics, GraphicsData, LineStyle } from '@pixi/graphics';
+import type { ExtensionMetadata, Circle, Ellipse, Polygon, Rectangle, RoundedRectangle } from '@pixi/core';
 
 /*
  * @author Mat Groves
@@ -26,6 +26,12 @@ import { PolygonUtils } from './utils/PolygonUtils';
  */
 export class CanvasGraphicsRenderer
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        name: 'graphics',
+        type: ExtensionType.CanvasRendererPlugin,
+    };
+
     /** A reference to the current renderer */
     public renderer: CanvasRenderer;
     private _svgMatrix: DOMMatrix | boolean = null;
@@ -77,12 +83,13 @@ export class CanvasGraphicsRenderer
     public render(graphics: Graphics): void
     {
         const renderer = this.renderer;
-        const context = renderer.context;
+
+        const context = renderer.canvasContext.activeContext;
         const worldAlpha = graphics.worldAlpha;
         const transform = graphics.transform.worldTransform;
 
-        renderer.setContextTransform(transform);
-        renderer.setBlendMode(graphics.blendMode);
+        renderer.canvasContext.setContextTransform(transform);
+        renderer.canvasContext.setBlendMode(graphics.blendMode);
 
         const graphicsData = graphics.geometry.graphicsData;
 
@@ -105,7 +112,7 @@ export class CanvasGraphicsRenderer
 
             if (data.matrix)
             {
-                renderer.setContextTransform(transform.copyTo(this._tempMatrix).append(data.matrix));
+                renderer.canvasContext.setContextTransform(transform.copyTo(this._tempMatrix).append(data.matrix));
             }
 
             if (fillStyle.visible)
@@ -589,7 +596,7 @@ export class CanvasGraphicsRenderer
         {
             const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
 
-            if (svg && svg.createSVGMatrix)
+            if (svg?.createSVGMatrix)
             {
                 this._svgMatrix = svg.createSVGMatrix();
             }
@@ -618,3 +625,5 @@ export class CanvasGraphicsRenderer
         this._tempMatrix = null;
     }
 }
+
+extensions.add(CanvasGraphicsRenderer);

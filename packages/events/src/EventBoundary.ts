@@ -1,8 +1,7 @@
-import { EventEmitter } from '@pixi/utils';
 import { FederatedMouseEvent } from './FederatedMouseEvent';
 import { FederatedPointerEvent } from './FederatedPointerEvent';
 import { FederatedWheelEvent } from './FederatedWheelEvent';
-import { Point } from '@pixi/math';
+import { Point, utils } from '@pixi/core';
 
 import type { Cursor, FederatedEventTarget } from './FederatedEventTarget';
 import type { DisplayObject } from '@pixi/display';
@@ -134,7 +133,7 @@ export class EventBoundary
      * Special events that do not bubble all the way to the root target are not emitted from here,
      * e.g. pointerenter, pointerleave, click.
      */
-    public dispatch: EventEmitter = new EventEmitter();
+    public dispatch: utils.EventEmitter = new utils.EventEmitter();
 
     /** The cursor preferred by the event targets underneath this boundary. */
     public cursor: Cursor | string;
@@ -497,9 +496,10 @@ export class EventBoundary
 
         if (displayObject._mask)
         {
-            const mask = displayObject._mask as any;
+            const maskObject = ((displayObject._mask as any).isMaskData
+                ? (displayObject._mask as any).maskObject : displayObject._mask);
 
-            if (!(mask.containsPoint && mask.containsPoint(location)))
+            if (maskObject && !maskObject.containsPoint?.(location))
             {
                 return true;
             }
@@ -920,10 +920,8 @@ export class EventBoundary
             {
                 this.dispatchEvent(clickEvent, 'tap');
             }
-            else
-            {
-                this.dispatchEvent(clickEvent, 'pointertap');
-            }
+
+            this.dispatchEvent(clickEvent, 'pointertap');
 
             this.freeEvent(clickEvent);
         }
@@ -1374,7 +1372,7 @@ export class EventBoundary
  * Capture phase equivalent of {@code mouseup}.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- * @event PIXI.DisplayObject#mouseupcature
+ * @event PIXI.DisplayObject#mouseupcapture
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
 
@@ -1493,7 +1491,7 @@ export class EventBoundary
  * Capture phase equivalent of {@code mousemove}.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
- * @event PIXI.DisplayObject#mousemovecature
+ * @event PIXI.DisplayObject#mousemovecapture
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
 

@@ -1,9 +1,10 @@
-import { BaseTexture } from '@pixi/core';
+import { settings, BaseTexture, extensions, ExtensionType } from '@pixi/core';
 import { BasePrepare } from '@pixi/prepare';
 
-import type { AbstractRenderer } from '@pixi/core';
+import type { ExtensionMetadata, IRenderer, ISystem } from '@pixi/core';
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
 import type { IDisplayObjectExtended } from '@pixi/prepare';
+import type { ICanvas, ICanvasRenderingContext2D } from '@pixi/settings';
 
 const CANVAS_START_SIZE = 16;
 
@@ -14,7 +15,7 @@ const CANVAS_START_SIZE = 16;
  * @param item - Item to check
  * @returns If item was uploaded.
  */
-function uploadBaseTextures(prepare: AbstractRenderer | BasePrepare, item: IDisplayObjectExtended): boolean
+function uploadBaseTextures(prepare: IRenderer | BasePrepare, item: IDisplayObjectExtended): boolean
 {
     const tempPrepare = prepare as CanvasPrepare;
 
@@ -53,18 +54,24 @@ function uploadBaseTextures(prepare: AbstractRenderer | BasePrepare, item: IDisp
  * @extends PIXI.BasePrepare
  * @memberof PIXI
  */
-export class CanvasPrepare extends BasePrepare
+export class CanvasPrepare extends BasePrepare implements ISystem
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        name: 'prepare',
+        type: ExtensionType.CanvasRendererSystem,
+    };
+
     /**
      * An offline canvas to render textures to
      * @internal
      */
-    canvas: HTMLCanvasElement;
+    canvas: ICanvas;
     /**
      * The context to the canvas
      * @internal
      */
-    ctx: CanvasRenderingContext2D;
+    ctx: ICanvasRenderingContext2D;
 
     /**
      * @param renderer - A reference to the current renderer
@@ -75,9 +82,10 @@ export class CanvasPrepare extends BasePrepare
 
         this.uploadHookHelper = this;
 
-        this.canvas = document.createElement('canvas');
-        this.canvas.width = CANVAS_START_SIZE;
-        this.canvas.height = CANVAS_START_SIZE;
+        this.canvas = settings.ADAPTER.createCanvas(
+            CANVAS_START_SIZE,
+            CANVAS_START_SIZE
+        );
 
         this.ctx = this.canvas.getContext('2d');
 
@@ -93,3 +101,5 @@ export class CanvasPrepare extends BasePrepare
         this.canvas = null;
     }
 }
+
+extensions.add(CanvasPrepare);

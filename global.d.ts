@@ -1,3 +1,6 @@
+// eslint-disable-next-line spaced-comment
+/// <reference types="jest-extended" />
+
 declare module '*.frag' {
     const value: string;
 
@@ -9,5 +12,3 @@ declare module '*.vert' {
 
     export default value;
 }
-
-declare module 'es6-promise-polyfill'

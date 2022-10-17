@@ -1,30 +1,17 @@
-import { ParticleContainer, ParticleRenderer } from '@pixi/particle-container';
+import { ParticleContainer } from '@pixi/particle-container';
 import { Texture, Renderer } from '@pixi/core';
-import { skipHello } from '@pixi/utils';
 import { Sprite } from '@pixi/sprite';
-import { expect } from 'chai';
-import path from 'path';
 
-skipHello();
+import path from 'path';
 
 describe('ParticleRenderer', () =>
 {
-    beforeEach(() =>
-    {
-        Renderer.registerPlugin('particle', ParticleRenderer);
-    });
-
-    afterEach(() =>
-    {
-        delete Renderer.__plugins.particle;
-    });
-
     it('should render a particle container with no children', () =>
     {
         const renderer = new Renderer();
         const container = new ParticleContainer();
 
-        expect(container.children.length).to.equal(0);
+        expect(container.children.length).toEqual(0);
 
         renderer.render(container);
         container.destroy();
@@ -51,7 +38,7 @@ describe('ParticleRenderer', () =>
 
         const child = Sprite.from(image);
 
-        expect(child.texture.baseTexture.valid).to.be.false;
+        expect(child.texture.baseTexture.valid).toBe(false);
 
         const container = new ParticleContainer();
         const renderer = new Renderer();

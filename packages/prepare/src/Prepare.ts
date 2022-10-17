@@ -1,8 +1,9 @@
-import { BaseTexture } from '@pixi/core';
+import { BaseTexture, extensions, ExtensionType } from '@pixi/core';
 import { Graphics } from '@pixi/graphics';
-import { BasePrepare, IDisplayObjectExtended } from './BasePrepare';
+import type { IDisplayObjectExtended } from './BasePrepare';
+import { BasePrepare } from './BasePrepare';
 
-import type { AbstractRenderer, Renderer } from '@pixi/core';
+import type { Renderer, IRenderer, ISystem, ExtensionMetadata } from '@pixi/core';
 
 /**
  * Built-in hook to upload PIXI.Texture objects to the GPU.
@@ -11,7 +12,7 @@ import type { AbstractRenderer, Renderer } from '@pixi/core';
  * @param item - Item to check
  * @returns If item was uploaded.
  */
-function uploadBaseTextures(renderer: AbstractRenderer | BasePrepare, item: IDisplayObjectExtended | BaseTexture): boolean
+function uploadBaseTextures(renderer: IRenderer | BasePrepare, item: IDisplayObjectExtended | BaseTexture): boolean
 {
     if (item instanceof BaseTexture)
     {
@@ -36,7 +37,7 @@ function uploadBaseTextures(renderer: AbstractRenderer | BasePrepare, item: IDis
  * @param item - Item to check
  * @returns If item was uploaded.
  */
-function uploadGraphics(renderer: AbstractRenderer | BasePrepare, item: IDisplayObjectExtended): boolean
+function uploadGraphics(renderer: IRenderer | BasePrepare, item: IDisplayObjectExtended): boolean
 {
     if (!(item instanceof Graphics))
     {
@@ -97,15 +98,17 @@ function findGraphics(item: IDisplayObjectExtended, queue: Array<any>): boolean
  * Do not instantiate this plugin directly. It is available from the `renderer.plugins` property.
  * See {@link PIXI.CanvasRenderer#plugins} or {@link PIXI.Renderer#plugins}.
  * @example
+ * import { Application, Graphics } from 'pixi.js';
+ *
  * // Create a new application
- * const app = new PIXI.Application();
+ * const app = new Application();
  * document.body.appendChild(app.view);
  *
  * // Don't start rendering right away
  * app.stop();
  *
  * // create a display object
- * const rect = new PIXI.Graphics()
+ * const rect = new Graphics()
  *     .beginFill(0x00ff00)
  *     .drawRect(40, 40, 200, 200);
  *
@@ -118,8 +121,14 @@ function findGraphics(item: IDisplayObjectExtended, queue: Array<any>): boolean
  * });
  * @memberof PIXI
  */
-export class Prepare extends BasePrepare
+export class Prepare extends BasePrepare implements ISystem
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        name: 'prepare',
+        type: ExtensionType.RendererSystem,
+    };
+
     /**
      * @param {PIXI.Renderer} renderer - A reference to the current renderer
      */
@@ -135,3 +144,5 @@ export class Prepare extends BasePrepare
         this.registerUploadHook(uploadGraphics);
     }
 }
+
+extensions.add(Prepare);

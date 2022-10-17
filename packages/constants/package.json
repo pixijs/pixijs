@@ -1,15 +1,14 @@
 {
   "name": "@pixi/constants",
-  "version": "6.4.2",
+  "version": "7.0.0-beta.3",
   "main": "dist/cjs/constants.js",
-  "module": "dist/esm/constants.js",
-  "bundle": "dist/browser/constants.js",
+  "module": "dist/esm/constants.mjs",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/constants.js"
+        "default": "./dist/esm/constants.mjs"
       },
       "require": {
         "types": "./index.d.ts",
@@ -33,7 +32,6 @@
     "access": "public"
   },
   "files": [
-    "lib",
     "dist",
     "*.d.ts"
   ]

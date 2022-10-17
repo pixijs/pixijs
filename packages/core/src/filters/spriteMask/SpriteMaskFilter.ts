@@ -1,6 +1,7 @@
 import { Filter } from '../Filter';
-import { Matrix, Point } from '@pixi/math';
-import { CLEAR_MODES } from '@pixi/constants';
+import type { Point } from '@pixi/math';
+import { Matrix } from '@pixi/math';
+import type { CLEAR_MODES } from '@pixi/constants';
 import vertex from './spriteMaskFilter.vert';
 import fragment from './spriteMaskFilter.frag';
 import { TextureMatrix } from '../../textures/TextureMatrix';

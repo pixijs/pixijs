@@ -4,7 +4,7 @@ import { BitmapFontData } from '../BitmapFontData';
  * Internal data format used to convert to BitmapFontData.
  * @private
  */
-interface IBitmapFontRawData
+export interface IBitmapFontRawData
 {
     info: {
         face: string;
@@ -56,7 +56,7 @@ export class TextFormat
      */
     static test(data: unknown): boolean
     {
-        return typeof data === 'string' && data.indexOf('info face=') === 0;
+        return typeof data === 'string' && data.startsWith('info face=');
     }
 
     /**

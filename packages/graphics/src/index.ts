@@ -21,7 +21,7 @@ import {
 } from './utils';
 import type { BatchDrawCall } from '@pixi/core/';
 import type { IShapeBuildCommand } from './utils/IShapeBuildCommand';
-import type { SHAPES } from '@pixi/math';
+import type { SHAPES } from '@pixi/core';
 
 export const graphicsUtils = {
     buildPoly: buildPoly as IShapeBuildCommand,

@@ -1,15 +1,14 @@
 {
   "name": "@pixi/events",
-  "version": "6.4.2",
+  "version": "7.0.0-beta.3",
   "main": "dist/cjs/events.js",
-  "module": "dist/esm/events.js",
-  "bundle": "dist/browser/events.js",
+  "module": "dist/esm/events.mjs",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/events.js"
+        "default": "./dist/esm/events.mjs"
       },
       "require": {
         "types": "./index.d.ts",
@@ -17,7 +16,7 @@
       }
     }
   },
-  "description": "UI events for scene graphs",
+  "description": "Federated Events API, the plumbing behind the propagation of UI events into the PixiJS scene graph.",
   "keywords": [
     "interaction",
     "UI",
@@ -30,7 +29,6 @@
   "homepage": "https://github.com/pixijs/pixi.js#readme",
   "license": "MIT",
   "files": [
-    "lib",
     "dist",
     "*.d.ts"
   ],
@@ -44,9 +42,8 @@
   "bugs": {
     "url": "https://github.com/pixijs/pixi.js/issues"
   },
-  "peerDependencies": {
-    "@pixi/display": "6.4.2",
-    "@pixi/math": "6.4.2",
-    "@pixi/utils": "6.4.2"
-  }
+  "pixiRequirements": [
+    "@pixi/core",
+    "@pixi/display"
+  ]
 }

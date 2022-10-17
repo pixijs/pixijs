@@ -142,7 +142,7 @@ export class CubeResource extends AbstractMultiResource
         {
             const side = this.items[i];
 
-            if (dirty[i] < side.dirtyId)
+            if (dirty[i] < side.dirtyId || glTexture.dirtyId < _baseTexture.dirtyId)
             {
                 if (side.valid && side.resource)
                 {

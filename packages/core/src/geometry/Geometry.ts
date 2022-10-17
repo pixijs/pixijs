@@ -4,7 +4,8 @@ import { interleaveTypedArrays } from './utils/interleaveTypedArrays';
 import { getBufferType } from '@pixi/utils';
 import { Runner } from '@pixi/runner';
 
-import { BUFFER_TYPE, TYPES } from '@pixi/constants';
+import type { TYPES } from '@pixi/constants';
+import { BUFFER_TYPE } from '@pixi/constants';
 import type { IArrayBuffer } from './Buffer';
 import type { Dict } from '@pixi/utils';
 
@@ -29,14 +30,14 @@ const map: Dict<any> = {
  * This can include anything from positions, uvs, normals, colors etc.
  *
  * Geometry can be defined without passing in a style or data if required (thats how I prefer!)
+ * @example
+ * import { Geometry } from 'pixi.js';
  *
- * ```js
- * let geometry = new PIXI.Geometry();
+ * const geometry = new Geometry();
  *
  * geometry.addAttribute('positions', [0, 0, 100, 0, 100, 100, 0, 100], 2);
  * geometry.addAttribute('uvs', [0,0,1,0,1,1,0,1],2)
- * geometry.addIndex([0,1,2,1,3,2])
- * ```
+ * geometry.addIndex([0,1,2,1,3,2]);
  * @memberof PIXI
  */
 export class Geometry
@@ -194,7 +195,7 @@ export class Geometry
 
         this.indexBuffer = buffer;
 
-        if (this.buffers.indexOf(buffer) === -1)
+        if (!this.buffers.includes(buffer))
         {
             this.buffers.push(buffer);
         }

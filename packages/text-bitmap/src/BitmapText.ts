@@ -1,18 +1,14 @@
-import { ObservablePoint, Point } from '@pixi/math';
-import { settings } from '@pixi/settings';
 import { Mesh, MeshGeometry, MeshMaterial } from '@pixi/mesh';
-import { removeItems } from '@pixi/utils';
 import { BitmapFont } from './BitmapFont';
 import { splitTextToCharacters, extractCharCode } from './utils';
 import msdfFrag from './shader/msdf.frag';
 import msdfVert from './shader/msdf.vert';
-import type { Rectangle } from '@pixi/math';
-import { Program, Renderer, Texture } from '@pixi/core';
+import type { Renderer, Rectangle } from '@pixi/core';
+import { Program, Texture, BLEND_MODES, settings, utils, ObservablePoint, Point } from '@pixi/core';
 import type { IBitmapTextStyle } from './BitmapTextStyle';
 import type { TextStyleAlign } from '@pixi/text';
 import { Container } from '@pixi/display';
 import type { IDestroyOptions } from '@pixi/display';
-import { BLEND_MODES } from '@pixi/constants';
 
 interface PageMeshData
 {
@@ -59,15 +55,15 @@ const charRenderDataPool: CharRenderData[] = [];
  * https://github.com/Chlumsky/msdf-atlas-gen for SDF, MSDF and MTSDF json files
  *
  * A BitmapText can only be created when the font is loaded.
+ * @example
+ * import { BitmapText } from 'pixi.js';
  *
- * ```js
  * // in this case the font is in a file called 'desyrel.fnt'
- * let bitmapText = new PIXI.BitmapText("text using a fancy font!", {
+ * const bitmapText = new BitmapText("text using a fancy font!", {
  *   fontName: "Desyrel",
  *   fontSize: 35,
  *   align: "right"
  * });
- * ```
  * @memberof PIXI
  */
 export class BitmapText extends Container
@@ -299,7 +295,8 @@ export class BitmapText extends Container
 
             chars.push(charRenderData);
 
-            lastLineWidth = charRenderData.position.x + Math.max(charData.xAdvance, charData.texture.orig.width);
+            lastLineWidth = charRenderData.position.x
+                + Math.max(charData.xAdvance - charData.xOffset, charData.texture.orig.width);
             pos.x += charData.xAdvance + this._letterSpacing;
             maxLineHeight = Math.max(maxLineHeight, (charData.yOffset + charData.texture.height));
             prevCharCode = charCode;
@@ -307,7 +304,7 @@ export class BitmapText extends Container
             if (lastBreakPos !== -1 && maxWidth > 0 && pos.x > maxWidth)
             {
                 ++spacesRemoved;
-                removeItems(chars, 1 + lastBreakPos - spacesRemoved, 1 + i - lastBreakPos);
+                utils.removeItems(chars, 1 + lastBreakPos - spacesRemoved, 1 + i - lastBreakPos);
                 i = lastBreakPos;
                 lastBreakPos = -1;
 
@@ -367,10 +364,7 @@ export class BitmapText extends Container
 
         const activePagesMeshData = this._activePagesMeshData;
 
-        for (let i = 0; i < activePagesMeshData.length; i++)
-        {
-            pageMeshDataPool.push(activePagesMeshData[i]);
-        }
+        pageMeshDataPool.push(...activePagesMeshData);
 
         for (let i = 0; i < lenChars; i++)
         {
@@ -443,7 +437,7 @@ export class BitmapText extends Container
         // the updated text (if any), removed and return them to the pool.
         for (let i = 0; i < activePagesMeshData.length; i++)
         {
-            if (newPagesMeshData.indexOf(activePagesMeshData[i]) === -1)
+            if (!newPagesMeshData.includes(activePagesMeshData[i]))
             {
                 this.removeChild(activePagesMeshData[i].mesh);
             }
@@ -625,9 +619,11 @@ export class BitmapText extends Container
 
             const fontScale = this._fontSize / size;
 
+            const resolution =  renderer._view.resolution;
+
             for (const mesh of this._activePagesMeshData)
             {
-                mesh.mesh.shader.uniforms.uFWidth = worldScale * distanceFieldRange * fontScale * this._resolution;
+                mesh.mesh.shader.uniforms.uFWidth = worldScale * distanceFieldRange * fontScale * resolution;
             }
         }
 
@@ -896,6 +892,24 @@ export class BitmapText extends Container
     destroy(options?: boolean | IDestroyOptions): void
     {
         const { _textureCache } = this;
+        const data = BitmapFont.available[this._fontName];
+        const pageMeshDataPool = data.distanceFieldType === 'none'
+            ? pageMeshDataDefaultPageMeshData : pageMeshDataMSDFPageMeshData;
+
+        pageMeshDataPool.push(...this._activePagesMeshData);
+        for (const data of this._activePagesMeshData)
+        {
+            this.removeChild(data.mesh);
+        }
+        this._activePagesMeshData = [];
+
+        // Release references to any cached textures in page pool
+        pageMeshDataPool
+            .filter((page) => _textureCache[page.mesh.texture.baseTexture.uid])
+            .forEach((page) =>
+            {
+                page.mesh.texture = Texture.EMPTY;
+            });
 
         for (const id in _textureCache)
         {

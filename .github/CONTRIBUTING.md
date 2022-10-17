@@ -64,11 +64,11 @@ bug if it ever happens again. This prevents regressions from sneaking in.
 Tips for a faster workflow:
 
 - Run `npm start` in one terminal. This watches the source tree and compiles it incrementally.
-- When desired, run `npm run unit-test` in another terminal. This runs tests using the compilation output from `npm start`.
-- Run `npm run unit-test:debug` to use headful DevTools to debug or develop tests
-- For testing specific a package, use `--package` flag, e.g., `npm run unit-test -- --package=@pixi/math`
-- The `--package` flag supports multiple packages, e.g., `npm run unit-test -- --package=@pixi/math --package=@pixi/core`
-- The `--package` flag supports debug testing as well, e.g., `npm run unit-test:debug -- --package=@pixi/math`
+- When desired, run `npm run test` in another terminal. This runs tests using the compilation output from `npm start`.
+- Run `npm run test:debug` to use headful DevTools to debug or develop tests
+- For testing specific a package, use `npm run test:pkg` with the `--packages` flag, e.g., `npm run test:pkg -- --packages=@pixi/math`
+- The `--packages` flag supports multiple packages, e.g., `npm run test:pkg -- --packages=@pixi/math @pixi/core`
+- Run `npm run test:pkg:debug` for debugging specific packages `npm run test:pkg:debug -- --packages=@pixi/math @pixi/core`
 
 ### Submitting Your Change
 

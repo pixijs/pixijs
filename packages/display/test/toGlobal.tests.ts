@@ -1,6 +1,5 @@
 import { Container } from '@pixi/display';
-import { Point } from '@pixi/math';
-import { expect } from 'chai';
+import { Point } from '@pixi/core';
 
 describe('toGlobal', () =>
 {
@@ -16,8 +15,8 @@ describe('toGlobal', () =>
 
         let globalPoint = container.toGlobal(point);
 
-        expect(globalPoint.x).to.equal(100);
-        expect(globalPoint.y).to.equal(100);
+        expect(globalPoint.x).toEqual(100);
+        expect(globalPoint.y).toEqual(100);
 
         container.position.x = 20;
         container.position.y = 20;
@@ -27,7 +26,7 @@ describe('toGlobal', () =>
 
         globalPoint = container.toGlobal(point);
 
-        expect(globalPoint.x).to.equal(220);
-        expect(globalPoint.y).to.equal(220);
+        expect(globalPoint.x).toEqual(220);
+        expect(globalPoint.y).toEqual(220);
     });
 });

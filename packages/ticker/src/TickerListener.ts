@@ -1,4 +1,4 @@
-import { TickerCallback } from './Ticker';
+import type { TickerCallback } from './Ticker';
 
 /**
  * Internal class for handling the priority sorting of ticker handlers.

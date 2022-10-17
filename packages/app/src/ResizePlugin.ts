@@ -1,6 +1,8 @@
-import type { CanvasRenderer } from '@pixi/canvas-renderer';
-import type { Renderer } from '@pixi/core';
+import type { ExtensionMetadata, Renderer } from '@pixi/core';
+import { extensions, ExtensionType } from '@pixi/core';
 import type { IApplicationOptions } from './Application';
+
+type ResizeableRenderer = Pick<Renderer, 'resize'>;
 
 /**
  * Middleware for for Application's resize functionality
@@ -9,9 +11,12 @@ import type { IApplicationOptions } from './Application';
  */
 export class ResizePlugin
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = ExtensionType.Application;
+
     public static resizeTo: Window | HTMLElement;
     public static resize: () => void;
-    public static renderer: Renderer | CanvasRenderer;
+    public static renderer: ResizeableRenderer;
     public static queueResize: () => void;
     private static _resizeId: number;
     private static _resizeTo: Window | HTMLElement;
@@ -144,3 +149,5 @@ export class ResizePlugin
         this.resize = null;
     }
 }
+
+extensions.add(ResizePlugin);

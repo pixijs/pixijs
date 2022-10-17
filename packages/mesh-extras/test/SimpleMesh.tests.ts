@@ -1,9 +1,5 @@
 import { SimpleMesh } from '@pixi/mesh-extras';
-import { skipHello } from '@pixi/utils';
-import { Renderer, BatchRenderer } from '@pixi/core';
-import { expect } from 'chai';
-
-skipHello();
+import { Renderer } from '@pixi/core';
 
 describe('SimpleMesh', () =>
 {
@@ -11,16 +7,14 @@ describe('SimpleMesh', () =>
     {
         const mesh = new SimpleMesh();
 
-        expect(mesh).to.be.instanceOf(SimpleMesh);
-        expect(mesh.autoUpdate).to.be.true;
+        expect(mesh).toBeInstanceOf(SimpleMesh);
+        expect(mesh.autoUpdate).toBe(true);
 
         mesh.destroy();
     });
 
     it('should render the rope', () =>
     {
-        Renderer.registerPlugin('batch', BatchRenderer);
-
         const renderer = new Renderer();
         const mesh = new SimpleMesh();
 

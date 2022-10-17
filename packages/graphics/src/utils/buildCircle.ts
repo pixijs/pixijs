@@ -1,7 +1,7 @@
 // for type only
-import { SHAPES } from '@pixi/math';
+import { SHAPES } from '@pixi/core';
 
-import type { Circle, Ellipse, RoundedRectangle } from '@pixi/math';
+import type { Circle, Ellipse, RoundedRectangle } from '@pixi/core';
 import type { IShapeBuildCommand } from './IShapeBuildCommand';
 
 /**
@@ -165,6 +165,11 @@ export const buildCircle: IShapeBuildCommand = {
         const points = graphicsData.points;
         const verts = graphicsGeometry.points;
         const indices = graphicsGeometry.indices;
+
+        if (points.length === 0)
+        {
+            return;
+        }
 
         let vertPos = verts.length / 2;
         const center = vertPos;

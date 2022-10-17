@@ -7,7 +7,6 @@
  * @name UPDATE_PRIORITY
  * @memberof PIXI
  * @enum {number}
- * @property {number} [INTERACTION=50] Highest priority, used for {@link PIXI.InteractionManager}
  * @property {number} [HIGH=25] High priority updating, {@link PIXI.VideoBaseTexture} and {@link PIXI.AnimatedSprite}
  * @property {number} [NORMAL=0] Default priority for ticker events, see {@link PIXI.Ticker#add}.
  * @property {number} [LOW=-25] Low priority used for {@link PIXI.Application} rendering.
@@ -16,7 +15,6 @@
 export enum UPDATE_PRIORITY
 // eslint-disable-next-line @typescript-eslint/indent
 {
-    INTERACTION = 50,
     HIGH = 25,
     NORMAL = 0,
     LOW = -25,

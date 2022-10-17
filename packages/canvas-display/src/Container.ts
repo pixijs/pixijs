@@ -30,7 +30,7 @@ Container.prototype.renderCanvas = function renderCanvas(renderer: CanvasRendere
 
     if (this._mask)
     {
-        renderer.maskManager.pushMask(this._mask as MaskData);
+        renderer.mask.pushMask(this._mask as MaskData);
     }
 
     this._renderCanvas(renderer);
@@ -41,6 +41,6 @@ Container.prototype.renderCanvas = function renderCanvas(renderer: CanvasRendere
 
     if (this._mask)
     {
-        renderer.maskManager.popMask(renderer);
+        renderer.mask.popMask(renderer);
     }
 };

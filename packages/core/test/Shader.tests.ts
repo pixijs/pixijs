@@ -1,7 +1,4 @@
 import { Renderer, Shader, Geometry } from '@pixi/core';
-import { skipHello } from '@pixi/utils';
-
-skipHello();
 
 describe('Shader', () =>
 {
@@ -17,14 +14,14 @@ void main() {
     let renderer: Renderer;
     let geometry: Geometry;
 
-    before(() =>
+    beforeAll(() =>
     {
         renderer = new Renderer();
         geometry = new Geometry()
             .addAttribute('aVertexPosition', [-100, -100, 100, -100, 100, 100], 2);
     });
 
-    after(() =>
+    afterAll(() =>
     {
         renderer.destroy();
         renderer = null;

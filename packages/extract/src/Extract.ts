@@ -1,27 +1,11 @@
-import { CanvasRenderTarget } from '@pixi/utils';
-import { Rectangle } from '@pixi/math';
-import { RenderTexture } from '@pixi/core';
+import { Rectangle, utils, extensions, ExtensionType, RenderTexture } from '@pixi/core';
 
-import type { Renderer, IRendererPlugin } from '@pixi/core';
-import { DisplayObject } from '@pixi/display';
+import type { ISystem, ExtensionMetadata, Renderer } from '@pixi/core';
+import type { DisplayObject } from '@pixi/display';
+import type { ICanvas } from '@pixi/settings';
 
 const TEMP_RECT = new Rectangle();
 const BYTES_PER_PIXEL = 4;
-
-/**
- * this interface is used to extract only  a single pixel of Render Texture or Display Object
- * if you use this Interface all fields is required
- * @example
- * test: PixelExtractOptions = { x: 15, y: 20, resolution: 4, width: 10, height: 10 }
- */
-export interface PixelExtractOptions
-{
-    x: number,
-    y: number,
-    height: number,
-    resolution: number,
-    width: number
-}
 
 /**
  * This class provides renderer-specific plugins for exporting content from a renderer.
@@ -30,11 +14,13 @@ export interface PixelExtractOptions
  * Do not instantiate these plugins directly. It is available from the `renderer.plugins` property.
  * See {@link PIXI.CanvasRenderer#plugins} or {@link PIXI.Renderer#plugins}.
  * @example
+ * import { Application, Graphics } from 'pixi.js';
+ *
  * // Create a new app (will auto-add extract plugin to renderer)
- * const app = new PIXI.Application();
+ * const app = new Application();
  *
  * // Draw a red circle
- * const graphics = new PIXI.Graphics()
+ * const graphics = new Graphics()
  *     .beginFill(0xFF0000)
  *     .drawCircle(0, 0, 50);
  *
@@ -44,8 +30,14 @@ export interface PixelExtractOptions
  * @memberof PIXI
  */
 
-export class Extract implements IRendererPlugin
+export class Extract implements ISystem
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        name: 'extract',
+        type: ExtensionType.RendererSystem,
+    };
+
     private renderer: Renderer;
 
     /**
@@ -64,11 +56,11 @@ export class Extract implements IRendererPlugin
      * @param quality - JPEG or Webp compression from 0 to 1. Default is 0.92.
      * @returns - HTML Image of the target
      */
-    public image(target: DisplayObject | RenderTexture, format?: string, quality?: number): HTMLImageElement
+    public async image(target: DisplayObject | RenderTexture, format?: string, quality?: number): Promise<HTMLImageElement>
     {
         const image = new Image();
 
-        image.src = this.base64(target, format, quality);
+        image.src = await this.base64(target, format, quality);
 
         return image;
     }
@@ -82,22 +74,41 @@ export class Extract implements IRendererPlugin
      * @param quality - JPEG or Webp compression from 0 to 1. Default is 0.92.
      * @returns - A base64 encoded string of the texture.
      */
-    public base64(target: DisplayObject | RenderTexture, format?: string, quality?: number): string
+    public async base64(target: DisplayObject | RenderTexture, format?: string, quality?: number): Promise<string>
     {
-        return this.canvas(target).toDataURL(format, quality);
+        const canvas = this.canvas(target);
+
+        if (canvas.toDataURL !== undefined)
+        {
+            return canvas.toDataURL(format, quality);
+        }
+        if (canvas.convertToBlob !== undefined)
+        {
+            const blob = await canvas.convertToBlob({ type: format, quality });
+
+            return await new Promise<string>((resolve) =>
+            {
+                const reader = new FileReader();
+
+                reader.onload = () => resolve(reader.result as string);
+                reader.readAsDataURL(blob);
+            });
+        }
+
+        throw new Error('Extract.base64() requires ICanvas.toDataURL or ICanvas.convertToBlob to be implemented');
     }
 
     /**
      * Creates a Canvas element, renders this target to it and then returns it.
      * @param target - A displayObject or renderTexture
      *  to convert. If left empty will use the main renderer
+     * @param frame - The frame the extraction is restricted to.
      * @returns - A Canvas element with the texture rendered on.
      */
-    public canvas(target: DisplayObject | RenderTexture): HTMLCanvasElement
+    public canvas(target: DisplayObject | RenderTexture, frame?: Rectangle): ICanvas
     {
         const renderer = this.renderer;
         let resolution;
-        let frame;
         let flipY = false;
         let renderTexture;
         let generated = false;
@@ -118,27 +129,29 @@ export class Extract implements IRendererPlugin
         if (renderTexture)
         {
             resolution = renderTexture.baseTexture.resolution;
-            frame = renderTexture.frame;
+            frame = frame ?? renderTexture.frame;
             flipY = false;
             renderer.renderTexture.bind(renderTexture);
         }
         else
         {
-            resolution = this.renderer.resolution;
+            resolution = renderer.resolution;
+
+            if (!frame)
+            {
+                frame = TEMP_RECT;
+                frame.width = renderer.width;
+                frame.height = renderer.height;
+            }
 
             flipY = true;
-
-            frame = TEMP_RECT;
-            frame.width = this.renderer.width;
-            frame.height = this.renderer.height;
-
             renderer.renderTexture.bind(null);
         }
 
-        const width = Math.floor((frame.width * resolution) + 1e-4);
-        const height = Math.floor((frame.height * resolution) + 1e-4);
+        const width = Math.round(frame.width * resolution);
+        const height = Math.round(frame.height * resolution);
 
-        let canvasBuffer = new CanvasRenderTarget(width, height, 1);
+        let canvasBuffer = new utils.CanvasRenderTarget(width, height, 1);
 
         const webglPixels = new Uint8Array(BYTES_PER_PIXEL * width * height);
 
@@ -146,8 +159,8 @@ export class Extract implements IRendererPlugin
         const gl = renderer.gl;
 
         gl.readPixels(
-            frame.x * resolution,
-            frame.y * resolution,
+            Math.round(frame.x * resolution),
+            Math.round(frame.y * resolution),
             width,
             height,
             gl.RGBA,
@@ -165,7 +178,7 @@ export class Extract implements IRendererPlugin
         // pulling pixels
         if (flipY)
         {
-            const target = new CanvasRenderTarget(canvasBuffer.width, canvasBuffer.height, 1);
+            const target = new utils.CanvasRenderTarget(canvasBuffer.width, canvasBuffer.height, 1);
 
             target.context.scale(1, -1);
 
@@ -190,14 +203,13 @@ export class Extract implements IRendererPlugin
      * order, with integer values between 0 and 255 (included).
      * @param target - A displayObject or renderTexture
      *  to convert. If left empty will use the main renderer
-     * @param options
+     * @param frame - The frame the extraction is restricted to.
      * @returns - One-dimensional array containing the pixel data of the entire texture
      */
-    public pixels(target?: DisplayObject | RenderTexture, options?: PixelExtractOptions): Uint8Array
+    public pixels(target?: DisplayObject | RenderTexture, frame?: Rectangle): Uint8Array
     {
         const renderer = this.renderer;
         let resolution;
-        let frame;
         let renderTexture;
         let generated = false;
 
@@ -207,7 +219,7 @@ export class Extract implements IRendererPlugin
             {
                 renderTexture = target;
             }
-            else if (target instanceof DisplayObject)
+            else
             {
                 renderTexture = this.renderer.generateTexture(target);
                 generated = true;
@@ -216,45 +228,26 @@ export class Extract implements IRendererPlugin
 
         if (renderTexture)
         {
-            if (options)
-            {
-                resolution = options.resolution;
-                frame = renderTexture.frame;
-
-                // bind the buffer
-                renderer.renderTexture.bind(renderTexture);
-            }
-            else
-            {
-                resolution = renderTexture.baseTexture.resolution;
-                frame = renderTexture.frame;
-
-                // bind the buffer
-                renderer.renderTexture.bind(renderTexture);
-            }
-        }
-        else if (options)
-        {
-            resolution = options.resolution;
-
-            frame = TEMP_RECT;
-            frame.width = options.width;
-            frame.height = options.height;
-            renderer.renderTexture.bind(null);
+            resolution = renderTexture.baseTexture.resolution;
+            frame = frame ?? renderTexture.frame;
+            renderer.renderTexture.bind(renderTexture);
         }
         else
         {
             resolution = renderer.resolution;
 
-            frame = TEMP_RECT;
-            frame.width = renderer.width;
-            frame.height = renderer.height;
+            if (!frame)
+            {
+                frame = TEMP_RECT;
+                frame.width = renderer.width;
+                frame.height = renderer.height;
+            }
 
             renderer.renderTexture.bind(null);
         }
 
-        const width = frame.width * resolution;
-        const height = frame.height * resolution;
+        const width = Math.round(frame.width * resolution);
+        const height = Math.round(frame.height * resolution);
 
         const webglPixels = new Uint8Array(BYTES_PER_PIXEL * width * height);
 
@@ -262,8 +255,8 @@ export class Extract implements IRendererPlugin
         const gl = renderer.gl;
 
         gl.readPixels(
-            frame.x * resolution,
-            frame.y * resolution,
+            Math.round(frame.x * resolution),
+            Math.round(frame.y * resolution),
             width,
             height,
             gl.RGBA,
@@ -316,3 +309,5 @@ export class Extract implements IRendererPlugin
         }
     }
 }
+
+extensions.add(Extract);

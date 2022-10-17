@@ -1,4 +1,4 @@
-import { BitmapFontData } from '../BitmapFontData';
+import type { BitmapFontData } from '../BitmapFontData';
 import { XMLFormat } from './XMLFormat';
 
 /**
@@ -14,7 +14,7 @@ export class XMLStringFormat
      */
     static test(data: unknown): boolean
     {
-        if (typeof data === 'string' && data.indexOf('<font>') > -1)
+        if (typeof data === 'string' && data.includes('<font>'))
         {
             const xml = new globalThis.DOMParser().parseFromString(data, 'text/xml');
 

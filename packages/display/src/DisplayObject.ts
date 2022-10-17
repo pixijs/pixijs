@@ -1,11 +1,8 @@
-import { DEG_TO_RAD, Matrix, Point, RAD_TO_DEG, Rectangle, Transform } from '@pixi/math';
-import { EventEmitter } from '@pixi/utils';
+import { DEG_TO_RAD, RAD_TO_DEG, Rectangle, Transform, utils } from '@pixi/core';
 import { Bounds } from './Bounds';
 
 import type { Container } from './Container';
-import type { Filter, MaskData, Renderer } from '@pixi/core';
-import type { IPointData, ObservablePoint } from '@pixi/math';
-import type { Dict } from '@pixi/utils';
+import type { Filter, MaskData, Renderer, IPointData, ObservablePoint, Matrix, Point } from '@pixi/core';
 
 export interface IDestroyOptions
 {
@@ -14,7 +11,7 @@ export interface IDestroyOptions
     baseTexture?: boolean;
 }
 
-export interface DisplayObject extends Omit<GlobalMixins.DisplayObject, keyof EventEmitter>, EventEmitter {}
+export interface DisplayObject extends Omit<GlobalMixins.DisplayObject, keyof utils.EventEmitter>, utils.EventEmitter {}
 
 /**
  * The base class for all objects that are rendered on the screen.
@@ -201,7 +198,7 @@ export interface DisplayObject extends Omit<GlobalMixins.DisplayObject, keyof Ev
  * one is also better in terms of performance.
  * @memberof PIXI
  */
-export abstract class DisplayObject extends EventEmitter
+export abstract class DisplayObject extends utils.EventEmitter
 {
     abstract sortDirty: boolean;
 
@@ -327,7 +324,7 @@ export abstract class DisplayObject extends EventEmitter
      * Mixes all enumerable properties and methods from a source object to DisplayObject.
      * @param source - The source of properties and methods to mix in.
      */
-    static mixin(source: Dict<any>): void
+    static mixin(source: utils.Dict<any>): void
     {
         // in ES8/ES2017, this would be really easy:
         // Object.defineProperties(DisplayObject.prototype, Object.getOwnPropertyDescriptors(source));
@@ -651,6 +648,12 @@ export abstract class DisplayObject extends EventEmitter
         return container;
     }
 
+    /** Remove the DisplayObject from its parent Container. If the DisplayObject has no parent, do nothing. */
+    removeFromParent()
+    {
+        this.parent?.removeChild(this);
+    }
+
     /**
      * Convenience function to set the position, scale, skew and pivot at once.
      * @param x - The X position
@@ -688,10 +691,8 @@ export abstract class DisplayObject extends EventEmitter
      */
     destroy(_options?: IDestroyOptions | boolean): void
     {
-        if (this.parent)
-        {
-            this.parent.removeChild(this);
-        }
+        this.removeFromParent();
+
         this._destroyed = true;
         this.transform = null;
 
@@ -942,14 +943,16 @@ export abstract class DisplayObject extends EventEmitter
      *
      * For sprite mask both alpha and red channel are used. Black mask is the same as transparent mask.
      * @example
-     * const graphics = new PIXI.Graphics();
+     * import { Graphics, Sprite } from 'pixi.js';
+     *
+     * const graphics = new Graphics();
      * graphics.beginFill(0xFF3300);
      * graphics.drawRect(50, 250, 100, 100);
      * graphics.endFill();
      *
-     * const sprite = new PIXI.Sprite(texture);
+     * const sprite = new Sprite(texture);
      * sprite.mask = graphics;
-     * @todo At the moment, PIXI.CanvasRenderer doesn't support PIXI.Sprite as mask.
+     * @todo At the moment, CanvasRenderer doesn't support Sprite as mask.
      */
     get mask(): Container | MaskData | null
     {
@@ -965,14 +968,18 @@ export abstract class DisplayObject extends EventEmitter
 
         if (this._mask)
         {
-            const maskObject = ((this._mask as MaskData).maskObject || this._mask) as Container;
+            const maskObject = ((this._mask as MaskData).isMaskData
+                ? (this._mask as MaskData).maskObject : this._mask) as Container;
 
-            maskObject._maskRefCount--;
-
-            if (maskObject._maskRefCount === 0)
+            if (maskObject)
             {
-                maskObject.renderable = true;
-                maskObject.isMask = false;
+                maskObject._maskRefCount--;
+
+                if (maskObject._maskRefCount === 0)
+                {
+                    maskObject.renderable = true;
+                    maskObject.isMask = false;
+                }
             }
         }
 
@@ -980,15 +987,19 @@ export abstract class DisplayObject extends EventEmitter
 
         if (this._mask)
         {
-            const maskObject = ((this._mask as MaskData).maskObject || this._mask) as Container;
+            const maskObject = ((this._mask as MaskData).isMaskData
+                ? (this._mask as MaskData).maskObject : this._mask) as Container;
 
-            if (maskObject._maskRefCount === 0)
+            if (maskObject)
             {
-                maskObject.renderable = false;
-                maskObject.isMask = true;
-            }
+                if (maskObject._maskRefCount === 0)
+                {
+                    maskObject.renderable = false;
+                    maskObject.isMask = true;
+                }
 
-            maskObject._maskRefCount++;
+                maskObject._maskRefCount++;
+            }
         }
     }
 }

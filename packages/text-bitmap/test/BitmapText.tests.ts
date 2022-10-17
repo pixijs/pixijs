@@ -1,11 +1,9 @@
 import path from 'path';
 import fs from 'fs';
 import { BitmapText, BitmapFont } from '@pixi/text-bitmap';
-import { settings } from '@pixi/settings';
-import { Texture, Renderer } from '@pixi/core';
-import sinon from 'sinon';
-import { expect } from 'chai';
-import { Container } from '@pixi/display';
+import { settings, Texture, Renderer } from '@pixi/core';
+
+import type { Container } from '@pixi/display';
 
 describe('BitmapText', () =>
 {
@@ -17,7 +15,7 @@ describe('BitmapText', () =>
     let font2XML: XMLDocument;
     let texture: Texture;
 
-    before((done) =>
+    beforeAll((done) =>
     {
         fontXML = null;
         fontImage = null;
@@ -27,7 +25,7 @@ describe('BitmapText', () =>
         const loadXML = (url: string) => new Promise<XMLDocument>((resolve) =>
             fs.readFile(resolveURL(url), 'utf8', (err, data) =>
             {
-                expect(err).to.be.null;
+                expect(err).toBeNull();
                 resolve((new window.DOMParser()).parseFromString(data, 'text/xml'));
             }));
 
@@ -57,7 +55,7 @@ describe('BitmapText', () =>
         });
     });
 
-    after(() =>
+    afterAll(() =>
     {
         BitmapFont.uninstall(font.font);
         BitmapFont.uninstall(font2.font);
@@ -72,10 +70,10 @@ describe('BitmapText', () =>
         texture = Texture.from(fontImage);
         font = BitmapFont.install(fontXML, texture);
         font2 = BitmapFont.install(font2XML, texture);
-        expect(font).instanceof(BitmapFont);
-        expect(font2).instanceof(BitmapFont);
-        expect(BitmapFont.available[font.font]).to.equal(font);
-        expect(BitmapFont.available[font2.font]).to.equal(font2);
+        expect(font).toBeInstanceOf(BitmapFont);
+        expect(font2).toBeInstanceOf(BitmapFont);
+        expect(BitmapFont.available[font.font]).toEqual(font);
+        expect(BitmapFont.available[font2.font]).toEqual(font2);
     });
 
     it('should have correct children when modified', () =>
@@ -89,24 +87,24 @@ describe('BitmapText', () =>
             fontName: 'testFont',
         });
 
-        const listener = sinon.spy(text, 'addChild');
+        const listener = jest.spyOn(text, 'addChild');
 
         text.updateText();
 
-        expect(listener.callCount).to.equal(1);
-        expect(text.children.length).to.equal(1);
+        expect(listener.mock.calls).toHaveLength(1);
+        expect(text.children.length).toEqual(1);
 
         text.updateText();
 
-        expect(listener.callCount).to.equal(1);
-        expect(text.children.length).to.equal(1);
+        expect(listener.mock.calls).toHaveLength(1);
+        expect(text.children.length).toEqual(1);
 
         text.text = 'hiya';
 
         text.updateText();
 
-        expect(listener.callCount).to.equal(1);
-        expect(text.children.length).to.equal(1);
+        expect(listener.mock.calls).toHaveLength(1);
+        expect(text.children.length).toEqual(1);
     });
 
     it('should render text even if there are unsupported characters', () =>
@@ -116,7 +114,7 @@ describe('BitmapText', () =>
         });
 
         text.updateText();
-        expect(text['_activePagesMeshData'][0].total).to.equal(4);
+        expect(text['_activePagesMeshData'][0].total).toEqual(4);
     });
     it('should support font without page reference', () =>
     {
@@ -126,8 +124,8 @@ describe('BitmapText', () =>
 
         text.updateText();
 
-        expect((text.children[0] as Container).width).to.equal(19);
-        expect((text.children[0] as Container).height).to.equal(20);
+        expect((text.children[0] as Container).width).toEqual(19);
+        expect((text.children[0] as Container).height).toEqual(20);
     });
     it('should break line on space', () =>
     {
@@ -142,13 +140,13 @@ describe('BitmapText', () =>
         bmpText.text = 'A A A A A A A ';
         bmpText.updateText();
 
-        expect(bmpText.textWidth).to.be.at.most(bmpText.maxWidth);
+        expect(bmpText.textWidth).toBeLessThanOrEqual(bmpText.maxWidth);
 
         bmpText.maxWidth = 40;
         bmpText.text = 'A A A A A A A';
         bmpText.updateText();
 
-        expect(bmpText.textWidth).to.be.at.most(bmpText.maxWidth);
+        expect(bmpText.textWidth).toBeLessThanOrEqual(bmpText.maxWidth);
     });
     it('letterSpacing should add extra space between characters', () =>
     {
@@ -174,7 +172,7 @@ describe('BitmapText', () =>
 
             for (let char = 1; char < renderedChars; ++char)
             {
-                expect(bmpText.children[char].x).to.equal(prevPos + space + positions[char] - positions[char - 1]);
+                expect(bmpText.children[char].x).toEqual(prevPos + space + positions[char] - positions[char - 1]);
                 prevPos = bmpText.children[char].x;
             }
         }
@@ -185,7 +183,7 @@ describe('BitmapText', () =>
             fontName: font.font,
         });
 
-        expect(() => text.updateText()).to.not.throw();
+        expect(() => text.updateText()).not.toThrowError();
 
         text = new BitmapText('not undefined', {
             fontName: font.font,
@@ -193,7 +191,7 @@ describe('BitmapText', () =>
 
         text.text = undefined;
 
-        expect(() => text.updateText()).to.not.throw();
+        expect(() => text.updateText()).not.toThrowError();
     });
 
     it('should set the text resolution to match the resolution setting when constructed time', () =>
@@ -202,7 +200,7 @@ describe('BitmapText', () =>
             fontName: font.font,
         });
 
-        expect(text.resolution).to.equal(settings.RESOLUTION);
+        expect(text.resolution).toEqual(settings.RESOLUTION);
     });
 
     it('should update the text resolution to match the renderer resolution when being rendered to screen', () =>
@@ -211,15 +209,15 @@ describe('BitmapText', () =>
             fontName: font.font,
         });
 
-        expect(text.resolution).to.equal(settings.RESOLUTION);
+        expect(text.resolution).toEqual(settings.RESOLUTION);
 
         const renderer = new Renderer({ resolution: 2 });
 
-        expect(renderer.resolution).to.equal(2);
+        expect(renderer.resolution).toEqual(2);
 
         renderer.render(text);
 
-        expect(text.resolution).to.equal(renderer.resolution);
+        expect(text.resolution).toEqual(renderer.resolution);
 
         renderer.destroy();
     });
@@ -232,13 +230,13 @@ describe('BitmapText', () =>
 
         text.resolution = 3;
 
-        expect(text.resolution).to.equal(3);
+        expect(text.resolution).toEqual(3);
 
         const renderer = new Renderer({ resolution: 2 });
 
         renderer.render(text);
 
-        expect(text.resolution).to.equal(3);
+        expect(text.resolution).toEqual(3);
 
         renderer.destroy();
     });

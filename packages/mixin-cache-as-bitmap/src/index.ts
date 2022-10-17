@@ -1,16 +1,18 @@
-import { Texture, BaseTexture, RenderTexture, Renderer, MaskData, AbstractRenderer } from '@pixi/core';
+import { Texture, BaseTexture, RenderTexture, Matrix, utils, MSAA_QUALITY, settings } from '@pixi/core';
 import { Sprite } from '@pixi/sprite';
-import { Container, DisplayObject, IDestroyOptions } from '@pixi/display';
-import { IPointData, Matrix, Rectangle } from '@pixi/math';
-import { uid } from '@pixi/utils';
-import { settings } from '@pixi/settings';
-import { MSAA_QUALITY } from '@pixi/constants';
+import { DisplayObject } from '@pixi/display';
+
+import type { Renderer, MaskData, IRenderer, IPointData, Rectangle } from '@pixi/core';
+import type { Container, IDestroyOptions } from '@pixi/display';
+import type { ICanvasRenderingContext2D } from '@pixi/settings';
 
 // Don't import CanvasRender to remove dependency on this optional package
 // this type should satisify these requirements for cacheAsBitmap types
-interface CanvasRenderer extends AbstractRenderer
+interface CanvasRenderer extends IRenderer
 {
-    context: CanvasRenderingContext2D;
+    canvasContext: {
+        activeContext: ICanvasRenderingContext2D;
+    }
 }
 
 const _tempMatrix = new Matrix();
@@ -32,7 +34,7 @@ export class CacheData
 {
     public textureCacheId: string;
     public originalRender: (renderer: Renderer) => void;
-    public originalRenderCanvas: (renderer: AbstractRenderer) => void;
+    public originalRenderCanvas: (renderer: IRenderer) => void;
     public originalCalculateBounds: () => void;
     public originalGetLocalBounds: (rect?: Rectangle) => Rectangle;
     public originalUpdateTransform: () => void;
@@ -235,7 +237,7 @@ DisplayObject.prototype._renderCached = function _renderCached(renderer: Rendere
  */
 DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayObject(renderer: Renderer): void
 {
-    if (this._cacheData && this._cacheData.sprite)
+    if (this._cacheData?.sprite)
     {
         return;
     }
@@ -256,7 +258,7 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
     const bounds = (this as Container).getLocalBounds(null, true).clone();
 
     // add some padding!
-    if (this.filters && this.filters.length)
+    if (this.filters?.length)
     {
         const padding = this.filters[0].padding;
 
@@ -283,7 +285,7 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
         multisample: this.cacheAsBitmapMultisample ?? renderer.multisample,
     });
 
-    const textureCacheId = `cacheAsBitmap_${uid()}`;
+    const textureCacheId = `cacheAsBitmap_${utils.uid()}`;
 
     this._cacheData.textureCacheId = textureCacheId;
 
@@ -350,7 +352,7 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
  * @memberof PIXI.DisplayObject#
  * @param {PIXI.CanvasRenderer} renderer - The canvas renderer
  */
-DisplayObject.prototype._renderCachedCanvas = function _renderCachedCanvas(renderer: AbstractRenderer): void
+DisplayObject.prototype._renderCachedCanvas = function _renderCachedCanvas(renderer: IRenderer): void
 {
     if (!this.visible || this.worldAlpha <= 0 || !this.renderable)
     {
@@ -375,7 +377,7 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDis
     renderer: CanvasRenderer
 ): void
 {
-    if (this._cacheData && this._cacheData.sprite)
+    if (this._cacheData?.sprite)
     {
         return;
     }
@@ -387,14 +389,14 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDis
 
     this.alpha = 1;
 
-    const cachedRenderTarget = renderer.context;
+    const cachedRenderTarget = renderer.canvasContext.activeContext;
     const cachedProjectionTransform = (renderer as any)._projTransform;
 
     bounds.ceil(settings.RESOLUTION);
 
     const renderTexture = RenderTexture.create({ width: bounds.width, height: bounds.height });
 
-    const textureCacheId = `cacheAsBitmap_${uid()}`;
+    const textureCacheId = `cacheAsBitmap_${utils.uid()}`;
 
     this._cacheData.textureCacheId = textureCacheId;
 
@@ -416,7 +418,7 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDis
 
     renderer.render(this, { renderTexture, clear: true, transform: m, skipUpdateTransform: false });
     // now restore the state be setting the new properties
-    renderer.context = cachedRenderTarget;
+    renderer.canvasContext.activeContext = cachedRenderTarget;
     (renderer as any)._projTransform = cachedProjectionTransform;
 
     this.renderCanvas = this._renderCachedCanvas;

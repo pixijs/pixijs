@@ -1,7 +1,6 @@
 import { TilingSprite } from '@pixi/sprite-tiling';
 import { canvasUtils } from '@pixi/canvas-renderer';
-import { CanvasRenderTarget } from '@pixi/utils';
-import { Matrix, Point } from '@pixi/math';
+import { Matrix, Point, utils } from '@pixi/core';
 
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
 
@@ -25,7 +24,7 @@ TilingSprite.prototype._renderCanvas = function _renderCanvas(renderer: CanvasRe
         return;
     }
 
-    const context = renderer.context;
+    const context = renderer.canvasContext.activeContext;
     const transform = this.worldTransform;
     const baseTexture = texture.baseTexture;
     const source = baseTexture.getDrawableSource();
@@ -36,14 +35,14 @@ TilingSprite.prototype._renderCanvas = function _renderCanvas(renderer: CanvasRe
     {
         this._textureID = this._texture._updateID;
         // cut an object from a spritesheet..
-        const tempCanvas = new CanvasRenderTarget(texture._frame.width,
+        const tempCanvas = new utils.CanvasRenderTarget(texture._frame.width,
             texture._frame.height,
             baseTextureResolution);
 
         // Tint the tiling sprite
         if (this.tint !== 0xFFFFFF)
         {
-            this._tintedCanvas = canvasUtils.getTintedCanvas(this, this.tint) as HTMLCanvasElement;
+            this._tintedCanvas = canvasUtils.getTintedCanvas(this, this.tint);
             tempCanvas.context.drawImage(this._tintedCanvas, 0, 0);
         }
         else
@@ -57,7 +56,7 @@ TilingSprite.prototype._renderCanvas = function _renderCanvas(renderer: CanvasRe
 
     // set context state..
     context.globalAlpha = this.worldAlpha;
-    renderer.setBlendMode(this.blendMode);
+    renderer.canvasContext.setBlendMode(this.blendMode);
 
     this.tileTransform.updateLocalTransform();
     const lt = this.tileTransform.localTransform;
@@ -100,7 +99,7 @@ TilingSprite.prototype._renderCanvas = function _renderCanvas(renderer: CanvasRe
      *
      * Local Space (-localBounds.x, -localBounds.y) <--> Pattern Space (0, 0)
      *
-     * Here the mapping is provided by the tileTransfrom PLUS some "shift". This shift is done POST-tileTransform. The shift
+     * Here the mapping is provided by the tileTransform PLUS some "shift". This shift is done POST-tileTransform. The shift
      * is equal to the position of the top-left corner of the tiling sprite in its local space.
      *
      * Hence,
@@ -110,14 +109,14 @@ TilingSprite.prototype._renderCanvas = function _renderCanvas(renderer: CanvasRe
 
     // worldMatrix is used to convert from pattern space to world space.
     //
-    // worldMatrix = tileTransform x shiftTransform x worldTransfrom
+    // worldMatrix = tileTransform x shiftTransform x worldTransform
     //             = patternMatrix x worldTransform
     worldMatrix.identity();
 
     // patternMatrix is used to convert from pattern space to local space. The drawing commands are issued in pattern space
     // and this matrix is used to inverse-map the local space vertices into it.
     //
-    // patternMatrix = tileTransfrom x shiftTransform
+    // patternMatrix = tileTransform x shiftTransform
     patternMatrix.copyFrom(lt);
 
     // Apply shiftTransform into patternMatrix. See $1.1
@@ -130,7 +129,7 @@ TilingSprite.prototype._renderCanvas = function _renderCanvas(renderer: CanvasRe
     worldMatrix.prepend(patternMatrix);
     worldMatrix.prepend(transform);
 
-    renderer.setContextTransform(worldMatrix);
+    renderer.canvasContext.setContextTransform(worldMatrix);
 
     // Fill the pattern!
     context.fillStyle = this._canvasPattern;

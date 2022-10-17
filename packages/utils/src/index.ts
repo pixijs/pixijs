@@ -1,8 +1,9 @@
 /**
  * Generalized convenience utilities for PIXI.
  * @example
+ * import { utils } from 'pixi.js';
  * // Extend PIXI's internal Event Emitter.
- * class MyEmitter extends PIXI.utils.EventEmitter {
+ * class MyEmitter extends utils.EventEmitter {
  *   constructor() {
  *      super();
  *      console.log("Emitter created!");
@@ -10,10 +11,10 @@
  * }
  *
  * // Get info on current device
- * console.log(PIXI.utils.isMobile);
+ * console.log(utils.isMobile);
  *
  * // Convert hex color to string
- * console.log(PIXI.utils.hex2string(0xff00ff)); // returns: "#ff00ff"
+ * console.log(utils.hex2string(0xff00ff)); // returns: "#ff00ff"
  * @namespace PIXI.utils
  */
 
@@ -76,6 +77,14 @@ export { default as earcut } from 'earcut';
  * @member {object}
  */
 export * from './url';
+/**
+ * Browser and Node.js compatible path utilities.
+ * All paths that are passed in will become normalized to have posix separators.
+ * @memberof PIXI.utils
+ * @name path
+ * @member {object}
+ */
+export * from './path';
 
 import './settings';
 

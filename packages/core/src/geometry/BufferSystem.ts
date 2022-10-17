@@ -1,9 +1,12 @@
 import { GLBuffer } from './GLBuffer';
 
 import type { Renderer } from '../Renderer';
-import type { IRenderingContext } from '../IRenderingContext';
 import type { Buffer } from './Buffer';
-import type { ISystem } from '../ISystem';
+import type { ISystem } from '../system/ISystem';
+import type { IRenderingContext } from '../IRenderer';
+import type { ExtensionMetadata } from '@pixi/extensions';
+import { extensions, ExtensionType } from '@pixi/extensions';
+import type { BUFFER_TYPE } from '@pixi/constants';
 
 /**
  * System plugin to the renderer to manage buffers.
@@ -24,6 +27,12 @@ import type { ISystem } from '../ISystem';
  */
 export class BufferSystem implements ISystem
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        type: ExtensionType.RendererSystem,
+        name: 'buffer',
+    };
+
     CONTEXT_UID: number;
     gl: IRenderingContext;
 
@@ -77,6 +86,13 @@ export class BufferSystem implements ISystem
         gl.bindBuffer(buffer.type, glBuffer.buffer);
     }
 
+    unbind(type: BUFFER_TYPE): void
+    {
+        const { gl } = this;
+
+        gl.bindBuffer(type, null);
+    }
+
     /**
      * Binds an uniform buffer to at the given index.
      *
@@ -124,7 +140,7 @@ export class BufferSystem implements ISystem
     {
         const { gl, CONTEXT_UID } = this;
 
-        const glBuffer = buffer._glBuffers[CONTEXT_UID];
+        const glBuffer = buffer._glBuffers[CONTEXT_UID] || this.createGLBuffer(buffer);
 
         if (buffer._updateID === glBuffer.updateID)
         {
@@ -213,3 +229,5 @@ export class BufferSystem implements ISystem
         return buffer._glBuffers[CONTEXT_UID];
     }
 }
+
+extensions.add(BufferSystem);

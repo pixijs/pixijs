@@ -8,20 +8,23 @@ import {
     RoundedRectangle,
     Matrix,
     SHAPES,
-} from '@pixi/math';
+    BLEND_MODES,
+    Texture,
+    UniformGroup,
+    State,
+    Shader,
+    utils
+} from '@pixi/core';
 
-import { Texture, UniformGroup, State, Renderer, BatchDrawCall, Shader } from '@pixi/core';
 import { BezierUtils, QuadraticUtils, ArcUtils } from './utils';
-import { hex2rgb } from '@pixi/utils';
 import { GraphicsGeometry } from './GraphicsGeometry';
 import { FillStyle } from './styles/FillStyle';
 import { LineStyle } from './styles/LineStyle';
-import { BLEND_MODES } from '@pixi/constants';
 import { Container } from '@pixi/display';
-
-import type { IShape, IPointData } from '@pixi/math';
-import type { IDestroyOptions } from '@pixi/display';
 import { LINE_JOIN, LINE_CAP } from './const';
+
+import type { IShape, IPointData, Renderer, BatchDrawCall } from '@pixi/core';
+import type { IDestroyOptions } from '@pixi/display';
 
 /** Batch element computed from Graphics geometry */
 export interface IGraphicsBatchElement
@@ -82,12 +85,6 @@ export interface Graphics extends GlobalMixins.Graphics, Container {}
  */
 export class Graphics extends Container
 {
-    /**
-     * New rendering behavior for rounded rectangles: circular arcs instead of quadratic bezier curves.
-     * In the next major release, we'll enable this by default.
-     */
-    public static nextRoundedRectBehavior = false;
-
     /**
      * Temporary point to use for containsPoint.
      * @private
@@ -310,7 +307,7 @@ export class Graphics extends Container
         options = Object.assign({
             width: 0,
             texture: Texture.WHITE,
-            color: (options && options.texture) ? 0xFFFFFF : 0x0,
+            color: options?.texture ? 0xFFFFFF : 0x0,
             alpha: 1,
             matrix: null,
             alignment: 0.5,
@@ -611,7 +608,8 @@ export class Graphics extends Container
     }
 
     /**
-     * Begin the texture fill
+     * Begin the texture fill.
+     * Note: The wrap mode of the texture is forced to REPEAT on render.
      * @param options - Object object.
      * @param {PIXI.Texture} [options.texture=PIXI.Texture.WHITE] - Texture to fill
      * @param {number} [options.color=0xffffff] - Background to fill behind texture
@@ -719,17 +717,17 @@ export class Graphics extends Container
         return this.drawShape(new Ellipse(x, y, width, height));
     }
 
-    public drawPolygon(...path: Array<number> | Array<Point>): this;
-    public drawPolygon(path: Array<number> | Array<Point> | Polygon): this;
+    public drawPolygon(...path: Array<number> | Array<IPointData>): this;
+    public drawPolygon(path: Array<number> | Array<IPointData> | Polygon): this;
 
     /**
      * Draws a polygon using the given path.
-     * @param {number[]|PIXI.Point[]|PIXI.Polygon} path - The path data used to construct the polygon.
+     * @param {number[]|PIXI.IPointData[]|PIXI.Polygon} path - The path data used to construct the polygon.
      * @returns - This Graphics object. Good for chaining method calls
      */
     public drawPolygon(...path: any[]): this
     {
-        let points: Array<number> | Array<Point>;
+        let points: Array<number> | Array<IPointData>;
         let closeStroke = true;// !!this._fillStyle;
 
         const poly = path[0] as Polygon;
@@ -826,11 +824,10 @@ export class Graphics extends Container
         this.finishPoly();
 
         const geometry = this._geometry;
-        const hasuint32 = renderer.context.supports.uint32Indices;
         // batch part..
         // batch it!
 
-        geometry.updateBatches(hasuint32);
+        geometry.updateBatches();
 
         if (geometry.batchable)
         {
@@ -885,7 +882,7 @@ export class Graphics extends Container
                 blendMode,
                 indices,
                 uvs,
-                _batchRGB: hex2rgb(color) as Array<number>,
+                _batchRGB: utils.hex2rgb(color) as Array<number>,
                 _tintRGB: color,
                 _texture: gI.style.texture,
                 alpha: gI.style.alpha,
@@ -1059,7 +1056,7 @@ export class Graphics extends Container
         {
             this.batchTint = this.tint;
 
-            const tintRGB = hex2rgb(this.tint, temp);
+            const tintRGB = utils.hex2rgb(this.tint, temp);
 
             for (let i = 0; i < this.batches.length; i++)
             {

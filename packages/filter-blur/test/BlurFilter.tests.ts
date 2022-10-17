@@ -1,5 +1,4 @@
 import { BlurFilter } from '@pixi/filter-blur';
-import { expect } from 'chai';
 
 describe('BlurFilter', () =>
 {
@@ -7,11 +6,11 @@ describe('BlurFilter', () =>
     {
         const filter = new BlurFilter();
 
-        expect(filter).to.be.instanceOf(BlurFilter);
-        expect(filter.blur).to.equal(8);
-        expect(filter.blurX).to.equal(8);
-        expect(filter.blurY).to.equal(8);
-        expect(filter.quality).to.equal(4);
+        expect(filter).toBeInstanceOf(BlurFilter);
+        expect(filter.blur).toEqual(8);
+        expect(filter.blurX).toEqual(8);
+        expect(filter.blurY).toEqual(8);
+        expect(filter.quality).toEqual(4);
 
         filter.destroy();
     });
@@ -20,13 +19,13 @@ describe('BlurFilter', () =>
     {
         const filter = new BlurFilter();
 
-        expect(filter.repeatEdgePixels).to.be.false;
-        expect(filter.padding).to.be.greaterThan(0);
+        expect(filter.repeatEdgePixels).toBe(false);
+        expect(filter.padding).toBeGreaterThan(0);
 
         filter.repeatEdgePixels = true;
 
-        expect(filter.repeatEdgePixels).to.be.true;
-        expect(filter.padding).to.equal(0);
+        expect(filter.repeatEdgePixels).toBe(true);
+        expect(filter.padding).toEqual(0);
 
         filter.destroy();
     });

@@ -1,13 +1,8 @@
-import { BLEND_MODES } from '@pixi/constants';
-import { Texture } from '@pixi/core';
+import { BLEND_MODES, ObservablePoint, Point, Rectangle, Texture, settings, utils } from '@pixi/core';
 import { Bounds, Container } from '@pixi/display';
-import { ObservablePoint, Point, Rectangle } from '@pixi/math';
-import { settings } from '@pixi/settings';
-import { sign } from '@pixi/utils';
 
-import type { IBaseTextureOptions, Renderer, TextureSource } from '@pixi/core';
+import type { IPointData, IBaseTextureOptions, Renderer, TextureSource } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
-import type { IPointData } from '@pixi/math';
 
 const tempPoint = new Point();
 const indices = new Uint16Array([0, 1, 2, 0, 2, 3]);
@@ -22,20 +17,19 @@ export interface Sprite extends GlobalMixins.Sprite, Container {}
  * A sprite can be created directly from an image like this:
  *
  * ```js
- * let sprite = PIXI.Sprite.from('assets/image.png');
+ * import {  Sprite } from 'pixi.js';
+ *
+ * const sprite = Sprite.from('assets/image.png');
  * ```
  *
  * The more efficient way to create sprites is using a {@link PIXI.Spritesheet},
  * as swapping base textures when rendering to the screen is inefficient.
  *
  * ```js
- * PIXI.Loader.shared.add("assets/spritesheet.json").load(setup);
+ * import { Assets, Sprite } from 'pixi.js';
  *
- * function setup() {
- *   let sheet = PIXI.Loader.shared.resources["assets/spritesheet.json"].spritesheet;
- *   let sprite = new PIXI.Sprite(sheet.textures["image.png"]);
- *   ...
- * }
+ * const sheet = await Assets.load("assets/spritesheet.json");
+ * const sprite = new Sprite(sheet.textures["image.png"]);
  * ```
  * @memberof PIXI
  */
@@ -200,12 +194,12 @@ export class Sprite extends Container
         // so if _width is 0 then width was not set..
         if (this._width)
         {
-            this.scale.x = sign(this.scale.x) * this._width / this._texture.orig.width;
+            this.scale.x = utils.sign(this.scale.x) * this._width / this._texture.orig.width;
         }
 
         if (this._height)
         {
-            this.scale.y = sign(this.scale.y) * this._height / this._texture.orig.height;
+            this.scale.y = utils.sign(this.scale.y) * this._height / this._texture.orig.height;
         }
     }
 
@@ -471,11 +465,11 @@ export class Sprite extends Container
 
         this._anchor = null;
 
-        const destroyTexture = typeof options === 'boolean' ? options : options && options.texture;
+        const destroyTexture = typeof options === 'boolean' ? options : options?.texture;
 
         if (destroyTexture)
         {
-            const destroyBaseTexture = typeof options === 'boolean' ? options : options && options.baseTexture;
+            const destroyBaseTexture = typeof options === 'boolean' ? options : options?.baseTexture;
 
             this._texture.destroy(!!destroyBaseTexture);
         }
@@ -488,7 +482,8 @@ export class Sprite extends Container
     /**
      * Helper function that creates a new sprite based on the source you provide.
      * The source can be - frame id, image url, video url, canvas element, video element, base texture
-     * @param {string|PIXI.Texture|HTMLCanvasElement|HTMLVideoElement} source - Source to create texture from
+     * @param {string|PIXI.Texture|HTMLImageElement|HTMLVideoElement|ImageBitmap|PIXI.ICanvas} source
+     *     - Source to create texture from
      * @param {object} [options] - See {@link PIXI.BaseTexture}'s constructor for options.
      * @returns The newly created sprite
      */
@@ -532,7 +527,7 @@ export class Sprite extends Container
 
     set width(value: number)
     {
-        const s = sign(this.scale.x) || 1;
+        const s = utils.sign(this.scale.x) || 1;
 
         this.scale.x = s * value / this._texture.orig.width;
         this._width = value;
@@ -546,7 +541,7 @@ export class Sprite extends Container
 
     set height(value: number)
     {
-        const s = sign(this.scale.y) || 1;
+        const s = utils.sign(this.scale.y) || 1;
 
         this.scale.y = s * value / this._texture.orig.height;
         this._height = value;
@@ -564,7 +559,9 @@ export class Sprite extends Container
      *
      * If you pass only single parameter, it will set both x and y to the same value as shown in the example below.
      * @example
-     * const sprite = new PIXI.Sprite(texture);
+     * import { Sprite } from 'pixi.js';
+     *
+     * const sprite = new Sprite(Texture.WHITE);
      * sprite.anchor.set(0.5); // This will set the origin to center. (0.5) is same as (0.5, 0.5).
      */
     get anchor(): ObservablePoint

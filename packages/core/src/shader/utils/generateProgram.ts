@@ -1,5 +1,4 @@
-import { Program } from '../Program';
-import type { IRenderingContext } from '../../IRenderingContext';
+import type { Program } from '../Program';
 import type { IGLUniformData } from '../GLProgram';
 import { GLProgram } from '../GLProgram';
 import { compileShader } from './compileShader';
@@ -7,6 +6,7 @@ import { defaultValue } from './defaultValue';
 import { getAttributeData } from './getAttributeData';
 import { getUniformData } from './getUniformData';
 import { logProgramError } from './logProgramError';
+import type { IRenderingContext } from '../../IRenderer';
 
 /**
  * generates a WebGL Program object from a high level Pixi Program.
@@ -22,6 +22,28 @@ export function generateProgram(gl: IRenderingContext, program: Program): GLProg
 
     gl.attachShader(webGLProgram, glVertShader);
     gl.attachShader(webGLProgram, glFragShader);
+
+    const transformFeedbackVaryings = program.extra?.transformFeedbackVaryings;
+
+    if (transformFeedbackVaryings)
+    {
+        if (typeof gl.transformFeedbackVaryings !== 'function')
+        {
+            // #if _DEBUG
+            console.warn(`TransformFeedback is not supported but TransformFeedbackVaryings are given.`);
+            // #endif
+        }
+        else
+        {
+            gl.transformFeedbackVaryings(
+                webGLProgram,
+                transformFeedbackVaryings.names,
+                transformFeedbackVaryings.bufferMode === 'separate'
+                    ? gl.SEPARATE_ATTRIBS
+                    : gl.INTERLEAVED_ATTRIBS
+            );
+        }
+    }
 
     gl.linkProgram(webGLProgram);
 

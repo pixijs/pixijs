@@ -1,4 +1,4 @@
-import { IUniformData } from '../Program';
+import type { IUniformData } from '../Program';
 import { defaultValue } from './defaultValue';
 import { mapType } from './mapType';
 

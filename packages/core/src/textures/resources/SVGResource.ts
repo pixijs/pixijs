@@ -1,7 +1,9 @@
 import { uid } from '@pixi/utils';
 import { BaseImageResource } from './BaseImageResource';
+import { settings } from '@pixi/settings';
 
 import type { ISize } from '@pixi/math';
+import type { ICanvas } from '@pixi/settings';
 
 export interface ISVGResourceOptions
 {
@@ -51,7 +53,7 @@ export class SVGResource extends BaseImageResource
     {
         options = options || {};
 
-        super(document.createElement('canvas'));
+        super(settings.ADAPTER.createCanvas());
         this._width = 0;
         this._height = 0;
 
@@ -149,7 +151,7 @@ export class SVGResource extends BaseImageResource
             height = Math.round(height);
 
             // Create a canvas element
-            const canvas = this.source as HTMLCanvasElement;
+            const canvas = this.source as ICanvas;
 
             canvas.width = width;
             canvas.height = height;
@@ -203,7 +205,7 @@ export class SVGResource extends BaseImageResource
         // url file extension is SVG
         return extension === 'svg'
             // source is SVG data-uri
-            || (typeof source === 'string' && (/^data:image\/svg\+xml(;(charset=utf8|utf8))?;base64/).test(source))
+            || (typeof source === 'string' && source.startsWith('data:image/svg+xml'))
             // source is SVG inline
             || (typeof source === 'string' && SVGResource.SVG_XML.test(source));
     }

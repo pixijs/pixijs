@@ -1,21 +1,19 @@
-import { RenderTexture, autoDetectRenderer, Framebuffer, Renderer, BatchRenderer } from '@pixi/core';
+import { RenderTexture, autoDetectRenderer, Framebuffer, Renderer } from '@pixi/core';
 import { Graphics } from '@pixi/graphics';
 import { Container } from '@pixi/display';
 import { MSAA_QUALITY, FORMATS, TYPES } from '@pixi/constants';
 import { AlphaFilter } from '@pixi/filter-alpha';
-import { expect } from 'chai';
 
 describe('RenderTexture', () =>
 {
     let renderer: Renderer;
 
-    before(() =>
+    beforeAll(() =>
     {
-        Renderer.registerPlugin('batch', BatchRenderer);
         renderer = new Renderer();
     });
 
-    after(() =>
+    afterAll(() =>
     {
         renderer.destroy();
         renderer = null;
@@ -35,9 +33,9 @@ describe('RenderTexture', () =>
 
         renderer.renderTexture.bind(renderTexture);
 
-        expect(depthTexture._glTextures[renderer.CONTEXT_UID]).to.not.equal(undefined);
+        expect(depthTexture._glTextures[renderer.CONTEXT_UID]).not.toEqual(undefined);
         renderTexture.destroy(true);
-        expect(depthTexture._glTextures[renderer.CONTEXT_UID]).to.equal(undefined);
+        expect(depthTexture._glTextures[renderer.CONTEXT_UID]).toEqual(undefined);
     });
 
     it('should render correctly with empty mask', () =>
@@ -69,10 +67,10 @@ describe('RenderTexture', () =>
 
         gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixel);
 
-        expect(pixel[0]).to.equal(51);
-        expect(pixel[1]).to.equal(51);
-        expect(pixel[2]).to.equal(51);
-        expect(pixel[3]).to.equal(51);
+        expect(pixel[0]).toEqual(51);
+        expect(pixel[1]).toEqual(51);
+        expect(pixel[2]).toEqual(51);
+        expect(pixel[3]).toEqual(51);
     });
 
     it('should render correctly with empty mask and multisampling', () =>
@@ -109,10 +107,10 @@ describe('RenderTexture', () =>
 
         gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixel);
 
-        expect(pixel[0]).to.equal(51);
-        expect(pixel[1]).to.equal(51);
-        expect(pixel[2]).to.equal(51);
-        expect(pixel[3]).to.equal(51);
+        expect(pixel[0]).toEqual(51);
+        expect(pixel[1]).toEqual(51);
+        expect(pixel[2]).toEqual(51);
+        expect(pixel[3]).toEqual(51);
     });
 
     it('should render correctly with mask', () =>
@@ -149,19 +147,19 @@ describe('RenderTexture', () =>
 
         gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixel);
 
-        expect(pixel[0]).to.equal(0xff);
-        expect(pixel[1]).to.equal(0xff);
-        expect(pixel[2]).to.equal(0xff);
-        expect(pixel[3]).to.equal(0xff);
+        expect(pixel[0]).toEqual(0xff);
+        expect(pixel[1]).toEqual(0xff);
+        expect(pixel[2]).toEqual(0xff);
+        expect(pixel[3]).toEqual(0xff);
 
         pixel.set([0x80, 0x80, 0x80, 0x80]);
 
         gl.readPixels(1, 1, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixel);
 
-        expect(pixel[0]).to.equal(51);
-        expect(pixel[1]).to.equal(51);
-        expect(pixel[2]).to.equal(51);
-        expect(pixel[3]).to.equal(51);
+        expect(pixel[0]).toEqual(51);
+        expect(pixel[1]).toEqual(51);
+        expect(pixel[2]).toEqual(51);
+        expect(pixel[3]).toEqual(51);
     });
 
     it('should render correctly with stencil mask and filter', () =>
@@ -200,10 +198,10 @@ describe('RenderTexture', () =>
 
         gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixel);
 
-        expect(pixel[0]).to.equal(0xff);
-        expect(pixel[1]).to.equal(0xff);
-        expect(pixel[2]).to.equal(0xff);
-        expect(pixel[3]).to.equal(0xff);
+        expect(pixel[0]).toEqual(0xff);
+        expect(pixel[1]).toEqual(0xff);
+        expect(pixel[2]).toEqual(0xff);
+        expect(pixel[3]).toEqual(0xff);
     });
 
     it('should render correctly with mask and multisampling', () =>
@@ -245,19 +243,19 @@ describe('RenderTexture', () =>
 
         gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixel);
 
-        expect(pixel[0]).to.equal(0xff);
-        expect(pixel[1]).to.equal(0xff);
-        expect(pixel[2]).to.equal(0xff);
-        expect(pixel[3]).to.equal(0xff);
+        expect(pixel[0]).toEqual(0xff);
+        expect(pixel[1]).toEqual(0xff);
+        expect(pixel[2]).toEqual(0xff);
+        expect(pixel[3]).toEqual(0xff);
 
         pixel.set([0x80, 0x80, 0x80, 0x80]);
 
         gl.readPixels(1, 1, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixel);
 
-        expect(pixel[0]).to.equal(51);
-        expect(pixel[1]).to.equal(51);
-        expect(pixel[2]).to.equal(51);
-        expect(pixel[3]).to.equal(51);
+        expect(pixel[0]).toEqual(51);
+        expect(pixel[1]).toEqual(51);
+        expect(pixel[2]).toEqual(51);
+        expect(pixel[3]).toEqual(51);
     });
 
     // eslint-disable-next-line func-names
@@ -343,10 +341,10 @@ describe('RenderTexture', () =>
 
         gl.readPixels(1, 1, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixel);
 
-        expect(pixel[0]).to.equal(0xff);
-        expect(pixel[1]).to.equal(0xff);
-        expect(pixel[2]).to.equal(0xff);
-        expect(pixel[3]).to.equal(0xff);
+        expect(pixel[0]).toEqual(0xff);
+        expect(pixel[1]).toEqual(0xff);
+        expect(pixel[2]).toEqual(0xff);
+        expect(pixel[3]).toEqual(0xff);
     });
 
     it('should resize multisampled framebuffer', () =>
@@ -383,10 +381,10 @@ describe('RenderTexture', () =>
 
         gl.readPixels(1, 1, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixel);
 
-        expect(pixel[0]).to.equal(0xff);
-        expect(pixel[1]).to.equal(0xff);
-        expect(pixel[2]).to.equal(0xff);
-        expect(pixel[3]).to.equal(0xff);
+        expect(pixel[0]).toEqual(0xff);
+        expect(pixel[1]).toEqual(0xff);
+        expect(pixel[2]).toEqual(0xff);
+        expect(pixel[3]).toEqual(0xff);
     });
 
     // eslint-disable-next-line func-names

@@ -151,7 +151,7 @@ export class Runner
      */
     public contains(item: unknown): boolean
     {
-        return this.items.indexOf(item) !== -1;
+        return this.items.includes(item);
     }
 
     /** Remove all listeners from the Runner */

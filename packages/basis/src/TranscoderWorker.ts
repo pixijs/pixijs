@@ -1,13 +1,13 @@
-import { Runner } from '@pixi/runner';
-import { BASIS_FORMATS } from './Basis';
-import { ITranscodeResponse, TranscoderWorkerWrapper } from './TranscoderWorkerWrapper';
+import type { BASIS_FORMATS } from './Basis';
+import type { ITranscodeResponse } from './TranscoderWorkerWrapper';
+import { TranscoderWorkerWrapper } from './TranscoderWorkerWrapper';
 
 /**
  * Worker class for transcoding *.basis files in background threads.
  *
  * To enable asynchronous transcoding, you need to provide the URL to the basis_universal transcoding
  * library.
- * @memberof PIXI.BasisLoader
+ * @memberof PIXI.BasisParser
  */
 export class TranscoderWorker
 {
@@ -21,7 +21,13 @@ export class TranscoderWorker
     static jsSource: string;
     static wasmSource: ArrayBuffer;
 
-    public static onTranscoderInitialized = new Runner('onTranscoderInitialized');
+    private static _onTranscoderInitializedResolve: () => void;
+
+    /** a promise that when reslved means the transcoder is ready to be used */
+    public static onTranscoderInitialized = new Promise<void>((resolve) =>
+    {
+        TranscoderWorker._onTranscoderInitializedResolve = resolve;
+    });
 
     isInit: boolean;
     load: number;
@@ -174,8 +180,9 @@ export class TranscoderWorker
             .then((arrayBuffer: ArrayBuffer) => { TranscoderWorker.wasmSource = arrayBuffer; });
 
         return Promise.all([jsPromise, wasmPromise]).then((data) =>
+
         {
-            TranscoderWorker.onTranscoderInitialized.emit();
+            this._onTranscoderInitializedResolve();
 
             return data;
         });

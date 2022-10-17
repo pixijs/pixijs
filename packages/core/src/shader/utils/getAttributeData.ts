@@ -1,4 +1,4 @@
-import { IAttributeData } from '../Program';
+import type { IAttributeData } from '../Program';
 import { mapSize } from './mapSize';
 import { mapType } from './mapType';
 
@@ -19,7 +19,7 @@ export function getAttributeData(program: WebGLProgram, gl: WebGLRenderingContex
     {
         const attribData = gl.getActiveAttrib(program, i);
 
-        if (attribData.name.indexOf('gl_') === 0)
+        if (attribData.name.startsWith('gl_'))
         {
             continue;
         }

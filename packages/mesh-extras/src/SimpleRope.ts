@@ -1,19 +1,18 @@
 import { Mesh, MeshMaterial } from '@pixi/mesh';
-import { WRAP_MODES } from '@pixi/constants';
+import { WRAP_MODES } from '@pixi/core';
 import { RopeGeometry } from './geometry/RopeGeometry';
 
-import type { Texture, Renderer } from '@pixi/core';
-import type { IPoint } from '@pixi/math';
+import type { IPoint, Texture, Renderer } from '@pixi/core';
 
 /**
  * The rope allows you to draw a texture across several points and then manipulate these points
+ * @example
+ * import { SimpleRope, Texture, Point } from 'pixi.js';
  *
- *```js
  * for (let i = 0; i < 20; i++) {
- *     points.push(new PIXI.Point(i * 50, 0));
+ *     points.push(new Point(i * 50, 0));
  * };
- * let rope = new PIXI.SimpleRope(PIXI.Texture.from("snake.png"), points);
- *  ```
+ * const rope = new SimpleRope(Texture.from("snake.png"), points);
  * @memberof PIXI
  */
 export class SimpleRope extends Mesh
@@ -21,6 +20,7 @@ export class SimpleRope extends Mesh
     public autoUpdate: boolean;
 
     /**
+     * Note: The wrap mode of the texture is set to REPEAT if `textureScale` is positive.
      * @param texture - The texture to use on the rope.
      * @param points - An array of {@link PIXI.Point} objects to construct this rope.
      * @param {number} textureScale - Optional. Positive values scale rope texture

@@ -3,30 +3,27 @@ import { CanvasRenderer } from '@pixi/canvas-renderer';
 import { DisplayObject, Container } from '@pixi/display';
 import { Renderer } from '@pixi/core';
 import { isMobile } from '@pixi/utils';
-import { expect } from 'chai';
 
 describe('AccessibilityManager', () =>
 {
     it('should exist', () =>
     {
-        expect(AccessibilityManager).to.be.not.undefined;
+        expect(AccessibilityManager).toBeDefined();
     });
 
     it('should create new manager', () =>
     {
         const manager = new AccessibilityManager(undefined);
 
-        expect(manager).to.be.instanceof(AccessibilityManager);
+        expect(manager).toBeInstanceOf(AccessibilityManager);
         manager.destroy();
     });
 
     it('should be plugin for renderer', () =>
     {
-        CanvasRenderer.registerPlugin('accessibility', AccessibilityManager);
-
         const renderer = new CanvasRenderer();
 
-        expect(renderer.plugins.accessibility).to.be.instanceof(AccessibilityManager);
+        expect(renderer.plugins.accessibility).toBeInstanceOf(AccessibilityManager);
         renderer.destroy();
     });
 
@@ -38,10 +35,10 @@ describe('AccessibilityManager', () =>
         const manager = new AccessibilityManager(undefined);
         const hookDiv = manager['_hookDiv'];
 
-        expect(hookDiv).to.be.instanceof(HTMLElement);
-        expect(document.body.contains(hookDiv)).to.be.true;
+        expect(hookDiv).toBeInstanceOf(HTMLElement);
+        expect(document.body.contains(hookDiv)).toBe(true);
         manager.destroy();
-        expect(document.body.contains(hookDiv)).to.be.false;
+        expect(document.body.contains(hookDiv)).toBe(false);
         isMobile.phone = phone;
     });
 
@@ -51,9 +48,12 @@ describe('AccessibilityManager', () =>
         const manager = new AccessibilityManager(renderer);
 
         globalThis.dispatchEvent(new KeyboardEvent('keydown', { keyCode: 9, key: 'tab' }));
-        expect(manager.isActive).to.be.true;
-        globalThis.document.dispatchEvent(new MouseEvent('mousemove', { movementX: 10, movementY: 10 }));
-        expect(manager.isActive).to.be.false;
+        setTimeout(() =>
+        {
+            expect(manager.isActive).toBe(true);
+            globalThis.document.dispatchEvent(new MouseEvent('mousemove', { movementX: 10, movementY: 10 }));
+            expect(manager.isActive).toBe(false);
+        }, 0);
     });
 
     it('should not crash when scene graph contains DisplayObjects without children', () =>
@@ -71,7 +71,10 @@ describe('AccessibilityManager', () =>
 
         globalThis.dispatchEvent(new KeyboardEvent('keydown', { keyCode: 9, key: 'tab' }));
 
-        expect(() => renderer.render(stage)).not.to.throw();
-        expect(manager.isActive).to.be.true;
+        expect(() => renderer.render(stage)).not.toThrowError();
+        setTimeout(() =>
+        {
+            expect(manager.isActive).toBe(true);
+        }, 0);
     });
 });

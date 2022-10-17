@@ -6,4 +6,19 @@ declare namespace GlobalMixins
     {
 
     }
+
+    interface IRenderer
+    {
+        readonly events: import('@pixi/events').EventSystem;
+    }
+
+    interface Renderer
+    {
+        readonly events: import('@pixi/events').EventSystem;
+    }
+
+    interface CanvasRenderer
+    {
+        readonly events: import('@pixi/events').EventSystem;
+    }
 }

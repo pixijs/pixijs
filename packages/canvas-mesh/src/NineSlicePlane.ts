@@ -14,7 +14,7 @@ NineSlicePlane.prototype._cachedTint = 0xFFFFFF;
 /**
  * Cached tinted texture.
  * @memberof PIXI.NineSlicePlane#
- * @member {HTMLCanvasElement} _tintedCanvas
+ * @member {PIXI.ICanvas | HTMLImageElement} _tintedCanvas
  * @protected
  */
 NineSlicePlane.prototype._tintedCanvas = null;
@@ -36,7 +36,7 @@ NineSlicePlane.prototype._canvasUvs = null;
  */
 NineSlicePlane.prototype._renderCanvas = function _renderCanvas(renderer: CanvasRenderer): void
 {
-    const context = renderer.context;
+    const context = renderer.canvasContext.activeContext;
     const transform = this.worldTransform;
     const isTinted = this.tint !== 0xFFFFFF;
     const texture = this.texture;
@@ -55,7 +55,7 @@ NineSlicePlane.prototype._renderCanvas = function _renderCanvas(renderer: Canvas
 
             this._cachedTint = this.tint;
 
-            this._tintedCanvas = canvasUtils.getTintedCanvas(this, this.tint) as HTMLCanvasElement;
+            this._tintedCanvas = canvasUtils.getTintedCanvas(this, this.tint);
         }
     }
 
@@ -88,8 +88,8 @@ NineSlicePlane.prototype._renderCanvas = function _renderCanvas(renderer: Canvas
     }
 
     context.globalAlpha = this.worldAlpha;
-    renderer.setBlendMode(this.blendMode);
-    renderer.setContextTransform(transform, this.roundPixels);
+    renderer.canvasContext.setBlendMode(this.blendMode);
+    renderer.canvasContext.setContextTransform(transform, this.roundPixels);
 
     for (let row = 0; row < 3; row++)
     {

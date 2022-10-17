@@ -1,15 +1,14 @@
 {
   "name": "@pixi/graphics",
-  "version": "6.4.2",
+  "version": "7.0.0-beta.3",
   "main": "dist/cjs/graphics.js",
-  "module": "dist/esm/graphics.js",
-  "bundle": "dist/browser/graphics.js",
+  "module": "dist/esm/graphics.mjs",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/graphics.js"
+        "default": "./dist/esm/graphics.mjs"
       },
       "require": {
         "types": "./index.d.ts",
@@ -33,16 +32,12 @@
     "access": "public"
   },
   "files": [
-    "lib",
     "dist",
     "*.d.ts"
   ],
-  "peerDependencies": {
-    "@pixi/constants": "6.4.2",
-    "@pixi/core": "6.4.2",
-    "@pixi/display": "6.4.2",
-    "@pixi/math": "6.4.2",
-    "@pixi/sprite": "6.4.2",
-    "@pixi/utils": "6.4.2"
-  }
+  "pixiRequirements": [
+    "@pixi/core",
+    "@pixi/display",
+    "@pixi/sprite"
+  ]
 }

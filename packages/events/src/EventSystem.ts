@@ -1,11 +1,12 @@
 import { EventBoundary } from './EventBoundary';
-import { FederatedMouseEvent } from './FederatedMouseEvent';
+import type { FederatedMouseEvent } from './FederatedMouseEvent';
 import { FederatedPointerEvent } from './FederatedPointerEvent';
 import { FederatedWheelEvent } from './FederatedWheelEvent';
+import { extensions, ExtensionType } from '@pixi/core';
 
-import type { IRenderableObject } from '@pixi/core';
+import type { IRenderableObject, ExtensionMetadata, IPointData } from '@pixi/core';
 import type { DisplayObject } from '@pixi/display';
-import type { IPointData } from '@pixi/math';
+import type { ICanvas } from '@pixi/settings';
 
 const MOUSE_POINTER_ID = 1;
 const TOUCH_TO_POINTER: Record<string, string> = {
@@ -18,8 +19,8 @@ const TOUCH_TO_POINTER: Record<string, string> = {
 
 interface Renderer
 {
-    _lastObjectRendered: IRenderableObject;
-    view: HTMLCanvasElement;
+    lastObjectRendered: IRenderableObject;
+    view: ICanvas;
     resolution: number;
     plugins: Record<string, any>;
 }
@@ -30,6 +31,15 @@ interface Renderer
  */
 export class EventSystem
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        name: 'events',
+        type: [
+            ExtensionType.RendererSystem,
+            ExtensionType.CanvasRendererSystem
+        ],
+    };
+
     /**
      * The {@link PIXI.EventBoundary} for the stage.
      *
@@ -70,7 +80,7 @@ export class EventSystem
      * The DOM element to which the root event listeners are bound. This is automatically set to
      * the renderer's {@link PIXI.Renderer#view view}.
      */
-    public domElement: HTMLElement;
+    public domElement: HTMLElement = null;
 
     /** The resolution used to convert between the DOM client space into world space. */
     public resolution = 1;
@@ -88,11 +98,6 @@ export class EventSystem
      */
     constructor(renderer: Renderer)
     {
-        if (renderer.plugins.interaction)
-        {
-            throw new Error('EventSystem cannot initialize with the InteractionManager installed!');
-        }
-
         this.renderer = renderer;
         this.rootBoundary = new EventBoundary(null);
 
@@ -106,16 +111,24 @@ export class EventSystem
             default: 'inherit',
             pointer: 'pointer',
         };
-        this.domElement = renderer.view;
 
         this.onPointerDown = this.onPointerDown.bind(this);
         this.onPointerMove = this.onPointerMove.bind(this);
         this.onPointerUp = this.onPointerUp.bind(this);
         this.onPointerOverOut = this.onPointerOverOut.bind(this);
         this.onWheel = this.onWheel.bind(this);
+    }
 
-        this.setTargetElement(this.domElement);
-        this.resolution = this.renderer.resolution;
+    /**
+     * Runner init called, view is available at this point.
+     * @ignore
+     */
+    init(): void
+    {
+        const { view, resolution } = this.renderer;
+
+        this.setTargetElement(view as HTMLCanvasElement);
+        this.resolution = resolution;
     }
 
     /** Destroys all event listeners and detaches the renderer. */
@@ -188,7 +201,7 @@ export class EventSystem
      */
     private onPointerDown(nativeEvent: MouseEvent | PointerEvent | TouchEvent): void
     {
-        this.rootBoundary.rootTarget = this.renderer._lastObjectRendered as DisplayObject;
+        this.rootBoundary.rootTarget = this.renderer.lastObjectRendered as DisplayObject;
 
         // if we support touch events, then only use those for touch events, not pointer events
         if (this.supportsTouchEvents && (nativeEvent as PointerEvent).pointerType === 'touch') return;
@@ -230,7 +243,7 @@ export class EventSystem
      */
     private onPointerMove(nativeEvent: MouseEvent | PointerEvent | TouchEvent): void
     {
-        this.rootBoundary.rootTarget = this.renderer._lastObjectRendered as DisplayObject;
+        this.rootBoundary.rootTarget = this.renderer.lastObjectRendered as DisplayObject;
 
         // if we support touch events, then only use those for touch events, not pointer events
         if (this.supportsTouchEvents && (nativeEvent as PointerEvent).pointerType === 'touch') return;
@@ -253,12 +266,20 @@ export class EventSystem
      */
     private onPointerUp(nativeEvent: MouseEvent | PointerEvent | TouchEvent): void
     {
-        this.rootBoundary.rootTarget = this.renderer._lastObjectRendered as DisplayObject;
+        this.rootBoundary.rootTarget = this.renderer.lastObjectRendered as DisplayObject;
 
         // if we support touch events, then only use those for touch events, not pointer events
         if (this.supportsTouchEvents && (nativeEvent as PointerEvent).pointerType === 'touch') return;
 
-        const outside = nativeEvent.target !== this.domElement ? 'outside' : '';
+        let target = nativeEvent.target;
+
+        // if in shadow DOM use composedPath to access target
+        if (nativeEvent.composedPath && nativeEvent.composedPath().length > 0)
+        {
+            target = nativeEvent.composedPath()[0];
+        }
+
+        const outside = target !== this.domElement ? 'outside' : '';
         const normalizedEvents = this.normalizeToPointerData(nativeEvent);
 
         for (let i = 0, j = normalizedEvents.length; i < j; i++)
@@ -279,7 +300,7 @@ export class EventSystem
      */
     private onPointerOverOut(nativeEvent: MouseEvent | PointerEvent | TouchEvent): void
     {
-        this.rootBoundary.rootTarget = this.renderer._lastObjectRendered as DisplayObject;
+        this.rootBoundary.rootTarget = this.renderer.lastObjectRendered as DisplayObject;
 
         // if we support touch events, then only use those for touch events, not pointer events
         if (this.supportsTouchEvents && (nativeEvent as PointerEvent).pointerType === 'touch') return;
@@ -304,7 +325,7 @@ export class EventSystem
     {
         const wheelEvent = this.normalizeWheelEvent(nativeEvent);
 
-        this.rootBoundary.rootTarget = this.renderer._lastObjectRendered as DisplayObject;
+        this.rootBoundary.rootTarget = this.renderer.lastObjectRendered as DisplayObject;
         this.rootBoundary.mapEvent(wheelEvent);
     }
 
@@ -331,14 +352,17 @@ export class EventSystem
 
         const style = this.domElement.style as CrossCSSStyleDeclaration;
 
-        if ((globalThis.navigator as any).msPointerEnabled)
+        if (style)
         {
-            style.msContentZooming = 'none';
-            style.msTouchAction = 'none';
-        }
-        else if (this.supportsPointerEvents)
-        {
-            style.touchAction = 'none';
+            if ((globalThis.navigator as any).msPointerEnabled)
+            {
+                style.msContentZooming = 'none';
+                style.msTouchAction = 'none';
+            }
+            else if (this.supportsPointerEvents)
+            {
+                style.touchAction = 'none';
+            }
         }
 
         /*
@@ -488,8 +512,8 @@ export class EventSystem
             {
                 const touch = event.changedTouches[i] as PixiTouch;
 
-                if (typeof touch.button === 'undefined') touch.button = event.touches.length ? 1 : 0;
-                if (typeof touch.buttons === 'undefined') touch.buttons = event.touches.length ? 1 : 0;
+                if (typeof touch.button === 'undefined') touch.button = 0;
+                if (typeof touch.buttons === 'undefined') touch.buttons = 1;
                 if (typeof touch.isPrimary === 'undefined')
                 {
                     touch.isPrimary = event.touches.length === 1 && event.type === 'touchstart';
@@ -643,6 +667,7 @@ export class EventSystem
         event.page.x = nativeEvent.pageX;
         event.page.y = nativeEvent.pageY;
         event.relatedTarget = null;
+        event.shiftKey = nativeEvent.shiftKey;
     }
 }
 
@@ -689,3 +714,5 @@ interface PixiTouch extends Touch
     isNormalized: boolean;
     type: string;
 }
+
+extensions.add(EventSystem);

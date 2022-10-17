@@ -1,10 +1,10 @@
-import { BLEND_MODES } from '@pixi/constants';
+import { BLEND_MODES, utils } from '@pixi/core';
 import { Container } from '@pixi/display';
-import { hex2rgb } from '@pixi/utils';
 
 import type { BaseTexture, Renderer } from '@pixi/core';
 import type { ParticleBuffer } from './ParticleBuffer';
 import type { IDestroyOptions } from '@pixi/display';
+import type { Sprite } from '@pixi/sprite';
 
 export interface IParticleProperties
 {
@@ -27,21 +27,20 @@ export interface IParticleProperties
  *
  * Other more advanced functionality like masking, children, filters, etc will not work on sprites in this batch.
  *
- * It's extremely easy to use:
- * ```js
- * let container = new ParticleContainer();
+ * It's extremely easy to use. And here you have a hundred sprites that will be rendered at the speed of light.
+ * @example
+ * import { ParticleContainer, Sprite } from 'pixi.js';
+ *
+ * const container = new ParticleContainer();
  *
  * for (let i = 0; i < 100; ++i)
  * {
- *     let sprite = PIXI.Sprite.from("myImage.png");
+ *     let sprite = Sprite.from("myImage.png");
  *     container.addChild(sprite);
  * }
- * ```
- *
- * And here you have a hundred sprites that will be rendered at the speed of light.
  * @memberof PIXI
  */
-export class ParticleContainer extends Container
+export class ParticleContainer extends Container<Sprite>
 {
     /**
      * The blend mode to be applied to the sprite. Apply a value of `PIXI.BLEND_MODES.NORMAL`
@@ -192,7 +191,7 @@ export class ParticleContainer extends Container
     set tint(value: number)
     {
         this._tint = value;
-        hex2rgb(value, this.tintRgb);
+        utils.hex2rgb(value, this.tintRgb);
     }
 
     /**
@@ -208,7 +207,7 @@ export class ParticleContainer extends Container
 
         if (!this.baseTexture)
         {
-            this.baseTexture = (this.children[0] as any)._texture.baseTexture;
+            this.baseTexture = this.children[0]._texture.baseTexture;
             if (!this.baseTexture.valid)
             {
                 this.baseTexture.once('update', () => this.onChildrenChange(0));

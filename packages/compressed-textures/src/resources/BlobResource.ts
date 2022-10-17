@@ -1,4 +1,5 @@
-import { Resource, ViewableBuffer, BufferResource } from '@pixi/core';
+import type { Resource } from '@pixi/core';
+import { ViewableBuffer, BufferResource } from '@pixi/core';
 
 interface IBlobOptions
 {
@@ -64,7 +65,7 @@ export abstract class BlobResource extends BufferResource
         {
             this.load();
         }
-        if (data && data.length)
+        if (data?.length)
         {
             this.loaded = true;
             this.onBlobLoaded(this.buffer.rawBinaryData);

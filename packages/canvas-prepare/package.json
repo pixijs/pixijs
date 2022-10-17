@@ -1,15 +1,14 @@
 {
   "name": "@pixi/canvas-prepare",
-  "version": "6.4.2",
+  "version": "7.0.0-beta.3",
   "main": "dist/cjs/canvas-prepare.js",
-  "module": "dist/esm/canvas-prepare.js",
-  "bundle": "dist/browser/canvas-prepare.js",
+  "module": "dist/esm/canvas-prepare.mjs",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/canvas-prepare.js"
+        "default": "./dist/esm/canvas-prepare.mjs"
       },
       "require": {
         "types": "./index.d.ts",
@@ -33,13 +32,12 @@
     "access": "public"
   },
   "files": [
-    "lib",
     "dist",
     "*.d.ts"
   ],
-  "peerDependencies": {
-    "@pixi/canvas-renderer": "6.4.2",
-    "@pixi/core": "6.4.2",
-    "@pixi/prepare": "6.4.2"
-  }
+  "pixiRequirements": [
+    "@pixi/canvas-renderer",
+    "@pixi/core",
+    "@pixi/prepare"
+  ]
 }

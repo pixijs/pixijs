@@ -1,15 +1,14 @@
 {
   "name": "@pixi/mixin-cache-as-bitmap",
-  "version": "6.4.2",
+  "version": "7.0.0-beta.3",
   "main": "dist/cjs/mixin-cache-as-bitmap.js",
-  "module": "dist/esm/mixin-cache-as-bitmap.js",
-  "bundle": "dist/browser/mixin-cache-as-bitmap.js",
+  "module": "dist/esm/mixin-cache-as-bitmap.mjs",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/mixin-cache-as-bitmap.js"
+        "default": "./dist/esm/mixin-cache-as-bitmap.mjs"
       },
       "require": {
         "types": "./index.d.ts",
@@ -17,7 +16,6 @@
       }
     }
   },
-  "bundleNoExports": true,
   "description": "Mixin to allow caching container and its children to a bitmap texture",
   "author": "Mat Groves",
   "contributors": [
@@ -34,16 +32,12 @@
     "access": "public"
   },
   "files": [
-    "lib",
     "dist",
     "*.d.ts"
   ],
-  "peerDependencies": {
-    "@pixi/core": "6.4.2",
-    "@pixi/display": "6.4.2",
-    "@pixi/math": "6.4.2",
-    "@pixi/settings": "6.4.2",
-    "@pixi/sprite": "6.4.2",
-    "@pixi/utils": "6.4.2"
-  }
+  "pixiRequirements": [
+    "@pixi/core",
+    "@pixi/display",
+    "@pixi/sprite"
+  ]
 }

@@ -1,8 +1,4 @@
 import { Renderer, Shader, CanvasResource, Geometry, UniformGroup, BaseTexture } from '@pixi/core';
-import { skipHello } from '@pixi/utils';
-import { expect } from 'chai';
-
-skipHello();
 
 describe('ShaderSystem', () =>
 {
@@ -49,12 +45,12 @@ void main() {
 
     let renderer: Renderer;
 
-    before(() =>
+    beforeAll(() =>
     {
         renderer = new Renderer();
     });
 
-    after(() =>
+    afterAll(() =>
     {
         renderer.destroy();
         renderer = null;
@@ -75,7 +71,7 @@ void main() {
         renderer.shader.bind(shader);
         renderer.geometry.bind(geometry);
         // actually, order is not important. But if behaviour changes, we'll be better knowing about that
-        expect(renderer.texture.boundTextures[0]).to.equal(texture2);
-        expect(renderer.texture.boundTextures[1]).to.equal(texture1);
+        expect(renderer.texture.boundTextures[0]).toEqual(texture2);
+        expect(renderer.texture.boundTextures[1]).toEqual(texture1);
     });
 });

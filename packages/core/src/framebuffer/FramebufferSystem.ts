@@ -4,9 +4,11 @@ import { settings } from '../settings';
 import { Framebuffer } from './Framebuffer';
 import { GLFramebuffer } from './GLFramebuffer';
 
-import type { ISystem } from '../ISystem';
+import type { ISystem } from '../system/ISystem';
 import type { Renderer } from '../Renderer';
-import type { IRenderingContext } from '../IRenderingContext';
+import type { IRenderingContext } from '../IRenderer';
+import type { ExtensionMetadata } from '@pixi/extensions';
+import { extensions, ExtensionType } from '@pixi/extensions';
 
 const tempRectangle = new Rectangle();
 
@@ -16,6 +18,12 @@ const tempRectangle = new Rectangle();
  */
 export class FramebufferSystem implements ISystem
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        type: ExtensionType.RendererSystem,
+        name: 'framebuffer',
+    };
+
     /** A list of managed framebuffers. */
     public readonly managedFramebuffers: Array<Framebuffer>;
     public current: Framebuffer;
@@ -697,3 +705,5 @@ export class FramebufferSystem implements ISystem
         this.renderer = null;
     }
 }
+
+extensions.add(FramebufferSystem);

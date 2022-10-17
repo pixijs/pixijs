@@ -1,7 +1,8 @@
-import { hex2rgb, rgb2hex } from '@pixi/utils';
+import { settings, utils } from '@pixi/core';
 import { canUseNewCanvasBlendModes } from './utils/canUseNewCanvasBlendModes';
 
 import type { Texture } from '@pixi/core';
+import type { ICanvas } from '@pixi/settings';
 
 /**
  * Utility methods for Sprite/Texture tinting.
@@ -12,7 +13,7 @@ import type { Texture } from '@pixi/core';
  * @memberof PIXI
  */
 export const canvasUtils = {
-    canvas: null as HTMLCanvasElement,
+    canvas: null as ICanvas,
 
     /**
      * Basically this method just needs a sprite and a color and tints the sprite with the given color.
@@ -20,9 +21,9 @@ export const canvasUtils = {
      * @param {PIXI.Sprite} sprite - the sprite to tint
      * @param sprite.texture
      * @param {number} color - the color to use to tint the sprite with
-     * @returns {HTMLCanvasElement} The tinted canvas
+     * @returns {ICanvas|HTMLImageElement} The tinted canvas
      */
-    getTintedCanvas: (sprite: { texture: Texture }, color: number): HTMLCanvasElement | HTMLImageElement =>
+    getTintedCanvas: (sprite: { texture: Texture }, color: number): ICanvas | HTMLImageElement =>
     {
         const texture = sprite.texture;
 
@@ -34,7 +35,7 @@ export const canvasUtils = {
 
         const cachedCanvas = texture.tintCache[stringColor];
 
-        let canvas: HTMLCanvasElement;
+        let canvas: ICanvas;
 
         if (cachedCanvas)
         {
@@ -43,23 +44,24 @@ export const canvasUtils = {
                 return texture.tintCache[stringColor];
             }
 
-            canvas = texture.tintCache[stringColor] as HTMLCanvasElement;
+            canvas = texture.tintCache[stringColor] as ICanvas;
         }
         else
         {
-            canvas = document.createElement('canvas');
+            canvas = settings.ADAPTER.createCanvas();
         }
 
         canvasUtils.tintMethod(texture, color, canvas);
 
         canvas.tintId = texture._updateID;
 
-        if (canvasUtils.convertTintToImage)
+        // Convert tint to image only if ICanvas.toDataURL exists (e.g. OffscreenCanvas don't have toDataURL)
+        if (canvasUtils.convertTintToImage && canvas.toDataURL !== undefined)
         {
             // is this better?
             const tintImage = new Image();
 
-            tintImage.src = (canvas as HTMLCanvasElement).toDataURL();
+            tintImage.src = canvas.toDataURL();
 
             texture.tintCache[stringColor] = tintImage;
         }
@@ -76,7 +78,7 @@ export const canvasUtils = {
      * @memberof PIXI.canvasUtils
      * @param {PIXI.Texture} texture - the sprite to tint
      * @param {number} color - the color to use to tint the sprite with
-     * @returns {HTMLCanvasElement} The tinted canvas
+     * @returns {CanvasPattern} The tinted canvas
      */
     getTintedPattern: (texture: Texture, color: number): CanvasPattern =>
     {
@@ -88,13 +90,13 @@ export const canvasUtils = {
 
         let pattern = texture.patternCache[stringColor];
 
-        if (pattern && pattern.tintId === texture._updateID)
+        if (pattern?.tintId === texture._updateID)
         {
             return pattern;
         }
         if (!canvasUtils.canvas)
         {
-            canvasUtils.canvas = document.createElement('canvas');
+            canvasUtils.canvas = settings.ADAPTER.createCanvas();
         }
         canvasUtils.tintMethod(texture, color, canvasUtils.canvas);
         pattern = canvasUtils.canvas.getContext('2d').createPattern(canvasUtils.canvas, 'repeat');
@@ -109,9 +111,9 @@ export const canvasUtils = {
      * @memberof PIXI.canvasUtils
      * @param {PIXI.Texture} texture - the texture to tint
      * @param {number} color - the color to use to tint the sprite with
-     * @param {HTMLCanvasElement} canvas - the current canvas
+     * @param {PIXI.ICanvas} canvas - the current canvas
      */
-    tintWithMultiply: (texture: Texture, color: number, canvas: HTMLCanvasElement): void =>
+    tintWithMultiply: (texture: Texture, color: number, canvas: ICanvas): void =>
     {
         const context = canvas.getContext('2d');
         const crop = texture._frame.clone();
@@ -167,9 +169,9 @@ export const canvasUtils = {
      * @memberof PIXI.canvasUtils
      * @param {PIXI.Texture} texture - the texture to tint
      * @param {number} color - the color to use to tint the sprite with
-     * @param {HTMLCanvasElement} canvas - the current canvas
+     * @param {PIXI.ICanvas} canvas - the current canvas
      */
-    tintWithOverlay: (texture: Texture, color: number, canvas: HTMLCanvasElement): void =>
+    tintWithOverlay: (texture: Texture, color: number, canvas: ICanvas): void =>
     {
         const context = canvas.getContext('2d');
         const crop = texture._frame.clone();
@@ -210,9 +212,9 @@ export const canvasUtils = {
      * @memberof PIXI.canvasUtils
      * @param {PIXI.Texture} texture - the texture to tint
      * @param {number} color - the color to use to tint the sprite with
-     * @param {HTMLCanvasElement} canvas - the current canvas
+     * @param {PIXI.ICanvas} canvas - the current canvas
      */
-    tintWithPerPixel: (texture: Texture, color: number, canvas: HTMLCanvasElement): void =>
+    tintWithPerPixel: (texture: Texture, color: number, canvas: ICanvas): void =>
     {
         const context = canvas.getContext('2d');
         const crop = texture._frame.clone();
@@ -241,7 +243,7 @@ export const canvasUtils = {
         );
         context.restore();
 
-        const rgbValues = hex2rgb(color);
+        const rgbValues = utils.hex2rgb(color);
         const r = rgbValues[0];
         const g = rgbValues[1];
         const b = rgbValues[2];
@@ -270,13 +272,13 @@ export const canvasUtils = {
     {
         const step = canvasUtils.cacheStepsPerColorChannel;
 
-        const rgbValues = hex2rgb(color);
+        const rgbValues = utils.hex2rgb(color);
 
         rgbValues[0] = Math.min(255, (rgbValues[0] / step) * step);
         rgbValues[1] = Math.min(255, (rgbValues[1] / step) * step);
         rgbValues[2] = Math.min(255, (rgbValues[2] / step) * step);
 
-        return rgb2hex(rgbValues);
+        return utils.rgb2hex(rgbValues);
     },
 
     /**
@@ -305,7 +307,7 @@ export const canvasUtils = {
      * @memberof PIXI.canvasUtils
      * @type {Function}
      */
-    tintMethod: null as (texture: Texture, color: number, canvas: HTMLCanvasElement) => void,
+    tintMethod: null as (texture: Texture, color: number, canvas: ICanvas) => void,
 };
 
 canvasUtils.tintMethod = canvasUtils.canUseMultiply ? canvasUtils.tintWithMultiply : canvasUtils.tintWithPerPixel;

@@ -1,15 +1,14 @@
 {
   "name": "@pixi/math-extras",
-  "version": "6.4.2",
+  "version": "7.0.0-beta.3",
   "main": "dist/cjs/math-extras.js",
-  "module": "dist/esm/math-extras.js",
-  "bundle": "dist/browser/math-extras.js",
+  "module": "dist/esm/math-extras.mjs",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/math-extras.js"
+        "default": "./dist/esm/math-extras.mjs"
       },
       "require": {
         "types": "./index.d.ts",
@@ -17,7 +16,6 @@
       }
     }
   },
-  "bundleNoExports": true,
   "description": "Useful methods for some math structures",
   "author": "Milton Candelero",
   "contributors": [
@@ -35,11 +33,10 @@
     "access": "public"
   },
   "files": [
-    "lib",
     "dist",
     "*.d.ts"
   ],
-  "peerDependencies": {
-    "@pixi/math": "6.4.2"
-  }
+  "pixiRequirements": [
+    "@pixi/core"
+  ]
 }

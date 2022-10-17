@@ -1,4 +1,4 @@
-import { BLEND_MODES } from '@pixi/constants';
+import { BLEND_MODES } from '@pixi/core';
 import { canUseNewCanvasBlendModes } from './canUseNewCanvasBlendModes';
 
 /**
@@ -9,6 +9,7 @@ import { canUseNewCanvasBlendModes } from './canUseNewCanvasBlendModes';
  * @param {string[]} [array=[]] - The array to output into.
  * @returns {string[]} Mapped modes.
  */
+// TODO after upgrading to typeScript 4.6, replace `string[]` with `GlobalCompositeOperation[]`
 export function mapCanvasBlendModesToPixi(array: string[] = []): string[]
 {
     if (canUseNewCanvasBlendModes())
@@ -27,7 +28,7 @@ export function mapCanvasBlendModesToPixi(array: string[] = []): string[]
         array[BLEND_MODES.DIFFERENCE] = 'difference';
         array[BLEND_MODES.EXCLUSION] = 'exclusion';
         array[BLEND_MODES.HUE] = 'hue';
-        array[BLEND_MODES.SATURATION] = 'saturate';
+        array[BLEND_MODES.SATURATION] = 'saturation';
         array[BLEND_MODES.COLOR] = 'color';
         array[BLEND_MODES.LUMINOSITY] = 'luminosity';
     }

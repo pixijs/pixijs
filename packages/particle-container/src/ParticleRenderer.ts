@@ -1,14 +1,11 @@
-import { TYPES } from '@pixi/constants';
-import { ObjectRenderer, Shader, State } from '@pixi/core';
-import { Matrix } from '@pixi/math';
-import { correctBlendMode, premultiplyRgba, premultiplyTint } from '@pixi/utils';
+import { TYPES, Matrix, extensions, ExtensionType, ObjectRenderer, Shader, State, utils } from '@pixi/core';
 import { ParticleBuffer } from './ParticleBuffer';
 import fragment from './particles.frag';
 import vertex from './particles.vert';
 
-import type { DisplayObject } from '@pixi/display';
 import type { ParticleContainer } from './ParticleContainer';
-import type { Renderer } from '@pixi/core';
+import type { Renderer, ExtensionMetadata } from '@pixi/core';
+import type { Sprite } from '@pixi/sprite';
 
 export interface IParticleRendererProperty
 {
@@ -37,6 +34,12 @@ export interface IParticleRendererProperty
  */
 export class ParticleRenderer extends ObjectRenderer
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        name: 'particle',
+        type: ExtensionType.RendererPlugin,
+    };
+
     /** The WebGL state in which this renderer will work. */
     public readonly state: State;
 
@@ -135,10 +138,11 @@ export class ParticleRenderer extends ObjectRenderer
             buffers = container._buffers = this.generateBuffers(container);
         }
 
-        const baseTexture = (children[0] as any)._texture.baseTexture;
+        const baseTexture = children[0]._texture.baseTexture;
+        const premultiplied = baseTexture.alphaMode > 0;
 
         // if the uvs have not updated then no point rendering just yet!
-        this.state.blendMode = correctBlendMode(container.blendMode, baseTexture.alphaMode);
+        this.state.blendMode = utils.correctBlendMode(container.blendMode, premultiplied);
         renderer.state.set(this.state);
 
         const gl = renderer.gl;
@@ -149,8 +153,8 @@ export class ParticleRenderer extends ObjectRenderer
 
         this.shader.uniforms.translationMatrix = m.toArray(true);
 
-        this.shader.uniforms.uColor = premultiplyRgba(container.tintRgb,
-            container.worldAlpha, this.shader.uniforms.uColor, baseTexture.alphaMode);
+        this.shader.uniforms.uColor = utils.premultiplyRgba(container.tintRgb,
+            container.worldAlpha, this.shader.uniforms.uColor, premultiplied);
 
         this.shader.uniforms.uSampler = baseTexture;
 
@@ -229,7 +233,7 @@ export class ParticleRenderer extends ObjectRenderer
 
     /**
      * Uploads the vertices.
-     * @param children - the array of display objects to render
+     * @param children - the array of sprites to render
      * @param startIndex - the index to start from in the children array
      * @param amount - the amount of children that will have their vertices uploaded
      * @param array - The vertices to upload.
@@ -237,7 +241,7 @@ export class ParticleRenderer extends ObjectRenderer
      * @param offset - Offset to start at.
      */
     public uploadVertices(
-        children: DisplayObject[], startIndex: number, amount: number,
+        children: Sprite[], startIndex: number, amount: number,
         array: number[], stride: number, offset: number
     ): void
     {
@@ -248,7 +252,7 @@ export class ParticleRenderer extends ObjectRenderer
 
         for (let i = 0; i < amount; ++i)
         {
-            const sprite: any = children[startIndex + i];
+            const sprite = children[startIndex + i];
             const texture = sprite._texture;
             const sx = sprite.scale.x;
             const sy = sprite.scale.y;
@@ -292,7 +296,7 @@ export class ParticleRenderer extends ObjectRenderer
 
     /**
      * Uploads the position.
-     * @param children - the array of display objects to render
+     * @param children - the array of sprites to render
      * @param startIndex - the index to start from in the children array
      * @param amount - the amount of children that will have their positions uploaded
      * @param array - The vertices to upload.
@@ -300,7 +304,7 @@ export class ParticleRenderer extends ObjectRenderer
      * @param offset - Offset to start at.
      */
     public uploadPosition(
-        children: DisplayObject[], startIndex: number, amount: number,
+        children: Sprite[], startIndex: number, amount: number,
         array: number[], stride: number, offset: number
     ): void
     {
@@ -326,7 +330,7 @@ export class ParticleRenderer extends ObjectRenderer
 
     /**
      * Uploads the rotation.
-     * @param children - the array of display objects to render
+     * @param children - the array of sprites to render
      * @param startIndex - the index to start from in the children array
      * @param amount - the amount of children that will have their rotation uploaded
      * @param array - The vertices to upload.
@@ -334,7 +338,7 @@ export class ParticleRenderer extends ObjectRenderer
      * @param offset - Offset to start at.
      */
     public uploadRotation(
-        children: DisplayObject[], startIndex: number, amount: number,
+        children: Sprite[], startIndex: number, amount: number,
         array: number[], stride: number, offset: number
     ): void
     {
@@ -353,7 +357,7 @@ export class ParticleRenderer extends ObjectRenderer
 
     /**
      * Uploads the UVs.
-     * @param children - the array of display objects to render
+     * @param children - the array of sprites to render
      * @param startIndex - the index to start from in the children array
      * @param amount - the amount of children that will have their rotation uploaded
      * @param array - The vertices to upload.
@@ -361,13 +365,13 @@ export class ParticleRenderer extends ObjectRenderer
      * @param offset - Offset to start at.
      */
     public uploadUvs(
-        children: DisplayObject[], startIndex: number, amount: number,
+        children: Sprite[], startIndex: number, amount: number,
         array: number[], stride: number, offset: number
     ): void
     {
         for (let i = 0; i < amount; ++i)
         {
-            const textureUvs = (children[startIndex + i] as any)._texture._uvs;
+            const textureUvs = children[startIndex + i]._texture._uvs;
 
             if (textureUvs)
             {
@@ -407,7 +411,7 @@ export class ParticleRenderer extends ObjectRenderer
 
     /**
      * Uploads the tint.
-     * @param children - the array of display objects to render
+     * @param children - the array of sprites to render
      * @param startIndex - the index to start from in the children array
      * @param amount - the amount of children that will have their rotation uploaded
      * @param array - The vertices to upload.
@@ -415,19 +419,19 @@ export class ParticleRenderer extends ObjectRenderer
      * @param offset - Offset to start at.
      */
     public uploadTint(
-        children: DisplayObject[], startIndex: number, amount: number,
+        children: Sprite[], startIndex: number, amount: number,
         array: number[], stride: number, offset: number
     ): void
     {
         for (let i = 0; i < amount; ++i)
         {
-            const sprite: any = children[startIndex + i];
+            const sprite = children[startIndex + i];
             const premultiplied = sprite._texture.baseTexture.alphaMode > 0;
             const alpha = sprite.alpha;
 
             // we dont call extra function if alpha is 1.0, that's faster
             const argb = alpha < 1.0 && premultiplied
-                ? premultiplyTint(sprite._tintRGB, alpha) : sprite._tintRGB + (alpha * 255 << 24);
+                ? utils.premultiplyTint(sprite._tintRGB, alpha) : sprite._tintRGB + (alpha * 255 << 24);
 
             array[offset] = argb;
             array[offset + stride] = argb;
@@ -452,3 +456,5 @@ export class ParticleRenderer extends ObjectRenderer
         this.tempMatrix = null;
     }
 }
+
+extensions.add(ParticleRenderer);

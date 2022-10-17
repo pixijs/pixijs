@@ -1,15 +1,14 @@
 {
   "name": "@pixi/filter-displacement",
-  "version": "6.4.2",
+  "version": "7.0.0-beta.3",
   "main": "dist/cjs/filter-displacement.js",
-  "module": "dist/esm/filter-displacement.js",
-  "bundle": "dist/browser/filter-displacement.js",
+  "module": "dist/esm/filter-displacement.mjs",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/filter-displacement.js"
+        "default": "./dist/esm/filter-displacement.mjs"
       },
       "require": {
         "types": "./index.d.ts",
@@ -17,7 +16,6 @@
       }
     }
   },
-  "namespace": "PIXI.filters",
   "description": "Filter that allows offsetting of pixel values to create warping effects",
   "author": "Mat Groves",
   "contributors": [
@@ -34,12 +32,10 @@
     "access": "public"
   },
   "files": [
-    "lib",
     "dist",
     "*.d.ts"
   ],
-  "peerDependencies": {
-    "@pixi/core": "6.4.2",
-    "@pixi/math": "6.4.2"
-  }
+  "pixiRequirements": [
+    "@pixi/core"
+  ]
 }

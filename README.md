@@ -5,9 +5,9 @@ PixiJS — The HTML5 Creation Engine
 
 [![Discord](https://badgen.net/badge/icon/discord?icon=discord&label)](https://discord.gg/QrnxmQUPGV)
 [![npm version](https://badge.fury.io/js/pixi.js.svg)](https://badge.fury.io/js/pixi.js)
-[![Node.js CI](https://github.com/pixijs/pixi.js/workflows/Node.js%20CI/badge.svg)](https://github.com/pixi.js/pixi.js/actions?query=workflow%3A%22Node.js+CI%22)
+[![Node.js CI](https://github.com/pixijs/pixijs/workflows/Node.js%20CI/badge.svg)](https://github.com/pixijs/pixijs/actions?query=workflow%3A%22Node.js+CI%22)
 
-The aim of this project is to provide a fast lightweight 2D library that works
+This project aims to provide a fast lightweight 2D library that works
 across all devices. The PixiJS renderer allows everyone to enjoy the power of
 hardware acceleration without prior knowledge of WebGL. Also, it's fast. Really fast.
 
@@ -25,15 +25,17 @@ as any breakthroughs will be posted up there too!
 
 ### What to Use PixiJS for and When to Use It
 
-PixiJS is a rendering library that will allow you to create rich, interactive graphics, cross platform applications, and games without having to dive into the WebGL API or deal with browser and device compatibility.
+PixiJS is a rendering library that will allow you to create rich, interactive graphics, cross-platform applications, and games without having to dive into the WebGL API or deal with browser and device compatibility.
 
-PixiJS has full [WebGL](https://en.wikipedia.org/wiki/WebGL) support and seamlessly falls back to HTML5's [canvas](https://en.wikipedia.org/wiki/Canvas_element) if needed. As a framework, PixiJS is a fantastic tool for authoring interactive content, *especially with the move away from Adobe Flash in recent years*. Use it for your graphics rich, interactive websites, applications, and HTML5 games.  Out of the box cross-platform compatibility and graceful degradation mean you have less work to do and have more fun doing it! If you want to create polished and refined experiences relatively quickly, without delving into dense, low level code, all while avoiding the headaches of browser inconsistencies, then sprinkle your next project with some PixiJS magic!
+PixiJS has full [WebGL](https://en.wikipedia.org/wiki/WebGL) support and seamlessly falls back to HTML5's [canvas](https://en.wikipedia.org/wiki/Canvas_element) if needed. As a framework, PixiJS is a fantastic tool for authoring interactive content, *especially with the move away from Adobe Flash in recent years*. Use it for your graphics-rich, interactive websites, applications, and HTML5 games.  Out of the box, cross-platform compatibility and graceful degradation mean you have less work to do and have more fun doing it! If you want to create polished and refined experiences relatively quickly, without delving into dense, low-level code, all while avoiding the headaches of browser inconsistencies, then sprinkle your next project with some PixiJS magic!
 
 **Boost your development and feel free to use your imagination!**
 
 ### Learn ###
 - Website: Find out more about PixiJS on the [official website](https://www.pixijs.com/).
-- Getting started: Check out @kittykatattack's comprehensive [tutorial](https://github.com/kittykatattack/learningPixi).
+- Getting started:
+    - Check out @kittykatattack's comprehensive [tutorial](https://github.com/kittykatattack/learningPixi).
+    - Also check out @miltoncandelero's PixiJS tutorials aimed toward videogames with recipes, best practices and TypeScript / npm / webpack setup [here](https://www.pixijselementals.com/)
 - Examples: Get stuck right in and play around with PixiJS code and features right [here](https://pixijs.io/examples/)!
 - Docs: Get to know the PixiJS API by checking out the [docs](https://pixijs.io/docs/).
 - Guide: Supplementary guide to the API documentation [here](https://pixijs.io/guides/).
@@ -119,46 +121,46 @@ before submitting changes.
 ### Basic Usage Example ###
 
 ```js
-import * as PIXI from 'pixi.js';
+import { Application, Sprite, Assets } from 'pixi.js';
 
 // The application will create a renderer using WebGL, if possible,
 // with a fallback to a canvas render. It will also setup the ticker
 // and the root stage PIXI.Container
-const app = new PIXI.Application();
+const app = new Application();
 
 // The application will create a canvas element for you that you
 // can then insert into the DOM
 document.body.appendChild(app.view);
 
 // load the texture we need
-app.loader.add('bunny', 'bunny.png').load((loader, resources) => {
-    // This creates a texture from a 'bunny.png' image
-    const bunny = new PIXI.Sprite(resources.bunny.texture);
+const texture = await Assets.load('bunny.png');
 
-    // Setup the position of the bunny
-    bunny.x = app.renderer.width / 2;
-    bunny.y = app.renderer.height / 2;
+// This creates a texture from a 'bunny.png' image
+const bunny = new Sprite(texture);
 
-    // Rotate around the center
-    bunny.anchor.x = 0.5;
-    bunny.anchor.y = 0.5;
+// Setup the position of the bunny
+bunny.x = app.renderer.width / 2;
+bunny.y = app.renderer.height / 2;
 
-    // Add the bunny to the scene we are building
-    app.stage.addChild(bunny);
+// Rotate around the center
+bunny.anchor.x = 0.5;
+bunny.anchor.y = 0.5;
 
-    // Listen for frame updates
-    app.ticker.add(() => {
-         // each frame we spin the bunny around a bit
-        bunny.rotation += 0.01;
-    });
+// Add the bunny to the scene we are building
+app.stage.addChild(bunny);
+
+// Listen for frame updates
+app.ticker.add(() => {
+    // each frame we spin the bunny around a bit
+    bunny.rotation += 0.01;
 });
 ```
 
 ### How to build ###
 
 Note that for most users you don't need to build this project. If all you want is to use PixiJS, then
-just download one of our [prebuilt releases](https://github.com/pixijs/pixijs/releases). Really
-the only time you should need to build PixiJS is if you are developing it.
+just download one of our [prebuilt releases](https://github.com/pixijs/pixijs/releases). 
+The only time you should need to build PixiJS is if you are developing it.
 
 If you don't already have Node.js and NPM, go install them. Then, in the folder where you have cloned
 the repository, install the build dependencies using npm:
@@ -173,6 +175,23 @@ Then, to build the source, run:
 npm run build
 ```
 
+#### Error installing gl package
+
+In most cases installing `gl` from npm should just work. However, if you run into problems you might need to adjust your system configuration and make sure all your dependencies are up to date
+
+Please refer to the [gl installation guide](https://www.npmjs.com/package/gl/v/4.5.3-win64.0#system-dependencies) for more information.
+
+#### Error installing canvas package
+
+The [canvas](https://www.npmjs.com/package/canvas) library currently being used does not have a pre-built version for every environment.
+When the package detects an unsupported environment, it will try to build from source.
+
+To build from source you will need to make sure you have the following dependencies installed and then reinstall:
+
+`brew install pkg-config cairo pango libpng jpeg giflib librsvg`
+
+For non-mac users, please refer to the [canvas installation guide](https://www.npmjs.com/package/canvas#compiling) for more information.
+
 ### How to generate the documentation ###
 
 The docs can be generated using npm:
@@ -186,5 +205,3 @@ The documentation uses [webdoc](https://github.com/webdoc-labs/webdoc) in combin
 ### License ###
 
 This content is released under the (http://opensource.org/licenses/MIT) MIT License.
-
-[![Analytics](https://ga-beacon.appspot.com/UA-39213431-2/pixi.js/index)](https://github.com/igrigorik/ga-beacon)

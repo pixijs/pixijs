@@ -1,4 +1,4 @@
-import type { ISystem } from '../ISystem';
+import type { ISystem } from '../system/ISystem';
 import type { MaskData } from './MaskData';
 import type { Renderer } from '../Renderer';
 

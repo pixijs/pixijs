@@ -1,9 +1,7 @@
-import { Texture, TextureMatrix } from '@pixi/core';
-import { Point, Rectangle, Transform  } from '@pixi/math';
+import { Point, Rectangle, Transform, Texture, TextureMatrix } from '@pixi/core';
 import { Sprite } from '@pixi/sprite';
-import type { Renderer, IBaseTextureOptions, TextureSource } from '@pixi/core';
+import type { IPoint, IPointData, ISize, ObservablePoint, Renderer, IBaseTextureOptions, TextureSource } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
-import type { IPoint, IPointData, ISize, ObservablePoint } from '@pixi/math';
 
 const tempPoint = new Point();
 
@@ -33,6 +31,8 @@ export class TilingSprite extends Sprite
     public uvRespectAnchor: boolean;
 
     /**
+     * Note: The wrap mode of the texture is forced to REPEAT on render if the size of the texture
+     * is a power of two, the texture's wrap mode is CLAMP, and the texture hasn't been bound yet.
      * @param texture - The texture of the tiling sprite.
      * @param width - The width of the tiling sprite.
      * @param height - The height of the tiling sprite.

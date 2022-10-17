@@ -1,11 +1,12 @@
 import { BaseTextureCache, EventEmitter, isPow2, TextureCache, uid } from '@pixi/utils';
-import { FORMATS, SCALE_MODES, TARGETS, TYPES, ALPHA_MODES, MIPMAP_MODES, WRAP_MODES } from '@pixi/constants';
+import { FORMATS, SCALE_MODES, TARGETS, TYPES, ALPHA_MODES } from '@pixi/constants';
 import { Resource } from './resources/Resource';
 import { BufferResource } from './resources/BufferResource';
 import { autoDetectResource } from './resources/autoDetectResource';
 import { settings } from '@pixi/settings';
 
-import type { MSAA_QUALITY } from '@pixi/constants';
+import type { MSAA_QUALITY, MIPMAP_MODES, WRAP_MODES } from '@pixi/constants';
+import type { ICanvas } from '@pixi/settings';
 import type { IAutoDetectOptions } from './resources/autoDetectResource';
 import type { GLTexture } from './GLTexture';
 
@@ -15,7 +16,7 @@ const defaultBufferOptions = {
     alphaMode: ALPHA_MODES.NPM,
 };
 
-export type ImageSource = HTMLImageElement | HTMLCanvasElement | HTMLVideoElement | ImageBitmap;
+export type ImageSource = HTMLImageElement | HTMLVideoElement | ImageBitmap | ICanvas;
 
 export interface IBaseTextureOptions<RO = any>
 {
@@ -197,7 +198,7 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
     private _wrapMode?: WRAP_MODES;
 
     /**
-     * @param {PIXI.Resource|string|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement} [resource=null] -
+     * @param {PIXI.Resource|HTMLImageElement|HTMLVideoElement|ImageBitmap|ICanvas|string} [resource=null] -
      *        The current resource to use, for things that aren't Resource objects, will be converted
      *        into a Resource.
      * @param options - Collection of options
@@ -234,14 +235,14 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
         this.resolution = resolution || settings.RESOLUTION;
         this.width = Math.round((width || 0) * this.resolution) / this.resolution;
         this.height = Math.round((height || 0) * this.resolution) / this.resolution;
-        this._mipmap = mipmap !== undefined ? mipmap : settings.MIPMAP_TEXTURES;
-        this.anisotropicLevel = anisotropicLevel !== undefined ? anisotropicLevel : settings.ANISOTROPIC_LEVEL;
+        this._mipmap = mipmap ?? settings.MIPMAP_TEXTURES;
+        this.anisotropicLevel = anisotropicLevel ?? settings.ANISOTROPIC_LEVEL;
         this._wrapMode = wrapMode || settings.WRAP_MODE;
-        this._scaleMode = scaleMode !== undefined ? scaleMode : settings.SCALE_MODE;
+        this._scaleMode = scaleMode ?? settings.SCALE_MODE;
         this.format = format || FORMATS.RGBA;
         this.type = type || TYPES.UNSIGNED_BYTE;
         this.target = target || TARGETS.TEXTURE_2D;
-        this.alphaMode = alphaMode !== undefined ? alphaMode : ALPHA_MODES.UNPACK;
+        this.alphaMode = alphaMode ?? ALPHA_MODES.UNPACK;
 
         this.uid = uid();
         this.touched = 0;
@@ -582,7 +583,7 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
      * source is an image url or an image element and not in the base texture
      * cache, it will be created and loaded.
      * @static
-     * @param {string|string[]|HTMLImageElement|HTMLCanvasElement|SVGElement|HTMLVideoElement} source - The
+     * @param {HTMLImageElement|HTMLVideoElement|ImageBitmap|PIXI.ICanvas|string|string[]} source - The
      *        source to create base texture from.
      * @param options - See {@link PIXI.BaseTexture}'s constructor for options.
      * @param {string} [options.pixiIdPrefix=pixiid] - If a source has no id, this is the prefix of the generated id
@@ -603,7 +604,7 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
         {
             if (!(source as any)._pixiId)
             {
-                const prefix = (options && options.pixiIdPrefix) || 'pixiid';
+                const prefix = options?.pixiIdPrefix || 'pixiid';
 
                 (source as any)._pixiId = `${prefix}_${uid()}`;
             }
@@ -637,6 +638,10 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
      * @param width - Width of the resource
      * @param height - Height of the resource
      * @param options - See {@link PIXI.BaseTexture}'s constructor for options.
+     *        Default properties are different from the constructor's defaults.
+     * @param {PIXI.FORMATS} [options.format=PIXI.FORMATS.RGBA] - GL format type
+     * @param {PIXI.ALPHA_MODES} [options.alphaMode=PIXI.ALPHA_MODES.NPM] - Image alpha, not premultiplied by default
+     * @param {PIXI.SCALE_MODES} [options.scaleMode=PIXI.SCALE_MODES.NEAREST] - Scale mode, pixelating by default
      * @returns - The resulting new BaseTexture
      */
     static fromBuffer(buffer: Float32Array | Uint8Array,
@@ -647,7 +652,7 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
         const resource = new BufferResource(buffer, { width, height });
         const type = buffer instanceof Float32Array ? TYPES.FLOAT : TYPES.UNSIGNED_BYTE;
 
-        return new BaseTexture(resource, Object.assign(defaultBufferOptions, options || { width, height, type }));
+        return new BaseTexture(resource, Object.assign({}, defaultBufferOptions, options || { width, height, type }));
     }
 
     /**
@@ -659,7 +664,7 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
     {
         if (id)
         {
-            if (baseTexture.textureCacheIds.indexOf(id) === -1)
+            if (!baseTexture.textureCacheIds.includes(id))
             {
                 baseTexture.textureCacheIds.push(id);
             }
@@ -699,7 +704,7 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
                 return baseTextureFromCache;
             }
         }
-        else if (baseTexture && baseTexture.textureCacheIds)
+        else if (baseTexture?.textureCacheIds)
         {
             for (let i = 0; i < baseTexture.textureCacheIds.length; ++i)
             {

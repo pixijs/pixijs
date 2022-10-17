@@ -1,15 +1,14 @@
 {
   "name": "@pixi/graphics-extras",
-  "version": "6.4.2",
+  "version": "7.0.0-beta.3",
   "main": "dist/cjs/graphics-extras.js",
-  "module": "dist/esm/graphics-extras.js",
-  "bundle": "dist/browser/graphics-extras.js",
+  "module": "dist/esm/graphics-extras.mjs",
   "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./index.d.ts",
-        "default": "./dist/esm/graphics-extras.js"
+        "default": "./dist/esm/graphics-extras.mjs"
       },
       "require": {
         "types": "./index.d.ts",
@@ -17,7 +16,6 @@
       }
     }
   },
-  "bundleNoExports": true,
   "description": "Additional Graphics functions for drawing special shapes.",
   "author": "Matt Karl <matt@mattkarl.com>",
   "homepage": "http://pixijs.com/",
@@ -31,12 +29,11 @@
     "access": "public"
   },
   "files": [
-    "lib",
     "dist",
     "*.d.ts"
   ],
-  "peerDependencies": {
-    "@pixi/graphics": "6.4.2",
-    "@pixi/math": "6.4.2"
-  }
+  "pixiRequirements": [
+    "@pixi/core",
+    "@pixi/graphics"
+  ]
 }

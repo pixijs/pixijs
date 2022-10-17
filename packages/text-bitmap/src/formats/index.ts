@@ -27,3 +27,6 @@ export function autoDetectFormat(data: unknown): typeof formats[number] | null
 
     return null;
 }
+
+export type { IBitmapFontRawData } from './TextFormat';
+export { TextFormat, XMLFormat, XMLStringFormat };

@@ -1,6 +1,8 @@
 import { generateFillStyle } from './generateFillStyle';
-import { hex2rgb, string2hex } from '@pixi/utils';
+import { utils } from '@pixi/core';
+
 import type { TextMetrics, TextStyle } from '@pixi/text';
+import type { ICanvas, ICanvasRenderingContext2D } from '@pixi/settings';
 
 // TODO: Prevent code duplication b/w drawGlyph & Text#updateText
 
@@ -9,8 +11,8 @@ import type { TextMetrics, TextStyle } from '@pixi/text';
  *
  * Ignored because not directly exposed.
  * @ignore
- * @param {HTMLCanvasElement} canvas
- * @param {CanvasRenderingContext2D} context
+ * @param {PIXI.ICanvas} canvas
+ * @param {PIXI.ICanvasRenderingContext2D} context
  * @param {TextMetrics} metrics
  * @param {number} x
  * @param {number} y
@@ -18,8 +20,8 @@ import type { TextMetrics, TextStyle } from '@pixi/text';
  * @param {TextStyle} style
  */
 export function drawGlyph(
-    canvas: HTMLCanvasElement,
-    context: CanvasRenderingContext2D,
+    canvas: ICanvas,
+    context: ICanvasRenderingContext2D,
     metrics: TextMetrics,
     x: number,
     y: number,
@@ -49,7 +51,7 @@ export function drawGlyph(
     if (style.dropShadow)
     {
         const dropShadowColor = style.dropShadowColor;
-        const rgb = hex2rgb(typeof dropShadowColor === 'number' ? dropShadowColor : string2hex(dropShadowColor));
+        const rgb = utils.hex2rgb(typeof dropShadowColor === 'number' ? dropShadowColor : utils.string2hex(dropShadowColor));
         const dropShadowBlur = style.dropShadowBlur * resolution;
         const dropShadowDistance = style.dropShadowDistance * resolution;
 

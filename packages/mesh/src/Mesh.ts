@@ -1,14 +1,10 @@
-import { Shader, State } from '@pixi/core';
-import { Point, Polygon } from '@pixi/math';
-import { BLEND_MODES, DRAW_MODES } from '@pixi/constants';
+import { State, DRAW_MODES, settings, Point, Polygon } from '@pixi/core';
 import { Container } from '@pixi/display';
-import { settings } from '@pixi/settings';
 import { MeshBatchUvs } from './MeshBatchUvs';
-import { MeshMaterial } from './MeshMaterial';
 
+import type { MeshMaterial } from './MeshMaterial';
 import type { IDestroyOptions } from '@pixi/display';
-import type { Texture, Renderer, Geometry, Buffer } from '@pixi/core';
-import type { IPointData } from '@pixi/math';
+import type { BLEND_MODES, IPointData, Texture, Renderer, Geometry, Buffer, Shader } from '@pixi/core';
 
 const tempPoint = new Point();
 const tempPolygon = new Polygon();
