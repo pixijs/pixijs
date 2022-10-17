@@ -45,7 +45,7 @@ export function hex2string(hex: number): string
  *  hex strings without prefix: "ffffff"
  *  css colors: "black"
  * @example
- * PIXI.utils.string2hex("#ffffff"); // returns 0xffffff
+ * PIXI.utils.string2hex("#ffffff"); // returns 0xffffff, which is 16777215 as an integer
  * @memberof PIXI.utils
  * @function string2hex
  * @param {string} string - The string color (e.g., `"#ffffff"`)
@@ -69,7 +69,7 @@ export function string2hex(string: string): number
 /**
  * Converts a color as an [R, G, B] array of normalized floats to a hexadecimal number.
  * @example
- * PIXI.utils.rgb2hex([1, 1, 1]); // returns 0xffffff
+ * PIXI.utils.rgb2hex([1, 1, 1]); // returns 0xffffff, which is 16777215 as an integer
  * @memberof PIXI.utils
  * @function rgb2hex
  * @param {number[]} rgb - Array of numbers where all values are normalized floats from 0.0 to 1.0.
