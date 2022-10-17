@@ -21,6 +21,13 @@ const validImages = ['.jpg', '.png', '.jpeg', '.avif', '.webp'];
 export async function loadImageBitmap(url: string): Promise<ImageBitmap>
 {
     const response = await settings.ADAPTER.fetch(url);
+
+    if (!response.ok)
+    {
+        throw new Error(`[loadImageBitmap] Failed to fetch ${url}: `
+            + `${response.status} ${response.statusText}`);
+    }
+
     const imageBlob = await response.blob();
     const imageBitmap = await createImageBitmap(imageBlob);
 
@@ -62,7 +69,14 @@ export const loadTextures = {
 
         if (window.createImageBitmap)
         {
-            src = this.config.preferWorkers ? await WorkerManager.loadImageBitmap(url) : await loadImageBitmap(url);
+            if (this.config.preferWorkers && await WorkerManager.isImageBitmapSupported())
+            {
+                src = await WorkerManager.loadImageBitmap(url);
+            }
+            else
+            {
+                src = await loadImageBitmap(url);
+            }
         }
         else
         {
