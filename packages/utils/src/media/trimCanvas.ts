@@ -22,7 +22,9 @@ export function trimCanvas(canvas: ICanvas): {width: number; height: number; dat
     let width = canvas.width;
     let height = canvas.height;
 
-    const context = canvas.getContext('2d');
+    const context = canvas.getContext('2d', {
+        willReadFrequently: true,
+    } as CanvasRenderingContext2DSettings);
     const imageData = context.getImageData(0, 0, width, height);
     const pixels = imageData.data;
     const len = pixels.length;
