@@ -304,13 +304,13 @@ describe('RenderTexture', () =>
 
         gl.readPixels(0, 0, 1, 1, gl.RED, gl.FLOAT, pixel);
 
-        expect(pixel[0]).to.equal(1.0);
+        expect(pixel[0]).toEqual(1.0);
 
         pixel.set([0.1]);
 
         gl.readPixels(1, 1, 1, 1, gl.RED, gl.FLOAT, pixel);
 
-        expect(pixel[0]).to.equal(0.5);
+        expect(pixel[0]).toEqual(0.5);
     });
 
     it('should resize framebuffer', () =>
@@ -428,6 +428,6 @@ describe('RenderTexture', () =>
 
         gl.readPixels(1, 1, 1, 1, gl.RED, gl.FLOAT, pixel);
 
-        expect(pixel[0]).to.equal(1.0);
+        expect(pixel[0]).toEqual(1.0);
     });
 });
