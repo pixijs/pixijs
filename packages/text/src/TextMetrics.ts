@@ -754,7 +754,7 @@ export class TextMetrics
         {
             TextMetrics.__context = TextMetrics._canvas.getContext('2d', {
                 willReadFrequently: true,
-            } as CanvasRenderingContext2DSettings);
+            });
         }
 
         return TextMetrics.__context;

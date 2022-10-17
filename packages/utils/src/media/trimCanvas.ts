@@ -24,7 +24,7 @@ export function trimCanvas(canvas: ICanvas): {width: number; height: number; dat
 
     const context = canvas.getContext('2d', {
         willReadFrequently: true,
-    } as CanvasRenderingContext2DSettings);
+    });
     const imageData = context.getImageData(0, 0, width, height);
     const pixels = imageData.data;
     const len = pixels.length;

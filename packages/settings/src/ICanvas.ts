@@ -2,8 +2,18 @@ import type { ICanvasRenderingContext2D } from './ICanvasRenderingContext2D';
 
 export type ContextIds = '2d' | 'bitmaprenderer' | 'webgl' | 'experimental-webgl' | 'webgl2' | 'experimental-webgl2';
 
+export type PredefinedColorSpace = 'srgb' | 'display-p3';
+
 export type RenderingContext =
     ICanvasRenderingContext2D | ImageBitmapRenderingContext | WebGLRenderingContext | WebGL2RenderingContext;
+
+export interface ICanvasRenderingContext2DSettings
+{
+    alpha?: boolean;
+    colorSpace?: PredefinedColorSpace;
+    desynchronized?: boolean;
+    willReadFrequently?: boolean;
+}
 
 export interface ICanvasParentNode
 {
@@ -57,7 +67,7 @@ export interface ICanvas extends GlobalMixins.ICanvas, Partial<EventTarget>
      * @param {any} options - The options for creating context.
      * @returns {RenderingContext | null} The created context, or null if contextId is not supported.
      */
-    getContext(contextId: '2d', options?: CanvasRenderingContext2DSettings):
+    getContext(contextId: '2d', options?: ICanvasRenderingContext2DSettings):
     ICanvasRenderingContext2D | null;
     getContext(contextId: 'bitmaprenderer', options?: ImageBitmapRenderingContextSettings):
     ImageBitmapRenderingContext | null;
