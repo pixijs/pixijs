@@ -135,7 +135,10 @@ export class Text extends Sprite
 
         this._ownCanvas = ownCanvas;
         this.canvas = canvas;
-        this.context = canvas.getContext('2d');
+        this.context = canvas.getContext('2d', {
+            // required for trimming to work without warnings
+            willReadFrequently: true,
+        });
 
         this._resolution = settings.RESOLUTION;
         this._autoResolution = true;
