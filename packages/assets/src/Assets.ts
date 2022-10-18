@@ -82,13 +82,13 @@ export interface AssetInitOptions
  * Only one Asset Class exists accessed via the Global Asset object.
  *
  * It has four main responsibilities:
- * 1. Allows users to map URLs to keys and resolve them according to the user's browser capabilities
+ * 1. Allows users to map URLs to keys and resolve them according to the user's browser capabilities.
  * 2. Loads the resources and transforms them into assets that developers understand.
  * 3. Caches the assets and provides a way to access them.
- * 4: Allow developers to unload assets and clear the cache.
+ * 4. Allow developers to unload assets and clear the cache.
  *
  * It also has a few advanced features:
- * 1. Allows developers to provide a manifest upfront of all assets and help manage them via 'bundles'
+ * 1. Allows developers to provide a manifest upfront of all assets and help manage them via 'bundles'.
  * 2. Allows users to background load assets. Shortening (or eliminating) load times and improving UX. With this feature,
  * in-game loading bars can be a thing of the past!
  *
