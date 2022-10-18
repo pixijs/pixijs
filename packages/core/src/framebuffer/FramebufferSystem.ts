@@ -295,13 +295,6 @@ export class FramebufferSystem implements ISystem
 
         const fbo = framebuffer.glFramebuffers[this.CONTEXT_UID];
 
-        if (fbo.msaaBuffer)
-        {
-            gl.bindRenderbuffer(gl.RENDERBUFFER, fbo.msaaBuffer);
-            gl.renderbufferStorageMultisample(gl.RENDERBUFFER, fbo.multisample,
-                gl.RGBA8, framebuffer.width, framebuffer.height);
-        }
-
         if (fbo.stencil)
         {
             gl.bindRenderbuffer(gl.RENDERBUFFER, fbo.stencil);
@@ -332,6 +325,13 @@ export class FramebufferSystem implements ISystem
             const parentTexture = texture.parentTextureArray || texture;
 
             this.renderer.texture.bind(parentTexture, 0);
+
+            if (i === 0 && fbo.msaaBuffer)
+            {
+                gl.bindRenderbuffer(gl.RENDERBUFFER, fbo.msaaBuffer);
+                gl.renderbufferStorageMultisample(gl.RENDERBUFFER, fbo.multisample,
+                    parentTexture._glTextures[this.CONTEXT_UID].internalFormat, framebuffer.width, framebuffer.height);
+            }
         }
 
         if (framebuffer.depthTexture && this.writeDepthTexture)
@@ -365,10 +365,6 @@ export class FramebufferSystem implements ISystem
         if (fbo.multisample > 1 && this.canMultisampleFramebuffer(framebuffer))
         {
             fbo.msaaBuffer = fbo.msaaBuffer || gl.createRenderbuffer();
-            gl.bindRenderbuffer(gl.RENDERBUFFER, fbo.msaaBuffer);
-            gl.renderbufferStorageMultisample(gl.RENDERBUFFER, fbo.multisample,
-                gl.RGBA8, framebuffer.width, framebuffer.height);
-            gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.RENDERBUFFER, fbo.msaaBuffer);
         }
         else if (fbo.msaaBuffer)
         {
@@ -393,16 +389,21 @@ export class FramebufferSystem implements ISystem
 
             if (i === 0 && fbo.msaaBuffer)
             {
-                continue;
+                gl.bindRenderbuffer(gl.RENDERBUFFER, fbo.msaaBuffer);
+                gl.renderbufferStorageMultisample(gl.RENDERBUFFER, fbo.multisample,
+                    parentTexture._glTextures[this.CONTEXT_UID].internalFormat, framebuffer.width, framebuffer.height);
+                gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.RENDERBUFFER, fbo.msaaBuffer);
             }
+            else
+            {
+                gl.framebufferTexture2D(gl.FRAMEBUFFER,
+                    gl.COLOR_ATTACHMENT0 + i,
+                    texture.target,
+                    parentTexture._glTextures[this.CONTEXT_UID].texture,
+                    mipLevel);
 
-            gl.framebufferTexture2D(gl.FRAMEBUFFER,
-                gl.COLOR_ATTACHMENT0 + i,
-                texture.target,
-                parentTexture._glTextures[this.CONTEXT_UID].texture,
-                mipLevel);
-
-            activeTextures.push(gl.COLOR_ATTACHMENT0 + i);
+                activeTextures.push(gl.COLOR_ATTACHMENT0 + i);
+            }
         }
 
         if (activeTextures.length > 1)

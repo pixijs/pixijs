@@ -128,6 +128,7 @@ describe('FramebufferSystem', () =>
         framebuffer.depth = true;
         framebuffer.stencil = true;
         framebuffer.multisample = MSAA_QUALITY.NONE;
+        framebuffer.addColorTexture(0);
 
         renderer.framebuffer.bind(framebuffer);
 
@@ -161,6 +162,7 @@ describe('FramebufferSystem', () =>
         framebuffer.depth = false;
         framebuffer.stencil = false;
         framebuffer.multisample = MSAA_QUALITY.HIGH;
+        framebuffer.addColorTexture(0);
 
         renderer.framebuffer.bind(framebuffer);
 
@@ -195,6 +197,7 @@ describe('FramebufferSystem', () =>
         framebuffer.depth = true;
         framebuffer.stencil = true;
         framebuffer.multisample = MSAA_QUALITY.HIGH;
+        framebuffer.addColorTexture(0);
 
         renderer.framebuffer.bind(framebuffer);
 
@@ -278,6 +281,7 @@ describe('FramebufferSystem', () =>
         framebuffer.depth = true;
         framebuffer.stencil = true;
         framebuffer.multisample = MSAA_QUALITY.NONE;
+        framebuffer.addColorTexture(0);
 
         renderer.framebuffer.bind(framebuffer);
 
@@ -329,6 +333,7 @@ describe('FramebufferSystem', () =>
         framebuffer.depth = true;
         framebuffer.stencil = true;
         framebuffer.multisample = MSAA_QUALITY.HIGH;
+        framebuffer.addColorTexture(0);
 
         renderer.framebuffer.bind(framebuffer);
 
