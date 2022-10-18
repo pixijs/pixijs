@@ -89,7 +89,7 @@ export class PolygonUtils
      * @param {number} y3 - y-coordinate of start point at second line
      * @param {number} x4 - x-coordinate of end point at second line
      * @param {number} y4 - y-coordinate of end point at second line
-     * @returns {[number, number] | null} - [x, y] coordinates of intersection
+     * @returns [x, y] coordinates of intersection
      */
     static findIntersection(
         x1: number, y1: number, x2: number, y2: number,

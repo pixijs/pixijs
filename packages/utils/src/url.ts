@@ -1,4 +1,4 @@
-/**
+/*
  * This file contains redeclared types for Node `url` and `querystring` modules. These modules
  * don't provide their own typings but instead are a part of the full Node typings. The purpose of
  * this file is to redeclare the required types to avoid having the whole Node types as a

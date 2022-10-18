@@ -72,7 +72,6 @@ export class EventSystem
      * values, objects are handled as dictionaries of CSS values for {@code domElement},
      * and functions are called instead of changing the CSS.
      * Default CSS cursor values are provided for 'default' and 'pointer' modes.
-     * @member {Object<string, string | ((mode: string) => void) | CSSStyleDeclaration>}
      */
     public cursorStyles: Record<string, string | ((mode: string) => void) | CSSStyleDeclaration>;
 
