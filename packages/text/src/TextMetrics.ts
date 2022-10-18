@@ -1,4 +1,5 @@
 import { settings } from '@pixi/settings';
+
 import type { TextStyle, TextStyleWhiteSpace } from './TextStyle';
 
 interface IFontMetrics
@@ -9,6 +10,12 @@ interface IFontMetrics
 }
 
 type CharacterWidthCache = { [key: string]: number };
+
+// Default settings used for all getContext calls
+const contextSettings = {
+    // TextMetrics requires getImageData readback for measuring fonts.
+    willReadFrequently: true,
+};
 
 /**
  * The TextMetrics object represents the measurement of a block of text with a specified style.
@@ -116,7 +123,7 @@ export class TextMetrics
             fontProperties.ascent = style.fontSize as number;
         }
 
-        const context = canvas.getContext('2d');
+        const context = canvas.getContext('2d', contextSettings);
 
         context.font = font;
 
@@ -175,7 +182,7 @@ export class TextMetrics
         canvas: HTMLCanvasElement | OffscreenCanvas = TextMetrics._canvas
     ): string
     {
-        const context = canvas.getContext('2d');
+        const context = canvas.getContext('2d', contextSettings);
 
         let width = 0;
         let line = '';
@@ -715,7 +722,7 @@ export class TextMetrics
             {
                 // OffscreenCanvas2D measureText can be up to 40% faster.
                 const c = new OffscreenCanvas(0, 0);
-                const context = c.getContext('2d');
+                const context = c.getContext('2d', contextSettings);
 
                 if (context && context.measureText)
                 {
@@ -745,7 +752,7 @@ export class TextMetrics
     {
         if (!TextMetrics.__context)
         {
-            TextMetrics.__context = TextMetrics._canvas.getContext('2d');
+            TextMetrics.__context = TextMetrics._canvas.getContext('2d', contextSettings);
         }
 
         return TextMetrics.__context;
