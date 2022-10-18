@@ -1,12 +1,13 @@
-import { BLEND_MODES } from '@pixi/constants';
+import { BLEND_MODES, utils } from '@pixi/core';
 import { Container } from '@pixi/display';
-import { hex2rgb } from '@pixi/utils';
 
 import type { BaseTexture, Renderer } from '@pixi/core';
 import type { ParticleBuffer } from './ParticleBuffer';
 import type { IDestroyOptions } from '@pixi/display';
+import type { Sprite } from '@pixi/sprite';
 
-export interface IParticleProperties {
+export interface IParticleProperties
+{
     vertices?: boolean;
     position?: boolean;
     rotation?: boolean;
@@ -26,34 +27,30 @@ export interface IParticleProperties {
  *
  * Other more advanced functionality like masking, children, filters, etc will not work on sprites in this batch.
  *
- * It's extremely easy to use:
- * ```js
- * let container = new ParticleContainer();
+ * It's extremely easy to use. And here you have a hundred sprites that will be rendered at the speed of light.
+ * @example
+ * import { ParticleContainer, Sprite } from 'pixi.js';
+ *
+ * const container = new ParticleContainer();
  *
  * for (let i = 0; i < 100; ++i)
  * {
- *     let sprite = PIXI.Sprite.from("myImage.png");
+ *     let sprite = Sprite.from("myImage.png");
  *     container.addChild(sprite);
  * }
- * ```
- *
- * And here you have a hundred sprites that will be rendered at the speed of light.
- *
  * @memberof PIXI
  */
-export class ParticleContainer extends Container
+export class ParticleContainer extends Container<Sprite>
 {
     /**
      * The blend mode to be applied to the sprite. Apply a value of `PIXI.BLEND_MODES.NORMAL`
      * to reset the blend mode.
-     *
      * @default PIXI.BLEND_MODES.NORMAL
      */
     public blendMode: BLEND_MODES;
 
     /**
      * If true, container allocates more batches in case there are more than `maxSize` particles.
-     *
      * @default false
      */
     public autoResize: boolean;
@@ -63,14 +60,12 @@ export class ParticleContainer extends Container
      * Advantages can include sharper image quality (like text) and faster rendering on canvas.
      * The main disadvantage is movement of objects may appear less smooth.
      * Default to true here as performance is usually the priority for particles.
-     *
      * @default true
      */
     public roundPixels: boolean;
 
     /**
      * The texture used to render the children.
-     *
      * @readonly
      */
     public baseTexture: BaseTexture;
@@ -87,21 +82,18 @@ export class ParticleContainer extends Container
 
     /**
      * Set properties to be dynamic (true) / static (false).
-     *
      * @private
      */
     _properties: boolean[];
 
     /**
      * For every batch, stores _updateID corresponding to the last change in that batch.
-     *
      * @private
      */
     _bufferUpdateIDs: number[];
 
     /**
      * When child inserted, removed or changes position this number goes up.
-     *
      * @private
      */
     _updateID: number;
@@ -109,7 +101,6 @@ export class ParticleContainer extends Container
     /**
      * The tint applied to the container.
      * This is a hex value. A value of 0xFFFFFF will remove any tint effect.
-     *
      * @default 0xFFFFFF
      */
     private _tint: number;
@@ -164,7 +155,6 @@ export class ParticleContainer extends Container
 
     /**
      * Sets the private properties array to dynamic / static based on the passed properties object
-     *
      * @param properties - The properties to be uploaded
      */
     public setProperties(properties: IParticleProperties): void
@@ -191,7 +181,6 @@ export class ParticleContainer extends Container
      * The tint applied to the container. This is a hex value.
      * A value of 0xFFFFFF will remove any tint effect.
      * IMPORTANT: This is a WebGL only feature and will be ignored by the canvas renderer.
-     *
      * @default 0xFFFFFF
      */
     get tint(): number
@@ -202,12 +191,11 @@ export class ParticleContainer extends Container
     set tint(value: number)
     {
         this._tint = value;
-        hex2rgb(value, this.tintRgb);
+        utils.hex2rgb(value, this.tintRgb);
     }
 
     /**
      * Renders the container using the WebGL renderer.
-     *
      * @param renderer - The WebGL renderer.
      */
     public render(renderer: Renderer): void
@@ -219,7 +207,7 @@ export class ParticleContainer extends Container
 
         if (!this.baseTexture)
         {
-            this.baseTexture = (this.children[0] as any)._texture.baseTexture;
+            this.baseTexture = this.children[0]._texture.baseTexture;
             if (!this.baseTexture.valid)
             {
                 this.baseTexture.once('update', () => this.onChildrenChange(0));
@@ -232,7 +220,6 @@ export class ParticleContainer extends Container
 
     /**
      * Set the flag that static data should be updated to true
-     *
      * @param smallestChildIndex - The smallest child index.
      */
     protected onChildrenChange(smallestChildIndex: number): void
@@ -261,7 +248,6 @@ export class ParticleContainer extends Container
 
     /**
      * Destroys the container
-     *
      * @param options - Options parameter. A boolean will act as if all options
      *  have been set to that value
      * @param {boolean} [options.children=false] - if set to true, all the children will have their
@@ -271,7 +257,7 @@ export class ParticleContainer extends Container
      * @param {boolean} [options.baseTexture=false] - Only used for child Sprites if options.children is set to true
      *  Should it destroy the base texture of the child sprite
      */
-    public destroy(options?: IDestroyOptions|boolean): void
+    public destroy(options?: IDestroyOptions | boolean): void
     {
         super.destroy(options);
 

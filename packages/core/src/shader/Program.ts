@@ -30,9 +30,16 @@ export interface IUniformData
     name: string;
 }
 
+export interface IProgramExtraData
+{
+    transformFeedbackVaryings?: {
+        names: string[],
+        bufferMode: 'separate' | 'interleaved'
+    }
+}
+
 /**
  * Helper class to create a shader program.
- *
  * @memberof PIXI
  */
 export class Program
@@ -55,12 +62,15 @@ export class Program
     /** Assigned when a program is first bound to the shader system. */
     uniformData: {[key: string]: IUniformData};
 
+    extra: IProgramExtraData = {};
+
     /**
      * @param vertexSrc - The source of the vertex shader.
      * @param fragmentSrc - The source of the fragment shader.
      * @param name - Name for shader
+     * @param extra - Extra data for shader
      */
-    constructor(vertexSrc?: string, fragmentSrc?: string, name = 'pixi-shader')
+    constructor(vertexSrc?: string, fragmentSrc?: string, name = 'pixi-shader', extra: IProgramExtraData = {})
     {
         this.id = UID++;
         this.vertexSrc = vertexSrc || Program.defaultVertexSrc;
@@ -68,6 +78,8 @@ export class Program
 
         this.vertexSrc = this.vertexSrc.trim();
         this.fragmentSrc = this.fragmentSrc.trim();
+
+        this.extra = extra;
 
         if (this.vertexSrc.substring(0, 8) !== '#version')
         {
@@ -99,7 +111,6 @@ export class Program
 
     /**
      * The default vertex shader source.
-     *
      * @constant
      */
     static get defaultVertexSrc(): string
@@ -109,7 +120,6 @@ export class Program
 
     /**
      * The default fragment shader source.
-     *
      * @constant
      */
     static get defaultFragmentSrc(): string
@@ -121,7 +131,6 @@ export class Program
      * A short hand function to create a program based of a vertex and fragment shader.
      *
      * This method will also check to see if there is a cached program.
-     *
      * @param vertexSrc - The source of the vertex shader.
      * @param fragmentSrc - The source of the fragment shader.
      * @param name - Name for shader

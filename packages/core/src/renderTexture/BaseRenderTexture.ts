@@ -15,12 +15,13 @@ export interface BaseRenderTexture extends GlobalMixins.BaseRenderTexture, BaseT
  *
  * A BaseRenderTexture takes a snapshot of any Display Object given to its render method. The position
  * and rotation of the given Display Objects is ignored. For example:
+ * @example
+ * import { autoDetectRenderer, BaseRenderTexture, RenderTexture, Sprite } from 'pixi.js';
  *
- * ```js
- * let renderer = PIXI.autoDetectRenderer();
- * let baseRenderTexture = new PIXI.BaseRenderTexture({ width: 800, height: 600 });
- * let renderTexture = new PIXI.RenderTexture(baseRenderTexture);
- * let sprite = PIXI.Sprite.from("spinObj_01.png");
+ * const renderer = autoDetectRenderer();
+ * const baseRenderTexture = new BaseRenderTexture({ width: 800, height: 600 });
+ * const renderTexture = new RenderTexture(baseRenderTexture);
+ * const sprite = Sprite.from("spinObj_01.png");
  *
  * sprite.position.x = 800/2;
  * sprite.position.y = 600/2;
@@ -28,21 +29,15 @@ export interface BaseRenderTexture extends GlobalMixins.BaseRenderTexture, BaseT
  * sprite.anchor.y = 0.5;
  *
  * renderer.render(sprite, {renderTexture});
- * ```
  *
- * The Sprite in this case will be rendered using its local transform. To render this sprite at 0,0
- * you can clear the transform
- *
- * ```js
- *
+ * // The Sprite in this case will be rendered using its local transform.
+ * // To render this sprite at 0,0 you can clear the transform
  * sprite.setTransform()
  *
- * let baseRenderTexture = new PIXI.BaseRenderTexture({ width: 100, height: 100 });
- * let renderTexture = new PIXI.RenderTexture(baseRenderTexture);
+ * const baseRenderTexture = new BaseRenderTexture({ width: 100, height: 100 });
+ * const renderTexture = new RenderTexture(baseRenderTexture);
  *
  * renderer.render(sprite, {renderTexture});  // Renders to center of RenderTexture
- * ```
- *
  * @memberof PIXI
  */
 export class BaseRenderTexture extends BaseTexture
@@ -83,7 +78,7 @@ export class BaseRenderTexture extends BaseTexture
 
         options.width = options.width || 100;
         options.height = options.height || 100;
-        options.multisample = options.multisample !== undefined ? options.multisample : MSAA_QUALITY.NONE;
+        options.multisample ??= MSAA_QUALITY.NONE;
 
         super(null, options);
 
@@ -104,7 +99,6 @@ export class BaseRenderTexture extends BaseTexture
 
     /**
      * Resizes the BaseRenderTexture.
-     *
      * @param desiredWidth - The desired width to resize to.
      * @param desiredHeight - The desired height to resize to.
      */
@@ -118,7 +112,6 @@ export class BaseRenderTexture extends BaseTexture
      * Frees the texture and framebuffer from WebGL memory without destroying this texture object.
      * This means you can still use the texture later which will upload it to GPU
      * memory again.
-     *
      * @fires PIXI.BaseTexture#dispose
      */
     dispose(): void

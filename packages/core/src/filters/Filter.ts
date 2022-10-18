@@ -1,16 +1,15 @@
-import { Shader } from '../shader/Shader';
-import { Program } from '../shader/Program';
-import { State } from '../state/State';
 import { settings } from '@pixi/settings';
-import { MSAA_QUALITY } from '@pixi/constants';
-import defaultVertex from './defaultFilter.vert';
+import { Program } from '../shader/Program';
+import { Shader } from '../shader/Shader';
+import { State } from '../state/State';
 import defaultFragment from './defaultFilter.frag';
+import defaultVertex from './defaultFilter.vert';
 
-import type { RenderTexture } from '../renderTexture/RenderTexture';
-import type { FilterSystem } from './FilterSystem';
-import type { FilterState } from './FilterState';
-import type { BLEND_MODES, CLEAR_MODES } from '@pixi/constants';
+import type { MSAA_QUALITY, BLEND_MODES, CLEAR_MODES } from '@pixi/constants';
 import type { Dict } from '@pixi/utils';
+import type { RenderTexture } from '../renderTexture/RenderTexture';
+import type { FilterState } from './FilterState';
+import type { FilterSystem } from './FilterSystem';
 
 /**
  * A filter is a special shader that applies post-processing effects to an input texture and writes into an output
@@ -26,8 +25,9 @@ import type { Dict } from '@pixi/utils';
  * Multiple filters can be added to the `filters` array property and stacked on each other.
  *
  * ```
- * const filter = new PIXI.Filter(myShaderVert, myShaderFrag, { myUniform: 0.5 });
- * const container = new PIXI.Container();
+ * import { Filter, Container } from 'pixi.js';
+ * const filter = new Filter(myShaderVert, myShaderFrag, { myUniform: 0.5 });
+ * const container = new Container();
  * container.filters = [filter];
  * ```
  *
@@ -95,6 +95,7 @@ import type { Dict } from '@pixi/utils';
  * Use it to sample the input.
  *
  * ```
+ * import { Filter } from 'pixi.js';
  * const fragment = `
  * varying vec2 vTextureCoord;
  * uniform sampler2D uSampler;
@@ -104,7 +105,7 @@ import type { Dict } from '@pixi/utils';
  * }
  * `;
  *
- * const myFilter = new PIXI.Filter(null, fragment);
+ * const myFilter = new Filter(null, fragment);
  * ```
  *
  * This filter is just one uniform less than {@link PIXI.filters.AlphaFilter AlphaFilter}.
@@ -179,7 +180,6 @@ import type { Dict } from '@pixi/utils';
  *
  * Since PixiJS only had a handful of built-in filters, additional filters can be downloaded
  * {@link https://github.com/pixijs/pixi-filters here} from the PixiJS Filters repository.
- *
  * @memberof PIXI
  */
 export class Filter extends Shader
@@ -200,14 +200,12 @@ export class Filter extends Shader
     /**
      * If enabled, PixiJS will fit the filter area into boundaries for better performance.
      * Switch it off if it does not work for specific shader.
-     *
      * @default true
      */
     public autoFit: boolean;
 
     /**
      * Legacy filters use position and uvs from attributes (set by filter system)
-     *
      * @readonly
      */
     public legacy: boolean;
@@ -239,12 +237,11 @@ export class Filter extends Shader
 
     /**
      * Applies the filter
-     *
      * @param {PIXI.FilterSystem} filterManager - The renderer to retrieve the filter from
      * @param {PIXI.RenderTexture} input - The input render target.
      * @param {PIXI.RenderTexture} output - The target to output to.
      * @param {PIXI.CLEAR_MODES} [clearMode] - Should the output be cleared before rendering to it.
-     * @param {object} [currentState] - It's current state of filter.
+     * @param {object} [_currentState] - It's current state of filter.
      *        There are some useful properties in the currentState :
      *        target, filters, sourceFrame, destinationFrame, renderTarget, resolution
      */
@@ -260,7 +257,6 @@ export class Filter extends Shader
 
     /**
      * Sets the blend mode of the filter.
-     *
      * @default PIXI.BLEND_MODES.NORMAL
      */
     get blendMode(): BLEND_MODES
@@ -289,7 +285,6 @@ export class Filter extends Shader
 
     /**
      * The default vertex shader source
-     *
      * @constant
      */
     static get defaultVertexSrc(): string
@@ -299,7 +294,6 @@ export class Filter extends Shader
 
     /**
      * The default fragment shader source
-     *
      * @constant
      */
     static get defaultFragmentSrc(): string

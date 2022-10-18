@@ -3,8 +3,12 @@ import { AbstractMaskSystem } from './AbstractMaskSystem';
 import type { Renderer } from '../Renderer';
 import type { MaskData } from './MaskData';
 import { Matrix, Rectangle } from '@pixi/math';
+import type { ExtensionMetadata } from '@pixi/extensions';
+import { extensions, ExtensionType } from '@pixi/extensions';
+import { settings } from '@pixi/settings';
 
 const tempMatrix = new Matrix();
+const rectPool: Rectangle[] = [];
 
 /**
  * System plugin to the renderer to manage scissor masking.
@@ -12,11 +16,16 @@ const tempMatrix = new Matrix();
  * Scissor masking discards pixels outside of a rectangle called the scissor box. The scissor box is in the framebuffer
  * viewport's space; however, the mask's rectangle is projected from world-space to viewport space automatically
  * by this system.
- *
  * @memberof PIXI
  */
 export class ScissorSystem extends AbstractMaskSystem
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        type: ExtensionType.RendererSystem,
+        name: 'scissor',
+    };
+
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */
@@ -24,7 +33,7 @@ export class ScissorSystem extends AbstractMaskSystem
     {
         super(renderer);
 
-        this.glConst = WebGLRenderingContext.SCISSOR_TEST;
+        this.glConst = settings.ADAPTER.getWebGLRenderingContext().SCISSOR_TEST;
     }
 
     getStackLength(): number
@@ -54,18 +63,13 @@ export class ScissorSystem extends AbstractMaskSystem
         const { maskObject } = maskData;
         const { renderer } = this;
         const renderTextureSystem = renderer.renderTexture;
-
-        maskObject.renderable = true;
-
-        const rect = maskObject.getBounds();
+        const rect = maskObject.getBounds(true, rectPool.pop() ?? new Rectangle());
 
         this.roundFrameToPixels(rect,
             renderTextureSystem.current ? renderTextureSystem.current.resolution : renderer.resolution,
             renderTextureSystem.sourceFrame,
             renderTextureSystem.destinationFrame,
             renderer.projection.transform);
-
-        maskObject.renderable = false;
 
         if (prevData)
         {
@@ -91,7 +95,7 @@ export class ScissorSystem extends AbstractMaskSystem
     /**
      * Test, whether the object can be scissor mask with current renderer projection.
      * Calls "calcScissorRect()" if its true.
-     * @param maskData mask data
+     * @param maskData - mask data
      * @returns whether Whether the object can be scissor mask
      */
     public testScissor(maskData: MaskData): boolean
@@ -153,7 +157,6 @@ export class ScissorSystem extends AbstractMaskSystem
 
     /**
      * Applies the Mask and adds it to the current stencil stack.
-     *
      * @author alvin
      * @param maskData - The mask data.
      */
@@ -181,10 +184,16 @@ export class ScissorSystem extends AbstractMaskSystem
      * last mask in the stack.
      *
      * This can also be called when you directly modify the scissor box and want to restore PixiJS state.
+     * @param maskData - The mask data.
      */
-    pop(): void
+    pop(maskData?: MaskData): void
     {
         const { gl } = this.renderer;
+
+        if (maskData)
+        {
+            rectPool.push(maskData._scissorRectLocal);
+        }
 
         if (this.getStackLength() > 0)
         {
@@ -218,3 +227,5 @@ export class ScissorSystem extends AbstractMaskSystem
         this.renderer.gl.scissor(rect.x, y, rect.width, rect.height);
     }
 }
+
+extensions.add(ScissorSystem);

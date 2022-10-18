@@ -2,7 +2,6 @@ import type { ITypedArray } from './Buffer';
 
 /**
  * Flexible wrapper around `ArrayBuffer` that also provides typed array views on demand.
- *
  * @memberof PIXI
  */
 export class ViewableBuffer
@@ -110,10 +109,9 @@ export class ViewableBuffer
 
     /**
      * Returns the view of the given type.
-     *
      * @param type - One of `int8`, `uint8`, `int16`,
      *    `uint16`, `int32`, `uint32`, and `float32`.
-     * @return - typed array of given type
+     * @returns - typed array of given type
      */
     view(type: string): ITypedArray
     {

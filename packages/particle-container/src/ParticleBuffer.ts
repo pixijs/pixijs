@@ -1,8 +1,6 @@
-import { createIndicesForQuads } from '@pixi/utils';
-import { Geometry, Buffer } from '@pixi/core';
-import { TYPES } from '@pixi/constants';
+import { Geometry, Buffer, TYPES, utils } from '@pixi/core';
 
-import type { DisplayObject } from '@pixi/display';
+import type { Sprite } from '@pixi/sprite';
 import type { IParticleRendererProperty } from './ParticleRenderer';
 
 /*
@@ -19,7 +17,6 @@ import type { IParticleRendererProperty } from './ParticleRenderer';
 
 /**
  * The particle buffer manages the static and dynamic buffers for a particle container.
- *
  * @private
  * @memberof PIXI
  */
@@ -109,7 +106,7 @@ export class ParticleBuffer
 
         let dynamicOffset = 0;
 
-        this.indexBuffer = new Buffer(createIndicesForQuads(this.size), true, true);
+        this.indexBuffer = new Buffer(utils.createIndicesForQuads(this.size), true, true);
         geometry.addIndex(this.indexBuffer);
 
         this.dynamicStride = 0;
@@ -182,12 +179,11 @@ export class ParticleBuffer
 
     /**
      * Uploads the dynamic properties.
-     *
      * @param children - The children to upload.
      * @param startIndex - The index to start at.
      * @param amount - The number to upload.
      */
-    uploadDynamic(children: DisplayObject[], startIndex: number, amount: number): void
+    uploadDynamic(children: Sprite[], startIndex: number, amount: number): void
     {
         for (let i = 0; i < this.dynamicProperties.length; i++)
         {
@@ -203,12 +199,11 @@ export class ParticleBuffer
 
     /**
      * Uploads the static properties.
-     *
      * @param children - The children to upload.
      * @param startIndex - The index to start at.
      * @param amount - The number to upload.
      */
-    uploadStatic(children: DisplayObject[], startIndex: number, amount: number): void
+    uploadStatic(children: Sprite[], startIndex: number, amount: number): void
     {
         for (let i = 0; i < this.staticProperties.length; i++)
         {

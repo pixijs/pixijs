@@ -12,16 +12,16 @@ import {
     BatchDrawCall,
     BatchTextureArray,
     BaseTexture,
-    Texture,
+    DRAW_MODES,
+    WRAP_MODES,
+    Point,
+    utils,
 } from '@pixi/core';
 
-import { DRAW_MODES, WRAP_MODES } from '@pixi/constants';
-import { SHAPES, Point, Matrix } from '@pixi/math';
 import { GraphicsData } from './GraphicsData';
-import { premultiplyTint } from '@pixi/utils';
 import { Bounds } from '@pixi/display';
 
-import type { Circle, Ellipse, Polygon, Rectangle, RoundedRectangle, IPointData } from '@pixi/math';
+import type { Texture, Circle, Ellipse, Polygon, Rectangle, RoundedRectangle, IPointData, Matrix } from '@pixi/core';
 import type { FillStyle } from './styles/FillStyle';
 import type { LineStyle } from './styles/LineStyle';
 
@@ -32,7 +32,6 @@ import type { LineStyle } from './styles/LineStyle';
 type IShape = Circle | Ellipse | Polygon | Rectangle | RoundedRectangle;
 
 const tmpPoint = new Point();
-const tmpBounds = new Bounds();
 
 /**
  * The Graphics class contains methods used to draw primitive shapes such as lines, circles and
@@ -40,7 +39,6 @@ const tmpBounds = new Bounds();
  *
  * GraphicsGeometry is designed to not be continually updating the geometry since it's expensive
  * to re-tesselate using **earcut**. Consider using {@link PIXI.Mesh} for this use-case, it's much faster.
- *
  * @memberof PIXI
  */
 export class GraphicsGeometry extends BatchGeometry
@@ -48,13 +46,11 @@ export class GraphicsGeometry extends BatchGeometry
     /**
      * The maximum number of points to consider an object "batchable",
      * able to be batched by the renderer's batch system.
-\    */
+\
+     */
     public static BATCHABLE_SIZE = 100;
 
-    /**
-     * Minimal distance between points that are considered different.
-     * Affects line tesselation.
-     */
+    /** Minimal distance between points that are considered different. Affects line tesselation. */
     public closePointEps = 1e-4;
 
     /** Padding to add to the bounds. */
@@ -81,14 +77,12 @@ export class GraphicsGeometry extends BatchGeometry
 
     /**
      * The collection of drawn shapes.
-     *
      * @member {PIXI.GraphicsData[]}
      */
     graphicsData: Array<GraphicsData> = [];
 
     /**
      * List of current draw calls drived from the batches.
-     *
      * @member {PIXI.BatchDrawCall[]}
      */
     drawCalls: Array<BatchDrawCall> = [];
@@ -99,7 +93,6 @@ export class GraphicsGeometry extends BatchGeometry
     /**
      * Intermediate abstract format sent to batch system.
      * Can be converted to drawCalls or to batchable objects.
-     *
      * @member {PIXI.graphicsUtils.BatchPart[]}
      */
     batches: Array<BatchPart> = [];
@@ -130,11 +123,12 @@ export class GraphicsGeometry extends BatchGeometry
 
     /**
      * Get the current bounds of the graphic geometry.
-     *
      * @readonly
      */
     public get bounds(): Bounds
     {
+        this.updateBatches();
+
         if (this.boundsDirty !== this.dirty)
         {
             this.boundsDirty = this.dirty;
@@ -144,10 +138,7 @@ export class GraphicsGeometry extends BatchGeometry
         return this._bounds;
     }
 
-    /**
-     * Call if you changed graphicsData manually.
-     * Empties all batch buffers.
-     */
+    /** Call if you changed graphicsData manually. Empties all batch buffers. */
     protected invalidate(): void
     {
         this.boundsDirty = -1;
@@ -182,8 +173,7 @@ export class GraphicsGeometry extends BatchGeometry
 
     /**
      * Clears the graphics that were drawn to this Graphics object, and resets fill and line style settings.
-     *
-     * @return - This GraphicsGeometry object. Good for chaining method calls
+     * @returns - This GraphicsGeometry object. Good for chaining method calls
      */
     public clear(): GraphicsGeometry
     {
@@ -199,12 +189,11 @@ export class GraphicsGeometry extends BatchGeometry
 
     /**
      * Draws the given shape to this Graphics object. Can be any of Circle, Rectangle, Ellipse, Line or Polygon.
-     *
      * @param {PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.Rectangle|PIXI.RoundedRectangle} shape - The shape object to draw.
      * @param fillStyle - Defines style of the fill.
      * @param lineStyle - Defines style of the lines.
      * @param matrix - Transform applied to the points of the shape.
-     * @return - Returns geometry for chaining.
+     * @returns - Returns geometry for chaining.
      */
     public drawShape(
         shape: IShape,
@@ -222,10 +211,9 @@ export class GraphicsGeometry extends BatchGeometry
 
     /**
      * Draws the given shape to this Graphics object. Can be any of Circle, Rectangle, Ellipse, Line or Polygon.
-     *
      * @param {PIXI.Circle|PIXI.Ellipse|PIXI.Polygon|PIXI.Rectangle|PIXI.RoundedRectangle} shape - The shape object to draw.
      * @param matrix - Transform applied to the points of the shape.
-     * @return - Returns geometry for chaining.
+     * @returns - Returns geometry for chaining.
      */
     public drawHole(shape: IShape, matrix: Matrix = null): GraphicsGeometry
     {
@@ -279,9 +267,8 @@ export class GraphicsGeometry extends BatchGeometry
 
     /**
      * Check to see if a point is contained within this geometry.
-     *
      * @param point - Point to check if it's contained.
-     * @return {Boolean} `true` if the point is contained within geometry.
+     * @returns {boolean} `true` if the point is contained within geometry.
      */
     public containsPoint(point: IPointData): boolean
     {
@@ -340,10 +327,8 @@ export class GraphicsGeometry extends BatchGeometry
     /**
      * Generates intermediate batch data. Either gets converted to drawCalls
      * or used to convert to batch objects directly by the Graphics object.
-     *
-     * @param allow32Indices - Allow using 32-bit indices for preventing artifacts when more that 65535 vertices
      */
-    updateBatches(allow32Indices?: boolean): void
+    updateBatches(): void
     {
         if (!this.graphicsData.length)
         {
@@ -454,16 +439,16 @@ export class GraphicsGeometry extends BatchGeometry
             return;
         }
 
+        const need32 = attrib > 0xffff;
+
         // prevent allocation when length is same as buffer
-        if (this.indicesUint16 && this.indices.length === this.indicesUint16.length)
+        if (this.indicesUint16 && this.indices.length === this.indicesUint16.length
+            && need32 === (this.indicesUint16.BYTES_PER_ELEMENT > 2))
         {
             this.indicesUint16.set(this.indices);
         }
         else
         {
-            const need32
-                = attrib > 0xffff && allow32Indices;
-
             this.indicesUint16 = need32 ? new Uint32Array(this.indices) : new Uint16Array(this.indices);
         }
 
@@ -482,7 +467,6 @@ export class GraphicsGeometry extends BatchGeometry
 
     /**
      * Affinity check
-     *
      * @param styleA
      * @param styleB
      */
@@ -730,7 +714,10 @@ export class GraphicsGeometry extends BatchGeometry
         this._indexBuffer.update(this.indicesUint16);
     }
 
-    /** Process fill part of Graphics. */
+    /**
+     * Process fill part of Graphics.
+     * @param data
+     */
     protected processFill(data: GraphicsData): void
     {
         if (data.holes.length)
@@ -745,7 +732,10 @@ export class GraphicsGeometry extends BatchGeometry
         }
     }
 
-    /** Process line part of Graphics. */
+    /**
+     * Process line part of Graphics.
+     * @param data
+     */
     protected processLine(data: GraphicsData): void
     {
         buildLine(data, this);
@@ -756,7 +746,10 @@ export class GraphicsGeometry extends BatchGeometry
         }
     }
 
-    /** Process the holes data. */
+    /**
+     * Process the holes data.
+     * @param holes
+     */
     protected processHoles(holes: Array<GraphicsData>): void
     {
         for (let i = 0; i < holes.length; i++)
@@ -777,86 +770,14 @@ export class GraphicsGeometry extends BatchGeometry
     protected calculateBounds(): void
     {
         const bounds = this._bounds;
-        const sequenceBounds = tmpBounds;
-        let curMatrix = Matrix.IDENTITY;
 
-        this._bounds.clear();
-        sequenceBounds.clear();
-
-        for (let i = 0; i < this.graphicsData.length; i++)
-        {
-            const data = this.graphicsData[i];
-            const shape = data.shape;
-            const type = data.type;
-            const lineStyle = data.lineStyle;
-            const nextMatrix = data.matrix || Matrix.IDENTITY;
-            let lineWidth = 0.0;
-
-            if (lineStyle && lineStyle.visible)
-            {
-                lineWidth = lineStyle.width;
-
-                if (type !== SHAPES.POLY || data.fillStyle.visible)
-                {
-                    lineWidth *= Math.max(0, lineStyle.alignment);
-                }
-                else
-                {
-                    lineWidth *= Math.max(lineStyle.alignment, 1 - lineStyle.alignment);
-                }
-            }
-
-            if (curMatrix !== nextMatrix)
-            {
-                if (!sequenceBounds.isEmpty())
-                {
-                    bounds.addBoundsMatrix(sequenceBounds, curMatrix);
-                    sequenceBounds.clear();
-                }
-                curMatrix = nextMatrix;
-            }
-
-            if (type === SHAPES.RECT || type === SHAPES.RREC)
-            {
-                const rect = shape as Rectangle | RoundedRectangle;
-
-                sequenceBounds.addFramePad(rect.x, rect.y, rect.x + rect.width, rect.y + rect.height,
-                    lineWidth, lineWidth);
-            }
-            else if (type === SHAPES.CIRC)
-            {
-                const circle = shape as Circle;
-
-                sequenceBounds.addFramePad(circle.x, circle.y, circle.x, circle.y,
-                    circle.radius + lineWidth, circle.radius + lineWidth);
-            }
-            else if (type === SHAPES.ELIP)
-            {
-                const ellipse = shape as Ellipse;
-
-                sequenceBounds.addFramePad(ellipse.x, ellipse.y, ellipse.x, ellipse.y,
-                    ellipse.width + lineWidth, ellipse.height + lineWidth);
-            }
-            else
-            {
-                const poly = shape as Polygon;
-                // adding directly to the bounds
-
-                bounds.addVerticesMatrix(curMatrix, (poly.points as any), 0, poly.points.length, lineWidth, lineWidth);
-            }
-        }
-
-        if (!sequenceBounds.isEmpty())
-        {
-            bounds.addBoundsMatrix(sequenceBounds, curMatrix);
-        }
-
+        bounds.clear();
+        bounds.addVertexData((this.points as any), 0, this.points.length);
         bounds.pad(this.boundsPadding, this.boundsPadding);
     }
 
     /**
      * Transform points using matrix.
-     *
      * @param points - Points to transform
      * @param matrix - Transform matrix
      */
@@ -874,7 +795,6 @@ export class GraphicsGeometry extends BatchGeometry
 
     /**
      * Add colors.
-     *
      * @param colors - List of colors to add to
      * @param color - Color to add
      * @param alpha - Alpha to use
@@ -891,7 +811,7 @@ export class GraphicsGeometry extends BatchGeometry
         // TODO use the premultiply bits Ivan added
         const rgb = (color >> 16) + (color & 0xff00) + ((color & 0xff) << 16);
 
-        const rgba =  premultiplyTint(rgb, alpha);
+        const rgba = utils.premultiplyTint(rgb, alpha);
 
         colors.length = Math.max(colors.length, offset + size);
 
@@ -901,7 +821,13 @@ export class GraphicsGeometry extends BatchGeometry
         }
     }
 
-    /** Add texture id that the shader/fragment wants to use. */
+    /**
+     * Add texture id that the shader/fragment wants to use.
+     * @param textureIds
+     * @param id
+     * @param size
+     * @param offset
+     */
     protected addTextureIds(
         textureIds: Array<number>,
         id: number,
@@ -918,7 +844,6 @@ export class GraphicsGeometry extends BatchGeometry
 
     /**
      * Generates the UVs for a shape.
-     *
      * @param verts - Vertices
      * @param uvs - UVs
      * @param texture - Reference to Texture
@@ -968,7 +893,6 @@ export class GraphicsGeometry extends BatchGeometry
     /**
      * Modify uvs array according to position of texture region
      * Does not work with rotated or trimmed textures
-     *
      * @param uvs - array
      * @param texture - region
      * @param start - starting index for uvs

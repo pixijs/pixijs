@@ -1,7 +1,6 @@
 /**
  * Regexp for data URI.
  * Based on: {@link https://github.com/ragingwind/data-uri-regex}
- *
  * @static
  * @constant {RegExp|string} DATA_URI
  * @memberof PIXI

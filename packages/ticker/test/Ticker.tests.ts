@@ -1,23 +1,23 @@
 import { Ticker, UPDATE_PRIORITY } from '@pixi/ticker';
-import sinon from 'sinon';
-import { expect } from 'chai';
 
 const { shared, system } = Ticker;
 
-describe('Ticker', function ()
+describe('Ticker', () =>
 {
-    before(function ()
+    let length: (ticker?: Ticker) => number;
+
+    beforeAll(() =>
     {
-        this.length = (ticker) =>
+        length = (ticker?: Ticker) =>
         {
             ticker = ticker || shared;
 
-            if (!ticker._head || !ticker._head.next)
+            if (!ticker['_head'] || !ticker['_head'].next)
             {
                 return 0;
             }
 
-            let listener = ticker._head.next;
+            let listener = ticker['_head'].next;
             let i = 0;
 
             while (listener)
@@ -30,174 +30,176 @@ describe('Ticker', function ()
         };
     });
 
-    it('should be available', function ()
+    it('should be available', () =>
     {
-        expect(Ticker).to.be.a('function');
-        expect(shared).to.be.an.instanceof(Ticker);
-        expect(system).to.be.an.instanceof(Ticker);
+        expect(Ticker).toBeInstanceOf(Function);
+        expect(shared).toBeInstanceOf(Ticker);
+        expect(system).toBeInstanceOf(Ticker);
     });
 
-    it('should create a new ticker and destroy it', function ()
+    it('should create a new ticker and destroy it', () =>
     {
         const ticker = new Ticker();
 
         ticker.start();
 
-        const listener = sinon.spy();
+        const listener = jest.fn();
 
-        expect(this.length(ticker)).to.equal(0);
+        expect(length(ticker)).toEqual(0);
 
         ticker.add(listener);
 
-        expect(this.length(ticker)).to.equal(1);
+        expect(length(ticker)).toEqual(1);
 
         ticker.destroy();
 
-        expect(ticker._head).to.be.null;
-        expect(ticker.started).to.be.false;
-        expect(this.length(ticker)).to.equal(0);
+        expect(ticker['_head']).toBeNull();
+        expect(ticker.started).toBe(false);
+        expect(length(ticker)).toEqual(0);
     });
 
-    it('should protect destroying shared ticker', function ()
+    it('should protect destroying shared ticker', () =>
     {
-        const listener = sinon.spy();
+        const listener = jest.fn();
 
         shared.add(listener); // needed to autoStart
         shared.destroy();
-        expect(shared._head).to.not.be.null;
-        expect(shared.started).to.be.true;
+        expect(shared['_head']).not.toBeNull();
+        expect(shared.started).toBe(true);
     });
 
-    it('should protect destroying system ticker', function ()
+    it('should protect destroying system ticker', () =>
     {
-        const listener = sinon.spy();
+        const listener = jest.fn();
 
         system.add(listener); // needed to autoStart
         system.destroy();
-        expect(system._head).to.not.be.null;
-        expect(system.started).to.be.true;
+        expect(system['_head']).not.toBeNull();
+        expect(system.started).toBe(true);
     });
 
-    it('should add and remove listener', function ()
+    it('should add and remove listener', () =>
     {
-        const listener = sinon.spy();
-        const length = this.length();
+        const listener = jest.fn();
+        const len = length();
 
         shared.add(listener);
 
-        expect(this.length()).to.equal(length + 1);
+        expect(length()).toEqual(len + 1);
 
         shared.remove(listener);
 
-        expect(this.length()).to.equal(length);
+        expect(length()).toEqual(len);
     });
 
-    it('should update a listener', function ()
+    it('should update a listener', () =>
     {
-        const listener = sinon.spy();
+        const listener = jest.fn();
 
         shared.add(listener);
         shared.update();
 
-        expect(listener.calledOnce).to.be.true;
+        expect(listener).toBeCalledTimes(1);
 
         shared.remove(listener);
         shared.update();
 
-        expect(listener.calledOnce).to.be.true;
+        expect(listener).toBeCalledTimes(1);
     });
 
-    it('should update a listener twice and remove once', function ()
+    it('should update a listener twice and remove once', () =>
     {
-        const listener = sinon.spy();
-        const length = this.length();
+        const listener = jest.fn();
+        const len = length();
 
         shared.add(listener).add(listener);
         shared.update();
 
-        expect(listener.calledTwice).to.be.true;
-        expect(this.length()).to.equal(length + 2);
+        expect(listener).toBeCalledTimes(2);
+        expect(length()).toEqual(len + 2);
 
         shared.remove(listener);
         shared.update();
 
-        expect(listener.calledTwice).to.be.true;
-        expect(this.length()).to.equal(length);
+        expect(listener).toBeCalledTimes(2);
+        expect(length()).toEqual(len);
     });
 
-    it('should count listeners correctly', function ()
+    it('should count listeners correctly', () =>
     {
         const ticker = new Ticker();
 
-        expect(ticker.count).to.equal(0);
+        expect(ticker.count).toEqual(0);
 
-        const listener = sinon.spy();
-
-        ticker.add(listener);
-
-        expect(ticker.count).to.equal(1);
+        const listener = jest.fn();
 
         ticker.add(listener);
 
-        expect(ticker.count).to.equal(2);
+        expect(ticker.count).toEqual(1);
+
+        ticker.add(listener);
+
+        expect(ticker.count).toEqual(2);
 
         ticker.remove(listener);
 
-        expect(ticker.count).to.equal(0);
+        expect(ticker.count).toEqual(0);
 
         ticker.destroy();
 
-        expect(ticker._head).to.be.null;
-        expect(ticker.started).to.be.false;
-        expect(this.length(ticker)).to.equal(0);
+        expect(ticker['_head']).toBeNull();
+        expect(ticker.started).toBe(false);
+        expect(length(ticker)).toEqual(0);
     });
 
-    it('should respect priority order', function ()
+    it('should respect priority order', () =>
     {
-        const length = this.length();
-        const listener1 = sinon.spy();
-        const listener2 = sinon.spy();
-        const listener3 = sinon.spy();
-        const listener4 = sinon.spy();
+        const len = length();
+        const listener1 = jest.fn();
+        const listener2 = jest.fn();
+        const listener3 = jest.fn();
 
         shared.add(listener1, null, UPDATE_PRIORITY.LOW)
-            .add(listener4, null, UPDATE_PRIORITY.INTERACTION)
             .add(listener3, null, UPDATE_PRIORITY.HIGH)
             .add(listener2, null, UPDATE_PRIORITY.NORMAL);
 
         shared.update();
 
-        expect(this.length()).to.equal(length + 4);
+        expect(length()).toEqual(len + 3);
 
-        sinon.assert.callOrder(listener4, listener3, listener2, listener1);
+        const l3 = listener3.mock.invocationCallOrder[0];
+        const l2 = listener2.mock.invocationCallOrder[0];
+        const l1 = listener1.mock.invocationCallOrder[0];
+
+        expect(l3).toBeLessThan(l2);
+        expect(l2).toBeLessThan(l1);
 
         shared.remove(listener1)
             .remove(listener2)
-            .remove(listener3)
-            .remove(listener4);
+            .remove(listener3);
 
-        expect(this.length()).to.equal(length);
+        expect(length()).toEqual(len);
     });
 
-    it('should auto-remove once listeners', function ()
+    it('should auto-remove once listeners', () =>
     {
-        const length = this.length();
-        const listener = sinon.spy();
+        const len = length();
+        const listener = jest.fn();
 
         shared.addOnce(listener);
 
         shared.update();
 
-        expect(listener.calledOnce).to.be.true;
-        expect(this.length()).to.equal(length);
+        expect(listener).toBeCalledTimes(1);
+        expect(length()).toEqual(len);
     });
 
-    it('should call when adding same priority', function ()
+    it('should call when adding same priority', () =>
     {
-        const length = this.length();
-        const listener1 = sinon.spy();
-        const listener2 = sinon.spy();
-        const listener3 = sinon.spy();
+        const len = length();
+        const listener1 = jest.fn();
+        const listener2 = jest.fn();
+        const listener3 = jest.fn();
 
         shared.add(listener1)
             .add(listener2)
@@ -205,23 +207,28 @@ describe('Ticker', function ()
 
         shared.update();
 
-        expect(this.length()).to.equal(length + 3);
+        expect(length()).toEqual(len + 3);
 
-        sinon.assert.callOrder(listener1, listener2, listener3);
+        const l3 = listener3.mock.invocationCallOrder[0];
+        const l2 = listener2.mock.invocationCallOrder[0];
+        const l1 = listener1.mock.invocationCallOrder[0];
+
+        expect(l1).toBeLessThan(l2);
+        expect(l2).toBeLessThan(l3);
 
         shared.remove(listener1)
             .remove(listener2)
             .remove(listener3);
 
-        expect(this.length()).to.equal(length);
+        expect(length()).toEqual(len);
     });
 
-    it.skip('should remove once listener in a stack', function ()
+    it('should remove once listener in a stack', () =>
     {
-        const length = this.length();
-        const listener1 = sinon.spy();
-        const listener2 = sinon.spy();
-        const listener3 = sinon.spy();
+        const len = length();
+        const listener1 = jest.fn();
+        const listener2 = jest.fn();
+        const listener3 = jest.fn();
 
         shared.add(listener1, null, UPDATE_PRIORITY.HIGH);
         shared.addOnce(listener2, null, UPDATE_PRIORITY.NORMAL);
@@ -229,25 +236,25 @@ describe('Ticker', function ()
 
         shared.update();
 
-        expect(this.length()).to.equal(length + 2);
+        expect(length()).toEqual(len + 2);
 
         shared.update();
 
-        expect(listener1.calledTwice).to.be.true;
-        expect(listener2.calledOnce).to.be.true;
-        expect(listener3.calledTwice).to.be.true;
+        expect(listener1).toBeCalledTimes(2);
+        expect(listener2).toBeCalledTimes(1);
+        expect(listener3).toBeCalledTimes(2);
 
         shared.remove(listener1).remove(listener3);
 
-        expect(this.length()).to.equal(length);
+        expect(length()).toEqual(len);
     });
 
-    it('should call inserted item with a lower priority', function ()
+    it('should call inserted item with a lower priority', () =>
     {
-        const length = this.length();
-        const lowListener = sinon.spy();
-        const highListener = sinon.spy();
-        const mainListener = sinon.spy(() =>
+        const len = length();
+        const lowListener = jest.fn();
+        const highListener = jest.fn();
+        const mainListener = jest.fn(() =>
         {
             shared.add(highListener, null, UPDATE_PRIORITY.HIGH);
             shared.add(lowListener, null, UPDATE_PRIORITY.LOW);
@@ -257,24 +264,24 @@ describe('Ticker', function ()
 
         shared.update();
 
-        expect(this.length()).to.equal(length + 3);
+        expect(length()).toEqual(len + 3);
 
-        expect(mainListener.calledOnce).to.be.true;
-        expect(lowListener.calledOnce).to.be.true;
-        expect(highListener.calledOnce).to.be.false;
+        expect(mainListener).toBeCalledTimes(1);
+        expect(lowListener).toBeCalledTimes(1);
+        expect(highListener).not.toBeCalled();
 
         shared.remove(mainListener)
             .remove(highListener)
             .remove(lowListener);
 
-        expect(this.length()).to.equal(length);
+        expect(length()).toEqual(len);
     });
 
-    it('should remove emit low-priority item during emit', function ()
+    it('should remove emit low-priority item during emit', () =>
     {
-        const length = this.length();
-        const listener2 = sinon.spy();
-        const listener1 = sinon.spy(() =>
+        const len = length();
+        const listener2 = jest.fn();
+        const listener1 = jest.fn(() =>
         {
             shared.add(listener2, null, UPDATE_PRIORITY.LOW);
         });
@@ -283,131 +290,131 @@ describe('Ticker', function ()
 
         shared.update();
 
-        expect(this.length()).to.equal(length + 2);
+        expect(length()).toEqual(len + 2);
 
-        expect(listener2.calledOnce).to.be.true;
-        expect(listener1.calledOnce).to.be.true;
+        expect(listener2).toBeCalledTimes(1);
+        expect(listener1).toBeCalledTimes(1);
 
         shared.remove(listener1)
             .remove(listener2);
 
-        expect(this.length()).to.equal(length);
+        expect(length()).toEqual(len);
     });
 
-    it('should remove itself on emit after adding new item', function ()
+    it('should remove itself on emit after adding new item', () =>
     {
-        const length = this.length();
-        const listener2 = sinon.spy();
-        const listener1 = sinon.spy(() =>
+        const len = length();
+        const listener2 = jest.fn();
+        const listener1 = jest.fn(() =>
         {
             shared.add(listener2, null, UPDATE_PRIORITY.LOW);
             shared.remove(listener1);
 
             // listener is removed right away
-            expect(this.length()).to.equal(length + 1);
+            expect(length()).toEqual(len + 1);
         });
 
         shared.add(listener1, null, UPDATE_PRIORITY.NORMAL);
 
         shared.update();
 
-        expect(this.length()).to.equal(length + 1);
+        expect(length()).toEqual(len + 1);
 
-        expect(listener2.calledOnce).to.be.true;
-        expect(listener1.calledOnce).to.be.true;
+        expect(listener2).toBeCalledTimes(1);
+        expect(listener1).toBeCalledTimes(1);
 
         shared.remove(listener2);
 
-        expect(this.length()).to.equal(length);
+        expect(length()).toEqual(len);
     });
 
-    it.skip('should remove itself before, still calling new item', function ()
+    it('should remove itself before, still calling new item', () =>
     {
-        const length = this.length();
-        const listener2 = sinon.spy();
-        const listener1 = sinon.spy(() =>
+        const len = length();
+        const listener2 = jest.fn();
+        const listener1 = jest.fn(() =>
         {
             shared.remove(listener1);
             shared.add(listener2, null, UPDATE_PRIORITY.LOW);
 
             // listener is removed right away
-            expect(this.length()).to.equal(length + 1);
+            expect(length()).toEqual(len + 1);
         });
 
         shared.add(listener1, null, UPDATE_PRIORITY.NORMAL);
 
         shared.update();
 
-        expect(this.length()).to.equal(length + 1);
+        expect(length()).toEqual(len + 1);
 
-        expect(listener2.called).to.be.false;
-        expect(listener1.calledOnce).to.be.true;
+        expect(listener2).not.toHaveBeenCalled();
+        expect(listener1).toBeCalledTimes(1);
 
         shared.update();
 
-        expect(listener2.calledOnce).to.be.true;
-        expect(listener1.calledOnce).to.be.true;
+        expect(listener2).toBeCalledTimes(1);
+        expect(listener1).toBeCalledTimes(1);
 
         shared.remove(listener2);
 
-        expect(this.length()).to.equal(length);
+        expect(length()).toEqual(len);
     });
 
-    it.skip('should remove items before and after current priority', function ()
+    it('should remove items before and after current priority', () =>
     {
-        const length = this.length();
-        const listener2 = sinon.spy();
-        const listener3 = sinon.spy();
-        const listener4 = sinon.spy();
+        const len = length();
+        const listener2 = jest.fn();
+        const listener3 = jest.fn();
+        const listener4 = jest.fn();
 
         shared.add(listener2, null, UPDATE_PRIORITY.HIGH);
         shared.add(listener3, null, UPDATE_PRIORITY.LOW);
         shared.add(listener4, null, UPDATE_PRIORITY.LOW);
 
-        const listener1 = sinon.spy(() =>
+        const listener1 = jest.fn(() =>
         {
             shared.remove(listener2)
                 .remove(listener3);
 
             // listener is removed right away
-            expect(this.length()).to.equal(length + 2);
+            expect(length()).toEqual(len + 2);
         });
 
         shared.add(listener1, null, UPDATE_PRIORITY.NORMAL);
 
         shared.update();
 
-        expect(this.length()).to.equal(length + 2);
+        expect(length()).toEqual(len + 2);
 
-        expect(listener2.calledOnce).to.be.true;
-        expect(listener3.calledOnce).to.be.false;
-        expect(listener4.calledOnce).to.be.true;
-        expect(listener1.calledOnce).to.be.true;
+        expect(listener2).toBeCalledTimes(1);
+        expect(listener3).not.toBeCalled();
+        expect(listener4).toBeCalledTimes(1);
+        expect(listener1).toBeCalledTimes(1);
 
         shared.update();
 
-        expect(listener2.calledOnce).to.be.true;
-        expect(listener3.calledOnce).to.be.false;
-        expect(listener4.calledTwice).to.be.true;
-        expect(listener1.calledTwice).to.be.true;
+        expect(listener2).toBeCalledTimes(1);
+        expect(listener3).not.toBeCalled();
+        expect(listener4).toBeCalledTimes(2);
+        expect(listener1).toBeCalledTimes(2);
 
         shared.remove(listener1)
             .remove(listener4);
 
-        expect(this.length()).to.equal(length);
+        expect(length()).toEqual(len);
     });
 
-    it('should destroy on listener', function (done)
+    it('should destroy on listener', (done) =>
     {
         const ticker = new Ticker();
-        const listener2 = sinon.spy();
-        const listener = sinon.spy(() =>
+        const listener2 = jest.fn();
+        const listener = jest.fn(() =>
         {
             ticker.destroy();
             setTimeout(() =>
             {
-                expect(listener2.called).to.be.false;
-                expect(listener.calledOnce).to.be.true;
+                expect(listener2).not.toHaveBeenCalled();
+                expect(listener).toBeCalledTimes(1);
                 done();
             }, 0);
         });
@@ -417,23 +424,23 @@ describe('Ticker', function ()
         ticker.start();
     });
 
-    it('should Ticker call destroyed listener "next" pointer after destroy', function (done)
+    it('should Ticker call destroyed listener "next" pointer after destroy', (done) =>
     {
         const ticker = new Ticker();
 
-        const listener1 = sinon.spy();
-        const listener2 = sinon.spy(() =>
+        const listener1 = jest.fn();
+        const listener2 = jest.fn(() =>
         {
             ticker.remove(listener2);
         });
 
-        const listener3 = sinon.spy(() =>
+        const listener3 = jest.fn(() =>
         {
             ticker.stop();
 
-            expect(listener1.calledOnce).to.be.true;
-            expect(listener2.calledOnce).to.be.true;
-            expect(listener3.calledOnce).to.be.true;
+            expect(listener1).toBeCalledTimes(1);
+            expect(listener2).toBeCalledTimes(1);
+            expect(listener3).toBeCalledTimes(1);
             done();
         });
 

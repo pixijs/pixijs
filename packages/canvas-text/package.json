@@ -1,0 +1,40 @@
+{
+  "name": "@pixi/canvas-text",
+  "version": "7.0.0-beta.3",
+  "main": "dist/cjs/canvas-text.js",
+  "module": "dist/esm/canvas-text.mjs",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./index.d.ts",
+        "default": "./dist/esm/canvas-text.mjs"
+      },
+      "require": {
+        "types": "./index.d.ts",
+        "default": "./dist/cjs/canvas-text.js"
+      }
+    }
+  },
+  "description": "Canvas mixin for the text package",
+  "author": "Dave Moore",
+  "homepage": "http://pixijs.com/",
+  "bugs": "https://github.com/pixijs/pixi.js/issues",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pixijs/pixi.js.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "*.d.ts"
+  ],
+  "pixiRequirements": [
+    "@pixi/canvas-sprite",
+    "@pixi/sprite",
+    "@pixi/text"
+  ]
+}

@@ -1,24 +1,23 @@
+import type { BaseTexture } from '@pixi/core';
 import { ImageBitmapResource } from '@pixi/core';
-import sinon from 'sinon';
-import { expect } from 'chai';
 
-describe('ImageBitmapResource', function ()
+describe('ImageBitmapResource', () =>
 {
-    it('should create new dimension-less resource', async function ()
+    it('should create new dimension-less resource', async () =>
     {
         const canvas = document.createElement('canvas');
 
         const bitmap = await createImageBitmap(canvas);
         const resource = new ImageBitmapResource(bitmap);
 
-        expect(resource.width).to.equal(canvas.width);
-        expect(resource.height).to.equal(canvas.height);
-        expect(resource.valid).to.be.true;
+        expect(resource.width).toEqual(canvas.width);
+        expect(resource.height).toEqual(canvas.height);
+        expect(resource.valid).toBe(true);
 
         resource.destroy();
     });
 
-    it('should create new valid resource', async function ()
+    it('should create new valid resource', async () =>
     {
         const canvas = document.createElement('canvas');
 
@@ -28,44 +27,44 @@ describe('ImageBitmapResource', function ()
         const bitmap = await createImageBitmap(canvas);
         const resource = new ImageBitmapResource(bitmap);
 
-        expect(resource.width).to.equal(100);
-        expect(resource.height).to.equal(200);
-        expect(resource.valid).to.be.true;
+        expect(resource.width).toEqual(100);
+        expect(resource.height).toEqual(200);
+        expect(resource.valid).toBe(true);
 
         resource.destroy();
     });
 
-    it('should fire resize event on bind', async function ()
+    it('should fire resize event on bind', async () =>
     {
         const canvas = document.createElement('canvas');
         const bitmap = await createImageBitmap(canvas);
         const resource = new ImageBitmapResource(bitmap);
-        const baseTexture = { setRealSize: sinon.stub() };
+        const baseTexture = { setRealSize: jest.fn() };
 
-        resource.bind(baseTexture);
+        resource.bind(baseTexture as unknown as BaseTexture);
 
-        expect(baseTexture.setRealSize.calledOnce).to.be.true;
+        expect(baseTexture.setRealSize).toBeCalledTimes(1);
 
-        resource.unbind(baseTexture);
+        resource.unbind(baseTexture as unknown as BaseTexture);
         resource.destroy();
     });
 
-    it('should fire manual update event', async function ()
+    it('should fire manual update event', async () =>
     {
         const canvas = document.createElement('canvas');
         const bitmap = await createImageBitmap(canvas);
         const resource = new ImageBitmapResource(bitmap);
-        const baseTexture = { update: sinon.stub() };
+        const baseTexture = { update: jest.fn() };
 
-        resource.bind(baseTexture);
+        resource.bind(baseTexture as unknown as BaseTexture);
 
-        expect(baseTexture.update.called).to.be.false;
+        expect(baseTexture.update).not.toHaveBeenCalled();
 
         resource.update();
 
-        expect(baseTexture.update.calledOnce).to.be.true;
+        expect(baseTexture.update).toBeCalledTimes(1);
 
-        resource.unbind(baseTexture);
+        resource.unbind(baseTexture as unknown as BaseTexture);
         resource.destroy();
     });
 });

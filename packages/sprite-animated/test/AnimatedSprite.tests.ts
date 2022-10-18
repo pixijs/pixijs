@@ -1,330 +1,357 @@
 import { AnimatedSprite } from '@pixi/sprite-animated';
 import { Texture } from '@pixi/core';
-import { expect } from 'chai';
 
-describe('AnimatedSprite', function ()
+describe('AnimatedSprite', () =>
 {
-    describe('instance', function ()
+    describe('instance', () =>
     {
-        beforeEach(function ()
+        let textures: Texture[];
+        let sprite: AnimatedSprite;
+
+        beforeEach(() =>
         {
-            this.textures = [Texture.EMPTY];
+            textures = [Texture.EMPTY];
         });
 
-        afterEach(function ()
+        afterEach(() =>
         {
-            expect(this.sprite.animationSpeed).to.be.equal(1);
-            expect(this.sprite.loop).to.be.true;
-            expect(this.sprite.onComplete).to.be.null;
-            expect(this.sprite.onFrameChange).to.be.null;
-            expect(this.sprite.onLoop).to.be.null;
-            expect(this.sprite.playing).to.be.false;
+            expect(sprite.animationSpeed).toEqual(1);
+            expect(sprite.loop).toBe(true);
+            expect(sprite.onComplete).toBeNull();
+            expect(sprite.onFrameChange).toBeNull();
+            expect(sprite.onLoop).toBeNull();
+            expect(sprite.playing).toBe(false);
 
-            this.sprite.destroy();
-            this.sprite = null;
+            sprite.destroy();
+            sprite = null;
         });
 
-        it('should be correct with default options', function ()
+        it('should be correct with default options', () =>
         {
-            this.sprite = new AnimatedSprite(this.textures);
-            expect(this.sprite._autoUpdate).to.be.true;
+            sprite = new AnimatedSprite(textures);
+            expect(sprite['_autoUpdate']).toBe(true);
         });
 
-        it('should be correct with autoUpdate=false', function ()
+        it('should be correct with autoUpdate=false', () =>
         {
-            this.sprite = new AnimatedSprite(this.textures, false);
-            expect(this.sprite._autoUpdate).to.be.false;
+            sprite = new AnimatedSprite(textures, false);
+            expect(sprite['_autoUpdate']).toBe(false);
         });
 
-        it('should be correct with autoUpdate=true but then turned off via setter', function ()
+        it('should be correct with autoUpdate=true but then turned off via setter', () =>
         {
-            this.sprite = new AnimatedSprite(this.textures, true);
-            expect(this.sprite._autoUpdate).to.be.true;
-            this.sprite.autoUpdate = false;
-            expect(this.sprite._autoUpdate).to.be.false;
+            sprite = new AnimatedSprite(textures, true);
+            expect(sprite['_autoUpdate']).toBe(true);
+            sprite.autoUpdate = false;
+            expect(sprite['_autoUpdate']).toBe(false);
         });
     });
 
-    describe('.stop()', function ()
+    describe('.stop()', () =>
     {
-        before(function ()
+        let sprite: AnimatedSprite;
+
+        beforeAll(() =>
         {
-            this.sprite = new AnimatedSprite([Texture.EMPTY], false);
+            sprite = new AnimatedSprite([Texture.EMPTY], false);
         });
 
-        after(function ()
+        afterAll(() =>
         {
-            this.sprite.destroy();
-            this.sprite = null;
+            sprite.destroy();
+            sprite = null;
         });
 
-        afterEach(function ()
+        afterEach(() =>
         {
-            this.sprite.stop();
-            expect(this.sprite.playing).to.be.false;
+            sprite.stop();
+            expect(sprite.playing).toBe(false);
         });
 
-        it('should stop playing if it is playing', function ()
+        it('should stop playing if it is playing', () =>
         {
-            this.sprite._playing = true;
+            sprite['_playing'] = true;
         });
 
-        it('should do nothing if it is not playing', function ()
+        it('should do nothing if it is not playing', () =>
         {
-            this.sprite._playing = false;
+            sprite['_playing'] = false;
         });
     });
 
-    describe('.play()', function ()
+    describe('.play()', () =>
     {
-        before(function ()
+        let sprite: AnimatedSprite;
+
+        beforeAll(() =>
         {
-            this.sprite = new AnimatedSprite([Texture.EMPTY], false);
+            sprite = new AnimatedSprite([Texture.EMPTY], false);
         });
 
-        after(function ()
+        afterAll(() =>
         {
-            this.sprite.destroy();
-            this.sprite = null;
+            sprite.destroy();
+            sprite = null;
         });
 
-        afterEach(function ()
+        afterEach(() =>
         {
-            this.sprite.play();
-            expect(this.sprite.playing).to.be.true;
+            sprite.play();
+            expect(sprite.playing).toBe(true);
         });
 
-        it('should start playing if it is not playing', function ()
+        it('should start playing if it is not playing', () =>
         {
-            this.sprite._playing = false;
+            sprite['_playing'] = false;
         });
 
-        it('should do nothing if it is playing', function ()
+        it('should do nothing if it is playing', () =>
         {
-            this.sprite._playing = true;
+            sprite['_playing'] = true;
         });
     });
 
-    describe('.onComplete()', function ()
+    describe('.onComplete()', () =>
     {
-        before(function ()
+        let sprite: AnimatedSprite;
+
+        beforeAll(() =>
         {
-            this.sprite = new AnimatedSprite([Texture.WHITE, Texture.WHITE, Texture.EMPTY]);
-            this.sprite.animationSpeed = 0.5;
-            this.sprite.loop = false;
+            sprite = new AnimatedSprite([Texture.WHITE, Texture.WHITE, Texture.EMPTY]);
+            sprite.animationSpeed = 0.5;
+            sprite.loop = false;
         });
 
-        after(function ()
+        afterAll(() =>
         {
-            this.sprite.destroy();
-            this.sprite = null;
+            sprite.destroy();
+            sprite = null;
         });
 
-        it('should fire onComplete', function (done)
+        // eslint-disable-next-line func-names
+        it('should fire onComplete', (done) =>
         {
-            this.timeout((
-                this.sprite.textures.length * 1000 / 60 / this.sprite.animationSpeed)
-                + (1000 / 60 / this.sprite.animationSpeed * 0.9)
-            );
-            this.sprite.onComplete = () =>
+            jest.setTimeout(5000);
+            sprite.onComplete = () =>
             {
-                this.sprite.onComplete = null;
+                sprite.onComplete = null;
                 done();
             };
-            this.sprite.play();
-            expect(this.sprite.playing).to.be.true;
+            sprite.play();
+            expect(sprite.playing).toBe(true);
         });
 
-        it('should the current texture be the last item in textures', function (done)
+        it('should the current texture be the last item in textures', (done) =>
         {
-            this.sprite.play();
-            this.sprite.onComplete = () =>
+            jest.setTimeout(5000);
+            sprite.play();
+            sprite.onComplete = () =>
             {
-                expect(this.sprite.texture === this.sprite.textures[this.sprite.currentFrame]).to.be.true;
-                this.sprite.onComplete = null;
+                expect(sprite.texture === sprite.textures[sprite.currentFrame]).toBe(true);
+                sprite.onComplete = null;
                 done();
             };
         });
     });
 
-    describe('.gotoAndPlay()', function ()
+    describe('.gotoAndPlay()', () =>
     {
-        before(function ()
+        let sprite: AnimatedSprite;
+
+        beforeAll(() =>
         {
-            this.sprite = new AnimatedSprite([Texture.EMPTY, Texture.EMPTY, Texture.EMPTY]);
-            this.sprite.animationSpeed = 0.5;
-            this.sprite.loop = false;
+            sprite = new AnimatedSprite([Texture.EMPTY, Texture.EMPTY, Texture.EMPTY]);
+            sprite.animationSpeed = 0.5;
+            sprite.loop = false;
         });
 
-        after(function ()
+        afterAll(() =>
         {
-            this.sprite.destroy();
-            this.sprite = null;
+            sprite.destroy();
+            sprite = null;
         });
 
-        it('should fire frame after start frame during one play and fire onComplete', function (done)
+        it('should fire frame after start frame during one play and fire onComplete', (done) =>
         {
-            const frameIds = [];
+            jest.setTimeout(5000);
+            const frameIds = [] as number[];
 
-            this.sprite.onComplete = () =>
+            sprite.onComplete = () =>
             {
-                expect(frameIds).to.deep.equal([1, 2]);
-                expect(this.sprite.playing).to.be.false;
-                this.sprite.onComplete = null;
-                this.sprite.onFrameChange = null;
+                expect(frameIds).toEqual(expect.arrayContaining([1, 2]));
+                expect(sprite.playing).toBe(false);
+                sprite.onComplete = null;
+                sprite.onFrameChange = null;
                 done();
             };
-            this.sprite.onFrameChange = (frame) =>
+            sprite.onFrameChange = (frame) =>
             {
                 frameIds.push(frame);
             };
-            this.sprite.gotoAndPlay(1);
-            expect(this.sprite.playing).to.be.true;
+            sprite.gotoAndPlay(1);
+            expect(sprite.playing).toBe(true);
         });
     });
 
-    describe('.gotoAndStop()', function ()
+    describe('.gotoAndStop()', () =>
     {
-        before(function ()
+        let sprite: AnimatedSprite;
+
+        beforeAll(() =>
         {
-            this.sprite = new AnimatedSprite([Texture.EMPTY, Texture.EMPTY, Texture.EMPTY]);
-            this.sprite.animationSpeed = 0.5;
-            this.sprite.loop = false;
+            sprite = new AnimatedSprite([Texture.EMPTY, Texture.EMPTY, Texture.EMPTY]);
+            sprite.animationSpeed = 0.5;
+            sprite.loop = false;
         });
 
-        after(function ()
+        afterAll(() =>
         {
-            this.sprite.destroy();
-            this.sprite = null;
+            sprite.destroy();
+            sprite = null;
         });
 
-        beforeEach(function ()
+        beforeEach(() =>
         {
-            this.sprite._playing = false;
+            sprite['_playing'] = false;
         });
 
-        it('should fire onFrameChange on target frame', function (done)
+        it('should fire onFrameChange on target frame', (done) =>
         {
             const targetFrame = 1;
 
-            this.sprite.onFrameChange = (frame) =>
+            sprite.onFrameChange = (frame) =>
             {
-                expect(frame).to.equal(targetFrame);
-                expect(this.sprite.playing).to.be.false;
-                this.sprite.onComplete = null;
-                this.sprite.onFrameChange = null;
+                expect(frame).toEqual(targetFrame);
+                expect(sprite.playing).toBe(false);
+                sprite.onComplete = null;
+                sprite.onFrameChange = null;
                 done();
             };
-            this.sprite.gotoAndStop(targetFrame);
-            expect(this.sprite.playing).to.be.false;
+            sprite.gotoAndStop(targetFrame);
+            expect(sprite.playing).toBe(false);
         });
 
-        it('should not fire onFrameChange on target frame if current is already target', function ()
+        it('should not fire onFrameChange on target frame if current is already target', () =>
         {
             let fired = false;
             const targetFrame = 1;
 
-            this.sprite.gotoAndStop(targetFrame);
+            sprite.gotoAndStop(targetFrame);
 
-            this.sprite.onFrameChange = () =>
+            sprite.onFrameChange = () =>
             {
                 fired = true;
             };
-            this.sprite.gotoAndStop(targetFrame);
-            expect(this.sprite.playing).to.be.false;
-            expect(fired).to.be.false;
+            sprite.gotoAndStop(targetFrame);
+            expect(sprite.playing).toBe(false);
+            expect(fired).toBe(false);
         });
     });
 
-    describe('.onFrameChange()', function ()
+    describe('.onFrameChange()', () =>
     {
-        before(function ()
+        let sprite: AnimatedSprite;
+
+        beforeEach(() =>
         {
-            this.sprite = new AnimatedSprite([Texture.EMPTY, Texture.WHITE, Texture.EMPTY]);
-            this.sprite.animationSpeed = 0.5;
-            this.sprite.loop = false;
+            sprite = new AnimatedSprite([Texture.EMPTY, Texture.WHITE, Texture.EMPTY]);
+            sprite.animationSpeed = 0.5;
+            sprite.loop = false;
         });
 
-        after(function ()
+        afterEach(() =>
         {
-            this.sprite.destroy();
-            this.sprite = null;
+            sprite.destroy();
+            sprite = null;
         });
 
-        beforeEach(function ()
+        it('should fire every frame(except current) during one play', (done) =>
         {
-            this.sprite._playing = false;
-        });
+            jest.setTimeout(10000);
+            const frameIds = [] as number[];
 
-        it('should fire every frame(except current) during one play', function (done)
-        {
-            const frameIds = [];
-
-            this.sprite.gotoAndStop(0);
-            this.sprite.onComplete = () =>
+            sprite.gotoAndStop(0);
+            sprite.onComplete = () =>
             {
-                expect(frameIds).to.deep.equal([1, 2]); // from 0 to 2, triggers onFrameChange at 1,2.
-                expect(this.sprite.currentFrame).to.equal(2);
-                this.sprite.onComplete = null;
-                this.sprite.onFrameChange = null;
+                expect(frameIds).toEqual(expect.arrayContaining([1, 2])); // from 0 to 2, triggers onFrameChange at 1,2.
+                expect(sprite.currentFrame).toEqual(2);
+                sprite.onComplete = null;
+                sprite.onFrameChange = null;
                 done();
             };
-            this.sprite.onFrameChange = (frame) =>
+            sprite.onFrameChange = (frame) =>
             {
                 frameIds.push(frame);
             };
-            this.sprite.play();
-            expect(this.sprite.playing).to.be.true;
+            sprite.autoUpdate = false;
+            sprite.play();
+            expect(sprite.playing).toBe(true);
+            sprite.update(1);
+            sprite.update(1);
+            sprite.update(1);
+            sprite.update(1);
+            sprite.update(1);
+            sprite.update(1);
         });
 
-        it('should fire every frame(except current) during one play - reverse', function (done)
+        it('should fire every frame(except current) during one play - reverse', (done) =>
         {
-            const frameIds = [];
+            jest.setTimeout(10000);
+            const frameIds = [] as number[];
 
-            this.sprite.gotoAndStop(2);
-            this.sprite.animationSpeed = -0.5;
-            this.sprite.onComplete = () =>
+            sprite.gotoAndStop(2);
+            sprite.animationSpeed = -1;
+            sprite.onComplete = () =>
             {
-                expect(frameIds).to.deep.equal([1, 0]); // from 2 to 0, triggers onFrameChange at 1,0.
-                expect(this.sprite.currentFrame).to.equal(0);
-                this.sprite.onComplete = null;
-                this.sprite.onFrameChange = null;
+                expect(frameIds).toEqual(expect.arrayContaining([1, 0])); // from 2 to 0, triggers onFrameChange at 1,0.
+                expect(sprite.currentFrame).toEqual(0);
+                sprite.onComplete = null;
+                sprite.onFrameChange = null;
                 done();
             };
-            this.sprite.onFrameChange = (frame) =>
+            sprite.onFrameChange = (frame) =>
             {
                 frameIds.push(frame);
             };
-            this.sprite.play();
-            expect(this.sprite.playing).to.be.true;
+            sprite.autoUpdate = false;
+            sprite.play();
+            expect(sprite.playing).toBe(true);
+            sprite.update(1);
+            sprite.update(1);
+            sprite.update(1);
         });
 
-        it('should fire every frame(except current) during one play - from not start/end', function (done)
+        it('should fire every frame(except current) during one play - from not start/end', (done) =>
         {
-            const frameIds = [];
+            jest.setTimeout(10000);
+            const frameIds = [] as number[];
 
-            this.sprite.gotoAndStop(1);
-            this.sprite.animationSpeed = -0.5;
-            this.sprite.onComplete = () =>
+            sprite.gotoAndStop(1);
+            sprite.animationSpeed = -1;
+            sprite.onComplete = () =>
             {
-                expect(frameIds).to.deep.equal([0]); // from 1 to 0, triggers onFrameChange at 0.
-                expect(this.sprite.currentFrame).to.equal(0);
-                this.sprite.onComplete = null;
-                this.sprite.onFrameChange = null;
+                expect(frameIds).toEqual(expect.arrayContaining([0])); // from 1 to 0, triggers onFrameChange at 0.
+                expect(sprite.currentFrame).toEqual(0);
+                sprite.onComplete = null;
+                sprite.onFrameChange = null;
                 done();
             };
-            this.sprite.onFrameChange = (frame) =>
+            sprite.onFrameChange = (frame) =>
             {
                 frameIds.push(frame);
             };
-            this.sprite.play();
-            expect(this.sprite.playing).to.be.true;
+            sprite.autoUpdate = false;
+            sprite.play();
+            expect(sprite.playing).toBe(true);
+            sprite.update(1);
+            sprite.update(1);
+            sprite.update(1);
         });
     });
 
-    describe('.textures', function ()
+    describe('.textures', () =>
     {
-        it('should set the first frame when setting new textures', function (done)
+        it('should set the first frame when setting new textures', (done) =>
         {
             const orig1 = Texture.EMPTY.clone();
             const orig2 = Texture.EMPTY.clone();
@@ -344,11 +371,67 @@ describe('AnimatedSprite', function ()
 
                 sprite.textures = [frame1, frame2, frame3];
 
-                expect(sprite.currentFrame).to.equal(0);
-                expect(sprite._texture).to.equal(frame1);
+                expect(sprite.currentFrame).toEqual(0);
+                expect(sprite._texture).toEqual(frame1);
 
                 done();
             };
+        });
+    });
+
+    describe('.currentFrame', () =>
+    {
+        let sprite: AnimatedSprite;
+
+        beforeAll(() =>
+        {
+            sprite = new AnimatedSprite([Texture.EMPTY, Texture.EMPTY, Texture.EMPTY]);
+            sprite.animationSpeed = 0.5;
+            sprite.loop = false;
+        });
+
+        afterAll(() =>
+        {
+            sprite.destroy();
+            sprite = null;
+        });
+
+        it('should get the same value after setting the value', () =>
+        {
+            sprite.currentFrame = 1;
+            expect(sprite.currentFrame).toBe(1);
+        });
+
+        it('should throw on out-of-bounds', (done) =>
+        {
+            jest.setTimeout(10000);
+
+            const notExistIndexes = [-1, 3];
+
+            notExistIndexes.forEach((i) =>
+            {
+                expect(() =>
+                {
+                    sprite.currentFrame = i;
+                }).toThrowError();
+
+                expect(() =>
+                {
+                    sprite.gotoAndPlay(i);
+                }).toThrowError();
+
+                expect(() =>
+                {
+                    sprite.gotoAndStop(i);
+                }).toThrowError();
+            });
+
+            sprite.onComplete = () =>
+            {
+                sprite.onComplete = null;
+                done();
+            };
+            sprite.play();
         });
     });
 });

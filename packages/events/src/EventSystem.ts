@@ -1,11 +1,12 @@
 import { EventBoundary } from './EventBoundary';
-import { FederatedMouseEvent } from './FederatedMouseEvent';
+import type { FederatedMouseEvent } from './FederatedMouseEvent';
 import { FederatedPointerEvent } from './FederatedPointerEvent';
 import { FederatedWheelEvent } from './FederatedWheelEvent';
+import { extensions, ExtensionType } from '@pixi/core';
 
-import type { IRenderableObject } from '@pixi/core';
+import type { IRenderableObject, ExtensionMetadata, IPointData } from '@pixi/core';
 import type { DisplayObject } from '@pixi/display';
-import type { IPointData } from '@pixi/math';
+import type { ICanvas } from '@pixi/settings';
 
 const MOUSE_POINTER_ID = 1;
 const TOUCH_TO_POINTER: Record<string, string> = {
@@ -18,19 +19,27 @@ const TOUCH_TO_POINTER: Record<string, string> = {
 
 interface Renderer
 {
-    _lastObjectRendered: IRenderableObject;
-    view: HTMLCanvasElement;
+    lastObjectRendered: IRenderableObject;
+    view: ICanvas;
     resolution: number;
     plugins: Record<string, any>;
 }
 
 /**
  * The system for handling UI events.
- *
  * @memberof PIXI
  */
 export class EventSystem
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        name: 'events',
+        type: [
+            ExtensionType.RendererSystem,
+            ExtensionType.CanvasRendererSystem
+        ],
+    };
+
     /**
      * The {@link PIXI.EventBoundary} for the stage.
      *
@@ -43,16 +52,10 @@ export class EventSystem
      */
     public readonly rootBoundary: EventBoundary;
 
-    /**
-     * Does the device support touch events
-     * https://www.w3.org/TR/touch-events/
-     */
+    /** Does the device support touch events https://www.w3.org/TR/touch-events/ */
     public readonly supportsTouchEvents = 'ontouchstart' in globalThis;
 
-    /**
-     * Does the device support pointer events
-     * https://www.w3.org/Submission/pointer-events/
-     */
+    /** Does the device support pointer events https://www.w3.org/Submission/pointer-events/ */
     public readonly supportsPointerEvents = !!globalThis.PointerEvent;
 
     /**
@@ -60,7 +63,6 @@ export class EventSystem
      * Does not apply to pointer events for backwards compatibility
      * preventDefault on pointer events stops mouse events from firing
      * Thus, for every pointer event, there will always be either a mouse of touch event alongside it.
-     *
      * @default true
      */
     public autoPreventDefault: boolean;
@@ -70,8 +72,7 @@ export class EventSystem
      * values, objects are handled as dictionaries of CSS values for {@code domElement},
      * and functions are called instead of changing the CSS.
      * Default CSS cursor values are provided for 'default' and 'pointer' modes.
-     *
-     * @member {Object.<string, string | ((mode: string) => void) | CSSStyleDeclaration>}
+     * @member {Object<string, string | ((mode: string) => void) | CSSStyleDeclaration>}
      */
     public cursorStyles: Record<string, string | ((mode: string) => void) | CSSStyleDeclaration>;
 
@@ -79,16 +80,12 @@ export class EventSystem
      * The DOM element to which the root event listeners are bound. This is automatically set to
      * the renderer's {@link PIXI.Renderer#view view}.
      */
-    public domElement: HTMLElement;
+    public domElement: HTMLElement = null;
 
-    /**
-     * The resolution used to convert between the DOM client space into world space.
-     */
+    /** The resolution used to convert between the DOM client space into world space. */
     public resolution = 1;
 
-    /**
-     * The renderer managing this {@link EventSystem}.
-     */
+    /** The renderer managing this {@link EventSystem}. */
     public renderer: Renderer;
 
     private currentCursor: string;
@@ -101,11 +98,6 @@ export class EventSystem
      */
     constructor(renderer: Renderer)
     {
-        if (renderer.plugins.interaction)
-        {
-            throw new Error('EventSystem cannot initialize with the InteractionManager installed!');
-        }
-
         this.renderer = renderer;
         this.rootBoundary = new EventBoundary(null);
 
@@ -119,21 +111,27 @@ export class EventSystem
             default: 'inherit',
             pointer: 'pointer',
         };
-        this.domElement = renderer.view;
 
         this.onPointerDown = this.onPointerDown.bind(this);
         this.onPointerMove = this.onPointerMove.bind(this);
         this.onPointerUp = this.onPointerUp.bind(this);
         this.onPointerOverOut = this.onPointerOverOut.bind(this);
         this.onWheel = this.onWheel.bind(this);
-
-        this.setTargetElement(this.domElement);
-        this.resolution = this.renderer.resolution;
     }
 
     /**
-     * Destroys all event listeners and detaches the renderer.
+     * Runner init called, view is available at this point.
+     * @ignore
      */
+    init(): void
+    {
+        const { view, resolution } = this.renderer;
+
+        this.setTargetElement(view as HTMLCanvasElement);
+        this.resolution = resolution;
+    }
+
+    /** Destroys all event listeners and detaches the renderer. */
     destroy(): void
     {
         this.setTargetElement(null);
@@ -142,7 +140,6 @@ export class EventSystem
 
     /**
      * Sets the current cursor mode, handling any callbacks or CSS style changes.
-     *
      * @param mode - cursor mode, a key from the cursorStyles dictionary
      */
     public setCursor(mode: string): void
@@ -200,12 +197,11 @@ export class EventSystem
 
     /**
      * Event handler for pointer down events on {@link PIXI.EventSystem#domElement this.domElement}.
-     *
      * @param nativeEvent - The native mouse/pointer/touch event.
      */
     private onPointerDown(nativeEvent: MouseEvent | PointerEvent | TouchEvent): void
     {
-        this.rootBoundary.rootTarget = this.renderer._lastObjectRendered as DisplayObject;
+        this.rootBoundary.rootTarget = this.renderer.lastObjectRendered as DisplayObject;
 
         // if we support touch events, then only use those for touch events, not pointer events
         if (this.supportsTouchEvents && (nativeEvent as PointerEvent).pointerType === 'touch') return;
@@ -243,12 +239,11 @@ export class EventSystem
 
     /**
      * Event handler for pointer move events on on {@link PIXI.EventSystem#domElement this.domElement}.
-     *
      * @param nativeEvent - The native mouse/pointer/touch events.
      */
     private onPointerMove(nativeEvent: MouseEvent | PointerEvent | TouchEvent): void
     {
-        this.rootBoundary.rootTarget = this.renderer._lastObjectRendered as DisplayObject;
+        this.rootBoundary.rootTarget = this.renderer.lastObjectRendered as DisplayObject;
 
         // if we support touch events, then only use those for touch events, not pointer events
         if (this.supportsTouchEvents && (nativeEvent as PointerEvent).pointerType === 'touch') return;
@@ -267,17 +262,24 @@ export class EventSystem
 
     /**
      * Event handler for pointer up events on {@link PIXI.EventSystem#domElement this.domElement}.
-     *
      * @param nativeEvent - The native mouse/pointer/touch event.
      */
     private onPointerUp(nativeEvent: MouseEvent | PointerEvent | TouchEvent): void
     {
-        this.rootBoundary.rootTarget = this.renderer._lastObjectRendered as DisplayObject;
+        this.rootBoundary.rootTarget = this.renderer.lastObjectRendered as DisplayObject;
 
         // if we support touch events, then only use those for touch events, not pointer events
         if (this.supportsTouchEvents && (nativeEvent as PointerEvent).pointerType === 'touch') return;
 
-        const outside = nativeEvent.target !== this.domElement ? 'outside' : '';
+        let target = nativeEvent.target;
+
+        // if in shadow DOM use composedPath to access target
+        if (nativeEvent.composedPath && nativeEvent.composedPath().length > 0)
+        {
+            target = nativeEvent.composedPath()[0];
+        }
+
+        const outside = target !== this.domElement ? 'outside' : '';
         const normalizedEvents = this.normalizeToPointerData(nativeEvent);
 
         for (let i = 0, j = normalizedEvents.length; i < j; i++)
@@ -294,12 +296,11 @@ export class EventSystem
 
     /**
      * Event handler for pointer over & out events on {@link PIXI.EventSystem#domElement this.domElement}.
-     *
      * @param nativeEvent - The native mouse/pointer/touch event.
      */
     private onPointerOverOut(nativeEvent: MouseEvent | PointerEvent | TouchEvent): void
     {
-        this.rootBoundary.rootTarget = this.renderer._lastObjectRendered as DisplayObject;
+        this.rootBoundary.rootTarget = this.renderer.lastObjectRendered as DisplayObject;
 
         // if we support touch events, then only use those for touch events, not pointer events
         if (this.supportsTouchEvents && (nativeEvent as PointerEvent).pointerType === 'touch') return;
@@ -318,14 +319,13 @@ export class EventSystem
 
     /**
      * Passive handler for `wheel` events on {@link EventSystem.domElement this.domElement}.
-     *
      * @param nativeEvent - The native wheel event.
      */
     protected onWheel(nativeEvent: WheelEvent): void
     {
         const wheelEvent = this.normalizeWheelEvent(nativeEvent);
 
-        this.rootBoundary.rootTarget = this.renderer._lastObjectRendered as DisplayObject;
+        this.rootBoundary.rootTarget = this.renderer.lastObjectRendered as DisplayObject;
         this.rootBoundary.mapEvent(wheelEvent);
     }
 
@@ -333,7 +333,6 @@ export class EventSystem
      * Sets the {@link PIXI.EventSystem#domElement domElement} and binds event listeners.
      *
      * To deregister the current DOM element without setting a new one, pass {@code null}.
-     *
      * @param element - The new DOM element.
      */
     public setTargetElement(element: HTMLElement): void
@@ -343,9 +342,7 @@ export class EventSystem
         this.addEvents();
     }
 
-    /**
-     * Register event listeners on {@link PIXI.Renderer#domElement this.domElement}.
-     */
+    /** Register event listeners on {@link PIXI.Renderer#domElement this.domElement}. */
     private addEvents(): void
     {
         if (this.eventsAdded || !this.domElement)
@@ -355,14 +352,17 @@ export class EventSystem
 
         const style = this.domElement.style as CrossCSSStyleDeclaration;
 
-        if (globalThis.navigator.msPointerEnabled)
+        if (style)
         {
-            style.msContentZooming = 'none';
-            style.msTouchAction = 'none';
-        }
-        else if (this.supportsPointerEvents)
-        {
-            style.touchAction = 'none';
+            if ((globalThis.navigator as any).msPointerEnabled)
+            {
+                style.msContentZooming = 'none';
+                style.msTouchAction = 'none';
+            }
+            else if (this.supportsPointerEvents)
+            {
+                style.touchAction = 'none';
+            }
         }
 
         /*
@@ -409,9 +409,7 @@ export class EventSystem
         this.eventsAdded = true;
     }
 
-    /**
-     * Unregister event listeners on {@link PIXI.EventSystem#domElement this.domElement}.
-     */
+    /** Unregister event listeners on {@link PIXI.EventSystem#domElement this.domElement}. */
     private removeEvents(): void
     {
         if (!this.eventsAdded || !this.domElement)
@@ -421,7 +419,7 @@ export class EventSystem
 
         const style = this.domElement.style as CrossCSSStyleDeclaration;
 
-        if (globalThis.navigator.msPointerEnabled)
+        if ((globalThis.navigator as any).msPointerEnabled)
         {
             style.msContentZooming = '';
             style.msTouchAction = '';
@@ -467,7 +465,6 @@ export class EventSystem
      * Maps x and y coords from a DOM object and maps them correctly to the PixiJS view. The
      * resulting value is stored in the point. This takes into account the fact that the DOM
      * element could be scaled and positioned anywhere on the screen.
-     *
      * @param  {PIXI.IPointData} point - the point that the result will be stored in
      * @param  {number} x - the x coord of the position to map
      * @param  {number} y - the y coord of the position to map
@@ -501,12 +498,11 @@ export class EventSystem
 
     /**
      * Ensures that the original event object contains all data that a regular pointer event would have
-     *
      * @param event - The original event data from a touch or mouse event
-     * @return An array containing a single normalized pointer event, in the case of a pointer
+     * @returns An array containing a single normalized pointer event, in the case of a pointer
      *  or mouse event, or a multiple normalized pointer events if there are multiple changed touches
      */
-    private normalizeToPointerData(event: TouchEvent|MouseEvent|PointerEvent): PointerEvent[]
+    private normalizeToPointerData(event: TouchEvent | MouseEvent | PointerEvent): PointerEvent[]
     {
         const normalizedEvents = [];
 
@@ -516,8 +512,8 @@ export class EventSystem
             {
                 const touch = event.changedTouches[i] as PixiTouch;
 
-                if (typeof touch.button === 'undefined') touch.button = event.touches.length ? 1 : 0;
-                if (typeof touch.buttons === 'undefined') touch.buttons = event.touches.length ? 1 : 0;
+                if (typeof touch.button === 'undefined') touch.button = 0;
+                if (typeof touch.buttons === 'undefined') touch.buttons = 1;
                 if (typeof touch.isPrimary === 'undefined')
                 {
                     touch.isPrimary = event.touches.length === 1 && event.type === 'touchstart';
@@ -580,9 +576,8 @@ export class EventSystem
      *
      * The returned {@link PIXI.FederatedWheelEvent} is a shared instance. It will not persist across
      * multiple native wheel events.
-     *
      * @param nativeEvent - The native wheel event that occurred on the canvas.
-     * @return A federated wheel event.
+     * @returns A federated wheel event.
      */
     protected normalizeWheelEvent(nativeEvent: WheelEvent): FederatedWheelEvent
     {
@@ -607,7 +602,6 @@ export class EventSystem
 
     /**
      * Normalizes the {@code nativeEvent} into a federateed {@code FederatedPointerEvent}.
-     *
      * @param event
      * @param nativeEvent
      */
@@ -651,7 +645,6 @@ export class EventSystem
 
     /**
      * Transfers base & mouse event data from the {@code nativeEvent} to the federated event.
-     *
      * @param event
      * @param nativeEvent
      */
@@ -674,6 +667,7 @@ export class EventSystem
         event.page.x = nativeEvent.pageX;
         event.page.y = nativeEvent.pageY;
         event.relatedTarget = null;
+        event.shiftKey = nativeEvent.shiftKey;
     }
 }
 
@@ -720,3 +714,5 @@ interface PixiTouch extends Touch
     isNormalized: boolean;
     type: string;
 }
+
+extensions.add(EventSystem);

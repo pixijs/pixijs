@@ -1,10 +1,21 @@
 {
   "name": "@pixi/utils",
-  "version": "6.3.0",
+  "version": "7.0.0-beta.3",
   "main": "dist/cjs/utils.js",
-  "module": "dist/esm/utils.js",
-  "bundle": "dist/browser/utils.js",
-  "namespace": "PIXI.utils",
+  "module": "dist/esm/utils.mjs",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./index.d.ts",
+        "default": "./dist/esm/utils.mjs"
+      },
+      "require": {
+        "types": "./index.d.ts",
+        "default": "./dist/cjs/utils.js"
+      }
+    }
+  },
   "description": "Collection of utilities used by PixiJS",
   "author": "Mat Groves",
   "contributors": [
@@ -21,19 +32,16 @@
     "access": "public"
   },
   "files": [
-    "lib",
     "dist",
     "*.d.ts"
   ],
   "dependencies": {
+    "@pixi/constants": "7.0.0-beta.3",
+    "@pixi/settings": "7.0.0-beta.3",
     "@types/earcut": "^2.1.0",
-    "earcut": "^2.2.2",
+    "earcut": "^2.2.4",
     "eventemitter3": "^3.1.0",
     "url": "^0.11.0"
-  },
-  "peerDependencies": {
-    "@pixi/constants": "6.3.0",
-    "@pixi/settings": "6.3.0"
   },
   "devDependencies": {
     "css-color-names": "^1.0.1"

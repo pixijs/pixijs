@@ -1,42 +1,46 @@
-import { GLBuffer } from './GLBuffer';
-import { ENV } from '@pixi/constants';
+import type { GLBuffer } from './GLBuffer';
+import { BUFFER_TYPE, ENV } from '@pixi/constants';
 import { settings } from '../settings';
 
-import type { ISystem } from '../ISystem';
+import type { ISystem } from '../system/ISystem';
 import type { DRAW_MODES } from '@pixi/constants';
 import type { Renderer } from '../Renderer';
-import type { IRenderingContext } from '../IRenderingContext';
 import type { Geometry } from './Geometry';
 import type { Shader } from '../shader/Shader';
 import type { Program } from '../shader/Program';
 import type { Dict } from '@pixi/utils';
+import type { IRenderingContext } from '../IRenderer';
+import type { ExtensionMetadata } from '@pixi/extensions';
+import { extensions, ExtensionType } from '@pixi/extensions';
 
 const byteSizeMap: {[key: number]: number} = { 5126: 4, 5123: 2, 5121: 1 };
 
 /**
  * System plugin to the renderer to manage geometry.
- *
  * @memberof PIXI
  */
 export class GeometrySystem implements ISystem
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        type: ExtensionType.RendererSystem,
+        name: 'geometry',
+    };
+
     /**
      * `true` if we has `*_vertex_array_object` extension.
-     *
      * @readonly
      */
     public hasVao: boolean;
 
     /**
      * `true` if has `ANGLE_instanced_arrays` extension.
-     *
      * @readonly
      */
     public hasInstance: boolean;
 
     /**
      * `true` if support `gl.UNSIGNED_INT` in `gl.drawElements` or `gl.drawElementsInstanced`.
-     *
      * @readonly
      */
     public canUseUInt32ElementIndex: boolean;
@@ -138,7 +142,6 @@ export class GeometrySystem implements ISystem
 
     /**
      * Binds geometry so that is can be drawn. Creating a Vao if required
-     *
      * @param geometry - Instance of geometry to bind.
      * @param shader - Instance of shader to use vao for.
      */
@@ -210,7 +213,6 @@ export class GeometrySystem implements ISystem
 
     /**
      * Check compatibility between a geometry and a program
-     *
      * @param geometry - Geometry instance.
      * @param program - Program instance.
      */
@@ -231,10 +233,9 @@ export class GeometrySystem implements ISystem
 
     /**
      * Takes a geometry and program and generates a unique signature for them.
-     *
      * @param geometry - To get signature from.
      * @param program - To test geometry against.
-     * @return - Unique signature of the geometry and program
+     * @returns - Unique signature of the geometry and program
      */
     protected getSignature(geometry: Geometry, program: Program): string
     {
@@ -258,7 +259,6 @@ export class GeometrySystem implements ISystem
      * Creates or gets Vao with the same structure as the geometry and stores it on the geometry.
      * If vao is created, it is bound automatically. We use a shader to infer what and how to set up the
      * attribute locations.
-     *
      * @param geometry - Instance of geometry to to generate Vao for.
      * @param shader - Instance of the shader.
      * @param incRefCount - Increment refCount of all geometry buffers.
@@ -341,6 +341,7 @@ export class GeometrySystem implements ISystem
             }
         }
 
+        // @TODO: We don't know if VAO is supported.
         vao = gl.createVertexArray();
 
         gl.bindVertexArray(vao);
@@ -364,18 +365,18 @@ export class GeometrySystem implements ISystem
 
         this.activateVao(geometry, program);
 
-        this._activeVao = vao;
-
         // add it to the cache!
         vaoObjectHash[program.id] = vao;
         vaoObjectHash[signature] = vao;
+
+        gl.bindVertexArray(null);
+        bufferSystem.unbind(BUFFER_TYPE.ARRAY_BUFFER);
 
         return vao;
     }
 
     /**
      * Disposes geometry.
-     *
      * @param geometry - Geometry with buffers. Only VAO will be disposed
      * @param [contextLost=false] - If context was lost, we suppress deleteVertexArray
      */
@@ -444,7 +445,6 @@ export class GeometrySystem implements ISystem
 
     /**
      * Dispose all WebGL resources of all managed geometries.
-     *
      * @param [contextLost=false] - If context was lost, we suppress `gl.delete` calls
      */
     disposeAll(contextLost?: boolean): void
@@ -459,7 +459,6 @@ export class GeometrySystem implements ISystem
 
     /**
      * Activate vertex array object.
-     *
      * @param geometry - Geometry instance.
      * @param program - Shader program instance.
      */
@@ -526,7 +525,6 @@ export class GeometrySystem implements ISystem
 
     /**
      * Draws the currently bound geometry.
-     *
      * @param type - The type primitive to render.
      * @param size - The number of elements to be rendered. If not specified, all vertices after the
      *  starting vertex will be drawn.
@@ -593,3 +591,5 @@ export class GeometrySystem implements ISystem
         this.renderer = null;
     }
 }
+
+extensions.add(GeometrySystem);

@@ -1,16 +1,15 @@
 import { MeshGeometry } from '@pixi/mesh';
-import type { IPoint } from '@pixi/math';
+import type { IPoint } from '@pixi/core';
 
 /**
  * RopeGeometry allows you to draw a geometry across several points and then manipulate these points.
+ * @example
+ * import { RopeGeometry, Point } from 'pixi.js';
  *
- * ```js
  * for (let i = 0; i < 20; i++) {
- *     points.push(new PIXI.Point(i * 50, 0));
+ *     points.push(new Point(i * 50, 0));
  * };
- * const rope = new PIXI.RopeGeometry(100, points);
- * ```
- *
+ * const rope = new RopeGeometry(100, points);
  * @memberof PIXI
  */
 export class RopeGeometry extends MeshGeometry
@@ -23,7 +22,6 @@ export class RopeGeometry extends MeshGeometry
 
     /**
      * The width (i.e., thickness) of the rope.
-     *
      * @readonly
      */
     _width: number;
@@ -54,8 +52,7 @@ export class RopeGeometry extends MeshGeometry
 
     /**
      * The width (i.e., thickness) of the rope.
-     *
-     * @readOnly
+     * @readonly
      */
     get width(): number
     {
@@ -150,9 +147,7 @@ export class RopeGeometry extends MeshGeometry
         this.updateVertices();
     }
 
-    /**
-     * refreshes vertices of Rope mesh
-     */
+    /** refreshes vertices of Rope mesh */
     public updateVertices(): void
     {
         const points = this.points;

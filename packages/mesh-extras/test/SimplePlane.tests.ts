@@ -1,63 +1,70 @@
 import { SimplePlane } from '@pixi/mesh-extras';
-import { skipHello } from '@pixi/utils';
-import { Loader } from '@pixi/loaders';
-import { Point } from '@pixi/math';
-import { Renderer, BatchRenderer, RenderTexture, Texture } from '@pixi/core';
-import { expect } from 'chai';
+import { Point, Renderer, RenderTexture, Texture } from '@pixi/core';
+import { Cache, loadTextures } from '@pixi/assets';
+import { Loader } from '../../assets/src/loader/Loader';
 
-skipHello();
+import type { PlaneGeometry } from '@pixi/mesh-extras';
 
-// TODO: fix with webglrenderer
-describe('SimplePlane', function ()
+describe('SimplePlane', () =>
 {
-    it('should create a plane from an external image', function (done)
+    let loader: Loader;
+    const serverPath = process.env.GITHUB_ACTIONS
+        ? `https://raw.githubusercontent.com/pixijs/pixijs/${process.env.GITHUB_SHA}/packages/mesh-extras/test/resources/`
+        : 'http://localhost:8080/mesh-extras/test/resources/';
+
+    beforeEach(() =>
     {
-        const loader = new Loader();
-
-        loader.add('testBitmap', `file://${__dirname}/resources/bitmap-1.png`)
-            .load(function (loader, resources)
-            {
-                const plane = new SimplePlane(resources.testBitmap.texture, 100, 100);
-
-                expect(plane.geometry.segWidth).to.equal(100);
-                expect(plane.geometry.segHeight).to.equal(100);
-                done();
-            });
+        Cache.reset();
+        loader.reset();
     });
 
-    it('should create a new empty textured SimplePlane', function ()
+    beforeAll(() =>
+    {
+        loader = new Loader();
+        loader['_parsers'].push(loadTextures);
+    });
+
+    it('should create a plane from an external image', async () =>
+    {
+        const texture = await loader.load(`${serverPath}bitmap-1.png`);
+
+        const plane = new SimplePlane(texture, 100, 100);
+
+        expect((plane.geometry as PlaneGeometry).segWidth).toEqual(100);
+        expect((plane.geometry as PlaneGeometry).segHeight).toEqual(100);
+    });
+
+    it('should create a new empty textured SimplePlane', () =>
     {
         const plane = new SimplePlane(Texture.EMPTY, 100, 100);
 
-        expect(plane.geometry.segWidth).to.equal(100);
-        expect(plane.geometry.segHeight).to.equal(100);
+        expect((plane.geometry as PlaneGeometry).segWidth).toEqual(100);
+        expect((plane.geometry as PlaneGeometry).segHeight).toEqual(100);
     });
 
-    describe('containsPoint', function ()
+    describe('containsPoint', () =>
     {
-        it('should return true when point inside', function ()
+        it('should return true when point inside', () =>
         {
             const point = new Point(10, 10);
             const texture = RenderTexture.create({ width: 20, height: 30 });
             const plane = new SimplePlane(texture, 100, 100);
 
-            expect(plane.containsPoint(point)).to.be.true;
+            expect(plane.containsPoint(point)).toBe(true);
         });
 
-        it('should return false when point outside', function ()
+        it('should return false when point outside', () =>
         {
             const point = new Point(100, 100);
             const texture = RenderTexture.create({ width: 20, height: 30 });
             const plane = new SimplePlane(texture, 100, 100);
 
-            expect(plane.containsPoint(point)).to.be.false;
+            expect(plane.containsPoint(point)).toBe(false);
         });
     });
 
-    it('should render the plane', function ()
+    it('should render the plane', () =>
     {
-        Renderer.registerPlugin('batch', BatchRenderer);
-
         const renderer = new Renderer();
         const plane = new SimplePlane(Texture.WHITE, 100, 100);
 

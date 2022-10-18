@@ -1,4 +1,5 @@
-import { Matrix, Rectangle } from '@pixi/math';
+import type { Matrix } from '@pixi/math';
+import { Rectangle } from '@pixi/math';
 import { MSAA_QUALITY } from '@pixi/constants';
 
 import type { Filter } from './Filter';
@@ -7,7 +8,6 @@ import type { RenderTexture } from '../renderTexture/RenderTexture';
 
 /**
  * System plugin to the renderer to manage filter states.
- *
  * @ignore
  */
 export class FilterState

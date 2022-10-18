@@ -1,0 +1,52 @@
+{
+    "bundles": [
+        {
+            "name": "default",
+            "assets": [
+                {
+                    "name": "bunny",
+                    "srcs": [
+                        {
+                            "resolution": 1,
+                            "format": "png",
+                            "src": "textures/bunny.png"
+                        }
+                    ]
+                },
+                {
+                    "name": "spritesheet",
+                    "srcs": [
+                        {
+                            "resolution": 1,
+                            "format": "png",
+                            "src": "spritesheet/spritesheet.json"
+                        },
+                        {
+                            "resolution": 1,
+                            "format": "png",
+                            "src": "spritesheet/spritesheet.json"
+                        }
+                    ]
+                },
+                {
+                    "name": "profile-abel",
+                    "srcs": [
+                        "textures/profile-abel@0.5x.jpg",
+                        "textures/profile-abel@2x.webp",
+                        "textures/profile-abel@0.5x.jpg",
+                        "textures/profile-abel@2x.webp"
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "data",
+            "assets": [
+                {
+                    "name": "test.json",
+                    "srcs": "json/test.json"
+                }
+            ]
+        }
+    ]
+}

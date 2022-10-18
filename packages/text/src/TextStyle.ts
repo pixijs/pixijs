@@ -2,7 +2,7 @@
 /* eslint-disable */
 
 import { TEXT_GRADIENT } from './const';
-import { hex2string } from '@pixi/utils';
+import { utils } from '@pixi/core';
 
 export type TextStyleAlign = 'left'|'center'|'right'|'justify';
 export type TextStyleFill = string|string[]|number|number[]|CanvasGradient|CanvasPattern;
@@ -719,7 +719,7 @@ export class TextStyle implements ITextStyle
             let fontFamily = fontFamilies[i].trim();
 
             // Check if font already contains strings
-            if (!(/([\"\'])[^\'\"]+\1/).test(fontFamily) && genericFontFamilies.indexOf(fontFamily) < 0)
+            if (!(/([\"\'])[^\'\"]+\1/).test(fontFamily) && !genericFontFamilies.includes(fontFamily))
             {
                 fontFamily = `"${fontFamily}"`;
             }
@@ -740,11 +740,11 @@ function getSingleColor(color: string|number): string
 {
     if (typeof color === 'number')
     {
-        return hex2string(color);
+        return utils.hex2string(color);
     }
     else if (typeof color === 'string')
     {
-        if ( color.indexOf('0x') === 0 )
+        if ( color.startsWith('0x'))
         {
             color = color.replace('0x', '#');
         }

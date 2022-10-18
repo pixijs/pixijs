@@ -1,56 +1,57 @@
 import { DisplayObject } from '@pixi/display';
 import { FederatedEvent } from './FederatedEvent';
 
-import type { EventEmitter } from '@pixi/utils';
+import type { utils } from '@pixi/core';
 
 export type Cursor = 'auto'
-    | 'default'
-    | 'none'
-    | 'context-menu'
-    | 'help'
-    | 'pointer'
-    | 'progress'
-    | 'wait'
-    | 'cell'
-    | 'crosshair'
-    | 'text'
-    | 'vertical-text'
-    | 'alias'
-    | 'copy'
-    | 'move'
-    | 'no-drop'
-    | 'not-allowed'
-    | 'e-resize'
-    | 'n-resize'
-    | 'ne-resize'
-    | 'nw-resize'
-    | 's-resize'
-    | 'se-resize'
-    | 'sw-resize'
-    | 'w-resize'
-    | 'ns-resize'
-    | 'ew-resize'
-    | 'nesw-resize'
-    | 'col-resize'
-    | 'nwse-resize'
-    | 'row-resize'
-    | 'all-scroll'
-    | 'zoom-in'
-    | 'zoom-out'
-    | 'grab'
-    | 'grabbing';
+| 'default'
+| 'none'
+| 'context-menu'
+| 'help'
+| 'pointer'
+| 'progress'
+| 'wait'
+| 'cell'
+| 'crosshair'
+| 'text'
+| 'vertical-text'
+| 'alias'
+| 'copy'
+| 'move'
+| 'no-drop'
+| 'not-allowed'
+| 'e-resize'
+| 'n-resize'
+| 'ne-resize'
+| 'nw-resize'
+| 's-resize'
+| 'se-resize'
+| 'sw-resize'
+| 'w-resize'
+| 'ns-resize'
+| 'ew-resize'
+| 'nesw-resize'
+| 'col-resize'
+| 'nwse-resize'
+| 'row-resize'
+| 'all-scroll'
+| 'zoom-in'
+| 'zoom-out'
+| 'grab'
+| 'grabbing';
 
 // @ignore - This is documented elsewhere.
-export interface IHitArea {
+export interface IHitArea
+{
     contains(x: number, y: number): boolean;
 }
 
 /**
  * Describes the shape for a {@link FederatedEvent}'s' `eventTarget`.
- *
  * @memberof PIXI
  */
-export interface FederatedEventTarget extends EventEmitter, EventTarget {
+export interface FederatedEventTarget extends utils.EventEmitter, EventTarget
+{
     /** The cursor preferred when the mouse pointer is hovering over. */
     cursor: Cursor | string;
 
@@ -63,10 +64,7 @@ export interface FederatedEventTarget extends EventEmitter, EventTarget {
     /** Whether this event target should fire UI events. */
     interactive: boolean;
 
-    /**
-     * Whether this event target has any children that need UI events. This can be used optimize
-     * event propagation.
-     */
+    /** Whether this event target has any children that need UI events. This can be used optimize event propagation. */
     interactiveChildren: boolean;
 
     /** The hit-area specifies the area for which pointer events should be captured by this event target. */
@@ -74,15 +72,16 @@ export interface FederatedEventTarget extends EventEmitter, EventTarget {
 }
 
 export const FederatedDisplayObject: Omit<
-    FederatedEventTarget,
-    'parent' | 'children' | keyof EventEmitter | 'cursor'
+FederatedEventTarget,
+'parent' | 'children' | keyof utils.EventEmitter | 'cursor'
 > = {
     /**
      * Enable interaction events for the DisplayObject. Touch, pointer and mouse
      * events will not be emitted unless `interactive` is set to `true`.
-     *
      * @example
-     * const sprite = new PIXI.Sprite(texture);
+     * import { Sprite } from 'pixi.js';
+     *
+     * const sprite = new Sprite(texture);
      * sprite.interactive = true;
      * sprite.on('tap', (event) => {
      *    //handle event
@@ -94,7 +93,6 @@ export const FederatedDisplayObject: Omit<
     /**
      * Determines if the children to the displayObject can be clicked/touched
      * Setting this to false allows PixiJS to bypass a recursive `hitTest` function
-     *
      * @memberof PIXI.Container#
      */
     interactiveChildren: true,
@@ -102,11 +100,12 @@ export const FederatedDisplayObject: Omit<
     /**
      * Interaction shape. Children will be hit first, then this shape will be checked.
      * Setting this will cause this shape to be checked in hit tests rather than the displayObject's bounds.
-     *
      * @example
-     * const sprite = new PIXI.Sprite(texture);
+     * import { Sprite, Rectangle } from 'pixi.js';
+     *
+     * const sprite = new Sprite(texture);
      * sprite.interactive = true;
-     * sprite.hitArea = new PIXI.Rectangle(0, 0, 100, 100);
+     * sprite.hitArea = new Rectangle(0, 0, 100, 100);
      * @member {PIXI.IHitArea}
      * @memberof PIXI.DisplayObject#
      */
@@ -158,7 +157,7 @@ export const FederatedDisplayObject: Omit<
         type = capture ? `${type}capture` : type;
         listener = typeof listener === 'function' ? listener : listener.handleEvent;
 
-        (this as unknown as EventEmitter).on(type, listener, context);
+        (this as unknown as utils.EventEmitter).on(type, listener, context);
     },
 
     /**
@@ -183,7 +182,7 @@ export const FederatedDisplayObject: Omit<
         type = capture ? `${type}capture` : type;
         listener = typeof listener === 'function' ? listener : listener.handleEvent;
 
-        (this as unknown as EventEmitter).off(type, listener, context);
+        (this as unknown as utils.EventEmitter).off(type, listener, context);
     },
 
     /**
@@ -194,7 +193,7 @@ export const FederatedDisplayObject: Omit<
      * **IMPORTANT:** _Only_ available if using the `@pixi/events` package.
      * @memberof PIXI.DisplayObject
      * @param e - The event to dispatch.
-     * @return Whether the {@link PIXI.FederatedEvent.preventDefault preventDefault}() method was not invoked.
+     * @returns Whether the {@link PIXI.FederatedEvent.preventDefault preventDefault}() method was not invoked.
      * @example
      * // Reuse a click event!
      * button.dispatchEvent(clickEvent);

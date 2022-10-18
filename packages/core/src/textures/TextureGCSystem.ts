@@ -1,12 +1,15 @@
 import { GC_MODES } from '@pixi/constants';
 import { settings } from '@pixi/settings';
 
-import type { ISystem } from '../ISystem';
+import type { ISystem } from '../system/ISystem';
 import type { Renderer } from '../Renderer';
 import type { Texture } from './Texture';
 import type { RenderTexture } from '../renderTexture/RenderTexture';
+import type { ExtensionMetadata } from '@pixi/extensions';
+import { extensions, ExtensionType } from '@pixi/extensions';
 
-export interface IUnloadableTexture {
+export interface IUnloadableTexture
+{
     _texture: Texture | RenderTexture;
     children: IUnloadableTexture[];
 }
@@ -14,42 +17,42 @@ export interface IUnloadableTexture {
 /**
  * System plugin to the renderer to manage texture garbage collection on the GPU,
  * ensuring that it does not get clogged up with textures that are no longer being used.
- *
  * @memberof PIXI
  */
 export class TextureGCSystem implements ISystem
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        type: ExtensionType.RendererSystem,
+        name: 'textureGC',
+    };
+
     /**
      * Count
-     *
      * @readonly
      */
     public count: number;
 
     /**
      * Check count
-     *
      * @readonly
      */
     public checkCount: number;
 
     /**
      * Maximum idle time, in seconds
-     *
      * @see PIXI.settings.GC_MAX_IDLE
      */
     public maxIdle: number;
 
     /**
      * Maximum number of item to check
-     *
      * @see PIXI.settings.GC_MAX_CHECK_COUNT
      */
     public checkCountMax: number;
 
     /**
      * Current garbage collection mode
-     *
      * @see PIXI.settings.GC_MODE
      */
     public mode: GC_MODES;
@@ -73,7 +76,7 @@ export class TextureGCSystem implements ISystem
      */
     protected postrender(): void
     {
-        if (!this.renderer.renderingToScreen)
+        if (!this.renderer.objectRenderer.renderingToScreen)
         {
             return;
         }
@@ -136,7 +139,6 @@ export class TextureGCSystem implements ISystem
 
     /**
      * Removes all the textures within the specified displayObject and its children from the GPU
-     *
      * @param {PIXI.DisplayObject} displayObject - the displayObject to remove the textures from.
      */
     unload(displayObject: IUnloadableTexture): void
@@ -161,3 +163,5 @@ export class TextureGCSystem implements ISystem
         this.renderer = null;
     }
 }
+
+extensions.add(TextureGCSystem);

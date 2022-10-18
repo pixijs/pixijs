@@ -1,39 +1,40 @@
+import { Cache, loadTextures } from '@pixi/assets';
+import { Renderer, Texture, Point } from '@pixi/core';
 import { SimpleRope } from '@pixi/mesh-extras';
-import { skipHello } from '@pixi/utils';
-import { Loader } from '@pixi/loaders';
-import { Point } from '@pixi/math';
-import { Renderer, Texture, BatchRenderer } from '@pixi/core';
-import { expect } from 'chai';
+import { Loader } from '../../assets/src/loader/Loader';
 
-skipHello();
-
-describe('SimpleRope', function ()
+describe('SimpleRope', () =>
 {
-    it('should create a rope from an external image', function (done: () => void)
+    let loader: Loader;
+    const serverPath = process.env.GITHUB_ACTIONS
+        ? `https://raw.githubusercontent.com/pixijs/pixijs/${process.env.GITHUB_SHA}/packages/mesh-extras/test/resources/`
+        : 'http://localhost:8080/mesh-extras/test/resources/';
+
+    beforeEach(() =>
     {
-        const loader = new Loader();
-
-        loader.add('testBitmap', `file://${__dirname}/resources/bitmap-1.png`)
-            .load(function (loader, resources)
-            {
-                const rope = new SimpleRope(resources.testBitmap.texture, [new Point(0, 0), new Point(0, 1)]);
-
-                expect(rope).to.be.instanceof(SimpleRope);
-                expect(rope.autoUpdate).to.be.true;
-
-                rope.destroy();
-                resources.testBitmap.texture.destroy(true);
-
-                loader.reset();
-
-                done();
-            });
+        Cache.reset();
+        loader.reset();
     });
 
-    it('should render the rope', function ()
+    beforeAll(() =>
     {
-        Renderer.registerPlugin('batch', BatchRenderer);
+        loader = new Loader();
+        loader['_parsers'].push(loadTextures);
+    });
+    it('should create a rope from an external image', async () =>
+    {
+        const texture = await loader.load(`${serverPath}bitmap-1.png`);
+        const rope = new SimpleRope(texture, [new Point(0, 0), new Point(0, 1)]);
 
+        expect(rope).toBeInstanceOf(SimpleRope);
+        expect(rope.autoUpdate).toBe(true);
+
+        rope.destroy();
+        texture.destroy(true);
+    });
+
+    it('should render the rope', () =>
+    {
         const renderer = new Renderer();
         const rope = new SimpleRope(Texture.WHITE, [new Point(0, 0), new Point(0, 1)]);
 

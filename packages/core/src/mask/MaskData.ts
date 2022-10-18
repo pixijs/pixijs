@@ -1,7 +1,8 @@
-import { MASK_TYPES, MSAA_QUALITY } from '@pixi/constants';
+import { MASK_TYPES } from '@pixi/constants';
 import { settings } from '@pixi/settings';
-import { ISpriteMaskFilter } from '@pixi/core';
+import type { ISpriteMaskFilter } from '@pixi/core';
 
+import type { COLOR_MASK_BITS, MSAA_QUALITY } from '@pixi/constants';
 import type { Rectangle, Matrix } from '@pixi/math';
 import type { IFilterTarget } from '../filters/IFilterTarget';
 import type { Renderer } from '../Renderer';
@@ -12,14 +13,13 @@ export interface IMaskTarget extends IFilterTarget
     isSprite?: boolean;
     worldTransform: Matrix;
     isFastRect?(): boolean;
-    getBounds(skipUpdate?: boolean): Rectangle;
+    getBounds(skipUpdate?: boolean, rect?: Rectangle): Rectangle;
     render(renderer: Renderer): void;
 }
 /**
  * Component for masked elements.
  *
  * Holds mask mode and temporary data about current mask.
- *
  * @memberof PIXI
  */
 export class MaskData
@@ -62,6 +62,9 @@ export class MaskData
     /** If enabled is true the mask is applied, if false it will not. */
     public enabled: boolean;
 
+    /** Color mask. */
+    public colorMask: COLOR_MASK_BITS;
+
     /**
      * The sprite mask filter wrapped in an array.
      * @private
@@ -83,14 +86,22 @@ export class MaskData
     /**
      * Scissor operation above the mask in stack.
      * Null if _scissorCounter is zero, rectangle instance if positive.
+     * @private
      */
     _scissorRect: Rectangle;
 
     /**
      * pre-computed scissor rect
      * does become _scissorRect when mask is actually pushed
+     * @private
      */
     _scissorRectLocal: Rectangle;
+
+    /**
+     * pre-computed color mask
+     * @private
+     */
+    _colorMask: number;
 
     /**
      * Targeted element. Temporary variable set by MaskSystem
@@ -101,7 +112,6 @@ export class MaskData
 
     /**
      * Create MaskData
-     *
      * @param {PIXI.DisplayObject} [maskObject=null] - object that describes the mask
      */
     constructor(maskObject: IMaskTarget = null)
@@ -114,11 +124,13 @@ export class MaskData
         this.resolution = null;
         this.multisample = settings.FILTER_MULTISAMPLE;
         this.enabled = true;
+        this.colorMask = 0xf;
         this._filters = null;
         this._stencilCounter = 0;
         this._scissorCounter = 0;
         this._scissorRect = null;
         this._scissorRectLocal = null;
+        this._colorMask = 0xf;
         this._target = null;
     }
 
@@ -167,7 +179,10 @@ export class MaskData
         this._scissorRectLocal = null;
     }
 
-    /** Copies counters from maskData above, called from pushMask(). */
+    /**
+     * Copies counters from maskData above, called from pushMask().
+     * @param maskAbove
+     */
     copyCountersOrReset(maskAbove?: MaskData): void
     {
         if (maskAbove)

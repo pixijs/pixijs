@@ -13,7 +13,7 @@ const formats = [
  * Auto-detect BitmapFont parsing format based on data.
  * @private
  * @param {any} data - Data to detect format
- * @return {any} Format or null
+ * @returns {any} Format or null
  */
 export function autoDetectFormat(data: unknown): typeof formats[number] | null
 {
@@ -27,3 +27,6 @@ export function autoDetectFormat(data: unknown): typeof formats[number] | null
 
     return null;
 }
+
+export type { IBitmapFontRawData } from './TextFormat';
+export { TextFormat, XMLFormat, XMLStringFormat };

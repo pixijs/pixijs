@@ -4,28 +4,34 @@ import { GLTexture } from './GLTexture';
 import { removeItems } from '@pixi/utils';
 import { MIPMAP_MODES, WRAP_MODES, SCALE_MODES, TYPES, SAMPLER_TYPES } from '@pixi/constants';
 
-import type { ISystem } from '../ISystem';
+import type { ISystem } from '../system/ISystem';
 import type { Texture } from './Texture';
-import type { IRenderingContext } from '../IRenderingContext';
+
 import type { Renderer } from '../Renderer';
+import type { IRenderingContext } from '../IRenderer';
+import type { ExtensionMetadata } from '@pixi/extensions';
+import { extensions, ExtensionType } from '@pixi/extensions';
 
 /**
  * System plugin to the renderer to manage textures.
- *
  * @memberof PIXI
  */
 export class TextureSystem implements ISystem
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        type: ExtensionType.RendererSystem,
+        name: 'texture',
+    };
+
     /**
      * Bound textures.
-     *
      * @readonly
      */
     public boundTextures: BaseTexture[];
 
     /**
      * List of managed textures.
-     *
      * @readonly
      */
     public managedTextures: Array<BaseTexture>;
@@ -39,21 +45,18 @@ export class TextureSystem implements ISystem
 
     /**
      * BaseTexture value that shows that we don't know what is bound.
-     *
      * @readonly
      */
     protected unknownTexture: BaseTexture;
 
     /**
      * Did someone temper with textures state? We'll overwrite them when we need to unbind something.
-     *
      * @private
      */
     protected _unknownBoundTextures: boolean;
 
     /**
      * Current location.
-     *
      * @readonly
      */
     currentLocation: number;
@@ -129,11 +132,10 @@ export class TextureSystem implements ISystem
      * Bind a texture to a specific location
      *
      * If you want to unbind something, please use `unbind(texture)` instead of `bind(null, textureLocation)`
-     *
-     * @param texture_ - Texture to bind
+     * @param texture - Texture to bind
      * @param [location=0] - Location to bind at
      */
-    bind(texture: Texture|BaseTexture, location = 0): void
+    bind(texture: Texture | BaseTexture, location = 0): void
     {
         const { gl } = this;
 
@@ -141,7 +143,7 @@ export class TextureSystem implements ISystem
 
         // cannot bind partial texture
         // TODO: report a warning
-        if (texture && texture.valid && !texture.parentTextureArray)
+        if (texture?.valid && !texture.parentTextureArray)
         {
             texture.touched = this.renderer.textureGC.count;
 
@@ -167,6 +169,10 @@ export class TextureSystem implements ISystem
                 }
                 this.updateTexture(texture);
             }
+            else if (glTexture.dirtyStyleId !== texture.dirtyStyleId)
+            {
+                this.updateTextureStyle(texture);
+            }
 
             this.boundTextures[location] = texture;
         }
@@ -183,11 +189,7 @@ export class TextureSystem implements ISystem
         }
     }
 
-    /**
-     * Resets texture location and bound textures
-     *
-     * Actual `bind(null, i)` calls will be performed at next `unbind()` call
-     */
+    /** Resets texture location and bound textures Actual `bind(null, i)` calls will be performed at next `unbind()` call */
     reset(): void
     {
         this._unknownBoundTextures = true;
@@ -202,7 +204,6 @@ export class TextureSystem implements ISystem
 
     /**
      * Unbind a texture.
-     *
      * @param texture - Texture to bind
      */
     unbind(texture?: BaseTexture): void
@@ -242,7 +243,6 @@ export class TextureSystem implements ISystem
     /**
      * Ensures that current boundTextures all have FLOAT sampler type,
      * see {@link PIXI.SAMPLER_TYPES} for explanation.
-     *
      * @param maxTextures - number of locations to check
      */
     ensureSamplerType(maxTextures: number): void
@@ -272,7 +272,6 @@ export class TextureSystem implements ISystem
 
     /**
      * Initialize a texture
-     *
      * @private
      * @param texture - Texture to initialize
      */
@@ -309,7 +308,6 @@ export class TextureSystem implements ISystem
 
     /**
      * Update a texture
-     *
      * @private
      * @param {PIXI.BaseTexture} texture - Texture to initialize
      */
@@ -326,7 +324,7 @@ export class TextureSystem implements ISystem
 
         this.initTextureType(texture, glTexture);
 
-        if (texture.resource && texture.resource.upload(renderer, texture, glTexture))
+        if (texture.resource?.upload(renderer, texture, glTexture))
         {
             // texture is uploaded, dont do anything!
             if (glTexture.samplerType !== SAMPLER_TYPES.FLOAT)
@@ -369,12 +367,11 @@ export class TextureSystem implements ISystem
 
     /**
      * Deletes the texture from WebGL
-     *
      * @private
-     * @param texture_ - the texture to destroy
+     * @param texture - the texture to destroy
      * @param [skipRemove=false] - Whether to skip removing the texture from the TextureManager.
      */
-    destroyTexture(texture: BaseTexture|Texture, skipRemove?: boolean): void
+    destroyTexture(texture: BaseTexture | Texture, skipRemove?: boolean): void
     {
         const { gl } = this;
 
@@ -403,7 +400,6 @@ export class TextureSystem implements ISystem
 
     /**
      * Update texture style such as mipmap flag
-     *
      * @private
      * @param {PIXI.BaseTexture} texture - Texture to update
      */
@@ -434,7 +430,7 @@ export class TextureSystem implements ISystem
             glTexture.wrapMode = texture.wrapMode;
         }
 
-        if (texture.resource && texture.resource.style(this.renderer, texture, glTexture))
+        if (texture.resource?.style(this.renderer, texture, glTexture))
         {
             // style is set, dont do anything!
         }
@@ -448,7 +444,6 @@ export class TextureSystem implements ISystem
 
     /**
      * Set style for texture
-     *
      * @private
      * @param texture - Texture to update
      * @param glTexture
@@ -493,3 +488,5 @@ export class TextureSystem implements ISystem
         this.renderer = null;
     }
 }
+
+extensions.add(TextureSystem);

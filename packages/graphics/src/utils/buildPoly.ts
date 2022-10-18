@@ -1,7 +1,7 @@
-import { earcut } from '@pixi/utils';
+import { utils } from '@pixi/core';
 
 import type { IShapeBuildCommand } from './IShapeBuildCommand';
-import type { Polygon } from '@pixi/math';
+import type { Polygon } from '@pixi/core';
 
 function fixOrientation(points: number[], hole = false)
 {
@@ -45,7 +45,6 @@ function fixOrientation(points: number[], hole = false)
  * Builds a polygon to draw
  *
  * Ignored from docs since it is not directly exposed.
- *
  * @ignore
  * @private
  * @param {PIXI.WebGLGraphicsData} graphicsData - The graphics object containing all the necessary properties
@@ -84,7 +83,7 @@ export const buildPoly: IShapeBuildCommand = {
             }
 
             // sort color
-            const triangles = earcut(points, holeArray, 2);
+            const triangles = utils.earcut(points, holeArray, 2);
 
             if (!triangles)
             {

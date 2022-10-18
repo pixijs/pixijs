@@ -2,8 +2,10 @@ import { mapWebGLBlendModesToPixi } from './utils/mapWebGLBlendModesToPixi';
 import { State } from './State';
 import { BLEND_MODES } from '@pixi/constants';
 
-import type { ISystem } from '../ISystem';
-import type { IRenderingContext } from '../IRenderingContext';
+import type { ISystem } from '../system/ISystem';
+import type { IRenderingContext } from '../IRenderer';
+import type { ExtensionMetadata } from '@pixi/extensions';
+import { extensions, ExtensionType } from '@pixi/extensions';
 
 const BLEND = 0;
 const OFFSET = 1;
@@ -14,11 +16,16 @@ const DEPTH_MASK = 5;
 
 /**
  * System plugin to the renderer to manage WebGL state machines.
- *
  * @memberof PIXI
  */
 export class StateSystem implements ISystem
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        type: ExtensionType.RendererSystem,
+        name: 'state',
+    };
+
     /**
      * State ID
      * @readonly
@@ -52,13 +59,13 @@ export class StateSystem implements ISystem
 
     /**
      * Collection of calls
-     * @member {function[]}
+     * @member {Function[]}
      */
     protected readonly map: Array<(value: boolean) => void>;
 
     /**
      * Collection of check calls
-     * @member {function[]}
+     * @member {Function[]}
      */
     protected readonly checks: Array<(system: this, state: State) => void>;
 
@@ -106,7 +113,6 @@ export class StateSystem implements ISystem
 
     /**
      * Sets the current state
-     *
      * @param {*} state - The state to set.
      */
     set(state: State): void
@@ -146,7 +152,6 @@ export class StateSystem implements ISystem
 
     /**
      * Sets the state, when previous state is unknown.
-     *
      * @param {*} state - The state to set
      */
     forceState(state: State): void
@@ -166,7 +171,6 @@ export class StateSystem implements ISystem
 
     /**
      * Sets whether to enable or disable blending.
-     *
      * @param value - Turn on or off WebGl blending.
      */
     setBlend(value: boolean): void
@@ -178,7 +182,6 @@ export class StateSystem implements ISystem
 
     /**
      * Sets whether to enable or disable polygon offset fill.
-     *
      * @param value - Turn on or off webgl polygon offset testing.
      */
     setOffset(value: boolean): void
@@ -190,7 +193,6 @@ export class StateSystem implements ISystem
 
     /**
      * Sets whether to enable or disable depth test.
-     *
      * @param value - Turn on or off webgl depth testing.
      */
     setDepthTest(value: boolean): void
@@ -200,7 +202,6 @@ export class StateSystem implements ISystem
 
     /**
      * Sets whether to enable or disable depth mask.
-     *
      * @param value - Turn on or off webgl depth mask.
      */
     setDepthMask(value: boolean): void
@@ -210,7 +211,6 @@ export class StateSystem implements ISystem
 
     /**
      * Sets whether to enable or disable cull face.
-     *
      * @param {boolean} value - Turn on or off webgl cull face.
      */
     setCullFace(value: boolean): void
@@ -220,7 +220,6 @@ export class StateSystem implements ISystem
 
     /**
      * Sets the gl front face.
-     *
      * @param {boolean} value - true is clockwise and false is counter-clockwise
      */
     setFrontFace(value: boolean): void
@@ -230,7 +229,6 @@ export class StateSystem implements ISystem
 
     /**
      * Sets the blend mode.
-     *
      * @param {number} value - The blend mode to set to.
      */
     setBlendMode(value: number): void
@@ -267,7 +265,6 @@ export class StateSystem implements ISystem
 
     /**
      * Sets the polygon offset.
-     *
      * @param {number} value - the polygon offset
      * @param {number} scale - the polygon offset scale
      */
@@ -295,7 +292,6 @@ export class StateSystem implements ISystem
      * For example, if blend is enabled then we should check the blend modes each time the state is changed
      * or if polygon fill is activated then we need to check if the polygon offset changes.
      * The idea is that we only check what we have too.
-     *
      * @param func - the checking function to add or remove
      * @param value - should the check function be added or removed.
      */
@@ -315,8 +311,7 @@ export class StateSystem implements ISystem
 
     /**
      * A private little wrapper function that we call to check the blend mode.
-     *
-     * @param System - the System to perform the state check on
+     * @param system - the System to perform the state check on
      * @param state - the state that the blendMode will pulled from
      */
     private static checkBlendMode(system: StateSystem, state: State): void
@@ -326,8 +321,7 @@ export class StateSystem implements ISystem
 
     /**
      * A private little wrapper function that we call to check the polygon offset.
-     *
-     * @param System - the System to perform the state check on
+     * @param system - the System to perform the state check on
      * @param state - the state that the blendMode will pulled from
      */
     private static checkPolygonOffset(system: StateSystem, state: State): void
@@ -343,3 +337,5 @@ export class StateSystem implements ISystem
         this.gl = null;
     }
 }
+
+extensions.add(StateSystem);

@@ -20,10 +20,8 @@ ticker.start();
 Use as an Application plugin:
 
 ```js
-import { TickerPlugin } from '@pixi/ticker';
+import '@pixi/ticker';
 import { Application } from '@pixi/app';
-
-Application.registerPlugin(TickerPlugin);
 
 const app = new Application();
 app.ticker.start();

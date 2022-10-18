@@ -1,68 +1,67 @@
 import { TextStyle } from '@pixi/text';
-import { expect } from 'chai';
 
-describe('TextStyle', function ()
+describe('TextStyle', () =>
 {
-    it('reset reverts style to default', function ()
+    it('reset reverts style to default', () =>
     {
         const textStyle = new TextStyle();
         const defaultFontSize = textStyle.fontSize;
 
         textStyle.fontSize = 1000;
 
-        expect(textStyle.fontSize).to.equal(1000);
+        expect(textStyle.fontSize).toEqual(1000);
         textStyle.reset();
-        expect(textStyle.fontSize).to.equal(defaultFontSize);
+        expect(textStyle.fontSize).toEqual(defaultFontSize);
     });
 
-    it('should clone correctly', function ()
+    it('should clone correctly', () =>
     {
         const textStyle = new TextStyle({ fontSize: 1000 });
 
         const clonedTextStyle = textStyle.clone();
 
-        expect(textStyle.fontSize).to.equal(1000);
-        expect(clonedTextStyle.fontSize).to.equal(textStyle.fontSize);
+        expect(textStyle.fontSize).toEqual(1000);
+        expect(clonedTextStyle.fontSize).toEqual(textStyle.fontSize);
     });
 
-    it('should assume pixel fonts', function ()
+    it('should assume pixel fonts', () =>
     {
         const style = new TextStyle({ fontSize: 72 });
         const font = style.toFontString();
 
-        expect(font).to.be.a.string;
-        expect(font).to.have.string(' 72px ');
+        expect(font).toBeString();
+        expect(font).toContain(' 72px ');
     });
 
-    it('should handle multiple fonts as array', function ()
+    it('should handle multiple fonts as array', () =>
     {
         const style = new TextStyle({
             fontFamily: ['Georgia', 'Arial', 'sans-serif'],
         });
 
-        expect(style.toFontString()).to.have.string('"Georgia","Arial",sans-serif');
+        expect(style.toFontString()).toContain('"Georgia","Arial",sans-serif');
     });
 
-    it('should handle multiple fonts as string', function ()
+    it('should handle multiple fonts as string', () =>
     {
         const style = new TextStyle({
             fontFamily: 'Georgia, "Arial", sans-serif',
         });
 
-        expect(style.toFontString()).to.have.string('"Georgia","Arial",sans-serif');
+        expect(style.toFontString()).toContain('"Georgia","Arial",sans-serif');
     });
 
-    it('should not shared array / object references between different instances', function ()
+    it('should not shared array / object references between different instances', () =>
     {
         const defaultStyle = new TextStyle();
         const style = new TextStyle();
 
-        expect(defaultStyle.fillGradientStops.length).to.equal(style.fillGradientStops.length);
+        expect(defaultStyle.fillGradientStops.length).toEqual(style.fillGradientStops.length);
         style.fillGradientStops.push(0);
-        expect(defaultStyle.fillGradientStops.length).to.not.equal(style.fillGradientStops.length);
+        expect(defaultStyle.fillGradientStops.length).not.toEqual(style.fillGradientStops.length);
     });
 
-    it('should not quote generic font families when calling toFontString', function ()
+    it('should not quote generic font families when calling toFontString', () =>
     {
         // Should match the list in TextStyle
         const genericFontFamilies = [
@@ -87,7 +86,7 @@ describe('TextStyle', function ()
             const regex = new RegExp(incorrectRegexTemplate.replace('FAMILY', genericFamily));
             const result = style.toFontString().match(regex);
 
-            expect(result).to.be.null;
+            expect(result).toBeNull();
         }
     });
 });

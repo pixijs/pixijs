@@ -1,4 +1,3 @@
-import { expect } from 'chai';
 import { autoDetectResource,
     INSTALLED,
     CanvasResource,
@@ -6,20 +5,20 @@ import { autoDetectResource,
     VideoResource,
     SVGResource } from '@pixi/core';
 
-describe('autoDetectResource', function ()
+describe('autoDetectResource', () =>
 {
-    it('should have api', function ()
+    it('should have api', () =>
     {
-        expect(autoDetectResource).to.be.a('function');
+        expect(autoDetectResource).toBeInstanceOf(Function);
     });
 
-    it('should have installed resources', function ()
+    it('should have installed resources', () =>
     {
-        expect(INSTALLED).to.be.an('array');
-        expect(INSTALLED.length).to.equal(8);
+        expect(INSTALLED).toBeArray();
+        expect(INSTALLED.length).toEqual(8);
     });
 
-    it('should auto-detect canvas element', function ()
+    it('should auto-detect canvas element', () =>
     {
         const canvas = document.createElement('canvas');
 
@@ -28,63 +27,63 @@ describe('autoDetectResource', function ()
 
         const resource = autoDetectResource(canvas);
 
-        expect(resource).is.instanceOf(CanvasResource);
-        expect(resource.width).to.equal(200);
-        expect(resource.height).to.equal(100);
+        expect(resource).toBeInstanceOf(CanvasResource);
+        expect(resource.width).toEqual(200);
+        expect(resource.height).toEqual(100);
     });
 
-    it('should auto-detect video element', function ()
+    it('should auto-detect video element', () =>
     {
         const video = document.createElement('video');
         const resource = autoDetectResource(video);
 
-        expect(resource).is.instanceOf(VideoResource);
+        expect(resource).toBeInstanceOf(VideoResource);
     });
 
-    it('should auto-detect image element', function ()
+    it('should auto-detect image element', () =>
     {
         const img = new Image();
         const resource = autoDetectResource(img);
 
-        expect(resource).is.instanceOf(ImageResource);
+        expect(resource).toBeInstanceOf(ImageResource);
     });
 
-    it('should auto-detect image string', function ()
+    it('should auto-detect image string', () =>
     {
         const img = 'foo.png';
         const resource = autoDetectResource(img);
 
-        expect(resource).is.instanceOf(ImageResource);
+        expect(resource).toBeInstanceOf(ImageResource);
     });
 
-    it('should auto-detect svg string', function ()
+    it('should auto-detect svg string', () =>
     {
         const svg = 'foo.svg';
         const resource = autoDetectResource(svg);
 
-        expect(resource).is.instanceOf(SVGResource);
+        expect(resource).toBeInstanceOf(SVGResource);
     });
 
-    it('should auto-detect video Url', function ()
+    it('should auto-detect video Url', () =>
     {
         const video = 'foo.mp4';
         const resource = autoDetectResource(video);
 
-        expect(resource).is.instanceOf(VideoResource);
+        expect(resource).toBeInstanceOf(VideoResource);
     });
 
-    it('should pass null', function ()
+    it('should pass null', () =>
     {
         const resource = autoDetectResource(null);
 
-        expect(resource).to.equal(null);
+        expect(resource).toEqual(null);
     });
 
-    it('should throw for unknown types', function ()
+    it('should throw for unknown types', () =>
     {
-        expect(() => autoDetectResource({})).throws;
-        expect(() => autoDetectResource(document.createElement('input'))).throws;
-        expect(() => autoDetectResource(2)).throws;
-        expect(() => autoDetectResource(true)).throws;
+        expect(() => autoDetectResource({})).toThrow();
+        expect(() => autoDetectResource(document.createElement('input'))).toThrow();
+        expect(() => autoDetectResource(2)).toThrow();
+        expect(() => autoDetectResource(true)).toThrow();
     });
 });

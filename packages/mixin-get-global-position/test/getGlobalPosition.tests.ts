@@ -1,19 +1,19 @@
 import { Container, DisplayObject } from '@pixi/display';
-import { expect } from 'chai';
 
 import '@pixi/mixin-get-global-position';
 
-describe('DisplayObject#getGlobalPosition', function ()
+describe('DisplayObject#getGlobalPosition', () =>
 {
-    it('should exist', function ()
+    it('should exist', () =>
     {
+        // @ts-expect-error - instantiating DisplayObject
         const obj = new DisplayObject();
 
-        expect(obj.getGlobalPosition).to.be.not.undefined;
-        expect(obj.getGlobalPosition).to.be.a('function');
+        expect(obj.getGlobalPosition).toBeDefined();
+        expect(obj.getGlobalPosition).toBeInstanceOf(Function);
     });
 
-    it('should return correct global coordinates of a displayObject, without depending on its pivot', function ()
+    it('should return correct global coordinates of a displayObject, without depending on its pivot', () =>
     {
         const parent = new Container();
 
@@ -29,15 +29,15 @@ describe('DisplayObject#getGlobalPosition', function ()
 
         let globalPoint = container.getGlobalPosition();
 
-        expect(globalPoint.x).to.equal(80);
-        expect(globalPoint.y).to.equal(160);
+        expect(globalPoint.x).toEqual(80);
+        expect(globalPoint.y).toEqual(160);
 
         // check but skipUpdate
 
         parent.position.set(200, 200);
         globalPoint = container.getGlobalPosition(globalPoint, true);
 
-        expect(globalPoint.x).to.equal(80);
-        expect(globalPoint.y).to.equal(160);
+        expect(globalPoint.x).toEqual(80);
+        expect(globalPoint.y).toEqual(160);
     });
 });

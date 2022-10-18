@@ -1,5 +1,4 @@
 import { Buffer, Geometry, Program, Renderer, Shader, Texture } from '@pixi/core';
-import { expect } from 'chai';
 
 const vert = `
 attribute vec2 aVertexPosition;
@@ -30,15 +29,15 @@ void main() {
     gl_FragColor = texture2D(uSampler, vUvs);
 }`;
 
-describe('Geometry', function ()
+describe('Geometry', () =>
 {
-    it('should dispose shared index buffer after all geometries were disposed/destroyed', function ()
+    it('should dispose shared index buffer after all geometries were disposed/destroyed', () =>
     {
         const renderer = new Renderer({ width: 1, height: 1 });
 
         try
         {
-            const indices = new Buffer([0, 1, 2, 0, 2, 3], true, true);
+            const indices = new Buffer(new Float32Array([0, 1, 2, 0, 2, 3]), true, true);
             const geometry1 = new Geometry();
             const geometry2 = new Geometry();
             const prog = new Program(vert, frag);
@@ -55,10 +54,10 @@ describe('Geometry', function ()
             renderer.geometry.bind(geometry2, shader);
 
             geometry1.destroy();
-            expect(indices.data).to.be.not.null;
-            expect(Object.keys(indices._glBuffers).length).to.equal(1);
+            expect(indices.data).not.toBeNull();
+            expect(Object.keys(indices._glBuffers).length).toEqual(1);
             geometry2.destroy();
-            expect(Object.keys(indices._glBuffers).length).to.equal(0);
+            expect(Object.keys(indices._glBuffers).length).toEqual(0);
         }
         finally
         {
@@ -66,13 +65,13 @@ describe('Geometry', function ()
         }
     });
 
-    it('should dispose buffer if geometry is used by two shaders', function ()
+    it('should dispose buffer if geometry is used by two shaders', () =>
     {
         const renderer = new Renderer({ width: 1, height: 1 });
 
         try
         {
-            const indices = new Buffer([0, 1, 2, 0, 2, 3], true, true);
+            const indices = new Buffer(new Float32Array([0, 1, 2, 0, 2, 3]), true, true);
             const geometry = new Geometry();
             const prog = new Program(vert, frag);
             const prog2 = new Program(vert2, frag);
@@ -87,15 +86,15 @@ describe('Geometry', function ()
             renderer.geometry.bind(geometry, shader2);
 
             // 2 signatures and 2 by shader-ids
-            expect(Object.keys(geometry.glVertexArrayObjects).length).to.equal(1);
-            expect(Object.keys(geometry.glVertexArrayObjects[renderer.CONTEXT_UID]).length).to.equal(4);
-            expect(Object.keys(renderer.geometry.managedGeometries).length).to.equal(1);
-            expect(Object.keys(indices._glBuffers).length).to.equal(1);
-            expect(indices._glBuffers[renderer.CONTEXT_UID].refCount).to.equal(1);
+            expect(Object.keys(geometry.glVertexArrayObjects).length).toEqual(1);
+            expect(Object.keys(geometry.glVertexArrayObjects[renderer.CONTEXT_UID]).length).toEqual(4);
+            expect(Object.keys(renderer.geometry.managedGeometries).length).toEqual(1);
+            expect(Object.keys(indices._glBuffers).length).toEqual(1);
+            expect(indices._glBuffers[renderer.CONTEXT_UID].refCount).toEqual(1);
             geometry.dispose();
-            expect(Object.keys(geometry.glVertexArrayObjects).length).to.equal(0);
-            expect(Object.keys(renderer.geometry.managedGeometries).length).to.equal(0);
-            expect(Object.keys(indices._glBuffers).length).to.equal(0);
+            expect(Object.keys(geometry.glVertexArrayObjects).length).toEqual(0);
+            expect(Object.keys(renderer.geometry.managedGeometries).length).toEqual(0);
+            expect(Object.keys(indices._glBuffers).length).toEqual(0);
             geometry.destroy();
         }
         finally
@@ -104,7 +103,7 @@ describe('Geometry', function ()
         }
     });
 
-    it('should correctly merge the index buffers of geometries with different length', function ()
+    it('should correctly merge the index buffers of geometries with different length', () =>
     {
         const geom0 = new Geometry()
             .addAttribute('aVertexPosition', [0, 0, 1, 1, 2, 2], 2)
@@ -115,16 +114,16 @@ describe('Geometry', function ()
 
         const geom = Geometry.merge([geom0, geom1]);
 
-        expect([...geom.getIndex().data]).to.have.members([0, 1, 2, 3, 4, 5, 6]);
+        expect([...(geom.getIndex().data) as unknown as number[]]).toEqual(expect.arrayContaining([0, 1, 2, 3, 4, 5, 6]));
     });
 
-    it('should create one VAO for shaders with the same attributes and same location specifiers', function ()
+    it('should create one VAO for shaders with the same attributes and same location specifiers', () =>
     {
         const renderer = new Renderer({ width: 1, height: 1 });
 
         try
         {
-            const indices = new Buffer([0, 1, 2], true, true);
+            const indices = new Buffer(new Float32Array([0, 1, 2]), true, true);
             const prog1 = new Program(`\
                 #version 300 es
 
@@ -175,13 +174,13 @@ describe('Geometry', function ()
 
             renderer.geometry.bind(geometry, shader1);
 
-            const vao1 = renderer.geometry._activeVao;
+            const vao1 = renderer.geometry['_activeVao'];
 
             renderer.geometry.bind(geometry, shader2);
 
-            const vao2 = renderer.geometry._activeVao;
+            const vao2 = renderer.geometry['_activeVao'];
 
-            expect(vao1).to.equal(vao2);
+            expect(vao1).toEqual(vao2);
 
             geometry.destroy();
         }
@@ -191,13 +190,13 @@ describe('Geometry', function ()
         }
     });
 
-    it('should create different VAOs for shaders with the same attributes but different location specifiers', function ()
+    it('should create different VAOs for shaders with the same attributes but different location specifiers', () =>
     {
         const renderer = new Renderer({ width: 1, height: 1 });
 
         try
         {
-            const indices = new Buffer([0, 1, 2], true, true);
+            const indices = new Buffer(new Float32Array([0, 1, 2]), true, true);
             const prog1 = new Program(`\
                 #version 300 es
 
@@ -248,13 +247,13 @@ describe('Geometry', function ()
 
             renderer.geometry.bind(geometry, shader1);
 
-            const vao1 = renderer.geometry._activeVao;
+            const vao1 = renderer.geometry['_activeVao'];
 
             renderer.geometry.bind(geometry, shader2);
 
-            const vao2 = renderer.geometry._activeVao;
+            const vao2 = renderer.geometry['_activeVao'];
 
-            expect(vao1).to.not.equal(vao2);
+            expect(vao1).not.toBe(vao2);
 
             geometry.destroy();
         }
@@ -264,15 +263,16 @@ describe('Geometry', function ()
         }
     });
 
-    it('should create compatible VAOs if GeometrySystem.checkCompatibility is disabled', function ()
+    it('should create compatible VAOs if GeometrySystem.checkCompatibility is disabled', () =>
     {
         const renderer = new Renderer({ width: 1, height: 1 });
 
-        renderer.geometry.checkCompatibility = function () {};
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        renderer.geometry['checkCompatibility'] = () => {};
 
         try
         {
-            const indices = new Buffer([0, 1, 2], true, true);
+            const indices = new Buffer(new Float32Array([0, 1, 2]), true, true);
             const prog1 = new Program(`\
                 #version 100
 
@@ -317,13 +317,13 @@ describe('Geometry', function ()
 
             renderer.geometry.bind(geometry, shader1);
 
-            const vao1 = renderer.geometry._activeVao;
+            const vao1 = renderer.geometry['_activeVao'];
 
             renderer.geometry.bind(geometry, shader2);
 
-            const vao2 = renderer.geometry._activeVao;
+            const vao2 = renderer.geometry['_activeVao'];
 
-            expect(vao1).to.not.equal(vao2);
+            expect(vao1).not.toBe(vao2);
 
             geometry.destroy();
         }

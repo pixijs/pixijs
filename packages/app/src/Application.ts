@@ -1,25 +1,23 @@
+import { autoDetectRenderer, extensions, ExtensionType } from '@pixi/core';
 import { Container } from '@pixi/display';
-import { autoDetectRenderer } from '@pixi/core';
 
-import type { Rectangle } from '@pixi/math';
-import type { Renderer, IRendererOptionsAuto, AbstractRenderer } from '@pixi/core';
+import type { Rectangle, IRendererOptionsAuto, IRenderer } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
+import type { ICanvas } from '@pixi/settings';
 
 /**
  * Any plugin that's usable for Application should contain these methods.
  * @memberof PIXI
- * @see {@link PIXI.Application.registerPlugin}
  */
-export interface IApplicationPlugin {
+export interface IApplicationPlugin
+{
     /**
      * Called when Application is constructed, scoped to Application instance.
      * Passes in `options` as the only argument, which are Application constructor options.
      * @param {object} options - Application options.
      */
     init(options: IApplicationOptions): void;
-    /**
-     * Called when destroying Application, scoped to Application instance.
-     */
+    /** Called when destroying Application, scoped to Application instance. */
     destroy(): void;
 }
 
@@ -30,27 +28,27 @@ export interface IApplicationOptions extends IRendererOptionsAuto, GlobalMixins.
 export interface Application extends GlobalMixins.Application {}
 
 /**
- * Convenience class to create a new PIXI application.
+ * Convenience class to create a new PixiJS application.
  *
  * This class automatically creates the renderer, ticker and root container.
- *
  * @example
+ * import { Application, Sprite } from 'pixi.js';
+ *
  * // Create the application
- * const app = new PIXI.Application();
+ * const app = new Application();
  *
  * // Add the view to the DOM
  * document.body.appendChild(app.view);
  *
  * // ex, add display objects
- * app.stage.addChild(PIXI.Sprite.from('something.png'));
- *
+ * app.stage.addChild(Sprite.from('something.png'));
  * @class
  * @memberof PIXI
  */
 export class Application
 {
     /** Collection of installed plugins. */
-    private static _plugins: IApplicationPlugin[] = [];
+    static _plugins: IApplicationPlugin[] = [];
 
     /**
      * The root display container that's rendered.
@@ -62,7 +60,7 @@ export class Application
      * WebGL renderer if available, otherwise CanvasRenderer.
      * @member {PIXI.Renderer|PIXI.CanvasRenderer}
      */
-    public renderer: Renderer|AbstractRenderer;
+    public renderer: IRenderer;
 
     /**
      * @param {object} [options] - The optional renderer parameters.
@@ -71,7 +69,7 @@ export class Application
      *     options.sharedTicker to true in case that it is already started. Stop it by your own.
      * @param {number} [options.width=800] - The width of the renderers view.
      * @param {number} [options.height=600] - The height of the renderers view.
-     * @param {HTMLCanvasElement} [options.view] - The canvas to use as a view, optional.
+     * @param {PIXI.ICanvas} [options.view] - The canvas to use as a view, optional.
      * @param {boolean} [options.useContextAlpha=true] - Pass-through value for canvas' context `alpha` property.
      *   If you want to set transparency, please use `backgroundAlpha`. This option is for cases where the
      *   canvas needs to be opaque, possibly for performance reasons on some older devices.
@@ -79,13 +77,14 @@ export class Application
      *   resolutions other than 1.
      * @param {boolean} [options.antialias=false] - Sets antialias
      * @param {boolean} [options.preserveDrawingBuffer=false] - Enables drawing buffer preservation, enable this if you
-     *  need to call toDataUrl on the WebGL context.
+     *  need to call toDataURL on the WebGL context.
      * @param {number} [options.resolution=PIXI.settings.RESOLUTION] - The resolution / device pixel ratio of the renderer.
      * @param {boolean} [options.forceCanvas=false] - prevents selection of WebGL renderer, even if such is present, this
      *   option only is available when using **pixi.js-legacy** or **@pixi/canvas-renderer** modules, otherwise
      *   it is ignored.
-     * @param {number} [options.backgroundColor=0x000000] - The background color of the rendered area
-     *  (shown if not transparent).
+     * @param {number|string} [options.backgroundColor=0x000000] - The background color of the rendered area
+     *  (shown if not transparent). Also, accepts hex strings or color names (e.g., 'white').
+     * @param {number|string} [options.background] - Alias for `options.backgroundColor`.
      * @param {number} [options.backgroundAlpha=1] - Value from 0 (fully transparent) to 1 (fully opaque).
      * @param {boolean} [options.clearBeforeRender=true] - This sets if the renderer will clear the canvas or
      *   not before the new render pass.
@@ -96,6 +95,7 @@ export class Application
      *  The system ticker will always run before both the shared ticker and the app ticker.
      * @param {boolean} [options.sharedLoader=false] - `true` to use PIXI.Loader.shared, `false` to create new Loader.
      * @param {Window|HTMLElement} [options.resizeTo] - Element to automatically resize stage to.
+     * @param {boolean} [options.hello=false] - Logs renderer type and version.
      */
     constructor(options?: IApplicationOptions)
     {
@@ -113,19 +113,7 @@ export class Application
         });
     }
 
-    /**
-     * Register a middleware plugin for the application
-     * @static
-     * @param {PIXI.IApplicationPlugin} plugin - Plugin being installed
-     */
-    static registerPlugin(plugin: IApplicationPlugin): void
-    {
-        Application._plugins.push(plugin);
-    }
-
-    /**
-     * Render the current stage.
-     */
+    /** Render the current stage. */
     public render(): void
     {
         this.renderer.render(this.stage);
@@ -133,10 +121,10 @@ export class Application
 
     /**
      * Reference to the renderer's canvas element.
-     * @member {HTMLCanvasElement}
+     * @member {PIXI.ICanvas}
      * @readonly
      */
-    get view(): HTMLCanvasElement
+    get view(): ICanvas
     {
         return this.renderer.view;
     }
@@ -153,7 +141,7 @@ export class Application
 
     /**
      * Destroy and don't use after this.
-     * @param {Boolean} [removeView=false] - Automatically remove canvas from DOM.
+     * @param {boolean} [removeView=false] - Automatically remove canvas from DOM.
      * @param {object|boolean} [stageOptions] - Options parameter. A boolean will act as if all options
      *  have been set to that value
      * @param {boolean} [stageOptions.children=false] - if set to true, all the children will have their destroy
@@ -163,7 +151,7 @@ export class Application
      * @param {boolean} [stageOptions.baseTexture=false] - Only used for child Sprites if stageOptions.children is set
      *  to true. Should it destroy the base texture of the child sprite
      */
-    public destroy(removeView?: boolean, stageOptions?: IDestroyOptions|boolean): void
+    public destroy(removeView?: boolean, stageOptions?: IDestroyOptions | boolean): void
     {
         // Destroy plugins in the opposite order
         // which they were constructed
@@ -182,3 +170,5 @@ export class Application
         this.renderer = null;
     }
 }
+
+extensions.handleByList(ExtensionType.Application, Application._plugins);

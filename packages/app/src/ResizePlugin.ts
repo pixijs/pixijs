@@ -1,6 +1,8 @@
-import type { CanvasRenderer } from '@pixi/canvas-renderer';
-import type { Renderer } from '@pixi/core';
+import type { ExtensionMetadata, Renderer } from '@pixi/core';
+import { extensions, ExtensionType } from '@pixi/core';
 import type { IApplicationOptions } from './Application';
+
+type ResizeableRenderer = Pick<Renderer, 'resize'>;
 
 /**
  * Middleware for for Application's resize functionality
@@ -9,12 +11,15 @@ import type { IApplicationOptions } from './Application';
  */
 export class ResizePlugin
 {
-    public static resizeTo: Window|HTMLElement;
+    /** @ignore */
+    static extension: ExtensionMetadata = ExtensionType.Application;
+
+    public static resizeTo: Window | HTMLElement;
     public static resize: () => void;
-    public static renderer: Renderer|CanvasRenderer;
+    public static renderer: ResizeableRenderer;
     public static queueResize: () => void;
     private static _resizeId: number;
-    private static _resizeTo: Window|HTMLElement;
+    private static _resizeTo: Window | HTMLElement;
     private static cancelResize: () => void;
 
     /**
@@ -34,7 +39,7 @@ export class ResizePlugin
              * @memberof PIXI.Application#
              */
             {
-                set(dom: Window|HTMLElement)
+                set(dom: Window | HTMLElement)
                 {
                     globalThis.removeEventListener('resize', this.queueResize);
                     this._resizeTo = dom;
@@ -53,7 +58,6 @@ export class ResizePlugin
         /**
          * Resize is throttled, so it's safe to call this multiple times per frame and it'll
          * only be called once.
-         *
          * @memberof PIXI.Application#
          * @method queueResize
          * @private
@@ -73,7 +77,6 @@ export class ResizePlugin
 
         /**
          * Cancel the resize queue.
-         *
          * @memberof PIXI.Application#
          * @method cancelResize
          * @private
@@ -91,7 +94,6 @@ export class ResizePlugin
          * Execute an immediate resize on the renderer, this is not
          * throttled and can be expensive to call many times in a row.
          * Will resize only if `resizeTo` property is set.
-         *
          * @memberof PIXI.Application#
          * @method resize
          */
@@ -134,7 +136,6 @@ export class ResizePlugin
 
     /**
      * Clean up the ticker, scoped to application
-     *
      * @static
      * @private
      */
@@ -148,3 +149,5 @@ export class ResizePlugin
         this.resize = null;
     }
 }
+
+extensions.add(ResizePlugin);

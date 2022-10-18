@@ -1,6 +1,7 @@
 import { Filter } from '../Filter';
-import { Matrix, Point } from '@pixi/math';
-import { CLEAR_MODES } from '@pixi/constants';
+import type { Point } from '@pixi/math';
+import { Matrix } from '@pixi/math';
+import type { CLEAR_MODES } from '@pixi/constants';
 import vertex from './spriteMaskFilter.vert';
 import fragment from './spriteMaskFilter.frag';
 import { TextureMatrix } from '../../textures/TextureMatrix';
@@ -27,7 +28,6 @@ export interface ISpriteMaskFilter extends Filter
  * This handles a Sprite acting as a mask, as opposed to a Graphic.
  *
  * WebGL only.
- *
  * @memberof PIXI
  */
 export class SpriteMaskFilter extends Filter
@@ -71,7 +71,6 @@ export class SpriteMaskFilter extends Filter
 
     /**
      * Sprite mask
-     *
      * @type {PIXI.DisplayObject}
      */
     get maskSprite(): IMaskTarget
@@ -91,7 +90,6 @@ export class SpriteMaskFilter extends Filter
 
     /**
      * Applies the filter
-     *
      * @param filterManager - The renderer to retrieve the filter from
      * @param input - The input render target.
      * @param output - The target to output to.

@@ -1,14 +1,12 @@
-import { IAttributeData } from '../Program';
+import type { IAttributeData } from '../Program';
 import { mapSize } from './mapSize';
 import { mapType } from './mapType';
 
 /**
  * returns the attribute data from the program
  * @private
- *
  * @param {WebGLProgram} [program] - the WebGL program
  * @param {WebGLRenderingContext} [gl] - the WebGL context
- *
  * @returns {object} the attribute data for this program
  */
 export function getAttributeData(program: WebGLProgram, gl: WebGLRenderingContextBase): {[key: string]: IAttributeData}
@@ -21,7 +19,7 @@ export function getAttributeData(program: WebGLProgram, gl: WebGLRenderingContex
     {
         const attribData = gl.getActiveAttrib(program, i);
 
-        if (attribData.name.indexOf('gl_') === 0)
+        if (attribData.name.startsWith('gl_'))
         {
             continue;
         }

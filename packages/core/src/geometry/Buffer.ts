@@ -1,6 +1,5 @@
 import { BUFFER_TYPE } from '@pixi/constants';
 import { Runner } from '@pixi/runner';
-
 import type { GLBuffer } from './GLBuffer';
 
 let UID = 0;
@@ -21,8 +20,7 @@ export interface IArrayBuffer extends ArrayBuffer
  * to support expressions like `geometry.buffers[0].data[0] = position.x`.
  *
  * Gives access to indexing and `length` field
- *
- * @popelyshev: If data is actually ArrayBuffer and throws Exception on indexing - its user problem :)
+ * * @popelyshev: If data is actually ArrayBuffer and throws Exception on indexing - its user problem :)
  */
 export interface ITypedArray extends IArrayBuffer
 {
@@ -33,15 +31,13 @@ export interface ITypedArray extends IArrayBuffer
 
 /**
  * A wrapper for data so that it can be used and uploaded by WebGL
- *
  * @memberof PIXI
  */
 export class Buffer
 {
     /**
      * The data in the buffer, as a typed array
-     *
-     * @type {ArrayBuffer| SharedArrayBuffer | ArrayBufferView}
+     * @type {PIXI.IArrayBuffer}
      */
     public data: ITypedArray;
 
@@ -55,19 +51,18 @@ export class Buffer
 
     public static: boolean;
     public id: number;
-     disposeRunner: Runner;
+    disposeRunner: Runner;
 
     /**
      * A map of renderer IDs to webgl buffer
-     *
      * @private
-     * @type {object<number, GLBuffer>}
+     * @type {Object<number, GLBuffer>}
      */
     _glBuffers: {[key: number]: GLBuffer};
     _updateID: number;
 
     /**
-     * @param {ArrayBuffer| SharedArrayBuffer|ArrayBufferView} data - the data to store in the buffer.
+     * @param {PIXI.IArrayBuffer} data - the data to store in the buffer.
      * @param _static - `true` for static buffer
      * @param index - `true` for index buffer
      */
@@ -88,7 +83,7 @@ export class Buffer
     // TODO could explore flagging only a partial upload?
     /**
      * Flags this buffer as requiring an upload to the GPU.
-     * @param {ArrayBuffer|SharedArrayBuffer|ArrayBufferView|number[]} [data] - the data to update in the buffer.
+     * @param {PIXI.IArrayBuffer|number[]} [data] - the data to update in the buffer.
      */
     update(data?: IArrayBuffer | Array<number>): void
     {
@@ -134,9 +129,8 @@ export class Buffer
 
     /**
      * Helper function that creates a buffer based on an array or TypedArray
-     *
      * @param {ArrayBufferView | number[]} data - the TypedArray that the buffer will store. If this is a regular Array it will be converted to a Float32Array.
-     * @return - A new Buffer based on the data provided.
+     * @returns - A new Buffer based on the data provided.
      */
     static from(data: IArrayBuffer | number[]): Buffer
     {

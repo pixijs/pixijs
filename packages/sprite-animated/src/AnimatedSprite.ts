@@ -1,51 +1,49 @@
-import { Texture } from '@pixi/core';
 import { Sprite } from '@pixi/sprite';
-import { Ticker, UPDATE_PRIORITY } from '@pixi/ticker';
+import { Texture, Ticker, UPDATE_PRIORITY } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
 
 /**
  * An AnimatedSprite is a simple way to display an animation depicted by a list of textures.
  *
  * ```js
- * let alienImages = ["image_sequence_01.png","image_sequence_02.png","image_sequence_03.png","image_sequence_04.png"];
- * let textureArray = [];
+ * import { Texture, AnimatedSprite } from 'pixi.js';
  *
- * for (let i=0; i < 4; i++)
+ * const alienImages = [
+ *   "image_sequence_01.png",
+ *   "image_sequence_02.png",
+ *   "image_sequence_03.png",
+ *   "image_sequence_04.png"
+ * ];
+ * const textureArray = [];
+ *
+ * for (let i = 0; i < 4; i++)
  * {
- *      let texture = PIXI.Texture.from(alienImages[i]);
+ *      const texture = Texture.from(alienImages[i]);
  *      textureArray.push(texture);
  * };
  *
- * let animatedSprite = new PIXI.AnimatedSprite(textureArray);
+ * const animatedSprite = new AnimatedSprite(textureArray);
  * ```
  *
  * The more efficient and simpler way to create an animated sprite is using a {@link PIXI.Spritesheet}
  * containing the animation definitions:
+ * @example
+ * import { Assets, AnimatedSprite } from 'pixi.js';
  *
- * ```js
- * PIXI.Loader.shared.add("assets/spritesheet.json").load(setup);
- *
- * function setup() {
- *   let sheet = PIXI.Loader.shared.resources["assets/spritesheet.json"].spritesheet;
- *   animatedSprite = new PIXI.AnimatedSprite(sheet.animations["image_sequence"]);
- *   ...
- * }
- * ```
- *
+ * const sheet = await Assets.load("assets/spritesheet.json");
+ * animatedSprite = new AnimatedSprite(sheet.animations["image_sequence"]);
  * @memberof PIXI
  */
 export class AnimatedSprite extends Sprite
 {
     /**
      * The speed that the AnimatedSprite will play at. Higher is faster, lower is slower.
-     *
      * @default 1
      */
     public animationSpeed: number;
 
     /**
      * Whether or not the animate sprite repeats after playing.
-     *
      * @default true
      */
     public loop: boolean;
@@ -58,16 +56,14 @@ export class AnimatedSprite extends Sprite
      * of the frame (e.g. left foot).
      *
      * Note: Enabling this will override any previously set `anchor` on each frame change.
-     *
      * @default false
      */
     public updateAnchor: boolean;
 
     /**
      * User-assigned function to call when an AnimatedSprite finishes playing.
-     *
      * @example
-     * animation.onComplete = function () {
+     * animation.onComplete = () => {
      *   // finished!
      * };
      */
@@ -75,9 +71,8 @@ export class AnimatedSprite extends Sprite
 
     /**
      * User-assigned function to call when an AnimatedSprite changes which texture is being rendered.
-     *
      * @example
-     * animation.onFrameChange = function () {
+     * animation.onFrameChange = () => {
      *   // updated!
      * };
      */
@@ -86,9 +81,8 @@ export class AnimatedSprite extends Sprite
     /**
      * User-assigned function to call when `loop` is true, and an AnimatedSprite is played and
      * loops around to start again.
-     *
      * @example
-     * animation.onLoop = function () {
+     * animation.onLoop = () => {
      *   // looped!
      * };
      */
@@ -100,14 +94,12 @@ export class AnimatedSprite extends Sprite
 
     /**
      * `true` uses PIXI.Ticker.shared to auto update animation time.
-     *
      * @default true
      */
     private _autoUpdate: boolean;
 
     /**
      * `true` if the instance is currently connected to PIXI.Ticker.shared to auto update animation time.
-     *
      * @default false
      */
     private _isConnectedToTicker: boolean;
@@ -123,7 +115,7 @@ export class AnimatedSprite extends Sprite
      *  objects that make up the animation.
      * @param {boolean} [autoUpdate=true] - Whether to use PIXI.Ticker.shared to auto update animation time.
      */
-    constructor(textures: Texture[]|FrameObject[], autoUpdate = true)
+    constructor(textures: Texture[] | FrameObject[], autoUpdate = true)
     {
         super(textures[0] instanceof Texture ? textures[0] : textures[0].texture);
 
@@ -181,45 +173,26 @@ export class AnimatedSprite extends Sprite
 
     /**
      * Stops the AnimatedSprite and goes to a specific frame.
-     *
      * @param frameNumber - Frame index to stop at.
      */
     public gotoAndStop(frameNumber: number): void
     {
         this.stop();
-
-        const previousFrame = this.currentFrame;
-
-        this._currentTime = frameNumber;
-
-        if (previousFrame !== this.currentFrame)
-        {
-            this.updateTexture();
-        }
+        this.currentFrame = frameNumber;
     }
 
     /**
      * Goes to a specific frame and begins playing the AnimatedSprite.
-     *
      * @param frameNumber - Frame index to start at.
      */
     public gotoAndPlay(frameNumber: number): void
     {
-        const previousFrame = this.currentFrame;
-
-        this._currentTime = frameNumber;
-
-        if (previousFrame !== this.currentFrame)
-        {
-            this.updateTexture();
-        }
-
+        this.currentFrame = frameNumber;
         this.play();
     }
 
     /**
      * Updates the object transform for rendering.
-     *
      * @param deltaTime - Time since last tick.
      */
     update(deltaTime: number): void
@@ -328,7 +301,6 @@ export class AnimatedSprite extends Sprite
 
     /**
      * Stops the AnimatedSprite and destroys it.
-     *
      * @param {object|boolean} [options] - Options parameter. A boolean will act as if all options
      *  have been set to that value.
      * @param {boolean} [options.children=false] - If set to true, all the children will have their destroy
@@ -336,7 +308,7 @@ export class AnimatedSprite extends Sprite
      * @param {boolean} [options.texture=false] - Should it destroy the current texture of the sprite as well.
      * @param {boolean} [options.baseTexture=false] - Should it destroy the base texture of the sprite as well.
      */
-    public destroy(options?: IDestroyOptions|boolean): void
+    public destroy(options?: IDestroyOptions | boolean): void
     {
         this.stop();
         super.destroy(options);
@@ -348,9 +320,8 @@ export class AnimatedSprite extends Sprite
 
     /**
      * A short hand way of creating an AnimatedSprite from an array of frame ids.
-     *
      * @param frames - The array of frames ids the AnimatedSprite will use as its texture frames.
-     * @return - The new animated sprite with the specified frames.
+     * @returns - The new animated sprite with the specified frames.
      */
     public static fromFrames(frames: string[]): AnimatedSprite
     {
@@ -366,9 +337,8 @@ export class AnimatedSprite extends Sprite
 
     /**
      * A short hand way of creating an AnimatedSprite from an array of image ids.
-     *
      * @param images - The array of image urls the AnimatedSprite will use as its texture frames.
-     * @return The new animate sprite with the specified images as frames.
+     * @returns The new animate sprite with the specified images as frames.
      */
     public static fromImages(images: string[]): AnimatedSprite
     {
@@ -385,7 +355,6 @@ export class AnimatedSprite extends Sprite
     /**
      * The total number of frames in the AnimatedSprite. This is the same as number of textures
      * assigned to the AnimatedSprite.
-     *
      * @readonly
      * @default 0
      */
@@ -395,12 +364,12 @@ export class AnimatedSprite extends Sprite
     }
 
     /** The array of textures used for this AnimatedSprite. */
-    get textures(): Texture[]|FrameObject[]
+    get textures(): Texture[] | FrameObject[]
     {
         return this._textures;
     }
 
-    set textures(value: Texture[]|FrameObject[])
+    set textures(value: Texture[] | FrameObject[])
     {
         if (value[0] instanceof Texture)
         {
@@ -423,11 +392,7 @@ export class AnimatedSprite extends Sprite
         this.updateTexture();
     }
 
-    /**
-     * The AnimatedSprites current frame index.
-     *
-     * @readonly
-     */
+    /** The AnimatedSprites current frame index. */
     get currentFrame(): number
     {
         let currentFrame = Math.floor(this._currentTime) % this._textures.length;
@@ -440,9 +405,26 @@ export class AnimatedSprite extends Sprite
         return currentFrame;
     }
 
+    set currentFrame(value: number)
+    {
+        if (value < 0 || value > this.totalFrames - 1)
+        {
+            throw new Error(`[AnimatedSprite]: Invalid frame index value ${value}, `
+                + `expected to be between 0 and totalFrames ${this.totalFrames}.`);
+        }
+
+        const previousFrame = this.currentFrame;
+
+        this._currentTime = value;
+
+        if (previousFrame !== this.currentFrame)
+        {
+            this.updateTexture();
+        }
+    }
+
     /**
      * Indicates if the AnimatedSprite is currently playing.
-     *
      * @readonly
      */
     get playing(): boolean
@@ -477,7 +459,8 @@ export class AnimatedSprite extends Sprite
 }
 
 /** @memberof PIXI.AnimatedSprite */
-export interface FrameObject {
+export interface FrameObject
+{
     /** The {@link PIXI.Texture} of the frame. */
     texture: Texture;
 

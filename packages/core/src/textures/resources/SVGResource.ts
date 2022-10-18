@@ -1,7 +1,9 @@
 import { uid } from '@pixi/utils';
 import { BaseImageResource } from './BaseImageResource';
+import { settings } from '@pixi/settings';
 
 import type { ISize } from '@pixi/math';
+import type { ICanvas } from '@pixi/settings';
 
 export interface ISVGResourceOptions
 {
@@ -10,11 +12,10 @@ export interface ISVGResourceOptions
     width?: number;
     height?: number;
     autoLoad?: boolean;
-    crossorigin?: boolean|string;
+    crossorigin?: boolean | string;
 }
 /**
  * Resource type for SVG elements and graphics.
- *
  * @memberof PIXI
  */
 export class SVGResource extends BaseImageResource
@@ -38,7 +39,7 @@ export class SVGResource extends BaseImageResource
     private _load: Promise<SVGResource>;
 
     /** Cross origin value to use */
-    private _crossorigin?: boolean|string;
+    private _crossorigin?: boolean | string;
 
     /**
      * @param sourceBase64 - Base64 encoded SVG element or URL for SVG file.
@@ -52,7 +53,7 @@ export class SVGResource extends BaseImageResource
     {
         options = options || {};
 
-        super(document.createElement('canvas'));
+        super(settings.ADAPTER.createCanvas());
         this._width = 0;
         this._height = 0;
 
@@ -150,7 +151,7 @@ export class SVGResource extends BaseImageResource
             height = Math.round(height);
 
             // Create a canvas element
-            const canvas = this.source as HTMLCanvasElement;
+            const canvas = this.source as ICanvas;
 
             canvas.width = width;
             canvas.height = height;
@@ -168,9 +169,8 @@ export class SVGResource extends BaseImageResource
 
     /**
      * Get size from an svg string using a regular expression.
-     *
      * @param svgString - a serialized svg element
-     * @return - image extension
+     * @returns - image extension
      */
     static getSize(svgString?: string): ISize
     {
@@ -196,24 +196,22 @@ export class SVGResource extends BaseImageResource
 
     /**
      * Used to auto-detect the type of resource.
-     *
      * @param {*} source - The source object
      * @param {string} extension - The extension of source, if set
-     * @return {boolean} - If the source is a SVG source or data file
+     * @returns {boolean} - If the source is a SVG source or data file
      */
     static test(source: unknown, extension?: string): boolean
     {
         // url file extension is SVG
         return extension === 'svg'
             // source is SVG data-uri
-            || (typeof source === 'string' && (/^data:image\/svg\+xml(;(charset=utf8|utf8))?;base64/).test(source))
+            || (typeof source === 'string' && source.startsWith('data:image/svg+xml'))
             // source is SVG inline
             || (typeof source === 'string' && SVGResource.SVG_XML.test(source));
     }
 
     /**
      * Regular expression for SVG XML document.
-     *
      * @example &lt;?xml version="1.0" encoding="utf-8" ?&gt;&lt;!-- image/svg --&gt;&lt;svg
      * @readonly
      */
@@ -221,7 +219,6 @@ export class SVGResource extends BaseImageResource
 
     /**
      * Regular expression for SVG size.
-     *
      * @example &lt;svg width="100" height="100"&gt;&lt;/svg&gt;
      * @readonly
      */

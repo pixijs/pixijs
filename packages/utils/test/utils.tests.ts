@@ -1,40 +1,35 @@
 import * as utils from '@pixi/utils';
-import { expect } from 'chai';
 
-describe('utils', function ()
+describe('utils', () =>
 {
-    describe('uid', function ()
+    describe('uid', () =>
     {
-        it('should exist', function ()
+        it('should exist', () =>
         {
-            expect(utils.uid)
-                .to.be.a('function');
+            expect(utils.uid).toBeInstanceOf(Function);
         });
 
-        it('should return a number', function ()
+        it('should return a number', () =>
         {
-            expect(utils.uid())
-                .to.be.a('number');
+            expect(utils.uid()).toBeNumber();
         });
     });
 
-    describe('hex2rgb', function ()
+    describe('hex2rgb', () =>
     {
-        it('should exist', function ()
+        it('should exist', () =>
         {
-            expect(utils.hex2rgb)
-                .to.be.a('function');
+            expect(utils.hex2rgb).toBeInstanceOf(Function);
         });
 
         // it('should properly convert number to rgb array');
     });
 
-    describe('hex2string', function ()
+    describe('hex2string', () =>
     {
-        it('should exist', function ()
+        it('should exist', () =>
         {
-            expect(utils.hex2string)
-                .to.be.a('function');
+            expect(utils.hex2string).toBeInstanceOf(Function);
         });
 
         const testCases = [
@@ -56,220 +51,238 @@ describe('utils', function ()
         {
             it(`should properly convert number 0x${num.toString(16)} to hex color string #${result}`, () =>
             {
-                expect(utils.hex2string(num)).to.equals(result);
+                expect(utils.hex2string(num as number)).toEqual(result);
             });
         });
     });
 
-    describe('rgb2hex', function ()
+    describe('rgb2hex', () =>
     {
-        it('should exist', function ()
+        it('should exist', () =>
         {
-            expect(utils.rgb2hex)
-                .to.be.a('function');
+            expect(utils.rgb2hex).toBeInstanceOf(Function);
         });
 
-        it('should calculate correctly', function ()
+        it('should calculate correctly', () =>
         {
-            expect(utils.rgb2hex([0.3, 0.2, 0.1])).to.equals(0x4c3319);
+            expect(utils.rgb2hex([0.3, 0.2, 0.1])).toEqual(0x4c3319);
         });
 
         // it('should properly convert rgb array to hex color string');
     });
 
-    describe('getResolutionOfUrl', function ()
+    describe('string2hex', () =>
     {
-        it('should exist', function ()
+        it('should handle short-hand hex colors', () =>
         {
-            expect(utils.getResolutionOfUrl)
-                .to.be.a('function');
+            expect(utils.string2hex('fff')).toEqual(0xffffff);
+            expect(utils.string2hex('f00')).toEqual(0xff0000);
+            expect(utils.string2hex('000')).toEqual(0);
+        });
+
+        it('should handle short-hand hex colors with hash', () =>
+        {
+            expect(utils.string2hex('#fff')).toEqual(0xffffff);
+            expect(utils.string2hex('#f00')).toEqual(0xff0000);
+            expect(utils.string2hex('#000')).toEqual(0);
+        });
+
+        it('should handle color names', () =>
+        {
+            expect(utils.string2hex('white')).toEqual(0xffffff);
+            expect(utils.string2hex('red')).toEqual(0xff0000);
+            expect(utils.string2hex('black')).toEqual(0);
+        });
+
+        it('should handle hex colors with hash prefix', () =>
+        {
+            expect(utils.string2hex('#ffffff')).toEqual(0xffffff);
+            expect(utils.string2hex('#ff0000')).toEqual(0xff0000);
+            expect(utils.string2hex('#000000')).toEqual(0);
+        });
+
+        it('should handle hex colors', () =>
+        {
+            expect(utils.string2hex('ffffff')).toEqual(0xffffff);
+            expect(utils.string2hex('ff0000')).toEqual(0xff0000);
+            expect(utils.string2hex('000000')).toEqual(0);
+        });
+
+        it('should handle hex with hexadecimal prefix', () =>
+        {
+            expect(utils.string2hex('0xffffff')).toEqual(0xffffff);
+            expect(utils.string2hex('0xff0000')).toEqual(0xff0000);
+            expect(utils.string2hex('0x000000')).toEqual(0);
+        });
+    });
+
+    describe('getResolutionOfUrl', () =>
+    {
+        it('should exist', () =>
+        {
+            expect(utils.getResolutionOfUrl).toBeInstanceOf(Function);
         });
 
         // it('should return the correct resolution based on a URL');
     });
 
-    describe('decomposeDataUri', function ()
+    describe('decomposeDataUri', () =>
     {
-        it('should exist', function ()
+        it('should exist', () =>
         {
-            expect(utils.decomposeDataUri)
-                .to.be.a('function');
+            expect(utils.decomposeDataUri).toBeInstanceOf(Function);
         });
 
-        it('should decompose a data URI', function ()
+        it('should decompose a data URI', () =>
         {
             const dataUri = utils.decomposeDataUri('data:image/png;base64,94Z9RWUN77ZW');
 
-            expect(dataUri)
-                .to.be.an('object');
-            expect(dataUri.mediaType)
-                .to.equal('image');
-            expect(dataUri.subType)
-                .to.equal('png');
-            expect(dataUri.charset)
-                .to.be.an('undefined');
-            expect(dataUri.encoding)
-                .to.equal('base64');
-            expect(dataUri.data)
-                .to.equal('94Z9RWUN77ZW');
+            expect(dataUri).toBeObject();
+            expect(dataUri.mediaType).toEqual('image');
+            expect(dataUri.subType).toEqual('png');
+            expect(dataUri.charset).toBeUndefined();
+            expect(dataUri.encoding).toEqual('base64');
+            expect(dataUri.data).toEqual('94Z9RWUN77ZW');
         });
 
-        it('should decompose a data URI with charset', function ()
+        it('should decompose a data URI with charset', () =>
         {
             const dataUri = utils.decomposeDataUri('data:image/svg+xml;charset=utf8;base64,PGRpdiB4bWxucz0Pg==');
 
-            expect(dataUri)
-                .to.be.an('object');
-            expect(dataUri.mediaType)
-                .to.equal('image');
-            expect(dataUri.subType)
-                .to.equal('svg+xml');
-            expect(dataUri.charset)
-                .to.equal('utf8');
-            expect(dataUri.encoding)
-                .to.equal('base64');
-            expect(dataUri.data)
-                .to.equal('PGRpdiB4bWxucz0Pg==');
+            expect(dataUri).toBeObject();
+            expect(dataUri.mediaType).toEqual('image');
+            expect(dataUri.subType).toEqual('svg+xml');
+            expect(dataUri.charset).toEqual('utf8');
+            expect(dataUri.encoding).toEqual('base64');
+            expect(dataUri.data).toEqual('PGRpdiB4bWxucz0Pg==');
         });
 
-        it('should decompose a data URI with charset without encoding', function ()
+        it('should decompose a data URI with charset without encoding', () =>
         {
             const dataUri = utils.decomposeDataUri('data:image/svg+xml;charset=utf8,PGRpdiB4bWxucz0Pg==');
 
-            expect(dataUri)
-                .to.be.an('object');
-            expect(dataUri.mediaType)
-                .to.equal('image');
-            expect(dataUri.subType)
-                .to.equal('svg+xml');
-            expect(dataUri.charset)
-                .to.equal('utf8');
-            expect(dataUri.encoding)
-                .to.be.an('undefined');
-            expect(dataUri.data)
-                .to.equal('PGRpdiB4bWxucz0Pg==');
+            expect(dataUri).toBeObject();
+            expect(dataUri.mediaType).toEqual('image');
+            expect(dataUri.subType).toEqual('svg+xml');
+            expect(dataUri.charset).toEqual('utf8');
+            expect(dataUri.encoding).toBeUndefined();
+            expect(dataUri.data).toEqual('PGRpdiB4bWxucz0Pg==');
         });
 
-        it('should return undefined for anything else', function ()
+        it('should return undefined for anything else', () =>
         {
             const dataUri = utils.decomposeDataUri('foo');
 
-            expect(dataUri)
-                .to.be.an('undefined');
+            expect(dataUri).toBeUndefined();
         });
     });
 
-    describe('sayHello', function ()
+    describe('sayHello', () =>
     {
-        it('should exist', function ()
+        it('should exist', () =>
         {
-            expect(utils.sayHello)
-                .to.be.a('function');
+            expect(utils.sayHello).toBeInstanceOf(Function);
         });
     });
 
-    describe('isWebGLSupported', function ()
+    describe('isWebGLSupported', () =>
     {
-        it('should exist', function ()
+        it('should exist', () =>
         {
-            expect(utils.isWebGLSupported)
-                .to.be.a('function');
+            expect(utils.isWebGLSupported).toBeInstanceOf(Function);
         });
     });
 
-    describe('sign', function ()
+    describe('sign', () =>
     {
-        it('should return 0 for 0', function ()
+        it('should return 0 for 0', () =>
         {
-            expect(utils.sign(0))
-                .to.be.equal(0);
+            expect(utils.sign(0)).toEqual(0);
         });
 
-        it('should return -1 for negative numbers', function ()
+        it('should return -1 for negative numbers', () =>
         {
             for (let i = 0; i < 10; i += 1)
             {
-                expect(utils.sign(-Math.random()))
-                    .to.be.equal(-1);
+                expect(utils.sign(-Math.random())).toEqual(-1);
             }
         });
 
-        it('should return 1 for positive numbers', function ()
+        it('should return 1 for positive numbers', () =>
         {
             for (let i = 0; i < 10; i += 1)
             {
-                expect(utils.sign(Math.random() + 0.000001))
-                    .to.be.equal(1);
+                expect(utils.sign(Math.random() + 0.000001)).toEqual(1);
             }
         });
     });
 
-    describe('.removeItems', function ()
+    describe('.removeItems', () =>
     {
-        it('should exist', function ()
+        it('should exist', () =>
         {
-            expect(utils.removeItems).to.be.a('function');
+            expect(utils.removeItems).toBeInstanceOf(Function);
         });
 
-        it('should return if the start index is greater than or equal to the length of the array', function ()
+        it('should return if the start index is greater than or equal to the length of the array', () =>
         {
             const arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
             utils.removeItems(arr, arr.length + 1, 5);
-            expect(arr.length).to.equal(10);
+            expect(arr.length).toEqual(10);
         });
 
-        it('should return if the remove count is 0', function ()
+        it('should return if the remove count is 0', () =>
         {
             const arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
             utils.removeItems(arr, 2, 0);
-            expect(arr.length).to.equal(10);
+            expect(arr.length).toEqual(10);
         });
 
-        it('should remove the number of elements specified from the array, starting from the start index', function ()
+        it('should remove the number of elements specified from the array, starting from the start index', () =>
         {
             const arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
             utils.removeItems(arr, 3, 4);
-            expect(arr).to.deep.equal([1, 2, 3, 8, 9, 10]);
+            expect(arr).toEqual([1, 2, 3, 8, 9, 10]);
         });
 
-        it('should remove other elements if delete count is > than the number of elements after start index', function ()
+        it('should remove other elements if delete count is > than the number of elements after start index', () =>
         {
             const arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
             utils.removeItems(arr, 7, 10);
-            expect(arr).to.deep.equal([1, 2, 3, 4, 5, 6, 7]);
+            expect(arr).toEqual([1, 2, 3, 4, 5, 6, 7]);
         });
     });
 
-    describe('EventEmitter', function ()
+    describe('EventEmitter', () =>
     {
-        it('should exist', function ()
+        it('should exist', () =>
         {
-            expect(utils.EventEmitter).to.be.a('function');
+            expect(utils.EventEmitter).toBeInstanceOf(Function);
         });
     });
 
-    describe('isMobile', function ()
+    describe('isMobile', () =>
     {
-        it('should exist', function ()
+        it('should exist', () =>
         {
-            expect(utils.isMobile).to.be.an('object');
+            expect(utils.isMobile).toBeObject();
         });
 
-        it('should return a boolean for .any', function ()
+        it('should return a boolean for .any', () =>
         {
-            expect(utils.isMobile.any).to.be.a('boolean');
+            expect(utils.isMobile.any).toBeBoolean();
         });
     });
 
-    describe('earcut', function ()
+    describe('earcut', () =>
     {
-        it('should exist', function ()
+        it('should exist', () =>
         {
-            expect(utils.earcut).to.be.a('function');
+            expect(utils.earcut).toBeInstanceOf(Function);
         });
     });
 });
