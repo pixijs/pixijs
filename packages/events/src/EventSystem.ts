@@ -26,6 +26,48 @@ interface Renderer
 
 /**
  * The system for handling UI events.
+ *
+ * ### Setup
+ *
+ * As for PixiJS v6.x, `@pixi/events` is an opt-in package, so you need to import it first.
+ *
+ * #### NPM Install
+ *
+ * ```sh
+ * npm install @pixi/events@6.5.7
+ * ```
+ *
+ * There is no default export. The correct way to import EventSystem is:
+ *
+ * ```js
+ * import { Application, Renderer } from 'pixi.js';
+ * import { EventSystem } from '@pixi/events';
+ *
+ * // Disable interaction plugin (for PixiJS v6.x)
+ * delete Renderer.__plugins.interaction;
+ *
+ * const app = new Application();
+ * app.renderer.addSystem(EventSystem, 'events');
+ * ```
+ *
+ * #### CDN Install (via jsDelivr)
+ *
+ * ```html
+ * <script src="https://cdn.jsdelivr.net/npm/@pixi/events@6.5.7/dist/browser/events.min.js"></script>
+ * ```
+ *
+ * Then install the EventSystem:
+ *
+ * ```js
+ * // Disable interaction plugin (for PixiJS v6.x)
+ * delete PIXI.Renderer.__plugins.interaction;
+ *
+ * const app = new PIXI.Application();
+ * app.renderer.addSystem(PIXI.EventSystem, 'events');
+ * ```
+ *
+ * _Note: `6.5.7` can be replaced by any [released](https://github.com/pixijs/pixi.js/releases) version.
+ * It should be the same as the version of `pixi.js` you are using._
  * @memberof PIXI
  */
 export class EventSystem

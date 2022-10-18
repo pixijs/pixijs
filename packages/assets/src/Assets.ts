@@ -93,17 +93,45 @@ export interface AssetInitOptions
  * in-game loading bars can be a thing of the past!
  *
  *
+ * ### Setup
+ *
+ * As for PixiJS v6.x, `@pixi/assets` is an opt-in package, so you need to import it first.
+ *
+ * #### NPM Install
+ *
+ * ```sh
+ * npm install @pixi/assets@6.5.7
+ * ```
+ *
+ * There is no default export. The correct way to import Assets is:
+ *
+ * ```js
+ * import { Assets } from '@pixi/assets';
+ * ```
+ *
+ * #### CDN Install (via jsDelivr)
+ *
+ * ```html
+ * <script src="https://cdn.jsdelivr.net/npm/@pixi/assets@6.5.7/dist/browser/assets.min.js"></script>
+ * ```
+ *
+ * _Note: `6.5.7` can be replaced by any [released](https://github.com/pixijs/pixi.js/releases) version.
+ * It should be the same as the version of `pixi.js` you are using._
+ *
+ * ### Assets Loading
+ *
  * Do not be afraid to load things multiple times - under the hood, it will NEVER load anything more than once.
  *
- * for example:
+ * For example:
  *
  * ```
  * promise1 = PIXI.Assets.load('bunny.png')
  * promise2 = PIXI.Assets.load('bunny.png')
  *
- * //promise1 === promise2
+ * // promise1 === promise2
  * ```
- * here both promises will be the same. Once resolved.. forever resolved! It makes for really easy resource management!
+ *
+ * Here both promises will be the same. Once resolved... Forever resolved! It makes for really easy resource management!
  *
  * Out of the box it supports the following files:
  * * textures (avif, webp, png, jpg, gif)

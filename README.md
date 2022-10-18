@@ -68,10 +68,10 @@ import * as PIXI from 'pixi.js'
 #### CDN Install (via cdnjs)
 
 ```html
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/5.1.3/pixi.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/6.5.7/pixi.min.js"></script>
 ```
 
-_Note: `5.1.3` can be replaced by any [released](https://github.com/pixijs/pixi.js/releases) version._
+_Note: `6.5.7` can be replaced by any [released](https://github.com/pixijs/pixi.js/releases) version._
 
 ### Demos ###
 
