@@ -15,7 +15,7 @@ type CharacterWidthCache = { [key: string]: number };
 const contextSettings = {
     // TextMetrics requires getImageData readback for measuring fonts.
     willReadFrequently: true,
-};
+} as CanvasRenderingContext2DSettings;
 
 /**
  * The TextMetrics object represents the measurement of a block of text with a specified style.
