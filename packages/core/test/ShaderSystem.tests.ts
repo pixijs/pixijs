@@ -1,10 +1,6 @@
 import { Renderer, Shader, CanvasResource, Geometry, UniformGroup, BaseTexture } from '@pixi/core';
-import { skipHello } from '@pixi/utils';
-import { expect } from 'chai';
 
-skipHello();
-
-describe('ShaderSystem', function ()
+describe('ShaderSystem', () =>
 {
     const vertexSrc = `
 attribute vec2 aVertexPosition;
@@ -34,7 +30,7 @@ void main() {
 
 }`;
 
-    function createTexture(w, h)
+    function createTexture(w: number, h: number)
     {
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d');
@@ -47,20 +43,21 @@ void main() {
         return new BaseTexture(new CanvasResource(canvas));
     }
 
-    before(function ()
+    let renderer: Renderer;
+
+    beforeAll(() =>
     {
-        this.renderer = new Renderer();
+        renderer = new Renderer();
     });
 
-    after(function ()
+    afterAll(() =>
     {
-        this.renderer.destroy();
-        this.renderer = null;
+        renderer.destroy();
+        renderer = null;
     });
 
-    it('should set textures in different groups to different locations', function ()
+    it('should set textures in different groups to different locations', () =>
     {
-        const renderer = this.renderer;
         const texture1 = createTexture(10, 10);
         const texture2 = createTexture(20, 20);
 
@@ -74,7 +71,7 @@ void main() {
         renderer.shader.bind(shader);
         renderer.geometry.bind(geometry);
         // actually, order is not important. But if behaviour changes, we'll be better knowing about that
-        expect(renderer.texture.boundTextures[0]).to.equal(texture2);
-        expect(renderer.texture.boundTextures[1]).to.equal(texture1);
+        expect(renderer.texture.boundTextures[0]).toEqual(texture2);
+        expect(renderer.texture.boundTextures[1]).toEqual(texture1);
     });
 });

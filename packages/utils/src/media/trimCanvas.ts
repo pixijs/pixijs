@@ -1,4 +1,7 @@
-interface Inset {
+import type { ICanvas } from '@pixi/settings';
+
+interface Inset
+{
     top?: number;
     left?: number;
     right?: number;
@@ -7,20 +10,21 @@ interface Inset {
 
 /**
  * Trim transparent borders from a canvas
- *
  * @memberof PIXI.utils
  * @function trimCanvas
- * @param {HTMLCanvasElement} canvas - the canvas to trim
+ * @param {PIXI.ICanvas} canvas - the canvas to trim
  * @returns {object} Trim data
  */
-export function trimCanvas(canvas: HTMLCanvasElement): {width: number; height: number; data?: ImageData}
+export function trimCanvas(canvas: ICanvas): {width: number; height: number; data?: ImageData}
 {
     // https://gist.github.com/remy/784508
 
     let width = canvas.width;
     let height = canvas.height;
 
-    const context = canvas.getContext('2d');
+    const context = canvas.getContext('2d', {
+        willReadFrequently: true,
+    });
     const imageData = context.getImageData(0, 0, width, height);
     const pixels = imageData.data;
     const len = pixels.length;

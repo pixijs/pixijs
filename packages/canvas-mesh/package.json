@@ -1,0 +1,45 @@
+{
+  "name": "@pixi/canvas-mesh",
+  "version": "7.0.0-beta.3",
+  "main": "dist/cjs/canvas-mesh.js",
+  "module": "dist/esm/canvas-mesh.mjs",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./index.d.ts",
+        "default": "./dist/esm/canvas-mesh.mjs"
+      },
+      "require": {
+        "types": "./index.d.ts",
+        "default": "./dist/cjs/canvas-mesh.js"
+      }
+    }
+  },
+  "description": "Canvas mixin for the mesh package",
+  "author": "Mat Groves",
+  "contributors": [
+    "Matt Karl <matt@mattkarl.com>"
+  ],
+  "homepage": "http://pixijs.com/",
+  "bugs": "https://github.com/pixijs/pixi.js/issues",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pixijs/pixi.js.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "*.d.ts"
+  ],
+  "pixiRequirements": [
+    "@pixi/canvas-display",
+    "@pixi/canvas-renderer",
+    "@pixi/core",
+    "@pixi/mesh",
+    "@pixi/mesh-extras"
+  ]
+}

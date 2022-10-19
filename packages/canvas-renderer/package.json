@@ -1,0 +1,41 @@
+{
+  "name": "@pixi/canvas-renderer",
+  "version": "7.0.0-beta.3",
+  "main": "dist/cjs/canvas-renderer.js",
+  "module": "dist/esm/canvas-renderer.mjs",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./index.d.ts",
+        "default": "./dist/esm/canvas-renderer.mjs"
+      },
+      "require": {
+        "types": "./index.d.ts",
+        "default": "./dist/cjs/canvas-renderer.js"
+      }
+    }
+  },
+  "description": "Rendering using the Canvas API",
+  "author": "Mat Groves",
+  "contributors": [
+    "Matt Karl <matt@mattkarl.com>"
+  ],
+  "homepage": "http://pixijs.com/",
+  "bugs": "https://github.com/pixijs/pixi.js/issues",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pixijs/pixi.js.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "*.d.ts"
+  ],
+  "pixiRequirements": [
+    "@pixi/core"
+  ]
+}

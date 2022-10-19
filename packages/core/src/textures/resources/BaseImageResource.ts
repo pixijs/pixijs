@@ -1,23 +1,34 @@
-import { Resource } from './Resource';
-import { determineCrossOrigin } from '@pixi/utils';
 import { ALPHA_MODES } from '@pixi/constants';
+import { determineCrossOrigin } from '@pixi/utils';
+import { Resource } from './Resource';
 
-import type { BaseTexture, ImageSource } from '../BaseTexture';
 import type { Renderer } from '../../Renderer';
+import type { BaseTexture, ImageSource } from '../BaseTexture';
 import type { GLTexture } from '../GLTexture';
+
 /**
- * Base for all the image/canvas resources
- * @class
- * @extends PIXI.Resource
+ * Base for all the image/canvas resources.
  * @memberof PIXI
  */
 export class BaseImageResource extends Resource
 {
+    /**
+     * The source element.
+     * @member {HTMLImageElement|HTMLVideoElement|ImageBitmap|PIXI.ICanvas}
+     * @readonly
+     */
     public source: ImageSource;
+
+    /**
+     * If set to `true`, will force `texImage2D` over `texSubImage2D` for uploading.
+     * Certain types of media (e.g. video) using `texImage2D` is more performant.
+     * @default false
+     * @private
+     */
     public noSubImage: boolean;
 
     /**
-     * @param {HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|SVGElement} source
+     * @param {HTMLImageElement|HTMLVideoElement|ImageBitmap|PIXI.ICanvas} source
      */
     constructor(source: ImageSource)
     {
@@ -27,33 +38,19 @@ export class BaseImageResource extends Resource
 
         super(width, height);
 
-        /**
-         * The source element
-         * @member {HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|SVGElement}
-         * @readonly
-         */
         this.source = source;
-
-        /**
-         * If set to `true`, will force `texImage2D` over `texSubImage2D` for uploading.
-         * Certain types of media (e.g. video) using `texImage2D` is more performant.
-         * @member {boolean}
-         * @default false
-         * @private
-         */
         this.noSubImage = false;
     }
 
     /**
      * Set cross origin based detecting the url and the crossorigin
-     * @protected
-     * @param {HTMLElement} element - Element to apply crossOrigin
-     * @param {string} url - URL to check
-     * @param {boolean|string} [crossorigin=true] - Cross origin value to use
+     * @param element - Element to apply crossOrigin
+     * @param url - URL to check
+     * @param crossorigin - Cross origin value to use
      */
-    static crossOrigin(element: HTMLImageElement|HTMLVideoElement, url: string, crossorigin?: boolean|string): void
+    static crossOrigin(element: HTMLImageElement | HTMLVideoElement, url: string, crossorigin?: boolean | string): void
     {
-        if (crossorigin === undefined && url.indexOf('data:') !== 0)
+        if (crossorigin === undefined && !url.startsWith('data:'))
         {
             element.crossOrigin = determineCrossOrigin(url);
         }
@@ -65,19 +62,34 @@ export class BaseImageResource extends Resource
 
     /**
      * Upload the texture to the GPU.
-     * @param {PIXI.Renderer} renderer - Upload to the renderer
-     * @param {PIXI.BaseTexture} baseTexture - Reference to parent texture
-     * @param {PIXI.GLTexture} glTexture
-     * @param {HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|SVGElement} [source] - (optional)
-     * @returns {boolean} true is success
+     * @param renderer - Upload to the renderer
+     * @param baseTexture - Reference to parent texture
+     * @param glTexture
+     * @param {HTMLImageElement|HTMLVideoElement|ImageBitmap|PIXI.ICanvas} [source] - (optional)
+     * @returns - true is success
      */
-    upload(renderer: Renderer, baseTexture: BaseTexture, glTexture: GLTexture, source?: ImageSource): boolean
+    override upload(renderer: Renderer, baseTexture: BaseTexture, glTexture: GLTexture, source?: ImageSource): boolean
     {
         const gl = renderer.gl;
         const width = baseTexture.realWidth;
         const height = baseTexture.realHeight;
 
         source = source || this.source;
+
+        if (typeof HTMLImageElement !== 'undefined' && source instanceof HTMLImageElement)
+        {
+            if (!source.complete || source.naturalWidth === 0)
+            {
+                return false;
+            }
+        }
+        else if (typeof HTMLVideoElement !== 'undefined' && source instanceof HTMLVideoElement)
+        {
+            if (source.readyState <= 1)
+            {
+                return false;
+            }
+        }
 
         gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, baseTexture.alphaMode === ALPHA_MODES.UNPACK);
 
@@ -103,7 +115,7 @@ export class BaseImageResource extends Resource
      * Checks if source width/height was changed, resize can cause extra baseTexture update.
      * Triggers one update in any case.
      */
-    update(): void
+    override update(): void
     {
         if (this.destroyed)
         {
@@ -120,11 +132,8 @@ export class BaseImageResource extends Resource
         super.update();
     }
 
-    /**
-     * Destroy this BaseImageResource
-     * @override
-     */
-    dispose(): void
+    /** Destroy this {@link BaseImageResource} */
+    override dispose(): void
     {
         this.source = null;
     }

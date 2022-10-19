@@ -1,10 +1,11 @@
 import { WRAP_MODES, TYPES, FORMATS, SAMPLER_TYPES } from '@pixi/constants';
-import { Renderer, Texture, BaseTexture, BufferResource } from '@pixi/core';
-import { expect } from 'chai';
+import { Renderer, Texture, BaseTexture } from '@pixi/core';
 
-describe('TextureSystem', function ()
+describe('TextureSystem', () =>
 {
-    function createTempTexture(options)
+    let renderer: Renderer;
+
+    function createTempTexture(options?: Parameters<typeof BaseTexture.from>[1])
     {
         const canvas = document.createElement('canvas');
 
@@ -14,84 +15,85 @@ describe('TextureSystem', function ()
         return BaseTexture.from(canvas, options);
     }
 
-    beforeEach(function ()
+    beforeEach(() =>
     {
-        this.renderer = new Renderer();
-        this.renderer.mask.enableScissor = true;
+        renderer = new Renderer();
+        renderer.mask.enableScissor = true;
     });
 
-    afterEach(function ()
+    afterEach(() =>
     {
-        this.renderer.destroy();
-        this.renderer = null;
+        renderer.destroy();
+        renderer = null;
     });
 
-    it('should allow glTexture wrapMode=REPEAT for non-pow2 in webgl2', function ()
-    {
-        const baseTex = createTempTexture();
-
-        baseTex.wrapMode = WRAP_MODES.REPEAT;
-        this.renderer.texture.webGLVersion = 2;
-        this.renderer.texture.bind(baseTex);
-
-        const glTex = baseTex._glTextures[this.renderer.CONTEXT_UID];
-
-        expect(glTex).to.exist;
-        expect(glTex.wrapMode).to.equal(WRAP_MODES.REPEAT);
-    });
-
-    it('should not allow glTexture wrapMode=REPEAT for non-pow2 in webgl1', function ()
+    it('should allow glTexture wrapMode=REPEAT for non-pow2 in webgl2', () =>
     {
         const baseTex = createTempTexture();
 
         baseTex.wrapMode = WRAP_MODES.REPEAT;
-        this.renderer.texture.webGLVersion = 1;
-        this.renderer.texture.bind(baseTex);
+        renderer.texture['webGLVersion'] = 2;
+        renderer.texture.bind(baseTex);
 
-        const glTex = baseTex._glTextures[this.renderer.CONTEXT_UID];
+        const glTex = baseTex._glTextures[renderer.CONTEXT_UID];
 
-        expect(glTex).to.exist;
-        expect(glTex.wrapMode).to.equal(WRAP_MODES.CLAMP);
+        expect(glTex).toBeDefined();
+        expect(glTex.wrapMode).toEqual(WRAP_MODES.REPEAT);
     });
 
-    it('should set internalFormat correctly for RGBA float textures', function ()
+    it('should not allow glTexture wrapMode=REPEAT for non-pow2 in webgl1', () =>
+    {
+        const baseTex = createTempTexture();
+
+        baseTex.wrapMode = WRAP_MODES.REPEAT;
+        renderer.texture['webGLVersion'] = 1;
+        renderer.texture.bind(baseTex);
+
+        const glTex = baseTex._glTextures[renderer.CONTEXT_UID];
+
+        expect(glTex).toBeDefined();
+        expect(glTex.wrapMode).toEqual(WRAP_MODES.CLAMP);
+    });
+
+    it('should set internalFormat correctly for RGBA float textures', () =>
     {
         const baseTex = createTempTexture({ type: TYPES.FLOAT, format: FORMATS.RGBA });
 
-        this.renderer.texture.bind(baseTex);
+        renderer.texture.bind(baseTex);
 
-        const glTex = baseTex._glTextures[this.renderer.CONTEXT_UID];
+        const glTex = baseTex._glTextures[renderer.CONTEXT_UID];
 
-        expect(glTex).to.be.notnull;
-        expect(glTex.internalFormat).to.equal(this.renderer.gl.RGBA32F);
+        expect(glTex).not.toBeNull();
+        expect(glTex.internalFormat).toEqual(renderer.gl.RGBA32F);
     });
 
-    it('should set internalFormat correctly for red-channel float textures', function ()
+    it('should set internalFormat correctly for red-channel float textures', () =>
     {
         const baseTex = createTempTexture({ type: TYPES.FLOAT, format: FORMATS.RED });
 
-        this.renderer.texture.bind(baseTex);
+        renderer.texture.bind(baseTex);
 
-        const glTex = baseTex._glTextures[this.renderer.CONTEXT_UID];
+        const glTex = baseTex._glTextures[renderer.CONTEXT_UID];
 
-        expect(glTex).to.be.notnull;
-        expect(glTex.internalFormat).to.equal(this.renderer.gl.R32F);
+        expect(glTex).not.toBeNull();
+        expect(glTex.internalFormat).toEqual(renderer.gl.R32F);
     });
 
-    it('should set internalFormat correctly for RGB FLOAT textures', function ()
+    it('should set internalFormat correctly for RGB FLOAT textures', () =>
     {
         const baseTex = createTempTexture({ type: TYPES.FLOAT, format: FORMATS.RGB });
 
-        this.renderer.texture.bind(baseTex);
+        renderer.texture.bind(baseTex);
 
-        const glTex = baseTex._glTextures[this.renderer.CONTEXT_UID];
+        const glTex = baseTex._glTextures[renderer.CONTEXT_UID];
 
-        expect(glTex).to.be.notnull;
-        expect(glTex.internalFormat).to.equal(this.renderer.gl.RGB32F);
+        expect(glTex).not.toBeNull();
+        expect(glTex.internalFormat).toEqual(renderer.gl.RGB32F);
     });
 
     function createIntegerTexture()
     {
+        // @ts-expect-error ---
         const baseTexture = BaseTexture.fromBuffer(new Uint32Array([0, 0, 0, 0]), 1, 1);
         const oldUpload = baseTexture.resource.upload.bind(baseTexture);
 
@@ -100,7 +102,7 @@ describe('TextureSystem', function ()
             glTexture.samplerType = SAMPLER_TYPES.INT;
             if (renderer.context.webGLVersion === 2)
             {
-                glTexture.internalFormat = renderer.context.gl.RGBA32I;
+                glTexture.internalFormat = renderer.context['gl'].RGBA32I;
             }
 
             return oldUpload(renderer, baseTexture, glTexture);
@@ -109,9 +111,9 @@ describe('TextureSystem', function ()
         return baseTexture;
     }
 
-    it('should unbind textures with non-float samplerType for batching', function ()
+    it('should unbind textures with non-float samplerType for batching', () =>
     {
-        const textureSystem = this.renderer.texture;
+        const textureSystem = renderer.texture;
         const { boundTextures } = textureSystem;
         const sampleTex = createIntegerTexture();
         const sampleTex2 = createIntegerTexture();
@@ -119,26 +121,26 @@ describe('TextureSystem', function ()
         textureSystem.bind(Texture.WHITE.baseTexture, 0);
         textureSystem.bind(sampleTex, 1);
         textureSystem.bind(sampleTex2, 2);
-        expect(textureSystem.hasIntegerTextures).to.be.true;
+        expect(textureSystem['hasIntegerTextures']).toBe(true);
         textureSystem.ensureSamplerType(2);
-        expect(boundTextures[0]).to.equal(Texture.WHITE.baseTexture);
-        expect(boundTextures[1]).to.be.null;
-        expect(boundTextures[2]).to.equal(sampleTex2);
+        expect(boundTextures[0]).toEqual(Texture.WHITE.baseTexture);
+        expect(boundTextures[1]).toBeNull();
+        expect(boundTextures[2]).toEqual(sampleTex2);
     });
 
-    it('should bind empty texture if texture is invalid', function ()
+    it('should bind empty texture if texture is invalid', () =>
     {
-        const textureSystem = this.renderer.texture;
+        const textureSystem = renderer.texture;
 
-        expect(Texture.WHITE.baseTexture.valid).to.be.true;
+        expect(Texture.WHITE.baseTexture.valid).toBe(true);
 
         textureSystem.bind(Texture.WHITE.baseTexture, 0);
 
-        expect(textureSystem.boundTextures[0]).to.equal(Texture.WHITE.baseTexture);
-        expect(Texture.EMPTY.baseTexture.valid).to.be.false;
+        expect(textureSystem.boundTextures[0]).toEqual(Texture.WHITE.baseTexture);
+        expect(Texture.EMPTY.baseTexture.valid).toBe(false);
 
         textureSystem.bind(Texture.EMPTY.baseTexture, 0);
 
-        expect(textureSystem.boundTextures[0]).to.equal(null);
+        expect(textureSystem.boundTextures[0]).toEqual(null);
     });
 });

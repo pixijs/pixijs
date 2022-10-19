@@ -5,14 +5,14 @@ import type { Graphics } from '@pixi/graphics';
  * however it support negative numbers as well for the corner radius.
  *
  * _Note: Only available with **@pixi/graphics-extras**._
- *
  * @method PIXI.Graphics#drawFilletRect
+ * @param this
  * @param {number} x - Upper left corner of rect
  * @param {number} y - Upper right corner of rect
  * @param {number} width - Width of rect
  * @param {number} height - Height of rect
  * @param {number} fillet - accept negative or positive values
- * @return {PIXI.Graphics} Returns self.
+ * @returns {PIXI.Graphics} Returns self.
  */
 export function drawFilletRect(this: Graphics,
     x: number,

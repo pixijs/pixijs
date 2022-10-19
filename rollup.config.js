@@ -1,25 +1,25 @@
 import path from 'path';
-import transpile from '@rollup/plugin-buble';
 import resolve from '@rollup/plugin-node-resolve';
 import { string } from 'rollup-plugin-string';
 import sourcemaps from 'rollup-plugin-sourcemaps';
-import typescript from 'rollup-plugin-typescript';
+import esbuild from 'rollup-plugin-esbuild';
 import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
-import { terser } from 'rollup-plugin-terser';
 import jscc from 'rollup-plugin-jscc';
 import alias from '@rollup/plugin-alias';
 import workspacesRun from 'workspaces-run';
 import repo from './lerna.json';
-import fs from 'fs';
 
 const isProduction = process.env.NODE_ENV === 'production';
+const bundleTarget = 'es2017';
+const moduleTarget = 'es2020';
 
 /**
  * Get the JSCC plugin for preprocessing code.
  * @param {boolean} debug Build is for debugging
  */
-function preprocessPlugin(debug) {
+function preprocessPlugin(debug)
+{
     return jscc({
         values: {
             _DEBUG: debug,
@@ -33,7 +33,8 @@ function preprocessPlugin(debug) {
  * Convert a development file name to minified.
  * @param {string} name
  */
-function prodName(name) {
+function prodName(name)
+{
     return name.replace(/\.(m)?js$/, '.min.$1js');
 }
 
@@ -47,39 +48,52 @@ async function main()
         }),
         commonjs(),
         json(),
-        typescript(),
         string({
             include: [
                 '**/*.frag',
                 '**/*.vert',
             ],
         }),
-        transpile(),
     ];
 
     const plugins = [
         preprocessPlugin(true),
+        esbuild({
+            target: moduleTarget,
+        }),
+        ...commonPlugins
+    ];
+
+    const bundlePlugins = [
+        preprocessPlugin(true),
+        esbuild({
+            target: bundleTarget,
+        }),
         ...commonPlugins
     ];
 
     const prodPlugins = [
         preprocessPlugin(false),
+        esbuild({
+            target: moduleTarget,
+            minify: true,
+        }),
         ...commonPlugins,
-        terser({
-            output: {
-                comments: (node, comment) => comment.line === 1,
-            },
-        })
     ];
 
     const prodBundlePlugins = [
         alias({
             entries: [{
                 find: /^(@pixi\/([^\/]+))$/,
-                replacement: '$1/dist/esm/$2.min.js',
+                replacement: '$1/dist/esm/$2.min.mjs',
             }]
         }),
-        ...prodPlugins
+        preprocessPlugin(false),
+        esbuild({
+            target: bundleTarget,
+            minify: true,
+        }),
+        ...commonPlugins,
     ];
 
     const compiled = (new Date()).toUTCString().replace(/GMT/g, 'UTC');
@@ -96,14 +110,6 @@ async function main()
         }
     });
 
-    const namespaces = {};
-
-    // Create a map of globals to use for bundled packages
-    packages.forEach((pkg) =>
-    {
-        namespaces[pkg.name] = pkg.config.namespace || 'PIXI';
-    });
-
     packages.forEach((pkg) =>
     {
         const {
@@ -111,15 +117,14 @@ async function main()
             module,
             bundle,
             bundleModule,
-            bundleInput,
-            bundleOutput,
-            bundleNoExports,
-            standalone,
             version,
             dependencies,
-            peerDependencies } = pkg.config;
+            nodeDependencies,
+            peerDependencies,
+            pixiRequirements,
+        } = pkg.config;
 
-        let banner = [
+        const banner = [
             `/*!`,
             ` * ${pkg.name} - v${version}`,
             ` * Compiled ${compiled}`,
@@ -131,9 +136,11 @@ async function main()
 
         // Check for bundle folder
         const external = Object.keys(dependencies || [])
-            .concat(Object.keys(peerDependencies || []));
+            .concat(Object.keys(peerDependencies || []))
+            .concat(nodeDependencies || [])
+            .concat(pixiRequirements || []);
         const basePath = path.relative(__dirname, pkg.dir);
-        let input = path.join(basePath, 'src/index.ts');
+        const input = path.join(basePath, 'src/index.ts');
         const freeze = false;
 
         results.push({
@@ -158,7 +165,8 @@ async function main()
             plugins,
         });
 
-        if (isProduction) {
+        if (isProduction)
+        {
             results.push({
                 input,
                 output: [
@@ -187,91 +195,56 @@ async function main()
         // this will package all dependencies
         if (bundle)
         {
-            let input = path.join(basePath, bundleInput || 'src/index.ts');
-
-            // TODO: remove check once all packages have been converted to typescript
-            if (!fs.existsSync(input))
-            {
-                input = path.join(basePath, bundleInput || 'src/index.js');
-            }
-
+            const input = path.join(basePath, 'src/index.ts');
             const file = path.join(basePath, bundle);
             const moduleFile = bundleModule ? path.join(basePath, bundleModule) : '';
-            const external = standalone ? null : Object.keys(namespaces);
-            const globals = standalone ? null : namespaces;
-            const ns = namespaces[pkg.name];
-            const name = pkg.name.replace(/[^a-z]+/g, '_');
             let footer;
-            let nsBanner = banner;
-
-            // Ignore self-contained packages like polyfills and unsafe-eval
-            // as well as the bundles pixi.js and pixi.js-legacy
-            if (!standalone)
-            {
-                if (bundleNoExports !== true)
-                {
-                    footer = `Object.assign(this.${ns}, ${name});`;
-                }
-
-                if (ns.includes('.'))
-                {
-                    const base = ns.split('.')[0];
-
-                    nsBanner += `\nthis.${base} = this.${base} || {};`;
-                }
-
-                nsBanner += `\nthis.${ns} = this.${ns} || {};`;
-            }
 
             results.push({
                 input,
-                external,
                 output: [
-                    Object.assign({
-                        banner: nsBanner,
+                    {
+                        name: 'PIXI',
+                        banner,
                         file,
                         format: 'iife',
                         freeze,
-                        globals,
-                        name,
                         footer,
                         sourcemap,
-                    }, bundleOutput),
-                    ...moduleFile ? [{
+                    },
+                    {
                         banner,
                         file: moduleFile,
                         format: 'esm',
                         freeze,
                         sourcemap,
-                    }] : []
+                    }
                 ],
                 treeshake: false,
-                plugins,
+                plugins: bundlePlugins,
             });
 
             if (isProduction)
             {
                 results.push({
                     input,
-                    external,
                     output: [
-                        Object.assign({
-                            banner: nsBanner,
+                        {
+                            name: 'PIXI',
+                            banner,
                             file: prodName(file),
                             format: 'iife',
                             freeze,
-                            globals,
-                            name,
                             footer,
                             sourcemap,
-                        }, bundleOutput),
-                        ...moduleFile ? [{
+                        },
+                        {
                             banner,
                             file: prodName(moduleFile),
                             format: 'esm',
                             freeze,
                             sourcemap,
-                        }] : []
+                        }
                     ],
                     treeshake: false,
                     plugins: prodBundlePlugins,

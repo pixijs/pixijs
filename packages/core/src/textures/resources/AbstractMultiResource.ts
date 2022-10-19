@@ -1,29 +1,44 @@
 import { Resource } from './Resource';
 import { BaseTexture } from '../BaseTexture';
-import { ISize } from '@pixi/math';
-import { autoDetectResource, IAutoDetectOptions } from './autoDetectResource';
+import type { ISize } from '@pixi/math';
+import type { IAutoDetectOptions } from './autoDetectResource';
+import { autoDetectResource } from './autoDetectResource';
 
 /**
  * Resource that can manage several resource (items) inside.
  * All resources need to have the same pixel size.
  * Parent class for CubeResource and ArrayResource
- *
- * @class
- * @extends PIXI.Resource
  * @memberof PIXI
  */
 export abstract class AbstractMultiResource extends Resource
 {
+    /** Number of elements in array. */
     readonly length: number;
+
+    /**
+     * Collection of partial baseTextures that correspond to resources.
+     * @readonly
+     */
     items: Array<BaseTexture>;
+
+    /**
+     * Dirty IDs for each part.
+     * @readonly
+     */
     itemDirtyIds: Array<number>;
+
+    /**
+     * Promise when loading.
+     * @default null
+     */
     private _load: Promise<this>;
 
+    /** Bound baseTexture, there can only be one. */
     baseTexture: BaseTexture;
 
     /**
-     * @param {number} length
-     * @param {object} [options] - Options to for Resource constructor
+     * @param length
+     * @param options - Options to for Resource constructor
      * @param {number} [options.width] - Width of the resource
      * @param {number} [options.height] - Height of the resource
      */
@@ -32,18 +47,8 @@ export abstract class AbstractMultiResource extends Resource
         const { width, height } = options || {};
 
         super(width, height);
-        /**
-         * Collection of partial baseTextures that correspond to resources
-         * @member {Array<PIXI.BaseTexture>}
-         * @readonly
-         */
-        this.items = [];
 
-        /**
-         * Dirty IDs for each part
-         * @member {Array<number>}
-         * @readonly
-         */
+        this.items = [];
         this.itemDirtyIds = [];
 
         for (let i = 0; i < length; i++)
@@ -57,35 +62,16 @@ export abstract class AbstractMultiResource extends Resource
             this.itemDirtyIds.push(-2);
         }
 
-        /**
-         * Number of elements in array
-         *
-         * @member {number}
-         * @readonly
-         */
         this.length = length;
-
-        /**
-         * Promise when loading
-         * @member {Promise}
-         * @private
-         * @default null
-         */
         this._load = null;
-
-        /**
-         * Bound baseTexture, there can only be one
-         * @member {PIXI.BaseTexture}
-         */
         this.baseTexture = null;
     }
 
     /**
-     * used from ArrayResource and CubeResource constructors
-     * @param {Array<*>} resources - Can be resources, image elements, canvas, etc. ,
+     * Used from ArrayResource and CubeResource constructors.
+     * @param resources - Can be resources, image elements, canvas, etc. ,
      *  length should be same as constructor length
-     * @param {object} [options] - detect options for resources
-     * @protected
+     * @param options - Detect options for resources
      */
     protected initFromArray(resources: Array<any>, options?: IAutoDetectOptions): void
     {
@@ -110,10 +96,7 @@ export abstract class AbstractMultiResource extends Resource
         }
     }
 
-    /**
-     * Destroy this BaseImageResource
-     * @override
-     */
+    /** Destroy this BaseImageResource. */
     dispose(): void
     {
         for (let i = 0, len = this.length; i < len; i++)
@@ -127,19 +110,17 @@ export abstract class AbstractMultiResource extends Resource
 
     /**
      * Set a baseTexture by ID
-     *
-     * @param {PIXI.BaseTexture} baseTexture
-     * @param {number} index - Zero-based index of resource to set
-     * @return {PIXI.AbstractMultiResource} Instance for chaining
+     * @param baseTexture
+     * @param index - Zero-based index of resource to set
+     * @returns - Instance for chaining
      */
     abstract addBaseTextureAt(baseTexture: BaseTexture, index: number): this;
 
     /**
      * Set a resource by ID
-     *
-     * @param {PIXI.Resource} resource
-     * @param {number} index - Zero-based index of resource to set
-     * @return {PIXI.ArrayResource} Instance for chaining
+     * @param resource
+     * @param index - Zero-based index of resource to set
+     * @returns - Instance for chaining
      */
     addResourceAt(resource: Resource, index: number): this
     {
@@ -160,9 +141,8 @@ export abstract class AbstractMultiResource extends Resource
     }
 
     /**
-     * Set the parent base texture
-     * @member {PIXI.BaseTexture}
-     * @override
+     * Set the parent base texture.
+     * @param baseTexture
      */
     bind(baseTexture: BaseTexture): void
     {
@@ -180,9 +160,8 @@ export abstract class AbstractMultiResource extends Resource
     }
 
     /**
-     * Unset the parent base texture
-     * @member {PIXI.BaseTexture}
-     * @override
+     * Unset the parent base texture.
+     * @param baseTexture
      */
     unbind(baseTexture: BaseTexture): void
     {
@@ -197,8 +176,7 @@ export abstract class AbstractMultiResource extends Resource
 
     /**
      * Load all the resources simultaneously
-     * @override
-     * @return {Promise<void>} When load is resolved
+     * @returns - When load is resolved
      */
     load(): Promise<this>
     {

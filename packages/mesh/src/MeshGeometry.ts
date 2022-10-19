@@ -1,5 +1,4 @@
-import { TYPES } from '@pixi/constants';
-import { Buffer, Geometry } from '@pixi/core';
+import { Buffer, Geometry, TYPES } from '@pixi/core';
 
 import type { IArrayBuffer } from '@pixi/core';
 
@@ -7,22 +6,26 @@ import type { IArrayBuffer } from '@pixi/core';
  * Standard 2D geometry used in PixiJS.
  *
  * Geometry can be defined without passing in a style or data if required.
+ * @example
+ * import { Geometry } from 'pixi.js';
  *
- * ```js
- * const geometry = new PIXI.Geometry();
+ * const geometry = new Geometry();
  *
  * geometry.addAttribute('positions', [0, 0, 100, 0, 100, 100, 0, 100], 2);
  * geometry.addAttribute('uvs', [0,0,1,0,1,1,0,1], 2);
  * geometry.addIndex([0,1,2,1,3,2]);
- *
- * ```
- * @class
  * @memberof PIXI
- * @extends PIXI.Geometry
  */
 export class MeshGeometry extends Geometry
 {
     // Internal-only properties
+    /**
+     * Dirty flag to limit update calls on Mesh. For example,
+     * limiting updates on a single Mesh instance with a shared Geometry
+     * within the render loop.
+     * @private
+     * @default -1
+     */
     _updateId: number;
 
     /**
@@ -42,20 +45,11 @@ export class MeshGeometry extends Geometry
             .addAttribute('aTextureCoord', uvsBuffer, 2, false, TYPES.FLOAT)
             .addIndex(indexBuffer);
 
-        /**
-         * Dirty flag to limit update calls on Mesh. For example,
-         * limiting updates on a single Mesh instance with a shared Geometry
-         * within the render loop.
-         * @private
-         * @member {number}
-         * @default -1
-         */
         this._updateId = -1;
     }
 
     /**
      * If the vertex position is updated.
-     * @member {number}
      * @readonly
      * @private
      */

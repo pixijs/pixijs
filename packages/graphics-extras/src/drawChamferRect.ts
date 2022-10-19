@@ -4,14 +4,14 @@ import type { Graphics } from '@pixi/graphics';
  * Draw Rectangle with chamfer corners. These are angled corners.
  *
  * _Note: Only available with **@pixi/graphics-extras**._
- *
  * @method PIXI.Graphics#drawChamferRect
+ * @param this
  * @param {number} x - Upper left corner of rect
  * @param {number} y - Upper right corner of rect
  * @param {number} width - Width of rect
  * @param {number} height - Height of rect
  * @param {number} chamfer - non-zero real number, size of corner cutout
- * @return {PIXI.Graphics} Returns self.
+ * @returns {PIXI.Graphics} Returns self.
  */
 export function drawChamferRect(this: Graphics,
     x: number,

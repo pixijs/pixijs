@@ -1,9 +1,21 @@
 {
   "name": "@pixi/app",
-  "version": "6.1.3",
+  "version": "7.0.0-beta.3",
   "main": "dist/cjs/app.js",
-  "module": "dist/esm/app.js",
-  "bundle": "dist/browser/app.js",
+  "module": "dist/esm/app.mjs",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./index.d.ts",
+        "default": "./dist/esm/app.mjs"
+      },
+      "require": {
+        "types": "./index.d.ts",
+        "default": "./dist/cjs/app.js"
+      }
+    }
+  },
   "description": "Convenience class to create a new PixiJS application",
   "author": "Mat Groves",
   "contributors": [
@@ -20,12 +32,11 @@
     "access": "public"
   },
   "files": [
-    "lib",
     "dist",
     "*.d.ts"
   ],
-  "peerDependencies": {
-    "@pixi/core": "6.1.3",
-    "@pixi/display": "6.1.3"
-  }
+  "pixiRequirements": [
+    "@pixi/core",
+    "@pixi/display"
+  ]
 }

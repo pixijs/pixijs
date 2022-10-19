@@ -5,45 +5,37 @@ import { Matrix } from '@pixi/math';
 
 /**
  * Helper that generates batching multi-texture shader. Use it with your new BatchRenderer
- *
- * @class
  * @memberof PIXI
  */
 export class BatchShaderGenerator
 {
+    /** Reference to the vertex shader source. */
     public vertexSrc: string;
+
+    /** Reference to the fragment shader template. Must contain "%count%" and "%forloop%". */
     public fragTemplate: string;
+
     programCache: {[key: number]: Program};
     defaultGroupCache: {[key: number]: UniformGroup};
+
     /**
-     * @param {string} vertexSrc - Vertex shader
-     * @param {string} fragTemplate - Fragment shader template
+     * @param vertexSrc - Vertex shader
+     * @param fragTemplate - Fragment shader template
      */
     constructor(vertexSrc: string, fragTemplate: string)
     {
-        /**
-         * Reference to the vertex shader source.
-         *
-         * @member {string}
-         */
         this.vertexSrc = vertexSrc;
-
-        /**
-         * Reference to the fragment shader template. Must contain "%count%" and "%forloop%".
-         *
-         * @member {string}
-         */
         this.fragTemplate = fragTemplate;
 
         this.programCache = {};
         this.defaultGroupCache = {};
 
-        if (fragTemplate.indexOf('%count%') < 0)
+        if (!fragTemplate.includes('%count%'))
         {
             throw new Error('Fragment template must contain "%count%".');
         }
 
-        if (fragTemplate.indexOf('%forloop%') < 0)
+        if (!fragTemplate.includes('%forloop%'))
         {
             throw new Error('Fragment template must contain "%forloop%".');
         }

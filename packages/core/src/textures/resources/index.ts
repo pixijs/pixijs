@@ -12,8 +12,8 @@ export * from './Resource';
 export * from './BaseImageResource';
 
 INSTALLED.push(
-    ImageResource,
     ImageBitmapResource,
+    ImageResource,
     CanvasResource,
     VideoResource,
     SVGResource,

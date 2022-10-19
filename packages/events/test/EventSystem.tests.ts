@@ -1,22 +1,21 @@
 import { Renderer } from '@pixi/core';
 import { Container } from '@pixi/display';
-import { EventSystem } from '@pixi/events';
 import { Graphics } from '@pixi/graphics';
-import sinon from 'sinon';
-import { expect } from 'chai';
+import '@pixi/events';
 
-function createRenderer(view, supportsPointerEvents)
+function createRenderer(view?: HTMLCanvasElement, supportsPointerEvents?: boolean)
 {
-    const renderer = Renderer.create({
+    // TODO: event emitter types do not appear in tests
+    interface EERenderer extends Renderer
+    {
+        events: any
+    }
+
+    const renderer = new Renderer({
         width: 100,
         height: 100,
         view,
-    });
-
-    if (!renderer.events)
-    {
-        renderer.addSystem(EventSystem, 'events');
-    }
+    }) as EERenderer;
 
     if (supportsPointerEvents === false)
     {
@@ -44,7 +43,7 @@ function createScene()
     return [stage, graphics];
 }
 
-describe('EventSystem', function ()
+describe('EventSystem', () =>
 {
     // Share WebGL context for performance
     const view = document.createElement('canvas');
@@ -83,7 +82,12 @@ describe('EventSystem', function ()
             { type: 'touchstart' },
             { type: 'touchendoutside', native: 'touchend' },
         ]
-    ];
+    ] as Array<{
+        type: string;
+        clientX?: number;
+        clientY?: number;
+        native?: string;
+    }>;
 
     // Maps native event types to their listeners on EventSystem.
     const handlers = {
@@ -108,7 +112,7 @@ describe('EventSystem', function ()
         const isMouseEvent = events[0].type.startsWith('mouse');
         const isTouchEvent = events[0].type.startsWith('touch');
 
-        it(`should fire ${events[events.length - 1].type}`, function ()
+        it(`should fire ${events[events.length - 1].type}`, () =>
         {
             const renderer = createRenderer(view, isMouseEvent);
             const stage = new Container();
@@ -126,13 +130,13 @@ describe('EventSystem', function ()
                 clientX = clientX || 25;
                 clientY = clientY || 25;
 
-                const eventSpy = sinon.spy();
-                const handler = handlers[native || type];
+                const eventSpy = jest.fn();
+                const handler = handlers[(native || type) as keyof typeof handlers];
 
                 graphics.on(type, function testEvent(e)
                 {
-                    expect(e.nativeEvent.clientX).to.equal(clientX);
-                    expect(e.nativeEvent.clientY).to.equal(clientY);
+                    expect(e.nativeEvent.clientX).toEqual(clientX);
+                    expect(e.nativeEvent.clientY).toEqual(clientY);
                     eventSpy();
                 });
 
@@ -148,8 +152,7 @@ describe('EventSystem', function ()
                         changedTouches: [
                             new Touch({
                                 identifier: 0,
-                                target: renderer.view,
-                                isPrimary: true,
+                                target: renderer.view as EventTarget,
                                 clientX,
                                 clientY,
                             }),
@@ -163,12 +166,12 @@ describe('EventSystem', function ()
 
                 renderer.events[handler](event);
 
-                expect(eventSpy).to.have.been.calledOnce;
+                expect(eventSpy).toHaveBeenCalledOnce();
             });
         });
     });
 
-    it('should manage the CSS cursor', function ()
+    it('should manage the CSS cursor', () =>
     {
         const renderer = createRenderer();
         const [stage, graphics] = createScene();
@@ -184,9 +187,9 @@ describe('EventSystem', function ()
             })
         );
 
-        expect(renderer.view.style.cursor).to.equal('copy');
+        expect(renderer.view.style.cursor).toEqual('copy');
 
-        const eventSpy = sinon.spy();
+        const eventSpy = jest.fn();
 
         graphics.on('mousemove', eventSpy);
         renderer.events.onPointerMove(
@@ -197,11 +200,11 @@ describe('EventSystem', function ()
             })
         );
 
-        expect(eventSpy).to.not.have.been.called;
-        expect(renderer.view.style.cursor).to.equal('inherit');
+        expect(eventSpy).not.toBeCalled();
+        expect(renderer.view.style.cursor).toEqual('inherit');
     });
 
-    it('should dispatch synthetic over/out events on pointermove', function ()
+    it('should dispatch synthetic over/out events on pointermove', () =>
     {
         const renderer = createRenderer();
         const [stage, graphics] = createScene();
@@ -214,45 +217,45 @@ describe('EventSystem', function ()
         renderer.render(stage);
         second.interactive = true;
 
-        const primaryOverSpy = sinon.spy();
-        const primaryOutSpy = sinon.spy();
-        const primaryMoveSpy = sinon.spy();
+        const primaryOverSpy = jest.fn();
+        const primaryOutSpy = jest.fn();
+        const primaryMoveSpy = jest.fn();
 
         let callCount = 0;
 
-        graphics.on('pointerover', function ()
+        graphics.on('pointerover', () =>
         {
-            expect(callCount).to.equal(0);
+            expect(callCount).toEqual(0);
             primaryOverSpy();
             ++callCount;
         });
-        graphics.on('pointermove', function ()
+        graphics.on('pointermove', () =>
         {
-            expect(callCount).to.equal(1);
+            expect(callCount).toEqual(1);
             primaryMoveSpy();
             ++callCount;
         });
-        graphics.on('pointerout', function ()
+        graphics.on('pointerout', () =>
         {
-            expect(callCount).to.equal(2);
+            expect(callCount).toEqual(2);
             primaryOutSpy();
             ++callCount;
         });
 
-        const secondaryOverSpy = sinon.spy();
-        const secondaryOutSpy = sinon.spy();
-        const secondaryMoveSpy = sinon.spy();
+        const secondaryOverSpy = jest.fn();
+        const secondaryOutSpy = jest.fn();
+        const secondaryMoveSpy = jest.fn();
 
-        second.on('pointerover', function ()
+        second.on('pointerover', () =>
         {
-            expect(callCount).to.equal(3);
+            expect(callCount).toEqual(3);
             secondaryOverSpy();
             ++callCount;
         });
         second.on('pointerout', secondaryOutSpy);
-        second.on('pointermove', function ()
+        second.on('pointermove', () =>
         {
-            expect(callCount).to.equal(4);
+            expect(callCount).toEqual(4);
             secondaryMoveSpy();
             ++callCount;
         });
@@ -260,29 +263,29 @@ describe('EventSystem', function ()
         renderer.events.onPointerMove(
             new PointerEvent('pointermove', { clientX: 25, clientY: 25 })
         );
-        expect(primaryOverSpy).to.have.been.calledOnce;
-        expect(primaryMoveSpy).to.have.been.calledOnce;
+        expect(primaryOverSpy).toHaveBeenCalledOnce();
+        expect(primaryMoveSpy).toHaveBeenCalledOnce();
 
         renderer.events.onPointerMove(
             new PointerEvent('pointermove', { clientX: 125, clientY: 25 })
         );
-        expect(primaryOutSpy).to.have.been.calledOnce;
-        expect(secondaryOverSpy).to.have.been.calledOnce;
-        expect(secondaryMoveSpy).to.have.been.calledOnce;
-        expect(secondaryOutSpy).to.not.have.been.calledOnce;
+        expect(primaryOutSpy).toHaveBeenCalledOnce();
+        expect(secondaryOverSpy).toHaveBeenCalledOnce();
+        expect(secondaryMoveSpy).toHaveBeenCalledOnce();
+        expect(secondaryOutSpy).not.toBeCalledTimes(1);
     });
 
-    it('should dispatch click events', function ()
+    it('should dispatch click events', () =>
     {
         const renderer = createRenderer();
         const [stage, graphics] = createScene();
-        const eventSpy = sinon.spy();
+        const eventSpy = jest.fn();
 
         renderer.render(stage);
 
-        graphics.addEventListener('pointertap', function (e)
+        graphics.addEventListener('pointertap', (e) =>
         {
-            expect(e.type).to.equal('click');
+            expect(e.type).toEqual('click');
             eventSpy();
         });
 
@@ -298,22 +301,22 @@ describe('EventSystem', function ()
         });
         renderer.events.onPointerUp(e);
 
-        expect(eventSpy).to.have.been.calledOnce;
+        expect(eventSpy).toHaveBeenCalledOnce();
     });
 
-    it('should set the detail of click events to the click count', function (done)
+    it('should set the detail of click events to the click count', (done) =>
     {
         const renderer = createRenderer();
         const [stage, graphics] = createScene();
-        const eventSpy = sinon.spy();
+        const eventSpy = jest.fn();
         let clickCount = 0;
 
         renderer.render(stage);
 
-        graphics.addEventListener('pointertap', function (e)
+        graphics.addEventListener('pointertap', (e) =>
         {
             ++clickCount;
-            expect(e.detail).to.equal(clickCount);
+            expect((e as PointerEvent).detail).toEqual(clickCount);
             eventSpy();
         });
 
@@ -332,19 +335,19 @@ describe('EventSystem', function ()
             renderer.events.onPointerUp(e);
         }
 
-        expect(eventSpy).to.have.been.calledThrice;
+        expect(eventSpy).toBeCalledTimes(3);
 
         graphics.removeAllListeners();
 
-        const newSpy = sinon.spy();
+        const newSpy = jest.fn();
 
-        graphics.addEventListener('pointertap', function (e)
+        graphics.addEventListener('pointertap', (e) =>
         {
-            expect(e.detail).to.equal(1);
+            expect((e as PointerEvent).detail).toEqual(1);
             newSpy();
         });
 
-        setTimeout(function ()
+        setTimeout(() =>
         {
             renderer.events.onPointerDown(
                 new PointerEvent('pointerdown', { clientX: 25, clientY: 25 })
@@ -358,7 +361,7 @@ describe('EventSystem', function ()
             });
             renderer.events.onPointerUp(e);
 
-            expect(newSpy).to.have.been.calledOnce;
+            expect(newSpy).toHaveBeenCalledOnce();
             done();
         }, 800);
     });

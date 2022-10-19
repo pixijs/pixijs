@@ -1,9 +1,12 @@
 import { GLBuffer } from './GLBuffer';
 
 import type { Renderer } from '../Renderer';
-import type { IRenderingContext } from '../IRenderingContext';
 import type { Buffer } from './Buffer';
-import type { ISystem } from '../ISystem';
+import type { ISystem } from '../system/ISystem';
+import type { IRenderingContext } from '../IRenderer';
+import type { ExtensionMetadata } from '@pixi/extensions';
+import { extensions, ExtensionType } from '@pixi/extensions';
+import type { BUFFER_TYPE } from '@pixi/constants';
 
 /**
  * System plugin to the renderer to manage buffers.
@@ -19,13 +22,17 @@ import type { ISystem } from '../ISystem';
  * This system will handle the binding of buffers to the GPU as well as uploading
  * them. With this system, you never need to work directly with GPU buffers, but instead work with
  * the PIXI.Buffer class.
- *
- *
  * @class
  * @memberof PIXI
  */
 export class BufferSystem implements ISystem
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        type: ExtensionType.RendererSystem,
+        name: 'buffer',
+    };
+
     CONTEXT_UID: number;
     gl: IRenderingContext;
 
@@ -55,9 +62,7 @@ export class BufferSystem implements ISystem
         this.renderer = null;
     }
 
-    /**
-     * Sets up the renderer context and necessary buffers.
-     */
+    /** Sets up the renderer context and necessary buffers. */
     protected contextChange(): void
     {
         this.disposeAll(true);
@@ -70,7 +75,6 @@ export class BufferSystem implements ISystem
 
     /**
      * This binds specified buffer. On first run, it will create the webGL buffers for the context too
-     *
      * @param buffer - the buffer to bind to the renderer
      */
     bind(buffer: Buffer): void
@@ -82,11 +86,17 @@ export class BufferSystem implements ISystem
         gl.bindBuffer(buffer.type, glBuffer.buffer);
     }
 
+    unbind(type: BUFFER_TYPE): void
+    {
+        const { gl } = this;
+
+        gl.bindBuffer(type, null);
+    }
+
     /**
      * Binds an uniform buffer to at the given index.
      *
      * A cache is used so a buffer will not be bound again if already bound.
-     *
      * @param buffer - the buffer to bind
      * @param index - the base index to bind it to.
      */
@@ -107,7 +117,6 @@ export class BufferSystem implements ISystem
     /**
      * Binds a buffer whilst also binding its range.
      * This will make the buffer start from the offset supplied rather than 0 when it is read.
-     *
      * @param buffer - the buffer to bind
      * @param index - the base index to bind at, defaults to 0
      * @param offset - the offset to bind at (this is blocks of 256). 0 = 0, 1 = 256, 2 = 512 etc
@@ -124,15 +133,14 @@ export class BufferSystem implements ISystem
     }
 
     /**
-     * Will ensure sure the the data in the buffer is uploaded to the GPU.
-     *
+     * Will ensure the data in the buffer is uploaded to the GPU.
      * @param {PIXI.Buffer} buffer - the buffer to update
      */
     update(buffer: Buffer): void
     {
         const { gl, CONTEXT_UID } = this;
 
-        const glBuffer = buffer._glBuffers[CONTEXT_UID];
+        const glBuffer = buffer._glBuffers[CONTEXT_UID] || this.createGLBuffer(buffer);
 
         if (buffer._updateID === glBuffer.updateID)
         {
@@ -205,6 +213,7 @@ export class BufferSystem implements ISystem
 
     /**
      * creates and attaches a GLBuffer object tied to the current context.
+     * @param buffer
      * @protected
      */
     protected createGLBuffer(buffer: Buffer): GLBuffer
@@ -220,3 +229,5 @@ export class BufferSystem implements ISystem
         return buffer._glBuffers[CONTEXT_UID];
     }
 }
+
+extensions.add(BufferSystem);

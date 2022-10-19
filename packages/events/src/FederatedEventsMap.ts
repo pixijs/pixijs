@@ -1,5 +1,5 @@
-import { FederatedPointerEvent } from './FederatedPointerEvent';
-import { FederatedWheelEvent } from './FederatedWheelEvent';
+import type { FederatedPointerEvent } from './FederatedPointerEvent';
+import type { FederatedWheelEvent } from './FederatedWheelEvent';
 
 export type FederatedEventsMap = {
     click: FederatedPointerEvent;

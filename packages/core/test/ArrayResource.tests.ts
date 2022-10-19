@@ -1,66 +1,67 @@
+import type { BaseTexture } from '@pixi/core';
 import { ArrayResource, ImageResource } from '@pixi/core';
 import { join } from 'path';
-import sinon from 'sinon';
-import { expect } from 'chai';
 
-describe('ArrayResource', function ()
+describe('ArrayResource', () =>
 {
-    before(function ()
+    let basePath: string;
+    let imageUrl: string;
+
+    beforeAll(() =>
     {
-        this.basePath = join(__dirname, 'resources');
-        this.imageUrl = join(this.basePath, 'slug.png');
+        basePath = join(__dirname, 'resources');
+        imageUrl = join(basePath, 'slug.png');
     });
 
-    it('should create new resource by length', function ()
+    it('should create new resource by length', () =>
     {
         const resource = new ArrayResource(5, { width: 100, height: 100 });
 
         resource.destroy();
-        expect(resource.destroyed).to.be.true;
+        expect(resource.destroyed).toBe(true);
     });
 
-    it('should error on out of bound', function ()
+    it('should error on out of bound', () =>
     {
         const resource = new ArrayResource(5, { width: 100, height: 100 });
-        const image = new ImageResource(this.imageUrl);
+        const image = new ImageResource(imageUrl);
 
-        expect(() => resource.addResourceAt(image, 10)).to.throw(Error, /out of bounds/);
+        expect(() => resource.addResourceAt(image, 10)).toThrowWithMessage(Error, 'Index 10 is out of bounds');
 
         resource.destroy();
     });
 
-    it('should load array of URL resources', function ()
+    it('should load array of URL resources', () =>
     {
         const images = [
-            this.imageUrl,
-            this.imageUrl,
-            this.imageUrl,
-            this.imageUrl,
+            imageUrl,
+            imageUrl,
+            imageUrl,
+            imageUrl,
         ];
 
         const resource = new ArrayResource(images, {
             width: 100,
             height: 100,
-            autoLoad: false,
         });
         const baseTexture = {
-            setRealSize: sinon.stub(),
-            update: sinon.stub(),
-        };
+            setRealSize: jest.fn(),
+            update: jest.fn(),
+        } as unknown as BaseTexture;
 
         resource.bind(baseTexture);
 
         return resource.load().then((res) =>
         {
-            expect(res).to.equal(resource);
-            expect(baseTexture.setRealSize.calledOnce).to.be.true;
+            expect(res).toEqual(resource);
+            expect(baseTexture.setRealSize).toBeCalledTimes(1);
             for (let i = 0; i < images.length; i++)
             {
                 const item = resource.items[i].resource;
 
-                expect(item.valid).to.be.true;
-                expect(item.width).to.equal(100);
-                expect(item.height).to.equal(100);
+                expect(item.valid).toBe(true);
+                expect(item.width).toEqual(100);
+                expect(item.height).toEqual(100);
             }
             resource.unbind(baseTexture);
             resource.destroy();

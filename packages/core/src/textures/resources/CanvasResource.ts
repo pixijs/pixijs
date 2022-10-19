@@ -1,36 +1,34 @@
 import { BaseImageResource } from './BaseImageResource';
 
+import type { ICanvas } from '@pixi/settings';
+
 /**
  * @interface OffscreenCanvas
  */
 
 /**
- * Resource type for HTMLCanvasElement.
- * @class
- * @extends PIXI.BaseImageResource
+ * Resource type for HTMLCanvasElement and OffscreenCanvas.
  * @memberof PIXI
  */
 export class CanvasResource extends BaseImageResource
 {
     /**
-     * @param {HTMLCanvasElement} source - Canvas element to use
+     * @param source - Canvas element to use
      */
     // eslint-disable-next-line @typescript-eslint/no-useless-constructor
-    constructor(source: HTMLCanvasElement)
+    constructor(source: ICanvas)
     {
         super(source);
     }
 
     /**
      * Used to auto-detect the type of resource.
-     *
-     * @static
-     * @param {HTMLCanvasElement|OffscreenCanvas} source - The source object
-     * @return {boolean} `true` if source is HTMLCanvasElement or OffscreenCanvas
+     * @param {*} source - The source object
+     * @returns {boolean} `true` if source is HTMLCanvasElement or OffscreenCanvas
      */
-    static test(source: unknown): source is OffscreenCanvas|HTMLCanvasElement
+    static test(source: unknown): source is OffscreenCanvas | HTMLCanvasElement
     {
-        const { OffscreenCanvas } = self;
+        const { OffscreenCanvas } = globalThis;
 
         // Check for browsers that don't yet support OffscreenCanvas
         if (OffscreenCanvas && source instanceof OffscreenCanvas)
@@ -38,6 +36,6 @@ export class CanvasResource extends BaseImageResource
             return true;
         }
 
-        return self.HTMLCanvasElement && source instanceof HTMLCanvasElement;
+        return globalThis.HTMLCanvasElement && source instanceof HTMLCanvasElement;
     }
 }

@@ -1,18 +1,19 @@
 import { settings } from '@pixi/settings';
 
+import type { ICanvas, ICanvasRenderingContext2D } from '@pixi/settings';
+
 /**
  * Creates a Canvas element of the given size to be used as a target for rendering to.
- *
  * @class
  * @memberof PIXI.utils
  */
 export class CanvasRenderTarget
 {
     /** The Canvas object that belongs to this CanvasRenderTarget. */
-    public canvas: HTMLCanvasElement;
+    public canvas: ICanvas;
 
     /** A CanvasRenderingContext2D object representing a two-dimensional rendering context. */
-    public context: CanvasRenderingContext2D;
+    public context: ICanvasRenderingContext2D;
 
     /**
      * The resolution / device pixel ratio of the canvas
@@ -27,7 +28,7 @@ export class CanvasRenderTarget
      */
     constructor(width: number, height: number, resolution?: number)
     {
-        this.canvas = document.createElement('canvas');
+        this.canvas = settings.ADAPTER.createCanvas();
 
         this.context = this.canvas.getContext('2d');
 
@@ -38,7 +39,6 @@ export class CanvasRenderTarget
 
     /**
      * Clears the canvas that was created by the CanvasRenderTarget class.
-     *
      * @private
      */
     clear(): void
@@ -49,7 +49,6 @@ export class CanvasRenderTarget
 
     /**
      * Resizes the canvas to the specified width and height.
-     *
      * @param desiredWidth - the desired width of the canvas
      * @param desiredHeight - the desired height of the canvas
      */
@@ -68,7 +67,6 @@ export class CanvasRenderTarget
 
     /**
      * The width of the canvas buffer in pixels.
-     *
      * @member {number}
      */
     get width(): number
@@ -83,7 +81,6 @@ export class CanvasRenderTarget
 
     /**
      * The height of the canvas buffer in pixels.
-     *
      * @member {number}
      */
     get height(): number

@@ -1,69 +1,98 @@
 import { ENV } from '@pixi/constants';
+import { extensions, ExtensionType } from '@pixi/extensions';
 import { settings } from '../settings';
 
-import type { ISystem } from '../ISystem';
-import type { IRenderingContext } from '../IRenderingContext';
+import type { ExtensionMetadata } from '@pixi/extensions';
+import type { ICanvas } from '@pixi/settings';
+import type { ISystem } from '../system/ISystem';
 import type { Renderer } from '../Renderer';
 import type { WebGLExtensions } from './WebGLExtensions';
+import type { IRenderingContext } from '../IRenderer';
 
 let CONTEXT_UID_COUNTER = 0;
 
-export interface ISupportDict {
+export interface ISupportDict
+{
     uint32Indices: boolean;
+}
+
+export interface ContextOptions
+{
+    context?: IRenderingContext;
+    /**
+     * Use premultipliedAlpha instead
+     * @deprecated since 7.0.0
+     */
+    useContextAlpha?: boolean | 'notMultiplied';
+    premultipliedAlpha?: boolean;
+    powerPreference?: WebGLPowerPreference;
+    preserveDrawingBuffer?: boolean;
+    antialias?: boolean;
 }
 
 /**
  * System plugin to the renderer to manage the context.
- *
- * @class
- * @extends PIXI.System
  * @memberof PIXI
  */
-export class ContextSystem implements ISystem
+export class ContextSystem implements ISystem<ContextOptions>
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        type: ExtensionType.RendererSystem,
+        name: 'context',
+    };
+
+    /**
+     * Either 1 or 2 to reflect the WebGL version being used.
+     * @readonly
+     */
     public webGLVersion: number;
+
+    /**
+     * Features supported by current context.
+     * @type {object}
+     * @readonly
+     * @property {boolean} uint32Indices - Support for 32-bit indices buffer.
+     */
     readonly supports: ISupportDict;
+
+    preserveDrawingBuffer: boolean;
+    powerPreference: WebGLPowerPreference;
+
+    /**
+     * Pass-thru setting for the canvas' context `alpha` property. This is typically
+     * not something you need to fiddle with. If you want transparency, use `backgroundAlpha`.
+     * @member {boolean}
+     * @deprecated since 7.0.0
+     */
+    useContextAlpha: boolean | 'notMultiplied';
 
     protected CONTEXT_UID: number;
     protected gl: IRenderingContext;
 
+    /**
+     * Extensions available.
+     * @type {object}
+     * @readonly
+     * @property {WEBGL_draw_buffers} drawBuffers - WebGL v1 extension
+     * @property {WEBGL_depth_texture} depthTexture - WebGL v1 extension
+     * @property {OES_texture_float} floatTexture - WebGL v1 extension
+     * @property {WEBGL_lose_context} loseContext - WebGL v1 extension
+     * @property {OES_vertex_array_object} vertexArrayObject - WebGL v1 extension
+     * @property {EXT_texture_filter_anisotropic} anisotropicFiltering - WebGL v1 and v2 extension
+     */
     public extensions: WebGLExtensions;
+
     private renderer: Renderer;
 
-    /**
-     * @param {PIXI.Renderer} renderer - The renderer this System works for.
-     */
+    /** @param renderer - The renderer this System works for. */
     constructor(renderer: Renderer)
     {
         this.renderer = renderer;
 
-        /**
-         * Either 1 or 2 to reflect the WebGL version being used
-         * @member {number}
-         * @readonly
-         */
         this.webGLVersion = 1;
-
-        /**
-         * Extensions being used
-         * @member {object}
-         * @readonly
-         * @property {WEBGL_draw_buffers} drawBuffers - WebGL v1 extension
-         * @property {WEBGL_depth_texture} depthTexture - WebGL v1 extension
-         * @property {OES_texture_float} floatTexture - WebGL v1 extension
-         * @property {WEBGL_lose_context} loseContext - WebGL v1 extension
-         * @property {OES_vertex_array_object} vertexArrayObject - WebGL v1 extension
-         * @property {EXT_texture_filter_anisotropic} anisotropicFiltering - WebGL v1 and v2 extension
-         */
         this.extensions = {};
 
-        /**
-         * Features supported by current context
-         * @member {object}
-         * @private
-         * @readonly
-         * @property {boolean} uint32Indices - Supports of 32-bit indices buffer
-         */
         this.supports = {
             uint32Indices: false,
         };
@@ -71,14 +100,10 @@ export class ContextSystem implements ISystem
         // Bind functions
         this.handleContextLost = this.handleContextLost.bind(this);
         this.handleContextRestored = this.handleContextRestored.bind(this);
-
-        (renderer.view as any).addEventListener('webglcontextlost', this.handleContextLost, false);
-        renderer.view.addEventListener('webglcontextrestored', this.handleContextRestored, false);
     }
 
     /**
      * `true` if the context is lost
-     * @member {boolean}
      * @readonly
      */
     get isLost(): boolean
@@ -87,8 +112,8 @@ export class ContextSystem implements ISystem
     }
 
     /**
-     * Handle the context change event
-     * @param {WebGLRenderingContext} gl - new webgl context
+     * Handles the context change event.
+     * @param {WebGLRenderingContext} gl - New WebGL context.
      */
     protected contextChange(gl: IRenderingContext): void
     {
@@ -103,9 +128,37 @@ export class ContextSystem implements ISystem
         }
     }
 
+    init(options: ContextOptions): void
+    {
+        /*
+         * The options passed in to create a new WebGL context.
+         */
+        if (options.context)
+        {
+            this.initFromContext(options.context);
+        }
+        else
+        {
+            const alpha = this.renderer.background.alpha < 1;
+            const premultipliedAlpha =  options.premultipliedAlpha ?? true;
+
+            this.preserveDrawingBuffer = options.preserveDrawingBuffer;
+            this.useContextAlpha = options.useContextAlpha;
+            this.powerPreference = options.powerPreference;
+
+            this.initFromOptions({
+                alpha,
+                premultipliedAlpha,
+                antialias: options.antialias,
+                stencil: true,
+                preserveDrawingBuffer: options.preserveDrawingBuffer,
+                powerPreference: options.powerPreference,
+            });
+        }
+    }
+
     /**
-     * Initialize the context
-     *
+     * Initializes the context.
      * @protected
      * @param {WebGLRenderingContext} gl - WebGL context
      */
@@ -116,11 +169,18 @@ export class ContextSystem implements ISystem
         this.renderer.gl = gl;
         this.renderer.CONTEXT_UID = CONTEXT_UID_COUNTER++;
         this.renderer.runners.contextChange.emit(gl);
+
+        const view = this.renderer.view;
+
+        if (view.addEventListener !== undefined)
+        {
+            view.addEventListener('webglcontextlost', this.handleContextLost, false);
+            view.addEventListener('webglcontextrestored', this.handleContextRestored, false);
+        }
     }
 
     /**
      * Initialize from context options
-     *
      * @protected
      * @see https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/getContext
      * @param {object} options - context attributes
@@ -134,14 +194,13 @@ export class ContextSystem implements ISystem
 
     /**
      * Helper class to create a WebGL Context
-     *
-     * @param {HTMLCanvasElement} canvas - the canvas element that we will get the context from
-     * @param {object} options - An options object that gets passed in to the canvas element containing the
+     * @param canvas - the canvas element that we will get the context from
+     * @param options - An options object that gets passed in to the canvas element containing the
      *    context attributes
      * @see https://developer.mozilla.org/en/docs/Web/API/HTMLCanvasElement/getContext
-     * @return {WebGLRenderingContext} the WebGL context
+     * @returns {WebGLRenderingContext} the WebGL context
      */
-    createContext(canvas: HTMLCanvasElement, options: WebGLContextAttributes): IRenderingContext
+    createContext(canvas: ICanvas, options: WebGLContextAttributes): IRenderingContext
     {
         let gl;
 
@@ -158,8 +217,7 @@ export class ContextSystem implements ISystem
         {
             this.webGLVersion = 1;
 
-            gl = canvas.getContext('webgl', options)
-            || canvas.getContext('experimental-webgl', options);
+            gl = canvas.getContext('webgl', options) || canvas.getContext('experimental-webgl', options);
 
             if (!gl)
             {
@@ -175,11 +233,7 @@ export class ContextSystem implements ISystem
         return this.gl;
     }
 
-    /**
-     * Auto-populate the extensions
-     *
-     * @protected
-     */
+    /** Auto-populate the {@link PIXI.ContextSystem.extensions extensions}. */
     protected getExtensions(): void
     {
         // time to set up default extensions that Pixi uses.
@@ -227,8 +281,6 @@ export class ContextSystem implements ISystem
 
     /**
      * Handles a lost webgl context
-     *
-     * @protected
      * @param {WebGLContextEvent} event - The context lost event.
      */
     protected handleContextLost(event: WebGLContextEvent): void
@@ -236,11 +288,7 @@ export class ContextSystem implements ISystem
         event.preventDefault();
     }
 
-    /**
-     * Handles a restored webgl context
-     *
-     * @protected
-     */
+    /** Handles a restored webgl context. */
     protected handleContextRestored(): void
     {
         this.renderer.runners.contextChange.emit(this.gl);
@@ -253,8 +301,11 @@ export class ContextSystem implements ISystem
         this.renderer = null;
 
         // remove listeners
-        (view as any).removeEventListener('webglcontextlost', this.handleContextLost);
-        view.removeEventListener('webglcontextrestored', this.handleContextRestored);
+        if (view.removeEventListener !== undefined)
+        {
+            view.removeEventListener('webglcontextlost', this.handleContextLost);
+            view.removeEventListener('webglcontextrestored', this.handleContextRestored);
+        }
 
         this.gl.useProgram(null);
 
@@ -264,30 +315,24 @@ export class ContextSystem implements ISystem
         }
     }
 
-    /**
-     * Handle the post-render runner event
-     *
-     * @protected
-     */
+    /** Handle the post-render runner event. */
     protected postrender(): void
     {
-        if (this.renderer.renderingToScreen)
+        if (this.renderer.objectRenderer.renderingToScreen)
         {
             this.gl.flush();
         }
     }
 
     /**
-     * Validate context
-     *
-     * @protected
-     * @param {WebGLRenderingContext} gl - Render context
+     * Validate context.
+     * @param {WebGLRenderingContext} gl - Render context.
      */
     protected validateContext(gl: IRenderingContext): void
     {
         const attributes = gl.getContextAttributes();
 
-        const isWebGl2 = 'WebGL2RenderingContext' in self && gl instanceof self.WebGL2RenderingContext;
+        const isWebGl2 = 'WebGL2RenderingContext' in globalThis && gl instanceof globalThis.WebGL2RenderingContext;
 
         if (isWebGl2)
         {
@@ -295,7 +340,7 @@ export class ContextSystem implements ISystem
         }
 
         // this is going to be fairly simple for now.. but at least we have room to grow!
-        if (!attributes.stencil)
+        if (attributes && !attributes.stencil)
         {
             /* eslint-disable max-len, no-console */
             console.warn('Provided WebGL context does not have a stencil buffer, masks may not render correctly');
@@ -314,3 +359,5 @@ export class ContextSystem implements ISystem
         }
     }
 }
+
+extensions.add(ContextSystem);

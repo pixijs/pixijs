@@ -1,11 +1,10 @@
-import { Point } from '@pixi/math';
+import { Point } from '@pixi/core';
 import type { EventBoundary } from './EventBoundary';
 import type { FederatedEventTarget } from './FederatedEventTarget';
 
 /**
  * An DOM-compatible synthetic event implementation that is "forwarded" on behalf of an original
  * FederatedEvent or native {@link https://dom.spec.whatwg.org/#event Event}.
- *
  * @memberof PIXI
  * @typeParam N - The type of native event held.
  */
@@ -14,7 +13,7 @@ export class FederatedEvent<N extends UIEvent = UIEvent> implements UIEvent
     /** Flags whether this event bubbles. This will take effect only if it is set before propagation. */
     public bubbles = true;
 
-    /** @deprecated */
+    /** @deprecated since 7.0.0 */
     public cancelBubble = true;
 
     /**
@@ -26,7 +25,6 @@ export class FederatedEvent<N extends UIEvent = UIEvent> implements UIEvent
     /**
      * Flag added for compatibility with DOM {@code Event}. It is not used in the Federated Events
      * API.
-     *
      * @see https://dom.spec.whatwg.org/#dom-event-composed
      */
     public readonly composed = false;
@@ -39,7 +37,6 @@ export class FederatedEvent<N extends UIEvent = UIEvent> implements UIEvent
 
     /**
      * The propagation phase.
-     *
      * @default {@link FederatedEvent.NONE}
      */
     public eventPhase = FederatedEvent.prototype.NONE;
@@ -47,10 +44,10 @@ export class FederatedEvent<N extends UIEvent = UIEvent> implements UIEvent
     /** Flags whether this is a user-trusted event */
     public isTrusted: boolean;
 
-    /** @deprecated */
+    /** @deprecated since 7.0.0 */
     public returnValue: boolean;
 
-    /** @deprecated */
+    /** @deprecated since 7.0.0 */
     public srcElement: EventTarget;
 
     /** The event target that this will be dispatched to. */
@@ -88,14 +85,11 @@ export class FederatedEvent<N extends UIEvent = UIEvent> implements UIEvent
 
     /**
      * Not supported.
-     * @deprecated
+     * @deprecated since 7.0.0
      */
     public which: number;
 
-    /**
-     * The coordinates of the evnet relative to the nearest DOM layer. This is a non-standard
-     * property.
-     */
+    /** The coordinates of the evnet relative to the nearest DOM layer. This is a non-standard property. */
     public layer: Point = new Point();
 
     /** @readonly */
@@ -104,9 +98,7 @@ export class FederatedEvent<N extends UIEvent = UIEvent> implements UIEvent
     /** @readonly */
     get layerY(): number { return this.layer.y; }
 
-    /**
-     * The coordinates of the event relative to the DOM document. This is a non-standard property.
-     */
+    /** The coordinates of the event relative to the DOM document. This is a non-standard property. */
     public page: Point = new Point();
 
     /** @readonly */
@@ -126,17 +118,14 @@ export class FederatedEvent<N extends UIEvent = UIEvent> implements UIEvent
 
     /**
      * Fallback for the deprecated {@link PIXI.InteractionEvent.data}.
-     *
-     * @deprecated
+     * @deprecated since 7.0.0
      */
     get data(): this
     {
         return this;
     }
 
-    /**
-     * The propagation path for this event. Alias for {@link EventBoundary.propagationPath}.
-     */
+    /** The propagation path for this event. Alias for {@link EventBoundary.propagationPath}. */
     composedPath(): FederatedEventTarget[]
     {
         // Find the propagation path if it isn't cached or if the target has changed since since
@@ -150,8 +139,11 @@ export class FederatedEvent<N extends UIEvent = UIEvent> implements UIEvent
     }
 
     /**
-     * Unimplemented method included for implementing the DOM interface {@code Event}. It will throw
-     * an {@code Error}.
+     * Unimplemented method included for implementing the DOM interface {@code Event}. It will throw an {@code Error}.
+     * @deprecated
+     * @param _type
+     * @param _bubbles
+     * @param _cancelable
      */
     initEvent(_type: string, _bubbles?: boolean, _cancelable?: boolean): void
     {
@@ -159,8 +151,21 @@ export class FederatedEvent<N extends UIEvent = UIEvent> implements UIEvent
     }
 
     /**
-     * Prevent default behavior of PixiJS and the user agent.
+     * Unimplemented method included for implementing the DOM interface {@code UIEvent}. It will throw an {@code Error}.
+     * @deprecated
+     * @param _typeArg
+     * @param _bubblesArg
+     * @param _cancelableArg
+     * @param _viewArg
+     * @param _detailArg
      */
+    initUIEvent(_typeArg: string, _bubblesArg?: boolean, _cancelableArg?: boolean, _viewArg?: Window | null,
+        _detailArg?: number): void
+    {
+        throw new Error('initUIEvent() is a legacy DOM API. It is not implemented in the Federated Events API.');
+    }
+
+    /** Prevent default behavior of PixiJS and the user agent. */
     preventDefault(): void
     {
         if (this.nativeEvent instanceof Event && this.nativeEvent.cancelable)

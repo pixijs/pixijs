@@ -1,16 +1,14 @@
-import { TYPES } from '@pixi/constants';
-import { ObjectRenderer, Shader, State } from '@pixi/core';
-import { Matrix } from '@pixi/math';
-import { correctBlendMode, premultiplyRgba, premultiplyTint } from '@pixi/utils';
+import { TYPES, Matrix, extensions, ExtensionType, ObjectRenderer, Shader, State, utils } from '@pixi/core';
 import { ParticleBuffer } from './ParticleBuffer';
 import fragment from './particles.frag';
 import vertex from './particles.vert';
 
-import type { DisplayObject } from '@pixi/display';
 import type { ParticleContainer } from './ParticleContainer';
-import type { Renderer } from '@pixi/core';
+import type { Renderer, ExtensionMetadata } from '@pixi/core';
+import type { Sprite } from '@pixi/sprite';
 
-export interface IParticleRendererProperty {
+export interface IParticleRendererProperty
+{
     attributeName: string;
     size: number;
     type?: TYPES;
@@ -32,19 +30,26 @@ export interface IParticleRendererProperty {
 
 /**
  * Renderer for Particles that is designer for speed over feature set.
- *
- * @class
  * @memberof PIXI
  */
 export class ParticleRenderer extends ObjectRenderer
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        name: 'particle',
+        type: ExtensionType.RendererPlugin,
+    };
+
+    /** The WebGL state in which this renderer will work. */
     public readonly state: State;
+
+    /** The default shader that is used if a sprite doesn't have a more specific one. */
     public shader: Shader;
     public tempMatrix: Matrix;
     public properties: IParticleRendererProperty[];
 
     /**
-     * @param {PIXI.Renderer} renderer - The renderer this sprite batch works for.
+     * @param renderer - The renderer this sprite batch works for.
      */
     constructor(renderer: Renderer)
     {
@@ -56,11 +61,6 @@ export class ParticleRenderer extends ObjectRenderer
         // Creating a full index buffer, overhead is 98304 * 2 = 196Ko
         // let numIndices = 98304;
 
-        /**
-         * The default shader that is used if a sprite doesn't have a more specific one.
-         *
-         * @member {PIXI.Shader}
-         */
         this.shader = null;
 
         this.properties = null;
@@ -107,20 +107,12 @@ export class ParticleRenderer extends ObjectRenderer
         ];
 
         this.shader = Shader.from(vertex, fragment, {});
-
-        /**
-         * The WebGL state in which this renderer will work.
-         *
-         * @member {PIXI.State}
-         * @readonly
-         */
         this.state = State.for2d();
     }
 
     /**
      * Renders the particle container object.
-     *
-     * @param {PIXI.ParticleContainer} container - The container to render using this ParticleRenderer
+     * @param container - The container to render using this ParticleRenderer.
      */
     public render(container: ParticleContainer): void
     {
@@ -146,10 +138,11 @@ export class ParticleRenderer extends ObjectRenderer
             buffers = container._buffers = this.generateBuffers(container);
         }
 
-        const baseTexture = (children[0] as any)._texture.baseTexture;
+        const baseTexture = children[0]._texture.baseTexture;
+        const premultiplied = baseTexture.alphaMode > 0;
 
         // if the uvs have not updated then no point rendering just yet!
-        this.state.blendMode = correctBlendMode(container.blendMode, baseTexture.alphaMode);
+        this.state.blendMode = utils.correctBlendMode(container.blendMode, premultiplied);
         renderer.state.set(this.state);
 
         const gl = renderer.gl;
@@ -160,8 +153,8 @@ export class ParticleRenderer extends ObjectRenderer
 
         this.shader.uniforms.translationMatrix = m.toArray(true);
 
-        this.shader.uniforms.uColor = premultiplyRgba(container.tintRgb,
-            container.worldAlpha, this.shader.uniforms.uColor, baseTexture.alphaMode);
+        this.shader.uniforms.uColor = utils.premultiplyRgba(container.tintRgb,
+            container.worldAlpha, this.shader.uniforms.uColor, premultiplied);
 
         this.shader.uniforms.uSampler = baseTexture;
 
@@ -206,11 +199,9 @@ export class ParticleRenderer extends ObjectRenderer
     }
 
     /**
-     * Creates one particle buffer for each child in the container we want to render and updates internal properties
-     *
-     * @param {PIXI.ParticleContainer} container - The container to render using this ParticleRenderer
-     * @return {PIXI.ParticleBuffer[]} The buffers
-     * @private
+     * Creates one particle buffer for each child in the container we want to render and updates internal properties.
+     * @param container - The container to render using this ParticleRenderer
+     * @returns - The buffers
      */
     private generateBuffers(container: ParticleContainer): ParticleBuffer[]
     {
@@ -228,11 +219,9 @@ export class ParticleRenderer extends ObjectRenderer
     }
 
     /**
-     * Creates one more particle buffer, because container has autoResize feature
-     *
-     * @param {PIXI.ParticleContainer} container - The container to render using this ParticleRenderer
-     * @return {PIXI.ParticleBuffer} generated buffer
-     * @private
+     * Creates one more particle buffer, because container has autoResize feature.
+     * @param container - The container to render using this ParticleRenderer
+     * @returns - The generated buffer
      */
     private _generateOneMoreBuffer(container: ParticleContainer): ParticleBuffer
     {
@@ -244,16 +233,15 @@ export class ParticleRenderer extends ObjectRenderer
 
     /**
      * Uploads the vertices.
-     *
-     * @param {PIXI.DisplayObject[]} children - the array of display objects to render
-     * @param {number} startIndex - the index to start from in the children array
-     * @param {number} amount - the amount of children that will have their vertices uploaded
-     * @param {number[]} array - The vertices to upload.
-     * @param {number} stride - Stride to use for iteration.
-     * @param {number} offset - Offset to start at.
+     * @param children - the array of sprites to render
+     * @param startIndex - the index to start from in the children array
+     * @param amount - the amount of children that will have their vertices uploaded
+     * @param array - The vertices to upload.
+     * @param stride - Stride to use for iteration.
+     * @param offset - Offset to start at.
      */
     public uploadVertices(
-        children: DisplayObject[], startIndex: number, amount: number,
+        children: Sprite[], startIndex: number, amount: number,
         array: number[], stride: number, offset: number
     ): void
     {
@@ -264,7 +252,7 @@ export class ParticleRenderer extends ObjectRenderer
 
         for (let i = 0; i < amount; ++i)
         {
-            const sprite: any = children[startIndex + i];
+            const sprite = children[startIndex + i];
             const texture = sprite._texture;
             const sx = sprite.scale.x;
             const sy = sprite.scale.y;
@@ -308,16 +296,15 @@ export class ParticleRenderer extends ObjectRenderer
 
     /**
      * Uploads the position.
-     *
-     * @param {PIXI.DisplayObject[]} children - the array of display objects to render
-     * @param {number} startIndex - the index to start from in the children array
-     * @param {number} amount - the amount of children that will have their positions uploaded
-     * @param {number[]} array - The vertices to upload.
-     * @param {number} stride - Stride to use for iteration.
-     * @param {number} offset - Offset to start at.
+     * @param children - the array of sprites to render
+     * @param startIndex - the index to start from in the children array
+     * @param amount - the amount of children that will have their positions uploaded
+     * @param array - The vertices to upload.
+     * @param stride - Stride to use for iteration.
+     * @param offset - Offset to start at.
      */
     public uploadPosition(
-        children: DisplayObject[], startIndex: number, amount: number,
+        children: Sprite[], startIndex: number, amount: number,
         array: number[], stride: number, offset: number
     ): void
     {
@@ -343,16 +330,15 @@ export class ParticleRenderer extends ObjectRenderer
 
     /**
      * Uploads the rotation.
-     *
-     * @param {PIXI.DisplayObject[]} children - the array of display objects to render
-     * @param {number} startIndex - the index to start from in the children array
-     * @param {number} amount - the amount of children that will have their rotation uploaded
-     * @param {number[]} array - The vertices to upload.
-     * @param {number} stride - Stride to use for iteration.
-     * @param {number} offset - Offset to start at.
+     * @param children - the array of sprites to render
+     * @param startIndex - the index to start from in the children array
+     * @param amount - the amount of children that will have their rotation uploaded
+     * @param array - The vertices to upload.
+     * @param stride - Stride to use for iteration.
+     * @param offset - Offset to start at.
      */
     public uploadRotation(
-        children: DisplayObject[], startIndex: number, amount: number,
+        children: Sprite[], startIndex: number, amount: number,
         array: number[], stride: number, offset: number
     ): void
     {
@@ -370,23 +356,22 @@ export class ParticleRenderer extends ObjectRenderer
     }
 
     /**
-     * Uploads the Uvs
-     *
-     * @param {PIXI.DisplayObject[]} children - the array of display objects to render
-     * @param {number} startIndex - the index to start from in the children array
-     * @param {number} amount - the amount of children that will have their rotation uploaded
-     * @param {number[]} array - The vertices to upload.
-     * @param {number} stride - Stride to use for iteration.
-     * @param {number} offset - Offset to start at.
+     * Uploads the UVs.
+     * @param children - the array of sprites to render
+     * @param startIndex - the index to start from in the children array
+     * @param amount - the amount of children that will have their rotation uploaded
+     * @param array - The vertices to upload.
+     * @param stride - Stride to use for iteration.
+     * @param offset - Offset to start at.
      */
     public uploadUvs(
-        children: DisplayObject[], startIndex: number, amount: number,
+        children: Sprite[], startIndex: number, amount: number,
         array: number[], stride: number, offset: number
     ): void
     {
         for (let i = 0; i < amount; ++i)
         {
-            const textureUvs = (children[startIndex + i] as any)._texture._uvs;
+            const textureUvs = children[startIndex + i]._texture._uvs;
 
             if (textureUvs)
             {
@@ -426,28 +411,27 @@ export class ParticleRenderer extends ObjectRenderer
 
     /**
      * Uploads the tint.
-     *
-     * @param {PIXI.DisplayObject[]} children - the array of display objects to render
-     * @param {number} startIndex - the index to start from in the children array
-     * @param {number} amount - the amount of children that will have their rotation uploaded
-     * @param {number[]} array - The vertices to upload.
-     * @param {number} stride - Stride to use for iteration.
-     * @param {number} offset - Offset to start at.
+     * @param children - the array of sprites to render
+     * @param startIndex - the index to start from in the children array
+     * @param amount - the amount of children that will have their rotation uploaded
+     * @param array - The vertices to upload.
+     * @param stride - Stride to use for iteration.
+     * @param offset - Offset to start at.
      */
     public uploadTint(
-        children: DisplayObject[], startIndex: number, amount: number,
+        children: Sprite[], startIndex: number, amount: number,
         array: number[], stride: number, offset: number
     ): void
     {
         for (let i = 0; i < amount; ++i)
         {
-            const sprite: any = children[startIndex + i];
+            const sprite = children[startIndex + i];
             const premultiplied = sprite._texture.baseTexture.alphaMode > 0;
             const alpha = sprite.alpha;
 
             // we dont call extra function if alpha is 1.0, that's faster
             const argb = alpha < 1.0 && premultiplied
-                ? premultiplyTint(sprite._tintRGB, alpha) : sprite._tintRGB + (alpha * 255 << 24);
+                ? utils.premultiplyTint(sprite._tintRGB, alpha) : sprite._tintRGB + (alpha * 255 << 24);
 
             array[offset] = argb;
             array[offset + stride] = argb;
@@ -458,9 +442,7 @@ export class ParticleRenderer extends ObjectRenderer
         }
     }
 
-    /**
-     * Destroys the ParticleRenderer.
-     */
+    /** Destroys the ParticleRenderer. */
     public destroy(): void
     {
         super.destroy();
@@ -474,3 +456,5 @@ export class ParticleRenderer extends ObjectRenderer
         this.tempMatrix = null;
     }
 }
+
+extensions.add(ParticleRenderer);

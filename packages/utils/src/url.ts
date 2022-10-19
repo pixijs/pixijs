@@ -1,4 +1,4 @@
-/**
+/*
  * This file contains redeclared types for Node `url` and `querystring` modules. These modules
  * don't provide their own typings but instead are a part of the full Node typings. The purpose of
  * this file is to redeclare the required types to avoid having the whole Node types as a
@@ -7,15 +7,18 @@
 
 import { parse as _parse, format as _format, resolve as _resolve } from 'url';
 
-interface ParsedUrlQuery {
+interface ParsedUrlQuery
+{
     [key: string]: string | string[];
 }
 
-interface ParsedUrlQueryInput {
+interface ParsedUrlQueryInput
+{
     [key: string]: unknown;
 }
 
-interface UrlObjectCommon {
+interface UrlObjectCommon
+{
     auth?: string;
     hash?: string;
     host?: string;
@@ -29,26 +32,31 @@ interface UrlObjectCommon {
 }
 
 // Input to `url.format`
-interface UrlObject extends UrlObjectCommon {
+interface UrlObject extends UrlObjectCommon
+{
     port?: string | number;
     query?: string | null | ParsedUrlQueryInput;
 }
 
 // Output of `url.parse`
-interface Url extends UrlObjectCommon {
+interface Url extends UrlObjectCommon
+{
     port?: string;
     query?: string | null | ParsedUrlQuery;
 }
 
-interface UrlWithParsedQuery extends Url {
+interface UrlWithParsedQuery extends Url
+{
     query: ParsedUrlQuery;
 }
 
-interface UrlWithStringQuery extends Url {
+interface UrlWithStringQuery extends Url
+{
     query: string | null;
 }
 
-interface URLFormatOptions {
+interface URLFormatOptions
+{
     auth?: boolean;
     fragment?: boolean;
     search?: boolean;

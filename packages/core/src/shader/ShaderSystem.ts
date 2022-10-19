@@ -1,9 +1,8 @@
-import { GLProgram } from './GLProgram';
+import type { GLProgram } from './GLProgram';
 import { generateUniformsSync, unsafeEvalSupported } from './utils';
 
-import type { ISystem } from '../ISystem';
+import type { ISystem } from '../system/ISystem';
 import type { Renderer } from '../Renderer';
-import type { IRenderingContext } from '../IRenderingContext';
 import type { Shader } from './Shader';
 import type { Program } from './Program';
 import type { UniformGroup } from './UniformGroup';
@@ -12,6 +11,9 @@ import type { UniformsSyncCallback } from './utils';
 import { generateUniformBufferSync } from './utils/generateUniformBufferSync';
 
 import { generateProgram } from './utils/generateProgram';
+import type { IRenderingContext } from '../IRenderer';
+import type { ExtensionMetadata } from '@pixi/extensions';
+import { extensions, ExtensionType } from '@pixi/extensions';
 
 let UID = 0;
 // default sync data so we don't create a new one each time!
@@ -19,25 +21,33 @@ const defaultSyncData = { textureCount: 0, uboCount: 0 };
 
 /**
  * System plugin to the renderer to manage shaders.
- *
- * @class
  * @memberof PIXI
- * @extends PIXI.System
  */
 export class ShaderSystem implements ISystem
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        type: ExtensionType.RendererSystem,
+        name: 'shader',
+    };
+
+    /**
+     * The current WebGL rendering context.
+     * @member {WebGLRenderingContext}
+     */
     protected gl: IRenderingContext;
+
     public shader: Shader;
     public program: Program;
     public id: number;
     public destroyed = false;
+
+    /** Cache to holds the generated functions. Stored against UniformObjects unique signature. */
     private cache: Dict<UniformsSyncCallback>;
     private _uboCache: Dict<{size: number, syncFunc: UniformsSyncCallback}>;
     private renderer: Renderer;
 
-    /**
-     * @param {PIXI.Renderer} renderer - The renderer this System works for.
-     */
+    /** @param renderer - The renderer this System works for. */
     constructor(renderer: Renderer)
     {
         this.renderer = renderer;
@@ -45,21 +55,11 @@ export class ShaderSystem implements ISystem
         // Validation check that this environment support `new Function`
         this.systemCheck();
 
-        /**
-         * The current WebGL rendering context
-         *
-         * @member {WebGLRenderingContext}
-         */
         this.gl = null;
 
         this.shader = null;
         this.program = null;
 
-        /**
-         * Cache to holds the generated functions. Stored against UniformObjects unique signature
-         * @type {Object}
-         * @private
-         */
         this.cache = {};
         this._uboCache = {};
 
@@ -69,10 +69,9 @@ export class ShaderSystem implements ISystem
     /**
      * Overrideable function by `@pixi/unsafe-eval` to silence
      * throwing an error if platform doesn't support unsafe-evals.
-     *
      * @private
      */
-    systemCheck(): void
+    private systemCheck(): void
     {
         if (!unsafeEvalSupported())
         {
@@ -88,11 +87,10 @@ export class ShaderSystem implements ISystem
     }
 
     /**
-     * Changes the current shader to the one given in parameter
-     *
-     * @param {PIXI.Shader} shader - the new shader
-     * @param {boolean} [dontSync] - false if the shader should automatically sync its uniforms.
-     * @returns {PIXI.GLProgram} the glProgram that belongs to the shader.
+     * Changes the current shader to the one given in parameter.
+     * @param shader - the new shader
+     * @param dontSync - false if the shader should automatically sync its uniforms.
+     * @returns the glProgram that belongs to the shader.
      */
     bind(shader: Shader, dontSync?: boolean): GLProgram
     {
@@ -123,8 +121,7 @@ export class ShaderSystem implements ISystem
 
     /**
      * Uploads the uniforms values to the currently bound shader.
-     *
-     * @param {object} uniforms - the uniforms values that be applied to the current shader
+     * @param uniforms - the uniforms values that be applied to the current shader
      */
     setUniforms(uniforms: Dict<any>): void
     {
@@ -136,8 +133,7 @@ export class ShaderSystem implements ISystem
 
     /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
     /**
-     *
-     * syncs uniforms on the group
+     * Syncs uniforms on the group
      * @param group - the uniform group to sync
      * @param syncData - this is data that is passed to the sync function and any nested sync functions
      */
@@ -154,10 +150,10 @@ export class ShaderSystem implements ISystem
     }
 
     /**
-     * Overrideable by the @pixi/unsafe-eval package to use static
-     * syncUniforms instead.
-     *
-     * @private
+     * Overrideable by the @pixi/unsafe-eval package to use static syncUniforms instead.
+     * @param group
+     * @param glProgram
+     * @param syncData
      */
     syncUniforms(group: UniformGroup, glProgram: GLProgram, syncData: any): void
     {
@@ -182,7 +178,6 @@ export class ShaderSystem implements ISystem
 
     /**
      * Syncs uniform buffers
-     *
      * @param group - the uniform buffer group to sync
      * @param name - the name of the uniform buffer
      */
@@ -215,7 +210,6 @@ export class ShaderSystem implements ISystem
      * Will create a function that uploads a uniform buffer using the STD140 standard.
      * The upload function will then be cached for future calls
      * If a group is manually managed, then a simple upload function is generated
-     *
      * @param group - the uniform buffer group to sync
      * @param glProgram - the gl program to attach the uniform bindings to
      * @param name - the name of the uniform buffer (must exist on the shader)
@@ -258,11 +252,11 @@ export class ShaderSystem implements ISystem
 
     /**
      * Takes a uniform group and data and generates a unique signature for them.
-     *
-     * @param {PIXI.UniformGroup} group - the uniform group to get signature of
-     * @param {Object} uniformData - uniform information generated by the shader
-     * @returns {String} Unique signature of the uniform group
-     * @private
+     * @param group - The uniform group to get signature of
+     * @param group.uniforms
+     * @param uniformData - Uniform information generated by the shader
+     * @param preFix
+     * @returns Unique signature of the uniform group
      */
     private getSignature(group: {uniforms: Dict<any>}, uniformData: Dict<any>, preFix: string): string
     {
@@ -285,9 +279,9 @@ export class ShaderSystem implements ISystem
 
     /**
      * Returns the underlying GLShade rof the currently bound shader.
-     * This can be handy for when you to have a little more control over the setting of your uniforms.
      *
-     * @return {PIXI.GLProgram} the glProgram for the currently bound Shader for this context
+     * This can be handy for when you to have a little more control over the setting of your uniforms.
+     * @returns The glProgram for the currently bound Shader for this context
      */
     getGlProgram(): GLProgram
     {
@@ -301,10 +295,8 @@ export class ShaderSystem implements ISystem
 
     /**
      * Generates a glProgram version of the Shader provided.
-     *
-     * @private
-     * @param {PIXI.Shader} shader - the shader that the glProgram will be based on.
-     * @return {PIXI.GLProgram} A shiny new glProgram!
+     * @param shader - The shader that the glProgram will be based on.
+     * @returns A shiny new glProgram!
      */
     generateProgram(shader: Shader): GLProgram
     {
@@ -318,18 +310,14 @@ export class ShaderSystem implements ISystem
         return glProgram;
     }
 
-    /**
-     * Resets ShaderSystem state, does not affect WebGL state
-     */
+    /** Resets ShaderSystem state, does not affect WebGL state. */
     reset(): void
     {
         this.program = null;
         this.shader = null;
     }
 
-    /**
-     * Destroys this System and removes all its textures
-     */
+    /** Destroys this System and removes all its textures. */
     destroy(): void
     {
         this.renderer = null;
@@ -337,3 +325,5 @@ export class ShaderSystem implements ISystem
         this.destroyed = true;
     }
 }
+
+extensions.add(ShaderSystem);

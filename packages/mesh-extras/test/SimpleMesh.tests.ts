@@ -1,26 +1,20 @@
 import { SimpleMesh } from '@pixi/mesh-extras';
-import { skipHello } from '@pixi/utils';
-import { Renderer, BatchRenderer } from '@pixi/core';
-import { expect } from 'chai';
+import { Renderer } from '@pixi/core';
 
-skipHello();
-
-describe('SimpleMesh', function ()
+describe('SimpleMesh', () =>
 {
-    it('should create a simple mesh with defaults', function ()
+    it('should create a simple mesh with defaults', () =>
     {
         const mesh = new SimpleMesh();
 
-        expect(mesh).to.be.instanceOf(SimpleMesh);
-        expect(mesh.autoUpdate).to.be.true;
+        expect(mesh).toBeInstanceOf(SimpleMesh);
+        expect(mesh.autoUpdate).toBe(true);
 
         mesh.destroy();
     });
 
-    it('should render the rope', function ()
+    it('should render the rope', () =>
     {
-        Renderer.registerPlugin('batch', BatchRenderer);
-
         const renderer = new Renderer();
         const mesh = new SimpleMesh();
 

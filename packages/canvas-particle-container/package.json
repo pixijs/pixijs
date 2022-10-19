@@ -1,0 +1,41 @@
+{
+  "name": "@pixi/canvas-particle-container",
+  "version": "7.0.0-beta.3",
+  "main": "dist/cjs/canvas-particle-container.js",
+  "module": "dist/esm/canvas-particle-container.mjs",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./index.d.ts",
+        "default": "./dist/esm/canvas-particle-container.mjs"
+      },
+      "require": {
+        "types": "./index.d.ts",
+        "default": "./dist/cjs/canvas-particle-container.js"
+      }
+    }
+  },
+  "description": "Canvas mixin for the particles package",
+  "author": "Mat Groves",
+  "contributors": [
+    "Matt Karl <matt@mattkarl.com>"
+  ],
+  "homepage": "http://pixijs.com/",
+  "bugs": "https://github.com/pixijs/pixi.js/issues",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pixijs/pixi.js.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "*.d.ts"
+  ],
+  "pixiRequirements": [
+    "@pixi/particle-container"
+  ]
+}

@@ -1,122 +1,116 @@
 import { Application } from '@pixi/app';
-import { autoDetectRenderer } from '@pixi/canvas-renderer';
-import { Container, DisplayObject } from '@pixi/display';
-import { skipHello } from '@pixi/utils';
-import sinon from 'sinon';
-import { expect } from 'chai';
+import { extensions, ExtensionType } from '@pixi/core';
+import { Container } from '@pixi/display';
 
-skipHello();
-
-// Use fallback if no webgl
-Application.prototype.createRenderer = autoDetectRenderer;
-
-describe('Application', function ()
+describe('Application', () =>
 {
-    it('should generate application', function ()
+    it('should generate application', () =>
     {
-        expect(Application).to.be.a('function');
+        expect(Application).toBeInstanceOf(Function);
         const app = new Application();
 
-        expect(app.stage).to.be.instanceof(Container);
-        expect(app.renderer).to.be.ok;
+        expect(app.stage).toBeInstanceOf(Container);
+        expect(app.renderer).toBeTruthy();
 
         app.destroy();
 
-        expect(app.stage).to.be.null;
-        expect(app.renderer).to.be.null;
+        expect(app.stage).toBeNull();
+        expect(app.renderer).toBeNull();
     });
 
-    it('register a new plugin, then destroy it', function ()
+    it('register a new plugin, then destroy it', () =>
     {
         const plugin = {
-            init: sinon.spy(),
-            destroy: sinon.spy(),
+            init: jest.fn(),
+            destroy: jest.fn(),
         };
+        const extension = { type: ExtensionType.Application, ref: plugin };
 
-        Application.registerPlugin(plugin);
+        extensions.add(extension);
 
         const app = new Application();
 
         app.destroy();
 
-        expect(plugin.init).to.be.calledOnce;
-        expect(plugin.destroy).to.be.calledOnce;
+        expect(plugin.init).toHaveBeenCalledOnce();
+        expect(plugin.destroy).toHaveBeenCalledOnce();
 
-        Application._plugins.pop();
+        extensions.remove(extension);
     });
 
-    it('should remove canvas when destroyed', function ()
+    it('should remove canvas when destroyed', () =>
     {
         const app = new Application();
-        const view = app.view;
+        const view = app.view as HTMLCanvasElement;
 
-        expect(view).to.be.instanceof(HTMLCanvasElement);
+        expect(view).toBeInstanceOf(HTMLCanvasElement);
         document.body.appendChild(view);
 
-        expect(document.body.contains(view)).to.be.true;
+        expect(document.body.contains(view)).toBe(true);
         app.destroy(true);
-        expect(document.body.contains(view)).to.be.false;
+        expect(document.body.contains(view)).toBe(false);
     });
 
-    it('should not destroy children by default', function ()
+    it('should not destroy children by default', () =>
     {
         const app = new Application();
         const stage = app.stage;
-        const child = new DisplayObject();
+        const child = new Container();
 
         stage.addChild(child);
 
         app.destroy(true);
-        expect(child.transform).to.not.be.null;
+        expect(child.transform).not.toBeNull();
     });
 
-    it('should allow children destroy', function ()
+    it('should allow children destroy', () =>
     {
         const app = new Application();
         const stage = app.stage;
-        const child = new DisplayObject();
+        const child = new Container();
 
         stage.addChild(child);
 
         app.destroy(true, true);
-        expect(child.transform).to.be.null;
+        expect(child.transform).toBeNull();
     });
 
-    describe('resizeTo', function ()
+    describe('resizeTo', () =>
     {
-        before(function ()
+        let div: HTMLDivElement;
+
+        beforeAll(() =>
         {
-            const div = document.createElement('div');
+            div = document.createElement('div');
 
             div.style.width = '100px';
             div.style.height = '200px';
             document.body.appendChild(div);
-            this.div = div;
         });
 
-        after(function ()
+        afterAll(() =>
         {
-            this.div.parentNode.removeChild(this.div);
-            this.div = null;
+            div.parentNode.removeChild(div);
+            div = null;
         });
 
-        it('should assign resizeTo', function ()
+        it('should assign resizeTo', () =>
         {
             const app = new Application({
-                resizeTo: this.div,
+                resizeTo: div,
             });
 
-            expect(app.resizeTo).to.equal(this.div);
-            expect(app.view.width).to.equal(100);
-            expect(app.view.height).to.equal(200);
+            expect(app.resizeTo).toEqual(div);
+            expect(app.view.width).toEqual(100);
+            expect(app.view.height).toEqual(200);
             app.destroy();
         });
 
-        it('should force multiple immediate resizes', function ()
+        it('should force multiple immediate resizes', () =>
         {
-            const spy = sinon.spy();
+            const spy = jest.fn();
             const app = new Application({
-                resizeTo: this.div,
+                resizeTo: div,
             });
 
             app.renderer.on('resize', spy);
@@ -124,16 +118,16 @@ describe('Application', function ()
             app.resize();
             app.resize();
 
-            expect(spy.calledTwice).to.be.true;
+            expect(spy).toBeCalledTimes(2);
 
             app.destroy();
         });
 
-        it('should throttle multiple resizes', function (done)
+        it('should throttle multiple resizes', (done) =>
         {
-            const spy = sinon.spy();
+            const spy = jest.fn();
             const app = new Application({
-                resizeTo: this.div,
+                resizeTo: div,
             });
 
             app.renderer.on('resize', spy);
@@ -142,17 +136,17 @@ describe('Application', function ()
 
             setTimeout(() =>
             {
-                expect(spy.calledOnce).to.be.true;
+                expect(spy).toBeCalledTimes(1);
                 app.destroy();
                 done();
             }, 50);
         });
 
-        it('should cancel resize on destroy', function (done)
+        it('should cancel resize on destroy', (done) =>
         {
-            const spy = sinon.spy();
+            const spy = jest.fn();
             const app = new Application({
-                resizeTo: this.div,
+                resizeTo: div,
             });
 
             app.renderer.on('resize', spy);
@@ -161,16 +155,16 @@ describe('Application', function ()
 
             requestAnimationFrame(() =>
             {
-                expect(spy.called).to.be.false;
+                expect(spy).not.toBeCalled();
                 done();
             });
         });
 
-        it('should resize cancel resize queue', function (done)
+        it('should resize cancel resize queue', (done) =>
         {
-            const spy = sinon.spy();
+            const spy = jest.fn();
             const app = new Application({
-                resizeTo: this.div,
+                resizeTo: div,
             });
 
             app.renderer.on('resize', spy);
@@ -180,36 +174,46 @@ describe('Application', function ()
 
             requestAnimationFrame(() =>
             {
-                expect(spy.calledOnce).to.be.true;
+                expect(spy).toBeCalledTimes(1);
                 done();
             });
         });
 
-        it('should resizeTo with resolution', function ()
+        it('should resizeTo with resolution', () =>
         {
             const app = new Application({
                 resolution: 2,
-                resizeTo: this.div,
+                resizeTo: div,
             });
 
-            expect(app.view.width).to.equal(200);
-            expect(app.view.height).to.equal(400);
+            expect(app.view.width).toEqual(200);
+            expect(app.view.height).toEqual(400);
             app.destroy();
         });
 
-        it('should resizeTo with resolution and autoDensity', function ()
+        it('should resizeTo with resolution and autoDensity', () =>
         {
             const app = new Application({
                 resolution: 2,
-                resizeTo: this.div,
+                resizeTo: div,
                 autoDensity: true,
             });
 
-            expect(app.view.width).to.equal(200);
-            expect(app.view.height).to.equal(400);
-            expect(app.view.style.width).to.equal(this.div.style.width);
-            expect(app.view.style.height).to.equal(this.div.style.height);
+            expect(app.view.width).toEqual(200);
+            expect(app.view.height).toEqual(400);
+            expect(app.view.style.width).toEqual(div.style.width);
+            expect(app.view.style.height).toEqual(div.style.height);
             app.destroy();
         });
+    });
+
+    it('should support OffscreenCanvas', () =>
+    {
+        const view = new OffscreenCanvas(1, 1);
+        const app = new Application({ view, width: 1, height: 1 });
+
+        expect(app.view).toBeInstanceOf(OffscreenCanvas);
+
+        app.destroy();
     });
 });

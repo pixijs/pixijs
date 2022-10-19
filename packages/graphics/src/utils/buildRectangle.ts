@@ -1,11 +1,10 @@
 import type { IShapeBuildCommand } from './IShapeBuildCommand';
-import type { Rectangle } from '@pixi/math';
+import type { Rectangle } from '@pixi/core';
 
 /**
  * Builds a rectangle to draw
  *
  * Ignored from docs since it is not directly exposed.
- *
  * @ignore
  * @private
  * @param {PIXI.WebGLGraphicsData} graphicsData - The graphics object containing all the necessary properties
@@ -29,6 +28,11 @@ export const buildRectangle: IShapeBuildCommand = {
 
         points.length = 0;
 
+        if (!(width >= 0 && height >= 0))
+        {
+            return;
+        }
+
         points.push(x, y,
             x + width, y,
             x + width, y + height,
@@ -39,6 +43,11 @@ export const buildRectangle: IShapeBuildCommand = {
     {
         const points = graphicsData.points;
         const verts = graphicsGeometry.points;
+
+        if (points.length === 0)
+        {
+            return;
+        }
 
         const vertPos = verts.length / 2;
 

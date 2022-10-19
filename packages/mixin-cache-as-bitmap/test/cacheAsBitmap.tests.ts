@@ -1,29 +1,29 @@
 import { DisplayObject, Container } from '@pixi/display';
-import { Renderer, Filter } from '@pixi/core';
-import { Rectangle } from '@pixi/math';
-import { expect } from 'chai';
+import { Rectangle, Renderer, Filter } from '@pixi/core';
 
 import '@pixi/mixin-cache-as-bitmap';
 
-describe('DisplayObject#cacheAsBitmap', function ()
+describe('DisplayObject#cacheAsBitmap', () =>
 {
-    it('should contain property', function ()
+    it('should contain property', () =>
     {
+        // @ts-expect-error - instantiating DisplayObject
         const obj = new DisplayObject();
 
-        expect(obj.cacheAsBitmap).to.be.not.undefined;
-        expect(obj.cacheAsBitmap).to.be.a('boolean');
-        expect(obj.cacheAsBitmap).to.be.false;
+        expect(obj.cacheAsBitmap).toBeDefined();
+        expect(obj.cacheAsBitmap).toBeBoolean();
+        expect(obj.cacheAsBitmap).toBe(false);
     });
 
-    it('should enable cacheAsBitmap', function ()
+    it('should enable cacheAsBitmap', () =>
     {
+        // @ts-expect-error - instantiating DisplayObject
         const obj = new DisplayObject();
 
         obj.cacheAsBitmap = true;
     });
 
-    it('should respect filters', function ()
+    it('should respect filters', () =>
     {
         const par = new Container();
         const obj = new Container();
@@ -35,7 +35,8 @@ describe('DisplayObject#cacheAsBitmap', function ()
         obj.position.set(5, 15);
         obj.updateTransform();
         obj.cacheAsBitmap = true;
-        obj._calculateBounds = function ()
+        // eslint-disable-next-line func-names
+        obj['_calculateBounds'] = function ()
         {
             this._bounds.clear();
             this._bounds.addFrame(this.transform, 0, 0, 10, 11);
@@ -52,18 +53,18 @@ describe('DisplayObject#cacheAsBitmap', function ()
             let src = renderer.renderTexture.sourceFrame;
             let dest = renderer.renderTexture.destinationFrame;
 
-            expect(src.toString()).to.equal(srcExpected.toString());
-            expect(dest.toString()).to.equal(destExpected.toString());
+            expect(src.toString()).toEqual(srcExpected.toString());
+            expect(dest.toString()).toEqual(destExpected.toString());
 
             obj.render(renderer);
 
             src = renderer.renderTexture.sourceFrame;
             dest = renderer.renderTexture.destinationFrame;
 
-            expect(obj._cacheData.sprite.width).to.equal(10);
-            expect(obj._cacheData.sprite.height).to.equal(11);
-            expect(src.toString()).to.equal(srcExpected.toString());
-            expect(dest.toString()).to.equal(destExpected.toString());
+            expect(obj._cacheData.sprite.width).toEqual(10);
+            expect(obj._cacheData.sprite.height).toEqual(11);
+            expect(src.toString()).toEqual(srcExpected.toString());
+            expect(dest.toString()).toEqual(destExpected.toString());
         }
         finally
         {
@@ -71,7 +72,31 @@ describe('DisplayObject#cacheAsBitmap', function ()
         }
     });
 
-    it('should respect projection', function ()
+    it('should not throw error when filters is empty array', () =>
+    {
+        const obj = new Container();
+
+        obj.filters = [];
+        obj.cacheAsBitmap = true;
+
+        expect(() =>
+        {
+            let renderer = null;
+
+            try
+            {
+                renderer = new Renderer({ width: 50, height: 50 });
+
+                obj.render(renderer);
+            }
+            finally
+            {
+                renderer.destroy();
+            }
+        }).not.toThrowError();
+    });
+
+    it('should respect projection', () =>
     {
         const par = new Container();
         const obj = new Container();
@@ -83,7 +108,8 @@ describe('DisplayObject#cacheAsBitmap', function ()
         obj.position.set(5, 15);
         obj.updateTransform();
         obj.cacheAsBitmap = true;
-        obj._calculateBounds = function ()
+        // eslint-disable-next-line func-names
+        obj['_calculateBounds'] = function ()
         {
             this._bounds.clear();
             this._bounds.addFrame(this.transform, 0, 0, 10, 11);
@@ -102,10 +128,10 @@ describe('DisplayObject#cacheAsBitmap', function ()
             const src = renderer.renderTexture.sourceFrame;
             const dest = renderer.renderTexture.destinationFrame;
 
-            expect(obj._cacheData.sprite.width).to.equal(10);
-            expect(obj._cacheData.sprite.height).to.equal(11);
-            expect(src.toString()).to.equal(srcExpected.toString());
-            expect(dest.toString()).to.equal(destExpected.toString());
+            expect(obj._cacheData.sprite.width).toEqual(10);
+            expect(obj._cacheData.sprite.height).toEqual(11);
+            expect(src.toString()).toEqual(srcExpected.toString());
+            expect(dest.toString()).toEqual(destExpected.toString());
         }
         finally
         {

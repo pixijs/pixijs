@@ -1,9 +1,21 @@
 {
   "name": "@pixi/spritesheet",
-  "version": "6.1.3",
+  "version": "7.0.0-beta.3",
   "main": "dist/cjs/spritesheet.js",
-  "module": "dist/esm/spritesheet.js",
-  "bundle": "dist/browser/spritesheet.js",
+  "module": "dist/esm/spritesheet.mjs",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./index.d.ts",
+        "default": "./dist/esm/spritesheet.mjs"
+      },
+      "require": {
+        "types": "./index.d.ts",
+        "default": "./dist/cjs/spritesheet.js"
+      }
+    }
+  },
   "description": "Spritesheets maintain a collection of Textures on a single image",
   "author": "Mat Groves",
   "contributors": [
@@ -20,14 +32,11 @@
     "access": "public"
   },
   "files": [
-    "lib",
     "dist",
     "*.d.ts"
   ],
-  "peerDependencies": {
-    "@pixi/core": "6.1.3",
-    "@pixi/loaders": "6.1.3",
-    "@pixi/math": "6.1.3",
-    "@pixi/utils": "6.1.3"
-  }
+  "pixiRequirements": [
+    "@pixi/assets",
+    "@pixi/core"
+  ]
 }

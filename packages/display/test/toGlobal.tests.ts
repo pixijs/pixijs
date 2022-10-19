@@ -1,10 +1,9 @@
 import { Container } from '@pixi/display';
-import { Point } from '@pixi/math';
-import { expect } from 'chai';
+import { Point } from '@pixi/core';
 
-describe('toGlobal', function ()
+describe('toGlobal', () =>
 {
-    it('should return correct global cordinates of a point from within a displayObject', function ()
+    it('should return correct global cordinates of a point from within a displayObject', () =>
     {
         const parent = new Container();
 
@@ -16,8 +15,8 @@ describe('toGlobal', function ()
 
         let globalPoint = container.toGlobal(point);
 
-        expect(globalPoint.x).to.equal(100);
-        expect(globalPoint.y).to.equal(100);
+        expect(globalPoint.x).toEqual(100);
+        expect(globalPoint.y).toEqual(100);
 
         container.position.x = 20;
         container.position.y = 20;
@@ -27,7 +26,7 @@ describe('toGlobal', function ()
 
         globalPoint = container.toGlobal(point);
 
-        expect(globalPoint.x).to.equal(220);
-        expect(globalPoint.y).to.equal(220);
+        expect(globalPoint.x).toEqual(220);
+        expect(globalPoint.y).toEqual(220);
     });
 });

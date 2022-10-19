@@ -1,10 +1,9 @@
 import { Container } from '@pixi/display';
-import { Point } from '@pixi/math';
-import { expect } from 'chai';
+import { Point } from '@pixi/core';
 
-describe('toLocal', function ()
+describe('toLocal', () =>
 {
-    it('should return correct local cordinates of a displayObject', function ()
+    it('should return correct local cordinates of a displayObject', () =>
     {
         const parent = new Container();
 
@@ -16,8 +15,8 @@ describe('toLocal', function ()
 
         let localPoint = container.toLocal(point);
 
-        expect(localPoint.x).to.equal(100);
-        expect(localPoint.y).to.equal(100);
+        expect(localPoint.x).toEqual(100);
+        expect(localPoint.y).toEqual(100);
 
         container.position.x = 20;
         container.position.y = 20;
@@ -27,11 +26,11 @@ describe('toLocal', function ()
 
         localPoint = container.toLocal(point);
 
-        expect(localPoint.x).to.equal(40);
-        expect(localPoint.y).to.equal(40);
+        expect(localPoint.x).toEqual(40);
+        expect(localPoint.y).toEqual(40);
     });
 
-    it('should map the correct local cordinates of a displayObject to another', function ()
+    it('should map the correct local cordinates of a displayObject to another', () =>
     {
         const parent = new Container();
 
@@ -51,7 +50,7 @@ describe('toLocal', function ()
 
         const localPoint = container.toLocal(point, container2);
 
-        expect(localPoint.x).to.equal(100);
-        expect(localPoint.y).to.equal(100);
+        expect(localPoint.x).toEqual(100);
+        expect(localPoint.y).toEqual(100);
     });
 });

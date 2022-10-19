@@ -1,6 +1,6 @@
 {
   "name": "pixi.js-legacy",
-  "version": "6.1.3",
+  "version": "7.0.0-beta.3",
   "description": "The HTML5 Creation Engine: Create beautiful digital content with the fastest, most flexible 2D WebGL renderer.",
   "author": "Mat Groves",
   "contributors": [
@@ -11,11 +11,24 @@
   ],
   "standalone": true,
   "main": "dist/cjs/pixi-legacy.js",
-  "module": "dist/esm/pixi-legacy.js",
+  "module": "dist/esm/pixi-legacy.mjs",
   "bundle": "dist/browser/pixi-legacy.js",
   "bundleModule": "dist/browser/pixi-legacy.mjs",
   "bundleOutput": {
     "name": "PIXI"
+  },
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./index.d.ts",
+        "default": "./dist/esm/pixi-legacy.mjs"
+      },
+      "require": {
+        "types": "./index.d.ts",
+        "default": "./dist/cjs/pixi-legacy.js"
+      }
+    }
   },
   "homepage": "http://www.pixijs.com/",
   "bugs": "https://github.com/pixijs/pixi.js/issues",
@@ -25,7 +38,6 @@
     "url": "https://github.com/pixijs/pixi.js.git"
   },
   "files": [
-    "lib/",
     "dist/",
     "*.d.ts"
   ],
@@ -34,16 +46,16 @@
     "url": "https://opencollective.com/pixijs"
   },
   "dependencies": {
-    "@pixi/canvas-display": "6.1.3",
-    "@pixi/canvas-extract": "6.1.3",
-    "@pixi/canvas-graphics": "6.1.3",
-    "@pixi/canvas-mesh": "6.1.3",
-    "@pixi/canvas-particle-container": "6.1.3",
-    "@pixi/canvas-prepare": "6.1.3",
-    "@pixi/canvas-renderer": "6.1.3",
-    "@pixi/canvas-sprite": "6.1.3",
-    "@pixi/canvas-sprite-tiling": "6.1.3",
-    "@pixi/canvas-text": "6.1.3",
-    "pixi.js": "6.1.3"
+    "@pixi/canvas-display": "7.0.0-beta.3",
+    "@pixi/canvas-extract": "7.0.0-beta.3",
+    "@pixi/canvas-graphics": "7.0.0-beta.3",
+    "@pixi/canvas-mesh": "7.0.0-beta.3",
+    "@pixi/canvas-particle-container": "7.0.0-beta.3",
+    "@pixi/canvas-prepare": "7.0.0-beta.3",
+    "@pixi/canvas-renderer": "7.0.0-beta.3",
+    "@pixi/canvas-sprite": "7.0.0-beta.3",
+    "@pixi/canvas-sprite-tiling": "7.0.0-beta.3",
+    "@pixi/canvas-text": "7.0.0-beta.3",
+    "pixi.js": "7.0.0-beta.3"
   }
 }

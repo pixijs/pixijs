@@ -1,9 +1,21 @@
 {
   "name": "@pixi/core",
-  "version": "6.1.3",
+  "version": "7.0.0-beta.3",
   "main": "dist/cjs/core.js",
-  "module": "dist/esm/core.js",
-  "bundle": "dist/browser/core.js",
+  "module": "dist/esm/core.mjs",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./index.d.ts",
+        "default": "./dist/esm/core.mjs"
+      },
+      "require": {
+        "types": "./index.d.ts",
+        "default": "./dist/cjs/core.js"
+      }
+    }
+  },
   "description": "Core PixiJS",
   "author": "Mat Groves",
   "contributors": [
@@ -28,12 +40,14 @@
     "type": "opencollective",
     "url": "https://opencollective.com/pixijs"
   },
-  "peerDependencies": {
-    "@pixi/constants": "6.1.3",
-    "@pixi/math": "6.1.3",
-    "@pixi/runner": "6.1.3",
-    "@pixi/settings": "6.1.3",
-    "@pixi/ticker": "6.1.3",
-    "@pixi/utils": "6.1.3"
+  "dependencies": {
+    "@pixi/constants": "7.0.0-beta.3",
+    "@pixi/extensions": "7.0.0-beta.3",
+    "@pixi/math": "7.0.0-beta.3",
+    "@pixi/runner": "7.0.0-beta.3",
+    "@pixi/settings": "7.0.0-beta.3",
+    "@pixi/ticker": "7.0.0-beta.3",
+    "@pixi/utils": "7.0.0-beta.3",
+    "@types/offscreencanvas": "^2019.6.4"
   }
 }

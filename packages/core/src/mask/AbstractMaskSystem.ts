@@ -1,10 +1,9 @@
-import type { ISystem } from '../ISystem';
+import type { ISystem } from '../system/ISystem';
 import type { MaskData } from './MaskData';
 import type { Renderer } from '../Renderer';
 
 /**
  * System plugin to the renderer to manage specific types of masking operations.
- *
  * @memberof PIXI
  */
 export class AbstractMaskSystem implements ISystem
@@ -41,7 +40,6 @@ export class AbstractMaskSystem implements ISystem
 
     /**
      * Changes the mask stack that is used by this System.
-     *
      * @param {PIXI.MaskData[]} maskStack - The mask stack
      */
     setMaskStack(maskStack: Array<MaskData>): void

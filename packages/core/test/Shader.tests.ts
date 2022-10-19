@@ -1,9 +1,6 @@
 import { Renderer, Shader, Geometry } from '@pixi/core';
-import { skipHello } from '@pixi/utils';
 
-skipHello();
-
-describe('Shader', function ()
+describe('Shader', () =>
 {
     const vertexSrc = `
 attribute vec2 aVertexPosition;
@@ -14,20 +11,23 @@ void main() {
 
 }`;
 
-    before(function ()
+    let renderer: Renderer;
+    let geometry: Geometry;
+
+    beforeAll(() =>
     {
-        this.renderer = new Renderer();
-        this.geometry = new Geometry()
+        renderer = new Renderer();
+        geometry = new Geometry()
             .addAttribute('aVertexPosition', [-100, -100, 100, -100, 100, 100], 2);
     });
 
-    after(function ()
+    afterAll(() =>
     {
-        this.renderer.destroy();
-        this.renderer = null;
+        renderer.destroy();
+        renderer = null;
     });
 
-    it('should be able to set uniform value', function ()
+    it('should be able to set uniform value', () =>
     {
         const fragmentSrc = `
 uniform float uTestFloat;
@@ -42,11 +42,11 @@ void main() {
 
         shader.uniforms.uTestFloat = 0.88;
 
-        this.renderer.shader.bind(shader);
-        this.renderer.geometry.bind(this.geometry);
+        renderer.shader.bind(shader);
+        renderer.geometry.bind(geometry);
     });
 
-    it('should be able to set uniform arrays', function ()
+    it('should be able to set uniform arrays', () =>
     {
         const fragmentSrc = `
 uniform float uTestFloat[3];
@@ -61,11 +61,11 @@ void main() {
 
         shader.uniforms.uTestFloat = [1, 2, 3];
 
-        this.renderer.shader.bind(shader);
-        this.renderer.geometry.bind(this.geometry);
+        renderer.shader.bind(shader);
+        renderer.geometry.bind(geometry);
     });
 
-    it('should be able to set uniform structs', function ()
+    it('should be able to set uniform structs', () =>
     {
         const fragmentSrc = `
 struct Test {
@@ -84,11 +84,11 @@ void main() {
 
         shader.uniforms['uTest.testFloat'] = 1;
 
-        this.renderer.shader.bind(shader);
-        this.renderer.geometry.bind(this.geometry);
+        renderer.shader.bind(shader);
+        renderer.geometry.bind(geometry);
     });
 
-    it('should be able to set uniform struct arrays', function ()
+    it('should be able to set uniform struct arrays', () =>
     {
         const fragmentSrc = `
 struct Test {
@@ -119,7 +119,7 @@ void main() {
         shader.uniforms['uTest[2].testFloat'] = 3.3;
         shader.uniforms['uTest[2].testVec3'] = [1, 2, 3];
 
-        this.renderer.shader.bind(shader);
-        this.renderer.geometry.bind(this.geometry);
+        renderer.shader.bind(shader);
+        renderer.geometry.bind(geometry);
     });
 });

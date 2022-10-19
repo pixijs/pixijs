@@ -1,8 +1,7 @@
 import { GRAPHICS_CURVES } from '../const';
 
 /**
- * Utilities for quadratic curves
- * @class
+ * Utilities for quadratic curves.
  * @private
  */
 export class QuadraticUtils
@@ -11,15 +10,14 @@ export class QuadraticUtils
      * Calculate length of quadratic curve
      * @see {@link http://www.malczak.linuxpl.com/blog/quadratic-bezier-curve-length/}
      * for the detailed explanation of math behind this.
-     *
      * @private
-     * @param {number} fromX - x-coordinate of curve start point
-     * @param {number} fromY - y-coordinate of curve start point
-     * @param {number} cpX - x-coordinate of curve control point
-     * @param {number} cpY - y-coordinate of curve control point
-     * @param {number} toX - x-coordinate of curve end point
-     * @param {number} toY - y-coordinate of curve end point
-     * @return {number} Length of quadratic curve
+     * @param fromX - x-coordinate of curve start point
+     * @param fromY - y-coordinate of curve start point
+     * @param cpX - x-coordinate of curve control point
+     * @param cpY - y-coordinate of curve control point
+     * @param toX - x-coordinate of curve end point
+     * @param toY - y-coordinate of curve end point
+     * @returns - Length of quadratic curve
      */
     static curveLength(
         fromX: number, fromY: number,
@@ -53,13 +51,12 @@ export class QuadraticUtils
     /**
      * Calculate the points for a quadratic bezier curve and then draws it.
      * Based on: https://stackoverflow.com/questions/785097/how-do-i-implement-a-bezier-curve-in-c
-     *
      * @private
-     * @param {number} cpX - Control point x
-     * @param {number} cpY - Control point y
-     * @param {number} toX - Destination point x
-     * @param {number} toY - Destination point y
-     * @param {number[]} points - Points to add segments to.
+     * @param cpX - Control point x
+     * @param cpY - Control point y
+     * @param toX - Destination point x
+     * @param toY - Destination point y
+     * @param points - Points to add segments to.
      */
     static curveTo(cpX: number, cpY: number, toX: number, toY: number, points: Array<number>): void
     {

@@ -1,29 +1,26 @@
-import { AbstractMultiResource } from './AbstractMultiResource';
 import { TARGETS } from '@pixi/constants';
-import { BaseTexture } from '../BaseTexture';
+import { AbstractMultiResource } from './AbstractMultiResource';
 
-import type { BaseImageResource } from './BaseImageResource';
-import type { Renderer } from '../../Renderer';
-import type { GLTexture } from '../GLTexture';
 import type { ISize } from '@pixi/math';
+import type { Renderer } from '../../Renderer';
+import type { BaseTexture } from '../BaseTexture';
+import type { GLTexture } from '../GLTexture';
+import type { BaseImageResource } from './BaseImageResource';
 
 /**
  * A resource that contains a number of sources.
- *
- * @class
- * @extends PIXI.Resource
  * @memberof PIXI
  */
 export class ArrayResource extends AbstractMultiResource
 {
     /**
-     * @param {number|Array<*>} source - Number of items in array or the collection
+     * @param source - Number of items in array or the collection
      *        of image URLs to use. Can also be resources, image elements, canvas, etc.
-     * @param {object} [options] - Options to apply to {@link PIXI.autoDetectResource}
+     * @param options - Options to apply to {@link PIXI.autoDetectResource}
      * @param {number} [options.width] - Width of the resource
      * @param {number} [options.height] - Height of the resource
      */
-    constructor(source: number|Array<any>, options?: ISize)
+    constructor(source: number | Array<any>, options?: ISize)
     {
         const { width, height } = options || {};
 
@@ -47,13 +44,13 @@ export class ArrayResource extends AbstractMultiResource
             this.initFromArray(urls, options);
         }
     }
+
     /**
      * Set a baseTexture by ID,
      * ArrayResource just takes resource from it, nothing more
-     *
-     * @param {PIXI.BaseTexture} baseTexture
-     * @param {number} index - Zero-based index of resource to set
-     * @return {PIXI.ArrayResource} Instance for chaining
+     * @param baseTexture
+     * @param index - Zero-based index of resource to set
+     * @returns - Instance for chaining
      */
     addBaseTextureAt(baseTexture: BaseTexture, index: number): this
     {
@@ -71,8 +68,7 @@ export class ArrayResource extends AbstractMultiResource
 
     /**
      * Add binding
-     * @member {PIXI.BaseTexture}
-     * @override
+     * @param baseTexture
      */
     bind(baseTexture: BaseTexture): void
     {
@@ -83,10 +79,10 @@ export class ArrayResource extends AbstractMultiResource
 
     /**
      * Upload the resources to the GPU.
-     * @param {PIXI.Renderer} renderer
-     * @param {PIXI.BaseTexture} texture
-     * @param {PIXI.GLTexture} glTexture
-     * @returns {boolean} whether texture was uploaded
+     * @param renderer
+     * @param texture
+     * @param glTexture
+     * @returns - whether texture was uploaded
      */
     upload(renderer: Renderer, texture: BaseTexture, glTexture: GLTexture): boolean
     {

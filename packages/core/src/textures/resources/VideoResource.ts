@@ -8,7 +8,7 @@ export interface IVideoResourceOptions
     autoLoad?: boolean;
     autoPlay?: boolean;
     updateFPS?: number;
-    crossorigin?: boolean|string;
+    crossorigin?: boolean | string;
 }
 
 export interface IVideoResourceOptionsElement
@@ -18,21 +18,42 @@ export interface IVideoResourceOptionsElement
 }
 
 /**
- * Resource type for HTMLVideoElement.
- * @class
- * @extends PIXI.BaseImageResource
+ * Resource type for {@code HTMLVideoElement}.
  * @memberof PIXI
  */
 export class VideoResource extends BaseImageResource
 {
     /** Override the source to be the video element. */
     public source: HTMLVideoElement;
+
+    /**
+     * `true` to use PIXI.Ticker.shared to auto update the base texture.
+     * @default true
+     */
     protected _autoUpdate: boolean;
+
+    /**
+     * `true` if the instance is currently connected to PIXI.Ticker.shared to auto update the base texture.
+     * @default false
+     */
     protected _isConnectedToTicker: boolean;
     protected _updateFPS: number;
     protected _msToNextUpdate: number;
+
+    /**
+     * When set to true will automatically play videos used by this texture once
+     * they are loaded. If false, it will not modify the playing state.
+     * @default true
+     */
     protected autoPlay: boolean;
+
+    /**
+     * Promise when loading.
+     * @default null
+     */
     private _load: Promise<VideoResource>;
+
+    /** Callback when completed with load. */
     private _resolve: (value?: VideoResource | PromiseLike<VideoResource>) => void;
 
     /**
@@ -44,7 +65,9 @@ export class VideoResource extends BaseImageResource
      * Leave at 0 to update at every render.
      * @param {boolean} [options.crossorigin=true] - Load image using cross origin
      */
-    constructor(source?: HTMLVideoElement|Array<string|IVideoResourceOptionsElement>|string, options?: IVideoResourceOptions)
+    constructor(
+        source?: HTMLVideoElement | Array<string | IVideoResourceOptionsElement> | string, options?: IVideoResourceOptions
+    )
     {
         options = options || {};
 
@@ -76,7 +99,7 @@ export class VideoResource extends BaseImageResource
                 src = src || source[i] as string;
 
                 const baseSrc = src.split('?').shift().toLowerCase();
-                const ext = baseSrc.substr(baseSrc.lastIndexOf('.') + 1);
+                const ext = baseSrc.slice(baseSrc.lastIndexOf('.') + 1);
 
                 mime = mime || VideoResource.MIME_TYPES[ext] || `video/${ext}`;
 
@@ -94,49 +117,14 @@ export class VideoResource extends BaseImageResource
 
         this.noSubImage = true;
 
-        /**
-         * `true` to use PIXI.Ticker.shared to auto update the base texture.
-         *
-         * @type {boolean}
-         * @default true
-         * @private
-         */
         this._autoUpdate = true;
-
-        /**
-         * `true` if the instance is currently connected to PIXI.Ticker.shared to auto update the base texture.
-         *
-         * @type {boolean}
-         * @default false
-         * @private
-         */
         this._isConnectedToTicker = false;
 
         this._updateFPS = options.updateFPS || 0;
         this._msToNextUpdate = 0;
-
-        /**
-         * When set to true will automatically play videos used by this texture once
-         * they are loaded. If false, it will not modify the playing state.
-         *
-         * @member {boolean}
-         * @default true
-         */
         this.autoPlay = options.autoPlay !== false;
 
-        /**
-         * Promise when loading
-         * @member {Promise<void>}
-         * @private
-         * @default null
-         */
         this._load = null;
-
-        /**
-         * Callback when completed with load.
-         * @member {function}
-         * @private
-         */
         this._resolve = null;
 
         // Bind for listeners
@@ -150,9 +138,8 @@ export class VideoResource extends BaseImageResource
     }
 
     /**
-     * Trigger updating of the texture
-     *
-     * @param {number} [deltaTime=0] - time delta since last tick
+     * Trigger updating of the texture.
+     * @param _deltaTime - time delta since last tick
      */
     update(_deltaTime = 0): void
     {
@@ -172,9 +159,7 @@ export class VideoResource extends BaseImageResource
 
     /**
      * Start preloading the video resource.
-     *
-     * @protected
-     * @return {Promise<void>} Handle the validate event
+     * @returns {Promise<void>} Handle the validate event
      */
     load(): Promise<VideoResource>
     {
@@ -224,8 +209,7 @@ export class VideoResource extends BaseImageResource
 
     /**
      * Handle video error events.
-     *
-     * @private
+     * @param event
      */
     private _onError(event: ErrorEvent): void
     {
@@ -235,35 +219,27 @@ export class VideoResource extends BaseImageResource
 
     /**
      * Returns true if the underlying source is playing.
-     *
-     * @private
-     * @return {boolean} True if playing.
+     * @returns - True if playing.
      */
     private _isSourcePlaying(): boolean
     {
         const source = this.source as HTMLVideoElement;
 
-        return (source.currentTime > 0 && source.paused === false && source.ended === false && source.readyState > 2);
+        return (!source.paused && !source.ended && this._isSourceReady());
     }
 
     /**
      * Returns true if the underlying source is ready for playing.
-     *
-     * @private
-     * @return {boolean} True if ready.
+     * @returns - True if ready.
      */
     private _isSourceReady(): boolean
     {
         const source = this.source as HTMLVideoElement;
 
-        return source.readyState === 3 || source.readyState === 4;
+        return source.readyState > 2;
     }
 
-    /**
-     * Runs the update loop when the video is ready to play
-     *
-     * @private
-     */
+    /** Runs the update loop when the video is ready to play. */
     private _onPlayStart(): void
     {
         // Just in case the video has not received its can play even yet..
@@ -279,11 +255,7 @@ export class VideoResource extends BaseImageResource
         }
     }
 
-    /**
-     * Fired when a pause event is triggered, stops the update loop
-     *
-     * @private
-     */
+    /** Fired when a pause event is triggered, stops the update loop. */
     private _onPlayStop(): void
     {
         if (this._isConnectedToTicker)
@@ -293,11 +265,7 @@ export class VideoResource extends BaseImageResource
         }
     }
 
-    /**
-     * Fired when the video is loaded and ready to play
-     *
-     * @private
-     */
+    /** Fired when the video is loaded and ready to play. */
     private _onCanPlay(): void
     {
         const source = this.source as HTMLVideoElement;
@@ -326,10 +294,7 @@ export class VideoResource extends BaseImageResource
         }
     }
 
-    /**
-     * Destroys this texture
-     * @override
-     */
+    /** Destroys this texture. */
     dispose(): void
     {
         if (this._isConnectedToTicker)
@@ -350,11 +315,7 @@ export class VideoResource extends BaseImageResource
         super.dispose();
     }
 
-    /**
-     * Should the base texture automatically update itself, set to true by default
-     *
-     * @member {boolean}
-     */
+    /** Should the base texture automatically update itself, set to true by default. */
     get autoUpdate(): boolean
     {
         return this._autoUpdate;
@@ -382,8 +343,6 @@ export class VideoResource extends BaseImageResource
     /**
      * How many times a second to update the texture from the video. Leave at 0 to update at every render.
      * A lower fps can help performance, as updating the texture at 60fps on a 30ps video may not be efficient.
-     *
-     * @member {number}
      */
     get updateFPS(): number
     {
@@ -400,32 +359,24 @@ export class VideoResource extends BaseImageResource
 
     /**
      * Used to auto-detect the type of resource.
-     *
-     * @static
      * @param {*} source - The source object
      * @param {string} extension - The extension of source, if set
-     * @return {boolean} `true` if video source
+     * @returns {boolean} `true` if video source
      */
     static test(source: unknown, extension?: string): source is HTMLVideoElement
     {
-        return (self.HTMLVideoElement && source instanceof HTMLVideoElement)
-            || VideoResource.TYPES.indexOf(extension) > -1;
+        return (globalThis.HTMLVideoElement && source instanceof HTMLVideoElement)
+            || VideoResource.TYPES.includes(extension);
     }
 
     /**
      * List of common video file extensions supported by VideoResource.
-     * @constant
-     * @member {Array<string>}
-     * @static
      * @readonly
      */
-    static TYPES = ['mp4', 'm4v', 'webm', 'ogg', 'ogv', 'h264', 'avi', 'mov'];
+    static TYPES: Array<string> = ['mp4', 'm4v', 'webm', 'ogg', 'ogv', 'h264', 'avi', 'mov'];
 
     /**
      * Map of video MIME types that can't be directly derived from file extensions.
-     * @constant
-     * @member {object}
-     * @static
      * @readonly
      */
     static MIME_TYPES: Dict<string> = {

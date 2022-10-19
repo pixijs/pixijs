@@ -1,6 +1,8 @@
 import { generateFillStyle } from './generateFillStyle';
-import { hex2rgb, string2hex } from '@pixi/utils';
+import { utils } from '@pixi/core';
+
 import type { TextMetrics, TextStyle } from '@pixi/text';
+import type { ICanvas, ICanvasRenderingContext2D } from '@pixi/settings';
 
 // TODO: Prevent code duplication b/w drawGlyph & Text#updateText
 
@@ -8,10 +10,9 @@ import type { TextMetrics, TextStyle } from '@pixi/text';
  * Draws the glyph `metrics.text` on the given canvas.
  *
  * Ignored because not directly exposed.
- *
  * @ignore
- * @param {HTMLCanvasElement} canvas
- * @param {CanvasRenderingContext2D} context
+ * @param {PIXI.ICanvas} canvas
+ * @param {PIXI.ICanvasRenderingContext2D} context
  * @param {TextMetrics} metrics
  * @param {number} x
  * @param {number} y
@@ -19,8 +20,8 @@ import type { TextMetrics, TextStyle } from '@pixi/text';
  * @param {TextStyle} style
  */
 export function drawGlyph(
-    canvas: HTMLCanvasElement,
-    context: CanvasRenderingContext2D,
+    canvas: ICanvas,
+    context: ICanvasRenderingContext2D,
     metrics: TextMetrics,
     x: number,
     y: number,
@@ -47,15 +48,17 @@ export function drawGlyph(
     context.fillStyle = generateFillStyle(canvas, context, style, resolution, [char], metrics);
     context.strokeStyle = style.stroke as string;
 
-    const dropShadowColor = style.dropShadowColor;
-    const rgb = hex2rgb(typeof dropShadowColor === 'number' ? dropShadowColor : string2hex(dropShadowColor));
-
     if (style.dropShadow)
     {
+        const dropShadowColor = style.dropShadowColor;
+        const rgb = utils.hex2rgb(typeof dropShadowColor === 'number' ? dropShadowColor : utils.string2hex(dropShadowColor));
+        const dropShadowBlur = style.dropShadowBlur * resolution;
+        const dropShadowDistance = style.dropShadowDistance * resolution;
+
         context.shadowColor = `rgba(${rgb[0] * 255},${rgb[1] * 255},${rgb[2] * 255},${style.dropShadowAlpha})`;
-        context.shadowBlur = style.dropShadowBlur;
-        context.shadowOffsetX = Math.cos(style.dropShadowAngle) * style.dropShadowDistance;
-        context.shadowOffsetY = Math.sin(style.dropShadowAngle) * style.dropShadowDistance;
+        context.shadowBlur = dropShadowBlur;
+        context.shadowOffsetX = Math.cos(style.dropShadowAngle) * dropShadowDistance;
+        context.shadowOffsetY = Math.sin(style.dropShadowAngle) * dropShadowDistance;
     }
     else
     {

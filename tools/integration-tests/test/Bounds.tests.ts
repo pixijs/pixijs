@@ -4,15 +4,13 @@ import { Sprite } from '@pixi/sprite';
 import { Rectangle } from '@pixi/math';
 import { Graphics } from '@pixi/graphics';
 import { Text } from '@pixi/text';
-// import { SimplePlane } from '@pixi/mesh-extras';
-import { expect } from 'chai';
 
-describe('getBounds', function ()
+describe('getBounds', () =>
 {
-    it('should register correct width/height with a LOADED Sprite', function ()
+    it('should register correct width/height with a LOADED Sprite', () =>
     {
         const parent = new Container();
-        const texture = RenderTexture.create(10, 10);
+        const texture = RenderTexture.create({ width: 10, height: 10 });
 
         const sprite = new Sprite(texture);
 
@@ -20,10 +18,10 @@ describe('getBounds', function ()
 
         let bounds = sprite.getBounds();
 
-        expect(bounds.x).to.equal(0);
-        expect(bounds.y).to.equal(0);
-        expect(bounds.width).to.equal(10);
-        expect(bounds.height).to.equal(10);
+        expect(bounds.x).toEqual(0);
+        expect(bounds.y).toEqual(0);
+        expect(bounds.width).toEqual(10);
+        expect(bounds.height).toEqual(10);
 
         sprite.position.x = 20;
         sprite.position.y = 20;
@@ -33,30 +31,30 @@ describe('getBounds', function ()
 
         bounds = sprite.getBounds();
 
-        expect(bounds.x).to.equal(20);
-        expect(bounds.y).to.equal(20);
-        expect(bounds.width).to.equal(20);
-        expect(bounds.height).to.equal(20);
+        expect(bounds.x).toEqual(20);
+        expect(bounds.y).toEqual(20);
+        expect(bounds.width).toEqual(20);
+        expect(bounds.height).toEqual(20);
 
         bounds = sprite.getBounds(true);
 
-        expect(bounds.x).to.equal(20);
-        expect(bounds.y).to.equal(20);
-        expect(bounds.width).to.equal(20);
-        expect(bounds.height).to.equal(20);
+        expect(bounds.x).toEqual(20);
+        expect(bounds.y).toEqual(20);
+        expect(bounds.width).toEqual(20);
+        expect(bounds.height).toEqual(20);
     });
 
-    it('should register correct width/height with Graphics', function ()
+    it('should register correct width/height with Graphics', () =>
     {
         const parent = new Container();
         const graphics = new Graphics();
 
         let bounds = graphics.getBounds();
 
-        expect(bounds.x).to.equal(0);
-        expect(bounds.y).to.equal(0);
-        expect(bounds.width).to.equal(0);
-        expect(bounds.height).to.equal(0);
+        expect(bounds.x).toEqual(0);
+        expect(bounds.y).toEqual(0);
+        expect(bounds.width).toEqual(0);
+        expect(bounds.height).toEqual(0);
 
         graphics.beginFill(0xFF0000).drawCircle(0, 0, 10);
 
@@ -64,10 +62,10 @@ describe('getBounds', function ()
 
         bounds = graphics.getBounds();
 
-        expect(bounds.x).to.equal(-10);
-        expect(bounds.y).to.equal(-10);
-        expect(bounds.width).to.equal(20);
-        expect(bounds.height).to.equal(20);
+        expect(bounds.x).toEqual(-10);
+        expect(bounds.y).toEqual(-10);
+        expect(bounds.width).toEqual(20);
+        expect(bounds.height).toEqual(20);
 
         graphics.position.x = 20;
         graphics.position.y = 20;
@@ -77,20 +75,20 @@ describe('getBounds', function ()
 
         bounds = graphics.getBounds();
 
-        expect(bounds.x).to.equal(0);
-        expect(bounds.y).to.equal(0);
-        expect(bounds.width).to.equal(40);
-        expect(bounds.height).to.equal(40);
+        expect(bounds.x).toEqual(0);
+        expect(bounds.y).toEqual(0);
+        expect(bounds.width).toEqual(40);
+        expect(bounds.height).toEqual(40);
 
         bounds = graphics.getBounds(true);
 
-        expect(bounds.x).to.equal(0);
-        expect(bounds.y).to.equal(0);
-        expect(bounds.width).to.equal(40);
-        expect(bounds.height).to.equal(40);
+        expect(bounds.x).toEqual(0);
+        expect(bounds.y).toEqual(0);
+        expect(bounds.width).toEqual(40);
+        expect(bounds.height).toEqual(40);
     });
 
-    it('should register correct width/height with an empty Container', function ()
+    it('should register correct width/height with an empty Container', () =>
     {
         const parent = new Container();
 
@@ -100,10 +98,10 @@ describe('getBounds', function ()
 
         let bounds = container.getBounds();
 
-        expect(bounds.x).to.equal(0);
-        expect(bounds.y).to.equal(0);
-        expect(bounds.width).to.equal(0);
-        expect(bounds.height).to.equal(0);
+        expect(bounds.x).toEqual(0);
+        expect(bounds.y).toEqual(0);
+        expect(bounds.width).toEqual(0);
+        expect(bounds.height).toEqual(0);
 
         container.position.x = 20;
         container.position.y = 20;
@@ -113,13 +111,13 @@ describe('getBounds', function ()
 
         bounds = container.getBounds();
 
-        expect(bounds.x).to.equal(0);
-        expect(bounds.y).to.equal(0);
-        expect(bounds.width).to.equal(0);
-        expect(bounds.height).to.equal(0);
+        expect(bounds.x).toEqual(0);
+        expect(bounds.y).toEqual(0);
+        expect(bounds.width).toEqual(0);
+        expect(bounds.height).toEqual(0);
     });
 
-    it('should register correct width/height with a Container', function ()
+    it('should register correct width/height with a Container', () =>
     {
         const parent = new Container();
 
@@ -127,7 +125,7 @@ describe('getBounds', function ()
 
         const graphics = new Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10);
 
-        const texture = RenderTexture.create(10, 10);
+        const texture = RenderTexture.create({ width: 10, height: 10 });
         const sprite = new Sprite(texture);
 
         container.addChild(sprite);
@@ -142,29 +140,29 @@ describe('getBounds', function ()
 
         let bounds = container.getBounds();
 
-        expect(bounds.x).to.equal(30);
-        expect(bounds.y).to.equal(20);
-        expect(bounds.width).to.equal(80);
-        expect(bounds.height).to.equal(90);
+        expect(bounds.x).toEqual(30);
+        expect(bounds.y).toEqual(20);
+        expect(bounds.width).toEqual(80);
+        expect(bounds.height).toEqual(90);
 
         container.rotation = 0.1;
 
         bounds = container.getBounds();
 
-        expect(bounds.x | 0).to.equal(26);
-        expect(bounds.y | 0).to.equal(22);
-        expect(bounds.width | 0).to.equal(73);
-        expect(bounds.height | 0).to.equal(97);
+        expect(bounds.x | 0).toEqual(26);
+        expect(bounds.y | 0).toEqual(22);
+        expect(bounds.width | 0).toEqual(73);
+        expect(bounds.height | 0).toEqual(97);
 
         bounds = container.getBounds(true);
 
-        expect(bounds.x | 0).to.equal(26);
-        expect(bounds.y | 0).to.equal(22);
-        expect(bounds.width | 0).to.equal(73);
-        expect(bounds.height | 0).to.equal(97);
+        expect(bounds.x | 0).toEqual(26);
+        expect(bounds.y | 0).toEqual(22);
+        expect(bounds.width | 0).toEqual(73);
+        expect(bounds.height | 0).toEqual(97);
     });
 
-    it('should register correct width/height with an item that has already had its parent Container transformed', function ()
+    it('should register correct width/height with an item that has already had its parent Container transformed', () =>
     {
         const parent = new Container();
 
@@ -180,25 +178,25 @@ describe('getBounds', function ()
 
         let bounds = container.getBounds();
 
-        expect(bounds.x).to.equal(100);
-        expect(bounds.y).to.equal(100);
-        expect(bounds.width).to.equal(10);
-        expect(bounds.height).to.equal(10);
+        expect(bounds.x).toEqual(100);
+        expect(bounds.y).toEqual(100);
+        expect(bounds.width).toEqual(10);
+        expect(bounds.height).toEqual(10);
 
         bounds = graphics.getBounds(true);
 
-        expect(bounds.x).to.equal(100);
-        expect(bounds.y).to.equal(100);
-        expect(bounds.width).to.equal(10);
-        expect(bounds.height).to.equal(10);
+        expect(bounds.x).toEqual(100);
+        expect(bounds.y).toEqual(100);
+        expect(bounds.width).toEqual(10);
+        expect(bounds.height).toEqual(10);
     });
 
     /*
-    it('should register correct width/height with a Mesh', function ()
+    it('should register correct width/height with a Mesh', ()=>
     {
         const parent = new Container();
 
-        const texture = RenderTexture.create(10, 10);
+        const texture = RenderTexture.create({ width: 10, height: 10 });
 
         const plane = new SimplePlane(texture);
 
@@ -209,24 +207,24 @@ describe('getBounds', function ()
 
         let bounds = plane.getBounds();
 
-        expect(bounds.x).to.equal(20);
-        expect(bounds.y).to.equal(20);
-        expect(bounds.width).to.equal(10);
-        expect(bounds.height).to.equal(10);
+        expect(bounds.x).toEqual(20);
+        expect(bounds.y).toEqual(20);
+        expect(bounds.width).toEqual(10);
+        expect(bounds.height).toEqual(10);
 
         plane.scale.x = 2;
         plane.scale.y = 2;
 
         bounds = plane.getBounds();
 
-        expect(bounds.x).to.equal(20);
-        expect(bounds.y).to.equal(20);
-        expect(bounds.width).to.equal(20);
-        expect(bounds.height).to.equal(20);
+        expect(bounds.x).toEqual(20);
+        expect(bounds.y).toEqual(20);
+        expect(bounds.width).toEqual(20);
+        expect(bounds.height).toEqual(20);
     });
     */
 
-    it('should register correct width/height with an a DisplayObject is visible false', function ()
+    it('should register correct width/height with an a DisplayObject is visible false', () =>
     {
         const parent = new Container();
 
@@ -234,7 +232,7 @@ describe('getBounds', function ()
 
         const graphics = new Graphics().beginFill(0xFF0000).drawCircle(0, 0, 10);
 
-        const texture = RenderTexture.create(10, 10);
+        const texture = RenderTexture.create({ width: 10, height: 10 });
         const sprite = new Sprite(texture);
 
         container.addChild(sprite);
@@ -251,35 +249,35 @@ describe('getBounds', function ()
 
         let bounds = container.getBounds();
 
-        expect(bounds.x).to.equal(30);
-        expect(bounds.y).to.equal(20);
-        expect(bounds.width).to.equal(10);
-        expect(bounds.height).to.equal(10);
+        expect(bounds.x).toEqual(30);
+        expect(bounds.y).toEqual(20);
+        expect(bounds.width).toEqual(10);
+        expect(bounds.height).toEqual(10);
 
         sprite.renderable = false;
 
         bounds = container.getBounds();
 
-        expect(bounds.x).to.equal(0);
-        expect(bounds.y).to.equal(0);
-        expect(bounds.width).to.equal(0);
-        expect(bounds.height).to.equal(0);
+        expect(bounds.x).toEqual(0);
+        expect(bounds.y).toEqual(0);
+        expect(bounds.width).toEqual(0);
+        expect(bounds.height).toEqual(0);
 
         bounds = sprite.getBounds();
 
-        expect(bounds.x).to.equal(30);
-        expect(bounds.y).to.equal(20);
-        expect(bounds.width).to.equal(10);
-        expect(bounds.height).to.equal(10);
+        expect(bounds.x).toEqual(30);
+        expect(bounds.y).toEqual(20);
+        expect(bounds.width).toEqual(10);
+        expect(bounds.height).toEqual(10);
     });
 
-    it('should register correct bounds of invisible Container', function ()
+    it('should register correct bounds of invisible Container', () =>
     {
         const parent = new Container();
 
         const container = new Container();
 
-        const texture = RenderTexture.create(10, 10);
+        const texture = RenderTexture.create({ width: 10, height: 10 });
         const sprite = new Sprite(texture);
 
         container.addChild(sprite);
@@ -291,13 +289,13 @@ describe('getBounds', function ()
 
         const bounds = container.getBounds();
 
-        expect(bounds.x).to.equal(130);
-        expect(bounds.y).to.equal(120);
-        expect(bounds.width).to.equal(10);
-        expect(bounds.height).to.equal(10);
+        expect(bounds.x).toEqual(130);
+        expect(bounds.y).toEqual(120);
+        expect(bounds.width).toEqual(10);
+        expect(bounds.height).toEqual(10);
     });
 
-    it('should register correct width/height with Container masked child', function ()
+    it('should register correct width/height with Container masked child', () =>
     {
         const parent = new Container();
 
@@ -305,7 +303,7 @@ describe('getBounds', function ()
 
         const graphics = new Graphics().beginFill(0xFF0000).drawRect(0, 0, 10, 10);
 
-        const texture = RenderTexture.create(10, 10);
+        const texture = RenderTexture.create({ width: 10, height: 10 });
         const sprite = new Sprite(texture);
 
         container.addChild(sprite);
@@ -321,20 +319,20 @@ describe('getBounds', function ()
 
         let bounds = graphics.getBounds();
 
-        expect(bounds.x).to.equal(32);
-        expect(bounds.y).to.equal(23);
-        expect(bounds.width).to.equal(10);
-        expect(bounds.height).to.equal(10);
+        expect(bounds.x).toEqual(32);
+        expect(bounds.y).toEqual(23);
+        expect(bounds.width).toEqual(10);
+        expect(bounds.height).toEqual(10);
 
         bounds = container.getBounds();
 
-        expect(bounds.x).to.equal(32);
-        expect(bounds.y).to.equal(23);
-        expect(bounds.width).to.equal(8);
-        expect(bounds.height).to.equal(7);
+        expect(bounds.x).toEqual(32);
+        expect(bounds.y).toEqual(23);
+        expect(bounds.width).toEqual(8);
+        expect(bounds.height).toEqual(7);
     });
 
-    it('should register correct width/height with an a DisplayObject parent has moved', function ()
+    it('should register correct width/height with an a DisplayObject parent has moved', () =>
     {
         const parent = new Container();
 
@@ -353,13 +351,13 @@ describe('getBounds', function ()
 
         const bounds = graphics.getBounds();
 
-        expect(bounds.x).to.equal(-110);
-        expect(bounds.y).to.equal(-110);
-        expect(bounds.width).to.equal(20);
-        expect(bounds.height).to.equal(20);
+        expect(bounds.x).toEqual(-110);
+        expect(bounds.y).toEqual(-110);
+        expect(bounds.width).toEqual(20);
+        expect(bounds.height).toEqual(20);
     });
 
-    it('should register correct width/height with a Text Object', function ()
+    it('should register correct width/height with a Text Object', () =>
     {
         const parent = new Container();
 
@@ -374,23 +372,23 @@ describe('getBounds', function ()
         let bounds = text.getBounds();
         const bx = bounds.width;
 
-        expect(bounds.x).to.equal(0);
-        expect(bounds.y).to.equal(0);
-        expect(bounds.width).to.be.greaterThan(0);
-        expect(bounds.height).to.greaterThan(0);
+        expect(bounds.x).toEqual(0);
+        expect(bounds.y).toEqual(0);
+        expect(bounds.width).toBeGreaterThan(0);
+        expect(bounds.height).toBeGreaterThan(0);
 
         text.text = 'hello!';
 
         bounds = text.getBounds();
 
         // this variable seems to be different on different devices. a font thing?
-        expect(bounds.width).to.not.equal(bx);
+        expect(bounds.width).not.toEqual(bx);
     });
 
-    it('should return a different rectangle if getting local bounds after global bounds ', function ()
+    it('should return a different rectangle if getting local bounds after global bounds ', () =>
     {
         const parent = new Container();
-        const texture = RenderTexture.create(10, 10);
+        const texture = RenderTexture.create({ width: 10, height: 10 });
         const sprite = new Sprite(texture);
 
         sprite.position.x = 20;
@@ -403,23 +401,26 @@ describe('getBounds', function ()
 
         const bounds = sprite.getBounds();
 
-        expect(bounds.x).to.equal(20);
-        expect(bounds.y).to.equal(20);
-        expect(bounds.width).to.equal(20);
-        expect(bounds.height).to.equal(20);
+        expect(bounds.x).toEqual(20);
+        expect(bounds.y).toEqual(20);
+        expect(bounds.width).toEqual(20);
+        expect(bounds.height).toEqual(20);
 
         const localBounds = sprite.getLocalBounds();
 
-        expect(localBounds.x).to.equal(0);
-        expect(localBounds.y).to.equal(0);
-        expect(localBounds.width).to.equal(10);
-        expect(localBounds.height).to.equal(10);
+        expect(Math.abs(localBounds.x)).toEqual(0);
+        expect(Math.abs(localBounds.y)).toEqual(0);
+        expect(localBounds.width).toEqual(10);
+        expect(localBounds.height).toEqual(10);
     });
 
-    it('should ensure bounds respect the trim of a texture ', function ()
+    it('should ensure bounds respect the trim of a texture ', () =>
     {
         const parent = new Container();
-        const baseTexture = new BaseRenderTexture(100, 100);
+        const baseTexture = new BaseRenderTexture({
+            width: 100,
+            height: 100,
+        });
 
         const orig = new Rectangle(0, 0, 100, 50);
         const frame = new Rectangle(2, 2, 50, 50);
@@ -436,9 +437,9 @@ describe('getBounds', function ()
 
         const bounds = sprite.getBounds();
 
-        expect(bounds.x).to.equal(20);
-        expect(bounds.y).to.equal(20);
-        expect(bounds.width).to.equal(100);
-        expect(bounds.height).to.equal(50);
+        expect(bounds.x).toEqual(20);
+        expect(bounds.y).toEqual(20);
+        expect(bounds.width).toEqual(100);
+        expect(bounds.height).toEqual(50);
     });
 });

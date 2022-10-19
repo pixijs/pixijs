@@ -1,22 +1,34 @@
-import { BaseTexture } from './BaseTexture';
-import { ImageResource } from './resources/ImageResource';
-import { CanvasResource } from './resources/CanvasResource';
-import { TextureUvs } from './TextureUvs';
+import { Point, Rectangle } from '@pixi/math';
 import { settings } from '@pixi/settings';
-import { Rectangle, Point } from '@pixi/math';
 import { uid, TextureCache, getResolutionOfUrl, EventEmitter } from '@pixi/utils';
+import { ImageResource } from './resources/ImageResource';
+import { BaseTexture } from './BaseTexture';
+import { TextureUvs } from './TextureUvs';
 
-import type { Resource } from './resources/Resource';
-import type { BufferResource } from './resources/BufferResource';
 import type { IPointData, ISize } from '@pixi/math';
+import type { BufferResource } from './resources/BufferResource';
+import type { CanvasResource } from './resources/CanvasResource';
+import type { Resource } from './resources/Resource';
 import type { IBaseTextureOptions, ImageSource } from './BaseTexture';
 import type { TextureMatrix } from './TextureMatrix';
 
 const DEFAULT_UVS = new TextureUvs();
 
-export type TextureSource = string|BaseTexture|ImageSource;
+export type TextureSource = string | BaseTexture | ImageSource;
 
 export interface Texture extends GlobalMixins.Texture, EventEmitter {}
+
+/**
+ * Used to remove listeners from WHITE and EMPTY Textures
+ * @ignore
+ */
+function removeAllHandlers(tex: any): void
+{
+    tex.destroy = function _emptyDestroy(): void { /* empty */ };
+    tex.on = function _emptyOn(): void { /* empty */ };
+    tex.once = function _emptyOnce(): void { /* empty */ };
+    tex.emit = function _emptyEmit(): void { /* empty */ };
+}
 
 /**
  * A texture stores the information that represents an image or part of an image.
@@ -27,9 +39,11 @@ export interface Texture extends GlobalMixins.Texture, EventEmitter {}
  * You can directly create a texture from an image and then reuse it multiple times like this :
  *
  * ```js
- * let texture = PIXI.Texture.from('assets/image.png');
- * let sprite1 = new PIXI.Sprite(texture);
- * let sprite2 = new PIXI.Sprite(texture);
+ * import { Texture, Sprite } from 'pixi.js';
+ *
+ * const texture = Texture.from('assets/image.png');
+ * const sprite1 = new Sprite(texture);
+ * const sprite2 = new Sprite(texture);
  * ```
  *
  * If you didnt pass the texture frame to constructor, it enables `noFrame` mode:
@@ -38,63 +52,99 @@ export interface Texture extends GlobalMixins.Texture, EventEmitter {}
  * Textures made from SVGs, loaded or not, cannot be used before the file finishes processing.
  * You can check for this by checking the sprite's _textureID property.
  * ```js
- * var texture = PIXI.Texture.from('assets/image.svg');
- * var sprite1 = new PIXI.Sprite(texture);
+ * import { Texture, Sprite } from 'pixi.js';
+ *
+ * const texture = Texture.from('assets/image.svg');
+ * const sprite1 = new Sprite(texture);
  * //sprite1._textureID should not be undefined if the texture has finished processing the SVG file
  * ```
  * You can use a ticker or rAF to ensure your sprites load the finished textures after processing. See issue #3068.
- *
- * @class
- * @extends PIXI.utils.EventEmitter
  * @memberof PIXI
  * @typeParam R - The BaseTexture's Resource type.
  */
 export class Texture<R extends Resource = Resource> extends EventEmitter
 {
+    /** The base texture that this texture uses. */
     public baseTexture: BaseTexture<R>;
+
+    /** This is the area of original texture, before it was put in atlas. */
     public orig: Rectangle;
+
+    /**
+     * This is the trimmed area of original texture, before it was put in atlas
+     * Please call `updateUvs()` after you change coordinates of `trim` manually.
+     */
     public trim: Rectangle;
+
+    /** This will let the renderer know if the texture is valid. If it's not then it cannot be rendered. */
     public valid: boolean;
+
+    /**
+     * Does this Texture have any frame data assigned to it?
+     *
+     * This mode is enabled automatically if no frame was passed inside constructor.
+     *
+     * In this mode texture is subscribed to baseTexture events, and fires `update` on any change.
+     *
+     * Beware, after loading or resize of baseTexture event can fired two times!
+     * If you want more control, subscribe on baseTexture itself.
+     *
+     * Any assignment of `frame` switches off `noFrame` mode.
+     * @example
+     * texture.on('update', () => {});
+     */
     public noFrame: boolean;
+
+    /**
+     * Anchor point that is used as default if sprite is created with this texture.
+     * Changing the `defaultAnchor` at a later point of time will not update Sprite's anchor point.
+     * @default {0,0}
+     */
     public defaultAnchor: Point;
+
+    /** Default TextureMatrix instance for this texture. By default, that object is not created because its heavy. */
     public uvMatrix: TextureMatrix;
     protected _rotate: number;
+
+    /**
+     * Update ID is observed by sprites and TextureMatrix instances.
+     * Call updateUvs() to increment it.
+     * @protected
+     */
     _updateID: number;
+
+    /**
+     * This is the area of the BaseTexture image to actually copy to the Canvas / WebGL when rendering,
+     * irrespective of the actual frame size or placement (which can be influenced by trimmed texture atlases)
+     */
     _frame: Rectangle;
+
+    /**
+     * The WebGL UV data cache. Can be used as quad UV.
+     * @protected
+     */
     _uvs: TextureUvs;
+
+    /**
+     * The ids under which this Texture has been added to the texture cache. This is
+     * automatically set as long as Texture.addToCache is used, but may not be set if a
+     * Texture is added directly to the TextureCache array.
+     */
     textureCacheIds: Array<string>;
 
     /**
-     * @param {PIXI.BaseTexture} baseTexture - The base texture source to create the texture from
-     * @param {PIXI.Rectangle} [frame] - The rectangle frame of the texture to show
-     * @param {PIXI.Rectangle} [orig] - The area of original texture
-     * @param {PIXI.Rectangle} [trim] - Trimmed rectangle of original texture
-     * @param {number} [rotate] - indicates how the texture was rotated by texture packer. See {@link PIXI.groupD8}
-     * @param {PIXI.IPointData} [anchor] - Default anchor point used for sprite placement / rotation
+     * @param baseTexture - The base texture source to create the texture from
+     * @param frame - The rectangle frame of the texture to show
+     * @param orig - The area of original texture
+     * @param trim - Trimmed rectangle of original texture
+     * @param rotate - indicates how the texture was rotated by texture packer. See {@link PIXI.groupD8}
+     * @param anchor - Default anchor point used for sprite placement / rotation
      */
     constructor(baseTexture: BaseTexture<R>, frame?: Rectangle,
         orig?: Rectangle, trim?: Rectangle, rotate?: number, anchor?: IPointData)
     {
         super();
 
-        /**
-         * Does this Texture have any frame data assigned to it?
-         *
-         * This mode is enabled automatically if no frame was passed inside constructor.
-         *
-         * In this mode texture is subscribed to baseTexture events, and fires `update` on any change.
-         *
-         * Beware, after loading or resize of baseTexture event can fired two times!
-         * If you want more control, subscribe on baseTexture itself.
-         *
-         * ```js
-         * texture.on('update', () => {});
-         * ```
-         *
-         * Any assignment of `frame` switches off `noFrame` mode.
-         *
-         * @member {boolean}
-         */
         this.noFrame = false;
 
         if (!frame)
@@ -108,57 +158,12 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
             baseTexture = baseTexture.baseTexture;
         }
 
-        /**
-         * The base texture that this texture uses.
-         *
-         * @member {PIXI.BaseTexture}
-         */
         this.baseTexture = baseTexture;
-
-        /**
-         * This is the area of the BaseTexture image to actually copy to the Canvas / WebGL when rendering,
-         * irrespective of the actual frame size or placement (which can be influenced by trimmed texture atlases)
-         *
-         * @member {PIXI.Rectangle}
-         */
         this._frame = frame;
-
-        /**
-         * This is the trimmed area of original texture, before it was put in atlas
-         * Please call `updateUvs()` after you change coordinates of `trim` manually.
-         *
-         * @member {PIXI.Rectangle}
-         */
         this.trim = trim;
-
-        /**
-         * This will let the renderer know if the texture is valid. If it's not then it cannot be rendered.
-         *
-         * @member {boolean}
-         */
         this.valid = false;
-
-        /**
-         * The WebGL UV data cache. Can be used as quad UV
-         *
-         * @member {PIXI.TextureUvs}
-         * @protected
-         */
         this._uvs = DEFAULT_UVS;
-
-        /**
-         * Default TextureMatrix instance for this texture
-         * By default that object is not created because its heavy
-         *
-         * @member {PIXI.TextureMatrix}
-         */
         this.uvMatrix = null;
-
-        /**
-         * This is the area of original texture, before it was put in atlas
-         *
-         * @member {PIXI.Rectangle}
-         */
         this.orig = orig || frame;// new Rectangle(0, 0, 1, 1);
 
         this._rotate = Number(rotate || 0);
@@ -173,31 +178,10 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
             throw new Error('attempt to use diamond-shaped UVs. If you are sure, set rotation manually');
         }
 
-        /**
-         * Anchor point that is used as default if sprite is created with this texture.
-         * Changing the `defaultAnchor` at a later point of time will not update Sprite's anchor point.
-         * @member {PIXI.Point}
-         * @default {0,0}
-         */
         this.defaultAnchor = anchor ? new Point(anchor.x, anchor.y) : new Point(0, 0);
-
-        /**
-         * Update ID is observed by sprites and TextureMatrix instances.
-         * Call updateUvs() to increment it.
-         *
-         * @member {number}
-         * @protected
-         */
 
         this._updateID = 0;
 
-        /**
-         * The ids under which this Texture has been added to the texture cache. This is
-         * automatically set as long as Texture.addToCache is used, but may not be set if a
-         * Texture is added directly to the TextureCache array.
-         *
-         * @member {string[]}
-         */
         this.textureCacheIds = [];
 
         if (!baseTexture.valid)
@@ -229,7 +213,6 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
      * Calls the TextureResource update.
      *
      * If you adjusted `frame` manually, please call `updateUvs()` instead.
-     *
      */
     update(): void
     {
@@ -241,9 +224,8 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
 
     /**
      * Called when the base texture is updated
-     *
      * @protected
-     * @param {PIXI.BaseTexture} baseTexture - The base texture.
+     * @param baseTexture - The base texture.
      */
     onBaseTextureUpdated(baseTexture: BaseTexture): void
     {
@@ -271,8 +253,7 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
 
     /**
      * Destroys this texture
-     *
-     * @param {boolean} [destroyBase=false] - Whether to destroy the base texture as well
+     * @param [destroyBase=false] - Whether to destroy the base texture as well
      */
     destroy(destroyBase?: boolean): void
     {
@@ -284,7 +265,7 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
 
                 // delete the texture if it exists in the texture cache..
                 // this only needs to be removed if the base texture is actually destroyed too..
-                if (resource && resource.url && TextureCache[resource.url])
+                if (resource?.url && TextureCache[resource.url])
                 {
                     Texture.removeFromCache(resource.url);
                 }
@@ -311,8 +292,7 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
 
     /**
      * Creates a new texture object that acts the same as this one.
-     *
-     * @return {PIXI.Texture} The new texture
+     * @returns - The new texture
      */
     clone(): Texture
     {
@@ -321,7 +301,7 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
         const clonedTexture = new Texture(this.baseTexture,
             !this.noFrame && clonedFrame,
             clonedOrig,
-            this.trim && this.trim.clone(),
+            this.trim?.clone(),
             this.rotate,
             this.defaultAnchor
         );
@@ -353,16 +333,15 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
     /**
      * Helper function that creates a new Texture based on the source you provide.
      * The source can be - frame id, image url, video url, canvas element, video element, base texture
-     *
-     * @static
-     * @param {string|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|PIXI.BaseTexture} source -
-     *        Source to create texture from
-     * @param {object} [options] - See {@link PIXI.BaseTexture}'s constructor for options.
+     * @param {string|PIXI.BaseTexture|HTMLImageElement|HTMLVideoElement|ImageBitmap|PIXI.ICanvas} source -
+     *        Source or array of sources to create texture from
+     * @param options - See {@link PIXI.BaseTexture}'s constructor for options.
      * @param {string} [options.pixiIdPrefix=pixiid] - If a source has no id, this is the prefix of the generated id
      * @param {boolean} [strict] - Enforce strict-mode, see {@link PIXI.settings.STRICT_TEXTURE_CACHE}.
-     * @return {PIXI.Texture} The newly created texture
+     * @returns {PIXI.Texture} The newly created texture
      */
-    static from<R extends Resource = Resource, RO = any>(source: TextureSource, options: IBaseTextureOptions<RO> = {},
+    static from<R extends Resource = Resource, RO = any>(source: TextureSource | TextureSource[],
+        options: IBaseTextureOptions<RO> = {},
         strict = settings.STRICT_TEXTURE_CACHE): Texture<R>
     {
         const isFrame = typeof source === 'string';
@@ -376,7 +355,7 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
         {
             if (!source.cacheId)
             {
-                const prefix = (options && options.pixiIdPrefix) || 'pixiid';
+                const prefix = options?.pixiIdPrefix || 'pixiid';
 
                 source.cacheId = `${prefix}-${uid()}`;
                 BaseTexture.addToCache(source, source.cacheId);
@@ -388,7 +367,7 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
         {
             if (!(source as any)._pixiId)
             {
-                const prefix = (options && options.pixiIdPrefix) || 'pixiid';
+                const prefix = options?.pixiIdPrefix || 'pixiid';
 
                 (source as any)._pixiId = `${prefix}_${uid()}`;
             }
@@ -432,12 +411,12 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
      * Useful for loading textures via URLs. Use instead of `Texture.from` because
      * it does a better job of handling failed URLs more effectively. This also ignores
      * `PIXI.settings.STRICT_TEXTURE_CACHE`. Works for Videos, SVGs, Images.
-     * @param {string} url - The remote URL to load.
-     * @param {object} [options] - Optional options to include
-     * @return {Promise<PIXI.Texture>} A Promise that resolves to a Texture.
+     * @param url - The remote URL or array of URLs to load.
+     * @param options - Optional options to include
+     * @returns - A Promise that resolves to a Texture.
      */
     static fromURL<R extends Resource = Resource, RO = any>(
-        url: string, options?: IBaseTextureOptions<RO>): Promise<Texture<R>>
+        url: string | string[], options?: IBaseTextureOptions<RO>): Promise<Texture<R>>
     {
         const resourceOptions = Object.assign({ autoLoad: false }, options?.resourceOptions);
         const texture = Texture.from<R>(url, Object.assign({ resourceOptions }, options), false);
@@ -456,15 +435,14 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
     /**
      * Create a new Texture with a BufferResource from a Float32Array.
      * RGBA values are floats from 0 to 1.
-     * @static
      * @param {Float32Array|Uint8Array} buffer - The optional array to use, if no data
      *        is provided, a new Float32Array is created.
-     * @param {number} width - Width of the resource
-     * @param {number} height - Height of the resource
-     * @param {object} [options] - See {@link PIXI.BaseTexture}'s constructor for options.
-     * @return {PIXI.Texture} The resulting new BaseTexture
+     * @param width - Width of the resource
+     * @param height - Height of the resource
+     * @param options - See {@link PIXI.BaseTexture}'s constructor for options.
+     * @returns - The resulting new BaseTexture
      */
-    static fromBuffer(buffer: Float32Array|Uint8Array,
+    static fromBuffer(buffer: Float32Array | Uint8Array,
         width: number, height: number, options?: IBaseTextureOptions<ISize>): Texture<BufferResource>
     {
         return new Texture(BaseTexture.fromBuffer(buffer, width, height, options));
@@ -472,15 +450,14 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
 
     /**
      * Create a texture from a source and add to the cache.
-     *
-     * @static
-     * @param {HTMLImageElement|HTMLCanvasElement|string} source - The input source.
-     * @param {String} imageUrl - File name of texture, for cache and resolving resolution.
-     * @param {String} [name] - Human readable name for the texture cache. If no name is
+     * @param {HTMLImageElement|HTMLVideoElement|ImageBitmap|PIXI.ICanvas|string} source - The input source.
+     * @param imageUrl - File name of texture, for cache and resolving resolution.
+     * @param name - Human readable name for the texture cache. If no name is
      *        specified, only `imageUrl` will be used as the cache ID.
-     * @return {PIXI.Texture} Output texture
+     * @param options
+     * @returns - Output texture
      */
-    static fromLoader<R extends Resource = Resource>(source: HTMLImageElement|HTMLCanvasElement|string,
+    static fromLoader<R extends Resource = Resource>(source: ImageSource | string,
         imageUrl: string, name?: string, options?: IBaseTextureOptions): Promise<Texture<R>>
     {
         const baseTexture = new BaseTexture<R>(source, Object.assign({
@@ -529,16 +506,14 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
 
     /**
      * Adds a Texture to the global TextureCache. This cache is shared across the whole PIXI object.
-     *
-     * @static
-     * @param {PIXI.Texture} texture - The Texture to add to the cache.
-     * @param {string} id - The id that the Texture will be stored against.
+     * @param texture - The Texture to add to the cache.
+     * @param id - The id that the Texture will be stored against.
      */
     static addToCache(texture: Texture, id: string): void
     {
         if (id)
         {
-            if (texture.textureCacheIds.indexOf(id) === -1)
+            if (!texture.textureCacheIds.includes(id))
             {
                 texture.textureCacheIds.push(id);
             }
@@ -555,12 +530,10 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
 
     /**
      * Remove a Texture from the global TextureCache.
-     *
-     * @static
-     * @param {string|PIXI.Texture} texture - id of a Texture to be removed, or a Texture instance itself
-     * @return {PIXI.Texture|null} The Texture that was removed
+     * @param texture - id of a Texture to be removed, or a Texture instance itself
+     * @returns - The Texture that was removed
      */
-    static removeFromCache(texture: string|Texture): Texture|null
+    static removeFromCache(texture: string | Texture): Texture | null
     {
         if (typeof texture === 'string')
         {
@@ -580,7 +553,7 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
                 return textureFromCache;
             }
         }
-        else if (texture && texture.textureCacheIds)
+        else if (texture?.textureCacheIds)
         {
             for (let i = 0; i < texture.textureCacheIds.length; ++i)
             {
@@ -601,8 +574,6 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
 
     /**
      * Returns resolution of baseTexture
-     *
-     * @member {number}
      * @readonly
      */
     get resolution(): number
@@ -613,8 +584,6 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
     /**
      * The frame specifies the region of the base texture that this texture uses.
      * Please call `updateUvs()` after you change coordinates of `frame` manually.
-     *
-     * @member {PIXI.Rectangle}
      */
     get frame(): Rectangle
     {
@@ -660,8 +629,6 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
      * set to 6 to compensate for spine packer rotation
      * can be used to rotate or mirror sprites
      * See {@link PIXI.groupD8} for explanation
-     *
-     * @member {number}
      */
     get rotate(): number
     {
@@ -677,81 +644,59 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
         }
     }
 
-    /**
-     * The width of the Texture in pixels.
-     *
-     * @member {number}
-     */
+    /** The width of the Texture in pixels. */
     get width(): number
     {
         return this.orig.width;
     }
 
-    /**
-     * The height of the Texture in pixels.
-     *
-     * @member {number}
-     */
+    /** The height of the Texture in pixels. */
     get height(): number
     {
         return this.orig.height;
     }
 
-    /**
-     * Utility function for BaseTexture|Texture cast
-     */
+    /** Utility function for BaseTexture|Texture cast. */
     castToBaseTexture(): BaseTexture
     {
         return this.baseTexture;
     }
 
-    static readonly EMPTY: Texture<CanvasResource>;
-    static readonly WHITE: Texture<CanvasResource>;
+    private static _EMPTY: Texture<Resource>;
+    private static _WHITE: Texture<CanvasResource>;
+
+    /** An empty texture, used often to not have to create multiple empty textures. Can not be destroyed. */
+    public static get EMPTY(): Texture<Resource>
+    {
+        if (!Texture._EMPTY)
+        {
+            Texture._EMPTY = new Texture(new BaseTexture());
+            removeAllHandlers(Texture._EMPTY);
+            removeAllHandlers(Texture._EMPTY.baseTexture);
+        }
+
+        return Texture._EMPTY;
+    }
+
+    /** A white texture of 16x16 size, used for graphics and other things Can not be destroyed. */
+    public static get WHITE(): Texture<CanvasResource>
+    {
+        if (!Texture._WHITE)
+        {
+            const canvas = settings.ADAPTER.createCanvas(16, 16);
+            const context = canvas.getContext('2d');
+
+            canvas.width = 16;
+            canvas.height = 16;
+            context.fillStyle = 'white';
+            context.fillRect(0, 0, 16, 16);
+
+            Texture._WHITE = new Texture(BaseTexture.from(canvas));
+            removeAllHandlers(Texture._WHITE);
+            removeAllHandlers(Texture._WHITE.baseTexture);
+        }
+
+        return Texture._WHITE;
+    }
 }
 
-function createWhiteTexture(): Texture<CanvasResource>
-{
-    const canvas = document.createElement('canvas');
-
-    canvas.width = 16;
-    canvas.height = 16;
-
-    const context = canvas.getContext('2d');
-
-    context.fillStyle = 'white';
-    context.fillRect(0, 0, 16, 16);
-
-    return new Texture(new BaseTexture(new CanvasResource(canvas)));
-}
-
-function removeAllHandlers(tex: any): void
-{
-    tex.destroy = function _emptyDestroy(): void { /* empty */ };
-    tex.on = function _emptyOn(): void { /* empty */ };
-    tex.once = function _emptyOnce(): void { /* empty */ };
-    tex.emit = function _emptyEmit(): void { /* empty */ };
-}
-
-/**
- * An empty texture, used often to not have to create multiple empty textures.
- * Can not be destroyed.
- *
- * @static
- * @constant
- * @member {PIXI.Texture}
- */
-(Texture as any).EMPTY = new Texture(new BaseTexture());
-removeAllHandlers(Texture.EMPTY);
-removeAllHandlers(Texture.EMPTY.baseTexture);
-
-/**
- * A white texture of 16x16 size, used for graphics and other things
- * Can not be destroyed.
- *
- * @static
- * @constant
- * @member {PIXI.Texture}
- */
-(Texture as any).WHITE = createWhiteTexture();
-removeAllHandlers(Texture.WHITE);
-removeAllHandlers(Texture.WHITE.baseTexture);

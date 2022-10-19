@@ -12,9 +12,6 @@ export interface NineSlicePlane extends GlobalMixins.NineSlicePlane {}
  * The NineSlicePlane allows you to stretch a texture using 9-slice scaling. The corners will remain unscaled (useful
  * for buttons with rounded corners for example) and the other areas will be scaled horizontally and or vertically
  *
- *```js
- * let Plane9 = new PIXI.NineSlicePlane(PIXI.Texture.from('BoxWithRoundedCorners.png'), 15, 15, 15, 15);
- *  ```
  * <pre>
  *      A                          B
  *    +---+----------------------+---+
@@ -26,14 +23,16 @@ export interface NineSlicePlane extends GlobalMixins.NineSlicePlane {}
  *    +---+----------------------+---+
  *  D | 7 |          8           | 9 |
  *    +---+----------------------+---+
-
  *  When changing this objects width and/or height:
  *     areas 1 3 7 and 9 will remain unscaled.
  *     areas 2 and 8 will be stretched horizontally
  *     areas 4 and 6 will be stretched vertically
  *     area 5 will be stretched both horizontally and vertically
  * </pre>
+ * @example
+ * import { NineSlicePlane, Texture } from 'pixi.js';
  *
+ * const Plane9 = new NineSlicePlane(Texture.from('BoxWithRoundedCorners.png'), 15, 15, 15, 15);
  * @memberof PIXI
  */
 export class NineSlicePlane extends SimplePlane
@@ -43,28 +42,24 @@ export class NineSlicePlane extends SimplePlane
 
     /**
      * The width of the left column (a).
-     *
      * @private
      */
     _leftWidth: number;
 
     /**
      * The width of the right column (b)
-     *
      * @private
      */
     _rightWidth: number;
 
     /**
      * The height of the top row (c)
-     *
      * @private
      */
     _topHeight: number;
 
     /**
      * The height of the bottom row (d)
-     *
      * @private
      */
     _bottomHeight: number;
@@ -146,8 +141,7 @@ export class NineSlicePlane extends SimplePlane
 
     /**
      * Returns the smaller of a set of vertical and horizontal scale of nine slice corners.
-     *
-     * @return Smaller number of vertical and horizontal scale.
+     * @returns Smaller number of vertical and horizontal scale.
      */
     private _getMinScale(): number
     {

@@ -1,14 +1,13 @@
-import { Runner } from '@pixi/runner';
-import { BASIS_FORMATS } from './Basis';
-import { ITranscodeResponse, TranscoderWorkerWrapper } from './TranscoderWorkerWrapper';
+import type { BASIS_FORMATS } from './Basis';
+import type { ITranscodeResponse } from './TranscoderWorkerWrapper';
+import { TranscoderWorkerWrapper } from './TranscoderWorkerWrapper';
 
 /**
  * Worker class for transcoding *.basis files in background threads.
  *
  * To enable asynchronous transcoding, you need to provide the URL to the basis_universal transcoding
  * library.
- *
- * @memberof PIXI.BasisLoader
+ * @memberof PIXI.BasisParser
  */
 export class TranscoderWorker
 {
@@ -22,7 +21,13 @@ export class TranscoderWorker
     static jsSource: string;
     static wasmSource: ArrayBuffer;
 
-    public static onTranscoderInitialized = new Runner('onTranscoderInitialized');
+    private static _onTranscoderInitializedResolve: () => void;
+
+    /** a promise that when reslved means the transcoder is ready to be used */
+    public static onTranscoderInitialized = new Promise<void>((resolve) =>
+    {
+        TranscoderWorker._onTranscoderInitializedResolve = resolve;
+    });
 
     isInit: boolean;
     load: number;
@@ -124,7 +129,6 @@ export class TranscoderWorker
 
     /**
      * Handles responses from the web-worker
-     *
      * @param e - a message event containing the transcoded response
      */
     protected onMessage = (e: MessageEvent): void =>
@@ -162,7 +166,6 @@ export class TranscoderWorker
 
     /**
      * Loads the transcoder source code
-     *
      * @param jsURL - URL to the javascript basis transcoder
      * @param wasmURL - URL to the wasm basis transcoder
      * @returns A promise that resolves when both the js and wasm transcoders have been loaded.
@@ -177,8 +180,9 @@ export class TranscoderWorker
             .then((arrayBuffer: ArrayBuffer) => { TranscoderWorker.wasmSource = arrayBuffer; });
 
         return Promise.all([jsPromise, wasmPromise]).then((data) =>
+
         {
-            TranscoderWorker.onTranscoderInitialized.emit();
+            this._onTranscoderInitializedResolve();
 
             return data;
         });
@@ -186,7 +190,6 @@ export class TranscoderWorker
 
     /**
      * Set the transcoder source code directly
-     *
      * @param jsSource - source for the javascript basis transcoder
      * @param wasmSource - source for the wasm basis transcoder
      */

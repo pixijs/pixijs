@@ -12,21 +12,20 @@ declare namespace GlobalMixins
 
     interface Rectangle
     {
-        intersects(other: Rectangle): boolean;
+        containsRect(other: import('@pixi/math').Rectangle): boolean;
 
-        containsRect(other: Rectangle): boolean;
+        equals(other: import('@pixi/math').Rectangle): boolean;
 
-        equals(other: Rectangle): boolean;
+        intersection(other: import('@pixi/math').Rectangle): import('@pixi/math').Rectangle;
+        intersection<T extends import('@pixi/math').Rectangle>(other: import('@pixi/math').Rectangle, outRect: T): T;
 
-        intersection(other: Rectangle): Rectangle;
-        intersection<T extends Rectangle>(other: Rectangle, outRect: T): T;
-
-        union(other: Rectangle): Rectangle;
-        union<T extends Rectangle>(other: Rectangle, outRect: T): T;
+        union(other: import('@pixi/math').Rectangle): import('@pixi/math').Rectangle;
+        union<T extends import('@pixi/math').Rectangle>(other: import('@pixi/math').Rectangle, outRect: T): T;
     }
 }
 
-interface Vector2Math {
+interface Vector2Math
+{
     add(other: import('@pixi/math').IPointData): import('@pixi/math').Point;
     add<T extends import('@pixi/math').IPointData>(other: import('@pixi/math').IPointData, outPoint: T): T;
 
@@ -36,8 +35,8 @@ interface Vector2Math {
     multiply(other: import('@pixi/math').IPointData): import('@pixi/math').Point;
     multiply<T extends import('@pixi/math').IPointData>(other: import('@pixi/math').IPointData, outPoint: T): T;
 
-    divide(other: import('@pixi/math').IPointData): import('@pixi/math').Point;
-    divide<T extends import('@pixi/math').IPointData>(other: import('@pixi/math').IPointData, outPoint: T): T;
+    // divide(other: import('@pixi/math').IPointData): import('@pixi/math').Point;
+    // divide<T extends import('@pixi/math').IPointData>(other: import('@pixi/math').IPointData, outPoint: T): T;
 
     multiplyScalar(scalar: number): import('@pixi/math').Point;
     multiplyScalar<T extends import('@pixi/math').IPointData>(scalar: number, outPoint: T): T;

@@ -1,70 +1,73 @@
 import { VideoResource } from '@pixi/core';
 import path from 'path';
-import { expect } from 'chai';
 
-describe('VideoResource', function ()
+describe('VideoResource', () =>
 {
-    before(function ()
+    let videoUrl: string;
+
+    beforeAll(() =>
     {
-        this.videoUrl = path.resolve(__dirname, 'resources', 'small.mp4');
+        videoUrl = path.resolve(__dirname, 'resources', 'small.mp4');
     });
 
-    it('should create new resource', function ()
+    it('should create new resource', () =>
     {
-        const resource = new VideoResource(this.videoUrl, { autoLoad: false });
+        const resource = new VideoResource(videoUrl, { autoLoad: false });
 
-        expect(resource.width).to.equal(0);
-        expect(resource.height).to.equal(0);
-        expect(resource.valid).to.be.false;
-        expect(resource.source).to.be.instanceof(HTMLVideoElement);
+        expect(resource.width).toEqual(0);
+        expect(resource.height).toEqual(0);
+        expect(resource.valid).toBe(false);
+        expect(resource.source).toBeInstanceOf(HTMLVideoElement);
 
         resource.destroy();
     });
 
-    it('should load new resource', function ()
+    it('should load new resource', () =>
     {
-        const resource = new VideoResource(this.videoUrl, {
+        const resource = new VideoResource(videoUrl, {
             autoLoad: false,
             autoPlay: false,
         });
 
         return resource.load().then((res) =>
         {
-            expect(res).to.equal(resource);
-            expect(res.width).to.equal(560);
-            expect(res.height).to.equal(320);
-            expect(res.valid).to.be.true;
+            expect(res).toEqual(resource);
+            expect(res.width).toEqual(560);
+            expect(res.height).toEqual(320);
+            expect(res.valid).toBe(true);
             resource.destroy();
         });
     });
 
-    it('should find correct video extension from Url', function ()
+    it('should find correct video extension from Url', () =>
     {
         const resource = new VideoResource('https://example.org/video.webm', {
             autoLoad: false,
             autoPlay: false,
         });
 
-        expect(resource.source.firstChild.type).to.be.equals('video/webm');
+        // @ts-expect-error ---
+        expect(resource.source.firstChild.type).toEqual('video/webm');
 
         resource.destroy();
     });
 
-    it('should get video extension without being thrown by query string', function ()
+    it('should get video extension without being thrown by query string', () =>
     {
         const resource = new VideoResource('/test.mp4?123...', {
             autoLoad: false,
             autoPlay: false,
         });
 
-        expect(resource.source.firstChild.type).to.be.equals('video/mp4');
+        // @ts-expect-error ---
+        expect(resource.source.firstChild.type).toEqual('video/mp4');
 
         resource.destroy();
     });
 
-    it('should respect the updateFPS settings property and getter / setter', function ()
+    it('should respect the updateFPS settings property and getter / setter', () =>
     {
-        const resource = new VideoResource(this.videoUrl, {
+        const resource = new VideoResource(videoUrl, {
             autoLoad: false,
             autoPlay: false,
             updateFPS: 30,
@@ -72,10 +75,10 @@ describe('VideoResource', function ()
 
         return resource.load().then((res) =>
         {
-            expect(res).to.equal(resource);
-            expect(res.updateFPS).to.equal(30);
+            expect(res).toEqual(resource);
+            expect(res.updateFPS).toEqual(30);
             res.updateFPS = 20;
-            expect(res.updateFPS).to.equal(20);
+            expect(res.updateFPS).toEqual(20);
             resource.destroy();
         });
     });

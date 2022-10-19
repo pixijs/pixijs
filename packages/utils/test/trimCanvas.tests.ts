@@ -1,9 +1,8 @@
 import { trimCanvas } from '@pixi/utils';
-import { expect } from 'chai';
 
-describe('trimCanvas', function ()
+describe('trimCanvas', () =>
 {
-    it('should trim the canvas', function ()
+    it('should trim the canvas', () =>
     {
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d');
@@ -16,8 +15,8 @@ describe('trimCanvas', function ()
 
         const trimmedImageData = trimCanvas(canvas);
 
-        expect(trimmedImageData.width).to.equal(9);
-        expect(trimmedImageData.height).to.equal(5);
-        expect(trimmedImageData.data).to.be.instanceOf(ImageData);
+        expect(trimmedImageData.width).toEqual(9);
+        expect(trimmedImageData.height).toEqual(5);
+        expect(trimmedImageData.data).toBeInstanceOf(ImageData);
     });
 });

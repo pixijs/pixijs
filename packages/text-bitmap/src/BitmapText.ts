@@ -1,20 +1,17 @@
-import { ObservablePoint, Point } from '@pixi/math';
-import { settings } from '@pixi/settings';
 import { Mesh, MeshGeometry, MeshMaterial } from '@pixi/mesh';
-import { removeItems } from '@pixi/utils';
 import { BitmapFont } from './BitmapFont';
 import { splitTextToCharacters, extractCharCode } from './utils';
 import msdfFrag from './shader/msdf.frag';
 import msdfVert from './shader/msdf.vert';
-import type { Rectangle } from '@pixi/math';
-import { Program, Renderer, Texture } from '@pixi/core';
+import type { Renderer, Rectangle } from '@pixi/core';
+import { Program, Texture, BLEND_MODES, settings, utils, ObservablePoint, Point } from '@pixi/core';
 import type { IBitmapTextStyle } from './BitmapTextStyle';
 import type { TextStyleAlign } from '@pixi/text';
 import { Container } from '@pixi/display';
 import type { IDestroyOptions } from '@pixi/display';
-import { BLEND_MODES } from '@pixi/constants';
 
-interface PageMeshData {
+interface PageMeshData
+{
     index: number;
     indexCount: number;
     vertexCount: number;
@@ -25,7 +22,8 @@ interface PageMeshData {
     uvs?: Float32Array;
     indices?: Uint16Array;
 }
-interface CharRenderData {
+interface CharRenderData
+{
     texture: Texture;
     line: number;
     charCode: number;
@@ -57,18 +55,15 @@ const charRenderDataPool: CharRenderData[] = [];
  * https://github.com/Chlumsky/msdf-atlas-gen for SDF, MSDF and MTSDF json files
  *
  * A BitmapText can only be created when the font is loaded.
+ * @example
+ * import { BitmapText } from 'pixi.js';
  *
- * ```js
  * // in this case the font is in a file called 'desyrel.fnt'
- * let bitmapText = new PIXI.BitmapText("text using a fancy font!", {
+ * const bitmapText = new BitmapText("text using a fancy font!", {
  *   fontName: "Desyrel",
  *   fontSize: 35,
  *   align: "right"
  * });
- * ```
- *
- * @class
- * @extends PIXI.Container
  * @memberof PIXI
  */
 export class BitmapText extends Container
@@ -79,25 +74,105 @@ export class BitmapText extends Container
         maxWidth: 0,
         letterSpacing: 0,
     };
+
+    /** Set to `true` if the BitmapText needs to be redrawn. */
     public dirty: boolean;
+
+    /**
+     * The resolution / device pixel ratio of the canvas.
+     *
+     * This is set to automatically match the renderer resolution by default, but can be overridden by setting manually.
+     * @default PIXI.settings.RESOLUTION
+     */
+    _resolution: number;
+    _autoResolution: boolean;
+
+    /**
+     * Private tracker for the width of the overall text.
+     * @private
+     */
     protected _textWidth: number;
+
+    /**
+     * Private tracker for the height of the overall text.
+     * @private
+     */
     protected _textHeight: number;
+
+    /**
+     * Private tracker for the current text.
+     * @private
+     */
     protected _text: string;
+
+    /**
+     * The max width of this bitmap text in pixels. If the text provided is longer than the
+     * value provided, line breaks will be automatically inserted in the last whitespace.
+     * Disable by setting value to 0
+     * @private
+     */
     protected _maxWidth: number;
+
+    /**
+     * The max line height. This is useful when trying to use the total height of the Text,
+     * ie: when trying to vertically align. (Internally used)
+     * @private
+     */
     protected _maxLineHeight: number;
+
+    /**
+     * Letter spacing. This is useful for setting the space between characters.
+     * @private
+     */
     protected _letterSpacing: number;
+
+    /**
+     * Text anchor.
+     * @readonly
+     * @private
+     */
     protected _anchor: ObservablePoint;
+
+    /**
+     * Private tracker for the current font name.
+     * @private
+     */
     protected _fontName: string;
+
+    /**
+     * Private tracker for the current font size.
+     * @private
+     */
     protected _fontSize: number;
+
+    /**
+     * Private tracker for the current text align.
+     * @type {string}
+     * @private
+     */
     protected _align: TextStyleAlign;
+
+    /** Collection of page mesh data. */
     protected _activePagesMeshData: PageMeshData[];
+
+    /**
+     * Private tracker for the current tint.
+     * @private
+     */
     protected _tint = 0xFFFFFF;
+
+    /**
+     * If true PixiJS will Math.floor() x/y values when rendering.
+     * @default PIXI.settings.ROUND_PIXELS
+     */
     protected _roundPixels: boolean;
+
+    /** Cached char texture is destroyed when BitmapText is destroyed. */
     private _textureCache: Record<number, Texture>;
 
     /**
-     * @param {string} text - A string that you would like the text to display.
-     * @param {object} style - The style parameters.
+     * @param text - A string that you would like the text to display.
+     * @param style - The style parameters.
      * @param {string} style.fontName - The installed BitmapFont name.
      * @param {number} [style.fontSize] - The size of the font in pixels, e.g. 24. If undefined,
      *.     this will default to the BitmapFont size.
@@ -120,131 +195,26 @@ export class BitmapText extends Container
             throw new Error(`Missing BitmapFont "${fontName}"`);
         }
 
-        /**
-         * Collection of page mesh data.
-         *
-         * @member {object}
-         * @private
-         */
         this._activePagesMeshData = [];
-
-        /**
-         * Private tracker for the width of the overall text
-         *
-         * @member {number}
-         * @private
-         */
         this._textWidth = 0;
-
-        /**
-         * Private tracker for the height of the overall text
-         *
-         * @member {number}
-         * @private
-         */
         this._textHeight = 0;
-
-        /**
-         * Private tracker for the current text align.
-         *
-         * @member {string}
-         * @private
-         */
         this._align = align;
-
-        /**
-         * Private tracker for the current tint.
-         *
-         * @member {number}
-         * @private
-         */
         this._tint = tint;
-
-        /**
-         * Private tracker for the current font name.
-         *
-         * @member {string}
-         * @private
-         */
         this._fontName = fontName;
-
-        /**
-         * Private tracker for the current font size.
-         *
-         * @member {number}
-         * @private
-         */
         this._fontSize = fontSize || BitmapFont.available[fontName].size;
-
-        /**
-         * Private tracker for the current text.
-         *
-         * @member {string}
-         * @private
-         */
-        this._text = text;
-
-        /**
-         * The max width of this bitmap text in pixels. If the text provided is longer than the
-         * value provided, line breaks will be automatically inserted in the last whitespace.
-         * Disable by setting value to 0
-         *
-         * @member {number}
-         * @private
-         */
+        this.text = text;
         this._maxWidth = maxWidth;
-
-        /**
-         * The max line height. This is useful when trying to use the total height of the Text,
-         * ie: when trying to vertically align. (Internally used)
-         *
-         * @member {number}
-         * @private
-         */
         this._maxLineHeight = 0;
-
-        /**
-         * Letter spacing. This is useful for setting the space between characters.
-         * @member {number}
-         * @private
-         */
         this._letterSpacing = letterSpacing;
-
-        /**
-         * Text anchor. read-only
-         *
-         * @member {PIXI.ObservablePoint}
-         * @private
-         */
         this._anchor = new ObservablePoint((): void => { this.dirty = true; }, this, 0, 0);
-
-        /**
-         * If true PixiJS will Math.floor() x/y values when rendering
-         *
-         * @member {boolean}
-         * @default PIXI.settings.ROUND_PIXELS
-         */
         this._roundPixels = settings.ROUND_PIXELS;
-
-        /**
-         * Set to `true` if the BitmapText needs to be redrawn.
-         *
-         * @member {boolean}
-         */
         this.dirty = true;
-
-        /**
-         * Cached char texture is destroyed when BitmapText is destroyed
-         * @member {Record<number, Texture>}
-         * @private
-         */
+        this._resolution = settings.RESOLUTION;
+        this._autoResolution = true;
         this._textureCache = {};
     }
 
-    /**
-     * Renders text and updates it when needed. This should only be called
-     * if the BitmapFont is regenerated.
-     */
+    /** Renders text and updates it when needed. This should only be called if the BitmapFont is regenerated. */
     public updateText(): void
     {
         const data = BitmapFont.available[this._fontName];
@@ -325,7 +295,8 @@ export class BitmapText extends Container
 
             chars.push(charRenderData);
 
-            lastLineWidth = charRenderData.position.x + charData.texture.orig.width;// Use charRenderData position!
+            lastLineWidth = charRenderData.position.x
+                + Math.max(charData.xAdvance - charData.xOffset, charData.texture.orig.width);
             pos.x += charData.xAdvance + this._letterSpacing;
             maxLineHeight = Math.max(maxLineHeight, (charData.yOffset + charData.texture.height));
             prevCharCode = charCode;
@@ -333,7 +304,7 @@ export class BitmapText extends Container
             if (lastBreakPos !== -1 && maxWidth > 0 && pos.x > maxWidth)
             {
                 ++spacesRemoved;
-                removeItems(chars, 1 + lastBreakPos - spacesRemoved, 1 + i - lastBreakPos);
+                utils.removeItems(chars, 1 + lastBreakPos - spacesRemoved, 1 + i - lastBreakPos);
                 i = lastBreakPos;
                 lastBreakPos = -1;
 
@@ -393,10 +364,7 @@ export class BitmapText extends Container
 
         const activePagesMeshData = this._activePagesMeshData;
 
-        for (let i = 0; i < activePagesMeshData.length; i++)
-        {
-            pageMeshDataPool.push(activePagesMeshData[i]);
-        }
+        pageMeshDataPool.push(...activePagesMeshData);
 
         for (let i = 0; i < lenChars; i++)
         {
@@ -469,7 +437,7 @@ export class BitmapText extends Container
         // the updated text (if any), removed and return them to the pool.
         for (let i = 0; i < activePagesMeshData.length; i++)
         {
-            if (newPagesMeshData.indexOf(activePagesMeshData[i]) === -1)
+            if (!newPagesMeshData.includes(activePagesMeshData[i]))
             {
                 this.removeChild(activePagesMeshData[i].mesh);
             }
@@ -623,11 +591,6 @@ export class BitmapText extends Container
         }
     }
 
-    /**
-     * Updates the transform of this object
-     *
-     * @private
-     */
     updateTransform(): void
     {
         this.validate();
@@ -636,6 +599,12 @@ export class BitmapText extends Container
 
     _render(renderer: Renderer): void
     {
+        if (this._autoResolution && this._resolution !== renderer.resolution)
+        {
+            this._resolution = renderer.resolution;
+            this.dirty = true;
+        }
+
         // Update the uniform
         const { distanceFieldRange, distanceFieldType, size } = BitmapFont.available[this._fontName];
 
@@ -650,9 +619,11 @@ export class BitmapText extends Container
 
             const fontScale = this._fontSize / size;
 
+            const resolution =  renderer._view.resolution;
+
             for (const mesh of this._activePagesMeshData)
             {
-                mesh.mesh.shader.uniforms.uFWidth = worldScale * distanceFieldRange * fontScale * renderer.resolution;
+                mesh.mesh.shader.uniforms.uFWidth = worldScale * distanceFieldRange * fontScale * resolution;
             }
         }
 
@@ -661,8 +632,7 @@ export class BitmapText extends Container
 
     /**
      * Validates text before calling parent's getLocalBounds
-     *
-     * @return {PIXI.Rectangle} The rectangular bounding area
+     * @returns - The rectangular bounding area
      */
     public getLocalBounds(): Rectangle
     {
@@ -673,7 +643,6 @@ export class BitmapText extends Container
 
     /**
      * Updates text when needed
-     *
      * @private
      */
     protected validate(): void
@@ -687,8 +656,6 @@ export class BitmapText extends Container
 
     /**
      * The tint of the BitmapText object.
-     *
-     * @member {number}
      * @default 0xffffff
      */
     public get tint(): number
@@ -710,7 +677,6 @@ export class BitmapText extends Container
 
     /**
      * The alignment of the BitmapText object.
-     *
      * @member {string}
      * @default 'left'
      */
@@ -728,11 +694,7 @@ export class BitmapText extends Container
         }
     }
 
-    /**
-     * The name of the BitmapFont.
-     *
-     * @member {string}
-     */
+    /** The name of the BitmapFont. */
     public get fontName(): string
     {
         return this._fontName;
@@ -752,11 +714,7 @@ export class BitmapText extends Container
         }
     }
 
-    /**
-     * The size of the font to display.
-     *
-     * @member {number}
-     */
+    /** The size of the font to display. */
     public get fontSize(): number
     {
         return this._fontSize;
@@ -779,8 +737,6 @@ export class BitmapText extends Container
      * Setting the anchor to `(0.5,0.5)` means the text's origin is centered.
      *
      * Setting the anchor to `(1,1)` would mean the text's origin point will be the bottom right corner.
-     *
-     * @member {PIXI.Point | number}
      */
     public get anchor(): ObservablePoint
     {
@@ -799,11 +755,7 @@ export class BitmapText extends Container
         }
     }
 
-    /**
-     * The text of the BitmapText object.
-     *
-     * @member {string}
-     */
+    /** The text of the BitmapText object. */
     public get text(): string
     {
         return this._text;
@@ -825,8 +777,6 @@ export class BitmapText extends Container
      * The max width of this bitmap text in pixels. If the text provided is longer than the
      * value provided, line breaks will be automatically inserted in the last whitespace.
      * Disable by setting the value to 0.
-     *
-     * @member {number}
      */
     public get maxWidth(): number
     {
@@ -846,8 +796,6 @@ export class BitmapText extends Container
     /**
      * The max line height. This is useful when trying to use the total height of the Text,
      * i.e. when trying to vertically align.
-     *
-     * @member {number}
      * @readonly
      */
     public get maxLineHeight(): number
@@ -860,8 +808,6 @@ export class BitmapText extends Container
     /**
      * The width of the overall text, different from fontSize,
      * which is defined in the style object.
-     *
-     * @member {number}
      * @readonly
      */
     public get textWidth(): number
@@ -871,11 +817,7 @@ export class BitmapText extends Container
         return this._textWidth;
     }
 
-    /**
-     * Additional space between characters.
-     *
-     * @member {number}
-     */
+    /** Additional space between characters. */
     public get letterSpacing(): number
     {
         return this._letterSpacing;
@@ -895,8 +837,6 @@ export class BitmapText extends Container
      * Advantages can include sharper image quality (like text) and faster rendering on canvas.
      * The main disadvantage is movement of objects may appear less smooth.
      * To set the global default, change {@link PIXI.settings.ROUND_PIXELS}
-     *
-     * @member {boolean}
      * @default PIXI.settings.ROUND_PIXELS
      */
     public get roundPixels(): boolean
@@ -916,8 +856,6 @@ export class BitmapText extends Container
     /**
      * The height of the overall text, different from fontSize,
      * which is defined in the style object.
-     *
-     * @member {number}
      * @readonly
      */
     public get textHeight(): number
@@ -927,9 +865,51 @@ export class BitmapText extends Container
         return this._textHeight;
     }
 
+    /**
+     * The resolution / device pixel ratio of the canvas.
+     *
+     * This is set to automatically match the renderer resolution by default, but can be overridden by setting manually.
+     * @default 1
+     */
+    get resolution(): number
+    {
+        return this._resolution;
+    }
+
+    set resolution(value: number)
+    {
+        this._autoResolution = false;
+
+        if (this._resolution === value)
+        {
+            return;
+        }
+
+        this._resolution = value;
+        this.dirty = true;
+    }
+
     destroy(options?: boolean | IDestroyOptions): void
     {
         const { _textureCache } = this;
+        const data = BitmapFont.available[this._fontName];
+        const pageMeshDataPool = data.distanceFieldType === 'none'
+            ? pageMeshDataDefaultPageMeshData : pageMeshDataMSDFPageMeshData;
+
+        pageMeshDataPool.push(...this._activePagesMeshData);
+        for (const data of this._activePagesMeshData)
+        {
+            this.removeChild(data.mesh);
+        }
+        this._activePagesMeshData = [];
+
+        // Release references to any cached textures in page pool
+        pageMeshDataPool
+            .filter((page) => _textureCache[page.mesh.texture.baseTexture.uid])
+            .forEach((page) =>
+            {
+                page.mesh.texture = Texture.EMPTY;
+            });
 
         for (const id in _textureCache)
         {

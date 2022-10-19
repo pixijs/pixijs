@@ -1,48 +1,44 @@
 import { ObjectRenderer } from './ObjectRenderer';
 
-import type { ISystem } from '../ISystem';
+import type { ISystem } from '../system/ISystem';
 import type { Renderer } from '../Renderer';
 import type { BaseTexture } from '../textures/BaseTexture';
 import type { BatchTextureArray } from './BatchTextureArray';
+import type { ExtensionMetadata } from '@pixi/extensions';
+import { extensions, ExtensionType } from '@pixi/extensions';
+
 /**
  * System plugin to the renderer to manage batching.
- *
- * @class
- * @extends PIXI.System
  * @memberof PIXI
  */
 export class BatchSystem implements ISystem
 {
+    /** @ignore */
+    static extension: ExtensionMetadata = {
+        type: ExtensionType.RendererSystem,
+        name: 'batch',
+    };
+
+    /** An empty renderer. */
     public readonly emptyRenderer: ObjectRenderer;
+
+    /** The currently active ObjectRenderer. */
     public currentRenderer: ObjectRenderer;
     private renderer: Renderer;
 
     /**
-     * @param {PIXI.Renderer} renderer - The renderer this System works for.
+     * @param renderer - The renderer this System works for.
      */
     constructor(renderer: Renderer)
     {
         this.renderer = renderer;
-
-        /**
-         * An empty renderer.
-         *
-         * @member {PIXI.ObjectRenderer}
-         */
         this.emptyRenderer = new ObjectRenderer(renderer);
-
-        /**
-         * The currently active ObjectRenderer.
-         *
-         * @member {PIXI.ObjectRenderer}
-         */
         this.currentRenderer = this.emptyRenderer;
     }
 
     /**
      * Changes the current renderer to the one given in parameter
-     *
-     * @param {PIXI.ObjectRenderer} objectRenderer - The object renderer to use.
+     * @param objectRenderer - The object renderer to use.
      */
     setObjectRenderer(objectRenderer: ObjectRenderer): void
     {
@@ -66,9 +62,7 @@ export class BatchSystem implements ISystem
         this.setObjectRenderer(this.emptyRenderer);
     }
 
-    /**
-     * Reset the system to an empty renderer
-     */
+    /** Reset the system to an empty renderer */
     reset(): void
     {
         this.setObjectRenderer(this.emptyRenderer);
@@ -77,9 +71,8 @@ export class BatchSystem implements ISystem
     /**
      * Handy function for batch renderers: copies bound textures in first maxTextures locations to array
      * sets actual _batchLocation for them
-     *
-     * @param {PIXI.BaseTexture[]} arr - arr copy destination
-     * @param {number} maxTextures - number of copied elements
+     * @param arr - arr copy destination
+     * @param maxTextures - number of copied elements
      */
     copyBoundTextures(arr: BaseTexture[], maxTextures: number): void
     {
@@ -99,11 +92,10 @@ export class BatchSystem implements ISystem
      * Assigns batch locations to textures in array based on boundTextures state.
      * All textures in texArray should have `_batchEnabled = _batchId`,
      * and their count should be less than `maxTextures`.
-     *
-     * @param {PIXI.BatchTextureArray} texArray - textures to bound
-     * @param {PIXI.BaseTexture[]} boundTextures - current state of bound textures
-     * @param {number} batchId - marker for _batchEnabled param of textures in texArray
-     * @param {number} maxTextures - number of texture locations to manipulate
+     * @param texArray - textures to bound
+     * @param boundTextures - current state of bound textures
+     * @param batchId - marker for _batchEnabled param of textures in texArray
+     * @param maxTextures - number of texture locations to manipulate
      */
     boundArray(texArray: BatchTextureArray, boundTextures: Array<BaseTexture>,
         batchId: number, maxTextures: number): void
@@ -150,3 +142,5 @@ export class BatchSystem implements ISystem
         this.renderer = null;
     }
 }
+
+extensions.add(BatchSystem);

@@ -1,20 +1,19 @@
 import type { Graphics } from '@pixi/graphics';
-import { Polygon, PI_2 } from '@pixi/math';
+import { Polygon, PI_2 } from '@pixi/core';
 
 /**
  * Draw a star shape with an arbitrary number of points.
- *
  * @ignore
  */
 class Star extends Polygon
 {
     /**
-     * @param {number} x - Center X position of the star
-     * @param {number} y - Center Y position of the star
-     * @param {number} points - The number of points of the star, must be > 1
-     * @param {number} radius - The outer radius of the star
-     * @param {number} [innerRadius] - The inner radius between points, default half `radius`
-     * @param {number} [rotation=0] - The rotation of the star in radians, where 0 is vertical
+     * @param x - Center X position of the star
+     * @param y - Center Y position of the star
+     * @param points - The number of points of the star, must be > 1
+     * @param radius - The outer radius of the star
+     * @param innerRadius - The inner radius between points, default half `radius`
+     * @param rotation - The rotation of the star in radians, where 0 is vertical
      */
     constructor(x: number, y: number, points: number, radius: number, innerRadius?: number, rotation = 0)
     {
@@ -44,15 +43,15 @@ class Star extends Polygon
  * Draw a star shape with an arbitrary number of points.
  *
  * _Note: Only available with **@pixi/graphics-extras**._
- *
  * @method PIXI.Graphics#drawStar
- * @param {number} x - Center X position of the star
- * @param {number} y - Center Y position of the star
- * @param {number} points - The number of points of the star, must be > 1
- * @param {number} radius - The outer radius of the star
- * @param {number} [innerRadius] - The inner radius between points, default half `radius`
- * @param {number} [rotation=0] - The rotation of the star in radians, where 0 is vertical
- * @return {PIXI.Graphics} This Graphics object. Good for chaining method calls
+ * @param this
+ * @param x - Center X position of the star
+ * @param y - Center Y position of the star
+ * @param points - The number of points of the star, must be > 1
+ * @param radius - The outer radius of the star
+ * @param innerRadius - The inner radius between points, default half `radius`
+ * @param rotation - The rotation of the star in radians, where 0 is vertical
+ * @returns - This Graphics object. Good for chaining method calls
  */
 export function drawStar(this: Graphics,
     x: number,

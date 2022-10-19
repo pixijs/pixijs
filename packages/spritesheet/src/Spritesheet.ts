@@ -1,14 +1,9 @@
-import { Rectangle } from '@pixi/math';
-import { Texture, BaseTexture } from '@pixi/core';
-import { getResolutionOfUrl } from '@pixi/utils';
-import type { Dict } from '@pixi/utils';
-import type { ImageResource } from '@pixi/core';
-import type { IPointData } from '@pixi/math';
+import { Texture, BaseTexture, utils, Rectangle } from '@pixi/core';
+import type { ImageResource, IPointData } from '@pixi/core';
 
-/**
- * Represents the JSON data for a spritesheet atlas.
- */
-export interface ISpritesheetFrameData {
+/** Represents the JSON data for a spritesheet atlas. */
+export interface ISpritesheetFrameData
+{
     frame: {
         x: number;
         y: number;
@@ -28,14 +23,15 @@ export interface ISpritesheetFrameData {
     anchor?: IPointData;
 }
 
-/**
- * Atlas format.
- */
-export interface ISpritesheetData {
-    frames: Dict<ISpritesheetFrameData>;
-    animations?: Dict<string[]>;
+/** Atlas format. */
+export interface ISpritesheetData
+{
+    frames: utils.Dict<ISpritesheetFrameData>;
+    animations?: utils.Dict<string[]>;
     meta: {
         scale: string;
+        // eslint-disable-next-line camelcase
+        related_multi_packs?: string[];
     };
 }
 
@@ -43,155 +39,138 @@ export interface ISpritesheetData {
  * Utility class for maintaining reference to a collection
  * of Textures on a single Spritesheet.
  *
- * To access a sprite sheet from your code pass its JSON data file to Pixi's loader:
+ * To access a sprite sheet from your code you may pass its JSON data file to Pixi's loader:
  *
  * ```js
- * PIXI.Loader.shared.add("images/spritesheet.json").load(setup);
+ * import { Assets } from 'pixi.js';
  *
- * function setup() {
- *   let sheet = PIXI.Loader.shared.resources["images/spritesheet.json"].spritesheet;
- *   ...
- * }
+ * const sheet = await Assets.load("images/spritesheet.json");
  * ```
+ *
+ * Alternately, you may circumvent the loader by instantiating the Spritesheet directly:
+ * ```js
+ * import { Spritesheet } from 'pixi.js';
+ *
+ * const sheet = new Spritesheet(texture, spritesheetData);
+ * await sheet.parse();
+ * console.log('Spritesheet ready to use!');
+ * ```
+ *
  * With the `sheet.textures` you can create Sprite objects,`sheet.animations` can be used to create an AnimatedSprite.
  *
  * Sprite sheets can be packed using tools like {@link https://codeandweb.com/texturepacker|TexturePacker},
  * {@link https://renderhjs.net/shoebox/|Shoebox} or {@link https://github.com/krzysztof-o/spritesheet.js|Spritesheet.js}.
  * Default anchor points (see {@link PIXI.Texture#defaultAnchor}) and grouping of animation sprites are currently only
  * supported by TexturePacker.
- *
- * @class
  * @memberof PIXI
  */
 export class Spritesheet
 {
-    /**
-     * The maximum number of Textures to build per process.
-     *
-     * @type {number}
-     * @default 1000
-     */
+    /** The maximum number of Textures to build per process. */
     static readonly BATCH_SIZE = 1000;
 
-    public baseTexture: BaseTexture;
-    public textures: Dict<Texture>;
-    public animations: Dict<Texture[]>;
-    public data: ISpritesheetData;
-    public resolution: number;
+    /** For multi-packed spritesheets, this contains a reference to all the other spritesheets it depends on. */
+    public linkedSheets: Spritesheet[] = [];
 
-    private _texture: Texture;
-    private _frames: Dict<ISpritesheetFrameData>;
-    private _frameKeys: string[];
-    private _batchIndex: number;
-    private _callback: (textures: Dict<Texture>) => void;
+    /** Reference to ths source texture. */
+    public baseTexture: BaseTexture;
 
     /**
-     * @param {PIXI.BaseTexture|PIXI.Texture} baseTexture - Reference to the source BaseTexture object.
-     * @param {Object} data - Spritesheet image data.
-     * @param {string} [resolutionFilename] - The filename to consider when determining
+     * A map containing all textures of the sprite sheet.
+     * Can be used to create a {@link PIXI.Sprite|Sprite}:
+     * @example
+     * import { Sprite } from 'pixi.js';
+     *
+     * new Sprite(sheet.textures["image.png"]);
+     */
+    public textures: utils.Dict<Texture>;
+
+    /**
+     * A map containing the textures for each animation.
+     * Can be used to create an {@link PIXI.AnimatedSprite|AnimatedSprite}:
+     * @example
+     * import { AnimatedSprite } from 'pixi.js';
+     *
+     * new AnimatedSprite(sheet.animations["anim_name"])
+     */
+    public animations: utils.Dict<Texture[]>;
+
+    /**
+     * Reference to the original JSON data.
+     * @type {object}
+     */
+    public data: ISpritesheetData;
+
+    /** The resolution of the spritesheet. */
+    public resolution: number;
+
+    /**
+     * Reference to original source image from the Loader. This reference is retained so we
+     * can destroy the Texture later on. It is never used internally.
+     */
+    private _texture: Texture;
+
+    /**
+     * Map of spritesheet frames.
+     * @type {object}
+     */
+    private _frames: utils.Dict<ISpritesheetFrameData>;
+
+    /** Collection of frame names. */
+    private _frameKeys: string[];
+
+    /** Current batch index being processed. */
+    private _batchIndex: number;
+
+    /**
+     * Callback when parse is completed.
+     * @type {Function}
+     */
+    private _callback: (textures: utils.Dict<Texture>) => void;
+
+    /**
+     * @param texture - Reference to the source BaseTexture object.
+     * @param {object} data - Spritesheet image data.
+     * @param resolutionFilename - The filename to consider when determining
      *        the resolution of the spritesheet. If not provided, the imageUrl will
      *        be used on the BaseTexture.
      */
     constructor(texture: BaseTexture | Texture, data: ISpritesheetData, resolutionFilename: string = null)
     {
-        /**
-         * Reference to original source image from the Loader. This reference is retained so we
-         * can destroy the Texture later on. It is never used internally.
-         * @type {PIXI.Texture}
-         * @private
-         */
         this._texture = texture instanceof Texture ? texture : null;
-
-        /**
-         * Reference to ths source texture.
-         * @type {PIXI.BaseTexture}
-         */
         this.baseTexture = texture instanceof BaseTexture ? texture : this._texture.baseTexture;
-
-        /**
-         * A map containing all textures of the sprite sheet.
-         * Can be used to create a {@link PIXI.Sprite|Sprite}:
-         * ```js
-         * new PIXI.Sprite(sheet.textures["image.png"]);
-         * ```
-         * @member {Object}
-         */
         this.textures = {};
-
-        /**
-         * A map containing the textures for each animation.
-         * Can be used to create an {@link PIXI.AnimatedSprite|AnimatedSprite}:
-         * ```js
-         * new PIXI.AnimatedSprite(sheet.animations["anim_name"])
-         * ```
-         * @member {Object}
-         */
         this.animations = {};
-
-        /**
-         * Reference to the original JSON data.
-         * @type {Object}
-         */
         this.data = data;
 
         const resource = this.baseTexture.resource as ImageResource;
 
-        /**
-         * The resolution of the spritesheet.
-         * @type {number}
-         */
         this.resolution = this._updateResolution(resolutionFilename || (resource ? resource.url : null));
-
-        /**
-         * Map of spritesheet frames.
-         * @type {Object}
-         * @private
-         */
         this._frames = this.data.frames;
-
-        /**
-         * Collection of frame names.
-         * @type {string[]}
-         * @private
-         */
         this._frameKeys = Object.keys(this._frames);
-
-        /**
-         * Current batch index being processed.
-         * @type {number}
-         * @private
-         */
         this._batchIndex = 0;
-
-        /**
-         * Callback when parse is completed.
-         * @type {Function}
-         * @private
-         */
         this._callback = null;
     }
 
     /**
      * Generate the resolution from the filename or fallback
      * to the meta.scale field of the JSON data.
-     *
-     * @private
-     * @param {string} resolutionFilename - The filename to use for resolving
+     * @param resolutionFilename - The filename to use for resolving
      *        the default resolution.
-     * @return {number} Resolution to use for spritesheet.
+     * @returns Resolution to use for spritesheet.
      */
     private _updateResolution(resolutionFilename: string = null): number
     {
         const { scale } = this.data.meta;
 
         // Use a defaultValue of `null` to check if a url-based resolution is set
-        let resolution = getResolutionOfUrl(resolutionFilename, null);
+        let resolution = utils.getResolutionOfUrl(resolutionFilename, null);
 
         // No resolution found via URL
         if (resolution === null)
         {
             // Use the scale value or default to 1
-            resolution = scale !== undefined ? parseFloat(scale) : 1;
+            resolution = parseFloat(scale ?? '1');
         }
 
         // For non-1 resolutions, update baseTexture
@@ -206,32 +185,31 @@ export class Spritesheet
     /**
      * Parser spritesheet from loaded data. This is done asynchronously
      * to prevent creating too many Texture within a single process.
-     *
-     * @param {Function} callback - Callback when complete returns
-     *        a map of the Textures for this spritesheet.
+     * @method PIXI.Spritesheet#parse
      */
-    public parse(callback: (textures?: Dict<Texture>) => void): void
+    public parse(): Promise<utils.Dict<Texture>>
     {
-        this._batchIndex = 0;
-        this._callback = callback;
+        return new Promise((resolve) =>
+        {
+            this._callback = resolve;
+            this._batchIndex = 0;
 
-        if (this._frameKeys.length <= Spritesheet.BATCH_SIZE)
-        {
-            this._processFrames(0);
-            this._processAnimations();
-            this._parseComplete();
-        }
-        else
-        {
-            this._nextBatch();
-        }
+            if (this._frameKeys.length <= Spritesheet.BATCH_SIZE)
+            {
+                this._processFrames(0);
+                this._processAnimations();
+                this._parseComplete();
+            }
+            else
+            {
+                this._nextBatch();
+            }
+        });
     }
 
     /**
      * Process a batch of frames
-     *
-     * @private
-     * @param {number} initialFrameIndex - The index of frame to start.
+     * @param initialFrameIndex - The index of frame to start.
      */
     private _processFrames(initialFrameIndex: number): void
     {
@@ -305,11 +283,7 @@ export class Spritesheet
         }
     }
 
-    /**
-     * Parse animations config
-     *
-     * @private
-     */
+    /** Parse animations config. */
     private _processAnimations(): void
     {
         const animations = this.data.animations || {};
@@ -326,11 +300,7 @@ export class Spritesheet
         }
     }
 
-    /**
-     * The parse has completed.
-     *
-     * @private
-     */
+    /** The parse has completed. */
     private _parseComplete(): void
     {
         const callback = this._callback;
@@ -340,11 +310,7 @@ export class Spritesheet
         callback.call(this, this.textures);
     }
 
-    /**
-     * Begin the next batch of textures.
-     *
-     * @private
-     */
+    /** Begin the next batch of textures. */
     private _nextBatch(): void
     {
         this._processFrames(this._batchIndex * Spritesheet.BATCH_SIZE);
@@ -365,7 +331,6 @@ export class Spritesheet
 
     /**
      * Destroy Spritesheet and don't use after this.
-     *
      * @param {boolean} [destroyBase=false] - Whether to destroy the base texture as well
      */
     public destroy(destroyBase = false): void
@@ -385,19 +350,6 @@ export class Spritesheet
         }
         this._texture = null;
         this.baseTexture = null;
+        this.linkedSheets = [];
     }
 }
-
-/**
- * Reference to Spritesheet object created.
- * @member {PIXI.Spritesheet} spritesheet
- * @memberof PIXI.LoaderResource
- * @instance
- */
-
-/**
- * Dictionary of textures from Spritesheet.
- * @member {object<string, PIXI.Texture>} textures
- * @memberof PIXI.LoaderResource
- * @instance
- */

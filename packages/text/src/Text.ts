@@ -1,15 +1,13 @@
 /* eslint max-depth: [2, 8] */
 import { Sprite } from '@pixi/sprite';
-import { Texture  } from '@pixi/core';
-import { settings } from '@pixi/settings';
-import { Rectangle } from '@pixi/math';
-import { sign, trimCanvas, hex2rgb, string2hex } from '@pixi/utils';
+import { Texture, settings, Rectangle, utils } from '@pixi/core';
 import { TEXT_GRADIENT } from './const';
 import { TextStyle } from './TextStyle';
 import { TextMetrics } from './TextMetrics';
 
-import type { IDestroyOptions } from '@pixi/display';
 import type { Renderer } from '@pixi/core';
+import type { IDestroyOptions } from '@pixi/display';
+import type { ICanvas, ICanvasRenderingContext2D } from '@pixi/settings';
 import type { ITextStyle } from './TextStyle';
 
 const defaultDestroyOptions: IDestroyOptions = {
@@ -17,6 +15,14 @@ const defaultDestroyOptions: IDestroyOptions = {
     children: false,
     baseTexture: true,
 };
+
+interface ModernContext2D extends ICanvasRenderingContext2D
+{
+    // for chrome less 94
+    textLetterSpacing?: number;
+    // for chrome greater 94
+    letterSpacing?: number;
+}
 
 /**
  * A Text Object will create a line or multiple lines of text.
@@ -34,28 +40,30 @@ const defaultDestroyOptions: IDestroyOptions = {
  *
  * A Text can be created directly from a string and a style object,
  * which can be generated [here](https://pixijs.io/pixi-text-style).
+ * @example
+ * import { Text } from 'pixi.js';
  *
- * ```js
- * let text = new PIXI.Text('This is a PixiJS text',{fontFamily : 'Arial', fontSize: 24, fill : 0xff1010, align : 'center'});
- * ```
- *
+ * const text = new Text('This is a PixiJS text', {
+ *   fontFamily : 'Arial',
+ *   fontSize: 24,
+ *   fill : 0xff1010,
+ *   align : 'center',
+ * });
  * @memberof PIXI
  */
 export class Text extends Sprite
 {
     /**
-     * New behavior for `lineHeight` that's meant to mimic HTML text. A value of `true` will
-     * make sure the first baseline is offset by the `lineHeight` value if it is greater than `fontSize`.
-     * A value of `false` will use the legacy behavior and not change the baseline of the first line.
-     * In the next major release, we'll enable this by default.
+     * New rendering behavior for letter-spacing which uses Chrome's new native API. This will
+     * lead to more accurate letter-spacing results because it does not try to manually draw
+     * each character. However, this Chrome API is experimental and may not serve all cases yet.
      */
-    public static nextLineHeightBehavior = false;
+    public static experimentalLetterSpacing = false;
 
     /** The canvas element that everything is drawn to. */
-    public canvas: HTMLCanvasElement;
-
+    public canvas: ICanvas;
     /** The canvas 2d context that everything is drawn with. */
-    public context: CanvasRenderingContext2D;
+    public context: ModernContext2D;
     public localStyleID: number;
     public dirty: boolean;
 
@@ -63,7 +71,6 @@ export class Text extends Sprite
      * The resolution / device pixel ratio of the canvas.
      *
      * This is set to automatically match the renderer resolution by default, but can be overridden by setting manually.
-     *
      * @default PIXI.settings.RESOLUTION
      */
     _resolution: number;
@@ -71,28 +78,24 @@ export class Text extends Sprite
 
     /**
      * Private tracker for the current text.
-     *
      * @private
      */
     protected _text: string;
 
     /**
      * Private tracker for the current font.
-     *
      * @private
      */
     protected _font: string;
 
     /**
      * Private tracker for the current style.
-     *
      * @private
      */
     protected _style: TextStyle;
 
     /**
      * Private listener to track style changes.
-     *
      * @private
      */
     protected _styleListener: () => void;
@@ -110,13 +113,13 @@ export class Text extends Sprite
      * @param {object|PIXI.TextStyle} [style] - The style parameters
      * @param canvas - The canvas element for drawing text
      */
-    constructor(text: string, style?: Partial<ITextStyle>|TextStyle, canvas?: HTMLCanvasElement)
+    constructor(text?: string | number, style?: Partial<ITextStyle> | TextStyle, canvas?: ICanvas)
     {
         let ownCanvas = false;
 
         if (!canvas)
         {
-            canvas = document.createElement('canvas');
+            canvas = settings.ADAPTER.createCanvas();
             ownCanvas = true;
         }
 
@@ -132,7 +135,10 @@ export class Text extends Sprite
 
         this._ownCanvas = ownCanvas;
         this.canvas = canvas;
-        this.context = this.canvas.getContext('2d');
+        this.context = canvas.getContext('2d', {
+            // required for trimming to work without warnings
+            willReadFrequently: true,
+        });
 
         this._resolution = settings.RESOLUTION;
         this._autoResolution = true;
@@ -153,7 +159,6 @@ export class Text extends Sprite
      * By default this is used internally to ensure the texture is correct before rendering,
      * but it can be used called externally, for example from this class to 'pre-generate' the texture from a piece of text,
      * and then shared across multiple Sprites.
-     *
      * @param respectDirty - Whether to abort updating the text if the Text isn't dirty and the function is called.
      */
     public updateText(respectDirty: boolean): void
@@ -230,12 +235,16 @@ export class Text extends Sprite
                 context.strokeStyle = 'black';
 
                 const dropShadowColor = style.dropShadowColor;
-                const rgb = hex2rgb(typeof dropShadowColor === 'number' ? dropShadowColor : string2hex(dropShadowColor));
+                const rgb = utils.hex2rgb(typeof dropShadowColor === 'number'
+                    ? dropShadowColor
+                    : utils.string2hex(dropShadowColor));
+                const dropShadowBlur = style.dropShadowBlur * this._resolution;
+                const dropShadowDistance = style.dropShadowDistance * this._resolution;
 
                 context.shadowColor = `rgba(${rgb[0] * 255},${rgb[1] * 255},${rgb[2] * 255},${style.dropShadowAlpha})`;
-                context.shadowBlur = style.dropShadowBlur;
-                context.shadowOffsetX = Math.cos(style.dropShadowAngle) * style.dropShadowDistance;
-                context.shadowOffsetY = (Math.sin(style.dropShadowAngle) * style.dropShadowDistance) + dsOffsetShadow;
+                context.shadowBlur = dropShadowBlur;
+                context.shadowOffsetX = Math.cos(style.dropShadowAngle) * dropShadowDistance;
+                context.shadowOffsetY = (Math.sin(style.dropShadowAngle) * dropShadowDistance) + dsOffsetShadow;
             }
             else
             {
@@ -254,7 +263,7 @@ export class Text extends Sprite
 
             let linePositionYShift = (lineHeight - fontProperties.fontSize) / 2;
 
-            if (!Text.nextLineHeightBehavior || lineHeight - fontProperties.fontSize < 0)
+            if (lineHeight - fontProperties.fontSize < 0)
             {
                 linePositionYShift = 0;
             }
@@ -301,7 +310,6 @@ export class Text extends Sprite
 
     /**
      * Render the text with letter-spacing.
-     *
      * @param text - The text to draw
      * @param x - Horizontal position to draw the text
      * @param y - Vertical position to draw the text
@@ -315,8 +323,22 @@ export class Text extends Sprite
         // letterSpacing of 0 means normal
         const letterSpacing = style.letterSpacing;
 
-        if (letterSpacing === 0)
+        // Checking that we can use moddern canvas2D api
+        // https://developer.chrome.com/origintrials/#/view_trial/3585991203293757441
+        // note: this is unstable API, Chrome less 94 use a `textLetterSpacing`, newest use a letterSpacing
+        // eslint-disable-next-line max-len
+        const supportLetterSpacing = Text.experimentalLetterSpacing
+            && ('letterSpacing' in CanvasRenderingContext2D.prototype
+                || 'textLetterSpacing' in CanvasRenderingContext2D.prototype);
+
+        if (letterSpacing === 0 || supportLetterSpacing)
         {
+            if (supportLetterSpacing)
+            {
+                this.context.letterSpacing = letterSpacing;
+                this.context.textLetterSpacing = letterSpacing;
+            }
+
             if (isStroke)
             {
                 this.context.strokeText(text, x, y);
@@ -353,7 +375,13 @@ export class Text extends Sprite
             {
                 this.context.fillText(currentChar, currentPosition, y);
             }
-            currentWidth = this.context.measureText(text.substring(i + 1)).width;
+            let textStr = '';
+
+            for (let j = i + 1; j < stringArray.length; ++j)
+            {
+                textStr += stringArray[j];
+            }
+            currentWidth = this.context.measureText(textStr).width;
             currentPosition += previousWidth - currentWidth + letterSpacing;
             previousWidth = currentWidth;
         }
@@ -366,7 +394,7 @@ export class Text extends Sprite
 
         if (this._style.trim)
         {
-            const trimmed = trimCanvas(canvas);
+            const trimmed = utils.trimCanvas(canvas);
 
             if (trimmed.data)
             {
@@ -396,15 +424,11 @@ export class Text extends Sprite
 
         texture.updateUvs();
 
-        // Recursively updates transform of all objects from the root to this one
-        this._recursivePostUpdateTransform();
-
         this.dirty = false;
     }
 
     /**
      * Renders the object using the WebGL renderer
-     *
      * @param renderer - The renderer
      */
     protected _render(renderer: Renderer): void
@@ -420,13 +444,33 @@ export class Text extends Sprite
         super._render(renderer);
     }
 
+    /** Updates the transform on all children of this container for rendering. */
+    public updateTransform(): void
+    {
+        this.updateText(true);
+
+        super.updateTransform();
+    }
+
+    public getBounds(skipUpdate?: boolean, rect?: Rectangle): Rectangle
+    {
+        this.updateText(true);
+
+        if (this._textureID === -1)
+        {
+            // texture was updated: recalculate transforms
+            skipUpdate = false;
+        }
+
+        return super.getBounds(skipUpdate, rect);
+    }
+
     /**
      * Gets the local bounds of the text object.
-     *
      * @param rect - The output rectangle.
-     * @return The bounds.
+     * @returns The bounds.
      */
-    public getLocalBounds(rect: Rectangle): Rectangle
+    public getLocalBounds(rect?: Rectangle): Rectangle
     {
         this.updateText(true);
 
@@ -436,7 +480,6 @@ export class Text extends Sprite
     /** Calculates the bounds of the Text as a rectangle. The bounds calculation takes the worldTransform into account. */
     protected _calculateBounds(): void
     {
-        this.updateText(true);
         this.calculateVertices();
         // if we have already done this on THIS frame.
         this._bounds.addQuad(this.vertexData);
@@ -444,17 +487,19 @@ export class Text extends Sprite
 
     /**
      * Generates the fill style. Can automatically generate a gradient based on the fill style being an array
-     *
      * @param style - The style.
      * @param lines - The lines of text.
-     * @return The fill style
+     * @param metrics
+     * @returns The fill style
      */
-    private _generateFillStyle(style: TextStyle, lines: string[], metrics: TextMetrics): string|CanvasGradient|CanvasPattern
+    private _generateFillStyle(
+        style: TextStyle, lines: string[], metrics: TextMetrics
+    ): string | CanvasGradient | CanvasPattern
     {
         // TODO: Can't have different types for getter and setter. The getter shouldn't have the number type as
         //       the setter converts to string. See this thread for more details:
         //       https://github.com/microsoft/TypeScript/issues/2521
-        const fillStyle: string|string[]|CanvasGradient|CanvasPattern = style.fill as any;
+        const fillStyle: string | string[] | CanvasGradient | CanvasPattern = style.fill as any;
 
         if (!Array.isArray(fillStyle))
         {
@@ -467,7 +512,7 @@ export class Text extends Sprite
 
         // the gradient will be evenly spaced out according to how large the array is.
         // ['#FF0000', '#00FF00', '#0000FF'] would created stops at 0.25, 0.5 and 0.75
-        let gradient: string[]|CanvasGradient;
+        let gradient: string[] | CanvasGradient;
 
         // a dropshadow will enlarge the canvas and result in the gradient being
         // generated with the incorrect dimensions
@@ -596,7 +641,6 @@ export class Text extends Sprite
      *
      * Note* Unlike a Sprite, a Text object will automatically destroy its baseTexture and texture as
      * the majority of the time the texture will not be shared with any other Sprites.
-     *
      * @param options - Options parameter. A boolean will act as if all options
      *  have been set to that value
      * @param {boolean} [options.children=false] - if set to true, all the children will have their
@@ -604,7 +648,7 @@ export class Text extends Sprite
      * @param {boolean} [options.texture=true] - Should it destroy the current texture of the sprite as well
      * @param {boolean} [options.baseTexture=true] - Should it destroy the base texture of the sprite as well
      */
-    public destroy(options?: IDestroyOptions|boolean): void
+    public destroy(options?: IDestroyOptions | boolean): void
     {
         if (typeof options === 'boolean')
         {
@@ -622,7 +666,7 @@ export class Text extends Sprite
             this.canvas.height = this.canvas.width = 0;
         }
 
-        // make sure to reset the the context and canvas.. dont want this hanging around in memory!
+        // make sure to reset the context and canvas.. dont want this hanging around in memory!
         this.context = null;
         this.canvas = null;
 
@@ -641,7 +685,7 @@ export class Text extends Sprite
     {
         this.updateText(true);
 
-        const s = sign(this.scale.x) || 1;
+        const s = utils.sign(this.scale.x) || 1;
 
         this.scale.x = s * value / this._texture.orig.width;
         this._width = value;
@@ -659,7 +703,7 @@ export class Text extends Sprite
     {
         this.updateText(true);
 
-        const s = sign(this.scale.y) || 1;
+        const s = utils.sign(this.scale.y) || 1;
 
         this.scale.y = s * value / this._texture.orig.height;
         this._height = value;
@@ -670,7 +714,7 @@ export class Text extends Sprite
      *
      * Set up an event listener to listen for changes on the style object and mark the text as dirty.
      */
-    get style(): TextStyle|Partial<ITextStyle>
+    get style(): TextStyle | Partial<ITextStyle>
     {
         // TODO: Can't have different types for getter and setter. The getter shouldn't have the ITextStyle
         //       since the setter creates the TextStyle. See this thread for more details:
@@ -678,7 +722,7 @@ export class Text extends Sprite
         return this._style;
     }
 
-    set style(style: TextStyle|Partial<ITextStyle>)
+    set style(style: TextStyle | Partial<ITextStyle>)
     {
         style = style || {};
 
@@ -701,7 +745,7 @@ export class Text extends Sprite
         return this._text;
     }
 
-    set text(text: string)
+    set text(text: string | number)
     {
         text = String(text === null || text === undefined ? '' : text);
 
@@ -717,7 +761,6 @@ export class Text extends Sprite
      * The resolution / device pixel ratio of the canvas.
      *
      * This is set to automatically match the renderer resolution by default, but can be overridden by setting manually.
-     *
      * @default 1
      */
     get resolution(): number

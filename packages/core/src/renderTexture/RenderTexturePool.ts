@@ -7,40 +7,37 @@ import type { IBaseTextureOptions } from '../textures/BaseTexture';
 import type { ISize } from '@pixi/math';
 
 /**
- * Experimental!
+ * Texture pool, used by FilterSystem and plugins.
  *
- * Texture pool, used by FilterSystem and plugins
  * Stores collection of temporary pow2 or screen-sized renderTextures
  *
  * If you use custom RenderTexturePool for your filters, you can use methods
  * `getFilterTexture` and `returnFilterTexture` same as in
- *
- * @class
  * @memberof PIXI
  */
 export class RenderTexturePool
 {
     public textureOptions: IBaseTextureOptions;
+
+    /**
+     * Allow renderTextures of the same size as screen, not just pow2
+     *
+     * Automatically sets to true after `setScreenSize`
+     * @default false
+     */
     public enableFullScreen: boolean;
-    texturePool: {[x in string|number]: RenderTexture[]};
+    texturePool: {[x in string | number]: RenderTexture[]};
     private _pixelsWidth: number;
     private _pixelsHeight: number;
+
     /**
-     * @param {object} [textureOptions] - options that will be passed to BaseRenderTexture constructor
+     * @param textureOptions - options that will be passed to BaseRenderTexture constructor
      * @param {PIXI.SCALE_MODES} [textureOptions.scaleMode] - See {@link PIXI.SCALE_MODES} for possible values.
      */
     constructor(textureOptions?: IBaseTextureOptions)
     {
         this.texturePool = {};
         this.textureOptions = textureOptions || {};
-        /**
-         * Allow renderTextures of the same size as screen, not just pow2
-         *
-         * Automatically sets to true after `setScreenSize`
-         *
-         * @member {boolean}
-         * @default false
-         */
         this.enableFullScreen = false;
 
         this._pixelsWidth = 0;
@@ -48,12 +45,10 @@ export class RenderTexturePool
     }
 
     /**
-     * creates of texture with params that were specified in pool constructor
-     *
-     * @param {number} realWidth - width of texture in pixels
-     * @param {number} realHeight - height of texture in pixels
-     * @param {PIXI.MSAA_QUALITY} [multisample=PIXI.MSAA_QUALITY.NONE] - number of samples of the framebuffer
-     * @returns {RenderTexture}
+     * Creates texture with params that were specified in pool constructor.
+     * @param realWidth - Width of texture in pixels.
+     * @param realHeight - Height of texture in pixels.
+     * @param multisample - Number of samples of the framebuffer.
      */
     createTexture(realWidth: number, realHeight: number, multisample = MSAA_QUALITY.NONE): RenderTexture
     {
@@ -69,20 +64,18 @@ export class RenderTexturePool
 
     /**
      * Gets a Power-of-Two render texture or fullScreen texture
-     *
-     * @protected
-     * @param {number} minWidth - The minimum width of the render texture.
-     * @param {number} minHeight - The minimum height of the render texture.
-     * @param {number} [resolution=1] - The resolution of the render texture.
-     * @param {PIXI.MSAA_QUALITY} [multisample=PIXI.MSAA_QUALITY.NONE] - Number of samples of the render texture.
-     * @return {PIXI.RenderTexture} The new render texture.
+     * @param minWidth - The minimum width of the render texture.
+     * @param minHeight - The minimum height of the render texture.
+     * @param resolution - The resolution of the render texture.
+     * @param multisample - Number of samples of the render texture.
+     * @returns The new render texture.
      */
     getOptimalTexture(minWidth: number, minHeight: number, resolution = 1, multisample = MSAA_QUALITY.NONE): RenderTexture
     {
         let key;
 
-        minWidth = Math.ceil(minWidth * resolution);
-        minHeight = Math.ceil(minHeight * resolution);
+        minWidth = Math.ceil((minWidth * resolution) - 1e-6);
+        minHeight = Math.ceil((minHeight * resolution) - 1e-6);
 
         if (!this.enableFullScreen || minWidth !== this._pixelsWidth || minHeight !== this._pixelsHeight)
         {
@@ -122,12 +115,10 @@ export class RenderTexturePool
      * Gets extra texture of the same size as input renderTexture
      *
      * `getFilterTexture(input, 0.5)` or `getFilterTexture(0.5, input)`
-     *
-     * @param {PIXI.RenderTexture} input - renderTexture from which size and resolution will be copied
-     * @param {number} [resolution] - override resolution of the renderTexture
+     * @param input - renderTexture from which size and resolution will be copied
+     * @param resolution - override resolution of the renderTexture
      *  It overrides, it does not multiply
-     * @param {PIXI.MSAA_QUALITY} [multisample=PIXI.MSAA_QUALITY.NONE] - number of samples of the renderTexture
-     * @returns {PIXI.RenderTexture}
+     * @param multisample - number of samples of the renderTexture
      */
     getFilterTexture(input: RenderTexture, resolution?: number, multisample?: MSAA_QUALITY): RenderTexture
     {
@@ -141,7 +132,7 @@ export class RenderTexturePool
 
     /**
      * Place a render texture back into the pool.
-     * @param {PIXI.RenderTexture} renderTexture - The renderTexture to free
+     * @param renderTexture - The renderTexture to free
      */
     returnTexture(renderTexture: RenderTexture): void
     {
@@ -152,8 +143,8 @@ export class RenderTexturePool
     }
 
     /**
-     * Alias for returnTexture, to be compliant with FilterSystem interface
-     * @param {PIXI.RenderTexture} renderTexture - The renderTexture to free
+     * Alias for returnTexture, to be compliant with FilterSystem interface.
+     * @param renderTexture - The renderTexture to free
      */
     returnFilterTexture(renderTexture: RenderTexture): void
     {
@@ -161,9 +152,8 @@ export class RenderTexturePool
     }
 
     /**
-     * Clears the pool
-     *
-     * @param {boolean} [destroyTextures=true] - destroy all stored textures
+     * Clears the pool.
+     * @param destroyTextures - Destroy all stored textures.
      */
     clear(destroyTextures?: boolean): void
     {
@@ -192,8 +182,7 @@ export class RenderTexturePool
      * sets new screen size, sets `enableFullScreen` to true
      *
      * Size is measured in pixels, `renderer.view` can be passed here, not `renderer.screen`
-     *
-     * @param {PIXI.ISize} size - Initial size of screen
+     * @param size - Initial size of screen.
      */
     setScreenSize(size: ISize): void
     {
@@ -231,9 +220,7 @@ export class RenderTexturePool
 
     /**
      * Key that is used to store fullscreen renderTextures in a pool
-     *
-     * @static
-     * @const {number}
+     * @constant
      */
     static SCREEN_KEY = -1;
 }
