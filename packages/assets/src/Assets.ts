@@ -82,28 +82,63 @@ export interface AssetInitOptions
  * Only one Asset Class exists accessed via the Global Asset object.
  *
  * It has four main responsibilities:
- * 1. Allows users to map URLs to keys and resolve them according to the user's browser capabilities
+ * 1. Allows users to map URLs to keys and resolve them according to the user's browser capabilities.
  * 2. Loads the resources and transforms them into assets that developers understand.
  * 3. Caches the assets and provides a way to access them.
- * 4: Allow developers to unload assets and clear the cache.
+ * 4. Allow developers to unload assets and clear the cache.
  *
  * It also has a few advanced features:
- * 1. Allows developers to provide a manifest upfront of all assets and help manage them via 'bundles'
+ * 1. Allows developers to provide a manifest upfront of all assets and help manage them via 'bundles'.
  * 2. Allows users to background load assets. Shortening (or eliminating) load times and improving UX. With this feature,
  * in-game loading bars can be a thing of the past!
  *
  *
+ * ### Setup
+ *
+ * As for PixiJS v6.x, `@pixi/assets` is an opt-in package, so you need to import it first.
+ *
+ * #### NPM Install
+ *
+ * ```sh
+ * npm install @pixi/assets@v6.x
+ * ```
+ *
+ * There is no default export. The correct way to import Assets is:
+ *
+ * ```js
+ * import { Assets } from '@pixi/assets';
+ * ```
+ *
+ * #### CDN Install
+ *
+ * Via jsDelivr:
+ *
+ * ```html
+ * <script src="https://cdn.jsdelivr.net/npm/@pixi/assets@6.x/dist/browser/assets.min.js"></script>
+ * ```
+ *
+ * Or via unpkg:
+ *
+ * ```html
+ * <script src="https://unpkg.com/@pixi/assets@6.x/dist/browser/assets.min.js"></script>
+ * ```
+ *
+ * _Note: The version of `@pixi/assets` should be the same as the version of `pixi.js` you are using._
+ *
+ * ### Assets Loading
+ *
  * Do not be afraid to load things multiple times - under the hood, it will NEVER load anything more than once.
  *
- * for example:
+ * For example:
  *
  * ```
  * promise1 = PIXI.Assets.load('bunny.png')
  * promise2 = PIXI.Assets.load('bunny.png')
  *
- * //promise1 === promise2
+ * // promise1 === promise2
  * ```
- * here both promises will be the same. Once resolved.. forever resolved! It makes for really easy resource management!
+ *
+ * Here both promises will be the same. Once resolved... Forever resolved! It makes for really easy resource management!
  *
  * Out of the box it supports the following files:
  * * textures (avif, webp, png, jpg, gif)
