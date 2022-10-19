@@ -86,6 +86,8 @@ export class ShaderSystem implements ISystem
      */
     bind(shader: Shader, dontSync?: boolean): GLProgram
     {
+        shader.disposeRunner.add(this);
+
         shader.uniforms.globals = this.renderer.globalUniforms;
 
         const program = shader.program;
@@ -307,6 +309,19 @@ export class ShaderSystem implements ISystem
     {
         this.program = null;
         this.shader = null;
+    }
+
+    /**
+     * Disposes shader.
+     * If disposing one equals with current shader, set current as null.
+     * @param shader - Shader object
+     */
+    disposeShader(shader: Shader): void
+    {
+        if (this.shader === shader)
+        {
+            this.shader = null;
+        }
     }
 
     /** Destroys this System and removes all its textures. */

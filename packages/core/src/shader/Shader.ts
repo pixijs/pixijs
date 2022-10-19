@@ -2,6 +2,7 @@ import { Program } from './Program';
 import { UniformGroup } from './UniformGroup';
 
 import type { Dict } from '@pixi/utils';
+import { Runner } from '@pixi/runner';
 
 /**
  * A helper class for shaders.
@@ -18,6 +19,8 @@ export class Shader
      * @ignore
      */
     uniformBindCount = 0;
+
+    disposeRunner: Runner;
 
     /**
      * @param program - The program the shader will use.
@@ -44,6 +47,8 @@ export class Shader
         {
             this.uniformGroup = new UniformGroup({});
         }
+
+        this.disposeRunner = new Runner('disposeShader');
     }
 
     // TODO move to shader system..
@@ -75,6 +80,9 @@ export class Shader
         // usage count on programs?
         // remove if not used!
         this.uniformGroup = null;
+
+        this.disposeRunner.emit(this);
+        this.disposeRunner.destroy();
     }
 
     /**
