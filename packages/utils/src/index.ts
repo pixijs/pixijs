@@ -4,10 +4,10 @@
  * import { utils } from 'pixi.js';
  * // Extend PIXI's internal Event Emitter.
  * class MyEmitter extends utils.EventEmitter {
- *   constructor() {
- *      super();
- *      console.log("Emitter created!");
- *   }
+ *     constructor() {
+ *         super();
+ *         console.log('Emitter created!');
+ *     }
  * }
  *
  * // Get info on current device

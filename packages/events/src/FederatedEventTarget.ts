@@ -2,6 +2,7 @@ import { DisplayObject } from '@pixi/display';
 import { FederatedEvent } from './FederatedEvent';
 
 import type { utils } from '@pixi/core';
+import type { FederatedEventMap } from './FederatedEventMap';
 
 export type Cursor = 'auto'
 | 'default'
@@ -71,10 +72,35 @@ export interface FederatedEventTarget extends utils.EventEmitter, EventTarget
     hitArea: IHitArea | null;
 }
 
-export const FederatedDisplayObject: Omit<
-FederatedEventTarget,
-'parent' | 'children' | keyof utils.EventEmitter | 'cursor'
-> = {
+type AddListenerOptions = boolean | AddEventListenerOptions;
+type RemoveListenerOptions = boolean | EventListenerOptions;
+
+export interface IFederatedDisplayObject
+    extends Omit<FederatedEventTarget, 'parent' | 'children' | keyof utils.EventEmitter | 'cursor'>
+{
+    addEventListener<K extends keyof FederatedEventMap>(
+        type: K,
+        listener: (e: FederatedEventMap[K]) => any,
+        options?: AddListenerOptions
+    ): void;
+    addEventListener(
+        type: string,
+        listener: EventListenerOrEventListenerObject,
+        options?: AddListenerOptions
+    ): void;
+    removeEventListener<K extends keyof FederatedEventMap>(
+        type: K,
+        listener: (e: FederatedEventMap[K]) => any,
+        options?: RemoveListenerOptions
+    ): void;
+    removeEventListener(
+        type: string,
+        listener: EventListenerOrEventListenerObject,
+        options?: RemoveListenerOptions
+    ): void;
+}
+
+export const FederatedDisplayObject: IFederatedDisplayObject = {
     /**
      * Enable interaction events for the DisplayObject. Touch, pointer and mouse
      * events will not be emitted unless `interactive` is set to `true`.
@@ -84,7 +110,7 @@ FederatedEventTarget,
      * const sprite = new Sprite(texture);
      * sprite.interactive = true;
      * sprite.on('tap', (event) => {
-     *    //handle event
+     *     // Handle event
      * });
      * @memberof PIXI.DisplayObject#
      */
@@ -101,7 +127,7 @@ FederatedEventTarget,
      * Interaction shape. Children will be hit first, then this shape will be checked.
      * Setting this will cause this shape to be checked in hit tests rather than the displayObject's bounds.
      * @example
-     * import { Sprite, Rectangle } from 'pixi.js';
+     * import { Rectangle, Sprite } from 'pixi.js';
      *
      * const sprite = new Sprite(texture);
      * sprite.interactive = true;
@@ -122,32 +148,32 @@ FederatedEventTarget,
      * @example
      * // Tell the user whether they did a single, double, triple, or nth click.
      * button.addEventListener('click', {
-     *   handleEvent(e): {
-     *     let prefix;
+     *     handleEvent(e): {
+     *         let prefix;
      *
-     *     switch (e.detail) {
-     *       case 1: prefix = 'single'; break;
-     *       case 2: prefix = 'double'; break;
-     *       case 3: prefix = 'triple'; break;
-     *       default: prefix = e.detail + 'th'; break;
+     *         switch (e.detail) {
+     *             case 1: prefix = 'single'; break;
+     *             case 2: prefix = 'double'; break;
+     *             case 3: prefix = 'triple'; break;
+     *             default: prefix = e.detail + 'th'; break;
+     *         }
+     *
+     *         console.log('That was a ' + prefix + 'click');
      *     }
-     *
-     *     console.log('That was a ' + prefix + 'click');
-     *   }
      * });
      *
      * // But skip the first click!
      * button.parent.addEventListener('click', function blockClickOnce(e) {
-     *   e.stopImmediatePropagation();
-     *   button.parent.removeEventListener('click', blockClickOnce, true);
+     *     e.stopImmediatePropagation();
+     *     button.parent.removeEventListener('click', blockClickOnce, true);
      * }, {
-     *   capture: true,
-     * })
+     *     capture: true,
+     * });
      */
     addEventListener(
         type: string,
         listener: EventListenerOrEventListenerObject,
-        options?: boolean | AddEventListenerOptions,
+        options?: AddListenerOptions
     )
     {
         const capture = (typeof options === 'boolean' && options)
@@ -172,7 +198,7 @@ FederatedEventTarget,
     removeEventListener(
         type: string,
         listener: EventListenerOrEventListenerObject,
-        options?: boolean | AddEventListenerOptions,
+        options?: RemoveListenerOptions
     )
     {
         const capture = (typeof options === 'boolean' && options)

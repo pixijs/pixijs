@@ -17,7 +17,7 @@ export interface Sprite extends GlobalMixins.Sprite, Container {}
  * A sprite can be created directly from an image like this:
  *
  * ```js
- * import {  Sprite } from 'pixi.js';
+ * import { Sprite } from 'pixi.js';
  *
  * const sprite = Sprite.from('assets/image.png');
  * ```
@@ -28,8 +28,8 @@ export interface Sprite extends GlobalMixins.Sprite, Container {}
  * ```js
  * import { Assets, Sprite } from 'pixi.js';
  *
- * const sheet = await Assets.load("assets/spritesheet.json");
- * const sprite = new Sprite(sheet.textures["image.png"]);
+ * const sheet = await Assets.load('assets/spritesheet.json');
+ * const sprite = new Sprite(sheet.textures['image.png']);
  * ```
  * @memberof PIXI
  */

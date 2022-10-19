@@ -539,7 +539,7 @@ export class Ticker
      * const stage = new Container();
      * document.body.appendChild(renderer.view);
      * ticker.add((time) => renderer.render(stage));
-     * @example
+     *
      * // Or you can just update it manually.
      * ticker.autoStart = false;
      * ticker.stop();

@@ -62,7 +62,7 @@ export class BitmapFont
      * This character set includes all the letters in the alphabet (both lower- and upper- case).
      * @type {string[][]}
      * @example
-     * BitmapFont.from("ExampleFont", style, { chars: BitmapFont.ALPHA })
+     * BitmapFont.from('ExampleFont', style, { chars: BitmapFont.ALPHA })
      */
     public static readonly ALPHA = [['a', 'z'], ['A', 'Z'], ' '];
 
@@ -70,7 +70,7 @@ export class BitmapFont
      * This character set includes all decimal digits (from 0 to 9).
      * @type {string[][]}
      * @example
-     * BitmapFont.from("ExampleFont", style, { chars: BitmapFont.NUMERIC })
+     * BitmapFont.from('ExampleFont', style, { chars: BitmapFont.NUMERIC })
      */
     public static readonly NUMERIC = [['0', '9']];
 
@@ -346,14 +346,14 @@ export class BitmapFont
      * @example
      * import { BitmapFont, BitmapText } from 'pixi.js';
      *
-     * BitmapFont.from("TitleFont", {
-     *     fontFamily: "Arial",
+     * BitmapFont.from('TitleFont', {
+     *     fontFamily: 'Arial',
      *     fontSize: 12,
      *     strokeThickness: 2,
-     *     fill: "purple",
+     *     fill: 'purple',
      * });
      *
-     * const title = new BitmapText("This is the title", { fontName: "TitleFont" });
+     * const title = new BitmapText('This is the title', { fontName: 'TitleFont' });
      */
     public static from(name: string, textStyle?: TextStyle | Partial<ITextStyle>, options?: IBitmapFontOptions): BitmapFont
     {

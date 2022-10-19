@@ -44,10 +44,11 @@ export interface ISpritesheetData
  * ```js
  * import { Assets } from 'pixi.js';
  *
- * const sheet = await Assets.load("images/spritesheet.json");
+ * const sheet = await Assets.load('images/spritesheet.json');
  * ```
  *
  * Alternately, you may circumvent the loader by instantiating the Spritesheet directly:
+ *
  * ```js
  * import { Spritesheet } from 'pixi.js';
  *
@@ -56,7 +57,7 @@ export interface ISpritesheetData
  * console.log('Spritesheet ready to use!');
  * ```
  *
- * With the `sheet.textures` you can create Sprite objects,`sheet.animations` can be used to create an AnimatedSprite.
+ * With the `sheet.textures` you can create Sprite objects, and `sheet.animations` can be used to create an AnimatedSprite.
  *
  * Sprite sheets can be packed using tools like {@link https://codeandweb.com/texturepacker|TexturePacker},
  * {@link https://renderhjs.net/shoebox/|Shoebox} or {@link https://github.com/krzysztof-o/spritesheet.js|Spritesheet.js}.
@@ -81,7 +82,7 @@ export class Spritesheet
      * @example
      * import { Sprite } from 'pixi.js';
      *
-     * new Sprite(sheet.textures["image.png"]);
+     * new Sprite(sheet.textures['image.png']);
      */
     public textures: utils.Dict<Texture>;
 
@@ -91,7 +92,7 @@ export class Spritesheet
      * @example
      * import { AnimatedSprite } from 'pixi.js';
      *
-     * new AnimatedSprite(sheet.animations["anim_name"])
+     * new AnimatedSprite(sheet.animations['anim_name']);
      */
     public animations: utils.Dict<Texture[]>;
 

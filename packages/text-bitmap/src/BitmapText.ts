@@ -59,10 +59,10 @@ const charRenderDataPool: CharRenderData[] = [];
  * import { BitmapText } from 'pixi.js';
  *
  * // in this case the font is in a file called 'desyrel.fnt'
- * const bitmapText = new BitmapText("text using a fancy font!", {
- *   fontName: "Desyrel",
- *   fontSize: 35,
- *   align: "right"
+ * const bitmapText = new BitmapText('text using a fancy font!', {
+ *     fontName: 'Desyrel',
+ *     fontSize: 35,
+ *     align: 'right',
  * });
  * @memberof PIXI
  */
