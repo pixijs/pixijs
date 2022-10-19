@@ -1,8 +1,8 @@
-import { DEG_TO_RAD, RAD_TO_DEG, Rectangle, Transform } from '@pixi/core';
+import { DEG_TO_RAD, RAD_TO_DEG, Rectangle, Transform, utils } from '@pixi/core';
 import { Bounds } from './Bounds';
 
+import type { Filter, IPointData, Matrix, MaskData, ObservablePoint, Point, Renderer } from '@pixi/core';
 import type { Container } from './Container';
-import type { Filter, MaskData, Renderer, IPointData, ObservablePoint, Matrix, Point, utils } from '@pixi/core';
 
 export interface IDestroyOptions
 {
@@ -11,7 +11,7 @@ export interface IDestroyOptions
     baseTexture?: boolean;
 }
 
-export type DisplayObjectEventEmitterTypes = GlobalMixins.InteractionEventEmitterTypes & {
+export type DisplayObjectEventEmitterTypes = GlobalMixins.FederatedEventEmitterTypes & {
     added: [Container];
     childAdded: [DisplayObject, Container, number];
     childRemoved: [DisplayObject, Container, number];
@@ -21,7 +21,7 @@ export type DisplayObjectEventEmitterTypes = GlobalMixins.InteractionEventEmitte
 };
 
 export interface DisplayObject
-    extends Omit<GlobalMixins.DisplayObject, keyof utils.EventEmitter>,
+    extends Omit<GlobalMixins.DisplayObject, keyof utils.EventEmitter<DisplayObjectEventEmitterTypes>>,
     utils.EventEmitter<DisplayObjectEventEmitterTypes> {}
 
 /**
@@ -209,7 +209,7 @@ export interface DisplayObject
  * one is also better in terms of performance.
  * @memberof PIXI
  */
-export abstract class DisplayObject extends EventEmitter
+export abstract class DisplayObject extends utils.EventEmitter<DisplayObjectEventEmitterTypes>
 {
     abstract sortDirty: boolean;
 

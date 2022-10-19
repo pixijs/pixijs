@@ -75,10 +75,8 @@ export interface FederatedEventTarget extends utils.EventEmitter, EventTarget
 type AddListenerOptions = boolean | AddEventListenerOptions;
 type RemoveListenerOptions = boolean | EventListenerOptions;
 
-export interface IFederatedDisplayObject extends Omit<
-FederatedEventTarget,
-'parent' | 'children' | keyof utils.EventEmitter | 'cursor'
->
+export interface IFederatedDisplayObject
+    extends Omit<FederatedEventTarget, 'parent' | 'children' | keyof utils.EventEmitter | 'cursor'>
 {
     addEventListener<K extends keyof FederatedEventsMap>(
         type: K,
