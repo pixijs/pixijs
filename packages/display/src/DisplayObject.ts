@@ -172,7 +172,7 @@ export interface DisplayObject
  * using {@link PIXI.Bounds#addPointMatrix}.
  *
  * ```js
- * calculateBounds(): void
+ * calculateBounds()
  * {
  *     const points = [...];
  *
@@ -739,14 +739,14 @@ export abstract class DisplayObject extends utils.EventEmitter<DisplayObjectEven
     }
 
     /**
-     * Used in Renderer, cacheAsBitmap and other places where you call an `updateTransform` on root
+     * Used in Renderer, cacheAsBitmap and other places where you call an `updateTransform` on root.
      *
-     * ```
+     * ```js
      * const cacheParent = elem.enableTempParent();
      * elem.updateTransform();
      * elem.disableTempParent(cacheParent);
      * ```
-     * @returns - current parent
+     * @returns - Current parent
      */
     enableTempParent(): Container
     {

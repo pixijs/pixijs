@@ -60,10 +60,10 @@ export interface ICompressedTextureResourceOptions
  * // The resource backing the texture data for your textures.
  * // NOTE: You can also provide a ArrayBufferView instead of a URL. This is used when loading data from a container file
  * //   format such as KTX, DDS, or BASIS.
- * const compressedResource = new CompressedTextureResource("bunny.dxt5", {
- *   format: INTERNAL_FORMATS.COMPRESSED_RGBA_S3TC_DXT5_EXT,
- *   width: 256,
- *   height: 256
+ * const compressedResource = new CompressedTextureResource('bunny.dxt5', {
+ *     format: INTERNAL_FORMATS.COMPRESSED_RGBA_S3TC_DXT5_EXT,
+ *     width: 256,
+ *     height: 256,
  * });
  *
  * // You can create a base-texture to the cache, so that future `Texture`s can be created using the `Texture.from` API.
@@ -73,8 +73,8 @@ export interface ICompressedTextureResourceOptions
  * const texture = new Texture(baseTexture);
  *
  * // Add baseTexture & texture to the global texture cache
- * BaseTexture.addToCache(baseTexture, "bunny.dxt5");
- * Texture.addToCache(texture, "bunny.dxt5");
+ * BaseTexture.addToCache(baseTexture, 'bunny.dxt5');
+ * Texture.addToCache(texture, 'bunny.dxt5');
  * @memberof PIXI
  */
 export class CompressedTextureResource extends BlobResource

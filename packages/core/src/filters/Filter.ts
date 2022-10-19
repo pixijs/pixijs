@@ -24,8 +24,8 @@ import type { FilterSystem } from './FilterSystem';
  * then filter renders it to the screen.
  * Multiple filters can be added to the `filters` array property and stacked on each other.
  *
- * ```
- * import { Filter, Container } from 'pixi.js';
+ * ```js
+ * import { Container, Filter } from 'pixi.js';
  * const filter = new Filter(myShaderVert, myShaderFrag, { myUniform: 0.5 });
  * const container = new Container();
  * container.filters = [filter];
@@ -94,7 +94,7 @@ import type { FilterSystem } from './FilterSystem';
  * By default, input normalized coordinates are passed to fragment shader with `vTextureCoord`.
  * Use it to sample the input.
  *
- * ```
+ * ```js
  * import { Filter } from 'pixi.js';
  * const fragment = `
  * varying vec2 vTextureCoord;
@@ -120,7 +120,7 @@ import type { FilterSystem } from './FilterSystem';
  * Filters uses this quad to normalized (0-1) space, its passed into `aVertexPosition` attribute.
  * To calculate vertex position in screen space using normalized (0-1) space:
  *
- * ```
+ * ```glsl
  * vec4 filterVertexPosition( void )
  * {
  *     vec2 position = aVertexPosition * max(outputFrame.zw, vec2(0.)) + outputFrame.xy;
@@ -140,12 +140,13 @@ import type { FilterSystem } from './FilterSystem';
  * Multiply by `outputFrame.zw` to get input coordinate.
  * Divide by `inputSize.xy` to get input normalized coordinate.
  *
- * ```
+ * ```glsl
  * vec2 filterTextureCoord( void )
  * {
  *     return aVertexPosition * (outputFrame.zw * inputSize.zw); // same as /inputSize.xy
  * }
  * ```
+ *
  * **resolution**
  *
  * The `resolution` is the ratio of screen (CSS) pixels to real pixels.
@@ -165,12 +166,14 @@ import type { FilterSystem } from './FilterSystem';
  * The `inputClamp.xy` is left-top pixel center, you may ignore it, because we use left-top part of Framebuffer
  * `inputClamp.zw` is bottom-right pixel center.
  *
+ * ```glsl
+ * vec4 color = texture2D(uSampler, clamp(modifiedTextureCoord, inputClamp.xy, inputClamp.zw));
  * ```
- * vec4 color = texture2D(uSampler, clamp(modifiedTextureCoord, inputClamp.xy, inputClamp.zw))
- * ```
- * OR
- * ```
- * vec4 color = texture2D(uSampler, min(modifigedTextureCoord, inputClamp.zw))
+ *
+ * Or:
+ *
+ * ```glsl
+ * vec4 color = texture2D(uSampler, min(modifigedTextureCoord, inputClamp.zw));
  * ```
  *
  * ### Additional Information
@@ -248,11 +251,11 @@ export class Filter extends Shader
     apply(filterManager: FilterSystem, input: RenderTexture, output: RenderTexture, clearMode?: CLEAR_MODES,
         _currentState?: FilterState): void
     {
-        // do as you please!
+        // Do as you please!
 
         filterManager.applyFilter(this, input, output, clearMode);
 
-        // or just do a regular render..
+        // Or just do a regular render..
     }
 
     /**

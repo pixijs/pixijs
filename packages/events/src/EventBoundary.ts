@@ -18,14 +18,14 @@ const tempLocalMapping = new Point();
  *
  * ```ts
  * pressTargetsByButton: {
- *      [id: number]: FederatedEventTarget[];
+ *     [id: number]: FederatedEventTarget[];
  * };
  * clicksByButton: {
  *     [id: number]: {
  *         clickCount: number;
  *         target: FederatedEventTarget;
  *         timeStamp: number;
- *     }
+ *     };
  * };
  * overTargets: FederatedEventTarget[];
  * ```

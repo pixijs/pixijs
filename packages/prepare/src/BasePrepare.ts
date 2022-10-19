@@ -216,11 +216,9 @@ function findTextStyle(item: TextStyle, queue: Array<any>): boolean
  *
  * // Load object into GPU
  * app.renderer.plugins.prepare.upload(sprite, () => {
- *
- *     //Texture(s) has been uploaded to GPU
+ *     // Texture(s) has been uploaded to GPU
  *     app.stage.addChild(sprite);
- *
- * })
+ * });
  * @abstract
  * @memberof PIXI
  */

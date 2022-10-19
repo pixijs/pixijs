@@ -35,7 +35,7 @@ export interface IParticleProperties
  *
  * for (let i = 0; i < 100; ++i)
  * {
- *     let sprite = Sprite.from("myImage.png");
+ *     let sprite = Sprite.from('myImage.png');
  *     container.addChild(sprite);
  * }
  * @memberof PIXI

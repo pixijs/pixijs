@@ -8,24 +8,24 @@ import type { ResolveAsset, PreferOrder, ResolveURLParser, ResolverManifest, Res
  * A class that is responsible for resolving mapping asset URLs to keys.
  * At its most basic it can be used for Aliases:
  *
- * ```
+ * ```js
  * resolver.add('foo', 'bar');
  * resolver.resolveUrl('foo') // => 'bar'
  * ```
  *
  * It can also be used to resolve the most appropriate asset for a given URL:
  *
- * ```
- *  resolver.prefer({
- *      params:{
- *          format:'webp',
- *          resolution: 2,
- *      }
- *  })
+ * ```js
+ * resolver.prefer({
+ *     params: {
+ *         format: 'webp',
+ *         resolution: 2,
+ *     }
+ * });
  *
- *  resolver.add('foo', ['bar@2x.webp', 'bar@2x.png', 'bar.webp', 'bar.png']);
+ * resolver.add('foo', ['bar@2x.webp', 'bar@2x.png', 'bar.webp', 'bar.png']);
  *
- *  resolver.resolveUrl('foo') // => 'bar@2x.webp'
+ * resolver.resolveUrl('foo') // => 'bar@2x.webp'
  * ```
  * Other features include:
  * - Ability to process a manifest file to get the correct understanding of how to resolve all assets
@@ -128,19 +128,19 @@ export class Resolver
      * Can be added using the extensions API
      * @example
      * resolver.add('foo', [
-     *    {
-     *      resolution:2,
-     *      format:'png'
-     *      src: 'image@2x.png'
-     *    },
-     *    {
-     *      resolution:1,
-     *      format:'png'
-     *      src: 'image.png'
-     *    }
+     *     {
+     *         resolution: 2,
+     *         format: 'png',
+     *         src: 'image@2x.png',
+     *     },
+     *     {
+     *         resolution:1,
+     *         format:'png',
+     *         src: 'image.png',
+     *     },
      * ]);
      *
-     * // with a url parser the information such as resolution and file format could extracted from the url itself:
+     * // With a url parser the information such as resolution and file format could extracted from the url itself:
      * extensions.add({
      *     extension: ExtensionType.ResolveParser,
      *     test: loadTextures.test, // test if url ends in an image
@@ -152,12 +152,11 @@ export class Resolver
      *     }),
      * });
      *
-     * // now resolution and format can be extracted from the url
+     * // Now resolution and format can be extracted from the url
      * resolver.add('foo', [
-     *    'image@2x.png'
-     *    'image.png'
+     *     'image@2x.png',
+     *     'image.png',
      * ]);
-     * @
      */
     public get parsers(): ResolveURLParser[]
     {
@@ -202,11 +201,11 @@ export class Resolver
      * This adds a bundle of assets in one go so that you can resolve them as a group.
      * For example you could add a bundle for each screen in you pixi app
      * @example
-     *  resolver.addBundle('animals', {
-     *    bunny: 'bunny.png',
-     *    chicken: 'chicken.png',
-     *    thumper: 'thumper.png',
-     *  });
+     * resolver.addBundle('animals', {
+     *     bunny: 'bunny.png',
+     *     chicken: 'chicken.png',
+     *     thumper: 'thumper.png',
+     * });
      *
      * const resolvedAssets = await resolver.resolveBundle('animals');
      * @param bundleId - The id of the bundle to add
@@ -248,27 +247,27 @@ export class Resolver
      * Tells the resolver what keys are associated with witch asset.
      * The most important thing the resolver does
      * @example
-     * // single key, single asset:
+     * // Single key, single asset:
      * resolver.add('foo', 'bar.png');
      * resolver.resolveUrl('foo') // => 'bar.png'
      *
-     * // multiple keys, single asset:
+     * // Multiple keys, single asset:
      * resolver.add(['foo', 'boo'], 'bar.png');
      * resolver.resolveUrl('foo') // => 'bar.png'
      * resolver.resolveUrl('boo') // => 'bar.png'
      *
-     * // multiple keys, multiple assets:
+     * // Multiple keys, multiple assets:
      * resolver.add(['foo', 'boo'], ['bar.png', 'bar.webp']);
      * resolver.resolveUrl('foo') // => 'bar.png'
      *
-     * // add custom data attached to the resolver
+     * // Add custom data attached to the resolver
      * Resolver.add(
      *     'bunnyBooBooSmooth',
      *     'bunny{png,webp}',
-     *     {scaleMode:SCALE_MODES.NEAREST} // base texture options
+     *     { scaleMode:SCALE_MODES.NEAREST }, // Base texture options
      * );
      *
-     * resolver.resolve('bunnyBooBooSmooth') // => {src: 'bunny.png', data: {scaleMode: SCALE_MODES.NEAREST}}
+     * resolver.resolve('bunnyBooBooSmooth') // => { src: 'bunny.png', data: { scaleMode: SCALE_MODES.NEAREST } }
      * @param keysIn - The keys to map, can be an array or a single key
      * @param assetsIn - The assets to associate with the key(s)
      * @param data - The data that will be attached to the object that resolved object.
@@ -360,35 +359,38 @@ export class Resolver
      * If the resolver has had a manifest set via setManifest, this will return the assets urls for
      * a given bundleId or bundleIds.
      * @example
-     * // manifest example
+     * // Manifest Example
      * const manifest = {
-     *   bundles:[{
-     *      name:'load-screen',
-     *      assets:[
-     *          {
-     *             name: 'background',
-     *             srcs: 'sunset.png',
-     *          },
-     *          {
-     *             name: 'bar',
-     *             srcs: 'load-bar.{png,webp}',
-     *          }
-     *      ]
-     *   },
-     *   {
-     *      name:'game-screen',
-     *      assets:[
-     *          {
-     *             name: 'character',
-     *             srcs: 'robot.png',
-     *          },
-     *          {
-     *             name: 'enemy',
-     *             srcs: 'bad-guy.png',
-     *          }
-     *      ]
-     *   }]
-     * }}
+     *     bundles: [
+     *         {
+     *             name: 'load-screen',
+     *             assets: [
+     *                 {
+     *                     name: 'background',
+     *                     srcs: 'sunset.png',
+     *                 },
+     *                 {
+     *                     name: 'bar',
+     *                     srcs: 'load-bar.{png,webp}',
+     *                 },
+     *             ],
+     *         },
+     *         {
+     *             name: 'game-screen',
+     *             assets: [
+     *                 {
+     *                     name: 'character',
+     *                     srcs: 'robot.png',
+     *                 },
+     *                 {
+     *                     name: 'enemy',
+     *                     srcs: 'bad-guy.png',
+     *                 },
+     *             ],
+     *         },
+     *     ]
+     * };
+     *
      * resolver.setManifest(manifest);
      * const resolved = resolver.resolveBundle('load-screen');
      * @param bundleIds - The bundle ids to resolve
@@ -448,10 +450,10 @@ export class Resolver
      * @example
      * resolver.add('boo', 'bunny.png');
      *
-     * resolver.resolve('boo') // => {src:'bunny.png'}
+     * resolver.resolve('boo') // => { src: 'bunny.png' }
      *
-     * // will return the same string as no key was added for this value..
-     * resolver.resolve('another-thing.png') // => {src:'another-thing.png'}
+     * // Will return the same string as no key was added for this value..
+     * resolver.resolve('another-thing.png') // => { src: 'another-thing.png' }
      * @param keys - key or keys to resolve
      * @returns - the resolve asset or a hash of resolve assets for each key specified
      */

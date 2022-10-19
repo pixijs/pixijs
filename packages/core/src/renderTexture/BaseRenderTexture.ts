@@ -21,23 +21,23 @@ export interface BaseRenderTexture extends GlobalMixins.BaseRenderTexture, BaseT
  * const renderer = autoDetectRenderer();
  * const baseRenderTexture = new BaseRenderTexture({ width: 800, height: 600 });
  * const renderTexture = new RenderTexture(baseRenderTexture);
- * const sprite = Sprite.from("spinObj_01.png");
+ * const sprite = Sprite.from('spinObj_01.png');
  *
- * sprite.position.x = 800/2;
- * sprite.position.y = 600/2;
+ * sprite.position.x = 800 / 2;
+ * sprite.position.y = 600 / 2;
  * sprite.anchor.x = 0.5;
  * sprite.anchor.y = 0.5;
  *
- * renderer.render(sprite, {renderTexture});
+ * renderer.render(sprite, { renderTexture });
  *
  * // The Sprite in this case will be rendered using its local transform.
  * // To render this sprite at 0,0 you can clear the transform
- * sprite.setTransform()
+ * sprite.setTransform();
  *
  * const baseRenderTexture = new BaseRenderTexture({ width: 100, height: 100 });
  * const renderTexture = new RenderTexture(baseRenderTexture);
  *
- * renderer.render(sprite, {renderTexture});  // Renders to center of RenderTexture
+ * renderer.render(sprite, { renderTexture }); // Renders to center of RenderTexture
  * @memberof PIXI
  */
 export class BaseRenderTexture extends BaseTexture

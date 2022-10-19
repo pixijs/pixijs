@@ -24,10 +24,10 @@ export type TranscodedResourcesArray = (Array<CompressedTextureResource> | Array
  * 1. Adding a &lt;script&gt; tag to your HTML page to the transcoder bundle in this package, and serving
  * the WASM binary from the same location.
  *
- * ```js
- * // Copy ./node_modules/@pixi/basis/assets/basis_.wasm into your assets directory
- * // as well, so it is served from the same folder as the JavaScript!
- * &lt;script src="./node_modules/@pixi/basis/assets/basis_transcoder.js" /&gt;
+ * ```html
+ * <!-- Copy ./node_modules/@pixi/basis/assets/basis_.wasm into your assets directory
+ *     as well, so it is served from the same folder as the JavaScript! -->
+ * <script src="./node_modules/@pixi/basis/assets/basis_transcoder.js"></script>
  * ```
  *
  * NOTE: `basis_transcoder.js` expects the WebAssembly binary to be named `basis_transcoder.wasm`.

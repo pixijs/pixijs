@@ -20,7 +20,7 @@ export interface IArrayBuffer extends ArrayBuffer
  * to support expressions like `geometry.buffers[0].data[0] = position.x`.
  *
  * Gives access to indexing and `length` field
- * * @popelyshev: If data is actually ArrayBuffer and throws Exception on indexing - its user problem :)
+ * - @popelyshev: If data is actually ArrayBuffer and throws Exception on indexing - its user problem :)
  */
 export interface ITypedArray extends IArrayBuffer
 {

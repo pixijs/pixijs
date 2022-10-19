@@ -108,16 +108,16 @@ export class SystemManager<R=IRenderer> extends EventEmitter
      * A function that will run a runner and call the runners function but pass in different options
      * to each system based on there name.
      *
-     * eg if you have two systems added called `systemA` and `systemB` you could call do the following:
+     * E.g. If you have two systems added called `systemA` and `systemB` you could call do the following:
      *
-     * ```
+     * ```js
      * system.emitWithCustomOptions(init, {
-     *   systemA: {...optionsForA},
-     *   systemB: {...optionsForB}
-     * })
-     *
-     * init would be called on system A passing options.A and init would be called on system B passing options.B
+     *     systemA: {...optionsForA},
+     *     systemB: {...optionsForB},
+     * });
      * ```
+     *
+     * `init` would be called on system A passing `optionsForA` and on system B passing `optionsForB`.
      * @param runner - the runner to target
      * @param options - key value options for each system
      */

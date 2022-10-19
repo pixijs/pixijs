@@ -110,7 +110,7 @@ export const FederatedDisplayObject: IFederatedDisplayObject = {
      * const sprite = new Sprite(texture);
      * sprite.interactive = true;
      * sprite.on('tap', (event) => {
-     *    //handle event
+     *     // Handle event
      * });
      * @memberof PIXI.DisplayObject#
      */
@@ -127,7 +127,7 @@ export const FederatedDisplayObject: IFederatedDisplayObject = {
      * Interaction shape. Children will be hit first, then this shape will be checked.
      * Setting this will cause this shape to be checked in hit tests rather than the displayObject's bounds.
      * @example
-     * import { Sprite, Rectangle } from 'pixi.js';
+     * import { Rectangle, Sprite } from 'pixi.js';
      *
      * const sprite = new Sprite(texture);
      * sprite.interactive = true;
@@ -148,27 +148,27 @@ export const FederatedDisplayObject: IFederatedDisplayObject = {
      * @example
      * // Tell the user whether they did a single, double, triple, or nth click.
      * button.addEventListener('click', {
-     *   handleEvent(e): {
-     *     let prefix;
+     *     handleEvent(e): {
+     *         let prefix;
      *
-     *     switch (e.detail) {
-     *       case 1: prefix = 'single'; break;
-     *       case 2: prefix = 'double'; break;
-     *       case 3: prefix = 'triple'; break;
-     *       default: prefix = e.detail + 'th'; break;
+     *         switch (e.detail) {
+     *             case 1: prefix = 'single'; break;
+     *             case 2: prefix = 'double'; break;
+     *             case 3: prefix = 'triple'; break;
+     *             default: prefix = e.detail + 'th'; break;
+     *         }
+     *
+     *         console.log('That was a ' + prefix + 'click');
      *     }
-     *
-     *     console.log('That was a ' + prefix + 'click');
-     *   }
      * });
      *
      * // But skip the first click!
      * button.parent.addEventListener('click', function blockClickOnce(e) {
-     *   e.stopImmediatePropagation();
-     *   button.parent.removeEventListener('click', blockClickOnce, true);
+     *     e.stopImmediatePropagation();
+     *     button.parent.removeEventListener('click', blockClickOnce, true);
      * }, {
-     *   capture: true,
-     * })
+     *     capture: true,
+     * });
      */
     addEventListener(
         type: string,
