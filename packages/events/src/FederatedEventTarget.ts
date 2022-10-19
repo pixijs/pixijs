@@ -2,6 +2,7 @@ import { DisplayObject } from '@pixi/display';
 import { FederatedEvent } from './FederatedEvent';
 
 import type { utils } from '@pixi/core';
+import type { FederatedEventMap } from './FederatedEventMap';
 
 export type Cursor = 'auto'
 | 'default'
@@ -71,10 +72,35 @@ export interface FederatedEventTarget extends utils.EventEmitter, EventTarget
     hitArea: IHitArea | null;
 }
 
-export const FederatedDisplayObject: Omit<
-FederatedEventTarget,
-'parent' | 'children' | keyof utils.EventEmitter | 'cursor'
-> = {
+type AddListenerOptions = boolean | AddEventListenerOptions;
+type RemoveListenerOptions = boolean | EventListenerOptions;
+
+export interface IFederatedDisplayObject
+    extends Omit<FederatedEventTarget, 'parent' | 'children' | keyof utils.EventEmitter | 'cursor'>
+{
+    addEventListener<K extends keyof FederatedEventMap>(
+        type: K,
+        listener: (e: FederatedEventMap[K]) => any,
+        options?: AddListenerOptions
+    ): void;
+    addEventListener(
+        type: string,
+        listener: EventListenerOrEventListenerObject,
+        options?: AddListenerOptions
+    ): void;
+    removeEventListener<K extends keyof FederatedEventMap>(
+        type: K,
+        listener: (e: FederatedEventMap[K]) => any,
+        options?: RemoveListenerOptions
+    ): void;
+    removeEventListener(
+        type: string,
+        listener: EventListenerOrEventListenerObject,
+        options?: RemoveListenerOptions
+    ): void;
+}
+
+export const FederatedDisplayObject: IFederatedDisplayObject = {
     /**
      * Enable interaction events for the DisplayObject. Touch, pointer and mouse
      * events will not be emitted unless `interactive` is set to `true`.
@@ -147,7 +173,7 @@ FederatedEventTarget,
     addEventListener(
         type: string,
         listener: EventListenerOrEventListenerObject,
-        options?: boolean | AddEventListenerOptions,
+        options?: AddListenerOptions
     )
     {
         const capture = (typeof options === 'boolean' && options)
@@ -172,7 +198,7 @@ FederatedEventTarget,
     removeEventListener(
         type: string,
         listener: EventListenerOrEventListenerObject,
-        options?: boolean | AddEventListenerOptions,
+        options?: RemoveListenerOptions
     )
     {
         const capture = (typeof options === 'boolean' && options)
