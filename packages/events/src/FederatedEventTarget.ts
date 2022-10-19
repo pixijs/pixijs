@@ -2,7 +2,7 @@ import { DisplayObject } from '@pixi/display';
 import { FederatedEvent } from './FederatedEvent';
 
 import type { utils } from '@pixi/core';
-import type { FederatedEventsMap } from './FederatedEventsMap';
+import type { FederatedEventMap } from './FederatedEventMap';
 
 export type Cursor = 'auto'
 | 'default'
@@ -78,9 +78,9 @@ type RemoveListenerOptions = boolean | EventListenerOptions;
 export interface IFederatedDisplayObject
     extends Omit<FederatedEventTarget, 'parent' | 'children' | keyof utils.EventEmitter | 'cursor'>
 {
-    addEventListener<K extends keyof FederatedEventsMap>(
+    addEventListener<K extends keyof FederatedEventMap>(
         type: K,
-        listener: (e: FederatedEventsMap[K]) => any,
+        listener: (e: FederatedEventMap[K]) => any,
         options?: AddListenerOptions
     ): void;
     addEventListener(
@@ -88,9 +88,9 @@ export interface IFederatedDisplayObject
         listener: EventListenerOrEventListenerObject,
         options?: AddListenerOptions
     ): void;
-    removeEventListener<K extends keyof FederatedEventsMap>(
+    removeEventListener<K extends keyof FederatedEventMap>(
         type: K,
-        listener: (e: FederatedEventsMap[K]) => any,
+        listener: (e: FederatedEventMap[K]) => any,
         options?: RemoveListenerOptions
     ): void;
     removeEventListener(

@@ -1,7 +1,7 @@
 import type { FederatedPointerEvent } from './FederatedPointerEvent';
 import type { FederatedWheelEvent } from './FederatedWheelEvent';
 
-export type FederatedEventsMap = {
+export type FederatedEventMap = {
     click: FederatedPointerEvent;
     mousedown: FederatedPointerEvent;
     mousemove: FederatedPointerEvent;
@@ -29,5 +29,5 @@ export type FederatedEventsMap = {
     wheel: FederatedWheelEvent;
 };
 export type FederatedEventEmitterTypes = {
-    [K in keyof FederatedEventsMap]: [FederatedEventsMap[K]];
+    [K in keyof FederatedEventMap]: [FederatedEventMap[K]];
 };
