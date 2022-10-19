@@ -44,10 +44,10 @@ interface ModernContext2D extends ICanvasRenderingContext2D
  * import { Text } from 'pixi.js';
  *
  * const text = new Text('This is a PixiJS text', {
- *   fontFamily : 'Arial',
- *   fontSize: 24,
- *   fill : 0xff1010,
- *   align : 'center',
+ *     fontFamily: 'Arial',
+ *     fontSize: 24,
+ *     fill: 0xff1010,
+ *     align: 'center',
  * });
  * @memberof PIXI
  */

@@ -23,13 +23,10 @@ export interface Container extends GlobalMixins.Container, DisplayObject {}
  * It is the base class of all display objects that act as a container for other objects, including Graphics
  * and Sprite.
  * @example
- * import { BlurFilter } from '@pixi/filter-blur';
- * import { Container } from '@pixi/display';
- * import { Graphics } from '@pixi/graphics';
- * import { Sprite } from '@pixi/sprite';
+ * import { BlurFilter, Container, Graphics, Sprite } from 'pixi.js';
  *
  * const container = new Container();
- * const sprite = Sprite.from("https://s3-us-west-2.amazonaws.com/s.cdpn.io/693612/IaUrttj.png");
+ * const sprite = Sprite.from('https://s3-us-west-2.amazonaws.com/s.cdpn.io/693612/IaUrttj.png');
  *
  * sprite.width = 512;
  * sprite.height = 512;
@@ -43,9 +40,9 @@ export interface Container extends GlobalMixins.Container, DisplayObject {}
  *
  * // Only the contents within a circle at the center should be rendered onto the screen.
  * container.mask = new Graphics()
- *  .beginFill(0xffffff)
- *  .drawCircle(sprite.width / 2, sprite.height / 2, Math.min(sprite.width, sprite.height) / 2)
- *  .endFill();
+ *     .beginFill(0xffffff)
+ *     .drawCircle(sprite.width / 2, sprite.height / 2, Math.min(sprite.width, sprite.height) / 2)
+ *     .endFill();
  * @memberof PIXI
  */
 export class Container<T extends DisplayObject = DisplayObject> extends DisplayObject

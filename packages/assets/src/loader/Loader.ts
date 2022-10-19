@@ -90,14 +90,14 @@ export class Loader
     }
 
     /**
-     * Loads an asset(s) using the parsers added to the Loader.
+     * Loads one or more assets using the parsers added to the Loader.
      * @example
-     * // single asset:
+     * // Single asset:
      * const asset = await Loader.load('cool.png');
      * console.log(asset);
-     * @example
-     * // multiple assets:
-     * const assets = await  Loader.load(['cool.png', 'cooler.png']);
+     *
+     * // Multiple assets:
+     * const assets = await Loader.load(['cool.png', 'cooler.png']);
      * console.log(assets);
      * @param assetsToLoadIn - urls that you want to load, or a single one!
      * @param onProgress - a function that gets called when the progress changes
@@ -156,10 +156,10 @@ export class Loader
     }
 
     /**
-     * Unloads an asset(s). Any unloaded assets will be destroyed, freeing up memory for your app.
+     * Unloads one or more assets. Any unloaded assets will be destroyed, freeing up memory for your app.
      * The parser that created the asset, will be the one that unloads it.
      * @example
-     * // single asset:
+     * // Single asset:
      * const asset = await Loader.load('cool.png');
      *
      * await Loader.unload('cool.png');

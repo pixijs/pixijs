@@ -32,7 +32,7 @@ export interface NineSlicePlane extends GlobalMixins.NineSlicePlane {}
  * @example
  * import { NineSlicePlane, Texture } from 'pixi.js';
  *
- * const Plane9 = new NineSlicePlane(Texture.from('BoxWithRoundedCorners.png'), 15, 15, 15, 15);
+ * const plane9 = new NineSlicePlane(Texture.from('BoxWithRoundedCorners.png'), 15, 15, 15, 15);
  * @memberof PIXI
  */
 export class NineSlicePlane extends SimplePlane

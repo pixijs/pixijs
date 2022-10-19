@@ -4,7 +4,7 @@ import type { IPoint } from '@pixi/core';
 /**
  * RopeGeometry allows you to draw a geometry across several points and then manipulate these points.
  * @example
- * import { RopeGeometry, Point } from 'pixi.js';
+ * import { Point, RopeGeometry } from 'pixi.js';
  *
  * for (let i = 0; i < 20; i++) {
  *     points.push(new Point(i * 50, 0));

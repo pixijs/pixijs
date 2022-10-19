@@ -59,19 +59,26 @@ _Note: After v4.5.0, support for the [Bower](https://bower.io) package manager h
 ```sh
 npm install pixi.js
 ```
+
 There is no default export. The correct way to import PixiJS is:
 
 ```js
 import * as PIXI from 'pixi.js'
 ```
 
-#### CDN Install (via cdnjs)
+#### CDN Install
+
+Via jsDelivr:
 
 ```html
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/5.1.3/pixi.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pixi.js@7.x/dist/browser/pixi.min.js"></script>
 ```
 
-_Note: `5.1.3` can be replaced by any [released](https://github.com/pixijs/pixi.js/releases) version._
+Or via unpkg:
+
+```html
+<script src="https://unpkg.com/pixi.js@7.x/dist/browser/pixi.min.js"></script>
+```
 
 ### Demos ###
 

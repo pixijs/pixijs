@@ -40,12 +40,10 @@ export interface IAccessibleHTMLElement extends HTMLElement
  * @memberof PIXI
  * @type {object}
  * @example
- *      function MyObject() {}
+ * import { accessibleTarget } from 'pixi.js';
  *
- *      Object.assign(
- *          MyObject.prototype,
- *          PIXI.accessibleTarget
- *      );
+ * function MyObject() {}
+ * Object.assign(MyObject.prototype, accessibleTarget);
  */
 export const accessibleTarget: IAccessibleTarget = {
     /**

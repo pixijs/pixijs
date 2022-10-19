@@ -39,7 +39,7 @@ function removeAllHandlers(tex: any): void
  * You can directly create a texture from an image and then reuse it multiple times like this :
  *
  * ```js
- * import { Texture, Sprite } from 'pixi.js';
+ * import { Sprite, Texture } from 'pixi.js';
  *
  * const texture = Texture.from('assets/image.png');
  * const sprite1 = new Sprite(texture);
@@ -51,13 +51,15 @@ function removeAllHandlers(tex: any): void
  *
  * Textures made from SVGs, loaded or not, cannot be used before the file finishes processing.
  * You can check for this by checking the sprite's _textureID property.
+ *
  * ```js
- * import { Texture, Sprite } from 'pixi.js';
+ * import { Sprite, Texture } from 'pixi.js';
  *
  * const texture = Texture.from('assets/image.svg');
  * const sprite1 = new Sprite(texture);
- * //sprite1._textureID should not be undefined if the texture has finished processing the SVG file
+ * // sprite1._textureID should not be undefined if the texture has finished processing the SVG file
  * ```
+ *
  * You can use a ticker or rAF to ensure your sprites load the finished textures after processing. See issue #3068.
  * @memberof PIXI
  * @typeParam R - The BaseTexture's Resource type.
