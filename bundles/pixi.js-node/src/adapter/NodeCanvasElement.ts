@@ -190,7 +190,7 @@ export class NodeCanvasElement extends canvasModule.Canvas implements ICanvas
                 {
                     let pixels = args[args.length - 1];
 
-                    if (pixels && pixels._image) pixels = pixels._image;
+                    if (pixels?._image) pixels = pixels._image;
                     if (pixels instanceof Image)
                     {
                         const canvas = new Canvas(pixels.width, pixels.height);

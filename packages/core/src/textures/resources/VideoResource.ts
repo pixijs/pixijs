@@ -225,7 +225,7 @@ export class VideoResource extends BaseImageResource
     {
         const source = this.source as HTMLVideoElement;
 
-        return (source.currentTime > 0 && source.paused === false && source.ended === false && source.readyState > 2);
+        return (!source.paused && !source.ended && this._isSourceReady());
     }
 
     /**
@@ -236,7 +236,7 @@ export class VideoResource extends BaseImageResource
     {
         const source = this.source as HTMLVideoElement;
 
-        return source.readyState === 3 || source.readyState === 4;
+        return source.readyState > 2;
     }
 
     /** Runs the update loop when the video is ready to play. */
