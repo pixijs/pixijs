@@ -100,7 +100,7 @@ export interface AssetInitOptions
  * #### NPM Install
  *
  * ```sh
- * npm install @pixi/assets@6.5.7
+ * npm install @pixi/assets@v6.x
  * ```
  *
  * There is no default export. The correct way to import Assets is:
@@ -109,14 +109,21 @@ export interface AssetInitOptions
  * import { Assets } from '@pixi/assets';
  * ```
  *
- * #### CDN Install (via jsDelivr)
+ * #### CDN Install
+ *
+ * Via jsDelivr:
  *
  * ```html
- * <script src="https://cdn.jsdelivr.net/npm/@pixi/assets@6.5.7/dist/browser/assets.min.js"></script>
+ * <script src="https://cdn.jsdelivr.net/npm/@pixi/assets@6.x/dist/browser/assets.min.js"></script>
  * ```
  *
- * _Note: `6.5.7` can be replaced by any [released](https://github.com/pixijs/pixi.js/releases) version.
- * It should be the same as the version of `pixi.js` you are using._
+ * Or via unpkg:
+ *
+ * ```html
+ * <script src="https://unpkg.com/@pixi/assets@6.x/dist/browser/assets.min.js"></script>
+ * ```
+ *
+ * _Note: The version of `@pixi/assets` should be the same as the version of `pixi.js` you are using._
  *
  * ### Assets Loading
  *

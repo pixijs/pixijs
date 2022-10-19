@@ -34,7 +34,7 @@ interface Renderer
  * #### NPM Install
  *
  * ```sh
- * npm install @pixi/events@6.5.7
+ * npm install @pixi/events@v6.x
  * ```
  *
  * There is no default export. The correct way to import EventSystem is:
@@ -50,10 +50,18 @@ interface Renderer
  * app.renderer.addSystem(EventSystem, 'events');
  * ```
  *
- * #### CDN Install (via jsDelivr)
+ * #### CDN Install
+ *
+ * Via jsDelivr:
  *
  * ```html
- * <script src="https://cdn.jsdelivr.net/npm/@pixi/events@6.5.7/dist/browser/events.min.js"></script>
+ * <script src="https://cdn.jsdelivr.net/npm/@pixi/events@6.x/dist/browser/events.min.js"></script>
+ * ```
+ *
+ * Or via unpkg:
+ *
+ * ```html
+ * <script src="https://unpkg.com/@pixi/events@6.x/dist/browser/events.min.js"></script>
  * ```
  *
  * Then install the EventSystem:
@@ -66,8 +74,7 @@ interface Renderer
  * app.renderer.addSystem(PIXI.EventSystem, 'events');
  * ```
  *
- * _Note: `6.5.7` can be replaced by any [released](https://github.com/pixijs/pixi.js/releases) version.
- * It should be the same as the version of `pixi.js` you are using._
+ * _Note: The version of `@pixi/events` should be the same as the version of `pixi.js` you are using._
  * @memberof PIXI
  */
 export class EventSystem

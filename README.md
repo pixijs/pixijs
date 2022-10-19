@@ -65,13 +65,19 @@ There is no default export. The correct way to import PixiJS is:
 import * as PIXI from 'pixi.js'
 ```
 
-#### CDN Install (via cdnjs)
+#### CDN Install
+
+Via jsDelivr:
 
 ```html
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/6.5.7/browser/pixi.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pixi.js@6.x/dist/browser/pixi.min.js"></script>
 ```
 
-_Note: `6.5.7` can be replaced by any [released](https://github.com/pixijs/pixi.js/releases) version._
+Or via unpkg:
+
+```html
+<script src="https://unpkg.com/pixi.js@6.x/dist/browser/pixi.min.js"></script>
+```
 
 ### Demos ###
 
