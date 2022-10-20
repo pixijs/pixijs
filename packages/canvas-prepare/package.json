@@ -1,6 +1,6 @@
 {
   "name": "@pixi/canvas-prepare",
-  "version": "7.0.0-beta.3",
+  "version": "7.0.0-beta.4",
   "main": "dist/cjs/canvas-prepare.js",
   "module": "dist/esm/canvas-prepare.mjs",
   "types": "index.d.ts",
