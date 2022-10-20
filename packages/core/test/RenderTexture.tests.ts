@@ -382,17 +382,17 @@ describe('RenderTexture', () =>
 
             renderer.framebuffer.bind(textureFramebuffer);
 
-            const pixel = new Float32Array([0.3]);
+            const pixel = new Float32Array([0.1, 0.2, 0.3, 0.4]);
 
-            gl.readPixels(0, 0, 1, 1, gl.RED, gl.FLOAT, pixel);
+            gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.FLOAT, pixel);
 
-            expect(pixel[0]).toEqual(1.0);
+            expect(pixel).toEqual(new Float32Array([1.0, 0.0, 0.0, 1.0]));
 
-            pixel.set([0.1]);
+            pixel.set([0.1, 0.2, 0.3, 0.4]);
 
-            gl.readPixels(1, 1, 1, 1, gl.RED, gl.FLOAT, pixel);
+            gl.readPixels(1, 1, 1, 1, gl.RGBA, gl.FLOAT, pixel);
 
-            expect(pixel[0]).toEqual(0.5);
+            expect(pixel).toEqual(new Float32Array([0.5, 0.0, 0.0, 1.0]));
         });
 
         itif('should resize multisampled framebuffer with format RED / type FLOAT', () =>
@@ -425,11 +425,11 @@ describe('RenderTexture', () =>
 
             renderer.framebuffer.bind(textureFramebuffer);
 
-            const pixel = new Float32Array([0.3]);
+            const pixel = new Float32Array([0.1, 0.2, 0.3, 0.4]);
 
-            gl.readPixels(1, 1, 1, 1, gl.RED, gl.FLOAT, pixel);
+            gl.readPixels(1, 1, 1, 1, gl.RGBA, gl.FLOAT, pixel);
 
-            expect(pixel[0]).toEqual(1.0);
+            expect(pixel).toEqual(new Float32Array([1.0, 0.0, 0.0, 1.0]));
         });
     });
 });
