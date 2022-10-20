@@ -1,6 +1,6 @@
 {
   "name": "@pixi/canvas-sprite",
-  "version": "6.5.6",
+  "version": "6.5.7",
   "main": "dist/cjs/canvas-sprite.js",
   "module": "dist/esm/canvas-sprite.mjs",
   "bundle": "dist/browser/canvas-sprite.js",
@@ -38,12 +38,12 @@
     "*.d.ts"
   ],
   "peerDependencies": {
-    "@pixi/canvas-display": "6.5.6",
-    "@pixi/canvas-renderer": "6.5.6",
-    "@pixi/constants": "6.5.6",
-    "@pixi/core": "6.5.6",
-    "@pixi/math": "6.5.6",
-    "@pixi/sprite": "6.5.6",
-    "@pixi/utils": "6.5.6"
+    "@pixi/canvas-display": "6.5.7",
+    "@pixi/canvas-renderer": "6.5.7",
+    "@pixi/constants": "6.5.7",
+    "@pixi/core": "6.5.7",
+    "@pixi/math": "6.5.7",
+    "@pixi/sprite": "6.5.7",
+    "@pixi/utils": "6.5.7"
   }
 }

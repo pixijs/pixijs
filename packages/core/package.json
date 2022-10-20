@@ -1,6 +1,6 @@
 {
   "name": "@pixi/core",
-  "version": "6.5.6",
+  "version": "6.5.7",
   "main": "dist/cjs/core.js",
   "module": "dist/esm/core.mjs",
   "bundle": "dist/browser/core.js",
@@ -45,12 +45,12 @@
     "@types/offscreencanvas": "^2019.6.4"
   },
   "peerDependencies": {
-    "@pixi/constants": "6.5.6",
-    "@pixi/extensions": "6.5.6",
-    "@pixi/math": "6.5.6",
-    "@pixi/runner": "6.5.6",
-    "@pixi/settings": "6.5.6",
-    "@pixi/ticker": "6.5.6",
-    "@pixi/utils": "6.5.6"
+    "@pixi/constants": "6.5.7",
+    "@pixi/extensions": "6.5.7",
+    "@pixi/math": "6.5.7",
+    "@pixi/runner": "6.5.7",
+    "@pixi/settings": "6.5.7",
+    "@pixi/ticker": "6.5.7",
+    "@pixi/utils": "6.5.7"
   }
 }
