@@ -416,7 +416,8 @@ export class BitmapFont
             }
 
             // Measure glyph dimensions
-            const metrics = TextMetrics.measureText(charsList[i], style, false, canvas);
+            const character = charsList[i];
+            const metrics = TextMetrics.measureText(character, style, false, canvas);
             const width = metrics.width;
             const height = Math.ceil(metrics.height);
 
@@ -429,8 +430,8 @@ export class BitmapFont
                 if (positionY === 0)
                 {
                     // We don't want user debugging an infinite loop (or do we? :)
-                    throw new Error(`[BitmapFont] textureHeight ${textureHeight}px is `
-                        + `too small for ${style.fontSize}px fonts`);
+                    throw new Error(`[BitmapFont] textureHeight ${textureHeight}px is too small `
+                        + `(fontFamily: '${style.fontFamily}', fontSize: ${style.fontSize}px, char: '${character}')`);
                 }
 
                 --i;
@@ -451,6 +452,13 @@ export class BitmapFont
             // Wrap line once full row has been rendered
             if ((textureGlyphWidth * resolution) + positionX >= lineWidth)
             {
+                if (positionX === 0)
+                {
+                    // Avoid infinite loop (There can be some very wide char like '\uFDFD'!)
+                    throw new Error(`[BitmapFont] textureWidth ${textureWidth}px is too small `
+                        + `(fontFamily: '${style.fontFamily}', fontSize: ${style.fontSize}px, char: '${character}')`);
+                }
+
                 --i;
                 positionY += maxCharHeight * resolution;
                 positionY = Math.ceil(positionY);
