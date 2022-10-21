@@ -32,7 +32,7 @@
     "access": "public"
   },
   "files": [
-    "dist",
+    "lib",
     "*.d.ts"
   ],
   "repository": {

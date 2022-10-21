@@ -47,7 +47,7 @@
     "benchmark": "cd benchmark && npm start"
   },
   "files": [
-    "dist",
+    "lib",
     "*.d.ts"
   ]
 }

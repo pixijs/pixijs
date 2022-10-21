@@ -33,7 +33,7 @@
     "access": "public"
   },
   "files": [
-    "dist",
+    "lib",
     "*.d.ts"
   ],
   "pixiRequirements": [

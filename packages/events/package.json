@@ -29,7 +29,7 @@
   "homepage": "https://github.com/pixijs/pixi.js#readme",
   "license": "MIT",
   "files": [
-    "dist",
+    "lib",
     "*.d.ts"
   ],
   "publishConfig": {

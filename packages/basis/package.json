@@ -30,7 +30,7 @@
     "access": "public"
   },
   "files": [
-    "dist",
+    "lib",
     "assets",
     "*.d.ts"
   ],

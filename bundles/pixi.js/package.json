@@ -41,7 +41,8 @@
     "test": "floss --path test"
   },
   "files": [
-    "dist/",
+    "lib",
+    "dist",
     "*.d.ts"
   ],
   "funding": {
