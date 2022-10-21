@@ -1,18 +1,18 @@
 {
   "name": "@pixi/unsafe-eval",
   "version": "7.0.0-beta.4",
-  "main": "dist/cjs/unsafe-eval.js",
-  "module": "dist/esm/unsafe-eval.mjs",
-  "types": "index.d.ts",
+  "main": "lib/index.js",
+  "module": "lib/index.mjs",
+  "types": "lib/index.d.ts",
   "exports": {
     ".": {
       "import": {
-        "types": "./index.d.ts",
-        "default": "./dist/esm/unsafe-eval.mjs"
+        "types": "./lib/index.d.ts",
+        "default": "./lib/index.mjs"
       },
       "require": {
-        "types": "./index.d.ts",
-        "default": "./dist/cjs/unsafe-eval.js"
+        "types": "./lib/index.d.ts",
+        "default": "./lib/index.js"
       }
     }
   },

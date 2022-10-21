@@ -25,9 +25,7 @@
             "pixi.js-legacy": [
                 "bundles/pixi.js-legacy/src"
             ]
-        },
-        "outDir": "./out",
-        "declaration": true
+        }
     },
     "exclude": [
         "node_modules",

@@ -1,18 +1,18 @@
 {
   "name": "@pixi/graphics-extras",
   "version": "7.0.0-beta.4",
-  "main": "dist/cjs/graphics-extras.js",
-  "module": "dist/esm/graphics-extras.mjs",
-  "types": "index.d.ts",
+  "main": "lib/index.js",
+  "module": "lib/index.mjs",
+  "types": "lib/index.d.ts",
   "exports": {
     ".": {
       "import": {
-        "types": "./index.d.ts",
-        "default": "./dist/esm/graphics-extras.mjs"
+        "types": "./lib/index.d.ts",
+        "default": "./lib/index.mjs"
       },
       "require": {
-        "types": "./index.d.ts",
-        "default": "./dist/cjs/graphics-extras.js"
+        "types": "./lib/index.d.ts",
+        "default": "./lib/index.js"
       }
     }
   },

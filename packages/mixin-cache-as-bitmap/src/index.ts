@@ -1,3 +1,4 @@
+/// <reference path="../global.d.ts" />
 import { Texture, BaseTexture, RenderTexture, Matrix, utils, MSAA_QUALITY, settings } from '@pixi/core';
 import { Sprite } from '@pixi/sprite';
 import { DisplayObject } from '@pixi/display';

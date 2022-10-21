@@ -13,18 +13,18 @@
   "author": "Shukant Pal <shukantpal@outlook.com>",
   "homepage": "https://github.com/pixijs/pixi.js#readme",
   "license": "MIT",
-  "main": "dist/cjs/compressed-textures.js",
-  "module": "dist/esm/compressed-textures.mjs",
-  "types": "index.d.ts",
+  "main": "lib/index.js",
+  "module": "lib/index.mjs",
+  "types": "lib/index.d.ts",
   "exports": {
     ".": {
       "import": {
-        "types": "./index.d.ts",
-        "default": "./dist/esm/compressed-textures.mjs"
+        "types": "./lib/index.d.ts",
+        "default": "./lib/index.mjs"
       },
       "require": {
-        "types": "./index.d.ts",
-        "default": "./dist/cjs/compressed-textures.js"
+        "types": "./lib/index.d.ts",
+        "default": "./lib/index.js"
       }
     }
   },

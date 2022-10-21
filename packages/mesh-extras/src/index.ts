@@ -1,3 +1,4 @@
+/// <reference path="../global.d.ts" />
 export * from './geometry/PlaneGeometry';
 export * from './geometry/RopeGeometry';
 export * from './SimpleRope';
