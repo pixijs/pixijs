@@ -134,6 +134,12 @@ export class BitmapText extends Container
     protected _anchor: ObservablePoint;
 
     /**
+     * Private tracker for the current font.
+     * @private
+     */
+    protected _font: BitmapFont | null;
+
+    /**
      * Private tracker for the current font name.
      * @private
      */
@@ -143,7 +149,7 @@ export class BitmapText extends Container
      * Private tracker for the current font size.
      * @private
      */
-    protected _fontSize: number;
+    protected _fontSize?: number;
 
     /**
      * Private tracker for the current text align.
@@ -200,8 +206,9 @@ export class BitmapText extends Container
         this._textHeight = 0;
         this._align = align;
         this._tint = tint;
+        this._font = null;
         this._fontName = fontName;
-        this._fontSize = fontSize || BitmapFont.available[fontName].size;
+        this._fontSize = fontSize;
         this.text = text;
         this._maxWidth = maxWidth;
         this._maxLineHeight = 0;
@@ -218,14 +225,15 @@ export class BitmapText extends Container
     public updateText(): void
     {
         const data = BitmapFont.available[this._fontName];
-        const scale = this._fontSize / data.size;
+        const fontSize = this.fontSize;
+        const scale = fontSize / data.size;
         const pos = new Point();
         const chars: CharRenderData[] = [];
         const lineWidths = [];
         const lineSpaces = [];
         const text = this._text.replace(/(?:\r\n|\r)/g, '\n') || ' ';
         const charsInput = splitTextToCharacters(text);
-        const maxWidth = this._maxWidth * data.size / this._fontSize;
+        const maxWidth = this._maxWidth * data.size / fontSize;
         const pageMeshDataPool = data.distanceFieldType === 'none'
             ? pageMeshDataDefaultPageMeshData : pageMeshDataMSDFPageMeshData;
 
@@ -617,7 +625,7 @@ export class BitmapText extends Container
             const dy = Math.sqrt((c * c) + (d * d));
             const worldScale = (Math.abs(dx) + Math.abs(dy)) / 2;
 
-            const fontScale = this._fontSize / size;
+            const fontScale = this.fontSize / size;
 
             const resolution =  renderer._view.resolution;
 
@@ -647,6 +655,18 @@ export class BitmapText extends Container
      */
     protected validate(): void
     {
+        const font = BitmapFont.available[this._fontName];
+
+        if (!font)
+        {
+            throw new Error(`Missing BitmapFont "${this._fontName}"`);
+        }
+        if (this._font !== font)
+        {
+            this.dirty = true;
+            this._font = font;
+        }
+
         if (this.dirty)
         {
             this.updateText();
@@ -717,10 +737,10 @@ export class BitmapText extends Container
     /** The size of the font to display. */
     public get fontSize(): number
     {
-        return this._fontSize;
+        return this._fontSize ?? BitmapFont.available[this._fontName].size;
     }
 
-    public set fontSize(value: number)
+    public set fontSize(value: number | undefined)
     {
         if (this._fontSize !== value)
         {
@@ -897,9 +917,9 @@ export class BitmapText extends Container
             ? pageMeshDataDefaultPageMeshData : pageMeshDataMSDFPageMeshData;
 
         pageMeshDataPool.push(...this._activePagesMeshData);
-        for (const data of this._activePagesMeshData)
+        for (const pageMeshData of this._activePagesMeshData)
         {
-            this.removeChild(data.mesh);
+            this.removeChild(pageMeshData.mesh);
         }
         this._activePagesMeshData = [];
 
@@ -919,6 +939,7 @@ export class BitmapText extends Container
             delete _textureCache[id];
         }
 
+        this._font = null;
         this._textureCache = null;
 
         super.destroy(options);
