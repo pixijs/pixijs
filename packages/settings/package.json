@@ -37,6 +37,9 @@
     "dist",
     "*.d.ts"
   ],
+  "peerDependencies": {
+    "@pixi/constants": "^6.5.7"
+  },
   "devDependencies": {
     "ismobilejs": "^1.1.0"
   }
