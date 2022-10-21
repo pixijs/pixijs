@@ -37,7 +37,9 @@
   ],
   "dependencies": {
     "@pixi/constants": "7.0.0-beta.4",
-    "@types/css-font-loading-module": "^0.0.7",
+    "@types/css-font-loading-module": "^0.0.7"
+  },
+  "devDependencies": {
     "ismobilejs": "^1.1.0"
   }
 }

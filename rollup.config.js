@@ -99,6 +99,7 @@ async function main()
                     freeze: false,
                     sourcemap: true,
                     preserveModules: true,
+                    preserveModulesRoot: path.join(basePath, 'src'),
                     exports: 'named',
                 },
                 {
@@ -108,6 +109,7 @@ async function main()
                     freeze: false,
                     sourcemap: true,
                     preserveModules: true,
+                    preserveModulesRoot: path.join(basePath, 'src'),
                     exports: 'named',
                 },
             ],

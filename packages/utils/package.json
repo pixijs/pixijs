@@ -41,7 +41,9 @@
     "@types/earcut": "^2.1.0",
     "earcut": "^2.2.4",
     "eventemitter3": "^4.0.0",
-    "css-color-names": "^1.0.1",
     "url": "^0.11.0"
+  },
+  "devDependencies": {
+    "css-color-names": "^1.0.1"
   }
 }
