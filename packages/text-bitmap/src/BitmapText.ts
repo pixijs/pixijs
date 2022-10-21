@@ -137,7 +137,7 @@ export class BitmapText extends Container
      * Private tracker for the current font.
      * @private
      */
-    protected _font: BitmapFont | null;
+    protected _font?: BitmapFont;
 
     /**
      * Private tracker for the current font name.
@@ -206,7 +206,7 @@ export class BitmapText extends Container
         this._textHeight = 0;
         this._align = align;
         this._tint = tint;
-        this._font = null;
+        this._font = undefined;
         this._fontName = fontName;
         this._fontSize = fontSize;
         this.text = text;
@@ -597,6 +597,9 @@ export class BitmapText extends Container
         {
             charRenderDataPool.push(chars[i]);
         }
+
+        this._font = data;
+        this.dirty = false;
     }
 
     updateTransform(): void
@@ -664,13 +667,11 @@ export class BitmapText extends Container
         if (this._font !== font)
         {
             this.dirty = true;
-            this._font = font;
         }
 
         if (this.dirty)
         {
             this.updateText();
-            this.dirty = false;
         }
     }
 
