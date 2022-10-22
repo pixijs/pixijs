@@ -362,7 +362,7 @@ function buildNonNativeLine(graphicsData: GraphicsData, graphicsGeometry: Graphi
                         x1, y1,
                         x1 - (perpx * innerWeight), y1 - (perpy * innerWeight),
                         x1 - (perp1x * innerWeight), y1 - (perp1y * innerWeight),
-                        verts, false) + 2;
+                        verts, false) + 4;
                 }
                 else
                 {
