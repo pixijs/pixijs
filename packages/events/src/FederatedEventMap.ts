@@ -16,6 +16,7 @@ export type FederatedEventMap = {
     pointertap: FederatedPointerEvent;
     pointerup: FederatedPointerEvent;
     pointerupoutside: FederatedPointerEvent;
+    pointercancel: FederatedPointerEvent;
     rightclick: FederatedPointerEvent;
     rightdown: FederatedPointerEvent;
     rightup: FederatedPointerEvent;
