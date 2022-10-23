@@ -1,5 +1,6 @@
 import { BatchRenderer, Texture, extensions } from '@pixi/core';
-import { Graphics, GRAPHICS_CURVES, FillStyle, LineStyle, graphicsUtils, LINE_CAP } from '@pixi/graphics';
+import { Graphics, GRAPHICS_CURVES, FillStyle, LineStyle, graphicsUtils, LINE_CAP, LINE_JOIN } from '@pixi/graphics';
+
 const { FILL_COMMANDS, buildLine } = graphicsUtils;
 
 import { BLEND_MODES } from '@pixi/constants';
@@ -288,6 +289,45 @@ describe('Graphics', () =>
             graphics.lineTo(10, 0);
 
             expect(graphics.currentPath.points).toEqual([0, 0, 10, 0]);
+        });
+
+        it('should not have miter join on 180 degree corner', () =>
+        {
+            const graphics = new Graphics();
+
+            graphics.lineStyle({ width: 1, join: LINE_JOIN.MITER });
+            graphics.moveTo(0, 0);
+            graphics.lineTo(10, 0);
+            graphics.lineTo(0, 0);
+
+            expect(graphics.width).toBeCloseTo(10, 0.0001);
+            expect(graphics.height).toBeCloseTo(1, 0.0001);
+        });
+
+        it('should not have bevel join on 180 degree corner', () =>
+        {
+            const graphics = new Graphics();
+
+            graphics.lineStyle({ width: 1, join: LINE_JOIN.BEVEL });
+            graphics.moveTo(0, 0);
+            graphics.lineTo(10, 0);
+            graphics.lineTo(0, 0);
+
+            expect(graphics.width).toBeCloseTo(10, 0.0001);
+            expect(graphics.height).toBeCloseTo(1, 0.0001);
+        });
+
+        it('should have round join on 180 degree corner', () =>
+        {
+            const graphics = new Graphics();
+
+            graphics.lineStyle({ width: 1, join: LINE_JOIN.ROUND });
+            graphics.moveTo(0, 0);
+            graphics.lineTo(10, 0);
+            graphics.lineTo(0, 0);
+
+            expect(graphics.width).toBeCloseTo(10.5, 0.0001);
+            expect(graphics.height).toBeCloseTo(1, 0.0001);
         });
     });
 
