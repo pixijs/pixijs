@@ -1,6 +1,6 @@
 {
   "name": "@pixi/settings",
-  "version": "6.5.7",
+  "version": "6.5.8",
   "main": "dist/cjs/settings.js",
   "module": "dist/esm/settings.mjs",
   "bundle": "dist/browser/settings.js",
@@ -38,7 +38,7 @@
     "*.d.ts"
   ],
   "peerDependencies": {
-    "@pixi/constants": "^6.5.7"
+    "@pixi/constants": "6.5.8"
   },
   "devDependencies": {
     "ismobilejs": "^1.1.0"

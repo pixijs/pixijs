@@ -1,6 +1,6 @@
 {
   "name": "@pixi/extract",
-  "version": "6.5.7",
+  "version": "6.5.8",
   "main": "dist/cjs/extract.js",
   "module": "dist/esm/extract.mjs",
   "bundle": "dist/browser/extract.js",
@@ -38,8 +38,8 @@
     "*.d.ts"
   ],
   "peerDependencies": {
-    "@pixi/core": "6.5.7",
-    "@pixi/math": "6.5.7",
-    "@pixi/utils": "6.5.7"
+    "@pixi/core": "6.5.8",
+    "@pixi/math": "6.5.8",
+    "@pixi/utils": "6.5.8"
   }
 }

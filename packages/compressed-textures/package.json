@@ -1,6 +1,6 @@
 {
   "name": "@pixi/compressed-textures",
-  "version": "6.5.7",
+  "version": "6.5.8",
   "description": "Loaders for compressed texture file formats",
   "keywords": [
     "pixi.js",
@@ -48,10 +48,10 @@
     "url": "https://github.com/pixijs/pixi.js/issues"
   },
   "peerDependencies": {
-    "@pixi/constants": "6.5.7",
-    "@pixi/core": "6.5.7",
-    "@pixi/loaders": "6.5.7",
-    "@pixi/settings": "6.5.7",
-    "@pixi/utils": "6.5.7"
+    "@pixi/constants": "6.5.8",
+    "@pixi/core": "6.5.8",
+    "@pixi/loaders": "6.5.8",
+    "@pixi/settings": "6.5.8",
+    "@pixi/utils": "6.5.8"
   }
 }

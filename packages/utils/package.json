@@ -1,6 +1,6 @@
 {
   "name": "@pixi/utils",
-  "version": "6.5.7",
+  "version": "6.5.8",
   "main": "dist/cjs/utils.js",
   "module": "dist/esm/utils.mjs",
   "bundle": "dist/browser/utils.js",
@@ -45,8 +45,8 @@
     "url": "^0.11.0"
   },
   "peerDependencies": {
-    "@pixi/constants": "6.5.7",
-    "@pixi/settings": "6.5.7"
+    "@pixi/constants": "6.5.8",
+    "@pixi/settings": "6.5.8"
   },
   "devDependencies": {
     "css-color-names": "^1.0.1"

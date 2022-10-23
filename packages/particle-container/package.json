@@ -1,6 +1,6 @@
 {
   "name": "@pixi/particle-container",
-  "version": "6.5.7",
+  "version": "6.5.8",
   "main": "dist/cjs/particle-container.js",
   "module": "dist/esm/particle-container.mjs",
   "bundle": "dist/browser/particle-container.js",
@@ -38,11 +38,11 @@
     "*.d.ts"
   ],
   "peerDependencies": {
-    "@pixi/constants": "6.5.7",
-    "@pixi/core": "6.5.7",
-    "@pixi/display": "6.5.7",
-    "@pixi/math": "6.5.7",
-    "@pixi/sprite": "6.5.7",
-    "@pixi/utils": "6.5.7"
+    "@pixi/constants": "6.5.8",
+    "@pixi/core": "6.5.8",
+    "@pixi/display": "6.5.8",
+    "@pixi/math": "6.5.8",
+    "@pixi/sprite": "6.5.8",
+    "@pixi/utils": "6.5.8"
   }
 }
