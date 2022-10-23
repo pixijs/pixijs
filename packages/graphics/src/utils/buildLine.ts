@@ -336,16 +336,16 @@ function buildNonNativeLine(graphicsData: GraphicsData, graphicsGeometry: Graphi
         /* atan(0.001) ~= 0.001 rad ~= 0.057 degree */
         if (Math.abs(cross) < 0.001 * Math.abs(dot))
         {
-           verts.push(
+            verts.push(
                 x1 - (perpx * innerWeight),
                 y1 - (perpy * innerWeight));
             verts.push(
                 x1 + (perpx * outerWeight),
                 y1 + (perpy * outerWeight));
 
+            /* 180 degree corner? */
             if (dot >= 0)
             {
-
                 if (style.join === LINE_JOIN.ROUND)
                 {
                     indexCount += round(
@@ -396,17 +396,17 @@ function buildNonNativeLine(graphicsData: GraphicsData, graphicsGeometry: Graphi
             {
                 if (clockwise) /* rotating at inner angle */
                 {
-                    verts.push(imx, imy);// inner miter point
-                    verts.push(x1 + (perpx * outerWeight), y1 + (perpy * outerWeight));// first segment's outer vertex
-                    verts.push(imx, imy);// inner miter point
-                    verts.push(x1 + (perp1x * outerWeight), y1 + (perp1y * outerWeight));// second segment's outer vertex
+                    verts.push(imx, imy); // inner miter point
+                    verts.push(x1 + (perpx * outerWeight), y1 + (perpy * outerWeight)); // first segment's outer vertex
+                    verts.push(imx, imy); // inner miter point
+                    verts.push(x1 + (perp1x * outerWeight), y1 + (perp1y * outerWeight)); // second segment's outer vertex
                 }
                 else /* rotating at outer angle */
                 {
-                    verts.push(x1 - (perpx * innerWeight), y1 - (perpy * innerWeight));// first segment's inner vertex
-                    verts.push(omx, omy);// outer miter point
-                    verts.push(x1 - (perp1x * innerWeight), y1 - (perp1y * innerWeight));// second segment's outer vertex
-                    verts.push(omx, omy);// outer miter point
+                    verts.push(x1 - (perpx * innerWeight), y1 - (perpy * innerWeight)); // first segment's inner vertex
+                    verts.push(omx, omy); // outer miter point
+                    verts.push(x1 - (perp1x * innerWeight), y1 - (perp1y * innerWeight)); // second segment's outer vertex
+                    verts.push(omx, omy); // outer miter point
                 }
 
                 indexCount += 2;
