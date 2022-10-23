@@ -336,25 +336,15 @@ function buildNonNativeLine(graphicsData: GraphicsData, graphicsGeometry: Graphi
         /* atan(0.001) ~= 0.001 rad ~= 0.057 degree */
         if (Math.abs(cross) < 0.001 * Math.abs(dot))
         {
-            if (dot < 0)
+           verts.push(
+                x1 - (perpx * innerWeight),
+                y1 - (perpy * innerWeight));
+            verts.push(
+                x1 + (perpx * outerWeight),
+                y1 + (perpy * outerWeight));
+
+            if (dot >= 0)
             {
-                // Straight line
-                verts.push(
-                    x1 - (perpx * innerWeight),
-                    y1 - (perpy * innerWeight));
-                verts.push(
-                    x1 + (perpx * outerWeight),
-                    y1 + (perpy * outerWeight));
-            }
-            else
-            {
-                // 180 degree corner
-                verts.push(
-                    x1 - (perpx * innerWeight),
-                    y1 - (perpy * innerWeight));
-                verts.push(
-                    x1 + (perpx * outerWeight),
-                    y1 + (perpy * outerWeight));
 
                 if (style.join === LINE_JOIN.ROUND)
                 {
