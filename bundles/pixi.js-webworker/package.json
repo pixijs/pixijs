@@ -10,27 +10,28 @@
   },
   "license": "MIT",
   "author": "PixiJS Team",
-  "main": "dist/cjs/webworker.cjs",
-  "module": "dist/esm/webworker.mjs",
-  "bundle": "dist/browser/webworker.js",
-  "bundleModule": "dist/browser/webworker.mjs",
+  "main": "lib/index.js",
+  "module": "lib/index.mjs",
+  "bundle": "dist/webworker.js",
+  "bundleModule": "dist/webworker.mjs",
   "bundleOutput": {
     "name": "PIXI"
   },
-  "types": "index.d.ts",
+  "types": "lib/index.d.ts",
   "exports": {
     ".": {
       "import": {
-        "types": "./index.d.ts",
-        "default": "./dist/esm/webworker.mjs"
+        "types": "./lib/index.d.ts",
+        "default": "./lib/index.mjs"
       },
       "require": {
-        "types": "./index.d.ts",
-        "default": "./dist/cjs/webworker.cjs"
+        "types": "./lib/index.d.ts",
+        "default": "./lib/index.js"
       }
     }
   },
   "files": [
+    "lib",
     "dist",
     "*.d.ts"
   ],

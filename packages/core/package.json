@@ -1,18 +1,18 @@
 {
   "name": "@pixi/core",
   "version": "7.0.0-beta.4",
-  "main": "dist/cjs/core.js",
-  "module": "dist/esm/core.mjs",
-  "types": "index.d.ts",
+  "main": "lib/index.js",
+  "module": "lib/index.mjs",
+  "types": "lib/index.d.ts",
   "exports": {
     ".": {
       "import": {
-        "types": "./index.d.ts",
-        "default": "./dist/esm/core.mjs"
+        "types": "./lib/index.d.ts",
+        "default": "./lib/index.mjs"
       },
       "require": {
-        "types": "./index.d.ts",
-        "default": "./dist/cjs/core.js"
+        "types": "./lib/index.d.ts",
+        "default": "./lib/index.js"
       }
     }
   },

@@ -1,3 +1,4 @@
+/// <reference path="../global.d.ts" />
 export * from './CanvasRenderer';
 export * from './CanvasMaskSystem';
 export * from './CanvasObjectRendererSystem';

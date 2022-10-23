@@ -1,3 +1,4 @@
+/// <reference path="../global.d.ts" />
 export * from './EventBoundary';
 export * from './EventSystem';
 export * from './FederatedEvent';

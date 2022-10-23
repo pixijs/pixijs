@@ -1,3 +1,4 @@
+/// <reference path="../global.d.ts" />
 import { DisplayObject } from '@pixi/display';
 import { Point } from '@pixi/core';
 

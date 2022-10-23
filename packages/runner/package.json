@@ -1,18 +1,18 @@
 {
   "name": "@pixi/runner",
   "version": "7.0.0-beta.4",
-  "main": "dist/cjs/runner.js",
-  "module": "dist/esm/runner.mjs",
-  "types": "index.d.ts",
+  "main": "lib/index.js",
+  "module": "lib/index.mjs",
+  "types": "lib/index.d.ts",
   "exports": {
     ".": {
       "import": {
-        "types": "./index.d.ts",
-        "default": "./dist/esm/runner.mjs"
+        "types": "./lib/index.d.ts",
+        "default": "./lib/index.mjs"
       },
       "require": {
-        "types": "./index.d.ts",
-        "default": "./dist/cjs/runner.js"
+        "types": "./lib/index.d.ts",
+        "default": "./lib/index.js"
       }
     }
   },
@@ -47,7 +47,7 @@
     "benchmark": "cd benchmark && npm start"
   },
   "files": [
-    "dist",
+    "lib",
     "*.d.ts"
   ]
 }

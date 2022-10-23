@@ -11,18 +11,18 @@
   "author": "Shukant Pal <shukantpal@outlook.com>",
   "homepage": "https://github.com/pixijs/pixi.js#readme",
   "license": "MIT",
-  "main": "dist/cjs/basis.js",
-  "module": "dist/esm/basis.mjs",
-  "types": "index.d.ts",
+  "main": "lib/index.js",
+  "module": "lib/index.mjs",
+  "types": "lib/index.d.ts",
   "exports": {
     ".": {
       "import": {
-        "types": "./index.d.ts",
-        "default": "./dist/esm/basis.mjs"
+        "types": "./lib/index.d.ts",
+        "default": "./lib/index.mjs"
       },
       "require": {
-        "types": "./index.d.ts",
-        "default": "./dist/cjs/basis.js"
+        "types": "./lib/index.d.ts",
+        "default": "./lib/index.js"
       }
     }
   },
@@ -30,7 +30,7 @@
     "access": "public"
   },
   "files": [
-    "dist",
+    "lib",
     "assets",
     "*.d.ts"
   ],

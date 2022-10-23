@@ -1,3 +1,4 @@
+/// <reference path="../global.d.ts" />
 export * from './const';
 export * from './styles/FillStyle';
 export * from './Graphics';

@@ -1,18 +1,18 @@
 {
   "name": "@pixi/canvas-display",
   "version": "7.0.0-beta.4",
-  "main": "dist/cjs/canvas-display.js",
-  "module": "dist/esm/canvas-display.mjs",
-  "types": "index.d.ts",
+  "main": "lib/index.js",
+  "module": "lib/index.mjs",
+  "types": "lib/index.d.ts",
   "exports": {
     ".": {
       "import": {
-        "types": "./index.d.ts",
-        "default": "./dist/esm/canvas-display.mjs"
+        "types": "./lib/index.d.ts",
+        "default": "./lib/index.mjs"
       },
       "require": {
-        "types": "./index.d.ts",
-        "default": "./dist/cjs/canvas-display.js"
+        "types": "./lib/index.d.ts",
+        "default": "./lib/index.js"
       }
     }
   },
@@ -32,7 +32,7 @@
     "access": "public"
   },
   "files": [
-    "dist",
+    "lib",
     "*.d.ts"
   ],
   "pixiRequirements": [

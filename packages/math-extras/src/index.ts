@@ -1,3 +1,4 @@
+/// <reference path="../global.d.ts" />
 import './pointExtras';
 import './rectangleExtras';
 

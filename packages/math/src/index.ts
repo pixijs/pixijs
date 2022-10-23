@@ -1,3 +1,4 @@
+/// <reference path="../global.d.ts" />
 /*
  * Math classes and utilities mixed into PIXI namespace.
  */

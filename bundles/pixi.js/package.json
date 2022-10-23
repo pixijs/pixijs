@@ -10,23 +10,23 @@
     "Richard Davey <rdavey@gmail.com>"
   ],
   "standalone": true,
-  "main": "dist/cjs/pixi.js",
-  "module": "dist/esm/pixi.mjs",
-  "bundle": "dist/browser/pixi.js",
-  "bundleModule": "dist/browser/pixi.mjs",
+  "main": "lib/index.js",
+  "module": "lib/index.mjs",
+  "bundle": "dist/pixi.js",
+  "bundleModule": "dist/pixi.mjs",
   "bundleOutput": {
     "name": "PIXI"
   },
-  "types": "index.d.ts",
+  "types": "lib/index.d.ts",
   "exports": {
     ".": {
       "import": {
-        "types": "./index.d.ts",
-        "default": "./dist/esm/pixi.mjs"
+        "types": "./lib/index.d.ts",
+        "default": "./lib/index.mjs"
       },
       "require": {
-        "types": "./index.d.ts",
-        "default": "./dist/cjs/pixi.js"
+        "types": "./lib/index.d.ts",
+        "default": "./lib/index.js"
       }
     }
   },
@@ -41,7 +41,8 @@
     "test": "floss --path test"
   },
   "files": [
-    "dist/",
+    "lib",
+    "dist",
     "*.d.ts"
   ],
   "funding": {

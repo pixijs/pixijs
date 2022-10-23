@@ -1,3 +1,4 @@
+/// <reference path="../global.d.ts" />
 export * from './CanvasMeshRenderer';
 
 import './settings';

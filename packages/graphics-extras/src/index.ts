@@ -1,3 +1,4 @@
+/// <reference path="../global.d.ts" />
 import { Graphics } from '@pixi/graphics';
 import { drawTorus } from './drawTorus';
 import { drawChamferRect } from './drawChamferRect';
