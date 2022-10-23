@@ -18,6 +18,7 @@ export class ResizePlugin
     public static resize: () => void;
     public static renderer: ResizeableRenderer;
     public static queueResize: () => void;
+    public static render: () => void;
     private static _resizeId: number;
     private static _resizeTo: Window | HTMLElement;
     private static cancelResize: () => void;
@@ -126,6 +127,7 @@ export class ResizePlugin
             }
 
             this.renderer.resize(width, height);
+            this.render();
         };
 
         // On resize
