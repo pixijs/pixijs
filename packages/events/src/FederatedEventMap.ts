@@ -4,12 +4,17 @@ import type { FederatedWheelEvent } from './FederatedWheelEvent';
 export type FederatedEventMap = {
     click: FederatedPointerEvent;
     mousedown: FederatedPointerEvent;
+    mouseenter: FederatedPointerEvent;
+    mouseleave: FederatedPointerEvent;
     mousemove: FederatedPointerEvent;
     mouseout: FederatedPointerEvent;
     mouseover: FederatedPointerEvent;
     mouseup: FederatedPointerEvent;
     mouseupoutside: FederatedPointerEvent;
+    pointercancel: FederatedPointerEvent;
     pointerdown: FederatedPointerEvent;
+    pointerenter: FederatedPointerEvent;
+    pointerleave: FederatedPointerEvent;
     pointermove: FederatedPointerEvent;
     pointerout: FederatedPointerEvent;
     pointerover: FederatedPointerEvent;

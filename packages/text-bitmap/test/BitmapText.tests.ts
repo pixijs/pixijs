@@ -240,4 +240,85 @@ describe('BitmapText', () =>
 
         renderer.destroy();
     });
+
+    it('should update after font is replaced', () =>
+    {
+        BitmapFont.from('testFont');
+
+        const text = new BitmapText('123ABCabc', {
+            fontName: 'testFont',
+        });
+
+        const listener = jest.spyOn(text, 'updateText');
+
+        text.textWidth; // Should trigger updateText()
+
+        expect(listener.mock.calls).toHaveLength(1);
+
+        text.textWidth; // Should not trigger updateText()
+
+        expect(listener.mock.calls).toHaveLength(1);
+
+        BitmapFont.from('testFont'); // Replace the font
+        text.textWidth; // Should trigger updateText()
+
+        expect(listener.mock.calls).toHaveLength(2);
+    });
+
+    it('should update fontSize when font is replaced if fontSize is undefined', () =>
+    {
+        BitmapFont.from('testFont', {
+            fontSize: 12,
+        });
+
+        const text = new BitmapText('123ABCabc', {
+            fontName: 'testFont',
+        });
+
+        expect(text.fontSize).toEqual(12);
+
+        BitmapFont.from('testFont', {
+            fontSize: 24,
+        }); // Replace the font
+
+        expect(text.fontSize).toEqual(24);
+    });
+    it('should not update fontSize when font is replaced if fontSize is defined', () =>
+    {
+        BitmapFont.from('testFont', {
+            fontSize: 12,
+        });
+
+        const text = new BitmapText('123ABCabc', {
+            fontName: 'testFont',
+            fontSize: 16,
+        });
+
+        expect(text.fontSize).toEqual(16);
+
+        BitmapFont.from('testFont', {
+            fontSize: 24,
+        }); // Replace the font
+
+        expect(text.fontSize).toEqual(16);
+    });
+
+    it('should unset dirty after updateText', () =>
+    {
+        const text = new BitmapText('123ABCabc', {
+            fontName: font.font,
+        });
+
+        expect(text.dirty).toBeTrue();
+
+        text.updateText();
+
+        expect(text.dirty).toBeFalse();
+
+        text.dirty = true;
+
+        text.updateText();
+
+        expect(text.dirty).toBeFalse();
+    });
 });
