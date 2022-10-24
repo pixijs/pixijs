@@ -47,7 +47,7 @@
  */
 export { isMobile } from '@pixi/settings';
 
-import EventEmitter from 'eventemitter3';
+import * as EventEmitter from 'eventemitter3';
 
 /**
  * A high performance event emitter
