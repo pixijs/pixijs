@@ -53,6 +53,14 @@ jobs:
     - name: Build for Distribution
       run: npm run dist
 
+    # Append assets to releases
+    - name: Upload Assets to Release
+      if: github.event_name == 'release'
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          ./dist/*
+
     # Examples:
     # 1) PR feature/acme merged into dev
     # 2) branch A merged into branch B
