@@ -69,7 +69,6 @@ export interface ISettings
  * @namespace PIXI.settings
  */
 export const settings: ISettings = {
-
     /**
      * This adapter is used to call methods that are platform dependent.
      * For example `document.createElement` only runs on the web but fails in node environments.
@@ -83,9 +82,9 @@ export const settings: ISettings = {
      * @default PIXI.BrowserAdapter
      */
     ADAPTER: BrowserAdapter,
+
     /**
-     * If set to true WebGL will attempt make textures mimpaped by default.
-     * Mipmapping will only succeed if the base texture uploaded has power of two dimensions.
+     * Default mipmap mode for textures.
      * @static
      * @name MIPMAP_TEXTURES
      * @memberof PIXI.settings
@@ -96,7 +95,7 @@ export const settings: ISettings = {
 
     /**
      * Default anisotropic filtering level of textures.
-     * Usually from 0 to 16
+     * Usually from 0 to 16.
      * @static
      * @name ANISOTROPIC_LEVEL
      * @memberof PIXI.settings

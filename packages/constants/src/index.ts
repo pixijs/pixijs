@@ -340,18 +340,19 @@ export enum WRAP_MODES
  * The {@link PIXI.settings.MIPMAP_TEXTURES} affects default texture filtering.
  * Mipmaps are generated for a baseTexture if its `mipmap` field is `ON`,
  * or its `POW2` and texture dimensions are powers of 2.
- * Due to platform restriction, `ON` option will work like `POW2` for webgl-1.
+ * Since WebGL 1 don't support mipmap for non-power-of-two textures,
+ * `ON` option will work like `POW2` for WebGL 1.
  *
  * This property only affects WebGL.
  * @name MIPMAP_MODES
  * @memberof PIXI
  * @static
  * @enum {number}
- * @property {number} OFF - No mipmaps
- * @property {number} POW2 - Generate mipmaps if texture dimensions are pow2
- * @property {number} ON - Always generate mipmaps
- * @property {number} ON_MANUAL - Use mipmaps, but do not auto-generate them; this is used with a resource
- *   that supports buffering each level-of-detail.
+ * @property {number} OFF - No mipmaps.
+ * @property {number} POW2 - Generate mipmaps if texture dimensions are powers of 2.
+ * @property {number} ON - Always generate mipmaps.
+ * @property {number} ON_MANUAL - Use mipmaps, but do not auto-generate them;
+ *  this is used with a resource that supports buffering each level-of-detail.
  */
 export enum MIPMAP_MODES
 // eslint-disable-next-line @typescript-eslint/indent
@@ -359,7 +360,7 @@ export enum MIPMAP_MODES
     OFF,
     POW2,
     ON,
-    ON_MANUAL
+    ON_MANUAL,
 }
 
 /**
