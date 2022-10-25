@@ -11,18 +11,19 @@ export interface IDestroyOptions
     baseTexture?: boolean;
 }
 
-export type DisplayObjectEventEmitterTypes = GlobalMixins.FederatedEventEmitterTypes & {
+export interface DisplayObjectEvents extends GlobalMixins.DisplayObjectEvents
+{
     added: [Container];
     childAdded: [DisplayObject, Container, number];
     childRemoved: [DisplayObject, Container, number];
     destroyed: [];
     removed: [Container];
     removedFrom: [DisplayObject, Container, number];
-};
+}
 
 export interface DisplayObject
-    extends Omit<GlobalMixins.DisplayObject, keyof utils.EventEmitter<DisplayObjectEventEmitterTypes>>,
-    utils.EventEmitter<DisplayObjectEventEmitterTypes> {}
+    extends Omit<GlobalMixins.DisplayObject, keyof utils.EventEmitter<DisplayObjectEvents>>,
+    utils.EventEmitter<DisplayObjectEvents> {}
 
 /**
  * The base class for all objects that are rendered on the screen.
@@ -209,7 +210,7 @@ export interface DisplayObject
  * one is also better in terms of performance.
  * @memberof PIXI
  */
-export abstract class DisplayObject extends utils.EventEmitter<DisplayObjectEventEmitterTypes>
+export abstract class DisplayObject extends utils.EventEmitter<DisplayObjectEvents>
 {
     abstract sortDirty: boolean;
 
