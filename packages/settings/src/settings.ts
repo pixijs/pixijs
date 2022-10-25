@@ -89,9 +89,9 @@ export const settings: ISettings = {
      * @name MIPMAP_TEXTURES
      * @memberof PIXI.settings
      * @type {PIXI.MIPMAP_MODES}
-     * @default PIXI.MIPMAP_MODES.ON
+     * @default PIXI.MIPMAP_MODES.POW2
      */
-    MIPMAP_TEXTURES: MIPMAP_MODES.ON,
+    MIPMAP_TEXTURES: MIPMAP_MODES.POW2,
 
     /**
      * Default anisotropic filtering level of textures.
