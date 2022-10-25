@@ -1,6 +1,6 @@
 {
   "name": "@pixi/ticker",
-  "version": "7.0.0-beta.4",
+  "version": "7.0.0-beta.5",
   "main": "lib/index.js",
   "module": "lib/index.mjs",
   "types": "lib/index.d.ts",
@@ -36,7 +36,7 @@
     "*.d.ts"
   ],
   "dependencies": {
-    "@pixi/extensions": "7.0.0-beta.4",
-    "@pixi/settings": "7.0.0-beta.4"
+    "@pixi/extensions": "7.0.0-beta.5",
+    "@pixi/settings": "7.0.0-beta.5"
   }
 }
