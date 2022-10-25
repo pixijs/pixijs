@@ -1,6 +1,6 @@
 {
   "name": "@pixi/core",
-  "version": "7.0.0-beta.5",
+  "version": "7.0.0-beta.6",
   "main": "lib/index.js",
   "module": "lib/index.mjs",
   "types": "lib/index.d.ts",
@@ -41,13 +41,13 @@
     "url": "https://opencollective.com/pixijs"
   },
   "dependencies": {
-    "@pixi/constants": "7.0.0-beta.5",
-    "@pixi/extensions": "7.0.0-beta.5",
-    "@pixi/math": "7.0.0-beta.5",
-    "@pixi/runner": "7.0.0-beta.5",
-    "@pixi/settings": "7.0.0-beta.5",
-    "@pixi/ticker": "7.0.0-beta.5",
-    "@pixi/utils": "7.0.0-beta.5",
+    "@pixi/constants": "7.0.0-beta.6",
+    "@pixi/extensions": "7.0.0-beta.6",
+    "@pixi/math": "7.0.0-beta.6",
+    "@pixi/runner": "7.0.0-beta.6",
+    "@pixi/settings": "7.0.0-beta.6",
+    "@pixi/ticker": "7.0.0-beta.6",
+    "@pixi/utils": "7.0.0-beta.6",
     "@types/offscreencanvas": "^2019.6.4"
   }
 }
