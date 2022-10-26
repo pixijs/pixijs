@@ -1,9 +1,9 @@
 /// <reference path="../global.d.ts" />
-import { Texture, BaseTexture, RenderTexture, Matrix, utils, MSAA_QUALITY, settings } from '@pixi/core';
+import { Texture, BaseTexture, RenderTexture, Matrix, utils, settings } from '@pixi/core';
 import { Sprite } from '@pixi/sprite';
 import { DisplayObject } from '@pixi/display';
 
-import type { Renderer, MaskData, IRenderer, IPointData, Rectangle } from '@pixi/core';
+import type { Renderer, MaskData, IRenderer, IPointData, Rectangle, MSAA_QUALITY } from '@pixi/core';
 import type { Container, IDestroyOptions } from '@pixi/display';
 import type { ICanvasRenderingContext2D } from '@pixi/settings';
 
