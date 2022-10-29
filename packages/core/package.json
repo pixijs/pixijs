@@ -33,7 +33,6 @@
   },
   "files": [
     "lib",
-    "dist",
     "*.d.ts"
   ],
   "funding": {
