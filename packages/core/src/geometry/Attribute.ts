@@ -18,6 +18,7 @@ export class Attribute
     public stride: number;
     public start: number;
     public instance: boolean;
+    public divisor: number;
 
     /**
      * @param buffer - the id of the buffer that this attribute will look for
@@ -27,8 +28,9 @@ export class Attribute
      * @param [stride=0] - How far apart, in bytes, the start of each value is. (used for interleaving data)
      * @param [start=0] - How far into the array to start reading values (used for interleaving data)
      * @param [instance=false] - Whether the geometry is instanced.
+     * @param [divisor=1] - Divisor to use when doing instanced rendering
      */
-    constructor(buffer: number, size = 0, normalized = false, type = TYPES.FLOAT, stride?: number, start?: number, instance?: boolean)
+    constructor(buffer: number, size = 0, normalized = false, type = TYPES.FLOAT, stride?: number, start?: number, instance?: boolean, divisor = 1)
     {
         this.buffer = buffer;
         this.size = size;
@@ -37,6 +39,7 @@ export class Attribute
         this.stride = stride;
         this.start = start;
         this.instance = instance;
+        this.divisor = divisor;
     }
 
     /** Destroys the Attribute. */
