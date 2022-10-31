@@ -7,7 +7,7 @@ async function main(): Promise<void>
     const outDir = path.join(rootDir, 'out');
     const bundlesDir = path.join(outDir, 'bundles');
     const packagesDir = path.join(outDir, 'packages');
-
+    const globalMixinsPattern = /(reference) types="packages\/\w+\/(global)"/;
     const all = [
         ...(await promises.readdir(packagesDir)).map((pkg) => path.join(packagesDir, pkg)),
         ...(await promises.readdir(bundlesDir)).map((bundle) => path.join(bundlesDir, bundle))
@@ -25,7 +25,7 @@ async function main(): Promise<void>
 
         await promises.writeFile(
             path.join(libDir, 'index.d.ts'),
-            buffer.replace('reference types="packages', 'reference types="@pixi')
+            buffer.replace(globalMixinsPattern, '$1 path="../$2.d.ts"')
         );
     }
 }
