@@ -1,30 +1,43 @@
+import { ShaderSystem, unsafeEvalSupported, utils } from '@pixi/core';
 import { syncUniforms } from './syncUniforms';
 
-import type { ShaderSystem, Program, UniformGroup } from '@pixi/core';
+import type { Program, UniformGroup } from '@pixi/core';
 
 interface PIXICore
 {
     ShaderSystem: typeof ShaderSystem;
 }
 
-export function install({ ShaderSystem }: PIXICore): void
+/**
+ * Apply the no `new Function` patch to ShaderSystem in `@pixi/core`.
+ * `@pixi/unsafe-eval` is auto-installed since 7.1.0, so this function no longer needs to be called manually.
+ * @param _core
+ * @deprecated since 7.1.0
+ */
+export function install(_core: PIXICore): void
 {
-    if (!ShaderSystem)
-    {
-        throw new Error('Unable to patch ShaderSystem, class not found.');
-    }
+    utils.deprecation('7.1.0', 'install() has been deprecated, @pixi/unsafe-eval is auto-installed since 7.1.0');
+}
+
+/**
+ * Apply the no `new Function` patch to ShaderSystem in `@pixi/core`.
+ * @private
+ * @since 7.1.0
+ */
+export function autoInstall(): void
+{
+    if (unsafeEvalSupported()) return;
 
     Object.assign(ShaderSystem.prototype,
         {
             systemCheck()
             {
-            // do nothing, don't throw error
+                // Do nothing, don't throw error
             },
             syncUniforms(group: UniformGroup, glProgram: Program)
             {
                 const { shader, renderer } = (this as any);
 
-                /* eslint-disable max-len */
                 syncUniforms(
                     group,
                     shader.program.uniformData,
@@ -32,7 +45,6 @@ export function install({ ShaderSystem }: PIXICore): void
                     group.uniforms,
                     renderer
                 );
-            /* eslint-disable max-len */
             },
         }
     );
