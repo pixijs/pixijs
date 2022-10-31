@@ -224,6 +224,11 @@ const extensions = {
             type,
             (extension) =>
             {
+                if (list.includes(extension.ref))
+                {
+                    return;
+                }
+
                 list.push(extension.ref);
                 // TODO: remove me later, only added for @pixi/loaders
                 if (type === ExtensionType.Loader)
