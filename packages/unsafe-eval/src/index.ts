@@ -1,4 +1,4 @@
 export { install } from './install';
 
-import { autoInstall } from './install';
-autoInstall();
+import { selfInstall } from './install';
+selfInstall();

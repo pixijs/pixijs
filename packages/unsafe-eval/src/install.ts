@@ -10,13 +10,13 @@ interface PIXICore
 
 /**
  * Apply the no `new Function` patch to ShaderSystem in `@pixi/core`.
- * `@pixi/unsafe-eval` is auto-installed since 7.1.0, so this function no longer needs to be called manually.
+ * `@pixi/unsafe-eval` is self-installed since 7.1.0, so this function no longer needs to be called manually.
  * @param _core
  * @deprecated since 7.1.0
  */
 export function install(_core: PIXICore): void
 {
-    utils.deprecation('7.1.0', 'install() has been deprecated, @pixi/unsafe-eval is auto-installed since 7.1.0');
+    utils.deprecation('7.1.0', 'install() has been deprecated, @pixi/unsafe-eval is self-installed since 7.1.0');
 }
 
 /**
@@ -24,7 +24,7 @@ export function install(_core: PIXICore): void
  * @private
  * @since 7.1.0
  */
-export function autoInstall(): void
+export function selfInstall(): void
 {
     if (unsafeEvalSupported()) return;
 

@@ -14,6 +14,8 @@ Import `@pixi/unsafe-eval` before you create `Application` or `Renderer`.
 
 ```js
 import { Renderer } from '@pixi/core';
+
+// Apply the patch to PIXI
 import '@pixi/unsafe-eval';
 
 // Create the renderer with patch applied
