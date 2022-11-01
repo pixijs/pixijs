@@ -16,7 +16,9 @@ interface PIXICore
  */
 export function install(_core: PIXICore): void
 {
+    // #if _DEBUG
     utils.deprecation('7.1.0', 'install() has been deprecated, @pixi/unsafe-eval is self-installed since 7.1.0');
+    // #endif
 }
 
 /**
