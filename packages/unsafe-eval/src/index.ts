@@ -1,4 +1,1 @@
-export { install } from './install';
-
-import { selfInstall } from './install';
-selfInstall();
+export * from './install';

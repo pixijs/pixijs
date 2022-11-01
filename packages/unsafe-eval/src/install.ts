@@ -24,7 +24,7 @@ export function install(_core: PIXICore): void
  * @private
  * @since 7.1.0
  */
-export function selfInstall(): void
+function selfInstall(): void
 {
     if (unsafeEvalSupported()) return;
 
@@ -49,3 +49,5 @@ export function selfInstall(): void
         }
     );
 }
+
+selfInstall();
