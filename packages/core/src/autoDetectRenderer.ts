@@ -1,4 +1,5 @@
 import { extensions, ExtensionType } from '@pixi/extensions';
+import type { ICanvas } from '@pixi/settings';
 import type { IRenderer, IRendererOptions } from './IRenderer';
 
 export interface IRendererOptionsAuto extends IRendererOptions
@@ -53,13 +54,13 @@ extensions.handleByList(ExtensionType.Renderer, renderers);
  * @param {boolean} [options.hello=false] - Logs renderer type and version.
  * @returns {PIXI.Renderer|PIXI.CanvasRenderer} Returns WebGL renderer if available, otherwise CanvasRenderer
  */
-export function autoDetectRenderer(options?: IRendererOptionsAuto): IRenderer
+export function autoDetectRenderer<VIEW = ICanvas>(options?: IRendererOptionsAuto): IRenderer<VIEW>
 {
     for (const RendererType of renderers)
     {
         if (RendererType.test(options))
         {
-            return new RendererType(options);
+            return new RendererType(options) as IRenderer<VIEW>;
         }
     }
 
