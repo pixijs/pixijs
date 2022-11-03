@@ -7,17 +7,17 @@ export interface IRendererOptionsAuto extends IRendererOptions
     forceCanvas?: boolean;
 }
 
-export interface IRendererConstructor
+export interface IRendererConstructor<VIEW = ICanvas>
 {
     test(options?: IRendererOptionsAuto): boolean;
-    new (options?: IRendererOptionsAuto): IRenderer;
+    new (options?: IRendererOptionsAuto): IRenderer<VIEW>;
 }
 
 /**
  * Collection of installed Renderers.
  * @ignore
  */
-const renderers: IRendererConstructor[] = [];
+const renderers: IRendererConstructor<unknown>[] = [];
 
 extensions.handleByList(ExtensionType.Renderer, renderers);
 
