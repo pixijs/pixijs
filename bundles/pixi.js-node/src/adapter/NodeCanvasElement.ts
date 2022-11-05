@@ -7,7 +7,7 @@ import createGLContext from 'gl';
 import { utils } from '@pixi/core';
 
 import type { JpegConfig, NodeCanvasRenderingContext2DSettings, PdfConfig, PngConfig } from 'canvas';
-import type { ContextIds, ICanvas } from '@pixi/core';
+import type { ContextIds, ContextSettings, ICanvas, ICanvasRenderingContext2DSettings } from '@pixi/core';
 
 const { Canvas, CanvasRenderingContext2D, Image } = canvasModule;
 
@@ -132,11 +132,29 @@ export class NodeCanvasElement extends canvasModule.Canvas implements ICanvas
     }
 
     // @ts-expect-error - overriding getContext
-    override getContext(contextId: ContextIds, options?: any): RenderingContext | null;
+    override getContext(
+        contextId: '2d',
+        options?: ICanvasRenderingContext2DSettings | NodeCanvasRenderingContext2DSettings,
+    ): CanvasRenderingContext2D | null;
+    // @ts-expect-error - overriding getContext
+    override getContext(
+        contextId: 'bitmaprenderer',
+        options?: ImageBitmapRenderingContextSettings | NodeCanvasRenderingContext2DSettings,
+    ): null;
+    // @ts-expect-error - overriding getContext
+    override getContext(
+        contextId: 'webgl' | 'experimental-webgl',
+        options?: WebGLContextAttributes | NodeCanvasRenderingContext2DSettings,
+    ): WebGLRenderingContext | null;
+    // @ts-expect-error - overriding getContext
+    override getContext(
+        contextId: 'webgl2' | 'experimental-webgl2',
+        options?: WebGLContextAttributes | NodeCanvasRenderingContext2DSettings,
+    ): null;
     // @ts-expect-error - overriding getContext
     override getContext(
         type: ContextIds,
-        options?: NodeCanvasRenderingContext2DSettings | WebGLContextAttributes
+        options?: ContextSettings | NodeCanvasRenderingContext2DSettings,
     ): CanvasRenderingContext2D | WebGLRenderingContext | null
     {
         switch (type)
