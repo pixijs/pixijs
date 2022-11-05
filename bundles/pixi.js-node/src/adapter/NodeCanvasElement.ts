@@ -132,6 +132,8 @@ export class NodeCanvasElement extends canvasModule.Canvas implements ICanvas
     }
 
     // @ts-expect-error - overriding getContext
+    override getContext(contextId: ContextIds, options?: any): RenderingContext | null;
+    // @ts-expect-error - overriding getContext
     override getContext(
         type: ContextIds,
         options?: NodeCanvasRenderingContext2DSettings | WebGLContextAttributes
