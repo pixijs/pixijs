@@ -56,7 +56,7 @@ type TempCtx = WebGLRenderingContext & {
  * @class
  * @memberof PIXI
  */
-export class NodeCanvasElement extends Canvas implements ICanvas
+export class NodeCanvasElement extends canvasModule.Canvas implements ICanvas
 {
     public style: Record<string, any>;
     private _gl: WebGLRenderingContext;
