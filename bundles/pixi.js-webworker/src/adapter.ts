@@ -9,8 +9,7 @@ export const WebWorkerAdapter = {
      * @param width - width of the canvas
      * @param height - height of the canvas
      */
-    createCanvas: (width?: number, height?: number): OffscreenCanvas =>
-        new OffscreenCanvas(width | 0, height | 0),
+    createCanvas: (width?: number, height?: number) => new OffscreenCanvas(width | 0, height | 0),
     getWebGLRenderingContext: () => WebGLRenderingContext,
     getNavigator: () => navigator,
     getBaseUrl: () => globalThis.location.href,

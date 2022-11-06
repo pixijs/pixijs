@@ -45,7 +45,7 @@ export interface Application extends GlobalMixins.Application {}
  * @class
  * @memberof PIXI
  */
-export class Application
+export class Application<VIEW extends ICanvas = ICanvas>
 {
     /** Collection of installed plugins. */
     static _plugins: IApplicationPlugin[] = [];
@@ -60,7 +60,7 @@ export class Application
      * WebGL renderer if available, otherwise CanvasRenderer.
      * @member {PIXI.Renderer|PIXI.CanvasRenderer}
      */
-    public renderer: IRenderer;
+    public renderer: IRenderer<VIEW>;
 
     /**
      * @param {object} [options] - The optional renderer parameters.
@@ -104,7 +104,7 @@ export class Application
             forceCanvas: false,
         }, options);
 
-        this.renderer = autoDetectRenderer(options);
+        this.renderer = autoDetectRenderer<VIEW>(options);
 
         // install plugins here
         Application._plugins.forEach((plugin) =>
@@ -124,7 +124,7 @@ export class Application
      * @member {PIXI.ICanvas}
      * @readonly
      */
-    get view(): ICanvas
+    get view(): VIEW
     {
         return this.renderer.view;
     }
