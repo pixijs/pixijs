@@ -13,12 +13,12 @@ export interface IDestroyOptions
 
 export interface DisplayObjectEvents extends GlobalMixins.DisplayObjectEvents
 {
-    added: [Container];
-    childAdded: [DisplayObject, Container, number];
-    childRemoved: [DisplayObject, Container, number];
+    added: [container: Container];
+    childAdded: [child: DisplayObject, container: Container, index: number];
+    childRemoved: [child: DisplayObject, container: Container, index: number];
     destroyed: [];
-    removed: [Container];
-    removedFrom: [DisplayObject, Container, number];
+    removed: [container: Container];
+    removedFrom: [child: DisplayObject, container: Container, index: number];
 }
 
 export interface DisplayObject
