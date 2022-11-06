@@ -11,6 +11,7 @@ import type { PreferOrder, ResolveAsset, ResolverBundle, ResolverManifest, Resol
 import { Resolver } from './resolver/Resolver';
 import { convertToList } from './utils/convertToList';
 import { isSingleItem } from './utils/isSingleItem';
+import { loadTextures } from './loader/parsers';
 
 export type ProgressCallback = (progress: number) => void;
 
@@ -810,6 +811,22 @@ export class AssetsClass
     public get detections(): FormatDetectionParser[]
     {
         return this._detections;
+    }
+
+    /** 
+     * When set to `true`, loading and decoding images will happen with Worker thread,
+     * if available on the browser. This is much more performant as network requests
+     * and decoding can be expensive on the CPU. However, not all environments support
+     * Workers, in some cases it can be helpful to disable by setting to `false`.
+     * @default true
+     */
+    public get preferWorker(): boolean
+    {
+        return loadTextures.config.preferWorker;
+    }
+    public set preferWorker(value: boolean)
+    {
+        loadTextures.config.preferWorker = value;
     }
 }
 
