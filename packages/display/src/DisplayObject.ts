@@ -18,7 +18,6 @@ export interface DisplayObjectEvents extends GlobalMixins.DisplayObjectEvents
     childRemoved: [child: DisplayObject, container: Container, index: number];
     destroyed: [];
     removed: [container: Container];
-    removedFrom: [child: DisplayObject, container: Container, index: number];
 }
 
 export interface DisplayObject
