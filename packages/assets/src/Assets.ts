@@ -813,7 +813,7 @@ export class AssetsClass
         return this._detections;
     }
 
-    /** 
+    /**
      * When set to `true`, loading and decoding images will happen with Worker thread,
      * if available on the browser. This is much more performant as network requests
      * and decoding can be expensive on the CPU. However, not all environments support
