@@ -326,7 +326,17 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
         }, true);
 
         const systemConfig = {
-            runners: ['init', 'destroy', 'contextChange', 'reset', 'update', 'postrender', 'prerender', 'resize'],
+            runners: [
+                'init',
+                'destroy',
+                'contextChange',
+                'resolutionChange',
+                'reset',
+                'update',
+                'postrender',
+                'prerender',
+                'resize'
+            ],
             systems: Renderer.__systems,
             priority: [
                 '_view',
@@ -481,6 +491,11 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
     get resolution(): number
     {
         return this._view.resolution;
+    }
+    set resolution(value: number)
+    {
+        this._view.resolution = value;
+        this.runners.resolutionChange.emit(value);
     }
 
     /** Whether CSS dimensions of canvas view should be resized to screen dimensions automatically. */

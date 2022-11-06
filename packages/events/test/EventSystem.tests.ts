@@ -365,4 +365,19 @@ describe('EventSystem', () =>
             done();
         }, 800);
     });
+
+    it('should inherit resolution changes', () =>
+    {
+        const renderer = createRenderer();
+
+        renderer.resolution = 2;
+
+        expect(renderer.resolution).toEqual(2);
+        expect(renderer.events.resolution).toEqual(2);
+
+        renderer.resolution = 1;
+
+        expect(renderer.resolution).toEqual(1);
+        expect(renderer.events.resolution).toEqual(1);
+    });
 });
