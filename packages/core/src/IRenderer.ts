@@ -111,7 +111,7 @@ export interface IRendererRenderOptions
  * Starard Interface for a Pixi renderer.
  * @memberof PIXI
  */
-export interface IRenderer<VIEW = ICanvas> extends SystemManager, GlobalMixins.IRenderer
+export interface IRenderer<VIEW extends ICanvas = ICanvas> extends SystemManager, GlobalMixins.IRenderer
 {
 
     resize(width: number, height: number): void;

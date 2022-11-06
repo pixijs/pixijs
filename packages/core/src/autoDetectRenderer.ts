@@ -7,7 +7,7 @@ export interface IRendererOptionsAuto extends IRendererOptions
     forceCanvas?: boolean;
 }
 
-export interface IRendererConstructor<VIEW = ICanvas>
+export interface IRendererConstructor<VIEW extends ICanvas = ICanvas>
 {
     test(options?: IRendererOptionsAuto): boolean;
     new (options?: IRendererOptionsAuto): IRenderer<VIEW>;
@@ -17,7 +17,7 @@ export interface IRendererConstructor<VIEW = ICanvas>
  * Collection of installed Renderers.
  * @ignore
  */
-const renderers: IRendererConstructor<unknown>[] = [];
+const renderers: IRendererConstructor<ICanvas>[] = [];
 
 extensions.handleByList(ExtensionType.Renderer, renderers);
 
@@ -54,7 +54,7 @@ extensions.handleByList(ExtensionType.Renderer, renderers);
  * @param {boolean} [options.hello=false] - Logs renderer type and version.
  * @returns {PIXI.Renderer|PIXI.CanvasRenderer} Returns WebGL renderer if available, otherwise CanvasRenderer
  */
-export function autoDetectRenderer<VIEW = ICanvas>(options?: IRendererOptionsAuto): IRenderer<VIEW>
+export function autoDetectRenderer<VIEW extends ICanvas = ICanvas>(options?: IRendererOptionsAuto): IRenderer<VIEW>
 {
     for (const RendererType of renderers)
     {

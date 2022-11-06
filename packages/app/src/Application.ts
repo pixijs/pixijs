@@ -45,7 +45,7 @@ export interface Application extends GlobalMixins.Application {}
  * @class
  * @memberof PIXI
  */
-export class Application<VIEW = ICanvas>
+export class Application<VIEW extends ICanvas = ICanvas>
 {
     /** Collection of installed plugins. */
     static _plugins: IApplicationPlugin[] = [];
