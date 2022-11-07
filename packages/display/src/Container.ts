@@ -99,10 +99,10 @@ export class Container<T extends DisplayObject = DisplayObject> extends DisplayO
 
         /**
          * Fired when a DisplayObject is removed from this Container.
-         * @event PIXI.DisplayObject#childRemoved
+         * @event PIXI.Container#childRemoved
          * @param {PIXI.DisplayObject} child - The child removed from the Container.
          * @param {PIXI.Container} container - The container that removed the child.
-         * @param {number} index - The former children's index of the removed child
+         * @param {number} index - The former children's index of the removed child.
          */
     }
 

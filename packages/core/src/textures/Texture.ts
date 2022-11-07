@@ -60,7 +60,8 @@ function removeAllHandlers(tex: any): void
  * // sprite1._textureID should not be undefined if the texture has finished processing the SVG file
  * ```
  *
- * You can use a ticker or rAF to ensure your sprites load the finished textures after processing. See issue #3068.
+ * You can use a ticker or rAF to ensure your sprites load the finished textures after processing.
+ * See issue [#3085]{@link https://github.com/pixijs/pixijs/issues/3085}.
  * @memberof PIXI
  * @typeParam R - The BaseTexture's Resource type.
  */
