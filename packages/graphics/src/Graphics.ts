@@ -1019,7 +1019,10 @@ export class Graphics extends Container
         return shader;
     }
 
-    /** Retrieves the bounds of the graphic shape as a rectangle object. */
+    /**
+     * Retrieves the bounds of the graphic shape as a rectangle object.
+     * @see PIXI.GraphicsGeometry#bounds
+     */
     protected _calculateBounds(): void
     {
         this.finishPoly();
