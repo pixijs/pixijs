@@ -34,5 +34,5 @@ export type FederatedEventMap = {
     wheel: FederatedWheelEvent;
 };
 export type FederatedEventEmitterTypes = {
-    [K in keyof FederatedEventMap]: [FederatedEventMap[K]];
+    [K in keyof FederatedEventMap as K | `${K}capture`]: [event: FederatedEventMap[K]];
 };
