@@ -63,6 +63,16 @@ describe('extensions', () =>
             extensions.remove(example);
             expect(list[0]).toBeUndefined();
         });
+
+        it('should not add duplicating extensions', () =>
+        {
+            const list: any[] = [];
+
+            extensions.handleByList(exampleType, list);
+            extensions.add(example);
+            extensions.add(example);
+            expect(list.length).toBe(1);
+        });
     });
 
     describe('add', () =>

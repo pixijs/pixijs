@@ -230,6 +230,11 @@ const extensions = {
             type,
             (extension) =>
             {
+                if (list.includes(extension.ref))
+                {
+                    return;
+                }
+
                 list.push(extension.ref);
                 list.sort((a, b) => (b.priority ?? -1) - (a.priority ?? -1));
             },

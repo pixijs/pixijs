@@ -15,6 +15,9 @@ export interface ICanvasRenderingContext2DSettings
     willReadFrequently?: boolean;
 }
 
+export type ContextSettings =
+    ICanvasRenderingContext2DSettings | ImageBitmapRenderingContextSettings | WebGLContextAttributes;
+
 export interface ICanvasParentNode
 {
     /** Adds a node to the end of the list of children of the parent node. */
@@ -64,18 +67,29 @@ export interface ICanvas extends GlobalMixins.ICanvas, Partial<EventTarget>
     /**
      * Get rendering context of the canvas.
      * @param {ContextIds} contextId - The identifier of the type of context to create.
-     * @param {any} options - The options for creating context.
+     * @param {ContextSettings} options - The options for creating context.
      * @returns {RenderingContext | null} The created context, or null if contextId is not supported.
      */
-    getContext(contextId: '2d', options?: ICanvasRenderingContext2DSettings):
-    ICanvasRenderingContext2D | null;
-    getContext(contextId: 'bitmaprenderer', options?: ImageBitmapRenderingContextSettings):
-    ImageBitmapRenderingContext | null;
-    getContext(contextId: 'webgl' | 'experimental-webgl', options?: WebGLContextAttributes):
-    WebGLRenderingContext | null;
-    getContext(contextId: 'webgl2' | 'experimental-webgl2', options?: WebGLContextAttributes):
-    WebGL2RenderingContext | null;
-    getContext(contextId: ContextIds, options?: any): RenderingContext | null;
+    getContext(
+        contextId: '2d',
+        options?: ICanvasRenderingContext2DSettings,
+    ): ICanvasRenderingContext2D | null;
+    getContext(
+        contextId: 'bitmaprenderer',
+        options?: ImageBitmapRenderingContextSettings,
+    ): ImageBitmapRenderingContext | null;
+    getContext(
+        contextId: 'webgl' | 'experimental-webgl',
+        options?: WebGLContextAttributes,
+    ): WebGLRenderingContext | null;
+    getContext(
+        contextId: 'webgl2' | 'experimental-webgl2',
+        options?: WebGLContextAttributes,
+    ): WebGL2RenderingContext | null;
+    getContext(
+        contextId: ContextIds,
+        options?: ContextSettings,
+    ): RenderingContext | null;
 
     /**
      * Get the content of the canvas as data URL.

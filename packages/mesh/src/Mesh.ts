@@ -374,7 +374,7 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
 
             for (let i = 0; i < vertexData.length; ++i)
             {
-                vertexData[i] = Math.round((vertexData[i] * resolution | 0) / resolution);
+                vertexData[i] = Math.round(vertexData[i] * resolution) / resolution;
             }
         }
 

@@ -70,6 +70,15 @@ export interface FederatedEventTarget extends utils.EventEmitter, EventTarget
 
     /** The hit-area specifies the area for which pointer events should be captured by this event target. */
     hitArea: IHitArea | null;
+
+    // In Angular projects, zone.js is monkey patching the `EventTarget`
+    // by adding its own `removeAllListeners(event?: string): void;` method,
+    // so we have to override this signature when extending both `EventTarget` and `utils.EventEmitter`
+    // to make it compatible with Angular projects
+    // @see https://github.com/pixijs/pixijs/issues/8794
+
+    /** Remove all listeners, or those of the specified event. */
+    removeAllListeners(event?: string | symbol): this;
 }
 
 type AddListenerOptions = boolean | AddEventListenerOptions;

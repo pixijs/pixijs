@@ -1,9 +1,11 @@
 {
   "name": "@pixi/graphics-extras",
-  "version": "7.0.0",
+  "version": "7.0.3",
   "main": "lib/index.js",
   "module": "lib/index.mjs",
   "types": "lib/index.d.ts",
+  "plugin": "dist/graphics-extras.js",
+  "pluginExports": false,
   "exports": {
     ".": {
       "import": {
@@ -29,6 +31,7 @@
     "access": "public"
   },
   "files": [
+    "dist",
     "lib",
     "*.d.ts"
   ],

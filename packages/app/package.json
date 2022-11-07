@@ -1,6 +1,6 @@
 {
   "name": "@pixi/app",
-  "version": "7.0.0",
+  "version": "7.0.3",
   "main": "lib/index.js",
   "module": "lib/index.mjs",
   "types": "lib/index.d.ts",
