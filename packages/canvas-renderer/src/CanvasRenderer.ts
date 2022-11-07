@@ -189,7 +189,17 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
         options = Object.assign({}, settings.RENDER_OPTIONS, options);
 
         const systemConfig = {
-            runners: ['init', 'destroy', 'contextChange', 'reset', 'update', 'postrender', 'prerender', 'resize'],
+            runners: [
+                'init',
+                'destroy',
+                'contextChange',
+                'resolutionChange',
+                'reset',
+                'update',
+                'postrender',
+                'prerender',
+                'resize'
+            ],
             systems: CanvasRenderer.__systems,
             priority: [
                 'textureGenerator',
@@ -324,6 +334,11 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
     get resolution(): number
     {
         return this._view.resolution;
+    }
+    set resolution(value: number)
+    {
+        this._view.resolution = value;
+        this.runners.resolutionChange.emit(value);
     }
 
     /** Whether CSS dimensions of canvas view should be resized to screen dimensions automatically. */

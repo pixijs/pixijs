@@ -130,6 +130,15 @@ export class EventSystem
         this.resolution = resolution;
     }
 
+    /**
+     * Handle changing resolution.
+     * @ignore
+     */
+    resolutionChange(resolution: number): void
+    {
+        this.resolution = resolution;
+    }
+
     /** Destroys all event listeners and detaches the renderer. */
     destroy(): void
     {
