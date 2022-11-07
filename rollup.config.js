@@ -74,6 +74,8 @@ async function main()
     packages.forEach((pkg) =>
     {
         const {
+            plugin,
+            pluginExports = true,
             bundle,
             bundleModule,
             version,
@@ -120,24 +122,67 @@ async function main()
             plugins,
         });
 
+        const banner = [
+            `/*!`,
+            ` * ${pkg.name} - v${version}`,
+            ` * Compiled ${(new Date()).toUTCString().replace(/GMT/g, 'UTC')}`,
+            ` *`,
+            ` * ${pkg.name} is licensed under the MIT License.`,
+            ` * http://www.opensource.org/licenses/mit-license`,
+            ` */`,
+        ].join('\n');
+
+        // There are a handful of optional packages that are not included in the bundle
+        // but we still want to build a browser-based version of them, like we would
+        // for any external plugin.
+        if (plugin)
+        {
+            const name = pkg.name.replace(/[^a-z]+/g, '_');
+            const file = path.join(basePath, plugin);
+            const footer = pluginExports ? `Object.assign(this.PIXI, ${name});` : '';
+            const nsBanner = pluginExports ? `${banner}\nthis.PIXI = this.PIXI || {};`: banner;
+            const globals = external.reduce((obj, name) => ({ ...obj, [name]: 'PIXI' }), {});
+
+            results.push({
+                input,
+                output: {
+                    name,
+                    banner: nsBanner,
+                    footer,
+                    file,
+                    format: 'iife',
+                    freeze: false,
+                    sourcemap: true,
+                    globals,
+                },
+                treeshake: false,
+                external,
+                plugins: bundlePlugins,
+            }, {
+                input,
+                output: {
+                    name,
+                    banner: nsBanner,
+                    footer,
+                    file: prodName(file),
+                    format: 'iife',
+                    freeze: false,
+                    sourcemap: true,
+                    globals,
+                },
+                treeshake: false,
+                external,
+                plugins: bundlePluginsProd,
+            });
+        }
+
         // The package.json file has a bundle field
         // we'll use this to generate the bundle file
         // this will package all dependencies
         if (bundle)
         {
-            const banner = [
-                `/*!`,
-                ` * ${pkg.name} - v${version}`,
-                ` * Compiled ${(new Date()).toUTCString().replace(/GMT/g, 'UTC')}`,
-                ` *`,
-                ` * ${pkg.name} is licensed under the MIT License.`,
-                ` * http://www.opensource.org/licenses/mit-license`,
-                ` */`,
-            ].join('\n');
-            const input = path.join(basePath, 'src/index.ts');
             const file = path.join(basePath, bundle);
             const moduleFile = bundleModule ? path.join(basePath, bundleModule) : '';
-            let footer;
 
             results.push({
                 input,
@@ -148,7 +193,6 @@ async function main()
                         file,
                         format: 'iife',
                         freeze: false,
-                        footer,
                         sourcemap: true,
                     },
                     {
@@ -170,7 +214,6 @@ async function main()
                         file: prodName(file),
                         format: 'iife',
                         freeze: false,
-                        footer,
                         sourcemap: true,
                     },
                     {
