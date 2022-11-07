@@ -43,11 +43,7 @@ const tmpPoint = new Point();
  */
 export class GraphicsGeometry extends BatchGeometry
 {
-    /**
-     * The maximum number of points to consider an object "batchable",
-     * able to be batched by the renderer's batch system.
-\
-     */
+    /** The maximum number of points to consider an object "batchable", able to be batched by the renderer's batch system. */
     public static BATCHABLE_SIZE = 100;
 
     /** Minimal distance between points that are considered different. Affects line tesselation. */
@@ -123,6 +119,11 @@ export class GraphicsGeometry extends BatchGeometry
 
     /**
      * Get the current bounds of the graphic geometry.
+     *
+     * Since 6.5.0, bounds of the graphics geometry are calculated based on the vertices of generated geometry.
+     * Since shapes or strokes with full transparency (`alpha: 0`) will not generate geometry, they are not considered
+     * when calculating bounds for the graphics geometry. See PR [#8343]{@link https://github.com/pixijs/pixijs/pull/8343}
+     * and issue [#8623]{@link https://github.com/pixijs/pixijs/pull/8623}.
      * @readonly
      */
     public get bounds(): Bounds
