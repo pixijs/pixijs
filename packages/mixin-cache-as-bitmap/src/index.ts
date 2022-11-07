@@ -1,9 +1,9 @@
 /// <reference path="../global.d.ts" />
-import { Texture, BaseTexture, RenderTexture, Matrix, utils, MSAA_QUALITY, settings } from '@pixi/core';
+import { Texture, BaseTexture, RenderTexture, Matrix, utils, settings } from '@pixi/core';
 import { Sprite } from '@pixi/sprite';
 import { DisplayObject } from '@pixi/display';
 
-import type { Renderer, MaskData, IRenderer, IPointData, Rectangle } from '@pixi/core';
+import type { Renderer, MaskData, IRenderer, IPointData, Rectangle, MSAA_QUALITY } from '@pixi/core';
 import type { Container, IDestroyOptions } from '@pixi/display';
 import type { ICanvasRenderingContext2D } from '@pixi/settings';
 
@@ -21,7 +21,7 @@ const _tempMatrix = new Matrix();
 DisplayObject.prototype._cacheAsBitmap = false;
 DisplayObject.prototype._cacheData = null;
 DisplayObject.prototype._cacheAsBitmapResolution = null;
-DisplayObject.prototype._cacheAsBitmapMultisample = MSAA_QUALITY.NONE;
+DisplayObject.prototype._cacheAsBitmapMultisample = null;
 
 // figured there's no point adding ALL the extra variables to prototype.
 // this model can hold the information needed. This can also be generated on demand as
@@ -102,7 +102,7 @@ Object.defineProperties(DisplayObject.prototype, {
      * If `cacheAsBitmap` is set to `true`, this will re-render with the new number of samples.
      * @member {number} cacheAsBitmapMultisample
      * @memberof PIXI.DisplayObject#
-     * @default PIXI.MSAA_QUALITY.NONE
+     * @default null
      */
     cacheAsBitmapMultisample: {
         get(): MSAA_QUALITY

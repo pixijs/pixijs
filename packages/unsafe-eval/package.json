@@ -1,9 +1,10 @@
 {
   "name": "@pixi/unsafe-eval",
-  "version": "7.0.0-beta.4",
+  "version": "7.0.3",
   "main": "lib/index.js",
   "module": "lib/index.mjs",
   "types": "lib/index.d.ts",
+  "plugin": "dist/unsafe-eval.js",
   "exports": {
     ".": {
       "import": {
@@ -30,7 +31,8 @@
     "access": "public"
   },
   "files": [
-    "dist/",
+    "dist",
+    "lib",
     "*.d.ts"
   ],
   "pixiRequirements": [
