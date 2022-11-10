@@ -1,6 +1,6 @@
 {
   "name": "@pixi/settings",
-  "version": "7.0.3",
+  "version": "7.1.0-alpha",
   "main": "lib/index.js",
   "module": "lib/index.mjs",
   "types": "lib/index.d.ts",
@@ -36,7 +36,7 @@
     "*.d.ts"
   ],
   "dependencies": {
-    "@pixi/constants": "7.0.3",
+    "@pixi/constants": "7.1.0-alpha",
     "@types/css-font-loading-module": "^0.0.7"
   },
   "devDependencies": {
