@@ -40,7 +40,6 @@
   "dependencies": {
     "@pixi/app": "7.1.0-alpha",
     "@pixi/assets": "7.1.0-alpha",
-    "@pixi/basis": "^7.1.0-alpha",
     "@pixi/core": "7.1.0-alpha",
     "@pixi/display": "7.1.0-alpha",
     "@pixi/extensions": "7.1.0-alpha",
