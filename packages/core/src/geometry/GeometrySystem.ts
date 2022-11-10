@@ -512,7 +512,7 @@ export class GeometrySystem implements ISystem
                     // TODO calculate instance count based of this...
                     if (this.hasInstance)
                     {
-                        gl.vertexAttribDivisor(location, 1);
+                        gl.vertexAttribDivisor(location, attribute.divisor);
                     }
                     else
                     {
