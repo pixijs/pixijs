@@ -40,6 +40,7 @@
   "dependencies": {
     "@pixi/app": "7.1.0-alpha",
     "@pixi/assets": "7.1.0-alpha",
+    "@pixi/basis": "^7.1.0-alpha",
     "@pixi/core": "7.1.0-alpha",
     "@pixi/display": "7.1.0-alpha",
     "@pixi/extensions": "7.1.0-alpha",
@@ -64,11 +65,11 @@
     "@pixi/spritesheet": "7.1.0-alpha",
     "@pixi/text": "7.1.0-alpha",
     "@pixi/text-bitmap": "7.1.0-alpha",
-    "@types/gl": "^4.1.0",
+    "@types/gl": "^6.0.0",
     "@types/xml2js": "^0.4.11",
     "canvas": "^2.9.1",
     "cross-fetch": "^3.1.5",
-    "gl": "^5.0.0",
+    "gl": "^6.0.1",
     "xml2js": "^0.4.23"
   },
   "nodeDependencies": [
