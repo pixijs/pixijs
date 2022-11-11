@@ -1,8 +1,10 @@
-import { MASK_TYPES, settings, utils } from '@pixi/core';
+import { MASK_TYPES, Matrix, settings, utils } from '@pixi/core';
 import { DisplayObject } from './DisplayObject';
 
-import type { MaskData, Renderer, Matrix, Rectangle } from '@pixi/core';
+import type { MaskData, Renderer, Rectangle } from '@pixi/core';
 import type { IDestroyOptions } from './DisplayObject';
+
+const tempMatrix = new Matrix();
 
 function sortChildren(a: DisplayObject, b: DisplayObject): number
 {
@@ -559,6 +561,22 @@ export class Container<T extends DisplayObject = DisplayObject> extends DisplayO
         else if (this._render !== Container.prototype._render)
         {
             bounds = this.getBounds(true);
+        }
+
+        // Prepend the transform that is appended to the projection matrix.
+        const projectionTransform = renderer.projection.transform;
+
+        if (projectionTransform)
+        {
+            if (transform)
+            {
+                transform = tempMatrix.copyFrom(transform);
+                transform.prepend(projectionTransform);
+            }
+            else
+            {
+                transform = projectionTransform;
+            }
         }
 
         // Render the container if the source frame intersects the bounds.
