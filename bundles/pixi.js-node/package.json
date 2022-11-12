@@ -3,10 +3,10 @@
   "version": "7.1.0-alpha",
   "description": "Bundle for PixiJS with support for NodeJS",
   "homepage": "http://pixijs.com/",
-  "bugs": "https://github.com/pixijs/pixi.js/issues",
+  "bugs": "https://github.com/pixijs/pixijs/issues",
   "repository": {
     "type": "git",
-    "url": "https://github.com/pixijs/pixi.js.git"
+    "url": "https://github.com/pixijs/pixijs.git"
   },
   "license": "MIT",
   "author": "PixiJS Team",
