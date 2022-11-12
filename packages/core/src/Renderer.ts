@@ -442,7 +442,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
     /**
      * Removes everything from the renderer (event listeners, spritebatch, etc...)
      * @param [removeView=false] - Removes the Canvas element from the DOM.
-     *  See: https://github.com/pixijs/pixi.js/issues/2233
+     *  See: https://github.com/pixijs/pixijs/issues/2233
      */
     destroy(removeView = false): void
     {
