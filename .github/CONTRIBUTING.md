@@ -90,7 +90,7 @@ eslint, rebuild, then run the test suite.
 [fork-cli]: https://help.github.com/articles/fork-a-repo/
 [fork-gui]: https://guides.github.com/activities/forking/
 [forums]: http://www.html5gamedevs.com/forum/15-pixijs/
-[issues]: https://github.com/pixijs/pixi.js/issues
+[issues]: https://github.com/pixijs/pixijs/issues
 [jsbin]: http://jsbin.com/
 [node]: http://nodejs.org
 [pixi]: https://github.com/pixijs/pixi.js
