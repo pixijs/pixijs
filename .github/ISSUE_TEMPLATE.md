@@ -2,7 +2,7 @@
 Thank you for reporting an issue!
 
 Before opening an issue _please_ check if a similar issue exists by
-searching existing issues (https://github.com/pixijs/pixi.js/issues).
+searching existing issues (https://github.com/pixijs/pixijs/issues).
 
 If possible, please provide code that demonstrates the problem.
 Links to a running example of the problem are best!

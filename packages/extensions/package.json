@@ -19,11 +19,11 @@
   "description": "Installing and uninstalling extensions for PixiJS",
   "author": "Matt Karl <matt@mattkarl.com>",
   "homepage": "http://pixijs.com/",
-  "bugs": "https://github.com/pixijs/pixi.js/issues",
+  "bugs": "https://github.com/pixijs/pixijs/issues",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/pixijs/pixi.js.git"
+    "url": "https://github.com/pixijs/pixijs.git"
   },
   "publishConfig": {
     "access": "public"

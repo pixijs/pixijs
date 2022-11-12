@@ -38,13 +38,13 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/pixijs/pixi.js.git"
+    "url": "git+https://github.com/pixijs/pixijs.git"
   },
   "scripts": {
     "test": "echo \"Error: run tests from root\" && exit 1"
   },
   "bugs": {
-    "url": "https://github.com/pixijs/pixi.js/issues"
+    "url": "https://github.com/pixijs/pixijs/issues"
   },
   "pixiRequirements": [
     "@pixi/assets",
