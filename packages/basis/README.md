@@ -1,11 +1,11 @@
 # @pixi/basis
 
-This package contains the loader for *.basis files, and it also ships with the transcoder.
+This package contains the parser for *.basis files, and it also ships with the transcoder.
 
 ## Installation
 
 ```bash
-npm install @pixi/core
+npm install @pixi/basis
 ```
 
 ## Usage
