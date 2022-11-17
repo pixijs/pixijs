@@ -1,9 +1,10 @@
-import type { CacheParser } from '@pixi/assets';
 import { Cache, loadJson, loadTextures } from '@pixi/assets';
 import { Texture } from '@pixi/core';
-import { spritesheetAsset, Spritesheet } from '@pixi/spritesheet';
+import { spritesheetAsset, spritesheetAssetCache, Spritesheet } from '@pixi/spritesheet';
 import { clearTextureCache } from '@pixi/utils';
 import { Loader } from '../../assets/src/loader/Loader';
+
+import type { CacheParser } from '@pixi/assets';
 
 describe('spritesheetAsset', () =>
 {
@@ -16,6 +17,8 @@ describe('spritesheetAsset', () =>
     {
         Cache.reset();
         loader.reset();
+        clearTextureCache();
+        spritesheetAssetCache.reset();
     });
 
     beforeAll(() =>
@@ -60,6 +63,13 @@ describe('spritesheetAsset', () =>
         expect(spriteSheet).toEqual({ testNumber: 23, testString: 'Test String 23' });
     });
 
+    it('should not create multipack resources when related multi packs is missing', async () =>
+    {
+        const spritesheet = await loader.load(`${serverPath}building1.json`) as Spritesheet;
+
+        expect(spritesheet.linkedSheets.length).toEqual(0);
+    });
+
     it('should load a multi packed spritesheet', async () =>
     {
         Cache['_parsers'].push(spritesheetAsset.cache as CacheParser);
@@ -83,18 +93,71 @@ describe('spritesheetAsset', () =>
         expect(pack1.height).toBe(229);
     });
 
-    it('should not create multipack resources when related_multi_packs field is missing or the wrong type', async () =>
+    it('should load linked multi packed spritesheets', async () =>
     {
-        // clear the caches only to avoid cluttering the output
-        clearTextureCache();
+        Cache['_parsers'].push(spritesheetAsset.cache as CacheParser);
 
-        const spritesheet = await loader.load(`${serverPath}building1-1.json`) as Spritesheet;
-        const spritesheet2 = await loader.load(`${serverPath}atlas-multipack-wrong-type.json`) as Spritesheet;
-        const spritesheet3 = await loader.load(`${serverPath}atlas-multipack-wrong-array.json`) as Spritesheet;
+        const url0 = `${serverPath}multi-pack-0.json`;
+        const url1 = `${serverPath}multi-pack-1.json`;
+        const { [url0]: spritesheet0, [url1]: spritesheet1 }
+            = await loader.load([url0, url1]) as {[key: string]: Spritesheet};
 
-        expect(spritesheet.linkedSheets.length).toEqual(1);
-        expect(spritesheet2.linkedSheets.length).toEqual(0);
-        expect(spritesheet3.linkedSheets.length).toEqual(0);
+        expect(spritesheet0.linkedSheets).toEqual([spritesheet1]);
+        expect(spritesheet1.linkedSheets).toEqual([spritesheet0]);
+
+        Cache.set('multi-pack-0.json', spritesheet0);
+        Cache.set('multi-pack-1.json', spritesheet1);
+
+        const pack0 = Cache.get('star1.png');
+        const pack1 = Cache.get('goldmine_10_5.png');
+
+        expect(pack0).toBeInstanceOf(Texture);
+        expect(pack1).toBeInstanceOf(Texture);
+
+        expect(pack0.baseTexture.valid).toBe(true);
+        expect(pack0.width).toBe(64);
+        expect(pack0.height).toBe(64);
+
+        expect(pack1.baseTexture.valid).toBe(true);
+        expect(pack1.width).toBe(190);
+        expect(pack1.height).toBe(229);
+    });
+
+    it('should throw when related multi packs is not an array of string', async () =>
+    {
+        await expect(async () =>
+        {
+            await loader.load(`${serverPath}atlas-multipack-wrong-type.json`);
+        }).rejects.toThrow();
+
+        await expect(async () =>
+        {
+            await loader.load(`${serverPath}atlas-multipack-wrong-array.json`);
+        }).rejects.toThrow();
+    });
+
+    it('should throw when related multi packs do not exist', async () =>
+    {
+        await expect(async () =>
+        {
+            await loader.load(`${serverPath}multi-pack-not-exist-0.json`);
+        }).rejects.toThrow();
+    });
+
+    it('should throw when indirect related multi packs do not exist', async () =>
+    {
+        await expect(async () =>
+        {
+            await loader.load(`${serverPath}multi-pack-not-exist-1.json`);
+        }).rejects.toThrow();
+    });
+
+    it('should throw when related multi packs is not a spritesheet', async () =>
+    {
+        await expect(async () =>
+        {
+            await loader.load(`${serverPath}multi-pack-not-spritesheet.json`);
+        }).rejects.toThrow();
     });
 
     it('should unload a spritesheet', async () =>

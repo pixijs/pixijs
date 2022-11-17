@@ -47,6 +47,84 @@ function getCacheableAssets(keys: string[], asset: Spritesheet, ignoreMultiPack:
     return out;
 }
 
+export class SpritesheetAssetCacheEntry
+{
+    private _promise: Record<number, Promise<Spritesheet>> = {};
+    private _resolve: Record<number, (value: Spritesheet) => void> = {};
+    private _reject: Record<number, (reason: any) => void> = {};
+    private _value: Record<number, Spritesheet> = {};
+    private _reason: Record<number, any> = {};
+    private _done: Record<number, boolean> = {};
+
+    constructor()
+    {
+        for (let step = 0; step < 2; ++step)
+        {
+            this._promise[step] = new Promise((resolve, reject) =>
+            {
+                if (this._reason[step]) resolve(this._value[step]);
+                else if (this._value[step]) resolve(this._value[step]);
+                else
+                {
+                    this._resolve[step] = resolve;
+                    this._reject[step] = reject;
+                }
+            });
+            this._done[step] = false;
+        }
+    }
+
+    getPromise(step: number) { return this._promise[step]; }
+
+    resolve(step: number, value: Spritesheet)
+    {
+        if (this._done[step]) return;
+        this._done[step] = true;
+        if (this._resolve[step]) this._resolve[step](value);
+        else this._value[step] = value;
+    }
+    reject(reason: any)
+    {
+        for (let step = 0; step < 2; ++step)
+        {
+            if (this._done[step]) continue;
+            this._done[step] = true;
+            if (this._reject[step]) this._reject[step](reason);
+            else this._reason[step] = reason;
+        }
+    }
+}
+
+export class SpritesheetAssetCache
+{
+    private _cache: Record<string, SpritesheetAssetCacheEntry> = {};
+
+    get(url: string)
+    {
+        let cache = this._cache[url];
+
+        if (!cache)
+        {
+            cache = new SpritesheetAssetCacheEntry();
+            this._cache[url] = cache;
+        }
+
+        return cache;
+    }
+
+    remove(url: string)
+    {
+        delete this._cache[url];
+    }
+
+    reset()
+    {
+        this._cache = {};
+    }
+}
+
+export const spritesheetAssetCache = new SpritesheetAssetCache();
+
 /**
  * Asset extension for loading spritesheets.
  * @memberof PIXI
@@ -93,77 +171,173 @@ export const spritesheetAsset = {
             priority: LoaderParserPriority.Normal,
         },
 
-        async testParse(asset: SpriteSheetJson, options: LoadAsset): Promise<boolean>
+        async testParse(asset: SpriteSheetJson, loadAsset: LoadAsset): Promise<boolean>
         {
-            return (utils.path.extname(options.src).includes('.json') && !!asset.frames);
+            return (utils.path.extname(loadAsset.src).includes('.json') && !!asset.frames);
         },
 
-        async parse(asset: SpriteSheetJson, options: LoadAsset, loader: Loader): Promise<Spritesheet>
+        async parse(asset: SpriteSheetJson, loadAsset: LoadAsset, loader: Loader): Promise<Spritesheet>
         {
-            let basePath = utils.path.dirname(options.src);
+            const url = utils.path.toAbsolute(loadAsset.src);
+            const entry = spritesheetAssetCache.get(url);
 
-            if (basePath && basePath.lastIndexOf('/') !== (basePath.length - 1))
+            try
             {
-                basePath += '/';
-            }
+                let basePath = utils.path.dirname(url);
 
-            const imagePath = basePath + asset.meta.image;
-            const assets = await loader.load([imagePath]) as Record<string, Texture>;
-            const texture = assets[imagePath];
-            const spritesheet = new Spritesheet(
-                texture.baseTexture,
-                asset,
-                options.src,
-            );
-
-            await spritesheet.parse();
-
-            // Check and add the multi atlas
-            // Heavily influenced and based on https://github.com/rocket-ua/pixi-tps-loader/blob/master/src/ResourceLoader.js
-            // eslint-disable-next-line camelcase
-            const multiPacks = asset?.meta?.related_multi_packs;
-
-            if (Array.isArray(multiPacks))
-            {
-                const promises: Promise<Spritesheet>[] = [];
-
-                for (const item of multiPacks)
+                if (basePath && basePath.lastIndexOf('/') !== (basePath.length - 1))
                 {
-                    if (typeof item !== 'string')
-                    {
-                        continue;
-                    }
-
-                    const itemUrl = basePath + item;
-
-                    // Check if the file wasn't already added as multipack
-                    if (options.data?.ignoreMultiPack)
-                    {
-                        continue;
-                    }
-
-                    promises.push(loader.load({
-                        src: itemUrl,
-                        data: {
-                            ignoreMultiPack: true,
-                        }
-                    }));
+                    basePath += '/';
                 }
 
-                const res = await Promise.all(promises);
+                const imagePath = basePath + asset.meta.image;
+                const assets = await loader.load([imagePath]) as Record<string, Texture>;
+                const texture = assets[imagePath];
+                const spritesheet = new Spritesheet(
+                    texture.baseTexture,
+                    asset,
+                    url,
+                );
 
-                spritesheet.linkedSheets = res;
-                res.forEach((item) =>
+                // Wait for the spritesheet itself being loaded
+                await spritesheet.parse();
+                entry.resolve(0, spritesheet);
+
+                // Check and add the multi atlas
+                // Heavily influenced and based on:
+                // https://github.com/rocket-ua/pixi-tps-loader/blob/master/src/ResourceLoader.js
+                const multiPacks = asset?.meta?.related_multi_packs;
+
+                const relatedEntries: SpritesheetAssetCacheEntry[] = [];
+
+                if (multiPacks !== undefined)
                 {
-                    item.linkedSheets = [spritesheet].concat(spritesheet.linkedSheets.filter((sp) => (sp !== item)));
-                });
-            }
+                    if (!Array.isArray(multiPacks))
+                    {
+                        throw new TypeError(`related_multi_packs: ${multiPacks} is invalid`);
+                    }
 
-            return spritesheet;
+                    const relatedURLs: string[] = [];
+
+                    for (const item of multiPacks)
+                    {
+                        if (typeof item !== 'string')
+                        {
+                            throw new TypeError(`related_multi_packs: ${multiPacks} is invalid`);
+                        }
+                        relatedURLs.push(utils.path.toAbsolute(basePath + item));
+                    }
+
+                    if (relatedURLs.length > 0)
+                    {
+                        const relatedSpritesheets: Record<string, Spritesheet | null> = {};
+
+                        // Wait for all related multi packs to be loaded
+                        await new Promise<void>((resolve, reject) =>
+                        {
+                            let pending = 0;
+                            const load = async (relatedURL: string) =>
+                            {
+                                try
+                                {
+                                    relatedURL = utils.path.toAbsolute(relatedURL);
+                                    if (relatedSpritesheets[relatedURL] !== undefined) return;
+                                    relatedSpritesheets[relatedURL] = null;
+                                    ++pending;
+
+                                    const relatedEntry = spritesheetAssetCache.get(relatedURL);
+
+                                    relatedEntries.push(relatedEntry);
+
+                                    // Don't use await here or deadlock may happen
+                                    loader.load(relatedURL)
+                                        .then((value) =>
+                                        {
+                                            if (!(value instanceof Spritesheet))
+                                            {
+                                                throw new TypeError(`${relatedURL} is not a Spritesheet`);
+                                            }
+                                        })
+                                        .catch((reason) =>
+                                        {
+                                            spritesheetAssetCache.remove(relatedURL);
+                                            relatedEntry.reject(reason);
+                                        });
+
+                                    const relatedSpritesheet = await relatedEntry.getPromise(0);
+
+                                    relatedSpritesheets[relatedURL] = relatedSpritesheet;
+
+                                    const multiPacks = relatedSpritesheet?.data?.meta?.related_multi_packs;
+
+                                    if (multiPacks !== undefined)
+                                    {
+                                        if (!Array.isArray(multiPacks))
+                                        {
+                                            throw new TypeError(`related_multi_packs: ${multiPacks} is invalid`);
+                                        }
+
+                                        let basePath = utils.path.dirname(relatedURL);
+
+                                        if (basePath && basePath.lastIndexOf('/') !== (basePath.length - 1))
+                                        {
+                                            basePath += '/';
+                                        }
+
+                                        for (const item of multiPacks)
+                                        {
+                                            if (typeof item !== 'string')
+                                            {
+                                                throw new TypeError(`related_multi_packs: ${multiPacks} is invalid`);
+                                            }
+                                            load(utils.path.toAbsolute(basePath + item));
+                                        }
+                                    }
+
+                                    --pending;
+                                    if (pending === 0) resolve();
+                                }
+                                catch (e)
+                                {
+                                    reject(e);
+                                }
+                            };
+
+                            for (const relatedURL of relatedURLs)
+                            {
+                                load(relatedURL);
+                            }
+                        });
+
+                        for (const relatedURL of relatedURLs)
+                        {
+                            spritesheet.linkedSheets.push(relatedSpritesheets[relatedURL]);
+                        }
+                    }
+                }
+
+                entry.resolve(1, spritesheet);
+                // Wait for all related multi packs' linkedSheets field being filled
+                if (relatedEntries.length > 0)
+                {
+                    Promise.all(relatedEntries.map((entry) => entry.getPromise(1)));
+                }
+
+                return spritesheet;
+            }
+            catch (e)
+            {
+                spritesheetAssetCache.remove(url);
+                entry.reject(e);
+                throw e;
+            }
         },
 
-        unload(spritesheet: Spritesheet)
+        unload(spritesheet: Spritesheet, loadAsset: LoadAsset<Spritesheet>)
         {
+            const url = utils.path.toAbsolute(loadAsset.src);
+
+            spritesheetAssetCache.remove(url);
             spritesheet.destroy(true);
         },
     },

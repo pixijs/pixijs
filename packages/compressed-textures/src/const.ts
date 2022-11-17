@@ -74,7 +74,6 @@ export enum INTERNAL_FORMATS
     COMPRESSED_RGBA_ATC_INTERPOLATED_ALPHA_WEBGL = 0x87EE,
 
     // WEBGL_compressed_texture_astc
-    /* eslint-disable-next-line camelcase */
     COMPRESSED_RGBA_ASTC_4x4_KHR = 0x93B0,
 }
 
@@ -127,6 +126,5 @@ export const INTERNAL_FORMAT_TO_BYTES_PER_PIXEL: { [id: number]: number } = {
 
     // @see https://registry.khronos.org/OpenGL/extensions/KHR/KHR_texture_compression_astc_hdr.txt
     // WEBGL_compressed_texture_astc
-    /* eslint-disable-next-line camelcase */
     [INTERNAL_FORMATS.COMPRESSED_RGBA_ASTC_4x4_KHR]: 1,
 };

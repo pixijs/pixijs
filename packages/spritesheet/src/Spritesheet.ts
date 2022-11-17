@@ -30,7 +30,6 @@ export interface ISpritesheetData
     animations?: utils.Dict<string[]>;
     meta: {
         scale: string;
-        // eslint-disable-next-line camelcase
         related_multi_packs?: string[];
     };
 }
