@@ -93,7 +93,7 @@ describe('spritesheetAsset', () =>
         expect(pack1.height).toBe(229);
     });
 
-    it('should load linked multi packed spritesheets', async () =>
+    it('should load looped multi packed spritesheets', async () =>
     {
         Cache['_parsers'].push(spritesheetAsset.cache as CacheParser);
 

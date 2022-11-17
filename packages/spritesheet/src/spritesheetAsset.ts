@@ -181,6 +181,11 @@ export const spritesheetAsset = {
             const url = utils.path.toAbsolute(loadAsset.src);
             const entry = spritesheetAssetCache.get(url);
 
+            function invalidRelatedMultiPacks(multiPacks: any)
+            {
+                throw new TypeError(`[spritesheetAsset] Invalid related_multi_packs: ${JSON.stringify(multiPacks)}`);
+            }
+
             try
             {
                 let basePath = utils.path.dirname(url);
@@ -199,7 +204,7 @@ export const spritesheetAsset = {
                     url,
                 );
 
-                // Wait for the spritesheet itself being loaded
+                // Wait for the spritesheet itself being loaded (resolving Promise 0)
                 await spritesheet.parse();
                 entry.resolve(0, spritesheet);
 
@@ -212,19 +217,13 @@ export const spritesheetAsset = {
 
                 if (multiPacks !== undefined)
                 {
-                    if (!Array.isArray(multiPacks))
-                    {
-                        throw new TypeError(`related_multi_packs: ${multiPacks} is invalid`);
-                    }
+                    if (!Array.isArray(multiPacks)) invalidRelatedMultiPacks(multiPacks);
 
                     const relatedURLs: string[] = [];
 
                     for (const item of multiPacks)
                     {
-                        if (typeof item !== 'string')
-                        {
-                            throw new TypeError(`related_multi_packs: ${multiPacks} is invalid`);
-                        }
+                        if (typeof item !== 'string') invalidRelatedMultiPacks(multiPacks);
                         relatedURLs.push(utils.path.toAbsolute(basePath + item));
                     }
 
@@ -232,7 +231,7 @@ export const spritesheetAsset = {
                     {
                         const relatedSpritesheets: Record<string, Spritesheet | null> = {};
 
-                        // Wait for all related multi packs to be loaded
+                        // Wait for all related multi packs to be loaded, recursively (waiting their Promise 0)
                         await new Promise<void>((resolve, reject) =>
                         {
                             let pending = 0;
@@ -255,7 +254,9 @@ export const spritesheetAsset = {
                                         {
                                             if (!(value instanceof Spritesheet))
                                             {
-                                                throw new TypeError(`${relatedURL} is not a Spritesheet`);
+                                                throw new TypeError(
+                                                    `[spritesheetAsset] ${relatedURL} in related_multi_packs `
+                                                    + `is not a Spritesheet`);
                                             }
                                         })
                                         .catch((reason) =>
@@ -272,10 +273,7 @@ export const spritesheetAsset = {
 
                                     if (multiPacks !== undefined)
                                     {
-                                        if (!Array.isArray(multiPacks))
-                                        {
-                                            throw new TypeError(`related_multi_packs: ${multiPacks} is invalid`);
-                                        }
+                                        if (!Array.isArray(multiPacks)) invalidRelatedMultiPacks(multiPacks);
 
                                         let basePath = utils.path.dirname(relatedURL);
 
@@ -286,10 +284,7 @@ export const spritesheetAsset = {
 
                                         for (const item of multiPacks)
                                         {
-                                            if (typeof item !== 'string')
-                                            {
-                                                throw new TypeError(`related_multi_packs: ${multiPacks} is invalid`);
-                                            }
+                                            if (typeof item !== 'string') invalidRelatedMultiPacks(multiPacks);
                                             load(utils.path.toAbsolute(basePath + item));
                                         }
                                     }
@@ -309,6 +304,7 @@ export const spritesheetAsset = {
                             }
                         });
 
+                        // Fill the spritesheet's linkedSheets field (resolving Promise 1)
                         for (const relatedURL of relatedURLs)
                         {
                             spritesheet.linkedSheets.push(relatedSpritesheets[relatedURL]);
@@ -317,7 +313,8 @@ export const spritesheetAsset = {
                 }
 
                 entry.resolve(1, spritesheet);
-                // Wait for all related multi packs' linkedSheets field being filled
+
+                // Wait for all related multi packs' linkedSheets field being filled (waiting their Promise 1)
                 if (relatedEntries.length > 0)
                 {
                     Promise.all(relatedEntries.map((entry) => entry.getPromise(1)));
