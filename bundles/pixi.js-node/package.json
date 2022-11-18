@@ -35,7 +35,8 @@
   "scripts": {
     "test:import": "node test/import.mjs",
     "test:require": "node test/require.cjs",
-    "test": "run-s test:*"
+    "test:dist": "run-s test:import test:require",
+    "test": "npx jest --silent"
   },
   "dependencies": {
     "@pixi/app": "7.1.0-alpha",
