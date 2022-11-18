@@ -22,4 +22,8 @@ module.exports = {
             diagnostics: false,
         },
     },
+    collectCoverageFrom: [
+        '<rootDir>/**/*.ts',
+    ],
+    coverageDirectory: '<rootDir>/../../dist/coverage-node',
 };
