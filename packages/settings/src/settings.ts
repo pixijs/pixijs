@@ -16,7 +16,9 @@ export interface IRenderOptions
     backgroundColor: number | string;
     background?: number | string;
     backgroundAlpha: number;
-    useContextAlpha: boolean | 'notMultiplied';
+    premultipliedAlpha: boolean;
+    /** @deprecated */
+    useContextAlpha?: boolean | 'notMultiplied';
     clearBeforeRender: boolean;
     preserveDrawingBuffer: boolean;
     width: number;
@@ -169,7 +171,7 @@ export const settings: ISettings = {
      * @property {PIXI.ICanvas} [view=null] -
      * @property {boolean} [antialias=false] -
      * @property {boolean} [autoDensity=false] -
-     * @property {boolean} [useContextAlpha=true]  -
+     * @property {boolean} [premultipliedAlpha=true]  -
      * @property {number} [backgroundColor=0x000000] -
      * @property {number} [backgroundAlpha=1] -
      * @property {boolean} [clearBeforeRender=true] -
@@ -185,7 +187,7 @@ export const settings: ISettings = {
         autoDensity: false,
         backgroundColor: 0x000000,
         backgroundAlpha: 1,
-        useContextAlpha: true,
+        premultipliedAlpha: true,
         clearBeforeRender: true,
         preserveDrawingBuffer: false,
         width: 800,
