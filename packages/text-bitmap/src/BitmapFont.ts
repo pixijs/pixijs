@@ -60,25 +60,25 @@ export interface IBitmapFontOptions extends BaseOptions
      * on Power-of-Two textures. If your textureWidth or textureHeight are not power-of-two, you
      * may consider enabling mipmapping to get better quality with lower font sizes. Note:
      * for MSDF/SDF fonts, mipmapping is not supported.
-     * @default PIXI.settings.MIPMAP_TEXTURES
+     * @default PIXI.BaseTexture.defaultOptions.mipmap
      */
     mipmap?: MIPMAP_MODES;
 
     /**
      * Anisotropic filtering level of texture.
-     * @default PIXI.settings.ANISOTROPIC_LEVEL
+     * @default PIXI.BaseTexture.defaultOptions.anisotropicLevel
      */
     anisotropicLevel?: number;
 
     /**
      * Default scale mode, linear, nearest. Nearest can be helpful for bitmap-style fonts.
-     * @default PIXI.settings.SCALE_MODE
+     * @default PIXI.BaseTexture.defaultOptions.scaleMode
      */
     scaleMode?: SCALE_MODES;
 
     /**
      * Pre multiply the image alpha.  Note: for MSDF/SDF fonts, alphaMode is not supported.
-     * @default PIXI.ALPHA_MODES.UNPACK
+     * @default PIXI.BaseTexture.defaultOptions.alphaMode
      */
     alphaMode?: ALPHA_MODES;
 }
