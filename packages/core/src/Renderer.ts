@@ -554,7 +554,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
     {
         // #if _DEBUG
         // eslint-disable-next-line max-len
-        deprecation('7.0.0', 'renderer.useContextAlpha has been deprecated, please use renderer.background.clearBeforeRender instead.');
+        deprecation('7.0.0', 'renderer.clearBeforeRender has been deprecated, please use renderer.background.clearBeforeRender instead.');
         // #endif
 
         return this.background.clearBeforeRender;
@@ -570,7 +570,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
     {
         // #if _DEBUG
         // eslint-disable-next-line max-len
-        deprecation('7.0.0', 'Renderer#useContextAlpha has been deprecated, please use Renderer#context.premultipliedAlpha instead.');
+        deprecation('7.0.0', 'renderer.useContextAlpha has been deprecated, please use renderer.context.premultipliedAlpha instead.');
         // #endif
 
         return this.context.useContextAlpha;
