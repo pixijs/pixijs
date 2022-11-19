@@ -51,7 +51,7 @@ Object.defineProperties(settings, {
         get()
         {
             // #if _DEBUG
-            deprecation('7.1.0', 'PIXI.settings.FILTER_MULTISAMPLE is deprecated, use PIXI.Filter.multisample');
+            deprecation('7.1.0', 'PIXI.settings.FILTER_RESOLUTION is deprecated, use PIXI.Filter.resolution');
             // #endif
 
             return Filter.resolution;
