@@ -179,5 +179,3 @@ Object.defineProperties(settings, {
         },
     },
 });
-
-export { settings };
