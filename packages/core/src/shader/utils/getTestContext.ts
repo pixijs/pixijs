@@ -1,4 +1,4 @@
-import { settings } from '../../settings';
+import { settings } from '@pixi/settings';
 import { ENV } from '@pixi/constants';
 
 const unknownContext = {};

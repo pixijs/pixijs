@@ -1,6 +1,6 @@
 import { ENV } from '@pixi/constants';
 import { extensions, ExtensionType } from '@pixi/extensions';
-import { settings } from '../settings';
+import { settings } from '@pixi/settings';
 
 import type { ExtensionMetadata } from '@pixi/extensions';
 import type { ICanvas } from '@pixi/settings';

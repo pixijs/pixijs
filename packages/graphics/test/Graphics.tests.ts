@@ -1,5 +1,5 @@
 import { Texture, BLEND_MODES, Point, Matrix, SHAPES, Polygon } from '@pixi/core';
-import { Graphics, GRAPHICS_CURVES, FillStyle, LineStyle, graphicsUtils, LINE_CAP, LINE_JOIN } from '@pixi/graphics';
+import { Graphics, FillStyle, LineStyle, graphicsUtils, LINE_CAP, LINE_JOIN } from '@pixi/graphics';
 const { FILL_COMMANDS, buildLine } = graphicsUtils;
 
 describe('Graphics', () =>
@@ -861,12 +861,12 @@ describe('Graphics', () =>
 
     describe('should support adaptive curves', () =>
     {
-        const defMode = GRAPHICS_CURVES.adaptive;
-        const defMaxLen = GRAPHICS_CURVES.maxLength;
-        const myMaxLen = GRAPHICS_CURVES.maxLength = 1.0;
+        const defMode = Graphics.curves.adaptive;
+        const defMaxLen = Graphics.curves.maxLength;
+        const myMaxLen = Graphics.curves.maxLength = 1.0;
         const graphics = new Graphics();
 
-        GRAPHICS_CURVES.adaptive = true;
+        Graphics.curves.adaptive = true;
 
         graphics.beginFill(0xffffff, 1.0);
         graphics.moveTo(610, 500);
@@ -879,8 +879,8 @@ describe('Graphics', () =>
 
         expect(pointsLen).toBeCloseTo(estimate, 2.0);
 
-        GRAPHICS_CURVES.adaptive = defMode;
-        GRAPHICS_CURVES.maxLength = defMaxLen;
+        Graphics.curves.adaptive = defMode;
+        Graphics.curves.maxLength = defMaxLen;
     });
 
     describe('geometry', () =>
