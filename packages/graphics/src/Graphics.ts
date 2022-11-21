@@ -21,7 +21,7 @@ import { GraphicsGeometry } from './GraphicsGeometry';
 import { FillStyle } from './styles/FillStyle';
 import { LineStyle } from './styles/LineStyle';
 import { Container } from '@pixi/display';
-import { LINE_JOIN, LINE_CAP } from './const';
+import { LINE_JOIN, LINE_CAP, curves } from './const';
 
 import type { IShape, IPointData, Renderer, BatchDrawCall } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
@@ -85,6 +85,19 @@ export interface Graphics extends GlobalMixins.Graphics, Container {}
  */
 export class Graphics extends Container
 {
+    /**
+     * Graphics curves resolution settings. If `adaptive` flag is set to `true`,
+     * the resolution is calculated based on the curve's length to ensure better visual quality.
+     * Adaptive draw works with `bezierCurveTo` and `quadraticCurveTo`.
+     * @static
+     * @property {boolean} [adaptive=true] - flag indicating if the resolution should be adaptive
+     * @property {number} [maxLength=10] - maximal length of a single segment of the curve (if adaptive = false, ignored)
+     * @property {number} [minSegments=8] - minimal number of segments in the curve (if adaptive = false, ignored)
+     * @property {number} [maxSegments=2048] - maximal number of segments in the curve (if adaptive = false, ignored)
+     * @property {number} [epsilon=0.0001] - precision of the curve fitting
+     */
+    public static readonly curves = curves;
+
     /**
      * Temporary point to use for containsPoint.
      * @private
