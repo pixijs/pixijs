@@ -13,11 +13,6 @@ describe('settings', () =>
         expect(settings.PREFER_ENV).toBeNumber();
     });
 
-    it('should have FILTER_RESOLUTION', () =>
-    {
-        expect(settings.FILTER_RESOLUTION).toBeNumber();
-    });
-
     it('should have SPRITE_MAX_TEXTURES', () =>
     {
         expect(settings.SPRITE_MAX_TEXTURES).toBeNumber();
