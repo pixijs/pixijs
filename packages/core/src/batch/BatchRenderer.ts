@@ -22,6 +22,7 @@ import type { BLEND_MODES } from '@pixi/constants';
 import type { ExtensionMetadata } from '@pixi/extensions';
 import { extensions, ExtensionType } from '@pixi/extensions';
 import { maxRecommendedTextures } from './maxRecommendedTextures';
+import { canUploadSameBuffer } from './canUploadSameBuffer';
 
 /**
  * Interface for elements like Sprite, Mesh etc. for batching.
@@ -75,6 +76,24 @@ export class BatchRenderer extends ObjectRenderer
      * @static
      */
     public static batchSize = 4096;
+
+    /**
+     * Can we upload the same buffer in a single frame?
+     * @static
+     */
+    public static get canUploadSameBuffer(): boolean
+    {
+        this._canUploadSameBuffer = this._canUploadSameBuffer ?? canUploadSameBuffer();
+
+        return this._canUploadSameBuffer;
+    }
+    public static set canUploadSameBuffer(value: boolean)
+    {
+        this._canUploadSameBuffer = value;
+    }
+
+    /** @ignore */
+    private static _canUploadSameBuffer: boolean;
 
     /** @ignore */
     static extension: ExtensionMetadata = {
@@ -168,7 +187,7 @@ export class BatchRenderer extends ObjectRenderer
     /**
      * A flush may occur multiple times in a single
      * frame. On iOS devices or when
-     * `settings.CAN_UPLOAD_SAME_BUFFER` is false, the
+     * `BatchRenderer.canUploadSameBuffer` is false, the
      * batch renderer does not upload data to the same
      * `WebGLBuffer` for performance reasons.
      *
@@ -551,7 +570,7 @@ export class BatchRenderer extends ObjectRenderer
             _indexBuffer: indexBuffer,
         } = this;
 
-        if (!settings.CAN_UPLOAD_SAME_BUFFER)
+        if (!BatchRenderer.canUploadSameBuffer)
         { /* Usually on iOS devices, where the browser doesn't
             like uploads to the same buffer in a single frame. */
             if (this._packedGeometryPoolSize <= this._flushId)
@@ -635,7 +654,7 @@ export class BatchRenderer extends ObjectRenderer
 
         this.renderer.shader.bind(this._shader);
 
-        if (settings.CAN_UPLOAD_SAME_BUFFER)
+        if (BatchRenderer.canUploadSameBuffer)
         {
             // bind buffer #0, we don't need others
             this.renderer.geometry.bind(this._packedGeometries[this._flushId]);

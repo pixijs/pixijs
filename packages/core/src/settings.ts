@@ -227,4 +227,28 @@ Object.defineProperties(settings, {
             BatchRenderer.batchSize = value;
         },
     },
+
+    /**
+     * Can we upload the same buffer in a single frame?
+     * @static
+     * @name CAN_UPLOAD_SAME_BUFFER
+     * @memberof PIXI.settings
+     * @see PIXI.BatchRenderer.canUploadSameBuffer
+     * @deprecated since 7.1.0
+     * @type {boolean}
+     */
+    CAN_UPLOAD_SAME_BUFFER: {
+        get()
+        {
+            return BatchRenderer.canUploadSameBuffer;
+        },
+        set(value: boolean)
+        {
+            // #if _DEBUG
+            // eslint-disable-next-line max-len
+            deprecation('7.1.0', 'PIXI.settings.CAN_UPLOAD_SAME_BUFFER is deprecated, use PIXI.BatchRenderer.canUploadSameBuffer');
+            // #endif
+            BatchRenderer.canUploadSameBuffer = value;
+        },
+    },
 });

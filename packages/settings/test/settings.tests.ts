@@ -42,9 +42,4 @@ describe('settings', () =>
     {
         expect(settings.PRECISION_FRAGMENT).toBeString();
     });
-
-    it('should have CAN_UPLOAD_SAME_BUFFER', () =>
-    {
-        expect(settings.CAN_UPLOAD_SAME_BUFFER).toBeBoolean();
-    });
 });

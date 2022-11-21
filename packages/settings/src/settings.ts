@@ -1,6 +1,5 @@
 import { GC_MODES, PRECISION } from '@pixi/constants';
 import { BrowserAdapter } from './adapter';
-import { canUploadSameBuffer } from './utils/canUploadSameBuffer';
 import { isMobile } from './utils/isMobile';
 
 import type { ENV, MIPMAP_MODES, WRAP_MODES, SCALE_MODES, MSAA_QUALITY } from '@pixi/constants';
@@ -52,7 +51,8 @@ export interface ISettings
     SCALE_MODE?: SCALE_MODES;
     PRECISION_VERTEX: PRECISION;
     PRECISION_FRAGMENT: PRECISION;
-    CAN_UPLOAD_SAME_BUFFER: boolean;
+    /** @deprecated */
+    CAN_UPLOAD_SAME_BUFFER?: boolean;
     CREATE_IMAGE_BITMAP: boolean;
     ROUND_PIXELS: boolean;
     RETINA_PREFIX?: RegExp;
@@ -187,15 +187,6 @@ export const settings: ISettings = {
      * @default PIXI.PRECISION.MEDIUM
      */
     PRECISION_FRAGMENT: isMobile.apple.device ? PRECISION.HIGH : PRECISION.MEDIUM,
-
-    /**
-     * Can we upload the same buffer in a single frame?
-     * @static
-     * @name CAN_UPLOAD_SAME_BUFFER
-     * @memberof PIXI.settings
-     * @type {boolean}
-     */
-    CAN_UPLOAD_SAME_BUFFER: canUploadSameBuffer(),
 
     /**
      * Enables bitmap creation before image load. This feature is experimental.
