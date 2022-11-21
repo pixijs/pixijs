@@ -54,7 +54,19 @@ export class BatchRenderer extends ObjectRenderer
      * @static
      * @default 32
      */
-    public static maxTextures = maxRecommendedTextures(32);
+    public static get maxTextures(): number
+    {
+        this._maxTextures = this._maxTextures ?? maxRecommendedTextures(32);
+
+        return this._maxTextures;
+    }
+    public static set maxTextures(value: number)
+    {
+        this._maxTextures = value;
+    }
+
+    /** @ignore */
+    private static _maxTextures: number;
 
     /**
      * The default sprite batch size.
