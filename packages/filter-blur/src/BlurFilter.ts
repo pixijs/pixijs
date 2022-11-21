@@ -1,4 +1,4 @@
-import { Filter, settings, CLEAR_MODES } from '@pixi/core';
+import { Filter, CLEAR_MODES } from '@pixi/core';
 import { BlurFilterPass } from './BlurFilterPass';
 
 import type { BLEND_MODES, FilterSystem, RenderTexture } from '@pixi/core';
@@ -19,10 +19,10 @@ export class BlurFilter extends Filter
     /**
      * @param strength - The strength of the blur filter.
      * @param quality - The quality of the blur filter.
-     * @param [resolution=PIXI.settings.FILTER_RESOLUTION] - The resolution of the blur filter.
+     * @param [resolution=Filter.resolution] - The resolution of the blur filter.
      * @param kernelSize - The kernelSize of the blur filter.Options: 5, 7, 9, 11, 13, 15.
      */
-    constructor(strength = 8, quality = 4, resolution = settings.FILTER_RESOLUTION, kernelSize = 5)
+    constructor(strength = 8, quality = 4, resolution = Filter.resolution, kernelSize = 5)
     {
         super();
 

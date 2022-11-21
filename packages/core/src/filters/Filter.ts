@@ -1,11 +1,11 @@
-import { settings } from '@pixi/settings';
 import { Program } from '../shader/Program';
 import { Shader } from '../shader/Shader';
 import { State } from '../state/State';
 import defaultFragment from './defaultFilter.frag';
 import defaultVertex from './defaultFilter.vert';
+import { MSAA_QUALITY } from '@pixi/constants';
 
-import type { MSAA_QUALITY, BLEND_MODES, CLEAR_MODES } from '@pixi/constants';
+import type { BLEND_MODES, CLEAR_MODES } from '@pixi/constants';
 import type { Dict } from '@pixi/utils';
 import type { RenderTexture } from '../renderTexture/RenderTexture';
 import type { FilterState } from './FilterState';
@@ -188,13 +188,27 @@ import type { FilterSystem } from './FilterSystem';
 export class Filter extends Shader
 {
     /**
+     * Default filter resolution for any filter.
+     * @static
+     */
+    public static resolution = 1;
+
+    /**
+     * Default filter samples for any filter.
+     * @static
+     * @type {PIXI.MSAA_QUALITY}
+     * @default PIXI.MSAA_QUALITY.NONE
+     */
+    public static multisample = MSAA_QUALITY.NONE;
+
+    /**
      * The padding of the filter. Some filters require extra space to breath such as a blur.
      * Increasing this will add extra width and height to the bounds of the object that the
      * filter is applied to.
      */
     public padding: number;
 
-    /** The samples of the filter. */
+    /** The samples override of the filter instance. */
     public multisample: MSAA_QUALITY;
 
     /** If enabled is true the filter is applied, if false it will not. */
@@ -231,8 +245,8 @@ export class Filter extends Shader
         super(program, uniforms);
 
         this.padding = 0;
-        this.resolution = settings.FILTER_RESOLUTION;
-        this.multisample = settings.FILTER_MULTISAMPLE;
+        this.resolution = Filter.resolution;
+        this.multisample = Filter.multisample;
         this.enabled = true;
         this.autoFit = true;
         this.state = new State();
