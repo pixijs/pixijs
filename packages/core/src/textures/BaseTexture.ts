@@ -1,11 +1,11 @@
 import { BaseTextureCache, EventEmitter, isPow2, TextureCache, uid } from '@pixi/utils';
-import { FORMATS, SCALE_MODES, TARGETS, TYPES, ALPHA_MODES } from '@pixi/constants';
+import { FORMATS, SCALE_MODES, TARGETS, TYPES, ALPHA_MODES, MIPMAP_MODES, WRAP_MODES } from '@pixi/constants';
 import { Resource } from './resources/Resource';
 import { BufferResource } from './resources/BufferResource';
 import { autoDetectResource } from './resources/autoDetectResource';
 import { settings } from '@pixi/settings';
 
-import type { MSAA_QUALITY, MIPMAP_MODES, WRAP_MODES } from '@pixi/constants';
+import type { MSAA_QUALITY } from '@pixi/constants';
 import type { ICanvas } from '@pixi/settings';
 import type { IAutoDetectOptions } from './resources/autoDetectResource';
 import type { GLTexture } from './GLTexture';
@@ -77,7 +77,7 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
     /**
      * Anisotropic filtering level of texture
      * @member {number}
-     * @default PIXI.settings.ANISOTROPIC_LEVEL
+     * @default 0
      */
     public anisotropicLevel?: number;
 
@@ -198,18 +198,71 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
     private _wrapMode?: WRAP_MODES;
 
     /**
+     * Default options used when creating BaseTexture objects.
+     * @static
+     * @memberof PIXI.BaseTexture
+     * @type {PIXI.IBaseTextureOptions}
+     */
+    public static defaultOptions: IBaseTextureOptions = {
+        /**
+         * If mipmapping is enabled for texture.
+         * @type {PIXI.MIPMAP_MODES}
+         * @default PIXI.MIPMAP_MODES.POW2
+         */
+        mipmap: MIPMAP_MODES.POW2,
+        /** Anisotropic filtering level of texture */
+        anisotropicLevel: 0,
+        /**
+         * Default scale mode, linear, nearest.
+         * @type {PIXI.SCALE_MODES}
+         * @default PIXI.SCALE_MODES.LINEAR
+         */
+        scaleMode: SCALE_MODES.LINEAR,
+        /**
+         * Wrap mode for textures.
+         * @type {PIXI.WRAP_MODES}
+         * @default PIXI.WRAP_MODES.CLAMP
+         */
+        wrapMode: WRAP_MODES.CLAMP,
+        /**
+         * Pre multiply the image alpha
+         * @type {PIXI.ALPHA_MODES}
+         * @default PIXI.ALPHA_MODES.UNPACK
+         */
+        alphaMode: ALPHA_MODES.UNPACK,
+        /**
+         * GL texture target
+         * @type {PIXI.TARGETS}
+         * @default PIXI.TARGETS.TEXTURE_2D
+         */
+        target: TARGETS.TEXTURE_2D,
+        /**
+         * GL format type
+         * @type {PIXI.FORMATS}
+         * @default PIXI.FORMATS.RGBA
+         */
+        format: FORMATS.RGBA,
+        /**
+         * GL data type
+         * @type {PIXI.TYPES}
+         * @default PIXI.TYPES.UNSIGNED_BYTE
+         */
+        type: TYPES.UNSIGNED_BYTE,
+    };
+
+    /**
      * @param {PIXI.Resource|HTMLImageElement|HTMLVideoElement|ImageBitmap|ICanvas|string} [resource=null] -
      *        The current resource to use, for things that aren't Resource objects, will be converted
      *        into a Resource.
-     * @param options - Collection of options
-     * @param {PIXI.MIPMAP_MODES} [options.mipmap=PIXI.settings.MIPMAP_TEXTURES] - If mipmapping is enabled for texture
-     * @param {number} [options.anisotropicLevel=PIXI.settings.ANISOTROPIC_LEVEL] - Anisotropic filtering level of texture
-     * @param {PIXI.WRAP_MODES} [options.wrapMode=PIXI.settings.WRAP_MODE] - Wrap mode for textures
-     * @param {PIXI.SCALE_MODES} [options.scaleMode=PIXI.settings.SCALE_MODE] - Default scale mode, linear, nearest
-     * @param {PIXI.FORMATS} [options.format=PIXI.FORMATS.RGBA] - GL format type
-     * @param {PIXI.TYPES} [options.type=PIXI.TYPES.UNSIGNED_BYTE] - GL data type
-     * @param {PIXI.TARGETS} [options.target=PIXI.TARGETS.TEXTURE_2D] - GL texture target
-     * @param {PIXI.ALPHA_MODES} [options.alphaMode=PIXI.ALPHA_MODES.UNPACK] - Pre multiply the image alpha
+     * @param options - Collection of options, default options inherited from {@link PIXI.BaseTexture.defaultOptions}.
+     * @param {PIXI.MIPMAP_MODES} [options.mipmap] - If mipmapping is enabled for texture
+     * @param {number} [options.anisotropicLevel] - Anisotropic filtering level of texture
+     * @param {PIXI.WRAP_MODES} [options.wrapMode] - Wrap mode for textures
+     * @param {PIXI.SCALE_MODES} [options.scaleMode] - Default scale mode, linear, nearest
+     * @param {PIXI.FORMATS} [options.format] - GL format type
+     * @param {PIXI.TYPES} [options.type] - GL data type
+     * @param {PIXI.TARGETS} [options.target] - GL texture target
+     * @param {PIXI.ALPHA_MODES} [options.alphaMode] - Pre multiply the image alpha
      * @param {number} [options.width=0] - Width of the texture
      * @param {number} [options.height=0] - Height of the texture
      * @param {number} [options.resolution=PIXI.settings.RESOLUTION] - Resolution of the base texture
@@ -220,7 +273,7 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
     {
         super();
 
-        options = options || {};
+        options = Object.assign({}, BaseTexture.defaultOptions, options);
 
         const { alphaMode, mipmap, anisotropicLevel, scaleMode, width, height,
             wrapMode, format, type, target, resolution, resourceOptions } = options;
@@ -235,14 +288,14 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
         this.resolution = resolution || settings.RESOLUTION;
         this.width = Math.round((width || 0) * this.resolution) / this.resolution;
         this.height = Math.round((height || 0) * this.resolution) / this.resolution;
-        this._mipmap = mipmap ?? settings.MIPMAP_TEXTURES;
-        this.anisotropicLevel = anisotropicLevel ?? settings.ANISOTROPIC_LEVEL;
-        this._wrapMode = wrapMode || settings.WRAP_MODE;
-        this._scaleMode = scaleMode ?? settings.SCALE_MODE;
-        this.format = format || FORMATS.RGBA;
-        this.type = type || TYPES.UNSIGNED_BYTE;
-        this.target = target || TARGETS.TEXTURE_2D;
-        this.alphaMode = alphaMode ?? ALPHA_MODES.UNPACK;
+        this._mipmap = mipmap;
+        this.anisotropicLevel = anisotropicLevel;
+        this._wrapMode = wrapMode;
+        this._scaleMode = scaleMode;
+        this.format = format;
+        this.type = type;
+        this.target = target;
+        this.alphaMode = alphaMode;
 
         this.uid = uid();
         this.touched = 0;
@@ -322,7 +375,7 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
 
     /**
      * Mipmap mode of the texture, affects downscaled images
-     * @default PIXI.settings.MIPMAP_TEXTURES
+     * @default PIXI.MIPMAP_MODES.POW2
      */
     get mipmap(): MIPMAP_MODES
     {
@@ -339,7 +392,7 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
 
     /**
      * The scale mode to apply when scaling this texture
-     * @default PIXI.settings.SCALE_MODE
+     * @default PIXI.SCALE_MODES.LINEAR
      */
     get scaleMode(): SCALE_MODES
     {
@@ -356,7 +409,7 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
 
     /**
      * How the texture wraps
-     * @default PIXI.settings.WRAP_MODE
+     * @default PIXI.WRAP_MODES.CLAMP
      */
     get wrapMode(): WRAP_MODES
     {
