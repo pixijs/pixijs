@@ -1,10 +1,10 @@
-import { GC_MODES, MIPMAP_MODES, MSAA_QUALITY, PRECISION, SCALE_MODES, WRAP_MODES } from '@pixi/constants';
+import { GC_MODES, MIPMAP_MODES, PRECISION, SCALE_MODES, WRAP_MODES } from '@pixi/constants';
 import { BrowserAdapter } from './adapter';
 import { canUploadSameBuffer } from './utils/canUploadSameBuffer';
 import { isMobile } from './utils/isMobile';
 import { maxRecommendedTextures } from './utils/maxRecommendedTextures';
 
-import type { ENV } from '@pixi/constants';
+import type { ENV, MSAA_QUALITY } from '@pixi/constants';
 import type { ICanvas } from './ICanvas';
 import type { IAdapter } from './adapter';
 
@@ -16,7 +16,9 @@ export interface IRenderOptions
     backgroundColor: number | string;
     background?: number | string;
     backgroundAlpha: number;
-    useContextAlpha: boolean | 'notMultiplied';
+    premultipliedAlpha: boolean;
+    /** @deprecated */
+    useContextAlpha?: boolean | 'notMultiplied';
     clearBeforeRender: boolean;
     preserveDrawingBuffer: boolean;
     width: number;
@@ -31,8 +33,10 @@ export interface ISettings
     MIPMAP_TEXTURES: MIPMAP_MODES;
     ANISOTROPIC_LEVEL: number;
     RESOLUTION: number;
-    FILTER_RESOLUTION: number;
-    FILTER_MULTISAMPLE: MSAA_QUALITY;
+    /** @deprecated */
+    FILTER_RESOLUTION?: number;
+    /** @deprecated */
+    FILTER_MULTISAMPLE?: MSAA_QUALITY;
     SPRITE_MAX_TEXTURES: number;
     SPRITE_BATCH_SIZE: number;
     RENDER_OPTIONS: IRenderOptions;
@@ -115,26 +119,6 @@ export const settings: ISettings = {
     RESOLUTION: 1,
 
     /**
-     * Default filter resolution.
-     * @static
-     * @name FILTER_RESOLUTION
-     * @memberof PIXI.settings
-     * @type {number}
-     * @default 1
-     */
-    FILTER_RESOLUTION: 1,
-
-    /**
-     * Default filter samples.
-     * @static
-     * @name FILTER_MULTISAMPLE
-     * @memberof PIXI.settings
-     * @type {PIXI.MSAA_QUALITY}
-     * @default PIXI.MSAA_QUALITY.NONE
-     */
-    FILTER_MULTISAMPLE: MSAA_QUALITY.NONE,
-
-    /**
      * The maximum textures that this device supports.
      * @static
      * @name SPRITE_MAX_TEXTURES
@@ -169,7 +153,7 @@ export const settings: ISettings = {
      * @property {PIXI.ICanvas} [view=null] -
      * @property {boolean} [antialias=false] -
      * @property {boolean} [autoDensity=false] -
-     * @property {boolean} [useContextAlpha=true]  -
+     * @property {boolean} [premultipliedAlpha=true]  -
      * @property {number} [backgroundColor=0x000000] -
      * @property {number} [backgroundAlpha=1] -
      * @property {boolean} [clearBeforeRender=true] -
@@ -185,7 +169,7 @@ export const settings: ISettings = {
         autoDensity: false,
         backgroundColor: 0x000000,
         backgroundAlpha: 1,
-        useContextAlpha: true,
+        premultipliedAlpha: true,
         clearBeforeRender: true,
         preserveDrawingBuffer: false,
         width: 800,
