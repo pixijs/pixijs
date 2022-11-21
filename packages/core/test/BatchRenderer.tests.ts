@@ -61,7 +61,7 @@ describe('BatchRenderer', () =>
         {
             batchRenderer.size = 300;
             batchRenderer.contextChange();
-            batchRenderer.MAX_TEXTURES = 2;
+            batchRenderer.maxTextures = 2;
             batchRenderer.start();
             elements.forEach((element) => batchRenderer.render(element));
             expect(batchRenderer['_bufferedElements'].length).toEqual(8);
@@ -149,7 +149,7 @@ describe('BatchRenderer', () =>
         {
             batchRenderer.size = 300;
             batchRenderer.contextChange();
-            batchRenderer.MAX_TEXTURES = 2;
+            batchRenderer.maxTextures = 2;
             batchRenderer.start();
 
             const glEnable = jest.spyOn(gl, 'enable');

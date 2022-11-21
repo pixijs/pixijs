@@ -8,7 +8,7 @@ import { BatchShaderGenerator } from './BatchShaderGenerator';
 import { checkMaxIfStatementsInShader } from '../shader/utils/checkMaxIfStatementsInShader';
 
 import { settings } from '@pixi/settings';
-import { premultiplyBlendMode, premultiplyTint, nextPow2, log2 } from '@pixi/utils';
+import { premultiplyBlendMode, premultiplyTint, nextPow2, log2, deprecation } from '@pixi/utils';
 import { ENV } from '@pixi/constants';
 import { BatchGeometry } from './BatchGeometry';
 
@@ -21,6 +21,7 @@ import type { Texture } from '../textures/Texture';
 import type { BLEND_MODES } from '@pixi/constants';
 import type { ExtensionMetadata } from '@pixi/extensions';
 import { extensions, ExtensionType } from '@pixi/extensions';
+import { maxRecommendedTextures } from './maxRecommendedTextures';
 
 /**
  * Interface for elements like Sprite, Mesh etc. for batching.
@@ -48,6 +49,21 @@ export interface IBatchableElement
  */
 export class BatchRenderer extends ObjectRenderer
 {
+    /**
+     * The maximum textures that this device supports.
+     * @static
+     * @default 32
+     */
+    public static maxTextures = maxRecommendedTextures(32);
+
+    /**
+     * The default sprite batch size.
+     *
+     * The default aims to balance desktop and mobile devices.
+     * @static
+     */
+    public static batchSize = 4096;
+
     /** @ignore */
     static extension: ExtensionMetadata = {
         name: 'batch',
@@ -60,7 +76,7 @@ export class BatchRenderer extends ObjectRenderer
     /**
      * The number of bufferable objects before a flush
      * occurs automatically.
-     * @default settings.SPRITE_BATCH_SIZE * 4
+     * @default PIXI.BatchRenderer.batchSize * 4
      */
     public size: number;
 
@@ -71,7 +87,7 @@ export class BatchRenderer extends ObjectRenderer
      * @see PIXI.BatchRenderer#contextChange
      * @readonly
      */
-    public MAX_TEXTURES: number;
+    public maxTextures: number;
 
     /**
      * This is used to generate a shader that can
@@ -214,7 +230,7 @@ export class BatchRenderer extends ObjectRenderer
         this.geometryClass = BatchGeometry;
         this.vertexSize = 6;
         this.state = State.for2d();
-        this.size = settings.SPRITE_BATCH_SIZE * 4;
+        this.size = BatchRenderer.batchSize * 4;
         this._vertexCount = 0;
         this._indexCount = 0;
         this._bufferedElements = [];
@@ -227,7 +243,7 @@ export class BatchRenderer extends ObjectRenderer
         this._aBuffers = {} as any;
         this._iBuffers = {} as any;
 
-        this.MAX_TEXTURES = 1;
+        this.maxTextures = 1;
 
         this.renderer.on('prerender', this.onPrerender, this);
         renderer.runners.contextChange.add(this);
@@ -238,6 +254,20 @@ export class BatchRenderer extends ObjectRenderer
         this._attributeBuffer = null;
         this._indexBuffer = null;
         this._tempBoundTextures = [];
+    }
+
+    /**
+     * @see PIXI.BatchRenderer#maxTextures
+     * @deprecated since 7.1.0
+     * @readonly
+     */
+    get MAX_TEXTURES(): number
+    {
+        // #if _DEBUG
+        deprecation('7.1.0', 'PIXI.BatchRenderer.MAX_TEXTURES renamed to PIXI.BatchRenderer.maxTextures');
+        // #endif
+
+        return this.maxTextures;
     }
 
     /**
@@ -275,7 +305,7 @@ export class BatchRenderer extends ObjectRenderer
     /**
      * Handles the `contextChange` signal.
      *
-     * It calculates `this.MAX_TEXTURES` and allocating the packed-geometry object pool.
+     * It calculates `this.maxTextures` and allocating the packed-geometry object pool.
      */
     contextChange(): void
     {
@@ -283,21 +313,21 @@ export class BatchRenderer extends ObjectRenderer
 
         if (settings.PREFER_ENV === ENV.WEBGL_LEGACY)
         {
-            this.MAX_TEXTURES = 1;
+            this.maxTextures = 1;
         }
         else
         {
             // step 1: first check max textures the GPU can handle.
-            this.MAX_TEXTURES = Math.min(
+            this.maxTextures = Math.min(
                 gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS),
-                settings.SPRITE_MAX_TEXTURES);
+                BatchRenderer.maxTextures);
 
             // step 2: check the maximum number of if statements the shader can have too..
-            this.MAX_TEXTURES = checkMaxIfStatementsInShader(
-                this.MAX_TEXTURES, gl);
+            this.maxTextures = checkMaxIfStatementsInShader(
+                this.maxTextures, gl);
         }
 
-        this._shader = this.shaderGenerator.generateShader(this.MAX_TEXTURES);
+        this._shader = this.shaderGenerator.generateShader(this.maxTextures);
 
         // we use the second shader as the first one depending on your browser
         // may omit aTextureId as it is not used by the shader so is optimized out.
@@ -320,7 +350,7 @@ export class BatchRenderer extends ObjectRenderer
         // max draw calls
         const MAX_SPRITES = this.size / 4;
         // max texture arrays
-        const MAX_TA = Math.floor(MAX_SPRITES / this.MAX_TEXTURES) + 1;
+        const MAX_TA = Math.floor(MAX_SPRITES / this.maxTextures) + 1;
 
         while (_drawCallPool.length < MAX_SPRITES)
         {
@@ -330,7 +360,7 @@ export class BatchRenderer extends ObjectRenderer
         {
             _textureArrayPool.push(new BatchTextureArray());
         }
-        for (let i = 0; i < this.MAX_TEXTURES; i++)
+        for (let i = 0; i < this.maxTextures; i++)
         {
             this._tempBoundTextures[i] = null;
         }
@@ -369,7 +399,7 @@ export class BatchRenderer extends ObjectRenderer
     {
         const {
             _bufferedTextures: textures,
-            MAX_TEXTURES,
+            maxTextures,
         } = this;
         const textureArrays = BatchRenderer._textureArrayPool;
         const batch = this.renderer.batch;
@@ -381,7 +411,7 @@ export class BatchRenderer extends ObjectRenderer
         let texArray = textureArrays[0];
         let start = 0;
 
-        batch.copyBoundTextures(boundTextures, MAX_TEXTURES);
+        batch.copyBoundTextures(boundTextures, maxTextures);
 
         for (let i = 0; i < this._bufferSize; ++i)
         {
@@ -393,9 +423,9 @@ export class BatchRenderer extends ObjectRenderer
                 continue;
             }
 
-            if (texArray.count >= MAX_TEXTURES)
+            if (texArray.count >= maxTextures)
             {
-                batch.boundArray(texArray, boundTextures, TICK, MAX_TEXTURES);
+                batch.boundArray(texArray, boundTextures, TICK, maxTextures);
                 this.buildDrawCalls(texArray, start, i);
                 start = i;
                 texArray = textureArrays[++countTexArrays];
@@ -409,7 +439,7 @@ export class BatchRenderer extends ObjectRenderer
 
         if (texArray.count > 0)
         {
-            batch.boundArray(texArray, boundTextures, TICK, MAX_TEXTURES);
+            batch.boundArray(texArray, boundTextures, TICK, maxTextures);
             this.buildDrawCalls(texArray, start, this._bufferSize);
             ++countTexArrays;
             ++TICK;
@@ -589,7 +619,7 @@ export class BatchRenderer extends ObjectRenderer
     {
         this.renderer.state.set(this.state);
 
-        this.renderer.texture.ensureSamplerType(this.MAX_TEXTURES);
+        this.renderer.texture.ensureSamplerType(this.maxTextures);
 
         this.renderer.shader.bind(this._shader);
 

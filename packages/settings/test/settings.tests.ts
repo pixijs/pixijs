@@ -13,16 +13,6 @@ describe('settings', () =>
         expect(settings.PREFER_ENV).toBeNumber();
     });
 
-    it('should have SPRITE_MAX_TEXTURES', () =>
-    {
-        expect(settings.SPRITE_MAX_TEXTURES).toBeNumber();
-    });
-
-    it('should have SPRITE_BATCH_SIZE', () =>
-    {
-        expect(settings.SPRITE_BATCH_SIZE).toBeNumber();
-    });
-
     it('should have RENDER_OPTIONS', () =>
     {
         expect(settings.RENDER_OPTIONS).toBeObject();
