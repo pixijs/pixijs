@@ -1,4 +1,5 @@
 import type { ChildProcess } from 'child_process';
+import kill from 'tree-kill';
 
 // eslint-disable-next-line func-names
 module.exports = async function ()
@@ -14,7 +15,7 @@ module.exports = async function ()
             httpServerProcess.on('close', resolve);
         });
 
-        httpServerProcess.kill();
+        kill(httpServerProcess.pid);
         await processClose;
     }
 };
