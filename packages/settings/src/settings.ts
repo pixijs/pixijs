@@ -1,10 +1,10 @@
-import { GC_MODES, MSAA_QUALITY, PRECISION } from '@pixi/constants';
+import { GC_MODES, PRECISION } from '@pixi/constants';
 import { BrowserAdapter } from './adapter';
 import { canUploadSameBuffer } from './utils/canUploadSameBuffer';
 import { isMobile } from './utils/isMobile';
 import { maxRecommendedTextures } from './utils/maxRecommendedTextures';
 
-import type { ENV, MIPMAP_MODES, WRAP_MODES, SCALE_MODES } from '@pixi/constants';
+import type { ENV, MIPMAP_MODES, WRAP_MODES, SCALE_MODES, MSAA_QUALITY } from '@pixi/constants';
 import type { ICanvas } from './ICanvas';
 import type { IAdapter } from './adapter';
 
