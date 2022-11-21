@@ -134,7 +134,7 @@ export class ContextSystem implements ISystem<ContextOptions>
         else
         {
             const alpha = this.renderer.background.alpha < 1;
-            const premultipliedAlpha =  options.premultipliedAlpha ?? true;
+            const premultipliedAlpha =  options.premultipliedAlpha;
 
             this.preserveDrawingBuffer = options.preserveDrawingBuffer;
             this.useContextAlpha = options.useContextAlpha;
