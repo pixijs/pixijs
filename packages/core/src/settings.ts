@@ -1,5 +1,8 @@
 import { settings } from '@pixi/settings';
+import type { MSAA_QUALITY } from '@pixi/constants';
 import { ENV } from '@pixi/constants';
+import { Filter } from './filters/Filter';
+import { deprecation } from '@pixi/utils';
 
 /**
  * The maximum support for using WebGL. If a device does not
@@ -31,5 +34,59 @@ settings.PREFER_ENV = ENV.WEBGL2;
  * @default false
  */
 settings.STRICT_TEXTURE_CACHE = false;
+
+// Deprecations
+Object.defineProperties(settings, {
+    /**
+     * Default filter resolution.
+     * @static
+     * @name FILTER_RESOLUTION
+     * @memberof PIXI.settings
+     * @deprecated since 7.1.0
+     * @type {number}
+     * @default 1
+     * @see PIXI.Filter.resolution
+     */
+    FILTER_RESOLUTION: {
+        get()
+        {
+            // #if _DEBUG
+            deprecation('7.1.0', 'PIXI.settings.FILTER_RESOLUTION is deprecated, use PIXI.Filter.resolution');
+            // #endif
+
+            return Filter.resolution;
+        },
+        set(value)
+        {
+            Filter.resolution = value;
+        },
+    },
+
+    /**
+     * Default filter samples.
+     * @static
+     * @name FILTER_MULTISAMPLE
+     * @memberof PIXI.settings
+     * @deprecated since 7.1.0
+     * @type {PIXI.MSAA_QUALITY}
+     * @default PIXI.MSAA_QUALITY.NONE
+     * @see PIXI.Filter.multisample
+     */
+    FILTER_MULTISAMPLE: {
+        get()
+        {
+            // #if _DEBUG
+            deprecation('7.1.0', 'PIXI.settings.FILTER_MULTISAMPLE is deprecated, use PIXI.Filter.multisample');
+            // #endif
+
+            return Filter.multisample;
+        },
+        set(value: MSAA_QUALITY)
+        {
+            Filter.multisample = value;
+        },
+    },
+
+});
 
 export { settings };
