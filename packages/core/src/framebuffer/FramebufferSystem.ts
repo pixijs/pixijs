@@ -1,6 +1,6 @@
 import { Rectangle } from '@pixi/math';
 import { ENV, BUFFER_BITS, MSAA_QUALITY } from '@pixi/constants';
-import { settings } from '../settings';
+import { settings } from '@pixi/settings';
 import { Framebuffer } from './Framebuffer';
 import { GLFramebuffer } from './GLFramebuffer';
 

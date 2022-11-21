@@ -6,7 +6,14 @@ module.exports = async function ()
 {
     if (!process.env.GITHUB_ACTIONS)
     {
-        const httpServerProcess = spawn('http-server', ['-c-1', `${join(process.cwd(), './packages')}`]);
+        const httpServerProcess = spawn(
+            'http-server',
+            ['-c-1', `${join(process.cwd(), './packages')}`],
+            {
+                // See https://nodejs.org/api/child_process.html#spawning-bat-and-cmd-files-on-windows
+                shell: process.platform === 'win32',
+            },
+        );
 
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore

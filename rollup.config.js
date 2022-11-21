@@ -42,7 +42,7 @@ async function main()
 
     const plugins = [
         rename(),
-        jscc({ values: { _VERSION: repo.version } }),
+        jscc({ values: { _VERSION: repo.version, _DEBUG: true } }),
         esbuild({ target: moduleTarget }),
         ...commonPlugins
     ];

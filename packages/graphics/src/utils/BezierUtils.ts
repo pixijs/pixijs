@@ -1,4 +1,4 @@
-import { GRAPHICS_CURVES } from '../const';
+import { curves } from '../const';
 
 /**
  * Utilities for bezier curves
@@ -88,7 +88,7 @@ export class BezierUtils
 
         points.length -= 2;
 
-        const n = GRAPHICS_CURVES._segmentsCount(
+        const n = curves._segmentsCount(
             BezierUtils.curveLength(fromX, fromY, cpX, cpY, cpX2, cpY2, toX, toY)
         );
 

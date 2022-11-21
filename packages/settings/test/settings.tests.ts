@@ -3,11 +3,6 @@ import '@pixi/core';
 
 describe('settings', () =>
 {
-    it('should have MIPMAP_TEXTURES', () =>
-    {
-        expect(settings.MIPMAP_TEXTURES).toBeNumber();
-    });
-
     it('should have RESOLUTION', () =>
     {
         expect(settings.RESOLUTION).toBeNumber();
@@ -16,11 +11,6 @@ describe('settings', () =>
     it('should have PREFER_ENV', () =>
     {
         expect(settings.PREFER_ENV).toBeNumber();
-    });
-
-    it('should have FILTER_RESOLUTION', () =>
-    {
-        expect(settings.FILTER_RESOLUTION).toBeNumber();
     });
 
     it('should have SPRITE_MAX_TEXTURES', () =>
@@ -51,16 +41,6 @@ describe('settings', () =>
     it('should have GC_MAX_CHECK_COUNT', () =>
     {
         expect(settings.GC_MAX_CHECK_COUNT).toBeNumber();
-    });
-
-    it('should have WRAP_MODE', () =>
-    {
-        expect(settings.WRAP_MODE).toBeNumber();
-    });
-
-    it('should have SCALE_MODE', () =>
-    {
-        expect(settings.SCALE_MODE).toBeNumber();
     });
 
     it('should have PRECISION_VERTEX', () =>

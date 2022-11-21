@@ -286,9 +286,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      * @param {number} [options.width=800] - The width of the screen.
      * @param {number} [options.height=600] - The height of the screen.
      * @param {PIXI.ICanvas} [options.view] - The canvas to use as a view, optional.
-     * @param {boolean} [options.useContextAlpha=true] - Pass-through value for canvas' context `alpha` property.
-     *   If you want to set transparency, please use `backgroundAlpha`. This option is for cases where the
-     *   canvas needs to be opaque, possibly for performance reasons on some older devices.
+     * @param {boolean} [options.premultipliedAlpha=true] - Set to `false` to disable premultipliedAlpha.
      * @param {boolean} [options.autoDensity=false] - Resizes renderer view in CSS pixels to allow for
      *   resolutions other than 1.
      * @param {boolean} [options.antialias=false] - Sets antialias. If not available natively then FXAA
@@ -368,6 +366,16 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
 
         this.setup(systemConfig);
 
+        if ('useContextAlpha' in options)
+        {
+            // #if _DEBUG
+            // eslint-disable-next-line max-len
+            deprecation('7.0.0', 'options.useContextAlpha is deprecated, use options.premultipliedAlpha and options.backgroundAlpha instead');
+            // #endif
+            options.premultipliedAlpha = options.useContextAlpha && options.useContextAlpha !== 'notMultiplied';
+            options.backgroundAlpha = options.useContextAlpha === false ? 1 : options.backgroundAlpha;
+        }
+
         // new options!
         const startupOptions: StartupOptions = {
             hello: options.hello,
@@ -388,8 +396,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
                 antialias: options.antialias,
                 context: options.context,
                 powerPreference: options.powerPreference,
-                premultipliedAlpha: options.premultipliedAlpha
-                ?? (options.useContextAlpha && options.useContextAlpha !== 'notMultiplied'),
+                premultipliedAlpha: options.premultipliedAlpha,
                 preserveDrawingBuffer: options.preserveDrawingBuffer,
             },
         };
@@ -547,7 +554,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
     {
         // #if _DEBUG
         // eslint-disable-next-line max-len
-        deprecation('7.0.0', 'renderer.useContextAlpha has been deprecated, please use renderer.background.clearBeforeRender instead.');
+        deprecation('7.0.0', 'renderer.clearBeforeRender has been deprecated, please use renderer.background.clearBeforeRender instead.');
         // #endif
 
         return this.background.clearBeforeRender;
@@ -563,7 +570,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
     {
         // #if _DEBUG
         // eslint-disable-next-line max-len
-        deprecation('7.0.0', 'Renderer#useContextAlpha has been deprecated, please use Renderer#context.premultipliedAlpha instead.');
+        deprecation('7.0.0', 'renderer.useContextAlpha has been deprecated, please use renderer.context.premultipliedAlpha instead.');
         // #endif
 
         return this.context.useContextAlpha;

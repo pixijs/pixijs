@@ -1,5 +1,9 @@
 import { settings } from '@pixi/settings';
+import type { MSAA_QUALITY, MIPMAP_MODES, SCALE_MODES, WRAP_MODES } from '@pixi/constants';
 import { ENV } from '@pixi/constants';
+import { BaseTexture } from './textures/BaseTexture';
+import { Filter } from './filters/Filter';
+import { deprecation } from '@pixi/utils';
 
 /**
  * The maximum support for using WebGL. If a device does not
@@ -32,4 +36,146 @@ settings.PREFER_ENV = ENV.WEBGL2;
  */
 settings.STRICT_TEXTURE_CACHE = false;
 
-export { settings };
+Object.defineProperties(settings, {
+    /**
+     * @static
+     * @name WRAP_MODE
+     * @memberof PIXI.settings
+     * @type {PIXI.WRAP_MODES}
+     * @deprecated since 7.1.0
+     * @see PIXI.BaseTexture.defaultOptions.wrapMode
+     */
+    WRAP_MODE: {
+        get()
+        {
+            return BaseTexture.defaultOptions.wrapMode;
+        },
+        set(value: WRAP_MODES)
+        {
+            // #if _DEBUG
+            deprecation('7.1.0', 'PIXI.settings.WRAP_MODE is deprecated, use PIXI.BaseTeture.defaultOptions.wrapMode');
+            // #endif
+            BaseTexture.defaultOptions.wrapMode = value;
+        },
+    },
+
+    /**
+     * @static
+     * @name SCALE_MODE
+     * @memberof PIXI.settings
+     * @type {PIXI.SCALE_MODES}
+     * @deprecated since 7.1.0
+     * @see PIXI.BaseTexture.defaultOptions.scaleMode
+     */
+    SCALE_MODE: {
+        get()
+        {
+            return BaseTexture.defaultOptions.scaleMode;
+        },
+        set(value: SCALE_MODES)
+        {
+            // #if _DEBUG
+            deprecation('7.1.0', 'PIXI.settings.SCALE_MODE is deprecated, use PIXI.BaseTeture.defaultOptions.scaleMode');
+            // #endif
+            BaseTexture.defaultOptions.scaleMode = value;
+        },
+    },
+
+    /**
+     * @static
+     * @name MIPMAP_TEXTURES
+     * @memberof PIXI.settings
+     * @type {PIXI.MIPMAP_MODES}
+     * @deprecated since 7.1.0
+     * @see PIXI.BaseTexture.defaultOptions.mipmap
+     */
+    MIPMAP_TEXTURES:
+    {
+        get()
+        {
+            return BaseTexture.defaultOptions.mipmap;
+        },
+        set(value: MIPMAP_MODES)
+        {
+            // #if _DEBUG
+            deprecation('7.1.0', 'PIXI.settings.MIPMAP_TEXTURES is deprecated, use PIXI.BaseTeture.defaultOptions.mipmap');
+            // #endif
+            BaseTexture.defaultOptions.mipmap = value;
+        },
+        // MIPMAP_MODES.POW2,
+    },
+
+    /**
+     * @static
+     * @name ANISOTROPIC_LEVEL
+     * @memberof PIXI.settings
+     * @type {number}
+     * @deprecated since 7.1.0
+     * @see PIXI.BaseTexture.defaultOptions.anisotropicLevel
+     */
+    ANISOTROPIC_LEVEL:
+    {
+        get()
+        {
+            return BaseTexture.defaultOptions.anisotropicLevel;
+        },
+        set(value: number)
+        {
+            // #if _DEBUG
+            // eslint-disable-next-line max-len
+            deprecation('7.1.0', 'PIXI.settings.ANISOTROPIC_LEVEL is deprecated, use PIXI.BaseTeture.defaultOptions.anisotropicLevel');
+            // #endif
+            BaseTexture.defaultOptions.anisotropicLevel = value;
+        },
+
+    },
+    /**
+     * Default filter resolution.
+     * @static
+     * @name FILTER_RESOLUTION
+     * @memberof PIXI.settings
+     * @deprecated since 7.1.0
+     * @type {number}
+     * @default 1
+     * @see PIXI.Filter.resolution
+     */
+    FILTER_RESOLUTION: {
+        get()
+        {
+            // #if _DEBUG
+            deprecation('7.1.0', 'PIXI.settings.FILTER_RESOLUTION is deprecated, use PIXI.Filter.resolution');
+            // #endif
+
+            return Filter.resolution;
+        },
+        set(value)
+        {
+            Filter.resolution = value;
+        },
+    },
+
+    /**
+     * Default filter samples.
+     * @static
+     * @name FILTER_MULTISAMPLE
+     * @memberof PIXI.settings
+     * @deprecated since 7.1.0
+     * @type {PIXI.MSAA_QUALITY}
+     * @default PIXI.MSAA_QUALITY.NONE
+     * @see PIXI.Filter.multisample
+     */
+    FILTER_MULTISAMPLE: {
+        get()
+        {
+            // #if _DEBUG
+            deprecation('7.1.0', 'PIXI.settings.FILTER_MULTISAMPLE is deprecated, use PIXI.Filter.multisample');
+            // #endif
+
+            return Filter.multisample;
+        },
+        set(value: MSAA_QUALITY)
+        {
+            Filter.multisample = value;
+        },
+    },
+});

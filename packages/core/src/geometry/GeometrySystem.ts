@@ -1,6 +1,6 @@
 import type { GLBuffer } from './GLBuffer';
 import { BUFFER_TYPE, ENV } from '@pixi/constants';
-import { settings } from '../settings';
+import { settings } from '@pixi/settings';
 
 import type { ISystem } from '../system/ISystem';
 import type { DRAW_MODES } from '@pixi/constants';

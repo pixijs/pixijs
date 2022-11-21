@@ -164,9 +164,6 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
      * @param {number} [options.width=800] - the width of the screen
      * @param {number} [options.height=600] - the height of the screen
      * @param {PIXI.ICanvas} [options.view] - the canvas to use as a view, optional
-     * @param {boolean} [options.useContextAlpha=true] - Pass-through value for canvas' context `alpha` property.
-     *   If you want to set transparency, please use `backgroundAlpha`. This option is for cases where the
-     *   canvas needs to be opaque, possibly for performance reasons on some older devices.
      * @param {boolean} [options.autoDensity=false] - Resizes renderer view in CSS pixels to allow for
      *   resolutions other than 1
      * @param {boolean} [options.antialias=false] - sets antialias
@@ -214,6 +211,14 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
         };
 
         this.setup(systemConfig);
+
+        if ('useContextAlpha' in options)
+        {
+            // #if _DEBUG
+            deprecation('7.0.0', 'options.useContextAlpha is deprecated, use options.backgroundAlpha instead');
+            // #endif
+            options.backgroundAlpha = options.useContextAlpha === false ? 1 : options.backgroundAlpha;
+        }
 
         // convert our big blob of options into system specific ones..
         const startupOptions: StartupOptions = {
