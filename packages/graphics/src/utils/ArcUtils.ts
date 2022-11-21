@@ -1,4 +1,4 @@
-import { GRAPHICS_CURVES } from '../const';
+import { curves } from '../const';
 import { PI_2 } from '@pixi/core';
 
 interface IArcLikeShape
@@ -98,7 +98,7 @@ export class ArcUtils
         startAngle: number, endAngle: number, _anticlockwise: boolean, points: Array<number>): void
     {
         const sweep = endAngle - startAngle;
-        const n = GRAPHICS_CURVES._segmentsCount(
+        const n = curves._segmentsCount(
             Math.abs(sweep) * radius,
             Math.ceil(Math.abs(sweep) / PI_2) * 40
         );
