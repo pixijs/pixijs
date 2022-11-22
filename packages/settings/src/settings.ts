@@ -59,6 +59,7 @@ export interface ISettings
     FAIL_IF_MAJOR_PERFORMANCE_CAVEAT?: boolean;
     /** @deprecated */
     UPLOADS_PER_FRAME?: number;
+    /** @deprecated */
     SORTABLE_CHILDREN?: boolean;
     PREFER_ENV?: ENV;
     STRICT_TEXTURE_CACHE?: boolean;
