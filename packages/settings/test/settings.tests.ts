@@ -18,21 +18,6 @@ describe('settings', () =>
         expect(settings.RENDER_OPTIONS).toBeObject();
     });
 
-    it('should have GC_MODE', () =>
-    {
-        expect(settings.GC_MODE).toBeNumber();
-    });
-
-    it('should have GC_MAX_IDLE', () =>
-    {
-        expect(settings.GC_MAX_IDLE).toBeNumber();
-    });
-
-    it('should have GC_MAX_CHECK_COUNT', () =>
-    {
-        expect(settings.GC_MAX_CHECK_COUNT).toBeNumber();
-    });
-
     it('should have PRECISION_VERTEX', () =>
     {
         expect(settings.PRECISION_VERTEX).toBeString();
