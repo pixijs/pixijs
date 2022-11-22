@@ -605,7 +605,7 @@ export const FederatedDisplayObject: IFederatedDisplayObject = {
 
         e.defaultPrevented = false;
         e.path = null;
-        e.target = this as FederatedEventTarget;
+        e.target = this as unknown as FederatedEventTarget;
         e.manager.dispatchEvent(e);
 
         return !e.defaultPrevented;
