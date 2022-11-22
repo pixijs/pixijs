@@ -63,6 +63,7 @@ export interface ISettings
     PREFER_ENV?: ENV;
     STRICT_TEXTURE_CACHE?: boolean;
     MESH_CANVAS_PADDING?: number;
+    /** @deprecated */
     TARGET_FPMS?: number;
 }
 
