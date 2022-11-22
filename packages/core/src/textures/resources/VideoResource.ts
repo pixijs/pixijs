@@ -27,7 +27,7 @@ export class VideoResource extends BaseImageResource
     public source: HTMLVideoElement;
 
     /**
-     * `true` to use PIXI.Ticker.shared to auto update the base texture.
+     * `true` to use Ticker.shared to auto update the base texture.
      * @default true
      */
     protected _autoUpdate: boolean;

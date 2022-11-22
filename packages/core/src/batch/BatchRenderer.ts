@@ -55,19 +55,19 @@ export class BatchRenderer extends ObjectRenderer
      * @static
      * @default 32
      */
-    public static get maxTextures(): number
+    public static get defaultMaxTextures(): number
     {
-        this._maxTextures = this._maxTextures ?? maxRecommendedTextures(32);
+        this._defaultMaxTextures = this._defaultMaxTextures ?? maxRecommendedTextures(32);
 
-        return this._maxTextures;
+        return this._defaultMaxTextures;
     }
-    public static set maxTextures(value: number)
+    public static set defaultMaxTextures(value: number)
     {
-        this._maxTextures = value;
+        this._defaultMaxTextures = value;
     }
 
     /** @ignore */
-    private static _maxTextures: number;
+    private static _defaultMaxTextures: number;
 
     /**
      * The default sprite batch size.
@@ -75,7 +75,7 @@ export class BatchRenderer extends ObjectRenderer
      * The default aims to balance desktop and mobile devices.
      * @static
      */
-    public static batchSize = 4096;
+    public static defaultBatchSize = 4096;
 
     /**
      * Can we upload the same buffer in a single frame?
@@ -107,7 +107,7 @@ export class BatchRenderer extends ObjectRenderer
     /**
      * The number of bufferable objects before a flush
      * occurs automatically.
-     * @default PIXI.BatchRenderer.batchSize * 4
+     * @default PIXI.BatchRenderer.defaultBatchSize * 4
      */
     public size: number;
 
@@ -261,7 +261,7 @@ export class BatchRenderer extends ObjectRenderer
         this.geometryClass = BatchGeometry;
         this.vertexSize = 6;
         this.state = State.for2d();
-        this.size = BatchRenderer.batchSize * 4;
+        this.size = BatchRenderer.defaultBatchSize * 4;
         this._vertexCount = 0;
         this._indexCount = 0;
         this._bufferedElements = [];
@@ -295,7 +295,7 @@ export class BatchRenderer extends ObjectRenderer
     get MAX_TEXTURES(): number
     {
         // #if _DEBUG
-        deprecation('7.1.0', 'PIXI.BatchRenderer.MAX_TEXTURES renamed to PIXI.BatchRenderer.maxTextures');
+        deprecation('7.1.0', 'BatchRenderer#MAX_TEXTURES renamed to BatchRenderer#maxTextures');
         // #endif
 
         return this.maxTextures;
@@ -351,7 +351,7 @@ export class BatchRenderer extends ObjectRenderer
             // step 1: first check max textures the GPU can handle.
             this.maxTextures = Math.min(
                 gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS),
-                BatchRenderer.maxTextures);
+                BatchRenderer.defaultMaxTextures);
 
             // step 2: check the maximum number of if statements the shader can have too..
             this.maxTextures = checkMaxIfStatementsInShader(
