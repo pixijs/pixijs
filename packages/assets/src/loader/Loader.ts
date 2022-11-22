@@ -1,7 +1,8 @@
 import { utils } from '@pixi/core';
 import { convertToList, isSingleItem } from '../utils';
+
 import type { LoaderParser } from './parsers/LoaderParser';
-import type { PromiseAndParser, LoadAsset } from './types';
+import type { LoadAsset, PromiseAndParser } from './types';
 
 /**
  * The Loader is responsible for loading all assets, such as images, spritesheets, audio files, etc.
@@ -102,10 +103,18 @@ export class Loader
      * @param assetsToLoadIn - urls that you want to load, or a single one!
      * @param onProgress - a function that gets called when the progress changes
      */
-    public async load(
+    public async load<T = any>(
+        assetsToLoadIn: string | LoadAsset,
+        onProgress?: (progress: number) => void,
+    ): Promise<T>;
+    public async load<T = any>(
+        assetsToLoadIn: string[] | LoadAsset[],
+        onProgress?: (progress: number) => void,
+    ): Promise<Record<string, T>>;
+    public async load<T = any>(
         assetsToLoadIn: string | string[] | LoadAsset | LoadAsset[],
         onProgress?: (progress: number) => void,
-    ): Promise<{[key: string]: any} | any>
+    ): Promise<T | Record<string, T>>
     {
         let count = 0;
 

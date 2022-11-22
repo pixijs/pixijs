@@ -1,8 +1,8 @@
+import { Cache, loadJson, loadSVG, loadTextures, loadWebFont } from '@pixi/assets';
 import { Texture } from '@pixi/core';
+import { Loader } from '../src/loader/Loader';
 
 import type { LoaderParser } from '@pixi/assets';
-import { Cache, loadJson, loadSVG, loadTextures, loadWebFont } from '@pixi/assets';
-import { Loader } from '../src/loader/Loader';
 
 describe('Loader', () =>
 {
@@ -21,7 +21,7 @@ describe('Loader', () =>
 
         loader['_parsers'].push(loadTextures);
 
-        const texture: Texture = await loader.load(`${serverPath}textures/bunny.png`);
+        const texture = await loader.load<Texture>(`${serverPath}textures/bunny.png`);
 
         expect(texture.baseTexture.valid).toBe(true);
         expect(texture.width).toBe(26);
@@ -34,7 +34,7 @@ describe('Loader', () =>
 
         loader['_parsers'].push(loadSVG);
 
-        const texture: Texture = await loader.load(`${serverPath}svg/logo.svg`);
+        const texture = await loader.load<Texture>(`${serverPath}svg/logo.svg`);
 
         expect(texture.baseTexture.valid).toBe(true);
         expect(texture.width).toBe(512);
@@ -47,7 +47,7 @@ describe('Loader', () =>
 
         loader['_parsers'].push(loadSVG);
 
-        const texture: Texture = await loader.load({
+        const texture = await loader.load<Texture>({
             data: {
                 resourceOptions: {
                     width: 128,
@@ -73,7 +73,7 @@ describe('Loader', () =>
 
         for (let i = 0; i < 10; i++)
         {
-            texturesPromises.push(loader.load(`${serverPath}textures/bunny.png`));
+            texturesPromises.push(loader.load<Texture>(`${serverPath}textures/bunny.png`));
         }
 
         const textures = await Promise.all(texturesPromises);
@@ -94,7 +94,7 @@ describe('Loader', () =>
 
         const assetsUrls = [`${serverPath}textures/bunny.png`, `${serverPath}textures/bunny-2.png`];
 
-        const textures = await loader.load(assetsUrls);
+        const textures = await loader.load<Texture>(assetsUrls);
 
         expect(textures[`${serverPath}textures/bunny.png`]).toBeInstanceOf(Texture);
         expect(textures[`${serverPath}textures/bunny-2.png`]).toBeInstanceOf(Texture);
@@ -120,7 +120,7 @@ describe('Loader', () =>
 
         loader['_parsers'].push(loadWebFont);
 
-        const font = await loader.load(`${serverPath}fonts/outfit.woff2`);
+        const font = await loader.load<FontFace>(`${serverPath}fonts/outfit.woff2`);
 
         let foundFont = false;
 
@@ -144,7 +144,7 @@ describe('Loader', () =>
         document.fonts.clear();
         loader['_parsers'].push(loadWebFont);
 
-        const font = await loader.load({
+        const font = await loader.load<FontFace>({
             data: {
                 family: 'Overridden',
                 style: 'italic',
@@ -178,7 +178,7 @@ describe('Loader', () =>
                 url + options.data.whatever,
         } as LoaderParser<string>);
 
-        const sillyID: string = await loader.load({
+        const sillyID = await loader.load<string>({
             src: `${serverPath}textures/bunny.png`,
             data: { whatever: 23 },
         });
@@ -192,7 +192,7 @@ describe('Loader', () =>
 
         loader['_parsers'].push(loadTextures);
 
-        const texture: Texture = await loader.load(`${serverPath}textures/bunny.png`);
+        const texture = await loader.load<Texture>(`${serverPath}textures/bunny.png`);
 
         expect(texture.baseTexture.destroyed).toBe(false);
 

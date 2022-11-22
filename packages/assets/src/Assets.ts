@@ -1,17 +1,15 @@
 import { extensions, ExtensionType } from '@pixi/core';
 import { BackgroundLoader } from './BackgroundLoader';
 import { Cache } from './cache/Cache';
-import type { FormatDetectionParser } from './detections';
-import type {
-    LoadAsset,
-    LoaderParser
-} from './loader';
 import { Loader } from './loader/Loader';
-import type { PreferOrder, ResolveAsset, ResolverBundle, ResolverManifest, ResolveURLParser } from './resolver';
+import { loadTextures } from './loader/parsers';
 import { Resolver } from './resolver/Resolver';
 import { convertToList } from './utils/convertToList';
 import { isSingleItem } from './utils/isSingleItem';
-import { loadTextures } from './loader/parsers';
+
+import type { FormatDetectionParser } from './detections';
+import type { LoadAsset, LoaderParser } from './loader';
+import type { PreferOrder, ResolveAsset, ResolveURLParser, ResolverBundle, ResolverManifest } from './resolver';
 
 export type ProgressCallback = (progress: number) => void;
 
@@ -280,7 +278,7 @@ export class AssetsClass
 
             if (typeof manifest === 'string')
             {
-                manifest = await this.load<ResolverManifest>(manifest) as ResolverManifest;
+                manifest = await this.load<ResolverManifest>(manifest);
             }
 
             this.resolver.addManifest(manifest);
@@ -406,7 +404,15 @@ export class AssetsClass
      * (0.0 - 1.0) of the assets loaded.
      * @returns - the assets that were loaded, either a single asset or a hash of assets
      */
-    public async load<T=any>(
+    public async load<T = any>(
+        urls: string | LoadAsset,
+        onProgress?: ProgressCallback,
+    ): Promise<T>;
+    public async load<T = any>(
+        urls: string[] | LoadAsset[],
+        onProgress?: ProgressCallback,
+    ): Promise<Record<string, T>>;
+    public async load<T = any>(
         urls: string | string[] | LoadAsset | LoadAsset[],
         onProgress?: ProgressCallback,
     ): Promise<T | Record<string, T>>
@@ -654,7 +660,9 @@ export class AssetsClass
      * @param keys - The key or keys for the assets that you want to access
      * @returns - The assets or hash of assets requested
      */
-    public get<T=any>(keys: string | string[]): T | Record<string, T>
+    public get<T = any>(keys: string): T;
+    public get<T = any>(keys: string[]): Record<string, T>;
+    public get<T = any>(keys: string | string[]): T | Record<string, T>
     {
         if (typeof keys === 'string')
         {
@@ -687,7 +695,7 @@ export class AssetsClass
         // pause background loader...
         this._backgroundLoader.active = false;
 
-        const loadedAssets = await this.loader.load(resolveArray, onProgress);
+        const loadedAssets = await this.loader.load<T>(resolveArray, onProgress);
 
         // resume background loader...
         this._backgroundLoader.active = true;
