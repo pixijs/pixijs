@@ -56,6 +56,7 @@ export interface ISettings
     ROUND_PIXELS: boolean;
     RETINA_PREFIX?: RegExp;
     FAIL_IF_MAJOR_PERFORMANCE_CAVEAT?: boolean;
+    /** @deprecated */
     UPLOADS_PER_FRAME?: number;
     SORTABLE_CHILDREN?: boolean;
     PREFER_ENV?: ENV;
