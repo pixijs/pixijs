@@ -1,8 +1,6 @@
 import { GC_MODES, PRECISION } from '@pixi/constants';
 import { BrowserAdapter } from './adapter';
-import { canUploadSameBuffer } from './utils/canUploadSameBuffer';
 import { isMobile } from './utils/isMobile';
-import { maxRecommendedTextures } from './utils/maxRecommendedTextures';
 
 import type { ENV, MIPMAP_MODES, WRAP_MODES, SCALE_MODES, MSAA_QUALITY } from '@pixi/constants';
 import type { ICanvas } from './ICanvas';
@@ -39,8 +37,10 @@ export interface ISettings
     FILTER_RESOLUTION?: number;
     /** @deprecated */
     FILTER_MULTISAMPLE?: MSAA_QUALITY;
-    SPRITE_MAX_TEXTURES: number;
-    SPRITE_BATCH_SIZE: number;
+    /** @deprecated */
+    SPRITE_MAX_TEXTURES?: number;
+    /** @deprecated */
+    SPRITE_BATCH_SIZE?: number;
     RENDER_OPTIONS: IRenderOptions;
     GC_MODE: GC_MODES;
     GC_MAX_IDLE: number;
@@ -51,11 +51,13 @@ export interface ISettings
     SCALE_MODE?: SCALE_MODES;
     PRECISION_VERTEX: PRECISION;
     PRECISION_FRAGMENT: PRECISION;
-    CAN_UPLOAD_SAME_BUFFER: boolean;
+    /** @deprecated */
+    CAN_UPLOAD_SAME_BUFFER?: boolean;
     CREATE_IMAGE_BITMAP: boolean;
     ROUND_PIXELS: boolean;
     RETINA_PREFIX?: RegExp;
     FAIL_IF_MAJOR_PERFORMANCE_CAVEAT?: boolean;
+    /** @deprecated */
     UPLOADS_PER_FRAME?: number;
     SORTABLE_CHILDREN?: boolean;
     PREFER_ENV?: ENV;
@@ -100,31 +102,6 @@ export const settings: ISettings = {
      * @default 1
      */
     RESOLUTION: 1,
-
-    /**
-     * The maximum textures that this device supports.
-     * @static
-     * @name SPRITE_MAX_TEXTURES
-     * @memberof PIXI.settings
-     * @type {number}
-     * @default 32
-     */
-    SPRITE_MAX_TEXTURES: maxRecommendedTextures(32),
-
-    // TODO: maybe change to SPRITE.BATCH_SIZE: 2000
-    // TODO: maybe add PARTICLE.BATCH_SIZE: 15000
-
-    /**
-     * The default sprite batch size.
-     *
-     * The default aims to balance desktop and mobile devices.
-     * @static
-     * @name SPRITE_BATCH_SIZE
-     * @memberof PIXI.settings
-     * @type {number}
-     * @default 4096
-     */
-    SPRITE_BATCH_SIZE: 4096,
 
     /**
      * The default render options if none are supplied to {@link PIXI.Renderer}
@@ -211,15 +188,6 @@ export const settings: ISettings = {
      * @default PIXI.PRECISION.MEDIUM
      */
     PRECISION_FRAGMENT: isMobile.apple.device ? PRECISION.HIGH : PRECISION.MEDIUM,
-
-    /**
-     * Can we upload the same buffer in a single frame?
-     * @static
-     * @name CAN_UPLOAD_SAME_BUFFER
-     * @memberof PIXI.settings
-     * @type {boolean}
-     */
-    CAN_UPLOAD_SAME_BUFFER: canUploadSameBuffer(),
 
     /**
      * Enables bitmap creation before image load. This feature is experimental.

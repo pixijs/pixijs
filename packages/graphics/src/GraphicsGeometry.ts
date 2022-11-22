@@ -607,7 +607,7 @@ export class GraphicsGeometry extends BatchGeometry
             const data = this.batches[i];
 
             // TODO add some full on MAX_TEXTURE CODE..
-            const MAX_TEXTURES = 8;
+            const maxTextures = 8;
 
             // Forced cast for checking `native` without errors
             const style = data.style as LineStyle;
@@ -621,7 +621,7 @@ export class GraphicsGeometry extends BatchGeometry
 
                 // force the batch to break!
                 currentTexture = null;
-                textureCount = MAX_TEXTURES;
+                textureCount = maxTextures;
                 TICK++;
             }
 
@@ -631,7 +631,7 @@ export class GraphicsGeometry extends BatchGeometry
 
                 if (nextTexture._batchEnabled !== TICK)
                 {
-                    if (textureCount === MAX_TEXTURES)
+                    if (textureCount === maxTextures)
                     {
                         TICK++;
 

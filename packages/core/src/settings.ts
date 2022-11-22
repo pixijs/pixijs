@@ -4,6 +4,7 @@ import { ENV } from '@pixi/constants';
 import { BaseTexture } from './textures/BaseTexture';
 import { Filter } from './filters/Filter';
 import { deprecation } from '@pixi/utils';
+import { BatchRenderer } from './batch/BatchRenderer';
 
 /**
  * The maximum support for using WebGL. If a device does not
@@ -176,6 +177,78 @@ Object.defineProperties(settings, {
         set(value: MSAA_QUALITY)
         {
             Filter.multisample = value;
+        },
+    },
+
+    /**
+     * The maximum textures that this device supports.
+     * @static
+     * @name SPRITE_MAX_TEXTURES
+     * @memberof PIXI.settings
+     * @deprecated since 7.1.0
+     * @see PIXI.BatchRenderer.maxTextures
+     * @type {number}
+     */
+    SPRITE_MAX_TEXTURES: {
+        get()
+        {
+            return BatchRenderer.maxTextures;
+        },
+        set(value: number)
+        {
+            // #if _DEBUG
+            deprecation('7.1.0', 'PIXI.settings.SPRITE_MAX_TEXTURES is deprecated, use PIXI.BatchRenderer.maxTextures');
+            // #endif
+            BatchRenderer.maxTextures = value;
+        },
+    },
+
+    /**
+     * The default sprite batch size.
+     *
+     * The default aims to balance desktop and mobile devices.
+     * @static
+     * @name SPRITE_BATCH_SIZE
+     * @memberof PIXI.settings
+     * @see PIXI.BatchRenderer.batchSize
+     * @deprecated since 7.1.0
+     * @type {number}
+     */
+    SPRITE_BATCH_SIZE: {
+        get()
+        {
+            return BatchRenderer.batchSize;
+        },
+        set(value: number)
+        {
+            // #if _DEBUG
+            deprecation('7.1.0', 'PIXI.settings.SPRITE_BATCH_SIZE is deprecated, use PIXI.BatchRenderer.batchSize');
+            // #endif
+            BatchRenderer.batchSize = value;
+        },
+    },
+
+    /**
+     * Can we upload the same buffer in a single frame?
+     * @static
+     * @name CAN_UPLOAD_SAME_BUFFER
+     * @memberof PIXI.settings
+     * @see PIXI.BatchRenderer.canUploadSameBuffer
+     * @deprecated since 7.1.0
+     * @type {boolean}
+     */
+    CAN_UPLOAD_SAME_BUFFER: {
+        get()
+        {
+            return BatchRenderer.canUploadSameBuffer;
+        },
+        set(value: boolean)
+        {
+            // #if _DEBUG
+            // eslint-disable-next-line max-len
+            deprecation('7.1.0', 'PIXI.settings.CAN_UPLOAD_SAME_BUFFER is deprecated, use PIXI.BatchRenderer.canUploadSameBuffer');
+            // #endif
+            BatchRenderer.canUploadSameBuffer = value;
         },
     },
 });
