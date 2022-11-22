@@ -1,4 +1,4 @@
-import { Ticker, UPDATE_PRIORITY, settings, Texture, BaseTexture } from '@pixi/core';
+import { Ticker, UPDATE_PRIORITY, Texture, BaseTexture } from '@pixi/core';
 import type { DisplayObject } from '@pixi/display';
 import { Container } from '@pixi/display';
 import { Text, TextStyle, TextMetrics } from '@pixi/text';
@@ -225,6 +225,12 @@ function findTextStyle(item: TextStyle, queue: Array<any>): boolean
 export class BasePrepare
 {
     /**
+     * The default maximum uploads per frame.
+     * @static
+     */
+    public static uploadsPerFrame = 4;
+
+    /**
      * The limiter to be used to control how quickly items are prepared.
      * @type {PIXI.CountLimiter|PIXI.TimeLimiter}
      */
@@ -277,7 +283,7 @@ export class BasePrepare
      */
     constructor(renderer: IRenderer)
     {
-        this.limiter = new CountLimiter(settings.UPLOADS_PER_FRAME);
+        this.limiter = new CountLimiter(BasePrepare.uploadsPerFrame);
         this.renderer = renderer;
         this.uploadHookHelper = null;
         this.queue = [];
