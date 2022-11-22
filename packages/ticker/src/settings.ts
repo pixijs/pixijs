@@ -10,20 +10,20 @@ Object.defineProperties(settings, {
      * @memberof PIXI.settings
      * @type {number}
      * @deprecated since 7.1.0
-     * @see PIXI.Ticker.defaultTargetFPMS
+     * @see PIXI.Ticker.targetFPMS
      */
     TARGET_FPMS: {
         get()
         {
-            return Ticker.defaultTargetFPMS;
+            return Ticker.targetFPMS;
         },
         set(value: number)
         {
             // #if _DEBUG
-            deprecation('7.1.0', 'settings.TARGET_FPMS is deprecated, use Ticker.defaultTargetFPMS');
+            deprecation('7.1.0', 'settings.TARGET_FPMS is deprecated, use Ticker.targetFPMS');
             // #endif
 
-            Ticker.defaultTargetFPMS = value;
+            Ticker.targetFPMS = value;
         },
     },
 });
