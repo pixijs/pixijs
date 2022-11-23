@@ -1,4 +1,4 @@
-import { GC_MODES, PRECISION } from '@pixi/constants';
+import { PRECISION } from '@pixi/constants';
 import { BrowserAdapter } from './adapter';
 import { isMobile } from './utils/isMobile';
 
@@ -29,9 +29,6 @@ interface ISettings
     ADAPTER: IAdapter;
     RESOLUTION: number;
     RENDER_OPTIONS: IRenderOptions;
-    GC_MODE: GC_MODES;
-    GC_MAX_IDLE: number;
-    GC_MAX_CHECK_COUNT: number;
     PRECISION_VERTEX: PRECISION;
     PRECISION_FRAGMENT: PRECISION;
     CREATE_IMAGE_BITMAP: boolean;
@@ -109,36 +106,6 @@ export const settings: ISettings & Partial<GlobalMixins.Settings> = {
         legacy: false,
         hello: false,
     },
-
-    /**
-     * Default Garbage Collection mode.
-     * @static
-     * @name GC_MODE
-     * @memberof PIXI.settings
-     * @type {PIXI.GC_MODES}
-     * @default PIXI.GC_MODES.AUTO
-     */
-    GC_MODE: GC_MODES.AUTO,
-
-    /**
-     * Default Garbage Collection max idle.
-     * @static
-     * @name GC_MAX_IDLE
-     * @memberof PIXI.settings
-     * @type {number}
-     * @default 3600
-     */
-    GC_MAX_IDLE: 60 * 60,
-
-    /**
-     * Default Garbage Collection maximum check count.
-     * @static
-     * @name GC_MAX_CHECK_COUNT
-     * @memberof PIXI.settings
-     * @type {number}
-     * @default 600
-     */
-    GC_MAX_CHECK_COUNT: 60 * 10,
 
     /**
      * Default specify float precision in vertex shader.

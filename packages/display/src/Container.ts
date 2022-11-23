@@ -1,4 +1,4 @@
-import { MASK_TYPES, Matrix, settings, utils } from '@pixi/core';
+import { MASK_TYPES, Matrix, utils } from '@pixi/core';
 import { DisplayObject } from './DisplayObject';
 
 import type { MaskData, Renderer, Rectangle } from '@pixi/core';
@@ -50,22 +50,37 @@ export interface Container extends GlobalMixins.Container, DisplayObject {}
 export class Container<T extends DisplayObject = DisplayObject> extends DisplayObject
 {
     /**
+     * Sets the default value for the container property `sortableChildren`.
+     * If set to true, the container will sort its children by zIndex value
+     * when `updateTransform()` is called, or manually if `sortChildren()` is called.
+     *
+     * This actually changes the order of elements in the array, so should be treated
+     * as a basic solution that is not performant compared to other solutions,
+     * such as {@link https://github.com/pixijs/layers PixiJS Layers}.
+     *
+     * Also be aware of that this may not work nicely with the `addChildAt()` function,
+     * as the `zIndex` sorting may cause the child to automatically sorted to another position.
+     * @static
+     */
+    public static defaultSortableChildren = false;
+
+    /**
      * The array of children of this container.
      * @readonly
      */
     public readonly children: T[];
 
     /**
-     * If set to true, the container will sort its children by zIndex value
-     * when updateTransform() is called, or manually if sortChildren() is called.
+     * If set to true, the container will sort its children by `zIndex` value
+     * when `updateTransform()` is called, or manually if `sortChildren()` is called.
      *
      * This actually changes the order of elements in the array, so should be treated
      * as a basic solution that is not performant compared to other solutions,
-     * such as @link https://github.com/pixijs/pixi-display
+     * such as {@link https://github.com/pixijs/layers PixiJS Layers}
      *
-     * Also be aware of that this may not work nicely with the addChildAt() function,
-     * as the zIndex sorting may cause the child to automatically sorted to another position.
-     * @see PIXI.settings.SORTABLE_CHILDREN
+     * Also be aware of that this may not work nicely with the `addChildAt()` function,
+     * as the `zIndex` sorting may cause the child to automatically sorted to another position.
+     * @see PIXI.Container.defaultSortableChildren
      */
     public sortableChildren: boolean;
 
@@ -86,7 +101,7 @@ export class Container<T extends DisplayObject = DisplayObject> extends DisplayO
         super();
 
         this.children = [];
-        this.sortableChildren = settings.SORTABLE_CHILDREN;
+        this.sortableChildren = Container.defaultSortableChildren;
         this.sortDirty = false;
 
         /**

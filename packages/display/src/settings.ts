@@ -1,23 +1,30 @@
-import { settings } from '@pixi/core';
+import { settings, utils } from '@pixi/core';
+import { Container } from './Container';
 
-/**
- * Sets the default value for the container property 'sortableChildren'.
- * If set to true, the container will sort its children by zIndex value
- * when updateTransform() is called, or manually if sortChildren() is called.
- *
- * This actually changes the order of elements in the array, so should be treated
- * as a basic solution that is not performant compared to other solutions,
- * such as @link https://github.com/pixijs/pixi-display
- *
- * Also be aware of that this may not work nicely with the addChildAt() function,
- * as the zIndex sorting may cause the child to automatically sorted to another position.
- * @static
- * @constant
- * @name SORTABLE_CHILDREN
- * @memberof PIXI.settings
- * @type {boolean}
- * @default false
- */
-settings.SORTABLE_CHILDREN = false;
+Object.defineProperties(settings, {
+    /**
+     * Sets the default value for the container property 'sortableChildren'.
+     * @static
+     * @constant
+     * @name SORTABLE_CHILDREN
+     * @memberof PIXI.settings
+     * @deprecated since 7.1.0
+     * @type {boolean}
+     * @see PIXI.Container.defaultSortableChildren
+     */
+    SORTABLE_CHILDREN: {
+        get()
+        {
+            return Container.defaultSortableChildren;
+        },
+        set(value: boolean)
+        {
+            // #if _DEBUG
+            utils.deprecation('7.1.0', 'settings.SORTABLE_CHILDREN is deprecated, use Container.defaultSortableChildren');
+            // #endif
+            Container.defaultSortableChildren = value;
+        },
+    },
+});
 
 export { settings };
