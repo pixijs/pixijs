@@ -2,7 +2,6 @@ import { GC_MODES, PRECISION } from '@pixi/constants';
 import { BrowserAdapter } from './adapter';
 import { isMobile } from './utils/isMobile';
 
-import type { ENV, MIPMAP_MODES, WRAP_MODES, SCALE_MODES, MSAA_QUALITY } from '@pixi/constants';
 import type { ICanvas } from './ICanvas';
 import type { IAdapter } from './adapter';
 
@@ -25,45 +24,18 @@ export interface IRenderOptions
     hello: boolean;
 }
 
-export interface ISettings
+interface ISettings
 {
     ADAPTER: IAdapter;
-    /** @deprecated */
-    MIPMAP_TEXTURES?: MIPMAP_MODES;
-    /** @deprecated */
-    ANISOTROPIC_LEVEL?: number;
     RESOLUTION: number;
-    /** @deprecated */
-    FILTER_RESOLUTION?: number;
-    /** @deprecated */
-    FILTER_MULTISAMPLE?: MSAA_QUALITY;
-    /** @deprecated */
-    SPRITE_MAX_TEXTURES?: number;
-    /** @deprecated */
-    SPRITE_BATCH_SIZE?: number;
     RENDER_OPTIONS: IRenderOptions;
     GC_MODE: GC_MODES;
     GC_MAX_IDLE: number;
     GC_MAX_CHECK_COUNT: number;
-    /** @deprecated */
-    WRAP_MODE?: WRAP_MODES;
-    /** @deprecated */
-    SCALE_MODE?: SCALE_MODES;
     PRECISION_VERTEX: PRECISION;
     PRECISION_FRAGMENT: PRECISION;
-    /** @deprecated */
-    CAN_UPLOAD_SAME_BUFFER?: boolean;
     CREATE_IMAGE_BITMAP: boolean;
     ROUND_PIXELS: boolean;
-    RETINA_PREFIX?: RegExp;
-    FAIL_IF_MAJOR_PERFORMANCE_CAVEAT?: boolean;
-    /** @deprecated */
-    UPLOADS_PER_FRAME?: number;
-    SORTABLE_CHILDREN?: boolean;
-    PREFER_ENV?: ENV;
-    STRICT_TEXTURE_CACHE?: boolean;
-    MESH_CANVAS_PADDING?: number;
-    TARGET_FPMS?: number;
 }
 
 /**
@@ -78,7 +50,7 @@ export interface ISettings
  * PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
  * @namespace PIXI.settings
  */
-export const settings: ISettings = {
+export const settings: ISettings & Partial<GlobalMixins.Settings> = {
     /**
      * This adapter is used to call methods that are platform dependent.
      * For example `document.createElement` only runs on the web but fails in node environments.
