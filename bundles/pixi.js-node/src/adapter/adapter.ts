@@ -25,7 +25,7 @@ export const NodeAdapter = {
     {
         const request = new Request(url, options);
 
-        // check if urls starts with http(s) as only these are supported by node-fetch
+        // Check if urls starts with http(s) as only these are supported by node-fetch
         if (utils.path.isUrl(request.url))
         {
             return fetch(url, request);
@@ -41,16 +41,15 @@ export const NodeAdapter = {
             }
             const readStream = fs.createReadStream(filePath);
 
-            // eslint-disable-next-line func-names
-            readStream.on('open', function ()
+            readStream.on('open', () =>
             {
                 resolve(new Response(readStream as unknown as ReadableStream, {
                     url: request.url,
                     status: 200,
                     statusText: 'OK',
                     size: fs.statSync(filePath).size,
-                    timeout: (request as any).timeout
-                } as unknown as ResponseInit));
+                    timeout: (request as any).timeout,
+                } as ResponseInit));
             });
         });
     },
