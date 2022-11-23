@@ -30,6 +30,13 @@ export interface Mesh extends GlobalMixins.Mesh {}
 export class Mesh<T extends Shader = MeshMaterial> extends Container
 {
     /**
+     * Used by the @pixi/canvas-mesh package to draw meshes using canvas.
+     * Added here because we cannot mixin a static property to Mesh type.
+     * @ignore
+     */
+    public static defaultCanvasPadding: number;
+
+    /**
      * Represents the vertex and fragment shaders that processes the geometry and runs on the GPU.
      * Can be shared between multiple Mesh objects.
      * @type {PIXI.Shader|PIXI.MeshMaterial}

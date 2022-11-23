@@ -24,6 +24,7 @@ declare namespace GlobalMixins
 
     interface Settings
     {
+        /** @deprecated */
         MESH_CANVAS_PADDING: number;
     }
 }
