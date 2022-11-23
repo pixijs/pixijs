@@ -38,7 +38,7 @@ function getCacheableAssets(keys: string[], asset: Spritesheet, ignoreMultiPack:
 
         asset.linkedSheets.forEach((item: Spritesheet, i) =>
         {
-            const out2 = getCacheableAssets([`${basePath}/${asset.data.meta.related_multi_packs[i]}`], item, true);
+            const out2 = getCacheableAssets([utils.path.join(basePath, asset.data.meta.related_multi_packs[i])], item, true);
 
             Object.assign(out, out2);
         });
@@ -125,6 +125,89 @@ export class SpritesheetAssetCache
 
 export const spritesheetAssetCache = new SpritesheetAssetCache();
 
+function invalidRelatedMultiPacks(multiPacks: any)
+{
+    throw new TypeError(`[spritesheetAsset] Invalid related_multi_packs: ${JSON.stringify(multiPacks)}`);
+}
+
+function loadRelatedMultiPacks(
+    loader: Loader, relatedURLs: string[],
+    relatedEntries: SpritesheetAssetCacheEntry[], relatedSpritesheets: Record<string, Spritesheet | null>)
+{
+    return new Promise<void>((resolve, reject) =>
+    {
+        if (relatedURLs.length === 0)
+        {
+            resolve();
+
+            return;
+        }
+
+        let pending = 0;
+        const load = async (relatedURL: string) =>
+        {
+            try
+            {
+                relatedURL = utils.path.toAbsolute(relatedURL);
+                if (relatedSpritesheets[relatedURL] !== undefined) return;
+                relatedSpritesheets[relatedURL] = null;
+                ++pending;
+
+                const relatedEntry = spritesheetAssetCache.get(relatedURL);
+
+                relatedEntries.push(relatedEntry);
+
+                // Don't use await here or deadlock may happen
+                loader.load<Texture>(relatedURL)
+                    .then((value) =>
+                    {
+                        if (!(value instanceof Spritesheet))
+                        {
+                            throw new TypeError(
+                                `[spritesheetAsset] ${relatedURL} in related_multi_packs is not a Spritesheet`);
+                        }
+                    })
+                    .catch((reason) =>
+                    {
+                        spritesheetAssetCache.remove(relatedURL);
+                        relatedEntry.reject(reason);
+                    });
+
+                const relatedSpritesheet = await relatedEntry.getPromise(0);
+
+                relatedSpritesheets[relatedURL] = relatedSpritesheet;
+
+                const multiPacks = relatedSpritesheet?.data?.meta?.related_multi_packs;
+
+                if (multiPacks !== undefined)
+                {
+                    if (!Array.isArray(multiPacks)) invalidRelatedMultiPacks(multiPacks);
+
+                    const basePath = utils.path.dirname(relatedURL);
+
+                    for (const item of multiPacks)
+                    {
+                        if (typeof item !== 'string') invalidRelatedMultiPacks(multiPacks);
+                        load(utils.path.toAbsolute(utils.path.join(basePath, item)));
+                    }
+                }
+
+                --pending;
+                if (pending === 0) resolve();
+            }
+            catch (e)
+            {
+                reject(e);
+            }
+        };
+
+        for (const relatedURL of relatedURLs)
+        {
+            load(relatedURL);
+        }
+    });
+}
+
 /**
  * Asset extension for loading spritesheets.
  * @memberof PIXI
@@ -181,21 +264,11 @@ export const spritesheetAsset = {
             const url = utils.path.toAbsolute(loadAsset.src);
             const entry = spritesheetAssetCache.get(url);
 
-            function invalidRelatedMultiPacks(multiPacks: any)
-            {
-                throw new TypeError(`[spritesheetAsset] Invalid related_multi_packs: ${JSON.stringify(multiPacks)}`);
-            }
-
             try
             {
-                let basePath = utils.path.dirname(url);
+                const basePath = utils.path.dirname(url);
 
-                if (basePath && basePath.lastIndexOf('/') !== (basePath.length - 1))
-                {
-                    basePath += '/';
-                }
-
-                const imagePath = basePath + asset.meta.image;
+                const imagePath = utils.path.join(basePath, asset.meta.image);
                 const assets = await loader.load<Texture>([imagePath]);
                 const texture = assets[imagePath];
                 const spritesheet = new Spritesheet(
@@ -208,11 +281,7 @@ export const spritesheetAsset = {
                 await spritesheet.parse();
                 entry.resolve(0, spritesheet);
 
-                // Check and add the multi atlas
-                // Heavily influenced and based on:
-                // https://github.com/rocket-ua/pixi-tps-loader/blob/master/src/ResourceLoader.js
                 const multiPacks = asset?.meta?.related_multi_packs;
-
                 const relatedEntries: SpritesheetAssetCacheEntry[] = [];
 
                 if (multiPacks !== undefined)
@@ -224,7 +293,7 @@ export const spritesheetAsset = {
                     for (const item of multiPacks)
                     {
                         if (typeof item !== 'string') invalidRelatedMultiPacks(multiPacks);
-                        relatedURLs.push(utils.path.toAbsolute(basePath + item));
+                        relatedURLs.push(utils.path.toAbsolute(utils.path.join(basePath, item)));
                     }
 
                     if (relatedURLs.length > 0)
@@ -232,77 +301,7 @@ export const spritesheetAsset = {
                         const relatedSpritesheets: Record<string, Spritesheet | null> = {};
 
                         // Wait for all related multi packs to be loaded, recursively (waiting their Promise 0)
-                        await new Promise<void>((resolve, reject) =>
-                        {
-                            let pending = 0;
-                            const load = async (relatedURL: string) =>
-                            {
-                                try
-                                {
-                                    relatedURL = utils.path.toAbsolute(relatedURL);
-                                    if (relatedSpritesheets[relatedURL] !== undefined) return;
-                                    relatedSpritesheets[relatedURL] = null;
-                                    ++pending;
-
-                                    const relatedEntry = spritesheetAssetCache.get(relatedURL);
-
-                                    relatedEntries.push(relatedEntry);
-
-                                    // Don't use await here or deadlock may happen
-                                    loader.load<Texture>(relatedURL)
-                                        .then((value) =>
-                                        {
-                                            if (!(value instanceof Spritesheet))
-                                            {
-                                                throw new TypeError(
-                                                    `[spritesheetAsset] ${relatedURL} in related_multi_packs `
-                                                    + `is not a Spritesheet`);
-                                            }
-                                        })
-                                        .catch((reason) =>
-                                        {
-                                            spritesheetAssetCache.remove(relatedURL);
-                                            relatedEntry.reject(reason);
-                                        });
-
-                                    const relatedSpritesheet = await relatedEntry.getPromise(0);
-
-                                    relatedSpritesheets[relatedURL] = relatedSpritesheet;
-
-                                    const multiPacks = relatedSpritesheet?.data?.meta?.related_multi_packs;
-
-                                    if (multiPacks !== undefined)
-                                    {
-                                        if (!Array.isArray(multiPacks)) invalidRelatedMultiPacks(multiPacks);
-
-                                        let basePath = utils.path.dirname(relatedURL);
-
-                                        if (basePath && basePath.lastIndexOf('/') !== (basePath.length - 1))
-                                        {
-                                            basePath += '/';
-                                        }
-
-                                        for (const item of multiPacks)
-                                        {
-                                            if (typeof item !== 'string') invalidRelatedMultiPacks(multiPacks);
-                                            load(utils.path.toAbsolute(basePath + item));
-                                        }
-                                    }
-
-                                    --pending;
-                                    if (pending === 0) resolve();
-                                }
-                                catch (e)
-                                {
-                                    reject(e);
-                                }
-                            };
-
-                            for (const relatedURL of relatedURLs)
-                            {
-                                load(relatedURL);
-                            }
-                        });
+                        await loadRelatedMultiPacks(loader, relatedURLs, relatedEntries, relatedSpritesheets);
 
                         // Fill the spritesheet's linkedSheets field (resolving Promise 1)
                         for (const relatedURL of relatedURLs)
@@ -317,7 +316,7 @@ export const spritesheetAsset = {
                 // Wait for all related multi packs' linkedSheets field being filled (waiting their Promise 1)
                 if (relatedEntries.length > 0)
                 {
-                    Promise.all(relatedEntries.map((entry) => entry.getPromise(1)));
+                    await Promise.all(relatedEntries.map((entry) => entry.getPromise(1)));
                 }
 
                 return spritesheet;
