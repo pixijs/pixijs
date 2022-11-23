@@ -1,10 +1,11 @@
 import { settings } from '@pixi/settings';
-import type { MSAA_QUALITY, MIPMAP_MODES, SCALE_MODES, WRAP_MODES } from '@pixi/constants';
+import type { MSAA_QUALITY, MIPMAP_MODES, SCALE_MODES, WRAP_MODES, GC_MODES } from '@pixi/constants';
 import { ENV } from '@pixi/constants';
 import { BaseTexture } from './textures/BaseTexture';
 import { Filter } from './filters/Filter';
 import { deprecation } from '@pixi/utils';
 import { BatchRenderer } from './batch/BatchRenderer';
+import { TextureGCSystem } from './systems';
 
 /**
  * The maximum support for using WebGL. If a device does not
@@ -249,6 +250,72 @@ Object.defineProperties(settings, {
             deprecation('7.1.0', 'PIXI.settings.CAN_UPLOAD_SAME_BUFFER is deprecated, use PIXI.BatchRenderer.canUploadSameBuffer');
             // #endif
             BatchRenderer.canUploadSameBuffer = value;
+        },
+    },
+
+    /**
+     * Default Garbage Collection mode.
+     * @static
+     * @name GC_MODE
+     * @memberof PIXI.settings
+     * @type {PIXI.GC_MODES}
+     * @deprecated since 7.1.0
+     */
+    GC_MODE: {
+        get()
+        {
+            return TextureGCSystem.defaultMode;
+        },
+        set(value: GC_MODES)
+        {
+            // #if _DEBUG
+            deprecation('7.1.0', 'settings.GC_MODE is deprecated, use TextureGCSystem.defaultMode');
+            // #endif
+            TextureGCSystem.defaultMode = value;
+        },
+    },
+
+    /**
+     * Default Garbage Collection max idle.
+     * @static
+     * @name GC_MAX_IDLE
+     * @memberof PIXI.settings
+     * @type {number}
+     * @deprecated since 7.1.0
+     */
+    GC_MAX_IDLE: {
+        get()
+        {
+            return TextureGCSystem.defaultMaxIdle;
+        },
+        set(value: number)
+        {
+            // #if _DEBUG
+            deprecation('7.1.0', 'settings.GC_MAX_IDLE is deprecated, use TextureGCSystem.defaultMaxIdle');
+            // #endif
+            TextureGCSystem.defaultMaxIdle = value;
+        },
+    },
+
+    /**
+     * Default Garbage Collection maximum check count.
+     * @static
+     * @name GC_MAX_CHECK_COUNT
+     * @memberof PIXI.settings
+     * @type {number}
+     * @deprecated since 7.1.0
+     */
+    GC_MAX_CHECK_COUNT: {
+        get()
+        {
+            return TextureGCSystem.defaultCheckCountMax;
+        },
+        set(value: number)
+        {
+            // #if _DEBUG
+            deprecation('7.1.0', 'settings.GC_MAX_CHECK_COUNT is deprecated, use TextureGCSystem.defaultCheckCountMax');
+            // #endif
+            TextureGCSystem.defaultCheckCountMax = value;
         },
     },
 });

@@ -1,5 +1,4 @@
 import { GC_MODES } from '@pixi/constants';
-import { settings } from '@pixi/settings';
 
 import type { ISystem } from '../system/ISystem';
 import type { Renderer } from '../Renderer';
@@ -21,6 +20,28 @@ export interface IUnloadableTexture
  */
 export class TextureGCSystem implements ISystem
 {
+    /**
+     * Default Garbage Collection mode.
+     * @static
+     * @type {PIXI.GC_MODES}
+     * @default PIXI.GC_MODES.AUTO
+     */
+    public static defaultMode = GC_MODES.AUTO;
+
+    /**
+     * Default Garbage Collection max idle.
+     * @static
+     * @default 3600
+     */
+    public static defaultMaxIdle = 60 * 60;
+
+    /**
+     * Default Garbage Collection maximum check count.
+     * @static
+     * @default 600
+     */
+    public static defaultCheckCountMax = 60 * 10;
+
     /** @ignore */
     static extension: ExtensionMetadata = {
         type: ExtensionType.RendererSystem,
@@ -41,19 +62,19 @@ export class TextureGCSystem implements ISystem
 
     /**
      * Maximum idle time, in seconds
-     * @see PIXI.settings.GC_MAX_IDLE
+     * @see PIXI.TextureGCSystem.defaultMaxIdle
      */
     public maxIdle: number;
 
     /**
      * Maximum number of item to check
-     * @see PIXI.settings.GC_MAX_CHECK_COUNT
+     * @see PIXI.TextureGCSystem.defaultCheckCountMax
      */
     public checkCountMax: number;
 
     /**
      * Current garbage collection mode
-     * @see PIXI.settings.GC_MODE
+     * @see PIXI.TextureGCSystem.defaultMode
      */
     public mode: GC_MODES;
     private renderer: Renderer;
@@ -65,9 +86,9 @@ export class TextureGCSystem implements ISystem
 
         this.count = 0;
         this.checkCount = 0;
-        this.maxIdle = settings.GC_MAX_IDLE;
-        this.checkCountMax = settings.GC_MAX_CHECK_COUNT;
-        this.mode = settings.GC_MODE;
+        this.maxIdle = TextureGCSystem.defaultMaxIdle;
+        this.checkCountMax = TextureGCSystem.defaultCheckCountMax;
+        this.mode = TextureGCSystem.defaultMode;
     }
 
     /**

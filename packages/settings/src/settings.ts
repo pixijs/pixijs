@@ -1,8 +1,8 @@
-import { GC_MODES, PRECISION } from '@pixi/constants';
+import { PRECISION } from '@pixi/constants';
 import { BrowserAdapter } from './adapter';
 import { isMobile } from './utils/isMobile';
 
-import type { ENV, MIPMAP_MODES, WRAP_MODES, SCALE_MODES, MSAA_QUALITY } from '@pixi/constants';
+import type { ENV, MIPMAP_MODES, WRAP_MODES, SCALE_MODES, MSAA_QUALITY, GC_MODES } from '@pixi/constants';
 import type { ICanvas } from './ICanvas';
 import type { IAdapter } from './adapter';
 
@@ -42,9 +42,12 @@ export interface ISettings
     /** @deprecated */
     SPRITE_BATCH_SIZE?: number;
     RENDER_OPTIONS: IRenderOptions;
-    GC_MODE: GC_MODES;
-    GC_MAX_IDLE: number;
-    GC_MAX_CHECK_COUNT: number;
+    /** @deprecated */
+    GC_MODE?: GC_MODES;
+    /** @deprecated */
+    GC_MAX_IDLE?: number;
+    /** @deprecated */
+    GC_MAX_CHECK_COUNT?: number;
     /** @deprecated */
     WRAP_MODE?: WRAP_MODES;
     /** @deprecated */
@@ -59,10 +62,12 @@ export interface ISettings
     FAIL_IF_MAJOR_PERFORMANCE_CAVEAT?: boolean;
     /** @deprecated */
     UPLOADS_PER_FRAME?: number;
+    /** @deprecated */
     SORTABLE_CHILDREN?: boolean;
     PREFER_ENV?: ENV;
     STRICT_TEXTURE_CACHE?: boolean;
     MESH_CANVAS_PADDING?: number;
+    /** @deprecated */
     TARGET_FPMS?: number;
 }
 
@@ -137,36 +142,6 @@ export const settings: ISettings = {
         legacy: false,
         hello: false,
     },
-
-    /**
-     * Default Garbage Collection mode.
-     * @static
-     * @name GC_MODE
-     * @memberof PIXI.settings
-     * @type {PIXI.GC_MODES}
-     * @default PIXI.GC_MODES.AUTO
-     */
-    GC_MODE: GC_MODES.AUTO,
-
-    /**
-     * Default Garbage Collection max idle.
-     * @static
-     * @name GC_MAX_IDLE
-     * @memberof PIXI.settings
-     * @type {number}
-     * @default 3600
-     */
-    GC_MAX_IDLE: 60 * 60,
-
-    /**
-     * Default Garbage Collection maximum check count.
-     * @static
-     * @name GC_MAX_CHECK_COUNT
-     * @memberof PIXI.settings
-     * @type {number}
-     * @default 600
-     */
-    GC_MAX_CHECK_COUNT: 60 * 10,
 
     /**
      * Default specify float precision in vertex shader.

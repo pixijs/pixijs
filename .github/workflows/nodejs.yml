@@ -32,10 +32,18 @@ jobs:
       run: npm install -g npm@8
     - name: Install Dependencies
       run: npm ci
+
     - name: Run Unit Tests
       uses: GabrielBB/xvfb-action@v1
       with:
         run: npm run coverage
+      env:
+        NODE_ENV: production
+
+    - name: Run Unit Tests for @pixi/node
+      uses: GabrielBB/xvfb-action@v1
+      with:
+        run: npm run coverage:node
       env:
         NODE_ENV: production
 
