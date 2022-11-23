@@ -3,7 +3,7 @@ import { FederatedPointerEvent } from './FederatedPointerEvent';
 import { FederatedWheelEvent } from './FederatedWheelEvent';
 import { Point, utils } from '@pixi/core';
 
-import type { Cursor, FederatedEventTarget, IFederatedDisplayObject } from './FederatedEventTarget';
+import type { Cursor, FederatedEventTarget, IFederatedDisplayObject, FederatedEventHandler } from './FederatedEventTarget';
 import type { DisplayObject } from '@pixi/display';
 import type { FederatedEvent } from './FederatedEvent';
 
@@ -58,8 +58,6 @@ type EmitterListeners = Record<string,
 | Array<{ fn(...args: any[]): any, context: any }>
 | { fn(...args: any[]): any, context: any }
 >;
-
-type EventHandler<T= FederatedPointerEvent> = (event: T) => void;
 
 /**
  * Event boundaries are "barriers" where events coming from an upstream scene are modified before downstream propagation.
@@ -547,9 +545,9 @@ export class EventBoundary
         type = type ?? e.type;
 
         // call the `on${type}` for the current target if it exists
-        const displayObject = (e.currentTarget as unknown as IFederatedDisplayObject);
+        const handlerKey = `on${type}` as keyof IFederatedDisplayObject;
 
-        (displayObject[`on${type}` as keyof IFederatedDisplayObject] as EventHandler)?.(e as FederatedPointerEvent);
+        (e.currentTarget[handlerKey] as FederatedEventHandler<FederatedEvent<UIEvent>>)?.(e);
 
         const key = e.eventPhase === e.CAPTURING_PHASE || e.eventPhase === e.AT_TARGET ? `${type}capture` : type;
 
