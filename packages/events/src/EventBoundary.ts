@@ -3,7 +3,7 @@ import { FederatedPointerEvent } from './FederatedPointerEvent';
 import { FederatedWheelEvent } from './FederatedWheelEvent';
 import { Point, utils } from '@pixi/core';
 
-import type { Cursor, FederatedEventTarget } from './FederatedEventTarget';
+import type { Cursor, FederatedEventTarget, IFederatedDisplayObject, FederatedEventHandler } from './FederatedEventTarget';
 import type { DisplayObject } from '@pixi/display';
 import type { FederatedEvent } from './FederatedEvent';
 
@@ -534,12 +534,21 @@ export class EventBoundary
 
     /**
      * Notify all the listeners to the event's `currentTarget`.
+     *
+     * If the `currentTarget` contains the property `on<type>`, then it is called here,
+     * simulating the behavior from version 6.x and prior.
      * @param e - The event passed to the target.
      * @param type
      */
     protected notifyTarget(e: FederatedEvent, type?: string): void
     {
         type = type ?? e.type;
+
+        // call the `on${type}` for the current target if it exists
+        const handlerKey = `on${type}` as keyof IFederatedDisplayObject;
+
+        (e.currentTarget[handlerKey] as FederatedEventHandler<FederatedEvent<UIEvent>>)?.(e);
+
         const key = e.eventPhase === e.CAPTURING_PHASE || e.eventPhase === e.AT_TARGET ? `${type}capture` : type;
 
         this.notifyListeners(e, key);
