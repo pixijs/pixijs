@@ -1,7 +1,6 @@
+import { Assets } from '@pixi/assets';
 import { BaseTexture, Texture } from '@pixi/core';
 import { Spritesheet } from '@pixi/spritesheet';
-
-import { Assets } from '@pixi/assets';
 
 function wait(value = 500)
 {
@@ -252,13 +251,13 @@ describe('Assets', () =>
             basePath,
         });
 
-        const bunny = await Assets.load('textures/bunny.png') as Texture;
+        const bunny = await Assets.load<Texture>('textures/bunny.png');
 
         bunny.destroy(true);
 
         expect(bunny.baseTexture).toBe(null);
 
-        const bunnyReloaded = await Assets.load('textures/bunny.png') as Texture;
+        const bunnyReloaded = await Assets.load<Texture>('textures/bunny.png');
 
         expect(bunnyReloaded.baseTexture).toBeInstanceOf(BaseTexture);
     });
@@ -306,7 +305,7 @@ describe('Assets', () =>
             basePath,
         });
 
-        const bunny = await Assets.load('textures/bunny.png') as Texture;
+        const bunny = await Assets.load<Texture>('textures/bunny.png');
 
         await Assets.unload('textures/bunny.png');
 

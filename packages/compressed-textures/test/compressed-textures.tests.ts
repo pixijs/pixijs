@@ -1,8 +1,9 @@
 import { Assets } from '@pixi/assets';
-import type { Texture } from '@pixi/core';
 import { Loader } from '../../assets/src/loader/Loader';
 import { Resolver } from '../../assets/src/resolver/Resolver';
 import { detectCompressedTextures, loadDDS, loadKTX, resolveCompressedTextureUrl } from '../src/loaders';
+
+import type { Texture } from '@pixi/core';
 
 describe('Compressed Loader', () =>
 {
@@ -15,7 +16,7 @@ describe('Compressed Loader', () =>
         loader['_parsers'].push(loadKTX);
 
         // eslint-disable-next-line max-len
-        const texture: Texture = await loader.load(`https://pixijs.io/compressed-textures-example/images/PixiJS-Logo_PNG_BC3_KTX.KTX`);
+        const texture = await loader.load<Texture>(`https://pixijs.io/compressed-textures-example/images/PixiJS-Logo_PNG_BC3_KTX.KTX`);
 
         expect(texture.baseTexture.valid).toBe(true);
         expect(texture.width).toBe(898);
@@ -29,7 +30,7 @@ describe('Compressed Loader', () =>
         loader['_parsers'].push(loadDDS);
 
         // eslint-disable-next-line max-len
-        const texture: Texture = await loader.load(`https://pixijs.io/compressed-textures-example/images/airplane-boeing_JPG_BC3_1.DDS`);
+        const texture = await loader.load<Texture>(`https://pixijs.io/compressed-textures-example/images/airplane-boeing_JPG_BC3_1.DDS`);
 
         expect(texture.baseTexture.valid).toBe(true);
         expect(texture.width).toBe(1000);

@@ -1,5 +1,5 @@
 import { Cache, loadTextures } from '@pixi/assets';
-import { Renderer, Texture, Point } from '@pixi/core';
+import { Point, Renderer, Texture } from '@pixi/core';
 import { SimpleRope } from '@pixi/mesh-extras';
 import { Loader } from '../../assets/src/loader/Loader';
 
@@ -23,7 +23,7 @@ describe('SimpleRope', () =>
     });
     it('should create a rope from an external image', async () =>
     {
-        const texture = await loader.load(`${serverPath}bitmap-1.png`);
+        const texture = await loader.load<Texture>(`${serverPath}bitmap-1.png`);
         const rope = new SimpleRope(texture, [new Point(0, 0), new Point(0, 1)]);
 
         expect(rope).toBeInstanceOf(SimpleRope);
