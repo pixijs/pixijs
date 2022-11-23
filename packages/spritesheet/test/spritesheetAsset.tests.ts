@@ -1,6 +1,6 @@
 import { Cache, loadJson, loadTextures } from '@pixi/assets';
 import { Texture } from '@pixi/core';
-import { spritesheetAsset, spritesheetAssetCache, Spritesheet } from '@pixi/spritesheet';
+import { Spritesheet, spritesheetAsset, spritesheetAssetCache } from '@pixi/spritesheet';
 import { clearTextureCache } from '@pixi/utils';
 import { Loader } from '../../assets/src/loader/Loader';
 
@@ -29,7 +29,7 @@ describe('spritesheetAsset', () =>
 
     it('should load a spritesheet', async () =>
     {
-        const spriteSheet: Spritesheet = await loader.load(`${serverPath}spritesheet.json`);
+        const spriteSheet = await loader.load<Spritesheet>(`${serverPath}spritesheet.json`);
 
         const bunnyTexture = spriteSheet.textures['bunny.png'];
         const senseiTexture = spriteSheet.textures['pic-sensei.jpg'];
@@ -65,7 +65,7 @@ describe('spritesheetAsset', () =>
 
     it('should not create multipack resources when related multi packs is missing', async () =>
     {
-        const spritesheet = await loader.load(`${serverPath}building1.json`) as Spritesheet;
+        const spritesheet = await loader.load<Spritesheet>(`${serverPath}building1.json`);
 
         expect(spritesheet.linkedSheets.length).toEqual(0);
     });
@@ -74,7 +74,7 @@ describe('spritesheetAsset', () =>
     {
         Cache['_parsers'].push(spritesheetAsset.cache as CacheParser);
 
-        const spritesheet = await loader.load(`${serverPath}multi-pack-0.json`) as Spritesheet;
+        const spritesheet = await loader.load<Spritesheet>(`${serverPath}multi-pack-0.json`);
 
         Cache.set('multi-pack-0.json', spritesheet);
 
@@ -99,8 +99,7 @@ describe('spritesheetAsset', () =>
 
         const url0 = `${serverPath}multi-pack-0.json`;
         const url1 = `${serverPath}multi-pack-1.json`;
-        const { [url0]: spritesheet0, [url1]: spritesheet1 }
-            = await loader.load([url0, url1]) as {[key: string]: Spritesheet};
+        const { [url0]: spritesheet0, [url1]: spritesheet1 } = await loader.load<Spritesheet>([url0, url1]);
 
         expect(spritesheet0.linkedSheets).toEqual([spritesheet1]);
         expect(spritesheet1.linkedSheets).toEqual([spritesheet0]);
@@ -162,7 +161,7 @@ describe('spritesheetAsset', () =>
 
     it('should unload a spritesheet', async () =>
     {
-        const spriteSheet: Spritesheet = await loader.load(`${serverPath}spritesheet.json`);
+        const spriteSheet = await loader.load<Spritesheet>(`${serverPath}spritesheet.json`);
 
         await loader.unload(`${serverPath}spritesheet.json`);
 

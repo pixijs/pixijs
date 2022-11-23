@@ -196,7 +196,7 @@ export const spritesheetAsset = {
                 }
 
                 const imagePath = basePath + asset.meta.image;
-                const assets = await loader.load([imagePath]) as Record<string, Texture>;
+                const assets = await loader.load<Texture>([imagePath]);
                 const texture = assets[imagePath];
                 const spritesheet = new Spritesheet(
                     texture.baseTexture,
@@ -249,7 +249,7 @@ export const spritesheetAsset = {
                                     relatedEntries.push(relatedEntry);
 
                                     // Don't use await here or deadlock may happen
-                                    loader.load(relatedURL)
+                                    loader.load<Texture>(relatedURL)
                                         .then((value) =>
                                         {
                                             if (!(value instanceof Spritesheet))
