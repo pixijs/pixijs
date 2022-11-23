@@ -39,12 +39,14 @@ interface ISettings
  * User's customizable globals for overriding the default PIXI settings, such
  * as a renderer's default resolution, framerate, float precision, etc.
  * @example
+ * import { settings, ENV } from 'pixi.js';
+ * 
  * // Use the native window resolution as the default resolution
  * // will support high-density displays when rendering
- * PIXI.settings.RESOLUTION = window.devicePixelRatio;
+ * settings.RESOLUTION = window.devicePixelRatio;
  *
- * // Disable interpolation when scaling, will make texture be pixelated
- * PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
+ * // Used for older v1 WebGL devices for backwards compatibility
+ * settings.PREFER_ENV = ENV.WEBGL_LEGACY;
  * @namespace PIXI.settings
  */
 export const settings: ISettings & Partial<GlobalMixins.Settings> = {
