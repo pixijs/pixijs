@@ -49,6 +49,9 @@ export interface IHitArea
     contains(x: number, y: number): boolean;
 }
 
+/** Function type for handlers, e.g., onclick */
+export type FederatedEventHandler<T= FederatedPointerEvent> = (event: T) => void;
+
 /**
  * Describes the shape for a {@link FederatedEvent}'s' `eventTarget`.
  * @memberof PIXI
@@ -81,11 +84,71 @@ export interface FederatedEventTarget extends utils.EventEmitter, EventTarget
 
     /** Remove all listeners, or those of the specified event. */
     removeAllListeners(event?: string | symbol): this;
+
+    /** Handler for 'click' event */
+    onclick: FederatedEventHandler | null;
+    /** Handler for 'mousedown' event */
+    onmousedown: FederatedEventHandler | null;
+    /** Handler for 'mouseenter' event */
+    onmouseenter: FederatedEventHandler | null;
+    /** Handler for 'mouseleave' event */
+    onmouseleave: FederatedEventHandler | null;
+    /** Handler for 'mouseover' event */
+    onmousemove: FederatedEventHandler | null;
+    /** Handler for 'mouseout' event */
+    onmouseout: FederatedEventHandler | null;
+    /** Handler for 'mouseover' event */
+    onmouseover: FederatedEventHandler | null;
+    /** Handler for 'mouseup' event */
+    onmouseup: FederatedEventHandler | null;
+    /** Handler for 'mouseupoutside' event */
+    onmouseupoutside: FederatedEventHandler | null;
+    /** Handler for 'pointercancel' event */
+    onpointercancel: FederatedEventHandler | null;
+    /** Handler for 'pointerdown' event */
+    onpointerdown: FederatedEventHandler | null;
+    /** Handler for 'pointerenter' event */
+    onpointerenter: FederatedEventHandler | null;
+    /** Handler for 'pointerleave' event */
+    onpointerleave: FederatedEventHandler | null;
+    /** Handler for 'pointermove' event */
+    onpointermove: FederatedEventHandler | null;
+    /** Handler for 'pointerout' event */
+    onpointerout: FederatedEventHandler | null;
+    /** Handler for 'pointerover' event */
+    onpointerover: FederatedEventHandler | null;
+    /** Handler for 'pointertap' event */
+    onpointertap: FederatedEventHandler | null;
+    /** Handler for 'pointerup' event */
+    onpointerup: FederatedEventHandler | null;
+    /** Handler for 'pointerupoutside' event */
+    onpointerupoutside: FederatedEventHandler | null;
+    /** Handler for 'rightclick' event */
+    onrightclick: FederatedEventHandler | null;
+    /** Handler for 'rightdown' event */
+    onrightdown: FederatedEventHandler | null;
+    /** Handler for 'rightup' event */
+    onrightup: FederatedEventHandler | null;
+    /** Handler for 'rightupoutside' event */
+    onrightupoutside: FederatedEventHandler | null;
+    /** Handler for 'tap' event */
+    ontap: FederatedEventHandler | null;
+    /** Handler for 'touchcancel' event */
+    ontouchcancel: FederatedEventHandler | null;
+    /** Handler for 'touchend' event */
+    ontouchend: FederatedEventHandler | null;
+    /** Handler for 'touchendoutside' event */
+    ontouchendoutside: FederatedEventHandler | null;
+    /** Handler for 'touchmove' event */
+    ontouchmove: FederatedEventHandler | null;
+    /** Handler for 'touchstart' event */
+    ontouchstart: FederatedEventHandler | null;
+    /** Handler for 'wheel' event */
+    onwheel: FederatedEventHandler<FederatedWheelEvent> | null;
 }
 
 type AddListenerOptions = boolean | AddEventListenerOptions;
 type RemoveListenerOptions = boolean | EventListenerOptions;
-type EventHandler<T= FederatedPointerEvent> = (event: T) => void;
 
 export interface IFederatedDisplayObject
     extends Omit<FederatedEventTarget, 'parent' | 'children' | keyof utils.EventEmitter | 'cursor'>
@@ -110,36 +173,6 @@ export interface IFederatedDisplayObject
         listener: EventListenerOrEventListenerObject,
         options?: RemoveListenerOptions
     ): void;
-    onclick: EventHandler | null;
-    onmousedown: EventHandler | null;
-    onmouseenter: EventHandler | null;
-    onmouseleave: EventHandler | null;
-    onmousemove: EventHandler | null;
-    onmouseout: EventHandler | null;
-    onmouseover: EventHandler | null;
-    onmouseup: EventHandler | null;
-    onmouseupoutside: EventHandler | null;
-    onpointercancel: EventHandler | null;
-    onpointerdown: EventHandler | null;
-    onpointerenter: EventHandler | null;
-    onpointerleave: EventHandler | null;
-    onpointermove: EventHandler | null;
-    onpointerout: EventHandler | null;
-    onpointerover: EventHandler | null;
-    onpointertap: EventHandler | null;
-    onpointerup: EventHandler | null;
-    onpointerupoutside: EventHandler | null;
-    onrightclick: EventHandler | null;
-    onrightdown: EventHandler | null;
-    onrightup: EventHandler | null;
-    onrightupoutside: EventHandler | null;
-    ontap: EventHandler | null;
-    ontouchcancel: EventHandler | null;
-    ontouchend: EventHandler | null;
-    ontouchendoutside: EventHandler | null;
-    ontouchmove: EventHandler | null;
-    ontouchstart: EventHandler | null;
-    onwheel: EventHandler<FederatedWheelEvent> | null;
 }
 
 export const FederatedDisplayObject: IFederatedDisplayObject = {
