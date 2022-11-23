@@ -17,4 +17,9 @@ declare namespace GlobalMixins
     {
 
     }
+
+    interface Settings
+    {
+        SORTABLE_CHILDREN: boolean;
+    }
 }

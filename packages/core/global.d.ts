@@ -47,4 +47,29 @@ declare namespace GlobalMixins
     {
 
     }
+
+    interface Settings
+    {
+        /** @deprecated */
+        FILTER_RESOLUTION: number;
+        /** @deprecated */
+        FILTER_MULTISAMPLE: import('@pixi/constants').MSAA_QUALITY;
+        /** @deprecated */
+        SPRITE_MAX_TEXTURES: number;
+        /** @deprecated */
+        SPRITE_BATCH_SIZE: number;
+        /** @deprecated */
+        MIPMAP_TEXTURES: import('@pixi/constants').MIPMAP_MODES;
+        /** @deprecated */
+        ANISOTROPIC_LEVEL: number;
+        /** @deprecated */
+        WRAP_MODE: import('@pixi/constants').WRAP_MODES;
+        /** @deprecated */
+        SCALE_MODE: import('@pixi/constants').SCALE_MODES;
+        /** @deprecated */
+        CAN_UPLOAD_SAME_BUFFER: boolean;
+
+        STRICT_TEXTURE_CACHE: boolean;
+        PREFER_ENV: import('@pixi/constants').ENV;
+    }
 }

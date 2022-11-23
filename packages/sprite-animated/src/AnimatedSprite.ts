@@ -113,7 +113,7 @@ export class AnimatedSprite extends Sprite
     /**
      * @param textures - An array of {@link PIXI.Texture} or frame
      *  objects that make up the animation.
-     * @param {boolean} [autoUpdate=true] - Whether to use PIXI.Ticker.shared to auto update animation time.
+     * @param {boolean} [autoUpdate=true] - Whether to use Ticker.shared to auto update animation time.
      */
     constructor(textures: Texture[] | FrameObject[], autoUpdate = true)
     {
@@ -432,7 +432,7 @@ export class AnimatedSprite extends Sprite
         return this._playing;
     }
 
-    /** Whether to use PIXI.Ticker.shared to auto update animation time. */
+    /** Whether to use Ticker.shared to auto update animation time. */
     get autoUpdate(): boolean
     {
         return this._autoUpdate;

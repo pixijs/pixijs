@@ -191,7 +191,7 @@ export class Filter extends Shader
      * Default filter resolution for any filter.
      * @static
      */
-    public static resolution = 1;
+    public static defaultResolution = 1;
 
     /**
      * Default filter samples for any filter.
@@ -199,7 +199,7 @@ export class Filter extends Shader
      * @type {PIXI.MSAA_QUALITY}
      * @default PIXI.MSAA_QUALITY.NONE
      */
-    public static multisample = MSAA_QUALITY.NONE;
+    public static defaultMultisample = MSAA_QUALITY.NONE;
 
     /**
      * The padding of the filter. Some filters require extra space to breath such as a blur.
@@ -245,8 +245,8 @@ export class Filter extends Shader
         super(program, uniforms);
 
         this.padding = 0;
-        this.resolution = Filter.resolution;
-        this.multisample = Filter.multisample;
+        this.resolution = Filter.defaultResolution;
+        this.multisample = Filter.defaultMultisample;
         this.enabled = true;
         this.autoFit = true;
         this.state = new State();

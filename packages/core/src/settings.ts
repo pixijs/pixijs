@@ -55,7 +55,7 @@ Object.defineProperties(settings, {
         set(value: WRAP_MODES)
         {
             // #if _DEBUG
-            deprecation('7.1.0', 'PIXI.settings.WRAP_MODE is deprecated, use PIXI.BaseTeture.defaultOptions.wrapMode');
+            deprecation('7.1.0', 'settings.WRAP_MODE is deprecated, use BaseTeture.defaultOptions.wrapMode');
             // #endif
             BaseTexture.defaultOptions.wrapMode = value;
         },
@@ -77,7 +77,7 @@ Object.defineProperties(settings, {
         set(value: SCALE_MODES)
         {
             // #if _DEBUG
-            deprecation('7.1.0', 'PIXI.settings.SCALE_MODE is deprecated, use PIXI.BaseTeture.defaultOptions.scaleMode');
+            deprecation('7.1.0', 'settings.SCALE_MODE is deprecated, use BaseTeture.defaultOptions.scaleMode');
             // #endif
             BaseTexture.defaultOptions.scaleMode = value;
         },
@@ -100,7 +100,7 @@ Object.defineProperties(settings, {
         set(value: MIPMAP_MODES)
         {
             // #if _DEBUG
-            deprecation('7.1.0', 'PIXI.settings.MIPMAP_TEXTURES is deprecated, use PIXI.BaseTeture.defaultOptions.mipmap');
+            deprecation('7.1.0', 'settings.MIPMAP_TEXTURES is deprecated, use BaseTeture.defaultOptions.mipmap');
             // #endif
             BaseTexture.defaultOptions.mipmap = value;
         },
@@ -125,7 +125,7 @@ Object.defineProperties(settings, {
         {
             // #if _DEBUG
             // eslint-disable-next-line max-len
-            deprecation('7.1.0', 'PIXI.settings.ANISOTROPIC_LEVEL is deprecated, use PIXI.BaseTeture.defaultOptions.anisotropicLevel');
+            deprecation('7.1.0', 'settings.ANISOTROPIC_LEVEL is deprecated, use BaseTeture.defaultOptions.anisotropicLevel');
             // #endif
             BaseTexture.defaultOptions.anisotropicLevel = value;
         },
@@ -139,20 +139,20 @@ Object.defineProperties(settings, {
      * @deprecated since 7.1.0
      * @type {number}
      * @default 1
-     * @see PIXI.Filter.resolution
+     * @see PIXI.Filter.defaultResolution
      */
     FILTER_RESOLUTION: {
         get()
         {
             // #if _DEBUG
-            deprecation('7.1.0', 'PIXI.settings.FILTER_RESOLUTION is deprecated, use PIXI.Filter.resolution');
+            deprecation('7.1.0', 'settings.FILTER_RESOLUTION is deprecated, use Filter.defaultResolution');
             // #endif
 
-            return Filter.resolution;
+            return Filter.defaultResolution;
         },
         set(value)
         {
-            Filter.resolution = value;
+            Filter.defaultResolution = value;
         },
     },
 
@@ -164,20 +164,20 @@ Object.defineProperties(settings, {
      * @deprecated since 7.1.0
      * @type {PIXI.MSAA_QUALITY}
      * @default PIXI.MSAA_QUALITY.NONE
-     * @see PIXI.Filter.multisample
+     * @see PIXI.Filter.defaultMultisample
      */
     FILTER_MULTISAMPLE: {
         get()
         {
             // #if _DEBUG
-            deprecation('7.1.0', 'PIXI.settings.FILTER_MULTISAMPLE is deprecated, use PIXI.Filter.multisample');
+            deprecation('7.1.0', 'settings.FILTER_MULTISAMPLE is deprecated, use Filter.defaultMultisample');
             // #endif
 
-            return Filter.multisample;
+            return Filter.defaultMultisample;
         },
         set(value: MSAA_QUALITY)
         {
-            Filter.multisample = value;
+            Filter.defaultMultisample = value;
         },
     },
 
@@ -187,20 +187,20 @@ Object.defineProperties(settings, {
      * @name SPRITE_MAX_TEXTURES
      * @memberof PIXI.settings
      * @deprecated since 7.1.0
-     * @see PIXI.BatchRenderer.maxTextures
+     * @see PIXI.BatchRenderer.defaultMaxTextures
      * @type {number}
      */
     SPRITE_MAX_TEXTURES: {
         get()
         {
-            return BatchRenderer.maxTextures;
+            return BatchRenderer.defaultMaxTextures;
         },
         set(value: number)
         {
             // #if _DEBUG
-            deprecation('7.1.0', 'PIXI.settings.SPRITE_MAX_TEXTURES is deprecated, use PIXI.BatchRenderer.maxTextures');
+            deprecation('7.1.0', 'settings.SPRITE_MAX_TEXTURES is deprecated, use BatchRenderer.defaultMaxTextures');
             // #endif
-            BatchRenderer.maxTextures = value;
+            BatchRenderer.defaultMaxTextures = value;
         },
     },
 
@@ -211,21 +211,21 @@ Object.defineProperties(settings, {
      * @static
      * @name SPRITE_BATCH_SIZE
      * @memberof PIXI.settings
-     * @see PIXI.BatchRenderer.batchSize
+     * @see PIXI.BatchRenderer.defaultBatchSize
      * @deprecated since 7.1.0
      * @type {number}
      */
     SPRITE_BATCH_SIZE: {
         get()
         {
-            return BatchRenderer.batchSize;
+            return BatchRenderer.defaultBatchSize;
         },
         set(value: number)
         {
             // #if _DEBUG
-            deprecation('7.1.0', 'PIXI.settings.SPRITE_BATCH_SIZE is deprecated, use PIXI.BatchRenderer.batchSize');
+            deprecation('7.1.0', 'settings.SPRITE_BATCH_SIZE is deprecated, use BatchRenderer.defaultBatchSize');
             // #endif
-            BatchRenderer.batchSize = value;
+            BatchRenderer.defaultBatchSize = value;
         },
     },
 
@@ -247,7 +247,7 @@ Object.defineProperties(settings, {
         {
             // #if _DEBUG
             // eslint-disable-next-line max-len
-            deprecation('7.1.0', 'PIXI.settings.CAN_UPLOAD_SAME_BUFFER is deprecated, use PIXI.BatchRenderer.canUploadSameBuffer');
+            deprecation('7.1.0', 'settings.CAN_UPLOAD_SAME_BUFFER is deprecated, use BatchRenderer.canUploadSameBuffer');
             // #endif
             BatchRenderer.canUploadSameBuffer = value;
         },

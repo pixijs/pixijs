@@ -74,7 +74,7 @@ export class TranscoderWorker
 
         if (!TranscoderWorker.wasmSource)
         {
-            console.warn('PIXI.resources.BasisResource.TranscoderWorker has not been given the transcoder WASM binary!');
+            console.warn('resources.BasisResource.TranscoderWorker has not been given the transcoder WASM binary!');
         }
 
         this.worker = new Worker(TranscoderWorker.workerURL);

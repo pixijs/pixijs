@@ -4,4 +4,10 @@ declare namespace GlobalMixins
     {
         readonly prepare: import('@pixi/prepare').Prepare;
     }
+
+    interface Settings
+    {
+        /** @deprecated */
+        UPLOADS_PER_FRAME: number;
+    }
 }
