@@ -40,7 +40,7 @@ interface ISettings
  * as a renderer's default resolution, framerate, float precision, etc.
  * @example
  * import { settings, ENV } from 'pixi.js';
- * 
+ *
  * // Use the native window resolution as the default resolution
  * // will support high-density displays when rendering
  * settings.RESOLUTION = window.devicePixelRatio;
