@@ -1,4 +1,4 @@
-import { isMobile } from './isMobile';
+import { isMobile, settings } from '@pixi/settings';
 
 /**
  * The maximum recommended texture units to use.
@@ -15,6 +15,7 @@ import { isMobile } from './isMobile';
 export function maxRecommendedTextures(max: number): number
 {
     let allowMax = true;
+    const navigator = settings.ADAPTER.getNavigator();
 
     if (isMobile.tablet || isMobile.phone)
     {

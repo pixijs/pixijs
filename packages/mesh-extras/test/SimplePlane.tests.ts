@@ -1,6 +1,6 @@
-import { SimplePlane } from '@pixi/mesh-extras';
-import { Point, Renderer, RenderTexture, Texture } from '@pixi/core';
 import { Cache, loadTextures } from '@pixi/assets';
+import { Point, Renderer, RenderTexture, Texture } from '@pixi/core';
+import { SimplePlane } from '@pixi/mesh-extras';
 import { Loader } from '../../assets/src/loader/Loader';
 
 import type { PlaneGeometry } from '@pixi/mesh-extras';
@@ -26,7 +26,7 @@ describe('SimplePlane', () =>
 
     it('should create a plane from an external image', async () =>
     {
-        const texture = await loader.load(`${serverPath}bitmap-1.png`);
+        const texture = await loader.load<Texture>(`${serverPath}bitmap-1.png`);
 
         const plane = new SimplePlane(texture, 100, 100);
 

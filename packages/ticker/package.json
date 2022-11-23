@@ -37,6 +37,7 @@
   ],
   "dependencies": {
     "@pixi/extensions": "7.1.0-alpha",
-    "@pixi/settings": "7.1.0-alpha"
+    "@pixi/settings": "7.1.0-alpha",
+    "@pixi/utils": "7.1.0-alpha"
   }
 }

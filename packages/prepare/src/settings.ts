@@ -1,13 +1,30 @@
-import { settings } from '@pixi/core';
+import { settings, utils } from '@pixi/core';
+import { BasePrepare } from './BasePrepare';
 
-/**
- * Default number of uploads per frame using prepare plugin.
- * @static
- * @memberof PIXI.settings
- * @name UPLOADS_PER_FRAME
- * @type {number}
- * @default 4
- */
-settings.UPLOADS_PER_FRAME = 4;
+Object.defineProperties(settings, {
+    /**
+     * Default number of uploads per frame using prepare plugin.
+     * @static
+     * @memberof PIXI.settings
+     * @name UPLOADS_PER_FRAME
+     * @deprecated since 7.1.0
+     * @see PIXI.BasePrepare.uploadsPerFrame
+     * @type {number}
+     */
+    UPLOADS_PER_FRAME:
+    {
+        get()
+        {
+            return BasePrepare.uploadsPerFrame;
+        },
+        set(value: number)
+        {
+            // #if _DEBUG
+            utils.deprecation('7.1.0', 'settings.UPLOADS_PER_FRAME is deprecated, use prepare.BasePrepare.uploadsPerFrame');
+            // #endif
+            BasePrepare.uploadsPerFrame = value;
+        },
+    },
+});
 
 export { settings };

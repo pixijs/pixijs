@@ -6,7 +6,7 @@ import { ENV, MSAA_QUALITY } from '@pixi/constants';
 
 describe('Renderer', () =>
 {
-    it('setting option legacy should disable VAOs and SPRITE_MAX_TEXTURES', () =>
+    it('setting option legacy should disable VAOs', () =>
     {
         settings.PREFER_ENV = ENV.WEBGL_LEGACY;
         const renderer = new Renderer({ width: 1, height: 1 });

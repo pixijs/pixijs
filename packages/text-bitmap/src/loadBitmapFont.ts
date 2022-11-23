@@ -1,11 +1,11 @@
-import type { Texture } from '@pixi/core';
-import { settings, utils, extensions, ExtensionType } from '@pixi/core';
+import { LoaderParserPriority } from '@pixi/assets';
+import { extensions, ExtensionType, settings, utils } from '@pixi/core';
+import { BitmapFont } from './BitmapFont';
+import { TextFormat, XMLStringFormat } from './formats';
 
 import type { LoadAsset, Loader, LoaderParser } from '@pixi/assets';
-import { LoaderParserPriority } from '@pixi/assets';
-import { BitmapFont } from './BitmapFont';
+import type { Texture } from '@pixi/core';
 import type { BitmapFontData } from './BitmapFontData';
-import { TextFormat, XMLStringFormat } from './formats';
 
 const validExtensions = ['.xml', '.fnt'];
 
@@ -44,7 +44,7 @@ export const loadBitmapFont = {
             textureUrls.push(imagePath);
         }
 
-        const loadedTextures = await loader.load(textureUrls) as Record<string, Texture>;
+        const loadedTextures = await loader.load<Texture>(textureUrls);
         const textures = textureUrls.map((url) => loadedTextures[url]);
 
         return BitmapFont.install(fontData, textures, true);

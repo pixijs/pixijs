@@ -76,13 +76,13 @@ Mesh.prototype._canvasPadding = null;
  * to overlap a bit with each other. To set the global default, set {@link PIXI.settings.MESH_CANVAS_PADDING}
  * @see PIXI.settings.MESH_CANVAS_PADDING
  * @member {number} canvasPadding
- * @memberof PIXI.SimpleMesh#
+ * @memberof PIXI.Mesh
  * @default 0
  */
 Object.defineProperty(Mesh.prototype, 'canvasPadding', {
     get()
     {
-        return this._canvasPadding !== null ? this._canvasPadding : settings.MESH_CANVAS_PADDING;
+        return this._canvasPadding ?? settings.MESH_CANVAS_PADDING;
     },
     set(value)
     {

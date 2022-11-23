@@ -2,7 +2,7 @@ import { settings } from '@pixi/core';
 
 /**
  * Default `canvasPadding` for canvas-based Mesh rendering.
- * @see PIXI.Mesh2d#canvasPadding
+ * @see PIXI.Mesh.canvasPadding
  * @static
  * @memberof PIXI.settings
  * @member {number}

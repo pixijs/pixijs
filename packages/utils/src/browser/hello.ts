@@ -8,7 +8,7 @@ import { deprecation } from '../logging/deprecation';
 export function skipHello(): void
 {
     // #if _DEBUG
-    deprecation('7.0.0', 'skipHello is deprecated, please use PIXI.settings.RENDER_OPTIONS.hello');
+    deprecation('7.0.0', 'skipHello is deprecated, please use settings.RENDER_OPTIONS.hello');
     // #endif
 }
 

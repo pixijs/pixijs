@@ -1,19 +1,16 @@
 module.exports = {
-    testPathIgnorePatterns: ['/node_modules/', '/src/', '/dist/', '/lib/', '/out/', '/bundles/'],
+    testPathIgnorePatterns: ['/node_modules/', '/src/', '/dist/', '/lib/', '/out/'],
     preset: 'ts-jest/presets/js-with-ts',
-    runner: 'jest-electron/runner',
-    testEnvironment: 'jest-electron/environment',
     setupFilesAfterEnv: [
         'jest-extended/all',
     ],
-    globalSetup: '<rootDir>/test/jest-global-setup.ts',
-    globalTeardown: '<rootDir>/test/jest-global-teardown.ts',
     transform: {
         '\\.vert$': 'jest-raw-loader',
         '\\.frag$': 'jest-raw-loader',
     },
     moduleNameMapper: {
-        '^@pixi/(.*)$': '<rootDir>/packages/$1/src',
+        '^@pixi/node$': '<rootDir>/src',
+        '^@pixi/(.*)$': '<rootDir>/../../packages/$1/src',
     },
     testMatch: ['**/?(*.)+(spec|tests).[tj]s?(x)'],
     globals: {
@@ -26,9 +23,7 @@ module.exports = {
         },
     },
     collectCoverageFrom: [
-        '<rootDir>/packages/**/*.ts',
-        '!<rootDir>/packages/**/*.d.ts',
-        '!<rootDir>/packages/polyfill/**/*.ts',
+        '<rootDir>/**/*.ts',
     ],
-    coverageDirectory: '<rootDir>/dist/coverage',
+    coverageDirectory: '<rootDir>/../../dist/coverage-node',
 };
