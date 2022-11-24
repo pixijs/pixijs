@@ -1,5 +1,4 @@
 import { Mesh } from '@pixi/mesh';
-import { settings } from './settings';
 
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
 
@@ -51,16 +50,9 @@ Mesh.prototype._renderCanvas = function _renderCanvas(renderer: CanvasRenderer):
     else if (!warned)
     {
         warned = true;
-        if (globalThis.console)
-        {
-            console.warn('Mesh with custom shaders are not supported in CanvasRenderer.');
-        }
+        globalThis.console.warn('Mesh with custom shaders are not supported in CanvasRenderer.');
     }
 };
-
-// IMPORTANT: Please do NOT use this as a precedent to use `settings` after the object is created
-// this was merely created to completely decouple canvas from the base Mesh class and we are
-// unable to add `canvasPadding` in the constructor anymore, as the case was for PixiJS v4.
 
 /**
  * Internal variable for `canvasPadding`.
@@ -72,9 +64,19 @@ Mesh.prototype._renderCanvas = function _renderCanvas(renderer: CanvasRenderer):
 Mesh.prototype._canvasPadding = null;
 
 /**
+ * Default `canvasPadding` for canvas-based Mesh rendering.
+ * @see PIXI.Mesh.canvasPadding
+ * @static
+ * @memberof PIXI.Mesh
+ * @member {number}
+ * @default 0
+ */
+Mesh.defaultCanvasPadding = 0;
+
+/**
  * Triangles in canvas mode are automatically antialiased, use this value to force triangles
- * to overlap a bit with each other. To set the global default, set {@link PIXI.settings.MESH_CANVAS_PADDING}
- * @see PIXI.settings.MESH_CANVAS_PADDING
+ * to overlap a bit with each other. To set the global default, set {@link PIXI.Mesh.defaultCanvasPadding}
+ * @see PIXI.Mesh.defaultCanvasPadding
  * @member {number} canvasPadding
  * @memberof PIXI.Mesh
  * @default 0
@@ -82,7 +84,7 @@ Mesh.prototype._canvasPadding = null;
 Object.defineProperty(Mesh.prototype, 'canvasPadding', {
     get()
     {
-        return this._canvasPadding ?? settings.MESH_CANVAS_PADDING;
+        return this._canvasPadding ?? Mesh.defaultCanvasPadding;
     },
     set(value)
     {

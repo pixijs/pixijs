@@ -138,7 +138,6 @@ Object.defineProperties(settings, {
      * @memberof PIXI.settings
      * @deprecated since 7.1.0
      * @type {number}
-     * @default 1
      * @see PIXI.Filter.defaultResolution
      */
     FILTER_RESOLUTION: {
@@ -163,7 +162,6 @@ Object.defineProperties(settings, {
      * @memberof PIXI.settings
      * @deprecated since 7.1.0
      * @type {PIXI.MSAA_QUALITY}
-     * @default PIXI.MSAA_QUALITY.NONE
      * @see PIXI.Filter.defaultMultisample
      */
     FILTER_MULTISAMPLE: {
@@ -260,6 +258,7 @@ Object.defineProperties(settings, {
      * @memberof PIXI.settings
      * @type {PIXI.GC_MODES}
      * @deprecated since 7.1.0
+     * @see PIXI.TextureGCSystem.defaultMode
      */
     GC_MODE: {
         get()
@@ -282,6 +281,7 @@ Object.defineProperties(settings, {
      * @memberof PIXI.settings
      * @type {number}
      * @deprecated since 7.1.0
+     * @see PIXI.TextureGCSystem.defaultMaxIdle
      */
     GC_MAX_IDLE: {
         get()
@@ -304,6 +304,7 @@ Object.defineProperties(settings, {
      * @memberof PIXI.settings
      * @type {number}
      * @deprecated since 7.1.0
+     * @see PIXI.TextureGCSystem.defaultCheckCountMax
      */
     GC_MAX_CHECK_COUNT: {
         get()
