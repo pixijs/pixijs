@@ -3,6 +3,7 @@ import fs from 'fs';
 import { WebGLRenderingContext } from 'gl';
 import { settings, utils } from '@pixi/core';
 import { NodeCanvasElement } from './NodeCanvasElement';
+import { DOMParser } from '@xmldom/xmldom';
 
 import type { IAdapter } from '@pixi/core';
 
@@ -52,6 +53,12 @@ export const NodeAdapter = {
                 } as ResponseInit));
             });
         });
+    },
+    parseXML: (xml: string) =>
+    {
+        const parser = new DOMParser();
+
+        return parser.parseFromString(xml, 'text/xml');
     },
 } as IAdapter;
 

@@ -1,4 +1,5 @@
 import { settings } from '@pixi/core';
+import { DOMParser } from '@xmldom/xmldom';
 
 import type { IAdapter } from '@pixi/core';
 
@@ -15,6 +16,13 @@ export const WebWorkerAdapter = {
     getBaseUrl: () => globalThis.location.href,
     getFontFaceSet: () => (globalThis as unknown as WorkerGlobalScope).fonts,
     fetch: (url: RequestInfo, options?: RequestInit) => fetch(url, options),
+    parseXML: (xml: string) =>
+    {
+        const parser = new DOMParser();
+
+        return parser.parseFromString(xml, 'text/xml');
+    },
+
 } as IAdapter;
 
 settings.ADAPTER = WebWorkerAdapter;
