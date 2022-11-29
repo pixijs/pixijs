@@ -828,13 +828,13 @@ export class AssetsClass
      * Workers, in some cases it can be helpful to disable by setting to `false`.
      * @default true
      */
-    public get preferWorker(): boolean
+    public get preferWorkers(): boolean
     {
-        return loadTextures.config.preferWorker;
+        return loadTextures.config.preferWorkers;
     }
-    public set preferWorker(value: boolean)
+    public set preferWorkers(value: boolean)
     {
-        loadTextures.config.preferWorker = value;
+        loadTextures.config.preferWorkers = value;
     }
 }
 
