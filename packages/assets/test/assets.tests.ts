@@ -391,4 +391,15 @@ describe('Assets', () =>
 
         expect(font).toBeInstanceOf(FontFace);
     });
+
+    it('should load font assets with space in URL', async () =>
+    {
+        await Assets.init({
+            basePath,
+        });
+
+        const font = await Assets.load('fonts/url with space.ttf');
+
+        expect(font).toBeInstanceOf(FontFace);
+    });
 });
