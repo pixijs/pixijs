@@ -1,17 +1,14 @@
 import { extensions, ExtensionType } from '@pixi/core';
 import { BackgroundLoader } from './BackgroundLoader';
 import { Cache } from './cache/Cache';
-import type { FormatDetectionParser } from './detections';
-import type {
-    LoadAsset,
-    LoaderParser
-} from './loader';
 import { Loader } from './loader/Loader';
-import type { PreferOrder, ResolveAsset, ResolverBundle, ResolverManifest, ResolveURLParser } from './resolver';
 import { Resolver } from './resolver/Resolver';
 import { convertToList } from './utils/convertToList';
 import { isSingleItem } from './utils/isSingleItem';
 
+import type { FormatDetectionParser } from './detections';
+import type { LoadAsset, LoaderParser } from './loader';
+import type { ResolveAsset, ResolverBundle, ResolverManifest } from './resolver';
 export type ProgressCallback = (progress: number) => void;
 
 /**
@@ -46,21 +43,6 @@ export interface AssetInitOptions
         /** custom parsers can be added here, for example something that could load a sound or a 3D model */
         parsers?: LoaderParser[];
         // more...
-    };
-    /** resolver specific options */
-    resolver?: {
-        /**
-         * a list of urlParsers, these can read the URL and pick put the various options.
-         * for example there is a texture URL parser that picks our resolution and file format.
-         * You can add custom ways to read URLs and extract information here.
-         */
-        urlParsers?: ResolveURLParser[];
-        /**
-         * a list of preferOrders that let the resolver know which asset to pick.
-         * already built-in we have a texture preferOrders that let the resolve know which asset to prefer
-         * if it has multiple assets to pick from (resolution/formats etc)
-         */
-        preferOrders?: PreferOrder[];
     };
 }
 
