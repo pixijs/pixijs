@@ -13,9 +13,11 @@ export class XMLFormat
      */
     static test(data: unknown): boolean
     {
-        return data instanceof XMLDocument
-            && data.getElementsByTagName('page').length
-            && data.getElementsByTagName('info')[0].getAttribute('face') !== null;
+        const xml = data as Document;
+
+        return 'getElementsByTagName' in xml
+            && xml.getElementsByTagName('page').length
+            && xml.getElementsByTagName('info')[0].getAttribute('face') !== null;
     }
 
     /**
@@ -23,7 +25,7 @@ export class XMLFormat
      * @param xml
      * @returns - Data to use for BitmapFont
      */
-    static parse(xml: XMLDocument): BitmapFontData
+    static parse(xml: Document): BitmapFontData
     {
         const data = new BitmapFontData();
         const info = xml.getElementsByTagName('info');
