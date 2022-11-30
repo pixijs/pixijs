@@ -10,6 +10,27 @@ import type { IDestroyOptions } from '@pixi/display';
 import type { ICanvas, ICanvasRenderingContext2D } from '@pixi/settings';
 import type { ITextStyle } from './TextStyle';
 
+// The type for Intl.Segmenter is only available since TypeScript 4.7.2, so let's make a polyfill for it.
+interface ISegmentData
+{
+    segment: string;
+}
+interface ISegments
+{
+    [Symbol.iterator](): IterableIterator<ISegmentData>;
+}
+interface ISegmenter
+{
+    segment(input: string): ISegments;
+}
+interface IIntl
+{
+    Segmenter?: {
+        prototype: ISegmenter;
+        new(): ISegmenter;
+    };
+}
+
 const defaultDestroyOptions: IDestroyOptions = {
     texture: true,
     children: false,
@@ -66,12 +87,36 @@ export class Text extends Sprite
      * const text = new Text('This is a PixiJS text');
      */
     public static defaultAutoResolution = true;
+
     /**
      * New rendering behavior for letter-spacing which uses Chrome's new native API. This will
      * lead to more accurate letter-spacing results because it does not try to manually draw
      * each character. However, this Chrome API is experimental and may not serve all cases yet.
      */
     public static experimentalLetterSpacing = false;
+
+    /**
+     * A Unicode "character", or "grapheme cluster", can be composed of multiple Unicode code points,
+     * such as letters with diacritical marks (e.g. `'\u0065\u0301'`, letter e with acute)
+     * or emojis with modifiers (e.g. `'\uD83E\uDDD1\u200D\uD83D\uDCBB'`, technologist).
+     * The new `Intl.Segmenter` API in ES2022 can split the string into grapheme clusters correctly. If it is not available,
+     * PixiJS will fallback to use the iterator of String, which can only spilt the string into code points.
+     * If you want to get full functionality in environments that don't support `Intl.Segmenter` (such as Firefox),
+     * you can use other libraries such as [grapheme-splitter]{@link https://www.npmjs.com/package/grapheme-splitter}
+     * or [graphemer]{@link https://www.npmjs.com/package/graphemer} to create a polyfill. Since these libraries can be
+     * relatively large in size to handle various Unicode grapheme clusters properly, PixiJS won't use them directly.
+     */
+    public static graphemeSegmenter: (s: string) => string[] = (() =>
+    {
+        if (typeof (Intl as IIntl)?.Segmenter === 'function')
+        {
+            const segmenter = new (Intl as IIntl).Segmenter();
+
+            return (s: string) => [...segmenter.segment(s)].map((x) => x.segment);
+        }
+
+        return (s: string) => [...s];
+    })();
 
     /** The canvas element that everything is drawn to. */
     public canvas: ICanvas;
@@ -366,13 +411,7 @@ export class Text extends Sprite
 
         let currentPosition = x;
 
-        // Using Array.from correctly splits characters whilst keeping emoji together.
-        // This is not supported on IE as it requires ES6, so regular text splitting occurs.
-        // This also doesn't account for emoji that are multiple emoji put together to make something else.
-        // Handling all of this would require a big library itself.
-        // https://medium.com/@giltayar/iterating-over-emoji-characters-the-es6-way-f06e4589516
-        // https://github.com/orling/grapheme-splitter
-        const stringArray = Array.from ? Array.from(text) : text.split('');
+        const stringArray = Text.graphemeSegmenter(text);
         let previousWidth = this.context.measureText(text).width;
         let currentWidth = 0;
 
