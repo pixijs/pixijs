@@ -62,7 +62,8 @@
     "@pixi/sprite-tiling": "7.1.0-alpha",
     "@pixi/spritesheet": "7.1.0-alpha",
     "@pixi/text": "7.1.0-alpha",
-    "@pixi/text-bitmap": "7.1.0-alpha"
+    "@pixi/text-bitmap": "7.1.0-alpha",
+    "@xmldom/xmldom": "^0.8.6"
   },
   "publishConfig": {
     "access": "public"

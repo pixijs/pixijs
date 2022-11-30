@@ -1,3 +1,4 @@
+import { settings } from '@pixi/core';
 import type { BitmapFontData } from '../BitmapFontData';
 import { XMLFormat } from './XMLFormat';
 
@@ -16,9 +17,7 @@ export class XMLStringFormat
     {
         if (typeof data === 'string' && data.includes('<font>'))
         {
-            const xml = new globalThis.DOMParser().parseFromString(data, 'text/xml');
-
-            return XMLFormat.test(xml);
+            return XMLFormat.test(settings.ADAPTER.parseXML(data));
         }
 
         return false;
@@ -31,8 +30,6 @@ export class XMLStringFormat
      */
     static parse(xmlTxt: string): BitmapFontData
     {
-        const xml = new globalThis.DOMParser().parseFromString(xmlTxt, 'text/xml');
-
-        return XMLFormat.parse(xml);
+        return XMLFormat.parse(settings.ADAPTER.parseXML(xmlTxt));
     }
 }

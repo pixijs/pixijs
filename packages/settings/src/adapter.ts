@@ -18,6 +18,7 @@ export interface IAdapter
     getBaseUrl: () => string;
     getFontFaceSet: () => FontFaceSet | null;
     fetch: (url: RequestInfo, options?: RequestInit) => Promise<Response>;
+    parseXML: (xml: string) => Document;
 }
 
 export const BrowserAdapter = {
@@ -41,4 +42,10 @@ export const BrowserAdapter = {
     getBaseUrl: () => (document.baseURI ?? window.location.href),
     getFontFaceSet: () => document.fonts,
     fetch: (url: RequestInfo, options?: RequestInit) => fetch(url, options),
+    parseXML: (xml: string) =>
+    {
+        const parser = new DOMParser();
+
+        return parser.parseFromString(xml, 'text/xml');
+    },
 } as IAdapter;
