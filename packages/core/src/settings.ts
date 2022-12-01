@@ -1,11 +1,12 @@
 import { settings } from '@pixi/settings';
-import type { MSAA_QUALITY, MIPMAP_MODES, SCALE_MODES, WRAP_MODES, GC_MODES } from '@pixi/constants';
+import type { MSAA_QUALITY, MIPMAP_MODES, SCALE_MODES, WRAP_MODES, GC_MODES, PRECISION } from '@pixi/constants';
 import { ENV } from '@pixi/constants';
 import { BaseTexture } from './textures/BaseTexture';
 import { Filter } from './filters/Filter';
 import { deprecation } from '@pixi/utils';
 import { BatchRenderer } from './batch/BatchRenderer';
 import { TextureGCSystem } from './systems';
+import { Program } from './shader/Program';
 
 /**
  * The maximum support for using WebGL. If a device does not
@@ -317,6 +318,52 @@ Object.defineProperties(settings, {
             deprecation('7.1.0', 'settings.GC_MAX_CHECK_COUNT is deprecated, use TextureGCSystem.defaultCheckCountMax');
             // #endif
             TextureGCSystem.defaultCheckCountMax = value;
+        },
+    },
+
+    /**
+     * Default specify float precision in vertex shader.
+     * @static
+     * @name PRECISION_VERTEX
+     * @memberof PIXI.settings
+     * @type {PIXI.PRECISION}
+     * @deprecated since 7.1.0
+     * @see PIXI.Program.defaultVertexPrecision
+     */
+    PRECISION_VERTEX: {
+        get()
+        {
+            return Program.defaultVertexPrecision;
+        },
+        set(value: PRECISION)
+        {
+            // #if _DEBUG
+            deprecation('7.1.0', 'settings.PRECISION_VERTEX is deprecated, use Program.defaultVertexPrecision');
+            // #endif
+            Program.defaultVertexPrecision = value;
+        },
+    },
+
+    /**
+     * Default specify float precision in fragment shader.
+     * @static
+     * @name PRECISION_FRAGMENT
+     * @memberof PIXI.settings
+     * @type {PIXI.PRECISION}
+     * @deprecated since 7.1.0
+     * @see PIXI.Program.defaultFragmentPrecision
+     */
+    PRECISION_FRAGMENT: {
+        get()
+        {
+            return Program.defaultFragmentPrecision;
+        },
+        set(value: PRECISION)
+        {
+            // #if _DEBUG
+            deprecation('7.1.0', 'settings.PRECISION_FRAGMENT is deprecated, use Program.defaultFragmentPrecision');
+            // #endif
+            Program.defaultFragmentPrecision = value;
         },
     },
 });

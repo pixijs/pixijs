@@ -1,6 +1,4 @@
-import { PRECISION } from '@pixi/constants';
 import { BrowserAdapter } from './adapter';
-import { isMobile } from './utils/isMobile';
 
 import type { ICanvas } from './ICanvas';
 import type { IAdapter } from './adapter';
@@ -29,8 +27,6 @@ interface ISettings
     ADAPTER: IAdapter;
     RESOLUTION: number;
     RENDER_OPTIONS: IRenderOptions;
-    PRECISION_VERTEX: PRECISION;
-    PRECISION_FRAGMENT: PRECISION;
     CREATE_IMAGE_BITMAP: boolean;
     ROUND_PIXELS: boolean;
 }
@@ -108,27 +104,6 @@ export const settings: ISettings & Partial<GlobalMixins.Settings> = {
         legacy: false,
         hello: false,
     },
-
-    /**
-     * Default specify float precision in vertex shader.
-     * @static
-     * @name PRECISION_VERTEX
-     * @memberof PIXI.settings
-     * @type {PIXI.PRECISION}
-     * @default PIXI.PRECISION.HIGH
-     */
-    PRECISION_VERTEX: PRECISION.HIGH,
-
-    /**
-     * Default specify float precision in fragment shader.
-     * iOS is best set at highp due to https://github.com/pixijs/pixijs/issues/3742
-     * @static
-     * @name PRECISION_FRAGMENT
-     * @memberof PIXI.settings
-     * @type {PIXI.PRECISION}
-     * @default PIXI.PRECISION.MEDIUM
-     */
-    PRECISION_FRAGMENT: isMobile.apple.device ? PRECISION.HIGH : PRECISION.MEDIUM,
 
     /**
      * Enables bitmap creation before image load. This feature is experimental.
