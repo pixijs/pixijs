@@ -311,9 +311,16 @@ export class TextMetrics
 
         let width = context.measureText(text).width;
 
-        if (!useExperimentalLetterSpacing)
+        if (width > 0)
         {
-            width += (TextMetrics.graphemeSegmenter(text).length - 1) * letterSpacing;
+            if (useExperimentalLetterSpacing)
+            {
+                width -= letterSpacing;
+            }
+            else
+            {
+                width += (TextMetrics.graphemeSegmenter(text).length - 1) * letterSpacing;
+            }
         }
 
         return width;
