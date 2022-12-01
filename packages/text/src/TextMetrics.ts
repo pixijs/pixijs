@@ -298,14 +298,14 @@ export class TextMetrics
         {
             if (TextMetrics.experimentalLetterSpacing)
             {
-                context.letterSpacing = letterSpacing;
-                context.textLetterSpacing = letterSpacing;
+                context.letterSpacing = `${letterSpacing}px`;
+                context.textLetterSpacing = `${letterSpacing}px`;
                 useExperimentalLetterSpacing = true;
             }
             else
             {
-                context.letterSpacing = 0;
-                context.textLetterSpacing = 0;
+                context.letterSpacing = '0px';
+                context.textLetterSpacing = '0px';
             }
         }
 

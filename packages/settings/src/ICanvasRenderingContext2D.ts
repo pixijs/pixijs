@@ -28,6 +28,6 @@ export interface ICanvasRenderingContext2D extends
     drawImage(image: CanvasImageSource | ICanvas, sx: number, sy: number, sw: number, sh: number,
         dx: number, dy: number, dw: number, dh: number): void;
 
-    letterSpacing?: number;
-    textLetterSpacing?: number; // For Chrome < 94
+    letterSpacing?: string;
+    textLetterSpacing?: string; // For Chrome < 94
 }

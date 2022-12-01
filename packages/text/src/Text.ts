@@ -357,14 +357,14 @@ export class Text extends Sprite
         {
             if (TextMetrics.experimentalLetterSpacing)
             {
-                this.context.letterSpacing = letterSpacing;
-                this.context.textLetterSpacing = letterSpacing;
+                this.context.letterSpacing = `${letterSpacing}px`;
+                this.context.textLetterSpacing = `${letterSpacing}px`;
                 useExperimentalLetterSpacing = true;
             }
             else
             {
-                this.context.letterSpacing = 0;
-                this.context.textLetterSpacing = 0;
+                this.context.letterSpacing = '0px';
+                this.context.textLetterSpacing = '0px';
             }
         }
 
