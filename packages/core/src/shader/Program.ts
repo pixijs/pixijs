@@ -111,7 +111,7 @@ export class Program
 
     /**
      * The default vertex shader source.
-     * @constant
+     * @readonly
      */
     static get defaultVertexSrc(): string
     {
@@ -120,7 +120,7 @@ export class Program
 
     /**
      * The default fragment shader source.
-     * @constant
+     * @readonly
      */
     static get defaultFragmentSrc(): string
     {

@@ -37,7 +37,6 @@ function mapPremultipliedBlendModes(): number[][]
 /**
  * maps premultiply flag and blendMode to adjusted blendMode
  * @memberof PIXI.utils
- * @constant premultiplyBlendMode
  * @type {Array<number[]>}
  */
 export const premultiplyBlendMode = mapPremultipliedBlendModes();

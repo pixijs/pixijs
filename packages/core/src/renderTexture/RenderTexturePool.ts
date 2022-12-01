@@ -220,7 +220,7 @@ export class RenderTexturePool
 
     /**
      * Key that is used to store fullscreen renderTextures in a pool
-     * @constant
+     * @readonly
      */
     static SCREEN_KEY = -1;
 }
