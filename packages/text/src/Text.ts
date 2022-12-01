@@ -75,6 +75,32 @@ interface ModernContext2D extends ICanvasRenderingContext2D
 export class Text extends Sprite
 {
     /**
+     * Override whether or not the resolution of the text is automatically adjusted to match the resolution of the renderer.
+     * Setting this to false can allow you to get crisper text at lower render resolutions.
+     * @example
+     * // renderer has a resolution of 1
+     * const app = new Application();
+     *
+     * Text.defaultResolution = 2;
+     * Text.defaultAutoResolution = false;
+     * // text has a resolution of 2
+     * const text = new Text('This is a PixiJS text');
+     */
+    public static defaultAutoResolution = true;
+
+    /**
+     * If {@link PIXI.Text.defaultAutoResolution} is false, this will be the default resolution of the text.
+     * If not set it will default to {@link PIXI.settings.RESOLUTION}.
+     * @example
+     * Text.defaultResolution = 2;
+     * Text.defaultAutoResolution = false;
+     *
+     * // text has a resolution of 2
+     * const text = new Text('This is a PixiJS text');
+     */
+    public static defaultResolution: number;
+
+    /**
      * New rendering behavior for letter-spacing which uses Chrome's new native API. This will
      * lead to more accurate letter-spacing results because it does not try to manually draw
      * each character. However, this Chrome API is experimental and may not serve all cases yet.
@@ -184,8 +210,8 @@ export class Text extends Sprite
             willReadFrequently: true,
         });
 
-        this._resolution = settings.RESOLUTION;
-        this._autoResolution = true;
+        this._resolution = Text.defaultResolution ?? settings.RESOLUTION;
+        this._autoResolution = Text.defaultAutoResolution;
         this._text = null;
         this._style = null;
         this._styleListener = null;
