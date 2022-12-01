@@ -120,7 +120,6 @@ export const settings: ISettings & Partial<GlobalMixins.Settings> = {
      * Advantages can include sharper image quality (like text) and faster rendering on canvas.
      * The main disadvantage is movement of objects may appear less smooth.
      * @static
-     * @constant
      * @memberof PIXI.settings
      * @type {boolean}
      * @default false

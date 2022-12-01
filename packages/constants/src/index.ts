@@ -446,7 +446,6 @@ export enum GC_MODES
  * Constants that specify float precision in shaders.
  * @name PRECISION
  * @memberof PIXI
- * @constant
  * @static
  * @enum {string}
  * @property {string} [LOW='lowp'] -

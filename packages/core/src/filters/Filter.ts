@@ -302,7 +302,7 @@ export class Filter extends Shader
 
     /**
      * The default vertex shader source
-     * @constant
+     * @readonly
      */
     static get defaultVertexSrc(): string
     {
@@ -311,7 +311,7 @@ export class Filter extends Shader
 
     /**
      * The default fragment shader source
-     * @constant
+     * @readonly
      */
     static get defaultFragmentSrc(): string
     {

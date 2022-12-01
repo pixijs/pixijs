@@ -3,7 +3,6 @@
  * the {@link PIXI.Ticker} object. Higher priority items are updated first and lower
  * priority items, such as render, should go later.
  * @static
- * @constant
  * @name UPDATE_PRIORITY
  * @memberof PIXI
  * @enum {number}

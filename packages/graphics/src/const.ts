@@ -85,7 +85,7 @@ export const curves = {
 
 /**
  * @static
- * @constant
+ * @readonly
  * @memberof PIXI
  * @name GRAPHICS_CURVES
  * @type {object}
