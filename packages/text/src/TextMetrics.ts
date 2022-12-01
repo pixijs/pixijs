@@ -1,6 +1,6 @@
 import { settings } from '@pixi/core';
 
-import type { ICanvas, ICanvasRenderingContext2D, ICanvasRenderingContext2DSettings } from '@pixi/settings';
+import type { ICanvas, ICanvasRenderingContext2D, ICanvasRenderingContext2DSettings } from '@pixi/core';
 import type { TextStyle, TextStyleWhiteSpace } from './TextStyle';
 
 // The type for Intl.Segmenter is only available since TypeScript 4.7.2, so let's make a polyfill for it.
@@ -138,6 +138,22 @@ export class TextMetrics
         return (s: string) => [...s];
     })();
 
+    /**
+     * Checking that we can use modern canvas2D API
+     * https://developer.chrome.com/origintrials/#/view_trial/3585991203293757441
+     * Note: This is unstable API, Chrome < 94 use a `textLetterSpacing`, latest use `letterSpacing`
+     * @see PIXI.TextMetrics.experimentalLetterSpacing
+     */
+    public static readonly experimentalLetterSpacingSupported
+        = 'letterSpacing' in CanvasRenderingContext2D.prototype || 'textLetterSpacing' in CanvasRenderingContext2D.prototype;
+
+    /**
+     * New rendering behavior for letter-spacing which uses Chrome's new native API. This will
+     * lead to more accurate letter-spacing results because it does not try to manually draw
+     * each character. However, this Chrome API is experimental and may not serve all cases yet.
+     */
+    public static experimentalLetterSpacing = false;
+
     /** Cache of {@see PIXI.TextMetrics.FontMetrics} objects. */
     private static _fonts: Record<string, IFontMetrics> = {};
 
@@ -231,7 +247,7 @@ export class TextMetrics
 
         for (let i = 0; i < lines.length; i++)
         {
-            const lineWidth = context.measureText(lines[i]).width + ((lines[i].length - 1) * style.letterSpacing);
+            const lineWidth = TextMetrics._measureText(lines[i], style.letterSpacing, context);
 
             lineWidths[i] = lineWidth;
             maxLineWidth = Math.max(maxLineWidth, lineWidth);
@@ -263,6 +279,39 @@ export class TextMetrics
             maxLineWidth,
             fontProperties
         );
+    }
+
+    private static _measureText(
+        text: string,
+        letterSpacing: number,
+        context: ICanvasRenderingContext2D
+    )
+    {
+        let useExperimentalLetterSpacing = false;
+
+        if (TextMetrics.experimentalLetterSpacingSupported)
+        {
+            if (TextMetrics.experimentalLetterSpacing)
+            {
+                context.letterSpacing = letterSpacing;
+                context.textLetterSpacing = letterSpacing;
+                useExperimentalLetterSpacing = true;
+            }
+            else
+            {
+                context.letterSpacing = 0;
+                context.textLetterSpacing = 0;
+            }
+        }
+
+        let width = context.measureText(text).width;
+
+        if (!useExperimentalLetterSpacing)
+        {
+            width += (TextMetrics.graphemeSegmenter(text).length - 1) * letterSpacing;
+        }
+
+        return width;
     }
 
     /**
@@ -495,9 +544,7 @@ export class TextMetrics
 
         if (typeof width !== 'number')
         {
-            const spacing = ((key.length) * letterSpacing);
-
-            width = context.measureText(key).width + spacing;
+            width = TextMetrics._measureText(key, letterSpacing, context) + letterSpacing;
             cache[key] = width;
         }
 

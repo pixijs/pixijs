@@ -1,13 +1,12 @@
 /* eslint max-depth: [2, 8] */
-import { Sprite } from '@pixi/sprite';
 import { Texture, settings, Rectangle, utils } from '@pixi/core';
+import { Sprite } from '@pixi/sprite';
 import { TEXT_GRADIENT } from './const';
-import { TextStyle } from './TextStyle';
 import { TextMetrics } from './TextMetrics';
+import { TextStyle } from './TextStyle';
 
-import type { Renderer } from '@pixi/core';
+import type { ICanvas, ICanvasRenderingContext2D, Renderer } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
-import type { ICanvas, ICanvasRenderingContext2D } from '@pixi/settings';
 import type { ITextStyle } from './TextStyle';
 
 const defaultDestroyOptions: IDestroyOptions = {
@@ -15,14 +14,6 @@ const defaultDestroyOptions: IDestroyOptions = {
     children: false,
     baseTexture: true,
 };
-
-interface ModernContext2D extends ICanvasRenderingContext2D
-{
-    // for chrome less 94
-    textLetterSpacing?: number;
-    // for chrome greater 94
-    letterSpacing?: number;
-}
 
 /**
  * A Text Object will create a line or multiple lines of text.
@@ -80,16 +71,27 @@ export class Text extends Sprite
     public static defaultResolution: number;
 
     /**
-     * New rendering behavior for letter-spacing which uses Chrome's new native API. This will
-     * lead to more accurate letter-spacing results because it does not try to manually draw
-     * each character. However, this Chrome API is experimental and may not serve all cases yet.
+     * @see PIXI.TextMetrics.experimentalLetterSpacing
+     * @deprecated since 7.1.0
      */
-    public static experimentalLetterSpacing = false;
+    public static get experimentalLetterSpacing()
+    {
+        return TextMetrics.experimentalLetterSpacing;
+    }
+    public static set experimentalLetterSpacing(value)
+    {
+        // #if _DEBUG
+        utils.deprecation('7.1.0',
+            'Text.experimentalLetterSpacing is deprecated, use TextMetrics.experimentalLetterSpacing');
+        // #endif
+
+        TextMetrics.experimentalLetterSpacing = value;
+    }
 
     /** The canvas element that everything is drawn to. */
     public canvas: ICanvas;
     /** The canvas 2d context that everything is drawn with. */
-    public context: ModernContext2D;
+    public context: ICanvasRenderingContext2D;
     public localStyleID: number;
     public dirty: boolean;
 
@@ -349,22 +351,25 @@ export class Text extends Sprite
         // letterSpacing of 0 means normal
         const letterSpacing = style.letterSpacing;
 
-        // Checking that we can use moddern canvas2D api
-        // https://developer.chrome.com/origintrials/#/view_trial/3585991203293757441
-        // note: this is unstable API, Chrome less 94 use a `textLetterSpacing`, newest use a letterSpacing
-        // eslint-disable-next-line max-len
-        const supportLetterSpacing = Text.experimentalLetterSpacing
-            && ('letterSpacing' in CanvasRenderingContext2D.prototype
-                || 'textLetterSpacing' in CanvasRenderingContext2D.prototype);
+        let useExperimentalLetterSpacing = false;
 
-        if (letterSpacing === 0 || supportLetterSpacing)
+        if (TextMetrics.experimentalLetterSpacingSupported)
         {
-            if (supportLetterSpacing)
+            if (TextMetrics.experimentalLetterSpacing)
             {
                 this.context.letterSpacing = letterSpacing;
                 this.context.textLetterSpacing = letterSpacing;
+                useExperimentalLetterSpacing = true;
             }
+            else
+            {
+                this.context.letterSpacing = 0;
+                this.context.textLetterSpacing = 0;
+            }
+        }
 
+        if (letterSpacing === 0 || useExperimentalLetterSpacing)
+        {
             if (isStroke)
             {
                 this.context.strokeText(text, x, y);
