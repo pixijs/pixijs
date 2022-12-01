@@ -145,7 +145,12 @@ export class TextMetrics
      * @see PIXI.TextMetrics.experimentalLetterSpacing
      */
     public static readonly experimentalLetterSpacingSupported
-        = 'letterSpacing' in CanvasRenderingContext2D.prototype || 'textLetterSpacing' in CanvasRenderingContext2D.prototype;
+        = (() =>
+        {
+            const proto = settings.ADAPTER.getCanvasRenderingContext2D().prototype;
+
+            return 'letterSpacing' in proto || 'textLetterSpacing' in proto;
+        })();
 
     /**
      * New rendering behavior for letter-spacing which uses Chrome's new native API. This will

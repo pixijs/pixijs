@@ -1,4 +1,5 @@
 import type { ICanvas } from './ICanvas';
+import type { ICanvasRenderingContext2D } from './ICanvasRenderingContext2D';
 
 /**
  * This interface describes all the DOM dependent calls that Pixi makes throughout its codebase.
@@ -10,7 +11,9 @@ export interface IAdapter
 {
     /** Returns a canvas object that can be used to create a webgl context. */
     createCanvas: (width?: number, height?: number) => ICanvas;
-    /** Returns a webgl rendering context. */
+    /** Returns a 2D rendering context. */
+    getCanvasRenderingContext2D: () => { prototype: ICanvasRenderingContext2D; };
+    /** Returns a WebGL rendering context. */
     getWebGLRenderingContext: () => typeof WebGLRenderingContext;
     /** Returns a partial implementation of the browsers window.navigator */
     getNavigator: () => { userAgent: string };
@@ -37,6 +40,7 @@ export const BrowserAdapter = {
 
         return canvas;
     },
+    getCanvasRenderingContext2D: () => CanvasRenderingContext2D,
     getWebGLRenderingContext: () => WebGLRenderingContext,
     getNavigator: () => navigator,
     getBaseUrl: () => (document.baseURI ?? window.location.href),
