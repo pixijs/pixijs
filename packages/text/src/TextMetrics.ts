@@ -49,7 +49,7 @@ interface IFontMetrics
     fontSize: number;
 }
 
-type CharacterWidthCache = { [key: string]: number };
+type CharacterWidthCache = Record<string, number>;
 
 // Default settings used for all getContext calls
 const contextSettings: ICanvasRenderingContext2DSettings = {
@@ -139,7 +139,7 @@ export class TextMetrics
     })();
 
     /** Cache of {@see PIXI.TextMetrics.FontMetrics} objects. */
-    private static _fonts: { [font: string]: IFontMetrics } = {};
+    private static _fonts: Record<string, IFontMetrics> = {};
 
     /** Cache of new line chars. */
     private static _newlines: number[] = [
