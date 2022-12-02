@@ -1,49 +1,19 @@
 /* eslint max-depth: [2, 8] */
-import { Sprite } from '@pixi/sprite';
 import { Texture, settings, Rectangle, utils } from '@pixi/core';
+import { Sprite } from '@pixi/sprite';
 import { TEXT_GRADIENT } from './const';
-import { TextStyle } from './TextStyle';
 import { TextMetrics } from './TextMetrics';
+import { TextStyle } from './TextStyle';
 
-import type { Renderer } from '@pixi/core';
+import type { ICanvas, ICanvasRenderingContext2D, Renderer } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
-import type { ICanvas, ICanvasRenderingContext2D } from '@pixi/settings';
 import type { ITextStyle } from './TextStyle';
-
-// The type for Intl.Segmenter is only available since TypeScript 4.7.2, so let's make a polyfill for it.
-interface ISegmentData
-{
-    segment: string;
-}
-interface ISegments
-{
-    [Symbol.iterator](): IterableIterator<ISegmentData>;
-}
-interface ISegmenter
-{
-    segment(input: string): ISegments;
-}
-interface IIntl
-{
-    Segmenter?: {
-        prototype: ISegmenter;
-        new(): ISegmenter;
-    };
-}
 
 const defaultDestroyOptions: IDestroyOptions = {
     texture: true,
     children: false,
     baseTexture: true,
 };
-
-interface ModernContext2D extends ICanvasRenderingContext2D
-{
-    // for chrome less 94
-    textLetterSpacing?: number;
-    // for chrome greater 94
-    letterSpacing?: number;
-}
 
 /**
  * A Text Object will create a line or multiple lines of text.
@@ -101,39 +71,27 @@ export class Text extends Sprite
     public static defaultResolution: number;
 
     /**
-     * New rendering behavior for letter-spacing which uses Chrome's new native API. This will
-     * lead to more accurate letter-spacing results because it does not try to manually draw
-     * each character. However, this Chrome API is experimental and may not serve all cases yet.
+     * @see PIXI.TextMetrics.experimentalLetterSpacing
+     * @deprecated since 7.1.0
      */
-    public static experimentalLetterSpacing = false;
-
-    /**
-     * A Unicode "character", or "grapheme cluster", can be composed of multiple Unicode code points,
-     * such as letters with diacritical marks (e.g. `'\u0065\u0301'`, letter e with acute)
-     * or emojis with modifiers (e.g. `'\uD83E\uDDD1\u200D\uD83D\uDCBB'`, technologist).
-     * The new `Intl.Segmenter` API in ES2022 can split the string into grapheme clusters correctly. If it is not available,
-     * PixiJS will fallback to use the iterator of String, which can only spilt the string into code points.
-     * If you want to get full functionality in environments that don't support `Intl.Segmenter` (such as Firefox),
-     * you can use other libraries such as [grapheme-splitter]{@link https://www.npmjs.com/package/grapheme-splitter}
-     * or [graphemer]{@link https://www.npmjs.com/package/graphemer} to create a polyfill. Since these libraries can be
-     * relatively large in size to handle various Unicode grapheme clusters properly, PixiJS won't use them directly.
-     */
-    public static graphemeSegmenter: (s: string) => string[] = (() =>
+    public static get experimentalLetterSpacing()
     {
-        if (typeof (Intl as IIntl)?.Segmenter === 'function')
-        {
-            const segmenter = new (Intl as IIntl).Segmenter();
+        return TextMetrics.experimentalLetterSpacing;
+    }
+    public static set experimentalLetterSpacing(value)
+    {
+        // #if _DEBUG
+        utils.deprecation('7.1.0',
+            'Text.experimentalLetterSpacing is deprecated, use TextMetrics.experimentalLetterSpacing');
+        // #endif
 
-            return (s: string) => [...segmenter.segment(s)].map((x) => x.segment);
-        }
-
-        return (s: string) => [...s];
-    })();
+        TextMetrics.experimentalLetterSpacing = value;
+    }
 
     /** The canvas element that everything is drawn to. */
     public canvas: ICanvas;
     /** The canvas 2d context that everything is drawn with. */
-    public context: ModernContext2D;
+    public context: ICanvasRenderingContext2D;
     public localStyleID: number;
     public dirty: boolean;
 
@@ -393,22 +351,25 @@ export class Text extends Sprite
         // letterSpacing of 0 means normal
         const letterSpacing = style.letterSpacing;
 
-        // Checking that we can use moddern canvas2D api
-        // https://developer.chrome.com/origintrials/#/view_trial/3585991203293757441
-        // note: this is unstable API, Chrome less 94 use a `textLetterSpacing`, newest use a letterSpacing
-        // eslint-disable-next-line max-len
-        const supportLetterSpacing = Text.experimentalLetterSpacing
-            && ('letterSpacing' in CanvasRenderingContext2D.prototype
-                || 'textLetterSpacing' in CanvasRenderingContext2D.prototype);
+        let useExperimentalLetterSpacing = false;
 
-        if (letterSpacing === 0 || supportLetterSpacing)
+        if (TextMetrics.experimentalLetterSpacingSupported)
         {
-            if (supportLetterSpacing)
+            if (TextMetrics.experimentalLetterSpacing)
             {
-                this.context.letterSpacing = letterSpacing;
-                this.context.textLetterSpacing = letterSpacing;
+                this.context.letterSpacing = `${letterSpacing}px`;
+                this.context.textLetterSpacing = `${letterSpacing}px`;
+                useExperimentalLetterSpacing = true;
             }
+            else
+            {
+                this.context.letterSpacing = '0px';
+                this.context.textLetterSpacing = '0px';
+            }
+        }
 
+        if (letterSpacing === 0 || useExperimentalLetterSpacing)
+        {
             if (isStroke)
             {
                 this.context.strokeText(text, x, y);
@@ -423,7 +384,7 @@ export class Text extends Sprite
 
         let currentPosition = x;
 
-        const stringArray = Text.graphemeSegmenter(text);
+        const stringArray = TextMetrics.graphemeSegmenter(text);
         let previousWidth = this.context.measureText(text).width;
         let currentWidth = 0;
 

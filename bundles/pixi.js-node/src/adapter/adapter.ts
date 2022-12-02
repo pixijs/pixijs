@@ -1,3 +1,4 @@
+import canvasModule from 'canvas';
 import { fetch, Request, Response } from 'cross-fetch';
 import fs from 'fs';
 import { WebGLRenderingContext } from 'gl';
@@ -15,7 +16,8 @@ export const NodeAdapter = {
      * @param height - height of the canvas
      */
     createCanvas: (width?: number, height?: number) => new NodeCanvasElement(width, height),
-    /** Returns a webgl rendering context using the gl package. */
+    getCanvasRenderingContext2D: () => canvasModule.CanvasRenderingContext2D,
+    /** Returns a WebGL rendering context using the gl package. */
     getWebGLRenderingContext: () => WebGLRenderingContext,
     /** Returns the fake user agent string of `node` */
     getNavigator: () => ({ userAgent: 'node' }),

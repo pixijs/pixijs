@@ -434,4 +434,77 @@ describe('AnimatedSprite', () =>
             sprite.play();
         });
     });
+
+    describe('.onLoop()', () =>
+    {
+        let sprite: AnimatedSprite;
+
+        beforeEach(() =>
+        {
+            sprite = new AnimatedSprite([Texture.EMPTY, Texture.WHITE, Texture.EMPTY]);
+            sprite.animationSpeed = 0.5;
+            sprite.loop = true;
+        });
+
+        afterEach(() =>
+        {
+            sprite.destroy();
+            sprite = null;
+        });
+
+        it('should not fire if loop is false', () =>
+        {
+            let called = false;
+
+            sprite.loop = false;
+            sprite.gotoAndStop(0);
+            sprite.onLoop = () => { called = true; };
+            sprite.autoUpdate = false;
+            sprite.play();
+            sprite.update(1);
+            sprite.update(1);
+            sprite.update(1);
+            sprite.update(1);
+            sprite.update(1);
+            sprite.update(1);
+            expect(called).toBe(false);
+        });
+
+        it('should fire onLoop', () =>
+        {
+            let count = 0;
+
+            sprite.gotoAndStop(0);
+            sprite.onLoop = () => { ++count; };
+            sprite.autoUpdate = false;
+            sprite.play();
+            sprite.update(5);
+            expect(count).toBe(0);
+            sprite.update(1);
+            expect(count).toBe(1);
+            sprite.update(5);
+            expect(count).toBe(1);
+            sprite.update(1);
+            expect(count).toBe(2);
+        });
+
+        it('should fire onLoop - reverse', () =>
+        {
+            let count = 0;
+
+            sprite.gotoAndStop(2);
+            sprite.animationSpeed = -0.5;
+            sprite.onLoop = () => { ++count; };
+            sprite.autoUpdate = false;
+            sprite.play();
+            sprite.update(4);
+            expect(count).toBe(0);
+            sprite.update(1);
+            expect(count).toBe(1);
+            sprite.update(5);
+            expect(count).toBe(1);
+            sprite.update(1);
+            expect(count).toBe(2);
+        });
+    });
 });
