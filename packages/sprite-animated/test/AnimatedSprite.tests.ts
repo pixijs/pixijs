@@ -475,12 +475,7 @@ describe('AnimatedSprite', () =>
             let count = 0;
 
             sprite.gotoAndStop(0);
-            sprite.onLoop = (loopCount) =>
-            {
-                ++count;
-                expect(loopCount).toBe(count);
-                expect(sprite.loopCount).toBe(count);
-            };
+            sprite.onLoop = () => { ++count; };
             sprite.autoUpdate = false;
             sprite.play();
             sprite.update(5);
@@ -499,12 +494,7 @@ describe('AnimatedSprite', () =>
 
             sprite.gotoAndStop(2);
             sprite.animationSpeed = -0.5;
-            sprite.onLoop = (loopCount) =>
-            {
-                ++count;
-                expect(loopCount).toBe(count);
-                expect(sprite.loopCount).toBe(count);
-            };
+            sprite.onLoop = () => { ++count; };
             sprite.autoUpdate = false;
             sprite.play();
             sprite.update(4);
