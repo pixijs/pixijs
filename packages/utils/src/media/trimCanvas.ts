@@ -1,11 +1,25 @@
 import type { ICanvas } from '@pixi/settings';
 
-interface Inset
+function checkRow(data: Uint8ClampedArray, width: number, y: number)
 {
-    top?: number;
-    left?: number;
-    right?: number;
-    bottom?: number;
+    for (let x = 0, index = 4 * y * width; x < width; ++x, index += 4)
+    {
+        if (data[index + 3] !== 0) return false;
+    }
+
+    return true;
+}
+
+function checkColumn(data: Uint8ClampedArray, width: number, x: number, top: number, bottom: number)
+{
+    const stride = 4 * width;
+
+    for (let y = top, index = (top * stride) + (4 * x); y <= bottom; ++y, index += stride)
+    {
+        if (data[index + 3] !== 0) return false;
+    }
+
+    return true;
 }
 
 /**
@@ -15,82 +29,37 @@ interface Inset
  * @param {PIXI.ICanvas} canvas - the canvas to trim
  * @returns {object} Trim data
  */
-export function trimCanvas(canvas: ICanvas): {width: number; height: number; data?: ImageData}
+export function trimCanvas(canvas: ICanvas): { width: number; height: number; data?: ImageData }
 {
-    // https://gist.github.com/remy/784508
+    // https://gist.github.com/timdown/021d9c8f2aabc7092df564996f5afbbf
 
-    let width = canvas.width;
-    let height = canvas.height;
+    let { width, height } = canvas;
 
     const context = canvas.getContext('2d', {
         willReadFrequently: true,
     });
     const imageData = context.getImageData(0, 0, width, height);
-    const pixels = imageData.data;
-    const len = pixels.length;
+    const data = imageData.data;
 
-    const bound: Inset = {
-        top: null,
-        left: null,
-        right: null,
-        bottom: null,
-    };
-    let data = null;
-    let i;
-    let x;
-    let y;
+    let top = 0;
+    let bottom = height - 1;
+    let left = 0;
+    let right = width - 1;
 
-    for (i = 0; i < len; i += 4)
+    while (top < height && checkRow(data, width, top)) ++top;
+    if (top === height)
     {
-        if (pixels[i + 3] !== 0)
-        {
-            x = (i / 4) % width;
-            y = ~~((i / 4) / width);
-
-            if (bound.top === null)
-            {
-                bound.top = y;
-            }
-
-            if (bound.left === null)
-            {
-                bound.left = x;
-            }
-            else if (x < bound.left)
-            {
-                bound.left = x;
-            }
-
-            if (bound.right === null)
-            {
-                bound.right = x + 1;
-            }
-            else if (bound.right < x)
-            {
-                bound.right = x + 1;
-            }
-
-            if (bound.bottom === null)
-            {
-                bound.bottom = y;
-            }
-            else if (bound.bottom < y)
-            {
-                bound.bottom = y;
-            }
-        }
+        return { width: 0, height: 0, data: null };
     }
+    while (checkRow(data, width, bottom)) --bottom;
+    while (checkColumn(data, width, left, top, bottom)) ++left;
+    while (checkColumn(data, width, right, top, bottom)) --right;
 
-    if (bound.top !== null)
-    {
-        width = bound.right - bound.left;
-        height = bound.bottom - bound.top + 1;
-        data = context.getImageData(bound.left, bound.top, width, height);
-    }
+    width = right - left + 1;
+    height = bottom - top + 1;
 
     return {
-        height,
-        width,
-        data,
+        width, height,
+        data: context.getImageData(left, top, width, height),
     };
 }

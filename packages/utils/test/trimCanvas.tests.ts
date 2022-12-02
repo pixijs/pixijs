@@ -2,6 +2,20 @@ import { trimCanvas } from '@pixi/utils';
 
 describe('trimCanvas', () =>
 {
+    it('should trim empty canvas', () =>
+    {
+        const canvas = document.createElement('canvas');
+
+        canvas.width = 100;
+        canvas.height = 50;
+
+        const trimmedImageData = trimCanvas(canvas);
+
+        expect(trimmedImageData.width).toEqual(0);
+        expect(trimmedImageData.height).toEqual(0);
+        expect(trimmedImageData.data).toBe(null);
+    });
+
     it('should trim the canvas', () =>
     {
         const canvas = document.createElement('canvas');
@@ -15,7 +29,7 @@ describe('trimCanvas', () =>
 
         const trimmedImageData = trimCanvas(canvas);
 
-        expect(trimmedImageData.width).toEqual(9);
+        expect(trimmedImageData.width).toEqual(10);
         expect(trimmedImageData.height).toEqual(5);
         expect(trimmedImageData.data).toBeInstanceOf(ImageData);
     });
