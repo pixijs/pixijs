@@ -86,7 +86,7 @@ export class AnimatedSprite extends Sprite
      *     // Looped!
      * };
      */
-    public onLoop?: () => void;
+    public onLoop?: (loopCount: number) => void;
 
     private _playing: boolean;
     private _textures: Texture[];
@@ -110,6 +110,9 @@ export class AnimatedSprite extends Sprite
     /** The texture index that was displayed last time. */
     private _previousFrame: number;
 
+    /** The AnimatedSprite's current loop count. */
+    private _loopCount: number;
+
     /**
      * @param textures - An array of {@link PIXI.Texture} or frame
      *  objects that make up the animation.
@@ -132,6 +135,7 @@ export class AnimatedSprite extends Sprite
         this.onLoop = null;
 
         this._currentTime = 0;
+        this._loopCount = 0;
 
         this._playing = false;
         this._previousFrame = null;
@@ -256,13 +260,11 @@ export class AnimatedSprite extends Sprite
         {
             if (this.loop && this.onLoop)
             {
-                if (this.animationSpeed > 0 && this.currentFrame < previousFrame)
+                if ((this.animationSpeed > 0 && this.currentFrame < previousFrame)
+                    || (this.animationSpeed < 0 && this.currentFrame > previousFrame))
                 {
-                    this.onLoop();
-                }
-                else if (this.animationSpeed < 0 && this.currentFrame > previousFrame)
-                {
-                    this.onLoop();
+                    ++this._loopCount;
+                    this.onLoop(this._loopCount);
                 }
             }
 
@@ -392,7 +394,7 @@ export class AnimatedSprite extends Sprite
         this.updateTexture();
     }
 
-    /** The AnimatedSprites current frame index. */
+    /** The AnimatedSprite's current frame index. */
     get currentFrame(): number
     {
         let currentFrame = Math.floor(this._currentTime) % this._textures.length;
@@ -455,6 +457,17 @@ export class AnimatedSprite extends Sprite
                 this._isConnectedToTicker = true;
             }
         }
+    }
+
+    /** The AnimatedSprite's current loop count. */
+    get loopCount(): number
+    {
+        return this._loopCount;
+    }
+
+    set loopCount(value: number)
+    {
+        this._loopCount = value;
     }
 }
 
