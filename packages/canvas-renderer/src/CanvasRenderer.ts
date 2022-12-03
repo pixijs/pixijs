@@ -234,6 +234,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
                 width: options.width,
                 autoDensity: options.autoDensity,
                 resolution: options.resolution,
+                view: options.view,
             }
         };
 
