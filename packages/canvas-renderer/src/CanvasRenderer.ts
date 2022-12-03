@@ -9,24 +9,26 @@ import {
 import type {
     BLEND_MODES,
     RENDERER_TYPE,
-    Matrix,
-    Rectangle,
+    BackgroundSystem,
+    ExtensionMetadata,
+    GenerateTextureSystem,
+    ICanvas,
+    ICanvasRenderingContext2D,
+    IGenerateTextureOptions,
+    IRenderableObject,
+    IRenderer,
     IRendererOptions,
     IRendererPlugins,
     IRendererRenderOptions,
-    RenderTexture,
-    IRenderableObject,
-    GenerateTextureSystem,
-    IRenderer,
-    BackgroundSystem,
-    ViewSystem,
+    Matrix,
     PluginSystem,
-    StartupSystem,
+    Rectangle,
+    RenderTexture,
     StartupOptions,
-    ExtensionMetadata,
-    IGenerateTextureOptions } from '@pixi/core';
+    StartupSystem,
+    ViewSystem,
+} from '@pixi/core';
 import type { DisplayObject } from '@pixi/display';
-import type { ICanvas, ICanvasRenderingContext2D } from '@pixi/settings';
 import type { CanvasContextSystem, SmoothingEnabledProperties } from './CanvasContextSystem';
 import type { CanvasMaskSystem } from './CanvasMaskSystem';
 import type { CanvasObjectRendererSystem } from './CanvasObjectRendererSystem';

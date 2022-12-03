@@ -1,8 +1,7 @@
 import type { CacheParser } from '@pixi/assets';
 import { Cache, loadJson, loadTextures } from '@pixi/assets';
-import { Texture } from '@pixi/core';
+import { Texture, utils } from '@pixi/core';
 import { spritesheetAsset, Spritesheet } from '@pixi/spritesheet';
-import { clearTextureCache } from '@pixi/utils';
 import { Loader } from '../../assets/src/loader/Loader';
 
 describe('spritesheetAsset', () =>
@@ -86,7 +85,7 @@ describe('spritesheetAsset', () =>
     it('should not create multipack resources when related_multi_packs field is missing or the wrong type', async () =>
     {
         // clear the caches only to avoid cluttering the output
-        clearTextureCache();
+        utils.clearTextureCache();
 
         const spritesheet = await loader.load(`${serverPath}building1-1.json`) as Spritesheet;
         const spritesheet2 = await loader.load(`${serverPath}atlas-multipack-wrong-type.json`) as Spritesheet;
