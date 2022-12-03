@@ -13,69 +13,180 @@ export type TextStyleLineJoin = 'miter'|'round'|'bevel';
 export type TextStyleTextBaseline = 'alphabetic'|'top'|'hanging'|'middle'|'ideographic'|'bottom';
 export type TextStyleWhiteSpace = 'normal'|'pre'|'pre-line';
 
+/**
+ * Generic interface for TextStyle options.
+ * @memberof PIXI
+ */
 export interface ITextStyle {
+    /**
+     * Alignment for multiline text, does not affect single line text
+     * @type {'left'|'center'|'right'|'justify'}
+     * @default 'left'
+     */
     align: TextStyleAlign;
+    /**
+     * Indicates if lines can be wrapped within words, it needs wordWrap to be set to true
+     * @default false
+     */
     breakWords: boolean;
+    /**
+     * Set a drop shadow for the text
+     * @default false
+     */
     dropShadow: boolean;
+    /**
+     * Set alpha for the drop shadow
+     * @default 1
+     */
     dropShadowAlpha: number;
+    /**
+     * Set a angle of the drop shadow
+     * @default Math.PI / 6
+     */
     dropShadowAngle: number;
+    /**
+     * Set a shadow blur radius
+     * @default 0
+     */
     dropShadowBlur: number;
+    /**
+     * A fill style to be used on the dropshadow e.g 'red', '#00FF00'
+     * @default 'black'
+     */
     dropShadowColor: string|number;
+    /**
+     * Set a distance of the drop shadow
+     * @default 5
+     */
     dropShadowDistance: number;
+    /**
+     * A canvas fillstyle that will be used on the text e.g 'red', '#00FF00'.
+     * Can be an array to create a gradient, e.g., `['#000000','#FFFFFF']`
+     * {@link https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillStyle|MDN}
+     * @type {string|string[]|number|number[]|CanvasGradient|CanvasPattern}
+     * @default 'black'
+     */
     fill: TextStyleFill;
+    /**
+     * If fill is an array of colours to create a gradient, this can change the
+     * type/direction of the gradient. See {@link PIXI.TEXT_GRADIENT}
+     * @type {PIXI.TEXT_GRADIENT}
+     * @default PIXI.TEXT_GRADIENT.LINEAR_VERTICAL
+     */
     fillGradientType: TEXT_GRADIENT;
-    fillGradientStops: number[];
+    /**
+     * If fill is an array of colours to create a gradient, this array can set
+     * the stop points (numbers between 0 and 1) for the color, overriding the
+     * default behaviour of evenly spacing them.
+     * @default null
+     */
+    fillGradientStops: number[] | null;
+    /**
+     * The font family, can be a single font name, or a list of names where the first
+     * is the preferred font.
+     * @default 'Arial'
+     */
     fontFamily: string | string[];
+    /**
+     * The font size (as a number it converts to px, but as a string,
+     * equivalents are '26px','20pt','160%' or '1.6em')
+     * @default 26
+     */
     fontSize: number | string;
+    /**
+     * The font style.
+     * @type {'normal'|'italic'|'oblique'}
+     * @default 'normal'
+     */
     fontStyle: TextStyleFontStyle;
+    /**
+     * The font variant.
+     * @type {'normal'|'small-caps'}
+     * @default 'normal'
+     */
     fontVariant: TextStyleFontVariant;
+    /**
+     * The font weight.
+     * @type {'normal'|'bold'|'bolder'|'lighter'|'100'|'200'|'300'|'400'|'500'|'600'|'700'|'800'|'900'}
+     * @default 'normal'
+     */
     fontWeight: TextStyleFontWeight;
-    letterSpacing: number;
-    lineHeight: number;
-    lineJoin: TextStyleLineJoin;
-    miterLimit: number;
-    padding: number;
-    stroke: string|number;
-    strokeThickness: number;
-    textBaseline: TextStyleTextBaseline;
-    trim: boolean;
-    whiteSpace: TextStyleWhiteSpace;
-    wordWrap: boolean;
-    wordWrapWidth: number;
+    /**
+     * The height of the line, a number that represents the vertical space that a letter uses.
+     * @default 0
+     */
     leading: number;
+    /**
+     * The amount of spacing between letters, default is 0
+     * @default 0
+     */
+    letterSpacing: number;
+    /**
+     * The line height, a number that represents the vertical space that a letter uses
+     * @default null
+     */
+    lineHeight: number;
+    /**
+     * The lineJoin property sets the type of corner created, it can resolve
+     * spiked text issues. Possible values "miter" (creates a sharp corner),
+     * "round" (creates a round corner) or "bevel" (creates a squared corner).
+     * @type {'miter'|'round'|'bevel'}
+     * @default 'miter'
+     */
+    lineJoin: TextStyleLineJoin;
+    /**
+     * The miter limit to use when using the 'miter' lineJoin mode. This can reduce
+     * or increase the spikiness of rendered text.
+     * @default 10
+     */
+    miterLimit: number;
+    /**
+     * Occasionally some fonts are cropped. Adding some padding will prevent this from
+     * happening by adding padding to all sides of the text.
+     * @default 0
+     */
+    padding: number;
+    /**
+     * A canvas fillstyle that will be used on the text stroke, e.g., 'blue', '#FCFF00'
+     * @default 'black'
+     */
+    stroke: string|number;
+    /**
+     * A number that represents the thickness of the stroke.
+     * A value of 0 will disable stroke.
+     * @default 0
+     */
+    strokeThickness: number;
+    /**
+     * The baseline of the text that is rendered.
+     * @type {'alphabetic'|'top'|'hanging'|'middle'|'ideographic'|'bottom'}
+     * @default 'alphabetic'
+     */
+    textBaseline: TextStyleTextBaseline;
+    /**
+     * Trim transparent borders
+     * @default false
+     */
+    trim: boolean;
+    /**
+     * Determines whether newlines & spaces are collapsed or preserved "normal"
+     * (collapse, collapse), "pre" (preserve, preserve) | "pre-line" (preserve,
+     * collapse). It needs wordWrap to be set to true.
+     * @type {'normal'|'pre'|'pre-line'}
+     * @default 'pre'
+     */
+    whiteSpace: TextStyleWhiteSpace;
+    /**
+     * Indicates if word wrap should be used
+     * @default false
+     */
+    wordWrap: boolean;
+    /**
+     * The width at which text will wrap, it needs wordWrap to be set to true
+     * @default 100
+     */
+    wordWrapWidth: number;
 }
-
-const defaultStyle: ITextStyle = {
-    align: 'left',
-    breakWords: false,
-    dropShadow: false,
-    dropShadowAlpha: 1,
-    dropShadowAngle: Math.PI / 6,
-    dropShadowBlur: 0,
-    dropShadowColor: 'black',
-    dropShadowDistance: 5,
-    fill: 'black',
-    fillGradientType: TEXT_GRADIENT.LINEAR_VERTICAL,
-    fillGradientStops: [],
-    fontFamily: 'Arial',
-    fontSize: 26,
-    fontStyle: 'normal',
-    fontVariant: 'normal',
-    fontWeight: 'normal',
-    letterSpacing: 0,
-    lineHeight: 0,
-    lineJoin: 'miter',
-    miterLimit: 10,
-    padding: 0,
-    stroke: 'black',
-    strokeThickness: 0,
-    textBaseline: 'alphabetic',
-    trim: false,
-    whiteSpace: 'pre',
-    wordWrap: false,
-    wordWrapWidth: 100,
-    leading: 0,
-};
 
 const genericFontFamilies = [
     'serif',
@@ -97,6 +208,42 @@ const genericFontFamilies = [
  */
 export class TextStyle implements ITextStyle
 {
+    /**
+     * Default style options used for all TextStyle instances.
+     * @type {PIXI.ITextStyle}
+     */
+    public static defaultStyle: ITextStyle = {
+        align: 'left',
+        breakWords: false,
+        dropShadow: false,
+        dropShadowAlpha: 1,
+        dropShadowAngle: Math.PI / 6,
+        dropShadowBlur: 0,
+        dropShadowColor: 'black',
+        dropShadowDistance: 5,
+        fill: 'black',
+        fillGradientType: TEXT_GRADIENT.LINEAR_VERTICAL,
+        fillGradientStops: [],
+        fontFamily: 'Arial',
+        fontSize: 26,
+        fontStyle: 'normal',
+        fontVariant: 'normal',
+        fontWeight: 'normal',
+        letterSpacing: 0,
+        lineHeight: 0,
+        lineJoin: 'miter',
+        miterLimit: 10,
+        padding: 0,
+        stroke: 'black',
+        strokeThickness: 0,
+        textBaseline: 'alphabetic',
+        trim: false,
+        whiteSpace: 'pre',
+        wordWrap: false,
+        wordWrapWidth: 100,
+        leading: 0,
+    };
+
     public styleID: number;
 
     protected _align: TextStyleAlign;
@@ -130,52 +277,7 @@ export class TextStyle implements ITextStyle
     protected _leading: number;
 
     /**
-     * @param {object} [style] - The style parameters
-     * @param {string} [style.align='left'] - Alignment for multiline text ('left', 'center' or 'right'),
-     *  does not affect single line text
-     * @param {boolean} [style.breakWords=false] - Indicates if lines can be wrapped within words, it
-     *  needs wordWrap to be set to true
-     * @param {boolean} [style.dropShadow=false] - Set a drop shadow for the text
-     * @param {number} [style.dropShadowAlpha=1] - Set alpha for the drop shadow
-     * @param {number} [style.dropShadowAngle=Math.PI/6] - Set a angle of the drop shadow
-     * @param {number} [style.dropShadowBlur=0] - Set a shadow blur radius
-     * @param {string|number} [style.dropShadowColor='black'] - A fill style to be used on the dropshadow e.g 'red', '#00FF00'
-     * @param {number} [style.dropShadowDistance=5] - Set a distance of the drop shadow
-     * @param {string|string[]|number|number[]|CanvasGradient|CanvasPattern} [style.fill='black'] - A canvas
-     *  fillstyle that will be used on the text e.g 'red', '#00FF00'. Can be an array to create a gradient
-     *  eg ['#000000','#FFFFFF']
-     * {@link https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillStyle|MDN}
-     * @param {number} [style.fillGradientType=PIXI.TEXT_GRADIENT.LINEAR_VERTICAL] - If fill is an array of colours
-     *  to create a gradient, this can change the type/direction of the gradient. See {@link PIXI.TEXT_GRADIENT}
-     * @param {number[]} [style.fillGradientStops] - If fill is an array of colours to create a gradient, this array can set
-     * the stop points (numbers between 0 and 1) for the color, overriding the default behaviour of evenly spacing them.
-     * @param {string|string[]} [style.fontFamily='Arial'] - The font family
-     * @param {number|string} [style.fontSize=26] - The font size (as a number it converts to px, but as a string,
-     *  equivalents are '26px','20pt','160%' or '1.6em')
-     * @param {string} [style.fontStyle='normal'] - The font style ('normal', 'italic' or 'oblique')
-     * @param {string} [style.fontVariant='normal'] - The font variant ('normal' or 'small-caps')
-     * @param {string} [style.fontWeight='normal'] - The font weight ('normal', 'bold', 'bolder', 'lighter' and '100',
-     *  '200', '300', '400', '500', '600', '700', '800' or '900')
-     * @param {number} [style.leading=0] - The space between lines
-     * @param {number} [style.letterSpacing=0] - The amount of spacing between letters, default is 0
-     * @param {number} [style.lineHeight] - The line height, a number that represents the vertical space that a letter uses
-     * @param {string} [style.lineJoin='miter'] - The lineJoin property sets the type of corner created, it can resolve
-     *      spiked text issues. Possible values "miter" (creates a sharp corner), "round" (creates a round corner) or "bevel"
-     *      (creates a squared corner).
-     * @param {number} [style.miterLimit=10] - The miter limit to use when using the 'miter' lineJoin mode. This can reduce
-     *      or increase the spikiness of rendered text.
-     * @param {number} [style.padding=0] - Occasionally some fonts are cropped. Adding some padding will prevent this from
-     *     happening by adding padding to all sides of the text.
-     * @param {string|number} [style.stroke='black'] - A canvas fillstyle that will be used on the text stroke
-     *  e.g 'blue', '#FCFF00'
-     * @param {number} [style.strokeThickness=0] - A number that represents the thickness of the stroke.
-     *  Default is 0 (no stroke)
-     * @param {boolean} [style.trim=false] - Trim transparent borders
-     * @param {string} [style.textBaseline='alphabetic'] - The baseline of the text that is rendered.
-     * @param {string} [style.whiteSpace='pre'] - Determines whether newlines & spaces are collapsed or preserved "normal"
-     *      (collapse, collapse), "pre" (preserve, preserve) | "pre-line" (preserve, collapse). It needs wordWrap to be set to true
-     * @param {boolean} [style.wordWrap=false] - Indicates if word wrap should be used
-     * @param {number} [style.wordWrapWidth=100] - The width at which text will wrap, it needs wordWrap to be set to true
+     * @param style - TextStyle properties to be set on the text.
      */
     constructor(style?: Partial<ITextStyle>)
     {
@@ -196,7 +298,7 @@ export class TextStyle implements ITextStyle
     {
         const clonedProperties: Partial<ITextStyle> = {};
 
-        deepCopyProperties(clonedProperties, this, defaultStyle);
+        deepCopyProperties(clonedProperties, this, TextStyle.defaultStyle);
 
         return new TextStyle(clonedProperties);
     }
@@ -204,13 +306,13 @@ export class TextStyle implements ITextStyle
     /** Resets all properties to the defaults specified in TextStyle.prototype._default */
     public reset(): void
     {
-        deepCopyProperties(this, defaultStyle, defaultStyle);
+        deepCopyProperties(this, TextStyle.defaultStyle, TextStyle.defaultStyle);
     }
 
     /**
-     * Alignment for multiline text ('left', 'center' or 'right'), does not affect single line text
+     * Alignment for multiline text, does not affect single line text.
      *
-     * @member {string}
+     * @member {'left'|'center'|'right'|'justify'}
      */
     get align(): TextStyleAlign
     {
@@ -295,7 +397,7 @@ export class TextStyle implements ITextStyle
         }
     }
 
-    /** A fill style to be used on the dropshadow e.g 'red', '#00FF00'. */
+    /** A fill style to be used on the dropshadow e.g., 'red', '#00FF00'. */
     get dropShadowColor(): number | string
     {
         return this._dropShadowColor;
@@ -327,7 +429,7 @@ export class TextStyle implements ITextStyle
     /**
      * A canvas fillstyle that will be used on the text e.g 'red', '#00FF00'.
      *
-     * Can be an array to create a gradient eg ['#000000','#FFFFFF']
+     * Can be an array to create a gradient e.g., `['#000000','#FFFFFF']`
      * {@link https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillStyle|MDN}
      *
      * @member {string|string[]|number|number[]|CanvasGradient|CanvasPattern}
@@ -355,6 +457,7 @@ export class TextStyle implements ITextStyle
      * If fill is an array of colours to create a gradient, this can change the type/direction of the gradient.
      *
      * @see PIXI.TEXT_GRADIENT
+     * @type {PIXI.TEXT_GRADIENT}
      */
     get fillGradientType(): TEXT_GRADIENT
     {
@@ -386,7 +489,10 @@ export class TextStyle implements ITextStyle
         }
     }
 
-    /** The font family. */
+    /**
+     * The font family, can be a single font name, or a list of names where the first
+     * is the preferred font.
+     */
     get fontFamily(): string | string[]
     {
         return this._fontFamily;
@@ -418,10 +524,9 @@ export class TextStyle implements ITextStyle
     }
 
     /**
-     * The font style
-     * ('normal', 'italic' or 'oblique')
+     * The font style.
      *
-     * @member {string}
+     * @member {'normal'|'italic'|'oblique'}
      */
     get fontStyle(): TextStyleFontStyle
     {
@@ -437,10 +542,9 @@ export class TextStyle implements ITextStyle
     }
 
     /**
-     * The font variant
-     * ('normal' or 'small-caps')
+     * The font variant.
      *
-     * @member {string}
+     * @member {'normal'|'small-caps'}
      */
     get fontVariant(): TextStyleFontVariant
     {
@@ -456,10 +560,9 @@ export class TextStyle implements ITextStyle
     }
 
     /**
-     * The font weight
-     * ('normal', 'bold', 'bolder', 'lighter' and '100', '200', '300', '400', '500', '600', '700', 800' or '900')
+     * The font weight.
      *
-     * @member {string}
+     * @member {'normal'|'bold'|'bolder'|'lighter'|'100'|'200'|'300'|'400'|'500'|'600'|'700'|'800'|'900'}
      */
     get fontWeight(): TextStyleFontWeight
     {
@@ -520,7 +623,7 @@ export class TextStyle implements ITextStyle
      * The lineJoin property sets the type of corner created, it can resolve spiked text issues.
      * Default is 'miter' (creates a sharp corner).
      *
-     * @member {string}
+     * @member {'miter'|'round'|'bevel'}
      */
     get lineJoin(): TextStyleLineJoin
     {
@@ -612,7 +715,7 @@ export class TextStyle implements ITextStyle
     /**
      * The baseline of the text that is rendered.
      *
-     * @member {string}
+     * @member {'alphabetic'|'top'|'hanging'|'middle'|'ideographic'|'bottom'}
      */
     get textBaseline(): TextStyleTextBaseline
     {
@@ -651,7 +754,7 @@ export class TextStyle implements ITextStyle
      * 'pre'        | Preserve      |   Preserve
      * 'pre-line'   | Preserve      |   Collapse
      *
-     * @member {string}
+     * @member {'normal'|'pre'|'pre-line'}
      */
     get whiteSpace(): TextStyleWhiteSpace
     {
