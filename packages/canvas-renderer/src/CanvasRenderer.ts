@@ -119,6 +119,8 @@ export class CanvasRenderer extends AbstractRenderer
      * @param {number} [options.backgroundColor=0x000000] - The background color of the rendered area
      *  (shown if not transparent).
      * @param {number} [options.backgroundAlpha=1] - Value from 0 (fully transparent) to 1 (fully opaque).
+     * @param {boolean} [options.transparent] − Deprecated. true sets backgroundAlpha to 0,
+     *  false sets backgroundAlpha to 1.
      */
     constructor(options?: IRendererOptions)
     {
