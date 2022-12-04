@@ -1,7 +1,4 @@
-import { MASK_TYPES, COLOR_MASK_BITS } from '@pixi/constants';
-import type {
-    IFilterTarget,
-    IMaskTarget } from '@pixi/core';
+import { COLOR_MASK_BITS, MASK_TYPES } from '@pixi/constants';
 import {
     BaseTexture,
     CanvasResource,
@@ -16,6 +13,10 @@ import { Container } from '@pixi/display';
 import { Graphics } from '@pixi/graphics';
 import { Matrix, Rectangle } from '@pixi/math';
 import { Sprite } from '@pixi/sprite';
+
+import type {
+    IFilterTarget,
+    IMaskTarget } from '@pixi/core';
 
 describe('MaskSystem', () =>
 {

@@ -1,5 +1,5 @@
 import canvasModule from 'canvas';
-import { extensions, ExtensionType, Texture, settings, utils } from '@pixi/core';
+import { extensions, ExtensionType, settings, Texture, utils } from '@pixi/core';
 import { NodeCanvasElement } from './NodeCanvasElement';
 
 import type { LoadAsset, LoaderParser } from '@pixi/assets';

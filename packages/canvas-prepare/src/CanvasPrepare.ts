@@ -1,8 +1,8 @@
-import { settings, BaseTexture, extensions, ExtensionType } from '@pixi/core';
+import { BaseTexture, extensions, ExtensionType, settings } from '@pixi/core';
 import { BasePrepare } from '@pixi/prepare';
 
-import type { ExtensionMetadata, ICanvas, ICanvasRenderingContext2D, IRenderer, ISystem } from '@pixi/core';
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
+import type { ExtensionMetadata, ICanvas, ICanvasRenderingContext2D, IRenderer, ISystem } from '@pixi/core';
 import type { IDisplayObjectExtended } from '@pixi/prepare';
 
 const CANVAS_START_SIZE = 16;

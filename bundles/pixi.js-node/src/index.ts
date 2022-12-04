@@ -1,5 +1,5 @@
-import './adapter';
-
+import { ResizePlugin } from '@pixi/app';
+import { loadTextures, loadWebFont } from '@pixi/assets';
 import { extensions, INSTALLED } from '@pixi/core';
 import { AlphaFilter } from '@pixi/filter-alpha';
 import { BlurFilter, BlurFilterPass } from '@pixi/filter-blur';
@@ -10,10 +10,7 @@ import { NoiseFilter } from '@pixi/filter-noise';
 import '@pixi/mixin-cache-as-bitmap';
 import '@pixi/mixin-get-child-by-name';
 import '@pixi/mixin-get-global-position';
-// eslint-disable-next-line @typescript-eslint/no-duplicate-imports
 import { NodeCanvasResource } from './adapter';
-import { loadTextures, loadWebFont } from '@pixi/assets';
-import { ResizePlugin } from '@pixi/app';
 
 // Remove the default loader plugins
 extensions.remove(
@@ -36,9 +33,8 @@ export const filters = {
     NoiseFilter,
 };
 
-// Export ES for those importing specifically by name,
+// Export ES for those importing specifically by name
 export * from '@pixi/app';
-export * from './adapter';
 export * from '@pixi/assets';
 export * from '@pixi/core';
 export * from '@pixi/display';
@@ -54,3 +50,6 @@ export * from '@pixi/sprite-tiling';
 export * from '@pixi/spritesheet';
 export * from '@pixi/text';
 export * from '@pixi/text-bitmap';
+
+// Export adapter
+export * from './adapter';

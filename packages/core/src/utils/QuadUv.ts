@@ -1,5 +1,5 @@
-import { Geometry } from '../geometry/Geometry';
 import { Buffer } from '../geometry/Buffer';
+import { Geometry } from '../geometry/Geometry';
 
 import type { Rectangle } from '@pixi/math';
 

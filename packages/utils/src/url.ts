@@ -5,7 +5,7 @@
  * dependency.
  */
 
-import { parse as _parse, format as _format, resolve as _resolve } from 'url';
+import { format as _format, parse as _parse, resolve as _resolve } from 'url';
 
 interface ParsedUrlQuery
 {

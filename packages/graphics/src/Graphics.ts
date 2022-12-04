@@ -1,29 +1,28 @@
 import {
+    BLEND_MODES,
     Circle,
     Ellipse,
+    Matrix,
     PI_2,
     Point,
     Polygon,
     Rectangle,
     RoundedRectangle,
-    Matrix,
+    Shader,
     SHAPES,
-    BLEND_MODES,
+    State,
     Texture,
     UniformGroup,
-    State,
-    Shader,
     utils
 } from '@pixi/core';
-
-import { BezierUtils, QuadraticUtils, ArcUtils } from './utils';
+import { Container } from '@pixi/display';
+import { curves, LINE_CAP, LINE_JOIN } from './const';
 import { GraphicsGeometry } from './GraphicsGeometry';
 import { FillStyle } from './styles/FillStyle';
 import { LineStyle } from './styles/LineStyle';
-import { Container } from '@pixi/display';
-import { LINE_JOIN, LINE_CAP, curves } from './const';
+import { ArcUtils, BezierUtils, QuadraticUtils } from './utils';
 
-import type { IShape, IPointData, Renderer, BatchDrawCall } from '@pixi/core';
+import type { BatchDrawCall, IPointData, IShape, Renderer } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
 
 /** Batch element computed from Graphics geometry */

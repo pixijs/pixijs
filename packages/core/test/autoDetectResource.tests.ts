@@ -1,9 +1,8 @@
 import { autoDetectResource,
-    INSTALLED,
     CanvasResource,
     ImageResource,
-    VideoResource,
-    SVGResource } from '@pixi/core';
+    INSTALLED,
+    SVGResource,    VideoResource } from '@pixi/core';
 
 describe('autoDetectResource', () =>
 {

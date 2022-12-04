@@ -1,6 +1,6 @@
-import { Filter, settings, CLEAR_MODES } from '@pixi/core';
-import { generateBlurVertSource } from './generateBlurVertSource';
+import { CLEAR_MODES, Filter, settings } from '@pixi/core';
 import { generateBlurFragSource } from './generateBlurFragSource';
+import { generateBlurVertSource } from './generateBlurVertSource';
 
 import type { FilterSystem, RenderTexture } from '@pixi/core';
 

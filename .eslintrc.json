@@ -1,6 +1,6 @@
 {
     "extends": ["@pixi/eslint-config"],
-    "plugins": ["jsdoc"],
+    "plugins": ["import", "jsdoc", "simple-import-sort"],
     "ignorePatterns": ["**/*.index.d.ts"],
     "settings": {
         "jsdoc": {
@@ -15,6 +15,30 @@
         }
     },
     "rules": {
+        // Imports and exports
+        "import/first": 1,
+        "import/newline-after-import": 1,
+        "simple-import-sort/imports": [1, {
+            "groups": [
+                [
+                    "^\\w", // External
+                    "^\\u0000", // External side effect
+                    "^@pixi/", // @pixi/*
+                    "^\\u0000@pixi/", // @pixi/* side effect
+                    "^\\.", // Relative
+                    "^\\u0000\\.", // Relative side effect
+                    "^" // Others
+                ],
+                [
+                    "^\\w.*\\u0000$", // External types
+                    "^@pixi/.*\\u0000$", // PixiJS types
+                    "^\\..*\\u0000$", // Relative types
+                    "\\u0000$" // Other types
+                ]
+            ]
+        }],
+        "simple-import-sort/exports": 1,
+        
         "spaced-comment": [1, "always", { "markers": ["/"] }],
         "@typescript-eslint/triple-slash-reference": [1, { "path": "always" }],
         "@typescript-eslint/consistent-type-imports": [1, { "disallowTypeAnnotations": false }],

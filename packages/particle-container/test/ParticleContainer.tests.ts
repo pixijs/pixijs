@@ -1,6 +1,6 @@
+import { Texture } from '@pixi/core';
 import { ParticleContainer } from '@pixi/particle-container';
 import { Sprite } from '@pixi/sprite';
-import { Texture } from '@pixi/core';
 
 describe('ParticleContainer', () =>
 {

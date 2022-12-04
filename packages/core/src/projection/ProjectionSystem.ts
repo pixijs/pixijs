@@ -1,10 +1,10 @@
+import { extensions, ExtensionType } from '@pixi/extensions';
 import { Matrix } from '@pixi/math';
 
-import type { ISystem } from '../system/ISystem';
+import type { ExtensionMetadata } from '@pixi/extensions';
 import type { Rectangle } from '@pixi/math';
 import type { Renderer } from '../Renderer';
-import type { ExtensionMetadata } from '@pixi/extensions';
-import { extensions, ExtensionType } from '@pixi/extensions';
+import type { ISystem } from '../system/ISystem';
 
 /**
  * System plugin to the renderer to manage the projection matrix.

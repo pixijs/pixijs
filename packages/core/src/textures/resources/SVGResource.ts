@@ -1,6 +1,6 @@
+import { settings } from '@pixi/settings';
 import { uid } from '@pixi/utils';
 import { BaseImageResource } from './BaseImageResource';
-import { settings } from '@pixi/settings';
 
 import type { ISize } from '@pixi/math';
 import type { ICanvas } from '@pixi/settings';

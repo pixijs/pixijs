@@ -256,8 +256,8 @@ export {
     ExtensionType,
 };
 export type {
+    ExtensionFormat,
+    ExtensionFormatLoose,
     ExtensionHandler,
     ExtensionMetadata,
-    ExtensionFormatLoose,
-    ExtensionFormat,
 };

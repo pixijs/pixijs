@@ -1,11 +1,11 @@
+import { extensions, ExtensionType } from '@pixi/core';
 import { EventBoundary } from './EventBoundary';
-import type { FederatedMouseEvent } from './FederatedMouseEvent';
 import { FederatedPointerEvent } from './FederatedPointerEvent';
 import { FederatedWheelEvent } from './FederatedWheelEvent';
-import { extensions, ExtensionType } from '@pixi/core';
 
 import type { ExtensionMetadata, ICanvas, IPointData, IRenderableObject } from '@pixi/core';
 import type { DisplayObject } from '@pixi/display';
+import type { FederatedMouseEvent } from './FederatedMouseEvent';
 
 const MOUSE_POINTER_ID = 1;
 const TOUCH_TO_POINTER: Record<string, string> = {

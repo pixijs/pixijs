@@ -1,7 +1,7 @@
 import { Runner } from '@pixi/runner';
 
-import type { BaseTexture } from '../BaseTexture';
 import type { Renderer } from '../../Renderer';
+import type { BaseTexture } from '../BaseTexture';
 import type { GLTexture } from '../GLTexture';
 
 /**

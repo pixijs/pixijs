@@ -1,4 +1,4 @@
-import { Filter, CLEAR_MODES } from '@pixi/core';
+import { CLEAR_MODES, Filter } from '@pixi/core';
 import { BlurFilterPass } from './BlurFilterPass';
 
 import type { BLEND_MODES, FilterSystem, RenderTexture } from '@pixi/core';

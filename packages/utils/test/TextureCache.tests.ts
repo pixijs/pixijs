@@ -1,5 +1,5 @@
-import { Texture, BaseTexture } from '@pixi/core';
-import { TextureCache, destroyTextureCache, clearTextureCache, BaseTextureCache } from '@pixi/utils';
+import { BaseTexture, Texture } from '@pixi/core';
+import { BaseTextureCache, clearTextureCache, destroyTextureCache, TextureCache } from '@pixi/utils';
 
 describe('TextureCache', () =>
 {

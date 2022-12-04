@@ -1,7 +1,7 @@
 import { AccessibilityManager } from '@pixi/accessibility';
 import { CanvasRenderer } from '@pixi/canvas-renderer';
-import { DisplayObject, Container } from '@pixi/display';
 import { Renderer, utils } from '@pixi/core';
+import { Container, DisplayObject } from '@pixi/display';
 
 describe('AccessibilityManager', () =>
 {

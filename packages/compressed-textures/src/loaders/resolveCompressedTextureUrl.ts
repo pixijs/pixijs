@@ -1,4 +1,4 @@
-import { settings, extensions, ExtensionType } from '@pixi/core';
+import { extensions, ExtensionType, settings } from '@pixi/core';
 
 import type { ResolveAsset, ResolveURLParser } from '@pixi/assets';
 

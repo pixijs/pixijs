@@ -1,7 +1,7 @@
 import { BrowserAdapter } from './adapter';
 
-import type { ICanvas } from './ICanvas';
 import type { IAdapter } from './adapter';
+import type { ICanvas } from './ICanvas';
 
 export interface IRenderOptions
 {

@@ -1,10 +1,11 @@
+import { extensions, ExtensionType } from '@pixi/extensions';
+
+import type { ExtensionMetadata } from '@pixi/extensions';
 import type { Matrix } from '@pixi/math';
 import type { IRenderableObject, IRendererRenderOptions } from '../IRenderer';
-import type { ISystem } from '../system/ISystem';
 import type { Renderer } from '../Renderer';
 import type { RenderTexture } from '../renderTexture/RenderTexture';
-import type { ExtensionMetadata } from '@pixi/extensions';
-import { extensions, ExtensionType } from '@pixi/extensions';
+import type { ISystem } from '../system/ISystem';
 
 /**
  * system that provides a render function that focussing on rendering Pixi Scene Graph objects

@@ -1,4 +1,5 @@
 import { MeshGeometry } from '@pixi/mesh';
+
 import type { IPoint } from '@pixi/core';
 
 /**

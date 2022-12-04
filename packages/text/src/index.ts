@@ -1,5 +1,4 @@
-export * from './Text';
-export * from './TextStyle';
-export * from './TextMetrics';
-
 export * from './const';
+export * from './Text';
+export * from './TextMetrics';
+export * from './TextStyle';

@@ -1,12 +1,11 @@
-import { ObjectRenderer, Shader, State, QuadUv, ExtensionType, WRAP_MODES, Matrix, utils, extensions } from '@pixi/core';
-
-import fragmentSimpleSrc from './sprite-tiling-simple.frag';
-import gl1VertexSrc from './sprite-tiling-fallback.vert';
-import gl1FragmentSrc from './sprite-tiling-fallback.frag';
-import gl2VertexSrc from './sprite-tiling.vert';
+import { extensions, ExtensionType, Matrix, ObjectRenderer, QuadUv, Shader, State, utils, WRAP_MODES } from '@pixi/core';
 import gl2FragmentSrc from './sprite-tiling.frag';
+import gl2VertexSrc from './sprite-tiling.vert';
+import gl1FragmentSrc from './sprite-tiling-fallback.frag';
+import gl1VertexSrc from './sprite-tiling-fallback.vert';
+import fragmentSimpleSrc from './sprite-tiling-simple.frag';
 
-import type { Renderer, ExtensionMetadata } from '@pixi/core';
+import type { ExtensionMetadata, Renderer } from '@pixi/core';
 import type { TilingSprite } from './TilingSprite';
 
 const tempMat = new Matrix();

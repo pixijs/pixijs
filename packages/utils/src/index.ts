@@ -18,6 +18,8 @@
  * @namespace PIXI.utils
  */
 
+import './settings';
+
 /**
  * A simple JS library that detects mobile devices.
  * @see {@link https://github.com/kaimallea/isMobile}
@@ -47,15 +49,13 @@
  */
 export { isMobile } from '@pixi/settings';
 
-import EventEmitter from 'eventemitter3';
-
 /**
  * A high performance event emitter
  * @see {@link https://github.com/primus/eventemitter3}
  * @memberof PIXI.utils
  * @class EventEmitter
  */
-export { EventEmitter };
+export { default as EventEmitter } from 'eventemitter3';
 
 /**
  * A polygon triangulation library
@@ -77,6 +77,7 @@ export { default as earcut } from 'earcut';
  * @member {object}
  */
 export * from './url';
+
 /**
  * Browser and Node.js compatible path utilities.
  * All paths that are passed in will become normalized to have posix separators.
@@ -86,12 +87,12 @@ export * from './url';
  */
 export * from './path';
 
-import './settings';
-
+// Other exports
 export * from './browser/hello';
 export * from './browser/isWebGLSupported';
 export * from './color/hex';
 export * from './color/premultiply';
+export * from './const';
 export * from './data/createIndicesForQuads';
 export * from './data/getBufferType';
 export * from './data/interleaveTypedArrays';
@@ -106,5 +107,4 @@ export * from './media/trimCanvas';
 export * from './network/decomposeDataUri';
 export * from './network/determineCrossOrigin';
 export * from './network/getResolutionOfUrl';
-export * from './const';
 export * from './types';

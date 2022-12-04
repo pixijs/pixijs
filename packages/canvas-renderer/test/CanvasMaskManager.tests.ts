@@ -1,7 +1,7 @@
+import { CanvasRenderer } from '@pixi/canvas-renderer';
 import { Container } from '@pixi/display';
 import { Graphics } from '@pixi/graphics';
 import { Sprite } from '@pixi/sprite';
-import { CanvasRenderer } from '@pixi/canvas-renderer';
 import '@pixi/canvas-display';
 
 describe('CanvasMaskManager', () =>

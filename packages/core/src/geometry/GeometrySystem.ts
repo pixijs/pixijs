@@ -1,17 +1,17 @@
-import type { GLBuffer } from './GLBuffer';
 import { BUFFER_TYPE, ENV } from '@pixi/constants';
+import { extensions, ExtensionType } from '@pixi/extensions';
 import { settings } from '@pixi/settings';
 
-import type { ISystem } from '../system/ISystem';
 import type { DRAW_MODES } from '@pixi/constants';
-import type { Renderer } from '../Renderer';
-import type { Geometry } from './Geometry';
-import type { Shader } from '../shader/Shader';
-import type { Program } from '../shader/Program';
+import type { ExtensionMetadata } from '@pixi/extensions';
 import type { Dict } from '@pixi/utils';
 import type { IRenderingContext } from '../IRenderer';
-import type { ExtensionMetadata } from '@pixi/extensions';
-import { extensions, ExtensionType } from '@pixi/extensions';
+import type { Renderer } from '../Renderer';
+import type { Program } from '../shader/Program';
+import type { Shader } from '../shader/Shader';
+import type { ISystem } from '../system/ISystem';
+import type { Geometry } from './Geometry';
+import type { GLBuffer } from './GLBuffer';
 
 const byteSizeMap: {[key: number]: number} = { 5126: 4, 5123: 2, 5121: 1 };
 

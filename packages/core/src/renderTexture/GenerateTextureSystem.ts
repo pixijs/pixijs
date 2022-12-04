@@ -1,11 +1,12 @@
-import type { MSAA_QUALITY, SCALE_MODES } from '@pixi/constants';
-import type { Rectangle } from '@pixi/math';
-import { Matrix, Transform } from '@pixi/math';
-import type { ExtensionMetadata } from '@pixi/extensions';
 import { extensions, ExtensionType } from '@pixi/extensions';
-import type { IRenderer, IRenderableContainer, IRenderableObject } from '../IRenderer';
-import type { ISystem } from '../system/ISystem';
+import { Matrix, Transform } from '@pixi/math';
 import { RenderTexture } from './RenderTexture';
+
+import type { MSAA_QUALITY, SCALE_MODES } from '@pixi/constants';
+import type { ExtensionMetadata } from '@pixi/extensions';
+import type { Rectangle } from '@pixi/math';
+import type { IRenderableContainer, IRenderableObject, IRenderer } from '../IRenderer';
+import type { ISystem } from '../system/ISystem';
 
 const tempTransform = new Transform();
 

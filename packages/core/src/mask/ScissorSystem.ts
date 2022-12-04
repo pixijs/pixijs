@@ -1,11 +1,11 @@
+import { extensions, ExtensionType } from '@pixi/extensions';
+import { Matrix, Rectangle } from '@pixi/math';
+import { settings } from '@pixi/settings';
 import { AbstractMaskSystem } from './AbstractMaskSystem';
 
+import type { ExtensionMetadata } from '@pixi/extensions';
 import type { Renderer } from '../Renderer';
 import type { MaskData } from './MaskData';
-import { Matrix, Rectangle } from '@pixi/math';
-import type { ExtensionMetadata } from '@pixi/extensions';
-import { extensions, ExtensionType } from '@pixi/extensions';
-import { settings } from '@pixi/settings';
 
 const tempMatrix = new Matrix();
 const rectPool: Rectangle[] = [];

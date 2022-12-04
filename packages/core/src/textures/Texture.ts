@@ -1,15 +1,15 @@
 import { Point, Rectangle } from '@pixi/math';
 import { settings } from '@pixi/settings';
-import { uid, TextureCache, getResolutionOfUrl, EventEmitter } from '@pixi/utils';
-import { ImageResource } from './resources/ImageResource';
+import { EventEmitter, getResolutionOfUrl, TextureCache, uid } from '@pixi/utils';
 import { BaseTexture } from './BaseTexture';
+import { ImageResource } from './resources/ImageResource';
 import { TextureUvs } from './TextureUvs';
 
 import type { IPointData, ISize } from '@pixi/math';
+import type { IBaseTextureOptions, ImageSource } from './BaseTexture';
 import type { BufferResource } from './resources/BufferResource';
 import type { CanvasResource } from './resources/CanvasResource';
 import type { Resource } from './resources/Resource';
-import type { IBaseTextureOptions, ImageSource } from './BaseTexture';
 import type { TextureMatrix } from './TextureMatrix';
 
 const DEFAULT_UVS = new TextureUvs();

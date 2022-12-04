@@ -1,11 +1,11 @@
-import { TYPES, Matrix, extensions, ExtensionType, ObjectRenderer, Shader, State, utils } from '@pixi/core';
+import { extensions, ExtensionType, Matrix, ObjectRenderer, Shader, State, TYPES, utils } from '@pixi/core';
 import { ParticleBuffer } from './ParticleBuffer';
 import fragment from './particles.frag';
 import vertex from './particles.vert';
 
-import type { ParticleContainer } from './ParticleContainer';
-import type { Renderer, ExtensionMetadata } from '@pixi/core';
+import type { ExtensionMetadata, Renderer } from '@pixi/core';
 import type { Sprite } from '@pixi/sprite';
+import type { ParticleContainer } from './ParticleContainer';
 
 export interface IParticleRendererProperty
 {

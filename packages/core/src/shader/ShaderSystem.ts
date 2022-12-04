@@ -1,19 +1,18 @@
-import type { GLProgram } from './GLProgram';
+import { extensions, ExtensionType } from '@pixi/extensions';
 import { generateUniformsSync, unsafeEvalSupported } from './utils';
-
-import type { ISystem } from '../system/ISystem';
-import type { Renderer } from '../Renderer';
-import type { Shader } from './Shader';
-import type { Program } from './Program';
-import type { UniformGroup } from './UniformGroup';
-import type { Dict } from '@pixi/utils';
-import type { UniformsSyncCallback } from './utils';
+import { generateProgram } from './utils/generateProgram';
 import { generateUniformBufferSync } from './utils/generateUniformBufferSync';
 
-import { generateProgram } from './utils/generateProgram';
-import type { IRenderingContext } from '../IRenderer';
 import type { ExtensionMetadata } from '@pixi/extensions';
-import { extensions, ExtensionType } from '@pixi/extensions';
+import type { Dict } from '@pixi/utils';
+import type { IRenderingContext } from '../IRenderer';
+import type { Renderer } from '../Renderer';
+import type { ISystem } from '../system/ISystem';
+import type { GLProgram } from './GLProgram';
+import type { Program } from './Program';
+import type { Shader } from './Shader';
+import type { UniformGroup } from './UniformGroup';
+import type { UniformsSyncCallback } from './utils';
 
 let UID = 0;
 // default sync data so we don't create a new one each time!

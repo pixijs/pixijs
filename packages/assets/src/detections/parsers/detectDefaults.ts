@@ -1,4 +1,5 @@
 import { extensions, ExtensionType } from '@pixi/core';
+
 import type { FormatDetectionParser } from '..';
 
 const imageFormats = ['png', 'jpg', 'jpeg'];

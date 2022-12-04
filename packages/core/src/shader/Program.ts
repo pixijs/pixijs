@@ -1,9 +1,8 @@
-import { setPrecision,
-    getMaxFragmentPrecision } from './utils';
-import { ProgramCache, isMobile } from '@pixi/utils';
+import { PRECISION } from '@pixi/constants';
+import { isMobile, ProgramCache } from '@pixi/utils';
 import defaultFragment from './defaultProgram.frag';
 import defaultVertex from './defaultProgram.vert';
-import { PRECISION } from '@pixi/constants';
+import {     getMaxFragmentPrecision, setPrecision } from './utils';
 
 import type { GLProgram } from './GLProgram';
 

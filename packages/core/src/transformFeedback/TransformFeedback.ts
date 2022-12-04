@@ -1,5 +1,6 @@
-import type { Buffer } from '@pixi/core';
 import { Runner } from '@pixi/runner';
+
+import type { Buffer } from '@pixi/core';
 
 /**
  * A TransformFeedback object wrapping GLTransformFeedback object.

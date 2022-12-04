@@ -1,7 +1,8 @@
-import type { LoadAsset, LoaderParser, LoadFontData } from '@pixi/assets';
+import canvasModule from 'canvas';
 import { getFontFamilyName } from '@pixi/assets';
 import { extensions, ExtensionType, utils } from '@pixi/core';
-import canvasModule from 'canvas';
+
+import type { LoadAsset, LoaderParser, LoadFontData } from '@pixi/assets';
 
 const { registerFont } = canvasModule;
 const validWeights = [

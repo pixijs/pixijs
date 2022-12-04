@@ -1,9 +1,9 @@
-import { ALPHA_MODES, MIPMAP_MODES, settings, utils, BaseTexture, extensions, ExtensionType } from '@pixi/core';
 import { checkExtension, createTexture, LoaderParserPriority } from '@pixi/assets';
+import { ALPHA_MODES, BaseTexture, extensions, ExtensionType, MIPMAP_MODES, settings, utils } from '@pixi/core';
 import { parseKTX } from '../parsers';
 
-import type { IBaseTextureOptions, Texture } from '@pixi/core';
 import type { LoadAsset, Loader, LoaderParser } from '@pixi/assets';
+import type { IBaseTextureOptions, Texture } from '@pixi/core';
 
 /** Loads KTX textures! */
 export const loadKTX = {

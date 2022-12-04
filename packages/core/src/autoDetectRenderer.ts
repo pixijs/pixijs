@@ -1,4 +1,5 @@
 import { extensions, ExtensionType } from '@pixi/extensions';
+
 import type { ICanvas } from '@pixi/settings';
 import type { IRenderer, IRendererOptions } from './IRenderer';
 

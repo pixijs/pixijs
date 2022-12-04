@@ -1,6 +1,6 @@
 import { TYPES } from '@pixi/constants';
-import { Geometry } from '../geometry/Geometry';
 import { Buffer } from '../geometry/Buffer';
+import { Geometry } from '../geometry/Geometry';
 
 /**
  * Geometry used to batch standard PIXI content (e.g. Mesh, Sprite, Graphics objects).

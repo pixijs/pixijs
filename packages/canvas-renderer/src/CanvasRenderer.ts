@@ -1,15 +1,14 @@
 import {
-    SystemManager,
     extensions,
     ExtensionType,
     settings,
+    SystemManager,
     utils
 } from '@pixi/core';
 
 import type {
-    BLEND_MODES,
-    RENDERER_TYPE,
     BackgroundSystem,
+    BLEND_MODES,
     ExtensionMetadata,
     GenerateTextureSystem,
     ICanvas,
@@ -23,6 +22,7 @@ import type {
     Matrix,
     PluginSystem,
     Rectangle,
+    RENDERER_TYPE,
     RenderTexture,
     StartupOptions,
     StartupSystem,

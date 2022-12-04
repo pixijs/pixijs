@@ -1,14 +1,14 @@
-import { BaseTextureCache, EventEmitter, isPow2, TextureCache, uid } from '@pixi/utils';
-import { FORMATS, SCALE_MODES, TARGETS, TYPES, ALPHA_MODES, MIPMAP_MODES, WRAP_MODES } from '@pixi/constants';
-import { Resource } from './resources/Resource';
-import { BufferResource } from './resources/BufferResource';
-import { autoDetectResource } from './resources/autoDetectResource';
+import { ALPHA_MODES, FORMATS, MIPMAP_MODES, SCALE_MODES, TARGETS, TYPES, WRAP_MODES } from '@pixi/constants';
 import { settings } from '@pixi/settings';
+import { BaseTextureCache, EventEmitter, isPow2, TextureCache, uid } from '@pixi/utils';
+import { autoDetectResource } from './resources/autoDetectResource';
+import { BufferResource } from './resources/BufferResource';
+import { Resource } from './resources/Resource';
 
 import type { MSAA_QUALITY } from '@pixi/constants';
 import type { ICanvas } from '@pixi/settings';
-import type { IAutoDetectOptions } from './resources/autoDetectResource';
 import type { GLTexture } from './GLTexture';
+import type { IAutoDetectOptions } from './resources/autoDetectResource';
 
 const defaultBufferOptions = {
     scaleMode: SCALE_MODES.NEAREST,

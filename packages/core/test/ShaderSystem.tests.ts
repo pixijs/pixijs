@@ -1,4 +1,4 @@
-import { Renderer, Shader, CanvasResource, Geometry, UniformGroup, BaseTexture } from '@pixi/core';
+import { BaseTexture, CanvasResource, Geometry, Renderer, Shader, UniformGroup } from '@pixi/core';
 
 describe('ShaderSystem', () =>
 {

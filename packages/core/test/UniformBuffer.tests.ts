@@ -1,17 +1,16 @@
+import {
+    Buffer,
+    createUBOElements,
+    generateProgram,
+    generateUniformBufferSync,
+    getTestContext,
+    getUBOData,
+    Shader,
+    UniformGroup } from '@pixi/core';
+import { Matrix, Point, Rectangle } from '@pixi/math';
+
 import type {
     IRenderingContext } from '@pixi/core';
-import {
-    Shader,
-    createUBOElements,
-    generateUniformBufferSync,
-    getUBOData,
-    Buffer,
-    UniformGroup,
-    generateProgram,
-    getTestContext
-} from '@pixi/core';
-
-import { Matrix, Rectangle, Point } from '@pixi/math';
 
 const vertexSrc = `
 #version 300 es

@@ -4,10 +4,10 @@ import { settings } from '@pixi/settings';
 
 import type { ExtensionMetadata } from '@pixi/extensions';
 import type { ICanvas } from '@pixi/settings';
-import type { ISystem } from '../system/ISystem';
-import type { Renderer } from '../Renderer';
-import type { WebGLExtensions } from './WebGLExtensions';
 import type { IRenderingContext } from '../IRenderer';
+import type { Renderer } from '../Renderer';
+import type { ISystem } from '../system/ISystem';
+import type { WebGLExtensions } from './WebGLExtensions';
 
 let CONTEXT_UID_COUNTER = 0;
 

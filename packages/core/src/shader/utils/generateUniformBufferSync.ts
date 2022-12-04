@@ -1,10 +1,11 @@
-import type { Dict } from '@pixi/utils';
 import { mapSize } from '../utils';
+import { uniformParsers } from './uniformParsers';
+
+import type { Dict } from '@pixi/utils';
+import type { Buffer } from '../../geometry/Buffer';
+import type { Renderer } from '../../Renderer';
 import type { IUniformData } from '../Program';
 import type { UniformGroup } from '../UniformGroup';
-import { uniformParsers } from './uniformParsers';
-import type { Renderer } from '../../Renderer';
-import type { Buffer } from '../../geometry/Buffer';
 
 export type UniformsSyncCallback = (...args: any[]) => void;
 

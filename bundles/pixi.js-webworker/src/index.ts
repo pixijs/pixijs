@@ -18,7 +18,7 @@ export const filters = {
     NoiseFilter,
 };
 
-// Export ES for those importing specifically by name,
+// Export ES for those importing specifically by name
 export * from '@pixi/app';
 export * from '@pixi/assets';
 export * from '@pixi/compressed-textures';
@@ -31,10 +31,11 @@ export * from '@pixi/mesh-extras';
 export * from '@pixi/particle-container';
 export * from '@pixi/prepare';
 export * from '@pixi/sprite';
-export * from '@pixi/spritesheet';
 export * from '@pixi/sprite-animated';
 export * from '@pixi/sprite-tiling';
+export * from '@pixi/spritesheet';
 export * from '@pixi/text';
 export * from '@pixi/text-bitmap';
 
+// Export adapter
 export * from './adapter';

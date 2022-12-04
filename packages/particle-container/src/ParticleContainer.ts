@@ -2,9 +2,9 @@ import { BLEND_MODES, utils } from '@pixi/core';
 import { Container } from '@pixi/display';
 
 import type { BaseTexture, Renderer } from '@pixi/core';
-import type { ParticleBuffer } from './ParticleBuffer';
 import type { IDestroyOptions } from '@pixi/display';
 import type { Sprite } from '@pixi/sprite';
+import type { ParticleBuffer } from './ParticleBuffer';
 
 export interface IParticleProperties
 {

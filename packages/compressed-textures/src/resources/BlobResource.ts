@@ -1,5 +1,6 @@
+import { BufferResource, ViewableBuffer } from '@pixi/core';
+
 import type { Resource } from '@pixi/core';
-import { ViewableBuffer, BufferResource } from '@pixi/core';
 
 interface IBlobOptions
 {

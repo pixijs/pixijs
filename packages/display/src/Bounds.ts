@@ -1,6 +1,6 @@
 import { Rectangle } from '@pixi/core';
 
-import type { IPointData, Transform, Matrix } from '@pixi/core';
+import type { IPointData, Matrix, Transform } from '@pixi/core';
 
 /**
  * 'Builder' pattern for bounds rectangles.
