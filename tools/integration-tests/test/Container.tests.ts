@@ -1,7 +1,6 @@
+import { MaskData, Transform } from '@pixi/core';
 import { Container } from '@pixi/display';
 import { Graphics } from '@pixi/graphics';
-import { Transform } from '@pixi/math';
-import { MaskData } from '@pixi/core';
 
 import '@pixi/canvas-display';
 
