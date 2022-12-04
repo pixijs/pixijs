@@ -4,9 +4,8 @@ import { FederatedPointerEvent } from './FederatedPointerEvent';
 import { FederatedWheelEvent } from './FederatedWheelEvent';
 import { extensions, ExtensionType } from '@pixi/core';
 
-import type { IRenderableObject, ExtensionMetadata, IPointData } from '@pixi/core';
+import type { ExtensionMetadata, ICanvas, IPointData, IRenderableObject } from '@pixi/core';
 import type { DisplayObject } from '@pixi/display';
-import type { ICanvas } from '@pixi/settings';
 
 const MOUSE_POINTER_ID = 1;
 const TOUCH_TO_POINTER: Record<string, string> = {
