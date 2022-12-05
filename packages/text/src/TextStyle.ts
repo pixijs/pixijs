@@ -33,7 +33,7 @@ export interface ITextStyle {
     dropShadowAngle: number;
     /** Set a shadow blur radius */
     dropShadowBlur: number;
-    /** A fill style to be used on the dropshadow e.g 'red', '#00FF00' */
+    /** A fill style to be used on the dropshadow e.g., 'red', '#00FF00' */
     dropShadowColor: string|number;
     /** Set a distance of the drop shadow */
     dropShadowDistance: number;
