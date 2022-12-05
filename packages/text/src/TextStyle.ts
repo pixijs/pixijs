@@ -38,7 +38,7 @@ export interface ITextStyle {
     /** Set a distance of the drop shadow */
     dropShadowDistance: number;
     /**
-     * A canvas fillstyle that will be used on the text e.g 'red', '#00FF00'.
+     * A canvas fillstyle that will be used on the text e.g., 'red', '#00FF00'.
      * Can be an array to create a gradient, e.g., `['#000000','#FFFFFF']`
      * {@link https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillStyle|MDN}
      * @type {string|string[]|number|number[]|CanvasGradient|CanvasPattern}
