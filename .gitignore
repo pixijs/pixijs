@@ -11,6 +11,7 @@ Thumbs.db
 Desktop.ini
 npm-debug.log
 lerna-debug.log
+.eslintcache
 
 # project files
 .project
