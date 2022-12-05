@@ -3,9 +3,16 @@ import { Texture, BaseTexture, RenderTexture, Matrix, utils, settings } from '@p
 import { Sprite } from '@pixi/sprite';
 import { DisplayObject } from '@pixi/display';
 
-import type { Renderer, MaskData, IRenderer, IPointData, Rectangle, MSAA_QUALITY } from '@pixi/core';
+import type {
+    MSAA_QUALITY,
+    ICanvasRenderingContext2D,
+    IPointData,
+    IRenderer,
+    MaskData,
+    Rectangle,
+    Renderer,
+} from '@pixi/core';
 import type { Container, IDestroyOptions } from '@pixi/display';
-import type { ICanvasRenderingContext2D } from '@pixi/settings';
 
 // Don't import CanvasRender to remove dependency on this optional package
 // this type should satisify these requirements for cacheAsBitmap types
@@ -129,7 +136,7 @@ Object.defineProperties(DisplayObject.prototype, {
 
     /**
      * Set this to true if you want this display object to be cached as a bitmap.
-     * This basically takes a snap shot of the display object as it is at that moment. It can
+     * This basically takes a snapshot of the display object as it is at that moment. It can
      * provide a performance benefit for complex static displayObjects.
      * To remove simply set this property to `false`
      *
