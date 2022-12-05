@@ -393,8 +393,8 @@ export class BitmapFont
             resolution,
             textureWidth,
             textureHeight,
-            ...baseOptions } = Object.assign(
-            {}, BitmapFont.defaultOptions, options);
+            ...baseOptions
+        } = Object.assign({}, BitmapFont.defaultOptions, options);
 
         const charsList = resolveCharacters(chars);
         const style = textStyle instanceof TextStyle ? textStyle : new TextStyle(textStyle);

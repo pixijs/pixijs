@@ -275,8 +275,10 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
 
         options = Object.assign({}, BaseTexture.defaultOptions, options);
 
-        const { alphaMode, mipmap, anisotropicLevel, scaleMode, width, height,
-            wrapMode, format, type, target, resolution, resourceOptions } = options;
+        const {
+            alphaMode, mipmap, anisotropicLevel, scaleMode, width, height,
+            wrapMode, format, type, target, resolution, resourceOptions
+        } = options;
 
         // Convert the resource to a Resource object
         if (resource && !(resource instanceof Resource))

@@ -3,7 +3,7 @@ import {
     ExtensionType,
     settings,
     SystemManager,
-    utils
+    utils,
 } from '@pixi/core';
 
 import type {

@@ -238,7 +238,7 @@ export function generateUniformBufferSync(
         {
             if (uboElement.data.size > 1)
             {
-                const size =  mapSize(uboElement.data.type);
+                const size = mapSize(uboElement.data.type);
                 const rowSize = Math.max(GLSL_TO_STD40_SIZE[uboElement.data.type] / 16, 1);
                 const elementSize = size / rowSize;
                 const remainder = (4 - (elementSize % 4)) % 4;

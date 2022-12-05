@@ -51,8 +51,10 @@ describe('BatchRenderer', () =>
             { uvs, vertexData, indices, _tintRGB: tint2, worldAlpha: 1.0, _texture: new Texture(tex1), blendMode: 0 },
             { uvs, vertexData, indices, _tintRGB: tint2, worldAlpha: 0.5, _texture: new Texture(tex2), blendMode: 1 },
             { uvs, vertexData, indices, _tintRGB: tint1, worldAlpha: 1.0, _texture: new Texture(tex3), blendMode: 0 },
-            { uvs: uvs2, vertexData: vertexData2, indices: indices2,
-                _tintRGB: tint2, worldAlpha: 1.0, _texture: new Texture(tex1), blendMode: 0 },
+            {
+                uvs: uvs2, vertexData: vertexData2, indices: indices2,
+                _tintRGB: tint2, worldAlpha: 1.0, _texture: new Texture(tex1), blendMode: 0
+            },
             { uvs, vertexData, indices, _tintRGB: tint3, worldAlpha: 1.0, _texture: new Texture(tex2), blendMode: 0 },
             { uvs, vertexData, indices, _tintRGB: tint1, worldAlpha: 0.5, _texture: new Texture(tex4), blendMode: 0 },
         ] as unknown as IBatchableElement[];
@@ -140,10 +142,14 @@ describe('BatchRenderer', () =>
         const { gl } = renderer;
 
         const elements = [
-            { uvs, vertexData, indices, _tintRGB: tint1, worldAlpha: 1.0, _texture: new Texture(tex1),
-                blendMode: BLEND_MODES.NONE },
-            { uvs, vertexData, indices, _tintRGB: tint1, worldAlpha: 0.5, _texture: new Texture(tex1),
-                blendMode: BLEND_MODES.NORMAL },
+            {
+                uvs, vertexData, indices, _tintRGB: tint1, worldAlpha: 1.0, _texture: new Texture(tex1),
+                blendMode: BLEND_MODES.NONE
+            },
+            {
+                uvs, vertexData, indices, _tintRGB: tint1, worldAlpha: 0.5, _texture: new Texture(tex1),
+                blendMode: BLEND_MODES.NORMAL
+            },
         ] as unknown as IBatchableElement[];
 
         try

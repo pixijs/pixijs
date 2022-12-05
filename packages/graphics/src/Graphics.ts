@@ -13,7 +13,7 @@ import {
     State,
     Texture,
     UniformGroup,
-    utils
+    utils,
 } from '@pixi/core';
 import { Container } from '@pixi/display';
 import { curves, LINE_CAP, LINE_JOIN } from './const';
@@ -898,7 +898,8 @@ export class Graphics extends Container
                 _tintRGB: color,
                 _texture: gI.style.texture,
                 alpha: gI.style.alpha,
-                worldAlpha: 1 };
+                worldAlpha: 1
+            };
 
             this.batches[i] = batch;
         }

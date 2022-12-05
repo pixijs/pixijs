@@ -437,7 +437,7 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
         const vertices = this.geometry.getBuffer('aVertexPosition').data;
 
         const points = tempPolygon.points;
-        const indices =  this.geometry.getIndex().data;
+        const indices = this.geometry.getIndex().data;
         const len = indices.length;
         const step = this.drawMode === 4 ? 3 : 1;
 

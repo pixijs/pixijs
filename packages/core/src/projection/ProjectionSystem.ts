@@ -120,7 +120,7 @@ export class ProjectionSystem implements ISystem
             this.projectionMatrix.append(this.transform);
         }
 
-        const renderer =  this.renderer;
+        const renderer = this.renderer;
 
         renderer.globalUniforms.uniforms.projectionMatrix = this.projectionMatrix;
         renderer.globalUniforms.update();

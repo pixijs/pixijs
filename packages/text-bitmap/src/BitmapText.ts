@@ -631,7 +631,7 @@ export class BitmapText extends Container
 
             const fontScale = this.fontSize / size;
 
-            const resolution =  renderer._view.resolution;
+            const resolution = renderer._view.resolution;
 
             for (const mesh of this._activePagesMeshData)
             {

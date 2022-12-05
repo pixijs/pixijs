@@ -196,7 +196,7 @@ describe('Loader', () =>
 
         expect(texture.baseTexture.destroyed).toBe(false);
 
-        const baseTexture =  texture.baseTexture;
+        const baseTexture = texture.baseTexture;
 
         await loader.unload(`${serverPath}textures/bunny.png`);
 

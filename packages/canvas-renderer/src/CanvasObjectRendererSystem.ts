@@ -2,7 +2,9 @@ import {
     BLEND_MODES,
     CanvasResource,
     extensions,
-    ExtensionType,    utils } from '@pixi/core';
+    ExtensionType,
+    utils,
+} from '@pixi/core';
 
 import type {
     BaseRenderTexture,
@@ -11,7 +13,8 @@ import type {
     IRendererRenderOptions,
     ISystem,
     Matrix,
-    RenderTexture } from '@pixi/core';
+    RenderTexture,
+} from '@pixi/core';
 import type { CrossPlatformCanvasRenderingContext2D } from './CanvasContextSystem';
 import type { CanvasRenderer } from './CanvasRenderer';
 

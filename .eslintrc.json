@@ -15,6 +15,9 @@
         }
     },
     "rules": {
+        "no-multi-spaces": [1, { "exceptions": {} }],
+        "object-curly-newline": [1, { "multiline": true, "consistent": true }],
+        
         // Imports and exports
         "import/first": 1,
         "import/newline-after-import": 1,

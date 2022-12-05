@@ -126,7 +126,7 @@ export class TextureGCSystem implements ISystem
     run(): void
     {
         const tm = this.renderer.texture;
-        const managedTextures =  tm.managedTextures;
+        const managedTextures = tm.managedTextures;
         let wasRemoved = false;
 
         for (let i = 0; i < managedTextures.length; i++)

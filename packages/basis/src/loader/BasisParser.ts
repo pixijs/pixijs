@@ -4,7 +4,7 @@ import {
     BASIS_FORMAT_TO_INTERNAL_FORMAT,
     BASIS_FORMATS,
     BASIS_FORMATS_ALPHA,
-    INTERNAL_FORMAT_TO_BASIS_FORMAT
+    INTERNAL_FORMAT_TO_BASIS_FORMAT,
 } from '../Basis';
 import { TranscoderWorker } from '../TranscoderWorker';
 

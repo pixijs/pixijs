@@ -533,7 +533,7 @@ export class Resolver
         {
             const asset = assets[0];
 
-            const preferred =  this._preferredOrder.find((preference: PreferOrder) =>
+            const preferred = this._preferredOrder.find((preference: PreferOrder) =>
                 preference.params.format.includes(asset.format));
 
             if (preferred)

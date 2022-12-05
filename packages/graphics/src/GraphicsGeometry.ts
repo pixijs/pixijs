@@ -577,7 +577,7 @@ export class GraphicsGeometry extends BatchGeometry
         const colors = this.colors;
         const textureIds = this.textureIds;
 
-        let currentGroup: BatchDrawCall =  DRAW_CALL_POOL.pop();
+        let currentGroup: BatchDrawCall = DRAW_CALL_POOL.pop();
 
         if (!currentGroup)
         {
