@@ -697,8 +697,7 @@ export class TextStyle implements ITextStyle
     }
 
     /**
-     * A canvas fillstyle that will be used on the text stroke
-     * e.g 'blue', '#FCFF00'
+     * A canvas fillstyle that will be used on the text stroke, e.g., 'blue', '#FCFF00'
      */
     get stroke(): string | number
     {
