@@ -17,8 +17,8 @@
     "rules": {
         "no-multi-spaces": [1, { "exceptions": {} }],
         "object-curly-newline": [1, { "multiline": true, "consistent": true }],
-        
-        // Imports and exports
+
+        // Imports and Exports
         "import/first": 1,
         "import/newline-after-import": 1,
         "simple-import-sort/imports": [1, {
@@ -34,14 +34,14 @@
                 ],
                 [
                     "^\\w.*\\u0000$", // External types
-                    "^@pixi/.*\\u0000$", // PixiJS types
+                    "^@pixi/.*\\u0000$", // @pixi/* types
                     "^\\..*\\u0000$", // Relative types
                     "\\u0000$" // Other types
                 ]
             ]
         }],
         "simple-import-sort/exports": 1,
-        
+
         "spaced-comment": [1, "always", { "markers": ["/"] }],
         "@typescript-eslint/triple-slash-reference": [1, { "path": "always" }],
         "@typescript-eslint/consistent-type-imports": [1, { "disallowTypeAnnotations": false }],
