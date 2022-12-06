@@ -1,4 +1,4 @@
-import { Rectangle, Matrix } from '@pixi/math';
+import { Matrix, Rectangle } from '@pixi/math';
 
 describe('Rectangle', () =>
 {

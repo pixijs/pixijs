@@ -1,7 +1,7 @@
-import { BLEND_MODES, ObservablePoint, Point, Rectangle, Texture, settings, utils } from '@pixi/core';
+import { BLEND_MODES, ObservablePoint, Point, Rectangle, settings, Texture, utils } from '@pixi/core';
 import { Bounds, Container } from '@pixi/display';
 
-import type { IPointData, IBaseTextureOptions, Renderer, TextureSource } from '@pixi/core';
+import type { IBaseTextureOptions, IPointData, Renderer, TextureSource } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
 
 const tempPoint = new Point();

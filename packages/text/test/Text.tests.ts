@@ -1,6 +1,7 @@
-import { Text } from '@pixi/text';
+import { Renderer, settings } from '@pixi/core';
 import { Sprite } from '@pixi/sprite';
-import { settings, Renderer } from '@pixi/core';
+import { Text } from '@pixi/text';
+
 import type { IDestroyOptions } from '@pixi/display';
 
 describe('Text', () =>

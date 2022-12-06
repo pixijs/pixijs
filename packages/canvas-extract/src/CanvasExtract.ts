@@ -1,4 +1,4 @@
-import { Rectangle, extensions, ExtensionType, RenderTexture, utils } from '@pixi/core';
+import { extensions, ExtensionType, Rectangle, RenderTexture, utils } from '@pixi/core';
 
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
 import type { BaseRenderTexture, ExtensionMetadata, ICanvas, ISystem } from '@pixi/core';

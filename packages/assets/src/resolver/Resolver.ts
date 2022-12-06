@@ -2,7 +2,8 @@ import { utils } from '@pixi/core';
 import { convertToList } from '../utils/convertToList';
 import { createStringVariations } from '../utils/createStringVariations';
 import { isSingleItem } from '../utils/isSingleItem';
-import type { ResolveAsset, PreferOrder, ResolveURLParser, ResolverManifest, ResolverBundle } from './types';
+
+import type { PreferOrder, ResolveAsset, ResolverBundle, ResolverManifest, ResolveURLParser } from './types';
 
 /**
  * A class that is responsible for resolving mapping asset URLs to keys.
@@ -532,7 +533,7 @@ export class Resolver
         {
             const asset = assets[0];
 
-            const preferred =  this._preferredOrder.find((preference: PreferOrder) =>
+            const preferred = this._preferredOrder.find((preference: PreferOrder) =>
                 preference.params.format.includes(asset.format));
 
             if (preferred)

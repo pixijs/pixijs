@@ -1,5 +1,5 @@
-import path from 'path';
 import { promises } from 'fs';
+import path from 'path';
 
 async function main(): Promise<void>
 {

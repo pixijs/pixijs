@@ -1,8 +1,9 @@
-import type { ObjectRenderer } from '@pixi/core';
-import { Renderer, Framebuffer } from '@pixi/core';
+import { ENV, MSAA_QUALITY } from '@pixi/constants';
+import { Framebuffer, Renderer } from '@pixi/core';
 import { Graphics } from '@pixi/graphics';
 import { settings } from '@pixi/settings';
-import { ENV, MSAA_QUALITY } from '@pixi/constants';
+
+import type { ObjectRenderer } from '@pixi/core';
 
 describe('Renderer', () =>
 {

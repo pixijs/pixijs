@@ -1,7 +1,7 @@
 import { DEG_TO_RAD, RAD_TO_DEG, Rectangle, Transform, utils } from '@pixi/core';
 import { Bounds } from './Bounds';
 
-import type { Filter, IPointData, Matrix, MaskData, ObservablePoint, Point, Renderer } from '@pixi/core';
+import type { Filter, IPointData, MaskData, Matrix, ObservablePoint, Point, Renderer } from '@pixi/core';
 import type { Container } from './Container';
 
 export interface IDestroyOptions

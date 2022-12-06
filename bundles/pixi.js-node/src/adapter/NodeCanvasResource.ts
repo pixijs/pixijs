@@ -1,4 +1,4 @@
-import { Resource, utils, ALPHA_MODES } from '@pixi/core';
+import { ALPHA_MODES, Resource, utils } from '@pixi/core';
 import { NodeCanvasElement } from './NodeCanvasElement';
 
 import type { BaseTexture, GLTexture, Renderer } from '@pixi/core';

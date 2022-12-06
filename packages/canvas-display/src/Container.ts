@@ -1,4 +1,5 @@
 import { Container } from '@pixi/display';
+
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
 import type { MaskData } from '@pixi/core';
 

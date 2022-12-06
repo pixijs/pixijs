@@ -1,8 +1,8 @@
-import { ALPHA_MODES, MIPMAP_MODES, settings, Texture, BaseTexture, Rectangle, utils } from '@pixi/core';
-import { TextStyle, TextMetrics } from '@pixi/text';
-import { autoDetectFormat } from './formats';
+import { ALPHA_MODES, BaseTexture, MIPMAP_MODES, Rectangle, settings, Texture, utils } from '@pixi/core';
+import { TextMetrics, TextStyle } from '@pixi/text';
 import { BitmapFontData } from './BitmapFontData';
-import { resolveCharacters, drawGlyph, extractCharCode } from './utils';
+import { autoDetectFormat } from './formats';
+import { drawGlyph, extractCharCode, resolveCharacters } from './utils';
 
 import type { IBaseTextureOptions, ICanvas, ICanvasRenderingContext2D, SCALE_MODES } from '@pixi/core';
 import type { ITextStyle } from '@pixi/text';
@@ -393,8 +393,8 @@ export class BitmapFont
             resolution,
             textureWidth,
             textureHeight,
-            ...baseOptions } = Object.assign(
-            {}, BitmapFont.defaultOptions, options);
+            ...baseOptions
+        } = Object.assign({}, BitmapFont.defaultOptions, options);
 
         const charsList = resolveCharacters(chars);
         const style = textStyle instanceof TextStyle ? textStyle : new TextStyle(textStyle);

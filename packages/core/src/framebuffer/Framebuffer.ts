@@ -1,7 +1,7 @@
+import { FORMATS, MIPMAP_MODES, MSAA_QUALITY, SCALE_MODES, TYPES } from '@pixi/constants';
 import { Runner } from '@pixi/runner';
 import { BaseTexture } from '../textures/BaseTexture';
 import { DepthResource } from '../textures/resources/DepthResource';
-import { FORMATS, MIPMAP_MODES, SCALE_MODES, TYPES, MSAA_QUALITY } from '@pixi/constants';
 
 import type { GLFramebuffer } from './GLFramebuffer';
 

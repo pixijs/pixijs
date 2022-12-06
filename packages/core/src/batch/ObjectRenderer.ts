@@ -1,5 +1,5 @@
-import type { ISystem } from '../system/ISystem';
 import type { Renderer } from '../Renderer';
+import type { ISystem } from '../system/ISystem';
 
 /**
  * Base for a common object renderer that can be used as a

@@ -168,7 +168,7 @@ describe('Matrix', () =>
     it('should have the same transform after decompose', () =>
     {
         const matrix = new Matrix();
-        const transformInitial  = new Transform();
+        const transformInitial = new Transform();
         const transformDecomposed = new Transform();
 
         for (let x = 0; x < 50; ++x)
@@ -205,7 +205,7 @@ describe('Matrix', () =>
     it('should decompose corner case', () =>
     {
         const matrix = new Matrix();
-        const transform  = new Transform();
+        const transform = new Transform();
         const result = transform.localTransform;
 
         matrix.a = -0.00001;

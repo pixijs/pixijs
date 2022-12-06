@@ -1,9 +1,9 @@
+import { MSAA_QUALITY } from '@pixi/constants';
 import { Program } from '../shader/Program';
 import { Shader } from '../shader/Shader';
 import { State } from '../state/State';
 import defaultFragment from './defaultFilter.frag';
 import defaultVertex from './defaultFilter.vert';
-import { MSAA_QUALITY } from '@pixi/constants';
 
 import type { BLEND_MODES, CLEAR_MODES } from '@pixi/constants';
 import type { Dict } from '@pixi/utils';

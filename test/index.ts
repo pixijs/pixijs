@@ -1,11 +1,11 @@
 import { exec, execFileSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
-import type { PackageResult } from './packages';
-
+import parse from 'yargs-parser';
 // Support for the tsconfig path aliasing
 import 'tsconfig-paths/register';
-import parse from 'yargs-parser';
+
+import type { PackageResult } from './packages';
 
 const args = parse(process.argv, {
     array: ['packages']

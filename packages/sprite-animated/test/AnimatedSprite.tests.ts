@@ -1,5 +1,5 @@
-import { AnimatedSprite } from '@pixi/sprite-animated';
 import { Texture } from '@pixi/core';
+import { AnimatedSprite } from '@pixi/sprite-animated';
 
 describe('AnimatedSprite', () =>
 {

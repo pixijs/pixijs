@@ -1,14 +1,14 @@
+import { BUFFER_BITS, ENV, MSAA_QUALITY } from '@pixi/constants';
+import { extensions, ExtensionType } from '@pixi/extensions';
 import { Rectangle } from '@pixi/math';
-import { ENV, BUFFER_BITS, MSAA_QUALITY } from '@pixi/constants';
 import { settings } from '@pixi/settings';
 import { Framebuffer } from './Framebuffer';
 import { GLFramebuffer } from './GLFramebuffer';
 
-import type { ISystem } from '../system/ISystem';
-import type { Renderer } from '../Renderer';
-import type { IRenderingContext } from '../IRenderer';
 import type { ExtensionMetadata } from '@pixi/extensions';
-import { extensions, ExtensionType } from '@pixi/extensions';
+import type { IRenderingContext } from '../IRenderer';
+import type { Renderer } from '../Renderer';
+import type { ISystem } from '../system/ISystem';
 
 const tempRectangle = new Rectangle();
 

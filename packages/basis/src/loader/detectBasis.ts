@@ -1,6 +1,7 @@
 import { extensions, ExtensionType } from '@pixi/core';
-import type { FormatDetectionParser } from '@pixi/assets';
 import { BasisParser } from './BasisParser';
+
+import type { FormatDetectionParser } from '@pixi/assets';
 
 export const detectBasis = {
     extension: {

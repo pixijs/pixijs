@@ -1,10 +1,10 @@
-import { RenderTexture } from './RenderTexture';
-import { BaseRenderTexture } from './BaseRenderTexture';
-import { nextPow2 } from '@pixi/utils';
 import { MSAA_QUALITY } from '@pixi/constants';
+import { nextPow2 } from '@pixi/utils';
+import { BaseRenderTexture } from './BaseRenderTexture';
+import { RenderTexture } from './RenderTexture';
 
-import type { IBaseTextureOptions } from '../textures/BaseTexture';
 import type { ISize } from '@pixi/math';
+import type { IBaseTextureOptions } from '../textures/BaseTexture';
 
 /**
  * Texture pool, used by FilterSystem and plugins.

@@ -1,5 +1,6 @@
-import { Sprite } from '@pixi/sprite';
 import { Texture, Ticker, UPDATE_PRIORITY } from '@pixi/core';
+import { Sprite } from '@pixi/sprite';
+
 import type { IDestroyOptions } from '@pixi/display';
 
 /**

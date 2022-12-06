@@ -1,5 +1,5 @@
-import { generateFillStyle } from './generateFillStyle';
 import { utils } from '@pixi/core';
+import { generateFillStyle } from './generateFillStyle';
 
 import type { ICanvas, ICanvasRenderingContext2D } from '@pixi/core';
 import type { TextMetrics, TextStyle } from '@pixi/text';

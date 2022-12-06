@@ -1,5 +1,5 @@
-import { DisplayObject, Container } from '@pixi/display';
-import { RAD_TO_DEG, DEG_TO_RAD } from '@pixi/core';
+import { DEG_TO_RAD, RAD_TO_DEG } from '@pixi/core';
+import { Container, DisplayObject } from '@pixi/display';
 
 describe('DisplayObject', () =>
 {

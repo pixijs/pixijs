@@ -1,4 +1,4 @@
-import { Renderer, Shader, Geometry } from '@pixi/core';
+import { Geometry, Renderer, Shader } from '@pixi/core';
 
 describe('Shader', () =>
 {

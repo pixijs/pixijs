@@ -1,7 +1,7 @@
 import { TEXT_GRADIENT } from '@pixi/text';
 
 import type { ICanvas, ICanvasRenderingContext2D } from '@pixi/core';
-import type { TextStyle, TextMetrics } from '@pixi/text';
+import type { TextMetrics, TextStyle } from '@pixi/text';
 
 // TODO: Prevent code duplication b/w generateFillStyle & Text#generateFillStyle
 

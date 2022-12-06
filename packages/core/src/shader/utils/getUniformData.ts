@@ -1,6 +1,7 @@
-import type { IUniformData } from '../Program';
 import { defaultValue } from './defaultValue';
 import { mapType } from './mapType';
+
+import type { IUniformData } from '../Program';
 
 /**
  * returns the uniform data from the program

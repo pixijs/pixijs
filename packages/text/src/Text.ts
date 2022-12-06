@@ -1,5 +1,5 @@
 /* eslint max-depth: [2, 8] */
-import { Texture, settings, Rectangle, utils } from '@pixi/core';
+import { Rectangle, settings, Texture, utils } from '@pixi/core';
 import { Sprite } from '@pixi/sprite';
 import { TEXT_GRADIENT } from './const';
 import { TextMetrics } from './TextMetrics';

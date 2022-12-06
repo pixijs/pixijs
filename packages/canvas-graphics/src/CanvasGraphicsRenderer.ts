@@ -1,10 +1,10 @@
-import { SHAPES, Matrix, extensions, ExtensionType, Texture } from '@pixi/core';
 import { canvasUtils } from '@pixi/canvas-renderer';
+import { extensions, ExtensionType, Matrix, SHAPES, Texture } from '@pixi/core';
 import { PolygonUtils } from './utils/PolygonUtils';
 
 import type { CanvasRenderer, CrossPlatformCanvasRenderingContext2D } from '@pixi/canvas-renderer';
+import type { Circle, Ellipse, ExtensionMetadata, Polygon, Rectangle, RoundedRectangle } from '@pixi/core';
 import type { FillStyle, Graphics, GraphicsData, LineStyle } from '@pixi/graphics';
-import type { ExtensionMetadata, Circle, Ellipse, Polygon, Rectangle, RoundedRectangle } from '@pixi/core';
 
 /*
  * @author Mat Groves

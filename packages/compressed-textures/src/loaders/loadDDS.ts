@@ -1,9 +1,9 @@
-import { BaseTexture, extensions, ExtensionType, settings, utils, ALPHA_MODES, MIPMAP_MODES } from '@pixi/core';
 import { checkExtension, createTexture, LoaderParserPriority } from '@pixi/assets';
+import { ALPHA_MODES, BaseTexture, extensions, ExtensionType, MIPMAP_MODES, settings, utils } from '@pixi/core';
 import { parseDDS } from '../parsers';
 
-import type { IBaseTextureOptions, Texture } from '@pixi/core';
 import type { LoadAsset, Loader, LoaderParser } from '@pixi/assets';
+import type { IBaseTextureOptions, Texture } from '@pixi/core';
 
 /** Load our DDS textures! */
 export const loadDDS: LoaderParser = {

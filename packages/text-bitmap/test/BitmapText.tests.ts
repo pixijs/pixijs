@@ -1,7 +1,7 @@
-import path from 'path';
 import fs from 'fs';
-import { BitmapText, BitmapFont } from '@pixi/text-bitmap';
-import { settings, Texture, Renderer } from '@pixi/core';
+import path from 'path';
+import { Renderer, settings, Texture } from '@pixi/core';
+import { BitmapFont, BitmapText } from '@pixi/text-bitmap';
 
 import type { Container } from '@pixi/display';
 

@@ -1,6 +1,7 @@
 import { BUFFER_TYPE } from '@pixi/constants';
-import type { Dict } from '@pixi/utils';
 import { Buffer } from '../geometry/Buffer';
+
+import type { Dict } from '@pixi/utils';
 import type { UniformsSyncCallback } from './utils';
 
 let UID = 0;

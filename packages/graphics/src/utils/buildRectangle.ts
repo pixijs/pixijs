@@ -1,5 +1,5 @@
-import type { IShapeBuildCommand } from './IShapeBuildCommand';
 import type { Rectangle } from '@pixi/core';
+import type { IShapeBuildCommand } from './IShapeBuildCommand';
 
 /**
  * Builds a rectangle to draw

@@ -1,5 +1,6 @@
 import { BUFFER_TYPE } from '@pixi/constants';
 import { Runner } from '@pixi/runner';
+
 import type { GLBuffer } from './GLBuffer';
 
 let UID = 0;

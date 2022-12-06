@@ -1,11 +1,11 @@
 import { GC_MODES } from '@pixi/constants';
-
-import type { ISystem } from '../system/ISystem';
-import type { Renderer } from '../Renderer';
-import type { Texture } from './Texture';
-import type { RenderTexture } from '../renderTexture/RenderTexture';
-import type { ExtensionMetadata } from '@pixi/extensions';
 import { extensions, ExtensionType } from '@pixi/extensions';
+
+import type { ExtensionMetadata } from '@pixi/extensions';
+import type { Renderer } from '../Renderer';
+import type { RenderTexture } from '../renderTexture/RenderTexture';
+import type { ISystem } from '../system/ISystem';
+import type { Texture } from './Texture';
 
 export interface IUnloadableTexture
 {
@@ -126,7 +126,7 @@ export class TextureGCSystem implements ISystem
     run(): void
     {
         const tm = this.renderer.texture;
-        const managedTextures =  tm.managedTextures;
+        const managedTextures = tm.managedTextures;
         let wasRemoved = false;
 
         for (let i = 0; i < managedTextures.length; i++)

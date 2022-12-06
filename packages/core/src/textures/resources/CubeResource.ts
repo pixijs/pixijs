@@ -1,12 +1,12 @@
-import { AbstractMultiResource } from './AbstractMultiResource';
 import { TARGETS } from '@pixi/constants';
+import { AbstractMultiResource } from './AbstractMultiResource';
 
-import type { Resource } from './Resource';
 import type { ISize } from '@pixi/math';
 import type { ArrayFixed } from '@pixi/utils';
-import type { BaseTexture } from '../BaseTexture';
 import type { Renderer } from '../../Renderer';
+import type { BaseTexture } from '../BaseTexture';
 import type { GLTexture } from '../GLTexture';
+import type { Resource } from './Resource';
 
 /** Constructor options for CubeResource */
 export interface ICubeResourceOptions extends ISize

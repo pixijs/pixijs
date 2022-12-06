@@ -1,6 +1,7 @@
 import { settings } from '@pixi/core';
-import type { BitmapFontData } from '../BitmapFontData';
 import { XMLFormat } from './XMLFormat';
+
+import type { BitmapFontData } from '../BitmapFontData';
 
 /**
  * BitmapFont format that's XML-based.

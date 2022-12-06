@@ -1,3 +1,3 @@
 export * from './Cache';
-export * from './parsers';
 export * from './CacheParser';
+export * from './parsers';

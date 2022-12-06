@@ -1,12 +1,12 @@
+import { extensions, ExtensionType } from '@pixi/extensions';
 import { GLBuffer } from './GLBuffer';
 
-import type { Renderer } from '../Renderer';
-import type { Buffer } from './Buffer';
-import type { ISystem } from '../system/ISystem';
-import type { IRenderingContext } from '../IRenderer';
-import type { ExtensionMetadata } from '@pixi/extensions';
-import { extensions, ExtensionType } from '@pixi/extensions';
 import type { BUFFER_TYPE } from '@pixi/constants';
+import type { ExtensionMetadata } from '@pixi/extensions';
+import type { IRenderingContext } from '../IRenderer';
+import type { Renderer } from '../Renderer';
+import type { ISystem } from '../system/ISystem';
+import type { Buffer } from './Buffer';
 
 /**
  * System plugin to the renderer to manage buffers.

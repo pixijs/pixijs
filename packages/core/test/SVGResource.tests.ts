@@ -1,6 +1,6 @@
-import { SVGResource } from '@pixi/core';
 import fs from 'fs';
 import path from 'path';
+import { SVGResource } from '@pixi/core';
 
 describe('SVGResource', () =>
 {

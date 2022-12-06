@@ -269,7 +269,7 @@ export class AssetsClass
             this.resolver.addManifest(manifest);
         }
 
-        const resolutionPref =  options.texturePreference?.resolution ?? 1;
+        const resolutionPref = options.texturePreference?.resolution ?? 1;
         const resolution = (typeof resolutionPref === 'number') ? [resolutionPref] : resolutionPref;
 
         let formats: string[] = [];

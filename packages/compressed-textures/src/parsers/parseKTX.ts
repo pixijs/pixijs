@@ -1,8 +1,8 @@
 import { BufferResource, FORMATS, TYPES } from '@pixi/core';
-
 import { INTERNAL_FORMAT_TO_BYTES_PER_PIXEL } from '../const';
-import type { CompressedLevelBuffer } from '../resources';
 import { CompressedTextureResource } from '../resources';
+
+import type { CompressedLevelBuffer } from '../resources';
 
 /**
  * The 12-byte KTX file identifier

@@ -1,7 +1,9 @@
 import { Runner } from '@pixi/runner';
 import { EventEmitter } from '@pixi/utils';
+
 import type { IRenderer } from '../IRenderer';
 import type { ISystem, ISystemConstructor } from './ISystem';
+
 interface ISystemConfig<R>
 {
     runners: string[],

@@ -1,4 +1,4 @@
-import { BLEND_MODES, SCALE_MODES, settings, Matrix, extensions, ExtensionType } from '@pixi/core';
+import { BLEND_MODES, extensions, ExtensionType, Matrix, SCALE_MODES, settings } from '@pixi/core';
 import { mapCanvasBlendModesToPixi } from './utils/mapCanvasBlendModesToPixi';
 
 import type { ExtensionMetadata, ICanvasRenderingContext2D, ISystem } from '@pixi/core';

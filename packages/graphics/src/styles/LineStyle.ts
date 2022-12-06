@@ -1,5 +1,5 @@
+import { LINE_CAP, LINE_JOIN } from '../const';
 import { FillStyle } from './FillStyle';
-import { LINE_JOIN, LINE_CAP } from '../const';
 
 /**
  * Represents the line style for Graphics.

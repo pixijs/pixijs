@@ -1,20 +1,22 @@
 import {
     BLEND_MODES,
-    utils,
-    extensions,
     CanvasResource,
-    ExtensionType } from '@pixi/core';
+    extensions,
+    ExtensionType,
+    utils,
+} from '@pixi/core';
 
-import type { CanvasRenderer } from './CanvasRenderer';
 import type {
-    Matrix,
     BaseRenderTexture,
     ExtensionMetadata,
+    IRenderableObject,
     IRendererRenderOptions,
     ISystem,
-    IRenderableObject,
-    RenderTexture } from '@pixi/core';
+    Matrix,
+    RenderTexture,
+} from '@pixi/core';
 import type { CrossPlatformCanvasRenderingContext2D } from './CanvasContextSystem';
+import type { CanvasRenderer } from './CanvasRenderer';
 
 /**
  * system that provides a render function that focussing on rendering Pixi Scene Graph objects

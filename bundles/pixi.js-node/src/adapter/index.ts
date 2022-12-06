@@ -1,8 +1,8 @@
 import './polyfills';
 
-export * from './NodeCanvasElement';
-export * from './NodeCanvasResource';
+export * from './adapter';
+export * from './loadNodeBase64';
 export * from './loadNodeFont';
 export * from './loadNodeTexture';
-export * from './loadNodeBase64';
-export * from './adapter';
+export * from './NodeCanvasElement';
+export * from './NodeCanvasResource';

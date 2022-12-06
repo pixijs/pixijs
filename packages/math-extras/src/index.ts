@@ -1,9 +1,9 @@
 /// <reference path="../global.d.ts" />
+import { Point } from '@pixi/core';
 import './pointExtras';
 import './rectangleExtras';
 
 import type { IPointData } from '@pixi/core';
-import { Point } from '@pixi/core';
 
 /**
  * The idea of a relative epsilon comparison is to find the difference between the two numbers,

@@ -1,5 +1,5 @@
-import { WRAP_MODES, TYPES, FORMATS, SAMPLER_TYPES } from '@pixi/constants';
-import { Renderer, Texture, BaseTexture } from '@pixi/core';
+import { FORMATS, SAMPLER_TYPES, TYPES, WRAP_MODES } from '@pixi/constants';
+import { BaseTexture, Renderer, Texture } from '@pixi/core';
 
 describe('TextureSystem', () =>
 {

@@ -1,11 +1,11 @@
 /// <reference path="../global.d.ts" />
 import { Graphics } from '@pixi/graphics';
-import { drawTorus } from './drawTorus';
 import { drawChamferRect } from './drawChamferRect';
 import { drawFilletRect } from './drawFilletRect';
 import { drawRegularPolygon } from './drawRegularPolygon';
 import { drawRoundedPolygon } from './drawRoundedPolygon';
 import { drawStar } from './drawStar';
+import { drawTorus } from './drawTorus';
 
 export interface IGraphicsExtras
 {

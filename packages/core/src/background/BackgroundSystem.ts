@@ -1,6 +1,7 @@
-import { hex2rgb, hex2string, string2hex } from '@pixi/utils';
-import type { ExtensionMetadata } from '@pixi/extensions';
 import { extensions, ExtensionType } from '@pixi/extensions';
+import { hex2rgb, hex2string, string2hex } from '@pixi/utils';
+
+import type { ExtensionMetadata } from '@pixi/extensions';
 import type { ISystem } from '../system/ISystem';
 
 export interface BackgroundOptions

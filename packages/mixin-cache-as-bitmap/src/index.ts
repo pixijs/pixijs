@@ -1,14 +1,14 @@
 /// <reference path="../global.d.ts" />
-import { Texture, BaseTexture, RenderTexture, Matrix, utils, settings } from '@pixi/core';
-import { Sprite } from '@pixi/sprite';
+import { BaseTexture, Matrix, RenderTexture, settings, Texture, utils } from '@pixi/core';
 import { DisplayObject } from '@pixi/display';
+import { Sprite } from '@pixi/sprite';
 
 import type {
-    MSAA_QUALITY,
     ICanvasRenderingContext2D,
     IPointData,
     IRenderer,
     MaskData,
+    MSAA_QUALITY,
     Rectangle,
     Renderer,
 } from '@pixi/core';

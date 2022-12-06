@@ -1,9 +1,9 @@
 import { Point, SHAPES } from '@pixi/core';
+import { curves, LINE_CAP, LINE_JOIN } from '../const';
 
 import type { Polygon } from '@pixi/core';
 import type { GraphicsData } from '../GraphicsData';
 import type { GraphicsGeometry } from '../GraphicsGeometry';
-import { LINE_JOIN, LINE_CAP, curves } from '../const';
 
 /**
  * Buffers vertices to draw a square cap.

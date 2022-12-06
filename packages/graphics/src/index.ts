@@ -1,28 +1,29 @@
 /// <reference path="../global.d.ts" />
+import {
+    ArcUtils,
+    BATCH_POOL,
+    BatchPart,
+    BezierUtils,
+    buildCircle,
+    buildLine,
+    buildPoly,
+    buildRectangle,
+    buildRoundedRectangle,
+    DRAW_CALL_POOL,
+    FILL_COMMANDS,
+    QuadraticUtils,
+} from './utils';
+
+import type { SHAPES } from '@pixi/core';
+import type { BatchDrawCall } from '@pixi/core/';
+import type { IShapeBuildCommand } from './utils/IShapeBuildCommand';
+
 export * from './const';
-export * from './styles/FillStyle';
 export * from './Graphics';
 export * from './GraphicsData';
 export * from './GraphicsGeometry';
+export * from './styles/FillStyle';
 export * from './styles/LineStyle';
-
-import {
-    buildPoly,
-    buildCircle,
-    buildRectangle,
-    buildRoundedRectangle,
-    buildLine,
-    ArcUtils,
-    BezierUtils,
-    QuadraticUtils,
-    BatchPart,
-    FILL_COMMANDS,
-    BATCH_POOL,
-    DRAW_CALL_POOL
-} from './utils';
-import type { BatchDrawCall } from '@pixi/core/';
-import type { IShapeBuildCommand } from './utils/IShapeBuildCommand';
-import type { SHAPES } from '@pixi/core';
 
 export const graphicsUtils = {
     buildPoly: buildPoly as IShapeBuildCommand,

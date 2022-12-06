@@ -1,5 +1,5 @@
-import { settings } from '@pixi/settings';
 import { ENV } from '@pixi/constants';
+import { settings } from '@pixi/settings';
 
 const unknownContext = {};
 let context: WebGLRenderingContext | WebGL2RenderingContext = unknownContext as any;

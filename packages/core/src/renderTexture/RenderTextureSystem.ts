@@ -1,14 +1,14 @@
-import { Rectangle } from '@pixi/math';
-import type { BUFFER_BITS } from '@pixi/constants';
-
-import type { ISystem } from '../system/ISystem';
-import type { Renderer } from '../Renderer';
-import type { RenderTexture } from './RenderTexture';
-import type { BaseRenderTexture } from './BaseRenderTexture';
-import type { MaskData } from '../mask/MaskData';
-import type { ISize } from '@pixi/math';
-import type { ExtensionMetadata } from '@pixi/extensions';
 import { extensions, ExtensionType } from '@pixi/extensions';
+import { Rectangle } from '@pixi/math';
+
+import type { BUFFER_BITS } from '@pixi/constants';
+import type { ExtensionMetadata } from '@pixi/extensions';
+import type { ISize } from '@pixi/math';
+import type { MaskData } from '../mask/MaskData';
+import type { Renderer } from '../Renderer';
+import type { ISystem } from '../system/ISystem';
+import type { BaseRenderTexture } from './BaseRenderTexture';
+import type { RenderTexture } from './RenderTexture';
 
 // Temporary rectangle for assigned sourceFrame or destinationFrame
 const tempRect = new Rectangle();

@@ -1,6 +1,6 @@
 import { Filter } from '@pixi/core';
-import vertex from './fxaa.vert';
 import fragment from './fxaa.frag';
+import vertex from './fxaa.vert';
 
 /**
  * Basic FXAA (Fast Approximate Anti-Aliasing) implementation based on the code on geeks3d.com

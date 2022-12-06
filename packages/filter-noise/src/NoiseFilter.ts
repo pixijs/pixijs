@@ -1,4 +1,4 @@
-import { Filter, defaultFilterVertex } from '@pixi/core';
+import { defaultFilterVertex, Filter } from '@pixi/core';
 import fragment from './noise.frag';
 
 /**

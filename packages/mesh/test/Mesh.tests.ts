@@ -1,5 +1,5 @@
-import { Mesh, MeshGeometry, MeshMaterial } from '@pixi/mesh';
 import { Texture } from '@pixi/core';
+import { Mesh, MeshGeometry, MeshMaterial } from '@pixi/mesh';
 
 describe('Mesh', () =>
 {
