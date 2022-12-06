@@ -11,7 +11,7 @@ export const WebWorkerAdapter = {
      * @param height - height of the canvas
      */
     createCanvas: (width?: number, height?: number) => new OffscreenCanvas(width | 0, height | 0),
-    getCanvasRenderingContext2D: () => CanvasRenderingContext2D,
+    getCanvasRenderingContext2D: () => OffscreenCanvasRenderingContext2D,
     getWebGLRenderingContext: () => WebGLRenderingContext,
     getNavigator: () => navigator,
     getBaseUrl: () => globalThis.location.href,
