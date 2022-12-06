@@ -141,12 +141,14 @@ export class TextMetrics
     public static _experimentalLetterSpacingSupported?: boolean;
 
     /**
-     * Checking that we can use modern canvas2D API
-     * https://developer.chrome.com/origintrials/#/view_trial/3585991203293757441
-     * Note: This is unstable API, Chrome < 94 use a `textLetterSpacing`, latest use `letterSpacing`
+     * Checking that we can use modern canvas 2D API.
+     *
+     * Note: This is an unstable API, Chrome < 94 use `textLetterSpacing`, later versions use `letterSpacing`.
      * @see PIXI.TextMetrics.experimentalLetterSpacing
+     * @see https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/letterSpacing
+     * @see https://developer.chrome.com/origintrials/#/view_trial/3585991203293757441
      */
-    public static get experimentalLetterSpacingSupported()
+    public static get experimentalLetterSpacingSupported(): boolean
     {
         let result = TextMetrics._experimentalLetterSpacingSupported;
 
@@ -166,6 +168,7 @@ export class TextMetrics
      * New rendering behavior for letter-spacing which uses Chrome's new native API. This will
      * lead to more accurate letter-spacing results because it does not try to manually draw
      * each character. However, this Chrome API is experimental and may not serve all cases yet.
+     * @see PIXI.TextMetrics.experimentalLetterSpacingSupported
      */
     public static experimentalLetterSpacing = false;
 
