@@ -138,7 +138,7 @@ export class Text extends Sprite
 
     /**
      * @param text - The string that you would like the text to display
-     * @param {object|PIXI.TextStyle} [style] - The style parameters
+     * @param style - The style parameters
      * @param canvas - The canvas element for drawing text
      */
     constructor(text?: string | number, style?: Partial<ITextStyle> | TextStyle, canvas?: ICanvas)
@@ -738,12 +738,11 @@ export class Text extends Sprite
      * Set the style of the text.
      *
      * Set up an event listener to listen for changes on the style object and mark the text as dirty.
+     *
+     * If setting the `style` can also be partial {@link PIXI.ITextStyle}.
      */
-    get style(): TextStyle | Partial<ITextStyle>
+    get style(): TextStyle
     {
-        // TODO: Can't have different types for getter and setter. The getter shouldn't have the ITextStyle
-        //       since the setter creates the TextStyle. See this thread for more details:
-        //       https://github.com/microsoft/TypeScript/issues/2521
         return this._style;
     }
 

@@ -115,6 +115,16 @@ export class CanvasMeshRenderer
         const textureWidth = base.width;
         const textureHeight = base.height;
 
+        // Invalidate texture if base texture was updated
+        // either because mesh.texture or mesh.shader.texture was changed
+        if (mesh._cachedTexture && mesh._cachedTexture.baseTexture !== base)
+        {
+            mesh._cachedTint = 0xffffff;
+            mesh._cachedTexture?.destroy();
+            mesh._cachedTexture = null;
+            mesh._tintedCanvas = null;
+        }
+
         if (isTinted)
         {
             if (mesh._cachedTint !== mesh.tint)
