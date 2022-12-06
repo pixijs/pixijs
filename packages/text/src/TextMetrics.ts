@@ -138,19 +138,29 @@ export class TextMetrics
         return (s: string) => [...s];
     })();
 
+    public static _experimentalLetterSpacingSupported?: boolean;
+
     /**
      * Checking that we can use modern canvas2D API
      * https://developer.chrome.com/origintrials/#/view_trial/3585991203293757441
      * Note: This is unstable API, Chrome < 94 use a `textLetterSpacing`, latest use `letterSpacing`
      * @see PIXI.TextMetrics.experimentalLetterSpacing
      */
-    public static readonly experimentalLetterSpacingSupported
-        = (() =>
+    public static get experimentalLetterSpacingSupported()
+    {
+        let result = TextMetrics._experimentalLetterSpacingSupported;
+
+        if (result !== undefined)
         {
             const proto = settings.ADAPTER.getCanvasRenderingContext2D().prototype;
 
-            return 'letterSpacing' in proto || 'textLetterSpacing' in proto;
-        })();
+            result
+                = TextMetrics._experimentalLetterSpacingSupported
+                = 'letterSpacing' in proto || 'textLetterSpacing' in proto;
+        }
+
+        return result;
+    }
 
     /**
      * New rendering behavior for letter-spacing which uses Chrome's new native API. This will
