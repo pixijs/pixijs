@@ -216,28 +216,40 @@ export class Resolver
     {
         const assetNames: string[] = [];
 
+        // when storing keys against a bundle we prepend the bundleId to each asset key
+        // and pass it through as an additional alias for the asset
+        // this keeps clashing ids separate on a per-bundle basis
+        // you can also resolve a file using the bundleId-assetId syntax
         if (Array.isArray(assets))
         {
             assets.forEach((asset) =>
             {
                 if (typeof asset.name === 'string')
                 {
-                    assetNames.push(asset.name);
+                    const bundleAssetId = `${bundleId}-${asset.name}`;
+
+                    assetNames.push(bundleAssetId);
+                    this.add([asset.name, bundleAssetId], asset.srcs);
                 }
                 else
                 {
-                    assetNames.push(...asset.name);
-                }
+                    const bundleIds = asset.name.map((name) => `${bundleId}-${name}`);
 
-                this.add(asset.name, asset.srcs);
+                    bundleIds.forEach((bundleId) =>
+                    {
+                        assetNames.push(bundleId);
+                    });
+
+                    this.add([...asset.name, ...bundleIds], asset.srcs);
+                }
             });
         }
         else
         {
             Object.keys(assets).forEach((key) =>
             {
-                assetNames.push(key);
-                this.add(key, assets[key]);
+                assetNames.push(`${bundleId}-${key}`);
+                this.add([key, `${bundleId}-${key}`], assets[key]);
             });
         }
 
@@ -412,7 +424,18 @@ export class Resolver
 
             if (assetNames)
             {
-                out[bundleId] = this.resolve(assetNames) as Record<string, ResolveAsset>;
+                const results = this.resolve(assetNames) as Record<string, ResolveAsset>;
+
+                const assets: Record<string, ResolveAsset> = {};
+
+                for (const key in results)
+                {
+                    const asset = results[key];
+
+                    assets[key.replace(`${bundleId}-`, '')] = asset;
+                }
+
+                out[bundleId] = assets;
             }
         });
 
