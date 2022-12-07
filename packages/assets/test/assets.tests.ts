@@ -403,7 +403,7 @@ describe('Assets', () =>
         expect(font).toBeInstanceOf(FontFace);
     });
 
-    it('should load not show a cache warning if the same asset is loaded twice', async () =>
+    it('should not show a cache warning if the same asset is loaded twice', async () =>
     {
         await Assets.init({
             basePath,
