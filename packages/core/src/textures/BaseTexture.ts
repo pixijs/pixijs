@@ -724,7 +724,8 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
                 baseTexture.textureCacheIds.push(id);
             }
 
-            if (BaseTextureCache[id])
+            // only throw a warning if there is a different base texture mapped to this id.
+            if (BaseTextureCache[id] && BaseTextureCache[id] !== baseTexture)
             {
                 // eslint-disable-next-line no-console
                 console.warn(`BaseTexture added to the cache with an id [${id}] that already had an entry`);
