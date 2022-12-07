@@ -409,10 +409,10 @@ describe('Assets', () =>
             basePath,
         });
 
-        const spy = jest.spyOn(console, 'warn')
+        const spy = jest.spyOn(console, 'warn');
 
-        const bunnyPromise =  Assets.load('textures/bunny.png');
-        const bunnyPromise2 =  Assets.load('textures/bunny.png');
+        const bunnyPromise = Assets.load('textures/bunny.png');
+        const bunnyPromise2 = Assets.load('textures/bunny.png');
 
         await Promise.all([bunnyPromise, bunnyPromise2]);
 
