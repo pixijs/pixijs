@@ -42,7 +42,7 @@ import type { PreferOrder, ResolveAsset, ResolverBundle, ResolverManifest, Resol
 export class Resolver
 {
     /** The character that is used to connect the bundleId and the assetId when generating a bundle asset id key */
-    public static readonly bundleIdAssetConnector = '-';
+    public static bundleIdAssetConnector = '-';
 
     /**
      * A function that generates a bundle asset id key from a bundleId and an assetId
