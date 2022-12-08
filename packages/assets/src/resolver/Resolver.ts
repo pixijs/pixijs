@@ -41,6 +41,33 @@ import type { PreferOrder, ResolveAsset, ResolverBundle, ResolverManifest, Resol
  */
 export class Resolver
 {
+    /** The character that is used to connect the bundleId and the assetId when generating a bundle asset id key */
+    public static readonly bundleIdAssetConnector = '-';
+
+    /**
+     * A function that generates a bundle asset id key from a bundleId and an assetId
+     * @param bundleId - the bundleId
+     * @param assetId  - the assetId
+     * @returns the bundle asset id key
+     */
+    public static readonly generateBundleAssetId: (
+        bundleId: string,
+        assetId: string
+    ) => string = (bundleId, assetId) =>
+            `${bundleId}${Resolver.bundleIdAssetConnector}${assetId}`;
+
+    /**
+     * A function that generates an assetId from a bundle asset id key. This is the reverse of generateBundleAssetId
+     * @param bundleId - the bundleId
+     * @param assetBundleId - the bundle asset id key
+     * @returns the assetId
+     */
+    public static readonly generateAssetIdFromBundleAssetId: (
+        bundleId: string,
+        assetBundleId: string
+    ) => string = (bundleId, assetBundleId) =>
+            assetBundleId.replace(`${bundleId}-`, '');
+
     private _assetMap: Record<string, ResolveAsset[]> = {};
     private _preferredOrder: PreferOrder[] = [];
     private _parsers: ResolveURLParser[] = [];
@@ -226,14 +253,14 @@ export class Resolver
             {
                 if (typeof asset.name === 'string')
                 {
-                    const bundleAssetId = `${bundleId}-${asset.name}`;
+                    const bundleAssetId = Resolver.generateBundleAssetId(bundleId, asset.name);
 
                     assetNames.push(bundleAssetId);
                     this.add([asset.name, bundleAssetId], asset.srcs);
                 }
                 else
                 {
-                    const bundleIds = asset.name.map((name) => `${bundleId}-${name}`);
+                    const bundleIds = asset.name.map((name) => Resolver.generateBundleAssetId(bundleId, name));
 
                     bundleIds.forEach((bundleId) =>
                     {
@@ -248,8 +275,8 @@ export class Resolver
         {
             Object.keys(assets).forEach((key) =>
             {
-                assetNames.push(`${bundleId}-${key}`);
-                this.add([key, `${bundleId}-${key}`], assets[key]);
+                assetNames.push(Resolver.generateBundleAssetId(bundleId, key));
+                this.add([key, Resolver.generateBundleAssetId(bundleId, key)], assets[key]);
             });
         }
 
@@ -432,7 +459,7 @@ export class Resolver
                 {
                     const asset = results[key];
 
-                    assets[key.replace(`${bundleId}-`, '')] = asset;
+                    assets[Resolver.generateAssetIdFromBundleAssetId(bundleId, key)] = asset;
                 }
 
                 out[bundleId] = assets;

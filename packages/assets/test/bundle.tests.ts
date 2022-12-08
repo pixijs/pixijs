@@ -189,7 +189,7 @@ describe('Assets bundles', () =>
             .toBe(`${basePath}textures/bunny-2.png`);
     });
 
-    it.only('should load bundles with clashing names correctly with key value pairs', async () =>
+    it('should load bundles with clashing multiple names correctly with key value pairs', async () =>
     {
         const manifest = {
             bundles: [
