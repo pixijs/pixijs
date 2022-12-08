@@ -2,6 +2,8 @@ import { Assets } from '@pixi/assets';
 import { Texture } from '@pixi/core';
 import { Spritesheet } from '@pixi/spritesheet';
 
+import type { BundleIdentifierOptions } from '../src/resolver/Resolver';
+
 function wait(value = 500)
 {
     // wait a bit...
@@ -224,5 +226,132 @@ describe('Assets bundles', () =>
 
         expect(resources2.character.textureCacheIds[0])
             .toBe(`${basePath}textures/bunny-2.png`);
+    });
+
+    it('should load bundles with clashing names correctly', async () =>
+    {
+        const manifest = {
+            bundles: [
+                {
+                    name: 'bunny1',
+                    assets: [
+                        {
+                            name: 'character',
+                            srcs: 'textures/bunny.png',
+                        },
+                    ],
+                },
+                {
+                    name: 'bunny2',
+                    assets: [
+                        {
+                            name: 'character',
+                            srcs: 'textures/bunny-2.png',
+                        },
+                    ],
+                },
+            ]
+        };
+
+        const bundleIdentifier: BundleIdentifierOptions = {
+            bundleIdAssetConnector: ':',
+        };
+
+        await Assets.init({ manifest, basePath, bundleIdentifier });
+
+        const resources = await Assets.loadBundle('bunny1');
+        const resources2 = await Assets.loadBundle('bunny2');
+
+        expect(resources.character.textureCacheIds[0])
+            .toBe(`${basePath}textures/bunny.png`);
+
+        expect(resources2.character.textureCacheIds[0])
+            .toBe(`${basePath}textures/bunny-2.png`);
+
+        const bunny2Character = await Assets.load('bunny2:character');
+
+        expect(bunny2Character.textureCacheIds[0])
+            .toBe(`${basePath}textures/bunny-2.png`);
+    });
+
+    it('should load bundles with clashing names correctly and overridden bundleIdentifier', async () =>
+    {
+        const manifest = {
+            bundles: [
+                {
+                    name: 'bunny1',
+                    assets: [
+                        {
+                            name: 'character',
+                            srcs: 'textures/bunny.png',
+                        },
+                    ],
+                },
+                {
+                    name: 'bunny2',
+                    assets: [
+                        {
+                            name: 'character',
+                            srcs: 'textures/bunny-2.png',
+                        },
+                    ],
+                },
+            ]
+        };
+
+        const bundleIdentifier: BundleIdentifierOptions = {
+            generateBundleAssetId: (bundleId, assetId) => `${assetId}>-<${bundleId}`,
+            generateAssetIdFromBundleAssetId: (bundleId, assetId) => assetId.replace(`>-<${bundleId}`, ''),
+        };
+
+        await Assets.init({ manifest, basePath, bundleIdentifier });
+
+        const resources = await Assets.loadBundle('bunny1');
+        const resources2 = await Assets.loadBundle('bunny2');
+
+        expect(resources.character.textureCacheIds[0])
+            .toBe(`${basePath}textures/bunny.png`);
+
+        expect(resources2.character.textureCacheIds[0])
+            .toBe(`${basePath}textures/bunny-2.png`);
+
+        const bunny2Character = await Assets.load('character>-<bunny2');
+
+        expect(bunny2Character.textureCacheIds[0])
+            .toBe(`${basePath}textures/bunny-2.png`);
+    });
+
+    it('should throw an error if bundleIdentifier is overridden but does not pair up correctly', async () =>
+    {
+        const manifest = {
+            bundles: [
+                {
+                    name: 'bunny1',
+                    assets: [
+                        {
+                            name: 'character',
+                            srcs: 'textures/bunny.png',
+                        },
+                    ],
+                },
+                {
+                    name: 'bunny2',
+                    assets: [
+                        {
+                            name: 'character',
+                            srcs: 'textures/bunny-2.png',
+                        },
+                    ],
+                },
+            ]
+        };
+
+        const bundleIdentifier: BundleIdentifierOptions = {
+            generateBundleAssetId: (bundleId, assetId) => `${assetId}>-<${bundleId}`,
+            generateAssetIdFromBundleAssetId: (_bundleId, _assetId) => 'no-idea',
+        };
+
+        // expect promise to throw an error..
+        await expect(Assets.init({ manifest, basePath, bundleIdentifier })).rejects.toThrow();
     });
 });

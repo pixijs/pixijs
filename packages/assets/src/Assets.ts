@@ -8,8 +8,9 @@ import { convertToList } from './utils/convertToList';
 import { isSingleItem } from './utils/isSingleItem';
 
 import type { FormatDetectionParser } from './detections';
-import type { LoadAsset, LoaderParser } from './loader';
+import type { LoadAsset } from './loader';
 import type { ResolveAsset, ResolverBundle, ResolverManifest } from './resolver';
+import type { BundleIdentifierOptions } from './resolver/Resolver';
 
 export type ProgressCallback = (progress: number) => void;
 
@@ -39,13 +40,8 @@ export interface AssetInitOptions
         format?: string | string[];
     };
 
-    // advanced users can add custom parsers and and preferences for how things are resolved
-    /** loader options to configure the loader with, currently only parsers! */
-    loader?: {
-        /** custom parsers can be added here, for example something that could load a sound or a 3D model */
-        parsers?: LoaderParser[];
-        // more...
-    };
+    /** advanced - override how bundlesIds are generated */
+    bundleIdentifier?: BundleIdentifierOptions;
 }
 
 /**
@@ -255,6 +251,11 @@ export class AssetsClass
         if (options.basePath)
         {
             this.resolver.basePath = options.basePath;
+        }
+
+        if (options.bundleIdentifier)
+        {
+            this.resolver.setBundleIdentifier(options.bundleIdentifier);
         }
 
         if (options.manifest)
