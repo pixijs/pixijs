@@ -50,7 +50,7 @@ export class Resolver
      * @param assetId  - the assetId
      * @returns the bundle asset id key
      */
-    public static readonly generateBundleAssetId: (
+    public static generateBundleAssetId: (
         bundleId: string,
         assetId: string
     ) => string = (bundleId, assetId) =>
