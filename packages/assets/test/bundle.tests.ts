@@ -254,7 +254,7 @@ describe('Assets bundles', () =>
         };
 
         const bundleIdentifier: BundleIdentifierOptions = {
-            bundleIdAssetConnector: ':',
+            connector: ':',
         };
 
         await Assets.init({ manifest, basePath, bundleIdentifier });
@@ -300,8 +300,8 @@ describe('Assets bundles', () =>
         };
 
         const bundleIdentifier: BundleIdentifierOptions = {
-            generateBundleAssetId: (bundleId, assetId) => `${assetId}>-<${bundleId}`,
-            generateAssetIdFromBundleAssetId: (bundleId, assetId) => assetId.replace(`>-<${bundleId}`, ''),
+            createBundleAssetId: (bundleId, assetId) => `${assetId}>-<${bundleId}`,
+            extractAssetIdFromBundle: (bundleId, assetId) => assetId.replace(`>-<${bundleId}`, ''),
         };
 
         await Assets.init({ manifest, basePath, bundleIdentifier });
@@ -347,8 +347,8 @@ describe('Assets bundles', () =>
         };
 
         const bundleIdentifier: BundleIdentifierOptions = {
-            generateBundleAssetId: (bundleId, assetId) => `${assetId}>-<${bundleId}`,
-            generateAssetIdFromBundleAssetId: (_bundleId, _assetId) => 'no-idea',
+            createBundleAssetId: (bundleId, assetId) => `${assetId}>-<${bundleId}`,
+            extractAssetIdFromBundle: (_bundleId, _assetId) => 'no-idea',
         };
 
         // expect promise to throw an error..
