@@ -301,4 +301,20 @@ describe('Assets', () =>
 
         expect(font).toBeInstanceOf(FontFace);
     });
+
+    it('should not show a cache warning if the same asset is loaded twice', async () =>
+    {
+        await Assets.init({
+            basePath,
+        });
+
+        const spy = jest.spyOn(console, 'warn');
+
+        const bunnyPromise = Assets.load('textures/bunny.png');
+        const bunnyPromise2 = Assets.load('textures/bunny.png');
+
+        await Promise.all([bunnyPromise, bunnyPromise2]);
+
+        expect(spy).not.toHaveBeenCalled();
+    });
 });
