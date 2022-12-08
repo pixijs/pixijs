@@ -113,10 +113,9 @@ export interface IRendererRenderOptions
  */
 export interface IRenderer<VIEW extends ICanvas = ICanvas> extends SystemManager, GlobalMixins.IRenderer
 {
-
     resize(width: number, height: number): void;
-    render(displayObject: IRenderableObject, options?: IRendererRenderOptions): void
-    generateTexture(displayObject: IRenderableObject, options?: IGenerateTextureOptions): void
+    render(displayObject: IRenderableObject, options?: IRendererRenderOptions): void;
+    generateTexture(displayObject: IRenderableObject, options?: IGenerateTextureOptions): RenderTexture;
     destroy(removeView?: boolean): void;
     clear(): void;
     reset(): void;
