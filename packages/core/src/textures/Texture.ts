@@ -520,7 +520,8 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
                 texture.textureCacheIds.push(id);
             }
 
-            if (TextureCache[id])
+            // only throw a warning if there is a different texture mapped to this id.
+            if (TextureCache[id] && TextureCache[id] !== texture)
             {
                 // eslint-disable-next-line no-console
                 console.warn(`Texture added to the cache with an id [${id}] that already had an entry`);
