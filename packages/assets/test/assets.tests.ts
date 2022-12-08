@@ -1,5 +1,9 @@
 import { Assets } from '@pixi/assets';
 import { BaseTexture, Texture } from '@pixi/core';
+import { Spritesheet } from '@pixi/spritesheet';
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const keepImportAlive = [Spritesheet];
 
 function wait(value = 500)
 {
