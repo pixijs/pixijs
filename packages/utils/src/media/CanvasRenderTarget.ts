@@ -75,19 +75,19 @@ export class CanvasRenderTarget
      * The width of the canvas buffer in pixels.
      * @member {number}
      */
-    get width(): number | null
+    get width(): number
     {
         if (this.canvas !== null)
         {
             return this.canvas.width;
         }
 
-        return null;
+        throw TypeError('Canvas is null');
     }
 
-    set width(val: number | null)
+    set width(val: number)
     {
-        if (this.canvas !== null && val !== null)
+        if (this.canvas !== null)
         {
             this.canvas.width = Math.round(val);
         }
@@ -97,19 +97,19 @@ export class CanvasRenderTarget
      * The height of the canvas buffer in pixels.
      * @member {number}
      */
-    get height(): number | null
+    get height(): number
     {
         if (this.canvas !== null)
         {
             return this.canvas.height;
         }
 
-        return null;
+        throw TypeError('Canvas is null');
     }
 
-    set height(val: number | null)
+    set height(val: number)
     {
-        if (this.canvas !== null && val !== null)
+        if (this.canvas !== null)
         {
             this.canvas.height = Math.round(val);
         }
