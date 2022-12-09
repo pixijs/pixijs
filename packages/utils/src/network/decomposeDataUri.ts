@@ -2,11 +2,11 @@ import { DATA_URI } from '../const';
 
 export interface DecomposedDataUri
 {
-    mediaType: string | undefined;
-    subType: string | undefined;
-    charset: string | undefined;
-    encoding: string | undefined;
-    data: string | undefined;
+    mediaType?: string;
+    subType?: string;
+    charset?: string;
+    encoding?: string;
+    data?: string;
 }
 
 /**
