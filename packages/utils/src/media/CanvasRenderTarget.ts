@@ -30,7 +30,7 @@ export class CanvasRenderTarget
     {
         this.canvas = settings.ADAPTER.createCanvas();
 
-        this.context = this.canvas?.getContext('2d');
+        this.context = this.canvas.getContext('2d');
 
         this.resolution = resolution || settings.RESOLUTION;
 
@@ -43,11 +43,12 @@ export class CanvasRenderTarget
      */
     clear(): void
     {
-        if (this.canvas !== null)
-        {
-            this.context?.setTransform(1, 0, 0, 1, 0, 0);
-            this.context?.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        }
+        // #ifdef _DEBUG
+        this._checkDestroyed();
+        // #endif
+
+        this.context?.setTransform(1, 0, 0, 1, 0, 0);
+        this.context?.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
 
     /**
@@ -57,11 +58,12 @@ export class CanvasRenderTarget
      */
     resize(desiredWidth: number, desiredHeight: number): void
     {
-        if (this.canvas !== null)
-        {
-            this.canvas.width = Math.round(desiredWidth * this.resolution);
-            this.canvas.height = Math.round(desiredHeight * this.resolution);
-        }
+        // #ifdef _DEBUG
+        this._checkDestroyed();
+        // #endif
+
+        this.canvas.width = Math.round(desiredWidth * this.resolution);
+        this.canvas.height = Math.round(desiredHeight * this.resolution);
     }
 
     /** Destroys this canvas. */
@@ -77,20 +79,20 @@ export class CanvasRenderTarget
      */
     get width(): number
     {
-        if (this.canvas !== null)
-        {
-            return this.canvas.width;
-        }
+        // #ifdef _DEBUG
+        this._checkDestroyed();
+        // #endif
 
-        throw new TypeError('CanvasRenderTarget has been destroyed');
+        return this.canvas.width;
     }
 
     set width(val: number)
     {
-        if (this.canvas !== null)
-        {
-            this.canvas.width = Math.round(val);
-        }
+        // #ifdef _DEBUG
+        this._checkDestroyed();
+        // #endif
+
+        this.canvas.width = Math.round(val);
     }
 
     /**
@@ -99,19 +101,27 @@ export class CanvasRenderTarget
      */
     get height(): number
     {
-        if (this.canvas !== null)
-        {
-            return this.canvas.height;
-        }
+        // #ifdef _DEBUG
+        this._checkDestroyed();
+        // #endif
 
-        throw new TypeError('CanvasRenderTarget has been destroyed');
+        return this.canvas.height;
     }
 
     set height(val: number)
     {
-        if (this.canvas !== null)
+        // #ifdef _DEBUG
+        this._checkDestroyed();
+        // #endif
+
+        this.canvas.height = Math.round(val);
+    }
+
+    private _checkDestroyed(): asserts this is this & { canvas: ICanvas; context: ICanvasRenderingContext2D }
+    {
+        if (this.canvas === null)
         {
-            this.canvas.height = Math.round(val);
+            throw new TypeError('The CanvasRenderTarget has already been destroyed');
         }
     }
 }
