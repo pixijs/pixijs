@@ -101,7 +101,10 @@ export class Loader
      * const assets = await Loader.load(['cool.png', 'cooler.png']);
      * console.log(assets);
      * @param assetsToLoadIn - urls that you want to load, or a single one!
-     * @param onProgress - a function that gets called when the progress changes
+     * @param onProgress - For multiple asset loading only, an optional function that is called
+     * when progress on asset loading is made. The function is passed a single parameter, `progress`,
+     * which represents the percentage (0.0 - 1.0) of the assets loaded. Do not use this function
+     * to detect when assets are complete and available, instead use the Promise returned by this function.
      */
     public async load<T = any>(
         assetsToLoadIn: string | LoadAsset,
