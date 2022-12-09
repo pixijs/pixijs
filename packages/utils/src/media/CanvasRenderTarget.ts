@@ -82,7 +82,7 @@ export class CanvasRenderTarget
             return this.canvas.width;
         }
 
-        throw TypeError('Canvas is null');
+        throw new TypeError('CanvasRenderTarget has been destroyed');
     }
 
     set width(val: number)
@@ -104,7 +104,7 @@ export class CanvasRenderTarget
             return this.canvas.height;
         }
 
-        throw TypeError('Canvas is null');
+        throw new TypeError('CanvasRenderTarget has been destroyed');
     }
 
     set height(val: number)
