@@ -194,7 +194,7 @@ export const path: Path = {
 
         if (isFile || isHttp || isWindows)
         {
-            const arr = isFile?.[0] || isHttp?.[0] || isWindows?.[0];
+            const arr = isFile?.[0] || isHttp?.[0] || isWindows?.[0] || '';
 
             protocol = arr;
             path = path.slice(arr.length);

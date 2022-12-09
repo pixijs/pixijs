@@ -10,10 +10,10 @@ import type { ICanvas, ICanvasRenderingContext2D } from '@pixi/settings';
 export class CanvasRenderTarget
 {
     /** The Canvas object that belongs to this CanvasRenderTarget. */
-    public canvas: ICanvas;
+    public canvas: ICanvas | null;
 
     /** A CanvasRenderingContext2D object representing a two-dimensional rendering context. */
-    public context: ICanvasRenderingContext2D;
+    public context: ICanvasRenderingContext2D | null;
 
     /**
      * The resolution / device pixel ratio of the canvas
@@ -30,7 +30,7 @@ export class CanvasRenderTarget
     {
         this.canvas = settings.ADAPTER.createCanvas();
 
-        this.context = this.canvas.getContext('2d');
+        this.context = this.canvas?.getContext('2d');
 
         this.resolution = resolution || settings.RESOLUTION;
 
@@ -43,8 +43,11 @@ export class CanvasRenderTarget
      */
     clear(): void
     {
-        this.context.setTransform(1, 0, 0, 1, 0, 0);
-        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        if (this.canvas !== null)
+        {
+            this.context?.setTransform(1, 0, 0, 1, 0, 0);
+            this.context?.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        }
     }
 
     /**
@@ -54,8 +57,11 @@ export class CanvasRenderTarget
      */
     resize(desiredWidth: number, desiredHeight: number): void
     {
-        this.canvas.width = Math.round(desiredWidth * this.resolution);
-        this.canvas.height = Math.round(desiredHeight * this.resolution);
+        if (this.canvas !== null)
+        {
+            this.canvas.width = Math.round(desiredWidth * this.resolution);
+            this.canvas.height = Math.round(desiredHeight * this.resolution);
+        }
     }
 
     /** Destroys this canvas. */
@@ -69,27 +75,43 @@ export class CanvasRenderTarget
      * The width of the canvas buffer in pixels.
      * @member {number}
      */
-    get width(): number
+    get width(): number | null
     {
-        return this.canvas.width;
+        if (this.canvas !== null)
+        {
+            return this.canvas.width;
+        }
+
+        return null;
     }
 
-    set width(val: number)
+    set width(val: number | null)
     {
-        this.canvas.width = Math.round(val);
+        if (this.canvas !== null && val !== null)
+        {
+            this.canvas.width = Math.round(val);
+        }
     }
 
     /**
      * The height of the canvas buffer in pixels.
      * @member {number}
      */
-    get height(): number
+    get height(): number | null
     {
-        return this.canvas.height;
+        if (this.canvas !== null)
+        {
+            return this.canvas.height;
+        }
+
+        return null;
     }
 
-    set height(val: number)
+    set height(val: number | null)
     {
-        this.canvas.height = Math.round(val);
+        if (this.canvas !== null && val !== null)
+        {
+            this.canvas.height = Math.round(val);
+        }
     }
 }

@@ -11,9 +11,9 @@ describe('trimCanvas', () =>
 
         const trimmedImageData = trimCanvas(canvas);
 
-        expect(trimmedImageData.width).toEqual(0);
-        expect(trimmedImageData.height).toEqual(0);
-        expect(trimmedImageData.data).toBe(null);
+        expect(trimmedImageData?.width).toEqual(0);
+        expect(trimmedImageData?.height).toEqual(0);
+        expect(trimmedImageData?.data).toBe(null);
     });
 
     it('should trim the canvas', () =>
@@ -24,18 +24,25 @@ describe('trimCanvas', () =>
         canvas.width = 100;
         canvas.height = 50;
 
-        context.fillStyle = '#ff0000';
-        context.fillRect(10, 20, 10, 5);
-        context.fillStyle = '#00ff00';
-        context.fillRect(15, 25, 10, 5);
+        if (context !== null)
+        {
+            context.fillStyle = '#ff0000';
+            context?.fillRect(10, 20, 10, 5);
+            context.fillStyle = '#00ff00';
+            context?.fillRect(15, 25, 10, 5);
+        }
+        else
+        {
+            fail();
+        }
 
         const trimmedImageData = trimCanvas(canvas);
 
-        expect(trimmedImageData.width).toEqual(15);
-        expect(trimmedImageData.height).toEqual(10);
-        expect(trimmedImageData.data).toBeInstanceOf(ImageData);
-        expect(trimmedImageData.data.width).toEqual(15);
-        expect(trimmedImageData.data.height).toEqual(10);
-        expect(trimmedImageData.data.data).toEqual(context.getImageData(10, 20, 15, 10).data);
+        expect(trimmedImageData?.width).toEqual(15);
+        expect(trimmedImageData?.height).toEqual(10);
+        expect(trimmedImageData?.data).toBeInstanceOf(ImageData);
+        expect(trimmedImageData?.data?.width).toEqual(15);
+        expect(trimmedImageData?.data?.height).toEqual(10);
+        expect(trimmedImageData?.data?.data).toEqual(context?.getImageData(10, 20, 15, 10).data);
     });
 });

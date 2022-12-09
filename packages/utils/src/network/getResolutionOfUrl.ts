@@ -11,7 +11,7 @@ import { settings } from '../settings';
  */
 export function getResolutionOfUrl(url: string, defaultValue = 1): number
 {
-    const resolution = settings.RETINA_PREFIX.exec(url);
+    const resolution = settings.RETINA_PREFIX?.exec(url);
 
     if (resolution)
     {
