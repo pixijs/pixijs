@@ -39,32 +39,33 @@ export function trimCanvas(canvas: ICanvas): {width: number, height: number, dat
         willReadFrequently: true,
     });
 
-    if (context !== null)
+    if (context === null)
     {
-        const imageData = context.getImageData(0, 0, width, height);
-        const data = imageData.data;
-
-        let top = 0;
-        let bottom = height - 1;
-        let left = 0;
-        let right = width - 1;
-
-        while (top < height && checkRow(data, width, top)) ++top;
-        if (top === height)
-        {
-            return { width: 0, height: 0, data: null };
-        }
-        while (checkRow(data, width, bottom)) --bottom;
-        while (checkColumn(data, width, left, top, bottom)) ++left;
-        while (checkColumn(data, width, right, top, bottom)) --right;
-
-        width = right - left + 1;
-        height = bottom - top + 1;
-
-        return {
-            width, height,
-            data: context.getImageData(left, top, width, height),
-        };
+        throw new TypeError('Canvas rendering context is null');
     }
-    throw new TypeError('Canvas rendering context is null');
+    const imageData = context.getImageData(0, 0, width, height);
+    const data = imageData.data;
+
+    let top = 0;
+    let bottom = height - 1;
+    let left = 0;
+    let right = width - 1;
+
+    while (top < height && checkRow(data, width, top)) ++top;
+    if (top === height)
+    {
+        return { width: 0, height: 0, data: null };
+    }
+    while (checkRow(data, width, bottom)) --bottom;
+    while (checkColumn(data, width, left, top, bottom)) ++left;
+    while (checkColumn(data, width, right, top, bottom)) --right;
+
+    width = right - left + 1;
+    height = bottom - top + 1;
+
+    return {
+        width,
+        height,
+        data: context.getImageData(left, top, width, height),
+    };
 }
