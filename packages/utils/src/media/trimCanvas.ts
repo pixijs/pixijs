@@ -29,7 +29,7 @@ function checkColumn(data: Uint8ClampedArray, width: number, x: number, top: num
  * @param {PIXI.ICanvas} canvas - the canvas to trim
  * @returns {object} Trim data
  */
-export function trimCanvas(canvas: ICanvas): {width: number, height: number, data?: ImageData | null }
+export function trimCanvas(canvas: ICanvas): { width: number, height: number, data: ImageData | null }
 {
     // https://gist.github.com/timdown/021d9c8f2aabc7092df564996f5afbbf
 
