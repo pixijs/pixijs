@@ -1,5 +1,16 @@
+/**
+ * We are trying to enable strictNullChecks in PixiJS. However, enabling strictNullChecks directly
+ * generates a lot of errors, so we decided to do it step by step. This script filters the output
+ * of tsc with a specific prefix in the path. Once we try to enable strict null checks for a
+ * package, its path should be added to the `pathPrefix` array below.
+ *
+ * You can run this script using `npm run types:strict`.
+ * @see https://github.com/pixijs/pixijs/issues/8852
+ * @see https://github.com/pixijs/pixijs/pull/8965
+ */
+
 const pathPrefixs = [
-    // 'packages/utils',
+    'packages/utils',
 ];
 const filter = new RegExp(pathPrefixs.length === 0 ? `$^` : `^(${pathPrefixs.join('|')})`);
 
@@ -12,8 +23,8 @@ stdin.on('data', (chunk) => { buffer += chunk; });
 stdin.on('end', () =>
 {
     const lines = buffer.split('\n');
-    const errors = [];
-    let currentError = null;
+    const errors: string[][] = [];
+    let currentError: string[] | null = null;
 
     for (const line of lines)
     {
