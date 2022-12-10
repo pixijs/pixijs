@@ -81,7 +81,7 @@ export class CanvasRenderTarget
         this._checkDestroyed();
         // #endif
 
-        return this.canvas.width;
+        return this._canvas.width;
     }
 
     set width(val: number)
@@ -90,7 +90,7 @@ export class CanvasRenderTarget
         this._checkDestroyed();
         // #endif
 
-        this.canvas.width = Math.round(val);
+        this._canvas.width = Math.round(val);
     }
 
     /**
