@@ -28,7 +28,7 @@ export class CanvasRenderTarget
     {
         this._canvas = settings.ADAPTER.createCanvas();
 
-        this._context = this.canvas.getContext('2d');
+        this._context = this._canvas.getContext('2d');
 
         this.resolution = resolution || settings.RESOLUTION;
 
@@ -46,7 +46,7 @@ export class CanvasRenderTarget
         // #endif
 
         this._context.setTransform(1, 0, 0, 1, 0, 0);
-        this._context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this._context.clearRect(0, 0, this._canvas.width, this._canvas.height);
     }
 
     /**
@@ -103,7 +103,7 @@ export class CanvasRenderTarget
         this._checkDestroyed();
         // #endif
 
-        return this.canvas.height;
+        return this._canvas.height;
     }
 
     set height(val: number)
@@ -112,7 +112,7 @@ export class CanvasRenderTarget
         this._checkDestroyed();
         // #endif
 
-        this.canvas.height = Math.round(val);
+        this._canvas.height = Math.round(val);
     }
 
     /** The Canvas object that belongs to this CanvasRenderTarget. */
