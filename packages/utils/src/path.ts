@@ -32,7 +32,7 @@ function normalizeStringPosix(path: string, allowAboveRoot: boolean)
     let lastSegmentLength = 0;
     let lastSlash = -1;
     let dots = 0;
-    let code: number;
+    let code = -1;
 
     for (let i = 0; i <= path.length; ++i)
     {
