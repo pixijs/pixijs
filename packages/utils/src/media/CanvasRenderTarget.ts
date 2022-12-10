@@ -117,6 +117,7 @@ export class CanvasRenderTarget
         this.canvas.height = Math.round(val);
     }
 
+    // #if _DEBUG
     private _checkDestroyed(): asserts this is this & { canvas: ICanvas; context: ICanvasRenderingContext2D }
     {
         if (this.canvas === null)
@@ -124,4 +125,5 @@ export class CanvasRenderTarget
             throw new TypeError('The CanvasRenderTarget has already been destroyed');
         }
     }
+    // #endif
 }
