@@ -16,7 +16,7 @@ describe('CanvasRenderTarget', () =>
 
         renderTarget.destroy();
 
-        expect(renderTarget.canvas).toBeNull();
+        expect(renderTarget.canvas).toThrowError();
     });
 
     it('should create with custom resolution', () =>
