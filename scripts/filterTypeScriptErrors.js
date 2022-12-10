@@ -1,5 +1,5 @@
 const pathPrefixs = [
-    'packages/utils',
+    // 'packages/utils',
 ];
 const filter = new RegExp(pathPrefixs.length === 0 ? `$^` : `^(${pathPrefixs.join('|')})`);
 
