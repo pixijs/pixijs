@@ -11,8 +11,8 @@ describe('CanvasRenderTarget', () =>
         expect(renderTarget.width).toEqual(200);
         expect(renderTarget.height).toEqual(100);
         expect(renderTarget.resolution).toEqual(settings.RESOLUTION);
-        expect(renderTarget.canvas?.width).toEqual(200 * settings.RESOLUTION);
-        expect(renderTarget.canvas?.height).toEqual(100 * settings.RESOLUTION);
+        expect(renderTarget.canvas.width).toEqual(200 * settings.RESOLUTION);
+        expect(renderTarget.canvas.height).toEqual(100 * settings.RESOLUTION);
 
         renderTarget.destroy();
 
@@ -27,8 +27,8 @@ describe('CanvasRenderTarget', () =>
         expect(renderTarget.width).toEqual(400);
         expect(renderTarget.height).toEqual(200);
         expect(renderTarget.resolution).toEqual(2);
-        expect(renderTarget.canvas?.width).toEqual(400);
-        expect(renderTarget.canvas?.height).toEqual(200);
+        expect(renderTarget.canvas.width).toEqual(400);
+        expect(renderTarget.canvas.height).toEqual(200);
 
         renderTarget.destroy();
     });
@@ -40,8 +40,8 @@ describe('CanvasRenderTarget', () =>
         renderTarget.width = 400;
         renderTarget.height = 200;
 
-        expect(renderTarget.canvas?.width).toEqual(400);
-        expect(renderTarget.canvas?.height).toEqual(200);
+        expect(renderTarget.canvas.width).toEqual(400);
+        expect(renderTarget.canvas.height).toEqual(200);
 
         renderTarget.destroy();
     });
