@@ -43,7 +43,7 @@ export class CanvasRenderTarget
      */
     clear(): void
     {
-        // #ifdef _DEBUG
+        // #if _DEBUG
         this._checkDestroyed();
         // #endif
 
@@ -58,7 +58,7 @@ export class CanvasRenderTarget
      */
     resize(desiredWidth: number, desiredHeight: number): void
     {
-        // #ifdef _DEBUG
+        // #if _DEBUG
         this._checkDestroyed();
         // #endif
 
@@ -79,7 +79,7 @@ export class CanvasRenderTarget
      */
     get width(): number
     {
-        // #ifdef _DEBUG
+        // #if _DEBUG
         this._checkDestroyed();
         // #endif
 
@@ -88,7 +88,7 @@ export class CanvasRenderTarget
 
     set width(val: number)
     {
-        // #ifdef _DEBUG
+        // #if _DEBUG
         this._checkDestroyed();
         // #endif
 
@@ -101,7 +101,7 @@ export class CanvasRenderTarget
      */
     get height(): number
     {
-        // #ifdef _DEBUG
+        // #if _DEBUG
         this._checkDestroyed();
         // #endif
 
@@ -110,7 +110,7 @@ export class CanvasRenderTarget
 
     set height(val: number)
     {
-        // #ifdef _DEBUG
+        // #if _DEBUG
         this._checkDestroyed();
         // #endif
 
