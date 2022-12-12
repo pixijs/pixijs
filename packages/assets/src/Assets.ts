@@ -224,8 +224,6 @@ export class AssetsClass
 
     private _initialized = false;
 
-    private _defaultQueryString: string;
-
     constructor()
     {
         this.resolver = new Resolver();
