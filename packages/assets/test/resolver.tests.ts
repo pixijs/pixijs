@@ -446,7 +446,7 @@ describe('Resolver', () =>
     {
         const resolver = new Resolver();
 
-        resolver.setUrlParameters({
+        resolver.setDefaultSearchParams({
             hello: 'world',
             lucky: 23,
         });
@@ -460,7 +460,7 @@ describe('Resolver', () =>
     {
         const resolver = new Resolver();
 
-        resolver.setUrlParameters('hello=world&lucky=23');
+        resolver.setDefaultSearchParams('hello=world&lucky=23');
 
         resolver.add('test', 'my-image.png');
 
@@ -471,7 +471,7 @@ describe('Resolver', () =>
     {
         const resolver = new Resolver();
 
-        resolver.setUrlParameters('hello=world&lucky=23');
+        resolver.setDefaultSearchParams('hello=world&lucky=23');
 
         resolver.add('test', 'my-image.png?chicken=egg');
 
@@ -482,7 +482,7 @@ describe('Resolver', () =>
     {
         const resolver = new Resolver();
 
-        resolver.setUrlParameters('hello=world&lucky=23');
+        resolver.setDefaultSearchParams('hello=world&lucky=23');
 
         expect(resolver.resolveUrl('my-image.png')).toBe('my-image.png?hello=world&lucky=23');
     });

@@ -24,7 +24,7 @@ export interface AssetInitOptions
     basePath?: string;
 
     /** a default URL parameter string to append to all assets loaded */
-    defaultUrlParameters?: string | Record<string, any>;
+    defaultSearchParams?: string | Record<string, any>;
 
     /**
      * a manifest to tell the asset loader upfront what all your assets are
@@ -256,9 +256,9 @@ export class AssetsClass
 
         this._initialized = true;
 
-        if (options.defaultUrlParameters)
+        if (options.defaultSearchParams)
         {
-            this.resolver.setUrlParameters(options.defaultUrlParameters);
+            this.resolver.setDefaultSearchParams(options.defaultSearchParams);
         }
 
         if (options.basePath)

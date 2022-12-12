@@ -423,7 +423,7 @@ describe('Assets', () =>
     {
         await Assets.init({
             basePath,
-            defaultUrlParameters: {
+            defaultSearchParams: {
                 foo: 'bar',
                 chicken: 'nuggets',
             },

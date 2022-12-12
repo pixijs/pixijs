@@ -50,7 +50,7 @@ export class Resolver
     private _basePath: string;
     private _manifest: ResolverManifest;
     private _bundles: Record<string, string[]> = {};
-    private _defaultUrlParameters: string;
+    private _defaultSearchParams: string;
 
     /**
      * Let the resolver know which assets you prefer to use when resolving assets.
@@ -178,20 +178,20 @@ export class Resolver
     }
 
     /**
-     * Sets the default URL parameters for the URL resolver. The urls can be specified as a string or an object.
-     * @param urlParameters - the default url parameters to append when resolving urls
+     * Sets the default URL search parameters for the URL resolver. The urls can be specified as a string or an object.
+     * @param searchParams - the default url parameters to append when resolving urls
      */
-    public setUrlParameters(urlParameters: string | Record<string, unknown>): void
+    public setDefaultSearchParams(searchParams: string | Record<string, unknown>): void
     {
-        if (typeof urlParameters === 'string')
+        if (typeof searchParams === 'string')
         {
-            this._defaultUrlParameters = urlParameters;
+            this._defaultSearchParams = searchParams;
         }
         else
         {
-            const queryValues = urlParameters as Record<string, any>;
+            const queryValues = searchParams as Record<string, any>;
 
-            this._defaultUrlParameters = Object.keys(queryValues)
+            this._defaultSearchParams = Object.keys(queryValues)
                 .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(queryValues[key])}`)
                 .join('&');
         }
@@ -366,7 +366,7 @@ export class Resolver
                 formattedAsset.src = utils.path.toAbsolute(formattedAsset.src, this._basePath, this._rootPath);
             }
 
-            formattedAsset.src = this._appendDefaultUrlParameters(formattedAsset.src);
+            formattedAsset.src = this._appendDefaultSearchParams(formattedAsset.src);
 
             formattedAsset.data = formattedAsset.data ?? data;
 
@@ -534,7 +534,7 @@ export class Resolver
                     }
 
                     // make sure to append any default parameters
-                    src = this._appendDefaultUrlParameters(src);
+                    src = this._appendDefaultSearchParams(src);
 
                     // if the resolver fails we just pass back the key assuming its a url
                     this._resolverHash[key] = {
@@ -576,12 +576,12 @@ export class Resolver
      * @param url - The url to append the default parameters to
      * @returns - The url with the default parameters appended
      */
-    private _appendDefaultUrlParameters(url: string): string
+    private _appendDefaultSearchParams(url: string): string
     {
-        if (!this._defaultUrlParameters) return url;
+        if (!this._defaultSearchParams) return url;
 
         const paramConnector = (/\?/).test(url) ? '&' : '?';
 
-        return `${url}${paramConnector}${this._defaultUrlParameters}`;
+        return `${url}${paramConnector}${this._defaultSearchParams}`;
     }
 }
