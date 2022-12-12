@@ -22,6 +22,10 @@ export interface AssetInitOptions
     // basic...
     /** a base path for any assets loaded */
     basePath?: string;
+
+    /** a default URL parameter string to append to all assets loaded */
+    defaultUrlParameters?: string | Record<string, any>;
+
     /**
      * a manifest to tell the asset loader upfront what all your assets are
      * this can be the manifest object itself, or a URL to the manifest.
@@ -220,6 +224,8 @@ export class AssetsClass
 
     private _initialized = false;
 
+    private _defaultQueryString: string;
+
     constructor()
     {
         this.resolver = new Resolver();
@@ -251,6 +257,11 @@ export class AssetsClass
         }
 
         this._initialized = true;
+
+        if (options.defaultUrlParameters)
+        {
+            this.resolver.setUrlParameters(options.defaultUrlParameters);
+        }
 
         if (options.basePath)
         {
