@@ -419,7 +419,7 @@ describe('Assets', () =>
         expect(spy).not.toHaveBeenCalled();
     });
 
-    it.only('should append default url params when specified in the constructor', async () =>
+    it('should append default url params when specified in the constructor', async () =>
     {
         await Assets.init({
             basePath,
