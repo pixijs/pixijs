@@ -592,10 +592,17 @@ export class EventSystem
 
         this.transferMouseData(event, nativeEvent);
 
-        event.deltaMode = nativeEvent.deltaMode;
+        // When WheelEvent is triggered by scrolling with mouse wheel, reading WheelEvent.deltaMode
+        // before deltaX/deltaY/deltaZ will result in deltaMode === WheelEvent.DOM_DELTA_LINE (1)
+        // on Firefox, while reading deltaMode after deltaX/deltaY/deltaZ or reading in any order
+        // on other browsers will result in deltaMode === WheelEvent.DOM_DELTA_PIXEL (0).
+        // Therefore, we need to read deltaMode after deltaX/deltaY/deltaZ in order to make its
+        // behavior more consistent across browsers.
+        // @see https://github.com/pixijs/pixijs/issues/8970
         event.deltaX = nativeEvent.deltaX;
         event.deltaY = nativeEvent.deltaY;
         event.deltaZ = nativeEvent.deltaZ;
+        event.deltaMode = nativeEvent.deltaMode;
 
         this.mapPositionToPoint(event.screen, nativeEvent.clientX, nativeEvent.clientY);
         event.global.copyFrom(event.screen);
