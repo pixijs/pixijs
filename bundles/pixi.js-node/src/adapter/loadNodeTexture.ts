@@ -25,7 +25,7 @@ export const loadNodeTexture = {
 
     test(url: string): boolean
     {
-        return validImages.includes(utils.path.extname(url)) || isSupportedDataURL(url);
+        return validImages.includes(utils.path.extname(url).toLocaleLowerCase()) || isSupportedDataURL(url);
     },
 
     async load(url: string, asset: LoadAsset): Promise<Texture>

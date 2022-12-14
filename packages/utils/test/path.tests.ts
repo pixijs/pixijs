@@ -176,6 +176,7 @@ describe('Paths', () =>
 
     it('should get the extension of a path', () =>
     {
+        expect(path.extname('https://foo.com/bar/baz/file.TXT')).toBe('.TXT');
         expect(path.extname('https://foo.com/bar/baz/file.txt')).toBe('.txt');
         expect(path.extname('file:///foo/bar/baz/file.txt')).toBe('.txt');
         expect(path.extname('C:/foo/bar/baz/file.txt')).toBe('.txt');

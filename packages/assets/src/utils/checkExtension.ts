@@ -7,8 +7,8 @@ export function checkExtension(url: string, extension: string | string[]): boole
 
     if (Array.isArray(extension))
     {
-        return extension.includes(ext.toLowerCase());
+        return extension.includes(ext);
     }
 
-    return ext.toLowerCase() === extension;
+    return ext === extension;
 }
