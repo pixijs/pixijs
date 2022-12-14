@@ -9,8 +9,8 @@ Links to a running example of the problem are best!
 
 Before submitting please read:
 
-Contributors guide: https://github.com/pixijs/pixi.js/blob/dev/.github/CONTRIBUTING.md
-Code of Conduct: https://github.com/pixijs/pixi.js/blob/dev/.github/CODE_OF_CONDUCT.md
+Contributors guide: https://github.com/pixijs/pixijs/blob/dev/.github/CONTRIBUTING.md
+Code of Conduct: https://github.com/pixijs/pixijs/blob/dev/.github/CODE_OF_CONDUCT.md
 -->
 
 <!-- Bug Report (delete if not applicable) -->

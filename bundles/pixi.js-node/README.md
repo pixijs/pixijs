@@ -78,7 +78,7 @@ app.ticker.add(() => {
 
 // extract and save the stage
 app.renderer.render(app.stage);
-const base64Image = app.renderer.plugins.extract
+const base64Image = app.renderer.extract
     .canvas(app.stage)
     .toDataURL('image/png');
 

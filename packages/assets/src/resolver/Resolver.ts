@@ -5,6 +5,26 @@ import { isSingleItem } from '../utils/isSingleItem';
 
 import type { PreferOrder, ResolveAsset, ResolverBundle, ResolverManifest, ResolveURLParser } from './types';
 
+export interface BundleIdentifierOptions
+{
+    /** The character that is used to connect the bundleId and the assetId when generating a bundle asset id key */
+    connector?: string;
+    /**
+     * A function that generates a bundle asset id key from a bundleId and an assetId
+     * @param bundleId - the bundleId
+     * @param assetId  - the assetId
+     * @returns the bundle asset id key
+     */
+    createBundleAssetId?: (bundleId: string, assetId: string) => string;
+    /**
+     * A function that generates an assetId from a bundle asset id key. This is the reverse of generateBundleAssetId
+     * @param bundleId - the bundleId
+     * @param assetBundleId - the bundle asset id key
+     * @returns the assetId
+     */
+    extractAssetIdFromBundle?: (bundleId: string, assetBundleId: string) => string;
+}
+
 /**
  * A class that is responsible for resolving mapping asset URLs to keys.
  * At its most basic it can be used for Aliases:
@@ -41,6 +61,33 @@ import type { PreferOrder, ResolveAsset, ResolverBundle, ResolverManifest, Resol
  */
 export class Resolver
 {
+    /** The character that is used to connect the bundleId and the assetId when generating a bundle asset id key */
+    private _bundleIdConnector = '-';
+
+    /**
+     * A function that generates a bundle asset id key from a bundleId and an assetId
+     * @param bundleId - the bundleId
+     * @param assetId  - the assetId
+     * @returns the bundle asset id key
+     */
+    private _createBundleAssetId: (
+        bundleId: string,
+        assetId: string
+    ) => string = (bundleId, assetId) =>
+            `${bundleId}${this._bundleIdConnector}${assetId}`;
+
+    /**
+     * A function that generates an assetId from a bundle asset id key. This is the reverse of generateBundleAssetId
+     * @param bundleId - the bundleId
+     * @param assetBundleId - the bundle asset id key
+     * @returns the assetId
+     */
+    private _extractAssetIdFromBundle: (
+        bundleId: string,
+        assetBundleId: string
+    ) => string = (bundleId, assetBundleId) =>
+            assetBundleId.replace(`${bundleId}${this._bundleIdConnector}`, '');
+
     private _assetMap: Record<string, ResolveAsset[]> = {};
     private _preferredOrder: PreferOrder[] = [];
     private _parsers: ResolveURLParser[] = [];
@@ -51,6 +98,24 @@ export class Resolver
     private _manifest: ResolverManifest;
     private _bundles: Record<string, string[]> = {};
     private _defaultSearchParams: string;
+
+    /**
+     * Override how the resolver deals with generating bundle ids.
+     * must be called before any bundles are added
+     * @param bundleIdentifier - the bundle identifier options
+     */
+    public setBundleIdentifier(bundleIdentifier: BundleIdentifierOptions): void
+    {
+        this._bundleIdConnector = bundleIdentifier.connector ?? this._bundleIdConnector;
+        this._createBundleAssetId = bundleIdentifier.createBundleAssetId ?? this._createBundleAssetId;
+        // eslint-disable-next-line max-len
+        this._extractAssetIdFromBundle = bundleIdentifier.extractAssetIdFromBundle ?? this._extractAssetIdFromBundle;
+
+        if (this._extractAssetIdFromBundle('foo', this._createBundleAssetId('foo', 'bar')) !== 'bar')
+        {
+            throw new Error('[Resolver] GenerateBundleAssetId are not working correctly');
+        }
+    }
 
     /**
      * Let the resolver know which assets you prefer to use when resolving assets.
@@ -237,28 +302,40 @@ export class Resolver
     {
         const assetNames: string[] = [];
 
+        // when storing keys against a bundle we prepend the bundleId to each asset key
+        // and pass it through as an additional alias for the asset
+        // this keeps clashing ids separate on a per-bundle basis
+        // you can also resolve a file using the bundleId-assetId syntax
         if (Array.isArray(assets))
         {
             assets.forEach((asset) =>
             {
                 if (typeof asset.name === 'string')
                 {
-                    assetNames.push(asset.name);
+                    const bundleAssetId = this._createBundleAssetId(bundleId, asset.name);
+
+                    assetNames.push(bundleAssetId);
+                    this.add([asset.name, bundleAssetId], asset.srcs);
                 }
                 else
                 {
-                    assetNames.push(...asset.name);
-                }
+                    const bundleIds = asset.name.map((name) => this._createBundleAssetId(bundleId, name));
 
-                this.add(asset.name, asset.srcs);
+                    bundleIds.forEach((bundleId) =>
+                    {
+                        assetNames.push(bundleId);
+                    });
+
+                    this.add([...asset.name, ...bundleIds], asset.srcs);
+                }
             });
         }
         else
         {
             Object.keys(assets).forEach((key) =>
             {
-                assetNames.push(key);
-                this.add(key, assets[key]);
+                assetNames.push(this._createBundleAssetId(bundleId, key));
+                this.add([key, this._createBundleAssetId(bundleId, key)], assets[key]);
             });
         }
 
@@ -435,7 +512,18 @@ export class Resolver
 
             if (assetNames)
             {
-                out[bundleId] = this.resolve(assetNames) as Record<string, ResolveAsset>;
+                const results = this.resolve(assetNames) as Record<string, ResolveAsset>;
+
+                const assets: Record<string, ResolveAsset> = {};
+
+                for (const key in results)
+                {
+                    const asset = results[key];
+
+                    assets[this._extractAssetIdFromBundle(bundleId, key)] = asset;
+                }
+
+                out[bundleId] = assets;
             }
         });
 

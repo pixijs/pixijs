@@ -116,7 +116,7 @@ function findGraphics(item: IDisplayObjectExtended, queue: Array<any>): boolean
  * app.stage.addChild(rect);
  *
  * // Don't start rendering until the graphic is uploaded to the GPU
- * app.renderer.plugins.prepare.upload(app.stage, () => {
+ * app.renderer.prepare.upload(app.stage, () => {
  *     app.start();
  * });
  * @memberof PIXI
