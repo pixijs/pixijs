@@ -26,7 +26,7 @@
     "touch"
   ],
   "author": "Shukant Pal <shukant@pixijs.io>",
-  "homepage": "https://github.com/pixijs/pixi.js#readme",
+  "homepage": "https://github.com/pixijs/pixijs#readme",
   "license": "MIT",
   "files": [
     "lib",

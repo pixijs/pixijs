@@ -48,7 +48,7 @@ function uploadBaseTextures(prepare: IRenderer | BasePrepare, item: IDisplayObje
  * This cannot be done directly for Canvas like in WebGL, but the effect can be achieved by drawing
  * textures to an offline canvas. This draw call will force the texture to be moved onto the GPU.
  *
- * An instance of this class is automatically created by default, and can be found at `renderer.plugins.prepare`
+ * An instance of this class is automatically created by default, and can be found at `renderer.prepare`
  * @class
  * @extends PIXI.BasePrepare
  * @memberof PIXI
