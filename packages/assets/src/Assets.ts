@@ -498,9 +498,10 @@ export class AssetsClass
      * // Load another bundle...
      * gameScreenAssets = await Assets.loadBundle('game-screen');
      * @param bundleIds - the bundle id or ids to load
-     * @param onProgress - optional function that is called when progress on asset loading is made.
+     * @param onProgress - Optional function that is called when progress on asset loading is made.
      * The function is passed a single parameter, `progress`, which represents the percentage (0.0 - 1.0)
-     * of the assets loaded.
+     * of the assets loaded. Do not use this function to detect when assets are complete and available,
+     * instead use the Promise returned by this function.
      * @returns all the bundles assets or a hash of assets for each bundle specified
      */
     public async loadBundle(bundleIds: string | string[], onProgress?: ProgressCallback): Promise<any>
