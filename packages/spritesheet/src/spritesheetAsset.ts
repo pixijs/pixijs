@@ -95,7 +95,7 @@ export const spritesheetAsset = {
 
         async testParse(asset: SpriteSheetJson, options: LoadAsset): Promise<boolean>
         {
-            return (utils.path.extname(options.src).includes('.json') && !!asset.frames);
+            return (utils.path.extname(options.src).toLowerCase() === '.json' && !!asset.frames);
         },
 
         async parse(asset: SpriteSheetJson, options: LoadAsset, loader: Loader): Promise<Spritesheet>

@@ -17,7 +17,7 @@ export const loadSVG = {
 
     test(url: string): boolean
     {
-        return (utils.path.extname(url).includes('.svg'));
+        return (utils.path.extname(url).toLowerCase() === '.svg');
     },
 
     async testParse(data: string): Promise<boolean>

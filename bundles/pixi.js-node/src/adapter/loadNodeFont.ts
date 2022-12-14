@@ -16,7 +16,7 @@ export const loadNodeFont = {
 
     test(url: string): boolean
     {
-        return validFonts.includes(utils.path.extname(url));
+        return validFonts.includes(utils.path.extname(url).toLowerCase());
     },
 
     async load(url: string, options: LoadAsset<LoadFontData>): Promise<void>
