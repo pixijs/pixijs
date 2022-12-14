@@ -12,7 +12,7 @@ export const loadJson = {
 
     test(url: string): boolean
     {
-        return (utils.path.extname(url).includes('.json'));
+        return (utils.path.extname(url).toLowerCase() === '.json');
     },
 
     async load<T>(url: string): Promise<T>

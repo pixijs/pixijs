@@ -12,7 +12,7 @@ export const loadTxt = {
 
     test(url: string): boolean
     {
-        return (utils.path.extname(url).includes('.txt'));
+        return (utils.path.extname(url).toLowerCase() === '.txt');
     },
 
     async load(url: string): Promise<string>

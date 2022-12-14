@@ -18,7 +18,7 @@ export const loadBitmapFont = {
 
     test(url: string): boolean
     {
-        return validExtensions.includes(utils.path.extname(url));
+        return validExtensions.includes(utils.path.extname(url).toLowerCase());
     },
 
     async testParse(data: string): Promise<boolean>

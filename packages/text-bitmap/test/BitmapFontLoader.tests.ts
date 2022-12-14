@@ -201,6 +201,24 @@ describe('BitmapFontLoader', () =>
         expect(charE).toBeUndefined();
     });
 
+    it('should properly register bitmap font with url params', async () =>
+    {
+        const font = await loader.load<BitmapFont>(`${serverPath}font-text.fnt?version=1.0.0`);
+
+        expect(font).toBeObject();
+        expect(BitmapFont.available.fontText).toEqual(font);
+        expect(font).toHaveProperty('chars');
+        const charA = font.chars['A'.charCodeAt(0)];
+        const charATexture = charA.texture as Texture<ImageResource>;
+
+        expect(charA).toBeDefined();
+        expect(charATexture.baseTexture.resource.src).toEqual(`${serverPath}font.png`);
+        expect(charATexture.frame.x).toEqual(2);
+        expect(charATexture.frame.y).toEqual(2);
+        expect(charATexture.frame.width).toEqual(19);
+        expect(charATexture.frame.height).toEqual(20);
+    });
+
     it('should properly register SCALED bitmap font', async () =>
     {
         const font = await loader.load<BitmapFont>(`${serverPath}font@0.5x.fnt`);
