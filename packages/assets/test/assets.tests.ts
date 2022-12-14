@@ -418,4 +418,20 @@ describe('Assets', () =>
 
         expect(spy).not.toHaveBeenCalled();
     });
+
+    it('should append default url params when specified in the constructor', async () =>
+    {
+        await Assets.init({
+            basePath,
+            defaultSearchParams: {
+                foo: 'bar',
+                chicken: 'nuggets',
+            },
+        });
+
+        Assets.add('bunny', 'textures/bunny.png');
+        const bunnyTexture = await Assets.load('bunny');
+
+        expect(bunnyTexture.textureCacheIds[0]).toEqual(`${basePath}textures/bunny.png?foo=bar&chicken=nuggets`);
+    });
 });
