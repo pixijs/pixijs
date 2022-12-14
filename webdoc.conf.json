@@ -14,7 +14,7 @@
     "template": {
         "outputSourceFiles": true,
         "readme": "./README.md",
-        "repository": "https://github.com/pixijs/pixi.js/"
+        "repository": "https://github.com/pixijs/pixijs/"
     },
     "templates": {
         "cleverLinks"   : false,

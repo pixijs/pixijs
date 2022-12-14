@@ -24,7 +24,7 @@ const BYTES_PER_PIXEL = 4;
  *     .drawCircle(0, 0, 50);
  *
  * // Render the graphics as an HTMLImageElement
- * const image = app.renderer.plugins.extract.image(graphics);
+ * const image = app.renderer.plugins.image(graphics);
  * document.body.appendChild(image);
  * @memberof PIXI
  */

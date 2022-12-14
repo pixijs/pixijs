@@ -369,7 +369,7 @@ describe('Resolver', () =>
 
         expect(assets.level).toEqual({
             image3: {
-                alias: ['image3'],
+                alias: ['image3', 'level-image3'],
                 format: 'png',
                 resolution: 1,
                 src: 'chicken.png',
@@ -378,7 +378,7 @@ describe('Resolver', () =>
 
         expect(assets.default).toEqual({
             image1: {
-                alias: ['image1'],
+                alias: ['image1', 'default-image1'],
                 format: 'png',
                 resolution: 1,
                 src: 'my-sprite@2x.png',
@@ -386,18 +386,19 @@ describe('Resolver', () =>
             levelData: {
                 alias:  [
                     'levelData',
+                    'default-levelData',
                 ],
                 format: 'json',
                 src: 'levelData.json',
             },
             spriteSheet1: {
-                alias: ['spriteSheet1'],
+                alias: ['spriteSheet1', 'default-spriteSheet1'],
                 format: 'png',
                 resolution: 1,
                 src: 'my-sprite-sheet.json',
             },
             spriteSheet2: {
-                alias: ['spriteSheet2'],
+                alias: ['spriteSheet2', 'default-spriteSheet2'],
                 format: 'png',
                 resolution: 1,
                 src: 'my-sprite-sheet-2.json',
