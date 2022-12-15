@@ -1,11 +1,11 @@
 module.exports = {
     testPathIgnorePatterns: ['/node_modules/', '/src/', '/dist/', '/lib/'],
-    preset: 'ts-jest',
     setupFilesAfterEnv: [
         'jest-extended/all',
     ],
     transform: {
         '\\.(vert|frag)$': '<rootDir>/../../test/transform-raw-loader.js',
+        '^.+\\.ts$': ['ts-jest', { isolatedModules: true }],
     },
     moduleNameMapper: {
         '^@pixi/node$': '<rootDir>/src',

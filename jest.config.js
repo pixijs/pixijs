@@ -1,6 +1,5 @@
 module.exports = {
     testPathIgnorePatterns: ['/node_modules/', '/src/', '/dist/', '/lib/', '/out/', '/bundles/'],
-    preset: 'ts-jest',
     runner: '@kayahr/jest-electron-runner',
     testEnvironment: '@kayahr/jest-electron-runner/environment',
     setupFilesAfterEnv: [
@@ -9,8 +8,8 @@ module.exports = {
     globalSetup: '<rootDir>/test/jest-global-setup.ts',
     globalTeardown: '<rootDir>/test/jest-global-teardown.ts',
     transform: {
-        '\\.vert$': '<rootDir>/test/transform-raw-loader.js',
-        '\\.frag$': '<rootDir>/test/transform-raw-loader.js',
+        '\\.(vert|frag)$': '<rootDir>/test/transform-raw-loader.js',
+        '^.+\\.ts$': ['ts-jest', { isolatedModules: true }],
     },
     moduleNameMapper: {
         '^@pixi/(.*)$': '<rootDir>/packages/$1/src',
