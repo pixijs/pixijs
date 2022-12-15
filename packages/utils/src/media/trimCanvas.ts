@@ -1,5 +1,6 @@
-import type { ICanvas } from '@pixi/settings';
 import { measureCanvasContent } from '@pixi/utils';
+
+import type { ICanvas } from '@pixi/settings';
 
 /**
  * Trim transparent borders from a canvas

@@ -31,17 +31,17 @@ function checkColumn(data: Uint8ClampedArray, width: number, x: number, top: num
  */
 export function measureCanvasContent(canvas: ICanvas):
 {
-        size: {
-            width: number;
-            height: number;
-        }
-        bounds: {
-            top: number;
-            bottom: number;
-            left: number;
-            right: number;
-        }
+    size: {
+        width: number;
+        height: number;
     }
+    bounds: {
+        top: number;
+        bottom: number;
+        left: number;
+        right: number;
+    }
+}
 {
     // https://gist.github.com/timdown/021d9c8f2aabc7092df564996f5afbbf
 
