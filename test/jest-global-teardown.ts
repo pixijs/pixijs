@@ -3,7 +3,7 @@ import kill from 'tree-kill';
 import type { ChildProcess } from 'child_process';
 
 // eslint-disable-next-line func-names
-module.exports = async function ()
+export default async function ()
 {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
@@ -19,4 +19,4 @@ module.exports = async function ()
         kill(httpServerProcess.pid);
         await processClose;
     }
-};
+}

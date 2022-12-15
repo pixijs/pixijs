@@ -2,13 +2,13 @@ import { spawn } from 'child_process';
 import { join } from 'path';
 
 // eslint-disable-next-line func-names
-module.exports = async function ()
+export default async function ()
 {
     if (!process.env.GITHUB_ACTIONS)
     {
         const httpServerProcess = spawn(
             'http-server',
-            ['-c-1', `${join(process.cwd(), './packages')}`],
+            [`${join(process.cwd(), './packages')}`, '-p', '8080', '-c-1'],
             {
                 // See https://nodejs.org/api/child_process.html#spawning-bat-and-cmd-files-on-windows
                 shell: process.platform === 'win32',
@@ -34,4 +34,4 @@ module.exports = async function ()
             });
         });
     }
-};
+}

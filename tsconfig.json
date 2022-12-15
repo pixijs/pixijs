@@ -14,6 +14,7 @@
         "moduleResolution": "node",
         "resolveJsonModule": true,
         "downlevelIteration": true,
+        "esModuleInterop": true,
         "baseUrl": "./",
         "paths": {
             "@pixi/*": [
@@ -41,9 +42,6 @@
         "**/out/**"
     ],
     "ts-node": {
-        "files": true,
-        "compilerOptions": {
-            "esModuleInterop": true
-        }
+        "files": true
     }
 }
