@@ -103,6 +103,7 @@ export * from './data/uid';
 export * from './logging/deprecation';
 export * from './media/caches';
 export * from './media/CanvasRenderTarget';
+export * from './media/measureCanvasContent';
 export * from './media/trimCanvas';
 export * from './network/decomposeDataUri';
 export * from './network/determineCrossOrigin';
