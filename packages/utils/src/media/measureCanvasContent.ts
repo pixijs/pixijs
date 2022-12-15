@@ -23,25 +23,34 @@ function checkColumn(data: Uint8ClampedArray, width: number, x: number, top: num
 }
 
 /**
+ * Result when using `utils.measureCanvasContent` to determine
+ * the bounds of a canvas' visual content excluding transparency.
+ * @memberof PIXI.utils
+ */
+export interface CanvasContent
+{
+    /** Total width in pixels of the canvas */
+    width: number;
+    /** Total height in pixels of the canvas */
+    height: number;
+    /** Offset from the top, in pixels, where the canvas' content begins */
+    top: number;
+    /** Offset from the bottom, in pixels, where the canvas' content begins */
+    bottom: number;
+    /** Offset from the left, in pixels, where the canvas' content begins */
+    left: number;
+    /** Offset from the right, in pixels, where the canvas' content begins */
+    right: number;
+}
+
+/**
  * Measure canvas content (size/bounds of non-transparent pixels)
  * @memberof PIXI.utils
  * @function measureCanvasContent
  * @param {PIXI.ICanvas} canvas - the canvas to measure
  * @returns {object} Canvas measurement
  */
-export function measureCanvasContent(canvas: ICanvas):
-{
-    size: {
-        width: number;
-        height: number;
-    }
-    bounds: {
-        top: number;
-        bottom: number;
-        left: number;
-        right: number;
-    }
-}
+export function measureCanvasContent(canvas: ICanvas): CanvasContent
 {
     // https://gist.github.com/timdown/021d9c8f2aabc7092df564996f5afbbf
 
@@ -62,8 +71,8 @@ export function measureCanvasContent(canvas: ICanvas):
     if (top === height)
     {
         return {
-            size: { width: 0, height: 0 },
-            bounds: { top: 0, right: 0, bottom: 0, left: 0 }
+            width: 0, height: 0,
+            top: 0, right: 0, bottom: 0, left: 0
         };
     }
     while (checkRow(data, width, bottom)) --bottom;
@@ -74,7 +83,7 @@ export function measureCanvasContent(canvas: ICanvas):
     height = bottom - top + 1;
 
     return {
-        size: { width, height },
-        bounds: { top, bottom, left, right }
+        width, height,
+        top, bottom, left, right
     };
 }

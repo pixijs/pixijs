@@ -12,8 +12,8 @@ describe('measureCanvasContent', () =>
         const measurement = measureCanvasContent(canvas);
 
         expect(measurement).toEqual({
-            size: { width: 0, height: 0 },
-            bounds: { top: 0, bottom: 0, left: 0, right: 0 }
+            width: 0, height: 0,
+            top: 0, bottom: 0, left: 0, right: 0
         });
     });
 
@@ -34,8 +34,8 @@ describe('measureCanvasContent', () =>
         const measurement = measureCanvasContent(canvas);
 
         expect(measurement).toEqual({
-            size: { width: 15, height: 10 },
-            bounds: { top: 20, bottom: 29, left: 10, right: 24 }
+            width: 15, height: 10,
+            top: 20, bottom: 29, left: 10, right: 24
         });
     });
 });

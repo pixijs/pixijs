@@ -11,20 +11,24 @@ import type { ICanvas } from '@pixi/settings';
  */
 export function trimCanvas(canvas: ICanvas): { width: number; height: number; data?: ImageData }
 {
-    const { size, bounds } = measureCanvasContent(canvas);
+    const content = measureCanvasContent(canvas);
     let data = null;
 
-    if (size.height > 0)
+    if (content.height > 0)
     {
         const context = canvas.getContext('2d');
 
         data = context.getImageData(
-            bounds.left,
-            bounds.top,
-            size.width,
-            size.height
+            content.left,
+            content.top,
+            content.width,
+            content.height
         );
     }
 
-    return { ...size, data };
+    return {
+        width: content.width,
+        height: content.height,
+        data
+    };
 }
