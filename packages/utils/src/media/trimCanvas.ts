@@ -13,8 +13,10 @@ export function trimCanvas(canvas: ICanvas): { width: number; height: number; da
     const { size, bounds } = measureCanvasContent(canvas);
     let data = null;
 
-    if (size.height > 0) {
+    if (size.height > 0)
+    {
         const context = canvas.getContext('2d');
+
         data = context.getImageData(
             bounds.left,
             bounds.top,
@@ -23,5 +25,5 @@ export function trimCanvas(canvas: ICanvas): { width: number; height: number; da
         );
     }
 
-    return {...size, data};
+    return { ...size, data };
 }

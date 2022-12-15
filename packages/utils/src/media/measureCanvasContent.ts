@@ -31,17 +31,17 @@ function checkColumn(data: Uint8ClampedArray, width: number, x: number, top: num
  */
 export function measureCanvasContent(canvas: ICanvas):
 {
-    size: {
-        width: number;
-        height: number;
+        size: {
+            width: number;
+            height: number;
+        }
+        bounds: {
+            top: number;
+            bottom: number;
+            left: number;
+            right: number;
+        }
     }
-    bounds: {
-        top: number;
-        bottom: number;
-        left: number;
-        right: number;
-    }
-}
 {
     // https://gist.github.com/timdown/021d9c8f2aabc7092df564996f5afbbf
 
@@ -62,8 +62,8 @@ export function measureCanvasContent(canvas: ICanvas):
     if (top === height)
     {
         return {
-            size: {width: 0, height: 0},
-            bounds: {top: 0, right: 0, bottom: 0, left: 0}
+            size: { width: 0, height: 0 },
+            bounds: { top: 0, right: 0, bottom: 0, left: 0 }
         };
     }
     while (checkRow(data, width, bottom)) --bottom;
@@ -74,7 +74,7 @@ export function measureCanvasContent(canvas: ICanvas):
     height = bottom - top + 1;
 
     return {
-        size: {width, height},
-        bounds: {top, bottom, left, right}
+        size: { width, height },
+        bounds: { top, bottom, left, right }
     };
 }
