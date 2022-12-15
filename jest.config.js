@@ -15,7 +15,7 @@ module.exports = {
     moduleNameMapper: {
         '^@pixi/(.*)$': '<rootDir>/packages/$1/src',
     },
-    testMatch: ['**/?(*.)+(spec|tests).ts'],
+    testMatch: ['**/test/*.tests.ts'],
     collectCoverageFrom: [
         '<rootDir>/packages/**/*.ts',
         '!<rootDir>/packages/**/*.d.ts'

@@ -1,27 +1,17 @@
 module.exports = {
-    testPathIgnorePatterns: ['/node_modules/', '/src/', '/dist/', '/lib/', '/out/'],
-    preset: 'ts-jest/presets/js-with-ts',
+    testPathIgnorePatterns: ['/node_modules/', '/src/', '/dist/', '/lib/'],
+    preset: 'ts-jest',
     setupFilesAfterEnv: [
         'jest-extended/all',
     ],
     transform: {
-        '\\.vert$': 'jest-raw-loader',
-        '\\.frag$': 'jest-raw-loader',
+        '\\.(vert|frag)$': '<rootDir>/../../test/transform-raw-loader.js',
     },
     moduleNameMapper: {
         '^@pixi/node$': '<rootDir>/src',
         '^@pixi/(.*)$': '<rootDir>/../../packages/$1/src',
     },
-    testMatch: ['**/?(*.)+(spec|tests).[tj]s?(x)'],
-    globals: {
-        'ts-jest': {
-            tsconfig: {
-                module: 'ESNext',
-                esModuleInterop: true,
-            },
-            diagnostics: false,
-        },
-    },
+    testMatch: ['<rootDir>/test/*.tests.ts'],
     collectCoverageFrom: [
         '<rootDir>/**/*.ts',
     ],
