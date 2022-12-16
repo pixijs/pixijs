@@ -20,7 +20,7 @@ describe('getCanvasBoundingBox', () =>
         expect(boundingBox.isEmpty()).toEqual(true);
     });
 
-    it('should measure non-empty canvas', () =>
+    it('should get bounding box with non-empty canvas', () =>
     {
         const canvas = document.createElement('canvas');
 
