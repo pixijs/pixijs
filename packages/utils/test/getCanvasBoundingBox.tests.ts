@@ -2,7 +2,7 @@ import { getCanvasBoundingBox } from '@pixi/utils';
 
 describe('getCanvasBoundingBox', () =>
 {
-    it('should measure empty canvas', () =>
+    it('should get empty bounding box with empty canvas', () =>
     {
         const canvas = document.createElement('canvas');
 
