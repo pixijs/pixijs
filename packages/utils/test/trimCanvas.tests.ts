@@ -19,12 +19,13 @@ describe('trimCanvas', () =>
     it('should trim the canvas', () =>
     {
         const canvas = document.createElement('canvas');
-        const context = canvas.getContext('2d');
 
         canvas.width = 100;
         canvas.height = 50;
 
-        if (context === null) fail('Failed to create context');
+        const context = canvas.getContext('2d');
+
+        if (context === null) fail('Failed to get canvas 2D context');
 
         context.fillStyle = '#ff0000';
         context.fillRect(10, 20, 10, 5);
