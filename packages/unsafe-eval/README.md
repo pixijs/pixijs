@@ -22,3 +22,18 @@ import '@pixi/unsafe-eval';
 const renderer = new Renderer();
 ```
 
+## CDN Install
+
+Via jsDelivr:
+
+```html
+<!-- This script tag should be placed after pixi.min.js -->
+<script src="https://cdn.jsdelivr.net/npm/@pixi/unsafe-eval@7.x/dist/unsafe-eval.min.js"></script>
+```
+
+Or via unpkg:
+
+```html
+<!-- This script tag should be placed after pixi.min.js -->
+<script src="https://unpkg.com/@pixi/unsafe-eval@7.x/dist/unsafe-eval.min.js"></script>
+```

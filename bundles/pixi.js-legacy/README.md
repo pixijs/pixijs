@@ -28,11 +28,27 @@ PixiJS can be installed with [npm](https://docs.npmjs.com/getting-started/what-i
 ```
 npm install pixi.js-legacy
 ```
+
 There is no default export. The correct way to import PixiJS is:
 
 ```js
-import * as PIXI from 'pixi.js-legacy'
+import * as PIXI from 'pixi.js-legacy';
 ```
+
+#### CDN Install
+
+Via jsDelivr:
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/pixi.js-legacy@7.x/dist/pixi-legacy.min.js"></script>
+```
+
+Or via unpkg:
+
+```html
+<script src="https://unpkg.com/pixi.js-legacy@7.x/dist/pixi-legacy.min.js"></script>
+```
+
 ### Basic Usage Example
 
 ```js
