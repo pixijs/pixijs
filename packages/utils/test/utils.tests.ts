@@ -285,4 +285,89 @@ describe('utils', () =>
             expect(utils.earcut).toBeInstanceOf(Function);
         });
     });
+
+    describe('color2rgba', () =>
+    {
+        it.concurrent('should throw error for invalid color values', async () =>
+        {
+            const invalidColorValues = [-1, '', undefined, null, false, true, {}, { foo: 'bar' }];
+
+            invalidColorValues.forEach((value) =>
+            {
+                expect(() =>
+                {
+                    // eslint-disable-next-line
+                    // @ts-ignore
+                    utils.color2rgba(value);
+                }).toThrow();
+            });
+        });
+
+        it.concurrent('should convert color values to rgba', async () =>
+        {
+            const transparent = [0, 0, 0, 0];
+            const red = [1, 0, 0, 1];
+            const semiRed = [1, 0, 0, 0.5];
+
+            // [value, expectedRgba]
+            const testCases = [
+                // Float32Array
+                [new Float32Array([255, 0, 0, 0.5]), semiRed],
+                [new Float32Array([255, 0, 0]), red],
+
+                // names
+                ['transparent', transparent],
+                ['red', red],
+
+                // hex
+                ['F00', red],
+                ['f00', red],
+                ['#f00', red],
+                ['ff0000', red],
+                ['#ff0000', red],
+                ['#ff0000', red],
+                ['ff000080', semiRed],
+                ['#ff000080', semiRed],
+
+                // numbers
+                [0xff0000, red],
+                [0xff000080, [1, 0, 0, 0.5019607843137255]],
+                [0xff0000ff, red],
+                [0, [0, 0, 0, 1]],
+
+                // rgb
+                [[255, 0, 0], red],
+                [[255, 0, 0, 0.5], semiRed],
+                [{ r: 255, g: 0, b: 0 }, red],
+                [{ r: 255, g: 0, b: 0, a: 0.5 }, semiRed],
+                ['rgb(255, 0, 0)', red],
+                ['rgba(255, 0, 0, 0.5)', semiRed],
+                ['rgba(255, 0, 0, 50%)', semiRed],
+                ['rgba(100% 0% 0% / 50%)', semiRed],
+
+                // hsl
+                [{ h: 0, s: 100, l: 50 }, red],
+                [{ h: 0, s: 100, l: 50, a: 0.5 }, semiRed],
+                ['hsl(0, 100%, 50%)', red],
+                ['hsla(0, 100%, 50%, 0.5)', semiRed],
+
+                // hsv
+                [{ h: 0, s: 100, v: 100 }, red],
+                [{ h: 0, s: 100, v: 100, a: 0.5 }, semiRed],
+
+                // cmyk
+                [{ c: 0, m: 100, y: 100, k: 0 }, red],
+                [{ c: 0, m: 100, y: 100, k: 0, a: 0.5 }, semiRed],
+                ['device-cmyk(0% 100% 100% 0%)', red],
+                ['device-cmyk(0% 100% 100% 0% / 0.5)', semiRed],
+            ];
+
+            testCases.forEach((tc) =>
+            {
+                const [value, expectedRgba] = tc;
+
+                expect(utils.color2rgba(value)).toEqual(expectedRgba);
+            });
+        });
+    });
 });

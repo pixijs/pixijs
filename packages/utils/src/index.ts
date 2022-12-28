@@ -90,6 +90,7 @@ export * from './path';
 // Other exports
 export * from './browser/hello';
 export * from './browser/isWebGLSupported';
+export * from './color/color';
 export * from './color/hex';
 export * from './color/premultiply';
 export * from './const';
