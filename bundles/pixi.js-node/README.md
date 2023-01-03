@@ -100,6 +100,9 @@ writeFileSync(output, base64Data, 'base64');
 ```
 
 ## Full environment setup with Docker 🐳
+
+*NOTE: It is recommended to add `node_modules` to your `.dockerignore` file.*
+
 ```Dockerfile
 # Set the base image
 FROM node:16
