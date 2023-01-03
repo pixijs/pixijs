@@ -22,7 +22,7 @@ There is no default export. The correct way to import PixiJS is:
 import * as PIXI from "@pixi/node";
 ```
 
-#### Error installing gl package
+### Error installing gl package
 
 In most cases installing `gl` from npm should just work. However, if you run into problems you might need to adjust your system configuration and make sure all your dependencies are up to date
 
