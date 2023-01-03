@@ -99,6 +99,31 @@ const output = `./test.png`;
 writeFileSync(output, base64Data, 'base64');
 ```
 
+## Full environment setup with Docker 🐳
+```Dockerfile
+# Set the base image
+FROM node:16
+
+# Create and set the working directory
+WORKDIR /usr/src/app
+
+# Add dependencies for gl, canvas and xvfb
+# Important! These dependencies must be installed before running `npm install`
+RUN apt-get update
+RUN apt-get install -y build-essential libxi-dev libglu1-mesa-dev libglew-dev pkg-config libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev xvfb
+
+# Install app dependencies
+COPY package*.json ./
+RUN npm install
+
+# Bundle app source
+COPY . .
+
+# Start the server
+EXPOSE 3000
+CMD [ "xvfb", "node", "./src/index.js" ]
+```
+
 ### License
 
 This content is released under the (http://opensource.org/licenses/MIT) MIT License.
