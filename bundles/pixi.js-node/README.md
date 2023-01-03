@@ -39,6 +39,17 @@ To build from source you will need to make sure you have the following dependenc
 
 For non-mac users, please refer to the [canvas installation guide](https://www.npmjs.com/package/canvas#compiling) for more information.
 
+### Error unable to auto-detect a suitable renderer
+When running in a headless environment (e.g. server or continuous integration), use `xvfb` as a virtual frame buffer.
+Install with:
+```
+sudo apt-get xvfb
+```
+And then use with node when starting the program:
+```
+xvfb-run node ./src/index.js
+```
+
 ## Basic Usage Example
 
 ```js
