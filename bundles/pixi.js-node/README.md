@@ -121,7 +121,7 @@ COPY . .
 
 # Start the server
 EXPOSE 3000
-CMD [ "xvfb", "node", "./src/index.js" ]
+CMD xvfb-run node ./src/index.js
 ```
 
 ### License
