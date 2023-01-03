@@ -43,7 +43,7 @@ For non-mac users, please refer to the [canvas installation guide](https://www.n
 When running in a headless environment (e.g. server or continuous integration), use `xvfb` as a virtual frame buffer.
 Install with:
 ```
-sudo apt-get xvfb
+sudo apt-get install xvfb
 ```
 And then use with node when starting the program:
 ```
