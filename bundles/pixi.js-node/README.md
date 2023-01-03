@@ -109,8 +109,9 @@ WORKDIR /usr/src/app
 
 # Add dependencies for gl, canvas and xvfb
 # Important! These dependencies must be installed before running `npm install`
-RUN apt-get update
-RUN apt-get install -y build-essential libxi-dev libglu1-mesa-dev libglew-dev pkg-config libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev xvfb
+RUN apt-get update \
+    && apt-get install -y build-essential libcairo2-dev libgif-dev libglew-dev libglu1-mesa-dev libjpeg-dev libpango1.0-dev librsvg2-dev libxi-dev pkg-config xvfb \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install app dependencies
 COPY package*.json ./
