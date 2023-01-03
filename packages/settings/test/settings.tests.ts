@@ -17,14 +17,4 @@ describe('settings', () =>
     {
         expect(settings.RENDER_OPTIONS).toBeObject();
     });
-
-    it('should have PRECISION_VERTEX', () =>
-    {
-        expect(settings.PRECISION_VERTEX).toBeString();
-    });
-
-    it('should have PRECISION_FRAGMENT', () =>
-    {
-        expect(settings.PRECISION_FRAGMENT).toBeString();
-    });
 });

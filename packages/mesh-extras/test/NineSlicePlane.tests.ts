@@ -1,5 +1,5 @@
-import { NineSlicePlane } from '@pixi/mesh-extras';
 import { Texture } from '@pixi/core';
+import { NineSlicePlane } from '@pixi/mesh-extras';
 
 describe('NineSlicePlane', () =>
 {

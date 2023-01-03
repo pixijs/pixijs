@@ -1,4 +1,4 @@
-import { Filter, defaultVertex } from '@pixi/core';
+import { defaultVertex, Filter } from '@pixi/core';
 import fragment from './alpha.frag';
 
 /**

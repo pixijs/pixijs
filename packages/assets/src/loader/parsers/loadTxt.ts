@@ -1,4 +1,4 @@
-import { settings, utils, extensions, ExtensionType } from '@pixi/core';
+import { extensions, ExtensionType, settings, utils } from '@pixi/core';
 import { LoaderParserPriority } from './LoaderParser';
 
 import type { LoaderParser } from './LoaderParser';
@@ -12,7 +12,7 @@ export const loadTxt = {
 
     test(url: string): boolean
     {
-        return (utils.path.extname(url).includes('.txt'));
+        return (utils.path.extname(url).toLowerCase() === '.txt');
     },
 
     async load(url: string): Promise<string>

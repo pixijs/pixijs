@@ -18,4 +18,4 @@ import $defaultFilterVertex from './defaultFilter.vert';
 const defaultVertex: string = $defaultVertex;
 const defaultFilterVertex: string = $defaultFilterVertex;
 
-export { defaultVertex, defaultFilterVertex };
+export { defaultFilterVertex, defaultVertex };

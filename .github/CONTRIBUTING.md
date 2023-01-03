@@ -93,9 +93,9 @@ eslint, rebuild, then run the test suite.
 [issues]: https://github.com/pixijs/pixijs/issues
 [jsbin]: http://jsbin.com/
 [node]: http://nodejs.org
-[pixi]: https://github.com/pixijs/pixi.js
+[pixi]: https://github.com/pixijs/pixijs
 [tutorials]: http://www.pixijs.com/tutorials
-[wiki]: https://github.com/pixijs/pixi.js/wiki
+[wiki]: https://github.com/pixijs/pixijs/wiki
 
 ## Contributor Code of Conduct
 

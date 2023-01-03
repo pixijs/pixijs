@@ -1,32 +1,34 @@
 import {
-    SystemManager,
     extensions,
     ExtensionType,
     settings,
-    utils
+    SystemManager,
+    utils,
 } from '@pixi/core';
 
 import type {
+    BackgroundSystem,
     BLEND_MODES,
-    RENDERER_TYPE,
-    Matrix,
-    Rectangle,
+    ExtensionMetadata,
+    GenerateTextureSystem,
+    ICanvas,
+    ICanvasRenderingContext2D,
+    IGenerateTextureOptions,
+    IRenderableObject,
+    IRenderer,
     IRendererOptions,
     IRendererPlugins,
     IRendererRenderOptions,
-    RenderTexture,
-    IRenderableObject,
-    GenerateTextureSystem,
-    IRenderer,
-    BackgroundSystem,
-    ViewSystem,
+    Matrix,
     PluginSystem,
-    StartupSystem,
+    Rectangle,
+    RENDERER_TYPE,
+    RenderTexture,
     StartupOptions,
-    ExtensionMetadata,
-    IGenerateTextureOptions } from '@pixi/core';
+    StartupSystem,
+    ViewSystem,
+} from '@pixi/core';
 import type { DisplayObject } from '@pixi/display';
-import type { ICanvas, ICanvasRenderingContext2D } from '@pixi/settings';
 import type { CanvasContextSystem, SmoothingEnabledProperties } from './CanvasContextSystem';
 import type { CanvasMaskSystem } from './CanvasMaskSystem';
 import type { CanvasObjectRendererSystem } from './CanvasObjectRendererSystem';
@@ -234,6 +236,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
                 width: options.width,
                 autoDensity: options.autoDensity,
                 resolution: options.resolution,
+                view: options.view,
             }
         };
 

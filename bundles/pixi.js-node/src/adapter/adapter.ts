@@ -1,8 +1,10 @@
+import canvasModule from 'canvas';
 import { fetch, Request, Response } from 'cross-fetch';
 import fs from 'fs';
 import { WebGLRenderingContext } from 'gl';
 import { settings, utils } from '@pixi/core';
 import { NodeCanvasElement } from './NodeCanvasElement';
+import { DOMParser } from '@xmldom/xmldom';
 
 import type { IAdapter } from '@pixi/core';
 
@@ -14,7 +16,8 @@ export const NodeAdapter = {
      * @param height - height of the canvas
      */
     createCanvas: (width?: number, height?: number) => new NodeCanvasElement(width, height),
-    /** Returns a webgl rendering context using the gl package. */
+    getCanvasRenderingContext2D: () => canvasModule.CanvasRenderingContext2D,
+    /** Returns a WebGL rendering context using the gl package. */
     getWebGLRenderingContext: () => WebGLRenderingContext,
     /** Returns the fake user agent string of `node` */
     getNavigator: () => ({ userAgent: 'node' }),
@@ -52,6 +55,12 @@ export const NodeAdapter = {
                 } as ResponseInit));
             });
         });
+    },
+    parseXML: (xml: string) =>
+    {
+        const parser = new DOMParser();
+
+        return parser.parseFromString(xml, 'text/xml');
     },
 } as IAdapter;
 

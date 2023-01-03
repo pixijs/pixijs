@@ -1,7 +1,7 @@
 import { MASK_TYPES, Matrix, utils } from '@pixi/core';
 import { DisplayObject } from './DisplayObject';
 
-import type { MaskData, Renderer, Rectangle } from '@pixi/core';
+import type { MaskData, Rectangle, Renderer } from '@pixi/core';
 import type { IDestroyOptions } from './DisplayObject';
 
 const tempMatrix = new Matrix();

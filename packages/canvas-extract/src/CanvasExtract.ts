@@ -1,16 +1,15 @@
-import { Rectangle, extensions, ExtensionType, RenderTexture, utils } from '@pixi/core';
+import { extensions, ExtensionType, Rectangle, RenderTexture, utils } from '@pixi/core';
 
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
-import type { BaseRenderTexture, ExtensionMetadata, ISystem } from '@pixi/core';
+import type { BaseRenderTexture, ExtensionMetadata, ICanvas, ISystem } from '@pixi/core';
 import type { DisplayObject } from '@pixi/display';
-import type { ICanvas } from '@pixi/settings';
 
 const TEMP_RECT = new Rectangle();
 
 /**
  * The extract manager provides functionality to export content from the renderers.
  *
- * An instance of this class is automatically created by default, and can be found at `renderer.plugins.extract`
+ * An instance of this class is automatically created by default, and can be found at `renderer.extract`
  * @class
  * @memberof PIXI
  */

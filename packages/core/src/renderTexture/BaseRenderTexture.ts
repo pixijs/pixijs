@@ -1,9 +1,9 @@
-import { BaseTexture } from '../textures/BaseTexture';
-import { Framebuffer } from '../framebuffer/Framebuffer';
 import { MIPMAP_MODES, MSAA_QUALITY } from '@pixi/constants';
+import { Framebuffer } from '../framebuffer/Framebuffer';
+import { BaseTexture } from '../textures/BaseTexture';
 
-import type { IBaseTextureOptions } from '../textures/BaseTexture';
 import type { MaskData } from '../mask/MaskData';
+import type { IBaseTextureOptions } from '../textures/BaseTexture';
 
 export interface BaseRenderTexture extends GlobalMixins.BaseRenderTexture, BaseTexture {}
 

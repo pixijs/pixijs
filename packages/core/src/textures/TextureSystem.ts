@@ -1,16 +1,15 @@
-import { mapTypeAndFormatToInternalFormat } from './utils/mapTypeAndFormatToInternalFormat';
+import { MIPMAP_MODES, SAMPLER_TYPES, SCALE_MODES, TYPES, WRAP_MODES } from '@pixi/constants';
+import { extensions, ExtensionType } from '@pixi/extensions';
+import { removeItems } from '@pixi/utils';
 import { BaseTexture } from './BaseTexture';
 import { GLTexture } from './GLTexture';
-import { removeItems } from '@pixi/utils';
-import { MIPMAP_MODES, WRAP_MODES, SCALE_MODES, TYPES, SAMPLER_TYPES } from '@pixi/constants';
+import { mapTypeAndFormatToInternalFormat } from './utils/mapTypeAndFormatToInternalFormat';
 
+import type { ExtensionMetadata } from '@pixi/extensions';
+import type { IRenderingContext } from '../IRenderer';
+import type { Renderer } from '../Renderer';
 import type { ISystem } from '../system/ISystem';
 import type { Texture } from './Texture';
-
-import type { Renderer } from '../Renderer';
-import type { IRenderingContext } from '../IRenderer';
-import type { ExtensionMetadata } from '@pixi/extensions';
-import { extensions, ExtensionType } from '@pixi/extensions';
 
 /**
  * System plugin to the renderer to manage textures.

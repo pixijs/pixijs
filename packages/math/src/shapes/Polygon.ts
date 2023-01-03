@@ -1,4 +1,5 @@
 import { SHAPES } from '../const';
+
 import type { IPointData } from '../IPointData';
 
 /**

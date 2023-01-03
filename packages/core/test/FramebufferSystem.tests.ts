@@ -1,5 +1,5 @@
-import { Renderer, Framebuffer } from '@pixi/core';
 import { MSAA_QUALITY } from '@pixi/constants';
+import { Framebuffer, Renderer } from '@pixi/core';
 import { Rectangle } from '@pixi/math';
 
 describe('FramebufferSystem', () =>

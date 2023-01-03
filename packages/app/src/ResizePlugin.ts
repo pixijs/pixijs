@@ -1,5 +1,6 @@
-import type { ExtensionMetadata, Renderer } from '@pixi/core';
 import { extensions, ExtensionType } from '@pixi/core';
+
+import type { ExtensionMetadata, Renderer } from '@pixi/core';
 import type { IApplicationOptions } from './Application';
 
 type ResizeableRenderer = Pick<Renderer, 'resize'>;

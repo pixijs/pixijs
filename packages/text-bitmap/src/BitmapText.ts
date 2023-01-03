@@ -1,14 +1,15 @@
+import { BLEND_MODES, ObservablePoint, Point, Program, settings, Texture, utils } from '@pixi/core';
+import { Container } from '@pixi/display';
 import { Mesh, MeshGeometry, MeshMaterial } from '@pixi/mesh';
 import { BitmapFont } from './BitmapFont';
-import { splitTextToCharacters, extractCharCode } from './utils';
 import msdfFrag from './shader/msdf.frag';
 import msdfVert from './shader/msdf.vert';
-import type { Renderer, Rectangle } from '@pixi/core';
-import { Program, Texture, BLEND_MODES, settings, utils, ObservablePoint, Point } from '@pixi/core';
-import type { IBitmapTextStyle } from './BitmapTextStyle';
-import type { TextStyleAlign } from '@pixi/text';
-import { Container } from '@pixi/display';
+import { extractCharCode, splitTextToCharacters } from './utils';
+
+import type { Rectangle, Renderer } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
+import type { TextStyleAlign } from '@pixi/text';
+import type { IBitmapTextStyle } from './BitmapTextStyle';
 
 interface PageMeshData
 {
@@ -630,7 +631,7 @@ export class BitmapText extends Container
 
             const fontScale = this.fontSize / size;
 
-            const resolution =  renderer._view.resolution;
+            const resolution = renderer._view.resolution;
 
             for (const mesh of this._activePagesMeshData)
             {

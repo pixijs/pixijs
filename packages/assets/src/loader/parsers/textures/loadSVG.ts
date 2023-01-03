@@ -1,4 +1,4 @@
-import { settings, utils, BaseTexture, ExtensionType, SVGResource } from '@pixi/core';
+import { BaseTexture, ExtensionType, settings, SVGResource, utils } from '@pixi/core';
 import { LoaderParserPriority } from '../LoaderParser';
 import { loadTextures } from './loadTextures';
 import { createTexture } from './utils/createTexture';
@@ -17,7 +17,7 @@ export const loadSVG = {
 
     test(url: string): boolean
     {
-        return (utils.path.extname(url).includes('.svg'));
+        return (utils.path.extname(url).toLowerCase() === '.svg');
     },
 
     async testParse(data: string): Promise<boolean>

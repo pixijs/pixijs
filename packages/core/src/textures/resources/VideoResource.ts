@@ -1,5 +1,5 @@
-import { BaseImageResource } from './BaseImageResource';
 import { Ticker } from '@pixi/ticker';
+import { BaseImageResource } from './BaseImageResource';
 
 import type { Dict } from '@pixi/utils';
 

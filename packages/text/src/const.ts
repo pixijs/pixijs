@@ -1,7 +1,6 @@
 /**
  * Constants that define the type of gradient on text.
  * @static
- * @constant
  * @name TEXT_GRADIENT
  * @memberof PIXI
  * @type {object}

@@ -1,5 +1,5 @@
 import { Container } from '@pixi/display';
-import { FederatedPointerEvent, EventBoundary } from '@pixi/events';
+import { EventBoundary, FederatedPointerEvent } from '@pixi/events';
 import { Graphics } from '@pixi/graphics';
 
 describe('EventBoundary', () =>

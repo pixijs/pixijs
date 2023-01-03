@@ -1,5 +1,5 @@
-import { FederatedEvent } from './FederatedEvent';
 import { Point } from '@pixi/core';
+import { FederatedEvent } from './FederatedEvent';
 
 /**
  * A {@link PIXI.FederatedEvent} for mouse events.

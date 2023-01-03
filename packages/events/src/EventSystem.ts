@@ -1,12 +1,11 @@
+import { extensions, ExtensionType } from '@pixi/core';
 import { EventBoundary } from './EventBoundary';
-import type { FederatedMouseEvent } from './FederatedMouseEvent';
 import { FederatedPointerEvent } from './FederatedPointerEvent';
 import { FederatedWheelEvent } from './FederatedWheelEvent';
-import { extensions, ExtensionType } from '@pixi/core';
 
-import type { IRenderableObject, ExtensionMetadata, IPointData } from '@pixi/core';
+import type { ExtensionMetadata, ICanvas, IPointData, IRenderableObject } from '@pixi/core';
 import type { DisplayObject } from '@pixi/display';
-import type { ICanvas } from '@pixi/settings';
+import type { FederatedMouseEvent } from './FederatedMouseEvent';
 
 const MOUSE_POINTER_ID = 1;
 const TOUCH_TO_POINTER: Record<string, string> = {
@@ -593,10 +592,17 @@ export class EventSystem
 
         this.transferMouseData(event, nativeEvent);
 
-        event.deltaMode = nativeEvent.deltaMode;
+        // When WheelEvent is triggered by scrolling with mouse wheel, reading WheelEvent.deltaMode
+        // before deltaX/deltaY/deltaZ on Firefox will result in WheelEvent.DOM_DELTA_LINE (1),
+        // while reading WheelEvent.deltaMode after deltaX/deltaY/deltaZ on Firefox or reading
+        // in any order on other browsers will result in WheelEvent.DOM_DELTA_PIXEL (0).
+        // Therefore, we need to read WheelEvent.deltaMode after deltaX/deltaY/deltaZ in order to
+        // make its behavior more consistent across browsers.
+        // @see https://github.com/pixijs/pixijs/issues/8970
         event.deltaX = nativeEvent.deltaX;
         event.deltaY = nativeEvent.deltaY;
         event.deltaZ = nativeEvent.deltaZ;
+        event.deltaMode = nativeEvent.deltaMode;
 
         this.mapPositionToPoint(event.screen, nativeEvent.clientX, nativeEvent.clientY);
         event.global.copyFrom(event.screen);

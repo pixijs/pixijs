@@ -1,7 +1,6 @@
 import { Cache, loadJson, loadTextures } from '@pixi/assets';
-import { Texture } from '@pixi/core';
+import { Texture, utils } from '@pixi/core';
 import { Spritesheet, spritesheetAsset, spritesheetAssetCache } from '@pixi/spritesheet';
-import { clearTextureCache } from '@pixi/utils';
 import { Loader } from '../../assets/src/loader/Loader';
 
 import type { CacheParser } from '@pixi/assets';
@@ -17,7 +16,7 @@ describe('spritesheetAsset', () =>
     {
         Cache.reset();
         loader.reset();
-        clearTextureCache();
+        utils.clearTextureCache();
         spritesheetAssetCache.reset();
     });
 

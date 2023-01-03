@@ -1,8 +1,8 @@
+import { Runner } from '@pixi/runner';
 import { Program } from './Program';
 import { UniformGroup } from './UniformGroup';
 
 import type { Dict } from '@pixi/utils';
-import { Runner } from '@pixi/runner';
 
 /**
  * A helper class for shaders.

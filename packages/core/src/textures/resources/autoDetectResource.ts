@@ -1,8 +1,7 @@
-import type { Resource } from './Resource';
-
-import type { IImageResourceOptions } from './ImageResource';
 import type { ISize } from '@pixi/math';
 import type { ICubeResourceOptions } from './CubeResource';
+import type { IImageResourceOptions } from './ImageResource';
+import type { Resource } from './Resource';
 import type { ISVGResourceOptions } from './SVGResource';
 import type { IVideoResourceOptions } from './VideoResource';
 

@@ -1,4 +1,4 @@
-import { Matrix, utils, Program, Shader, TextureMatrix } from '@pixi/core';
+import { Matrix, Program, Shader, TextureMatrix, utils } from '@pixi/core';
 import fragment from './shader/mesh.frag';
 import vertex from './shader/mesh.vert';
 

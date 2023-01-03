@@ -1,9 +1,8 @@
 import { autoDetectRenderer, extensions, ExtensionType } from '@pixi/core';
 import { Container } from '@pixi/display';
 
-import type { Rectangle, IRendererOptionsAuto, IRenderer } from '@pixi/core';
+import type { ICanvas, IRenderer, IRendererOptionsAuto, Rectangle } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
-import type { ICanvas } from '@pixi/settings';
 
 /**
  * Any plugin that's usable for Application should contain these methods.

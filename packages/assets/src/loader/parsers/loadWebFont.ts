@@ -1,13 +1,22 @@
 import { extensions, ExtensionType, settings, utils } from '@pixi/core';
+import { checkDataUrl } from '../../utils/checkDataUrl';
+import { checkExtension } from '../../utils/checkExtension';
 import { LoaderParserPriority } from './LoaderParser';
 
 import type { LoadAsset } from '../types';
 import type { LoaderParser } from './LoaderParser';
 
-const validWeights = ['normal', 'bold',
+const validWeights = [
+    'normal', 'bold',
     '100', '200', '300', '400', '500', '600', '700', '800', '900',
 ];
-const validFonts = ['woff', 'woff2', 'ttf', 'otf'];
+const validFontExtensions = ['.ttf', '.otf', '.woff', '.woff2'];
+const validFontMIMEs = [
+    'font/ttf',
+    'font/otf',
+    'font/woff',
+    'font/woff2',
+];
 
 export type LoadFontData = {
     family: string;
@@ -51,10 +60,7 @@ export const loadWebFont = {
 
     test(url: string): boolean
     {
-        const tempURL = url.split('?')[0];
-        const extension = tempURL.split('.').pop();
-
-        return validFonts.includes(extension);
+        return checkDataUrl(url, validFontMIMEs) || checkExtension(url, validFontExtensions);
     },
 
     async load(url: string, options?: LoadAsset<LoadFontData>): Promise<FontFace | FontFace[]>
@@ -78,7 +84,7 @@ export const loadWebFont = {
             {
                 const weight = weights[i];
 
-                const font = new FontFace(name, `url(${url})`, {
+                const font = new FontFace(name, `url(${encodeURI(url)})`, {
                     ...data,
                     weight,
                 });

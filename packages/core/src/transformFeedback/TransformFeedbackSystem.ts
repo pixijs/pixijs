@@ -1,7 +1,8 @@
-import type { ISystem, IRenderingContext, Renderer, Shader } from '@pixi/core';
-import type { DRAW_MODES } from '@pixi/constants';
-import type { ExtensionMetadata } from '@pixi/extensions';
 import { extensions, ExtensionType } from '@pixi/extensions';
+
+import type { DRAW_MODES } from '@pixi/constants';
+import type { IRenderingContext, ISystem, Renderer, Shader } from '@pixi/core';
+import type { ExtensionMetadata } from '@pixi/extensions';
 import type { TransformFeedback } from './TransformFeedback';
 
 /**

@@ -1,8 +1,8 @@
-import { DRAW_MODES, extensions, ExtensionType, Texture } from '@pixi/core';
 import { canvasUtils } from '@pixi/canvas-renderer';
+import { DRAW_MODES, extensions, ExtensionType, Texture } from '@pixi/core';
 
-import type { ExtensionMetadata } from '@pixi/core';
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
+import type { ExtensionMetadata } from '@pixi/core';
 import type { Mesh } from '@pixi/mesh';
 
 /**
@@ -114,6 +114,16 @@ export class CanvasMeshRenderer
         const base = texture.baseTexture;
         const textureWidth = base.width;
         const textureHeight = base.height;
+
+        // Invalidate texture if base texture was updated
+        // either because mesh.texture or mesh.shader.texture was changed
+        if (mesh._cachedTexture && mesh._cachedTexture.baseTexture !== base)
+        {
+            mesh._cachedTint = 0xffffff;
+            mesh._cachedTexture?.destroy();
+            mesh._cachedTexture = null;
+            mesh._tintedCanvas = null;
+        }
 
         if (isTinted)
         {

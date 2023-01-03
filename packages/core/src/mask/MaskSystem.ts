@@ -1,12 +1,12 @@
-import { MaskData } from './MaskData';
-import { SpriteMaskFilter } from '../filters/spriteMask/SpriteMaskFilter';
 import { MASK_TYPES } from '@pixi/constants';
+import { extensions, ExtensionType } from '@pixi/extensions';
+import { SpriteMaskFilter } from '../filters/spriteMask/SpriteMaskFilter';
+import { MaskData } from './MaskData';
 
+import type { ExtensionMetadata } from '@pixi/extensions';
+import type { Renderer } from '../Renderer';
 import type { ISystem } from '../system/ISystem';
 import type { IMaskTarget } from './MaskData';
-import type { Renderer } from '../Renderer';
-import type { ExtensionMetadata } from '@pixi/extensions';
-import { extensions, ExtensionType } from '@pixi/extensions';
 
 /**
  * System plugin to the renderer to manage masks.

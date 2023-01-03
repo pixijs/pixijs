@@ -1,8 +1,7 @@
 import { AccessibilityManager } from '@pixi/accessibility';
 import { CanvasRenderer } from '@pixi/canvas-renderer';
-import { DisplayObject, Container } from '@pixi/display';
-import { Renderer } from '@pixi/core';
-import { isMobile } from '@pixi/utils';
+import { Renderer, utils } from '@pixi/core';
+import { Container, DisplayObject } from '@pixi/display';
 
 describe('AccessibilityManager', () =>
 {
@@ -29,9 +28,9 @@ describe('AccessibilityManager', () =>
 
     it('should remove touch hook when destroyed', () =>
     {
-        const phone = isMobile.phone;
+        const phone = utils.isMobile.phone;
 
-        isMobile.phone = true;
+        utils.isMobile.phone = true;
         const manager = new AccessibilityManager(undefined);
         const hookDiv = manager['_hookDiv'];
 
@@ -39,7 +38,7 @@ describe('AccessibilityManager', () =>
         expect(document.body.contains(hookDiv)).toBe(true);
         manager.destroy();
         expect(document.body.contains(hookDiv)).toBe(false);
-        isMobile.phone = phone;
+        utils.isMobile.phone = phone;
     });
 
     it('should activate when tab is pressed and deactivate when mouse moved', () =>

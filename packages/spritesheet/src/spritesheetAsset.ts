@@ -1,8 +1,8 @@
-import { extensions, ExtensionType, settings, utils } from '@pixi/core';
 import { LoaderParserPriority } from '@pixi/assets';
+import { extensions, ExtensionType, settings, utils } from '@pixi/core';
 import { Spritesheet } from './Spritesheet';
 
-import type { AssetExtension, ResolveAsset, LoadAsset, Loader } from '@pixi/assets';
+import type { AssetExtension, LoadAsset, Loader, ResolveAsset } from '@pixi/assets';
 import type { Texture } from '@pixi/core';
 import type { ISpritesheetData } from './Spritesheet';
 
@@ -256,7 +256,7 @@ export const spritesheetAsset = {
 
         async testParse(asset: SpriteSheetJson, loadAsset: LoadAsset): Promise<boolean>
         {
-            return (utils.path.extname(loadAsset.src).includes('.json') && !!asset.frames);
+            return (utils.path.extname(loadAsset.src).toLowerCase() === '.json' && !!asset.frames);
         },
 
         async parse(asset: SpriteSheetJson, loadAsset: LoadAsset, loader: Loader): Promise<Spritesheet>

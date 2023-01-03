@@ -1,10 +1,10 @@
-import { State, DRAW_MODES, settings, Point, Polygon } from '@pixi/core';
+import { DRAW_MODES, Point, Polygon, settings, State } from '@pixi/core';
 import { Container } from '@pixi/display';
 import { MeshBatchUvs } from './MeshBatchUvs';
 
-import type { MeshMaterial } from './MeshMaterial';
+import type { BLEND_MODES, Buffer, Geometry, IPointData, Renderer, Shader, Texture } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
-import type { BLEND_MODES, IPointData, Texture, Renderer, Geometry, Buffer, Shader } from '@pixi/core';
+import type { MeshMaterial } from './MeshMaterial';
 
 const tempPoint = new Point();
 const tempPolygon = new Polygon();
@@ -437,7 +437,7 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
         const vertices = this.geometry.getBuffer('aVertexPosition').data;
 
         const points = tempPolygon.points;
-        const indices =  this.geometry.getIndex().data;
+        const indices = this.geometry.getIndex().data;
         const len = indices.length;
         const step = this.drawMode === 4 ? 3 : 1;
 

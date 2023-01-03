@@ -1,49 +1,19 @@
 /* eslint max-depth: [2, 8] */
+import { Rectangle, settings, Texture, utils } from '@pixi/core';
 import { Sprite } from '@pixi/sprite';
-import { Texture, settings, Rectangle, utils } from '@pixi/core';
 import { TEXT_GRADIENT } from './const';
-import { TextStyle } from './TextStyle';
 import { TextMetrics } from './TextMetrics';
+import { TextStyle } from './TextStyle';
 
-import type { Renderer } from '@pixi/core';
+import type { ICanvas, ICanvasRenderingContext2D, Renderer } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
-import type { ICanvas, ICanvasRenderingContext2D } from '@pixi/settings';
 import type { ITextStyle } from './TextStyle';
-
-// The type for Intl.Segmenter is only available since TypeScript 4.7.2, so let's make a polyfill for it.
-interface ISegmentData
-{
-    segment: string;
-}
-interface ISegments
-{
-    [Symbol.iterator](): IterableIterator<ISegmentData>;
-}
-interface ISegmenter
-{
-    segment(input: string): ISegments;
-}
-interface IIntl
-{
-    Segmenter?: {
-        prototype: ISegmenter;
-        new(): ISegmenter;
-    };
-}
 
 const defaultDestroyOptions: IDestroyOptions = {
     texture: true,
     children: false,
     baseTexture: true,
 };
-
-interface ModernContext2D extends ICanvasRenderingContext2D
-{
-    // for chrome less 94
-    textLetterSpacing?: number;
-    // for chrome greater 94
-    letterSpacing?: number;
-}
 
 /**
  * A Text Object will create a line or multiple lines of text.
@@ -75,39 +45,53 @@ interface ModernContext2D extends ICanvasRenderingContext2D
 export class Text extends Sprite
 {
     /**
-     * New rendering behavior for letter-spacing which uses Chrome's new native API. This will
-     * lead to more accurate letter-spacing results because it does not try to manually draw
-     * each character. However, this Chrome API is experimental and may not serve all cases yet.
+     * Override whether or not the resolution of the text is automatically adjusted to match the resolution of the renderer.
+     * Setting this to false can allow you to get crisper text at lower render resolutions.
+     * @example
+     * // renderer has a resolution of 1
+     * const app = new Application();
+     *
+     * Text.defaultResolution = 2;
+     * Text.defaultAutoResolution = false;
+     * // text has a resolution of 2
+     * const text = new Text('This is a PixiJS text');
      */
-    public static experimentalLetterSpacing = false;
+    public static defaultAutoResolution = true;
 
     /**
-     * A Unicode "character", or "grapheme cluster", can be composed of multiple Unicode code points,
-     * such as letters with diacritical marks (e.g. `'\u0065\u0301'`, letter e with acute)
-     * or emojis with modifiers (e.g. `'\uD83E\uDDD1\u200D\uD83D\uDCBB'`, technologist).
-     * The new `Intl.Segmenter` API in ES2022 can split the string into grapheme clusters correctly. If it is not available,
-     * PixiJS will fallback to use the iterator of String, which can only spilt the string into code points.
-     * If you want to get full functionality in environments that don't support `Intl.Segmenter` (such as Firefox),
-     * you can use other libraries such as [grapheme-splitter]{@link https://www.npmjs.com/package/grapheme-splitter}
-     * or [graphemer]{@link https://www.npmjs.com/package/graphemer} to create a polyfill. Since these libraries can be
-     * relatively large in size to handle various Unicode grapheme clusters properly, PixiJS won't use them directly.
+     * If {@link PIXI.Text.defaultAutoResolution} is false, this will be the default resolution of the text.
+     * If not set it will default to {@link PIXI.settings.RESOLUTION}.
+     * @example
+     * Text.defaultResolution = 2;
+     * Text.defaultAutoResolution = false;
+     *
+     * // text has a resolution of 2
+     * const text = new Text('This is a PixiJS text');
      */
-    public static graphemeSegmenter: (s: string) => string[] = (() =>
+    public static defaultResolution: number;
+
+    /**
+     * @see PIXI.TextMetrics.experimentalLetterSpacing
+     * @deprecated since 7.1.0
+     */
+    public static get experimentalLetterSpacing()
     {
-        if (typeof (Intl as IIntl)?.Segmenter === 'function')
-        {
-            const segmenter = new (Intl as IIntl).Segmenter();
+        return TextMetrics.experimentalLetterSpacing;
+    }
+    public static set experimentalLetterSpacing(value)
+    {
+        // #if _DEBUG
+        utils.deprecation('7.1.0',
+            'Text.experimentalLetterSpacing is deprecated, use TextMetrics.experimentalLetterSpacing');
+        // #endif
 
-            return (s: string) => [...segmenter.segment(s)].map((x) => x.segment);
-        }
-
-        return (s: string) => [...s];
-    })();
+        TextMetrics.experimentalLetterSpacing = value;
+    }
 
     /** The canvas element that everything is drawn to. */
     public canvas: ICanvas;
     /** The canvas 2d context that everything is drawn with. */
-    public context: ModernContext2D;
+    public context: ICanvasRenderingContext2D;
     public localStyleID: number;
     public dirty: boolean;
 
@@ -154,7 +138,7 @@ export class Text extends Sprite
 
     /**
      * @param text - The string that you would like the text to display
-     * @param {object|PIXI.TextStyle} [style] - The style parameters
+     * @param style - The style parameters
      * @param canvas - The canvas element for drawing text
      */
     constructor(text?: string | number, style?: Partial<ITextStyle> | TextStyle, canvas?: ICanvas)
@@ -184,8 +168,8 @@ export class Text extends Sprite
             willReadFrequently: true,
         });
 
-        this._resolution = settings.RESOLUTION;
-        this._autoResolution = true;
+        this._resolution = Text.defaultResolution ?? settings.RESOLUTION;
+        this._autoResolution = Text.defaultAutoResolution;
         this._text = null;
         this._style = null;
         this._styleListener = null;
@@ -367,22 +351,25 @@ export class Text extends Sprite
         // letterSpacing of 0 means normal
         const letterSpacing = style.letterSpacing;
 
-        // Checking that we can use moddern canvas2D api
-        // https://developer.chrome.com/origintrials/#/view_trial/3585991203293757441
-        // note: this is unstable API, Chrome less 94 use a `textLetterSpacing`, newest use a letterSpacing
-        // eslint-disable-next-line max-len
-        const supportLetterSpacing = Text.experimentalLetterSpacing
-            && ('letterSpacing' in CanvasRenderingContext2D.prototype
-                || 'textLetterSpacing' in CanvasRenderingContext2D.prototype);
+        let useExperimentalLetterSpacing = false;
 
-        if (letterSpacing === 0 || supportLetterSpacing)
+        if (TextMetrics.experimentalLetterSpacingSupported)
         {
-            if (supportLetterSpacing)
+            if (TextMetrics.experimentalLetterSpacing)
             {
-                this.context.letterSpacing = letterSpacing;
-                this.context.textLetterSpacing = letterSpacing;
+                this.context.letterSpacing = `${letterSpacing}px`;
+                this.context.textLetterSpacing = `${letterSpacing}px`;
+                useExperimentalLetterSpacing = true;
             }
+            else
+            {
+                this.context.letterSpacing = '0px';
+                this.context.textLetterSpacing = '0px';
+            }
+        }
 
+        if (letterSpacing === 0 || useExperimentalLetterSpacing)
+        {
             if (isStroke)
             {
                 this.context.strokeText(text, x, y);
@@ -397,7 +384,7 @@ export class Text extends Sprite
 
         let currentPosition = x;
 
-        const stringArray = Text.graphemeSegmenter(text);
+        const stringArray = TextMetrics.graphemeSegmenter(text);
         let previousWidth = this.context.measureText(text).width;
         let currentWidth = 0;
 
@@ -751,12 +738,11 @@ export class Text extends Sprite
      * Set the style of the text.
      *
      * Set up an event listener to listen for changes on the style object and mark the text as dirty.
+     *
+     * If setting the `style` can also be partial {@link PIXI.ITextStyle}.
      */
-    get style(): TextStyle | Partial<ITextStyle>
+    get style(): TextStyle
     {
-        // TODO: Can't have different types for getter and setter. The getter shouldn't have the ITextStyle
-        //       since the setter creates the TextStyle. See this thread for more details:
-        //       https://github.com/microsoft/TypeScript/issues/2521
         return this._style;
     }
 

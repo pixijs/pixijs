@@ -1,8 +1,47 @@
 import { settings } from '@pixi/core';
 
-import type { ICanvas, ICanvasRenderingContext2D, ICanvasRenderingContext2DSettings } from '@pixi/settings';
+import type { ICanvas, ICanvasRenderingContext2D, ICanvasRenderingContext2DSettings } from '@pixi/core';
 import type { TextStyle, TextStyleWhiteSpace } from './TextStyle';
 
+// The type for Intl.Segmenter is only available since TypeScript 4.7.2, so let's make a polyfill for it.
+interface ISegmentData
+{
+    segment: string;
+}
+interface ISegments
+{
+    [Symbol.iterator](): IterableIterator<ISegmentData>;
+}
+interface ISegmenter
+{
+    segment(input: string): ISegments;
+}
+interface IIntl
+{
+    Segmenter?: {
+        prototype: ISegmenter;
+        new(): ISegmenter;
+    };
+}
+
+/**
+ * Internal return object for {@link PIXI.TextMetrics.measureFont `TextMetrics.measureFont`}.
+ * @typedef {object} FontMetrics
+ * @property {number} ascent - The ascent distance
+ * @property {number} descent - The descent distance
+ * @property {number} fontSize - Font size from ascent to descent
+ * @memberof PIXI.TextMetrics
+ * @private
+ */
+
+/**
+ * A number, or a string containing a number.
+ * @memberof PIXI
+ * @typedef {object} IFontMetrics
+ * @property {number} ascent - Font ascent
+ * @property {number} descent - Font descent
+ * @property {number} fontSize - Font size
+ */
 interface IFontMetrics
 {
     ascent: number;
@@ -10,7 +49,7 @@ interface IFontMetrics
     fontSize: number;
 }
 
-type CharacterWidthCache = { [key: string]: number };
+type CharacterWidthCache = Record<string, number>;
 
 // Default settings used for all getContext calls
 const contextSettings: ICanvasRenderingContext2DSettings = {
@@ -58,24 +97,110 @@ export class TextMetrics
     /** The maximum line width for all measured lines. */
     public maxLineWidth: number;
 
-    /**
-     * The font properties object from TextMetrics.measureFont.
-     * @type {PIXI.IFontMetrics}
-     */
+    /** The font properties object from TextMetrics.measureFont. */
     public fontProperties: IFontMetrics;
 
-    public static METRICS_STRING: string;
-    public static BASELINE_SYMBOL: string;
-    public static BASELINE_MULTIPLIER: number;
-    public static HEIGHT_MULTIPLIER: number;
+    /**
+     * String used for calculate font metrics.
+     * These characters are all tall to help calculate the height required for text.
+     */
+    public static METRICS_STRING = '|ÉqÅ';
+
+    /** Baseline symbol for calculate font metrics. */
+    public static BASELINE_SYMBOL = 'M';
+
+    /** Baseline multiplier for calculate font metrics. */
+    public static BASELINE_MULTIPLIER = 1.4;
+
+    /** Height multiplier for setting height of canvas to calculate font metrics. */
+    public static HEIGHT_MULTIPLIER = 2.0;
+
+    /**
+     * A Unicode "character", or "grapheme cluster", can be composed of multiple Unicode code points,
+     * such as letters with diacritical marks (e.g. `'\u0065\u0301'`, letter e with acute)
+     * or emojis with modifiers (e.g. `'\uD83E\uDDD1\u200D\uD83D\uDCBB'`, technologist).
+     * The new `Intl.Segmenter` API in ES2022 can split the string into grapheme clusters correctly. If it is not available,
+     * PixiJS will fallback to use the iterator of String, which can only spilt the string into code points.
+     * If you want to get full functionality in environments that don't support `Intl.Segmenter` (such as Firefox),
+     * you can use other libraries such as [grapheme-splitter]{@link https://www.npmjs.com/package/grapheme-splitter}
+     * or [graphemer]{@link https://www.npmjs.com/package/graphemer} to create a polyfill. Since these libraries can be
+     * relatively large in size to handle various Unicode grapheme clusters properly, PixiJS won't use them directly.
+     */
+    public static graphemeSegmenter: (s: string) => string[] = (() =>
+    {
+        if (typeof (Intl as IIntl)?.Segmenter === 'function')
+        {
+            const segmenter = new (Intl as IIntl).Segmenter();
+
+            return (s: string) => [...segmenter.segment(s)].map((x) => x.segment);
+        }
+
+        return (s: string) => [...s];
+    })();
+
+    public static _experimentalLetterSpacingSupported?: boolean;
+
+    /**
+     * Checking that we can use modern canvas 2D API.
+     *
+     * Note: This is an unstable API, Chrome < 94 use `textLetterSpacing`, later versions use `letterSpacing`.
+     * @see PIXI.TextMetrics.experimentalLetterSpacing
+     * @see https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/letterSpacing
+     * @see https://developer.chrome.com/origintrials/#/view_trial/3585991203293757441
+     */
+    public static get experimentalLetterSpacingSupported(): boolean
+    {
+        let result = TextMetrics._experimentalLetterSpacingSupported;
+
+        if (result !== undefined)
+        {
+            const proto = settings.ADAPTER.getCanvasRenderingContext2D().prototype;
+
+            result
+                = TextMetrics._experimentalLetterSpacingSupported
+                = 'letterSpacing' in proto || 'textLetterSpacing' in proto;
+        }
+
+        return result;
+    }
+
+    /**
+     * New rendering behavior for letter-spacing which uses Chrome's new native API. This will
+     * lead to more accurate letter-spacing results because it does not try to manually draw
+     * each character. However, this Chrome API is experimental and may not serve all cases yet.
+     * @see PIXI.TextMetrics.experimentalLetterSpacingSupported
+     */
+    public static experimentalLetterSpacing = false;
+
+    /** Cache of {@see PIXI.TextMetrics.FontMetrics} objects. */
+    private static _fonts: Record<string, IFontMetrics> = {};
+
+    /** Cache of new line chars. */
+    private static _newlines: number[] = [
+        0x000A, // line feed
+        0x000D, // carriage return
+    ];
+
+    /** Cache of breaking spaces. */
+    private static _breakingSpaces: number[] = [
+        0x0009, // character tabulation
+        0x0020, // space
+        0x2000, // en quad
+        0x2001, // em quad
+        0x2002, // en space
+        0x2003, // em space
+        0x2004, // three-per-em space
+        0x2005, // four-per-em space
+        0x2006, // six-per-em space
+        0x2008, // punctuation space
+        0x2009, // thin space
+        0x200A, // hair space
+        0x205F, // medium mathematical space
+        0x3000, // ideographic space
+    ];
 
     private static __canvas: ICanvas;
     private static __context: ICanvasRenderingContext2D;
-
-    // TODO: These should be protected but they're initialized outside of the class.
-    public static _fonts: { [font: string]: IFontMetrics };
-    public static _newlines: number[];
-    public static _breakingSpaces: number[];
 
     /**
      * @param text - the text that was measured
@@ -140,7 +265,7 @@ export class TextMetrics
 
         for (let i = 0; i < lines.length; i++)
         {
-            const lineWidth = context.measureText(lines[i]).width + ((lines[i].length - 1) * style.letterSpacing);
+            const lineWidth = TextMetrics._measureText(lines[i], style.letterSpacing, context);
 
             lineWidths[i] = lineWidth;
             maxLineWidth = Math.max(maxLineWidth, lineWidth);
@@ -153,7 +278,7 @@ export class TextMetrics
         }
 
         const lineHeight = style.lineHeight || fontProperties.fontSize + style.strokeThickness;
-        let height = Math.max(lineHeight, fontProperties.fontSize + style.strokeThickness)
+        let height = Math.max(lineHeight, fontProperties.fontSize + (style.strokeThickness * 2))
             + ((lines.length - 1) * (lineHeight + style.leading));
 
         if (style.dropShadow)
@@ -172,6 +297,46 @@ export class TextMetrics
             maxLineWidth,
             fontProperties
         );
+    }
+
+    private static _measureText(
+        text: string,
+        letterSpacing: number,
+        context: ICanvasRenderingContext2D
+    )
+    {
+        let useExperimentalLetterSpacing = false;
+
+        if (TextMetrics.experimentalLetterSpacingSupported)
+        {
+            if (TextMetrics.experimentalLetterSpacing)
+            {
+                context.letterSpacing = `${letterSpacing}px`;
+                context.textLetterSpacing = `${letterSpacing}px`;
+                useExperimentalLetterSpacing = true;
+            }
+            else
+            {
+                context.letterSpacing = '0px';
+                context.textLetterSpacing = '0px';
+            }
+        }
+
+        let width = context.measureText(text).width;
+
+        if (width > 0)
+        {
+            if (useExperimentalLetterSpacing)
+            {
+                width -= letterSpacing;
+            }
+            else
+            {
+                width += (TextMetrics.graphemeSegmenter(text).length - 1) * letterSpacing;
+            }
+        }
+
+        return width;
     }
 
     /**
@@ -276,14 +441,14 @@ export class TextMetrics
                     for (let j = 0; j < characters.length; j++)
                     {
                         let char = characters[j];
+                        let lastChar = char;
 
                         let k = 1;
-                        // we are not at the end of the token
 
+                        // we are not at the end of the token
                         while (characters[j + k])
                         {
                             const nextChar = characters[j + k];
-                            const lastChar = char[char.length - 1];
 
                             // should not split chars
                             if (!TextMetrics.canBreakChars(lastChar, nextChar, token, j, style.breakWords))
@@ -296,10 +461,11 @@ export class TextMetrics
                                 break;
                             }
 
+                            lastChar = nextChar;
                             k++;
                         }
 
-                        j += char.length - 1;
+                        j += k - 1;
 
                         const characterWidth = TextMetrics.getFromCache(char, letterSpacing, cache, context);
 
@@ -403,9 +569,7 @@ export class TextMetrics
 
         if (typeof width !== 'number')
         {
-            const spacing = ((key.length) * letterSpacing);
-
-            width = context.measureText(key).width + spacing;
+            width = TextMetrics._measureText(key, letterSpacing, context) + letterSpacing;
             cache[key] = width;
         }
 
@@ -425,7 +589,7 @@ export class TextMetrics
     /**
      * Determines whether we should collapse newLine chars.
      * @param whiteSpace - The white space
-     * @returns  should collapse
+     * @returns should collapse
      */
     private static collapseNewlines(whiteSpace: TextStyleWhiteSpace): boolean
     {
@@ -434,7 +598,7 @@ export class TextMetrics
 
     /**
      * Trims breaking whitespaces from string.
-     * @param  text - The text
+     * @param text - The text
      * @returns Trimmed string
      */
     private static trimRight(text: string): string
@@ -461,7 +625,7 @@ export class TextMetrics
 
     /**
      * Determines if char is a newline.
-     * @param  char - The character
+     * @param char - The character
      * @returns True if newline, False otherwise.
      */
     private static isNewline(char: string): boolean
@@ -496,8 +660,8 @@ export class TextMetrics
 
     /**
      * Splits a string into words, breaking-spaces and newLine characters
-     * @param  text - The text
-     * @returns  A tokenized array
+     * @param text - The text
+     * @returns A tokenized array
      */
     private static tokenize(text: string): string[]
     {
@@ -545,7 +709,7 @@ export class TextMetrics
      * Examples are if the token is CJK or numbers.
      * It must return a boolean.
      * @param _token - The token
-     * @param  breakWords - The style attr break words
+     * @param breakWords - The style attr break words
      * @returns Whether to break word or not
      */
     static canBreakWords(_token: string, breakWords: boolean): boolean
@@ -579,15 +743,13 @@ export class TextMetrics
      * It is called when a token (usually a word) has to be split into separate pieces
      * in order to determine the point to break a word.
      * It must return an array of characters.
-     * @example
-     * // Correctly splits emojis, eg "🤪🤪" will result in two element array, each with one emoji.
-     * TextMetrics.wordWrapSplit = (token) => [...token];
-     * @param  token - The token to split
+     * @param token - The token to split
      * @returns The characters of the token
+     * @see TextMetrics.graphemeSegmenter
      */
     static wordWrapSplit(token: string): string[]
     {
-        return token.split('');
+        return TextMetrics.graphemeSegmenter(token);
     }
 
     /**
@@ -764,105 +926,3 @@ export class TextMetrics
         return TextMetrics.__context;
     }
 }
-
-/**
- * Internal return object for {@link PIXI.TextMetrics.measureFont `TextMetrics.measureFont`}.
- * @typedef {object} FontMetrics
- * @property {number} ascent - The ascent distance
- * @property {number} descent - The descent distance
- * @property {number} fontSize - Font size from ascent to descent
- * @memberof PIXI.TextMetrics
- * @private
- */
-
-/**
- * Cache of {@see PIXI.TextMetrics.FontMetrics} objects.
- * @memberof PIXI.TextMetrics
- * @type {object}
- * @private
- */
-TextMetrics._fonts = {};
-
-/**
- * String used for calculate font metrics.
- * These characters are all tall to help calculate the height required for text.
- * @static
- * @memberof PIXI.TextMetrics
- * @name METRICS_STRING
- * @type {string}
- * @default |ÉqÅ
- */
-TextMetrics.METRICS_STRING = '|ÉqÅ';
-
-/**
- * Baseline symbol for calculate font metrics.
- * @static
- * @memberof PIXI.TextMetrics
- * @name BASELINE_SYMBOL
- * @type {string}
- * @default M
- */
-TextMetrics.BASELINE_SYMBOL = 'M';
-
-/**
- * Baseline multiplier for calculate font metrics.
- * @static
- * @memberof PIXI.TextMetrics
- * @name BASELINE_MULTIPLIER
- * @type {number}
- * @default 1.4
- */
-TextMetrics.BASELINE_MULTIPLIER = 1.4;
-
-/**
- * Height multiplier for setting height of canvas to calculate font metrics.
- * @static
- * @memberof PIXI.TextMetrics
- * @name HEIGHT_MULTIPLIER
- * @type {number}
- * @default 2.00
- */
-TextMetrics.HEIGHT_MULTIPLIER = 2.0;
-
-/**
- * Cache of new line chars.
- * @memberof PIXI.TextMetrics
- * @type {number[]}
- * @private
- */
-TextMetrics._newlines = [
-    0x000A, // line feed
-    0x000D, // carriage return
-];
-
-/**
- * Cache of breaking spaces.
- * @memberof PIXI.TextMetrics
- * @type {number[]}
- * @private
- */
-TextMetrics._breakingSpaces = [
-    0x0009, // character tabulation
-    0x0020, // space
-    0x2000, // en quad
-    0x2001, // em quad
-    0x2002, // en space
-    0x2003, // em space
-    0x2004, // three-per-em space
-    0x2005, // four-per-em space
-    0x2006, // six-per-em space
-    0x2008, // punctuation space
-    0x2009, // thin space
-    0x200A, // hair space
-    0x205F, // medium mathematical space
-    0x3000, // ideographic space
-];
-
-/**
- * A number, or a string containing a number.
- * @memberof PIXI
- * @typedef {object} IFontMetrics
- * @property {number} ascent - Font ascent
- * @property {number} descent - Font descent
- * @property {number} fontSize - Font size
- */

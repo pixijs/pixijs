@@ -369,7 +369,7 @@ describe('Resolver', () =>
 
         expect(assets.level).toEqual({
             image3: {
-                alias: ['image3'],
+                alias: ['image3', 'level-image3'],
                 format: 'png',
                 resolution: 1,
                 src: 'chicken.png',
@@ -378,7 +378,7 @@ describe('Resolver', () =>
 
         expect(assets.default).toEqual({
             image1: {
-                alias: ['image1'],
+                alias: ['image1', 'default-image1'],
                 format: 'png',
                 resolution: 1,
                 src: 'my-sprite@2x.png',
@@ -386,18 +386,19 @@ describe('Resolver', () =>
             levelData: {
                 alias:  [
                     'levelData',
+                    'default-levelData',
                 ],
                 format: 'json',
                 src: 'levelData.json',
             },
             spriteSheet1: {
-                alias: ['spriteSheet1'],
+                alias: ['spriteSheet1', 'default-spriteSheet1'],
                 format: 'png',
                 resolution: 1,
                 src: 'my-sprite-sheet.json',
             },
             spriteSheet2: {
-                alias: ['spriteSheet2'],
+                alias: ['spriteSheet2', 'default-spriteSheet2'],
                 format: 'png',
                 resolution: 1,
                 src: 'my-sprite-sheet-2.json',
@@ -440,5 +441,50 @@ describe('Resolver', () =>
         });
 
         expect(resolver.resolveUrl('test')).toBe('my-image.webp');
+    });
+
+    it('should be able to append a default url params object correctly', () =>
+    {
+        const resolver = new Resolver();
+
+        resolver.setDefaultSearchParams({
+            hello: 'world',
+            lucky: 23,
+        });
+
+        resolver.add('test', 'my-image.png');
+
+        expect(resolver.resolveUrl('test')).toBe('my-image.png?hello=world&lucky=23');
+    });
+
+    it('should be able to append a default url params string correctly', () =>
+    {
+        const resolver = new Resolver();
+
+        resolver.setDefaultSearchParams('hello=world&lucky=23');
+
+        resolver.add('test', 'my-image.png');
+
+        expect(resolver.resolveUrl('test')).toBe('my-image.png?hello=world&lucky=23');
+    });
+
+    it('should be able to append default url params correctly even if the url already has some', () =>
+    {
+        const resolver = new Resolver();
+
+        resolver.setDefaultSearchParams('hello=world&lucky=23');
+
+        resolver.add('test', 'my-image.png?chicken=egg');
+
+        expect(resolver.resolveUrl('test')).toBe('my-image.png?chicken=egg&hello=world&lucky=23');
+    });
+
+    it('should be able to append default url params correctly even if the url has no key', () =>
+    {
+        const resolver = new Resolver();
+
+        resolver.setDefaultSearchParams('hello=world&lucky=23');
+
+        expect(resolver.resolveUrl('my-image.png')).toBe('my-image.png?hello=world&lucky=23');
     });
 });

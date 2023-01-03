@@ -1,11 +1,11 @@
+import { extensions, ExtensionType } from '@pixi/extensions';
 import { ObjectRenderer } from './ObjectRenderer';
 
-import type { ISystem } from '../system/ISystem';
+import type { ExtensionMetadata } from '@pixi/extensions';
 import type { Renderer } from '../Renderer';
+import type { ISystem } from '../system/ISystem';
 import type { BaseTexture } from '../textures/BaseTexture';
 import type { BatchTextureArray } from './BatchTextureArray';
-import type { ExtensionMetadata } from '@pixi/extensions';
-import { extensions, ExtensionType } from '@pixi/extensions';
 
 /**
  * System plugin to the renderer to manage batching.

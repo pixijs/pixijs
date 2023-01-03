@@ -1,6 +1,6 @@
-import { TilingSprite } from '@pixi/sprite-tiling';
 import { canvasUtils } from '@pixi/canvas-renderer';
 import { Matrix, Point, utils } from '@pixi/core';
+import { TilingSprite } from '@pixi/sprite-tiling';
 
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
 

@@ -1,27 +1,25 @@
 import {
-    buildLine,
-    buildPoly,
-    BatchPart,
-    FILL_COMMANDS,
-    BATCH_POOL,
-    DRAW_CALL_POOL,
-} from './utils';
-
-import {
-    BatchGeometry,
-    BatchDrawCall,
-    BatchTextureArray,
     BaseTexture,
+    BatchDrawCall,
+    BatchGeometry,
+    BatchTextureArray,
     DRAW_MODES,
-    WRAP_MODES,
     Point,
     utils,
+    WRAP_MODES,
 } from '@pixi/core';
-
-import { GraphicsData } from './GraphicsData';
 import { Bounds } from '@pixi/display';
+import { GraphicsData } from './GraphicsData';
+import {
+    BATCH_POOL,
+    BatchPart,
+    buildLine,
+    buildPoly,
+    DRAW_CALL_POOL,
+    FILL_COMMANDS,
+} from './utils';
 
-import type { Texture, Circle, Ellipse, Polygon, Rectangle, RoundedRectangle, IPointData, Matrix } from '@pixi/core';
+import type { Circle, Ellipse, IPointData, Matrix, Polygon, Rectangle, RoundedRectangle, Texture } from '@pixi/core';
 import type { FillStyle } from './styles/FillStyle';
 import type { LineStyle } from './styles/LineStyle';
 
@@ -579,7 +577,7 @@ export class GraphicsGeometry extends BatchGeometry
         const colors = this.colors;
         const textureIds = this.textureIds;
 
-        let currentGroup: BatchDrawCall =  DRAW_CALL_POOL.pop();
+        let currentGroup: BatchDrawCall = DRAW_CALL_POOL.pop();
 
         if (!currentGroup)
         {

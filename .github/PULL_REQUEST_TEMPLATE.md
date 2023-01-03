@@ -5,8 +5,8 @@ Bug fixes and new features should include tests and possibly benchmarks.
 
 Before submitting please read:
 
-Contributors guide: https://github.com/pixijs/pixi.js/blob/dev/.github/CONTRIBUTING.md
-Code of Conduct: https://github.com/pixijs/pixi.js/blob/dev/.github/CODE_OF_CONDUCT.md
+Contributors guide: https://github.com/pixijs/pixijs/blob/dev/.github/CONTRIBUTING.md
+Code of Conduct: https://github.com/pixijs/pixijs/blob/dev/.github/CODE_OF_CONDUCT.md
 -->
 
 ##### Description of change

@@ -1,7 +1,8 @@
 import { CLEAR_MODES } from '@pixi/constants';
-import type { IFilterTarget } from '@pixi/core';
 import { Filter, Renderer } from '@pixi/core';
 import { Matrix, Rectangle } from '@pixi/math';
+
+import type { IFilterTarget } from '@pixi/core';
 
 describe('FilterSystem', () =>
 {

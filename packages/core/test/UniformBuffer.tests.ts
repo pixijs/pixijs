@@ -1,17 +1,16 @@
-import type {
-    IRenderingContext } from '@pixi/core';
 import {
-    Shader,
-    createUBOElements,
-    generateUniformBufferSync,
-    getUBOData,
     Buffer,
-    UniformGroup,
+    createUBOElements,
     generateProgram,
-    getTestContext
+    generateUniformBufferSync,
+    getTestContext,
+    getUBOData,
+    Shader,
+    UniformGroup,
 } from '@pixi/core';
+import { Matrix, Point, Rectangle } from '@pixi/math';
 
-import { Matrix, Rectangle, Point } from '@pixi/math';
+import type { IRenderingContext } from '@pixi/core';
 
 const vertexSrc = `
 #version 300 es
@@ -133,7 +132,8 @@ describe('UniformBuffer', () =>
                     data: { name: 'uInt', index: 3, type: 'int', size: 1, isArray: false, value: 0 },
                     offset: 8,
                     dataLen: 4,
-                    dirty: 0 },
+                    dirty: 0
+                },
                 {
                     data: { name: 'uUInt', index: 4, type: 'uint', size: 1, isArray: false, value: 0 },
                     offset: 12,
@@ -563,7 +563,7 @@ describe('UniformBuffer', () =>
 
             const shader = Shader.from(vertexSrc, fragmentSrc);
 
-            const group =  UniformGroup.uboFrom(toTest.groupData);
+            const group = UniformGroup.uboFrom(toTest.groupData);
 
             generateProgram(gl, shader.program);
 

@@ -1,6 +1,6 @@
-import { Container } from '@pixi/display';
-import { Matrix } from '@pixi/core';
 import { CanvasRenderer } from '@pixi/canvas-renderer';
+import { Matrix } from '@pixi/core';
+import { Container } from '@pixi/display';
 import '@pixi/canvas-display';
 
 describe('CanvasRenderer', () =>

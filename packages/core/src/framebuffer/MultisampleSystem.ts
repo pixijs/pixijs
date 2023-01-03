@@ -1,9 +1,10 @@
 import { MSAA_QUALITY } from '@pixi/constants';
-import type { ISystem } from '../system/ISystem';
-import type { Renderer } from '../Renderer';
-import type { IRenderingContext } from '../IRenderer';
-import type { ExtensionMetadata } from '@pixi/extensions';
 import { extensions, ExtensionType } from '@pixi/extensions';
+
+import type { ExtensionMetadata } from '@pixi/extensions';
+import type { IRenderingContext } from '../IRenderer';
+import type { Renderer } from '../Renderer';
+import type { ISystem } from '../system/ISystem';
 
 /**
  * System that manages the multisample property on the WebGL renderer

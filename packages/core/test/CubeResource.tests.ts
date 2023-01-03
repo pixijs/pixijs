@@ -1,5 +1,5 @@
-import { CubeResource, BaseTexture } from '@pixi/core';
 import path from 'path';
+import { BaseTexture, CubeResource } from '@pixi/core';
 
 describe('CubeResource', () =>
 {

@@ -68,6 +68,10 @@ declare namespace GlobalMixins
         SCALE_MODE: import('@pixi/constants').SCALE_MODES;
         /** @deprecated */
         CAN_UPLOAD_SAME_BUFFER: boolean;
+        /** @deprecated */
+        PRECISION_VERTEX: import('@pixi/constants').PRECISION,
+        /** @deprecated */
+        PRECISION_FRAGMENT: import('@pixi/constants').PRECISION,
 
         STRICT_TEXTURE_CACHE: boolean;
         PREFER_ENV: import('@pixi/constants').ENV;

@@ -103,6 +103,16 @@ const normalizeExtension = (ext: ExtensionFormatLoose | any): ExtensionFormat =>
 };
 
 /**
+ * Get the priority for an extension.
+ * @ignore
+ * @param ext - Any extension
+ * @param defaultPriority - Fallback priority if none is defined.
+ * @returns The priority for the extension.
+ */
+const normalizePriority = (ext: ExtensionFormatLoose | any, defaultPriority: number): number =>
+    normalizeExtension(ext).priority ?? defaultPriority;
+
+/**
  * Global registration of all PixiJS extensions. One-stop-shop for extensibility.
  * @memberof PIXI
  * @namespace extensions
@@ -222,9 +232,10 @@ const extensions = {
      * Handle a type, but using a list of extensions.
      * @param type - Type of extension to handle.
      * @param list - The list of extensions.
+     * @param defaultPriority - The default priority to use if none is specified.
      * @returns {PIXI.extensions} For chaining.
      */
-    handleByList(type: ExtensionType, list: any[])
+    handleByList(type: ExtensionType, list: any[], defaultPriority = -1)
     {
         return this.handle(
             type,
@@ -236,7 +247,7 @@ const extensions = {
                 }
 
                 list.push(extension.ref);
-                list.sort((a, b) => (b.priority ?? -1) - (a.priority ?? -1));
+                list.sort((a, b) => normalizePriority(b, defaultPriority) - normalizePriority(a, defaultPriority));
             },
             (extension) =>
             {
@@ -256,8 +267,8 @@ export {
     ExtensionType,
 };
 export type {
+    ExtensionFormat,
+    ExtensionFormatLoose,
     ExtensionHandler,
     ExtensionMetadata,
-    ExtensionFormatLoose,
-    ExtensionFormat,
 };

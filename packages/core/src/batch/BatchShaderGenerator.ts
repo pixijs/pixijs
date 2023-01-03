@@ -1,7 +1,7 @@
-import { Shader } from '../shader/Shader';
-import { Program } from '../shader/Program';
-import { UniformGroup } from '../shader/UniformGroup';
 import { Matrix } from '@pixi/math';
+import { Program } from '../shader/Program';
+import { Shader } from '../shader/Shader';
+import { UniformGroup } from '../shader/UniformGroup';
 
 /**
  * Helper that generates batching multi-texture shader. Use it with your new BatchRenderer

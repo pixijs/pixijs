@@ -1,4 +1,4 @@
-import { BaseTexture, BaseRenderTexture, Texture } from '@pixi/core';
+import { BaseRenderTexture, BaseTexture, Texture } from '@pixi/core';
 
 /**
  * Get the drawable source, such as HTMLCanvasElement or HTMLImageElement suitable

@@ -1,7 +1,7 @@
 import { getBufferType } from '@pixi/utils';
 
-import type { ITypedArray } from '../Buffer';
 import type { Dict } from '@pixi/utils';
+import type { ITypedArray } from '../Buffer';
 
 /* eslint-disable object-shorthand */
 const map: Dict<any> = {

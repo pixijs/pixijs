@@ -8,8 +8,9 @@ import { convertToList } from './utils/convertToList';
 import { isSingleItem } from './utils/isSingleItem';
 
 import type { FormatDetectionParser } from './detections';
-import type { LoadAsset, LoaderParser } from './loader';
-import type { PreferOrder, ResolveAsset, ResolveURLParser, ResolverBundle, ResolverManifest } from './resolver';
+import type { LoadAsset } from './loader';
+import type { ResolveAsset, ResolverBundle, ResolverManifest } from './resolver';
+import type { BundleIdentifierOptions } from './resolver/Resolver';
 
 export type ProgressCallback = (progress: number) => void;
 
@@ -22,6 +23,10 @@ export interface AssetInitOptions
     // basic...
     /** a base path for any assets loaded */
     basePath?: string;
+
+    /** a default URL parameter string to append to all assets loaded */
+    defaultSearchParams?: string | Record<string, any>;
+
     /**
      * a manifest to tell the asset loader upfront what all your assets are
      * this can be the manifest object itself, or a URL to the manifest.
@@ -39,28 +44,8 @@ export interface AssetInitOptions
         format?: string | string[];
     };
 
-    // advanced users can add custom parsers and and preferences for how things are resolved
-    /** loader options to configure the loader with, currently only parsers! */
-    loader?: {
-        /** custom parsers can be added here, for example something that could load a sound or a 3D model */
-        parsers?: LoaderParser[];
-        // more...
-    };
-    /** resolver specific options */
-    resolver?: {
-        /**
-         * a list of urlParsers, these can read the URL and pick put the various options.
-         * for example there is a texture URL parser that picks our resolution and file format.
-         * You can add custom ways to read URLs and extract information here.
-         */
-        urlParsers?: ResolveURLParser[];
-        /**
-         * a list of preferOrders that let the resolver know which asset to pick.
-         * already built-in we have a texture preferOrders that let the resolve know which asset to prefer
-         * if it has multiple assets to pick from (resolution/formats etc)
-         */
-        preferOrders?: PreferOrder[];
-    };
+    /** advanced - override how bundlesIds are generated */
+    bundleIdentifier?: BundleIdentifierOptions;
 }
 
 /**
@@ -267,9 +252,19 @@ export class AssetsClass
 
         this._initialized = true;
 
+        if (options.defaultSearchParams)
+        {
+            this.resolver.setDefaultSearchParams(options.defaultSearchParams);
+        }
+
         if (options.basePath)
         {
             this.resolver.basePath = options.basePath;
+        }
+
+        if (options.bundleIdentifier)
+        {
+            this.resolver.setBundleIdentifier(options.bundleIdentifier);
         }
 
         if (options.manifest)
@@ -284,7 +279,7 @@ export class AssetsClass
             this.resolver.addManifest(manifest);
         }
 
-        const resolutionPref =  options.texturePreference?.resolution ?? 1;
+        const resolutionPref = options.texturePreference?.resolution ?? 1;
         const resolution = (typeof resolutionPref === 'number') ? [resolutionPref] : resolutionPref;
 
         let formats: string[] = [];
@@ -513,9 +508,10 @@ export class AssetsClass
      * // Load another bundle...
      * gameScreenAssets = await Assets.loadBundle('game-screen');
      * @param bundleIds - the bundle id or ids to load
-     * @param onProgress - optional function that is called when progress on asset loading is made.
+     * @param onProgress - Optional function that is called when progress on asset loading is made.
      * The function is passed a single parameter, `progress`, which represents the percentage (0.0 - 1.0)
-     * of the assets loaded.
+     * of the assets loaded. Do not use this function to detect when assets are complete and available,
+     * instead use the Promise returned by this function.
      * @returns all the bundles assets or a hash of assets for each bundle specified
      */
     public async loadBundle(bundleIds: string | string[], onProgress?: ProgressCallback): Promise<any>
@@ -828,13 +824,13 @@ export class AssetsClass
      * Workers, in some cases it can be helpful to disable by setting to `false`.
      * @default true
      */
-    public get preferWorker(): boolean
+    public get preferWorkers(): boolean
     {
-        return loadTextures.config.preferWorker;
+        return loadTextures.config.preferWorkers;
     }
-    public set preferWorker(value: boolean)
+    public set preferWorkers(value: boolean)
     {
-        loadTextures.config.preferWorker = value;
+        loadTextures.config.preferWorkers = value;
     }
 }
 

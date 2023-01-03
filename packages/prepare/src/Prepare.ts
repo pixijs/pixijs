@@ -1,9 +1,9 @@
 import { BaseTexture, extensions, ExtensionType } from '@pixi/core';
 import { Graphics } from '@pixi/graphics';
-import type { IDisplayObjectExtended } from './BasePrepare';
 import { BasePrepare } from './BasePrepare';
 
-import type { Renderer, IRenderer, ISystem, ExtensionMetadata } from '@pixi/core';
+import type { ExtensionMetadata, IRenderer, ISystem, Renderer } from '@pixi/core';
+import type { IDisplayObjectExtended } from './BasePrepare';
 
 /**
  * Built-in hook to upload PIXI.Texture objects to the GPU.
@@ -116,7 +116,7 @@ function findGraphics(item: IDisplayObjectExtended, queue: Array<any>): boolean
  * app.stage.addChild(rect);
  *
  * // Don't start rendering until the graphic is uploaded to the GPU
- * app.renderer.plugins.prepare.upload(app.stage, () => {
+ * app.renderer.prepare.upload(app.stage, () => {
  *     app.start();
  * });
  * @memberof PIXI

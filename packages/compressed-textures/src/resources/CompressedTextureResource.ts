@@ -1,7 +1,7 @@
-import { BlobResource } from './BlobResource';
 import { INTERNAL_FORMAT_TO_BYTES_PER_PIXEL } from '../const';
-import type { Renderer, BaseTexture, GLTexture } from '@pixi/core';
+import { BlobResource } from './BlobResource';
 
+import type { BaseTexture, GLTexture, Renderer } from '@pixi/core';
 import type { INTERNAL_FORMATS } from '../const';
 
 /**

@@ -1,10 +1,10 @@
-import type { Matrix } from '@pixi/math';
-import { Rectangle } from '@pixi/math';
 import { MSAA_QUALITY } from '@pixi/constants';
+import { Rectangle } from '@pixi/math';
 
+import type { Matrix } from '@pixi/math';
+import type { RenderTexture } from '../renderTexture/RenderTexture';
 import type { Filter } from './Filter';
 import type { IFilterTarget } from './IFilterTarget';
-import type { RenderTexture } from '../renderTexture/RenderTexture';
 
 /**
  * System plugin to the renderer to manage filter states.

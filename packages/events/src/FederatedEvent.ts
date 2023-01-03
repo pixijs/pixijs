@@ -1,4 +1,5 @@
 import { Point } from '@pixi/core';
+
 import type { EventBoundary } from './EventBoundary';
 import type { FederatedEventTarget } from './FederatedEventTarget';
 

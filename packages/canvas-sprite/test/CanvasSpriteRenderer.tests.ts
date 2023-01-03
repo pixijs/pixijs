@@ -1,8 +1,8 @@
-import '@pixi/canvas-display';
 import { CanvasRenderer } from '@pixi/canvas-renderer';
-import { MIPMAP_MODES, SCALE_MODES, Rectangle, BaseTexture, CanvasResource, Texture } from '@pixi/core';
+import { BaseTexture, CanvasResource, MIPMAP_MODES, Rectangle, SCALE_MODES, Texture } from '@pixi/core';
 import { Container } from '@pixi/display';
 import { Sprite } from '@pixi/sprite';
+import '@pixi/canvas-display';
 import '@pixi/canvas-sprite';
 
 describe('CanvasSpriteRenderer', () =>
@@ -50,8 +50,8 @@ describe('CanvasSpriteRenderer', () =>
         const scale = 2;
 
         const frame = new Rectangle(0, 0, baseTexture.width, baseTexture.height);
-        const orig  = new Rectangle(0, 0, baseTexture.width * scale, baseTexture.height * scale);
-        const trim  = new Rectangle(0, 0, baseTexture.width * scale, baseTexture.height * scale);
+        const orig = new Rectangle(0, 0, baseTexture.width * scale, baseTexture.height * scale);
+        const trim = new Rectangle(0, 0, baseTexture.width * scale, baseTexture.height * scale);
 
         const testSprite = new Sprite(new Texture(baseTexture, frame, orig, trim));
 
@@ -99,7 +99,7 @@ describe('CanvasSpriteRenderer', () =>
         });
 
         const frame = new Rectangle(0, 0, 4, 2);
-        const orig  = new Rectangle(0, 0, 2, 4);
+        const orig = new Rectangle(0, 0, 2, 4);
 
         // create a sprite with a texture that treats this base texture as rotated
         // (now a 2x4 texture with the top 2x2 green, bottom 2x2 red)

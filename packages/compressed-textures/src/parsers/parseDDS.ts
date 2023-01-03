@@ -1,5 +1,5 @@
+import { INTERNAL_FORMAT_TO_BYTES_PER_PIXEL, INTERNAL_FORMATS } from '../const';
 import { CompressedTextureResource } from '../resources';
-import { INTERNAL_FORMATS, INTERNAL_FORMAT_TO_BYTES_PER_PIXEL } from '../const';
 
 const DDS_MAGIC_SIZE = 4;
 const DDS_HEADER_SIZE = 124;

@@ -9,12 +9,12 @@ import { Polygon } from './shapes/Polygon';
 import { Rectangle } from './shapes/Rectangle';
 import { RoundedRectangle } from './shapes/RoundedRectangle';
 
-export * from './IPointData';
-export * from './IPoint';
-export * from './Point';
-export * from './ObservablePoint';
-export * from './Matrix';
 export * from './groupD8';
+export * from './IPoint';
+export * from './IPointData';
+export * from './Matrix';
+export * from './ObservablePoint';
+export * from './Point';
 export * from './Transform';
 
 export { Circle };

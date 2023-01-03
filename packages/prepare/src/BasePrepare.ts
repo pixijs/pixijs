@@ -1,9 +1,10 @@
-import { Ticker, UPDATE_PRIORITY, Texture, BaseTexture } from '@pixi/core';
-import type { DisplayObject } from '@pixi/display';
+import { BaseTexture, Texture, Ticker, UPDATE_PRIORITY } from '@pixi/core';
 import { Container } from '@pixi/display';
-import { Text, TextStyle, TextMetrics } from '@pixi/text';
+import { Text, TextMetrics, TextStyle } from '@pixi/text';
 import { CountLimiter } from './CountLimiter';
+
 import type { IRenderer } from '@pixi/core';
+import type { DisplayObject } from '@pixi/display';
 
 interface IArrowFunction
 {
@@ -215,7 +216,7 @@ function findTextStyle(item: TextStyle, queue: Array<any>): boolean
  * const sprite = PIXI.Sprite.from('something.png');
  *
  * // Load object into GPU
- * app.renderer.plugins.prepare.upload(sprite, () => {
+ * app.renderer.prepare.upload(sprite, () => {
  *     // Texture(s) has been uploaded to GPU
  *     app.stage.addChild(sprite);
  * });

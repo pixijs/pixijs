@@ -1,10 +1,10 @@
 import { DisplayObject } from '@pixi/display';
 import { FederatedEvent } from './FederatedEvent';
-import type { FederatedPointerEvent } from './FederatedPointerEvent';
-import type { FederatedWheelEvent } from './FederatedWheelEvent';
 
 import type { utils } from '@pixi/core';
 import type { FederatedEventMap } from './FederatedEventMap';
+import type { FederatedPointerEvent } from './FederatedPointerEvent';
+import type { FederatedWheelEvent } from './FederatedWheelEvent';
 
 export type Cursor = 'auto'
 | 'default'

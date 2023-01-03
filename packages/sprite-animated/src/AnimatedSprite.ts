@@ -1,5 +1,6 @@
-import { Sprite } from '@pixi/sprite';
 import { Texture, Ticker, UPDATE_PRIORITY } from '@pixi/core';
+import { Sprite } from '@pixi/sprite';
+
 import type { IDestroyOptions } from '@pixi/display';
 
 /**
@@ -256,11 +257,8 @@ export class AnimatedSprite extends Sprite
         {
             if (this.loop && this.onLoop)
             {
-                if (this.animationSpeed > 0 && this.currentFrame < previousFrame)
-                {
-                    this.onLoop();
-                }
-                else if (this.animationSpeed < 0 && this.currentFrame > previousFrame)
+                if ((this.animationSpeed > 0 && this.currentFrame < previousFrame)
+                    || (this.animationSpeed < 0 && this.currentFrame > previousFrame))
                 {
                     this.onLoop();
                 }
@@ -392,7 +390,7 @@ export class AnimatedSprite extends Sprite
         this.updateTexture();
     }
 
-    /** The AnimatedSprites current frame index. */
+    /** The AnimatedSprite's current frame index. */
     get currentFrame(): number
     {
         let currentFrame = Math.floor(this._currentTime) % this._textures.length;

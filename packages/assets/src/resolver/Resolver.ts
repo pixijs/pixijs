@@ -2,7 +2,28 @@ import { utils } from '@pixi/core';
 import { convertToList } from '../utils/convertToList';
 import { createStringVariations } from '../utils/createStringVariations';
 import { isSingleItem } from '../utils/isSingleItem';
-import type { ResolveAsset, PreferOrder, ResolveURLParser, ResolverManifest, ResolverBundle } from './types';
+
+import type { PreferOrder, ResolveAsset, ResolverBundle, ResolverManifest, ResolveURLParser } from './types';
+
+export interface BundleIdentifierOptions
+{
+    /** The character that is used to connect the bundleId and the assetId when generating a bundle asset id key */
+    connector?: string;
+    /**
+     * A function that generates a bundle asset id key from a bundleId and an assetId
+     * @param bundleId - the bundleId
+     * @param assetId  - the assetId
+     * @returns the bundle asset id key
+     */
+    createBundleAssetId?: (bundleId: string, assetId: string) => string;
+    /**
+     * A function that generates an assetId from a bundle asset id key. This is the reverse of generateBundleAssetId
+     * @param bundleId - the bundleId
+     * @param assetBundleId - the bundle asset id key
+     * @returns the assetId
+     */
+    extractAssetIdFromBundle?: (bundleId: string, assetBundleId: string) => string;
+}
 
 /**
  * A class that is responsible for resolving mapping asset URLs to keys.
@@ -40,6 +61,33 @@ import type { ResolveAsset, PreferOrder, ResolveURLParser, ResolverManifest, Res
  */
 export class Resolver
 {
+    /** The character that is used to connect the bundleId and the assetId when generating a bundle asset id key */
+    private _bundleIdConnector = '-';
+
+    /**
+     * A function that generates a bundle asset id key from a bundleId and an assetId
+     * @param bundleId - the bundleId
+     * @param assetId  - the assetId
+     * @returns the bundle asset id key
+     */
+    private _createBundleAssetId: (
+        bundleId: string,
+        assetId: string
+    ) => string = (bundleId, assetId) =>
+            `${bundleId}${this._bundleIdConnector}${assetId}`;
+
+    /**
+     * A function that generates an assetId from a bundle asset id key. This is the reverse of generateBundleAssetId
+     * @param bundleId - the bundleId
+     * @param assetBundleId - the bundle asset id key
+     * @returns the assetId
+     */
+    private _extractAssetIdFromBundle: (
+        bundleId: string,
+        assetBundleId: string
+    ) => string = (bundleId, assetBundleId) =>
+            assetBundleId.replace(`${bundleId}${this._bundleIdConnector}`, '');
+
     private _assetMap: Record<string, ResolveAsset[]> = {};
     private _preferredOrder: PreferOrder[] = [];
     private _parsers: ResolveURLParser[] = [];
@@ -49,6 +97,25 @@ export class Resolver
     private _basePath: string;
     private _manifest: ResolverManifest;
     private _bundles: Record<string, string[]> = {};
+    private _defaultSearchParams: string;
+
+    /**
+     * Override how the resolver deals with generating bundle ids.
+     * must be called before any bundles are added
+     * @param bundleIdentifier - the bundle identifier options
+     */
+    public setBundleIdentifier(bundleIdentifier: BundleIdentifierOptions): void
+    {
+        this._bundleIdConnector = bundleIdentifier.connector ?? this._bundleIdConnector;
+        this._createBundleAssetId = bundleIdentifier.createBundleAssetId ?? this._createBundleAssetId;
+        // eslint-disable-next-line max-len
+        this._extractAssetIdFromBundle = bundleIdentifier.extractAssetIdFromBundle ?? this._extractAssetIdFromBundle;
+
+        if (this._extractAssetIdFromBundle('foo', this._createBundleAssetId('foo', 'bar')) !== 'bar')
+        {
+            throw new Error('[Resolver] GenerateBundleAssetId are not working correctly');
+        }
+    }
 
     /**
      * Let the resolver know which assets you prefer to use when resolving assets.
@@ -176,6 +243,26 @@ export class Resolver
     }
 
     /**
+     * Sets the default URL search parameters for the URL resolver. The urls can be specified as a string or an object.
+     * @param searchParams - the default url parameters to append when resolving urls
+     */
+    public setDefaultSearchParams(searchParams: string | Record<string, unknown>): void
+    {
+        if (typeof searchParams === 'string')
+        {
+            this._defaultSearchParams = searchParams;
+        }
+        else
+        {
+            const queryValues = searchParams as Record<string, any>;
+
+            this._defaultSearchParams = Object.keys(queryValues)
+                .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(queryValues[key])}`)
+                .join('&');
+        }
+    }
+
+    /**
      * Add a manifest to the asset resolver. This is a nice way to add all the asset information in one go.
      * generally a manifest would be built using a tool.
      * @param manifest - the manifest to add to the resolver
@@ -215,28 +302,40 @@ export class Resolver
     {
         const assetNames: string[] = [];
 
+        // when storing keys against a bundle we prepend the bundleId to each asset key
+        // and pass it through as an additional alias for the asset
+        // this keeps clashing ids separate on a per-bundle basis
+        // you can also resolve a file using the bundleId-assetId syntax
         if (Array.isArray(assets))
         {
             assets.forEach((asset) =>
             {
                 if (typeof asset.name === 'string')
                 {
-                    assetNames.push(asset.name);
+                    const bundleAssetId = this._createBundleAssetId(bundleId, asset.name);
+
+                    assetNames.push(bundleAssetId);
+                    this.add([asset.name, bundleAssetId], asset.srcs);
                 }
                 else
                 {
-                    assetNames.push(...asset.name);
-                }
+                    const bundleIds = asset.name.map((name) => this._createBundleAssetId(bundleId, name));
 
-                this.add(asset.name, asset.srcs);
+                    bundleIds.forEach((bundleId) =>
+                    {
+                        assetNames.push(bundleId);
+                    });
+
+                    this.add([...asset.name, ...bundleIds], asset.srcs);
+                }
             });
         }
         else
         {
             Object.keys(assets).forEach((key) =>
             {
-                assetNames.push(key);
-                this.add(key, assets[key]);
+                assetNames.push(this._createBundleAssetId(bundleId, key));
+                this.add([key, this._createBundleAssetId(bundleId, key)], assets[key]);
             });
         }
 
@@ -344,6 +443,8 @@ export class Resolver
                 formattedAsset.src = utils.path.toAbsolute(formattedAsset.src, this._basePath, this._rootPath);
             }
 
+            formattedAsset.src = this._appendDefaultSearchParams(formattedAsset.src);
+
             formattedAsset.data = formattedAsset.data ?? data;
 
             return formattedAsset;
@@ -411,7 +512,18 @@ export class Resolver
 
             if (assetNames)
             {
-                out[bundleId] = this.resolve(assetNames) as Record<string, ResolveAsset>;
+                const results = this.resolve(assetNames) as Record<string, ResolveAsset>;
+
+                const assets: Record<string, ResolveAsset> = {};
+
+                for (const key in results)
+                {
+                    const asset = results[key];
+
+                    assets[this._extractAssetIdFromBundle(bundleId, key)] = asset;
+                }
+
+                out[bundleId] = assets;
             }
         });
 
@@ -509,6 +621,9 @@ export class Resolver
                         src = utils.path.toAbsolute(src, this._basePath, this._rootPath);
                     }
 
+                    // make sure to append any default parameters
+                    src = this._appendDefaultSearchParams(src);
+
                     // if the resolver fails we just pass back the key assuming its a url
                     this._resolverHash[key] = {
                         src,
@@ -532,7 +647,7 @@ export class Resolver
         {
             const asset = assets[0];
 
-            const preferred =  this._preferredOrder.find((preference: PreferOrder) =>
+            const preferred = this._preferredOrder.find((preference: PreferOrder) =>
                 preference.params.format.includes(asset.format));
 
             if (preferred)
@@ -542,5 +657,19 @@ export class Resolver
         }
 
         return this._preferredOrder[0];
+    }
+
+    /**
+     * Appends the default url parameters to the url
+     * @param url - The url to append the default parameters to
+     * @returns - The url with the default parameters appended
+     */
+    private _appendDefaultSearchParams(url: string): string
+    {
+        if (!this._defaultSearchParams) return url;
+
+        const paramConnector = (/\?/).test(url) ? '&' : '?';
+
+        return `${url}${paramConnector}${this._defaultSearchParams}`;
     }
 }

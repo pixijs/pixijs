@@ -1,6 +1,6 @@
-import { BaseTextureCache, TextureCache } from '@pixi/utils';
-import { BaseTexture, Texture, RenderTexture, ImageResource, SVGResource, VideoResource } from '@pixi/core';
+import { BaseTexture, ImageResource, RenderTexture, SVGResource, Texture, VideoResource } from '@pixi/core';
 import { settings } from '@pixi/settings';
+import { BaseTextureCache, TextureCache } from '@pixi/utils';
 
 const URL = 'foo.png';
 const NAME = 'foo';

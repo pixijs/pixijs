@@ -1,9 +1,9 @@
+import { MSAA_QUALITY } from '@pixi/constants';
 import { Program } from '../shader/Program';
 import { Shader } from '../shader/Shader';
 import { State } from '../state/State';
 import defaultFragment from './defaultFilter.frag';
 import defaultVertex from './defaultFilter.vert';
-import { MSAA_QUALITY } from '@pixi/constants';
 
 import type { BLEND_MODES, CLEAR_MODES } from '@pixi/constants';
 import type { Dict } from '@pixi/utils';
@@ -43,7 +43,7 @@ import type { FilterSystem } from './FilterSystem';
  * bringing those extra uniforms into account.
  *
  * Also be aware that we have changed default vertex shader, please consult
- * {@link https://github.com/pixijs/pixi.js/wiki/v5-Creating-filters Wiki}.
+ * {@link https://github.com/pixijs/pixijs/wiki/v5-Creating-filters Wiki}.
  *
  * ### Frames
  *
@@ -179,7 +179,7 @@ import type { FilterSystem } from './FilterSystem';
  * ### Additional Information
  *
  * Complete documentation on Filter usage is located in the
- * {@link https://github.com/pixijs/pixi.js/wiki/v5-Creating-filters Wiki}.
+ * {@link https://github.com/pixijs/pixijs/wiki/v5-Creating-filters Wiki}.
  *
  * Since PixiJS only had a handful of built-in filters, additional filters can be downloaded
  * {@link https://github.com/pixijs/pixi-filters here} from the PixiJS Filters repository.
@@ -302,7 +302,7 @@ export class Filter extends Shader
 
     /**
      * The default vertex shader source
-     * @constant
+     * @readonly
      */
     static get defaultVertexSrc(): string
     {
@@ -311,7 +311,7 @@ export class Filter extends Shader
 
     /**
      * The default fragment shader source
-     * @constant
+     * @readonly
      */
     static get defaultFragmentSrc(): string
     {

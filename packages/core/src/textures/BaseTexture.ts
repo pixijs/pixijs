@@ -1,14 +1,14 @@
-import { BaseTextureCache, EventEmitter, isPow2, TextureCache, uid } from '@pixi/utils';
-import { FORMATS, SCALE_MODES, TARGETS, TYPES, ALPHA_MODES, MIPMAP_MODES, WRAP_MODES } from '@pixi/constants';
-import { Resource } from './resources/Resource';
-import { BufferResource } from './resources/BufferResource';
-import { autoDetectResource } from './resources/autoDetectResource';
+import { ALPHA_MODES, FORMATS, MIPMAP_MODES, SCALE_MODES, TARGETS, TYPES, WRAP_MODES } from '@pixi/constants';
 import { settings } from '@pixi/settings';
+import { BaseTextureCache, EventEmitter, isPow2, TextureCache, uid } from '@pixi/utils';
+import { autoDetectResource } from './resources/autoDetectResource';
+import { BufferResource } from './resources/BufferResource';
+import { Resource } from './resources/Resource';
 
 import type { MSAA_QUALITY } from '@pixi/constants';
 import type { ICanvas } from '@pixi/settings';
-import type { IAutoDetectOptions } from './resources/autoDetectResource';
 import type { GLTexture } from './GLTexture';
+import type { IAutoDetectOptions } from './resources/autoDetectResource';
 
 const defaultBufferOptions = {
     scaleMode: SCALE_MODES.NEAREST,
@@ -275,8 +275,10 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
 
         options = Object.assign({}, BaseTexture.defaultOptions, options);
 
-        const { alphaMode, mipmap, anisotropicLevel, scaleMode, width, height,
-            wrapMode, format, type, target, resolution, resourceOptions } = options;
+        const {
+            alphaMode, mipmap, anisotropicLevel, scaleMode, width, height,
+            wrapMode, format, type, target, resolution, resourceOptions
+        } = options;
 
         // Convert the resource to a Resource object
         if (resource && !(resource instanceof Resource))
@@ -722,7 +724,8 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
                 baseTexture.textureCacheIds.push(id);
             }
 
-            if (BaseTextureCache[id])
+            // only throw a warning if there is a different base texture mapped to this id.
+            if (BaseTextureCache[id] && BaseTextureCache[id] !== baseTexture)
             {
                 // eslint-disable-next-line no-console
                 console.warn(`BaseTexture added to the cache with an id [${id}] that already had an entry`);

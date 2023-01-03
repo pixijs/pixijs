@@ -1,5 +1,6 @@
-import type { ChildProcess } from 'child_process';
 import kill from 'tree-kill';
+
+import type { ChildProcess } from 'child_process';
 
 // eslint-disable-next-line func-names
 module.exports = async function ()

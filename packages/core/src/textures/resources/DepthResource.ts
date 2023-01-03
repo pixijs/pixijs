@@ -1,8 +1,8 @@
 import { ALPHA_MODES } from '@pixi/constants';
 import { BufferResource } from './BufferResource';
 
-import type { BaseTexture } from '../BaseTexture';
 import type { Renderer } from '../../Renderer';
+import type { BaseTexture } from '../BaseTexture';
 import type { GLTexture } from '../GLTexture';
 
 /**

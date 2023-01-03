@@ -1,5 +1,4 @@
 import { ObservablePoint, Point } from '@pixi/core';
-
 import '@pixi/math-extras';
 
 describe('Point', () =>

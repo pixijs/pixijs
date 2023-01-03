@@ -5,7 +5,6 @@ Object.defineProperties(settings, {
     /**
      * Sets the default value for the container property 'sortableChildren'.
      * @static
-     * @constant
      * @name SORTABLE_CHILDREN
      * @memberof PIXI.settings
      * @deprecated since 7.1.0

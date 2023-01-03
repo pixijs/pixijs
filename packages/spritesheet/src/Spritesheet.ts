@@ -1,4 +1,5 @@
-import { Texture, BaseTexture, utils, Rectangle } from '@pixi/core';
+import { BaseTexture, Rectangle, Texture, utils } from '@pixi/core';
+
 import type { ImageResource, IPointData } from '@pixi/core';
 
 /** Represents the JSON data for a spritesheet atlas. */

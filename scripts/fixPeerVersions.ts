@@ -1,7 +1,7 @@
-import workspacesRun from 'workspaces-run';
-import path from 'path';
 import fs from 'fs';
+import path from 'path';
 import util from 'util';
+import workspacesRun from 'workspaces-run';
 
 /** Simplified interface for a package.json */
 interface Package

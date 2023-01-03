@@ -1,4 +1,5 @@
 import { ParticleContainer } from '@pixi/particle-container';
+
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
 
 /**

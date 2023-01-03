@@ -1,6 +1,6 @@
 import { settings } from '@pixi/core';
 
-import type { ICanvas } from '@pixi/settings';
+import type { ICanvas } from '@pixi/core';
 
 /**
  * Creates a little colored canvas

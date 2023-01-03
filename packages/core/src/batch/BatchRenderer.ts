@@ -1,28 +1,26 @@
-import { BatchDrawCall } from './BatchDrawCall';
-import { BatchTextureArray } from './BatchTextureArray';
-import { BaseTexture } from '../textures/BaseTexture';
-import { ObjectRenderer } from './ObjectRenderer';
-import { State } from '../state/State';
-import { ViewableBuffer } from '../geometry/ViewableBuffer';
-import { BatchShaderGenerator } from './BatchShaderGenerator';
-import { checkMaxIfStatementsInShader } from '../shader/utils/checkMaxIfStatementsInShader';
-
-import { settings } from '@pixi/settings';
-import { premultiplyBlendMode, premultiplyTint, nextPow2, log2, deprecation } from '@pixi/utils';
 import { ENV } from '@pixi/constants';
+import { extensions, ExtensionType } from '@pixi/extensions';
+import { settings } from '@pixi/settings';
+import { deprecation, log2, nextPow2, premultiplyBlendMode, premultiplyTint } from '@pixi/utils';
+import { ViewableBuffer } from '../geometry/ViewableBuffer';
+import { checkMaxIfStatementsInShader } from '../shader/utils/checkMaxIfStatementsInShader';
+import { State } from '../state/State';
+import { BaseTexture } from '../textures/BaseTexture';
+import { BatchDrawCall } from './BatchDrawCall';
 import { BatchGeometry } from './BatchGeometry';
-
-import defaultVertex from './texture.vert';
+import { BatchShaderGenerator } from './BatchShaderGenerator';
+import { BatchTextureArray } from './BatchTextureArray';
+import { canUploadSameBuffer } from './canUploadSameBuffer';
+import { maxRecommendedTextures } from './maxRecommendedTextures';
+import { ObjectRenderer } from './ObjectRenderer';
 import defaultFragment from './texture.frag';
+import defaultVertex from './texture.vert';
 
+import type { BLEND_MODES } from '@pixi/constants';
+import type { ExtensionMetadata } from '@pixi/extensions';
 import type { Renderer } from '../Renderer';
 import type { Shader } from '../shader/Shader';
 import type { Texture } from '../textures/Texture';
-import type { BLEND_MODES } from '@pixi/constants';
-import type { ExtensionMetadata } from '@pixi/extensions';
-import { extensions, ExtensionType } from '@pixi/extensions';
-import { maxRecommendedTextures } from './maxRecommendedTextures';
-import { canUploadSameBuffer } from './canUploadSameBuffer';
 
 /**
  * Interface for elements like Sprite, Mesh etc. for batching.

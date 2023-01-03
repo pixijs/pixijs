@@ -1,7 +1,8 @@
 import { BaseTexture, extensions, ExtensionType, settings, utils } from '@pixi/core';
+import { checkDataUrl } from '../../../utils/checkDataUrl';
+import { checkExtension } from '../../../utils/checkExtension';
 import { LoaderParserPriority } from '../LoaderParser';
 import { WorkerManager } from '../WorkerManager';
-import { checkExtension } from './utils/checkExtension';
 import { createTexture } from './utils/createTexture';
 
 import type { IBaseTextureOptions, Texture } from '@pixi/core';
@@ -9,7 +10,13 @@ import type { Loader } from '../../Loader';
 import type { LoadAsset } from '../../types';
 import type { LoaderParser } from '../LoaderParser';
 
-const validImages = ['.jpg', '.png', '.jpeg', '.avif', '.webp'];
+const validImageExtensions = ['.jpeg', '.jpg', '.png', '.webp', '.avif'];
+const validImageMIMEs = [
+    'image/jpeg',
+    'image/png',
+    'image/webp',
+    'image/avif',
+];
 
 /**
  * Returns a promise that resolves an ImageBitmaps.
@@ -51,18 +58,7 @@ export const loadTextures = {
 
     test(url: string): boolean
     {
-        let isValidBase64Suffix = false;
-
-        for (let i = 0; i < validImages.length; i++)
-        {
-            if (url.startsWith(`data:image/${validImages[i].slice(1)}`))
-            {
-                isValidBase64Suffix = true;
-                break;
-            }
-        }
-
-        return isValidBase64Suffix || checkExtension(url, validImages);
+        return checkDataUrl(url, validImageMIMEs) || checkExtension(url, validImageExtensions);
     },
 
     async load(url: string, asset: LoadAsset<IBaseTextureOptions>, loader: Loader): Promise<Texture>

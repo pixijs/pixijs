@@ -1,8 +1,9 @@
-import { Resource } from './Resource';
 import { BaseTexture } from '../BaseTexture';
+import { autoDetectResource } from './autoDetectResource';
+import { Resource } from './Resource';
+
 import type { ISize } from '@pixi/math';
 import type { IAutoDetectOptions } from './autoDetectResource';
-import { autoDetectResource } from './autoDetectResource';
 
 /**
  * Resource that can manage several resource (items) inside.

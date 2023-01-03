@@ -1,6 +1,7 @@
-import type { IAttributeData } from '../Program';
 import { mapSize } from './mapSize';
 import { mapType } from './mapType';
+
+import type { IAttributeData } from '../Program';
 
 /**
  * returns the attribute data from the program

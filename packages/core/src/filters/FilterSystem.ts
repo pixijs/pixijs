@@ -1,19 +1,19 @@
+import { CLEAR_MODES, DRAW_MODES, MSAA_QUALITY } from '@pixi/constants';
+import { extensions, ExtensionType } from '@pixi/extensions';
+import { Matrix, Point, Rectangle } from '@pixi/math';
 import { RenderTexturePool } from '../renderTexture/RenderTexturePool';
+import { UniformGroup } from '../shader/UniformGroup';
 import { Quad } from '../utils/Quad';
 import { QuadUv } from '../utils/QuadUv';
-import { Rectangle, Matrix, Point } from '@pixi/math';
-import { UniformGroup } from '../shader/UniformGroup';
-import { DRAW_MODES, CLEAR_MODES, MSAA_QUALITY } from '@pixi/constants';
 import { FilterState } from './FilterState';
 
+import type { ExtensionMetadata } from '@pixi/extensions';
+import type { Renderer } from '../Renderer';
+import type { RenderTexture } from '../renderTexture/RenderTexture';
 import type { ISystem } from '../system/ISystem';
 import type { Filter } from './Filter';
 import type { IFilterTarget } from './IFilterTarget';
 import type { ISpriteMaskTarget } from './spriteMask/SpriteMaskFilter';
-import type { RenderTexture } from '../renderTexture/RenderTexture';
-import type { Renderer } from '../Renderer';
-import type { ExtensionMetadata } from '@pixi/extensions';
-import { extensions, ExtensionType } from '@pixi/extensions';
 
 const tempPoints = [new Point(), new Point(), new Point(), new Point()];
 const tempMatrix = new Matrix();
