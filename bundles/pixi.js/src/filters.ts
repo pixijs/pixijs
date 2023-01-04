@@ -55,18 +55,18 @@ const filters = {
     NoiseFilter,
 };
 
-for (const i in filters)
+Object.entries(filters).forEach(([key, FilterClass]) =>
 {
-    const key = i as keyof typeof filters;
-
     Object.defineProperty(filters, key, {
         get()
         {
+            // #if _DEBUG
             utils.deprecation('7.1.0', `filters.${key} has moved to ${key}`);
+            // #endif
 
-            return filters[key];
+            return FilterClass;
         },
     });
-}
+});
 
 export { filters };
