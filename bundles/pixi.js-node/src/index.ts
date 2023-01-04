@@ -18,6 +18,7 @@ INSTALLED.length = 0;
 INSTALLED.push(NodeCanvasResource);
 
 // Export ES for those importing specifically by name
+export * from './filters';
 export * from '@pixi/app';
 export * from '@pixi/assets';
 export * from '@pixi/core';

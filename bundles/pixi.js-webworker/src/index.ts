@@ -3,6 +3,7 @@ import '@pixi/mixin-get-child-by-name';
 import '@pixi/mixin-get-global-position';
 
 // Export ES for those importing specifically by name
+export * from './filters';
 export * from '@pixi/app';
 export * from '@pixi/assets';
 export * from '@pixi/compressed-textures';
