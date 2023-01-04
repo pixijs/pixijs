@@ -1,4 +1,5 @@
 import { utils } from '@pixi/core';
+import { AlphaFilter } from '@pixi/filter-alpha';
 import { BlurFilter, BlurFilterPass } from '@pixi/filter-blur';
 import { ColorMatrixFilter } from '@pixi/filter-color-matrix';
 import { DisplacementFilter } from '@pixi/filter-displacement';
@@ -11,6 +12,13 @@ import { NoiseFilter } from '@pixi/filter-noise';
  * @deprecated
  */
 const filters = {
+    /**
+     * @class
+     * @memberof PIXI.filters
+     * @deprecated since 7.1.0
+     * @see PIXI.AlphaFilter
+     */
+    AlphaFilter,
     /**
      * @class
      * @memberof PIXI.filters
