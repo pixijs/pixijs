@@ -107,6 +107,12 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
     public readonly type: RENDERER_TYPE.WEBGL;
 
     /**
+     * Options passed to the constructor.
+     * @type {PIXI.IRendererOptions}
+     */
+    public readonly options: IRendererOptions;
+
+    /**
      * WebGL context, set by {@link PIXI.ContextSystem this.context}.
      * @readonly
      * @member {WebGLRenderingContext}
@@ -403,6 +409,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
         };
 
         this.startup.run(startupOptions);
+        this.options = options;
     }
 
     /**
