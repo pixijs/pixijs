@@ -16,7 +16,7 @@ import type { FilterSystem } from './FilterSystem';
  * render-target.
  *
  * {@link http://pixijs.io/examples/#/filters/blur-filter.js Example} of the
- * {@link PIXI.filters.BlurFilter BlurFilter}.
+ * {@link PIXI.BlurFilter BlurFilter}.
  *
  * ### Usage
  * Filters can be applied to any DisplayObject or Container.
@@ -108,7 +108,7 @@ import type { FilterSystem } from './FilterSystem';
  * const myFilter = new Filter(null, fragment);
  * ```
  *
- * This filter is just one uniform less than {@link PIXI.filters.AlphaFilter AlphaFilter}.
+ * This filter is just one uniform less than {@link PIXI.AlphaFilter AlphaFilter}.
  *
  * **outputFrame**
  *
@@ -156,7 +156,7 @@ import type { FilterSystem } from './FilterSystem';
  * `inputPixel.xy` is the size of framebuffer in real pixels, same as `inputSize.xy * resolution`
  * `inputPixel.zw` is inverted `inputPixel.xy`.
  *
- * It's handy for filters that use neighbour pixels, like {@link PIXI.filters.FXAAFilter FXAAFilter}.
+ * It's handy for filters that use neighbour pixels, like {@link PIXI.FXAAFilter FXAAFilter}.
  *
  * **inputClamp**
  *

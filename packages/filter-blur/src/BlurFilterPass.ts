@@ -6,7 +6,7 @@ import type { FilterSystem, RenderTexture } from '@pixi/core';
 
 /**
  * The BlurFilterPass applies a horizontal or vertical Gaussian blur to an object.
- * @memberof PIXI.filters
+ * @memberof PIXI
  */
 export class BlurFilterPass extends Filter
 {

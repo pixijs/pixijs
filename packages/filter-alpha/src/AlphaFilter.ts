@@ -13,7 +13,7 @@ import fragment from './alpha.frag';
  * 1. Assign a blendMode to this filter, blend all elements inside display object with background.
  *
  * 2. To use clipping in display coordinates, assign a filterArea to the same container that has this filter.
- * @memberof PIXI.filters
+ * @memberof PIXI
  */
 export class AlphaFilter extends Filter
 {
