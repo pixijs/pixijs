@@ -74,27 +74,46 @@ export interface IRenderingContext extends WebGL2RenderingContext
         srcData: ArrayBufferView | null, srcOffset?: GLuint): void;
 }
 
+/**
+ * Renderer options supplied to constructor.
+ * @memberof PIXI
+ */
 export interface IRendererOptions extends GlobalMixins.IRendererOptions
 {
+    /** Width of the view */
     width?: number;
+    /** Height of the view */
     height?: number;
+    /** Canvas or OffscreenCanvas to use, will be created if omitted */
     view?: ICanvas;
     /**
      * Use premultipliedAlpha and backgroundAlpha instead
      * @deprecated since 7.0.0
      */
     useContextAlpha?: boolean | 'notMultiplied';
+    /** Consider the resolution when resizing the view */
     autoDensity?: boolean;
+    /** Antialias turn on for WebGL, impacts performance */
     antialias?: boolean;
+    /** Base resolution for the Renderer */
     resolution?: number;
+    /** Preserve the drawing buffer */
     preserveDrawingBuffer?: boolean;
+    /** Clear the draw before render */
     clearBeforeRender?: boolean;
+    /** The background color, can be number (`0xff0000`) or string (`#f00`) */
     backgroundColor?: number | string;
+    /** Alias for `backgroundColor` */
     background?: number | string;
+    /** Background color alpha */
     backgroundAlpha?: number;
+    /** Premultiply alpha */
     premultipliedAlpha?: boolean;
+    /** Power preference, for multiple GPUs */
     powerPreference?: WebGLPowerPreference;
+    /** User-proviced rendering context object */
     context?: IRenderingContext;
+    /** Console log the version and type of Renderer */
     hello?: boolean;
 }
 
@@ -125,6 +144,12 @@ export interface IRenderer<VIEW extends ICanvas = ICanvas> extends SystemManager
      * @see PIXI.RENDERER_TYPE
      */
     readonly type: RENDERER_TYPE
+
+    /**
+     * The options passed in to create a new instance of the renderer.
+     * @type {PIXI.IRendererOptions}
+     */
+    readonly options: IRendererOptions
 
     /** When logging Pixi to the console, this is the name we will show */
     readonly rendererLogId: string

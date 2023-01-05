@@ -16,7 +16,7 @@ export type ColorMatrix = utils.ArrayFixed<number, 20>;
  * container.filters = [colorMatrix];
  * colorMatrix.contrast(2);
  * @author Clément Chenebault <clement@goodboydigital.com>
- * @memberof PIXI.filters
+ * @memberof PIXI
  */
 export class ColorMatrixFilter extends Filter
 {

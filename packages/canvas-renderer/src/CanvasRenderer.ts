@@ -85,6 +85,12 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
     };
 
     /**
+     * Options passed to the constructor.
+     * @member {PIXI.IRendererOptions}
+     */
+    public readonly options: IRendererOptions;
+
+    /**
      * Used with autoDetectRenderer, this is always supported for any environment, so return true.
      * @ignore
      */
@@ -241,6 +247,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
         };
 
         this.startup.run(startupOptions);
+        this.options = options;
     }
 
     /**

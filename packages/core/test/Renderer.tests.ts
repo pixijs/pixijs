@@ -146,4 +146,17 @@ describe('Renderer', () =>
 
         renderer.destroy();
     });
+
+    it('should expose constructor options', () =>
+    {
+        const options = { width: 1, height: 2, antialias: true, resolution: 2 };
+        const renderer = new Renderer(options);
+
+        expect(renderer.options.width).toBe(1);
+        expect(renderer.options.height).toBe(2);
+        expect(renderer.options.antialias).toBe(true);
+        expect(renderer.options.resolution).toBe(2);
+
+        renderer.destroy();
+    });
 });

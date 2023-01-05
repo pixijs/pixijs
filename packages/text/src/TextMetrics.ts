@@ -783,6 +783,13 @@ export class TextMetrics
 
         baseline = baseline * TextMetrics.BASELINE_MULTIPLIER | 0;
 
+        if (width === 0 || height === 0)
+        {
+            TextMetrics._fonts[font] = properties;
+
+            return properties;
+        }
+
         canvas.width = width;
         canvas.height = height;
 
