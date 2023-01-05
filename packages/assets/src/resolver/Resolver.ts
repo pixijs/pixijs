@@ -371,7 +371,7 @@ export class Resolver
      * @param assetsIn - The assets to associate with the key(s)
      * @param data - The data that will be attached to the object that resolved object.
      */
-    public add(keysIn: string | string[], assetsIn: string | ResolveAsset | (ResolveAsset | string)[], data?: unknown): void
+    public add(keysIn: string | string[], assetsIn: string | ResolveAsset | (string | ResolveAsset)[], data?: unknown): void
     {
         const keys: string[] = convertToList<string>(keysIn);
 

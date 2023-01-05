@@ -26,7 +26,7 @@ export interface ResolveAsset extends Record<string, any>
 
 export type ResolverAssetsArray = {
     name: string | string[];
-    srcs: string | ResolveAsset[];
+    srcs: string | ResolveAsset | (string | ResolveAsset)[];
 }[];
 
 export type ResolverAssetsObject = Record<string, (string | ResolveAsset)>;
