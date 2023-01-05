@@ -32,7 +32,7 @@ function normalizeStringPosix(path: string, allowAboveRoot: boolean)
     let lastSegmentLength = 0;
     let lastSlash = -1;
     let dots = 0;
-    let code: number;
+    let code = -1;
 
     for (let i = 0; i <= path.length; ++i)
     {
@@ -194,7 +194,7 @@ export const path: Path = {
 
         if (isFile || isHttp || isWindows)
         {
-            const arr = isFile?.[0] || isHttp?.[0] || isWindows?.[0];
+            const arr = (isFile?.[0] || isHttp?.[0] || isWindows?.[0]) as string;
 
             protocol = arr;
             path = path.slice(arr.length);

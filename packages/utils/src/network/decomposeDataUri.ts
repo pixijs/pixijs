@@ -2,11 +2,11 @@ import { DATA_URI } from '../const';
 
 export interface DecomposedDataUri
 {
-    mediaType: string;
-    subType: string;
-    charset: string;
-    encoding: string;
-    data: string;
+    mediaType?: string;
+    subType?: string;
+    charset?: string;
+    encoding?: string;
+    data?: string;
 }
 
 /**
@@ -51,7 +51,7 @@ export interface DecomposedDataUri
  * @param {string} dataUri - the data URI to check
  * @returns {PIXI.utils.DecomposedDataUri|undefined} The decomposed data uri or undefined
  */
-export function decomposeDataUri(dataUri: string): DecomposedDataUri
+export function decomposeDataUri(dataUri: string): DecomposedDataUri | undefined
 {
     const dataUriMatch = DATA_URI.exec(dataUri);
 

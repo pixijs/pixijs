@@ -30,9 +30,9 @@ export function isWebGLSupported(): boolean
                 let gl = (
                     canvas.getContext('webgl', contextOptions)
                     || canvas.getContext('experimental-webgl', contextOptions)
-                ) as WebGLRenderingContext;
+                ) as WebGLRenderingContext | null;
 
-                const success = !!(gl && gl.getContextAttributes().stencil);
+                const success = !!gl?.getContextAttributes()?.stencil;
 
                 if (gl)
                 {

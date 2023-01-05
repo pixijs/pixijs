@@ -19,10 +19,13 @@ describe('trimCanvas', () =>
     it('should trim the canvas', () =>
     {
         const canvas = document.createElement('canvas');
-        const context = canvas.getContext('2d');
 
         canvas.width = 100;
         canvas.height = 50;
+
+        const context = canvas.getContext('2d');
+
+        if (context === null) fail('Failed to get canvas 2D context');
 
         context.fillStyle = '#ff0000';
         context.fillRect(10, 20, 10, 5);
@@ -34,8 +37,8 @@ describe('trimCanvas', () =>
         expect(trimmedImageData.width).toEqual(15);
         expect(trimmedImageData.height).toEqual(10);
         expect(trimmedImageData.data).toBeInstanceOf(ImageData);
-        expect(trimmedImageData.data.width).toEqual(15);
-        expect(trimmedImageData.data.height).toEqual(10);
-        expect(trimmedImageData.data.data).toEqual(context.getImageData(10, 20, 15, 10).data);
+        expect(trimmedImageData.data?.width).toEqual(15);
+        expect(trimmedImageData.data?.height).toEqual(10);
+        expect(trimmedImageData.data?.data).toEqual(context.getImageData(10, 20, 15, 10).data);
     });
 });

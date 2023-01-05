@@ -9,11 +9,9 @@ import type { ICanvas, ICanvasRenderingContext2D } from '@pixi/settings';
  */
 export class CanvasRenderTarget
 {
-    /** The Canvas object that belongs to this CanvasRenderTarget. */
-    public canvas: ICanvas;
+    protected _canvas: ICanvas | null;
 
-    /** A CanvasRenderingContext2D object representing a two-dimensional rendering context. */
-    public context: ICanvasRenderingContext2D;
+    protected _context: ICanvasRenderingContext2D | null;
 
     /**
      * The resolution / device pixel ratio of the canvas
@@ -28,9 +26,9 @@ export class CanvasRenderTarget
      */
     constructor(width: number, height: number, resolution?: number)
     {
-        this.canvas = settings.ADAPTER.createCanvas();
+        this._canvas = settings.ADAPTER.createCanvas();
 
-        this.context = this.canvas.getContext('2d');
+        this._context = this._canvas.getContext('2d');
 
         this.resolution = resolution || settings.RESOLUTION;
 
@@ -43,8 +41,12 @@ export class CanvasRenderTarget
      */
     clear(): void
     {
-        this.context.setTransform(1, 0, 0, 1, 0, 0);
-        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        // #if _DEBUG
+        this._checkDestroyed();
+        // #endif
+
+        this._context.setTransform(1, 0, 0, 1, 0, 0);
+        this._context.clearRect(0, 0, this._canvas.width, this._canvas.height);
     }
 
     /**
@@ -54,15 +56,19 @@ export class CanvasRenderTarget
      */
     resize(desiredWidth: number, desiredHeight: number): void
     {
-        this.canvas.width = Math.round(desiredWidth * this.resolution);
-        this.canvas.height = Math.round(desiredHeight * this.resolution);
+        // #if _DEBUG
+        this._checkDestroyed();
+        // #endif
+
+        this._canvas.width = Math.round(desiredWidth * this.resolution);
+        this._canvas.height = Math.round(desiredHeight * this.resolution);
     }
 
     /** Destroys this canvas. */
     destroy(): void
     {
-        this.context = null;
-        this.canvas = null;
+        this._context = null;
+        this._canvas = null;
     }
 
     /**
@@ -71,12 +77,20 @@ export class CanvasRenderTarget
      */
     get width(): number
     {
-        return this.canvas.width;
+        // #if _DEBUG
+        this._checkDestroyed();
+        // #endif
+
+        return this._canvas.width;
     }
 
     set width(val: number)
     {
-        this.canvas.width = Math.round(val);
+        // #if _DEBUG
+        this._checkDestroyed();
+        // #endif
+
+        this._canvas.width = Math.round(val);
     }
 
     /**
@@ -85,11 +99,49 @@ export class CanvasRenderTarget
      */
     get height(): number
     {
-        return this.canvas.height;
+        // #if _DEBUG
+        this._checkDestroyed();
+        // #endif
+
+        return this._canvas.height;
     }
 
     set height(val: number)
     {
-        this.canvas.height = Math.round(val);
+        // #if _DEBUG
+        this._checkDestroyed();
+        // #endif
+
+        this._canvas.height = Math.round(val);
     }
+
+    /** The Canvas object that belongs to this CanvasRenderTarget. */
+    public get canvas(): ICanvas
+    {
+        // #if _DEBUG
+        this._checkDestroyed();
+        // #endif
+
+        return this._canvas;
+    }
+
+    /** A CanvasRenderingContext2D object representing a two-dimensional rendering context. */
+    public get context(): ICanvasRenderingContext2D
+    {
+        // #if _DEBUG
+        this._checkDestroyed();
+        // #endif
+
+        return this._context;
+    }
+
+    // #if _DEBUG
+    private _checkDestroyed(): asserts this is this & { _canvas: ICanvas; _context: ICanvasRenderingContext2D }
+    {
+        if (this._canvas === null)
+        {
+            throw new TypeError('The CanvasRenderTarget has already been destroyed');
+        }
+    }
+    // #endif
 }
