@@ -26,7 +26,7 @@ describe('spritesheetAsset', () =>
 
     it('should load a spritesheet', async () =>
     {
-        const spriteSheet: Spritesheet = await loader.load(`${serverPath}spritesheet.json`);
+        const spriteSheet = await loader.load<Spritesheet>(`${serverPath}spritesheet.json`);
 
         const bunnyTexture = spriteSheet.textures['bunny.png'];
         const senseiTexture = spriteSheet.textures['pic-sensei.jpg'];
@@ -47,14 +47,14 @@ describe('spritesheetAsset', () =>
 
     it('should do nothing if the resource is not JSON', async () =>
     {
-        const spriteSheet = await loader.load(`black.txt`);
+        const spriteSheet = await loader.load<Spritesheet>('black.txt');
 
         expect(spriteSheet).toBeNull();
     });
 
     it('should do nothing if the resource is JSON, but improper format', async () =>
     {
-        const spriteSheet = await loader.load(`${serverPath}test.json`);
+        const spriteSheet = await loader.load<Spritesheet>(`${serverPath}test.json`);
 
         expect(spriteSheet).not.toBeInstanceOf(Spritesheet);
         expect(spriteSheet).toEqual({ testNumber: 23, testString: 'Test String 23' });
@@ -64,7 +64,7 @@ describe('spritesheetAsset', () =>
     {
         Cache['_parsers'].push(spritesheetAsset.cache as CacheParser);
 
-        const spritesheet = await loader.load(`${serverPath}multi-pack-0.json`) as Spritesheet;
+        const spritesheet = await loader.load<Spritesheet>(`${serverPath}multi-pack-0.json`);
 
         Cache.set('multi-pack-0.json', spritesheet);
 
@@ -88,9 +88,9 @@ describe('spritesheetAsset', () =>
         // clear the caches only to avoid cluttering the output
         utils.clearTextureCache();
 
-        const spritesheet = await loader.load(`${serverPath}building1-1.json`) as Spritesheet;
-        const spritesheet2 = await loader.load(`${serverPath}atlas-multipack-wrong-type.json`) as Spritesheet;
-        const spritesheet3 = await loader.load(`${serverPath}atlas-multipack-wrong-array.json`) as Spritesheet;
+        const spritesheet = await loader.load<Spritesheet>(`${serverPath}building1-1.json`);
+        const spritesheet2 = await loader.load<Spritesheet>(`${serverPath}atlas-multipack-wrong-type.json`);
+        const spritesheet3 = await loader.load<Spritesheet>(`${serverPath}atlas-multipack-wrong-array.json`);
 
         expect(spritesheet.linkedSheets.length).toEqual(1);
         expect(spritesheet2.linkedSheets.length).toEqual(0);
@@ -99,7 +99,7 @@ describe('spritesheetAsset', () =>
 
     it('should unload a spritesheet', async () =>
     {
-        const spriteSheet: Spritesheet = await loader.load(`${serverPath}spritesheet.json`);
+        const spriteSheet = await loader.load<Spritesheet>(`${serverPath}spritesheet.json`);
 
         await loader.unload(`${serverPath}spritesheet.json`);
 
