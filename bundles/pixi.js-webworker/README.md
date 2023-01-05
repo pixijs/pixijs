@@ -24,11 +24,27 @@ PixiJS can be installed with [npm](https://docs.npmjs.com/getting-started/what-i
 ```
 npm install @pixi/webworker
 ```
+
 There is no default export. The correct way to import PixiJS is:
 
 ```js
-import * as PIXI from '@pixi/webworker'
+import * as PIXI from '@pixi/webworker';
 ```
+
+#### CDN Install
+
+Via jsDelivr:
+
+```js
+importScripts('https://cdn.jsdelivr.net/npm/pixi.js-webworker@7.x/dist/pixi-webworker.min.js');
+```
+
+Or via unpkg:
+
+```js
+importScripts('https://unpkg.com/pixi.js-webworker@7.x/dist/pixi-webworker.min.js');
+```
+
 ### Basic Usage Example
 
 In `index.js`:
