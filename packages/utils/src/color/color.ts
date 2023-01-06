@@ -63,19 +63,9 @@ export function color2rgba(value: Color): number[]
     {
         const rgba = [0, 0, 0, 1];
 
-        if (value > 0xffffff)
-        {
-            rgba[0] = ((value >> 24) & 0xFF);
-            rgba[1] = ((value >> 16) & 0xFF);
-            rgba[2] = ((value >> 8) & 0xFF);
-            rgba[3] = (value & 0xFF) / 255;
-        }
-        else
-        {
-            rgba[0] = ((value >> 16) & 0xFF);
-            rgba[1] = ((value >> 8) & 0xFF);
-            rgba[2] = (value & 0xFF);
-        }
+        rgba[0] = ((value >> 16) & 0xFF);
+        rgba[1] = ((value >> 8) & 0xFF);
+        rgba[2] = (value & 0xFF);
 
         rgba[0] /= 255;
         rgba[1] /= 255;
@@ -89,7 +79,7 @@ export function color2rgba(value: Color): number[]
 
 function isHexNumber(value: number): boolean
 {
-    return value >= 0 && value <= 0xffffffff;
+    return value >= 0 && value <= 0xffffff;
 }
 
 function isHexString(value: string): boolean
