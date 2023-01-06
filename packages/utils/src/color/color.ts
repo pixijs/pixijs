@@ -59,7 +59,7 @@ export function color2rgba(value: Color): number[]
 
         return [r / 255, g / 255, b / 255, a];
     }
-    else if (typeof value === 'number' && value >= 0 && value <= 0xffffffff)
+    else if (typeof value === 'number' && isHexNumber(value))
     {
         const rgba = [0, 0, 0, 1];
 
@@ -85,6 +85,11 @@ export function color2rgba(value: Color): number[]
     }
 
     throw new Error(`Unable to convert color "${value}" to RGBA`);
+}
+
+function isHexNumber(value: number): boolean
+{
+    return value >= 0 && value <= 0xffffffff;
 }
 
 function isHexString(value: string): boolean
