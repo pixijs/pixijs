@@ -1,4 +1,4 @@
-import { BaseTexture, ExtensionType, settings, SVGResource, utils } from '@pixi/core';
+import { BaseTexture, extensions, ExtensionType, settings, SVGResource, utils } from '@pixi/core';
 import { LoaderParserPriority } from '../LoaderParser';
 import { loadTextures } from './loadTextures';
 import { createTexture } from './utils/createTexture';
@@ -56,3 +56,5 @@ export const loadSVG = {
     unload: loadTextures.unload,
 
 } as LoaderParser<Texture | string, IBaseTextureOptions>;
+
+extensions.add(loadSVG);
