@@ -33,7 +33,7 @@ export function color2rgba(value: Color): number[]
         const r = value[0] / 255;
         const g = value[1] / 255;
         const b = value[2] / 255;
-        const a = value.length > 3 ? value[3] : 1.0;
+        const a = value[3] ?? 1.0;
 
         return [r, g, b, a];
     }
