@@ -1,18 +1,13 @@
 {
     "compilerOptions": {
         "moduleResolution": "node",
-        "target": "ES2017",
+        "target": "ES2020",
         "strict": true,
         "removeComments": false,
         "sourceMap": true,
-        "inlineSources": true,
         "esModuleInterop": true
     },
     "include": [
         "src/*"
-    ],
-    "exclude": [
-        "dist",
-        "node_modules"
     ]
 }

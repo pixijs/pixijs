@@ -4,7 +4,7 @@
 
 Plugin to support playback of animated GIF images in PixiJS. Unlike normal GIF playback in the browser, this plugins allows you to stop, loop, change speed, or go to a specific frame.
 
-* [Demo](https://pixijs.io/gif/demo/)
+* [Demo](https://pixijs.io/gif/examples/)
 * [API Documentation](https://pixijs.io/gif/docs/)
 
 ## Usage

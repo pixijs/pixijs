@@ -29,7 +29,7 @@ const createServer = (port: number) =>
         stream.once('error', (error) =>
         {
             response.writeHead(404);
-            response.end(`File not found: ${error.code} ..\n`);
+            response.end(`File not found: ${error} ..\n`);
             response.end();
         });
     });

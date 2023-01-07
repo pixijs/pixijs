@@ -2,46 +2,33 @@
   "name": "@pixi/gif",
   "version": "2.0.1",
   "description": "Animated GIF Runtime for PixiJS",
-  "source": "./src/index.ts",
-  "main": "./dist/pixi-gif.cjs.js",
-  "module": "./dist/pixi-gif.esm.mjs",
-  "bundle": "./dist/pixi-gif.js",
-  "types": "./dist/pixi-gif.d.ts",
-  "namespace": "PIXI.gif",
+  "main": "./lib/index.js",
+  "module": "./lib/index.mjs",
+  "types": "./lib/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/pixi-gif.esm.mjs",
-      "require": "./dist/pixi-gif.cjs.js",
-      "types": "./dist/pixi-gif.d.ts"
+      "import": "./lib/index.mjs",
+      "require": "./lib/index.js",
+      "types": "./lib/index.d.ts"
     }
   },
+  "extensionConfig": {
+    "docsName": "PixiJS GIF",
+    "docsCopyright": "PIXI Copyright &copy; 2023 Matt Karl.",
+    "docsGoogleAnalytics": "UA-103772589-10",
+    "docsTitle": "PixiJS GIF API Documentation",
+    "docsDescription": "Documentation for PixiJS GIF library",
+    "docsKeywords": "docs, documentation, pixi, pixijs, gif, animation, html5, javascript, jsdoc"
+  },
   "scripts": {
-    "test": "floss -p test --require ts-node/register",
-    "coverage": "nyc floss -p test --require ts-node/register",
-    "clean": "rimraf dist/**",
-    "start": "run-s watch",
-    "watch": "rollup -c  config/rollup.js --environment DEV --watch",
-    "lint": "eslint --ext .js --ext .ts test src --ignore-path .gitignore",
-    "lint:fix": "npm run lint -- --fix",
-    "types": "tsc --noEmit",
-    "prebuild": "run-s clean lint types",
-    "build": "rollup -c config/rollup.js",
-    "postbuild": "run-s build:types",
-    "build:prod": "cross-env NODE_ENV=production run-s build",
-    "prebuild:types": "rimraf .types_output/**",
-    "build:types": "tsc --declaration --emitDeclarationOnly --skipLibCheck --outDir .types_output",
-    "postbuild:types": "run-s bundle:types",
-    "bundle:types": "api-extractor run --local",
-    "predocs": "rimraf docs/**",
-    "docs": "webdoc -c config/webdoc.json -r README.md",
-    "predeploy": "run-s docs",
-    "deploy": "gh-pages -d . -s \"{dist,demo,docs}/**\" -f",
-    "examples": "http-server . -a localhost -o",
-    "publish:patch": "npm version patch && run-s publish:skip",
-    "publish:minor": "npm version minor && run-s publish:skip",
-    "publish:major": "npm version major && run-s publish:skip",
-    "publish:skip": "run-s build:prod test && npm publish",
-    "postpublish": "run-s deploy && git push && git push --tags",
+    "start": "extension-scripts serve",
+    "lint": "extension-scripts lint",
+    "types": "extension-scripts types",
+    "build": "extension-scripts build",
+    "docs": "extension-scripts docs",
+    "deploy": "extension-scripts deploy",
+    "release": "extension-scripts release",
+    "test": "extension-scripts test",
     "prepack": "clean-package",
     "postpack": "clean-package restore"
   },
@@ -59,7 +46,7 @@
   },
   "files": [
     "dist",
-    "*.d.ts"
+    "lib"
   ],
   "keywords": [
     "gif",
@@ -84,50 +71,24 @@
       "scripts",
       "engines",
       "pre-commit",
-      "devDependencies",
-      "eslintConfig",
-      "source"
+      "extensionConfig",
+      "devDependencies"
     ]
   },
   "devDependencies": {
-    "@microsoft/api-extractor": "^7.13.3",
-    "@pixi/eslint-config": "^4.0.0",
-    "@pixi/webdoc-template": "^1.5.0",
-    "@rollup/plugin-commonjs": "^21.0.1",
-    "@rollup/plugin-node-resolve": "^13.0.6",
-    "@types/chai": "^4.2.16",
-    "@types/mocha": "^8.2.2",
-    "@types/node": "^12.0.0",
-    "@types/offscreencanvas": "^2019.6.4",
-    "@webdoc/cli": "^2.0.0",
-    "chai": "^4.2.0",
+    "@pixi/assets": "^7.0.0",
+    "@pixi/core": "^7.0.0",
+    "@pixi/display": "^7.0.0",
+    "@pixi/extension-scripts": "^1.1.1",
+    "@pixi/sprite": "^7.0.0",
     "clean-package": "^1.0.1",
-    "copyfiles": "^2.1.0",
-    "cross-env": "^5.2.0",
-    "electron": "^12.0.0",
-    "eslint": "^7.23.0",
-    "floss": "^5.0.0",
-    "gh-pages": "^3.2.3",
     "gifuct-js": "^2.1.2",
-    "http-server": "^0.11.1",
-    "mkdirp": "^0.5.1",
-    "npm-run-all": "^4.1.5",
-    "nyc": "^14.1.0",
-    "pixi.js": "^7.0.0-X",
-    "pre-commit": "^1.2.2",
-    "rimraf": "^2.6.3",
-    "rollup": "^2.0.0",
-    "rollup-plugin-esbuild": "^4.10.1",
-    "ts-node": "^10.0.0",
-    "typescript": "^4.8.0"
+    "pre-commit": "^1.2.2"
   },
   "peerDependencies": {
-    "@pixi/core": "^7.0.0-X",
-    "@pixi/sprite": "^7.0.0-X"
-  },
-  "eslintConfig": {
-    "extends": [
-      "@pixi/eslint-config"
-    ]
+    "@pixi/assets": "^7.0.0",
+    "@pixi/core": "^7.0.0",
+    "@pixi/display": "^7.0.0",
+    "@pixi/sprite": "^7.0.0"
   }
 }

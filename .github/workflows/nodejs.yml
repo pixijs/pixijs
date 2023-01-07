@@ -24,5 +24,5 @@ jobs:
     - name: Run Unit Tests
       uses: GabrielBB/xvfb-action@v1
       with:
-        run: npm run coverage
+        run: npm test
 
