@@ -1,12 +1,5 @@
 {
-    "compilerOptions": {
-        "moduleResolution": "node",
-        "target": "ES2020",
-        "strict": true,
-        "removeComments": false,
-        "sourceMap": true,
-        "esModuleInterop": true
-    },
+    "extends": "@pixi/extension-scripts/lib/configs/tsconfig.json",
     "include": [
         "src/*"
     ]
