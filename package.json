@@ -28,9 +28,7 @@
     "docs": "xs docs",
     "deploy": "xs deploy",
     "release": "xs release",
-    "test": "xs test",
-    "prepack": "clean-package",
-    "postpack": "clean-package restore"
+    "test": "xs test"
   },
   "engines": {
     "node": ">=16",
@@ -64,24 +62,12 @@
     "lint",
     "types"
   ],
-  "clean-package": {
-    "indent": 2,
-    "remove": [
-      "clean-package",
-      "scripts",
-      "engines",
-      "pre-commit",
-      "extensionConfig",
-      "devDependencies"
-    ]
-  },
   "devDependencies": {
     "@pixi/assets": "^7.0.0",
     "@pixi/core": "^7.0.0",
     "@pixi/display": "^7.0.0",
-    "@pixi/extension-scripts": "^1.2.1",
+    "@pixi/extension-scripts": "^1.4.0",
     "@pixi/sprite": "^7.0.0",
-    "clean-package": "^1.0.1",
     "gifuct-js": "^2.1.2",
     "pre-commit": "^1.2.2"
   },
