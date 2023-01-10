@@ -1,6 +1,6 @@
 {
   "name": "@pixi/mesh-extras",
-  "version": "7.1.0-alpha",
+  "version": "7.1.0",
   "main": "lib/index.js",
   "module": "lib/index.mjs",
   "types": "lib/index.d.ts",
