@@ -507,13 +507,16 @@ export class Graphics extends Container
     }
 
     /**
-     * The arcTo() method creates an arc/curve between two tangents on the canvas.
+     * The `arcTo` method creates an arc/curve between two tangents on the canvas.
+     * The first tangent is from the start point to the first control point,
+     * and the second tangent is from the first control point to the second control point.
+     * Note that the second control point is not necessarily the end point of the arc.
      *
      * "borrowed" from https://code.google.com/p/fxcanvas/ - thanks google!
-     * @param x1 - The x-coordinate of the first tangent point of the arc
-     * @param y1 - The y-coordinate of the first tangent point of the arc
-     * @param x2 - The x-coordinate of the end of the arc
-     * @param y2 - The y-coordinate of the end of the arc
+     * @param x1 - The x-coordinate of the first control point of the arc
+     * @param y1 - The y-coordinate of the first control point of the arc
+     * @param x2 - The x-coordinate of the second control point of the arc
+     * @param y2 - The y-coordinate of the second control point of the arc
      * @param radius - The radius of the arc
      * @returns - This Graphics object. Good for chaining method calls
      */
