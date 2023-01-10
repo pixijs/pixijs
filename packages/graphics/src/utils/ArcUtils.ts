@@ -18,16 +18,14 @@ interface IArcLikeShape
 export class ArcUtils
 {
     /**
-     * The arcTo() method creates an arc/curve between two tangents on the canvas.
-     *
-     * "borrowed" from https://code.google.com/p/fxcanvas/ - thanks google!
+     * Calculate information of the arc for {@link PIXI.Graphics.arcTo}.
      * @private
-     * @param x1 - The x-coordinate of the beginning of the arc
-     * @param y1 - The y-coordinate of the beginning of the arc
-     * @param x2 - The x-coordinate of the end of the arc
-     * @param y2 - The y-coordinate of the end of the arc
+     * @param x1 - The x-coordinate of the first control point of the arc
+     * @param y1 - The y-coordinate of the first control point of the arc
+     * @param x2 - The x-coordinate of the second control point of the arc
+     * @param y2 - The y-coordinate of the second control point of the arc
      * @param radius - The radius of the arc
-     * @param points -
+     * @param points - Collection of points to add to
      * @returns - If the arc length is valid, return center of circle, radius and other info otherwise `null`.
      */
     static curveTo(x1: number, y1: number, x2: number, y2: number, radius: number, points: Array<number>): IArcLikeShape
@@ -77,7 +75,6 @@ export class ArcUtils
         };
     }
 
-    /* eslint-disable max-len */
     /**
      * The arc method creates an arc/curve (used to create circles, or parts of circles).
      * @private
@@ -123,5 +120,4 @@ export class ArcUtils
             );
         }
     }
-    /* eslint-enable max-len */
 }
