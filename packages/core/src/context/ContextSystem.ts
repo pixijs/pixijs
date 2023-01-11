@@ -89,12 +89,6 @@ export class ContextSystem implements ISystem
         this.gl = gl;
         this.renderer.gl = gl;
         this.renderer.CONTEXT_UID = CONTEXT_UID_COUNTER++;
-
-        // restore a context if it was previously lost
-        if (gl.isContextLost() && gl.getExtension('WEBGL_lose_context'))
-        {
-            gl.getExtension('WEBGL_lose_context').restoreContext();
-        }
     }
 
     /**
@@ -172,6 +166,7 @@ export class ContextSystem implements ISystem
         const { gl } = this;
 
         const common = {
+            loseContext: gl.getExtension('WEBGL_lose_context'),
             anisotropicFiltering: gl.getExtension('EXT_texture_filter_anisotropic'),
             floatTextureLinear: gl.getExtension('OES_texture_float_linear'),
 
@@ -190,7 +185,6 @@ export class ContextSystem implements ISystem
             Object.assign(this.extensions, common, {
                 drawBuffers: gl.getExtension('WEBGL_draw_buffers'),
                 depthTexture: gl.getExtension('WEBGL_depth_texture'),
-                loseContext: gl.getExtension('WEBGL_lose_context'),
                 vertexArrayObject: gl.getExtension('OES_vertex_array_object')
                     || gl.getExtension('MOZ_OES_vertex_array_object')
                     || gl.getExtension('WEBKIT_OES_vertex_array_object'),
@@ -217,7 +211,17 @@ export class ContextSystem implements ISystem
      */
     protected handleContextLost(event: WebGLContextEvent): void
     {
+        // Prevent default to be able to restore the context
         event.preventDefault();
+
+        // Restore the context after this event has exited
+        setTimeout(() =>
+        {
+            if (this.gl.isContextLost() && this.extensions.loseContext)
+            {
+                this.extensions.loseContext.restoreContext();
+            }
+        }, 0);
     }
 
     /** Handles a restored webgl context. */
