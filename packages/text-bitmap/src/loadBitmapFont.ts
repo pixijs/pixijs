@@ -45,7 +45,7 @@ export const loadBitmapFont = {
 
             if (searchParams)
             {
-                imagePath = `${imagePath}?${searchParams}`;
+                imagePath += `?${searchParams}`;
             }
 
             textureUrls.push(imagePath);
