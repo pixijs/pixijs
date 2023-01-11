@@ -315,7 +315,8 @@ export class Resolver
                     const bundleAssetId = this._createBundleAssetId(bundleId, asset.name);
 
                     assetNames.push(bundleAssetId);
-                    this.add([asset.name, bundleAssetId], asset.srcs);
+
+                    this.add([asset.name, bundleAssetId], asset.srcs, asset.data);
                 }
                 else
                 {

@@ -20,13 +20,14 @@ export interface PreferOrder
  */
 export interface ResolveAsset extends Record<string, any>
 {
-    alias?: string[];
     src: string;
+    alias?: string[];
 }
 
 export type ResolverAssetsArray = {
     name: string | string[];
     srcs: string | ResolveAsset | (string | ResolveAsset)[];
+    data?: unknown;
 }[];
 
 export type ResolverAssetsObject = Record<string, (string | ResolveAsset)>;
