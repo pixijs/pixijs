@@ -1,4 +1,4 @@
-import { LoaderParserPriority } from '@pixi/assets';
+import { copySearchParams, LoaderParserPriority } from '@pixi/assets';
 import { extensions, ExtensionType, settings, utils } from '@pixi/core';
 import { Spritesheet } from './Spritesheet';
 
@@ -107,14 +107,9 @@ export const spritesheetAsset = {
                 basePath += '/';
             }
 
-            const searchParams = options.src.split('?')[1];
-
             let imagePath = basePath + asset.meta.image;
 
-            if (searchParams)
-            {
-                imagePath += `?${searchParams}`;
-            }
+            imagePath = copySearchParams(imagePath, options.src);
 
             const assets = await loader.load<Texture>([imagePath]);
             const texture = assets[imagePath];
@@ -150,10 +145,7 @@ export const spritesheetAsset = {
                         continue;
                     }
 
-                    if (searchParams)
-                    {
-                        itemUrl += `?${searchParams}`;
-                    }
+                    itemUrl = copySearchParams(itemUrl, options.src);
 
                     promises.push(loader.load<Spritesheet>({
                         src: itemUrl,
