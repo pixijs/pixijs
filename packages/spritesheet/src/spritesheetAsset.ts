@@ -152,7 +152,7 @@ export const spritesheetAsset = {
 
                     if (searchParams)
                     {
-                        itemUrl = `${itemUrl}?${searchParams}`;
+                        itemUrl += `?${searchParams}`;
                     }
 
                     promises.push(loader.load<Spritesheet>({
