@@ -113,7 +113,7 @@ export const spritesheetAsset = {
 
             if (searchParams)
             {
-                imagePath = `${imagePath}?${searchParams}`;
+                imagePath += `?${searchParams}`;
             }
 
             const assets = await loader.load<Texture>([imagePath]);
