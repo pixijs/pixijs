@@ -36,10 +36,17 @@ export const loadBitmapFont = {
         const { page: pages } = fontData;
         const textureUrls = [];
 
+        const searchParams = data.src.split('?')[1];
+
         for (let i = 0; i < pages.length; ++i)
         {
             const pageFile = pages[i].file;
-            const imagePath = utils.path.join(utils.path.dirname(src), pageFile);
+            let imagePath = utils.path.join(utils.path.dirname(src), pageFile);
+
+            if (searchParams)
+            {
+                imagePath = `${imagePath}?${searchParams}`;
+            }
 
             textureUrls.push(imagePath);
         }

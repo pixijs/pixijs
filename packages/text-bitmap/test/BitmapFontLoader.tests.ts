@@ -212,7 +212,7 @@ describe('BitmapFontLoader', () =>
         const charATexture = charA.texture as Texture<ImageResource>;
 
         expect(charA).toBeDefined();
-        expect(charATexture.baseTexture.resource.src).toEqual(`${serverPath}font.png`);
+        expect(charATexture.baseTexture.resource.src).toEqual(`${serverPath}font.png?version=1.0.0`);
         expect(charATexture.frame.x).toEqual(2);
         expect(charATexture.frame.y).toEqual(2);
         expect(charATexture.frame.width).toEqual(19);

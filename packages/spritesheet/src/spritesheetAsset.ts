@@ -107,7 +107,15 @@ export const spritesheetAsset = {
                 basePath += '/';
             }
 
-            const imagePath = basePath + asset.meta.image;
+            const searchParams = options.src.split('?')[1];
+
+            let imagePath = basePath + asset.meta.image;
+
+            if (searchParams)
+            {
+                imagePath = `${imagePath}?${searchParams}`;
+            }
+
             const assets = await loader.load<Texture>([imagePath]);
             const texture = assets[imagePath];
             const spritesheet = new Spritesheet(
@@ -134,12 +142,17 @@ export const spritesheetAsset = {
                         continue;
                     }
 
-                    const itemUrl = basePath + item;
+                    let itemUrl = basePath + item;
 
                     // Check if the file wasn't already added as multipack
                     if (options.data?.ignoreMultiPack)
                     {
                         continue;
+                    }
+
+                    if (searchParams)
+                    {
+                        itemUrl = `${itemUrl}?${searchParams}`;
                     }
 
                     promises.push(loader.load<Spritesheet>({
