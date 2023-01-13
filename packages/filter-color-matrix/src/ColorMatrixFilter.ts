@@ -142,7 +142,7 @@ export class ColorMatrixFilter extends Filter
      */
     public tint(color: number, multiply?: boolean): void
     {
-        const [r, g, b] = new utils.Color(color).toArray();
+        const [r, g, b] = utils.Color.default.setValue(color).toArray();
         const matrix: ColorMatrix = [
             r, 0, 0, 0, 0,
             0, g, 0, 0, 0,
@@ -443,7 +443,7 @@ export class ColorMatrixFilter extends Filter
         lightColor = lightColor || 0xFFE580;
         darkColor = darkColor || 0x338000;
 
-        const temp = new utils.Color();
+        const temp = utils.Color.default;
         const [lR, lG, lB] = temp.setValue(lightColor).toArray();
         const [dR, dG, dB] = temp.setValue(darkColor).toArray();
 

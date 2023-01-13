@@ -266,7 +266,10 @@ export class Text extends Sprite
                 const dropShadowBlur = style.dropShadowBlur * this._resolution;
                 const dropShadowDistance = style.dropShadowDistance * this._resolution;
 
-                context.shadowColor = new utils.Color(dropShadowColor).setAlpha(style.dropShadowAlpha).toRgbaString();
+                context.shadowColor = utils.Color.default
+                    .setValue(dropShadowColor)
+                    .setAlpha(style.dropShadowAlpha)
+                    .toRgbaString();
                 context.shadowBlur = dropShadowBlur;
                 context.shadowOffsetX = Math.cos(style.dropShadowAngle) * dropShadowDistance;
                 context.shadowOffsetY = (Math.sin(style.dropShadowAngle) * dropShadowDistance) + dsOffsetShadow;

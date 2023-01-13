@@ -866,7 +866,7 @@ function getColor(color: (string|number)[]): string[];
 function getColor(color: string|number): string;
 function getColor(color: string|number|(string|number)[]): string|string[]
 {
-    const temp = new utils.Color();
+    const temp = utils.Color.default;
 
     if (!Array.isArray(color))
     {

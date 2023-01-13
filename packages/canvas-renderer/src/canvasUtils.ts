@@ -242,7 +242,7 @@ export const canvasUtils = {
         );
         context.restore();
 
-        const [r, g, b] = new utils.Color(color).toArray();
+        const [r, g, b] = utils.Color.default.setValue(color).toArray();
         const pixelData = context.getImageData(0, 0, crop.width, crop.height);
 
         const pixels = pixelData.data;
@@ -264,7 +264,8 @@ export const canvasUtils = {
      * @returns {number} The rounded color.
      */
     roundColor: (color: number): number =>
-        new utils.Color(color)
+        utils.Color.default
+            .setValue(color)
             .round(canvasUtils.cacheStepsPerColorChannel)
             .toNumber(),
 
