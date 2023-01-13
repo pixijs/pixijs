@@ -14,7 +14,7 @@
  * console.log(utils.isMobile);
  *
  * // Convert hex color to string
- * console.log(utils.hex2string(0xff00ff)); // returns: "#ff00ff"
+ * console.log(new utils.Color(0xff00ff).toString()); // returns: "#ff00ff"
  * @namespace PIXI.utils
  */
 
@@ -90,7 +90,7 @@ export * from './path';
 // Other exports
 export * from './browser/hello';
 export * from './browser/isWebGLSupported';
-export * from './color/color';
+export * from './color/Color';
 export * from './color/hex';
 export * from './color/premultiply';
 export * from './const';

@@ -857,29 +857,6 @@ export class TextStyle implements ITextStyle
 
 /**
  * Utility function to convert hexadecimal colors to strings, and simply return the color if it's a string.
- * @private
- * @param color
- * @return The color as a string.
- */
-function getSingleColor(color: string|number): string
-{
-    if (typeof color === 'number')
-    {
-        return utils.hex2string(color);
-    }
-    else if (typeof color === 'string')
-    {
-        if ( color.startsWith('0x'))
-        {
-            color = color.replace('0x', '#');
-        }
-    }
-
-    return color;
-}
-
-/**
- * Utility function to convert hexadecimal colors to strings, and simply return the color if it's a string.
  * This version can also convert array of colors
  * @private
  * @param color
@@ -889,18 +866,15 @@ function getColor(color: (string|number)[]): string[];
 function getColor(color: string|number): string;
 function getColor(color: string|number|(string|number)[]): string|string[]
 {
+    const temp = new utils.Color();
+
     if (!Array.isArray(color))
     {
-        return getSingleColor(color);
+        return temp.setValue(color).toString();
     }
     else
     {
-        for (let i = 0; i < color.length; ++i)
-        {
-            color[i] = getSingleColor(color[i]);
-        }
-
-        return color as string[];
+        return color.map(c => temp.setValue(c).toString());
     }
 }
 

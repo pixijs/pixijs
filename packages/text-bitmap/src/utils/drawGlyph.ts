@@ -51,11 +51,10 @@ export function drawGlyph(
     if (style.dropShadow)
     {
         const dropShadowColor = style.dropShadowColor;
-        const rgb = utils.hex2rgb(typeof dropShadowColor === 'number' ? dropShadowColor : utils.string2hex(dropShadowColor));
         const dropShadowBlur = style.dropShadowBlur * resolution;
         const dropShadowDistance = style.dropShadowDistance * resolution;
 
-        context.shadowColor = `rgba(${rgb[0] * 255},${rgb[1] * 255},${rgb[2] * 255},${style.dropShadowAlpha})`;
+        context.shadowColor = new utils.Color(dropShadowColor).setAlpha(style.dropShadowAlpha).toRgbaString();
         context.shadowBlur = dropShadowBlur;
         context.shadowOffsetX = Math.cos(style.dropShadowAngle) * dropShadowDistance;
         context.shadowOffsetY = Math.sin(style.dropShadowAngle) * dropShadowDistance;

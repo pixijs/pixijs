@@ -242,11 +242,7 @@ export const canvasUtils = {
         );
         context.restore();
 
-        const rgbValues = utils.hex2rgb(color);
-        const r = rgbValues[0];
-        const g = rgbValues[1];
-        const b = rgbValues[2];
-
+        const [r, g, b] = new utils.Color(color).toArray();
         const pixelData = context.getImageData(0, 0, crop.width, crop.height);
 
         const pixels = pixelData.data;
@@ -268,17 +264,9 @@ export const canvasUtils = {
      * @returns {number} The rounded color.
      */
     roundColor: (color: number): number =>
-    {
-        const step = canvasUtils.cacheStepsPerColorChannel;
-
-        const rgbValues = utils.hex2rgb(color);
-
-        rgbValues[0] = Math.min(255, (rgbValues[0] / step) * step);
-        rgbValues[1] = Math.min(255, (rgbValues[1] / step) * step);
-        rgbValues[2] = Math.min(255, (rgbValues[2] / step) * step);
-
-        return utils.rgb2hex(rgbValues);
-    },
+        new utils.Color(color)
+            .round(canvasUtils.cacheStepsPerColorChannel)
+            .toNumber(),
 
     /**
      * Number of steps which will be used as a cap when rounding colors.

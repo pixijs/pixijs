@@ -191,7 +191,7 @@ export class ParticleContainer extends Container<Sprite>
     set tint(value: number)
     {
         this._tint = value;
-        utils.hex2rgb(value, this.tintRgb);
+        new utils.Color(value).toRgbArray(this.tintRgb);
     }
 
     /**

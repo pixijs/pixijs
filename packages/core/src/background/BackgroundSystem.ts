@@ -1,7 +1,8 @@
 import { extensions, ExtensionType } from '@pixi/extensions';
-import { hex2rgb, hex2string, string2hex } from '@pixi/utils';
+import { Color } from '@pixi/utils';
 
 import type { ExtensionMetadata } from '@pixi/extensions';
+import type { ColorSource } from '@pixi/utils';
 import type { ISystem } from '../system/ISystem';
 
 export interface BackgroundOptions
@@ -40,21 +41,13 @@ export class BackgroundSystem implements ISystem<BackgroundOptions>
      */
     public clearBeforeRender: boolean;
 
-    private _backgroundColorString: string;
-    private _backgroundColorRgba: number[];
-    private _backgroundColor: number;
+    /** Reference to the internal color */
+    private _background: Color;
 
     constructor()
     {
         this.clearBeforeRender = true;
-
-        this._backgroundColor = 0x000000;
-
-        this._backgroundColorRgba = [0, 0, 0, 1];
-
-        this._backgroundColorString = '#000000';
-
-        this.color = this._backgroundColor; // run bg color setter
+        this._background = new Color(0x0);
         this.alpha = 1;
     }
 
@@ -68,9 +61,7 @@ export class BackgroundSystem implements ISystem<BackgroundOptions>
 
         if (options.color)
         {
-            this.color = typeof options.color === 'string'
-                ? string2hex(options.color)
-                : options.color;
+            this.color = options.color;
         }
 
         this.alpha = options.alpha;
@@ -78,18 +69,16 @@ export class BackgroundSystem implements ISystem<BackgroundOptions>
 
     /**
      * The background color to fill if not transparent
-     * @member {number}
+     * @member {number|string|number[]|Float32Array}
      */
     get color(): number
     {
-        return this._backgroundColor;
+        return this._background.toNumber();
     }
 
-    set color(value: number)
+    set color(value: ColorSource)
     {
-        this._backgroundColor = value;
-        this._backgroundColorString = hex2string(value);
-        hex2rgb(value, this._backgroundColorRgba);
+        this._background.setValue(value);
     }
 
     /**
@@ -98,12 +87,12 @@ export class BackgroundSystem implements ISystem<BackgroundOptions>
      */
     get alpha(): number
     {
-        return this._backgroundColorRgba[3];
+        return this._background.toAlpha();
     }
 
     set alpha(value: number)
     {
-        this._backgroundColorRgba[3] = value;
+        this._background.setAlpha(value);
     }
 
     /**
@@ -113,7 +102,7 @@ export class BackgroundSystem implements ISystem<BackgroundOptions>
      */
     get colorRgba(): number[]
     {
-        return this._backgroundColorRgba;
+        return this._background.toArray();
     }
 
     /**
@@ -123,7 +112,7 @@ export class BackgroundSystem implements ISystem<BackgroundOptions>
      */
     get colorString(): string
     {
-        return this._backgroundColorString;
+        return this._background.toString();
     }
 
     destroy(): void

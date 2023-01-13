@@ -44,7 +44,6 @@
     "url": "^0.11.0"
   },
   "devDependencies": {
-    "colord": "^2.9.3",
-    "css-color-names": "^1.0.1"
+    "colord": "^2.9.3"
   }
 }

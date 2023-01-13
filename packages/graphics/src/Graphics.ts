@@ -58,6 +58,7 @@ export interface ILineStyleOptions extends IFillStyleOptions
 }
 
 const temp = new Float32Array(3);
+const tempColor = new utils.Color();
 
 // a default shaders map used by graphics..
 const DEFAULT_SHADERS: {[key: string]: Shader} = {};
@@ -894,7 +895,7 @@ export class Graphics extends Container
                 blendMode,
                 indices,
                 uvs,
-                _batchRGB: utils.hex2rgb(color) as Array<number>,
+                _batchRGB: tempColor.setValue(color).toRgbArray(),
                 _tintRGB: color,
                 _texture: gI.style.texture,
                 alpha: gI.style.alpha,
@@ -1072,7 +1073,7 @@ export class Graphics extends Container
         {
             this.batchTint = this.tint;
 
-            const tintRGB = utils.hex2rgb(this.tint, temp);
+            const tintRGB = tempColor.setValue(this.tint).toRgbArray(temp);
 
             for (let i = 0; i < this.batches.length; i++)
             {

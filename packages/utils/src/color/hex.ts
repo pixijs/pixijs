@@ -1,30 +1,31 @@
-import { default as cssColorNames } from 'css-color-names';
+import { deprecation } from '../logging/deprecation';
+import { Color } from './Color';
+
+const tempColor = new Color();
 
 /**
  * Converts a hexadecimal color number to an [R, G, B] array of normalized floats (numbers from 0.0 to 1.0).
- * @example
- * import { utils } from 'pixi.js';
- * utils.hex2rgb(0xffffff); // returns [1, 1, 1]
  * @memberof PIXI.utils
  * @function hex2rgb
+ * @see PIXI.utils.Color.toRgbArray
+ * @deprecated since 7.2.0
  * @param {number} hex - The hexadecimal number to convert
  * @param  {number[]} [out=[]] - If supplied, this array will be used rather than returning a new one
  * @returns {number[]} An array representing the [R, G, B] of the color where all values are floats.
  */
 export function hex2rgb(hex: number, out: Array<number> | Float32Array = []): Array<number> | Float32Array
 {
-    out[0] = ((hex >> 16) & 0xFF) / 255;
-    out[1] = ((hex >> 8) & 0xFF) / 255;
-    out[2] = (hex & 0xFF) / 255;
+    // #if _DEBUG
+    deprecation('v7.2.0', 'utils.hex2rgb is deprecated, use utils.Color#toRgbArray instead');
+    // #endif
 
-    return out;
+    return tempColor.setValue(hex).toRgbArray(out);
 }
 
 /**
  * Converts a hexadecimal color number to a string.
- * @example
- * import { utils } from 'pixi.js';
- * utils.hex2string(0xffffff); // returns "#ffffff"
+ * @see PIXI.utils.Color.toString
+ * @deprecated since 7.2.0
  * @memberof PIXI.utils
  * @function hex2string
  * @param {number} hex - Number in hex (e.g., `0xffffff`)
@@ -32,25 +33,17 @@ export function hex2rgb(hex: number, out: Array<number> | Float32Array = []): Ar
  */
 export function hex2string(hex: number): string
 {
-    let hexString = hex.toString(16);
+    // #if _DEBUG
+    deprecation('v7.2.0', 'utils.hex2string is deprecated, use utils.Color#toString instead');
+    // #endif
 
-    hexString = '000000'.substring(0, 6 - hexString.length) + hexString;
-
-    return `#${hexString}`;
+    return tempColor.setValue(hex).toString();
 }
 
 /**
  * Converts a string to a hexadecimal color number.
- * It can handle:
- *  - hex strings starting with #: "#ffffff"
- *  - hex strings starting with 0x: "0xffffff"
- *  - hex strings without prefix: "ffffff"
- *  - hex strings (3 characters) with #: "#fff"
- *  - hex strings (3 characters) without prefix: "fff"
- *  - css colors: "black"
- * @example
- * import { utils } from 'pixi.js';
- * utils.string2hex("#ffffff"); // returns 0xffffff, which is 16777215 as an integer
+ * @deprecated since 7.2.0
+ * @see PIXI.utils.Color.toNumber
  * @memberof PIXI.utils
  * @function string2hex
  * @param {string} string - The string color (e.g., `"#ffffff"`)
@@ -58,32 +51,17 @@ export function hex2string(hex: number): string
  */
 export function string2hex(string: string): number
 {
-    if (typeof string === 'string')
-    {
-        string = (cssColorNames as {[key: string]: string})[string.toLowerCase()] || string;
+    // #if _DEBUG
+    deprecation('v7.2.0', 'utils.string2hex is deprecated, use utils.Color#toNumber instead');
+    // #endif
 
-        if (string[0] === '#')
-        {
-            string = string.slice(1);
-        }
-
-        // Add support for shorthand hex colors
-        if (string.length === 3)
-        {
-            const [r, g, b] = string;
-
-            string = r + r + g + g + b + b;
-        }
-    }
-
-    return parseInt(string, 16);
+    return tempColor.setValue(string).toNumber();
 }
 
 /**
  * Converts a color as an [R, G, B] array of normalized floats to a hexadecimal number.
- * @example
- * import { utils } from 'pixi.js';
- * utils.rgb2hex([1, 1, 1]); // returns 0xffffff, which is 16777215 as an integer
+ * @deprecated since 7.2.0
+ * @see PIXI.utils.Color.toNumber
  * @memberof PIXI.utils
  * @function rgb2hex
  * @param {number[]} rgb - Array of numbers where all values are normalized floats from 0.0 to 1.0.
@@ -91,5 +69,9 @@ export function string2hex(string: string): number
  */
 export function rgb2hex(rgb: number[] | Float32Array): number
 {
-    return (((rgb[0] * 255) << 16) + ((rgb[1] * 255) << 8) + (rgb[2] * 255 | 0));
+    // #if _DEBUG
+    deprecation('v7.2.0', 'utils.rgb2hex is deprecated, use utils.Color#toNumber instead');
+    // #endif
+
+    return tempColor.setValue(rgb).toNumber();
 }
