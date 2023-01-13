@@ -87,7 +87,7 @@ export class BackgroundSystem implements ISystem<BackgroundOptions>
      */
     get alpha(): number
     {
-        return this._background.toAlpha();
+        return this._background.alpha;
     }
 
     set alpha(value: number)

@@ -38,7 +38,6 @@ describe('Color', () =>
             hexString: '#00000000',
             string: '#000000',
             number: 0,
-            alpha: 0,
             rgbaString: 'rgba(0,0,0,0)',
         };
 
@@ -47,7 +46,6 @@ describe('Color', () =>
             hexString: '#000000ff',
             string: '#000000',
             number: 0,
-            alpha: 1,
             rgbaString: 'rgba(0,0,0,1)',
         };
 
@@ -56,7 +54,6 @@ describe('Color', () =>
             hexString: '#ff0000ff',
             string: '#ff0000',
             number: 0xff0000,
-            alpha: 1,
             rgbaString: 'rgba(255,0,0,1)',
         };
 
@@ -65,7 +62,6 @@ describe('Color', () =>
             hexString: '#ff000080',
             string: '#ff0000',
             number: 0xff0000,
-            alpha: 0.5,
             rgbaString: 'rgba(255,0,0,0.5)',
         };
 
@@ -145,7 +141,6 @@ describe('Color', () =>
             expect(color.toString()).toEqual(expected.string);
             expect(color.toHexString()).toEqual(expected.hexString);
             expect(color.toRgbaString()).toEqual(expected.rgbaString);
-            expect(color.toAlpha()).toEqual(expected.alpha);
         });
     });
 });

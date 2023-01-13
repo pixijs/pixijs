@@ -63,6 +63,30 @@ export class Color
         this.value = value;
     }
 
+    /** Read out red value (0 - 1) */
+    get red(): number
+    {
+        return this._components[0];
+    }
+
+    /** Read out green value (0 - 1) */
+    get green(): number
+    {
+        return this._components[1];
+    }
+
+    /** Read out blue value (0 - 1) */
+    get blue(): number
+    {
+        return this._components[2];
+    }
+
+    /** Read out alpha value (0 - 1) */
+    get alpha(): number
+    {
+        return this._components[3];
+    }
+
     /**
      * Set the value, suitable for chaining
      * @param value
@@ -193,12 +217,6 @@ export class Color
         return this;
     }
 
-    /** Get the alpha amount */
-    toAlpha(): number
-    {
-        return this._components[3];
-    }
-
     /**
      * Rounds the specified color according to the step.
      * @param step - Number of steps which will be used as a cap when rounding colors
@@ -236,7 +254,10 @@ export class Color
         return out;
     }
 
-    /** Normalize the input value into rgba */
+    /**
+     * Normalize the input value into rgba
+     * @param value - Input value
+     */
     private normalize(value: ColorSource): void
     {
         let components: number[];
