@@ -14,7 +14,7 @@ import { Color } from './Color';
 export function hex2rgb(hex: number, out: Array<number> | Float32Array = []): Array<number> | Float32Array
 {
     // #if _DEBUG
-    deprecation('v7.2.0', 'utils.hex2rgb is deprecated, use utils.Color#toRgbArray instead');
+    deprecation('7.2.0', 'utils.hex2rgb is deprecated, use utils.Color#toRgbArray instead');
     // #endif
 
     return Color.default.setValue(hex).toRgbArray(out);
