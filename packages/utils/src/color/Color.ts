@@ -82,8 +82,8 @@ export class Color
     {
         if (this._value !== value)
         {
-            this._value = value;
             this.normalize();
+            this._value = value;
         }
     }
     get value(): ColorSource
