@@ -32,7 +32,7 @@ export function hex2rgb(hex: number, out: Array<number> | Float32Array = []): Ar
 export function hex2string(hex: number): string
 {
     // #if _DEBUG
-    deprecation('v7.2.0', 'utils.hex2string is deprecated, use utils.Color#toString instead');
+    deprecation('7.2.0', 'utils.hex2string is deprecated, use utils.Color#toString instead');
     // #endif
 
     return Color.default.setValue(hex).toString();
