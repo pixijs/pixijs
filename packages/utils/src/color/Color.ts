@@ -42,7 +42,7 @@ export class Color
     static readonly default = new Color();
 
     /** Pattern for hex strings */
-    static readonly HEX_PATTERN = /^#?([a-f0-9]{3}){1,2}([a-f0-9]{2})?$/i;
+    private static readonly HEX_PATTERN = /^(#|0x)?(([a-f0-9]{3}){1,2}([a-f0-9]{2})?)$/i;
 
     /** Internal color source, from constructor or set value */
     private _value: ColorSource;
@@ -82,7 +82,7 @@ export class Color
     {
         if (this._value !== value)
         {
-            this.normalize();
+            this.normalize(value);
             this._value = value;
         }
     }
@@ -237,9 +237,8 @@ export class Color
     }
 
     /** Normalize the input value into rgba */
-    private normalize(): void
+    private normalize(value: ColorSource): void
     {
-        let value = this._value;
         let components: number[];
 
         if ((Array.isArray(value) || value instanceof Float32Array) && value.length >= 3)
@@ -256,16 +255,12 @@ export class Color
         }
         else if (typeof value === 'string' || typeof value === 'object')
         {
-            if (typeof value === 'string')
+            if (typeof value === 'string' && Color.HEX_PATTERN.test(value))
             {
-                if (value.startsWith('0x'))
-                {
-                    value = value.slice(2);
-                }
-                if (Color.HEX_PATTERN.test(value) && !value.startsWith('#'))
-                {
-                    value = `#${value}`;
-                }
+                // Normalize hex string, remove 0x or # prefix
+                const hexString = Color.HEX_PATTERN.exec(value)[2];
+
+                value = `#${hexString}`;
             }
 
             const color = colord(value as AnyColor);

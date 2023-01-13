@@ -6,7 +6,18 @@ describe('Color', () =>
 {
     it.concurrent('should throw error for invalid color values', async () =>
     {
-        const invalidColorValues = [-1, '', null, false, true, {}, { foo: 'bar' }];
+        const invalidColorValues = [
+            -1,
+            '',
+            null,
+            false,
+            true,
+            {},
+            { foo: 'bar' },
+            '0xfffff',
+            '#ff',
+            'ff'
+        ];
 
         invalidColorValues.forEach((value) =>
         {
@@ -76,10 +87,12 @@ describe('Color', () =>
             ['f00', red],
             ['#f00', red],
             ['ff0000', red],
+            ['0xff0000', red],
             ['#ff0000', red],
             ['#ff0000', red],
             ['ff000080', semiRed],
             ['#ff000080', semiRed],
+            ['0xff000080', semiRed],
             ['#000', black],
             ['#000000', black],
             ['#00000000', transparent],
