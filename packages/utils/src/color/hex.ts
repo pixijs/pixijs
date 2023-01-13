@@ -50,7 +50,7 @@ export function hex2string(hex: number): string
 export function string2hex(string: string): number
 {
     // #if _DEBUG
-    deprecation('v7.2.0', 'utils.string2hex is deprecated, use utils.Color#toNumber instead');
+    deprecation('7.2.0', 'utils.string2hex is deprecated, use utils.Color#toNumber instead');
     // #endif
 
     return Color.default.setValue(string).toNumber();
