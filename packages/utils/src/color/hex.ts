@@ -14,7 +14,7 @@ import { Color } from './Color';
 export function hex2rgb(hex: number, out: Array<number> | Float32Array = []): Array<number> | Float32Array
 {
     // #if _DEBUG
-    deprecation('v7.2.0', 'utils.hex2rgb is deprecated, use utils.Color#toRgbArray instead');
+    deprecation('7.2.0', 'utils.hex2rgb is deprecated, use utils.Color#toRgbArray instead');
     // #endif
 
     return Color.default.setValue(hex).toRgbArray(out);
@@ -32,7 +32,7 @@ export function hex2rgb(hex: number, out: Array<number> | Float32Array = []): Ar
 export function hex2string(hex: number): string
 {
     // #if _DEBUG
-    deprecation('v7.2.0', 'utils.hex2string is deprecated, use utils.Color#toString instead');
+    deprecation('7.2.0', 'utils.hex2string is deprecated, use utils.Color#toString instead');
     // #endif
 
     return Color.default.setValue(hex).toString();
@@ -50,7 +50,7 @@ export function hex2string(hex: number): string
 export function string2hex(string: string): number
 {
     // #if _DEBUG
-    deprecation('v7.2.0', 'utils.string2hex is deprecated, use utils.Color#toNumber instead');
+    deprecation('7.2.0', 'utils.string2hex is deprecated, use utils.Color#toNumber instead');
     // #endif
 
     return Color.default.setValue(string).toNumber();
@@ -68,7 +68,7 @@ export function string2hex(string: string): number
 export function rgb2hex(rgb: number[] | Float32Array): number
 {
     // #if _DEBUG
-    deprecation('v7.2.0', 'utils.rgb2hex is deprecated, use utils.Color#toNumber instead');
+    deprecation('7.2.0', 'utils.rgb2hex is deprecated, use utils.Color#toNumber instead');
     // #endif
 
     return Color.default.setValue(rgb).toNumber();
