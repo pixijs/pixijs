@@ -22,7 +22,7 @@ There is no default export. The correct way to import PixiJS is:
 import * as PIXI from "@pixi/node";
 ```
 
-#### Error installing gl package
+### Error installing gl package
 
 In most cases installing `gl` from npm should just work. However, if you run into problems you might need to adjust your system configuration and make sure all your dependencies are up to date
 
@@ -38,6 +38,17 @@ To build from source you will need to make sure you have the following dependenc
 `brew install pkg-config cairo pango libpng jpeg giflib librsvg`
 
 For non-mac users, please refer to the [canvas installation guide](https://www.npmjs.com/package/canvas#compiling) for more information.
+
+### Error unable to auto-detect a suitable renderer
+When running in a headless environment (e.g. server or continuous integration), use `xvfb` as a virtual frame buffer.
+Install with:
+```
+sudo apt-get install xvfb
+```
+And then use with node when starting the program:
+```
+xvfb-run node ./src/index.js
+```
 
 ## Basic Usage Example
 
@@ -86,6 +97,35 @@ const base64Data = base64Image.replace(/^data:image\/png;base64,/, '');
 const output = `./test.png`;
 
 writeFileSync(output, base64Data, 'base64');
+```
+
+## Full environment setup with Docker 🐳
+
+*NOTE: It is recommended to add `node_modules` to your `.dockerignore` file.*
+
+```Dockerfile
+# Set the base image
+FROM node:16
+
+# Create and set the working directory
+WORKDIR /usr/src/app
+
+# Add dependencies for gl, canvas and xvfb
+# Important! These dependencies must be installed before running `npm install`
+RUN apt-get update \
+    && apt-get install -y build-essential libcairo2-dev libgif-dev libglew-dev libglu1-mesa-dev libjpeg-dev libpango1.0-dev librsvg2-dev libxi-dev pkg-config xvfb \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install app dependencies
+COPY package*.json ./
+RUN npm install
+
+# Bundle app source
+COPY . .
+
+# Start the server
+EXPOSE 3000
+CMD xvfb-run node ./src/index.js
 ```
 
 ### License

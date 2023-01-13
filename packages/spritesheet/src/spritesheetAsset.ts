@@ -108,7 +108,7 @@ export const spritesheetAsset = {
             }
 
             const imagePath = basePath + asset.meta.image;
-            const assets = await loader.load([imagePath]) as Record<string, Texture>;
+            const assets = await loader.load<Texture>([imagePath]);
             const texture = assets[imagePath];
             const spritesheet = new Spritesheet(
                 texture.baseTexture,
@@ -142,7 +142,7 @@ export const spritesheetAsset = {
                         continue;
                     }
 
-                    promises.push(loader.load({
+                    promises.push(loader.load<Spritesheet>({
                         src: itemUrl,
                         data: {
                             ignoreMultiPack: true,

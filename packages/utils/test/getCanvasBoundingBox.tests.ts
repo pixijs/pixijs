@@ -29,6 +29,8 @@ describe('getCanvasBoundingBox', () =>
 
         const context = canvas.getContext('2d');
 
+        if (context === null) fail('Failed to get canvas 2D context');
+
         context.fillStyle = '#ff0000';
         context.fillRect(10, 20, 10, 5);
         context.fillStyle = '#00ff00';

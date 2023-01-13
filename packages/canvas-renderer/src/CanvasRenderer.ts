@@ -38,9 +38,6 @@ const { deprecation } = utils;
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface CanvasRenderer extends GlobalMixins.CanvasRenderer {}
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface CanvasRenderer extends GlobalMixins.CanvasRenderer {}
-
 /**
  * The CanvasRenderer draws the scene and all its content onto a 2d canvas.
  *
@@ -83,6 +80,12 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
         type: ExtensionType.Renderer,
         priority: 0,
     };
+
+    /**
+     * Options passed to the constructor.
+     * @member {PIXI.IRendererOptions}
+     */
+    public readonly options: IRendererOptions;
 
     /**
      * Used with autoDetectRenderer, this is always supported for any environment, so return true.
@@ -241,6 +244,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
         };
 
         this.startup.run(startupOptions);
+        this.options = options;
     }
 
     /**

@@ -38,9 +38,6 @@ import type { ViewSystem } from './view/ViewSystem';
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface Renderer extends GlobalMixins.Renderer {}
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface Renderer extends GlobalMixins.Renderer {}
-
 /**
  * The Renderer draws the scene and all its content onto a WebGL enabled canvas.
  *
@@ -105,6 +102,12 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      * @see PIXI.RENDERER_TYPE
      */
     public readonly type: RENDERER_TYPE.WEBGL;
+
+    /**
+     * Options passed to the constructor.
+     * @type {PIXI.IRendererOptions}
+     */
+    public readonly options: IRendererOptions;
 
     /**
      * WebGL context, set by {@link PIXI.ContextSystem this.context}.
@@ -403,6 +406,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
         };
 
         this.startup.run(startupOptions);
+        this.options = options;
     }
 
     /**

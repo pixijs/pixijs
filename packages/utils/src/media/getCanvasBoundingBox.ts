@@ -40,6 +40,12 @@ export function getCanvasBoundingBox(canvas: ICanvas): BoundingBox
     const context = canvas.getContext('2d', {
         willReadFrequently: true,
     });
+
+    if (context === null)
+    {
+        throw new TypeError('Failed to get canvas 2D context');
+    }
+
     const imageData = context.getImageData(0, 0, width, height);
     const data = imageData.data;
 

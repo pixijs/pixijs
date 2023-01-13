@@ -85,7 +85,7 @@ export interface AssetInitOptions
  * Here both promises will be the same. Once resolved... Forever resolved! It makes for really easy resource management!
  *
  * Out of the box it supports the following files:
- * - textures (avif, webp, png, jpg, gif)
+ * - textures (avif, webp, png, jpg, gif, svg)
  * - sprite sheets (json)
  * - bitmap fonts (xml, fnt, txt)
  * - web fonts (ttf, woff, woff2)

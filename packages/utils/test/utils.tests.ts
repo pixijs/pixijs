@@ -37,11 +37,11 @@ describe('utils', () =>
             const dataUri = utils.decomposeDataUri('data:image/png;base64,94Z9RWUN77ZW');
 
             expect(dataUri).toBeObject();
-            expect(dataUri.mediaType).toEqual('image');
-            expect(dataUri.subType).toEqual('png');
-            expect(dataUri.charset).toBeUndefined();
-            expect(dataUri.encoding).toEqual('base64');
-            expect(dataUri.data).toEqual('94Z9RWUN77ZW');
+            expect(dataUri?.mediaType).toEqual('image');
+            expect(dataUri?.subType).toEqual('png');
+            expect(dataUri?.charset).toBeUndefined();
+            expect(dataUri?.encoding).toEqual('base64');
+            expect(dataUri?.data).toEqual('94Z9RWUN77ZW');
         });
 
         it('should decompose a data URI with charset', () =>
@@ -49,11 +49,11 @@ describe('utils', () =>
             const dataUri = utils.decomposeDataUri('data:image/svg+xml;charset=utf8;base64,PGRpdiB4bWxucz0Pg==');
 
             expect(dataUri).toBeObject();
-            expect(dataUri.mediaType).toEqual('image');
-            expect(dataUri.subType).toEqual('svg+xml');
-            expect(dataUri.charset).toEqual('utf8');
-            expect(dataUri.encoding).toEqual('base64');
-            expect(dataUri.data).toEqual('PGRpdiB4bWxucz0Pg==');
+            expect(dataUri?.mediaType).toEqual('image');
+            expect(dataUri?.subType).toEqual('svg+xml');
+            expect(dataUri?.charset).toEqual('utf8');
+            expect(dataUri?.encoding).toEqual('base64');
+            expect(dataUri?.data).toEqual('PGRpdiB4bWxucz0Pg==');
         });
 
         it('should decompose a data URI with charset without encoding', () =>
@@ -61,11 +61,11 @@ describe('utils', () =>
             const dataUri = utils.decomposeDataUri('data:image/svg+xml;charset=utf8,PGRpdiB4bWxucz0Pg==');
 
             expect(dataUri).toBeObject();
-            expect(dataUri.mediaType).toEqual('image');
-            expect(dataUri.subType).toEqual('svg+xml');
-            expect(dataUri.charset).toEqual('utf8');
-            expect(dataUri.encoding).toBeUndefined();
-            expect(dataUri.data).toEqual('PGRpdiB4bWxucz0Pg==');
+            expect(dataUri?.mediaType).toEqual('image');
+            expect(dataUri?.subType).toEqual('svg+xml');
+            expect(dataUri?.charset).toEqual('utf8');
+            expect(dataUri?.encoding).toBeUndefined();
+            expect(dataUri?.data).toEqual('PGRpdiB4bWxucz0Pg==');
         });
 
         it('should return undefined for anything else', () =>
