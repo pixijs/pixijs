@@ -1,6 +1,7 @@
 import type { RENDERER_TYPE } from '@pixi/constants';
 import type { Matrix, Rectangle, Transform } from '@pixi/math';
 import type { ICanvas } from '@pixi/settings';
+import type { ColorSource } from '@pixi/utils';
 import type { IRendererPlugins } from './plugin/PluginSystem';
 import type { IGenerateTextureOptions } from './renderTexture/GenerateTextureSystem';
 import type { RenderTexture } from './renderTexture/RenderTexture';
@@ -89,8 +90,8 @@ export interface IRendererOptions extends GlobalMixins.IRendererOptions
     resolution?: number;
     preserveDrawingBuffer?: boolean;
     clearBeforeRender?: boolean;
-    backgroundColor?: number | string;
-    background?: number | string;
+    backgroundColor?: ColorSource;
+    background?: ColorSource;
     backgroundAlpha?: number;
     premultipliedAlpha?: boolean;
     powerPreference?: WebGLPowerPreference;

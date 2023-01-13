@@ -10,7 +10,7 @@ export interface BackgroundOptions
     /** the main canvas background alpha. From 0 (fully transparent) to 1 (fully opaque). */
     alpha: number,
     /** the main canvas background color. */
-    color: number | string,
+    color: ColorSource,
     /** sets if the renderer will clear the canvas or not before the new render pass. */
     clearBeforeRender: boolean,
 }
