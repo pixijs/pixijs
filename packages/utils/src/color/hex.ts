@@ -68,7 +68,7 @@ export function string2hex(string: string): number
 export function rgb2hex(rgb: number[] | Float32Array): number
 {
     // #if _DEBUG
-    deprecation('v7.2.0', 'utils.rgb2hex is deprecated, use utils.Color#toNumber instead');
+    deprecation('7.2.0', 'utils.rgb2hex is deprecated, use utils.Color#toNumber instead');
     // #endif
 
     return Color.default.setValue(rgb).toNumber();
