@@ -1,8 +1,6 @@
 import { deprecation } from '../logging/deprecation';
 import { Color } from './Color';
 
-const tempColor = new Color();
-
 /**
  * Converts a hexadecimal color number to an [R, G, B] array of normalized floats (numbers from 0.0 to 1.0).
  * @memberof PIXI.utils
@@ -19,7 +17,7 @@ export function hex2rgb(hex: number, out: Array<number> | Float32Array = []): Ar
     deprecation('v7.2.0', 'utils.hex2rgb is deprecated, use utils.Color#toRgbArray instead');
     // #endif
 
-    return tempColor.setValue(hex).toRgbArray(out);
+    return Color.default.setValue(hex).toRgbArray(out);
 }
 
 /**
@@ -37,7 +35,7 @@ export function hex2string(hex: number): string
     deprecation('v7.2.0', 'utils.hex2string is deprecated, use utils.Color#toString instead');
     // #endif
 
-    return tempColor.setValue(hex).toString();
+    return Color.default.setValue(hex).toString();
 }
 
 /**
@@ -55,7 +53,7 @@ export function string2hex(string: string): number
     deprecation('v7.2.0', 'utils.string2hex is deprecated, use utils.Color#toNumber instead');
     // #endif
 
-    return tempColor.setValue(string).toNumber();
+    return Color.default.setValue(string).toNumber();
 }
 
 /**
@@ -73,5 +71,5 @@ export function rgb2hex(rgb: number[] | Float32Array): number
     deprecation('v7.2.0', 'utils.rgb2hex is deprecated, use utils.Color#toNumber instead');
     // #endif
 
-    return tempColor.setValue(rgb).toNumber();
+    return Color.default.setValue(rgb).toNumber();
 }

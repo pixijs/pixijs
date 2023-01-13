@@ -33,6 +33,15 @@ export type ColorSource = string | number | number[] | Float32Array
  */
 export class Color
 {
+    /**
+     * Default Color object for static uses
+     * @example
+     * import { utils } from 'pixi.js';
+     * utils.Color.default.setValue(0xffffff).toString(); // '#ffffff'
+     */
+    static readonly default = new Color();
+
+    /** Pattern for hex strings */
     static readonly HEX_PATTERN = /^#?([a-f0-9]{3}){1,2}([a-f0-9]{2})?$/i;
 
     /** Internal color source, from constructor or set value */
