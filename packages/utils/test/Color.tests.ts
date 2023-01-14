@@ -31,6 +31,15 @@ describe('Color', () =>
         });
     });
 
+    it('should copy from another color object', () =>
+    {
+        const color = new utils.Color('red');
+        const color2 = new utils.Color(color);
+
+        expect(color.value).toBe(color2.value);
+        expect(color.toArray()).toStrictEqual(color2.toArray());
+    });
+
     it.concurrent('should convert color values to rgba', async () =>
     {
         const transparent = {

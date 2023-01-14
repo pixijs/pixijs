@@ -15,7 +15,7 @@ extend([namesPlugin]);
 
 /** Different possible value types for Color class */
 export type ColorSource = string | number | number[] | Float32Array
-| HslColor | HslaColor | HsvColor | HsvaColor | RgbColor | RgbaColor;
+| HslColor | HslaColor | HsvColor | HsvaColor | RgbColor | RgbaColor | Color;
 
 /**
  * Converts a color value to an [R,G,B,A] array of normalized values (numbers from 0.0 to 1.0).
@@ -104,6 +104,9 @@ export class Color
      */
     set value(value: ColorSource)
     {
+        // Support copying from other Color objects
+        value = value instanceof Color ? value._value : value;
+
         if (this._value !== value)
         {
             this.normalize(value);
