@@ -278,10 +278,13 @@ export class Color
         {
             if (typeof value === 'string' && Color.HEX_PATTERN.test(value))
             {
-                // Normalize hex string, remove 0x or # prefix
-                const hexString = Color.HEX_PATTERN.exec(value)[2];
+                const match = Color.HEX_PATTERN.exec(value);
 
-                value = `#${hexString}`;
+                if (match)
+                {
+                    // Normalize hex string, remove 0x or # prefix
+                    value = `#${match[2]}`;
+                }
             }
 
             const color = colord(value as AnyColor);
