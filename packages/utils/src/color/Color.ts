@@ -107,9 +107,9 @@ export class Color
         // Support copying from other Color objects
         if (value instanceof Color)
         {
-            this._value = color._value;
-            this._int = color._int;
-            this._components.set(color._components);
+            this._value = value._value;
+            this._int = value._int;
+            this._components.set(value._components);
         }
         else
         {
