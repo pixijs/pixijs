@@ -20,24 +20,24 @@ export type ColorSource = string | number | number[] | Float32Array
 /**
  * Converts a color value to an [R,G,B,A] array of normalized values (numbers from 0.0 to 1.0).
  * @example
- * import { utils } from 'pixi.js';
- * new utils.Color('red').toArray(); // [1, 0, 0, 1]
- * new utils.Color(0xff0000).toArray(); // [1, 0, 0, 1]
- * new utils.Color('ff0000').toArray(); // [1, 0, 0, 1]
- * new utils.Color('#f00').toArray(); // [1, 0, 0, 1]
- * new utils.Color([255, 0, 0, 0.5]).toArray(); // [1, 0, 0, 0.5]
- * new utils.Color('rgb(255, 0, 0, 0.5)').toArray(); // [1, 0, 0, 0.5]
- * new utils.Color({h: 0, s: 100, l: 50, a: 0.5}).toArray(); // [1, 0, 0, 0.5]
- * new utils.Color({h: 0, s: 100, v: 100, a: 0.5}).toArray(); // [1, 0, 0, 0.5]
- * @memberof PIXI.utils
+ * import { Color } from 'pixi.js';
+ * new Color('red').toArray(); // [1, 0, 0, 1]
+ * new Color(0xff0000).toArray(); // [1, 0, 0, 1]
+ * new Color('ff0000').toArray(); // [1, 0, 0, 1]
+ * new Color('#f00').toArray(); // [1, 0, 0, 1]
+ * new Color([255, 0, 0, 0.5]).toArray(); // [1, 0, 0, 0.5]
+ * new Color('rgb(255, 0, 0, 0.5)').toArray(); // [1, 0, 0, 0.5]
+ * new Color({h: 0, s: 100, l: 50, a: 0.5}).toArray(); // [1, 0, 0, 0.5]
+ * new Color({h: 0, s: 100, v: 100, a: 0.5}).toArray(); // [1, 0, 0, 0.5]
+ * @memberof PIXI
  */
 export class Color
 {
     /**
      * Default Color object for static uses
      * @example
-     * import { utils } from 'pixi.js';
-     * utils.Color.default.setValue(0xffffff).toString(); // '#ffffff'
+     * import { Color } from 'pixi.js';
+     * Color.default.setValue(0xffffff).toString(); // '#ffffff'
      */
     static readonly default = new Color();
 
@@ -125,8 +125,8 @@ export class Color
     /**
      * Get RGBA color object.
      * @example
-     * import { utils } from 'pixi.js';
-     * new utils.Color('white').toRgb(); // returns { r: 1, g: 1, b: 1, a: 1 }
+     * import { Color } from 'pixi.js';
+     * new Color('white').toRgb(); // returns { r: 1, g: 1, b: 1, a: 1 }
      */
     toRgba(): RgbaColor
     {
@@ -138,8 +138,8 @@ export class Color
     /**
      * Get RGB color object.
      * @example
-     * import { utils } from 'pixi.js';
-     * new utils.Color('white').toRgb(); // returns { r: 1, g: 1, b: 1 }
+     * import { Color } from 'pixi.js';
+     * new Color('white').toRgb(); // returns { r: 1, g: 1, b: 1 }
      */
     toRgb(): RgbColor
     {
@@ -159,8 +159,8 @@ export class Color
     /**
      * Converts color to an [R, G, B] array of normalized floats (numbers from 0.0 to 1.0).
      * @example
-     * import { utils } from 'pixi.js';
-     * new utils.Color('white').toRgbArray(); // returns [1, 1, 1]
+     * import { Color } from 'pixi.js';
+     * new Color('white').toRgbArray(); // returns [1, 1, 1]
      * @param {number[]|Float32Array} [out] - Output array
      */
     toRgbArray<T extends (number[] | Float32Array) = number[]>(out?: T): T
@@ -178,8 +178,8 @@ export class Color
     /**
      * Converts a color to a hexadecimal number.
      * @example
-     * import { utils } from 'pixi.js';
-     * new utils.Color('white').toNumber(); // returns 16777215
+     * import { Color } from 'pixi.js';
+     * new Color('white').toNumber(); // returns 16777215
      */
     toNumber(): number
     {
@@ -189,8 +189,8 @@ export class Color
     /**
      * Converts a hexadecimal color number to a string.
      * @example
-     * import { utils } from 'pixi.js';
-     * new utils.Color('white').toString(); // returns "#ffffff"
+     * import { Color } from 'pixi.js';
+     * new Color('white').toString(); // returns "#ffffff"
      */
     toString(): string
     {
@@ -202,8 +202,8 @@ export class Color
     /**
      * Convert to a hexidecimal string with alpha.
      * @example
-     * import { utils } from 'pixi.js';
-     * new utils.Color('white').toHexString(); // returns "#ffffffff"
+     * import { Color } from 'pixi.js';
+     * new Color('white').toHexString(); // returns "#ffffffff"
      */
     toHexString(): string
     {
@@ -244,8 +244,8 @@ export class Color
     /**
      * Converts color to an [R, G, B, A] array of normalized floats (numbers from 0.0 to 1.0).
      * @example
-     * import { utils } from 'pixi.js';
-     * new utils.Color('white').toArray(); // returns [1, 1, 1, 1]
+     * import { Color } from 'pixi.js';
+     * new Color('white').toArray(); // returns [1, 1, 1, 1]
      * @param {number[]|Float32Array} [out] - Output array
      */
     toArray<T extends (number[] | Float32Array) = number[]>(out?: T): T

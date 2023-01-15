@@ -1,6 +1,6 @@
-import * as utils from '@pixi/utils';
+import { Color } from '@pixi/color';
 
-import type { ColorSource } from '@pixi/utils';
+import type { ColorSource } from '@pixi/color';
 
 describe('Color', () =>
 {
@@ -25,7 +25,7 @@ describe('Color', () =>
             {
                 /* eslint-disable */
                 // @ts-ignore
-                new utils.Color(value);
+                new Color(value);
                 /* eslint-enable */
             }).toThrow();
         });
@@ -33,8 +33,8 @@ describe('Color', () =>
 
     it('should copy from another color object', () =>
     {
-        const color = new utils.Color('red');
-        const color2 = new utils.Color(color);
+        const color = new Color('red');
+        const color2 = new Color(color);
 
         expect(color.value).toBe(color2.value);
         expect(color.toArray()).toStrictEqual(color2.toArray());
@@ -143,7 +143,7 @@ describe('Color', () =>
         testCases.forEach((tc) =>
         {
             const [value, expected] = tc;
-            const color = new utils.Color(value);
+            const color = new Color(value);
 
             expect(color.toArray()).toEqual(expected.rgba);
             expect(color.toNumber()).toEqual(expected.number);

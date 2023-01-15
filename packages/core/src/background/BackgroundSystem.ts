@@ -1,8 +1,8 @@
+import { Color } from '@pixi/color';
 import { extensions, ExtensionType } from '@pixi/extensions';
-import { Color } from '@pixi/utils';
 
+import type { ColorSource } from '@pixi/color';
 import type { ExtensionMetadata } from '@pixi/extensions';
-import type { ColorSource } from '@pixi/utils';
 import type { ISystem } from '../system/ISystem';
 
 export interface BackgroundOptions

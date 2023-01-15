@@ -1,7 +1,7 @@
+import type { ColorSource } from '@pixi/color';
 import type { RENDERER_TYPE } from '@pixi/constants';
 import type { Matrix, Rectangle, Transform } from '@pixi/math';
 import type { ICanvas } from '@pixi/settings';
-import type { ColorSource } from '@pixi/utils';
 import type { IRendererPlugins } from './plugin/PluginSystem';
 import type { IGenerateTextureOptions } from './renderTexture/GenerateTextureSystem';
 import type { RenderTexture } from './renderTexture/RenderTexture';

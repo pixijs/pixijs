@@ -40,6 +40,7 @@
     "url": "https://opencollective.com/pixijs"
   },
   "dependencies": {
+    "@pixi/color": "7.1.0",
     "@pixi/constants": "7.1.0",
     "@pixi/extensions": "7.1.0",
     "@pixi/math": "7.1.0",

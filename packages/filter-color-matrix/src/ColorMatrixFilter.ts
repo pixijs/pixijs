@@ -1,5 +1,7 @@
-import { defaultFilterVertex, Filter, utils } from '@pixi/core';
+import { Color, defaultFilterVertex, Filter } from '@pixi/core';
 import fragment from './colorMatrix.frag';
+
+import type { utils } from '@pixi/core';
 
 export type ColorMatrix = utils.ArrayFixed<number, 20>;
 
@@ -142,7 +144,7 @@ export class ColorMatrixFilter extends Filter
      */
     public tint(color: number, multiply?: boolean): void
     {
-        const [r, g, b] = utils.Color.default.setValue(color).toArray();
+        const [r, g, b] = Color.default.setValue(color).toArray();
         const matrix: ColorMatrix = [
             r, 0, 0, 0, 0,
             0, g, 0, 0, 0,
@@ -443,7 +445,7 @@ export class ColorMatrixFilter extends Filter
         lightColor = lightColor || 0xFFE580;
         darkColor = darkColor || 0x338000;
 
-        const temp = utils.Color.default;
+        const temp = Color.default;
         const [lR, lG, lB] = temp.setValue(lightColor).toArray();
         const [dR, dG, dB] = temp.setValue(darkColor).toArray();
 

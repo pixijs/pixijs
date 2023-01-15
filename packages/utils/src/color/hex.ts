@@ -1,11 +1,11 @@
+import { Color } from '@pixi/color';
 import { deprecation } from '../logging/deprecation';
-import { Color } from './Color';
 
 /**
  * Converts a hexadecimal color number to an [R, G, B] array of normalized floats (numbers from 0.0 to 1.0).
  * @memberof PIXI.utils
  * @function hex2rgb
- * @see PIXI.utils.Color.toRgbArray
+ * @see PIXI.Color.toRgbArray
  * @deprecated since 7.2.0
  * @param {number} hex - The hexadecimal number to convert
  * @param  {number[]} [out=[]] - If supplied, this array will be used rather than returning a new one
@@ -14,7 +14,7 @@ import { Color } from './Color';
 export function hex2rgb(hex: number, out: Array<number> | Float32Array = []): Array<number> | Float32Array
 {
     // #if _DEBUG
-    deprecation('7.2.0', 'utils.hex2rgb is deprecated, use utils.Color#toRgbArray instead');
+    deprecation('7.2.0', 'utils.hex2rgb is deprecated, use Color#toRgbArray instead');
     // #endif
 
     return Color.default.setValue(hex).toRgbArray(out);
@@ -22,7 +22,7 @@ export function hex2rgb(hex: number, out: Array<number> | Float32Array = []): Ar
 
 /**
  * Converts a hexadecimal color number to a string.
- * @see PIXI.utils.Color.toString
+ * @see PIXI.Color.toString
  * @deprecated since 7.2.0
  * @memberof PIXI.utils
  * @function hex2string
@@ -32,7 +32,7 @@ export function hex2rgb(hex: number, out: Array<number> | Float32Array = []): Ar
 export function hex2string(hex: number): string
 {
     // #if _DEBUG
-    deprecation('7.2.0', 'utils.hex2string is deprecated, use utils.Color#toString instead');
+    deprecation('7.2.0', 'utils.hex2string is deprecated, use Color#toString instead');
     // #endif
 
     return Color.default.setValue(hex).toString();
@@ -41,7 +41,7 @@ export function hex2string(hex: number): string
 /**
  * Converts a string to a hexadecimal color number.
  * @deprecated since 7.2.0
- * @see PIXI.utils.Color.toNumber
+ * @see PIXI.Color.toNumber
  * @memberof PIXI.utils
  * @function string2hex
  * @param {string} string - The string color (e.g., `"#ffffff"`)
@@ -50,7 +50,7 @@ export function hex2string(hex: number): string
 export function string2hex(string: string): number
 {
     // #if _DEBUG
-    deprecation('7.2.0', 'utils.string2hex is deprecated, use utils.Color#toNumber instead');
+    deprecation('7.2.0', 'utils.string2hex is deprecated, use Color#toNumber instead');
     // #endif
 
     return Color.default.setValue(string).toNumber();
@@ -59,7 +59,7 @@ export function string2hex(string: string): number
 /**
  * Converts a color as an [R, G, B] array of normalized floats to a hexadecimal number.
  * @deprecated since 7.2.0
- * @see PIXI.utils.Color.toNumber
+ * @see PIXI.Color.toNumber
  * @memberof PIXI.utils
  * @function rgb2hex
  * @param {number[]} rgb - Array of numbers where all values are normalized floats from 0.0 to 1.0.
@@ -68,7 +68,7 @@ export function string2hex(string: string): number
 export function rgb2hex(rgb: number[] | Float32Array): number
 {
     // #if _DEBUG
-    deprecation('7.2.0', 'utils.rgb2hex is deprecated, use utils.Color#toNumber instead');
+    deprecation('7.2.0', 'utils.rgb2hex is deprecated, use Color#toNumber instead');
     // #endif
 
     return Color.default.setValue(rgb).toNumber();

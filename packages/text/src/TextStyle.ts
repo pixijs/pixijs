@@ -2,7 +2,7 @@
 /* eslint-disable */
 
 import { TEXT_GRADIENT } from './const';
-import { utils } from '@pixi/core';
+import { Color } from '@pixi/core';
 
 export type TextStyleAlign = 'left'|'center'|'right'|'justify';
 export type TextStyleFill = string|string[]|number|number[]|CanvasGradient|CanvasPattern;
@@ -866,7 +866,7 @@ function getColor(color: (string|number)[]): string[];
 function getColor(color: string|number): string;
 function getColor(color: string|number|(string|number)[]): string|string[]
 {
-    const temp = utils.Color.default;
+    const temp = Color.default;
 
     if (!Array.isArray(color))
     {

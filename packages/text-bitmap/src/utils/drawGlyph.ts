@@ -1,4 +1,4 @@
-import { utils } from '@pixi/core';
+import { Color } from '@pixi/core';
 import { generateFillStyle } from './generateFillStyle';
 
 import type { ICanvas, ICanvasRenderingContext2D } from '@pixi/core';
@@ -54,7 +54,7 @@ export function drawGlyph(
         const dropShadowBlur = style.dropShadowBlur * resolution;
         const dropShadowDistance = style.dropShadowDistance * resolution;
 
-        context.shadowColor = utils.Color.default
+        context.shadowColor = Color.default
             .setValue(dropShadowColor)
             .setAlpha(style.dropShadowAlpha)
             .toRgbaString();

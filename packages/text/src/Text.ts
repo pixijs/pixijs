@@ -1,5 +1,5 @@
 /* eslint max-depth: [2, 8] */
-import { Rectangle, settings, Texture, utils } from '@pixi/core';
+import { Color, Rectangle, settings, Texture, utils } from '@pixi/core';
 import { Sprite } from '@pixi/sprite';
 import { TEXT_GRADIENT } from './const';
 import { TextMetrics } from './TextMetrics';
@@ -266,7 +266,7 @@ export class Text extends Sprite
                 const dropShadowBlur = style.dropShadowBlur * this._resolution;
                 const dropShadowDistance = style.dropShadowDistance * this._resolution;
 
-                context.shadowColor = utils.Color.default
+                context.shadowColor = Color.default
                     .setValue(dropShadowColor)
                     .setAlpha(style.dropShadowAlpha)
                     .toRgbaString();
