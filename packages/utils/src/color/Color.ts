@@ -111,13 +111,10 @@ export class Color
             this._int = value._int;
             this._components.set(value._components);
         }
-        else
+        else if (this._value !== value)
         {
-            if (this._value !== value)
-            {
-                this.normalize(value);
-                this._value = value;
-            }
+            this.normalize(value);
+            this._value = value;
         }
     }
     get value(): ColorSource
