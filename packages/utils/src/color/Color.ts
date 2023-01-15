@@ -45,7 +45,7 @@ export class Color
     private static readonly HEX_PATTERN = /^(#|0x)?(([a-f0-9]{3}){1,2}([a-f0-9]{2})?)$/i;
 
     /** Internal color source, from constructor or set value */
-    private _value: ColorSource;
+    private _value: Exclude<ColorSource, Color>;
 
     /** Normalized rgba component, floats from 0-1 */
     private _components: Float32Array;
@@ -117,7 +117,7 @@ export class Color
             this._value = value;
         }
     }
-    get value(): ColorSource
+    get value(): Exclude<ColorSource, Color>
     {
         return this._value;
     }
@@ -265,7 +265,7 @@ export class Color
      * Normalize the input value into rgba
      * @param value - Input value
      */
-    private normalize(value: ColorSource): void
+    private normalize(value: Exclude<ColorSource, Color>): void
     {
         let components: number[];
 
