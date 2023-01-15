@@ -1,4 +1,4 @@
-import { LoaderParserPriority } from '@pixi/assets';
+import { copySearchParams, LoaderParserPriority } from '@pixi/assets';
 import { extensions, ExtensionType, settings, utils } from '@pixi/core';
 import { Spritesheet } from './Spritesheet';
 
@@ -107,7 +107,10 @@ export const spritesheetAsset = {
                 basePath += '/';
             }
 
-            const imagePath = basePath + asset.meta.image;
+            let imagePath = basePath + asset.meta.image;
+
+            imagePath = copySearchParams(imagePath, options.src);
+
             const assets = await loader.load<Texture>([imagePath]);
             const texture = assets[imagePath];
             const spritesheet = new Spritesheet(
@@ -134,13 +137,15 @@ export const spritesheetAsset = {
                         continue;
                     }
 
-                    const itemUrl = basePath + item;
+                    let itemUrl = basePath + item;
 
                     // Check if the file wasn't already added as multipack
                     if (options.data?.ignoreMultiPack)
                     {
                         continue;
                     }
+
+                    itemUrl = copySearchParams(itemUrl, options.src);
 
                     promises.push(loader.load<Spritesheet>({
                         src: itemUrl,

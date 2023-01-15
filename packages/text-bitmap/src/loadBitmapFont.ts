@@ -1,4 +1,4 @@
-import { LoaderParserPriority } from '@pixi/assets';
+import { copySearchParams, LoaderParserPriority } from '@pixi/assets';
 import { extensions, ExtensionType, settings, utils } from '@pixi/core';
 import { BitmapFont } from './BitmapFont';
 import { TextFormat, XMLStringFormat } from './formats';
@@ -39,7 +39,9 @@ export const loadBitmapFont = {
         for (let i = 0; i < pages.length; ++i)
         {
             const pageFile = pages[i].file;
-            const imagePath = utils.path.join(utils.path.dirname(src), pageFile);
+            let imagePath = utils.path.join(utils.path.dirname(src), pageFile);
+
+            imagePath = copySearchParams(imagePath, src);
 
             textureUrls.push(imagePath);
         }

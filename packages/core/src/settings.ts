@@ -57,7 +57,7 @@ Object.defineProperties(settings, {
         set(value: WRAP_MODES)
         {
             // #if _DEBUG
-            deprecation('7.1.0', 'settings.WRAP_MODE is deprecated, use BaseTeture.defaultOptions.wrapMode');
+            deprecation('7.1.0', 'settings.WRAP_MODE is deprecated, use BaseTexture.defaultOptions.wrapMode');
             // #endif
             BaseTexture.defaultOptions.wrapMode = value;
         },
@@ -79,7 +79,7 @@ Object.defineProperties(settings, {
         set(value: SCALE_MODES)
         {
             // #if _DEBUG
-            deprecation('7.1.0', 'settings.SCALE_MODE is deprecated, use BaseTeture.defaultOptions.scaleMode');
+            deprecation('7.1.0', 'settings.SCALE_MODE is deprecated, use BaseTexture.defaultOptions.scaleMode');
             // #endif
             BaseTexture.defaultOptions.scaleMode = value;
         },
@@ -102,7 +102,7 @@ Object.defineProperties(settings, {
         set(value: MIPMAP_MODES)
         {
             // #if _DEBUG
-            deprecation('7.1.0', 'settings.MIPMAP_TEXTURES is deprecated, use BaseTeture.defaultOptions.mipmap');
+            deprecation('7.1.0', 'settings.MIPMAP_TEXTURES is deprecated, use BaseTexture.defaultOptions.mipmap');
             // #endif
             BaseTexture.defaultOptions.mipmap = value;
         },
@@ -126,8 +126,8 @@ Object.defineProperties(settings, {
         set(value: number)
         {
             // #if _DEBUG
-            // eslint-disable-next-line max-len
-            deprecation('7.1.0', 'settings.ANISOTROPIC_LEVEL is deprecated, use BaseTeture.defaultOptions.anisotropicLevel');
+            deprecation(
+                '7.1.0', 'settings.ANISOTROPIC_LEVEL is deprecated, use BaseTexture.defaultOptions.anisotropicLevel');
             // #endif
             BaseTexture.defaultOptions.anisotropicLevel = value;
         },
