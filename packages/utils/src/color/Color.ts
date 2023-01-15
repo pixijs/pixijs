@@ -105,12 +105,19 @@ export class Color
     set value(value: ColorSource)
     {
         // Support copying from other Color objects
-        value = value instanceof Color ? value._value : value;
-
-        if (this._value !== value)
+        if (value instanceof Color)
         {
-            this.normalize(value);
-            this._value = value;
+            this._value = color._value;
+            this._int = color._int;
+            this._components.set(color._components);
+        }
+        else
+        {
+            if (this._value !== value)
+            {
+                this.normalize(value);
+                this._value = value;
+            }
         }
     }
     get value(): ColorSource
@@ -279,7 +286,7 @@ export class Color
         }
         else if (typeof value === 'string' || typeof value === 'object')
         {
-            if (typeof value === 'string' && Color.HEX_PATTERN.test(value))
+            if (typeof value === 'string')
             {
                 const match = Color.HEX_PATTERN.exec(value);
 
