@@ -36,6 +36,7 @@
     "*.d.ts"
   ],
   "dependencies": {
+    "@pixi/color": "7.1.0",
     "@pixi/constants": "7.1.0",
     "@pixi/settings": "7.1.0",
     "@types/earcut": "^2.1.0",
