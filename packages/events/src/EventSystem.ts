@@ -1,4 +1,4 @@
-import { extensions, ExtensionType } from '@pixi/core';
+import { extensions, ExtensionType, Ticker, UPDATE_PRIORITY } from '@pixi/core';
 import { EventBoundary } from './EventBoundary';
 import { FederatedPointerEvent } from './FederatedPointerEvent';
 import { FederatedWheelEvent } from './FederatedWheelEvent';
@@ -86,10 +86,23 @@ export class EventSystem
     /** The renderer managing this {@link EventSystem}. */
     public renderer: Renderer;
 
+    /**
+     * Maximum frequency in milliseconds at which pointer over/out states will be checked by {@link tickerUpdate}.
+     * @default 10
+     */
+    public interactionFrequency: number;
+
     private currentCursor: string;
     private rootPointerEvent: FederatedPointerEvent;
     private rootWheelEvent: FederatedWheelEvent;
     private eventsAdded: boolean;
+
+    /** Has the system ticker been added? */
+    protected tickerAdded: boolean;
+    /** Time since the last update */
+    private _deltaTime: number;
+    /** Did the user move the mouse this frame */
+    private _didMove: boolean;
 
     /**
      * @param {PIXI.Renderer} renderer
@@ -143,6 +156,77 @@ export class EventSystem
     {
         this.setTargetElement(null);
         this.renderer = null;
+    }
+
+    /** Updates the state of interactive objects. */
+    private update(): void
+    {
+        if (!this.domElement)
+        {
+            return;
+        }
+
+        // if the user move the mouse this check has already been done using the mouse move!
+        if (this._didMove)
+        {
+            this._didMove = false;
+
+            return;
+        }
+
+        if (this.supportsTouchEvents && (this.rootPointerEvent as PointerEvent).pointerType === 'touch') return;
+
+        globalThis.document.dispatchEvent(new PointerEvent('pointermove', {
+            clientX: this.rootPointerEvent.clientX,
+            clientY: this.rootPointerEvent.clientY,
+        }));
+    }
+
+    /**
+     * Updates the state of interactive objects if at least {@link interactionFrequency}
+     * milliseconds have passed since the last invocation.
+     *
+     * Invoked by a throttled ticker update from {@link PIXI.Ticker.system}.
+     * @param deltaTime - time delta since the last call
+     */
+    private tickerUpdate(deltaTime: number): void
+    {
+        this._deltaTime += deltaTime;
+
+        if (this._deltaTime < this.interactionFrequency)
+        {
+            return;
+        }
+
+        this._deltaTime = 0;
+
+        this.update();
+    }
+
+    /** Adds the ticker listener. */
+    private addTickerListener(): void
+    {
+        if (this.tickerAdded || !this.domElement)
+        {
+            return;
+        }
+
+        Ticker.system.add(this.tickerUpdate, this, UPDATE_PRIORITY.INTERACTION);
+
+        this.tickerAdded = true;
+    }
+
+    /** Removes the ticker listener. */
+    private removeTickerListener(): void
+    {
+        if (!this.tickerAdded)
+        {
+            return;
+        }
+
+        Ticker.system.remove(this.tickerUpdate, this);
+
+        this.tickerAdded = false;
     }
 
     /**
@@ -255,6 +339,8 @@ export class EventSystem
         // if we support touch events, then only use those for touch events, not pointer events
         if (this.supportsTouchEvents && (nativeEvent as PointerEvent).pointerType === 'touch') return;
 
+        this._didMove = true;
+
         const normalizedEvents = this.normalizeToPointerData(nativeEvent);
 
         for (let i = 0, j = normalizedEvents.length; i < j; i++)
@@ -344,9 +430,11 @@ export class EventSystem
      */
     public setTargetElement(element: HTMLElement): void
     {
+        this.removeTickerListener();
         this.removeEvents();
         this.domElement = element;
         this.addEvents();
+        this.addTickerListener();
     }
 
     /** Register event listeners on {@link PIXI.Renderer#domElement this.domElement}. */

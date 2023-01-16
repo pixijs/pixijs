@@ -14,6 +14,7 @@
 export enum UPDATE_PRIORITY
 // eslint-disable-next-line @typescript-eslint/indent
 {
+    INTERACTION = 50,
     HIGH = 25,
     NORMAL = 0,
     LOW = -25,
