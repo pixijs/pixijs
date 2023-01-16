@@ -35,4 +35,8 @@ export type FederatedEventMap = {
 };
 export type FederatedEventEmitterTypes = {
     [K in keyof FederatedEventMap as K | `${K}capture`]: [event: FederatedEventMap[K]];
+} & {
+    'globalpointermove': [event: FederatedPointerEvent];
+    'globaltouchmove': [event: FederatedPointerEvent];
+    'globalmousemove': [event: FederatedPointerEvent];
 };

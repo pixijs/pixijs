@@ -703,12 +703,18 @@ export class EventBoundary
 
         // Then pointermove
         this[propagationMethod](e, 'pointermove');
+        this.all(e, 'globalpointermove');
 
-        if (e.pointerType === 'touch') this[propagationMethod](e, 'touchmove');
+        if (e.pointerType === 'touch')
+        {
+            this[propagationMethod](e, 'touchmove');
+            this.all(e, 'globaltouchmove');
+        }
 
         if (isMouse)
         {
             this[propagationMethod](e, 'mousemove');
+            this.all(e, 'globalmousemove');
             this.cursor = e.target?.cursor;
         }
 
