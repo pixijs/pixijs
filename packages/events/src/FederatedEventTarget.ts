@@ -93,8 +93,10 @@ export interface FederatedEventTarget extends utils.EventEmitter, EventTarget
     onmouseenter: FederatedEventHandler | null;
     /** Handler for 'mouseleave' event */
     onmouseleave: FederatedEventHandler | null;
-    /** Handler for 'mouseover' event */
+    /** Handler for 'mousemove' event */
     onmousemove: FederatedEventHandler | null;
+    /** Handler for 'globalmousemove' event */
+    onglobalmousemove: FederatedEventHandler | null;
     /** Handler for 'mouseout' event */
     onmouseout: FederatedEventHandler | null;
     /** Handler for 'mouseover' event */
@@ -113,6 +115,8 @@ export interface FederatedEventTarget extends utils.EventEmitter, EventTarget
     onpointerleave: FederatedEventHandler | null;
     /** Handler for 'pointermove' event */
     onpointermove: FederatedEventHandler | null;
+    /** Handler for 'globalpointermove' event */
+    onglobalpointermove: FederatedEventHandler | null;
     /** Handler for 'pointerout' event */
     onpointerout: FederatedEventHandler | null;
     /** Handler for 'pointerover' event */
@@ -141,6 +145,8 @@ export interface FederatedEventTarget extends utils.EventEmitter, EventTarget
     ontouchendoutside: FederatedEventHandler | null;
     /** Handler for 'touchmove' event */
     ontouchmove: FederatedEventHandler | null;
+    /** Handler for 'globaltouchmove' event */
+    onglobaltouchmove: FederatedEventHandler | null;
     /** Handler for 'touchstart' event */
     ontouchstart: FederatedEventHandler | null;
     /** Handler for 'wheel' event */
@@ -231,6 +237,17 @@ export const FederatedDisplayObject: IFederatedDisplayObject = {
      * }
      */
     onmousemove: null,
+
+    /**
+     * Property-based event handler for the `globalmousemove` event.
+     * @memberof PIXI.DisplayObject#
+     * @default null
+     * @example
+     * this.onglobalmousemove = (event) => {
+     *  //some function here that happens on globalmousemove
+     * }
+     */
+    onglobalmousemove: null,
 
     /**
      * Property-based event handler for the `mouseout` event.
@@ -330,6 +347,17 @@ export const FederatedDisplayObject: IFederatedDisplayObject = {
      * }
      */
     onpointermove:  null,
+
+    /**
+     * Property-based event handler for the `globalpointermove` event.
+     * @memberof PIXI.DisplayObject#
+     * @default null
+     * @example
+     * this.onglobalpointermove = (event) => {
+     *  //some function here that happens on globalpointermove
+     * }
+     */
+    onglobalpointermove:  null,
 
     /**
      * Property-based event handler for the `pointerout` event.
@@ -484,6 +512,17 @@ export const FederatedDisplayObject: IFederatedDisplayObject = {
      * }
      */
     ontouchmove:  null,
+
+    /**
+     * Property-based event handler for the `globaltouchmove` event.
+     * @memberof PIXI.DisplayObject#
+     * @default null
+     * @example
+     * this.onglobaltouchmove = (event) => {
+     *  //some function here that happens on globaltouchmove
+     * }
+     */
+    onglobaltouchmove:  null,
 
     /**
      * Property-based event handler for the `touchstart` event.

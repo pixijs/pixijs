@@ -1494,6 +1494,15 @@ export class EventBoundary
  */
 
 /**
+ * Fired when a pointer device (usually a mouse) is moved globally over the scene.
+ * DisplayObject's `interactive` property must be set to `true` to fire event.
+ *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
+ * @event PIXI.DisplayObject#globalmousemove
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
  * Fired when a pointer device (usually a mouse) is moved while over the display object.
  * DisplayObject's `interactive` property must be set to `true` to fire event.
  *
@@ -1670,6 +1679,15 @@ export class EventBoundary
  */
 
 /**
+ * Fired when a pointer device is moved globally over the scene.
+ * DisplayObject's `interactive` property must be set to `true` to fire event.
+ *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
+ * @event PIXI.DisplayObject#globalpointermove
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
  * Fired when a pointer device is moved while over the display object.
  * DisplayObject's `interactive` property must be set to `true` to fire event.
  *
@@ -1837,6 +1855,15 @@ export class EventBoundary
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  * @event PIXI.DisplayObject#touchendoutsidecapture
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
+ * Fired when a touch point is moved globally over the scene.
+ * DisplayObject's `interactive` property must be set to `true` to fire event.
+ *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
+ * @event PIXI.DisplayObject#globaltouchmove
  * @param {PIXI.FederatedPointerEvent} event - Event
  */
 
