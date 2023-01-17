@@ -464,7 +464,7 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
         imageUrl: string, name?: string, options?: IBaseTextureOptions): Promise<Texture<R>>
     {
         const baseTexture = new BaseTexture<R>(source, Object.assign({
-            scaleMode: settings.SCALE_MODE,
+            scaleMode: BaseTexture.defaultOptions.scaleMode,
             resolution: getResolutionOfUrl(imageUrl),
         }, options));
 
