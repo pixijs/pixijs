@@ -36,7 +36,7 @@ export const NodeAdapter = {
 
         return new Promise((resolve, reject) =>
         {
-            const filePath = utils.path.normalize(request.url);
+            const filePath = utils.path.normalize(url);
 
             if (!fs.existsSync(filePath))
             {
