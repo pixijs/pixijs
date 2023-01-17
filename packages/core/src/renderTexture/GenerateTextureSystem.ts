@@ -13,7 +13,7 @@ const tempTransform = new Transform();
 // TODO could this just be part of extract?
 export interface IGenerateTextureOptions
 {
-    /** The scale mode of the texture. Optional, defaults to `PIXI.settings.SCALE_MODE`. */
+    /** The scale mode of the texture. Optional, defaults to `PIXI.BaseTexture.defaultOptions.scaleMode`. */
     scaleMode?: SCALE_MODES;
     /** The resolution / device pixel ratio of the texture being generated. Optional defaults to Renderer resolution. */
     resolution?: number;
