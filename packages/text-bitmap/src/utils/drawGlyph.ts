@@ -54,7 +54,7 @@ export function drawGlyph(
         const dropShadowBlur = style.dropShadowBlur * resolution;
         const dropShadowDistance = style.dropShadowDistance * resolution;
 
-        context.shadowColor = Color.default
+        context.shadowColor = Color.shared
             .setValue(dropShadowColor)
             .setAlpha(style.dropShadowAlpha)
             .toRgbaString();

@@ -866,7 +866,7 @@ function getColor(color: (string|number)[]): string[];
 function getColor(color: string|number): string;
 function getColor(color: string|number|(string|number)[]): string|string[]
 {
-    const temp = Color.default;
+    const temp = Color.shared;
 
     if (!Array.isArray(color))
     {

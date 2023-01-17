@@ -37,9 +37,9 @@ export class Color
      * Default Color object for static uses
      * @example
      * import { Color } from 'pixi.js';
-     * Color.default.setValue(0xffffff).toString(); // '#ffffff'
+     * Color.shared.setValue(0xffffff).toString(); // '#ffffff'
      */
-    static readonly default = new Color();
+    static readonly shared = new Color();
 
     /** Pattern for hex strings */
     private static readonly HEX_PATTERN = /^(#|0x)?(([a-f0-9]{3}){1,2}([a-f0-9]{2})?)$/i;

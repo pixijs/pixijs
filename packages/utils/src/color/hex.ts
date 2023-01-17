@@ -17,7 +17,7 @@ export function hex2rgb(hex: number, out: Array<number> | Float32Array = []): Ar
     deprecation('7.2.0', 'utils.hex2rgb is deprecated, use Color#toRgbArray instead');
     // #endif
 
-    return Color.default.setValue(hex).toRgbArray(out);
+    return Color.shared.setValue(hex).toRgbArray(out);
 }
 
 /**
@@ -35,7 +35,7 @@ export function hex2string(hex: number): string
     deprecation('7.2.0', 'utils.hex2string is deprecated, use Color#toString instead');
     // #endif
 
-    return Color.default.setValue(hex).toString();
+    return Color.shared.setValue(hex).toString();
 }
 
 /**
@@ -53,7 +53,7 @@ export function string2hex(string: string): number
     deprecation('7.2.0', 'utils.string2hex is deprecated, use Color#toNumber instead');
     // #endif
 
-    return Color.default.setValue(string).toNumber();
+    return Color.shared.setValue(string).toNumber();
 }
 
 /**
@@ -71,5 +71,5 @@ export function rgb2hex(rgb: number[] | Float32Array): number
     deprecation('7.2.0', 'utils.rgb2hex is deprecated, use Color#toNumber instead');
     // #endif
 
-    return Color.default.setValue(rgb).toNumber();
+    return Color.shared.setValue(rgb).toNumber();
 }

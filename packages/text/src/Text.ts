@@ -266,7 +266,7 @@ export class Text extends Sprite
                 const dropShadowBlur = style.dropShadowBlur * this._resolution;
                 const dropShadowDistance = style.dropShadowDistance * this._resolution;
 
-                context.shadowColor = Color.default
+                context.shadowColor = Color.shared
                     .setValue(dropShadowColor)
                     .setAlpha(style.dropShadowAlpha)
                     .toRgbaString();

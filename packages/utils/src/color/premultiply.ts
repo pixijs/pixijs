@@ -131,7 +131,7 @@ export function premultiplyTint(tint: number, alpha: number): number
  */
 export function premultiplyTintToRgba(tint: number, alpha: number, out?: Float32Array, premultiply?: boolean): Float32Array
 {
-    out = Color.default.setValue(tint).toRgbArray(out ?? new Float32Array(4));
+    out = Color.shared.setValue(tint).toRgbArray(out ?? new Float32Array(4));
 
     if (premultiply || premultiply === undefined)
     {

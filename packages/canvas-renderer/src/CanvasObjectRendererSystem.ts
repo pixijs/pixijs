@@ -155,7 +155,7 @@ export class CanvasObjectRendererSystem implements ISystem
                 if (clearColor[3] > 0)
                 {
                     context2D.globalAlpha = clearColor[3] ?? 1;
-                    context2D.fillStyle = Color.default.setValue(clearColor).toString();
+                    context2D.fillStyle = Color.shared.setValue(clearColor).toString();
                     context2D.fillRect(0, 0, renderTexture.realWidth, renderTexture.realHeight);
                     context2D.globalAlpha = 1;
                 }
