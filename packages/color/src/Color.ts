@@ -302,13 +302,13 @@ export class Color
                 value[3] ?? 1.0,
             ];
         }
-        else if (value instanceof Uint8Array || value instanceof Uint8ClampedArray)
+        else if ((value instanceof Uint8Array || value instanceof Uint8ClampedArray) && value.length >= 3)
         {
             components = [
                 value[0] / 255,
                 value[1] / 255,
                 value[2] / 255,
-                1.0,
+                (value[3] ?? 255) / 255,
             ];
         }
         else if (typeof value === 'string' || typeof value === 'object')

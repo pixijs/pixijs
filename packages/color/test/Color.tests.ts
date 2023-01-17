@@ -16,7 +16,9 @@ describe('Color', () =>
             { foo: 'bar' },
             '0xfffff',
             '#ff',
-            'ff'
+            'ff',
+            [1, 1],
+            new Uint8Array([255, 255]),
         ];
 
         invalidColorValues.forEach((value) =>
