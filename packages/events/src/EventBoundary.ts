@@ -618,7 +618,7 @@ export class EventBoundary
         const outTarget = this.findMountedTarget(trackingData.overTargets);
 
         // First pointerout/pointerleave
-        if (trackingData.overTargets && outTarget !== e.target)
+        if (trackingData.overTargets?.length > 0 && outTarget !== e.target)
         {
             // pointerout always occurs on the overTarget when the pointer hovers over another element.
             const outType = from.type === 'mousemove' ? 'mouseout' : 'pointerout';
