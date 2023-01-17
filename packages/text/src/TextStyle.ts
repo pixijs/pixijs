@@ -870,11 +870,11 @@ function getColor(color: string|number|(string|number)[]): string|string[]
 
     if (!Array.isArray(color))
     {
-        return temp.setValue(color).toString();
+        return temp.setValue(color).toHex();
     }
     else
     {
-        return color.map(c => temp.setValue(c).toString());
+        return color.map(c => temp.setValue(c).toHex());
     }
 }
 

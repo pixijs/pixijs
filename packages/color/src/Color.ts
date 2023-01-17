@@ -38,7 +38,7 @@ export class Color
      * Default Color object for static uses
      * @example
      * import { Color } from 'pixi.js';
-     * Color.shared.setValue(0xffffff).toString(); // '#ffffff'
+     * Color.shared.setValue(0xffffff).toHex(); // '#ffffff'
      */
     static readonly shared = new Color();
 
@@ -211,9 +211,9 @@ export class Color
      * Converts a hexadecimal color number to a string.
      * @example
      * import { Color } from 'pixi.js';
-     * new Color('white').toString(); // returns "#ffffff"
+     * new Color('white').toHex(); // returns "#ffffff"
      */
-    toString(): string
+    toHex(): string
     {
         const hexString = this._int.toString(16);
 
@@ -224,14 +224,14 @@ export class Color
      * Convert to a hexidecimal string with alpha.
      * @example
      * import { Color } from 'pixi.js';
-     * new Color('white').toHexString(); // returns "#ffffffff"
+     * new Color('white').toHexa(); // returns "#ffffffff"
      */
-    toHexString(): string
+    toHexa(): string
     {
         const alphaValue = Math.round(this._components[3] * 255);
         const alphaString = alphaValue.toString(16);
 
-        return this.toString() + '00'.substring(0, 2 - alphaString.length) + alphaString;
+        return this.toHex() + '00'.substring(0, 2 - alphaString.length) + alphaString;
     }
 
     /**

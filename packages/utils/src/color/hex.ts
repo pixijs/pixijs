@@ -22,7 +22,7 @@ export function hex2rgb(hex: number, out: Array<number> | Float32Array = []): Ar
 
 /**
  * Converts a hexadecimal color number to a string.
- * @see PIXI.Color.toString
+ * @see PIXI.Color.toHex
  * @deprecated since 7.2.0
  * @memberof PIXI.utils
  * @function hex2string
@@ -32,10 +32,10 @@ export function hex2rgb(hex: number, out: Array<number> | Float32Array = []): Ar
 export function hex2string(hex: number): string
 {
     // #if _DEBUG
-    deprecation('7.2.0', 'utils.hex2string is deprecated, use Color#toString instead');
+    deprecation('7.2.0', 'utils.hex2string is deprecated, use Color#toHex instead');
     // #endif
 
-    return Color.shared.setValue(hex).toString();
+    return Color.shared.setValue(hex).toHex();
 }
 
 /**

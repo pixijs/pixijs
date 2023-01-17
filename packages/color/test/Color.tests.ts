@@ -46,40 +46,40 @@ describe('Color', () =>
     {
         const transparent = {
             rgba: [0, 0, 0, 0],
-            hexString: '#00000000',
-            string: '#000000',
+            hexa: '#00000000',
+            hex: '#000000',
             number: 0,
             rgbaString: 'rgba(0,0,0,0)',
         };
 
         const black = {
             rgba: [0, 0, 0, 1],
-            hexString: '#000000ff',
-            string: '#000000',
+            hexa: '#000000ff',
+            hex: '#000000',
             number: 0,
             rgbaString: 'rgba(0,0,0,1)',
         };
 
         const white = {
             rgba: [1, 1, 1, 1],
-            hexString: '#ffffffff',
-            string: '#ffffff',
+            hexa: '#ffffffff',
+            hex: '#ffffff',
             number: 0xffffff,
             rgbaString: 'rgba(255,255,255,1)',
         };
 
         const red = {
             rgba: [1, 0, 0, 1],
-            hexString: '#ff0000ff',
-            string: '#ff0000',
+            hexa: '#ff0000ff',
+            hex: '#ff0000',
             number: 0xff0000,
             rgbaString: 'rgba(255,0,0,1)',
         };
 
         const semiRed = {
             rgba: [1, 0, 0, 0.5],
-            hexString: '#ff000080',
-            string: '#ff0000',
+            hexa: '#ff000080',
+            hex: '#ff0000',
             number: 0xff0000,
             rgbaString: 'rgba(255,0,0,0.5)',
         };
@@ -179,8 +179,8 @@ describe('Color', () =>
 
             expect(color.toArray()).toEqual(expected.rgba);
             expect(color.toNumber()).toEqual(expected.number);
-            expect(color.toString()).toEqual(expected.string);
-            expect(color.toHexString()).toEqual(expected.hexString);
+            expect(color.toHex()).toEqual(expected.hex);
+            expect(color.toHexa()).toEqual(expected.hexa);
             expect(color.toRgbaString()).toEqual(expected.rgbaString);
         });
     });
