@@ -151,9 +151,29 @@ export class Color
     /** Get the color as a CSS-style rgba string: `rgba(255,255,255,1.0)`. */
     toRgbaString(): string
     {
-        const [r, g, b, a] = this._components;
+        const [r, g, b] = this.toUint8ClampedArray();
 
-        return `rgba(${Math.round(r * 255)},${Math.round(g * 255)},${Math.round(b * 255)},${a})`;
+        return `rgba(${r},${g},${b},${this.alpha})`;
+    }
+
+    /**
+     * Get non-alpha color as clamped uint8 values (0 to 255).
+     * @example
+     * import { Color } from 'pixi.js';
+     * new Color('white').toUint8ClampedArray(); // returns [255, 255, 255]
+     * @param {number[]|Uint8ClampedArray} [out] - Output array
+     */
+    toUint8ClampedArray<T extends (number[] | Uint8ClampedArray) = number[]>(out?: T): T
+    {
+        const [r, g, b] = this._components;
+
+        out = out ?? [] as T;
+
+        out[0] = Math.round(r * 255);
+        out[1] = Math.round(g * 255);
+        out[2] = Math.round(b * 255);
+
+        return out;
     }
 
     /**
