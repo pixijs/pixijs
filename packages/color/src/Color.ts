@@ -14,7 +14,7 @@ import type {
 extend([namesPlugin]);
 
 /** Different possible value types for Color class */
-export type ColorSource = string | number | number[] | Float32Array
+export type ColorSource = string | number | number[] | Float32Array | Uint8Array | Uint8ClampedArray
 | HslColor | HslaColor | HsvColor | HsvaColor | RgbColor | RgbaColor | Color;
 
 /**
@@ -26,6 +26,7 @@ export type ColorSource = string | number | number[] | Float32Array
  * new Color('ff0000').toArray(); // [1, 0, 0, 1]
  * new Color('#f00').toArray(); // [1, 0, 0, 1]
  * new Color([255, 0, 0, 0.5]).toArray(); // [1, 0, 0, 0.5]
+ * new Color([255, 255, 255]).toArray(); // [1, 1, 1, 1]
  * new Color('rgb(255, 0, 0, 0.5)').toArray(); // [1, 0, 0, 0.5]
  * new Color({h: 0, s: 100, l: 50, a: 0.5}).toArray(); // [1, 0, 0, 0.5]
  * new Color({h: 0, s: 100, v: 100, a: 0.5}).toArray(); // [1, 0, 0, 0.5]
@@ -299,6 +300,15 @@ export class Color
                 normalizeValue(value[1]),
                 normalizeValue(value[2]),
                 value[3] ?? 1.0,
+            ];
+        }
+        else if (value instanceof Uint8Array || value instanceof Uint8ClampedArray)
+        {
+            components = [
+                value[0] / 255,
+                value[1] / 255,
+                value[2] / 255,
+                1.0,
             ];
         }
         else if (typeof value === 'string' || typeof value === 'object')
