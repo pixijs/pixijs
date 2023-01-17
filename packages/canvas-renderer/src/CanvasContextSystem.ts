@@ -1,4 +1,4 @@
-import { BLEND_MODES, extensions, ExtensionType, Matrix, SCALE_MODES, settings } from '@pixi/core';
+import { BaseTexture, BLEND_MODES, extensions, ExtensionType, Matrix, SCALE_MODES } from '@pixi/core';
 import { mapCanvasBlendModesToPixi } from './utils/mapCanvasBlendModesToPixi';
 
 import type { ExtensionMetadata, ICanvasRenderingContext2D, ISystem } from '@pixi/core';
@@ -205,7 +205,7 @@ export class CanvasContextSystem implements ISystem
         // surely a browser bug?? Let PixiJS fix that for you..
         if (this.smoothProperty)
         {
-            this.rootContext[this.smoothProperty] = (settings.SCALE_MODE === SCALE_MODES.LINEAR);
+            this.rootContext[this.smoothProperty] = (BaseTexture.defaultOptions.scaleMode === SCALE_MODES.LINEAR);
         }
     }
 
