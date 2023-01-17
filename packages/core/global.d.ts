@@ -72,6 +72,12 @@ declare namespace GlobalMixins
         PRECISION_VERTEX: import('@pixi/constants').PRECISION,
         /** @deprecated */
         PRECISION_FRAGMENT: import('@pixi/constants').PRECISION,
+        /** @deprecated */
+        GC_MODE: import('@pixi/constants').GC_MODES,
+        /** @deprecated */
+        GC_MAX_IDLE: number,
+        /** @deprecated */
+        GC_MAX_CHECK_COUNT: number,
 
         STRICT_TEXTURE_CACHE: boolean;
         PREFER_ENV: import('@pixi/constants').ENV;

@@ -220,6 +220,7 @@ describe('EventSystem', () =>
         const primaryOverSpy = jest.fn();
         const primaryOutSpy = jest.fn();
         const primaryMoveSpy = jest.fn();
+        const primaryMoveGlobalSpy = jest.fn();
 
         let callCount = 0;
 
@@ -235,9 +236,15 @@ describe('EventSystem', () =>
             primaryMoveSpy();
             ++callCount;
         });
+        graphics.on('globalpointermove', () =>
+        {
+            expect([2, 7]).toContain(callCount);
+            primaryMoveGlobalSpy();
+            ++callCount;
+        });
         graphics.on('pointerout', () =>
         {
-            expect(callCount).toEqual(2);
+            expect(callCount).toEqual(4);
             primaryOutSpy();
             ++callCount;
         });
@@ -245,18 +252,25 @@ describe('EventSystem', () =>
         const secondaryOverSpy = jest.fn();
         const secondaryOutSpy = jest.fn();
         const secondaryMoveSpy = jest.fn();
+        const secondaryMoveGlobalSpy = jest.fn();
 
         second.on('pointerover', () =>
         {
-            expect(callCount).toEqual(3);
+            expect(callCount).toEqual(5);
             secondaryOverSpy();
             ++callCount;
         });
         second.on('pointerout', secondaryOutSpy);
         second.on('pointermove', () =>
         {
-            expect(callCount).toEqual(4);
+            expect(callCount).toEqual(6);
             secondaryMoveSpy();
+            ++callCount;
+        });
+        second.on('globalpointermove', () =>
+        {
+            expect([3, 8]).toContain(callCount);
+            secondaryMoveGlobalSpy();
             ++callCount;
         });
 
@@ -265,6 +279,8 @@ describe('EventSystem', () =>
         );
         expect(primaryOverSpy).toHaveBeenCalledOnce();
         expect(primaryMoveSpy).toHaveBeenCalledOnce();
+        expect(primaryMoveGlobalSpy).toHaveBeenCalledTimes(1);
+        expect(secondaryMoveGlobalSpy).toHaveBeenCalledTimes(1);
 
         renderer.events.onPointerMove(
             new PointerEvent('pointermove', { clientX: 125, clientY: 25 })
@@ -272,6 +288,8 @@ describe('EventSystem', () =>
         expect(primaryOutSpy).toHaveBeenCalledOnce();
         expect(secondaryOverSpy).toHaveBeenCalledOnce();
         expect(secondaryMoveSpy).toHaveBeenCalledOnce();
+        expect(primaryMoveGlobalSpy).toHaveBeenCalledTimes(2);
+        expect(secondaryMoveGlobalSpy).toHaveBeenCalledTimes(2);
         expect(secondaryOutSpy).not.toBeCalledTimes(1);
     });
 
