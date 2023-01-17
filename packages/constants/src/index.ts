@@ -420,7 +420,7 @@ export enum CLEAR_MODES
 /**
  * The gc modes that are supported by pixi.
  *
- * The {@link PIXI.settings.GC_MODE} Garbage Collection mode for PixiJS textures is AUTO
+ * The {@link PIXI.TextureGCSystem.defaultMode} Garbage Collection mode for PixiJS textures is AUTO
  * If set to GC_MODE, the renderer will occasionally check textures usage. If they are not
  * used for a specified period of time they will be removed from the GPU. They will of course
  * be uploaded again when they are required. This is a silent behind the scenes process that

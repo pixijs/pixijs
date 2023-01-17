@@ -55,7 +55,7 @@ export class MaskData
     /**
      * Number of samples of the sprite mask filter.
      * If set to `null`, the sample count of the current render target is used.
-     * @default PIXI.Filter#defaultMultisample
+     * @default PIXI.Filter.defaultMultisample
      */
     public multisample: MSAA_QUALITY;
 
