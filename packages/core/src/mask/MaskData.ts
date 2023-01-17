@@ -1,5 +1,5 @@
 import { MASK_TYPES } from '@pixi/constants';
-import { settings } from '@pixi/settings';
+import { Filter } from '@pixi/core';
 
 import type { COLOR_MASK_BITS, MSAA_QUALITY } from '@pixi/constants';
 import type { ISpriteMaskFilter } from '@pixi/core';
@@ -55,7 +55,7 @@ export class MaskData
     /**
      * Number of samples of the sprite mask filter.
      * If set to `null`, the sample count of the current render target is used.
-     * @default PIXI.settings.FILTER_MULTISAMPLE
+     * @default PIXI.Filter#defaultMultisample
      */
     public multisample: MSAA_QUALITY;
 
@@ -122,7 +122,7 @@ export class MaskData
         this.pooled = false;
         this.isMaskData = true;
         this.resolution = null;
-        this.multisample = settings.FILTER_MULTISAMPLE;
+        this.multisample = Filter.defaultMultisample;
         this.enabled = true;
         this.colorMask = 0xf;
         this._filters = null;

@@ -293,7 +293,7 @@ export enum SAMPLER_TYPES
 /**
  * The scale modes that are supported by pixi.
  *
- * The {@link PIXI.settings.SCALE_MODE} scale mode affects the default scaling mode of future operations.
+ * The {@link PIXI.BaseTexture.defaultOptions.scaleMode} scale mode affects the default scaling mode of future operations.
  * It can be re-assigned to either LINEAR or NEAREST, depending upon suitability.
  * @memberof PIXI
  * @static
@@ -337,7 +337,7 @@ export enum WRAP_MODES
 /**
  * Mipmap filtering modes that are supported by pixi.
  *
- * The {@link PIXI.settings.MIPMAP_TEXTURES} affects default texture filtering.
+ * The {@link PIXI.BaseTexture.defaultOptions.mipmap} affects default texture filtering.
  * Mipmaps are generated for a baseTexture if its `mipmap` field is `ON`,
  * or its `POW2` and texture dimensions are powers of 2.
  * Since WebGL 1 don't support mipmap for non-power-of-two textures,
