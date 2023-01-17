@@ -59,18 +59,21 @@ export class ImageBitmapResource extends BaseImageResource
     {
         options = options || {};
 
+        let baseSource;
+        let url;
+
         if (typeof source === 'string')
         {
-            super(ImageBitmapResource.EMPTY);
-
-            this.url = source;
+            baseSource = ImageBitmapResource.EMPTY;
+            url = source;
         }
         else
         {
-            super(source);
-
-            this.url = null;
+            baseSource = source;
+            url = null;
         }
+        super(baseSource);
+        this.url = url;
 
         this.crossOrigin = options.crossOrigin ?? true;
         this.alphaMode = typeof options.alphaMode === 'number' ? options.alphaMode : null;
