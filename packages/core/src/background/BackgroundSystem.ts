@@ -68,12 +68,12 @@ export class BackgroundSystem implements ISystem<BackgroundOptions>
     }
 
     /**
-     * The background color to fill if not transparent
-     * @member {number|string|number[]|Float32Array}
+     * The background color to fill if not transparent.
+     * @member {PIXI.ColorSource}
      */
-    get color(): number
+    get color(): ColorSource
     {
-        return this._background.toNumber();
+        return this._background.value;
     }
 
     set color(value: ColorSource)
@@ -100,7 +100,7 @@ export class BackgroundSystem implements ISystem<BackgroundOptions>
      * @member {number[]}
      * @protected
      */
-    get colorRgba(): number[]
+    get rgba(): number[]
     {
         return this._background.toArray();
     }
@@ -110,9 +110,9 @@ export class BackgroundSystem implements ISystem<BackgroundOptions>
      * @member {string}
      * @protected
      */
-    get colorString(): string
+    get hex(): string
     {
-        return this._background.toString();
+        return this._background.toHex();
     }
 
     destroy(): void
