@@ -6,7 +6,7 @@ describe('Color', () =>
 {
     it.concurrent('should throw error for invalid color values', async () =>
     {
-        const invalidColorValues = [
+        const invalidColorValues: any[] = [
             -1,
             '',
             null,
@@ -23,13 +23,7 @@ describe('Color', () =>
 
         invalidColorValues.forEach((value) =>
         {
-            expect(() =>
-            {
-                /* eslint-disable */
-                // @ts-ignore
-                new Color(value);
-                /* eslint-enable */
-            }).toThrow();
+            expect(() => new Color(value as any)).toThrow();
         });
     });
 
