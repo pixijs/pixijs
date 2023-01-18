@@ -1,4 +1,4 @@
-import { CLEAR_MODES, Filter, settings } from '@pixi/core';
+import { CLEAR_MODES, Filter } from '@pixi/core';
 import { generateBlurFragSource } from './generateBlurFragSource';
 import { generateBlurVertSource } from './generateBlurVertSource';
 
@@ -23,7 +23,7 @@ export class BlurFilterPass extends Filter
      * @param resolution - The resolution of the blur filter.
      * @param kernelSize - The kernelSize of the blur filter.Options: 5, 7, 9, 11, 13, 15.
      */
-    constructor(horizontal: boolean, strength = 8, quality = 4, resolution = settings.FILTER_RESOLUTION, kernelSize = 5)
+    constructor(horizontal: boolean, strength = 8, quality = 4, resolution = Filter.defaultResolution, kernelSize = 5)
     {
         const vertSrc = generateBlurVertSource(kernelSize, horizontal);
         const fragSrc = generateBlurFragSource(kernelSize);
