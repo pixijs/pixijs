@@ -19,6 +19,9 @@ describe('Color', () =>
             'ff',
             [1, 1],
             new Uint8Array([255, 255]),
+            [1, 1, -1, 1],
+            [1, 1, 1.1, 1],
+            [1, 1, 1, 1, 0],
         ];
 
         invalidColorValues.forEach((value) =>
@@ -82,8 +85,8 @@ describe('Color', () =>
         const testCases: Array<[ColorSource, typeof transparent]> = [
             // Float32Array
             [new Float32Array([0, 0, 0, 0]), transparent],
-            [new Float32Array([255, 0, 0, 0.5]), semiRed],
-            [new Float32Array([255, 0, 0]), red],
+            [new Float32Array([1, 0, 0, 0.5]), semiRed],
+            [new Float32Array([1, 0, 0]), red],
             [new Float32Array([0, 0, 0]), black],
             [new Float32Array([1, 1, 1]), white],
             [new Float32Array([1, 1, 1, 1]), white],
@@ -127,10 +130,10 @@ describe('Color', () =>
             [0, black],
 
             // rgb
-            [[255, 0, 0], red],
+            [[1, 0, 0], red],
             [[0, 0, 0], black],
-            [[255, 255, 255], white],
-            [[255, 0, 0, 0.5], semiRed],
+            [[1, 1, 1], white],
+            [[1, 0, 0, 0.5], semiRed],
             [[0, 0, 0, 0], transparent],
             [{ r: 255, g: 0, b: 0 }, red],
             [{ r: 255, g: 0, b: 0, a: 0.5 }, semiRed],

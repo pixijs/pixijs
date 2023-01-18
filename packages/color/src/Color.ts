@@ -25,8 +25,8 @@ export type ColorSource = string | number | number[] | Float32Array | Uint8Array
  * new Color(0xff0000).toArray(); // [1, 0, 0, 1]
  * new Color('ff0000').toArray(); // [1, 0, 0, 1]
  * new Color('#f00').toArray(); // [1, 0, 0, 1]
- * new Color([255, 0, 0, 0.5]).toArray(); // [1, 0, 0, 0.5]
- * new Color([255, 255, 255]).toArray(); // [1, 1, 1, 1]
+ * new Color([1, 0, 0, 0.5]).toArray(); // [1, 0, 0, 0.5]
+ * new Color([1, 1, 1]).toArray(); // [1, 1, 1, 1]
  * new Color('rgb(255, 0, 0, 0.5)').toArray(); // [1, 0, 0, 0.5]
  * new Color({h: 0, s: 100, l: 50, a: 0.5}).toArray(); // [1, 0, 0, 0.5]
  * new Color({h: 0, s: 100, v: 100, a: 0.5}).toArray(); // [1, 0, 0, 0.5]
@@ -290,26 +290,23 @@ export class Color
     {
         let components: number[];
 
-        if ((Array.isArray(value) || value instanceof Float32Array) && value.length >= 3)
+        if ((Array.isArray(value) || value instanceof Float32Array)
+            // Can be rgb or rgba
+            && value.length >= 3 && value.length <= 4
+            // make sure all values are 0 - 1
+            && value.every((v) => v <= 1 && v >= 0))
         {
-            // Handle floats or uints
-            const normalizeValue = (v: number) => (v > 1 ? v / 255 : v);
+            const [r, g, b, a = 1.0] = value;
 
-            components = [
-                normalizeValue(value[0]),
-                normalizeValue(value[1]),
-                normalizeValue(value[2]),
-                value[3] ?? 1.0,
-            ];
+            components = [r, g, b, a];
         }
-        else if ((value instanceof Uint8Array || value instanceof Uint8ClampedArray) && value.length >= 3)
+        else if ((value instanceof Uint8Array || value instanceof Uint8ClampedArray)
+            // Can be rgb or rgba
+            && value.length >= 3 && value.length <= 4)
         {
-            components = [
-                value[0] / 255,
-                value[1] / 255,
-                value[2] / 255,
-                (value[3] ?? 255) / 255,
-            ];
+            const [r, g, b, a = 255] = value;
+
+            components = [r / 255, g / 255, b / 255, a / 255];
         }
         else if (typeof value === 'string' || typeof value === 'object')
         {
