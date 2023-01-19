@@ -13,7 +13,7 @@ import type {
 
 extend([namesPlugin]);
 
-/** Different possible value types for Color class */
+/** Possible value types for Color class */
 export type ColorSource = string | number | number[] | Float32Array | Uint8Array | Uint8ClampedArray
 | HslColor | HslaColor | HsvColor | HsvaColor | RgbColor | RgbaColor | Color;
 
