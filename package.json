@@ -27,7 +27,7 @@
     "types": "tsc --noEmit",
     "types:strict": "npm run types -- --strictNullChecks | ts-node ./scripts/filterTypeScriptErrors.ts",
     "prebuild": "run-s clean:build",
-    "build": "rollup -c",
+    "build": "rollup -c --failAfterWarnings",
     "prebuild:types": "run-s clean:types clean:out",
     "build:types": "tsc -p tsconfig.types.json && ts-node scripts/fixTypes.ts",
     "postbuild:types": "copyfiles -u 1 \"out/**/*\" . && run-s clean:out",
