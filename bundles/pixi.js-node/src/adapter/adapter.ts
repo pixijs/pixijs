@@ -38,7 +38,8 @@ export const NodeAdapter = {
         {
             // Request transforms paths and encodeURIs, but for filesystem requests, it's better to use the raw string (path).
             // If url is a request instead, decode the URI before trying to access the file
-            const filePath = utils.path.normalize(typeof url === 'string' ? url : decodeURI(request.url));
+            const rawPath = typeof url === 'string' ? url : decodeURI(request.url);
+            const filePath = utils.path.normalize(rawPath);
 
             if (!fs.existsSync(filePath))
             {
