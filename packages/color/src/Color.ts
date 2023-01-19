@@ -18,7 +18,7 @@ export type ColorSource = string | number | number[] | Float32Array | Uint8Array
 | HslColor | HslaColor | HsvColor | HsvaColor | RgbColor | RgbaColor | Color;
 
 /**
- * Converts a color value to an [R,G,B,A] array of normalized values (numbers from 0.0 to 1.0).
+ * Color utility class
  * @example
  * import { Color } from 'pixi.js';
  * new Color('red').toArray(); // [1, 0, 0, 1]
