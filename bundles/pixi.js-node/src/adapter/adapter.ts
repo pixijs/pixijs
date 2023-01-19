@@ -40,7 +40,7 @@ export const NodeAdapter = {
             // it's better to use the raw string (path).
             // If url is a request instead, decode the URI before trying to access the file
             const rawPath = typeof url === 'string' ? url : decodeURI(request.url);
-            
+
             // Normalize the path
             const filePath = utils.path.normalize(rawPath);
 
