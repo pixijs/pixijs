@@ -1,4 +1,4 @@
-import type { BaseTexture } from '@pixi/core';
+import type { BaseTexture } from '../textures/BaseTexture';
 
 /**
  * Used by the batcher to build texture batches.
