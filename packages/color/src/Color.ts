@@ -158,7 +158,7 @@ export class Color
     }
 
     /**
-     * Get non-alpha color as clamped uint8 values (0 to 255).
+     * Convert to an [R, G, B] array of clamped uint8 values (0 to 255).
      * @example
      * import { Color } from 'pixi.js';
      * new Color('white').toUint8ClampedArray(); // returns [255, 255, 255]
