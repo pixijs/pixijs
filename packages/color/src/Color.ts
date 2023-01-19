@@ -70,7 +70,7 @@ export class Color
         return this._components[0];
     }
 
-    /** Read out green value (0 - 1) */
+    /** Get green component (0 - 1) */
     get green(): number
     {
         return this._components[1];
