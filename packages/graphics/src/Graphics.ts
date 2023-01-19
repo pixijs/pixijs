@@ -22,7 +22,7 @@ import { FillStyle } from './styles/FillStyle';
 import { LineStyle } from './styles/LineStyle';
 import { ArcUtils, BezierUtils, QuadraticUtils } from './utils';
 
-import type { BatchDrawCall, IPointData, IShape, Renderer } from '@pixi/core';
+import type { BatchDrawCall, ColorSource, IPointData, IShape, Renderer } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
 
 /** Batch element computed from Graphics geometry */
@@ -41,7 +41,7 @@ export interface IGraphicsBatchElement
 
 export interface IFillStyleOptions
 {
-    color?: number;
+    color?: ColorSource;
     alpha?: number;
     texture?: Texture;
     matrix?: Matrix;
@@ -265,15 +265,15 @@ export class Graphics extends Container
      * @param [native=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
      * @returns - This Graphics object. Good for chaining method calls
      */
-    public lineStyle(width: number, color?: number, alpha?: number, alignment?: number, native?: boolean): this;
+    public lineStyle(width: number, color?: ColorSource, alpha?: number, alignment?: number, native?: boolean): this;
 
     /**
      * Specifies the line style used for subsequent calls to Graphics methods such as the lineTo()
      * method or the drawCircle() method.
      * @param options - Line style options
      * @param {number} [options.width=0] - width of the line to draw, will update the objects stored style
-     * @param {number} [options.color=0x0] - color of the line to draw, will update the objects stored style
-     * @param {number} [options.alpha=1] - alpha of the line to draw, will update the objects stored style
+     * @param {PIXI.ColorSource} [options.color=0x0] - color of the line to draw, will update the objects stored style
+     * @param {number} [options.alpha] - alpha of the line to draw, will update the objects stored style
      * @param {number} [options.alignment=0.5] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outer).
      *        WebGL only.
      * @param {boolean} [options.native=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
@@ -285,7 +285,7 @@ export class Graphics extends Container
     public lineStyle(options?: ILineStyleOptions): this;
 
     public lineStyle(options: ILineStyleOptions | number = null,
-        color = 0x0, alpha = 1, alignment = 0.5, native = false): this
+        color: ColorSource = 0x0, alpha?: number, alignment = 0.5, native = false): this
     {
         // Support non-object params: (width, color, alpha, alignment, native)
         if (typeof options === 'number')
@@ -301,7 +301,7 @@ export class Graphics extends Container
      * @param [options] - Collection of options for setting line style.
      * @param {number} [options.width=0] - width of the line to draw, will update the objects stored style
      * @param {PIXI.Texture} [options.texture=PIXI.Texture.WHITE] - Texture to use
-     * @param {number} [options.color=0x0] - color of the line to draw, will update the objects stored style.
+     * @param {PIXI.ColorSource} [options.color=0x0] - color of the line to draw, will update the objects stored style.
      *  Default 0xFFFFFF if texture present.
      * @param {number} [options.alpha=1] - alpha of the line to draw, will update the objects stored style
      * @param {PIXI.Matrix} [options.matrix=null] - Texture matrix to transform texture
@@ -316,18 +316,19 @@ export class Graphics extends Container
     public lineTextureStyle(options?: ILineStyleOptions): this
     {
         // Apply defaults
-        options = Object.assign({
-            width: 0,
-            texture: Texture.WHITE,
-            color: options?.texture ? 0xFFFFFF : 0x0,
-            alpha: 1,
-            matrix: null,
-            alignment: 0.5,
-            native: false,
-            cap: LINE_CAP.BUTT,
-            join: LINE_JOIN.MITER,
-            miterLimit: 10,
-        }, options);
+        options = this.normalizeColor(
+            Object.assign({
+                width: 0,
+                texture: Texture.WHITE,
+                color: options?.texture ? 0xFFFFFF : 0x0,
+                matrix: null,
+                alignment: 0.5,
+                native: false,
+                cap: LINE_CAP.BUTT,
+                join: LINE_JOIN.MITER,
+                miterLimit: 10,
+            }, options)
+        );
 
         if (this.currentPath)
         {
@@ -613,13 +614,27 @@ export class Graphics extends Container
     /**
      * Specifies a simple one-color fill that subsequent calls to other Graphics methods
      * (such as lineTo() or drawCircle()) use when drawing.
-     * @param color - the color of the fill
-     * @param alpha - the alpha of the fill
+     * @param {PIXI.ColorSource} color - the color of the fill
+     * @param alpha - the alpha of the fill, will override the color's alpha
      * @returns - This Graphics object. Good for chaining method calls
      */
-    public beginFill(color = 0, alpha = 1): this
+    public beginFill(color: ColorSource = 0, alpha?: number): this
     {
         return this.beginTextureFill({ texture: Texture.WHITE, color, alpha });
+    }
+
+    /**
+     * Normalize the color input from options for line style or fill
+     * @param {PIXI.IFillStyleOptions} options - Object object.
+     */
+    private normalizeColor<T extends IFillStyleOptions>(options: T): T
+    {
+        const temp = Color.shared.setValue(options.color);
+
+        options.color = temp.toNumber();
+        options.alpha ??= temp.alpha;
+
+        return options;
     }
 
     /**
@@ -627,20 +642,21 @@ export class Graphics extends Container
      * Note: The wrap mode of the texture is forced to REPEAT on render.
      * @param options - Object object.
      * @param {PIXI.Texture} [options.texture=PIXI.Texture.WHITE] - Texture to fill
-     * @param {number} [options.color=0xffffff] - Background to fill behind texture
-     * @param {number} [options.alpha=1] - Alpha of fill
+     * @param {PIXI.ColorSource} [options.color=0xffffff] - Background to fill behind texture
+     * @param {number} [options.alpha] - Alpha of fill, will override the color's alpha
      * @param {PIXI.Matrix} [options.matrix=null] - Transform matrix
      * @returns {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
     beginTextureFill(options?: IFillStyleOptions): this
     {
         // Apply defaults
-        options = Object.assign({
-            texture: Texture.WHITE,
-            color: 0xFFFFFF,
-            alpha: 1,
-            matrix: null,
-        }, options) as IFillStyleOptions;
+        options = this.normalizeColor(
+            Object.assign({
+                texture: Texture.WHITE,
+                color: 0xFFFFFF,
+                matrix: null,
+            }, options)
+        );
 
         if (this.currentPath)
         {
