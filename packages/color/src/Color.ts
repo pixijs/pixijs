@@ -137,7 +137,7 @@ export class Color
     }
 
     /**
-     * Get RGB color object.
+     * Convert to a RGB color object.
      * @example
      * import { Color } from 'pixi.js';
      * new Color('white').toRgb(); // returns { r: 1, g: 1, b: 1 }
