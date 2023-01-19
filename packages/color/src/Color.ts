@@ -149,7 +149,7 @@ export class Color
         return { r, g, b };
     }
 
-    /** Get the color as a CSS-style rgba string: `rgba(255,255,255,1.0)`. */
+    /** Convert to a CSS-style rgba string: `rgba(255,255,255,1.0)`. */
     toRgbaString(): string
     {
         const [r, g, b] = this.toUint8ClampedArray();
