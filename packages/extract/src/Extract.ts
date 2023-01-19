@@ -10,12 +10,11 @@ const BYTES_PER_PIXEL = 4;
  * This class provides renderer-specific plugins for exporting content from a renderer.
  * For instance, these plugins can be used for saving an Image, Canvas element or for exporting the raw image data (pixels).
  *
- * Do not instantiate these plugins directly. It is available from the `renderer.plugins` property.
- * See {@link PIXI.CanvasRenderer#plugins} or {@link PIXI.Renderer#plugins}.
+ * Do not instantiate these plugins directly. It is available from the `renderer.extract` property.
  * @example
  * import { Application, Graphics } from 'pixi.js';
  *
- * // Create a new app (will auto-add extract plugin to renderer)
+ * // Create a new application (extract will be auto-added to renderer)
  * const app = new Application();
  *
  * // Draw a red circle
@@ -24,7 +23,7 @@ const BYTES_PER_PIXEL = 4;
  *     .drawCircle(0, 0, 50);
  *
  * // Render the graphics as an HTMLImageElement
- * const image = app.renderer.plugins.image(graphics);
+ * const image = await app.renderer.extract.image(graphics);
  * document.body.appendChild(image);
  * @memberof PIXI
  */
