@@ -82,7 +82,7 @@ export class Color
         return this._components[2];
     }
 
-    /** Read out alpha value (0 - 1) */
+    /** Get alpha component (0 - 1) */
     get alpha(): number
     {
         return this._components[3];
