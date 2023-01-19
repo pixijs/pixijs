@@ -197,7 +197,7 @@ export class Color
     }
 
     /**
-     * Converts a color to a hexadecimal number.
+     * Convert to a hexadecimal number.
      * @example
      * import { Color } from 'pixi.js';
      * new Color('white').toNumber(); // returns 16777215
