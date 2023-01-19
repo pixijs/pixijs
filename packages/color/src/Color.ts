@@ -208,7 +208,7 @@ export class Color
     }
 
     /**
-     * Converts a hexadecimal color number to a string.
+     * Convert to a hexidecimal string.
      * @example
      * import { Color } from 'pixi.js';
      * new Color('white').toHex(); // returns "#ffffff"
