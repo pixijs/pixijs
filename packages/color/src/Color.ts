@@ -152,7 +152,7 @@ export class Color
     /** Convert to a CSS-style rgba string: `rgba(255,255,255,1.0)`. */
     toRgbaString(): string
     {
-        const [r, g, b] = this.toUint8ClampedArray();
+        const [r, g, b] = this.toUint8RgbArray();
 
         return `rgba(${r},${g},${b},${this.alpha})`;
     }
@@ -161,10 +161,10 @@ export class Color
      * Convert to an [R, G, B] array of clamped uint8 values (0 to 255).
      * @example
      * import { Color } from 'pixi.js';
-     * new Color('white').toUint8ClampedArray(); // returns [255, 255, 255]
-     * @param {number[]|Uint8ClampedArray} [out] - Output array
+     * new Color('white').toUint8RgbArray(); // returns [255, 255, 255]
+     * @param {number[]|Uint8Array|Uint8ClampedArray} [out] - Output array
      */
-    toUint8ClampedArray<T extends (number[] | Uint8ClampedArray) = number[]>(out?: T): T
+    toUint8RgbArray<T extends (number[] | Uint8Array | Uint8ClampedArray) = number[]>(out?: T): T
     {
         const [r, g, b] = this._components;
 
