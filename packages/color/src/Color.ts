@@ -76,7 +76,7 @@ export class Color
         return this._components[1];
     }
 
-    /** Read out blue value (0 - 1) */
+    /** Get blue component (0 - 1) */
     get blue(): number
     {
         return this._components[2];
