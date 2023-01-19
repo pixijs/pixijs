@@ -63,6 +63,74 @@ describe('EventBoundary', () =>
         expect(hitTestTarget).toEqual(container);
     });
 
+    it('should not hit-test a target that is interactive none && has interactiveChildren false', () =>
+    {
+        const stage = new Container();
+        const boundary = new EventBoundary(stage);
+        const container = stage.addChild(new Container());
+        const target = container.addChild(new Graphics().beginFill(0).drawRect(0, 0, 100, 100));
+
+        container.interactive = 'none';
+        container.interactiveChildren = false;
+        target.interactive = true;
+
+        expect(boundary.hitTest(50, 50)).toEqual(null);
+    });
+
+    it(`should hit-test a target who's parent is interactive 'none', but interactiveChildren is true`, () =>
+    {
+        const stage = new Container();
+        const boundary = new EventBoundary(stage);
+        const container = stage.addChild(new Container());
+        const target = container.addChild(new Graphics().beginFill(0).drawRect(0, 0, 100, 100));
+
+        container.interactive = 'none';
+        container.interactiveChildren = true;
+        target.interactive = true;
+
+        expect(boundary.hitTest(50, 50)).toEqual(target);
+    });
+
+    it('should hit-test a target that is interactive auto, static, dynamic', () =>
+    {
+        const stage = new Container();
+        const boundary = new EventBoundary(stage);
+        const container = stage.addChild(new Container());
+        const targetAuto = container.addChild(new Graphics().beginFill(0).drawRect(0, 0, 100, 100));
+        const targetStatic = container.addChild(new Graphics().beginFill(0).drawRect(100, 0, 100, 100));
+        const targetDynamic = container.addChild(new Graphics().beginFill(0).drawRect(200, 0, 100, 100));
+
+        targetAuto.interactive = 'auto';
+        targetStatic.interactive = 'static';
+        targetDynamic.interactive = 'dynamic';
+
+        expect(boundary.hitTest(50, 50)).toEqual(null);
+        expect(boundary.hitTest(150, 50)).toEqual(targetStatic);
+        expect(boundary.hitTest(250, 50)).toEqual(targetDynamic);
+
+        container.interactive = true;
+
+        expect(boundary.hitTest(50, 50)).toEqual(container);
+        expect(boundary.hitTest(150, 50)).toEqual(targetStatic);
+        expect(boundary.hitTest(250, 50)).toEqual(targetDynamic);
+    });
+
+    it('should hit-test a target which is blocked by a none interactive element', () =>
+    {
+        const stage = new Container();
+        const boundary = new EventBoundary(stage);
+        const container = stage.addChild(new Container());
+        const target = container.addChild(new Graphics().beginFill(0).drawRect(0, 0, 100, 100));
+        const blocker = container.addChild(new Graphics().beginFill(0).drawRect(50, 0, 100, 100));
+
+        container.interactive = true;
+        target.interactive = true;
+        blocker.interactive = 'none';
+
+        expect(boundary.hitTest(25, 50)).toEqual(target);
+        expect(boundary.hitTest(75, 50)).toEqual(target);
+    });
+
     it('should fire pointerupoutside only on relevant & still mounted targets', () =>
     {
         const stage = new Container();

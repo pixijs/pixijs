@@ -5,7 +5,13 @@ import { FederatedWheelEvent } from './FederatedWheelEvent';
 
 import type { DisplayObject } from '@pixi/display';
 import type { FederatedEvent } from './FederatedEvent';
-import type { Cursor, FederatedEventHandler, FederatedEventTarget, IFederatedDisplayObject } from './FederatedEventTarget';
+import type {
+    Cursor,
+    FederatedEventHandler,
+    FederatedEventTarget,
+    IFederatedDisplayObject,
+    Interactive
+} from './FederatedEventTarget';
 
 // The maximum iterations used in propagation. This prevent infinite loops.
 const PROPAGATION_LIMIT = 2048;
@@ -281,7 +287,7 @@ export class EventBoundary
     {
         const invertedPath = this.hitTestRecursive(
             this.rootTarget,
-            this.rootTarget.interactive,
+            this.rootTarget._internalInteractive,
             tempHitLocation.set(x, y),
             this.hitTestFn,
             this.hitPruneFn,
@@ -407,7 +413,7 @@ export class EventBoundary
      */
     protected hitTestRecursive(
         currentTarget: DisplayObject,
-        interactive: boolean,
+        interactive: Interactive,
         location: Point,
         testFn: (object: DisplayObject, pt: Point) => boolean,
         pruneFn?: (object: DisplayObject, pt: Point) => boolean,
@@ -435,7 +441,7 @@ export class EventBoundary
 
                 const nestedHit = this.hitTestRecursive(
                     child,
-                    interactive || child.interactive,
+                    this._isInteractive(interactive) ? interactive : child._internalInteractive,
                     location,
                     testFn,
                     pruneFn,
@@ -453,7 +459,7 @@ export class EventBoundary
                     // Only add the current hit-test target to the hit-test chain if the chain
                     // has already started (i.e. the event target has been found) or if the current
                     // target is interactive (i.e. it becomes the event target).
-                    if (nestedHit.length > 0 || currentTarget.interactive)
+                    if (nestedHit.length > 0 || this.isTargetInteractive(currentTarget))
                     {
                         nestedHit.push(currentTarget);
                     }
@@ -464,14 +470,29 @@ export class EventBoundary
         }
 
         // Finally, hit test this DisplayObject itself.
-        if (interactive && testFn(currentTarget, location))
+        if (this._isInteractive(interactive) && testFn(currentTarget, location))
         {
+            if (currentTarget._internalInteractive === 'none')
+            {
+                return null;
+            }
+
             // The current hit-test target is the event's target only if it is interactive. Otherwise,
             // the first interactive ancestor will be the event's target.
-            return currentTarget.interactive ? [currentTarget] : [];
+            return this.isTargetInteractive(currentTarget) ? [currentTarget] : [];
         }
 
         return null;
+    }
+
+    private isTargetInteractive(target: DisplayObject): boolean
+    {
+        return target._internalInteractive === 'static' || target._internalInteractive === 'dynamic';
+    }
+
+    private _isInteractive(int: Interactive): int is 'static' | 'dynamic'
+    {
+        return int === 'static' || int === 'dynamic';
     }
 
     /**
@@ -503,6 +524,11 @@ export class EventBoundary
             {
                 return true;
             }
+        }
+
+        if (displayObject._internalInteractive === 'none' && !displayObject.interactiveChildren)
+        {
+            return true;
         }
 
         return false;

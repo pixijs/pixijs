@@ -1,4 +1,5 @@
 import { DisplayObject } from '@pixi/display';
+import { deprecation } from '@pixi/utils';
 import { FederatedEvent } from './FederatedEvent';
 
 import type { utils } from '@pixi/core';
@@ -52,6 +53,9 @@ export interface IHitArea
 /** Function type for handlers, e.g., onclick */
 export type FederatedEventHandler<T= FederatedPointerEvent> = (event: T) => void;
 
+/** The type of interaction a DisplayObject can be */
+export type Interactive = 'none' | 'auto' | 'static' | 'dynamic';
+
 /**
  * Describes the shape for a {@link FederatedEvent}'s' `eventTarget`.
  * @memberof PIXI
@@ -68,7 +72,11 @@ export interface FederatedEventTarget extends utils.EventEmitter, EventTarget
     readonly children?: ReadonlyArray<FederatedEventTarget>;
 
     /** Whether this event target should fire UI events. */
-    interactive: boolean;
+    interactive: boolean | Interactive;
+    /** The internal value of the interactive state of an object. */
+    _internalInteractive: Interactive;
+    /** The interactive value the user set */
+    _userSetInteractive: boolean | Interactive;
 
     /** Whether this event target has any children that need UI events. This can be used optimize event propagation. */
     interactiveChildren: boolean;
@@ -547,18 +555,26 @@ export const FederatedDisplayObject: IFederatedDisplayObject = {
     onwheel:  null,
     /**
      * Enable interaction events for the DisplayObject. Touch, pointer and mouse
-     * events will not be emitted unless `interactive` is set to `true`.
+     * There is 4 types of interaction settings:
+     * - `'none'`: does not emit events and ignores all hit testing. Similar to `pointer-events: none` in CSS
+     * - `'auto'`: does not emit events and but is hit tested if parent is interactive. Same as `interactive = false` in v7
+     * - `'static'`: emit events and is hit tested. Same as `interaction = true` in v7
+     * - `'dynamic'`: emits events and is hit tested but will also receive mock interaction events fired from a ticker to
+     * allow for interaction when the mouse isn't moving
      * @example
      * import { Sprite } from 'pixi.js';
      *
      * const sprite = new Sprite(texture);
-     * sprite.interactive = true;
+     * sprite.interactive = 'static';
      * sprite.on('tap', (event) => {
      *     // Handle event
      * });
      * @memberof PIXI.DisplayObject#
      */
     interactive: false,
+    /** Internal reference to the normalised interactive value. This should always be used instead of interactive */
+    _internalInteractive: 'auto',
+    _userSetInteractive: false,
 
     /**
      * Determines if the children to the displayObject can be clicked/touched
@@ -683,5 +699,35 @@ export const FederatedDisplayObject: IFederatedDisplayObject = {
         return !e.defaultPrevented;
     }
 };
+
+Object.defineProperties(FederatedDisplayObject, {
+    interactive:  {
+        get()
+        {
+            return this._userSetInteractive;
+        },
+        set(value: boolean | Interactive)
+        {
+            this._userSetInteractive = value;
+
+            if (typeof value === 'boolean')
+            {
+                // #if _DEBUG
+                deprecation(
+                    '7.2.0',
+                    // eslint-disable-next-line max-len
+                    `Setting interactive to a boolean is deprecated, use interactive = 'none'/'auto'/'static'/'dynamic' instead.`
+                );
+                // #endif
+
+                this._internalInteractive = value ? 'static' : 'auto';
+
+                return;
+            }
+
+            this._internalInteractive = value;
+        },
+    },
+});
 
 DisplayObject.mixin(FederatedDisplayObject);
