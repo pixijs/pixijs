@@ -263,7 +263,7 @@ export class Color
     }
 
     /**
-     * Converts color to an [R, G, B, A] array of normalized floats (numbers from 0.0 to 1.0).
+     * Convert to an [R, G, B, A] array of normalized floats (numbers from 0.0 to 1.0).
      * @example
      * import { Color } from 'pixi.js';
      * new Color('white').toArray(); // returns [1, 1, 1, 1]
