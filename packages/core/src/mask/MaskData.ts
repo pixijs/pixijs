@@ -1,10 +1,10 @@
 import { MASK_TYPES } from '@pixi/constants';
-import { Filter } from '@pixi/core';
+import { Filter } from '../filters/Filter';
 
 import type { COLOR_MASK_BITS, MSAA_QUALITY } from '@pixi/constants';
-import type { ISpriteMaskFilter } from '@pixi/core';
 import type { Matrix, Rectangle } from '@pixi/math';
 import type { IFilterTarget } from '../filters/IFilterTarget';
+import type { ISpriteMaskFilter } from '../filters/spriteMask/SpriteMaskFilter';
 import type { Renderer } from '../Renderer';
 
 export interface IMaskTarget extends IFilterTarget
