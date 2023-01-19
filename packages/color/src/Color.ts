@@ -323,14 +323,12 @@ export class Color
 
             const color = colord(value as AnyColor);
 
-            if (!color.isValid())
+            if (color.isValid())
             {
-                throw new Error(`Unable to convert color ${value}`);
+                const { r, g, b, a } = color.rgba;
+
+                components = [r / 255, g / 255, b / 255, a];
             }
-
-            const { r, g, b, a } = color.rgba;
-
-            components = [r / 255, g / 255, b / 255, a];
         }
         else if (typeof value === 'number' && value >= 0 && value <= 0xffffff)
         {
