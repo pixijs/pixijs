@@ -1,5 +1,6 @@
 import { DisplayObject } from '@pixi/display';
 import { deprecation } from '@pixi/utils';
+import { EventSystem } from './EventSystem';
 import { FederatedEvent } from './FederatedEvent';
 
 import type { utils } from '@pixi/core';
@@ -189,6 +190,27 @@ export interface IFederatedDisplayObject
         listener: EventListenerOrEventListenerObject,
         options?: RemoveListenerOptions
     ): void;
+}
+
+function convertToInteractive(value: boolean | Interactive, warn?: boolean): Interactive
+{
+    if (typeof value === 'boolean')
+    {
+        if (warn)
+        {
+            // #if _DEBUG
+            deprecation(
+                '7.2.0',
+                // eslint-disable-next-line max-len
+                `Setting interactive to a boolean is deprecated, use interactive = 'none'/'passive'/'auto'/'static'/'dynamic' instead.`
+            );
+            // #endif
+        }
+
+        return value ? 'static' : 'auto';
+    }
+
+    return value;
 }
 
 export const FederatedDisplayObject: IFederatedDisplayObject = {
@@ -575,11 +597,11 @@ export const FederatedDisplayObject: IFederatedDisplayObject = {
      * });
      * @memberof PIXI.DisplayObject#
      */
-    interactive: false,
+    interactive: EventSystem.defaultInteraction,
     /** Internal reference to the normalised interactive value. This should always be used instead of interactive */
-    _internalInteractive: 'auto',
+    _internalInteractive: convertToInteractive(EventSystem.defaultInteraction, false),
     /** Internal reference to the value the user set. e.g. interactive = false means _userSetInteractive === false */
-    _userSetInteractive: false,
+    _userSetInteractive: null,
 
     /**
      * Determines if the displayObject is interactive or not
@@ -736,28 +758,20 @@ Object.defineProperties(FederatedDisplayObject, {
     interactive:  {
         get()
         {
+            // make sure to update the internal value if the default has changed
+            if (this._userSetInteractive === null)
+            {
+                this._internalInteractive = convertToInteractive(EventSystem.defaultInteraction, true);
+
+                return EventSystem.defaultInteraction;
+            }
+
             return this._userSetInteractive;
         },
         set(value: boolean | Interactive)
         {
             this._userSetInteractive = value;
-
-            if (typeof value === 'boolean')
-            {
-                // #if _DEBUG
-                deprecation(
-                    '7.2.0',
-                    // eslint-disable-next-line max-len
-                    `Setting interactive to a boolean is deprecated, use interactive = 'none'/'auto'/'static'/'dynamic' instead.`
-                );
-                // #endif
-
-                this._internalInteractive = value ? 'static' : 'auto';
-
-                return;
-            }
-
-            this._internalInteractive = value;
+            this._internalInteractive = convertToInteractive(value, true);
         },
     },
 });
