@@ -239,9 +239,7 @@ export class AccessibilityManager
             return;
         }
 
-        const { _internalInteractive } = displayObject;
-
-        if (displayObject.accessible && (_internalInteractive === 'static' || _internalInteractive === 'dynamic'))
+        if (displayObject.accessible && displayObject.isInteractive())
         {
             if (!displayObject._accessibleActive)
             {

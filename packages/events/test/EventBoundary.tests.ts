@@ -63,7 +63,7 @@ describe('EventBoundary', () =>
         expect(hitTestTarget).toEqual(container);
     });
 
-    it('should not hit-test a target that is interactive none && has interactiveChildren false', () =>
+    it('should not fire an interaction event to its children if the display object is none', () =>
     {
         const stage = new Container();
         const boundary = new EventBoundary(stage);
@@ -71,24 +71,23 @@ describe('EventBoundary', () =>
         const target = container.addChild(new Graphics().beginFill(0).drawRect(0, 0, 100, 100));
 
         container.interactive = 'none';
-        container.interactiveChildren = false;
         target.interactive = true;
 
         expect(boundary.hitTest(50, 50)).toEqual(null);
     });
 
-    it(`should hit-test a target who's parent is interactive 'none', but interactiveChildren is true`, () =>
+    it(`should not fire an interaction event if the display object is passive and interactiveChildren is false`, () =>
     {
         const stage = new Container();
         const boundary = new EventBoundary(stage);
         const container = stage.addChild(new Container());
         const target = container.addChild(new Graphics().beginFill(0).drawRect(0, 0, 100, 100));
 
-        container.interactive = 'none';
-        container.interactiveChildren = true;
+        container.interactive = 'passive';
+        container.interactiveChildren = false;
         target.interactive = true;
 
-        expect(boundary.hitTest(50, 50)).toEqual(target);
+        expect(boundary.hitTest(50, 50)).toEqual(null);
     });
 
     it('should hit-test a target that is interactive auto, static, dynamic', () =>
@@ -115,7 +114,7 @@ describe('EventBoundary', () =>
         expect(boundary.hitTest(250, 50)).toEqual(targetDynamic);
     });
 
-    it('should hit-test a target which is blocked by a none interactive element', () =>
+    it('should not block an interactive if display object is none', () =>
     {
         const stage = new Container();
         const boundary = new EventBoundary(stage);
@@ -129,6 +128,47 @@ describe('EventBoundary', () =>
 
         expect(boundary.hitTest(25, 50)).toEqual(target);
         expect(boundary.hitTest(75, 50)).toEqual(target);
+    });
+
+    it('should not register an interaction event if parent is set to none', () =>
+    {
+        const stage = new Container();
+        const boundary = new EventBoundary(stage);
+        const container = stage.addChild(new Container());
+        const target = container.addChild(new Graphics().beginFill(0).drawRect(0, 0, 100, 100));
+        const blocker = container.addChild(new Graphics().beginFill(0).drawRect(50, 0, 100, 100));
+
+        container.interactive = 'none';
+        target.interactive = true;
+        blocker.interactive = true;
+
+        expect(boundary.hitTest(25, 50)).toEqual(null);
+        expect(boundary.hitTest(75, 50)).toEqual(null);
+    });
+
+    it('should hit-test correctly when using multiple interactive types', () =>
+    {
+        const stage = new Container();
+        const boundary = new EventBoundary(stage);
+        const container = stage.addChild(new Container());
+        const target = container.addChild(new Graphics().beginFill(0).drawRect(0, 0, 100, 100));
+        const autoBlocker = container.addChild(new Graphics().beginFill(0).drawRect(0, 0, 25, 100));
+        const activeBlocker = container.addChild(new Graphics().beginFill(0).drawRect(75, 0, 25, 100));
+        const noneBlocker = container.addChild(new Graphics().beginFill(0).drawRect(25, 0, 50, 100));
+
+        container.interactive = 'passive';
+        // this should be hit because it is interactive and parent is passive
+        target.interactive = true;
+        // this should block the target because it is interactive and parent is passive
+        activeBlocker.interactive = true;
+        // this should be ignored because it is not interactive and parent is passive
+        autoBlocker.interactive = 'auto';
+        // this should be ignored because it is using none
+        noneBlocker.interactive = 'none';
+
+        expect(boundary.hitTest(12, 50)).toEqual(target);
+        expect(boundary.hitTest(50, 50)).toEqual(target);
+        expect(boundary.hitTest(87, 50)).toEqual(activeBlocker);
     });
 
     it('should fire pointerupoutside only on relevant & still mounted targets', () =>

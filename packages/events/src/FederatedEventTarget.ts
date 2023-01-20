@@ -54,7 +54,7 @@ export interface IHitArea
 export type FederatedEventHandler<T= FederatedPointerEvent> = (event: T) => void;
 
 /** The type of interaction a DisplayObject can be */
-export type Interactive = 'none' | 'auto' | 'static' | 'dynamic';
+export type Interactive = 'none' | 'passive' | 'auto' | 'static' | 'dynamic';
 
 /**
  * Describes the shape for a {@link FederatedEvent}'s' `eventTarget`.
@@ -77,6 +77,8 @@ export interface FederatedEventTarget extends utils.EventEmitter, EventTarget
     _internalInteractive: Interactive;
     /** The interactive value the user set */
     _userSetInteractive: boolean | Interactive;
+    /** Returns true if the DisplayObject has interactive 'static' or 'dynamic' */
+    isInteractive: () => boolean;
 
     /** Whether this event target has any children that need UI events. This can be used optimize event propagation. */
     interactiveChildren: boolean;
@@ -556,10 +558,12 @@ export const FederatedDisplayObject: IFederatedDisplayObject = {
     /**
      * Enable interaction events for the DisplayObject. Touch, pointer and mouse
      * There is 4 types of interaction settings:
-     * - `'none'`: does not emit events and ignores all hit testing. Similar to `pointer-events: none` in CSS
-     * - `'auto'`: does not emit events and but is hit tested if parent is interactive. Same as `interactive = false` in v7
-     * - `'static'`: emit events and is hit tested. Same as `interaction = true` in v7
-     * - `'dynamic'`: emits events and is hit tested but will also receive mock interaction events fired from a ticker to
+     * - `'none'`: Ignores all interaction events, even on its children.
+     * - `'passive'`: Does not emit events and ignores all hit testing on itself and non-interactive children.
+     * Interactive children will still emit events.
+     * - `'auto'`: Does not emit events and but is hit tested if parent is interactive. Same as `interactive = false` in v7
+     * - `'static'`: Emit events and is hit tested. Same as `interaction = true` in v7
+     * - `'dynamic'`: Emits events and is hit tested but will also receive mock interaction events fired from a ticker to
      * allow for interaction when the mouse isn't moving
      * @example
      * import { Sprite } from 'pixi.js';
@@ -574,7 +578,35 @@ export const FederatedDisplayObject: IFederatedDisplayObject = {
     interactive: false,
     /** Internal reference to the normalised interactive value. This should always be used instead of interactive */
     _internalInteractive: 'auto',
+    /** Internal reference to the value the user set. e.g. interactive = false means _userSetInteractive === false */
     _userSetInteractive: false,
+
+    /**
+     * Determines if the displayObject is interactive or not
+     * @returns {boolean} Whether the displayObject is interactive or not
+     * @memberof PIXI.DisplayObject#
+     * @example
+     * import { Sprite } from 'pixi.js';
+     * const sprite = new Sprite(texture);
+     * sprite.interactive = 'static';
+     * sprite.isInteractive(); // true
+     *
+     * sprite.interactive = 'dynamic';
+     * sprite.isInteractive(); // true
+     *
+     * sprite.interactive = 'none';
+     * sprite.isInteractive(); // false
+     *
+     * sprite.interactive = 'passive';
+     * sprite.isInteractive(); // false
+     *
+     * sprite.interactive = 'auto';
+     * sprite.isInteractive(); // false
+     */
+    isInteractive()
+    {
+        return this._internalInteractive === 'static' || this._internalInteractive === 'dynamic';
+    },
 
     /**
      * Determines if the children to the displayObject can be clicked/touched

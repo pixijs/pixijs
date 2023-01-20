@@ -459,7 +459,7 @@ export class EventBoundary
                     // Only add the current hit-test target to the hit-test chain if the chain
                     // has already started (i.e. the event target has been found) or if the current
                     // target is interactive (i.e. it becomes the event target).
-                    if (nestedHit.length > 0 || this.isTargetInteractive(currentTarget))
+                    if (nestedHit.length > 0 || currentTarget.isInteractive())
                     {
                         nestedHit.push(currentTarget);
                     }
@@ -472,22 +472,12 @@ export class EventBoundary
         // Finally, hit test this DisplayObject itself.
         if (this._isInteractive(interactive) && testFn(currentTarget, location))
         {
-            if (currentTarget._internalInteractive === 'none')
-            {
-                return null;
-            }
-
             // The current hit-test target is the event's target only if it is interactive. Otherwise,
             // the first interactive ancestor will be the event's target.
-            return this.isTargetInteractive(currentTarget) ? [currentTarget] : [];
+            return currentTarget.isInteractive() ? [currentTarget] : [];
         }
 
         return null;
-    }
-
-    private isTargetInteractive(target: DisplayObject): boolean
-    {
-        return target._internalInteractive === 'static' || target._internalInteractive === 'dynamic';
     }
 
     private _isInteractive(int: Interactive): int is 'static' | 'dynamic'
@@ -505,6 +495,18 @@ export class EventBoundary
      */
     protected hitPruneFn(displayObject: DisplayObject, location: Point): boolean
     {
+        // If this DisplayObject is none then it cannot be hit by anything.
+        if (displayObject._internalInteractive === 'none')
+        {
+            return true;
+        }
+
+        // If this DisplayObject is passive and it has no interactive children then it cannot be hit
+        if (displayObject._internalInteractive === 'passive' && !displayObject.interactiveChildren)
+        {
+            return true;
+        }
+
         if (displayObject.hitArea)
         {
             displayObject.worldTransform.applyInverse(location, tempLocalMapping);
@@ -526,11 +528,6 @@ export class EventBoundary
             }
         }
 
-        if (displayObject._internalInteractive === 'none' && !displayObject.interactiveChildren)
-        {
-            return true;
-        }
-
         return false;
     }
 
@@ -542,6 +539,12 @@ export class EventBoundary
      */
     protected hitTestFn(displayObject: DisplayObject, location: Point): boolean
     {
+        // If the displayObject is passive then it cannot be hit directly.
+        if (displayObject._internalInteractive === 'passive')
+        {
+            return false;
+        }
+
         // If the display object failed pruning with a hitArea, then it must pass it.
         if (displayObject.hitArea)
         {
