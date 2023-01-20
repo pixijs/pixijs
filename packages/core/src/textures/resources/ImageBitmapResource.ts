@@ -72,6 +72,8 @@ export class ImageBitmapResource extends BaseImageResource
             baseSource = source;
             url = null;
         }
+        // Using super() in if() can cause transpilation problems in some cases, so take it out of if().
+        // See https://github.com/pixijs/pixijs/pull/9093 for details.
         super(baseSource);
         this.url = url;
 
