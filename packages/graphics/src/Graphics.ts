@@ -952,10 +952,10 @@ export class Graphics extends Container
         uniforms.translationMatrix = this.transform.worldTransform;
 
         // and then lets set the tint..
-        uniforms.tint[0] = (((tint >> 16) & 0xFF) / 255) * worldAlpha;
-        uniforms.tint[1] = (((tint >> 8) & 0xFF) / 255) * worldAlpha;
-        uniforms.tint[2] = ((tint & 0xFF) / 255) * worldAlpha;
-        uniforms.tint[3] = worldAlpha;
+        Color.shared.setValue(tint)
+            .multiply([worldAlpha, worldAlpha, worldAlpha])
+            .setAlpha(worldAlpha)
+            .toArray(uniforms.tint);
 
         // the first draw call, we can set the uniforms of the shader directly here.
 
