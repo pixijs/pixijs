@@ -1,4 +1,5 @@
 import { Point, utils } from '@pixi/core';
+import { EventsTicker } from './EventTicker';
 import { FederatedMouseEvent } from './FederatedMouseEvent';
 import { FederatedPointerEvent } from './FederatedPointerEvent';
 import { FederatedWheelEvent } from './FederatedWheelEvent';
@@ -179,9 +180,7 @@ export class EventBoundary
      */
     protected eventPool: Map<typeof FederatedEvent, FederatedEvent[]> = new Map();
 
-    /**
-     * @param rootTarget - The holder of the event boundary.
-     */
+    /** @param rootTarget - The holder of the event boundary. */
     constructor(rootTarget?: DisplayObject)
     {
         this.rootTarget = rootTarget;
@@ -285,6 +284,7 @@ export class EventBoundary
         y: number,
     ): DisplayObject
     {
+        EventsTicker.pauseUpdate = true;
         const invertedPath = this.hitTestRecursive(
             this.rootTarget,
             this.rootTarget._internalInteractive,
@@ -428,6 +428,11 @@ export class EventBoundary
         if (pruneFn(currentTarget, location))
         {
             return null;
+        }
+
+        if (currentTarget._internalInteractive === 'dynamic' || interactive === 'dynamic')
+        {
+            EventsTicker.pauseUpdate = false;
         }
 
         // Find a child that passes the hit testing and return one, if any.

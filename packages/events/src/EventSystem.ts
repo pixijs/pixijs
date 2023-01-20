@@ -1,5 +1,6 @@
 import { extensions, ExtensionType } from '@pixi/core';
 import { EventBoundary } from './EventBoundary';
+import { EventsTicker } from './EventTicker';
 import { FederatedPointerEvent } from './FederatedPointerEvent';
 import { FederatedWheelEvent } from './FederatedWheelEvent';
 
@@ -98,6 +99,7 @@ export class EventSystem
     {
         this.renderer = renderer;
         this.rootBoundary = new EventBoundary(null);
+        EventsTicker.init(this);
 
         this.autoPreventDefault = true;
         this.eventsAdded = false;
@@ -255,6 +257,8 @@ export class EventSystem
         // if we support touch events, then only use those for touch events, not pointer events
         if (this.supportsTouchEvents && (nativeEvent as PointerEvent).pointerType === 'touch') return;
 
+        EventsTicker.pointerMoved();
+
         const normalizedEvents = this.normalizeToPointerData(nativeEvent);
 
         for (let i = 0, j = normalizedEvents.length; i < j; i++)
@@ -346,6 +350,7 @@ export class EventSystem
     {
         this.removeEvents();
         this.domElement = element;
+        EventsTicker.domElement = element;
         this.addEvents();
     }
 
@@ -356,6 +361,8 @@ export class EventSystem
         {
             return;
         }
+
+        EventsTicker.addTickerListener();
 
         const style = this.domElement.style as CrossCSSStyleDeclaration;
 
@@ -423,6 +430,8 @@ export class EventSystem
         {
             return;
         }
+
+        EventsTicker.removeTickerListener();
 
         const style = this.domElement.style as CrossCSSStyleDeclaration;
 
