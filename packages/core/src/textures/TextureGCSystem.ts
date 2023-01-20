@@ -21,24 +21,27 @@ export interface IUnloadableTexture
 export class TextureGCSystem implements ISystem
 {
     /**
-     * Default Garbage Collection mode.
+     * Default garbage collection mode.
      * @static
      * @type {PIXI.GC_MODES}
      * @default PIXI.GC_MODES.AUTO
+     * @see PIXI.TextureGCSystem#mode
      */
     public static defaultMode = GC_MODES.AUTO;
 
     /**
-     * Default Garbage Collection max idle.
+     * Default maximum idle frames before a texture is destroyed by garbage collection.
      * @static
      * @default 3600
+     * @see PIXI.TextureGCSystem#maxIdle
      */
     public static defaultMaxIdle = 60 * 60;
 
     /**
-     * Default Garbage Collection maximum check count.
+     * Default frames between two garbage collections.
      * @static
      * @default 600
+     * @see PIXI.TextureGCSystem#checkCountMax
      */
     public static defaultCheckCountMax = 60 * 10;
 
@@ -49,31 +52,31 @@ export class TextureGCSystem implements ISystem
     };
 
     /**
-     * Count
+     * Frame count since started.
      * @readonly
      */
     public count: number;
 
     /**
-     * Check count
+     * Frame count since last garbage collection.
      * @readonly
      */
     public checkCount: number;
 
     /**
-     * Maximum idle time, in seconds
+     * Maximum idle frames before a texture is destroyed by garbage collection.
      * @see PIXI.TextureGCSystem.defaultMaxIdle
      */
     public maxIdle: number;
 
     /**
-     * Maximum number of item to check
+     * Frames between two garbage collections.
      * @see PIXI.TextureGCSystem.defaultCheckCountMax
      */
     public checkCountMax: number;
 
     /**
-     * Current garbage collection mode
+     * Current garbage collection mode.
      * @see PIXI.TextureGCSystem.defaultMode
      */
     public mode: GC_MODES;
@@ -92,8 +95,8 @@ export class TextureGCSystem implements ISystem
     }
 
     /**
-     * Checks to see when the last time a texture was used
-     * if the texture has not been used for a specified amount of time it will be removed from the GPU
+     * Checks to see when the last time a texture was used.
+     * If the texture has not been used for a specified amount of time, it will be removed from the GPU.
      */
     protected postrender(): void
     {
@@ -120,8 +123,8 @@ export class TextureGCSystem implements ISystem
     }
 
     /**
-     * Checks to see when the last time a texture was used
-     * if the texture has not been used for a specified amount of time it will be removed from the GPU
+     * Checks to see when the last time a texture was used.
+     * If the texture has not been used for a specified amount of time, it will be removed from the GPU.
      */
     run(): void
     {
@@ -133,7 +136,7 @@ export class TextureGCSystem implements ISystem
         {
             const texture = managedTextures[i];
 
-            // only supports non generated textures at the moment!
+            // Only supports non generated textures at the moment!
             if (!(texture as any).framebuffer && this.count - texture.touched > this.maxIdle)
             {
                 tm.destroyTexture(texture, true);
@@ -159,7 +162,7 @@ export class TextureGCSystem implements ISystem
     }
 
     /**
-     * Removes all the textures within the specified displayObject and its children from the GPU
+     * Removes all the textures within the specified displayObject and its children from the GPU.
      * @param {PIXI.DisplayObject} displayObject - the displayObject to remove the textures from.
      */
     unload(displayObject: IUnloadableTexture): void
