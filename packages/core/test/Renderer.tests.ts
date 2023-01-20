@@ -143,8 +143,8 @@ describe('Renderer', () =>
         const renderer = new Renderer({ background: 'white' });
 
         expect(renderer.background.color).toEqual('white');
-        expect(renderer.background.hex).toEqual('#ffffff');
-        expect(renderer.background.rgba).toEqual([1, 1, 1, 1]);
+        expect(renderer.background.value.toHex()).toEqual('#ffffff');
+        expect(renderer.background.value.toArray()).toEqual([1, 1, 1, 1]);
 
         renderer.destroy();
     });

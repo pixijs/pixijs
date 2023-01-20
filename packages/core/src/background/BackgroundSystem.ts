@@ -42,12 +42,12 @@ export class BackgroundSystem implements ISystem<BackgroundOptions>
     public clearBeforeRender: boolean;
 
     /** Reference to the internal color */
-    private _background: Color;
+    private _value: Color;
 
     constructor()
     {
         this.clearBeforeRender = true;
-        this._background = new Color(0x0);
+        this._value = new Color(0x0);
         this.alpha = 1;
     }
 
@@ -73,12 +73,12 @@ export class BackgroundSystem implements ISystem<BackgroundOptions>
      */
     get color(): ColorSource
     {
-        return this._background.value;
+        return this._value.value;
     }
 
     set color(value: ColorSource)
     {
-        this._background.setValue(value);
+        this._value.setValue(value);
     }
 
     /**
@@ -87,32 +87,18 @@ export class BackgroundSystem implements ISystem<BackgroundOptions>
      */
     get alpha(): number
     {
-        return this._background.alpha;
+        return this._value.alpha;
     }
 
     set alpha(value: number)
     {
-        this._background.setAlpha(value);
+        this._value.setAlpha(value);
     }
 
-    /**
-     * The background color as an [R, G, B, A] array.
-     * @member {number[]}
-     * @protected
-     */
-    get rgba(): number[]
+    /** The background color object. */
+    get value(): Color
     {
-        return this._background.toArray();
-    }
-
-    /**
-     * The background color as a string.
-     * @member {string}
-     * @protected
-     */
-    get hex(): string
-    {
-        return this._background.toHex();
+        return this._value;
     }
 
     destroy(): void
