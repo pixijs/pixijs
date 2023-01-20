@@ -44,6 +44,7 @@
   },
   "pixiRequirements": [
     "@pixi/core",
-    "@pixi/display"
+    "@pixi/display",
+    "@pixi/utils"
   ]
 }
