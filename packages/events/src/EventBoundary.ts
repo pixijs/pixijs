@@ -507,6 +507,12 @@ export class EventBoundary
             return true;
         }
 
+        // If displayObject is a mask then it cannot be hit directly.
+        if (displayObject.isMask)
+        {
+            return true;
+        }
+
         if (displayObject.hitArea)
         {
             displayObject.worldTransform.applyInverse(location, tempLocalMapping);

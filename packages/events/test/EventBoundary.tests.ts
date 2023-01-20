@@ -90,6 +90,28 @@ describe('EventBoundary', () =>
         expect(boundary.hitTest(50, 50)).toEqual(null);
     });
 
+    it(`should not block an interaction event if the display object is a mask`, () =>
+    {
+        const stage = new Container();
+        const boundary = new EventBoundary(stage);
+        const container = stage.addChild(new Container());
+        const target = container.addChild(new Graphics().beginFill(0).drawRect(0, 0, 100, 100));
+        const maskTarget = container.addChild(new Graphics().beginFill(0).drawRect(0, 0, 100, 100));
+        const maskTargetChild = maskTarget.addChild(new Graphics().beginFill(0).drawRect(0, 0, 100, 100));
+
+        container.interactive = true;
+        container.mask = maskTarget;
+        maskTarget.interactive = true;
+        maskTargetChild.interactive = true;
+        target.interactive = true;
+
+        expect(boundary.hitTest(50, 50)).toEqual(target);
+
+        container.interactive = 'passive';
+
+        expect(boundary.hitTest(50, 50)).toEqual(target);
+    });
+
     it('should hit-test a target that is interactive auto, static, dynamic', () =>
     {
         const stage = new Container();
