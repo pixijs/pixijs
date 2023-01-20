@@ -208,6 +208,37 @@ export class Color
     }
 
     /**
+     * Convert to a hexadecimal number in little endian format (e.g., BBGGRR).
+     * @example
+     * import { Color } from 'pixi.js';
+     * new Color(0xffcc99).toLittleEndianNumber(); // returns 0x99ccff
+     * @returns {number} - The color as a number in little endian format.
+     */
+    toLittleEndianNumber(): number
+    {
+        const value = this._int;
+
+        return (value >> 16) + (value & 0xff00) + ((value & 0xff) << 16);
+    }
+
+    /**
+     * Multiply the colors
+     * @param {PIXI.Color | number[]} value - The color to multiply by, either
+     *   and existing Color object or an [R, G, B] or [R, G, B, A] array of floats.
+     */
+    multiply(value: Color | number[]): this
+    {
+        const [r, g, b, a = 1] = value instanceof Color ? value._components : value;
+
+        this._components[0] *= r;
+        this._components[1] *= g;
+        this._components[2] *= b;
+        this._components[3] *= a;
+
+        return this;
+    }
+
+    /**
      * Convert to a hexidecimal string.
      * @example
      * import { Color } from 'pixi.js';

@@ -3,6 +3,7 @@ import {
     BatchDrawCall,
     BatchGeometry,
     BatchTextureArray,
+    Color,
     DRAW_MODES,
     Point,
     utils,
@@ -808,7 +809,7 @@ export class GraphicsGeometry extends BatchGeometry
         offset = 0): void
     {
         // TODO use the premultiply bits Ivan added
-        const rgb = (color >> 16) + (color & 0xff00) + ((color & 0xff) << 16);
+        const rgb = Color.shared.setValue(color).toLittleEndianNumber();
 
         const rgba = utils.premultiplyTint(rgb, alpha);
 

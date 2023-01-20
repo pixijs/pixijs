@@ -181,4 +181,48 @@ describe('Color', () =>
             expect(color.toRgbaString()).toEqual(expected.rgbaString);
         });
     });
+
+    describe('toLittleEndianNumber', () =>
+    {
+        it('should format to little endian hexidecimal correctly', () =>
+        {
+            expect(new Color(0xffcc99).toLittleEndianNumber()).toEqual(0x99ccff);
+            expect(new Color(0xff0000).toLittleEndianNumber()).toEqual(0x0000ff);
+            expect(new Color(0x000000).toLittleEndianNumber()).toEqual(0x000000);
+            expect(new Color(0xffffff).toLittleEndianNumber()).toEqual(0xffffff);
+        });
+    });
+
+    describe('multiply', () =>
+    {
+        it('should multiply color', () =>
+        {
+            const color = new Color([1, 1, 1]).multiply([0, 0.25, 0.5]);
+
+            expect(color.red).toEqual(0);
+            expect(color.green).toEqual(0.25);
+            expect(color.blue).toEqual(0.5);
+            expect(color.alpha).toEqual(1);
+        });
+
+        it('should multiply color with input alpha', () =>
+        {
+            const color = new Color([1, 1, 1, 0.5]).multiply([0, 0.25, 0.5]);
+
+            expect(color.red).toEqual(0);
+            expect(color.green).toEqual(0.25);
+            expect(color.blue).toEqual(0.5);
+            expect(color.alpha).toEqual(0.5);
+        });
+
+        it('should multiply color with output alpha', () =>
+        {
+            const color = new Color([1, 1, 1]).multiply([0, 0.25, 0.5, 0.5]);
+
+            expect(color.red).toEqual(0);
+            expect(color.green).toEqual(0.25);
+            expect(color.blue).toEqual(0.5);
+            expect(color.alpha).toEqual(0.5);
+        });
+    });
 });
