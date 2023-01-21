@@ -240,13 +240,16 @@ export class Resolver
     {
         this.setBundleIdentifier(this._defaultBundleIdentifierOptions);
 
+        this._assetMap = {};
         this._preferredOrder = [];
+        // Do not reset this._parsers
 
         this._resolverHash = {};
-        this._assetMap = {};
         this._rootPath = null;
         this._basePath = null;
         this._manifest = null;
+        this._bundles = {};
+        this._defaultSearchParams = null;
     }
 
     /**
