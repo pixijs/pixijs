@@ -61,8 +61,16 @@ export interface BundleIdentifierOptions
  */
 export class Resolver
 {
+    private _defaultBundleIdentifierOptions: Required<BundleIdentifierOptions> = {
+        connector: '-',
+        createBundleAssetId: (bundleId, assetId) =>
+            `${bundleId}${this._bundleIdConnector}${assetId}`,
+        extractAssetIdFromBundle: (bundleId, assetBundleId) =>
+            assetBundleId.replace(`${bundleId}${this._bundleIdConnector}`, ''),
+    };
+
     /** The character that is used to connect the bundleId and the assetId when generating a bundle asset id key */
-    private _bundleIdConnector = '-';
+    private _bundleIdConnector = this._defaultBundleIdentifierOptions.connector;
 
     /**
      * A function that generates a bundle asset id key from a bundleId and an assetId
@@ -73,8 +81,7 @@ export class Resolver
     private _createBundleAssetId: (
         bundleId: string,
         assetId: string
-    ) => string = (bundleId, assetId) =>
-            `${bundleId}${this._bundleIdConnector}${assetId}`;
+    ) => string = this._defaultBundleIdentifierOptions.createBundleAssetId;
 
     /**
      * A function that generates an assetId from a bundle asset id key. This is the reverse of generateBundleAssetId
@@ -85,8 +92,7 @@ export class Resolver
     private _extractAssetIdFromBundle: (
         bundleId: string,
         assetBundleId: string
-    ) => string = (bundleId, assetBundleId) =>
-            assetBundleId.replace(`${bundleId}${this._bundleIdConnector}`, '');
+    ) => string = this._defaultBundleIdentifierOptions.extractAssetIdFromBundle;
 
     private _assetMap: Record<string, ResolveAsset[]> = {};
     private _preferredOrder: PreferOrder[] = [];
@@ -108,7 +114,6 @@ export class Resolver
     {
         this._bundleIdConnector = bundleIdentifier.connector ?? this._bundleIdConnector;
         this._createBundleAssetId = bundleIdentifier.createBundleAssetId ?? this._createBundleAssetId;
-        // eslint-disable-next-line max-len
         this._extractAssetIdFromBundle = bundleIdentifier.extractAssetIdFromBundle ?? this._extractAssetIdFromBundle;
 
         if (this._extractAssetIdFromBundle('foo', this._createBundleAssetId('foo', 'bar')) !== 'bar')
@@ -233,6 +238,8 @@ export class Resolver
     /** Used for testing, this resets the resolver to its initial state */
     public reset(): void
     {
+        this.setBundleIdentifier(this._defaultBundleIdentifierOptions);
+
         this._preferredOrder = [];
 
         this._resolverHash = {};
