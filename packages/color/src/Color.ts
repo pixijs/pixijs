@@ -222,17 +222,12 @@ export class Color
     }
 
     /**
-     * Multiply the colors
+     * Multiply with another color
      * @param {PIXI.ColorSource} value - The color to multiply by.
      */
     multiply(value: ColorSource): this
     {
-        if (!(value instanceof Color))
-        {
-            value = new Color(value);
-        }
-
-        const [r, g, b, a = 1] = value._components;
+        const [r, g, b, a = 1] = new Color(value)._components;
 
         this._components[0] *= r;
         this._components[1] *= g;

@@ -195,7 +195,7 @@ describe('Color', () =>
 
     describe('multiply', () =>
     {
-        it('should multiply color', () =>
+        it('should multiply color (with default alpha)', () =>
         {
             const color = new Color([1, 1, 1]).multiply([0, 0.25, 0.5]);
 
