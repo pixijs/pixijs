@@ -61,4 +61,19 @@ describe('Extract', () =>
         renderTexture.destroy();
         sprite.destroy();
     });
+
+    it('should extract with multisample', async () =>
+    {
+        const renderer = new Renderer({ antialias: true });
+        const extract = renderer.extract;
+        const sprite = new Sprite(Texture.WHITE);
+
+        expect(extract.canvas(sprite)).toBeInstanceOf(HTMLCanvasElement);
+        expect(await extract.base64(sprite)).toBeString();
+        expect(extract.pixels(sprite)).toBeInstanceOf(Uint8Array);
+        expect(await extract.image(sprite)).toBeInstanceOf(HTMLImageElement);
+
+        renderer.destroy();
+        sprite.destroy();
+    });
 });
