@@ -316,8 +316,7 @@ export class Graphics extends Container
     public lineTextureStyle(options?: ILineStyleOptions): this
     {
         // Apply defaults
-        options = this.normalizeColor(
-            Object.assign({
+        const defaultLineStyleOptions = {
                 width: 0,
                 texture: Texture.WHITE,
                 color: options?.texture ? 0xFFFFFF : 0x0,
@@ -327,8 +326,10 @@ export class Graphics extends Container
                 cap: LINE_CAP.BUTT,
                 join: LINE_JOIN.MITER,
                 miterLimit: 10,
-            }, options)
-        );
+        };
+
+        options = Object.assign(defaultLineStyleOptions, options);
+        options = this.normalizeColor(options);
 
         if (this.currentPath)
         {
@@ -625,7 +626,7 @@ export class Graphics extends Container
 
     /**
      * Normalize the color input from options for line style or fill
-     * @param {PIXI.IFillStyleOptions} options - Object object.
+     * @param {PIXI.IFillStyleOptions} options - Fill style object.
      */
     private normalizeColor<T extends IFillStyleOptions>(options: T): T
     {
@@ -640,23 +641,24 @@ export class Graphics extends Container
     /**
      * Begin the texture fill.
      * Note: The wrap mode of the texture is forced to REPEAT on render.
-     * @param options - Object object.
+     * @param options - Fill style object.
      * @param {PIXI.Texture} [options.texture=PIXI.Texture.WHITE] - Texture to fill
      * @param {PIXI.ColorSource} [options.color=0xffffff] - Background to fill behind texture
-     * @param {number} [options.alpha] - Alpha of fill, will override the color's alpha
+     * @param {number} [options.alpha] - Alpha of fill, overrides the color's alpha
      * @param {PIXI.Matrix} [options.matrix=null] - Transform matrix
      * @returns {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
     beginTextureFill(options?: IFillStyleOptions): this
     {
         // Apply defaults
-        options = this.normalizeColor(
-            Object.assign({
-                texture: Texture.WHITE,
-                color: 0xFFFFFF,
-                matrix: null,
-            }, options)
-        );
+        const defaultOptions = {
+            texture: Texture.WHITE,
+            color: 0xFFFFFF,
+            matrix: null,
+        };
+
+        options = Object.assign(defaultOptions, options);
+        options = this.normalizeColor(options);
 
         if (this.currentPath)
         {
