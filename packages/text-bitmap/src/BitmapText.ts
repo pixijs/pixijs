@@ -298,8 +298,8 @@ export class BitmapText extends Container
             charRenderData.texture = charData.texture;
             charRenderData.line = line;
             charRenderData.charCode = charCode;
-            charRenderData.position.x = pos.x + charData.xOffset + (this._letterSpacing / 2);
-            charRenderData.position.y = pos.y + charData.yOffset;
+            charRenderData.position.x = Math.round(pos.x + charData.xOffset + (this._letterSpacing / 2));
+            charRenderData.position.y = Math.round(pos.y + charData.yOffset);
             charRenderData.prevSpaces = spaceCount;
 
             chars.push(charRenderData);
