@@ -316,20 +316,21 @@ export class Graphics extends Container
     public lineTextureStyle(options?: ILineStyleOptions): this
     {
         // Apply defaults
-        const defaultLineStyleOptions = {
-                width: 0,
-                texture: Texture.WHITE,
-                color: options?.texture ? 0xFFFFFF : 0x0,
-                matrix: null,
-                alignment: 0.5,
-                native: false,
-                cap: LINE_CAP.BUTT,
-                join: LINE_JOIN.MITER,
-                miterLimit: 10,
+        const defaultLineStyleOptions: ILineStyleOptions = {
+            width: 0,
+            texture: Texture.WHITE,
+            color: options?.texture ? 0xFFFFFF : 0x0,
+            matrix: null,
+            alignment: 0.5,
+            native: false,
+            cap: LINE_CAP.BUTT,
+            join: LINE_JOIN.MITER,
+            miterLimit: 10,
         };
 
         options = Object.assign(defaultLineStyleOptions, options);
-        options = this.normalizeColor(options);
+
+        this.normalizeColor(options);
 
         if (this.currentPath)
         {
@@ -628,14 +629,12 @@ export class Graphics extends Container
      * Normalize the color input from options for line style or fill
      * @param {PIXI.IFillStyleOptions} options - Fill style object.
      */
-    private normalizeColor<T extends IFillStyleOptions>(options: T): T
+    private normalizeColor(options: Pick<IFillStyleOptions, 'color' | 'alpha'>): void
     {
         const temp = Color.shared.setValue(options.color);
 
         options.color = temp.toNumber();
         options.alpha ??= temp.alpha;
-
-        return options;
     }
 
     /**
@@ -651,14 +650,15 @@ export class Graphics extends Container
     beginTextureFill(options?: IFillStyleOptions): this
     {
         // Apply defaults
-        const defaultOptions = {
+        const defaultOptions: IFillStyleOptions = {
             texture: Texture.WHITE,
             color: 0xFFFFFF,
             matrix: null,
         };
 
         options = Object.assign(defaultOptions, options);
-        options = this.normalizeColor(options);
+
+        this.normalizeColor(options);
 
         if (this.currentPath)
         {
