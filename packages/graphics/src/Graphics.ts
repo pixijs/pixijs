@@ -617,7 +617,7 @@ export class Graphics extends Container
      * (such as lineTo() or drawCircle()) use when drawing.
      * @param {PIXI.ColorSource} color - the color of the fill
      * @param alpha - the alpha of the fill, will override the color's alpha
-     * @returns - This Graphics object. Good for chaining method calls
+     * @returns - This Graphics object. Suitable for chaining method calls
      */
     public beginFill(color: ColorSource = 0, alpha?: number): this
     {
