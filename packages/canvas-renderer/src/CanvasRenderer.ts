@@ -243,8 +243,8 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
             }
         };
 
-        this.startup.run(startupOptions);
         this.options = options;
+        this.startup.run(startupOptions);
     }
 
     /**
