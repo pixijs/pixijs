@@ -355,7 +355,7 @@ describe('Assets bundles', () =>
         await expect(Assets.init({ manifest, basePath, bundleIdentifier })).rejects.toThrow();
     });
 
-    it.only('should pass optional data correctly in a bundle', async () =>
+    it('should pass optional data correctly in a bundle', async () =>
     {
         const manifest = {
             bundles: [

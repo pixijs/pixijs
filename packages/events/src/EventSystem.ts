@@ -6,6 +6,7 @@ import { FederatedWheelEvent } from './FederatedWheelEvent';
 
 import type { ExtensionMetadata, ICanvas, IPointData, IRenderableObject } from '@pixi/core';
 import type { DisplayObject } from '@pixi/display';
+import type { Interactive } from './FederatedEventTarget';
 import type { FederatedMouseEvent } from './FederatedMouseEvent';
 
 const MOUSE_POINTER_ID = 1;
@@ -39,6 +40,13 @@ export class EventSystem
             ExtensionType.CanvasRendererSystem
         ],
     };
+
+    /**
+     * The default interaction mode for all display objects.
+     * Note if you update this value any display objects that have
+     * not been explicitly set will update to this new value.
+     */
+    static defaultInteraction: boolean | Interactive = false;
 
     /**
      * The {@link PIXI.EventBoundary} for the stage.
