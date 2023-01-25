@@ -4,7 +4,7 @@ import { EventsTicker } from './EventTicker';
 import { FederatedPointerEvent } from './FederatedPointerEvent';
 import { FederatedWheelEvent } from './FederatedWheelEvent';
 
-import type { ExtensionMetadata, ICanvas, IPointData, IRenderableObject } from '@pixi/core';
+import type { ExtensionMetadata, IPointData, IRenderer } from '@pixi/core';
 import type { DisplayObject } from '@pixi/display';
 import type { Interactive } from './FederatedEventTarget';
 import type { FederatedMouseEvent } from './FederatedMouseEvent';
@@ -17,14 +17,6 @@ const TOUCH_TO_POINTER: Record<string, string> = {
     touchmove: 'pointermove',
     touchcancel: 'pointercancel',
 };
-
-interface Renderer
-{
-    lastObjectRendered: IRenderableObject;
-    view: ICanvas;
-    resolution: number;
-    plugins: Record<string, any>;
-}
 
 /**
  * The system for handling UI events.
@@ -41,12 +33,13 @@ export class EventSystem
         ],
     };
 
-    /**
-     * The default interaction mode for all display objects.
-     * Note if you update this value any display objects that have
-     * not been explicitly set will update to this new value.
-     */
-    static defaultInteraction: boolean | Interactive = false;
+    private static _defaultInteraction: boolean | Interactive;
+
+    /** The default interaction mode for all display objects. */
+    public static get defaultInteraction()
+    {
+        return this._defaultInteraction;
+    }
 
     /**
      * The {@link PIXI.EventBoundary} for the stage.
@@ -93,7 +86,7 @@ export class EventSystem
     public resolution = 1;
 
     /** The renderer managing this {@link EventSystem}. */
-    public renderer: Renderer;
+    public renderer: IRenderer;
 
     private currentCursor: string;
     private rootPointerEvent: FederatedPointerEvent;
@@ -103,7 +96,7 @@ export class EventSystem
     /**
      * @param {PIXI.Renderer} renderer
      */
-    constructor(renderer: Renderer)
+    constructor(renderer: IRenderer)
     {
         this.renderer = renderer;
         this.rootBoundary = new EventBoundary(null);
@@ -133,10 +126,11 @@ export class EventSystem
      */
     init(): void
     {
-        const { view, resolution } = this.renderer;
+        const { view, resolution, options } = this.renderer;
 
         this.setTargetElement(view as HTMLCanvasElement);
         this.resolution = resolution;
+        EventSystem._defaultInteraction = options?.defaultInteractionType ?? false;
     }
 
     /**

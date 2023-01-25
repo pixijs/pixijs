@@ -405,8 +405,8 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
             },
         };
 
-        this.startup.run(startupOptions);
         this.options = options;
+        this.startup.run(startupOptions);
     }
 
     /**
