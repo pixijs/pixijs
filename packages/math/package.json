@@ -1,6 +1,6 @@
 {
   "name": "@pixi/math",
-  "version": "6.5.8",
+  "version": "6.5.9",
   "main": "dist/cjs/math.js",
   "module": "dist/esm/math.mjs",
   "bundle": "dist/browser/math.js",

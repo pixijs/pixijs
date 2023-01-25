@@ -1,6 +1,6 @@
 {
   "name": "@pixi/basis",
-  "version": "6.5.8",
+  "version": "6.5.9",
   "description": "Loader for the *.basis supercompressed texture file format. This package also ships with the transcoder!",
   "keywords": [
     "basisu",
@@ -46,11 +46,11 @@
     "url": "https://github.com/pixijs/pixi.js/issues"
   },
   "peerDependencies": {
-    "@pixi/compressed-textures": "6.5.8",
-    "@pixi/constants": "6.5.8",
-    "@pixi/core": "6.5.8",
-    "@pixi/loaders": "6.5.8",
-    "@pixi/runner": "6.5.8",
-    "@pixi/settings": "6.5.8"
+    "@pixi/compressed-textures": "6.5.9",
+    "@pixi/constants": "6.5.9",
+    "@pixi/core": "6.5.9",
+    "@pixi/loaders": "6.5.9",
+    "@pixi/runner": "6.5.9",
+    "@pixi/settings": "6.5.9"
   }
 }
