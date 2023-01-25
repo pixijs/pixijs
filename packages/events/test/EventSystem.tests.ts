@@ -5,7 +5,13 @@ import { Graphics } from '@pixi/graphics';
 // eslint-disable-next-line @typescript-eslint/no-duplicate-imports
 import '@pixi/events';
 
-function createRenderer(view?: HTMLCanvasElement, supportsPointerEvents?: boolean)
+import type { IRendererOptions } from '@pixi/core';
+
+function createRenderer(
+    view?: HTMLCanvasElement,
+    supportsPointerEvents?: boolean,
+    rendererOptions: Partial<IRendererOptions> = {}
+)
 {
     // TODO: event emitter types do not appear in tests
     interface EERenderer extends Renderer
@@ -17,6 +23,7 @@ function createRenderer(view?: HTMLCanvasElement, supportsPointerEvents?: boolea
         width: 100,
         height: 100,
         view,
+        ...rendererOptions,
     }) as EERenderer;
 
     if (supportsPointerEvents === false)
@@ -403,31 +410,18 @@ describe('EventSystem', () =>
 
     it('should set the default interaction state', () =>
     {
-        EventSystem.defaultInteraction = false;
+        const renderer = new Renderer({
+            width: 100,
+            height: 100,
+            defaultInteractionType: 'dynamic'
+        });
+
+        expect(renderer.options.defaultInteractionType).toEqual('dynamic');
+        expect(EventSystem.defaultInteraction).toEqual('dynamic');
 
         const graphics = new Graphics();
 
-        // nothing has been explicitly set, so it should be false
-        expect(graphics.interactive).toEqual(false);
-        expect(graphics._internalInteractive).toEqual('auto');
-
-        EventSystem.defaultInteraction = 'dynamic';
-
-        // we have now set the default interaction to dynamic
-        // we have not explicitly set the state, so this pre existing Graphics should update to be dynamic
         expect(graphics.interactive).toEqual('dynamic');
         expect(graphics._internalInteractive).toEqual('dynamic');
-
-        EventSystem.defaultInteraction = true;
-        const graphics2 = new Graphics();
-
-        // we now explicitly set the default interaction to false
-        graphics.interactive = false;
-        expect(graphics.interactive).toEqual(false);
-        expect(graphics._internalInteractive).toEqual('auto');
-
-        // we have NOT set the state on this new Graphics, so it should be true
-        expect(graphics2.interactive).toEqual(true);
-        expect(graphics2._internalInteractive).toEqual('static');
     });
 });

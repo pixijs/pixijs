@@ -761,7 +761,7 @@ Object.defineProperties(FederatedDisplayObject, {
             // make sure to update the internal value if the default has changed
             if (this._userSetInteractive === null)
             {
-                this._internalInteractive = convertToInteractive(EventSystem.defaultInteraction, true);
+                this._internalInteractive = convertToInteractive(EventSystem.defaultInteraction, false);
 
                 return EventSystem.defaultInteraction;
             }
