@@ -7,6 +7,7 @@ import type { ICanvas } from '@pixi/settings';
 import type { IRenderingContext } from '../IRenderer';
 import type { Renderer } from '../Renderer';
 import type { ISystem } from '../system/ISystem';
+import type { StartupOptions } from '../systems';
 import type { WebGLExtensions } from './WebGLExtensions';
 
 let CONTEXT_UID_COUNTER = 0;
@@ -16,25 +17,11 @@ export interface ISupportDict
     uint32Indices: boolean;
 }
 
-export interface ContextOptions
-{
-    context?: IRenderingContext;
-    /**
-     * Use premultipliedAlpha instead
-     * @deprecated since 7.0.0
-     */
-    useContextAlpha?: boolean | 'notMultiplied';
-    premultipliedAlpha?: boolean;
-    powerPreference?: WebGLPowerPreference;
-    preserveDrawingBuffer?: boolean;
-    antialias?: boolean;
-}
-
 /**
  * System plugin to the renderer to manage the context.
  * @memberof PIXI
  */
-export class ContextSystem implements ISystem<ContextOptions>
+export class ContextSystem implements ISystem
 {
     /** @ignore */
     static extension: ExtensionMetadata = {
@@ -122,7 +109,7 @@ export class ContextSystem implements ISystem<ContextOptions>
         this.renderer.CONTEXT_UID = CONTEXT_UID_COUNTER++;
     }
 
-    init(options: ContextOptions): void
+    init(options: StartupOptions): void
     {
         /*
          * The options passed in to create a new WebGL context.

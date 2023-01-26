@@ -382,27 +382,8 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
 
         // new options!
         const startupOptions: StartupOptions = {
-            hello: options.hello,
-            _plugin: Renderer.__plugins,
-            background: {
-                alpha: options.backgroundAlpha,
-                color: options.background ?? options.backgroundColor,
-                clearBeforeRender: options.clearBeforeRender,
-            },
-            _view: {
-                height: options.height,
-                width: options.width,
-                autoDensity: options.autoDensity,
-                resolution: options.resolution,
-                view: options.view,
-            },
-            context: {
-                antialias: options.antialias,
-                context: options.context,
-                powerPreference: options.powerPreference,
-                premultipliedAlpha: options.premultipliedAlpha,
-                preserveDrawingBuffer: options.preserveDrawingBuffer,
-            },
+            plugins: Renderer.__plugins,
+            ...options,
         };
 
         this.options = options;

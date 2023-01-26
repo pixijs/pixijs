@@ -6,31 +6,14 @@ import type { ExtensionMetadata } from '@pixi/extensions';
 import type { ICanvas } from '@pixi/settings';
 import type { IRenderer } from '../IRenderer';
 import type { ISystem } from '../system/ISystem';
-
-/**
- * Options passed to the ViewSystem
- * @memberof PIXI
- */
-export interface ViewOptions
-{
-    /** The width of the screen. */
-    width: number
-    /** The height of the screen. */
-    height: number
-    /** The canvas to use as a view, optional. */
-    view?: ICanvas;
-    /** Resizes renderer view in CSS pixels to allow for resolutions other than 1. */
-    autoDensity?: boolean
-    /** The resolution / device pixel ratio of the renderer. */
-    resolution?: number
-}
+import type { StartupOptions } from '../systems';
 
 /**
  * The view system manages the main canvas that is attached to the DOM.
  * This main role is to deal with how the holding the view reference and dealing with how it is resized.
  * @memberof PIXI
  */
-export class ViewSystem implements ISystem<ViewOptions, boolean>
+export class ViewSystem implements ISystem<boolean>
 {
     /** @ignore */
     static extension: ExtensionMetadata = {
@@ -79,7 +62,7 @@ export class ViewSystem implements ISystem<ViewOptions, boolean>
      * initiates the view system
      * @param {PIXI.ViewOptions} options - the options for the view
      */
-    init(options: ViewOptions): void
+    init(options: StartupOptions): void
     {
         this.screen = new Rectangle(0, 0, options.width, options.height);
 

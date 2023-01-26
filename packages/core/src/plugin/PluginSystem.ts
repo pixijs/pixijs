@@ -4,6 +4,7 @@ import { deprecation } from '@pixi/utils';
 import type { ExtensionMetadata } from '@pixi/extensions';
 import type { IRenderer } from '../IRenderer';
 import type { ISystem } from '../system/ISystem';
+import type { StartupOptions } from '../systems';
 
 export interface IRendererPlugins extends GlobalMixins.IRendererPlugins
 {
@@ -14,7 +15,7 @@ export interface IRendererPlugins extends GlobalMixins.IRendererPlugins
  * Manages the functionality that allows users to extend pixi functionality via additional plugins.
  * @memberof PIXI
  */
-export class PluginSystem implements ISystem<IRendererPlugins>
+export class PluginSystem implements ISystem
 {
     /** @ignore */
     static extension: ExtensionMetadata = {
@@ -80,10 +81,12 @@ export class PluginSystem implements ISystem<IRendererPlugins>
     /**
      * Initialize the plugins.
      * @protected
-     * @param {object} staticMap - The dictionary of statically saved plugins.
+     * @param options
      */
-    init(staticMap: IRendererPlugins): void
+    init(options: StartupOptions): void
     {
+        const staticMap = options.plugins;
+
         for (const o in staticMap)
         {
             this.plugins[o] = new (staticMap[o])(this.renderer);

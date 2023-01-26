@@ -3,22 +3,13 @@ import { hex2rgb, hex2string, string2hex } from '@pixi/utils';
 
 import type { ExtensionMetadata } from '@pixi/extensions';
 import type { ISystem } from '../system/ISystem';
-
-export interface BackgroundOptions
-{
-    /** the main canvas background alpha. From 0 (fully transparent) to 1 (fully opaque). */
-    alpha: number,
-    /** the main canvas background color. */
-    color: number | string,
-    /** sets if the renderer will clear the canvas or not before the new render pass. */
-    clearBeforeRender: boolean,
-}
+import type { StartupOptions } from '../systems';
 
 /**
  * The background system manages the background color and alpha of the main view.
  * @memberof PIXI
  */
-export class BackgroundSystem implements ISystem<BackgroundOptions>
+export class BackgroundSystem implements ISystem
 {
     /** @ignore */
     static extension: ExtensionMetadata = {
@@ -60,20 +51,22 @@ export class BackgroundSystem implements ISystem<BackgroundOptions>
 
     /**
      * initiates the background system
-     * @param {BackgroundOptions} options - the options for the background colors
+     * @param {StartupOptions} options - the options for the background colors
      */
-    init(options: BackgroundOptions): void
+    init(options: StartupOptions): void
     {
         this.clearBeforeRender = options.clearBeforeRender;
+        const { backgroundColor, background, backgroundAlpha } = options;
+        const color = background ?? backgroundColor;
 
-        if (options.color)
+        if (color)
         {
-            this.color = typeof options.color === 'string'
-                ? string2hex(options.color)
-                : options.color;
+            this.color = typeof color === 'string'
+                ? string2hex(color)
+                : color;
         }
 
-        this.alpha = options.alpha;
+        this.alpha = backgroundAlpha;
     }
 
     /**

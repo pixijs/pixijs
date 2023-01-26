@@ -1,21 +1,13 @@
 import { extensions, ExtensionType } from '@pixi/extensions';
 
 import type { ExtensionMetadata } from '@pixi/extensions';
-import type { BackgroundOptions } from '../background/BackgroundSystem';
-import type { IRenderer } from '../IRenderer';
+import type { IRenderer, IRendererOptions } from '../IRenderer';
 import type { IRendererPlugins } from '../plugin/PluginSystem';
 import type { ISystem } from '../system/ISystem';
-import type { ContextOptions } from '../systems';
-import type { ViewOptions } from '../view/ViewSystem';
 
-// TODO this can be infered by good use of generics in the future..
-export interface StartupOptions extends Record<string, unknown>
+export interface StartupOptions extends IRendererOptions
 {
-    hello: boolean;
-    _plugin: IRendererPlugins,
-    background: BackgroundOptions,
-    _view: ViewOptions,
-    context?: ContextOptions
+    plugins: IRendererPlugins,
 }
 
 /**
@@ -46,8 +38,9 @@ export interface StartupOptions extends Record<string, unknown>
     run(options: StartupOptions): void
     {
         const renderer = this.renderer;
+        const opts = Object.freeze({ ...renderer.options, ...options });
 
-        renderer.emitWithCustomOptions(renderer.runners.init, options);
+        renderer.runners.init.emit(opts);
 
         if (options.hello)
         {
