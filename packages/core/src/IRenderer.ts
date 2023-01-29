@@ -38,8 +38,10 @@ export interface IRenderableContainer extends IRenderableObject
     getLocalBounds(rect?: Rectangle, skipChildrenUpdate?: boolean): Rectangle;
 }
 
-/** Mixed WebGL1/WebGL2 Rendering Context. Either its WebGL2, either its WebGL1 with PixiJS polyfills on it */
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
+/**
+ * Mixed WebGL1 / WebGL2 rendering context. Either it's WebGL2, either it's WebGL1 with PixiJS polyfills on it.
+ * @memberof PIXI
+ */
 export interface IRenderingContext extends WebGL2RenderingContext
 {
     texImage2D(target: GLenum, level: GLint, internalformat: GLint, width: GLsizei, height: GLsizei, border: GLint,
@@ -77,43 +79,93 @@ export interface IRenderingContext extends WebGL2RenderingContext
 /**
  * Renderer options supplied to constructor.
  * @memberof PIXI
+ * @see PIXI.settings.RENDER_OPTIONS
  */
 export interface IRendererOptions extends GlobalMixins.IRendererOptions
 {
-    /** Width of the view */
-    width?: number;
-    /** Height of the view */
-    height?: number;
-    /** Canvas or OffscreenCanvas to use, will be created if omitted */
+    /** The canvas to use as the view. If omitted, a new canvas will be created. */
     view?: ICanvas;
     /**
-     * Use premultipliedAlpha and backgroundAlpha instead
+     * The width of the renderer's view.
+     * @default 800
+     */
+    width?: number;
+    /**
+     * The height of the renderer's view.
+     * @default 600
+     */
+    height?: number;
+    /**
+     * The resolution / device pixel ratio of the renderer.
+     * @default PIXI.settings.RESOLUTION
+     */
+    resolution?: number;
+    /**
+     * Whether the CSS dimensions of the renderer's view should be resized automatically.
+     * @default false
+     */
+    autoDensity?: boolean;
+
+    /**
+     * The background color used to clear the canvas. It accepts hex numbers (e.g. `0xff0000`),
+     * hex strings (e.g. `'#f00'` or `'#ff0000'`) or color names (e.g. `'red'`).
+     * @default 0x000000
+     */
+    backgroundColor?: number | string;
+    /** Alias for `backgroundColor`. */
+    background?: number | string;
+    /**
+     * Transparency of the background color, value from `0` (fully transparent) to `1` (fully opaque).
+     * @default 1
+     */
+    backgroundAlpha?: number;
+    /**
+     * **Deprecated since 7.0.0, use `premultipliedAlpha` and `backgroundAlpha` instead.** \
+     * Pass-through value for canvas' context attribute `alpha`. This option is for cases where the
+     * canvas needs to be opaque, possibly for performance reasons on some older devices.
+     * If you want to set transparency, please use `backgroundAlpha`. \
+     * **WebGL Only:** When set to `'notMultiplied'`, the canvas' context attribute `alpha` will be
+     * set to `true` and `premultipliedAlpha` will be to `false`.
+     * @default true
      * @deprecated since 7.0.0
      */
     useContextAlpha?: boolean | 'notMultiplied';
-    /** Consider the resolution when resizing the view */
-    autoDensity?: boolean;
-    /** Antialias turn on for WebGL, impacts performance */
-    antialias?: boolean;
-    /** Base resolution for the Renderer */
-    resolution?: number;
-    /** Preserve the drawing buffer */
-    preserveDrawingBuffer?: boolean;
-    /** Clear the draw before render */
+    /**
+     * Whether to clear the canvas before new render passes.
+     * @default true
+     */
     clearBeforeRender?: boolean;
-    /** The background color, can be number (`0xff0000`) or string (`#f00`) */
-    backgroundColor?: number | string;
-    /** Alias for `backgroundColor` */
-    background?: number | string;
-    /** Background color alpha */
-    backgroundAlpha?: number;
-    /** Premultiply alpha */
-    premultipliedAlpha?: boolean;
-    /** Power preference, for multiple GPUs */
-    powerPreference?: WebGLPowerPreference;
-    /** User-proviced rendering context object */
+
+    /** **WebGL Only.** User-provided WebGL rendering context object. */
     context?: IRenderingContext;
-    /** Console log the version and type of Renderer */
+    /**
+     * **WebGL Only.** Whether to enable anti-aliasing. This may affect performance.
+     * @default false
+     */
+    antialias?: boolean;
+    /**
+     * **WebGL Only.** A hint indicating what configuration of GPU is suitable for the WebGL context,
+     * can be `'default'`, `'high-performance'` or `'low-power'`.
+     * Setting to `'high-performance'` will prioritize rendering performance over power consumption,
+     * while setting to `'low-power'` will prioritize power saving over rendering performance.
+     */
+    powerPreference?: WebGLPowerPreference;
+    /**
+     * **WebGL Only.** Whether the compositor will assume the drawing buffer contains colors with premultiplied alpha.
+     * @default true
+     */
+    premultipliedAlpha?: boolean;
+    /**
+     * **WebGL Only.** Whether to enable drawing buffer preservation. If enabled, the drawing buffer will preserve
+     * its value until cleared or overwritten. Enable this if you need to call `toDataUrl` on the WebGL context.
+     * @default false
+     */
+    preserveDrawingBuffer?: boolean;
+
+    /**
+     * Whether to log the version and type information of renderer to console.
+     * @default false
+     */
     hello?: boolean;
 }
 
