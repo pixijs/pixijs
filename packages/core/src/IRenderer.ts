@@ -120,10 +120,12 @@ export interface IRendererOptions extends GlobalMixins.IRendererOptions
      */
     backgroundAlpha?: number;
     /**
-     * **Deprecated since 7.0.0, use `premultipliedAlpha` and `backgroundAlpha` instead.** \
+     * **Deprecated since 7.0.0, use `premultipliedAlpha` and `backgroundAlpha` instead.**
+     *
      * Pass-through value for canvas' context attribute `alpha`. This option is for cases where the
      * canvas needs to be opaque, possibly for performance reasons on some older devices.
-     * If you want to set transparency, please use `backgroundAlpha`. \
+     * If you want to set transparency, please use `backgroundAlpha`.
+     *
      * **WebGL Only:** When set to `'notMultiplied'`, the canvas' context attribute `alpha` will be
      * set to `true` and `premultipliedAlpha` will be to `false`.
      * @default true
