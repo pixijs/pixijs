@@ -76,17 +76,17 @@ export const settings: ISettings & Partial<GlobalMixins.Settings> = {
      * @name RENDER_OPTIONS
      * @memberof PIXI.settings
      * @type {object}
-     * @property {PIXI.ICanvas} [view=null] - {@link PIXI.IRendererOptions.view}
-     * @property {number} [width=800] - {@link PIXI.IRendererOptions.width}
-     * @property {number} [height=600] - {@link PIXI.IRendererOptions.height}
+     * @property {boolean} [antialias=false] - {@link PIXI.IRendererOptions.antialias}
      * @property {boolean} [autoDensity=false] - {@link PIXI.IRendererOptions.autoDensity}
      * @property {number} [backgroundColor=0x000000] - {@link PIXI.IRendererOptions.backgroundColor}
      * @property {number} [backgroundAlpha=1] - {@link PIXI.IRendererOptions.backgroundAlpha}
      * @property {boolean} [clearBeforeRender=true] - {@link PIXI.IRendererOptions.clearBeforeRender}
-     * @property {boolean} [antialias=false] - {@link PIXI.IRendererOptions.antialias}
+     * @property {number} [height=600] - {@link PIXI.IRendererOptions.height}
+     * @property {boolean} [hello=false] - {@link PIXI.IRendererOptions.hello}
      * @property {boolean} [premultipliedAlpha=true] - {@link PIXI.IRendererOptions.premultipliedAlpha}
      * @property {boolean} [preserveDrawingBuffer=false] - {@link PIXI.IRendererOptions.preserveDrawingBuffer}
-     * @property {boolean} [hello=false] - {@link PIXI.IRendererOptions.hello}
+     * @property {PIXI.ICanvas} [view=null] - {@link PIXI.IRendererOptions.view}
+     * @property {number} [width=800] - {@link PIXI.IRendererOptions.width}
      * @see PIXI.IRendererOptions
      */
     RENDER_OPTIONS: {
