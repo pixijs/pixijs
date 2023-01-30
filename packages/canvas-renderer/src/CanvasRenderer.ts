@@ -101,26 +101,28 @@ export class CanvasRenderer extends AbstractRenderer
     _outerBlend = false;
 
     /**
-     * @param options - The optional renderer parameters
-     * @param {number} [options.width=800] - the width of the screen
-     * @param {number} [options.height=600] - the height of the screen
-     * @param {HTMLCanvasElement} [options.view] - the canvas to use as a view, optional
-     * @param {boolean} [options.useContextAlpha=true] - Pass-through value for canvas' context `alpha` property.
-     *   If you want to set transparency, please use `backgroundAlpha`. This option is for cases where the
-     *   canvas needs to be opaque, possibly for performance reasons on some older devices.
-     * @param {boolean} [options.autoDensity=false] - Resizes renderer view in CSS pixels to allow for
-     *   resolutions other than 1
-     * @param {boolean} [options.antialias=false] - sets antialias
-     * @param {number} [options.resolution=PIXI.settings.RESOLUTION] - The resolution / device pixel ratio of the renderer.
-     * @param {boolean} [options.preserveDrawingBuffer=false] - enables drawing buffer preservation,
-     *  enable this if you need to call toDataUrl on the webgl context.
-     * @param {boolean} [options.clearBeforeRender=true] - This sets if the renderer will clear the canvas or
-     *      not before the new render pass.
-     * @param {number} [options.backgroundColor=0x000000] - The background color of the rendered area
-     *  (shown if not transparent).
-     * @param {number} [options.backgroundAlpha=1] - Value from 0 (fully transparent) to 1 (fully opaque).
-     * @param {boolean} [options.transparent] − **Deprecated**. `true` sets backgroundAlpha to 0,
-     *  `false` sets backgroundAlpha to 1.
+     * @param {PIXI.IRendererOptions} [options] - The optional renderer parameters.
+     * @param {boolean} [options.autoDensity=false] -
+     *  Whether the CSS dimensions of the renderer's view should be resized automatically.
+     * @param {number} [options.backgroundAlpha=1] -
+     *  Transparency of the background color, value from `0` (fully transparent) to `1` (fully opaque).
+     * @param {number} [options.backgroundColor=0x000000] -
+     *  The background color used to clear the canvas. It accepts hex numbers (e.g. `0xff0000`).
+     * @param {boolean} [options.clearBeforeRender=true] - Whether to clear the canvas before new render passes.
+     * @param {PIXI.IRenderingContext} [options.context] - **WebGL Only.** User-provided WebGL rendering context object.
+     * @param {number} [options.height=600] - The height of the renderer's view.
+     * @param {number} [options.resolution=PIXI.settings.RESOLUTION] -
+     *  The resolution / device pixel ratio of the renderer.
+     * @param {boolean} [options.transparent] -
+     *  **Deprecated since 6.0.0, Use `backgroundAlpha` instead.** \
+     *  `true` sets `backgroundAlpha` to `0`, `false` sets `backgroundAlpha` to `1`.
+     * @param {boolean} [options.useContextAlpha=true] -
+     *  Pass-through value for canvas' context attribute `alpha`. This option is for cases where the
+     *  canvas needs to be opaque, possibly for performance reasons on some older devices.
+     *  If you want to set transparency, please use `backgroundAlpha`.
+     * @param {HTMLCanvasElement} [options.view=null] -
+     *  The canvas to use as the view. If omitted, a new canvas will be created.
+     * @param {number} [options.width=800] - The width of the renderer's view.
      */
     constructor(options?: IRendererOptions)
     {

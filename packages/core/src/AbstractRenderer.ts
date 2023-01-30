@@ -11,26 +11,87 @@ import type { IRenderableContainer, IRenderableObject } from './IRenderableObjec
 
 const tempMatrix = new Matrix();
 
+/**
+ * Renderer options supplied to constructor.
+ * @memberof PIXI
+ * @see PIXI.settings.RENDER_OPTIONS
+ */
 export interface IRendererOptions extends GlobalMixins.IRendererOptions
 {
-    width?: number;
-    height?: number;
+    /** The canvas to use as the view. If omitted, a new canvas will be created. */
     view?: HTMLCanvasElement;
+    /**
+     * The width of the renderer's view.
+     * @default 800
+     */
+    width?: number;
+    /**
+     * The height of the renderer's view.
+     * @default 600
+     */
+    height?: number;
+    /**
+     * The resolution / device pixel ratio of the renderer.
+     * @default PIXI.settings.RESOLUTION
+     */
+    resolution?: number;
+    /**
+     * Whether the CSS dimensions of the renderer's view should be resized automatically.
+     * @default false
+     */
+    autoDensity?: boolean;
+
+    /**
+     * The background color used to clear the canvas. It accepts hex numbers (e.g. `0xff0000`).
+     * @default 0x000000
+     */
+    backgroundColor?: number;
+    /**
+     * Transparency of the background color, value from `0` (fully transparent) to `1` (fully opaque).
+     * @default 1
+     */
+    backgroundAlpha?: number;
+    /**
+     * Pass-through value for canvas' context attribute `alpha`. This option is for cases where the
+     * canvas needs to be opaque, possibly for performance reasons on some older devices.
+     * If you want to set transparency, please use `backgroundAlpha`.
+     *
+     * **WebGL Only:** When set to `'notMultiplied'`, the canvas' context attribute `alpha` will be
+     * set to `true` and `premultipliedAlpha` will be to `false`.
+     * @default true
+     */
     useContextAlpha?: boolean | 'notMultiplied';
     /**
      * Use `backgroundAlpha` instead.
-     * @deprecated
+     * @deprecated since 6.0.0
      */
     transparent?: boolean;
-    autoDensity?: boolean;
-    antialias?: boolean;
-    resolution?: number;
-    preserveDrawingBuffer?: boolean;
+    /**
+     * Whether to clear the canvas before new render passes.
+     * @default true
+     */
     clearBeforeRender?: boolean;
-    backgroundColor?: number;
-    backgroundAlpha?: number;
-    powerPreference?: WebGLPowerPreference;
+
+    /** **WebGL Only.** User-provided WebGL rendering context object. */
     context?: IRenderingContext;
+    /**
+     * **WebGL Only.** Whether to enable anti-aliasing. This may affect performance.
+     * @default false
+     */
+    antialias?: boolean;
+    /**
+     * **WebGL Only.** A hint indicating what configuration of GPU is suitable for the WebGL context,
+     * can be `'default'`, `'high-performance'` or `'low-power'`.
+     * Setting to `'high-performance'` will prioritize rendering performance over power consumption,
+     * while setting to `'low-power'` will prioritize power saving over rendering performance.
+     */
+    powerPreference?: WebGLPowerPreference;
+    /**
+     * **WebGL Only.** Whether to enable drawing buffer preservation. If enabled, the drawing buffer will preserve
+     * its value until cleared or overwritten. Enable this if you need to call `toDataUrl` on the WebGL context.
+     * @default false
+     */
+    preserveDrawingBuffer?: boolean;
 }
 
 export interface IRendererPlugins
@@ -82,26 +143,42 @@ export abstract class AbstractRenderer extends EventEmitter
 
     /**
      * @param type - The renderer type.
-     * @param [options] - The optional renderer parameters.
-     * @param {number} [options.width=800] - The width of the screen.
-     * @param {number} [options.height=600] - The height of the screen.
-     * @param {HTMLCanvasElement} [options.view] - The canvas to use as a view, optional.
-     * @param {boolean} [options.useContextAlpha=true] - Pass-through value for canvas' context `alpha` property.
-     *   If you want to set transparency, please use `backgroundAlpha`. This option is for cases where the
-     *   canvas needs to be opaque, possibly for performance reasons on some older devices.
-     * @param {boolean} [options.autoDensity=false] - Resizes renderer view in CSS pixels to allow for
-     *   resolutions other than 1.
-     * @param {boolean} [options.antialias=false] - Sets antialias
-     * @param {number} [options.resolution=PIXI.settings.RESOLUTION] - The resolution / device pixel ratio of the renderer.
-     * @param {boolean} [options.preserveDrawingBuffer=false] - Enables drawing buffer preservation,
-     *  enable this if you need to call toDataUrl on the WebGL context.
-     * @param {boolean} [options.clearBeforeRender=true] - This sets if the renderer will clear the canvas or
-     *      not before the new render pass.
-     * @param {number} [options.backgroundColor=0x000000] - The background color of the rendered area
-     *  (shown if not transparent).
-     * @param {number} [options.backgroundAlpha=1] - Value from 0 (fully transparent) to 1 (fully opaque).
-     * @param {boolean} [options.transparent] - **Deprecated**. `true` sets backgroundAlpha to 0,
-     * `false` sets backgroundAlpha to 1.
+     * @param {PIXI.IRendererOptions} [options] - The optional renderer parameters.
+     * @param {HTMLCanvasElement} [options.view=null] -
+     *  The canvas to use as the view. If omitted, a new canvas will be created.
+     * @param {number} [options.width=800] - The width of the renderer's view.
+     * @param {number} [options.height=600] - The height of the renderer's view.
+     * @param {number} [options.resolution=PIXI.settings.RESOLUTION] -
+     *  The resolution / device pixel ratio of the renderer.
+     * @param {boolean} [options.autoDensity=false] -
+     *  Whether the CSS dimensions of the renderer's view should be resized automatically.
+     * @param {number} [options.backgroundColor=0x000000] -
+     *  The background color used to clear the canvas. It accepts hex numbers (e.g. `0xff0000`).
+     * @param {number} [options.backgroundAlpha=1] -
+     *  Transparency of the background color, value from `0` (fully transparent) to `1` (fully opaque).
+     * @param {boolean} [options.transparent] -
+     *  **Deprecated since 6.0.0, Use `backgroundAlpha` instead.** \
+     *  `true` sets `backgroundAlpha` to `0`, `false` sets `backgroundAlpha` to `1`.
+     * @param {boolean|'notMultiplied'} [options.useContextAlpha=true] -
+     *  Pass-through value for canvas' context attribute `alpha`. This option is for cases where the
+     *  canvas needs to be opaque, possibly for performance reasons on some older devices.
+     *  If you want to set transparency, please use `backgroundAlpha`. \
+     *  **WebGL Only:** When set to `'notMultiplied'`, the canvas' context attribute `alpha` will be
+     *  set to `true` and `premultipliedAlpha` will be to `false`.
+     * @param {boolean} [options.clearBeforeRender=true] - Whether to clear the canvas before new render passes.
+     * @param {PIXI.IRenderingContext} [options.context] - **WebGL Only.** User-provided WebGL rendering context object.
+     * @param {boolean} [options.antialias=false] -
+     *  **WebGL Only.** Whether to enable anti-aliasing. This may affect performance.
+     * @param {string} [options.powerPreference] -
+     *  **WebGL Only.** A hint indicating what configuration of GPU is suitable for the WebGL context,
+     *  can be `'default'`, `'high-performance'` or `'low-power'`.
+     *  Setting to `'high-performance'` will prioritize rendering performance over power consumption,
+     *  while setting to `'low-power'` will prioritize power saving over rendering performance.
+     * @param {boolean} [options.premultipliedAlpha=true] -
+     *  **WebGL Only.** Whether the compositor will assume the drawing buffer contains colors with premultiplied alpha.
+     * @param {boolean} [options.preserveDrawingBuffer=false] -
+     *  **WebGL Only.** Whether to enable drawing buffer preservation. If enabled, the drawing buffer will preserve
+     *  its value until cleared or overwritten. Enable this if you need to call `toDataUrl` on the WebGL context.
      */
     constructor(type: RENDERER_TYPE = RENDERER_TYPE.UNKNOWN, options?: IRendererOptions)
     {
