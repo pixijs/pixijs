@@ -128,7 +128,8 @@ export class EventSystem
 
         this.setTargetElement(view as HTMLCanvasElement);
         this.resolution = resolution;
-        EventSystem._defaultInteraction = options?.defaultInteractionType ?? false;
+        // allow for false to keep backwards compatibility
+        EventSystem._defaultInteraction = options?.defaultInteraction ?? false;
     }
 
     /**
