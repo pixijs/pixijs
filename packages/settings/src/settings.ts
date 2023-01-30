@@ -18,7 +18,6 @@ export interface IRenderOptions
     antialias: boolean;
     premultipliedAlpha: boolean;
     preserveDrawingBuffer: boolean;
-    legacy: boolean;
     hello: boolean;
 }
 
@@ -88,7 +87,6 @@ export const settings: ISettings & Partial<GlobalMixins.Settings> = {
      * @property {boolean} [premultipliedAlpha=true] - {@link PIXI.IRendererOptions.premultipliedAlpha}
      * @property {boolean} [preserveDrawingBuffer=false] - {@link PIXI.IRendererOptions.preserveDrawingBuffer}
      * @property {boolean} [hello=false] - {@link PIXI.IRendererOptions.hello}
-     * @property {boolean} [legacy=false] -
      * @see PIXI.IRendererOptions
      */
     RENDER_OPTIONS: {
@@ -103,7 +101,6 @@ export const settings: ISettings & Partial<GlobalMixins.Settings> = {
         premultipliedAlpha: true,
         preserveDrawingBuffer: false,
         hello: false,
-        legacy: false,
     },
 
     /**
