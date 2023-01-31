@@ -44,7 +44,7 @@ describe('Color', () =>
         expect(color.toArray()).toStrictEqual(color2.toArray());
     });
 
-    it.concurrent('should convert to color values', async () =>
+    it.concurrent('should convert color values to rgba', async () =>
     {
         const transparent = {
             array: [0, 0, 0, 0],
