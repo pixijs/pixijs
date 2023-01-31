@@ -42,6 +42,13 @@ export class Color
      */
     static readonly shared = new Color();
 
+    /**
+     * Temporary Color object for static uses internally.
+     * As to not conflict with Color.shared.
+     * @ignore
+     */
+    private static readonly temp = new Color();
+
     /** Pattern for hex strings */
     private static readonly HEX_PATTERN = /^(#|0x)?(([a-f0-9]{3}){1,2}([a-f0-9]{2})?)$/i;
 
@@ -227,7 +234,7 @@ export class Color
      */
     multiply(value: ColorSource): this
     {
-        const [r, g, b, a = 1] = new Color(value)._components;
+        const [r, g, b, a] = Color.temp.setValue(value)._components;
 
         this._components[0] *= r;
         this._components[1] *= g;
