@@ -9,16 +9,15 @@ import { maxRecommendedTextures } from './utils/maxRecommendedTextures';
 export interface IRenderOptions
 {
     view: HTMLCanvasElement;
-    antialias: boolean;
+    width: number;
+    height: number;
     autoDensity: boolean;
     backgroundColor: number;
     backgroundAlpha: number;
     useContextAlpha: boolean | 'notMultiplied';
     clearBeforeRender: boolean;
+    antialias: boolean;
     preserveDrawingBuffer: boolean;
-    width: number;
-    height: number;
-    legacy: boolean;
 }
 
 export interface ISettings
@@ -163,30 +162,28 @@ export const settings: ISettings = {
      * @name RENDER_OPTIONS
      * @memberof PIXI.settings
      * @type {object}
-     * @property {HTMLCanvasElement} [view=null] -
-     * @property {boolean} [antialias=false] -
-     * @property {boolean} [autoDensity=false] -
-     * @property {boolean} [useContextAlpha=true]  -
-     * @property {number} [backgroundColor=0x000000] -
-     * @property {number} [backgroundAlpha=1] -
-     * @property {boolean} [clearBeforeRender=true] -
-     * @property {boolean} [preserveDrawingBuffer=false] -
-     * @property {number} [width=800] -
-     * @property {number} [height=600] -
-     * @property {boolean} [legacy=false] -
+     * @property {boolean} [antialias=false] - {@link PIXI.IRendererOptions.antialias}
+     * @property {boolean} [autoDensity=false] - {@link PIXI.IRendererOptions.autoDensity}
+     * @property {number} [backgroundAlpha=1] - {@link PIXI.IRendererOptions.backgroundAlpha}
+     * @property {number} [backgroundColor=0x000000] - {@link PIXI.IRendererOptions.backgroundColor}
+     * @property {boolean} [clearBeforeRender=true] - {@link PIXI.IRendererOptions.clearBeforeRender}
+     * @property {number} [height=600] - {@link PIXI.IRendererOptions.height}
+     * @property {boolean} [preserveDrawingBuffer=false] - {@link PIXI.IRendererOptions.preserveDrawingBuffer}
+     * @property {boolean|'notMultiplied'} [useContextAlpha=true] - {@link PIXI.IRendererOptions.useContextAlpha}
+     * @property {HTMLCanvasElement} [view=null] - {@link PIXI.IRendererOptions.view}
+     * @property {number} [width=800] - {@link PIXI.IRendererOptions.width}
      */
     RENDER_OPTIONS: {
         view: null,
-        antialias: false,
+        width: 800,
+        height: 600,
         autoDensity: false,
         backgroundColor: 0x000000,
         backgroundAlpha: 1,
         useContextAlpha: true,
         clearBeforeRender: true,
+        antialias: false,
         preserveDrawingBuffer: false,
-        width: 800,
-        height: 600,
-        legacy: false,
     },
 
     /**

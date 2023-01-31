@@ -22,6 +22,10 @@ export interface IApplicationPlugin
     destroy(): void;
 }
 
+/**
+ * Application options supplied to constructor.
+ * @memberof PIXI
+ */
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface IApplicationOptions extends IRendererOptionsAuto, GlobalMixins.IApplicationOptions {}
 
@@ -62,39 +66,53 @@ export class Application
     public renderer: Renderer | AbstractRenderer;
 
     /**
-     * @param {object} [options] - The optional renderer parameters.
+     * @param {PIXI.IApplicationOptions} [options] - The optional application and renderer parameters.
+     * @param {boolean} [options.antialias=false] -
+     *  **WebGL Only.** Whether to enable anti-aliasing. This may affect performance.
+     * @param {boolean} [options.autoDensity=false] -
+     *  Whether the CSS dimensions of the renderer's view should be resized automatically.
      * @param {boolean} [options.autoStart=true] - Automatically starts the rendering after the construction.
-     *     **Note**: Setting this parameter to false does NOT stop the shared ticker even if you set
-     *     options.sharedTicker to true in case that it is already started. Stop it by your own.
-     * @param {number} [options.width=800] - The width of the renderers view.
-     * @param {number} [options.height=600] - The height of the renderers view.
-     * @param {HTMLCanvasElement} [options.view] - The canvas to use as a view, optional.
-     * @param {boolean} [options.useContextAlpha=true] - Pass-through value for canvas' context `alpha` property.
-     *   If you want to set transparency, please use `backgroundAlpha`. This option is for cases where the
-     *   canvas needs to be opaque, possibly for performance reasons on some older devices.
-     * @param {boolean} [options.autoDensity=false] - Resizes renderer view in CSS pixels to allow for
-     *   resolutions other than 1.
-     * @param {boolean} [options.antialias=false] - Sets antialias
-     * @param {boolean} [options.preserveDrawingBuffer=false] - Enables drawing buffer preservation, enable this if you
-     *  need to call toDataUrl on the WebGL context.
-     * @param {number} [options.resolution=PIXI.settings.RESOLUTION] - The resolution / device pixel ratio of the renderer.
-     * @param {boolean} [options.forceCanvas=false] - prevents selection of WebGL renderer, even if such is present, this
-     *   option only is available when using **pixi.js-legacy** or **@pixi/canvas-renderer** modules, otherwise
-     *   it is ignored.
-     * @param {number} [options.backgroundColor=0x000000] - The background color of the rendered area
-     *  (shown if not transparent).
-     * @param {number} [options.backgroundAlpha=1] - Value from 0 (fully transparent) to 1 (fully opaque).
-     * @param {boolean} [options.transparent] - **Deprecated**. `true` sets backgroundAlpha to 0,
-     *  `false` sets backgroundAlpha to 1.
-     * @param {boolean} [options.clearBeforeRender=true] - This sets if the renderer will clear the canvas or
-     *   not before the new render pass.
-     * @param {string} [options.powerPreference] - Parameter passed to webgl context, set to "high-performance"
-     *  for devices with dual graphics card. **(WebGL only)**.
-     * @param {boolean} [options.sharedTicker=false] - `true` to use PIXI.Ticker.shared, `false` to create new ticker.
-     *  If set to false, you cannot register a handler to occur before anything that runs on the shared ticker.
-     *  The system ticker will always run before both the shared ticker and the app ticker.
-     * @param {boolean} [options.sharedLoader=false] - `true` to use PIXI.Loader.shared, `false` to create new Loader.
+     *  **Note**: Setting this parameter to false does NOT stop the shared ticker even if you set
+     *  `options.sharedTicker` to `true` in case that it is already started. Stop it by your own.
+     * @param {number} [options.backgroundAlpha=1] -
+     *  Transparency of the background color, value from `0` (fully transparent) to `1` (fully opaque).
+     * @param {number} [options.backgroundColor=0x000000] -
+     *  The background color used to clear the canvas. It accepts hex numbers (e.g. `0xff0000`).
+     * @param {boolean} [options.clearBeforeRender=true] - Whether to clear the canvas before new render passes.
+     * @param {PIXI.IRenderingContext} [options.context] - **WebGL Only.** User-provided WebGL rendering context object.
+     * @param {boolean} [options.forceCanvas=false] -
+     *  Force using {@link PIXI.CanvasRenderer}, even if WebGL is available. This option only is available when
+     *  using **pixi.js-legacy** or **@pixi/canvas-renderer** packages, otherwise it is ignored.
+     * @param {number} [options.height=600] - The height of the renderer's view.
+     * @param {string} [options.powerPreference] -
+     *  **WebGL Only.** A hint indicating what configuration of GPU is suitable for the WebGL context,
+     *  can be `'default'`, `'high-performance'` or `'low-power'`.
+     *  Setting to `'high-performance'` will prioritize rendering performance over power consumption,
+     *  while setting to `'low-power'` will prioritize power saving over rendering performance.
+     * @param {boolean} [options.premultipliedAlpha=true] -
+     *  **WebGL Only.** Whether the compositor will assume the drawing buffer contains colors with premultiplied alpha.
+     * @param {boolean} [options.preserveDrawingBuffer=false] -
+     *  **WebGL Only.** Whether to enable drawing buffer preservation. If enabled, the drawing buffer will preserve
+     *  its value until cleared or overwritten. Enable this if you need to call `toDataUrl` on the WebGL context.
      * @param {Window|HTMLElement} [options.resizeTo] - Element to automatically resize stage to.
+     * @param {number} [options.resolution=PIXI.settings.RESOLUTION] -
+     *  The resolution / device pixel ratio of the renderer.
+     * @param {boolean} [options.sharedLoader=false] - `true` to use PIXI.Loader.shared, `false` to create new Loader.
+     * @param {boolean} [options.sharedTicker=false] - `true` to use PIXI.Ticker.shared, `false` to create new ticker.
+     *  If set to `false`, you cannot register a handler to occur before anything that runs on the shared ticker.
+     *  The system ticker will always run before both the shared ticker and the app ticker.
+     * @param {boolean} [options.transparent] -
+     *  **Deprecated since 6.0.0, Use `backgroundAlpha` instead.** \
+     *  `true` sets `backgroundAlpha` to `0`, `false` sets `backgroundAlpha` to `1`.
+     * @param {boolean|'notMultiplied'} [options.useContextAlpha=true] -
+     *  Pass-through value for canvas' context attribute `alpha`. This option is for cases where the
+     *  canvas needs to be opaque, possibly for performance reasons on some older devices.
+     *  If you want to set transparency, please use `backgroundAlpha`. \
+     *  **WebGL Only:** When set to `'notMultiplied'`, the canvas' context attribute `alpha` will be
+     *  set to `true` and `premultipliedAlpha` will be to `false`.
+     * @param {HTMLCanvasElement} [options.view=null] -
+     *  The canvas to use as the view. If omitted, a new canvas will be created.
+     * @param {number} [options.width=800] - The width of the renderer's view.
      */
     constructor(options?: IApplicationOptions)
     {
