@@ -30,7 +30,12 @@ describe('Color', () =>
         });
     });
 
-    it('should copy from another color object', () =>
+    it.concurrent('should expose a default color object', async () =>
+    {
+        expect(Color.shared.toHexa()).toEqual('#ffffffff');
+    });
+
+    it.concurrent('should copy from another color object', async () =>
     {
         const color = new Color('red');
         const color2 = new Color(color);
@@ -42,43 +47,58 @@ describe('Color', () =>
     it.concurrent('should convert color values to rgba', async () =>
     {
         const transparent = {
-            rgba: [0, 0, 0, 0],
-            hexa: '#00000000',
+            array: [0, 0, 0, 0],
             hex: '#000000',
+            hexa: '#00000000',
             number: 0,
+            rgb: { r: 0, g: 0, b: 0 },
+            rgba: { r: 0, g: 0, b: 0, a: 0 },
             rgbaString: 'rgba(0,0,0,0)',
+            uint8RgbArray: [0, 0, 0],
         };
 
         const black = {
-            rgba: [0, 0, 0, 1],
-            hexa: '#000000ff',
+            array: [0, 0, 0, 1],
             hex: '#000000',
+            hexa: '#000000ff',
             number: 0,
+            rgb: { r: 0, g: 0, b: 0 },
+            rgba: { r: 0, g: 0, b: 0, a: 1 },
             rgbaString: 'rgba(0,0,0,1)',
+            uint8RgbArray: [0, 0, 0],
         };
 
         const white = {
-            rgba: [1, 1, 1, 1],
-            hexa: '#ffffffff',
+            array: [1, 1, 1, 1],
             hex: '#ffffff',
+            hexa: '#ffffffff',
             number: 0xffffff,
+            rgb: { r: 1, g: 1, b: 1 },
+            rgba: { r: 1, g: 1, b: 1, a: 1 },
             rgbaString: 'rgba(255,255,255,1)',
+            uint8RgbArray: [255, 255, 255],
         };
 
         const red = {
-            rgba: [1, 0, 0, 1],
-            hexa: '#ff0000ff',
+            array: [1, 0, 0, 1],
             hex: '#ff0000',
+            hexa: '#ff0000ff',
             number: 0xff0000,
+            rgb: { r: 1, g: 0, b: 0 },
+            rgba: { r: 1, g: 0, b: 0, a: 1 },
             rgbaString: 'rgba(255,0,0,1)',
+            uint8RgbArray: [255, 0, 0],
         };
 
         const semiRed = {
-            rgba: [1, 0, 0, 0.5],
-            hexa: '#ff000080',
+            array: [1, 0, 0, 0.5],
             hex: '#ff0000',
+            hexa: '#ff000080',
             number: 0xff0000,
+            rgb: { r: 1, g: 0, b: 0 },
+            rgba: { r: 1, g: 0, b: 0, a: 0.5 },
             rgbaString: 'rgba(255,0,0,0.5)',
+            uint8RgbArray: [255, 0, 0],
         };
 
         // [value, expectedRgba]
@@ -174,11 +194,14 @@ describe('Color', () =>
             const [value, expected] = tc;
             const color = new Color(value);
 
-            expect(color.toArray()).toEqual(expected.rgba);
-            expect(color.toNumber()).toEqual(expected.number);
+            expect(color.toArray()).toEqual(expected.array);
             expect(color.toHex()).toEqual(expected.hex);
             expect(color.toHexa()).toEqual(expected.hexa);
+            expect(color.toNumber()).toEqual(expected.number);
+            expect(color.toRgb()).toEqual(expected.rgb);
+            expect(color.toRgba()).toEqual(expected.rgba);
             expect(color.toRgbaString()).toEqual(expected.rgbaString);
+            expect(color.toUint8RgbArray()).toEqual(expected.uint8RgbArray);
         });
     });
 });

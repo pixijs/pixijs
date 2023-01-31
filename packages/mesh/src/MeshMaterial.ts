@@ -1,4 +1,4 @@
-import { Matrix, Program, Shader, TextureMatrix, utils } from '@pixi/core';
+import { Color, Matrix, Program, Shader, TextureMatrix, utils } from '@pixi/core';
 import fragment from './shader/mesh.frag';
 import vertex from './shader/mesh.vert';
 
@@ -138,7 +138,7 @@ export class MeshMaterial extends Shader
         if (value === this._tint) return;
 
         this._tint = value;
-        this._tintRGB = (value >> 16) + (value & 0xff00) + ((value & 0xff) << 16);
+        this._tintRGB = Color.shared.setValue(value).toLittleEndianNumber();
         this._colorDirty = true;
     }
     get tint(): number

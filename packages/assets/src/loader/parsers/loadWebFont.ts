@@ -65,12 +65,6 @@ export const loadWebFont = {
 
     async load(url: string, options?: LoadAsset<LoadFontData>): Promise<FontFace | FontFace[]>
     {
-        // Prevent loading font if navigator is not online
-        if (!globalThis.navigator.onLine)
-        {
-            throw new Error('[loadWebFont] Cannot load font - navigator is offline');
-        }
-
         const fonts = settings.ADAPTER.getFontFaceSet();
 
         if (fonts)
