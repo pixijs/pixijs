@@ -5,6 +5,7 @@ import { deprecation, isWebGLSupported } from '@pixi/utils';
 import { UniformGroup } from './shader/UniformGroup';
 import { SystemManager } from './system/SystemManager';
 
+import type { ColorSource } from '@pixi/color';
 import type { MSAA_QUALITY, RENDERER_TYPE } from '@pixi/constants';
 import type { ExtensionMetadata } from '@pixi/extensions';
 import type { Rectangle } from '@pixi/math';
@@ -286,31 +287,43 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
     }
 
     /**
-     * @param [options] - The optional renderer parameters.
-     * @param {number} [options.width=800] - The width of the screen.
-     * @param {number} [options.height=600] - The height of the screen.
-     * @param {PIXI.ICanvas} [options.view] - The canvas to use as a view, optional.
-     * @param {boolean} [options.premultipliedAlpha=true] - Set to `false` to disable premultipliedAlpha.
-     * @param {boolean} [options.autoDensity=false] - Resizes renderer view in CSS pixels to allow for
-     *   resolutions other than 1.
-     * @param {boolean} [options.antialias=false] - Sets antialias. If not available natively then FXAA
-     *  antialiasing is used.
-     * @param {number} [options.resolution=PIXI.settings.RESOLUTION] - The resolution / device pixel ratio of the renderer.
-     * @param {boolean} [options.clearBeforeRender=true] - This sets if the renderer will clear
-     *  the canvas or not before the new render pass. If you wish to set this to false, you *must* set
-     *  preserveDrawingBuffer to `true`.
-     * @param {boolean} [options.preserveDrawingBuffer=false] - Enables drawing buffer preservation,
-     *  enable this if you need to call toDataURL on the WebGL context.
-     * @param {number|string} [options.backgroundColor=0x000000] - The background color of the rendered area
-     *  (shown if not transparent). Also, accepts hex strings or color names (e.g., 'white').
+     * @param {PIXI.IRendererOptions} [options] - The optional renderer parameters.
+     * @param {boolean} [options.antialias=false] -
+     *  **WebGL Only.** Whether to enable anti-aliasing. This may affect performance.
+     * @param {boolean} [options.autoDensity=false] -
+     *  Whether the CSS dimensions of the renderer's view should be resized automatically.
      * @param {number|string} [options.background] - Alias for `options.backgroundColor`.
-     * @param {number} [options.backgroundAlpha=1] - Value from 0 (fully transparent) to 1 (fully opaque).
-     * @param {string} [options.powerPreference] - Parameter passed to WebGL context, set to "high-performance"
-     *  for devices with dual graphics card.
-     * @param {object} [options.context] - If WebGL context already exists, all parameters must be taken from it.
-     * @param {object} [options.blit] - if rendering to a renderTexture, set to true if you want to run blit after
-     * the render. defaults to false.
-     * @param {boolean} [options.hello=false] - Logs renderer type and version.
+     * @param {number} [options.backgroundAlpha=1] -
+     *  Transparency of the background color, value from `0` (fully transparent) to `1` (fully opaque).
+     * @param {number|string} [options.backgroundColor=0x000000] -
+     *  The background color used to clear the canvas. It accepts hex numbers (e.g. `0xff0000`),
+     *  hex strings (e.g. `'#f00'` or `'#ff0000'`) or color names (e.g. `'red'`).
+     * @param {boolean} [options.clearBeforeRender=true] - Whether to clear the canvas before new render passes.
+     * @param {PIXI.IRenderingContext} [options.context] - **WebGL Only.** User-provided WebGL rendering context object.
+     * @param {number} [options.height=600] - The height of the renderer's view.
+     * @param {boolean} [options.hello=false] - Whether to log the version and type information of renderer to console.
+     * @param {string} [options.powerPreference] -
+     *  **WebGL Only.** A hint indicating what configuration of GPU is suitable for the WebGL context,
+     *  can be `'default'`, `'high-performance'` or `'low-power'`.
+     *  Setting to `'high-performance'` will prioritize rendering performance over power consumption,
+     *  while setting to `'low-power'` will prioritize power saving over rendering performance.
+     * @param {boolean} [options.premultipliedAlpha=true] -
+     *  **WebGL Only.** Whether the compositor will assume the drawing buffer contains colors with premultiplied alpha.
+     * @param {boolean} [options.preserveDrawingBuffer=false] -
+     *  **WebGL Only.** Whether to enable drawing buffer preservation. If enabled, the drawing buffer will preserve
+     *  its value until cleared or overwritten. Enable this if you need to call `toDataUrl` on the WebGL context.
+     * @param {number} [options.resolution=PIXI.settings.RESOLUTION] -
+     *  The resolution / device pixel ratio of the renderer.
+     * @param {boolean|'notMultiplied'} [options.useContextAlpha=true] -
+     *  **Deprecated since 7.0.0, use `premultipliedAlpha` and `backgroundAlpha` instead.** \
+     *  Pass-through value for canvas' context attribute `alpha`. This option is for cases where the
+     *  canvas needs to be opaque, possibly for performance reasons on some older devices.
+     *  If you want to set transparency, please use `backgroundAlpha`. \
+     *  **WebGL Only:** When set to `'notMultiplied'`, the canvas' context attribute `alpha` will be
+     *  set to `true` and `premultipliedAlpha` will be to `false`.
+     * @param {PIXI.ICanvas} [options.view=null] -
+     *  The canvas to use as the view. If omitted, a new canvas will be created.
+     * @param {number} [options.width=800] - The width of the renderer's view.
      */
     constructor(options?: IRendererOptions)
     {
@@ -582,7 +595,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      * @member {number}
      * @deprecated since 7.0.0
      */
-    get backgroundColor(): number
+    get backgroundColor(): ColorSource
     {
         // #if _DEBUG
         // eslint-disable-next-line max-len
@@ -592,7 +605,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
         return this.background.color;
     }
 
-    set backgroundColor(value: number)
+    set backgroundColor(value: ColorSource)
     {
         // #if _DEBUG
         deprecation('7.0.0', 'renderer.backgroundColor has been deprecated, use renderer.background.color instead.');
@@ -613,7 +626,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
         deprecation('7.0.0', 'renderer.backgroundAlpha has been deprecated, use renderer.background.alpha instead.');
         // #endif
 
-        return this.background.color;
+        return this.background.alpha;
     }
 
     /**

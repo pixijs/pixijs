@@ -1,10 +1,12 @@
 import { extensions, ExtensionType } from '@pixi/core';
 import { EventBoundary } from './EventBoundary';
+import { EventsTicker } from './EventTicker';
 import { FederatedPointerEvent } from './FederatedPointerEvent';
 import { FederatedWheelEvent } from './FederatedWheelEvent';
 
-import type { ExtensionMetadata, ICanvas, IPointData, IRenderableObject } from '@pixi/core';
+import type { ExtensionMetadata, IPointData, IRenderer } from '@pixi/core';
 import type { DisplayObject } from '@pixi/display';
+import type { Interactive } from './FederatedEventTarget';
 import type { FederatedMouseEvent } from './FederatedMouseEvent';
 
 const MOUSE_POINTER_ID = 1;
@@ -15,14 +17,6 @@ const TOUCH_TO_POINTER: Record<string, string> = {
     touchmove: 'pointermove',
     touchcancel: 'pointercancel',
 };
-
-interface Renderer
-{
-    lastObjectRendered: IRenderableObject;
-    view: ICanvas;
-    resolution: number;
-    plugins: Record<string, any>;
-}
 
 /**
  * The system for handling UI events.
@@ -38,6 +32,14 @@ export class EventSystem
             ExtensionType.CanvasRendererSystem
         ],
     };
+
+    private static _defaultInteraction: boolean | Interactive;
+
+    /** The default interaction mode for all display objects. */
+    public static get defaultInteraction()
+    {
+        return this._defaultInteraction;
+    }
 
     /**
      * The {@link PIXI.EventBoundary} for the stage.
@@ -84,7 +86,7 @@ export class EventSystem
     public resolution = 1;
 
     /** The renderer managing this {@link EventSystem}. */
-    public renderer: Renderer;
+    public renderer: IRenderer;
 
     private currentCursor: string;
     private rootPointerEvent: FederatedPointerEvent;
@@ -94,10 +96,11 @@ export class EventSystem
     /**
      * @param {PIXI.Renderer} renderer
      */
-    constructor(renderer: Renderer)
+    constructor(renderer: IRenderer)
     {
         this.renderer = renderer;
         this.rootBoundary = new EventBoundary(null);
+        EventsTicker.init(this);
 
         this.autoPreventDefault = true;
         this.eventsAdded = false;
@@ -123,10 +126,12 @@ export class EventSystem
      */
     init(): void
     {
-        const { view, resolution } = this.renderer;
+        const { view, resolution, options } = this.renderer;
 
         this.setTargetElement(view as HTMLCanvasElement);
         this.resolution = resolution;
+        // allow for false to keep backwards compatibility
+        EventSystem._defaultInteraction = options?.defaultInteraction ?? false;
     }
 
     /**
@@ -255,6 +260,8 @@ export class EventSystem
         // if we support touch events, then only use those for touch events, not pointer events
         if (this.supportsTouchEvents && (nativeEvent as PointerEvent).pointerType === 'touch') return;
 
+        EventsTicker.pointerMoved();
+
         const normalizedEvents = this.normalizeToPointerData(nativeEvent);
 
         for (let i = 0, j = normalizedEvents.length; i < j; i++)
@@ -346,6 +353,7 @@ export class EventSystem
     {
         this.removeEvents();
         this.domElement = element;
+        EventsTicker.domElement = element;
         this.addEvents();
     }
 
@@ -356,6 +364,8 @@ export class EventSystem
         {
             return;
         }
+
+        EventsTicker.addTickerListener();
 
         const style = this.domElement.style as CrossCSSStyleDeclaration;
 
@@ -423,6 +433,8 @@ export class EventSystem
         {
             return;
         }
+
+        EventsTicker.removeTickerListener();
 
         const style = this.domElement.style as CrossCSSStyleDeclaration;
 

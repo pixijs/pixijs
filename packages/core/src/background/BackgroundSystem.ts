@@ -1,9 +1,20 @@
+import { Color } from '@pixi/color';
 import { extensions, ExtensionType } from '@pixi/extensions';
-import { hex2rgb, hex2string, string2hex } from '@pixi/utils';
 
+import type { ColorSource } from '@pixi/color';
 import type { ExtensionMetadata } from '@pixi/extensions';
 import type { ISystem } from '../system/ISystem';
 import type { StartupOptions } from '../systems';
+
+export interface BackgroundOptions
+{
+    /** the main canvas background alpha. From 0 (fully transparent) to 1 (fully opaque). */
+    alpha: number,
+    /** the main canvas background color. */
+    color: ColorSource,
+    /** sets if the renderer will clear the canvas or not before the new render pass. */
+    clearBeforeRender: boolean,
+}
 
 /**
  * The background system manages the background color and alpha of the main view.
@@ -31,21 +42,13 @@ export class BackgroundSystem implements ISystem
      */
     public clearBeforeRender: boolean;
 
-    private _backgroundColorString: string;
-    private _backgroundColorRgba: number[];
-    private _backgroundColor: number;
+    /** Reference to the internal color */
+    private _backgroundColor: Color;
 
     constructor()
     {
         this.clearBeforeRender = true;
-
-        this._backgroundColor = 0x000000;
-
-        this._backgroundColorRgba = [0, 0, 0, 1];
-
-        this._backgroundColorString = '#000000';
-
-        this.color = this._backgroundColor; // run bg color setter
+        this._backgroundColor = new Color(0x0);
         this.alpha = 1;
     }
 
@@ -61,28 +64,24 @@ export class BackgroundSystem implements ISystem
 
         if (color)
         {
-            this.color = typeof color === 'string'
-                ? string2hex(color)
-                : color;
+            this.color = options.color;
         }
 
         this.alpha = backgroundAlpha;
     }
 
     /**
-     * The background color to fill if not transparent
-     * @member {number}
+     * The background color to fill if not transparent.
+     * @member {PIXI.ColorSource}
      */
-    get color(): number
+    get color(): ColorSource
     {
-        return this._backgroundColor;
+        return this._backgroundColor.value;
     }
 
-    set color(value: number)
+    set color(value: ColorSource)
     {
-        this._backgroundColor = value;
-        this._backgroundColorString = hex2string(value);
-        hex2rgb(value, this._backgroundColorRgba);
+        this._backgroundColor.setValue(value);
     }
 
     /**
@@ -91,32 +90,18 @@ export class BackgroundSystem implements ISystem
      */
     get alpha(): number
     {
-        return this._backgroundColorRgba[3];
+        return this._backgroundColor.alpha;
     }
 
     set alpha(value: number)
     {
-        this._backgroundColorRgba[3] = value;
+        this._backgroundColor.setAlpha(value);
     }
 
-    /**
-     * The background color as an [R, G, B, A] array.
-     * @member {number[]}
-     * @protected
-     */
-    get colorRgba(): number[]
+    /** The background color object. */
+    get backgroundColor(): Color
     {
-        return this._backgroundColorRgba;
-    }
-
-    /**
-     * The background color as a string.
-     * @member {string}
-     * @protected
-     */
-    get colorString(): string
-    {
-        return this._backgroundColorString;
+        return this._backgroundColor;
     }
 
     destroy(): void

@@ -1,11 +1,18 @@
 import { Point, utils } from '@pixi/core';
+import { EventsTicker } from './EventTicker';
 import { FederatedMouseEvent } from './FederatedMouseEvent';
 import { FederatedPointerEvent } from './FederatedPointerEvent';
 import { FederatedWheelEvent } from './FederatedWheelEvent';
 
 import type { DisplayObject } from '@pixi/display';
 import type { FederatedEvent } from './FederatedEvent';
-import type { Cursor, FederatedEventHandler, FederatedEventTarget, IFederatedDisplayObject } from './FederatedEventTarget';
+import type {
+    Cursor,
+    FederatedEventHandler,
+    FederatedEventTarget,
+    IFederatedDisplayObject,
+    Interactive
+} from './FederatedEventTarget';
 
 // The maximum iterations used in propagation. This prevent infinite loops.
 const PROPAGATION_LIMIT = 2048;
@@ -173,9 +180,7 @@ export class EventBoundary
      */
     protected eventPool: Map<typeof FederatedEvent, FederatedEvent[]> = new Map();
 
-    /**
-     * @param rootTarget - The holder of the event boundary.
-     */
+    /** @param rootTarget - The holder of the event boundary. */
     constructor(rootTarget?: DisplayObject)
     {
         this.rootTarget = rootTarget;
@@ -279,9 +284,10 @@ export class EventBoundary
         y: number,
     ): DisplayObject
     {
+        EventsTicker.pauseUpdate = true;
         const invertedPath = this.hitTestRecursive(
             this.rootTarget,
-            this.rootTarget.interactive,
+            this.rootTarget._internalInteractive,
             tempHitLocation.set(x, y),
             this.hitTestFn,
             this.hitPruneFn,
@@ -407,7 +413,7 @@ export class EventBoundary
      */
     protected hitTestRecursive(
         currentTarget: DisplayObject,
-        interactive: boolean,
+        interactive: Interactive,
         location: Point,
         testFn: (object: DisplayObject, pt: Point) => boolean,
         pruneFn?: (object: DisplayObject, pt: Point) => boolean,
@@ -424,6 +430,11 @@ export class EventBoundary
             return null;
         }
 
+        if (currentTarget._internalInteractive === 'dynamic' || interactive === 'dynamic')
+        {
+            EventsTicker.pauseUpdate = false;
+        }
+
         // Find a child that passes the hit testing and return one, if any.
         if (currentTarget.interactiveChildren && currentTarget.children)
         {
@@ -435,7 +446,7 @@ export class EventBoundary
 
                 const nestedHit = this.hitTestRecursive(
                     child,
-                    interactive || child.interactive,
+                    this._isInteractive(interactive) ? interactive : child._internalInteractive,
                     location,
                     testFn,
                     pruneFn,
@@ -453,7 +464,7 @@ export class EventBoundary
                     // Only add the current hit-test target to the hit-test chain if the chain
                     // has already started (i.e. the event target has been found) or if the current
                     // target is interactive (i.e. it becomes the event target).
-                    if (nestedHit.length > 0 || currentTarget.interactive)
+                    if (nestedHit.length > 0 || currentTarget.isInteractive())
                     {
                         nestedHit.push(currentTarget);
                     }
@@ -464,14 +475,19 @@ export class EventBoundary
         }
 
         // Finally, hit test this DisplayObject itself.
-        if (interactive && testFn(currentTarget, location))
+        if (this._isInteractive(interactive) && testFn(currentTarget, location))
         {
             // The current hit-test target is the event's target only if it is interactive. Otherwise,
             // the first interactive ancestor will be the event's target.
-            return currentTarget.interactive ? [currentTarget] : [];
+            return currentTarget.isInteractive() ? [currentTarget] : [];
         }
 
         return null;
+    }
+
+    private _isInteractive(int: Interactive): int is 'static' | 'dynamic'
+    {
+        return int === 'static' || int === 'dynamic';
     }
 
     /**
@@ -484,6 +500,24 @@ export class EventBoundary
      */
     protected hitPruneFn(displayObject: DisplayObject, location: Point): boolean
     {
+        // If this DisplayObject is none then it cannot be hit by anything.
+        if (displayObject._internalInteractive === 'none')
+        {
+            return true;
+        }
+
+        // If this DisplayObject is passive and it has no interactive children then it cannot be hit
+        if (displayObject._internalInteractive === 'passive' && !displayObject.interactiveChildren)
+        {
+            return true;
+        }
+
+        // If displayObject is a mask then it cannot be hit directly.
+        if (displayObject.isMask)
+        {
+            return true;
+        }
+
         if (displayObject.hitArea)
         {
             displayObject.worldTransform.applyInverse(location, tempLocalMapping);
@@ -516,6 +550,12 @@ export class EventBoundary
      */
     protected hitTestFn(displayObject: DisplayObject, location: Point): boolean
     {
+        // If the displayObject is passive then it cannot be hit directly.
+        if (displayObject._internalInteractive === 'passive')
+        {
+            return false;
+        }
+
         // If the display object failed pruning with a hitArea, then it must pass it.
         if (displayObject.hitArea)
         {

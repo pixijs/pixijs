@@ -1,6 +1,6 @@
 {
   "name": "@pixi/runner",
-  "version": "7.1.1",
+  "version": "7.1.2",
   "main": "lib/index.js",
   "module": "lib/index.mjs",
   "types": "lib/index.d.ts",

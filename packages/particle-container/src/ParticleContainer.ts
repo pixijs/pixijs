@@ -1,4 +1,4 @@
-import { BLEND_MODES, utils } from '@pixi/core';
+import { BLEND_MODES, Color } from '@pixi/core';
 import { Container } from '@pixi/display';
 
 import type { BaseTexture, Renderer } from '@pixi/core';
@@ -191,7 +191,9 @@ export class ParticleContainer extends Container<Sprite>
     set tint(value: number)
     {
         this._tint = value;
-        utils.hex2rgb(value, this.tintRgb);
+        Color.shared
+            .setValue(value)
+            .toRgbArray(this.tintRgb);
     }
 
     /**

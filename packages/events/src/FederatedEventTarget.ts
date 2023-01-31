@@ -1,4 +1,6 @@
 import { DisplayObject } from '@pixi/display';
+import { deprecation } from '@pixi/utils';
+import { EventSystem } from './EventSystem';
 import { FederatedEvent } from './FederatedEvent';
 
 import type { utils } from '@pixi/core';
@@ -52,6 +54,9 @@ export interface IHitArea
 /** Function type for handlers, e.g., onclick */
 export type FederatedEventHandler<T= FederatedPointerEvent> = (event: T) => void;
 
+/** The type of interaction a DisplayObject can be */
+export type Interactive = 'none' | 'passive' | 'auto' | 'static' | 'dynamic';
+
 /**
  * Describes the shape for a {@link FederatedEvent}'s' `eventTarget`.
  * @memberof PIXI
@@ -68,7 +73,13 @@ export interface FederatedEventTarget extends utils.EventEmitter, EventTarget
     readonly children?: ReadonlyArray<FederatedEventTarget>;
 
     /** Whether this event target should fire UI events. */
-    interactive: boolean;
+    interactive: boolean | Interactive;
+    /** The internal value of the interactive state of an object. */
+    _internalInteractive: Interactive;
+    /** The interactive value the user set */
+    _userSetInteractive: boolean | Interactive;
+    /** Returns true if the DisplayObject has interactive 'static' or 'dynamic' */
+    isInteractive: () => boolean;
 
     /** Whether this event target has any children that need UI events. This can be used optimize event propagation. */
     interactiveChildren: boolean;
@@ -179,6 +190,27 @@ export interface IFederatedDisplayObject
         listener: EventListenerOrEventListenerObject,
         options?: RemoveListenerOptions
     ): void;
+}
+
+function convertToInteractive(value: boolean | Interactive, warn?: boolean): Interactive
+{
+    if (typeof value === 'boolean')
+    {
+        if (warn)
+        {
+            // #if _DEBUG
+            deprecation(
+                '7.2.0',
+                // eslint-disable-next-line max-len
+                `Setting interactive to a boolean is deprecated, use interactive = 'none'/'passive'/'auto'/'static'/'dynamic' instead.`
+            );
+            // #endif
+        }
+
+        return value ? 'static' : 'auto';
+    }
+
+    return value;
 }
 
 export const FederatedDisplayObject: IFederatedDisplayObject = {
@@ -547,18 +579,56 @@ export const FederatedDisplayObject: IFederatedDisplayObject = {
     onwheel:  null,
     /**
      * Enable interaction events for the DisplayObject. Touch, pointer and mouse
-     * events will not be emitted unless `interactive` is set to `true`.
+     * There is 4 types of interaction settings:
+     * - `'none'`: Ignores all interaction events, even on its children.
+     * - `'passive'`: Does not emit events and ignores all hit testing on itself and non-interactive children.
+     * Interactive children will still emit events.
+     * - `'auto'`: Does not emit events and but is hit tested if parent is interactive. Same as `interactive = false` in v7
+     * - `'static'`: Emit events and is hit tested. Same as `interaction = true` in v7
+     * - `'dynamic'`: Emits events and is hit tested but will also receive mock interaction events fired from a ticker to
+     * allow for interaction when the mouse isn't moving
      * @example
      * import { Sprite } from 'pixi.js';
      *
      * const sprite = new Sprite(texture);
-     * sprite.interactive = true;
+     * sprite.interactive = 'static';
      * sprite.on('tap', (event) => {
      *     // Handle event
      * });
      * @memberof PIXI.DisplayObject#
      */
-    interactive: false,
+    interactive: EventSystem.defaultInteraction,
+    /** Internal reference to the normalised interactive value. This should always be used instead of interactive */
+    _internalInteractive: convertToInteractive(EventSystem.defaultInteraction, false),
+    /** Internal reference to the value the user set. e.g. interactive = false means _userSetInteractive === false */
+    _userSetInteractive: null,
+
+    /**
+     * Determines if the displayObject is interactive or not
+     * @returns {boolean} Whether the displayObject is interactive or not
+     * @memberof PIXI.DisplayObject#
+     * @example
+     * import { Sprite } from 'pixi.js';
+     * const sprite = new Sprite(texture);
+     * sprite.interactive = 'static';
+     * sprite.isInteractive(); // true
+     *
+     * sprite.interactive = 'dynamic';
+     * sprite.isInteractive(); // true
+     *
+     * sprite.interactive = 'none';
+     * sprite.isInteractive(); // false
+     *
+     * sprite.interactive = 'passive';
+     * sprite.isInteractive(); // false
+     *
+     * sprite.interactive = 'auto';
+     * sprite.isInteractive(); // false
+     */
+    isInteractive()
+    {
+        return this._internalInteractive === 'static' || this._internalInteractive === 'dynamic';
+    },
 
     /**
      * Determines if the children to the displayObject can be clicked/touched
@@ -683,5 +753,27 @@ export const FederatedDisplayObject: IFederatedDisplayObject = {
         return !e.defaultPrevented;
     }
 };
+
+Object.defineProperties(FederatedDisplayObject, {
+    interactive:  {
+        get()
+        {
+            // make sure to update the internal value if the default has changed
+            if (this._userSetInteractive === null)
+            {
+                this._internalInteractive = convertToInteractive(EventSystem.defaultInteraction, false);
+
+                return EventSystem.defaultInteraction;
+            }
+
+            return this._userSetInteractive;
+        },
+        set(value: boolean | Interactive)
+        {
+            this._userSetInteractive = value;
+            this._internalInteractive = convertToInteractive(value, true);
+        },
+    },
+});
 
 DisplayObject.mixin(FederatedDisplayObject);
