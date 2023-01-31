@@ -105,7 +105,7 @@ export class BaseRenderTexture extends BaseTexture
     }
     get clearColor(): ColorSource
     {
-        return this._clear;
+        return this._clear.value;
     }
 
     /**
