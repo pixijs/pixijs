@@ -198,7 +198,7 @@ export class RenderTextureSystem implements ISystem
     {
         const fallbackColor = this.current
             ? (this.current.baseTexture as BaseRenderTexture).clear
-            : this.renderer.background.value;
+            : this.renderer.background.backgroundColor;
         const color = clearColor ? Color.shared.setValue(clearColor) : fallbackColor;
 
         const destinationFrame = this.destinationFrame;

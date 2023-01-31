@@ -96,7 +96,7 @@ export class BackgroundSystem implements ISystem<BackgroundOptions>
     }
 
     /** The background color object. */
-    get value(): Color
+    get backgroundColor(): Color
     {
         return this._backgroundColor;
     }

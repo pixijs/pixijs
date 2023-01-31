@@ -138,8 +138,8 @@ export class CanvasObjectRendererSystem implements ISystem
 
                 if (background.alpha > 0)
                 {
-                    context2D.globalAlpha = background.value.alpha;
-                    context2D.fillStyle = background.value.toHex();
+                    context2D.globalAlpha = background.backgroundColor.alpha;
+                    context2D.fillStyle = background.backgroundColor.toHex();
                     context2D.fillRect(0, 0, renderer.width, renderer.height);
                     context2D.globalAlpha = 1;
                 }
