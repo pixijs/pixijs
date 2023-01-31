@@ -429,6 +429,11 @@ export class AssetsClass
                     return url.src;
                 }
 
+                if (!this.resolver.hasKey(url))
+                {
+                    this.resolver.add(url, url);
+                }
+
                 return url;
             });
 

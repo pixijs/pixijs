@@ -32,6 +32,18 @@ describe('Assets', () =>
         expect(bunny).toBeInstanceOf(Texture);
     });
 
+    it('should load assets with resolver', async () =>
+    {
+        await Assets.init({
+            basePath,
+        });
+
+        const bunny = await Assets.load<Texture>('textures/texture.{webp,png}');
+
+        expect(bunny).toBeInstanceOf(Texture);
+        expect(bunny.baseTexture.resource.src.endsWith('.webp')).toBeTrue();
+    });
+
     it('should get assets once loaded', async () =>
     {
         await Assets.init({
