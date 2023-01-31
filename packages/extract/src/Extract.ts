@@ -1,4 +1,4 @@
-import { extensions, ExtensionType, Rectangle, RenderTexture, utils } from '@pixi/core';
+import { extensions, ExtensionType, MSAA_QUALITY, Rectangle, RenderTexture, utils } from '@pixi/core';
 
 import type { ExtensionMetadata, ICanvas, ISystem, Renderer } from '@pixi/core';
 import type { DisplayObject } from '@pixi/display';
@@ -10,12 +10,11 @@ const BYTES_PER_PIXEL = 4;
  * This class provides renderer-specific plugins for exporting content from a renderer.
  * For instance, these plugins can be used for saving an Image, Canvas element or for exporting the raw image data (pixels).
  *
- * Do not instantiate these plugins directly. It is available from the `renderer.plugins` property.
- * See {@link PIXI.CanvasRenderer#plugins} or {@link PIXI.Renderer#plugins}.
+ * Do not instantiate these plugins directly. It is available from the `renderer.extract` property.
  * @example
  * import { Application, Graphics } from 'pixi.js';
  *
- * // Create a new app (will auto-add extract plugin to renderer)
+ * // Create a new application (extract will be auto-added to renderer)
  * const app = new Application();
  *
  * // Draw a red circle
@@ -24,7 +23,7 @@ const BYTES_PER_PIXEL = 4;
  *     .drawCircle(0, 0, 50);
  *
  * // Render the graphics as an HTMLImageElement
- * const image = app.renderer.plugins.image(graphics);
+ * const image = await app.renderer.extract.image(graphics);
  * document.body.appendChild(image);
  * @memberof PIXI
  */
@@ -104,7 +103,57 @@ export class Extract implements ISystem
      * @param frame - The frame the extraction is restricted to.
      * @returns - A Canvas element with the texture rendered on.
      */
-    public canvas(target: DisplayObject | RenderTexture, frame?: Rectangle): ICanvas
+    public canvas(target?: DisplayObject | RenderTexture, frame?: Rectangle): ICanvas
+    {
+        const { pixels, width, height, flipY } = this._rawPixels(target, frame);
+
+        let canvasBuffer = new utils.CanvasRenderTarget(width, height, 1);
+
+        // Add the pixels to the canvas
+        const canvasData = canvasBuffer.context.getImageData(0, 0, width, height);
+
+        Extract.arrayPostDivide(pixels, canvasData.data);
+
+        canvasBuffer.context.putImageData(canvasData, 0, 0);
+
+        // Flipping pixels
+        if (flipY)
+        {
+            const target = new utils.CanvasRenderTarget(canvasBuffer.width, canvasBuffer.height, 1);
+
+            target.context.scale(1, -1);
+
+            // We can't render to itself because we should be empty before render.
+            target.context.drawImage(canvasBuffer.canvas, 0, -height);
+
+            canvasBuffer.destroy();
+            canvasBuffer = target;
+        }
+
+        // Send the canvas back
+        return canvasBuffer.canvas;
+    }
+
+    /**
+     * Will return a one-dimensional array containing the pixel data of the entire texture in RGBA
+     * order, with integer values between 0 and 255 (included).
+     * @param target - A displayObject or renderTexture
+     *  to convert. If left empty will use the main renderer
+     * @param frame - The frame the extraction is restricted to.
+     * @returns - One-dimensional array containing the pixel data of the entire texture
+     */
+    public pixels(target?: DisplayObject | RenderTexture, frame?: Rectangle): Uint8Array
+    {
+        const { pixels } = this._rawPixels(target, frame);
+
+        Extract.arrayPostDivide(pixels, pixels);
+
+        return pixels;
+    }
+
+    private _rawPixels(target?: DisplayObject | RenderTexture, frame?: Rectangle): {
+        pixels: Uint8Array, width: number, height: number, flipY: boolean,
+    }
     {
         const renderer = this.renderer;
         let resolution;
@@ -120,7 +169,26 @@ export class Extract implements ISystem
             }
             else
             {
-                renderTexture = this.renderer.generateTexture(target);
+                const multisample = renderer.context.webGLVersion >= 2 ? renderer.multisample : MSAA_QUALITY.NONE;
+
+                renderTexture = this.renderer.generateTexture(target, { multisample });
+
+                if (multisample !== MSAA_QUALITY.NONE)
+                {
+                    // Resolve the multisampled texture to a non-multisampled texture
+                    const resolvedTexture = RenderTexture.create({
+                        width: renderTexture.width,
+                        height: renderTexture.height,
+                    });
+
+                    renderer.framebuffer.bind(renderTexture.framebuffer);
+                    renderer.framebuffer.blit(resolvedTexture.framebuffer);
+                    renderer.framebuffer.bind(null);
+
+                    renderTexture.destroy(true);
+                    renderTexture = resolvedTexture;
+                }
+
                 generated = true;
             }
         }
@@ -150,11 +218,9 @@ export class Extract implements ISystem
         const width = Math.round(frame.width * resolution);
         const height = Math.round(frame.height * resolution);
 
-        let canvasBuffer = new utils.CanvasRenderTarget(width, height, 1);
+        const pixels = new Uint8Array(BYTES_PER_PIXEL * width * height);
 
-        const webglPixels = new Uint8Array(BYTES_PER_PIXEL * width * height);
-
-        // read pixels to the array
+        // Read pixels to the array
         const gl = renderer.gl;
 
         gl.readPixels(
@@ -164,103 +230,7 @@ export class Extract implements ISystem
             height,
             gl.RGBA,
             gl.UNSIGNED_BYTE,
-            webglPixels
-        );
-
-        // add the pixels to the canvas
-        const canvasData = canvasBuffer.context.getImageData(0, 0, width, height);
-
-        Extract.arrayPostDivide(webglPixels, canvasData.data);
-
-        canvasBuffer.context.putImageData(canvasData, 0, 0);
-
-        // pulling pixels
-        if (flipY)
-        {
-            const target = new utils.CanvasRenderTarget(canvasBuffer.width, canvasBuffer.height, 1);
-
-            target.context.scale(1, -1);
-
-            // we can't render to itself because we should be empty before render.
-            target.context.drawImage(canvasBuffer.canvas, 0, -height);
-
-            canvasBuffer.destroy();
-            canvasBuffer = target;
-        }
-
-        if (generated)
-        {
-            renderTexture.destroy(true);
-        }
-
-        // send the canvas back..
-        return canvasBuffer.canvas;
-    }
-
-    /**
-     * Will return a one-dimensional array containing the pixel data of the entire texture in RGBA
-     * order, with integer values between 0 and 255 (included).
-     * @param target - A displayObject or renderTexture
-     *  to convert. If left empty will use the main renderer
-     * @param frame - The frame the extraction is restricted to.
-     * @returns - One-dimensional array containing the pixel data of the entire texture
-     */
-    public pixels(target?: DisplayObject | RenderTexture, frame?: Rectangle): Uint8Array
-    {
-        const renderer = this.renderer;
-        let resolution;
-        let renderTexture;
-        let generated = false;
-
-        if (target)
-        {
-            if (target instanceof RenderTexture)
-            {
-                renderTexture = target;
-            }
-            else
-            {
-                renderTexture = this.renderer.generateTexture(target);
-                generated = true;
-            }
-        }
-
-        if (renderTexture)
-        {
-            resolution = renderTexture.baseTexture.resolution;
-            frame = frame ?? renderTexture.frame;
-            renderer.renderTexture.bind(renderTexture);
-        }
-        else
-        {
-            resolution = renderer.resolution;
-
-            if (!frame)
-            {
-                frame = TEMP_RECT;
-                frame.width = renderer.width;
-                frame.height = renderer.height;
-            }
-
-            renderer.renderTexture.bind(null);
-        }
-
-        const width = Math.round(frame.width * resolution);
-        const height = Math.round(frame.height * resolution);
-
-        const webglPixels = new Uint8Array(BYTES_PER_PIXEL * width * height);
-
-        // read pixels to the array
-        const gl = renderer.gl;
-
-        gl.readPixels(
-            Math.round(frame.x * resolution),
-            Math.round(frame.y * resolution),
-            width,
-            height,
-            gl.RGBA,
-            gl.UNSIGNED_BYTE,
-            webglPixels
+            pixels
         );
 
         if (generated)
@@ -268,9 +238,7 @@ export class Extract implements ISystem
             renderTexture.destroy(true);
         }
 
-        Extract.arrayPostDivide(webglPixels, webglPixels);
-
-        return webglPixels;
+        return { pixels, width, height, flipY };
     }
 
     /** Destroys the extract. */

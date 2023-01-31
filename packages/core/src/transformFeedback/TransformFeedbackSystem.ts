@@ -1,8 +1,11 @@
 import { extensions, ExtensionType } from '@pixi/extensions';
 
 import type { DRAW_MODES } from '@pixi/constants';
-import type { IRenderingContext, ISystem, Renderer, Shader } from '@pixi/core';
 import type { ExtensionMetadata } from '@pixi/extensions';
+import type { IRenderingContext } from '../IRenderer';
+import type { Renderer } from '../Renderer';
+import type { Shader } from '../shader/Shader';
+import type { ISystem } from '../system/ISystem';
 import type { TransformFeedback } from './TransformFeedback';
 
 /**
