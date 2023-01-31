@@ -3,8 +3,9 @@ import { EventBoundary } from './EventBoundary';
 import { FederatedPointerEvent } from './FederatedPointerEvent';
 import { FederatedWheelEvent } from './FederatedWheelEvent';
 
-import type { ExtensionMetadata, ICanvas, IPointData, IRenderableObject } from '@pixi/core';
+import type { ExtensionMetadata, IPointData, IRenderer } from '@pixi/core';
 import type { DisplayObject } from '@pixi/display';
+import type { Interactive } from './FederatedEventTarget';
 import type { FederatedMouseEvent } from './FederatedMouseEvent';
 
 const MOUSE_POINTER_ID = 1;
@@ -15,14 +16,6 @@ const TOUCH_TO_POINTER: Record<string, string> = {
     touchmove: 'pointermove',
     touchcancel: 'pointercancel',
 };
-
-interface Renderer
-{
-    lastObjectRendered: IRenderableObject;
-    view: ICanvas;
-    resolution: number;
-    plugins: Record<string, any>;
-}
 
 /**
  * The system for handling UI events.
@@ -38,6 +31,14 @@ export class EventSystem
             ExtensionType.CanvasRendererSystem
         ],
     };
+
+    private static _defaultInteraction: boolean | Interactive;
+
+    /** The default interaction mode for all display objects. */
+    public static get defaultInteraction()
+    {
+        return this._defaultInteraction;
+    }
 
     /**
      * The {@link PIXI.EventBoundary} for the stage.
@@ -84,7 +85,7 @@ export class EventSystem
     public resolution = 1;
 
     /** The renderer managing this {@link EventSystem}. */
-    public renderer: Renderer;
+    public renderer: IRenderer;
 
     private currentCursor: string;
     private rootPointerEvent: FederatedPointerEvent;
@@ -94,7 +95,7 @@ export class EventSystem
     /**
      * @param {PIXI.Renderer} renderer
      */
-    constructor(renderer: Renderer)
+    constructor(renderer: IRenderer)
     {
         this.renderer = renderer;
         this.rootBoundary = new EventBoundary(null);
@@ -123,10 +124,12 @@ export class EventSystem
      */
     init(): void
     {
-        const { view, resolution } = this.renderer;
+        const { view, resolution, options } = this.renderer;
 
         this.setTargetElement(view as HTMLCanvasElement);
         this.resolution = resolution;
+        // allow for false to keep backwards compatibility
+        EventSystem._defaultInteraction = options?.defaultInteraction ?? false;
     }
 
     /**

@@ -1,9 +1,17 @@
 import { Renderer } from '@pixi/core';
 import { Container } from '@pixi/display';
+import { EventSystem } from '@pixi/events';
 import { Graphics } from '@pixi/graphics';
+// eslint-disable-next-line @typescript-eslint/no-duplicate-imports
 import '@pixi/events';
 
-function createRenderer(view?: HTMLCanvasElement, supportsPointerEvents?: boolean)
+import type { IRendererOptions } from '@pixi/core';
+
+function createRenderer(
+    view?: HTMLCanvasElement,
+    supportsPointerEvents?: boolean,
+    rendererOptions: Partial<IRendererOptions> = {}
+)
 {
     // TODO: event emitter types do not appear in tests
     interface EERenderer extends Renderer
@@ -15,6 +23,7 @@ function createRenderer(view?: HTMLCanvasElement, supportsPointerEvents?: boolea
         width: 100,
         height: 100,
         view,
+        ...rendererOptions,
     }) as EERenderer;
 
     if (supportsPointerEvents === false)
@@ -397,5 +406,22 @@ describe('EventSystem', () =>
 
         expect(renderer.resolution).toEqual(1);
         expect(renderer.events.resolution).toEqual(1);
+    });
+
+    it('should set the default interaction state', () =>
+    {
+        const renderer = new Renderer({
+            width: 100,
+            height: 100,
+            defaultInteraction: 'dynamic'
+        });
+
+        expect(renderer.options.defaultInteraction).toEqual('dynamic');
+        expect(EventSystem.defaultInteraction).toEqual('dynamic');
+
+        const graphics = new Graphics();
+
+        expect(graphics.interactive).toEqual('dynamic');
+        expect(graphics._internalInteractive).toEqual('dynamic');
     });
 });

@@ -239,7 +239,7 @@ export class AccessibilityManager
             return;
         }
 
-        if (displayObject.accessible && displayObject.interactive)
+        if (displayObject.accessible && displayObject.isInteractive())
         {
             if (!displayObject._accessibleActive)
             {

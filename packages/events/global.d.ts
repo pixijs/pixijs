@@ -26,6 +26,12 @@ declare namespace GlobalMixins
         readonly events: import('@pixi/events').EventSystem;
     }
 
+    interface IRendererOptions
+    {
+        /** The default interaction mode for all display objects. */
+        defaultInteraction?: import('@pixi/events').Interactive;
+    }
+
     interface CanvasRenderer
     {
         readonly events: import('@pixi/events').EventSystem;
