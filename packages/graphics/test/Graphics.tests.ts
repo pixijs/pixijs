@@ -78,6 +78,42 @@ describe('Graphics', () =>
 
             graphics.destroy();
         });
+
+        it('should accept other color sources', () =>
+        {
+            const graphics = new Graphics();
+
+            graphics.lineStyle({ color: 'red', width: 1 });
+
+            expect(graphics.line.color).toEqual(0xFF0000);
+            expect(graphics.line.alpha).toEqual(1);
+
+            graphics.destroy();
+        });
+
+        it('should accept other color sources with alpha', () =>
+        {
+            const graphics = new Graphics();
+
+            graphics.lineStyle({ color: '#ff000080', width: 1 });
+
+            expect(graphics.line.color).toEqual(0xFF0000);
+            expect(graphics.line.alpha).toEqual(0.5);
+
+            graphics.destroy();
+        });
+
+        it('should accept other color sources with alpha override', () =>
+        {
+            const graphics = new Graphics();
+
+            graphics.lineStyle({ color: '#ff000080', alpha: 1, width: 1 });
+
+            expect(graphics.line.color).toEqual(0xFF0000);
+            expect(graphics.line.alpha).toEqual(1);
+
+            graphics.destroy();
+        });
     });
 
     describe('lineTextureStyle', () =>
@@ -151,6 +187,42 @@ describe('Graphics', () =>
             expect(batches.length).toEqual(2);
             expect(batches[0].style.texture).toEqual(validTex1);
             expect(batches[1].style.texture).toEqual(validTex2);
+        });
+
+        it('should accept other color sources', () =>
+        {
+            const graphics = new Graphics();
+
+            graphics.beginTextureFill({ color: 'red' });
+
+            expect(graphics.fill.color).toEqual(0xFF0000);
+            expect(graphics.fill.alpha).toEqual(1);
+
+            graphics.destroy();
+        });
+
+        it('should accept other color sources with alpha', () =>
+        {
+            const graphics = new Graphics();
+
+            graphics.beginTextureFill({ color: '#ff000080' });
+
+            expect(graphics.fill.color).toEqual(0xFF0000);
+            expect(graphics.fill.alpha).toEqual(0.5);
+
+            graphics.destroy();
+        });
+
+        it('should accept other color sources with alpha override', () =>
+        {
+            const graphics = new Graphics();
+
+            graphics.beginTextureFill({ color: '#ff000080', alpha: 1 });
+
+            expect(graphics.fill.color).toEqual(0xFF0000);
+            expect(graphics.fill.alpha).toEqual(1);
+
+            graphics.destroy();
         });
     });
 
