@@ -970,10 +970,10 @@ export class Graphics extends Container
         uniforms.translationMatrix = this.transform.worldTransform;
 
         // and then lets set the tint..
-        uniforms.tint[0] = (((tint >> 16) & 0xFF) / 255) * worldAlpha;
-        uniforms.tint[1] = (((tint >> 8) & 0xFF) / 255) * worldAlpha;
-        uniforms.tint[2] = ((tint & 0xFF) / 255) * worldAlpha;
-        uniforms.tint[3] = worldAlpha;
+        Color.shared.setValue(tint)
+            .multiply([worldAlpha, worldAlpha, worldAlpha])
+            .setAlpha(worldAlpha)
+            .toArray(uniforms.tint);
 
         // the first draw call, we can set the uniforms of the shader directly here.
 
@@ -1099,18 +1099,10 @@ export class Graphics extends Container
             {
                 const batch = this.batches[i];
 
-                const batchTint = batch._batchRGB;
-
-                const r = (tintRGB[0] * batchTint[0]) * 255;
-                const g = (tintRGB[1] * batchTint[1]) * 255;
-                const b = (tintRGB[2] * batchTint[2]) * 255;
-
-                // TODO Ivan, can this be done in one go?
-                const color = (r << 16) + (g << 8) + (b | 0);
-
-                batch._tintRGB = (color >> 16)
-                        + (color & 0xff00)
-                        + ((color & 0xff) << 16);
+                batch._tintRGB = Color.shared
+                    .setValue(tintRGB)
+                    .multiply(batch._batchRGB)
+                    .toLittleEndianNumber();
             }
         }
     }

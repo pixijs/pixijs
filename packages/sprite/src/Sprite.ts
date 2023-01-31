@@ -1,4 +1,4 @@
-import { BLEND_MODES, ObservablePoint, Point, Rectangle, settings, Texture, utils } from '@pixi/core';
+import { BLEND_MODES, Color, ObservablePoint, Point, Rectangle, settings, Texture, utils } from '@pixi/core';
 import { Bounds, Container } from '@pixi/display';
 
 import type { IBaseTextureOptions, IPointData, Renderer, TextureSource } from '@pixi/core';
@@ -588,7 +588,7 @@ export class Sprite extends Container
     set tint(value: number)
     {
         this._tint = value;
-        this._tintRGB = (value >> 16) + (value & 0xff00) + ((value & 0xff) << 16);
+        this._tintRGB = Color.shared.setValue(value).toLittleEndianNumber();
     }
 
     /** The texture that the sprite is using. */

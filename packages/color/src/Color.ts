@@ -42,6 +42,13 @@ export class Color
      */
     static readonly shared = new Color();
 
+    /**
+     * Temporary Color object for static uses internally.
+     * As to not conflict with Color.shared.
+     * @ignore
+     */
+    private static readonly temp = new Color();
+
     /** Pattern for hex strings */
     private static readonly HEX_PATTERN = /^(#|0x)?(([a-f0-9]{3}){1,2}([a-f0-9]{2})?)$/i;
 
@@ -205,6 +212,36 @@ export class Color
     toNumber(): number
     {
         return this._int;
+    }
+
+    /**
+     * Convert to a hexadecimal number in little endian format (e.g., BBGGRR).
+     * @example
+     * import { Color } from 'pixi.js';
+     * new Color(0xffcc99).toLittleEndianNumber(); // returns 0x99ccff
+     * @returns {number} - The color as a number in little endian format.
+     */
+    toLittleEndianNumber(): number
+    {
+        const value = this._int;
+
+        return (value >> 16) + (value & 0xff00) + ((value & 0xff) << 16);
+    }
+
+    /**
+     * Multiply with another color
+     * @param {PIXI.ColorSource} value - The color to multiply by.
+     */
+    multiply(value: ColorSource): this
+    {
+        const [r, g, b, a] = Color.temp.setValue(value)._components;
+
+        this._components[0] *= r;
+        this._components[1] *= g;
+        this._components[2] *= b;
+        this._components[3] *= a;
+
+        return this;
     }
 
     /**
