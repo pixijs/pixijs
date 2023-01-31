@@ -1,6 +1,8 @@
+import { Color } from '@pixi/color';
 import { extensions, ExtensionType } from '@pixi/extensions';
 import { Rectangle } from '@pixi/math';
 
+import type { ColorSource } from '@pixi/color';
 import type { BUFFER_BITS } from '@pixi/constants';
 import type { ExtensionMetadata } from '@pixi/extensions';
 import type { ISize } from '@pixi/math';
@@ -192,16 +194,12 @@ export class RenderTextureSystem implements ISystem
      * @param [mask=BUFFER_BITS.COLOR | BUFFER_BITS.DEPTH] - Bitwise OR of masks
      *  that indicate the buffers to be cleared, by default COLOR and DEPTH buffers.
      */
-    clear(clearColor?: number[], mask?: BUFFER_BITS): void
+    clear(clearColor?: ColorSource, mask?: BUFFER_BITS): void
     {
-        if (this.current)
-        {
-            clearColor = clearColor || (this.current.baseTexture as BaseRenderTexture).clearColor;
-        }
-        else
-        {
-            clearColor = clearColor || this.renderer.background.rgba;
-        }
+        const fallbackColor = this.current
+            ? (this.current.baseTexture as BaseRenderTexture).clear
+            : this.renderer.background.backgroundColor;
+        const color = clearColor ? Color.shared.setValue(clearColor) : fallbackColor;
 
         const destinationFrame = this.destinationFrame;
         const baseFrame: ISize = this.current ? this.current.baseTexture : this.renderer._view.screen;
@@ -221,7 +219,7 @@ export class RenderTextureSystem implements ISystem
             this.renderer.gl.scissor(x, y, width, height);
         }
 
-        this.renderer.framebuffer.clear(clearColor[0], clearColor[1], clearColor[2], clearColor[3], mask);
+        this.renderer.framebuffer.clear(color.red, color.blue, color.green, color.alpha, mask);
 
         if (clearMask)
         {
