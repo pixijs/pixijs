@@ -388,7 +388,7 @@ export class Resolver
 
         keys.forEach((key) =>
         {
-            if (this._assetMap[key])
+            if (this.hasKey(key))
             {
                 // #if _DEBUG
                 console.warn(`[Resolver] already has key: ${key} overwriting`);
@@ -646,6 +646,24 @@ export class Resolver
         });
 
         return singleAsset ? result[keys[0]] : result;
+    }
+
+    /**
+     * Checks if an asset with a given key exists in the resolver
+     * @param key - The key of the asset
+     */
+    public hasKey(key: string): boolean
+    {
+        return !!this._assetMap[key];
+    }
+
+    /**
+     * Checks if a bundle with the given key exists in the resolver
+     * @param key - The key of the bundle
+     */
+    public hasBundle(key: string): boolean
+    {
+        return !!this._bundles[key];
     }
 
     /**

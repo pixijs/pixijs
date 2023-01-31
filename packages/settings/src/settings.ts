@@ -6,19 +6,18 @@ import type { ICanvas } from './ICanvas';
 export interface IRenderOptions
 {
     view: ICanvas;
-    antialias: boolean;
+    width: number;
+    height: number;
     autoDensity: boolean;
     backgroundColor: number | string;
     background?: number | string;
     backgroundAlpha: number;
-    premultipliedAlpha: boolean;
     /** @deprecated */
     useContextAlpha?: boolean | 'notMultiplied';
     clearBeforeRender: boolean;
+    antialias: boolean;
+    premultipliedAlpha: boolean;
     preserveDrawingBuffer: boolean;
-    width: number;
-    height: number;
-    legacy: boolean;
     hello: boolean;
 }
 
@@ -77,31 +76,30 @@ export const settings: ISettings & Partial<GlobalMixins.Settings> = {
      * @name RENDER_OPTIONS
      * @memberof PIXI.settings
      * @type {object}
-     * @property {PIXI.ICanvas} [view=null] -
-     * @property {boolean} [antialias=false] -
-     * @property {boolean} [autoDensity=false] -
-     * @property {boolean} [premultipliedAlpha=true]  -
-     * @property {number} [backgroundColor=0x000000] -
-     * @property {number} [backgroundAlpha=1] -
-     * @property {boolean} [clearBeforeRender=true] -
-     * @property {boolean} [preserveDrawingBuffer=false] -
-     * @property {number} [width=800] -
-     * @property {number} [height=600] -
-     * @property {boolean} [legacy=false] -
-     * @property {boolean} [debug=false] -
+     * @property {boolean} [antialias=false] - {@link PIXI.IRendererOptions.antialias}
+     * @property {boolean} [autoDensity=false] - {@link PIXI.IRendererOptions.autoDensity}
+     * @property {number} [backgroundColor=0x000000] - {@link PIXI.IRendererOptions.backgroundColor}
+     * @property {number} [backgroundAlpha=1] - {@link PIXI.IRendererOptions.backgroundAlpha}
+     * @property {boolean} [clearBeforeRender=true] - {@link PIXI.IRendererOptions.clearBeforeRender}
+     * @property {number} [height=600] - {@link PIXI.IRendererOptions.height}
+     * @property {boolean} [hello=false] - {@link PIXI.IRendererOptions.hello}
+     * @property {boolean} [premultipliedAlpha=true] - {@link PIXI.IRendererOptions.premultipliedAlpha}
+     * @property {boolean} [preserveDrawingBuffer=false] - {@link PIXI.IRendererOptions.preserveDrawingBuffer}
+     * @property {PIXI.ICanvas} [view=null] - {@link PIXI.IRendererOptions.view}
+     * @property {number} [width=800] - {@link PIXI.IRendererOptions.width}
+     * @see PIXI.IRendererOptions
      */
     RENDER_OPTIONS: {
         view: null,
-        antialias: false,
+        width: 800,
+        height: 600,
         autoDensity: false,
         backgroundColor: 0x000000,
         backgroundAlpha: 1,
-        premultipliedAlpha: true,
         clearBeforeRender: true,
+        antialias: false,
+        premultipliedAlpha: true,
         preserveDrawingBuffer: false,
-        width: 800,
-        height: 600,
-        legacy: false,
         hello: false,
     },
 

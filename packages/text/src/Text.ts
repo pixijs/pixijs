@@ -1,5 +1,5 @@
 /* eslint max-depth: [2, 8] */
-import { Rectangle, settings, Texture, utils } from '@pixi/core';
+import { Color, Rectangle, settings, Texture, utils } from '@pixi/core';
 import { Sprite } from '@pixi/sprite';
 import { TEXT_GRADIENT } from './const';
 import { TextMetrics } from './TextMetrics';
@@ -263,13 +263,13 @@ export class Text extends Sprite
                 context.strokeStyle = 'black';
 
                 const dropShadowColor = style.dropShadowColor;
-                const rgb = utils.hex2rgb(typeof dropShadowColor === 'number'
-                    ? dropShadowColor
-                    : utils.string2hex(dropShadowColor));
                 const dropShadowBlur = style.dropShadowBlur * this._resolution;
                 const dropShadowDistance = style.dropShadowDistance * this._resolution;
 
-                context.shadowColor = `rgba(${rgb[0] * 255},${rgb[1] * 255},${rgb[2] * 255},${style.dropShadowAlpha})`;
+                context.shadowColor = Color.shared
+                    .setValue(dropShadowColor)
+                    .setAlpha(style.dropShadowAlpha)
+                    .toRgbaString();
                 context.shadowBlur = dropShadowBlur;
                 context.shadowOffsetX = Math.cos(style.dropShadowAngle) * dropShadowDistance;
                 context.shadowOffsetY = (Math.sin(style.dropShadowAngle) * dropShadowDistance) + dsOffsetShadow;

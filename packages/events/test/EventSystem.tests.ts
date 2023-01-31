@@ -413,10 +413,10 @@ describe('EventSystem', () =>
         const renderer = new Renderer({
             width: 100,
             height: 100,
-            defaultInteractionType: 'dynamic'
+            defaultInteraction: 'dynamic'
         });
 
-        expect(renderer.options.defaultInteractionType).toEqual('dynamic');
+        expect(renderer.options.defaultInteraction).toEqual('dynamic');
         expect(EventSystem.defaultInteraction).toEqual('dynamic');
 
         const graphics = new Graphics();
