@@ -109,7 +109,6 @@ export class CanvasRenderer extends AbstractRenderer
      * @param {number} [options.backgroundColor=0x000000] -
      *  The background color used to clear the canvas. It accepts hex numbers (e.g. `0xff0000`).
      * @param {boolean} [options.clearBeforeRender=true] - Whether to clear the canvas before new render passes.
-     * @param {PIXI.IRenderingContext} [options.context] - **WebGL Only.** User-provided WebGL rendering context object.
      * @param {number} [options.height=600] - The height of the renderer's view.
      * @param {number} [options.resolution=PIXI.settings.RESOLUTION] -
      *  The resolution / device pixel ratio of the renderer.
