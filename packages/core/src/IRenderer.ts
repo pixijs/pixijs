@@ -1,3 +1,4 @@
+import type { ColorSource } from '@pixi/color';
 import type { RENDERER_TYPE } from '@pixi/constants';
 import type { Matrix, Rectangle, Transform } from '@pixi/math';
 import type { ICanvas } from '@pixi/settings';
@@ -111,9 +112,9 @@ export interface IRendererOptions extends GlobalMixins.IRendererOptions
      * hex strings (e.g. `'#f00'` or `'#ff0000'`) or color names (e.g. `'red'`).
      * @default 0x000000
      */
-    backgroundColor?: number | string;
+    backgroundColor?: ColorSource;
     /** Alias for `backgroundColor`. */
-    background?: number | string;
+    background?: ColorSource;
     /**
      * Transparency of the background color, value from `0` (fully transparent) to `1` (fully opaque).
      * @default 1
@@ -137,7 +138,6 @@ export interface IRendererOptions extends GlobalMixins.IRendererOptions
      * @default true
      */
     clearBeforeRender?: boolean;
-
     /** **WebGL Only.** User-provided WebGL rendering context object. */
     context?: IRenderingContext;
     /**

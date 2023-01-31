@@ -1,3 +1,4 @@
+import { Color } from '@pixi/color';
 import { BLEND_MODES } from '@pixi/constants';
 
 /**
@@ -128,12 +129,10 @@ export function premultiplyTint(tint: number, alpha: number): number
  * @param {boolean} [premultiply=true] - do premultiply it
  * @returns {Float32Array} vec4 rgba
  */
-export function premultiplyTintToRgba(tint: number, alpha: number, out: Float32Array, premultiply?: boolean): Float32Array
+export function premultiplyTintToRgba(tint: number, alpha: number, out?: Float32Array, premultiply?: boolean): Float32Array
 {
-    out = out || new Float32Array(4);
-    out[0] = ((tint >> 16) & 0xFF) / 255.0;
-    out[1] = ((tint >> 8) & 0xFF) / 255.0;
-    out[2] = (tint & 0xFF) / 255.0;
+    out = Color.shared.setValue(tint).toRgbArray(out ?? new Float32Array(4));
+
     if (premultiply || premultiply === undefined)
     {
         out[0] *= alpha;

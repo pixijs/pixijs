@@ -1,4 +1,4 @@
-import { settings, utils } from '@pixi/core';
+import { Color, settings } from '@pixi/core';
 import { canUseNewCanvasBlendModes } from './utils/canUseNewCanvasBlendModes';
 
 import type { ICanvas, Texture } from '@pixi/core';
@@ -242,11 +242,7 @@ export const canvasUtils = {
         );
         context.restore();
 
-        const rgbValues = utils.hex2rgb(color);
-        const r = rgbValues[0];
-        const g = rgbValues[1];
-        const b = rgbValues[2];
-
+        const [r, g, b] = Color.shared.setValue(color).toArray();
         const pixelData = context.getImageData(0, 0, crop.width, crop.height);
 
         const pixels = pixelData.data;
@@ -268,17 +264,10 @@ export const canvasUtils = {
      * @returns {number} The rounded color.
      */
     roundColor: (color: number): number =>
-    {
-        const step = canvasUtils.cacheStepsPerColorChannel;
-
-        const rgbValues = utils.hex2rgb(color);
-
-        rgbValues[0] = Math.min(255, (rgbValues[0] / step) * step);
-        rgbValues[1] = Math.min(255, (rgbValues[1] / step) * step);
-        rgbValues[2] = Math.min(255, (rgbValues[2] / step) * step);
-
-        return utils.rgb2hex(rgbValues);
-    },
+        Color.shared
+            .setValue(color)
+            .round(canvasUtils.cacheStepsPerColorChannel)
+            .toNumber(),
 
     /**
      * Number of steps which will be used as a cap when rounding colors.

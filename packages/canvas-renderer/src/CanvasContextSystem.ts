@@ -158,7 +158,7 @@ export class CanvasContextSystem implements ISystem
     {
         const { activeContext: context, renderer } = this;
 
-        clearColor = clearColor ?? this.renderer.background.colorString;
+        clearColor = clearColor ?? this.renderer.background.hex;
 
         context.clearRect(0, 0, renderer.width, renderer.height);
 

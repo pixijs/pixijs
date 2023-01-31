@@ -5,6 +5,7 @@ import { deprecation, isWebGLSupported } from '@pixi/utils';
 import { UniformGroup } from './shader/UniformGroup';
 import { SystemManager } from './system/SystemManager';
 
+import type { ColorSource } from '@pixi/color';
 import type { MSAA_QUALITY, RENDERER_TYPE } from '@pixi/constants';
 import type { ExtensionMetadata } from '@pixi/extensions';
 import type { Rectangle } from '@pixi/math';
@@ -613,7 +614,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      * @member {number}
      * @deprecated since 7.0.0
      */
-    get backgroundColor(): number
+    get backgroundColor(): ColorSource
     {
         // #if _DEBUG
         // eslint-disable-next-line max-len
@@ -623,7 +624,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
         return this.background.color;
     }
 
-    set backgroundColor(value: number)
+    set backgroundColor(value: ColorSource)
     {
         // #if _DEBUG
         deprecation('7.0.0', 'renderer.backgroundColor has been deprecated, use renderer.background.color instead.');
@@ -644,7 +645,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
         deprecation('7.0.0', 'renderer.backgroundAlpha has been deprecated, use renderer.background.alpha instead.');
         // #endif
 
-        return this.background.color;
+        return this.background.alpha;
     }
 
     /**

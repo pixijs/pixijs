@@ -1,6 +1,7 @@
 import {
     BLEND_MODES,
     Circle,
+    Color,
     Ellipse,
     Matrix,
     PI_2,
@@ -13,7 +14,6 @@ import {
     State,
     Texture,
     UniformGroup,
-    utils,
 } from '@pixi/core';
 import { Container } from '@pixi/display';
 import { curves, LINE_CAP, LINE_JOIN } from './const';
@@ -897,7 +897,7 @@ export class Graphics extends Container
                 blendMode,
                 indices,
                 uvs,
-                _batchRGB: utils.hex2rgb(color) as Array<number>,
+                _batchRGB: Color.shared.setValue(color).toRgbArray(),
                 _tintRGB: color,
                 _texture: gI.style.texture,
                 alpha: gI.style.alpha,
@@ -1075,7 +1075,7 @@ export class Graphics extends Container
         {
             this.batchTint = this.tint;
 
-            const tintRGB = utils.hex2rgb(this.tint, temp);
+            const tintRGB = Color.shared.setValue(this.tint).toRgbArray(temp);
 
             for (let i = 0; i < this.batches.length; i++)
             {

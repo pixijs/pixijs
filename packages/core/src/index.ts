@@ -12,6 +12,7 @@ import './settings';
 export const VERSION = '$_VERSION';
 
 // Export dependencies
+export * from '@pixi/color';
 export * from '@pixi/constants';
 export * from '@pixi/extensions';
 export * from '@pixi/math';

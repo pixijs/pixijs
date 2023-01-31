@@ -36,14 +36,12 @@
     "*.d.ts"
   ],
   "dependencies": {
+    "@pixi/color": "7.1.2",
     "@pixi/constants": "7.1.2",
     "@pixi/settings": "7.1.2",
     "@types/earcut": "^2.1.0",
     "earcut": "^2.2.4",
     "eventemitter3": "^4.0.0",
     "url": "^0.11.0"
-  },
-  "devDependencies": {
-    "css-color-names": "^1.0.1"
   }
 }

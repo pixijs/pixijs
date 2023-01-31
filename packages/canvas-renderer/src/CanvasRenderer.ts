@@ -9,6 +9,7 @@ import {
 import type {
     BackgroundSystem,
     BLEND_MODES,
+    ColorSource,
     ExtensionMetadata,
     GenerateTextureSystem,
     ICanvas,
@@ -26,7 +27,7 @@ import type {
     RenderTexture,
     StartupOptions,
     StartupSystem,
-    ViewSystem,
+    ViewSystem
 } from '@pixi/core';
 import type { DisplayObject } from '@pixi/display';
 import type { CanvasContextSystem, SmoothingEnabledProperties } from './CanvasContextSystem';
@@ -539,7 +540,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
      * The background color to fill if not transparent
      * @deprecated since 7.0.0
      */
-    get backgroundColor(): number
+    get backgroundColor(): ColorSource
     {
         // #if _DEBUG
         // eslint-disable-next-line max-len
@@ -552,7 +553,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
     /**
      * @deprecated since 7.0.0
      */
-    set backgroundColor(value: number)
+    set backgroundColor(value: ColorSource)
     {
         // #if _DEBUG
         deprecation('7.0.0', 'renderer.backgroundColor has been deprecated, use renderer.background.color instead.');
@@ -573,7 +574,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
         deprecation('7.0.0', 'renderer.backgroundAlpha has been deprecated, use renderer.background.alpha instead.');
         // #endif
 
-        return this.background.color;
+        return this.background.alpha;
     }
 
     /**
