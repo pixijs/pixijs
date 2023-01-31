@@ -62,9 +62,9 @@ export class BackgroundSystem implements ISystem
         const { backgroundColor, background, backgroundAlpha } = options;
         const color = background ?? backgroundColor;
 
-        if (color)
+        if (color !== undefined)
         {
-            this.color = options.color;
+            this.color = color;
         }
 
         this.alpha = backgroundAlpha;
