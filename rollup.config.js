@@ -8,7 +8,7 @@ import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
 import jscc from 'rollup-plugin-jscc';
 import workspacesRun from 'workspaces-run';
-import repo from './lerna.json';
+import repo from './package.json';
 
 const bundleTarget = 'es2017';
 const moduleTarget = 'es2020';
