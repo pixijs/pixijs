@@ -61,7 +61,7 @@ async function main(): Promise<void>
     await spawn('npm', ['install', '--package-lock-only']);
     await spawn('git', ['add', '-A']);
     await spawn('git', ['commit', '-m', `v${nextVersion}`]);
-    await spawn('git', ['tag', '-a', `v${nextVersion}`]);
+    await spawn('git', ['tag', '-a', `v${nextVersion}`, '-m', `v${nextVersion}`]);
     await spawn('git', ['push']);
     await spawn('git', ['push', '--tags']);
 }
