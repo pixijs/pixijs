@@ -20,6 +20,7 @@ declare namespace GlobalMixins
 
     interface Settings
     {
+        /** @deprecated since 7.1.0 */
         SORTABLE_CHILDREN: boolean;
     }
 }
