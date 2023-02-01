@@ -38,7 +38,7 @@
     "postdist": "copyfiles -f bundles/*/dist/* dist && copyfiles -f packages/*/dist/* dist/packages",
     "prerelease": "run-s clean:build test dist",
     "release": "ts-node ./scripts/release.ts",
-    "publish-ci": "workspaces-run --only-fs=\"{packages,bundles}/*\" -- npm publish --access public",
+    "publish-ci": "workspaces-run --only-fs=\"{packages,bundles}/*\" -- npm publish",
     "webdoc": "webdoc"
   },
   "pre-commit": [
