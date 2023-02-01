@@ -32,7 +32,7 @@ async function main(): Promise<void>
 
     try
     {
-        await bump(currentVersion);
+        nextVersion = await bump(currentVersion);
     }
     catch (err)
     {
