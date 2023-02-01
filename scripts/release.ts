@@ -1,14 +1,9 @@
 import { execSync } from 'child_process';
-import fs from 'fs';
-import inquirer from 'inquirer';
 import path from 'path';
-import semver from 'semver';
 import workspacesRun from 'workspaces-run';
+import { bump } from './utils/bump';
+import { readJSON, writeJSON } from './utils/json';
 import { spawn } from './utils/spawn';
-
-// Read and write JSON from FS
-const readJSON = async (file: string) => JSON.parse(await fs.promises.readFile(file, 'utf8'));
-const writeJSON = (file: string, data: any) => fs.promises.writeFile(file, `${JSON.stringify(data, null, 2)}\n`);
 
 /**
  * Bump the version of all packages in the monorepo
@@ -33,39 +28,16 @@ async function main(): Promise<void>
     const rootPackageInfo = await readJSON(rootPackagePath);
     const { version: currentVersion } = rootPackageInfo;
 
-    const { bump, custom } = await inquirer.prompt<{bump: 'major' | 'minor' | 'patch' | 'custom', custom: string}>([{
-        name: 'bump',
-        type: 'list',
-        message: `Release version (currently v${currentVersion}):`,
-        choices: [
-            { value: 'major', name: `Major (v${semver.inc(currentVersion, 'major')})` },
-            { value: 'minor', name: `Minor (v${semver.inc(currentVersion, 'minor')})` },
-            { value: 'patch', name: `Patch (v${semver.inc(currentVersion, 'patch')})` },
-            { value: 'custom', name: `Custom version` },
-        ],
-    }, {
-        name: 'custom',
-        type: 'input',
-        message: 'What version? (e.g., 1.0.0)',
-        when: (answers) => answers.bump === 'custom',
-    }]);
+    let nextVersion: string;
 
-    const nextVersion = bump === 'custom' ? custom : semver.inc(currentVersion, bump as 'major' | 'minor' | 'patch');
-
-    // Make sure the version is valid
-    if (semver.valid(nextVersion) === null)
+    try
     {
-        // eslint-disable-next-line no-console
-        console.log(`Error: Invalid version: ${nextVersion}`);
-
-        process.exit(1);
+        await bump(currentVersion);
     }
-
-    // Make sure we are incrementing the version
-    if (semver.lt(nextVersion, currentVersion))
+    catch (err)
     {
         // eslint-disable-next-line no-console
-        console.log(`Error: Next version (v${nextVersion}) is less than current version (v${currentVersion}).`);
+        console.error((err as Error).message);
 
         process.exit(1);
     }
@@ -74,30 +46,41 @@ async function main(): Promise<void>
     rootPackageInfo.version = nextVersion;
     await writeJSON(rootPackagePath, rootPackageInfo);
 
-    // Update all the packages
+    // Update all the packages with versions
     await workspacesRun({ cwd: process.cwd() }, async (workspace) =>
     {
         workspace.config.version = nextVersion;
 
-        const { dependencies } = workspace.config;
-
-        Object.keys(dependencies || {})
-            .filter((n) => n.startsWith('@pixi'))
-            .forEach((n) =>
-            {
-                dependencies[n] = nextVersion;
-            });
+        bumpDependencies(workspace.config.dependencies, nextVersion);
+        bumpDependencies(workspace.config.devDependencies, nextVersion);
 
         await writeJSON(path.join(workspace.dir, 'package.json'), workspace.config);
     });
 
-    // Commit and tag the release
+    // Finish up: update lock, commit and tag the release
     await spawn('npm', ['install', '--package-lock-only']);
     await spawn('git', ['add', '-A']);
     await spawn('git', ['commit', '-m', `v${nextVersion}`]);
-    // await spawn('git', ['tag', '-a', `v${nextVersion}`]);
-    // await spawn('git', ['push']);
-    // await spawn('git', ['push', '--tags']);
+    await spawn('git', ['tag', '-a', `v${nextVersion}`]);
+    await spawn('git', ['push']);
+    await spawn('git', ['push', '--tags']);
+}
+
+/**
+ * Update the *dependencies in the package.json
+ * @param dependencies - Dependencies map
+ * @param version - Version to bump to
+ */
+function bumpDependencies(dependencies: Record<string, string> = {}, version: string)
+{
+    Object.keys(dependencies)
+        // Only consider bumping monorepo packages
+        .filter((n) => n.startsWith('@pixi') || n.startsWith('pixi.js'))
+        .forEach((n) =>
+        {
+            // replace with exact version
+            dependencies[n] = version;
+        });
 }
 
 main();
