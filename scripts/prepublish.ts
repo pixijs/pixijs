@@ -10,6 +10,8 @@ async function main()
     // Update all the packages with versions
     await workspacesRun({ cwd: process.cwd() }, async (workspace) =>
     {
+        if (workspace.config.private) return;
+
         if ('version' in workspace.config)
         {
             console.error(
