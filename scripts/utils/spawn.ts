@@ -12,8 +12,7 @@ export const spawn = (command: string, args: string[], options: childProcess.Spa
         const child = childProcess.spawn(command, args, {
             stdio: 'inherit',
             cwd: process.cwd(),
-            // See https://nodejs.org/api/child_process.html#spawning-bat-and-cmd-files-on-windows
-            shell: process.platform.startsWith('win'),
+            shell: process.platform === 'win32',
             ...options,
         });
 

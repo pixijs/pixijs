@@ -58,7 +58,8 @@ async function main(): Promise<void>
     });
 
     // Finish up: update lock, commit and tag the release
-    await spawn('npm', ['install', '--package-lock-only']);
+    // Having issues with npm@9 with package-lock-only, using latest 8 instead
+    await spawn('npx', ['--yes', 'npm@8.19.3', 'install', '--package-lock-only']);
     await spawn('git', ['add', '-A']);
     await spawn('git', ['commit', '-m', `v${nextVersion}`]);
     await spawn('git', ['tag', '-a', `v${nextVersion}`, '-m', `v${nextVersion}`]);
