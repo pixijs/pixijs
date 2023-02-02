@@ -164,7 +164,7 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
      * @param borders - Default borders used for 9-slice scaling. See {@link PIXI.NineSlicePlane}
      */
     constructor(baseTexture: BaseTexture<R>, frame?: Rectangle,
-        orig?: Rectangle, trim?: Rectangle, rotate?: number, anchor?: IPointData, borders?: INineSliceBorders)
+        orig?: Rectangle, trim?: Rectangle, rotate?: number, anchor?: IPointData, borders?: ITextureBorders)
     {
         super();
 
@@ -202,7 +202,7 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
         }
 
         this.defaultAnchor = anchor ? new Point(anchor.x, anchor.y) : new Point(0, 0);
-        this.defaultNineSliceBorders = borders;
+        this.defaultBorders = borders;
 
         this._updateID = 0;
 
@@ -328,7 +328,7 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
             this.trim?.clone(),
             this.rotate,
             this.defaultAnchor,
-            this.defaultNineSliceBorders
+            this.defaultBorders
         );
 
         if (this.noFrame)

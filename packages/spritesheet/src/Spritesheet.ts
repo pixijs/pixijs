@@ -1,6 +1,6 @@
 import { BaseTexture, Rectangle, Texture, utils } from '@pixi/core';
 
-import type { ImageResource, INineSliceBorders, IPointData } from '@pixi/core';
+import type { ImageResource, IPointData, ITextureBorders } from '@pixi/core';
 
 /** Represents the JSON data for a spritesheet atlas. */
 export interface ISpritesheetFrameData
@@ -22,7 +22,7 @@ export interface ISpritesheetFrameData
         y: number;
     };
     anchor?: IPointData;
-    borders?: INineSliceBorders;
+    borders?: ITextureBorders;
 }
 
 /** Atlas format. */
@@ -104,7 +104,7 @@ export interface ISpritesheetData
  * Sprite sheets can be packed using tools like {@link https://codeandweb.com/texturepacker|TexturePacker},
  * {@link https://renderhjs.net/shoebox/|Shoebox} or {@link https://github.com/krzysztof-o/spritesheet.js|Spritesheet.js}.
  * Default anchor points (see {@link PIXI.Texture#defaultAnchor}), default 9-slice borders
- * (see {@link PIXI.Texture#defaultNineSliceBorders}) and grouping of animation sprites are currently only
+ * (see {@link PIXI.Texture#defaultBorders}) and grouping of animation sprites are currently only
  * supported by TexturePacker.
  * @memberof PIXI
  */

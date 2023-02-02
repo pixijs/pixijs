@@ -90,10 +90,10 @@ export class NineSlicePlane extends SimplePlane
         /** The height of the NineSlicePlane, setting this will actually modify the vertices and UV's of this plane. */
         this._height = this._origHeight;
 
-        this._leftWidth = leftWidth ?? texture.defaultNineSliceBorders?.left ?? DEFAULT_BORDER_SIZE;
-        this._rightWidth = rightWidth ?? texture.defaultNineSliceBorders?.right ?? DEFAULT_BORDER_SIZE;
-        this._topHeight = topHeight ?? texture.defaultNineSliceBorders?.top ?? DEFAULT_BORDER_SIZE;
-        this._bottomHeight = bottomHeight ?? texture.defaultNineSliceBorders?.bottom ?? DEFAULT_BORDER_SIZE;
+        this._leftWidth = leftWidth ?? texture.defaultBorders?.left ?? DEFAULT_BORDER_SIZE;
+        this._rightWidth = rightWidth ?? texture.defaultBorders?.right ?? DEFAULT_BORDER_SIZE;
+        this._topHeight = topHeight ?? texture.defaultBorders?.top ?? DEFAULT_BORDER_SIZE;
+        this._bottomHeight = bottomHeight ?? texture.defaultBorders?.bottom ?? DEFAULT_BORDER_SIZE;
 
         // lets call the setter to ensure all necessary updates are performed
         this.texture = texture;
