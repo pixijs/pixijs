@@ -78,6 +78,7 @@
     "@pixi/sprite-tiling": "7.1.2",
     "@pixi/spritesheet": "7.1.2",
     "@pixi/text": "7.1.2",
-    "@pixi/text-bitmap": "7.1.2"
+    "@pixi/text-bitmap": "7.1.2",
+    "@pixi/text-html": "7.1.2"
   }
 }
