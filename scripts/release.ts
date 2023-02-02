@@ -1,6 +1,5 @@
 import { execSync } from 'child_process';
 import path from 'path';
-import workspacesRun from 'workspaces-run';
 import { bump } from './utils/bump';
 import { readJSON, writeJSON } from './utils/json';
 import { spawn } from './utils/spawn';
@@ -25,7 +24,7 @@ async function main(): Promise<void>
     }
 
     const rootPackagePath = path.join(process.cwd(), 'package.json');
-    const rootPackageInfo = await readJSON(rootPackagePath);
+    const rootPackageInfo = await readJSON<{version: string}>(rootPackagePath);
     const { version: currentVersion } = rootPackageInfo;
 
     let nextVersion: string;
@@ -46,20 +45,8 @@ async function main(): Promise<void>
     rootPackageInfo.version = nextVersion;
     await writeJSON(rootPackagePath, rootPackageInfo);
 
-    // Update all the packages with versions
-    await workspacesRun({ cwd: process.cwd() }, async (workspace) =>
-    {
-        workspace.config.version = nextVersion;
-
-        bumpDependencies(workspace.config.dependencies, nextVersion);
-        bumpDependencies(workspace.config.devDependencies, nextVersion);
-
-        await writeJSON(path.join(workspace.dir, 'package.json'), workspace.config);
-    });
-
     // Finish up: update lock, commit and tag the release
-    // Having issues with npm@9 with package-lock-only, using latest 8 instead
-    await spawn('npx', ['--yes', 'npm@8.19.3', 'install', '--package-lock-only']);
+    await spawn('npm', ['install', '--package-lock-only']);
     await spawn('git', ['add', '-A']);
     await spawn('git', ['commit', '-m', `v${nextVersion}`]);
     await spawn('git', ['tag', '-a', `v${nextVersion}`, '-m', `v${nextVersion}`]);
@@ -70,23 +57,6 @@ async function main(): Promise<void>
         await spawn('git', ['push']);
         await spawn('git', ['push', '--tags']);
     }
-}
-
-/**
- * Update the *dependencies in the package.json
- * @param dependencies - Dependencies map
- * @param version - Version to bump to
- */
-function bumpDependencies(dependencies: Record<string, string> = {}, version: string)
-{
-    Object.keys(dependencies)
-        // Only consider bumping monorepo packages
-        .filter((n) => n.startsWith('@pixi') || n.startsWith('pixi.js'))
-        .forEach((n) =>
-        {
-            // replace with exact version
-            dependencies[n] = version;
-        });
 }
 
 main();

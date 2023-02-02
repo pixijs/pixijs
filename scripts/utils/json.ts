@@ -4,7 +4,7 @@ import { promises } from 'fs';
  * Read JSON file using async
  * @param file
  */
-const readJSON = async (file: string) => JSON.parse(await promises.readFile(file, 'utf8'));
+const readJSON = async <T = any>(file: string): Promise<T> => JSON.parse(await promises.readFile(file, 'utf8')) as T;
 
 /**
  * Write JSON file using async
