@@ -16,8 +16,8 @@ const DEFAULT_UVS = new TextureUvs();
 
 export type TextureSource = string | BaseTexture | ImageSource;
 
-/** INineSliceBorders stores the width of the non-scalable borders of a {@link PIXI.NineSlicePlane} texture */
-export interface INineSliceBorders
+/** Stores the width of the non-scalable borders, for example when used with {@link PIXI.NineSlicePlane} texture */
+export interface ITextureBorders
 {
     /** left border in pixels */
     left: number;
