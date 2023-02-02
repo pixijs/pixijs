@@ -1,7 +1,7 @@
 import { execSync } from 'child_process';
 import path from 'path';
 import { bump } from './utils/bump';
-import { readJSON, writeJSON } from './utils/json';
+import { readJSON } from './utils/json';
 import { spawn } from './utils/spawn';
 
 /**
@@ -22,9 +22,9 @@ async function main(): Promise<void>
         process.exit(1);
     }
 
-    const rootPackagePath = path.join(process.cwd(), 'package.json');
-    const rootPackageInfo = await readJSON<{version: string}>(rootPackagePath);
-    const { version: currentVersion } = rootPackageInfo;
+    const { version: currentVersion } = await readJSON<{version: string}>(
+        path.join(process.cwd(), 'package.json')
+    );
 
     let nextVersion: string;
 
@@ -40,15 +40,8 @@ async function main(): Promise<void>
         process.exit(1);
     }
 
-    // Update the root version, we'll use in the future to track the latest version
-    rootPackageInfo.version = nextVersion;
-    await writeJSON(rootPackagePath, rootPackageInfo);
-
     // Finish up: update lock, commit and tag the release
-    await spawn('npm', ['install', '--package-lock-only']);
-    await spawn('git', ['add', '-A']);
-    await spawn('git', ['commit', '-m', `v${nextVersion}`]);
-    await spawn('git', ['tag', '-a', `v${nextVersion}`, '-m', `v${nextVersion}`]);
+    await spawn('npm', ['version', nextVersion]);
 
     // For testing purposes
     if (!process.argv.includes('--no-push'))
