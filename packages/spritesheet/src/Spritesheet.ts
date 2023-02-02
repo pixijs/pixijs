@@ -1,6 +1,6 @@
 import { BaseTexture, Rectangle, Texture, utils } from '@pixi/core';
 
-import type { ImageResource, IPointData } from '@pixi/core';
+import type { ImageResource, INineSliceBorders, IPointData } from '@pixi/core';
 
 /** Represents the JSON data for a spritesheet atlas. */
 export interface ISpritesheetFrameData
@@ -22,6 +22,7 @@ export interface ISpritesheetFrameData
         y: number;
     };
     anchor?: IPointData;
+    borders?: INineSliceBorders;
 }
 
 /** Atlas format. */
@@ -274,7 +275,8 @@ export class Spritesheet
                     orig,
                     trim,
                     data.rotated ? 2 : 0,
-                    data.anchor
+                    data.anchor,
+                    data.borders
                 );
 
                 // lets also add the frame to pixi's global cache for 'from' and 'fromLoader' functions
