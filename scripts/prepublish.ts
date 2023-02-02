@@ -10,7 +10,15 @@ async function main()
     // Update all the packages with versions
     await workspacesRun({ cwd: process.cwd() }, async (workspace) =>
     {
-        workspace.config.version = version;
+        if ('version' in workspace.config)
+        {
+            console.error(
+                `Error: ${workspace.dir}/package.json should not have a "version" property. `
+                + `Remove it before publishing.`);
+
+            process.exit(1);
+        }
+        workspace.config = { name: workspace.config.name, version, ...workspace.config };
 
         bumpDependencies(workspace.config.dependencies, version);
         bumpDependencies(workspace.config.devDependencies, version);

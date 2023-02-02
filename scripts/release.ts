@@ -17,8 +17,7 @@ async function main(): Promise<void>
 
     if (status.length > 0)
     {
-        // eslint-disable-next-line no-console
-        console.log('Error: You have uncommitted changes. Commit or stash them first.');
+        console.error('Error: You have uncommitted changes. Commit or stash them first.');
 
         process.exit(1);
     }
