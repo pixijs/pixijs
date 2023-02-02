@@ -22,15 +22,21 @@ async function main(): Promise<void>
         process.exit(1);
     }
 
-    const { version: currentVersion } = await readJSON<{version: string}>(
-        path.join(process.cwd(), 'package.json')
-    );
-
-    let nextVersion: string;
-
     try
     {
-        nextVersion = await bump(currentVersion);
+        const { version } = await readJSON<{version: string}>(
+            path.join(process.cwd(), 'package.json')
+        );
+
+        // Finish up: update lock, commit and tag the release
+        await spawn('npm', ['version', await bump(version)]);
+
+        // For testing purposes
+        if (!process.argv.includes('--no-push'))
+        {
+            await spawn('git', ['push']);
+            await spawn('git', ['push', '--tags']);
+        }
     }
     catch (err)
     {
@@ -38,16 +44,6 @@ async function main(): Promise<void>
         console.error((err as Error).message);
 
         process.exit(1);
-    }
-
-    // Finish up: update lock, commit and tag the release
-    await spawn('npm', ['version', nextVersion]);
-
-    // For testing purposes
-    if (!process.argv.includes('--no-push'))
-    {
-        await spawn('git', ['push']);
-        await spawn('git', ['push', '--tags']);
     }
 }
 
