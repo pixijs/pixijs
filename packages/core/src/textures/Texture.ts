@@ -122,7 +122,7 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
      * Default width of the non-scalable border that is used if 9-slice plane is created with this texture.
      * (See {@link PIXI.NineSlicePlane})
      */
-    public defaultNineSliceBorders?: INineSliceBorders;
+    public defaultBorders?: ITextureBorders;
 
     /** Default TextureMatrix instance for this texture. By default, that object is not created because its heavy. */
     public uvMatrix: TextureMatrix;
