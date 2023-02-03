@@ -27,9 +27,10 @@ async function main(): Promise<void>
         const { version } = await readJSON<{version: string}>(
             path.join(process.cwd(), 'package.json')
         );
+        const nextVersion = await bump(version);
 
         // Finish up: update lock, commit and tag the release
-        await spawn('npm', ['version', await bump(version)]);
+        await spawn('npm', ['version', nextVersion, '-m', `v${nextVersion}`]);
 
         // For testing purposes
         if (!process.argv.includes('--no-push'))
