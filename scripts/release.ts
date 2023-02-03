@@ -40,7 +40,6 @@ async function main(): Promise<void>
     }
     catch (err)
     {
-        // eslint-disable-next-line no-console
         console.error((err as Error).message);
 
         process.exit(1);
