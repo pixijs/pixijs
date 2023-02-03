@@ -1,4 +1,3 @@
-import { execSync } from 'child_process';
 import path from 'path';
 import { bump } from './utils/bump';
 import { readJSON } from './utils/json';
@@ -10,18 +9,6 @@ import { spawn } from './utils/spawn';
  */
 async function main(): Promise<void>
 {
-    const status = execSync('git status --porcelain', {
-        encoding: 'utf8',
-        cwd: process.cwd(),
-    });
-
-    if (status.length > 0)
-    {
-        console.error('Error: You have uncommitted changes. Commit or stash them first.');
-
-        process.exit(1);
-    }
-
     try
     {
         const { version } = await readJSON<{version: string}>(
