@@ -22,11 +22,11 @@ export class FederatedWheelEvent extends FederatedMouseEvent implements WheelEve
     deltaZ: number;
 
     /** Units specified in lines. */
-    DOM_DELTA_LINE = 0;
+    readonly DOM_DELTA_LINE = WheelEvent.DOM_DELTA_LINE;
 
     /** Units specified in pages. */
-    DOM_DELTA_PAGE = 1;
+    readonly DOM_DELTA_PAGE = WheelEvent.DOM_DELTA_PAGE;
 
     /** Units specified in pixels. */
-    DOM_DELTA_PIXEL = 2;
+    readonly DOM_DELTA_PIXEL = WheelEvent.DOM_DELTA_PIXEL;
 }
