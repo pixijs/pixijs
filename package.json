@@ -46,9 +46,9 @@
     "lintfix"
   ],
   "engines": {
-    "node": ">=14",
+    "node": ">=18",
     "yarn": "please-use-npm",
-    "npm": ">=7"
+    "npm": ">=8"
   },
   "devDependencies": {
     "@pixi/eslint-config": "^4.0.1",
