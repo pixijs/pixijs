@@ -108,8 +108,7 @@ export interface IRendererOptions extends GlobalMixins.IRendererOptions
     autoDensity?: boolean;
 
     /**
-     * The background color used to clear the canvas. It accepts hex numbers (e.g. `0xff0000`),
-     * hex strings (e.g. `'#f00'` or `'#ff0000'`) or color names (e.g. `'red'`).
+     * The background color used to clear the canvas. See {@link PIXI.ColorSource} for accepted color values.
      * @default 0x000000
      */
     backgroundColor?: ColorSource;
@@ -138,6 +137,7 @@ export interface IRendererOptions extends GlobalMixins.IRendererOptions
      * @default true
      */
     clearBeforeRender?: boolean;
+
     /** **WebGL Only.** User-provided WebGL rendering context object. */
     context?: IRenderingContext;
     /**
