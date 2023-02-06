@@ -28,6 +28,7 @@ jobs:
       with:
         node-version: 16
         registry-url: 'https://registry.npmjs.org'
+        cache: 'npm'
     - name: Install npm
       run: npm install -g npm@8
     - name: Install Dependencies
