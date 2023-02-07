@@ -13,23 +13,64 @@ import type {
 
 extend([namesPlugin]);
 
-/** Possible value types for Color class */
+/**
+ * Value types for the constructor of {@link PIXI.Color}.
+ * These types are extended from [colord](https://www.npmjs.com/package/colord) with some PixiJS-specific extensions.
+ *
+ * Possible value types are:
+ * - [Color names](https://www.w3.org/TR/css-color-4/#named-colors):
+ *   `'red'`, `'green'`, `'blue'`, `'white'`, etc.
+ * - RGB hex integers (`0xRRGGBB`):
+ *   `0xff0000`, `0x00ff00`, `0x0000ff`, etc.
+ * - [RGB(A) hex strings](https://www.w3.org/TR/css-color-4/#hex-notation):
+ *   - 6 digits (`RRGGBB`): `'ff0000'`, `'#00ff00'`, `'0x0000ff'`, etc.
+ *   - 3 digits (`RGB`): `'f00'`, `'#0f0'`, `'0x00f'`, etc.
+ *   - 8 digits (`RRGGBBAA`): `'ff000080'`, `'#00ff0080'`, `'0x0000ff80'`, etc.
+ *   - 4 digits (`RGBA`): `'f008'`, `'#0f08'`, `'0x00f8'`, etc.
+ * - RGB(A) objects:
+ *   `{ r: 255, g: 0, b: 0 }`, `{ r: 255, g: 0, b: 0, a: 0.5 }`, etc.
+ * - [RGB(A) strings](https://www.w3.org/TR/css-color-4/#rgb-functions):
+ *   `'rgb(255, 0, 0)'`, `'rgb(100% 0% 0%)'`, `'rgba(255, 0, 0, 0.5)'`, `'rgba(100% 0% 0% / 50%)'`, etc.
+ * - RGB(A) arrays:
+ *   `[1, 0, 0]`, `[1, 0, 0, 0.5]`, etc.
+ * - RGB(A) Float32Array:
+ *   `new Float32Array([1, 0, 0])`, `new Float32Array([1, 0, 0, 0.5])`, etc.
+ * - RGB(A) Uint8Array:
+ *   `new Uint8Array([255, 0, 0])`, `new Uint8Array([255, 0, 0, 128])`, etc.
+ * - RGB(A) Uint8ClampedArray:
+ *   `new Uint8ClampedArray([255, 0, 0])`, `new Uint8ClampedArray([255, 0, 0, 128])`, etc.
+ * - HSL(A) objects:
+ *   `{ h: 0, s: 100, l: 50 }`, `{ h: 0, s: 100, l: 50, a: 0.5 }`, etc.
+ * - [HSL(A) strings](https://www.w3.org/TR/css-color-4/#the-hsl-notation):
+ *   `'hsl(0, 100%, 50%)'`, `'hsl(0deg 100% 50%)'`, `'hsla(0, 100%, 50%, 0.5)'`, `'hsla(0deg 100% 50% / 50%)'`, etc.
+ * - HSV(A) objects:
+ *   `{ h: 0, s: 100, v: 100 }`, `{ h: 0, s: 100, v: 100, a: 0.5 }`, etc.
+ * - {@link PIXI.Color} objects.
+ * @memberof PIXI
+ */
 export type ColorSource = string | number | number[] | Float32Array | Uint8Array | Uint8ClampedArray
 | HslColor | HslaColor | HsvColor | HsvaColor | RgbColor | RgbaColor | Color;
 
 /**
- * Color utility class
+ * Color utility class.
  * @example
  * import { Color } from 'pixi.js';
  * new Color('red').toArray(); // [1, 0, 0, 1]
  * new Color(0xff0000).toArray(); // [1, 0, 0, 1]
  * new Color('ff0000').toArray(); // [1, 0, 0, 1]
  * new Color('#f00').toArray(); // [1, 0, 0, 1]
- * new Color([1, 0, 0, 0.5]).toArray(); // [1, 0, 0, 0.5]
- * new Color([1, 1, 1]).toArray(); // [1, 1, 1, 1]
+ * new Color('0xff0000ff').toArray(); // [1, 0, 0, 1]
+ * new Color('#f00f').toArray(); // [1, 0, 0, 1]
+ * new Color({ r: 255, g: 0, b: 0, a: 0.5 }).toArray(); // [1, 0, 0, 0.5]
  * new Color('rgb(255, 0, 0, 0.5)').toArray(); // [1, 0, 0, 0.5]
- * new Color({h: 0, s: 100, l: 50, a: 0.5}).toArray(); // [1, 0, 0, 0.5]
- * new Color({h: 0, s: 100, v: 100, a: 0.5}).toArray(); // [1, 0, 0, 0.5]
+ * new Color([1, 1, 1]).toArray(); // [1, 1, 1, 1]
+ * new Color([1, 0, 0, 0.5]).toArray(); // [1, 0, 0, 0.5]
+ * new Color(new Float32Array([1, 0, 0, 0.5])).toArray(); // [1, 0, 0, 0.5]
+ * new Color(new Uint8Array([255, 0, 0, 255])).toArray(); // [1, 0, 0, 1]
+ * new Color(new Uint8ClampedArray([255, 0, 0, 255])).toArray(); // [1, 0, 0, 1]
+ * new Color({ h: 0, s: 100, l: 50, a: 0.5 }).toArray(); // [1, 0, 0, 0.5]
+ * new Color('hsl(0, 100%, 50%, 50%)').toArray(); // [1, 0, 0, 0.5]
+ * new Color({ h: 0, s: 100, v: 100, a: 0.5 }).toArray(); // [1, 0, 0, 0.5]
  * @memberof PIXI
  */
 export class Color
