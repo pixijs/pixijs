@@ -338,6 +338,7 @@ export class Color
             Math.min(255, (g / step) * step),
             Math.min(255, (b / step) * step),
         ]);
+        this.refreshInt();
 
         return this;
     }
