@@ -13,23 +13,64 @@ import type {
 
 extend([namesPlugin]);
 
-/** Possible value types for Color class */
+/**
+ * Value types for the constructor of {@link PIXI.Color}.
+ * These types are extended from [colord](https://www.npmjs.com/package/colord) with some PixiJS-specific extensions.
+ *
+ * Possible value types are:
+ * - [Color names](https://www.w3.org/TR/css-color-4/#named-colors):
+ *   `'red'`, `'green'`, `'blue'`, `'white'`, etc.
+ * - RGB hex integers (`0xRRGGBB`):
+ *   `0xff0000`, `0x00ff00`, `0x0000ff`, etc.
+ * - [RGB(A) hex strings](https://www.w3.org/TR/css-color-4/#hex-notation):
+ *   - 6 digits (`RRGGBB`): `'ff0000'`, `'#00ff00'`, `'0x0000ff'`, etc.
+ *   - 3 digits (`RGB`): `'f00'`, `'#0f0'`, `'0x00f'`, etc.
+ *   - 8 digits (`RRGGBBAA`): `'ff000080'`, `'#00ff0080'`, `'0x0000ff80'`, etc.
+ *   - 4 digits (`RGBA`): `'f008'`, `'#0f08'`, `'0x00f8'`, etc.
+ * - RGB(A) objects:
+ *   `{ r: 255, g: 0, b: 0 }`, `{ r: 255, g: 0, b: 0, a: 0.5 }`, etc.
+ * - [RGB(A) strings](https://www.w3.org/TR/css-color-4/#rgb-functions):
+ *   `'rgb(255, 0, 0)'`, `'rgb(100% 0% 0%)'`, `'rgba(255, 0, 0, 0.5)'`, `'rgba(100% 0% 0% / 50%)'`, etc.
+ * - RGB(A) arrays:
+ *   `[1, 0, 0]`, `[1, 0, 0, 0.5]`, etc.
+ * - RGB(A) Float32Array:
+ *   `new Float32Array([1, 0, 0])`, `new Float32Array([1, 0, 0, 0.5])`, etc.
+ * - RGB(A) Uint8Array:
+ *   `new Uint8Array([255, 0, 0])`, `new Uint8Array([255, 0, 0, 128])`, etc.
+ * - RGB(A) Uint8ClampedArray:
+ *   `new Uint8ClampedArray([255, 0, 0])`, `new Uint8ClampedArray([255, 0, 0, 128])`, etc.
+ * - HSL(A) objects:
+ *   `{ h: 0, s: 100, l: 50 }`, `{ h: 0, s: 100, l: 50, a: 0.5 }`, etc.
+ * - [HSL(A) strings](https://www.w3.org/TR/css-color-4/#the-hsl-notation):
+ *   `'hsl(0, 100%, 50%)'`, `'hsl(0deg 100% 50%)'`, `'hsla(0, 100%, 50%, 0.5)'`, `'hsla(0deg 100% 50% / 50%)'`, etc.
+ * - HSV(A) objects:
+ *   `{ h: 0, s: 100, v: 100 }`, `{ h: 0, s: 100, v: 100, a: 0.5 }`, etc.
+ * - {@link PIXI.Color} objects.
+ * @memberof PIXI
+ */
 export type ColorSource = string | number | number[] | Float32Array | Uint8Array | Uint8ClampedArray
 | HslColor | HslaColor | HsvColor | HsvaColor | RgbColor | RgbaColor | Color;
 
 /**
- * Color utility class
+ * Color utility class.
  * @example
  * import { Color } from 'pixi.js';
  * new Color('red').toArray(); // [1, 0, 0, 1]
  * new Color(0xff0000).toArray(); // [1, 0, 0, 1]
  * new Color('ff0000').toArray(); // [1, 0, 0, 1]
  * new Color('#f00').toArray(); // [1, 0, 0, 1]
- * new Color([1, 0, 0, 0.5]).toArray(); // [1, 0, 0, 0.5]
- * new Color([1, 1, 1]).toArray(); // [1, 1, 1, 1]
+ * new Color('0xff0000ff').toArray(); // [1, 0, 0, 1]
+ * new Color('#f00f').toArray(); // [1, 0, 0, 1]
+ * new Color({ r: 255, g: 0, b: 0, a: 0.5 }).toArray(); // [1, 0, 0, 0.5]
  * new Color('rgb(255, 0, 0, 0.5)').toArray(); // [1, 0, 0, 0.5]
- * new Color({h: 0, s: 100, l: 50, a: 0.5}).toArray(); // [1, 0, 0, 0.5]
- * new Color({h: 0, s: 100, v: 100, a: 0.5}).toArray(); // [1, 0, 0, 0.5]
+ * new Color([1, 1, 1]).toArray(); // [1, 1, 1, 1]
+ * new Color([1, 0, 0, 0.5]).toArray(); // [1, 0, 0, 0.5]
+ * new Color(new Float32Array([1, 0, 0, 0.5])).toArray(); // [1, 0, 0, 0.5]
+ * new Color(new Uint8Array([255, 0, 0, 255])).toArray(); // [1, 0, 0, 1]
+ * new Color(new Uint8ClampedArray([255, 0, 0, 255])).toArray(); // [1, 0, 0, 1]
+ * new Color({ h: 0, s: 100, l: 50, a: 0.5 }).toArray(); // [1, 0, 0, 0.5]
+ * new Color('hsl(0, 100%, 50%, 50%)').toArray(); // [1, 0, 0, 0.5]
+ * new Color({ h: 0, s: 100, v: 100, a: 0.5 }).toArray(); // [1, 0, 0, 0.5]
  * @memberof PIXI
  */
 export class Color
@@ -53,7 +94,7 @@ export class Color
     private static readonly HEX_PATTERN = /^(#|0x)?(([a-f0-9]{3}){1,2}([a-f0-9]{2})?)$/i;
 
     /** Internal color source, from constructor or set value */
-    private _value: Exclude<ColorSource, Color>;
+    private _value: Exclude<ColorSource, Color> | null;
 
     /** Normalized rgba component, floats from 0-1 */
     private _components: Float32Array;
@@ -107,7 +148,8 @@ export class Color
     }
 
     /**
-     * Set the current color source
+     * Set the current color source. A return value of `null` means the previous
+     * value was overridden (e.g., `multiply`, `round`).
      * @type {PIXI.ColorSource}
      */
     set value(value: ColorSource)
@@ -125,7 +167,7 @@ export class Color
             this._value = value;
         }
     }
-    get value(): Exclude<ColorSource, Color>
+    get value(): Exclude<ColorSource, Color> | null
     {
         return this._value;
     }
@@ -229,7 +271,8 @@ export class Color
     }
 
     /**
-     * Multiply with another color
+     * Multiply with another color. This action is destructive, and will
+     * override the previous `value` property to be `null`.
      * @param {PIXI.ColorSource} value - The color to multiply by.
      */
     multiply(value: ColorSource): this
@@ -240,6 +283,9 @@ export class Color
         this._components[1] *= g;
         this._components[2] *= b;
         this._components[3] *= a;
+
+        this.refreshInt();
+        this._value = null;
 
         return this;
     }
@@ -283,7 +329,8 @@ export class Color
     }
 
     /**
-     * Rounds the specified color according to the step.
+     * Rounds the specified color according to the step. This action is destructive, and will
+     * override the previous `value` property to be `null`.
      * @param step - Number of steps which will be used as a cap when rounding colors
      */
     round(step: number): this
@@ -295,6 +342,8 @@ export class Color
             Math.min(255, (g / step) * step),
             Math.min(255, (b / step) * step),
         ]);
+        this.refreshInt();
+        this._value = null;
 
         return this;
     }
@@ -380,14 +429,20 @@ export class Color
         // Cache normalized values for rgba and hex integer
         if (components)
         {
-            const [r, g, b] = components;
-
             this._components.set(components);
-            this._int = (((r * 255) << 16) + ((g * 255) << 8) + (b * 255 | 0));
+            this.refreshInt();
         }
         else
         {
             throw new Error(`Unable to convert color ${value}`);
         }
+    }
+
+    /** Refresh the internal color rgb number */
+    private refreshInt(): void
+    {
+        const [r, g, b] = this._components;
+
+        this._int = (((r * 255) << 16) + ((g * 255) << 8) + (b * 255 | 0));
     }
 }
