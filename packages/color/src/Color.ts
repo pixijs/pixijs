@@ -282,6 +282,8 @@ export class Color
         this._components[2] *= b;
         this._components[3] *= a;
 
+        this.refreshInt();
+
         return this;
     }
 
@@ -421,14 +423,20 @@ export class Color
         // Cache normalized values for rgba and hex integer
         if (components)
         {
-            const [r, g, b] = components;
-
             this._components.set(components);
-            this._int = (((r * 255) << 16) + ((g * 255) << 8) + (b * 255 | 0));
+            this.refreshInt();
         }
         else
         {
             throw new Error(`Unable to convert color ${value}`);
         }
+    }
+
+    /** Refresh the internal color rgb number */
+    private refreshInt(): void
+    {
+        const [r, g, b] = this._components;
+
+        this._int = (((r * 255) << 16) + ((g * 255) << 8) + (b * 255 | 0));
     }
 }
