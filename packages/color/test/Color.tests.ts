@@ -204,4 +204,15 @@ describe('Color', () =>
             expect(color.toUint8RgbArray()).toEqual(expected.uint8RgbArray);
         });
     });
+
+    it('should multiply color correctly', () =>
+    {
+        const color = new Color([0.5, 0.5, 0.5, 0.5]).multiply([0.5, 0.5, 0.5, 0.5]);
+
+        expect(color.red).toBe(0.25);
+        expect(color.blue).toBe(0.25);
+        expect(color.green).toBe(0.25);
+        expect(color.alpha).toBe(0.25);
+        expect(color.toNumber()).toBe(0x3f3f3f);
+    });
 });
