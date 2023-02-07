@@ -292,12 +292,11 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      *  **WebGL Only.** Whether to enable anti-aliasing. This may affect performance.
      * @param {boolean} [options.autoDensity=false] -
      *  Whether the CSS dimensions of the renderer's view should be resized automatically.
-     * @param {number|string} [options.background] - Alias for `options.backgroundColor`.
+     * @param {PIXI.ColorSource} [options.background] - Alias for `options.backgroundColor`.
      * @param {number} [options.backgroundAlpha=1] -
      *  Transparency of the background color, value from `0` (fully transparent) to `1` (fully opaque).
-     * @param {number|string} [options.backgroundColor=0x000000] -
-     *  The background color used to clear the canvas. It accepts hex numbers (e.g. `0xff0000`),
-     *  hex strings (e.g. `'#f00'` or `'#ff0000'`) or color names (e.g. `'red'`).
+     * @param {PIXI.ColorSource} [options.backgroundColor=0x000000] -
+     *  The background color used to clear the canvas. See {@link PIXI.ColorSource} for accepted color values.
      * @param {boolean} [options.clearBeforeRender=true] - Whether to clear the canvas before new render passes.
      * @param {PIXI.IRenderingContext} [options.context] - **WebGL Only.** User-provided WebGL rendering context object.
      * @param {number} [options.height=600] - The height of the renderer's view.
