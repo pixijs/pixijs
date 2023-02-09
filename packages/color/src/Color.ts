@@ -94,7 +94,7 @@ export class Color
     private static readonly HEX_PATTERN = /^(#|0x)?(([a-f0-9]{3}){1,2}([a-f0-9]{2})?)$/i;
 
     /** Internal color source, from constructor or set value */
-    private _value: Exclude<ColorSource, Color>;
+    private _value: Exclude<ColorSource, Color> | null;
 
     /** Normalized rgba component, floats from 0-1 */
     private _components: Float32Array;
@@ -148,7 +148,8 @@ export class Color
     }
 
     /**
-     * Set the current color source
+     * Set the current color source. A return value of `null` means the previous
+     * value was overridden (e.g., `multiply`, `round`).
      * @type {PIXI.ColorSource}
      */
     set value(value: ColorSource)
@@ -166,7 +167,7 @@ export class Color
             this._value = value;
         }
     }
-    get value(): Exclude<ColorSource, Color>
+    get value(): Exclude<ColorSource, Color> | null
     {
         return this._value;
     }
@@ -270,7 +271,8 @@ export class Color
     }
 
     /**
-     * Multiply with another color
+     * Multiply with another color. This action is destructive, and will
+     * override the previous `value` property to be `null`.
      * @param {PIXI.ColorSource} value - The color to multiply by.
      */
     multiply(value: ColorSource): this
@@ -281,6 +283,9 @@ export class Color
         this._components[1] *= g;
         this._components[2] *= b;
         this._components[3] *= a;
+
+        this.refreshInt();
+        this._value = null;
 
         return this;
     }
@@ -324,7 +329,8 @@ export class Color
     }
 
     /**
-     * Rounds the specified color according to the step.
+     * Rounds the specified color according to the step. This action is destructive, and will
+     * override the previous `value` property to be `null`.
      * @param step - Number of steps which will be used as a cap when rounding colors
      */
     round(step: number): this
@@ -336,6 +342,8 @@ export class Color
             Math.min(255, (g / step) * step),
             Math.min(255, (b / step) * step),
         ]);
+        this.refreshInt();
+        this._value = null;
 
         return this;
     }
@@ -421,14 +429,20 @@ export class Color
         // Cache normalized values for rgba and hex integer
         if (components)
         {
-            const [r, g, b] = components;
-
             this._components.set(components);
-            this._int = (((r * 255) << 16) + ((g * 255) << 8) + (b * 255 | 0));
+            this.refreshInt();
         }
         else
         {
             throw new Error(`Unable to convert color ${value}`);
         }
+    }
+
+    /** Refresh the internal color rgb number */
+    private refreshInt(): void
+    {
+        const [r, g, b] = this._components;
+
+        this._int = (((r * 255) << 16) + ((g * 255) << 8) + (b * 255 | 0));
     }
 }
