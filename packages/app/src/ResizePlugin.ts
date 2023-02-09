@@ -4,14 +4,14 @@ import type { ExtensionMetadata, Renderer } from '@pixi/core';
 
 type ResizeableRenderer = Pick<Renderer, 'resize'>;
 
-export interface ResizePluginOptions {
+export interface ResizePluginOptions
+{
     /**
      * Element to automatically resize stage to.
      * @memberof PIXI.IApplicationOptions
      */
     resizeTo?: Window | HTMLElement;
 }
-
 
 /**
  * Middleware for for Application's resize functionality
