@@ -50,33 +50,33 @@ declare namespace GlobalMixins
 
     interface Settings
     {
-        /** @deprecated */
+        /** @deprecated since 7.1.0 */
         FILTER_RESOLUTION: number;
-        /** @deprecated */
+        /** @deprecated since 7.1.0 */
         FILTER_MULTISAMPLE: import('@pixi/constants').MSAA_QUALITY;
-        /** @deprecated */
+        /** @deprecated since 7.1.0 */
         SPRITE_MAX_TEXTURES: number;
-        /** @deprecated */
+        /** @deprecated since 7.1.0 */
         SPRITE_BATCH_SIZE: number;
-        /** @deprecated */
+        /** @deprecated since 7.1.0 */
         MIPMAP_TEXTURES: import('@pixi/constants').MIPMAP_MODES;
-        /** @deprecated */
+        /** @deprecated since 7.1.0 */
         ANISOTROPIC_LEVEL: number;
-        /** @deprecated */
+        /** @deprecated since 7.1.0 */
         WRAP_MODE: import('@pixi/constants').WRAP_MODES;
-        /** @deprecated */
+        /** @deprecated since 7.1.0 */
         SCALE_MODE: import('@pixi/constants').SCALE_MODES;
-        /** @deprecated */
+        /** @deprecated since 7.1.0 */
         CAN_UPLOAD_SAME_BUFFER: boolean;
-        /** @deprecated */
+        /** @deprecated since 7.1.0 */
         PRECISION_VERTEX: import('@pixi/constants').PRECISION,
-        /** @deprecated */
+        /** @deprecated since 7.1.0 */
         PRECISION_FRAGMENT: import('@pixi/constants').PRECISION,
-        /** @deprecated */
+        /** @deprecated since 7.1.0 */
         GC_MODE: import('@pixi/constants').GC_MODES,
-        /** @deprecated */
+        /** @deprecated since 7.1.0 */
         GC_MAX_IDLE: number,
-        /** @deprecated */
+        /** @deprecated since 7.1.0 */
         GC_MAX_CHECK_COUNT: number,
 
         STRICT_TEXTURE_CACHE: boolean;

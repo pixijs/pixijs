@@ -8,7 +8,8 @@ import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
 import jscc from 'rollup-plugin-jscc';
 import workspacesRun from 'workspaces-run';
-import repo from './lerna.json';
+import repo from './package.json';
+import toposort from 'toposort';
 
 const bundleTarget = 'es2017';
 const moduleTarget = 'es2020';
@@ -60,25 +61,32 @@ async function main()
     ];
 
     const results = [];
-    const packages = [];
+    const packagesMap = {};
+    const dependencies = [];
 
     // Collect the list of packages
-    await workspacesRun({ cwd: __dirname, orderByDeps: true }, async (pkg) =>
+    await workspacesRun({ cwd: __dirname }, async (pkg) =>
     {
         if (!pkg.config.private)
         {
-            packages.push(pkg);
+            packagesMap[pkg.name] = pkg;
+
+            // workspaces-run doesn't support relative paths with orderByDeps
+            // see: https://github.com/jamiebuilds/workspaces-run/issues/4
+            // so we need to sort the packages by their dependencies
+            Object.keys({...pkg.config.dependencies})
+                .filter(name => pkg.config.dependencies[name].startsWith('file:'))
+                .forEach(name => dependencies.push([name, pkg.config.name]));
         }
     });
 
-    packages.forEach((pkg) =>
+    toposort(dependencies).map(name => packagesMap[name]).forEach((pkg) =>
     {
         const {
             plugin,
             pluginExports = true,
             bundle,
             bundleModule,
-            version,
             dependencies,
             nodeDependencies,
             peerDependencies,
@@ -124,7 +132,7 @@ async function main()
 
         const banner = [
             `/*!`,
-            ` * ${pkg.name} - v${version}`,
+            ` * ${pkg.name} - v${repo.version}`,
             ` * Compiled ${(new Date()).toUTCString().replace(/GMT/g, 'UTC')}`,
             ` *`,
             ` * ${pkg.name} is licensed under the MIT License.`,
