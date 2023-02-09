@@ -73,10 +73,10 @@ export class NineSlicePlane extends SimplePlane
      */
     constructor(
         texture: Texture,
-        leftWidth = DEFAULT_BORDER_SIZE,
-        topHeight = DEFAULT_BORDER_SIZE,
-        rightWidth = DEFAULT_BORDER_SIZE,
-        bottomHeight = DEFAULT_BORDER_SIZE
+        leftWidth?: number,
+        topHeight?: number,
+        rightWidth?: number,
+        bottomHeight?: number
     )
     {
         super(Texture.WHITE, 4, 4);
@@ -90,10 +90,10 @@ export class NineSlicePlane extends SimplePlane
         /** The height of the NineSlicePlane, setting this will actually modify the vertices and UV's of this plane. */
         this._height = this._origHeight;
 
-        this._leftWidth = leftWidth;
-        this._rightWidth = rightWidth;
-        this._topHeight = topHeight;
-        this._bottomHeight = bottomHeight;
+        this._leftWidth = leftWidth ?? texture.defaultBorders?.left ?? DEFAULT_BORDER_SIZE;
+        this._rightWidth = rightWidth ?? texture.defaultBorders?.right ?? DEFAULT_BORDER_SIZE;
+        this._topHeight = topHeight ?? texture.defaultBorders?.top ?? DEFAULT_BORDER_SIZE;
+        this._bottomHeight = bottomHeight ?? texture.defaultBorders?.bottom ?? DEFAULT_BORDER_SIZE;
 
         // lets call the setter to ensure all necessary updates are performed
         this.texture = texture;
