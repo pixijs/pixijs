@@ -79,6 +79,7 @@ declare namespace GlobalMixins
         /** @deprecated since 7.1.0 */
         GC_MAX_CHECK_COUNT: number,
 
+        RENDER_OPTIONS: import('@pixi/core').IRendererOptions;
         STRICT_TEXTURE_CACHE: boolean;
         PREFER_ENV: import('@pixi/constants').ENV;
     }

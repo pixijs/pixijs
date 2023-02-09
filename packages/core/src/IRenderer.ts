@@ -1,4 +1,3 @@
-import type { ColorSource } from '@pixi/color';
 import type { RENDERER_TYPE } from '@pixi/constants';
 import type { Matrix, Rectangle, Transform } from '@pixi/math';
 import type { ICanvas } from '@pixi/settings';
@@ -6,6 +5,7 @@ import type { IRendererPlugins } from './plugin/PluginSystem';
 import type { IGenerateTextureOptions } from './renderTexture/GenerateTextureSystem';
 import type { RenderTexture } from './renderTexture/RenderTexture';
 import type { SystemManager } from './system/SystemManager';
+import type { BackgroundSytemOptions, ContextSystemOptions, StartupSystemOptions, ViewSystemOptions } from './systems';
 import type { ImageSource } from './textures/BaseTexture';
 
 /**
@@ -82,94 +82,19 @@ export interface IRenderingContext extends WebGL2RenderingContext
  * @memberof PIXI
  * @see PIXI.settings.RENDER_OPTIONS
  */
-export interface IRendererOptions extends GlobalMixins.IRendererOptions
+export interface IRendererOptions extends GlobalMixins.IRendererOptions,
+    BackgroundSytemOptions,
+    ContextSystemOptions,
+    ViewSystemOptions,
+    StartupSystemOptions
 {
-    /** The canvas to use as the view. If omitted, a new canvas will be created. */
-    view?: ICanvas;
-    /**
-     * The width of the renderer's view.
-     * @default 800
-     */
-    width?: number;
-    /**
-     * The height of the renderer's view.
-     * @default 600
-     */
-    height?: number;
-    /**
-     * The resolution / device pixel ratio of the renderer.
-     * @default PIXI.settings.RESOLUTION
-     */
-    resolution?: number;
-    /**
-     * Whether the CSS dimensions of the renderer's view should be resized automatically.
-     * @default false
-     */
-    autoDensity?: boolean;
-
-    /**
-     * The background color used to clear the canvas. See {@link PIXI.ColorSource} for accepted color values.
-     * @default 0x000000
-     */
-    backgroundColor?: ColorSource;
-    /** Alias for `backgroundColor`. */
-    background?: ColorSource;
-    /**
-     * Transparency of the background color, value from `0` (fully transparent) to `1` (fully opaque).
-     * @default 1
-     */
-    backgroundAlpha?: number;
-    /**
-     * **Deprecated since 7.0.0, use `premultipliedAlpha` and `backgroundAlpha` instead.**
-     *
-     * Pass-through value for canvas' context attribute `alpha`. This option is for cases where the
-     * canvas needs to be opaque, possibly for performance reasons on some older devices.
-     * If you want to set transparency, please use `backgroundAlpha`.
-     *
-     * **WebGL Only:** When set to `'notMultiplied'`, the canvas' context attribute `alpha` will be
-     * set to `true` and `premultipliedAlpha` will be to `false`.
-     * @default true
-     * @deprecated since 7.0.0
-     */
-    useContextAlpha?: boolean | 'notMultiplied';
-    /**
-     * Whether to clear the canvas before new render passes.
-     * @default true
-     */
-    clearBeforeRender?: boolean;
-
-    /** **WebGL Only.** User-provided WebGL rendering context object. */
-    context?: IRenderingContext;
-    /**
-     * **WebGL Only.** Whether to enable anti-aliasing. This may affect performance.
-     * @default false
-     */
-    antialias?: boolean;
-    /**
-     * **WebGL Only.** A hint indicating what configuration of GPU is suitable for the WebGL context,
-     * can be `'default'`, `'high-performance'` or `'low-power'`.
-     * Setting to `'high-performance'` will prioritize rendering performance over power consumption,
-     * while setting to `'low-power'` will prioritize power saving over rendering performance.
-     */
-    powerPreference?: WebGLPowerPreference;
-    /**
-     * **WebGL Only.** Whether the compositor will assume the drawing buffer contains colors with premultiplied alpha.
-     * @default true
-     */
-    premultipliedAlpha?: boolean;
-    /**
-     * **WebGL Only.** Whether to enable drawing buffer preservation. If enabled, the drawing buffer will preserve
-     * its value until cleared or overwritten. Enable this if you need to call `toDataUrl` on the WebGL context.
-     * @default false
-     */
-    preserveDrawingBuffer?: boolean;
-
-    /**
-     * Whether to log the version and type information of renderer to console.
-     * @default false
-     */
-    hello?: boolean;
 }
+
+/**
+ * @deprecated since 7.2.0
+ * @see PIXI.IRendererOptions
+ */
+export type IRenderOptions = IRendererOptions;
 
 export interface IRendererRenderOptions
 {

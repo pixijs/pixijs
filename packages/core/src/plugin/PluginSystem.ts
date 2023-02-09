@@ -4,7 +4,6 @@ import { deprecation } from '@pixi/utils';
 import type { ExtensionMetadata } from '@pixi/extensions';
 import type { IRenderer } from '../IRenderer';
 import type { ISystem } from '../system/ISystem';
-import type { StartupOptions } from '../systems';
 
 export interface IRendererPlugins extends GlobalMixins.IRendererPlugins
 {
@@ -25,6 +24,9 @@ export class PluginSystem implements ISystem
         ],
         name: '_plugin',
     };
+
+    /** @ignore */
+    public rendererPlugins: IRendererPlugins;
 
     /**
      * Collection of plugins.
@@ -81,11 +83,10 @@ export class PluginSystem implements ISystem
     /**
      * Initialize the plugins.
      * @protected
-     * @param options
      */
-    init(options: StartupOptions): void
+    init(): void
     {
-        const staticMap = options.plugins;
+        const staticMap = this.rendererPlugins;
 
         for (const o in staticMap)
         {

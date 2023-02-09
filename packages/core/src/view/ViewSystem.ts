@@ -6,15 +6,72 @@ import type { ExtensionMetadata } from '@pixi/extensions';
 import type { ICanvas } from '@pixi/settings';
 import type { IRenderer } from '../IRenderer';
 import type { ISystem } from '../system/ISystem';
-import type { StartupOptions } from '../systems';
+
+export interface ViewSystemOptions
+{
+    /**
+     * The canvas to use as the view. If omitted, a new canvas will be created.
+     * @memberof PIXI.IRendererOptions
+     */
+    view?: ICanvas;
+    /**
+     * The width of the renderer's view.
+     * @memberof PIXI.IRendererOptions
+     */
+    width?: number;
+    /**
+     * The height of the renderer's view.
+     * @memberof PIXI.IRendererOptions
+     */
+    height?: number;
+    /**
+     * The resolution / device pixel ratio of the renderer.
+     * @memberof PIXI.IRendererOptions
+     */
+    resolution?: number;
+    /**
+     * Whether the CSS dimensions of the renderer's view should be resized automatically.
+     * @memberof PIXI.IRendererOptions
+     */
+    autoDensity?: boolean;
+}
 
 /**
  * The view system manages the main canvas that is attached to the DOM.
  * This main role is to deal with how the holding the view reference and dealing with how it is resized.
  * @memberof PIXI
  */
-export class ViewSystem implements ISystem<boolean>
+export class ViewSystem implements ISystem<ViewSystemOptions, boolean>
 {
+    /** @ignore */
+    static defaultOptions = {
+        /**
+         * {@link PIXI.IRendererOptions.width}
+         * @default 800
+         * @memberof PIXI.settings.RENDER_OPTIONS
+         */
+        width: 800,
+        /**
+         * {@link PIXI.IRendererOptions.height}
+         * @default 600
+         * @memberof PIXI.settings.RENDER_OPTIONS
+         */
+        height: 600,
+        /**
+         * {@link PIXI.IRendererOptions.resolution}
+         * @type {number}
+         * @default PIXI.settings.RESOLUTION
+         * @memberof PIXI.settings.RENDER_OPTIONS
+         */
+        resolution: settings.RESOLUTION,
+        /**
+         * {@link PIXI.IRendererOptions.autoDensity}
+         * @default false
+         * @memberof PIXI.settings.RENDER_OPTIONS
+         */
+        autoDensity: false,
+    };
+
     /** @ignore */
     static extension: ExtensionMetadata = {
         type: [
@@ -62,7 +119,7 @@ export class ViewSystem implements ISystem<boolean>
      * initiates the view system
      * @param {PIXI.ViewOptions} options - the options for the view
      */
-    init(options: StartupOptions): void
+    init(options: ViewSystemOptions): void
     {
         this.screen = new Rectangle(0, 0, options.width, options.height);
 

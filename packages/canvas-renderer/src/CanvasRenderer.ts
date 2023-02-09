@@ -25,7 +25,6 @@ import type {
     Rectangle,
     RENDERER_TYPE,
     RenderTexture,
-    StartupOptions,
     StartupSystem,
     ViewSystem
 } from '@pixi/core';
@@ -166,30 +165,9 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
     public objectRenderer: CanvasObjectRendererSystem;
 
     /**
-     * @param {PIXI.IRendererOptions} [options] - The optional renderer parameters.
-     * @param {boolean} [options.autoDensity=false] -
-     *  Whether the CSS dimensions of the renderer's view should be resized automatically.
-     * @param {PIXI.ColorSource} [options.background] - Alias for `options.backgroundColor`.
-     * @param {number} [options.backgroundAlpha=1] -
-     *  Transparency of the background color, value from `0` (fully transparent) to `1` (fully opaque).
-     * @param {PIXI.ColorSource} [options.backgroundColor=0x000000] -
-     *  The background color used to clear the canvas. See {@link PIXI.ColorSource} for accepted color values.
-     * @param {boolean} [options.clearBeforeRender=true] - Whether to clear the canvas before new render passes.
-     * @param {PIXI.IRenderingContext} [options.context] - **WebGL Only.** User-provided WebGL rendering context object.
-     * @param {number} [options.height=600] - The height of the renderer's view.
-     * @param {boolean} [options.hello=false] - Whether to log the version and type information of renderer to console.
-     * @param {number} [options.resolution=PIXI.settings.RESOLUTION] -
-     *  The resolution / device pixel ratio of the renderer.
-     * @param {boolean} [options.useContextAlpha=true] -
-     *  **Deprecated since 7.0.0, use `premultipliedAlpha` and `backgroundAlpha` instead.** \
-     *  Pass-through value for canvas' context attribute `alpha`. This option is for cases where the
-     *  canvas needs to be opaque, possibly for performance reasons on some older devices.
-     *  If you want to set transparency, please use `backgroundAlpha`.
-     * @param {PIXI.ICanvas} [options.view=null] -
-     *  The canvas to use as the view. If omitted, a new canvas will be created.
-     * @param {number} [options.width=800] - The width of the renderer's view.
+     * @param {PIXI.IRendererOptions} [options] - See {@link PIXI.settings.RENDER_OPTIONS} for defaults.
      */
-    constructor(options?: IRendererOptions)
+    constructor(options?: Partial<IRendererOptions>)
     {
         super();
 
@@ -232,13 +210,9 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
         }
 
         // convert our big blob of options into system specific ones..
-        const startupOptions: StartupOptions = {
-            plugins: CanvasRenderer.__plugins,
-            ...options
-        };
-
-        this.options = options;
-        this.startup.run(startupOptions);
+        this.plugins.rendererPlugins = CanvasRenderer.__plugins;
+        this.options = options as IRendererOptions;
+        this.startup.run(this.options);
     }
 
     /**
