@@ -77,6 +77,7 @@
     "@pixi/sprite-tiling": "file:../../packages/sprite-tiling",
     "@pixi/spritesheet": "file:../../packages/spritesheet",
     "@pixi/text": "file:../../packages/text",
-    "@pixi/text-bitmap": "file:../../packages/text-bitmap"
+    "@pixi/text-bitmap": "file:../../packages/text-bitmap",
+    "@pixi/text-html": "file:../../packages/text-html"
   }
 }
