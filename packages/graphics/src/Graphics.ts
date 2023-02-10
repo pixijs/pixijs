@@ -631,7 +631,7 @@ export class Graphics extends Container
      */
     private normalizeColor(options: Pick<IFillStyleOptions, 'color' | 'alpha'>): void
     {
-        const temp = Color.shared.setValue(options.color);
+        const temp = Color.shared.setValue(options.color ?? 0);
 
         options.color = temp.toNumber();
         options.alpha ??= temp.alpha;
