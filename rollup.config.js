@@ -80,7 +80,12 @@ async function main()
         }
     });
 
-    toposort(dependencies).map(name => packagesMap[name]).forEach((pkg) =>
+    // Sort the packages into a flat list, however
+    // this list excludes non-graph packages (graphics-extras, unsafe-eval, etc)
+    const packagesGraph = toposort(dependencies);
+    const packagesExtras = Object.keys(packagesMap).filter(name => !packagesGraph.includes(name));
+
+    [...packagesGraph, ...packagesExtras].map(name => packagesMap[name]).forEach((pkg) =>
     {
         const {
             plugin,
