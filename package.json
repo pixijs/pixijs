@@ -13,7 +13,6 @@
     "clean:types": "rimraf \"{bundles,packages}/*/lib/**/*.d.ts\"",
     "clean:out": "rimraf out",
     "clean:dist": "rimraf dist/*",
-    "clean:modules": "lerna clean --yes",
     "clean": "run-s clean:*",
     "test:pkg": "ts-node --transpile-only ./test/index.ts",
     "test:pkg:debug": "cross-env DEBUG_MODE=1 ts-node --transpile-only ./test/index.ts",
