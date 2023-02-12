@@ -81,6 +81,10 @@ export class Application<VIEW extends ICanvas = ICanvas>
      *  The background color used to clear the canvas. See {@link PIXI.ColorSource} for accepted color values.
      * @param {boolean} [options.clearBeforeRender=true] - Whether to clear the canvas before new render passes.
      * @param {PIXI.IRenderingContext} [options.context] - **WebGL Only.** User-provided WebGL rendering context object.
+     * @param {PIXI.Interactive} [options.defaultInteraction='auto'] -
+     *  The default interaction mode for all display objects.
+     *  This option only is available when using **@pixi/events** package
+     *  (included in the **pixi.js** and **pixi.js-legacy** bundle), otherwise it will be ignored.
      * @param {boolean} [options.forceCanvas=false] -
      *  Force using {@link PIXI.CanvasRenderer}, even if WebGL is available. This option only is available when
      *  using **pixi.js-legacy** or **@pixi/canvas-renderer** packages, otherwise it will throw an error.
