@@ -210,7 +210,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
         }
 
         // convert our big blob of options into system specific ones..
-        this.plugins.rendererPlugins = CanvasRenderer.__plugins;
+        this._plugin.rendererPlugins = CanvasRenderer.__plugins;
         this.options = options as IRendererOptions;
         this.startup.run(this.options);
     }

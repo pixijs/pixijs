@@ -357,7 +357,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
             options.backgroundAlpha = options.useContextAlpha === false ? 1 : options.backgroundAlpha;
         }
 
-        this.plugins.rendererPlugins = Renderer.__plugins;
+        this._plugin.rendererPlugins = Renderer.__plugins;
         this.options = options as IRendererOptions;
         this.startup.run(this.options);
     }
