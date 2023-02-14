@@ -16,7 +16,11 @@ const DEFAULT_UVS = new TextureUvs();
 
 export type TextureSource = string | BaseTexture | ImageSource;
 
-/** Stores the width of the non-scalable borders, for example when used with {@link PIXI.NineSlicePlane} texture */
+/**
+ * Stores the width of the non-scalable borders, for example when used with {@link PIXI.NineSlicePlane} texture.
+ * @memberof PIXI
+ * @since 7.2.0
+ */
 export interface ITextureBorders
 {
     /** left border in pixels */
@@ -120,7 +124,8 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
 
     /**
      * Default width of the non-scalable border that is used if 9-slice plane is created with this texture.
-     * (See {@link PIXI.NineSlicePlane})
+     * @since 7.2.0
+     * @see PIXI.NineSlicePlane
      */
     public defaultBorders?: ITextureBorders;
 

@@ -9,8 +9,13 @@ import type {
     TextStyleTextBaseline
 } from '@pixi/text';
 
-// HTMLText support more white-space options
-type HTMLTextStyleWhiteSpace = 'normal' | 'pre' | 'pre-line' | 'nowrap' | 'pre-wrap';
+/**
+ * HTMLText support more white-space options.
+ * @memberof PIXI
+ * @since 7.2.0
+ * @see PIXI.IHTMLTextStyle
+ */
+export type HTMLTextStyleWhiteSpace = 'normal' | 'pre' | 'pre-line' | 'nowrap' | 'pre-wrap';
 
 // Subset of ITextStyle
 type ITextStyleIgnore = 'whiteSpace'
@@ -24,23 +29,22 @@ type ITextStyleIgnore = 'whiteSpace'
 
 /**
  * Modifed versions from ITextStyle.
- * @extends ITextStyle
  * @memberof PIXI
+ * @extends PIXI.ITextStyle
+ * @since 7.2.0
  */
-interface IHTMLTextStyle extends Omit<ITextStyle, ITextStyleIgnore>
+export interface IHTMLTextStyle extends Omit<ITextStyle, ITextStyleIgnore>
 {
-    /**
-     * White-space with expanded options
-     * @type {'normal'|'pre'|'pre-line'|'nowrap'|'pre-wrap'}
-     */
+    /** White-space with expanded options. */
     whiteSpace: HTMLTextStyleWhiteSpace;
 }
 
 /**
  * Font information for HTMLText
  * @memberof PIXI
+ * @since 7.2.0
  */
-interface IHTMLFont
+export interface IHTMLFont
 {
     /** User-supplied URL request */
     originalUrl: string;
@@ -63,11 +67,11 @@ interface IHTMLFont
 /**
  * Used internally to restrict text style usage and convert easily to CSS.
  * @class
- * @extends PIXI.TextStyle
  * @memberof PIXI
- * @param {PIXI.ITextStyle|IHTMLTextStyle} [style] - Style to copy.
+ * @param {PIXI.ITextStyle|PIXI.IHTMLTextStyle} [style] - Style to copy.
+ * @since 7.2.0
  */
-class HTMLTextStyle extends TextStyle
+export class HTMLTextStyle extends TextStyle
 {
     /** The collection of installed fonts */
     public static availableFonts: Record<string, IHTMLFont> = {};
@@ -498,6 +502,3 @@ class HTMLTextStyle extends TextStyle
         return super.lineJoin;
     }
 }
-
-export { HTMLTextStyle };
-export type { HTMLTextStyleWhiteSpace, IHTMLTextStyle };

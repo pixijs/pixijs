@@ -35,7 +35,11 @@ export class EventSystem
 
     private static _defaultInteraction: boolean | Interactive;
 
-    /** The default interaction mode for all display objects. */
+    /**
+     * The default interaction mode for all display objects.
+     * @readonly
+     * @since 7.2.0
+     */
     public static get defaultInteraction()
     {
         return this._defaultInteraction;

@@ -37,7 +37,10 @@ export enum LINE_CAP
     SQUARE = 'square'
 }
 
-/** @deprecated */
+/**
+ * @memberof PIXI
+ * @deprecated
+ */
 export interface IGraphicsCurvesSettings
 {
     adaptive: boolean;

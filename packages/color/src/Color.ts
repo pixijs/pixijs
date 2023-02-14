@@ -47,6 +47,7 @@ extend([namesPlugin]);
  *   `{ h: 0, s: 100, v: 100 }`, `{ h: 0, s: 100, v: 100, a: 0.5 }`, etc.
  * - {@link PIXI.Color} objects.
  * @memberof PIXI
+ * @since 7.2.0
  */
 export type ColorSource = string | number | number[] | Float32Array | Uint8Array | Uint8ClampedArray
 | HslColor | HslaColor | HsvColor | HsvaColor | RgbColor | RgbaColor | Color;
@@ -72,6 +73,7 @@ export type ColorSource = string | number | number[] | Float32Array | Uint8Array
  * new Color('hsl(0, 100%, 50%, 50%)').toArray(); // [1, 0, 0, 0.5]
  * new Color({ h: 0, s: 100, v: 100, a: 0.5 }).toArray(); // [1, 0, 0, 0.5]
  * @memberof PIXI
+ * @since 7.2.0
  */
 export class Color
 {
