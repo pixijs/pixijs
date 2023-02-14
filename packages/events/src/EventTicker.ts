@@ -2,6 +2,12 @@ import { Ticker, UPDATE_PRIORITY } from '@pixi/core';
 
 import type { EventSystem } from './EventSystem';
 
+/**
+ * This class handles automatic firing of PointerEvents
+ * in the case where the pointer is stationary for too long.
+ * This is to ensure that hit-tests are still run on moving objects.
+ * @memberof PIXI
+ */
 class EventsTickerClass
 {
     /** The event system. */
@@ -130,5 +136,7 @@ class EventsTickerClass
  * This class handles automatic firing of PointerEvents
  * in the case where the pointer is stationary for too long.
  * This is to ensure that hit-tests are still run on moving objects.
+ * @memberof PIXI
+ * @type {PIXI.EventsTickerClass}
  */
 export const EventsTicker = new EventsTickerClass();

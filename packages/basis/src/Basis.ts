@@ -126,10 +126,7 @@ export type BasisTextureExtensions = {
 };
 /* eslint-enable camelcase */
 
-/**
- * API provided by basis_universal WebGL library.
- * @ignore
- */
+/** API provided by basis_universal WebGL library. */
 export type BasisBinding = {
     BasisFile: typeof BasisFile,
     initializeBasis(): void

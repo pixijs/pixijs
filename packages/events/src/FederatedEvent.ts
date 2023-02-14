@@ -118,7 +118,7 @@ export class FederatedEvent<N extends UIEvent = UIEvent> implements UIEvent
     }
 
     /**
-     * Fallback for the deprecated {@link PIXI.InteractionEvent.data}.
+     * Fallback for the deprecated @code{PIXI.InteractionEvent.data}.
      * @deprecated since 7.0.0
      */
     get data(): this

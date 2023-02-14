@@ -51,7 +51,7 @@ export class ImageResource extends BaseImageResource
     alphaMode: ALPHA_MODES;
 
     /**
-     * The ImageBitmap element created for a {@code HTMLImageElement}.
+     * The ImageBitmap element created for a {@link HTMLImageElement}.
      * @default null
      */
     bitmap: ImageBitmap;

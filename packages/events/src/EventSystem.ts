@@ -627,7 +627,7 @@ export class EventSystem
     }
 
     /**
-     * Normalizes the {@code nativeEvent} into a federateed {@code FederatedPointerEvent}.
+     * Normalizes the `nativeEvent` into a federateed {@link PIXI.FederatedPointerEvent}.
      * @param event
      * @param nativeEvent
      */
