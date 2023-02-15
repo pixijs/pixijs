@@ -58,7 +58,8 @@ export interface IHitArea
 export type FederatedEventHandler<T= FederatedPointerEvent> = (event: T) => void;
 
 /**
- * The type of interaction a DisplayObject can be.
+ * The type of interaction a DisplayObject can be. For more information on values and their meaning,
+ * see {@link PIXI.DisplayObject.interactive DisplayObject's interactive property}.
  * @memberof PIXI
  * @since 7.2.0
  */
@@ -603,6 +604,7 @@ export const FederatedDisplayObject: IFederatedDisplayObject = {
      *     // Handle event
      * });
      * @memberof PIXI.DisplayObject#
+     * @type {PIXI.Interactive|boolean}
      */
     interactive: EventSystem.defaultInteraction,
     /** Internal reference to the normalised interactive value. This should always be used instead of interactive */

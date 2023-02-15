@@ -33,7 +33,7 @@ export class EventSystem
         ],
     };
 
-    private static _defaultInteraction: boolean | Interactive;
+    private static _defaultInteraction: Interactive;
 
     /**
      * The default interaction mode for all display objects.
@@ -135,7 +135,7 @@ export class EventSystem
         this.setTargetElement(view as HTMLCanvasElement);
         this.resolution = resolution;
         // allow for false to keep backwards compatibility
-        EventSystem._defaultInteraction = options?.defaultInteraction ?? false;
+        EventSystem._defaultInteraction = options?.defaultInteraction ?? 'auto';
     }
 
     /**

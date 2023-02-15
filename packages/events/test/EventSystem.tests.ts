@@ -424,4 +424,20 @@ describe('EventSystem', () =>
         expect(graphics.interactive).toEqual('dynamic');
         expect(graphics._internalInteractive).toEqual('dynamic');
     });
+
+    it('should use auto for the default interaction when undefined', () =>
+    {
+        const renderer = new Renderer({
+            width: 100,
+            height: 100,
+        });
+
+        expect(renderer.options.defaultInteraction).toBeUndefined();
+        expect(EventSystem.defaultInteraction).toEqual('auto');
+
+        const graphics = new Graphics();
+
+        expect(graphics.interactive).toEqual('auto');
+        expect(graphics._internalInteractive).toEqual('auto');
+    });
 });
