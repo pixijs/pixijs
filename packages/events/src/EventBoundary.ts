@@ -297,7 +297,7 @@ export class EventBoundary
     }
 
     /**
-     * Propagate the passed event from from {@link EventBoundary.rootTarget this.rootTarget} to its
+     * Propagate the passed event from from {@link PIXI.EventBoundary.rootTarget this.rootTarget} to its
      * target {@code e.target}.
      * @param e - The event to propagate.
      * @param type
@@ -346,7 +346,7 @@ export class EventBoundary
     }
 
     /**
-     * Emits the event {@link e} to all display objects. The event is propagated in the bubbling phase always.
+     * Emits the event {@code e} to all display objects. The event is propagated in the bubbling phase always.
      *
      * This is used in the `pointermove` legacy mode.
      * @param e - The emitted event.
@@ -398,7 +398,7 @@ export class EventBoundary
     }
 
     /**
-     * Recursive implementation for {@link EventBoundary.hitTest hitTest}.
+     * Recursive implementation for {@link PIXI.EventBoundary.hitTest hitTest}.
      * @param currentTarget - The DisplayObject that is to be hit tested.
      * @param interactive - Flags whether `currentTarget` or one of its parents are interactive.
      * @param location - The location that is being tested for overlap.
@@ -408,7 +408,7 @@ export class EventBoundary
      *  cannot pass the hit test. It is used as a preliminary optimization to prune entire subtrees
      *  of the scene graph.
      * @returns An array holding the hit testing target and all its ancestors in order. The first element
-     *  is the target itself and the last is {@link EventBoundary.rootTarget rootTarget}. This is the opposite
+     *  is the target itself and the last is {@link PIXI.EventBoundary.rootTarget rootTarget}. This is the opposite
      *  order w.r.t. the propagation path. If no hit testing target is found, null is returned.
      */
     protected hitTestRecursive(
@@ -493,7 +493,7 @@ export class EventBoundary
     /**
      * Checks whether the display object or any of its children cannot pass the hit test at all.
      *
-     * {@link EventBoundary}'s implementation uses the {@link PIXI.DisplayObject.hitArea hitArea}
+     * {@link PIXI.EventBoundary}'s implementation uses the {@link PIXI.DisplayObject.hitArea hitArea}
      * and {@link PIXI.DisplayObject._mask} for pruning.
      * @param displayObject
      * @param location
@@ -988,8 +988,8 @@ export class EventBoundary
      * Maps the upstream `pointerupoutside` event to a downstream `pointerupoutside` event, bubbling from the original
      * `pointerdown` target to `rootTarget`.
      *
-     * (The most specific ancestor of the `pointerdown` event and the `pointerup` event must the {@code EventBoundary}'s
-     * root because the `pointerup` event occurred outside of the boundary.)
+     * (The most specific ancestor of the `pointerdown` event and the `pointerup` event must the
+     * `{@link PIXI.EventBoundary}'s root because the `pointerup` event occurred outside of the boundary.)
      *
      * `touchendoutside`, `mouseupoutside`, and `rightupoutside` events are fired as well for specific pointer
      * types. The tracking data for the specific pointer is cleared of a `pressTarget`.
@@ -1352,7 +1352,7 @@ export class EventBoundary
     }
 
     /**
-     * Similar to {@link EventEmitter.emit}, except it stops if the `propagationImmediatelyStopped` flag
+     * Similar to {@link PIXI.EventEmitter.emit}, except it stops if the `propagationImmediatelyStopped` flag
      * is set on the event.
      * @param e - The event to call each listener with.
      * @param type - The event key.

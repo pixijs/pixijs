@@ -97,7 +97,7 @@ type GD8Symmetry = number;
  * of an angle of `a: GD8Constant` are the vectors `(uX(a), uY(a))`
  * and `(vX(a), vY(a))`. These aren't necessarily unit vectors.
  *
- * **Origin:**<br>
+ * **Origin:**
  *  This is the small part of gameofbombs.com portal system. It works.
  * @see PIXI.groupD8.E
  * @see PIXI.groupD8.SE

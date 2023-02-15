@@ -68,7 +68,7 @@ export class RenderTextureSystem implements ISystem
     /**
      * The destination frame for the render-target's projection mapping.
      *
-     * See {@link PIXI.Projection#destinationFrame} for more details.
+     * See {@link PIXI.ProjectionSystem#destinationFrame} for more details.
      */
     public readonly destinationFrame: Rectangle;
 

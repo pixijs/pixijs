@@ -6,6 +6,9 @@ import type { LoadAsset } from '../types';
  * The extension priority for loader parsers.
  * Helpful when managing multiple parsers that share the same extension
  * test. The higher priority parsers will be checked first.
+ * @static
+ * @memberof PIXI
+ * @enum {number}
  */
 export enum LoaderParserPriority
 // eslint-disable-next-line @typescript-eslint/indent

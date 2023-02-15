@@ -1,6 +1,6 @@
 import isMobileCall from 'ismobilejs';
 
-type isMobileResult = {
+export type isMobileResult = {
     apple: {
         phone: boolean;
         ipod: boolean;

@@ -132,7 +132,7 @@ export class BaseImageResource extends Resource
         super.update();
     }
 
-    /** Destroy this {@link BaseImageResource} */
+    /** Destroy this {@link PIXI.BaseImageResource} */
     override dispose(): void
     {
         this.source = null;

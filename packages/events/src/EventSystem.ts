@@ -85,7 +85,7 @@ export class EventSystem
     /** The resolution used to convert between the DOM client space into world space. */
     public resolution = 1;
 
-    /** The renderer managing this {@link EventSystem}. */
+    /** The renderer managing this {@link PIXI.EventSystem}. */
     public renderer: IRenderer;
 
     private currentCursor: string;
@@ -332,7 +332,7 @@ export class EventSystem
     }
 
     /**
-     * Passive handler for `wheel` events on {@link EventSystem.domElement this.domElement}.
+     * Passive handler for `wheel` events on {@link PIXI.EventSystem.domElement this.domElement}.
      * @param nativeEvent - The native wheel event.
      */
     protected onWheel(nativeEvent: WheelEvent): void
@@ -627,7 +627,7 @@ export class EventSystem
     }
 
     /**
-     * Normalizes the {@code nativeEvent} into a federateed {@code FederatedPointerEvent}.
+     * Normalizes the `nativeEvent` into a federateed {@link PIXI.FederatedPointerEvent}.
      * @param event
      * @param nativeEvent
      */

@@ -9,7 +9,6 @@ const tempMatrix = new Matrix();
 /**
  * Rendering context for all browsers. This includes platform-specific
  * properties that are not included in the spec for CanvasRenderingContext2D
- * @private
  */
 export interface CrossPlatformCanvasRenderingContext2D extends ICanvasRenderingContext2D
 {

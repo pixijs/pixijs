@@ -31,7 +31,7 @@ settings.PREFER_ENV = ENV.WEBGL2;
  * {@link PIXI.BaseTexture.from BaseTexture.from}.
  * Otherwise, these `from` calls throw an exception. Using this property
  * can be useful if you want to enforce preloading all assets with
- * {@link PIXI.Loader Loader}.
+ * {@link PIXI.Assets Loader}.
  * @static
  * @name STRICT_TEXTURE_CACHE
  * @memberof PIXI.settings
