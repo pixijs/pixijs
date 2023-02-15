@@ -1,9 +1,17 @@
 import { extensions, ExtensionType } from '@pixi/core';
 
 import type { ExtensionMetadata, Renderer } from '@pixi/core';
-import type { IApplicationOptions } from './Application';
 
 type ResizeableRenderer = Pick<Renderer, 'resize'>;
+
+export interface ResizePluginOptions
+{
+    /**
+     * Element to automatically resize stage to.
+     * @memberof PIXI.IApplicationOptions
+     */
+    resizeTo?: Window | HTMLElement;
+}
 
 /**
  * Middleware for for Application's resize functionality
@@ -30,7 +38,7 @@ export class ResizePlugin
      * @private
      * @param {object} [options] - See application options
      */
-    static init(options?: IApplicationOptions): void
+    static init(options: ResizePluginOptions): void
     {
         Object.defineProperty(this, 'resizeTo',
             /**

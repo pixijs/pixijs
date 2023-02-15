@@ -29,7 +29,7 @@ import type { GenerateTextureSystem, IGenerateTextureOptions } from './renderTex
 import type { RenderTexture } from './renderTexture/RenderTexture';
 import type { RenderTextureSystem } from './renderTexture/RenderTextureSystem';
 import type { ShaderSystem } from './shader/ShaderSystem';
-import type { StartupOptions, StartupSystem } from './startup/StartupSystem';
+import type { StartupSystem } from './startup/StartupSystem';
 import type { StateSystem } from './state/StateSystem';
 import type { TextureGCSystem } from './textures/TextureGCSystem';
 import type { TextureSystem } from './textures/TextureSystem';
@@ -275,7 +275,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      * @param options
      * @private
      */
-    static test(options?: IRendererOptions): boolean
+    static test(options?: Partial<IRendererOptions>): boolean
     {
         if (options?.forceCanvas)
         {
@@ -286,48 +286,9 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
     }
 
     /**
-     * @param {PIXI.IRendererOptions} [options] - The optional renderer parameters.
-     * @param {boolean} [options.antialias=false] -
-     *  **WebGL Only.** Whether to enable anti-aliasing. This may affect performance.
-     * @param {boolean} [options.autoDensity=false] -
-     *  Whether the CSS dimensions of the renderer's view should be resized automatically.
-     * @param {PIXI.ColorSource} [options.background] - Alias for `options.backgroundColor`.
-     * @param {number} [options.backgroundAlpha=1] -
-     *  Transparency of the background color, value from `0` (fully transparent) to `1` (fully opaque).
-     * @param {PIXI.ColorSource} [options.backgroundColor=0x000000] -
-     *  The background color used to clear the canvas. See {@link PIXI.ColorSource} for accepted color values.
-     * @param {boolean} [options.clearBeforeRender=true] - Whether to clear the canvas before new render passes.
-     * @param {PIXI.IRenderingContext} [options.context] - **WebGL Only.** User-provided WebGL rendering context object.
-     * @param {PIXI.Interactive} [options.defaultInteraction='auto'] -
-     *  The default interaction mode for all display objects.
-     *  This option only is available when using **@pixi/events** package
-     *  (included in the **pixi.js** and **pixi.js-legacy** bundle), otherwise it will be ignored.
-     * @param {number} [options.height=600] - The height of the renderer's view.
-     * @param {boolean} [options.hello=false] - Whether to log the version and type information of renderer to console.
-     * @param {string} [options.powerPreference] -
-     *  **WebGL Only.** A hint indicating what configuration of GPU is suitable for the WebGL context,
-     *  can be `'default'`, `'high-performance'` or `'low-power'`.
-     *  Setting to `'high-performance'` will prioritize rendering performance over power consumption,
-     *  while setting to `'low-power'` will prioritize power saving over rendering performance.
-     * @param {boolean} [options.premultipliedAlpha=true] -
-     *  **WebGL Only.** Whether the compositor will assume the drawing buffer contains colors with premultiplied alpha.
-     * @param {boolean} [options.preserveDrawingBuffer=false] -
-     *  **WebGL Only.** Whether to enable drawing buffer preservation. If enabled, the drawing buffer will preserve
-     *  its value until cleared or overwritten. Enable this if you need to call `toDataUrl` on the WebGL context.
-     * @param {number} [options.resolution=PIXI.settings.RESOLUTION] -
-     *  The resolution / device pixel ratio of the renderer.
-     * @param {boolean|'notMultiplied'} [options.useContextAlpha=true] -
-     *  **Deprecated since 7.0.0, use `premultipliedAlpha` and `backgroundAlpha` instead.** \
-     *  Pass-through value for canvas' context attribute `alpha`. This option is for cases where the
-     *  canvas needs to be opaque, possibly for performance reasons on some older devices.
-     *  If you want to set transparency, please use `backgroundAlpha`. \
-     *  **WebGL Only:** When set to `'notMultiplied'`, the canvas' context attribute `alpha` will be
-     *  set to `true` and `premultipliedAlpha` will be to `false`.
-     * @param {PIXI.ICanvas} [options.view=null] -
-     *  The canvas to use as the view. If omitted, a new canvas will be created.
-     * @param {number} [options.width=800] - The width of the renderer's view.
+     * @param {PIXI.IRendererOptions} [options] - See {@link PIXI.settings.RENDER_OPTIONS} for defaults.
      */
-    constructor(options?: IRendererOptions)
+    constructor(options?: Partial<IRendererOptions>)
     {
         super();
 
@@ -395,33 +356,9 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
             options.backgroundAlpha = options.useContextAlpha === false ? 1 : options.backgroundAlpha;
         }
 
-        // new options!
-        const startupOptions: StartupOptions = {
-            hello: options.hello,
-            _plugin: Renderer.__plugins,
-            background: {
-                alpha: options.backgroundAlpha,
-                color: options.background ?? options.backgroundColor,
-                clearBeforeRender: options.clearBeforeRender,
-            },
-            _view: {
-                height: options.height,
-                width: options.width,
-                autoDensity: options.autoDensity,
-                resolution: options.resolution,
-                view: options.view,
-            },
-            context: {
-                antialias: options.antialias,
-                context: options.context,
-                powerPreference: options.powerPreference,
-                premultipliedAlpha: options.premultipliedAlpha,
-                preserveDrawingBuffer: options.preserveDrawingBuffer,
-            },
-        };
-
-        this.options = options;
-        this.startup.run(startupOptions);
+        this._plugin.rendererPlugins = Renderer.__plugins;
+        this.options = options as IRendererOptions;
+        this.startup.run(this.options);
     }
 
     /**

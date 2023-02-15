@@ -1,31 +1,11 @@
 import { BrowserAdapter } from './adapter';
 
 import type { IAdapter } from './adapter';
-import type { ICanvas } from './ICanvas';
-
-export interface IRenderOptions
-{
-    view: ICanvas;
-    width: number;
-    height: number;
-    autoDensity: boolean;
-    backgroundColor: number | string;
-    background?: number | string;
-    backgroundAlpha: number;
-    /** @deprecated */
-    useContextAlpha?: boolean | 'notMultiplied';
-    clearBeforeRender: boolean;
-    antialias: boolean;
-    premultipliedAlpha: boolean;
-    preserveDrawingBuffer: boolean;
-    hello: boolean;
-}
 
 interface ISettings
 {
     ADAPTER: IAdapter;
     RESOLUTION: number;
-    RENDER_OPTIONS: IRenderOptions;
     CREATE_IMAGE_BITMAP: boolean;
     ROUND_PIXELS: boolean;
 }
@@ -68,40 +48,6 @@ export const settings: ISettings & Partial<GlobalMixins.Settings> = {
      * @default 1
      */
     RESOLUTION: 1,
-
-    /**
-     * The default render options if none are supplied to {@link PIXI.Renderer}
-     * or {@link PIXI.CanvasRenderer}.
-     * @static
-     * @name RENDER_OPTIONS
-     * @memberof PIXI.settings
-     * @type {object}
-     * @property {boolean} [antialias=false] - {@link PIXI.IRendererOptions.antialias}
-     * @property {boolean} [autoDensity=false] - {@link PIXI.IRendererOptions.autoDensity}
-     * @property {number} [backgroundColor=0x000000] - {@link PIXI.IRendererOptions.backgroundColor}
-     * @property {number} [backgroundAlpha=1] - {@link PIXI.IRendererOptions.backgroundAlpha}
-     * @property {boolean} [clearBeforeRender=true] - {@link PIXI.IRendererOptions.clearBeforeRender}
-     * @property {number} [height=600] - {@link PIXI.IRendererOptions.height}
-     * @property {boolean} [hello=false] - {@link PIXI.IRendererOptions.hello}
-     * @property {boolean} [premultipliedAlpha=true] - {@link PIXI.IRendererOptions.premultipliedAlpha}
-     * @property {boolean} [preserveDrawingBuffer=false] - {@link PIXI.IRendererOptions.preserveDrawingBuffer}
-     * @property {PIXI.ICanvas} [view=null] - {@link PIXI.IRendererOptions.view}
-     * @property {number} [width=800] - {@link PIXI.IRendererOptions.width}
-     * @see PIXI.IRendererOptions
-     */
-    RENDER_OPTIONS: {
-        view: null,
-        width: 800,
-        height: 600,
-        autoDensity: false,
-        backgroundColor: 0x000000,
-        backgroundAlpha: 1,
-        clearBeforeRender: true,
-        antialias: false,
-        premultipliedAlpha: true,
-        preserveDrawingBuffer: false,
-        hello: false,
-    },
 
     /**
      * Enables bitmap creation before image load. This feature is experimental.

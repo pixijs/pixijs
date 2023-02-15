@@ -5,22 +5,57 @@ import type { ColorSource } from '@pixi/color';
 import type { ExtensionMetadata } from '@pixi/extensions';
 import type { ISystem } from '../system/ISystem';
 
-export interface BackgroundOptions
+export interface BackgroundSytemOptions
 {
-    /** the main canvas background alpha. From 0 (fully transparent) to 1 (fully opaque). */
-    alpha: number,
-    /** the main canvas background color. */
-    color: ColorSource,
-    /** sets if the renderer will clear the canvas or not before the new render pass. */
-    clearBeforeRender: boolean,
+    /**
+     * The background color used to clear the canvas. See {@link PIXI.ColorSource} for accepted color values.
+     * @memberof PIXI.IRendererOptions
+     */
+    backgroundColor: ColorSource;
+    /**
+     * Alias for {@link PIXI.IRendererOptions.backgroundColor}
+     * @memberof PIXI.IRendererOptions
+     */
+    background?: ColorSource;
+    /**
+     * Transparency of the background color, value from `0` (fully transparent) to `1` (fully opaque).
+     * @memberof PIXI.IRendererOptions
+     */
+    backgroundAlpha: number;
+    /**
+     * Whether to clear the canvas before new render passes.
+     * @memberof PIXI.IRendererOptions
+     */
+    clearBeforeRender: boolean;
 }
 
 /**
  * The background system manages the background color and alpha of the main view.
  * @memberof PIXI
  */
-export class BackgroundSystem implements ISystem<BackgroundOptions>
+export class BackgroundSystem implements ISystem<BackgroundSytemOptions>
 {
+    static defaultOptions: BackgroundSytemOptions = {
+        /**
+         * {@link PIXI.IRendererOptions.backgroundAlpha}
+         * @default 1
+         * @memberof PIXI.settings.RENDER_OPTIONS
+         */
+        backgroundAlpha: 1,
+        /**
+         * {@link PIXI.IRendererOptions.backgroundColor}
+         * @default 0x000000
+         * @memberof PIXI.settings.RENDER_OPTIONS
+         */
+        backgroundColor: 0x0,
+        /**
+         * {@link PIXI.IRendererOptions.clearBeforeRender}
+         * @default true
+         * @memberof PIXI.settings.RENDER_OPTIONS
+         */
+        clearBeforeRender: true,
+    };
+
     /** @ignore */
     static extension: ExtensionMetadata = {
         type: [
@@ -53,18 +88,20 @@ export class BackgroundSystem implements ISystem<BackgroundOptions>
 
     /**
      * initiates the background system
-     * @param {BackgroundOptions} options - the options for the background colors
+     * @param {PIXI.IRendererOptions} options - the options for the background colors
      */
-    init(options: BackgroundOptions): void
+    init(options: BackgroundSytemOptions): void
     {
         this.clearBeforeRender = options.clearBeforeRender;
+        const { backgroundColor, background, backgroundAlpha } = options;
+        const color = background ?? backgroundColor;
 
-        if (options.color)
+        if (color !== undefined)
         {
-            this.color = options.color;
+            this.color = color;
         }
 
-        this.alpha = options.alpha;
+        this.alpha = backgroundAlpha;
     }
 
     /**

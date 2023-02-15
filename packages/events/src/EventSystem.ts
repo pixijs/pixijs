@@ -4,7 +4,7 @@ import { EventsTicker } from './EventTicker';
 import { FederatedPointerEvent } from './FederatedPointerEvent';
 import { FederatedWheelEvent } from './FederatedWheelEvent';
 
-import type { ExtensionMetadata, IPointData, IRenderer } from '@pixi/core';
+import type { ExtensionMetadata, IPointData, IRenderer, ISystem } from '@pixi/core';
 import type { DisplayObject } from '@pixi/display';
 import type { Interactive } from './FederatedEventTarget';
 import type { FederatedMouseEvent } from './FederatedMouseEvent';
@@ -18,11 +18,23 @@ const TOUCH_TO_POINTER: Record<string, string> = {
     touchcancel: 'pointercancel',
 };
 
+/** @ignore */
+export interface EventSystemOptions
+{
+    /**
+     * The default interaction mode for all display objects.
+     * This option only is available when using **@pixi/events** package
+     * (included in the **pixi.js** and **pixi.js-legacy** bundle), otherwise it will be ignored.
+     * @memberof PIXI.IRendererOptions
+     */
+    defaultInteraction?: Interactive;
+}
+
 /**
  * The system for handling UI events.
  * @memberof PIXI
  */
-export class EventSystem
+export class EventSystem implements ISystem<EventSystemOptions>
 {
     /** @ignore */
     static extension: ExtensionMetadata = {
@@ -128,14 +140,14 @@ export class EventSystem
      * Runner init called, view is available at this point.
      * @ignore
      */
-    init(): void
+    init(options: EventSystemOptions): void
     {
-        const { view, resolution, options } = this.renderer;
+        const { view, resolution } = this.renderer;
 
         this.setTargetElement(view as HTMLCanvasElement);
         this.resolution = resolution;
         // allow for false to keep backwards compatibility
-        EventSystem._defaultInteraction = options?.defaultInteraction ?? false;
+        EventSystem._defaultInteraction = options.defaultInteraction ?? false;
     }
 
     /**

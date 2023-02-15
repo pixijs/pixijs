@@ -4,7 +4,7 @@ import { deprecation } from '@pixi/utils';
 import { BatchRenderer } from './batch/BatchRenderer';
 import { Filter } from './filters/Filter';
 import { Program } from './shader/Program';
-import { TextureGCSystem } from './systems';
+import { BackgroundSystem, ContextSystem, StartupSystem, TextureGCSystem, ViewSystem } from './systems';
 import { BaseTexture } from './textures/BaseTexture';
 
 import type { GC_MODES, MIPMAP_MODES, MSAA_QUALITY, PRECISION, SCALE_MODES, WRAP_MODES } from '@pixi/constants';
@@ -39,6 +39,21 @@ settings.PREFER_ENV = ENV.WEBGL2;
  * @default false
  */
 settings.STRICT_TEXTURE_CACHE = false;
+
+/**
+ * The default render options if none are supplied to {@link PIXI.Renderer}
+ * or {@link PIXI.CanvasRenderer}.
+ * @static
+ * @name RENDER_OPTIONS
+ * @memberof PIXI.settings
+ * @type {PIXI.IRendererOptions}
+ */
+settings.RENDER_OPTIONS = {
+    ...ContextSystem.defaultOptions,
+    ...BackgroundSystem.defaultOptions,
+    ...ViewSystem.defaultOptions,
+    ...StartupSystem.defaultOptions,
+};
 
 Object.defineProperties(settings, {
     /**
