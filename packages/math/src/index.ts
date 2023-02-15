@@ -25,11 +25,15 @@ export { RoundedRectangle };
 
 export * from './const';
 
-/*
- * @description Complex shape type
+/**
+ * Complex shape type
+ * @memberof PIXI
  */
 export type IShape = Circle | Ellipse | Polygon | Rectangle | RoundedRectangle;
 
+/**
+ * @memberof PIXI
+ */
 export interface ISize
 {
     width: number;

@@ -42,7 +42,7 @@ export class MaskData
     /** Whether it belongs to MaskSystem pool */
     public pooled: boolean;
 
-    /** Indicator of the type (always true for {@link MaskData} objects) */
+    /** Indicator of the type (always true for {@link PIXI.MaskData} objects) */
     public isMaskData: boolean;// webdoc crashes if the type is true because reasons... (will fix)
 
     /**

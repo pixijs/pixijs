@@ -97,7 +97,8 @@ export class ProjectionSystem implements ISystem
      * NOTE: It is expected you call `renderer.framebuffer.setViewport(destinationFrame)` after this. This is because
      * the framebuffer viewport converts shader vertex output in normalized device coordinates to window coordinates.
      *
-     * NOTE-2: {@link RenderTextureSystem#bind} updates the projection-matrix when you bind a render-texture. It is expected
+     * NOTE-2: {@link PIXI.RenderTextureSystem#bind} updates the projection-matrix when you bind a render-texture.
+     * It is expected
      * that you dirty the current bindings when calling this manually.
      * @param destinationFrame - The rectangle in the render-target to render the contents into. If rendering to the canvas,
      *  the origin is on the top-left; if rendering to a render-texture, the origin is on the bottom-left.

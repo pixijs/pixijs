@@ -51,14 +51,20 @@ export interface IHitArea
     contains(x: number, y: number): boolean;
 }
 
-/** Function type for handlers, e.g., onclick */
+/**
+ * Function type for handlers, e.g., onclick
+ * @memberof PIXI
+ */
 export type FederatedEventHandler<T= FederatedPointerEvent> = (event: T) => void;
 
-/** The type of interaction a DisplayObject can be */
+/**
+ * The type of interaction a DisplayObject can be
+ * @memberof PIXI
+ */
 export type Interactive = 'none' | 'passive' | 'auto' | 'static' | 'dynamic';
 
 /**
- * Describes the shape for a {@link FederatedEvent}'s' `eventTarget`.
+ * Describes the shape for a {@link PIXI.FederatedEvent}'s' `eventTarget`.
  * @memberof PIXI
  */
 export interface FederatedEventTarget extends utils.EventEmitter, EventTarget

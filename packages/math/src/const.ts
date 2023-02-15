@@ -27,18 +27,33 @@ export const DEG_TO_RAD = Math.PI / 180;
  * @static
  * @memberof PIXI
  * @enum {number}
- * @property {number} POLY Polygon
- * @property {number} RECT Rectangle
- * @property {number} CIRC Circle
- * @property {number} ELIP Ellipse
- * @property {number} RREC Rounded Rectangle
  */
 export enum SHAPES
 // eslint-disable-next-line @typescript-eslint/indent
 {
+    /**
+     * @property {number} RECT Rectangle
+     * @default 0
+     */
     POLY = 0,
+    /**
+     * @property {number} POLY Polygon
+     * @default 1
+     */
     RECT = 1,
+    /**
+     * @property {number} CIRC Circle
+     * @default 2
+     */
     CIRC = 2,
+    /**
+     * @property {number} ELIP Ellipse
+     * @default 3
+     */
     ELIP = 3,
+    /**
+     * @property {number} RREC Rounded Rectangle
+     * @default 4
+     */
     RREC = 4,
 }
