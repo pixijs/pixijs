@@ -693,7 +693,7 @@ export enum ALPHA_MODES
 /**
  * Configure whether filter textures are cleared after binding.
  *
- * Filter textures need not be cleared if the filter does not use pixel blending. {@link CLEAR_MODES.BLIT} will detect
+ * Filter textures need not be cleared if the filter does not use pixel blending. {@link PIXI.CLEAR_MODES.BLIT} will detect
  * this and skip clearing as an optimization.
  * @memberof PIXI
  * @static
@@ -728,7 +728,7 @@ export enum CLEAR_MODES
      */
     CLEAR = 1,
     /**
-     * Clear only if {@link FilterSystem.forceClear} is set or if the filter uses pixel blending.
+     * Clear only if {@link PIXI.FilterSystem.forceClear} is set or if the filter uses pixel blending.
      * @default 2
      */
     BLIT = 2,

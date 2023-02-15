@@ -64,7 +64,7 @@ export type FederatedEventHandler<T= FederatedPointerEvent> = (event: T) => void
 export type Interactive = 'none' | 'passive' | 'auto' | 'static' | 'dynamic';
 
 /**
- * Describes the shape for a {@link FederatedEvent}'s' `eventTarget`.
+ * Describes the shape for a {@link PIXI.FederatedEvent}'s' `eventTarget`.
  * @memberof PIXI
  */
 export interface FederatedEventTarget extends utils.EventEmitter, EventTarget

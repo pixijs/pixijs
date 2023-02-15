@@ -40,13 +40,13 @@ MouseEvent | PointerEvent | TouchEvent
     public get clientY(): number { return this.client.y; }
 
     /**
-     * Alias for {@link FederatedMouseEvent.clientX this.clientX}.
+     * Alias for {@link PIXI.FederatedMouseEvent.clientX this.clientX}.
      * @readonly
      */
     get x(): number { return this.clientX; }
 
     /**
-     * Alias for {@link FederatedMouseEvent.clientY this.clientY}.
+     * Alias for {@link PIXI.FederatedMouseEvent.clientY this.clientY}.
      * @readonly
      */
     get y(): number { return this.clientY; }

@@ -146,7 +146,7 @@ export class MeshMaterial extends Shader
         return this._tint;
     }
 
-    /** Gets called automatically by the Mesh. Intended to be overridden for custom {@link MeshMaterial} objects. */
+    /** Gets called automatically by the Mesh. Intended to be overridden for custom {@link PIXI.MeshMaterial} objects. */
     public update(): void
     {
         if (this._colorDirty)

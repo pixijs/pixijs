@@ -297,7 +297,7 @@ export class EventBoundary
     }
 
     /**
-     * Propagate the passed event from from {@link EventBoundary.rootTarget this.rootTarget} to its
+     * Propagate the passed event from from {@link PIXI.EventBoundary.rootTarget this.rootTarget} to its
      * target {@code e.target}.
      * @param e - The event to propagate.
      * @param type
@@ -1352,7 +1352,7 @@ export class EventBoundary
     }
 
     /**
-     * Similar to {@link EventEmitter.emit}, except it stops if the `propagationImmediatelyStopped` flag
+     * Similar to {@link PIXI.EventEmitter.emit}, except it stops if the `propagationImmediatelyStopped` flag
      * is set on the event.
      * @param e - The event to call each listener with.
      * @param type - The event key.

@@ -78,8 +78,8 @@ export interface Renderer extends GlobalMixins.Renderer {}
  * | {@link PIXI.ProjectionSystem}        | This manages the `projectionMatrix`, used by shaders to get NDC coordinates.  |
  * | {@link PIXI.RenderTextureSystem}     | This manages render-textures, which are an abstraction over framebuffers.     |
  * | {@link PIXI.MaskSystem}              | This manages masking operations.                                              |
- * | {@link PIXI.ScissorSystem}           | This handles scissor masking, and is used internally by {@link MaskSystem}    |
- * | {@link PIXI.StencilSystem}           | This handles stencil masking, and is used internally by {@link MaskSystem}    |
+ * | {@link PIXI.ScissorSystem}           | This handles scissor masking, and is used internally by {@link PIXI.MaskSystem} |
+ * | {@link PIXI.StencilSystem}           | This handles stencil masking, and is used internally by {@link PIXI.MaskSystem} |
  * | {@link PIXI.FilterSystem}            | This manages the filtering pipeline for post-processing effects.              |
  * | {@link PIXI.BatchSystem}             | This manages object renderers that defer rendering until a flush.             |
  * | {@link PIXI.Prepare}                 | This manages uploading assets to the GPU.                                     |
