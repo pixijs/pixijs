@@ -1,8 +1,8 @@
-import { Color, Matrix, Program, Shader, TextureMatrix, utils } from '@pixi/core';
+import { Color, Matrix, Program, Shader, TextureMatrix } from '@pixi/core';
 import fragment from './shader/mesh.frag';
 import vertex from './shader/mesh.vert';
 
-import type { Texture } from '@pixi/core';
+import type { Texture, utils } from '@pixi/core';
 
 export interface IMeshMaterialOptions
 {
@@ -153,10 +153,12 @@ export class MeshMaterial extends Shader
         {
             this._colorDirty = false;
             const baseTexture = this.texture.baseTexture;
+            const applyToChannels = (baseTexture.alphaMode as unknown as boolean);
 
-            utils.premultiplyTintToRgba(
-                this._tint, this._alpha, this.uniforms.uColor, (baseTexture.alphaMode as unknown as boolean)
-            );
+            Color.shared
+                .setValue(this._tint)
+                .premultiply(this._alpha, applyToChannels)
+                .toArray(this.uniforms.uColor);
         }
         if (this.uvMatrix.update())
         {
