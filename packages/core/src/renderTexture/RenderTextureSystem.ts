@@ -219,7 +219,7 @@ export class RenderTextureSystem implements ISystem
             this.renderer.gl.scissor(x, y, width, height);
         }
 
-        this.renderer.framebuffer.clear(color.red, color.blue, color.green, color.alpha, mask);
+        this.renderer.framebuffer.clear(color.red, color.green, color.blue, color.alpha, mask);
 
         if (clearMask)
         {
