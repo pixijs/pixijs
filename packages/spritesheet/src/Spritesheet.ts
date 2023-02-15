@@ -2,7 +2,10 @@ import { BaseTexture, Rectangle, Texture, utils } from '@pixi/core';
 
 import type { ImageResource, IPointData, ITextureBorders } from '@pixi/core';
 
-/** Represents the JSON data for a spritesheet atlas. */
+/**
+ * Represents the JSON data for a spritesheet atlas.
+ * @memberof PIXI
+ */
 export interface ISpritesheetFrameData
 {
     frame: {
@@ -25,7 +28,10 @@ export interface ISpritesheetFrameData
     borders?: ITextureBorders;
 }
 
-/** Atlas format. */
+/**
+ * Atlas format.
+ * @memberof PIXI
+ */
 export interface ISpritesheetData
 {
     frames: utils.Dict<ISpritesheetFrameData>;

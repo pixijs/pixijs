@@ -111,6 +111,7 @@ export class BaseRenderTexture extends BaseTexture
     /**
      * Color object when clearning the texture.
      * @readonly
+     * @since 7.2.0
      */
     get clear(): Color
     {

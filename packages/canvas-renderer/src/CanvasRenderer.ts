@@ -175,6 +175,10 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
      *  The background color used to clear the canvas. See {@link PIXI.ColorSource} for accepted color values.
      * @param {boolean} [options.clearBeforeRender=true] - Whether to clear the canvas before new render passes.
      * @param {PIXI.IRenderingContext} [options.context] - **WebGL Only.** User-provided WebGL rendering context object.
+     * @param {PIXI.Interactive} [options.defaultInteraction='auto'] -
+     *  The default interaction mode for all display objects.
+     *  This option only is available when using **@pixi/events** package
+     *  (included in the **pixi.js** and **pixi.js-legacy** bundle), otherwise it will be ignored.
      * @param {number} [options.height=600] - The height of the renderer's view.
      * @param {boolean} [options.hello=false] - Whether to log the version and type information of renderer to console.
      * @param {number} [options.resolution=PIXI.settings.RESOLUTION] -
