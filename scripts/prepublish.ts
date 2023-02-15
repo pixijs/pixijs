@@ -1,5 +1,5 @@
 import path from 'path';
-import workspacesRun from '@pixi/workspaces-run';
+import workspacesRun from 'workspaces-run';
 import { readJSON, writeJSON } from './utils/json';
 
 /** Before publish, let's replace all the relative file links with versions */
