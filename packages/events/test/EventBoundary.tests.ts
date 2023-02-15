@@ -45,7 +45,7 @@ describe('EventBoundary', () =>
         expect(eventSpy).toBeCalledTimes(2);
         expect(captureSpy).toHaveBeenCalledOnce();
         expect(captureSpy).toHaveBeenCalledBefore(eventSpy);
-        expect(stageSpy).toHaveBeenCalledOnce();
+        expect(stageSpy).not.toHaveBeenCalled();
     });
 
     it('should set hit-test target to most specific ancestor if hit object is not interactive', () =>
