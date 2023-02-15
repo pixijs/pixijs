@@ -716,7 +716,7 @@ export abstract class DisplayObject extends utils.EventEmitter<DisplayObjectEven
         this.filterArea = null;
         this.hitArea = null;
 
-        this.interactive = false;
+        this.eventMode = 'auto';
         this.interactiveChildren = false;
 
         this.emit('destroyed');

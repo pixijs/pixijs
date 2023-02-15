@@ -58,11 +58,12 @@ export interface IHitArea
 export type FederatedEventHandler<T= FederatedPointerEvent> = (event: T) => void;
 
 /**
- * The type of interaction a DisplayObject can be.
+ * The type of interaction a DisplayObject can be. For more information on values and their meaning,
+ * see {@link PIXI.DisplayObject.eventMode DisplayObject's eventMode property}.
  * @memberof PIXI
  * @since 7.2.0
  */
-export type Interactive = 'none' | 'passive' | 'auto' | 'static' | 'dynamic';
+export type EventMode = 'none' | 'passive' | 'auto' | 'static' | 'dynamic';
 
 /**
  * Describes the shape for a {@link PIXI.FederatedEvent}'s' `eventTarget`.
@@ -80,11 +81,12 @@ export interface FederatedEventTarget extends utils.EventEmitter, EventTarget
     readonly children?: ReadonlyArray<FederatedEventTarget>;
 
     /** Whether this event target should fire UI events. */
-    interactive: boolean | Interactive;
-    /** The internal value of the interactive state of an object. */
-    _internalInteractive: Interactive;
-    /** The interactive value the user set */
-    _userSetInteractive: boolean | Interactive;
+    interactive: boolean
+    _internalInteractive: boolean;
+    /** The mode of interaction for this object */
+    eventMode: EventMode;
+    _internalEventMode: EventMode;
+
     /** Returns true if the DisplayObject has interactive 'static' or 'dynamic' */
     isInteractive: () => boolean;
 
@@ -199,25 +201,9 @@ export interface IFederatedDisplayObject
     ): void;
 }
 
-function convertToInteractive(value: boolean | Interactive, warn?: boolean): Interactive
+function convertEventModeToInteractiveMode(mode: EventMode): boolean
 {
-    if (typeof value === 'boolean')
-    {
-        if (warn)
-        {
-            // #if _DEBUG
-            deprecation(
-                '7.2.0',
-                // eslint-disable-next-line max-len
-                `Setting interactive to a boolean is deprecated, use interactive = 'none'/'passive'/'auto'/'static'/'dynamic' instead.`
-            );
-            // #endif
-        }
-
-        return value ? 'static' : 'auto';
-    }
-
-    return value;
+    return mode === 'dynamic' || mode === 'static';
 }
 
 export const FederatedDisplayObject: IFederatedDisplayObject = {
@@ -585,8 +571,38 @@ export const FederatedDisplayObject: IFederatedDisplayObject = {
      */
     onwheel:  null,
     /**
+     * @ignore
+     */
+    _internalInteractive: undefined,
+    /**
      * Enable interaction events for the DisplayObject. Touch, pointer and mouse
-     * There is 4 types of interaction settings:
+     * @memberof PIXI.DisplayObject#
+     */
+    get interactive()
+    {
+        return this._internalInteractive ?? convertEventModeToInteractiveMode(EventSystem.defaultInteraction);
+    },
+    set interactive(value: boolean)
+    {
+        // #if _DEBUG
+        deprecation(
+            '7.2.0',
+            // eslint-disable-next-line max-len
+            `Setting interactive is deprecated, use eventMode = 'none'/'passive'/'auto'/'static'/'dynamic' instead.`
+        );
+        // #endif
+
+        this._internalInteractive = value;
+        this.eventMode = value ? 'static' : 'auto';
+    },
+    /**
+     * @ignore
+     */
+    _internalEventMode: undefined,
+    /**
+     * Enable interaction events for the DisplayObject. Touch, pointer and mouse.
+     * This now replaces the `interactive` property
+     * There is 5 types of interaction settings:
      * - `'none'`: Ignores all interaction events, even on its children.
      * - `'passive'`: Does not emit events and ignores all hit testing on itself and non-interactive children.
      * Interactive children will still emit events.
@@ -598,17 +614,22 @@ export const FederatedDisplayObject: IFederatedDisplayObject = {
      * import { Sprite } from 'pixi.js';
      *
      * const sprite = new Sprite(texture);
-     * sprite.interactive = 'static';
+     * sprite.eventMode = 'static';
      * sprite.on('tap', (event) => {
      *     // Handle event
      * });
      * @memberof PIXI.DisplayObject#
+     * @since 7.2.0
      */
-    interactive: EventSystem.defaultInteraction,
-    /** Internal reference to the normalised interactive value. This should always be used instead of interactive */
-    _internalInteractive: convertToInteractive(EventSystem.defaultInteraction, false),
-    /** Internal reference to the value the user set. e.g. interactive = false means _userSetInteractive === false */
-    _userSetInteractive: null,
+    get eventMode()
+    {
+        return this._internalEventMode ?? EventSystem.defaultInteraction;
+    },
+    set eventMode(value)
+    {
+        this._internalInteractive = convertEventModeToInteractiveMode(value);
+        this._internalEventMode = value;
+    },
 
     /**
      * Determines if the displayObject is interactive or not
@@ -618,24 +639,24 @@ export const FederatedDisplayObject: IFederatedDisplayObject = {
      * @example
      * import { Sprite } from 'pixi.js';
      * const sprite = new Sprite(texture);
-     * sprite.interactive = 'static';
+     * sprite.eventMode = 'static';
      * sprite.isInteractive(); // true
      *
-     * sprite.interactive = 'dynamic';
+     * sprite.eventMode = 'dynamic';
      * sprite.isInteractive(); // true
      *
-     * sprite.interactive = 'none';
+     * sprite.eventMode = 'none';
      * sprite.isInteractive(); // false
      *
-     * sprite.interactive = 'passive';
+     * sprite.eventMode = 'passive';
      * sprite.isInteractive(); // false
      *
-     * sprite.interactive = 'auto';
+     * sprite.eventMode = 'auto';
      * sprite.isInteractive(); // false
      */
     isInteractive()
     {
-        return this._internalInteractive === 'static' || this._internalInteractive === 'dynamic';
+        return this.eventMode === 'static' || this.eventMode === 'dynamic';
     },
 
     /**
@@ -761,27 +782,5 @@ export const FederatedDisplayObject: IFederatedDisplayObject = {
         return !e.defaultPrevented;
     }
 };
-
-Object.defineProperties(FederatedDisplayObject, {
-    interactive:  {
-        get()
-        {
-            // make sure to update the internal value if the default has changed
-            if (this._userSetInteractive === null)
-            {
-                this._internalInteractive = convertToInteractive(EventSystem.defaultInteraction, false);
-
-                return EventSystem.defaultInteraction;
-            }
-
-            return this._userSetInteractive;
-        },
-        set(value: boolean | Interactive)
-        {
-            this._userSetInteractive = value;
-            this._internalInteractive = convertToInteractive(value, true);
-        },
-    },
-});
 
 DisplayObject.mixin(FederatedDisplayObject);
