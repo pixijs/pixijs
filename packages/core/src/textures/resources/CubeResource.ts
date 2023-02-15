@@ -8,7 +8,10 @@ import type { BaseTexture } from '../BaseTexture';
 import type { GLTexture } from '../GLTexture';
 import type { Resource } from './Resource';
 
-/** Constructor options for CubeResource */
+/**
+ * Constructor options for CubeResource.
+ * @memberof PIXI
+ */
 export interface ICubeResourceOptions extends ISize
 {
     /** Whether to auto-load resources */
