@@ -3,10 +3,6 @@ import { BaseImageResource } from './BaseImageResource';
 import type { ICanvas } from '@pixi/settings';
 
 /**
- * @interface OffscreenCanvas
- */
-
-/**
  * Resource type for HTMLCanvasElement and OffscreenCanvas.
  * @memberof PIXI
  */

@@ -58,8 +58,9 @@ export interface IHitArea
 export type FederatedEventHandler<T= FederatedPointerEvent> = (event: T) => void;
 
 /**
- * The type of interaction a DisplayObject can be
+ * The type of interaction a DisplayObject can be.
  * @memberof PIXI
+ * @since 7.2.0
  */
 export type Interactive = 'none' | 'passive' | 'auto' | 'static' | 'dynamic';
 
@@ -613,6 +614,7 @@ export const FederatedDisplayObject: IFederatedDisplayObject = {
      * Determines if the displayObject is interactive or not
      * @returns {boolean} Whether the displayObject is interactive or not
      * @memberof PIXI.DisplayObject#
+     * @since 7.2.0
      * @example
      * import { Sprite } from 'pixi.js';
      * const sprite = new Sprite(texture);

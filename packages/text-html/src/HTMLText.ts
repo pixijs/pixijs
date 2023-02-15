@@ -25,6 +25,7 @@ import type { ITextStyle } from '@pixi/text';
  * @class
  * @memberof PIXI
  * @extends PIXI.Sprite
+ * @since 7.2.0
  */
 export class HTMLText extends Sprite
 {

@@ -5,9 +5,6 @@ import type { ISize } from '@pixi/math';
 import type { Renderer } from '../../Renderer';
 import type { BaseTexture } from '../BaseTexture';
 import type { GLTexture } from '../GLTexture';
-/**
- * @interface SharedArrayBuffer
- */
 
 /**
  * Buffer resource with data of typed array.

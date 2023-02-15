@@ -25,7 +25,10 @@ import { ArcUtils, BezierUtils, QuadraticUtils } from './utils';
 import type { BatchDrawCall, ColorSource, IPointData, IShape, Renderer } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
 
-/** Batch element computed from Graphics geometry */
+/**
+ * Batch element computed from Graphics geometry.
+ * @memberof PIXI
+ */
 export interface IGraphicsBatchElement
 {
     vertexData: Float32Array;
