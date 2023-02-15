@@ -359,15 +359,24 @@ export class EventBoundary
 
         const children = target.children;
 
-        if (children)
+        const interactionNone = target._internalInteractive === 'none';
+        const interactionPassive = target._internalInteractive === 'passive' && !target.interactiveChildren;
+        const interactiveChildren = target.interactiveChildren;
+        const shouldIterateChildren = !interactionNone && interactiveChildren && !interactionPassive;
+
+        if (children && children.length > 0)
         {
-            for (let i = 0; i < children.length; i++)
+            if (shouldIterateChildren)
             {
-                this.all(e, type, children[i]);
+                for (let i = 0; i < children.length; i++)
+                {
+                    this.all(e, type, children[i]);
+                }
             }
         }
 
         e.currentTarget = target;
+
         this.notifyTarget(e, type);
     }
 
@@ -1362,6 +1371,7 @@ export class EventBoundary
         const listeners = ((e.currentTarget as any)._events as EmitterListeners)[type];
 
         if (!listeners) return;
+        if (!e.currentTarget.isInteractive()) return;
 
         if ('fn' in listeners)
         {

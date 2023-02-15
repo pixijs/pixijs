@@ -302,6 +302,124 @@ describe('EventSystem', () =>
         expect(secondaryOutSpy).not.toBeCalledTimes(1);
     });
 
+    it('should not dispatch pointer events if not interactive', () =>
+    {
+        const renderer = createRenderer();
+        const [stage, graphics] = createScene();
+
+        renderer.render(stage);
+
+        const primaryMoveSpy = jest.fn();
+        const primaryMoveGlobalSpy = jest.fn();
+
+        graphics.interactive = false;
+
+        graphics.on('pointermove', () =>
+        {
+            primaryMoveSpy();
+        });
+        graphics.on('globalpointermove', () =>
+        {
+            primaryMoveGlobalSpy();
+        });
+
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', { clientX: 25, clientY: 25 })
+        );
+        expect(primaryMoveSpy).not.toHaveBeenCalled();
+        expect(primaryMoveGlobalSpy).not.toHaveBeenCalled();
+
+        graphics.interactive = true;
+
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', { clientX: 25, clientY: 25 })
+        );
+        expect(primaryMoveSpy).toHaveBeenCalledTimes(1);
+        expect(primaryMoveGlobalSpy).toHaveBeenCalledTimes(1);
+
+        graphics.interactive = 'none';
+
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', { clientX: 25, clientY: 25 })
+        );
+        expect(primaryMoveSpy).toHaveBeenCalledTimes(1);
+        expect(primaryMoveGlobalSpy).toHaveBeenCalledTimes(1);
+
+        graphics.interactive = 'auto';
+
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', { clientX: 25, clientY: 25 })
+        );
+        expect(primaryMoveSpy).toHaveBeenCalledTimes(1);
+        expect(primaryMoveGlobalSpy).toHaveBeenCalledTimes(1);
+
+        graphics.interactive = 'passive';
+
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', { clientX: 25, clientY: 25 })
+        );
+        expect(primaryMoveSpy).toHaveBeenCalledTimes(1);
+        expect(primaryMoveGlobalSpy).toHaveBeenCalledTimes(1);
+
+        graphics.interactive = 'dynamic';
+
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', { clientX: 25, clientY: 25 })
+        );
+        expect(primaryMoveSpy).toHaveBeenCalledTimes(2);
+        expect(primaryMoveGlobalSpy).toHaveBeenCalledTimes(2);
+
+        graphics.interactive = 'static';
+
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', { clientX: 25, clientY: 25 })
+        );
+        expect(primaryMoveSpy).toHaveBeenCalledTimes(3);
+        expect(primaryMoveGlobalSpy).toHaveBeenCalledTimes(3);
+
+        // add a second graphics object
+        const second = graphics.addChild(
+            new Graphics()
+                .beginFill(0xFFFFFF)
+                .drawRect(0, 0, 50, 50)
+        );
+
+        // should be called
+        second.interactive = true;
+        // should not be called again
+        graphics.interactive = false;
+
+        const secondaryMoveSpy = jest.fn();
+        const secondaryMoveGlobalSpy = jest.fn();
+
+        second.on('pointermove', () =>
+        {
+            secondaryMoveSpy();
+        });
+        second.on('globalpointermove', () =>
+        {
+            secondaryMoveGlobalSpy();
+        });
+
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', { clientX: 25, clientY: 25 })
+        );
+        expect(primaryMoveSpy).toHaveBeenCalledTimes(3);
+        expect(primaryMoveGlobalSpy).toHaveBeenCalledTimes(3);
+        expect(secondaryMoveSpy).toHaveBeenCalledTimes(1);
+        expect(secondaryMoveGlobalSpy).toHaveBeenCalledTimes(1);
+
+        // nothing should be called again
+        graphics.interactiveChildren = false;
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', { clientX: 25, clientY: 25 })
+        );
+        expect(primaryMoveSpy).toHaveBeenCalledTimes(3);
+        expect(primaryMoveGlobalSpy).toHaveBeenCalledTimes(3);
+        expect(secondaryMoveSpy).toHaveBeenCalledTimes(1);
+        expect(secondaryMoveGlobalSpy).toHaveBeenCalledTimes(1);
+    });
+
     it('should dispatch click events', () =>
     {
         const renderer = createRenderer();
