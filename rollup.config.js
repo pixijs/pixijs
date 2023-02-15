@@ -7,9 +7,8 @@ import esbuild from 'rollup-plugin-esbuild';
 import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
 import jscc from 'rollup-plugin-jscc';
-import workspacesRun from 'workspaces-run';
+import workspacesRun from '@pixi/workspaces-run';
 import repo from './package.json';
-import toposort from 'toposort';
 
 const bundleTarget = 'es2017';
 const moduleTarget = 'es2020';
@@ -61,31 +60,18 @@ async function main()
     ];
 
     const results = [];
-    const packagesMap = {};
-    const dependencies = [];
+    const packages = [];
 
     // Collect the list of packages
-    await workspacesRun({ cwd: __dirname }, async (pkg) =>
+    await workspacesRun({ cwd: __dirname, orderByDeps: true }, async (pkg) =>
     {
         if (!pkg.config.private)
         {
-            packagesMap[pkg.name] = pkg;
-
-            // workspaces-run doesn't support relative paths with orderByDeps
-            // see: https://github.com/jamiebuilds/workspaces-run/issues/4
-            // so we need to sort the packages by their dependencies
-            Object.keys({...pkg.config.dependencies})
-                .filter(name => pkg.config.dependencies[name].startsWith('file:'))
-                .forEach(name => dependencies.push([name, pkg.config.name]));
+            packages.push(pkg);
         }
     });
 
-    // Sort the packages into a flat list, however
-    // this list excludes non-graph packages (graphics-extras, unsafe-eval, etc)
-    const packagesGraph = toposort(dependencies);
-    const packagesExtras = Object.keys(packagesMap).filter(name => !packagesGraph.includes(name));
-
-    [...packagesGraph, ...packagesExtras].map(name => packagesMap[name]).forEach((pkg) =>
+    packages.forEach((pkg) =>
     {
         const {
             plugin,
