@@ -213,6 +213,31 @@ describe('EventSystem', () =>
         expect(renderer.view.style.cursor).toEqual('inherit');
     });
 
+    it('should provide the correct global position', () =>
+    {
+        const renderer = createRenderer();
+        const [stage, graphics] = createScene();
+
+        graphics.position.set(35, 35);
+        renderer.render(stage);
+
+        graphics.on('pointermove', (e) =>
+        {
+            expect(e.global.x).toEqual(40);
+            expect(e.global.y).toEqual(40);
+            expect(e.getLocalPosition(graphics).x).toEqual(5);
+            expect(e.getLocalPosition(graphics).y).toEqual(5);
+        });
+
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', {
+                clientX: 40,
+                clientY: 40,
+                pointerType: 'mouse',
+            })
+        );
+    });
+
     it('should dispatch synthetic over/out events on pointermove', () =>
     {
         const renderer = createRenderer();
