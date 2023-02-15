@@ -7,28 +7,20 @@ import {
     DRAW_MODES,
     Point,
     utils,
-    WRAP_MODES,
+    WRAP_MODES
 } from '@pixi/core';
 import { Bounds } from '@pixi/display';
 import { GraphicsData } from './GraphicsData';
 import {
-    BATCH_POOL,
-    BatchPart,
-    buildLine,
+    BATCH_POOL, BatchPart, buildLine,
     buildPoly,
     DRAW_CALL_POOL,
-    FILL_COMMANDS,
+    FILL_COMMANDS
 } from './utils';
 
-import type { Circle, Ellipse, IPointData, Matrix, Polygon, Rectangle, RoundedRectangle, Texture } from '@pixi/core';
+import type { IPointData, IShape, Matrix, Texture } from '@pixi/core';
 import type { FillStyle } from './styles/FillStyle';
 import type { LineStyle } from './styles/LineStyle';
-
-/*
- * Complex shape type
- * @todo Move to Math shapes
- */
-type IShape = Circle | Ellipse | Polygon | Rectangle | RoundedRectangle;
 
 const tmpPoint = new Point();
 

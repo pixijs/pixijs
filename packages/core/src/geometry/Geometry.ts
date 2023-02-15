@@ -97,7 +97,7 @@ export class Geometry
      * @param {PIXI.Buffer|number[]} buffer - the buffer that holds the data of the attribute . You can also provide an Array and a buffer will be created from it.
      * @param size - the size of the attribute. If you have 2 floats per vertex (eg position x and y) this would be 2
      * @param normalized - should the data be normalized.
-     * @param [type=PIXI.TYPES.FLOAT] - what type of number is the attribute. Check {PIXI.TYPES} to see the ones available
+     * @param [type=PIXI.TYPES.FLOAT] - what type of number is the attribute. Check {@link PIXI.TYPES} to see the ones available
      * @param [stride=0] - How far apart, in bytes, the start of each value is. (used for interleaving data)
      * @param [start=0] - How far into the array to start reading values (used for interleaving data)
      * @param instance - Instancing flag

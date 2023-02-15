@@ -10,7 +10,11 @@ export interface Transform extends GlobalMixins.Transform {}
  */
 export class Transform
 {
-    /** A default (identity) transform. */
+    /**
+     * A default (identity) transform.
+     * @static
+     * @type {PIXI.Transform}
+     */
     public static readonly IDENTITY = new Transform();
 
     /** The world transformation matrix. */

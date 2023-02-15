@@ -11,8 +11,7 @@ let UID = 0;
  *
  * Same as ArrayBuffer in typescript lib, defined here just for documentation
  */
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface IArrayBuffer extends ArrayBuffer
+export interface IArrayBuffer extends ArrayBuffer // eslint-disable-line @typescript-eslint/no-empty-interface
 {
 }
 

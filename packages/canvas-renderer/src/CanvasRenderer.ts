@@ -66,7 +66,6 @@ export interface CanvasRenderer extends GlobalMixins.CanvasRenderer {}
  * | ------------------------------------ | ----------------------------------------------------------------------------- |
  * | {@link PIXI.CanvasContextSystem}     | This manages the canvas `2d` contexts and their state                         |
  * | {@link PIXI.CanvasMaskSystem}        | This manages masking operations.                                              |
- * | {@link PIXI.CanvasRenderSystem}      | This adds the ability to render a PIXI.DisplayObject                          |
  * | {@link PIXI.CanvasExtract}           | This extracts image data from a PIXI.DisplayObject                            |
  * | {@link PIXI.CanvasPrepare}           | This prepares a PIXI.DisplayObject async for rendering                        |
  *

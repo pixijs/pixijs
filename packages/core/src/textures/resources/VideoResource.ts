@@ -18,7 +18,7 @@ export interface IVideoResourceOptionsElement
 }
 
 /**
- * Resource type for {@code HTMLVideoElement}.
+ * Resource type for {@link HTMLVideoElement}.
  * @memberof PIXI
  */
 export class VideoResource extends BaseImageResource
