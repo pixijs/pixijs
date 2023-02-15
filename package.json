@@ -52,12 +52,12 @@
   "devDependencies": {
     "@pixi/eslint-config": "^4.0.1",
     "@pixi/webdoc-template": "^1.5.5",
+    "@pixi/workspaces-run": "^1.0.2",
     "@rollup/plugin-commonjs": "^15.1.0",
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^15.0.0",
     "@types/inquirer": "^8.0.0",
     "@types/jest": "^26.0.0",
-    "@types/toposort": "^2.0.3",
     "@webdoc/cli": "^2.2.0",
     "copyfiles": "^2.1.0",
     "cross-env": "^5.2.0",
@@ -84,13 +84,11 @@
     "rollup-plugin-sourcemaps": "^0.4.2",
     "rollup-plugin-string": "^3.0.0",
     "semver": "^7.3.8",
-    "toposort": "^2.0.2",
     "tree-kill": "^1.2.2",
     "ts-jest": "^26.0.0",
     "ts-node": "^9.0.0",
     "tsconfig-paths": "^3.10.1",
     "typescript": "~4.3.0",
-    "workspaces-run": "^1.0.1",
     "yargs-parser": "^21.0.1"
   }
 }

@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import workspacesRun from 'workspaces-run';
+import workspacesRun from '@pixi/workspaces-run';
 
 interface PackageResult
 {

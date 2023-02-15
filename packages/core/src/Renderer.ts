@@ -74,13 +74,12 @@ export interface Renderer extends GlobalMixins.Renderer {}
  *
  * | PixiJS High-Level Systems            | Set of specific systems designed to work with PixiJS objects                  |
  * | ------------------------------------ | ----------------------------------------------------------------------------- |
- * | {@link PIXI.RenderSystem}            | This adds the ability to render a PIXI.DisplayObject                          |
  * | {@link PIXI.GenerateTextureSystem}   | This adds the ability to generate textures from any PIXI.DisplayObject        |
  * | {@link PIXI.ProjectionSystem}        | This manages the `projectionMatrix`, used by shaders to get NDC coordinates.  |
  * | {@link PIXI.RenderTextureSystem}     | This manages render-textures, which are an abstraction over framebuffers.     |
  * | {@link PIXI.MaskSystem}              | This manages masking operations.                                              |
- * | {@link PIXI.ScissorSystem}           | This handles scissor masking, and is used internally by {@link MaskSystem}    |
- * | {@link PIXI.StencilSystem}           | This handles stencil masking, and is used internally by {@link MaskSystem}    |
+ * | {@link PIXI.ScissorSystem}           | This handles scissor masking, and is used internally by {@link PIXI.MaskSystem} |
+ * | {@link PIXI.StencilSystem}           | This handles stencil masking, and is used internally by {@link PIXI.MaskSystem} |
  * | {@link PIXI.FilterSystem}            | This manages the filtering pipeline for post-processing effects.              |
  * | {@link PIXI.BatchSystem}             | This manages object renderers that defer rendering until a flush.             |
  * | {@link PIXI.Prepare}                 | This manages uploading assets to the GPU.                                     |

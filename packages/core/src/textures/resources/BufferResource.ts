@@ -95,7 +95,7 @@ export class BufferResource extends Resource
     /**
      * Used to auto-detect the type of resource.
      * @param {*} source - The source object
-     * @returns {boolean} `true` if <canvas>
+     * @returns {boolean} `true` if \<canvas\>
      */
     static test(source: unknown): source is Float32Array | Uint8Array | Uint32Array
     {

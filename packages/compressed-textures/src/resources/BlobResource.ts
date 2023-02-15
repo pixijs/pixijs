@@ -25,7 +25,7 @@ export abstract class BlobResource extends BufferResource
      * @param {string} source - the URL of the texture file
      * @param {PIXI.IBlobOptions} options
      * @param {boolean}[options.autoLoad] - whether to fetch the data immediately;
-     *  you can fetch it later via {@link BlobResource#load}
+     *  you can fetch it later via {@link PIXI.BlobResource#load}
      * @param {boolean}[options.width] - the width in pixels.
      * @param {boolean}[options.height] - the height in pixels.
      */

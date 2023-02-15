@@ -6,7 +6,7 @@ import type { AssetExtension, LoadAsset, Loader, ResolveAsset } from '@pixi/asse
 import type { Texture } from '@pixi/core';
 import type { ISpritesheetData } from './Spritesheet';
 
-interface SpriteSheetJson extends ISpritesheetData
+export interface SpriteSheetJson extends ISpritesheetData
 {
     meta: {
         image: string;
@@ -50,6 +50,7 @@ function getCacheableAssets(keys: string[], asset: Spritesheet, ignoreMultiPack:
 /**
  * Asset extension for loading spritesheets.
  * @memberof PIXI
+ * @type {PIXI.AssetExtension}
  */
 export const spritesheetAsset = {
     extension: ExtensionType.Asset,

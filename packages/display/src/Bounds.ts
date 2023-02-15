@@ -315,7 +315,7 @@ export class Bounds
     }
 
     /**
-     * Adds other {@link Bounds}.
+     * Adds other {@link PIXI.Bounds}.
      * @param bounds - The Bounds to be added
      */
     addBounds(bounds: Bounds): void
