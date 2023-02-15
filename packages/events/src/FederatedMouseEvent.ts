@@ -1,8 +1,8 @@
 import { Point } from '@pixi/core';
 import { FederatedEvent } from './FederatedEvent';
 
-import type { DisplayObject } from 'pixi.js';
 import type { IPointData } from '@pixi/core';
+import type { DisplayObject } from '@pixi/display';
 
 /**
  * A {@link PIXI.FederatedEvent} for mouse events.
