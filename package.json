@@ -51,7 +51,7 @@
     "@docusaurus/core": "~2.3.1",
     "@docusaurus/preset-classic": "~2.3.1",
     "@pixi/eslint-config": "^4.0.1",
-    "@pixi/webdoc-docusaurus-template": "^1.0.0",
+    "@pixi/webdoc-docusaurus-template": "^1.0.1",
     "@pixi/webdoc-template": "^1.5.5",
     "@pixi/workspaces-run": "^1.0.2",
     "@rollup/plugin-commonjs": "^15.1.0",
