@@ -13,6 +13,7 @@
     "clean:types": "rimraf \"{bundles,packages}/*/lib/**/*.d.ts\"",
     "clean:out": "rimraf out",
     "clean:dist": "rimraf dist/*",
+    "clean:docusaurus": "rimraf .docusaurus docusaurus",
     "clean": "run-s clean:*",
     "test:pkg": "ts-node --transpile-only ./test/index.ts",
     "test:pkg:debug": "cross-env DEBUG_MODE=1 ts-node --transpile-only ./test/index.ts",
@@ -21,7 +22,6 @@
     "test:debug": "cross-env DEBUG_MODE=1 npx jest",
     "coverage": "npm run test -- --coverage --maxWorkers=4",
     "coverage:node": "workspaces-run --only=\"@pixi/node\" -- npm run coverage",
-    "docs": "mkdirp dist && webdoc -R README.md",
     "lint": "eslint --cache --ext .js --ext .ts test bundles packages scripts --ignore-path .gitignore --max-warnings 0",
     "lintfix": "run-s \"lint -- --fix\"",
     "types": "tsc --noEmit",
@@ -32,25 +32,26 @@
     "build:types": "tsc -p tsconfig.types.json && ts-node scripts/fixTypes.ts",
     "postbuild:types": "copyfiles -u 1 \"out/**/*\" . && run-s clean:out",
     "watch": "rollup -cw",
-    "dist": "run-s lint types build build:types docs",
+    "dist": "run-s lint types build build:types docs:webdoc docs:docusaurus",
     "dist-validate": "workspaces-run --only=\"@pixi/node\" -- npm run test:dist",
     "postdist": "copyfiles -f bundles/*/dist/* dist && copyfiles -f packages/*/dist/* dist/packages",
     "prerelease": "run-s clean:build test dist",
     "release": "ts-node ./scripts/release.ts",
     "prepublish-ci": "ts-node ./scripts/prepublish.ts",
     "publish-ci": "workspaces-run --only-fs=\"{packages,bundles}/*\" -- npm publish",
-    "webdoc": "webdoc"
+    "docs:webdoc": "mkdirp dist && webdoc -R README.md",
+    "docs:webdoc-docusaurus": "mkdirp docusaurus && webdoc -c webdoc.docusaurus.config.json",
+    "docs:docusaurus": "npm run docs:webdoc-docusaurus && docusaurus build --config webdoc.docusaurus.config.js --out-dir docusaurus/dist",
+    "docs:docusaurus:preview": "npm run docs:webdoc-docusaurus && docusaurus start --config webdoc.docusaurus.config.js"
   },
   "pre-commit": [
     "lintfix"
   ],
-  "engines": {
-    "node": ">=18",
-    "yarn": "please-use-npm",
-    "npm": ">=8"
-  },
   "devDependencies": {
+    "@docusaurus/core": "~2.3.1",
+    "@docusaurus/preset-classic": "~2.3.1",
     "@pixi/eslint-config": "^4.0.1",
+    "@pixi/webdoc-docusaurus-template": "^1.0.0",
     "@pixi/webdoc-template": "^1.5.5",
     "@pixi/workspaces-run": "^1.0.2",
     "@rollup/plugin-commonjs": "^15.1.0",

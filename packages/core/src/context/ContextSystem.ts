@@ -11,6 +11,10 @@ import type { WebGLExtensions } from './WebGLExtensions';
 
 let CONTEXT_UID_COUNTER = 0;
 
+/**
+ * Options for the context system.
+ * @memberof PIXI
+ */
 export interface ContextSystemOptions
 {
     /**

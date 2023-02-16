@@ -4,6 +4,10 @@ import type { ExtensionMetadata } from '@pixi/extensions';
 import type { IRenderer } from '../IRenderer';
 import type { ISystem } from '../system/ISystem';
 
+/**
+ * Options for the startup system.
+ * @memberof PIXI
+ */
 export interface StartupSystemOptions
 {
     /**

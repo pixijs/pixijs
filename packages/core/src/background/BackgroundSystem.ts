@@ -5,6 +5,10 @@ import type { ColorSource } from '@pixi/color';
 import type { ExtensionMetadata } from '@pixi/extensions';
 import type { ISystem } from '../system/ISystem';
 
+/**
+ * Options for the background system.
+ * @memberof PIXI
+ */
 export interface BackgroundSytemOptions
 {
     /**
