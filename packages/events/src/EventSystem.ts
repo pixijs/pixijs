@@ -27,7 +27,7 @@ export interface EventSystemOptions
      * (included in the **pixi.js** and **pixi.js-legacy** bundle), otherwise it will be ignored.
      * @memberof PIXI.IRendererOptions
      */
-    defaultEventMode?: EventMode;
+    eventMode?: EventMode;
 }
 
 /**
@@ -49,6 +49,8 @@ export class EventSystem implements ISystem<EventSystemOptions>
 
     /**
      * The default interaction mode for all display objects.
+     * @see PIXI.DisplayObject.eventMode
+     * @type {PIXI.EventMode}
      * @readonly
      * @since 7.2.0
      */
@@ -146,7 +148,7 @@ export class EventSystem implements ISystem<EventSystemOptions>
 
         this.setTargetElement(view as HTMLCanvasElement);
         this.resolution = resolution;
-        EventSystem._defaultEventMode = options.defaultEventMode ?? 'auto';
+        EventSystem._defaultEventMode = options.eventMode ?? 'auto';
     }
 
     /**

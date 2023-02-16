@@ -32,7 +32,7 @@ declare namespace GlobalMixins
          * The default event mode for all display objects.
          * @since 7.2.0
          */
-        defaultEventMode?: import('@pixi/events').EventMode;
+        eventMode?: import('@pixi/events').EventMode;
     }
 
     interface CanvasRenderer

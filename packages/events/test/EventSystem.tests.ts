@@ -556,10 +556,10 @@ describe('EventSystem', () =>
         const renderer = new Renderer({
             width: 100,
             height: 100,
-            defaultEventMode: 'dynamic'
+            eventMode: 'dynamic'
         });
 
-        expect(renderer.options.defaultEventMode).toEqual('dynamic');
+        expect(renderer.options.eventMode).toEqual('dynamic');
         expect(EventSystem.defaultEventMode).toEqual('dynamic');
 
         const graphics = new Graphics();
@@ -575,7 +575,7 @@ describe('EventSystem', () =>
             height: 100,
         });
 
-        expect(renderer.options.defaultEventMode).toBeUndefined();
+        expect(renderer.options.eventMode).toBeUndefined();
         expect(EventSystem.defaultEventMode).toEqual('auto');
 
         const graphics = new Graphics();
