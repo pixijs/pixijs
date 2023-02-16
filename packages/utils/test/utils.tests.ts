@@ -184,4 +184,94 @@ describe('utils', () =>
             expect(utils.earcut).toBeInstanceOf(Function);
         });
     });
+
+    describe('premultiplyTintToRgba', () =>
+    {
+        it('should successfully premultiply alpha float', () =>
+        {
+            const [r, g, b, a] = utils.premultiplyTintToRgba(0xffffff, 0.5);
+
+            expect(a).toBe(0.5);
+            expect(r).toBe(0.5);
+            expect(g).toBe(0.5);
+            expect(b).toBe(0.5);
+        });
+
+        it('should successfully premultiply alpha 0', () =>
+        {
+            const [r, g, b, a] = utils.premultiplyTintToRgba(0xffffff, 0);
+
+            expect(a).toBe(0);
+            expect(r).toBe(0);
+            expect(g).toBe(0);
+            expect(b).toBe(0);
+        });
+
+        it('should successfully premultiply alpha 1', () =>
+        {
+            const [r, g, b, a] = utils.premultiplyTintToRgba(0xffffff, 1);
+
+            expect(a).toBe(1);
+            expect(r).toBe(1);
+            expect(g).toBe(1);
+            expect(b).toBe(1);
+        });
+    });
+
+    describe('premultiplyTint', () =>
+    {
+        it('should successfully premultiply alpha float', () =>
+        {
+            const tint = utils.premultiplyTint(0xffffff, 0.5);
+
+            expect(tint).toBe(0x7f808080);
+        });
+
+        it('should successfully premultiply alpha 0', () =>
+        {
+            const tint = utils.premultiplyTint(0xffffff, 0);
+
+            expect(tint).toBe(0);
+        });
+
+        it('should successfully premultiply alpha 1', () =>
+        {
+            const tint = utils.premultiplyTint(0xffffff, 1);
+
+            expect(tint).toBe(-1);
+        });
+    });
+
+    describe('premultiplyRgba', () =>
+    {
+        it('should successfully premultiply alpha float', () =>
+        {
+            const [r, g, b, a] = utils.premultiplyRgba([0.5, 0.5, 0.5, 1], 0.5);
+
+            expect(r).toBe(0.25);
+            expect(g).toBe(0.25);
+            expect(b).toBe(0.25);
+            expect(a).toBe(0.5);
+        });
+
+        it('should successfully premultiply alpha 0', () =>
+        {
+            const [r, g, b, a] = utils.premultiplyRgba([0.5, 0.5, 0.5, 1], 0);
+
+            expect(r).toBe(0);
+            expect(g).toBe(0);
+            expect(b).toBe(0);
+            expect(a).toBe(0);
+        });
+
+        it('should successfully premultiply alpha 1', () =>
+        {
+            const [r, g, b, a] = utils.premultiplyRgba([0.5, 0.5, 0.5, 1], 1);
+
+            expect(r).toBe(0.5);
+            expect(g).toBe(0.5);
+            expect(b).toBe(0.5);
+            expect(a).toBe(1);
+        });
+    });
 });
