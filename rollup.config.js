@@ -7,7 +7,7 @@ import esbuild from 'rollup-plugin-esbuild';
 import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
 import jscc from 'rollup-plugin-jscc';
-import workspacesRun from '@pixi/workspaces-run';
+import workspacesRun from 'workspaces-run';
 import repo from './package.json';
 
 const bundleTarget = 'es2017';

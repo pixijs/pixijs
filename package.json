@@ -52,7 +52,6 @@
   "devDependencies": {
     "@pixi/eslint-config": "^4.0.1",
     "@pixi/webdoc-template": "^1.5.5",
-    "@pixi/workspaces-run": "^1.0.2",
     "@rollup/plugin-commonjs": "^15.1.0",
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^15.0.0",
@@ -89,6 +88,7 @@
     "ts-node": "^9.0.0",
     "tsconfig-paths": "^3.10.1",
     "typescript": "~4.3.0",
+    "workspaces-run": "^1.0.2",
     "yargs-parser": "^21.0.1"
   }
 }
