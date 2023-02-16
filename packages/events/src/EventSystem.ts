@@ -22,12 +22,12 @@ const TOUCH_TO_POINTER: Record<string, string> = {
 export interface EventSystemOptions
 {
     /**
-     * The default interaction mode for all display objects.
+     * The default event mode mode for all display objects.
      * This option only is available when using **@pixi/events** package
      * (included in the **pixi.js** and **pixi.js-legacy** bundle), otherwise it will be ignored.
      * @memberof PIXI.IRendererOptions
      */
-    defaultInteraction?: EventMode;
+    defaultEventMode?: EventMode;
 }
 
 /**
@@ -45,16 +45,16 @@ export class EventSystem implements ISystem<EventSystemOptions>
         ],
     };
 
-    private static _defaultInteraction: EventMode;
+    private static _defaultEventMode: EventMode;
 
     /**
      * The default interaction mode for all display objects.
      * @readonly
      * @since 7.2.0
      */
-    public static get defaultInteraction()
+    public static get defaultEventMode()
     {
-        return this._defaultInteraction;
+        return this._defaultEventMode;
     }
 
     /**
@@ -146,7 +146,7 @@ export class EventSystem implements ISystem<EventSystemOptions>
 
         this.setTargetElement(view as HTMLCanvasElement);
         this.resolution = resolution;
-        EventSystem._defaultInteraction = options.defaultInteraction ?? 'auto';
+        EventSystem._defaultEventMode = options.defaultEventMode ?? 'auto';
     }
 
     /**

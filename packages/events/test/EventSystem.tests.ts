@@ -531,11 +531,11 @@ describe('EventSystem', () =>
         const renderer = new Renderer({
             width: 100,
             height: 100,
-            defaultInteraction: 'dynamic'
+            defaultEventMode: 'dynamic'
         });
 
-        expect(renderer.options.defaultInteraction).toEqual('dynamic');
-        expect(EventSystem.defaultInteraction).toEqual('dynamic');
+        expect(renderer.options.defaultEventMode).toEqual('dynamic');
+        expect(EventSystem.defaultEventMode).toEqual('dynamic');
 
         const graphics = new Graphics();
 
@@ -550,8 +550,8 @@ describe('EventSystem', () =>
             height: 100,
         });
 
-        expect(renderer.options.defaultInteraction).toBeUndefined();
-        expect(EventSystem.defaultInteraction).toEqual('auto');
+        expect(renderer.options.defaultEventMode).toBeUndefined();
+        expect(EventSystem.defaultEventMode).toEqual('auto');
 
         const graphics = new Graphics();
 

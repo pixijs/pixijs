@@ -580,7 +580,7 @@ export const FederatedDisplayObject: IFederatedDisplayObject = {
      */
     get interactive()
     {
-        return this._internalInteractive ?? convertEventModeToInteractiveMode(EventSystem.defaultInteraction);
+        return this._internalInteractive ?? convertEventModeToInteractiveMode(EventSystem.defaultEventMode);
     },
     set interactive(value: boolean)
     {
@@ -623,7 +623,7 @@ export const FederatedDisplayObject: IFederatedDisplayObject = {
      */
     get eventMode()
     {
-        return this._internalEventMode ?? EventSystem.defaultInteraction;
+        return this._internalEventMode ?? EventSystem.defaultEventMode;
     },
     set eventMode(value)
     {
