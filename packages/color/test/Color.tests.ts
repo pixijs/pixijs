@@ -230,4 +230,32 @@ describe('Color', () =>
 
         expect(color.value).toBe(0x999999);
     });
+
+    it('should premultiply color correctly', () =>
+    {
+        const color = new Color([0.5, 0.5, 0.5, 1]).premultiply(0.5);
+
+        expect(color.red).toBe(0.25);
+        expect(color.blue).toBe(0.25);
+        expect(color.green).toBe(0.25);
+        expect(color.alpha).toBe(0.5);
+    });
+
+    it('should premultiply alpha only correctly', () =>
+    {
+        const color = new Color([0.5, 0.5, 0.5, 1]).premultiply(0.5, false);
+
+        expect(color.red).toBe(0.5);
+        expect(color.blue).toBe(0.5);
+        expect(color.green).toBe(0.5);
+        expect(color.alpha).toBe(0.5);
+    });
+
+    it('should output premultiplied alpha integer correctly', () =>
+    {
+        const color = new Color([0.5, 0.5, 0.5, 1]);
+
+        expect(color.toPremultiplied(0)).toBe(0);
+        expect(color.toPremultiplied(0.5)).toBe(0x7f404040);
+    });
 });
