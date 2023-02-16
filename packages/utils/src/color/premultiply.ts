@@ -80,7 +80,7 @@ export function premultiplyRgba(
     return Color.shared
         .setValue(rgb)
         .premultiply(alpha, premultiply)
-        .toRgbArray(out ?? new Float32Array(4));
+        .toArray(out ?? new Float32Array(4));
 }
 
 /**
@@ -121,5 +121,5 @@ export function premultiplyTintToRgba(tint: number, alpha: number, out?: Float32
     return Color.shared
         .setValue(tint)
         .premultiply(alpha, premultiply)
-        .toRgbArray(out ?? new Float32Array(4));
+        .toArray(out ?? new Float32Array(4));
 }
