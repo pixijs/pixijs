@@ -6,7 +6,6 @@ import {
     Color,
     DRAW_MODES,
     Point,
-    utils,
     WRAP_MODES
 } from '@pixi/core';
 import { Bounds } from '@pixi/display';
@@ -800,16 +799,19 @@ export class GraphicsGeometry extends BatchGeometry
         size: number,
         offset = 0): void
     {
-        // TODO use the premultiply bits Ivan added
-        const rgb = Color.shared.setValue(color).toLittleEndianNumber();
+        const bgr = Color.shared
+            .setValue(color)
+            .toLittleEndianNumber();
 
-        const rgba = utils.premultiplyTint(rgb, alpha);
+        const result = Color.shared
+            .setValue(bgr)
+            .toPremultiplied(alpha);
 
         colors.length = Math.max(colors.length, offset + size);
 
         for (let i = 0; i < size; i++)
         {
-            colors[offset + i] = rgba;
+            colors[offset + i] = result;
         }
     }
 
