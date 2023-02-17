@@ -293,6 +293,55 @@ export class Color
     }
 
     /**
+     * Converts color to a premultiplied alpha format. This action is destructive, and will
+     * override the previous `value` property to be `null`.
+     * @param alpha - The color to multiply by.
+     * @param [applyToRGB=true] - Whether to premultiply RGB channels.
+     * @returns {PIXI.Color} - Itself.
+     */
+    premultiply(alpha: number, applyToRGB = true): this
+    {
+        if (applyToRGB)
+        {
+            this._components[0] *= alpha;
+            this._components[1] *= alpha;
+            this._components[2] *= alpha;
+        }
+        this._components[3] = alpha;
+
+        this.refreshInt();
+        this._value = null;
+
+        return this;
+    }
+
+    /**
+     * Premultiplies alpha with current color.
+     * @param {number} alpha - floating point alpha (0.0-1.0)
+     * @returns {number} tint multiplied by alpha
+     */
+    toPremultiplied(alpha: number): number
+    {
+        if (alpha === 1.0)
+        {
+            return (alpha * 255 << 24) + this._int;
+        }
+        if (alpha === 0.0)
+        {
+            return 0;
+        }
+        let r = ((this._int >> 16) & 0xFF);
+        let g = ((this._int >> 8) & 0xFF);
+        let b = (this._int & 0xFF);
+
+        r = ((r * alpha) + 0.5) | 0;
+        g = ((g * alpha) + 0.5) | 0;
+        b = ((b * alpha) + 0.5) | 0;
+
+        return (alpha * 255 << 24) + (r << 16) + (g << 8) + b;
+    }
+
+    /**
      * Convert to a hexidecimal string.
      * @example
      * import { Color } from 'pixi.js';

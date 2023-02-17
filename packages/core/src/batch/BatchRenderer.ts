@@ -1,7 +1,8 @@
+import { Color } from '@pixi/color';
 import { ENV } from '@pixi/constants';
 import { extensions, ExtensionType } from '@pixi/extensions';
 import { settings } from '@pixi/settings';
-import { deprecation, log2, nextPow2, premultiplyBlendMode, premultiplyTint } from '@pixi/utils';
+import { deprecation, log2, nextPow2, premultiplyBlendMode } from '@pixi/utils';
 import { ViewableBuffer } from '../geometry/ViewableBuffer';
 import { checkMaxIfStatementsInShader } from '../shader/utils/checkMaxIfStatementsInShader';
 import { State } from '../state/State';
@@ -776,10 +777,9 @@ export class BatchRenderer extends ObjectRenderer
         const textureId = element._texture.baseTexture._batchLocation;
 
         const alpha = Math.min(element.worldAlpha, 1.0);
-        const argb = (alpha < 1.0
-            && element._texture.baseTexture.alphaMode)
-            ? premultiplyTint(element._tintRGB, alpha)
-            : element._tintRGB + (alpha * 255 << 24);
+        const argb = Color.shared
+            .setValue(element._tintRGB)
+            .toPremultiplied(alpha);
 
         // lets not worry about tint! for now..
         for (let i = 0; i < vertexData.length; i += 2)
