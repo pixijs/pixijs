@@ -362,7 +362,7 @@ describe('EventSystem', () =>
         expect(primaryMoveSpy).toHaveBeenCalledTimes(1);
         expect(primaryMoveGlobalSpy).toHaveBeenCalledTimes(1);
 
-        graphics.interactive = 'none';
+        graphics.eventMode = 'none';
 
         renderer.events.onPointerMove(
             new PointerEvent('pointermove', { clientX: 25, clientY: 25 })
@@ -370,7 +370,7 @@ describe('EventSystem', () =>
         expect(primaryMoveSpy).toHaveBeenCalledTimes(1);
         expect(primaryMoveGlobalSpy).toHaveBeenCalledTimes(1);
 
-        graphics.interactive = 'auto';
+        graphics.eventMode = 'auto';
 
         renderer.events.onPointerMove(
             new PointerEvent('pointermove', { clientX: 25, clientY: 25 })
@@ -378,7 +378,7 @@ describe('EventSystem', () =>
         expect(primaryMoveSpy).toHaveBeenCalledTimes(1);
         expect(primaryMoveGlobalSpy).toHaveBeenCalledTimes(1);
 
-        graphics.interactive = 'passive';
+        graphics.eventMode = 'passive';
 
         renderer.events.onPointerMove(
             new PointerEvent('pointermove', { clientX: 25, clientY: 25 })
@@ -386,7 +386,7 @@ describe('EventSystem', () =>
         expect(primaryMoveSpy).toHaveBeenCalledTimes(1);
         expect(primaryMoveGlobalSpy).toHaveBeenCalledTimes(1);
 
-        graphics.interactive = 'dynamic';
+        graphics.eventMode = 'dynamic';
 
         renderer.events.onPointerMove(
             new PointerEvent('pointermove', { clientX: 25, clientY: 25 })
@@ -394,7 +394,7 @@ describe('EventSystem', () =>
         expect(primaryMoveSpy).toHaveBeenCalledTimes(2);
         expect(primaryMoveGlobalSpy).toHaveBeenCalledTimes(2);
 
-        graphics.interactive = 'static';
+        graphics.eventMode = 'static';
 
         renderer.events.onPointerMove(
             new PointerEvent('pointermove', { clientX: 25, clientY: 25 })
@@ -556,15 +556,31 @@ describe('EventSystem', () =>
         const renderer = new Renderer({
             width: 100,
             height: 100,
-            defaultInteraction: 'dynamic'
+            eventMode: 'dynamic'
         });
 
-        expect(renderer.options.defaultInteraction).toEqual('dynamic');
-        expect(EventSystem.defaultInteraction).toEqual('dynamic');
+        expect(renderer.options.eventMode).toEqual('dynamic');
+        expect(EventSystem.defaultEventMode).toEqual('dynamic');
 
         const graphics = new Graphics();
 
-        expect(graphics.interactive).toEqual('dynamic');
-        expect(graphics._internalInteractive).toEqual('dynamic');
+        expect(graphics.interactive).toEqual(true);
+        expect(graphics.eventMode).toEqual('dynamic');
+    });
+
+    it('should use auto for the default interaction when undefined', () =>
+    {
+        const renderer = new Renderer({
+            width: 100,
+            height: 100,
+        });
+
+        expect(renderer.options.eventMode).toBeUndefined();
+        expect(EventSystem.defaultEventMode).toEqual('auto');
+
+        const graphics = new Graphics();
+
+        expect(graphics.interactive).toEqual(false);
+        expect(graphics.eventMode).toEqual('auto');
     });
 });

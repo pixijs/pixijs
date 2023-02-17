@@ -29,10 +29,10 @@ declare namespace GlobalMixins
     interface IRendererOptions
     {
         /**
-         * The default interaction mode for all display objects.
+         * The default event mode for all display objects.
          * @since 7.2.0
          */
-        defaultInteraction?: import('@pixi/events').Interactive;
+        eventMode?: import('@pixi/events').EventMode;
     }
 
     interface CanvasRenderer
