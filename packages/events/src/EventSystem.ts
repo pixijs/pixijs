@@ -6,7 +6,7 @@ import { FederatedWheelEvent } from './FederatedWheelEvent';
 
 import type { ExtensionMetadata, IPointData, IRenderer, ISystem } from '@pixi/core';
 import type { DisplayObject } from '@pixi/display';
-import type { Interactive } from './FederatedEventTarget';
+import type { EventMode } from './FederatedEventTarget';
 import type { FederatedMouseEvent } from './FederatedMouseEvent';
 
 const MOUSE_POINTER_ID = 1;
@@ -22,12 +22,12 @@ const TOUCH_TO_POINTER: Record<string, string> = {
 export interface EventSystemOptions
 {
     /**
-     * The default interaction mode for all display objects.
+     * The default event mode mode for all display objects.
      * This option only is available when using **@pixi/events** package
      * (included in the **pixi.js** and **pixi.js-legacy** bundle), otherwise it will be ignored.
      * @memberof PIXI.IRendererOptions
      */
-    defaultInteraction?: Interactive;
+    eventMode?: EventMode;
 }
 
 /**
@@ -45,16 +45,18 @@ export class EventSystem implements ISystem<EventSystemOptions>
         ],
     };
 
-    private static _defaultInteraction: boolean | Interactive;
+    private static _defaultEventMode: EventMode;
 
     /**
      * The default interaction mode for all display objects.
+     * @see PIXI.DisplayObject.eventMode
+     * @type {PIXI.EventMode}
      * @readonly
      * @since 7.2.0
      */
-    public static get defaultInteraction()
+    public static get defaultEventMode()
     {
-        return this._defaultInteraction;
+        return this._defaultEventMode;
     }
 
     /**
@@ -146,8 +148,7 @@ export class EventSystem implements ISystem<EventSystemOptions>
 
         this.setTargetElement(view as HTMLCanvasElement);
         this.resolution = resolution;
-        // allow for false to keep backwards compatibility
-        EventSystem._defaultInteraction = options.defaultInteraction ?? false;
+        EventSystem._defaultEventMode = options.eventMode ?? 'auto';
     }
 
     /**

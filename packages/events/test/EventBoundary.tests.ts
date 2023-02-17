@@ -70,7 +70,7 @@ describe('EventBoundary', () =>
         const container = stage.addChild(new Container());
         const target = container.addChild(new Graphics().beginFill(0).drawRect(0, 0, 100, 100));
 
-        container.interactive = 'none';
+        container.eventMode = 'none';
         target.interactive = true;
 
         expect(boundary.hitTest(50, 50)).toEqual(null);
@@ -83,7 +83,7 @@ describe('EventBoundary', () =>
         const container = stage.addChild(new Container());
         const target = container.addChild(new Graphics().beginFill(0).drawRect(0, 0, 100, 100));
 
-        container.interactive = 'passive';
+        container.eventMode = 'passive';
         container.interactiveChildren = false;
         target.interactive = true;
 
@@ -107,7 +107,7 @@ describe('EventBoundary', () =>
 
         expect(boundary.hitTest(50, 50)).toEqual(target);
 
-        container.interactive = 'passive';
+        container.eventMode = 'passive';
 
         expect(boundary.hitTest(50, 50)).toEqual(target);
     });
@@ -121,9 +121,9 @@ describe('EventBoundary', () =>
         const targetStatic = container.addChild(new Graphics().beginFill(0).drawRect(100, 0, 100, 100));
         const targetDynamic = container.addChild(new Graphics().beginFill(0).drawRect(200, 0, 100, 100));
 
-        targetAuto.interactive = 'auto';
-        targetStatic.interactive = 'static';
-        targetDynamic.interactive = 'dynamic';
+        targetAuto.eventMode = 'auto';
+        targetStatic.eventMode = 'static';
+        targetDynamic.eventMode = 'dynamic';
 
         expect(boundary.hitTest(50, 50)).toEqual(null);
         expect(boundary.hitTest(150, 50)).toEqual(targetStatic);
@@ -146,7 +146,7 @@ describe('EventBoundary', () =>
 
         container.interactive = true;
         target.interactive = true;
-        blocker.interactive = 'none';
+        blocker.eventMode = 'none';
 
         expect(boundary.hitTest(25, 50)).toEqual(target);
         expect(boundary.hitTest(75, 50)).toEqual(target);
@@ -160,7 +160,7 @@ describe('EventBoundary', () =>
         const target = container.addChild(new Graphics().beginFill(0).drawRect(0, 0, 100, 100));
         const blocker = container.addChild(new Graphics().beginFill(0).drawRect(50, 0, 100, 100));
 
-        container.interactive = 'none';
+        container.eventMode = 'none';
         target.interactive = true;
         blocker.interactive = true;
 
@@ -178,15 +178,15 @@ describe('EventBoundary', () =>
         const activeBlocker = container.addChild(new Graphics().beginFill(0).drawRect(75, 0, 25, 100));
         const noneBlocker = container.addChild(new Graphics().beginFill(0).drawRect(25, 0, 50, 100));
 
-        container.interactive = 'passive';
+        container.eventMode = 'passive';
         // this should be hit because it is interactive and parent is passive
         target.interactive = true;
         // this should block the target because it is interactive and parent is passive
         activeBlocker.interactive = true;
         // this should be ignored because it is not interactive and parent is passive
-        autoBlocker.interactive = 'auto';
+        autoBlocker.eventMode = 'auto';
         // this should be ignored because it is using none
-        noneBlocker.interactive = 'none';
+        noneBlocker.eventMode = 'none';
 
         expect(boundary.hitTest(12, 50)).toEqual(target);
         expect(boundary.hitTest(50, 50)).toEqual(target);
