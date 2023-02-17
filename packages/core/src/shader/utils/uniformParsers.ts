@@ -149,6 +149,62 @@ export const uniformParsers: IUniformParser[] = [
                     data[offset+3] = v.height;
                 `
     },
+    // upload a pixi color as vec4 with caching layer
+    {
+        test: (data: any, uniform: any): boolean =>
+            data.type === 'vec4' && data.size === 1 && !data.isArray && uniform.red !== undefined,
+
+        code: (name: string): string =>
+            `
+                cv = ud["${name}"].value;
+                v = uv["${name}"];
+
+                if(cv[0] !== v.red || cv[1] !== v.green || cv[2] !== v.blue || cv[3] !== v.alpha)
+                {
+                    cv[0] = v.red;
+                    cv[1] = v.green;
+                    cv[2] = v.blue;
+                    cv[3] = v.alpha;
+                    gl.uniform4f(ud["${name}"].location, v.red, v.green, v.blue, v.alpha)
+                }`,
+        codeUbo: (name: string): string =>
+            `
+                    v = uv.${name};
+
+                    data[offset] = v.red;
+                    data[offset+1] = v.green;
+                    data[offset+2] = v.blue;
+                    data[offset+3] = v.alpha;
+                `
+    },
+    // upload a pixi color as a vec3 with caching layer
+    {
+        test: (data: any, uniform: any): boolean =>
+            data.type === 'vec3' && data.size === 1 && !data.isArray && uniform.red !== undefined,
+
+        code: (name: string): string =>
+            `
+                cv = ud["${name}"].value;
+                v = uv["${name}"];
+
+                if(cv[0] !== v.red || cv[1] !== v.green || cv[2] !== v.blue || cv[3] !== v.a)
+                {
+                    cv[0] = v.red;
+                    cv[1] = v.green;
+                    cv[2] = v.blue;
+    
+                    gl.uniform3f(ud["${name}"].location, v.red, v.green, v.blue)
+                }`,
+        codeUbo: (name: string): string =>
+            `
+                    v = uv.${name};
+
+                    data[offset] = v.red;
+                    data[offset+1] = v.green;
+                    data[offset+2] = v.blue;
+                `
+    },
+
     // a caching layer for vec4 uploading
     {
         test: (data: any): boolean =>
