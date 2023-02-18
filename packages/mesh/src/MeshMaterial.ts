@@ -7,7 +7,7 @@ import type { ColorSource, Texture, utils } from '@pixi/core';
 export interface IMeshMaterialOptions
 {
     alpha?: number;
-    tint?: number;
+    tint?: ColorSource;
     pluginName?: string;
     program?: Program;
     uniforms?: utils.Dict<unknown>;
@@ -56,7 +56,7 @@ export class MeshMaterial extends Shader
      * @param uSampler - Texture that material uses to render.
      * @param options - Additional options
      * @param {number} [options.alpha=1] - Default alpha.
-     * @param {number} [options.tint=0xFFFFFF] - Default tint.
+     * @param {PIXI.ColorSource} [options.tint=0xFFFFFF] - Default tint.
      * @param {string} [options.pluginName='batch'] - Renderer plugin for batching.
      * @param {PIXI.Program} [options.program=0xFFFFFF] - Custom program.
      * @param {object} [options.uniforms] - Custom uniforms.
@@ -90,7 +90,9 @@ export class MeshMaterial extends Shader
         this.batchable = options.program === undefined;
         this.pluginName = options.pluginName;
 
-        this.tint = options.tint;
+        this._tintColor = new Color(options.tint);
+        this._tintRGB = this._tintColor.toLittleEndianNumber();
+        this._colorDirty = true;
         this.alpha = options.alpha;
     }
 
