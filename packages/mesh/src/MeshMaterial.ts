@@ -2,7 +2,7 @@ import { Color, Matrix, Program, Shader, TextureMatrix } from '@pixi/core';
 import fragment from './shader/mesh.frag';
 import vertex from './shader/mesh.vert';
 
-import type { Texture, utils } from '@pixi/core';
+import type { ColorSource, Texture, utils } from '@pixi/core';
 
 export interface IMeshMaterialOptions
 {
@@ -50,7 +50,7 @@ export class MeshMaterial extends Shader
      */
     private _colorDirty: boolean;
     private _alpha: number;
-    private _tint: number;
+    private _tintColor: Color;
 
     /**
      * @param uSampler - Texture that material uses to render.
@@ -133,17 +133,26 @@ export class MeshMaterial extends Shader
      * Multiply tint for the material.
      * @default 0xFFFFFF
      */
-    set tint(value: number)
+    set tint(value: ColorSource)
     {
-        if (value === this._tint) return;
+        if (value === this.tint) return;
 
-        this._tint = value;
-        this._tintRGB = Color.shared.setValue(value).toLittleEndianNumber();
+        this._tintColor.setValue(value);
+        this._tintRGB = this._tintColor.toLittleEndianNumber();
         this._colorDirty = true;
     }
-    get tint(): number
+    get tint(): ColorSource
     {
-        return this._tint;
+        return this._tintColor.value;
+    }
+
+    /**
+     * Get the internal number from tint color
+     * @ignore
+     */
+    get tintValue(): number
+    {
+        return this._tintColor.toNumber();
     }
 
     /** Gets called automatically by the Mesh. Intended to be overridden for custom {@link PIXI.MeshMaterial} objects. */
@@ -156,7 +165,7 @@ export class MeshMaterial extends Shader
             const applyToChannels = (baseTexture.alphaMode as unknown as boolean);
 
             Color.shared
-                .setValue(this._tint)
+                .setValue(this._tintColor)
                 .premultiply(this._alpha, applyToChannels)
                 .toArray(this.uniforms.uColor);
         }
