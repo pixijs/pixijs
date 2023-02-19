@@ -1,3 +1,5 @@
+/// <reference path="../global.d.ts" />
+
 /**
  * Generalized convenience utilities for PIXI.
  * @example
