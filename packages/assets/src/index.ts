@@ -1,3 +1,4 @@
+/// <reference path="../global.d.ts" />
 export * from './AssetExtension';
 export * from './Assets';
 export * from './cache';

@@ -35,12 +35,13 @@ export enum LoaderParserPriority
  * and some for both!
  * @memberof PIXI
  */
-export interface LoaderParser<ASSET = any, META_DATA = any>
+export interface LoaderParser<ASSET = any, META_DATA = any, CONFIG = Record<string, any>>
 {
     extension?: ExtensionMetadata;
 
     /** A config to adjust the parser */
-    config?: Record<string, any>
+    config?: CONFIG;
+
     /**
      * each URL to load will be tested here,
      * if the test is passed the assets are loaded using the load function below.
