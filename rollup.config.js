@@ -79,7 +79,7 @@ async function main()
             bundle,
             bundleModule,
             dependencies,
-            nodeDependencies,
+            externalDependencies,
             peerDependencies,
             pixiRequirements,
         } = pkg.config;
@@ -87,7 +87,7 @@ async function main()
         // Check for bundle folder
         const external = Object.keys(dependencies || [])
             .concat(Object.keys(peerDependencies || []))
-            .concat(nodeDependencies || [])
+            .concat(externalDependencies || [])
             .concat(pixiRequirements || []);
         const basePath = path.relative(__dirname, pkg.dir);
         const input = path.join(basePath, 'src/index.ts');

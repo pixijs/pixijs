@@ -33,6 +33,9 @@
     ],
     "dependencies": {
       "colord": "^2.9.3"
-    }
+    },
+    "externalDependencies": [
+      "colord/plugins/names"
+    ]
   }
   
