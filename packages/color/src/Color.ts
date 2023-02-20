@@ -237,7 +237,7 @@ export class Color
     {
         const [r, g, b] = this._components;
 
-        out = out ?? [] as unknown as T;
+        out = out ?? [] as number[] as T;
 
         out[0] = Math.round(r * 255);
         out[1] = Math.round(g * 255);
@@ -257,7 +257,7 @@ export class Color
     toRgbArray<T extends (number[] | Float32Array)>(out: T): T;
     toRgbArray<T extends (number[] | Float32Array)>(out?: T): T
     {
-        out = out ?? [] as unknown as T;
+        out = out ?? [] as number[] as T;
         const [r, g, b] = this._components;
 
         out[0] = r;
@@ -430,7 +430,7 @@ export class Color
     toArray<T extends (number[] | Float32Array)>(out: T): T;
     toArray<T extends (number[] | Float32Array)>(out?: T): T
     {
-        out = out ?? [] as unknown as T;
+        out = out ?? [] as number[] as T;
         const [r, g, b, a] = this._components;
 
         out[0] = r;
