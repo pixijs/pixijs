@@ -321,4 +321,21 @@ describe('BitmapText', () =>
 
         expect(text.dirty).toBeFalse();
     });
+
+    it('should support tinting', () =>
+    {
+        const text = new BitmapText('123ABCabc', {
+            fontName: font.font,
+        });
+
+        text.tint = 'red';
+
+        expect(text.tint).toEqual('red');
+
+        text.updateText();
+
+        text['_activePagesMeshData'].every((mesh) => mesh.mesh.tintValue === 0xff0000);
+
+        text.destroy(true);
+    });
 });
