@@ -445,7 +445,7 @@ export class Color
      * Normalize the input value into rgba
      * @param value - Input value
      */
-    private normalize(value: Exclude<ColorSource, Color> | null): void
+    private normalize(value: Exclude<ColorSource, Color>): void
     {
         let components: number[] | undefined;
 
