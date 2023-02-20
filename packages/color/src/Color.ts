@@ -160,8 +160,11 @@ export class Color
      * - Otherwise, `Color` will try to normalize the color source and set the components.
      *   If the color source is invalid, an `Error` will be thrown and the `Color` will left unchanged.
      *
+     * Note: The `null` in the setter's parameter type is added to match the TypeScript rule: return type of getter
+     * must be assignable to its setter's parameter type. Setting `value` to `null` will throw an `Error`.
+     *
      * When getting:
-     * - A return value of `null` means the previous value was overridden  (e.g., {@link PIXI.Color.multiply multiply},
+     * - A return value of `null` means the previous value was overridden (e.g., {@link PIXI.Color.multiply multiply},
      *   {@link PIXI.Color.premultiply premultiply} or {@link PIXI.Color.round round}).
      * - Otherwise, the color source used when setting is returned.
      * @type {PIXI.ColorSource}
