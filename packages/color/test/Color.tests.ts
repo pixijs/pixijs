@@ -258,4 +258,13 @@ describe('Color', () =>
         expect(color.toPremultiplied(0)).toBe(0);
         expect(color.toPremultiplied(0.5)).toBe(0x7f404040);
     });
+
+    it('should support objects that extends Number', () =>
+    {
+        class ColorNumber extends Number {}
+
+        const color = new Color(new ColorNumber(0xff0000));
+
+        expect(color.toNumber()).toBe(0xff0000);
+    });
 });

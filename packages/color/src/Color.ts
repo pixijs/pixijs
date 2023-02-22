@@ -50,7 +50,9 @@ extend([namesPlugin]);
  * @since 7.2.0
  */
 export type ColorSource = string | number | number[] | Float32Array | Uint8Array | Uint8ClampedArray
-| HslColor | HslaColor | HsvColor | HsvaColor | RgbColor | RgbaColor | Color;
+| HslColor | HslaColor | HsvColor | HsvaColor | RgbColor | RgbaColor | Color |
+// eslint-disable-next-line @typescript-eslint/ban-types
+Number;
 
 /**
  * Color utility class.
@@ -452,7 +454,21 @@ export class Color
     {
         let components: number[] | undefined;
 
-        if ((Array.isArray(value) || value instanceof Float32Array)
+        // Number is a primative so typeof works fine, but in the case
+        // that someone creates a class that extends Number, we also
+        // need to check for instanceof Number
+        if ((typeof value === 'number' || value instanceof Number) && value >= 0 && value <= 0xffffff)
+        {
+            const int = value as number; // cast required because instanceof Number is ambiguous for TS
+
+            components = [
+                ((int >> 16) & 0xFF) / 255,
+                ((int >> 8) & 0xFF) / 255,
+                (int & 0xFF) / 255,
+                1.0
+            ];
+        }
+        else if ((Array.isArray(value) || value instanceof Float32Array)
             // Can be rgb or rgba
             && value.length >= 3 && value.length <= 4
             // make sure all values are 0 - 1
@@ -491,15 +507,6 @@ export class Color
 
                 components = [r / 255, g / 255, b / 255, a];
             }
-        }
-        else if (typeof value === 'number' && value >= 0 && value <= 0xffffff)
-        {
-            components = [
-                ((value >> 16) & 0xFF) / 255,
-                ((value >> 8) & 0xFF) / 255,
-                (value & 0xFF) / 255,
-                1.0
-            ];
         }
 
         // Cache normalized values for rgba and hex integer
