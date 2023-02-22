@@ -152,12 +152,12 @@ export class CanvasSpriteRenderer
 
         if (sprite.tint !== 0xFFFFFF)
         {
-            if (sprite._cachedTint !== sprite.tint || sprite._tintedCanvas.tintId !== sprite._texture._updateID)
+            if (sprite._cachedTint !== sprite.tintValue || sprite._tintedCanvas.tintId !== sprite._texture._updateID)
             {
-                sprite._cachedTint = sprite.tint;
+                sprite._cachedTint = sprite.tintValue;
 
                 // TODO clean up caching - how to clean up the caches?
-                sprite._tintedCanvas = canvasUtils.getTintedCanvas(sprite, sprite.tint);
+                sprite._tintedCanvas = canvasUtils.getTintedCanvas(sprite, sprite.tintValue);
             }
 
             context.drawImage(

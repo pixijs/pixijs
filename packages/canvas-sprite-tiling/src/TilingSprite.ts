@@ -31,7 +31,7 @@ TilingSprite.prototype._renderCanvas = function _renderCanvas(renderer: CanvasRe
     const baseTextureResolution = baseTexture.resolution;
 
     // create a nice shiny pattern!
-    if (this._textureID !== this._texture._updateID || this._cachedTint !== this.tint)
+    if (this._textureID !== this._texture._updateID || this._cachedTint !== this.tintValue)
     {
         this._textureID = this._texture._updateID;
         // cut an object from a spritesheet..
@@ -40,9 +40,9 @@ TilingSprite.prototype._renderCanvas = function _renderCanvas(renderer: CanvasRe
             baseTextureResolution);
 
         // Tint the tiling sprite
-        if (this.tint !== 0xFFFFFF)
+        if (this.tintValue !== 0xFFFFFF)
         {
-            this._tintedCanvas = canvasUtils.getTintedCanvas(this, this.tint);
+            this._tintedCanvas = canvasUtils.getTintedCanvas(this, this.tintValue);
             tempCanvas.context.drawImage(this._tintedCanvas, 0, 0);
         }
         else
@@ -50,7 +50,7 @@ TilingSprite.prototype._renderCanvas = function _renderCanvas(renderer: CanvasRe
             tempCanvas.context.drawImage(source,
                 -texture._frame.x * baseTextureResolution, -texture._frame.y * baseTextureResolution);
         }
-        this._cachedTint = this.tint;
+        this._cachedTint = this.tintValue;
         this._canvasPattern = tempCanvas.context.createPattern(tempCanvas.canvas, 'repeat');
     }
 
