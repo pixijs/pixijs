@@ -19,6 +19,34 @@ const validImageMIMEs = [
 ];
 
 /**
+ * Configuration for the `loadTextures` loader plugin.
+ * @memberof PIXI
+ * @see PIXI.loadTextures
+ */
+export interface LoadTextureConfig
+{
+    /**
+     * When set to `true`, loading and decoding images will happen with Worker thread,
+     * if available on the browser. This is much more performant as network requests
+     * and decoding can be expensive on the CPU. However, not all environments support
+     * Workers, in some cases it can be helpful to disable by setting to `false`.
+     * @default true
+     */
+    preferWorkers: boolean;
+    /**
+     * When set to `true`, loading and decoding images will happen with `createImageBitmap`,
+     * otherwise it will use `new Image()`.
+     * @default true
+     */
+    preferCreateImageBitmap: boolean;
+    /**
+     * The crossOrigin value to use for images when `preferCreateImageBitmap` is `false`.
+     * @default 'anonymous'
+     */
+    crossOrigin: HTMLImageElement['crossOrigin'];
+}
+
+/**
  * Returns a promise that resolves an ImageBitmaps.
  * This function is designed to be used by a worker.
  * Part of WorkerManager!
@@ -59,6 +87,7 @@ export async function loadImageBitmap(url: string): Promise<ImageBitmap>
  *    crossOrigin: 'anonymous',
  * };
  * ```
+ * @memberof PIXI
  */
 export const loadTextures = {
     extension: {
@@ -128,6 +157,6 @@ export const loadTextures = {
     {
         texture.destroy(true);
     }
-} as LoaderParser<Texture, IBaseTextureOptions>;
+} as LoaderParser<Texture, IBaseTextureOptions, LoadTextureConfig>;
 
 extensions.add(loadTextures);

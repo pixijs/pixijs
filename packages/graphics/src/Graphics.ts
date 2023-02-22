@@ -60,8 +60,6 @@ export interface ILineStyleOptions extends IFillStyleOptions
     miterLimit?: number;
 }
 
-const temp = new Float32Array(3);
-
 // a default shaders map used by graphics..
 const DEFAULT_SHADERS: {[key: string]: Shader} = {};
 
@@ -145,7 +143,7 @@ export class Graphics extends Container
     /** Current hole mode is enabled. */
     protected _holeMode = false;
     protected _transformID: number;
-    protected _tint: number;
+    protected _tintColor: Color;
 
     /**
      * Represents the WebGL state the Graphics required to render, excludes shader and geometry. E.g.,
@@ -190,7 +188,7 @@ export class Graphics extends Container
         this._transformID = -1;
 
         // Set default
-        this.tint = 0xFFFFFF;
+        this._tintColor = new Color(0xFFFFFF);
         this.blendMode = BLEND_MODES.NORMAL;
     }
 
@@ -229,14 +227,14 @@ export class Graphics extends Container
      * 0xFFFFFF will remove any tint effect.
      * @default 0xFFFFFF
      */
-    public get tint(): number
+    public get tint(): ColorSource
     {
-        return this._tint;
+        return this._tintColor.value;
     }
 
-    public set tint(value: number)
+    public set tint(value: ColorSource)
     {
-        this._tint = value;
+        this._tintColor.setValue(value);
     }
 
     /**
@@ -964,7 +962,6 @@ export class Graphics extends Container
         const shader = this._resolveDirectShader(renderer);
 
         const geometry = this._geometry;
-        const tint = this.tint;
         const worldAlpha = this.worldAlpha;
         const uniforms = shader.uniforms;
         const drawCalls = geometry.drawCalls;
@@ -973,7 +970,7 @@ export class Graphics extends Container
         uniforms.translationMatrix = this.transform.worldTransform;
 
         // and then lets set the tint..
-        Color.shared.setValue(tint)
+        Color.shared.setValue(this._tintColor)
             .multiply([worldAlpha, worldAlpha, worldAlpha])
             .setAlpha(worldAlpha)
             .toArray(uniforms.tint);
@@ -1094,16 +1091,14 @@ export class Graphics extends Container
     {
         if (this.batchTint !== this.tint)
         {
-            this.batchTint = this.tint;
-
-            const tintRGB = Color.shared.setValue(this.tint).toRgbArray(temp);
+            this.batchTint = this._tintColor.toNumber();
 
             for (let i = 0; i < this.batches.length; i++)
             {
                 const batch = this.batches[i];
 
                 batch._tintRGB = Color.shared
-                    .setValue(tintRGB)
+                    .setValue(this._tintColor)
                     .multiply(batch._batchRGB)
                     .toLittleEndianNumber();
             }

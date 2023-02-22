@@ -110,7 +110,7 @@ export class CanvasMeshRenderer
         {
             return;
         }
-        const isTinted = mesh.tint !== 0xFFFFFF;
+        const isTinted = mesh.tintValue !== 0xFFFFFF;
         const base = texture.baseTexture;
         const textureWidth = base.width;
         const textureHeight = base.height;
@@ -127,13 +127,13 @@ export class CanvasMeshRenderer
 
         if (isTinted)
         {
-            if (mesh._cachedTint !== mesh.tint)
+            if (mesh._cachedTint !== mesh.tintValue)
             {
-                mesh._cachedTint = mesh.tint;
+                mesh._cachedTint = mesh.tintValue;
                 mesh._cachedTexture = mesh._cachedTexture || new Texture(base);
                 mesh._tintedCanvas = canvasUtils.getTintedCanvas(
                     { texture: mesh._cachedTexture },
-                    mesh.tint
+                    mesh.tintValue
                 );
             }
         }
