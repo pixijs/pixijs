@@ -109,8 +109,10 @@ export class Color
      */
     constructor(value: ColorSource = 0xffffff)
     {
+        this._value = null;
         this._components = new Float32Array(4);
         this._components.fill(1);
+        this._int = 0xffffff;
         this.value = value;
     }
 
@@ -141,6 +143,7 @@ export class Color
     /**
      * Set the value, suitable for chaining
      * @param value
+     * @see PIXI.Color.value
      */
     setValue(value: ColorSource): this
     {
@@ -150,11 +153,23 @@ export class Color
     }
 
     /**
-     * Set the current color source. A return value of `null` means the previous
-     * value was overridden (e.g., `multiply`, `round`).
+     * The current color source.
+     *
+     * When setting:
+     * - Setting to an instance of `Color` will copy its color source and components.
+     * - Otherwise, `Color` will try to normalize the color source and set the components.
+     *   If the color source is invalid, an `Error` will be thrown and the `Color` will left unchanged.
+     *
+     * Note: The `null` in the setter's parameter type is added to match the TypeScript rule: return type of getter
+     * must be assignable to its setter's parameter type. Setting `value` to `null` will throw an `Error`.
+     *
+     * When getting:
+     * - A return value of `null` means the previous value was overridden (e.g., {@link PIXI.Color.multiply multiply},
+     *   {@link PIXI.Color.premultiply premultiply} or {@link PIXI.Color.round round}).
+     * - Otherwise, the color source used when setting is returned.
      * @type {PIXI.ColorSource}
      */
-    set value(value: ColorSource)
+    set value(value: ColorSource | null)
     {
         // Support copying from other Color objects
         if (value instanceof Color)
@@ -162,6 +177,10 @@ export class Color
             this._value = value._value;
             this._int = value._int;
             this._components.set(value._components);
+        }
+        else if (value === null)
+        {
+            throw new Error('Cannot set PIXI.Color#value to null');
         }
         else if (this._value !== value)
         {
@@ -215,11 +234,13 @@ export class Color
      * new Color('white').toUint8RgbArray(); // returns [255, 255, 255]
      * @param {number[]|Uint8Array|Uint8ClampedArray} [out] - Output array
      */
-    toUint8RgbArray<T extends (number[] | Uint8Array | Uint8ClampedArray) = number[]>(out?: T): T
+    toUint8RgbArray(): number[];
+    toUint8RgbArray<T extends (number[] | Uint8Array | Uint8ClampedArray)>(out: T): T;
+    toUint8RgbArray<T extends (number[] | Uint8Array | Uint8ClampedArray)>(out?: T): T
     {
         const [r, g, b] = this._components;
 
-        out = out ?? [] as T;
+        out = out ?? [] as number[] as T;
 
         out[0] = Math.round(r * 255);
         out[1] = Math.round(g * 255);
@@ -235,9 +256,11 @@ export class Color
      * new Color('white').toRgbArray(); // returns [1, 1, 1]
      * @param {number[]|Float32Array} [out] - Output array
      */
-    toRgbArray<T extends (number[] | Float32Array) = number[]>(out?: T): T
+    toRgbArray(): number[];
+    toRgbArray<T extends (number[] | Float32Array)>(out: T): T;
+    toRgbArray<T extends (number[] | Float32Array)>(out?: T): T
     {
-        out = out ?? [] as T;
+        out = out ?? [] as number[] as T;
         const [r, g, b] = this._components;
 
         out[0] = r;
@@ -406,9 +429,11 @@ export class Color
      * new Color('white').toArray(); // returns [1, 1, 1, 1]
      * @param {number[]|Float32Array} [out] - Output array
      */
-    toArray<T extends (number[] | Float32Array) = number[]>(out?: T): T
+    toArray(): number[];
+    toArray<T extends (number[] | Float32Array)>(out: T): T;
+    toArray<T extends (number[] | Float32Array)>(out?: T): T
     {
-        out = out ?? [] as T;
+        out = out ?? [] as number[] as T;
         const [r, g, b, a] = this._components;
 
         out[0] = r;
@@ -425,7 +450,7 @@ export class Color
      */
     private normalize(value: Exclude<ColorSource, Color>): void
     {
-        let components: number[];
+        let components: number[] | undefined;
 
         if ((Array.isArray(value) || value instanceof Float32Array)
             // Can be rgb or rgba

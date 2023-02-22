@@ -46,6 +46,7 @@
     "@types/css-font-loading-module": "^0.0.7"
   },
   "pixiRequirements": [
-    "@pixi/core"
+    "@pixi/core",
+    "@pixi/utils"
   ]
 }
