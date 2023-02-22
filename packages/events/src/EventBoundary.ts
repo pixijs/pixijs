@@ -821,8 +821,8 @@ export class EventBoundary
     }
 
     /**
-     * Maps the upstream `pointerup` event to downstream `pointerup`, `pointerupoutside`, and `click`/`pointertap` events,
-     * in that order.
+     * Maps the upstream `pointerup` event to downstream `pointerup`, `pointerupoutside`,
+     * and `click`/`rightclick`/`pointertap` events, in that order.
      *
      * The `pointerupoutside` event bubbles from the original `pointerdown` target to the most specific
      * ancestor of the `pointerdown` and `pointerup` targets, which is also the `click` event's target. `touchend`,
@@ -929,7 +929,9 @@ export class EventBoundary
 
             if (clickEvent.pointerType === 'mouse')
             {
-                this.dispatchEvent(clickEvent, 'click');
+                const isRightButton = clickEvent.button === 2;
+
+                this.dispatchEvent(clickEvent, isRightButton ? 'rightclick' : 'click');
             }
             else if (clickEvent.pointerType === 'touch')
             {
