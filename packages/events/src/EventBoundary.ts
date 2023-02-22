@@ -976,14 +976,9 @@ export class EventBoundary
 
             if (clickEvent.pointerType === 'mouse')
             {
-                this.dispatchEvent(clickEvent, 'click');
-
                 const isRightButton = clickEvent.button === 2;
 
-                if (isRightButton)
-                {
-                    this.dispatchEvent(clickEvent, 'rightclick');
-                }
+                this.dispatchEvent(clickEvent, isRightButton ? 'rightclick' : 'click');
             }
             else if (clickEvent.pointerType === 'touch')
             {
