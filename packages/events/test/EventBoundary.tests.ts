@@ -172,4 +172,58 @@ describe('EventBoundary', () =>
         expect(containerOutSpy).toHaveBeenCalledOnce();
         expect(toOverSpy).toHaveBeenCalledOnce();
     });
+
+    it('should only call listener once when using .once() to register listener', () =>
+    {
+        const stage = new Container();
+        const boundary = new EventBoundary(stage);
+        const container = stage.addChild(new Container());
+        const target1 = container.addChild(
+            new Graphics().drawRect(0, 0, 100, 100)
+        );
+        const target2 = container.addChild(
+            new Graphics().drawRect(100, 0, 100, 100)
+        );
+
+        target1.interactive = true;
+        target2.interactive = true;
+
+        // With a single listener
+        const eventSpy1 = jest.fn();
+
+        target1.once('click', eventSpy1);
+
+        const event1 = new FederatedPointerEvent(boundary);
+
+        event1.target = target1;
+        event1.global.set(50, 50);
+        event1.type = 'click';
+
+        boundary.dispatchEvent(event1);
+        boundary.dispatchEvent(event1);
+
+        expect(eventSpy1).toHaveBeenCalledOnce();
+
+        // With multiple listeners
+        const eventSpy2 = jest.fn();
+        const eventSpy3 = jest.fn();
+        const eventSpy4 = jest.fn();
+
+        target2.once('click', eventSpy2);
+        target2.on('click', eventSpy3);
+        target2.addEventListener('click', eventSpy4);
+
+        const event2 = new FederatedPointerEvent(boundary);
+
+        event2.target = target2;
+        event2.global.set(150, 50);
+        event2.type = 'click';
+
+        boundary.dispatchEvent(event2);
+        boundary.dispatchEvent(event2);
+
+        expect(eventSpy2).toHaveBeenCalledOnce();
+        expect(eventSpy3).toHaveBeenCalledTimes(2);
+        expect(eventSpy4).toHaveBeenCalledTimes(2);
+    });
 });

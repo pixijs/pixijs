@@ -51,13 +51,16 @@ type TrackingData = {
 };
 
 /**
+ * Internal storage of an event listener in EventEmitter.
+ * @ignore
+ */
+type EmitterListener = { fn(...args: any[]): any, context: any, once: boolean };
+
+/**
  * Internal storage of event listeners in EventEmitter.
  * @ignore
  */
-type EmitterListeners = Record<string,
-| Array<{ fn(...args: any[]): any, context: any }>
-| { fn(...args: any[]): any, context: any }
->;
+type EmitterListeners = Record<string, EmitterListener | EmitterListener[]>;
 
 /**
  * Event boundaries are "barriers" where events coming from an upstream scene are modified before downstream propagation.
@@ -1327,6 +1330,7 @@ export class EventBoundary
 
         if ('fn' in listeners)
         {
+            if (listeners.once) e.currentTarget.removeListener(type, listeners.fn, undefined, true);
             listeners.fn.call(listeners.context, e);
         }
         else
@@ -1336,6 +1340,7 @@ export class EventBoundary
                 i < j && !e.propagationImmediatelyStopped;
                 i++)
             {
+                if (listeners[i].once) e.currentTarget.removeListener(type, listeners[i].fn, undefined, true);
                 listeners[i].fn.call(listeners[i].context, e);
             }
         }
