@@ -1,7 +1,7 @@
 import { BLEND_MODES, Color } from '@pixi/core';
 import { Container } from '@pixi/display';
 
-import type { BaseTexture, Renderer } from '@pixi/core';
+import type { BaseTexture, ColorSource, Renderer } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
 import type { Sprite } from '@pixi/sprite';
 import type { ParticleBuffer } from './ParticleBuffer';
@@ -103,7 +103,7 @@ export class ParticleContainer extends Container<Sprite>
      * This is a hex value. A value of 0xFFFFFF will remove any tint effect.
      * @default 0xFFFFFF
      */
-    private _tint: number;
+    private _tintColor: Color;
 
     /**
      * @param maxSize - The maximum number of particles that can be rendered by the container.
@@ -148,8 +148,8 @@ export class ParticleContainer extends Container<Sprite>
 
         this.setProperties(properties);
 
-        this._tint = 0;
-        this.tintRgb = new Float32Array(4);
+        this._tintColor = new Color(0);
+        this.tintRgb = new Float32Array(3);
         this.tint = 0xFFFFFF;
     }
 
@@ -183,17 +183,15 @@ export class ParticleContainer extends Container<Sprite>
      * IMPORTANT: This is a WebGL only feature and will be ignored by the canvas renderer.
      * @default 0xFFFFFF
      */
-    get tint(): number
+    get tint(): ColorSource
     {
-        return this._tint;
+        return this._tintColor.value;
     }
 
-    set tint(value: number)
+    set tint(value: ColorSource)
     {
-        this._tint = value;
-        Color.shared
-            .setValue(value)
-            .toRgbArray(this.tintRgb);
+        this._tintColor.setValue(value);
+        this._tintColor.toRgbArray(this.tintRgb);
     }
 
     /**
