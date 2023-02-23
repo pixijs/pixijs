@@ -21,8 +21,9 @@ export interface DisplayObjectEvents extends GlobalMixins.DisplayObjectEvents
 }
 
 export interface DisplayObject
-    extends Omit<GlobalMixins.DisplayObject, keyof utils.EventEmitter<DisplayObjectEvents>>,
-    utils.EventEmitter<DisplayObjectEvents> {}
+    <EventTypes extends utils.EventEmitter.ValidEventTypes = unknown>
+    extends Omit<GlobalMixins.DisplayObject, keyof utils.EventEmitter<DisplayObjectEvents & EventTypes>>,
+    utils.EventEmitter<DisplayObjectEvents & EventTypes> {}
 
 /**
  * The base class for all objects that are rendered on the screen.
@@ -209,8 +210,12 @@ export interface DisplayObject
  * one is also better in terms of performance.
  * @memberof PIXI
  */
-export abstract class DisplayObject extends utils.EventEmitter<DisplayObjectEvents>
+export abstract class DisplayObject
+    <EventTypes extends utils.EventEmitter.ValidEventTypes = unknown>
+    extends utils.EventEmitter<DisplayObjectEvents & EventTypes>
 {
+    eventNames: () => (keyof DisplayObjectEvents)[]
+  
     abstract sortDirty: boolean;
 
     /** The display object container that contains this display object. */

@@ -1,5 +1,6 @@
 import { Texture, Ticker, UPDATE_PRIORITY } from '@pixi/core';
 import { Sprite } from '@pixi/sprite';
+import type { utils } from '@pixi/core';
 
 import type { IDestroyOptions } from '@pixi/display';
 
@@ -35,7 +36,9 @@ import type { IDestroyOptions } from '@pixi/display';
  * animatedSprite = new AnimatedSprite(sheet.animations['image_sequence']);
  * @memberof PIXI
  */
-export class AnimatedSprite extends Sprite
+export class AnimatedSprite
+    <EventTypes extends utils.EventEmitter.ValidEventTypes = unknown>
+    extends Sprite<EventTypes>
 {
     /**
      * The speed that the AnimatedSprite will play at. Higher is faster, lower is slower.

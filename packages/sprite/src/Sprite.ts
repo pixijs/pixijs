@@ -1,5 +1,6 @@
 import { BLEND_MODES, Color, ObservablePoint, Point, Rectangle, settings, Texture, utils } from '@pixi/core';
 import { Bounds, Container } from '@pixi/display';
+import type { DisplayObject } from '@pixi/display';
 
 import type { ColorSource, IBaseTextureOptions, IPointData, Renderer, TextureSource } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
@@ -9,7 +10,9 @@ const indices = new Uint16Array([0, 1, 2, 0, 2, 3]);
 
 export type SpriteSource = TextureSource | Texture;
 
-export interface Sprite extends GlobalMixins.Sprite, Container {}
+export interface Sprite
+    <EventTypes extends utils.EventEmitter.ValidEventTypes = unknown>
+    extends GlobalMixins.Sprite, Container<DisplayObject, EventTypes> {}
 
 /**
  * The Sprite object is the base for all textured objects that are rendered to the screen
@@ -33,7 +36,9 @@ export interface Sprite extends GlobalMixins.Sprite, Container {}
  * ```
  * @memberof PIXI
  */
-export class Sprite extends Container
+export class Sprite
+    <EventTypes extends utils.EventEmitter.ValidEventTypes = unknown>
+    extends Container<DisplayObject, EventTypes>
 {
     /**
      * The blend mode to be applied to the sprite. Apply a value of `PIXI.BLEND_MODES.NORMAL` to reset the blend mode.

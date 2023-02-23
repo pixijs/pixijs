@@ -1,5 +1,6 @@
 import { BLEND_MODES, Color, ObservablePoint, Point, Program, settings, Texture, utils } from '@pixi/core';
 import { Container } from '@pixi/display';
+import type { DisplayObject } from '@pixi/display';
 import { Mesh, MeshGeometry, MeshMaterial } from '@pixi/mesh';
 import { BitmapFont } from './BitmapFont';
 import msdfFrag from './shader/msdf.frag';
@@ -67,7 +68,9 @@ const charRenderDataPool: CharRenderData[] = [];
  * });
  * @memberof PIXI
  */
-export class BitmapText extends Container
+export class BitmapText
+    <EventTypes extends utils.EventEmitter.ValidEventTypes = unknown>
+    extends Container<DisplayObject, EventTypes>
 {
     public static styleDefaults: Partial<IBitmapTextStyle> = {
         align: 'left',

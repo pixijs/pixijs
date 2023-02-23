@@ -42,7 +42,9 @@ const defaultDestroyOptions: IDestroyOptions = {
  * });
  * @memberof PIXI
  */
-export class Text extends Sprite
+export class Text
+    <EventTypes extends utils.EventEmitter.ValidEventTypes = unknown>
+    extends Sprite<EventTypes>
 {
     /**
      * Override whether or not the resolution of the text is automatically adjusted to match the resolution of the renderer.

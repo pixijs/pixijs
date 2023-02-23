@@ -15,7 +15,9 @@ import {
     Texture,
     UniformGroup,
 } from '@pixi/core';
+import type { utils } from "@pixi/core";
 import { Container } from '@pixi/display';
+import type { DisplayObject } from "@pixi/display"
 import { curves, LINE_CAP, LINE_JOIN } from './const';
 import { GraphicsGeometry } from './GraphicsGeometry';
 import { FillStyle } from './styles/FillStyle';
@@ -63,7 +65,9 @@ export interface ILineStyleOptions extends IFillStyleOptions
 // a default shaders map used by graphics..
 const DEFAULT_SHADERS: {[key: string]: Shader} = {};
 
-export interface Graphics extends GlobalMixins.Graphics, Container {}
+export interface Graphics
+    <EventTypes extends utils.EventEmitter.ValidEventTypes = unknown>
+    extends GlobalMixins.Graphics, Container<DisplayObject, EventTypes> {}
 
 /**
  * The Graphics class is primarily used to render primitive shapes such as lines, circles and
@@ -83,7 +87,9 @@ export interface Graphics extends GlobalMixins.Graphics, Container {}
  * properly dereference each GraphicsGeometry and prevent memory leaks.
  * @memberof PIXI
  */
-export class Graphics extends Container
+export class Graphics
+    <EventTypes extends utils.EventEmitter.ValidEventTypes = unknown>
+    extends Container<DisplayObject, EventTypes>
 {
     /**
      * Graphics curves resolution settings. If `adaptive` flag is set to `true`,

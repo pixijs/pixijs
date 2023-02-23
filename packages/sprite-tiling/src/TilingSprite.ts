@@ -1,5 +1,6 @@
 import { Point, Rectangle, Texture, TextureMatrix, Transform } from '@pixi/core';
 import { Sprite } from '@pixi/sprite';
+import type { utils } from '@pixi/core';
 
 import type { IBaseTextureOptions, IPoint, IPointData, ISize, ObservablePoint, Renderer, TextureSource } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
@@ -7,13 +8,17 @@ import type { IDestroyOptions } from '@pixi/display';
 const tempPoint = new Point();
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface TilingSprite extends GlobalMixins.TilingSprite {}
+export interface TilingSprite
+    <EventTypes extends utils.EventEmitter.ValidEventTypes = unknown>
+    extends GlobalMixins.TilingSprite {}
 
 /**
  * A tiling sprite is a fast way of rendering a tiling image.
  * @memberof PIXI
  */
-export class TilingSprite extends Sprite
+export class TilingSprite
+    <EventTypes extends utils.EventEmitter.ValidEventTypes = unknown>
+    extends Sprite<EventTypes>
 {
     /** Tile transform */
     public tileTransform: Transform;

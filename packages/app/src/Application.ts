@@ -1,5 +1,7 @@
 import { autoDetectRenderer, extensions, ExtensionType } from '@pixi/core';
 import { Container } from '@pixi/display';
+import type { DisplayObject } from "@pixi/display";
+import type { utils } from '@pixi/core';
 
 import type { ICanvas, IRenderer, IRendererOptionsAuto, Rectangle } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
@@ -48,7 +50,9 @@ export interface Application extends GlobalMixins.Application {}
  * @class
  * @memberof PIXI
  */
-export class Application<VIEW extends ICanvas = ICanvas>
+export class Application
+    <VIEW extends ICanvas = ICanvas,
+    EventTypes extends utils.EventEmitter.ValidEventTypes = unknown>
 {
     /** Collection of installed plugins. */
     static _plugins: IApplicationPlugin[] = [];
@@ -57,7 +61,7 @@ export class Application<VIEW extends ICanvas = ICanvas>
      * The root display container that's rendered.
      * @member {PIXI.Container}
      */
-    public stage: Container = new Container();
+    public stage: Container<DisplayObject, EventTypes> = new Container<DisplayObject, EventTypes>();
 
     /**
      * WebGL renderer if available, otherwise CanvasRenderer.

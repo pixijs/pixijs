@@ -16,7 +16,10 @@ function sortChildren(a: DisplayObject, b: DisplayObject): number
     return a.zIndex - b.zIndex;
 }
 
-export interface Container extends GlobalMixins.Container, DisplayObject {}
+export interface Container
+    <T extends DisplayObject = DisplayObject,
+    EventTypes extends utils.EventEmitter.ValidEventTypes = unknown>
+    extends GlobalMixins.Container, DisplayObject<EventTypes> {}
 
 /**
  * Container is a general-purpose display object that holds children. It also adds built-in support for advanced
@@ -47,7 +50,10 @@ export interface Container extends GlobalMixins.Container, DisplayObject {}
  *     .endFill();
  * @memberof PIXI
  */
-export class Container<T extends DisplayObject = DisplayObject> extends DisplayObject
+export class Container
+    <T extends DisplayObject = DisplayObject,
+    EventTypes extends utils.EventEmitter.ValidEventTypes = unknown>
+    extends DisplayObject<EventTypes>
 {
     /**
      * Sets the default value for the container property `sortableChildren`.

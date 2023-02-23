@@ -1,4 +1,5 @@
 import { BLEND_MODES, Color } from '@pixi/core';
+import type { utils } from '@pixi/core';
 import { Container } from '@pixi/display';
 
 import type { BaseTexture, ColorSource, Renderer } from '@pixi/core';
@@ -40,7 +41,9 @@ export interface IParticleProperties
  * }
  * @memberof PIXI
  */
-export class ParticleContainer extends Container<Sprite>
+export class ParticleContainer
+    <EventTypes extends utils.EventEmitter.ValidEventTypes = unknown>
+    extends Container<Sprite, EventTypes>
 {
     /**
      * The blend mode to be applied to the sprite. Apply a value of `PIXI.BLEND_MODES.NORMAL`
