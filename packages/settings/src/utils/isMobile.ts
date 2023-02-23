@@ -1,4 +1,9 @@
-import isMobileCall from 'ismobilejs';
+import isMobileJs from 'ismobilejs';
+
+// ismobilejs have different import behavior for CJS and ESM, so here is the hack
+type isMobileJsType = typeof isMobileJs & { default?: typeof isMobileJs };
+const isMobileJsModule = isMobileJs as isMobileJsType;
+const isMobileCall = isMobileJsModule.default ?? isMobileJsModule;
 
 export type isMobileResult = {
     apple: {
