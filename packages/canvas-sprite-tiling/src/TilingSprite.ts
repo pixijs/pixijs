@@ -125,7 +125,7 @@ TilingSprite.prototype._renderCanvas = function _renderCanvas(renderer: CanvasRe
         patternMatrix.translate(-this.anchor.x * W, -this.anchor.y * H);
     }
 
-    patternMatrix.scale(this.tileScale.x / baseTextureResolution, this.tileScale.y / baseTextureResolution);
+    patternMatrix.scale(1 / baseTextureResolution, 1 / baseTextureResolution);
     worldMatrix.prepend(patternMatrix);
     worldMatrix.prepend(transform);
 
