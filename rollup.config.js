@@ -1,6 +1,5 @@
 import path from 'path';
 import resolve from '@rollup/plugin-node-resolve';
-import rename from 'rollup-plugin-rename-node-modules';
 import { string } from 'rollup-plugin-string';
 import sourcemaps from 'rollup-plugin-sourcemaps';
 import esbuild from 'rollup-plugin-esbuild';
@@ -59,7 +58,6 @@ async function main()
     ];
 
     const plugins = [
-        rename(),
         jscc({ values: { _VERSION: repo.version, _DEBUG: true } }),
         esbuild({ target: moduleTarget }),
         ...commonPlugins
