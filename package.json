@@ -1,7 +1,7 @@
 {
   "name": "pixi.js-monorepo",
   "private": true,
-  "version": "7.2.0-beta.2",
+  "version": "7.2.0-beta.3",
   "workspaces": [
     "bundles/*",
     "packages/*",
