@@ -1,11 +1,16 @@
 import { Point, utils } from '@pixi/core';
+import { EventsTicker } from './EventTicker';
 import { FederatedMouseEvent } from './FederatedMouseEvent';
 import { FederatedPointerEvent } from './FederatedPointerEvent';
 import { FederatedWheelEvent } from './FederatedWheelEvent';
 
 import type { DisplayObject } from '@pixi/display';
 import type { FederatedEvent } from './FederatedEvent';
-import type { Cursor, FederatedEventHandler, FederatedEventTarget, IFederatedDisplayObject } from './FederatedEventTarget';
+import type {
+    Cursor, EventMode, FederatedEventHandler,
+    FederatedEventTarget,
+    IFederatedDisplayObject
+} from './FederatedEventTarget';
 
 // The maximum iterations used in propagation. This prevent infinite loops.
 const PROPAGATION_LIMIT = 2048;
@@ -51,13 +56,16 @@ type TrackingData = {
 };
 
 /**
+ * Internal storage of an event listener in EventEmitter.
+ * @ignore
+ */
+type EmitterListener = { fn(...args: any[]): any, context: any, once: boolean };
+
+/**
  * Internal storage of event listeners in EventEmitter.
  * @ignore
  */
-type EmitterListeners = Record<string,
-| Array<{ fn(...args: any[]): any, context: any }>
-| { fn(...args: any[]): any, context: any }
->;
+type EmitterListeners = Record<string, EmitterListener | EmitterListener[]>;
 
 /**
  * Event boundaries are "barriers" where events coming from an upstream scene are modified before downstream propagation.
@@ -173,9 +181,7 @@ export class EventBoundary
      */
     protected eventPool: Map<typeof FederatedEvent, FederatedEvent[]> = new Map();
 
-    /**
-     * @param rootTarget - The holder of the event boundary.
-     */
+    /** @param rootTarget - The holder of the event boundary. */
     constructor(rootTarget?: DisplayObject)
     {
         this.rootTarget = rootTarget;
@@ -279,9 +285,10 @@ export class EventBoundary
         y: number,
     ): DisplayObject
     {
+        EventsTicker.pauseUpdate = true;
         const invertedPath = this.hitTestRecursive(
             this.rootTarget,
-            this.rootTarget.interactive,
+            this.rootTarget.eventMode,
             tempHitLocation.set(x, y),
             this.hitTestFn,
             this.hitPruneFn,
@@ -291,7 +298,7 @@ export class EventBoundary
     }
 
     /**
-     * Propagate the passed event from from {@link EventBoundary.rootTarget this.rootTarget} to its
+     * Propagate the passed event from from {@link PIXI.EventBoundary.rootTarget this.rootTarget} to its
      * target {@code e.target}.
      * @param e - The event to propagate.
      * @param type
@@ -340,7 +347,7 @@ export class EventBoundary
     }
 
     /**
-     * Emits the event {@link e} to all display objects. The event is propagated in the bubbling phase always.
+     * Emits the event {@code e} to all display objects. The event is propagated in the bubbling phase always.
      *
      * This is used in the `pointermove` legacy mode.
      * @param e - The emitted event.
@@ -353,15 +360,24 @@ export class EventBoundary
 
         const children = target.children;
 
-        if (children)
+        const interactionNone = target.eventMode === 'none';
+        const interactionPassive = target.eventMode === 'passive' && !target.interactiveChildren;
+        const interactiveChildren = target.interactiveChildren;
+        const shouldIterateChildren = !interactionNone && interactiveChildren && !interactionPassive;
+
+        if (children && children.length > 0)
         {
-            for (let i = 0; i < children.length; i++)
+            if (shouldIterateChildren)
             {
-                this.all(e, type, children[i]);
+                for (let i = 0; i < children.length; i++)
+                {
+                    this.all(e, type, children[i]);
+                }
             }
         }
 
         e.currentTarget = target;
+
         this.notifyTarget(e, type);
     }
 
@@ -392,9 +408,9 @@ export class EventBoundary
     }
 
     /**
-     * Recursive implementation for {@link EventBoundary.hitTest hitTest}.
+     * Recursive implementation for {@link PIXI.EventBoundary.hitTest hitTest}.
      * @param currentTarget - The DisplayObject that is to be hit tested.
-     * @param interactive - Flags whether `currentTarget` or one of its parents are interactive.
+     * @param eventMode - The event mode for the `currentTarget` or one of its parents.
      * @param location - The location that is being tested for overlap.
      * @param testFn - Callback that determines whether the target passes hit testing. This callback
      *  can assume that `pruneFn` failed to prune the display object.
@@ -402,12 +418,12 @@ export class EventBoundary
      *  cannot pass the hit test. It is used as a preliminary optimization to prune entire subtrees
      *  of the scene graph.
      * @returns An array holding the hit testing target and all its ancestors in order. The first element
-     *  is the target itself and the last is {@link EventBoundary.rootTarget rootTarget}. This is the opposite
+     *  is the target itself and the last is {@link PIXI.EventBoundary.rootTarget rootTarget}. This is the opposite
      *  order w.r.t. the propagation path. If no hit testing target is found, null is returned.
      */
     protected hitTestRecursive(
         currentTarget: DisplayObject,
-        interactive: boolean,
+        eventMode: EventMode,
         location: Point,
         testFn: (object: DisplayObject, pt: Point) => boolean,
         pruneFn?: (object: DisplayObject, pt: Point) => boolean,
@@ -424,6 +440,11 @@ export class EventBoundary
             return null;
         }
 
+        if (currentTarget.eventMode === 'dynamic' || eventMode === 'dynamic')
+        {
+            EventsTicker.pauseUpdate = false;
+        }
+
         // Find a child that passes the hit testing and return one, if any.
         if (currentTarget.interactiveChildren && currentTarget.children)
         {
@@ -435,7 +456,7 @@ export class EventBoundary
 
                 const nestedHit = this.hitTestRecursive(
                     child,
-                    interactive || child.interactive,
+                    this._isInteractive(eventMode) ? eventMode : child.eventMode,
                     location,
                     testFn,
                     pruneFn,
@@ -453,7 +474,7 @@ export class EventBoundary
                     // Only add the current hit-test target to the hit-test chain if the chain
                     // has already started (i.e. the event target has been found) or if the current
                     // target is interactive (i.e. it becomes the event target).
-                    if (nestedHit.length > 0 || currentTarget.interactive)
+                    if (nestedHit.length > 0 || currentTarget.isInteractive())
                     {
                         nestedHit.push(currentTarget);
                     }
@@ -464,26 +485,49 @@ export class EventBoundary
         }
 
         // Finally, hit test this DisplayObject itself.
-        if (interactive && testFn(currentTarget, location))
+        if (this._isInteractive(eventMode) && testFn(currentTarget, location))
         {
             // The current hit-test target is the event's target only if it is interactive. Otherwise,
             // the first interactive ancestor will be the event's target.
-            return currentTarget.interactive ? [currentTarget] : [];
+            return currentTarget.isInteractive() ? [currentTarget] : [];
         }
 
         return null;
     }
 
+    private _isInteractive(int: EventMode): int is 'static' | 'dynamic'
+    {
+        return int === 'static' || int === 'dynamic';
+    }
+
     /**
      * Checks whether the display object or any of its children cannot pass the hit test at all.
      *
-     * {@link EventBoundary}'s implementation uses the {@link PIXI.DisplayObject.hitArea hitArea}
+     * {@link PIXI.EventBoundary}'s implementation uses the {@link PIXI.DisplayObject.hitArea hitArea}
      * and {@link PIXI.DisplayObject._mask} for pruning.
      * @param displayObject
      * @param location
      */
     protected hitPruneFn(displayObject: DisplayObject, location: Point): boolean
     {
+        // If this DisplayObject is none then it cannot be hit by anything.
+        if (displayObject.eventMode === 'none')
+        {
+            return true;
+        }
+
+        // If this DisplayObject is passive and it has no interactive children then it cannot be hit
+        if (displayObject.eventMode === 'passive' && !displayObject.interactiveChildren)
+        {
+            return true;
+        }
+
+        // If displayObject is a mask then it cannot be hit directly.
+        if (displayObject.isMask)
+        {
+            return true;
+        }
+
         if (displayObject.hitArea)
         {
             displayObject.worldTransform.applyInverse(location, tempLocalMapping);
@@ -516,6 +560,12 @@ export class EventBoundary
      */
     protected hitTestFn(displayObject: DisplayObject, location: Point): boolean
     {
+        // If the displayObject is passive then it cannot be hit directly.
+        if (displayObject.eventMode === 'passive')
+        {
+            return false;
+        }
+
         // If the display object failed pruning with a hitArea, then it must pass it.
         if (displayObject.hitArea)
         {
@@ -618,7 +668,7 @@ export class EventBoundary
         const outTarget = this.findMountedTarget(trackingData.overTargets);
 
         // First pointerout/pointerleave
-        if (trackingData.overTargets && outTarget !== e.target)
+        if (trackingData.overTargets?.length > 0 && outTarget !== e.target)
         {
             // pointerout always occurs on the overTarget when the pointer hovers over another element.
             const outType = from.type === 'mousemove' ? 'mouseout' : 'pointerout';
@@ -703,12 +753,18 @@ export class EventBoundary
 
         // Then pointermove
         this[propagationMethod](e, 'pointermove');
+        this.all(e, 'globalpointermove');
 
-        if (e.pointerType === 'touch') this[propagationMethod](e, 'touchmove');
+        if (e.pointerType === 'touch')
+        {
+            this[propagationMethod](e, 'touchmove');
+            this.all(e, 'globaltouchmove');
+        }
 
         if (isMouse)
         {
             this[propagationMethod](e, 'mousemove');
+            this.all(e, 'globalmousemove');
             this.cursor = e.target?.cursor;
         }
 
@@ -815,8 +871,8 @@ export class EventBoundary
     }
 
     /**
-     * Maps the upstream `pointerup` event to downstream `pointerup`, `pointerupoutside`, and `click`/`pointertap` events,
-     * in that order.
+     * Maps the upstream `pointerup` event to downstream `pointerup`, `pointerupoutside`,
+     * and `click`/`rightclick`/`pointertap` events, in that order.
      *
      * The `pointerupoutside` event bubbles from the original `pointerdown` target to the most specific
      * ancestor of the `pointerdown` and `pointerup` targets, which is also the `click` event's target. `touchend`,
@@ -923,7 +979,9 @@ export class EventBoundary
 
             if (clickEvent.pointerType === 'mouse')
             {
-                this.dispatchEvent(clickEvent, 'click');
+                const isRightButton = clickEvent.button === 2;
+
+                this.dispatchEvent(clickEvent, isRightButton ? 'rightclick' : 'click');
             }
             else if (clickEvent.pointerType === 'touch')
             {
@@ -942,8 +1000,8 @@ export class EventBoundary
      * Maps the upstream `pointerupoutside` event to a downstream `pointerupoutside` event, bubbling from the original
      * `pointerdown` target to `rootTarget`.
      *
-     * (The most specific ancestor of the `pointerdown` event and the `pointerup` event must the {@code EventBoundary}'s
-     * root because the `pointerup` event occurred outside of the boundary.)
+     * (The most specific ancestor of the `pointerdown` event and the `pointerup` event must the
+     * `{@link PIXI.EventBoundary}'s root because the `pointerup` event occurred outside of the boundary.)
      *
      * `touchendoutside`, `mouseupoutside`, and `rightupoutside` events are fired as well for specific pointer
      * types. The tracking data for the specific pointer is cleared of a `pressTarget`.
@@ -1306,7 +1364,7 @@ export class EventBoundary
     }
 
     /**
-     * Similar to {@link EventEmitter.emit}, except it stops if the `propagationImmediatelyStopped` flag
+     * Similar to {@link PIXI.EventEmitter.emit}, except it stops if the `propagationImmediatelyStopped` flag
      * is set on the event.
      * @param e - The event to call each listener with.
      * @param type - The event key.
@@ -1316,9 +1374,11 @@ export class EventBoundary
         const listeners = ((e.currentTarget as any)._events as EmitterListeners)[type];
 
         if (!listeners) return;
+        if (!e.currentTarget.isInteractive()) return;
 
         if ('fn' in listeners)
         {
+            if (listeners.once) e.currentTarget.removeListener(type, listeners.fn, undefined, true);
             listeners.fn.call(listeners.context, e);
         }
         else
@@ -1328,6 +1388,7 @@ export class EventBoundary
                 i < j && !e.propagationImmediatelyStopped;
                 i++)
             {
+                if (listeners[i].once) e.currentTarget.removeListener(type, listeners[i].fn, undefined, true);
                 listeners[i].fn.call(listeners[i].context, e);
             }
         }
@@ -1336,7 +1397,7 @@ export class EventBoundary
 
 /**
  * Fired when a mouse button (usually a mouse left-button) is pressed on the display.
- * object. DisplayObject's `interactive` property must be set to `true` to fire event.
+ * object. DisplayObject's `eventMode` property must be set to `static` or 'dynamic' to fire event.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  * @event PIXI.DisplayObject#mousedown
@@ -1353,7 +1414,7 @@ export class EventBoundary
 
 /**
  * Fired when a pointer device secondary button (usually a mouse right-button) is pressed
- * on the display object. DisplayObject's `interactive` property must be set to `true` to fire event.
+ * on the display object. DisplayObject's `eventMode` property must be set to `static` or 'dynamic' to fire event.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  * @event PIXI.DisplayObject#rightdown
@@ -1370,7 +1431,7 @@ export class EventBoundary
 
 /**
  * Fired when a pointer device button (usually a mouse left-button) is released over the display
- * object. DisplayObject's `interactive` property must be set to `true` to fire event.
+ * object. DisplayObject's `eventMode` property must be set to `static` or 'dynamic' to fire event.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  * @event PIXI.DisplayObject#mouseup
@@ -1387,7 +1448,7 @@ export class EventBoundary
 
 /**
  * Fired when a pointer device secondary button (usually a mouse right-button) is released
- * over the display object. DisplayObject's `interactive` property must be set to `true` to fire event.
+ * over the display object. DisplayObject's `eventMode` property must be set to `static` or 'dynamic' to fire event.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  * @event PIXI.DisplayObject#rightup
@@ -1404,7 +1465,7 @@ export class EventBoundary
 
 /**
  * Fired when a pointer device button (usually a mouse left-button) is pressed and released on
- * the display object. DisplayObject's `interactive` property must be set to `true` to fire event.
+ * the display object. DisplayObject's `eventMode` property must be set to `static` or 'dynamic' to fire event.
  *
  * A {@code click} event fires after the {@code pointerdown} and {@code pointerup} events, in that
  * order. If the mouse is moved over another DisplayObject after the {@code pointerdown} event, the
@@ -1428,7 +1489,8 @@ export class EventBoundary
 
 /**
  * Fired when a pointer device secondary button (usually a mouse right-button) is pressed
- * and released on the display object. DisplayObject's `interactive` property must be set to `true` to fire event.
+ * and released on the display object. DisplayObject's `eventMode`
+ * property must be set to `static` or 'dynamic' to fire event.
  *
  * This event follows the semantics of {@code click}.
  *
@@ -1449,7 +1511,7 @@ export class EventBoundary
  * Fired when a pointer device button (usually a mouse left-button) is released outside the
  * display object that initially registered a
  * [mousedown]{@link PIXI.DisplayObject#event:mousedown}.
- * DisplayObject's `interactive` property must be set to `true` to fire event.
+ * DisplayObject's `eventMode` property must be set to `static` or 'dynamic' to fire event.
  *
  * This event is specific to the Federated Events API. It does not have a capture phase, unlike most of the
  * other events. It only bubbles to the most specific ancestor of the targets of the corresponding {@code pointerdown}
@@ -1472,7 +1534,7 @@ export class EventBoundary
  * Fired when a pointer device secondary button (usually a mouse right-button) is released
  * outside the display object that initially registered a
  * [rightdown]{@link PIXI.DisplayObject#event:rightdown}.
- * DisplayObject's `interactive` property must be set to `true` to fire event.
+ * DisplayObject's `eventMode` property must be set to `static` or 'dynamic' to fire event.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  * @event PIXI.DisplayObject#rightupoutside
@@ -1488,8 +1550,17 @@ export class EventBoundary
  */
 
 /**
+ * Fired when a pointer device (usually a mouse) is moved globally over the scene.
+ * DisplayObject's `eventMode` property must be set to `static` or 'dynamic' to fire event.
+ *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
+ * @event PIXI.DisplayObject#globalmousemove
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
  * Fired when a pointer device (usually a mouse) is moved while over the display object.
- * DisplayObject's `interactive` property must be set to `true` to fire event.
+ * DisplayObject's `eventMode` property must be set to `static` or 'dynamic' to fire event.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  * @event PIXI.DisplayObject#mousemove
@@ -1506,7 +1577,7 @@ export class EventBoundary
 
 /**
  * Fired when a pointer device (usually a mouse) is moved onto the display object.
- * DisplayObject's `interactive` property must be set to `true` to fire event.
+ * DisplayObject's `eventMode` property must be set to `static` or 'dynamic' to fire event.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  * @event PIXI.DisplayObject#mouseover
@@ -1539,7 +1610,7 @@ export class EventBoundary
 
 /**
  * Fired when a pointer device (usually a mouse) is moved off the display object.
- * DisplayObject's `interactive` property must be set to `true` to fire event.
+ * DisplayObject's `eventMode` property must be set to `static` or 'dynamic' to fire event.
  *
  * This may be fired on a DisplayObject that was removed from the scene graph immediately after
  * a {@code mouseover} event.
@@ -1575,7 +1646,7 @@ export class EventBoundary
 
 /**
  * Fired when a pointer device button is pressed on the display object.
- * DisplayObject's `interactive` property must be set to `true` to fire event.
+ * DisplayObject's `eventMode` property must be set to `static` or 'dynamic' to fire event.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  * @event PIXI.DisplayObject#pointerdown
@@ -1592,7 +1663,7 @@ export class EventBoundary
 
 /**
  * Fired when a pointer device button is released over the display object.
- * DisplayObject's `interactive` property must be set to `true` to fire event.
+ * DisplayObject's `eventMode` property must be set to `static` or 'dynamic' to fire event.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  * @event PIXI.DisplayObject#pointerup
@@ -1609,7 +1680,7 @@ export class EventBoundary
 
 /**
  * Fired when the operating system cancels a pointer event.
- * DisplayObject's `interactive` property must be set to `true` to fire event.
+ * DisplayObject's `eventMode` property must be set to `static` or 'dynamic' to fire event.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  * @event PIXI.DisplayObject#pointercancel
@@ -1626,7 +1697,7 @@ export class EventBoundary
 
 /**
  * Fired when a pointer device button is pressed and released on the display object.
- * DisplayObject's `interactive` property must be set to `true` to fire event.
+ * DisplayObject's `eventMode` property must be set to `static` or 'dynamic' to fire event.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  * @event PIXI.DisplayObject#pointertap
@@ -1644,7 +1715,7 @@ export class EventBoundary
 /**
  * Fired when a pointer device button is released outside the display object that initially
  * registered a [pointerdown]{@link PIXI.DisplayObject#event:pointerdown}.
- * DisplayObject's `interactive` property must be set to `true` to fire event.
+ * DisplayObject's `eventMode` property must be set to `static` or 'dynamic' to fire event.
  *
  * This event is specific to the Federated Events API. It does not have a capture phase, unlike most of the
  * other events. It only bubbles to the most specific ancestor of the targets of the corresponding {@code pointerdown}
@@ -1664,8 +1735,17 @@ export class EventBoundary
  */
 
 /**
+ * Fired when a pointer device is moved globally over the scene.
+ * DisplayObject's `eventMode` property must be set to `static` or 'dynamic' to fire event.
+ *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
+ * @event PIXI.DisplayObject#globalpointermove
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
  * Fired when a pointer device is moved while over the display object.
- * DisplayObject's `interactive` property must be set to `true` to fire event.
+ * DisplayObject's `eventMode` property must be set to `static` or 'dynamic' to fire event.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  * @event PIXI.DisplayObject#pointermove
@@ -1682,7 +1762,7 @@ export class EventBoundary
 
 /**
  * Fired when a pointer device is moved onto the display object.
- * DisplayObject's `interactive` property must be set to `true` to fire event.
+ * DisplayObject's `eventMode` property must be set to `static` or 'dynamic' to fire event.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  * @event PIXI.DisplayObject#pointerover
@@ -1715,7 +1795,7 @@ export class EventBoundary
 
 /**
  * Fired when a pointer device is moved off the display object.
- * DisplayObject's `interactive` property must be set to `true` to fire event.
+ * DisplayObject's `eventMode` property must be set to `static` or 'dynamic' to fire event.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  * @event PIXI.DisplayObject#pointerout
@@ -1750,7 +1830,7 @@ export class EventBoundary
 
 /**
  * Fired when a touch point is placed on the display object.
- * DisplayObject's `interactive` property must be set to `true` to fire event.
+ * DisplayObject's `eventMode` property must be set to `static` or 'dynamic' to fire event.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  * @event PIXI.DisplayObject#touchstart
@@ -1767,7 +1847,7 @@ export class EventBoundary
 
 /**
  * Fired when a touch point is removed from the display object.
- * DisplayObject's `interactive` property must be set to `true` to fire event.
+ * DisplayObject's `eventMode` property must be set to `static` or 'dynamic' to fire event.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  * @event PIXI.DisplayObject#touchend
@@ -1784,7 +1864,7 @@ export class EventBoundary
 
 /**
  * Fired when the operating system cancels a touch.
- * DisplayObject's `interactive` property must be set to `true` to fire event.
+ * DisplayObject's `eventMode` property must be set to `static` or 'dynamic' to fire event.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  * @event PIXI.DisplayObject#touchcancel
@@ -1801,7 +1881,7 @@ export class EventBoundary
 
 /**
  * Fired when a touch point is placed and removed from the display object.
- * DisplayObject's `interactive` property must be set to `true` to fire event.
+ * DisplayObject's `eventMode` property must be set to `static` or 'dynamic' to fire event.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  * @event PIXI.DisplayObject#tap
@@ -1819,7 +1899,7 @@ export class EventBoundary
 /**
  * Fired when a touch point is removed outside of the display object that initially
  * registered a [touchstart]{@link PIXI.DisplayObject#event:touchstart}.
- * DisplayObject's `interactive` property must be set to `true` to fire event.
+ * DisplayObject's `eventMode` property must be set to `static` or 'dynamic' to fire event.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  * @event PIXI.DisplayObject#touchendoutside
@@ -1835,8 +1915,17 @@ export class EventBoundary
  */
 
 /**
+ * Fired when a touch point is moved globally over the scene.
+ * DisplayObject's `eventMode` property must be set to `static` or 'dynamic' to fire event.
+ *
+ * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
+ * @event PIXI.DisplayObject#globaltouchmove
+ * @param {PIXI.FederatedPointerEvent} event - Event
+ */
+
+/**
  * Fired when a touch point is moved along the display object.
- * DisplayObject's `interactive` property must be set to `true` to fire event.
+ * DisplayObject's `eventMode` property must be set to `static` or 'dynamic' to fire event.
  *
  * These events are propagating from the {@link PIXI.EventSystem EventSystem} in @pixi/events.
  * @event PIXI.DisplayObject#touchmove

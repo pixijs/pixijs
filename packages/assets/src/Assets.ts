@@ -1,4 +1,5 @@
 import { extensions, ExtensionType } from '@pixi/core';
+import { deprecation } from '@pixi/utils';
 import { BackgroundLoader } from './BackgroundLoader';
 import { Cache } from './cache/Cache';
 import { Loader } from './loader/Loader';
@@ -9,10 +10,18 @@ import { isSingleItem } from './utils/isSingleItem';
 
 import type { FormatDetectionParser } from './detections';
 import type { LoadAsset } from './loader';
+import type { LoadTextureConfig } from './loader/parsers';
 import type { ResolveAsset, ResolverBundle, ResolverManifest } from './resolver';
 import type { BundleIdentifierOptions } from './resolver/Resolver';
 
 export type ProgressCallback = (progress: number) => void;
+
+/**
+ * Extensible preferences that can be used, for instance, when configuring loaders.
+ * @since 7.2.0
+ * @memberof PIXI
+ */
+export interface AssetsPreferences extends LoadTextureConfig, GlobalMixins.AssetsPreferences {}
 
 /**
  * Initialization options object for Asset Class.
@@ -46,6 +55,9 @@ export interface AssetInitOptions
 
     /** advanced - override how bundlesIds are generated */
     bundleIdentifier?: BundleIdentifierOptions;
+
+    /** Optional loader preferences */
+    preferences?: Partial<AssetsPreferences>;
 }
 
 /**
@@ -85,7 +97,7 @@ export interface AssetInitOptions
  * Here both promises will be the same. Once resolved... Forever resolved! It makes for really easy resource management!
  *
  * Out of the box it supports the following files:
- * - textures (avif, webp, png, jpg, gif)
+ * - textures (avif, webp, png, jpg, gif, svg)
  * - sprite sheets (json)
  * - bitmap fonts (xml, fnt, txt)
  * - web fonts (ttf, woff, woff2)
@@ -317,6 +329,11 @@ export class AssetsClass
                 resolution,
             },
         });
+
+        if (options.preferences)
+        {
+            this.setPreferences(options.preferences);
+        }
     }
 
     /**
@@ -427,6 +444,11 @@ export class AssetsClass
                     this.resolver.add(url.src as string, url);
 
                     return url.src;
+                }
+
+                if (!this.resolver.hasKey(url))
+                {
+                    this.resolver.add(url, url);
                 }
 
                 return url;
@@ -818,11 +840,8 @@ export class AssetsClass
     }
 
     /**
-     * When set to `true`, loading and decoding images will happen with Worker thread,
-     * if available on the browser. This is much more performant as network requests
-     * and decoding can be expensive on the CPU. However, not all environments support
-     * Workers, in some cases it can be helpful to disable by setting to `false`.
-     * @default true
+     * @deprecated since 7.2.0
+     * @see {@link Assets.setPreferences}
      */
     public get preferWorkers(): boolean
     {
@@ -830,7 +849,32 @@ export class AssetsClass
     }
     public set preferWorkers(value: boolean)
     {
-        loadTextures.config.preferWorkers = value;
+        // #if _DEBUG
+        deprecation('7.2.0', 'Assets.prefersWorkers is deprecated, '
+            + 'use Assets.setPreferences({ preferWorkers: true }) instead.');
+        // #endif
+        this.setPreferences({ preferWorkers: value });
+    }
+
+    /**
+     * General setter for preferences. This is a helper function to set preferences on all parsers.
+     * @param preferences - the preferences to set
+     */
+    public setPreferences(preferences: Partial<AssetsPreferences>): void
+    {
+        // Find matching config keys in loaders with preferences
+        // and set the values
+        this.loader.parsers.forEach((parser) =>
+        {
+            if (!parser.config) return;
+
+            (Object.keys(parser.config) as (keyof AssetsPreferences)[])
+                .filter((key) => key in preferences)
+                .forEach((key) =>
+                {
+                    parser.config[key] = preferences[key];
+                });
+        });
     }
 }
 

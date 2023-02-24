@@ -1,23 +1,22 @@
 {
   "name": "@internal/integration-tests",
   "private": true,
-  "version": "7.1.0-alpha",
   "description": "Integration tests for PixiJS packages",
   "devDependencies": {
-    "@pixi/canvas-display": "7.1.0-alpha",
-    "@pixi/canvas-graphics": "7.1.0-alpha",
-    "@pixi/canvas-mesh": "7.1.0-alpha",
-    "@pixi/canvas-renderer": "7.1.0-alpha",
-    "@pixi/canvas-sprite": "7.1.0-alpha",
-    "@pixi/canvas-text": "7.1.0-alpha",
-    "@pixi/core": "7.1.0-alpha",
-    "@pixi/display": "7.1.0-alpha",
-    "@pixi/graphics": "7.1.0-alpha",
-    "@pixi/math": "7.1.0-alpha",
-    "@pixi/mesh": "7.1.0-alpha",
-    "@pixi/mesh-extras": "7.1.0-alpha",
-    "@pixi/sprite": "7.1.0-alpha",
-    "@pixi/text": "7.1.0-alpha",
-    "@pixi/utils": "7.1.0-alpha"
+    "@pixi/canvas-display": "file:../../packages/canvas-display",
+    "@pixi/canvas-graphics": "file:../../packages/canvas-graphics",
+    "@pixi/canvas-mesh": "file:../../packages/canvas-mesh",
+    "@pixi/canvas-renderer": "file:../../packages/canvas-renderer",
+    "@pixi/canvas-sprite": "file:../../packages/canvas-sprite",
+    "@pixi/canvas-text": "file:../../packages/canvas-text",
+    "@pixi/core": "file:../../packages/core",
+    "@pixi/display": "file:../../packages/display",
+    "@pixi/graphics": "file:../../packages/graphics",
+    "@pixi/math": "file:../../packages/math",
+    "@pixi/mesh": "file:../../packages/mesh",
+    "@pixi/mesh-extras": "file:../../packages/mesh-extras",
+    "@pixi/sprite": "file:../../packages/sprite",
+    "@pixi/text": "file:../../packages/text",
+    "@pixi/utils": "file:../../packages/utils"
   }
 }

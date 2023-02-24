@@ -1,8 +1,10 @@
 import { DisplayObject } from '@pixi/display';
+import { deprecation } from '@pixi/utils';
+import { EventSystem } from './EventSystem';
 import { FederatedEvent } from './FederatedEvent';
 
 import type { utils } from '@pixi/core';
-import type { FederatedEventMap } from './FederatedEventMap';
+import type { AllFederatedEventMap } from './FederatedEventMap';
 import type { FederatedPointerEvent } from './FederatedPointerEvent';
 import type { FederatedWheelEvent } from './FederatedWheelEvent';
 
@@ -49,11 +51,22 @@ export interface IHitArea
     contains(x: number, y: number): boolean;
 }
 
-/** Function type for handlers, e.g., onclick */
+/**
+ * Function type for handlers, e.g., onclick
+ * @memberof PIXI
+ */
 export type FederatedEventHandler<T= FederatedPointerEvent> = (event: T) => void;
 
 /**
- * Describes the shape for a {@link FederatedEvent}'s' `eventTarget`.
+ * The type of interaction a DisplayObject can be. For more information on values and their meaning,
+ * see {@link PIXI.DisplayObject.eventMode DisplayObject's eventMode property}.
+ * @memberof PIXI
+ * @since 7.2.0
+ */
+export type EventMode = 'none' | 'passive' | 'auto' | 'static' | 'dynamic';
+
+/**
+ * Describes the shape for a {@link PIXI.FederatedEvent}'s' `eventTarget`.
  * @memberof PIXI
  */
 export interface FederatedEventTarget extends utils.EventEmitter, EventTarget
@@ -68,7 +81,14 @@ export interface FederatedEventTarget extends utils.EventEmitter, EventTarget
     readonly children?: ReadonlyArray<FederatedEventTarget>;
 
     /** Whether this event target should fire UI events. */
-    interactive: boolean;
+    interactive: boolean
+    _internalInteractive: boolean;
+    /** The mode of interaction for this object */
+    eventMode: EventMode;
+    _internalEventMode: EventMode;
+
+    /** Returns true if the DisplayObject has interactive 'static' or 'dynamic' */
+    isInteractive: () => boolean;
 
     /** Whether this event target has any children that need UI events. This can be used optimize event propagation. */
     interactiveChildren: boolean;
@@ -93,8 +113,10 @@ export interface FederatedEventTarget extends utils.EventEmitter, EventTarget
     onmouseenter: FederatedEventHandler | null;
     /** Handler for 'mouseleave' event */
     onmouseleave: FederatedEventHandler | null;
-    /** Handler for 'mouseover' event */
+    /** Handler for 'mousemove' event */
     onmousemove: FederatedEventHandler | null;
+    /** Handler for 'globalmousemove' event */
+    onglobalmousemove: FederatedEventHandler | null;
     /** Handler for 'mouseout' event */
     onmouseout: FederatedEventHandler | null;
     /** Handler for 'mouseover' event */
@@ -113,6 +135,8 @@ export interface FederatedEventTarget extends utils.EventEmitter, EventTarget
     onpointerleave: FederatedEventHandler | null;
     /** Handler for 'pointermove' event */
     onpointermove: FederatedEventHandler | null;
+    /** Handler for 'globalpointermove' event */
+    onglobalpointermove: FederatedEventHandler | null;
     /** Handler for 'pointerout' event */
     onpointerout: FederatedEventHandler | null;
     /** Handler for 'pointerover' event */
@@ -141,6 +165,8 @@ export interface FederatedEventTarget extends utils.EventEmitter, EventTarget
     ontouchendoutside: FederatedEventHandler | null;
     /** Handler for 'touchmove' event */
     ontouchmove: FederatedEventHandler | null;
+    /** Handler for 'globaltouchmove' event */
+    onglobaltouchmove: FederatedEventHandler | null;
     /** Handler for 'touchstart' event */
     ontouchstart: FederatedEventHandler | null;
     /** Handler for 'wheel' event */
@@ -153,9 +179,9 @@ type RemoveListenerOptions = boolean | EventListenerOptions;
 export interface IFederatedDisplayObject
     extends Omit<FederatedEventTarget, 'parent' | 'children' | keyof utils.EventEmitter | 'cursor'>
 {
-    addEventListener<K extends keyof FederatedEventMap>(
+    addEventListener<K extends keyof AllFederatedEventMap>(
         type: K,
-        listener: (e: FederatedEventMap[K]) => any,
+        listener: (e: AllFederatedEventMap[K]) => any,
         options?: AddListenerOptions
     ): void;
     addEventListener(
@@ -163,9 +189,9 @@ export interface IFederatedDisplayObject
         listener: EventListenerOrEventListenerObject,
         options?: AddListenerOptions
     ): void;
-    removeEventListener<K extends keyof FederatedEventMap>(
+    removeEventListener<K extends keyof AllFederatedEventMap>(
         type: K,
-        listener: (e: FederatedEventMap[K]) => any,
+        listener: (e: AllFederatedEventMap[K]) => any,
         options?: RemoveListenerOptions
     ): void;
     removeEventListener(
@@ -173,6 +199,11 @@ export interface IFederatedDisplayObject
         listener: EventListenerOrEventListenerObject,
         options?: RemoveListenerOptions
     ): void;
+}
+
+function convertEventModeToInteractiveMode(mode: EventMode): boolean
+{
+    return mode === 'dynamic' || mode === 'static';
 }
 
 export const FederatedDisplayObject: IFederatedDisplayObject = {
@@ -231,6 +262,17 @@ export const FederatedDisplayObject: IFederatedDisplayObject = {
      * }
      */
     onmousemove: null,
+
+    /**
+     * Property-based event handler for the `globalmousemove` event.
+     * @memberof PIXI.DisplayObject#
+     * @default null
+     * @example
+     * this.onglobalmousemove = (event) => {
+     *  //some function here that happens on globalmousemove
+     * }
+     */
+    onglobalmousemove: null,
 
     /**
      * Property-based event handler for the `mouseout` event.
@@ -330,6 +372,17 @@ export const FederatedDisplayObject: IFederatedDisplayObject = {
      * }
      */
     onpointermove:  null,
+
+    /**
+     * Property-based event handler for the `globalpointermove` event.
+     * @memberof PIXI.DisplayObject#
+     * @default null
+     * @example
+     * this.onglobalpointermove = (event) => {
+     *  //some function here that happens on globalpointermove
+     * }
+     */
+    onglobalpointermove:  null,
 
     /**
      * Property-based event handler for the `pointerout` event.
@@ -486,6 +539,17 @@ export const FederatedDisplayObject: IFederatedDisplayObject = {
     ontouchmove:  null,
 
     /**
+     * Property-based event handler for the `globaltouchmove` event.
+     * @memberof PIXI.DisplayObject#
+     * @default null
+     * @example
+     * this.onglobaltouchmove = (event) => {
+     *  //some function here that happens on globaltouchmove
+     * }
+     */
+    onglobaltouchmove:  null,
+
+    /**
      * Property-based event handler for the `touchstart` event.
      * @memberof PIXI.DisplayObject#
      * @default null
@@ -507,19 +571,93 @@ export const FederatedDisplayObject: IFederatedDisplayObject = {
      */
     onwheel:  null,
     /**
+     * @ignore
+     */
+    _internalInteractive: undefined,
+    /**
      * Enable interaction events for the DisplayObject. Touch, pointer and mouse
-     * events will not be emitted unless `interactive` is set to `true`.
+     * @memberof PIXI.DisplayObject#
+     */
+    get interactive()
+    {
+        return this._internalInteractive ?? convertEventModeToInteractiveMode(EventSystem.defaultEventMode);
+    },
+    set interactive(value: boolean)
+    {
+        // #if _DEBUG
+        deprecation(
+            '7.2.0',
+            // eslint-disable-next-line max-len
+            `Setting interactive is deprecated, use eventMode = 'none'/'passive'/'auto'/'static'/'dynamic' instead.`
+        );
+        // #endif
+
+        this._internalInteractive = value;
+        this.eventMode = value ? 'static' : 'auto';
+    },
+    /**
+     * @ignore
+     */
+    _internalEventMode: undefined,
+    /**
+     * Enable interaction events for the DisplayObject. Touch, pointer and mouse.
+     * This now replaces the `interactive` property
+     * There is 5 types of interaction settings:
+     * - `'none'`: Ignores all interaction events, even on its children.
+     * - `'passive'`: Does not emit events and ignores all hit testing on itself and non-interactive children.
+     * Interactive children will still emit events.
+     * - `'auto'`: Does not emit events and but is hit tested if parent is interactive. Same as `interactive = false` in v7
+     * - `'static'`: Emit events and is hit tested. Same as `interaction = true` in v7
+     * - `'dynamic'`: Emits events and is hit tested but will also receive mock interaction events fired from a ticker to
+     * allow for interaction when the mouse isn't moving
      * @example
      * import { Sprite } from 'pixi.js';
      *
      * const sprite = new Sprite(texture);
-     * sprite.interactive = true;
+     * sprite.eventMode = 'static';
      * sprite.on('tap', (event) => {
      *     // Handle event
      * });
      * @memberof PIXI.DisplayObject#
+     * @since 7.2.0
      */
-    interactive: false,
+    get eventMode()
+    {
+        return this._internalEventMode ?? EventSystem.defaultEventMode;
+    },
+    set eventMode(value)
+    {
+        this._internalInteractive = convertEventModeToInteractiveMode(value);
+        this._internalEventMode = value;
+    },
+
+    /**
+     * Determines if the displayObject is interactive or not
+     * @returns {boolean} Whether the displayObject is interactive or not
+     * @memberof PIXI.DisplayObject#
+     * @since 7.2.0
+     * @example
+     * import { Sprite } from 'pixi.js';
+     * const sprite = new Sprite(texture);
+     * sprite.eventMode = 'static';
+     * sprite.isInteractive(); // true
+     *
+     * sprite.eventMode = 'dynamic';
+     * sprite.isInteractive(); // true
+     *
+     * sprite.eventMode = 'none';
+     * sprite.isInteractive(); // false
+     *
+     * sprite.eventMode = 'passive';
+     * sprite.isInteractive(); // false
+     *
+     * sprite.eventMode = 'auto';
+     * sprite.isInteractive(); // false
+     */
+    isInteractive()
+    {
+        return this.eventMode === 'static' || this.eventMode === 'dynamic';
+    },
 
     /**
      * Determines if the children to the displayObject can be clicked/touched

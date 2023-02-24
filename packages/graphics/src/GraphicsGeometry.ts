@@ -3,31 +3,23 @@ import {
     BatchDrawCall,
     BatchGeometry,
     BatchTextureArray,
+    Color,
     DRAW_MODES,
     Point,
-    utils,
-    WRAP_MODES,
+    WRAP_MODES
 } from '@pixi/core';
 import { Bounds } from '@pixi/display';
 import { GraphicsData } from './GraphicsData';
 import {
-    BATCH_POOL,
-    BatchPart,
-    buildLine,
+    BATCH_POOL, BatchPart, buildLine,
     buildPoly,
     DRAW_CALL_POOL,
-    FILL_COMMANDS,
+    FILL_COMMANDS
 } from './utils';
 
-import type { Circle, Ellipse, IPointData, Matrix, Polygon, Rectangle, RoundedRectangle, Texture } from '@pixi/core';
+import type { IPointData, IShape, Matrix, Texture } from '@pixi/core';
 import type { FillStyle } from './styles/FillStyle';
 import type { LineStyle } from './styles/LineStyle';
-
-/*
- * Complex shape type
- * @todo Move to Math shapes
- */
-type IShape = Circle | Ellipse | Polygon | Rectangle | RoundedRectangle;
 
 const tmpPoint = new Point();
 
@@ -807,16 +799,19 @@ export class GraphicsGeometry extends BatchGeometry
         size: number,
         offset = 0): void
     {
-        // TODO use the premultiply bits Ivan added
-        const rgb = (color >> 16) + (color & 0xff00) + ((color & 0xff) << 16);
+        const bgr = Color.shared
+            .setValue(color)
+            .toLittleEndianNumber();
 
-        const rgba = utils.premultiplyTint(rgb, alpha);
+        const result = Color.shared
+            .setValue(bgr)
+            .toPremultiplied(alpha);
 
         colors.length = Math.max(colors.length, offset + size);
 
         for (let i = 0; i < size; i++)
         {
-            colors[offset + i] = rgba;
+            colors[offset + i] = result;
         }
     }
 

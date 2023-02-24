@@ -20,13 +20,13 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Install Canvas Dependencies
-      run: sudo apt-get install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
+      run: sudo apt-get -o Acquire::Retries=3 install build-essential libcairo2-dev libgif-dev libjpeg-dev libpango1.0-dev librsvg2-dev xvfb
     - name: Use Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: 16
+        node-version: 18
         registry-url: 'https://registry.npmjs.org'
     - name: Install npm
       run: npm install -g npm@8
@@ -34,31 +34,25 @@ jobs:
       run: npm ci
 
     - name: Run Unit Tests
-      uses: GabrielBB/xvfb-action@v1
-      with:
-        run: npm run coverage
+      run: xvfb-run --auto-servernum npm run coverage
       env:
         NODE_ENV: production
 
     - name: Run Unit Tests for @pixi/node
-      uses: GabrielBB/xvfb-action@v1
-      with:
-        run: npm run coverage:node
+      run: xvfb-run --auto-servernum npm run coverage:node
       env:
         NODE_ENV: production
 
     - name: Extract Branch Name
       id: branch_name
       if: github.event_name == 'push'
-      run: echo ::set-output name=BRANCH_NAME::${GITHUB_REF/refs\/heads\//}
+      run: echo BRANCH_NAME=${GITHUB_REF/refs\/heads\//} >> $GITHUB_OUTPUT
 
     - name: Build for Distribution
       run: npm run dist
 
     - name: Validate Build for Distribution
-      uses: GabrielBB/xvfb-action@v1
-      with:
-        run: npm run dist-validate
+      run: xvfb-run --auto-servernum npm run dist-validate
 
     # Append assets to releases
     - name: Upload Assets to Release
@@ -106,4 +100,4 @@ jobs:
     # Publish to NPM with prerelease dist-tag
     - name: Publish Latest Prerelease
       if: github.event_name == 'release' && github.event.release.prerelease && env.NODE_AUTH_TOKEN != ''
-      run: npm run publish-ci -- --dist-tag prerelease
+      run: npm run publish-ci -- --tag prerelease

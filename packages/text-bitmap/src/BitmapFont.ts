@@ -507,9 +507,9 @@ export class BitmapFont
                 height,
                 xoffset: 0,
                 yoffset: 0,
-                xadvance: Math.ceil(width
+                xadvance: width
                         - (style.dropShadow ? style.dropShadowDistance : 0)
-                        - (style.stroke ? style.strokeThickness : 0)),
+                        - (style.stroke ? style.strokeThickness : 0),
             });
 
             positionX += (textureGlyphWidth + (2 * padding)) * resolution;

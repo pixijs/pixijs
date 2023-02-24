@@ -1,9 +1,17 @@
 import { Renderer } from '@pixi/core';
 import { Container } from '@pixi/display';
+import { EventSystem } from '@pixi/events';
 import { Graphics } from '@pixi/graphics';
+// eslint-disable-next-line @typescript-eslint/no-duplicate-imports
 import '@pixi/events';
 
-function createRenderer(view?: HTMLCanvasElement, supportsPointerEvents?: boolean)
+import type { IRendererOptions } from '@pixi/core';
+
+function createRenderer(
+    view?: HTMLCanvasElement,
+    supportsPointerEvents?: boolean,
+    rendererOptions: Partial<IRendererOptions> = {}
+)
 {
     // TODO: event emitter types do not appear in tests
     interface EERenderer extends Renderer
@@ -15,6 +23,7 @@ function createRenderer(view?: HTMLCanvasElement, supportsPointerEvents?: boolea
         width: 100,
         height: 100,
         view,
+        ...rendererOptions,
     }) as EERenderer;
 
     if (supportsPointerEvents === false)
@@ -204,6 +213,31 @@ describe('EventSystem', () =>
         expect(renderer.view.style.cursor).toEqual('inherit');
     });
 
+    it('should provide the correct global position', () =>
+    {
+        const renderer = createRenderer();
+        const [stage, graphics] = createScene();
+
+        graphics.position.set(35, 35);
+        renderer.render(stage);
+
+        graphics.on('pointermove', (e) =>
+        {
+            expect(e.global.x).toEqual(40);
+            expect(e.global.y).toEqual(40);
+            expect(e.getLocalPosition(graphics).x).toEqual(5);
+            expect(e.getLocalPosition(graphics).y).toEqual(5);
+        });
+
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', {
+                clientX: 40,
+                clientY: 40,
+                pointerType: 'mouse',
+            })
+        );
+    });
+
     it('should dispatch synthetic over/out events on pointermove', () =>
     {
         const renderer = createRenderer();
@@ -220,6 +254,7 @@ describe('EventSystem', () =>
         const primaryOverSpy = jest.fn();
         const primaryOutSpy = jest.fn();
         const primaryMoveSpy = jest.fn();
+        const primaryMoveGlobalSpy = jest.fn();
 
         let callCount = 0;
 
@@ -235,9 +270,15 @@ describe('EventSystem', () =>
             primaryMoveSpy();
             ++callCount;
         });
+        graphics.on('globalpointermove', () =>
+        {
+            expect([2, 7]).toContain(callCount);
+            primaryMoveGlobalSpy();
+            ++callCount;
+        });
         graphics.on('pointerout', () =>
         {
-            expect(callCount).toEqual(2);
+            expect(callCount).toEqual(4);
             primaryOutSpy();
             ++callCount;
         });
@@ -245,18 +286,25 @@ describe('EventSystem', () =>
         const secondaryOverSpy = jest.fn();
         const secondaryOutSpy = jest.fn();
         const secondaryMoveSpy = jest.fn();
+        const secondaryMoveGlobalSpy = jest.fn();
 
         second.on('pointerover', () =>
         {
-            expect(callCount).toEqual(3);
+            expect(callCount).toEqual(5);
             secondaryOverSpy();
             ++callCount;
         });
         second.on('pointerout', secondaryOutSpy);
         second.on('pointermove', () =>
         {
-            expect(callCount).toEqual(4);
+            expect(callCount).toEqual(6);
             secondaryMoveSpy();
+            ++callCount;
+        });
+        second.on('globalpointermove', () =>
+        {
+            expect([3, 8]).toContain(callCount);
+            secondaryMoveGlobalSpy();
             ++callCount;
         });
 
@@ -265,6 +313,8 @@ describe('EventSystem', () =>
         );
         expect(primaryOverSpy).toHaveBeenCalledOnce();
         expect(primaryMoveSpy).toHaveBeenCalledOnce();
+        expect(primaryMoveGlobalSpy).toHaveBeenCalledTimes(1);
+        expect(secondaryMoveGlobalSpy).toHaveBeenCalledTimes(1);
 
         renderer.events.onPointerMove(
             new PointerEvent('pointermove', { clientX: 125, clientY: 25 })
@@ -272,7 +322,127 @@ describe('EventSystem', () =>
         expect(primaryOutSpy).toHaveBeenCalledOnce();
         expect(secondaryOverSpy).toHaveBeenCalledOnce();
         expect(secondaryMoveSpy).toHaveBeenCalledOnce();
+        expect(primaryMoveGlobalSpy).toHaveBeenCalledTimes(2);
+        expect(secondaryMoveGlobalSpy).toHaveBeenCalledTimes(2);
         expect(secondaryOutSpy).not.toBeCalledTimes(1);
+    });
+
+    it('should not dispatch pointer events if not interactive', () =>
+    {
+        const renderer = createRenderer();
+        const [stage, graphics] = createScene();
+
+        renderer.render(stage);
+
+        const primaryMoveSpy = jest.fn();
+        const primaryMoveGlobalSpy = jest.fn();
+
+        graphics.interactive = false;
+
+        graphics.on('pointermove', () =>
+        {
+            primaryMoveSpy();
+        });
+        graphics.on('globalpointermove', () =>
+        {
+            primaryMoveGlobalSpy();
+        });
+
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', { clientX: 25, clientY: 25 })
+        );
+        expect(primaryMoveSpy).not.toHaveBeenCalled();
+        expect(primaryMoveGlobalSpy).not.toHaveBeenCalled();
+
+        graphics.interactive = true;
+
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', { clientX: 25, clientY: 25 })
+        );
+        expect(primaryMoveSpy).toHaveBeenCalledTimes(1);
+        expect(primaryMoveGlobalSpy).toHaveBeenCalledTimes(1);
+
+        graphics.eventMode = 'none';
+
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', { clientX: 25, clientY: 25 })
+        );
+        expect(primaryMoveSpy).toHaveBeenCalledTimes(1);
+        expect(primaryMoveGlobalSpy).toHaveBeenCalledTimes(1);
+
+        graphics.eventMode = 'auto';
+
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', { clientX: 25, clientY: 25 })
+        );
+        expect(primaryMoveSpy).toHaveBeenCalledTimes(1);
+        expect(primaryMoveGlobalSpy).toHaveBeenCalledTimes(1);
+
+        graphics.eventMode = 'passive';
+
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', { clientX: 25, clientY: 25 })
+        );
+        expect(primaryMoveSpy).toHaveBeenCalledTimes(1);
+        expect(primaryMoveGlobalSpy).toHaveBeenCalledTimes(1);
+
+        graphics.eventMode = 'dynamic';
+
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', { clientX: 25, clientY: 25 })
+        );
+        expect(primaryMoveSpy).toHaveBeenCalledTimes(2);
+        expect(primaryMoveGlobalSpy).toHaveBeenCalledTimes(2);
+
+        graphics.eventMode = 'static';
+
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', { clientX: 25, clientY: 25 })
+        );
+        expect(primaryMoveSpy).toHaveBeenCalledTimes(3);
+        expect(primaryMoveGlobalSpy).toHaveBeenCalledTimes(3);
+
+        // add a second graphics object
+        const second = graphics.addChild(
+            new Graphics()
+                .beginFill(0xFFFFFF)
+                .drawRect(0, 0, 50, 50)
+        );
+
+        // should be called
+        second.interactive = true;
+        // should not be called again
+        graphics.interactive = false;
+
+        const secondaryMoveSpy = jest.fn();
+        const secondaryMoveGlobalSpy = jest.fn();
+
+        second.on('pointermove', () =>
+        {
+            secondaryMoveSpy();
+        });
+        second.on('globalpointermove', () =>
+        {
+            secondaryMoveGlobalSpy();
+        });
+
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', { clientX: 25, clientY: 25 })
+        );
+        expect(primaryMoveSpy).toHaveBeenCalledTimes(3);
+        expect(primaryMoveGlobalSpy).toHaveBeenCalledTimes(3);
+        expect(secondaryMoveSpy).toHaveBeenCalledTimes(1);
+        expect(secondaryMoveGlobalSpy).toHaveBeenCalledTimes(1);
+
+        // nothing should be called again
+        graphics.interactiveChildren = false;
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', { clientX: 25, clientY: 25 })
+        );
+        expect(primaryMoveSpy).toHaveBeenCalledTimes(3);
+        expect(primaryMoveGlobalSpy).toHaveBeenCalledTimes(3);
+        expect(secondaryMoveSpy).toHaveBeenCalledTimes(1);
+        expect(secondaryMoveGlobalSpy).toHaveBeenCalledTimes(1);
     });
 
     it('should dispatch click events', () =>
@@ -379,5 +549,38 @@ describe('EventSystem', () =>
 
         expect(renderer.resolution).toEqual(1);
         expect(renderer.events.resolution).toEqual(1);
+    });
+
+    it('should set the default interaction state', () =>
+    {
+        const renderer = new Renderer({
+            width: 100,
+            height: 100,
+            eventMode: 'dynamic'
+        });
+
+        expect(renderer.options.eventMode).toEqual('dynamic');
+        expect(EventSystem.defaultEventMode).toEqual('dynamic');
+
+        const graphics = new Graphics();
+
+        expect(graphics.interactive).toEqual(true);
+        expect(graphics.eventMode).toEqual('dynamic');
+    });
+
+    it('should use auto for the default interaction when undefined', () =>
+    {
+        const renderer = new Renderer({
+            width: 100,
+            height: 100,
+        });
+
+        expect(renderer.options.eventMode).toBeUndefined();
+        expect(EventSystem.defaultEventMode).toEqual('auto');
+
+        const graphics = new Graphics();
+
+        expect(graphics.interactive).toEqual(false);
+        expect(graphics.eventMode).toEqual('auto');
     });
 });

@@ -15,11 +15,15 @@ export interface IApplicationPlugin
      * Passes in `options` as the only argument, which are Application constructor options.
      * @param {object} options - Application options.
      */
-    init(options: IApplicationOptions): void;
+    init(options: Partial<IApplicationOptions>): void;
     /** Called when destroying Application, scoped to Application instance. */
     destroy(): void;
 }
 
+/**
+ * Application options supplied to constructor.
+ * @memberof PIXI
+ */
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface IApplicationOptions extends IRendererOptionsAuto, GlobalMixins.IApplicationOptions {}
 
@@ -62,38 +66,9 @@ export class Application<VIEW extends ICanvas = ICanvas>
     public renderer: IRenderer<VIEW>;
 
     /**
-     * @param {object} [options] - The optional renderer parameters.
-     * @param {boolean} [options.autoStart=true] - Automatically starts the rendering after the construction.
-     *     **Note**: Setting this parameter to false does NOT stop the shared ticker even if you set
-     *     options.sharedTicker to true in case that it is already started. Stop it by your own.
-     * @param {number} [options.width=800] - The width of the renderers view.
-     * @param {number} [options.height=600] - The height of the renderers view.
-     * @param {PIXI.ICanvas} [options.view] - The canvas to use as a view, optional.
-     * @param {boolean} [options.premultipliedAlpha=true] - Set to `false` to disable premultipliedAlpha.
-     * @param {boolean} [options.autoDensity=false] - Resizes renderer view in CSS pixels to allow for
-     *   resolutions other than 1.
-     * @param {boolean} [options.antialias=false] - Sets antialias
-     * @param {boolean} [options.preserveDrawingBuffer=false] - Enables drawing buffer preservation, enable this if you
-     *  need to call toDataURL on the WebGL context.
-     * @param {number} [options.resolution=PIXI.settings.RESOLUTION] - The resolution / device pixel ratio of the renderer.
-     * @param {boolean} [options.forceCanvas=false] - prevents selection of WebGL renderer, even if such is present, this
-     *   option only is available when using **pixi.js-legacy** or **@pixi/canvas-renderer** modules, otherwise
-     *   it is ignored.
-     * @param {number|string} [options.backgroundColor=0x000000] - The background color of the rendered area
-     *  (shown if not transparent). Also, accepts hex strings or color names (e.g., 'white').
-     * @param {number|string} [options.background] - Alias for `options.backgroundColor`.
-     * @param {number} [options.backgroundAlpha=1] - Value from 0 (fully transparent) to 1 (fully opaque).
-     * @param {boolean} [options.clearBeforeRender=true] - This sets if the renderer will clear the canvas or
-     *   not before the new render pass.
-     * @param {string} [options.powerPreference] - Parameter passed to webgl context, set to "high-performance"
-     *  for devices with dual graphics card. **(WebGL only)**.
-     * @param {boolean} [options.sharedTicker=false] - `true` to use Ticker.shared, `false` to create new ticker.
-     *  If set to false, you cannot register a handler to occur before anything that runs on the shared ticker.
-     *  The system ticker will always run before both the shared ticker and the app ticker.
-     * @param {Window|HTMLElement} [options.resizeTo] - Element to automatically resize stage to.
-     * @param {boolean} [options.hello=false] - Logs renderer type and version.
+     * @param options - The optional application and renderer parameters.
      */
-    constructor(options?: IApplicationOptions)
+    constructor(options?: Partial<IApplicationOptions>)
     {
         // The default options
         options = Object.assign({

@@ -48,7 +48,7 @@ export interface DisplayObject
  *
  * ## Transforms
  *
- * The [transform]{@link DisplayObject#transform} of a display object describes the projection from its
+ * The [transform]{@link PIXI.DisplayObject#transform} of a display object describes the projection from its
  * local coordinate space to its parent's local coordinate space. The following properties are derived
  * from the transform:
  *
@@ -162,7 +162,7 @@ export interface DisplayObject
  *
  * ### calculateBounds
  *
- * [Container]{@link Container} already implements `calculateBounds` in a manner that includes children.
+ * [Container]{@link PIXI.Container} already implements `calculateBounds` in a manner that includes children.
  *
  * But for a non-Container display object, the `calculateBounds` method must be overridden in order for `getBounds` and
  * `getLocalBounds` to work. This method must write the bounds into `this._bounds`.
@@ -716,7 +716,7 @@ export abstract class DisplayObject extends utils.EventEmitter<DisplayObjectEven
         this.filterArea = null;
         this.hitArea = null;
 
-        this.interactive = false;
+        this.eventMode = 'auto';
         this.interactiveChildren = false;
 
         this.emit('destroyed');

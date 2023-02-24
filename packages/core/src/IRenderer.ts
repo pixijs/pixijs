@@ -5,6 +5,7 @@ import type { IRendererPlugins } from './plugin/PluginSystem';
 import type { IGenerateTextureOptions } from './renderTexture/GenerateTextureSystem';
 import type { RenderTexture } from './renderTexture/RenderTexture';
 import type { SystemManager } from './system/SystemManager';
+import type { BackgroundSytemOptions, ContextSystemOptions, StartupSystemOptions, ViewSystemOptions } from './systems';
 import type { ImageSource } from './textures/BaseTexture';
 
 /**
@@ -38,8 +39,10 @@ export interface IRenderableContainer extends IRenderableObject
     getLocalBounds(rect?: Rectangle, skipChildrenUpdate?: boolean): Rectangle;
 }
 
-/** Mixed WebGL1/WebGL2 Rendering Context. Either its WebGL2, either its WebGL1 with PixiJS polyfills on it */
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
+/**
+ * Mixed WebGL1 / WebGL2 rendering context. Either it's WebGL2, either it's WebGL1 with PixiJS polyfills on it.
+ * @memberof PIXI
+ */
 export interface IRenderingContext extends WebGL2RenderingContext
 {
     texImage2D(target: GLenum, level: GLint, internalformat: GLint, width: GLsizei, height: GLsizei, border: GLint,
@@ -77,45 +80,21 @@ export interface IRenderingContext extends WebGL2RenderingContext
 /**
  * Renderer options supplied to constructor.
  * @memberof PIXI
+ * @see PIXI.settings.RENDER_OPTIONS
  */
-export interface IRendererOptions extends GlobalMixins.IRendererOptions
+export interface IRendererOptions extends GlobalMixins.IRendererOptions,
+    BackgroundSytemOptions,
+    ContextSystemOptions,
+    ViewSystemOptions,
+    StartupSystemOptions
 {
-    /** Width of the view */
-    width?: number;
-    /** Height of the view */
-    height?: number;
-    /** Canvas or OffscreenCanvas to use, will be created if omitted */
-    view?: ICanvas;
-    /**
-     * Use premultipliedAlpha and backgroundAlpha instead
-     * @deprecated since 7.0.0
-     */
-    useContextAlpha?: boolean | 'notMultiplied';
-    /** Consider the resolution when resizing the view */
-    autoDensity?: boolean;
-    /** Antialias turn on for WebGL, impacts performance */
-    antialias?: boolean;
-    /** Base resolution for the Renderer */
-    resolution?: number;
-    /** Preserve the drawing buffer */
-    preserveDrawingBuffer?: boolean;
-    /** Clear the draw before render */
-    clearBeforeRender?: boolean;
-    /** The background color, can be number (`0xff0000`) or string (`#f00`) */
-    backgroundColor?: number | string;
-    /** Alias for `backgroundColor` */
-    background?: number | string;
-    /** Background color alpha */
-    backgroundAlpha?: number;
-    /** Premultiply alpha */
-    premultipliedAlpha?: boolean;
-    /** Power preference, for multiple GPUs */
-    powerPreference?: WebGLPowerPreference;
-    /** User-proviced rendering context object */
-    context?: IRenderingContext;
-    /** Console log the version and type of Renderer */
-    hello?: boolean;
 }
+
+/**
+ * @deprecated since 7.2.0
+ * @see PIXI.IRendererOptions
+ */
+export type IRenderOptions = IRendererOptions;
 
 export interface IRendererRenderOptions
 {
@@ -159,7 +138,7 @@ export interface IRenderer<VIEW extends ICanvas = ICanvas> extends SystemManager
     /** Flag if we are rendering to the screen vs renderTexture */
     readonly renderingToScreen: boolean
     /** The resolution / device pixel ratio of the renderer. */
-    readonly resolution: number
+    resolution: number
     /** the width of the screen */
     readonly width: number
     /** the height of the screen */

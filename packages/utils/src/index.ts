@@ -1,3 +1,5 @@
+/// <reference path="../global.d.ts" />
+
 /**
  * Generalized convenience utilities for PIXI.
  * @example
@@ -12,9 +14,6 @@
  *
  * // Get info on current device
  * console.log(utils.isMobile);
- *
- * // Convert hex color to string
- * console.log(utils.hex2string(0xff00ff)); // returns: "#ff00ff"
  * @namespace PIXI.utils
  */
 

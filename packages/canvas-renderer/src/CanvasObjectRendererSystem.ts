@@ -138,8 +138,8 @@ export class CanvasObjectRendererSystem implements ISystem
 
                 if (background.alpha > 0)
                 {
-                    context2D.globalAlpha = background.alpha;
-                    context2D.fillStyle = background.colorString;
+                    context2D.globalAlpha = background.backgroundColor.alpha;
+                    context2D.fillStyle = background.backgroundColor.toHex();
                     context2D.fillRect(0, 0, renderer.width, renderer.height);
                     context2D.globalAlpha = 1;
                 }
@@ -149,12 +149,10 @@ export class CanvasObjectRendererSystem implements ISystem
                 renderTexture = (renderTexture as BaseRenderTexture);
                 renderTexture._canvasRenderTarget.clear();
 
-                const clearColor = renderTexture.clearColor;
-
-                if (clearColor[3] > 0)
+                if (renderTexture.clear.alpha > 0)
                 {
-                    context2D.globalAlpha = clearColor[3] ?? 1;
-                    context2D.fillStyle = utils.hex2string(utils.rgb2hex(clearColor));
+                    context2D.globalAlpha = renderTexture.clear.alpha;
+                    context2D.fillStyle = renderTexture.clear.toHex();
                     context2D.fillRect(0, 0, renderTexture.realWidth, renderTexture.realHeight);
                     context2D.globalAlpha = 1;
                 }

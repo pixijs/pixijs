@@ -9,6 +9,7 @@ import {
 import type {
     BackgroundSystem,
     BLEND_MODES,
+    ColorSource,
     ExtensionMetadata,
     GenerateTextureSystem,
     ICanvas,
@@ -24,9 +25,8 @@ import type {
     Rectangle,
     RENDERER_TYPE,
     RenderTexture,
-    StartupOptions,
     StartupSystem,
-    ViewSystem,
+    ViewSystem
 } from '@pixi/core';
 import type { DisplayObject } from '@pixi/display';
 import type { CanvasContextSystem, SmoothingEnabledProperties } from './CanvasContextSystem';
@@ -34,9 +34,6 @@ import type { CanvasMaskSystem } from './CanvasMaskSystem';
 import type { CanvasObjectRendererSystem } from './CanvasObjectRendererSystem';
 
 const { deprecation } = utils;
-
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface CanvasRenderer extends GlobalMixins.CanvasRenderer {}
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface CanvasRenderer extends GlobalMixins.CanvasRenderer {}
@@ -68,7 +65,6 @@ export interface CanvasRenderer extends GlobalMixins.CanvasRenderer {}
  * | ------------------------------------ | ----------------------------------------------------------------------------- |
  * | {@link PIXI.CanvasContextSystem}     | This manages the canvas `2d` contexts and their state                         |
  * | {@link PIXI.CanvasMaskSystem}        | This manages masking operations.                                              |
- * | {@link PIXI.CanvasRenderSystem}      | This adds the ability to render a PIXI.DisplayObject                          |
  * | {@link PIXI.CanvasExtract}           | This extracts image data from a PIXI.DisplayObject                            |
  * | {@link PIXI.CanvasPrepare}           | This prepares a PIXI.DisplayObject async for rendering                        |
  *
@@ -168,25 +164,9 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
     public objectRenderer: CanvasObjectRendererSystem;
 
     /**
-     * @param options - The optional renderer parameters
-     * @param {number} [options.width=800] - the width of the screen
-     * @param {number} [options.height=600] - the height of the screen
-     * @param {PIXI.ICanvas} [options.view] - the canvas to use as a view, optional
-     * @param {boolean} [options.autoDensity=false] - Resizes renderer view in CSS pixels to allow for
-     *   resolutions other than 1
-     * @param {boolean} [options.antialias=false] - sets antialias
-     * @param {number} [options.resolution=PIXI.settings.RESOLUTION] - The resolution / device pixel ratio of the renderer.
-     * @param {boolean} [options.preserveDrawingBuffer=false] - enables drawing buffer preservation,
-     *  enable this if you need to call toDataURL on the webgl context.
-     * @param {boolean} [options.clearBeforeRender=true] - This sets if the renderer will clear the canvas or
-     *      not before the new render pass.
-     * @param {number|string} [options.backgroundColor=0x000000] - The background color of the rendered area
-     *  (shown if not transparent). Also, accepts hex strings or color names (e.g., 'white').
-     * @param {number|string} [options.background] - Alias for `options.backgroundColor`.
-     * @param {number} [options.backgroundAlpha=1] - Value from 0 (fully transparent) to 1 (fully opaque).
-     * @param {boolean} [options.hello=false] - Logs renderer type and version.
+     * @param {PIXI.IRendererOptions} [options] - See {@link PIXI.settings.RENDER_OPTIONS} for defaults.
      */
-    constructor(options?: IRendererOptions)
+    constructor(options?: Partial<IRendererOptions>)
     {
         super();
 
@@ -229,25 +209,9 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
         }
 
         // convert our big blob of options into system specific ones..
-        const startupOptions: StartupOptions = {
-            hello: options.hello,
-            _plugin: CanvasRenderer.__plugins,
-            background: {
-                alpha: options.backgroundAlpha,
-                color: options.background ?? options.backgroundColor,
-                clearBeforeRender: options.clearBeforeRender,
-            },
-            _view: {
-                height: options.height,
-                width: options.width,
-                autoDensity: options.autoDensity,
-                resolution: options.resolution,
-                view: options.view,
-            }
-        };
-
-        this.startup.run(startupOptions);
-        this.options = options;
+        this._plugin.rendererPlugins = CanvasRenderer.__plugins;
+        this.options = options as IRendererOptions;
+        this.startup.run(this.options);
     }
 
     /**
@@ -536,7 +500,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
      * The background color to fill if not transparent
      * @deprecated since 7.0.0
      */
-    get backgroundColor(): number
+    get backgroundColor(): ColorSource
     {
         // #if _DEBUG
         // eslint-disable-next-line max-len
@@ -549,7 +513,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
     /**
      * @deprecated since 7.0.0
      */
-    set backgroundColor(value: number)
+    set backgroundColor(value: ColorSource)
     {
         // #if _DEBUG
         deprecation('7.0.0', 'renderer.backgroundColor has been deprecated, use renderer.background.color instead.');
@@ -570,7 +534,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
         deprecation('7.0.0', 'renderer.backgroundAlpha has been deprecated, use renderer.background.alpha instead.');
         // #endif
 
-        return this.background.color;
+        return this.background.alpha;
     }
 
     /**

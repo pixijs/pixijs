@@ -1,6 +1,7 @@
 import {
     BLEND_MODES,
     Circle,
+    Color,
     Ellipse,
     Matrix,
     PI_2,
@@ -13,7 +14,6 @@ import {
     State,
     Texture,
     UniformGroup,
-    utils,
 } from '@pixi/core';
 import { Container } from '@pixi/display';
 import { curves, LINE_CAP, LINE_JOIN } from './const';
@@ -22,10 +22,13 @@ import { FillStyle } from './styles/FillStyle';
 import { LineStyle } from './styles/LineStyle';
 import { ArcUtils, BezierUtils, QuadraticUtils } from './utils';
 
-import type { BatchDrawCall, IPointData, IShape, Renderer } from '@pixi/core';
+import type { BatchDrawCall, ColorSource, IPointData, IShape, Renderer } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
 
-/** Batch element computed from Graphics geometry */
+/**
+ * Batch element computed from Graphics geometry.
+ * @memberof PIXI
+ */
 export interface IGraphicsBatchElement
 {
     vertexData: Float32Array;
@@ -41,7 +44,7 @@ export interface IGraphicsBatchElement
 
 export interface IFillStyleOptions
 {
-    color?: number;
+    color?: ColorSource;
     alpha?: number;
     texture?: Texture;
     matrix?: Matrix;
@@ -56,8 +59,6 @@ export interface ILineStyleOptions extends IFillStyleOptions
     join?: LINE_JOIN;
     miterLimit?: number;
 }
-
-const temp = new Float32Array(3);
 
 // a default shaders map used by graphics..
 const DEFAULT_SHADERS: {[key: string]: Shader} = {};
@@ -142,7 +143,7 @@ export class Graphics extends Container
     /** Current hole mode is enabled. */
     protected _holeMode = false;
     protected _transformID: number;
-    protected _tint: number;
+    protected _tintColor: Color;
 
     /**
      * Represents the WebGL state the Graphics required to render, excludes shader and geometry. E.g.,
@@ -187,7 +188,7 @@ export class Graphics extends Container
         this._transformID = -1;
 
         // Set default
-        this.tint = 0xFFFFFF;
+        this._tintColor = new Color(0xFFFFFF);
         this.blendMode = BLEND_MODES.NORMAL;
     }
 
@@ -226,14 +227,14 @@ export class Graphics extends Container
      * 0xFFFFFF will remove any tint effect.
      * @default 0xFFFFFF
      */
-    public get tint(): number
+    public get tint(): ColorSource
     {
-        return this._tint;
+        return this._tintColor.value;
     }
 
-    public set tint(value: number)
+    public set tint(value: ColorSource)
     {
-        this._tint = value;
+        this._tintColor.setValue(value);
     }
 
     /**
@@ -265,15 +266,15 @@ export class Graphics extends Container
      * @param [native=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
      * @returns - This Graphics object. Good for chaining method calls
      */
-    public lineStyle(width: number, color?: number, alpha?: number, alignment?: number, native?: boolean): this;
+    public lineStyle(width: number, color?: ColorSource, alpha?: number, alignment?: number, native?: boolean): this;
 
     /**
      * Specifies the line style used for subsequent calls to Graphics methods such as the lineTo()
      * method or the drawCircle() method.
      * @param options - Line style options
      * @param {number} [options.width=0] - width of the line to draw, will update the objects stored style
-     * @param {number} [options.color=0x0] - color of the line to draw, will update the objects stored style
-     * @param {number} [options.alpha=1] - alpha of the line to draw, will update the objects stored style
+     * @param {PIXI.ColorSource} [options.color=0x0] - color of the line to draw, will update the objects stored style
+     * @param {number} [options.alpha] - alpha of the line to draw, will update the objects stored style
      * @param {number} [options.alignment=0.5] - alignment of the line to draw, (0 = inner, 0.5 = middle, 1 = outer).
      *        WebGL only.
      * @param {boolean} [options.native=false] - If true the lines will be draw using LINES instead of TRIANGLE_STRIP
@@ -285,7 +286,7 @@ export class Graphics extends Container
     public lineStyle(options?: ILineStyleOptions): this;
 
     public lineStyle(options: ILineStyleOptions | number = null,
-        color = 0x0, alpha = 1, alignment = 0.5, native = false): this
+        color: ColorSource = 0x0, alpha?: number, alignment = 0.5, native = false): this
     {
         // Support non-object params: (width, color, alpha, alignment, native)
         if (typeof options === 'number')
@@ -301,7 +302,7 @@ export class Graphics extends Container
      * @param [options] - Collection of options for setting line style.
      * @param {number} [options.width=0] - width of the line to draw, will update the objects stored style
      * @param {PIXI.Texture} [options.texture=PIXI.Texture.WHITE] - Texture to use
-     * @param {number} [options.color=0x0] - color of the line to draw, will update the objects stored style.
+     * @param {PIXI.ColorSource} [options.color=0x0] - color of the line to draw, will update the objects stored style.
      *  Default 0xFFFFFF if texture present.
      * @param {number} [options.alpha=1] - alpha of the line to draw, will update the objects stored style
      * @param {PIXI.Matrix} [options.matrix=null] - Texture matrix to transform texture
@@ -316,18 +317,21 @@ export class Graphics extends Container
     public lineTextureStyle(options?: ILineStyleOptions): this
     {
         // Apply defaults
-        options = Object.assign({
+        const defaultLineStyleOptions: ILineStyleOptions = {
             width: 0,
             texture: Texture.WHITE,
             color: options?.texture ? 0xFFFFFF : 0x0,
-            alpha: 1,
             matrix: null,
             alignment: 0.5,
             native: false,
             cap: LINE_CAP.BUTT,
             join: LINE_JOIN.MITER,
             miterLimit: 10,
-        }, options);
+        };
+
+        options = Object.assign(defaultLineStyleOptions, options);
+
+        this.normalizeColor(options);
 
         if (this.currentPath)
         {
@@ -507,13 +511,16 @@ export class Graphics extends Container
     }
 
     /**
-     * The arcTo() method creates an arc/curve between two tangents on the canvas.
+     * The `arcTo` method creates an arc/curve between two tangents on the canvas.
+     * The first tangent is from the start point to the first control point,
+     * and the second tangent is from the first control point to the second control point.
+     * Note that the second control point is not necessarily the end point of the arc.
      *
      * "borrowed" from https://code.google.com/p/fxcanvas/ - thanks google!
-     * @param x1 - The x-coordinate of the first tangent point of the arc
-     * @param y1 - The y-coordinate of the first tangent point of the arc
-     * @param x2 - The x-coordinate of the end of the arc
-     * @param y2 - The y-coordinate of the end of the arc
+     * @param x1 - The x-coordinate of the first control point of the arc
+     * @param y1 - The y-coordinate of the first control point of the arc
+     * @param x2 - The x-coordinate of the second control point of the arc
+     * @param y2 - The y-coordinate of the second control point of the arc
      * @param radius - The radius of the arc
      * @returns - This Graphics object. Good for chaining method calls
      */
@@ -610,34 +617,49 @@ export class Graphics extends Container
     /**
      * Specifies a simple one-color fill that subsequent calls to other Graphics methods
      * (such as lineTo() or drawCircle()) use when drawing.
-     * @param color - the color of the fill
-     * @param alpha - the alpha of the fill
-     * @returns - This Graphics object. Good for chaining method calls
+     * @param {PIXI.ColorSource} color - the color of the fill
+     * @param alpha - the alpha of the fill, will override the color's alpha
+     * @returns - This Graphics object. Suitable for chaining method calls
      */
-    public beginFill(color = 0, alpha = 1): this
+    public beginFill(color: ColorSource = 0, alpha?: number): this
     {
         return this.beginTextureFill({ texture: Texture.WHITE, color, alpha });
     }
 
     /**
+     * Normalize the color input from options for line style or fill
+     * @param {PIXI.IFillStyleOptions} options - Fill style object.
+     */
+    private normalizeColor(options: Pick<IFillStyleOptions, 'color' | 'alpha'>): void
+    {
+        const temp = Color.shared.setValue(options.color ?? 0);
+
+        options.color = temp.toNumber();
+        options.alpha ??= temp.alpha;
+    }
+
+    /**
      * Begin the texture fill.
      * Note: The wrap mode of the texture is forced to REPEAT on render.
-     * @param options - Object object.
+     * @param options - Fill style object.
      * @param {PIXI.Texture} [options.texture=PIXI.Texture.WHITE] - Texture to fill
-     * @param {number} [options.color=0xffffff] - Background to fill behind texture
-     * @param {number} [options.alpha=1] - Alpha of fill
+     * @param {PIXI.ColorSource} [options.color=0xffffff] - Background to fill behind texture
+     * @param {number} [options.alpha] - Alpha of fill, overrides the color's alpha
      * @param {PIXI.Matrix} [options.matrix=null] - Transform matrix
      * @returns {PIXI.Graphics} This Graphics object. Good for chaining method calls
      */
     beginTextureFill(options?: IFillStyleOptions): this
     {
         // Apply defaults
-        options = Object.assign({
+        const defaultOptions: IFillStyleOptions = {
             texture: Texture.WHITE,
             color: 0xFFFFFF,
-            alpha: 1,
             matrix: null,
-        }, options) as IFillStyleOptions;
+        };
+
+        options = Object.assign(defaultOptions, options);
+
+        this.normalizeColor(options);
 
         if (this.currentPath)
         {
@@ -894,7 +916,7 @@ export class Graphics extends Container
                 blendMode,
                 indices,
                 uvs,
-                _batchRGB: utils.hex2rgb(color) as Array<number>,
+                _batchRGB: Color.shared.setValue(color).toRgbArray(),
                 _tintRGB: color,
                 _texture: gI.style.texture,
                 alpha: gI.style.alpha,
@@ -940,7 +962,6 @@ export class Graphics extends Container
         const shader = this._resolveDirectShader(renderer);
 
         const geometry = this._geometry;
-        const tint = this.tint;
         const worldAlpha = this.worldAlpha;
         const uniforms = shader.uniforms;
         const drawCalls = geometry.drawCalls;
@@ -949,10 +970,10 @@ export class Graphics extends Container
         uniforms.translationMatrix = this.transform.worldTransform;
 
         // and then lets set the tint..
-        uniforms.tint[0] = (((tint >> 16) & 0xFF) / 255) * worldAlpha;
-        uniforms.tint[1] = (((tint >> 8) & 0xFF) / 255) * worldAlpha;
-        uniforms.tint[2] = ((tint & 0xFF) / 255) * worldAlpha;
-        uniforms.tint[3] = worldAlpha;
+        Color.shared.setValue(this._tintColor)
+            .multiply([worldAlpha, worldAlpha, worldAlpha])
+            .setAlpha(worldAlpha)
+            .toArray(uniforms.tint);
 
         // the first draw call, we can set the uniforms of the shader directly here.
 
@@ -1070,26 +1091,16 @@ export class Graphics extends Container
     {
         if (this.batchTint !== this.tint)
         {
-            this.batchTint = this.tint;
-
-            const tintRGB = utils.hex2rgb(this.tint, temp);
+            this.batchTint = this._tintColor.toNumber();
 
             for (let i = 0; i < this.batches.length; i++)
             {
                 const batch = this.batches[i];
 
-                const batchTint = batch._batchRGB;
-
-                const r = (tintRGB[0] * batchTint[0]) * 255;
-                const g = (tintRGB[1] * batchTint[1]) * 255;
-                const b = (tintRGB[2] * batchTint[2]) * 255;
-
-                // TODO Ivan, can this be done in one go?
-                const color = (r << 16) + (g << 8) + (b | 0);
-
-                batch._tintRGB = (color >> 16)
-                        + (color & 0xff00)
-                        + ((color & 0xff) << 16);
+                batch._tintRGB = Color.shared
+                    .setValue(this._tintColor)
+                    .multiply(batch._batchRGB)
+                    .toLittleEndianNumber();
             }
         }
     }

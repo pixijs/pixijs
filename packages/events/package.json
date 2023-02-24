@@ -1,6 +1,5 @@
 {
   "name": "@pixi/events",
-  "version": "7.1.0-alpha",
   "main": "lib/index.js",
   "module": "lib/index.mjs",
   "types": "lib/index.d.ts",
@@ -44,6 +43,7 @@
   },
   "pixiRequirements": [
     "@pixi/core",
-    "@pixi/display"
+    "@pixi/display",
+    "@pixi/utils"
   ]
 }

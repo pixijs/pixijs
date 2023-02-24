@@ -4,8 +4,10 @@ import type { LoadAsset } from '../types';
 
 /**
  * The extension priority for loader parsers.
- * Helpful when managing multiple parsers that share the same extension
- * test. The higher priority parsers will be checked first.
+ * Helpful when managing multiple parsers that share the same extension test.
+ * The higher priority parsers will be checked first.
+ * @memberof PIXI
+ * @enum {number}
  */
 export enum LoaderParserPriority
 // eslint-disable-next-line @typescript-eslint/indent
@@ -31,13 +33,15 @@ export enum LoaderParserPriority
  * some plugins may only be used for parsing,
  * some only for loading
  * and some for both!
+ * @memberof PIXI
  */
-export interface LoaderParser<ASSET = any, META_DATA = any>
+export interface LoaderParser<ASSET = any, META_DATA = any, CONFIG = Record<string, any>>
 {
     extension?: ExtensionMetadata;
 
     /** A config to adjust the parser */
-    config?: Record<string, any>
+    config?: CONFIG;
+
     /**
      * each URL to load will be tested here,
      * if the test is passed the assets are loaded using the load function below.

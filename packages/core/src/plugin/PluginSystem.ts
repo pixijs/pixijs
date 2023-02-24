@@ -14,7 +14,7 @@ export interface IRendererPlugins extends GlobalMixins.IRendererPlugins
  * Manages the functionality that allows users to extend pixi functionality via additional plugins.
  * @memberof PIXI
  */
-export class PluginSystem implements ISystem<IRendererPlugins>
+export class PluginSystem implements ISystem
 {
     /** @ignore */
     static extension: ExtensionMetadata = {
@@ -24,6 +24,9 @@ export class PluginSystem implements ISystem<IRendererPlugins>
         ],
         name: '_plugin',
     };
+
+    /** @ignore */
+    public rendererPlugins: IRendererPlugins;
 
     /**
      * Collection of plugins.
@@ -80,10 +83,11 @@ export class PluginSystem implements ISystem<IRendererPlugins>
     /**
      * Initialize the plugins.
      * @protected
-     * @param {object} staticMap - The dictionary of statically saved plugins.
      */
-    init(staticMap: IRendererPlugins): void
+    init(): void
     {
+        const staticMap = this.rendererPlugins;
+
         for (const o in staticMap)
         {
             this.plugins[o] = new (staticMap[o])(this.renderer);

@@ -1,7 +1,9 @@
+import { Color } from '@pixi/color';
 import { MIPMAP_MODES, MSAA_QUALITY } from '@pixi/constants';
 import { Framebuffer } from '../framebuffer/Framebuffer';
 import { BaseTexture } from '../textures/BaseTexture';
 
+import type { ColorSource } from '@pixi/color';
 import type { MaskData } from '../mask/MaskData';
 import type { IBaseTextureOptions } from '../textures/BaseTexture';
 
@@ -42,7 +44,7 @@ export interface BaseRenderTexture extends GlobalMixins.BaseRenderTexture, BaseT
  */
 export class BaseRenderTexture extends BaseTexture
 {
-    public clearColor: number[];
+    public _clear: Color;
     public framebuffer: Framebuffer;
 
     /** The data structure for the stencil masks. */
@@ -55,7 +57,7 @@ export class BaseRenderTexture extends BaseTexture
      * @param options
      * @param {number} [options.width=100] - The width of the base render texture.
      * @param {number} [options.height=100] - The height of the base render texture.
-     * @param {PIXI.SCALE_MODES} [options.scaleMode=PIXI.settings.SCALE_MODE] - See {@link PIXI.SCALE_MODES}
+     * @param {PIXI.SCALE_MODES} [options.scaleMode=PIXI.BaseTexture.defaultOptions.scaleMode] - See {@link PIXI.SCALE_MODES}
      *   for possible values.
      * @param {number} [options.resolution=PIXI.settings.RESOLUTION] - The resolution / device pixel ratio
      *   of the texture being generated.
@@ -86,8 +88,7 @@ export class BaseRenderTexture extends BaseTexture
         this.mipmap = MIPMAP_MODES.OFF;
         this.valid = true;
 
-        this.clearColor = [0, 0, 0, 0];
-
+        this._clear = new Color([0, 0, 0, 0]);
         this.framebuffer = new Framebuffer(this.realWidth, this.realHeight)
             .addColorTexture(0, this);
         this.framebuffer.multisample = options.multisample;
@@ -95,6 +96,26 @@ export class BaseRenderTexture extends BaseTexture
         // TODO - could this be added the systems?
         this.maskStack = [];
         this.filterStack = [{}];
+    }
+
+    /** Color when clearning the texture. */
+    set clearColor(value: ColorSource)
+    {
+        this._clear.setValue(value);
+    }
+    get clearColor(): ColorSource
+    {
+        return this._clear.value;
+    }
+
+    /**
+     * Color object when clearning the texture.
+     * @readonly
+     * @since 7.2.0
+     */
+    get clear(): Color
+    {
+        return this._clear;
     }
 
     /**

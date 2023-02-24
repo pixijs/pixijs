@@ -354,4 +354,34 @@ describe('Assets bundles', () =>
         // expect promise to throw an error..
         await expect(Assets.init({ manifest, basePath, bundleIdentifier })).rejects.toThrow();
     });
+
+    it('should pass optional data correctly in a bundle', async () =>
+    {
+        const manifest = {
+            bundles: [
+                {
+                    name: 'bunny1',
+                    assets: [
+                        {
+                            name: 'character',
+                            srcs: 'textures/bunny.png',
+                            data: {
+                                otherData: 'thing'
+                            }
+                        },
+                    ],
+
+                },
+            ]
+        };
+
+        Assets.init({ manifest, basePath });
+
+        // expect promise to throw an error..
+        await expect(Assets.init({ manifest, basePath }));
+
+        const bundle = await Assets.resolver.resolveBundle('bunny1');
+
+        expect(bundle.character.data).toEqual({ otherData: 'thing' });
+    });
 });

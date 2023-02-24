@@ -1,4 +1,4 @@
-import { defaultFilterVertex, Filter } from '@pixi/core';
+import { Color, defaultFilterVertex, Filter } from '@pixi/core';
 import fragment from './colorMatrix.frag';
 
 import type { utils } from '@pixi/core';
@@ -144,14 +144,11 @@ export class ColorMatrixFilter extends Filter
      */
     public tint(color: number, multiply?: boolean): void
     {
-        const r = (color >> 16) & 0xff;
-        const g = (color >> 8) & 0xff;
-        const b = color & 0xff;
-
+        const [r, g, b] = Color.shared.setValue(color).toArray();
         const matrix: ColorMatrix = [
-            r / 255, 0, 0, 0, 0,
-            0, g / 255, 0, 0, 0,
-            0, 0, b / 255, 0, 0,
+            r, 0, 0, 0, 0,
+            0, g, 0, 0, 0,
+            0, 0, b, 0, 0,
             0, 0, 0, 1, 0,
         ];
 
@@ -448,13 +445,9 @@ export class ColorMatrixFilter extends Filter
         lightColor = lightColor || 0xFFE580;
         darkColor = darkColor || 0x338000;
 
-        const lR = ((lightColor >> 16) & 0xFF) / 255;
-        const lG = ((lightColor >> 8) & 0xFF) / 255;
-        const lB = (lightColor & 0xFF) / 255;
-
-        const dR = ((darkColor >> 16) & 0xFF) / 255;
-        const dG = ((darkColor >> 8) & 0xFF) / 255;
-        const dB = (darkColor & 0xFF) / 255;
+        const temp = Color.shared;
+        const [lR, lG, lB] = temp.setValue(lightColor).toArray();
+        const [dR, dG, dB] = temp.setValue(darkColor).toArray();
 
         const matrix: ColorMatrix = [
             0.3, 0.59, 0.11, 0, 0,

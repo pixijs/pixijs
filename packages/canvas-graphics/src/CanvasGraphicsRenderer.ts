@@ -1,5 +1,5 @@
 import { canvasUtils } from '@pixi/canvas-renderer';
-import { extensions, ExtensionType, Matrix, SHAPES, Texture } from '@pixi/core';
+import { Color, extensions, ExtensionType, Matrix, SHAPES, Texture } from '@pixi/core';
 import { PolygonUtils } from './utils/PolygonUtils';
 
 import type { CanvasRenderer, CrossPlatformCanvasRenderingContext2D } from '@pixi/canvas-renderer';
@@ -96,9 +96,7 @@ export class CanvasGraphicsRenderer
         let contextFillStyle;
         let contextStrokeStyle;
 
-        const tintR = ((graphics.tint >> 16) & 0xFF) / 255;
-        const tintG = ((graphics.tint >> 8) & 0xFF) / 255;
-        const tintB = (graphics.tint & 0xFF) / 255;
+        const tint = Color.shared.setValue(graphics.tint).toArray();
 
         for (let i = 0; i < graphicsData.length; i++)
         {
@@ -117,23 +115,19 @@ export class CanvasGraphicsRenderer
 
             if (fillStyle.visible)
             {
-                const fillTint = (
-                    (((fillColor >> 16) & 0xFF) / 255 * tintR * 255 << 16)
-                    + (((fillColor >> 8) & 0xFF) / 255 * tintG * 255 << 8)
-                    + (((fillColor & 0xFF) / 255) * tintB * 255)
+                contextFillStyle = this._calcCanvasStyle(fillStyle, Color.shared
+                    .setValue(fillColor)
+                    .multiply(tint)
+                    .toNumber()
                 );
-
-                contextFillStyle = this._calcCanvasStyle(fillStyle, fillTint);
             }
             if (lineStyle.visible)
             {
-                const lineTint = (
-                    (((lineColor >> 16) & 0xFF) / 255 * tintR * 255 << 16)
-                    + (((lineColor >> 8) & 0xFF) / 255 * tintG * 255 << 8)
-                    + (((lineColor & 0xFF) / 255) * tintB * 255)
+                contextStrokeStyle = this._calcCanvasStyle(lineStyle, Color.shared
+                    .setValue(lineColor)
+                    .multiply(tint)
+                    .toNumber()
                 );
-
-                contextStrokeStyle = this._calcCanvasStyle(lineStyle, lineTint);
             }
 
             context.lineWidth = lineStyle.width;

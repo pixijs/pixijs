@@ -39,6 +39,9 @@ export class BoundingBox
         return this.left === this.right || this.top === this.bottom;
     }
 
-    /** An empty BoundingBox. */
+    /**
+     * An empty BoundingBox.
+     * @type {PIXI.utils.BoundingBox}
+     */
     public static readonly EMPTY = new BoundingBox(0, 0, 0, 0);
 }

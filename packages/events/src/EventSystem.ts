@@ -1,10 +1,12 @@
 import { extensions, ExtensionType } from '@pixi/core';
 import { EventBoundary } from './EventBoundary';
+import { EventsTicker } from './EventTicker';
 import { FederatedPointerEvent } from './FederatedPointerEvent';
 import { FederatedWheelEvent } from './FederatedWheelEvent';
 
-import type { ExtensionMetadata, ICanvas, IPointData, IRenderableObject } from '@pixi/core';
+import type { ExtensionMetadata, IPointData, IRenderer, ISystem } from '@pixi/core';
 import type { DisplayObject } from '@pixi/display';
+import type { EventMode } from './FederatedEventTarget';
 import type { FederatedMouseEvent } from './FederatedMouseEvent';
 
 const MOUSE_POINTER_ID = 1;
@@ -16,19 +18,23 @@ const TOUCH_TO_POINTER: Record<string, string> = {
     touchcancel: 'pointercancel',
 };
 
-interface Renderer
+/** @ignore */
+export interface EventSystemOptions
 {
-    lastObjectRendered: IRenderableObject;
-    view: ICanvas;
-    resolution: number;
-    plugins: Record<string, any>;
+    /**
+     * The default event mode mode for all display objects.
+     * This option only is available when using **@pixi/events** package
+     * (included in the **pixi.js** and **pixi.js-legacy** bundle), otherwise it will be ignored.
+     * @memberof PIXI.IRendererOptions
+     */
+    eventMode?: EventMode;
 }
 
 /**
  * The system for handling UI events.
  * @memberof PIXI
  */
-export class EventSystem
+export class EventSystem implements ISystem<EventSystemOptions>
 {
     /** @ignore */
     static extension: ExtensionMetadata = {
@@ -38,6 +44,20 @@ export class EventSystem
             ExtensionType.CanvasRendererSystem
         ],
     };
+
+    private static _defaultEventMode: EventMode;
+
+    /**
+     * The default interaction mode for all display objects.
+     * @see PIXI.DisplayObject.eventMode
+     * @type {PIXI.EventMode}
+     * @readonly
+     * @since 7.2.0
+     */
+    public static get defaultEventMode()
+    {
+        return this._defaultEventMode;
+    }
 
     /**
      * The {@link PIXI.EventBoundary} for the stage.
@@ -83,8 +103,8 @@ export class EventSystem
     /** The resolution used to convert between the DOM client space into world space. */
     public resolution = 1;
 
-    /** The renderer managing this {@link EventSystem}. */
-    public renderer: Renderer;
+    /** The renderer managing this {@link PIXI.EventSystem}. */
+    public renderer: IRenderer;
 
     private currentCursor: string;
     private rootPointerEvent: FederatedPointerEvent;
@@ -94,10 +114,11 @@ export class EventSystem
     /**
      * @param {PIXI.Renderer} renderer
      */
-    constructor(renderer: Renderer)
+    constructor(renderer: IRenderer)
     {
         this.renderer = renderer;
         this.rootBoundary = new EventBoundary(null);
+        EventsTicker.init(this);
 
         this.autoPreventDefault = true;
         this.eventsAdded = false;
@@ -121,12 +142,13 @@ export class EventSystem
      * Runner init called, view is available at this point.
      * @ignore
      */
-    init(): void
+    init(options: EventSystemOptions): void
     {
         const { view, resolution } = this.renderer;
 
         this.setTargetElement(view as HTMLCanvasElement);
         this.resolution = resolution;
+        EventSystem._defaultEventMode = options.eventMode ?? 'auto';
     }
 
     /**
@@ -255,6 +277,8 @@ export class EventSystem
         // if we support touch events, then only use those for touch events, not pointer events
         if (this.supportsTouchEvents && (nativeEvent as PointerEvent).pointerType === 'touch') return;
 
+        EventsTicker.pointerMoved();
+
         const normalizedEvents = this.normalizeToPointerData(nativeEvent);
 
         for (let i = 0, j = normalizedEvents.length; i < j; i++)
@@ -325,7 +349,7 @@ export class EventSystem
     }
 
     /**
-     * Passive handler for `wheel` events on {@link EventSystem.domElement this.domElement}.
+     * Passive handler for `wheel` events on {@link PIXI.EventSystem.domElement this.domElement}.
      * @param nativeEvent - The native wheel event.
      */
     protected onWheel(nativeEvent: WheelEvent): void
@@ -346,6 +370,7 @@ export class EventSystem
     {
         this.removeEvents();
         this.domElement = element;
+        EventsTicker.domElement = element;
         this.addEvents();
     }
 
@@ -356,6 +381,8 @@ export class EventSystem
         {
             return;
         }
+
+        EventsTicker.addTickerListener();
 
         const style = this.domElement.style as CrossCSSStyleDeclaration;
 
@@ -423,6 +450,8 @@ export class EventSystem
         {
             return;
         }
+
+        EventsTicker.removeTickerListener();
 
         const style = this.domElement.style as CrossCSSStyleDeclaration;
 
@@ -615,7 +644,7 @@ export class EventSystem
     }
 
     /**
-     * Normalizes the {@code nativeEvent} into a federateed {@code FederatedPointerEvent}.
+     * Normalizes the `nativeEvent` into a federateed {@link PIXI.FederatedPointerEvent}.
      * @param event
      * @param nativeEvent
      */

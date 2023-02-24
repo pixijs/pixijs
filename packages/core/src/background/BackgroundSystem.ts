@@ -1,25 +1,61 @@
+import { Color } from '@pixi/color';
 import { extensions, ExtensionType } from '@pixi/extensions';
-import { hex2rgb, hex2string, string2hex } from '@pixi/utils';
 
+import type { ColorSource } from '@pixi/color';
 import type { ExtensionMetadata } from '@pixi/extensions';
 import type { ISystem } from '../system/ISystem';
 
-export interface BackgroundOptions
+export interface BackgroundSytemOptions
 {
-    /** the main canvas background alpha. From 0 (fully transparent) to 1 (fully opaque). */
-    alpha: number,
-    /** the main canvas background color. */
-    color: number | string,
-    /** sets if the renderer will clear the canvas or not before the new render pass. */
-    clearBeforeRender: boolean,
+    /**
+     * The background color used to clear the canvas. See {@link PIXI.ColorSource} for accepted color values.
+     * @memberof PIXI.IRendererOptions
+     */
+    backgroundColor: ColorSource;
+    /**
+     * Alias for {@link PIXI.IRendererOptions.backgroundColor}
+     * @memberof PIXI.IRendererOptions
+     */
+    background?: ColorSource;
+    /**
+     * Transparency of the background color, value from `0` (fully transparent) to `1` (fully opaque).
+     * @memberof PIXI.IRendererOptions
+     */
+    backgroundAlpha: number;
+    /**
+     * Whether to clear the canvas before new render passes.
+     * @memberof PIXI.IRendererOptions
+     */
+    clearBeforeRender: boolean;
 }
 
 /**
  * The background system manages the background color and alpha of the main view.
  * @memberof PIXI
  */
-export class BackgroundSystem implements ISystem<BackgroundOptions>
+export class BackgroundSystem implements ISystem<BackgroundSytemOptions>
 {
+    static defaultOptions: BackgroundSytemOptions = {
+        /**
+         * {@link PIXI.IRendererOptions.backgroundAlpha}
+         * @default 1
+         * @memberof PIXI.settings.RENDER_OPTIONS
+         */
+        backgroundAlpha: 1,
+        /**
+         * {@link PIXI.IRendererOptions.backgroundColor}
+         * @default 0x000000
+         * @memberof PIXI.settings.RENDER_OPTIONS
+         */
+        backgroundColor: 0x0,
+        /**
+         * {@link PIXI.IRendererOptions.clearBeforeRender}
+         * @default true
+         * @memberof PIXI.settings.RENDER_OPTIONS
+         */
+        clearBeforeRender: true,
+    };
+
     /** @ignore */
     static extension: ExtensionMetadata = {
         type: [
@@ -40,56 +76,46 @@ export class BackgroundSystem implements ISystem<BackgroundOptions>
      */
     public clearBeforeRender: boolean;
 
-    private _backgroundColorString: string;
-    private _backgroundColorRgba: number[];
-    private _backgroundColor: number;
+    /** Reference to the internal color */
+    private _backgroundColor: Color;
 
     constructor()
     {
         this.clearBeforeRender = true;
-
-        this._backgroundColor = 0x000000;
-
-        this._backgroundColorRgba = [0, 0, 0, 1];
-
-        this._backgroundColorString = '#000000';
-
-        this.color = this._backgroundColor; // run bg color setter
+        this._backgroundColor = new Color(0x0);
         this.alpha = 1;
     }
 
     /**
      * initiates the background system
-     * @param {BackgroundOptions} options - the options for the background colors
+     * @param {PIXI.IRendererOptions} options - the options for the background colors
      */
-    init(options: BackgroundOptions): void
+    init(options: BackgroundSytemOptions): void
     {
         this.clearBeforeRender = options.clearBeforeRender;
+        const { backgroundColor, background, backgroundAlpha } = options;
+        const color = background ?? backgroundColor;
 
-        if (options.color)
+        if (color !== undefined)
         {
-            this.color = typeof options.color === 'string'
-                ? string2hex(options.color)
-                : options.color;
+            this.color = color;
         }
 
-        this.alpha = options.alpha;
+        this.alpha = backgroundAlpha;
     }
 
     /**
-     * The background color to fill if not transparent
-     * @member {number}
+     * The background color to fill if not transparent.
+     * @member {PIXI.ColorSource}
      */
-    get color(): number
+    get color(): ColorSource
     {
-        return this._backgroundColor;
+        return this._backgroundColor.value;
     }
 
-    set color(value: number)
+    set color(value: ColorSource)
     {
-        this._backgroundColor = value;
-        this._backgroundColorString = hex2string(value);
-        hex2rgb(value, this._backgroundColorRgba);
+        this._backgroundColor.setValue(value);
     }
 
     /**
@@ -98,32 +124,18 @@ export class BackgroundSystem implements ISystem<BackgroundOptions>
      */
     get alpha(): number
     {
-        return this._backgroundColorRgba[3];
+        return this._backgroundColor.alpha;
     }
 
     set alpha(value: number)
     {
-        this._backgroundColorRgba[3] = value;
+        this._backgroundColor.setAlpha(value);
     }
 
-    /**
-     * The background color as an [R, G, B, A] array.
-     * @member {number[]}
-     * @protected
-     */
-    get colorRgba(): number[]
+    /** The background color object. */
+    get backgroundColor(): Color
     {
-        return this._backgroundColorRgba;
-    }
-
-    /**
-     * The background color as a string.
-     * @member {string}
-     * @protected
-     */
-    get colorString(): string
-    {
-        return this._backgroundColorString;
+        return this._backgroundColor;
     }
 
     destroy(): void

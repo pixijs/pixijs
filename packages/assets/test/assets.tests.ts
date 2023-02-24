@@ -1,4 +1,4 @@
-import { Assets } from '@pixi/assets';
+import { Assets, loadTextures } from '@pixi/assets';
 import { BaseTexture, Texture } from '@pixi/core';
 import '@pixi/spritesheet';
 
@@ -30,6 +30,18 @@ describe('Assets', () =>
         const bunny = await Assets.load('textures/bunny.png');
 
         expect(bunny).toBeInstanceOf(Texture);
+    });
+
+    it('should load assets with resolver', async () =>
+    {
+        await Assets.init({
+            basePath,
+        });
+
+        const bunny = await Assets.load<Texture>('textures/texture.{webp,png}');
+
+        expect(bunny).toBeInstanceOf(Texture);
+        expect(bunny.baseTexture.resource.src.endsWith('.webp')).toBeTrue();
     });
 
     it('should get assets once loaded', async () =>
@@ -333,5 +345,18 @@ describe('Assets', () =>
         const bunnyTexture = await Assets.load('bunny');
 
         expect(bunnyTexture.textureCacheIds[0]).toEqual(`${basePath}textures/bunny.png?foo=bar&chicken=nuggets`);
+    });
+
+    it('should support preferences settings', async () =>
+    {
+        await Assets.init({
+            preferences: {
+                preferWorkers: false,
+            }
+        });
+
+        expect(loadTextures.config.preferWorkers).toBe(false);
+        Assets.setPreferences({ preferWorkers: true });
+        expect(loadTextures.config.preferWorkers).toBe(true);
     });
 });

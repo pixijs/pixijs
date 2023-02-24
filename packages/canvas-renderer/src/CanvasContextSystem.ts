@@ -1,7 +1,7 @@
-import { BLEND_MODES, extensions, ExtensionType, Matrix, SCALE_MODES, settings } from '@pixi/core';
+import { BaseTexture, BLEND_MODES, Color, extensions, ExtensionType, Matrix, SCALE_MODES } from '@pixi/core';
 import { mapCanvasBlendModesToPixi } from './utils/mapCanvasBlendModesToPixi';
 
-import type { ExtensionMetadata, ICanvasRenderingContext2D, ISystem } from '@pixi/core';
+import type { ColorSource, ExtensionMetadata, ICanvasRenderingContext2D, ISystem } from '@pixi/core';
 import type { CanvasRenderer } from './CanvasRenderer';
 
 const tempMatrix = new Matrix();
@@ -9,7 +9,6 @@ const tempMatrix = new Matrix();
 /**
  * Rendering context for all browsers. This includes platform-specific
  * properties that are not included in the spec for CanvasRenderingContext2D
- * @private
  */
 export interface CrossPlatformCanvasRenderingContext2D extends ICanvasRenderingContext2D
 {
@@ -154,18 +153,19 @@ export class CanvasContextSystem implements ISystem
      * @param {string} [clearColor] - Clear the canvas with this color, except the canvas is transparent.
      * @param {number} [alpha] - Alpha to apply to the background fill color.
      */
-    public clear(clearColor?: string, alpha?: number): void
+    public clear(clearColor?: ColorSource, alpha?: number): void
     {
         const { activeContext: context, renderer } = this;
-
-        clearColor = clearColor ?? this.renderer.background.colorString;
+        const fillColor = clearColor
+            ? Color.shared.setValue(clearColor)
+            : this.renderer.background.backgroundColor;
 
         context.clearRect(0, 0, renderer.width, renderer.height);
 
         if (clearColor)
         {
             context.globalAlpha = alpha ?? this.renderer.background.alpha;
-            context.fillStyle = clearColor;
+            context.fillStyle = fillColor.toHex();
             context.fillRect(0, 0, renderer.width, renderer.height);
             context.globalAlpha = 1;
         }
@@ -205,7 +205,7 @@ export class CanvasContextSystem implements ISystem
         // surely a browser bug?? Let PixiJS fix that for you..
         if (this.smoothProperty)
         {
-            this.rootContext[this.smoothProperty] = (settings.SCALE_MODE === SCALE_MODES.LINEAR);
+            this.rootContext[this.smoothProperty] = (BaseTexture.defaultOptions.scaleMode === SCALE_MODES.LINEAR);
         }
     }
 

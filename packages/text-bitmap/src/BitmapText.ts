@@ -1,4 +1,4 @@
-import { BLEND_MODES, ObservablePoint, Point, Program, settings, Texture, utils } from '@pixi/core';
+import { BLEND_MODES, Color, ObservablePoint, Point, Program, settings, Texture, utils } from '@pixi/core';
 import { Container } from '@pixi/display';
 import { Mesh, MeshGeometry, MeshMaterial } from '@pixi/mesh';
 import { BitmapFont } from './BitmapFont';
@@ -6,7 +6,7 @@ import msdfFrag from './shader/msdf.frag';
 import msdfVert from './shader/msdf.vert';
 import { extractCharCode, splitTextToCharacters } from './utils';
 
-import type { Rectangle, Renderer } from '@pixi/core';
+import type { ColorSource, Rectangle, Renderer } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
 import type { TextStyleAlign } from '@pixi/text';
 import type { IBitmapTextStyle } from './BitmapTextStyle';
@@ -166,7 +166,7 @@ export class BitmapText extends Container
      * Private tracker for the current tint.
      * @private
      */
-    protected _tint = 0xFFFFFF;
+    protected _tintColor: Color;
 
     /**
      * If true PixiJS will Math.floor() x/y values when rendering.
@@ -185,7 +185,7 @@ export class BitmapText extends Container
      *.     this will default to the BitmapFont size.
      * @param {string} [style.align='left'] - Alignment for multiline text ('left', 'center', 'right' or 'justify'),
      *      does not affect single line text.
-     * @param {number} [style.tint=0xFFFFFF] - The tint color.
+     * @param {PIXI.ColorSource} [style.tint=0xFFFFFF] - The tint color.
      * @param {number} [style.letterSpacing=0] - The amount of spacing between letters.
      * @param {number} [style.maxWidth=0] - The max width of the text before line wrapping.
      */
@@ -206,7 +206,7 @@ export class BitmapText extends Container
         this._textWidth = 0;
         this._textHeight = 0;
         this._align = align;
-        this._tint = tint;
+        this._tintColor = new Color(tint);
         this._font = undefined;
         this._fontName = fontName;
         this._fontSize = fontSize;
@@ -298,8 +298,8 @@ export class BitmapText extends Container
             charRenderData.texture = charData.texture;
             charRenderData.line = line;
             charRenderData.charCode = charCode;
-            charRenderData.position.x = pos.x + charData.xOffset + (this._letterSpacing / 2);
-            charRenderData.position.y = pos.y + charData.yOffset;
+            charRenderData.position.x = Math.round(pos.x + charData.xOffset + (this._letterSpacing / 2));
+            charRenderData.position.y = Math.round(pos.y + charData.yOffset);
             charRenderData.prevSpaces = spaceCount;
 
             chars.push(charRenderData);
@@ -432,7 +432,7 @@ export class BitmapText extends Container
                 _textureCache[baseTextureUid] = _textureCache[baseTextureUid] || new Texture(texture.baseTexture);
                 pageMeshData.mesh.texture = _textureCache[baseTextureUid];
 
-                pageMeshData.mesh.tint = this._tint;
+                pageMeshData.mesh.tint = this._tintColor.value;
 
                 newPagesMeshData.push(pageMeshData);
 
@@ -680,16 +680,16 @@ export class BitmapText extends Container
      * The tint of the BitmapText object.
      * @default 0xffffff
      */
-    public get tint(): number
+    public get tint(): ColorSource
     {
-        return this._tint;
+        return this._tintColor.value;
     }
 
-    public set tint(value: number)
+    public set tint(value: ColorSource)
     {
-        if (this._tint === value) return;
+        if (this.tint === value) return;
 
-        this._tint = value;
+        this._tintColor.setValue(value);
 
         for (let i = 0; i < this._activePagesMeshData.length; i++)
         {
@@ -942,6 +942,7 @@ export class BitmapText extends Container
         }
 
         this._font = null;
+        this._tintColor = null;
         this._textureCache = null;
 
         super.destroy(options);

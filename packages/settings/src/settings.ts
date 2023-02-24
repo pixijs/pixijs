@@ -1,32 +1,11 @@
 import { BrowserAdapter } from './adapter';
 
 import type { IAdapter } from './adapter';
-import type { ICanvas } from './ICanvas';
-
-export interface IRenderOptions
-{
-    view: ICanvas;
-    antialias: boolean;
-    autoDensity: boolean;
-    backgroundColor: number | string;
-    background?: number | string;
-    backgroundAlpha: number;
-    premultipliedAlpha: boolean;
-    /** @deprecated */
-    useContextAlpha?: boolean | 'notMultiplied';
-    clearBeforeRender: boolean;
-    preserveDrawingBuffer: boolean;
-    width: number;
-    height: number;
-    legacy: boolean;
-    hello: boolean;
-}
 
 interface ISettings
 {
     ADAPTER: IAdapter;
     RESOLUTION: number;
-    RENDER_OPTIONS: IRenderOptions;
     CREATE_IMAGE_BITMAP: boolean;
     ROUND_PIXELS: boolean;
 }
@@ -69,41 +48,6 @@ export const settings: ISettings & Partial<GlobalMixins.Settings> = {
      * @default 1
      */
     RESOLUTION: 1,
-
-    /**
-     * The default render options if none are supplied to {@link PIXI.Renderer}
-     * or {@link PIXI.CanvasRenderer}.
-     * @static
-     * @name RENDER_OPTIONS
-     * @memberof PIXI.settings
-     * @type {object}
-     * @property {PIXI.ICanvas} [view=null] -
-     * @property {boolean} [antialias=false] -
-     * @property {boolean} [autoDensity=false] -
-     * @property {boolean} [premultipliedAlpha=true]  -
-     * @property {number} [backgroundColor=0x000000] -
-     * @property {number} [backgroundAlpha=1] -
-     * @property {boolean} [clearBeforeRender=true] -
-     * @property {boolean} [preserveDrawingBuffer=false] -
-     * @property {number} [width=800] -
-     * @property {number} [height=600] -
-     * @property {boolean} [legacy=false] -
-     * @property {boolean} [debug=false] -
-     */
-    RENDER_OPTIONS: {
-        view: null,
-        antialias: false,
-        autoDensity: false,
-        backgroundColor: 0x000000,
-        backgroundAlpha: 1,
-        premultipliedAlpha: true,
-        clearBeforeRender: true,
-        preserveDrawingBuffer: false,
-        width: 800,
-        height: 600,
-        legacy: false,
-        hello: false,
-    },
 
     /**
      * Enables bitmap creation before image load. This feature is experimental.

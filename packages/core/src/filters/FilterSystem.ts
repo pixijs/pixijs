@@ -432,7 +432,7 @@ export class FilterSystem implements ISystem
     /**
      * Draws a filter using the default rendering process.
      *
-     * This should be called only by {@link Filter#apply}.
+     * This should be called only by {@link PIXI.Filter#apply}.
      * @param filter - The filter to draw.
      * @param input - The input render target.
      * @param output - The target to output to.

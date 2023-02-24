@@ -5,6 +5,7 @@ import { deprecation, isWebGLSupported } from '@pixi/utils';
 import { UniformGroup } from './shader/UniformGroup';
 import { SystemManager } from './system/SystemManager';
 
+import type { ColorSource } from '@pixi/color';
 import type { MSAA_QUALITY, RENDERER_TYPE } from '@pixi/constants';
 import type { ExtensionMetadata } from '@pixi/extensions';
 import type { Rectangle } from '@pixi/math';
@@ -28,15 +29,12 @@ import type { GenerateTextureSystem, IGenerateTextureOptions } from './renderTex
 import type { RenderTexture } from './renderTexture/RenderTexture';
 import type { RenderTextureSystem } from './renderTexture/RenderTextureSystem';
 import type { ShaderSystem } from './shader/ShaderSystem';
-import type { StartupOptions, StartupSystem } from './startup/StartupSystem';
+import type { StartupSystem } from './startup/StartupSystem';
 import type { StateSystem } from './state/StateSystem';
 import type { TextureGCSystem } from './textures/TextureGCSystem';
 import type { TextureSystem } from './textures/TextureSystem';
 import type { TransformFeedbackSystem } from './transformFeedback/TransformFeedbackSystem';
 import type { ViewSystem } from './view/ViewSystem';
-
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface Renderer extends GlobalMixins.Renderer {}
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface Renderer extends GlobalMixins.Renderer {}
@@ -76,13 +74,12 @@ export interface Renderer extends GlobalMixins.Renderer {}
  *
  * | PixiJS High-Level Systems            | Set of specific systems designed to work with PixiJS objects                  |
  * | ------------------------------------ | ----------------------------------------------------------------------------- |
- * | {@link PIXI.RenderSystem}            | This adds the ability to render a PIXI.DisplayObject                          |
  * | {@link PIXI.GenerateTextureSystem}   | This adds the ability to generate textures from any PIXI.DisplayObject        |
  * | {@link PIXI.ProjectionSystem}        | This manages the `projectionMatrix`, used by shaders to get NDC coordinates.  |
  * | {@link PIXI.RenderTextureSystem}     | This manages render-textures, which are an abstraction over framebuffers.     |
  * | {@link PIXI.MaskSystem}              | This manages masking operations.                                              |
- * | {@link PIXI.ScissorSystem}           | This handles scissor masking, and is used internally by {@link MaskSystem}    |
- * | {@link PIXI.StencilSystem}           | This handles stencil masking, and is used internally by {@link MaskSystem}    |
+ * | {@link PIXI.ScissorSystem}           | This handles scissor masking, and is used internally by {@link PIXI.MaskSystem} |
+ * | {@link PIXI.StencilSystem}           | This handles stencil masking, and is used internally by {@link PIXI.MaskSystem} |
  * | {@link PIXI.FilterSystem}            | This manages the filtering pipeline for post-processing effects.              |
  * | {@link PIXI.BatchSystem}             | This manages object renderers that defer rendering until a flush.             |
  * | {@link PIXI.Prepare}                 | This manages uploading assets to the GPU.                                     |
@@ -278,7 +275,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      * @param options
      * @private
      */
-    static test(options?: IRendererOptions): boolean
+    static test(options?: Partial<IRendererOptions>): boolean
     {
         if (options?.forceCanvas)
         {
@@ -289,33 +286,9 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
     }
 
     /**
-     * @param [options] - The optional renderer parameters.
-     * @param {number} [options.width=800] - The width of the screen.
-     * @param {number} [options.height=600] - The height of the screen.
-     * @param {PIXI.ICanvas} [options.view] - The canvas to use as a view, optional.
-     * @param {boolean} [options.premultipliedAlpha=true] - Set to `false` to disable premultipliedAlpha.
-     * @param {boolean} [options.autoDensity=false] - Resizes renderer view in CSS pixels to allow for
-     *   resolutions other than 1.
-     * @param {boolean} [options.antialias=false] - Sets antialias. If not available natively then FXAA
-     *  antialiasing is used.
-     * @param {number} [options.resolution=PIXI.settings.RESOLUTION] - The resolution / device pixel ratio of the renderer.
-     * @param {boolean} [options.clearBeforeRender=true] - This sets if the renderer will clear
-     *  the canvas or not before the new render pass. If you wish to set this to false, you *must* set
-     *  preserveDrawingBuffer to `true`.
-     * @param {boolean} [options.preserveDrawingBuffer=false] - Enables drawing buffer preservation,
-     *  enable this if you need to call toDataURL on the WebGL context.
-     * @param {number|string} [options.backgroundColor=0x000000] - The background color of the rendered area
-     *  (shown if not transparent). Also, accepts hex strings or color names (e.g., 'white').
-     * @param {number|string} [options.background] - Alias for `options.backgroundColor`.
-     * @param {number} [options.backgroundAlpha=1] - Value from 0 (fully transparent) to 1 (fully opaque).
-     * @param {string} [options.powerPreference] - Parameter passed to WebGL context, set to "high-performance"
-     *  for devices with dual graphics card.
-     * @param {object} [options.context] - If WebGL context already exists, all parameters must be taken from it.
-     * @param {object} [options.blit] - if rendering to a renderTexture, set to true if you want to run blit after
-     * the render. defaults to false.
-     * @param {boolean} [options.hello=false] - Logs renderer type and version.
+     * @param {PIXI.IRendererOptions} [options] - See {@link PIXI.settings.RENDER_OPTIONS} for defaults.
      */
-    constructor(options?: IRendererOptions)
+    constructor(options?: Partial<IRendererOptions>)
     {
         super();
 
@@ -383,33 +356,9 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
             options.backgroundAlpha = options.useContextAlpha === false ? 1 : options.backgroundAlpha;
         }
 
-        // new options!
-        const startupOptions: StartupOptions = {
-            hello: options.hello,
-            _plugin: Renderer.__plugins,
-            background: {
-                alpha: options.backgroundAlpha,
-                color: options.background ?? options.backgroundColor,
-                clearBeforeRender: options.clearBeforeRender,
-            },
-            _view: {
-                height: options.height,
-                width: options.width,
-                autoDensity: options.autoDensity,
-                resolution: options.resolution,
-                view: options.view,
-            },
-            context: {
-                antialias: options.antialias,
-                context: options.context,
-                powerPreference: options.powerPreference,
-                premultipliedAlpha: options.premultipliedAlpha,
-                preserveDrawingBuffer: options.preserveDrawingBuffer,
-            },
-        };
-
-        this.startup.run(startupOptions);
-        this.options = options;
+        this._plugin.rendererPlugins = Renderer.__plugins;
+        this.options = options as IRendererOptions;
+        this.startup.run(this.options);
     }
 
     /**
@@ -604,7 +553,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      * @member {number}
      * @deprecated since 7.0.0
      */
-    get backgroundColor(): number
+    get backgroundColor(): ColorSource
     {
         // #if _DEBUG
         // eslint-disable-next-line max-len
@@ -614,7 +563,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
         return this.background.color;
     }
 
-    set backgroundColor(value: number)
+    set backgroundColor(value: ColorSource)
     {
         // #if _DEBUG
         deprecation('7.0.0', 'renderer.backgroundColor has been deprecated, use renderer.background.color instead.');
@@ -635,7 +584,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
         deprecation('7.0.0', 'renderer.backgroundAlpha has been deprecated, use renderer.background.alpha instead.');
         // #endif
 
-        return this.background.color;
+        return this.background.alpha;
     }
 
     /**

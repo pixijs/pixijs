@@ -4,7 +4,7 @@ import { deprecation } from '@pixi/utils';
 import { BatchRenderer } from './batch/BatchRenderer';
 import { Filter } from './filters/Filter';
 import { Program } from './shader/Program';
-import { TextureGCSystem } from './systems';
+import { BackgroundSystem, ContextSystem, StartupSystem, TextureGCSystem, ViewSystem } from './systems';
 import { BaseTexture } from './textures/BaseTexture';
 
 import type { GC_MODES, MIPMAP_MODES, MSAA_QUALITY, PRECISION, SCALE_MODES, WRAP_MODES } from '@pixi/constants';
@@ -31,7 +31,7 @@ settings.PREFER_ENV = ENV.WEBGL2;
  * {@link PIXI.BaseTexture.from BaseTexture.from}.
  * Otherwise, these `from` calls throw an exception. Using this property
  * can be useful if you want to enforce preloading all assets with
- * {@link PIXI.Loader Loader}.
+ * {@link PIXI.Assets Loader}.
  * @static
  * @name STRICT_TEXTURE_CACHE
  * @memberof PIXI.settings
@@ -39,6 +39,21 @@ settings.PREFER_ENV = ENV.WEBGL2;
  * @default false
  */
 settings.STRICT_TEXTURE_CACHE = false;
+
+/**
+ * The default render options if none are supplied to {@link PIXI.Renderer}
+ * or {@link PIXI.CanvasRenderer}.
+ * @static
+ * @name RENDER_OPTIONS
+ * @memberof PIXI.settings
+ * @type {PIXI.IRendererOptions}
+ */
+settings.RENDER_OPTIONS = {
+    ...ContextSystem.defaultOptions,
+    ...BackgroundSystem.defaultOptions,
+    ...ViewSystem.defaultOptions,
+    ...StartupSystem.defaultOptions,
+};
 
 Object.defineProperties(settings, {
     /**
@@ -57,7 +72,7 @@ Object.defineProperties(settings, {
         set(value: WRAP_MODES)
         {
             // #if _DEBUG
-            deprecation('7.1.0', 'settings.WRAP_MODE is deprecated, use BaseTeture.defaultOptions.wrapMode');
+            deprecation('7.1.0', 'settings.WRAP_MODE is deprecated, use BaseTexture.defaultOptions.wrapMode');
             // #endif
             BaseTexture.defaultOptions.wrapMode = value;
         },
@@ -79,7 +94,7 @@ Object.defineProperties(settings, {
         set(value: SCALE_MODES)
         {
             // #if _DEBUG
-            deprecation('7.1.0', 'settings.SCALE_MODE is deprecated, use BaseTeture.defaultOptions.scaleMode');
+            deprecation('7.1.0', 'settings.SCALE_MODE is deprecated, use BaseTexture.defaultOptions.scaleMode');
             // #endif
             BaseTexture.defaultOptions.scaleMode = value;
         },
@@ -102,7 +117,7 @@ Object.defineProperties(settings, {
         set(value: MIPMAP_MODES)
         {
             // #if _DEBUG
-            deprecation('7.1.0', 'settings.MIPMAP_TEXTURES is deprecated, use BaseTeture.defaultOptions.mipmap');
+            deprecation('7.1.0', 'settings.MIPMAP_TEXTURES is deprecated, use BaseTexture.defaultOptions.mipmap');
             // #endif
             BaseTexture.defaultOptions.mipmap = value;
         },
@@ -126,8 +141,8 @@ Object.defineProperties(settings, {
         set(value: number)
         {
             // #if _DEBUG
-            // eslint-disable-next-line max-len
-            deprecation('7.1.0', 'settings.ANISOTROPIC_LEVEL is deprecated, use BaseTeture.defaultOptions.anisotropicLevel');
+            deprecation(
+                '7.1.0', 'settings.ANISOTROPIC_LEVEL is deprecated, use BaseTexture.defaultOptions.anisotropicLevel');
             // #endif
             BaseTexture.defaultOptions.anisotropicLevel = value;
         },

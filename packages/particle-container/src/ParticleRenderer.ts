@@ -1,4 +1,4 @@
-import { extensions, ExtensionType, Matrix, ObjectRenderer, Shader, State, TYPES, utils } from '@pixi/core';
+import { Color, extensions, ExtensionType, Matrix, ObjectRenderer, Shader, State, TYPES, utils } from '@pixi/core';
 import { ParticleBuffer } from './ParticleBuffer';
 import fragment from './particles.frag';
 import vertex from './particles.vert';
@@ -153,8 +153,10 @@ export class ParticleRenderer extends ObjectRenderer
 
         this.shader.uniforms.translationMatrix = m.toArray(true);
 
-        this.shader.uniforms.uColor = utils.premultiplyRgba(container.tintRgb,
-            container.worldAlpha, this.shader.uniforms.uColor, premultiplied);
+        this.shader.uniforms.uColor = Color.shared
+            .setValue(container.tintRgb)
+            .premultiply(container.worldAlpha, premultiplied)
+            .toArray(this.shader.uniforms.uColor);
 
         this.shader.uniforms.uSampler = baseTexture;
 
@@ -426,17 +428,14 @@ export class ParticleRenderer extends ObjectRenderer
         for (let i = 0; i < amount; ++i)
         {
             const sprite = children[startIndex + i];
-            const premultiplied = sprite._texture.baseTexture.alphaMode > 0;
-            const alpha = sprite.alpha;
+            const result = Color.shared
+                .setValue(sprite._tintRGB)
+                .toPremultiplied(sprite.alpha);
 
-            // we dont call extra function if alpha is 1.0, that's faster
-            const argb = alpha < 1.0 && premultiplied
-                ? utils.premultiplyTint(sprite._tintRGB, alpha) : sprite._tintRGB + (alpha * 255 << 24);
-
-            array[offset] = argb;
-            array[offset + stride] = argb;
-            array[offset + (stride * 2)] = argb;
-            array[offset + (stride * 3)] = argb;
+            array[offset] = result;
+            array[offset + stride] = result;
+            array[offset + (stride * 2)] = result;
+            array[offset + (stride * 3)] = result;
 
             offset += stride * 4;
         }

@@ -5,9 +5,6 @@ import type { ISize } from '@pixi/math';
 import type { Renderer } from '../../Renderer';
 import type { BaseTexture } from '../BaseTexture';
 import type { GLTexture } from '../GLTexture';
-/**
- * @interface SharedArrayBuffer
- */
 
 /**
  * Buffer resource with data of typed array.
@@ -98,7 +95,7 @@ export class BufferResource extends Resource
     /**
      * Used to auto-detect the type of resource.
      * @param {*} source - The source object
-     * @returns {boolean} `true` if <canvas>
+     * @returns {boolean} `true` if \<canvas\>
      */
     static test(source: unknown): source is Float32Array | Uint8Array | Uint32Array
     {

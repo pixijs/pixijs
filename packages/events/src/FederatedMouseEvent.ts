@@ -1,6 +1,9 @@
 import { Point } from '@pixi/core';
 import { FederatedEvent } from './FederatedEvent';
 
+import type { IPointData } from '@pixi/core';
+import type { DisplayObject } from '@pixi/display';
+
 /**
  * A {@link PIXI.FederatedEvent} for mouse events.
  * @memberof PIXI
@@ -40,13 +43,13 @@ MouseEvent | PointerEvent | TouchEvent
     public get clientY(): number { return this.client.y; }
 
     /**
-     * Alias for {@link FederatedMouseEvent.clientX this.clientX}.
+     * Alias for {@link PIXI.FederatedMouseEvent.clientX this.clientX}.
      * @readonly
      */
     get x(): number { return this.clientX; }
 
     /**
-     * Alias for {@link FederatedMouseEvent.clientY this.clientY}.
+     * Alias for {@link PIXI.FederatedMouseEvent.clientY this.clientY}.
      * @readonly
      */
     get y(): number { return this.clientY; }
@@ -101,6 +104,22 @@ MouseEvent | PointerEvent | TouchEvent
      * @readonly
      */
     get screenY(): number { return this.screen.y; }
+
+    /**
+     * This will return the local coordinates of the specified displayObject for this InteractionData
+     * @param {PIXI.DisplayObject} displayObject - The DisplayObject that you would like the local
+     *  coords off
+     * @param {PIXI.IPointData} point - A Point object in which to store the value, optional (otherwise
+     *  will create a new point)
+     * @param {PIXI.IPointData} globalPos - A Point object containing your custom global coords, optional
+     *  (otherwise will use the current global coords)
+     * @returns - A point containing the coordinates of the InteractionData position relative
+     *  to the DisplayObject
+     */
+    public getLocalPosition<P extends IPointData = Point>(displayObject: DisplayObject, point?: P, globalPos?: IPointData): P
+    {
+        return displayObject.worldTransform.applyInverse<P>(globalPos || this.global, point);
+    }
 
     /**
      * Whether the modifier key was pressed when this event natively occurred.

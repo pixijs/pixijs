@@ -16,6 +16,23 @@ const DEFAULT_UVS = new TextureUvs();
 
 export type TextureSource = string | BaseTexture | ImageSource;
 
+/**
+ * Stores the width of the non-scalable borders, for example when used with {@link PIXI.NineSlicePlane} texture.
+ * @memberof PIXI
+ * @since 7.2.0
+ */
+export interface ITextureBorders
+{
+    /** left border in pixels */
+    left: number;
+    /** top border in pixels */
+    top: number;
+    /** right border in pixels */
+    right: number;
+    /** bottom border in pixels */
+    bottom: number;
+}
+
 export interface Texture extends GlobalMixins.Texture, EventEmitter {}
 
 /**
@@ -105,6 +122,13 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
      */
     public defaultAnchor: Point;
 
+    /**
+     * Default width of the non-scalable border that is used if 9-slice plane is created with this texture.
+     * @since 7.2.0
+     * @see PIXI.NineSlicePlane
+     */
+    public defaultBorders?: ITextureBorders;
+
     /** Default TextureMatrix instance for this texture. By default, that object is not created because its heavy. */
     public uvMatrix: TextureMatrix;
     protected _rotate: number;
@@ -142,9 +166,10 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
      * @param trim - Trimmed rectangle of original texture
      * @param rotate - indicates how the texture was rotated by texture packer. See {@link PIXI.groupD8}
      * @param anchor - Default anchor point used for sprite placement / rotation
+     * @param borders - Default borders used for 9-slice scaling. See {@link PIXI.NineSlicePlane}
      */
     constructor(baseTexture: BaseTexture<R>, frame?: Rectangle,
-        orig?: Rectangle, trim?: Rectangle, rotate?: number, anchor?: IPointData)
+        orig?: Rectangle, trim?: Rectangle, rotate?: number, anchor?: IPointData, borders?: ITextureBorders)
     {
         super();
 
@@ -182,6 +207,7 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
         }
 
         this.defaultAnchor = anchor ? new Point(anchor.x, anchor.y) : new Point(0, 0);
+        this.defaultBorders = borders;
 
         this._updateID = 0;
 
@@ -306,7 +332,8 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
             clonedOrig,
             this.trim?.clone(),
             this.rotate,
-            this.defaultAnchor
+            this.defaultAnchor,
+            this.defaultBorders
         );
 
         if (this.noFrame)
@@ -464,7 +491,7 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
         imageUrl: string, name?: string, options?: IBaseTextureOptions): Promise<Texture<R>>
     {
         const baseTexture = new BaseTexture<R>(source, Object.assign({
-            scaleMode: settings.SCALE_MODE,
+            scaleMode: BaseTexture.defaultOptions.scaleMode,
             resolution: getResolutionOfUrl(imageUrl),
         }, options));
 

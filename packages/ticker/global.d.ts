@@ -15,6 +15,7 @@ declare namespace GlobalMixins
 
     interface Settings
     {
+        /** @deprecated since 7.1.0 */
         TARGET_FPMS: number;
     }
 }
