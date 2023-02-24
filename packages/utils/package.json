@@ -1,6 +1,6 @@
 {
   "name": "@pixi/utils",
-  "version": "7.1.2",
+  "version": "7.1.3",
   "main": "lib/index.js",
   "module": "lib/index.mjs",
   "types": "lib/index.d.ts",
@@ -36,8 +36,8 @@
     "*.d.ts"
   ],
   "dependencies": {
-    "@pixi/constants": "7.1.2",
-    "@pixi/settings": "7.1.2",
+    "@pixi/constants": "7.1.3",
+    "@pixi/settings": "7.1.3",
     "@types/earcut": "^2.1.0",
     "earcut": "^2.2.4",
     "eventemitter3": "^4.0.0",
