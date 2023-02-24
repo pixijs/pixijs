@@ -138,7 +138,7 @@ export interface IRenderer<VIEW extends ICanvas = ICanvas> extends SystemManager
     /** Flag if we are rendering to the screen vs renderTexture */
     readonly renderingToScreen: boolean
     /** The resolution / device pixel ratio of the renderer. */
-    readonly resolution: number
+    resolution: number
     /** the width of the screen */
     readonly width: number
     /** the height of the screen */
