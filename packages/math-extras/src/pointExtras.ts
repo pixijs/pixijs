@@ -29,7 +29,7 @@ const mixins: any = {
     {
         if (!outPoint)
         {
-            (outPoint as any) = new Point();
+            outPoint = new Point() as IPointData as T;
         }
         outPoint.x = this.x + other.x;
         outPoint.y = this.y + other.y;
@@ -63,7 +63,7 @@ const mixins: any = {
     {
         if (!outPoint)
         {
-            (outPoint as any) = new Point();
+            outPoint = new Point() as IPointData as T;
         }
         outPoint.x = this.x - other.x;
         outPoint.y = this.y - other.y;
@@ -97,7 +97,7 @@ const mixins: any = {
     {
         if (!outPoint)
         {
-            (outPoint as any) = new Point();
+            outPoint = new Point() as IPointData as T;
         }
         outPoint.x = this.x * other.x;
         outPoint.y = this.y * other.y;
@@ -131,7 +131,7 @@ const mixins: any = {
     {
         if (!outPoint)
         {
-            (outPoint as any) = new Point();
+            outPoint = new Point() as IPointData as T;
         }
         outPoint.x = this.x * scalar;
         outPoint.y = this.y * scalar;
@@ -236,7 +236,7 @@ const mixins: any = {
     {
         if (!outPoint)
         {
-            (outPoint as any) = new Point();
+            outPoint = new Point() as IPointData as T;
         }
         const magnitude = Math.sqrt((this.x * this.x) + (this.y * this.y));
 
@@ -334,7 +334,7 @@ const mixins: any = {
     {
         if (!outPoint)
         {
-            (outPoint as any) = new Point();
+            outPoint = new Point() as IPointData as T;
         }
         // Math says: a Projected over b = [(a·b) / (b·b)] * b;
         const normalizedScalarProjection = ((this.x * onto.x) + (this.y * onto.y)) / ((onto.x * onto.x) + (onto.y * onto.y));
@@ -381,7 +381,7 @@ const mixins: any = {
     {
         if (!outPoint)
         {
-            (outPoint as any) = new Point();
+            outPoint = new Point() as IPointData as T;
         }
 
         // Given an incident vector i and a normal vector n, returns the reflection vector r = i - 2 * dot(i, n) * n
