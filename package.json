@@ -32,7 +32,7 @@
     "build:types": "tsc -p tsconfig.types.json && ts-node scripts/fixTypes.ts",
     "postbuild:types": "copyfiles -u 1 \"out/**/*\" . && run-s clean:out",
     "watch": "rollup -cw",
-    "dist": "run-s lint types build build:types docs",
+    "dist": "run-s lint types types:strict build build:types docs",
     "dist-validate": "workspaces-run --only=\"@pixi/node\" -- npm run test:dist",
     "postdist": "copyfiles -f bundles/*/dist/* dist && copyfiles -f packages/*/dist/* dist/packages",
     "prerelease": "run-s clean:build test dist",

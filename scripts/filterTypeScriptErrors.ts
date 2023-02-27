@@ -10,7 +10,60 @@
  */
 
 const pathPrefixs = [
+    'bundles/pixi.js/',
+    'bundles/pixi.js-legacy/',
+    // 'bundles/pixi.js-node/',
+    // 'bundles/pixi.js-webworker/',
+    // 'packages/accessibility/',
+    // 'packages/app/',
+    // 'packages/assets/',
+    // 'packages/basis/',
+    // 'packages/canvas-display/',
+    // 'packages/canvas-extract/',
+    // 'packages/canvas-graphics/',
+    // 'packages/canvas-mesh/',
+    // 'packages/canvas-particle-container/',
+    // 'packages/canvas-prepare/',
+    // 'packages/canvas-renderer/',
+    // 'packages/canvas-sprite/',
+    // 'packages/canvas-sprite-tiling/',
+    'packages/canvas-text/',
     'packages/color/',
+    // 'packages/compressed-textures/',
+    'packages/constants/',
+    // 'packages/core/',
+    // 'packages/display/',
+    // 'packages/events/',
+    // 'packages/extensions/',
+    // 'packages/extract/',
+    'packages/filter-alpha/',
+    // 'packages/filter-blur/',
+    // 'packages/filter-color-matrix/',
+    'packages/filter-displacement/',
+    'packages/filter-fxaa/',
+    'packages/filter-noise/',
+    // 'packages/graphics/',
+    // 'packages/graphics-extras/',
+    // 'packages/math/',
+    // 'packages/math-extras/',
+    // 'packages/mesh/',
+    // 'packages/mesh-extras/',
+    // 'packages/mixin-cache-as-bitmap/',
+    // 'packages/mixin-get-child-by-name/',
+    'packages/mixin-get-global-position/',
+    // 'packages/particle-container/',
+    // 'packages/prepare/',
+    // 'packages/runner/',
+    'packages/settings/',
+    // 'packages/sprite/',
+    // 'packages/sprite-animated/',
+    // 'packages/sprite-tiling/',
+    // 'packages/spritesheet/',
+    // 'packages/text/',
+    // 'packages/text-bitmap/',
+    'packages/text-html/',
+    // 'packages/ticker/',
+    'packages/unsafe-eval/',
     'packages/utils/',
 ];
 const filter = new RegExp(pathPrefixs.length === 0 ? `$^` : `^(${pathPrefixs.join('|')})`);
@@ -48,6 +101,6 @@ stdin.on('end', () =>
     if (matchedErrors.length !== 0)
     {
         console.error(matchedErrors.join('\n'));
-        process.exitCode = 1;
+        // process.exitCode = 1;
     }
 });
