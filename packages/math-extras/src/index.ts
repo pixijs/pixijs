@@ -64,7 +64,7 @@ function genericLineIntersection<T extends IPointData>(
 {
     if (!outPoint)
     {
-        (outPoint as any) = new Point();
+        outPoint = new Point() as IPointData as T;
     }
 
     const dxa = aEnd.x - aStart.x;
