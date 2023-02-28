@@ -297,30 +297,32 @@ export class HTMLTextStyle extends TextStyle
     public toCSS(scale: number): string
     {
         return [
+            `transform: scale(${scale})`,
+            `transform-origin: top left`,
             'display: inline-block',
             `color: ${this.normalizeColor(this.fill)}`,
-            `font-size: ${(this.fontSize as number) * scale}px`,
+            `font-size: ${(this.fontSize as number)}px`,
             `font-family: ${this.fontFamily}`,
             `font-weight: ${this.fontWeight}`,
             `font-style: ${this.fontStyle}`,
             `font-variant: ${this.fontVariant}`,
-            `letter-spacing: ${this.letterSpacing * scale}px`,
+            `letter-spacing: ${this.letterSpacing}px`,
             `text-align: ${this.align}`,
-            `padding: ${this.padding * scale}px`,
+            `padding: ${this.padding}px`,
             `white-space: ${this.whiteSpace}`,
-            ...this.lineHeight ? [`line-height: ${this.lineHeight * scale}px`] : [],
+            ...this.lineHeight ? [`line-height: ${this.lineHeight}px`] : [],
             ...this.wordWrap ? [
                 `word-wrap: ${this.breakWords ? 'break-all' : 'break-word'}`,
-                `max-width: ${this.wordWrapWidth * scale}px`
+                `max-width: ${this.wordWrapWidth}px`
             ] : [],
             ...this.strokeThickness ? [
-                `-webkit-text-stroke-width: ${this.strokeThickness * scale}px`,
+                `-webkit-text-stroke-width: ${this.strokeThickness}px`,
                 `-webkit-text-stroke-color: ${this.normalizeColor(this.stroke)}`,
-                `text-stroke-width: ${this.strokeThickness * scale}px`,
+                `text-stroke-width: ${this.strokeThickness}px`,
                 `text-stroke-color: ${this.normalizeColor(this.stroke)}`,
                 'paint-order: stroke',
             ] : [],
-            ...this.dropShadow ? [this.dropShadowToCSS(scale)] : [],
+            ...this.dropShadow ? [this.dropShadowToCSS()] : [],
             ...this._overrides,
         ].join(';');
     }
@@ -372,11 +374,8 @@ export class HTMLTextStyle extends TextStyle
         return color;
     }
 
-    /**
-     * Convert the internal drop-shadow settings to CSS text-shadow
-     * @param scale
-     */
-    private dropShadowToCSS(scale: number): string
+    /** Convert the internal drop-shadow settings to CSS text-shadow */
+    private dropShadowToCSS(): string
     {
         let color = this.normalizeColor(this.dropShadowColor);
         const alpha = this.dropShadowAlpha;
@@ -389,7 +388,7 @@ export class HTMLTextStyle extends TextStyle
             color += (alpha * 255 | 0).toString(16).padStart(2, '0');
         }
 
-        const position = `${x * scale}px ${y * scale}px`;
+        const position = `${x}px ${y}px`;
 
         if (this.dropShadowBlur > 0)
         {
