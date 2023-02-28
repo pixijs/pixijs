@@ -1,3 +1,4 @@
+import { RENDERER_TYPE } from '@pixi/constants';
 import { extensions, ExtensionType } from '@pixi/extensions';
 import { Matrix } from '@pixi/math';
 import { settings } from '@pixi/settings';
@@ -6,7 +7,7 @@ import { UniformGroup } from './shader/UniformGroup';
 import { SystemManager } from './system/SystemManager';
 
 import type { ColorSource } from '@pixi/color';
-import type { MSAA_QUALITY, RENDERER_TYPE } from '@pixi/constants';
+import type { MSAA_QUALITY } from '@pixi/constants';
 import type { ExtensionMetadata } from '@pixi/extensions';
 import type { Rectangle } from '@pixi/math';
 import type { ICanvas } from '@pixi/settings';
@@ -101,7 +102,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      * @member {number}
      * @see PIXI.RENDERER_TYPE
      */
-    public readonly type: RENDERER_TYPE.WEBGL;
+    public readonly type = RENDERER_TYPE.WEBGL;
 
     /**
      * Options passed to the constructor.
