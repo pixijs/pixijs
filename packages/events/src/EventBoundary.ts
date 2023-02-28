@@ -56,13 +56,16 @@ type TrackingData = {
 };
 
 /**
+ * Internal storage of an event listener in EventEmitter.
+ * @ignore
+ */
+type EmitterListener = { fn(...args: any[]): any, context: any, once: boolean };
+
+/**
  * Internal storage of event listeners in EventEmitter.
  * @ignore
  */
-type EmitterListeners = Record<string,
-| Array<{ fn(...args: any[]): any, context: any }>
-| { fn(...args: any[]): any, context: any }
->;
+type EmitterListeners = Record<string, EmitterListener | EmitterListener[]>;
 
 /**
  * Event boundaries are "barriers" where events coming from an upstream scene are modified before downstream propagation.
@@ -868,8 +871,8 @@ export class EventBoundary
     }
 
     /**
-     * Maps the upstream `pointerup` event to downstream `pointerup`, `pointerupoutside`, and `click`/`pointertap` events,
-     * in that order.
+     * Maps the upstream `pointerup` event to downstream `pointerup`, `pointerupoutside`,
+     * and `click`/`rightclick`/`pointertap` events, in that order.
      *
      * The `pointerupoutside` event bubbles from the original `pointerdown` target to the most specific
      * ancestor of the `pointerdown` and `pointerup` targets, which is also the `click` event's target. `touchend`,
@@ -976,7 +979,9 @@ export class EventBoundary
 
             if (clickEvent.pointerType === 'mouse')
             {
-                this.dispatchEvent(clickEvent, 'click');
+                const isRightButton = clickEvent.button === 2;
+
+                this.dispatchEvent(clickEvent, isRightButton ? 'rightclick' : 'click');
             }
             else if (clickEvent.pointerType === 'touch')
             {
@@ -1373,6 +1378,7 @@ export class EventBoundary
 
         if ('fn' in listeners)
         {
+            if (listeners.once) e.currentTarget.removeListener(type, listeners.fn, undefined, true);
             listeners.fn.call(listeners.context, e);
         }
         else
@@ -1382,6 +1388,7 @@ export class EventBoundary
                 i < j && !e.propagationImmediatelyStopped;
                 i++)
             {
+                if (listeners[i].once) e.currentTarget.removeListener(type, listeners[i].fn, undefined, true);
                 listeners[i].fn.call(listeners[i].context, e);
             }
         }

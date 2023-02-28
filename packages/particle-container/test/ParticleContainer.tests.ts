@@ -38,4 +38,18 @@ describe('ParticleContainer', () =>
 
         container.destroy();
     });
+
+    it('should support tint setting', () =>
+    {
+        const container = new ParticleContainer();
+
+        container.tint = 'red';
+
+        expect(container.tint).toBe('red');
+        expect(container.tintRgb[0]).toBe(1);
+        expect(container.tintRgb[1]).toBe(0);
+        expect(container.tintRgb[2]).toBe(0);
+
+        container.destroy();
+    });
 });

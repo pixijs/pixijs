@@ -65,6 +65,7 @@ export class HTMLText extends Sprite
     private _svgRoot: SVGSVGElement;
     private _foreignObject: SVGForeignObjectElement;
     private _image: HTMLImageElement;
+    private _loadImage: HTMLImageElement;
     private _resolution: number;
     private _text: string | null = null;
     private _style: HTMLTextStyle | null = null;
@@ -121,6 +122,7 @@ export class HTMLText extends Sprite
         this._foreignObject.appendChild(styleElement);
         this._foreignObject.appendChild(domElement);
         this._image = image;
+        this._loadImage = new Image();
         this._autoResolution = HTMLText.defaultAutoResolution;
         this._resolution = HTMLText.defaultResolution ?? settings.RESOLUTION;
         this.text = text;
@@ -188,7 +190,7 @@ export class HTMLText extends Sprite
      */
     async updateText(respectDirty = true): Promise<void>
     {
-        const { style, _image: image } = this;
+        const { style, _image: image, _loadImage: loadImage } = this;
 
         // check if style has changed..
         if (this.localStyleID !== style.styleID)
@@ -206,24 +208,35 @@ export class HTMLText extends Sprite
 
         // Make sure canvas is at least 1x1 so it drawable
         // for sub-pixel sizes, round up to avoid clipping
-        image.width = Math.ceil((Math.max(1, width)));
-        image.height = Math.ceil((Math.max(1, height)));
+        // we update both images, to make sure bounds are correct synchronously
+        image.width = loadImage.width = Math.ceil((Math.max(1, width)));
+        image.height = loadImage.height = Math.ceil((Math.max(1, height)));
 
         if (!this._loading)
         {
             this._loading = true;
             await new Promise<void>((resolve) =>
             {
-                image.onload = async () =>
+                loadImage.onload = async () =>
                 {
+                    // Fake waiting for the image to load
                     await style.onBeforeDraw();
                     this._loading = false;
+
+                    // Swap image and loadImage, we do this to avoid
+                    // flashes between updateText calls, usually when
+                    // the onload time is longer than updateText time
+                    image.src = loadImage.src;
+                    loadImage.onload = null;
+                    loadImage.src = '';
+
+                    // Force update the texture
                     this.updateTexture();
                     resolve();
                 };
                 const svgURL = new XMLSerializer().serializeToString(this._svgRoot);
 
-                image.src = `data:image/svg+xml;charset=utf8,${encodeURIComponent(svgURL)}`;
+                loadImage.src = `data:image/svg+xml;charset=utf8,${encodeURIComponent(svgURL)}`;
             });
         }
     }
@@ -358,7 +371,10 @@ export class HTMLText extends Sprite
         this._foreignObject = forceClear;
         this._styleElement?.remove();
         this._styleElement = forceClear;
-        this._image.onload = null;
+
+        this._loadImage.src = '';
+        this._loadImage.onload = null;
+        this._loadImage = forceClear;
         this._image.src = '';
         this._image = forceClear;
     }

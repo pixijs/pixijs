@@ -1,6 +1,5 @@
 import path from 'path';
 import resolve from '@rollup/plugin-node-resolve';
-import rename from 'rollup-plugin-rename-node-modules';
 import { string } from 'rollup-plugin-string';
 import sourcemaps from 'rollup-plugin-sourcemaps';
 import esbuild from 'rollup-plugin-esbuild';
@@ -22,6 +21,24 @@ function prodName(name)
     return name.replace(/\.(m)?js$/, '.min.$1js');
 }
 
+/**
+ * Escapes the `RegExp` special characters.
+ * @param {string} str
+ */
+function escapeRegExp(str)
+{
+    return str.replace(/[$()*+.?[\\\]^{|}]/g, '\\$&');
+}
+
+/**
+ * Convert the name of a package to a `RegExp` that matches the package's export names.
+ * @param {string} packageName
+ */
+function convertPackageNameToRegExp(packageName)
+{
+    return new RegExp(`^${escapeRegExp(packageName)}(/.+)?$`);
+}
+
 async function main()
 {
     const commonPlugins = [
@@ -41,7 +58,6 @@ async function main()
     ];
 
     const plugins = [
-        rename(),
         jscc({ values: { _VERSION: repo.version, _DEBUG: true } }),
         esbuild({ target: moduleTarget }),
         ...commonPlugins
@@ -78,17 +94,18 @@ async function main()
             pluginExports = true,
             bundle,
             bundleModule,
-            dependencies,
-            nodeDependencies,
-            peerDependencies,
-            pixiRequirements,
+            dependencies = {},
+            peerDependencies = {},
+            nodeDependencies = [],
+            pixiRequirements = [],
         } = pkg.config;
 
         // Check for bundle folder
-        const external = Object.keys(dependencies || [])
-            .concat(Object.keys(peerDependencies || []))
-            .concat(nodeDependencies || [])
-            .concat(pixiRequirements || []);
+        const external = Object.keys(dependencies)
+            .concat(Object.keys(peerDependencies))
+            .concat(nodeDependencies)
+            .concat(pixiRequirements)
+            .map(convertPackageNameToRegExp);
         const basePath = path.relative(__dirname, pkg.dir);
         const input = path.join(basePath, 'src/index.ts');
 
@@ -139,8 +156,8 @@ async function main()
             const name = pkg.name.replace(/[^a-z]+/g, '_');
             const file = path.join(basePath, plugin);
             const footer = pluginExports ? `Object.assign(this.PIXI, ${name});` : '';
-            const nsBanner = pluginExports ? `${banner}\nthis.PIXI = this.PIXI || {};`: banner;
-            const globals = external.reduce((obj, name) => ({ ...obj, [name]: 'PIXI' }), {});
+            const nsBanner = pluginExports ? `${banner}\nthis.PIXI = this.PIXI || {};` : banner;
+            const globals = pixiRequirements.reduce((obj, name) => ({ ...obj, [name]: 'PIXI' }), {});
 
             results.push({
                 input,

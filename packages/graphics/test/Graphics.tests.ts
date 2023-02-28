@@ -1095,4 +1095,16 @@ describe('Graphics', () =>
             expect(geometry.batches[1].size).toEqual(30);
         });
     });
+
+    describe('tint', () =>
+    {
+        it('should allow for other color sources', () =>
+        {
+            const graphics = new Graphics();
+
+            graphics.tint = 'red';
+            expect(graphics.tint).toEqual('red');
+            graphics.destroy();
+        });
+    });
 });

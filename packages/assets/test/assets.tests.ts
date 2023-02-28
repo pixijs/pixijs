@@ -1,4 +1,4 @@
-import { Assets } from '@pixi/assets';
+import { Assets, loadTextures } from '@pixi/assets';
 import { BaseTexture, Texture } from '@pixi/core';
 import '@pixi/spritesheet';
 
@@ -345,5 +345,18 @@ describe('Assets', () =>
         const bunnyTexture = await Assets.load('bunny');
 
         expect(bunnyTexture.textureCacheIds[0]).toEqual(`${basePath}textures/bunny.png?foo=bar&chicken=nuggets`);
+    });
+
+    it('should support preferences settings', async () =>
+    {
+        await Assets.init({
+            preferences: {
+                preferWorkers: false,
+            }
+        });
+
+        expect(loadTextures.config.preferWorkers).toBe(false);
+        Assets.setPreferences({ preferWorkers: true });
+        expect(loadTextures.config.preferWorkers).toBe(true);
     });
 });

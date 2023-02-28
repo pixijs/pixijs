@@ -2,7 +2,7 @@ import { DRAW_MODES, Point, Polygon, settings, State } from '@pixi/core';
 import { Container } from '@pixi/display';
 import { MeshBatchUvs } from './MeshBatchUvs';
 
-import type { BLEND_MODES, Buffer, Geometry, IPointData, Renderer, Shader, Texture } from '@pixi/core';
+import type { BLEND_MODES, Buffer, ColorSource, Geometry, IPointData, Renderer, Shader, Texture } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
 import type { MeshMaterial } from './MeshMaterial';
 
@@ -232,14 +232,23 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
      * Null for non-MeshMaterial shaders
      * @default 0xFFFFFF
      */
-    get tint(): number
+    get tint(): ColorSource
     {
         return 'tint' in this.shader ? (this.shader as unknown as MeshMaterial).tint : null;
     }
 
-    set tint(value: number)
+    set tint(value: ColorSource)
     {
         (this.shader as unknown as MeshMaterial).tint = value;
+    }
+
+    /**
+     * The tint color as a RGB integer
+     * @ignore
+     */
+    get tintValue(): number
+    {
+        return (this.shader as unknown as MeshMaterial).tintValue;
     }
 
     /** The texture that the Mesh uses. Null for non-MeshMaterial shaders */

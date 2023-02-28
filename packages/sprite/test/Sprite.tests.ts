@@ -219,4 +219,19 @@ describe('Sprite', () =>
             texture.destroy(true);
         });
     });
+
+    describe('tint', () =>
+    {
+        it('should support ColorSource inputs', () =>
+        {
+            const sprite = new Sprite(Texture.WHITE);
+
+            sprite.tint = 'red';
+
+            expect(sprite.tint).toEqual('red');
+            expect(sprite.tintValue).toEqual(0xff0000);
+
+            sprite.destroy();
+        });
+    });
 });

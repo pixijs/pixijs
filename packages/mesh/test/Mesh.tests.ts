@@ -66,4 +66,18 @@ describe('Mesh', () =>
         expect(dispose1).toBeCalled();
         expect(dispose2).toBeCalled();
     });
+
+    it('should support color tinting', () =>
+    {
+        const geometry = new MeshGeometry(new Float32Array([0, 0]));
+        const mesh = new Mesh(geometry, new MeshMaterial(Texture.EMPTY));
+
+        mesh.tint = 'red';
+
+        expect(mesh.tint).toBe('red');
+        expect(mesh.tintValue).toBe(0xff0000);
+
+        geometry.dispose();
+        mesh.destroy();
+    });
 });
