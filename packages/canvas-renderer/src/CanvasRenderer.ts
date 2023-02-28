@@ -1,9 +1,10 @@
 import {
     extensions,
     ExtensionType,
+    RENDERER_TYPE,
     settings,
     SystemManager,
-    utils,
+    utils
 } from '@pixi/core';
 
 import type {
@@ -23,10 +24,9 @@ import type {
     Matrix,
     PluginSystem,
     Rectangle,
-    RENDERER_TYPE,
     RenderTexture,
     StartupSystem,
-    ViewSystem
+    ViewSystem,
 } from '@pixi/core';
 import type { DisplayObject } from '@pixi/display';
 import type { CanvasContextSystem, SmoothingEnabledProperties } from './CanvasContextSystem';
@@ -109,7 +109,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
      * @member {number}
      * @see PIXI.RENDERER_TYPE
      */
-    public readonly type: RENDERER_TYPE.CANVAS;
+    public readonly type = RENDERER_TYPE.CANVAS;
 
     /** When logging Pixi to the console, this is the name we will show */
     public readonly rendererLogId = 'Canvas';
