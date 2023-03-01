@@ -84,7 +84,7 @@ export class Loader
                 {
                     // #if _DEBUG
                     // eslint-disable-next-line max-len
-                    console.warn(`[Assets] ${url} could not be loaded as we don't know how to parse it, ensure the correct parser has being added`);
+                    console.warn(`[Assets] ${url} could not be loaded as we don't know how to parse it, ensure the correct parser has been added`);
                     // #endif
 
                     return null;
