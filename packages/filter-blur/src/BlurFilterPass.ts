@@ -11,8 +11,8 @@ import type { FilterSystem, RenderTexture } from '@pixi/core';
 export class BlurFilterPass extends Filter
 {
     public horizontal: boolean;
-    public strength: number;
-    public passes: number;
+    public strength!: number;
+    public passes!: number;
 
     private _quality: number;
 
