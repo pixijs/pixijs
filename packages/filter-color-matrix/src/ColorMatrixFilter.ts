@@ -20,8 +20,6 @@ export type ColorMatrix = utils.ArrayFixed<number, 20>;
  */
 export class ColorMatrixFilter extends Filter
 {
-    public grayscale: (scale: number, multiply: boolean) => void;
-
     constructor()
     {
         const uniforms = {
@@ -172,6 +170,17 @@ export class ColorMatrixFilter extends Filter
 
         this._loadMatrix(matrix, multiply);
     }
+
+    /**
+     * Americanized alias of greyscale.
+     * @method
+     * @param scale - value of the grey (0-1, where 0 is black)
+     * @param multiply - if true, current matrix and matrix are multiplied. If false,
+     *  just set the current matrix with @param matrix
+     * @returns {void}
+     * @see PIXI.ColorMatrixFilter.greyscale
+     */
+    public grayscale!: (scale: number, multiply: boolean) => void;
 
     /**
      * Set the black and white matrice.
