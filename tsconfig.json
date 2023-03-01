@@ -25,9 +25,6 @@
             "pixi.js-legacy": [
                 "bundles/pixi.js-legacy/src"
             ],
-            "@pixi/node": [
-                "bundles/pixi.js-node/src"
-            ],
             "@pixi/webworker": [
                 "bundles/pixi.js-webworker/src"
             ]
