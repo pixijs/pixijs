@@ -226,4 +226,55 @@ describe('Loader', () =>
 
         expect(foundFont).toBe(false);
     });
+
+    it('should throw a warning if a parser specified does not exist', async () =>
+    {
+        const loader = new Loader();
+
+        loader['_parsers'].push(loadTextures);
+
+        const spy = spyOn(console, 'warn');
+
+        await loader.load({
+            src: `${serverPath}textures/bunny.other`,
+            loadParser: 'chicken'
+        });
+
+        // eslint-disable-next-line max-len
+        expect(spy).toHaveBeenCalledWith('[Assets] specified loadParser chicken not whilst found attempting to load http://localhost:8080/assets/test/assets/textures/bunny.other');
+    });
+
+    it('should throw a warning if a parser is added with the same name', async () =>
+    {
+        const loader = new Loader();
+
+        loader['_parsers'].push(loadTextures);
+        loader['_parsers'].push(loadTextures);
+
+        const spy = spyOn(console, 'warn');
+
+        await loader.load({
+            src: `${serverPath}textures/bunny.other`,
+            loadParser: 'loadTextures'
+        });
+
+        // eslint-disable-next-line max-len
+        expect(spy).toHaveBeenCalledWith('[Assets] loadParser name conflict "loadTextures"');
+    });
+
+    it('should load and parse with specified loader', async () =>
+    {
+        const loader = new Loader();
+
+        loader['_parsers'].push(loadTextures);
+
+        const texture = await loader.load({
+            src: `${serverPath}textures/bunny.other`,
+            loadParser: 'loadTextures'
+        });
+
+        expect(texture.baseTexture.valid).toBe(true);
+        expect(texture.width).toBe(26);
+        expect(texture.height).toBe(37);
+    });
 });

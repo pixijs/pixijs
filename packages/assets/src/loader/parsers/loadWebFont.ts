@@ -62,6 +62,8 @@ export const loadWebFont = {
         priority: LoaderParserPriority.Low,
     },
 
+    name: 'loadWebFont',
+
     test(url: string): boolean
     {
         return checkDataUrl(url, validFontMIMEs) || checkExtension(url, validFontExtensions);

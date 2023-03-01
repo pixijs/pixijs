@@ -15,6 +15,8 @@ export const loadBasis = {
         priority: LoaderParserPriority.High,
     },
 
+    name: 'loadBasis',
+
     test(url: string): boolean
     {
         return checkExtension(url, '.basis');

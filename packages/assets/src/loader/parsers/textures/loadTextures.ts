@@ -90,6 +90,9 @@ export async function loadImageBitmap(url: string): Promise<ImageBitmap>
  * @memberof PIXI
  */
 export const loadTextures = {
+
+    name: 'loadTextures',
+
     extension: {
         type: ExtensionType.LoadParser,
         priority: LoaderParserPriority.High,

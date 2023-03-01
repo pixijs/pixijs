@@ -10,6 +10,8 @@ export const loadJson = {
         priority: LoaderParserPriority.Low,
     },
 
+    name: 'loadJson',
+
     test(url: string): boolean
     {
         return (utils.path.extname(url).toLowerCase() === '.json');

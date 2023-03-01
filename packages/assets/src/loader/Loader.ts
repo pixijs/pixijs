@@ -18,6 +18,9 @@ import type { LoadAsset, PromiseAndParser } from './types';
 export class Loader
 {
     private _parsers: LoaderParser[] = [];
+    private _parserHash: Record<string, LoaderParser> = {};
+
+    private _parsersValidated = false;
 
     /** Cache loading promises that ae currently active */
     public promiseCache: Record<string, PromiseAndParser> = {};
@@ -25,6 +28,7 @@ export class Loader
     /** function used for testing */
     public reset(): void
     {
+        this._parsersValidated = false;
         this.promiseCache = {};
     }
 
@@ -45,28 +49,50 @@ export class Loader
         {
             let asset = null;
 
-            for (let i = 0; i < this.parsers.length; i++)
+            let parser: LoaderParser = null;
+
+            // first check to see if the user has specified a parser
+            if (data.loadParser)
             {
-                const parser = this.parsers[i];
+                // they have? lovely, lets use it
+                parser = this._parserHash[data.loadParser];
 
-                if (parser.load && parser.test?.(url, data, this))
+                if (!parser)
                 {
-                    asset = await parser.load(url, data, this);
-                    result.parser = parser;
-
-                    break;
+                    // #if _DEBUG
+                    // eslint-disable-next-line max-len
+                    console.warn(`[Assets] specified loadParser ${data.loadParser} not whilst found attempting to load ${url}`);
+                    // #endif
                 }
             }
 
-            if (!result.parser)
+            // no parser specified, so lets try and find one using the tests
+            if (!parser)
             {
-                // #if _DEBUG
-                // eslint-disable-next-line max-len
-                console.warn(`[Assets] ${url} could not be loaded as we don't know how to parse it, ensure the correct parser has being added`);
-                // #endif
+                for (let i = 0; i < this.parsers.length; i++)
+                {
+                    const parserX = this.parsers[i];
 
-                return null;
+                    if (parserX.load && parserX.test?.(url, data, this))
+                    {
+                        parser = parserX;
+                        break;
+                    }
+                }
+
+                if (!parser)
+                {
+                    // #if _DEBUG
+                    // eslint-disable-next-line max-len
+                    console.warn(`[Assets] ${url} could not be loaded as we don't know how to parse it, ensure the correct parser has being added`);
+                    // #endif
+
+                    return null;
+                }
             }
+
+            asset = await parser.load(url, data, this);
+            result.parser = parser;
 
             for (let i = 0; i < this.parsers.length; i++)
             {
@@ -119,6 +145,11 @@ export class Loader
         onProgress?: (progress: number) => void,
     ): Promise<T | Record<string, T>>
     {
+        if (!this._parsersValidated)
+        {
+            this._validateParsers();
+        }
+
         let count = 0;
 
         const assets: Record<string, Promise<any>> = {};
@@ -210,5 +241,30 @@ export class Loader
     public get parsers(): LoaderParser[]
     {
         return this._parsers;
+    }
+
+    /** validates our parsers, right now it only checks for name conflicts but we can add more here as required! */
+    private _validateParsers()
+    {
+        this._parsersValidated = true;
+
+        this._parserHash = {};
+
+        for (let i = 0; i < this._parsers.length; i++)
+        {
+            const parser = this._parsers[i];
+
+            if (parser.name)
+            {
+                if (this._parserHash[parser.name])
+                {
+                    // #if _DEBUG
+                    console.warn(`[Assets] loadParser name conflict "${parser.name}"`);
+                    // #endif
+                }
+
+                this._parserHash[parser.name] = parser;
+            }
+        }
     }
 }
