@@ -37,6 +37,7 @@
   "peerDependencies": {
     "@pixi/canvas-renderer": "file:../canvas-renderer",
     "@pixi/core": "file:../core",
-    "@pixi/display": "file:../display"
+    "@pixi/display": "file:../display",
+    "@pixi/extract": "file:../extract"
   }
 }
