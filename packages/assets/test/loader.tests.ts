@@ -241,7 +241,7 @@ describe('Loader', () =>
         });
 
         // eslint-disable-next-line max-len
-        expect(spy).toHaveBeenCalledWith(`[Assets] specified loadParser chicken not whilst found attempting to load ${serverPath}textures/bunny.png`);
+        expect(spy).toHaveBeenCalledWith(`[Assets] specified load parser "chicken" not found while loading ${serverPath}textures/bunny.png`);
     });
 
     it('should throw a warning if a parser is added with the same name', async () =>
