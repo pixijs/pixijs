@@ -34,10 +34,10 @@
     "lib",
     "*.d.ts"
   ],
-  "pixiRequirements": [
-    "@pixi/canvas-display",
-    "@pixi/canvas-renderer",
-    "@pixi/core",
-    "@pixi/graphics"
-  ]
+  "peerDependencies": {
+    "@pixi/canvas-display": "file:../canvas-display",
+    "@pixi/canvas-renderer": "file:../canvas-renderer",
+    "@pixi/core": "file:../core",
+    "@pixi/graphics": "file:../graphics"
+  }
 }

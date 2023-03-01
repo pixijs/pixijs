@@ -34,8 +34,8 @@
     "lib",
     "*.d.ts"
   ],
-  "pixiRequirements": [
-    "@pixi/core",
-    "@pixi/mesh"
-  ]
+  "peerDependencies": {
+    "@pixi/core": "file:../core",
+    "@pixi/mesh": "file:../mesh"
+  }
 }

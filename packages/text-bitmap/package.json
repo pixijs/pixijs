@@ -34,11 +34,11 @@
     "lib",
     "*.d.ts"
   ],
-  "pixiRequirements": [
-    "@pixi/assets",
-    "@pixi/core",
-    "@pixi/display",
-    "@pixi/mesh",
-    "@pixi/text"
-  ]
+  "peerDependencies": {
+    "@pixi/assets": "file:../assets",
+    "@pixi/core": "file:../core",
+    "@pixi/display": "file:../display",
+    "@pixi/mesh": "file:../mesh",
+    "@pixi/text": "file:../text"
+  }
 }
