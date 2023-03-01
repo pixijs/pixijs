@@ -61,7 +61,7 @@ export class Loader
                 {
                     // #if _DEBUG
                     // eslint-disable-next-line max-len
-                    console.warn(`[Assets] specified loadParser ${data.loadParser} not whilst found attempting to load ${url}`);
+                    console.warn(`[Assets] specified load parser "${data.loadParser}" not found while loading ${url}`);
                     // #endif
                 }
             }
