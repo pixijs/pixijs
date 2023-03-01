@@ -34,7 +34,7 @@
     "lib",
     "*.d.ts"
   ],
-  "pixiRequirements": [
-    "@pixi/particle-container"
-  ]
+  "peerDependencies": {
+    "@pixi/particle-container": "file:../particle-container"
+  }
 }

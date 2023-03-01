@@ -34,11 +34,11 @@
     "lib",
     "*.d.ts"
   ],
-  "pixiRequirements": [
-    "@pixi/canvas-display",
-    "@pixi/canvas-renderer",
-    "@pixi/core",
-    "@pixi/mesh",
-    "@pixi/mesh-extras"
-  ]
+  "peerDependencies": {
+    "@pixi/canvas-display": "file:../canvas-display",
+    "@pixi/canvas-renderer": "file:../canvas-renderer",
+    "@pixi/core": "file:../core",
+    "@pixi/mesh": "file:../mesh",
+    "@pixi/mesh-extras": "file:../mesh-extras"
+  }
 }

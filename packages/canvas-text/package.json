@@ -31,9 +31,9 @@
     "lib",
     "*.d.ts"
   ],
-  "pixiRequirements": [
-    "@pixi/canvas-sprite",
-    "@pixi/sprite",
-    "@pixi/text"
-  ]
+  "peerDependencies": {
+    "@pixi/canvas-sprite": "file:../canvas-sprite",
+    "@pixi/sprite": "file:../sprite",
+    "@pixi/text": "file:../text"
+  }
 }

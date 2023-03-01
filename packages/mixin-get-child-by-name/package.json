@@ -34,7 +34,7 @@
     "lib",
     "*.d.ts"
   ],
-  "pixiRequirements": [
-    "@pixi/display"
-  ]
+  "peerDependencies": {
+    "@pixi/display": "file:../display"
+  }
 }

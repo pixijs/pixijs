@@ -34,9 +34,9 @@
     "lib",
     "*.d.ts"
   ],
-  "pixiRequirements": [
-    "@pixi/canvas-renderer",
-    "@pixi/core",
-    "@pixi/prepare"
-  ]
+  "peerDependencies": {
+    "@pixi/canvas-renderer": "file:../canvas-renderer",
+    "@pixi/core": "file:../core",
+    "@pixi/prepare": "file:../prepare"
+  }
 }
