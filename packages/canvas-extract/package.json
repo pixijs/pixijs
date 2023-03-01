@@ -38,6 +38,7 @@
   "pixiRequirements": [
     "@pixi/canvas-renderer",
     "@pixi/core",
-    "@pixi/display"
+    "@pixi/display",
+    "@pixi/extract"
   ]
 }
