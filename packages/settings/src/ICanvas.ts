@@ -112,33 +112,41 @@ export interface ICanvas extends GlobalMixins.ICanvas, Partial<EventTarget>
 
     /**
      * Adds the listener for the specified event.
+     * @method
      * @param {string} type - The type of event to listen for.
      * @param {EventListenerOrEventListenerObject} listener - The callback to invoke when the event is fired.
      * @param {boolean | AddEventListenerOptions} options - The options for adding event listener.
+     * @returns {void}
      */
-    addEventListener?(
-        type: string,
-        listener: EventListenerOrEventListenerObject,
-        options?: boolean | AddEventListenerOptions): void;
-    addEventListener?<K extends keyof WebGLContextEventMap>(
-        type: K,
-        listener: (this: ICanvas, ev: WebGLContextEventMap[K]) => any,
-        options?: boolean | AddEventListenerOptions): void;
+    addEventListener?: {
+        (
+            type: string,
+            listener: EventListenerOrEventListenerObject,
+            options?: boolean | AddEventListenerOptions): void;
+        <K extends keyof WebGLContextEventMap>(
+            type: K,
+            listener: (this: ICanvas, ev: WebGLContextEventMap[K]) => any,
+            options?: boolean | AddEventListenerOptions): void;
+    };
 
     /**
      * Removes the listener for the specified event.
+     * @method
      * @param {string} type - The type of event to listen for.
      * @param {EventListenerOrEventListenerObject} listener - The callback to invoke when the event is fired.
      * @param {boolean | EventListenerOptions} options - The options for removing event listener.
+     * @returns {void}
      */
-    removeEventListener?(
-        type: string,
-        listener: EventListenerOrEventListenerObject,
-        options?: boolean | EventListenerOptions): void;
-    removeEventListener?<K extends keyof WebGLContextEventMap>(
-        type: K,
-        listener: (this: ICanvas, ev: WebGLContextEventMap[K]) => any,
-        options?: boolean | EventListenerOptions): void;
+    removeEventListener?: {
+        (
+            type: string,
+            listener: EventListenerOrEventListenerObject,
+            options?: boolean | EventListenerOptions): void;
+        <K extends keyof WebGLContextEventMap>(
+            type: K,
+            listener: (this: ICanvas, ev: WebGLContextEventMap[K]) => any,
+            options?: boolean | EventListenerOptions): void;
+    };
 
     /**
      * Dispatches a event.
