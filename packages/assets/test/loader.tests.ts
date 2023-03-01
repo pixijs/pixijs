@@ -236,12 +236,12 @@ describe('Loader', () =>
         const spy = spyOn(console, 'warn');
 
         await loader.load({
-            src: `${serverPath}textures/bunny.other`,
+            src: `${serverPath}textures/bunny.png`,
             loadParser: 'chicken'
         });
 
         // eslint-disable-next-line max-len
-        expect(spy).toHaveBeenCalledWith('[Assets] specified loadParser chicken not whilst found attempting to load http://localhost:8080/assets/test/assets/textures/bunny.other');
+        expect(spy).toHaveBeenCalledWith(`[Assets] specified loadParser chicken not whilst found attempting to load ${serverPath}textures/bunny.png`);
     });
 
     it('should throw a warning if a parser is added with the same name', async () =>
