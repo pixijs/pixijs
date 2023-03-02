@@ -5,6 +5,9 @@ import type { LoaderParser } from './LoaderParser';
 
 /** Simple loader plugin for loading text data */
 export const loadTxt = {
+
+    name: 'loadTxt',
+
     extension: {
         type: ExtensionType.LoadParser,
         priority: LoaderParserPriority.Low,

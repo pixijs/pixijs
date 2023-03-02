@@ -89,6 +89,8 @@ export const spritesheetAsset = {
      * @ignore
      */
     loader: {
+        name: 'spritesheetLoader',
+
         extension: {
             type: ExtensionType.LoadParser,
             priority: LoaderParserPriority.Normal,

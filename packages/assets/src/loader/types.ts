@@ -7,7 +7,7 @@ export interface LoadAsset<T=any>
     alias?: string[];
     format?: string;
     /** an override that will ensure that the asset is loaded with a specific parser */
-    loadParser?: string;
+    loadParser?: 'loadTextures' | 'loadJson' | 'loadTxt' | 'loadWebFont' | 'loadSVG' | string;
 }
 
 export interface PromiseAndParser
