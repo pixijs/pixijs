@@ -34,8 +34,8 @@
     "lib",
     "*.d.ts"
   ],
-  "pixiRequirements": [
-    "@pixi/core",
-    "@pixi/sprite"
-  ]
+  "peerDependencies": {
+    "@pixi/core": "file:../core",
+    "@pixi/sprite": "file:../sprite"
+  }
 }

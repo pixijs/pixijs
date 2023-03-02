@@ -165,6 +165,7 @@ export class RopeGeometry extends MeshGeometry
 
         const vertices = this.buffers[0].data;
         const total = points.length;
+        const halfWidth = this.textureScale > 0 ? this.textureScale * this._width / 2 : this._width / 2;
 
         for (let i = 0; i < total; i++)
         {
@@ -191,13 +192,20 @@ export class RopeGeometry extends MeshGeometry
             }
 
             const perpLength = Math.sqrt((perpX * perpX) + (perpY * perpY));
-            const num = this.textureScale > 0 ? this.textureScale * this._width / 2 : this._width / 2;
 
-            perpX /= perpLength;
-            perpY /= perpLength;
+            if (perpLength < 1e-6)
+            {
+                perpX = 0;
+                perpY = 0;
+            }
+            else
+            {
+                perpX /= perpLength;
+                perpY /= perpLength;
 
-            perpX *= num;
-            perpY *= num;
+                perpX *= halfWidth;
+                perpY *= halfWidth;
+            }
 
             vertices[index] = point.x + perpX;
             vertices[index + 1] = point.y + perpY;

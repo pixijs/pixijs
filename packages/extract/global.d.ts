@@ -4,4 +4,9 @@ declare namespace GlobalMixins
     {
         readonly extract: import('@pixi/extract').Extract;
     }
+
+    interface IRenderer
+    {
+        readonly extract: import('@pixi/extract').IExtract;
+    }
 }

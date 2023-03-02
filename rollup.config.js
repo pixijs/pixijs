@@ -96,15 +96,11 @@ async function main()
             bundleModule,
             dependencies = {},
             peerDependencies = {},
-            nodeDependencies = [],
-            pixiRequirements = [],
         } = pkg.config;
 
         // Check for bundle folder
         const external = Object.keys(dependencies)
             .concat(Object.keys(peerDependencies))
-            .concat(nodeDependencies)
-            .concat(pixiRequirements)
             .map(convertPackageNameToRegExp);
         const basePath = path.relative(__dirname, pkg.dir);
         const input = path.join(basePath, 'src/index.ts');
@@ -157,7 +153,7 @@ async function main()
             const file = path.join(basePath, plugin);
             const footer = pluginExports ? `Object.assign(this.PIXI, ${name});` : '';
             const nsBanner = pluginExports ? `${banner}\nthis.PIXI = this.PIXI || {};` : banner;
-            const globals = pixiRequirements.reduce((obj, name) => ({ ...obj, [name]: 'PIXI' }), {});
+            const globals = Object.keys(peerDependencies).reduce((obj, name) => ({ ...obj, [name]: 'PIXI' }), {});
 
             results.push({
                 input,

@@ -45,9 +45,9 @@
   "bugs": {
     "url": "https://github.com/pixijs/pixijs/issues"
   },
-  "pixiRequirements": [
-    "@pixi/assets",
-    "@pixi/compressed-textures",
-    "@pixi/core"
-  ]
+  "peerDependencies": {
+    "@pixi/assets": "file:../assets",
+    "@pixi/compressed-textures": "file:../compressed-textures",
+    "@pixi/core": "file:../core"
+  }
 }

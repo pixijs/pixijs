@@ -45,8 +45,8 @@
   "dependencies": {
     "@types/css-font-loading-module": "^0.0.7"
   },
-  "pixiRequirements": [
-    "@pixi/core",
-    "@pixi/utils"
-  ]
+  "peerDependencies": {
+    "@pixi/core": "file:../core",
+    "@pixi/utils": "file:../utils"
+  }
 }

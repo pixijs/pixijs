@@ -6,6 +6,14 @@ import type { DisplayObject } from '@pixi/display';
 const TEMP_RECT = new Rectangle();
 const BYTES_PER_PIXEL = 4;
 
+export interface IExtract
+{
+    image(target: DisplayObject | RenderTexture, format?: string, quality?: number): Promise<HTMLImageElement>;
+    base64(target: DisplayObject | RenderTexture, format?: string, quality?: number): Promise<string>;
+    canvas(target?: DisplayObject | RenderTexture, frame?: Rectangle): ICanvas;
+    pixels(target: DisplayObject | RenderTexture, frame?: Rectangle): Uint8Array | Uint8ClampedArray;
+}
+
 /**
  * This class provides renderer-specific plugins for exporting content from a renderer.
  * For instance, these plugins can be used for saving an Image, Canvas element or for exporting the raw image data (pixels).
@@ -28,7 +36,7 @@ const BYTES_PER_PIXEL = 4;
  * @memberof PIXI
  */
 
-export class Extract implements ISystem
+export class Extract implements ISystem, IExtract
 {
     /** @ignore */
     static extension: ExtensionMetadata = {

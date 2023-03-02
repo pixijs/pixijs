@@ -34,10 +34,10 @@
     "lib",
     "*.d.ts"
   ],
-  "pixiRequirements": [
-    "@pixi/canvas-renderer",
-    "@pixi/canvas-sprite",
-    "@pixi/core",
-    "@pixi/sprite-tiling"
-  ]
+  "peerDependencies": {
+    "@pixi/canvas-renderer": "file:../canvas-renderer",
+    "@pixi/canvas-sprite": "file:../canvas-sprite",
+    "@pixi/core": "file:../core",
+    "@pixi/sprite-tiling": "file:../sprite-tiling"
+  }
 }

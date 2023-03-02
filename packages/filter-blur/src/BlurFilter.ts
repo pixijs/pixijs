@@ -14,7 +14,7 @@ export class BlurFilter extends Filter
     public blurXFilter: BlurFilterPass;
     public blurYFilter: BlurFilterPass;
 
-    private _repeatEdgePixels: boolean;
+    private _repeatEdgePixels = false;
 
     /**
      * @param strength - The strength of the blur filter.

@@ -3,6 +3,7 @@ import { extensions, ExtensionType, Rectangle, RenderTexture, utils } from '@pix
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
 import type { BaseRenderTexture, ExtensionMetadata, ICanvas, ISystem } from '@pixi/core';
 import type { DisplayObject } from '@pixi/display';
+import type { IExtract } from '@pixi/extract';
 
 const TEMP_RECT = new Rectangle();
 
@@ -13,7 +14,7 @@ const TEMP_RECT = new Rectangle();
  * @class
  * @memberof PIXI
  */
-export class CanvasExtract implements ISystem
+export class CanvasExtract implements ISystem, IExtract
 {
     /** @ignore */
     static extension: ExtensionMetadata = {

@@ -24,6 +24,7 @@ async function main()
 
         bumpDependencies(workspace.config.dependencies, version);
         bumpDependencies(workspace.config.devDependencies, version);
+        bumpDependencies(workspace.config.peerDependencies, version);
 
         await writeJSON(path.join(workspace.dir, 'package.json'), workspace.config);
     });

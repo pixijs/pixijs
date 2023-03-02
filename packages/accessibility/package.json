@@ -34,9 +34,9 @@
     "lib",
     "*.d.ts"
   ],
-  "pixiRequirements": [
-    "@pixi/core",
-    "@pixi/display",
-    "@pixi/events"
-  ]
+  "peerDependencies": {
+    "@pixi/core": "file:../core",
+    "@pixi/display": "file:../display",
+    "@pixi/events": "file:../events"
+  }
 }
