@@ -261,7 +261,7 @@ export class Loader
                 if (hash[parser.name])
                 {
                     // #if _DEBUG
-                    console.warn(`[Assets] LoaderParser name conflict "${parser.name}"`);
+                    console.warn(`[Assets] loadParser name conflict "${parser.name}"`);
                     // #endif
                 }
 
