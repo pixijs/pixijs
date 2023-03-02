@@ -260,7 +260,7 @@ describe('Loader', () =>
         });
 
         // eslint-disable-next-line max-len
-        expect(spy).toHaveBeenCalledWith('[Assets] loadParser name conflict "loadTextures"');
+        expect(spy).toHaveBeenCalledWith('[Assets] LoaderParser name conflict "loadTextures"');
     });
 
     it('should load and parse with specified loader', async () =>
