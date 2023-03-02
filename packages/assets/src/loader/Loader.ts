@@ -22,6 +22,19 @@ export class Loader
 
     private _parsersValidated = false;
 
+    /** All loader parsers registered */
+    public parsers = new Proxy(this._parsers, {
+        set: (target, key, value) =>
+        {
+            this._parsersValidated = false;
+
+            // @Zyie or @bigtimebuddy - is this the best way work around this types issue?
+            target[key as any as number] = value;
+
+            return true;
+        }
+    });
+
     /** Cache loading promises that ae currently active */
     public promiseCache: Record<string, PromiseAndParser> = {};
 
@@ -235,12 +248,6 @@ export class Loader
         });
 
         await Promise.all(promises);
-    }
-
-    /** All loader parsers registered */
-    public get parsers(): LoaderParser[]
-    {
-        return this._parsers;
     }
 
     /** validates our parsers, right now it only checks for name conflicts but we can add more here as required! */
