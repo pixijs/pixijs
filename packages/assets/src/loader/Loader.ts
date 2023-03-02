@@ -18,7 +18,7 @@ import type { LoadAsset, PromiseAndParser } from './types';
 export class Loader
 {
     private _parsers: LoaderParser[] = [];
-    private _parserHash: Record<string, LoaderParser> = {};
+    private _parserHash: Record<string, LoaderParser>;
 
     private _parsersValidated = false;
 
@@ -28,7 +28,6 @@ export class Loader
         {
             this._parsersValidated = false;
 
-            // @Zyie or @bigtimebuddy - is this the best way work around this types issue?
             target[key as any as number] = value;
 
             return true;
@@ -255,23 +254,18 @@ export class Loader
     {
         this._parsersValidated = true;
 
-        this._parserHash = {};
-
-        for (let i = 0; i < this._parsers.length; i++)
-        {
-            const parser = this._parsers[i];
-
-            if (parser.name)
+        this._parserHash = this._parsers
+            .filter((parser) => parser.name)
+            .reduce((hash, parser) =>
             {
-                if (this._parserHash[parser.name])
+                if (hash[parser.name])
                 {
                     // #if _DEBUG
-                    console.warn(`[Assets] loadParser name conflict "${parser.name}"`);
+                    console.warn(`[Assets] LoadParser name conflict "${parser.name}"`);
                     // #endif
                 }
 
-                this._parserHash[parser.name] = parser;
-            }
-        }
+                return { ...hash, [parser.name]: parser };
+            }, {} as Record<string, LoaderParser>);
     }
 }
