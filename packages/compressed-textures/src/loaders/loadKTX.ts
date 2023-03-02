@@ -12,6 +12,8 @@ export const loadKTX = {
         priority: LoaderParserPriority.High,
     },
 
+    name: 'loadKTX',
+
     test(url: string): boolean
     {
         return checkExtension(url, '.ktx');

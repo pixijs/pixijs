@@ -378,6 +378,8 @@ export class EventBoundary
 
         e.currentTarget = target;
 
+        if (!target.isInteractive()) return;
+
         this.notifyTarget(e, type);
     }
 

@@ -12,6 +12,8 @@ export const loadDDS: LoaderParser = {
         priority: LoaderParserPriority.High,
     },
 
+    name: 'loadDDS',
+
     test(url: string): boolean
     {
         return checkExtension(url, '.dds');
