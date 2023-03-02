@@ -15,6 +15,8 @@ export const loadSVG = {
         priority: LoaderParserPriority.High,
     },
 
+    name: 'loadSVG',
+
     test(url: string): boolean
     {
         return (utils.path.extname(url).toLowerCase() === '.svg');

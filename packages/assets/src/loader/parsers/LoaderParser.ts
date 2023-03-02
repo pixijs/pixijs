@@ -42,6 +42,9 @@ export interface LoaderParser<ASSET = any, META_DATA = any, CONFIG = Record<stri
     /** A config to adjust the parser */
     config?: CONFIG;
 
+    /** The name of the parser (this can be used when specifying loadParser in a LoadAsset) */
+    name?: string;
+
     /**
      * each URL to load will be tested here,
      * if the test is passed the assets are loaded using the load function below.
