@@ -12,7 +12,7 @@
 const pathPrefixs = [
     'bundles/pixi.js/',
     'bundles/pixi.js-legacy/',
-    // 'bundles/pixi.js-webworker/',
+    'bundles/pixi.js-webworker/',
     // 'packages/accessibility/',
     // 'packages/app/',
     // 'packages/assets/',
