@@ -173,6 +173,7 @@ describe('Loader', () =>
         const loader = new Loader();
 
         loader['_parsers'].push({
+            name: 'test',
             test: () => true,
             load: async (url, options) =>
                 url + options.data.whatever,
