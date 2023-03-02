@@ -1,12 +1,20 @@
 import type { LoaderParser } from './parsers';
 
+/**
+ * The loader resource type.
+ * @memberof PIXI
+ */
 export interface LoadAsset<T=any>
 {
+    /** The URL or relative path to the asset */
     src: string;
+    /** Optional data */
     data?: T;
+    /** Aliases associated with asset */
     alias?: string[];
+    /** Format, ususally the file extension */
     format?: string;
-    /** an override that will ensure that the asset is loaded with a specific parser */
+    /** An override that will ensure that the asset is loaded with a specific parser */
     loadParser?: 'loadTextures' | 'loadJson' | 'loadTxt' | 'loadWebFont' | 'loadSVG' | string;
 }
 
