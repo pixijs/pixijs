@@ -8,10 +8,10 @@ const BYTES_PER_PIXEL = 4;
 
 export interface IExtract
 {
-    image(target: DisplayObject | RenderTexture, format?: string, quality?: number): Promise<HTMLImageElement>;
-    base64(target: DisplayObject | RenderTexture, format?: string, quality?: number): Promise<string>;
+    image(target?: DisplayObject | RenderTexture, format?: string, quality?: number): Promise<HTMLImageElement>;
+    base64(target?: DisplayObject | RenderTexture, format?: string, quality?: number): Promise<string>;
     canvas(target?: DisplayObject | RenderTexture, frame?: Rectangle): ICanvas;
-    pixels(target: DisplayObject | RenderTexture, frame?: Rectangle): Uint8Array | Uint8ClampedArray;
+    pixels(target?: DisplayObject | RenderTexture, frame?: Rectangle): Uint8Array | Uint8ClampedArray;
 }
 
 /**
@@ -44,7 +44,7 @@ export class Extract implements ISystem, IExtract
         type: ExtensionType.RendererSystem,
     };
 
-    private renderer: Renderer;
+    private renderer: Renderer | null;
 
     /**
      * @param renderer - A reference to the current renderer
@@ -62,7 +62,7 @@ export class Extract implements ISystem, IExtract
      * @param quality - JPEG or Webp compression from 0 to 1. Default is 0.92.
      * @returns - HTML Image of the target
      */
-    public async image(target: DisplayObject | RenderTexture, format?: string, quality?: number): Promise<HTMLImageElement>
+    public async image(target?: DisplayObject | RenderTexture, format?: string, quality?: number): Promise<HTMLImageElement>
     {
         const image = new Image();
 
@@ -80,7 +80,7 @@ export class Extract implements ISystem, IExtract
      * @param quality - JPEG or Webp compression from 0 to 1. Default is 0.92.
      * @returns - A base64 encoded string of the texture.
      */
-    public async base64(target: DisplayObject | RenderTexture, format?: string, quality?: number): Promise<string>
+    public async base64(target?: DisplayObject | RenderTexture, format?: string, quality?: number): Promise<string>
     {
         const canvas = this.canvas(target);
 
@@ -164,6 +164,12 @@ export class Extract implements ISystem, IExtract
     }
     {
         const renderer = this.renderer;
+
+        if (!renderer)
+        {
+            throw new Error('The Extract has already been destroyed');
+        }
+
         let resolution;
         let flipY = false;
         let renderTexture;
@@ -179,7 +185,7 @@ export class Extract implements ISystem, IExtract
             {
                 const multisample = renderer.context.webGLVersion >= 2 ? renderer.multisample : MSAA_QUALITY.NONE;
 
-                renderTexture = this.renderer.generateTexture(target, { multisample });
+                renderTexture = renderer.generateTexture(target, { multisample });
 
                 if (multisample !== MSAA_QUALITY.NONE)
                 {
@@ -191,7 +197,7 @@ export class Extract implements ISystem, IExtract
 
                     renderer.framebuffer.bind(renderTexture.framebuffer);
                     renderer.framebuffer.blit(resolvedTexture.framebuffer);
-                    renderer.framebuffer.bind(null);
+                    renderer.framebuffer.bind();
 
                     renderTexture.destroy(true);
                     renderTexture = resolvedTexture;
@@ -220,7 +226,7 @@ export class Extract implements ISystem, IExtract
             }
 
             flipY = true;
-            renderer.renderTexture.bind(null);
+            renderer.renderTexture.bind();
         }
 
         const width = Math.round(frame.width * resolution);
@@ -243,7 +249,7 @@ export class Extract implements ISystem, IExtract
 
         if (generated)
         {
-            renderTexture.destroy(true);
+            renderTexture?.destroy(true);
         }
 
         return { pixels, width, height, flipY };
