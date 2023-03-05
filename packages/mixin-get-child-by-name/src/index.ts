@@ -21,7 +21,7 @@ DisplayObject.prototype.name = null;
 Container.prototype.getChildByName = function getChildByName<T extends DisplayObject = DisplayObject>(
     name: string,
     deep?: boolean,
-): T
+): T | null
 {
     for (let i = 0, j = this.children.length; i < j; i++)
     {
