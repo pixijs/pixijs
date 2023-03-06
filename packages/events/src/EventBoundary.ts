@@ -1264,6 +1264,7 @@ export class EventBoundary
         to.client.copyFrom(from.client);
         to.ctrlKey = from.ctrlKey;
         to.metaKey = from.metaKey;
+        to.shiftKey = from.shiftKey;
         to.movement.copyFrom(from.movement);
 
         to.screen.copyFrom(from.screen);
