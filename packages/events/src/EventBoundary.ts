@@ -359,26 +359,22 @@ export class EventBoundary
         e.eventPhase = e.BUBBLING_PHASE;
 
         const children = target.children;
+        const { visible } = target as DisplayObject;
 
         const interactionNone = target.eventMode === 'none';
         const interactionPassive = target.eventMode === 'passive' && !target.interactiveChildren;
         const interactiveChildren = target.interactiveChildren;
         const shouldIterateChildren = !interactionNone && interactiveChildren && !interactionPassive;
 
-        if (children && children.length > 0)
+        if (visible && shouldIterateChildren && children?.length > 0)
         {
-            if (shouldIterateChildren)
+            for (let i = 0; i < children.length; i++)
             {
-                for (let i = 0; i < children.length; i++)
-                {
-                    this.all(e, type, children[i]);
-                }
+                this.all(e, type, children[i]);
             }
         }
 
         e.currentTarget = target;
-
-        const { visible } = target as DisplayObject;
 
         if (!visible || !target.isInteractive()) return;
 
