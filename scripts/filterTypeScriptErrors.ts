@@ -48,7 +48,7 @@ const pathPrefixs = [
     // 'packages/mesh/',
     // 'packages/mesh-extras/',
     // 'packages/mixin-cache-as-bitmap/',
-    // 'packages/mixin-get-child-by-name/',
+    'packages/mixin-get-child-by-name/',
     'packages/mixin-get-global-position/',
     // 'packages/particle-container/',
     // 'packages/prepare/',

@@ -2,7 +2,7 @@ declare namespace GlobalMixins
 {
     interface DisplayObject
     {
-        name: string;
+        name: string | null;
     }
 
     interface Container
@@ -10,6 +10,6 @@ declare namespace GlobalMixins
         getChildByName<T extends import('@pixi/display').DisplayObject = import('@pixi/display').DisplayObject>(
             name: string,
             deep?: boolean,
-        ): T;
+        ): T | null;
     }
 }
