@@ -34,10 +34,10 @@ describe('Extract', () =>
         const renderer = new Renderer();
         const extract = renderer.extract;
 
-        expect(extract.canvas(undefined)).toBeInstanceOf(HTMLCanvasElement);
-        expect(await extract.base64(undefined)).toBeString();
+        expect(extract.canvas()).toBeInstanceOf(HTMLCanvasElement);
+        expect(await extract.base64()).toBeString();
         expect(extract.pixels()).toBeInstanceOf(Uint8Array);
-        expect(await extract.image(undefined)).toBeInstanceOf(HTMLImageElement);
+        expect(await extract.image()).toBeInstanceOf(HTMLImageElement);
 
         renderer.destroy();
     });

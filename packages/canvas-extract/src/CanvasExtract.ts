@@ -23,7 +23,7 @@ export class CanvasExtract implements ISystem, IExtract
     };
 
     /** A reference to the current renderer */
-    public renderer: CanvasRenderer;
+    public renderer: CanvasRenderer | null;
 
     /**
      * @param renderer - A reference to the current renderer
@@ -93,6 +93,12 @@ export class CanvasExtract implements ISystem, IExtract
     public canvas(target?: DisplayObject | RenderTexture, frame?: Rectangle): ICanvas
     {
         const renderer = this.renderer;
+
+        if (!renderer)
+        {
+            throw new Error('The CanvasExtract has already been destroyed');
+        }
+
         let context;
         let resolution;
         let renderTexture;
@@ -153,6 +159,12 @@ export class CanvasExtract implements ISystem, IExtract
     public pixels(target?: DisplayObject | RenderTexture, frame?: Rectangle): Uint8ClampedArray
     {
         const renderer = this.renderer;
+
+        if (!renderer)
+        {
+            throw new Error('The CanvasExtract has already been destroyed');
+        }
+
         let context;
         let resolution;
         let renderTexture;
