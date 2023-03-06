@@ -378,7 +378,9 @@ export class EventBoundary
 
         e.currentTarget = target;
 
-        if (!target.isInteractive()) return;
+        const { visible } = target as DisplayObject;
+
+        if (!visible || !target.isInteractive()) return;
 
         this.notifyTarget(e, type);
     }
