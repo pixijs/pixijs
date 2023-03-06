@@ -525,7 +525,7 @@ export class EventBoundary
         }
 
         // If displayObject is a mask or invisible then it cannot be hit directly.
-        if (displayObject.isMask || displayObject.visible)
+        if (displayObject.isMask || !displayObject.visible)
         {
             return true;
         }
