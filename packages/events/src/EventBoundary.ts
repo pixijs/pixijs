@@ -1250,6 +1250,7 @@ export class EventBoundary
      * + x
      * + y
      * + screen
+     * + shiftKey
      * + global
      * @param from
      * @param to
@@ -1265,8 +1266,8 @@ export class EventBoundary
         to.ctrlKey = from.ctrlKey;
         to.metaKey = from.metaKey;
         to.movement.copyFrom(from.movement);
-
         to.screen.copyFrom(from.screen);
+        to.shiftKey = from.shiftKey;
         to.global.copyFrom(from.global);
     }
 
