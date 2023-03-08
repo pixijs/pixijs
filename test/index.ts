@@ -50,5 +50,5 @@ if (!availableSuites.length)
 const tests = availableSuites.map((pkg) => pkg.tests).join(' ');
 const out = exec(`jest ${tests} --colors`);
 
-out.stdout.pipe(process.stdout);
-out.stderr.pipe(process.stderr);
+out.stdout?.pipe(process.stdout);
+out.stderr?.pipe(process.stderr);
