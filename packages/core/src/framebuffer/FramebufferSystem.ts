@@ -628,7 +628,7 @@ export class FramebufferSystem implements ISystem
 
         if (fbo.blitFramebuffer)
         {
-            fbo.blitFramebuffer.dispose();
+            this.disposeFramebuffer(fbo.blitFramebuffer, contextLost);
         }
     }
 
