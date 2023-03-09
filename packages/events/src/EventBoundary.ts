@@ -106,6 +106,7 @@ export class EventBoundary
      */
     public moveOnAll = false;
 
+    /** Enables or disables global pointer events `globalpointermove`, `globalmousemove`. `globaltouchmove`. */
     public allowGlobalPointerEvents = true;
 
     /**
@@ -135,8 +136,11 @@ export class EventBoundary
      */
     protected eventPool: Map<typeof FederatedEvent, FederatedEvent[]> = new Map();
 
+    /** Every interactive element gathered from the scene. Only used in `pointermove` */
     private _allInteractiveElements: FederatedEventTarget[] = [];
+    /** Every element that passed the hit test. Only used in `pointermove` */
     private _hitElements: FederatedEventTarget[] = [];
+    /** Whether or not to collect all the interactive elements from the scene. Enabled in `pointermove` */
     private _collectInteractiveElements = false;
 
     /** @param rootTarget - The holder of the event boundary. */
