@@ -6,6 +6,7 @@ import { FederatedWheelEvent } from './FederatedWheelEvent';
 
 import type { DisplayObject } from '@pixi/display';
 import type { EmitterListeners, TrackingData } from './EventBoundaryTypes';
+import type { EventSystem } from './EventSystem';
 import type { FederatedEvent } from './FederatedEvent';
 import type {
     Cursor, EventMode, FederatedEventHandler,
@@ -106,9 +107,6 @@ export class EventBoundary
      */
     public moveOnAll = false;
 
-    /** Enables or disables global pointer events `globalpointermove`, `globalmousemove`. `globaltouchmove`. */
-    public allowGlobalPointerEvents = true;
-
     /**
      * Maps event types to forwarding handles for them.
      *
@@ -136,6 +134,8 @@ export class EventBoundary
      */
     protected eventPool: Map<typeof FederatedEvent, FederatedEvent[]> = new Map();
 
+    private _eventSystem: EventSystem;
+
     /** Every interactive element gathered from the scene. Only used in `pointermove` */
     private _allInteractiveElements: FederatedEventTarget[] = [];
     /** Every element that passed the hit test. Only used in `pointermove` */
@@ -143,10 +143,14 @@ export class EventBoundary
     /** Whether or not to collect all the interactive elements from the scene. Enabled in `pointermove` */
     private _collectInteractiveElements = false;
 
-    /** @param rootTarget - The holder of the event boundary. */
-    constructor(rootTarget?: DisplayObject)
+    /**
+     * @param rootTarget - The holder of the event boundary.
+     * @param eventSystem - The event system that manages this boundary.
+     */
+    constructor(rootTarget?: DisplayObject, eventSystem?: EventSystem)
     {
         this.rootTarget = rootTarget;
+        this._eventSystem = eventSystem;
 
         this.hitPruneFn = this.hitPruneFn.bind(this);
         this.hitTestFn = this.hitTestFn.bind(this);
@@ -730,22 +734,23 @@ export class EventBoundary
         }
 
         const allMethods: string[] = [];
+        const allowGlobalPointerEvents = this._eventSystem?.features.globalMove ?? true;
 
         /* eslint-disable @typescript-eslint/no-unused-expressions */
         this.moveOnAll ? allMethods.push('pointermove') : this.dispatchEvent(e, 'pointermove');
-        this.allowGlobalPointerEvents && allMethods.push('globalpointermove');
+        allowGlobalPointerEvents && allMethods.push('globalpointermove');
 
         // Then pointermove
         if (e.pointerType === 'touch')
         {
             this.moveOnAll ? allMethods.splice(1, 0, 'touchmove') : this.dispatchEvent(e, 'touchmove');
-            this.allowGlobalPointerEvents && allMethods.push('globaltouchmove');
+            allowGlobalPointerEvents && allMethods.push('globaltouchmove');
         }
 
         if (isMouse)
         {
             this.moveOnAll ? allMethods.splice(1, 0, 'mousemove') : this.dispatchEvent(e, 'mousemove');
-            this.allowGlobalPointerEvents && allMethods.push('globalmousemove');
+            allowGlobalPointerEvents && allMethods.push('globalmousemove');
             this.cursor = e.target?.cursor;
         }
 
