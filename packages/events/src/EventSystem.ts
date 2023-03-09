@@ -28,6 +28,38 @@ export interface EventSystemOptions
      * @memberof PIXI.IRendererOptions
      */
     eventMode?: EventMode;
+
+    /**
+     * The event types that are enabled by the EventSystem
+     * This option only is available when using **@pixi/events** package
+     * (included in the **pixi.js** and **pixi.js-legacy** bundle), otherwise it will be ignored.
+     * @memberof PIXI.IRendererOptions
+     * @property {boolean} move - Enables pointer events associated with pointer movement:
+     * - `pointermove` / `mousemove` / `touchmove`
+     * - `pointerout` / `mouseout`
+     * - `pointerover` / `mouseover`
+     * @property {boolean} globalMove - Enables global pointer move events:
+     * - `globalpointermove`
+     * - `globalmousemove`
+     * - `globaltouchemove`
+     * @property {boolean} click - Enables pointer events associated with clicking:
+     * - `pointerup` / `mouseup` / `touchend` / 'rightup'
+     * - `pointerupoutside` / `mouseupoutside` / `touchendoutside` / 'rightupoutside'
+     * - `pointerdown` / 'mousedown' / `touchstart` / 'rightdown'
+     * - `click` / `tap`
+     * @property {boolean} wheel - Enables wheel events.
+     * @example
+     * const app = new PIXI.Application({
+     *   view: canvas,
+     *   events: {
+     *     move: true,
+     *     globalMove: false,
+     *     click: true,
+     *     wheel: true,
+     *   },
+     * });
+     */
+    events?: Partial<Record<'move' | 'globalMove' | 'click' | 'wheel', boolean>>
 }
 
 /**
@@ -44,6 +76,38 @@ export class EventSystem implements ISystem<EventSystemOptions>
             ExtensionType.CanvasRendererSystem
         ],
     };
+
+    private static _defaultEvents: Record<'move' | 'globalMove' | 'click' | 'wheel', boolean> = {
+        move: true,
+        globalMove: true,
+        click: true,
+        wheel: true,
+    };
+
+    /**
+     * The event types that are enabled by the EventSystem
+     * @type {object}
+     * @readonly
+     * @since 7.2.0
+     * @property {boolean} move - Enables pointer events associated with pointer movement:
+     * - `pointermove` / `mousemove` / `touchmove`
+     * - `pointerout` / `mouseout`
+     * - `pointerover` / `mouseover`
+     * @property {boolean} globalMove - Enables global pointer move events:
+     * - `globalpointermove`
+     * - `globalmousemove`
+     * - `globaltouchemove`
+     * @property {boolean} click - Enables pointer events associated with clicking:
+     * - `pointerup` / `mouseup` / `touchend` / 'rightup'
+     * - `pointerupoutside` / `mouseupoutside` / `touchendoutside` / 'rightupoutside'
+     * - `pointerdown` / 'mousedown' / `touchstart` / 'rightdown'
+     * - `click` / `tap`
+     * @property {boolean} wheel - Enables wheel events.
+     */
+    public static get defaultEvents()
+    {
+        return this._defaultEvents;
+    }
 
     private static _defaultEventMode: EventMode;
 
@@ -149,6 +213,8 @@ export class EventSystem implements ISystem<EventSystemOptions>
         this.setTargetElement(view as HTMLCanvasElement);
         this.resolution = resolution;
         EventSystem._defaultEventMode = options.eventMode ?? 'auto';
+        EventSystem._defaultEvents = { ...EventSystem._defaultEvents, ...options.events };
+        this.rootBoundary.allowGlobalPointerEvents = EventSystem._defaultEvents.globalMove;
     }
 
     /**
@@ -405,23 +471,35 @@ export class EventSystem implements ISystem<EventSystemOptions>
          */
         if (this.supportsPointerEvents)
         {
-            globalThis.document.addEventListener('pointermove', this.onPointerMove, true);
-            this.domElement.addEventListener('pointerdown', this.onPointerDown, true);
-            // pointerout is fired in addition to pointerup (for touch events) and pointercancel
-            // we already handle those, so for the purposes of what we do in onPointerOut, we only
-            // care about the pointerleave event
-            this.domElement.addEventListener('pointerleave', this.onPointerOverOut, true);
-            this.domElement.addEventListener('pointerover', this.onPointerOverOut, true);
-            // globalThis.addEventListener('pointercancel', this.onPointerCancel, true);
-            globalThis.addEventListener('pointerup', this.onPointerUp, true);
+            if (EventSystem.defaultEvents.move)
+            { globalThis.document.addEventListener('pointermove', this.onPointerMove, true); }
+
+            if (EventSystem.defaultEvents.click)
+            {
+                this.domElement.addEventListener('pointerdown', this.onPointerDown, true);
+
+                // pointerout is fired in addition to pointerup (for touch events) and pointercancel
+                // we already handle those, so for the purposes of what we do in onPointerOut, we only
+                // care about the pointerleave event
+
+                this.domElement.addEventListener('pointerleave', this.onPointerOverOut, true);
+                this.domElement.addEventListener('pointerover', this.onPointerOverOut, true);
+                // globalThis.addEventListener('pointercancel', this.onPointerCancel, true);
+                globalThis.addEventListener('pointerup', this.onPointerUp, true);
+            }
         }
         else
         {
-            globalThis.document.addEventListener('mousemove', this.onPointerMove, true);
-            this.domElement.addEventListener('mousedown', this.onPointerDown, true);
-            this.domElement.addEventListener('mouseout', this.onPointerOverOut, true);
-            this.domElement.addEventListener('mouseover', this.onPointerOverOut, true);
-            globalThis.addEventListener('mouseup', this.onPointerUp, true);
+            if (EventSystem.defaultEvents.move)
+            { globalThis.document.addEventListener('mousemove', this.onPointerMove, true); }
+
+            if (EventSystem.defaultEvents.click)
+            {
+                this.domElement.addEventListener('mousedown', this.onPointerDown, true);
+                this.domElement.addEventListener('mouseout', this.onPointerOverOut, true);
+                this.domElement.addEventListener('mouseover', this.onPointerOverOut, true);
+                globalThis.addEventListener('mouseup', this.onPointerUp, true);
+            }
         }
 
         // Always look directly for touch events so that we can provide original data
@@ -429,10 +507,15 @@ export class EventSystem implements ISystem<EventSystemOptions>
         // PointerEvents whenever available
         if (this.supportsTouchEvents)
         {
-            this.domElement.addEventListener('touchstart', this.onPointerDown, true);
-            // this.domElement.addEventListener('touchcancel', this.onPointerCancel, true);
-            this.domElement.addEventListener('touchend', this.onPointerUp, true);
-            this.domElement.addEventListener('touchmove', this.onPointerMove, true);
+            if (EventSystem.defaultEvents.move)
+            { this.domElement.addEventListener('touchmove', this.onPointerMove, true); }
+
+            if (EventSystem.defaultEvents.click)
+            {
+                this.domElement.addEventListener('touchstart', this.onPointerDown, true);
+                // this.domElement.addEventListener('touchcancel', this.onPointerCancel, true);
+                this.domElement.addEventListener('touchend', this.onPointerUp, true);
+            }
         }
 
         this.domElement.addEventListener('wheel', this.onWheel, {
