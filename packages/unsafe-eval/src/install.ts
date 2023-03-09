@@ -1,4 +1,4 @@
-import { ShaderSystem, unsafeEvalSupported, utils } from '@pixi/core';
+import { ShaderSystem, utils } from '@pixi/core';
 import { syncUniforms } from './syncUniforms';
 
 import type { Program, UniformGroup } from '@pixi/core';
@@ -28,8 +28,6 @@ export function install(_core: PIXICore): void
  */
 function selfInstall(): void
 {
-    if (unsafeEvalSupported()) return;
-
     Object.assign(ShaderSystem.prototype,
         {
             systemCheck()
