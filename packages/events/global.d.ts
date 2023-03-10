@@ -33,6 +33,11 @@ declare namespace GlobalMixins
          * @since 7.2.0
          */
         eventMode?: import('@pixi/events').EventMode;
+        /**
+         * The event features that are enabled by the EventSystem.
+         * @since 7.2.0
+         */
+        eventFeatures?: import('@pixi/events').EventSystemOptions['eventFeatures']
     }
 
     interface CanvasRenderer
