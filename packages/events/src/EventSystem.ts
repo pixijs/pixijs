@@ -181,6 +181,14 @@ export class EventSystem implements ISystem<EventSystemOptions>
      * @example
      * const app = new PIXI.Application()
      * app.renderer.events.features.globalMove = false
+     *
+     * // to override all features use Object.assign
+     * Object.assign(app.renderer.events.features, {
+     *  move: false,
+     *  globalMove: false,
+     *  click: false,
+     *  wheel: false,
+     * })
      */
     public features: EventSystemFeatures;
 
@@ -195,7 +203,7 @@ export class EventSystem implements ISystem<EventSystemOptions>
     constructor(renderer: IRenderer)
     {
         this.renderer = renderer;
-        this.rootBoundary = new EventBoundary(null, this);
+        this.rootBoundary = new EventBoundary(null);
         EventsTicker.init(this);
 
         this.autoPreventDefault = true;
@@ -209,7 +217,18 @@ export class EventSystem implements ISystem<EventSystemOptions>
             pointer: 'pointer',
         };
 
-        this.features = { ...EventSystem.defaultEventFeatures };
+        this.features = new Proxy({ ...EventSystem.defaultEventFeatures }, {
+            set: (target, key, value) =>
+            {
+                if (key === 'globalMove')
+                {
+                    this.rootBoundary.enableGlobalMoveEvents = value;
+                }
+                target[key as keyof EventSystemFeatures] = value;
+
+                return true;
+            }
+        });
 
         this.onPointerDown = this.onPointerDown.bind(this);
         this.onPointerMove = this.onPointerMove.bind(this);
@@ -229,7 +248,8 @@ export class EventSystem implements ISystem<EventSystemOptions>
         this.setTargetElement(view as HTMLCanvasElement);
         this.resolution = resolution;
         EventSystem._defaultEventMode = options.eventMode ?? 'auto';
-        this.features = { ...this.features, ...options.eventFeatures };
+        Object.assign(this.features, options.eventFeatures ?? {});
+        this.rootBoundary.enableGlobalMoveEvents = this.features.globalMove;
     }
 
     /**

@@ -6,7 +6,6 @@ import { FederatedWheelEvent } from './FederatedWheelEvent';
 
 import type { DisplayObject } from '@pixi/display';
 import type { EmitterListeners, TrackingData } from './EventBoundaryTypes';
-import type { EventSystem } from './EventSystem';
 import type { FederatedEvent } from './FederatedEvent';
 import type {
     Cursor, EventMode, FederatedEventHandler,
@@ -107,6 +106,9 @@ export class EventBoundary
      */
     public moveOnAll = false;
 
+    /** Enables the global move events. `globalpointermove`, `globaltouchmove`, and `globalmousemove` */
+    public enableGlobalMoveEvents = true;
+
     /**
      * Maps event types to forwarding handles for them.
      *
@@ -134,8 +136,6 @@ export class EventBoundary
      */
     protected eventPool: Map<typeof FederatedEvent, FederatedEvent[]> = new Map();
 
-    private _eventSystem: EventSystem;
-
     /** Every interactive element gathered from the scene. Only used in `pointermove` */
     private _allInteractiveElements: FederatedEventTarget[] = [];
     /** Every element that passed the hit test. Only used in `pointermove` */
@@ -145,12 +145,10 @@ export class EventBoundary
 
     /**
      * @param rootTarget - The holder of the event boundary.
-     * @param eventSystem - The event system that manages this boundary.
      */
-    constructor(rootTarget?: DisplayObject, eventSystem?: EventSystem)
+    constructor(rootTarget?: DisplayObject)
     {
         this.rootTarget = rootTarget;
-        this._eventSystem = eventSystem;
 
         this.hitPruneFn = this.hitPruneFn.bind(this);
         this.hitTestFn = this.hitTestFn.bind(this);
@@ -734,7 +732,7 @@ export class EventBoundary
         }
 
         const allMethods: string[] = [];
-        const allowGlobalPointerEvents = this._eventSystem?.features.globalMove ?? true;
+        const allowGlobalPointerEvents = this.enableGlobalMoveEvents ?? true;
 
         /* eslint-disable @typescript-eslint/no-unused-expressions */
         this.moveOnAll ? allMethods.push('pointermove') : this.dispatchEvent(e, 'pointermove');
@@ -756,7 +754,7 @@ export class EventBoundary
 
         if (allMethods.length > 0)
         {
-            allMethods.forEach((method) => this.all(e, method));
+            this.all(e, allMethods);
         }
         this._allInteractiveElements.length = 0;
         this._hitElements.length = 0;
