@@ -190,7 +190,7 @@ export class EventSystem implements ISystem<EventSystemOptions>
      *  wheel: false,
      * })
      */
-    public features: EventSystemFeatures;
+    public readonly features: EventSystemFeatures;
 
     private currentCursor: string;
     private rootPointerEvent: FederatedPointerEvent;
