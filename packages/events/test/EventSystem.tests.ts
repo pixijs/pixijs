@@ -583,4 +583,28 @@ describe('EventSystem', () =>
         expect(graphics.interactive).toEqual(false);
         expect(graphics.eventMode).toEqual('auto');
     });
+
+    it('should provide the correct global pointer event', () =>
+    {
+        const renderer = createRenderer();
+        const [stage, graphics] = createScene();
+
+        graphics.position.set(35, 35);
+        renderer.render(stage);
+
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', {
+                clientX: 40,
+                clientY: 40,
+                pointerType: 'mouse',
+            })
+        );
+
+        const e = (renderer.events as EventSystem).pointer;
+
+        expect(e.global.x).toEqual(40);
+        expect(e.global.y).toEqual(40);
+        expect(e.getLocalPosition(graphics).x).toEqual(5);
+        expect(e.getLocalPosition(graphics).y).toEqual(5);
+    });
 });

@@ -225,6 +225,16 @@ export class EventSystem implements ISystem<EventSystemOptions>
     }
 
     /**
+     * The global pointer event.
+     * Useful for getting the pointer position without listening to events.
+     * @since 7.2.0
+     */
+    public get pointer(): Readonly<FederatedPointerEvent>
+    {
+        return this.rootPointerEvent;
+    }
+
+    /**
      * Event handler for pointer down events on {@link PIXI.EventSystem#domElement this.domElement}.
      * @param nativeEvent - The native mouse/pointer/touch event.
      */
