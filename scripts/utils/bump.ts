@@ -28,7 +28,7 @@ export const bump = async (currentVersion: string): Promise<string> =>
     const nextVersion = bump === 'custom' ? custom : semver.inc(currentVersion, bump as 'major' | 'minor' | 'patch');
 
     // Make sure the version is valid
-    if (semver.valid(nextVersion) === null)
+    if (nextVersion === null || semver.valid(nextVersion) === null)
     {
         throw new Error(`Error: Invalid version: ${nextVersion}`);
     }
