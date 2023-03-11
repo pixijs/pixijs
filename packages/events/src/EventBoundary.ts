@@ -503,7 +503,7 @@ export class EventBoundary
         }
 
         // bail out early if we have already found something that hit
-        if (this._hitElements.length > 0) return false;
+        if (this._collectInteractiveElements && this._hitElements.length > 0) return false;
 
         if (displayObject.hitArea)
         {
