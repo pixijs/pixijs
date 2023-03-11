@@ -28,7 +28,11 @@ void main(void) {
     alpha = 1.0;
   }
 
-  // NPM Textures, NPM outputs
-  gl_FragColor = vec4(uColor.rgb, uColor.a * alpha);
+  // Gamma correction for coverage-like alpha
+  float luma = dot(texColor.rgb, vec3(0.299, 0.587, 0.114));
+  float gamma = mix(1.0, 1.0/2.2, luma);
+  float coverage = pow(uColor.a * alpha, gamma);  
 
+  // NPM Textures, NPM outputs
+  gl_FragColor = vec4(uColor.rgb, coverage);
 }
