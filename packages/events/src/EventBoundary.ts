@@ -430,12 +430,14 @@ export class EventBoundary
 
                     if (nestedHit.length > 0 || isInteractive)
                     {
-                        if (isInteractive) this._allInteractiveElements.push(currentTarget);
+                        if (this._collectInteractiveElements && isInteractive)
+                        { this._allInteractiveElements.push(currentTarget); }
                         nestedHit.push(currentTarget);
                     }
 
                     // store all hit elements
-                    if (this._hitElements.length === 0) this._hitElements = nestedHit;
+                    if (this._collectInteractiveElements && this._hitElements.length === 0)
+                    { this._hitElements = nestedHit; }
                     // only return the hit elements if we are not collecting all interactive elements
                     if (!this._collectInteractiveElements) return nestedHit;
                 }
@@ -503,7 +505,7 @@ export class EventBoundary
         }
 
         // bail out early if we have already found something that hit
-        if (this._hitElements.length > 0) return false;
+        if (this._collectInteractiveElements && this._hitElements.length > 0) return false;
 
         if (displayObject.hitArea)
         {
