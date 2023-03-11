@@ -245,6 +245,36 @@ describe('Assets', () =>
         expect(bunny.baseTexture).toBe(null);
     });
 
+    it('should load TXT assets from data URL', async () =>
+    {
+        let txtDataURL = `
+        data:text/plain,Hello, world!
+        `;
+
+        txtDataURL = encodeURI(txtDataURL.trim());
+
+        const txt = await Assets.load(txtDataURL);
+
+        expect(txt).toBe('Hello, world!');
+    });
+
+    it('should load JSON assets from data URL', async () =>
+    {
+        let jsonDataURL = `
+        data:application/json,
+        {
+            "text": "Hello, world!",
+            "value": 123
+        }
+        `;
+
+        jsonDataURL = encodeURI(jsonDataURL.trim());
+
+        const json = await Assets.load(jsonDataURL);
+
+        expect(json).toStrictEqual({ text: 'Hello, world!', value: 123 });
+    });
+
     it('should load PNG assets from data URL', async () =>
     {
         // Other formats (JPEG, WEBP, AVIF) can be added similarly.
@@ -270,6 +300,22 @@ describe('Assets', () =>
         const bunny = await Assets.load(bunnyDataURL);
 
         expect(bunny).toBeInstanceOf(Texture);
+    });
+
+    it('should load SVG assets from data URL', async () =>
+    {
+        let svgDataURL = `
+        data:image/svg+xml,
+        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="25" fill="red"/>
+        </svg>
+        `;
+
+        svgDataURL = encodeURI(svgDataURL.trim());
+
+        const svg = await Assets.load(svgDataURL);
+
+        expect(svg).toBeInstanceOf(Texture);
     });
 
     it('should load TTF assets from data URL', async () =>
