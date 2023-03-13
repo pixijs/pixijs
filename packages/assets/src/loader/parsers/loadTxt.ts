@@ -1,7 +1,12 @@
-import { extensions, ExtensionType, settings, utils } from '@pixi/core';
+import { extensions, ExtensionType, settings } from '@pixi/core';
+import { checkDataUrl } from '../../utils/checkDataUrl';
+import { checkExtension } from '../../utils/checkExtension';
 import { LoaderParserPriority } from './LoaderParser';
 
 import type { LoaderParser } from './LoaderParser';
+
+const validTXTExtension = '.txt';
+const validTXTMIME = 'text/plain';
 
 /** Simple loader plugin for loading text data */
 export const loadTxt = {
@@ -15,7 +20,7 @@ export const loadTxt = {
 
     test(url: string): boolean
     {
-        return (utils.path.extname(url).toLowerCase() === '.txt');
+        return checkDataUrl(url, validTXTMIME) || checkExtension(url, validTXTExtension);
     },
 
     async load(url: string): Promise<string>

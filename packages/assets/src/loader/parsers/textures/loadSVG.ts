@@ -1,4 +1,6 @@
 import { BaseTexture, extensions, ExtensionType, settings, SVGResource, utils } from '@pixi/core';
+import { checkDataUrl } from '../../../utils/checkDataUrl';
+import { checkExtension } from '../../../utils/checkExtension';
 import { LoaderParserPriority } from '../LoaderParser';
 import { loadTextures } from './loadTextures';
 import { createTexture } from './utils/createTexture';
@@ -7,6 +9,9 @@ import type { IBaseTextureOptions, Texture } from '@pixi/core';
 import type { Loader } from '../../Loader';
 import type { LoadAsset } from '../../types';
 import type { LoaderParser } from '../LoaderParser';
+
+const validSVGExtension = '.svg';
+const validSVGMIME = 'image/svg+xml';
 
 /** Loads SVG's into Textures */
 export const loadSVG = {
@@ -19,7 +24,7 @@ export const loadSVG = {
 
     test(url: string): boolean
     {
-        return (utils.path.extname(url).toLowerCase() === '.svg');
+        return checkDataUrl(url, validSVGMIME) || checkExtension(url, validSVGExtension);
     },
 
     async testParse(data: string): Promise<boolean>

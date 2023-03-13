@@ -245,6 +245,48 @@ describe('Assets', () =>
         expect(bunny.baseTexture).toBe(null);
     });
 
+    it('should load TXT assets from data URL', async () =>
+    {
+        let txtDataURL1 = `
+        data:text/plain,Hello, world!
+        `;
+
+        txtDataURL1 = encodeURI(txtDataURL1.trim());
+
+        const txt1 = await Assets.load(txtDataURL1);
+
+        expect(txt1).toBe('Hello, world!');
+
+        const txtDataURL2 = 'data:text/plain;base64,SGVsbG8sIHdvcmxkIQ==';
+
+        const txt2 = await Assets.load(txtDataURL2);
+
+        expect(txt2).toBe('Hello, world!');
+    });
+
+    it('should load JSON assets from data URL', async () =>
+    {
+        let jsonDataURL1 = `
+        data:application/json,
+        {
+            "text": "Hello, world!",
+            "value": 123
+        }
+        `;
+
+        jsonDataURL1 = encodeURI(jsonDataURL1.trim());
+
+        const json1 = await Assets.load(jsonDataURL1);
+
+        expect(json1).toStrictEqual({ text: 'Hello, world!', value: 123 });
+
+        const jsonDataURL2 = 'data:application/json;base64,eyJ0ZXh0IjoiSGVsbG8sIHdvcmxkISIsInZhbHVlIjogMTIzfQ==';
+
+        const json2 = await Assets.load(jsonDataURL2);
+
+        expect(json2).toStrictEqual({ text: 'Hello, world!', value: 123 });
+    });
+
     it('should load PNG assets from data URL', async () =>
     {
         // Other formats (JPEG, WEBP, AVIF) can be added similarly.
@@ -270,6 +312,34 @@ describe('Assets', () =>
         const bunny = await Assets.load(bunnyDataURL);
 
         expect(bunny).toBeInstanceOf(Texture);
+    });
+
+    it('should load SVG assets from data URL', async () =>
+    {
+        let svgDataURL1 = `
+        data:image/svg+xml,
+        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="25" fill="red"/>
+        </svg>
+        `;
+
+        svgDataURL1 = encodeURI(svgDataURL1.trim());
+
+        const svg1 = await Assets.load(svgDataURL1);
+
+        expect(svg1).toBeInstanceOf(Texture);
+
+        let svgDataURL2 = `
+        data:image/svg+xml;base64,
+        PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIw
+        IDAgMTAwIDEwMCI+PGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iMjUiIGZpbGw9InJlZCIvPjwvc3ZnPg==
+        `;
+
+        svgDataURL2 = svgDataURL2.replace(/\s/g, '');
+
+        const svg2 = await Assets.load(svgDataURL2);
+
+        expect(svg2).toBeInstanceOf(Texture);
     });
 
     it('should load TTF assets from data URL', async () =>
