@@ -1,19 +1,20 @@
 /// <reference path="../global.d.ts" />
-import { Graphics } from '@pixi/graphics';
-import { drawChamferRect } from './drawChamferRect';
-import { drawFilletRect } from './drawFilletRect';
-import { drawRegularPolygon } from './drawRegularPolygon';
-import { drawRoundedPolygon } from './drawRoundedPolygon';
-import { drawStar } from './drawStar';
-import { drawTorus } from './drawTorus';
+import { Graphics } from "@pixi/graphics";
+import { drawChamferRect } from "./drawChamferRect";
+import { drawFilletRect } from "./drawFilletRect";
+import { drawRegularPolygon } from "./drawRegularPolygon";
+import { drawRoundedPolygon } from "./drawRoundedPolygon";
+import { drawRoundedPath } from "./drawRoundedPath";
+import { drawStar } from "./drawStar";
+import { drawTorus } from "./drawTorus";
 
-export interface IGraphicsExtras
-{
+export interface IGraphicsExtras {
     drawTorus: typeof drawTorus;
     drawChamferRect: typeof drawChamferRect;
     drawFilletRect: typeof drawFilletRect;
     drawRegularPolygon: typeof drawRegularPolygon;
     drawRoundedPolygon: typeof drawRoundedPolygon;
+    drawRoundedPath: typeof drawRoundedPolygon;
     drawStar: typeof drawStar;
 }
 
@@ -24,5 +25,6 @@ Object.defineProperties(Graphics.prototype, {
     drawFilletRect: { value: drawFilletRect },
     drawRegularPolygon: { value: drawRegularPolygon },
     drawRoundedPolygon: { value: drawRoundedPolygon },
+    drawRoundedPath: { value: drawRoundedPath },
     drawStar: { value: drawStar },
 });
