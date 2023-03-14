@@ -1,6 +1,9 @@
-import type { LoaderParser } from './loader';
-
 export type ArrayOr<T> = T | T[];
+
+/**
+ * Names of the parsers that are built into PIXI.
+ * @memberof PIXI
+ */
 export type LoadParserName = 'loadTextures' | 'loadJson' | 'loadTxt' | 'loadWebFont' | 'loadSVG' | string;
 
 /**
@@ -17,7 +20,7 @@ export interface ResolvedAsset<T=any>
      */
     name?: string[];
     /** The URL or relative path to the asset */
-    src: string;
+    src?: string;
     /**
      * Please use `src` instead.
      * @deprecated since 7.2.0
@@ -33,22 +36,14 @@ export interface ResolvedAsset<T=any>
 }
 
 /**
- * Please use `ResolvedAsset` instead.
+ * A fully resolved src,
+ * Glob patterns will not work here, and the src will be resolved to a single file.
  * @memberof PIXI
- * @deprecated since 7.2.0
  */
-export type ResolveAsset<T = any> = ResolvedAsset<T>;
-
-/**
- * Please use `ResolvedAsset` instead.
- * @memberof PIXI
- * @deprecated since 7.2.0
- */
-export type LoadAsset<T = any> = ResolvedAsset<T>;
-
 // NOTE: Omit does not seem to work here
 export type ResolvedSrc = Pick<ResolvedAsset, 'src' | 'srcs' | 'format' | 'loadParser' | 'data'> & {[key: string]: any;};
-export type UnresolvedSrc = ArrayOr<string> | ArrayOr<ResolvedSrc>;
+
+export type AssetSrc = ArrayOr<string> | ArrayOr<ResolvedSrc>;
 
 /**
  * An asset that has not been resolved yet.
@@ -59,7 +54,7 @@ export interface UnresolvedAsset<T=any> extends Omit<ResolvedAsset<T>, 'src' | '
     /** Aliases associated with asset */
     alias?: ArrayOr<string>;
     /** The URL or relative path to the asset */
-    src: UnresolvedSrc;
+    src?: AssetSrc;
     /**
      * Please use `alias` instead.
      * @deprecated since 7.2.0
@@ -69,7 +64,7 @@ export interface UnresolvedAsset<T=any> extends Omit<ResolvedAsset<T>, 'src' | '
      * Please use `src` instead.
      * @deprecated since 7.2.0
      */
-    srcs?: UnresolvedSrc
+    srcs?: AssetSrc;
 }
 
 /**
@@ -82,7 +77,7 @@ export type UnresolvedAssetObject = Omit<UnresolvedAsset, 'name' | 'alias'>;
  * Structure of a bundle found in a manifest file
  * @memberof PIXI
  */
-export interface AssetBundle
+export interface AssetsBundle
 {
     name: string;
     assets: UnresolvedAsset[] | Record<string, ArrayOr<string> | UnresolvedAssetObject>;
@@ -94,11 +89,5 @@ export interface AssetBundle
  */
 export interface AssetsManifest
 {
-    bundles: AssetBundle[];
-}
-
-export interface PromiseAndParser
-{
-    promise: Promise<any>
-    parser: LoaderParser
+    bundles: AssetsBundle[];
 }

@@ -1,8 +1,9 @@
 import { utils } from '@pixi/core';
 import { convertToList, isSingleItem } from '../utils';
 
-import type { PromiseAndParser, ResolvedAsset } from '../types';
+import type { ResolvedAsset } from '../types';
 import type { LoaderParser } from './parsers/LoaderParser';
+import type { PromiseAndParser } from './types';
 
 /**
  * The Loader is responsible for loading all assets, such as images, spritesheets, audio files, etc.

@@ -11,7 +11,7 @@ import { isSingleItem } from './utils/isSingleItem';
 import type { FormatDetectionParser } from './detections';
 import type { LoadTextureConfig } from './loader/parsers';
 import type { BundleIdentifierOptions } from './resolver/Resolver';
-import type { ArrayOr, AssetBundle, AssetsManifest, LoadParserName, ResolvedAsset, UnresolvedAsset } from './types';
+import type { ArrayOr, AssetsBundle, AssetsManifest, LoadParserName, ResolvedAsset, UnresolvedAsset } from './types';
 
 export type ProgressCallback = (progress: number) => void;
 
@@ -481,7 +481,7 @@ export class AssetsClass
      * @param bundleId - the id of the bundle to add
      * @param assets - a record of the asset or assets that will be chosen from when loading via the specified key
      */
-    public addBundle(bundleId: string, assets: AssetBundle['assets']): void
+    public addBundle(bundleId: string, assets: AssetsBundle['assets']): void
     {
         this.resolver.addBundle(bundleId, assets);
     }
@@ -709,7 +709,7 @@ export class AssetsClass
         onProgress?: ProgressCallback
     ): Promise<Record<string, T>>
     {
-        const resolveArray = Object.values(resolveResults);
+        const resolveArray = Object.values(resolveResults) as ResolvedAsset[];
         const resolveKeys = Object.keys(resolveResults);
 
         // pause background loader...

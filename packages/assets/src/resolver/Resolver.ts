@@ -5,14 +5,14 @@ import { isSingleItem } from '../utils/isSingleItem';
 
 import type {
     ArrayOr,
-    AssetBundle,
+    AssetsBundle,
     AssetsManifest,
+    AssetSrc,
     LoadParserName,
     ResolvedAsset,
     ResolvedSrc,
     UnresolvedAsset,
-    UnresolvedAssetObject,
-    UnresolvedSrc
+    UnresolvedAssetObject
 } from '../types';
 import type { PreferOrder, ResolveURLParser } from './types';
 
@@ -319,7 +319,7 @@ export class Resolver
      * @param bundleId - The id of the bundle to add
      * @param assets - A record of the asset or assets that will be chosen from when loading via the specified key
      */
-    public addBundle(bundleId: string, assets: AssetBundle['assets']): void
+    public addBundle(bundleId: string, assets: AssetsBundle['assets']): void
     {
         const assetNames: string[] = [];
 
@@ -434,7 +434,7 @@ export class Resolver
      */
     public add(
         aliases: ArrayOr<string> | (ArrayOr<UnresolvedAsset>),
-        srcs?: UnresolvedSrc,
+        srcs?: AssetSrc,
         data?: unknown,
         format?: string,
         loadParser?: LoadParserName
@@ -481,7 +481,7 @@ export class Resolver
             // src can contain an unresolved asset itself
             // so we need to merge that data with the current asset
             // we dont need to create string variations for the src if it is a ResolvedAsset
-            const srcsToUse: (string | ResolvedSrc)[][] = convertToList<UnresolvedSrc>(src || srcs).map((src) =>
+            const srcsToUse: (string | ResolvedSrc)[][] = convertToList<AssetSrc>(src || srcs).map((src) =>
             {
                 if (typeof src === 'string')
                 { return createStringVariations(src); }
