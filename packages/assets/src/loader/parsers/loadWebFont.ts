@@ -3,7 +3,7 @@ import { checkDataUrl } from '../../utils/checkDataUrl';
 import { checkExtension } from '../../utils/checkExtension';
 import { LoaderParserPriority } from './LoaderParser';
 
-import type { LoadAsset } from '../types';
+import type { ResolvedAsset } from '../../types';
 import type { LoaderParser } from './LoaderParser';
 
 const validWeights = [
@@ -69,7 +69,7 @@ export const loadWebFont = {
         return checkDataUrl(url, validFontMIMEs) || checkExtension(url, validFontExtensions);
     },
 
-    async load(url: string, options?: LoadAsset<LoadFontData>): Promise<FontFace | FontFace[]>
+    async load(url: string, options?: ResolvedAsset<LoadFontData>): Promise<FontFace | FontFace[]>
     {
         const fonts = settings.ADAPTER.getFontFaceSet();
 

@@ -3,7 +3,18 @@ import { convertToList } from '../utils/convertToList';
 import { createStringVariations } from '../utils/createStringVariations';
 import { isSingleItem } from '../utils/isSingleItem';
 
-import type { PreferOrder, ResolveAsset, ResolverBundle, ResolverManifest, ResolveURLParser } from './types';
+import type {
+    ArrayOr,
+    AssetBundle,
+    AssetsManifest,
+    LoadParserName,
+    ResolvedAsset,
+    ResolvedSrc,
+    UnresolvedAsset,
+    UnresolvedAssetObject,
+    UnresolvedSrc
+} from '../types';
+import type { PreferOrder, ResolveURLParser } from './types';
 
 export interface BundleIdentifierOptions
 {
@@ -94,14 +105,14 @@ export class Resolver
         assetBundleId: string
     ) => string = this._defaultBundleIdentifierOptions.extractAssetIdFromBundle;
 
-    private _assetMap: Record<string, ResolveAsset[]> = {};
+    private _assetMap: Record<string, ResolvedAsset[]> = {};
     private _preferredOrder: PreferOrder[] = [];
     private _parsers: ResolveURLParser[] = [];
 
-    private _resolverHash: Record<string, ResolveAsset> = {};
+    private _resolverHash: Record<string, ResolvedAsset> = {};
     private _rootPath: string;
     private _basePath: string;
-    private _manifest: ResolverManifest;
+    private _manifest: AssetsManifest;
     private _bundles: Record<string, string[]> = {};
     private _defaultSearchParams: string;
 
@@ -277,7 +288,7 @@ export class Resolver
      * generally a manifest would be built using a tool.
      * @param manifest - the manifest to add to the resolver
      */
-    public addManifest(manifest: ResolverManifest): void
+    public addManifest(manifest: AssetsManifest): void
     {
         if (this._manifest)
         {
@@ -308,7 +319,7 @@ export class Resolver
      * @param bundleId - The id of the bundle to add
      * @param assets - A record of the asset or assets that will be chosen from when loading via the specified key
      */
-    public addBundle(bundleId: string, assets: ResolverBundle['assets']): void
+    public addBundle(bundleId: string, assets: AssetBundle['assets']): void
     {
         const assetNames: string[] = [];
 
@@ -320,33 +331,69 @@ export class Resolver
         {
             assets.forEach((asset) =>
             {
-                if (typeof asset.name === 'string')
+                const srcs = asset.src ?? asset.srcs;
+                const aliases = asset.alias ?? asset.name;
+                let ids: string[];
+
+                if (typeof aliases === 'string')
                 {
-                    const bundleAssetId = this._createBundleAssetId(bundleId, asset.name);
+                    const bundleAssetId = this._createBundleAssetId(bundleId, aliases);
 
                     assetNames.push(bundleAssetId);
-
-                    this.add([asset.name, bundleAssetId], asset.srcs, asset.data);
+                    ids = [aliases, bundleAssetId];
                 }
                 else
                 {
-                    const bundleIds = asset.name.map((name) => this._createBundleAssetId(bundleId, name));
+                    const bundleIds = aliases.map((name) => this._createBundleAssetId(bundleId, name));
 
-                    bundleIds.forEach((bundleId) =>
-                    {
-                        assetNames.push(bundleId);
-                    });
-
-                    this.add([...asset.name, ...bundleIds], asset.srcs);
+                    assetNames.push(...bundleIds);
+                    ids = [...aliases, ...bundleIds];
                 }
+
+                this.add({
+                    ...asset,
+                    ...{
+                        alias: ids,
+                        src: srcs,
+                    }
+                });
             });
         }
         else
         {
             Object.keys(assets).forEach((key) =>
             {
-                assetNames.push(this._createBundleAssetId(bundleId, key));
-                this.add([key, this._createBundleAssetId(bundleId, key)], assets[key]);
+                const aliases: string[] = [key, this._createBundleAssetId(bundleId, key)];
+
+                if (typeof assets[key] === 'string')
+                {
+                    this.add({
+                        alias: aliases,
+                        src: assets[key] as string,
+                    });
+                }
+                else if (Array.isArray(assets[key]))
+                {
+                    this.add({
+                        alias: aliases,
+                        src: assets[key] as string[],
+                    });
+                }
+                else
+                {
+                    const asset = assets[key] as UnresolvedAssetObject;
+                    const assetSrc = asset.src ?? asset.srcs;
+
+                    this.add({
+                        ...asset,
+                        ...{
+                            alias: aliases,
+                            src: Array.isArray(assetSrc) ? assetSrc : [assetSrc],
+                        }
+                    });
+                }
+
+                assetNames.push(...aliases);
             });
         }
 
@@ -358,115 +405,150 @@ export class Resolver
      * The most important thing the resolver does
      * @example
      * // Single key, single asset:
-     * resolver.add('foo', 'bar.png');
+     * resolver.add({alias: 'foo', src: 'bar.png');
      * resolver.resolveUrl('foo') // => 'bar.png'
      *
      * // Multiple keys, single asset:
-     * resolver.add(['foo', 'boo'], 'bar.png');
+     * resolver.add({alias: ['foo', 'boo'], src: 'bar.png'});
      * resolver.resolveUrl('foo') // => 'bar.png'
      * resolver.resolveUrl('boo') // => 'bar.png'
      *
      * // Multiple keys, multiple assets:
-     * resolver.add(['foo', 'boo'], ['bar.png', 'bar.webp']);
+     * resolver.add({alias: ['foo', 'boo'], src: ['bar.png', 'bar.webp']});
      * resolver.resolveUrl('foo') // => 'bar.png'
      *
      * // Add custom data attached to the resolver
-     * Resolver.add(
-     *     'bunnyBooBooSmooth',
-     *     'bunny{png,webp}',
-     *     { scaleMode:SCALE_MODES.NEAREST }, // Base texture options
-     * );
+     * Resolver.add({
+     *     alias: 'bunnyBooBooSmooth',
+     *     src: 'bunny{png,webp}',
+     *     data: { scaleMode:SCALE_MODES.NEAREST }, // Base texture options
+     * });
      *
      * resolver.resolve('bunnyBooBooSmooth') // => { src: 'bunny.png', data: { scaleMode: SCALE_MODES.NEAREST } }
-     * @param keysIn - The keys to map, can be an array or a single key
-     * @param assetsIn - The assets to associate with the key(s)
-     * @param data - The data that will be attached to the object that resolved object.
+     * @param aliases - the key or keys that you will reference when loading this asset
+     * @param srcs - the asset or assets that will be chosen from when loading via the specified key
+     * @param data - asset-specific data that will be passed to the loaders
+     * - Useful if you want to initiate loaded objects with specific data
+     * @param format - the format of the asset
+     * @param loadParser - the name of the load parser to use
      */
-    public add(keysIn: string | string[], assetsIn: string | ResolveAsset | (string | ResolveAsset)[], data?: unknown): void
+    public add(
+        aliases: ArrayOr<string> | (ArrayOr<UnresolvedAsset>),
+        srcs?: UnresolvedSrc,
+        data?: unknown,
+        format?: string,
+        loadParser?: LoadParserName
+    ): void
     {
-        const keys: string[] = convertToList<string>(keysIn);
+        const assets: UnresolvedAsset[] = [];
 
-        keys.forEach((key) =>
+        if (typeof aliases === 'string' || (Array.isArray(aliases) && typeof aliases[0] === 'string'))
+        {
+            // #if _DEBUG
+            // eslint-disable-next-line max-len
+            utils.deprecation('7.2.0', `Assets.add now uses an object instead of individual parameters.\nPlease use Assets.add({ alias, src, data, format, loadParser }) instead.`);
+            // #endif
+
+            assets.push({ alias: aliases as ArrayOr<string>, src: srcs, data, format, loadParser });
+        }
+        else if (Array.isArray(aliases))
+        {
+            assets.push(...(aliases as UnresolvedAsset[]));
+        }
+        else
+        {
+            assets.push(aliases as UnresolvedAsset);
+        }
+
+        // #if _DEBUG
+        const keyCheck = (key: string) =>
         {
             if (this.hasKey(key))
             {
-                // #if _DEBUG
                 console.warn(`[Resolver] already has key: ${key} overwriting`);
-                // #endif
             }
-        });
+        };
+        // #endif
 
-        if (!Array.isArray(assetsIn))
+        const assetArray = convertToList(assets);
+
+        // loop through all the assets and generate a resolve asset for each src
+        assetArray.forEach((asset) =>
         {
-            if (typeof assetsIn === 'string')
+            const { alias, name, src, srcs } = asset;
+            let { data, format, loadParser } = asset;
+
+            // src can contain an unresolved asset itself
+            // so we need to merge that data with the current asset
+            // we dont need to create string variations for the src if it is a ResolvedAsset
+            const srcsToUse: (string | ResolvedSrc)[][] = convertToList<UnresolvedSrc>(src || srcs).map((src) =>
             {
-                assetsIn = createStringVariations(assetsIn);
-            }
-            else
+                if (typeof src === 'string')
+                { return createStringVariations(src); }
+
+                return Array.isArray(src) ? src : [src];
+            });
+            const aliasesToUse = convertToList<string>(alias || name);
+
+            // #if _DEBUG
+            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+            Array.isArray(alias) ? alias.forEach(keyCheck) : keyCheck(alias);
+            // #endif
+
+            // loop through all the srcs and generate a resolve asset for each src
+            const resolvedAssets: ResolvedAsset[] = [];
+
+            srcsToUse.forEach((srcs) =>
             {
-                assetsIn = [assetsIn];
-            }
-        }
-
-        const assetMap: ResolveAsset[] = assetsIn.map((asset): ResolveAsset =>
-        {
-            let formattedAsset = asset as ResolveAsset;
-
-            // check if is a string
-            if (typeof asset === 'string')
-            {
-                // first see if it contains any {} tags...
-
-                let parsed = false;
-
-                for (let i = 0; i < this._parsers.length; i++)
+                srcs.forEach((src) =>
                 {
-                    const parser = this._parsers[i];
+                    let formattedAsset = {} as ResolvedAsset;
 
-                    if (parser.test(asset))
+                    if (typeof src !== 'object')
                     {
-                        formattedAsset = parser.parse(asset);
-                        parsed = true;
-                        break;
+                        formattedAsset.src = src;
+                        // first see if it contains any {} tags...
+                        for (let i = 0; i < this._parsers.length; i++)
+                        {
+                            const parser = this._parsers[i];
+
+                            if (parser.test(src))
+                            {
+                                formattedAsset = parser.parse(src);
+                                break;
+                            }
+                        }
                     }
-                }
+                    else
+                    {
+                        data = src.data ?? data;
+                        format = src.format ?? format;
+                        loadParser = src.loadParser ?? loadParser;
+                        formattedAsset = {
+                            ...formattedAsset,
+                            ...src,
+                        };
+                    }
 
-                if (!parsed)
-                {
-                    formattedAsset = {
-                        src: asset,
-                    };
-                }
-            }
+                    formattedAsset = this.buildResolvedAsset(formattedAsset, {
+                        aliases: aliasesToUse,
+                        data,
+                        format,
+                        loadParser,
+                    });
 
-            if (!formattedAsset.format)
+                    resolvedAssets.push(formattedAsset);
+                });
+            });
+
+            aliasesToUse.forEach((alias) =>
             {
-                formattedAsset.format = formattedAsset.src.split('.').pop();
-            }
-
-            if (!formattedAsset.alias)
-            {
-                formattedAsset.alias = keys;
-            }
-
-            if (this._basePath || this._rootPath)
-            {
-                formattedAsset.src = utils.path.toAbsolute(formattedAsset.src, this._basePath, this._rootPath);
-            }
-
-            formattedAsset.src = this._appendDefaultSearchParams(formattedAsset.src);
-
-            formattedAsset.data = formattedAsset.data ?? data;
-
-            return formattedAsset;
-        });
-
-        keys.forEach((key) =>
-        {
-            this._assetMap[key] = assetMap;
+                this._assetMap[alias] = resolvedAssets;
+            });
         });
     }
 
+    // TODO: this needs an overload like load did in Assets
     /**
      * If the resolver has had a manifest set via setManifest, this will return the assets urls for
      * a given bundleId or bundleIds.
@@ -508,14 +590,14 @@ export class Resolver
      * @param bundleIds - The bundle ids to resolve
      * @returns All the bundles assets or a hash of assets for each bundle specified
      */
-    public resolveBundle(bundleIds: string | string[]):
-    Record<string, ResolveAsset> | Record<string, Record<string, ResolveAsset>>
+    public resolveBundle(bundleIds: ArrayOr<string>):
+    Record<string, ResolvedAsset> | Record<string, Record<string, ResolvedAsset>>
     {
         const singleAsset = isSingleItem(bundleIds);
 
         bundleIds = convertToList<string>(bundleIds);
 
-        const out: Record<string, Record<string, ResolveAsset>> = {};
+        const out: Record<string, Record<string, ResolvedAsset>> = {};
 
         bundleIds.forEach((bundleId) =>
         {
@@ -523,9 +605,9 @@ export class Resolver
 
             if (assetNames)
             {
-                const results = this.resolve(assetNames) as Record<string, ResolveAsset>;
+                const results = this.resolve(assetNames) as Record<string, ResolvedAsset>;
 
-                const assets: Record<string, ResolveAsset> = {};
+                const assets: Record<string, ResolvedAsset> = {};
 
                 for (const key in results)
                 {
@@ -546,9 +628,9 @@ export class Resolver
      * @param key - The key or keys to resolve
      * @returns - The URLs associated with the key(s)
      */
-    public resolveUrl(key: string | string[]): string | Record<string, string>
+    public resolveUrl(key: ArrayOr<string>): string | Record<string, string>
     {
-        const result = this.resolve(key);
+        const result = this.resolve(key as string) as ResolvedAsset | Record<string, ResolvedAsset>;
 
         if (typeof key !== 'string')
         {
@@ -556,13 +638,13 @@ export class Resolver
 
             for (const i in result)
             {
-                out[i] = (result as Record<string, ResolveAsset>)[i].src;
+                out[i] = (result as Record<string, ResolvedAsset>)[i].src;
             }
 
             return out;
         }
 
-        return (result as ResolveAsset).src;
+        return (result as ResolvedAsset).src;
     }
 
     /**
@@ -580,13 +662,15 @@ export class Resolver
      * @param keys - key or keys to resolve
      * @returns - the resolve asset or a hash of resolve assets for each key specified
      */
-    public resolve(keys: string | string[]): ResolveAsset | Record<string, ResolveAsset>
+    public resolve(keys: string): ResolvedAsset;
+    public resolve(keys: string[]): Record<string, ResolvedAsset>;
+    public resolve(keys: ArrayOr<string>): ResolvedAsset | Record<string, ResolvedAsset>
     {
         const singleAsset = isSingleItem(keys);
 
         keys = convertToList<string>(keys);
 
-        const result: Record<string, ResolveAsset> = {};
+        const result: Record<string, ResolvedAsset> = {};
 
         keys.forEach((key) =>
         {
@@ -595,10 +679,8 @@ export class Resolver
                 if (this._assetMap[key])
                 {
                     let assets = this._assetMap[key];
-
-                    const preferredOrder = this._getPreferredOrder(assets);
-
                     const bestAsset = assets[0];
+                    const preferredOrder = this._getPreferredOrder(assets);
 
                     preferredOrder?.priority.forEach((priorityKey) =>
                     {
@@ -606,9 +688,9 @@ export class Resolver
                         {
                             const filteredAssets = assets.filter((asset) =>
                             {
-                                if (asset[priorityKey])
+                                if (asset[priorityKey as keyof ResolvedAsset])
                                 {
-                                    return asset[priorityKey] === value;
+                                    return asset[priorityKey as keyof ResolvedAsset] === value;
                                 }
 
                                 return false;
@@ -625,20 +707,10 @@ export class Resolver
                 }
                 else
                 {
-                    let src = key;
-
-                    if (this._basePath || this._rootPath)
-                    {
-                        src = utils.path.toAbsolute(src, this._basePath, this._rootPath);
-                    }
-
-                    // make sure to append any default parameters
-                    src = this._appendDefaultSearchParams(src);
-
-                    // if the resolver fails we just pass back the key assuming its a url
-                    this._resolverHash[key] = {
-                        src,
-                    };
+                    this._resolverHash[key] = this.buildResolvedAsset({
+                        alias: [key],
+                        src: key,
+                    }, {});
                 }
             }
 
@@ -670,7 +742,7 @@ export class Resolver
      * Internal function for figuring out what prefer criteria an asset should use.
      * @param assets
      */
-    private _getPreferredOrder(assets: ResolveAsset[]): PreferOrder
+    private _getPreferredOrder(assets: ResolvedAsset[]): PreferOrder
     {
         for (let i = 0; i < assets.length; i++)
         {
@@ -700,5 +772,30 @@ export class Resolver
         const paramConnector = (/\?/).test(url) ? '&' : '?';
 
         return `${url}${paramConnector}${this._defaultSearchParams}`;
+    }
+
+    private buildResolvedAsset(formattedAsset: ResolvedAsset, data?: {
+        aliases?: string[],
+        data?: Record<string, unknown>
+        loadParser?: string,
+        format?: string,
+    }): ResolvedAsset
+    {
+        const { aliases, data: assetData, loadParser, format } = data;
+
+        if (this._basePath || this._rootPath)
+        {
+            formattedAsset.src = utils.path.toAbsolute(formattedAsset.src, this._basePath, this._rootPath);
+        }
+
+        formattedAsset.alias = aliases ?? formattedAsset.alias ?? [formattedAsset.src];
+        formattedAsset.src = this._appendDefaultSearchParams(formattedAsset.src);
+        formattedAsset.data = { ...assetData || {}, ...formattedAsset.data };
+        formattedAsset.loadParser = loadParser ?? formattedAsset.loadParser;
+        formattedAsset.format = format ?? formattedAsset.src.split('.').pop();
+        formattedAsset.srcs = formattedAsset.src;
+        formattedAsset.name = formattedAsset.alias;
+
+        return formattedAsset;
     }
 }

@@ -1,8 +1,8 @@
 import { utils } from '@pixi/core';
 import { convertToList, isSingleItem } from '../utils';
 
+import type { PromiseAndParser, ResolvedAsset } from '../types';
 import type { LoaderParser } from './parsers/LoaderParser';
-import type { LoadAsset, PromiseAndParser } from './types';
 
 /**
  * The Loader is responsible for loading all assets, such as images, spritesheets, audio files, etc.
@@ -50,7 +50,7 @@ export class Loader
      * @param data - any custom additional information relevant to the asset being loaded
      * @returns - a promise that will resolve to an Asset for example a Texture of a JSON object
      */
-    private _getLoadPromiseAndParser(url: string, data?: LoadAsset): PromiseAndParser
+    private _getLoadPromiseAndParser(url: string, data?: ResolvedAsset): PromiseAndParser
     {
         const result: PromiseAndParser = {
             promise: null,
@@ -145,15 +145,15 @@ export class Loader
      * to detect when assets are complete and available, instead use the Promise returned by this function.
      */
     public async load<T = any>(
-        assetsToLoadIn: string | LoadAsset,
+        assetsToLoadIn: string | ResolvedAsset,
         onProgress?: (progress: number) => void,
     ): Promise<T>;
     public async load<T = any>(
-        assetsToLoadIn: string[] | LoadAsset[],
+        assetsToLoadIn: string[] | ResolvedAsset[],
         onProgress?: (progress: number) => void,
     ): Promise<Record<string, T>>;
     public async load<T = any>(
-        assetsToLoadIn: string | string[] | LoadAsset | LoadAsset[],
+        assetsToLoadIn: string | string[] | ResolvedAsset | ResolvedAsset[],
         onProgress?: (progress: number) => void,
     ): Promise<T | Record<string, T>>
     {
@@ -168,13 +168,14 @@ export class Loader
 
         const singleAsset = isSingleItem(assetsToLoadIn);
 
-        const assetsToLoad = convertToList<LoadAsset>(assetsToLoadIn, (item) => ({
+        const assetsToLoad = convertToList<ResolvedAsset>(assetsToLoadIn, (item) => ({
+            alias: [item],
             src: item,
         }));
 
         const total = assetsToLoad.length;
 
-        const promises: Promise<void>[] = assetsToLoad.map(async (asset: LoadAsset) =>
+        const promises: Promise<void>[] = assetsToLoad.map(async (asset: ResolvedAsset) =>
         {
             const url = utils.path.toAbsolute(asset.src);
 
@@ -223,14 +224,15 @@ export class Loader
      * @param assetsToUnloadIn - urls that you want to unload, or a single one!
      */
     public async unload(
-        assetsToUnloadIn: string | string[] | LoadAsset | LoadAsset[],
+        assetsToUnloadIn: string | string[] | ResolvedAsset | ResolvedAsset[],
     ): Promise<void>
     {
-        const assetsToUnload = convertToList<LoadAsset>(assetsToUnloadIn, (item) => ({
+        const assetsToUnload = convertToList<ResolvedAsset>(assetsToUnloadIn, (item) => ({
+            alias: [item],
             src: item,
         }));
 
-        const promises: Promise<void>[] = assetsToUnload.map(async (asset: LoadAsset) =>
+        const promises: Promise<void>[] = assetsToUnload.map(async (asset: ResolvedAsset) =>
         {
             const url = utils.path.toAbsolute(asset.src);
 

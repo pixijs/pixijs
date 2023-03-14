@@ -6,8 +6,8 @@ import { WorkerManager } from '../WorkerManager';
 import { createTexture } from './utils/createTexture';
 
 import type { IBaseTextureOptions, Texture } from '@pixi/core';
+import type { ResolvedAsset } from '../../../types';
 import type { Loader } from '../../Loader';
-import type { LoadAsset } from '../../types';
 import type { LoaderParser } from '../LoaderParser';
 
 const validImageExtensions = ['.jpeg', '.jpg', '.png', '.webp', '.avif'];
@@ -109,7 +109,7 @@ export const loadTextures = {
         return checkDataUrl(url, validImageMIMEs) || checkExtension(url, validImageExtensions);
     },
 
-    async load(url: string, asset: LoadAsset<IBaseTextureOptions>, loader: Loader): Promise<Texture>
+    async load(url: string, asset: ResolvedAsset<IBaseTextureOptions>, loader: Loader): Promise<Texture>
     {
         let src: any = null;
 
