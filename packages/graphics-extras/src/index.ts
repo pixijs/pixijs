@@ -1,4 +1,4 @@
-/// <reference path='../global.d.ts' />
+/// <reference path="../global.d.ts" />
 import { Graphics } from '@pixi/graphics';
 import { drawChamferRect } from './drawChamferRect';
 import { drawFilletRect } from './drawFilletRect';
@@ -14,8 +14,8 @@ export interface IGraphicsExtras
     drawChamferRect: typeof drawChamferRect;
     drawFilletRect: typeof drawFilletRect;
     drawRegularPolygon: typeof drawRegularPolygon;
+    drawRoundedPath: typeof drawRoundedPath;
     drawRoundedPolygon: typeof drawRoundedPolygon;
-    drawRoundedPath: typeof drawRoundedPolygon;
     drawStar: typeof drawStar;
 }
 
@@ -25,7 +25,7 @@ Object.defineProperties(Graphics.prototype, {
     drawChamferRect: { value: drawChamferRect },
     drawFilletRect: { value: drawFilletRect },
     drawRegularPolygon: { value: drawRegularPolygon },
-    drawRoundedPolygon: { value: drawRoundedPolygon },
     drawRoundedPath: { value: drawRoundedPath },
+    drawRoundedPolygon: { value: drawRoundedPolygon },
     drawStar: { value: drawStar },
 });
