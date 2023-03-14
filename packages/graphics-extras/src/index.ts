@@ -3,8 +3,8 @@ import { Graphics } from '@pixi/graphics';
 import { drawChamferRect } from './drawChamferRect';
 import { drawFilletRect } from './drawFilletRect';
 import { drawRegularPolygon } from './drawRegularPolygon';
-import { drawRoundedPath } from './drawRoundedPath';
 import { drawRoundedPolygon } from './drawRoundedPolygon';
+import { drawRoundedShape } from './drawRoundedShape';
 import { drawStar } from './drawStar';
 import { drawTorus } from './drawTorus';
 
@@ -14,7 +14,7 @@ export interface IGraphicsExtras
     drawChamferRect: typeof drawChamferRect;
     drawFilletRect: typeof drawFilletRect;
     drawRegularPolygon: typeof drawRegularPolygon;
-    drawRoundedPath: typeof drawRoundedPath;
+    drawRoundedShape: typeof drawRoundedShape;
     drawRoundedPolygon: typeof drawRoundedPolygon;
     drawStar: typeof drawStar;
 }
@@ -25,7 +25,7 @@ Object.defineProperties(Graphics.prototype, {
     drawChamferRect: { value: drawChamferRect },
     drawFilletRect: { value: drawFilletRect },
     drawRegularPolygon: { value: drawRegularPolygon },
-    drawRoundedPath: { value: drawRoundedPath },
+    drawRoundedShape: { value: drawRoundedShape },
     drawRoundedPolygon: { value: drawRoundedPolygon },
     drawStar: { value: drawStar },
 });
