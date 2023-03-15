@@ -20,7 +20,11 @@ async function main()
 
             process.exit(1);
         }
-        workspace.config = { name: workspace.config.name, version, ...workspace.config };
+        workspace.config = {
+            // Ensure the "version" property is placed right after the "name" property
+            ...{ name: workspace.config.name, version },
+            ...workspace.config,
+        };
 
         bumpDependencies(workspace.config.dependencies, version);
         bumpDependencies(workspace.config.devDependencies, version);

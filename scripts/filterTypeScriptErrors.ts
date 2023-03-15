@@ -64,6 +64,9 @@ const pathPrefixs = [
     // 'packages/ticker/',
     'packages/unsafe-eval/',
     'packages/utils/',
+    'scripts/',
+    'test/',
+    'tools/',
 ];
 const filter = new RegExp(pathPrefixs.length === 0 ? `$^` : `^(${pathPrefixs.join('|')})`);
 

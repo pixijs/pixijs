@@ -583,4 +583,91 @@ describe('EventSystem', () =>
         expect(graphics.interactive).toEqual(false);
         expect(graphics.eventMode).toEqual('auto');
     });
+
+    it('should provide the correct global pointer event', () =>
+    {
+        const renderer = createRenderer();
+        const [stage, graphics] = createScene();
+
+        graphics.position.set(35, 35);
+        renderer.render(stage);
+
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', {
+                clientX: 40,
+                clientY: 40,
+                pointerType: 'mouse',
+            })
+        );
+
+        const e = (renderer.events as EventSystem).pointer;
+
+        expect(e.global.x).toEqual(40);
+        expect(e.global.y).toEqual(40);
+        expect(e.getLocalPosition(graphics).x).toEqual(5);
+        expect(e.getLocalPosition(graphics).y).toEqual(5);
+    });
+
+    it('should not dispatch events if the feature is turned off', () =>
+    {
+        const renderer = createRenderer(undefined, undefined, {
+            eventFeatures: {
+                click: false,
+                move: false,
+                wheel: false,
+                globalMove: false,
+            }
+        });
+        const [stage, graphics] = createScene();
+        const eventSpy = jest.fn();
+
+        renderer.render(stage);
+
+        graphics.addEventListener('pointertap', () =>
+        {
+            eventSpy();
+        });
+        graphics.addEventListener('pointerup', () =>
+        {
+            eventSpy();
+        });
+        graphics.addEventListener('pointerupoutside', () =>
+        {
+            eventSpy();
+        });
+        graphics.addEventListener('pointerdown', () =>
+        {
+            eventSpy();
+        });
+        graphics.addEventListener('pointermove', () =>
+        {
+            eventSpy();
+        });
+        graphics.addEventListener('globalpointermove', () =>
+        {
+            eventSpy();
+        });
+
+        renderer.events.onPointerDown(
+            new PointerEvent('pointerdown', { clientX: 25, clientY: 25 })
+        );
+
+        expect(eventSpy).not.toHaveBeenCalled();
+
+        (renderer.events as EventSystem).features.move = true;
+
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', { clientX: 25, clientY: 25 })
+        );
+
+        expect(eventSpy).toHaveBeenCalledTimes(1);
+
+        (renderer.events as EventSystem).features.globalMove = true;
+
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', { clientX: 25, clientY: 25 })
+        );
+
+        expect(eventSpy).toHaveBeenCalledTimes(3);
+    });
 });
