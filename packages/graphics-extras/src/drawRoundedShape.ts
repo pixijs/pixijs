@@ -1,5 +1,3 @@
-import { PI_2 } from '@pixi/core';
-
 import type { IPointData } from '@pixi/core';
 import type { Graphics } from '@pixi/graphics';
 
@@ -28,9 +26,8 @@ function roundedShapeArc(
         const len = Math.sqrt((x * x) + (y * y));
         const nx = x / len;
         const ny = y / len;
-        const ang = Math.atan2(ny, nx);
 
-        return { x, y, len, nx, ny, ang };
+        return { len, nx, ny };
     };
 
     let p1 = points[points.length - 1];
@@ -82,35 +79,12 @@ function roundedShapeArc(
             cRadius = pRadius;
         }
 
-        const cX = p2.x + (v2.nx * lenOut) + (-v2.ny * cRadius * radDirection);
-        const cY = p2.y + (v2.ny * lenOut) + (v2.nx * cRadius * radDirection);
-
-        if (i === 0)
-        {
-            let startAngle = v1.ang + ((Math.PI / 2) * radDirection);
-            let endAngle = v2.ang - ((Math.PI / 2) * radDirection);
-
-            if (!drawDirection && endAngle <= startAngle)
-            {
-                endAngle += PI_2;
-            }
-            else if (drawDirection && startAngle <= endAngle)
-            {
-                startAngle += PI_2;
-            }
-
-            g.moveTo(
-                cX + (Math.cos(startAngle) * pRadius),
-                cY + (Math.sin(startAngle) * pRadius)
-            );
-        }
-
         g.arc(
-            cX,
-            cY,
+            p2.x + (v2.nx * lenOut) + (-v2.ny * cRadius * radDirection),
+            p2.y + (v2.ny * lenOut) + (v2.nx * cRadius * radDirection),
             cRadius,
-            v1.ang + ((Math.PI / 2) * radDirection),
-            v2.ang - ((Math.PI / 2) * radDirection),
+            Math.atan2(v1.ny, v1.nx) + ((Math.PI / 2) * radDirection),
+            Math.atan2(v2.ny, v2.nx) - ((Math.PI / 2) * radDirection),
             drawDirection
         );
 
