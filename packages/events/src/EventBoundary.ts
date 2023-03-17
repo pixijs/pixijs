@@ -504,8 +504,9 @@ export class EventBoundary
             return true;
         }
 
-        // bail out early if we have already found something that hit
-        if (this._collectInteractiveElements && this._hitElements.length > 0) return false;
+        // with pointermove we can't test for hitArea or mask, so we need to return false
+        // otherwise DisplayObjects will be skipped
+        if (this._collectInteractiveElements) return false;
 
         if (displayObject.hitArea)
         {
