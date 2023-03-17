@@ -1,4 +1,5 @@
 import { MSAA_QUALITY } from '@pixi/constants';
+import { settings } from '@pixi/settings';
 import { Program } from '../shader/Program';
 import { Shader } from '../shader/Shader';
 import { State } from '../state/State';
@@ -188,8 +189,29 @@ import type { FilterSystem } from './FilterSystem';
 export class Filter extends Shader
 {
     /**
-     * Default filter resolution for any filter.
-     * @static
+     * Override whether or not the resolution of the filter is automatically adjusted to match the resolution
+     * of the renderer.
+     * Setting this to false can allow you to get crisper filter at lower render resolutions.
+     * @example
+     * // renderer has a resolution of 1
+     * const app = new Application();
+     *
+     * Filter.defaultResolution = 2;
+     * Filter.defaultAutoResolution = false;
+     * // filter has a resolution of 2
+     * const filter = new GlowFilter();
+     */
+    public static defaultAutoResolution = true;
+
+    /**
+     * If {@link PIXI.Filter.defaultAutoResolution} is false, this will be the default resolution of the filter.
+     * If not set it will default to {@link PIXI.settings.RESOLUTION}.
+     * @example
+     * Filter.defaultResolution = 2;
+     * Filter.defaultAutoResolution = false;
+     *
+     * // filter has a resolution of 2
+     * const filter = new GlowFilter();
      */
     public static defaultResolution = 1;
 
@@ -230,7 +252,14 @@ export class Filter extends Shader
     /** The WebGL state the filter requires to render. */
     state: State;
 
-    protected _resolution: number;
+    /**
+     * The resolution / device pixel ratio of the canvas.
+     *
+     * This is set to automatically match the renderer resolution by default, but can be overridden by setting manually.
+     * @default PIXI.settings.RESOLUTION
+     */
+    _resolution: number;
+    _autoResolution: boolean;
 
     /**
      * @param vertexSrc - The source of the vertex shader.
@@ -245,7 +274,8 @@ export class Filter extends Shader
         super(program, uniforms);
 
         this.padding = 0;
-        this.resolution = Filter.defaultResolution;
+        this._resolution = Filter.defaultResolution ?? settings.RESOLUTION;
+        this._autoResolution = Filter.defaultAutoResolution;
         this.multisample = Filter.defaultMultisample;
         this.enabled = true;
         this.autoFit = true;
@@ -297,6 +327,13 @@ export class Filter extends Shader
 
     set resolution(value: number)
     {
+        this._autoResolution = false;
+
+        if (this._resolution === value)
+        {
+            return;
+        }
+
         this._resolution = value;
     }
 

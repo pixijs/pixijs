@@ -442,6 +442,11 @@ export class FilterSystem implements ISystem
     {
         const renderer = this.renderer;
 
+        if (filter._autoResolution && filter._resolution !== renderer.resolution)
+        {
+            filter._resolution = renderer.resolution;
+        }
+
         // Set state before binding, so bindAndClear gets the blend mode.
         renderer.state.set(filter.state);
         this.bindAndClear(output, clearMode);
