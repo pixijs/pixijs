@@ -64,7 +64,7 @@ function roundedShapeArc(
             drawDirection = true;
         }
 
-        const pRadius = p2.radius || radius;
+        const pRadius = p2.radius ?? radius;
         const halfAngle = angle / 2;
 
         let cRadius: number;
@@ -151,12 +151,10 @@ function roundedShapeQuadraticCurve(
         const lastPoint = points[i];
         const thisPoint = points[(i + 1) % numPoints];
         const nextPoint = points[(i + 2) % numPoints];
+        const pRadius = thisPoint.radius ?? radius;
 
         const lastEdgeLength = distance(lastPoint, thisPoint);
-        const lastOffsetDistance = Math.min(
-            lastEdgeLength / 2,
-            thisPoint.radius || radius
-        );
+        const lastOffsetDistance = Math.min(lastEdgeLength / 2, pRadius);
         const start = pointLerp(
             thisPoint,
             lastPoint,
@@ -164,10 +162,7 @@ function roundedShapeQuadraticCurve(
         );
 
         const nextEdgeLength = distance(nextPoint, thisPoint);
-        const nextOffsetDistance = Math.min(
-            nextEdgeLength / 2,
-            thisPoint.radius || radius
-        );
+        const nextOffsetDistance = Math.min(nextEdgeLength / 2, pRadius);
         const end = pointLerp(
             thisPoint,
             nextPoint,
