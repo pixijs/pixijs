@@ -153,17 +153,29 @@ export class FilterSystem implements ISystem
         const state = this.statePool.pop() || new FilterState();
         const renderTextureSystem = this.renderer.renderTexture;
 
-        let resolution = filters[0].resolution;
-        let multisample = filters[0].multisample;
-        let padding = filters[0].padding;
-        let autoFit = filters[0].autoFit;
+        const firstFilter = filters[0];
+
+        if (firstFilter._autoResolution && firstFilter._resolution !== renderer.resolution)
+        {
+            firstFilter._resolution = renderer.resolution;
+        }
+
+        let resolution = firstFilter.resolution;
+        let multisample = firstFilter.multisample;
+        let padding = firstFilter.padding;
+        let autoFit = firstFilter.autoFit;
         // We don't know whether it's a legacy filter until it was bound for the first time,
         // therefore we have to assume that it is if legacy is undefined.
-        let legacy = filters[0].legacy ?? true;
+        let legacy = firstFilter.legacy ?? true;
 
         for (let i = 1; i < filters.length; i++)
         {
             const filter = filters[i];
+
+            if (filter._autoResolution && filter._resolution !== renderer.resolution)
+            {
+                filter._resolution = renderer.resolution;
+            }
 
             // let's use the lowest resolution
             resolution = Math.min(resolution, filter.resolution);
@@ -441,11 +453,6 @@ export class FilterSystem implements ISystem
     applyFilter(filter: Filter, input: RenderTexture, output: RenderTexture, clearMode?: CLEAR_MODES): void
     {
         const renderer = this.renderer;
-
-        if (filter._autoResolution && filter._resolution !== renderer.resolution)
-        {
-            filter._resolution = renderer.resolution;
-        }
 
         // Set state before binding, so bindAndClear gets the blend mode.
         renderer.state.set(filter.state);
