@@ -1,4 +1,4 @@
-import { Renderer } from '@pixi/core';
+import { Rectangle, Renderer } from '@pixi/core';
 import { Container } from '@pixi/display';
 import { EventSystem } from '@pixi/events';
 import { Graphics } from '@pixi/graphics';
@@ -669,5 +669,53 @@ describe('EventSystem', () =>
         );
 
         expect(eventSpy).toHaveBeenCalledTimes(3);
+    });
+
+    it('should dispatch global pointer move event with custom hitArea', () =>
+    {
+        const renderer = createRenderer();
+        const [stage, graphics] = createScene();
+        const eventSpy = jest.fn();
+
+        renderer.render(stage);
+
+        graphics.hitArea = new Rectangle(0, 0, 100, 100);
+
+        graphics.addEventListener('globalpointermove', () =>
+        {
+            eventSpy();
+        });
+
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', { clientX: 250, clientY: 250 })
+        );
+
+        expect(eventSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should dispatch global pointer move event with mask', () =>
+    {
+        const renderer = createRenderer();
+        const [stage, graphics] = createScene();
+        const eventSpy = jest.fn();
+
+        renderer.render(stage);
+
+        const mask = new Graphics().beginFill(0xffffff).drawRect(0, 0, 10, 10);
+
+        stage.addChild(mask);
+
+        graphics.mask = mask;
+
+        graphics.addEventListener('globalpointermove', () =>
+        {
+            eventSpy();
+        });
+
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', { clientX: 250, clientY: 250 })
+        );
+
+        expect(eventSpy).toHaveBeenCalledTimes(1);
     });
 });
