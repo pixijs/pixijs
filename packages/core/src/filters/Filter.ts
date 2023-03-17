@@ -213,7 +213,7 @@ export class Filter extends Shader
      * // filter has a resolution of 2
      * const filter = new GlowFilter();
      */
-    public static defaultResolution = 1;
+    public static defaultResolution: number;
 
     /**
      * Default filter samples for any filter.
