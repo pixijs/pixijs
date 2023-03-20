@@ -176,7 +176,7 @@ export class Color
         // Support copying from other Color objects
         if (value instanceof Color)
         {
-            this._value = value._value === null ? null : this.cloneSource(value._value);
+            this._value = this.cloneSource(value._value);
             this._int = value._int;
             this._components.set(value._components);
         }
@@ -199,9 +199,9 @@ export class Color
      * Copy a color source internally.
      * @param value - Color source
      */
-    private cloneSource(value: Exclude<ColorSource, Color>): Exclude<ColorSource, Color>
+    private cloneSource(value: Exclude<ColorSource, Color> | null): Exclude<ColorSource, Color> | null
     {
-        if (typeof value === 'string' || typeof value === 'number' || value instanceof Number)
+        if (typeof value === 'string' || typeof value === 'number' || value instanceof Number || value === null)
         {
             return value;
         }
