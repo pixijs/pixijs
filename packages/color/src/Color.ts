@@ -184,7 +184,7 @@ export class Color
         {
             throw new Error('Cannot set PIXI.Color#value to null');
         }
-        else if (!this.isSourceEqual(this._value, value))
+        else if (this._value === null || !this.isSourceEqual(this._value, value))
         {
             this.normalize(value);
             this._value = this.cloneSource(value);
