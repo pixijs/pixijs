@@ -7,7 +7,7 @@ import { readJSON, writeJSON } from './utils/json';
 async function main()
 {
     // eslint-disable-next-line no-console
-    console.log('The GITHUB_SHA is: ', process.env.GITHUB_SHA);
+    console.log('Env variables ', process.env);
 
     const { version } = await readJSON<{version: string}>(path.join(process.cwd(), 'package.json'));
     const { packages } = await readJSON<{packages: string[]}>(path.join(process.cwd(), '.codesandbox', 'ci.json'));
