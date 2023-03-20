@@ -1,5 +1,5 @@
 {
-  "buildCommand": "build",
+  "buildCommand": "dist",
   "packages": [
     "bundles/pixi.js",
     "bundles/pixi.js-webworker"
