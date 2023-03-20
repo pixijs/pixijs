@@ -43,10 +43,6 @@ async function main()
             ...workspace.config,
         };
 
-        // TODO: this doesn't work, but does that mean package deps are just the latest version only?
-        // point dependency versions to their local codesandbox versions
-        // const getDependencyUrl = (packageName: string) => `${CSB_PACKAGES_BASE_URL}/${packageName}`;
-
         bumpDependencies(workspace.config.dependencies, version);
         bumpDependencies(workspace.config.devDependencies, version);
         bumpDependencies(workspace.config.peerDependencies, version);

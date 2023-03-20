@@ -140,9 +140,6 @@ export class Sprite extends Container
     {
         super();
 
-        // eslint-disable-next-line no-console
-        console.log('TEST SPRITE SUBPACKAGE DEV MODE!');
-
         this._anchor = new ObservablePoint(
             this._onAnchorUpdate,
             this,

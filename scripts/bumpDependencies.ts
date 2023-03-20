@@ -1,11 +1,9 @@
-type VersionCallback = (dependencyName: string) => string;
-
 /**
  * Update the *dependencies in the package.json
  * @param dependencies - Dependencies map
  * @param version - Version to bump to
  */
-export function bumpDependencies(dependencies: Record<string, string> = {}, version: string | VersionCallback)
+export function bumpDependencies(dependencies: Record<string, string> = {}, version: string)
 {
     Object.keys(dependencies)
         // Only consider bumping monorepo packages
@@ -13,6 +11,6 @@ export function bumpDependencies(dependencies: Record<string, string> = {}, vers
         .forEach((n) =>
         {
             // replace with exact version
-            dependencies[n] = typeof version === 'function' ? version(n) : version;
+            dependencies[n] = version;
         });
 }
