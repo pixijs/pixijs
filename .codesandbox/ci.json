@@ -1,5 +1,5 @@
 {
-  "buildCommand": "dist",
+  "buildCommand": "codesandbox-ci",
   "packages": [
     "bundles/pixi.js",
     "bundles/pixi.js-webworker"
