@@ -36,5 +36,6 @@
     "packages/text-bitmap",
     "packages/text-html"
   ],
+  "sandboxes": ["/.codesandbox/sandbox"],
   "node": "18"
 }
