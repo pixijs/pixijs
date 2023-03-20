@@ -34,7 +34,7 @@
     "packages/spritesheet",
     "packages/text",
     "packages/text-bitmap",
-    "packages/text-html",
+    "packages/text-html"
   ],
   "node": "18"
 }
