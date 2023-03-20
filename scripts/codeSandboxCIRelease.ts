@@ -1,6 +1,7 @@
 import path from 'path';
 import workspacesRun from 'workspaces-run';
 import { readJSON, writeJSON } from './utils/json';
+import { bumpDependencies } from './bumpDependencies';
 
 // copy version from package.json to sandbox CI bundles so npm pack command works
 async function main()
@@ -31,6 +32,10 @@ async function main()
             ...{ name: workspace.config.name, version },
             ...workspace.config,
         };
+
+        bumpDependencies(workspace.config.dependencies, version);
+        bumpDependencies(workspace.config.devDependencies, version);
+        bumpDependencies(workspace.config.peerDependencies, version);
 
         await writeJSON(path.join(workspace.dir, 'package.json'), workspace.config);
     });
