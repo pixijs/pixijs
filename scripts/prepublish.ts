@@ -39,7 +39,7 @@ async function main()
  * @param dependencies - Dependencies map
  * @param version - Version to bump to
  */
-export function bumpDependencies(dependencies: Record<string, string> = {}, version: string)
+function bumpDependencies(dependencies: Record<string, string> = {}, version: string)
 {
     Object.keys(dependencies)
         // Only consider bumping monorepo packages
