@@ -44,11 +44,11 @@ async function main()
         };
 
         // point dependency versions to their local codesandbox versions
-        // const getDependencyUrl = (packageName: string) => `${CSB_PACKAGES_BASE_URL}/${packageName}`;
+        const getDependencyUrl = (packageName: string) => `${CSB_PACKAGES_BASE_URL}/${packageName}`;
 
-        bumpDependencies(workspace.config.dependencies, version);
-        bumpDependencies(workspace.config.devDependencies, version);
-        bumpDependencies(workspace.config.peerDependencies, version);
+        bumpDependencies(workspace.config.dependencies, getDependencyUrl);
+        bumpDependencies(workspace.config.devDependencies, getDependencyUrl);
+        bumpDependencies(workspace.config.peerDependencies, getDependencyUrl);
 
         await writeJSON(path.join(workspace.dir, 'package.json'), workspace.config);
     });
