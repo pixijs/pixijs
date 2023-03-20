@@ -8,7 +8,8 @@ async function main()
 {
     const { CSB_PACKAGES_BASE_URL } = process.env;
 
-    if(!CSB_PACKAGES_BASE_URL) {
+    if (!CSB_PACKAGES_BASE_URL)
+    {
         throw new Error('CSB_PACKAGES_BASE_URL environment variable is undefined!');
     }
 
