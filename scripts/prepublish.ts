@@ -1,7 +1,7 @@
 import path from 'path';
 import workspacesRun from 'workspaces-run';
-import { readJSON, writeJSON } from './utils/json';
 import { bumpDependencies } from './bumpDependencies';
+import { readJSON, writeJSON } from './utils/json';
 
 /** Before publish, let's replace all the relative file links with versions */
 async function main()

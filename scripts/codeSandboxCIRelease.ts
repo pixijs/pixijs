@@ -1,7 +1,7 @@
 import path from 'path';
 import workspacesRun from 'workspaces-run';
-import { readJSON, writeJSON } from './utils/json';
 import { bumpDependencies } from './bumpDependencies';
+import { readJSON, writeJSON } from './utils/json';
 
 // copy version from package.json to sandbox CI bundles so npm pack command works
 async function main()
