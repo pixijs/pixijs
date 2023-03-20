@@ -6,16 +6,6 @@ import { readJSON, writeJSON } from './utils/json';
 // copy version from package.json to sandbox CI bundles so npm pack command works
 async function main()
 {
-    const { CSB_PACKAGES_BASE_URL } = process.env;
-
-    if (!CSB_PACKAGES_BASE_URL)
-    {
-        throw new Error('CSB_PACKAGES_BASE_URL environment variable is undefined!');
-    }
-
-    // eslint-disable-next-line no-console
-    console.log('The CSB_PACKAGES_BASE_URL is: ', CSB_PACKAGES_BASE_URL);
-
     const { version } = await readJSON<{version: string}>(path.join(process.cwd(), 'package.json'));
     const { packages } = await readJSON<{packages: string[]}>(path.join(process.cwd(), '.codesandbox', 'ci.json'));
 
