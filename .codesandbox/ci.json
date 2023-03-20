@@ -1,0 +1,8 @@
+{
+  "buildCommand": "build",
+  "packages": [
+    "bundles/pixi.js",
+    "bundles/pixi.js-webworker"
+  ],
+  "node": "18"
+}
