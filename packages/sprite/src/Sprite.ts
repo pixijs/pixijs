@@ -140,6 +140,8 @@ export class Sprite extends Container
     {
         super();
 
+        console.log('TEST SPRITE SUBPACKAGE DEV MODE!');
+
         this._anchor = new ObservablePoint(
             this._onAnchorUpdate,
             this,
