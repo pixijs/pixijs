@@ -471,7 +471,7 @@ export class Color
      */
     setAlpha(alpha: number): this
     {
-        this._components[3] = alpha;
+        this._components[3] = Math.min(1, Math.max(0, alpha));
 
         return this;
     }
@@ -542,10 +542,11 @@ export class Color
         }
         else if ((Array.isArray(value) || value instanceof Float32Array)
             // Can be rgb or rgba
-            && value.length >= 3 && value.length <= 4
-            // make sure all values are 0 - 1
-            && value.every((v) => v <= 1 && v >= 0))
+            && value.length >= 3 && value.length <= 4)
         {
+            // make sure all values are 0 - 1
+            value = value.map((v) => Math.min(1, Math.max(0, v)));
+
             const [r, g, b, a = 1.0] = value;
 
             components = [r, g, b, a];
@@ -554,6 +555,8 @@ export class Color
             // Can be rgb or rgba
             && value.length >= 3 && value.length <= 4)
         {
+            // make sure all values are 0 - 255
+            value = value.map((v) => Math.min(255, Math.max(0, v)));
             const [r, g, b, a = 255] = value;
 
             components = [r / 255, g / 255, b / 255, a / 255];
