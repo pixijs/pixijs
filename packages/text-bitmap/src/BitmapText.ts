@@ -76,6 +76,37 @@ export class BitmapText extends Container
         letterSpacing: 0,
     };
 
+    /**
+     * Override whether or not the resolution of the bitmapText is automatically adjusted to match the resolution
+     * of the renderer.
+     * Setting this to false can allow you to get crisper bitmapText at lower render resolutions.
+     * @example
+     * // renderer has a resolution of 1
+     * const app = new Application();
+     *
+     * BitmapText.defaultResolution = 2;
+     * BitmapText.defaultAutoResolution = false;
+     * // bitmapText has a resolution of 2
+     * const bitmapText = new BitmapText('This is a PixiJS bitmapText', {
+     *     fontName: 'Desyrel',
+     *     fontSize: 35,
+     *     align: 'right',
+     * });
+     */
+    public static defaultAutoResolution = true;
+
+    /**
+     * If {@link PIXI.BitmapText.defaultAutoResolution} is false, this will be the default resolution of the bitmapText.
+     * If not set it will default to {@link PIXI.settings.RESOLUTION}.
+     * @example
+     * BitmapText.defaultResolution = 2;
+     * BitmapText.defaultAutoResolution = false;
+     *
+     * // bitmapText has a resolution of 2
+     * const bitmapText = new GlowFilter();
+     */
+    public static defaultResolution: number;
+
     /** Set to `true` if the BitmapText needs to be redrawn. */
     public dirty: boolean;
 
@@ -83,10 +114,16 @@ export class BitmapText extends Container
      * The resolution / device pixel ratio of the canvas.
      *
      * This is set to automatically match the renderer resolution by default, but can be overridden by setting manually.
+     * @private
      * @default PIXI.settings.RESOLUTION
      */
-    _resolution: number;
-    _autoResolution: boolean;
+    protected _resolution: number;
+    /**
+     * Private tracker for the BitmapText.defaultAutoResolution, will be `false` if manually set the `resolution`.
+     * @private
+     * @default PIXI.BitmapText.defaultAutoResolution
+     */
+    protected _autoResolution: boolean;
 
     /**
      * Private tracker for the width of the overall text.
@@ -159,7 +196,10 @@ export class BitmapText extends Container
      */
     protected _align: TextStyleAlign;
 
-    /** Collection of page mesh data. */
+    /**
+     * Collection of page mesh data.
+     * @private
+     */
     protected _activePagesMeshData: PageMeshData[];
 
     /**
@@ -170,6 +210,7 @@ export class BitmapText extends Container
 
     /**
      * If true PixiJS will Math.floor() x/y values when rendering.
+     * @private
      * @default PIXI.settings.ROUND_PIXELS
      */
     protected _roundPixels: boolean;
@@ -217,8 +258,8 @@ export class BitmapText extends Container
         this._anchor = new ObservablePoint((): void => { this.dirty = true; }, this, 0, 0);
         this._roundPixels = settings.ROUND_PIXELS;
         this.dirty = true;
-        this._resolution = settings.RESOLUTION;
-        this._autoResolution = true;
+        this._resolution = BitmapText.defaultResolution ?? settings.RESOLUTION;
+        this._autoResolution = BitmapText.defaultAutoResolution;
         this._textureCache = {};
     }
 

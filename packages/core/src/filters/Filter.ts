@@ -191,7 +191,7 @@ export class Filter extends Shader
     /**
      * Override whether or not the resolution of the filter is automatically adjusted to match the resolution
      * of the renderer.
-     * Setting this to false can allow you to get crisper filter at lower render resolutions.
+     * Setting this to false can allow you to get crisper filter at lower render resolutions and more performance.
      * @example
      * // renderer has a resolution of 1
      * const app = new Application();
@@ -201,7 +201,7 @@ export class Filter extends Shader
      * // filter has a resolution of 2
      * const filter = new GlowFilter();
      */
-    public static defaultAutoResolution = true;
+    public static defaultAutoResolution = false;
 
     /**
      * If {@link PIXI.Filter.defaultAutoResolution} is false, this will be the default resolution of the filter.
@@ -256,9 +256,15 @@ export class Filter extends Shader
      * The resolution / device pixel ratio of the canvas.
      *
      * This is set to automatically match the renderer resolution by default, but can be overridden by setting manually.
+     * @private
      * @default PIXI.settings.RESOLUTION
      */
     _resolution: number;
+    /**
+     * Private tracker for the Filter.defaultAutoResolution, will be `false` if manually set the `resolution`.
+     * @private
+     * @default PIXI.Filter.defaultAutoResolution
+     */
     _autoResolution: boolean;
 
     /**
@@ -328,11 +334,6 @@ export class Filter extends Shader
     set resolution(value: number)
     {
         this._autoResolution = false;
-
-        if (this._resolution === value)
-        {
-            return;
-        }
 
         this._resolution = value;
     }
