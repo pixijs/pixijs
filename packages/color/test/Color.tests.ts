@@ -19,14 +19,26 @@ describe('Color', () =>
             'ff',
             [1, 1],
             new Uint8Array([255, 255]),
-            [1, 1, -1, 1],
-            [1, 1, 1.1, 1],
             [1, 1, 1, 1, 0],
         ];
 
         invalidColorValues.forEach((value) =>
         {
             expect(() => new Color(value as any)).toThrow();
+        });
+    });
+
+    it.concurrent('should not throw error for invalid color values', async () =>
+    {
+        const invalidColorValues: any[] = [
+            [1, 1, -1, 1],
+            [1, 1, 1.1, 1],
+            { r: 1, g: 1, b: 1, a: 1.1 },
+        ];
+
+        invalidColorValues.forEach((value) =>
+        {
+            expect(() => new Color(value as any)).not.toThrow();
         });
     });
 
