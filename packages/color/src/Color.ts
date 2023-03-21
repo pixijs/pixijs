@@ -524,6 +524,9 @@ export class Color
     /** Refresh the internal color rgb number */
     private refreshInt(): void
     {
+        // Clamp values to 0 - 1
+        this._components.forEach((value, i) => (this._components[i] = Math.min(Math.max(value, 0), 1)));
+
         const [r, g, b] = this._components;
 
         this._int = (((r * 255) << 16) + ((g * 255) << 8) + (b * 255 | 0));

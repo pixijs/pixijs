@@ -205,6 +205,26 @@ describe('Color', () =>
         });
     });
 
+    it('should clamp the color results with inputs over 1', () =>
+    {
+        const color = new Color('rgba(150% 150% 150% / 150%)');
+
+        expect(color.red).toBe(1);
+        expect(color.blue).toBe(1);
+        expect(color.green).toBe(1);
+        expect(color.alpha).toBe(1);
+    });
+
+    it('should clamp the color results with multiply', () =>
+    {
+        const color = new Color(0xffffff).premultiply(2);
+
+        expect(color.red).toBe(1);
+        expect(color.blue).toBe(1);
+        expect(color.green).toBe(1);
+        expect(color.alpha).toBe(1);
+    });
+
     it('should multiply color correctly', () =>
     {
         const color = new Color([0.5, 0.5, 0.5, 0.5]).multiply([0.5, 0.5, 0.5, 0.5]);
