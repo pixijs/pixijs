@@ -3,8 +3,8 @@ name: Trigger Website Build
 on:
   pull_request:
     branches:
-      - deploy
-    types: [closed]
+      - dev
+    types: [ closed ]
 
 jobs:
   trigger-website-build:
@@ -17,7 +17,7 @@ jobs:
           event-type: update-dev
           repository: pixijs/beta.pixijs.com
           token: ${{ secrets.PAT }}
-          client-payload: '{"sha": "${{ github.sha }}"}'
+          client-payload: '{"sha": "${{ github.event.pull_request.head.sha }}"}'
 
 
 
