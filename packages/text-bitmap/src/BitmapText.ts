@@ -103,7 +103,7 @@ export class BitmapText extends Container
      * BitmapText.defaultAutoResolution = false;
      *
      * // bitmapText has a resolution of 2
-     * const bitmapText = new GlowFilter();
+     * const bitmapText = new BitmapText();
      */
     public static defaultResolution: number;
 

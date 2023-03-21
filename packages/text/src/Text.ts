@@ -104,7 +104,7 @@ export class Text extends Sprite
      */
     _resolution: number;
     /**
-     * Private tracker for the Filter.defaultAutoResolution, will be `false` if manually set the `resolution`.
+     * Private tracker for the Text.defaultAutoResolution, will be `false` if manually set the `resolution`.
      * @private
      * @default PIXI.Text.defaultAutoResolution
      */
