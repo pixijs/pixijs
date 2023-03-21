@@ -205,6 +205,26 @@ describe('Color', () =>
         });
     });
 
+    it('should clamp the color results with inputs over 1', () =>
+    {
+        const color = new Color('rgba(150% 150% 150% / 150%)');
+
+        expect(color.red).toBe(1);
+        expect(color.blue).toBe(1);
+        expect(color.green).toBe(1);
+        expect(color.alpha).toBe(1);
+    });
+
+    it('should clamp the color results with multiply', () =>
+    {
+        const color = new Color(0xffffff).premultiply(2);
+
+        expect(color.red).toBe(1);
+        expect(color.blue).toBe(1);
+        expect(color.green).toBe(1);
+        expect(color.alpha).toBe(1);
+    });
+
     it('should multiply color correctly', () =>
     {
         const color = new Color([0.5, 0.5, 0.5, 0.5]).multiply([0.5, 0.5, 0.5, 0.5]);
@@ -266,5 +286,50 @@ describe('Color', () =>
         const color = new Color(new ColorNumber(0xff0000));
 
         expect(color.toNumber()).toBe(0xff0000);
+    });
+
+    it('should set preserve value when original Array mutes', () =>
+    {
+        const originalValue = [0, 0, 0, 1];
+        const color = new Color(originalValue);
+
+        expect(color.red).toBe(0);
+        expect(color.value).not.toBe(originalValue);
+        expect(color.value).toEqual(originalValue);
+        originalValue[0] = 1;
+        expect((color.value as number[])[0]).toEqual(0);
+        expect(color.red).toBe(0);
+        color.setValue(originalValue);
+        expect(color.red).toBe(1);
+    });
+
+    it('should set preserve value when original typed array mutes', () =>
+    {
+        const originalValue = new Float32Array([0, 0, 0, 1]);
+        const color = new Color(originalValue);
+
+        expect(color.red).toBe(0);
+        expect(color.value).not.toBe(originalValue);
+        expect(color.value).toEqual(originalValue);
+        originalValue[0] = 1;
+        expect((color.value as Float32Array)[0]).toBe(0);
+        expect(color.red).toBe(0);
+        color.setValue(originalValue);
+        expect(color.red).toBe(1);
+    });
+
+    it('should set preserve value when original object mutes', () =>
+    {
+        const originalValue = { r: 0, g: 0, b: 0 };
+        const color = new Color(originalValue);
+
+        expect(color.red).toBe(0);
+        expect(color.value).not.toBe(originalValue);
+        expect(color.value).toEqual(originalValue);
+        originalValue.r = 255;
+        expect((color.value as typeof originalValue).r).toBe(0);
+        expect(color.red).toBe(0);
+        color.setValue(originalValue);
+        expect(color.red).toBe(1);
     });
 });
