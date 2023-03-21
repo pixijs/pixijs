@@ -15,7 +15,7 @@ import type { FilterSystem } from './FilterSystem';
  * A filter is a special shader that applies post-processing effects to an input texture and writes into an output
  * render-target.
  *
- * {@link http://pixijs.io/examples/#/filters/blur-filter.js Example} of the
+ * {@link https://pixijs.io/examples/#/filters-basic/blur.js Example} of the
  * {@link PIXI.BlurFilter BlurFilter}.
  *
  * ### Usage
