@@ -176,7 +176,7 @@ export class Color
         // Support copying from other Color objects
         if (value instanceof Color)
         {
-            this._value = value._value;
+            this._value = this.cloneSource(value._value);
             this._int = value._int;
             this._components.set(value._components);
         }
@@ -184,15 +184,87 @@ export class Color
         {
             throw new Error('Cannot set PIXI.Color#value to null');
         }
-        else if (this._value !== value)
+        else if (this._value === null || !this.isSourceEqual(this._value, value))
         {
             this.normalize(value);
-            this._value = value;
+            this._value = this.cloneSource(value);
         }
     }
     get value(): Exclude<ColorSource, Color> | null
     {
         return this._value;
+    }
+
+    /**
+     * Copy a color source internally.
+     * @param value - Color source
+     */
+    private cloneSource(value: Exclude<ColorSource, Color> | null): Exclude<ColorSource, Color> | null
+    {
+        if (typeof value === 'string' || typeof value === 'number' || value instanceof Number || value === null)
+        {
+            return value;
+        }
+        else if (Array.isArray(value) || ArrayBuffer.isView(value))
+        {
+            return value.slice(0);
+        }
+        else if (typeof value === 'object' && value !== null)
+        {
+            return { ...value };
+        }
+
+        return value;
+    }
+
+    /**
+     * Equality check for color sources.
+     * @param value1 - First color source
+     * @param value2 - Second color source
+     * @returns `true` if the color sources are equal, `false` otherwise.
+     */
+    private isSourceEqual(value1: Exclude<ColorSource, Color>, value2: Exclude<ColorSource, Color>): boolean
+    {
+        const type1 = typeof value1;
+        const type2 = typeof value2;
+
+        // Mismatched types
+        if (type1 !== type2)
+        {
+            return false;
+        }
+        // Handle numbers/strings and things that extend Number
+        // important to do the instanceof Number first, as this is "object" type
+        else if (type1 === 'number' || type1 === 'string' || value1 instanceof Number)
+        {
+            return value1 === value2;
+        }
+        // Handle Arrays and TypedArrays
+        else if ((Array.isArray(value1) && Array.isArray(value2))
+            || (ArrayBuffer.isView(value1) && ArrayBuffer.isView(value2)))
+        {
+            if (value1.length !== value2.length)
+            {
+                return false;
+            }
+
+            return value1.every((v, i) => v === value2[i]);
+        }
+        // Handle Objects
+        else if (value1 !== null && value2 !== null)
+        {
+            const keys1 = Object.keys(value1) as (keyof typeof value1)[];
+            const keys2 = Object.keys(value2) as (keyof typeof value2)[];
+
+            if (keys1.length !== keys2.length)
+            {
+                return false;
+            }
+
+            return keys1.every((key) => value1[key] === value2[key]);
+        }
+
+        return value1 === value2;
     }
 
     /**
