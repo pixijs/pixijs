@@ -16,14 +16,14 @@ export interface ResolvedAsset<T=any>
     alias?: string[];
     /**
      * Please use `alias` instead.
-     * @deprecated since 7.2.0
+     * @deprecated since 7.3.0
      */
     name?: string[];
     /** The URL or relative path to the asset */
     src?: string;
     /**
      * Please use `src` instead.
-     * @deprecated since 7.2.0
+     * @deprecated since 7.3.0
      */
     srcs?: string;
     /** Optional data */
@@ -57,12 +57,12 @@ export interface UnresolvedAsset<T=any> extends Omit<ResolvedAsset<T>, 'src' | '
     src?: AssetSrc;
     /**
      * Please use `alias` instead.
-     * @deprecated since 7.2.0
+     * @deprecated since 7.3.0
      */
     name?: ArrayOr<string>;
     /**
      * Please use `src` instead.
-     * @deprecated since 7.2.0
+     * @deprecated since 7.3.0
      */
     srcs?: AssetSrc;
 }
