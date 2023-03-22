@@ -14,8 +14,8 @@ export interface IGraphicsExtras
     drawChamferRect: typeof drawChamferRect;
     drawFilletRect: typeof drawFilletRect;
     drawRegularPolygon: typeof drawRegularPolygon;
-    drawRoundedShape: typeof drawRoundedShape;
     drawRoundedPolygon: typeof drawRoundedPolygon;
+    drawRoundedShape: typeof drawRoundedShape;
     drawStar: typeof drawStar;
 }
 
@@ -25,7 +25,7 @@ Object.defineProperties(Graphics.prototype, {
     drawChamferRect: { value: drawChamferRect },
     drawFilletRect: { value: drawFilletRect },
     drawRegularPolygon: { value: drawRegularPolygon },
-    drawRoundedShape: { value: drawRoundedShape },
     drawRoundedPolygon: { value: drawRoundedPolygon },
+    drawRoundedShape: { value: drawRoundedShape },
     drawStar: { value: drawStar },
 });

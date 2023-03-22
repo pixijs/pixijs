@@ -1,5 +1,3 @@
-import { PI_2 } from '@pixi/core';
-
 import type { IPointData } from '@pixi/core';
 import type { Graphics } from '@pixi/graphics';
 
@@ -18,10 +16,7 @@ function roundedShapeArc(
     radius: number
 ): void
 {
-    const vecFrom = (
-        p: { x: number; y: number },
-        pp: { x: number; y: number }
-    ) =>
+    const vecFrom = (p: IPointData, pp: IPointData) =>
     {
         const x = pp.x - p.x;
         const y = pp.y - p.y;
@@ -32,14 +27,43 @@ function roundedShapeArc(
         return { len, nx, ny };
     };
 
+    const sharpCorner = (i: number, p: IPointData) =>
+    {
+        if (i === 0)
+        {
+            g.moveTo(p.x, p.y);
+        }
+        else
+        {
+            g.lineTo(p.x, p.y);
+        }
+    };
+
     let p1 = points[points.length - 1];
 
     for (let i = 0; i < points.length; i++)
     {
-        let p2 = points[i % points.length];
+        const p2 = points[i % points.length];
+        const pRadius = p2.radius ?? radius;
+
+        if (pRadius <= 0)
+        {
+            sharpCorner(i, p2);
+            p1 = p2;
+            continue;
+        }
+
         const p3 = points[(i + 1) % points.length];
         const v1 = vecFrom(p2, p1);
         const v2 = vecFrom(p2, p3);
+
+        if (v1.len < 1e-4 || v2.len < 1e-4)
+        {
+            sharpCorner(i, p2);
+            p1 = p2;
+            continue;
+        }
+
         let angle = Math.asin((v1.nx * v2.ny) - (v1.ny * v2.nx));
         let radDirection = 1;
         let drawDirection = false;
@@ -63,7 +87,6 @@ function roundedShapeArc(
             drawDirection = true;
         }
 
-        const pRadius = p2.radius ?? radius;
         const halfAngle = angle / 2;
 
         let cRadius: number;
@@ -88,26 +111,15 @@ function roundedShapeArc(
 
         if (i === 0)
         {
-            if (drawDirection && startAngle <= endAngle)
-            {
-                g.moveTo(
-                    cX + (Math.cos(startAngle + PI_2) * cRadius),
-                    cY + (Math.sin(startAngle + PI_2) * cRadius)
-                );
-            }
-            else
-            {
-                g.moveTo(
-                    cX + (Math.cos(startAngle) * cRadius),
-                    cY + (Math.sin(startAngle) * cRadius)
-                );
-            }
+            g.moveTo(
+                cX + (Math.cos(startAngle) * cRadius),
+                cY + (Math.sin(startAngle) * cRadius)
+            );
         }
 
         g.arc(cX, cY, cRadius, startAngle, endAngle, drawDirection);
 
         p1 = p2;
-        p2 = p3;
     }
 }
 
@@ -136,39 +148,73 @@ function roundedShapeQuadraticCurve(
 
     const numPoints = points.length;
 
-    const corners = [];
-
     for (let i = 0; i < numPoints; i++)
     {
-        const lastPoint = points[i];
         const thisPoint = points[(i + 1) % numPoints];
-        const nextPoint = points[(i + 2) % numPoints];
         const pRadius = thisPoint.radius ?? radius;
 
+        if (pRadius <= 0)
+        {
+            if (i === 0)
+            {
+                g.moveTo(thisPoint.x, thisPoint.y);
+            }
+            else
+            {
+                g.lineTo(thisPoint.x, thisPoint.y);
+            }
+
+            continue;
+        }
+
+        const lastPoint = points[i];
+        const nextPoint = points[(i + 2) % numPoints];
+
         const lastEdgeLength = distance(lastPoint, thisPoint);
-        const lastOffsetDistance = Math.min(lastEdgeLength / 2, pRadius);
-        const start = pointLerp(
-            thisPoint,
-            lastPoint,
-            lastOffsetDistance / lastEdgeLength
-        );
+        let start;
+
+        if (lastEdgeLength < 1e-4)
+        {
+            start = thisPoint;
+        }
+        else
+        {
+            const lastOffsetDistance = Math.min(lastEdgeLength / 2, pRadius);
+
+            start = pointLerp(
+                thisPoint,
+                lastPoint,
+                lastOffsetDistance / lastEdgeLength
+            );
+        }
 
         const nextEdgeLength = distance(nextPoint, thisPoint);
-        const nextOffsetDistance = Math.min(nextEdgeLength / 2, pRadius);
-        const end = pointLerp(
-            thisPoint,
-            nextPoint,
-            nextOffsetDistance / nextEdgeLength
-        );
+        let end;
 
-        corners.push([start, thisPoint, end]);
-    }
+        if (nextEdgeLength < 1e-4)
+        {
+            end = thisPoint;
+        }
+        else
+        {
+            const nextOffsetDistance = Math.min(nextEdgeLength / 2, pRadius);
 
-    g.moveTo(corners[0][0].x, corners[0][0].y);
-    for (const [start, ctrl, end] of corners)
-    {
-        g.lineTo(start.x, start.y);
-        g.quadraticCurveTo(ctrl.x, ctrl.y, end.x, end.y);
+            end = pointLerp(
+                thisPoint,
+                nextPoint,
+                nextOffsetDistance / nextEdgeLength
+            );
+        }
+
+        if (i === 0)
+        {
+            g.moveTo(start.x, start.y);
+        }
+        else
+        {
+            g.lineTo(start.x, start.y);
+        }
+        g.quadraticCurveTo(thisPoint.x, thisPoint.y, end.x, end.y);
     }
 }
 
