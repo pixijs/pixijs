@@ -4,11 +4,9 @@ import type { Graphics } from '@pixi/graphics';
 /**
  * Typed and cleaned up version of:
  * https://stackoverflow.com/questions/44855794/html5-canvas-triangle-with-rounded-corners/44856925#44856925
- * @method PIXI.Graphics#drawRoundedShape
- * @param {PIXI.Graphics} g - Graphics to be drawn on
- * @param {(IPointData & {radius?: number})[]} points - Minimum length is 3
- * @param {number} radius - Corners default radius
- * @returns {PIXI.Graphics} This Graphics object. Good for chaining method calls
+ * @param {PIXI.Graphics} g - Graphics to be drawn on.
+ * @param {(IPointData & { radius?: number })[]} points - Corners of the shape to draw. Minimum length is 3.
+ * @param {number} radius - Corners default radius.
  */
 function roundedShapeArc(
     g: Graphics,
@@ -126,11 +124,9 @@ function roundedShapeArc(
 /**
  * Typed and cleaned up version of:
  * https://stackoverflow.com/questions/44855794/html5-canvas-triangle-with-rounded-corners/56214413#56214413
- * @method PIXI.Graphics#drawRoundedShape
- * @param {PIXI.Graphics} g - Graphics to be drawn on
- * @param {(IPointData & {radius?: number})[]} points - Minimum length is 3
- * @param {number} radius - Corners default radius
- * @returns {PIXI.Graphics} This Graphics object. Good for chaining method calls
+ * @param {PIXI.Graphics} g - Graphics to be drawn on.
+ * @param {(IPointData & { radius?: number })[]} points - Corners of the shape to draw. Minimum length is 3.
+ * @param {number} radius - Corners default radius.
  */
 function roundedShapeQuadraticCurve(
     g: Graphics,
@@ -143,7 +139,7 @@ function roundedShapeQuadraticCurve(
 
     const pointLerp = (p1: IPointData, p2: IPointData, t: number) => ({
         x: p1.x + ((p2.x - p1.x) * t),
-        y: p1.y + ((p2.y - p1.y) * t)
+        y: p1.y + ((p2.y - p1.y) * t),
     });
 
     const numPoints = points.length;
@@ -220,15 +216,15 @@ function roundedShapeQuadraticCurve(
 
 /**
  * Draw a Shape with rounded corners.
- * Supports custom radius for each point
+ * Supports custom radius for each point.
  *
  * _Note: Only available with **@pixi/graphics-extras**._
  * @method PIXI.Graphics#drawRoundedShape
  * @param this
- * @param {(IPointData & {radius?: number})[]} points - Minimum length is 3
- * @param {number} radius - Corners default radius
- * @param {boolean} useQuadraticCurve - if true, rounded corners will be drawn using quadraticCurve instead of arc
- * @returns {PIXI.Graphics} This Graphics object. Good for chaining method calls
+ * @param {(IPointData & { radius?: number })[]} points - Corners of the shape to draw. Minimum length is 3.
+ * @param {number} radius - Corners default radius.
+ * @param {boolean} useQuadraticCurve - If true, rounded corners will be drawn using quadraticCurve instead of arc.
+ * @returns {PIXI.Graphics} This Graphics object. Good for chaining method calls.
  */
 export function drawRoundedShape(
     this: Graphics,
