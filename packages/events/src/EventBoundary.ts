@@ -250,7 +250,9 @@ export class EventBoundary
     ): DisplayObject
     {
         EventsTicker.pauseUpdate = true;
-        const fn = this._isPointerMoveEvent ? 'hitTestMoveRecursive' : 'hitTestRecursive';
+        // if we are using global move events, we need to hit test the whole scene graph
+        const useMove = this._isPointerMoveEvent && this.enableGlobalMoveEvents;
+        const fn = useMove ? 'hitTestMoveRecursive' : 'hitTestRecursive';
         const invertedPath = this[fn](
             this.rootTarget,
             this.rootTarget.eventMode,
@@ -425,9 +427,6 @@ export class EventBoundary
             }
         }
 
-        // parent has determined that this object is not within the hit-test chain
-        if (ignore) return null;
-
         const isInteractiveMode = this._isInteractive(eventMode);
         const isInteractiveTarget = currentTarget.isInteractive();
 
@@ -435,7 +434,7 @@ export class EventBoundary
 
         // we don't carry on hit testing something once we have found a hit,
         // now only care about gathering the interactive elements
-        if (this._hitElements.length > 0) return null;
+        if (ignore || this._hitElements.length > 0) return null;
 
         // Finally, hit test this DisplayObject itself.
         if (isInteractiveMode && (!pruneFn(currentTarget, location) && testFn(currentTarget, location)))
