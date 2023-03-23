@@ -8,7 +8,7 @@ import type {
     HsvaColor,
     HsvColor,
     RgbaColor,
-    RgbColor,
+    RgbColor
 } from 'colord/types';
 
 extend([namesPlugin]);
@@ -53,6 +53,8 @@ export type ColorSource = string | number | number[] | Float32Array | Uint8Array
 | HslColor | HslaColor | HsvColor | HsvaColor | RgbColor | RgbaColor | Color |
 // eslint-disable-next-line @typescript-eslint/ban-types
 Number;
+
+type ColorSourceTypedArray = Float32Array | Uint8Array | Uint8ClampedArray;
 
 /**
  * Color utility class.
@@ -471,7 +473,7 @@ export class Color
      */
     setAlpha(alpha: number): this
     {
-        this._components[3] = Math.min(1, Math.max(0, alpha));
+        this._components[3] = this._clamp(alpha, 0, 1);
 
         return this;
     }
@@ -545,7 +547,7 @@ export class Color
             && value.length >= 3 && value.length <= 4)
         {
             // make sure all values are 0 - 1
-            value = value.map((v) => Math.min(1, Math.max(0, v)));
+            value = this._clamp(value, 0, 1);
 
             const [r, g, b, a = 1.0] = value;
 
@@ -556,7 +558,7 @@ export class Color
             && value.length >= 3 && value.length <= 4)
         {
             // make sure all values are 0 - 255
-            value = value.map((v) => Math.min(255, Math.max(0, v)));
+            value = this._clamp(value, 0, 255);
             const [r, g, b, a = 255] = value;
 
             components = [r / 255, g / 255, b / 255, a / 255];
@@ -600,10 +602,31 @@ export class Color
     private refreshInt(): void
     {
         // Clamp values to 0 - 1
-        this._components.forEach((value, i) => (this._components[i] = Math.min(Math.max(value, 0), 1)));
+        this._clamp(this._components, 0, 1);
 
         const [r, g, b] = this._components;
 
         this._int = (((r * 255) << 16) + ((g * 255) << 8) + (b * 255 | 0));
+    }
+
+    /**
+     * Clamps values to a range. Will override original values
+     * @param value - Value(s) to clamp
+     * @param min - Minimum value
+     * @param max - Maximum value
+     */
+    private _clamp<T extends number | number[] | ColorSourceTypedArray>(value: T, min: number, max: number): T
+    {
+        if (typeof value === 'number')
+        {
+            return Math.min(Math.max(value, min), max) as T;
+        }
+
+        value.forEach((v, i) =>
+        {
+            value[i] = Math.min(Math.max(v, min), max);
+        });
+
+        return value;
     }
 }
