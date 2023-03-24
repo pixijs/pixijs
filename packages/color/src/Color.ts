@@ -473,7 +473,7 @@ export class Color
      */
     setAlpha(alpha: number): this
     {
-        this._components[3] = this._clamp(alpha, 0, 1);
+        this._components[3] = this._clamp(alpha);
 
         return this;
     }
@@ -547,7 +547,7 @@ export class Color
             && value.length >= 3 && value.length <= 4)
         {
             // make sure all values are 0 - 1
-            value = this._clamp(value, 0, 1);
+            value = this._clamp(value);
 
             const [r, g, b, a = 1.0] = value;
 
@@ -602,7 +602,7 @@ export class Color
     private refreshInt(): void
     {
         // Clamp values to 0 - 1
-        this._clamp(this._components, 0, 1);
+        this._clamp(this._components);
 
         const [r, g, b] = this._components;
 
@@ -615,7 +615,7 @@ export class Color
      * @param min - Minimum value
      * @param max - Maximum value
      */
-    private _clamp<T extends number | number[] | ColorSourceTypedArray>(value: T, min: number, max: number): T
+    private _clamp<T extends number | number[] | ColorSourceTypedArray>(value: T, min = 0, max = 1): T
     {
         if (typeof value === 'number')
         {
