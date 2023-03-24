@@ -8,7 +8,7 @@ import type { ISystem } from '../system/ISystem';
 /**
  * Options for the background system.
  * @memberof PIXI
- * @deprecated since 7.3.0
+ * @deprecated since 7.2.3
  * @see PIXI.BackgroundSystemOptions
  */
 export type BackgroundSytemOptions = BackgroundSystemOptions;
