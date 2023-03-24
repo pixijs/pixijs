@@ -141,7 +141,7 @@ export class EventBoundary
     /** Every element that passed the hit test. Only used in `pointermove` */
     private _hitElements: FederatedEventTarget[] = [];
     /** Whether or not to collect all the interactive elements from the scene. Enabled in `pointermove` */
-    private _collectInteractiveElements = false;
+    private _isPointerMoveEvent = false;
 
     /**
      * @param rootTarget - The holder of the event boundary.
@@ -250,7 +250,10 @@ export class EventBoundary
     ): DisplayObject
     {
         EventsTicker.pauseUpdate = true;
-        const invertedPath = this.hitTestRecursive(
+        // if we are using global move events, we need to hit test the whole scene graph
+        const useMove = this._isPointerMoveEvent && this.enableGlobalMoveEvents;
+        const fn = useMove ? 'hitTestMoveRecursive' : 'hitTestRecursive';
+        const invertedPath = this[fn](
             this.rootTarget,
             this.rootTarget.eventMode,
             tempHitLocation.set(x, y),
@@ -364,6 +367,86 @@ export class EventBoundary
         return propagationPath;
     }
 
+    protected hitTestMoveRecursive(
+        currentTarget: DisplayObject,
+        eventMode: EventMode,
+        location: Point,
+        testFn: (object: DisplayObject, pt: Point) => boolean,
+        pruneFn?: (object: DisplayObject, pt: Point) => boolean,
+        ignore = false
+    ): DisplayObject[]
+    {
+        // only bail out early if it is not interactive
+        if (this._interactivePrune(currentTarget)) return null;
+
+        if (currentTarget.eventMode === 'dynamic' || eventMode === 'dynamic')
+        {
+            EventsTicker.pauseUpdate = false;
+        }
+
+        if (currentTarget.interactiveChildren && currentTarget.children)
+        {
+            const children = currentTarget.children;
+
+            for (let i = children.length - 1; i >= 0; i--)
+            {
+                const child = children[i] as DisplayObject;
+
+                const nestedHit = this.hitTestMoveRecursive(
+                    child,
+                    this._isInteractive(eventMode) ? eventMode : child.eventMode,
+                    location,
+                    testFn,
+                    pruneFn,
+                    pruneFn(currentTarget, location)
+                );
+
+                if (nestedHit)
+                {
+                    // Its a good idea to check if a child has lost its parent.
+                    // this means it has been removed whilst looping so its best
+                    if (nestedHit.length > 0 && !nestedHit[nestedHit.length - 1].parent)
+                    {
+                        continue;
+                    }
+
+                    // Only add the current hit-test target to the hit-test chain if the chain
+                    // has already started (i.e. the event target has been found) or if the current
+                    // target is interactive (i.e. it becomes the event target).
+                    const isInteractive = currentTarget.isInteractive();
+
+                    if (nestedHit.length > 0 || isInteractive)
+                    {
+                        if (isInteractive) this._allInteractiveElements.push(currentTarget);
+                        nestedHit.push(currentTarget);
+                    }
+
+                    // store all hit elements to be returned once we have traversed the whole tree
+                    if (this._hitElements.length === 0) this._hitElements = nestedHit;
+                }
+            }
+        }
+
+        const isInteractiveMode = this._isInteractive(eventMode);
+        const isInteractiveTarget = currentTarget.isInteractive();
+
+        if (isInteractiveTarget && isInteractiveTarget) this._allInteractiveElements.push(currentTarget);
+
+        // we don't carry on hit testing something once we have found a hit,
+        // now only care about gathering the interactive elements
+        if (ignore || this._hitElements.length > 0) return null;
+
+        // Finally, hit test this DisplayObject itself.
+        if (isInteractiveMode && (!pruneFn(currentTarget, location) && testFn(currentTarget, location)))
+        {
+            // The current hit-test target is the event's target only if it is interactive. Otherwise,
+            // the first interactive ancestor will be the event's target.
+            return isInteractiveTarget ? [currentTarget] : [];
+        }
+
+        return null;
+    }
+
     /**
      * Recursive implementation for {@link PIXI.EventBoundary.hitTest hitTest}.
      * @param currentTarget - The DisplayObject that is to be hit tested.
@@ -383,11 +466,11 @@ export class EventBoundary
         eventMode: EventMode,
         location: Point,
         testFn: (object: DisplayObject, pt: Point) => boolean,
-        pruneFn?: (object: DisplayObject, pt: Point) => boolean,
+        pruneFn?: (object: DisplayObject, pt: Point) => boolean
     ): DisplayObject[]
     {
         // Attempt to prune this DisplayObject and its subtree as an optimization.
-        if (pruneFn(currentTarget, location))
+        if (this._interactivePrune(currentTarget) || pruneFn(currentTarget, location))
         {
             return null;
         }
@@ -411,7 +494,7 @@ export class EventBoundary
                     this._isInteractive(eventMode) ? eventMode : child.eventMode,
                     location,
                     testFn,
-                    pruneFn,
+                    pruneFn
                 );
 
                 if (nestedHit)
@@ -428,31 +511,15 @@ export class EventBoundary
                     // target is interactive (i.e. it becomes the event target).
                     const isInteractive = currentTarget.isInteractive();
 
-                    if (nestedHit.length > 0 || isInteractive)
-                    {
-                        if (this._collectInteractiveElements && isInteractive)
-                        { this._allInteractiveElements.push(currentTarget); }
-                        nestedHit.push(currentTarget);
-                    }
+                    if (nestedHit.length > 0 || isInteractive) nestedHit.push(currentTarget);
 
-                    // store all hit elements
-                    if (this._collectInteractiveElements && this._hitElements.length === 0)
-                    { this._hitElements = nestedHit; }
-                    // only return the hit elements if we are not collecting all interactive elements
-                    if (!this._collectInteractiveElements) return nestedHit;
+                    return nestedHit;
                 }
             }
         }
 
         const isInteractiveMode = this._isInteractive(eventMode);
         const isInteractiveTarget = currentTarget.isInteractive();
-
-        //
-        if (this._collectInteractiveElements)
-        {
-            if (isInteractiveMode && isInteractiveTarget) this._allInteractiveElements.push(currentTarget);
-            if (this._hitElements.length > 0) return null;
-        }
 
         // Finally, hit test this DisplayObject itself.
         if (isInteractiveMode && testFn(currentTarget, location))
@@ -470,15 +537,7 @@ export class EventBoundary
         return int === 'static' || int === 'dynamic';
     }
 
-    /**
-     * Checks whether the display object or any of its children cannot pass the hit test at all.
-     *
-     * {@link PIXI.EventBoundary}'s implementation uses the {@link PIXI.DisplayObject.hitArea hitArea}
-     * and {@link PIXI.DisplayObject._mask} for pruning.
-     * @param displayObject
-     * @param location
-     */
-    protected hitPruneFn(displayObject: DisplayObject, location: Point): boolean
+    private _interactivePrune(displayObject: DisplayObject): boolean
     {
         // If displayObject is a mask, invisible, or not renderable then it cannot be hit directly.
         if (!displayObject || displayObject.isMask || !displayObject.visible || !displayObject.renderable)
@@ -504,10 +563,19 @@ export class EventBoundary
             return true;
         }
 
-        // with pointermove we can't test for hitArea or mask, so we need to return false
-        // otherwise DisplayObjects will be skipped
-        if (this._collectInteractiveElements) return false;
+        return false;
+    }
 
+    /**
+     * Checks whether the display object or any of its children cannot pass the hit test at all.
+     *
+     * {@link PIXI.EventBoundary}'s implementation uses the {@link PIXI.DisplayObject.hitArea hitArea}
+     * and {@link PIXI.DisplayObject._mask} for pruning.
+     * @param displayObject
+     * @param location
+     */
+    protected hitPruneFn(displayObject: DisplayObject, location: Point): boolean
+    {
         if (displayObject.hitArea)
         {
             displayObject.worldTransform.applyInverse(location, tempLocalMapping);
@@ -644,10 +712,10 @@ export class EventBoundary
 
         this._allInteractiveElements.length = 0;
         this._hitElements.length = 0;
-        this._collectInteractiveElements = true;
+        this._isPointerMoveEvent = true;
         const e = this.createPointerEvent(from);
 
-        this._collectInteractiveElements = false;
+        this._isPointerMoveEvent = false;
         const isMouse = e.pointerType === 'mouse' || e.pointerType === 'pen';
         const trackingData = this.trackingData(from.pointerId);
         const outTarget = this.findMountedTarget(trackingData.overTargets);

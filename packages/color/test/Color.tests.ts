@@ -19,14 +19,26 @@ describe('Color', () =>
             'ff',
             [1, 1],
             new Uint8Array([255, 255]),
-            [1, 1, -1, 1],
-            [1, 1, 1.1, 1],
             [1, 1, 1, 1, 0],
         ];
 
         invalidColorValues.forEach((value) =>
         {
             expect(() => new Color(value as any)).toThrow();
+        });
+    });
+
+    it.concurrent('should not throw error for invalid color values', async () =>
+    {
+        const invalidColorValues: any[] = [
+            [1, 1, -1, 1],
+            [1, 1, 1.1, 1],
+            { r: 1, g: 1, b: 1, a: 1.1 },
+        ];
+
+        invalidColorValues.forEach((value) =>
+        {
+            expect(() => new Color(value as any)).not.toThrow();
         });
     });
 
@@ -218,6 +230,19 @@ describe('Color', () =>
     it('should clamp the color results with multiply', () =>
     {
         const color = new Color(0xffffff).premultiply(2);
+
+        expect(color.red).toBe(1);
+        expect(color.blue).toBe(1);
+        expect(color.green).toBe(1);
+        expect(color.alpha).toBe(1);
+    });
+
+    it('should clamp the color when multiplying', () =>
+    {
+        const worldAlpha = 1.1;
+        const color = new Color().setValue(0xffffff)
+            .multiply([worldAlpha, worldAlpha, worldAlpha])
+            .setAlpha(worldAlpha);
 
         expect(color.red).toBe(1);
         expect(color.blue).toBe(1);
