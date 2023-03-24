@@ -5,7 +5,19 @@ import type { ColorSource } from '@pixi/color';
 import type { ExtensionMetadata } from '@pixi/extensions';
 import type { ISystem } from '../system/ISystem';
 
-export interface BackgroundSytemOptions
+/**
+ * Options for the background system.
+ * @memberof PIXI
+ * @deprecated since 7.3.0
+ * @see PIXI.BackgroundSystemOptions
+ */
+export type BackgroundSytemOptions = BackgroundSystemOptions;
+
+/**
+ * Options for the background system.
+ * @memberof PIXI
+ */
+export interface BackgroundSystemOptions
 {
     /**
      * The background color used to clear the canvas. See {@link PIXI.ColorSource} for accepted color values.
@@ -33,9 +45,9 @@ export interface BackgroundSytemOptions
  * The background system manages the background color and alpha of the main view.
  * @memberof PIXI
  */
-export class BackgroundSystem implements ISystem<BackgroundSytemOptions>
+export class BackgroundSystem implements ISystem<BackgroundSystemOptions>
 {
-    static defaultOptions: BackgroundSytemOptions = {
+    static defaultOptions: BackgroundSystemOptions = {
         /**
          * {@link PIXI.IRendererOptions.backgroundAlpha}
          * @default 1
@@ -90,7 +102,7 @@ export class BackgroundSystem implements ISystem<BackgroundSytemOptions>
      * initiates the background system
      * @param {PIXI.IRendererOptions} options - the options for the background colors
      */
-    init(options: BackgroundSytemOptions): void
+    init(options: BackgroundSystemOptions): void
     {
         this.clearBeforeRender = options.clearBeforeRender;
         const { backgroundColor, background, backgroundAlpha } = options;

@@ -106,7 +106,7 @@ export interface DisplayObject
  *         a rotation. Indeed, if "skew.x" = -ϴ and "skew.y" = ϴ, it will produce an equivalent of "rotation" = ϴ.
  *         </p>
  *         <p>
- *         Another quite interesting observation is that "skew.x", "skew.y", rotation are communtative operations. Indeed,
+ *         Another quite interesting observation is that "skew.x", "skew.y", rotation are commutative operations. Indeed,
  *         because rotation is essentially a careful combination of the two.
  *         </p>
  *       </td>
@@ -201,9 +201,7 @@ export interface DisplayObject
  * object (and its children subtree) will continue to be calculated. When using `visible`, the transforms will not
  * be calculated.
  *
- * It is recommended that applications use the `renderable` property for culling. See
- * [@pixi-essentials/cull]{@link https://www.npmjs.com/package/@pixi-essentials/cull} or
- * [pixi-cull]{@link https://www.npmjs.com/package/pixi-cull} for more details.
+ * For culling purposes, it is recommended that applications use the [cullable]{@link PIXI.DisplayObject#cullable} property.
  *
  * Otherwise, to prevent an object from rendering in the general-purpose sense - `visible` is the property to use. This
  * one is also better in terms of performance.
