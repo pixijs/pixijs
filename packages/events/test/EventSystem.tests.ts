@@ -327,6 +327,97 @@ describe('EventSystem', () =>
         expect(secondaryOutSpy).not.toBeCalledTimes(1);
     });
 
+    it('should dispatch synthetic over/out events on pointermove with hitArea', () =>
+    {
+        const renderer = createRenderer();
+        const [stage, graphics] = createScene();
+        const second = stage.addChild(
+            new Graphics()
+                .beginFill(0xFFFFFF)
+                .drawRect(100, 0, 50, 50)
+        );
+
+        renderer.render(stage);
+        second.interactive = true;
+
+        const primaryOverSpy = jest.fn();
+        const primaryOutSpy = jest.fn();
+        const primaryMoveSpy = jest.fn();
+        const primaryMoveGlobalSpy = jest.fn();
+
+        let callCount = 0;
+
+        graphics.hitArea = new Rectangle(0, 0, 50, 50);
+        second.hitArea = new Rectangle(100, 0, 50, 50);
+        graphics.on('pointerover', () =>
+        {
+            expect(callCount).toEqual(0);
+            primaryOverSpy();
+            ++callCount;
+        });
+        graphics.on('pointermove', () =>
+        {
+            expect(callCount).toEqual(1);
+            primaryMoveSpy();
+            ++callCount;
+        });
+        graphics.on('globalpointermove', () =>
+        {
+            expect([2, 7]).toContain(callCount);
+            primaryMoveGlobalSpy();
+            ++callCount;
+        });
+        graphics.on('pointerout', () =>
+        {
+            expect(callCount).toEqual(4);
+            primaryOutSpy();
+            ++callCount;
+        });
+
+        const secondaryOverSpy = jest.fn();
+        const secondaryOutSpy = jest.fn();
+        const secondaryMoveSpy = jest.fn();
+        const secondaryMoveGlobalSpy = jest.fn();
+
+        second.on('pointerover', () =>
+        {
+            expect(callCount).toEqual(5);
+            secondaryOverSpy();
+            ++callCount;
+        });
+        second.on('pointerout', secondaryOutSpy);
+        second.on('pointermove', () =>
+        {
+            expect(callCount).toEqual(6);
+            secondaryMoveSpy();
+            ++callCount;
+        });
+        second.on('globalpointermove', () =>
+        {
+            expect([3, 8]).toContain(callCount);
+            secondaryMoveGlobalSpy();
+            ++callCount;
+        });
+
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', { clientX: 25, clientY: 25 })
+        );
+        expect(primaryOverSpy).toHaveBeenCalledOnce();
+        expect(primaryMoveSpy).toHaveBeenCalledOnce();
+        expect(primaryMoveGlobalSpy).toHaveBeenCalledTimes(1);
+        expect(secondaryMoveGlobalSpy).toHaveBeenCalledTimes(1);
+
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', { clientX: 125, clientY: 25 })
+        );
+        expect(primaryOutSpy).toHaveBeenCalledOnce();
+        expect(secondaryOverSpy).toHaveBeenCalledOnce();
+        expect(secondaryMoveSpy).toHaveBeenCalledOnce();
+        expect(primaryMoveGlobalSpy).toHaveBeenCalledTimes(2);
+        expect(secondaryMoveGlobalSpy).toHaveBeenCalledTimes(2);
+        expect(secondaryOutSpy).not.toBeCalledTimes(1);
+    });
+
     it('should not dispatch pointer events if not interactive', () =>
     {
         const renderer = createRenderer();
@@ -691,6 +782,111 @@ describe('EventSystem', () =>
         );
 
         expect(eventSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should dispatch global pointer over/out event with custom hitArea', () =>
+    {
+        const renderer = createRenderer();
+        const [stage, graphics] = createScene();
+        const eventSpy = jest.fn();
+
+        renderer.render(stage);
+
+        graphics.hitArea = new Rectangle(0, 0, 50, 50);
+        graphics.addEventListener('pointerover', () =>
+        {
+            eventSpy();
+        });
+        graphics.addEventListener('pointerout', () =>
+        {
+            eventSpy();
+        });
+
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', { clientX: 25, clientY: 25 })
+        );
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', { clientX: 75, clientY: 25 })
+        );
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', { clientX: 25, clientY: 25 })
+        );
+
+        expect(eventSpy).toHaveBeenCalledTimes(3);
+    });
+
+    it('should dispatch global pointer over/out event with a mask', () =>
+    {
+        const renderer = createRenderer();
+        const [stage, graphics] = createScene();
+        const eventSpy = jest.fn();
+
+        renderer.render(stage);
+
+        const mask = new Graphics().beginFill(0xffffff).drawRect(0, 0, 10, 10);
+
+        stage.addChild(mask);
+        graphics.interactive = true;
+        graphics.mask = mask;
+        graphics.on('pointerover', () => eventSpy());
+        graphics.on('pointerout', () => eventSpy());
+
+        // mask is 25x25, so this should not be inside
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', { clientX: 25, clientY: 5 })
+        );
+        // this is inside
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', { clientX: 5, clientY: 5 })
+        );
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', { clientX: 75, clientY: 5 })
+        );
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', { clientX: 5, clientY: 5 })
+        );
+
+        expect(eventSpy).toHaveBeenCalledTimes(3);
+    });
+
+    it('should dispatch global pointer over/out event with a mask and hitArea', () =>
+    {
+        const renderer = createRenderer();
+        const [stage, graphics] = createScene();
+        const eventSpy = jest.fn();
+
+        renderer.render(stage);
+
+        const mask = new Graphics().beginFill(0xffffff).drawRect(0, 0, 25, 25);
+
+        graphics.hitArea = new Rectangle(10, 0, 50, 50);
+
+        stage.addChild(mask);
+        graphics.interactive = true;
+        graphics.mask = mask;
+        graphics.on('pointerover', () => eventSpy());
+        graphics.on('pointerout', () => eventSpy());
+
+        // this is inside the hitArea, but outside the mask so should not fire
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', { clientX: 26, clientY: 5 })
+        );
+        // this is inside the mask, but not the hitArea so should not fire
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', { clientX: 5, clientY: 5 })
+        );
+        // this is inside the mask and hitArea so should fire
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', { clientX: 15, clientY: 5 })
+        );
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', { clientX: 75, clientY: 5 })
+        );
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', { clientX: 15, clientY: 5 })
+        );
+
+        expect(eventSpy).toHaveBeenCalledTimes(3);
     });
 
     it('should dispatch global pointer move event with mask', () =>
