@@ -512,6 +512,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
 
     /**
      * @deprecated since 7.0.0
+     * @ignore
      */
     set backgroundColor(value: ColorSource)
     {
@@ -539,6 +540,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
 
     /**
      * @deprecated since 7.0.0
+     * @ignore
      */
     set backgroundAlpha(value: number)
     {

@@ -7,6 +7,10 @@ import type { ICanvas } from '@pixi/settings';
 import type { IRenderer } from '../IRenderer';
 import type { ISystem } from '../system/ISystem';
 
+/**
+ * Options for the view system.
+ * @memberof PIXI
+ */
 export interface ViewSystemOptions
 {
     /**
