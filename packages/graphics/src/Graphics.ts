@@ -971,8 +971,7 @@ export class Graphics extends Container
 
         // and then lets set the tint..
         Color.shared.setValue(this._tintColor)
-            .multiply([worldAlpha, worldAlpha, worldAlpha])
-            .setAlpha(worldAlpha)
+            .premultiply(worldAlpha)
             .toArray(uniforms.tint);
 
         // the first draw call, we can set the uniforms of the shader directly here.
