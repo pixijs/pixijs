@@ -129,7 +129,7 @@ export type BasisTextureExtensions = {
 /** API provided by basis_universal WebGL library. */
 export type BasisBinding = {
     BasisFile: typeof BasisFile,
-    initializeBasis(): void
+    initializeBasis: () => void
 };
 
 /**

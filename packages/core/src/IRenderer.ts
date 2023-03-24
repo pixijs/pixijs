@@ -5,7 +5,7 @@ import type { IRendererPlugins } from './plugin/PluginSystem';
 import type { IGenerateTextureOptions } from './renderTexture/GenerateTextureSystem';
 import type { RenderTexture } from './renderTexture/RenderTexture';
 import type { SystemManager } from './system/SystemManager';
-import type { BackgroundSytemOptions, ContextSystemOptions, StartupSystemOptions, ViewSystemOptions } from './systems';
+import type { BackgroundSystemOptions, ContextSystemOptions, StartupSystemOptions, ViewSystemOptions } from './systems';
 import type { ImageSource } from './textures/BaseTexture';
 
 /**
@@ -83,7 +83,7 @@ export interface IRenderingContext extends WebGL2RenderingContext
  * @see PIXI.settings.RENDER_OPTIONS
  */
 export interface IRendererOptions extends GlobalMixins.IRendererOptions,
-    BackgroundSytemOptions,
+    BackgroundSystemOptions,
     ContextSystemOptions,
     ViewSystemOptions,
     StartupSystemOptions
@@ -106,7 +106,7 @@ export interface IRendererRenderOptions
 }
 
 /**
- * Starard Interface for a Pixi renderer.
+ * Standard Interface for a Pixi renderer.
  * @memberof PIXI
  */
 export interface IRenderer<VIEW extends ICanvas = ICanvas> extends SystemManager, GlobalMixins.IRenderer
