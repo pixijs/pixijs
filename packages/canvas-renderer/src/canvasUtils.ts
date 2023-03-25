@@ -1,4 +1,4 @@
-import { Color, settings } from '@pixi/core';
+import { Color, settings, utils } from '@pixi/core';
 import { canUseNewCanvasBlendModes } from './utils/canUseNewCanvasBlendModes';
 
 import type { ICanvas, Texture } from '@pixi/core';
@@ -25,10 +25,7 @@ export const canvasUtils = {
     getTintedCanvas: (sprite: { texture: Texture }, color: number): ICanvas | HTMLImageElement =>
     {
         const texture = sprite.texture;
-
-        color = canvasUtils.roundColor(color);
-
-        const stringColor = `#${(`00000${(color | 0).toString(16)}`).slice(-6)}`;
+        const stringColor = Color.shared.setValue(color).toHex();
 
         texture.tintCache = texture.tintCache || {};
 
@@ -81,9 +78,7 @@ export const canvasUtils = {
      */
     getTintedPattern: (texture: Texture, color: number): CanvasPattern =>
     {
-        color = canvasUtils.roundColor(color);
-
-        const stringColor = `#${(`00000${(color | 0).toString(16)}`).slice(-6)}`;
+        const stringColor = Color.shared.setValue(color).toHex();
 
         texture.patternCache = texture.patternCache || {};
 
@@ -127,7 +122,7 @@ export const canvasUtils = {
         canvas.height = Math.ceil(crop.height);
 
         context.save();
-        context.fillStyle = `#${(`00000${(color | 0).toString(16)}`).slice(-6)}`;
+        context.fillStyle = Color.shared.setValue(color).toHex();
 
         context.fillRect(0, 0, crop.width, crop.height);
 
@@ -260,14 +255,22 @@ export const canvasUtils = {
     /**
      * Rounds the specified color according to the canvasUtils.cacheStepsPerColorChannel.
      * @memberof PIXI.canvasUtils
+     * @deprecated since 7.3.0
+     * @see PIXI.Color.round
      * @param {number} color - the color to round, should be a hex color
      * @returns {number} The rounded color.
      */
     roundColor: (color: number): number =>
-        Color.shared
+    {
+        // #if _DEBUG
+        utils.deprecation('7.3.0', 'PIXI.canvasUtils.roundColor is deprecated, use PIXI.Color.round instead');
+        // #endif
+
+        return Color.shared
             .setValue(color)
             .round(canvasUtils.cacheStepsPerColorChannel)
-            .toNumber(),
+            .toNumber();
+    },
 
     /**
      * Number of steps which will be used as a cap when rounding colors.
