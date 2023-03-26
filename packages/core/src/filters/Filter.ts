@@ -211,6 +211,7 @@ export class Filter extends Shader
     /**
      * The samples override of the filter instance.
      * If set to `null`, the sample count of the current render target is used.
+     * @default PIXI.Filter.defaultMultisample
      */
     public multisample: MSAA_QUALITY | null;
 
@@ -293,6 +294,7 @@ export class Filter extends Shader
      * The resolution of the filter. Setting this to be lower will lower the quality but
      * increase the performance of the filter.
      * If set to `null` or `0`, the resolution of the current render target is used.
+     * @default PIXI.Filter.defaultResolution
      */
     get resolution(): number | null
     {
