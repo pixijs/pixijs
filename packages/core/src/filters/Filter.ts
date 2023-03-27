@@ -191,15 +191,15 @@ export class Filter extends Shader
      * Default filter resolution for any filter.
      * @static
      */
-    public static defaultResolution = 1;
+    public static defaultResolution: number | null = 1;
 
     /**
      * Default filter samples for any filter.
      * @static
-     * @type {PIXI.MSAA_QUALITY}
+     * @type {PIXI.MSAA_QUALITY|null}
      * @default PIXI.MSAA_QUALITY.NONE
      */
-    public static defaultMultisample = MSAA_QUALITY.NONE;
+    public static defaultMultisample: MSAA_QUALITY | null = MSAA_QUALITY.NONE;
 
     /**
      * The padding of the filter. Some filters require extra space to breath such as a blur.
