@@ -590,10 +590,10 @@ export class Color
         // Cache normalized values for rgba and hex integer
         if (r !== undefined)
         {
-            this._components[0] = r;
-            this._components[1] = g;
-            this._components[2] = b;
-            this._components[3] = a;
+            this._components[0] = r as number;
+            this._components[1] = g as number;
+            this._components[2] = b as number;
+            this._components[3] = a as number;
             this.refreshInt();
         }
         else
