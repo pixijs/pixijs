@@ -480,18 +480,16 @@ export class Color
 
     /**
      * Rounds the specified color according to the step. This action is destructive, and will
-     * override the previous `value` property to be `null`.
-     * @param step - Number of steps which will be used as a cap when rounding colors
+     * override the previous `value` property to be `null`. The alpha component is not rounded.
+     * @param steps - Number of steps which will be used as a cap when rounding colors
      */
-    round(step: number): this
+    round(steps: number): this
     {
         const [r, g, b] = this._components;
 
-        this._components.set([
-            Math.min(255, (r / step) * step),
-            Math.min(255, (g / step) * step),
-            Math.min(255, (b / step) * step),
-        ]);
+        this._components[0] = Math.round(r * steps) / steps;
+        this._components[1] = Math.round(g * steps) / steps;
+        this._components[2] = Math.round(b * steps) / steps;
         this.refreshInt();
         this._value = null;
 
