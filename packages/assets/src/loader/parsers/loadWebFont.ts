@@ -34,6 +34,12 @@ export type LoadFontData = {
 };
 
 /**
+ * RegExp for matching CSS <ident-token>. It doesn't consider escape and non-ASCII characters, but enough for us.
+ * @see {@link https://www.w3.org/TR/css-syntax-3/#ident-token-diagram}
+ */
+const CSS_IDENT_TOKEN_REGEX = /^(--|-?[A-Z_])[0-9A-Z_-]*$/i;
+
+/**
  * Return font face name from a file name
  * Ex.: 'fonts/tital-one.woff' turns into 'Titan One'
  * @param url - File url
@@ -47,12 +53,29 @@ export function getFontFamilyName(url: string): string
     const nameWithSpaces = name.replace(/(-|_)/g, ' ');
 
     // Upper case first character of each word
-    const nameTitleCase = nameWithSpaces.toLowerCase()
+    const nameTokens = nameWithSpaces.toLowerCase()
         .split(' ')
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ');
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1));
 
-    return nameTitleCase;
+    let valid = nameTokens.length > 0;
+
+    for (const token of nameTokens)
+    {
+        if (!token.match(CSS_IDENT_TOKEN_REGEX))
+        {
+            valid = false;
+            break;
+        }
+    }
+
+    let fontFamilyName = nameTokens.join(' ');
+
+    if (!valid)
+    {
+        fontFamilyName = `"${fontFamilyName.replace(/[\\"]/g, '\\$&')}"`;
+    }
+
+    return fontFamilyName;
 }
 
 /** Web font loader plugin */
