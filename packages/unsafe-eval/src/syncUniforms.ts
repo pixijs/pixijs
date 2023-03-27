@@ -8,23 +8,6 @@ import type { IRenderingContext, IUniformData, Renderer, UniformGroup } from '@p
 
 /* eslint-disable max-len, @typescript-eslint/explicit-module-boundary-types */
 const GLSL_TO_SINGLE_SETTERS = {
-    float(gl: IRenderingContext, location: WebGLUniformLocation, cv: any, v: number): void
-    {
-        if (cv !== v)
-        {
-            cv.v = v;
-            gl.uniform1f(location, v);
-        }
-    },
-    vec2(gl: IRenderingContext, location: WebGLUniformLocation, cv: number[], v: number[]): void
-    {
-        if (cv[0] !== v[0] || cv[1] !== v[1])
-        {
-            cv[0] = v[0];
-            cv[1] = v[1];
-            gl.uniform2f(location, v[0], v[1]);
-        }
-    },
     vec3(gl: IRenderingContext, location: WebGLUniformLocation, cv: number[], v: number[]): void
     {
         if (cv[0] !== v[0] || cv[1] !== v[1] || cv[2] !== v[2])
@@ -46,25 +29,12 @@ const GLSL_TO_SINGLE_SETTERS = {
     uvec3(gl: IRenderingContext, location: WebGLUniformLocation, _cv: any, value: number[]): void { gl.uniform3ui(location, value[0], value[1], value[2]); },
     uvec4(gl: IRenderingContext, location: WebGLUniformLocation, _cv: any, value: number[]): void { gl.uniform4ui(location, value[0], value[1], value[2], value[3]); },
 
-    bool(gl: IRenderingContext, location: WebGLUniformLocation, cv: any, v: boolean): void
-    {
-        if (cv !== v)
-        {
-            cv.v = v;
-            gl.uniform1i(location, Number(v));
-        }
-    },
     bvec2(gl: IRenderingContext, location: WebGLUniformLocation, _cv: any, value: number[]): void { gl.uniform2i(location, value[0], value[1]); },
     bvec3(gl: IRenderingContext, location: WebGLUniformLocation, _cv: any, value: number[]): void { gl.uniform3i(location, value[0], value[1], value[2]); },
     bvec4(gl: IRenderingContext, location: WebGLUniformLocation, _cv: any, value: number[]): void { gl.uniform4i(location, value[0], value[1], value[2], value[3]); },
 
     mat2(gl: IRenderingContext, location: WebGLUniformLocation, _cv: any, value: number[]): void { gl.uniformMatrix2fv(location, false, value); },
-    mat3(gl: IRenderingContext, location: WebGLUniformLocation, _cv: any, value: number[]): void { gl.uniformMatrix3fv(location, false, value); },
     mat4(gl: IRenderingContext, location: WebGLUniformLocation, _cv: any, value: number[]): void { gl.uniformMatrix4fv(location, false, value); },
-
-    sampler2D(gl: IRenderingContext, location: WebGLUniformLocation, _cv: any, value: number): void { gl.uniform1i(location, value); },
-    samplerCube(gl: IRenderingContext, location: WebGLUniformLocation, _cv: any, value: number): void { gl.uniform1i(location, value); },
-    sampler2DArray(gl: IRenderingContext, location: WebGLUniformLocation, _cv: any, value: number): void { gl.uniform1i(location, value); },
 };
 
 const GLSL_TO_ARRAY_SETTERS = {
@@ -114,12 +84,20 @@ export function syncUniforms(group: UniformGroup, uniformData: {[x: string]: IUn
             continue;
         }
 
-        if (data.type === 'float' && data.size === 1)
+        if (data.type === 'float' && data.size === 1 && !data.isArray)
         {
             if (uvi !== udi.value)
             {
                 udi.value = uvi;
                 gl.uniform1f(udi.location, uvi);
+            }
+        }
+        else if (data.type === 'bool' && data.size === 1 && !data.isArray)
+        {
+            if (uvi !== udi.value)
+            {
+                udi.value = uvi;
+                gl.uniform1i(udi.location, Number(uvi));
             }
         }
         /* eslint-disable max-len */
@@ -136,7 +114,7 @@ export function syncUniforms(group: UniformGroup, uniformData: {[x: string]: IUn
 
             textureCount++;
         }
-        else if (data.type === 'mat3' && data.size === 1)
+        else if (data.type === 'mat3' && data.size === 1 && !data.isArray)
         {
             if (gu.a !== undefined)
             {
@@ -147,7 +125,7 @@ export function syncUniforms(group: UniformGroup, uniformData: {[x: string]: IUn
                 gl.uniformMatrix3fv(udi.location, false, uvi);
             }
         }
-        else if (data.type === 'vec2' && data.size === 1)
+        else if (data.type === 'vec2' && data.size === 1 && !data.isArray)
         {
             if (gu.x !== undefined)
             {
@@ -174,7 +152,7 @@ export function syncUniforms(group: UniformGroup, uniformData: {[x: string]: IUn
                 }
             }
         }
-        else if (data.type === 'vec4' && data.size === 1)
+        else if (data.type === 'vec4' && data.size === 1 && !data.isArray)
         {
             if (gu.width !== undefined)
             {
@@ -208,7 +186,7 @@ export function syncUniforms(group: UniformGroup, uniformData: {[x: string]: IUn
         }
         else
         {
-            const funcArray = (data.size === 1) ? GLSL_TO_SINGLE_SETTERS : GLSL_TO_ARRAY_SETTERS;
+            const funcArray = (data.size === 1) && !data.isArray ? GLSL_TO_SINGLE_SETTERS : GLSL_TO_ARRAY_SETTERS;
 
             (funcArray as any)[data.type].call(null, gl, udi.location, udi.value, uvi);
         }
