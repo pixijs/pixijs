@@ -376,6 +376,8 @@ export class EventBoundary
         ignore = false
     ): DisplayObject[]
     {
+        let shouldReturn = false;
+
         // only bail out early if it is not interactive
         if (this._interactivePrune(currentTarget)) return null;
 
@@ -423,6 +425,8 @@ export class EventBoundary
 
                     // store all hit elements to be returned once we have traversed the whole tree
                     if (this._hitElements.length === 0) this._hitElements = nestedHit;
+
+                    shouldReturn = true;
                 }
             }
         }
@@ -435,6 +439,8 @@ export class EventBoundary
         // we don't carry on hit testing something once we have found a hit,
         // now only care about gathering the interactive elements
         if (ignore || this._hitElements.length > 0) return null;
+
+        if (shouldReturn) return this._hitElements as DisplayObject[];
 
         // Finally, hit test this DisplayObject itself.
         if (isInteractiveMode && (!pruneFn(currentTarget, location) && testFn(currentTarget, location)))
