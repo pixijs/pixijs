@@ -85,6 +85,7 @@ export class BackgroundLoader
     }
 
     /**
+     * Activate/Deactivate the loading. If set to true then it will immediately continue to load the next asset.
      * @returns whether the class is active
      */
     get active(): boolean
@@ -92,7 +93,6 @@ export class BackgroundLoader
         return this._isActive;
     }
 
-    /** Activate/Deactivate the loading. If set to true then it will immediately continue to load the next asset. */
     set active(value: boolean)
     {
         if (this._isActive === value) return;
