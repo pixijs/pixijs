@@ -526,10 +526,10 @@ export class Color
      */
     private normalize(value: Exclude<ColorSource, Color>): void
     {
-        let r: number;
-        let g: number;
-        let b: number;
-        let a: number;
+        let r: number | undefined;
+        let g: number | undefined;
+        let b: number | undefined;
+        let a: number | undefined;
 
         // Number is a primative so typeof works fine, but in the case
         // that someone creates a class that extends Number, we also
