@@ -5,7 +5,13 @@ import type { IRendererPlugins } from './plugin/PluginSystem';
 import type { IGenerateTextureOptions } from './renderTexture/GenerateTextureSystem';
 import type { RenderTexture } from './renderTexture/RenderTexture';
 import type { SystemManager } from './system/SystemManager';
-import type { BackgroundSystemOptions, ContextSystemOptions, StartupSystemOptions, ViewSystemOptions } from './systems';
+import type {
+    BackgroundSystem,
+    BackgroundSystemOptions,
+    ContextSystemOptions,
+    StartupSystemOptions,
+    ViewSystemOptions,
+} from './systems';
 import type { ImageSource } from './textures/BaseTexture';
 
 /**
@@ -152,4 +158,6 @@ export interface IRenderer<VIEW extends ICanvas = ICanvas> extends SystemManager
     readonly lastObjectRendered: IRenderableObject
     /** Collection of plugins */
     readonly plugins: IRendererPlugins
+    /** Background color, alpha and clear behavior */
+    readonly background: BackgroundSystem
 }
