@@ -61,6 +61,5 @@ export function canUseNewCanvasBlendModes(): boolean
         canUseNewCanvasBlendModesValue = (data[0] === 255 && data[1] === 0 && data[2] === 0);
     }
 
-
     return canUseNewCanvasBlendModesValue;
 }
