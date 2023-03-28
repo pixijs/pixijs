@@ -2,7 +2,7 @@ import { settings } from '@pixi/core';
 
 import type { ICanvas } from '@pixi/core';
 
-let canUseNewCanvasBlendModesValue = undefined as boolean | undefined;
+let canUseNewCanvasBlendModesValue: boolean | undefined;
 
 /**
  * Creates a little colored canvas
