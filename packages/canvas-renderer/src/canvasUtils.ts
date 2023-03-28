@@ -263,7 +263,7 @@ export const canvasUtils = {
     roundColor: (color: number): number =>
     {
         // #if _DEBUG
-        utils.deprecation('7.3.0', 'PIXI.canvasUtils.roundColor is deprecated, use PIXI.Color.round instead');
+        utils.deprecation('7.3.0', 'PIXI.canvasUtils.roundColor is deprecated');
         // #endif
 
         return Color.shared
@@ -275,6 +275,7 @@ export const canvasUtils = {
     /**
      * Number of steps which will be used as a cap when rounding colors.
      * @memberof PIXI.canvasUtils
+     * @deprecated since 7.3.0
      * @type {number}
      */
     cacheStepsPerColorChannel: 8,
