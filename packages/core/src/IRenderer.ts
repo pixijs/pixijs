@@ -125,6 +125,12 @@ export interface IRenderer<VIEW extends ICanvas = ICanvas> extends SystemManager
     readonly type: RENDERER_TYPE
 
     /**
+     * The Options for the background system.
+     * @see {BackgroundSystemOptions}
+     */
+    background: BackgroundSystemOptions;
+
+    /**
      * The options passed in to create a new instance of the renderer.
      * @type {PIXI.IRendererOptions}
      */
