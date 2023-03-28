@@ -149,6 +149,8 @@ export interface IRenderer<VIEW extends ICanvas = ICanvas> extends SystemManager
     readonly width: number
     /** the height of the screen */
     readonly height: number
+    /** Whether CSS dimensions of canvas view should be resized to screen dimensions automatically. */
+    readonly autoDensity: boolean
     /**
      * Measurements of the screen. (0, 0, screenWidth, screenHeight).
      * Its safe to use as filterArea or hitArea for the whole stage.
