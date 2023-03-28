@@ -2,6 +2,8 @@ import { settings } from '@pixi/core';
 
 import type { ICanvas } from '@pixi/core';
 
+let canUseNewCanvasBlendModesValue = undefined as boolean | undefined;
+
 /**
  * Creates a little colored canvas
  * @ignore
@@ -31,6 +33,11 @@ export function canUseNewCanvasBlendModes(): boolean
         return false;
     }
 
+    if (canUseNewCanvasBlendModesValue !== undefined)
+    {
+        return canUseNewCanvasBlendModesValue;
+    }
+
     const magenta = createColoredCanvas('#ff00ff');
     const yellow = createColoredCanvas('#ffff00');
 
@@ -45,10 +52,15 @@ export function canUseNewCanvasBlendModes(): boolean
 
     if (!imageData)
     {
-        return false;
+        canUseNewCanvasBlendModesValue = false;
+    }
+    else
+    {
+        const data = imageData.data;
+
+        canUseNewCanvasBlendModesValue = (data[0] === 255 && data[1] === 0 && data[2] === 0);
     }
 
-    const data = imageData.data;
 
-    return (data[0] === 255 && data[1] === 0 && data[2] === 0);
+    return canUseNewCanvasBlendModesValue;
 }
