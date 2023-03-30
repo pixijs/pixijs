@@ -358,6 +358,19 @@ export class Color
     }
 
     /**
+     * Convert to a hexadecimal number including alpha (signed 32-bit integer).
+     * @example
+     * import { Color } from 'pixi.js';
+     * new Color('white').toNumberWithAlpha(); // returns -1
+     * new Color('rgba(0, 127, 255, 40%)').toNumberWithAlpha(); // returns 1711308799
+     * @returns {number} - The color as a signed 32-bit number.
+     */
+    toNumberWithAlpha(): number
+    {
+        return (this._components[3] * 255 << 24) + this._int;
+    }
+
+    /**
      * Convert to a hexadecimal number in little endian format (e.g., BBGGRR).
      * @example
      * import { Color } from 'pixi.js';
@@ -369,6 +382,18 @@ export class Color
         const value = this._int;
 
         return (value >> 16) + (value & 0xff00) + ((value & 0xff) << 16);
+    }
+
+    /**
+     * Convert to a hexadecimal number including alpha (e.g., AABBGGRR) (signed 32-bit integer).
+     * @example
+     * import { Color } from 'pixi.js';
+     * new Color(0xffcc99).setAlpha(0.4).toLittleEndianNumberWithAlpha(); // returns 0x6699ccff
+     * @returns {number} - The color as a signed 32-bit number in little endian format.
+     */
+    toLittleEndianNumberWithAlpha(): number
+    {
+        return (this._components[3] * 255 << 24) + this.toLittleEndianNumber();
     }
 
     /**
