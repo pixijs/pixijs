@@ -15,7 +15,7 @@ export interface LoadAsset<T=any>
     /** Format, ususally the file extension */
     format?: string;
     /** An override that will ensure that the asset is loaded with a specific parser */
-    loadParser?: 'loadTextures' | 'loadJson' | 'loadTxt' | 'loadWebFont' | 'loadSVG' | string;
+    loadParser?: 'loadJson' | 'loadSVG' | 'loadTextures' | 'loadTxt' | 'loadVideo' | 'loadWebFont' | string;
 }
 
 export interface PromiseAndParser
