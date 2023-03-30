@@ -430,7 +430,8 @@ export class ParticleRenderer extends ObjectRenderer
             const sprite = children[startIndex + i];
             const result = Color.shared
                 .setValue(sprite._tintRGB)
-                .toPremultiplied(sprite.alpha);
+                .premultiply(sprite.alpha, sprite.texture.baseTexture.alphaMode > 0)
+                .toNumberWithAlpha();
 
             array[offset] = result;
             array[offset + stride] = result;
