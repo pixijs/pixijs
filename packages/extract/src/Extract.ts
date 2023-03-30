@@ -113,14 +113,21 @@ export class Extract implements ISystem, IExtract
      */
     public canvas(target?: DisplayObject | RenderTexture, frame?: Rectangle): ICanvas
     {
-        const { pixels, width, height, flipY } = this._rawPixels(target, frame);
+        const { pixels, width, height, flipY, premultipliedAlpha } = this._rawPixels(target, frame);
 
         let canvasBuffer = new utils.CanvasRenderTarget(width, height, 1);
 
         // Add the pixels to the canvas
         const canvasData = canvasBuffer.context.getImageData(0, 0, width, height);
 
-        Extract.arrayPostDivide(pixels, canvasData.data);
+        if (premultipliedAlpha)
+        {
+            Extract.arrayPostDivide(pixels, canvasData.data);
+        }
+        else
+        {
+            canvasData.data.set(pixels);
+        }
 
         canvasBuffer.context.putImageData(canvasData, 0, 0);
 
@@ -152,15 +159,18 @@ export class Extract implements ISystem, IExtract
      */
     public pixels(target?: DisplayObject | RenderTexture, frame?: Rectangle): Uint8Array
     {
-        const { pixels } = this._rawPixels(target, frame);
+        const { pixels, premultipliedAlpha } = this._rawPixels(target, frame);
 
-        Extract.arrayPostDivide(pixels, pixels);
+        if (premultipliedAlpha)
+        {
+            Extract.arrayPostDivide(pixels, pixels);
+        }
 
         return pixels;
     }
 
     private _rawPixels(target?: DisplayObject | RenderTexture, frame?: Rectangle): {
-        pixels: Uint8Array, width: number, height: number, flipY: boolean,
+        pixels: Uint8Array, width: number, height: number, flipY: boolean, premultipliedAlpha: boolean
     }
     {
         const renderer = this.renderer;
@@ -172,6 +182,7 @@ export class Extract implements ISystem, IExtract
 
         let resolution;
         let flipY = false;
+        let premultipliedAlpha = false;
         let renderTexture;
         let generated = false;
 
@@ -207,11 +218,14 @@ export class Extract implements ISystem, IExtract
             }
         }
 
+        const gl = renderer.gl;
+
         if (renderTexture)
         {
             resolution = renderTexture.baseTexture.resolution;
             frame = frame ?? renderTexture.frame;
             flipY = false;
+            premultipliedAlpha = renderTexture.baseTexture.alphaMode > 0;
             renderer.renderTexture.bind(renderTexture);
         }
         else
@@ -225,18 +239,18 @@ export class Extract implements ISystem, IExtract
                 frame.height = renderer.height;
             }
 
+            const contextAttributes = gl.getContextAttributes();
+
             flipY = true;
+            premultipliedAlpha = contextAttributes.alpha && contextAttributes.premultipliedAlpha;
             renderer.renderTexture.bind();
         }
 
         const width = Math.round(frame.width * resolution);
         const height = Math.round(frame.height * resolution);
-
         const pixels = new Uint8Array(BYTES_PER_PIXEL * width * height);
 
         // Read pixels to the array
-        const gl = renderer.gl;
-
         gl.readPixels(
             Math.round(frame.x * resolution),
             Math.round(frame.y * resolution),
@@ -252,7 +266,7 @@ export class Extract implements ISystem, IExtract
             renderTexture?.destroy(true);
         }
 
-        return { pixels, width, height, flipY };
+        return { pixels, width, height, flipY, premultipliedAlpha };
     }
 
     /** Destroys the extract. */
