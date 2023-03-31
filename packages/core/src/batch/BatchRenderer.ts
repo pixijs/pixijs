@@ -779,8 +779,7 @@ export class BatchRenderer extends ObjectRenderer
         const alpha = Math.min(element.worldAlpha, 1.0);
         const argb = Color.shared
             .setValue(element._tintRGB)
-            .premultiply(alpha, element._texture.baseTexture.alphaMode > 0)
-            .toNumberWithAlpha();
+            .toPremultiplied(alpha, element._texture.baseTexture.alphaMode > 0);
 
         // lets not worry about tint! for now..
         for (let i = 0; i < vertexData.length; i += 2)

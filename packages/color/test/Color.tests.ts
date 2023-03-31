@@ -63,9 +63,6 @@ describe('Color', () =>
             hex: '#000000',
             hexa: '#00000000',
             number: 0,
-            numberWithAlpha: 0,
-            littleEndian: 0,
-            littleEndianWithAlpha: 0,
             rgb: { r: 0, g: 0, b: 0 },
             rgba: { r: 0, g: 0, b: 0, a: 0 },
             rgbaString: 'rgba(0,0,0,0)',
@@ -77,9 +74,6 @@ describe('Color', () =>
             hex: '#000000',
             hexa: '#000000ff',
             number: 0,
-            numberWithAlpha: 0xff000000 | 0,
-            littleEndian: 0,
-            littleEndianWithAlpha: 0xff000000 | 0,
             rgb: { r: 0, g: 0, b: 0 },
             rgba: { r: 0, g: 0, b: 0, a: 1 },
             rgbaString: 'rgba(0,0,0,1)',
@@ -91,9 +85,6 @@ describe('Color', () =>
             hex: '#ffffff',
             hexa: '#ffffffff',
             number: 0xffffff,
-            numberWithAlpha: 0xffffffff | 0,
-            littleEndian: 0xffffff,
-            littleEndianWithAlpha: 0xffffffff | 0,
             rgb: { r: 1, g: 1, b: 1 },
             rgba: { r: 1, g: 1, b: 1, a: 1 },
             rgbaString: 'rgba(255,255,255,1)',
@@ -105,9 +96,6 @@ describe('Color', () =>
             hex: '#ff0000',
             hexa: '#ff0000ff',
             number: 0xff0000,
-            numberWithAlpha: 0xffff0000 | 0,
-            littleEndian: 0x0000ff,
-            littleEndianWithAlpha: 0xff0000ff | 0,
             rgb: { r: 1, g: 0, b: 0 },
             rgba: { r: 1, g: 0, b: 0, a: 1 },
             rgbaString: 'rgba(255,0,0,1)',
@@ -119,9 +107,6 @@ describe('Color', () =>
             hex: '#ff0000',
             hexa: '#ff000080',
             number: 0xff0000,
-            numberWithAlpha: 0x7fff0000 | 0,
-            littleEndian: 0x0000ff,
-            littleEndianWithAlpha: 0x7f0000ff | 0,
             rgb: { r: 1, g: 0, b: 0 },
             rgba: { r: 1, g: 0, b: 0, a: 0.5 },
             rgbaString: 'rgba(255,0,0,0.5)',
@@ -225,9 +210,6 @@ describe('Color', () =>
             expect(color.toHex()).toEqual(expected.hex);
             expect(color.toHexa()).toEqual(expected.hexa);
             expect(color.toNumber()).toEqual(expected.number);
-            expect(color.toNumberWithAlpha()).toEqual(expected.numberWithAlpha);
-            expect(color.toLittleEndianNumber()).toEqual(expected.littleEndian);
-            expect(color.toLittleEndianNumberWithAlpha()).toEqual(expected.littleEndianWithAlpha);
             expect(color.toRgb()).toEqual(expected.rgb);
             expect(color.toRgba()).toEqual(expected.rgba);
             expect(color.toRgbaString()).toEqual(expected.rgbaString);

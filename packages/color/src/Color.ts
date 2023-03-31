@@ -358,19 +358,6 @@ export class Color
     }
 
     /**
-     * Convert to a hexadecimal number including alpha (signed 32-bit integer).
-     * @example
-     * import { Color } from 'pixi.js';
-     * new Color('white').toNumberWithAlpha(); // returns -1
-     * new Color('rgba(0, 127, 255, 40%)').toNumberWithAlpha(); // returns 1711308799
-     * @returns {number} - The color as a signed 32-bit number.
-     */
-    toNumberWithAlpha(): number
-    {
-        return (this._components[3] * 255 << 24) + this._int;
-    }
-
-    /**
      * Convert to a hexadecimal number in little endian format (e.g., BBGGRR).
      * @example
      * import { Color } from 'pixi.js';
@@ -382,18 +369,6 @@ export class Color
         const value = this._int;
 
         return (value >> 16) + (value & 0xff00) + ((value & 0xff) << 16);
-    }
-
-    /**
-     * Convert to a hexadecimal number including alpha (e.g., AABBGGRR) (signed 32-bit integer).
-     * @example
-     * import { Color } from 'pixi.js';
-     * new Color(0xffcc99).setAlpha(0.4).toLittleEndianNumberWithAlpha(); // returns 0x6699ccff
-     * @returns {number} - The color as a signed 32-bit number in little endian format.
-     */
-    toLittleEndianNumberWithAlpha(): number
-    {
-        return (this._components[3] * 255 << 24) + this.toLittleEndianNumber();
     }
 
     /**
@@ -419,8 +394,8 @@ export class Color
     /**
      * Converts color to a premultiplied alpha format. This action is destructive, and will
      * override the previous `value` property to be `null`.
-     * @param alpha - The color to multiply by.
-     * @param [applyToRGB=true] - Whether to premultiply RGB channels.
+     * @param alpha - The alpha to multiply by.
+     * @param {boolean} [applyToRGB=true] - Whether to premultiply RGB channels.
      * @returns {PIXI.Color} - Itself.
      */
     premultiply(alpha: number, applyToRGB = true): this
@@ -441,26 +416,30 @@ export class Color
 
     /**
      * Premultiplies alpha with current color.
-     * @param {number} alpha - floating point alpha (0.0-1.0)
+     * @param {number} alpha - The alpha to multiply by.
+     * @param {boolean} [applyToRGB=true] - Whether to premultiply RGB channels.
      * @returns {number} tint multiplied by alpha
      */
-    toPremultiplied(alpha: number): number
+    toPremultiplied(alpha: number, applyToRGB = true): number
     {
         if (alpha === 1.0)
         {
-            return (alpha * 255 << 24) + this._int;
+            return (0xFF << 24) + this._int;
         }
         if (alpha === 0.0)
         {
-            return 0;
+            return applyToRGB ? 0 : this._int;
         }
         let r = ((this._int >> 16) & 0xFF);
         let g = ((this._int >> 8) & 0xFF);
         let b = (this._int & 0xFF);
 
-        r = ((r * alpha) + 0.5) | 0;
-        g = ((g * alpha) + 0.5) | 0;
-        b = ((b * alpha) + 0.5) | 0;
+        if (applyToRGB)
+        {
+            r = ((r * alpha) + 0.5) | 0;
+            g = ((g * alpha) + 0.5) | 0;
+            b = ((b * alpha) + 0.5) | 0;
+        }
 
         return (alpha * 255 << 24) + (r << 16) + (g << 8) + b;
     }
