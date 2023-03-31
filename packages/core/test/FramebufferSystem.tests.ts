@@ -22,15 +22,15 @@ describe('FramebufferSystem', () =>
         const { framebuffer } = renderer;
 
         // chrome, general
-        framebuffer['msaaSamples'] = [8, 4, 1];
+        framebuffer['msaaSamples'] = { [renderer.gl.RGBA8]: [8, 4, 1] };
         expect(framebuffer['detectSamples'](1)).toEqual(0);
         expect(framebuffer['detectSamples'](4)).toEqual(4);
         expect(framebuffer['detectSamples'](8)).toEqual(8);
         // some mobile devices
-        framebuffer['msaaSamples'] = [4, 1];
+        framebuffer['msaaSamples'] = { [renderer.gl.RGBA8]: [4, 1] };
         expect(framebuffer['detectSamples'](8)).toEqual(4);
         // firefox on mac
-        framebuffer['msaaSamples'] = [8, 4];
+        framebuffer['msaaSamples'] = { [renderer.gl.RGBA8]: [8, 4] };
         expect(framebuffer['detectSamples'](1)).toEqual(0);
         // no MSAA
         framebuffer['msaaSamples'] = null;
@@ -116,7 +116,7 @@ describe('FramebufferSystem', () =>
 
         if (renderer.context.webGLVersion === 1
             || renderer.framebuffer['msaaSamples'] === null
-            || renderer.framebuffer['msaaSamples'].every((x) => x <= 1))
+            || renderer.framebuffer['msaaSamples'][renderer.gl.RGBA8].every((x) => x <= 1))
         {
             return;
         }
@@ -151,7 +151,7 @@ describe('FramebufferSystem', () =>
 
         if (renderer.context.webGLVersion === 1
             || renderer.framebuffer['msaaSamples'] === null
-            || renderer.framebuffer['msaaSamples'].every((x) => x <= 1))
+            || renderer.framebuffer['msaaSamples'][renderer.gl.RGBA8].every((x) => x <= 1))
         {
             return;
         }
@@ -185,7 +185,7 @@ describe('FramebufferSystem', () =>
 
         if (renderer.context.webGLVersion === 1
             || renderer.framebuffer['msaaSamples'] === null
-            || renderer.framebuffer['msaaSamples'].every((x) => x <= 1))
+            || renderer.framebuffer['msaaSamples'][renderer.gl.RGBA8].every((x) => x <= 1))
         {
             return;
         }
@@ -321,7 +321,7 @@ describe('FramebufferSystem', () =>
 
         if (renderer.context.webGLVersion === 1
             || renderer.framebuffer['msaaSamples'] === null
-            || renderer.framebuffer['msaaSamples'].every((x) => x <= 1))
+            || renderer.framebuffer['msaaSamples'][renderer.gl.RGBA8].every((x) => x <= 1))
         {
             return;
         }

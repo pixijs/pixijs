@@ -35,7 +35,7 @@ export class FramebufferSystem implements ISystem
 
     /** Framebuffer value that shows that we don't know what is bound. */
     protected unknownFramebuffer: Framebuffer;
-    protected msaaSamples: Array<number>;
+    protected msaaSamples: { [internalFormat: number]: Array<number> };
     public renderer: Renderer;
 
     /**
@@ -99,7 +99,16 @@ export class FramebufferSystem implements ISystem
         {
             // WebGL2
             // cache possible MSAA samples
-            this.msaaSamples = gl.getInternalformatParameter(gl.RENDERBUFFER, gl.RGBA8, gl.SAMPLES);
+            this.msaaSamples = {};
+
+            for (const internalFormat of [gl.RGB, gl.RGBA, gl.R8, gl.RG8, gl.RGB8,
+                gl.RGB565, gl.RGBA4, gl.RGB5_A1, gl.RGBA8, gl.RGB10_A2, gl.SRGB8_ALPHA8,
+                gl.DEPTH_COMPONENT16, gl.DEPTH_COMPONENT24, gl.DEPTH_COMPONENT32F,
+                gl.DEPTH24_STENCIL8, gl.DEPTH32F_STENCIL8, gl.STENCIL_INDEX8])
+            {
+                this.msaaSamples[internalFormat] = gl.getInternalformatParameter(
+                    gl.RENDERBUFFER, internalFormat, gl.SAMPLES);
+            }
         }
     }
 
@@ -275,7 +284,6 @@ export class FramebufferSystem implements ISystem
         const { gl } = this;
         const fbo = new GLFramebuffer(gl.createFramebuffer());
 
-        fbo.multisample = this.detectSamples(framebuffer.multisample);
         framebuffer.glFramebuffers[this.CONTEXT_UID] = fbo;
 
         this.managedFramebuffers.push(framebuffer);
@@ -362,7 +370,26 @@ export class FramebufferSystem implements ISystem
             count = Math.min(count, 1);
         }
 
-        if (fbo.multisample > 1 && this.canMultisampleFramebuffer(framebuffer))
+        const stencil = (framebuffer.stencil || framebuffer.depth) && !(framebuffer.depthTexture && this.writeDepthTexture);
+
+        if (framebuffer.multisample > 1 && this.canMultisampleFramebuffer(framebuffer))
+        {
+            const parentTexture = colorTextures[0].parentTextureArray || colorTextures[0];
+
+            this.renderer.texture.bind(parentTexture, 0);
+
+            fbo.multisample = this.detectSamples(
+                framebuffer.multisample,
+                parentTexture._glTextures[this.CONTEXT_UID].internalFormat,
+                stencil
+            );
+        }
+        else
+        {
+            fbo.multisample = MSAA_QUALITY.NONE;
+        }
+
+        if (fbo.multisample > 1)
         {
             fbo.msaaBuffer = fbo.msaaBuffer || gl.createRenderbuffer();
         }
@@ -429,7 +456,7 @@ export class FramebufferSystem implements ISystem
             }
         }
 
-        if ((framebuffer.stencil || framebuffer.depth) && !(framebuffer.depthTexture && this.writeDepthTexture))
+        if (stencil)
         {
             fbo.stencil = fbo.stencil || gl.createRenderbuffer();
 
@@ -461,25 +488,34 @@ export class FramebufferSystem implements ISystem
     protected canMultisampleFramebuffer(framebuffer: Framebuffer): boolean
     {
         return this.renderer.context.webGLVersion !== 1
-            && framebuffer.colorTextures.length <= 1 && !framebuffer.depthTexture;
+            && framebuffer.colorTextures.length === 1
+            && !framebuffer.depthTexture;
     }
 
     /**
      * Detects number of samples that is not more than a param but as close to it as possible
-     * @param samples - number of samples
+     * @param {PIXI.MSAA_QUALITY} samples - The number of samples
+     * @param [internalFormat=WebGL2RenderingContext.RGBA8] - The internal format of the framebuffer
+     * @param [stencil=false] - Is a DEPTH24_STENCIL8 attachment present?
      * @returns - recommended number of samples
      */
-    protected detectSamples(samples: MSAA_QUALITY): MSAA_QUALITY
+    protected detectSamples(samples: MSAA_QUALITY, internalFormat?: number, stencil = false): MSAA_QUALITY
     {
-        const { msaaSamples } = this;
+        const msaaSamples = this.msaaSamples?.[internalFormat ?? this.gl.RGBA8];
+        const stencilSamples = this.msaaSamples?.[this.gl.DEPTH24_STENCIL8];
         let res: number = MSAA_QUALITY.NONE;
 
-        if (samples <= 1 || msaaSamples === null)
+        if (samples <= 1 || !msaaSamples)
         {
             return res;
         }
         for (let i = 0; i < msaaSamples.length; i++)
         {
+            if (stencil && !stencilSamples.includes(msaaSamples[i]))
+            {
+                continue;
+            }
+
             if (msaaSamples[i] <= samples)
             {
                 res = msaaSamples[i];
@@ -677,6 +713,35 @@ export class FramebufferSystem implements ISystem
         const h = framebuffer.height;
         const gl = this.gl;
         const stencil = gl.createRenderbuffer();
+
+        if (fbo.msaaBuffer)
+        {
+            const parentTexture = framebuffer.colorTexture.parentTextureArray || framebuffer.colorTexture;
+            const internalFormat = parentTexture._glTextures[this.CONTEXT_UID].internalFormat;
+            const multisample = this.detectSamples(framebuffer.multisample, internalFormat, true);
+
+            if (fbo.multisample !== multisample)
+            {
+                fbo.multisample = multisample;
+
+                if (fbo.multisample > 1)
+                {
+                    gl.bindRenderbuffer(gl.RENDERBUFFER, fbo.msaaBuffer);
+                    gl.renderbufferStorageMultisample(gl.RENDERBUFFER, fbo.multisample, internalFormat, w, h);
+                }
+                else
+                {
+                    gl.deleteRenderbuffer(fbo.msaaBuffer);
+                    fbo.msaaBuffer = null;
+
+                    if (fbo.blitFramebuffer)
+                    {
+                        fbo.blitFramebuffer.dispose();
+                        fbo.blitFramebuffer = null;
+                    }
+                }
+            }
+        }
 
         gl.bindRenderbuffer(gl.RENDERBUFFER, stencil);
 
