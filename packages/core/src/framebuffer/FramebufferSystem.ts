@@ -370,8 +370,6 @@ export class FramebufferSystem implements ISystem
             count = Math.min(count, 1);
         }
 
-        const stencil = (framebuffer.stencil || framebuffer.depth) && !(framebuffer.depthTexture && this.writeDepthTexture);
-
         if (framebuffer.multisample > 1 && this.canMultisampleFramebuffer(framebuffer))
         {
             const parentTexture = colorTextures[0].parentTextureArray || colorTextures[0];
@@ -381,7 +379,7 @@ export class FramebufferSystem implements ISystem
             fbo.multisample = this.detectSamples(
                 framebuffer.multisample,
                 parentTexture._glTextures[this.CONTEXT_UID].internalFormat,
-                stencil
+                !(framebuffer.depthTexture && this.writeDepthTexture)
             );
         }
         else
@@ -456,7 +454,7 @@ export class FramebufferSystem implements ISystem
             }
         }
 
-        if (stencil)
+        if ((framebuffer.stencil || framebuffer.depth) && !(framebuffer.depthTexture && this.writeDepthTexture))
         {
             fbo.stencil = fbo.stencil || gl.createRenderbuffer();
 
@@ -496,7 +494,7 @@ export class FramebufferSystem implements ISystem
      * Detects number of samples that is not more than a param but as close to it as possible
      * @param {PIXI.MSAA_QUALITY} samples - The number of samples
      * @param [internalFormat=WebGL2RenderingContext.RGBA8] - The internal format of the framebuffer
-     * @param [stencil=false] - Is a DEPTH24_STENCIL8 attachment present?
+     * @param [stencil=false] - Is a DEPTH24_STENCIL8 attachment present or may be later forced?
      * @returns - recommended number of samples
      */
     protected detectSamples(samples: MSAA_QUALITY, internalFormat?: number, stencil = false): MSAA_QUALITY
@@ -713,35 +711,6 @@ export class FramebufferSystem implements ISystem
         const h = framebuffer.height;
         const gl = this.gl;
         const stencil = gl.createRenderbuffer();
-
-        if (fbo.msaaBuffer)
-        {
-            const parentTexture = framebuffer.colorTexture.parentTextureArray || framebuffer.colorTexture;
-            const internalFormat = parentTexture._glTextures[this.CONTEXT_UID].internalFormat;
-            const multisample = this.detectSamples(framebuffer.multisample, internalFormat, true);
-
-            if (fbo.multisample !== multisample)
-            {
-                fbo.multisample = multisample;
-
-                if (fbo.multisample > 1)
-                {
-                    gl.bindRenderbuffer(gl.RENDERBUFFER, fbo.msaaBuffer);
-                    gl.renderbufferStorageMultisample(gl.RENDERBUFFER, fbo.multisample, internalFormat, w, h);
-                }
-                else
-                {
-                    gl.deleteRenderbuffer(fbo.msaaBuffer);
-                    fbo.msaaBuffer = null;
-
-                    if (fbo.blitFramebuffer)
-                    {
-                        fbo.blitFramebuffer.dispose();
-                        fbo.blitFramebuffer = null;
-                    }
-                }
-            }
-        }
 
         gl.bindRenderbuffer(gl.RENDERBUFFER, stencil);
 
