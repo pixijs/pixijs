@@ -101,8 +101,8 @@ export class FramebufferSystem implements ISystem
             // cache possible MSAA samples
             this.msaaSamples = {};
 
-            for (const internalFormat of [gl.RGB, gl.RGBA, gl.R8, gl.RG8, gl.RGB8,
-                gl.RGB565, gl.RGBA4, gl.RGB5_A1, gl.RGBA8, gl.RGB10_A2, gl.SRGB8_ALPHA8,
+            for (const internalFormat of [gl.R8, gl.RG8, gl.RGB8, gl.RGB565,
+                gl.RGBA4, gl.RGB5_A1, gl.RGBA8, gl.RGB10_A2, gl.SRGB8_ALPHA8,
                 gl.DEPTH_COMPONENT16, gl.DEPTH_COMPONENT24, gl.DEPTH_COMPONENT32F,
                 gl.DEPTH24_STENCIL8, gl.DEPTH32F_STENCIL8, gl.STENCIL_INDEX8])
             {
