@@ -46,12 +46,23 @@ export class Extract implements ISystem, IExtract
 
     private renderer: Renderer | null;
 
+    /** Does the renderer have alpha and are its color channels stored premultipled by the alpha channel? */
+    private _rendererPremultipliedAlpha: boolean;
+
     /**
      * @param renderer - A reference to the current renderer
      */
     constructor(renderer: Renderer)
     {
         this.renderer = renderer;
+        this._rendererPremultipliedAlpha = false;
+    }
+
+    protected contextChange(): void
+    {
+        const attributes = this.renderer.gl.getContextAttributes();
+
+        this._rendererPremultipliedAlpha = !!(attributes && attributes.alpha && attributes.premultipliedAlpha);
     }
 
     /**
@@ -239,10 +250,8 @@ export class Extract implements ISystem, IExtract
                 frame.height = renderer.height;
             }
 
-            const contextAttributes = gl.getContextAttributes();
-
             flipY = true;
-            premultipliedAlpha = contextAttributes.alpha && contextAttributes.premultipliedAlpha;
+            premultipliedAlpha = this._rendererPremultipliedAlpha;
             renderer.renderTexture.bind();
         }
 

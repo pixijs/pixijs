@@ -87,6 +87,9 @@ describe('Extract', () =>
             premultipliedAlpha: true
         });
         const extract = renderer.extract;
+
+        expect(extract['_rendererPremultipliedAlpha']).toBe(true);
+
         const renderTexture = RenderTexture.create({
             width: 1,
             height: 1,
@@ -127,6 +130,9 @@ describe('Extract', () =>
             premultipliedAlpha: false
         });
         const extract = renderer.extract;
+
+        expect(extract['_rendererPremultipliedAlpha']).toBe(false);
+
         const renderTexture = RenderTexture.create({
             width: 1,
             height: 1,
