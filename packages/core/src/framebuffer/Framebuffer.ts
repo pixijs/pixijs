@@ -20,22 +20,7 @@ export class Framebuffer
     /** Height of framebuffer in pixels. */
     public height: number;
 
-    /**
-     * Desired number of samples for antialiasing. 0 means AA should not be used.
-     *
-     * Experimental WebGL2 feature, allows to use antialiasing in individual renderTextures.
-     * Antialiasing is the same as for main buffer with renderer `antialias: true` options.
-     * Seriously affects GPU memory consumption and GPU performance.
-     * @example
-     * import { MSAA_QUALITY } from 'pixi.js';
-     *
-     * renderTexture.framebuffer.multisample = MSAA_QUALITY.HIGH;
-     * // ...
-     * renderer.render(myContainer, { renderTexture });
-     * renderer.framebuffer.blit(); // Copies data from MSAA framebuffer to texture
-     * @default PIXI.MSAA_QUALITY.NONE
-     */
-    public multisample: MSAA_QUALITY;
+    protected _multisample: MSAA_QUALITY;
 
     stencil: boolean;
     depth: boolean;
@@ -69,7 +54,7 @@ export class Framebuffer
         this.glFramebuffers = {};
 
         this.disposeRunner = new Runner('disposeFramebuffer');
-        this.multisample = MSAA_QUALITY.NONE;
+        this._multisample = MSAA_QUALITY.NONE;
     }
 
     /**
@@ -79,6 +64,38 @@ export class Framebuffer
     get colorTexture(): BaseTexture
     {
         return this.colorTextures[0];
+    }
+
+    /**
+     * Desired number of samples for antialiasing. 0 means AA should not be used.
+     *
+     * Allows to use antialiasing in individual renderTextures (WebGL2 only).
+     * Antialiasing is the same as for main buffer with renderer `antialias: true` options.
+     * Seriously affects GPU memory consumption and GPU performance.
+     * @example
+     * import { MSAA_QUALITY } from 'pixi.js';
+     *
+     * renderTexture.framebuffer.multisample = MSAA_QUALITY.HIGH;
+     * // ...
+     * renderer.render(myContainer, { renderTexture });
+     * renderer.framebuffer.blit(); // Copies data from MSAA framebuffer to texture
+     * @default PIXI.MSAA_QUALITY.NONE
+     */
+    get multisample(): MSAA_QUALITY
+    {
+        return this._multisample;
+    }
+
+    set multisample(value: MSAA_QUALITY)
+    {
+        if (this._multisample === value)
+        {
+            return;
+        }
+
+        this._multisample = value;
+        this.dirtyId++;
+        this.dirtyFormat++;
     }
 
     /**
