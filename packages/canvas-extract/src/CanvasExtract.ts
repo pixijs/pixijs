@@ -23,7 +23,7 @@ export class CanvasExtract implements ISystem, IExtract
     };
 
     /** A reference to the current renderer */
-    public renderer: CanvasRenderer | null;
+    public renderer: CanvasRenderer;
 
     /**
      * @param renderer - A reference to the current renderer

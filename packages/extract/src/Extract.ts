@@ -44,7 +44,7 @@ export class Extract implements ISystem, IExtract
         type: ExtensionType.RendererSystem,
     };
 
-    private renderer: Renderer | null;
+    private renderer: Renderer;
 
     /** Does the renderer have alpha and are its color channels stored premultipled by the alpha channel? */
     private _rendererPremultipliedAlpha: boolean;
