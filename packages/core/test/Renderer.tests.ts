@@ -1,7 +1,8 @@
 import { ENV, MSAA_QUALITY } from '@pixi/constants';
-import { Framebuffer, Renderer } from '@pixi/core';
+import { Framebuffer, Renderer, RenderTexture } from '@pixi/core';
 import { Graphics } from '@pixi/graphics';
 import { settings } from '@pixi/settings';
+import { Sprite } from '@pixi/sprite';
 
 import type { ObjectRenderer } from '@pixi/core';
 
@@ -159,6 +160,61 @@ describe('Renderer', () =>
         expect(renderer.options.antialias).toBe(true);
         expect(renderer.options.resolution).toBe(2);
 
+        renderer.destroy();
+    });
+
+    it('should bind render texture and framebuffer', () =>
+    {
+        const renderer = new Renderer();
+        const sprite = new Sprite();
+        const renderTexture = RenderTexture.create();
+
+        renderer.render(sprite);
+
+        expect(renderer.renderTexture.current).toBeNull();
+        expect(renderer.framebuffer.current).toBeNull();
+
+        renderer.render(sprite, { renderTexture });
+
+        expect(renderer.renderTexture.current).toBe(renderTexture);
+        expect(renderer.framebuffer.current).toBe(renderTexture.framebuffer);
+
+        renderTexture.destroy(true);
+        renderer.destroy();
+    });
+
+    it('should bind blit framebuffer if multisample and blit', () =>
+    {
+        const renderer = new Renderer();
+
+        if (renderer.context.webGLVersion === 1
+            || renderer.framebuffer['msaaSamples'] === null
+            || renderer.framebuffer['msaaSamples'].every((x) => x <= 1))
+        {
+            renderer.destroy();
+
+            return;
+        }
+
+        const sprite = new Sprite();
+        const renderTexture = RenderTexture.create({ multisample: MSAA_QUALITY.HIGH });
+
+        renderer.render(sprite, { renderTexture, blit: false });
+
+        expect(renderer.renderTexture.current).toBe(renderTexture);
+        expect(renderer.framebuffer.current).toBe(renderTexture.framebuffer);
+
+        renderer.render(sprite, { renderTexture, blit: true });
+
+        expect(renderer.renderTexture.current).toBe(renderTexture);
+
+        const framebuffer = renderTexture.framebuffer;
+        const fbo = framebuffer.glFramebuffers[renderer.CONTEXT_UID];
+
+        expect(fbo.blitFramebuffer).not.toBeNull();
+        expect(renderer.framebuffer.current).toBe(fbo.blitFramebuffer);
+
+        renderTexture.destroy(true);
         renderer.destroy();
     });
 });
