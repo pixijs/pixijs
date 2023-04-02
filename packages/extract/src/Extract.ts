@@ -131,28 +131,30 @@ export class Extract implements ISystem, IExtract
     {
         const { pixels, width, height, flipY } = this._rawPixels(target, frame);
 
+        // Flipping pixels
+        if (flipY)
+        {
+            const temp = new Uint8Array(width);
+
+            for (let y = 0, h = height >> 1; y < h; y++)
+            {
+                const t = y * width;
+                const b = (height - y - 1) * width;
+
+                temp.set(pixels.subarray(t, t + width));
+                pixels.copyWithin(t, b, b + width);
+                pixels.set(temp, b);
+            }
+        }
+
         Extract.arrayPostDivide(pixels, pixels);
 
-        let canvasBuffer = new utils.CanvasRenderTarget(width, height, 1);
+        const canvasBuffer = new utils.CanvasRenderTarget(width, height, 1);
 
         // Add the pixels to the canvas
         const imageData = new ImageData(new Uint8ClampedArray(pixels.buffer), width, height);
 
         canvasBuffer.context.putImageData(imageData, 0, 0);
-
-        // Flipping pixels
-        if (flipY)
-        {
-            const target = new utils.CanvasRenderTarget(canvasBuffer.width, canvasBuffer.height, 1);
-
-            target.context.scale(1, -1);
-
-            // We can't render to itself because we should be empty before render.
-            target.context.drawImage(canvasBuffer.canvas, 0, -height);
-
-            canvasBuffer.destroy();
-            canvasBuffer = target;
-        }
 
         // Send the canvas back
         return canvasBuffer.canvas;
