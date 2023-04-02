@@ -65,7 +65,7 @@ export class CanvasExtract implements ISystem, IExtract
 
         if (canvas.toBlob !== undefined)
         {
-            return await new Promise<string>((resolve, reject) =>
+            return new Promise<string>((resolve, reject) =>
             {
                 canvas.toBlob((blob) =>
                 {
@@ -85,7 +85,7 @@ export class CanvasExtract implements ISystem, IExtract
         {
             const blob = await canvas.convertToBlob({ type: format, quality });
 
-            return await new Promise<string>((resolve, reject) =>
+            return new Promise<string>((resolve, reject) =>
             {
                 const reader = new FileReader();
 
