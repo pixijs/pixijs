@@ -199,6 +199,13 @@ export class Extract implements ISystem, IExtract
             if (!generated)
             {
                 renderer.renderTexture.bind(renderTexture);
+
+                const fbo = renderTexture.framebuffer.glFramebuffers[renderer.CONTEXT_UID];
+
+                if (fbo.blitFramebuffer)
+                {
+                    renderer.framebuffer.bind(fbo.blitFramebuffer);
+                }
             }
         }
         else
