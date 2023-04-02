@@ -131,14 +131,14 @@ export class Extract implements ISystem, IExtract
     {
         const { pixels, width, height, flipY } = this._rawPixels(target, frame);
 
+        Extract.arrayPostDivide(pixels, pixels);
+
         let canvasBuffer = new utils.CanvasRenderTarget(width, height, 1);
 
         // Add the pixels to the canvas
-        const canvasData = canvasBuffer.context.getImageData(0, 0, width, height);
+        const imageData = new ImageData(new Uint8ClampedArray(pixels.buffer), width, height);
 
-        Extract.arrayPostDivide(pixels, canvasData.data);
-
-        canvasBuffer.context.putImageData(canvasData, 0, 0);
+        canvasBuffer.context.putImageData(imageData, 0, 0);
 
         // Flipping pixels
         if (flipY)
