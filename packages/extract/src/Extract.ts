@@ -60,7 +60,7 @@ export class Extract implements ISystem, IExtract
 
     protected contextChange(): void
     {
-        const attributes = this.renderer.gl.getContextAttributes();
+        const attributes = this.renderer?.gl.getContextAttributes();
 
         this._rendererPremultipliedAlpha = !!(attributes && attributes.alpha && attributes.premultipliedAlpha);
     }
