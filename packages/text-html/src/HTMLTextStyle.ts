@@ -17,6 +17,13 @@ import type {
  */
 export type HTMLTextStyleWhiteSpace = 'normal' | 'pre' | 'pre-line' | 'nowrap' | 'pre-wrap';
 
+/**
+ * FontFace display options.
+ * @memberof PIXI
+ * @since 7.3.0
+ */
+export type FontDisplay = 'auto' | 'block' | 'swap' | 'fallback' | 'optional';
+
 // Subset of ITextStyle
 type ITextStyleIgnore = 'whiteSpace'
 | 'fillGradientStops'
@@ -37,6 +44,12 @@ export interface IHTMLTextStyle extends Omit<ITextStyle, ITextStyleIgnore>
 {
     /** White-space with expanded options. */
     whiteSpace: HTMLTextStyleWhiteSpace;
+}
+
+export interface IHTMLTextFontOptions extends Pick<IHTMLFont, 'weight' | 'style' | 'family'>
+{
+    /** font-display property */
+    display: FontDisplay;
 }
 
 /**
@@ -60,6 +73,8 @@ export interface IHTMLFont
     weight: TextStyleFontWeight;
     /** Style of the font */
     style: TextStyleFontStyle;
+    /** Display property of the font */
+    display: FontDisplay;
     /** Reference counter */
     refs: number;
 }
@@ -189,7 +204,7 @@ export class HTMLTextStyle extends TextStyle
      * @param url
      * @param options
      */
-    public loadFont(url: string, options: Partial<Pick<IHTMLFont, 'weight' | 'style' | 'family'>> = {}): Promise<void>
+    public loadFont(url: string, options: Partial<IHTMLTextFontOptions> = {}): Promise<void>
     {
         const { availableFonts } = HTMLTextStyle;
 
@@ -223,6 +238,7 @@ export class HTMLTextStyle extends TextStyle
                     family: utils.path.basename(url, utils.path.extname(url)),
                     weight: 'normal',
                     style: 'normal',
+                    display: 'auto',
                     src,
                     dataSrc,
                     refs: 1,
@@ -238,6 +254,7 @@ export class HTMLTextStyle extends TextStyle
                 const fontFace = new FontFace(font.family, `url(${font.src})`, {
                     weight: font.weight,
                     style: font.style,
+                    display: font.display,
                 });
 
                 // Keep this reference so we can remove it later from document
@@ -336,7 +353,8 @@ export class HTMLTextStyle extends TextStyle
                 font-family: "${font.family}";
                 src: url('${font.dataSrc}');
                 font-weight: ${font.weight};
-                font-style: ${font.style}; 
+                font-style: ${font.style};
+                font-display: ${font.display};
             }`
         ), this._stylesheet);
     }
