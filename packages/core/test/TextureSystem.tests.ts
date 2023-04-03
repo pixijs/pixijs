@@ -93,17 +93,12 @@ describe('TextureSystem', () =>
 
     function createIntegerTexture()
     {
-        // @ts-expect-error ---
-        const baseTexture = BaseTexture.fromBuffer(new Uint32Array([0, 0, 0, 0]), 1, 1);
+        const baseTexture = BaseTexture.fromBuffer(new Int32Array([0, 0, 0, 0]), 1, 1);
         const oldUpload = baseTexture.resource.upload.bind(baseTexture);
 
         baseTexture.resource.upload = (renderer, baseTexture, glTexture) =>
         {
             glTexture.samplerType = SAMPLER_TYPES.INT;
-            if (renderer.context.webGLVersion === 2)
-            {
-                glTexture.internalFormat = renderer.context['gl'].RGBA32I;
-            }
 
             return oldUpload(renderer, baseTexture, glTexture);
         };
@@ -117,6 +112,11 @@ describe('TextureSystem', () =>
         const { boundTextures } = textureSystem;
         const sampleTex = createIntegerTexture();
         const sampleTex2 = createIntegerTexture();
+
+        expect(sampleTex.format).toBe(FORMATS.RGBA_INTEGER);
+        expect(sampleTex2.format).toBe(FORMATS.RGBA_INTEGER);
+        expect(sampleTex.type).toBe(TYPES.INT);
+        expect(sampleTex2.type).toBe(TYPES.INT);
 
         textureSystem.bind(Texture.WHITE.baseTexture, 0);
         textureSystem.bind(sampleTex, 1);
