@@ -194,4 +194,51 @@ describe('Extract', () =>
         renderer.destroy();
         sprite.destroy();
     });
+
+    it('should unpremultiply alpha correctly', () =>
+    {
+        const pixels1 = new Uint8Array(4);
+        const pixels2 = new Uint8ClampedArray(4);
+
+        Extract['_unpremultiplyAlpha'](pixels1);
+        Extract['_unpremultiplyAlpha'](pixels2);
+
+        expect(pixels1[0]).toBe(0);
+        expect(pixels1[1]).toBe(0);
+        expect(pixels1[2]).toBe(0);
+        expect(pixels1[3]).toBe(0);
+        expect(pixels2[0]).toBe(0);
+        expect(pixels2[1]).toBe(0);
+        expect(pixels2[2]).toBe(0);
+        expect(pixels2[3]).toBe(0);
+
+        for (let alpha = 1; alpha < 256; alpha++)
+        {
+            for (let x = 0; x <= alpha; x++)
+            {
+                pixels1[0] = x;
+                pixels1[1] = 0;
+                pixels1[2] = 0;
+                pixels1[3] = alpha;
+                pixels2[0] = x;
+                pixels2[1] = 0;
+                pixels2[2] = 0;
+                pixels2[3] = alpha;
+
+                Extract['_unpremultiplyAlpha'](pixels1);
+                Extract['_unpremultiplyAlpha'](pixels2);
+
+                const y = Math.min(Math.max(Math.round((x * 255) / alpha), 0), 255);
+
+                expect(pixels1[0]).toBe(y);
+                expect(pixels1[1]).toBe(0);
+                expect(pixels1[2]).toBe(0);
+                expect(pixels1[3]).toBe(alpha);
+                expect(pixels2[0]).toBe(y);
+                expect(pixels2[1]).toBe(0);
+                expect(pixels2[2]).toBe(0);
+                expect(pixels2[3]).toBe(alpha);
+            }
+        }
+    });
 });

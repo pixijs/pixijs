@@ -137,7 +137,7 @@ export class Extract implements ISystem, IExtract
             Extract._flipY(pixels, width, height);
         }
 
-        Extract.arrayPostDivide(pixels, pixels);
+        Extract._unpremultiplyAlpha(pixels);
 
         const canvasBuffer = new utils.CanvasRenderTarget(width, height, 1);
 
@@ -162,7 +162,7 @@ export class Extract implements ISystem, IExtract
     {
         const { pixels } = this._rawPixels(target, frame);
 
-        Extract.arrayPostDivide(pixels, pixels);
+        Extract._unpremultiplyAlpha(pixels);
 
         return pixels;
     }
@@ -286,31 +286,26 @@ export class Extract implements ISystem, IExtract
         }
     }
 
-    /**
-     * Takes premultiplied pixel data and produces regular pixel data
-     * @private
-     * @param pixels - array of pixel data
-     * @param out - output array
-     */
-    static arrayPostDivide(
-        pixels: number[] | Uint8Array | Uint8ClampedArray, out: number[] | Uint8Array | Uint8ClampedArray
-    ): void
+    private static _unpremultiplyAlpha(pixels: Uint8Array | Uint8ClampedArray): void
     {
-        for (let i = 0; i < pixels.length; i += 4)
+        if (pixels instanceof Uint8ClampedArray)
         {
-            const alpha = out[i + 3] = pixels[i + 3];
+            pixels = new Uint8Array(pixels.buffer);
+        }
+
+        const n = pixels.length;
+
+        for (let i = 0; i < n; i += 4)
+        {
+            const alpha = pixels[i + 3];
 
             if (alpha !== 0)
             {
-                out[i] = Math.round(Math.min(pixels[i] * 255.0 / alpha, 255.0));
-                out[i + 1] = Math.round(Math.min(pixels[i + 1] * 255.0 / alpha, 255.0));
-                out[i + 2] = Math.round(Math.min(pixels[i + 2] * 255.0 / alpha, 255.0));
-            }
-            else
-            {
-                out[i] = pixels[i];
-                out[i + 1] = pixels[i + 1];
-                out[i + 2] = pixels[i + 2];
+                const a = 255.001 / alpha;
+
+                pixels[i] = (pixels[i] * a) + 0.5;
+                pixels[i + 1] = (pixels[i + 1] * a) + 0.5;
+                pixels[i + 2] = (pixels[i + 2] * a) + 0.5;
             }
         }
     }
