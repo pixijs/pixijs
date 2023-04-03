@@ -12,7 +12,6 @@ import type { IAutoDetectOptions } from './resources/autoDetectResource';
 
 const defaultBufferOptions = {
     scaleMode: SCALE_MODES.NEAREST,
-    format: FORMATS.RGBA,
     alphaMode: ALPHA_MODES.NPM,
 };
 
@@ -686,26 +685,55 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
     }
 
     /**
-     * Create a new BaseTexture with a BufferResource from a Float32Array.
-     * RGBA values are floats from 0 to 1.
-     * @param {Float32Array|Uint8Array} buffer - The optional array to use, if no data
-     *        is provided, a new Float32Array is created.
+     * Create a new Texture with a BufferResource from a typed array.
+     * @param buffer - The optional array to use. If no data is provided, a new Float32Array is created.
      * @param width - Width of the resource
      * @param height - Height of the resource
      * @param options - See {@link PIXI.BaseTexture}'s constructor for options.
      *        Default properties are different from the constructor's defaults.
-     * @param {PIXI.FORMATS} [options.format=PIXI.FORMATS.RGBA] - GL format type
-     * @param {PIXI.ALPHA_MODES} [options.alphaMode=PIXI.ALPHA_MODES.NPM] - Image alpha, not premultiplied by default
-     * @param {PIXI.SCALE_MODES} [options.scaleMode=PIXI.SCALE_MODES.NEAREST] - Scale mode, pixelating by default
+     * @param {PIXI.TYPES} [options.type] - The type is not given, the type is inferred from the
+     *        type of the buffer.
+     * @param {PIXI.ALPHA_MODES} [options.alphaMode=PIXI.ALPHA_MODES.NPM]
+     * @param {PIXI.SCALE_MODES} [options.scaleMode=PIXI.SCALE_MODES.NEAREST]
      * @returns - The resulting new BaseTexture
      */
-    static fromBuffer(buffer: Float32Array | Uint8Array,
-        width: number, height: number, options?: IBaseTextureOptions): BaseTexture<BufferResource>
+    static fromBuffer(buffer: Int8Array | Uint8Array | Uint8ClampedArray | Int16Array | Uint16Array | Int32Array
+    | Uint32Array | Float32Array | null, width: number, height: number,
+    options?: IBaseTextureOptions): BaseTexture<BufferResource>
     {
         buffer = buffer || new Float32Array(width * height * 4);
 
         const resource = new BufferResource(buffer, { width, height });
-        const type = buffer instanceof Float32Array ? TYPES.FLOAT : TYPES.UNSIGNED_BYTE;
+        let type: TYPES;
+
+        if (buffer instanceof Float32Array)
+        {
+            type = TYPES.FLOAT;
+        }
+        else if (buffer instanceof Int32Array)
+        {
+            type = TYPES.INT;
+        }
+        else if (buffer instanceof Uint32Array)
+        {
+            type = TYPES.UNSIGNED_INT;
+        }
+        else if (buffer instanceof Int16Array)
+        {
+            type = TYPES.SHORT;
+        }
+        else if (buffer instanceof Uint16Array)
+        {
+            type = TYPES.UNSIGNED_SHORT;
+        }
+        else if (buffer instanceof Int8Array)
+        {
+            type = TYPES.BYTE;
+        }
+        else
+        {
+            type = TYPES.UNSIGNED_BYTE;
+        }
 
         return new BaseTexture(resource, Object.assign({}, defaultBufferOptions, options || { width, height, type }));
     }

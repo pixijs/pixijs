@@ -463,17 +463,21 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
     }
 
     /**
-     * Create a new Texture with a BufferResource from a Float32Array.
-     * RGBA values are floats from 0 to 1.
-     * @param {Float32Array|Uint8Array} buffer - The optional array to use, if no data
-     *        is provided, a new Float32Array is created.
+     * Create a new Texture with a BufferResource from a typed array.
+     * @param buffer - The optional array to use. If no data is provided, a new Float32Array is created.
      * @param width - Width of the resource
      * @param height - Height of the resource
      * @param options - See {@link PIXI.BaseTexture}'s constructor for options.
+     *        Default properties are different from the constructor's defaults.
+     * @param {PIXI.TYPES} [options.type] - The type is not given, the type is inferred from the
+     *        type of the buffer.
+     * @param {PIXI.ALPHA_MODES} [options.alphaMode=PIXI.ALPHA_MODES.NPM]
+     * @param {PIXI.SCALE_MODES} [options.scaleMode=PIXI.SCALE_MODES.NEAREST]
      * @returns - The resulting new BaseTexture
      */
-    static fromBuffer(buffer: Float32Array | Uint8Array,
-        width: number, height: number, options?: IBaseTextureOptions<ISize>): Texture<BufferResource>
+    static fromBuffer(buffer: Int8Array | Uint8Array | Uint8ClampedArray | Int16Array | Uint16Array | Int32Array
+    | Uint32Array | Float32Array | null, width: number, height: number,
+    options?: IBaseTextureOptions<ISize>): Texture<BufferResource>
     {
         return new Texture(BaseTexture.fromBuffer(buffer, width, height, options));
     }

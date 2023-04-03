@@ -12,8 +12,7 @@ import type { GLTexture } from '../GLTexture';
  */
 export class BufferResource extends Resource
 {
-    /** Source array Cannot be {@code ClampedUint8Array} because it cant be uploaded to WebGL */
-    data: Float32Array | Uint8Array | Uint16Array | Int32Array | Uint32Array;
+    data: Int8Array | Uint8Array | Uint8ClampedArray | Int16Array | Uint16Array | Int32Array | Uint32Array | Float32Array;
 
     /**
      * @param source - Source buffer
@@ -21,7 +20,8 @@ export class BufferResource extends Resource
      * @param {number} options.width - Width of the texture
      * @param {number} options.height - Height of the texture
      */
-    constructor(source: Float32Array | Uint8Array | Uint16Array | Int32Array | Uint32Array, options: ISize)
+    constructor(source: Int8Array | Uint8Array | Uint8ClampedArray | Int16Array | Uint16Array | Int32Array | Uint32Array
+    | Float32Array, options: ISize)
     {
         const { width, height } = options || {};
 

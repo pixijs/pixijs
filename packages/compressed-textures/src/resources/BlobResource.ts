@@ -22,18 +22,19 @@ export abstract class BlobResource extends BufferResource
     protected loaded: boolean;
 
     /**
-     * @param {string} source - the URL of the texture file
+     * @param source - the buffer/URL of the texture file
      * @param {PIXI.IBlobOptions} options
      * @param {boolean}[options.autoLoad] - whether to fetch the data immediately;
      *  you can fetch it later via {@link PIXI.BlobResource#load}
      * @param {boolean}[options.width] - the width in pixels.
      * @param {boolean}[options.height] - the height in pixels.
      */
-    constructor(source: string | Uint8Array | Uint32Array | Float32Array,
-        options: IBlobOptions = { width: 1, height: 1, autoLoad: true })
+    constructor(source: string | Int8Array | Uint8Array | Uint8ClampedArray | Int16Array | Uint16Array | Int32Array
+    | Uint32Array | Float32Array | null, options: IBlobOptions = { width: 1, height: 1, autoLoad: true })
     {
-        let origin: string;
-        let data: Uint8Array | Uint32Array | Float32Array;
+        let origin: string | null;
+        let data: Int8Array | Uint8Array | Uint8ClampedArray | Int16Array | Uint16Array | Int32Array | Uint32Array
+        | Float32Array | null;
 
         if (typeof source === 'string')
         {
