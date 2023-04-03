@@ -134,17 +134,7 @@ export class Extract implements ISystem, IExtract
         // Flipping pixels
         if (flipY)
         {
-            const temp = new Uint8Array(width);
-
-            for (let y = 0, h = height >> 1; y < h; y++)
-            {
-                const t = y * width;
-                const b = (height - y - 1) * width;
-
-                temp.set(pixels.subarray(t, t + width));
-                pixels.copyWithin(t, b, b + width);
-                pixels.set(temp, b);
-            }
+            Extract._flipY(pixels, width, height);
         }
 
         Extract.arrayPostDivide(pixels, pixels);
@@ -277,6 +267,23 @@ export class Extract implements ISystem, IExtract
     public destroy(): void
     {
         this.renderer = null;
+    }
+
+    private static _flipY(pixels: Uint8Array | Uint8ClampedArray, width: number, height: number): void
+    {
+        const w = width << 2;
+        const h = height >> 1;
+        const temp = new Uint8Array(w);
+
+        for (let y = 0; y < h; y++)
+        {
+            const t = y * w;
+            const b = (height - y - 1) * w;
+
+            temp.set(pixels.subarray(t, t + w));
+            pixels.copyWithin(t, b, b + w);
+            pixels.set(temp, b);
+        }
     }
 
     /**
