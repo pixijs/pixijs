@@ -691,8 +691,13 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
      * @param height - Height of the resource
      * @param options - See {@link PIXI.BaseTexture}'s constructor for options.
      *        Default properties are different from the constructor's defaults.
+     * @param {PIXI.FORMATS} [options.format] - The format is not given, the type is inferred from the
+     *        type of the buffer: `RGBA` if Float32Array, Int8Array, Uint8Array, or Uint8ClampedArray,
+     *        otherwise `RGBA_INTEGER`.
      * @param {PIXI.TYPES} [options.type] - The type is not given, the type is inferred from the
-     *        type of the buffer.
+     *        type of the buffer. Maps Float32Array to `FLOAT`, Int32Array to `INT`, Uint32Array to
+     *        `UNSIGNED_INT`, Int16Array to `SHORT`, Uint16Array to `UNSIGNED_SHORT`, Int8Array to `BYTE`,
+     *        Uint8Array/Uint8ClampedArray to `UNSIGNED_BYTE`.
      * @param {PIXI.ALPHA_MODES} [options.alphaMode=PIXI.ALPHA_MODES.NPM]
      * @param {PIXI.SCALE_MODES} [options.scaleMode=PIXI.SCALE_MODES.NEAREST]
      * @returns - The resulting new BaseTexture
@@ -704,38 +709,46 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
         buffer = buffer || new Float32Array(width * height * 4);
 
         const resource = new BufferResource(buffer, { width, height });
+        let format: FORMATS;
         let type: TYPES;
 
         if (buffer instanceof Float32Array)
         {
+            format = FORMATS.RGBA;
             type = TYPES.FLOAT;
         }
         else if (buffer instanceof Int32Array)
         {
+            format = FORMATS.RGBA_INTEGER;
             type = TYPES.INT;
         }
         else if (buffer instanceof Uint32Array)
         {
+            format = FORMATS.RGBA_INTEGER;
             type = TYPES.UNSIGNED_INT;
         }
         else if (buffer instanceof Int16Array)
         {
+            format = FORMATS.RGBA_INTEGER;
             type = TYPES.SHORT;
         }
         else if (buffer instanceof Uint16Array)
         {
+            format = FORMATS.RGBA_INTEGER;
             type = TYPES.UNSIGNED_SHORT;
         }
         else if (buffer instanceof Int8Array)
         {
+            format = FORMATS.RGBA;
             type = TYPES.BYTE;
         }
         else
         {
+            format = FORMATS.RGBA;
             type = TYPES.UNSIGNED_BYTE;
         }
 
-        return new BaseTexture(resource, Object.assign({}, defaultBufferOptions, options || { width, height, type }));
+        return new BaseTexture(resource, Object.assign({}, defaultBufferOptions, { type, format }, options));
     }
 
     /**

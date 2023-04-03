@@ -469,8 +469,13 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
      * @param height - Height of the resource
      * @param options - See {@link PIXI.BaseTexture}'s constructor for options.
      *        Default properties are different from the constructor's defaults.
+     * @param {PIXI.FORMATS} [options.format] - The format is not given, the type is inferred from the
+     *        type of the buffer: `RGBA` if Float32Array, Int8Array, Uint8Array, or Uint8ClampedArray,
+     *        otherwise `RGBA_INTEGER`.
      * @param {PIXI.TYPES} [options.type] - The type is not given, the type is inferred from the
-     *        type of the buffer.
+     *        type of the buffer. Maps Float32Array to `FLOAT`, Int32Array to `INT`, Uint32Array to
+     *        `UNSIGNED_INT`, Int16Array to `SHORT`, Uint16Array to `UNSIGNED_SHORT`, Int8Array to `BYTE`,
+     *        Uint8Array/Uint8ClampedArray to `UNSIGNED_BYTE`.
      * @param {PIXI.ALPHA_MODES} [options.alphaMode=PIXI.ALPHA_MODES.NPM]
      * @param {PIXI.SCALE_MODES} [options.scaleMode=PIXI.SCALE_MODES.NEAREST]
      * @returns - The resulting new BaseTexture
