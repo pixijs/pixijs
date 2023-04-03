@@ -98,16 +98,31 @@ export class FramebufferSystem implements ISystem
         else
         {
             // WebGL2
-            // cache possible MSAA samples
             this.msaaSamples = {};
 
+            // Don't use more than `MAX_SAMPLES`: some devices do not allow to create renderbuffers
+            // with more than `MAX_SAMPLES` despite the fact that it is a valid number of samples
+            // according to `getInternalformatParameter`.
+            const maxSamples = Math.min(gl.getParameter(gl.MAX_SAMPLES) as number, MSAA_QUALITY.HIGH);
+
             for (const internalFormat of [gl.R8, gl.RG8, gl.RGB8, gl.RGB565,
-                gl.RGBA4, gl.RGB5_A1, gl.RGBA8, gl.RGB10_A2, gl.SRGB8_ALPHA8,
-                gl.DEPTH_COMPONENT16, gl.DEPTH_COMPONENT24, gl.DEPTH_COMPONENT32F,
-                gl.DEPTH24_STENCIL8, gl.DEPTH32F_STENCIL8, gl.STENCIL_INDEX8])
+                gl.RGBA4, gl.RGB5_A1, gl.RGBA8, gl.RGB10_A2, gl.SRGB8_ALPHA8])
             {
-                this.msaaSamples[internalFormat] = gl.getInternalformatParameter(
-                    gl.RENDERBUFFER, internalFormat, gl.SAMPLES);
+                const samples = gl.getInternalformatParameter(gl.RENDERBUFFER, internalFormat, gl.SAMPLES) as number[];
+
+                this.msaaSamples[internalFormat] = samples.filter((s) => s <= maxSamples && s > 1);
+            }
+
+            // Make sure the samples are compatible with valid samples of stencil/depth buffers.
+            for (const stencilFormat of [gl.DEPTH_COMPONENT24, gl.DEPTH24_STENCIL8, gl.STENCIL_INDEX8])
+            {
+                const stencilSamples = gl.getInternalformatParameter(gl.RENDERBUFFER, stencilFormat, gl.SAMPLES) as number[];
+
+                for (const internalFormat in this.msaaSamples)
+                {
+                    this.msaaSamples[internalFormat] = this.msaaSamples[internalFormat].filter(
+                        (s) => stencilSamples.includes(s));
+                }
             }
         }
     }
@@ -378,8 +393,7 @@ export class FramebufferSystem implements ISystem
 
             fbo.multisample = this.detectSamples(
                 framebuffer.multisample,
-                parentTexture._glTextures[this.CONTEXT_UID].internalFormat,
-                !(framebuffer.depthTexture && this.writeDepthTexture)
+                parentTexture._glTextures[this.CONTEXT_UID].internalFormat
             );
         }
         else
@@ -494,13 +508,11 @@ export class FramebufferSystem implements ISystem
      * Detects number of samples that is not more than a param but as close to it as possible
      * @param {PIXI.MSAA_QUALITY} samples - The number of samples
      * @param [internalFormat=WebGL2RenderingContext.RGBA8] - The internal format of the framebuffer
-     * @param [stencil=false] - Is a DEPTH24_STENCIL8 attachment present or may be later forced?
      * @returns - recommended number of samples
      */
-    protected detectSamples(samples: MSAA_QUALITY, internalFormat?: number, stencil = false): MSAA_QUALITY
+    protected detectSamples(samples: MSAA_QUALITY, internalFormat?: number): MSAA_QUALITY
     {
         const msaaSamples = this.msaaSamples?.[internalFormat ?? this.gl.RGBA8];
-        const stencilSamples = this.msaaSamples?.[this.gl.DEPTH24_STENCIL8];
         let res: number = MSAA_QUALITY.NONE;
 
         if (samples <= 1 || !msaaSamples)
@@ -509,11 +521,6 @@ export class FramebufferSystem implements ISystem
         }
         for (let i = 0; i < msaaSamples.length; i++)
         {
-            if (stencil && !stencilSamples.includes(msaaSamples[i]))
-            {
-                continue;
-            }
-
             if (msaaSamples[i] <= samples)
             {
                 res = msaaSamples[i];

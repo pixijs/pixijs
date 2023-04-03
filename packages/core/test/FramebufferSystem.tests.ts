@@ -116,8 +116,7 @@ describe('FramebufferSystem', () =>
 
         if (renderer.context.webGLVersion === 1
             || renderer.framebuffer['msaaSamples'] === null
-            || renderer.framebuffer['msaaSamples'][renderer.gl.RGBA8].every((x) => x <= 1)
-            || renderer.framebuffer['msaaSamples'][renderer.gl.DEPTH24_STENCIL8].every((x) => x <= 1))
+            || renderer.framebuffer['msaaSamples'][renderer.gl.RGBA8].every((x) => x <= 1))
         {
             return;
         }
@@ -186,8 +185,7 @@ describe('FramebufferSystem', () =>
 
         if (renderer.context.webGLVersion === 1
             || renderer.framebuffer['msaaSamples'] === null
-            || renderer.framebuffer['msaaSamples'][renderer.gl.RGBA8].every((x) => x <= 1)
-            || renderer.framebuffer['msaaSamples'][renderer.gl.DEPTH24_STENCIL8].every((x) => x <= 1))
+            || renderer.framebuffer['msaaSamples'][renderer.gl.RGBA8].every((x) => x <= 1))
         {
             return;
         }
@@ -323,8 +321,7 @@ describe('FramebufferSystem', () =>
 
         if (renderer.context.webGLVersion === 1
             || renderer.framebuffer['msaaSamples'] === null
-            || renderer.framebuffer['msaaSamples'][renderer.gl.RGBA8].every((x) => x <= 1)
-            || renderer.framebuffer['msaaSamples'][renderer.gl.DEPTH24_STENCIL8].every((x) => x <= 1))
+            || renderer.framebuffer['msaaSamples'][renderer.gl.RGBA8].every((x) => x <= 1))
         {
             return;
         }
