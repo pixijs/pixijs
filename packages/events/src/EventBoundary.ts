@@ -400,7 +400,7 @@ export class EventBoundary
                     location,
                     testFn,
                     pruneFn,
-                    pruneFn(currentTarget, location)
+                    ignore || pruneFn(currentTarget, location)
                 );
 
                 if (nestedHit)
