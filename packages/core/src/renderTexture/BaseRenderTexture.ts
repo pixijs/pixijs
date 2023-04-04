@@ -124,6 +124,20 @@ export class BaseRenderTexture extends BaseTexture
     }
 
     /**
+     * Shortcut to `this.framebuffer.multisample`.
+     * @default PIXI.MSAA_QUALITY.NONE
+     */
+    get multisample(): MSAA_QUALITY
+    {
+        return this.framebuffer.multisample;
+    }
+
+    set multisample(value: MSAA_QUALITY)
+    {
+        this.framebuffer.multisample = value;
+    }
+
+    /**
      * Resizes the BaseRenderTexture.
      * @param desiredWidth - The desired width to resize to.
      * @param desiredHeight - The desired height to resize to.
