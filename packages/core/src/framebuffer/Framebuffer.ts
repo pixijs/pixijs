@@ -14,10 +14,16 @@ import type { GLFramebuffer } from './GLFramebuffer';
  */
 export class Framebuffer
 {
-    /** Width of framebuffer in pixels. */
+    /**
+     * Width of the framebuffer in pixels.
+     * @readonly
+     */
     public width: number;
 
-    /** Height of framebuffer in pixels. */
+    /**
+     * Height of the framebuffer in pixels.
+     * @readonly
+     */
     public height: number;
 
     /**
