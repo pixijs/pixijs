@@ -45,6 +45,11 @@ export interface BaseRenderTexture extends GlobalMixins.BaseRenderTexture, BaseT
 export class BaseRenderTexture extends BaseTexture
 {
     public _clear: Color;
+
+    /**
+     * The framebuffer of this base texture.
+     * @readonly
+     */
     public framebuffer: Framebuffer;
 
     /** The data structure for the stencil masks. */
