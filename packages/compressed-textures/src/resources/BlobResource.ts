@@ -50,7 +50,7 @@ export abstract class BlobResource extends BufferResource
             data = source;
         }
 
-        super(data ?? new Uint8Array(), options);
+        super(data, options);
 
         /**
          * The URL of the texture file
