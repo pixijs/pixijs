@@ -41,7 +41,7 @@ export class TextureSystem implements ISystem
     protected CONTEXT_UID: number;
     protected gl: IRenderingContext;
     protected internalFormats: { [type: number]: { [format: number]: number } };
-    protected samplerTypes: { [internalFormats: number]: SAMPLER_TYPES };
+    protected samplerTypes: Record<number, SAMPLER_TYPES>;
     protected webGLVersion: number;
 
     /**

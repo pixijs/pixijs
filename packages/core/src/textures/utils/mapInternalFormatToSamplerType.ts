@@ -9,7 +9,7 @@ import { SAMPLER_TYPES } from '@pixi/constants';
  * @returns Lookup table.
  */
 export function mapInternalFormatToSamplerType(gl: WebGLRenderingContextBase):
-{ [internalFormat: number]: SAMPLER_TYPES }
+Record<number, SAMPLER_TYPES>
 {
     let table;
 
