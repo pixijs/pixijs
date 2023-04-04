@@ -481,7 +481,7 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
      * @returns - The resulting new BaseTexture
      */
     static fromBuffer(buffer: BufferType, width: number, height: number,
-    options?: IBaseTextureOptions<ISize>): Texture<BufferResource>
+        options?: IBaseTextureOptions<ISize>): Texture<BufferResource>
     {
         return new Texture(BaseTexture.fromBuffer(buffer, width, height, options));
     }

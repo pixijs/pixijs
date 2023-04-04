@@ -2,13 +2,14 @@ import { ALPHA_MODES, FORMATS, MIPMAP_MODES, SCALE_MODES, TARGETS, TYPES, WRAP_M
 import { settings } from '@pixi/settings';
 import { BaseTextureCache, EventEmitter, isPow2, TextureCache, uid } from '@pixi/utils';
 import { autoDetectResource } from './resources/autoDetectResource';
-import { BufferResource, BufferType } from './resources/BufferResource';
+import { BufferResource } from './resources/BufferResource';
 import { Resource } from './resources/Resource';
 
 import type { MSAA_QUALITY } from '@pixi/constants';
 import type { ICanvas } from '@pixi/settings';
 import type { GLTexture } from './GLTexture';
 import type { IAutoDetectOptions } from './resources/autoDetectResource';
+import type { BufferType } from './resources/BufferResource';
 
 const defaultBufferOptions = {
     scaleMode: SCALE_MODES.NEAREST,
@@ -703,7 +704,7 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
      * @returns - The resulting new BaseTexture
      */
     static fromBuffer(buffer: BufferType, width: number, height: number,
-    options?: IBaseTextureOptions): BaseTexture<BufferResource>
+        options?: IBaseTextureOptions): BaseTexture<BufferResource>
     {
         buffer = buffer || new Float32Array(width * height * 4);
 
