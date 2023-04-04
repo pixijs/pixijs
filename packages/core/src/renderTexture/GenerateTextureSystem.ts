@@ -73,6 +73,8 @@ export class GenerateTextureSystem implements ISystem
             {
                 width: region.width,
                 height: region.height,
+                resolution: this.renderer.resolution,
+                multisample: this.renderer.multisample,
                 ...textureOptions,
             });
 
