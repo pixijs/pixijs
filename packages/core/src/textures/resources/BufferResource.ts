@@ -15,7 +15,8 @@ export type BufferType = null | Int8Array | Uint8Array | Uint8ClampedArray
  */
 export class BufferResource extends Resource
 {
-    data: BufferType;
+    /** The data of this resource. */
+    public data: BufferType;
 
     /**
      * @param source - Source buffer
