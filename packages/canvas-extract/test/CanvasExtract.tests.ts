@@ -76,9 +76,9 @@ describe('CanvasExtract', () =>
 
         const canvas = extract.canvas();
         const context = canvas.getContext('2d');
-        const imageData = context.getImageData(0, 0, 2, 2);
+        const imageData = context?.getImageData(0, 0, 2, 2);
 
-        expect(imageData.data).toEqual(new Uint8ClampedArray([
+        expect(imageData?.data).toEqual(new Uint8ClampedArray([
             255, 0, 0, 255, 0, 255, 0, 255,
             0, 0, 255, 255, 255, 255, 0, 255
         ]));
@@ -146,9 +146,9 @@ describe('CanvasExtract', () =>
 
         const canvas = extract.canvas(graphics);
         const context = canvas.getContext('2d');
-        const imageData = context.getImageData(0, 0, 2, 2);
+        const imageData = context?.getImageData(0, 0, 2, 2);
 
-        expect(imageData.data).toEqual(new Uint8ClampedArray([
+        expect(imageData?.data).toEqual(new Uint8ClampedArray([
             255, 0, 0, 255, 0, 255, 0, 255,
             0, 0, 255, 255, 255, 255, 0, 255
         ]));

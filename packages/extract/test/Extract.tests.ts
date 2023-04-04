@@ -66,9 +66,9 @@ describe('Extract', () =>
 
         const canvas = extract.canvas();
         const context = canvas.getContext('2d');
-        const imageData = context.getImageData(0, 0, 2, 2);
+        const imageData = context?.getImageData(0, 0, 2, 2);
 
-        expect(imageData.data).toEqual(new Uint8ClampedArray([
+        expect(imageData?.data).toEqual(new Uint8ClampedArray([
             255, 0, 0, 255, 0, 153, 0, 255,
             0, 0, 102, 255, 51, 51, 0, 255
         ]));
@@ -123,9 +123,9 @@ describe('Extract', () =>
 
         const canvas = extract.canvas(sprite);
         const context = canvas.getContext('2d');
-        const imageData = context.getImageData(0, 0, 2, 2);
+        const imageData = context?.getImageData(0, 0, 2, 2);
 
-        expect(imageData.data).toEqual(new Uint8ClampedArray(texturePixels.buffer));
+        expect(imageData?.data).toEqual(new Uint8ClampedArray(texturePixels.buffer));
 
         texture.destroy(true);
         sprite.destroy();

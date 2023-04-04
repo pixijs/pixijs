@@ -88,8 +88,16 @@ export class Extract implements ISystem, IExtract
         {
             return new Promise<string>((resolve, reject) =>
             {
-                canvas.toBlob((blob) =>
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                canvas.toBlob!((blob) =>
                 {
+                    if (!blob)
+                    {
+                        reject(new Error('ICanvas.toBlob failed!'));
+
+                        return;
+                    }
+
                     const reader = new FileReader();
 
                     reader.onload = () => resolve(reader.result as string);
