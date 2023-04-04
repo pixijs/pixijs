@@ -299,14 +299,33 @@ export class FramebufferSystem implements ISystem
         {
             gl.bindRenderbuffer(gl.RENDERBUFFER, fbo.stencil);
 
-            if (fbo.msaaBuffer)
+            let stencilFormat: number;
+
+            if (this.renderer.context.webGLVersion === 1)
             {
-                gl.renderbufferStorageMultisample(gl.RENDERBUFFER, fbo.multisample,
-                    gl.DEPTH24_STENCIL8, framebuffer.width, framebuffer.height);
+                stencilFormat = gl.DEPTH_STENCIL;
+            }
+            else if (framebuffer.depth && framebuffer.stencil)
+            {
+                stencilFormat = gl.DEPTH24_STENCIL8;
+            }
+            else if (framebuffer.depth)
+            {
+                stencilFormat = gl.DEPTH_COMPONENT24;
             }
             else
             {
-                gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL, framebuffer.width, framebuffer.height);
+                stencilFormat = gl.STENCIL_INDEX8;
+            }
+
+            if (fbo.msaaBuffer)
+            {
+                gl.renderbufferStorageMultisample(gl.RENDERBUFFER, fbo.multisample,
+                    stencilFormat, framebuffer.width, framebuffer.height);
+            }
+            else
+            {
+                gl.renderbufferStorage(gl.RENDERBUFFER, stencilFormat, framebuffer.width, framebuffer.height);
             }
         }
 
@@ -433,19 +452,43 @@ export class FramebufferSystem implements ISystem
         {
             fbo.stencil = fbo.stencil || gl.createRenderbuffer();
 
+            let stencilAttachment: number;
+            let stencilFormat: number;
+
+            if (this.renderer.context.webGLVersion === 1)
+            {
+                stencilAttachment = gl.DEPTH_STENCIL_ATTACHMENT;
+                stencilFormat = gl.DEPTH_STENCIL;
+            }
+            else if (framebuffer.depth && framebuffer.stencil)
+            {
+                stencilAttachment = gl.DEPTH_STENCIL_ATTACHMENT;
+                stencilFormat = gl.DEPTH24_STENCIL8;
+            }
+            else if (framebuffer.depth)
+            {
+                stencilAttachment = gl.DEPTH_ATTACHMENT;
+                stencilFormat = gl.DEPTH_COMPONENT24;
+            }
+            else
+            {
+                stencilAttachment = gl.STENCIL_ATTACHMENT;
+                stencilFormat = gl.STENCIL_INDEX8;
+            }
+
             gl.bindRenderbuffer(gl.RENDERBUFFER, fbo.stencil);
 
             if (fbo.msaaBuffer)
             {
-                gl.renderbufferStorageMultisample(gl.RENDERBUFFER, fbo.multisample,
-                    gl.DEPTH24_STENCIL8, framebuffer.width, framebuffer.height);
+                gl.renderbufferStorageMultisample(gl.RENDERBUFFER, fbo.multisample, stencilFormat,
+                    framebuffer.width, framebuffer.height);
             }
             else
             {
-                gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL, framebuffer.width, framebuffer.height);
+                gl.renderbufferStorage(gl.RENDERBUFFER, stencilFormat, framebuffer.width, framebuffer.height);
             }
 
-            gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, fbo.stencil);
+            gl.framebufferRenderbuffer(gl.FRAMEBUFFER, stencilAttachment, gl.RENDERBUFFER, fbo.stencil);
         }
         else if (fbo.stencil)
         {
@@ -666,7 +709,7 @@ export class FramebufferSystem implements ISystem
 
         const fbo = framebuffer.glFramebuffers[this.CONTEXT_UID];
 
-        if (!fbo || fbo.stencil)
+        if (!fbo || (fbo.stencil && framebuffer.stencil))
         {
             return;
         }
@@ -676,21 +719,39 @@ export class FramebufferSystem implements ISystem
         const w = framebuffer.width;
         const h = framebuffer.height;
         const gl = this.gl;
-        const stencil = gl.createRenderbuffer();
+        const stencil = fbo.stencil = gl.createRenderbuffer();
 
         gl.bindRenderbuffer(gl.RENDERBUFFER, stencil);
 
-        if (fbo.msaaBuffer)
+        let stencilAttachment: number;
+        let stencilFormat: number;
+
+        if (this.renderer.context.webGLVersion === 1)
         {
-            gl.renderbufferStorageMultisample(gl.RENDERBUFFER, fbo.multisample, gl.DEPTH24_STENCIL8, w, h);
+            stencilAttachment = gl.DEPTH_STENCIL_ATTACHMENT;
+            stencilFormat = gl.DEPTH_STENCIL;
+        }
+        else if (framebuffer.depth)
+        {
+            stencilAttachment = gl.DEPTH_STENCIL_ATTACHMENT;
+            stencilFormat = gl.DEPTH24_STENCIL8;
         }
         else
         {
-            gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL, w, h);
+            stencilAttachment = gl.STENCIL_ATTACHMENT;
+            stencilFormat = gl.STENCIL_INDEX8;
         }
 
-        fbo.stencil = stencil;
-        gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, stencil);
+        if (fbo.msaaBuffer)
+        {
+            gl.renderbufferStorageMultisample(gl.RENDERBUFFER, fbo.multisample, stencilFormat, w, h);
+        }
+        else
+        {
+            gl.renderbufferStorage(gl.RENDERBUFFER, stencilFormat, w, h);
+        }
+
+        gl.framebufferRenderbuffer(gl.FRAMEBUFFER, stencilAttachment, gl.RENDERBUFFER, stencil);
     }
 
     /** Resets framebuffer stored state, binds screen framebuffer. Should be called before renderTexture reset(). */
