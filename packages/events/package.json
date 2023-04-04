@@ -43,7 +43,6 @@
   },
   "peerDependencies": {
     "@pixi/core": "file:../core",
-    "@pixi/display": "file:../display",
-    "@pixi/utils": "file:../utils"
+    "@pixi/display": "file:../display"
   }
 }
