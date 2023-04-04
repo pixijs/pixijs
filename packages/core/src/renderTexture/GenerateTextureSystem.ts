@@ -57,6 +57,10 @@ export class GenerateTextureSystem implements ISystem
      * This can be quite useful if your displayObject is complicated and needs to be reused multiple times.
      * @param displayObject - The displayObject the object will be generated from.
      * @param {IGenerateTextureOptions} options - Generate texture options.
+     * @param {PIXI.Rectangle} options.region - The region of the displayObject, that shall be rendered,
+     *        if no region is specified, defaults to the local bounds of the displayObject.
+     * @param {number} [options.resolution] - If not given, the renderer's resolution is used.
+     * @param {PIXI.MSAA_QUALITY} [options.multisample] - If not given, the renderer's multisample is used.
      * @returns a shiny new texture of the display object passed in
      */
     generateTexture(displayObject: IRenderableObject, options?: IGenerateTextureOptions): RenderTexture
