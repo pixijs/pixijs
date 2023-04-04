@@ -158,7 +158,7 @@ export class Framebuffer
         return this;
     }
 
-    /** Does this framebuffer need/have a depth buffer? */
+    /** Does this framebuffer need/have a stencil buffer? */
     get stencil(): boolean
     {
         return this._stencil;
