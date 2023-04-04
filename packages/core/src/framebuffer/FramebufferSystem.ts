@@ -33,6 +33,8 @@ export class FramebufferSystem implements ISystem
     protected CONTEXT_UID: number;
     protected gl: IRenderingContext;
 
+    private _maxColorAttachments: number;
+
     /** Framebuffer value that shows that we don't know what is bound. */
     protected unknownFramebuffer: Framebuffer;
     protected msaaSamples: Array<number>;
@@ -78,13 +80,15 @@ export class FramebufferSystem implements ISystem
 
             if (nativeDrawBuffersExtension)
             {
-                gl.drawBuffers = (activeTextures: number[]): void =>
-                    nativeDrawBuffersExtension.drawBuffersWEBGL(activeTextures);
+                this._maxColorAttachments = gl.getParameter(nativeDrawBuffersExtension.MAX_DRAW_BUFFERS_WEBGL);
+                gl.drawBuffers = (buffers: Iterable<GLenum>): void =>
+                    nativeDrawBuffersExtension.drawBuffersWEBGL(buffers);
             }
             else
             {
                 this.hasMRT = false;
-                gl.drawBuffers = (): void =>
+                this._maxColorAttachments = 1;
+                gl.drawBuffers = (_buffers: Iterable<GLenum>): void =>
                 {
                     // empty
                 };
@@ -98,6 +102,7 @@ export class FramebufferSystem implements ISystem
         else
         {
             // WebGL2
+            this._maxColorAttachments = gl.getParameter(gl.MAX_COLOR_ATTACHMENTS);
             // cache possible MSAA samples
             this.msaaSamples = gl.getInternalformatParameter(gl.RENDERBUFFER, gl.RGBA8, gl.SAMPLES);
         }
@@ -311,13 +316,7 @@ export class FramebufferSystem implements ISystem
         }
 
         const colorTextures = framebuffer.colorTextures;
-
-        let count = colorTextures.length;
-
-        if (!gl.drawBuffers)
-        {
-            count = Math.min(count, 1);
-        }
+        const count = Math.min(colorTextures.length, this._maxColorAttachments);
 
         for (let i = 0; i < count; i++)
         {
@@ -354,13 +353,7 @@ export class FramebufferSystem implements ISystem
 
         // bind the color texture
         const colorTextures = framebuffer.colorTextures;
-
-        let count = colorTextures.length;
-
-        if (!gl.drawBuffers)
-        {
-            count = Math.min(count, 1);
-        }
+        const count = Math.min(colorTextures.length, this._maxColorAttachments);
 
         if (fbo.multisample > 1 && this.canMultisampleFramebuffer(framebuffer))
         {
@@ -378,7 +371,7 @@ export class FramebufferSystem implements ISystem
             }
         }
 
-        const activeTextures = [];
+        const drawBuffers: number[] = [];
 
         for (let i = 0; i < count; i++)
         {
@@ -401,32 +394,32 @@ export class FramebufferSystem implements ISystem
                     texture.target,
                     parentTexture._glTextures[this.CONTEXT_UID].texture,
                     mipLevel);
-
-                activeTextures.push(gl.COLOR_ATTACHMENT0 + i);
             }
+
+            drawBuffers.push(gl.COLOR_ATTACHMENT0 + i);
+        }
+        for (let i = count; i < this._maxColorAttachments; i++)
+        {
+            gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0 + i, gl.TEXTURE_2D, null, 0);
         }
 
-        if (activeTextures.length > 1)
+        gl.drawBuffers(drawBuffers);
+
+        if (framebuffer.depthTexture && this.writeDepthTexture)
         {
-            gl.drawBuffers(activeTextures);
+            const depthTexture = framebuffer.depthTexture;
+
+            this.renderer.texture.bind(depthTexture, 0);
+
+            gl.framebufferTexture2D(gl.FRAMEBUFFER,
+                gl.DEPTH_ATTACHMENT,
+                gl.TEXTURE_2D,
+                depthTexture._glTextures[this.CONTEXT_UID].texture,
+                mipLevel);
         }
-
-        if (framebuffer.depthTexture)
+        else
         {
-            const writeDepthTexture = this.writeDepthTexture;
-
-            if (writeDepthTexture)
-            {
-                const depthTexture = framebuffer.depthTexture;
-
-                this.renderer.texture.bind(depthTexture, 0);
-
-                gl.framebufferTexture2D(gl.FRAMEBUFFER,
-                    gl.DEPTH_ATTACHMENT,
-                    gl.TEXTURE_2D,
-                    depthTexture._glTextures[this.CONTEXT_UID].texture,
-                    mipLevel);
-            }
+            gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.TEXTURE_2D, null, 0);
         }
 
         if ((framebuffer.stencil || framebuffer.depth) && !(framebuffer.depthTexture && this.writeDepthTexture))
