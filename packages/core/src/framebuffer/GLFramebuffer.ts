@@ -1,5 +1,3 @@
-import { MSAA_QUALITY } from '@pixi/constants';
-
 import type { Framebuffer } from './Framebuffer';
 
 /**
@@ -15,7 +13,7 @@ export class GLFramebuffer
     public stencil: WebGLRenderbuffer;
 
     /** Detected AA samples number. */
-    public multisample: MSAA_QUALITY;
+    public multisample: number;
 
     /** In case MSAA, we use this Renderbuffer instead of colorTextures[0] when we write info. */
     public msaaBuffer: WebGLRenderbuffer;
@@ -45,7 +43,7 @@ export class GLFramebuffer
         this.dirtyId = -1;
         this.dirtyFormat = -1;
         this.dirtySize = -1;
-        this.multisample = MSAA_QUALITY.NONE;
+        this.multisample = 0;
         this.msaaBuffer = null;
         this.blitFramebuffer = null;
         this.mipLevel = 0;

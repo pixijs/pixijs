@@ -398,7 +398,7 @@ export class FramebufferSystem implements ISystem
         }
         else
         {
-            fbo.multisample = MSAA_QUALITY.NONE;
+            fbo.multisample = 0;
         }
 
         if (fbo.multisample > 1)
@@ -510,10 +510,10 @@ export class FramebufferSystem implements ISystem
      * @param [internalFormat=WebGL2RenderingContext.RGBA8] - The internal format of the framebuffer
      * @returns - recommended number of samples
      */
-    protected detectSamples(samples: MSAA_QUALITY, internalFormat?: number): MSAA_QUALITY
+    protected detectSamples(samples: MSAA_QUALITY, internalFormat?: number): number
     {
         const msaaSamples = this.msaaSamples?.[internalFormat ?? this.gl.RGBA8];
-        let res: number = MSAA_QUALITY.NONE;
+        let res = 0;
 
         if (samples <= 1 || !msaaSamples)
         {
@@ -530,7 +530,7 @@ export class FramebufferSystem implements ISystem
 
         if (res === 1)
         {
-            res = MSAA_QUALITY.NONE;
+            res = 0;
         }
 
         return res;
