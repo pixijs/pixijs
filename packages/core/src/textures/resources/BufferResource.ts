@@ -6,13 +6,16 @@ import type { Renderer } from '../../Renderer';
 import type { BaseTexture } from '../BaseTexture';
 import type { GLTexture } from '../GLTexture';
 
+export type BufferType = null | Int8Array | Uint8Array | Uint8ClampedArray
+| Int16Array | Uint16Array | Int32Array | Uint32Array | Float32Array;
+
 /**
  * Buffer resource with data of typed array.
  * @memberof PIXI
  */
 export class BufferResource extends Resource
 {
-    data: Int8Array | Uint8Array | Uint8ClampedArray | Int16Array | Uint16Array | Int32Array | Uint32Array | Float32Array;
+    data: BufferType;
 
     /**
      * @param source - Source buffer
@@ -20,8 +23,7 @@ export class BufferResource extends Resource
      * @param {number} options.width - Width of the texture
      * @param {number} options.height - Height of the texture
      */
-    constructor(source: Int8Array | Uint8Array | Uint8ClampedArray | Int16Array | Uint16Array | Int32Array | Uint32Array
-    | Float32Array, options: ISize)
+    constructor(source: BufferType, options: ISize)
     {
         const { width, height } = options || {};
 

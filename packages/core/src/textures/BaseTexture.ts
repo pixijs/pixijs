@@ -2,7 +2,7 @@ import { ALPHA_MODES, FORMATS, MIPMAP_MODES, SCALE_MODES, TARGETS, TYPES, WRAP_M
 import { settings } from '@pixi/settings';
 import { BaseTextureCache, EventEmitter, isPow2, TextureCache, uid } from '@pixi/utils';
 import { autoDetectResource } from './resources/autoDetectResource';
-import { BufferResource } from './resources/BufferResource';
+import { BufferResource, BufferType } from './resources/BufferResource';
 import { Resource } from './resources/Resource';
 
 import type { MSAA_QUALITY } from '@pixi/constants';
@@ -702,8 +702,7 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
      * @param {PIXI.SCALE_MODES} [options.scaleMode=PIXI.SCALE_MODES.NEAREST]
      * @returns - The resulting new BaseTexture
      */
-    static fromBuffer(buffer: Int8Array | Uint8Array | Uint8ClampedArray | Int16Array | Uint16Array | Int32Array
-    | Uint32Array | Float32Array | null, width: number, height: number,
+    static fromBuffer(buffer: BufferType, width: number, height: number,
     options?: IBaseTextureOptions): BaseTexture<BufferResource>
     {
         buffer = buffer || new Float32Array(width * height * 4);

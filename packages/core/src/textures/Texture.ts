@@ -7,7 +7,7 @@ import { TextureUvs } from './TextureUvs';
 
 import type { IPointData, ISize } from '@pixi/math';
 import type { IBaseTextureOptions, ImageSource } from './BaseTexture';
-import type { BufferResource } from './resources/BufferResource';
+import type { BufferResource, BufferType } from './resources/BufferResource';
 import type { CanvasResource } from './resources/CanvasResource';
 import type { Resource } from './resources/Resource';
 import type { TextureMatrix } from './TextureMatrix';
@@ -480,8 +480,7 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
      * @param {PIXI.SCALE_MODES} [options.scaleMode=PIXI.SCALE_MODES.NEAREST]
      * @returns - The resulting new BaseTexture
      */
-    static fromBuffer(buffer: Int8Array | Uint8Array | Uint8ClampedArray | Int16Array | Uint16Array | Int32Array
-    | Uint32Array | Float32Array | null, width: number, height: number,
+    static fromBuffer(buffer: BufferType, width: number, height: number,
     options?: IBaseTextureOptions<ISize>): Texture<BufferResource>
     {
         return new Texture(BaseTexture.fromBuffer(buffer, width, height, options));

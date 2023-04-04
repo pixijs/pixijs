@@ -1,4 +1,4 @@
-import { BufferResource, ViewableBuffer } from '@pixi/core';
+import { BufferResource, BufferType, ViewableBuffer } from '@pixi/core';
 
 import type { Resource } from '@pixi/core';
 
@@ -29,12 +29,10 @@ export abstract class BlobResource extends BufferResource
      * @param {boolean}[options.width] - the width in pixels.
      * @param {boolean}[options.height] - the height in pixels.
      */
-    constructor(source: string | Int8Array | Uint8Array | Uint8ClampedArray | Int16Array | Uint16Array | Int32Array
-    | Uint32Array | Float32Array | null, options: IBlobOptions = { width: 1, height: 1, autoLoad: true })
+    constructor(source: string | BufferType, options: IBlobOptions = { width: 1, height: 1, autoLoad: true })
     {
         let origin: string | null;
-        let data: Int8Array | Uint8Array | Uint8ClampedArray | Int16Array | Uint16Array | Int32Array | Uint32Array
-        | Float32Array | null;
+        let data: BufferType;
 
         if (typeof source === 'string')
         {
