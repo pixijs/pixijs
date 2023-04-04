@@ -37,8 +37,8 @@ export class Framebuffer
      */
     public multisample: MSAA_QUALITY;
 
-    stencil: boolean;
-    depth: boolean;
+    _stencil: boolean;
+    _depth: boolean;
     dirtyId: number;
     dirtyFormat: number;
     dirtySize: number;
@@ -56,8 +56,8 @@ export class Framebuffer
         this.width = Math.round(width || 100);
         this.height = Math.round(height || 100);
 
-        this.stencil = false;
-        this.depth = false;
+        this._stencil = false;
+        this._depth = false;
 
         this.dirtyId = 0;
         this.dirtyFormat = 0;
@@ -126,24 +126,54 @@ export class Framebuffer
         return this;
     }
 
+    /** Does this framebuffer need/have a depth buffer? */
+    get depth(): boolean
+    {
+        return this._depth;
+    }
+
+    set depth(value: boolean)
+    {
+        if (this._depth === value)
+        {
+            return;
+        }
+
+        this._depth = value;
+        this.dirtyId++;
+        this.dirtyFormat++;
+    }
+
     /** Enable depth on the frame buffer. */
     enableDepth(): this
     {
         this.depth = true;
 
+        return this;
+    }
+
+    /** Does this framebuffer need/have a depth buffer? */
+    get stencil(): boolean
+    {
+        return this._stencil;
+    }
+
+    set stencil(value: boolean)
+    {
+        if (this._stencil === value)
+        {
+            return;
+        }
+
+        this._stencil = value;
         this.dirtyId++;
         this.dirtyFormat++;
-
-        return this;
     }
 
     /** Enable stencil on the frame buffer. */
     enableStencil(): this
     {
         this.stencil = true;
-
-        this.dirtyId++;
-        this.dirtyFormat++;
 
         return this;
     }
