@@ -60,10 +60,10 @@ export class ImageResource extends BaseImageResource
      * Promise when loading.
      * @default null
      */
-    private _load: Promise<ImageResource>;
+    private _load: Promise<this>;
 
     /** When process is completed */
-    private _process: Promise<ImageResource>;
+    private _process: Promise<this>;
 
     /**
      * @param source - image source or URL
@@ -121,7 +121,7 @@ export class ImageResource extends BaseImageResource
      * Returns a promise when image will be loaded and processed.
      * @param createBitmap - whether process image into bitmap
      */
-    load(createBitmap?: boolean): Promise<ImageResource>
+    load(createBitmap?: boolean): Promise<this>
     {
         if (this._load)
         {
@@ -185,7 +185,7 @@ export class ImageResource extends BaseImageResource
      * Can be called multiple times, real promise is cached inside.
      * @returns - Cached promise to fill that bitmap
      */
-    process(): Promise<ImageResource>
+    process(): Promise<this>
     {
         const source = this.source as HTMLImageElement;
 
