@@ -1,5 +1,6 @@
 import { ALPHA_MODES, FORMATS, MSAA_QUALITY, Rectangle, Renderer, RenderTexture, Texture, TYPES } from '@pixi/core';
 import { Extract } from '@pixi/extract';
+import { Graphics } from '@pixi/graphics';
 import { Sprite } from '@pixi/sprite';
 
 describe('Extract', () =>
@@ -14,7 +15,47 @@ describe('Extract', () =>
         renderer.destroy();
     });
 
-    it('should extract pixels from renderer correctly (without y-flipping)', async () =>
+    it('should extract the same pixels', async () =>
+    {
+        const renderer = new Renderer({ width: 2, height: 2 });
+        const graphics = new Graphics()
+            .beginFill(0xFF0000)
+            .drawRect(0, 0, 1, 1)
+            .endFill()
+            .beginFill(0x00FF00)
+            .drawRect(1, 0, 1, 1)
+            .endFill()
+            .beginFill(0x0000FF)
+            .drawRect(0, 1, 1, 1)
+            .endFill()
+            .beginFill(0xFFFF00)
+            .drawRect(1, 1, 1, 1)
+            .endFill();
+        const expectedPixels = new Uint8Array([
+            255, 0, 0, 255,
+            0, 255, 0, 255,
+            0, 0, 255, 255,
+            255, 255, 0, 255
+        ]);
+        const renderTexture = renderer.generateTexture(graphics);
+        const extract = renderer.extract;
+
+        renderer.render(graphics);
+
+        const pixelsRenderer = extract.pixels();
+        const pixelsRenderTexture = extract.pixels(renderTexture);
+        const pixelsGraphics = extract.pixels(graphics);
+
+        expect(pixelsRenderer).toEqual(expectedPixels);
+        expect(pixelsRenderTexture).toEqual(expectedPixels);
+        expect(pixelsGraphics).toEqual(expectedPixels);
+
+        renderTexture.destroy(true);
+        graphics.destroy();
+        renderer.destroy();
+    });
+
+    it('should extract pixels from renderer correctly', async () =>
     {
         const renderer = new Renderer({ width: 2, height: 2 });
         const texturePixels = new Uint8Array([
@@ -36,8 +77,8 @@ describe('Extract', () =>
         const extractedPixels = extract.pixels();
 
         expect(extractedPixels).toEqual(new Uint8Array([
-            0, 0, 102, 255, 51, 51, 0, 255,
-            255, 0, 0, 255, 0, 153, 0, 255
+            255, 0, 0, 255, 0, 153, 0, 255,
+            0, 0, 102, 255, 51, 51, 0, 255
         ]));
 
         texture.destroy(true);
@@ -45,7 +86,7 @@ describe('Extract', () =>
         renderer.destroy();
     });
 
-    it('should extract canvas from renderer correctly (with y-flipping)', async () =>
+    it('should extract canvas from renderer correctly', async () =>
     {
         const renderer = new Renderer({ width: 2, height: 2 });
         const texturePixels = new Uint8Array([
