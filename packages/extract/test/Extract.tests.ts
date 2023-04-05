@@ -1,4 +1,4 @@
-import { ALPHA_MODES, FORMATS, Rectangle, Renderer, RenderTexture, Texture, TYPES } from '@pixi/core';
+import { ALPHA_MODES, FORMATS, MSAA_QUALITY, Rectangle, Renderer, RenderTexture, Texture, TYPES } from '@pixi/core';
 import { Extract } from '@pixi/extract';
 import { Sprite } from '@pixi/sprite';
 
@@ -240,5 +240,29 @@ describe('Extract', () =>
                 expect(pixels2[3]).toBe(alpha);
             }
         }
+    });
+
+    it('should extract from multisampled render texture', async () =>
+    {
+        const renderer = new Renderer();
+        const extract = renderer.extract;
+        const sprite = new Sprite(Texture.WHITE);
+        const renderTexture = renderer.generateTexture(sprite, {
+            multisample: MSAA_QUALITY.HIGH
+        });
+
+        // unbind renderTexture
+        renderer.renderTexture.bind();
+
+        const pixels = extract.pixels(renderTexture);
+
+        expect(pixels).toBeInstanceOf(Uint8Array);
+        expect(pixels[0]).toBe(255);
+        expect(pixels[1]).toBe(255);
+        expect(pixels[2]).toBe(255);
+        expect(pixels[3]).toBe(255);
+
+        renderer.destroy();
+        sprite.destroy();
     });
 });

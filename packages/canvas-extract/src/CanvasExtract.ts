@@ -135,7 +135,9 @@ export class CanvasExtract implements ISystem, IExtract
             }
             else
             {
-                renderTexture = renderer.generateTexture(target);
+                renderTexture = renderer.generateTexture(target, {
+                    resolution: renderer.resolution
+                });
             }
         }
 
@@ -201,7 +203,9 @@ export class CanvasExtract implements ISystem, IExtract
             }
             else
             {
-                renderTexture = renderer.generateTexture(target);
+                renderTexture = renderer.generateTexture(target, {
+                    resolution: renderer.resolution
+                });
             }
         }
 
