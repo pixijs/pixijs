@@ -1,4 +1,4 @@
-import { Rectangle, Renderer, RenderTexture, Texture } from '@pixi/core';
+import { MSAA_QUALITY, Rectangle, Renderer, RenderTexture, Texture } from '@pixi/core';
 import { Extract } from '@pixi/extract';
 import { Sprite } from '@pixi/sprite';
 
@@ -72,6 +72,30 @@ describe('Extract', () =>
         expect(await extract.base64(sprite)).toBeString();
         expect(extract.pixels(sprite)).toBeInstanceOf(Uint8Array);
         expect(await extract.image(sprite)).toBeInstanceOf(HTMLImageElement);
+
+        renderer.destroy();
+        sprite.destroy();
+    });
+
+    it('should extract from multisampled render texture', async () =>
+    {
+        const renderer = new Renderer();
+        const extract = renderer.extract;
+        const sprite = new Sprite(Texture.WHITE);
+        const renderTexture = renderer.generateTexture(sprite, {
+            multisample: MSAA_QUALITY.HIGH
+        });
+
+        // unbind renderTexture
+        renderer.renderTexture.bind();
+
+        const pixels = extract.pixels(renderTexture);
+
+        expect(pixels).toBeInstanceOf(Uint8Array);
+        expect(pixels[0]).toBe(255);
+        expect(pixels[1]).toBe(255);
+        expect(pixels[2]).toBe(255);
+        expect(pixels[3]).toBe(255);
 
         renderer.destroy();
         sprite.destroy();

@@ -1,4 +1,4 @@
-import { extensions, ExtensionType, MSAA_QUALITY, Rectangle, RenderTexture, utils } from '@pixi/core';
+import { extensions, ExtensionType, Rectangle, RenderTexture, utils } from '@pixi/core';
 
 import type { ExtensionMetadata, ICanvas, ISystem, Renderer } from '@pixi/core';
 import type { DisplayObject } from '@pixi/display';
@@ -183,26 +183,10 @@ export class Extract implements ISystem, IExtract
             }
             else
             {
-                const multisample = renderer.context.webGLVersion >= 2 ? renderer.multisample : MSAA_QUALITY.NONE;
-
-                renderTexture = renderer.generateTexture(target, { multisample });
-
-                if (multisample !== MSAA_QUALITY.NONE)
-                {
-                    // Resolve the multisampled texture to a non-multisampled texture
-                    const resolvedTexture = RenderTexture.create({
-                        width: renderTexture.width,
-                        height: renderTexture.height,
-                    });
-
-                    renderer.framebuffer.bind(renderTexture.framebuffer);
-                    renderer.framebuffer.blit(resolvedTexture.framebuffer);
-                    renderer.framebuffer.bind();
-
-                    renderTexture.destroy(true);
-                    renderTexture = resolvedTexture;
-                }
-
+                renderTexture = renderer.generateTexture(target, {
+                    resolution: renderer.resolution,
+                    multisample: renderer.multisample
+                });
                 generated = true;
             }
         }
@@ -212,7 +196,18 @@ export class Extract implements ISystem, IExtract
             resolution = renderTexture.baseTexture.resolution;
             frame = frame ?? renderTexture.frame;
             flipY = false;
-            renderer.renderTexture.bind(renderTexture);
+
+            if (!generated)
+            {
+                renderer.renderTexture.bind(renderTexture);
+
+                const fbo = renderTexture.framebuffer.glFramebuffers[renderer.CONTEXT_UID];
+
+                if (fbo.blitFramebuffer)
+                {
+                    renderer.framebuffer.bind(fbo.blitFramebuffer);
+                }
+            }
         }
         else
         {
