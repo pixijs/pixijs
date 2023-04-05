@@ -583,6 +583,7 @@ export class FramebufferSystem implements ISystem
             destPixels.left, destPixels.top, destPixels.right, destPixels.bottom,
             gl.COLOR_BUFFER_BIT, sameSize ? gl.NEAREST : gl.LINEAR
         );
+        gl.bindFramebuffer(gl.READ_FRAMEBUFFER, framebuffer.glFramebuffers[this.CONTEXT_UID].framebuffer);
     }
 
     /**

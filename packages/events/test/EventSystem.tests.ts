@@ -38,7 +38,7 @@ function createRenderer(
     return renderer;
 }
 
-function createScene()
+function createScene(nested = true)
 {
     const stage = new Container();
     const graphics = stage.addChild(
@@ -46,6 +46,41 @@ function createScene()
             .beginFill(0xFFFFFF)
             .drawRect(0, 0, 50, 50)
     );
+
+    if (nested)
+    {
+        const a = new Graphics()
+            .beginFill(0xFFFFFF)
+            .drawRect(0, 0, 50, 50);
+        const b = new Graphics()
+            .beginFill(0xFFFFFF)
+            .drawRect(0, 0, 50, 50);
+        const c = new Graphics()
+            .beginFill(0xFFFFFF)
+            .drawRect(0, 0, 50, 50);
+        const d = new Graphics()
+            .beginFill(0xFFFFFF)
+            .drawRect(0, 0, 50, 50);
+        const e = new Graphics()
+            .beginFill(0xFFFFFF)
+            .drawRect(0, 0, 50, 50);
+
+        a.addChild(b);
+        b.addChild(c);
+        c.addChild(d);
+        c.addChild(e);
+
+        a.position.set(50, 50);
+        b.position.set(50, 50);
+        c.position.set(50, 50);
+        d.position.set(50, 50);
+        e.position.set(110, 50);
+
+        graphics.addChild(a);
+        graphics.interactive = a.interactive = b.interactive = c.interactive = d.interactive = e.interactive = true;
+
+        return [stage, graphics, a, b, c, d, e];
+    }
 
     graphics.interactive = true;
 
@@ -203,8 +238,8 @@ describe('EventSystem', () =>
         graphics.on('mousemove', eventSpy);
         renderer.events.onPointerMove(
             new PointerEvent('pointermove', {
-                clientX: 60,
-                clientY: 60,
+                clientX: 600,
+                clientY: 600,
                 pointerType: 'mouse',
             })
         );
@@ -568,7 +603,7 @@ describe('EventSystem', () =>
     it('should set the detail of click events to the click count', (done) =>
     {
         const renderer = createRenderer();
-        const [stage, graphics] = createScene();
+        const [stage, graphics] = createScene(false);
         const eventSpy = jest.fn();
         let clickCount = 0;
 
@@ -849,7 +884,7 @@ describe('EventSystem', () =>
         expect(eventSpy).toHaveBeenCalledTimes(3);
     });
 
-    it('should dispatch global pointer over/out event with a mask and hitArea', () =>
+    it('should dispatch pointer over/out event with a mask and hitArea', () =>
     {
         const renderer = createRenderer();
         const [stage, graphics] = createScene();
@@ -870,6 +905,53 @@ describe('EventSystem', () =>
         // this is inside the hitArea, but outside the mask so should not fire
         renderer.events.onPointerMove(
             new PointerEvent('pointermove', { clientX: 26, clientY: 5 })
+        );
+        // this is inside the mask, but not the hitArea so should not fire
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', { clientX: 5, clientY: 5 })
+        );
+        // this is inside the mask and hitArea so should fire
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', { clientX: 15, clientY: 5 })
+        );
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', { clientX: 75, clientY: 5 })
+        );
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', { clientX: 15, clientY: 5 })
+        );
+
+        expect(eventSpy).toHaveBeenCalledTimes(3);
+    });
+
+    it('should dispatch pointer over/out event with a mask and hitArea on its children', () =>
+    {
+        const renderer = createRenderer();
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const [stage, graphics, _a, _b, _c, _d, e] = createScene();
+        const eventSpy = jest.fn();
+
+        renderer.render(stage);
+
+        const mask = new Graphics().beginFill(0xffffff).drawRect(0, 0, 25, 25);
+
+        graphics.hitArea = new Rectangle(10, 0, 50, 50);
+
+        stage.addChild(mask);
+        graphics.interactive = true;
+        graphics.mask = mask;
+        graphics.on('pointerover', () => eventSpy());
+        graphics.on('pointerout', () => eventSpy());
+
+        const position = e.parent.toGlobal(e.position);
+
+        // this is inside the hitArea, but outside the mask so should not fire
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', { clientX: 26, clientY: 5 })
+        );
+        // this is outside the hitArea but over a child, so it still should not fire
+        renderer.events.onPointerMove(
+            new PointerEvent('pointermove', { clientX: position.x + 5, clientY: position.y + 5 })
         );
         // this is inside the mask, but not the hitArea so should not fire
         renderer.events.onPointerMove(

@@ -1,5 +1,4 @@
-import { extensions, ExtensionType } from '@pixi/core';
-import { deprecation } from '@pixi/utils';
+import { extensions, ExtensionType, utils } from '@pixi/core';
 import { BackgroundLoader } from './BackgroundLoader';
 import { Cache } from './cache/Cache';
 import { Loader } from './loader/Loader';
@@ -850,7 +849,7 @@ export class AssetsClass
     public set preferWorkers(value: boolean)
     {
         // #if _DEBUG
-        deprecation('7.2.0', 'Assets.prefersWorkers is deprecated, '
+        utils.deprecation('7.2.0', 'Assets.prefersWorkers is deprecated, '
             + 'use Assets.setPreferences({ preferWorkers: true }) instead.');
         // #endif
         this.setPreferences({ preferWorkers: value });
