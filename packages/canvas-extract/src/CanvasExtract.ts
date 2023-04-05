@@ -63,6 +63,28 @@ export class CanvasExtract implements ISystem, IExtract
     {
         const canvas = this.canvas(target);
 
+        if (canvas.toBlob !== undefined)
+        {
+            return new Promise<string>((resolve, reject) =>
+            {
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                canvas.toBlob!((blob) =>
+                {
+                    if (!blob)
+                    {
+                        reject(new Error('ICanvas.toBlob failed!'));
+
+                        return;
+                    }
+
+                    const reader = new FileReader();
+
+                    reader.onload = () => resolve(reader.result as string);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(blob);
+                }, format, quality);
+            });
+        }
         if (canvas.toDataURL !== undefined)
         {
             return canvas.toDataURL(format, quality);
@@ -71,16 +93,18 @@ export class CanvasExtract implements ISystem, IExtract
         {
             const blob = await canvas.convertToBlob({ type: format, quality });
 
-            return await new Promise<string>((resolve) =>
+            return new Promise<string>((resolve, reject) =>
             {
                 const reader = new FileReader();
 
                 reader.onload = () => resolve(reader.result as string);
+                reader.onerror = reject;
                 reader.readAsDataURL(blob);
             });
         }
 
-        throw new Error('CanvasExtract.base64() requires ICanvas.toDataURL or ICanvas.convertToBlob to be implemented');
+        throw new Error('CanvasExtract.base64() requires ICanvas.toDataURL, ICanvas.toBlob, '
+            + 'or ICanvas.convertToBlob to be implemented');
     }
 
     /**
