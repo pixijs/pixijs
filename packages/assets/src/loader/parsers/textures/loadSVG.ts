@@ -36,6 +36,8 @@ export const loadSVG = {
     {
         const src = new SVGResource(asset, data?.data?.resourceOptions);
 
+        await src.load();
+
         const base = new BaseTexture(src, {
             resolution: utils.getResolutionOfUrl(asset),
             ...data?.data,
@@ -44,11 +46,6 @@ export const loadSVG = {
         base.resource.src = asset;
 
         const texture = createTexture(base, loader, asset);
-
-        if (!data?.data?.resourceOptions?.autoLoad)
-        {
-            await src.load();
-        }
 
         return texture;
     },
