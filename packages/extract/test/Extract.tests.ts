@@ -286,7 +286,7 @@ describe('Extract', () =>
         });
 
         renderer.renderTexture.bind();
-        renderer.renderTexture.clear([0.4, 0.4, 0.4, 0.4]);
+        renderer.renderTexture.clear([1.0, 1.0, 1.0, 0.4]);
 
         const rendererPixels = extract.pixels();
 
@@ -296,7 +296,7 @@ describe('Extract', () =>
         expect(rendererPixels[3]).toBe(102);
 
         renderer.renderTexture.bind(renderTexture);
-        renderer.renderTexture.clear([0.4, 0.4, 0.4, 0.4]);
+        renderer.renderTexture.clear([1.0, 1.0, 1.0, 0.4]);
 
         const renderTexturePixels = extract.pixels(renderTexture);
 
