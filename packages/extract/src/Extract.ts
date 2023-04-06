@@ -4,15 +4,24 @@ import type { ExtensionMetadata, ICanvas, ISystem, Renderer } from '@pixi/core';
 import type { DisplayObject } from '@pixi/display';
 
 const TEMP_RECT = new Rectangle();
-const BYTES_PER_PIXEL = 4;
 
 export interface IExtract
 {
     image(target?: DisplayObject | RenderTexture, format?: string, quality?: number): Promise<HTMLImageElement>;
     base64(target?: DisplayObject | RenderTexture, format?: string, quality?: number): Promise<string>;
-    canvas(target?: DisplayObject | RenderTexture, frame?: Rectangle): ICanvas;
-    pixels(target?: DisplayObject | RenderTexture, frame?: Rectangle): Uint8Array | Uint8ClampedArray;
+    canvas<T extends boolean = false>(target?: DisplayObject | RenderTexture, frame?: Rectangle, async?: T):
+    T extends true ? Promise<ICanvas> : ICanvas;
+    pixels<T extends boolean>(target?: DisplayObject | RenderTexture, frame?: Rectangle, async?: T):
+    T extends true ? Promise<Uint8Array | Uint8ClampedArray> : Uint8Array | Uint8ClampedArray;
 }
+
+type PixelData<T extends Uint8Array | Uint8ClampedArray> = {
+    pixels: T,
+    width: number,
+    height: number,
+    flippedY?: boolean,
+    premultipliedAlpha?: boolean
+};
 
 /**
  * This class provides renderer-specific plugins for exporting content from a renderer.
@@ -38,6 +47,21 @@ export interface IExtract
 
 export class Extract implements ISystem, IExtract
 {
+    /**
+     * Default maximum idle frames before temporary arrays/buffers
+     * used by async extraction is destroyed by garbage collection.
+     * @static
+     * @default 3600
+     */
+    public static defaultMaxIdle = 60 * 60;
+
+    /**
+     * Default frames between two garbage collections.
+     * @static
+     * @default 600
+     */
+    public static defaultCheckCountMax = 60 * 10;
+
     /** @ignore */
     static extension: ExtensionMetadata = {
         name: 'extract',
@@ -47,11 +71,82 @@ export class Extract implements ISystem, IExtract
     private renderer: Renderer | null;
 
     /**
+     * Frame count since started.
+     * @readonly
+     */
+    private _count: number;
+
+    /**
+     * Frame count since last garbage collection.
+     * @readonly
+     */
+    private _checkCount: number;
+
+    /**
+     * Maximum idle frames before an temporary array/buffer is destroyed by garbage collection.
+     * @see PIXI.Extract.defaultMaxIdle
+     */
+    private _maxIdle: number;
+
+    /**
+     * Frames between two garbage collections.
+     * @see PIXI.Extract.defaultCheckCountMax
+     */
+    private _checkCountMax: number;
+
+    private _arrayPool: { [arraySize: number]: { object: Uint8Array, touched: number }[] };
+    private _bufferPool: { [bufferSize: number]: { object: WebGLBuffer, touched: number }[] };
+
+    private _worker: ExtractWorker | undefined;
+
+    private get worker(): ExtractWorker
+    {
+        // eslint-disable-next-line @typescript-eslint/no-use-before-define
+        this._worker ??= new ExtractWorker();
+
+        return this._worker;
+    }
+
+    /**
      * @param renderer - A reference to the current renderer
      */
     constructor(renderer: Renderer)
     {
         this.renderer = renderer;
+        this._count = 0;
+        this._checkCount = 0;
+        this._maxIdle = Extract.defaultMaxIdle;
+        this._checkCountMax = Extract.defaultCheckCountMax;
+        this._worker = undefined;
+        this._arrayPool = {};
+        this._bufferPool = {};
+    }
+
+    protected contextChange(): void
+    {
+        this._arrayPool = {};
+        this._bufferPool = {};
+    }
+
+    protected postrender(): void
+    {
+        if (!this.renderer?.objectRenderer.renderingToScreen)
+        {
+            return;
+        }
+
+        this._count++;
+        this._checkCount++;
+
+        if (this._checkCount > this._checkCountMax)
+        {
+            this._checkCount = 0;
+
+            const olderThan = this._count - this._maxIdle;
+
+            this._deleteArrays(olderThan);
+            this._deleteBuffers(olderThan);
+        }
     }
 
     /**
@@ -82,50 +177,7 @@ export class Extract implements ISystem, IExtract
      */
     public async base64(target?: DisplayObject | RenderTexture, format?: string, quality?: number): Promise<string>
     {
-        const canvas = this.canvas(target);
-
-        if (canvas.toBlob !== undefined)
-        {
-            return new Promise<string>((resolve, reject) =>
-            {
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                canvas.toBlob!((blob) =>
-                {
-                    if (!blob)
-                    {
-                        reject(new Error('ICanvas.toBlob failed!'));
-
-                        return;
-                    }
-
-                    const reader = new FileReader();
-
-                    reader.onload = () => resolve(reader.result as string);
-                    reader.onerror = reject;
-                    reader.readAsDataURL(blob);
-                }, format, quality);
-            });
-        }
-        if (canvas.toDataURL !== undefined)
-        {
-            return canvas.toDataURL(format, quality);
-        }
-        if (canvas.convertToBlob !== undefined)
-        {
-            const blob = await canvas.convertToBlob({ type: format, quality });
-
-            return new Promise<string>((resolve, reject) =>
-            {
-                const reader = new FileReader();
-
-                reader.onload = () => resolve(reader.result as string);
-                reader.onerror = reject;
-                reader.readAsDataURL(blob);
-            });
-        }
-
-        throw new Error('Extract.base64() requires ICanvas.toDataURL, ICanvas.toBlob, '
-            + 'or ICanvas.convertToBlob to be implemented');
+        return this._extract(target, undefined, 'base64', format, quality);
     }
 
     /**
@@ -133,14 +185,20 @@ export class Extract implements ISystem, IExtract
      * @param target - A displayObject or renderTexture
      *  to convert. If left empty will use the main renderer
      * @param frame - The frame the extraction is restricted to.
-     * @returns - A Canvas element with the texture rendered on.
+     * @param {boolean} [async=false] - Perform the extraction asynchronously?
+     * @returns {ICanvas | Promise<ICanvas>}- A Canvas element with the texture rendered on.
      */
-    public canvas(target?: DisplayObject | RenderTexture, frame?: Rectangle): ICanvas
+    public canvas<T extends boolean = false>(target?: DisplayObject | RenderTexture, frame?: Rectangle, async?: T):
+    T extends true ? Promise<ICanvas> : ICanvas
     {
-        const { pixels, width, height, flipY } = this._rawPixels(target, frame);
+        if (async)
+        {
+            return this._extract(target, frame, 'canvas') as any;
+        }
 
-        // Flipping pixels
-        if (flipY)
+        const { pixels, width, height, flippedY } = this._rawPixels(target, frame);
+
+        if (flippedY)
         {
             Extract._flipY(pixels, width, height);
         }
@@ -148,14 +206,11 @@ export class Extract implements ISystem, IExtract
         Extract._unpremultiplyAlpha(pixels);
 
         const canvasBuffer = new utils.CanvasRenderTarget(width, height, 1);
-
-        // Add the pixels to the canvas
         const imageData = new ImageData(new Uint8ClampedArray(pixels.buffer), width, height);
 
         canvasBuffer.context.putImageData(imageData, 0, 0);
 
-        // Send the canvas back
-        return canvasBuffer.canvas;
+        return canvasBuffer.canvas as any;
     }
 
     /**
@@ -164,25 +219,38 @@ export class Extract implements ISystem, IExtract
      * @param target - A displayObject or renderTexture
      *  to convert. If left empty will use the main renderer
      * @param frame - The frame the extraction is restricted to.
-     * @returns - One-dimensional array containing the pixel data of the entire texture
+     * @param {boolean} [async=false] - Perform the extraction asynchronously?
+     * @returns {Uint8Array | Promise<Uint8Array>} - One-dimensional array containing the pixel data of the entire texture
      */
-    public pixels(target?: DisplayObject | RenderTexture, frame?: Rectangle): Uint8Array
+    public pixels<T extends boolean = false>(target?: DisplayObject | RenderTexture, frame?: Rectangle, async?: T):
+    T extends true ? Promise<Uint8Array> : Uint8Array
     {
-        const { pixels, width, height, flipY } = this._rawPixels(target, frame);
+        if (async)
+        {
+            return this._extract(target, frame, 'pixels') as any;
+        }
 
-        if (flipY)
+        const { pixels, width, height, flippedY } = this._rawPixels(target, frame);
+
+        if (flippedY)
         {
             Extract._flipY(pixels, width, height);
         }
 
         Extract._unpremultiplyAlpha(pixels);
 
-        return pixels;
+        return pixels as any;
     }
 
-    private _rawPixels(target?: DisplayObject | RenderTexture, frame?: Rectangle): {
-        pixels: Uint8Array, width: number, height: number, flipY: boolean,
+    private _rawPixels(target?: DisplayObject | RenderTexture, frame?: Rectangle): PixelData<Uint8Array>
+    {
+        return this._extract<undefined>(target, frame);
     }
+
+    private _extract<F extends undefined | 'base64' | 'bitmap' | 'canvas' | 'pixels'>(target?: DisplayObject | RenderTexture,
+        frame?: Rectangle, func?: F, ...args: F extends 'base64' ? [type?: string, quality?: number] : []):
+        F extends undefined ? PixelData<Uint8Array> : F extends 'base64' ? Promise<string> : F extends 'bitmap'
+            ? Promise<ImageBitmap> : F extends 'canvas' ? Promise<ICanvas> : F extends 'pixels' ? Promise<Uint8Array> : never
     {
         const renderer = this.renderer;
 
@@ -192,8 +260,9 @@ export class Extract implements ISystem, IExtract
         }
 
         let resolution;
-        let flipY = false;
-        let renderTexture;
+        let flippedY = false;
+        let premultipliedAlpha = false;
+        let renderTexture: RenderTexture | undefined;
         let generated = false;
 
         if (target)
@@ -216,7 +285,8 @@ export class Extract implements ISystem, IExtract
         {
             resolution = renderTexture.baseTexture.resolution;
             frame = frame ?? renderTexture.frame;
-            flipY = false;
+            flippedY = false;
+            premultipliedAlpha = true;
 
             if (!generated)
             {
@@ -241,39 +311,130 @@ export class Extract implements ISystem, IExtract
                 frame.height = renderer.height / resolution;
             }
 
-            flipY = true;
+            flippedY = true;
+            premultipliedAlpha = true;
             renderer.renderTexture.bind();
         }
 
+        const x = Math.round(frame.x * resolution);
+        const y = Math.round(frame.y * resolution);
         const width = Math.round(frame.width * resolution);
         const height = Math.round(frame.height * resolution);
-
-        const pixels = new Uint8Array(BYTES_PER_PIXEL * width * height);
-
-        // Read pixels to the array
+        const pixelsSize = 4 * width * height;
         const gl = renderer.gl;
 
-        gl.readPixels(
-            Math.round(frame.x * resolution),
-            Math.round(frame.y * resolution),
-            width,
-            height,
-            gl.RGBA,
-            gl.UNSIGNED_BYTE,
-            pixels
-        );
-
-        if (generated)
+        if (func === undefined)
         {
-            renderTexture?.destroy(true);
+            const pixels = new Uint8Array(pixelsSize);
+
+            gl.readPixels(x, y, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+
+            return { pixels, width, height, flippedY, premultipliedAlpha } as any;
         }
 
-        return { pixels, width, height, flipY };
+        const bufferSize = utils.nextPow2(pixelsSize);
+        let pixels: Uint8Array;
+        let tempPixels: Uint8Array | undefined;
+
+        if (func === 'pixels')
+        {
+            pixels = new Uint8Array(pixelsSize);
+        }
+        else
+        {
+            tempPixels = this._getArray(bufferSize);
+            pixels = tempPixels;
+        }
+
+        let readPixels: Promise<PixelData<Uint8Array>>;
+
+        if (renderer.context.webGLVersion === 1)
+        {
+            readPixels = new Promise((resolve) =>
+            {
+                gl.readPixels(x, y, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+
+                resolve({ pixels, width, height, flippedY, premultipliedAlpha });
+            });
+        }
+        else
+        {
+            const buffer = this._getBuffer(bufferSize);
+
+            readPixels = new Promise<void>((resolve, reject) =>
+            {
+                gl.readPixels(x, y, width, height, gl.RGBA, gl.UNSIGNED_BYTE, 0);
+                gl.bindBuffer(gl.PIXEL_PACK_BUFFER, null);
+
+                const sync = gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0);
+
+                if (!sync)
+                {
+                    reject(new Error('gl.fenceSync failed'));
+
+                    return;
+                }
+
+                const wait = (flags = 0) =>
+                {
+                    const status = gl.clientWaitSync(sync, flags, 0);
+
+                    if (status === gl.TIMEOUT_EXPIRED)
+                    {
+                        setTimeout(wait, 1);
+                    }
+                    else
+                    {
+                        gl.deleteSync(sync);
+
+                        if (status === gl.WAIT_FAILED)
+                        {
+                            reject(new Error('gl.clientWaitSync returned TIMEOUT_EXPIRED'));
+                        }
+                        else
+                        {
+                            resolve();
+                        }
+                    }
+                };
+
+                setTimeout(wait, 0, gl.SYNC_FLUSH_COMMANDS_BIT);
+            }).then(() =>
+            {
+                gl.bindBuffer(gl.PIXEL_PACK_BUFFER, buffer);
+                gl.getBufferSubData(gl.PIXEL_PACK_BUFFER, 0, pixels, 0, pixelsSize);
+                gl.bindBuffer(gl.PIXEL_PACK_BUFFER, null);
+
+                return { pixels, width, height, flippedY, premultipliedAlpha };
+            }).finally(() =>
+            {
+                this._returnBuffer(buffer, bufferSize);
+            });
+        }
+
+        return readPixels.finally(() =>
+        {
+            if (generated)
+            {
+                renderTexture?.destroy(true);
+            }
+        }).then(
+            async (data) => (this.worker as any)[func](data, ...args)
+        ).finally(() =>
+        {
+            this._returnArray(tempPixels);
+        }) as any;
     }
 
     /** Destroys the extract. */
     public destroy(): void
     {
+        this._worker?.terminate();
+        this._worker = undefined;
+        this._deleteArrays(this._count + 1);
+        this._deleteBuffers(this._count + 1);
+        this._arrayPool = {};
+        this._bufferPool = {};
         this.renderer = null;
     }
 
@@ -317,6 +478,495 @@ export class Extract implements ISystem, IExtract
             }
         }
     }
+
+    private _getArray(size: number): Uint8Array
+    {
+        const entry = (this._arrayPool[size] ??= []).pop();
+        let array: Uint8Array;
+
+        if (entry)
+        {
+            array = entry.object;
+        }
+        else
+        {
+            array = new Uint8Array(size);
+        }
+
+        return array;
+    }
+
+    private _returnArray(array?: Uint8Array): void
+    {
+        if (!array?.length)
+        {
+            return;
+        }
+
+        this._arrayPool[array.length].push({ object: array, touched: this._count });
+    }
+
+    private _deleteArrays(olderThan: number): void
+    {
+        for (const size in this._arrayPool)
+        {
+            const arrays = this._arrayPool[size];
+
+            for (let i = arrays.length - 1; i >= 0; i--)
+            {
+                const array = arrays[i];
+
+                if (array.touched < olderThan)
+                {
+                    arrays[i] = arrays[arrays.length - 1];
+                    arrays.length--;
+                }
+            }
+        }
+    }
+
+    private _getBuffer(size: number): WebGLBuffer
+    {
+        const renderer = this.renderer;
+
+        if (!renderer)
+        {
+            throw new Error('The Extract has already been destroyed');
+        }
+
+        const gl = renderer.gl;
+        const entry = (this._bufferPool[size] ??= []).pop();
+        let buffer: WebGLBuffer | null;
+
+        if (entry)
+        {
+            buffer = entry.object;
+            gl.bindBuffer(gl.PIXEL_PACK_BUFFER, buffer);
+        }
+        else
+        {
+            buffer = gl.createBuffer();
+
+            if (!buffer)
+            {
+                throw new Error('gl.createBuffer failed');
+            }
+
+            gl.bindBuffer(gl.PIXEL_PACK_BUFFER, buffer);
+            gl.bufferData(gl.PIXEL_PACK_BUFFER, size, gl.DYNAMIC_READ);
+        }
+
+        return buffer;
+    }
+
+    private _returnBuffer(buffer: WebGLBuffer, size: number)
+    {
+        this._bufferPool[size].push({ object: buffer, touched: this._count });
+    }
+
+    private _deleteBuffers(olderThan: number)
+    {
+        const renderer = this.renderer;
+
+        if (!renderer)
+        {
+            throw new Error('The Extract has already been destroyed');
+        }
+
+        const gl = renderer.gl;
+
+        for (const size in this._bufferPool)
+        {
+            const buffers = this._bufferPool[size];
+
+            for (let i = buffers.length - 1; i >= 0; i--)
+            {
+                const buffer = buffers[i];
+
+                if (buffer.touched < olderThan)
+                {
+                    gl.deleteBuffer(buffer.object);
+
+                    buffers[i] = buffers[buffers.length - 1];
+                    buffers.length--;
+                }
+            }
+        }
+    }
 }
 
 extensions.add(Extract);
+
+type ExtractWorkerTask<T extends Uint8Array | Uint8ClampedArray, R extends string | ImageBitmap | OffscreenCanvas | T> = {
+    data: PixelData<T>,
+    resolve: (result: R) => void,
+    reject: (error: Error) => void
+};
+
+type ExtractWorkerResult<T extends Uint8Array | Uint8ClampedArray, R extends string | ImageBitmap | OffscreenCanvas | T> = {
+    id: number,
+    pixels: T,
+    result?: R,
+    error?: string,
+};
+
+export class ExtractWorker extends Worker
+{
+    private static objectURL: string | undefined;
+    private static objectURLRefCount = 0;
+
+    private static readonly isOffscreenCanvasSupported = typeof OffscreenCanvas !== 'undefined'
+        && !!new OffscreenCanvas(0, 0).getContext('bitmaprenderer');
+
+    private static readonly isSubworker = 'WorkerGlobalScope' in globalThis
+        && globalThis instanceof (globalThis as any).WorkerGlobalScope;
+
+    private _terminated: boolean;
+
+    public get terminated(): boolean
+    {
+        return this._terminated;
+    }
+
+    private readonly tasks: Map<number, ExtractWorkerTask<Uint8Array | Uint8ClampedArray,
+    string | ImageBitmap | OffscreenCanvas | Uint8Array | Uint8ClampedArray>>;
+    private nextTaskID: number;
+
+    constructor()
+    {
+        ExtractWorker.objectURL ??= URL.createObjectURL(
+            // eslint-disable-next-line @typescript-eslint/no-use-before-define
+            new Blob([EXTRACT_WORKER_SOURCE], { type: 'application/javascript' }));
+        ExtractWorker.objectURLRefCount++;
+
+        super(ExtractWorker.objectURL);
+
+        this._terminated = false;
+        this.tasks = new Map();
+        this.nextTaskID = 0;
+        this.onmessage = this._onMessage.bind(this);
+    }
+
+    public terminate(): void
+    {
+        this._terminated = true;
+        super.terminate();
+
+        ExtractWorker.objectURLRefCount--;
+
+        if (ExtractWorker.objectURLRefCount === 0)
+        {
+            URL.revokeObjectURL(ExtractWorker.objectURL as string);
+            ExtractWorker.objectURL = undefined;
+        }
+    }
+
+    private _onMessage<T extends Uint8Array | Uint8ClampedArray, R extends string | ImageBitmap | OffscreenCanvas | T>(
+        event: MessageEvent<ExtractWorkerResult<T, R>>): void
+    {
+        const { id, pixels, result, error } = event.data;
+        const task = this.tasks.get(id);
+
+        if (!task)
+        {
+            throw new Error('ExtractWorker received an unexcepted message');
+        }
+
+        this.tasks.delete(id);
+        task.data.pixels = pixels;
+        task.data.flippedY = false;
+        task.data.premultipliedAlpha = false;
+
+        if (error)
+        {
+            task.reject(new Error(`ExtractWorker encountered an error: ${error}`));
+        }
+        else
+        {
+            task.resolve(result ?? pixels);
+        }
+    }
+
+    private process<T extends Uint8Array | Uint8ClampedArray, F extends 'base64' | 'bitmap' | 'canvas' | 'pixels'>(
+        data: PixelData<T>, func: F, ...args: F extends 'base64' ? [type?: string, quality?: number] : []):
+        F extends 'base64' ? Promise<string> : F extends 'bitmap' ? Promise<ImageBitmap> : F extends 'canvas'
+            ? Promise<OffscreenCanvas> : F extends 'pixels' ? Promise<T> : never
+    {
+        if (func === 'pixels' && !(data.flippedY || data.premultipliedAlpha))
+        {
+            return Promise.resolve(data.pixels) as any;
+        }
+
+        const taskID = this.nextTaskID++;
+        const taskData = { id: taskID, data, func, args };
+
+        return new Promise((resolve, reject) =>
+        {
+            if (this._terminated)
+            {
+                reject(new Error('ExtractWorker has been terminated already'));
+            }
+            else
+            {
+                this.tasks.set(taskID, { data, resolve, reject });
+                this.postMessage(taskData, [data.pixels.buffer]);
+            }
+        }) as any;
+    }
+
+    public async base64(data: PixelData<Uint8Array | Uint8ClampedArray>,
+        type = 'image/png', quality?: number): Promise<string>
+    {
+        if (ExtractWorker.isOffscreenCanvasSupported)
+        {
+            return this.process(data, 'base64', type, quality);
+        }
+
+        const canvas = await this.canvas(data);
+
+        if (canvas.convertToBlob !== undefined)
+        {
+            const blob = await canvas.convertToBlob({ type, quality });
+
+            return new Promise<string>((resolve, reject) =>
+            {
+                const reader = new FileReader();
+
+                reader.onload = () => resolve(reader.result as string);
+                reader.onerror = reject;
+                reader.readAsDataURL(blob);
+            });
+        }
+
+        if (canvas.toBlob !== undefined)
+        {
+            return new Promise<string>((resolve, reject) =>
+            {
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                canvas.toBlob!((blob) =>
+                {
+                    if (!blob)
+                    {
+                        reject(new Error('ICanvas.toBlob failed'));
+
+                        return;
+                    }
+
+                    const reader = new FileReader();
+
+                    reader.onload = () => resolve(reader.result as string);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(blob);
+                }, type, quality);
+            });
+        }
+
+        if (canvas.toDataURL !== undefined)
+        {
+            return canvas.toDataURL(type, quality);
+        }
+
+        throw new Error('ExtractWorker.base64() requires ICanvas.toDataURL, ICanvas.toBlob, '
+            + 'or ICanvas.convertToBlob to be implemented');
+    }
+
+    public async bitmap(data: PixelData<Uint8Array | Uint8ClampedArray>): Promise<ImageBitmap>
+    {
+        if (typeof createImageBitmap === 'undefined')
+        {
+            throw new Error('createImageBitmap is not supported');
+        }
+
+        if (ExtractWorker.isOffscreenCanvasSupported)
+        {
+            return this.process(data, 'bitmap');
+        }
+
+        const pixels = await this.pixels(data);
+        const { width, height } = data;
+        const size = 4 * width * height;
+        const imageData = new ImageData(new Uint8ClampedArray(pixels.buffer, 0, size), width, height);
+
+        return createImageBitmap(imageData);
+    }
+
+    public async canvas(data: PixelData<Uint8Array | Uint8ClampedArray>): Promise<ICanvas>
+    {
+        if (ExtractWorker.isSubworker)
+        {
+            return this.process(data, 'canvas');
+        }
+
+        const pixels = await this.pixels(data);
+        const { width, height } = data;
+        const canvasBuffer = new utils.CanvasRenderTarget(width, height, 1);
+        const size = 4 * width * height;
+        const imageData = new ImageData(new Uint8ClampedArray(pixels.buffer, 0, size), width, height);
+
+        canvasBuffer.context.putImageData(imageData, 0, 0);
+
+        return canvasBuffer.canvas;
+    }
+
+    public async pixels<T extends Uint8Array | Uint8ClampedArray>(data: PixelData<T>): Promise<T>
+    {
+        return this.process(data, 'pixels');
+    }
+}
+
+const EXTRACT_WORKER_SOURCE = `\
+/**
+ * @param {Uint8Array|Uint8ClampedArray} pixels
+ * @param {number} width
+ * @param {number} height
+ */
+function flipY(pixels, width, height)
+{
+    const w = width << 2;
+    const h = height >> 1;
+    const temp = new Uint8Array(w);
+
+    for (let y = 0; y < h; y++)
+    {
+        const t = y * w;
+        const b = (height - y - 1) * w;
+
+        temp.set(pixels.subarray(t, t + w));
+        pixels.copyWithin(t, b, b + w);
+        pixels.set(temp, b);
+    }
+}
+
+/**
+ * @param {Uint8Array|Uint8ClampedArray} pixels
+ * @param {number} width
+ * @param {number} height
+ */
+function unpremultiplyAlpha(pixels, width, height)
+{
+    if (pixels instanceof Uint8ClampedArray)
+    {
+        pixels = new Uint8Array(pixels.buffer);
+    }
+
+    const n = 4 * width * height;
+
+    for (let i = 0; i < n; i += 4)
+    {
+        const alpha = pixels[i + 3];
+
+        if (alpha !== 0)
+        {
+            const a = 255.001 / alpha;
+
+            pixels[i] = (pixels[i] * a) + 0.5;
+            pixels[i + 1] = (pixels[i + 1] * a) + 0.5;
+            pixels[i + 2] = (pixels[i + 2] * a) + 0.5;
+        }
+    }
+}
+
+/**
+ * @param {Uint8Array|Uint8ClampedArray} pixels
+ * @param {number} width
+ * @param {number} height
+ * @returns {Promise<ImageBitmap>}
+ */
+async function toBitmap(pixels, width, height)
+{
+    const size = 4 * width * height;
+    const imageData = new ImageData(new Uint8ClampedArray(pixels.buffer, 0, size), width, height);
+
+    return createImageBitmap(imageData);
+}
+
+/**
+ * @param {Uint8Array|Uint8ClampedArray} pixels
+ * @param {number} width
+ * @param {number} height
+ * @returns {Promise<OffscreenCanvas>}
+ */
+async function toCanvas(pixels, width, height)
+{
+    const bitmap = await toBitmap(pixels, width, height);
+    const canvas = new OffscreenCanvas(width, height);
+    const context = canvas.getContext('bitmaprenderer');
+
+    context.transferFromImageBitmap(bitmap);
+    bitmap.close();
+
+    return canvas;
+}
+
+/**
+ * @param {Uint8Array|Uint8ClampedArray} pixels
+ * @param {number} width
+ * @param {number} height
+ * @param {string} [type]
+ * @param {number} [quality]
+ * @returns {Promise<string>}
+ */
+async function toBase64(pixels, width, height, type, quality)
+{
+    const canvas = await toCanvas(pixels, width, height);
+
+    return canvas.convertToBlob({ type, quality }).then(
+        blob => new Promise((resolve, reject) =>
+        {
+            const reader = new FileReader();
+
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        })
+    );
+}
+
+onmessage = function(event)
+{
+    const { id, data: { pixels, width, height, flippedY, premultipliedAlpha }, func, args } = event.data;
+
+    setTimeout(async () =>
+    {
+        try
+        {
+            if (flippedY)
+            {
+                flipY(pixels, width, height);
+            }
+
+            if (premultipliedAlpha)
+            {
+                unpremultiplyAlpha(pixels, width, height);
+            }
+
+            if (func === 'base64')
+            {
+                const result = await toBase64(pixels, width, height, ...args);
+
+                postMessage({ id, pixels, result }, [pixels.buffer]);
+            }
+            else if (func === 'bitmap')
+            {
+                const result = await toBitmap(pixels, width, height);
+
+                postMessage({ id, pixels, result }, [pixels.buffer, result]);
+            }
+            else if (func === 'canvas')
+            {
+                const result = await toCanvas(pixels, width, height);
+
+                postMessage({ id, pixels, result }, [pixels.buffer, result]);
+            }
+            else
+            {
+                postMessage({ id, pixels }, [pixels.buffer]);
+            }
+        }
+        catch (e)
+        {
+            postMessage({ id, pixels, error: e.message }, [pixels.buffer]);
+        }
+    }, 0);
+};
+`;

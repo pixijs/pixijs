@@ -1,4 +1,5 @@
 import { extensions, ExtensionType, Rectangle, RenderTexture, utils } from '@pixi/core';
+import { ExtractWorker } from '../../extract/src/Extract';
 
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
 import type { BaseRenderTexture, ExtensionMetadata, ICanvas, ISystem } from '@pixi/core';
@@ -24,6 +25,15 @@ export class CanvasExtract implements ISystem, IExtract
 
     /** A reference to the current renderer */
     public renderer: CanvasRenderer | null;
+
+    private _worker: ExtractWorker | undefined;
+
+    private get worker(): ExtractWorker
+    {
+        this._worker ??= new ExtractWorker();
+
+        return this._worker;
+    }
 
     /**
      * @param renderer - A reference to the current renderer
@@ -61,50 +71,11 @@ export class CanvasExtract implements ISystem, IExtract
      */
     public async base64(target?: DisplayObject | RenderTexture, format?: string, quality?: number): Promise<string>
     {
-        const canvas = this.canvas(target);
+        const imageData = this._imageData(target);
+        const pixels = imageData.data;
+        const { width, height } = imageData;
 
-        if (canvas.toBlob !== undefined)
-        {
-            return new Promise<string>((resolve, reject) =>
-            {
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                canvas.toBlob!((blob) =>
-                {
-                    if (!blob)
-                    {
-                        reject(new Error('ICanvas.toBlob failed!'));
-
-                        return;
-                    }
-
-                    const reader = new FileReader();
-
-                    reader.onload = () => resolve(reader.result as string);
-                    reader.onerror = reject;
-                    reader.readAsDataURL(blob);
-                }, format, quality);
-            });
-        }
-        if (canvas.toDataURL !== undefined)
-        {
-            return canvas.toDataURL(format, quality);
-        }
-        if (canvas.convertToBlob !== undefined)
-        {
-            const blob = await canvas.convertToBlob({ type: format, quality });
-
-            return new Promise<string>((resolve, reject) =>
-            {
-                const reader = new FileReader();
-
-                reader.onload = () => resolve(reader.result as string);
-                reader.onerror = reject;
-                reader.readAsDataURL(blob);
-            });
-        }
-
-        throw new Error('CanvasExtract.base64() requires ICanvas.toDataURL, ICanvas.toBlob, '
-            + 'or ICanvas.convertToBlob to be implemented');
+        return this.worker.base64({ pixels, width, height }, format, quality);
     }
 
     /**
@@ -112,16 +83,25 @@ export class CanvasExtract implements ISystem, IExtract
      * @param target - A displayObject or renderTexture
      *  to convert. If left empty will use the main renderer
      * @param frame - The frame the extraction is restricted to.
-     * @returns A Canvas element with the texture rendered on.
+     * @param {boolean} [async=false] - Perform the extraction asynchronously?
+     * @returns {ICanvas | Promise<ICanvas>} A Canvas element with the texture rendered on.
      */
-    public canvas(target?: DisplayObject | RenderTexture, frame?: Rectangle): ICanvas
+    public canvas<T extends boolean = false>(target?: DisplayObject | RenderTexture, frame?: Rectangle, async?: T):
+    T extends true ? Promise<ICanvas> : ICanvas
     {
         const imageData = this._imageData(target, frame);
         const canvasBuffer = new utils.CanvasRenderTarget(imageData.width, imageData.height, 1);
 
         canvasBuffer.context.putImageData(imageData, 0, 0);
 
-        return canvasBuffer.canvas;
+        const canvas = canvasBuffer.canvas;
+
+        if (async)
+        {
+            return Promise.resolve(canvas) as any;
+        }
+
+        return canvas as any;
     }
 
     /**
@@ -130,11 +110,21 @@ export class CanvasExtract implements ISystem, IExtract
      * @param target - A displayObject or renderTexture
      *  to convert. If left empty will use the main renderer
      * @param frame - The frame the extraction is restricted to.
-     * @returns One-dimensional array containing the pixel data of the entire texture
+     * @param {boolean} [async=false] - Perform the extraction asynchronously?
+     * @returns {Uint8ClampedArray | Promise<Uint8ClampedArray>}
+     *      One-dimensional array containing the pixel data of the entire texture
      */
-    public pixels(target?: DisplayObject | RenderTexture, frame?: Rectangle): Uint8ClampedArray
+    public pixels<T extends boolean = false>(target?: DisplayObject | RenderTexture, frame?: Rectangle, async?: T):
+    T extends true ? Promise<Uint8ClampedArray> : Uint8ClampedArray
     {
-        return this._imageData(target, frame).data;
+        const pixels = this._imageData(target, frame).data;
+
+        if (async)
+        {
+            return Promise.resolve(pixels) as any;
+        }
+
+        return pixels as any;
     }
 
     private _imageData(target?: DisplayObject | RenderTexture, frame?: Rectangle): ImageData
@@ -194,6 +184,8 @@ export class CanvasExtract implements ISystem, IExtract
     /** Destroys the extract */
     public destroy(): void
     {
+        this._worker?.terminate();
+        this._worker = undefined;
         this.renderer = null;
     }
 }

@@ -150,6 +150,10 @@ describe('Extract', () =>
 
         expect(extractedPixels).toEqual(texturePixels);
 
+        const extractedPixelsAsync = await extract.pixels(sprite, undefined, true);
+
+        expect(extractedPixelsAsync).toEqual(texturePixels);
+
         texture.destroy(true);
         sprite.destroy();
         renderer.destroy();
@@ -177,6 +181,12 @@ describe('Extract', () =>
         const imageData = context?.getImageData(0, 0, 2, 2);
 
         expect(imageData?.data).toEqual(new Uint8ClampedArray(texturePixels.buffer));
+
+        const canvasAsync = await extract.canvas(sprite, undefined, true);
+        const contextAsync = canvasAsync.getContext('2d');
+        const imageDataAsync = contextAsync?.getImageData(0, 0, 2, 2);
+
+        expect(imageDataAsync?.data).toEqual(new Uint8ClampedArray(texturePixels.buffer));
 
         texture.destroy(true);
         sprite.destroy();
