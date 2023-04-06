@@ -1,4 +1,4 @@
-import { extensions, ExtensionType, Rectangle, RenderTexture, utils } from '@pixi/core';
+import { extensions, ExtensionType, FORMATS, Rectangle, RenderTexture, utils } from '@pixi/core';
 
 import type { ExtensionMetadata, ICanvas, ISystem, Renderer } from '@pixi/core';
 import type { DisplayObject } from '@pixi/display';
@@ -237,7 +237,8 @@ export class Extract implements ISystem, IExtract
             resolution = renderTexture.baseTexture.resolution;
             frame = frame ?? renderTexture.frame;
             flipY = false;
-            premultipliedAlpha = renderTexture.baseTexture.alphaMode > 0;
+            premultipliedAlpha = renderTexture.baseTexture.alphaMode > 0
+                && renderTexture.baseTexture.format === FORMATS.RGBA;
 
             if (!generated)
             {
