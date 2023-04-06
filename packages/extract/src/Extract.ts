@@ -389,7 +389,7 @@ export class Extract implements ISystem, IExtract
 
                         if (status === gl.WAIT_FAILED)
                         {
-                            reject(new Error('gl.clientWaitSync returned TIMEOUT_EXPIRED'));
+                            reject(new Error('gl.clientWaitSync returned WAIT_FAILED'));
                         }
                         else
                         {
