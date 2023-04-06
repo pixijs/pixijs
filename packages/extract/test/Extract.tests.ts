@@ -142,7 +142,7 @@ describe('Extract', () =>
         renderer.destroy();
     });
 
-    it('should extract pixels with resolution', async () =>
+    it('should extract pixels with resolution !== 1', async () =>
     {
         const renderer = new Renderer({ width: 2, height: 2, resolution: 2 });
         const texturePixels = new Uint8Array([
@@ -176,7 +176,7 @@ describe('Extract', () =>
         renderer.destroy();
     });
 
-    it('should extract canvas with resolution', async () =>
+    it('should extract canvas with resolution !== 1', async () =>
     {
         const renderer = new Renderer({ width: 2, height: 2, resolution: 2 });
         const texturePixels = new Uint8Array([
