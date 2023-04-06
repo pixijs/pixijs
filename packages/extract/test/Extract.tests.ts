@@ -1,4 +1,14 @@
-import { ALPHA_MODES, FORMATS, MSAA_QUALITY, Rectangle, Renderer, RenderTexture, Texture, TYPES } from '@pixi/core';
+import {
+    ALPHA_MODES,
+    FORMATS,
+    MSAA_QUALITY,
+    Rectangle,
+    Renderer,
+    RenderTexture,
+    SCALE_MODES,
+    Texture,
+    TYPES,
+} from '@pixi/core';
 import { Extract } from '@pixi/extract';
 import { Sprite } from '@pixi/sprite';
 
@@ -126,6 +136,79 @@ describe('Extract', () =>
         const imageData = context?.getImageData(0, 0, 2, 2);
 
         expect(imageData?.data).toEqual(new Uint8ClampedArray(texturePixels.buffer));
+
+        texture.destroy(true);
+        sprite.destroy();
+        renderer.destroy();
+    });
+
+    it('should extract pixels with resolution', async () =>
+    {
+        const renderer = new Renderer({ width: 2, height: 2, resolution: 2 });
+        const texturePixels = new Uint8Array([
+            255, 0, 0, 255, 0, 255, 0, 153,
+            0, 0, 255, 102, 255, 255, 0, 51,
+        ]);
+        const texture = Texture.fromBuffer(texturePixels, 2, 2, {
+            width: 2,
+            height: 2,
+            format: FORMATS.RGBA,
+            type: TYPES.UNSIGNED_BYTE,
+            alphaMode: ALPHA_MODES.UNPACK,
+            scaleMode: SCALE_MODES.NEAREST,
+        });
+        const sprite = new Sprite(texture);
+
+        renderer.render(sprite);
+
+        const extractedPixels = renderer.extract.pixels();
+
+        expect(extractedPixels).toEqual(new Uint8Array([
+            // TODO: Pixels here should no longer be upside down after #9347 is merged
+            0, 0, 102, 255, 0, 0, 102, 255, 51, 51, 0, 255, 51, 51, 0, 255,
+            0, 0, 102, 255, 0, 0, 102, 255, 51, 51, 0, 255, 51, 51, 0, 255,
+            255, 0, 0, 255, 255, 0, 0, 255, 0, 153, 0, 255, 0, 153, 0, 255,
+            255, 0, 0, 255, 255, 0, 0, 255, 0, 153, 0, 255, 0, 153, 0, 255,
+        ]));
+
+        texture.destroy(true);
+        sprite.destroy();
+        renderer.destroy();
+    });
+
+    it('should extract canvas with resolution', async () =>
+    {
+        const renderer = new Renderer({ width: 2, height: 2, resolution: 2 });
+        const texturePixels = new Uint8Array([
+            255, 0, 0, 255, 0, 255, 0, 153,
+            0, 0, 255, 102, 255, 255, 0, 51,
+        ]);
+        const texture = Texture.fromBuffer(texturePixels, 2, 2, {
+            width: 2,
+            height: 2,
+            format: FORMATS.RGBA,
+            type: TYPES.UNSIGNED_BYTE,
+            alphaMode: ALPHA_MODES.UNPACK,
+            scaleMode: SCALE_MODES.NEAREST,
+        });
+        const sprite = new Sprite(texture);
+
+        renderer.render(sprite);
+
+        const canvas = renderer.extract.canvas();
+
+        expect(canvas.width).toEqual(4);
+        expect(canvas.height).toEqual(4);
+
+        const context = canvas.getContext('2d');
+        const imageData = context?.getImageData(0, 0, 4, 4);
+
+        expect(imageData?.data).toEqual(new Uint8ClampedArray([
+            255, 0, 0, 255, 255, 0, 0, 255, 0, 153, 0, 255, 0, 153, 0, 255,
+            255, 0, 0, 255, 255, 0, 0, 255, 0, 153, 0, 255, 0, 153, 0, 255,
+            0, 0, 102, 255, 0, 0, 102, 255, 51, 51, 0, 255, 51, 51, 0, 255,
+            0, 0, 102, 255, 0, 0, 102, 255, 51, 51, 0, 255, 51, 51, 0, 255,
+        ]));
 
         texture.destroy(true);
         sprite.destroy();
