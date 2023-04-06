@@ -1,2 +1,3 @@
 /// <reference path="../global.d.ts" />
-export { Extract, IExtract } from './Extract';
+export type { IExtract } from './Extract';
+export { Extract } from './Extract';
