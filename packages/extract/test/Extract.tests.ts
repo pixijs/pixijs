@@ -205,11 +205,10 @@ describe('Extract', () =>
         const extractedPixels = renderer.extract.pixels();
 
         expect(extractedPixels).toEqual(new Uint8Array([
-            // TODO: Pixels here should no longer be upside down after #9347 is merged
-            0, 0, 102, 255, 0, 0, 102, 255, 51, 51, 0, 255, 51, 51, 0, 255,
-            0, 0, 102, 255, 0, 0, 102, 255, 51, 51, 0, 255, 51, 51, 0, 255,
             255, 0, 0, 255, 255, 0, 0, 255, 0, 153, 0, 255, 0, 153, 0, 255,
             255, 0, 0, 255, 255, 0, 0, 255, 0, 153, 0, 255, 0, 153, 0, 255,
+            0, 0, 102, 255, 0, 0, 102, 255, 51, 51, 0, 255, 51, 51, 0, 255,
+            0, 0, 102, 255, 0, 0, 102, 255, 51, 51, 0, 255, 51, 51, 0, 255,
         ]));
 
         texture.destroy(true);
