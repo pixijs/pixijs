@@ -237,8 +237,8 @@ export class Extract implements ISystem, IExtract
             if (!frame)
             {
                 frame = TEMP_RECT;
-                frame.width = renderer.width;
-                frame.height = renderer.height;
+                frame.width = renderer.width / resolution;
+                frame.height = renderer.height / resolution;
             }
 
             flipY = true;
