@@ -182,7 +182,12 @@ export class Extract implements ISystem, IExtract
      */
     public pixels(target?: DisplayObject | RenderTexture, frame?: Rectangle): Uint8Array
     {
-        const { pixels, premultipliedAlpha } = this._rawPixels(target, frame);
+        const { pixels, width, height, flipY, premultipliedAlpha } = this._rawPixels(target, frame);
+
+        if (flipY)
+        {
+            Extract._flipY(pixels, width, height);
+        }
 
         if (premultipliedAlpha)
         {
@@ -253,8 +258,8 @@ export class Extract implements ISystem, IExtract
             if (!frame)
             {
                 frame = TEMP_RECT;
-                frame.width = renderer.width;
-                frame.height = renderer.height;
+                frame.width = renderer.width / resolution;
+                frame.height = renderer.height / resolution;
             }
 
             flipY = true;
