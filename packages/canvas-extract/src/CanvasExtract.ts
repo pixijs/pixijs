@@ -116,61 +116,11 @@ export class CanvasExtract implements ISystem, IExtract
      */
     public canvas(target?: DisplayObject | RenderTexture, frame?: Rectangle): ICanvas
     {
-        const renderer = this.renderer;
+        const imageData = this._imageData(target, frame);
+        const canvasBuffer = new utils.CanvasRenderTarget(imageData.width, imageData.height, 1);
 
-        if (!renderer)
-        {
-            throw new Error('The CanvasExtract has already been destroyed');
-        }
+        canvasBuffer.context.putImageData(imageData, 0, 0);
 
-        let context;
-        let resolution;
-        let renderTexture;
-
-        if (target)
-        {
-            if (target instanceof RenderTexture)
-            {
-                renderTexture = target;
-            }
-            else
-            {
-                renderTexture = renderer.generateTexture(target, {
-                    resolution: renderer.resolution
-                });
-            }
-        }
-
-        if (renderTexture)
-        {
-            context = (renderTexture.baseTexture as BaseRenderTexture)._canvasRenderTarget.context;
-            resolution = (renderTexture.baseTexture as BaseRenderTexture)._canvasRenderTarget.resolution;
-            frame = frame ?? renderTexture.frame;
-        }
-        else
-        {
-            context = renderer.canvasContext.rootContext;
-            resolution = renderer._view.resolution;
-
-            if (!frame)
-            {
-                frame = TEMP_RECT;
-                frame.width = renderer.width / resolution;
-                frame.height = renderer.height / resolution;
-            }
-        }
-
-        const x = Math.round(frame.x * resolution);
-        const y = Math.round(frame.y * resolution);
-        const width = Math.round(frame.width * resolution);
-        const height = Math.round(frame.height * resolution);
-
-        const canvasBuffer = new utils.CanvasRenderTarget(width, height, 1);
-        const canvasData = context.getImageData(x, y, width, height);
-
-        canvasBuffer.context.putImageData(canvasData, 0, 0);
-
-        // send the canvas back..
         return canvasBuffer.canvas;
     }
 
@@ -183,6 +133,11 @@ export class CanvasExtract implements ISystem, IExtract
      * @returns One-dimensional array containing the pixel data of the entire texture
      */
     public pixels(target?: DisplayObject | RenderTexture, frame?: Rectangle): Uint8ClampedArray
+    {
+        return this._imageData(target, frame).data;
+    }
+
+    private _imageData(target?: DisplayObject | RenderTexture, frame?: Rectangle): ImageData
     {
         const renderer = this.renderer;
 
@@ -233,7 +188,7 @@ export class CanvasExtract implements ISystem, IExtract
         const width = Math.round(frame.width * resolution);
         const height = Math.round(frame.height * resolution);
 
-        return context.getImageData(x, y, width, height).data;
+        return context.getImageData(x, y, width, height);
     }
 
     /** Destroys the extract */
