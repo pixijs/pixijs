@@ -168,7 +168,12 @@ export class Extract implements ISystem, IExtract
      */
     public pixels(target?: DisplayObject | RenderTexture, frame?: Rectangle): Uint8Array
     {
-        const { pixels } = this._rawPixels(target, frame);
+        const { pixels, width, height, flipY } = this._rawPixels(target, frame);
+
+        if (flipY)
+        {
+            Extract._flipY(pixels, width, height);
+        }
 
         Extract._unpremultiplyAlpha(pixels);
 
