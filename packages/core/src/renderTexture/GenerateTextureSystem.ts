@@ -64,15 +64,16 @@ export class GenerateTextureSystem implements ISystem
         const { region: manualRegion, ...textureOptions } = options || {};
 
         const region = manualRegion || (displayObject as IRenderableContainer).getLocalBounds(null, true);
+        const resolution = 1;
 
-        // minimum texture size is 1x1, 0x0 will throw an error
-        if (region.width === 0) region.width = 1;
-        if (region.height === 0) region.height = 1;
+        region.width = Math.max(region.width, 1 / resolution);
+        region.height = Math.max(region.height, 1 / resolution);
 
         const renderTexture = RenderTexture.create(
             {
                 width: region.width,
                 height: region.height,
+                resolution,
                 ...textureOptions,
             });
 
