@@ -626,7 +626,7 @@ export class EventSystem implements ISystem<EventSystemOptions>
         let rect;
 
         // IE 11 fix
-        if (!this.domElement.parentElement && document.contains(this.domElement))
+        if (!this.domElement.parentElement && document.body.contains(this.domElement))
         {
             rect = {
                 x: 0,
