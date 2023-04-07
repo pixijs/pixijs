@@ -143,7 +143,13 @@ export class CanvasExtract implements ISystem, IExtract
                     region: frame,
                     resolution: renderer.resolution
                 });
-                frame = undefined;
+
+                if (frame)
+                {
+                    TEMP_RECT.width = frame.width;
+                    TEMP_RECT.height = frame.height;
+                    frame = TEMP_RECT;
+                }
             }
         }
 
@@ -213,7 +219,13 @@ export class CanvasExtract implements ISystem, IExtract
                     region: frame,
                     resolution: renderer.resolution
                 });
-                frame = undefined;
+
+                if (frame)
+                {
+                    TEMP_RECT.width = frame.width;
+                    TEMP_RECT.height = frame.height;
+                    frame = TEMP_RECT;
+                }
             }
         }
 

@@ -213,10 +213,16 @@ export class Extract implements ISystem, IExtract
                 renderTexture = renderer.generateTexture(target, {
                     region: frame,
                     resolution: renderer.resolution,
-                    multisample: renderer.multisample,
+                    multisample: renderer.multisample
                 });
-                frame = undefined;
                 generated = true;
+
+                if (frame)
+                {
+                    TEMP_RECT.width = frame.width;
+                    TEMP_RECT.height = frame.height;
+                    frame = TEMP_RECT;
+                }
             }
         }
 
