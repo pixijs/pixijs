@@ -140,8 +140,10 @@ export class CanvasExtract implements ISystem, IExtract
             else
             {
                 renderTexture = renderer.generateTexture(target, {
+                    region: frame,
                     resolution: renderer.resolution
                 });
+                frame = undefined;
             }
         }
 
@@ -208,8 +210,10 @@ export class CanvasExtract implements ISystem, IExtract
             else
             {
                 renderTexture = renderer.generateTexture(target, {
+                    region: frame,
                     resolution: renderer.resolution
                 });
+                frame = undefined;
             }
         }
 
