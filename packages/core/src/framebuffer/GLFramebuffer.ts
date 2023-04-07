@@ -11,7 +11,7 @@ export class GLFramebuffer
     /** The WebGL framebuffer. */
     public framebuffer: WebGLFramebuffer;
 
-    /** Stencil+depth , usually costs 32bits per pixel. */
+    /** The renderbuffer for depth and/or stencil (DEPTH24_STENCIL8, DEPTH_COMPONENT24, or STENCIL_INDEX8) */
     public stencil: WebGLRenderbuffer;
 
     /** Detected AA samples number. */
