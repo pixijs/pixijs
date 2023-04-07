@@ -256,7 +256,7 @@ export class Extract implements ISystem, IExtract
 
         if (!renderer)
         {
-            throw new Error('The Extract has already been destroyed');
+            throw new Error('Extract has already been destroyed');
         }
 
         let resolution;
@@ -321,7 +321,7 @@ export class Extract implements ISystem, IExtract
         const width = Math.round(frame.width * resolution);
         const height = Math.round(frame.height * resolution);
         const pixelsSize = 4 * width * height;
-        const gl = renderer.gl;
+        const { gl, CONTEXT_UID } = renderer;
 
         if (func === undefined)
         {
@@ -377,6 +377,16 @@ export class Extract implements ISystem, IExtract
 
                 const wait = (flags = 0) =>
                 {
+                    if (!this.renderer)
+                    {
+                        throw new Error('Extract has already been destroyed');
+                    }
+
+                    if (this.renderer.CONTEXT_UID !== CONTEXT_UID)
+                    {
+                        throw new Error('WebGL context has changed');
+                    }
+
                     const status = gl.clientWaitSync(sync, flags, 0);
 
                     if (status === gl.TIMEOUT_EXPIRED)
@@ -401,6 +411,16 @@ export class Extract implements ISystem, IExtract
                 setTimeout(wait, 0, gl.SYNC_FLUSH_COMMANDS_BIT);
             }).then(() =>
             {
+                if (!this.renderer)
+                {
+                    throw new Error('Extract has already been destroyed');
+                }
+
+                if (this.renderer.CONTEXT_UID !== CONTEXT_UID)
+                {
+                    throw new Error('WebGL context has changed');
+                }
+
                 gl.bindBuffer(gl.PIXEL_PACK_BUFFER, buffer);
                 gl.getBufferSubData(gl.PIXEL_PACK_BUFFER, 0, pixels, 0, pixelsSize);
                 gl.bindBuffer(gl.PIXEL_PACK_BUFFER, null);
@@ -408,7 +428,10 @@ export class Extract implements ISystem, IExtract
                 return { pixels, width, height, flippedY, premultipliedAlpha };
             }).finally(() =>
             {
-                this._returnBuffer(buffer, bufferSize);
+                if (this.renderer?.CONTEXT_UID === CONTEXT_UID)
+                {
+                    this._returnBuffer(buffer, bufferSize);
+                }
             });
         }
 
@@ -422,7 +445,10 @@ export class Extract implements ISystem, IExtract
             async (data) => (this.worker as any)[func](data, ...args)
         ).finally(() =>
         {
-            this._returnArray(tempPixels);
+            if (this.renderer?.CONTEXT_UID === CONTEXT_UID)
+            {
+                this._returnArray(tempPixels);
+            }
         }) as any;
     }
 
@@ -531,7 +557,7 @@ export class Extract implements ISystem, IExtract
 
         if (!renderer)
         {
-            throw new Error('The Extract has already been destroyed');
+            throw new Error('Extract has already been destroyed');
         }
 
         const gl = renderer.gl;
@@ -570,7 +596,7 @@ export class Extract implements ISystem, IExtract
 
         if (!renderer)
         {
-            throw new Error('The Extract has already been destroyed');
+            throw new Error('Extract has already been destroyed');
         }
 
         const gl = renderer.gl;
