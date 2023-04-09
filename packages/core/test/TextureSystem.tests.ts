@@ -1,4 +1,4 @@
-import { FORMATS, SAMPLER_TYPES, TYPES, WRAP_MODES } from '@pixi/constants';
+import { FORMATS, TYPES, WRAP_MODES } from '@pixi/constants';
 import { BaseTexture, Renderer, Texture } from '@pixi/core';
 
 describe('TextureSystem', () =>
@@ -91,27 +91,17 @@ describe('TextureSystem', () =>
         expect(glTex.internalFormat).toEqual(renderer.gl.RGB32F);
     });
 
-    function createIntegerTexture()
-    {
-        const baseTexture = BaseTexture.fromBuffer(new Int32Array([0, 0, 0, 0]), 1, 1);
-        const oldUpload = baseTexture.resource.upload.bind(baseTexture);
-
-        baseTexture.resource.upload = (renderer, baseTexture, glTexture) =>
-        {
-            glTexture.samplerType = SAMPLER_TYPES.INT;
-
-            return oldUpload(renderer, baseTexture, glTexture);
-        };
-
-        return baseTexture;
-    }
-
     it('should unbind textures with non-float samplerType for batching', () =>
     {
+        if (renderer.context.webGLVersion === 1)
+        {
+            return;
+        }
+
         const textureSystem = renderer.texture;
         const { boundTextures } = textureSystem;
-        const sampleTex = createIntegerTexture();
-        const sampleTex2 = createIntegerTexture();
+        const sampleTex = BaseTexture.fromBuffer(new Int32Array(4), 1, 1);
+        const sampleTex2 = BaseTexture.fromBuffer(new Int32Array(4), 1, 1);
 
         expect(sampleTex.format).toBe(FORMATS.RGBA_INTEGER);
         expect(sampleTex2.format).toBe(FORMATS.RGBA_INTEGER);

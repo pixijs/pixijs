@@ -39,13 +39,15 @@ export class CanvasExtract implements ISystem, IExtract
      *  to convert. If left empty will use the main renderer
      * @param format - Image format, e.g. "image/jpeg" or "image/webp".
      * @param quality - JPEG or Webp compression from 0 to 1. Default is 0.92.
+     * @param frame - The frame the extraction is restricted to.
      * @returns HTML Image of the target
      */
-    public async image(target?: DisplayObject | RenderTexture, format?: string, quality?: number): Promise<HTMLImageElement>
+    public async image(target?: DisplayObject | RenderTexture, format?: string, quality?: number,
+        frame?: Rectangle): Promise<HTMLImageElement>
     {
         const image = new Image();
 
-        image.src = await this.base64(target, format, quality);
+        image.src = await this.base64(target, format, quality, frame);
 
         return image;
     }
@@ -57,12 +59,36 @@ export class CanvasExtract implements ISystem, IExtract
      *  to convert. If left empty will use the main renderer
      * @param format - Image format, e.g. "image/jpeg" or "image/webp".
      * @param quality - JPEG or Webp compression from 0 to 1. Default is 0.92.
+     * @param frame - The frame the extraction is restricted to.
      * @returns A base64 encoded string of the texture.
      */
-    public async base64(target?: DisplayObject | RenderTexture, format?: string, quality?: number): Promise<string>
+    public async base64(target?: DisplayObject | RenderTexture, format?: string, quality?: number,
+        frame?: Rectangle): Promise<string>
     {
-        const canvas = this.canvas(target);
+        const canvas = this.canvas(target, frame);
 
+        if (canvas.toBlob !== undefined)
+        {
+            return new Promise<string>((resolve, reject) =>
+            {
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                canvas.toBlob!((blob) =>
+                {
+                    if (!blob)
+                    {
+                        reject(new Error('ICanvas.toBlob failed!'));
+
+                        return;
+                    }
+
+                    const reader = new FileReader();
+
+                    reader.onload = () => resolve(reader.result as string);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(blob);
+                }, format, quality);
+            });
+        }
         if (canvas.toDataURL !== undefined)
         {
             return canvas.toDataURL(format, quality);
@@ -71,16 +97,18 @@ export class CanvasExtract implements ISystem, IExtract
         {
             const blob = await canvas.convertToBlob({ type: format, quality });
 
-            return await new Promise<string>((resolve) =>
+            return new Promise<string>((resolve, reject) =>
             {
                 const reader = new FileReader();
 
                 reader.onload = () => resolve(reader.result as string);
+                reader.onerror = reject;
                 reader.readAsDataURL(blob);
             });
         }
 
-        throw new Error('CanvasExtract.base64() requires ICanvas.toDataURL or ICanvas.convertToBlob to be implemented');
+        throw new Error('CanvasExtract.base64() requires ICanvas.toDataURL, ICanvas.toBlob, '
+            + 'or ICanvas.convertToBlob to be implemented');
     }
 
     /**
@@ -111,7 +139,9 @@ export class CanvasExtract implements ISystem, IExtract
             }
             else
             {
-                renderTexture = renderer.generateTexture(target);
+                renderTexture = renderer.generateTexture(target, {
+                    resolution: renderer.resolution
+                });
             }
         }
 
@@ -129,8 +159,8 @@ export class CanvasExtract implements ISystem, IExtract
             if (!frame)
             {
                 frame = TEMP_RECT;
-                frame.width = renderer.width;
-                frame.height = renderer.height;
+                frame.width = renderer.width / resolution;
+                frame.height = renderer.height / resolution;
             }
         }
 
@@ -177,7 +207,9 @@ export class CanvasExtract implements ISystem, IExtract
             }
             else
             {
-                renderTexture = renderer.generateTexture(target);
+                renderTexture = renderer.generateTexture(target, {
+                    resolution: renderer.resolution
+                });
             }
         }
 
@@ -195,8 +227,8 @@ export class CanvasExtract implements ISystem, IExtract
             if (!frame)
             {
                 frame = TEMP_RECT;
-                frame.width = renderer.width;
-                frame.height = renderer.height;
+                frame.width = renderer.width / resolution;
+                frame.height = renderer.height / resolution;
             }
         }
 

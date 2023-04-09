@@ -93,20 +93,40 @@ export interface ICanvas extends GlobalMixins.ICanvas, Partial<EventTarget>
 
     /**
      * Get the content of the canvas as data URL.
-     * @param {string} type - The MIME type for the image format to return. If not specify, the default value is image/png.
-     * @param {any} options - The options for creating data URL.
-     * @returns {string} The content of the canvas as data URL.
+     * @param {string} [type] - A string indicating the image format. The default type is `image/png`;
+     *      that type is also used if the given type isn't supported.
+     * @param {string} [quality] - A number between 0 and 1 indicating the image quality to be used when
+     *      creating images using file formats that support lossy compression (such as `image/jpeg` or `image/webp`).
+     *      A user agent will use its default quality value if this option is not specified, or if the number
+     *      is outside the allowed range.
+     * @returns {string} A string containing the requested data URL.
      */
-    toDataURL?(type?: string, options?: any): string;
+    toDataURL?(type?: string, quality?: number): string;
+
+    /**
+     * Creates a Blob from the content of the canvas.
+     * @param {(blob: Blob | null) => void} callback - A callback function with the resulting `Blob` object
+     *      as a single argument. `null` may be passed if the image cannot be created for any reason.
+     * @param {string} [type] - A string indicating the image format. The default type is `image/png`;
+     *      that type is also used if the given type isn't supported.
+     * @param {string} [quality] - A number between 0 and 1 indicating the image quality to be used when
+     *      creating images using file formats that support lossy compression (such as `image/jpeg` or `image/webp`).
+     *      A user agent will use its default quality value if this option is not specified, or if the number
+     *      is outside the allowed range.
+     * @returns {void}
+     */
+    toBlob?(callback: (blob: Blob | null) => void, type?: string, quality?: number): void;
 
     /**
      * Get the content of the canvas as Blob.
-     * @param {object} options - The options for creating Blob.
-     * @param {string} options.type
-     *     - The MIME type for the image format to return. If not specify, the default value is image/png.
-     * @param {string} options.quality
-     *     - The image quality to be used when creating images using file formats that support lossy compression.
-     * @returns {Promise<Blob>} The content of the canvas as Blob.
+     * @param {object} [options] - The options for creating Blob.
+     * @param {string} [options.type] - A string indicating the image format. The default type is `image/png`;
+     *      that type is also used if the given type isn't supported.
+     * @param {string} [options.quality] - A number between 0 and 1 indicating the image quality to be used when
+     *      creating images using file formats that support lossy compression (such as `image/jpeg` or `image/webp`).
+     *      A user agent will use its default quality value if this option is not specified, or if the number
+     *      is outside the allowed range.
+     * @returns {Promise<Blob>} A `Promise` returning a Blob object representing the image contained in the canvas.
      */
     convertToBlob?(options?: { type?: string, quality?: number }): Promise<Blob>;
 

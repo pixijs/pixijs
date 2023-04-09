@@ -20,7 +20,7 @@ export class BlurFilterPass extends Filter
      * @param horizontal - Do pass along the x-axis (`true`) or y-axis (`false`).
      * @param strength - The strength of the blur filter.
      * @param quality - The quality of the blur filter.
-     * @param resolution - The resolution of the blur filter.
+     * @param {number|null} [resolution=PIXI.Filter.defaultResolution] - The resolution of the blur filter.
      * @param kernelSize - The kernelSize of the blur filter.Options: 5, 7, 9, 11, 13, 15.
      */
     constructor(horizontal: boolean, strength = 8, quality = 4, resolution = Filter.defaultResolution, kernelSize = 5)

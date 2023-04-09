@@ -1,6 +1,6 @@
 import { extensions, ExtensionType, settings } from '@pixi/core';
 
-import type { ResolveAsset, ResolveURLParser } from '@pixi/assets';
+import type { ResolveURLParser, UnresolvedAsset } from '@pixi/assets';
 
 export const resolveCompressedTextureUrl = {
     extension: ExtensionType.ResolveParser,
@@ -11,7 +11,7 @@ export const resolveCompressedTextureUrl = {
 
         return ['basis', 'ktx', 'dds'].includes(extension);
     },
-    parse: (value: string): ResolveAsset =>
+    parse: (value: string): UnresolvedAsset =>
     {
         const temp = value.split('?')[0];
         const extension = temp.split('.').pop();

@@ -151,10 +151,25 @@ export class FilterSystem implements ISystem
         const renderer = this.renderer;
         const filterStack = this.defaultFilterStack;
         const state = this.statePool.pop() || new FilterState();
-        const renderTextureSystem = this.renderer.renderTexture;
+        const renderTextureSystem = renderer.renderTexture;
+        let currentResolution: number;
+        let currentMultisample: MSAA_QUALITY;
 
-        let resolution = filters[0].resolution;
-        let multisample = filters[0].multisample;
+        if (renderTextureSystem.current)
+        {
+            const renderTexture = renderTextureSystem.current;
+
+            currentResolution = renderTexture.resolution;
+            currentMultisample = renderTexture.multisample;
+        }
+        else
+        {
+            currentResolution = renderer.resolution;
+            currentMultisample = renderer.multisample;
+        }
+
+        let resolution = filters[0].resolution || currentResolution;
+        let multisample = filters[0].multisample ?? currentMultisample;
         let padding = filters[0].padding;
         let autoFit = filters[0].autoFit;
         // We don't know whether it's a legacy filter until it was bound for the first time,
@@ -166,9 +181,9 @@ export class FilterSystem implements ISystem
             const filter = filters[i];
 
             // let's use the lowest resolution
-            resolution = Math.min(resolution, filter.resolution);
+            resolution = Math.min(resolution, filter.resolution || currentResolution);
             // let's use the lowest number of samples
-            multisample = Math.min(multisample, filter.multisample);
+            multisample = Math.min(multisample, filter.multisample ?? currentMultisample);
             // figure out the padding required for filters
             padding = this.useMaxPadding
                 // old behavior: use largest amount of padding!

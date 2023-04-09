@@ -81,6 +81,9 @@ export class RenderTextureSystem implements ISystem
 
     private renderer: Renderer;
 
+    /** Does the renderer have alpha and are its color channels stored premultipled by the alpha channel? */
+    private _rendererPremultipliedAlpha: boolean;
+
     /**
      * @param renderer - The renderer this System works for.
      */
@@ -93,6 +96,13 @@ export class RenderTextureSystem implements ISystem
         this.sourceFrame = new Rectangle();
         this.destinationFrame = new Rectangle();
         this.viewportFrame = new Rectangle();
+    }
+
+    protected contextChange(): void
+    {
+        const attributes = this.renderer?.gl.getContextAttributes();
+
+        this._rendererPremultipliedAlpha = !!(attributes && attributes.alpha && attributes.premultipliedAlpha);
     }
 
     /**
@@ -197,9 +207,15 @@ export class RenderTextureSystem implements ISystem
     clear(clearColor?: ColorSource, mask?: BUFFER_BITS): void
     {
         const fallbackColor = this.current
-            ? (this.current.baseTexture as BaseRenderTexture).clear
+            ? this.current.baseTexture.clear
             : this.renderer.background.backgroundColor;
-        const color = clearColor ? Color.shared.setValue(clearColor) : fallbackColor;
+        const color = Color.shared.setValue(clearColor ? clearColor : fallbackColor);
+
+        if ((this.current && this.current.baseTexture.alphaMode > 0)
+            || (!this.current && this._rendererPremultipliedAlpha))
+        {
+            color.premultiply(color.alpha);
+        }
 
         const destinationFrame = this.destinationFrame;
         const baseFrame: ISize = this.current ? this.current.baseTexture : this.renderer._view.screen;

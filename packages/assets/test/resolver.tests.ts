@@ -68,7 +68,7 @@ describe('Resolver', () =>
 
             resolver.prefer(testData.preferOrder);
 
-            resolver.add('test', [
+            resolver.add('test-src', [
                 {
                     resolution: 1,
                     format: 'png',
@@ -85,10 +85,32 @@ describe('Resolver', () =>
                     src: 'my-image.webp',
                 },
             ]);
+            resolver.add({
+                alias: 'test-obj',
+                src: [
+                    {
+                        resolution: 1,
+                        format: 'png',
+                        src: 'my-image.png',
+                    },
+                    {
+                        resolution: 2,
+                        format: 'png',
+                        src: 'my-image@2x.png',
+                    },
+                    {
+                        resolution: 1,
+                        format: 'webp',
+                        src: 'my-image.webp',
+                    },
+                ]
+            });
 
-            const asset = resolver.resolveUrl('test');
+            const asset = resolver.resolveUrl('test-src');
+            const asset2 = resolver.resolveUrl('test-obj');
 
             expect(asset).toBe(testData.expected);
+            expect(asset2).toBe(testData.expected);
         });
     });
 
@@ -112,6 +134,61 @@ describe('Resolver', () =>
             'profile-abel@0.5x.webp',
             'profile-abel@2x.webp',
         ]);
+        resolver.add({
+            alias: 'test-obj',
+            src: [
+                'profile-abel@0.5x.jpg',
+                'profile-abel@2x.jpg',
+                'profile-abel@0.5x.webp',
+                'profile-abel@2x.webp',
+            ]
+        });
+        resolver.add({
+            alias: 'test-string-obj',
+            src: [
+                'profile-abel@{0.5,2}x.{jpg,webp}',
+            ]
+        });
+        resolver.add({
+            alias: 'test-string-glob-obj',
+            src: 'profile-abel@{0.5,2}x.{jpg,webp}',
+        });
+        resolver.add('test-glob-string', [
+            'profile-abel@{0.5,2}x.{jpg,webp}',
+        ]);
+        resolver.add('test-string', 'profile-abel@{0.5,2}x.{jpg,webp}');
+
+        expect(resolver.resolveUrl('test')).toBe('profile-abel@2x.jpg');
+        expect(resolver.resolveUrl('test-obj')).toBe('profile-abel@2x.jpg');
+        expect(resolver.resolveUrl('test-string-obj')).toBe('profile-abel@2x.jpg');
+        expect(resolver.resolveUrl('test-string-glob-obj')).toBe('profile-abel@2x.jpg');
+        expect(resolver.resolveUrl('test-string')).toBe('profile-abel@2x.jpg');
+        expect(resolver.resolveUrl('test-glob-string')).toBe('profile-abel@2x.jpg');
+    });
+
+    it('should resolve the correct texture using an object', () =>
+    {
+        const resolver = new Resolver();
+
+        resolver.prefer({
+            priority: ['resolution', 'format'],
+            params: {
+                format: ['jpg'],
+                resolution: [2],
+            },
+        });
+
+        resolver['_parsers'].push(resolveTextureUrl);
+
+        resolver.add({
+            alias: 'test',
+            src: [
+                'profile-abel@0.5x.jpg',
+                'profile-abel@2x.jpg',
+                'profile-abel@0.5x.webp',
+                'profile-abel@2x.webp',
+            ]
+        });
 
         expect(resolver.resolveUrl('test')).toBe('profile-abel@2x.jpg');
     });
@@ -190,11 +267,11 @@ describe('Resolver', () =>
             priority: ['resolution', 'format'],
         });
 
-        resolver.add(['test', 'test-2', 'test-3'], [{
+        resolver.add(['test', 'test-2', 'test-3'], {
             resolution: 2,
             format: 'png',
             src: 'my-image.png',
-        }]);
+        });
 
         expect(resolver.resolveUrl('test')).toBe('my-image.png');
         expect(resolver.resolveUrl('test-2')).toBe('my-image.png');
@@ -300,18 +377,30 @@ describe('Resolver', () =>
         expect(resolver.resolve(['test', 'test2', 'test3'])).toEqual({
             test:  {
                 alias: ['test'],
-                format: 'png',
+                name: ['test'],
                 src: 'out1.png',
+                srcs: 'out1.png',
+                format: 'png',
+                loadParser: undefined,
+                data: {}
             },
             test2:  {
                 alias: ['test2'],
-                format: 'png',
+                name: ['test2'],
                 src: 'out2.png',
+                srcs: 'out2.png',
+                format: 'png',
+                loadParser: undefined,
+                data: {}
             },
             test3:  {
                 alias: ['test3'],
-                format: 'png',
+                name: ['test3'],
+                srcs: 'out4.png',
                 src: 'out4.png',
+                format: 'png',
+                loadParser: undefined,
+                data: {}
             },
         });
 
@@ -370,38 +459,61 @@ describe('Resolver', () =>
         expect(assets.level).toEqual({
             image3: {
                 alias: ['image3', 'level-image3'],
+                name: ['image3', 'level-image3'],
+                src: 'chicken.png',
+                srcs: 'chicken.png',
                 format: 'png',
                 resolution: 1,
-                src: 'chicken.png',
+                loadParser: undefined,
+                data: {}
             },
         });
 
         expect(assets.default).toEqual({
             image1: {
                 alias: ['image1', 'default-image1'],
+                name: ['image1', 'default-image1'],
                 format: 'png',
                 resolution: 1,
                 src: 'my-sprite@2x.png',
+                srcs: 'my-sprite@2x.png',
+                loadParser: undefined,
+                data: {}
             },
             levelData: {
                 alias:  [
                     'levelData',
                     'default-levelData',
                 ],
+                name:  [
+                    'levelData',
+                    'default-levelData',
+                ],
                 format: 'json',
                 src: 'levelData.json',
+                srcs: 'levelData.json',
+                loadParser: undefined,
+                data: {}
             },
             spriteSheet1: {
                 alias: ['spriteSheet1', 'default-spriteSheet1'],
+                name: ['spriteSheet1', 'default-spriteSheet1'],
                 format: 'png',
                 resolution: 1,
                 src: 'my-sprite-sheet.json',
+                srcs: 'my-sprite-sheet.json',
+                loadParser: undefined,
+                data: {}
             },
             spriteSheet2: {
                 alias: ['spriteSheet2', 'default-spriteSheet2'],
+                name: ['spriteSheet2', 'default-spriteSheet2'],
                 format: 'png',
                 resolution: 1,
                 src: 'my-sprite-sheet-2.json',
+                srcs: 'my-sprite-sheet-2.json',
+                loadParser: undefined,
+                data: {}
             },
         });
     });

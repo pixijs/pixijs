@@ -1,9 +1,8 @@
+import { utils } from '@pixi/core';
 import { DisplayObject } from '@pixi/display';
-import { deprecation } from '@pixi/utils';
 import { EventSystem } from './EventSystem';
 import { FederatedEvent } from './FederatedEvent';
 
-import type { utils } from '@pixi/core';
 import type { AllFederatedEventMap } from './FederatedEventMap';
 import type { FederatedPointerEvent } from './FederatedPointerEvent';
 import type { FederatedWheelEvent } from './FederatedWheelEvent';
@@ -585,7 +584,7 @@ export const FederatedDisplayObject: IFederatedDisplayObject = {
     set interactive(value: boolean)
     {
         // #if _DEBUG
-        deprecation(
+        utils.deprecation(
             '7.2.0',
             // eslint-disable-next-line max-len
             `Setting interactive is deprecated, use eventMode = 'none'/'passive'/'auto'/'static'/'dynamic' instead.`

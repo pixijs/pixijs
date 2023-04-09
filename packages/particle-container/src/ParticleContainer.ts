@@ -40,7 +40,7 @@ export interface IParticleProperties
  * }
  * @memberof PIXI
  */
-export class ParticleContainer extends Container<Sprite>
+export class ParticleContainer<T extends Sprite = Sprite> extends Container<T>
 {
     /**
      * The blend mode to be applied to the sprite. Apply a value of `PIXI.BLEND_MODES.NORMAL`

@@ -41,6 +41,38 @@ describe('Loader', () =>
         expect(texture.height).toBe(512);
     });
 
+    it('should load svg if autoLoad is true', async () =>
+    {
+        const loader = new Loader();
+
+        loader['_parsers'].push(loadSVG);
+
+        const texture = await loader.load<Texture>({
+            src: `${serverPath}svg/logo.svg`,
+            data: { resourceOptions: { autoLoad: true } }
+        });
+
+        expect(texture.baseTexture.valid).toBe(true);
+        expect(texture.width).toBe(512);
+        expect(texture.height).toBe(512);
+    });
+
+    it('should load svg if autoLoad is false', async () =>
+    {
+        const loader = new Loader();
+
+        loader['_parsers'].push(loadSVG);
+
+        const texture = await loader.load<Texture>({
+            src: `${serverPath}svg/logo.svg`,
+            data: { resourceOptions: { autoLoad: false } }
+        });
+
+        expect(texture.baseTexture.valid).toBe(true);
+        expect(texture.width).toBe(512);
+        expect(texture.height).toBe(512);
+    });
+
     it('should allow setting SVG width/height through metadata', async () =>
     {
         const loader = new Loader();
