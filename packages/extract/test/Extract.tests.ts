@@ -398,4 +398,41 @@ describe('Extract', () =>
         renderer.destroy();
         sprite.destroy();
     });
+
+    it('should fill out-of-bounds pixels with zeros', async () =>
+    {
+        const renderer = new Renderer();
+        const graphics = new Graphics()
+            .beginFill(0xFF0000)
+            .drawRect(0, 0, 2, 2)
+            .endFill();
+        const extract = renderer.extract;
+
+        const pixels1 = extract.pixels(graphics, new Rectangle(0, 0, 2, 2));
+        const pixels2 = extract.pixels(graphics, new Rectangle(1, 1, 2, 2));
+
+        expect(pixels1).toEqual(new Uint8Array([
+            255, 0, 0, 255, 255, 0, 0, 255,
+            255, 0, 0, 255, 255, 0, 0, 255
+        ]));
+        expect(pixels2).toEqual(new Uint8Array([
+            255, 0, 0, 255, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0
+        ]));
+
+        const pixels3 = await extract.pixels(graphics, new Rectangle(0, 0, 2, 2), true);
+        const pixels4 = await extract.pixels(graphics, new Rectangle(1, 1, 2, 2), true);
+
+        expect(pixels3).toEqual(new Uint8Array([
+            255, 0, 0, 255, 255, 0, 0, 255,
+            255, 0, 0, 255, 255, 0, 0, 255
+        ]));
+        expect(pixels4).toEqual(new Uint8Array([
+            255, 0, 0, 255, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0
+        ]));
+
+        graphics.destroy();
+        renderer.destroy();
+    });
 });

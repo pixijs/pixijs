@@ -19,6 +19,10 @@ type PixelData<T extends Uint8Array | Uint8ClampedArray> = {
     pixels: T,
     width: number,
     height: number,
+    minX?: number,
+    minY?: number,
+    maxX?: number,
+    maxY?: number,
     flippedY?: boolean,
     premultipliedAlpha?: boolean
 };
@@ -284,7 +288,7 @@ export class Extract implements ISystem, IExtract
         if (renderTexture)
         {
             resolution = renderTexture.baseTexture.resolution;
-            frame = frame ?? renderTexture.frame;
+            frame ??= renderTexture.frame;
             flippedY = false;
             premultipliedAlpha = true;
 
@@ -303,23 +307,27 @@ export class Extract implements ISystem, IExtract
         else
         {
             resolution = renderer.resolution;
-
-            if (!frame)
-            {
-                frame = TEMP_RECT;
-                frame.width = renderer.width / resolution;
-                frame.height = renderer.height / resolution;
-            }
-
+            frame ??= renderer.screen;
             flippedY = true;
             premultipliedAlpha = true;
             renderer.renderTexture.bind();
         }
 
+        const baseFrame = TEMP_RECT.copyFrom(renderTexture?.frame ?? renderer.screen);
+
+        baseFrame.x = Math.round(baseFrame.x * resolution);
+        baseFrame.y = Math.round(baseFrame.y * resolution);
+        baseFrame.width = Math.round(baseFrame.width * resolution);
+        baseFrame.height = Math.round(baseFrame.height * resolution);
+
         const x = Math.round(frame.x * resolution);
         const y = Math.round(frame.y * resolution);
         const width = Math.round(frame.width * resolution);
         const height = Math.round(frame.height * resolution);
+        const minX = Math.max(0, baseFrame.left - x);
+        const minY = Math.max(0, baseFrame.top - y);
+        const maxX = Math.min(width, baseFrame.right - x);
+        const maxY = Math.min(height, baseFrame.bottom - y);
         const pixelsSize = 4 * width * height;
         const { gl, CONTEXT_UID } = renderer;
 
@@ -329,7 +337,7 @@ export class Extract implements ISystem, IExtract
 
             gl.readPixels(x, y, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
-            return { pixels, width, height, flippedY, premultipliedAlpha } as any;
+            return { pixels, width, height, minX, minY, maxX, maxY, flippedY, premultipliedAlpha } as any;
         }
 
         const bufferSize = utils.nextPow2(pixelsSize);
@@ -354,7 +362,7 @@ export class Extract implements ISystem, IExtract
             {
                 gl.readPixels(x, y, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
-                resolve({ pixels, width, height, flippedY, premultipliedAlpha });
+                resolve({ pixels, width, height, minX, minY, maxX, maxY, flippedY, premultipliedAlpha });
             });
         }
         else
@@ -425,7 +433,7 @@ export class Extract implements ISystem, IExtract
                 gl.getBufferSubData(gl.PIXEL_PACK_BUFFER, 0, pixels, 0, pixelsSize);
                 gl.bindBuffer(gl.PIXEL_PACK_BUFFER, null);
 
-                return { pixels, width, height, flippedY, premultipliedAlpha };
+                return { pixels, width, height, minX, minY, maxX, maxY, flippedY, premultipliedAlpha };
             }).finally(() =>
             {
                 if (this.renderer?.CONTEXT_UID === CONTEXT_UID)
@@ -896,6 +904,45 @@ function unpremultiplyAlpha(pixels, width, height)
  * @param {Uint8Array|Uint8ClampedArray} pixels
  * @param {number} width
  * @param {number} height
+ * @param {number} minX
+ * @param {number} minY
+ * @param {number} maxY
+ * @param {number} maxX
+ */
+function clearOutOfBounds(pixels, width, height, minX, minY, maxX, maxY)
+{
+    if (minX > maxX || minY > maxY)
+    {
+        pixels.fill(0, 0, 4 * width * height);
+    }
+    else
+    {
+        const w = width << 2;
+
+        pixels.fill(0, 0, w * minY);
+
+        if (minX !== 0 || maxX !== width)
+        {
+            const l = minX << 2;
+            const r = maxX << 2;
+            let k = w * minY;
+
+            for (let y = minY; y < maxY; y++)
+            {
+                pixels.fill(0, k, k + l);
+                pixels.fill(0, k + r, k + w);
+                k += w;
+            }
+        }
+
+        pixels.fill(0, w * maxY, w * height);
+    }
+}
+
+/**
+ * @param {Uint8Array|Uint8ClampedArray} pixels
+ * @param {number} width
+ * @param {number} height
  * @returns {Promise<ImageBitmap>}
  */
 async function toBitmap(pixels, width, height)
@@ -950,18 +997,31 @@ async function toBase64(pixels, width, height, type, quality)
 
 onmessage = function(event)
 {
-    const { id, data: { pixels, width, height, flippedY, premultipliedAlpha }, func, args } = event.data;
+    const { id, data, func, args } = event.data;
+    const { pixels, width, height, minX, minY, maxX, maxY, flippedY, premultipliedAlpha } = data;
 
     setTimeout(async () =>
     {
         try
         {
-            if (flippedY)
+            let empty = false;
+
+            if (minX !== undefined)
+            {
+                if (minX > maxX || minY > maxY)
+                {
+                    empty = true;
+                }
+
+                clearOutOfBounds(pixels, width, height, minX, minY, maxX, maxY);
+            }
+
+            if (flippedY && !empty)
             {
                 flipY(pixels, width, height);
             }
 
-            if (premultipliedAlpha)
+            if (premultipliedAlpha && !empty)
             {
                 unpremultiplyAlpha(pixels, width, height);
             }

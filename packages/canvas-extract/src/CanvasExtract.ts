@@ -1,12 +1,10 @@
-import { extensions, ExtensionType, Rectangle, RenderTexture, utils } from '@pixi/core';
+import { extensions, ExtensionType, RenderTexture, utils } from '@pixi/core';
 import { ExtractWorker } from '../../extract/src/Extract';
 
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
-import type { BaseRenderTexture, ExtensionMetadata, ICanvas, ISystem } from '@pixi/core';
+import type { ExtensionMetadata, ICanvas, ISystem, Rectangle } from '@pixi/core';
 import type { DisplayObject } from '@pixi/display';
 import type { IExtract } from '@pixi/extract';
-
-const TEMP_RECT = new Rectangle();
 
 /**
  * The extract manager provides functionality to export content from the renderers.
@@ -156,21 +154,15 @@ export class CanvasExtract implements ISystem, IExtract
 
         if (renderTexture)
         {
-            context = (renderTexture.baseTexture as BaseRenderTexture)._canvasRenderTarget.context;
-            resolution = (renderTexture.baseTexture as BaseRenderTexture)._canvasRenderTarget.resolution;
-            frame = frame ?? renderTexture.frame;
+            context = renderTexture.baseTexture._canvasRenderTarget.context;
+            resolution = renderTexture.baseTexture._canvasRenderTarget.resolution;
+            frame ??= renderTexture.frame;
         }
         else
         {
             context = renderer.canvasContext.rootContext;
             resolution = renderer.resolution;
-
-            if (!frame)
-            {
-                frame = TEMP_RECT;
-                frame.width = renderer.width / resolution;
-                frame.height = renderer.height / resolution;
-            }
+            frame ??= renderer.screen;
         }
 
         const x = Math.round(frame.x * resolution);
