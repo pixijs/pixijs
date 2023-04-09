@@ -17,8 +17,12 @@ interface IBlobOptions
  */
 export abstract class BlobResource extends BufferResource
 {
+    /** The URL of the texture file. */
     protected origin: string | null;
+
+    /** The viewable buffer on the data. */
     protected buffer: ViewableBuffer | null;
+
     protected loaded: boolean;
 
     /**
@@ -28,12 +32,12 @@ export abstract class BlobResource extends BufferResource
     private _load: Promise<this>;
 
     /**
-     * @param source - the buffer/URL of the texture file
-     * @param {PIXI.IBlobOptions} options
-     * @param {boolean}[options.autoLoad] - whether to fetch the data immediately;
-     *  you can fetch it later via {@link PIXI.BlobResource#load}
-     * @param {boolean}[options.width] - the width in pixels.
-     * @param {boolean}[options.height] - the height in pixels.
+     * @param source - The buffer/URL of the texture file.
+     * @param {PIXI.IBlobOptions} [options]
+     * @param {boolean} [options.autoLoad=false] - Whether to fetch the data immediately;
+     *  you can fetch it later via {@link PIXI.BlobResource#load}.
+     * @param {number} [options.width=1] - The width in pixels.
+     * @param {number} [options.height=1] - The height in pixels.
      */
     constructor(source: string | BufferType, options: IBlobOptions = { width: 1, height: 1, autoLoad: true })
     {
@@ -53,17 +57,7 @@ export abstract class BlobResource extends BufferResource
 
         super(data, options);
 
-        /**
-         * The URL of the texture file
-         * @type {string|null}
-         */
         this.origin = origin;
-
-        /**
-         * The viewable buffer on the data
-         * @type {ViewableBuffer|null}
-         */
-        // HINT: BlobResource allows "null" sources, assuming the child class provides an alternative
         this.buffer = data ? new ViewableBuffer(data) : null;
 
         this._load = null;
