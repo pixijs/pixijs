@@ -81,6 +81,22 @@ export class CanvasExtract implements ISystem, IExtract
     }
 
     /**
+     * Creates an ImageBitmap from the target.
+     * @param target - A displayObject or renderTexture
+     *  to convert. If left empty will use the main renderer
+     * @param frame - The frame the extraction is restricted to.
+     * @returns - One-dimensional array containing the pixel data of the entire texture
+     */
+    public bitmap(target?: DisplayObject | RenderTexture, frame?: Rectangle): Promise<ImageBitmap>
+    {
+        const imageData = this._imageData(target, frame);
+        const pixels = imageData.data;
+        const { width, height } = imageData;
+
+        return this.worker.bitmap({ pixels, width, height });
+    }
+
+    /**
      * Creates a Canvas element, renders this target to it and then returns it.
      * @param target - A displayObject or renderTexture
      *  to convert. If left empty will use the main renderer

@@ -11,6 +11,7 @@ export interface IExtract
         frame?: Rectangle): Promise<HTMLImageElement>;
     base64(target?: DisplayObject | RenderTexture, format?: string, quality?: number,
         frame?: Rectangle): Promise<string>;
+    bitmap(target?: DisplayObject | RenderTexture, frame?: Rectangle): Promise<ImageBitmap>;
     canvas<T extends boolean = false>(target?: DisplayObject | RenderTexture, frame?: Rectangle, async?: T):
     T extends true ? Promise<ICanvas> : ICanvas;
     pixels<T extends boolean>(target?: DisplayObject | RenderTexture, frame?: Rectangle, async?: T):
@@ -188,6 +189,18 @@ export class Extract implements ISystem, IExtract
         frame?: Rectangle): Promise<string>
     {
         return this._extract(target, frame, 'base64', format, quality);
+    }
+
+    /**
+     * Creates an ImageBitmap from the target.
+     * @param target - A displayObject or renderTexture
+     *  to convert. If left empty will use the main renderer
+     * @param frame - The frame the extraction is restricted to.
+     * @returns - One-dimensional array containing the pixel data of the entire texture
+     */
+    public bitmap(target?: DisplayObject | RenderTexture, frame?: Rectangle): Promise<ImageBitmap>
+    {
+        return this._extract(target, frame, 'bitmap');
     }
 
     /**
