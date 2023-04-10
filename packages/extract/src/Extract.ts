@@ -976,9 +976,11 @@ async function toBitmap(pixels, width, height)
  * @param {Uint8Array|Uint8ClampedArray} pixels
  * @param {number} width
  * @param {number} height
- * @returns {Promise<OffscreenCanvas>}
+ * @param {string} [type]
+ * @param {number} [quality]
+ * @returns {Promise<string>}
  */
-async function toCanvas(pixels, width, height)
+async function toBase64(pixels, width, height, type, quality)
 {
     const bitmap = await toBitmap(pixels, width, height);
     const canvas = new OffscreenCanvas(width, height);
@@ -986,21 +988,6 @@ async function toCanvas(pixels, width, height)
 
     context.transferFromImageBitmap(bitmap);
     bitmap.close();
-
-    return canvas;
-}
-
-/**
- * @param {Uint8Array|Uint8ClampedArray} pixels
- * @param {number} width
- * @param {number} height
- * @param {string} [type]
- * @param {number} [quality]
- * @returns {Promise<string>}
- */
-async function toBase64(pixels, width, height, type, quality)
-{
-    const canvas = await toCanvas(pixels, width, height);
 
     return canvas.convertToBlob({ type, quality }).then(
         blob => new Promise((resolve, reject) =>
@@ -1012,6 +999,24 @@ async function toBase64(pixels, width, height, type, quality)
             reader.readAsDataURL(blob);
         })
     );
+}
+
+/**
+ * @param {Uint8Array|Uint8ClampedArray} pixels
+ * @param {number} width
+ * @param {number} height
+ * @returns {Promise<OffscreenCanvas>}
+ */
+async function toCanvas(pixels, width, height)
+{
+    const canvas = new OffscreenCanvas(width, height);
+    const context = canvas.getContext('2d');
+    const size = 4 * width * height;
+    const imageData = new ImageData(new Uint8ClampedArray(pixels.buffer, 0, size), width, height);
+
+    context.putImageData(imageData, 0, 0);
+
+    return canvas;
 }
 
 onmessage = function(event)
