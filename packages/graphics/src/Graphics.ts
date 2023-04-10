@@ -700,6 +700,19 @@ export class Graphics extends Container
     }
 
     /**
+     * Applies a line style to the lines and shapes that were added since the last call to the lineStyle() method.
+     * @returns - This Graphics object. Good for chaining method calls
+     */
+    public endLine(): this
+    {
+        this.finishPoly();
+
+        this._lineStyle.reset();
+
+        return this;
+    }
+
+    /**
      * Draws a rectangle shape.
      * @param x - The X coord of the top-left of the rectangle
      * @param y - The Y coord of the top-left of the rectangle
