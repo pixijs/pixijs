@@ -58,6 +58,9 @@ describe('Graphics', () =>
                 color: 0xff0000,
                 alignment: 1,
                 native: true,
+                cap: LINE_CAP.ROUND,
+                join: LINE_JOIN.ROUND,
+                miterLimit: 20,
             });
 
             expect(graphics.line.width).toEqual(1);
@@ -66,6 +69,9 @@ describe('Graphics', () =>
             expect(graphics.line.alpha).toEqual(0.5);
             expect(graphics.line.native).toEqual(true);
             expect(graphics.line.visible).toEqual(true);
+            expect(graphics.line.cap).toEqual(LINE_CAP.ROUND);
+            expect(graphics.line.join).toEqual(LINE_JOIN.ROUND);
+            expect(graphics.line.miterLimit).toEqual(20);
 
             graphics.lineStyle();
 
@@ -75,6 +81,9 @@ describe('Graphics', () =>
             expect(graphics.line.alpha).toEqual(1);
             expect(graphics.line.native).toEqual(false);
             expect(graphics.line.visible).toEqual(false);
+            expect(graphics.line.cap).toEqual(LINE_CAP.BUTT);
+            expect(graphics.line.join).toEqual(LINE_JOIN.MITER);
+            expect(graphics.line.miterLimit).toEqual(10);
 
             graphics.destroy();
         });
