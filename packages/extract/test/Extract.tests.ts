@@ -388,4 +388,38 @@ describe('Extract', () =>
         renderer.destroy();
         sprite.destroy();
     });
+
+    it('should not throw an error if frame is empty', async () =>
+    {
+        const renderer = new Renderer();
+        const extract = renderer.extract;
+        const emptyFrame = new Rectangle(0, 0, 0, 0);
+
+        const graphics = new Graphics()
+            .beginFill(0xFF00FF)
+            .drawRect(0, 0, 1, 1)
+            .endFill();
+
+        expect(() => extract.canvas(graphics, emptyFrame)).not.toThrow();
+        await expect(extract.base64(graphics, undefined, undefined, emptyFrame)).toResolve();
+        expect(() => extract.pixels(graphics, emptyFrame)).not.toThrow();
+        await expect(extract.image(graphics, undefined, undefined, emptyFrame)).toResolve();
+
+        const canvas = extract.canvas(graphics, emptyFrame);
+
+        expect(canvas.width).toBe(1);
+        expect(canvas.height).toBe(1);
+
+        const pixels = extract.pixels(graphics, new Rectangle(0, 0, 1, 1));
+
+        expect(pixels).toEqual(new Uint8Array([255, 0, 255, 255]));
+
+        const image = extract.canvas(graphics, emptyFrame);
+
+        expect(image.width).toBe(1);
+        expect(image.height).toBe(1);
+
+        graphics.destroy();
+        renderer.destroy();
+    });
 });

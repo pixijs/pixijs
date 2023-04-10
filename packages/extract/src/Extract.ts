@@ -251,8 +251,8 @@ export class Extract implements ISystem, IExtract
             renderer.renderTexture.bind();
         }
 
-        const width = Math.round(frame.width * resolution);
-        const height = Math.round(frame.height * resolution);
+        const width = Math.max(Math.round(frame.width * resolution), 1);
+        const height = Math.max(Math.round(frame.height * resolution), 1);
 
         const pixels = new Uint8Array(BYTES_PER_PIXEL * width * height);
 
