@@ -7,8 +7,10 @@ const TEMP_RECT = new Rectangle();
 
 export interface IExtract
 {
-    image(target?: DisplayObject | RenderTexture, format?: string, quality?: number): Promise<HTMLImageElement>;
-    base64(target?: DisplayObject | RenderTexture, format?: string, quality?: number): Promise<string>;
+    image(target?: DisplayObject | RenderTexture, format?: string, quality?: number,
+        frame?: Rectangle): Promise<HTMLImageElement>;
+    base64(target?: DisplayObject | RenderTexture, format?: string, quality?: number,
+        frame?: Rectangle): Promise<string>;
     canvas<T extends boolean = false>(target?: DisplayObject | RenderTexture, frame?: Rectangle, async?: T):
     T extends true ? Promise<ICanvas> : ICanvas;
     pixels<T extends boolean>(target?: DisplayObject | RenderTexture, frame?: Rectangle, async?: T):
@@ -159,13 +161,15 @@ export class Extract implements ISystem, IExtract
      *  to convert. If left empty will use the main renderer
      * @param format - Image format, e.g. "image/jpeg" or "image/webp".
      * @param quality - JPEG or Webp compression from 0 to 1. Default is 0.92.
+     * @param frame - The frame the extraction is restricted to.
      * @returns - HTML Image of the target
      */
-    public async image(target?: DisplayObject | RenderTexture, format?: string, quality?: number): Promise<HTMLImageElement>
+    public async image(target?: DisplayObject | RenderTexture, format?: string, quality?: number,
+        frame?: Rectangle): Promise<HTMLImageElement>
     {
         const image = new Image();
 
-        image.src = await this.base64(target, format, quality);
+        image.src = await this.base64(target, format, quality, frame);
 
         return image;
     }
@@ -177,11 +181,13 @@ export class Extract implements ISystem, IExtract
      *  to convert. If left empty will use the main renderer
      * @param format - Image format, e.g. "image/jpeg" or "image/webp".
      * @param quality - JPEG or Webp compression from 0 to 1. Default is 0.92.
+     * @param frame - The frame the extraction is restricted to.
      * @returns - A base64 encoded string of the texture.
      */
-    public async base64(target?: DisplayObject | RenderTexture, format?: string, quality?: number): Promise<string>
+    public async base64(target?: DisplayObject | RenderTexture, format?: string, quality?: number,
+        frame?: Rectangle): Promise<string>
     {
-        return this._extract(target, undefined, 'base64', format, quality);
+        return this._extract(target, frame, 'base64', format, quality);
     }
 
     /**

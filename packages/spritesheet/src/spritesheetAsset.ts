@@ -2,7 +2,7 @@ import { copySearchParams, LoaderParserPriority } from '@pixi/assets';
 import { extensions, ExtensionType, settings, utils } from '@pixi/core';
 import { Spritesheet } from './Spritesheet';
 
-import type { AssetExtension, LoadAsset, Loader, ResolveAsset } from '@pixi/assets';
+import type { AssetExtension, Loader, ResolvedAsset, UnresolvedAsset } from '@pixi/assets';
 import type { Texture } from '@pixi/core';
 import type { ISpritesheetData } from './Spritesheet';
 
@@ -70,7 +70,7 @@ export const spritesheetAsset = {
 
             return extension === 'json' && validImages.includes(format);
         },
-        parse: (value: string): ResolveAsset =>
+        parse: (value: string): UnresolvedAsset =>
         {
             const split = value.split('.');
 
@@ -96,12 +96,12 @@ export const spritesheetAsset = {
             priority: LoaderParserPriority.Normal,
         },
 
-        async testParse(asset: SpriteSheetJson, options: LoadAsset): Promise<boolean>
+        async testParse(asset: SpriteSheetJson, options: ResolvedAsset): Promise<boolean>
         {
             return (utils.path.extname(options.src).toLowerCase() === '.json' && !!asset.frames);
         },
 
-        async parse(asset: SpriteSheetJson, options: LoadAsset, loader: Loader): Promise<Spritesheet>
+        async parse(asset: SpriteSheetJson, options: ResolvedAsset, loader: Loader): Promise<Spritesheet>
         {
             let basePath = utils.path.dirname(options.src);
 

@@ -486,6 +486,7 @@ export class Color
      * Rounds the specified color according to the step. This action is destructive, and will
      * override the previous `value` property to be `null`. The alpha component is not rounded.
      * @param steps - Number of steps which will be used as a cap when rounding colors
+     * @deprecated since 7.3.0
      */
     round(steps: number): this
     {
