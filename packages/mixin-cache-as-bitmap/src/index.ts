@@ -76,16 +76,16 @@ Object.defineProperties(DisplayObject.prototype, {
      * but can be overriden for performance. Lower values will reduce memory usage at the expense
      * of render quality. A falsey value of `null` or `0` will default to the renderer's resolution.
      * If `cacheAsBitmap` is set to `true`, this will re-render with the new resolution.
-     * @member {number} cacheAsBitmapResolution
+     * @member {number|null} cacheAsBitmapResolution
      * @memberof PIXI.DisplayObject#
      * @default null
      */
     cacheAsBitmapResolution: {
-        get(): number
+        get(): number | null
         {
             return this._cacheAsBitmapResolution;
         },
-        set(resolution: number): void
+        set(resolution: number | null): void
         {
             if (resolution === this._cacheAsBitmapResolution)
             {
@@ -107,16 +107,16 @@ Object.defineProperties(DisplayObject.prototype, {
      * The number of samples to use for cacheAsBitmap. If set to `null`, the renderer's
      * sample count is used.
      * If `cacheAsBitmap` is set to `true`, this will re-render with the new number of samples.
-     * @member {number} cacheAsBitmapMultisample
+     * @member {number|null} cacheAsBitmapMultisample
      * @memberof PIXI.DisplayObject#
      * @default null
      */
     cacheAsBitmapMultisample: {
-        get(): MSAA_QUALITY
+        get(): MSAA_QUALITY | null
         {
             return this._cacheAsBitmapMultisample;
         },
-        set(multisample: MSAA_QUALITY): void
+        set(multisample: MSAA_QUALITY | null): void
         {
             if (multisample === this._cacheAsBitmapMultisample)
             {

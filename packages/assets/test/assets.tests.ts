@@ -28,8 +28,12 @@ describe('Assets', () =>
         });
 
         const bunny = await Assets.load('textures/bunny.png');
+        const bunny2 = await Assets.load({
+            src: 'textures/bunny.png'
+        });
 
         expect(bunny).toBeInstanceOf(Texture);
+        expect(bunny2).toBeInstanceOf(Texture);
     });
 
     it('should load assets with resolver', async () =>
@@ -39,9 +43,18 @@ describe('Assets', () =>
         });
 
         const bunny = await Assets.load<Texture>('textures/texture.{webp,png}');
+        const bunny2 = await Assets.load<Texture>({
+            src: 'textures/texture.{webp,png}',
+            alias: ['bunny-array', 'bunny-array2'],
+        });
 
+        expect(Assets.get('bunny-array')).toBe(bunny2);
+        expect(Assets.get('bunny-array2')).toBe(bunny2);
+        expect(Assets.get('textures/texture.{webp,png}')).toBe(bunny);
         expect(bunny).toBeInstanceOf(Texture);
+        expect(bunny2).toBeInstanceOf(Texture);
         expect(bunny.baseTexture.resource.src.endsWith('.webp')).toBeTrue();
+        expect(bunny2.baseTexture.resource.src.endsWith('.webp')).toBeTrue();
     });
 
     it('should get assets once loaded', async () =>
@@ -51,18 +64,28 @@ describe('Assets', () =>
         });
 
         Assets.add('test', 'textures/bunny.png');
+        Assets.add({
+            alias: 'test1',
+            src: 'textures/bunny.png'
+        });
 
         // not loaded yet!
         const bunny0 = Assets.get('test');
+        const bunny3 = Assets.get('test1');
 
         expect(bunny0).toBe(undefined);
+        expect(bunny3).toBe(undefined);
 
         const bunny = await Assets.load('test');
+        const bunny4 = await Assets.load('test1');
 
         const bunny2 = Assets.get('test');
+        const bunny5 = Assets.get('test1');
 
         expect(bunny).toBeInstanceOf(Texture);
+        expect(bunny4).toBeInstanceOf(Texture);
         expect(bunny2).toBe(bunny);
+        expect(bunny5).toBe(bunny);
     });
 
     it('should load a webp if available by default', async () =>
@@ -81,10 +104,22 @@ describe('Assets', () =>
             'textures/profile-abel@2x.webp',
         ]);
 
+        Assets.add({
+            alias: 'test2',
+            src: [
+                'textures/profile-abel@0.5x.jpg',
+                'textures/profile-abel@2x.jpg',
+                'textures/profile-abel@0.5x.webp',
+                'textures/profile-abel@2x.webp',
+            ]
+        });
+
         // not loaded yet!
         const bunny = await Assets.load('test');
+        const bunny2 = await Assets.load('test2');
 
         expect(bunny.baseTexture.resource.src).toBe(`${basePath}textures/profile-abel@2x.webp`);
+        expect(bunny2.baseTexture.resource.src).toBe(`${basePath}textures/profile-abel@2x.webp`);
     });
 
     it('should load a correct texture based on preference', async () =>
@@ -117,14 +152,22 @@ describe('Assets', () =>
         });
 
         Assets.add(['fish', 'chicken'], 'textures/bunny.png');
+        Assets.add({
+            alias: ['fish2', 'chicken2'],
+            src: 'textures/bunny.png'
+        });
 
         const bunny = await Assets.load('fish');
+        const bunny3 = await Assets.load('fish2');
 
         // this should be the same as bunny
         const bunny2 = await Assets.get('chicken');
+        const bunny4 = await Assets.get('chicken2');
 
         expect(bunny).toBeInstanceOf(Texture);
+        expect(bunny3).toBeInstanceOf(Texture);
         expect(bunny).toBe(bunny2);
+        expect(bunny3).toBe(bunny4);
     });
 
     it('should split url versions correctly', async () =>
@@ -134,10 +177,36 @@ describe('Assets', () =>
         });
 
         Assets.add('fish', 'textures/bunny.{png,webp}');
+        Assets.add({
+            alias: 'fish2',
+            src: 'textures/bunny.{png,webp}'
+        });
+        Assets.add({
+            alias: 'fish3',
+            src: ['textures/bunny.{png,webp}']
+        });
+        Assets.add({
+            alias: 'fish4',
+            src: [
+                {
+                    src: 'textures/bunny.png',
+                },
+
+                {
+                    src: 'textures/bunny.webp',
+                }
+            ]
+        });
 
         const bunny = await Assets.load('fish');
+        const bunny2 = await Assets.load('fish2');
+        const bunny3 = await Assets.load('fish3');
+        const bunny4 = await Assets.load('fish4');
 
         expect(bunny.baseTexture.resource.src).toBe(`${basePath}textures/bunny.webp`);
+        expect(bunny2.baseTexture.resource.src).toBe(`${basePath}textures/bunny.webp`);
+        expect(bunny3.baseTexture.resource.src).toBe(`${basePath}textures/bunny.webp`);
+        expect(bunny4.baseTexture.resource.src).toBe(`${basePath}textures/bunny.webp`);
     });
 
     it('should background load correctly', async () =>

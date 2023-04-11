@@ -3,7 +3,7 @@ import { extensions, ExtensionType, settings, utils } from '@pixi/core';
 import { BitmapFont } from './BitmapFont';
 import { TextFormat, XMLStringFormat } from './formats';
 
-import type { LoadAsset, Loader, LoaderParser } from '@pixi/assets';
+import type { Loader, LoaderParser, ResolvedAsset } from '@pixi/assets';
 import type { Texture } from '@pixi/core';
 import type { BitmapFontData } from './BitmapFontData';
 
@@ -28,7 +28,7 @@ export const loadBitmapFont = {
         return TextFormat.test(data) || XMLStringFormat.test(data);
     },
 
-    async parse(asset: string, data: LoadAsset, loader: Loader): Promise<BitmapFont>
+    async parse(asset: string, data: ResolvedAsset, loader: Loader): Promise<BitmapFont>
     {
         const fontData: BitmapFontData = TextFormat.test(asset)
             ? TextFormat.parse(asset)
@@ -54,7 +54,7 @@ export const loadBitmapFont = {
         return BitmapFont.install(fontData, textures, true);
     },
 
-    async load(url: string, _options: LoadAsset): Promise<string>
+    async load(url: string, _options: ResolvedAsset): Promise<string>
     {
         const response = await settings.ADAPTER.fetch(url);
 

@@ -5,7 +5,7 @@ import { BASIS_FORMAT_TO_TYPE, BASIS_FORMATS } from '../Basis';
 import { TranscoderWorker } from '../TranscoderWorker';
 import { BasisParser } from './BasisParser';
 
-import type { LoadAsset, Loader, LoaderParser } from '@pixi/assets';
+import type { Loader, LoaderParser, ResolvedAsset } from '@pixi/assets';
 import type { IBaseTextureOptions, Texture, TYPES } from '@pixi/core';
 
 /** Load BASIS textures! */
@@ -22,7 +22,7 @@ export const loadBasis = {
         return checkExtension(url, '.basis');
     },
 
-    async load(url: string, asset: LoadAsset, loader: Loader): Promise<Texture | Texture[]>
+    async load(url: string, asset: ResolvedAsset, loader: Loader): Promise<Texture | Texture[]>
     {
         await TranscoderWorker.onTranscoderInitialized;
 

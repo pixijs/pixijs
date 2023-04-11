@@ -4,6 +4,7 @@ import { drawChamferRect } from './drawChamferRect';
 import { drawFilletRect } from './drawFilletRect';
 import { drawRegularPolygon } from './drawRegularPolygon';
 import { drawRoundedPolygon } from './drawRoundedPolygon';
+import { drawRoundedShape } from './drawRoundedShape';
 import { drawStar } from './drawStar';
 import { drawTorus } from './drawTorus';
 
@@ -14,6 +15,7 @@ export interface IGraphicsExtras
     drawFilletRect: typeof drawFilletRect;
     drawRegularPolygon: typeof drawRegularPolygon;
     drawRoundedPolygon: typeof drawRoundedPolygon;
+    drawRoundedShape: typeof drawRoundedShape;
     drawStar: typeof drawStar;
 }
 
@@ -24,5 +26,6 @@ Object.defineProperties(Graphics.prototype, {
     drawFilletRect: { value: drawFilletRect },
     drawRegularPolygon: { value: drawRegularPolygon },
     drawRoundedPolygon: { value: drawRoundedPolygon },
+    drawRoundedShape: { value: drawRoundedShape },
     drawStar: { value: drawStar },
 });

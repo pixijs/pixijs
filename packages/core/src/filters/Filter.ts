@@ -191,15 +191,15 @@ export class Filter extends Shader
      * Default filter resolution for any filter.
      * @static
      */
-    public static defaultResolution = 1;
+    public static defaultResolution: number | null = 1;
 
     /**
      * Default filter samples for any filter.
      * @static
-     * @type {PIXI.MSAA_QUALITY}
+     * @type {PIXI.MSAA_QUALITY|null}
      * @default PIXI.MSAA_QUALITY.NONE
      */
-    public static defaultMultisample = MSAA_QUALITY.NONE;
+    public static defaultMultisample: MSAA_QUALITY | null = MSAA_QUALITY.NONE;
 
     /**
      * The padding of the filter. Some filters require extra space to breath such as a blur.
@@ -208,8 +208,12 @@ export class Filter extends Shader
      */
     public padding: number;
 
-    /** The samples override of the filter instance. */
-    public multisample: MSAA_QUALITY;
+    /**
+     * The samples override of the filter instance.
+     * If set to `null`, the sample count of the current render target is used.
+     * @default PIXI.Filter.defaultMultisample
+     */
+    public multisample: MSAA_QUALITY | null;
 
     /** If enabled is true the filter is applied, if false it will not. */
     public enabled: boolean;
@@ -230,7 +234,7 @@ export class Filter extends Shader
     /** The WebGL state the filter requires to render. */
     state: State;
 
-    protected _resolution: number;
+    protected _resolution: number | null;
 
     /**
      * @param vertexSrc - The source of the vertex shader.
@@ -289,13 +293,15 @@ export class Filter extends Shader
     /**
      * The resolution of the filter. Setting this to be lower will lower the quality but
      * increase the performance of the filter.
+     * If set to `null` or `0`, the resolution of the current render target is used.
+     * @default PIXI.Filter.defaultResolution
      */
-    get resolution(): number
+    get resolution(): number | null
     {
         return this._resolution;
     }
 
-    set resolution(value: number)
+    set resolution(value: number | null)
     {
         this._resolution = value;
     }
