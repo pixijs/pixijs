@@ -394,8 +394,8 @@ export class Color
     /**
      * Converts color to a premultiplied alpha format. This action is destructive, and will
      * override the previous `value` property to be `null`.
-     * @param alpha - The color to multiply by.
-     * @param [applyToRGB=true] - Whether to premultiply RGB channels.
+     * @param alpha - The alpha to multiply by.
+     * @param {boolean} [applyToRGB=true] - Whether to premultiply RGB channels.
      * @returns {PIXI.Color} - Itself.
      */
     premultiply(alpha: number, applyToRGB = true): this
@@ -416,26 +416,30 @@ export class Color
 
     /**
      * Premultiplies alpha with current color.
-     * @param {number} alpha - floating point alpha (0.0-1.0)
+     * @param {number} alpha - The alpha to multiply by.
+     * @param {boolean} [applyToRGB=true] - Whether to premultiply RGB channels.
      * @returns {number} tint multiplied by alpha
      */
-    toPremultiplied(alpha: number): number
+    toPremultiplied(alpha: number, applyToRGB = true): number
     {
         if (alpha === 1.0)
         {
-            return (alpha * 255 << 24) + this._int;
+            return (0xFF << 24) + this._int;
         }
         if (alpha === 0.0)
         {
-            return 0;
+            return applyToRGB ? 0 : this._int;
         }
         let r = ((this._int >> 16) & 0xFF);
         let g = ((this._int >> 8) & 0xFF);
         let b = (this._int & 0xFF);
 
-        r = ((r * alpha) + 0.5) | 0;
-        g = ((g * alpha) + 0.5) | 0;
-        b = ((b * alpha) + 0.5) | 0;
+        if (applyToRGB)
+        {
+            r = ((r * alpha) + 0.5) | 0;
+            g = ((g * alpha) + 0.5) | 0;
+            b = ((b * alpha) + 0.5) | 0;
+        }
 
         return (alpha * 255 << 24) + (r << 16) + (g << 8) + b;
     }
@@ -482,6 +486,7 @@ export class Color
      * Rounds the specified color according to the step. This action is destructive, and will
      * override the previous `value` property to be `null`. The alpha component is not rounded.
      * @param steps - Number of steps which will be used as a cap when rounding colors
+     * @deprecated since 7.3.0
      */
     round(steps: number): this
     {
@@ -524,7 +529,10 @@ export class Color
      */
     private normalize(value: Exclude<ColorSource, Color>): void
     {
-        let components: number[] | undefined;
+        let r: number | undefined;
+        let g: number | undefined;
+        let b: number | undefined;
+        let a: number | undefined;
 
         // Number is a primative so typeof works fine, but in the case
         // that someone creates a class that extends Number, we also
@@ -533,12 +541,10 @@ export class Color
         {
             const int = value as number; // cast required because instanceof Number is ambiguous for TS
 
-            components = [
-                ((int >> 16) & 0xFF) / 255,
-                ((int >> 8) & 0xFF) / 255,
-                (int & 0xFF) / 255,
-                1.0
-            ];
+            r = ((int >> 16) & 0xFF) / 255;
+            g = ((int >> 8) & 0xFF) / 255;
+            b = (int & 0xFF) / 255;
+            a = 1.0;
         }
         else if ((Array.isArray(value) || value instanceof Float32Array)
             // Can be rgb or rgba
@@ -546,10 +552,7 @@ export class Color
         {
             // make sure all values are 0 - 1
             value = this._clamp(value);
-
-            const [r, g, b, a = 1.0] = value;
-
-            components = [r, g, b, a];
+            [r, g, b, a = 1.0] = value;
         }
         else if ((value instanceof Uint8Array || value instanceof Uint8ClampedArray)
             // Can be rgb or rgba
@@ -557,9 +560,11 @@ export class Color
         {
             // make sure all values are 0 - 255
             value = this._clamp(value, 0, 255);
-            const [r, g, b, a = 255] = value;
-
-            components = [r / 255, g / 255, b / 255, a / 255];
+            [r, g, b, a = 255] = value;
+            r /= 255;
+            g /= 255;
+            b /= 255;
+            a /= 255;
         }
         else if (typeof value === 'string' || typeof value === 'object')
         {
@@ -578,16 +583,20 @@ export class Color
 
             if (color.isValid())
             {
-                const { r, g, b, a } = color.rgba;
-
-                components = [r / 255, g / 255, b / 255, a];
+                ({ r, g, b, a } = color.rgba);
+                r /= 255;
+                g /= 255;
+                b /= 255;
             }
         }
 
         // Cache normalized values for rgba and hex integer
-        if (components)
+        if (r !== undefined)
         {
-            this._components.set(components);
+            this._components[0] = r as number;
+            this._components[1] = g as number;
+            this._components[2] = b as number;
+            this._components[3] = a as number;
             this.refreshInt();
         }
         else

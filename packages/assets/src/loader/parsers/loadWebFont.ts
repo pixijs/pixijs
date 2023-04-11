@@ -3,7 +3,7 @@ import { checkDataUrl } from '../../utils/checkDataUrl';
 import { checkExtension } from '../../utils/checkExtension';
 import { LoaderParserPriority } from './LoaderParser';
 
-import type { LoadAsset } from '../types';
+import type { ResolvedAsset } from '../../types';
 import type { LoaderParser } from './LoaderParser';
 
 const validWeights = [
@@ -34,6 +34,12 @@ export type LoadFontData = {
 };
 
 /**
+ * RegExp for matching CSS <ident-token>. It doesn't consider escape and non-ASCII characters, but enough for us.
+ * @see {@link https://www.w3.org/TR/css-syntax-3/#ident-token-diagram}
+ */
+const CSS_IDENT_TOKEN_REGEX = /^(--|-?[A-Z_])[0-9A-Z_-]*$/i;
+
+/**
  * Return font face name from a file name
  * Ex.: 'fonts/tital-one.woff' turns into 'Titan One'
  * @param url - File url
@@ -47,12 +53,29 @@ export function getFontFamilyName(url: string): string
     const nameWithSpaces = name.replace(/(-|_)/g, ' ');
 
     // Upper case first character of each word
-    const nameTitleCase = nameWithSpaces.toLowerCase()
+    const nameTokens = nameWithSpaces.toLowerCase()
         .split(' ')
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ');
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1));
 
-    return nameTitleCase;
+    let valid = nameTokens.length > 0;
+
+    for (const token of nameTokens)
+    {
+        if (!token.match(CSS_IDENT_TOKEN_REGEX))
+        {
+            valid = false;
+            break;
+        }
+    }
+
+    let fontFamilyName = nameTokens.join(' ');
+
+    if (!valid)
+    {
+        fontFamilyName = `"${fontFamilyName.replace(/[\\"]/g, '\\$&')}"`;
+    }
+
+    return fontFamilyName;
 }
 
 /** Web font loader plugin */
@@ -69,7 +92,7 @@ export const loadWebFont = {
         return checkDataUrl(url, validFontMIMEs) || checkExtension(url, validFontExtensions);
     },
 
-    async load(url: string, options?: LoadAsset<LoadFontData>): Promise<FontFace | FontFace[]>
+    async load(url: string, options?: ResolvedAsset<LoadFontData>): Promise<FontFace | FontFace[]>
     {
         const fonts = settings.ADAPTER.getFontFaceSet();
 

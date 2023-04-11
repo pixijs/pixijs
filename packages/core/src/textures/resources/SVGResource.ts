@@ -36,7 +36,7 @@ export class SVGResource extends BaseImageResource
     private _resolve: () => void;
 
     /** Promise when loading */
-    private _load: Promise<SVGResource>;
+    private _load: Promise<this>;
 
     /** Cross origin value to use */
     private _crossorigin?: boolean | string;
@@ -72,7 +72,7 @@ export class SVGResource extends BaseImageResource
         }
     }
 
-    load(): Promise<SVGResource>
+    load(): Promise<this>
     {
         if (this._load)
         {

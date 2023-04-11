@@ -144,7 +144,7 @@ export abstract class Resource
      * @protected
      * @returns Handle the validate event
      */
-    load(): Promise<Resource>
+    load(): Promise<this>
     {
         return Promise.resolve(this);
     }

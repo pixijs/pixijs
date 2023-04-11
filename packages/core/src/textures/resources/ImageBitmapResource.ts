@@ -46,7 +46,7 @@ export class ImageBitmapResource extends BaseImageResource
      * Promise when loading.
      * @default null
      */
-    private _load: Promise<ImageBitmapResource>;
+    private _load: Promise<this>;
 
     /**
      * @param source - ImageBitmap or URL to use
@@ -88,7 +88,7 @@ export class ImageBitmapResource extends BaseImageResource
         }
     }
 
-    load(): Promise<ImageBitmapResource>
+    load(): Promise<this>
     {
         if (this._load)
         {

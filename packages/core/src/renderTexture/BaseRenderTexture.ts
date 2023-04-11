@@ -45,6 +45,11 @@ export interface BaseRenderTexture extends GlobalMixins.BaseRenderTexture, BaseT
 export class BaseRenderTexture extends BaseTexture
 {
     public _clear: Color;
+
+    /**
+     * The framebuffer of this base texture.
+     * @readonly
+     */
     public framebuffer: Framebuffer;
 
     /** The data structure for the stencil masks. */
@@ -116,6 +121,20 @@ export class BaseRenderTexture extends BaseTexture
     get clear(): Color
     {
         return this._clear;
+    }
+
+    /**
+     * Shortcut to `this.framebuffer.multisample`.
+     * @default PIXI.MSAA_QUALITY.NONE
+     */
+    get multisample(): MSAA_QUALITY
+    {
+        return this.framebuffer.multisample;
+    }
+
+    set multisample(value: MSAA_QUALITY)
+    {
+        this.framebuffer.multisample = value;
     }
 
     /**
