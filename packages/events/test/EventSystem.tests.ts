@@ -96,15 +96,8 @@ class CustomElement extends HTMLElement
 
         const shadowRoot = this.attachShadow({ mode: 'closed' });
 
-        const styleSheet = new CSSStyleSheet();
-
-        styleSheet.insertRule(`
-            :host {
-                display: block;
-                margin: 50px;
-            }
-        `);
-        shadowRoot.adoptedStyleSheets = [styleSheet];
+        this.style.display = 'block';
+        this.style.margin = '50px';
 
         shadowRoot.appendChild(this.view);
     }
