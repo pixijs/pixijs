@@ -663,7 +663,7 @@ type ExtractWorkerResult<T extends Uint8Array | Uint8ClampedArray, R extends str
     error?: string,
 };
 
-export class ExtractWorker extends Worker
+class ExtractWorker extends Worker
 {
     private static objectURL: string | undefined;
     private static objectURLRefCount = 0;

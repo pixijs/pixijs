@@ -1,8 +1,7 @@
 import { extensions, ExtensionType, RenderTexture, utils } from '@pixi/core';
-import { ExtractWorker } from '../../extract/src/Extract';
 
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
-import type { ExtensionMetadata, ICanvas, ISystem, Rectangle } from '@pixi/core';
+import type { ExtensionMetadata, ICanvas, ICanvasRenderingContext2D, ISystem, Rectangle } from '@pixi/core';
 import type { DisplayObject } from '@pixi/display';
 import type { IExtract } from '@pixi/extract';
 
@@ -23,15 +22,6 @@ export class CanvasExtract implements ISystem, IExtract
 
     /** A reference to the current renderer */
     public renderer: CanvasRenderer | null;
-
-    private _worker: ExtractWorker | undefined;
-
-    private get worker(): ExtractWorker
-    {
-        this._worker ??= new ExtractWorker();
-
-        return this._worker;
-    }
 
     /**
      * @param renderer - A reference to the current renderer
@@ -73,11 +63,60 @@ export class CanvasExtract implements ISystem, IExtract
     public async base64(target?: DisplayObject | RenderTexture, format?: string, quality?: number,
         frame?: Rectangle): Promise<string>
     {
-        const imageData = this._imageData(target, frame);
-        const pixels = imageData.data;
-        const { width, height } = imageData;
+        const { canvas: c, context, sx, sy, sw, sh } = this._canvas(target, frame);
+        let canvas = c;
 
-        return this.worker.base64({ pixels, width, height }, format, quality);
+        if (!(sx === 0 && sy === 0 && sw === c.width && sh === c.height))
+        {
+            const imageData = context.getImageData(sx, sy, sw, sh);
+            const canvasBuffer = new utils.CanvasRenderTarget(sw, sh, 1);
+
+            canvasBuffer.context.putImageData(imageData, 0, 0);
+            canvas = canvasBuffer.canvas;
+        }
+
+        if (canvas.toBlob !== undefined)
+        {
+            return new Promise<string>((resolve, reject) =>
+            {
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                canvas.toBlob!((blob) =>
+                {
+                    if (!blob)
+                    {
+                        reject(new Error('ICanvas.toBlob failed'));
+
+                        return;
+                    }
+
+                    const reader = new FileReader();
+
+                    reader.onload = () => resolve(reader.result as string);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(blob);
+                }, format, quality);
+            });
+        }
+        if (canvas.toDataURL !== undefined)
+        {
+            return canvas.toDataURL(format, quality);
+        }
+        if (canvas.convertToBlob !== undefined)
+        {
+            const blob = await canvas.convertToBlob({ type: format, quality });
+
+            return new Promise<string>((resolve, reject) =>
+            {
+                const reader = new FileReader();
+
+                reader.onload = () => resolve(reader.result as string);
+                reader.onerror = reject;
+                reader.readAsDataURL(blob);
+            });
+        }
+
+        throw new Error('CanvasExtract.base64() requires ICanvas.toDataURL, ICanvas.toBlob, '
+            + 'or ICanvas.convertToBlob to be implemented');
     }
 
     /**
@@ -89,11 +128,16 @@ export class CanvasExtract implements ISystem, IExtract
      */
     public bitmap(target?: DisplayObject | RenderTexture, frame?: Rectangle): Promise<ImageBitmap>
     {
-        const imageData = this._imageData(target, frame);
-        const pixels = imageData.data;
-        const { width, height } = imageData;
+        const { canvas, context, sx, sy, sw, sh } = this._canvas(target, frame);
 
-        return this.worker.bitmap({ pixels, width, height });
+        if (canvas instanceof HTMLCanvasElement || canvas instanceof OffscreenCanvas)
+        {
+            return createImageBitmap(canvas, sx, sy, sw, sh);
+        }
+
+        const imageData = context.getImageData(sx, sy, sw, sh);
+
+        return createImageBitmap(imageData);
     }
 
     /**
@@ -145,7 +189,8 @@ export class CanvasExtract implements ISystem, IExtract
         return pixels as any;
     }
 
-    private _imageData(target?: DisplayObject | RenderTexture, frame?: Rectangle): ImageData
+    private _canvas(target?: DisplayObject | RenderTexture, frame?: Rectangle):
+    { canvas: ICanvas, context: ICanvasRenderingContext2D, sx: number, sy: number, sw: number, sh: number }
     {
         const renderer = this.renderer;
 
@@ -154,6 +199,7 @@ export class CanvasExtract implements ISystem, IExtract
             throw new Error('The CanvasExtract has already been destroyed');
         }
 
+        let canvas;
         let context;
         let resolution;
         let renderTexture;
@@ -174,30 +220,37 @@ export class CanvasExtract implements ISystem, IExtract
 
         if (renderTexture)
         {
+            canvas = renderTexture.baseTexture._canvasRenderTarget.canvas;
             context = renderTexture.baseTexture._canvasRenderTarget.context;
             resolution = renderTexture.baseTexture._canvasRenderTarget.resolution;
             frame ??= renderTexture.frame;
         }
         else
         {
+            canvas = renderer.view;
             context = renderer.canvasContext.rootContext;
             resolution = renderer.resolution;
             frame ??= renderer.screen;
         }
 
-        const x = Math.round(frame.x * resolution);
-        const y = Math.round(frame.y * resolution);
-        const width = Math.round(frame.width * resolution);
-        const height = Math.round(frame.height * resolution);
+        const sx = Math.round(frame.x * resolution);
+        const sy = Math.round(frame.y * resolution);
+        const sw = Math.round(frame.width * resolution);
+        const sh = Math.round(frame.height * resolution);
 
-        return context.getImageData(x, y, width, height);
+        return { canvas, context, sx, sy, sw, sh };
+    }
+
+    private _imageData(target?: DisplayObject | RenderTexture, frame?: Rectangle): ImageData
+    {
+        const { context, sx, sy, sw, sh } = this._canvas(target, frame);
+
+        return context.getImageData(sx, sy, sw, sh);
     }
 
     /** Destroys the extract */
     public destroy(): void
     {
-        this._worker?.terminate();
-        this._worker = undefined;
         this.renderer = null;
     }
 }
