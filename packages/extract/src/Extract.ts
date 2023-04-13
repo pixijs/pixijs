@@ -14,7 +14,7 @@ export interface IExtract
     bitmap(target?: DisplayObject | RenderTexture, frame?: Rectangle): Promise<ImageBitmap>;
     canvas<T extends boolean = false>(target?: DisplayObject | RenderTexture, frame?: Rectangle, async?: T):
     T extends true ? Promise<ICanvas> : ICanvas;
-    pixels<T extends boolean>(target?: DisplayObject | RenderTexture, frame?: Rectangle, async?: T):
+    pixels<T extends boolean = false>(target?: DisplayObject | RenderTexture, frame?: Rectangle, async?: T):
     T extends true ? Promise<Uint8Array | Uint8ClampedArray> : Uint8Array | Uint8ClampedArray;
 }
 
@@ -668,12 +668,6 @@ class ExtractWorker extends Worker
     private static objectURL: string | undefined;
     private static objectURLRefCount = 0;
 
-    private static readonly isOffscreenCanvasSupported = typeof OffscreenCanvas !== 'undefined'
-        && !!new OffscreenCanvas(0, 0).getContext('bitmaprenderer');
-
-    private static readonly isSubworker = 'WorkerGlobalScope' in globalThis
-        && globalThis instanceof (globalThis as any).WorkerGlobalScope;
-
     private _terminated: boolean;
 
     public get terminated(): boolean
@@ -684,6 +678,8 @@ class ExtractWorker extends Worker
     private readonly tasks: Map<number, ExtractWorkerTask<Uint8Array | Uint8ClampedArray,
     string | ImageBitmap | OffscreenCanvas | Uint8Array | Uint8ClampedArray>>;
     private nextTaskID: number;
+
+    private supports: Record<'base64' | 'bitmap' | 'canvas' | 'pixels', Promise<boolean>>;
 
     constructor()
     {
@@ -698,6 +694,13 @@ class ExtractWorker extends Worker
         this.tasks = new Map();
         this.nextTaskID = 0;
         this.onmessage = this._onMessage.bind(this);
+        this.supports = {} as any;
+
+        for (const func of ['base64', 'bitmap', 'canvas', 'pixels'] as ['base64', 'bitmap', 'canvas', 'pixels'])
+        {
+            this.supports[func] = this.process({ pixels: new Uint8Array(4), width: 1, height: 1 }, func)
+                .then(() => true, () => false);
+        }
     }
 
     public terminate(): void
@@ -752,22 +755,21 @@ class ExtractWorker extends Worker
         F extends 'base64' ? Promise<string> : F extends 'bitmap' ? Promise<ImageBitmap> : F extends 'canvas'
             ? Promise<OffscreenCanvas> : F extends 'pixels' ? Promise<T> : never
     {
-        if (func === 'pixels' && !(data.flippedY || data.premultipliedAlpha))
-        {
-            return Promise.resolve(data.pixels) as any;
-        }
-
-        const taskID = this.nextTaskID++;
-        const taskData = { id: taskID, data, func, args };
-
         return new Promise((resolve, reject) =>
         {
             if (this._terminated)
             {
                 reject(new Error('ExtractWorker has been terminated already'));
             }
+            else if (func === 'pixels' && !(data.flippedY || data.premultipliedAlpha))
+            {
+                resolve(data.pixels);
+            }
             else
             {
+                const taskID = this.nextTaskID++;
+                const taskData = { id: taskID, data, func, args };
+
                 this.tasks.set(taskID, { data, resolve, reject });
                 this.postMessage(taskData, [data.pixels.buffer]);
             }
@@ -777,7 +779,7 @@ class ExtractWorker extends Worker
     public async base64(data: PixelData<Uint8Array | Uint8ClampedArray>,
         type = 'image/png', quality?: number): Promise<string>
     {
-        if (ExtractWorker.isOffscreenCanvasSupported)
+        if (await this.supports.base64)
         {
             return this.process(data, 'base64', type, quality);
         }
@@ -837,7 +839,7 @@ class ExtractWorker extends Worker
             throw new Error('createImageBitmap is not supported');
         }
 
-        if (ExtractWorker.isOffscreenCanvasSupported)
+        if (await this.supports.bitmap)
         {
             return this.process(data, 'bitmap');
         }
@@ -852,7 +854,8 @@ class ExtractWorker extends Worker
 
     public async canvas(data: PixelData<Uint8Array | Uint8ClampedArray>): Promise<ICanvas>
     {
-        if (ExtractWorker.isSubworker)
+        if ('WorkerGlobalScope' in globalThis && globalThis instanceof (globalThis as any).WorkerGlobalScope
+            && await this.supports.canvas)
         {
             return this.process(data, 'canvas');
         }
