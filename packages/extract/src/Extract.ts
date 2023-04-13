@@ -712,6 +712,13 @@ class ExtractWorker extends Worker
             URL.revokeObjectURL(ExtractWorker.objectURL as string);
             ExtractWorker.objectURL = undefined;
         }
+
+        for (const task of this.tasks.values())
+        {
+            task.reject(new Error('ExtractWorker has been terminated'));
+        }
+
+        this.tasks.clear();
     }
 
     private _onMessage<T extends Uint8Array | Uint8ClampedArray, R extends string | ImageBitmap | OffscreenCanvas | T>(
