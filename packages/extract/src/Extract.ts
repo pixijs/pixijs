@@ -275,134 +275,171 @@ export class Extract implements ISystem, IExtract
         F extends undefined ? PixelData<Uint8Array> : F extends 'base64' ? Promise<string> : F extends 'bitmap'
             ? Promise<ImageBitmap> : F extends 'canvas' ? Promise<ICanvas> : F extends 'pixels' ? Promise<Uint8Array> : never
     {
-        const renderer = this.renderer;
-
-        if (!renderer)
+        try
         {
-            throw new Error('Extract has already been destroyed');
-        }
+            const renderer = this.renderer;
 
-        let resolution;
-        let flippedY = false;
-        let premultipliedAlpha = false;
-        let renderTexture: RenderTexture | undefined;
-        let generated = false;
-
-        if (target)
-        {
-            if (target instanceof RenderTexture)
+            if (!renderer)
             {
-                renderTexture = target;
+                throw new Error('Extract has already been destroyed');
+            }
+
+            let resolution;
+            let flippedY = false;
+            let premultipliedAlpha = false;
+            let renderTexture: RenderTexture | undefined;
+            let generated = false;
+
+            if (target)
+            {
+                if (target instanceof RenderTexture)
+                {
+                    renderTexture = target;
+                }
+                else
+                {
+                    renderTexture = renderer.generateTexture(target, {
+                        resolution: renderer.resolution,
+                        multisample: renderer.multisample
+                    });
+                    generated = true;
+                }
+            }
+
+            if (renderTexture)
+            {
+                resolution = renderTexture.baseTexture.resolution;
+                frame ??= renderTexture.frame;
+                flippedY = false;
+                premultipliedAlpha = true;
+
+                if (!generated)
+                {
+                    renderer.renderTexture.bind(renderTexture);
+
+                    const fbo = renderTexture.framebuffer.glFramebuffers[renderer.CONTEXT_UID];
+
+                    if (fbo.blitFramebuffer)
+                    {
+                        renderer.framebuffer.bind(fbo.blitFramebuffer);
+                    }
+                }
             }
             else
             {
-                renderTexture = renderer.generateTexture(target, {
-                    resolution: renderer.resolution,
-                    multisample: renderer.multisample
-                });
-                generated = true;
+                resolution = renderer.resolution;
+                frame ??= renderer.screen;
+                flippedY = true;
+                premultipliedAlpha = true;
+                renderer.renderTexture.bind();
             }
-        }
 
-        if (renderTexture)
-        {
-            resolution = renderTexture.baseTexture.resolution;
-            frame ??= renderTexture.frame;
-            flippedY = false;
-            premultipliedAlpha = true;
+            const baseFrame = TEMP_RECT.copyFrom(renderTexture?.frame ?? renderer.screen);
 
-            if (!generated)
+            baseFrame.x = Math.round(baseFrame.x * resolution);
+            baseFrame.y = Math.round(baseFrame.y * resolution);
+            baseFrame.width = Math.round(baseFrame.width * resolution);
+            baseFrame.height = Math.round(baseFrame.height * resolution);
+
+            const x = Math.round(frame.x * resolution);
+            const y = Math.round(frame.y * resolution);
+            const width = Math.round(frame.width * resolution);
+            const height = Math.round(frame.height * resolution);
+            const minX = Math.max(0, baseFrame.left - x);
+            const minY = Math.max(0, baseFrame.top - y);
+            const maxX = Math.min(width, baseFrame.right - x);
+            const maxY = Math.min(height, baseFrame.bottom - y);
+            const pixelsSize = 4 * width * height;
+            const { gl, CONTEXT_UID } = renderer;
+
+            if (func === undefined)
             {
-                renderer.renderTexture.bind(renderTexture);
+                const pixels = new Uint8Array(pixelsSize);
 
-                const fbo = renderTexture.framebuffer.glFramebuffers[renderer.CONTEXT_UID];
-
-                if (fbo.blitFramebuffer)
-                {
-                    renderer.framebuffer.bind(fbo.blitFramebuffer);
-                }
-            }
-        }
-        else
-        {
-            resolution = renderer.resolution;
-            frame ??= renderer.screen;
-            flippedY = true;
-            premultipliedAlpha = true;
-            renderer.renderTexture.bind();
-        }
-
-        const baseFrame = TEMP_RECT.copyFrom(renderTexture?.frame ?? renderer.screen);
-
-        baseFrame.x = Math.round(baseFrame.x * resolution);
-        baseFrame.y = Math.round(baseFrame.y * resolution);
-        baseFrame.width = Math.round(baseFrame.width * resolution);
-        baseFrame.height = Math.round(baseFrame.height * resolution);
-
-        const x = Math.round(frame.x * resolution);
-        const y = Math.round(frame.y * resolution);
-        const width = Math.round(frame.width * resolution);
-        const height = Math.round(frame.height * resolution);
-        const minX = Math.max(0, baseFrame.left - x);
-        const minY = Math.max(0, baseFrame.top - y);
-        const maxX = Math.min(width, baseFrame.right - x);
-        const maxY = Math.min(height, baseFrame.bottom - y);
-        const pixelsSize = 4 * width * height;
-        const { gl, CONTEXT_UID } = renderer;
-
-        if (func === undefined)
-        {
-            const pixels = new Uint8Array(pixelsSize);
-
-            gl.readPixels(x, y, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
-
-            return { pixels, width, height, minX, minY, maxX, maxY, flippedY, premultipliedAlpha } as any;
-        }
-
-        const bufferSize = utils.nextPow2(pixelsSize);
-        let pixels: Uint8Array;
-        let tempPixels: Uint8Array | undefined;
-
-        if (func === 'pixels')
-        {
-            pixels = new Uint8Array(pixelsSize);
-        }
-        else
-        {
-            tempPixels = this._getArray(bufferSize);
-            pixels = tempPixels;
-        }
-
-        let readPixels: Promise<PixelData<Uint8Array>>;
-
-        if (renderer.context.webGLVersion === 1)
-        {
-            readPixels = new Promise((resolve) =>
-            {
                 gl.readPixels(x, y, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
-                resolve({ pixels, width, height, minX, minY, maxX, maxY, flippedY, premultipliedAlpha });
-            });
-        }
-        else
-        {
-            const buffer = this._getBuffer(bufferSize);
+                return { pixels, width, height, minX, minY, maxX, maxY, flippedY, premultipliedAlpha } as any;
+            }
 
-            readPixels = new Promise<void>((resolve, reject) =>
+            const bufferSize = utils.nextPow2(pixelsSize);
+            let pixels: Uint8Array;
+            let tempPixels: Uint8Array | undefined;
+
+            if (func === 'pixels')
             {
-                gl.readPixels(x, y, width, height, gl.RGBA, gl.UNSIGNED_BYTE, 0);
-                gl.bindBuffer(gl.PIXEL_PACK_BUFFER, null);
+                pixels = new Uint8Array(pixelsSize);
+            }
+            else
+            {
+                tempPixels = this._getArray(bufferSize);
+                pixels = tempPixels;
+            }
 
-                const sync = gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0);
+            let readPixels: Promise<PixelData<Uint8Array>>;
 
-                if (!sync)
+            if (renderer.context.webGLVersion === 1)
+            {
+                readPixels = new Promise((resolve) =>
                 {
-                    reject(new Error(`gl.fenceSync failed [${gl.getError()}]`));
+                    gl.readPixels(x, y, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
-                    return;
-                }
+                    resolve({ pixels, width, height, minX, minY, maxX, maxY, flippedY, premultipliedAlpha });
+                });
+            }
+            else
+            {
+                const buffer = this._getBuffer(bufferSize);
 
-                const wait = (flags = 0) =>
+                readPixels = new Promise<void>((resolve, reject) =>
+                {
+                    gl.readPixels(x, y, width, height, gl.RGBA, gl.UNSIGNED_BYTE, 0);
+                    gl.bindBuffer(gl.PIXEL_PACK_BUFFER, null);
+
+                    const sync = gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0);
+
+                    if (!sync)
+                    {
+                        reject(new Error(`gl.fenceSync failed [${gl.getError()}]`));
+
+                        return;
+                    }
+
+                    const wait = (flags = 0) =>
+                    {
+                        if (!this.renderer)
+                        {
+                            throw new Error('Extract has already been destroyed');
+                        }
+
+                        if (this.renderer.CONTEXT_UID !== CONTEXT_UID)
+                        {
+                            throw new Error('WebGL context has changed');
+                        }
+
+                        const status = gl.clientWaitSync(sync, flags, 0);
+
+                        if (status === gl.TIMEOUT_EXPIRED)
+                        {
+                            setTimeout(wait, 1);
+                        }
+                        else if (status === gl.WAIT_FAILED)
+                        {
+                            const error = gl.getError();
+
+                            gl.deleteSync(sync);
+
+                            reject(new Error(`gl.clientWaitSync returned WAIT_FAILED [${error}]`));
+                        }
+                        else
+                        {
+                            gl.deleteSync(sync);
+
+                            resolve();
+                        }
+                    };
+
+                    setTimeout(wait, 0, gl.SYNC_FLUSH_COMMANDS_BIT);
+                }).then(() =>
                 {
                     if (!this.renderer)
                     {
@@ -414,70 +451,47 @@ export class Extract implements ISystem, IExtract
                         throw new Error('WebGL context has changed');
                     }
 
-                    const status = gl.clientWaitSync(sync, flags, 0);
+                    gl.bindBuffer(gl.PIXEL_PACK_BUFFER, buffer);
+                    gl.getBufferSubData(gl.PIXEL_PACK_BUFFER, 0, pixels, 0, pixelsSize);
+                    gl.bindBuffer(gl.PIXEL_PACK_BUFFER, null);
 
-                    if (status === gl.TIMEOUT_EXPIRED)
+                    return { pixels, width, height, minX, minY, maxX, maxY, flippedY, premultipliedAlpha };
+                }).finally(() =>
+                {
+                    if (this.renderer?.CONTEXT_UID === CONTEXT_UID)
                     {
-                        setTimeout(wait, 1);
+                        this._returnBuffer(buffer, bufferSize);
                     }
-                    else if (status === gl.WAIT_FAILED)
-                    {
-                        const error = gl.getError();
+                });
+            }
 
-                        gl.deleteSync(sync);
-
-                        reject(new Error(`gl.clientWaitSync returned WAIT_FAILED [${error}]`));
-                    }
-                    else
-                    {
-                        gl.deleteSync(sync);
-
-                        resolve();
-                    }
-                };
-
-                setTimeout(wait, 0, gl.SYNC_FLUSH_COMMANDS_BIT);
-            }).then(() =>
+            return readPixels.finally(() =>
             {
-                if (!this.renderer)
+                if (generated)
                 {
-                    throw new Error('Extract has already been destroyed');
+                    renderTexture?.destroy(true);
                 }
-
-                if (this.renderer.CONTEXT_UID !== CONTEXT_UID)
-                {
-                    throw new Error('WebGL context has changed');
-                }
-
-                gl.bindBuffer(gl.PIXEL_PACK_BUFFER, buffer);
-                gl.getBufferSubData(gl.PIXEL_PACK_BUFFER, 0, pixels, 0, pixelsSize);
-                gl.bindBuffer(gl.PIXEL_PACK_BUFFER, null);
-
-                return { pixels, width, height, minX, minY, maxX, maxY, flippedY, premultipliedAlpha };
-            }).finally(() =>
+            }).then(
+                async (data) => (this.worker as any)[func](data, ...args)
+            ).finally(() =>
             {
                 if (this.renderer?.CONTEXT_UID === CONTEXT_UID)
                 {
-                    this._returnBuffer(buffer, bufferSize);
+                    this._returnArray(tempPixels);
                 }
-            });
+            }) as any;
         }
-
-        return readPixels.finally(() =>
+        catch (e)
         {
-            if (generated)
+            if (func === undefined)
             {
-                renderTexture?.destroy(true);
+                throw e;
             }
-        }).then(
-            async (data) => (this.worker as any)[func](data, ...args)
-        ).finally(() =>
-        {
-            if (this.renderer?.CONTEXT_UID === CONTEXT_UID)
+            else
             {
-                this._returnArray(tempPixels);
+                return Promise.reject(e) as any;
             }
-        }) as any;
+        }
     }
 
     /** Destroys the extract. */

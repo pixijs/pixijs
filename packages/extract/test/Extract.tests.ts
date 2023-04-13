@@ -435,4 +435,71 @@ describe('Extract', () =>
         graphics.destroy();
         renderer.destroy();
     });
+
+    it('should throw error if renderer is destroyed', async () =>
+    {
+        const renderer = new Renderer();
+        const sprite = new Sprite(Texture.WHITE);
+        const extract = renderer.extract;
+
+        renderer.destroy();
+
+        expect(() => extract.canvas(sprite)).toThrow();
+        await expect(extract.base64(sprite)).toReject();
+        expect(() => extract.pixels(sprite)).toThrow();
+        await expect(extract.image(sprite)).toReject();
+
+        sprite.destroy();
+    });
+
+    it('should return promise if async', async () =>
+    {
+        const renderer = new Renderer();
+        const sprite = new Sprite(Texture.WHITE);
+        const extract = renderer.extract;
+
+        const base64Promise1 = extract.base64(sprite);
+
+        expect(base64Promise1).toBeInstanceOf(Promise);
+        await expect(base64Promise1).toResolve();
+
+        const canvasPromise1 = extract.canvas(sprite, undefined, true);
+
+        expect(canvasPromise1).toBeInstanceOf(Promise);
+        await expect(canvasPromise1).toResolve();
+
+        const imagePromise1 = extract.image(sprite);
+
+        expect(imagePromise1).toBeInstanceOf(Promise);
+        await expect(imagePromise1).toResolve();
+
+        const pixelsPromise1 = extract.pixels(sprite, undefined, true);
+
+        expect(pixelsPromise1).toBeInstanceOf(Promise);
+        await expect(pixelsPromise1).toResolve();
+
+        renderer.destroy();
+
+        const base64Promise2 = extract.base64(sprite);
+
+        expect(base64Promise2).toBeInstanceOf(Promise);
+        await expect(base64Promise2).toReject();
+
+        const canvasPromise2 = extract.canvas(sprite, undefined, true);
+
+        expect(canvasPromise2).toBeInstanceOf(Promise);
+        await expect(canvasPromise2).toReject();
+
+        const imagePromise2 = extract.image(sprite);
+
+        expect(imagePromise2).toBeInstanceOf(Promise);
+        await expect(imagePromise2).toReject();
+
+        const pixelsPromise2 = extract.pixels(sprite, undefined, true);
+
+        expect(pixelsPromise2).toBeInstanceOf(Promise);
+        await expect(pixelsPromise2).toReject();
+
+        sprite.destroy();
+    });
 });

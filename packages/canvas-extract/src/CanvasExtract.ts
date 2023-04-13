@@ -170,19 +170,34 @@ export class CanvasExtract implements ISystem, IExtract
     public canvas<T extends boolean = false>(target?: DisplayObject | RenderTexture, frame?: Rectangle, async?: T):
     T extends true ? Promise<ICanvas> : ICanvas
     {
-        const imageData = this._imageData(target, frame);
-        const canvasBuffer = new utils.CanvasRenderTarget(imageData.width, imageData.height, 1);
+        let canvas: any;
 
-        canvasBuffer.context.putImageData(imageData, 0, 0);
-
-        const canvas = canvasBuffer.canvas;
-
-        if (async)
+        try
         {
-            return Promise.resolve(canvas) as any;
+            const imageData = this._imageData(target, frame);
+            const canvasBuffer = new utils.CanvasRenderTarget(imageData.width, imageData.height, 1);
+
+            canvasBuffer.context.putImageData(imageData, 0, 0);
+            canvas = canvasBuffer.canvas;
+
+            if (async)
+            {
+                canvas = Promise.resolve(canvas);
+            }
+        }
+        catch (e)
+        {
+            if (async)
+            {
+                canvas = Promise.reject(e);
+            }
+            else
+            {
+                throw e;
+            }
         }
 
-        return canvas as any;
+        return canvas;
     }
 
     /**
@@ -198,14 +213,30 @@ export class CanvasExtract implements ISystem, IExtract
     public pixels<T extends boolean = false>(target?: DisplayObject | RenderTexture, frame?: Rectangle, async?: T):
     T extends true ? Promise<Uint8ClampedArray> : Uint8ClampedArray
     {
-        const pixels = this._imageData(target, frame).data;
+        let pixels: any;
 
-        if (async)
+        try
         {
-            return Promise.resolve(pixels) as any;
+            pixels = this._imageData(target, frame).data;
+
+            if (async)
+            {
+                pixels = Promise.resolve(pixels);
+            }
+        }
+        catch (e)
+        {
+            if (async)
+            {
+                pixels = Promise.reject(e);
+            }
+            else
+            {
+                throw e;
+            }
         }
 
-        return pixels as any;
+        return pixels;
     }
 
     private _canvas(target?: DisplayObject | RenderTexture, frame?: Rectangle):
