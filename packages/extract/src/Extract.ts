@@ -397,7 +397,7 @@ export class Extract implements ISystem, IExtract
 
                 if (!sync)
                 {
-                    reject(new Error('gl.fenceSync failed'));
+                    reject(new Error(`gl.fenceSync failed [${gl.getError()}]`));
 
                     return;
                 }
@@ -420,18 +420,19 @@ export class Extract implements ISystem, IExtract
                     {
                         setTimeout(wait, 1);
                     }
+                    else if (status === gl.WAIT_FAILED)
+                    {
+                        const error = gl.getError();
+
+                        gl.deleteSync(sync);
+
+                        reject(new Error(`gl.clientWaitSync returned WAIT_FAILED [${error}]`));
+                    }
                     else
                     {
                         gl.deleteSync(sync);
 
-                        if (status === gl.WAIT_FAILED)
-                        {
-                            reject(new Error('gl.clientWaitSync returned WAIT_FAILED'));
-                        }
-                        else
-                        {
-                            resolve();
-                        }
+                        resolve();
                     }
                 };
 
@@ -602,7 +603,7 @@ export class Extract implements ISystem, IExtract
 
             if (!buffer)
             {
-                throw new Error('gl.createBuffer failed');
+                throw new Error(`gl.createBuffer failed [${gl.getError()}]`);
             }
 
             gl.bindBuffer(gl.PIXEL_PACK_BUFFER, buffer);
