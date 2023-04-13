@@ -126,9 +126,14 @@ export class CanvasExtract implements ISystem, IExtract
      * @param frame - The frame the extraction is restricted to.
      * @returns - One-dimensional array containing the pixel data of the entire texture
      */
-    public bitmap(target?: DisplayObject | RenderTexture, frame?: Rectangle): Promise<ImageBitmap>
+    public async bitmap(target?: DisplayObject | RenderTexture, frame?: Rectangle): Promise<ImageBitmap>
     {
         const { canvas, context, sx, sy, sw, sh } = this._canvas(target, frame);
+
+        if (typeof createImageBitmap === 'undefined')
+        {
+            throw new Error('createImageBitmap is not supported');
+        }
 
         if (canvas instanceof HTMLCanvasElement || canvas instanceof OffscreenCanvas)
         {
@@ -136,8 +141,22 @@ export class CanvasExtract implements ISystem, IExtract
         }
 
         const imageData = context.getImageData(sx, sy, sw, sh);
+        let bitmap: ImageBitmap;
 
-        return createImageBitmap(imageData);
+        try
+        {
+            bitmap = await createImageBitmap(imageData);
+        }
+        catch (e)
+        {
+            const canvasBuffer = new utils.CanvasRenderTarget(sw, sh, 1);
+
+            canvasBuffer.context.putImageData(imageData, 0, 0);
+
+            bitmap = await createImageBitmap(canvasBuffer.canvas as ImageBitmapSource);
+        }
+
+        return bitmap;
     }
 
     /**

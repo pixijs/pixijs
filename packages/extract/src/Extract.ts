@@ -848,8 +848,22 @@ class ExtractWorker extends Worker
         const { width, height } = data;
         const size = 4 * width * height;
         const imageData = new ImageData(new Uint8ClampedArray(pixels.buffer, 0, size), width, height);
+        let bitmap: ImageBitmap;
 
-        return createImageBitmap(imageData);
+        try
+        {
+            bitmap = await createImageBitmap(imageData);
+        }
+        catch (e)
+        {
+            const canvasBuffer = new utils.CanvasRenderTarget(width, height, 1);
+
+            canvasBuffer.context.putImageData(imageData, 0, 0);
+
+            bitmap = await createImageBitmap(canvasBuffer.canvas as ImageBitmapSource);
+        }
+
+        return bitmap;
     }
 
     public async canvas(data: PixelData<Uint8Array | Uint8ClampedArray>): Promise<ICanvas>
@@ -968,6 +982,61 @@ function clearOutOfBounds(pixels, width, height, minX, minY, maxX, maxY)
     }
 }
 
+/** @type {Promise<boolean>} */
+const supportsBitmapRenderer = new Promise((resolve) =>
+{
+    if (typeof createImageBitmap !== 'undefined'
+        && typeof OffscreenCanvas !== 'undefined'
+        && !!new OffscreenCanvas(0, 0).getContext('bitmaprenderer'))
+    {
+        createImageBitmap(new ImageData(1, 1)).then(() => resolve(true), () => resolve(false));
+    }
+    else
+    {
+        resolve(false);
+    }
+});
+
+/**
+ * @param {Uint8Array|Uint8ClampedArray} pixels
+ * @param {number} width
+ * @param {number} height
+ * @param {string} [type]
+ * @param {number} [quality]
+ * @returns {Promise<string>}
+ */
+async function toBase64(pixels, width, height, type, quality)
+{
+    let canvas;
+
+    if (await supportsBitmapRenderer)
+    {
+        const bitmap = await toBitmap(pixels, width, height);
+
+        canvas = new OffscreenCanvas(width, height);
+
+        const context = canvas.getContext('bitmaprenderer');
+
+        context.transferFromImageBitmap(bitmap);
+        bitmap.close();
+    }
+    else
+    {
+        canvas = await toCanvas(pixels, width, height);
+    }
+
+    return canvas.convertToBlob({ type, quality }).then(
+        blob => new Promise((resolve, reject) =>
+        {
+            const reader = new FileReader();
+
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        })
+    );
+}
+
 /**
  * @param {Uint8Array|Uint8ClampedArray} pixels
  * @param {number} width
@@ -980,35 +1049,6 @@ async function toBitmap(pixels, width, height)
     const imageData = new ImageData(new Uint8ClampedArray(pixels.buffer, 0, size), width, height);
 
     return createImageBitmap(imageData);
-}
-
-/**
- * @param {Uint8Array|Uint8ClampedArray} pixels
- * @param {number} width
- * @param {number} height
- * @param {string} [type]
- * @param {number} [quality]
- * @returns {Promise<string>}
- */
-async function toBase64(pixels, width, height, type, quality)
-{
-    const bitmap = await toBitmap(pixels, width, height);
-    const canvas = new OffscreenCanvas(width, height);
-    const context = canvas.getContext('bitmaprenderer');
-
-    context.transferFromImageBitmap(bitmap);
-    bitmap.close();
-
-    return canvas.convertToBlob({ type, quality }).then(
-        blob => new Promise((resolve, reject) =>
-        {
-            const reader = new FileReader();
-
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = reject;
-            reader.readAsDataURL(blob);
-        })
-    );
 }
 
 /**
