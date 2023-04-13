@@ -502,4 +502,64 @@ describe('Extract', () =>
 
         sprite.destroy();
     });
+
+    it('should extract base64 correctly', async () =>
+    {
+        const renderer = new Renderer({ width: 2, height: 2 });
+        const graphics = new Graphics()
+            .beginFill(0xFF0000, 0.4)
+            .drawRect(0, 0, 1, 1)
+            .endFill()
+            .beginFill(0x00FF00, 1.0)
+            .drawRect(1, 0, 1, 1)
+            .endFill()
+            .beginFill(0x0000FF, 1.0)
+            .drawRect(0, 1, 1, 1)
+            .endFill()
+            .beginFill(0xFFFF00, 0.8)
+            .drawRect(1, 1, 1, 1)
+            .endFill();
+        const extract = renderer.extract;
+
+        renderer.render(graphics);
+
+        const base64 = await extract.base64(graphics);
+
+        expect(base64).toStartWith('data:image/png;base64,');
+
+        const imagePromise = new Promise<HTMLImageElement>((resolve, reject) =>
+        {
+            const image = document.createElement('img');
+
+            image.onload = () => resolve(image);
+            image.onerror = reject;
+            image.src = base64;
+        });
+
+        await expect(imagePromise).toResolve();
+
+        const image = await imagePromise;
+
+        expect(image.naturalWidth).toBe(2);
+        expect(image.naturalHeight).toBe(2);
+
+        const canvas = document.createElement('canvas');
+
+        canvas.width = image.naturalWidth;
+        canvas.height = image.naturalHeight;
+
+        const context = canvas.getContext('2d');
+
+        context?.drawImage(image, 0, 0);
+
+        const imageData = context?.getImageData(0, 0, 2, 2);
+
+        expect(imageData?.data).toEqual(new Uint8ClampedArray([
+            255, 0, 0, 102, 0, 255, 0, 255,
+            0, 0, 255, 255, 255, 255, 0, 204
+        ]));
+
+        graphics.destroy();
+        renderer.destroy();
+    });
 });
