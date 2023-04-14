@@ -166,13 +166,14 @@ export class VideoResource extends BaseImageResource
         }
     }
 
-    private _videoFrameRequestCallback(_now: DOMHighResTimeStamp, _metadata: VideoFrameCallbackMetadata): void
+    private _videoFrameRequestCallback(): void
     {
         this.update();
 
         if (!this.destroyed)
         {
-            this._videoFrameRequestCallbackHandle = this.source.requestVideoFrameCallback(this._videoFrameRequestCallback);
+            this._videoFrameRequestCallbackHandle = (this.source as any).requestVideoFrameCallback(
+                this._videoFrameRequestCallback);
         }
         else
         {
@@ -363,7 +364,7 @@ export class VideoResource extends BaseImageResource
     {
         if (this._autoUpdate && this._isSourcePlaying())
         {
-            if (!this._updateFPS && this.source.requestVideoFrameCallback)
+            if (!this._updateFPS && (this.source as any).requestVideoFrameCallback)
             {
                 if (this._isConnectedToTicker)
                 {
@@ -374,7 +375,7 @@ export class VideoResource extends BaseImageResource
 
                 if (this._videoFrameRequestCallbackHandle === null)
                 {
-                    this._videoFrameRequestCallbackHandle = this.source.requestVideoFrameCallback(
+                    this._videoFrameRequestCallbackHandle = (this.source as any).requestVideoFrameCallback(
                         this._videoFrameRequestCallback);
                 }
             }
@@ -382,7 +383,7 @@ export class VideoResource extends BaseImageResource
             {
                 if (this._videoFrameRequestCallbackHandle !== null)
                 {
-                    this.source.cancelVideoFrameCallback(this._videoFrameRequestCallbackHandle);
+                    (this.source as any).cancelVideoFrameCallback(this._videoFrameRequestCallbackHandle);
                     this._videoFrameRequestCallbackHandle = null;
                 }
 
@@ -398,7 +399,7 @@ export class VideoResource extends BaseImageResource
         {
             if (this._videoFrameRequestCallbackHandle !== null)
             {
-                this.source.cancelVideoFrameCallback(this._videoFrameRequestCallbackHandle);
+                (this.source as any).cancelVideoFrameCallback(this._videoFrameRequestCallbackHandle);
                 this._videoFrameRequestCallbackHandle = null;
             }
 
