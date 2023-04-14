@@ -5,37 +5,32 @@ const inWorker = 'WorkerGlobalScope' in globalThis
 
 export async function testImageOrVideoFormat(dataURL: string): Promise<boolean>
 {
-    if (!dataURL.startsWith('data:'))
-    {
-        throw new Error('Invalid data URL');
-    }
-
-    const useLoadImageBitmap = await canLoadImageBitmap();
-
-    if (useLoadImageBitmap || inWorker)
-    {
-        if (!useLoadImageBitmap)
-        {
-            throw new Error('loadImageBitmap is not supported in worker');
-        }
-
-        try
-        {
-            const imageBitmap = await loadImageBitmap(dataURL);
-            const valid = imageBitmap.width > 0 && imageBitmap.height > 0;
-
-            imageBitmap.close();
-
-            return valid;
-        }
-        catch (e)
-        {
-            return false;
-        }
-    }
-
     if (dataURL.startsWith('data:image/'))
     {
+        const useLoadImageBitmap = await canLoadImageBitmap();
+
+        if (useLoadImageBitmap || inWorker)
+        {
+            if (!useLoadImageBitmap)
+            {
+                return false;
+            }
+
+            try
+            {
+                const imageBitmap = await loadImageBitmap(dataURL);
+                const valid = imageBitmap.width > 0 && imageBitmap.height > 0;
+
+                imageBitmap.close();
+
+                return valid;
+            }
+            catch (e)
+            {
+                return false;
+            }
+        }
+
         return new Promise((resolve) =>
         {
             const image = document.createElement('img');
@@ -49,6 +44,11 @@ export async function testImageOrVideoFormat(dataURL: string): Promise<boolean>
 
     if (dataURL.startsWith('data:video/'))
     {
+        if (inWorker)
+        {
+            return false;
+        }
+
         return new Promise((resolve) =>
         {
             const video = document.createElement('video');
@@ -63,5 +63,5 @@ export async function testImageOrVideoFormat(dataURL: string): Promise<boolean>
         });
     }
 
-    throw new Error('The data URL is neither an image or a video');
+    throw new Error('The data URL is neither an image nor a video');
 }
