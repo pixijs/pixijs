@@ -1,5 +1,5 @@
 import { extensions, ExtensionType } from '@pixi/core';
-import { testImageOrVideoFormat } from '../utils/testImageOrVideoFormat';
+import { testImageFormat } from '../utils/testImageFormat';
 
 import type { FormatDetectionParser } from '..';
 
@@ -12,7 +12,7 @@ export const detectWebp = {
     {
         const webpData = 'data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAAAAAAfQ//73v/+BiOh/AAA=';
 
-        return testImageOrVideoFormat(webpData);
+        return testImageFormat(webpData);
     },
     add: async (formats) => [...formats, 'webp'],
     remove: async (formats) => formats.filter((f) => f !== 'webp'),
