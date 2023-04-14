@@ -1,6 +1,7 @@
-import { BaseTexture, extensions, ExtensionType, settings, utils } from '@pixi/core';
+import { BaseTexture, extensions, ExtensionType, utils } from '@pixi/core';
 import { checkDataUrl } from '../../../utils/checkDataUrl';
 import { checkExtension } from '../../../utils/checkExtension';
+import { canLoadImageBitmap, loadImageBitmap } from '../../../utils/loadImageBitmap';
 import { LoaderParserPriority } from '../LoaderParser';
 import { WorkerManager } from '../WorkerManager';
 import { createTexture } from './utils/createTexture';
@@ -44,28 +45,6 @@ export interface LoadTextureConfig
      * @default 'anonymous'
      */
     crossOrigin: HTMLImageElement['crossOrigin'];
-}
-
-/**
- * Returns a promise that resolves an ImageBitmaps.
- * This function is designed to be used by a worker.
- * Part of WorkerManager!
- * @param url - The image to load an image bitmap for
- */
-export async function loadImageBitmap(url: string): Promise<ImageBitmap>
-{
-    const response = await settings.ADAPTER.fetch(url);
-
-    if (!response.ok)
-    {
-        throw new Error(`[loadImageBitmap] Failed to fetch ${url}: `
-            + `${response.status} ${response.statusText}`);
-    }
-
-    const imageBlob = await response.blob();
-    const imageBitmap = await createImageBitmap(imageBlob);
-
-    return imageBitmap;
 }
 
 /**
@@ -113,18 +92,18 @@ export const loadTextures = {
     {
         let src: any = null;
 
-        if (globalThis.createImageBitmap && this.config.preferCreateImageBitmap)
+        if (this.config.preferCreateImageBitmap)
         {
             if (this.config.preferWorkers && await WorkerManager.isImageBitmapSupported())
             {
                 src = await WorkerManager.loadImageBitmap(url);
             }
-            else
+            else if (await canLoadImageBitmap())
             {
                 src = await loadImageBitmap(url);
             }
         }
-        else
+        if (!src)
         {
             src = await new Promise((resolve) =>
             {
