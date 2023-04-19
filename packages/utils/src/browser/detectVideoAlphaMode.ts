@@ -31,22 +31,7 @@ export async function detectVideoAlphaMode(): Promise<ALPHA_MODES>
         {
             const video = document.createElement('video');
 
-            video.oncanplay = () =>
-            {
-                function wait()
-                {
-                    if (video.readyState <= 1)
-                    {
-                        setTimeout(wait, 1);
-                    }
-                    else
-                    {
-                        resolve(video);
-                    }
-                }
-
-                wait();
-            };
+            video.onloadeddata = () => resolve(video);
             video.onerror = () => resolve(null);
             video.autoplay = false;
             video.crossOrigin = 'anonymous';
