@@ -30,7 +30,7 @@ export const loadVideo = {
 
     test(url: string): boolean
     {
-        return checkDataUrl(url, validVideoExtensions) || checkExtension(url, validVideoMIMEs);
+        return checkDataUrl(url, validVideoMIMEs) || checkExtension(url, validVideoExtensions);
     },
 
     async load(url: string, loadAsset?: ResolvedAsset<IBaseTextureOptions>, loader?: Loader): Promise<Texture>

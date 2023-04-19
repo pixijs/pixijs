@@ -1,6 +1,7 @@
 import { Assets, loadTextures } from '@pixi/assets';
 import { BaseTexture, Texture } from '@pixi/core';
 import '@pixi/spritesheet';
+import { basePath } from './basePath';
 
 function wait(value = 500)
 {
@@ -11,10 +12,6 @@ function wait(value = 500)
 
 describe('Assets', () =>
 {
-    const basePath = process.env.GITHUB_ACTIONS
-        ? `https://raw.githubusercontent.com/pixijs/pixijs/${process.env.GITHUB_SHA}/packages/assets/test/assets/`
-        : 'http://localhost:8080/assets/test/assets/';
-
     beforeEach(() =>
     {
         // reset the loader
