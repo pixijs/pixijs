@@ -31,6 +31,22 @@ export async function detectVideoAlphaMode(): Promise<ALPHA_MODES>
         {
             const video = document.createElement('video');
 
+            video.oncanplay = () =>
+            {
+                function wait()
+                {
+                    if (video.readyState <= 1)
+                    {
+                        setTimeout(wait, 1);
+                    }
+                    else
+                    {
+                        resolve(video);
+                    }
+                }
+
+                wait();
+            };
             video.onerror = () => resolve(null);
             video.autoplay = false;
             video.crossOrigin = 'anonymous';
@@ -38,20 +54,6 @@ export async function detectVideoAlphaMode(): Promise<ALPHA_MODES>
             // eslint-disable-next-line max-len
             video.src = 'data:video/webm;base64,GkXfo59ChoEBQveBAULygQRC84EIQoKEd2VibUKHgQJChYECGFOAZwEAAAAAAAHTEU2bdLpNu4tTq4QVSalmU6yBoU27i1OrhBZUrmtTrIHGTbuMU6uEElTDZ1OsggEXTbuMU6uEHFO7a1OsggG97AEAAAAAAABZAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAVSalmoCrXsYMPQkBNgIRMYXZmV0GETGF2ZkSJiEBEAAAAAAAAFlSua8yuAQAAAAAAAEPXgQFzxYgAAAAAAAAAAZyBACK1nIN1bmSIgQCGhVZfVlA5g4EBI+ODhAJiWgDglLCBArqBApqBAlPAgQFVsIRVuYEBElTDZ9Vzc9JjwItjxYgAAAAAAAAAAWfInEWjh0VOQ09ERVJEh49MYXZjIGxpYnZweC12cDlnyKJFo4hEVVJBVElPTkSHlDAwOjAwOjAwLjA0MDAwMDAwMAAAH0O2dcfngQCgwqGggQAAAIJJg0IAABAAFgA4JBwYSgAAICAAEb///4r+AAB1oZ2mm+6BAaWWgkmDQgAAEAAWADgkHBhKAAAgIABIQBxTu2uRu4+zgQC3iveBAfGCAXHwgQM=';
             video.load();
-
-            function wait()
-            {
-                if (video.readyState <= 1)
-                {
-                    setTimeout(wait, 1);
-                }
-                else
-                {
-                    resolve(video);
-                }
-            }
-
-            wait();
         });
 
         if (!video)
