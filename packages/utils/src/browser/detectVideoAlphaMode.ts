@@ -15,7 +15,7 @@ let promise: Promise<ALPHA_MODES> | undefined;
  * @function detectVideoAlphaMode
  * @returns {Promise<PIXI.ALPHA_MODES>} The correct alpha mode for video textures.
  */
-export function detectVideoAlphaMode(): Promise<ALPHA_MODES>
+export async function detectVideoAlphaMode(): Promise<ALPHA_MODES>
 {
     promise ??= (async () =>
     {
@@ -27,53 +27,32 @@ export function detectVideoAlphaMode(): Promise<ALPHA_MODES>
             return ALPHA_MODES.UNPACK;
         }
 
-        function loadVideo(src: string): Promise<HTMLVideoElement | null>
+        const video = await new Promise<HTMLVideoElement | null>((resolve) =>
         {
-            return new Promise<HTMLVideoElement | null>((resolve) =>
+            const video = document.createElement('video');
+
+            video.onerror = () => resolve(null);
+            video.autoplay = false;
+            video.crossOrigin = 'anonymous';
+            video.preload = 'auto';
+            // eslint-disable-next-line max-len
+            video.src = 'data:video/webm;base64,GkXfo59ChoEBQveBAULygQRC84EIQoKEd2VibUKHgQJChYECGFOAZwEAAAAAAAIOEU2bdLpNu4tTq4QVSalmU6yBoU27i1OrhBZUrmtTrIHWTbuMU6uEElTDZ1OsggEnTbuMU6uEHFO7a1OsggH47AEAAAAAAABZAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAVSalmsCrXsYMPQkBNgIxMYXZmNjAuNC4xMDBXQYxMYXZmNjAuNC4xMDBEiYhARAAAAAAAABZUrmvMrgEAAAAAAABD14EBc8WIUzy3iLLKnmKcgQAitZyDdW5kiIEAhoVWX1ZQOYOBASPjg4QCYloA4JSwgQK6gQKagQJTwIEBVbCEVbmBARJUw2dAf3Nzn2PAgGfImUWjh0VOQ09ERVJEh4xMYXZmNjAuNC4xMDBzc9pjwItjxYhTPLeIssqeYmfIpEWjh0VOQ09ERVJEh5dMYXZjNjAuNi4xMDAgbGlidnB4LXZwOWfIokWjiERVUkFUSU9ORIeUMDA6MDA6MDAuMDQwMDAwMDAwAAAfQ7Z1x+eBAKDCoaCBAAAAgkmDQgAAEAAWADgkHBhKAAAgIAARv///iv4AAHWhnaab7oEBpZaCSYNCAAAQABYAOCQcGEoAACAgAEhAHFO7a5G7j7OBALeK94EB8YIBrPCBAw==';
+            video.load();
+
+            function wait()
             {
-                const video = document.createElement('video');
-
-                video.onerror = () => resolve(null);
-                video.autoplay = false;
-                video.crossOrigin = 'anonymous';
-                video.preload = 'auto';
-                video.src = src;
-                video.load();
-
-                function wait()
+                if (video.readyState <= 1)
                 {
-                    if (video.readyState <= 1)
-                    {
-                        setTimeout(wait, 1);
-                    }
-                    else
-                    {
-                        resolve(video);
-                    }
+                    setTimeout(wait, 1);
                 }
-
-                wait();
-            });
-        }
-
-        let video: HTMLVideoElement | null = null;
-
-        for (const src of [
-            // WebM VP9
-            // eslint-disable-next-line max-len
-            'data:video/webm;base64,GkXfo59ChoEBQveBAULygQRC84EIQoKEd2VibUKHgQJChYECGFOAZwEAAAAAAAIOEU2bdLpNu4tTq4QVSalmU6yBoU27i1OrhBZUrmtTrIHWTbuMU6uEElTDZ1OsggEnTbuMU6uEHFO7a1OsggH47AEAAAAAAABZAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAVSalmsCrXsYMPQkBNgIxMYXZmNjAuNC4xMDBXQYxMYXZmNjAuNC4xMDBEiYhARAAAAAAAABZUrmvMrgEAAAAAAABD14EBc8WIUzy3iLLKnmKcgQAitZyDdW5kiIEAhoVWX1ZQOYOBASPjg4QCYloA4JSwgQK6gQKagQJTwIEBVbCEVbmBARJUw2dAf3Nzn2PAgGfImUWjh0VOQ09ERVJEh4xMYXZmNjAuNC4xMDBzc9pjwItjxYhTPLeIssqeYmfIpEWjh0VOQ09ERVJEh5dMYXZjNjAuNi4xMDAgbGlidnB4LXZwOWfIokWjiERVUkFUSU9ORIeUMDA6MDA6MDAuMDQwMDAwMDAwAAAfQ7Z1x+eBAKDCoaCBAAAAgkmDQgAAEAAWADgkHBhKAAAgIAARv///iv4AAHWhnaab7oEBpZaCSYNCAAAQABYAOCQcGEoAACAgAEhAHFO7a5G7j7OBALeK94EB8YIBrPCBAw==',
-            // WebM VP8
-            // eslint-disable-next-line max-len
-            'data:video/webm;base64,GkXfo59ChoEBQveBAULygQRC84EIQoKEd2VibUKHgQRChYECGFOAZwEAAAAAAAHrEU2bdLpNu4tTq4QVSalmU6yBoU27i1OrhBZUrmtTrIHGTbuMU6uEElTDZ1OsggEXTbuMU6uEHFO7a1OsggHV7AEAAAAAAABZAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAVSalmoCrXsYMPQkBNgIRMYXZmV0GETGF2ZkSJiEBEAAAAAAAAFlSua8yuAQAAAAAAAEPXgQFzxYgAAAAAAAAAAZyBACK1nIN1bmSIgQCGhVZfVlA4g4EBI+ODhAJiWgDglLCBArqBApqBAlPAgQFVsIRVuYEBElTDZ+Vzc+JjwItjxYgAAAAAAAAAAWfIkUWjikFMUEhBX01PREVEh4ExZ8iYRaOHRU5DT0RFUkSHi0xhdmMgbGlidnB4Z8iiRaOIRFVSQVRJT05Eh5QwMDowMDowMC4wNDAwMDAwMDAAAB9DtnXP54EAoMqho4EAAAAQAgCdASoCAAIAAEcIhYWIhYSIAgIADA1gAP7/o94AdaGipqDugQGlmxACAJ0BKgIAAgAARwiFhYiFhIgCAgAGGvwAABxTu2uRu4+zgQC3iveBAfGCAYHwgQM=',
-        ])
-        {
-            video = await loadVideo(src);
-
-            if (video)
-            {
-                break;
+                else
+                {
+                    resolve(video);
+                }
             }
-        }
+
+            wait();
+        });
 
         if (!video)
         {
