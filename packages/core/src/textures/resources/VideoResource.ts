@@ -55,6 +55,7 @@ export class VideoResource extends BaseImageResource
 
     /** Callback when completed with load. */
     private _resolve: (value?: this | PromiseLike<this>) => void;
+    private _reject: (error: ErrorEvent) => void;
 
     /**
      * @param {HTMLVideoElement|object|string|Array<string|object>} source - Video element to use.
@@ -126,6 +127,7 @@ export class VideoResource extends BaseImageResource
 
         this._load = null;
         this._resolve = null;
+        this._reject = null;
 
         // Bind for listeners
         this._onCanPlay = this._onCanPlay.bind(this);
@@ -190,7 +192,7 @@ export class VideoResource extends BaseImageResource
             this._onCanPlay();
         }
 
-        this._load = new Promise((resolve): void =>
+        this._load = new Promise((resolve, reject): void =>
         {
             if (this.valid)
             {
@@ -199,6 +201,7 @@ export class VideoResource extends BaseImageResource
             else
             {
                 this._resolve = resolve;
+                this._reject = reject;
 
                 source.load();
             }
@@ -215,6 +218,13 @@ export class VideoResource extends BaseImageResource
     {
         (this.source as HTMLVideoElement).removeEventListener('error', this._onError, true);
         this.onError.emit(event);
+
+        if (this._reject)
+        {
+            this._reject(event);
+            this._reject = null;
+            this._resolve = null;
+        }
     }
 
     /**
@@ -272,6 +282,7 @@ export class VideoResource extends BaseImageResource
 
         source.removeEventListener('canplay', this._onCanPlay);
         source.removeEventListener('canplaythrough', this._onCanPlay);
+        source.removeEventListener('error', this._onError, true);
 
         const valid = this.valid;
 
@@ -282,6 +293,7 @@ export class VideoResource extends BaseImageResource
         {
             this._resolve(this);
             this._resolve = null;
+            this._reject = null;
         }
 
         if (this._isSourcePlaying())
