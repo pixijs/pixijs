@@ -37,6 +37,8 @@ export const loadVideo = {
     {
         const src = new VideoResource(url, loadAsset?.data?.resourceOptions);
 
+        await src.load();
+
         const base = new BaseTexture(src, {
             resolution: utils.getResolutionOfUrl(url),
             ...loadAsset?.data,
