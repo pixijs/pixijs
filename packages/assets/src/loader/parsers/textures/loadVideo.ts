@@ -5,8 +5,8 @@ import { LoaderParserPriority } from '../LoaderParser';
 import { createTexture } from './utils/createTexture';
 
 import type { IBaseTextureOptions, Texture } from '@pixi/core';
+import type { ResolvedAsset } from '../../../types';
 import type { Loader } from '../../Loader';
-import type { LoadAsset } from '../../types';
 import type { LoaderParser } from '../LoaderParser';
 
 const validVideoExtensions = ['.mp4', '.webm', '.ogv'];
@@ -33,7 +33,7 @@ export const loadVideo = {
         return checkDataUrl(url, validVideoExtensions) || checkExtension(url, validVideoMIMEs);
     },
 
-    async load(url: string, loadAsset?: LoadAsset<IBaseTextureOptions>, loader?: Loader): Promise<Texture>
+    async load(url: string, loadAsset?: ResolvedAsset<IBaseTextureOptions>, loader?: Loader): Promise<Texture>
     {
         const src = new VideoResource(url, loadAsset?.data?.resourceOptions);
 
