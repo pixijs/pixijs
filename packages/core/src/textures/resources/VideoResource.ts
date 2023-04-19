@@ -282,7 +282,6 @@ export class VideoResource extends BaseImageResource
 
         source.removeEventListener('canplay', this._onCanPlay);
         source.removeEventListener('canplaythrough', this._onCanPlay);
-        source.removeEventListener('error', this._onError, true);
 
         const valid = this.valid;
 
