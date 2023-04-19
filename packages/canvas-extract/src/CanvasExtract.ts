@@ -127,6 +127,11 @@ export class CanvasExtract implements ISystem, IExtract
             throw new Error('The CanvasExtract has already been destroyed');
         }
 
+        if (frame && !(frame.width > 0 && frame.height > 0))
+        {
+            throw new Error('The frame\'s width and height must be positive');
+        }
+
         let context;
         let resolution;
         let renderTexture;
@@ -149,26 +154,25 @@ export class CanvasExtract implements ISystem, IExtract
         {
             context = (renderTexture.baseTexture as BaseRenderTexture)._canvasRenderTarget.context;
             resolution = (renderTexture.baseTexture as BaseRenderTexture)._canvasRenderTarget.resolution;
-            frame = frame ?? renderTexture.frame;
+            frame ??= renderTexture.frame;
         }
         else
         {
             context = renderer.canvasContext.rootContext;
             resolution = renderer._view.resolution;
-
-            if (!frame)
-            {
-                frame = TEMP_RECT;
-                frame.width = renderer.width / resolution;
-                frame.height = renderer.height / resolution;
-            }
+            frame ??= renderer.screen;
         }
 
-        const x = Math.round(frame.x * resolution);
-        const y = Math.round(frame.y * resolution);
-        const width = Math.max(Math.round(frame.width * resolution), 1);
-        const height = Math.max(Math.round(frame.height * resolution), 1);
+        frame = TEMP_RECT.copyFrom(frame);
+        frame.x *= resolution;
+        frame.y *= resolution;
+        frame.width *= resolution;
+        frame.height *= resolution;
+        frame.ceil();
+        frame.width = Math.max(frame.width, 1);
+        frame.height = Math.max(frame.height, 1);
 
+        const { x, y, width, height } = frame;
         const canvasBuffer = new utils.CanvasRenderTarget(width, height, 1);
         const canvasData = context.getImageData(x, y, width, height);
 
@@ -195,6 +199,11 @@ export class CanvasExtract implements ISystem, IExtract
             throw new Error('The CanvasExtract has already been destroyed');
         }
 
+        if (frame && !(frame.width > 0 && frame.height > 0))
+        {
+            throw new Error('The frame\'s width and height must be positive');
+        }
+
         let context;
         let resolution;
         let renderTexture;
@@ -217,25 +226,25 @@ export class CanvasExtract implements ISystem, IExtract
         {
             context = (renderTexture.baseTexture as BaseRenderTexture)._canvasRenderTarget.context;
             resolution = (renderTexture.baseTexture as BaseRenderTexture)._canvasRenderTarget.resolution;
-            frame = frame ?? renderTexture.frame;
+            frame ??= renderTexture.frame;
         }
         else
         {
             context = renderer.canvasContext.rootContext;
             resolution = renderer.resolution;
-
-            if (!frame)
-            {
-                frame = TEMP_RECT;
-                frame.width = renderer.width / resolution;
-                frame.height = renderer.height / resolution;
-            }
+            frame ??= renderer.screen;
         }
 
-        const x = Math.round(frame.x * resolution);
-        const y = Math.round(frame.y * resolution);
-        const width = Math.max(Math.round(frame.width * resolution), 1);
-        const height = Math.max(Math.round(frame.height * resolution), 1);
+        frame = TEMP_RECT.copyFrom(frame);
+        frame.x *= resolution;
+        frame.y *= resolution;
+        frame.width *= resolution;
+        frame.height *= resolution;
+        frame.ceil();
+        frame.width = Math.max(frame.width, 1);
+        frame.height = Math.max(frame.height, 1);
+
+        const { x, y, width, height } = frame;
 
         return context.getImageData(x, y, width, height).data;
     }
