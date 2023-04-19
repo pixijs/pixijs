@@ -64,5 +64,8 @@ export class LineStyle extends FillStyle
         this.alignment = 0.5;
         this.width = 0;
         this.native = false;
+        this.cap = LINE_CAP.BUTT;
+        this.join = LINE_JOIN.MITER;
+        this.miterLimit = 10;
     }
 }

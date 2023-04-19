@@ -253,33 +253,14 @@ export class MaskSystem implements ISystem
             }
         }
 
-        const renderer = this.renderer;
-        const renderTextureSystem = renderer.renderTexture;
-
-        let resolution;
-        let multisample;
-
-        if (renderTextureSystem.current)
-        {
-            const renderTexture = renderTextureSystem.current;
-
-            resolution = maskData.resolution || renderTexture.resolution;
-            multisample = maskData.multisample ?? renderTexture.multisample;
-        }
-        else
-        {
-            resolution = maskData.resolution || renderer.resolution;
-            multisample = maskData.multisample ?? renderer.multisample;
-        }
-
-        alphaMaskFilter[0].resolution = resolution;
-        alphaMaskFilter[0].multisample = multisample;
+        alphaMaskFilter[0].resolution = maskData.resolution;
+        alphaMaskFilter[0].multisample = maskData.multisample;
         alphaMaskFilter[0].maskSprite = maskObject;
 
         const stashFilterArea = target.filterArea;
 
         target.filterArea = maskObject.getBounds(true);
-        renderer.filter.push(target, alphaMaskFilter);
+        this.renderer.filter.push(target, alphaMaskFilter);
         target.filterArea = stashFilterArea;
 
         if (!maskData._filters)

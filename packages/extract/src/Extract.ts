@@ -8,8 +8,10 @@ const BYTES_PER_PIXEL = 4;
 
 export interface IExtract
 {
-    image(target?: DisplayObject | RenderTexture, format?: string, quality?: number): Promise<HTMLImageElement>;
-    base64(target?: DisplayObject | RenderTexture, format?: string, quality?: number): Promise<string>;
+    image(target?: DisplayObject | RenderTexture, format?: string, quality?: number,
+        frame?: Rectangle): Promise<HTMLImageElement>;
+    base64(target?: DisplayObject | RenderTexture, format?: string, quality?: number,
+        frame?: Rectangle): Promise<string>;
     canvas(target?: DisplayObject | RenderTexture, frame?: Rectangle): ICanvas;
     pixels(target?: DisplayObject | RenderTexture, frame?: Rectangle): Uint8Array | Uint8ClampedArray;
 }
@@ -71,13 +73,15 @@ export class Extract implements ISystem, IExtract
      *  to convert. If left empty will use the main renderer
      * @param format - Image format, e.g. "image/jpeg" or "image/webp".
      * @param quality - JPEG or Webp compression from 0 to 1. Default is 0.92.
+     * @param frame - The frame the extraction is restricted to.
      * @returns - HTML Image of the target
      */
-    public async image(target?: DisplayObject | RenderTexture, format?: string, quality?: number): Promise<HTMLImageElement>
+    public async image(target?: DisplayObject | RenderTexture, format?: string, quality?: number,
+        frame?: Rectangle): Promise<HTMLImageElement>
     {
         const image = new Image();
 
-        image.src = await this.base64(target, format, quality);
+        image.src = await this.base64(target, format, quality, frame);
 
         return image;
     }
@@ -89,11 +93,13 @@ export class Extract implements ISystem, IExtract
      *  to convert. If left empty will use the main renderer
      * @param format - Image format, e.g. "image/jpeg" or "image/webp".
      * @param quality - JPEG or Webp compression from 0 to 1. Default is 0.92.
+     * @param frame - The frame the extraction is restricted to.
      * @returns - A base64 encoded string of the texture.
      */
-    public async base64(target?: DisplayObject | RenderTexture, format?: string, quality?: number): Promise<string>
+    public async base64(target?: DisplayObject | RenderTexture, format?: string, quality?: number,
+        frame?: Rectangle): Promise<string>
     {
-        const canvas = this.canvas(target);
+        const canvas = this.canvas(target, frame);
 
         if (canvas.toBlob !== undefined)
         {

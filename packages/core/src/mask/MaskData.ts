@@ -50,14 +50,14 @@ export class MaskData
      * If set to `null` or `0`, the resolution of the current render target is used.
      * @default null
      */
-    public resolution: number;
+    public resolution: number | null;
 
     /**
      * Number of samples of the sprite mask filter.
      * If set to `null`, the sample count of the current render target is used.
      * @default PIXI.Filter.defaultMultisample
      */
-    public multisample: MSAA_QUALITY;
+    public multisample: MSAA_QUALITY | null;
 
     /** If enabled is true the mask is applied, if false it will not. */
     public enabled: boolean;
