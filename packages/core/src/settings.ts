@@ -154,7 +154,7 @@ Object.defineProperties(settings, {
      * @name FILTER_RESOLUTION
      * @memberof PIXI.settings
      * @deprecated since 7.1.0
-     * @type {number}
+     * @type {number|null}
      * @see PIXI.Filter.defaultResolution
      */
     FILTER_RESOLUTION: {

@@ -55,7 +55,7 @@ describe('RenderTexture', () =>
 
         const renderTexture = RenderTexture.create({ width: 1, height: 1 });
 
-        renderTexture.baseTexture.clearColor = [0.2, 0.2, 0.2, 0.2];
+        renderTexture.baseTexture.clearColor = [1.0, 1.0, 1.0, 0.2];
 
         const framebuffer = renderTexture.framebuffer;
 
@@ -90,7 +90,7 @@ describe('RenderTexture', () =>
 
         const renderTexture = RenderTexture.create({ width: 1, height: 1 });
 
-        renderTexture.baseTexture.clearColor = [0.2, 0.2, 0.2, 0.2];
+        renderTexture.baseTexture.clearColor = [1.0, 1.0, 1.0, 0.2];
 
         const framebuffer = renderTexture.framebuffer;
 
@@ -130,7 +130,7 @@ describe('RenderTexture', () =>
 
         const renderTexture = RenderTexture.create({ width: 2, height: 2 });
 
-        renderTexture.baseTexture.clearColor = [0.2, 0.2, 0.2, 0.2];
+        renderTexture.baseTexture.clearColor = [1.0, 1.0, 1.0, 0.2];
 
         const framebuffer = renderTexture.framebuffer;
 
@@ -179,7 +179,7 @@ describe('RenderTexture', () =>
 
         const renderTexture = RenderTexture.create({ width: 1, height: 1 });
 
-        renderTexture.baseTexture.clearColor = [0.2, 0.2, 0.2, 0.2];
+        renderTexture.baseTexture.clearColor = [1.0, 1.0, 1.0, 0.2];
 
         const framebuffer = renderTexture.framebuffer;
 
@@ -221,7 +221,7 @@ describe('RenderTexture', () =>
 
         const renderTexture = RenderTexture.create({ width: 2, height: 2 });
 
-        renderTexture.baseTexture.clearColor = [0.2, 0.2, 0.2, 0.2];
+        renderTexture.baseTexture.clearColor = [1.0, 1.0, 1.0, 0.2];
 
         const framebuffer = renderTexture.framebuffer;
 
@@ -275,7 +275,7 @@ describe('RenderTexture', () =>
 
         const renderTexture = RenderTexture.create({ width: 1, height: 1 });
 
-        renderTexture.baseTexture.clearColor = [0.2, 0.2, 0.2, 0.2];
+        renderTexture.baseTexture.clearColor = [1.0, 1.0, 1.0, 0.2];
 
         const framebuffer = renderTexture.framebuffer;
 
@@ -309,7 +309,7 @@ describe('RenderTexture', () =>
 
         const renderTexture = RenderTexture.create({ width: 1, height: 1 });
 
-        renderTexture.baseTexture.clearColor = [0.2, 0.2, 0.2, 0.2];
+        renderTexture.baseTexture.clearColor = [1.0, 1.0, 1.0, 0.2];
 
         const framebuffer = renderTexture.framebuffer;
 
@@ -353,7 +353,7 @@ describe('RenderTexture', () =>
 
             const renderTexture = RenderTexture.create({ width: 2, height: 2, format: FORMATS.RED, type: TYPES.FLOAT });
 
-            renderTexture.baseTexture.clearColor = [0.5, 0.5, 0.5, 0.5];
+            renderTexture.baseTexture.clearColor = [1.0, 1.0, 1.0, 0.5];
 
             const framebuffer = renderTexture.framebuffer;
 
@@ -401,7 +401,7 @@ describe('RenderTexture', () =>
 
             const renderTexture = RenderTexture.create({ width: 1, height: 1, format: FORMATS.RED, type: TYPES.FLOAT });
 
-            renderTexture.baseTexture.clearColor = [0.5, 0.5, 0.5, 0.5];
+            renderTexture.baseTexture.clearColor = [1.0, 1.0, 1.0, 0.5];
 
             const framebuffer = renderTexture.framebuffer;
 

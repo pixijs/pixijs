@@ -1,5 +1,4 @@
-import { extensions, ExtensionType } from '@pixi/core';
-import { deprecation } from '@pixi/utils';
+import { extensions, ExtensionType, utils } from '@pixi/core';
 import { BackgroundLoader } from './BackgroundLoader';
 import { Cache } from './cache/Cache';
 import { Loader } from './loader/Loader';
@@ -9,10 +8,9 @@ import { convertToList } from './utils/convertToList';
 import { isSingleItem } from './utils/isSingleItem';
 
 import type { FormatDetectionParser } from './detections';
-import type { LoadAsset } from './loader';
 import type { LoadTextureConfig } from './loader/parsers';
-import type { ResolveAsset, ResolverBundle, ResolverManifest } from './resolver';
 import type { BundleIdentifierOptions } from './resolver/Resolver';
+import type { ArrayOr, AssetsBundle, AssetsManifest, LoadParserName, ResolvedAsset, UnresolvedAsset } from './types';
 
 export type ProgressCallback = (progress: number) => void;
 
@@ -40,7 +38,7 @@ export interface AssetInitOptions
      * a manifest to tell the asset loader upfront what all your assets are
      * this can be the manifest object itself, or a URL to the manifest.
      */
-    manifest?: string | ResolverManifest;
+    manifest?: string | AssetsManifest;
     /**
      * optional preferences for which textures preferences you have when resolving assets
      * for example you might set the resolution to 0.5 if the user is on a rubbish old phone
@@ -49,8 +47,11 @@ export interface AssetInitOptions
     texturePreference?: {
         /** the resolution order you prefer, can be an array (priority order - first is prefered) or a single resolutions  */
         resolution?: number | number[];
-        /** the formats you prefer, by default this will be:  ['avif', 'webp', 'png', 'jpg', 'jpeg'] */
-        format?: string | string[];
+        /**
+         * the formats you prefer, by default this will be:
+         * ['avif', 'webp', 'png', 'jpg', 'jpeg', 'webm', 'mp4', 'm4v', 'ogv']
+         */
+        format?: ArrayOr<string>;
     };
 
     /** advanced - override how bundlesIds are generated */
@@ -285,7 +286,7 @@ export class AssetsClass
 
             if (typeof manifest === 'string')
             {
-                manifest = await this.load<ResolverManifest>(manifest);
+                manifest = await this.load<AssetsManifest>(manifest);
             }
 
             this.resolver.addManifest(manifest);
@@ -343,53 +344,53 @@ export class AssetsClass
      * import { Assets } from 'pixi.js';
      *
      * // Simple
-     * Assets.add('bunnyBooBoo', 'bunny.png');
+     * Assets.add({alias: 'bunnyBooBoo', src: 'bunny.png'});
      * const bunny = await Assets.load('bunnyBooBoo');
      *
      * // Multiple keys:
-     * Assets.add(['burger', 'chicken'], 'bunny.png');
+     * Assets.add({alias: ['burger', 'chicken'], src: 'bunny.png'});
      *
      * const bunny = await Assets.load('burger');
      * const bunny2 = await Assets.load('chicken');
      *
      * // passing options to to the object
-     * Assets.add(
-     *     'bunnyBooBooSmooth',
-     *     'bunny{png,webp}',
-     *     { scaleMode: SCALE_MODES.NEAREST }, // Base texture options
-     * );
+     * Assets.add({
+     *     alias: 'bunnyBooBooSmooth',
+     *     src: 'bunny{png,webp}',
+     *     data: { scaleMode: SCALE_MODES.NEAREST }, // Base texture options
+     * });
      *
      * // Multiple assets
      *
      * // The following all do the same thing:
      *
-     * Assets.add('bunnyBooBoo', 'bunny{png,webp}');
+     * Assets.add({alias: 'bunnyBooBoo', src: 'bunny{png,webp}'});
      *
-     * Assets.add('bunnyBooBoo', [
-     *     'bunny.png',
-     *     'bunny.webp',
-     * ]);
-     *
-     * Assets.add('bunnyBooBoo', [
-     *     {
-     *         format: 'png',
-     *         src: 'bunny.png',
-     *     },
-     *     {
-     *         format: 'webp',
-     *         src: 'bunny.webp',
-     *     },
-     * ]);
+     * Assets.add({
+     *     alias: 'bunnyBooBoo',
+     *     src: [
+     *         'bunny.png',
+     *         'bunny.webp',
+     *    ],
+     * });
      *
      * const bunny = await Assets.load('bunnyBooBoo'); // Will try to load WebP if available
-     * @param keysIn - the key or keys that you will reference when loading this asset
-     * @param assetsIn - the asset or assets that will be chosen from when loading via the specified key
+     * @param aliases - the key or keys that you will reference when loading this asset
+     * @param srcs - the asset or assets that will be chosen from when loading via the specified key
      * @param data - asset-specific data that will be passed to the loaders
      * - Useful if you want to initiate loaded objects with specific data
+     * @param format - the format of the asset
+     * @param loadParser - the name of the load parser to use
      */
-    public add(keysIn: string | string[], assetsIn: string | (ResolveAsset | string)[], data?: unknown): void
+    public add(
+        aliases: ArrayOr<string> | (ArrayOr<UnresolvedAsset>),
+        srcs?: string | string[],
+        data?: unknown,
+        format?: string,
+        loadParser?: LoadParserName
+    ): void
     {
-        this.resolver.add(keysIn, assetsIn, data);
+        this.resolver.add(aliases, srcs, data, format, loadParser);
     }
 
     /**
@@ -417,16 +418,16 @@ export class AssetsClass
      * @returns - the assets that were loaded, either a single asset or a hash of assets
      */
     public async load<T = any>(
-        urls: string | LoadAsset,
+        urls: string | UnresolvedAsset,
         onProgress?: ProgressCallback,
     ): Promise<T>;
     public async load<T = any>(
-        urls: string[] | LoadAsset[],
+        urls: string[] | UnresolvedAsset[],
         onProgress?: ProgressCallback,
     ): Promise<Record<string, T>>;
     public async load<T = any>(
-        urls: string | string[] | LoadAsset | LoadAsset[],
-        onProgress?: ProgressCallback,
+        urls: ArrayOr<string> | ArrayOr<UnresolvedAsset>,
+        onProgress?: ProgressCallback
     ): Promise<T | Record<string, T>>
     {
         if (!this._initialized)
@@ -436,23 +437,26 @@ export class AssetsClass
 
         const singleAsset = isSingleItem(urls);
 
-        const urlArray = convertToList<ResolveAsset>(urls)
+        const urlArray: string[] = convertToList<UnresolvedAsset | string>(urls)
             .map((url) =>
             {
                 if (typeof url !== 'string')
                 {
-                    this.resolver.add(url.src as string, url);
+                    this.add(url);
+                    const srcs = url.src || url.srcs;
+                    const aliases = url.alias || url.name;
 
-                    return url.src;
+                    if (aliases && Array.isArray(aliases)) return aliases[0];
+                    if (srcs && Array.isArray(srcs)) return srcs[0];
+
+                    return aliases || srcs;
                 }
 
-                if (!this.resolver.hasKey(url))
-                {
-                    this.resolver.add(url, url);
-                }
+                // if it hasn't been added, add it now
+                if (!this.resolver.hasKey(url)) this.add({ alias: url, src: url });
 
                 return url;
-            });
+            }) as string[];
 
         // check cache first...
         const resolveResults = this.resolver.resolve(urlArray);
@@ -479,7 +483,7 @@ export class AssetsClass
      * @param bundleId - the id of the bundle to add
      * @param assets - a record of the asset or assets that will be chosen from when loading via the specified key
      */
-    public addBundle(bundleId: string, assets: ResolverBundle['assets']): void
+    public addBundle(bundleId: string, assets: AssetsBundle['assets']): void
     {
         this.resolver.addBundle(bundleId, assets);
     }
@@ -536,7 +540,7 @@ export class AssetsClass
      * instead use the Promise returned by this function.
      * @returns all the bundles assets or a hash of assets for each bundle specified
      */
-    public async loadBundle(bundleIds: string | string[], onProgress?: ProgressCallback): Promise<any>
+    public async loadBundle(bundleIds: ArrayOr<string>, onProgress?: ProgressCallback): Promise<any>
     {
         if (!this._initialized)
         {
@@ -596,7 +600,7 @@ export class AssetsClass
      * await Assets.loadBundle('bunny.png'); // Will resolve quicker as loading may have completed!
      * @param urls - the url / urls you want to background load
      */
-    public async backgroundLoad(urls: string | string[]): Promise<void>
+    public async backgroundLoad(urls: ArrayOr<string>): Promise<void>
     {
         if (!this._initialized)
         {
@@ -637,7 +641,7 @@ export class AssetsClass
      * await Assets.loadBundle('load-screen'); // Will resolve quicker as loading may have completed!
      * @param bundleIds - the bundleId / bundleIds you want to background load
      */
-    public async backgroundLoadBundle(bundleIds: string | string[]): Promise<void>
+    public async backgroundLoadBundle(bundleIds: ArrayOr<string>): Promise<void>
     {
         if (!this._initialized)
         {
@@ -680,7 +684,7 @@ export class AssetsClass
      */
     public get<T = any>(keys: string): T;
     public get<T = any>(keys: string[]): Record<string, T>;
-    public get<T = any>(keys: string | string[]): T | Record<string, T>
+    public get<T = any>(keys: ArrayOr<string>): T | Record<string, T>
     {
         if (typeof keys === 'string')
         {
@@ -703,11 +707,11 @@ export class AssetsClass
      * @param onProgress - the progress callback
      */
     private async _mapLoadToResolve<T>(
-        resolveResults: ResolveAsset | Record<string, ResolveAsset>,
+        resolveResults: ResolvedAsset | Record<string, ResolvedAsset>,
         onProgress?: ProgressCallback
     ): Promise<Record<string, T>>
     {
-        const resolveArray = Object.values(resolveResults);
+        const resolveArray = Object.values(resolveResults) as ResolvedAsset[];
         const resolveKeys = Object.keys(resolveResults);
 
         // pause background loader...
@@ -765,7 +769,7 @@ export class AssetsClass
      * @param urls - the urls to unload
      */
     public async unload(
-        urls: string | string[] | LoadAsset | LoadAsset[]
+        urls: ArrayOr<string> | ResolvedAsset | ResolvedAsset[]
     ): Promise<void>
     {
         if (!this._initialized)
@@ -773,7 +777,7 @@ export class AssetsClass
             await this.init();
         }
 
-        const urlArray = convertToList<string | LoadAsset>(urls)
+        const urlArray = convertToList<string | ResolvedAsset>(urls)
             .map((url) =>
                 ((typeof url !== 'string') ? url.src : url));
 
@@ -804,7 +808,7 @@ export class AssetsClass
      * // All assets in the assets object will now have been destroyed and purged from the cache
      * @param bundleIds - the bundle id or ids to unload
      */
-    public async unloadBundle(bundleIds: string | string[]): Promise<void>
+    public async unloadBundle(bundleIds: ArrayOr<string>): Promise<void>
     {
         if (!this._initialized)
         {
@@ -821,7 +825,7 @@ export class AssetsClass
         await Promise.all(promises);
     }
 
-    private async _unloadFromResolved(resolveResult: ResolveAsset | Record<string, ResolveAsset>)
+    private async _unloadFromResolved(resolveResult: ResolvedAsset | Record<string, ResolvedAsset>)
     {
         const resolveArray = Object.values(resolveResult);
 
@@ -850,7 +854,7 @@ export class AssetsClass
     public set preferWorkers(value: boolean)
     {
         // #if _DEBUG
-        deprecation('7.2.0', 'Assets.prefersWorkers is deprecated, '
+        utils.deprecation('7.2.0', 'Assets.prefersWorkers is deprecated, '
             + 'use Assets.setPreferences({ preferWorkers: true }) instead.');
         // #endif
         this.setPreferences({ preferWorkers: value });

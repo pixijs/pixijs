@@ -1,4 +1,4 @@
-import { extensions, ExtensionType, MSAA_QUALITY, Rectangle, RenderTexture, utils } from '@pixi/core';
+import { extensions, ExtensionType, Rectangle, RenderTexture, utils } from '@pixi/core';
 
 import type { ExtensionMetadata, ICanvas, ISystem, Renderer } from '@pixi/core';
 import type { DisplayObject } from '@pixi/display';
@@ -8,8 +8,10 @@ const BYTES_PER_PIXEL = 4;
 
 export interface IExtract
 {
-    image(target?: DisplayObject | RenderTexture, format?: string, quality?: number): Promise<HTMLImageElement>;
-    base64(target?: DisplayObject | RenderTexture, format?: string, quality?: number): Promise<string>;
+    image(target?: DisplayObject | RenderTexture, format?: string, quality?: number,
+        frame?: Rectangle): Promise<HTMLImageElement>;
+    base64(target?: DisplayObject | RenderTexture, format?: string, quality?: number,
+        frame?: Rectangle): Promise<string>;
     canvas(target?: DisplayObject | RenderTexture, frame?: Rectangle): ICanvas;
     pixels(target?: DisplayObject | RenderTexture, frame?: Rectangle): Uint8Array | Uint8ClampedArray;
 }
@@ -60,13 +62,15 @@ export class Extract implements ISystem, IExtract
      *  to convert. If left empty will use the main renderer
      * @param format - Image format, e.g. "image/jpeg" or "image/webp".
      * @param quality - JPEG or Webp compression from 0 to 1. Default is 0.92.
+     * @param frame - The frame the extraction is restricted to.
      * @returns - HTML Image of the target
      */
-    public async image(target?: DisplayObject | RenderTexture, format?: string, quality?: number): Promise<HTMLImageElement>
+    public async image(target?: DisplayObject | RenderTexture, format?: string, quality?: number,
+        frame?: Rectangle): Promise<HTMLImageElement>
     {
         const image = new Image();
 
-        image.src = await this.base64(target, format, quality);
+        image.src = await this.base64(target, format, quality, frame);
 
         return image;
     }
@@ -78,12 +82,36 @@ export class Extract implements ISystem, IExtract
      *  to convert. If left empty will use the main renderer
      * @param format - Image format, e.g. "image/jpeg" or "image/webp".
      * @param quality - JPEG or Webp compression from 0 to 1. Default is 0.92.
+     * @param frame - The frame the extraction is restricted to.
      * @returns - A base64 encoded string of the texture.
      */
-    public async base64(target?: DisplayObject | RenderTexture, format?: string, quality?: number): Promise<string>
+    public async base64(target?: DisplayObject | RenderTexture, format?: string, quality?: number,
+        frame?: Rectangle): Promise<string>
     {
-        const canvas = this.canvas(target);
+        const canvas = this.canvas(target, frame);
 
+        if (canvas.toBlob !== undefined)
+        {
+            return new Promise<string>((resolve, reject) =>
+            {
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                canvas.toBlob!((blob) =>
+                {
+                    if (!blob)
+                    {
+                        reject(new Error('ICanvas.toBlob failed!'));
+
+                        return;
+                    }
+
+                    const reader = new FileReader();
+
+                    reader.onload = () => resolve(reader.result as string);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(blob);
+                }, format, quality);
+            });
+        }
         if (canvas.toDataURL !== undefined)
         {
             return canvas.toDataURL(format, quality);
@@ -92,16 +120,18 @@ export class Extract implements ISystem, IExtract
         {
             const blob = await canvas.convertToBlob({ type: format, quality });
 
-            return await new Promise<string>((resolve) =>
+            return new Promise<string>((resolve, reject) =>
             {
                 const reader = new FileReader();
 
                 reader.onload = () => resolve(reader.result as string);
+                reader.onerror = reject;
                 reader.readAsDataURL(blob);
             });
         }
 
-        throw new Error('Extract.base64() requires ICanvas.toDataURL or ICanvas.convertToBlob to be implemented');
+        throw new Error('Extract.base64() requires ICanvas.toDataURL, ICanvas.toBlob, '
+            + 'or ICanvas.convertToBlob to be implemented');
     }
 
     /**
@@ -115,28 +145,20 @@ export class Extract implements ISystem, IExtract
     {
         const { pixels, width, height, flipY } = this._rawPixels(target, frame);
 
-        let canvasBuffer = new utils.CanvasRenderTarget(width, height, 1);
-
-        // Add the pixels to the canvas
-        const canvasData = canvasBuffer.context.getImageData(0, 0, width, height);
-
-        Extract.arrayPostDivide(pixels, canvasData.data);
-
-        canvasBuffer.context.putImageData(canvasData, 0, 0);
-
         // Flipping pixels
         if (flipY)
         {
-            const target = new utils.CanvasRenderTarget(canvasBuffer.width, canvasBuffer.height, 1);
-
-            target.context.scale(1, -1);
-
-            // We can't render to itself because we should be empty before render.
-            target.context.drawImage(canvasBuffer.canvas, 0, -height);
-
-            canvasBuffer.destroy();
-            canvasBuffer = target;
+            Extract._flipY(pixels, width, height);
         }
+
+        Extract._unpremultiplyAlpha(pixels);
+
+        const canvasBuffer = new utils.CanvasRenderTarget(width, height, 1);
+
+        // Add the pixels to the canvas
+        const imageData = new ImageData(new Uint8ClampedArray(pixels.buffer), width, height);
+
+        canvasBuffer.context.putImageData(imageData, 0, 0);
 
         // Send the canvas back
         return canvasBuffer.canvas;
@@ -152,9 +174,14 @@ export class Extract implements ISystem, IExtract
      */
     public pixels(target?: DisplayObject | RenderTexture, frame?: Rectangle): Uint8Array
     {
-        const { pixels } = this._rawPixels(target, frame);
+        const { pixels, width, height, flipY } = this._rawPixels(target, frame);
 
-        Extract.arrayPostDivide(pixels, pixels);
+        if (flipY)
+        {
+            Extract._flipY(pixels, width, height);
+        }
+
+        Extract._unpremultiplyAlpha(pixels);
 
         return pixels;
     }
@@ -183,26 +210,10 @@ export class Extract implements ISystem, IExtract
             }
             else
             {
-                const multisample = renderer.context.webGLVersion >= 2 ? renderer.multisample : MSAA_QUALITY.NONE;
-
-                renderTexture = renderer.generateTexture(target, { multisample });
-
-                if (multisample !== MSAA_QUALITY.NONE)
-                {
-                    // Resolve the multisampled texture to a non-multisampled texture
-                    const resolvedTexture = RenderTexture.create({
-                        width: renderTexture.width,
-                        height: renderTexture.height,
-                    });
-
-                    renderer.framebuffer.bind(renderTexture.framebuffer);
-                    renderer.framebuffer.blit(resolvedTexture.framebuffer);
-                    renderer.framebuffer.bind();
-
-                    renderTexture.destroy(true);
-                    renderTexture = resolvedTexture;
-                }
-
+                renderTexture = renderer.generateTexture(target, {
+                    resolution: renderer.resolution,
+                    multisample: renderer.multisample
+                });
                 generated = true;
             }
         }
@@ -212,7 +223,18 @@ export class Extract implements ISystem, IExtract
             resolution = renderTexture.baseTexture.resolution;
             frame = frame ?? renderTexture.frame;
             flipY = false;
-            renderer.renderTexture.bind(renderTexture);
+
+            if (!generated)
+            {
+                renderer.renderTexture.bind(renderTexture);
+
+                const fbo = renderTexture.framebuffer.glFramebuffers[renderer.CONTEXT_UID];
+
+                if (fbo.blitFramebuffer)
+                {
+                    renderer.framebuffer.bind(fbo.blitFramebuffer);
+                }
+            }
         }
         else
         {
@@ -221,8 +243,8 @@ export class Extract implements ISystem, IExtract
             if (!frame)
             {
                 frame = TEMP_RECT;
-                frame.width = renderer.width;
-                frame.height = renderer.height;
+                frame.width = renderer.width / resolution;
+                frame.height = renderer.height / resolution;
             }
 
             flipY = true;
@@ -261,31 +283,43 @@ export class Extract implements ISystem, IExtract
         this.renderer = null;
     }
 
-    /**
-     * Takes premultiplied pixel data and produces regular pixel data
-     * @private
-     * @param pixels - array of pixel data
-     * @param out - output array
-     */
-    static arrayPostDivide(
-        pixels: number[] | Uint8Array | Uint8ClampedArray, out: number[] | Uint8Array | Uint8ClampedArray
-    ): void
+    private static _flipY(pixels: Uint8Array | Uint8ClampedArray, width: number, height: number): void
     {
-        for (let i = 0; i < pixels.length; i += 4)
+        const w = width << 2;
+        const h = height >> 1;
+        const temp = new Uint8Array(w);
+
+        for (let y = 0; y < h; y++)
         {
-            const alpha = out[i + 3] = pixels[i + 3];
+            const t = y * w;
+            const b = (height - y - 1) * w;
+
+            temp.set(pixels.subarray(t, t + w));
+            pixels.copyWithin(t, b, b + w);
+            pixels.set(temp, b);
+        }
+    }
+
+    private static _unpremultiplyAlpha(pixels: Uint8Array | Uint8ClampedArray): void
+    {
+        if (pixels instanceof Uint8ClampedArray)
+        {
+            pixels = new Uint8Array(pixels.buffer);
+        }
+
+        const n = pixels.length;
+
+        for (let i = 0; i < n; i += 4)
+        {
+            const alpha = pixels[i + 3];
 
             if (alpha !== 0)
             {
-                out[i] = Math.round(Math.min(pixels[i] * 255.0 / alpha, 255.0));
-                out[i + 1] = Math.round(Math.min(pixels[i + 1] * 255.0 / alpha, 255.0));
-                out[i + 2] = Math.round(Math.min(pixels[i + 2] * 255.0 / alpha, 255.0));
-            }
-            else
-            {
-                out[i] = pixels[i];
-                out[i + 1] = pixels[i + 1];
-                out[i + 2] = pixels[i + 2];
+                const a = 255.001 / alpha;
+
+                pixels[i] = (pixels[i] * a) + 0.5;
+                pixels[i + 1] = (pixels[i + 1] * a) + 0.5;
+                pixels[i + 2] = (pixels[i + 2] * a) + 0.5;
             }
         }
     }
