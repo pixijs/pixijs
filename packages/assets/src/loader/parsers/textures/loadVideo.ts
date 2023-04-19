@@ -9,7 +9,7 @@ import type { ResolvedAsset } from '../../../types';
 import type { Loader } from '../../Loader';
 import type { LoaderParser } from '../LoaderParser';
 
-const validVideoExtensions = ['.mp4', '.webm', '.ogv'];
+const validVideoExtensions = ['.mp4', '.m4v', '.webm', '.ogv'];
 const validVideoMIMEs = [
     'video/mp4',
     'video/webm',
