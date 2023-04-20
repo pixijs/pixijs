@@ -72,32 +72,32 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
      * @member {PIXI.ALPHA_MODES}
      * @default PIXI.ALPHA_MODES.UNPACK
      */
-    public alphaMode?: ALPHA_MODES;
+    public alphaMode: ALPHA_MODES;
 
     /**
      * Anisotropic filtering level of texture
      * @member {number}
      * @default 0
      */
-    public anisotropicLevel?: number;
+    public anisotropicLevel: number;
 
     /**
      * The pixel format of the texture
      * @default PIXI.FORMATS.RGBA
      */
-    public format?: FORMATS;
+    public format: FORMATS;
 
     /**
      * The type of resource data
      * @default PIXI.TYPES.UNSIGNED_BYTE
      */
-    public type?: TYPES;
+    public type: TYPES;
 
     /**
      * The target type
      * @default PIXI.TARGETS.TEXTURE_2D
      */
-    public target?: TARGETS;
+    public target: TARGETS;
 
     /**
      * Global unique identifier for this BaseTexture
@@ -193,9 +193,9 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
      */
     parentTextureArray: BaseTexture;
 
-    private _mipmap?: MIPMAP_MODES;
-    private _scaleMode?: SCALE_MODES;
-    private _wrapMode?: WRAP_MODES;
+    private _mipmap: MIPMAP_MODES;
+    private _scaleMode: SCALE_MODES;
+    private _wrapMode: WRAP_MODES;
 
     /**
      * Default options used when creating BaseTexture objects.
