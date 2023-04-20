@@ -623,12 +623,7 @@ export class EventSystem implements ISystem<EventSystemOptions>
      */
     public mapPositionToPoint(point: IPointData, x: number, y: number): void
     {
-        /** use isConnected property when browser supports. if not, use parentElement (example browser: IE11) */
-        const isConnected = typeof this.domElement.isConnected === 'boolean'
-            ? this.domElement.isConnected
-            : !!this.domElement.parentElement;
-
-        const rect = isConnected
+        const rect = this.domElement.isConnected
             ? this.domElement.getBoundingClientRect()
             : {
                 x: 0,
