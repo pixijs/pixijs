@@ -40,6 +40,7 @@ export const loadVideo = {
         await src.load();
 
         const base = new BaseTexture(src, {
+            alphaMode: await utils.detectVideoAlphaMode(),
             resolution: utils.getResolutionOfUrl(url),
             ...loadAsset?.data,
         });
