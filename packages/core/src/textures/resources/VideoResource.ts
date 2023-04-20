@@ -51,10 +51,10 @@ export class VideoResource extends BaseImageResource
      * Promise when loading.
      * @default null
      */
-    private _load: Promise<VideoResource>;
+    private _load: Promise<this>;
 
     /** Callback when completed with load. */
-    private _resolve: (value?: VideoResource | PromiseLike<VideoResource>) => void;
+    private _resolve: (value?: this | PromiseLike<this>) => void;
 
     /**
      * @param {HTMLVideoElement|object|string|Array<string|object>} source - Video element to use.
@@ -161,7 +161,7 @@ export class VideoResource extends BaseImageResource
      * Start preloading the video resource.
      * @returns {Promise<void>} Handle the validate event
      */
-    load(): Promise<VideoResource>
+    load(): Promise<this>
     {
         if (this._load)
         {

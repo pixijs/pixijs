@@ -132,7 +132,7 @@ describe('Assets bundles', () =>
                     assets: [
                         {
                             name: 'character',
-                            srcs: 'textures/bunny.png',
+                            src: 'textures/bunny.png',
                         },
                     ],
                 },
@@ -141,7 +141,7 @@ describe('Assets bundles', () =>
                     assets: [
                         {
                             name: 'character',
-                            srcs: 'textures/bunny-2.png',
+                            src: 'textures/bunny-2.png',
                         },
                     ],
                 },
@@ -200,7 +200,7 @@ describe('Assets bundles', () =>
                     assets: [
                         {
                             name: ['character', 'character2'],
-                            srcs: 'textures/bunny.png',
+                            src: 'textures/bunny.png',
                         },
                     ],
                 },
@@ -209,7 +209,7 @@ describe('Assets bundles', () =>
                     assets: [
                         {
                             name: ['character', 'character2'],
-                            srcs: 'textures/bunny-2.png',
+                            src: 'textures/bunny-2.png',
                         },
                     ],
                 },
@@ -237,7 +237,7 @@ describe('Assets bundles', () =>
                     assets: [
                         {
                             name: 'character',
-                            srcs: 'textures/bunny.png',
+                            src: 'textures/bunny.png',
                         },
                     ],
                 },
@@ -246,7 +246,7 @@ describe('Assets bundles', () =>
                     assets: [
                         {
                             name: 'character',
-                            srcs: 'textures/bunny-2.png',
+                            src: 'textures/bunny-2.png',
                         },
                     ],
                 },
@@ -283,7 +283,7 @@ describe('Assets bundles', () =>
                     assets: [
                         {
                             name: 'character',
-                            srcs: 'textures/bunny.png',
+                            src: 'textures/bunny.png',
                         },
                     ],
                 },
@@ -292,7 +292,7 @@ describe('Assets bundles', () =>
                     assets: [
                         {
                             name: 'character',
-                            srcs: 'textures/bunny-2.png',
+                            src: 'textures/bunny-2.png',
                         },
                     ],
                 },
@@ -330,7 +330,7 @@ describe('Assets bundles', () =>
                     assets: [
                         {
                             name: 'character',
-                            srcs: 'textures/bunny.png',
+                            src: 'textures/bunny.png',
                         },
                     ],
                 },
@@ -339,7 +339,7 @@ describe('Assets bundles', () =>
                     assets: [
                         {
                             name: 'character',
-                            srcs: 'textures/bunny-2.png',
+                            src: 'textures/bunny-2.png',
                         },
                     ],
                 },
@@ -364,7 +364,7 @@ describe('Assets bundles', () =>
                     assets: [
                         {
                             name: 'character',
-                            srcs: 'textures/bunny.png',
+                            src: 'textures/bunny.png',
                             data: {
                                 otherData: 'thing'
                             }

@@ -1,6 +1,6 @@
 import type { ExtensionMetadata } from '@pixi/core';
+import type { ResolvedAsset } from '../../types';
 import type { Loader } from '../Loader';
-import type { LoadAsset } from '../types';
 
 /**
  * The extension priority for loader parsers.
@@ -42,7 +42,7 @@ export interface LoaderParser<ASSET = any, META_DATA = any, CONFIG = Record<stri
     /** A config to adjust the parser */
     config?: CONFIG;
 
-    /** The name of the parser (this can be used when specifying loadParser in a LoadAsset) */
+    /** The name of the parser (this can be used when specifying loadParser in a ResolvedAsset) */
     name?: string;
 
     /**
@@ -50,43 +50,43 @@ export interface LoaderParser<ASSET = any, META_DATA = any, CONFIG = Record<stri
      * if the test is passed the assets are loaded using the load function below.
      * Good place to test for things like file extensions!
      * @param url - The URL to test
-     * @param loadAsset - Any custom additional information relevant to the asset being loaded
+     * @param resolvedAsset - Any custom additional information relevant to the asset being loaded
      * @param loader - The loader instance
      */
-    test?: (url: string, loadAsset?: LoadAsset<META_DATA>, loader?: Loader) => boolean;
+    test?: (url: string, resolvedAsset?: ResolvedAsset<META_DATA>, loader?: Loader) => boolean;
 
     /**
      * This is the promise that loads the URL provided
      * resolves with a loaded asset if returned by the parser.
      * @param url - The URL to load
-     * @param loadAsset - Any custom additional information relevant to the asset being loaded
+     * @param resolvedAsset - Any custom additional information relevant to the asset being loaded
      * @param loader - The loader instance
      */
-    load?: <T>(url: string, loadAsset?: LoadAsset<META_DATA>, loader?: Loader) => Promise<T>;
+    load?: <T>(url: string, resolvedAsset?: ResolvedAsset<META_DATA>, loader?: Loader) => Promise<T>;
 
     /**
      * This function is used to test if the parse function should be run on the asset
      * If this returns true then parse is called with the asset
      * @param asset - The loaded asset data
-     * @param loadAsset - Any custom additional information relevant to the asset being loaded
+     * @param resolvedAsset - Any custom additional information relevant to the asset being loaded
      * @param loader - The loader instance
      */
-    testParse?: (asset: ASSET, loadAsset?: LoadAsset<META_DATA>, loader?: Loader) => Promise<boolean>;
+    testParse?: (asset: ASSET, resolvedAsset?: ResolvedAsset<META_DATA>, loader?: Loader) => Promise<boolean>;
 
     /**
      * Gets called on the asset it testParse passes. Useful to convert a raw asset into something more useful than
      * @param asset - The loaded asset data
-     * @param loadAsset - Any custom additional information relevant to the asset being loaded
+     * @param resolvedAsset - Any custom additional information relevant to the asset being loaded
      * @param loader - The loader instance
      */
-    parse?: <T>(asset: ASSET, loadAsset?: LoadAsset<META_DATA>, loader?: Loader) => Promise<T>;
+    parse?: <T>(asset: ASSET, resolvedAsset?: ResolvedAsset<META_DATA>, loader?: Loader) => Promise<T>;
 
     /**
      * If an asset is parsed using this parser, the unload function will be called when the user requests an asset
      * to be unloaded. This is useful for things like sounds or textures that can be unloaded from memory
      * @param asset - The asset to unload/destroy
-     * @param loadAsset - Any custom additional information relevant to the asset being loaded
+     * @param resolvedAsset - Any custom additional information relevant to the asset being loaded
      * @param loader - The loader instance
      */
-    unload?: (asset: ASSET, loadAsset?: LoadAsset<META_DATA>, loader?: Loader) => void;
+    unload?: (asset: ASSET, resolvedAsset?: ResolvedAsset<META_DATA>, loader?: Loader) => void;
 }

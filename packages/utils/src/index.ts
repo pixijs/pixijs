@@ -87,6 +87,7 @@ export * from './url';
 export * from './path';
 
 // Other exports
+export * from './browser/detectVideoAlphaMode';
 export * from './browser/hello';
 export * from './browser/isWebGLSupported';
 export * from './color/hex';

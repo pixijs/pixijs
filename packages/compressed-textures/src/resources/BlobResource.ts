@@ -1,7 +1,5 @@
 import { BufferResource, ViewableBuffer } from '@pixi/core';
 
-import type { Resource } from '@pixi/core';
-
 interface IBlobOptions
 {
     autoLoad?: boolean;
@@ -17,22 +15,28 @@ interface IBlobOptions
  */
 export abstract class BlobResource extends BufferResource
 {
-    protected origin: string;
-    protected buffer: ViewableBuffer;
+    protected origin: string | null;
+    protected buffer: ViewableBuffer | null;
     protected loaded: boolean;
 
     /**
-     * @param {string} source - the URL of the texture file
+     * Promise when loading.
+     * @default null
+     */
+    private _load: Promise<this>;
+
+    /**
+     * @param source - the buffer/URL of the texture file
      * @param {PIXI.IBlobOptions} options
      * @param {boolean}[options.autoLoad] - whether to fetch the data immediately;
      *  you can fetch it later via {@link PIXI.BlobResource#load}
      * @param {boolean}[options.width] - the width in pixels.
      * @param {boolean}[options.height] - the height in pixels.
      */
-    constructor(source: string | Uint8Array | Uint32Array | Float32Array,
+    constructor(source: string | Uint8Array | Uint32Array | Float32Array | null,
         options: IBlobOptions = { width: 1, height: 1, autoLoad: true })
     {
-        let origin: string;
+        let origin: string | null;
         let data: Uint8Array | Uint32Array | Float32Array;
 
         if (typeof source === 'string')
@@ -50,24 +54,28 @@ export abstract class BlobResource extends BufferResource
 
         /**
          * The URL of the texture file
-         * @member {string}
+         * @type {string|null}
          */
         this.origin = origin;
 
         /**
          * The viewable buffer on the data
-         * @member {ViewableBuffer}
+         * @type {ViewableBuffer|null}
          */
         // HINT: BlobResource allows "null" sources, assuming the child class provides an alternative
         this.buffer = data ? new ViewableBuffer(data) : null;
 
+        this._load = null;
+        this.loaded = false;
+
         // Allow autoLoad = "undefined" still load the resource by default
-        if (this.origin && options.autoLoad !== false)
+        if (this.origin !== null && options.autoLoad !== false)
         {
             this.load();
         }
-        if (data?.length)
+        if (this.origin === null && this.buffer)
         {
+            this._load = Promise.resolve(this);
             this.loaded = true;
             this.onBlobLoaded(this.buffer.rawBinaryData);
         }
@@ -79,19 +87,28 @@ export abstract class BlobResource extends BufferResource
     }
 
     /** Loads the blob */
-    async load(): Promise<Resource>
+    load(): Promise<this>
     {
-        const response = await fetch(this.origin);
-        const blob = await response.blob();
-        const arrayBuffer = await blob.arrayBuffer();
+        if (this._load)
+        {
+            return this._load;
+        }
 
-        this.data = new Uint32Array(arrayBuffer);
-        this.buffer = new ViewableBuffer(arrayBuffer);
-        this.loaded = true;
+        this._load = fetch(this.origin)
+            .then((response) => response.blob())
+            .then((blob) => blob.arrayBuffer())
+            .then((arrayBuffer) =>
+            {
+                this.data = new Uint32Array(arrayBuffer);
+                this.buffer = new ViewableBuffer(arrayBuffer);
+                this.loaded = true;
 
-        this.onBlobLoaded(arrayBuffer);
-        this.update();
+                this.onBlobLoaded(arrayBuffer);
+                this.update();
 
-        return this;
+                return this;
+            });
+
+        return this._load;
     }
 }

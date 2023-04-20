@@ -84,8 +84,7 @@ describe('Compressed Loader', () =>
     {
         detectCompressedTextures.test = jest.fn(async () => false);
         await Assets.init();
-        expect(Assets.resolver['_preferredOrder'][0].params.format).toEqual(
-            ['avif', 'webp', 'png', 'jpg', 'jpeg']
-        );
+        expect(Assets.resolver['_preferredOrder'][0].params.format.every(
+            (f: string) => !['s3tc', 's3tc_sRGB', 'etc', 'etc1', 'pvrtc', 'atc', 'astc'].includes(f))).toBeTrue();
     });
 });

@@ -5,4 +5,5 @@ export * from './cache';
 export * from './detections';
 export * from './loader';
 export * from './resolver';
+export * from './types';
 export * from './utils';

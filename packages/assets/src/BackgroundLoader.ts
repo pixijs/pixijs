@@ -1,5 +1,5 @@
-import type { LoadAsset } from './loader';
 import type { Loader } from './loader/Loader';
+import type { ResolvedAsset } from './types';
 
 /**
  * Quietly Loads assets in the background.
@@ -11,7 +11,7 @@ export class BackgroundLoader
     private _isActive: boolean;
 
     /** Assets to load. */
-    private readonly _assetList: LoadAsset[];
+    private readonly _assetList: ResolvedAsset[];
 
     /** Whether or not the loader is loading. */
     private _isLoading: boolean;
@@ -40,7 +40,7 @@ export class BackgroundLoader
      * Adds an array of assets to load.
      * @param assetUrls - assets to load
      */
-    public add(assetUrls: LoadAsset[]): void
+    public add(assetUrls: ResolvedAsset[]): void
     {
         assetUrls.forEach((a) =>
         {
