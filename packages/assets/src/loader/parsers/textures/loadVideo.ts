@@ -4,7 +4,7 @@ import { checkExtension } from '../../../utils/checkExtension';
 import { LoaderParserPriority } from '../LoaderParser';
 import { createTexture } from './utils/createTexture';
 
-import type { IBaseTextureOptions, Texture } from '@pixi/core';
+import type { IBaseTextureOptions, IVideoResourceOptions, Texture } from '@pixi/core';
 import type { ResolvedAsset } from '../../../types';
 import type { Loader } from '../../Loader';
 import type { LoaderParser } from '../LoaderParser';
@@ -15,6 +15,21 @@ const validVideoMIMEs = [
     'video/webm',
     'video/ogg',
 ];
+
+/**
+ * Configuration for the `loadVideo` loader paarser.
+ * @memberof PIXI
+ * @see PIXI.loadVideo
+ */
+export interface LoadVideoConfig
+{
+    /**
+     * When set to `true`, the video will start playing automatically after being loaded,
+     * otherwise it will not start playing automatically.
+     * @default true
+     */
+    defaultAutoPlay: boolean;
+}
 
 /**
  * Loads videos into Textures.
@@ -28,14 +43,25 @@ export const loadVideo = {
         priority: LoaderParserPriority.High,
     },
 
+    config: {
+        defaultAutoPlay: true,
+    },
+
     test(url: string): boolean
     {
         return checkDataUrl(url, validVideoMIMEs) || checkExtension(url, validVideoExtensions);
     },
 
-    async load(url: string, loadAsset?: ResolvedAsset<IBaseTextureOptions>, loader?: Loader): Promise<Texture>
+    async load(
+        url: string,
+        loadAsset?: ResolvedAsset<IBaseTextureOptions<IVideoResourceOptions>>,
+        loader?: Loader): Promise<Texture>
     {
-        const src = new VideoResource(url, loadAsset?.data?.resourceOptions);
+        const options = {
+            autoPlay: this.config.defaultAutoPlay,
+            ...loadAsset?.data?.resourceOptions,
+        };
+        const src = new VideoResource(url, options);
 
         await src.load();
 
@@ -56,6 +82,6 @@ export const loadVideo = {
     {
         texture.destroy(true);
     }
-} as LoaderParser<Texture, IBaseTextureOptions>;
+} as LoaderParser<Texture, IBaseTextureOptions<IVideoResourceOptions>, LoadVideoConfig>;
 
 extensions.add(loadVideo);
