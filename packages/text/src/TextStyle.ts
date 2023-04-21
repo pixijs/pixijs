@@ -868,13 +868,18 @@ function getColor(color: string|number|(string|number)[]): string|string[]
 {
     const temp = Color.shared;
 
+    const format = (color: string | number) => {
+        const res = temp.setValue(color);
+        return res.alpha === 1 ? res.toHex() : res.toRgbaString();
+    }
+
     if (!Array.isArray(color))
     {
-        return temp.setValue(color).toHex();
+        return format(color);
     }
     else
     {
-        return color.map(c => temp.setValue(c).toHex());
+        return color.map(format);
     }
 }
 
