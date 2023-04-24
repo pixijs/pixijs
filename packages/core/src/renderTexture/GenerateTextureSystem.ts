@@ -1,15 +1,15 @@
 import { extensions, ExtensionType } from '@pixi/extensions';
-import { Matrix, Transform } from '@pixi/math';
+import { Matrix, Rectangle, Transform } from '@pixi/math';
 import { RenderTexture } from './RenderTexture';
 
 import type { MSAA_QUALITY } from '@pixi/constants';
 import type { ExtensionMetadata } from '@pixi/extensions';
-import type { Rectangle } from '@pixi/math';
 import type { IRenderableContainer, IRenderableObject, IRenderer } from '../IRenderer';
 import type { ISystem } from '../system/ISystem';
 import type { IBaseTextureOptions } from '../textures/BaseTexture';
 
 const tempTransform = new Transform();
+const tempRect = new Rectangle();
 
 // TODO could this just be part of extract?
 export interface IGenerateTextureOptions extends IBaseTextureOptions
@@ -66,7 +66,8 @@ export class GenerateTextureSystem implements ISystem
     {
         const { region: manualRegion, ...textureOptions } = options || {};
 
-        const region = manualRegion || (displayObject as IRenderableContainer).getLocalBounds(null, true);
+        const region = manualRegion?.copyTo(tempRect)
+            || (displayObject as IRenderableContainer).getLocalBounds(tempRect, true);
 
         // minimum texture size is 1x1, 0x0 will throw an error
         if (region.width === 0) region.width = 1;
