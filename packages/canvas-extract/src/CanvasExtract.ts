@@ -145,8 +145,16 @@ export class CanvasExtract implements ISystem, IExtract
             else
             {
                 renderTexture = renderer.generateTexture(target, {
+                    region: frame,
                     resolution: renderer.resolution
                 });
+
+                if (frame)
+                {
+                    TEMP_RECT.width = frame.width;
+                    TEMP_RECT.height = frame.height;
+                    frame = TEMP_RECT;
+                }
             }
         }
 
@@ -217,8 +225,16 @@ export class CanvasExtract implements ISystem, IExtract
             else
             {
                 renderTexture = renderer.generateTexture(target, {
+                    region: frame,
                     resolution: renderer.resolution
                 });
+
+                if (frame)
+                {
+                    TEMP_RECT.width = frame.width;
+                    TEMP_RECT.height = frame.height;
+                    frame = TEMP_RECT;
+                }
             }
         }
 

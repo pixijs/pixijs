@@ -82,5 +82,36 @@ describe('VideoResource', () =>
             resource.destroy();
         });
     });
+
+    it('should not hang on load if an error occurs', async () =>
+    {
+        const video = document.createElement('video');
+
+        video.autoplay = false;
+        video.crossOrigin = 'anonymous';
+        video.preload = 'auto';
+        video.src = 'data:video/webm;base64,';
+
+        const resource = new VideoResource(video, { autoLoad: false });
+
+        expect(resource.width).toEqual(0);
+        expect(resource.height).toEqual(0);
+        expect(resource.valid).toBe(false);
+        expect(resource.source).toBeInstanceOf(HTMLVideoElement);
+
+        const errorOnLoad = new Promise<boolean>((resolve) =>
+        {
+            resource.source.addEventListener('loadeddata', () => resolve(false));
+            resource.source.addEventListener('error', () => resolve(true));
+        });
+
+        const loadPromise = resource.load();
+
+        await expect(errorOnLoad).toResolve();
+        expect(await errorOnLoad).toBe(true);
+        await expect(loadPromise).toReject();
+
+        resource.destroy();
+    });
 });
 

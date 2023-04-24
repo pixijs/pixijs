@@ -9,10 +9,10 @@ import type { MSAA_QUALITY } from '@pixi/constants';
 import type { ICanvas } from '@pixi/settings';
 import type { GLTexture } from './GLTexture';
 import type { IAutoDetectOptions } from './resources/autoDetectResource';
+import type { BufferType } from './resources/BufferResource';
 
 const defaultBufferOptions = {
     scaleMode: SCALE_MODES.NEAREST,
-    format: FORMATS.RGBA,
     alphaMode: ALPHA_MODES.NPM,
 };
 
@@ -72,32 +72,32 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
      * @member {PIXI.ALPHA_MODES}
      * @default PIXI.ALPHA_MODES.UNPACK
      */
-    public alphaMode?: ALPHA_MODES;
+    public alphaMode: ALPHA_MODES;
 
     /**
      * Anisotropic filtering level of texture
      * @member {number}
      * @default 0
      */
-    public anisotropicLevel?: number;
+    public anisotropicLevel: number;
 
     /**
      * The pixel format of the texture
      * @default PIXI.FORMATS.RGBA
      */
-    public format?: FORMATS;
+    public format: FORMATS;
 
     /**
      * The type of resource data
      * @default PIXI.TYPES.UNSIGNED_BYTE
      */
-    public type?: TYPES;
+    public type: TYPES;
 
     /**
      * The target type
      * @default PIXI.TARGETS.TEXTURE_2D
      */
-    public target?: TARGETS;
+    public target: TARGETS;
 
     /**
      * Global unique identifier for this BaseTexture
@@ -193,9 +193,9 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
      */
     parentTextureArray: BaseTexture;
 
-    private _mipmap?: MIPMAP_MODES;
-    private _scaleMode?: SCALE_MODES;
-    private _wrapMode?: WRAP_MODES;
+    private _mipmap: MIPMAP_MODES;
+    private _scaleMode: SCALE_MODES;
+    private _wrapMode: WRAP_MODES;
 
     /**
      * Default options used when creating BaseTexture objects.
@@ -686,28 +686,69 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
     }
 
     /**
-     * Create a new BaseTexture with a BufferResource from a Float32Array.
-     * RGBA values are floats from 0 to 1.
-     * @param {Float32Array|Uint8Array} buffer - The optional array to use, if no data
-     *        is provided, a new Float32Array is created.
+     * Create a new Texture with a BufferResource from a typed array.
+     * @param buffer - The optional array to use. If no data is provided, a new Float32Array is created.
      * @param width - Width of the resource
      * @param height - Height of the resource
      * @param options - See {@link PIXI.BaseTexture}'s constructor for options.
      *        Default properties are different from the constructor's defaults.
-     * @param {PIXI.FORMATS} [options.format=PIXI.FORMATS.RGBA] - GL format type
-     * @param {PIXI.ALPHA_MODES} [options.alphaMode=PIXI.ALPHA_MODES.NPM] - Image alpha, not premultiplied by default
-     * @param {PIXI.SCALE_MODES} [options.scaleMode=PIXI.SCALE_MODES.NEAREST] - Scale mode, pixelating by default
+     * @param {PIXI.FORMATS} [options.format] - The format is not given, the type is inferred from the
+     *        type of the buffer: `RGBA` if Float32Array, Int8Array, Uint8Array, or Uint8ClampedArray,
+     *        otherwise `RGBA_INTEGER`.
+     * @param {PIXI.TYPES} [options.type] - The type is not given, the type is inferred from the
+     *        type of the buffer. Maps Float32Array to `FLOAT`, Int32Array to `INT`, Uint32Array to
+     *        `UNSIGNED_INT`, Int16Array to `SHORT`, Uint16Array to `UNSIGNED_SHORT`, Int8Array to `BYTE`,
+     *        Uint8Array/Uint8ClampedArray to `UNSIGNED_BYTE`.
+     * @param {PIXI.ALPHA_MODES} [options.alphaMode=PIXI.ALPHA_MODES.NPM]
+     * @param {PIXI.SCALE_MODES} [options.scaleMode=PIXI.SCALE_MODES.NEAREST]
      * @returns - The resulting new BaseTexture
      */
-    static fromBuffer(buffer: Float32Array | Uint8Array,
-        width: number, height: number, options?: IBaseTextureOptions): BaseTexture<BufferResource>
+    static fromBuffer(buffer: BufferType, width: number, height: number,
+        options?: IBaseTextureOptions): BaseTexture<BufferResource>
     {
         buffer = buffer || new Float32Array(width * height * 4);
 
         const resource = new BufferResource(buffer, { width, height });
-        const type = buffer instanceof Float32Array ? TYPES.FLOAT : TYPES.UNSIGNED_BYTE;
+        let format: FORMATS;
+        let type: TYPES;
 
-        return new BaseTexture(resource, Object.assign({}, defaultBufferOptions, { type }, options));
+        if (buffer instanceof Float32Array)
+        {
+            format = FORMATS.RGBA;
+            type = TYPES.FLOAT;
+        }
+        else if (buffer instanceof Int32Array)
+        {
+            format = FORMATS.RGBA_INTEGER;
+            type = TYPES.INT;
+        }
+        else if (buffer instanceof Uint32Array)
+        {
+            format = FORMATS.RGBA_INTEGER;
+            type = TYPES.UNSIGNED_INT;
+        }
+        else if (buffer instanceof Int16Array)
+        {
+            format = FORMATS.RGBA_INTEGER;
+            type = TYPES.SHORT;
+        }
+        else if (buffer instanceof Uint16Array)
+        {
+            format = FORMATS.RGBA_INTEGER;
+            type = TYPES.UNSIGNED_SHORT;
+        }
+        else if (buffer instanceof Int8Array)
+        {
+            format = FORMATS.RGBA;
+            type = TYPES.BYTE;
+        }
+        else
+        {
+            format = FORMATS.RGBA;
+            type = TYPES.UNSIGNED_BYTE;
+        }
+
+        return new BaseTexture(resource, Object.assign({}, defaultBufferOptions, { type, format }, options));
     }
 
     /**

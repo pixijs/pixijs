@@ -403,6 +403,46 @@ describe('CanvasExtract', () =>
         sprite.destroy();
     });
 
+    it('should extract from object with frame correctly', async () =>
+    {
+        const renderer = new CanvasRenderer({ width: 2, height: 2 });
+
+        renderer.plugins.graphics = new CanvasGraphicsRenderer(renderer);
+
+        const graphics = new Graphics()
+            .beginFill(0xFF0000)
+            .drawRect(0, 0, 1, 1)
+            .endFill()
+            .beginFill(0x00FF00)
+            .drawRect(1, 0, 1, 1)
+            .endFill()
+            .beginFill(0x0000FF)
+            .drawRect(0, 1, 1, 1)
+            .endFill()
+            .beginFill(0xFFFF00)
+            .drawRect(1, 1, 1, 1)
+            .endFill();
+        const extract = renderer.extract;
+
+        const pixels = extract.pixels(graphics, new Rectangle(0, 0, 2, 2));
+        const pixels00 = extract.pixels(graphics, new Rectangle(0, 0, 1, 1));
+        const pixels10 = extract.pixels(graphics, new Rectangle(1, 0, 1, 1));
+        const pixels01 = extract.pixels(graphics, new Rectangle(0, 1, 1, 1));
+        const pixels11 = extract.pixels(graphics, new Rectangle(1, 1, 1, 1));
+
+        expect(pixels).toEqual(new Uint8ClampedArray([
+            255, 0, 0, 255, 0, 255, 0, 255,
+            0, 0, 255, 255, 255, 255, 0, 255
+        ]));
+        expect(pixels00).toEqual(new Uint8ClampedArray([255, 0, 0, 255]));
+        expect(pixels10).toEqual(new Uint8ClampedArray([0, 255, 0, 255]));
+        expect(pixels01).toEqual(new Uint8ClampedArray([0, 0, 255, 255]));
+        expect(pixels11).toEqual(new Uint8ClampedArray([255, 255, 0, 255]));
+
+        graphics.destroy();
+        renderer.destroy();
+    });
+
     it('should throw an error if frame is empty', async () =>
     {
         const renderer = new CanvasRenderer();
