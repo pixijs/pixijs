@@ -40,6 +40,8 @@ export class VideoResource extends BaseImageResource
     protected _updateFPS: number;
     protected _msToNextUpdate: number;
 
+    private _videoFrameRequestCallbackHandle: number | null;
+
     /**
      * When set to true will automatically play videos used by this texture once
      * they are loaded. If false, it will not modify the playing state.
@@ -55,6 +57,7 @@ export class VideoResource extends BaseImageResource
 
     /** Callback when completed with load. */
     private _resolve: (value?: this | PromiseLike<this>) => void;
+    private _reject: (error: ErrorEvent) => void;
 
     /**
      * @param {HTMLVideoElement|object|string|Array<string|object>} source - Video element to use.
@@ -131,8 +134,12 @@ export class VideoResource extends BaseImageResource
         this._msToNextUpdate = 0;
         this.autoPlay = options.autoPlay !== false;
 
+        this._videoFrameRequestCallback = this._videoFrameRequestCallback.bind(this);
+        this._videoFrameRequestCallbackHandle = null;
+
         this._load = null;
         this._resolve = null;
+        this._reject = null;
 
         // Bind for listeners
         this._onCanPlay = this._onCanPlay.bind(this);
@@ -152,15 +159,34 @@ export class VideoResource extends BaseImageResource
     {
         if (!this.destroyed)
         {
-            // account for if video has had its playbackRate changed
-            const elapsedMS = Ticker.shared.elapsedMS * (this.source as HTMLVideoElement).playbackRate;
+            if (this._updateFPS)
+            {
+                // account for if video has had its playbackRate changed
+                const elapsedMS = Ticker.shared.elapsedMS * (this.source as HTMLVideoElement).playbackRate;
 
-            this._msToNextUpdate = Math.floor(this._msToNextUpdate - elapsedMS);
+                this._msToNextUpdate = Math.floor(this._msToNextUpdate - elapsedMS);
+            }
+
             if (!this._updateFPS || this._msToNextUpdate <= 0)
             {
                 super.update(/* deltaTime*/);
                 this._msToNextUpdate = this._updateFPS ? Math.floor(1000 / this._updateFPS) : 0;
             }
+        }
+    }
+
+    private _videoFrameRequestCallback(): void
+    {
+        this.update();
+
+        if (!this.destroyed)
+        {
+            this._videoFrameRequestCallbackHandle = (this.source as any).requestVideoFrameCallback(
+                this._videoFrameRequestCallback);
+        }
+        else
+        {
+            this._videoFrameRequestCallbackHandle = null;
         }
     }
 
@@ -197,7 +223,7 @@ export class VideoResource extends BaseImageResource
             this._onCanPlay();
         }
 
-        this._load = new Promise((resolve): void =>
+        this._load = new Promise((resolve, reject): void =>
         {
             if (this.valid)
             {
@@ -206,6 +232,7 @@ export class VideoResource extends BaseImageResource
             else
             {
                 this._resolve = resolve;
+                this._reject = reject;
 
                 source.load();
             }
@@ -222,6 +249,13 @@ export class VideoResource extends BaseImageResource
     {
         (this.source as HTMLVideoElement).removeEventListener('error', this._onError, true);
         this.onError.emit(event);
+
+        if (this._reject)
+        {
+            this._reject(event);
+            this._reject = null;
+            this._resolve = null;
+        }
     }
 
     /**
@@ -255,21 +289,13 @@ export class VideoResource extends BaseImageResource
             this._onCanPlay();
         }
 
-        if (this.autoUpdate && !this._isConnectedToTicker)
-        {
-            Ticker.shared.add(this.update, this);
-            this._isConnectedToTicker = true;
-        }
+        this._configureAutoUpdate();
     }
 
     /** Fired when a pause event is triggered, stops the update loop. */
     private _onPlayStop(): void
     {
-        if (this._isConnectedToTicker)
-        {
-            Ticker.shared.remove(this.update, this);
-            this._isConnectedToTicker = false;
-        }
+        this._configureAutoUpdate();
     }
 
     /** Fired when the video is loaded and ready to play. */
@@ -289,6 +315,7 @@ export class VideoResource extends BaseImageResource
         {
             this._resolve(this);
             this._resolve = null;
+            this._reject = null;
         }
 
         if (this._isSourcePlaying())
@@ -304,11 +331,7 @@ export class VideoResource extends BaseImageResource
     /** Destroys this texture. */
     dispose(): void
     {
-        if (this._isConnectedToTicker)
-        {
-            Ticker.shared.remove(this.update, this);
-            this._isConnectedToTicker = false;
-        }
+        this._configureAutoUpdate();
 
         const source = this.source as HTMLVideoElement;
 
@@ -333,17 +356,7 @@ export class VideoResource extends BaseImageResource
         if (value !== this._autoUpdate)
         {
             this._autoUpdate = value;
-
-            if (!this._autoUpdate && this._isConnectedToTicker)
-            {
-                Ticker.shared.remove(this.update, this);
-                this._isConnectedToTicker = false;
-            }
-            else if (this._autoUpdate && !this._isConnectedToTicker && this._isSourcePlaying())
-            {
-                Ticker.shared.add(this.update, this);
-                this._isConnectedToTicker = true;
-            }
+            this._configureAutoUpdate();
         }
     }
 
@@ -361,6 +374,59 @@ export class VideoResource extends BaseImageResource
         if (value !== this._updateFPS)
         {
             this._updateFPS = value;
+            this._configureAutoUpdate();
+        }
+    }
+
+    private _configureAutoUpdate(): void
+    {
+        if (this._autoUpdate && this._isSourcePlaying())
+        {
+            if (!this._updateFPS && (this.source as any).requestVideoFrameCallback)
+            {
+                if (this._isConnectedToTicker)
+                {
+                    Ticker.shared.remove(this.update, this);
+                    this._isConnectedToTicker = false;
+                    this._msToNextUpdate = 0;
+                }
+
+                if (this._videoFrameRequestCallbackHandle === null)
+                {
+                    this._videoFrameRequestCallbackHandle = (this.source as any).requestVideoFrameCallback(
+                        this._videoFrameRequestCallback);
+                }
+            }
+            else
+            {
+                if (this._videoFrameRequestCallbackHandle !== null)
+                {
+                    (this.source as any).cancelVideoFrameCallback(this._videoFrameRequestCallbackHandle);
+                    this._videoFrameRequestCallbackHandle = null;
+                }
+
+                if (!this._isConnectedToTicker)
+                {
+                    Ticker.shared.add(this.update, this);
+                    this._isConnectedToTicker = true;
+                    this._msToNextUpdate = 0;
+                }
+            }
+        }
+        else
+        {
+            if (this._videoFrameRequestCallbackHandle !== null)
+            {
+                (this.source as any).cancelVideoFrameCallback(this._videoFrameRequestCallbackHandle);
+                this._videoFrameRequestCallbackHandle = null;
+            }
+
+            if (this._isConnectedToTicker)
+            {
+                Ticker.shared.remove(this.update, this);
+                this._isConnectedToTicker = false;
+                this._msToNextUpdate = 0;
+            }
         }
     }
 
