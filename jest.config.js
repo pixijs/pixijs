@@ -11,6 +11,7 @@ module.exports = {
     transform: {
         '\\.vert$': 'jest-raw-loader',
         '\\.frag$': 'jest-raw-loader',
+        '\\.worker.ts$': '<rootDir>/test/jest-webworker-loader.js',
     },
     moduleNameMapper: {
         '^@pixi/(.*)$': '<rootDir>/packages/$1/src',

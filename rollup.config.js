@@ -6,6 +6,7 @@ import esbuild from 'rollup-plugin-esbuild';
 import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
 import jscc from 'rollup-plugin-jscc';
+import webWorkerLoader from 'rollup-plugin-web-worker-loader';
 import workspacesRun from 'workspaces-run';
 import repo from './package.json';
 
@@ -54,6 +55,9 @@ async function main()
                 '**/*.frag',
                 '**/*.vert',
             ],
+        }),
+        webWorkerLoader({
+            pattern: /.*\.worker\.ts/,
         }),
     ];
 

@@ -31,11 +31,12 @@
         }
     },
     "exclude": [
+        "bundles/**/*.d.ts",
         "node_modules",
         "**/dist/**",
         "**/lib/**",
-        "bundles/**/*.d.ts",
-        "**/out/**"
+        "**/out/**",
+        "**/*.worker.ts"
     ],
     "ts-node": {
         "files": true,

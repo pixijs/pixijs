@@ -1,18 +1,18 @@
 {
     "extends": "./tsconfig.json",
     "compilerOptions": {
-        "declaration": true,
-        "emitDeclarationOnly": true,
-        "outDir": "out"
+        "lib": ["WebWorker", "ES6"],
+        "strict": true
     },
+    "include": [
+        "**/*.worker.ts"
+    ],
     "exclude": [
         "bundles/**/*.d.ts",
         "node_modules",
-        "scripts",
-        "tools",
         "**/dist/**",
         "**/lib/**",
-        "**/out/**",
-        "**/test/**"
-    ]
+        "**/out/**"
+    ],
+    "references": []
 }
