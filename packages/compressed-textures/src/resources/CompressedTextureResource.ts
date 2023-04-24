@@ -1,7 +1,7 @@
 import { INTERNAL_FORMAT_TO_BYTES_PER_PIXEL } from '../const';
 import { BlobResource } from './BlobResource';
 
-import type { BaseTexture, GLTexture, Renderer } from '@pixi/core';
+import type { BaseTexture, BufferType, GLTexture, Renderer } from '@pixi/core';
 import type { INTERNAL_FORMATS } from '../const';
 
 /**
@@ -102,7 +102,7 @@ export class CompressedTextureResource extends BlobResource
      * @param {number} [options.levelBuffers] - the buffers for each mipmap level. `CompressedTextureResource` can allows you
      *      to pass `null` for `source`, for cases where each level is stored in non-contiguous memory.
      */
-    constructor(source: string | Uint8Array | Uint32Array, options: ICompressedTextureResourceOptions)
+    constructor(source: string | BufferType, options: ICompressedTextureResourceOptions)
     {
         super(source, options);
 

@@ -1,7 +1,6 @@
 import { FORMATS, MIPMAP_MODES, MSAA_QUALITY, SCALE_MODES, TYPES } from '@pixi/constants';
 import { Runner } from '@pixi/runner';
 import { BaseTexture } from '../textures/BaseTexture';
-import { DepthResource } from '../textures/resources/DepthResource';
 
 import type { GLFramebuffer } from './GLFramebuffer';
 
@@ -114,8 +113,7 @@ export class Framebuffer
      */
     addDepthTexture(texture?: BaseTexture): this
     {
-        /* eslint-disable max-len */
-        this.depthTexture = texture || new BaseTexture(new DepthResource(null, { width: this.width, height: this.height }), {
+        this.depthTexture = texture || new BaseTexture(null, {
             scaleMode: SCALE_MODES.NEAREST,
             resolution: 1,
             width: this.width,
