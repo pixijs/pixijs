@@ -68,19 +68,17 @@ export class GenerateTextureSystem implements ISystem
 
         const region = manualRegion?.copyTo(tempRect)
             || (displayObject as IRenderableContainer).getLocalBounds(tempRect, true);
-        const resolution = this.renderer.resolution;
+        const resolution = textureOptions.resolution || this.renderer.resolution;
 
         region.width = Math.max(region.width, 1 / resolution);
         region.height = Math.max(region.height, 1 / resolution);
 
-        const renderTexture = RenderTexture.create(
-            {
-                width: region.width,
-                height: region.height,
-                resolution,
-                multisample: this.renderer.multisample,
-                ...textureOptions,
-            });
+        textureOptions.width = region.width;
+        textureOptions.height = region.height;
+        textureOptions.resolution = resolution;
+        textureOptions.multisample ??= this.renderer.multisample;
+
+        const renderTexture = RenderTexture.create(textureOptions);
 
         this._tempMatrix.tx = -region.x;
         this._tempMatrix.ty = -region.y;
