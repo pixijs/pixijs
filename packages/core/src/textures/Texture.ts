@@ -7,7 +7,7 @@ import { TextureUvs } from './TextureUvs';
 
 import type { IPointData, ISize } from '@pixi/math';
 import type { IBaseTextureOptions, ImageSource } from './BaseTexture';
-import type { BufferResource } from './resources/BufferResource';
+import type { BufferResource, BufferType } from './resources/BufferResource';
 import type { CanvasResource } from './resources/CanvasResource';
 import type { Resource } from './resources/Resource';
 import type { TextureMatrix } from './TextureMatrix';
@@ -463,17 +463,25 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
     }
 
     /**
-     * Create a new Texture with a BufferResource from a Float32Array.
-     * RGBA values are floats from 0 to 1.
-     * @param {Float32Array|Uint8Array} buffer - The optional array to use, if no data
-     *        is provided, a new Float32Array is created.
+     * Create a new Texture with a BufferResource from a typed array.
+     * @param buffer - The optional array to use. If no data is provided, a new Float32Array is created.
      * @param width - Width of the resource
      * @param height - Height of the resource
      * @param options - See {@link PIXI.BaseTexture}'s constructor for options.
+     *        Default properties are different from the constructor's defaults.
+     * @param {PIXI.FORMATS} [options.format] - The format is not given, the type is inferred from the
+     *        type of the buffer: `RGBA` if Float32Array, Int8Array, Uint8Array, or Uint8ClampedArray,
+     *        otherwise `RGBA_INTEGER`.
+     * @param {PIXI.TYPES} [options.type] - The type is not given, the type is inferred from the
+     *        type of the buffer. Maps Float32Array to `FLOAT`, Int32Array to `INT`, Uint32Array to
+     *        `UNSIGNED_INT`, Int16Array to `SHORT`, Uint16Array to `UNSIGNED_SHORT`, Int8Array to `BYTE`,
+     *        Uint8Array/Uint8ClampedArray to `UNSIGNED_BYTE`.
+     * @param {PIXI.ALPHA_MODES} [options.alphaMode=PIXI.ALPHA_MODES.NPM]
+     * @param {PIXI.SCALE_MODES} [options.scaleMode=PIXI.SCALE_MODES.NEAREST]
      * @returns - The resulting new BaseTexture
      */
-    static fromBuffer(buffer: Float32Array | Uint8Array,
-        width: number, height: number, options?: IBaseTextureOptions<ISize>): Texture<BufferResource>
+    static fromBuffer(buffer: BufferType, width: number, height: number,
+        options?: IBaseTextureOptions<ISize>): Texture<BufferResource>
     {
         return new Texture(BaseTexture.fromBuffer(buffer, width, height, options));
     }
