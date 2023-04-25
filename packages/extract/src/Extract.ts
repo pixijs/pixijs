@@ -77,7 +77,7 @@ export class Extract implements ISystem, IExtract
 
     /**
      * Will return a base64 encoded string of this target. It works by calling
-     *  `Extract.getCanvas` and then running toDataURL on that.
+     *  `Extract.canvas` and then running toDataURL on that.
      * @param target - A displayObject or renderTexture
      *  to convert. If left empty will use the main renderer
      * @param format - Image format, e.g. "image/jpeg" or "image/webp".
