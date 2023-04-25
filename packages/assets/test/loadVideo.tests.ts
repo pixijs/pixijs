@@ -23,7 +23,7 @@ describe('loadVideo', () =>
         expect(white.height).toBe(1);
     });
 
-    it.skip('should load MP4 assets from data URL', async () =>
+    it('should load MP4 assets from data URL', async () =>
     {
         let mp4DataURL = `
         data:video/mp4;base64,AAAAIGZ0eXBpc29tAAACAGlzb21pc28yYXZjMW1wNDEAAAAIZnJlZQAAABttZGF0AAAAD2WIhAAr//
@@ -63,7 +63,7 @@ describe('loadVideo', () =>
         expect(white.height).toBe(1);
     });
 
-    it.skip('should load WebM assets from data URL', async () =>
+    it('should load WebM assets from data URL', async () =>
     {
         let webmDataURL = `
         data:video/webm;base64,GkXfo59ChoEBQveBAULygQRC84EIQoKEd2VibUKHgQJChYECGFOAZwEAAAAAAAG9EU2bdLpNu4tTq
@@ -98,7 +98,7 @@ describe('loadVideo', () =>
         expect(white.height).toBe(1);
     });
 
-    it.skip('should load Ogv assets from data URL', async () =>
+    it('should load Ogv assets from data URL', async () =>
     {
         let ogvDataURL = `
         data:video/webm;base64,T2dnUwACAAAAAAAAAAAAAAAAAAAAACNvTl0BKoB0aGVvcmEDAgEAAQABAAABAAABAA8AAAAZAAAAA
