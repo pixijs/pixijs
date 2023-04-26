@@ -101,10 +101,17 @@ export class VideoResource extends BaseImageResource
 
                 src = src || source[i] as string;
 
-                const baseSrc = src.split('?').shift().toLowerCase();
-                const ext = baseSrc.slice(baseSrc.lastIndexOf('.') + 1);
+                if (src.startsWith('data:'))
+                {
+                    mime = src.slice(5, src.indexOf(';'));
+                }
+                else
+                {
+                    const baseSrc = src.split('?').shift().toLowerCase();
+                    const ext = baseSrc.slice(baseSrc.lastIndexOf('.') + 1);
 
-                mime = mime || VideoResource.MIME_TYPES[ext] || `video/${ext}`;
+                    mime = mime || VideoResource.MIME_TYPES[ext] || `video/${ext}`;
+                }
 
                 sourceElement.src = src;
                 sourceElement.type = mime;
