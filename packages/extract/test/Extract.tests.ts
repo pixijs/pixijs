@@ -447,7 +447,7 @@ describe('Extract', () =>
         expect(canvas.width).toBe(1);
         expect(canvas.height).toBe(1);
 
-        const pixels = extract.pixels(graphics, new Rectangle(0, 0, 1, 1));
+        const pixels = extract.pixels(graphics, emptyFrame);
 
         expect(pixels).toEqual(new Uint8Array([255, 0, 255, 255]));
 
