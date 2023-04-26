@@ -61,7 +61,7 @@ export class ImageBitmapResource extends BaseImageResource
      * Whether the underlying ImageBitmap is owned by the ImageBitmapResource.
      * @see PIXI.IImageBitmapResourceOptions.ownsImageBitmap
      */
-    ownsImageBitmap: boolean;
+    private ownsImageBitmap: boolean;
 
     /**
      * Promise when loading.
