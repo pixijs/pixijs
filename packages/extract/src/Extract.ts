@@ -197,11 +197,6 @@ export class Extract implements ISystem, IExtract
             throw new Error('The Extract has already been destroyed');
         }
 
-        if (frame && !(frame.width > 0 && frame.height > 0))
-        {
-            throw new Error('The frame\'s width and height must be positive');
-        }
-
         let resolution;
         let flipY = false;
         let renderTexture;
@@ -234,7 +229,7 @@ export class Extract implements ISystem, IExtract
         if (renderTexture)
         {
             resolution = renderTexture.baseTexture.resolution;
-            frame ??= renderTexture.frame;
+            frame = frame ?? renderTexture.frame;
             flipY = false;
 
             if (!generated)
@@ -252,29 +247,29 @@ export class Extract implements ISystem, IExtract
         else
         {
             resolution = renderer.resolution;
-            frame ??= renderer.screen;
+
+            if (!frame)
+            {
+                frame = TEMP_RECT;
+                frame.width = renderer.width / resolution;
+                frame.height = renderer.height / resolution;
+            }
+
             flipY = true;
             renderer.renderTexture.bind();
         }
 
-        frame = TEMP_RECT.copyFrom(frame);
-        frame.x *= resolution;
-        frame.y *= resolution;
-        frame.width *= resolution;
-        frame.height *= resolution;
-        frame.ceil();
-        frame.width = Math.max(frame.width, 1);
-        frame.height = Math.max(frame.height, 1);
+        const width = Math.max(Math.round(frame.width * resolution), 1);
+        const height = Math.max(Math.round(frame.height * resolution), 1);
 
-        const { x, y, width, height } = frame;
         const pixels = new Uint8Array(BYTES_PER_PIXEL * width * height);
 
         // Read pixels to the array
         const gl = renderer.gl;
 
         gl.readPixels(
-            x,
-            y,
+            Math.round(frame.x * resolution),
+            Math.round(frame.y * resolution),
             width,
             height,
             gl.RGBA,

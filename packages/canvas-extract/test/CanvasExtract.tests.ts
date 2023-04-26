@@ -443,12 +443,11 @@ describe('CanvasExtract', () =>
         renderer.destroy();
     });
 
-    it('should throw an error if frame is empty', async () =>
+    it('should not throw an error if frame is empty', async () =>
     {
         const renderer = new CanvasRenderer();
         const extract = renderer.extract as CanvasExtract;
         const emptyFrame = new Rectangle(0, 0, 0, 0);
-        const almostEmptyFrame = new Rectangle(0, 0, 1e-10, 1e-10);
 
         renderer.plugins.graphics = new CanvasGraphicsRenderer(renderer);
 
@@ -457,21 +456,21 @@ describe('CanvasExtract', () =>
             .drawRect(0, 0, 1, 1)
             .endFill();
 
-        expect(() => extract.canvas(graphics, emptyFrame)).toThrow();
-        await expect(extract.base64(graphics, undefined, undefined, emptyFrame)).toReject();
-        expect(() => extract.pixels(graphics, emptyFrame)).toThrow();
-        await expect(extract.image(graphics, undefined, undefined, emptyFrame)).toReject();
+        expect(() => extract.canvas(graphics, emptyFrame)).not.toThrow();
+        await expect(extract.base64(graphics, undefined, undefined, emptyFrame)).toResolve();
+        expect(() => extract.pixels(graphics, emptyFrame)).not.toThrow();
+        await expect(extract.image(graphics, undefined, undefined, emptyFrame)).toResolve();
 
-        const canvas = extract.canvas(graphics, almostEmptyFrame);
+        const canvas = extract.canvas(graphics, emptyFrame);
 
         expect(canvas.width).toBe(1);
         expect(canvas.height).toBe(1);
 
-        const pixels = extract.pixels(graphics, almostEmptyFrame);
+        const pixels = extract.pixels(graphics, new Rectangle(0, 0, 1, 1));
 
         expect(pixels).toEqual(new Uint8ClampedArray([255, 0, 255, 255]));
 
-        const image = extract.canvas(graphics, almostEmptyFrame);
+        const image = extract.canvas(graphics, emptyFrame);
 
         expect(image.width).toBe(1);
         expect(image.height).toBe(1);
