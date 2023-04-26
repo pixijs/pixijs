@@ -52,8 +52,13 @@ export class Framebuffer
      */
     constructor(width: number, height: number)
     {
-        this.width = Math.round(width || 100);
-        this.height = Math.round(height || 100);
+        this.width = Math.round(width);
+        this.height = Math.round(height);
+
+        if (!this.width || !this.height)
+        {
+            throw new Error('Framebuffer width or height is zero');
+        }
 
         this.stencil = false;
         this.depth = false;
@@ -155,6 +160,11 @@ export class Framebuffer
     {
         width = Math.round(width);
         height = Math.round(height);
+
+        if (!width || !height)
+        {
+            throw new Error('Framebuffer width and height must not be zero');
+        }
 
         if (width === this.width && height === this.height) return;
 
