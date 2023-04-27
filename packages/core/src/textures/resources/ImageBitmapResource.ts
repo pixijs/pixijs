@@ -143,7 +143,12 @@ export class ImageBitmapResource extends BaseImageResource
                         ? 'premultiply' : 'none',
                 });
 
-                if (this.destroyed) return;
+                if (this.destroyed)
+                {
+                    imageBitmap.close();
+
+                    return;
+                }
 
                 this.source = imageBitmap;
                 this.update();
