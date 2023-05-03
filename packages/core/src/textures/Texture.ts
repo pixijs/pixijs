@@ -5,9 +5,9 @@ import { BaseTexture } from './BaseTexture';
 import { ImageResource } from './resources/ImageResource';
 import { TextureUvs } from './TextureUvs';
 
-import type { IPointData, ISize } from '@pixi/math';
+import type { IPointData } from '@pixi/math';
 import type { IBaseTextureOptions, ImageSource } from './BaseTexture';
-import type { BufferResource, BufferType } from './resources/BufferResource';
+import type { BufferResource, BufferType, IBufferResourceOptions } from './resources/BufferResource';
 import type { CanvasResource } from './resources/CanvasResource';
 import type { Resource } from './resources/Resource';
 import type { TextureMatrix } from './TextureMatrix';
@@ -481,7 +481,7 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
      * @returns - The resulting new BaseTexture
      */
     static fromBuffer(buffer: BufferType, width: number, height: number,
-        options?: IBaseTextureOptions<ISize>): Texture<BufferResource>
+        options?: IBaseTextureOptions<IBufferResourceOptions>): Texture<BufferResource>
     {
         return new Texture(BaseTexture.fromBuffer(buffer, width, height, options));
     }

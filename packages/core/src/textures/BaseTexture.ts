@@ -9,7 +9,7 @@ import type { MSAA_QUALITY } from '@pixi/constants';
 import type { ICanvas } from '@pixi/settings';
 import type { GLTexture } from './GLTexture';
 import type { IAutoDetectOptions } from './resources/autoDetectResource';
-import type { BufferType } from './resources/BufferResource';
+import type { BufferType, IBufferResourceOptions } from './resources/BufferResource';
 
 const defaultBufferOptions = {
     scaleMode: SCALE_MODES.NEAREST,
@@ -704,11 +704,11 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
      * @returns - The resulting new BaseTexture
      */
     static fromBuffer(buffer: BufferType, width: number, height: number,
-        options?: IBaseTextureOptions): BaseTexture<BufferResource>
+        options?: IBaseTextureOptions<IBufferResourceOptions>): BaseTexture<BufferResource>
     {
         buffer = buffer || new Float32Array(width * height * 4);
 
-        const resource = new BufferResource(buffer, { width, height });
+        const resource = new BufferResource(buffer, Object.assign({ width, height }, options?.resourceOptions));
         let format: FORMATS;
         let type: TYPES;
 
