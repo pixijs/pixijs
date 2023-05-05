@@ -74,6 +74,7 @@ export { default as earcut } from 'earcut';
  * @memberof PIXI.utils
  * @name url
  * @member {object}
+ * @deprecated since 7.3.0
  */
 export * from './url';
 
