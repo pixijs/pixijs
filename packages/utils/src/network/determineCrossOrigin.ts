@@ -21,10 +21,8 @@ export function determineCrossOrigin(url: string, loc: Location = globalThis.loc
 
     const parsedUrl = new URL(url, document.baseURI);
 
-    const samePort = (!parsedUrl.port && loc.port === '') || (parsedUrl.port === loc.port);
-
     // if cross origin
-    if (parsedUrl.hostname !== loc.hostname || !samePort || parsedUrl.protocol !== loc.protocol)
+    if (parsedUrl.hostname !== loc.hostname || parsedUrl.port !== loc.port || parsedUrl.protocol !== loc.protocol)
     {
         return 'anonymous';
     }
