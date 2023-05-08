@@ -708,7 +708,7 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
     {
         buffer = buffer || new Float32Array(width * height * 4);
 
-        const resource = new BufferResource(buffer, Object.assign({ width, height }, options?.resourceOptions));
+        const resource = new BufferResource(buffer, { width, height, ...options?.resourceOptions });
         let format: FORMATS;
         let type: TYPES;
 
