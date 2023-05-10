@@ -86,11 +86,35 @@ function createScene(nested = true)
 
     return [stage, graphics];
 }
+class CustomElement extends HTMLElement
+{
+    static tagName = 'custom-element';
+    view = document.createElement('canvas');
+    constructor()
+    {
+        super();
+
+        const shadowRoot = this.attachShadow({ mode: 'closed' });
+
+        this.style.display = 'block';
+        this.style.margin = '50px';
+
+        shadowRoot.appendChild(this.view);
+    }
+}
 
 describe('EventSystem', () =>
 {
     // Share WebGL context for performance
     const view = document.createElement('canvas');
+
+    customElements.define(CustomElement.tagName, CustomElement);
+    const customElement = document.createElement(CustomElement.tagName) as CustomElement;
+
+    document.body.appendChild(customElement);
+    const viewInShadowDOM = customElement.view;
+
+    const views = [view, viewInShadowDOM];
 
     // Test each event(s) and ensure they are emitted at the event target.
     const staticPointerEventTests = [
@@ -150,70 +174,80 @@ describe('EventSystem', () =>
         touchend: 'onPointerUp',
     };
 
-    staticPointerEventTests.forEach((event) =>
+    const testStaticPointerEvents = (view: HTMLCanvasElement, index: number) =>
     {
-        const events = Array.isArray(event) ? event : [event];
-        const isMouseEvent = events[0].type.startsWith('mouse');
-        const isTouchEvent = events[0].type.startsWith('touch');
-
-        it(`should fire ${events[events.length - 1].type}`, () =>
+        staticPointerEventTests.forEach((event) =>
         {
-            const renderer = createRenderer(view, isMouseEvent);
-            const stage = new Container();
-            const graphics = new Graphics();
+            const events = Array.isArray(event) ? event : [event];
+            const isMouseEvent = events[0].type.startsWith('mouse');
+            const isTouchEvent = events[0].type.startsWith('touch');
 
-            stage.addChild(graphics);
-            graphics
-                .beginFill(0xFFFFFF)
-                .drawRect(0, 0, 50, 50);
-            graphics.interactive = true;
-            renderer.render(stage);
-
-            events.forEach(({ native, type, clientX, clientY }) =>
+            it(`should fire ${events[events.length - 1].type}${index === 0 ? '' : ' inside shadowDOM'}`, () =>
             {
-                clientX = clientX || 25;
-                clientY = clientY || 25;
+                const renderer = createRenderer(view, isMouseEvent);
+                const stage = new Container();
+                const graphics = new Graphics();
 
-                const eventSpy = jest.fn();
-                const handler = handlers[(native || type) as keyof typeof handlers];
+                stage.addChild(graphics);
+                graphics
+                    .beginFill(0xFFFFFF)
+                    .drawRect(0, 0, 50, 50);
+                graphics.interactive = true;
+                renderer.render(stage);
 
-                graphics.on(type, function testEvent(e)
+                events.forEach(({ native, type, clientX, clientY }) =>
                 {
-                    expect(e.nativeEvent.clientX).toEqual(clientX);
-                    expect(e.nativeEvent.clientY).toEqual(clientY);
-                    eventSpy();
-                });
+                    clientX = clientX || 25;
+                    clientY = clientY || 25;
 
-                let event;
+                    const eventSpy = jest.fn();
+                    const handler = handlers[(native || type) as keyof typeof handlers];
 
-                if (!isMouseEvent && !isTouchEvent)
-                {
-                    event = new PointerEvent(native || type, { clientX, clientY });
-                }
-                else if (isTouchEvent)
-                {
-                    event = new TouchEvent(native || type, {
-                        changedTouches: [
-                            new Touch({
-                                identifier: 0,
-                                target: renderer.view as EventTarget,
-                                clientX,
-                                clientY,
-                            }),
-                        ],
+                    graphics.on(type, function testEvent(e)
+                    {
+                        expect(e.nativeEvent.clientX).toEqual(clientX);
+                        expect(e.nativeEvent.clientY).toEqual(clientY);
+                        eventSpy();
                     });
-                }
-                else
-                {
-                    event = new MouseEvent(native || type, { clientX, clientY });
-                }
 
-                renderer.events[handler](event);
+                    let event;
 
-                expect(eventSpy).toHaveBeenCalledOnce();
+                    if (!isMouseEvent && !isTouchEvent)
+                    {
+                        event = new PointerEvent(native || type, { clientX, clientY });
+                    }
+                    else if (isTouchEvent)
+                    {
+                        event = new TouchEvent(native || type, {
+                            changedTouches: [
+                                new Touch({
+                                    identifier: 0,
+                                    target: renderer.view as EventTarget,
+                                    clientX,
+                                    clientY,
+                                }),
+                            ],
+                        });
+                    }
+                    else
+                    {
+                        event = new MouseEvent(native || type, { clientX, clientY });
+                    }
+
+                    renderer.events[handler](event);
+
+                    expect(eventSpy).toHaveBeenCalledOnce();
+                });
             });
         });
-    });
+
+        if (index === 1)
+        {
+            customElement.remove();
+        }
+    };
+
+    views.forEach(testStaticPointerEvents);
 
     it('should manage the CSS cursor', () =>
     {
