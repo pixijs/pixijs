@@ -1,7 +1,3 @@
-import { url as _url } from '../url';
-
-let tempAnchor: HTMLAnchorElement | undefined;
-
 /**
  * Sets the `crossOrigin` property for this resource based on if the url
  * for this resource is cross-origin. If crossOrigin was manually set, this
@@ -23,21 +19,10 @@ export function determineCrossOrigin(url: string, loc: Location = globalThis.loc
     // default is window.location
     loc = loc || globalThis.location;
 
-    if (!tempAnchor)
-    {
-        tempAnchor = document.createElement('a');
-    }
-
-    // let the browser determine the full href for the url of this resource and then
-    // parse with the node url lib, we can't use the properties of the anchor element
-    // because they don't work in IE9 :(
-    tempAnchor.href = url;
-    const parsedUrl = _url.parse(tempAnchor.href);
-
-    const samePort = (!parsedUrl.port && loc.port === '') || (parsedUrl.port === loc.port);
+    const parsedUrl = new URL(url, document.baseURI);
 
     // if cross origin
-    if (parsedUrl.hostname !== loc.hostname || !samePort || parsedUrl.protocol !== loc.protocol)
+    if (parsedUrl.hostname !== loc.hostname || parsedUrl.port !== loc.port || parsedUrl.protocol !== loc.protocol)
     {
         return 'anonymous';
     }
