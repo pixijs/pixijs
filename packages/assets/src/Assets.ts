@@ -47,7 +47,10 @@ export interface AssetInitOptions
     texturePreference?: {
         /** the resolution order you prefer, can be an array (priority order - first is prefered) or a single resolutions  */
         resolution?: number | number[];
-        /** the formats you prefer, by default this will be:  ['avif', 'webp', 'png', 'jpg', 'jpeg'] */
+        /**
+         * the formats you prefer, by default this will be:
+         * ['avif', 'webp', 'png', 'jpg', 'jpeg', 'webm', 'mp4', 'm4v', 'ogv']
+         */
         format?: ArrayOr<string>;
     };
 

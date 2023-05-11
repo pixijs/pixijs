@@ -423,4 +423,17 @@ describe('FramebufferSystem', () =>
         expect(blitFbo.multisample).toBe(0);
         expect(blitFbo.msaaBuffer).toBeNull();
     });
+
+    it('should throw error if created with (almost) 0 width or height', () =>
+    {
+        expect(() => new Framebuffer(0, 0)).toThrow();
+        expect(() => new Framebuffer(0, 1)).toThrow();
+        expect(() => new Framebuffer(1, 0)).toThrow();
+        expect(() => new Framebuffer(0.1, 0.1)).toThrow();
+        expect(() => new Framebuffer(1, 1)).not.toThrow();
+        expect(() => new Framebuffer(1, 1).resize(0, 0)).toThrow();
+        expect(() => new Framebuffer(1, 1).resize(0, 1)).toThrow();
+        expect(() => new Framebuffer(1, 1).resize(1, 0)).toThrow();
+        expect(() => new Framebuffer(1, 1).resize(0.1, 0.1)).toThrow();
+    });
 });

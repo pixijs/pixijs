@@ -1,5 +1,5 @@
 /// <reference path="../global.d.ts" />
-import { BaseTexture, Matrix, RenderTexture, settings, Texture, utils } from '@pixi/core';
+import { BaseTexture, Matrix, Rectangle, RenderTexture, Texture, utils } from '@pixi/core';
 import { DisplayObject } from '@pixi/display';
 import { Sprite } from '@pixi/sprite';
 
@@ -9,7 +9,6 @@ import type {
     IRenderer,
     MaskData,
     MSAA_QUALITY,
-    Rectangle,
     Renderer,
 } from '@pixi/core';
 import type { Container, IDestroyOptions } from '@pixi/display';
@@ -263,7 +262,7 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
     // this function also calls updatetransform on all its children as part of the measuring.
     // This means we don't need to update the transform again in this function
     // TODO pass an object to clone too? saves having to create a new one each time!
-    const bounds = (this as Container).getLocalBounds(null, true).clone();
+    const bounds = (this as Container).getLocalBounds(new Rectangle(), true);
 
     // add some padding!
     if (this.filters?.length)
@@ -273,7 +272,11 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
         bounds.pad(padding);
     }
 
-    bounds.ceil(settings.RESOLUTION);
+    const resolution = this.cacheAsBitmapResolution || renderer.resolution;
+
+    bounds.ceil(resolution);
+    bounds.width = Math.max(bounds.width, 1 / resolution);
+    bounds.height = Math.max(bounds.height, 1 / resolution);
 
     // for now we cache the current renderTarget that the WebGL renderer is currently using.
     // this could be more elegant..
@@ -289,7 +292,7 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
     const renderTexture = RenderTexture.create({
         width: bounds.width,
         height: bounds.height,
-        resolution: this.cacheAsBitmapResolution || renderer.resolution,
+        resolution,
         multisample: this.cacheAsBitmapMultisample ?? renderer.multisample,
     });
 
@@ -391,7 +394,7 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDis
     }
 
     // get bounds actually transforms the object for us already!
-    const bounds = (this as Container).getLocalBounds(null, true);
+    const bounds = (this as Container).getLocalBounds(new Rectangle(), true);
 
     const cacheAlpha = this.alpha;
 
@@ -400,9 +403,17 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDis
     const cachedRenderTarget = renderer.canvasContext.activeContext;
     const cachedProjectionTransform = (renderer as any)._projTransform;
 
-    bounds.ceil(settings.RESOLUTION);
+    const resolution = this.cacheAsBitmapResolution || renderer.resolution;
 
-    const renderTexture = RenderTexture.create({ width: bounds.width, height: bounds.height });
+    bounds.ceil(resolution);
+    bounds.width = Math.max(bounds.width, 1 / resolution);
+    bounds.height = Math.max(bounds.height, 1 / resolution);
+
+    const renderTexture = RenderTexture.create({
+        width: bounds.width,
+        height: bounds.height,
+        resolution
+    });
 
     const textureCacheId = `cacheAsBitmap_${utils.uid()}`;
 

@@ -432,4 +432,18 @@ describe('RenderTexture', () =>
             expect(pixel).toEqual(new Float32Array([1.0, 0.0, 0.0, 1.0]));
         });
     });
+
+    it('should throw error if created with (almost) 0 width or height', () =>
+    {
+        expect(() => RenderTexture.create()).not.toThrow();
+        expect(() => RenderTexture.create({ width: 0, height: 0 })).toThrow();
+        expect(() => RenderTexture.create({ width: 0, height: 1 })).toThrow();
+        expect(() => RenderTexture.create({ width: 1, height: 0 })).toThrow();
+        expect(() => RenderTexture.create({ width: 0.1, height: 0.1 })).toThrow();
+        expect(() => RenderTexture.create({ width: 1, height: 1 })).not.toThrow();
+        expect(() => RenderTexture.create({ width: 1, height: 1 }).resize(0, 0)).toThrow();
+        expect(() => RenderTexture.create({ width: 1, height: 1 }).resize(0, 1)).toThrow();
+        expect(() => RenderTexture.create({ width: 1, height: 1 }).resize(1, 0)).toThrow();
+        expect(() => RenderTexture.create({ width: 1, height: 1 }).resize(0.1, 0.1)).toThrow();
+    });
 });
