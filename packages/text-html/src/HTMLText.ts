@@ -73,6 +73,7 @@ export class HTMLText extends Sprite
     private _loading = false;
     private localStyleID = -1;
     private dirty = false;
+    private _updateID = 0;
 
     /** The HTMLTextStyle object is owned by this instance */
     private ownsStyle = false;
@@ -212,33 +213,40 @@ export class HTMLText extends Sprite
         image.width = loadImage.width = Math.ceil((Math.max(1, width)));
         image.height = loadImage.height = Math.ceil((Math.max(1, height)));
 
-        if (!this._loading)
+        this._updateID++;
+
+        const _updateID = this._updateID;
+
+        this._loading = true;
+        await new Promise<void>((resolve) =>
         {
-            this._loading = true;
-            await new Promise<void>((resolve) =>
+            loadImage.onload = async () =>
             {
-                loadImage.onload = async () =>
+                if(_updateID < this._updateID)
                 {
-                    // Fake waiting for the image to load
-                    await style.onBeforeDraw();
-                    this._loading = false;
-
-                    // Swap image and loadImage, we do this to avoid
-                    // flashes between updateText calls, usually when
-                    // the onload time is longer than updateText time
-                    image.src = loadImage.src;
-                    loadImage.onload = null;
-                    loadImage.src = '';
-
-                    // Force update the texture
-                    this.updateTexture();
                     resolve();
-                };
-                const svgURL = new XMLSerializer().serializeToString(this._svgRoot);
+                    return;
+                }
+                           
+                // Fake waiting for the image to load
+                await style.onBeforeDraw();
 
-                loadImage.src = `data:image/svg+xml;charset=utf8,${encodeURIComponent(svgURL)}`;
-            });
-        }
+                // Swap image and loadImage, we do this to avoid
+                // flashes between updateText calls, usually when
+                // the onload time is longer than updateText time
+                image.src = loadImage.src;
+                loadImage.onload = null;
+                loadImage.src = '';
+
+                // Force update the texture
+                this.updateTexture();
+                resolve();
+            };
+            const svgURL = new XMLSerializer().serializeToString(this._svgRoot);
+
+            loadImage.src = `data:image/svg+xml;charset=utf8,${encodeURIComponent(svgURL)}`;
+        });
+
     }
 
     /** The raw image element that is rendered under-the-hood. */
