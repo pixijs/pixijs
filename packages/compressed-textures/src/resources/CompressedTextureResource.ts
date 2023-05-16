@@ -149,6 +149,8 @@ export class CompressedTextureResource extends BlobResource
             return false;
         }
 
+        gl.pixelStorei(gl.UNPACK_ALIGNMENT, 4);
+
         for (let i = 0, j = this.levels; i < j; i++)
         {
             const { levelID, levelWidth, levelHeight, levelBuffer } = this._levelBuffers[i];

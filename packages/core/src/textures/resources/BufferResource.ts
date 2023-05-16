@@ -10,6 +10,15 @@ export type BufferType = null | Int8Array | Uint8Array | Uint8ClampedArray
 | Int16Array | Uint16Array | Int32Array | Uint32Array | Float32Array;
 
 /**
+ * Constructor options for BufferResource.
+ * @memberof PIXI
+ */
+export interface IBufferResourceOptions extends ISize
+{
+    unpackAlignment?: 1 | 2 | 4 | 8
+}
+
+/**
  * Buffer resource with data of typed array.
  * @memberof PIXI
  */
@@ -18,13 +27,17 @@ export class BufferResource extends Resource
     /** The data of this resource. */
     public data: BufferType;
 
+    /** The alignment of the rows in the data. */
+    public unpackAlignment: 1 | 2 | 4 | 8;
+
     /**
      * @param source - Source buffer
      * @param options - Options
      * @param {number} options.width - Width of the texture
      * @param {number} options.height - Height of the texture
+     * @param {1|2|4|8} [options.unpackAlignment=4] - The alignment of the pixel rows.
      */
-    constructor(source: BufferType, options: ISize)
+    constructor(source: BufferType, options: IBufferResourceOptions)
     {
         const { width, height } = options || {};
 
@@ -36,6 +49,7 @@ export class BufferResource extends Resource
         super(width, height);
 
         this.data = source;
+        this.unpackAlignment = options.unpackAlignment ?? 4;
     }
 
     /**
@@ -49,6 +63,7 @@ export class BufferResource extends Resource
     {
         const gl = renderer.gl;
 
+        gl.pixelStorei(gl.UNPACK_ALIGNMENT, this.unpackAlignment);
         gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, baseTexture.alphaMode === ALPHA_MODES.UNPACK);
 
         const width = baseTexture.realWidth;
