@@ -1,4 +1,4 @@
-import type { RENDERER_TYPE } from '@pixi/constants';
+import type { MSAA_QUALITY, RENDERER_TYPE } from '@pixi/constants';
 import type { Matrix, Rectangle, Transform } from '@pixi/math';
 import type { ICanvas } from '@pixi/settings';
 import type { IRendererPlugins } from './plugin/PluginSystem';
@@ -145,6 +145,8 @@ export interface IRenderer<VIEW extends ICanvas = ICanvas> extends SystemManager
     readonly renderingToScreen: boolean
     /** The resolution / device pixel ratio of the renderer. */
     resolution: number
+    /** The number of MSAA samples of the renderer. */
+    multisample?: MSAA_QUALITY
     /** the width of the screen */
     readonly width: number
     /** the height of the screen */

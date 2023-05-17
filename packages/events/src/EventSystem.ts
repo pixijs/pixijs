@@ -623,12 +623,9 @@ export class EventSystem implements ISystem<EventSystemOptions>
      */
     public mapPositionToPoint(point: IPointData, x: number, y: number): void
     {
-        let rect;
-
-        // IE 11 fix
-        if (!this.domElement.parentElement)
-        {
-            rect = {
+        const rect = this.domElement.isConnected
+            ? this.domElement.getBoundingClientRect()
+            : {
                 x: 0,
                 y: 0,
                 width: (this.domElement as any).width,
@@ -636,11 +633,6 @@ export class EventSystem implements ISystem<EventSystemOptions>
                 left: 0,
                 top: 0
             };
-        }
-        else
-        {
-            rect = this.domElement.getBoundingClientRect();
-        }
 
         const resolutionMultiplier = 1.0 / this.resolution;
 

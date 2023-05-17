@@ -88,7 +88,7 @@ export class Extract implements ISystem, IExtract
 
     /**
      * Will return a base64 encoded string of this target. It works by calling
-     *  `Extract.getCanvas` and then running toDataURL on that.
+     *  `Extract.canvas` and then running toDataURL on that.
      * @param target - A displayObject or renderTexture
      *  to convert. If left empty will use the main renderer
      * @param format - Image format, e.g. "image/jpeg" or "image/webp".
@@ -229,10 +229,18 @@ export class Extract implements ISystem, IExtract
             else
             {
                 renderTexture = renderer.generateTexture(target, {
+                    region: frame,
                     resolution: renderer.resolution,
                     multisample: renderer.multisample
                 });
                 generated = true;
+
+                if (frame)
+                {
+                    TEMP_RECT.width = frame.width;
+                    TEMP_RECT.height = frame.height;
+                    frame = TEMP_RECT;
+                }
             }
         }
 
