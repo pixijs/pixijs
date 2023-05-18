@@ -222,12 +222,13 @@ export class HTMLText extends Sprite
         {
             loadImage.onload = async () =>
             {
-                if(_updateID < this._updateID)
+                if (_updateID < this._updateID)
                 {
                     resolve();
+
                     return;
                 }
-                           
+
                 // Fake waiting for the image to load
                 await style.onBeforeDraw();
 
@@ -246,7 +247,6 @@ export class HTMLText extends Sprite
 
             loadImage.src = `data:image/svg+xml;charset=utf8,${encodeURIComponent(svgURL)}`;
         });
-
     }
 
     /** The raw image element that is rendered under-the-hood. */
