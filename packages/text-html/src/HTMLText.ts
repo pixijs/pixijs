@@ -70,7 +70,6 @@ export class HTMLText extends Sprite
     private _text: string | null = null;
     private _style: HTMLTextStyle | null = null;
     private _autoResolution = true;
-    private _loading = false;
     private localStyleID = -1;
     private dirty = false;
     private _updateID = 0;
@@ -215,14 +214,13 @@ export class HTMLText extends Sprite
 
         this._updateID++;
 
-        const _updateID = this._updateID;
+        const updateID = this._updateID;
 
-        this._loading = true;
         await new Promise<void>((resolve) =>
         {
             loadImage.onload = async () =>
             {
-                if (_updateID < this._updateID)
+                if (updateID < this._updateID)
                 {
                     resolve();
 
