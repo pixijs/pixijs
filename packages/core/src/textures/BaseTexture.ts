@@ -583,6 +583,7 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
      * Destroys this base texture.
      * The method stops if resource doesn't want this texture to be destroyed.
      * Removes texture from all caches.
+     * @fires PIXI.BaseTexture#destroy
      */
     destroy(): void
     {
@@ -613,6 +614,7 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
         this.textureCacheIds = null;
 
         this.destroyed = true;
+        this.emit('destroy', this);
     }
 
     /**
