@@ -144,6 +144,9 @@ export class VideoResource extends BaseImageResource
         // Bind for listeners
         this._onCanPlay = this._onCanPlay.bind(this);
         this._onError = this._onError.bind(this);
+        this._onPlayStart = this._onPlayStart.bind(this);
+        this._onPlayStop = this._onPlayStop.bind(this);
+        this._onSeeked = this._onSeeked.bind(this);
 
         if (options.autoLoad !== false)
         {
@@ -209,8 +212,9 @@ export class VideoResource extends BaseImageResource
             (source as any).complete = true;
         }
 
-        source.addEventListener('play', this._onPlayStart.bind(this));
-        source.addEventListener('pause', this._onPlayStop.bind(this));
+        source.addEventListener('play', this._onPlayStart);
+        source.addEventListener('pause', this._onPlayStop);
+        source.addEventListener('seeked', this._onSeeked);
 
         if (!this._isSourceReady())
         {
@@ -298,6 +302,15 @@ export class VideoResource extends BaseImageResource
         this._configureAutoUpdate();
     }
 
+    /** Fired when the video is completed seeking to the current playback position. */
+    private _onSeeked(): void
+    {
+        if (this._autoUpdate && !this._isSourcePlaying())
+        {
+            this.update();
+        }
+    }
+
     /** Fired when the video is loaded and ready to play. */
     private _onCanPlay(): void
     {
@@ -337,6 +350,11 @@ export class VideoResource extends BaseImageResource
 
         if (source)
         {
+            source.removeEventListener('play', this._onPlayStart);
+            source.removeEventListener('pause', this._onPlayStop);
+            source.removeEventListener('seeked', this._onSeeked);
+            source.removeEventListener('canplay', this._onCanPlay);
+            source.removeEventListener('canplaythrough', this._onCanPlay);
             source.removeEventListener('error', this._onError, true);
             source.pause();
             source.src = '';
