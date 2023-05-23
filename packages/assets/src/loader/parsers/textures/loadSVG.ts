@@ -48,7 +48,7 @@ export const loadSVG = {
 
         base.resource.src = data.src;
 
-        const texture = createTexture(base, loader, asset);
+        const texture = createTexture(base, loader, data.src);
 
         return texture;
     },
