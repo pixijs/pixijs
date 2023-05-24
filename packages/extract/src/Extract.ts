@@ -1,4 +1,4 @@
-import { extensions, ExtensionType, Rectangle, RenderTexture, utils } from '@pixi/core';
+import { extensions, ExtensionType, FORMATS, Rectangle, RenderTexture, utils } from '@pixi/core';
 
 import type { ExtensionMetadata, ICanvas, ISystem, Renderer } from '@pixi/core';
 import type { DisplayObject } from '@pixi/display';
@@ -48,12 +48,23 @@ export class Extract implements ISystem, IExtract
 
     private renderer: Renderer | null;
 
+    /** Does the renderer have alpha and are its color channels stored premultipled by the alpha channel? */
+    private _rendererPremultipliedAlpha: boolean;
+
     /**
      * @param renderer - A reference to the current renderer
      */
     constructor(renderer: Renderer)
     {
         this.renderer = renderer;
+        this._rendererPremultipliedAlpha = false;
+    }
+
+    protected contextChange(): void
+    {
+        const attributes = this.renderer?.gl.getContextAttributes();
+
+        this._rendererPremultipliedAlpha = !!(attributes && attributes.alpha && attributes.premultipliedAlpha);
     }
 
     /**
@@ -143,7 +154,7 @@ export class Extract implements ISystem, IExtract
      */
     public canvas(target?: DisplayObject | RenderTexture, frame?: Rectangle): ICanvas
     {
-        const { pixels, width, height, flipY } = this._rawPixels(target, frame);
+        const { pixels, width, height, flipY, premultipliedAlpha } = this._rawPixels(target, frame);
 
         // Flipping pixels
         if (flipY)
@@ -151,7 +162,10 @@ export class Extract implements ISystem, IExtract
             Extract._flipY(pixels, width, height);
         }
 
-        Extract._unpremultiplyAlpha(pixels);
+        if (premultipliedAlpha)
+        {
+            Extract._unpremultiplyAlpha(pixels);
+        }
 
         const canvasBuffer = new utils.CanvasRenderTarget(width, height, 1);
 
@@ -174,20 +188,23 @@ export class Extract implements ISystem, IExtract
      */
     public pixels(target?: DisplayObject | RenderTexture, frame?: Rectangle): Uint8Array
     {
-        const { pixels, width, height, flipY } = this._rawPixels(target, frame);
+        const { pixels, width, height, flipY, premultipliedAlpha } = this._rawPixels(target, frame);
 
         if (flipY)
         {
             Extract._flipY(pixels, width, height);
         }
 
-        Extract._unpremultiplyAlpha(pixels);
+        if (premultipliedAlpha)
+        {
+            Extract._unpremultiplyAlpha(pixels);
+        }
 
         return pixels;
     }
 
     private _rawPixels(target?: DisplayObject | RenderTexture, frame?: Rectangle): {
-        pixels: Uint8Array, width: number, height: number, flipY: boolean,
+        pixels: Uint8Array, width: number, height: number, flipY: boolean, premultipliedAlpha: boolean
     }
     {
         const renderer = this.renderer;
@@ -199,6 +216,7 @@ export class Extract implements ISystem, IExtract
 
         let resolution;
         let flipY = false;
+        let premultipliedAlpha = false;
         let renderTexture;
         let generated = false;
 
@@ -226,11 +244,15 @@ export class Extract implements ISystem, IExtract
             }
         }
 
+        const gl = renderer.gl;
+
         if (renderTexture)
         {
             resolution = renderTexture.baseTexture.resolution;
             frame = frame ?? renderTexture.frame;
             flipY = false;
+            premultipliedAlpha = renderTexture.baseTexture.alphaMode > 0
+                && renderTexture.baseTexture.format === FORMATS.RGBA;
 
             if (!generated)
             {
@@ -256,17 +278,15 @@ export class Extract implements ISystem, IExtract
             }
 
             flipY = true;
+            premultipliedAlpha = this._rendererPremultipliedAlpha;
             renderer.renderTexture.bind();
         }
 
         const width = Math.round(frame.width * resolution);
         const height = Math.round(frame.height * resolution);
-
         const pixels = new Uint8Array(BYTES_PER_PIXEL * width * height);
 
         // Read pixels to the array
-        const gl = renderer.gl;
-
         gl.readPixels(
             Math.round(frame.x * resolution),
             Math.round(frame.y * resolution),
@@ -282,7 +302,7 @@ export class Extract implements ISystem, IExtract
             renderTexture?.destroy(true);
         }
 
-        return { pixels, width, height, flipY };
+        return { pixels, width, height, flipY, premultipliedAlpha };
     }
 
     /** Destroys the extract. */
