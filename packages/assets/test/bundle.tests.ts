@@ -1,6 +1,7 @@
 import { Assets } from '@pixi/assets';
 import { Texture } from '@pixi/core';
 import { Spritesheet } from '@pixi/spritesheet';
+import { basePath } from './basePath';
 
 import type { BundleIdentifierOptions } from '../src/resolver/Resolver';
 
@@ -13,10 +14,6 @@ function wait(value = 500)
 
 describe('Assets bundles', () =>
 {
-    const basePath = process.env.GITHUB_ACTIONS
-        ? `https://raw.githubusercontent.com/pixijs/pixijs/${process.env.GITHUB_SHA}/packages/assets/test/assets/`
-        : 'http://localhost:8080/assets/test/assets/';
-
     beforeEach(() =>
     {
         // reset the loader

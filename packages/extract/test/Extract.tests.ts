@@ -459,4 +459,90 @@ describe('Extract', () =>
         graphics.destroy();
         renderer.destroy();
     });
+
+    it('should unpremultiply if premultiplied alpha', async () =>
+    {
+        const renderer = new Renderer({
+            width: 1,
+            height: 1,
+            backgroundColor: 0xFFFFFF,
+            backgroundAlpha: 0.4,
+            premultipliedAlpha: true
+        });
+        const extract = renderer.extract;
+
+        expect(extract['_rendererPremultipliedAlpha']).toBe(true);
+
+        const renderTexture = RenderTexture.create({
+            width: 1,
+            height: 1,
+            alphaMode: ALPHA_MODES.PREMULTIPLIED_ALPHA
+        });
+
+        renderer.renderTexture.bind();
+        renderer.renderTexture.clear([1.0, 1.0, 1.0, 0.4]);
+
+        const rendererPixels = extract.pixels();
+
+        expect(rendererPixels[0]).toBe(255);
+        expect(rendererPixels[1]).toBe(255);
+        expect(rendererPixels[2]).toBe(255);
+        expect(rendererPixels[3]).toBe(102);
+
+        renderer.renderTexture.bind(renderTexture);
+        renderer.renderTexture.clear([1.0, 1.0, 1.0, 0.4]);
+
+        const renderTexturePixels = extract.pixels(renderTexture);
+
+        expect(renderTexturePixels[0]).toBe(255);
+        expect(renderTexturePixels[1]).toBe(255);
+        expect(renderTexturePixels[2]).toBe(255);
+        expect(renderTexturePixels[3]).toBe(102);
+
+        renderer.destroy();
+        renderTexture.destroy();
+    });
+
+    it('should not unpremultiply if no premultiplied alpha', async () =>
+    {
+        const renderer = new Renderer({
+            width: 1,
+            height: 1,
+            backgroundColor: 0xCCCCCC,
+            backgroundAlpha: 0.4,
+            premultipliedAlpha: false
+        });
+        const extract = renderer.extract;
+
+        expect(extract['_rendererPremultipliedAlpha']).toBe(false);
+
+        const renderTexture = RenderTexture.create({
+            width: 1,
+            height: 1,
+            alphaMode: ALPHA_MODES.NO_PREMULTIPLIED_ALPHA
+        });
+
+        renderer.renderTexture.bind();
+        renderer.renderTexture.clear([0.8, 0.8, 0.8, 0.4]);
+
+        const rendererPixels = extract.pixels();
+
+        expect(rendererPixels[0]).toBe(204);
+        expect(rendererPixels[1]).toBe(204);
+        expect(rendererPixels[2]).toBe(204);
+        expect(rendererPixels[3]).toBe(102);
+
+        renderer.renderTexture.bind(renderTexture);
+        renderer.renderTexture.clear([0.8, 0.8, 0.8, 0.4]);
+
+        const renderTexturePixels = extract.pixels(renderTexture);
+
+        expect(renderTexturePixels[0]).toBe(204);
+        expect(renderTexturePixels[1]).toBe(204);
+        expect(renderTexturePixels[2]).toBe(204);
+        expect(renderTexturePixels[3]).toBe(102);
+
+        renderer.destroy();
+        renderTexture.destroy();
+    });
 });

@@ -7,6 +7,10 @@ import type { Renderer } from '../../Renderer';
 import type { BaseTexture } from '../BaseTexture';
 import type { GLTexture } from '../GLTexture';
 
+/**
+ * Options for ImageBitmapResource.
+ * @memberof PIXI
+ */
 export interface IImageBitmapResourceOptions
 {
     /** Start loading process automatically when constructed. */
@@ -17,6 +21,17 @@ export interface IImageBitmapResourceOptions
 
     /** Alpha mode used when creating the ImageBitmap. */
     alphaMode?: ALPHA_MODES;
+
+    /**
+     * Whether the underlying ImageBitmap is owned by the {@link PIXI.ImageBitmapResource}. When set to `true`,
+     * the underlying ImageBitmap will be disposed automatically when disposing {@link PIXI.ImageBitmapResource}.
+     * If this option is not set, whether it owns the underlying ImageBitmap is determained by the type of `source`
+     * used when constructing {@link PIXI.ImageBitmapResource}:
+     * - When `source` is `ImageBitmap`, the underlying ImageBitmap is not owned by default.
+     * - When `source` is `string` (a URL), the underlying ImageBitmap is owned by default.
+     * @see PIXI.ImageBitmapResource.ownsImageBitmap
+     */
+    ownsImageBitmap?: boolean;
 }
 
 /**
@@ -43,17 +58,20 @@ export class ImageBitmapResource extends BaseImageResource
     alphaMode: ALPHA_MODES | null;
 
     /**
+     * Whether the underlying ImageBitmap is owned by the ImageBitmapResource.
+     * @see PIXI.IImageBitmapResourceOptions.ownsImageBitmap
+     */
+    private ownsImageBitmap: boolean;
+
+    /**
      * Promise when loading.
      * @default null
      */
     private _load: Promise<this>;
 
     /**
-     * @param source - ImageBitmap or URL to use
-     * @param options
-     * @param {boolean} [options.autoLoad=true] - Start loading process automatically when constructed.
-     * @param {boolean} [options.crossOrigin=true] - Load image using cross origin.
-     * @param {PIXI.ALPHA_MODES} [options.alphaMode=null] - Alpha mode used when creating the ImageBitmap.
+     * @param source - ImageBitmap or URL to use.
+     * @param options - Options to use.
      */
     constructor(source: ImageBitmap | string, options?: IImageBitmapResourceOptions)
     {
@@ -61,16 +79,19 @@ export class ImageBitmapResource extends BaseImageResource
 
         let baseSource;
         let url;
+        let ownsImageBitmap;
 
         if (typeof source === 'string')
         {
             baseSource = ImageBitmapResource.EMPTY;
             url = source;
+            ownsImageBitmap = true;
         }
         else
         {
             baseSource = source;
             url = null;
+            ownsImageBitmap = false;
         }
         // Using super() in if() can cause transpilation problems in some cases, so take it out of if().
         // See https://github.com/pixijs/pixijs/pull/9093 for details.
@@ -79,6 +100,7 @@ export class ImageBitmapResource extends BaseImageResource
 
         this.crossOrigin = options.crossOrigin ?? true;
         this.alphaMode = typeof options.alphaMode === 'number' ? options.alphaMode : null;
+        this.ownsImageBitmap = options.ownsImageBitmap ?? ownsImageBitmap;
 
         this._load = null;
 
@@ -121,7 +143,12 @@ export class ImageBitmapResource extends BaseImageResource
                         ? 'premultiply' : 'none',
                 });
 
-                if (this.destroyed) return;
+                if (this.destroyed)
+                {
+                    imageBitmap.close();
+
+                    return;
+                }
 
                 this.source = imageBitmap;
                 this.update();
@@ -167,7 +194,7 @@ export class ImageBitmapResource extends BaseImageResource
     /** Destroys this resource. */
     override dispose(): void
     {
-        if (this.source instanceof ImageBitmap)
+        if (this.ownsImageBitmap && this.source instanceof ImageBitmap)
         {
             this.source.close();
         }

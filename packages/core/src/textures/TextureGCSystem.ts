@@ -137,7 +137,7 @@ export class TextureGCSystem implements ISystem
             const texture = managedTextures[i];
 
             // Only supports non generated textures at the moment!
-            if (!(texture as any).framebuffer && this.count - texture.touched > this.maxIdle)
+            if (texture.resource && this.count - texture.touched > this.maxIdle)
             {
                 tm.destroyTexture(texture, true);
                 managedTextures[i] = null;

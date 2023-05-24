@@ -1,12 +1,14 @@
 import { BufferResource, ViewableBuffer } from '@pixi/core';
 
-import type { BufferType } from '@pixi/core';
+import type { BufferType, IBufferResourceOptions } from '@pixi/core';
 
-interface IBlobOptions
+/**
+ * Constructor options for BlobResource.
+ * @memberof PIXI
+ */
+export interface IBlobResourceOptions extends IBufferResourceOptions
 {
     autoLoad?: boolean;
-    width: number;
-    height: number;
 }
 
 /**
@@ -33,13 +35,14 @@ export abstract class BlobResource extends BufferResource
 
     /**
      * @param source - The buffer/URL of the texture file.
-     * @param {PIXI.IBlobOptions} [options]
+     * @param {PIXI.IBlobResourceOptions} [options]
      * @param {boolean} [options.autoLoad=false] - Whether to fetch the data immediately;
      *  you can fetch it later via {@link PIXI.BlobResource#load}.
      * @param {number} [options.width=1] - The width in pixels.
      * @param {number} [options.height=1] - The height in pixels.
+     * @param {1|2|4|8} [options.unpackAlignment=4] - The alignment of the pixel rows.
      */
-    constructor(source: string | BufferType, options: IBlobOptions = { width: 1, height: 1, autoLoad: true })
+    constructor(source: string | BufferType, options: IBlobResourceOptions = { width: 1, height: 1, autoLoad: true })
     {
         let origin: string | null;
         let data: BufferType;
