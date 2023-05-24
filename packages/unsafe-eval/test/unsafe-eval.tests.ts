@@ -32,7 +32,6 @@ void main() {
     afterAll(() =>
     {
         renderer.destroy();
-        renderer = null;
     });
 
     it('should be able to set float and bool uniforms', () =>
