@@ -174,11 +174,11 @@ export class CanvasExtract implements ISystem, IExtract
 
         const x = Math.round(frame.x * resolution);
         const y = Math.round(frame.y * resolution);
-        const width = Math.round(frame.width * resolution);
-        const height = Math.round(frame.height * resolution);
+        const width = Math.max(Math.round(frame.width * resolution), 1);
+        const height = Math.max(Math.round(frame.height * resolution), 1);
 
         const canvasBuffer = new utils.CanvasRenderTarget(width, height, 1);
-        const canvasData = context.getImageData(x, y, width || 1, height || 1);
+        const canvasData = context.getImageData(x, y, width, height);
 
         canvasBuffer.context.putImageData(canvasData, 0, 0);
 
@@ -250,10 +250,10 @@ export class CanvasExtract implements ISystem, IExtract
 
         const x = Math.round(frame.x * resolution);
         const y = Math.round(frame.y * resolution);
-        const width = Math.round(frame.width * resolution);
-        const height = Math.round(frame.height * resolution);
+        const width = Math.max(Math.round(frame.width * resolution), 1);
+        const height = Math.max(Math.round(frame.height * resolution), 1);
 
-        return context.getImageData(x, y, width || 1, height || 1).data.subarray(0, 4 * width * height);
+        return context.getImageData(x, y, width, height).data;
     }
 
     /** Destroys the extract */

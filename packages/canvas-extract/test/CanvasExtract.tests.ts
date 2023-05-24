@@ -424,22 +424,56 @@ describe('CanvasExtract', () =>
             .endFill();
         const extract = renderer.extract;
 
-        const pixelsA = extract.pixels(graphics, new Rectangle(0, 0, 2, 2));
-        const pixelsB = extract.pixels(graphics, new Rectangle(0, 0, 0, 0));
+        const pixels = extract.pixels(graphics, new Rectangle(0, 0, 2, 2));
         const pixels00 = extract.pixels(graphics, new Rectangle(0, 0, 1, 1));
         const pixels10 = extract.pixels(graphics, new Rectangle(1, 0, 1, 1));
         const pixels01 = extract.pixels(graphics, new Rectangle(0, 1, 1, 1));
         const pixels11 = extract.pixels(graphics, new Rectangle(1, 1, 1, 1));
 
-        expect(pixelsA).toEqual(new Uint8ClampedArray([
+        expect(pixels).toEqual(new Uint8ClampedArray([
             255, 0, 0, 255, 0, 255, 0, 255,
             0, 0, 255, 255, 255, 255, 0, 255
         ]));
-        expect(pixelsB).toEqual(new Uint8ClampedArray([]));
         expect(pixels00).toEqual(new Uint8ClampedArray([255, 0, 0, 255]));
         expect(pixels10).toEqual(new Uint8ClampedArray([0, 255, 0, 255]));
         expect(pixels01).toEqual(new Uint8ClampedArray([0, 0, 255, 255]));
         expect(pixels11).toEqual(new Uint8ClampedArray([255, 255, 0, 255]));
+
+        graphics.destroy();
+        renderer.destroy();
+    });
+
+    it('should not throw an error if frame is empty', async () =>
+    {
+        const renderer = new CanvasRenderer();
+        const extract = renderer.extract as CanvasExtract;
+        const emptyFrame = new Rectangle(0, 0, 0, 0);
+
+        renderer.plugins.graphics = new CanvasGraphicsRenderer(renderer);
+
+        const graphics = new Graphics()
+            .beginFill(0xFF00FF)
+            .drawRect(0, 0, 1, 1)
+            .endFill();
+
+        expect(() => extract.canvas(graphics, emptyFrame)).not.toThrow();
+        await expect(extract.base64(graphics, undefined, undefined, emptyFrame)).toResolve();
+        expect(() => extract.pixels(graphics, emptyFrame)).not.toThrow();
+        await expect(extract.image(graphics, undefined, undefined, emptyFrame)).toResolve();
+
+        const canvas = extract.canvas(graphics, emptyFrame);
+
+        expect(canvas.width).toBe(1);
+        expect(canvas.height).toBe(1);
+
+        const pixels = extract.pixels(graphics, emptyFrame);
+
+        expect(pixels).toEqual(new Uint8ClampedArray([255, 0, 255, 255]));
+
+        const image = extract.canvas(graphics, emptyFrame);
+
+        expect(image.width).toBe(1);
+        expect(image.height).toBe(1);
 
         graphics.destroy();
         renderer.destroy();
