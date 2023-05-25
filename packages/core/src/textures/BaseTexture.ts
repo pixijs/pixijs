@@ -748,6 +748,8 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
             type = TYPES.UNSIGNED_BYTE;
         }
 
+        resource.internal = true;
+
         return new BaseTexture(resource, Object.assign({}, defaultBufferOptions, { type, format }, options));
     }
 
