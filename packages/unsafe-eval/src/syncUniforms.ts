@@ -106,7 +106,7 @@ export function syncUniforms(group: UniformGroup, uniformData: {[x: string]: IUn
 
         if (!data)
         {
-            if (gu.group)
+            if (gu.group === true)
             {
                 renderer.shader.syncUniformGroup(uvi);
             }

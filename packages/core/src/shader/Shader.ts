@@ -63,7 +63,7 @@ export class Shader
         {
             const uniform = group.uniforms[i];
 
-            if (uniform.group)
+            if (uniform.group === true)
             {
                 if (this.checkUniformExists(name, uniform))
                 {
