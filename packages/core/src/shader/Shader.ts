@@ -63,7 +63,7 @@ export class Shader
         {
             const uniform = group.uniforms[i];
 
-            if (uniform.group === true)
+            if (uniform.group === true) // strict check to desambiguate from Array.group
             {
                 if (this.checkUniformExists(name, uniform))
                 {

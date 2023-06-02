@@ -106,7 +106,7 @@ export function syncUniforms(group: UniformGroup, uniformData: {[x: string]: IUn
 
         if (!data)
         {
-            if (gu.group === true)
+            if (gu.group === true) // strict check to desambiguate from Array.group
             {
                 renderer.shader.syncUniformGroup(uvi);
             }
