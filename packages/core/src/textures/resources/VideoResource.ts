@@ -307,7 +307,9 @@ export class VideoResource extends BaseImageResource
     {
         if (this._autoUpdate && !this._isSourcePlaying())
         {
+            this._msToNextUpdate = 0;
             this.update();
+            this._msToNextUpdate = 0;
         }
     }
 
