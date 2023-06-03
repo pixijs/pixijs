@@ -308,7 +308,9 @@ export class VideoResource extends BaseImageResource
 
         const valid = this.valid;
 
-        this.resize(source.videoWidth, source.videoHeight);
+        this._msToNextUpdate = 0;
+        this.update();
+        this._msToNextUpdate = 0;
 
         // prevent multiple loaded dispatches..
         if (!valid && this._resolve)
