@@ -246,6 +246,13 @@ export class LayerGroup implements Instruction
         childrenToUpdate.index--;
     }
 
+    get isRenderable(): boolean
+    {
+        const worldAlpha = ((this.worldColor >> 24) & 0xFF);
+
+        return (this.root.localVisibleRenderable === 0b11 && worldAlpha > 0);
+    }
+
     onRenderContainers: Container[] = [];
 
     /**

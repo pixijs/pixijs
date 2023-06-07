@@ -691,6 +691,13 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         this.onUpdate();
     }
 
+    get isRenderable(): boolean
+    {
+        const worldAlpha = ((this.layerColor >> 24) & 0xFF);
+
+        return (this.localVisibleRenderable === 0b11 && worldAlpha > 0);
+    }
+
     updateIsSimple()
     {
         this.isSimple = !(this.isLayerRoot) && (this.effects.length === 0);
