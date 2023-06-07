@@ -1,6 +1,6 @@
 {
     "extends": ["@pixi/eslint-config"],
-    "plugins": ["import", "jsdoc", "simple-import-sort"],
+    "plugins": ["import", "jsdoc", "simple-import-sort", "no-mixed-operators"],
     "ignorePatterns": ["**/*.index.d.ts"],
     "settings": {
         "jsdoc": {
@@ -93,7 +93,9 @@
         "jsdoc/require-returns-description": 1,
         "jsdoc/require-hyphen-before-param-description": 1,
         "jsdoc/tag-lines": 1,
-        "jsdoc/valid-types": 1
+        "jsdoc/valid-types": 1,
+        "no-mixed-operators": "off",
+        "no-mixed-operators/no-mixed-operators": 1
     },
     "overrides": [
         {

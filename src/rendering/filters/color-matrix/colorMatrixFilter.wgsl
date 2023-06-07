@@ -1,0 +1,113 @@
+struct GlobalUniforms {
+  projectionMatrix:mat3x3<f32>,
+  worldTransformMatrix:mat3x3<f32>,
+  worldAlpha: f32
+}
+
+struct GlobalFilterUniforms {
+  inputSize:vec4<f32>,
+  inputPixel:vec4<f32>,
+  inputClamp:vec4<f32>,
+  outputFrame:vec4<f32>,
+  backgroundFrame:vec4<f32>,
+  globalFrame:vec4<f32>,
+};
+
+struct ColorMatrixUniforms {
+  uColorMatrix:array<vec4<f32>, 5>,
+  uAlpha:f32,
+};
+
+@group(0) @binding(0) var<uniform> globalUniforms : GlobalUniforms;
+
+@group(1) @binding(0) var<uniform> gfu: GlobalFilterUniforms;
+@group(1) @binding(1) var myTexture: texture_2d<f32>;
+@group(1) @binding(2) var mySampler : sampler;
+@group(1) @binding(3) var backTexture: texture_2d<f32>;
+@group(2) @binding(0) var<uniform> colorMatrixUniforms : ColorMatrixUniforms;
+
+
+struct VSOutput {
+    @builtin(position) position: vec4<f32>,
+    @location(0) uv : vec2<f32>,
+  };
+  
+fn filterVertexPosition(aPosition:vec2<f32>) -> vec4<f32>
+{
+    var position = aPosition * max(gfu.outputFrame.zw, vec2(0.)) + gfu.outputFrame.xy;
+
+    return vec4((globalUniforms.projectionMatrix * globalUniforms.worldTransformMatrix * vec3(position, 1.0)).xy, 0.0, 1.0);
+}
+
+fn filterTextureCoord( aPosition:vec2<f32> ) -> vec2<f32>
+{
+  return aPosition * (gfu.outputFrame.zw * gfu.inputSize.zw);
+}
+
+@vertex
+fn mainVertex(
+  @location(0) aPosition : vec2<f32>, 
+) -> VSOutput {
+  return VSOutput(
+   filterVertexPosition(aPosition),
+   filterTextureCoord(aPosition),
+  );
+}
+
+
+@fragment
+fn mainFragment(
+  @location(0) uv: vec2<f32>,
+) -> @location(0) vec4<f32> {
+
+
+  var c = textureSample(myTexture, mySampler, uv);
+  
+  if (colorMatrixUniforms.uAlpha == 0.0) {
+    return c;
+  }
+
+    // Un-premultiply alpha before applying the color matrix. See issue #3539.
+    if (c.a > 0.0) {
+      c.r /= c.a;
+      c.g /= c.a;
+      c.b /= c.a;
+    }
+
+    var cm = colorMatrixUniforms.uColorMatrix;
+
+
+    var result = vec4<f32>(0.);
+
+    result.r = (cm[0][0] * c.r);
+    result.r += (cm[0][1] * c.g);
+    result.r += (cm[0][2] * c.b);
+    result.r += (cm[0][3] * c.a);
+    result.r += cm[1][0];
+
+    result.g = (cm[1][1] * c.r);
+    result.g += (cm[1][2] * c.g);
+    result.g += (cm[1][3] * c.b);
+    result.g += (cm[2][0] * c.a);
+    result.g += cm[2][1];
+
+    result.b = (cm[2][2] * c.r);
+    result.b += (cm[2][3] * c.g);
+    result.b += (cm[3][0] * c.b);
+    result.b += (cm[3][1] * c.a);
+    result.b += cm[3][2];
+
+    result.a = (cm[3][3] * c.r);
+    result.a += (cm[4][0] * c.g);
+    result.a += (cm[4][1] * c.b);
+    result.a += (cm[4][2] * c.a);
+    result.a += cm[4][3];
+
+    var rgb = mix(c.rgb, result.rgb, colorMatrixUniforms.uAlpha);
+
+    rgb.r *= result.a;
+    rgb.g *= result.a;
+    rgb.b *= result.a;
+
+    return vec4(rgb, result.a);
+}

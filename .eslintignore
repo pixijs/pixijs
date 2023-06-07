@@ -1,0 +1,5 @@
+/docs/**
+/dist/**
+/lib/**
+node_modules
+/src/index.ts

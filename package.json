@@ -1,51 +1,130 @@
 {
-  "name": "pixi.js-monorepo",
-  "private": true,
-  "version": "7.2.4",
-  "workspaces": [
-    "bundles/*",
-    "packages/*",
-    "tools/*"
+  "name": "pixi.js",
+  "version": "8.0.0",
+  "author": "PixiJS Team",
+  "sideEffects": [
+    "./lib/events/init.*",
+    "./lib/app/init.*",
+    "./lib/assets/init.*",
+    "./lib/spritesheet/init.*",
+    "./lib/rendering/init.*",
+    "./lib/all.*"
+  ],
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./lib/index.d.ts",
+        "default": "./lib/index.mjs"
+      },
+      "require": {
+        "types": "./lib/index.d.ts",
+        "default": "./lib/index.js"
+      }
+    },
+    "./all": {
+      "import": {
+        "default": "./lib/all.mjs"
+      },
+      "require": {
+        "default": "./lib/all.js"
+      }
+    },
+    "./app": {
+      "import": {
+        "default": "./lib/app/init.mjs"
+      },
+      "require": {
+        "default": "./lib/app/init.js"
+      }
+    },
+    "./assets": {
+      "import": {
+        "default": "./lib/assets/init.mjs"
+      },
+      "require": {
+        "default": "./lib/assets/init.js"
+      }
+    },
+    "./events": {
+      "import": {
+        "default": "./lib/events/init.mjs"
+      },
+      "require": {
+        "default": "./lib/events/init.js"
+      }
+    },
+    "./rendering": {
+      "import": {
+        "default": "./lib/rendering/init.mjs"
+      },
+      "require": {
+        "default": "./lib/rendering/init.js"
+      }
+    },
+    "./spritesheet": {
+      "import": {
+        "default": "./lib/spritesheet/init.mjs"
+      },
+      "require": {
+        "default": "./lib/spritesheet/init.js"
+      }
+    }
+  },
+  "main": "lib/index.js",
+  "module": "lib/index.mjs",
+  "types": "lib/index.d.ts",
+  "files": [
+    "lib",
+    "dist"
   ],
   "scripts": {
+    "prepare": "husky install",
     "start": "run-s watch",
-    "clean:build": "rimraf \"{bundles,packages,out}/*/{dist,lib}\"",
-    "clean:types": "rimraf \"{bundles,packages}/*/lib/**/*.d.ts\"",
-    "clean:out": "rimraf out",
-    "clean:dist": "rimraf dist/*",
     "clean": "run-s clean:*",
-    "test:pkg": "ts-node --transpile-only ./test/index.ts",
-    "test:pkg:debug": "cross-env DEBUG_MODE=1 ts-node --transpile-only ./test/index.ts",
+    "clean:build": "rimraf \"{lib,dist,out}\" --glob",
+    "clean:index": "rimraf \"src/**/index.ts\" --glob",
+    "prebuild": "npm run clean",
+    "build": "run-s build:index build:rollup build:tsc build:dts",
+    "build:rollup": "npx rollup -c",
+    "build:tsc": "tsc-silent -p tsconfig.types.json --suppress @",
+    "build:index": "ts-node --transpile-only ./scripts/index/generateIndexFiles.ts",
+    "build:dts": "ts-node --transpile-only ./scripts/types/fixTypes.ts && copyfiles -u 1 \"src/**/*.d.ts\" lib/",
+    "dist": "run-s lint test:types build docs",
+    "prewatch": "npm run build",
+    "watch": "nodemon --watch \"./src/*\" --exec \"npm run watch:build\" -e ts,js,vert,frag,wgsl,d.ts --ignore \"index.ts\"",
+    "watch:build": "run-s build:index build:rollup build:tsc build:dts",
     "test": "npx jest --silent",
     "test:debug": "cross-env DEBUG_MODE=1 npx jest",
+    "test:pkg": "ts-node --transpile-only ./scripts/jest/jest-run.ts",
+    "test:pkg:debug": "cross-env DEBUG_MODE=1 npm run test:pkg",
+    "test:types": "tsc --noEmit",
     "coverage": "npm run test -- --coverage --maxWorkers=4",
-    "docs": "mkdirp dist && webdoc -R README.md",
-    "lint": "eslint --cache --ext .js --ext .ts test bundles packages scripts --ignore-path .gitignore --max-warnings 0",
-    "lintfix": "run-s \"lint -- --fix\"",
-    "types": "tsc --noEmit",
-    "types:strict": "npm run types -- --strictNullChecks | ts-node ./scripts/filterTypeScriptErrors.ts",
-    "prebuild": "run-s clean:build",
-    "build": "rollup -c --failAfterWarnings",
-    "prebuild:types": "run-s clean:types clean:out",
-    "build:types": "tsc -p tsconfig.types.json && ts-node scripts/fixTypes.ts",
-    "postbuild:types": "copyfiles -u 1 \"out/**/*\" . && run-s clean:out",
-    "watch": "rollup -cw",
-    "dist": "run-s lint types types:strict build build:types docs",
-    "postdist": "copyfiles -f bundles/*/dist/* dist && copyfiles -f packages/*/dist/* dist/packages",
+    "docs": "mkdirp out && npm run docs:webdoc",
+    "docs:webdoc": "webdoc -R README.md",
+    "lint": "eslint --ext .js --ext .ts ./ --ignore-path .gitignore --max-warnings 0",
+    "lint:fix": "npm run lint -- --fix",
     "codesandbox-ci": "run-s build build:types prepublish-ci",
     "prerelease": "run-s clean:build test dist",
     "release": "ts-node ./scripts/release.ts",
-    "prepublish-ci": "ts-node ./scripts/prepublish.ts",
-    "publish-ci": "workspaces-run --only-fs=\"{packages,bundles}/*\" -- npm publish",
-    "webdoc": "webdoc"
+    "publish-ci": "npm publish"
   },
-  "pre-commit": [
-    "lintfix"
-  ],
-  "engines": {
-    "node": ">=18",
-    "yarn": "please-use-npm",
-    "npm": ">=8"
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{ts,js,mjs}": [
+      "eslint --ext .js --ext .ts ./ --ignore-path .gitignore --cache --fix --max-warnings 0"
+    ]
+  },
+  "dependencies": {
+    "@types/css-font-loading-module": "^0.0.8",
+    "@types/earcut": "^2.1.1",
+    "@webgpu/types": "^0.1.30",
+    "earcut": "^2.2.4",
+    "eventemitter3": "^5.0.0",
+    "ismobilejs": "^1.1.0"
   },
   "devDependencies": {
     "@pixi/eslint-config": "^4.0.1",
@@ -53,27 +132,35 @@
     "@rollup/plugin-commonjs": "^15.1.0",
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^15.0.0",
+    "@types/fs-extra": "^11.0.1",
     "@types/inquirer": "^8.0.0",
     "@types/jest": "^26.0.0",
     "@webdoc/cli": "^2.2.0",
-    "copyfiles": "^2.1.0",
-    "cross-env": "^5.2.0",
+    "copyfiles": "^2.4.1",
+    "cross-env": "^7.0.3",
     "electron": "^12.0.0",
-    "esbuild": "^0.14.48",
-    "eslint": "^8.25.0",
-    "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-jsdoc": "^39.2.9",
-    "eslint-plugin-simple-import-sort": "^8.0.0",
-    "glob": "^7.1.3",
+    "esbuild": "^0.17.18",
+    "eslint": "^8.38.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-jsdoc": "^41.1.2",
+    "eslint-plugin-no-mixed-operators": "^1.1.1",
+    "eslint-plugin-simple-import-sort": "^10.0.0",
+    "fs-extra": "^11.1.1",
+    "glob": "^8.0.3",
+    "glob-promise": "^6.0.0",
     "http-server": "^14.1.1",
+    "husky": "^8.0.3",
     "inquirer": "^8.0.0",
     "jest": "^26.0.0",
     "jest-electron": "^0.1.12",
     "jest-extended": "^1.2.1",
     "jest-raw-loader": "^1.0.1",
+    "lint-staged": "^13.2.1",
+    "madge": "^6.0.0",
+    "nodemon": "^2.0.22",
     "npm-run-all": "^4.1.5",
     "pre-commit": "^1.2.2",
-    "rimraf": "^2.6.3",
+    "rimraf": "^5.0.0",
     "rollup": "^2.78.0",
     "rollup-plugin-esbuild": "^4.9.1",
     "rollup-plugin-jscc": "^2.0.0",
@@ -83,9 +170,16 @@
     "tree-kill": "^1.2.2",
     "ts-jest": "^26.0.0",
     "ts-node": "^9.0.0",
+    "tsc-silent": "^1.2.2",
     "tsconfig-paths": "^3.10.1",
-    "typescript": "~4.3.0",
-    "workspaces-run": "^1.0.2",
+    "typescript": "^5.0.4",
     "yargs-parser": "^21.0.1"
-  }
+  },
+  "engines": {
+    "node": ">=18",
+    "npm": ">=8",
+    "yarn": "please-use-npm"
+  },
+  "bundle": "dist/pixi.js",
+  "bundleModule": "dist/pixi.mjs"
 }

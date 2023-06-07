@@ -3,16 +3,9 @@
     "compilerOptions": {
         "declaration": true,
         "emitDeclarationOnly": true,
-        "outDir": "out"
+        "outDir": "lib"
     },
-    "exclude": [
-        "node_modules",
-        "**/dist/**",
-        "**/lib/**",
-        "bundles/**/*.d.ts",
-        "**/out/**",
-        "tools",
-        "scripts",
-        "**/test/**"
-    ]
+    "include": [
+        "./src"
+    ],
 }
