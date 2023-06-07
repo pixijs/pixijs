@@ -129,7 +129,16 @@ export class ViewSystem implements ISystem
 
     get resolution(): number
     {
-        return this.texture.source.resolution;
+        return this.texture.source._resolution;
+    }
+
+    set resolution(value: number)
+    {
+        this.texture.source.resize(
+            this.texture.source.width,
+            this.texture.source.height,
+            value
+        );
     }
 
     /**

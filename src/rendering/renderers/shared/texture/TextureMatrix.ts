@@ -167,7 +167,7 @@ export class TextureMatrix
 
         const texBase = tex.source;
         const frame = this.uClampFrame;
-        const margin = this.clampMargin / texBase.resolution;
+        const margin = this.clampMargin / texBase._resolution;
         const offset = this.clampOffset;
 
         frame[0] = (tex.frameX + margin + offset) / texBase.width;

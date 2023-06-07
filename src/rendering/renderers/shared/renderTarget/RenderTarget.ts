@@ -84,7 +84,7 @@ export class RenderTarget
 
             const colorSource = this.colorTexture.source;
 
-            this.resize(colorSource.width, colorSource.height, colorSource.resolution);
+            this.resize(colorSource.width, colorSource.height, colorSource._resolution);
         }
 
         // the first color texture drives the size of all others..
@@ -151,7 +151,7 @@ export class RenderTarget
 
     protected onSourceResize(source: TextureSource)
     {
-        this.resize(source.width, source.height, source.resolution, true);
+        this.resize(source.width, source.height, source._resolution, true);
     }
 
     private resize(width: number, height: number, resolution = this.resolution, skipColorTexture = false)

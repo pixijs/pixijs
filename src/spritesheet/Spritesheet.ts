@@ -199,11 +199,11 @@ export class Spritesheet
         if (metaResolution)
         {
             this.resolution = metaResolution;
-            texture.source.setResolution(this.resolution);
+            texture.source.resolution = this.resolution;
         }
         else
         {
-            this.resolution = texture.source.resolution;
+            this.resolution = texture.source._resolution;
         }
 
         this._frames = this.data.frames;

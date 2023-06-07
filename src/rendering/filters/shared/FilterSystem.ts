@@ -155,7 +155,7 @@ export class FilterSystem implements ISystem
 
         // next we get the settings for the filter
         // we need to find the LOWEST resolution for the filter list
-        let resolution = renderer.renderTarget.rootRenderTarget.colorTexture.source.resolution;
+        let resolution = renderer.renderTarget.rootRenderTarget.colorTexture.source._resolution;
 
         // Padding is additive to add padding to our padding
         let padding = 0;
@@ -346,7 +346,7 @@ export class FilterSystem implements ISystem
             let flop = TexturePool.getOptimalTexture(
                 bounds.width,
                 bounds.height,
-                flip.source.resolution,
+                flip.source._resolution,
                 false
             );
 
@@ -433,11 +433,11 @@ export class FilterSystem implements ISystem
         backgroundFrame[2] = backTexture.layout.frame.width;
         backgroundFrame[3] = backTexture.layout.frame.height;
 
-        let resolution = this.renderer.renderTarget.rootRenderTarget.colorTexture.source.resolution;
+        let resolution = this.renderer.renderTarget.rootRenderTarget.colorTexture.source._resolution;
 
         if (this.filterStackIndex > 0)
         {
-            resolution = this.filterStack[this.filterStackIndex - 1].inputTexture.source.resolution;
+            resolution = this.filterStack[this.filterStackIndex - 1].inputTexture.source._resolution;
         }
 
         globalFrame[0] = offset.x * resolution;
@@ -451,7 +451,7 @@ export class FilterSystem implements ISystem
 
     getBackTexture(lastRenderSurface: RenderTarget, bounds: Bounds)
     {
-        const backgroundResolution = lastRenderSurface.colorTexture.source.resolution;
+        const backgroundResolution = lastRenderSurface.colorTexture.source._resolution;
 
         const backTexture = TexturePool.getOptimalTexture(
             bounds.width,

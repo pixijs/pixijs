@@ -128,11 +128,15 @@ export class WebGLRenderer extends SystemManager<WebGLRenderer> implements GLRen
         this.runners.postrender.emit();
     }
 
-    // TODO: resolution is not dynamic
     /** The resolution / device pixel ratio of the renderer. */
     get resolution(): number
     {
         return this.view.resolution;
+    }
+
+    set resolution(value: number)
+    {
+        this.view.resolution = value;
     }
 
     get width(): number

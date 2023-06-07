@@ -94,7 +94,7 @@ export class TexturePoolClass
             texture = this.createTexture(po2Width, po2Height, antialias);
         }
 
-        texture.source.resolution = resolution;
+        texture.source._resolution = resolution;
         texture.source.width = po2Width / resolution;
         texture.source.height = po2Height / resolution;
         texture.source.pixelWidth = po2Width;
@@ -116,7 +116,7 @@ export class TexturePoolClass
     {
         const source = texture.source;
 
-        return this.getOptimalTexture(source.width, source.height, source.resolution, source.antialias);
+        return this.getOptimalTexture(source.width, source.height, source._resolution, source.antialias);
     }
 
     /**

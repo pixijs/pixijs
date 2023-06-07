@@ -395,7 +395,7 @@ export class GlRenderTargetSystem implements ISystem
             // nno need to resize the first texture..
             if (i === 0) return;
 
-            colorTexture.source.resize(source.width, source.height, source.resolution);
+            colorTexture.source.resize(source.width, source.height, source._resolution);
         });
 
         if (glRenderTarget.msaa)

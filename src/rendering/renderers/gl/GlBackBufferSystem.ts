@@ -115,7 +115,7 @@ export class GlBackBufferSystem implements ISystem
         this.backBufferTexture.source.resize(
             source.width,
             source.height,
-            source.resolution,
+            source._resolution,
         );
 
         return this.backBufferTexture;

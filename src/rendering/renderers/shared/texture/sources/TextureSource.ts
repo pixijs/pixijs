@@ -41,7 +41,7 @@ export class TextureSource<T extends Record<string, any> = any> implements Binda
     type = 'unknown';
 
     // dimensions
-    resolution = 1;
+    _resolution = 1;
     pixelWidth = 1;
     pixelHeight = 1;
 
@@ -80,11 +80,11 @@ export class TextureSource<T extends Record<string, any> = any> implements Binda
     {
         this.resource = options.resource;
 
-        this.resolution = options.resolution ?? 1;
+        this._resolution = options.resolution ?? 1;
 
         if (options.width)
         {
-            this.pixelWidth = options.width * this.resolution;
+            this.pixelWidth = options.width * this._resolution;
         }
         else
         {
@@ -93,15 +93,15 @@ export class TextureSource<T extends Record<string, any> = any> implements Binda
 
         if (options.height)
         {
-            this.pixelHeight = options.height * this.resolution;
+            this.pixelHeight = options.height * this._resolution;
         }
         else
         {
             this.pixelHeight = options.resource?.height ?? 1;
         }
 
-        this.width = this.pixelWidth / this.resolution;
-        this.height = this.pixelHeight / this.resolution;
+        this.width = this.pixelWidth / this._resolution;
+        this.height = this.pixelHeight / this._resolution;
 
         this.format = options.format ?? 'bgra8unorm';
         this.viewDimensions = options.view ?? '2d';
@@ -171,11 +171,16 @@ export class TextureSource<T extends Record<string, any> = any> implements Binda
         this.resource = null;
     }
 
-    setResolution(resolution: number)
+    get resolution(): number
     {
-        if (this.resolution === resolution) return;
+        return this._resolution;
+    }
 
-        this.resolution = resolution;
+    set resolution(resolution: number)
+    {
+        if (this._resolution === resolution) return;
+
+        this._resolution = resolution;
 
         this.width = this.pixelWidth / resolution;
         this.height = this.pixelHeight / resolution;
@@ -183,7 +188,7 @@ export class TextureSource<T extends Record<string, any> = any> implements Binda
 
     resize(width?: number, height?: number, resolution?: number)
     {
-        resolution = resolution || this.resolution;
+        resolution = resolution || this._resolution;
         width = width || this.width;
         height = height || this.height;
 
@@ -194,7 +199,7 @@ export class TextureSource<T extends Record<string, any> = any> implements Binda
         this.width = newPixelWidth / resolution;
         this.height = newPixelHeight / resolution;
 
-        this.resolution = resolution;
+        this._resolution = resolution;
 
         if (this.pixelWidth === newPixelWidth && this.pixelHeight === newPixelHeight)
         {

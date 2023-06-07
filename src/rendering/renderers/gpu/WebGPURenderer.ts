@@ -77,6 +77,17 @@ export class WebGPURenderer extends SystemManager<WebGPURenderer> implements GPU
         this.setup(systemConfig);
     }
 
+    set resolution(value: number)
+    {
+        this.view.resolution = value;
+    }
+
+    /** The resolution / device pixel ratio of the renderer. */
+    get resolution(): number
+    {
+        return this.view.resolution;
+    }
+
     /**
      * Resizes the WebGL view to the specified width and height.
      * @param desiredScreenWidth - The desired width of the screen.
@@ -121,13 +132,6 @@ export class WebGPURenderer extends SystemManager<WebGPURenderer> implements GPU
         this._lastObjectRendered = container;
 
         this.encoder.finish();
-    }
-
-    // TODO: resolution is not dynamic
-    /** The resolution / device pixel ratio of the renderer. */
-    get resolution(): number
-    {
-        return this.view.resolution;
     }
 
     get width(): number

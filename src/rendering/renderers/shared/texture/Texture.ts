@@ -128,7 +128,7 @@ export class Texture implements BindableTexture
 
     get frameWidth(): number
     {
-        return (this._source.pixelWidth / this._source.resolution) * this._layout.frame.width;
+        return (this._source.pixelWidth / this._source._resolution) * this._layout.frame.width;
     }
 
     set frameHeight(value: number)
@@ -138,7 +138,7 @@ export class Texture implements BindableTexture
 
     get frameHeight(): number
     {
-        return (this._source.pixelHeight / this._source.resolution) * this._layout.frame.height;
+        return (this._source.pixelHeight / this._source._resolution) * this._layout.frame.height;
     }
 
     set frameX(value: number)

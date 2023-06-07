@@ -169,6 +169,8 @@ export class GpuRenderTargetSystem implements ISystem
             depthStencilAttachment
         };
 
+        // console.log(JSON.stringify(descriptor));
+
         return descriptor;
     }
 
@@ -329,7 +331,7 @@ export class GpuRenderTargetSystem implements ISystem
             {
                 const msaaTexture = gpuRenderTarget.msaaTextures[i];
 
-                msaaTexture?.resize(colorTexture.source.width, colorTexture.source.height, colorTexture.source.resolution);
+                msaaTexture?.resize(colorTexture.source.width, colorTexture.source.height, colorTexture.source._resolution);
             });
         }
     }

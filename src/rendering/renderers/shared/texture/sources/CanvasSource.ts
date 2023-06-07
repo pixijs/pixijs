@@ -66,7 +66,7 @@ export class CanvasSource extends TextureSource<ICanvas>
         this.resource.height = this.pixelHeight;
     }
 
-    resize(width = this.width, height = this.height, resolution = this.resolution): void
+    resize(width = this.width, height = this.height, resolution = this._resolution): void
     {
         super.resize(width, height, resolution);
 
