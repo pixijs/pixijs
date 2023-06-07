@@ -34,4 +34,9 @@ export class ProxyRenderable<T extends View = View> implements Renderable<T>
     {
         return this.original.layerVisibleRenderable;
     }
+
+    get isRenderable()
+    {
+        return this.original.isRenderable;
+    }
 }
