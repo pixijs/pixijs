@@ -172,7 +172,7 @@ export class MeshView<GEOMETRY extends MeshGeometry = MeshGeometry>implements Vi
      * @param {boolean} [options.texture=false] - Should it destroy the current texture of the renderable as well
      * @param {boolean} [options.textureSource=false] - Should it destroy the textureSource of the renderable as well
      */
-    destroy(options: DestroyOptions = false): void
+    public destroy(options: DestroyOptions = false): void
     {
         const destroyTexture = typeof options === 'boolean' ? options : options?.texture;
 
