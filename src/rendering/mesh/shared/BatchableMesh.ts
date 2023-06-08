@@ -15,6 +15,14 @@ export class BatchableMesh implements BatchableObject
 
     get blendMode() { return this.renderable.layerBlendMode; }
 
+    reset()
+    {
+        this.renderable = null;
+        this.texture = null;
+        this.batcher = null;
+        this.batch = null;
+    }
+
     packIndex(indexBuffer: Uint32Array, index: number, indicesOffset: number)
     {
         const indices = this.renderable.view.geometry.indices;

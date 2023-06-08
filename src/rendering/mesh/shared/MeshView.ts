@@ -6,6 +6,7 @@ import type { Shader } from '../../renderers/shared/shader/Shader';
 import type { Texture } from '../../renderers/shared/texture/Texture';
 import type { View } from '../../renderers/shared/View';
 import type { Bounds } from '../../scene/bounds/Bounds';
+import type { DestroyOptions } from '../../scene/destroyTypes';
 import type { MeshGeometry } from './MeshGeometry';
 
 let UID = 0;
@@ -162,6 +163,28 @@ export class MeshView<GEOMETRY extends MeshGeometry = MeshGeometry>implements Vi
         }
 
         return this._geometry.batchMode === 'batch';
+    }
+
+    /**
+     * Destroys this sprite renderable and optionally its texture.
+     * @param options - Options parameter. A boolean will act as if all options
+     *  have been set to that value
+     * @param {boolean} [options.texture=false] - Should it destroy the current texture of the renderable as well
+     * @param {boolean} [options.textureSource=false] - Should it destroy the textureSource of the renderable as well
+     */
+    destroy(options: DestroyOptions = false): void
+    {
+        const destroyTexture = typeof options === 'boolean' ? options : options?.texture;
+
+        if (destroyTexture)
+        {
+            const destroyTextureSource = typeof options === 'boolean' ? options : options?.textureSource;
+
+            this._texture.destroy(destroyTextureSource);
+        }
+
+        this._geometry = null;
+        this._shader = null;
     }
 
     protected onGeometryUpdate()

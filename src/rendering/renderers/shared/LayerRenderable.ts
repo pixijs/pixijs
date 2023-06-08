@@ -1,3 +1,4 @@
+import EventEmitter from 'eventemitter3';
 import { Matrix } from '../../../maths/Matrix';
 import { getRenderableUID } from '../../scene/Container';
 
@@ -13,7 +14,7 @@ import type { View } from './View';
  * This proxy allows us to override the values. This saves us a lot of extra if statements in the core loop
  * for what is normally a very rare use case!
  */
-export class LayerRenderable<T extends View = View> implements Renderable<T>
+export class LayerRenderable<T extends View = View> extends EventEmitter implements Renderable<T>
 {
     uid = getRenderableUID();
     view: T;
@@ -26,6 +27,8 @@ export class LayerRenderable<T extends View = View> implements Renderable<T>
 
     constructor({ original, view }: { original: Container<View>; view: T; })
     {
+        super();
+
         this.view = view;
         this.original = original;
         this.layerTransform = new Matrix();

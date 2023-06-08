@@ -1,5 +1,6 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { Matrix } from '../../../maths/Matrix';
+import { BigPool } from '../../../utils/pool/PoolGroup';
 import { BindGroup } from '../../renderers/gpu/shader/BindGroup';
 import { UniformGroup } from '../../renderers/shared/shader/UniformGroup';
 import { State } from '../../renderers/shared/state/State';
@@ -8,6 +9,7 @@ import { BatchableMesh } from './BatchableMesh';
 import { MeshShader } from './MeshShader';
 
 import type { ExtensionMetadata } from '../../../extensions/Extensions';
+import type { PoolItem } from '../../../utils/pool/Pool';
 import type { Instruction } from '../../renderers/shared/instructions/Instruction';
 import type { InstructionSet } from '../../renderers/shared/instructions/InstructionSet';
 import type {
@@ -16,6 +18,7 @@ import type {
 } from '../../renderers/shared/instructions/RenderPipe';
 import type { Renderable } from '../../renderers/shared/Renderable';
 import type { Renderer } from '../../renderers/types';
+import type { MeshGeometry } from './MeshGeometry';
 import type { MeshView } from './MeshView';
 
 // TODO Record mode is a P2, will get back to this as it's not a priority
@@ -159,6 +162,18 @@ export class MeshPipe implements RenderPipe<MeshView>, InstructionPipe<MeshInstr
         }
     }
 
+    destroyRenderable(renderable: Renderable<MeshView<MeshGeometry>>)
+    {
+        this.renderableHash[renderable.uid] = null;
+
+        const gpuMesh = this.gpuBatchableMeshHash[renderable.uid];
+
+        // TODO consider adding reset to the BatchableObject interface? Could force pooling of them?
+        BigPool.return(gpuMesh as PoolItem);
+
+        this.gpuBatchableMeshHash[renderable.uid] = null;
+    }
+
     execute({ renderable }: MeshInstruction)
     {
         if (!renderable.isRenderable) return;
@@ -181,6 +196,11 @@ export class MeshPipe implements RenderPipe<MeshView>, InstructionPipe<MeshInstr
             vertexSize: view._geometry.positions.length,
         };
 
+        renderable.on('destroyed', () =>
+        {
+            this.destroyRenderable(renderable);
+        });
+
         return this.renderableHash[renderable.uid];
     }
 
@@ -192,7 +212,7 @@ export class MeshPipe implements RenderPipe<MeshView>, InstructionPipe<MeshInstr
     private initBatchableMesh(renderable: Renderable<MeshView>): BatchableMesh
     {
         // TODO - make this batchable graphics??
-        const gpuMesh: BatchableMesh = new BatchableMesh();
+        const gpuMesh: BatchableMesh = BigPool.get(BatchableMesh);
 
         gpuMesh.renderable = renderable;
 

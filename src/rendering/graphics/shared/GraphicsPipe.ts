@@ -193,10 +193,10 @@ export class GraphicsPipe implements RenderPipe<GraphicsView>
         this.renderableBatchesHash[renderable.uid] = batches;
 
         // TODO perhaps manage this outside this pipe? (a bit like how we update / add)
-        renderable.onDestroyed = () =>
+        renderable.on('destroyed', () =>
         {
             this.destroyRenderable(renderable);
-        };
+        });
 
         return batches;
     }
