@@ -183,6 +183,7 @@ export class MeshView<GEOMETRY extends MeshGeometry = MeshGeometry>implements Vi
             this._texture.destroy(destroyTextureSource);
         }
 
+        this._texture = null;
         this._geometry = null;
         this._shader = null;
     }
