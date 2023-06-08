@@ -1,20 +1,6 @@
 import { Graphics } from '../../../src/rendering/graphics/shared/Graphics';
-import { WebGLRenderer } from '../../../src/rendering/renderers/gl/WebGLRenderer';
 import { Container } from '../../../src/rendering/scene/Container';
-
-import type { Renderer } from '../../../src/rendering/renderers/types';
-
-async function getRenderer(): Promise<Renderer>
-{
-    const renderer = new WebGLRenderer();
-
-    await renderer.init({
-        width: 100,
-        height: 100,
-    });
-
-    return renderer;
-}
+import { getRenderer } from '../../utils/getRenderer';
 
 describe('Graphics', () =>
 {

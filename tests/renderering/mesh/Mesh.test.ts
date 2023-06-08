@@ -1,47 +1,8 @@
 import { Mesh } from '../../../src/rendering/mesh/shared/Mesh';
 import { MeshGeometry } from '../../../src/rendering/mesh/shared/MeshGeometry';
-import { WebGLRenderer } from '../../../src/rendering/renderers/gl/WebGLRenderer';
-import { ImageSource } from '../../../src/rendering/renderers/shared/texture/sources/ImageSource';
-import { Texture } from '../../../src/rendering/renderers/shared/texture/Texture';
 import { Container } from '../../../src/rendering/scene/Container';
-
-import type { Renderer } from '../../../src/rendering/renderers/types';
-
-async function getRenderer(): Promise<Renderer>
-{
-    const renderer = new WebGLRenderer();
-
-    await renderer.init({
-        width: 100,
-        height: 100,
-    });
-
-    return renderer;
-}
-
-function getTexture()
-{
-    const canvas = document.createElement('canvas');
-
-    canvas.width = 20;
-    canvas.height = 20;
-
-    const context = canvas.getContext('2d') as CanvasRenderingContext2D;
-
-    // fill canvas with white
-    context.fillStyle = '#FFFFFF';
-    context.fillRect(0, 0, canvas.width, canvas.height);
-
-    const defaultTexture = new Texture({
-        source: new ImageSource({
-            resource: canvas
-        })
-    });
-
-    defaultTexture.label = 'defaultTexture';
-
-    return defaultTexture;
-}
+import { getRenderer } from '../../utils/getRenderer';
+import { getTexture } from '../../utils/getTexture';
 
 function getMesh()
 {
