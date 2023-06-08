@@ -1,14 +1,16 @@
 import { ExtensionType } from '../../../extensions/Extensions';
+import { BigPool } from '../../../utils/pool/PoolGroup';
 import { BatchableSprite } from './BatchableSprite';
 
 import type { ExtensionMetadata } from '../../../extensions/Extensions';
+import type { PoolItem } from '../../../utils/pool/Pool';
 import type { InstructionSet } from '../../renderers/shared/instructions/InstructionSet';
 import type { RenderPipe } from '../../renderers/shared/instructions/RenderPipe';
 import type { Renderable } from '../../renderers/shared/Renderable';
 import type { Renderer } from '../../renderers/types';
 import type { SpriteView } from './SpriteView';
 
-const gpuSpriteHash: Record<number, BatchableSprite> = {};
+let gpuSpriteHash: Record<number, BatchableSprite>;
 
 export class SpritePipe implements RenderPipe<SpriteView>
 {
@@ -22,11 +24,13 @@ export class SpritePipe implements RenderPipe<SpriteView>
         name: 'sprite',
     };
 
-    renderer: Renderer;
+    private renderer: Renderer;
+    private gpuSpriteHash: Record<number, BatchableSprite> = {};
 
     constructor(renderer: Renderer)
     {
         this.renderer = renderer;
+        gpuSpriteHash = this.gpuSpriteHash;
     }
 
     addRenderable(sprite: Renderable<SpriteView>, instructionSet: InstructionSet)
@@ -61,6 +65,16 @@ export class SpritePipe implements RenderPipe<SpriteView>
         return false;
     }
 
+    destroyRenderable(sprite: Renderable<SpriteView>)
+    {
+        const batchableSprite = gpuSpriteHash[sprite.uid];
+
+        // this will call reset!
+        BigPool.return(batchableSprite as PoolItem);
+
+        gpuSpriteHash[sprite.uid] = null;
+    }
+
     updateBatchableSprite(sprite: Renderable<SpriteView>, batchableSprite: BatchableSprite)
     {
         const view = sprite.view;
@@ -77,7 +91,7 @@ export class SpritePipe implements RenderPipe<SpriteView>
 
     initGPUSprite(sprite: Renderable<SpriteView>): BatchableSprite
     {
-        const batchableSprite = new BatchableSprite();
+        const batchableSprite = BigPool.get(BatchableSprite);
 
         batchableSprite.sprite = sprite;
         batchableSprite.texture = sprite.view._texture;
@@ -86,6 +100,12 @@ export class SpritePipe implements RenderPipe<SpriteView>
         gpuSpriteHash[sprite.uid] = batchableSprite;
 
         sprite.view.didUpdate = false;
+
+        // TODO perhaps manage this outside this pipe? (a bit like how we update / add)
+        sprite.onDestroyed = () =>
+        {
+            this.destroyRenderable(sprite);
+        };
 
         return batchableSprite;
     }
