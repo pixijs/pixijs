@@ -121,6 +121,9 @@ export class GraphicsContext
 
     customShader?: Shader;
 
+    onGraphicsContextUpdate = new Runner('onGraphicsContextUpdate');
+    onGraphicsContextDestroy = new Runner('onGraphicsContextDestroy');
+
     private _transform: Matrix = new Matrix();
 
     private _fillStyle: FillStyle = { ...GraphicsContext.defaultFillStyle };
@@ -129,8 +132,6 @@ export class GraphicsContext
     private _strokeStyle: StrokeStyle = { ...GraphicsContext.defaultStrokeStyle };
     private _strokeStyleOriginal: FillStyleInputs = 0xffffff;
     private _stateStack: { fillStyle: FillStyle; strokeStyle: StrokeStyle, transform: Matrix }[] = [];
-
-    onGraphicsContextUpdate = new Runner('onGraphicsContextUpdate');
 
     private _tick = 0;
 
@@ -801,6 +802,18 @@ export class GraphicsContext
 
         this._fillStyle = null;
         this._strokeStyle = null;
+
+        this.instructions = null;
+        this.activePath = null;
+        this._bounds = null;
+        this._stateStack = null;
+        this.transformMatrix = null;
+        this.customShader = null;
+        this._transform = null;
+
+        this.onGraphicsContextDestroy.emit(this);
+        this.onGraphicsContextDestroy.removeAll();
+        this.onGraphicsContextDestroy = null;
     }
 }
 

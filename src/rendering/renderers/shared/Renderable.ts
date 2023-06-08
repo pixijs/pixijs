@@ -13,4 +13,6 @@ export interface Renderable<VIEW extends View = View>
     layerBlendMode: BLEND_MODES;
     layerVisibleRenderable: number;
     isRenderable: boolean;
+    // called when the renderable is destroyed..
+    onDestroyed?: () => void;
 }

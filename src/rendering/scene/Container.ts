@@ -2,6 +2,7 @@ import EventEmitter from 'eventemitter3';
 import { DEG_TO_RAD, RAD_TO_DEG } from '../../maths/const';
 import { Matrix } from '../../maths/Matrix';
 import { ObservablePoint } from '../../maths/ObservablePoint';
+import { NOOP } from '../../utils/NOOP';
 import { BLEND_MODES } from '../renderers/shared/state/const';
 import { childrenHelperMixin } from './container-mixins/childrenHelperMixin';
 import { effectsMixin } from './container-mixins/effectsMixin';
@@ -173,6 +174,8 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
     /// /// EFFECTS and masks etc...
 
     effects: Effect[] = [];
+
+    onDestroyed = NOOP;
 
     addEffect(effect: Effect)
     {
@@ -734,6 +737,8 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         this._skew = null;
 
         this.emit('destroyed');
+
+        this.onDestroyed();
         this.removeAllListeners();
 
         const destroyChildren = typeof options === 'boolean' ? options : options?.children;
