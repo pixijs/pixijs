@@ -1,9 +1,5 @@
 {
   "buildCommand": "codesandbox-ci",
-  "packages": [
-    "bundles/*",
-    "packages/*"
-  ],
   "sandboxes": ["/.codesandbox/sandbox"],
   "node": "18"
 }

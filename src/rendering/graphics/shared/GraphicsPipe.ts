@@ -117,7 +117,7 @@ export class GraphicsPipe implements RenderPipe<GraphicsView>
 
     execute({ renderable }: GraphicsInstruction)
     {
-        if (renderable.layerVisibleRenderable < 0b11) return;
+        if (!renderable.isRenderable) return;
 
         this.adaptor.execute(this, renderable);
     }

@@ -45,4 +45,9 @@ export class LayerRenderable<T extends View = View> implements Renderable<T>
         this.didViewUpdate = true;
         this.original.layerGroup.onChildViewUpdate(this);
     }
+
+    get isRenderable()
+    {
+        return this.original.isRenderable;
+    }
 }

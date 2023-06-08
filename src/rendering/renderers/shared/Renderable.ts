@@ -12,4 +12,5 @@ export interface Renderable<VIEW extends View = View>
     layerColor: number;
     layerBlendMode: BLEND_MODES;
     layerVisibleRenderable: number;
+    isRenderable: boolean;
 }

@@ -8,4 +8,5 @@ if [ -n "$staged_files" ]; then
   #log files
   echo 'linting the following commited files:' $staged_files
   npx eslint --ext .ts --max-warnings 0 $staged_files
+  npm run test:types
 fi

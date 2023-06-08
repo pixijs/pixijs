@@ -161,7 +161,7 @@ export class MeshPipe implements RenderPipe<MeshView>, InstructionPipe<MeshInstr
 
     execute({ renderable }: MeshInstruction)
     {
-        if (renderable.layerVisibleRenderable < 0b11) return;
+        if (!renderable.isRenderable) return;
 
         this.adaptor.execute(this, renderable);
     }
