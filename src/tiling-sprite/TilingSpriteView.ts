@@ -183,7 +183,6 @@ export class TilingSpriteView implements View
         this.anchor = null;
         this.tileTransform = null;
 
-        this.owner = null;
         this._bounds = null;
 
         const destroyTexture = typeof options === 'boolean' ? options : options?.texture;

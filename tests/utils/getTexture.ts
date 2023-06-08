@@ -1,12 +1,12 @@
 import { ImageSource } from '../../src/rendering/renderers/shared/texture/sources/ImageSource';
 import { Texture } from '../../src/rendering/renderers/shared/texture/Texture';
 
-export function getTexture()
+export function getTexture({ width = 20, height = 20 } = {})
 {
     const canvas = document.createElement('canvas');
 
-    canvas.width = 20;
-    canvas.height = 20;
+    canvas.width = width;
+    canvas.height = height;
 
     const context = canvas.getContext('2d') as CanvasRenderingContext2D;
 

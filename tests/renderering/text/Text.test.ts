@@ -1,7 +1,7 @@
 import { Container } from '../../../src/rendering/scene/Container';
 import { Sprite } from '../../../src/rendering/sprite/shared/Sprite';
 import { Text } from '../../../src/rendering/text/Text';
-import { getRenderer } from '../../utils/getRenderer';
+import { getRenderer } from '../sprite/getRenderer';
 import '../../../src/rendering/renderers/shared/texture/Texture';
 
 import type { DestroyOptions } from '../../../src/rendering/scene/destroyTypes';

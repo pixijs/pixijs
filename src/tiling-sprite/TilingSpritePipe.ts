@@ -36,6 +36,9 @@ export class TilingSpritePipe implements RenderPipe<TilingSpriteView>
     renderer: Renderer;
 
     renderableHash: Record<number, RenderableData> = {};
+
+    // TODO can prolly merge these properties into a single mesh and
+    // add them onto the renderableHash (rather than having them on separate hashes)
     gpuBatchedTilingSprite: Record<string, Renderable<MeshView>> = {};
 
     gpuTilingSprite: Record<string, {
@@ -121,6 +124,14 @@ export class TilingSpritePipe implements RenderPipe<TilingSpriteView>
         }
     }
 
+    destroyRenderable(renderable: Renderable<TilingSpriteView>)
+    {
+        // TODO pooling for the items... not a biggie though!
+        this.renderableHash[renderable.uid] = null;
+        this.gpuTilingSprite[renderable.uid] = null;
+        this.gpuBatchedTilingSprite[renderable.uid] = null;
+    }
+
     getRenderableData(renderable: Renderable<TilingSpriteView>): RenderableData
     {
         return this.renderableHash[renderable.uid] || this.initRenderableData(renderable);
@@ -135,6 +146,11 @@ export class TilingSpritePipe implements RenderPipe<TilingSpriteView>
         this.renderableHash[renderable.uid] = renderableData;
 
         this.validateRenderable(renderable);
+
+        renderable.on('destroyed', () =>
+        {
+            this.destroyRenderable(renderable);
+        });
 
         return renderableData;
     }
