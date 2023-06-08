@@ -103,7 +103,7 @@
     "docs:webdoc": "webdoc -R README.md",
     "lint": "eslint --ext .js --ext .ts ./ --ignore-path .gitignore --max-warnings 0",
     "lint:fix": "npm run lint -- --fix",
-    "codesandbox-ci": "run-s build prepublish-ci",
+    "codesandbox-ci": "run-s build",
     "prerelease": "run-s clean:build test dist",
     "release": "ts-node ./scripts/release.ts",
     "publish-ci": "npm publish"
