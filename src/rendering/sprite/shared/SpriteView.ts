@@ -204,7 +204,6 @@ export class SpriteView implements View
     public destroy(options: TypeOrBool<TextureDestroyOptions> = false)
     {
         this.anchor = null;
-        this.owner = null;
 
         const destroyTexture = typeof options === 'boolean' ? options : options?.texture;
 

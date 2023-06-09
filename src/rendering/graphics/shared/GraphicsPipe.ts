@@ -7,11 +7,10 @@ import type { ExtensionMetadata } from '../../../extensions/Extensions';
 import type { PoolItem } from '../../../utils/pool/Pool';
 import type { Instruction } from '../../renderers/shared/instructions/Instruction';
 import type { InstructionSet } from '../../renderers/shared/instructions/InstructionSet';
-import type { RenderPipe } from '../../renderers/shared/instructions/RenderPipe';
+import type { BatchPipe, RenderPipe } from '../../renderers/shared/instructions/RenderPipe';
 import type { Renderable } from '../../renderers/shared/Renderable';
 import type { Shader } from '../../renderers/shared/shader/Shader';
-import type { Renderer } from '../../renderers/types';
-import type { GpuGraphicsContext } from './GraphicsContextSystem';
+import type { GpuGraphicsContext, GraphicsContextSystem } from './GraphicsContextSystem';
 import type { GraphicsView } from './GraphicsView';
 
 export interface GraphicsAdaptor
@@ -25,6 +24,15 @@ export interface GraphicsInstruction extends Instruction
     type: 'graphics';
     renderable: Renderable<GraphicsView>;
 }
+
+export interface GraphicsSystem
+{
+    graphicsContext: GraphicsContextSystem;
+    renderPipes: {
+        batch: BatchPipe
+    }
+}
+
 export class GraphicsPipe implements RenderPipe<GraphicsView>
 {
     /** @ignore */
@@ -37,7 +45,7 @@ export class GraphicsPipe implements RenderPipe<GraphicsView>
         name: 'graphics',
     };
 
-    renderer: Renderer;
+    renderer: GraphicsSystem;
     shader: Shader;
     state: State = State.for2d();
 
@@ -45,7 +53,7 @@ export class GraphicsPipe implements RenderPipe<GraphicsView>
     private renderableBatchesHash: Record<number, BatchableGraphics[]> = {};
     private adaptor: GraphicsAdaptor;
 
-    constructor(renderer: Renderer, adaptor: GraphicsAdaptor)
+    constructor(renderer: GraphicsSystem, adaptor: GraphicsAdaptor)
     {
         this.renderer = renderer;
 
@@ -132,12 +140,7 @@ export class GraphicsPipe implements RenderPipe<GraphicsView>
 
         if (wasBatched)
         {
-            this.renderableBatchesHash[renderable.uid].forEach((batch) =>
-            {
-                BigPool.return(batch as PoolItem);
-            });
-
-            this.renderableBatchesHash[renderable.uid] = null;
+            this.removeBatchForRenderable(renderable);
         }
 
         if (gpuContext.isBatchable)
@@ -189,6 +192,27 @@ export class GraphicsPipe implements RenderPipe<GraphicsView>
 
         this.renderableBatchesHash[renderable.uid] = batches;
 
+        // TODO perhaps manage this outside this pipe? (a bit like how we update / add)
+        renderable.on('destroyed', () =>
+        {
+            this.destroyRenderable(renderable);
+        });
+
         return batches;
+    }
+
+    destroyRenderable(renderable: Renderable<GraphicsView>)
+    {
+        this.removeBatchForRenderable(renderable);
+    }
+
+    private removeBatchForRenderable(renderable: Renderable<GraphicsView>)
+    {
+        this.renderableBatchesHash[renderable.uid].forEach((batch) =>
+        {
+            BigPool.return(batch as PoolItem);
+        });
+
+        this.renderableBatchesHash[renderable.uid] = null;
     }
 }

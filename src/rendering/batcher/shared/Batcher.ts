@@ -39,6 +39,7 @@ export class Batch
 export interface BatchableObject
 {
     indexStart: number;
+
     packAttributes: (
         float32View: Float32Array,
         uint32View: Uint32Array,

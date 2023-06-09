@@ -82,5 +82,7 @@ export class GraphicsView implements View
         {
             this._context.destroy(options);
         }
+
+        this._context = null;
     }
 }

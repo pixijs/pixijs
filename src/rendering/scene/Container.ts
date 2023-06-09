@@ -734,6 +734,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         this._skew = null;
 
         this.emit('destroyed');
+
         this.removeAllListeners();
 
         const destroyChildren = typeof options === 'boolean' ? options : options?.children;
@@ -746,6 +747,12 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
             {
                 oldChildren[i].destroy(options);
             }
+        }
+
+        if (this.view)
+        {
+            this.view.destroy(options);
+            this.view.owner = null;
         }
     }
 }

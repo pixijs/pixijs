@@ -106,4 +106,13 @@ export class BatchableSprite implements BatchableObject
         indexBuffer[index++] = indicesOffset + 2;
         indexBuffer[index++] = indicesOffset + 3;
     }
+
+    reset()
+    {
+        this.sprite = null;
+        this.texture = null;
+        this.batcher = null;
+        this.batch = null;
+        this.bounds = null;
+    }
 }

@@ -1,10 +1,17 @@
+import EventEmitter from 'eventemitter3';
 import { getRenderableUID } from '../../scene/Container';
 
 import type { Matrix } from '../../../maths/Matrix';
 import type { Renderable } from './Renderable';
 import type { View } from './View';
 
-export class ProxyRenderable<T extends View = View> implements Renderable<T>
+export interface ProxyOptions<T>
+{
+    original?: Renderable<any>;
+    view: T;
+}
+
+export class ProxyRenderable<T extends View = View> extends EventEmitter implements Renderable<T>
 {
     uid = getRenderableUID();
     view: T;
@@ -13,9 +20,20 @@ export class ProxyRenderable<T extends View = View> implements Renderable<T>
     worldTransform: Matrix;
     didViewUpdate = false;
 
-    constructor({ original, view }: { original: Renderable<any>; view: T; })
+    constructor({ original, view }: ProxyOptions<T>)
     {
+        super();
+
         this.view = view;
+
+        if (original)
+        {
+            this.init(original);
+        }
+    }
+
+    init(original: Renderable<any>)
+    {
         this.original = original;
         this.layerTransform = original.layerTransform;
     }

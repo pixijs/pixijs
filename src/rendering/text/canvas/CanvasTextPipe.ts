@@ -1,4 +1,5 @@
 import { ExtensionType } from '../../../extensions/Extensions';
+import { BigPool } from '../../../utils/pool/PoolGroup';
 import { BatchableSprite } from '../../sprite/shared/BatchableSprite';
 
 import type { ExtensionMetadata } from '../../../extensions/Extensions';
@@ -95,15 +96,18 @@ export class CanvasTextPipe implements RenderPipe<TextView>
             this.updateText(renderable);
         }
 
-        // TODO FIX THIS
-        if (!batchableSprite.batcher)
-        {
-            console.warn('no batch found for:', renderable.view.text);
-        }
-        else
-        {
-            batchableSprite.batcher.updateElement(batchableSprite);
-        }
+        batchableSprite.batcher.updateElement(batchableSprite);
+    }
+
+    destroyRenderable(renderable: Renderable<TextView>)
+    {
+        const gpuText = this.gpuText[renderable.uid];
+
+        this.renderer.canvasText.decreaseReferenceCount(gpuText.currentKey);
+
+        BigPool.return(gpuText.batchableSprite);
+
+        this.gpuText[renderable.uid] = null;
     }
 
     private updateText(renderable: Renderable<TextView>)
@@ -161,7 +165,7 @@ export class CanvasTextPipe implements RenderPipe<TextView>
         const gpuTextData: CanvasTextPipe['gpuText'][string] = {
             texture: null,
             currentKey: '--',
-            batchableSprite: new BatchableSprite(),
+            batchableSprite: BigPool.get(BatchableSprite),
             needsTextureUpdate: true,
         };
 
@@ -171,6 +175,12 @@ export class CanvasTextPipe implements RenderPipe<TextView>
         this.gpuText[renderable.uid] = gpuTextData;
 
         this.updateText(renderable);
+
+        // TODO perhaps manage this outside this pipe? (a bit like how we update / add)
+        renderable.on('destroyed', () =>
+        {
+            this.destroyRenderable(renderable);
+        });
 
         return gpuTextData;
     }

@@ -141,25 +141,7 @@ export class GraphicsContextSystem implements ISystem
         {
             if (gpuContext)
             {
-                // if the context is dirty.. we should return the render
-                if (!gpuContext.isBatchable)
-                {
-                    if (this.graphicsDataContextHash[context.uid])
-                    {
-                        BigPool.return(this.getContextRenderData(context) as PoolItem);
-
-                        // we will rebuild this...
-                        this.graphicsDataContextHash[context.uid] = null;
-                    }
-                }
-
-                if (gpuContext.batches)
-                {
-                    gpuContext.batches.forEach((batch) =>
-                    {
-                        BigPool.return(batch as PoolItem);
-                    });
-                }
+                this.cleanGraphicsContextData(context);
             }
             else
             {
@@ -216,13 +198,44 @@ export class GraphicsContextSystem implements ISystem
         this.gpuContextHash[context.uid] = gpuContext;
 
         context.onGraphicsContextUpdate.add(this);
+        context.onGraphicsContextDestroy.add(this);
 
         return this.gpuContextHash[context.uid];
     }
 
-    onGraphicsContextUpdate(context: GraphicsContext)
+    protected onGraphicsContextUpdate(context: GraphicsContext)
     {
         this._needsContextNeedsRebuild.push(context);
+    }
+
+    protected onGraphicsContextDestroy(context: GraphicsContext)
+    {
+        this.cleanGraphicsContextData(context);
+        this.gpuContextHash[context.uid] = null;
+    }
+
+    private cleanGraphicsContextData(context: GraphicsContext)
+    {
+        const gpuContext: GpuGraphicsContext = this.gpuContextHash[context.uid];
+
+        if (!gpuContext.isBatchable)
+        {
+            if (this.graphicsDataContextHash[context.uid])
+            {
+                BigPool.return(this.getContextRenderData(context) as PoolItem);
+
+                // we will rebuild this...
+                this.graphicsDataContextHash[context.uid] = null;
+            }
+        }
+
+        if (gpuContext.batches)
+        {
+            gpuContext.batches.forEach((batch) =>
+            {
+                BigPool.return(batch as PoolItem);
+            });
+        }
     }
 
     destroy()
