@@ -54,7 +54,7 @@ describe('Buffer', () =>
 
         renderer.buffer.updateBuffer(buffer);
 
-        renderer.buffer.disposeAll();
+        renderer.buffer.destroyAll();
 
         expect((renderer).buffer['_gpuBuffers'][buffer.uid]).toBeUndefined();
     });

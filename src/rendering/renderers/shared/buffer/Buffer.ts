@@ -52,7 +52,7 @@ export class Buffer implements BindResource
 
         this._data = data as TypedArray;
 
-        size = size ?? (data as TypedArray).byteLength;
+        size = size ?? (data as TypedArray)?.byteLength;
 
         const mappedAtCreation = !!data;
 

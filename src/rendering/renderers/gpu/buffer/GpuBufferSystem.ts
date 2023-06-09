@@ -60,7 +60,7 @@ export class BufferSystem implements ISystem
     }
 
     /** dispose all WebGL resources of all managed buffers */
-    disposeAll(): void
+    destroyAll(): void
     {
         for (const id in this._gpuBuffers)
         {
@@ -102,7 +102,7 @@ export class BufferSystem implements ISystem
      * Disposes buffer
      * @param buffer - buffer with data
      */
-    protected onBufferDestroy(buffer: Buffer): void
+    onBufferDestroy(buffer: Buffer): void
     {
         const gpuBuffer = this._gpuBuffers[buffer.uid];
 

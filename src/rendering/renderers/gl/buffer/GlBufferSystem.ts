@@ -65,7 +65,7 @@ export class GlBufferSystem implements ISystem
     /** Sets up the renderer context and necessary buffers. */
     protected contextChange(): void
     {
-        this.disposeAll(true);
+        this.destroyAll(true);
 
         this.gl = this.renderer.gl;
     }
@@ -169,7 +169,7 @@ export class GlBufferSystem implements ISystem
      * dispose all WebGL resources of all managed buffers
      * @param {boolean} [contextLost=false] - If context was lost, we suppress `gl.delete` calls
      */
-    disposeAll(contextLost?: boolean): void
+    destroyAll(contextLost?: boolean): void
     {
         const gl = this.gl;
 
