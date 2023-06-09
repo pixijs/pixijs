@@ -1,6 +1,6 @@
 import { Cache } from '../../../assets/cache/Cache';
 import { ExtensionType } from '../../../extensions/Extensions';
-import { GraphicsContext } from '../../graphics/shared/GraphicsContext';
+import { BigPool } from '../../../utils/pool/PoolGroup';
 import { GraphicsView } from '../../graphics/shared/GraphicsView';
 import { ProxyRenderable } from '../../renderers/shared/ProxyRenderable';
 import { SdfShader } from '../sdfShader/SdfShader';
@@ -8,11 +8,22 @@ import { BitmapFontManager } from './BitmapFontManager';
 import { getBitmapTextLayout } from './utils/getBitmapTextLayout';
 
 import type { ExtensionMetadata } from '../../../extensions/Extensions';
+import type { GraphicsContext } from '../../graphics/shared/GraphicsContext';
 import type { InstructionSet } from '../../renderers/shared/instructions/InstructionSet';
 import type { RenderPipe } from '../../renderers/shared/instructions/RenderPipe';
 import type { Renderable } from '../../renderers/shared/Renderable';
 import type { Renderer } from '../../renderers/types';
 import type { TextView } from '../TextView';
+
+class GraphicsProxyRenderable extends ProxyRenderable<GraphicsView>
+{
+    constructor()
+    {
+        super({
+            view: new GraphicsView(),
+        });
+    }
+}
 
 export class BitmapTextPipe implements RenderPipe<TextView>
 {
@@ -28,10 +39,7 @@ export class BitmapTextPipe implements RenderPipe<TextView>
 
     private renderer: Renderer;
 
-    private gpuBitmapText: Record<string, {
-        graphicsRenderable: Renderable<GraphicsView>,
-        context: GraphicsContext,
-    }> = {};
+    private gpuBitmapText: Record<number, GraphicsProxyRenderable> = {};
 
     private sdfShader: SdfShader;
 
@@ -42,10 +50,10 @@ export class BitmapTextPipe implements RenderPipe<TextView>
 
     validateRenderable(renderable: Renderable<TextView>): boolean
     {
-        const { graphicsRenderable, context } = this.getGpuBitmapText(renderable);
+        const graphicsRenderable = this.getGpuBitmapText(renderable);
 
         // todo only if text change..
-        this.updateContext(renderable, context);
+        this.updateContext(renderable, graphicsRenderable.view.context);
 
         const rebuild = this.renderer.renderPipes.graphics.validateRenderable(graphicsRenderable);
 
@@ -57,26 +65,32 @@ export class BitmapTextPipe implements RenderPipe<TextView>
 
     addRenderable(renderable: Renderable<TextView>, instructionSet: InstructionSet)
     {
-        const { graphicsRenderable, context } = this.getGpuBitmapText(renderable);
+        const graphicsRenderable = this.getGpuBitmapText(renderable);
 
         // TODO break the batch if we are not batching..
         this.renderer.renderPipes.batch.break(instructionSet);
 
         this.renderer.renderPipes.graphics.addRenderable(graphicsRenderable, instructionSet);
 
-        if (context.customShader)
+        if (graphicsRenderable.view.context.customShader)
         {
             this.updateDistanceField(renderable);
         }
     }
 
+    destroyRenderable(renderable: Renderable<TextView>)
+    {
+        BigPool.return(this.gpuBitmapText[renderable.uid]);
+        this.gpuBitmapText[renderable.uid] = null;
+    }
+
     updateRenderable(renderable: Renderable<TextView>)
     {
-        const { graphicsRenderable, context } = this.getGpuBitmapText(renderable);
+        const graphicsRenderable = this.getGpuBitmapText(renderable);
 
         this.renderer.renderPipes.graphics.updateRenderable(graphicsRenderable);
 
-        if (context.customShader)
+        if (graphicsRenderable.view.context.customShader)
         {
             this.updateDistanceField(renderable);
         }
@@ -160,24 +174,24 @@ export class BitmapTextPipe implements RenderPipe<TextView>
     {
         renderable.view._style.update();
 
-        const context = new GraphicsContext();
+        // TODO we could keep a bunch of contexts around and reuse one that hav the same style!
+        const proxyRenderable = BigPool.get(GraphicsProxyRenderable, renderable);
 
-        this.gpuBitmapText[renderable.uid] = {
-            graphicsRenderable: new ProxyRenderable({
-                view: new GraphicsView(context),
-                original: renderable,
-            }),
-            context
-        };
+        this.gpuBitmapText[renderable.uid] = proxyRenderable;
 
-        this.updateContext(renderable, context);
+        this.updateContext(renderable, proxyRenderable.view.context);
+
+        renderable.on('destroyed', () =>
+        {
+            this.destroyRenderable(renderable);
+        });
 
         return this.gpuBitmapText[renderable.uid];
     }
 
     updateDistanceField(renderable: Renderable<TextView>)
     {
-        const { context } = this.getGpuBitmapText(renderable);
+        const context = this.getGpuBitmapText(renderable).view.context;
 
         const view = renderable.view;
 
