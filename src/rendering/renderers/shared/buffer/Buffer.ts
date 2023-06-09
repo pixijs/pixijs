@@ -11,7 +11,7 @@ let UID = 0;
 
 export interface BufferOptions
 {
-    data?: TypedArray;
+    data?: TypedArray | number[];
     size?: number;
     usage: number;
     label?: string;
@@ -28,25 +28,31 @@ export interface BufferDescriptor
 
 export class Buffer implements BindResource
 {
-    resourceType = 'buffer';
+    readonly resourceType = 'buffer';
     resourceId = generateUID();
 
-    public uid = UID++;
+    readonly uid = UID++;
 
     onUpdate = new Runner('onBufferUpdate');
-
-    private _data: TypedArray;
+    onDestroy = new Runner('onBufferDestroy');
 
     descriptor: BufferDescriptor;
 
     _updateID = 1;
     _updateSize: number;
 
+    private _data: TypedArray;
+
     constructor({ data, size, usage, label }: BufferOptions)
     {
-        this._data = data;
+        if (data instanceof Array)
+        {
+            data = new Float32Array(data as number[]);
+        }
 
-        size = size ?? data.byteLength;
+        this._data = data as TypedArray;
+
+        size = size ?? (data as TypedArray).byteLength;
 
         const mappedAtCreation = !!data;
 
@@ -79,6 +85,20 @@ export class Buffer implements BindResource
         this._updateID++;
 
         this.onUpdate.emit(this);
+    }
+
+    destroy()
+    {
+        this.onDestroy.emit(this);
+
+        this.onUpdate.destroy();
+        this.onDestroy.destroy();
+
+        this.onUpdate = null;
+        this.onDestroy = null;
+
+        this._data = null;
+        this.descriptor = null;
     }
 }
 
