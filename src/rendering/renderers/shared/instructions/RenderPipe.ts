@@ -23,7 +23,7 @@ export interface RenderPipe<VIEW extends View = View>
 {
     addRenderable: (renderable: Renderable<VIEW>, instructionSet: InstructionSet) => void;
     updateRenderable: (renderable: Renderable<VIEW>, instructionSet?: InstructionSet) => void;
-    destroyRenderable?: (renderable: Renderable<VIEW>) => void;
+    destroyRenderable: (renderable: Renderable<VIEW>) => void;
 }
 
 export interface BatchPipe
