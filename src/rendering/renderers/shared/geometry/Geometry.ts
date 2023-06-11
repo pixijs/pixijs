@@ -42,6 +42,7 @@ export class Geometry
     _bufferLayout: Record<number, Buffer>;
 
     onUpdate = new Runner('onGeometryUpdate');
+    onDestroy = new Runner('onGeometryDestroy');
     tick = 0;
 
     instanced: boolean;
@@ -68,9 +69,12 @@ export class Geometry
             }
         }
 
-        this.indexBuffer = ensureIsBuffer(indexBuffer, true);
+        if (indexBuffer)
+        {
+            this.indexBuffer = ensureIsBuffer(indexBuffer, true);
 
-        this.buffers.push(this.indexBuffer);
+            this.buffers.push(this.indexBuffer);
+        }
 
         this.topology = topology || 'triangle-list';
     }
@@ -142,6 +146,25 @@ export class Geometry
         }
 
         return 0;
+    }
+
+    destroy(destroyBuffers = false): void
+    {
+        this.onDestroy.emit(this);
+
+        this.onDestroy.destroy();
+        this.onUpdate.destroy();
+
+        this.onDestroy = null;
+        this.onUpdate = null;
+
+        if (destroyBuffers)
+        {
+            this.buffers.forEach((buffer) => buffer.destroy());
+        }
+
+        this.attributes = null;
+        this.buffers = null;
     }
 }
 

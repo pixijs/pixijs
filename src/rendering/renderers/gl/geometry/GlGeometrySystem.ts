@@ -234,7 +234,14 @@ export class GlGeometrySystem implements ISystem
 
         const signature = this.getSignature(geometry, program);
 
-        const vaoObjectHash = this._geometryVaoHash[geometry.uid] || (this._geometryVaoHash[geometry.uid] = {});
+        if (!this._geometryVaoHash[geometry.uid])
+        {
+            this._geometryVaoHash[geometry.uid] = {};
+
+            geometry.onDestroy.add(this);
+        }
+
+        const vaoObjectHash = this._geometryVaoHash[geometry.uid];
 
         let vao = vaoObjectHash[signature];
 
@@ -308,11 +315,6 @@ export class GlGeometrySystem implements ISystem
             const buffer = buffers[i];
 
             bufferSystem.bind(buffer);
-
-            // if (incRefCount)
-            // {
-            //     buffer._glBuffers[CONTEXT_UID].refCount++;
-            // }
         }
 
         // TODO - maybe make this a data object?
@@ -325,92 +327,68 @@ export class GlGeometrySystem implements ISystem
         vaoObjectHash[signature] = vao;
 
         gl.bindVertexArray(null);
-        // bufferSystem.unbind(BUFFER_TYPE.ARRAY_BUFFER);
 
         return vao;
     }
 
-    // /**
-    //  * Disposes geometry.
-    //  * @param geometry - Geometry with buffers. Only VAO will be disposed
-    //  * @param [contextLost=false] - If context was lost, we suppress deleteVertexArray
-    //  */
-    // disposeGeometry(geometry: Geometry, contextLost?: boolean): void
-    // {
-    //     if (!this.managedGeometries[geometry.id])
-    //     {
-    //         return;
-    //     }
+    /**
+     * Disposes geometry.
+     * @param geometry - Geometry with buffers. Only VAO will be disposed
+     * @param [contextLost=false] - If context was lost, we suppress deleteVertexArray
+     */
+    onGeometryDestroy(geometry: Geometry, contextLost?: boolean): void
+    {
+        const vaoObjectHash = this._geometryVaoHash[geometry.uid];
 
-    //     delete this.managedGeometries[geometry.id];
+        const gl = this.gl;
 
-    //     const vaos = geometry.glVertexArrayObjects[this.CONTEXT_UID];
-    //     const gl = this.gl;
-    //     const buffers = geometry.buffers;
-    //     const bufferSystem = this.renderer?.buffer;
+        if (vaoObjectHash)
+        {
+            if (contextLost)
+            {
+                for (const i in vaoObjectHash)
+                {
+                    if (this._activeVao !== vaoObjectHash[i])
+                    {
+                        this.unbind();
+                    }
 
-    //     geometry.disposeRunner.remove(this);
+                    gl.deleteVertexArray(vaoObjectHash[i]);
+                }
+            }
 
-    //     if (!vaos)
-    //     {
-    //         return;
-    //     }
+            this._geometryVaoHash[geometry.uid] = null;
+        }
+    }
 
-    //     // bufferSystem may have already been destroyed..
-    //     // if this is the case, there is no need to destroy the geometry buffers...
-    //     // they already have been!
-    //     if (bufferSystem)
-    //     {
-    //         for (let i = 0; i < buffers.length; i++)
-    //         {
-    //             const buf = buffers[i]._glBuffers[this.CONTEXT_UID];
+    /**
+     * Dispose all WebGL resources of all managed geometries.
+     * @param [contextLost=false] - If context was lost, we suppress `gl.delete` calls
+     */
+    destroyAll(contextLost = false): void
+    {
+        const gl = this.gl;
 
-    //             // my be null as context may have changed right before the dispose is called
-    //             if (buf)
-    //             {
-    //                 buf.refCount--;
-    //                 if (buf.refCount === 0 && !contextLost)
-    //                 {
-    //                     bufferSystem.dispose(buffers[i], contextLost);
-    //                 }
-    //             }
-    //         }
-    //     }
+        for (const i in this._geometryVaoHash)
+        {
+            if (contextLost)
+            {
+                for (const j in this._geometryVaoHash[i])
+                {
+                    const vaoObjectHash = this._geometryVaoHash[i];
 
-    //     if (!contextLost)
-    //     {
-    //         for (const vaoId in vaos)
-    //         {
-    //             // delete only signatures, everything else are copies
-    //             if (vaoId[0] === 'g')
-    //             {
-    //                 const vao = vaos[vaoId];
+                    if (this._activeVao !== vaoObjectHash)
+                    {
+                        this.unbind();
+                    }
 
-    //                 if (this._activeVao === vao)
-    //                 {
-    //                     this.unbind();
-    //                 }
-    //                 gl.deleteVertexArray(vao);
-    //             }
-    //         }
-    //     }
+                    gl.deleteVertexArray(vaoObjectHash[j]);
+                }
+            }
 
-    //     delete geometry.glVertexArrayObjects[this.CONTEXT_UID];
-    // }
-
-    // /**
-    //  * Dispose all WebGL resources of all managed geometries.
-    //  * @param [contextLost=false] - If context was lost, we suppress `gl.delete` calls
-    //  */
-    // disposeAll(contextLost?: boolean): void
-    // {
-    //     const all: Array<any> = Object.keys(this.managedGeometries);
-
-    //     for (let i = 0; i < all.length; i++)
-    //     {
-    //         this.disposeGeometry(this.managedGeometries[all[i]], contextLost);
-    //     }
-    // }
+            this._geometryVaoHash[i] = null;
+        }
+    }
 
     /**
      * Activate vertex array object.
