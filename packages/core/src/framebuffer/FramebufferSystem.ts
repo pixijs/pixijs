@@ -1,10 +1,12 @@
-import { BUFFER_BITS, ENV, MSAA_QUALITY } from '@pixi/constants';
+import { BUFFER_BITS, ENV } from '@pixi/constants';
 import { extensions, ExtensionType } from '@pixi/extensions';
 import { Rectangle } from '@pixi/math';
 import { settings } from '@pixi/settings';
 import { Framebuffer } from './Framebuffer';
 import { GLFramebuffer } from './GLFramebuffer';
+import { detectSupportedSamples } from './utils/detectSupportedSamples';
 
+import type { MSAA_QUALITY } from '@pixi/constants';
 import type { ExtensionMetadata } from '@pixi/extensions';
 import type { IRenderingContext } from '../IRenderer';
 import type { Renderer } from '../Renderer';
@@ -62,6 +64,7 @@ export class FramebufferSystem implements ISystem
         this.viewport = new Rectangle();
         this.hasMRT = true;
         this.writeDepthTexture = true;
+        this.msaaSamples = detectSupportedSamples(gl);
 
         // webgl2
         if (this.renderer.context.webGLVersion === 1)
@@ -93,36 +96,6 @@ export class FramebufferSystem implements ISystem
             if (!nativeDepthTextureExtension)
             {
                 this.writeDepthTexture = false;
-            }
-        }
-        else
-        {
-            // WebGL2
-            this.msaaSamples = {};
-
-            // Don't use more than `MAX_SAMPLES`: some devices do not allow to create renderbuffers
-            // with more than `MAX_SAMPLES` despite the fact that it is a valid number of samples
-            // according to `getInternalformatParameter`.
-            const maxSamples = Math.min(gl.getParameter(gl.MAX_SAMPLES) as number, MSAA_QUALITY.HIGH);
-
-            for (const internalFormat of [gl.R8, gl.RG8, gl.RGB8, gl.RGB565,
-                gl.RGBA4, gl.RGB5_A1, gl.RGBA8, gl.RGB10_A2, gl.SRGB8_ALPHA8])
-            {
-                const samples = gl.getInternalformatParameter(gl.RENDERBUFFER, internalFormat, gl.SAMPLES) as number[];
-
-                this.msaaSamples[internalFormat] = samples.filter((s) => s <= maxSamples && s > 1);
-            }
-
-            // Make sure the samples are compatible with valid samples of stencil/depth buffers.
-            for (const stencilFormat of [gl.DEPTH_COMPONENT24, gl.DEPTH24_STENCIL8, gl.STENCIL_INDEX8])
-            {
-                const stencilSamples = gl.getInternalformatParameter(gl.RENDERBUFFER, stencilFormat, gl.SAMPLES) as number[];
-
-                for (const internalFormat in this.msaaSamples)
-                {
-                    this.msaaSamples[internalFormat] = this.msaaSamples[internalFormat].filter(
-                        (s) => stencilSamples.includes(s));
-                }
             }
         }
     }
