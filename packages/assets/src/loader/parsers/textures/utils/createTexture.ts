@@ -9,7 +9,7 @@ export function createTexture(base: BaseTexture, loader: Loader, url: string)
     const texture = new Texture(base);
 
     // remove the promise from the loader and the url from the cache when the texture is destroyed
-    texture.baseTexture.once('destroy', () =>
+    texture.baseTexture.once('destroyed', () =>
     {
         delete loader.promiseCache[url];
         Cache.remove(url);
