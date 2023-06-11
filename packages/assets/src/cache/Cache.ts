@@ -145,8 +145,6 @@ class CacheClass
      */
     public remove(key: string): void
     {
-        this._cacheMap.get(key);
-
         if (!this._cacheMap.has(key))
         {
             // #if _DEBUG

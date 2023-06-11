@@ -12,7 +12,11 @@ export function createTexture(base: BaseTexture, loader: Loader, url: string)
     texture.baseTexture.once('destroyed', () =>
     {
         delete loader.promiseCache[url];
-        Cache.remove(url);
+
+        if (Cache.has(url))
+        {
+            Cache.remove(url);
+        }
     });
 
     return texture;
