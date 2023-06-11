@@ -1,52 +1,10 @@
-import { GlProgram } from '../../src/rendering/renderers/gl/shader/GlProgram';
 import { Buffer } from '../../src/rendering/renderers/shared/buffer/Buffer';
 import { Geometry } from '../../src/rendering/renderers/shared/geometry/Geometry';
+import { getGeometry } from '../utils/getGeometry';
+import { getGlProgram } from '../utils/getGlProgram';
 import { getRenderer } from '../utils/getRenderer';
 
 import type { WebGLRenderer } from '../../src/rendering/renderers/gl/WebGLRenderer';
-
-function getGlProgram()
-{
-    return new GlProgram({
-        vertex: `
-            
-            in vec2 aVertexPosition;
-            
-            void main(void)
-            {
-                gl_Position = vec4(aVertexPosition, 0.0, 1.0);
-            }
-        `,
-
-        fragment: `
-
-            out vec4 fragColor;
-
-            void main(void)
-            {
-                fragColor = vec4(1.0);
-            }
-        `,
-    });
-}
-
-function getGeometry()
-{
-    return new Geometry({
-        attributes: {
-            aVertexPosition: {
-                buffer: new Buffer({
-                    data: new Float32Array([1, 2, 3]),
-                    usage: 1,
-                }),
-                shaderLocation: 0,
-                format: 'float32x2',
-                stride: 2 * 4,
-                offset: 0,
-            }
-        }
-    });
-}
 
 describe('Geometry', () =>
 {

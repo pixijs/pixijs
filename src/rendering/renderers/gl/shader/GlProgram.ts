@@ -88,10 +88,22 @@ export class GlProgram
         this.key = `${this.vertex}:${this.fragment}`;
     }
 
+    destroy(): void
+    {
+        this.fragment = null;
+        this.vertex = null;
+
+        this.attributeData = null;
+        this.uniformData = null;
+        this.uniformBlockData = null;
+
+        this.transformFeedbackVaryings = null;
+    }
+
     static programCached: Record<string, GlProgram> = {};
     static from(options: GlProgramOptions): GlProgram
     {
-        const key = `${options.vertex}:${options.fragment}:${options.name}`;
+        const key = `${options.vertex}:${options.fragment}`;
 
         if (!GlProgram.programCached[key])
         {
