@@ -74,4 +74,10 @@ export class FilterPipe implements InstructionPipe<FilterInstruction>
             this.renderer.filter.pop();
         }
     }
+
+    destroy(): void
+    {
+        this.renderer = null;
+        this.filterGlobalUniforms = null;
+    }
 }

@@ -1,12 +1,9 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 
 import type { ExtensionMetadata } from '../../../extensions/Extensions';
-import type { MaskFilter } from '../../filters/mask/MaskFilter';
 import type { Instruction } from '../../renderers/shared/instructions/Instruction';
 import type { InstructionSet } from '../../renderers/shared/instructions/InstructionSet';
 import type { InstructionPipe } from '../../renderers/shared/instructions/RenderPipe';
-import type { RenderTarget } from '../../renderers/shared/renderTarget/RenderTarget';
-import type { Texture } from '../../renderers/shared/texture/Texture';
 import type { Renderer } from '../../renderers/types';
 import type { Container } from '../../scene/Container';
 import type { ColorMask } from './ColorMask';
@@ -15,14 +12,6 @@ export interface ColorMaskInstruction extends Instruction
 {
     type: 'colorMask',
     colorMask: number,
-}
-
-export interface ColorMaskData
-{
-    previousRenderTarget: RenderTarget,
-    filter: [MaskFilter],
-    container: Container,
-    filterTexture: Texture,
 }
 
 export class ColorMaskPipe implements InstructionPipe<ColorMaskInstruction>
@@ -108,5 +97,10 @@ export class ColorMaskPipe implements InstructionPipe<ColorMaskInstruction>
         const renderer = this.renderer;
 
         renderer.colorMask.setMask(instruction.colorMask);
+    }
+
+    destroy()
+    {
+        this.colorStack = null;
     }
 }

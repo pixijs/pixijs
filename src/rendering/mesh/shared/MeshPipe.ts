@@ -168,7 +168,6 @@ export class MeshPipe implements RenderPipe<MeshView>, InstructionPipe<MeshInstr
 
         const gpuMesh = this.gpuBatchableMeshHash[renderable.uid];
 
-        // TODO consider adding reset to the BatchableObject interface? Could force pooling of them?
         BigPool.return(gpuMesh as PoolItem);
 
         this.gpuBatchableMeshHash[renderable.uid] = null;
@@ -221,5 +220,30 @@ export class MeshPipe implements RenderPipe<MeshView>, InstructionPipe<MeshInstr
         gpuMesh.renderable = renderable;
 
         return gpuMesh;
+    }
+
+    destroy()
+    {
+        for (const i in this.gpuBatchableMeshHash)
+        {
+            if (this.gpuBatchableMeshHash[i])
+            {
+                BigPool.return(this.gpuBatchableMeshHash[i] as PoolItem);
+            }
+        }
+
+        this.gpuBatchableMeshHash = null;
+        this.renderableHash = null;
+
+        this.localUniforms = null;
+        this.localUniformsBindGroup = null;
+
+        this.meshShader.destroy();
+        this.meshShader = null;
+
+        this.adaptor = null;
+
+        this.renderer = null;
+        this.state = null;
     }
 }

@@ -229,4 +229,11 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
             BigPool.return(maskData.filterEffect);
         }
     }
+
+    destroy(): void
+    {
+        this.renderer = null;
+
+        this.activeMaskStage = null;
+    }
 }

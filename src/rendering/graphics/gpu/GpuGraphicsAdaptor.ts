@@ -101,4 +101,10 @@ export class GpuGraphicsAdaptor implements GraphicsAdaptor
             encoder.renderPassEncoder.drawIndexed(batch.size, 1, batch.start);
         }
     }
+
+    destroy(): void
+    {
+        this.shader.destroy(true);
+        this.shader = null;
+    }
 }

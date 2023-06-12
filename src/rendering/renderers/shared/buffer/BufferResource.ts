@@ -12,7 +12,7 @@ export class BufferResource implements BindResource
     // this really means ths the buffer resource cannot be updated!
     resourceId = this.uid;
 
-    readonly buffer: Buffer;
+    buffer: Buffer;
     readonly offset: number;
     readonly size: number;
     readonly bufferResource = true;
@@ -22,5 +22,15 @@ export class BufferResource implements BindResource
         this.buffer = buffer;
         this.offset = offset;
         this.size = size;
+    }
+
+    destroy(destroyBuffer = false): void
+    {
+        if (destroyBuffer)
+        {
+            this.buffer.destroy();
+        }
+
+        this.buffer = null;
     }
 }

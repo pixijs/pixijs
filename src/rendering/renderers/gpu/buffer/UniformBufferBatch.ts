@@ -55,4 +55,12 @@ export class UniformBufferBatch
     {
         // TODO
     }
+
+    destroy()
+    {
+        this.buffer.destroy();
+        this.buffer = null;
+
+        this.data = null;
+    }
 }

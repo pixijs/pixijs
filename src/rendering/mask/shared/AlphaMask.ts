@@ -69,6 +69,11 @@ export class AlphaMask implements Effect, PoolItem
         return false;
     }
 
+    destroy(): void
+    {
+        this.reset();
+    }
+
     static test(mask: any): boolean
     {
         return mask instanceof Sprite;

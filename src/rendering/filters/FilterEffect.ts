@@ -12,6 +12,16 @@ export class FilterEffect implements Effect
         this.filters = options?.filters;
     }
 
+    destroy(): void
+    {
+        for (let i = 0; i < this.filters.length; i++)
+        {
+            this.filters[i].destroy();
+        }
+
+        this.filters = null;
+    }
+
     // addBounds(_bounds: Bounds): void
     // {
     //     // TODO do we take into account padding?

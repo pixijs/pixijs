@@ -334,6 +334,15 @@ export class TilingSpritePipe implements RenderPipe<TilingSpriteView>
 
         applyMatrix(uvs, 2, 0, textureMatrix);
     }
+
+    destroy()
+    {
+        this.renderableHash = null;
+        this.gpuTilingSprite = null;
+        this.gpuBatchedTilingSprite = null;
+
+        this.renderer = null;
+    }
 }
 
 // TODO - move to a shared location

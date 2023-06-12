@@ -82,4 +82,10 @@ export class TextureBatcher
 
         return true;
     }
+
+    destroy()
+    {
+        this.output = null;
+        this.textureTicks = null;
+    }
 }

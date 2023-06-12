@@ -96,4 +96,10 @@ export class GlGraphicsAdaptor implements GraphicsAdaptor
             }
         }
     }
+
+    destroy(): void
+    {
+        this.shader.destroy(true);
+        this.shader = null;
+    }
 }
