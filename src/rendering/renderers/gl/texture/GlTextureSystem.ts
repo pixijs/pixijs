@@ -182,8 +182,8 @@ export class GlTextureSystem implements ISystem
 
         this.glTextures[source.uid] = glTexture;
 
-        source.onSourceUpdate.add(this);
-        source.onSourceDestroy.add(this);
+        source.on('onUpdate', this.onSourceUpdate, this);
+        source.on('onDestroy', this.onSourceDestroy, this);
 
         this.onSourceUpdate(source);
 
@@ -220,8 +220,8 @@ export class GlTextureSystem implements ISystem
     {
         const gl = this.gl;
 
-        source.onSourceUpdate.remove(this);
-        source.onSourceDestroy.remove(this);
+        source.off('onDestroy', this.onSourceDestroy, this);
+        source.off('onUpdate', this.onSourceUpdate, this);
 
         const glTexture = this.glTextures[source.uid];
 

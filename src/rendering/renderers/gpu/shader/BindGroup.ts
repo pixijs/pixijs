@@ -56,10 +56,10 @@ export class BindGroup
 
         if (currentResource)
         {
-            resource.onResourceChange?.remove(this);
+            resource.off?.('onResourceChange', this.onResourceChange, this);
         }
 
-        resource.onResourceChange?.add(this);
+        resource.on?.('onResourceChange', this.onResourceChange, this);
 
         this.resources[index] = resource;
         this.dirty = true;
@@ -70,16 +70,6 @@ export class BindGroup
         return this.resources[index];
     }
 
-    onSourceResize()
-    {
-        this.dirty = true;
-    }
-
-    onStyleUpdate()
-    {
-        this.dirty = true;
-    }
-
     destroy()
     {
         const resources = this.resources;
@@ -88,9 +78,14 @@ export class BindGroup
         {
             const resource = resources[i];
 
-            resource.onResourceChange?.remove(this);
+            resource.off?.('onResourceChange', this.onResourceChange, this);
         }
 
         this.resources = null;
+    }
+
+    onResourceChange()
+    {
+        this.dirty = true;
     }
 }

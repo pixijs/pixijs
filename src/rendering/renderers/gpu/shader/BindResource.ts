@@ -1,4 +1,4 @@
-import type { Runner } from '../../shared/runner/Runner';
+import type { BindGroup } from './BindGroup';
 
 /** an interface that allows a resource to be bound to the gpu in a bind group */
 export interface BindResource
@@ -10,9 +10,12 @@ export interface BindResource
     resourceId: number;
 
     /**
-     * dispatch whenever the underlying resource needs to change
+     * event dispatch whenever the underlying resource needs to change
      * this could be a texture or buffer that has been resized.
      * This is important as it allows the renderer to know that it needs to rebind the resource
      */
-    onResourceChange?: Runner;
+    // onResourceChange?: Runner;
+    on?(event: 'onResourceChange', listenerFunction: (resource: BindResource) => void, listener: BindGroup): void
+    off?(event: 'onResourceChange', listenerFunction: (resource: BindResource) => void, listener: BindGroup): void
+
 }

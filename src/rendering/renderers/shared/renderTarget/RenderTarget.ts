@@ -88,7 +88,9 @@ export class RenderTarget
         }
 
         // the first color texture drives the size of all others..
-        this.colorTexture.source.onSourceResize.add(this);
+        this.colorTexture.source.on('onResize', this.onSourceResize, this);
+
+        // TODO should listen for texture destroyed?
 
         if (descriptor.depthTexture)
         {
@@ -173,5 +175,10 @@ export class RenderTarget
         {
             this.depthTexture.source.resize(width, height, resolution);
         }
+    }
+
+    destroy()
+    {
+        throw new Error('Method not implemented.');
     }
 }

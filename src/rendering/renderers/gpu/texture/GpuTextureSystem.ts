@@ -72,9 +72,9 @@ export class GpuTextureSystem implements ISystem
 
         this.managedTextureSources[source.uid] = source;
 
-        source.onSourceUpdate.add(this);
-        source.onSourceDestroy.add(this);
-        source.onSourceResize.add(this);
+        source.on('onUpdate', this.onSourceUpdate, this);
+        source.on('onDestroy', this.onSourceDestroy, this);
+        source.on('onResize', this.onSourceResize, this);
 
         this.onSourceUpdate(source);
 
@@ -106,9 +106,9 @@ export class GpuTextureSystem implements ISystem
 
     onSourceDestroy(source: TextureSource): void
     {
-        source.onSourceUpdate.remove(this);
-        source.onSourceDestroy.remove(this);
-        source.onSourceResize.remove(this);
+        source.off('onUpdate', this.onSourceUpdate, this);
+        source.off('onDestroy', this.onSourceDestroy, this);
+        source.off('onResize', this.onSourceResize, this);
 
         const gpuTexture = this.gpuSources[source.uid];
 

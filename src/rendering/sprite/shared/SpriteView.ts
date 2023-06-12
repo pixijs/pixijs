@@ -46,11 +46,11 @@ export class SpriteView implements View
     {
         if (this._texture === value) return;
 
-        value._onTextureUpdate.remove(this);
+        value.on('onUpdate', this.onUpdate, this);
 
         this._texture = value;
 
-        value._onTextureUpdate.add(this);
+        value.off('onUpdate', this.onUpdate, this);
 
         this.onUpdate();
     }
