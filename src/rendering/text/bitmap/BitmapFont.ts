@@ -1,5 +1,5 @@
+import EventEmitter from 'eventemitter3';
 import { Rectangle } from '../../../maths/shapes/Rectangle';
-import { Runner } from '../../renderers/shared/runner/Runner';
 import { Texture } from '../../renderers/shared/texture/Texture';
 
 import type { FontMetrics } from '../canvas/CanvasTextMetrics';
@@ -57,10 +57,10 @@ export interface DynamicBitmapFontData
     style: TextStyle
 }
 
-export class BitmapFont implements IBitmapFont
+export class BitmapFont extends EventEmitter<{
+    destroy: BitmapFont
+}> implements IBitmapFont
 {
-    onFontDestroy = new Runner('onSourceDestroy');
-
     baseRenderedFontSize = 100;
     baseMeasurementFontSize = 100;
 
@@ -82,6 +82,8 @@ export class BitmapFont implements IBitmapFont
 
     constructor(options: BitmapFontOptions)
     {
+        super();
+
         this.pages = [];
 
         const { textures, data } = options;
@@ -145,7 +147,9 @@ export class BitmapFont implements IBitmapFont
 
     destroy(): void
     {
-        this.onFontDestroy.emit(this);
+        this.emit('destroy', this);
+
+        this.removeAllListeners();
 
         for (const i in this.chars)
         {

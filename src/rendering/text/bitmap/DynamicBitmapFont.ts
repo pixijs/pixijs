@@ -1,7 +1,7 @@
+import EventEmitter from 'eventemitter3';
 import { Rectangle } from '../../../maths/shapes/Rectangle';
 import { convertColorToNumber } from '../../../utils/color/convertColorToNumber';
 import { hex2rgb } from '../../../utils/color/hex';
-import { Runner } from '../../renderers/shared/runner/Runner';
 import { CanvasPool } from '../../renderers/shared/texture/CanvasPool';
 import { ALPHA_MODES } from '../../renderers/shared/texture/const';
 import { ImageSource } from '../../renderers/shared/texture/sources/ImageSource';
@@ -43,10 +43,10 @@ export interface IBitmapFont
     destroy(): void
 }
 
-export class DynamicBitmapFont implements IBitmapFont
+export class DynamicBitmapFont extends EventEmitter<{
+    destroy: DynamicBitmapFont
+}> implements IBitmapFont
 {
-    onFontDestroy = new Runner('onSourceDestroy');
-
     baseRenderedFontSize = 100;
     baseMeasurementFontSize = 100;
     padding = 4;
@@ -82,6 +82,8 @@ export class DynamicBitmapFont implements IBitmapFont
 
     constructor(options: DynamicBitmapFontOptions)
     {
+        super();
+
         this.pages = [];
 
         const dynamicOptions = options;
@@ -425,7 +427,9 @@ export class DynamicBitmapFont implements IBitmapFont
 
     destroy(): void
     {
-        this.onFontDestroy.emit(this);
+        this.emit('destroy', this);
+
+        this.removeAllListeners();
 
         for (const i in this.chars)
         {
