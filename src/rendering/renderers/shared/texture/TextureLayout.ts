@@ -1,6 +1,6 @@
+import EventEmitter from 'eventemitter3';
 import { groupD8 } from '../../../../maths/groupD8';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
-import { Runner } from '../runner/Runner';
 
 export interface TextureLayoutOptions
 {
@@ -22,7 +22,10 @@ export type UVs = {
     y3: number;
 };
 
-export class TextureLayout
+export class TextureLayout extends EventEmitter<{
+    update: TextureLayout
+    destroy: TextureLayout
+}>
 {
     frame: Rectangle;
     orig: Rectangle;
@@ -33,10 +36,10 @@ export class TextureLayout
     trim?: Rectangle;
     defaultAnchor?: { x: number; y: number };
 
-    onLayoutUpdate = new Runner('onLayoutUpdate');
-
     constructor(options: TextureLayoutOptions = {})
     {
+        super();
+
         this.frame = options.frame || new Rectangle(0, 0, 1, 1);
         this.orig = options.orig || this.frame;
 
@@ -98,17 +101,14 @@ export class TextureLayout
     update()
     {
         this.updateUvs();
-        this.onLayoutUpdate.emit(this);
+        this.emit('update', this);
     }
 
     /** Destroys this TextureLayout */
     destroy()
     {
-        if (this.onLayoutUpdate)
-        {
-            this.onLayoutUpdate.removeAll();
-            this.onLayoutUpdate = null;
-        }
+        this.emit('destroy', this);
+        this.removeAllListeners();
         this.frame = null;
         this.orig = null;
         this.trim = null;

@@ -69,13 +69,13 @@ export class Texture extends EventEmitter<{
         if (this._source)
         {
             this._source.off('update', this.onStyleSourceUpdate, this);
-            this._source.off('resize', this.onSourceResize, this);
+            this._source.off('resize', this.onUpdate, this);
         }
 
         this._source = value;
 
         value.on('update', this.onStyleSourceUpdate, this);
-        value.on('resize', this.onSourceResize, this);
+        value.on('resize', this.onUpdate, this);
 
         this.styleSourceKey = (this.style.resourceId << 24) + this._source.uid;
         this.emit('update', this);
@@ -105,11 +105,11 @@ export class Texture extends EventEmitter<{
 
     set layout(value: TextureLayout)
     {
-        this._layout?.onLayoutUpdate.remove(this);
+        this._layout?.off('update', this.onUpdate, this);
 
         this._layout = value;
 
-        value.onLayoutUpdate.add(this);
+        value.on('update', this.onUpdate, this);
 
         this.emit('update', this);
     }
@@ -233,15 +233,7 @@ export class Texture extends EventEmitter<{
     /**
      * @internal
      */
-    protected onSourceResize()
-    {
-        this.emit('update', this);
-    }
-
-    /**
-     * @internal
-     */
-    protected onLayoutUpdate()
+    protected onUpdate()
     {
         this.emit('update', this);
     }
