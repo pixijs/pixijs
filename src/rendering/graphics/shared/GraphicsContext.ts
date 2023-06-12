@@ -1,8 +1,8 @@
 /* eslint-disable max-len */
+import EventEmitter from 'eventemitter3';
 import { Matrix } from '../../../maths/Matrix';
 import { Point } from '../../../maths/Point';
 import { convertColorToNumber } from '../../../utils/color/convertColorToNumber';
-import { Runner } from '../../renderers/shared/runner/Runner';
 import { Texture } from '../../renderers/shared/texture/Texture';
 import { Bounds } from '../../scene/bounds/Bounds';
 import { FillGradient } from './fill/FillGradient';
@@ -87,7 +87,10 @@ export type GraphicsInstructions = FillInstruction | TextureInstruction;
 
 const tempMatrix = new Matrix();
 
-export class GraphicsContext
+export class GraphicsContext extends EventEmitter<{
+    update: GraphicsContext
+    destroy: GraphicsContext
+}>
 {
     static defaultFillStyle: FillStyle = {
         color: 0,
@@ -120,9 +123,6 @@ export class GraphicsContext
     activePath: GraphicsPath = new GraphicsPath();
 
     customShader?: Shader;
-
-    onGraphicsContextUpdate = new Runner('onGraphicsContextUpdate');
-    onGraphicsContextDestroy = new Runner('onGraphicsContextDestroy');
 
     private _transform: Matrix = new Matrix();
 
@@ -660,7 +660,7 @@ export class GraphicsContext
     {
         if (this.dirty) return;
 
-        this.onGraphicsContextUpdate.emit(this, 0x10);
+        this.emit('update', this, 0x10);
         this.dirty = true;
         this.boundsDirty = true;
     }
@@ -780,8 +780,8 @@ export class GraphicsContext
         this._stateStack.length = 0;
         this._transform = null;
 
-        this.onGraphicsContextUpdate.removeAll();
-        this.onGraphicsContextUpdate = null;
+        this.emit('destroy', this);
+        this.removeAllListeners();
 
         const destroyTexture = typeof options === 'boolean' ? options : options?.texture;
 
@@ -810,10 +810,6 @@ export class GraphicsContext
         this.transformMatrix = null;
         this.customShader = null;
         this._transform = null;
-
-        this.onGraphicsContextDestroy.emit(this);
-        this.onGraphicsContextDestroy.removeAll();
-        this.onGraphicsContextDestroy = null;
     }
 }
 
