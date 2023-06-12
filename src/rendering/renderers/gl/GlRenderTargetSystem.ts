@@ -209,7 +209,7 @@ export class GlRenderTargetSystem implements ISystem
                 renderTarget.isRoot = true;
             }
 
-            renderSurface.source.on('onDestroy', () =>
+            renderSurface.source.on('destroy', () =>
             {
                 renderTarget.destroy();
             });

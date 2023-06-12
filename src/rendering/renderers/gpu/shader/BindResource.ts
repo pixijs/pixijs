@@ -15,7 +15,7 @@ export interface BindResource
      * This is important as it allows the renderer to know that it needs to rebind the resource
      */
     // onResourceChange?: Runner;
-    on?(event: 'onResourceChange', listenerFunction: (resource: BindResource) => void, listener: BindGroup): void
-    off?(event: 'onResourceChange', listenerFunction: (resource: BindResource) => void, listener: BindGroup): void
+    on?(event: 'change', listenerFunction: (resource: BindResource) => void, listener: BindGroup): void
+    off?(event: 'change', listenerFunction: (resource: BindResource) => void, listener: BindGroup): void
 
 }

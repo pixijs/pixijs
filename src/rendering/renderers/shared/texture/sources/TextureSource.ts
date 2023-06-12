@@ -31,10 +31,10 @@ export interface TextureSourceOptions<T extends Record<string, any> = any>
 }
 
 export class TextureSource<T extends Record<string, any> = any> extends EventEmitter<{
-    onResourceChange: BindResource;
-    onUpdate: TextureSource;
-    onDestroy: TextureSource;
-    onResize: TextureSource;
+    change: BindResource;
+    update: TextureSource;
+    destroy: TextureSource;
+    resize: TextureSource;
 }> implements BindableTexture, BindResource
 {
     uid = UID++;
@@ -116,7 +116,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         const style = options.style ?? {};
 
         this.style = style instanceof TextureStyle ? style : new TextureStyle(style);
-        this.style.on('onResourceChange', this.onStyleUpdate, this);
+        this.style.on('change', this.onStyleUpdate, this);
 
         this.styleSourceKey = (this.style.resourceId << 24) + this.uid;
     }
@@ -128,7 +128,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
 
     update()
     {
-        this.emit('onUpdate', this);
+        this.emit('update', this);
     }
 
     onStyleUpdate()
@@ -139,7 +139,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     /** Destroys this texture source */
     destroy()
     {
-        this.emit('onDestroy', this);
+        this.emit('destroy', this);
 
         if (this.style)
         {
@@ -190,9 +190,9 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this.pixelWidth = newPixelWidth;
         this.pixelHeight = newPixelHeight;
 
-        this.emit('onResize', this);
+        this.emit('resize', this);
 
         this.resourceId++;
-        this.emit('onResourceChange', this);
+        this.emit('change', this);
     }
 }

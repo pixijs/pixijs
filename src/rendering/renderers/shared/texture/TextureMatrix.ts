@@ -101,9 +101,9 @@ export class TextureMatrix
     {
         if (this.texture === value) return;
 
-        this._texture?.removeListener('onUpdate', this.onTextureUpdate, this);
+        this._texture?.removeListener('update', this.onTextureUpdate, this);
         this._texture = value;
-        this._texture.addListener('onUpdate', this.onTextureUpdate, this);
+        this._texture.addListener('update', this.onTextureUpdate, this);
 
         this.update();
     }

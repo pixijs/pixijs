@@ -54,8 +54,8 @@ export interface TextureStyleOptions extends Partial<TextureStyle>
 }
 
 export class TextureStyle extends EventEmitter<{
-    onResourceChange: TextureStyle,
-    onDestroy: TextureStyle,
+    change: TextureStyle,
+    destroy: TextureStyle,
 }> implements BindResource
 {
     resourceType = 'textureSampler';
@@ -174,7 +174,7 @@ export class TextureStyle extends EventEmitter<{
     update()
     {
         // manage the resource..
-        this.emit('onResourceChange', this);
+        this.emit('change', this);
         this._resourceId = null;
     }
 
@@ -191,7 +191,7 @@ export class TextureStyle extends EventEmitter<{
     /** Destroys the style */
     destroy()
     {
-        this.emit('onDestroy', this);
+        this.emit('destroy', this);
 
         this.removeAllListeners();
     }

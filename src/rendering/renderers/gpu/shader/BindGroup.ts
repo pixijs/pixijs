@@ -56,10 +56,10 @@ export class BindGroup
 
         if (currentResource)
         {
-            resource.off?.('onResourceChange', this.onResourceChange, this);
+            resource.off?.('change', this.onResourceChange, this);
         }
 
-        resource.on?.('onResourceChange', this.onResourceChange, this);
+        resource.on?.('change', this.onResourceChange, this);
 
         this.resources[index] = resource;
         this.dirty = true;
@@ -78,7 +78,7 @@ export class BindGroup
         {
             const resource = resources[i];
 
-            resource.off?.('onResourceChange', this.onResourceChange, this);
+            resource.off?.('change', this.onResourceChange, this);
         }
 
         this.resources = null;

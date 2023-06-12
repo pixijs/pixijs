@@ -88,7 +88,7 @@ export class RenderTarget
         }
 
         // the first color texture drives the size of all others..
-        this.colorTexture.source.on('onResize', this.onSourceResize, this);
+        this.colorTexture.source.on('resize', this.onSourceResize, this);
 
         // TODO should listen for texture destroyed?
 

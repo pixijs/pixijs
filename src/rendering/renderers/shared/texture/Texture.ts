@@ -27,7 +27,7 @@ export interface BindableTexture
 }
 
 export class Texture extends EventEmitter<{
-    onUpdate: Texture
+    update: Texture
 }> implements BindableTexture
 {
     static from(id: string): Texture
@@ -68,17 +68,17 @@ export class Texture extends EventEmitter<{
     {
         if (this._source)
         {
-            this._source.off('onUpdate', this.onStyleSourceUpdate, this);
-            this._source.off('onResize', this.onSourceResize, this);
+            this._source.off('update', this.onStyleSourceUpdate, this);
+            this._source.off('resize', this.onSourceResize, this);
         }
 
         this._source = value;
 
-        value.on('onUpdate', this.onStyleSourceUpdate, this);
-        value.on('onResize', this.onSourceResize, this);
+        value.on('update', this.onStyleSourceUpdate, this);
+        value.on('resize', this.onSourceResize, this);
 
         this.styleSourceKey = (this.style.resourceId << 24) + this._source.uid;
-        this.emit('onUpdate', this);
+        this.emit('update', this);
     }
 
     get source(): TextureSource
@@ -93,9 +93,9 @@ export class Texture extends EventEmitter<{
 
     set style(value: TextureStyle)
     {
-        this._style?.off('onResourceChange', this.onStyleSourceUpdate, this);
+        this._style?.off('change', this.onStyleSourceUpdate, this);
         this._style = value;
-        this._style?.on('onResourceChange', this.onStyleSourceUpdate, this);
+        this._style?.on('change', this.onStyleSourceUpdate, this);
     }
 
     get layout(): TextureLayout
@@ -111,7 +111,7 @@ export class Texture extends EventEmitter<{
 
         value.onLayoutUpdate.add(this);
 
-        this.emit('onUpdate', this);
+        this.emit('update', this);
     }
 
     get textureMatrix()
@@ -227,7 +227,7 @@ export class Texture extends EventEmitter<{
     protected onStyleSourceUpdate()
     {
         this.styleSourceKey = (this.style.resourceId << 24) + this._source.uid;
-        this.emit('onUpdate', this);
+        this.emit('update', this);
     }
 
     /**
@@ -235,7 +235,7 @@ export class Texture extends EventEmitter<{
      */
     protected onSourceResize()
     {
-        this.emit('onUpdate', this);
+        this.emit('update', this);
     }
 
     /**
@@ -243,7 +243,7 @@ export class Texture extends EventEmitter<{
      */
     protected onLayoutUpdate()
     {
-        this.emit('onUpdate', this);
+        this.emit('update', this);
     }
 
     static EMPTY: Texture;
