@@ -38,11 +38,7 @@ export class GlBufferSystem implements ISystem
 
     private gl: GlRenderingContext;
 
-    private readonly _glBuffers: {[key: number]: GlBuffer} = {};
-
-    // TODO make sure to manage these! also for the GPU stuff
-    /** Cache for all buffers by id, used in case renderer gets destroyed or for profiling */
-    readonly managedBuffers: {[key: number]: Buffer};
+    private _gpuBuffers: {[key: number]: GlBuffer} = {};
 
     /** Cache keeping track of the base bound buffer bases */
     private readonly boundBufferBases: {[key: number]: Buffer};
@@ -55,7 +51,6 @@ export class GlBufferSystem implements ISystem
     constructor(renderer: WebGLRenderer)
     {
         this.renderer = renderer;
-        this.managedBuffers = {};
         this.boundBufferBases = {};
     }
 
@@ -70,14 +65,14 @@ export class GlBufferSystem implements ISystem
     /** Sets up the renderer context and necessary buffers. */
     protected contextChange(): void
     {
-        this.disposeAll(true);
+        this.destroyAll(true);
 
         this.gl = this.renderer.gl;
     }
 
     getGlBuffer(buffer: Buffer): GlBuffer
     {
-        return this._glBuffers[buffer.uid] || this.createGLBuffer(buffer);
+        return this._gpuBuffers[buffer.uid] || this.createGLBuffer(buffer);
     }
 
     /**
@@ -171,49 +166,41 @@ export class GlBufferSystem implements ISystem
     }
 
     /**
-     * Disposes buffer
-     * @param {PIXI.Buffer} _buffer - buffer with data
-     * @param {boolean} [_contextLost=false] - If context was lost, we suppress deleteVertexArray
+     * dispose all WebGL resources of all managed buffers
+     * @param {boolean} [contextLost=false] - If context was lost, we suppress `gl.delete` calls
      */
-    dispose(_buffer: Buffer, _contextLost?: boolean): void
+    destroyAll(contextLost?: boolean): void
     {
-        // if (!this.managedBuffers[buffer.id])
-        // {
-        //     return;
-        // }
+        const gl = this.gl;
 
-        // delete this.managedBuffers[buffer.id];
+        if (!contextLost)
+        {
+            for (const id in this._gpuBuffers)
+            {
+                gl.deleteBuffer(this._gpuBuffers[id].buffer);
+            }
+        }
 
-        // const glBuffer = this.getGlBuffer(buffer);
-        // const gl = this.gl;
-
-        // // buffer.disposeRunner.remove(this);
-
-        // if (!glBuffer)
-        // {
-        //     return;
-        // }
-
-        // if (!contextLost)
-        // {
-        //     gl.deleteBuffer(glBuffer.buffer);
-        // }
-
-        // delete this._glBuffers[buffer.UID];
+        this._gpuBuffers = {};
     }
 
     /**
-     * dispose all WebGL resources of all managed buffers
-     * @param {boolean} [_contextLost=false] - If context was lost, we suppress `gl.delete` calls
+     * Disposes buffer
+     * @param {Buffer} buffer - buffer with data
+     * @param {boolean} [contextLost=false] - If context was lost, we suppress deleteVertexArray
      */
-    disposeAll(_contextLost?: boolean): void
+    protected onBufferDestroy(buffer: Buffer, contextLost?: boolean): void
     {
-        // const all: any[] = Object.keys(this.managedBuffers);
+        const glBuffer = this._gpuBuffers[buffer.uid];
 
-        // for (let i = 0; i < all.length; i++)
-        // {
-        //     this.dispose(this.managedBuffers[all[i]], contextLost);
-        // }
+        const gl = this.gl;
+
+        if (!contextLost)
+        {
+            gl.deleteBuffer(glBuffer.buffer);
+        }
+
+        this._gpuBuffers[buffer.uid] = null;
     }
 
     /**
@@ -238,10 +225,9 @@ export class GlBufferSystem implements ISystem
 
         const glBuffer = new GlBuffer(gl.createBuffer(), type);
 
-        this._glBuffers[buffer.uid] = glBuffer;
+        this._gpuBuffers[buffer.uid] = glBuffer;
 
-        // TODO dispose runners!
-        //  buffer.disposeRunner.add(this);
+        buffer.onDestroy.add(this);
 
         return glBuffer;
     }

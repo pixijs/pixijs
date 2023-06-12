@@ -64,6 +64,17 @@ export class GpuProgram
         this.gpuLayout = gpuLayout ?? generateGpuLayoutGroups(structsAndGroups);
     }
 
+    destroy(): void
+    {
+        this._gpuLayout = null;
+        this.gpuLayout = null;
+        this.layout = null;
+        this.structsAndGroups = null;
+        this.fragment = null;
+        this.vertex = null;
+        this.compute = null;
+    }
+
     static programCached: Record<string, GpuProgram> = {};
     static from(options: GpuProgramOptions): GpuProgram
     {

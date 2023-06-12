@@ -1,4 +1,5 @@
 import { BindGroup } from '../../gpu/shader/BindGroup';
+import { Runner } from '../runner/Runner';
 
 import type { GlProgram } from '../../gl/shader/GlProgram';
 import type { GpuProgram } from '../../gpu/shader/GpuProgram';
@@ -38,6 +39,8 @@ export class Shader
     resources: Record<string, any>;
 
     uniformBindMap: Record<number, Record<number, string>> = {};
+
+    onDestroy = new Runner('onShaderDestroy');
 
     constructor({ gpuProgram, glProgram, resources }: ShaderWithResourcesDescriptor);
     constructor({ gpuProgram, glProgram, groups, groupMap }: ShaderWithGroupsDescriptor);
@@ -177,5 +180,28 @@ export class Shader
         }
 
         return uniformsOut;
+    }
+
+    destroy(destroyProgram = false): void
+    {
+        this.onDestroy.emit(this);
+
+        if (destroyProgram)
+        {
+            this.gpuProgram?.destroy();
+            this.glProgram?.destroy();
+        }
+
+        this.gpuProgram = null;
+        this.glProgram = null;
+
+        this.groups = null;
+
+        this.onDestroy.destroy();
+        this.onDestroy = null;
+
+        this.uniformBindMap = null;
+
+        this.resources = null;
     }
 }

@@ -20,7 +20,7 @@ export class BufferSystem implements ISystem
 
     readonly renderer: WebGPURenderer;
     protected CONTEXT_UID: number;
-    private readonly _gpuBuffers: { [key: number]: GPUBuffer } = {};
+    private _gpuBuffers: { [key: number]: GPUBuffer } = {};
 
     private gpu: GPU;
 
@@ -59,6 +59,17 @@ export class BufferSystem implements ISystem
         return gpuBuffer;
     }
 
+    /** dispose all WebGL resources of all managed buffers */
+    destroyAll(): void
+    {
+        for (const id in this._gpuBuffers)
+        {
+            this._gpuBuffers[id].destroy();
+        }
+
+        this._gpuBuffers = {};
+    }
+
     createGPUBuffer(buffer: Buffer): GPUBuffer
     {
         const gpuBuffer = this.gpu.device.createBuffer(buffer.descriptor);
@@ -76,6 +87,7 @@ export class BufferSystem implements ISystem
         this._gpuBuffers[buffer.uid] = gpuBuffer;
 
         buffer.onUpdate.add(this);
+        buffer.onDestroy.add(this);
 
         return gpuBuffer;
     }
@@ -84,6 +96,19 @@ export class BufferSystem implements ISystem
     {
         // just upload that...
         this.updateBuffer(buffer);
+    }
+
+    /**
+     * Disposes buffer
+     * @param buffer - buffer with data
+     */
+    onBufferDestroy(buffer: Buffer): void
+    {
+        const gpuBuffer = this._gpuBuffers[buffer.uid];
+
+        gpuBuffer.destroy();
+
+        this._gpuBuffers[buffer.uid] = null;
     }
 
     destroy(): void
