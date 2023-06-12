@@ -64,4 +64,10 @@ export class GlBatchAdaptor implements BatcherAdaptor
 
         renderer.geometry.draw('triangle-list', batch.size, batch.start);
     }
+
+    destroy(): void
+    {
+        this.shader.destroy(true);
+        this.shader = null;
+    }
 }

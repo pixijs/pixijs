@@ -33,7 +33,7 @@ export class UniformBatchPipe implements InstructionPipe<UniformInstruction>
 
     private renderer: WebGPURenderer;
 
-    private hash: Record<number, BindGroup> = {};
+    private bindGroupHash: Record<number, BindGroup> = {};
     private batchBuffer: UniformBufferBatch;
 
     // number of buffers..
@@ -71,16 +71,16 @@ export class UniformBatchPipe implements InstructionPipe<UniformInstruction>
 
     private resetBindGroups()
     {
-        this.hash = {};
+        this.bindGroupHash = {};
         this.batchBuffer.clear();
     }
 
     // just works for single bind groups for now
     getUniformBindGroup(group: UniformGroup<any>, duplicate: boolean): BindGroup
     {
-        if (!duplicate && this.hash[group.uid])
+        if (!duplicate && this.bindGroupHash[group.uid])
         {
-            return this.hash[group.uid];
+            return this.bindGroupHash[group.uid];
         }
 
         // update the data..
@@ -91,9 +91,9 @@ export class UniformBatchPipe implements InstructionPipe<UniformInstruction>
 
         const offset = this.batchBuffer.addGroup(data);
 
-        this.hash[group.uid] = this.getBindGroup(offset / minUniformOffsetAlignment);
+        this.bindGroupHash[group.uid] = this.getBindGroup(offset / minUniformOffsetAlignment);
 
-        return this.hash[group.uid];
+        return this.bindGroupHash[group.uid];
     }
 
     getUniformBufferResource(group: UniformGroup<any>): BufferResource
@@ -198,6 +198,30 @@ export class UniformBatchPipe implements InstructionPipe<UniformInstruction>
 
     destroy()
     {
-        // BOOM!
+        for (let i = 0; i < this.bindGroups.length; i++)
+        {
+            this.bindGroups[i].destroy();
+        }
+
+        this.bindGroups = null;
+        this.bindGroupHash = null;
+
+        for (let i = 0; i < this.buffers.length; i++)
+        {
+            this.buffers[i].destroy();
+        }
+        this.buffers = null;
+
+        for (let i = 0; i < this.bufferResources.length; i++)
+        {
+            this.bufferResources[i].destroy();
+        }
+
+        this.bufferResources = null;
+
+        this.batchBuffer.destroy();
+        this.bindGroupHash = null;
+
+        this.renderer = null;
     }
 }

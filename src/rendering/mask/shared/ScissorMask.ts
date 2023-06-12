@@ -44,4 +44,15 @@ export class ScissorMask implements Effect
 
         return false;
     }
+
+    reset()
+    {
+        this.mask.measurable = true;
+        this.mask = null;
+    }
+
+    destroy(): void
+    {
+        this.reset();
+    }
 }

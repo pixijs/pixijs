@@ -49,4 +49,9 @@ export class LayerPipe implements InstructionPipe<LayerGroup>
 
         // now render a quad..
     }
+
+    destroy(): void
+    {
+        this.renderer = null;
+    }
 }

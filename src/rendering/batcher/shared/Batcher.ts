@@ -34,6 +34,12 @@ export class Batch
 
     canBundle = true;
     batchParent: { geometry: Geometry, batcher: Batcher };
+
+    destroy()
+    {
+        this.textures = null;
+        this.batchParent = null;
+    }
 }
 
 export interface BatchableObject
@@ -80,7 +86,6 @@ export class Batcher
     vertexSize = 6;
 
     textureBatcher = new TextureBatcher();
-    computeBuffer: ViewableBuffer;
     elements: BatchableObject[] = [];
     updateIndex: boolean;
     currentBlendMode: number;
@@ -338,5 +343,31 @@ export class Batcher
         fastCopy(indexBuffer.buffer, newIndexBuffer.buffer);
 
         this.indexBuffer = newIndexBuffer;
+    }
+
+    destroy()
+    {
+        for (let i = 0; i < this.batches.length; i++)
+        {
+            this.batches[i].destroy();
+        }
+
+        this.batches = null;
+
+        for (let i = 0; i < this.elements.length; i++)
+        {
+            this.elements[i].batch = null;
+        }
+
+        this.elements = null;
+
+        this.indexBuffer = null;
+
+        this.attributeBuffer.destroy();
+        this.attributeBuffer = null;
+
+        this.textureBatcher.destroy();
+
+        this.boundTextures = null;
     }
 }

@@ -109,4 +109,15 @@ export class SpritePipe implements RenderPipe<SpriteView>
 
         return batchableSprite;
     }
+
+    destroy()
+    {
+        for (const i in this.gpuSpriteHash)
+        {
+            BigPool.return(this.gpuSpriteHash[i] as PoolItem);
+        }
+
+        this.gpuSpriteHash = null;
+        this.renderer = null;
+    }
 }

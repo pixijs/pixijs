@@ -174,4 +174,17 @@ export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
             this.endAdvancedBlendMode(instructionSet);
         }
     }
+
+    destroy()
+    {
+        this.renderer = null;
+        this.renderableList = null;
+
+        for (const i in this.filterHash)
+        {
+            this.filterHash[i as any as BLEND_MODES].destroy();
+        }
+
+        this.filterHash = null;
+    }
 }

@@ -17,6 +17,7 @@ export interface GraphicsAdaptor
 {
     init(): void;
     execute(graphicsPipe: GraphicsPipe, renderable: Renderable<GraphicsView>): void;
+    destroy(): void;
 }
 
 export interface GraphicsInstruction extends Instruction
@@ -140,7 +141,7 @@ export class GraphicsPipe implements RenderPipe<GraphicsView>
 
         if (wasBatched)
         {
-            this.removeBatchForRenderable(renderable);
+            this.removeBatchForRenderable(renderable.uid);
         }
 
         if (gpuContext.isBatchable)
@@ -203,16 +204,34 @@ export class GraphicsPipe implements RenderPipe<GraphicsView>
 
     destroyRenderable(renderable: Renderable<GraphicsView>)
     {
-        this.removeBatchForRenderable(renderable);
+        this.removeBatchForRenderable(renderable.uid);
     }
 
-    private removeBatchForRenderable(renderable: Renderable<GraphicsView>)
+    private removeBatchForRenderable(renderableUid: number)
     {
-        this.renderableBatchesHash[renderable.uid].forEach((batch) =>
+        this.renderableBatchesHash[renderableUid].forEach((batch) =>
         {
             BigPool.return(batch as PoolItem);
         });
 
-        this.renderableBatchesHash[renderable.uid] = null;
+        this.renderableBatchesHash[renderableUid] = null;
+    }
+
+    destroy()
+    {
+        this.renderer = null;
+        this.shader.destroy();
+        this.shader = null;
+
+        this.adaptor.destroy();
+        this.adaptor = null;
+        this.state = null;
+
+        for (const i in this.renderableBatchesHash)
+        {
+            this.removeBatchForRenderable(i as any as number);
+        }
+
+        this.renderableBatchesHash = null;
     }
 }

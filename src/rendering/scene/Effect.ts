@@ -9,6 +9,7 @@ export interface Effect
     addBounds?(bounds: Bounds, skipUpdateTransform?: boolean): void
     addLocalBounds?(bounds: Bounds, localRoot: Container): void
     containsPoint?(point: PointData): boolean
+    destroy(): void
 }
 
 export interface EffectConstructor

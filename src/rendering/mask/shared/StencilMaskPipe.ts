@@ -184,4 +184,11 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
 
         this.maskStackHash[currentRenderTargetUid] = maskStackIndex;
     }
+
+    destroy()
+    {
+        this.renderer = null;
+        this.maskStackHash = null;
+        this.maskHash = null;
+    }
 }

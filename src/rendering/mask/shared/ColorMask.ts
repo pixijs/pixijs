@@ -25,6 +25,11 @@ export class ColorMask implements Effect, PoolItem
         this.mask = mask;
     }
 
+    destroy(): void
+    {
+        // nothing to destroy
+    }
+
     static test(mask: any): boolean
     {
         return typeof mask === 'number';

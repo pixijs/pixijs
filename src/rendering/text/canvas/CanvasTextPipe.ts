@@ -101,13 +101,18 @@ export class CanvasTextPipe implements RenderPipe<TextView>
 
     destroyRenderable(renderable: Renderable<TextView>)
     {
-        const gpuText = this.gpuText[renderable.uid];
+        this.destroyRenderableById(renderable.uid);
+    }
+
+    private destroyRenderableById(renderableUid: number)
+    {
+        const gpuText = this.gpuText[renderableUid];
 
         this.renderer.canvasText.decreaseReferenceCount(gpuText.currentKey);
 
         BigPool.return(gpuText.batchableSprite);
 
-        this.gpuText[renderable.uid] = null;
+        this.gpuText[renderableUid] = null;
     }
 
     private updateText(renderable: Renderable<TextView>)
@@ -183,6 +188,17 @@ export class CanvasTextPipe implements RenderPipe<TextView>
         });
 
         return gpuTextData;
+    }
+
+    destroy()
+    {
+        for (const i in this.gpuText)
+        {
+            this.destroyRenderableById(i as any as number);
+        }
+
+        this.gpuText = null;
+        this.renderer = null;
     }
 }
 

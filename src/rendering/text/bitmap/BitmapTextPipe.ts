@@ -80,8 +80,13 @@ export class BitmapTextPipe implements RenderPipe<TextView>
 
     destroyRenderable(renderable: Renderable<TextView>)
     {
-        BigPool.return(this.gpuBitmapText[renderable.uid]);
-        this.gpuBitmapText[renderable.uid] = null;
+        this.destroyRenderableByUid(renderable.uid);
+    }
+
+    private destroyRenderableByUid(renderableUid: number)
+    {
+        BigPool.return(this.gpuBitmapText[renderableUid]);
+        this.gpuBitmapText[renderableUid] = null;
     }
 
     updateRenderable(renderable: Renderable<TextView>)
@@ -212,6 +217,21 @@ export class BitmapTextPipe implements RenderPipe<TextView>
         const distance = worldScale * dynamicFont.distanceField.distanceRange * (1 / fontScale) * resolution;
 
         context.customShader.resources.localUniforms.uniforms.distance = distance;
+    }
+
+    destroy()
+    {
+        for (const uid in this.gpuBitmapText)
+        {
+            this.destroyRenderableByUid(uid as any as number);
+        }
+
+        this.gpuBitmapText = null;
+
+        this.sdfShader?.destroy(true);
+        this.sdfShader = null;
+
+        this.renderer = null;
     }
 }
 

@@ -14,6 +14,7 @@ export interface BatcherAdaptor
 {
     init(): void;
     execute(batchPipe: BatcherPipe, batch: Batch): void
+    destroy(): void;
 }
 
 // eslint-disable-next-line max-len
@@ -132,5 +133,26 @@ export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
     execute(batch: Batch)
     {
         this.adaptor.execute(this, batch);
+    }
+
+    destroy()
+    {
+        this.toUpdate = null;
+        this.instructionSet = null;
+        this.activeBatcher = null;
+        this.state = null;
+        this._batches = null;
+        this.renderer = null;
+
+        this.adaptor.destroy();
+        this.adaptor = null;
+
+        for (const i in this._batches)
+        {
+            const batchData = this._batches[i];
+
+            batchData.batcher.destroy();
+            batchData.geometry.destroy();
+        }
     }
 }

@@ -65,4 +65,10 @@ export class GpuBatchAdaptor implements BatcherAdaptor
         // TODO move this to a draw function on the pipe!
         encoder.renderPassEncoder.drawIndexed(batch.size, 1, batch.start);
     }
+
+    destroy(): void
+    {
+        this.shader.destroy(true);
+        this.shader = null;
+    }
 }
