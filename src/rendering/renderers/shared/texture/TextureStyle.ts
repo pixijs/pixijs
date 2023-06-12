@@ -1,5 +1,5 @@
+import EventEmitter from 'eventemitter3';
 import { createIdFromString } from '../createIdFromString';
-import { Runner } from '../runner/Runner';
 
 import type { BindResource } from '../../gpu/shader/BindResource';
 import type { COMPARE_FUNCTION, SCALE_MODE, WRAP_MODE } from './const';
@@ -53,11 +53,13 @@ export interface TextureStyleOptions extends Partial<TextureStyle>
 
 }
 
-export class TextureStyle implements BindResource
+export class TextureStyle extends EventEmitter<{
+    change: TextureStyle,
+    destroy: TextureStyle,
+}> implements BindResource
 {
     resourceType = 'textureSampler';
     _resourceId: number;
-    onResourceChange = new Runner('onResourceChange');
 
     // override to set styles globally
     static readonly DEFAULT: TextureStyleOptions = {
@@ -98,11 +100,10 @@ export class TextureStyle implements BindResource
      */
     _maxAnisotropy?: number = 1;
 
-    onStyleUpdate = new Runner('onStyleUpdate');
-    onStyleDestroy = new Runner('onStyleDestroy');
-
     constructor(options: TextureStyleOptions = {})
     {
+        super();
+
         options = { ...TextureStyle.DEFAULT, ...options };
 
         this.addressMode = options.addressMode;
@@ -172,10 +173,8 @@ export class TextureStyle implements BindResource
 
     update()
     {
-        this.onStyleUpdate.emit(this);
-
         // manage the resource..
-        this.onResourceChange.emit(this);
+        this.emit('change', this);
         this._resourceId = null;
     }
 
@@ -192,23 +191,8 @@ export class TextureStyle implements BindResource
     /** Destroys the style */
     destroy()
     {
-        if (this.onStyleDestroy)
-        {
-            this.onStyleDestroy.emit(this);
-            this.onStyleDestroy.removeAll();
-            this.onStyleDestroy = null;
-        }
+        this.emit('destroy', this);
 
-        if (this.onStyleUpdate)
-        {
-            this.onStyleUpdate.removeAll();
-            this.onStyleUpdate = null;
-        }
-
-        if (this.onResourceChange)
-        {
-            this.onResourceChange.removeAll();
-            this.onResourceChange = null;
-        }
+        this.removeAllListeners();
     }
 }

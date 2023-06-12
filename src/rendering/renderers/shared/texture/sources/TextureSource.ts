@@ -1,4 +1,4 @@
-import { Runner } from '../../runner/Runner';
+import EventEmitter from 'eventemitter3';
 import { TextureStyle } from '../TextureStyle';
 
 import type { BindResource } from '../../../gpu/shader/BindResource';
@@ -30,13 +30,17 @@ export interface TextureSourceOptions<T extends Record<string, any> = any>
     style?: TextureStyleOptions | TextureStyle;
 }
 
-export class TextureSource<T extends Record<string, any> = any> implements BindableTexture, BindResource
+export class TextureSource<T extends Record<string, any> = any> extends EventEmitter<{
+    change: BindResource;
+    update: TextureSource;
+    destroy: TextureSource;
+    resize: TextureSource;
+}> implements BindableTexture, BindResource
 {
     uid = UID++;
 
     resourceType = 'textureSource';
     resourceId = RESOURCE_ID++;
-    onResourceChange = new Runner('onResourceChange');
 
     type = 'unknown';
 
@@ -66,10 +70,6 @@ export class TextureSource<T extends Record<string, any> = any> implements Binda
 
     style: TextureStyle;
 
-    onSourceUpdate = new Runner('onSourceUpdate');
-    onSourceDestroy = new Runner('onSourceDestroy');
-    onSourceResize = new Runner('onSourceResize');
-
     styleSourceKey: number;
 
     // properties used when rendering to this texture..
@@ -78,6 +78,8 @@ export class TextureSource<T extends Record<string, any> = any> implements Binda
 
     constructor(options: TextureSourceOptions<T> = {})
     {
+        super();
+
         this.resource = options.resource;
 
         this._resolution = options.resolution ?? 1;
@@ -114,7 +116,8 @@ export class TextureSource<T extends Record<string, any> = any> implements Binda
         const style = options.style ?? {};
 
         this.style = style instanceof TextureStyle ? style : new TextureStyle(style);
-        this.style.onStyleUpdate.add(this);
+        this.style.on('change', this.onStyleUpdate, this);
+
         this.styleSourceKey = (this.style.resourceId << 24) + this.uid;
     }
 
@@ -125,7 +128,7 @@ export class TextureSource<T extends Record<string, any> = any> implements Binda
 
     update()
     {
-        this.onSourceUpdate.emit(this);
+        this.emit('update', this);
     }
 
     onStyleUpdate()
@@ -136,30 +139,7 @@ export class TextureSource<T extends Record<string, any> = any> implements Binda
     /** Destroys this texture source */
     destroy()
     {
-        if (this.onSourceDestroy)
-        {
-            this.onSourceDestroy.emit(this);
-            this.onSourceDestroy.removeAll();
-            this.onSourceDestroy = null;
-        }
-
-        if (this.onResourceChange)
-        {
-            this.onResourceChange.removeAll();
-            this.onResourceChange = null;
-        }
-
-        if (this.onSourceUpdate)
-        {
-            this.onSourceUpdate.removeAll();
-            this.onSourceUpdate = null;
-        }
-
-        if (this.onSourceResize)
-        {
-            this.onSourceResize.removeAll();
-            this.onSourceResize = null;
-        }
+        this.emit('destroy', this);
 
         if (this.style)
         {
@@ -169,6 +149,7 @@ export class TextureSource<T extends Record<string, any> = any> implements Binda
 
         this.type = null;
         this.resource = null;
+        this.removeAllListeners();
     }
 
     get resolution(): number
@@ -209,9 +190,9 @@ export class TextureSource<T extends Record<string, any> = any> implements Binda
         this.pixelWidth = newPixelWidth;
         this.pixelHeight = newPixelHeight;
 
-        this.onSourceResize.emit(this);
+        this.emit('resize', this);
 
         this.resourceId++;
-        this.onResourceChange.emit(this);
+        this.emit('change', this);
     }
 }

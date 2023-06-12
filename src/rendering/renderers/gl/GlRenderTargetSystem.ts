@@ -192,7 +192,7 @@ export class GlRenderTargetSystem implements ISystem
 
     private initRenderTarget(renderSurface: RenderSurface): RenderTarget
     {
-        let renderTarget = null;
+        let renderTarget: RenderTarget = null;
 
         if (renderSurface instanceof RenderTarget)
         {
@@ -208,6 +208,11 @@ export class GlRenderTargetSystem implements ISystem
             {
                 renderTarget.isRoot = true;
             }
+
+            renderSurface.source.on('destroy', () =>
+            {
+                renderTarget.destroy();
+            });
         }
 
         this.renderSurfaceToRenderTargetHash.set(renderSurface, renderTarget);

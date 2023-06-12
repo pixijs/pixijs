@@ -1,6 +1,6 @@
+import EventEmitter from 'eventemitter3';
 import { Cache } from '../../../../assets/cache/Cache';
 import { NOOP } from '../../../../utils/NOOP';
-import { Runner } from '../runner/Runner';
 import { TextureSource } from './sources/TextureSource';
 import { TextureLayout } from './TextureLayout';
 import { TextureMatrix } from './TextureMatrix';
@@ -26,7 +26,9 @@ export interface BindableTexture
     styleSourceKey: number;
 }
 
-export class Texture implements BindableTexture
+export class Texture extends EventEmitter<{
+    update: Texture
+}> implements BindableTexture
 {
     static from(id: string): Texture
     {
@@ -43,12 +45,13 @@ export class Texture implements BindableTexture
     /**
      * @internal
      */
-    _onTextureUpdate: Runner = new Runner('onTextureUpdate');
     _layout: TextureLayout;
     _source: TextureSource;
 
     constructor({ source, style, layout, label }: TextureOptions = {})
     {
+        super();
+
         this.label = label;
         this.source = source?.source ?? new TextureSource();
         this.layout = layout instanceof TextureLayout ? layout : new TextureLayout(layout);
@@ -65,17 +68,17 @@ export class Texture implements BindableTexture
     {
         if (this._source)
         {
-            this._source.onSourceUpdate.remove(this);
-            this._source.onSourceResize.remove(this);
+            this._source.off('update', this.onStyleSourceUpdate, this);
+            this._source.off('resize', this.onUpdate, this);
         }
 
         this._source = value;
 
-        value.onSourceUpdate.add(this);
-        value.onSourceResize.add(this);
+        value.on('update', this.onStyleSourceUpdate, this);
+        value.on('resize', this.onUpdate, this);
 
         this.styleSourceKey = (this.style.resourceId << 24) + this._source.uid;
-        this._onTextureUpdate.emit(this);
+        this.emit('update', this);
     }
 
     get source(): TextureSource
@@ -90,9 +93,9 @@ export class Texture implements BindableTexture
 
     set style(value: TextureStyle)
     {
-        this._style?.onStyleUpdate.remove(this);
+        this._style?.off('change', this.onStyleSourceUpdate, this);
         this._style = value;
-        this._style?.onStyleUpdate.add(this);
+        this._style?.on('change', this.onStyleSourceUpdate, this);
     }
 
     get layout(): TextureLayout
@@ -102,13 +105,13 @@ export class Texture implements BindableTexture
 
     set layout(value: TextureLayout)
     {
-        this._layout?.onLayoutUpdate.remove(this);
+        this._layout?.off('update', this.onUpdate, this);
 
         this._layout = value;
 
-        value.onLayoutUpdate.add(this);
+        value.on('update', this.onUpdate, this);
 
-        this._onTextureUpdate.emit(this);
+        this.emit('update', this);
     }
 
     get textureMatrix()
@@ -215,40 +218,24 @@ export class Texture implements BindableTexture
         }
 
         this._textureMatrix = null;
+        this.removeAllListeners();
     }
 
     /**
      * @internal
      */
-    protected onSourceUpdate()
+    protected onStyleSourceUpdate()
     {
         this.styleSourceKey = (this.style.resourceId << 24) + this._source.uid;
-        this._onTextureUpdate.emit(this);
+        this.emit('update', this);
     }
 
     /**
      * @internal
      */
-    protected onSourceResize()
+    protected onUpdate()
     {
-        this._onTextureUpdate.emit(this);
-    }
-
-    /**
-     * @internal
-     */
-    protected onLayoutUpdate()
-    {
-        this._onTextureUpdate.emit(this);
-    }
-
-    /**
-     * @internal
-     */
-    protected onStyleUpdate()
-    {
-        this.styleSourceKey = (this.style.resourceId << 24) + this._source.uid;
-        this._onTextureUpdate.emit(this);
+        this.emit('update', this);
     }
 
     static EMPTY: Texture;
