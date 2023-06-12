@@ -227,7 +227,7 @@ export class GlBufferSystem implements ISystem
 
         this._gpuBuffers[buffer.uid] = glBuffer;
 
-        buffer.onDestroy.add(this);
+        buffer.on('destroy', this.onBufferDestroy, this);
 
         return glBuffer;
     }

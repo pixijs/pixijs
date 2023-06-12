@@ -86,8 +86,8 @@ export class BufferSystem implements ISystem
 
         this._gpuBuffers[buffer.uid] = gpuBuffer;
 
-        buffer.onUpdate.add(this);
-        buffer.onDestroy.add(this);
+        buffer.on('update', this.onBufferUpdate, this);
+        buffer.on('destroy', this.onBufferDestroy, this);
 
         return gpuBuffer;
     }

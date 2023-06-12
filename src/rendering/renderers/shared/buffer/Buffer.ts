@@ -1,4 +1,4 @@
-import { Runner } from '../runner/Runner';
+import EventEmitter from 'eventemitter3';
 import { generateUID } from '../texture/utils/generateUID';
 
 import type { BindResource } from '../../gpu/shader/BindResource';
@@ -26,15 +26,16 @@ export interface BufferDescriptor
     mappedAtCreation?: boolean;
 }
 
-export class Buffer implements BindResource
+export class Buffer extends EventEmitter<{
+    change: BindResource,
+    update: Buffer,
+    destroy: Buffer,
+}> implements BindResource
 {
     readonly resourceType = 'buffer';
     resourceId = generateUID();
 
     readonly uid = UID++;
-
-    onUpdate = new Runner('onBufferUpdate');
-    onDestroy = new Runner('onBufferDestroy');
 
     descriptor: BufferDescriptor;
 
@@ -45,6 +46,8 @@ export class Buffer implements BindResource
 
     constructor({ data, size, usage, label }: BufferOptions)
     {
+        super();
+
         if (data instanceof Array)
         {
             data = new Float32Array(data as number[]);
@@ -84,21 +87,17 @@ export class Buffer implements BindResource
         this._updateSize = sizeInBytes || this.descriptor.size;
         this._updateID++;
 
-        this.onUpdate.emit(this);
+        this.emit('update', this);
     }
 
     destroy()
     {
-        this.onDestroy.emit(this);
-
-        this.onUpdate.destroy();
-        this.onDestroy.destroy();
-
-        this.onUpdate = null;
-        this.onDestroy = null;
+        this.emit('destroy', this);
 
         this._data = null;
         this.descriptor = null;
+
+        this.removeAllListeners();
     }
 }
 

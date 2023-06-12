@@ -238,7 +238,7 @@ export class GlGeometrySystem implements ISystem
         {
             this._geometryVaoHash[geometry.uid] = {};
 
-            geometry.onDestroy.add(this);
+            geometry.on('destroy', this.onGeometryDestroy, this);
         }
 
         const vaoObjectHash = this._geometryVaoHash[geometry.uid];
