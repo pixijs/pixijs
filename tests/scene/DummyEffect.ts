@@ -21,4 +21,9 @@ export class DummyEffect implements Effect
     {
         return false;
     }
+
+    destroy(): void
+    {
+        // nothing to destroy
+    }
 }
