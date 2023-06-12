@@ -14,7 +14,6 @@ export interface BindResource
      * this could be a texture or buffer that has been resized.
      * This is important as it allows the renderer to know that it needs to rebind the resource
      */
-    // onResourceChange?: Runner;
     on?(event: 'change', listenerFunction: (resource: BindResource) => void, listener: BindGroup): void
     off?(event: 'change', listenerFunction: (resource: BindResource) => void, listener: BindGroup): void
 
