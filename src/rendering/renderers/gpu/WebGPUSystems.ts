@@ -37,7 +37,6 @@ export interface GPURenderSystems extends SharedRenderSystems, PixiMixins.GPURen
 export interface GPURenderPipes extends SharedRenderPipes, PixiMixins.GPURenderPipes
 {
     uniformBatch: UniformBatchPipe,
-    scissorMask: GpuScissorMaskPipe,
 }
 
 export const WebGPUSystemsExtensions = [

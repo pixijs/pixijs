@@ -1,7 +1,8 @@
 import { Buffer } from '../../src/rendering/renderers/shared/buffer/Buffer';
 import { Geometry } from '../../src/rendering/renderers/shared/geometry/Geometry';
 
-export function getGeometry() {
+export function getGeometry()
+{
     return new Geometry({
         attributes: {
             aVertexPosition: {

@@ -1,6 +1,7 @@
 import { GlProgram } from '../../src/rendering/renderers/gl/shader/GlProgram';
 
-export function getGlProgram() {
+export function getGlProgram()
+{
     return new GlProgram({
         vertex: `
             
