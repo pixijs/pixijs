@@ -84,7 +84,7 @@ export class BindGroup
         this.resources = null;
     }
 
-    onResourceChange()
+    private onResourceChange()
     {
         this.dirty = true;
     }
