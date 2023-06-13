@@ -26,19 +26,19 @@ export class GraphicsView implements View
     constructor(graphicsContext?: GraphicsContext)
     {
         this._context = graphicsContext || new GraphicsContext();
-        this._context.onGraphicsContextUpdate.add(this);
+        this._context.on('update', this.onGraphicsContextUpdate, this);
     }
 
     set context(context: GraphicsContext)
     {
         if (context === this._context) return;
 
-        this._context.onGraphicsContextUpdate.remove(this);
+        this._context.off('update', this.onGraphicsContextUpdate, this);
 
         this._context = context;
 
         // TODO store this bound function somewhere else..
-        this._context.onGraphicsContextUpdate.add(this);
+        this._context.on('update', this.onGraphicsContextUpdate, this);
 
         this.onGraphicsContextUpdate();
     }

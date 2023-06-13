@@ -61,7 +61,7 @@ export class MeshView<GEOMETRY extends MeshGeometry = MeshGeometry>implements Vi
         }
 
         this._geometry = options.geometry as GEOMETRY;
-        this._geometry.onUpdate.add(this);
+        this._geometry.on('update', this.onGeometryUpdate, this);
     }
 
     set shader(value: TextureShader)
@@ -82,8 +82,8 @@ export class MeshView<GEOMETRY extends MeshGeometry = MeshGeometry>implements Vi
     {
         if (this._geometry === value) return;
 
-        this._geometry?.onUpdate.remove(this);
-        value.onUpdate.add(this);
+        this._geometry?.off('update', this.onUpdate, this);
+        value.on('update', this.onUpdate, this);
 
         this._geometry = value;
 

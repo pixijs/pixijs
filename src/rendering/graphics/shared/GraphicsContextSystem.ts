@@ -197,8 +197,8 @@ export class GraphicsContextSystem implements ISystem
 
         this.gpuContextHash[context.uid] = gpuContext;
 
-        context.onGraphicsContextUpdate.add(this);
-        context.onGraphicsContextDestroy.add(this);
+        context.on('update', this.onGraphicsContextUpdate, this);
+        context.on('destroy', this.onGraphicsContextDestroy, this);
 
         return this.gpuContextHash[context.uid];
     }

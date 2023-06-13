@@ -1,6 +1,6 @@
+import EventEmitter from 'eventemitter3';
 import { GraphicsContext } from '../graphics/shared/GraphicsContext';
 import { convertFillInputToFillStyle } from '../graphics/shared/utils/convertFillInputToFillStyle';
-import { Runner } from '../renderers/shared/runner/Runner';
 
 import type { FillGradient } from '../graphics/shared/fill/FillGradient';
 import type { DefaultFillStyle, FillStyle, FillStyleInputs, StrokeStyle } from '../graphics/shared/GraphicsContext';
@@ -120,7 +120,9 @@ const valuesToIterateForKeys = [
     'padding',
 ];
 
-export class TextStyle
+export class TextStyle extends EventEmitter<{
+    update: TextDropShadow
+}>
 {
     static defaultTextStyle: TextStyleOptions = {
         /**
@@ -227,12 +229,12 @@ export class TextStyle
 
     padding: number;
 
-    onStyleUpdate = new Runner('onStyleUpdate');
-
     private _styleKey: string;
 
     constructor(style: Partial<TextStyleOptions> = {})
     {
+        super();
+
         // TODO getter setters...
 
         const fullStyle = { ...TextStyle.defaultTextStyle, ...style };
@@ -304,7 +306,7 @@ export class TextStyle
     update()
     {
         this._styleKey = null;
-        this.onStyleUpdate.emit(this);
+        this.emit('update', this);
     }
 
     get fill(): FillStyleInputs
@@ -373,8 +375,7 @@ export class TextStyle
      */
     public destroy(options: TypeOrBool<TextureDestroyOptions> = false)
     {
-        this.onStyleUpdate.removeAll();
-        this.onStyleUpdate = null;
+        this.removeAllListeners();
 
         const destroyTexture = typeof options === 'boolean' ? options : options?.texture;
 

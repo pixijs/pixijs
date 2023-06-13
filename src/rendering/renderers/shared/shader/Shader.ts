@@ -1,5 +1,5 @@
+import EventEmitter from 'eventemitter3';
 import { BindGroup } from '../../gpu/shader/BindGroup';
-import { Runner } from '../runner/Runner';
 
 import type { GlProgram } from '../../gl/shader/GlProgram';
 import type { GpuProgram } from '../../gpu/shader/GpuProgram';
@@ -30,7 +30,9 @@ interface GroupsData
 
 type ShaderDescriptor = ShaderWithGroupsDescriptor & ShaderWithResourcesDescriptor;
 
-export class Shader
+export class Shader extends EventEmitter<{
+    'destroy': Shader;
+}>
 {
     gpuProgram: GpuProgram;
     glProgram: GlProgram;
@@ -40,12 +42,12 @@ export class Shader
 
     uniformBindMap: Record<number, Record<number, string>> = {};
 
-    onDestroy = new Runner('onShaderDestroy');
-
     constructor({ gpuProgram, glProgram, resources }: ShaderWithResourcesDescriptor);
     constructor({ gpuProgram, glProgram, groups, groupMap }: ShaderWithGroupsDescriptor);
     constructor({ gpuProgram, glProgram, groups, resources, groupMap }: ShaderDescriptor)
     {
+        super();
+
         this.gpuProgram = gpuProgram;
         this.glProgram = glProgram;
 
@@ -184,7 +186,7 @@ export class Shader
 
     destroy(destroyProgram = false): void
     {
-        this.onDestroy.emit(this);
+        this.emit('destroy', this);
 
         if (destroyProgram)
         {
@@ -197,8 +199,7 @@ export class Shader
 
         this.groups = null;
 
-        this.onDestroy.destroy();
-        this.onDestroy = null;
+        this.removeAllListeners();
 
         this.uniformBindMap = null;
 

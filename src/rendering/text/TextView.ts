@@ -101,6 +101,8 @@ export class TextView implements View
     {
         style = style || {};
 
+        this._style?.off('update', this.onUpdate, this);
+
         if (style instanceof TextStyle)
         {
             this._style = style;
@@ -109,6 +111,8 @@ export class TextView implements View
         {
             this._style = new TextStyle(style);
         }
+
+        this._style.on('update', this.onUpdate, this);
 
         this.onUpdate();
     }

@@ -1,4 +1,4 @@
-import { Runner } from '../runner/Runner';
+import EventEmitter from 'eventemitter3';
 import { ensureIsBuffer } from './utils/ensureIsBuffer';
 
 import type { Buffer, TypedArray } from '../buffer/Buffer';
@@ -29,7 +29,10 @@ export interface GeometryDescriptor
 
 let UID = 1;
 
-export class Geometry
+export class Geometry extends EventEmitter<{
+    update: Geometry,
+    destroy: Geometry,
+}>
 {
     topology: Topology;
 
@@ -41,8 +44,6 @@ export class Geometry
     _layoutKey = 0;
     _bufferLayout: Record<number, Buffer>;
 
-    onUpdate = new Runner('onGeometryUpdate');
-    onDestroy = new Runner('onGeometryDestroy');
     tick = 0;
 
     instanced: boolean;
@@ -50,6 +51,8 @@ export class Geometry
 
     constructor({ attributes, indexBuffer, topology }: GeometryDescriptor)
     {
+        super();
+
         this.attributes = attributes as Record<string, Attribute>;
         this.buffers = [];
 
@@ -65,7 +68,7 @@ export class Geometry
             {
                 this.buffers.push(attribute.buffer);
 
-                attribute.buffer.onUpdate.add(this);
+                attribute.buffer.on('update', this.onBufferUpdate, this);
             }
         }
 
@@ -83,8 +86,9 @@ export class Geometry
     {
         const previousBuffer = this.buffers[index];
 
-        previousBuffer.onUpdate.remove(this);
-        buffer.onUpdate.add(this);
+        previousBuffer.off('update', this.onBufferUpdate, this);
+
+        buffer.on('update', this.onBufferUpdate, this);
 
         this.buffers[index] = buffer;
 
@@ -102,7 +106,7 @@ export class Geometry
     onBufferUpdate(): void
     {
         this.tick = this.tick++;
-        this.onUpdate.emit(this);
+        this.emit('update', this);
     }
 
     /**
@@ -150,13 +154,9 @@ export class Geometry
 
     destroy(destroyBuffers = false): void
     {
-        this.onDestroy.emit(this);
+        this.emit('destroy', this);
 
-        this.onDestroy.destroy();
-        this.onUpdate.destroy();
-
-        this.onDestroy = null;
-        this.onUpdate = null;
+        this.removeAllListeners();
 
         if (destroyBuffers)
         {
