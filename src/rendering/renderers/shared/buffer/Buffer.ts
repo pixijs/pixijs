@@ -42,6 +42,8 @@ export class Buffer extends EventEmitter<{
     _updateID = 1;
     _updateSize: number;
 
+    // TODO we should only need to resize a buffer if it gets Bigger..!
+    // private _maximumSize: number = 0;
     private _data: TypedArray;
 
     constructor({ data, size, usage, label }: BufferOptions)
@@ -76,9 +78,21 @@ export class Buffer extends EventEmitter<{
     {
         if (this._data !== value)
         {
+            const oldData = this._data;
+
             this._data = value;
-            this.descriptor.size = value.byteLength;
-            this.update();
+
+            if (oldData.length !== value.length)
+            {
+                this.descriptor.size = value.byteLength;
+                this.resourceId = generateUID();
+
+                this.emit('change', this);
+            }
+            else
+            {
+                this.emit('update', this);
+            }
         }
     }
 
