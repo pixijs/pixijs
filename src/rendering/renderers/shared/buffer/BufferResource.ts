@@ -31,7 +31,7 @@ export class BufferResource extends EventEmitter<{
         this.buffer.on('change', this.onBufferChange, this);
     }
 
-    onBufferChange(): void
+    protected onBufferChange(): void
     {
         this.resourceId = generateUID();
 
