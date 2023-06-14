@@ -3,13 +3,35 @@ import { Point } from '@pixi/core';
 import type { EventBoundary } from './EventBoundary';
 import type { FederatedEventTarget } from './FederatedEventTarget';
 
+export interface PixiTouch extends Touch
+{
+    button: number;
+    buttons: number;
+    isPrimary: boolean;
+    width: number;
+    height: number;
+    tiltX: number;
+    tiltY: number;
+    pointerType: string;
+    pointerId: number;
+    pressure: number;
+    twist: number;
+    tangentialPressure: number;
+    layerX: number;
+    layerY: number;
+    offsetX: number;
+    offsetY: number;
+    isNormalized: boolean;
+    type: string;
+}
+
 /**
  * An DOM-compatible synthetic event implementation that is "forwarded" on behalf of an original
  * FederatedEvent or native {@link https://dom.spec.whatwg.org/#event Event}.
  * @memberof PIXI
  * @typeParam N - The type of native event held.
  */
-export class FederatedEvent<N extends UIEvent = UIEvent> implements UIEvent
+export class FederatedEvent<N extends UIEvent | PixiTouch = UIEvent | PixiTouch> implements UIEvent
 {
     /** Flags whether this event bubbles. This will take effect only if it is set before propagation. */
     public bubbles = true;
