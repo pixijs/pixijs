@@ -1,7 +1,8 @@
 import { type Batch, type BatchableObject, Batcher } from '../../../src/rendering/batcher/shared/Batcher';
-import { BLEND_MODES } from '../../../src/rendering/renderers/shared/state/const';
 import { Texture } from '../../../src/rendering/renderers/shared/texture/Texture';
 import '../../../src/rendering/renderers/shared/texture/sources/ImageSource';
+
+import type { BLEND_MODES } from '../../../src/rendering/renderers/shared/state/const';
 
 class DummyBatchableObject implements BatchableObject
 {
@@ -15,7 +16,7 @@ class DummyBatchableObject implements BatchableObject
         //
     };
     texture: Texture;
-    blendMode = BLEND_MODES.NORMAL;
+    blendMode: BLEND_MODES = 'normal';
     vertexSize = 8;
     indexSize = 4;
     textureId: number;

@@ -1,4 +1,3 @@
-import { BLEND_MODES } from '../../renderers/shared/state/const';
 import { mixColors } from '../../scene/utils/mixColors';
 
 import type { Batch, BatchableObject, Batcher } from '../../batcher/shared/Batcher';
@@ -33,7 +32,7 @@ export class BatchableGraphics implements BatchableObject
             return this.renderable.layerBlendMode;
         }
 
-        return BLEND_MODES.NORMAL;
+        return 'normal';
     }
 
     packIndex(indexBuffer: Uint32Array, index: number, indicesOffset: number)

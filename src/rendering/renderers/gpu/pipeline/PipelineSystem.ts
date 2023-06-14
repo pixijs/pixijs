@@ -135,7 +135,7 @@ export class PipelineSystem implements ISystem
             geometry._layoutKey,
             program._layoutKey,
             state.data,
-            state.blendMode & 0b1111,
+            state._blendModeId,
             this.stencilMode,
             this.multisampleCount,
             this.colorMask,

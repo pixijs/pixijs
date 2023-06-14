@@ -24,7 +24,7 @@ export class GpuMeshAdapter implements MeshAdaptor
 
         const state = meshPipe.state;
 
-        state.blendMode = renderable.layerBlendMode & 0b1111;
+        state.blendMode = renderable.layerBlendMode;
 
         const localUniforms = meshPipe.localUniforms;
 

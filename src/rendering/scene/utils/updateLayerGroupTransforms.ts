@@ -133,7 +133,7 @@ function updateColorBlendVisibility(
 
     if (updateFlags & UPDATE_BLEND)
     {
-        container.layerBlendMode = container.localBlendMode || parent.layerBlendMode;
+        container.layerBlendMode = container.localBlendMode === 'inherit' ? parent.layerBlendMode : container.localBlendMode;
     }
 
     if (updateFlags & UPDATE_VISIBLE)

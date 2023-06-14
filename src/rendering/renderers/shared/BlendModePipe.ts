@@ -21,15 +21,16 @@ import { SoftLightBlend } from '../../filters/blend-modes/SoftLightBlend';
 import { SubtractBlend } from '../../filters/blend-modes/SubtractBlend';
 import { VividLightBlend } from '../../filters/blend-modes/VividLightBlend';
 import { FilterEffect } from '../../filters/FilterEffect';
-import { BLEND_MODES } from './state/const';
 
 import type { ExtensionMetadata } from '../../../extensions/Extensions';
+import type { BlendModeFilter } from '../../filters/blend-modes/BlendModeFilter';
 import type { FilterInstruction } from '../../filters/shared/FilterSystem';
 import type { Renderer } from '../types';
 import type { Instruction } from './instructions/Instruction';
 import type { InstructionSet } from './instructions/InstructionSet';
 import type { InstructionPipe } from './instructions/RenderPipe';
 import type { Renderable } from './Renderable';
+import type { BLEND_MODES } from './state/const';
 
 export interface AdvancedBlendInstruction extends Instruction
 {
@@ -39,28 +40,28 @@ export interface AdvancedBlendInstruction extends Instruction
 }
 
 // class map
-const BLEND_MODE_FILTERS = {
-    [BLEND_MODES.COLOR]: ColorBlend,
-    [BLEND_MODES.COLOR_BURN]: ColorBurnBlend,
-    [BLEND_MODES.COLOR_DODGE]: ColorDodgeBlend,
-    [BLEND_MODES.DARKEN]: DarkenBlend,
-    [BLEND_MODES.DIFFERENCE]: DifferenceBlend,
-    [BLEND_MODES.DIVIDE]: DivideBlend,
-    [BLEND_MODES.EXCLUSION]: ExclusionBlend,
-    [BLEND_MODES.HARD_LIGHT]: HardLightBlend,
-    [BLEND_MODES.HARD_MIX]: HardMixBlend,
-    [BLEND_MODES.LIGHTEN]: LightenBlend,
-    [BLEND_MODES.LINEAR_BURN]: LinearBurnBlend,
-    [BLEND_MODES.LINEAR_DODGE]: LinearDodgeBlend,
-    [BLEND_MODES.LINEAR_LIGHT]: LinearLightBlend,
-    [BLEND_MODES.LUMINOSITY]: LuminosityBlend,
-    [BLEND_MODES.NEGATION]: NegationBlend,
-    [BLEND_MODES.OVERLAY]: OverlayBlend,
-    [BLEND_MODES.PIN_LIGHT]: PinLightBlend,
-    [BLEND_MODES.SATURATION]: SaturationBlend,
-    [BLEND_MODES.SOFT_LIGHT]: SoftLightBlend,
-    [BLEND_MODES.SUBTRACT]: SubtractBlend,
-    [BLEND_MODES.VIVID_LIGHT]: VividLightBlend,
+const BLEND_MODE_FILTERS: Partial<Record<BLEND_MODES, new () => BlendModeFilter>> = {
+    color: ColorBlend,
+    'color-burn': ColorBurnBlend,
+    'color-dodge': ColorDodgeBlend,
+    darken: DarkenBlend,
+    difference: DifferenceBlend,
+    divide: DivideBlend,
+    exclusion: ExclusionBlend,
+    'hard-light': HardLightBlend,
+    'hard-mix': HardMixBlend,
+    lighten: LightenBlend,
+    'linear-burn': LinearBurnBlend,
+    'linear-dodge': LinearDodgeBlend,
+    'linear-light': LinearLightBlend,
+    luminosity: LuminosityBlend,
+    negation: NegationBlend,
+    overlay: OverlayBlend,
+    'pin-light': PinLightBlend,
+    saturation: SaturationBlend,
+    'soft-light': SoftLightBlend,
+    subtract: SubtractBlend,
+    'vivid-light': VividLightBlend,
 } as const;
 
 export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
@@ -79,7 +80,7 @@ export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
     private renderableList: Renderable[];
     private activeBlendMode: BLEND_MODES;
 
-    private isAdvanced = 0;
+    private isAdvanced = false;
 
     private filterHash: Partial<Record<BLEND_MODES, FilterEffect>> = {};
 
@@ -107,7 +108,7 @@ export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
             this.endAdvancedBlendMode(instructionSet);
         }
 
-        this.isAdvanced = (blendMode & 0b11110000);
+        this.isAdvanced = !!BLEND_MODE_FILTERS[blendMode];
 
         if (this.isAdvanced)
         {
@@ -125,7 +126,7 @@ export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
 
         if (!BLEND_MODE_FILTERS[blendMode as keyof typeof BLEND_MODE_FILTERS])
         {
-            console.warn(`Unable to assign 'BLEND_MODES.${BLEND_MODES[blendMode]}' using the blend mode pipeline`);
+            console.warn(`Unable to assign 'BLEND_MODES.${blendMode}' using the blend mode pipeline`);
 
             return;
         }
@@ -164,7 +165,7 @@ export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
 
     buildStart()
     {
-        this.isAdvanced = 0;
+        this.isAdvanced = false;
     }
 
     buildEnd(instructionSet: InstructionSet)

@@ -88,7 +88,7 @@ export class Batcher
     textureBatcher = new TextureBatcher();
     elements: BatchableObject[] = [];
     updateIndex: boolean;
-    currentBlendMode: number;
+    currentBlendMode: BLEND_MODES;
     boundTextures: TextureSource[];
 
     constructor(vertexSize = 4, indexSize = 6)
@@ -101,7 +101,7 @@ export class Batcher
     begin()
     {
         this.batchIndex = 0;
-        this.currentBlendMode = -1;
+        this.currentBlendMode = 'inherit';
 
         let currentBatch = this.batches[this.batchIndex];
 
