@@ -1,16 +1,19 @@
+import EventEmitter from 'eventemitter3';
 import { generateUID } from '../texture/utils/generateUID';
 
 import type { BindResource } from '../../gpu/shader/BindResource';
 import type { Buffer } from './Buffer';
 
-export class BufferResource implements BindResource
+export class BufferResource extends EventEmitter<{
+    'change': BindResource,
+}> implements BindResource
 {
     readonly uid = generateUID();
 
     resourceType = 'bufferResource';
 
     // this really means ths the buffer resource cannot be updated!
-    resourceId = this.uid;
+    resourceId = generateUID();
 
     buffer: Buffer;
     readonly offset: number;
@@ -19,9 +22,20 @@ export class BufferResource implements BindResource
 
     constructor({ buffer, offset, size }: { buffer: Buffer; offset: number; size: number; })
     {
+        super();
+
         this.buffer = buffer;
         this.offset = offset;
         this.size = size;
+
+        this.buffer.on('change', this.onBufferChange, this);
+    }
+
+    protected onBufferChange(): void
+    {
+        this.resourceId = generateUID();
+
+        this.emit('change', this);
     }
 
     destroy(destroyBuffer = false): void

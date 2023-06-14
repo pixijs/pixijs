@@ -11,7 +11,7 @@ export class UniformBufferBatch
     constructor({ minUniformOffsetAlignment }: {minUniformOffsetAlignment: number})
     {
         this.minUniformOffsetAlignment = minUniformOffsetAlignment;
-        this.data = new Float32Array(128 * 1024 * 2);
+        this.data = new Float32Array(65535);
     }
 
     clear(): void

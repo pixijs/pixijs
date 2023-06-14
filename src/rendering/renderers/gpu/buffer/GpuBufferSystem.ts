@@ -1,6 +1,5 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { fastCopy } from '../../shared/buffer/utils/fastCopy';
-import { generateUID } from '../../shared/texture/utils/generateUID';
 
 import type { ExtensionMetadata } from '../../../../extensions/Extensions';
 import type { Buffer } from '../../shared/buffer/Buffer';
@@ -36,24 +35,13 @@ export class BufferSystem implements ISystem
 
     updateBuffer(buffer: Buffer): GPUBuffer
     {
-        let gpuBuffer = this._gpuBuffers[buffer.uid] || this.createGPUBuffer(buffer);
+        const gpuBuffer = this._gpuBuffers[buffer.uid] || this.createGPUBuffer(buffer);
 
         // TODO this can be better...
         if (buffer._updateID && buffer.data)
         {
-            if (gpuBuffer.size !== buffer.data.byteLength)
-            {
-                gpuBuffer.destroy();
-                gpuBuffer = this.createGPUBuffer(buffer);
-                buffer.resourceId = generateUID();
-                console.warn('Buffer recreated as it was resized, watch out for side effects');
-            }
-            else
-            {
-                buffer._updateID = 0;
-
-                this.gpu.device.queue.writeBuffer(gpuBuffer, 0, buffer.data.buffer, 0, buffer._updateSize);// , 0);
-            }
+            buffer._updateID = 0;
+            this.gpu.device.queue.writeBuffer(gpuBuffer, 0, buffer.data.buffer, 0, buffer._updateSize);// , 0);
         }
 
         return gpuBuffer;
@@ -86,16 +74,20 @@ export class BufferSystem implements ISystem
 
         this._gpuBuffers[buffer.uid] = gpuBuffer;
 
-        buffer.on('update', this.onBufferUpdate, this);
+        buffer.on('update', this.updateBuffer, this);
+        buffer.on('change', this.onBufferChange, this);
         buffer.on('destroy', this.onBufferDestroy, this);
 
         return gpuBuffer;
     }
 
-    protected onBufferUpdate(buffer: Buffer)
+    protected onBufferChange(buffer: Buffer)
     {
-        // just upload that...
-        this.updateBuffer(buffer);
+        let gpuBuffer = this._gpuBuffers[buffer.uid];
+
+        gpuBuffer.destroy();
+        gpuBuffer = this.createGPUBuffer(buffer);
+        buffer._updateID = 0;
     }
 
     /**

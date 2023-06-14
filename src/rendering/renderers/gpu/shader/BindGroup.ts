@@ -10,7 +10,7 @@ export class BindGroup
 
     constructor(resources?: Record<string, BindResource>)
     {
-        this.resources = resources || {};
+        this.resources = {};
 
         let index = 0;
 
@@ -87,5 +87,6 @@ export class BindGroup
     private onResourceChange()
     {
         this.dirty = true;
+        this.update();
     }
 }
