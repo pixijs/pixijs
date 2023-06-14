@@ -91,6 +91,8 @@ export function generateUniformBufferSync(
         var index = 0;
     `];
 
+    let prev = 0;
+
     for (let i = 0; i < uboElements.length; i++)
     {
         const uboElement = uboElements[i];
@@ -98,6 +100,7 @@ export function generateUniformBufferSync(
         const name = uboElement.data.name;
 
         let parsed = false;
+        let offset = 0;
 
         for (let j = 0; j < uniformBufferParsers.length; j++)
         {
@@ -105,8 +108,10 @@ export function generateUniformBufferSync(
 
             if (uniformParser.test(uboElement.data))
             {
+                offset = uboElement.offset / 4;
+
                 funcFragments.push(
-                    `offset = ${uboElement.offset / 4};`,
+                    `offset += ${offset - prev};`,
                     uniformBufferParsers[j].code(name));
                 parsed = true;
 
@@ -123,9 +128,11 @@ export function generateUniformBufferSync(
 
                 const remainder = (4 - (elementSize % 4)) % 4;
 
+                offset = uboElement.offset / 4;
+
                 funcFragments.push(/* wgsl */`
                     v = uv.${name};
-                    offset = ${uboElement.offset / 4};
+                    offset += ${offset - prev};
 
                     t = 0;
 
@@ -143,13 +150,17 @@ export function generateUniformBufferSync(
             {
                 const template = UBO_TO_SINGLE_SETTERS[uboElement.data.type];
 
+                offset = uboElement.offset / 4;
+
                 funcFragments.push(/* wgsl */`
                     v = uv.${name};
-                    offset = ${uboElement.offset / 4};
+                    offset += ${offset - prev};
                     ${template};
                 `);
             }
         }
+
+        prev = offset;
     }
 
     const fragmentSrc = funcFragments.join('\n');
@@ -158,6 +169,7 @@ export function generateUniformBufferSync(
     return new Function(
         'uv',
         'data',
+        'offset',
         fragmentSrc,
     ) as UniformsSyncCallback;
 }

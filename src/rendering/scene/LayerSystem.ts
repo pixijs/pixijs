@@ -106,6 +106,7 @@ export class LayerSystem implements ISystem
         if ((renderPipes as GPURenderPipes).uniformBatch)
         {
             (renderPipes as GPURenderPipes).uniformBatch.renderEnd();
+            (renderPipes as GPURenderPipes).uniformBuffer.renderEnd();
         }
     }
 

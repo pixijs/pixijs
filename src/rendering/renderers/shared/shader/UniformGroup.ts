@@ -44,7 +44,7 @@ export class UniformGroup<UNIFORMS extends { [key: string]: UniformData } = any>
 
     readonly signature: string;
 
-    _syncFunction?: (uniforms: UNIFORMS, data: Float32Array) => void;
+    _syncFunction?: (uniforms: UNIFORMS, data: Float32Array, offset: number) => void;
 
     constructor(uniformStructures: UNIFORMS, options?: UniformGroupOptions)
     {

@@ -19,17 +19,17 @@ export class UniformBufferBatch
         this.byteIndex = 0;
     }
 
-    addGroup(array: Float32Array): number
+    addEmptyGroup(size: number): number
     {
         // update the buffer.. only float32 for now!
-        if (array.length > this.minUniformOffsetAlignment / 4)
+        if (size > this.minUniformOffsetAlignment / 4)
         {
-            throw new Error(`UniformBufferBatch: array is too large: ${array.byteLength}`);
+            throw new Error(`UniformBufferBatch: array is too large: ${size * 4}`);
         }
 
         const start = this.byteIndex;
 
-        let newSize = start + (array.length * 4);
+        let newSize = start + (size * 4);
 
         newSize = Math.ceil(newSize / this.minUniformOffsetAlignment) * this.minUniformOffsetAlignment;
 
@@ -41,14 +41,21 @@ export class UniformBufferBatch
             throw new Error('UniformBufferBatch: ubo batch got too big');
         }
 
-        for (let i = 0; i < array.length; i++)
-        {
-            this.data[(start / 4) + i] = array[i];
-        }
-
         this.byteIndex = newSize;
 
         return start;
+    }
+
+    addGroup(array: Float32Array): number
+    {
+        const offset = this.addEmptyGroup(array.length);
+
+        for (let i = 0; i < array.length; i++)
+        {
+            this.data[(offset / 4) + i] = array[i];
+        }
+
+        return offset;
     }
 
     upload()

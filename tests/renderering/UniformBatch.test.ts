@@ -1,4 +1,4 @@
-import { UniformBatchPipe } from '../../src/rendering/renderers/shared/instructions/UniformBatchPipe';
+import { GpuUniformBatchPipe } from '../../src/rendering/renderers/gpu/GpuUniformBatchPipe';
 
 import type { WebGPURenderer } from '../../src/rendering/renderers/gpu/WebGPURenderer';
 
@@ -6,7 +6,7 @@ describe('UniformBatch', () =>
 {
     it('should get a bind group correctly', () =>
     {
-        const uniformBatchPipe = new UniformBatchPipe({} as any as WebGPURenderer);
+        const uniformBatchPipe = new GpuUniformBatchPipe({} as any as WebGPURenderer);
 
         const bufferResource = uniformBatchPipe.getArrayBufferResource(new Float32Array(32));
 
