@@ -8,6 +8,7 @@ import type { Renderer } from './types';
 export interface AutoDetectOptions extends SharedOptions
 {
     preference?: 'webgl' | 'webgpu' | 'canvas';
+    manageImports?: boolean;
     webgl?: Partial<GLOnlyOptions>,
     webgpu?: Partial<GPUOnlyOptions>,
 }
@@ -24,6 +25,7 @@ export async function autoDetectRenderer(options: Partial<AutoDetectOptions>): P
 {
     let preferredOrder: string[] = [];
     let specificOptions: GLOnlyOptions | GPUOnlyOptions;
+
     const { webgl, webgpu, ...rest } = options;
 
     if (options.preference)
@@ -44,6 +46,11 @@ export async function autoDetectRenderer(options: Partial<AutoDetectOptions>): P
     }
 
     let RendererClass: new () => Renderer;
+
+    if (options.manageImports ?? true)
+    {
+        await import('../../all');
+    }
 
     for (let i = 0; i < preferredOrder.length; i++)
     {
