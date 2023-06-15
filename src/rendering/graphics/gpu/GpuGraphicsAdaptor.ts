@@ -56,7 +56,7 @@ export class GpuGraphicsAdaptor implements GraphicsAdaptor
             geometry, batches
         } = contextSystem.getContextRenderData(context);
 
-        graphicsPipe.state.blendMode = renderable.layerBlendMode & 0b1111;
+        graphicsPipe.state.blendMode = renderable.layerBlendMode;
 
         const localUniforms = shader.resources.localUniforms;
 

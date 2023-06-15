@@ -1,8 +1,13 @@
 /* eslint-disable max-len */
+import type { BLEND_MODES, CULL_MODES } from './const';
 
-import { BLEND_MODES } from './const';
-
-import type { CULL_MODES } from './const';
+const blendModeIds = {
+    normal: 0,
+    additive: 1,
+    multiply: 2,
+    screen: 3,
+    overlay: 4,
+};
 
 const BLEND = 0;
 const OFFSET = 1;
@@ -23,12 +28,13 @@ export class State
     data: number;
     _blendMode: BLEND_MODES;
     _polygonOffset: number;
+    _blendModeId: number;
 
     constructor()
     {
         this.data = 0;
 
-        this.blendMode = BLEND_MODES.NORMAL;
+        this.blendMode = 'normal';
         this.polygonOffset = 0;
 
         this.blend = true;
@@ -173,8 +179,9 @@ export class State
 
     set blendMode(value: BLEND_MODES)
     {
-        this.blend = (value !== BLEND_MODES.NONE);
+        this.blend = (value !== 'none');
         this._blendMode = value;
+        this._blendModeId = blendModeIds[value as keyof typeof blendModeIds] || 0;
     }
 
     /**

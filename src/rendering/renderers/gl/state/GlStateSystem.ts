@@ -1,9 +1,9 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
-import { BLEND_MODES } from '../../shared/state/const';
 import { State } from '../../shared/state/State';
 import { mapWebGLBlendModesToPixi } from './mapWebGLBlendModesToPixi';
 
 import type { ExtensionMetadata } from '../../../../extensions/Extensions';
+import type { BLEND_MODES } from '../../shared/state/const';
 import type { ISystem } from '../../shared/system/ISystem';
 import type { GlRenderingContext } from '../context/GlRenderingContext';
 
@@ -57,7 +57,7 @@ export class GlStateSystem implements ISystem
      */
     protected gl: GlRenderingContext;
 
-    protected blendModes: number[][];
+    protected blendModesMap: Record<BLEND_MODES, number[]>;
 
     /**
      * Collection of calls
@@ -83,7 +83,7 @@ export class GlStateSystem implements ISystem
 
         this.stateId = 0;
         this.polygonOffset = 0;
-        this.blendMode = BLEND_MODES.NONE;
+        this.blendMode = 'none';
 
         this._blendEq = false;
 
@@ -106,7 +106,7 @@ export class GlStateSystem implements ISystem
     {
         this.gl = gl;
 
-        this.blendModes = mapWebGLBlendModesToPixi(gl);
+        this.blendModesMap = mapWebGLBlendModesToPixi(gl);
 
         this.set(this.defaultState);
 
@@ -233,8 +233,13 @@ export class GlStateSystem implements ISystem
      * Sets the blend mode.
      * @param {number} value - The blend mode to set to.
      */
-    setBlendMode(value: number): void
+    setBlendMode(value: BLEND_MODES): void
     {
+        if (!this.blendModesMap[value])
+        {
+            value = 'normal';
+        }
+
         if (value === this.blendMode)
         {
             return;
@@ -242,7 +247,7 @@ export class GlStateSystem implements ISystem
 
         this.blendMode = value;
 
-        const mode = this.blendModes[value];
+        const mode = this.blendModesMap[value];
         const gl = this.gl;
 
         if (mode.length === 2)
@@ -285,9 +290,9 @@ export class GlStateSystem implements ISystem
         this.forceState(this.defaultState);
 
         this._blendEq = true;
-        // setting to -1 means the blend mode will be set as soon as we set the first blend mode when rendering!
-        this.blendMode = -1 as BLEND_MODES;
-        this.setBlendMode(1);
+        // setting to '' means the blend mode will be set as soon as we set the first blend mode when rendering!
+        this.blendMode = '' as BLEND_MODES;
+        this.setBlendMode('normal');
     }
 
     /**

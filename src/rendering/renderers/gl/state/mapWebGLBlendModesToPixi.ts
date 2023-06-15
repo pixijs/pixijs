@@ -1,50 +1,27 @@
-import { BLEND_MODES } from '../../shared/state/const';
-
+import type { BLEND_MODES } from '../../shared/state/const';
 import type { GlRenderingContext } from '../context/GlRenderingContext';
 
 /**
  * Maps gl blend combinations to WebGL.
- * @memberof PIXI
- * @function mapWebGLBlendModesToPixi
- * @private
- * @param {WebGLRenderingContext} gl - The rendering context.
- * @param {number[][]} [array=[]] - The array to output into.
- * @returns {number[][]} Mapped modes.
+ * @param gl
+ * @returns {object} Map of gl blend combinations to WebGL.
  */
-export function mapWebGLBlendModesToPixi(gl: GlRenderingContext, array: number[][] = []): number[][]
+export function mapWebGLBlendModesToPixi(gl: GlRenderingContext): Record<BLEND_MODES, number[]>
 {
+    const blendMap: Partial<Record<BLEND_MODES, number[]>> = {};
+
     // TODO - premultiply alpha would be different.
     // add a boolean for that!
-    array[BLEND_MODES.NORMAL] = [gl.ONE, gl.ONE_MINUS_SRC_ALPHA];
-    array[BLEND_MODES.ADD] = [gl.ONE, gl.ONE];
-    array[BLEND_MODES.MULTIPLY] = [gl.DST_COLOR, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA];
-    array[BLEND_MODES.SCREEN] = [gl.ONE, gl.ONE_MINUS_SRC_COLOR, gl.ONE, gl.ONE_MINUS_SRC_ALPHA];
-    array[BLEND_MODES.OVERLAY] = [gl.ONE, gl.ONE_MINUS_SRC_ALPHA];
-    array[BLEND_MODES.DARKEN] = [gl.ONE, gl.ONE_MINUS_SRC_ALPHA];
-    array[BLEND_MODES.LIGHTEN] = [gl.ONE, gl.ONE_MINUS_SRC_ALPHA];
-    array[BLEND_MODES.COLOR_DODGE] = [gl.ONE, gl.ONE_MINUS_SRC_ALPHA];
-    array[BLEND_MODES.COLOR_BURN] = [gl.ONE, gl.ONE_MINUS_SRC_ALPHA];
-    array[BLEND_MODES.HARD_LIGHT] = [gl.ONE, gl.ONE_MINUS_SRC_ALPHA];
-    array[BLEND_MODES.HARD_MIX] = [gl.ONE, gl.ONE_MINUS_SRC_ALPHA];
-    array[BLEND_MODES.SOFT_LIGHT] = [gl.ONE, gl.ONE_MINUS_SRC_ALPHA];
-    array[BLEND_MODES.DIFFERENCE] = [gl.ONE, gl.ONE_MINUS_SRC_ALPHA];
-    array[BLEND_MODES.EXCLUSION] = [gl.ONE, gl.ONE_MINUS_SRC_ALPHA];
-    array[BLEND_MODES.HUE] = [gl.ONE, gl.ONE_MINUS_SRC_ALPHA];
-    array[BLEND_MODES.SATURATION] = [gl.ONE, gl.ONE_MINUS_SRC_ALPHA];
-    array[BLEND_MODES.COLOR] = [gl.ONE, gl.ONE_MINUS_SRC_ALPHA];
-    array[BLEND_MODES.LUMINOSITY] = [gl.ONE, gl.ONE_MINUS_SRC_ALPHA];
-    array[BLEND_MODES.LINEAR_BURN] = [gl.ONE, gl.ONE_MINUS_SRC_ALPHA];
-    array[BLEND_MODES.LINEAR_DODGE] = [gl.ONE, gl.ONE_MINUS_SRC_ALPHA];
-    array[BLEND_MODES.LINEAR_LIGHT] = [gl.ONE, gl.ONE_MINUS_SRC_ALPHA];
-    array[BLEND_MODES.HARD_LIGHT] = [gl.ONE, gl.ONE_MINUS_SRC_ALPHA];
-    array[BLEND_MODES.HARD_LIGHT] = [gl.ONE, gl.ONE_MINUS_SRC_ALPHA];
-    array[BLEND_MODES.PIN_LIGHT] = [gl.ONE, gl.ONE_MINUS_SRC_ALPHA];
-    array[BLEND_MODES.NONE] = [0, 0];
+    blendMap.normal = [gl.ONE, gl.ONE_MINUS_SRC_ALPHA];
+    blendMap.add = [gl.ONE, gl.ONE];
+    blendMap.multiply = [gl.DST_COLOR, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA];
+    blendMap.screen = [gl.ONE, gl.ONE_MINUS_SRC_COLOR, gl.ONE, gl.ONE_MINUS_SRC_ALPHA];
+    blendMap.none = [0, 0];
 
     // not-premultiplied blend modes
-    array[BLEND_MODES.NORMAL_NPM] = [gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA];
-    array[BLEND_MODES.ADD_NPM] = [gl.SRC_ALPHA, gl.ONE, gl.ONE, gl.ONE];
-    array[BLEND_MODES.SCREEN_NPM] = [gl.SRC_ALPHA, gl.ONE_MINUS_SRC_COLOR, gl.ONE, gl.ONE_MINUS_SRC_ALPHA];
+    blendMap['normal-npm'] = [gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA];
+    blendMap['add-npm'] = [gl.SRC_ALPHA, gl.ONE, gl.ONE, gl.ONE];
+    blendMap['screen-npm'] = [gl.SRC_ALPHA, gl.ONE_MINUS_SRC_COLOR, gl.ONE, gl.ONE_MINUS_SRC_ALPHA];
 
     // TODO - implement if requested!
     // composite operations
@@ -56,9 +33,8 @@ export function mapWebGLBlendModesToPixi(gl: GlRenderingContext, array: number[]
     // array[BLEND_MODES.DST_OUT] = [gl.ZERO, gl.ONE_MINUS_SRC_ALPHA];
     // array[BLEND_MODES.DST_ATOP] = [gl.ONE_MINUS_DST_ALPHA, gl.SRC_ALPHA];
     // array[BLEND_MODES.XOR] = [gl.ONE_MINUS_DST_ALPHA, gl.ONE_MINUS_SRC_ALPHA];
-
     // SUBTRACT from flash
-    array[BLEND_MODES.SUBTRACT] = [gl.ONE, gl.ONE, gl.ONE, gl.ONE, gl.FUNC_REVERSE_SUBTRACT, gl.FUNC_ADD];
+    // array[BLEND_MODES.SUBTRACT] = [gl.ONE, gl.ONE, gl.ONE, gl.ONE, gl.FUNC_REVERSE_SUBTRACT, gl.FUNC_ADD];
 
-    return array;
+    return blendMap as Record<BLEND_MODES, number[]>;
 }

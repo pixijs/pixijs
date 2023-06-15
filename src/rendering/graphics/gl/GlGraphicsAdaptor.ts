@@ -58,7 +58,7 @@ export class GlGraphicsAdaptor implements GraphicsAdaptor
 
         const state = graphicsPipe.state;
 
-        state.blendMode = renderable.layerBlendMode & 0b1111;
+        state.blendMode = renderable.layerBlendMode;
 
         renderer.state.set(graphicsPipe.state);
 

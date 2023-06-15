@@ -1,9 +1,9 @@
 import { Shader } from '../renderers/shared/shader/Shader';
-import { BLEND_MODES } from '../renderers/shared/state/const';
 import { State } from '../renderers/shared/state/State';
 
 import type { RenderSurface } from '../renderers/gpu/renderTarget/GpuRenderTargetSystem';
 import type { ShaderWithResourcesDescriptor } from '../renderers/shared/shader/Shader';
+import type { BLEND_MODES } from '../renderers/shared/state/const';
 import type { Texture } from '../renderers/shared/texture/Texture';
 import type { FilterSystem } from './shared/FilterSystem';
 
@@ -25,7 +25,7 @@ export class Filter extends Shader
      * @static
      */
     static readonly defaultOptions: Partial<FilterOptions> = {
-        blendMode: BLEND_MODES.NORMAL,
+        blendMode: 'normal',
         resolution: 1,
         padding: 0,
         antialias: 'inherit',

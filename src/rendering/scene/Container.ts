@@ -2,7 +2,6 @@ import EventEmitter from 'eventemitter3';
 import { DEG_TO_RAD, RAD_TO_DEG } from '../../maths/const';
 import { Matrix } from '../../maths/Matrix';
 import { ObservablePoint } from '../../maths/ObservablePoint';
-import { BLEND_MODES } from '../renderers/shared/state/const';
 import { childrenHelperMixin } from './container-mixins/childrenHelperMixin';
 import { effectsMixin } from './container-mixins/effectsMixin';
 import { findMixin } from './container-mixins/getByLabelMixin';
@@ -13,6 +12,7 @@ import { LayerGroup } from './LayerGroup';
 
 import type { Dict } from '../../utils/types';
 import type { Renderable } from '../renderers/shared/Renderable';
+import type { BLEND_MODES } from '../renderers/shared/state/const';
 import type { View } from '../renderers/shared/View';
 import type { DestroyOptions } from './destroyTypes';
 import type { Effect } from './Effect';
@@ -159,8 +159,8 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
 
     /// BLEND related props //////////////
 
-    public localBlendMode = BLEND_MODES.INHERIT;
-    public layerBlendMode = BLEND_MODES.NORMAL;
+    public localBlendMode: BLEND_MODES = 'inherit';
+    public layerBlendMode: BLEND_MODES = 'normal';
 
     /// VISIBILITY related props //////////////
 
@@ -612,6 +612,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
     {
         if (this.localBlendMode === value) return;
 
+        // TODO look at this in the future!!
         // blend mode changes break batches!
 
         // if (this.layerGroup && !this.isLayerRoot)
@@ -637,7 +638,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         this.onUpdate();
     }
 
-    get blendMode(): number
+    get blendMode(): BLEND_MODES
     {
         return this.localBlendMode;
     }

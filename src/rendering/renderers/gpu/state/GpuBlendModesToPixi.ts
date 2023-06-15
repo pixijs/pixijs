@@ -1,8 +1,8 @@
-import { BLEND_MODES } from '../../shared/state/const';
+import type { BLEND_MODES } from '../../shared/state/const';
 
-export const GpuBlendModesToPixi: GPUBlendState[] = [];
+export const GpuBlendModesToPixi: Partial<Record<BLEND_MODES, GPUBlendState>> = {};
 
-GpuBlendModesToPixi[BLEND_MODES.NORMAL] = {
+GpuBlendModesToPixi.normal = {
     alpha: {
         srcFactor: 'src-alpha',
         dstFactor: 'one-minus-src-alpha',
@@ -15,7 +15,7 @@ GpuBlendModesToPixi[BLEND_MODES.NORMAL] = {
     },
 };
 
-GpuBlendModesToPixi[BLEND_MODES.ADD] = {
+GpuBlendModesToPixi.add = {
     alpha: {
         srcFactor: 'src-alpha',
         dstFactor: 'one-minus-src-alpha',
@@ -28,7 +28,7 @@ GpuBlendModesToPixi[BLEND_MODES.ADD] = {
     },
 };
 
-GpuBlendModesToPixi[BLEND_MODES.MULTIPLY] = {
+GpuBlendModesToPixi.multiply = {
     alpha: {
         srcFactor: 'one',
         dstFactor: 'one-minus-src-alpha',
@@ -41,7 +41,7 @@ GpuBlendModesToPixi[BLEND_MODES.MULTIPLY] = {
     },
 };
 
-GpuBlendModesToPixi[BLEND_MODES.SCREEN] = {
+GpuBlendModesToPixi.screen = {
     alpha: {
         srcFactor: 'one',
         dstFactor: 'one-minus-src-alpha',
@@ -54,7 +54,7 @@ GpuBlendModesToPixi[BLEND_MODES.SCREEN] = {
     },
 };
 
-GpuBlendModesToPixi[BLEND_MODES.OVERLAY] = {
+GpuBlendModesToPixi.overlay = {
     alpha: {
         srcFactor: 'one',
         dstFactor: 'one-minus-src-alpha',
@@ -67,7 +67,7 @@ GpuBlendModesToPixi[BLEND_MODES.OVERLAY] = {
     },
 };
 
-GpuBlendModesToPixi[BLEND_MODES.NONE] = {
+GpuBlendModesToPixi.none = {
     alpha: {
         srcFactor: 'one',
         dstFactor: 'one-minus-src-alpha',
@@ -81,7 +81,7 @@ GpuBlendModesToPixi[BLEND_MODES.NONE] = {
 };
 
 // not-premultiplied blend modes
-GpuBlendModesToPixi[BLEND_MODES.NORMAL_NPM] = {
+GpuBlendModesToPixi['normal-npm'] = {
     alpha: {
         srcFactor: 'one',
         dstFactor: 'one-minus-src-alpha',
@@ -94,7 +94,7 @@ GpuBlendModesToPixi[BLEND_MODES.NORMAL_NPM] = {
     },
 };
 
-GpuBlendModesToPixi[BLEND_MODES.ADD_NPM] = {
+GpuBlendModesToPixi['add-npm'] = {
     alpha: {
         srcFactor: 'one',
         dstFactor: 'one',
@@ -107,7 +107,7 @@ GpuBlendModesToPixi[BLEND_MODES.ADD_NPM] = {
     },
 };
 
-GpuBlendModesToPixi[BLEND_MODES.SCREEN_NPM] = {
+GpuBlendModesToPixi['screen-npm'] = {
     alpha: {
         srcFactor: 'one',
         dstFactor: 'one-minus-src-alpha',

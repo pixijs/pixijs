@@ -1,4 +1,3 @@
-import { BLEND_MODES } from '../../src/rendering/renderers/shared/state/const';
 import { Container } from '../../src/rendering/scene/Container';
 import { updateLayerGroupTransforms } from '../../src/rendering/scene/utils/updateLayerGroupTransforms';
 
@@ -10,7 +9,7 @@ describe('Transform Blend Modes', () =>
 
         root.layerGroup.structureDidChange = false;
 
-        root.blendMode = BLEND_MODES.ADD;
+        root.blendMode = 'add';
 
         expect(root.layerGroup.structureDidChange).toEqual(false);
     });
@@ -25,7 +24,7 @@ describe('Transform Blend Modes', () =>
 
         root.addChild(child);
 
-        child.blendMode = BLEND_MODES.ADD;
+        child.blendMode = 'add';
 
         expect(root.layerGroup.structureDidChange).toEqual(true);
     });
@@ -42,11 +41,11 @@ describe('Transform Blend Modes', () =>
 
         container.addChild(child);
 
-        container.blendMode = BLEND_MODES.ADD;
+        container.blendMode = 'add';
 
         updateLayerGroupTransforms(root.layerGroup, true);
 
-        expect(child.layerBlendMode).toEqual(BLEND_MODES.ADD);
+        expect(child.layerBlendMode).toEqual('add');
     });
 
     it('should inherit blend modes when children swapped around on the scene graph', async () =>
@@ -63,17 +62,17 @@ describe('Transform Blend Modes', () =>
 
         container.addChild(child);
 
-        containerAdd.blendMode = BLEND_MODES.ADD;
+        containerAdd.blendMode = 'add';
 
         updateLayerGroupTransforms(root.layerGroup, true);
 
-        expect(child.layerBlendMode).toEqual(BLEND_MODES.NORMAL);
+        expect(child.layerBlendMode).toEqual('normal');
 
         containerAdd.addChild(child);
 
         updateLayerGroupTransforms(root.layerGroup, true);
 
-        expect(child.layerBlendMode).toEqual(BLEND_MODES.ADD);
+        expect(child.layerBlendMode).toEqual('add');
     });
 });
 
