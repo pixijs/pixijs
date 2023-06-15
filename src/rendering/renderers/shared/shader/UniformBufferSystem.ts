@@ -28,12 +28,20 @@ export class UniformBufferSystem implements ISystem
     /** Cache of uniform buffer layouts and sync functions, so we don't have to re-create them */
     private _syncFunctionHash: Record<string, {
         layout: UniformBufferLayout,
-        syncFunction: (uniforms: Record<string, any>, data: Float32Array) => void
+        syncFunction: (uniforms: Record<string, any>, data: Float32Array, offset: number) => void
     }> = {};
 
     constructor(renderer: Renderer)
     {
         this.renderer = renderer;
+    }
+
+    ensureUniformGroup(uniformGroup: UniformGroup): void
+    {
+        if (!uniformGroup._syncFunction)
+        {
+            this.initUniformGroup(uniformGroup);
+        }
     }
 
     initUniformGroup(uniformGroup: UniformGroup): UniformsSyncCallback
@@ -66,18 +74,28 @@ export class UniformBufferSystem implements ISystem
         return uniformGroup._syncFunction;
     }
 
+    syncUniformGroup(uniformGroup: UniformGroup, data?: Float32Array, offset?: number): boolean
+    {
+        const syncFunction = uniformGroup._syncFunction || this.initUniformGroup(uniformGroup);
+
+        data ||= (uniformGroup.buffer.data as Float32Array);
+        offset ||= 0;
+
+        syncFunction(uniformGroup.uniforms, data, offset);
+
+        return true;
+    }
+
     updateUniformGroup(uniformGroup: UniformGroup): boolean
     {
         if (uniformGroup.isStatic && !uniformGroup.dirtyId) return false;
         uniformGroup.dirtyId = 0;
 
-        const syncFunction = uniformGroup._syncFunction || this.initUniformGroup(uniformGroup);
-
-        syncFunction(uniformGroup.uniforms, uniformGroup.buffer.data as Float32Array);
+        const synced = this.syncUniformGroup(uniformGroup);
 
         uniformGroup.buffer.update();
 
-        return true;
+        return synced;
     }
 
     destroy(): void

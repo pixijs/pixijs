@@ -1,27 +1,19 @@
-import { ExtensionType } from '../../../../extensions/Extensions';
-import { UniformBufferBatch } from '../../gpu/buffer/UniformBufferBatch';
-import { BindGroup } from '../../gpu/shader/BindGroup';
-import { Buffer } from '../buffer/Buffer';
-import { BufferResource } from '../buffer/BufferResource';
-import { BufferUsage } from '../buffer/const';
+import { ExtensionType } from '../../../extensions/Extensions';
+import { Buffer } from '../shared/buffer/Buffer';
+import { BufferResource } from '../shared/buffer/BufferResource';
+import { BufferUsage } from '../shared/buffer/const';
+import { UniformBufferBatch } from './buffer/UniformBufferBatch';
+import { BindGroup } from './shader/BindGroup';
 
-import type { ExtensionMetadata } from '../../../../extensions/Extensions';
-import type { WebGPURenderer } from '../../gpu/WebGPURenderer';
-import type { UniformGroup } from '../shader/UniformGroup';
-import type { Instruction } from './Instruction';
-import type { InstructionPipe } from './RenderPipe';
-
-export interface UniformInstruction extends Instruction
-{
-    type: 'bundles';
-    bundle: GPURenderBundle;
-}
+import type { ExtensionMetadata } from '../../../extensions/Extensions';
+import type { UniformGroup } from '../shared/shader/UniformGroup';
+import type { WebGPURenderer } from './WebGPURenderer';
 
 const minUniformOffsetAlignment = 128;// 256 / 2;
 
 // TODO renderStart and renderFinish - perhaps just make them instructions to fit the architecture of the
 // rest of the system
-export class UniformBatchPipe implements InstructionPipe<UniformInstruction>
+export class GpuUniformBatchPipe
 {
     /** @ignore */
     static extension: ExtensionMetadata = {
@@ -71,7 +63,11 @@ export class UniformBatchPipe implements InstructionPipe<UniformInstruction>
 
     private resetBindGroups()
     {
-        this.bindGroupHash = {};
+        for (const i in this.bindGroupHash)
+        {
+            this.bindGroupHash[i] = null;
+        }
+
         this.batchBuffer.clear();
     }
 
@@ -83,13 +79,13 @@ export class UniformBatchPipe implements InstructionPipe<UniformInstruction>
             return this.bindGroupHash[group.uid];
         }
 
-        // update the data..
-        // TODO upload directly to the buffer...
-        this.renderer.uniformBuffer.updateUniformGroup(group);
+        this.renderer.uniformBuffer.ensureUniformGroup(group);
 
         const data = group.buffer.data as Float32Array;
 
-        const offset = this.batchBuffer.addGroup(data);
+        const offset = this.batchBuffer.addEmptyGroup(data.length);
+
+        this.renderer.uniformBuffer.syncUniformGroup(group, this.batchBuffer.data, offset / 4);
 
         this.bindGroupHash[group.uid] = this.getBindGroup(offset / minUniformOffsetAlignment);
 
