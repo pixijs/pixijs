@@ -38,7 +38,7 @@ export class UniformGroup<UNIFORMS extends { [key: string]: UniformData } = any>
 
     isStatic: boolean;
     // to identify this as a uniform group
-    readonly group = true;
+    readonly isUniformGroup = true;
 
     dirtyId = 0;
 

@@ -195,7 +195,7 @@ export class GpuEncoderSystem implements ISystem
         {
             const resource = bindGroup.resources[j];
 
-            if ((resource as UniformGroup).group)
+            if ((resource as UniformGroup).isUniformGroup)
             {
                 this.renderer.uniformBuffer.updateUniformGroup(resource as UniformGroup);
             }

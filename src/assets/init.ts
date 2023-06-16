@@ -1,4 +1,4 @@
-import { extensions } from '../extensions/Extensions';
+import { extensions, ExtensionType } from '../extensions/Extensions';
 import { bitmapFontCachePlugin, xmlBitmapFontLoader } from '../rendering/text/bitmap/asset/loadBitmapFont';
 import { cacheTextureArray } from './cache/parsers/cacheTextureArray';
 import { detectAvif } from './detections/parsers/detectAvif';
@@ -13,6 +13,8 @@ import { loadWebFont } from './loader/parsers/loadWebFont';
 import { loadSvg } from './loader/parsers/textures/loadSVG';
 import { loadTextures } from './loader/parsers/textures/loadTextures';
 import { resolveTextureUrl } from './resolver/parsers/resolveTextureUrl';
+
+import type { AssetExtension } from './AssetExtension';
 
 extensions.add(
     cacheTextureArray,
@@ -37,3 +39,35 @@ extensions.add(
     xmlBitmapFontLoader,
     bitmapFontCachePlugin
 );
+
+const assetKeyMap = {
+    loader: ExtensionType.LoadParser,
+    resolver: ExtensionType.ResolveParser,
+    cache: ExtensionType.CacheParser,
+    detection: ExtensionType.DetectionParser,
+};
+
+type AssetType = keyof typeof assetKeyMap;
+
+// Split the Asset extension into it's various parts
+// these are handled in the Assets.ts file
+extensions.handle(ExtensionType.Asset, (extension) =>
+{
+    const ref = extension.ref as AssetExtension;
+
+    Object.entries(assetKeyMap)
+        .filter(([key]) => !!ref[key as AssetType])
+        .forEach(([key, type]) => extensions.add(Object.assign(
+            ref[key as AssetType],
+            // Allow the function to optionally define it's own
+            // ExtensionMetadata, the use cases here is priority for LoaderParsers
+            { extension: ref[key as AssetType].extension ?? type },
+        )));
+}, (extension) =>
+{
+    const ref = extension.ref as AssetExtension;
+
+    Object.keys(assetKeyMap)
+        .filter((key) => !!ref[key as AssetType])
+        .forEach((key) => extensions.remove(ref[key as AssetType]));
+});
