@@ -1,6 +1,5 @@
 {
   "name": "@pixi/assets",
-  "version": "7.0.0-alpha.3",
   "description": "Asset manager for PixiJS, loading resolving and Cacheing",
   "keywords": [
     "pixi",
@@ -9,20 +8,20 @@
     "loaders"
   ],
   "author": "Mat Groves <mat.groves@play.co>",
-  "homepage": "https://github.com/pixijs/pixi.js#readme",
+  "homepage": "https://github.com/pixijs/pixijs#readme",
   "license": "MIT",
-  "main": "dist/cjs/assets.js",
-  "module": "dist/esm/assets.mjs",
-  "types": "index.d.ts",
+  "main": "lib/index.js",
+  "module": "lib/index.mjs",
+  "types": "lib/index.d.ts",
   "exports": {
     ".": {
       "import": {
-        "types": "./index.d.ts",
-        "default": "./dist/esm/assets.mjs"
+        "types": "./lib/index.d.ts",
+        "default": "./lib/index.mjs"
       },
       "require": {
-        "types": "./index.d.ts",
-        "default": "./dist/cjs/assets.js"
+        "types": "./lib/index.d.ts",
+        "default": "./lib/index.js"
       }
     }
   },
@@ -30,23 +29,24 @@
     "access": "public"
   },
   "files": [
-    "dist",
+    "lib",
     "*.d.ts"
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/pixijs/pixi.js.git"
+    "url": "git+https://github.com/pixijs/pixijs.git"
   },
   "scripts": {
     "test": "echo \"Error: run tests from root\" && exit 1"
   },
   "bugs": {
-    "url": "https://github.com/pixijs/pixi.js/issues"
+    "url": "https://github.com/pixijs/pixijs/issues"
   },
   "dependencies": {
     "@types/css-font-loading-module": "^0.0.7"
   },
-  "pixiRequirements": [
-    "@pixi/core"
-  ]
+  "peerDependencies": {
+    "@pixi/core": "file:../core",
+    "@pixi/utils": "file:../utils"
+  }
 }

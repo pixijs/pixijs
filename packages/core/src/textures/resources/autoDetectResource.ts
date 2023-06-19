@@ -1,8 +1,7 @@
-import type { Resource } from './Resource';
-
-import type { IImageResourceOptions } from './ImageResource';
 import type { ISize } from '@pixi/math';
 import type { ICubeResourceOptions } from './CubeResource';
+import type { IImageResourceOptions } from './ImageResource';
+import type { Resource } from './Resource';
 import type { ISVGResourceOptions } from './SVGResource';
 import type { IVideoResourceOptions } from './VideoResource';
 
@@ -35,19 +34,19 @@ export interface IResourcePlugin<R, RO>
  * Collection of installed resource types, class must extend {@link PIXI.Resource}.
  * @example
  * class CustomResource extends PIXI.Resource {
- *   // MUST have source, options constructor signature
- *   // for auto-detected resources to be created.
- *   constructor(source, options) {
- *     super();
- *   }
- *   upload(renderer, baseTexture, glTexture) {
- *     // upload with GL
- *     return true;
- *   }
- *   // used to auto-detect resource
- *   static test(source, extension) {
- *     return extension === 'xyz'|| source instanceof SomeClass;
- *   }
+ *     // MUST have source, options constructor signature
+ *     // for auto-detected resources to be created.
+ *     constructor(source, options) {
+ *         super();
+ *     }
+ *     upload(renderer, baseTexture, glTexture) {
+ *         // Upload with GL
+ *         return true;
+ *     }
+ *     // Used to auto-detect resource
+ *     static test(source, extension) {
+ *         return extension === 'xyz' || source instanceof SomeClass;
+ *     }
  * }
  * // Install the new resource type
  * PIXI.INSTALLED.push(CustomResource);

@@ -1,11 +1,12 @@
-/**
+/*
  * This file contains redeclared types for Node `url` and `querystring` modules. These modules
  * don't provide their own typings but instead are a part of the full Node typings. The purpose of
  * this file is to redeclare the required types to avoid having the whole Node types as a
  * dependency.
  */
 
-import { parse as _parse, format as _format, resolve as _resolve } from 'url';
+import { format as _format, parse as _parse, resolve as _resolve } from 'url';
+import { deprecation } from './logging/deprecation';
 
 interface ParsedUrlQuery
 {
@@ -80,7 +81,37 @@ type ResolveFunction = {
 };
 
 export const url = {
-    parse: _parse as ParseFunction,
-    format: _format as FormatFunction,
-    resolve: _resolve as ResolveFunction,
+    /**
+     * @deprecated since 7.3.0
+     */
+    get parse()
+    {
+        // #if _DEBUG
+        deprecation('7.3.0', 'utils.url.parse is deprecated, use native URL API instead.');
+        // #endif
+
+        return _parse as ParseFunction;
+    },
+    /**
+     * @deprecated since 7.3.0
+     */
+    get format()
+    {
+        // #if _DEBUG
+        deprecation('7.3.0', 'utils.url.format is deprecated, use native URL API instead.');
+        // #endif
+
+        return _format as FormatFunction;
+    },
+    /**
+     * @deprecated since 7.3.0
+     */
+    get resolve()
+    {
+        // #if _DEBUG
+        deprecation('7.3.0', 'utils.url.resolve is deprecated, use native URL API instead.');
+        // #endif
+
+        return _resolve as ResolveFunction;
+    }
 };

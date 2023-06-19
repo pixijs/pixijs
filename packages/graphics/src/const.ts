@@ -2,41 +2,61 @@
  * Supported line joints in `PIXI.LineStyle` for graphics.
  * @see PIXI.Graphics#lineStyle
  * @see https://graphicdesign.stackexchange.com/questions/59018/what-is-a-bevel-join-of-two-lines-exactly-illustrator
- * @name LINE_JOIN
  * @memberof PIXI
  * @static
  * @enum {string}
- * @property {string} MITER - 'miter': make a sharp corner where outer part of lines meet
- * @property {string} BEVEL - 'bevel': add a square butt at each end of line segment and fill the triangle at turn
- * @property {string} ROUND - 'round': add an arc at the joint
  */
 export enum LINE_JOIN
 // eslint-disable-next-line @typescript-eslint/indent
 {
+    /**
+     * 'miter': make a sharp corner where outer part of lines meet
+     * @default miter
+     */
     MITER = 'miter',
+    /**
+     * 'bevel': add a square butt at each end of line segment and fill the triangle at turn
+     * @default bevel
+     */
     BEVEL = 'bevel',
+    /**
+     * 'round': add an arc at the joint
+     * @default round
+     */
     ROUND = 'round'
 }
 
 /**
  * Support line caps in `PIXI.LineStyle` for graphics.
  * @see PIXI.Graphics#lineStyle
- * @name LINE_CAP
  * @memberof PIXI
  * @static
  * @enum {string}
- * @property {string} BUTT - 'butt': don't add any cap at line ends (leaves orthogonal edges)
- * @property {string} ROUND - 'round': add semicircle at ends
- * @property {string} SQUARE - 'square': add square at end (like `BUTT` except more length at end)
  */
 export enum LINE_CAP
 // eslint-disable-next-line @typescript-eslint/indent
 {
+    /**
+     * 'butt': don't add any cap at line ends (leaves orthogonal edges)
+     * @default butt
+     */
     BUTT = 'butt',
+    /**
+     * 'round': add semicircle at ends
+     * @default round
+     */
     ROUND = 'round',
+    /**
+     * 'square': add square at end (like `BUTT` except more length at end)
+     * @default square
+     */
     SQUARE = 'square'
 }
 
+/**
+ * @memberof PIXI
+ * @deprecated
+ */
 export interface IGraphicsCurvesSettings
 {
     adaptive: boolean;
@@ -50,20 +70,9 @@ export interface IGraphicsCurvesSettings
 }
 
 /**
- * Graphics curves resolution settings. If `adaptive` flag is set to `true`,
- * the resolution is calculated based on the curve's length to ensure better visual quality.
- * Adaptive draw works with `bezierCurveTo` and `quadraticCurveTo`.
- * @static
- * @constant
- * @memberof PIXI
- * @name GRAPHICS_CURVES
- * @type {object}
- * @property {boolean} [adaptive=true] - flag indicating if the resolution should be adaptive
- * @property {number} [maxLength=10] - maximal length of a single segment of the curve (if adaptive = false, ignored)
- * @property {number} [minSegments=8] - minimal number of segments in the curve (if adaptive = false, ignored)
- * @property {number} [maxSegments=2048] - maximal number of segments in the curve (if adaptive = false, ignored)
+ * @private
  */
-export const GRAPHICS_CURVES: IGraphicsCurvesSettings = {
+export const curves = {
     adaptive: true,
     maxLength: 10,
     minSegments: 8,
@@ -92,3 +101,14 @@ export const GRAPHICS_CURVES: IGraphicsCurvesSettings = {
         return result;
     },
 };
+
+/**
+ * @static
+ * @readonly
+ * @memberof PIXI
+ * @name GRAPHICS_CURVES
+ * @type {object}
+ * @deprecated since 7.1.0
+ * @see PIXI.Graphics.curves
+ */
+export const GRAPHICS_CURVES = curves;

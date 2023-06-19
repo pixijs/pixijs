@@ -1,19 +1,19 @@
+import { CLEAR_MODES, DRAW_MODES, MSAA_QUALITY } from '@pixi/constants';
+import { extensions, ExtensionType } from '@pixi/extensions';
+import { Matrix, Point, Rectangle } from '@pixi/math';
 import { RenderTexturePool } from '../renderTexture/RenderTexturePool';
+import { UniformGroup } from '../shader/UniformGroup';
 import { Quad } from '../utils/Quad';
 import { QuadUv } from '../utils/QuadUv';
-import { Rectangle, Matrix, Point } from '@pixi/math';
-import { UniformGroup } from '../shader/UniformGroup';
-import { DRAW_MODES, CLEAR_MODES, MSAA_QUALITY } from '@pixi/constants';
 import { FilterState } from './FilterState';
 
+import type { ExtensionMetadata } from '@pixi/extensions';
+import type { Renderer } from '../Renderer';
+import type { RenderTexture } from '../renderTexture/RenderTexture';
 import type { ISystem } from '../system/ISystem';
 import type { Filter } from './Filter';
 import type { IFilterTarget } from './IFilterTarget';
 import type { ISpriteMaskTarget } from './spriteMask/SpriteMaskFilter';
-import type { RenderTexture } from '../renderTexture/RenderTexture';
-import type { Renderer } from '../Renderer';
-import type { ExtensionMetadata } from '@pixi/extensions';
-import { extensions, ExtensionType } from '@pixi/extensions';
 
 const tempPoints = [new Point(), new Point(), new Point(), new Point()];
 const tempMatrix = new Matrix();
@@ -151,10 +151,25 @@ export class FilterSystem implements ISystem
         const renderer = this.renderer;
         const filterStack = this.defaultFilterStack;
         const state = this.statePool.pop() || new FilterState();
-        const renderTextureSystem = this.renderer.renderTexture;
+        const renderTextureSystem = renderer.renderTexture;
+        let currentResolution: number;
+        let currentMultisample: MSAA_QUALITY;
 
-        let resolution = filters[0].resolution;
-        let multisample = filters[0].multisample;
+        if (renderTextureSystem.current)
+        {
+            const renderTexture = renderTextureSystem.current;
+
+            currentResolution = renderTexture.resolution;
+            currentMultisample = renderTexture.multisample;
+        }
+        else
+        {
+            currentResolution = renderer.resolution;
+            currentMultisample = renderer.multisample;
+        }
+
+        let resolution = filters[0].resolution || currentResolution;
+        let multisample = filters[0].multisample ?? currentMultisample;
         let padding = filters[0].padding;
         let autoFit = filters[0].autoFit;
         // We don't know whether it's a legacy filter until it was bound for the first time,
@@ -166,9 +181,9 @@ export class FilterSystem implements ISystem
             const filter = filters[i];
 
             // let's use the lowest resolution
-            resolution = Math.min(resolution, filter.resolution);
+            resolution = Math.min(resolution, filter.resolution || currentResolution);
             // let's use the lowest number of samples
-            multisample = Math.min(multisample, filter.multisample);
+            multisample = Math.min(multisample, filter.multisample ?? currentMultisample);
             // figure out the padding required for filters
             padding = this.useMaxPadding
                 // old behavior: use largest amount of padding!
@@ -432,7 +447,7 @@ export class FilterSystem implements ISystem
     /**
      * Draws a filter using the default rendering process.
      *
-     * This should be called only by {@link Filter#apply}.
+     * This should be called only by {@link PIXI.Filter#apply}.
      * @param filter - The filter to draw.
      * @param input - The input render target.
      * @param output - The target to output to.

@@ -1,4 +1,4 @@
-import { GRAPHICS_CURVES } from '../const';
+import { curves } from '../const';
 
 /**
  * Utilities for quadratic curves.
@@ -63,7 +63,7 @@ export class QuadraticUtils
         const fromX = points[points.length - 2];
         const fromY = points[points.length - 1];
 
-        const n = GRAPHICS_CURVES._segmentsCount(
+        const n = curves._segmentsCount(
             QuadraticUtils.curveLength(fromX, fromY, cpX, cpY, toX, toY)
         );
 

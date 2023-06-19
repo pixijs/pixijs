@@ -11,6 +11,7 @@ Thumbs.db
 Desktop.ini
 npm-debug.log
 lerna-debug.log
+.eslintcache
 
 # project files
 .project
@@ -31,6 +32,7 @@ coverage
 coverage.lcov
 .nyc_output
 dist
+lib
 bundles/*/*.d.ts
 out
 packages/**/index.d.ts

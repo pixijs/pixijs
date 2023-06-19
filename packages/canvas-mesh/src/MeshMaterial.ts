@@ -1,7 +1,7 @@
 import { MeshMaterial } from '@pixi/mesh';
 
-import type { Mesh } from '@pixi/mesh';
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
+import type { Mesh } from '@pixi/mesh';
 
 /**
  * Renders the mesh using the Canvas renderer

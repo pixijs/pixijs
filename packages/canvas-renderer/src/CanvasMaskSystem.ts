@@ -1,9 +1,9 @@
-import { SHAPES, extensions, ExtensionType } from '@pixi/core';
+import { extensions, ExtensionType, SHAPES } from '@pixi/core';
 
 import type { ExtensionMetadata, ISystem, MaskData, Polygon } from '@pixi/core';
-import type { CanvasRenderer } from './CanvasRenderer';
-import type { Graphics } from '@pixi/graphics';
 import type { Container } from '@pixi/display';
+import type { Graphics } from '@pixi/graphics';
+import type { CanvasRenderer } from './CanvasRenderer';
 /**
  * A set of functions used to handle masking.
  *

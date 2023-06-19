@@ -1,39 +1,41 @@
 {
   "name": "@pixi/graphics-extras",
-  "version": "7.0.0-alpha.3",
-  "main": "dist/cjs/graphics-extras.js",
-  "module": "dist/esm/graphics-extras.mjs",
-  "types": "index.d.ts",
+  "main": "lib/index.js",
+  "module": "lib/index.mjs",
+  "types": "lib/index.d.ts",
+  "plugin": "dist/graphics-extras.js",
+  "pluginExports": false,
   "exports": {
     ".": {
       "import": {
-        "types": "./index.d.ts",
-        "default": "./dist/esm/graphics-extras.mjs"
+        "types": "./lib/index.d.ts",
+        "default": "./lib/index.mjs"
       },
       "require": {
-        "types": "./index.d.ts",
-        "default": "./dist/cjs/graphics-extras.js"
+        "types": "./lib/index.d.ts",
+        "default": "./lib/index.js"
       }
     }
   },
   "description": "Additional Graphics functions for drawing special shapes.",
   "author": "Matt Karl <matt@mattkarl.com>",
   "homepage": "http://pixijs.com/",
-  "bugs": "https://github.com/pixijs/pixi.js/issues",
+  "bugs": "https://github.com/pixijs/pixijs/issues",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/pixijs/pixi.js.git"
+    "url": "https://github.com/pixijs/pixijs.git"
   },
   "publishConfig": {
     "access": "public"
   },
   "files": [
     "dist",
+    "lib",
     "*.d.ts"
   ],
-  "pixiRequirements": [
-    "@pixi/core",
-    "@pixi/graphics"
-  ]
+  "peerDependencies": {
+    "@pixi/core": "file:../core",
+    "@pixi/graphics": "file:../graphics"
+  }
 }

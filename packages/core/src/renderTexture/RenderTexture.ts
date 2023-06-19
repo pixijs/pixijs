@@ -1,10 +1,10 @@
-import { BaseRenderTexture } from './BaseRenderTexture';
 import { Texture } from '../textures/Texture';
+import { BaseRenderTexture } from './BaseRenderTexture';
 
+import type { MSAA_QUALITY } from '@pixi/constants';
 import type { Rectangle } from '@pixi/math';
 import type { Framebuffer } from '../framebuffer/Framebuffer';
 import type { IBaseTextureOptions } from '../textures/BaseTexture';
-import type { MSAA_QUALITY } from '@pixi/constants';
 
 /**
  * A RenderTexture is a special texture that allows any PixiJS display object to be rendered to it.
@@ -21,14 +21,14 @@ import type { MSAA_QUALITY } from '@pixi/constants';
  *
  * const renderer = autoDetectRenderer();
  * const renderTexture = RenderTexture.create({ width: 800, height: 600 });
- * const sprite = Sprite.from("spinObj_01.png");
+ * const sprite = Sprite.from('spinObj_01.png');
  *
- * sprite.position.x = 800/2;
- * sprite.position.y = 600/2;
+ * sprite.position.x = 800 / 2;
+ * sprite.position.y = 600 / 2;
  * sprite.anchor.x = 0.5;
  * sprite.anchor.y = 0.5;
  *
- * renderer.render(sprite, {renderTexture});
+ * renderer.render(sprite, { renderTexture });
  *
  * // Note that you should not create a new renderer, but reuse the same one as the rest of the application.
  * // The Sprite in this case will be rendered using its local transform. To render this sprite at 0,0
@@ -38,7 +38,7 @@ import type { MSAA_QUALITY } from '@pixi/constants';
  *
  * const renderTexture = new RenderTexture.create({ width: 100, height: 100 });
  *
- * renderer.render(sprite, {renderTexture});  // Renders to center of RenderTexture
+ * renderer.render(sprite, { renderTexture });  // Renders to center of RenderTexture
  * @memberof PIXI
  */
 export class RenderTexture extends Texture
@@ -146,7 +146,7 @@ export class RenderTexture extends Texture
      * @param options - Options
      * @param {number} [options.width=100] - The width of the render texture
      * @param {number} [options.height=100] - The height of the render texture
-     * @param {PIXI.SCALE_MODES} [options.scaleMode=PIXI.settings.SCALE_MODE] - See {@link PIXI.SCALE_MODES}
+     * @param {PIXI.SCALE_MODES} [options.scaleMode=PIXI.BaseTexture.defaultOptions.scaleMode] - See {@link PIXI.SCALE_MODES}
      *    for possible values
      * @param {number} [options.resolution=PIXI.settings.RESOLUTION] - The resolution / device pixel ratio of the texture
      *    being generated

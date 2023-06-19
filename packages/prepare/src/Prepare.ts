@@ -1,9 +1,9 @@
 import { BaseTexture, extensions, ExtensionType } from '@pixi/core';
 import { Graphics } from '@pixi/graphics';
-import type { IDisplayObjectExtended } from './BasePrepare';
 import { BasePrepare } from './BasePrepare';
 
-import type { Renderer, IRenderer, ISystem, ExtensionMetadata } from '@pixi/core';
+import type { ExtensionMetadata, IRenderer, ISystem, Renderer } from '@pixi/core';
+import type { IDisplayObjectExtended } from './BasePrepare';
 
 /**
  * Built-in hook to upload PIXI.Texture objects to the GPU.
@@ -95,19 +95,18 @@ function findGraphics(item: IDisplayObjectExtended, queue: Array<any>): boolean
  * The prepare plugin provides renderer-specific plugins for pre-rendering DisplayObjects. These plugins are useful for
  * asynchronously preparing and uploading to the GPU assets, textures, graphics waiting to be displayed.
  *
- * Do not instantiate this plugin directly. It is available from the `renderer.plugins` property.
- * See {@link PIXI.CanvasRenderer#plugins} or {@link PIXI.Renderer#plugins}.
+ * Do not instantiate this plugin directly. It is available from the `renderer.prepare` property.
  * @example
  * import { Application, Graphics } from 'pixi.js';
  *
- * // Create a new application
+ * // Create a new application (prepare will be auto-added to renderer)
  * const app = new Application();
  * document.body.appendChild(app.view);
  *
  * // Don't start rendering right away
  * app.stop();
  *
- * // create a display object
+ * // Create a display object
  * const rect = new Graphics()
  *     .beginFill(0x00ff00)
  *     .drawRect(40, 40, 200, 200);
@@ -116,7 +115,7 @@ function findGraphics(item: IDisplayObjectExtended, queue: Array<any>): boolean
  * app.stage.addChild(rect);
  *
  * // Don't start rendering until the graphic is uploaded to the GPU
- * app.renderer.plugins.prepare.upload(app.stage, () => {
+ * app.renderer.prepare.upload(app.stage, () => {
  *     app.start();
  * });
  * @memberof PIXI

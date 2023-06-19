@@ -1,7 +1,4 @@
-import { Renderer, Shader, CanvasResource, Geometry, UniformGroup, BaseTexture } from '@pixi/core';
-import { skipHello } from '@pixi/utils';
-
-skipHello();
+import { BaseTexture, CanvasResource, Geometry, Renderer, Shader, UniformGroup } from '@pixi/core';
 
 describe('ShaderSystem', () =>
 {
@@ -76,5 +73,18 @@ void main() {
         // actually, order is not important. But if behaviour changes, we'll be better knowing about that
         expect(renderer.texture.boundTextures[0]).toEqual(texture2);
         expect(renderer.texture.boundTextures[1]).toEqual(texture1);
+    });
+
+    it('should unbind shader if the shader is destroyed.', () =>
+    {
+        const shader = Shader.from(vertexSrc, fragmentSrc);
+
+        renderer.shader.bind(shader);
+
+        expect(renderer.shader.shader).toEqual(shader);
+
+        shader.destroy();
+
+        expect(renderer.shader.shader).toEqual(null);
     });
 });

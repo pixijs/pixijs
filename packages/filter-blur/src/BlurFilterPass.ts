@@ -1,18 +1,18 @@
-import { Filter, settings, CLEAR_MODES } from '@pixi/core';
-import { generateBlurVertSource } from './generateBlurVertSource';
+import { CLEAR_MODES, Filter } from '@pixi/core';
 import { generateBlurFragSource } from './generateBlurFragSource';
+import { generateBlurVertSource } from './generateBlurVertSource';
 
 import type { FilterSystem, RenderTexture } from '@pixi/core';
 
 /**
  * The BlurFilterPass applies a horizontal or vertical Gaussian blur to an object.
- * @memberof PIXI.filters
+ * @memberof PIXI
  */
 export class BlurFilterPass extends Filter
 {
     public horizontal: boolean;
-    public strength: number;
-    public passes: number;
+    public strength!: number;
+    public passes!: number;
 
     private _quality: number;
 
@@ -20,10 +20,10 @@ export class BlurFilterPass extends Filter
      * @param horizontal - Do pass along the x-axis (`true`) or y-axis (`false`).
      * @param strength - The strength of the blur filter.
      * @param quality - The quality of the blur filter.
-     * @param resolution - The resolution of the blur filter.
+     * @param {number|null} [resolution=PIXI.Filter.defaultResolution] - The resolution of the blur filter.
      * @param kernelSize - The kernelSize of the blur filter.Options: 5, 7, 9, 11, 13, 15.
      */
-    constructor(horizontal: boolean, strength = 8, quality = 4, resolution = settings.FILTER_RESOLUTION, kernelSize = 5)
+    constructor(horizontal: boolean, strength = 8, quality = 4, resolution = Filter.defaultResolution, kernelSize = 5)
     {
         const vertSrc = generateBlurVertSource(kernelSize, horizontal);
         const fragSrc = generateBlurFragSource(kernelSize);

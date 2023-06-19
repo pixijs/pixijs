@@ -1,18 +1,17 @@
 {
   "name": "@pixi/canvas-sprite-tiling",
-  "version": "7.0.0-alpha.3",
-  "main": "dist/cjs/canvas-sprite-tiling.js",
-  "module": "dist/esm/canvas-sprite-tiling.mjs",
-  "types": "index.d.ts",
+  "main": "lib/index.js",
+  "module": "lib/index.mjs",
+  "types": "lib/index.d.ts",
   "exports": {
     ".": {
       "import": {
-        "types": "./index.d.ts",
-        "default": "./dist/esm/canvas-sprite-tiling.mjs"
+        "types": "./lib/index.d.ts",
+        "default": "./lib/index.mjs"
       },
       "require": {
-        "types": "./index.d.ts",
-        "default": "./dist/cjs/canvas-sprite-tiling.js"
+        "types": "./lib/index.d.ts",
+        "default": "./lib/index.js"
       }
     }
   },
@@ -22,23 +21,23 @@
     "Matt Karl <matt@mattkarl.com>"
   ],
   "homepage": "http://pixijs.com/",
-  "bugs": "https://github.com/pixijs/pixi.js/issues",
+  "bugs": "https://github.com/pixijs/pixijs/issues",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/pixijs/pixi.js.git"
+    "url": "https://github.com/pixijs/pixijs.git"
   },
   "publishConfig": {
     "access": "public"
   },
   "files": [
-    "dist",
+    "lib",
     "*.d.ts"
   ],
-  "pixiRequirements": [
-    "@pixi/canvas-renderer",
-    "@pixi/canvas-sprite",
-    "@pixi/core",
-    "@pixi/sprite-tiling"
-  ]
+  "peerDependencies": {
+    "@pixi/canvas-renderer": "file:../canvas-renderer",
+    "@pixi/canvas-sprite": "file:../canvas-sprite",
+    "@pixi/core": "file:../core",
+    "@pixi/sprite-tiling": "file:../sprite-tiling"
+  }
 }

@@ -1,17 +1,18 @@
 import { BUFFER_TYPE } from '@pixi/constants';
 import { Runner } from '@pixi/runner';
+
 import type { GLBuffer } from './GLBuffer';
 
 let UID = 0;
 /* eslint-disable max-len */
 
 /**
- * Marks places in PixiJS where you can pass Float32Array, UInt32Array, any typed arrays, and ArrayBuffer
+ * Marks places in PixiJS where you can pass Float32Array, UInt32Array, any typed arrays, and ArrayBuffer.
  *
- * Same as ArrayBuffer in typescript lib, defined here just for documentation
+ * Same as ArrayBuffer in typescript lib, defined here just for documentation.
+ * @memberof PIXI
  */
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface IArrayBuffer extends ArrayBuffer
+export interface IArrayBuffer extends ArrayBuffer // eslint-disable-line @typescript-eslint/no-empty-interface
 {
 }
 
@@ -19,8 +20,9 @@ export interface IArrayBuffer extends ArrayBuffer
  * PixiJS classes use this type instead of ArrayBuffer and typed arrays
  * to support expressions like `geometry.buffers[0].data[0] = position.x`.
  *
- * Gives access to indexing and `length` field
- * * @popelyshev: If data is actually ArrayBuffer and throws Exception on indexing - its user problem :)
+ * Gives access to indexing and `length` field.
+ * - @popelyshev: If data is actually ArrayBuffer and throws Exception on indexing - its user problem :)
+ * @memberof PIXI
  */
 export interface ITypedArray extends IArrayBuffer
 {

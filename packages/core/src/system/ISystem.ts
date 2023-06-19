@@ -4,11 +4,11 @@ import type { Renderer } from '../Renderer';
  * Interface for systems used by the {@link PIXI.Renderer}.
  * @memberof PIXI
  */
-export interface ISystem<INIT_OPTIONS = null, DESTROY_OPTIONS = null>
+export interface ISystem<InitOptions = null, DestroyOptions = null>
 {
-    init?(options?: INIT_OPTIONS): void;
+    init?(options?: InitOptions): void;
     /** Generic destroy methods to be overridden by the subclass */
-    destroy?(options?: DESTROY_OPTIONS): void;
+    destroy?(options?: DestroyOptions): void;
 }
 
 /**

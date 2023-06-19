@@ -1,4 +1,5 @@
 import { Point } from '@pixi/core';
+
 import type { EventBoundary } from './EventBoundary';
 import type { FederatedEventTarget } from './FederatedEventTarget';
 
@@ -17,7 +18,7 @@ export class FederatedEvent<N extends UIEvent = UIEvent> implements UIEvent
     public cancelBubble = true;
 
     /**
-     * Flags whether this event can be canceled using {@link FederatedEvent.preventDefault}. This is always
+     * Flags whether this event can be canceled using {@link PIXI.FederatedEvent.preventDefault}. This is always
      * false (for now).
      */
     public readonly cancelable = false;
@@ -37,7 +38,7 @@ export class FederatedEvent<N extends UIEvent = UIEvent> implements UIEvent
 
     /**
      * The propagation phase.
-     * @default {@link FederatedEvent.NONE}
+     * @default {@link PIXI.FederatedEvent.NONE}
      */
     public eventPhase = FederatedEvent.prototype.NONE;
 
@@ -74,7 +75,7 @@ export class FederatedEvent<N extends UIEvent = UIEvent> implements UIEvent
     /** The composed path of the event's propagation. The {@code target} is at the end. */
     public path: FederatedEventTarget[];
 
-    /** The {@link EventBoundary} that manages this event. Null for root events. */
+    /** The {@link PIXI.EventBoundary} that manages this event. Null for root events. */
     public readonly manager: EventBoundary;
 
     /** Event-specific detail */
@@ -117,7 +118,7 @@ export class FederatedEvent<N extends UIEvent = UIEvent> implements UIEvent
     }
 
     /**
-     * Fallback for the deprecated {@link PIXI.InteractionEvent.data}.
+     * Fallback for the deprecated @code{PIXI.InteractionEvent.data}.
      * @deprecated since 7.0.0
      */
     get data(): this
@@ -125,7 +126,7 @@ export class FederatedEvent<N extends UIEvent = UIEvent> implements UIEvent
         return this;
     }
 
-    /** The propagation path for this event. Alias for {@link EventBoundary.propagationPath}. */
+    /** The propagation path for this event. Alias for {@link PIXI.EventBoundary.propagationPath}. */
     composedPath(): FederatedEventTarget[]
     {
         // Find the propagation path if it isn't cached or if the target has changed since since
@@ -178,7 +179,7 @@ export class FederatedEvent<N extends UIEvent = UIEvent> implements UIEvent
 
     /**
      * Stop this event from propagating to any addition listeners, including on the
-     * {@link FederatedEventTarget.currentTarget currentTarget} and also the following
+     * {@link PIXI.FederatedEventTarget.currentTarget currentTarget} and also the following
      * event targets on the propagation path.
      */
     stopImmediatePropagation(): void
@@ -187,16 +188,16 @@ export class FederatedEvent<N extends UIEvent = UIEvent> implements UIEvent
     }
 
     /**
-     * Stop this event from propagating to the next {@link FederatedEventTarget}. The rest of the listeners
-     * on the {@link FederatedEventTarget.currentTarget currentTarget} will still be notified.
+     * Stop this event from propagating to the next {@link PIXI.FederatedEventTarget}. The rest of the listeners
+     * on the {@link PIXI.FederatedEventTarget.currentTarget currentTarget} will still be notified.
      */
     stopPropagation(): void
     {
         this.propagationStopped = true;
     }
 
-    AT_TARGET = 1;
-    BUBBLING_PHASE = 2;
-    CAPTURING_PHASE = 3;
-    NONE = 0;
+    readonly NONE = 0;
+    readonly CAPTURING_PHASE = 1;
+    readonly AT_TARGET = 2;
+    readonly BUBBLING_PHASE = 3;
 }

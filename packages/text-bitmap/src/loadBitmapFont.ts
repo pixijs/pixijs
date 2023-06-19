@@ -1,11 +1,11 @@
-import type { Texture } from '@pixi/core';
-import { settings, utils, extensions, ExtensionType } from '@pixi/core';
-
-import type { LoadAsset, Loader, LoaderParser } from '@pixi/assets';
-import { LoaderParserPriority } from '@pixi/assets';
+import { copySearchParams, LoaderParserPriority } from '@pixi/assets';
+import { extensions, ExtensionType, settings, utils } from '@pixi/core';
 import { BitmapFont } from './BitmapFont';
-import type { BitmapFontData } from './BitmapFontData';
 import { TextFormat, XMLStringFormat } from './formats';
+
+import type { Loader, LoaderParser, ResolvedAsset } from '@pixi/assets';
+import type { Texture } from '@pixi/core';
+import type { BitmapFontData } from './BitmapFontData';
 
 const validExtensions = ['.xml', '.fnt'];
 
@@ -16,9 +16,11 @@ export const loadBitmapFont = {
         priority: LoaderParserPriority.Normal,
     },
 
+    name: 'loadBitmapFont',
+
     test(url: string): boolean
     {
-        return validExtensions.includes(utils.path.extname(url));
+        return validExtensions.includes(utils.path.extname(url).toLowerCase());
     },
 
     async testParse(data: string): Promise<boolean>
@@ -26,7 +28,7 @@ export const loadBitmapFont = {
         return TextFormat.test(data) || XMLStringFormat.test(data);
     },
 
-    async parse(asset: string, data: LoadAsset, loader: Loader): Promise<BitmapFont>
+    async parse(asset: string, data: ResolvedAsset, loader: Loader): Promise<BitmapFont>
     {
         const fontData: BitmapFontData = TextFormat.test(asset)
             ? TextFormat.parse(asset)
@@ -39,18 +41,20 @@ export const loadBitmapFont = {
         for (let i = 0; i < pages.length; ++i)
         {
             const pageFile = pages[i].file;
-            const imagePath = utils.path.join(utils.path.dirname(src), pageFile);
+            let imagePath = utils.path.join(utils.path.dirname(src), pageFile);
+
+            imagePath = copySearchParams(imagePath, src);
 
             textureUrls.push(imagePath);
         }
 
-        const loadedTextures = await loader.load(textureUrls) as Record<string, Texture>;
+        const loadedTextures = await loader.load<Texture>(textureUrls);
         const textures = textureUrls.map((url) => loadedTextures[url]);
 
         return BitmapFont.install(fontData, textures, true);
     },
 
-    async load(url: string, _options: LoadAsset): Promise<string>
+    async load(url: string, _options: ResolvedAsset): Promise<string>
     {
         const response = await settings.ADAPTER.fetch(url);
 

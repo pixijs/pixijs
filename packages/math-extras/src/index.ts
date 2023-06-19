@@ -1,8 +1,9 @@
+/// <reference path="../global.d.ts" />
+import { Point } from '@pixi/core';
 import './pointExtras';
 import './rectangleExtras';
 
 import type { IPointData } from '@pixi/core';
-import { Point } from '@pixi/core';
 
 /**
  * The idea of a relative epsilon comparison is to find the difference between the two numbers,
@@ -63,7 +64,7 @@ function genericLineIntersection<T extends IPointData>(
 {
     if (!outPoint)
     {
-        (outPoint as any) = new Point();
+        outPoint = new Point() as IPointData as T;
     }
 
     const dxa = aEnd.x - aStart.x;

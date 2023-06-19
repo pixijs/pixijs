@@ -1,7 +1,7 @@
 import { Runner } from '@pixi/runner';
 
-import type { BaseTexture } from '../BaseTexture';
 import type { Renderer } from '../../Renderer';
+import type { BaseTexture } from '../BaseTexture';
 import type { GLTexture } from '../GLTexture';
 
 /**
@@ -144,7 +144,7 @@ export abstract class Resource
      * @protected
      * @returns Handle the validate event
      */
-    load(): Promise<Resource>
+    load(): Promise<this>
     {
         return Promise.resolve(this);
     }

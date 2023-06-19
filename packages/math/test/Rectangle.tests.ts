@@ -1,4 +1,4 @@
-import { Rectangle, Matrix } from '@pixi/math';
+import { Matrix, Rectangle } from '@pixi/math';
 
 describe('Rectangle', () =>
 {
@@ -135,7 +135,7 @@ describe('Rectangle', () =>
         // Pad with Y
         const rect3 = new Rectangle(10, 10, 10, 10);
 
-        rect3.pad(null, 10);
+        rect3.pad(undefined, 10);
 
         expect(rect3.left).toEqual(10);
         expect(rect3.top).toEqual(0);

@@ -1,9 +1,9 @@
 import { Point, SHAPES } from '@pixi/core';
+import { curves, LINE_CAP, LINE_JOIN } from '../const';
 
 import type { Polygon } from '@pixi/core';
 import type { GraphicsData } from '../GraphicsData';
 import type { GraphicsGeometry } from '../GraphicsGeometry';
-import { LINE_JOIN, LINE_CAP, GRAPHICS_CURVES } from '../const';
 
 /**
  * Buffers vertices to draw a square cap.
@@ -59,8 +59,9 @@ function square(
     const eoy = oy + eyy;
 
     /* Square itself must be inserted clockwise*/
-    verts.push(eix, eiy);
-    verts.push(eox, eoy);
+    verts.push(
+        eix, eiy,
+        eox, eoy);
 
     return 2;
 }
@@ -123,7 +124,7 @@ function round(
                 angleDiff = -angleDiff;
             }
         }
-        else if (r1x >= -GRAPHICS_CURVES.epsilon)
+        else if (r1x >= -curves.epsilon)
         {
             angleDiff = -angleDiff;
         }
@@ -137,33 +138,37 @@ function round(
 
     if (clockwise)
     {
-        verts.push(cx, cy);
-        verts.push(sx, sy);
+        verts.push(
+            cx, cy,
+            sx, sy);
 
         for (let i = 1, angle = startAngle; i < segCount; i++, angle += angleInc)
         {
-            verts.push(cx, cy);
-            verts.push(cx + ((Math.sin(angle) * radius)),
-                cy + ((Math.cos(angle) * radius)));
+            verts.push(
+                cx, cy,
+                cx + ((Math.sin(angle) * radius)), cy + ((Math.cos(angle) * radius)));
         }
 
-        verts.push(cx, cy);
-        verts.push(ex, ey);
+        verts.push(
+            cx, cy,
+            ex, ey);
     }
     else
     {
-        verts.push(sx, sy);
-        verts.push(cx, cy);
+        verts.push(
+            sx, sy,
+            cx, cy);
 
         for (let i = 1, angle = startAngle; i < segCount; i++, angle += angleInc)
         {
-            verts.push(cx + ((Math.sin(angle) * radius)),
-                cy + ((Math.cos(angle) * radius)));
-            verts.push(cx, cy);
+            verts.push(
+                cx + ((Math.sin(angle) * radius)), cy + ((Math.cos(angle) * radius)),
+                cx, cy);
         }
 
-        verts.push(ex, ey);
-        verts.push(cx, cy);
+        verts.push(
+            ex, ey,
+            cx, cy);
     }
 
     return segCount * 2;
@@ -285,11 +290,8 @@ function buildNonNativeLine(graphicsData: GraphicsData, graphicsGeometry: Graphi
 
     // Push first point (below & above vertices)
     verts.push(
-        x0 - (perpx * innerWeight),
-        y0 - (perpy * innerWeight));
-    verts.push(
-        x0 + (perpx * outerWeight),
-        y0 + (perpy * outerWeight));
+        x0 - (perpx * innerWeight), y0 - (perpy * innerWeight),
+        x0 + (perpx * outerWeight), y0 + (perpy * outerWeight));
 
     for (let i = 1; i < length - 1; ++i)
     {
@@ -326,19 +328,40 @@ function buildNonNativeLine(graphicsData: GraphicsData, graphicsGeometry: Graphi
         const dx1 = x1 - x2;
         const dy1 = y2 - y1;
 
+        /* +ve if internal angle < 90 degree, -ve if internal angle > 90 degree. */
+        const dot = (dx0 * dx1) + (dy0 * dy1);
         /* +ve if internal angle counterclockwise, -ve if internal angle clockwise. */
         const cross = (dy0 * dx1) - (dy1 * dx0);
         const clockwise = (cross < 0);
 
-        /* Going nearly straight? */
-        if (Math.abs(cross) < 0.1)
+        /* Going nearly parallel? */
+        /* atan(0.001) ~= 0.001 rad ~= 0.057 degree */
+        if (Math.abs(cross) < 0.001 * Math.abs(dot))
         {
             verts.push(
-                x1 - (perpx * innerWeight),
-                y1 - (perpy * innerWeight));
-            verts.push(
-                x1 + (perpx * outerWeight),
-                y1 + (perpy * outerWeight));
+                x1 - (perpx * innerWeight), y1 - (perpy * innerWeight),
+                x1 + (perpx * outerWeight), y1 + (perpy * outerWeight));
+
+            /* 180 degree corner? */
+            if (dot >= 0)
+            {
+                if (style.join === LINE_JOIN.ROUND)
+                {
+                    indexCount += round(
+                        x1, y1,
+                        x1 - (perpx * innerWeight), y1 - (perpy * innerWeight),
+                        x1 - (perp1x * innerWeight), y1 - (perp1y * innerWeight),
+                        verts, false) + 4;
+                }
+                else
+                {
+                    indexCount += 2;
+                }
+
+                verts.push(
+                    x1 - (perp1x * outerWeight), y1 - (perp1y * outerWeight),
+                    x1 + (perp1x * innerWeight), y1 + (perp1y * innerWeight));
+            }
 
             continue;
         }
@@ -363,107 +386,136 @@ function buildNonNativeLine(graphicsData: GraphicsData, graphicsGeometry: Graphi
         const smallerInsideDiagonalSq = smallerInsideSegmentSq + (insideWeight * insideWeight * widthSquared);
         const insideMiterOk = pdist <= smallerInsideDiagonalSq;
 
+        let join = style.join;
+
+        if (join === LINE_JOIN.MITER && pdist / widthSquared > miterLimitSquared)
+        {
+            join = LINE_JOIN.BEVEL;
+        }
+
         if (insideMiterOk)
         {
-            if (style.join === LINE_JOIN.BEVEL || pdist / widthSquared > miterLimitSquared)
+            switch (join)
             {
-                if (clockwise) /* rotating at inner angle */
+                case LINE_JOIN.MITER:
                 {
-                    verts.push(imx, imy);// inner miter point
-                    verts.push(x1 + (perpx * outerWeight), y1 + (perpy * outerWeight));// first segment's outer vertex
-                    verts.push(imx, imy);// inner miter point
-                    verts.push(x1 + (perp1x * outerWeight), y1 + (perp1y * outerWeight));// second segment's outer vertex
+                    verts.push(
+                        imx, imy,
+                        omx, omy);
+                    break;
                 }
-                else /* rotating at outer angle */
+                case LINE_JOIN.BEVEL:
                 {
-                    verts.push(x1 - (perpx * innerWeight), y1 - (perpy * innerWeight));// first segment's inner vertex
-                    verts.push(omx, omy);// outer miter point
-                    verts.push(x1 - (perp1x * innerWeight), y1 - (perp1y * innerWeight));// second segment's outer vertex
-                    verts.push(omx, omy);// outer miter point
-                }
+                    if (clockwise) /* rotating at inner angle */
+                    {
+                        verts.push(
+                            imx, imy, // inner miter point
+                            x1 + (perpx * outerWeight), y1 + (perpy * outerWeight), // first segment's outer vertex
+                            imx, imy, // inner miter point
+                            x1 + (perp1x * outerWeight), y1 + (perp1y * outerWeight)); // second segment's outer vertex
+                    }
+                    else /* rotating at outer angle */
+                    {
+                        verts.push(
+                            x1 - (perpx * innerWeight), y1 - (perpy * innerWeight), // first segment's inner vertex
+                            omx, omy, // outer miter point
+                            x1 - (perp1x * innerWeight), y1 - (perp1y * innerWeight), // second segment's outer vertex
+                            omx, omy); // outer miter point
+                    }
 
-                indexCount += 2;
-            }
-            else if (style.join === LINE_JOIN.ROUND)
-            {
-                if (clockwise) /* arc is outside */
+                    indexCount += 2;
+                    break;
+                }
+                case LINE_JOIN.ROUND:
                 {
-                    verts.push(imx, imy);
-                    verts.push(x1 + (perpx * outerWeight), y1 + (perpy * outerWeight));
+                    if (clockwise) /* arc is outside */
+                    {
+                        verts.push(
+                            imx, imy,
+                            x1 + (perpx * outerWeight), y1 + (perpy * outerWeight));
 
-                    indexCount += round(
-                        x1, y1,
-                        x1 + (perpx * outerWeight), y1 + (perpy * outerWeight),
-                        x1 + (perp1x * outerWeight), y1 + (perp1y * outerWeight),
-                        verts, true
-                    ) + 4;
+                        indexCount += round(
+                            x1, y1,
+                            x1 + (perpx * outerWeight), y1 + (perpy * outerWeight),
+                            x1 + (perp1x * outerWeight), y1 + (perp1y * outerWeight),
+                            verts, true
+                        ) + 4;
 
-                    verts.push(imx, imy);
-                    verts.push(x1 + (perp1x * outerWeight), y1 + (perp1y * outerWeight));
+                        verts.push(
+                            imx, imy,
+                            x1 + (perp1x * outerWeight), y1 + (perp1y * outerWeight));
+                    }
+                    else /* arc is inside */
+                    {
+                        verts.push(
+                            x1 - (perpx * innerWeight), y1 - (perpy * innerWeight),
+                            omx, omy);
+
+                        indexCount += round(
+                            x1, y1,
+                            x1 - (perpx * innerWeight), y1 - (perpy * innerWeight),
+                            x1 - (perp1x * innerWeight), y1 - (perp1y * innerWeight),
+                            verts, false
+                        ) + 4;
+
+                        verts.push(
+                            x1 - (perp1x * innerWeight), y1 - (perp1y * innerWeight),
+                            omx, omy);
+                    }
+                    break;
                 }
-                else /* arc is inside */
-                {
-                    verts.push(x1 - (perpx * innerWeight), y1 - (perpy * innerWeight));
-                    verts.push(omx, omy);
-
-                    indexCount += round(
-                        x1, y1,
-                        x1 - (perpx * innerWeight), y1 - (perpy * innerWeight),
-                        x1 - (perp1x * innerWeight), y1 - (perp1y * innerWeight),
-                        verts, false
-                    ) + 4;
-
-                    verts.push(x1 - (perp1x * innerWeight), y1 - (perp1y * innerWeight));
-                    verts.push(omx, omy);
-                }
-            }
-            else
-            {
-                verts.push(imx, imy);
-                verts.push(omx, omy);
             }
         }
         else // inside miter is NOT ok
         {
-            verts.push(x1 - (perpx * innerWeight), y1 - (perpy * innerWeight)); // first segment's inner vertex
-            verts.push(x1 + (perpx * outerWeight), y1 + (perpy * outerWeight)); // first segment's outer vertex
-            if (style.join === LINE_JOIN.ROUND)
+            verts.push(
+                x1 - (perpx * innerWeight), y1 - (perpy * innerWeight), // first segment's inner vertex
+                x1 + (perpx * outerWeight), y1 + (perpy * outerWeight)); // first segment's outer vertex
+            switch (join)
             {
-                if (clockwise) /* arc is outside */
+                case LINE_JOIN.MITER:
                 {
-                    indexCount += round(
-                        x1, y1,
-                        x1 + (perpx * outerWeight), y1 + (perpy * outerWeight),
-                        x1 + (perp1x * outerWeight), y1 + (perp1y * outerWeight),
-                        verts, true
-                    ) + 2;
+                    if (clockwise)
+                    {
+                        verts.push(
+                            omx, omy, // inner miter point
+                            omx, omy); // inner miter point
+                    }
+                    else
+                    {
+                        verts.push(
+                            imx, imy, // outer miter point
+                            imx, imy); // outer miter point
+                    }
+                    indexCount += 2;
+                    break;
                 }
-                else /* arc is inside */
+                case LINE_JOIN.ROUND:
                 {
-                    indexCount += round(
-                        x1, y1,
-                        x1 - (perpx * innerWeight), y1 - (perpy * innerWeight),
-                        x1 - (perp1x * innerWeight), y1 - (perp1y * innerWeight),
-                        verts, false
-                    ) + 2;
+                    if (clockwise) /* arc is outside */
+                    {
+                        indexCount += round(
+                            x1, y1,
+                            x1 + (perpx * outerWeight), y1 + (perpy * outerWeight),
+                            x1 + (perp1x * outerWeight), y1 + (perp1y * outerWeight),
+                            verts, true
+                        ) + 2;
+                    }
+                    else /* arc is inside */
+                    {
+                        indexCount += round(
+                            x1, y1,
+                            x1 - (perpx * innerWeight), y1 - (perpy * innerWeight),
+                            x1 - (perp1x * innerWeight), y1 - (perp1y * innerWeight),
+                            verts, false
+                        ) + 2;
+                    }
+                    break;
                 }
             }
-            else if (style.join === LINE_JOIN.MITER && pdist / widthSquared <= miterLimitSquared)
-            {
-                if (clockwise)
-                {
-                    verts.push(omx, omy); // inner miter point
-                    verts.push(omx, omy); // inner miter point
-                }
-                else
-                {
-                    verts.push(imx, imy); // outer miter point
-                    verts.push(imx, imy); // outer miter point
-                }
-                indexCount += 2;
-            }
-            verts.push(x1 - (perp1x * innerWeight), y1 - (perp1y * innerWeight)); // second segment's inner vertex
-            verts.push(x1 + (perp1x * outerWeight), y1 + (perp1y * outerWeight)); // second segment's outer vertex
+            verts.push(
+                x1 - (perp1x * innerWeight), y1 - (perp1y * innerWeight), // second segment's inner vertex
+                x1 + (perp1x * outerWeight), y1 + (perp1y * outerWeight)); // second segment's outer vertex
             indexCount += 2;
         }
     }
@@ -483,8 +535,9 @@ function buildNonNativeLine(graphicsData: GraphicsData, graphicsGeometry: Graphi
     perpx *= width;
     perpy *= width;
 
-    verts.push(x1 - (perpx * innerWeight), y1 - (perpy * innerWeight));
-    verts.push(x1 + (perpx * outerWeight), y1 + (perpy * outerWeight));
+    verts.push(
+        x1 - (perpx * innerWeight), y1 - (perpy * innerWeight),
+        x1 + (perpx * outerWeight), y1 + (perpy * outerWeight));
 
     if (!closedShape)
     {
@@ -508,7 +561,7 @@ function buildNonNativeLine(graphicsData: GraphicsData, graphicsGeometry: Graphi
     }
 
     const indices = graphicsGeometry.indices;
-    const eps2 = GRAPHICS_CURVES.epsilon * GRAPHICS_CURVES.epsilon;
+    const eps2 = curves.epsilon * curves.epsilon;
 
     // indices.push(indexStart);
     for (let i = indexStart; i < indexCount + indexStart - 2; ++i)

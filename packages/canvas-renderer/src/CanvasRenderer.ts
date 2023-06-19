@@ -1,40 +1,39 @@
 import {
-    SystemManager,
     extensions,
     ExtensionType,
+    RENDERER_TYPE,
     settings,
+    SystemManager,
     utils
 } from '@pixi/core';
 
 import type {
+    BackgroundSystem,
     BLEND_MODES,
-    RENDERER_TYPE,
-    Matrix,
-    Rectangle,
+    ColorSource,
+    ExtensionMetadata,
+    GenerateTextureSystem,
+    ICanvas,
+    ICanvasRenderingContext2D,
+    IGenerateTextureOptions,
+    IRenderableObject,
+    IRenderer,
     IRendererOptions,
     IRendererPlugins,
     IRendererRenderOptions,
-    RenderTexture,
-    IRenderableObject,
-    GenerateTextureSystem,
-    IRenderer,
-    BackgroundSystem,
-    ViewSystem,
+    Matrix,
     PluginSystem,
+    Rectangle,
+    RenderTexture,
     StartupSystem,
-    StartupOptions,
-    ExtensionMetadata,
-    IGenerateTextureOptions } from '@pixi/core';
+    ViewSystem,
+} from '@pixi/core';
 import type { DisplayObject } from '@pixi/display';
-import type { ICanvas, ICanvasRenderingContext2D } from '@pixi/settings';
 import type { CanvasContextSystem, SmoothingEnabledProperties } from './CanvasContextSystem';
 import type { CanvasMaskSystem } from './CanvasMaskSystem';
 import type { CanvasObjectRendererSystem } from './CanvasObjectRendererSystem';
 
 const { deprecation } = utils;
-
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface CanvasRenderer extends GlobalMixins.CanvasRenderer {}
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface CanvasRenderer extends GlobalMixins.CanvasRenderer {}
@@ -66,7 +65,6 @@ export interface CanvasRenderer extends GlobalMixins.CanvasRenderer {}
  * | ------------------------------------ | ----------------------------------------------------------------------------- |
  * | {@link PIXI.CanvasContextSystem}     | This manages the canvas `2d` contexts and their state                         |
  * | {@link PIXI.CanvasMaskSystem}        | This manages masking operations.                                              |
- * | {@link PIXI.CanvasRenderSystem}      | This adds the ability to render a PIXI.DisplayObject                          |
  * | {@link PIXI.CanvasExtract}           | This extracts image data from a PIXI.DisplayObject                            |
  * | {@link PIXI.CanvasPrepare}           | This prepares a PIXI.DisplayObject async for rendering                        |
  *
@@ -81,6 +79,12 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
         type: ExtensionType.Renderer,
         priority: 0,
     };
+
+    /**
+     * Options passed to the constructor.
+     * @member {PIXI.IRendererOptions}
+     */
+    public readonly options: IRendererOptions;
 
     /**
      * Used with autoDetectRenderer, this is always supported for any environment, so return true.
@@ -105,7 +109,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
      * @member {number}
      * @see PIXI.RENDERER_TYPE
      */
-    public readonly type: RENDERER_TYPE.CANVAS;
+    public readonly type = RENDERER_TYPE.CANVAS;
 
     /** When logging Pixi to the console, this is the name we will show */
     public readonly rendererLogId = 'Canvas';
@@ -160,26 +164,9 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
     public objectRenderer: CanvasObjectRendererSystem;
 
     /**
-     * @param options - The optional renderer parameters
-     * @param {number} [options.width=800] - the width of the screen
-     * @param {number} [options.height=600] - the height of the screen
-     * @param {PIXI.ICanvas} [options.view] - the canvas to use as a view, optional
-     * @param {boolean} [options.useContextAlpha=true] - Pass-through value for canvas' context `alpha` property.
-     *   If you want to set transparency, please use `backgroundAlpha`. This option is for cases where the
-     *   canvas needs to be opaque, possibly for performance reasons on some older devices.
-     * @param {boolean} [options.autoDensity=false] - Resizes renderer view in CSS pixels to allow for
-     *   resolutions other than 1
-     * @param {boolean} [options.antialias=false] - sets antialias
-     * @param {number} [options.resolution=PIXI.settings.RESOLUTION] - The resolution / device pixel ratio of the renderer.
-     * @param {boolean} [options.preserveDrawingBuffer=false] - enables drawing buffer preservation,
-     *  enable this if you need to call toDataURL on the webgl context.
-     * @param {boolean} [options.clearBeforeRender=true] - This sets if the renderer will clear the canvas or
-     *      not before the new render pass.
-     * @param {number} [options.backgroundColor=0x000000] - The background color of the rendered area
-     *  (shown if not transparent).
-     * @param {number} [options.backgroundAlpha=1] - Value from 0 (fully transparent) to 1 (fully opaque).
+     * @param {PIXI.IRendererOptions} [options] - See {@link PIXI.settings.RENDER_OPTIONS} for defaults.
      */
-    constructor(options?: IRendererOptions)
+    constructor(options?: Partial<IRendererOptions>)
     {
         super();
 
@@ -187,7 +174,17 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
         options = Object.assign({}, settings.RENDER_OPTIONS, options);
 
         const systemConfig = {
-            runners: ['init', 'destroy', 'contextChange', 'reset', 'update', 'postrender', 'prerender', 'resize'],
+            runners: [
+                'init',
+                'destroy',
+                'contextChange',
+                'resolutionChange',
+                'reset',
+                'update',
+                'postrender',
+                'prerender',
+                'resize'
+            ],
             systems: CanvasRenderer.__systems,
             priority: [
                 'textureGenerator',
@@ -203,35 +200,29 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
 
         this.setup(systemConfig);
 
-        // convert our big blob of options into system specific ones..
-        const startupOptions: StartupOptions = {
-            _plugin: CanvasRenderer.__plugins,
-            background: {
-                alpha: options.backgroundAlpha,
-                color: options.backgroundColor,
-                clearBeforeRender: options.clearBeforeRender,
-            },
-            _view: {
-                height: options.height,
-                width: options.width,
-                autoDensity: options.autoDensity,
-                resolution: options.resolution,
-            }
-        };
+        if ('useContextAlpha' in options)
+        {
+            // #if _DEBUG
+            deprecation('7.0.0', 'options.useContextAlpha is deprecated, use options.backgroundAlpha instead');
+            // #endif
+            options.backgroundAlpha = options.useContextAlpha === false ? 1 : options.backgroundAlpha;
+        }
 
-        this.startup.run(startupOptions);
+        // convert our big blob of options into system specific ones..
+        this._plugin.rendererPlugins = CanvasRenderer.__plugins;
+        this.options = options as IRendererOptions;
+        this.startup.run(this.options);
     }
 
     /**
      * Useful function that returns a texture of the display object that can then be used to create sprites
      * This can be quite useful if your displayObject is complicated and needs to be reused multiple times.
      * @param displayObject - The displayObject the object will be generated from.
-     * @param {object} options - Generate texture options.
-     * @param {PIXI.SCALE_MODES} options.scaleMode - The scale mode of the texture.
-     * @param {number} options.resolution - The resolution / device pixel ratio of the texture being generated.
+     * @param {IGenerateTextureOptions} options - Generate texture options.
      * @param {PIXI.Rectangle} options.region - The region of the displayObject, that shall be rendered,
      *        if no region is specified, defaults to the local bounds of the displayObject.
-     * @param {PIXI.MSAA_QUALITY} options.multisample - The number of samples of the frame buffer.
+     * @param {number} [options.resolution] - If not given, the renderer's resolution is used.
+     * @param {PIXI.MSAA_QUALITY} [options.multisample] - If not given, the renderer's multisample is used.
      * @returns A texture of the graphics object.
      */
     generateTexture(displayObject: IRenderableObject, options?: IGenerateTextureOptions): RenderTexture
@@ -321,6 +312,11 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
     get resolution(): number
     {
         return this._view.resolution;
+    }
+    set resolution(value: number)
+    {
+        this._view.resolution = value;
+        this.runners.resolutionChange.emit(value);
     }
 
     /** Whether CSS dimensions of canvas view should be resized to screen dimensions automatically. */
@@ -503,7 +499,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
      * The background color to fill if not transparent
      * @deprecated since 7.0.0
      */
-    get backgroundColor(): number
+    get backgroundColor(): ColorSource
     {
         // #if _DEBUG
         // eslint-disable-next-line max-len
@@ -515,8 +511,9 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
 
     /**
      * @deprecated since 7.0.0
+     * @ignore
      */
-    set backgroundColor(value: number)
+    set backgroundColor(value: ColorSource)
     {
         // #if _DEBUG
         deprecation('7.0.0', 'renderer.backgroundColor has been deprecated, use renderer.background.color instead.');
@@ -537,11 +534,12 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
         deprecation('7.0.0', 'renderer.backgroundAlpha has been deprecated, use renderer.background.alpha instead.');
         // #endif
 
-        return this.background.color;
+        return this.background.alpha;
     }
 
     /**
      * @deprecated since 7.0.0
+     * @ignore
      */
     set backgroundAlpha(value: number)
     {

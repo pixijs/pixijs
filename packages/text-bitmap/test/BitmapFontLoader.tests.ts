@@ -1,8 +1,9 @@
 import { Cache, loadTextures, loadTxt } from '@pixi/assets';
-import type { ImageResource, Texture } from '@pixi/core';
+import { utils } from '@pixi/core';
 import { BitmapFont, loadBitmapFont } from '@pixi/text-bitmap';
-import { BaseTextureCache, TextureCache } from '@pixi/utils';
 import { Loader } from '../../assets/src/loader/Loader';
+
+import type { ImageResource, Texture } from '@pixi/core';
 
 describe('BitmapFontLoader', () =>
 {
@@ -23,13 +24,13 @@ describe('BitmapFontLoader', () =>
         {
             delete BitmapFont.available[font];
         }
-        for (const baseTexture in BaseTextureCache)
+        for (const baseTexture in utils.BaseTextureCache)
         {
-            delete BaseTextureCache[baseTexture];
+            delete utils.BaseTextureCache[baseTexture];
         }
-        for (const texture in TextureCache)
+        for (const texture in utils.TextureCache)
         {
-            delete TextureCache[texture];
+            delete utils.TextureCache[texture];
         }
     });
 
@@ -57,7 +58,7 @@ describe('BitmapFontLoader', () =>
 
     it('should properly register bitmap font', async () =>
     {
-        const font = await loader.load(`${serverPath}font.fnt`);
+        const font = await loader.load<BitmapFont>(`${serverPath}font.fnt`);
 
         expect(font).toBeObject();
         expect(BitmapFont.available.font).toEqual(font);
@@ -105,7 +106,7 @@ describe('BitmapFontLoader', () =>
 
     it('should properly register bitmap font based on txt data', async () =>
     {
-        const font = await loader.load(`${serverPath}bmtxt-test.txt`);
+        const font = await loader.load<BitmapFont>(`${serverPath}bmtxt-test.txt`);
 
         expect(font).toBeObject();
         expect(font).toHaveProperty('chars');
@@ -154,7 +155,7 @@ describe('BitmapFontLoader', () =>
 
     it('should properly register bitmap font based on text format', async () =>
     {
-        const font = await loader.load(`${serverPath}font-text.fnt`);
+        const font = await loader.load<BitmapFont>(`${serverPath}font-text.fnt`);
 
         expect(font).toBeObject();
         expect(BitmapFont.available.fontText).toEqual(font);
@@ -200,9 +201,27 @@ describe('BitmapFontLoader', () =>
         expect(charE).toBeUndefined();
     });
 
+    it('should properly register bitmap font with url params', async () =>
+    {
+        const font = await loader.load<BitmapFont>(`${serverPath}font-text.fnt?version=1.0.0`);
+
+        expect(font).toBeObject();
+        expect(BitmapFont.available.fontText).toEqual(font);
+        expect(font).toHaveProperty('chars');
+        const charA = font.chars['A'.charCodeAt(0)];
+        const charATexture = charA.texture as Texture<ImageResource>;
+
+        expect(charA).toBeDefined();
+        expect(charATexture.baseTexture.resource.src).toEqual(`${serverPath}font.png?version=1.0.0`);
+        expect(charATexture.frame.x).toEqual(2);
+        expect(charATexture.frame.y).toEqual(2);
+        expect(charATexture.frame.width).toEqual(19);
+        expect(charATexture.frame.height).toEqual(20);
+    });
+
     it('should properly register SCALED bitmap font', async () =>
     {
-        const font = await loader.load(`${serverPath}font@0.5x.fnt`);
+        const font = await loader.load<BitmapFont>(`${serverPath}font@0.5x.fnt`);
 
         expect(font).toBeObject();
         expect(BitmapFont.available.font).toEqual(font);
@@ -250,7 +269,7 @@ describe('BitmapFontLoader', () =>
 
     it('should properly register bitmap font having more than one texture', async () =>
     {
-        const font = await loader.load(`${serverPath}split_font.fnt`) as BitmapFont;
+        const font = await loader.load<BitmapFont>(`${serverPath}split_font.fnt`);
 
         expect(font).toBeObject();
         expect(BitmapFont.available.split_font).toEqual(font);
@@ -310,7 +329,7 @@ describe('BitmapFontLoader', () =>
 
     it('should split fonts if page IDs are in chronological order', async () =>
     {
-        const font = await loader.load(`${serverPath}split_font2.fnt`);
+        const font = await loader.load<BitmapFont>(`${serverPath}split_font2.fnt`);
 
         const charA = font.chars['A'.charCodeAt(0)];
         const charC = font.chars['C'.charCodeAt(0)];
@@ -325,9 +344,9 @@ describe('BitmapFontLoader', () =>
 
     it('should set the texture to NPM on SDF fonts', async () =>
     {
-        const sdfFont = await loader.load(`${serverPath}sdf.fnt`);
-        const msdfFont = await loader.load(`${serverPath}msdf.fnt`);
-        const regularFont = await loader.load(`${serverPath}font-text.fnt`);
+        const sdfFont = await loader.load<BitmapFont>(`${serverPath}sdf.fnt`);
+        const msdfFont = await loader.load<BitmapFont>(`${serverPath}msdf.fnt`);
+        const regularFont = await loader.load<BitmapFont>(`${serverPath}font-text.fnt`);
 
         expect(sdfFont.chars['A'.charCodeAt(0)].texture.baseTexture.alphaMode).toEqual(0);
         expect(msdfFont.chars['A'.charCodeAt(0)].texture.baseTexture.alphaMode).toEqual(0);
@@ -336,9 +355,9 @@ describe('BitmapFontLoader', () =>
 
     it('should set the distanceFieldType correctly', async () =>
     {
-        const sdfFont = await loader.load(`${serverPath}sdf.fnt`);
-        const msdfFont = await loader.load(`${serverPath}msdf.fnt`);
-        const regularFont = await loader.load(`${serverPath}font-text.fnt`);
+        const sdfFont = await loader.load<BitmapFont>(`${serverPath}sdf.fnt`);
+        const msdfFont = await loader.load<BitmapFont>(`${serverPath}msdf.fnt`);
+        const regularFont = await loader.load<BitmapFont>(`${serverPath}font-text.fnt`);
 
         expect(sdfFont.distanceFieldType).toEqual('sdf');
         expect(msdfFont.distanceFieldType).toEqual('msdf');
@@ -347,7 +366,7 @@ describe('BitmapFontLoader', () =>
 
     it('should properly register bitmap font with random placed arguments into info tag', async () =>
     {
-        const font = await loader.load(`${serverPath}font-random-args.fnt`);
+        const font = await loader.load<BitmapFont>(`${serverPath}font-random-args.fnt`);
 
         expect(font).toBeObject();
         expect(BitmapFont.available.font).toEqual(font);
@@ -369,7 +388,7 @@ describe('BitmapFontLoader', () =>
 
         loader['_parsers'].push(loadTextures, loadBitmapFont);
 
-        const bitmapFont: BitmapFont = await loader.load(`${serverPath}desyrel.xml`);
+        const bitmapFont = await loader.load<BitmapFont>(`${serverPath}desyrel.xml`);
 
         expect(bitmapFont).toBeInstanceOf(BitmapFont);
 

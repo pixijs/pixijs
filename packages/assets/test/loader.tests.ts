@@ -1,8 +1,8 @@
+import { Cache, loadJson, loadSVG, loadTextures, loadWebFont } from '@pixi/assets';
 import { Texture } from '@pixi/core';
+import { Loader } from '../src/loader/Loader';
 
 import type { LoaderParser } from '@pixi/assets';
-import { Cache, loadJson, loadSVG, loadTextures, loadWebFont } from '@pixi/assets';
-import { Loader } from '../src/loader/Loader';
 
 describe('Loader', () =>
 {
@@ -21,7 +21,7 @@ describe('Loader', () =>
 
         loader['_parsers'].push(loadTextures);
 
-        const texture: Texture = await loader.load(`${serverPath}textures/bunny.png`);
+        const texture = await loader.load<Texture>(`${serverPath}textures/bunny.png`);
 
         expect(texture.baseTexture.valid).toBe(true);
         expect(texture.width).toBe(26);
@@ -34,7 +34,39 @@ describe('Loader', () =>
 
         loader['_parsers'].push(loadSVG);
 
-        const texture: Texture = await loader.load(`${serverPath}svg/logo.svg`);
+        const texture = await loader.load<Texture>(`${serverPath}svg/logo.svg`);
+
+        expect(texture.baseTexture.valid).toBe(true);
+        expect(texture.width).toBe(512);
+        expect(texture.height).toBe(512);
+    });
+
+    it('should load svg if autoLoad is true', async () =>
+    {
+        const loader = new Loader();
+
+        loader['_parsers'].push(loadSVG);
+
+        const texture = await loader.load<Texture>({
+            src: `${serverPath}svg/logo.svg`,
+            data: { resourceOptions: { autoLoad: true } }
+        });
+
+        expect(texture.baseTexture.valid).toBe(true);
+        expect(texture.width).toBe(512);
+        expect(texture.height).toBe(512);
+    });
+
+    it('should load svg if autoLoad is false', async () =>
+    {
+        const loader = new Loader();
+
+        loader['_parsers'].push(loadSVG);
+
+        const texture = await loader.load<Texture>({
+            src: `${serverPath}svg/logo.svg`,
+            data: { resourceOptions: { autoLoad: false } }
+        });
 
         expect(texture.baseTexture.valid).toBe(true);
         expect(texture.width).toBe(512);
@@ -47,7 +79,7 @@ describe('Loader', () =>
 
         loader['_parsers'].push(loadSVG);
 
-        const texture: Texture = await loader.load({
+        const texture = await loader.load<Texture>({
             data: {
                 resourceOptions: {
                     width: 128,
@@ -73,7 +105,7 @@ describe('Loader', () =>
 
         for (let i = 0; i < 10; i++)
         {
-            texturesPromises.push(loader.load(`${serverPath}textures/bunny.png`));
+            texturesPromises.push(loader.load<Texture>(`${serverPath}textures/bunny.png`));
         }
 
         const textures = await Promise.all(texturesPromises);
@@ -94,7 +126,7 @@ describe('Loader', () =>
 
         const assetsUrls = [`${serverPath}textures/bunny.png`, `${serverPath}textures/bunny-2.png`];
 
-        const textures = await loader.load(assetsUrls);
+        const textures = await loader.load<Texture>(assetsUrls);
 
         expect(textures[`${serverPath}textures/bunny.png`]).toBeInstanceOf(Texture);
         expect(textures[`${serverPath}textures/bunny-2.png`]).toBeInstanceOf(Texture);
@@ -120,7 +152,7 @@ describe('Loader', () =>
 
         loader['_parsers'].push(loadWebFont);
 
-        const font = await loader.load(`${serverPath}fonts/outfit.woff2`);
+        const font = await loader.load<FontFace>(`${serverPath}fonts/outfit.woff2`);
 
         let foundFont = false;
 
@@ -144,7 +176,7 @@ describe('Loader', () =>
         document.fonts.clear();
         loader['_parsers'].push(loadWebFont);
 
-        const font = await loader.load({
+        const font = await loader.load<FontFace>({
             data: {
                 family: 'Overridden',
                 style: 'italic',
@@ -173,12 +205,13 @@ describe('Loader', () =>
         const loader = new Loader();
 
         loader['_parsers'].push({
+            name: 'test',
             test: () => true,
             load: async (url, options) =>
                 url + options.data.whatever,
         } as LoaderParser<string>);
 
-        const sillyID: string = await loader.load({
+        const sillyID = await loader.load<string>({
             src: `${serverPath}textures/bunny.png`,
             data: { whatever: 23 },
         });
@@ -192,11 +225,11 @@ describe('Loader', () =>
 
         loader['_parsers'].push(loadTextures);
 
-        const texture: Texture = await loader.load(`${serverPath}textures/bunny.png`);
+        const texture = await loader.load<Texture>(`${serverPath}textures/bunny.png`);
 
         expect(texture.baseTexture.destroyed).toBe(false);
 
-        const baseTexture =  texture.baseTexture;
+        const baseTexture = texture.baseTexture;
 
         await loader.unload(`${serverPath}textures/bunny.png`);
 
@@ -225,5 +258,56 @@ describe('Loader', () =>
         });
 
         expect(foundFont).toBe(false);
+    });
+
+    it('should throw a warning if a parser specified does not exist', async () =>
+    {
+        const loader = new Loader();
+
+        loader['_parsers'].push(loadTextures);
+
+        const spy = spyOn(console, 'warn');
+
+        await loader.load({
+            src: `${serverPath}textures/bunny.png`,
+            loadParser: 'chicken'
+        });
+
+        // eslint-disable-next-line max-len
+        expect(spy).toHaveBeenCalledWith(`[Assets] specified load parser "chicken" not found while loading ${serverPath}textures/bunny.png`);
+    });
+
+    it('should throw a warning if a parser is added with the same name', async () =>
+    {
+        const loader = new Loader();
+
+        loader['_parsers'].push(loadTextures);
+        loader['_parsers'].push(loadTextures);
+
+        const spy = spyOn(console, 'warn');
+
+        await loader.load({
+            src: `${serverPath}textures/bunny.other`,
+            loadParser: 'loadTextures'
+        });
+
+        // eslint-disable-next-line max-len
+        expect(spy).toHaveBeenCalledWith('[Assets] loadParser name conflict "loadTextures"');
+    });
+
+    it('should load and parse with specified loader', async () =>
+    {
+        const loader = new Loader();
+
+        loader['_parsers'].push(loadTextures);
+
+        const texture = await loader.load({
+            src: `${serverPath}textures/bunny.other`,
+            loadParser: 'loadTextures'
+        });
+
+        expect(texture.baseTexture.valid).toBe(true);
+        expect(texture.width).toBe(26);
+        expect(texture.height).toBe(37);
     });
 });

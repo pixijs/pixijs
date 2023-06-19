@@ -9,5 +9,5 @@ npm install @pixi/prepare
 ## Usage
 
 ```js
-import '@pixi/canvas-prepare';
+import '@pixi/prepare';
 ```

@@ -1,7 +1,8 @@
 import { extensions, ExtensionType } from '@pixi/core';
-import type { LoaderParser } from './loader';
+
 import type { CacheParser } from './cache';
 import type { FormatDetectionParser } from './detections';
+import type { LoaderParser } from './loader';
 import type { ResolveURLParser } from './resolver';
 
 const assetKeyMap = {

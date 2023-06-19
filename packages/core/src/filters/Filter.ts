@@ -1,11 +1,11 @@
-import { settings } from '@pixi/settings';
+import { MSAA_QUALITY } from '@pixi/constants';
 import { Program } from '../shader/Program';
 import { Shader } from '../shader/Shader';
 import { State } from '../state/State';
 import defaultFragment from './defaultFilter.frag';
 import defaultVertex from './defaultFilter.vert';
 
-import type { MSAA_QUALITY, BLEND_MODES, CLEAR_MODES } from '@pixi/constants';
+import type { BLEND_MODES, CLEAR_MODES } from '@pixi/constants';
 import type { Dict } from '@pixi/utils';
 import type { RenderTexture } from '../renderTexture/RenderTexture';
 import type { FilterState } from './FilterState';
@@ -15,8 +15,8 @@ import type { FilterSystem } from './FilterSystem';
  * A filter is a special shader that applies post-processing effects to an input texture and writes into an output
  * render-target.
  *
- * {@link http://pixijs.io/examples/#/filters/blur-filter.js Example} of the
- * {@link PIXI.filters.BlurFilter BlurFilter}.
+ * {@link https://pixijs.io/examples/#/filters-basic/blur.js Example} of the
+ * {@link PIXI.BlurFilter BlurFilter}.
  *
  * ### Usage
  * Filters can be applied to any DisplayObject or Container.
@@ -24,8 +24,8 @@ import type { FilterSystem } from './FilterSystem';
  * then filter renders it to the screen.
  * Multiple filters can be added to the `filters` array property and stacked on each other.
  *
- * ```
- * import { Filter, Container } from 'pixi.js';
+ * ```js
+ * import { Container, Filter } from 'pixi.js';
  * const filter = new Filter(myShaderVert, myShaderFrag, { myUniform: 0.5 });
  * const container = new Container();
  * container.filters = [filter];
@@ -43,7 +43,7 @@ import type { FilterSystem } from './FilterSystem';
  * bringing those extra uniforms into account.
  *
  * Also be aware that we have changed default vertex shader, please consult
- * {@link https://github.com/pixijs/pixi.js/wiki/v5-Creating-filters Wiki}.
+ * {@link https://github.com/pixijs/pixijs/wiki/v5-Creating-filters Wiki}.
  *
  * ### Frames
  *
@@ -94,7 +94,7 @@ import type { FilterSystem } from './FilterSystem';
  * By default, input normalized coordinates are passed to fragment shader with `vTextureCoord`.
  * Use it to sample the input.
  *
- * ```
+ * ```js
  * import { Filter } from 'pixi.js';
  * const fragment = `
  * varying vec2 vTextureCoord;
@@ -108,7 +108,7 @@ import type { FilterSystem } from './FilterSystem';
  * const myFilter = new Filter(null, fragment);
  * ```
  *
- * This filter is just one uniform less than {@link PIXI.filters.AlphaFilter AlphaFilter}.
+ * This filter is just one uniform less than {@link PIXI.AlphaFilter AlphaFilter}.
  *
  * **outputFrame**
  *
@@ -120,7 +120,7 @@ import type { FilterSystem } from './FilterSystem';
  * Filters uses this quad to normalized (0-1) space, its passed into `aVertexPosition` attribute.
  * To calculate vertex position in screen space using normalized (0-1) space:
  *
- * ```
+ * ```glsl
  * vec4 filterVertexPosition( void )
  * {
  *     vec2 position = aVertexPosition * max(outputFrame.zw, vec2(0.)) + outputFrame.xy;
@@ -140,12 +140,13 @@ import type { FilterSystem } from './FilterSystem';
  * Multiply by `outputFrame.zw` to get input coordinate.
  * Divide by `inputSize.xy` to get input normalized coordinate.
  *
- * ```
+ * ```glsl
  * vec2 filterTextureCoord( void )
  * {
  *     return aVertexPosition * (outputFrame.zw * inputSize.zw); // same as /inputSize.xy
  * }
  * ```
+ *
  * **resolution**
  *
  * The `resolution` is the ratio of screen (CSS) pixels to real pixels.
@@ -155,7 +156,7 @@ import type { FilterSystem } from './FilterSystem';
  * `inputPixel.xy` is the size of framebuffer in real pixels, same as `inputSize.xy * resolution`
  * `inputPixel.zw` is inverted `inputPixel.xy`.
  *
- * It's handy for filters that use neighbour pixels, like {@link PIXI.filters.FXAAFilter FXAAFilter}.
+ * It's handy for filters that use neighbour pixels, like {@link PIXI.FXAAFilter FXAAFilter}.
  *
  * **inputClamp**
  *
@@ -165,18 +166,20 @@ import type { FilterSystem } from './FilterSystem';
  * The `inputClamp.xy` is left-top pixel center, you may ignore it, because we use left-top part of Framebuffer
  * `inputClamp.zw` is bottom-right pixel center.
  *
+ * ```glsl
+ * vec4 color = texture2D(uSampler, clamp(modifiedTextureCoord, inputClamp.xy, inputClamp.zw));
  * ```
- * vec4 color = texture2D(uSampler, clamp(modifiedTextureCoord, inputClamp.xy, inputClamp.zw))
- * ```
- * OR
- * ```
- * vec4 color = texture2D(uSampler, min(modifigedTextureCoord, inputClamp.zw))
+ *
+ * Or:
+ *
+ * ```glsl
+ * vec4 color = texture2D(uSampler, min(modifigedTextureCoord, inputClamp.zw));
  * ```
  *
  * ### Additional Information
  *
  * Complete documentation on Filter usage is located in the
- * {@link https://github.com/pixijs/pixi.js/wiki/v5-Creating-filters Wiki}.
+ * {@link https://github.com/pixijs/pixijs/wiki/v5-Creating-filters Wiki}.
  *
  * Since PixiJS only had a handful of built-in filters, additional filters can be downloaded
  * {@link https://github.com/pixijs/pixi-filters here} from the PixiJS Filters repository.
@@ -185,14 +188,32 @@ import type { FilterSystem } from './FilterSystem';
 export class Filter extends Shader
 {
     /**
+     * Default filter resolution for any filter.
+     * @static
+     */
+    public static defaultResolution: number | null = 1;
+
+    /**
+     * Default filter samples for any filter.
+     * @static
+     * @type {PIXI.MSAA_QUALITY|null}
+     * @default PIXI.MSAA_QUALITY.NONE
+     */
+    public static defaultMultisample: MSAA_QUALITY | null = MSAA_QUALITY.NONE;
+
+    /**
      * The padding of the filter. Some filters require extra space to breath such as a blur.
      * Increasing this will add extra width and height to the bounds of the object that the
      * filter is applied to.
      */
     public padding: number;
 
-    /** The samples of the filter. */
-    public multisample: MSAA_QUALITY;
+    /**
+     * The samples override of the filter instance.
+     * If set to `null`, the sample count of the current render target is used.
+     * @default PIXI.Filter.defaultMultisample
+     */
+    public multisample: MSAA_QUALITY | null;
 
     /** If enabled is true the filter is applied, if false it will not. */
     public enabled: boolean;
@@ -213,7 +234,7 @@ export class Filter extends Shader
     /** The WebGL state the filter requires to render. */
     state: State;
 
-    protected _resolution: number;
+    protected _resolution: number | null;
 
     /**
      * @param vertexSrc - The source of the vertex shader.
@@ -228,8 +249,8 @@ export class Filter extends Shader
         super(program, uniforms);
 
         this.padding = 0;
-        this.resolution = settings.FILTER_RESOLUTION;
-        this.multisample = settings.FILTER_MULTISAMPLE;
+        this.resolution = Filter.defaultResolution;
+        this.multisample = Filter.defaultMultisample;
         this.enabled = true;
         this.autoFit = true;
         this.state = new State();
@@ -248,11 +269,11 @@ export class Filter extends Shader
     apply(filterManager: FilterSystem, input: RenderTexture, output: RenderTexture, clearMode?: CLEAR_MODES,
         _currentState?: FilterState): void
     {
-        // do as you please!
+        // Do as you please!
 
         filterManager.applyFilter(this, input, output, clearMode);
 
-        // or just do a regular render..
+        // Or just do a regular render..
     }
 
     /**
@@ -272,20 +293,22 @@ export class Filter extends Shader
     /**
      * The resolution of the filter. Setting this to be lower will lower the quality but
      * increase the performance of the filter.
+     * If set to `null` or `0`, the resolution of the current render target is used.
+     * @default PIXI.Filter.defaultResolution
      */
-    get resolution(): number
+    get resolution(): number | null
     {
         return this._resolution;
     }
 
-    set resolution(value: number)
+    set resolution(value: number | null)
     {
         this._resolution = value;
     }
 
     /**
      * The default vertex shader source
-     * @constant
+     * @readonly
      */
     static get defaultVertexSrc(): string
     {
@@ -294,7 +317,7 @@ export class Filter extends Shader
 
     /**
      * The default fragment shader source
-     * @constant
+     * @readonly
      */
     static get defaultFragmentSrc(): string
     {

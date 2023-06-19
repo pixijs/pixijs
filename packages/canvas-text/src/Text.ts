@@ -1,5 +1,5 @@
-import { Text } from '@pixi/text';
 import { Sprite } from '@pixi/sprite';
+import { Text } from '@pixi/text';
 
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
 

@@ -1,4 +1,3 @@
-import { settings } from './settings';
 import { UPDATE_PRIORITY } from './const';
 import { TickerListener } from './TickerListener';
 
@@ -14,6 +13,12 @@ export type TickerCallback<T> = (this: T, dt: number) => any;
  */
 export class Ticker
 {
+    /**
+     * Target frames per millisecond.
+     * @static
+     */
+    public static targetFPMS = 0.06;
+
     /** The private shared ticker instance */
     private static _shared: Ticker;
     /** The private system ticker instance  */
@@ -111,8 +116,8 @@ export class Ticker
     constructor()
     {
         this._head = new TickerListener(null, null, Infinity);
-        this.deltaMS = 1 / settings.TARGET_FPMS;
-        this.elapsedMS = 1 / settings.TARGET_FPMS;
+        this.deltaMS = 1 / Ticker.targetFPMS;
+        this.elapsedMS = 1 / Ticker.targetFPMS;
 
         this._tick = (time: number): void =>
         {
@@ -408,7 +413,7 @@ export class Ticker
             }
 
             this.deltaMS = elapsedMS;
-            this.deltaTime = this.deltaMS * settings.TARGET_FPMS;
+            this.deltaTime = this.deltaMS * Ticker.targetFPMS;
 
             // Cache a local reference, in-case ticker is destroyed
             // during the emit, we can still check for head.next
@@ -455,7 +460,7 @@ export class Ticker
      * This value is used to cap {@link PIXI.Ticker#deltaTime},
      * but does not effect the measured value of {@link PIXI.Ticker#FPS}.
      * When setting this property it is clamped to a value between
-     * `0` and `PIXI.settings.TARGET_FPMS * 1000`.
+     * `0` and `Ticker.targetFPMS * 1000`.
      * @member {number}
      * @default 10
      */
@@ -469,8 +474,8 @@ export class Ticker
         // Minimum must be below the maxFPS
         const minFPS = Math.min(this.maxFPS, fps);
 
-        // Must be at least 0, but below 1 / settings.TARGET_FPMS
-        const minFPMS = Math.min(Math.max(0, minFPS) / 1000, settings.TARGET_FPMS);
+        // Must be at least 0, but below 1 / Ticker.targetFPMS
+        const minFPMS = Math.min(Math.max(0, minFPS) / 1000, Ticker.targetFPMS);
 
         this._maxElapsedMS = 1 / minFPMS;
     }
@@ -539,7 +544,7 @@ export class Ticker
      * const stage = new Container();
      * document.body.appendChild(renderer.view);
      * ticker.add((time) => renderer.render(stage));
-     * @example
+     *
      * // Or you can just update it manually.
      * ticker.autoStart = false;
      * ticker.stop();

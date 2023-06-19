@@ -1,12 +1,22 @@
-import { ObjectRenderer, Shader, State, QuadUv, ExtensionType, WRAP_MODES, Matrix, utils, extensions } from '@pixi/core';
-
-import fragmentSimpleSrc from './sprite-tiling-simple.frag';
-import gl1VertexSrc from './sprite-tiling-fallback.vert';
-import gl1FragmentSrc from './sprite-tiling-fallback.frag';
-import gl2VertexSrc from './sprite-tiling.vert';
+import {
+    Color,
+    extensions,
+    ExtensionType,
+    Matrix,
+    ObjectRenderer,
+    QuadUv,
+    Shader,
+    State,
+    utils,
+    WRAP_MODES
+} from '@pixi/core';
 import gl2FragmentSrc from './sprite-tiling.frag';
+import gl2VertexSrc from './sprite-tiling.vert';
+import gl1FragmentSrc from './sprite-tiling-fallback.frag';
+import gl1VertexSrc from './sprite-tiling-fallback.vert';
+import fragmentSimpleSrc from './sprite-tiling-simple.frag';
 
-import type { Renderer, ExtensionMetadata } from '@pixi/core';
+import type { ExtensionMetadata, Renderer } from '@pixi/core';
 import type { TilingSprite } from './TilingSprite';
 
 const tempMat = new Matrix();
@@ -149,8 +159,11 @@ export class TilingSpriteRenderer extends ObjectRenderer
         }
 
         shader.uniforms.uTransform = tempMat.toArray(true);
-        shader.uniforms.uColor = utils.premultiplyTintToRgba(ts.tint, ts.worldAlpha,
-            shader.uniforms.uColor, premultiplied);
+        shader.uniforms.uColor = Color.shared
+            .setValue(ts.tint)
+            .premultiply(ts.worldAlpha, premultiplied)
+            .toArray(shader.uniforms.uColor);
+
         shader.uniforms.translationMatrix = ts.transform.worldTransform.toArray(true);
         shader.uniforms.uSampler = tex;
 

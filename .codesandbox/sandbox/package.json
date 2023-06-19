@@ -1,0 +1,8 @@
+{
+    "name": "pixi.js-sandbox",
+    "private": true,
+    "main": "index.js",
+    "dependencies": {
+        "pixi.js": "^7.2.1"
+    }
+}

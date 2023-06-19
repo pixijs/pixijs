@@ -1,4 +1,5 @@
-import { settings, extensions, ExtensionType } from '@pixi/core';
+import { extensions, ExtensionType, settings } from '@pixi/core';
+
 import type { FormatDetectionParser } from '..';
 
 export const detectAvif: FormatDetectionParser = {

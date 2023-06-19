@@ -1,10 +1,10 @@
-import { RenderTexture } from './RenderTexture';
-import { BaseRenderTexture } from './BaseRenderTexture';
-import { nextPow2 } from '@pixi/utils';
 import { MSAA_QUALITY } from '@pixi/constants';
+import { nextPow2 } from '@pixi/utils';
+import { BaseRenderTexture } from './BaseRenderTexture';
+import { RenderTexture } from './RenderTexture';
 
-import type { IBaseTextureOptions } from '../textures/BaseTexture';
 import type { ISize } from '@pixi/math';
+import type { IBaseTextureOptions } from '../textures/BaseTexture';
 
 /**
  * Texture pool, used by FilterSystem and plugins.
@@ -74,8 +74,8 @@ export class RenderTexturePool
     {
         let key;
 
-        minWidth = Math.ceil((minWidth * resolution) - 1e-6);
-        minHeight = Math.ceil((minHeight * resolution) - 1e-6);
+        minWidth = Math.max(Math.ceil((minWidth * resolution) - 1e-6), 1);
+        minHeight = Math.max(Math.ceil((minHeight * resolution) - 1e-6), 1);
 
         if (!this.enableFullScreen || minWidth !== this._pixelsWidth || minHeight !== this._pixelsHeight)
         {
@@ -220,7 +220,7 @@ export class RenderTexturePool
 
     /**
      * Key that is used to store fullscreen renderTextures in a pool
-     * @constant
+     * @readonly
      */
     static SCREEN_KEY = -1;
 }

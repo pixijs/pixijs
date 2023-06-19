@@ -1,7 +1,4 @@
-import { MASK_TYPES, COLOR_MASK_BITS } from '@pixi/constants';
-import type {
-    IFilterTarget,
-    IMaskTarget } from '@pixi/core';
+import { COLOR_MASK_BITS, MASK_TYPES } from '@pixi/constants';
 import {
     BaseTexture,
     CanvasResource,
@@ -10,12 +7,17 @@ import {
     Renderer,
     RenderTexture,
     SpriteMaskFilter,
-    Texture
+    Texture,
 } from '@pixi/core';
 import { Container } from '@pixi/display';
 import { Graphics } from '@pixi/graphics';
 import { Matrix, Rectangle } from '@pixi/math';
 import { Sprite } from '@pixi/sprite';
+
+import type {
+    IFilterTarget,
+    IMaskTarget,
+} from '@pixi/core';
 
 describe('MaskSystem', () =>
 {
@@ -172,7 +174,7 @@ describe('MaskSystem', () =>
     it('should apply scissor with transform on canvas or renderTexture', () =>
     {
         const context: IMaskTarget = {} as IMaskTarget;
-        const maskObject =  {
+        const maskObject = {
             isFastRect() { return true; },
             worldTransform: Matrix.IDENTITY,
             getBounds() { return new Rectangle(2, 3, 6, 5); },

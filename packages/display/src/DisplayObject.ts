@@ -1,8 +1,8 @@
 import { DEG_TO_RAD, RAD_TO_DEG, Rectangle, Transform, utils } from '@pixi/core';
 import { Bounds } from './Bounds';
 
+import type { Filter, IPointData, MaskData, Matrix, ObservablePoint, Point, Renderer } from '@pixi/core';
 import type { Container } from './Container';
-import type { Filter, MaskData, Renderer, IPointData, ObservablePoint, Matrix, Point } from '@pixi/core';
 
 export interface IDestroyOptions
 {
@@ -11,7 +11,18 @@ export interface IDestroyOptions
     baseTexture?: boolean;
 }
 
-export interface DisplayObject extends Omit<GlobalMixins.DisplayObject, keyof utils.EventEmitter>, utils.EventEmitter {}
+export interface DisplayObjectEvents extends GlobalMixins.DisplayObjectEvents
+{
+    added: [container: Container];
+    childAdded: [child: DisplayObject, container: Container, index: number];
+    childRemoved: [child: DisplayObject, container: Container, index: number];
+    destroyed: [];
+    removed: [container: Container];
+}
+
+export interface DisplayObject
+    extends Omit<GlobalMixins.DisplayObject, keyof utils.EventEmitter<DisplayObjectEvents>>,
+    utils.EventEmitter<DisplayObjectEvents> {}
 
 /**
  * The base class for all objects that are rendered on the screen.
@@ -37,7 +48,7 @@ export interface DisplayObject extends Omit<GlobalMixins.DisplayObject, keyof ut
  *
  * ## Transforms
  *
- * The [transform]{@link DisplayObject#transform} of a display object describes the projection from its
+ * The [transform]{@link PIXI.DisplayObject#transform} of a display object describes the projection from its
  * local coordinate space to its parent's local coordinate space. The following properties are derived
  * from the transform:
  *
@@ -95,7 +106,7 @@ export interface DisplayObject extends Omit<GlobalMixins.DisplayObject, keyof ut
  *         a rotation. Indeed, if "skew.x" = -ϴ and "skew.y" = ϴ, it will produce an equivalent of "rotation" = ϴ.
  *         </p>
  *         <p>
- *         Another quite interesting observation is that "skew.x", "skew.y", rotation are communtative operations. Indeed,
+ *         Another quite interesting observation is that "skew.x", "skew.y", rotation are commutative operations. Indeed,
  *         because rotation is essentially a careful combination of the two.
  *         </p>
  *       </td>
@@ -151,7 +162,7 @@ export interface DisplayObject extends Omit<GlobalMixins.DisplayObject, keyof ut
  *
  * ### calculateBounds
  *
- * [Container]{@link Container} already implements `calculateBounds` in a manner that includes children.
+ * [Container]{@link PIXI.Container} already implements `calculateBounds` in a manner that includes children.
  *
  * But for a non-Container display object, the `calculateBounds` method must be overridden in order for `getBounds` and
  * `getLocalBounds` to work. This method must write the bounds into `this._bounds`.
@@ -161,7 +172,7 @@ export interface DisplayObject extends Omit<GlobalMixins.DisplayObject, keyof ut
  * using {@link PIXI.Bounds#addPointMatrix}.
  *
  * ```js
- * calculateBounds(): void
+ * calculateBounds()
  * {
  *     const points = [...];
  *
@@ -190,15 +201,13 @@ export interface DisplayObject extends Omit<GlobalMixins.DisplayObject, keyof ut
  * object (and its children subtree) will continue to be calculated. When using `visible`, the transforms will not
  * be calculated.
  *
- * It is recommended that applications use the `renderable` property for culling. See
- * [@pixi-essentials/cull]{@link https://www.npmjs.com/package/@pixi-essentials/cull} or
- * [pixi-cull]{@link https://www.npmjs.com/package/pixi-cull} for more details.
+ * For culling purposes, it is recommended that applications use the [cullable]{@link PIXI.DisplayObject#cullable} property.
  *
  * Otherwise, to prevent an object from rendering in the general-purpose sense - `visible` is the property to use. This
  * one is also better in terms of performance.
  * @memberof PIXI
  */
-export abstract class DisplayObject extends utils.EventEmitter
+export abstract class DisplayObject extends utils.EventEmitter<DisplayObjectEvents>
 {
     abstract sortDirty: boolean;
 
@@ -648,6 +657,12 @@ export abstract class DisplayObject extends utils.EventEmitter
         return container;
     }
 
+    /** Remove the DisplayObject from its parent Container. If the DisplayObject has no parent, do nothing. */
+    removeFromParent()
+    {
+        this.parent?.removeChild(this);
+    }
+
     /**
      * Convenience function to set the position, scale, skew and pivot at once.
      * @param x - The X position
@@ -685,10 +700,8 @@ export abstract class DisplayObject extends utils.EventEmitter
      */
     destroy(_options?: IDestroyOptions | boolean): void
     {
-        if (this.parent)
-        {
-            this.parent.removeChild(this);
-        }
+        this.removeFromParent();
+
         this._destroyed = true;
         this.transform = null;
 
@@ -701,7 +714,7 @@ export abstract class DisplayObject extends utils.EventEmitter
         this.filterArea = null;
         this.hitArea = null;
 
-        this.interactive = false;
+        this.eventMode = 'auto';
         this.interactiveChildren = false;
 
         this.emit('destroyed');
@@ -724,14 +737,14 @@ export abstract class DisplayObject extends utils.EventEmitter
     }
 
     /**
-     * Used in Renderer, cacheAsBitmap and other places where you call an `updateTransform` on root
+     * Used in Renderer, cacheAsBitmap and other places where you call an `updateTransform` on root.
      *
-     * ```
+     * ```js
      * const cacheParent = elem.enableTempParent();
      * elem.updateTransform();
      * elem.disableTempParent(cacheParent);
      * ```
-     * @returns - current parent
+     * @returns - Current parent
      */
     enableTempParent(): Container
     {

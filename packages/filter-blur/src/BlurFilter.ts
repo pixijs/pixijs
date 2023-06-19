@@ -1,4 +1,4 @@
-import { Filter, settings, CLEAR_MODES } from '@pixi/core';
+import { CLEAR_MODES, Filter } from '@pixi/core';
 import { BlurFilterPass } from './BlurFilterPass';
 
 import type { BLEND_MODES, FilterSystem, RenderTexture } from '@pixi/core';
@@ -7,22 +7,22 @@ import type { BLEND_MODES, FilterSystem, RenderTexture } from '@pixi/core';
  * The BlurFilter applies a Gaussian blur to an object.
  *
  * The strength of the blur can be set for the x-axis and y-axis separately.
- * @memberof PIXI.filters
+ * @memberof PIXI
  */
 export class BlurFilter extends Filter
 {
     public blurXFilter: BlurFilterPass;
     public blurYFilter: BlurFilterPass;
 
-    private _repeatEdgePixels: boolean;
+    private _repeatEdgePixels = false;
 
     /**
      * @param strength - The strength of the blur filter.
      * @param quality - The quality of the blur filter.
-     * @param [resolution=PIXI.settings.FILTER_RESOLUTION] - The resolution of the blur filter.
+     * @param {number|null} [resolution=PIXI.Filter.defaultResolution] - The resolution of the blur filter.
      * @param kernelSize - The kernelSize of the blur filter.Options: 5, 7, 9, 11, 13, 15.
      */
-    constructor(strength = 8, quality = 4, resolution = settings.FILTER_RESOLUTION, kernelSize = 5)
+    constructor(strength = 8, quality = 4, resolution = Filter.defaultResolution, kernelSize = 5)
     {
         super();
 

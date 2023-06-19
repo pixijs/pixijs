@@ -1,7 +1,7 @@
 PixiJS — The HTML5 Creation Engine
 =============
 
-![pixi.js logo](https://pixijs.download/pixijs-banner-no-version.png)
+![pixi.js logo](https://pixijs.download/pixijs-banner-no-version.png?v=1)
 
 The aim of this project is to provide a fast lightweight 2D library that works
 across all devices. The PixiJS renderer allows everyone to enjoy the power of
@@ -24,15 +24,31 @@ PixiJS can be installed with [npm](https://docs.npmjs.com/getting-started/what-i
 ```
 npm install pixi.js
 ```
+
 There is no default export. The correct way to import PixiJS is:
 
 ```js
-import * as PIXI from 'pixi.js'
+import * as PIXI from 'pixi.js';
 ```
+
+#### CDN Install
+
+Via jsDelivr:
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/pixi.js@7.x/dist/pixi.min.js"></script>
+```
+
+Or via unpkg:
+
+```html
+<script src="https://unpkg.com/pixi.js@7.x/dist/pixi.min.js"></script>
+```
+
 ### Basic Usage Example
 
 ```js
-import { Application, Sprite } from 'pixi.js';
+import { Application, Assets, Sprite } from 'pixi.js';
 
 // The application will create a renderer using WebGL, if possible,
 // with a fallback to a canvas render. It will also setup the ticker

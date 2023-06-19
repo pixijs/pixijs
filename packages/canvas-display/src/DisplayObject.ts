@@ -1,4 +1,5 @@
 import { DisplayObject } from '@pixi/display';
+
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
 
 /**

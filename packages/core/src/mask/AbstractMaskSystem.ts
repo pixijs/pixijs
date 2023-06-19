@@ -1,6 +1,6 @@
+import type { Renderer } from '../Renderer';
 import type { ISystem } from '../system/ISystem';
 import type { MaskData } from './MaskData';
-import type { Renderer } from '../Renderer';
 
 /**
  * System plugin to the renderer to manage specific types of masking operations.

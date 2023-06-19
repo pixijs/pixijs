@@ -1,7 +1,7 @@
-import path from 'path';
 import fs from 'fs';
-import { BitmapText, BitmapFont } from '@pixi/text-bitmap';
-import { settings, Texture, Renderer } from '@pixi/core';
+import path from 'path';
+import { Renderer, settings, Texture } from '@pixi/core';
+import { BitmapFont, BitmapText } from '@pixi/text-bitmap';
 
 import type { Container } from '@pixi/display';
 
@@ -239,5 +239,103 @@ describe('BitmapText', () =>
         expect(text.resolution).toEqual(3);
 
         renderer.destroy();
+    });
+
+    it('should update after font is replaced', () =>
+    {
+        BitmapFont.from('testFont');
+
+        const text = new BitmapText('123ABCabc', {
+            fontName: 'testFont',
+        });
+
+        const listener = jest.spyOn(text, 'updateText');
+
+        text.textWidth; // Should trigger updateText()
+
+        expect(listener.mock.calls).toHaveLength(1);
+
+        text.textWidth; // Should not trigger updateText()
+
+        expect(listener.mock.calls).toHaveLength(1);
+
+        BitmapFont.from('testFont'); // Replace the font
+        text.textWidth; // Should trigger updateText()
+
+        expect(listener.mock.calls).toHaveLength(2);
+    });
+
+    it('should update fontSize when font is replaced if fontSize is undefined', () =>
+    {
+        BitmapFont.from('testFont', {
+            fontSize: 12,
+        });
+
+        const text = new BitmapText('123ABCabc', {
+            fontName: 'testFont',
+        });
+
+        expect(text.fontSize).toEqual(12);
+
+        BitmapFont.from('testFont', {
+            fontSize: 24,
+        }); // Replace the font
+
+        expect(text.fontSize).toEqual(24);
+    });
+    it('should not update fontSize when font is replaced if fontSize is defined', () =>
+    {
+        BitmapFont.from('testFont', {
+            fontSize: 12,
+        });
+
+        const text = new BitmapText('123ABCabc', {
+            fontName: 'testFont',
+            fontSize: 16,
+        });
+
+        expect(text.fontSize).toEqual(16);
+
+        BitmapFont.from('testFont', {
+            fontSize: 24,
+        }); // Replace the font
+
+        expect(text.fontSize).toEqual(16);
+    });
+
+    it('should unset dirty after updateText', () =>
+    {
+        const text = new BitmapText('123ABCabc', {
+            fontName: font.font,
+        });
+
+        expect(text.dirty).toBeTrue();
+
+        text.updateText();
+
+        expect(text.dirty).toBeFalse();
+
+        text.dirty = true;
+
+        text.updateText();
+
+        expect(text.dirty).toBeFalse();
+    });
+
+    it('should support tinting', () =>
+    {
+        const text = new BitmapText('123ABCabc', {
+            fontName: font.font,
+        });
+
+        text.tint = 'red';
+
+        expect(text.tint).toEqual('red');
+
+        text.updateText();
+
+        text['_activePagesMeshData'].every((mesh) => mesh.mesh.tintValue === 0xff0000);
+
+        text.destroy(true);
     });
 });

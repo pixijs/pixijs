@@ -1,18 +1,17 @@
 {
   "name": "@pixi/events",
-  "version": "7.0.0-alpha.3",
-  "main": "dist/cjs/events.js",
-  "module": "dist/esm/events.mjs",
-  "types": "index.d.ts",
+  "main": "lib/index.js",
+  "module": "lib/index.mjs",
+  "types": "lib/index.d.ts",
   "exports": {
     ".": {
       "import": {
-        "types": "./index.d.ts",
-        "default": "./dist/esm/events.mjs"
+        "types": "./lib/index.d.ts",
+        "default": "./lib/index.mjs"
       },
       "require": {
-        "types": "./index.d.ts",
-        "default": "./dist/cjs/events.js"
+        "types": "./lib/index.d.ts",
+        "default": "./lib/index.js"
       }
     }
   },
@@ -26,10 +25,10 @@
     "touch"
   ],
   "author": "Shukant Pal <shukant@pixijs.io>",
-  "homepage": "https://github.com/pixijs/pixi.js#readme",
+  "homepage": "https://github.com/pixijs/pixijs#readme",
   "license": "MIT",
   "files": [
-    "dist",
+    "lib",
     "*.d.ts"
   ],
   "publishConfig": {
@@ -37,13 +36,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/pixijs/pixi.js.git"
+    "url": "git+https://github.com/pixijs/pixijs.git"
   },
   "bugs": {
-    "url": "https://github.com/pixijs/pixi.js/issues"
+    "url": "https://github.com/pixijs/pixijs/issues"
   },
-  "pixiRequirements": [
-    "@pixi/core",
-    "@pixi/display"
-  ]
+  "peerDependencies": {
+    "@pixi/core": "file:../core",
+    "@pixi/display": "file:../display"
+  }
 }

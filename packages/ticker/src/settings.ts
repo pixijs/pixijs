@@ -1,13 +1,31 @@
 import { settings } from '@pixi/settings';
+import { deprecation } from '@pixi/utils';
+import { Ticker } from './Ticker';
 
-/**
- * Target frames per millisecond.
- * @static
- * @name TARGET_FPMS
- * @memberof PIXI.settings
- * @type {number}
- * @default 0.06
- */
-settings.TARGET_FPMS = 0.06;
+Object.defineProperties(settings, {
+    /**
+     * Target frames per millisecond.
+     * @static
+     * @name TARGET_FPMS
+     * @memberof PIXI.settings
+     * @type {number}
+     * @deprecated since 7.1.0
+     * @see PIXI.Ticker.targetFPMS
+     */
+    TARGET_FPMS: {
+        get()
+        {
+            return Ticker.targetFPMS;
+        },
+        set(value: number)
+        {
+            // #if _DEBUG
+            deprecation('7.1.0', 'settings.TARGET_FPMS is deprecated, use Ticker.targetFPMS');
+            // #endif
+
+            Ticker.targetFPMS = value;
+        },
+    },
+});
 
 export { settings };

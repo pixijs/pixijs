@@ -1,6 +1,6 @@
-import type {  ResolverManifest } from '../src/resolver/types';
+import type { AssetsManifest } from '../src/types';
 
-export const manifest: ResolverManifest = {
+export const manifest: AssetsManifest = {
     bundles: [
         {
             name: 'default',

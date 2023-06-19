@@ -1,18 +1,17 @@
 {
   "name": "@pixi/core",
-  "version": "7.0.0-alpha.3",
-  "main": "dist/cjs/core.js",
-  "module": "dist/esm/core.mjs",
-  "types": "index.d.ts",
+  "main": "lib/index.js",
+  "module": "lib/index.mjs",
+  "types": "lib/index.d.ts",
   "exports": {
     ".": {
       "import": {
-        "types": "./index.d.ts",
-        "default": "./dist/esm/core.mjs"
+        "types": "./lib/index.d.ts",
+        "default": "./lib/index.mjs"
       },
       "require": {
-        "types": "./index.d.ts",
-        "default": "./dist/cjs/core.js"
+        "types": "./lib/index.d.ts",
+        "default": "./lib/index.js"
       }
     }
   },
@@ -22,18 +21,17 @@
     "Matt Karl <matt@mattkarl.com>"
   ],
   "homepage": "http://pixijs.com/",
-  "bugs": "https://github.com/pixijs/pixi.js/issues",
+  "bugs": "https://github.com/pixijs/pixijs/issues",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/pixijs/pixi.js.git"
+    "url": "https://github.com/pixijs/pixijs.git"
   },
   "publishConfig": {
     "access": "public"
   },
   "files": [
     "lib",
-    "dist",
     "*.d.ts"
   ],
   "funding": {
@@ -41,13 +39,14 @@
     "url": "https://opencollective.com/pixijs"
   },
   "dependencies": {
-    "@pixi/constants": "7.0.0-alpha.3",
-    "@pixi/extensions": "7.0.0-alpha.3",
-    "@pixi/math": "7.0.0-alpha.3",
-    "@pixi/runner": "7.0.0-alpha.3",
-    "@pixi/settings": "7.0.0-alpha.3",
-    "@pixi/ticker": "7.0.0-alpha.3",
-    "@pixi/utils": "7.0.0-alpha.3",
+    "@pixi/color": "file:../color",
+    "@pixi/constants": "file:../constants",
+    "@pixi/extensions": "file:../extensions",
+    "@pixi/math": "file:../math",
+    "@pixi/runner": "file:../runner",
+    "@pixi/settings": "file:../settings",
+    "@pixi/ticker": "file:../ticker",
+    "@pixi/utils": "file:../utils",
     "@types/offscreencanvas": "^2019.6.4"
   }
 }

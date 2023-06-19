@@ -1,9 +1,9 @@
-import { BaseTexture, extensions, ExtensionType, settings, utils, ALPHA_MODES, MIPMAP_MODES } from '@pixi/core';
 import { checkExtension, createTexture, LoaderParserPriority } from '@pixi/assets';
+import { ALPHA_MODES, BaseTexture, extensions, ExtensionType, MIPMAP_MODES, settings, utils } from '@pixi/core';
 import { parseDDS } from '../parsers';
 
+import type { Loader, LoaderParser, ResolvedAsset } from '@pixi/assets';
 import type { IBaseTextureOptions, Texture } from '@pixi/core';
-import type { LoadAsset, Loader, LoaderParser } from '@pixi/assets';
 
 /** Load our DDS textures! */
 export const loadDDS: LoaderParser = {
@@ -12,12 +12,14 @@ export const loadDDS: LoaderParser = {
         priority: LoaderParserPriority.High,
     },
 
+    name: 'loadDDS',
+
     test(url: string): boolean
     {
         return checkExtension(url, '.dds');
     },
 
-    async load(url: string, asset: LoadAsset, loader: Loader): Promise<Texture | Texture[]>
+    async load(url: string, asset: ResolvedAsset, loader: Loader): Promise<Texture | Texture[]>
     {
         // get an array buffer...
         const response = await settings.ADAPTER.fetch(url);

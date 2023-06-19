@@ -1,5 +1,5 @@
-import { DisplayObject, Container } from '@pixi/display';
-import { RAD_TO_DEG, DEG_TO_RAD } from '@pixi/core';
+import { DEG_TO_RAD, RAD_TO_DEG } from '@pixi/core';
+import { Container, DisplayObject } from '@pixi/display';
 
 describe('DisplayObject', () =>
 {
@@ -7,7 +7,7 @@ describe('DisplayObject', () =>
     {
         it('should initialise properties', () =>
         {
-            // @ts-expect-error - instantiating DisplayOBject
+            // @ts-expect-error - instantiating DisplayObject
             const object = new DisplayObject();
 
             expect(object.alpha).toEqual(1);
@@ -21,7 +21,7 @@ describe('DisplayObject', () =>
     {
         it('should add itself to a Container', () =>
         {
-            // @ts-expect-error - instantiating DisplayOBject
+            // @ts-expect-error - instantiating DisplayObject
             const child = new DisplayObject();
             const container = new Container();
 
@@ -33,7 +33,7 @@ describe('DisplayObject', () =>
 
         it('should throw if not Container', () =>
         {
-            // @ts-expect-error - instantiating DisplayOBject
+            // @ts-expect-error - instantiating DisplayObject
             const child = new DisplayObject();
             const notAContainer = {};
 
@@ -42,11 +42,46 @@ describe('DisplayObject', () =>
         });
     });
 
+    describe('removeFromParent', () =>
+    {
+        it('should remove from parent', () =>
+        {
+            // @ts-expect-error - instantiating DisplayObject
+            const child = new DisplayObject();
+            const container = new Container();
+
+            expect(container.children.length).toEqual(0);
+            expect(child.parent).toBeNull();
+
+            container.addChild(child);
+
+            expect(container.children.length).toEqual(1);
+            expect(child.parent).toEqual(container);
+
+            child.removeFromParent();
+
+            expect(container.children.length).toEqual(0);
+            expect(child.parent).toBeNull();
+        });
+
+        it('should do nothing if no parent', () =>
+        {
+            // @ts-expect-error - instantiating DisplayObject
+            const child = new DisplayObject();
+
+            expect(child.parent).toBeNull();
+
+            child.removeFromParent();
+
+            expect(child.parent).toBeNull();
+        });
+    });
+
     describe('setTransform', () =>
     {
         it('should set correct properties', () =>
         {
-            // @ts-expect-error - instantiating DisplayOBject
+            // @ts-expect-error - instantiating DisplayObject
             const object = new DisplayObject();
 
             object.setTransform(1, 2, 3, 4, 5, 6, 7, 8, 9);
@@ -64,7 +99,7 @@ describe('DisplayObject', () =>
 
         it('should convert zero scale to one', () =>
         {
-            // @ts-expect-error - instantiating DisplayOBject
+            // @ts-expect-error - instantiating DisplayObject
             const object = new DisplayObject();
 
             object.setTransform(1, 1, 0, 0, 1, 1, 1, 1, 1);
@@ -80,7 +115,7 @@ describe('DisplayObject', () =>
         {
             const grandParent = new Container();
             const parent = new Container();
-            // @ts-expect-error - instantiating DisplayOBject
+            // @ts-expect-error - instantiating DisplayObject
             const child = new DisplayObject();
 
             grandParent.addChild(parent);
@@ -98,7 +133,7 @@ describe('DisplayObject', () =>
     {
         it('rotation and angle are different units of the same transformation', () =>
         {
-            // @ts-expect-error - instantiating DisplayOBject
+            // @ts-expect-error - instantiating DisplayObject
             const object = new DisplayObject();
 
             expect(object.rotation).toEqual(0);
@@ -120,7 +155,7 @@ describe('DisplayObject', () =>
     {
         it('should allow to recalc children transform', () =>
         {
-            // @ts-expect-error - instantiating DisplayOBject
+            // @ts-expect-error - instantiating DisplayObject
             const child = new DisplayObject();
             const container = new Container();
 
@@ -157,9 +192,9 @@ describe('DisplayObject', () =>
         it('should set isMask and renderable properties correctly even if the same mask is used by multiple objects',
             () =>
             {
-                // @ts-expect-error - instantiating DisplayOBject
+                // @ts-expect-error - instantiating DisplayObject
                 const mask1 = new DisplayObject();
-                // @ts-expect-error - instantiating DisplayOBject
+                // @ts-expect-error - instantiating DisplayObject
                 const mask2 = new DisplayObject();
                 const container1 = new Container();
                 const container2 = new Container();
@@ -236,7 +271,7 @@ describe('DisplayObject', () =>
         it('should trigger removed listeners', () =>
         {
             const listener = jest.fn();
-            // @ts-expect-error - instantiating DisplayOBject
+            // @ts-expect-error - instantiating DisplayObject
             const child = new DisplayObject();
             const container = new Container();
 
@@ -248,9 +283,14 @@ describe('DisplayObject', () =>
             expect(listener).toBeCalledTimes(1);
 
             container.addChild(child);
-            child.destroy();
+            child.removeFromParent();
 
             expect(listener).toBeCalledTimes(2);
+
+            container.addChild(child);
+            child.destroy();
+
+            expect(listener).toBeCalledTimes(3);
         });
     });
 
@@ -259,7 +299,7 @@ describe('DisplayObject', () =>
         it('should trigger destroyed listeners', () =>
         {
             const listener = jest.fn();
-            // @ts-expect-error - instantiating DisplayOBject
+            // @ts-expect-error - instantiating DisplayObject
             const child = new DisplayObject();
             const container = new Container();
 
@@ -279,7 +319,7 @@ describe('DisplayObject', () =>
         it('should trigger destroyed listeners once destruction is complete', () =>
         {
             let listenerCallCount = 0;
-            // @ts-expect-error - instantiating DisplayOBject
+            // @ts-expect-error - instantiating DisplayObject
             const child = new DisplayObject();
             const container = new Container();
 

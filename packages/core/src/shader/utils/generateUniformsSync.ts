@@ -1,7 +1,7 @@
 import { uniformParsers } from './uniformParsers';
 
-import type { UniformGroup } from '../UniformGroup';
 import type { Dict } from '@pixi/utils';
+import type { UniformGroup } from '../UniformGroup';
 
 export type UniformsSyncCallback = (...args: any[]) => void;
 

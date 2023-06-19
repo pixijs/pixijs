@@ -1,18 +1,17 @@
 {
   "name": "@pixi/text-bitmap",
-  "version": "7.0.0-alpha.3",
-  "main": "dist/cjs/text-bitmap.js",
-  "module": "dist/esm/text-bitmap.mjs",
-  "types": "index.d.ts",
+  "main": "lib/index.js",
+  "module": "lib/index.mjs",
+  "types": "lib/index.d.ts",
   "exports": {
     ".": {
       "import": {
-        "types": "./index.d.ts",
-        "default": "./dist/esm/text-bitmap.mjs"
+        "types": "./lib/index.d.ts",
+        "default": "./lib/index.mjs"
       },
       "require": {
-        "types": "./index.d.ts",
-        "default": "./dist/cjs/text-bitmap.js"
+        "types": "./lib/index.d.ts",
+        "default": "./lib/index.js"
       }
     }
   },
@@ -22,24 +21,24 @@
     "Matt Karl <matt@mattkarl.com>"
   ],
   "homepage": "http://pixijs.com/",
-  "bugs": "https://github.com/pixijs/pixi.js/issues",
+  "bugs": "https://github.com/pixijs/pixijs/issues",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/pixijs/pixi.js.git"
+    "url": "https://github.com/pixijs/pixijs.git"
   },
   "publishConfig": {
     "access": "public"
   },
   "files": [
-    "dist",
+    "lib",
     "*.d.ts"
   ],
-  "pixiRequirements": [
-    "@pixi/assets",
-    "@pixi/core",
-    "@pixi/display",
-    "@pixi/mesh",
-    "@pixi/text"
-  ]
+  "peerDependencies": {
+    "@pixi/assets": "file:../assets",
+    "@pixi/core": "file:../core",
+    "@pixi/display": "file:../display",
+    "@pixi/mesh": "file:../mesh",
+    "@pixi/text": "file:../text"
+  }
 }

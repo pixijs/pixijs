@@ -38,7 +38,7 @@ NineSlicePlane.prototype._renderCanvas = function _renderCanvas(renderer: Canvas
 {
     const context = renderer.canvasContext.activeContext;
     const transform = this.worldTransform;
-    const isTinted = this.tint !== 0xFFFFFF;
+    const isTinted = this.tintValue !== 0xFFFFFF;
     const texture = this.texture;
 
     if (!texture.valid)
@@ -49,13 +49,13 @@ NineSlicePlane.prototype._renderCanvas = function _renderCanvas(renderer: Canvas
     // Work out tinting
     if (isTinted)
     {
-        if (this._cachedTint !== this.tint)
+        if (this._cachedTint !== this.tintValue)
         {
             // Tint has changed, need to update the tinted texture and use that instead
 
-            this._cachedTint = this.tint;
+            this._cachedTint = this.tintValue;
 
-            this._tintedCanvas = canvasUtils.getTintedCanvas(this, this.tint);
+            this._tintedCanvas = canvasUtils.getTintedCanvas(this, this.tintValue);
         }
     }
 

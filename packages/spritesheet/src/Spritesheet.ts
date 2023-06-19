@@ -1,7 +1,11 @@
-import { Texture, BaseTexture, utils, Rectangle } from '@pixi/core';
-import type { ImageResource, IPointData } from '@pixi/core';
+import { BaseTexture, Rectangle, Texture, utils } from '@pixi/core';
 
-/** Represents the JSON data for a spritesheet atlas. */
+import type { ImageResource, IPointData, ITextureBorders } from '@pixi/core';
+
+/**
+ * Represents the JSON data for a spritesheet atlas.
+ * @memberof PIXI
+ */
 export interface ISpritesheetFrameData
 {
     frame: {
@@ -21,9 +25,13 @@ export interface ISpritesheetFrameData
         y: number;
     };
     anchor?: IPointData;
+    borders?: ITextureBorders;
 }
 
-/** Atlas format. */
+/**
+ * Atlas format.
+ * @memberof PIXI
+ */
 export interface ISpritesheetData
 {
     frames: utils.Dict<ISpritesheetFrameData>;
@@ -44,10 +52,11 @@ export interface ISpritesheetData
  * ```js
  * import { Assets } from 'pixi.js';
  *
- * const sheet = await Assets.load("images/spritesheet.json");
+ * const sheet = await Assets.load('images/spritesheet.json');
  * ```
  *
  * Alternately, you may circumvent the loader by instantiating the Spritesheet directly:
+ *
  * ```js
  * import { Spritesheet } from 'pixi.js';
  *
@@ -56,11 +65,52 @@ export interface ISpritesheetData
  * console.log('Spritesheet ready to use!');
  * ```
  *
- * With the `sheet.textures` you can create Sprite objects,`sheet.animations` can be used to create an AnimatedSprite.
+ * With the `sheet.textures` you can create Sprite objects, and `sheet.animations` can be used to create an AnimatedSprite.
  *
+ * Here's an example of a sprite sheet JSON data file:
+ * ```json
+ * {
+ *     "frames": {
+ *         "enemy1.png":
+ *         {
+ *             "frame": {"x":103,"y":1,"w":32,"h":32},
+ *             "spriteSourceSize": {"x":0,"y":0,"w":32,"h":32},
+ *             "sourceSize": {"w":32,"h":32},
+ *             "anchor": {"x":16,"y":16}
+ *         },
+ *         "enemy2.png":
+ *         {
+ *             "frame": {"x":103,"y":35,"w":32,"h":32},
+ *             "spriteSourceSize": {"x":0,"y":0,"w":32,"h":32},
+ *             "sourceSize": {"w":32,"h":32},
+ *             "anchor": {"x":16,"y":16}
+ *         },
+ *         "button.png":
+ *         {
+ *             "frame": {"x":1,"y":1,"w":100,"h":100},
+ *             "spriteSourceSize": {"x":0,"y":0,"w":100,"h":100},
+ *             "sourceSize": {"w":100,"h":100},
+ *             "anchor": {"x":0,"y":0},
+ *             "borders": {"left":35,"top":35,"right":35,"bottom":35}
+ *         }
+ *     },
+ *
+ *     "animations": {
+ *         "enemy": ["enemy1.png","enemy2.png"]
+ *     },
+ *
+ *     "meta": {
+ *         "image": "sheet.png",
+ *         "format": "RGBA8888",
+ *         "size": {"w":136,"h":102},
+ *         "scale": "1"
+ *     }
+ * }
+ * ```
  * Sprite sheets can be packed using tools like {@link https://codeandweb.com/texturepacker|TexturePacker},
  * {@link https://renderhjs.net/shoebox/|Shoebox} or {@link https://github.com/krzysztof-o/spritesheet.js|Spritesheet.js}.
- * Default anchor points (see {@link PIXI.Texture#defaultAnchor}) and grouping of animation sprites are currently only
+ * Default anchor points (see {@link PIXI.Texture#defaultAnchor}), default 9-slice borders
+ * (see {@link PIXI.Texture#defaultBorders}) and grouping of animation sprites are currently only
  * supported by TexturePacker.
  * @memberof PIXI
  */
@@ -81,7 +131,7 @@ export class Spritesheet
      * @example
      * import { Sprite } from 'pixi.js';
      *
-     * new Sprite(sheet.textures["image.png"]);
+     * new Sprite(sheet.textures['image.png']);
      */
     public textures: utils.Dict<Texture>;
 
@@ -91,7 +141,7 @@ export class Spritesheet
      * @example
      * import { AnimatedSprite } from 'pixi.js';
      *
-     * new AnimatedSprite(sheet.animations["anim_name"])
+     * new AnimatedSprite(sheet.animations['anim_name']);
      */
     public animations: utils.Dict<Texture[]>;
 
@@ -272,7 +322,8 @@ export class Spritesheet
                     orig,
                     trim,
                     data.rotated ? 2 : 0,
-                    data.anchor
+                    data.anchor,
+                    data.borders
                 );
 
                 // lets also add the frame to pixi's global cache for 'from' and 'fromLoader' functions

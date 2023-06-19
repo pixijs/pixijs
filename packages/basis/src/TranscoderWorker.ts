@@ -1,6 +1,7 @@
+import { TranscoderWorkerWrapper } from './TranscoderWorkerWrapper';
+
 import type { BASIS_FORMATS } from './Basis';
 import type { ITranscodeResponse } from './TranscoderWorkerWrapper';
-import { TranscoderWorkerWrapper } from './TranscoderWorkerWrapper';
 
 /**
  * Worker class for transcoding *.basis files in background threads.
@@ -74,7 +75,7 @@ export class TranscoderWorker
 
         if (!TranscoderWorker.wasmSource)
         {
-            console.warn('PIXI.resources.BasisResource.TranscoderWorker has not been given the transcoder WASM binary!');
+            console.warn('resources.BasisResource.TranscoderWorker has not been given the transcoder WASM binary!');
         }
 
         this.worker = new Worker(TranscoderWorker.workerURL);

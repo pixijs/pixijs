@@ -1,13 +1,27 @@
-import { extensions, ExtensionType, utils } from '@pixi/core';
-import type { LoadAsset } from '../types';
-import type { LoaderParser } from './LoaderParser';
+import { extensions, ExtensionType, settings, utils } from '@pixi/core';
+import { checkDataUrl } from '../../utils/checkDataUrl';
+import { checkExtension } from '../../utils/checkExtension';
 import { LoaderParserPriority } from './LoaderParser';
 
-const validWeights = ['normal', 'bold',
+import type { ResolvedAsset } from '../../types';
+import type { LoaderParser } from './LoaderParser';
+
+const validWeights = [
+    'normal', 'bold',
     '100', '200', '300', '400', '500', '600', '700', '800', '900',
 ];
-const validFonts = ['woff', 'woff2', 'ttf', 'otf'];
+const validFontExtensions = ['.ttf', '.otf', '.woff', '.woff2'];
+const validFontMIMEs = [
+    'font/ttf',
+    'font/otf',
+    'font/woff',
+    'font/woff2',
+];
 
+/**
+ * Loader plugin for handling web fonts
+ * @memberof PIXI
+ */
 export type LoadFontData = {
     family: string;
     display: string;
@@ -18,6 +32,12 @@ export type LoadFontData = {
     variant: string;
     weights: string[];
 };
+
+/**
+ * RegExp for matching CSS <ident-token>. It doesn't consider escape and non-ASCII characters, but enough for us.
+ * @see {@link https://www.w3.org/TR/css-syntax-3/#ident-token-diagram}
+ */
+const CSS_IDENT_TOKEN_REGEX = /^(--|-?[A-Z_])[0-9A-Z_-]*$/i;
 
 /**
  * Return font face name from a file name
@@ -33,12 +53,29 @@ export function getFontFamilyName(url: string): string
     const nameWithSpaces = name.replace(/(-|_)/g, ' ');
 
     // Upper case first character of each word
-    const nameTitleCase = nameWithSpaces.toLowerCase()
+    const nameTokens = nameWithSpaces.toLowerCase()
         .split(' ')
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ');
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1));
 
-    return nameTitleCase;
+    let valid = nameTokens.length > 0;
+
+    for (const token of nameTokens)
+    {
+        if (!token.match(CSS_IDENT_TOKEN_REGEX))
+        {
+            valid = false;
+            break;
+        }
+    }
+
+    let fontFamilyName = nameTokens.join(' ');
+
+    if (!valid)
+    {
+        fontFamilyName = `"${fontFamilyName.replace(/[\\"]/g, '\\$&')}"`;
+    }
+
+    return fontFamilyName;
 }
 
 /** Web font loader plugin */
@@ -48,23 +85,18 @@ export const loadWebFont = {
         priority: LoaderParserPriority.Low,
     },
 
+    name: 'loadWebFont',
+
     test(url: string): boolean
     {
-        const tempURL = url.split('?')[0];
-        const extension = tempURL.split('.').pop();
-
-        return validFonts.includes(extension);
+        return checkDataUrl(url, validFontMIMEs) || checkExtension(url, validFontExtensions);
     },
 
-    async load(url: string, options?: LoadAsset<LoadFontData>): Promise<FontFace | FontFace[]>
+    async load(url: string, options?: ResolvedAsset<LoadFontData>): Promise<FontFace | FontFace[]>
     {
-        // Prevent loading font if navigator is not online
-        if (!window.navigator.onLine)
-        {
-            throw new Error('[loadWebFont] Cannot load font - navigator is offline');
-        }
+        const fonts = settings.ADAPTER.getFontFaceSet();
 
-        if ('FontFace' in window)
+        if (fonts)
         {
             const fontFaces: FontFace[] = [];
             const name = options.data?.family ?? getFontFamilyName(url);
@@ -75,14 +107,14 @@ export const loadWebFont = {
             {
                 const weight = weights[i];
 
-                const font = new FontFace(name, `url(${url})`, {
+                const font = new FontFace(name, `url(${encodeURI(url)})`, {
                     ...data,
                     weight,
                 });
 
                 await font.load();
 
-                document.fonts.add(font);
+                fonts.add(font);
 
                 fontFaces.push(font);
             }
@@ -100,7 +132,7 @@ export const loadWebFont = {
     unload(font: FontFace | FontFace[]): void
     {
         (Array.isArray(font) ? font : [font])
-            .forEach((t) => document.fonts.delete(t));
+            .forEach((t) => settings.ADAPTER.getFontFaceSet().delete(t));
     }
 } as LoaderParser<FontFace | FontFace[]>;
 

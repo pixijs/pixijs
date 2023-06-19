@@ -1,5 +1,5 @@
-import { CanvasRenderTarget } from '@pixi/utils';
 import { settings } from '@pixi/settings';
+import { CanvasRenderTarget } from '@pixi/utils';
 
 describe('CanvasRenderTarget', () =>
 {
@@ -16,7 +16,7 @@ describe('CanvasRenderTarget', () =>
 
         renderTarget.destroy();
 
-        expect(renderTarget.canvas).toBeNull();
+        expect(() => renderTarget.canvas).toThrowError(TypeError);
     });
 
     it('should create with custom resolution', () =>

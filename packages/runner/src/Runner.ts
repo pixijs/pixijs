@@ -2,39 +2,40 @@
  * A Runner is a highly performant and simple alternative to signals. Best used in situations
  * where events are dispatched to many objects at high frequency (say every frame!)
  *
+ * Like a signal:
  *
- * like a signal..
- * ```
+ * ```js
  * import { Runner } from '@pixi/runner';
  *
  * const myObject = {
- *     loaded: new Runner('loaded')
- * }
+ *     loaded: new Runner('loaded'),
+ * };
  *
  * const listener = {
- *     loaded: function(){
- *         // thin
+ *     loaded: function() {
+ *         // Do something when loaded
  *     }
- * }
+ * };
  *
  * myObject.loaded.add(listener);
  *
  * myObject.loaded.emit();
  * ```
  *
- * Or for handling calling the same function on many items
- * ```
+ * Or for handling calling the same function on many items:
+ *
+ * ```js
  * import { Runner } from '@pixi/runner';
  *
  * const myGame = {
- *     update: new Runner('update')
- * }
+ *     update: new Runner('update'),
+ * };
  *
  * const gameObject = {
- *     update: function(time){
- *         // update my gamey state
- *     }
- * }
+ *     update: function(time) {
+ *         // Update my gamey state
+ *     },
+ * };
  *
  * myGame.update.add(gameObject);
  *
@@ -105,9 +106,9 @@ export class Runner
      * All that is required is to pass the listening object and ensure that it has contains a function that has the same name
      * as the name provided to the Runner when it was created.
      *
-     * Eg A listener passed to this Runner will require a 'complete' function.
+     * E.g. A listener passed to this Runner will require a 'complete' function.
      *
-     * ```
+     * ```js
      * import { Runner } from '@pixi/runner';
      *
      * const complete = new Runner('complete');

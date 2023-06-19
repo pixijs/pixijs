@@ -1,5 +1,4 @@
 import { Rectangle } from '@pixi/core';
-
 import '@pixi/math-extras';
 
 describe('Rectangle', () =>

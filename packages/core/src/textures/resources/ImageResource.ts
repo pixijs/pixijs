@@ -1,14 +1,14 @@
-import { BaseImageResource } from './BaseImageResource';
-import { settings } from '@pixi/settings';
 import { ALPHA_MODES } from '@pixi/constants';
+import { settings } from '@pixi/settings';
+import { BaseImageResource } from './BaseImageResource';
 
-import type { BaseTexture } from '../BaseTexture';
 import type { Renderer } from '../../Renderer';
+import type { BaseTexture } from '../BaseTexture';
 import type { GLTexture } from '../GLTexture';
 
 export interface IImageResourceOptions
 {
-    /** Start loading process */
+    /** Start loading process automatically when constructed. */
     autoLoad?: boolean;
 
     /** Whether its required to create a bitmap before upload. */
@@ -51,7 +51,7 @@ export class ImageResource extends BaseImageResource
     alphaMode: ALPHA_MODES;
 
     /**
-     * The ImageBitmap element created for a {@code HTMLImageElement}.
+     * The ImageBitmap element created for a {@link HTMLImageElement}.
      * @default null
      */
     bitmap: ImageBitmap;
@@ -60,10 +60,10 @@ export class ImageResource extends BaseImageResource
      * Promise when loading.
      * @default null
      */
-    private _load: Promise<ImageResource>;
+    private _load: Promise<this>;
 
     /** When process is completed */
-    private _process: Promise<ImageResource>;
+    private _process: Promise<this>;
 
     /**
      * @param source - image source or URL
@@ -93,7 +93,7 @@ export class ImageResource extends BaseImageResource
         // FireFox 68, and possibly other versions, seems like setting the HTMLImageElement#width and #height
         // to non-zero values before its loading completes if images are in a cache.
         // Because of this, need to set the `_width` and the `_height` to zero to avoid uploading incomplete images.
-        // Please refer to the issue #5968 (https://github.com/pixijs/pixi.js/issues/5968).
+        // Please refer to the issue #5968 (https://github.com/pixijs/pixijs/issues/5968).
         if (!source.complete && !!this._width && !!this._height)
         {
             this._width = 0;
@@ -121,7 +121,7 @@ export class ImageResource extends BaseImageResource
      * Returns a promise when image will be loaded and processed.
      * @param createBitmap - whether process image into bitmap
      */
-    load(createBitmap?: boolean): Promise<ImageResource>
+    load(createBitmap?: boolean): Promise<this>
     {
         if (this._load)
         {
@@ -185,7 +185,7 @@ export class ImageResource extends BaseImageResource
      * Can be called multiple times, real promise is cached inside.
      * @returns - Cached promise to fill that bitmap
      */
-    process(): Promise<ImageResource>
+    process(): Promise<this>
     {
         const source = this.source as HTMLImageElement;
 
@@ -209,7 +209,8 @@ export class ImageResource extends BaseImageResource
             .then((blob) => createImageBitmap(blob,
                 0, 0, source.width, source.height,
                 {
-                    premultiplyAlpha: this.alphaMode === ALPHA_MODES.UNPACK ? 'premultiply' : 'none',
+                    premultiplyAlpha: this.alphaMode === null || this.alphaMode === ALPHA_MODES.UNPACK
+                        ? 'premultiply' : 'none',
                 }))
             .then((bitmap: ImageBitmap) =>
             {
@@ -234,7 +235,7 @@ export class ImageResource extends BaseImageResource
      * @param glTexture - GLTexture to use
      * @returns {boolean} true is success
      */
-    upload(renderer: Renderer, baseTexture: BaseTexture, glTexture: GLTexture): boolean
+    override upload(renderer: Renderer, baseTexture: BaseTexture, glTexture: GLTexture): boolean
     {
         if (typeof this.alphaMode === 'number')
         {
@@ -293,7 +294,7 @@ export class ImageResource extends BaseImageResource
     }
 
     /** Destroys this resource. */
-    dispose(): void
+    override dispose(): void
     {
         (this.source as HTMLImageElement).onload = null;
         (this.source as HTMLImageElement).onerror = null;
@@ -312,10 +313,10 @@ export class ImageResource extends BaseImageResource
     /**
      * Used to auto-detect the type of resource.
      * @param {*} source - The source object
-     * @returns {boolean} `true` if source is string or HTMLImageElement
+     * @returns {boolean} `true` if current environment support HTMLImageElement, and source is string or HTMLImageElement
      */
-    static test(source: unknown): source is string | HTMLImageElement
+    static override test(source: unknown): source is string | HTMLImageElement
     {
-        return typeof source === 'string' || source instanceof HTMLImageElement;
+        return typeof HTMLImageElement !== 'undefined' && (typeof source === 'string' || source instanceof HTMLImageElement);
     }
 }

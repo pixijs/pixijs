@@ -1,7 +1,9 @@
 import { utils } from '@pixi/core';
 import { convertToList, isSingleItem } from '../utils';
+
+import type { ResolvedAsset } from '../types';
 import type { LoaderParser } from './parsers/LoaderParser';
-import type { PromiseAndParser, LoadAsset } from './types';
+import type { PromiseAndParser } from './types';
 
 /**
  * The Loader is responsible for loading all assets, such as images, spritesheets, audio files, etc.
@@ -17,6 +19,21 @@ import type { PromiseAndParser, LoadAsset } from './types';
 export class Loader
 {
     private _parsers: LoaderParser[] = [];
+    private _parserHash: Record<string, LoaderParser>;
+
+    private _parsersValidated = false;
+
+    /** All loader parsers registered */
+    public parsers = new Proxy(this._parsers, {
+        set: (target, key, value) =>
+        {
+            this._parsersValidated = false;
+
+            target[key as any as number] = value;
+
+            return true;
+        }
+    });
 
     /** Cache loading promises that ae currently active */
     public promiseCache: Record<string, PromiseAndParser> = {};
@@ -24,6 +41,7 @@ export class Loader
     /** function used for testing */
     public reset(): void
     {
+        this._parsersValidated = false;
         this.promiseCache = {};
     }
 
@@ -33,7 +51,7 @@ export class Loader
      * @param data - any custom additional information relevant to the asset being loaded
      * @returns - a promise that will resolve to an Asset for example a Texture of a JSON object
      */
-    private _getLoadPromiseAndParser(url: string, data?: LoadAsset): PromiseAndParser
+    private _getLoadPromiseAndParser(url: string, data?: ResolvedAsset): PromiseAndParser
     {
         const result: PromiseAndParser = {
             promise: null,
@@ -44,28 +62,50 @@ export class Loader
         {
             let asset = null;
 
-            for (let i = 0; i < this.parsers.length; i++)
+            let parser: LoaderParser = null;
+
+            // first check to see if the user has specified a parser
+            if (data.loadParser)
             {
-                const parser = this.parsers[i];
+                // they have? lovely, lets use it
+                parser = this._parserHash[data.loadParser];
 
-                if (parser.load && parser.test?.(url, data, this))
+                if (!parser)
                 {
-                    asset = await parser.load(url, data, this);
-                    result.parser = parser;
-
-                    break;
+                    // #if _DEBUG
+                    // eslint-disable-next-line max-len
+                    console.warn(`[Assets] specified load parser "${data.loadParser}" not found while loading ${url}`);
+                    // #endif
                 }
             }
 
-            if (!result.parser)
+            // no parser specified, so lets try and find one using the tests
+            if (!parser)
             {
-                // #if _DEBUG
-                // eslint-disable-next-line max-len
-                console.warn(`[Assets] ${url} could not be loaded as we don't know how to parse it, ensure the correct parser has being added`);
-                // #endif
+                for (let i = 0; i < this.parsers.length; i++)
+                {
+                    const parserX = this.parsers[i];
 
-                return null;
+                    if (parserX.load && parserX.test?.(url, data, this))
+                    {
+                        parser = parserX;
+                        break;
+                    }
+                }
+
+                if (!parser)
+                {
+                    // #if _DEBUG
+                    // eslint-disable-next-line max-len
+                    console.warn(`[Assets] ${url} could not be loaded as we don't know how to parse it, ensure the correct parser has been added`);
+                    // #endif
+
+                    return null;
+                }
             }
+
+            asset = await parser.load(url, data, this);
+            result.parser = parser;
 
             for (let i = 0; i < this.parsers.length; i++)
             {
@@ -90,36 +130,53 @@ export class Loader
     }
 
     /**
-     * Loads an asset(s) using the parsers added to the Loader.
+     * Loads one or more assets using the parsers added to the Loader.
      * @example
-     * // single asset:
+     * // Single asset:
      * const asset = await Loader.load('cool.png');
      * console.log(asset);
-     * @example
-     * // multiple assets:
-     * const assets = await  Loader.load(['cool.png', 'cooler.png']);
+     *
+     * // Multiple assets:
+     * const assets = await Loader.load(['cool.png', 'cooler.png']);
      * console.log(assets);
      * @param assetsToLoadIn - urls that you want to load, or a single one!
-     * @param onProgress - a function that gets called when the progress changes
+     * @param onProgress - For multiple asset loading only, an optional function that is called
+     * when progress on asset loading is made. The function is passed a single parameter, `progress`,
+     * which represents the percentage (0.0 - 1.0) of the assets loaded. Do not use this function
+     * to detect when assets are complete and available, instead use the Promise returned by this function.
      */
-    public async load(
-        assetsToLoadIn: string | string[] | LoadAsset | LoadAsset[],
+    public async load<T = any>(
+        assetsToLoadIn: string | ResolvedAsset,
         onProgress?: (progress: number) => void,
-    ): Promise<{[key: string]: any} | any>
+    ): Promise<T>;
+    public async load<T = any>(
+        assetsToLoadIn: string[] | ResolvedAsset[],
+        onProgress?: (progress: number) => void,
+    ): Promise<Record<string, T>>;
+    public async load<T = any>(
+        assetsToLoadIn: string | string[] | ResolvedAsset | ResolvedAsset[],
+        onProgress?: (progress: number) => void,
+    ): Promise<T | Record<string, T>>
     {
+        if (!this._parsersValidated)
+        {
+            this._validateParsers();
+        }
+
         let count = 0;
 
         const assets: Record<string, Promise<any>> = {};
 
         const singleAsset = isSingleItem(assetsToLoadIn);
 
-        const assetsToLoad = convertToList<LoadAsset>(assetsToLoadIn, (item) => ({
+        const assetsToLoad = convertToList<ResolvedAsset>(assetsToLoadIn, (item) => ({
+            alias: [item],
             src: item,
         }));
 
         const total = assetsToLoad.length;
 
-        const promises: Promise<void>[] = assetsToLoad.map(async (asset: LoadAsset) =>
+        const promises: Promise<void>[] = assetsToLoad.map(async (asset: ResolvedAsset) =>
         {
             const url = utils.path.toAbsolute(asset.src);
 
@@ -156,10 +213,10 @@ export class Loader
     }
 
     /**
-     * Unloads an asset(s). Any unloaded assets will be destroyed, freeing up memory for your app.
+     * Unloads one or more assets. Any unloaded assets will be destroyed, freeing up memory for your app.
      * The parser that created the asset, will be the one that unloads it.
      * @example
-     * // single asset:
+     * // Single asset:
      * const asset = await Loader.load('cool.png');
      *
      * await Loader.unload('cool.png');
@@ -168,14 +225,15 @@ export class Loader
      * @param assetsToUnloadIn - urls that you want to unload, or a single one!
      */
     public async unload(
-        assetsToUnloadIn: string | string[] | LoadAsset | LoadAsset[],
+        assetsToUnloadIn: string | string[] | ResolvedAsset | ResolvedAsset[],
     ): Promise<void>
     {
-        const assetsToUnload = convertToList<LoadAsset>(assetsToUnloadIn, (item) => ({
+        const assetsToUnload = convertToList<ResolvedAsset>(assetsToUnloadIn, (item) => ({
+            alias: [item],
             src: item,
         }));
 
-        const promises: Promise<void>[] = assetsToUnload.map(async (asset: LoadAsset) =>
+        const promises: Promise<void>[] = assetsToUnload.map(async (asset: ResolvedAsset) =>
         {
             const url = utils.path.toAbsolute(asset.src);
 
@@ -194,9 +252,23 @@ export class Loader
         await Promise.all(promises);
     }
 
-    /** All loader parsers registered */
-    public get parsers(): LoaderParser[]
+    /** validates our parsers, right now it only checks for name conflicts but we can add more here as required! */
+    private _validateParsers()
     {
-        return this._parsers;
+        this._parsersValidated = true;
+
+        this._parserHash = this._parsers
+            .filter((parser) => parser.name)
+            .reduce((hash, parser) =>
+            {
+                if (hash[parser.name])
+                {
+                    // #if _DEBUG
+                    console.warn(`[Assets] loadParser name conflict "${parser.name}"`);
+                    // #endif
+                }
+
+                return { ...hash, [parser.name]: parser };
+            }, {} as Record<string, LoaderParser>);
     }
 }

@@ -1,7 +1,6 @@
+import { FORMATS, MIPMAP_MODES, MSAA_QUALITY, SCALE_MODES, TYPES } from '@pixi/constants';
 import { Runner } from '@pixi/runner';
 import { BaseTexture } from '../textures/BaseTexture';
-import { DepthResource } from '../textures/resources/DepthResource';
-import { FORMATS, MIPMAP_MODES, SCALE_MODES, TYPES, MSAA_QUALITY } from '@pixi/constants';
 
 import type { GLFramebuffer } from './GLFramebuffer';
 
@@ -24,15 +23,15 @@ export class Framebuffer
      * Desired number of samples for antialiasing. 0 means AA should not be used.
      *
      * Experimental WebGL2 feature, allows to use antialiasing in individual renderTextures.
-     * Antialiasing is the same as for main buffer with renderer `antialias:true` options.
+     * Antialiasing is the same as for main buffer with renderer `antialias: true` options.
      * Seriously affects GPU memory consumption and GPU performance.
      * @example
      * import { MSAA_QUALITY } from 'pixi.js';
      *
      * renderTexture.framebuffer.multisample = MSAA_QUALITY.HIGH;
-     * //...
-     * renderer.render(myContainer, {renderTexture});
-     * renderer.framebuffer.blit(); // copies data from MSAA framebuffer to texture
+     * // ...
+     * renderer.render(myContainer, { renderTexture });
+     * renderer.framebuffer.blit(); // Copies data from MSAA framebuffer to texture
      * @default PIXI.MSAA_QUALITY.NONE
      */
     public multisample: MSAA_QUALITY;
@@ -53,8 +52,13 @@ export class Framebuffer
      */
     constructor(width: number, height: number)
     {
-        this.width = Math.round(width || 100);
-        this.height = Math.round(height || 100);
+        this.width = Math.round(width);
+        this.height = Math.round(height);
+
+        if (!this.width || !this.height)
+        {
+            throw new Error('Framebuffer width or height is zero');
+        }
 
         this.stencil = false;
         this.depth = false;
@@ -109,8 +113,7 @@ export class Framebuffer
      */
     addDepthTexture(texture?: BaseTexture): this
     {
-        /* eslint-disable max-len */
-        this.depthTexture = texture || new BaseTexture(new DepthResource(null, { width: this.width, height: this.height }), {
+        this.depthTexture = texture || new BaseTexture(null, {
             scaleMode: SCALE_MODES.NEAREST,
             resolution: 1,
             width: this.width,
@@ -157,6 +160,11 @@ export class Framebuffer
     {
         width = Math.round(width);
         height = Math.round(height);
+
+        if (!width || !height)
+        {
+            throw new Error('Framebuffer width and height must not be zero');
+        }
 
         if (width === this.width && height === this.height) return;
 

@@ -1,7 +1,6 @@
+import { BaseRenderTexture, Rectangle, RenderTexture, Texture } from '@pixi/core';
 import { Container } from '@pixi/display';
-import { RenderTexture, BaseRenderTexture, Texture } from '@pixi/core';
 import { Sprite } from '@pixi/sprite';
-import { Rectangle } from '@pixi/math';
 import { Graphics } from '@pixi/graphics';
 import { Text } from '@pixi/text';
 

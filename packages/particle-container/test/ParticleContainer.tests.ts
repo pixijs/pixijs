@@ -1,6 +1,6 @@
+import { Texture } from '@pixi/core';
 import { ParticleContainer } from '@pixi/particle-container';
 import { Sprite } from '@pixi/sprite';
-import { Texture } from '@pixi/core';
 
 describe('ParticleContainer', () =>
 {
@@ -35,6 +35,20 @@ describe('ParticleContainer', () =>
             position: true,
             rotation: true,
         });
+
+        container.destroy();
+    });
+
+    it('should support tint setting', () =>
+    {
+        const container = new ParticleContainer();
+
+        container.tint = 'red';
+
+        expect(container.tint).toBe('red');
+        expect(container.tintRgb[0]).toBe(1);
+        expect(container.tintRgb[1]).toBe(0);
+        expect(container.tintRgb[2]).toBe(0);
 
         container.destroy();
     });

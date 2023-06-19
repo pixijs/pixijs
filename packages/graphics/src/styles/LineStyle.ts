@@ -1,5 +1,5 @@
+import { LINE_CAP, LINE_JOIN } from '../const';
 import { FillStyle } from './FillStyle';
-import { LINE_JOIN, LINE_CAP } from '../const';
 
 /**
  * Represents the line style for Graphics.
@@ -64,5 +64,8 @@ export class LineStyle extends FillStyle
         this.alignment = 0.5;
         this.width = 0;
         this.native = false;
+        this.cap = LINE_CAP.BUTT;
+        this.join = LINE_JOIN.MITER;
+        this.miterLimit = 10;
     }
 }

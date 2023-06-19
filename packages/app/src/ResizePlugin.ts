@@ -1,8 +1,17 @@
-import type { ExtensionMetadata, Renderer } from '@pixi/core';
 import { extensions, ExtensionType } from '@pixi/core';
-import type { IApplicationOptions } from './Application';
+
+import type { ExtensionMetadata, Renderer } from '@pixi/core';
 
 type ResizeableRenderer = Pick<Renderer, 'resize'>;
+
+export interface ResizePluginOptions
+{
+    /**
+     * Element to automatically resize stage to.
+     * @memberof PIXI.IApplicationOptions
+     */
+    resizeTo?: Window | HTMLElement;
+}
 
 /**
  * Middleware for for Application's resize functionality
@@ -18,6 +27,7 @@ export class ResizePlugin
     public static resize: () => void;
     public static renderer: ResizeableRenderer;
     public static queueResize: () => void;
+    public static render: () => void;
     private static _resizeId: number;
     private static _resizeTo: Window | HTMLElement;
     private static cancelResize: () => void;
@@ -28,7 +38,7 @@ export class ResizePlugin
      * @private
      * @param {object} [options] - See application options
      */
-    static init(options?: IApplicationOptions): void
+    static init(options: ResizePluginOptions): void
     {
         Object.defineProperty(this, 'resizeTo',
             /**
@@ -126,6 +136,7 @@ export class ResizePlugin
             }
 
             this.renderer.resize(width, height);
+            this.render();
         };
 
         // On resize

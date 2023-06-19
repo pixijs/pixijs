@@ -1,8 +1,10 @@
-import { MASK_TYPES, settings, utils } from '@pixi/core';
+import { MASK_TYPES, Matrix, utils } from '@pixi/core';
 import { DisplayObject } from './DisplayObject';
 
-import type { MaskData, Renderer, Matrix, Rectangle } from '@pixi/core';
+import type { MaskData, Rectangle, Renderer } from '@pixi/core';
 import type { IDestroyOptions } from './DisplayObject';
+
+const tempMatrix = new Matrix();
 
 function sortChildren(a: DisplayObject, b: DisplayObject): number
 {
@@ -23,13 +25,10 @@ export interface Container extends GlobalMixins.Container, DisplayObject {}
  * It is the base class of all display objects that act as a container for other objects, including Graphics
  * and Sprite.
  * @example
- * import { BlurFilter } from '@pixi/filter-blur';
- * import { Container } from '@pixi/display';
- * import { Graphics } from '@pixi/graphics';
- * import { Sprite } from '@pixi/sprite';
+ * import { BlurFilter, Container, Graphics, Sprite } from 'pixi.js';
  *
  * const container = new Container();
- * const sprite = Sprite.from("https://s3-us-west-2.amazonaws.com/s.cdpn.io/693612/IaUrttj.png");
+ * const sprite = Sprite.from('https://s3-us-west-2.amazonaws.com/s.cdpn.io/693612/IaUrttj.png');
  *
  * sprite.width = 512;
  * sprite.height = 512;
@@ -43,13 +42,28 @@ export interface Container extends GlobalMixins.Container, DisplayObject {}
  *
  * // Only the contents within a circle at the center should be rendered onto the screen.
  * container.mask = new Graphics()
- *  .beginFill(0xffffff)
- *  .drawCircle(sprite.width / 2, sprite.height / 2, Math.min(sprite.width, sprite.height) / 2)
- *  .endFill();
+ *     .beginFill(0xffffff)
+ *     .drawCircle(sprite.width / 2, sprite.height / 2, Math.min(sprite.width, sprite.height) / 2)
+ *     .endFill();
  * @memberof PIXI
  */
 export class Container<T extends DisplayObject = DisplayObject> extends DisplayObject
 {
+    /**
+     * Sets the default value for the container property `sortableChildren`.
+     * If set to true, the container will sort its children by zIndex value
+     * when `updateTransform()` is called, or manually if `sortChildren()` is called.
+     *
+     * This actually changes the order of elements in the array, so should be treated
+     * as a basic solution that is not performant compared to other solutions,
+     * such as {@link https://github.com/pixijs/layers PixiJS Layers}.
+     *
+     * Also be aware of that this may not work nicely with the `addChildAt()` function,
+     * as the `zIndex` sorting may cause the child to automatically sorted to another position.
+     * @static
+     */
+    public static defaultSortableChildren = false;
+
     /**
      * The array of children of this container.
      * @readonly
@@ -57,16 +71,16 @@ export class Container<T extends DisplayObject = DisplayObject> extends DisplayO
     public readonly children: T[];
 
     /**
-     * If set to true, the container will sort its children by zIndex value
-     * when updateTransform() is called, or manually if sortChildren() is called.
+     * If set to true, the container will sort its children by `zIndex` value
+     * when `updateTransform()` is called, or manually if `sortChildren()` is called.
      *
      * This actually changes the order of elements in the array, so should be treated
      * as a basic solution that is not performant compared to other solutions,
-     * such as @link https://github.com/pixijs/pixi-display
+     * such as {@link https://github.com/pixijs/layers PixiJS Layers}
      *
-     * Also be aware of that this may not work nicely with the addChildAt() function,
-     * as the zIndex sorting may cause the child to automatically sorted to another position.
-     * @see PIXI.settings.SORTABLE_CHILDREN
+     * Also be aware of that this may not work nicely with the `addChildAt()` function,
+     * as the `zIndex` sorting may cause the child to automatically sorted to another position.
+     * @see PIXI.Container.defaultSortableChildren
      */
     public sortableChildren: boolean;
 
@@ -87,7 +101,7 @@ export class Container<T extends DisplayObject = DisplayObject> extends DisplayO
         super();
 
         this.children = [];
-        this.sortableChildren = settings.SORTABLE_CHILDREN;
+        this.sortableChildren = Container.defaultSortableChildren;
         this.sortDirty = false;
 
         /**
@@ -100,10 +114,10 @@ export class Container<T extends DisplayObject = DisplayObject> extends DisplayO
 
         /**
          * Fired when a DisplayObject is removed from this Container.
-         * @event PIXI.DisplayObject#childRemoved
+         * @event PIXI.Container#childRemoved
          * @param {PIXI.DisplayObject} child - The child removed from the Container.
          * @param {PIXI.Container} container - The container that removed the child.
-         * @param {number} index - The former children's index of the removed child
+         * @param {number} index - The former children's index of the removed child.
          */
     }
 
@@ -562,6 +576,22 @@ export class Container<T extends DisplayObject = DisplayObject> extends DisplayO
         else if (this._render !== Container.prototype._render)
         {
             bounds = this.getBounds(true);
+        }
+
+        // Prepend the transform that is appended to the projection matrix.
+        const projectionTransform = renderer.projection.transform;
+
+        if (projectionTransform)
+        {
+            if (transform)
+            {
+                transform = tempMatrix.copyFrom(transform);
+                transform.prepend(projectionTransform);
+            }
+            else
+            {
+                transform = projectionTransform;
+            }
         }
 
         // Render the container if the source frame intersects the bounds.

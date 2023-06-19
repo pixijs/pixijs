@@ -1,10 +1,10 @@
 import { MASK_TYPES } from '@pixi/constants';
-import { settings } from '@pixi/settings';
-import type { ISpriteMaskFilter } from '@pixi/core';
+import { Filter } from '../filters/Filter';
 
 import type { COLOR_MASK_BITS, MSAA_QUALITY } from '@pixi/constants';
-import type { Rectangle, Matrix } from '@pixi/math';
+import type { Matrix, Rectangle } from '@pixi/math';
 import type { IFilterTarget } from '../filters/IFilterTarget';
+import type { ISpriteMaskFilter } from '../filters/spriteMask/SpriteMaskFilter';
 import type { Renderer } from '../Renderer';
 
 export interface IMaskTarget extends IFilterTarget
@@ -42,7 +42,7 @@ export class MaskData
     /** Whether it belongs to MaskSystem pool */
     public pooled: boolean;
 
-    /** Indicator of the type (always true for {@link MaskData} objects) */
+    /** Indicator of the type (always true for {@link PIXI.MaskData} objects) */
     public isMaskData: boolean;// webdoc crashes if the type is true because reasons... (will fix)
 
     /**
@@ -50,14 +50,14 @@ export class MaskData
      * If set to `null` or `0`, the resolution of the current render target is used.
      * @default null
      */
-    public resolution: number;
+    public resolution: number | null;
 
     /**
      * Number of samples of the sprite mask filter.
      * If set to `null`, the sample count of the current render target is used.
-     * @default PIXI.settings.FILTER_MULTISAMPLE
+     * @default PIXI.Filter.defaultMultisample
      */
-    public multisample: MSAA_QUALITY;
+    public multisample: MSAA_QUALITY | null;
 
     /** If enabled is true the mask is applied, if false it will not. */
     public enabled: boolean;
@@ -122,7 +122,7 @@ export class MaskData
         this.pooled = false;
         this.isMaskData = true;
         this.resolution = null;
-        this.multisample = settings.FILTER_MULTISAMPLE;
+        this.multisample = Filter.defaultMultisample;
         this.enabled = true;
         this.colorMask = 0xf;
         this._filters = null;

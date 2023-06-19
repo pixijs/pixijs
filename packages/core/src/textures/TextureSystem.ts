@@ -1,16 +1,16 @@
-import { mapTypeAndFormatToInternalFormat } from './utils/mapTypeAndFormatToInternalFormat';
+import { MIPMAP_MODES, SAMPLER_TYPES, SCALE_MODES, TYPES, WRAP_MODES } from '@pixi/constants';
+import { extensions, ExtensionType } from '@pixi/extensions';
+import { removeItems } from '@pixi/utils';
 import { BaseTexture } from './BaseTexture';
 import { GLTexture } from './GLTexture';
-import { removeItems } from '@pixi/utils';
-import { MIPMAP_MODES, WRAP_MODES, SCALE_MODES, TYPES, SAMPLER_TYPES } from '@pixi/constants';
+import { mapInternalFormatToSamplerType } from './utils/mapInternalFormatToSamplerType';
+import { mapTypeAndFormatToInternalFormat } from './utils/mapTypeAndFormatToInternalFormat';
 
+import type { ExtensionMetadata } from '@pixi/extensions';
+import type { IRenderingContext } from '../IRenderer';
+import type { Renderer } from '../Renderer';
 import type { ISystem } from '../system/ISystem';
 import type { Texture } from './Texture';
-
-import type { Renderer } from '../Renderer';
-import type { IRenderingContext } from '../IRenderer';
-import type { ExtensionMetadata } from '@pixi/extensions';
-import { extensions, ExtensionType } from '@pixi/extensions';
 
 /**
  * System plugin to the renderer to manage textures.
@@ -41,6 +41,7 @@ export class TextureSystem implements ISystem
     protected CONTEXT_UID: number;
     protected gl: IRenderingContext;
     protected internalFormats: { [type: number]: { [format: number]: number } };
+    protected samplerTypes: Record<number, SAMPLER_TYPES>;
     protected webGLVersion: number;
 
     /**
@@ -91,6 +92,7 @@ export class TextureSystem implements ISystem
         this.webGLVersion = this.renderer.context.webGLVersion;
 
         this.internalFormats = mapTypeAndFormatToInternalFormat(gl);
+        this.samplerTypes = mapInternalFormatToSamplerType(gl);
 
         const maxTextures = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);
 
@@ -293,6 +295,7 @@ export class TextureSystem implements ISystem
     initTextureType(texture: BaseTexture, glTexture: GLTexture): void
     {
         glTexture.internalFormat = this.internalFormats[texture.type]?.[texture.format] ?? texture.format;
+        glTexture.samplerType = this.samplerTypes[glTexture.internalFormat] ?? SAMPLER_TYPES.FLOAT;
 
         if (this.webGLVersion === 2 && texture.type === TYPES.HALF_FLOAT)
         {
