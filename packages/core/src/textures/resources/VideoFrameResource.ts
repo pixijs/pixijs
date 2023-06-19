@@ -1,8 +1,6 @@
 import { BaseImageResource } from './BaseImageResource';
 
-const VideoFrame = (window as any).VideoFrame;
-
-type VideoFrame = typeof VideoFrame;
+type VideoFrame = any;
 
 /**
  * Resource type for VideoFrame.
@@ -26,6 +24,6 @@ export class VideoFrameResource extends BaseImageResource
      */
     static test(source: unknown): source is VideoFrame
     {
-        return !!globalThis.createImageBitmap && source instanceof VideoFrame;
+        return !!(window as any).VideoFrame && source instanceof (window as any).VideoFrame;
     }
 }
