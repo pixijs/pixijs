@@ -6,6 +6,7 @@ import { CubeResource } from './CubeResource';
 import { ImageResource } from './ImageResource';
 import { SVGResource } from './SVGResource';
 import { VideoResource } from './VideoResource';
+import { VideoFrameResource } from './VideoFrameResource';
 import { ImageBitmapResource } from './ImageBitmapResource';
 
 export * from './Resource';
@@ -16,6 +17,7 @@ INSTALLED.push(
     ImageBitmapResource,
     CanvasResource,
     VideoResource,
+    VideoFrameResource,
     SVGResource,
     BufferResource,
     CubeResource,
