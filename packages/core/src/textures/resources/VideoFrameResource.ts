@@ -24,6 +24,6 @@ export class VideoFrameResource extends BaseImageResource
      */
     static test(source: unknown): source is VideoFrame
     {
-        return !!(window as any).VideoFrame && source instanceof (window as any).VideoFrame;
+        return !!(globalThis as any).VideoFrame && source instanceof (globalThis as any).VideoFrame;
     }
 }
