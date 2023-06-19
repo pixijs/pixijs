@@ -1,9 +1,11 @@
-import { BaseTexture } from '../textures/BaseTexture';
-import { Framebuffer } from '../framebuffer/Framebuffer';
+import { Color } from '@pixi/color';
 import { MIPMAP_MODES, MSAA_QUALITY } from '@pixi/constants';
+import { Framebuffer } from '../framebuffer/Framebuffer';
+import { BaseTexture } from '../textures/BaseTexture';
 
-import type { IBaseTextureOptions } from '../textures/BaseTexture';
+import type { ColorSource } from '@pixi/color';
 import type { MaskData } from '../mask/MaskData';
+import type { IBaseTextureOptions } from '../textures/BaseTexture';
 
 export interface BaseRenderTexture extends GlobalMixins.BaseRenderTexture, BaseTexture {}
 
@@ -21,28 +23,33 @@ export interface BaseRenderTexture extends GlobalMixins.BaseRenderTexture, BaseT
  * const renderer = autoDetectRenderer();
  * const baseRenderTexture = new BaseRenderTexture({ width: 800, height: 600 });
  * const renderTexture = new RenderTexture(baseRenderTexture);
- * const sprite = Sprite.from("spinObj_01.png");
+ * const sprite = Sprite.from('spinObj_01.png');
  *
- * sprite.position.x = 800/2;
- * sprite.position.y = 600/2;
+ * sprite.position.x = 800 / 2;
+ * sprite.position.y = 600 / 2;
  * sprite.anchor.x = 0.5;
  * sprite.anchor.y = 0.5;
  *
- * renderer.render(sprite, {renderTexture});
+ * renderer.render(sprite, { renderTexture });
  *
  * // The Sprite in this case will be rendered using its local transform.
  * // To render this sprite at 0,0 you can clear the transform
- * sprite.setTransform()
+ * sprite.setTransform();
  *
  * const baseRenderTexture = new BaseRenderTexture({ width: 100, height: 100 });
  * const renderTexture = new RenderTexture(baseRenderTexture);
  *
- * renderer.render(sprite, {renderTexture});  // Renders to center of RenderTexture
+ * renderer.render(sprite, { renderTexture }); // Renders to center of RenderTexture
  * @memberof PIXI
  */
 export class BaseRenderTexture extends BaseTexture
 {
-    public clearColor: number[];
+    public _clear: Color;
+
+    /**
+     * The framebuffer of this base texture.
+     * @readonly
+     */
     public framebuffer: Framebuffer;
 
     /** The data structure for the stencil masks. */
@@ -55,7 +62,7 @@ export class BaseRenderTexture extends BaseTexture
      * @param options
      * @param {number} [options.width=100] - The width of the base render texture.
      * @param {number} [options.height=100] - The height of the base render texture.
-     * @param {PIXI.SCALE_MODES} [options.scaleMode=PIXI.settings.SCALE_MODE] - See {@link PIXI.SCALE_MODES}
+     * @param {PIXI.SCALE_MODES} [options.scaleMode=PIXI.BaseTexture.defaultOptions.scaleMode] - See {@link PIXI.SCALE_MODES}
      *   for possible values.
      * @param {number} [options.resolution=PIXI.settings.RESOLUTION] - The resolution / device pixel ratio
      *   of the texture being generated.
@@ -76,8 +83,8 @@ export class BaseRenderTexture extends BaseTexture
             /* eslint-enable prefer-rest-params */
         }
 
-        options.width = options.width || 100;
-        options.height = options.height || 100;
+        options.width = options.width ?? 100;
+        options.height = options.height ?? 100;
         options.multisample ??= MSAA_QUALITY.NONE;
 
         super(null, options);
@@ -86,8 +93,7 @@ export class BaseRenderTexture extends BaseTexture
         this.mipmap = MIPMAP_MODES.OFF;
         this.valid = true;
 
-        this.clearColor = [0, 0, 0, 0];
-
+        this._clear = new Color([0, 0, 0, 0]);
         this.framebuffer = new Framebuffer(this.realWidth, this.realHeight)
             .addColorTexture(0, this);
         this.framebuffer.multisample = options.multisample;
@@ -95,6 +101,40 @@ export class BaseRenderTexture extends BaseTexture
         // TODO - could this be added the systems?
         this.maskStack = [];
         this.filterStack = [{}];
+    }
+
+    /** Color when clearning the texture. */
+    set clearColor(value: ColorSource)
+    {
+        this._clear.setValue(value);
+    }
+    get clearColor(): ColorSource
+    {
+        return this._clear.value;
+    }
+
+    /**
+     * Color object when clearning the texture.
+     * @readonly
+     * @since 7.2.0
+     */
+    get clear(): Color
+    {
+        return this._clear;
+    }
+
+    /**
+     * Shortcut to `this.framebuffer.multisample`.
+     * @default PIXI.MSAA_QUALITY.NONE
+     */
+    get multisample(): MSAA_QUALITY
+    {
+        return this.framebuffer.multisample;
+    }
+
+    set multisample(value: MSAA_QUALITY)
+    {
+        this.framebuffer.multisample = value;
     }
 
     /**

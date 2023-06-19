@@ -1,17 +1,17 @@
-import type { GLBuffer } from './GLBuffer';
-import { ENV } from '@pixi/constants';
-import { settings } from '../settings';
+import { BUFFER_TYPE, ENV } from '@pixi/constants';
+import { extensions, ExtensionType } from '@pixi/extensions';
+import { settings } from '@pixi/settings';
 
-import type { ISystem } from '../system/ISystem';
 import type { DRAW_MODES } from '@pixi/constants';
-import type { Renderer } from '../Renderer';
-import type { Geometry } from './Geometry';
-import type { Shader } from '../shader/Shader';
-import type { Program } from '../shader/Program';
+import type { ExtensionMetadata } from '@pixi/extensions';
 import type { Dict } from '@pixi/utils';
 import type { IRenderingContext } from '../IRenderer';
-import type { ExtensionMetadata } from '@pixi/extensions';
-import { extensions, ExtensionType } from '@pixi/extensions';
+import type { Renderer } from '../Renderer';
+import type { Program } from '../shader/Program';
+import type { Shader } from '../shader/Shader';
+import type { ISystem } from '../system/ISystem';
+import type { Geometry } from './Geometry';
+import type { GLBuffer } from './GLBuffer';
 
 const byteSizeMap: {[key: number]: number} = { 5126: 4, 5123: 2, 5121: 1 };
 
@@ -341,6 +341,7 @@ export class GeometrySystem implements ISystem
             }
         }
 
+        // @TODO: We don't know if VAO is supported.
         vao = gl.createVertexArray();
 
         gl.bindVertexArray(vao);
@@ -364,11 +365,12 @@ export class GeometrySystem implements ISystem
 
         this.activateVao(geometry, program);
 
-        this._activeVao = vao;
-
         // add it to the cache!
         vaoObjectHash[program.id] = vao;
         vaoObjectHash[signature] = vao;
+
+        gl.bindVertexArray(null);
+        bufferSystem.unbind(BUFFER_TYPE.ARRAY_BUFFER);
 
         return vao;
     }
@@ -510,7 +512,7 @@ export class GeometrySystem implements ISystem
                     // TODO calculate instance count based of this...
                     if (this.hasInstance)
                     {
-                        gl.vertexAttribDivisor(location, 1);
+                        gl.vertexAttribDivisor(location, attribute.divisor);
                     }
                     else
                     {

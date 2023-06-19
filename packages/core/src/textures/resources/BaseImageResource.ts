@@ -68,7 +68,7 @@ export class BaseImageResource extends Resource
      * @param {HTMLImageElement|HTMLVideoElement|ImageBitmap|PIXI.ICanvas} [source] - (optional)
      * @returns - true is success
      */
-    upload(renderer: Renderer, baseTexture: BaseTexture, glTexture: GLTexture, source?: ImageSource): boolean
+    override upload(renderer: Renderer, baseTexture: BaseTexture, glTexture: GLTexture, source?: ImageSource): boolean
     {
         const gl = renderer.gl;
         const width = baseTexture.realWidth;
@@ -85,7 +85,7 @@ export class BaseImageResource extends Resource
         }
         else if (typeof HTMLVideoElement !== 'undefined' && source instanceof HTMLVideoElement)
         {
-            if (source.readyState <= 1)
+            if (source.readyState <= 1 && source.buffered.length === 0)
             {
                 return false;
             }
@@ -115,7 +115,7 @@ export class BaseImageResource extends Resource
      * Checks if source width/height was changed, resize can cause extra baseTexture update.
      * Triggers one update in any case.
      */
-    update(): void
+    override update(): void
     {
         if (this.destroyed)
         {
@@ -132,8 +132,8 @@ export class BaseImageResource extends Resource
         super.update();
     }
 
-    /** Destroy this {@link BaseImageResource} */
-    dispose(): void
+    /** Destroy this {@link PIXI.BaseImageResource} */
+    override dispose(): void
     {
         this.source = null;
     }

@@ -1,9 +1,9 @@
-import { SCALE_MODES, BLEND_MODES, extensions, ExtensionType, Matrix, groupD8 } from '@pixi/core';
 import { canvasUtils } from '@pixi/canvas-renderer';
+import { BLEND_MODES, extensions, ExtensionType, groupD8, Matrix, SCALE_MODES } from '@pixi/core';
 
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
-import type { Sprite } from '@pixi/sprite';
 import type { ExtensionMetadata } from '@pixi/core';
+import type { Sprite } from '@pixi/sprite';
 
 const canvasRenderWorldTransform = new Matrix();
 
@@ -152,12 +152,12 @@ export class CanvasSpriteRenderer
 
         if (sprite.tint !== 0xFFFFFF)
         {
-            if (sprite._cachedTint !== sprite.tint || sprite._tintedCanvas.tintId !== sprite._texture._updateID)
+            if (sprite._cachedTint !== sprite.tintValue || sprite._tintedCanvas.tintId !== sprite._texture._updateID)
             {
-                sprite._cachedTint = sprite.tint;
+                sprite._cachedTint = sprite.tintValue;
 
                 // TODO clean up caching - how to clean up the caches?
-                sprite._tintedCanvas = canvasUtils.getTintedCanvas(sprite, sprite.tint);
+                sprite._tintedCanvas = canvasUtils.getTintedCanvas(sprite, sprite.tintValue);
             }
 
             context.drawImage(

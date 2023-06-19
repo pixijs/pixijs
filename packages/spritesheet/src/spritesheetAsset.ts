@@ -1,12 +1,12 @@
+import { copySearchParams, LoaderParserPriority } from '@pixi/assets';
 import { extensions, ExtensionType, settings, utils } from '@pixi/core';
-import { LoaderParserPriority } from '@pixi/assets';
 import { Spritesheet } from './Spritesheet';
 
-import type { AssetExtension, ResolveAsset, LoadAsset, Loader } from '@pixi/assets';
+import type { AssetExtension, Loader, ResolvedAsset, UnresolvedAsset } from '@pixi/assets';
 import type { Texture } from '@pixi/core';
 import type { ISpritesheetData } from './Spritesheet';
 
-interface SpriteSheetJson extends ISpritesheetData
+export interface SpriteSheetJson extends ISpritesheetData
 {
     meta: {
         image: string;
@@ -50,6 +50,7 @@ function getCacheableAssets(keys: string[], asset: Spritesheet, ignoreMultiPack:
 /**
  * Asset extension for loading spritesheets.
  * @memberof PIXI
+ * @type {PIXI.AssetExtension}
  */
 export const spritesheetAsset = {
     extension: ExtensionType.Asset,
@@ -69,7 +70,7 @@ export const spritesheetAsset = {
 
             return extension === 'json' && validImages.includes(format);
         },
-        parse: (value: string): ResolveAsset =>
+        parse: (value: string): UnresolvedAsset =>
         {
             const split = value.split('.');
 
@@ -88,17 +89,19 @@ export const spritesheetAsset = {
      * @ignore
      */
     loader: {
+        name: 'spritesheetLoader',
+
         extension: {
             type: ExtensionType.LoadParser,
             priority: LoaderParserPriority.Normal,
         },
 
-        async testParse(asset: SpriteSheetJson, options: LoadAsset): Promise<boolean>
+        async testParse(asset: SpriteSheetJson, options: ResolvedAsset): Promise<boolean>
         {
-            return (utils.path.extname(options.src).includes('.json') && !!asset.frames);
+            return (utils.path.extname(options.src).toLowerCase() === '.json' && !!asset.frames);
         },
 
-        async parse(asset: SpriteSheetJson, options: LoadAsset, loader: Loader): Promise<Spritesheet>
+        async parse(asset: SpriteSheetJson, options: ResolvedAsset, loader: Loader): Promise<Spritesheet>
         {
             let basePath = utils.path.dirname(options.src);
 
@@ -107,8 +110,11 @@ export const spritesheetAsset = {
                 basePath += '/';
             }
 
-            const imagePath = basePath + asset.meta.image;
-            const assets = await loader.load([imagePath]) as Record<string, Texture>;
+            let imagePath = basePath + asset.meta.image;
+
+            imagePath = copySearchParams(imagePath, options.src);
+
+            const assets = await loader.load<Texture>([imagePath]);
             const texture = assets[imagePath];
             const spritesheet = new Spritesheet(
                 texture.baseTexture,
@@ -134,7 +140,7 @@ export const spritesheetAsset = {
                         continue;
                     }
 
-                    const itemUrl = basePath + item;
+                    let itemUrl = basePath + item;
 
                     // Check if the file wasn't already added as multipack
                     if (options.data?.ignoreMultiPack)
@@ -142,7 +148,9 @@ export const spritesheetAsset = {
                         continue;
                     }
 
-                    promises.push(loader.load({
+                    itemUrl = copySearchParams(itemUrl, options.src);
+
+                    promises.push(loader.load<Spritesheet>({
                         src: itemUrl,
                         data: {
                             ignoreMultiPack: true,

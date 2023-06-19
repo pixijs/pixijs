@@ -21,4 +21,10 @@ declare namespace GlobalMixins
         _tintedCanvas: import('@pixi/settings').ICanvas | HTMLImageElement;
         _canvasUvs: number[];
     }
+
+    interface Settings
+    {
+        /** @deprecated since 7.1.0 */
+        MESH_CANVAS_PADDING: number;
+    }
 }

@@ -3,20 +3,35 @@
  * the {@link PIXI.Ticker} object. Higher priority items are updated first and lower
  * priority items, such as render, should go later.
  * @static
- * @constant
- * @name UPDATE_PRIORITY
  * @memberof PIXI
  * @enum {number}
- * @property {number} [HIGH=25] High priority updating, {@link PIXI.VideoBaseTexture} and {@link PIXI.AnimatedSprite}
- * @property {number} [NORMAL=0] Default priority for ticker events, see {@link PIXI.Ticker#add}.
- * @property {number} [LOW=-25] Low priority used for {@link PIXI.Application} rendering.
- * @property {number} [UTILITY=-50] Lowest priority used for {@link PIXI.BasePrepare} utility.
  */
 export enum UPDATE_PRIORITY
 // eslint-disable-next-line @typescript-eslint/indent
 {
+    /**
+     * Highest priority used for interaction events in {@link PIXI.EventSystem}
+     * @default 50
+     */
+    INTERACTION = 50,
+    /**
+     * High priority updating, used by {@link PIXI.AnimatedSprite}
+     * @default 25
+     */
     HIGH = 25,
+    /**
+     * Default priority for ticker events, see {@link PIXI.Ticker#add}.
+     * @default 0
+     */
     NORMAL = 0,
+    /**
+     * Low priority used for {@link PIXI.Application} rendering.
+     * @default -25
+     */
     LOW = -25,
+    /**
+     * Lowest priority used for {@link PIXI.BasePrepare} utility.
+     * @default -50
+     */
     UTILITY = -50,
 }

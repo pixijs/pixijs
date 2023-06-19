@@ -6,28 +6,11 @@ import esbuild from 'rollup-plugin-esbuild';
 import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
 import jscc from 'rollup-plugin-jscc';
-import alias from '@rollup/plugin-alias';
 import workspacesRun from 'workspaces-run';
-import repo from './lerna.json';
+import repo from './package.json';
 
-const isProduction = process.env.NODE_ENV === 'production';
 const bundleTarget = 'es2017';
 const moduleTarget = 'es2020';
-
-/**
- * Get the JSCC plugin for preprocessing code.
- * @param {boolean} debug Build is for debugging
- */
-function preprocessPlugin(debug)
-{
-    return jscc({
-        values: {
-            _DEBUG: debug,
-            _PROD: !debug,
-            _VERSION: repo.version,
-        }
-    });
-}
 
 /**
  * Convert a development file name to minified.
@@ -36,6 +19,24 @@ function preprocessPlugin(debug)
 function prodName(name)
 {
     return name.replace(/\.(m)?js$/, '.min.$1js');
+}
+
+/**
+ * Escapes the `RegExp` special characters.
+ * @param {string} str
+ */
+function escapeRegExp(str)
+{
+    return str.replace(/[$()*+.?[\\\]^{|}]/g, '\\$&');
+}
+
+/**
+ * Convert the name of a package to a `RegExp` that matches the package's export names.
+ * @param {string} packageName
+ */
+function convertPackageNameToRegExp(packageName)
+{
+    return new RegExp(`^${escapeRegExp(packageName)}(/.+)?$`);
 }
 
 async function main()
@@ -57,47 +58,23 @@ async function main()
     ];
 
     const plugins = [
-        preprocessPlugin(true),
-        esbuild({
-            target: moduleTarget,
-        }),
+        jscc({ values: { _VERSION: repo.version, _DEBUG: true } }),
+        esbuild({ target: moduleTarget }),
         ...commonPlugins
     ];
 
     const bundlePlugins = [
-        preprocessPlugin(true),
-        esbuild({
-            target: bundleTarget,
-        }),
+        jscc({ values: { _VERSION: repo.version, _DEBUG: true } }),
+        esbuild({ target: bundleTarget }),
         ...commonPlugins
     ];
 
-    const prodPlugins = [
-        preprocessPlugin(false),
-        esbuild({
-            target: moduleTarget,
-            minify: true,
-        }),
+    const bundlePluginsProd = [
+        jscc({ values: { _VERSION: repo.version, _DEBUG: false } }),
+        esbuild({ target: bundleTarget, minify: true }),
         ...commonPlugins,
     ];
 
-    const prodBundlePlugins = [
-        alias({
-            entries: [{
-                find: /^(@pixi\/([^\/]+))$/,
-                replacement: '$1/dist/esm/$2.min.mjs',
-            }]
-        }),
-        preprocessPlugin(false),
-        esbuild({
-            target: bundleTarget,
-            minify: true,
-        }),
-        ...commonPlugins,
-    ];
-
-    const compiled = (new Date()).toUTCString().replace(/GMT/g, 'UTC');
-    const sourcemap = true;
     const results = [];
     const packages = [];
 
@@ -113,80 +90,101 @@ async function main()
     packages.forEach((pkg) =>
     {
         const {
-            main,
-            module,
+            plugin,
+            pluginExports = true,
             bundle,
             bundleModule,
-            version,
-            dependencies,
-            nodeDependencies,
-            peerDependencies,
-            pixiRequirements,
+            dependencies = {},
+            peerDependencies = {},
         } = pkg.config;
+
+        // Check for bundle folder
+        const external = Object.keys(dependencies)
+            .concat(Object.keys(peerDependencies))
+            .map(convertPackageNameToRegExp);
+        const basePath = path.relative(__dirname, pkg.dir);
+        const input = path.join(basePath, 'src/index.ts');
+
+        results.push({
+            input,
+            output: [
+                {
+                    dir: path.join(basePath, 'lib'),
+                    entryFileNames: '[name].js',
+                    format: 'cjs',
+                    freeze: false,
+                    sourcemap: true,
+                    preserveModules: true,
+                    preserveModulesRoot: path.join(basePath, 'src'),
+                    exports: 'named',
+                },
+                {
+                    dir: path.join(basePath, 'lib'),
+                    entryFileNames: '[name].mjs',
+                    format: 'esm',
+                    freeze: false,
+                    sourcemap: true,
+                    preserveModules: true,
+                    preserveModulesRoot: path.join(basePath, 'src'),
+                    exports: 'named',
+                },
+            ],
+            treeshake: false,
+            external,
+            plugins,
+        });
 
         const banner = [
             `/*!`,
-            ` * ${pkg.name} - v${version}`,
-            ` * Compiled ${compiled}`,
+            ` * ${pkg.name} - v${repo.version}`,
+            ` * Compiled ${(new Date()).toUTCString().replace(/GMT/g, 'UTC')}`,
             ` *`,
             ` * ${pkg.name} is licensed under the MIT License.`,
             ` * http://www.opensource.org/licenses/mit-license`,
             ` */`,
         ].join('\n');
 
-        // Check for bundle folder
-        const external = Object.keys(dependencies || [])
-            .concat(Object.keys(peerDependencies || []))
-            .concat(nodeDependencies || [])
-            .concat(pixiRequirements || []);
-        const basePath = path.relative(__dirname, pkg.dir);
-        const input = path.join(basePath, 'src/index.ts');
-        const freeze = false;
-
-        results.push({
-            input,
-            output: [
-                {
-                    banner,
-                    file: path.join(basePath, main),
-                    format: 'cjs',
-                    freeze,
-                    sourcemap,
-                },
-                {
-                    banner,
-                    file: path.join(basePath, module),
-                    format: 'esm',
-                    freeze,
-                    sourcemap,
-                },
-            ],
-            external,
-            plugins,
-        });
-
-        if (isProduction)
+        // There are a handful of optional packages that are not included in the bundle
+        // but we still want to build a browser-based version of them, like we would
+        // for any external plugin.
+        if (plugin)
         {
+            const name = pkg.name.replace(/[^a-z]+/g, '_');
+            const file = path.join(basePath, plugin);
+            const footer = pluginExports ? `Object.assign(this.PIXI, ${name});` : '';
+            const nsBanner = pluginExports ? `${banner}\nthis.PIXI = this.PIXI || {};` : banner;
+            const globals = Object.keys(peerDependencies).reduce((obj, name) => ({ ...obj, [name]: 'PIXI' }), {});
+
             results.push({
                 input,
-                output: [
-                    {
-                        banner,
-                        file: path.join(basePath, prodName(main)),
-                        format: 'cjs',
-                        freeze,
-                        sourcemap,
-                    },
-                    {
-                        banner,
-                        file: path.join(basePath, prodName(module)),
-                        format: 'esm',
-                        freeze,
-                        sourcemap,
-                    },
-                ],
+                output: {
+                    name,
+                    banner: nsBanner,
+                    footer,
+                    file,
+                    format: 'iife',
+                    freeze: false,
+                    sourcemap: true,
+                    globals,
+                },
+                treeshake: false,
                 external,
-                plugins: prodPlugins,
+                plugins: bundlePlugins,
+            }, {
+                input,
+                output: {
+                    name,
+                    banner: nsBanner,
+                    footer,
+                    file: prodName(file),
+                    format: 'iife',
+                    freeze: false,
+                    sourcemap: true,
+                    globals,
+                },
+                treeshake: false,
+                external,
+                plugins: bundlePluginsProd,
             });
         }
 
@@ -195,10 +193,8 @@ async function main()
         // this will package all dependencies
         if (bundle)
         {
-            const input = path.join(basePath, 'src/index.ts');
             const file = path.join(basePath, bundle);
             const moduleFile = bundleModule ? path.join(basePath, bundleModule) : '';
-            let footer;
 
             results.push({
                 input,
@@ -208,48 +204,41 @@ async function main()
                         banner,
                         file,
                         format: 'iife',
-                        freeze,
-                        footer,
-                        sourcemap,
+                        freeze: false,
+                        sourcemap: true,
                     },
                     {
                         banner,
                         file: moduleFile,
                         format: 'esm',
-                        freeze,
-                        sourcemap,
+                        freeze: false,
+                        sourcemap: true,
                     }
                 ],
                 treeshake: false,
                 plugins: bundlePlugins,
+            }, {
+                input,
+                output: [
+                    {
+                        name: 'PIXI',
+                        banner,
+                        file: prodName(file),
+                        format: 'iife',
+                        freeze: false,
+                        sourcemap: true,
+                    },
+                    {
+                        banner,
+                        file: prodName(moduleFile),
+                        format: 'esm',
+                        freeze: false,
+                        sourcemap: true,
+                    }
+                ],
+                treeshake: false,
+                plugins: bundlePluginsProd,
             });
-
-            if (isProduction)
-            {
-                results.push({
-                    input,
-                    output: [
-                        {
-                            name: 'PIXI',
-                            banner,
-                            file: prodName(file),
-                            format: 'iife',
-                            freeze,
-                            footer,
-                            sourcemap,
-                        },
-                        {
-                            banner,
-                            file: prodName(moduleFile),
-                            format: 'esm',
-                            freeze,
-                            sourcemap,
-                        }
-                    ],
-                    treeshake: false,
-                    plugins: prodBundlePlugins,
-                });
-            }
         }
     });
 

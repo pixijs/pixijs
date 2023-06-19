@@ -1,8 +1,9 @@
-import type { Bounds } from '@pixi/display';
+import { BaseTexture, Point, Rectangle, Texture } from '@pixi/core';
 import { Container } from '@pixi/display';
-import { Point, Rectangle, Texture, BaseTexture } from '@pixi/core';
 import { Sprite } from '@pixi/sprite';
 import { TilingSprite } from '@pixi/sprite-tiling';
+
+import type { Bounds } from '@pixi/display';
 
 describe('TilingSprite', () =>
 {

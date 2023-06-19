@@ -1,7 +1,7 @@
 import { SimpleRope } from '@pixi/mesh-extras';
 
-import type { RopeGeometry } from '@pixi/mesh-extras';
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
+import type { RopeGeometry } from '@pixi/mesh-extras';
 
 /**
  * Renders the object using the Canvas renderer

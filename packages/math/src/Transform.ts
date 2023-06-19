@@ -1,5 +1,5 @@
-import { ObservablePoint } from './ObservablePoint';
 import { Matrix } from './Matrix';
+import { ObservablePoint } from './ObservablePoint';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface Transform extends GlobalMixins.Transform {}
@@ -10,7 +10,11 @@ export interface Transform extends GlobalMixins.Transform {}
  */
 export class Transform
 {
-    /** A default (identity) transform. */
+    /**
+     * A default (identity) transform.
+     * @static
+     * @type {PIXI.Transform}
+     */
     public static readonly IDENTITY = new Transform();
 
     /** The world transformation matrix. */

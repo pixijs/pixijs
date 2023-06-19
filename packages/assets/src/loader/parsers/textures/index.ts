@@ -1,4 +1,4 @@
 export * from './loadSVG';
-export * from './loadTexture';
+export * from './loadTextures';
+export * from './loadVideo';
 export * from './utils';
-

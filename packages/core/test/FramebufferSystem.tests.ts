@@ -1,5 +1,5 @@
-import { Renderer, Framebuffer } from '@pixi/core';
 import { MSAA_QUALITY } from '@pixi/constants';
+import { Framebuffer, Renderer } from '@pixi/core';
 import { Rectangle } from '@pixi/math';
 
 describe('FramebufferSystem', () =>
@@ -128,6 +128,7 @@ describe('FramebufferSystem', () =>
         framebuffer.depth = true;
         framebuffer.stencil = true;
         framebuffer.multisample = MSAA_QUALITY.NONE;
+        framebuffer.addColorTexture(0);
 
         renderer.framebuffer.bind(framebuffer);
 
@@ -161,6 +162,7 @@ describe('FramebufferSystem', () =>
         framebuffer.depth = false;
         framebuffer.stencil = false;
         framebuffer.multisample = MSAA_QUALITY.HIGH;
+        framebuffer.addColorTexture(0);
 
         renderer.framebuffer.bind(framebuffer);
 
@@ -195,6 +197,7 @@ describe('FramebufferSystem', () =>
         framebuffer.depth = true;
         framebuffer.stencil = true;
         framebuffer.multisample = MSAA_QUALITY.HIGH;
+        framebuffer.addColorTexture(0);
 
         renderer.framebuffer.bind(framebuffer);
 
@@ -278,6 +281,7 @@ describe('FramebufferSystem', () =>
         framebuffer.depth = true;
         framebuffer.stencil = true;
         framebuffer.multisample = MSAA_QUALITY.NONE;
+        framebuffer.addColorTexture(0);
 
         renderer.framebuffer.bind(framebuffer);
 
@@ -329,6 +333,7 @@ describe('FramebufferSystem', () =>
         framebuffer.depth = true;
         framebuffer.stencil = true;
         framebuffer.multisample = MSAA_QUALITY.HIGH;
+        framebuffer.addColorTexture(0);
 
         renderer.framebuffer.bind(framebuffer);
 
@@ -371,5 +376,64 @@ describe('FramebufferSystem', () =>
         expect(gl.getRenderbufferParameter(gl.RENDERBUFFER, gl.RENDERBUFFER_SAMPLES)).toEqual(fbo.multisample);
         expect(gl.getRenderbufferParameter(gl.RENDERBUFFER, gl.RENDERBUFFER_WIDTH)).toEqual(16);
         expect(gl.getRenderbufferParameter(gl.RENDERBUFFER, gl.RENDERBUFFER_HEIGHT)).toEqual(32);
+    });
+
+    // eslint-disable-next-line func-names
+    it('should bind blit framebuffer after blit', function ()
+    {
+        renderer.framebuffer['contextChange']();
+
+        if (renderer.context.webGLVersion === 1
+            || renderer.framebuffer['msaaSamples'] === null
+            || renderer.framebuffer['msaaSamples'].every((x) => x <= 1))
+        {
+            return;
+        }
+
+        const { gl, CONTEXT_UID } = renderer;
+
+        const framebuffer = new Framebuffer(4, 4);
+
+        framebuffer.multisample = MSAA_QUALITY.HIGH;
+        framebuffer.addColorTexture(0);
+
+        renderer.framebuffer.bind(framebuffer);
+
+        expect(renderer.framebuffer.current).toBe(framebuffer);
+
+        const fbo = framebuffer.glFramebuffers[CONTEXT_UID];
+
+        expect(gl.checkFramebufferStatus(gl.FRAMEBUFFER)).toBe(gl.FRAMEBUFFER_COMPLETE);
+        expect(gl.getParameter(gl.DRAW_FRAMEBUFFER_BINDING)).toBe(fbo.framebuffer);
+        expect(gl.getParameter(gl.READ_FRAMEBUFFER_BINDING)).toBe(fbo.framebuffer);
+        expect(fbo.multisample).toBeGreaterThan(1);
+        expect(fbo.msaaBuffer).not.toBeNull();
+        expect(fbo.blitFramebuffer).toBeNull();
+
+        renderer.framebuffer.blit();
+
+        expect(fbo.blitFramebuffer).not.toBeNull();
+        expect(renderer.framebuffer.current).toBe(fbo.blitFramebuffer);
+
+        const blitFbo = fbo.blitFramebuffer.glFramebuffers[CONTEXT_UID];
+
+        expect(gl.checkFramebufferStatus(gl.FRAMEBUFFER)).toBe(gl.FRAMEBUFFER_COMPLETE);
+        expect(gl.getParameter(gl.DRAW_FRAMEBUFFER_BINDING)).toBe(blitFbo.framebuffer);
+        expect(gl.getParameter(gl.READ_FRAMEBUFFER_BINDING)).toBe(blitFbo.framebuffer);
+        expect(blitFbo.multisample).toBe(0);
+        expect(blitFbo.msaaBuffer).toBeNull();
+    });
+
+    it('should throw error if created with (almost) 0 width or height', () =>
+    {
+        expect(() => new Framebuffer(0, 0)).toThrow();
+        expect(() => new Framebuffer(0, 1)).toThrow();
+        expect(() => new Framebuffer(1, 0)).toThrow();
+        expect(() => new Framebuffer(0.1, 0.1)).toThrow();
+        expect(() => new Framebuffer(1, 1)).not.toThrow();
+        expect(() => new Framebuffer(1, 1).resize(0, 0)).toThrow();
+        expect(() => new Framebuffer(1, 1).resize(0, 1)).toThrow();
+        expect(() => new Framebuffer(1, 1).resize(1, 0)).toThrow();
+        expect(() => new Framebuffer(1, 1).resize(0.1, 0.1)).toThrow();
     });
 });

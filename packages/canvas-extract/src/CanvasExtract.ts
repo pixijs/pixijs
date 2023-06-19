@@ -1,20 +1,20 @@
-import { Rectangle, extensions, ExtensionType, RenderTexture, utils } from '@pixi/core';
+import { extensions, ExtensionType, Rectangle, RenderTexture, utils } from '@pixi/core';
 
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
-import type { BaseRenderTexture, ExtensionMetadata, ISystem } from '@pixi/core';
+import type { BaseRenderTexture, ExtensionMetadata, ICanvas, ISystem } from '@pixi/core';
 import type { DisplayObject } from '@pixi/display';
-import type { ICanvas } from '@pixi/settings';
+import type { IExtract } from '@pixi/extract';
 
 const TEMP_RECT = new Rectangle();
 
 /**
  * The extract manager provides functionality to export content from the renderers.
  *
- * An instance of this class is automatically created by default, and can be found at `renderer.plugins.extract`
+ * An instance of this class is automatically created by default, and can be found at `renderer.extract`
  * @class
  * @memberof PIXI
  */
-export class CanvasExtract implements ISystem
+export class CanvasExtract implements ISystem, IExtract
 {
     /** @ignore */
     static extension: ExtensionMetadata = {
@@ -23,7 +23,7 @@ export class CanvasExtract implements ISystem
     };
 
     /** A reference to the current renderer */
-    public renderer: CanvasRenderer;
+    public renderer: CanvasRenderer | null;
 
     /**
      * @param renderer - A reference to the current renderer
@@ -39,13 +39,15 @@ export class CanvasExtract implements ISystem
      *  to convert. If left empty will use the main renderer
      * @param format - Image format, e.g. "image/jpeg" or "image/webp".
      * @param quality - JPEG or Webp compression from 0 to 1. Default is 0.92.
+     * @param frame - The frame the extraction is restricted to.
      * @returns HTML Image of the target
      */
-    public async image(target?: DisplayObject | RenderTexture, format?: string, quality?: number): Promise<HTMLImageElement>
+    public async image(target?: DisplayObject | RenderTexture, format?: string, quality?: number,
+        frame?: Rectangle): Promise<HTMLImageElement>
     {
         const image = new Image();
 
-        image.src = await this.base64(target, format, quality);
+        image.src = await this.base64(target, format, quality, frame);
 
         return image;
     }
@@ -57,12 +59,36 @@ export class CanvasExtract implements ISystem
      *  to convert. If left empty will use the main renderer
      * @param format - Image format, e.g. "image/jpeg" or "image/webp".
      * @param quality - JPEG or Webp compression from 0 to 1. Default is 0.92.
+     * @param frame - The frame the extraction is restricted to.
      * @returns A base64 encoded string of the texture.
      */
-    public async base64(target?: DisplayObject | RenderTexture, format?: string, quality?: number): Promise<string>
+    public async base64(target?: DisplayObject | RenderTexture, format?: string, quality?: number,
+        frame?: Rectangle): Promise<string>
     {
-        const canvas = this.canvas(target);
+        const canvas = this.canvas(target, frame);
 
+        if (canvas.toBlob !== undefined)
+        {
+            return new Promise<string>((resolve, reject) =>
+            {
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                canvas.toBlob!((blob) =>
+                {
+                    if (!blob)
+                    {
+                        reject(new Error('ICanvas.toBlob failed!'));
+
+                        return;
+                    }
+
+                    const reader = new FileReader();
+
+                    reader.onload = () => resolve(reader.result as string);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(blob);
+                }, format, quality);
+            });
+        }
         if (canvas.toDataURL !== undefined)
         {
             return canvas.toDataURL(format, quality);
@@ -71,16 +97,18 @@ export class CanvasExtract implements ISystem
         {
             const blob = await canvas.convertToBlob({ type: format, quality });
 
-            return await new Promise<string>((resolve) =>
+            return new Promise<string>((resolve, reject) =>
             {
                 const reader = new FileReader();
 
                 reader.onload = () => resolve(reader.result as string);
+                reader.onerror = reject;
                 reader.readAsDataURL(blob);
             });
         }
 
-        throw new Error('CanvasExtract.base64() requires ICanvas.toDataURL or ICanvas.convertToBlob to be implemented');
+        throw new Error('CanvasExtract.base64() requires ICanvas.toDataURL, ICanvas.toBlob, '
+            + 'or ICanvas.convertToBlob to be implemented');
     }
 
     /**
@@ -93,6 +121,12 @@ export class CanvasExtract implements ISystem
     public canvas(target?: DisplayObject | RenderTexture, frame?: Rectangle): ICanvas
     {
         const renderer = this.renderer;
+
+        if (!renderer)
+        {
+            throw new Error('The CanvasExtract has already been destroyed');
+        }
+
         let context;
         let resolution;
         let renderTexture;
@@ -105,7 +139,17 @@ export class CanvasExtract implements ISystem
             }
             else
             {
-                renderTexture = renderer.generateTexture(target);
+                renderTexture = renderer.generateTexture(target, {
+                    region: frame,
+                    resolution: renderer.resolution
+                });
+
+                if (frame)
+                {
+                    TEMP_RECT.width = frame.width;
+                    TEMP_RECT.height = frame.height;
+                    frame = TEMP_RECT;
+                }
             }
         }
 
@@ -123,15 +167,15 @@ export class CanvasExtract implements ISystem
             if (!frame)
             {
                 frame = TEMP_RECT;
-                frame.width = renderer.width;
-                frame.height = renderer.height;
+                frame.width = renderer.width / resolution;
+                frame.height = renderer.height / resolution;
             }
         }
 
         const x = Math.round(frame.x * resolution);
         const y = Math.round(frame.y * resolution);
-        const width = Math.round(frame.width * resolution);
-        const height = Math.round(frame.height * resolution);
+        const width = Math.max(Math.round(frame.width * resolution), 1);
+        const height = Math.max(Math.round(frame.height * resolution), 1);
 
         const canvasBuffer = new utils.CanvasRenderTarget(width, height, 1);
         const canvasData = context.getImageData(x, y, width, height);
@@ -153,6 +197,12 @@ export class CanvasExtract implements ISystem
     public pixels(target?: DisplayObject | RenderTexture, frame?: Rectangle): Uint8ClampedArray
     {
         const renderer = this.renderer;
+
+        if (!renderer)
+        {
+            throw new Error('The CanvasExtract has already been destroyed');
+        }
+
         let context;
         let resolution;
         let renderTexture;
@@ -165,7 +215,17 @@ export class CanvasExtract implements ISystem
             }
             else
             {
-                renderTexture = renderer.generateTexture(target);
+                renderTexture = renderer.generateTexture(target, {
+                    region: frame,
+                    resolution: renderer.resolution
+                });
+
+                if (frame)
+                {
+                    TEMP_RECT.width = frame.width;
+                    TEMP_RECT.height = frame.height;
+                    frame = TEMP_RECT;
+                }
             }
         }
 
@@ -183,15 +243,15 @@ export class CanvasExtract implements ISystem
             if (!frame)
             {
                 frame = TEMP_RECT;
-                frame.width = renderer.width;
-                frame.height = renderer.height;
+                frame.width = renderer.width / resolution;
+                frame.height = renderer.height / resolution;
             }
         }
 
         const x = Math.round(frame.x * resolution);
         const y = Math.round(frame.y * resolution);
-        const width = Math.round(frame.width * resolution);
-        const height = Math.round(frame.height * resolution);
+        const width = Math.max(Math.round(frame.width * resolution), 1);
+        const height = Math.max(Math.round(frame.height * resolution), 1);
 
         return context.getImageData(x, y, width, height).data;
     }

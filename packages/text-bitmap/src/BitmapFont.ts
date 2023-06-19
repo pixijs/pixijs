@@ -1,10 +1,10 @@
-import { ALPHA_MODES, MIPMAP_MODES, settings, Texture, BaseTexture, Rectangle, utils } from '@pixi/core';
-import { TextStyle, TextMetrics } from '@pixi/text';
-import { autoDetectFormat } from './formats';
+import { ALPHA_MODES, BaseTexture, MIPMAP_MODES, Rectangle, settings, Texture, utils } from '@pixi/core';
+import { TextMetrics, TextStyle } from '@pixi/text';
 import { BitmapFontData } from './BitmapFontData';
-import { resolveCharacters, drawGlyph, extractCharCode } from './utils';
+import { autoDetectFormat } from './formats';
+import { drawGlyph, extractCharCode, resolveCharacters } from './utils';
 
-import type { ICanvas, ICanvasRenderingContext2D } from '@pixi/settings';
+import type { IBaseTextureOptions, ICanvas, ICanvasRenderingContext2D, SCALE_MODES } from '@pixi/core';
 import type { ITextStyle } from '@pixi/text';
 
 export interface IBitmapFontCharacter
@@ -17,38 +17,70 @@ export interface IBitmapFontCharacter
     kerning: utils.Dict<number>;
 }
 
+type BaseOptions = Pick<IBaseTextureOptions, 'scaleMode' | 'mipmap' | 'anisotropicLevel' | 'alphaMode'>;
+
 /** @memberof PIXI */
-export interface IBitmapFontOptions
+export interface IBitmapFontOptions extends BaseOptions
 {
     /**
-     * The character set to generate.
+     * Characters included in the font set. You can also use ranges.
+     * For example, `[['a', 'z'], ['A', 'Z'], "!@#$%^&*()~{}[] "]`.
+     * Don't forget to include spaces ' ' in your character set!
      * @default PIXI.BitmapFont.ALPHANUMERIC
      */
     chars?: string | (string | string[])[];
 
     /**
-     * The resolution for rendering.
+     * Render resolution for glyphs.
      * @default 1
      */
     resolution?: number;
 
     /**
-     * The padding between glyphs in the atlas.
+     * Padding between glyphs on texture atlas. Lower values could mean more visual artifacts
+     * and bleeding from other glyphs, larger values increase the space required on the texture.
      * @default 4
      */
     padding?: number;
 
     /**
-     * The width of the texture atlas.
+     * Optional width of atlas, smaller values to reduce memory.
      * @default 512
      */
     textureWidth?: number;
 
     /**
-     * The height of the texture atlas.
+     * Optional height of atlas, smaller values to reduce memory.
      * @default 512
      */
     textureHeight?: number;
+
+    /**
+     * If mipmapping is enabled for texture. For instance, by default PixiJS only enables mipmapping
+     * on Power-of-Two textures. If your textureWidth or textureHeight are not power-of-two, you
+     * may consider enabling mipmapping to get better quality with lower font sizes. Note:
+     * for MSDF/SDF fonts, mipmapping is not supported.
+     * @default PIXI.BaseTexture.defaultOptions.mipmap
+     */
+    mipmap?: MIPMAP_MODES;
+
+    /**
+     * Anisotropic filtering level of texture.
+     * @default PIXI.BaseTexture.defaultOptions.anisotropicLevel
+     */
+    anisotropicLevel?: number;
+
+    /**
+     * Default scale mode, linear, nearest. Nearest can be helpful for bitmap-style fonts.
+     * @default PIXI.BaseTexture.defaultOptions.scaleMode
+     */
+    scaleMode?: SCALE_MODES;
+
+    /**
+     * Pre multiply the image alpha.  Note: for MSDF/SDF fonts, alphaMode is not supported.
+     * @default PIXI.BaseTexture.defaultOptions.alphaMode
+     */
+    alphaMode?: ALPHA_MODES;
 }
 
 /**
@@ -62,7 +94,7 @@ export class BitmapFont
      * This character set includes all the letters in the alphabet (both lower- and upper- case).
      * @type {string[][]}
      * @example
-     * BitmapFont.from("ExampleFont", style, { chars: BitmapFont.ALPHA })
+     * BitmapFont.from('ExampleFont', style, { chars: BitmapFont.ALPHA })
      */
     public static readonly ALPHA = [['a', 'z'], ['A', 'Z'], ' '];
 
@@ -70,7 +102,7 @@ export class BitmapFont
      * This character set includes all decimal digits (from 0 to 9).
      * @type {string[][]}
      * @example
-     * BitmapFont.from("ExampleFont", style, { chars: BitmapFont.NUMERIC })
+     * BitmapFont.from('ExampleFont', style, { chars: BitmapFont.NUMERIC })
      */
     public static readonly NUMERIC = [['0', '9']];
 
@@ -335,25 +367,18 @@ export class BitmapFont
      * @param name - The name of the custom font to use with BitmapText.
      * @param textStyle - Style options to render with BitmapFont.
      * @param options - Setup options for font or name of the font.
-     * @param {string|string[]|string[][]} [options.chars=PIXI.BitmapFont.ALPHANUMERIC] - characters included
-     *      in the font set. You can also use ranges. For example, `[['a', 'z'], ['A', 'Z'], "!@#$%^&*()~{}[] "]`.
-     *      Don't forget to include spaces ' ' in your character set!
-     * @param {number} [options.resolution=1] - Render resolution for glyphs.
-     * @param {number} [options.textureWidth=512] - Optional width of atlas, smaller values to reduce memory.
-     * @param {number} [options.textureHeight=512] - Optional height of atlas, smaller values to reduce memory.
-     * @param {number} [options.padding=4] - Padding between glyphs on texture atlas.
      * @returns Font generated by style options.
      * @example
      * import { BitmapFont, BitmapText } from 'pixi.js';
      *
-     * BitmapFont.from("TitleFont", {
-     *     fontFamily: "Arial",
+     * BitmapFont.from('TitleFont', {
+     *     fontFamily: 'Arial',
      *     fontSize: 12,
      *     strokeThickness: 2,
-     *     fill: "purple",
+     *     fill: 'purple',
      * });
      *
-     * const title = new BitmapText("This is the title", { fontName: "TitleFont" });
+     * const title = new BitmapText('This is the title', { fontName: 'TitleFont' });
      */
     public static from(name: string, textStyle?: TextStyle | Partial<ITextStyle>, options?: IBitmapFontOptions): BitmapFont
     {
@@ -367,8 +392,9 @@ export class BitmapFont
             padding,
             resolution,
             textureWidth,
-            textureHeight } = Object.assign(
-            {}, BitmapFont.defaultOptions, options);
+            textureHeight,
+            ...baseOptions
+        } = Object.assign({}, BitmapFont.defaultOptions, options);
 
         const charsList = resolveCharacters(chars);
         const style = textStyle instanceof TextStyle ? textStyle : new TextStyle(textStyle);
@@ -402,7 +428,7 @@ export class BitmapFont
                 canvas.height = textureHeight;
 
                 context = canvas.getContext('2d');
-                baseTexture = new BaseTexture(canvas, { resolution });
+                baseTexture = new BaseTexture(canvas, { resolution, ...baseOptions });
 
                 baseTextures.push(baseTexture);
                 textures.push(new Texture(baseTexture));
@@ -414,7 +440,8 @@ export class BitmapFont
             }
 
             // Measure glyph dimensions
-            const metrics = TextMetrics.measureText(charsList[i], style, false, canvas);
+            const character = charsList[i];
+            const metrics = TextMetrics.measureText(character, style, false, canvas);
             const width = metrics.width;
             const height = Math.ceil(metrics.height);
 
@@ -427,8 +454,8 @@ export class BitmapFont
                 if (positionY === 0)
                 {
                     // We don't want user debugging an infinite loop (or do we? :)
-                    throw new Error(`[BitmapFont] textureHeight ${textureHeight}px is `
-                        + `too small for ${style.fontSize}px fonts`);
+                    throw new Error(`[BitmapFont] textureHeight ${textureHeight}px is too small `
+                        + `(fontFamily: '${style.fontFamily}', fontSize: ${style.fontSize}px, char: '${character}')`);
                 }
 
                 --i;
@@ -449,6 +476,13 @@ export class BitmapFont
             // Wrap line once full row has been rendered
             if ((textureGlyphWidth * resolution) + positionX >= lineWidth)
             {
+                if (positionX === 0)
+                {
+                    // Avoid infinite loop (There can be some very wide char like '\uFDFD'!)
+                    throw new Error(`[BitmapFont] textureWidth ${textureWidth}px is too small `
+                        + `(fontFamily: '${style.fontFamily}', fontSize: ${style.fontSize}px, char: '${character}')`);
+                }
+
                 --i;
                 positionY += maxCharHeight * resolution;
                 positionY = Math.ceil(positionY);
@@ -473,9 +507,9 @@ export class BitmapFont
                 height,
                 xoffset: 0,
                 yoffset: 0,
-                xadvance: Math.ceil(width
+                xadvance: width
                         - (style.dropShadow ? style.dropShadowDistance : 0)
-                        - (style.stroke ? style.strokeThickness : 0)),
+                        - (style.stroke ? style.strokeThickness : 0),
             });
 
             positionX += (textureGlyphWidth + (2 * padding)) * resolution;

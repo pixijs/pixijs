@@ -1,5 +1,6 @@
-import type { ExtensionMetadata, ExtensionType } from '@pixi/extensions';
 import { extensions } from '@pixi/extensions';
+
+import type { ExtensionMetadata, ExtensionType } from '@pixi/extensions';
 
 const exampleType = 'test-extension' as ExtensionType;
 const exampleType2 = 'test-extension2' as ExtensionType;
@@ -62,6 +63,47 @@ describe('extensions', () =>
             expect(list[0]).toBe(example);
             extensions.remove(example);
             expect(list[0]).toBeUndefined();
+        });
+
+        it('should not add duplicating extensions', () =>
+        {
+            const list: any[] = [];
+
+            extensions.handleByList(exampleType, list);
+            extensions.add(example);
+            extensions.add(example);
+            expect(list.length).toBe(1);
+        });
+
+        it('should add extensions in order of priority', () =>
+        {
+            const ext1 = {
+                extension: {
+                    priority: 1,
+                    type: exampleType,
+                },
+            };
+            const ext2 = {
+                extension: {
+                    priority: 2,
+                    type: exampleType,
+                },
+            };
+            const ext3 = {
+                extension: {
+                    priority: 0,
+                    type: exampleType,
+                },
+            };
+            const list: any[] = [];
+
+            extensions.handleByList(exampleType, list);
+            extensions.add(ext1);
+            extensions.add(ext2);
+            extensions.add(ext3);
+            expect(list[0]).toBe(ext2);
+            expect(list[1]).toBe(ext1);
+            expect(list[2]).toBe(ext3);
         });
     });
 

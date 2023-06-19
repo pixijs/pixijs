@@ -1,15 +1,15 @@
 import { CompressedTextureResource } from '@pixi/compressed-textures';
-import { BufferResource, TYPES, settings } from '@pixi/core';
+import { BufferResource, settings, TYPES } from '@pixi/core';
 import {
+    BASIS_FORMAT_TO_INTERNAL_FORMAT,
     BASIS_FORMATS,
     BASIS_FORMATS_ALPHA,
-    BASIS_FORMAT_TO_INTERNAL_FORMAT,
-    INTERNAL_FORMAT_TO_BASIS_FORMAT
+    INTERNAL_FORMAT_TO_BASIS_FORMAT,
 } from '../Basis';
 import { TranscoderWorker } from '../TranscoderWorker';
 
-import type { BasisBinding, BasisTextureExtensions } from '../Basis';
 import type { CompressedLevelBuffer, INTERNAL_FORMATS } from '@pixi/compressed-textures';
+import type { BasisBinding, BasisTextureExtensions } from '../Basis';
 
 export type TranscodedResourcesArray = (Array<CompressedTextureResource> | Array<BufferResource>) & {
     basisFormat: BASIS_FORMATS
@@ -24,10 +24,10 @@ export type TranscodedResourcesArray = (Array<CompressedTextureResource> | Array
  * 1. Adding a &lt;script&gt; tag to your HTML page to the transcoder bundle in this package, and serving
  * the WASM binary from the same location.
  *
- * ```js
- * // Copy ./node_modules/@pixi/basis/assets/basis_.wasm into your assets directory
- * // as well, so it is served from the same folder as the JavaScript!
- * &lt;script src="./node_modules/@pixi/basis/assets/basis_transcoder.js" /&gt;
+ * ```html
+ * <!-- Copy ./node_modules/@pixi/basis/assets/basis_.wasm into your assets directory
+ *     as well, so it is served from the same folder as the JavaScript! -->
+ * <script src="./node_modules/@pixi/basis/assets/basis_transcoder.js"></script>
  * ```
  *
  * NOTE: `basis_transcoder.js` expects the WebAssembly binary to be named `basis_transcoder.wasm`.

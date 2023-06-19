@@ -1,10 +1,10 @@
-import { State, DRAW_MODES, settings, Point, Polygon } from '@pixi/core';
+import { DRAW_MODES, Point, Polygon, settings, State } from '@pixi/core';
 import { Container } from '@pixi/display';
 import { MeshBatchUvs } from './MeshBatchUvs';
 
-import type { MeshMaterial } from './MeshMaterial';
+import type { BLEND_MODES, Buffer, ColorSource, Geometry, IPointData, Renderer, Shader, Texture } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
-import type { BLEND_MODES, IPointData, Texture, Renderer, Geometry, Buffer, Shader } from '@pixi/core';
+import type { MeshMaterial } from './MeshMaterial';
 
 const tempPoint = new Point();
 const tempPolygon = new Polygon();
@@ -29,6 +29,13 @@ export interface Mesh extends GlobalMixins.Mesh {}
  */
 export class Mesh<T extends Shader = MeshMaterial> extends Container
 {
+    /**
+     * Used by the @pixi/canvas-mesh package to draw meshes using canvas.
+     * Added here because we cannot mixin a static property to Mesh type.
+     * @ignore
+     */
+    public static defaultCanvasPadding: number;
+
     /**
      * Represents the vertex and fragment shaders that processes the geometry and runs on the GPU.
      * Can be shared between multiple Mesh objects.
@@ -225,14 +232,23 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
      * Null for non-MeshMaterial shaders
      * @default 0xFFFFFF
      */
-    get tint(): number
+    get tint(): ColorSource
     {
         return 'tint' in this.shader ? (this.shader as unknown as MeshMaterial).tint : null;
     }
 
-    set tint(value: number)
+    set tint(value: ColorSource)
     {
         (this.shader as unknown as MeshMaterial).tint = value;
+    }
+
+    /**
+     * The tint color as a RGB integer
+     * @ignore
+     */
+    get tintValue(): number
+    {
+        return (this.shader as unknown as MeshMaterial).tintValue;
     }
 
     /** The texture that the Mesh uses. Null for non-MeshMaterial shaders */
@@ -374,7 +390,7 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
 
             for (let i = 0; i < vertexData.length; ++i)
             {
-                vertexData[i] = Math.round((vertexData[i] * resolution | 0) / resolution);
+                vertexData[i] = Math.round(vertexData[i] * resolution) / resolution;
             }
         }
 
@@ -430,7 +446,7 @@ export class Mesh<T extends Shader = MeshMaterial> extends Container
         const vertices = this.geometry.getBuffer('aVertexPosition').data;
 
         const points = tempPolygon.points;
-        const indices =  this.geometry.getIndex().data;
+        const indices = this.geometry.getIndex().data;
         const len = indices.length;
         const step = this.drawMode === 4 ? 3 : 1;
 

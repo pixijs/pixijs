@@ -1,14 +1,15 @@
+import { BLEND_MODES, Color, ObservablePoint, Point, Program, settings, Texture, utils } from '@pixi/core';
+import { Container } from '@pixi/display';
 import { Mesh, MeshGeometry, MeshMaterial } from '@pixi/mesh';
 import { BitmapFont } from './BitmapFont';
-import { splitTextToCharacters, extractCharCode } from './utils';
 import msdfFrag from './shader/msdf.frag';
 import msdfVert from './shader/msdf.vert';
-import type { Renderer, Rectangle } from '@pixi/core';
-import { Program, Texture, BLEND_MODES, settings, utils, ObservablePoint, Point } from '@pixi/core';
-import type { IBitmapTextStyle } from './BitmapTextStyle';
-import type { TextStyleAlign } from '@pixi/text';
-import { Container } from '@pixi/display';
+import { extractCharCode, splitTextToCharacters } from './utils';
+
+import type { ColorSource, Rectangle, Renderer } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
+import type { TextStyleAlign } from '@pixi/text';
+import type { IBitmapTextStyle } from './BitmapTextStyle';
 
 interface PageMeshData
 {
@@ -59,10 +60,10 @@ const charRenderDataPool: CharRenderData[] = [];
  * import { BitmapText } from 'pixi.js';
  *
  * // in this case the font is in a file called 'desyrel.fnt'
- * const bitmapText = new BitmapText("text using a fancy font!", {
- *   fontName: "Desyrel",
- *   fontSize: 35,
- *   align: "right"
+ * const bitmapText = new BitmapText('text using a fancy font!', {
+ *     fontName: 'Desyrel',
+ *     fontSize: 35,
+ *     align: 'right',
  * });
  * @memberof PIXI
  */
@@ -134,6 +135,12 @@ export class BitmapText extends Container
     protected _anchor: ObservablePoint;
 
     /**
+     * Private tracker for the current font.
+     * @private
+     */
+    protected _font?: BitmapFont;
+
+    /**
      * Private tracker for the current font name.
      * @private
      */
@@ -143,7 +150,7 @@ export class BitmapText extends Container
      * Private tracker for the current font size.
      * @private
      */
-    protected _fontSize: number;
+    protected _fontSize?: number;
 
     /**
      * Private tracker for the current text align.
@@ -159,7 +166,7 @@ export class BitmapText extends Container
      * Private tracker for the current tint.
      * @private
      */
-    protected _tint = 0xFFFFFF;
+    protected _tintColor: Color;
 
     /**
      * If true PixiJS will Math.floor() x/y values when rendering.
@@ -178,7 +185,7 @@ export class BitmapText extends Container
      *.     this will default to the BitmapFont size.
      * @param {string} [style.align='left'] - Alignment for multiline text ('left', 'center', 'right' or 'justify'),
      *      does not affect single line text.
-     * @param {number} [style.tint=0xFFFFFF] - The tint color.
+     * @param {PIXI.ColorSource} [style.tint=0xFFFFFF] - The tint color.
      * @param {number} [style.letterSpacing=0] - The amount of spacing between letters.
      * @param {number} [style.maxWidth=0] - The max width of the text before line wrapping.
      */
@@ -199,9 +206,10 @@ export class BitmapText extends Container
         this._textWidth = 0;
         this._textHeight = 0;
         this._align = align;
-        this._tint = tint;
+        this._tintColor = new Color(tint);
+        this._font = undefined;
         this._fontName = fontName;
-        this._fontSize = fontSize || BitmapFont.available[fontName].size;
+        this._fontSize = fontSize;
         this.text = text;
         this._maxWidth = maxWidth;
         this._maxLineHeight = 0;
@@ -218,14 +226,15 @@ export class BitmapText extends Container
     public updateText(): void
     {
         const data = BitmapFont.available[this._fontName];
-        const scale = this._fontSize / data.size;
+        const fontSize = this.fontSize;
+        const scale = fontSize / data.size;
         const pos = new Point();
         const chars: CharRenderData[] = [];
         const lineWidths = [];
         const lineSpaces = [];
         const text = this._text.replace(/(?:\r\n|\r)/g, '\n') || ' ';
         const charsInput = splitTextToCharacters(text);
-        const maxWidth = this._maxWidth * data.size / this._fontSize;
+        const maxWidth = this._maxWidth * data.size / fontSize;
         const pageMeshDataPool = data.distanceFieldType === 'none'
             ? pageMeshDataDefaultPageMeshData : pageMeshDataMSDFPageMeshData;
 
@@ -289,8 +298,8 @@ export class BitmapText extends Container
             charRenderData.texture = charData.texture;
             charRenderData.line = line;
             charRenderData.charCode = charCode;
-            charRenderData.position.x = pos.x + charData.xOffset + (this._letterSpacing / 2);
-            charRenderData.position.y = pos.y + charData.yOffset;
+            charRenderData.position.x = Math.round(pos.x + charData.xOffset + (this._letterSpacing / 2));
+            charRenderData.position.y = Math.round(pos.y + charData.yOffset);
             charRenderData.prevSpaces = spaceCount;
 
             chars.push(charRenderData);
@@ -364,10 +373,7 @@ export class BitmapText extends Container
 
         const activePagesMeshData = this._activePagesMeshData;
 
-        for (let i = 0; i < activePagesMeshData.length; i++)
-        {
-            pageMeshDataPool.push(activePagesMeshData[i]);
-        }
+        pageMeshDataPool.push(...activePagesMeshData);
 
         for (let i = 0; i < lenChars; i++)
         {
@@ -426,7 +432,7 @@ export class BitmapText extends Container
                 _textureCache[baseTextureUid] = _textureCache[baseTextureUid] || new Texture(texture.baseTexture);
                 pageMeshData.mesh.texture = _textureCache[baseTextureUid];
 
-                pageMeshData.mesh.tint = this._tint;
+                pageMeshData.mesh.tint = this._tintColor.value;
 
                 newPagesMeshData.push(pageMeshData);
 
@@ -592,6 +598,9 @@ export class BitmapText extends Container
         {
             charRenderDataPool.push(chars[i]);
         }
+
+        this._font = data;
+        this.dirty = false;
     }
 
     updateTransform(): void
@@ -620,13 +629,13 @@ export class BitmapText extends Container
             const dy = Math.sqrt((c * c) + (d * d));
             const worldScale = (Math.abs(dx) + Math.abs(dy)) / 2;
 
-            const fontScale = this._fontSize / size;
+            const fontScale = this.fontSize / size;
 
-            const resolution =  renderer._view.resolution;
+            const resolution = renderer._view.resolution;
 
             for (const mesh of this._activePagesMeshData)
             {
-                mesh.mesh.shader.uniforms.uFWidth = Math.min(worldScale * distanceFieldRange * fontScale * resolution, 1.0);
+                mesh.mesh.shader.uniforms.uFWidth = worldScale * distanceFieldRange * fontScale * resolution;
             }
         }
 
@@ -650,10 +659,20 @@ export class BitmapText extends Container
      */
     protected validate(): void
     {
+        const font = BitmapFont.available[this._fontName];
+
+        if (!font)
+        {
+            throw new Error(`Missing BitmapFont "${this._fontName}"`);
+        }
+        if (this._font !== font)
+        {
+            this.dirty = true;
+        }
+
         if (this.dirty)
         {
             this.updateText();
-            this.dirty = false;
         }
     }
 
@@ -661,16 +680,16 @@ export class BitmapText extends Container
      * The tint of the BitmapText object.
      * @default 0xffffff
      */
-    public get tint(): number
+    public get tint(): ColorSource
     {
-        return this._tint;
+        return this._tintColor.value;
     }
 
-    public set tint(value: number)
+    public set tint(value: ColorSource)
     {
-        if (this._tint === value) return;
+        if (this.tint === value) return;
 
-        this._tint = value;
+        this._tintColor.setValue(value);
 
         for (let i = 0; i < this._activePagesMeshData.length; i++)
         {
@@ -720,10 +739,10 @@ export class BitmapText extends Container
     /** The size of the font to display. */
     public get fontSize(): number
     {
-        return this._fontSize;
+        return this._fontSize ?? BitmapFont.available[this._fontName].size;
     }
 
-    public set fontSize(value: number)
+    public set fontSize(value: number | undefined)
     {
         if (this._fontSize !== value)
         {
@@ -895,6 +914,24 @@ export class BitmapText extends Container
     destroy(options?: boolean | IDestroyOptions): void
     {
         const { _textureCache } = this;
+        const data = BitmapFont.available[this._fontName];
+        const pageMeshDataPool = data.distanceFieldType === 'none'
+            ? pageMeshDataDefaultPageMeshData : pageMeshDataMSDFPageMeshData;
+
+        pageMeshDataPool.push(...this._activePagesMeshData);
+        for (const pageMeshData of this._activePagesMeshData)
+        {
+            this.removeChild(pageMeshData.mesh);
+        }
+        this._activePagesMeshData = [];
+
+        // Release references to any cached textures in page pool
+        pageMeshDataPool
+            .filter((page) => _textureCache[page.mesh.texture.baseTexture.uid])
+            .forEach((page) =>
+            {
+                page.mesh.texture = Texture.EMPTY;
+            });
 
         for (const id in _textureCache)
         {
@@ -904,6 +941,8 @@ export class BitmapText extends Container
             delete _textureCache[id];
         }
 
+        this._font = null;
+        this._tintColor = null;
         this._textureCache = null;
 
         super.destroy(options);

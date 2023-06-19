@@ -1,4 +1,5 @@
-import { DisplayObject, Container } from '@pixi/display';
+/// <reference path="../global.d.ts" />
+import { Container, DisplayObject } from '@pixi/display';
 
 /**
  * The instance name of the object.
@@ -20,7 +21,7 @@ DisplayObject.prototype.name = null;
 Container.prototype.getChildByName = function getChildByName<T extends DisplayObject = DisplayObject>(
     name: string,
     deep?: boolean,
-): T
+): T | null
 {
     for (let i = 0, j = this.children.length; i < j; i++)
     {

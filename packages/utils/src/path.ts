@@ -32,7 +32,7 @@ function normalizeStringPosix(path: string, allowAboveRoot: boolean)
     let lastSegmentLength = 0;
     let lastSlash = -1;
     let dots = 0;
-    let code: number;
+    let code = -1;
 
     for (let i = 0; i <= path.length; ++i)
     {
@@ -194,7 +194,7 @@ export const path: Path = {
 
         if (isFile || isHttp || isWindows)
         {
-            const arr = isFile?.[0] || isHttp?.[0] || isWindows?.[0];
+            const arr = (isFile?.[0] || isHttp?.[0] || isWindows?.[0]) as string;
 
             protocol = arr;
             path = path.slice(arr.length);
@@ -407,7 +407,7 @@ export const path: Path = {
         assertPath(path);
         if (ext) assertPath(ext);
 
-        path = this.toPosix(path);
+        path = removeUrlParams(this.toPosix(path));
 
         let start = 0;
         let end = -1;
@@ -505,7 +505,7 @@ export const path: Path = {
     extname(path: string)
     {
         assertPath(path);
-        path = this.toPosix(path);
+        path = removeUrlParams(this.toPosix(path));
 
         let startDot = -1;
         let startPart = 0;
@@ -577,7 +577,7 @@ export const path: Path = {
         const ret = { root: '', dir: '', base: '', ext: '', name: '' };
 
         if (path.length === 0) return ret;
-        path = this.toPosix(path);
+        path = removeUrlParams(this.toPosix(path));
 
         let code = path.charCodeAt(0);
         const isAbsolute = this.isAbsolute(path);

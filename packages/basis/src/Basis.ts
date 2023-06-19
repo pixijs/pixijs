@@ -1,5 +1,5 @@
-import { TYPES } from '@pixi/core';
 import { INTERNAL_FORMATS } from '@pixi/compressed-textures';
+import { TYPES } from '@pixi/core';
 
 /**
  * The transcoding formats provided by basis_universal.
@@ -126,13 +126,10 @@ export type BasisTextureExtensions = {
 };
 /* eslint-enable camelcase */
 
-/**
- * API provided by basis_universal WebGL library.
- * @ignore
- */
+/** API provided by basis_universal WebGL library. */
 export type BasisBinding = {
     BasisFile: typeof BasisFile,
-    initializeBasis(): void
+    initializeBasis: () => void
 };
 
 /**

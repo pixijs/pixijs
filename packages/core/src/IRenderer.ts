@@ -1,10 +1,17 @@
-import type { RENDERER_TYPE } from '@pixi/constants';
+import type { MSAA_QUALITY, RENDERER_TYPE } from '@pixi/constants';
 import type { Matrix, Rectangle, Transform } from '@pixi/math';
 import type { ICanvas } from '@pixi/settings';
 import type { IRendererPlugins } from './plugin/PluginSystem';
 import type { IGenerateTextureOptions } from './renderTexture/GenerateTextureSystem';
 import type { RenderTexture } from './renderTexture/RenderTexture';
 import type { SystemManager } from './system/SystemManager';
+import type {
+    BackgroundSystem,
+    BackgroundSystemOptions,
+    ContextSystemOptions,
+    StartupSystemOptions,
+    ViewSystemOptions,
+} from './systems';
 import type { ImageSource } from './textures/BaseTexture';
 
 /**
@@ -38,8 +45,10 @@ export interface IRenderableContainer extends IRenderableObject
     getLocalBounds(rect?: Rectangle, skipChildrenUpdate?: boolean): Rectangle;
 }
 
-/** Mixed WebGL1/WebGL2 Rendering Context. Either its WebGL2, either its WebGL1 with PixiJS polyfills on it */
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
+/**
+ * Mixed WebGL1 / WebGL2 rendering context. Either it's WebGL2, either it's WebGL1 with PixiJS polyfills on it.
+ * @memberof PIXI
+ */
 export interface IRenderingContext extends WebGL2RenderingContext
 {
     texImage2D(target: GLenum, level: GLint, internalformat: GLint, width: GLsizei, height: GLsizei, border: GLint,
@@ -74,27 +83,24 @@ export interface IRenderingContext extends WebGL2RenderingContext
         srcData: ArrayBufferView | null, srcOffset?: GLuint): void;
 }
 
-export interface IRendererOptions extends GlobalMixins.IRendererOptions
+/**
+ * Renderer options supplied to constructor.
+ * @memberof PIXI
+ * @see PIXI.settings.RENDER_OPTIONS
+ */
+export interface IRendererOptions extends GlobalMixins.IRendererOptions,
+    BackgroundSystemOptions,
+    ContextSystemOptions,
+    ViewSystemOptions,
+    StartupSystemOptions
 {
-    width?: number;
-    height?: number;
-    view?: ICanvas;
-    /**
-     * Use premultipliedAlpha and backgroundAlpha instead
-     * @deprecated since 7.0.0
-     */
-    useContextAlpha?: boolean | 'notMultiplied';
-    autoDensity?: boolean;
-    antialias?: boolean;
-    resolution?: number;
-    preserveDrawingBuffer?: boolean;
-    clearBeforeRender?: boolean;
-    backgroundColor?: number;
-    backgroundAlpha?: number;
-    premultipliedAlpha?: boolean;
-    powerPreference?: WebGLPowerPreference;
-    context?: IRenderingContext;
 }
+
+/**
+ * @deprecated since 7.2.0
+ * @see PIXI.IRendererOptions
+ */
+export type IRenderOptions = IRendererOptions;
 
 export interface IRendererRenderOptions
 {
@@ -106,15 +112,14 @@ export interface IRendererRenderOptions
 }
 
 /**
- * Starard Interface for a Pixi renderer.
+ * Standard Interface for a Pixi renderer.
  * @memberof PIXI
  */
-export interface IRenderer extends SystemManager, GlobalMixins.IRenderer
+export interface IRenderer<VIEW extends ICanvas = ICanvas> extends SystemManager, GlobalMixins.IRenderer
 {
-
     resize(width: number, height: number): void;
-    render(displayObject: IRenderableObject, options?: IRendererRenderOptions): void
-    generateTexture(displayObject: IRenderableObject, options?: IGenerateTextureOptions): void
+    render(displayObject: IRenderableObject, options?: IRendererRenderOptions): void;
+    generateTexture(displayObject: IRenderableObject, options?: IGenerateTextureOptions): RenderTexture;
     destroy(removeView?: boolean): void;
     clear(): void;
     reset(): void;
@@ -125,19 +130,29 @@ export interface IRenderer extends SystemManager, GlobalMixins.IRenderer
      */
     readonly type: RENDERER_TYPE
 
+    /**
+     * The options passed in to create a new instance of the renderer.
+     * @type {PIXI.IRendererOptions}
+     */
+    readonly options: IRendererOptions
+
     /** When logging Pixi to the console, this is the name we will show */
     readonly rendererLogId: string
 
     /** The canvas element that everything is drawn to.*/
-    readonly view: ICanvas
+    readonly view: VIEW
     /** Flag if we are rendering to the screen vs renderTexture */
     readonly renderingToScreen: boolean
     /** The resolution / device pixel ratio of the renderer. */
-    readonly resolution: number
+    resolution: number
+    /** The number of MSAA samples of the renderer. */
+    multisample?: MSAA_QUALITY
     /** the width of the screen */
     readonly width: number
     /** the height of the screen */
     readonly height: number
+    /** Whether CSS dimensions of canvas view should be resized to screen dimensions automatically. */
+    readonly autoDensity: boolean
     /**
      * Measurements of the screen. (0, 0, screenWidth, screenHeight).
      * Its safe to use as filterArea or hitArea for the whole stage.
@@ -147,4 +162,6 @@ export interface IRenderer extends SystemManager, GlobalMixins.IRenderer
     readonly lastObjectRendered: IRenderableObject
     /** Collection of plugins */
     readonly plugins: IRendererPlugins
+    /** Background color, alpha and clear behavior */
+    readonly background: BackgroundSystem
 }

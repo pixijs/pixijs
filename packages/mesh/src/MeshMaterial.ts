@@ -1,13 +1,13 @@
-import { Matrix, utils, Program, Shader, TextureMatrix } from '@pixi/core';
+import { Color, Matrix, Program, Shader, TextureMatrix } from '@pixi/core';
 import fragment from './shader/mesh.frag';
 import vertex from './shader/mesh.vert';
 
-import type { Texture } from '@pixi/core';
+import type { ColorSource, Texture, utils } from '@pixi/core';
 
 export interface IMeshMaterialOptions
 {
     alpha?: number;
-    tint?: number;
+    tint?: ColorSource;
     pluginName?: string;
     program?: Program;
     uniforms?: utils.Dict<unknown>;
@@ -50,13 +50,13 @@ export class MeshMaterial extends Shader
      */
     private _colorDirty: boolean;
     private _alpha: number;
-    private _tint: number;
+    private _tintColor: Color;
 
     /**
      * @param uSampler - Texture that material uses to render.
      * @param options - Additional options
      * @param {number} [options.alpha=1] - Default alpha.
-     * @param {number} [options.tint=0xFFFFFF] - Default tint.
+     * @param {PIXI.ColorSource} [options.tint=0xFFFFFF] - Default tint.
      * @param {string} [options.pluginName='batch'] - Renderer plugin for batching.
      * @param {PIXI.Program} [options.program=0xFFFFFF] - Custom program.
      * @param {object} [options.uniforms] - Custom uniforms.
@@ -90,7 +90,9 @@ export class MeshMaterial extends Shader
         this.batchable = options.program === undefined;
         this.pluginName = options.pluginName;
 
-        this.tint = options.tint;
+        this._tintColor = new Color(options.tint);
+        this._tintRGB = this._tintColor.toLittleEndianNumber();
+        this._colorDirty = true;
         this.alpha = options.alpha;
     }
 
@@ -133,30 +135,41 @@ export class MeshMaterial extends Shader
      * Multiply tint for the material.
      * @default 0xFFFFFF
      */
-    set tint(value: number)
+    set tint(value: ColorSource)
     {
-        if (value === this._tint) return;
+        if (value === this.tint) return;
 
-        this._tint = value;
-        this._tintRGB = (value >> 16) + (value & 0xff00) + ((value & 0xff) << 16);
+        this._tintColor.setValue(value);
+        this._tintRGB = this._tintColor.toLittleEndianNumber();
         this._colorDirty = true;
     }
-    get tint(): number
+    get tint(): ColorSource
     {
-        return this._tint;
+        return this._tintColor.value;
     }
 
-    /** Gets called automatically by the Mesh. Intended to be overridden for custom {@link MeshMaterial} objects. */
+    /**
+     * Get the internal number from tint color
+     * @ignore
+     */
+    get tintValue(): number
+    {
+        return this._tintColor.toNumber();
+    }
+
+    /** Gets called automatically by the Mesh. Intended to be overridden for custom {@link PIXI.MeshMaterial} objects. */
     public update(): void
     {
         if (this._colorDirty)
         {
             this._colorDirty = false;
             const baseTexture = this.texture.baseTexture;
+            const applyToChannels = (baseTexture.alphaMode as unknown as boolean);
 
-            utils.premultiplyTintToRgba(
-                this._tint, this._alpha, this.uniforms.uColor, (baseTexture.alphaMode as unknown as boolean)
-            );
+            Color.shared
+                .setValue(this._tintColor)
+                .premultiply(this._alpha, applyToChannels)
+                .toArray(this.uniforms.uColor);
         }
         if (this.uvMatrix.update())
         {

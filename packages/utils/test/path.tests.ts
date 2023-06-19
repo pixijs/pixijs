@@ -176,6 +176,7 @@ describe('Paths', () =>
 
     it('should get the extension of a path', () =>
     {
+        expect(path.extname('https://foo.com/bar/baz/file.TXT')).toBe('.TXT');
         expect(path.extname('https://foo.com/bar/baz/file.txt')).toBe('.txt');
         expect(path.extname('file:///foo/bar/baz/file.txt')).toBe('.txt');
         expect(path.extname('C:/foo/bar/baz/file.txt')).toBe('.txt');
@@ -311,6 +312,22 @@ describe('Paths', () =>
         invalid.forEach((value) =>
         {
             expect(path.isDataUrl(value)).toBe(false);
+        });
+    });
+
+    it('should normalise url params correctly', () =>
+    {
+        const url = 'http://example.com/page-1/my-font.xml?var=a&var2=b#hash';
+
+        expect(path.extname(url)).toEqual('.xml');
+        expect(path.basename(url)).toEqual('my-font.xml');
+        expect(path.dirname(url)).toEqual('http://example.com/page-1');
+        expect(path.parse(url)).toEqual({
+            root: 'http://example.com/',
+            dir: 'http://example.com/page-1',
+            base: 'my-font.xml',
+            ext: '.xml',
+            name: 'my-font'
         });
     });
 });

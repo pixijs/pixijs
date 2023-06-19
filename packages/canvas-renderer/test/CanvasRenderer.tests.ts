@@ -1,6 +1,6 @@
-import { Container } from '@pixi/display';
-import { Matrix } from '@pixi/core';
 import { CanvasRenderer } from '@pixi/canvas-renderer';
+import { Matrix } from '@pixi/core';
+import { Container } from '@pixi/display';
 import '@pixi/canvas-display';
 
 describe('CanvasRenderer', () =>
@@ -54,5 +54,18 @@ describe('CanvasRenderer', () =>
         renderer.render(cont, { transform: new Matrix().translate(-20, 30) });
         expect(cont.worldTransform.tx).toEqual(0);
         expect(cont.worldTransform.ty).toEqual(0);
+    });
+
+    it('should expose constructor options', () =>
+    {
+        const options = { width: 1, height: 2, antialias: true, resolution: 2 };
+        const renderer = new CanvasRenderer(options);
+
+        expect(renderer.options.width).toBe(1);
+        expect(renderer.options.height).toBe(2);
+        expect(renderer.options.antialias).toBe(true);
+        expect(renderer.options.resolution).toBe(2);
+
+        renderer.destroy();
     });
 });

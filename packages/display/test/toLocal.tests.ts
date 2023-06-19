@@ -1,5 +1,5 @@
-import { Container } from '@pixi/display';
 import { Point } from '@pixi/core';
+import { Container } from '@pixi/display';
 
 describe('toLocal', () =>
 {

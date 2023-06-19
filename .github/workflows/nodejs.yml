@@ -12,46 +12,45 @@ jobs:
   build:
     env:
       NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN || '' }}
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN || '' }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID || '' }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
       AWS_REGION: ${{ secrets.AWS_REGION }}
       SOURCE_DIR: 'dist'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Use Node.js
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v3
       with:
-        node-version: 16
+        node-version: 18
         registry-url: 'https://registry.npmjs.org'
     - name: Install npm
-      run: npm install -g npm@>=7
+      run: npm install -g npm@8
     - name: Install Dependencies
       run: npm ci
-    - name: Install Code Coverage Dependency
-      if: env.CODECOV_TOKEN != ''
-      run: npm install codecov -g
+
     - name: Run Unit Tests
-      uses: GabrielBB/xvfb-action@v1.0
-      with:
-        run: npm run coverage
+      run: xvfb-run --auto-servernum npm run coverage
       env:
         NODE_ENV: production
-
-    - name: Report Code Coverage
-      if: env.CODECOV_TOKEN != ''
-      run: codecov
 
     - name: Extract Branch Name
       id: branch_name
       if: github.event_name == 'push'
-      run: echo ::set-output name=BRANCH_NAME::${GITHUB_REF/refs\/heads\//}
+      run: echo BRANCH_NAME=${GITHUB_REF/refs\/heads\//} >> $GITHUB_OUTPUT
 
     - name: Build for Distribution
       run: npm run dist
+
+    # Append assets to releases
+    - name: Upload Assets to Release
+      if: github.event_name == 'release'
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          ./dist/*
 
     # Examples:
     # 1) PR feature/acme merged into dev
@@ -91,4 +90,4 @@ jobs:
     # Publish to NPM with prerelease dist-tag
     - name: Publish Latest Prerelease
       if: github.event_name == 'release' && github.event.release.prerelease && env.NODE_AUTH_TOKEN != ''
-      run: npm run publish-ci -- --dist-tag prerelease
+      run: npm run publish-ci -- --tag prerelease

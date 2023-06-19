@@ -1,11 +1,11 @@
 import { exec, execFileSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
-import type { PackageResult } from './packages';
-
+import parse from 'yargs-parser';
 // Support for the tsconfig path aliasing
 import 'tsconfig-paths/register';
-import parse from 'yargs-parser';
+
+import type { PackageResult } from './packages';
 
 const args = parse(process.argv, {
     array: ['packages']
@@ -50,5 +50,5 @@ if (!availableSuites.length)
 const tests = availableSuites.map((pkg) => pkg.tests).join(' ');
 const out = exec(`jest ${tests} --colors`);
 
-out.stdout.pipe(process.stdout);
-out.stderr.pipe(process.stderr);
+out.stdout?.pipe(process.stdout);
+out.stderr?.pipe(process.stderr);

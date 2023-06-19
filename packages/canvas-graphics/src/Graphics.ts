@@ -1,8 +1,8 @@
-import { Graphics } from '@pixi/graphics';
 import { CanvasRenderer } from '@pixi/canvas-renderer';
-import { Matrix, RenderTexture, Texture } from '@pixi/core';
+import { Matrix, Rectangle, RenderTexture, Texture } from '@pixi/core';
+import { Graphics } from '@pixi/graphics';
 
-import type { SCALE_MODES, BaseRenderTexture } from '@pixi/core';
+import type { BaseRenderTexture, SCALE_MODES } from '@pixi/core';
 
 let canvasRenderer: CanvasRenderer;
 const tempMatrix = new Matrix();
@@ -18,7 +18,10 @@ const tempMatrix = new Matrix();
  */
 Graphics.prototype.generateCanvasTexture = function generateCanvasTexture(scaleMode?: SCALE_MODES, resolution = 1): Texture
 {
-    const bounds = this.getLocalBounds();
+    const bounds = this.getLocalBounds(new Rectangle());
+
+    bounds.width = Math.max(bounds.width, 1 / resolution);
+    bounds.height = Math.max(bounds.height, 1 / resolution);
 
     const canvasBuffer = RenderTexture.create({
         width: bounds.width,

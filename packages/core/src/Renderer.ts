@@ -1,40 +1,41 @@
-import { isWebGLSupported, deprecation } from '@pixi/utils';
-import type { MaskSystem } from './mask/MaskSystem';
-import type { StencilSystem } from './mask/StencilSystem';
-import type { ScissorSystem } from './mask/ScissorSystem';
+import { RENDERER_TYPE } from '@pixi/constants';
+import { extensions, ExtensionType } from '@pixi/extensions';
+import { Matrix } from '@pixi/math';
+import { settings } from '@pixi/settings';
+import { deprecation, isWebGLSupported } from '@pixi/utils';
+import { UniformGroup } from './shader/UniformGroup';
+import { SystemManager } from './system/SystemManager';
+
+import type { ColorSource } from '@pixi/color';
+import type { MSAA_QUALITY } from '@pixi/constants';
+import type { ExtensionMetadata } from '@pixi/extensions';
+import type { Rectangle } from '@pixi/math';
+import type { ICanvas } from '@pixi/settings';
+import type { BackgroundSystem } from './background/BackgroundSystem';
+import type { BatchSystem } from './batch/BatchSystem';
+import type { ContextSystem } from './context/ContextSystem';
 import type { FilterSystem } from './filters/FilterSystem';
 import type { FramebufferSystem } from './framebuffer/FramebufferSystem';
-import type { RenderTextureSystem } from './renderTexture/RenderTextureSystem';
-import type { TextureSystem } from './textures/TextureSystem';
-import type { ProjectionSystem } from './projection/ProjectionSystem';
-import type { StateSystem } from './state/StateSystem';
-import type { GeometrySystem } from './geometry/GeometrySystem';
-import type { ShaderSystem } from './shader/ShaderSystem';
-import type { ContextSystem } from './context/ContextSystem';
-import type { BatchSystem } from './batch/BatchSystem';
-import type { TextureGCSystem } from './textures/TextureGCSystem';
-import type { MSAA_QUALITY, RENDERER_TYPE } from '@pixi/constants';
-import { UniformGroup } from './shader/UniformGroup';
-import type { Rectangle } from '@pixi/math';
-import { Matrix } from '@pixi/math';
-import type { BufferSystem } from './geometry/BufferSystem';
-import type { RenderTexture } from './renderTexture/RenderTexture';
-import type { ExtensionMetadata } from '@pixi/extensions';
-import { extensions, ExtensionType } from '@pixi/extensions';
-import type { PluginSystem, IRendererPlugins } from './plugin/PluginSystem';
 import type { MultisampleSystem } from './framebuffer/MultisampleSystem';
-import type { IGenerateTextureOptions, GenerateTextureSystem } from './renderTexture/GenerateTextureSystem';
-import type { BackgroundSystem } from './background/BackgroundSystem';
-import type { ViewSystem } from './view/ViewSystem';
-import type { ObjectRendererSystem } from './render/ObjectRendererSystem';
-import { settings } from '@pixi/settings';
-import type { ICanvas } from '@pixi/settings';
-import { SystemManager } from './system/SystemManager';
+import type { BufferSystem } from './geometry/BufferSystem';
+import type { GeometrySystem } from './geometry/GeometrySystem';
 import type { IRenderableObject, IRenderer, IRendererOptions, IRendererRenderOptions, IRenderingContext } from './IRenderer';
-import type { StartupSystem, StartupOptions } from './startup/StartupSystem';
-
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface Renderer extends GlobalMixins.Renderer {}
+import type { MaskSystem } from './mask/MaskSystem';
+import type { ScissorSystem } from './mask/ScissorSystem';
+import type { StencilSystem } from './mask/StencilSystem';
+import type { IRendererPlugins, PluginSystem } from './plugin/PluginSystem';
+import type { ProjectionSystem } from './projection/ProjectionSystem';
+import type { ObjectRendererSystem } from './render/ObjectRendererSystem';
+import type { GenerateTextureSystem, IGenerateTextureOptions } from './renderTexture/GenerateTextureSystem';
+import type { RenderTexture } from './renderTexture/RenderTexture';
+import type { RenderTextureSystem } from './renderTexture/RenderTextureSystem';
+import type { ShaderSystem } from './shader/ShaderSystem';
+import type { StartupSystem } from './startup/StartupSystem';
+import type { StateSystem } from './state/StateSystem';
+import type { TextureGCSystem } from './textures/TextureGCSystem';
+import type { TextureSystem } from './textures/TextureSystem';
+import type { TransformFeedbackSystem } from './transformFeedback/TransformFeedbackSystem';
+import type { ViewSystem } from './view/ViewSystem';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface Renderer extends GlobalMixins.Renderer {}
@@ -74,13 +75,12 @@ export interface Renderer extends GlobalMixins.Renderer {}
  *
  * | PixiJS High-Level Systems            | Set of specific systems designed to work with PixiJS objects                  |
  * | ------------------------------------ | ----------------------------------------------------------------------------- |
- * | {@link PIXI.RenderSystem}            | This adds the ability to render a PIXI.DisplayObject                          |
  * | {@link PIXI.GenerateTextureSystem}   | This adds the ability to generate textures from any PIXI.DisplayObject        |
  * | {@link PIXI.ProjectionSystem}        | This manages the `projectionMatrix`, used by shaders to get NDC coordinates.  |
  * | {@link PIXI.RenderTextureSystem}     | This manages render-textures, which are an abstraction over framebuffers.     |
  * | {@link PIXI.MaskSystem}              | This manages masking operations.                                              |
- * | {@link PIXI.ScissorSystem}           | This handles scissor masking, and is used internally by {@link MaskSystem}    |
- * | {@link PIXI.StencilSystem}           | This handles stencil masking, and is used internally by {@link MaskSystem}    |
+ * | {@link PIXI.ScissorSystem}           | This handles scissor masking, and is used internally by {@link PIXI.MaskSystem} |
+ * | {@link PIXI.StencilSystem}           | This handles stencil masking, and is used internally by {@link PIXI.MaskSystem} |
  * | {@link PIXI.FilterSystem}            | This manages the filtering pipeline for post-processing effects.              |
  * | {@link PIXI.BatchSystem}             | This manages object renderers that defer rendering until a flush.             |
  * | {@link PIXI.Prepare}                 | This manages uploading assets to the GPU.                                     |
@@ -102,7 +102,13 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      * @member {number}
      * @see PIXI.RENDERER_TYPE
      */
-    public readonly type: RENDERER_TYPE.WEBGL;
+    public readonly type = RENDERER_TYPE.WEBGL;
+
+    /**
+     * Options passed to the constructor.
+     * @type {PIXI.IRendererOptions}
+     */
+    public readonly options: IRendererOptions;
 
     /**
      * WebGL context, set by {@link PIXI.ContextSystem this.context}.
@@ -160,6 +166,12 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      * @readonly
      */
     public readonly buffer: BufferSystem;
+
+    /**
+     * TransformFeedback system instance
+     * @readonly
+     */
+    public transformFeedback: TransformFeedbackSystem;
 
     /**
      * Geometry system instance
@@ -264,7 +276,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      * @param options
      * @private
      */
-    static test(options?: IRendererOptions): boolean
+    static test(options?: Partial<IRendererOptions>): boolean
     {
         if (options?.forceCanvas)
         {
@@ -275,33 +287,9 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
     }
 
     /**
-     * @param [options] - The optional renderer parameters.
-     * @param {number} [options.width=800] - The width of the screen.
-     * @param {number} [options.height=600] - The height of the screen.
-     * @param {PIXI.ICanvas} [options.view] - The canvas to use as a view, optional.
-     * @param {boolean} [options.useContextAlpha=true] - Pass-through value for canvas' context `alpha` property.
-     *   If you want to set transparency, please use `backgroundAlpha`. This option is for cases where the
-     *   canvas needs to be opaque, possibly for performance reasons on some older devices.
-     * @param {boolean} [options.autoDensity=false] - Resizes renderer view in CSS pixels to allow for
-     *   resolutions other than 1.
-     * @param {boolean} [options.antialias=false] - Sets antialias. If not available natively then FXAA
-     *  antialiasing is used.
-     * @param {number} [options.resolution=PIXI.settings.RESOLUTION] - The resolution / device pixel ratio of the renderer.
-     * @param {boolean} [options.clearBeforeRender=true] - This sets if the renderer will clear
-     *  the canvas or not before the new render pass. If you wish to set this to false, you *must* set
-     *  preserveDrawingBuffer to `true`.
-     * @param {boolean} [options.preserveDrawingBuffer=false] - Enables drawing buffer preservation,
-     *  enable this if you need to call toDataURL on the WebGL context.
-     * @param {number} [options.backgroundColor=0x000000] - The background color of the rendered area
-     *  (shown if not transparent).
-     * @param {number} [options.backgroundAlpha=1] - Value from 0 (fully transparent) to 1 (fully opaque).
-     * @param {string} [options.powerPreference] - Parameter passed to WebGL context, set to "high-performance"
-     *  for devices with dual graphics card.
-     * @param {object} [options.context] - If WebGL context already exists, all parameters must be taken from it.
-     * @param {object} [options.blit] - if rendering to a renderTexture, set to true if you want to run blit after
-     * the render. defaults to false.
+     * @param {PIXI.IRendererOptions} [options] - See {@link PIXI.settings.RENDER_OPTIONS} for defaults.
      */
-    constructor(options?: IRendererOptions)
+    constructor(options?: Partial<IRendererOptions>)
     {
         super();
 
@@ -317,7 +305,17 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
         }, true);
 
         const systemConfig = {
-            runners: ['init', 'destroy', 'contextChange', 'reset', 'update', 'postrender', 'prerender', 'resize'],
+            runners: [
+                'init',
+                'destroy',
+                'contextChange',
+                'resolutionChange',
+                'reset',
+                'update',
+                'postrender',
+                'prerender',
+                'resize'
+            ],
             systems: Renderer.__systems,
             priority: [
                 '_view',
@@ -332,6 +330,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
                 'buffer',
                 'geometry',
                 'framebuffer',
+                'transformFeedback',
                 // high level pixi specific rendering
                 'mask',
                 'scissor',
@@ -348,32 +347,19 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
 
         this.setup(systemConfig);
 
-        // new options!
-        const startupOptions: StartupOptions = {
-            _plugin: Renderer.__plugins,
-            background: {
-                alpha: options.backgroundAlpha,
-                color: options.backgroundColor,
-                clearBeforeRender: options.clearBeforeRender,
-            },
-            _view: {
-                height: options.height,
-                width: options.width,
-                autoDensity: options.autoDensity,
-                resolution: options.resolution,
-                view: options.view,
-            },
-            context: {
-                antialias: options.antialias,
-                context: options.context,
-                powerPreference: options.powerPreference,
-                premultipliedAlpha: options.premultipliedAlpha
-                ?? (options.useContextAlpha && options.useContextAlpha !== 'notMultiplied'),
-                preserveDrawingBuffer: options.preserveDrawingBuffer,
-            },
-        };
+        if ('useContextAlpha' in options)
+        {
+            // #if _DEBUG
+            // eslint-disable-next-line max-len
+            deprecation('7.0.0', 'options.useContextAlpha is deprecated, use options.premultipliedAlpha and options.backgroundAlpha instead');
+            // #endif
+            options.premultipliedAlpha = options.useContextAlpha && options.useContextAlpha !== 'notMultiplied';
+            options.backgroundAlpha = options.useContextAlpha === false ? 1 : options.backgroundAlpha;
+        }
 
-        this.startup.run(startupOptions);
+        this._plugin.rendererPlugins = Renderer.__plugins;
+        this.options = options as IRendererOptions;
+        this.startup.run(this.options);
     }
 
     /**
@@ -421,7 +407,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
     /**
      * Removes everything from the renderer (event listeners, spritebatch, etc...)
      * @param [removeView=false] - Removes the Canvas element from the DOM.
-     *  See: https://github.com/pixijs/pixi.js/issues/2233
+     *  See: https://github.com/pixijs/pixijs/issues/2233
      */
     destroy(removeView = false): void
     {
@@ -470,6 +456,11 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
     get resolution(): number
     {
         return this._view.resolution;
+    }
+    set resolution(value: number)
+    {
+        this._view.resolution = value;
+        this.runners.resolutionChange.emit(value);
     }
 
     /** Whether CSS dimensions of canvas view should be resized to screen dimensions automatically. */
@@ -521,7 +512,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
     {
         // #if _DEBUG
         // eslint-disable-next-line max-len
-        deprecation('7.0.0', 'renderer.useContextAlpha has been deprecated, please use renderer.background.clearBeforeRender instead.');
+        deprecation('7.0.0', 'renderer.clearBeforeRender has been deprecated, please use renderer.background.clearBeforeRender instead.');
         // #endif
 
         return this.background.clearBeforeRender;
@@ -537,7 +528,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
     {
         // #if _DEBUG
         // eslint-disable-next-line max-len
-        deprecation('7.0.0', 'Renderer#useContextAlpha has been deprecated, please use Renderer#context.premultipliedAlpha instead.');
+        deprecation('7.0.0', 'renderer.useContextAlpha has been deprecated, please use renderer.context.premultipliedAlpha instead.');
         // #endif
 
         return this.context.useContextAlpha;
@@ -563,7 +554,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      * @member {number}
      * @deprecated since 7.0.0
      */
-    get backgroundColor(): number
+    get backgroundColor(): ColorSource
     {
         // #if _DEBUG
         // eslint-disable-next-line max-len
@@ -573,7 +564,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
         return this.background.color;
     }
 
-    set backgroundColor(value: number)
+    set backgroundColor(value: ColorSource)
     {
         // #if _DEBUG
         deprecation('7.0.0', 'renderer.backgroundColor has been deprecated, use renderer.background.color instead.');
@@ -594,7 +585,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
         deprecation('7.0.0', 'renderer.backgroundAlpha has been deprecated, use renderer.background.alpha instead.');
         // #endif
 
-        return this.background.color;
+        return this.background.alpha;
     }
 
     /**
@@ -627,12 +618,11 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      * Useful function that returns a texture of the display object that can then be used to create sprites
      * This can be quite useful if your displayObject is complicated and needs to be reused multiple times.
      * @param displayObject - The displayObject the object will be generated from.
-     * @param {object} options - Generate texture options.
-     * @param {PIXI.SCALE_MODES} options.scaleMode - The scale mode of the texture.
-     * @param {number} options.resolution - The resolution / device pixel ratio of the texture being generated.
+     * @param {IGenerateTextureOptions} options - Generate texture options.
      * @param {PIXI.Rectangle} options.region - The region of the displayObject, that shall be rendered,
      *        if no region is specified, defaults to the local bounds of the displayObject.
-     * @param {PIXI.MSAA_QUALITY} options.multisample - The number of samples of the frame buffer.
+     * @param {number} [options.resolution] - If not given, the renderer's resolution is used.
+     * @param {PIXI.MSAA_QUALITY} [options.multisample] - If not given, the renderer's multisample is used.
      * @returns A texture of the graphics object.
      */
     generateTexture(displayObject: IRenderableObject, options?: IGenerateTextureOptions): RenderTexture

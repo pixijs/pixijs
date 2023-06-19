@@ -1,19 +1,18 @@
-import type { GLProgram } from './GLProgram';
+import { extensions, ExtensionType } from '@pixi/extensions';
 import { generateUniformsSync, unsafeEvalSupported } from './utils';
-
-import type { ISystem } from '../system/ISystem';
-import type { Renderer } from '../Renderer';
-import type { Shader } from './Shader';
-import type { Program } from './Program';
-import type { UniformGroup } from './UniformGroup';
-import type { Dict } from '@pixi/utils';
-import type { UniformsSyncCallback } from './utils';
+import { generateProgram } from './utils/generateProgram';
 import { generateUniformBufferSync } from './utils/generateUniformBufferSync';
 
-import { generateProgram } from './utils/generateProgram';
-import type { IRenderingContext } from '../IRenderer';
 import type { ExtensionMetadata } from '@pixi/extensions';
-import { extensions, ExtensionType } from '@pixi/extensions';
+import type { Dict } from '@pixi/utils';
+import type { IRenderingContext } from '../IRenderer';
+import type { Renderer } from '../Renderer';
+import type { ISystem } from '../system/ISystem';
+import type { GLProgram } from './GLProgram';
+import type { Program } from './Program';
+import type { Shader } from './Shader';
+import type { UniformGroup } from './UniformGroup';
+import type { UniformsSyncCallback } from './utils';
 
 let UID = 0;
 // default sync data so we don't create a new one each time!
@@ -94,6 +93,8 @@ export class ShaderSystem implements ISystem
      */
     bind(shader: Shader, dontSync?: boolean): GLProgram
     {
+        shader.disposeRunner.add(this);
+
         shader.uniforms.globals = this.renderer.globalUniforms;
 
         const program = shader.program;
@@ -315,6 +316,19 @@ export class ShaderSystem implements ISystem
     {
         this.program = null;
         this.shader = null;
+    }
+
+    /**
+     * Disposes shader.
+     * If disposing one equals with current shader, set current as null.
+     * @param shader - Shader object
+     */
+    disposeShader(shader: Shader): void
+    {
+        if (this.shader === shader)
+        {
+            this.shader = null;
+        }
     }
 
     /** Destroys this System and removes all its textures. */

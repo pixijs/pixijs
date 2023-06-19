@@ -1,13 +1,28 @@
-import { settings } from '@pixi/core';
+import { settings, utils } from '@pixi/core';
+import { Mesh } from '@pixi/mesh';
 
-/**
- * Default `canvasPadding` for canvas-based Mesh rendering.
- * @see PIXI.Mesh2d#canvasPadding
- * @static
- * @memberof PIXI.settings
- * @member {number}
- * @default 0
- */
-settings.MESH_CANVAS_PADDING = 0;
+Object.defineProperties(settings, {
+    /**
+     * Default `canvasPadding` for canvas-based Mesh rendering.
+     * @see PIXI.Mesh.defaultCanvasPadding
+     * @deprecated since 7.1.0
+     * @static
+     * @memberof PIXI.settings
+     * @member {number}
+     */
+    MESH_CANVAS_PADDING: {
+        get()
+        {
+            return Mesh.defaultCanvasPadding;
+        },
+        set(value: number)
+        {
+            // #if _DEBUG
+            utils.deprecation('7.1.0', 'settings.MESH_CANVAS_PADDING is deprecated, use Mesh.defaultCanvasPadding');
+            // #endif
+            Mesh.defaultCanvasPadding = value;
+        },
+    },
+});
 
 export { settings };

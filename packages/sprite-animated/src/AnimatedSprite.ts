@@ -1,26 +1,27 @@
-import { Sprite } from '@pixi/sprite';
 import { Texture, Ticker, UPDATE_PRIORITY } from '@pixi/core';
+import { Sprite } from '@pixi/sprite';
+
 import type { IDestroyOptions } from '@pixi/display';
 
 /**
  * An AnimatedSprite is a simple way to display an animation depicted by a list of textures.
  *
  * ```js
- * import { Texture, AnimatedSprite } from 'pixi.js';
+ * import { AnimatedSprite, Texture } from 'pixi.js';
  *
  * const alienImages = [
- *   "image_sequence_01.png",
- *   "image_sequence_02.png",
- *   "image_sequence_03.png",
- *   "image_sequence_04.png"
+ *     'image_sequence_01.png',
+ *     'image_sequence_02.png',
+ *     'image_sequence_03.png',
+ *     'image_sequence_04.png',
  * ];
  * const textureArray = [];
  *
  * for (let i = 0; i < 4; i++)
  * {
- *      const texture = Texture.from(alienImages[i]);
- *      textureArray.push(texture);
- * };
+ *     const texture = Texture.from(alienImages[i]);
+ *     textureArray.push(texture);
+ * }
  *
  * const animatedSprite = new AnimatedSprite(textureArray);
  * ```
@@ -28,10 +29,10 @@ import type { IDestroyOptions } from '@pixi/display';
  * The more efficient and simpler way to create an animated sprite is using a {@link PIXI.Spritesheet}
  * containing the animation definitions:
  * @example
- * import { Assets, AnimatedSprite } from 'pixi.js';
+ * import { AnimatedSprite, Assets } from 'pixi.js';
  *
- * const sheet = await Assets.load("assets/spritesheet.json");
- * animatedSprite = new AnimatedSprite(sheet.animations["image_sequence"]);
+ * const sheet = await Assets.load('assets/spritesheet.json');
+ * animatedSprite = new AnimatedSprite(sheet.animations['image_sequence']);
  * @memberof PIXI
  */
 export class AnimatedSprite extends Sprite
@@ -64,7 +65,7 @@ export class AnimatedSprite extends Sprite
      * User-assigned function to call when an AnimatedSprite finishes playing.
      * @example
      * animation.onComplete = () => {
-     *   // finished!
+     *     // Finished!
      * };
      */
     public onComplete?: () => void;
@@ -73,7 +74,7 @@ export class AnimatedSprite extends Sprite
      * User-assigned function to call when an AnimatedSprite changes which texture is being rendered.
      * @example
      * animation.onFrameChange = () => {
-     *   // updated!
+     *     // Updated!
      * };
      */
     public onFrameChange?: (currentFrame: number) => void;
@@ -83,7 +84,7 @@ export class AnimatedSprite extends Sprite
      * loops around to start again.
      * @example
      * animation.onLoop = () => {
-     *   // looped!
+     *     // Looped!
      * };
      */
     public onLoop?: () => void;
@@ -113,7 +114,7 @@ export class AnimatedSprite extends Sprite
     /**
      * @param textures - An array of {@link PIXI.Texture} or frame
      *  objects that make up the animation.
-     * @param {boolean} [autoUpdate=true] - Whether to use PIXI.Ticker.shared to auto update animation time.
+     * @param {boolean} [autoUpdate=true] - Whether to use Ticker.shared to auto update animation time.
      */
     constructor(textures: Texture[] | FrameObject[], autoUpdate = true)
     {
@@ -256,11 +257,8 @@ export class AnimatedSprite extends Sprite
         {
             if (this.loop && this.onLoop)
             {
-                if (this.animationSpeed > 0 && this.currentFrame < previousFrame)
-                {
-                    this.onLoop();
-                }
-                else if (this.animationSpeed < 0 && this.currentFrame > previousFrame)
+                if ((this.animationSpeed > 0 && this.currentFrame < previousFrame)
+                    || (this.animationSpeed < 0 && this.currentFrame > previousFrame))
                 {
                     this.onLoop();
                 }
@@ -392,7 +390,7 @@ export class AnimatedSprite extends Sprite
         this.updateTexture();
     }
 
-    /** The AnimatedSprites current frame index. */
+    /** The AnimatedSprite's current frame index. */
     get currentFrame(): number
     {
         let currentFrame = Math.floor(this._currentTime) % this._textures.length;
@@ -432,7 +430,7 @@ export class AnimatedSprite extends Sprite
         return this._playing;
     }
 
-    /** Whether to use PIXI.Ticker.shared to auto update animation time. */
+    /** Whether to use Ticker.shared to auto update animation time. */
     get autoUpdate(): boolean
     {
         return this._autoUpdate;

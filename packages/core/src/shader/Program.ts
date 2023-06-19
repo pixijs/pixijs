@@ -1,10 +1,8 @@
-import { setPrecision,
-    getMaxFragmentPrecision } from './utils';
-import { ProgramCache } from '@pixi/utils';
+import { PRECISION } from '@pixi/constants';
+import { isMobile, ProgramCache } from '@pixi/utils';
 import defaultFragment from './defaultProgram.frag';
 import defaultVertex from './defaultProgram.vert';
-import { settings } from '@pixi/settings';
-import { PRECISION } from '@pixi/constants';
+import { getMaxFragmentPrecision, setPrecision } from './utils';
 
 import type { GLProgram } from './GLProgram';
 
@@ -30,12 +28,39 @@ export interface IUniformData
     name: string;
 }
 
+export interface IProgramExtraData
+{
+    transformFeedbackVaryings?: {
+        names: string[],
+        bufferMode: 'separate' | 'interleaved'
+    }
+}
+
 /**
  * Helper class to create a shader program.
  * @memberof PIXI
  */
 export class Program
 {
+    /**
+     * Default specify float precision in vertex shader.
+     * @static
+     * @type {PIXI.PRECISION}
+     * @default PIXI.PRECISION.HIGH
+     */
+    public static defaultVertexPrecision: PRECISION = PRECISION.HIGH;
+
+    /**
+     * Default specify float precision in fragment shader.
+     * iOS is best set at highp due to https://github.com/pixijs/pixijs/issues/3742
+     * @static
+     * @type {PIXI.PRECISION}
+     * @default PIXI.PRECISION.MEDIUM
+     */
+    public static defaultFragmentPrecision: PRECISION = isMobile.apple.device
+        ? PRECISION.HIGH
+        : PRECISION.MEDIUM;
+
     public id: number;
 
     /** Source code for the vertex shader. */
@@ -54,12 +79,15 @@ export class Program
     /** Assigned when a program is first bound to the shader system. */
     uniformData: {[key: string]: IUniformData};
 
+    extra: IProgramExtraData = {};
+
     /**
      * @param vertexSrc - The source of the vertex shader.
      * @param fragmentSrc - The source of the fragment shader.
      * @param name - Name for shader
+     * @param extra - Extra data for shader
      */
-    constructor(vertexSrc?: string, fragmentSrc?: string, name = 'pixi-shader')
+    constructor(vertexSrc?: string, fragmentSrc?: string, name = 'pixi-shader', extra: IProgramExtraData = {})
     {
         this.id = UID++;
         this.vertexSrc = vertexSrc || Program.defaultVertexSrc;
@@ -67,6 +95,8 @@ export class Program
 
         this.vertexSrc = this.vertexSrc.trim();
         this.fragmentSrc = this.fragmentSrc.trim();
+
+        this.extra = extra;
 
         if (this.vertexSrc.substring(0, 8) !== '#version')
         {
@@ -85,8 +115,16 @@ export class Program
             this.vertexSrc = `#define SHADER_NAME ${name}\n${this.vertexSrc}`;
             this.fragmentSrc = `#define SHADER_NAME ${name}\n${this.fragmentSrc}`;
 
-            this.vertexSrc = setPrecision(this.vertexSrc, settings.PRECISION_VERTEX, PRECISION.HIGH);
-            this.fragmentSrc = setPrecision(this.fragmentSrc, settings.PRECISION_FRAGMENT, getMaxFragmentPrecision());
+            this.vertexSrc = setPrecision(
+                this.vertexSrc,
+                Program.defaultVertexPrecision,
+                PRECISION.HIGH
+            );
+            this.fragmentSrc = setPrecision(
+                this.fragmentSrc,
+                Program.defaultFragmentPrecision,
+                getMaxFragmentPrecision()
+            );
         }
 
         // currently this does not extract structs only default types
@@ -98,7 +136,7 @@ export class Program
 
     /**
      * The default vertex shader source.
-     * @constant
+     * @readonly
      */
     static get defaultVertexSrc(): string
     {
@@ -107,7 +145,7 @@ export class Program
 
     /**
      * The default fragment shader source.
-     * @constant
+     * @readonly
      */
     static get defaultFragmentSrc(): string
     {

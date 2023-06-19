@@ -1,7 +1,7 @@
-import { BLEND_MODES, ObservablePoint, Point, Rectangle, Texture, settings, utils } from '@pixi/core';
+import { BLEND_MODES, Color, ObservablePoint, Point, Rectangle, settings, Texture, utils } from '@pixi/core';
 import { Bounds, Container } from '@pixi/display';
 
-import type { IPointData, IBaseTextureOptions, Renderer, TextureSource } from '@pixi/core';
+import type { ColorSource, IBaseTextureOptions, IPointData, Renderer, TextureSource } from '@pixi/core';
 import type { IDestroyOptions } from '@pixi/display';
 
 const tempPoint = new Point();
@@ -17,7 +17,7 @@ export interface Sprite extends GlobalMixins.Sprite, Container {}
  * A sprite can be created directly from an image like this:
  *
  * ```js
- * import {  Sprite } from 'pixi.js';
+ * import { Sprite } from 'pixi.js';
  *
  * const sprite = Sprite.from('assets/image.png');
  * ```
@@ -28,8 +28,8 @@ export interface Sprite extends GlobalMixins.Sprite, Container {}
  * ```js
  * import { Assets, Sprite } from 'pixi.js';
  *
- * const sheet = await Assets.load("assets/spritesheet.json");
- * const sprite = new Sprite(sheet.textures["image.png"]);
+ * const sheet = await Assets.load('assets/spritesheet.json');
+ * const sprite = new Sprite(sheet.textures['image.png']);
  * ```
  * @memberof PIXI
  */
@@ -125,7 +125,7 @@ export class Sprite extends Container
      * The tint applied to the sprite. This is a hex value. A value of 0xFFFFFF will remove any tint effect.
      * @default 0xFFFFFF
      */
-    private _tint: number;
+    private _tintColor: Color;
 
     // Internal-only properties
     /**
@@ -151,7 +151,7 @@ export class Sprite extends Container
 
         this._width = 0;
         this._height = 0;
-        this._tint = null;
+        this._tintColor = new Color(0xFFFFFF);
         this._tintRGB = null;
 
         this.tint = 0xFFFFFF;
@@ -289,7 +289,7 @@ export class Sprite extends Container
 
             for (let i = 0; i < vertexData.length; ++i)
             {
-                vertexData[i] = Math.round((vertexData[i] * resolution | 0) / resolution);
+                vertexData[i] = Math.round(vertexData[i] * resolution) / resolution;
             }
         }
     }
@@ -580,15 +580,24 @@ export class Sprite extends Container
      * A value of 0xFFFFFF will remove any tint effect.
      * @default 0xFFFFFF
      */
-    get tint(): number
+    get tint(): ColorSource
     {
-        return this._tint;
+        return this._tintColor.value;
     }
 
-    set tint(value: number)
+    set tint(value: ColorSource)
     {
-        this._tint = value;
-        this._tintRGB = (value >> 16) + (value & 0xff00) + ((value & 0xff) << 16);
+        this._tintColor.setValue(value);
+        this._tintRGB = this._tintColor.toLittleEndianNumber();
+    }
+
+    /**
+     * Get the tint as a RGB integer.
+     * @ignore
+     */
+    get tintValue(): number
+    {
+        return this._tintColor.toNumber();
     }
 
     /** The texture that the sprite is using. */

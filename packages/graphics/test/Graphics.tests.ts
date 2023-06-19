@@ -1,8 +1,7 @@
-import { Texture, BLEND_MODES, Point, Matrix, SHAPES, Polygon, utils } from '@pixi/core';
-import { Graphics, GRAPHICS_CURVES, FillStyle, LineStyle, graphicsUtils, LINE_CAP } from '@pixi/graphics';
-const { FILL_COMMANDS, buildLine } = graphicsUtils;
+import { BLEND_MODES, Matrix, Point, Polygon, SHAPES, Texture } from '@pixi/core';
+import { FillStyle, Graphics, graphicsUtils, LINE_CAP, LINE_JOIN, LineStyle } from '@pixi/graphics';
 
-utils.skipHello();
+const { FILL_COMMANDS, buildLine } = graphicsUtils;
 
 describe('Graphics', () =>
 {
@@ -59,6 +58,9 @@ describe('Graphics', () =>
                 color: 0xff0000,
                 alignment: 1,
                 native: true,
+                cap: LINE_CAP.ROUND,
+                join: LINE_JOIN.ROUND,
+                miterLimit: 20,
             });
 
             expect(graphics.line.width).toEqual(1);
@@ -67,6 +69,9 @@ describe('Graphics', () =>
             expect(graphics.line.alpha).toEqual(0.5);
             expect(graphics.line.native).toEqual(true);
             expect(graphics.line.visible).toEqual(true);
+            expect(graphics.line.cap).toEqual(LINE_CAP.ROUND);
+            expect(graphics.line.join).toEqual(LINE_JOIN.ROUND);
+            expect(graphics.line.miterLimit).toEqual(20);
 
             graphics.lineStyle();
 
@@ -76,6 +81,45 @@ describe('Graphics', () =>
             expect(graphics.line.alpha).toEqual(1);
             expect(graphics.line.native).toEqual(false);
             expect(graphics.line.visible).toEqual(false);
+            expect(graphics.line.cap).toEqual(LINE_CAP.BUTT);
+            expect(graphics.line.join).toEqual(LINE_JOIN.MITER);
+            expect(graphics.line.miterLimit).toEqual(10);
+
+            graphics.destroy();
+        });
+
+        it('should accept other color sources', () =>
+        {
+            const graphics = new Graphics();
+
+            graphics.lineStyle({ color: 'red', width: 1 });
+
+            expect(graphics.line.color).toEqual(0xFF0000);
+            expect(graphics.line.alpha).toEqual(1);
+
+            graphics.destroy();
+        });
+
+        it('should accept other color sources with alpha', () =>
+        {
+            const graphics = new Graphics();
+
+            graphics.lineStyle({ color: '#ff000080', width: 1 });
+
+            expect(graphics.line.color).toEqual(0xFF0000);
+            expect(graphics.line.alpha).toEqual(0.5);
+
+            graphics.destroy();
+        });
+
+        it('should accept other color sources with alpha override', () =>
+        {
+            const graphics = new Graphics();
+
+            graphics.lineStyle({ color: '#ff000080', alpha: 1, width: 1 });
+
+            expect(graphics.line.color).toEqual(0xFF0000);
+            expect(graphics.line.alpha).toEqual(1);
 
             graphics.destroy();
         });
@@ -152,6 +196,42 @@ describe('Graphics', () =>
             expect(batches.length).toEqual(2);
             expect(batches[0].style.texture).toEqual(validTex1);
             expect(batches[1].style.texture).toEqual(validTex2);
+        });
+
+        it('should accept other color sources', () =>
+        {
+            const graphics = new Graphics();
+
+            graphics.beginTextureFill({ color: 'red' });
+
+            expect(graphics.fill.color).toEqual(0xFF0000);
+            expect(graphics.fill.alpha).toEqual(1);
+
+            graphics.destroy();
+        });
+
+        it('should accept other color sources with alpha', () =>
+        {
+            const graphics = new Graphics();
+
+            graphics.beginTextureFill({ color: '#ff000080' });
+
+            expect(graphics.fill.color).toEqual(0xFF0000);
+            expect(graphics.fill.alpha).toEqual(0.5);
+
+            graphics.destroy();
+        });
+
+        it('should accept other color sources with alpha override', () =>
+        {
+            const graphics = new Graphics();
+
+            graphics.beginTextureFill({ color: '#ff000080', alpha: 1 });
+
+            expect(graphics.fill.color).toEqual(0xFF0000);
+            expect(graphics.fill.alpha).toEqual(1);
+
+            graphics.destroy();
         });
     });
 
@@ -281,6 +361,45 @@ describe('Graphics', () =>
             graphics.lineTo(10, 0);
 
             expect(graphics.currentPath.points).toEqual([0, 0, 10, 0]);
+        });
+
+        it('should not have miter join on 180 degree corner', () =>
+        {
+            const graphics = new Graphics();
+
+            graphics.lineStyle({ width: 1, join: LINE_JOIN.MITER });
+            graphics.moveTo(0, 0);
+            graphics.lineTo(10, 0);
+            graphics.lineTo(0, 0);
+
+            expect(graphics.width).toBeCloseTo(10, 0.0001);
+            expect(graphics.height).toBeCloseTo(1, 0.0001);
+        });
+
+        it('should not have bevel join on 180 degree corner', () =>
+        {
+            const graphics = new Graphics();
+
+            graphics.lineStyle({ width: 1, join: LINE_JOIN.BEVEL });
+            graphics.moveTo(0, 0);
+            graphics.lineTo(10, 0);
+            graphics.lineTo(0, 0);
+
+            expect(graphics.width).toBeCloseTo(10, 0.0001);
+            expect(graphics.height).toBeCloseTo(1, 0.0001);
+        });
+
+        it('should have round join on 180 degree corner', () =>
+        {
+            const graphics = new Graphics();
+
+            graphics.lineStyle({ width: 1, join: LINE_JOIN.ROUND });
+            graphics.moveTo(0, 0);
+            graphics.lineTo(10, 0);
+            graphics.lineTo(0, 0);
+
+            expect(graphics.width).toBeCloseTo(10.5, 0.0001);
+            expect(graphics.height).toBeCloseTo(1, 0.0001);
         });
     });
 
@@ -824,12 +943,12 @@ describe('Graphics', () =>
 
     describe('should support adaptive curves', () =>
     {
-        const defMode = GRAPHICS_CURVES.adaptive;
-        const defMaxLen = GRAPHICS_CURVES.maxLength;
-        const myMaxLen = GRAPHICS_CURVES.maxLength = 1.0;
+        const defMode = Graphics.curves.adaptive;
+        const defMaxLen = Graphics.curves.maxLength;
+        const myMaxLen = Graphics.curves.maxLength = 1.0;
         const graphics = new Graphics();
 
-        GRAPHICS_CURVES.adaptive = true;
+        Graphics.curves.adaptive = true;
 
         graphics.beginFill(0xffffff, 1.0);
         graphics.moveTo(610, 500);
@@ -842,8 +961,8 @@ describe('Graphics', () =>
 
         expect(pointsLen).toBeCloseTo(estimate, 2.0);
 
-        GRAPHICS_CURVES.adaptive = defMode;
-        GRAPHICS_CURVES.maxLength = defMaxLen;
+        Graphics.curves.adaptive = defMode;
+        Graphics.curves.maxLength = defMaxLen;
     });
 
     describe('geometry', () =>
@@ -983,6 +1102,18 @@ describe('Graphics', () =>
             expect(geometry.batches[0].size).toEqual(6);
             expect(geometry.batches[1].style.color).toEqual(0x00ff00);
             expect(geometry.batches[1].size).toEqual(30);
+        });
+    });
+
+    describe('tint', () =>
+    {
+        it('should allow for other color sources', () =>
+        {
+            const graphics = new Graphics();
+
+            graphics.tint = 'red';
+            expect(graphics.tint).toEqual('red');
+            graphics.destroy();
         });
     });
 });

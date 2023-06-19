@@ -1,5 +1,5 @@
-import type { IPointData } from './IPointData';
 import type { IPoint } from './IPoint';
+import type { IPointData } from './IPointData';
 
 export interface ObservablePoint extends GlobalMixins.Point, IPoint {}
 

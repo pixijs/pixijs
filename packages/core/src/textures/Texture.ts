@@ -1,20 +1,37 @@
 import { Point, Rectangle } from '@pixi/math';
 import { settings } from '@pixi/settings';
-import { uid, TextureCache, getResolutionOfUrl, EventEmitter } from '@pixi/utils';
-import { ImageResource } from './resources/ImageResource';
+import { EventEmitter, getResolutionOfUrl, TextureCache, uid } from '@pixi/utils';
 import { BaseTexture } from './BaseTexture';
+import { ImageResource } from './resources/ImageResource';
 import { TextureUvs } from './TextureUvs';
 
-import type { IPointData, ISize } from '@pixi/math';
-import type { BufferResource } from './resources/BufferResource';
+import type { IPointData } from '@pixi/math';
+import type { IBaseTextureOptions, ImageSource } from './BaseTexture';
+import type { BufferResource, BufferType, IBufferResourceOptions } from './resources/BufferResource';
 import type { CanvasResource } from './resources/CanvasResource';
 import type { Resource } from './resources/Resource';
-import type { IBaseTextureOptions, ImageSource } from './BaseTexture';
 import type { TextureMatrix } from './TextureMatrix';
 
 const DEFAULT_UVS = new TextureUvs();
 
 export type TextureSource = string | BaseTexture | ImageSource;
+
+/**
+ * Stores the width of the non-scalable borders, for example when used with {@link PIXI.NineSlicePlane} texture.
+ * @memberof PIXI
+ * @since 7.2.0
+ */
+export interface ITextureBorders
+{
+    /** left border in pixels */
+    left: number;
+    /** top border in pixels */
+    top: number;
+    /** right border in pixels */
+    right: number;
+    /** bottom border in pixels */
+    bottom: number;
+}
 
 export interface Texture extends GlobalMixins.Texture, EventEmitter {}
 
@@ -39,7 +56,7 @@ function removeAllHandlers(tex: any): void
  * You can directly create a texture from an image and then reuse it multiple times like this :
  *
  * ```js
- * import { Texture, Sprite } from 'pixi.js';
+ * import { Sprite, Texture } from 'pixi.js';
  *
  * const texture = Texture.from('assets/image.png');
  * const sprite1 = new Sprite(texture);
@@ -51,14 +68,17 @@ function removeAllHandlers(tex: any): void
  *
  * Textures made from SVGs, loaded or not, cannot be used before the file finishes processing.
  * You can check for this by checking the sprite's _textureID property.
+ *
  * ```js
- * import { Texture, Sprite } from 'pixi.js';
+ * import { Sprite, Texture } from 'pixi.js';
  *
  * const texture = Texture.from('assets/image.svg');
  * const sprite1 = new Sprite(texture);
- * //sprite1._textureID should not be undefined if the texture has finished processing the SVG file
+ * // sprite1._textureID should not be undefined if the texture has finished processing the SVG file
  * ```
- * You can use a ticker or rAF to ensure your sprites load the finished textures after processing. See issue #3068.
+ *
+ * You can use a ticker or rAF to ensure your sprites load the finished textures after processing.
+ * See issue [#3085]{@link https://github.com/pixijs/pixijs/issues/3085}.
  * @memberof PIXI
  * @typeParam R - The BaseTexture's Resource type.
  */
@@ -102,6 +122,13 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
      */
     public defaultAnchor: Point;
 
+    /**
+     * Default width of the non-scalable border that is used if 9-slice plane is created with this texture.
+     * @since 7.2.0
+     * @see PIXI.NineSlicePlane
+     */
+    public defaultBorders?: ITextureBorders;
+
     /** Default TextureMatrix instance for this texture. By default, that object is not created because its heavy. */
     public uvMatrix: TextureMatrix;
     protected _rotate: number;
@@ -139,9 +166,10 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
      * @param trim - Trimmed rectangle of original texture
      * @param rotate - indicates how the texture was rotated by texture packer. See {@link PIXI.groupD8}
      * @param anchor - Default anchor point used for sprite placement / rotation
+     * @param borders - Default borders used for 9-slice scaling. See {@link PIXI.NineSlicePlane}
      */
     constructor(baseTexture: BaseTexture<R>, frame?: Rectangle,
-        orig?: Rectangle, trim?: Rectangle, rotate?: number, anchor?: IPointData)
+        orig?: Rectangle, trim?: Rectangle, rotate?: number, anchor?: IPointData, borders?: ITextureBorders)
     {
         super();
 
@@ -179,6 +207,7 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
         }
 
         this.defaultAnchor = anchor ? new Point(anchor.x, anchor.y) : new Point(0, 0);
+        this.defaultBorders = borders;
 
         this._updateID = 0;
 
@@ -303,7 +332,8 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
             clonedOrig,
             this.trim?.clone(),
             this.rotate,
-            this.defaultAnchor
+            this.defaultAnchor,
+            this.defaultBorders
         );
 
         if (this.noFrame)
@@ -433,17 +463,25 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
     }
 
     /**
-     * Create a new Texture with a BufferResource from a Float32Array.
-     * RGBA values are floats from 0 to 1.
-     * @param {Float32Array|Uint8Array} buffer - The optional array to use, if no data
-     *        is provided, a new Float32Array is created.
+     * Create a new Texture with a BufferResource from a typed array.
+     * @param buffer - The optional array to use. If no data is provided, a new Float32Array is created.
      * @param width - Width of the resource
      * @param height - Height of the resource
      * @param options - See {@link PIXI.BaseTexture}'s constructor for options.
+     *        Default properties are different from the constructor's defaults.
+     * @param {PIXI.FORMATS} [options.format] - The format is not given, the type is inferred from the
+     *        type of the buffer: `RGBA` if Float32Array, Int8Array, Uint8Array, or Uint8ClampedArray,
+     *        otherwise `RGBA_INTEGER`.
+     * @param {PIXI.TYPES} [options.type] - The type is not given, the type is inferred from the
+     *        type of the buffer. Maps Float32Array to `FLOAT`, Int32Array to `INT`, Uint32Array to
+     *        `UNSIGNED_INT`, Int16Array to `SHORT`, Uint16Array to `UNSIGNED_SHORT`, Int8Array to `BYTE`,
+     *        Uint8Array/Uint8ClampedArray to `UNSIGNED_BYTE`.
+     * @param {PIXI.ALPHA_MODES} [options.alphaMode=PIXI.ALPHA_MODES.NPM]
+     * @param {PIXI.SCALE_MODES} [options.scaleMode=PIXI.SCALE_MODES.NEAREST]
      * @returns - The resulting new BaseTexture
      */
-    static fromBuffer(buffer: Float32Array | Uint8Array,
-        width: number, height: number, options?: IBaseTextureOptions<ISize>): Texture<BufferResource>
+    static fromBuffer(buffer: BufferType, width: number, height: number,
+        options?: IBaseTextureOptions<IBufferResourceOptions>): Texture<BufferResource>
     {
         return new Texture(BaseTexture.fromBuffer(buffer, width, height, options));
     }
@@ -461,7 +499,7 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
         imageUrl: string, name?: string, options?: IBaseTextureOptions): Promise<Texture<R>>
     {
         const baseTexture = new BaseTexture<R>(source, Object.assign({
-            scaleMode: settings.SCALE_MODE,
+            scaleMode: BaseTexture.defaultOptions.scaleMode,
             resolution: getResolutionOfUrl(imageUrl),
         }, options));
 
@@ -518,7 +556,8 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
                 texture.textureCacheIds.push(id);
             }
 
-            if (TextureCache[id])
+            // only throw a warning if there is a different texture mapped to this id.
+            if (TextureCache[id] && TextureCache[id] !== texture)
             {
                 // eslint-disable-next-line no-console
                 console.warn(`Texture added to the cache with an id [${id}] that already had an entry`);

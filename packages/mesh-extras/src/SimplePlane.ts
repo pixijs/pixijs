@@ -8,12 +8,12 @@ import type { IDestroyOptions } from '@pixi/display';
 /**
  * The SimplePlane allows you to draw a texture across several points and then manipulate these points
  * @example
- * import { SimplePlane, Texture, Point } from 'pixi.js';
+ * import { Point, SimplePlane, Texture } from 'pixi.js';
  *
  * for (let i = 0; i < 20; i++) {
  *     points.push(new Point(i * 50, 0));
- * };
- * const SimplePlane = new SimplePlane(Texture.from("snake.png"), points);
+ * }
+ * const SimplePlane = new SimplePlane(Texture.from('snake.png'), points);
  * @memberof PIXI
  */
 export class SimplePlane extends Mesh

@@ -1,10 +1,17 @@
-import { Texture, BaseTexture, RenderTexture, Matrix, utils, MSAA_QUALITY, settings } from '@pixi/core';
-import { Sprite } from '@pixi/sprite';
+/// <reference path="../global.d.ts" />
+import { BaseTexture, Matrix, Rectangle, RenderTexture, Texture, utils } from '@pixi/core';
 import { DisplayObject } from '@pixi/display';
+import { Sprite } from '@pixi/sprite';
 
-import type { Renderer, MaskData, IRenderer, IPointData, Rectangle } from '@pixi/core';
+import type {
+    ICanvasRenderingContext2D,
+    IPointData,
+    IRenderer,
+    MaskData,
+    MSAA_QUALITY,
+    Renderer,
+} from '@pixi/core';
 import type { Container, IDestroyOptions } from '@pixi/display';
-import type { ICanvasRenderingContext2D } from '@pixi/settings';
 
 // Don't import CanvasRender to remove dependency on this optional package
 // this type should satisify these requirements for cacheAsBitmap types
@@ -20,7 +27,7 @@ const _tempMatrix = new Matrix();
 DisplayObject.prototype._cacheAsBitmap = false;
 DisplayObject.prototype._cacheData = null;
 DisplayObject.prototype._cacheAsBitmapResolution = null;
-DisplayObject.prototype._cacheAsBitmapMultisample = MSAA_QUALITY.NONE;
+DisplayObject.prototype._cacheAsBitmapMultisample = null;
 
 // figured there's no point adding ALL the extra variables to prototype.
 // this model can hold the information needed. This can also be generated on demand as
@@ -68,16 +75,16 @@ Object.defineProperties(DisplayObject.prototype, {
      * but can be overriden for performance. Lower values will reduce memory usage at the expense
      * of render quality. A falsey value of `null` or `0` will default to the renderer's resolution.
      * If `cacheAsBitmap` is set to `true`, this will re-render with the new resolution.
-     * @member {number} cacheAsBitmapResolution
+     * @member {number|null} cacheAsBitmapResolution
      * @memberof PIXI.DisplayObject#
      * @default null
      */
     cacheAsBitmapResolution: {
-        get(): number
+        get(): number | null
         {
             return this._cacheAsBitmapResolution;
         },
-        set(resolution: number): void
+        set(resolution: number | null): void
         {
             if (resolution === this._cacheAsBitmapResolution)
             {
@@ -99,16 +106,16 @@ Object.defineProperties(DisplayObject.prototype, {
      * The number of samples to use for cacheAsBitmap. If set to `null`, the renderer's
      * sample count is used.
      * If `cacheAsBitmap` is set to `true`, this will re-render with the new number of samples.
-     * @member {number} cacheAsBitmapMultisample
+     * @member {number|null} cacheAsBitmapMultisample
      * @memberof PIXI.DisplayObject#
-     * @default PIXI.MSAA_QUALITY.NONE
+     * @default null
      */
     cacheAsBitmapMultisample: {
-        get(): MSAA_QUALITY
+        get(): MSAA_QUALITY | null
         {
             return this._cacheAsBitmapMultisample;
         },
-        set(multisample: MSAA_QUALITY): void
+        set(multisample: MSAA_QUALITY | null): void
         {
             if (multisample === this._cacheAsBitmapMultisample)
             {
@@ -128,7 +135,7 @@ Object.defineProperties(DisplayObject.prototype, {
 
     /**
      * Set this to true if you want this display object to be cached as a bitmap.
-     * This basically takes a snap shot of the display object as it is at that moment. It can
+     * This basically takes a snapshot of the display object as it is at that moment. It can
      * provide a performance benefit for complex static displayObjects.
      * To remove simply set this property to `false`
      *
@@ -255,7 +262,7 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
     // this function also calls updatetransform on all its children as part of the measuring.
     // This means we don't need to update the transform again in this function
     // TODO pass an object to clone too? saves having to create a new one each time!
-    const bounds = (this as Container).getLocalBounds(null, true).clone();
+    const bounds = (this as Container).getLocalBounds(new Rectangle(), true);
 
     // add some padding!
     if (this.filters?.length)
@@ -265,7 +272,11 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
         bounds.pad(padding);
     }
 
-    bounds.ceil(settings.RESOLUTION);
+    const resolution = this.cacheAsBitmapResolution || renderer.resolution;
+
+    bounds.ceil(resolution);
+    bounds.width = Math.max(bounds.width, 1 / resolution);
+    bounds.height = Math.max(bounds.height, 1 / resolution);
 
     // for now we cache the current renderTarget that the WebGL renderer is currently using.
     // this could be more elegant..
@@ -281,7 +292,7 @@ DisplayObject.prototype._initCachedDisplayObject = function _initCachedDisplayOb
     const renderTexture = RenderTexture.create({
         width: bounds.width,
         height: bounds.height,
-        resolution: this.cacheAsBitmapResolution || renderer.resolution,
+        resolution,
         multisample: this.cacheAsBitmapMultisample ?? renderer.multisample,
     });
 
@@ -383,7 +394,7 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDis
     }
 
     // get bounds actually transforms the object for us already!
-    const bounds = (this as Container).getLocalBounds(null, true);
+    const bounds = (this as Container).getLocalBounds(new Rectangle(), true);
 
     const cacheAlpha = this.alpha;
 
@@ -392,9 +403,17 @@ DisplayObject.prototype._initCachedDisplayObjectCanvas = function _initCachedDis
     const cachedRenderTarget = renderer.canvasContext.activeContext;
     const cachedProjectionTransform = (renderer as any)._projTransform;
 
-    bounds.ceil(settings.RESOLUTION);
+    const resolution = this.cacheAsBitmapResolution || renderer.resolution;
 
-    const renderTexture = RenderTexture.create({ width: bounds.width, height: bounds.height });
+    bounds.ceil(resolution);
+    bounds.width = Math.max(bounds.width, 1 / resolution);
+    bounds.height = Math.max(bounds.height, 1 / resolution);
+
+    const renderTexture = RenderTexture.create({
+        width: bounds.width,
+        height: bounds.height,
+        resolution
+    });
 
     const textureCacheId = `cacheAsBitmap_${utils.uid()}`;
 

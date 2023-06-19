@@ -1,6 +1,7 @@
 // for type only
-import type { IShapeBuildCommand } from './IShapeBuildCommand';
 import { buildCircle } from './buildCircle';
+
+import type { IShapeBuildCommand } from './IShapeBuildCommand';
 
 /**
  * Builds a rounded rectangle to draw

@@ -1,4 +1,5 @@
 import { Sprite } from '@pixi/sprite';
+
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
 
 /**

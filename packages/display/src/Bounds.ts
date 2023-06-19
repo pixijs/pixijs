@@ -1,6 +1,6 @@
 import { Rectangle } from '@pixi/core';
 
-import type { IPointData, Transform, Matrix } from '@pixi/core';
+import type { IPointData, Matrix, Transform } from '@pixi/core';
 
 /**
  * 'Builder' pattern for bounds rectangles.
@@ -315,7 +315,7 @@ export class Bounds
     }
 
     /**
-     * Adds other {@link Bounds}.
+     * Adds other {@link PIXI.Bounds}.
      * @param bounds - The Bounds to be added
      */
     addBounds(bounds: Bounds): void

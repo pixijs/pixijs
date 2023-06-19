@@ -17,10 +17,10 @@ import { Runner } from '@pixi/runner';
 
 const onComplete = new Runner('onComplete');
 
-//listenerObject needs to have a 'onComplete' function
+// listenerObject needs to have a 'onComplete' function
 onComplete.add(listenerObject);
 
-//emit and all listeners will have their 'onComplete' functions called
+// emit() and all listeners will have their 'onComplete' functions called
 onComplete.emit(data);
 ```
 
@@ -36,7 +36,7 @@ updateRunner.add(gameItem1);
 updateRunner.add(gameItem2);
 updateRunner.add(gameItem3);
 
-// update game elements..
+// Update game elements...
 updateRunner.emit();
 ```
 

@@ -1,6 +1,7 @@
 import { BUFFER_TYPE } from '@pixi/constants';
-import type { Dict } from '@pixi/utils';
 import { Buffer } from '../geometry/Buffer';
+
+import type { Dict } from '@pixi/utils';
 import type { UniformsSyncCallback } from './utils';
 
 let UID = 0;
@@ -26,22 +27,24 @@ let UID = 0;
  * Otherwise, weirdness will ensue!
  * - The name of the ubo object added to the group must match exactly the name of the ubo in the shader.
  *
+ * ```glsl
+ * // UBO in shader:
+ * uniform myCoolData { // Declaring a UBO...
+ *     mat4 uCoolMatrix;
+ *     float uFloatyMcFloatFace;
+ * };
  * ```
- * // ubo in shader:
- * uniform myCoolData { // declaring a ubo..
- * mat4 uCoolMatrix;
- * float uFloatyMcFloatFace
  *
- *
- * // a new uniform buffer object..
+ * ```js
+ * // A new Uniform Buffer Object...
  * const myCoolData = new UniformBufferGroup({
- *   uCoolMatrix: new Matrix(),
- *   uFloatyMcFloatFace: 23,
+ *     uCoolMatrix: new Matrix(),
+ *     uFloatyMcFloatFace: 23,
  * }}
  *
- * // build a shader...
+ * // Build a shader...
  * const shader = Shader.from(srcVert, srcFrag, {
- *   myCoolData // name matches the ubo name in the shader. will be processed accordingly.
+ *     myCoolData // Name matches the UBO name in the shader. Will be processed accordingly.
  * })
  *
  *  ```

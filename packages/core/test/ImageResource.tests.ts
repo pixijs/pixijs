@@ -1,6 +1,6 @@
-import { ImageResource, BaseTexture, Renderer } from '@pixi/core';
-import { settings } from '@pixi/settings';
 import path from 'path';
+import { BaseTexture, ImageResource, Renderer } from '@pixi/core';
+import { settings } from '@pixi/settings';
 
 describe('ImageResource', () =>
 {

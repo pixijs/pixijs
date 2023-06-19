@@ -1,6 +1,15 @@
-import { BaseTextureCache, TextureCache } from '@pixi/utils';
-import { BaseTexture, Texture, RenderTexture, ImageResource, SVGResource, VideoResource } from '@pixi/core';
+import {
+    BaseTexture,
+    ImageResource,
+    RenderTexture,
+    SCALE_MODES,
+    SVGResource,
+    Texture,
+    TYPES,
+    VideoResource
+} from '@pixi/core';
 import { settings } from '@pixi/settings';
+import { BaseTextureCache, TextureCache } from '@pixi/utils';
 
 const URL = 'foo.png';
 const NAME = 'foo';
@@ -251,5 +260,16 @@ describe('BaseTexture', () =>
         settings.STRICT_TEXTURE_CACHE = true;
         expect(() => BaseTexture.from(id)).toThrowError(`The cacheId "${id}" does not exist in BaseTextureCache.`);
         settings.STRICT_TEXTURE_CACHE = false;
+    });
+
+    it('should create texture from buffer with correct type', () =>
+    {
+        const baseTexture = BaseTexture.fromBuffer(new Float32Array(2 * 3 * 4), 2, 3, {
+            scaleMode: SCALE_MODES.LINEAR
+        });
+
+        expect(baseTexture.type).toBe(TYPES.FLOAT);
+
+        baseTexture.destroy();
     });
 });

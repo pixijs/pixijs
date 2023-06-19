@@ -1,4 +1,5 @@
 import { Texture } from '@pixi/core';
+
 import type { Matrix } from '@pixi/core';
 
 /**

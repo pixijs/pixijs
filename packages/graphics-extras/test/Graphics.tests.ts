@@ -1,5 +1,4 @@
 import { Graphics } from '@pixi/graphics';
-
 import '@pixi/graphics-extras';
 
 describe('Graphics', () =>

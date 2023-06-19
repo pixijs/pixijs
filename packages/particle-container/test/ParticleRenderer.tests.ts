@@ -1,10 +1,7 @@
-import { ParticleContainer } from '@pixi/particle-container';
-import { Texture, Renderer, utils } from '@pixi/core';
-import { Sprite } from '@pixi/sprite';
-
 import path from 'path';
-
-utils.skipHello();
+import { Renderer, Texture } from '@pixi/core';
+import { ParticleContainer } from '@pixi/particle-container';
+import { Sprite } from '@pixi/sprite';
 
 describe('ParticleRenderer', () =>
 {

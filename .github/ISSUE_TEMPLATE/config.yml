@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: '💬 Discussions'
+    url: https://github.com/pixijs/pixijs/discussions
+    about: Ask everything about PixiJS.
+  - name: '📦 Strange problems when upgrading PixiJS'
+    url: https://github.com/pixijs/pixijs/wiki/Upgrading-PixiJS
+    about: You may need to reinstall PixiJS when upgrading it.

@@ -1,9 +1,10 @@
-import { Ticker, UPDATE_PRIORITY, settings, Texture, BaseTexture } from '@pixi/core';
-import type { DisplayObject } from '@pixi/display';
+import { BaseTexture, Texture, Ticker, UPDATE_PRIORITY } from '@pixi/core';
 import { Container } from '@pixi/display';
-import { Text, TextStyle, TextMetrics } from '@pixi/text';
+import { Text, TextMetrics, TextStyle } from '@pixi/text';
 import { CountLimiter } from './CountLimiter';
+
 import type { IRenderer } from '@pixi/core';
+import type { DisplayObject } from '@pixi/display';
 
 interface IArrowFunction
 {
@@ -215,17 +216,21 @@ function findTextStyle(item: TextStyle, queue: Array<any>): boolean
  * const sprite = PIXI.Sprite.from('something.png');
  *
  * // Load object into GPU
- * app.renderer.plugins.prepare.upload(sprite, () => {
- *
- *     //Texture(s) has been uploaded to GPU
+ * app.renderer.prepare.upload(sprite, () => {
+ *     // Texture(s) has been uploaded to GPU
  *     app.stage.addChild(sprite);
- *
- * })
+ * });
  * @abstract
  * @memberof PIXI
  */
 export class BasePrepare
 {
+    /**
+     * The default maximum uploads per frame.
+     * @static
+     */
+    public static uploadsPerFrame = 4;
+
     /**
      * The limiter to be used to control how quickly items are prepared.
      * @type {PIXI.CountLimiter|PIXI.TimeLimiter}
@@ -279,7 +284,7 @@ export class BasePrepare
      */
     constructor(renderer: IRenderer)
     {
-        this.limiter = new CountLimiter(settings.UPLOADS_PER_FRAME);
+        this.limiter = new CountLimiter(BasePrepare.uploadsPerFrame);
         this.renderer = renderer;
         this.uploadHookHelper = null;
         this.queue = [];

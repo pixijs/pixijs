@@ -15,62 +15,6 @@ describe('utils', () =>
         });
     });
 
-    describe('hex2rgb', () =>
-    {
-        it('should exist', () =>
-        {
-            expect(utils.hex2rgb).toBeInstanceOf(Function);
-        });
-
-        // it('should properly convert number to rgb array');
-    });
-
-    describe('hex2string', () =>
-    {
-        it('should exist', () =>
-        {
-            expect(utils.hex2string).toBeInstanceOf(Function);
-        });
-
-        const testCases = [
-            [0xffffff, '#ffffff'],
-            [0xf00000, '#f00000'],
-            [0x012345, '#012345'],
-            [0x010000, '#010000'],
-            [0x00abcd, '#00abcd'],
-            [0x00a000, '#00a000'],
-            [0x000987, '#000987'],
-            [0x000900, '#000900'],
-            [0x000012, '#000012'],
-            [0x000010, '#000010'],
-            [0x00000f, '#00000f'],
-            [0x000000, '#000000'],
-        ];
-
-        testCases.forEach(([num, result]) =>
-        {
-            it(`should properly convert number 0x${num.toString(16)} to hex color string #${result}`, () =>
-            {
-                expect(utils.hex2string(num as number)).toEqual(result);
-            });
-        });
-    });
-
-    describe('rgb2hex', () =>
-    {
-        it('should exist', () =>
-        {
-            expect(utils.rgb2hex).toBeInstanceOf(Function);
-        });
-
-        it('should calculate correctly', () =>
-        {
-            expect(utils.rgb2hex([0.3, 0.2, 0.1])).toEqual(0x4c3319);
-        });
-
-        // it('should properly convert rgb array to hex color string');
-    });
-
     describe('getResolutionOfUrl', () =>
     {
         it('should exist', () =>
@@ -93,11 +37,11 @@ describe('utils', () =>
             const dataUri = utils.decomposeDataUri('data:image/png;base64,94Z9RWUN77ZW');
 
             expect(dataUri).toBeObject();
-            expect(dataUri.mediaType).toEqual('image');
-            expect(dataUri.subType).toEqual('png');
-            expect(dataUri.charset).toBeUndefined();
-            expect(dataUri.encoding).toEqual('base64');
-            expect(dataUri.data).toEqual('94Z9RWUN77ZW');
+            expect(dataUri?.mediaType).toEqual('image');
+            expect(dataUri?.subType).toEqual('png');
+            expect(dataUri?.charset).toBeUndefined();
+            expect(dataUri?.encoding).toEqual('base64');
+            expect(dataUri?.data).toEqual('94Z9RWUN77ZW');
         });
 
         it('should decompose a data URI with charset', () =>
@@ -105,11 +49,11 @@ describe('utils', () =>
             const dataUri = utils.decomposeDataUri('data:image/svg+xml;charset=utf8;base64,PGRpdiB4bWxucz0Pg==');
 
             expect(dataUri).toBeObject();
-            expect(dataUri.mediaType).toEqual('image');
-            expect(dataUri.subType).toEqual('svg+xml');
-            expect(dataUri.charset).toEqual('utf8');
-            expect(dataUri.encoding).toEqual('base64');
-            expect(dataUri.data).toEqual('PGRpdiB4bWxucz0Pg==');
+            expect(dataUri?.mediaType).toEqual('image');
+            expect(dataUri?.subType).toEqual('svg+xml');
+            expect(dataUri?.charset).toEqual('utf8');
+            expect(dataUri?.encoding).toEqual('base64');
+            expect(dataUri?.data).toEqual('PGRpdiB4bWxucz0Pg==');
         });
 
         it('should decompose a data URI with charset without encoding', () =>
@@ -117,11 +61,11 @@ describe('utils', () =>
             const dataUri = utils.decomposeDataUri('data:image/svg+xml;charset=utf8,PGRpdiB4bWxucz0Pg==');
 
             expect(dataUri).toBeObject();
-            expect(dataUri.mediaType).toEqual('image');
-            expect(dataUri.subType).toEqual('svg+xml');
-            expect(dataUri.charset).toEqual('utf8');
-            expect(dataUri.encoding).toBeUndefined();
-            expect(dataUri.data).toEqual('PGRpdiB4bWxucz0Pg==');
+            expect(dataUri?.mediaType).toEqual('image');
+            expect(dataUri?.subType).toEqual('svg+xml');
+            expect(dataUri?.charset).toEqual('utf8');
+            expect(dataUri?.encoding).toBeUndefined();
+            expect(dataUri?.data).toEqual('PGRpdiB4bWxucz0Pg==');
         });
 
         it('should return undefined for anything else', () =>
@@ -238,6 +182,96 @@ describe('utils', () =>
         it('should exist', () =>
         {
             expect(utils.earcut).toBeInstanceOf(Function);
+        });
+    });
+
+    describe('premultiplyTintToRgba', () =>
+    {
+        it('should successfully premultiply alpha float', () =>
+        {
+            const [r, g, b, a] = utils.premultiplyTintToRgba(0xffffff, 0.5);
+
+            expect(a).toBe(0.5);
+            expect(r).toBe(0.5);
+            expect(g).toBe(0.5);
+            expect(b).toBe(0.5);
+        });
+
+        it('should successfully premultiply alpha 0', () =>
+        {
+            const [r, g, b, a] = utils.premultiplyTintToRgba(0xffffff, 0);
+
+            expect(a).toBe(0);
+            expect(r).toBe(0);
+            expect(g).toBe(0);
+            expect(b).toBe(0);
+        });
+
+        it('should successfully premultiply alpha 1', () =>
+        {
+            const [r, g, b, a] = utils.premultiplyTintToRgba(0xffffff, 1);
+
+            expect(a).toBe(1);
+            expect(r).toBe(1);
+            expect(g).toBe(1);
+            expect(b).toBe(1);
+        });
+    });
+
+    describe('premultiplyTint', () =>
+    {
+        it('should successfully premultiply alpha float', () =>
+        {
+            const tint = utils.premultiplyTint(0xffffff, 0.5);
+
+            expect(tint).toBe(0x7f808080);
+        });
+
+        it('should successfully premultiply alpha 0', () =>
+        {
+            const tint = utils.premultiplyTint(0xffffff, 0);
+
+            expect(tint).toBe(0);
+        });
+
+        it('should successfully premultiply alpha 1', () =>
+        {
+            const tint = utils.premultiplyTint(0xffffff, 1);
+
+            expect(tint).toBe(-1);
+        });
+    });
+
+    describe('premultiplyRgba', () =>
+    {
+        it('should successfully premultiply alpha float', () =>
+        {
+            const [r, g, b, a] = utils.premultiplyRgba([0.5, 0.5, 0.5, 1], 0.5);
+
+            expect(r).toBe(0.25);
+            expect(g).toBe(0.25);
+            expect(b).toBe(0.25);
+            expect(a).toBe(0.5);
+        });
+
+        it('should successfully premultiply alpha 0', () =>
+        {
+            const [r, g, b, a] = utils.premultiplyRgba([0.5, 0.5, 0.5, 1], 0);
+
+            expect(r).toBe(0);
+            expect(g).toBe(0);
+            expect(b).toBe(0);
+            expect(a).toBe(0);
+        });
+
+        it('should successfully premultiply alpha 1', () =>
+        {
+            const [r, g, b, a] = utils.premultiplyRgba([0.5, 0.5, 0.5, 1], 1);
+
+            expect(r).toBe(0.5);
+            expect(g).toBe(0.5);
+            expect(b).toBe(0.5);
+            expect(a).toBe(1);
         });
     });
 });

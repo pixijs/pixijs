@@ -1,11 +1,14 @@
-import type { Resource } from '@pixi/core';
-import { ViewableBuffer, BufferResource } from '@pixi/core';
+import { BufferResource, ViewableBuffer } from '@pixi/core';
 
-interface IBlobOptions
+import type { BufferType, IBufferResourceOptions } from '@pixi/core';
+
+/**
+ * Constructor options for BlobResource.
+ * @memberof PIXI
+ */
+export interface IBlobResourceOptions extends IBufferResourceOptions
 {
     autoLoad?: boolean;
-    width: number;
-    height: number;
 }
 
 /**
@@ -16,23 +19,33 @@ interface IBlobOptions
  */
 export abstract class BlobResource extends BufferResource
 {
-    protected origin: string;
-    protected buffer: ViewableBuffer;
+    /** The URL of the texture file. */
+    protected origin: string | null;
+
+    /** The viewable buffer on the data. */
+    protected buffer: ViewableBuffer | null;
+
     protected loaded: boolean;
 
     /**
-     * @param {string} source - the URL of the texture file
-     * @param {PIXI.IBlobOptions} options
-     * @param {boolean}[options.autoLoad] - whether to fetch the data immediately;
-     *  you can fetch it later via {@link BlobResource#load}
-     * @param {boolean}[options.width] - the width in pixels.
-     * @param {boolean}[options.height] - the height in pixels.
+     * Promise when loading.
+     * @default null
      */
-    constructor(source: string | Uint8Array | Uint32Array | Float32Array,
-        options: IBlobOptions = { width: 1, height: 1, autoLoad: true })
+    private _load: Promise<this>;
+
+    /**
+     * @param source - The buffer/URL of the texture file.
+     * @param {PIXI.IBlobResourceOptions} [options]
+     * @param {boolean} [options.autoLoad=false] - Whether to fetch the data immediately;
+     *  you can fetch it later via {@link PIXI.BlobResource#load}.
+     * @param {number} [options.width=1] - The width in pixels.
+     * @param {number} [options.height=1] - The height in pixels.
+     * @param {1|2|4|8} [options.unpackAlignment=4] - The alignment of the pixel rows.
+     */
+    constructor(source: string | BufferType, options: IBlobResourceOptions = { width: 1, height: 1, autoLoad: true })
     {
-        let origin: string;
-        let data: Uint8Array | Uint32Array | Float32Array;
+        let origin: string | null;
+        let data: BufferType;
 
         if (typeof source === 'string')
         {
@@ -47,26 +60,20 @@ export abstract class BlobResource extends BufferResource
 
         super(data, options);
 
-        /**
-         * The URL of the texture file
-         * @member {string}
-         */
         this.origin = origin;
-
-        /**
-         * The viewable buffer on the data
-         * @member {ViewableBuffer}
-         */
-        // HINT: BlobResource allows "null" sources, assuming the child class provides an alternative
         this.buffer = data ? new ViewableBuffer(data) : null;
 
+        this._load = null;
+        this.loaded = false;
+
         // Allow autoLoad = "undefined" still load the resource by default
-        if (this.origin && options.autoLoad !== false)
+        if (this.origin !== null && options.autoLoad !== false)
         {
             this.load();
         }
-        if (data?.length)
+        if (this.origin === null && this.buffer)
         {
+            this._load = Promise.resolve(this);
             this.loaded = true;
             this.onBlobLoaded(this.buffer.rawBinaryData);
         }
@@ -78,19 +85,28 @@ export abstract class BlobResource extends BufferResource
     }
 
     /** Loads the blob */
-    async load(): Promise<Resource>
+    load(): Promise<this>
     {
-        const response = await fetch(this.origin);
-        const blob = await response.blob();
-        const arrayBuffer = await blob.arrayBuffer();
+        if (this._load)
+        {
+            return this._load;
+        }
 
-        this.data = new Uint32Array(arrayBuffer);
-        this.buffer = new ViewableBuffer(arrayBuffer);
-        this.loaded = true;
+        this._load = fetch(this.origin)
+            .then((response) => response.blob())
+            .then((blob) => blob.arrayBuffer())
+            .then((arrayBuffer) =>
+            {
+                this.data = new Uint32Array(arrayBuffer);
+                this.buffer = new ViewableBuffer(arrayBuffer);
+                this.loaded = true;
 
-        this.onBlobLoaded(arrayBuffer);
-        this.update();
+                this.onBlobLoaded(arrayBuffer);
+                this.update();
 
-        return this;
+                return this;
+            });
+
+        return this._load;
     }
 }

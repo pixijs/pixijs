@@ -1,18 +1,18 @@
-import { Mesh, MeshMaterial } from '@pixi/mesh';
 import { WRAP_MODES } from '@pixi/core';
+import { Mesh, MeshMaterial } from '@pixi/mesh';
 import { RopeGeometry } from './geometry/RopeGeometry';
 
-import type { IPoint, Texture, Renderer } from '@pixi/core';
+import type { IPoint, Renderer, Texture } from '@pixi/core';
 
 /**
  * The rope allows you to draw a texture across several points and then manipulate these points
  * @example
- * import { SimpleRope, Texture, Point } from 'pixi.js';
+ * import { Point, SimpleRope, Texture } from 'pixi.js';
  *
  * for (let i = 0; i < 20; i++) {
  *     points.push(new Point(i * 50, 0));
  * };
- * const rope = new SimpleRope(Texture.from("snake.png"), points);
+ * const rope = new SimpleRope(Texture.from('snake.png'), points);
  * @memberof PIXI
  */
 export class SimpleRope extends Mesh

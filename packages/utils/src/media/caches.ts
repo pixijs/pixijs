@@ -1,11 +1,11 @@
-import type { Program, Texture, BaseTexture } from '@pixi/core';
+import type { BaseTexture, Program, Texture } from '@pixi/core';
 
 /**
  * @todo Describe property usage
  * @static
  * @name ProgramCache
  * @memberof PIXI.utils
- * @type {object}
+ * @type {Record<string, Program>}
  */
 export const ProgramCache: {[key: string]: Program} = {};
 
@@ -14,7 +14,7 @@ export const ProgramCache: {[key: string]: Program} = {};
  * @static
  * @name TextureCache
  * @memberof PIXI.utils
- * @type {object}
+ * @type {Record<string, Texture>}
  */
 export const TextureCache: {[key: string]: Texture} = Object.create(null);
 
@@ -23,7 +23,7 @@ export const TextureCache: {[key: string]: Texture} = Object.create(null);
  * @static
  * @name BaseTextureCache
  * @memberof PIXI.utils
- * @type {object}
+ * @type {Record<string, BaseTexture>}
  */
 export const BaseTextureCache: {[key: string]: BaseTexture} = Object.create(null);
 

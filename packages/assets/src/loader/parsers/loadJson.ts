@@ -1,7 +1,12 @@
-import { settings, utils, extensions, ExtensionType } from '@pixi/core';
+import { extensions, ExtensionType, settings } from '@pixi/core';
+import { checkDataUrl } from '../../utils/checkDataUrl';
+import { checkExtension } from '../../utils/checkExtension';
 import { LoaderParserPriority } from './LoaderParser';
 
 import type { LoaderParser } from './LoaderParser';
+
+const validJSONExtension = '.json';
+const validJSONMIME = 'application/json';
 
 /** simple loader plugin for loading json data */
 export const loadJson = {
@@ -10,9 +15,11 @@ export const loadJson = {
         priority: LoaderParserPriority.Low,
     },
 
+    name: 'loadJson',
+
     test(url: string): boolean
     {
-        return (utils.path.extname(url).includes('.json'));
+        return checkDataUrl(url, validJSONMIME) || checkExtension(url, validJSONExtension);
     },
 
     async load<T>(url: string): Promise<T>

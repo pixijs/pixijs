@@ -24,10 +24,11 @@
             ],
             "pixi.js-legacy": [
                 "bundles/pixi.js-legacy/src"
+            ],
+            "@pixi/webworker": [
+                "bundles/pixi.js-webworker/src"
             ]
-        },
-        "outDir": "./out",
-        "declaration": true
+        }
     },
     "exclude": [
         "node_modules",

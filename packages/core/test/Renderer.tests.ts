@@ -1,15 +1,14 @@
-import type { ObjectRenderer } from '@pixi/core';
-import { Renderer, Framebuffer } from '@pixi/core';
+import { ENV, MSAA_QUALITY } from '@pixi/constants';
+import { Framebuffer, Renderer, RenderTexture } from '@pixi/core';
 import { Graphics } from '@pixi/graphics';
 import { settings } from '@pixi/settings';
-import { ENV, MSAA_QUALITY } from '@pixi/constants';
-import { skipHello } from '@pixi/utils';
+import { Sprite } from '@pixi/sprite';
 
-skipHello();
+import type { ObjectRenderer } from '@pixi/core';
 
 describe('Renderer', () =>
 {
-    it('setting option legacy should disable VAOs and SPRITE_MAX_TEXTURES', () =>
+    it('setting option legacy should disable VAOs', () =>
     {
         settings.PREFER_ENV = ENV.WEBGL_LEGACY;
         const renderer = new Renderer({ width: 1, height: 1 });
@@ -137,6 +136,85 @@ describe('Renderer', () =>
 
         expect(renderer.view).toBeInstanceOf(OffscreenCanvas);
 
+        renderer.destroy();
+    });
+
+    it('should support natural language color names', () =>
+    {
+        const renderer = new Renderer({ background: 'white' });
+
+        expect(renderer.background.color).toEqual('white');
+        expect(renderer.background.backgroundColor.toHex()).toEqual('#ffffff');
+        expect(renderer.background.backgroundColor.toArray()).toEqual([1, 1, 1, 1]);
+
+        renderer.destroy();
+    });
+
+    it('should expose constructor options', () =>
+    {
+        const options = { width: 1, height: 2, antialias: true, resolution: 2 };
+        const renderer = new Renderer(options);
+
+        expect(renderer.options.width).toBe(1);
+        expect(renderer.options.height).toBe(2);
+        expect(renderer.options.antialias).toBe(true);
+        expect(renderer.options.resolution).toBe(2);
+
+        renderer.destroy();
+    });
+
+    it('should bind render texture and framebuffer', () =>
+    {
+        const renderer = new Renderer();
+        const sprite = new Sprite();
+        const renderTexture = RenderTexture.create();
+
+        renderer.render(sprite);
+
+        expect(renderer.renderTexture.current).toBeNull();
+        expect(renderer.framebuffer.current).toBeNull();
+
+        renderer.render(sprite, { renderTexture });
+
+        expect(renderer.renderTexture.current).toBe(renderTexture);
+        expect(renderer.framebuffer.current).toBe(renderTexture.framebuffer);
+
+        renderTexture.destroy(true);
+        renderer.destroy();
+    });
+
+    it('should bind blit framebuffer if multisample and blit', () =>
+    {
+        const renderer = new Renderer();
+
+        if (renderer.context.webGLVersion === 1
+            || renderer.framebuffer['msaaSamples'] === null
+            || renderer.framebuffer['msaaSamples'].every((x) => x <= 1))
+        {
+            renderer.destroy();
+
+            return;
+        }
+
+        const sprite = new Sprite();
+        const renderTexture = RenderTexture.create({ multisample: MSAA_QUALITY.HIGH });
+
+        renderer.render(sprite, { renderTexture, blit: false });
+
+        expect(renderer.renderTexture.current).toBe(renderTexture);
+        expect(renderer.framebuffer.current).toBe(renderTexture.framebuffer);
+
+        renderer.render(sprite, { renderTexture, blit: true });
+
+        expect(renderer.renderTexture.current).toBe(renderTexture);
+
+        const framebuffer = renderTexture.framebuffer;
+        const fbo = framebuffer.glFramebuffers[renderer.CONTEXT_UID];
+
+        expect(fbo.blitFramebuffer).not.toBeNull();
+        expect(renderer.framebuffer.current).toBe(fbo.blitFramebuffer);
+
+        renderTexture.destroy(true);
         renderer.destroy();
     });
 });

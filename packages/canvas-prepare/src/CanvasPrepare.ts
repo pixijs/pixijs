@@ -1,10 +1,9 @@
-import { settings, BaseTexture, extensions, ExtensionType } from '@pixi/core';
+import { BaseTexture, extensions, ExtensionType, settings } from '@pixi/core';
 import { BasePrepare } from '@pixi/prepare';
 
-import type { ExtensionMetadata, IRenderer, ISystem } from '@pixi/core';
 import type { CanvasRenderer } from '@pixi/canvas-renderer';
+import type { ExtensionMetadata, ICanvas, ICanvasRenderingContext2D, IRenderer, ISystem } from '@pixi/core';
 import type { IDisplayObjectExtended } from '@pixi/prepare';
-import type { ICanvas, ICanvasRenderingContext2D } from '@pixi/settings';
 
 const CANVAS_START_SIZE = 16;
 
@@ -49,7 +48,7 @@ function uploadBaseTextures(prepare: IRenderer | BasePrepare, item: IDisplayObje
  * This cannot be done directly for Canvas like in WebGL, but the effect can be achieved by drawing
  * textures to an offline canvas. This draw call will force the texture to be moved onto the GPU.
  *
- * An instance of this class is automatically created by default, and can be found at `renderer.plugins.prepare`
+ * An instance of this class is automatically created by default, and can be found at `renderer.prepare`
  * @class
  * @extends PIXI.BasePrepare
  * @memberof PIXI

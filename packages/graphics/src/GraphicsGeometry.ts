@@ -1,35 +1,25 @@
 import {
-    buildLine,
+    BaseTexture,
+    BatchDrawCall,
+    BatchGeometry,
+    BatchTextureArray,
+    Color,
+    DRAW_MODES,
+    Point,
+    WRAP_MODES
+} from '@pixi/core';
+import { Bounds } from '@pixi/display';
+import { GraphicsData } from './GraphicsData';
+import {
+    BATCH_POOL, BatchPart, buildLine,
     buildPoly,
-    BatchPart,
-    FILL_COMMANDS,
-    BATCH_POOL,
     DRAW_CALL_POOL,
+    FILL_COMMANDS
 } from './utils';
 
-import {
-    BatchGeometry,
-    BatchDrawCall,
-    BatchTextureArray,
-    BaseTexture,
-    DRAW_MODES,
-    WRAP_MODES,
-    Point,
-    utils,
-} from '@pixi/core';
-
-import { GraphicsData } from './GraphicsData';
-import { Bounds } from '@pixi/display';
-
-import type { Texture, Circle, Ellipse, Polygon, Rectangle, RoundedRectangle, IPointData, Matrix } from '@pixi/core';
+import type { IPointData, IShape, Matrix, Texture } from '@pixi/core';
 import type { FillStyle } from './styles/FillStyle';
 import type { LineStyle } from './styles/LineStyle';
-
-/*
- * Complex shape type
- * @todo Move to Math shapes
- */
-type IShape = Circle | Ellipse | Polygon | Rectangle | RoundedRectangle;
 
 const tmpPoint = new Point();
 
@@ -43,11 +33,7 @@ const tmpPoint = new Point();
  */
 export class GraphicsGeometry extends BatchGeometry
 {
-    /**
-     * The maximum number of points to consider an object "batchable",
-     * able to be batched by the renderer's batch system.
-\
-     */
+    /** The maximum number of points to consider an object "batchable", able to be batched by the renderer's batch system. */
     public static BATCHABLE_SIZE = 100;
 
     /** Minimal distance between points that are considered different. Affects line tesselation. */
@@ -123,6 +109,11 @@ export class GraphicsGeometry extends BatchGeometry
 
     /**
      * Get the current bounds of the graphic geometry.
+     *
+     * Since 6.5.0, bounds of the graphics geometry are calculated based on the vertices of generated geometry.
+     * Since shapes or strokes with full transparency (`alpha: 0`) will not generate geometry, they are not considered
+     * when calculating bounds for the graphics geometry. See PR [#8343]{@link https://github.com/pixijs/pixijs/pull/8343}
+     * and issue [#8623]{@link https://github.com/pixijs/pixijs/pull/8623}.
      * @readonly
      */
     public get bounds(): Bounds
@@ -578,7 +569,7 @@ export class GraphicsGeometry extends BatchGeometry
         const colors = this.colors;
         const textureIds = this.textureIds;
 
-        let currentGroup: BatchDrawCall =  DRAW_CALL_POOL.pop();
+        let currentGroup: BatchDrawCall = DRAW_CALL_POOL.pop();
 
         if (!currentGroup)
         {
@@ -606,7 +597,7 @@ export class GraphicsGeometry extends BatchGeometry
             const data = this.batches[i];
 
             // TODO add some full on MAX_TEXTURE CODE..
-            const MAX_TEXTURES = 8;
+            const maxTextures = 8;
 
             // Forced cast for checking `native` without errors
             const style = data.style as LineStyle;
@@ -620,7 +611,7 @@ export class GraphicsGeometry extends BatchGeometry
 
                 // force the batch to break!
                 currentTexture = null;
-                textureCount = MAX_TEXTURES;
+                textureCount = maxTextures;
                 TICK++;
             }
 
@@ -630,7 +621,7 @@ export class GraphicsGeometry extends BatchGeometry
 
                 if (nextTexture._batchEnabled !== TICK)
                 {
-                    if (textureCount === MAX_TEXTURES)
+                    if (textureCount === maxTextures)
                     {
                         TICK++;
 
@@ -808,16 +799,19 @@ export class GraphicsGeometry extends BatchGeometry
         size: number,
         offset = 0): void
     {
-        // TODO use the premultiply bits Ivan added
-        const rgb = (color >> 16) + (color & 0xff00) + ((color & 0xff) << 16);
+        const bgr = Color.shared
+            .setValue(color)
+            .toLittleEndianNumber();
 
-        const rgba = utils.premultiplyTint(rgb, alpha);
+        const result = Color.shared
+            .setValue(bgr)
+            .toPremultiplied(alpha);
 
         colors.length = Math.max(colors.length, offset + size);
 
         for (let i = 0; i < size; i++)
         {
-            colors[offset + i] = rgba;
+            colors[offset + i] = result;
         }
     }
 

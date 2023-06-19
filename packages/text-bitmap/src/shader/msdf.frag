@@ -22,8 +22,17 @@ void main(void) {
 
   float screenPxDistance = uFWidth * (median - 0.5);
   float alpha = clamp(screenPxDistance + 0.5, 0.0, 1.0);
+  if (median < 0.01) {
+    alpha = 0.0;
+  } else if (median > 0.99) {
+    alpha = 1.0;
+  }
+
+  // Gamma correction for coverage-like alpha
+  float luma = dot(uColor.rgb, vec3(0.299, 0.587, 0.114));
+  float gamma = mix(1.0, 1.0 / 2.2, luma);
+  float coverage = pow(uColor.a * alpha, gamma);  
 
   // NPM Textures, NPM outputs
-  gl_FragColor = vec4(uColor.rgb, uColor.a * alpha);
-
+  gl_FragColor = vec4(uColor.rgb, coverage);
 }

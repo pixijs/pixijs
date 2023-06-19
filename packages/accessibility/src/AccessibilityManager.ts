@@ -1,9 +1,9 @@
-import { ExtensionType, extensions, utils } from '@pixi/core';
+import { extensions, ExtensionType, utils } from '@pixi/core';
 import { DisplayObject } from '@pixi/display';
 import { FederatedEvent } from '@pixi/events';
 import { accessibleTarget } from './accessibleTarget';
 
-import type { Rectangle, IRenderer, ExtensionMetadata } from '@pixi/core';
+import type { ExtensionMetadata, IRenderer, Rectangle } from '@pixi/core';
 import type { Container } from '@pixi/display';
 import type { IAccessibleHTMLElement } from './accessibleTarget';
 
@@ -239,7 +239,7 @@ export class AccessibilityManager
             return;
         }
 
-        if (displayObject.accessible && displayObject.interactive)
+        if (displayObject.accessible && displayObject.isInteractive())
         {
             if (!displayObject._accessibleActive)
             {

@@ -1,0 +1,50 @@
+name: '🐛 Bug Report'
+description: Something is wrong with PixiJS?
+title: 'Bug: '
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting an issue!
+
+        Before opening an issue **please** check if a similar issue exists by
+        searching existing issues (<https://github.com/pixijs/pixijs/issues>).
+
+        Before submitting please read:
+
+        Contributors guide: <https://github.com/pixijs/pixijs/blob/dev/.github/CONTRIBUTING.md>
+        Code of Conduct: <https://github.com/pixijs/pixijs/blob/dev/.github/CODE_OF_CONDUCT.md>
+  - type: textarea
+    attributes:
+      label: Current Behavior
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Expected Behavior
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Steps to Reproduce
+      placeholder: |
+        If possible, please provide code that demonstrates the problem.
+        Links to a running example of the problem are best!
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Environment
+      value: |
+        - **`pixi.js` version**: *e.g. 7.1.0*
+        - **Browser & Version**: *e.g. Chrome 108*
+        - **OS & Version**: *e.g. Ubuntu 22.04*
+        - **Running Example**: *e.g. <https://pixiplayground.com/>*
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Possible Solution
+  - type: textarea
+    attributes:
+      label: Additional Information

@@ -1,8 +1,7 @@
-import { Sprite } from '@pixi/sprite';
-import { Point, Texture, BaseTexture, RenderTexture } from '@pixi/core';
-import { Container } from '@pixi/display';
-
 import path from 'path';
+import { BaseTexture, Point, RenderTexture, Texture } from '@pixi/core';
+import { Container } from '@pixi/display';
+import { Sprite } from '@pixi/sprite';
 
 describe('Sprite', () =>
 {
@@ -218,6 +217,21 @@ describe('Sprite', () =>
 
             texture.emit('update', texture);
             texture.destroy(true);
+        });
+    });
+
+    describe('tint', () =>
+    {
+        it('should support ColorSource inputs', () =>
+        {
+            const sprite = new Sprite(Texture.WHITE);
+
+            sprite.tint = 'red';
+
+            expect(sprite.tint).toEqual('red');
+            expect(sprite.tintValue).toEqual(0xff0000);
+
+            sprite.destroy();
         });
     });
 });

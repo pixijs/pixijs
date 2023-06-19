@@ -1,6 +1,5 @@
 {
   "name": "pixi.js-legacy",
-  "version": "7.0.0-alpha.3",
   "description": "The HTML5 Creation Engine: Create beautiful digital content with the fastest, most flexible 2D WebGL renderer.",
   "author": "Mat Groves",
   "contributors": [
@@ -10,35 +9,36 @@
     "Richard Davey <rdavey@gmail.com>"
   ],
   "standalone": true,
-  "main": "dist/cjs/pixi-legacy.js",
-  "module": "dist/esm/pixi-legacy.mjs",
-  "bundle": "dist/browser/pixi-legacy.js",
-  "bundleModule": "dist/browser/pixi-legacy.mjs",
+  "main": "lib/index.js",
+  "module": "lib/index.mjs",
+  "bundle": "dist/pixi-legacy.js",
+  "bundleModule": "dist/pixi-legacy.mjs",
   "bundleOutput": {
     "name": "PIXI"
   },
-  "types": "index.d.ts",
+  "types": "lib/index.d.ts",
   "exports": {
     ".": {
       "import": {
-        "types": "./index.d.ts",
-        "default": "./dist/esm/pixi-legacy.mjs"
+        "types": "./lib/index.d.ts",
+        "default": "./lib/index.mjs"
       },
       "require": {
-        "types": "./index.d.ts",
-        "default": "./dist/cjs/pixi-legacy.js"
+        "types": "./lib/index.d.ts",
+        "default": "./lib/index.js"
       }
     }
   },
   "homepage": "http://www.pixijs.com/",
-  "bugs": "https://github.com/pixijs/pixi.js/issues",
+  "bugs": "https://github.com/pixijs/pixijs/issues",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/pixijs/pixi.js.git"
+    "url": "https://github.com/pixijs/pixijs.git"
   },
   "files": [
-    "dist/",
+    "lib",
+    "dist",
     "*.d.ts"
   ],
   "funding": {
@@ -46,16 +46,16 @@
     "url": "https://opencollective.com/pixijs"
   },
   "dependencies": {
-    "@pixi/canvas-display": "7.0.0-alpha.3",
-    "@pixi/canvas-extract": "7.0.0-alpha.3",
-    "@pixi/canvas-graphics": "7.0.0-alpha.3",
-    "@pixi/canvas-mesh": "7.0.0-alpha.3",
-    "@pixi/canvas-particle-container": "7.0.0-alpha.3",
-    "@pixi/canvas-prepare": "7.0.0-alpha.3",
-    "@pixi/canvas-renderer": "7.0.0-alpha.3",
-    "@pixi/canvas-sprite": "7.0.0-alpha.3",
-    "@pixi/canvas-sprite-tiling": "7.0.0-alpha.3",
-    "@pixi/canvas-text": "7.0.0-alpha.3",
-    "pixi.js": "7.0.0-alpha.3"
+    "@pixi/canvas-display": "file:../../packages/canvas-display",
+    "@pixi/canvas-extract": "file:../../packages/canvas-extract",
+    "@pixi/canvas-graphics": "file:../../packages/canvas-graphics",
+    "@pixi/canvas-mesh": "file:../../packages/canvas-mesh",
+    "@pixi/canvas-particle-container": "file:../../packages/canvas-particle-container",
+    "@pixi/canvas-prepare": "file:../../packages/canvas-prepare",
+    "@pixi/canvas-renderer": "file:../../packages/canvas-renderer",
+    "@pixi/canvas-sprite": "file:../../packages/canvas-sprite",
+    "@pixi/canvas-sprite-tiling": "file:../../packages/canvas-sprite-tiling",
+    "@pixi/canvas-text": "file:../../packages/canvas-text",
+    "pixi.js": "file:../pixi.js"
   }
 }

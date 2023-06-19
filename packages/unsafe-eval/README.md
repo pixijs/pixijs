@@ -10,16 +10,30 @@ npm install @pixi/unsafe-eval
 
 ## Usage
 
-If you are using a bundler, you need to pass the core bundle into the `install` method.
+Import `@pixi/unsafe-eval` before you create `Application` or `Renderer`.
 
 ```js
-import { ShaderSystem, Renderer } from '@pixi/core';
-import { install } from '@pixi/unsafe-eval';
+import { Renderer } from '@pixi/core';
 
 // Apply the patch to PIXI
-install({ ShaderSystem });
+import '@pixi/unsafe-eval';
 
 // Create the renderer with patch applied
 const renderer = new Renderer();
 ```
 
+## CDN Install
+
+Via jsDelivr:
+
+```html
+<!-- This script tag should be placed after pixi.min.js -->
+<script src="https://cdn.jsdelivr.net/npm/@pixi/unsafe-eval@7.x/dist/unsafe-eval.min.js"></script>
+```
+
+Or via unpkg:
+
+```html
+<!-- This script tag should be placed after pixi.min.js -->
+<script src="https://unpkg.com/@pixi/unsafe-eval@7.x/dist/unsafe-eval.min.js"></script>
+```

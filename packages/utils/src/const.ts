@@ -2,8 +2,11 @@
  * Regexp for data URI.
  * Based on: {@link https://github.com/ragingwind/data-uri-regex}
  * @static
- * @constant {RegExp|string} DATA_URI
+ * @type {RegExp}
  * @memberof PIXI
- * @example data:image/png;base64
+ * @example
+ * import { DATA_URI } from 'pixi.js';
+ *
+ * DATA_URI.test('data:image/png;base64,foobar'); // => true
  */
 export const DATA_URI = /^\s*data:(?:([\w-]+)\/([\w+.-]+))?(?:;charset=([\w-]+))?(?:;(base64))?,(.*)/i;

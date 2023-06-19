@@ -1,14 +1,16 @@
-import { Rectangle } from '@pixi/math';
-import type { BUFFER_BITS } from '@pixi/constants';
-
-import type { ISystem } from '../system/ISystem';
-import type { Renderer } from '../Renderer';
-import type { RenderTexture } from './RenderTexture';
-import type { BaseRenderTexture } from './BaseRenderTexture';
-import type { MaskData } from '../mask/MaskData';
-import type { ISize } from '@pixi/math';
-import type { ExtensionMetadata } from '@pixi/extensions';
+import { Color } from '@pixi/color';
 import { extensions, ExtensionType } from '@pixi/extensions';
+import { Rectangle } from '@pixi/math';
+
+import type { ColorSource } from '@pixi/color';
+import type { BUFFER_BITS } from '@pixi/constants';
+import type { ExtensionMetadata } from '@pixi/extensions';
+import type { ISize } from '@pixi/math';
+import type { MaskData } from '../mask/MaskData';
+import type { Renderer } from '../Renderer';
+import type { ISystem } from '../system/ISystem';
+import type { BaseRenderTexture } from './BaseRenderTexture';
+import type { RenderTexture } from './RenderTexture';
 
 // Temporary rectangle for assigned sourceFrame or destinationFrame
 const tempRect = new Rectangle();
@@ -66,7 +68,7 @@ export class RenderTextureSystem implements ISystem
     /**
      * The destination frame for the render-target's projection mapping.
      *
-     * See {@link PIXI.Projection#destinationFrame} for more details.
+     * See {@link PIXI.ProjectionSystem#destinationFrame} for more details.
      */
     public readonly destinationFrame: Rectangle;
 
@@ -78,6 +80,9 @@ export class RenderTextureSystem implements ISystem
     public readonly viewportFrame: Rectangle;
 
     private renderer: Renderer;
+
+    /** Does the renderer have alpha and are its color channels stored premultipled by the alpha channel? */
+    private _rendererPremultipliedAlpha: boolean;
 
     /**
      * @param renderer - The renderer this System works for.
@@ -91,6 +96,13 @@ export class RenderTextureSystem implements ISystem
         this.sourceFrame = new Rectangle();
         this.destinationFrame = new Rectangle();
         this.viewportFrame = new Rectangle();
+    }
+
+    protected contextChange(): void
+    {
+        const attributes = this.renderer?.gl.getContextAttributes();
+
+        this._rendererPremultipliedAlpha = !!(attributes && attributes.alpha && attributes.premultipliedAlpha);
     }
 
     /**
@@ -192,15 +204,17 @@ export class RenderTextureSystem implements ISystem
      * @param [mask=BUFFER_BITS.COLOR | BUFFER_BITS.DEPTH] - Bitwise OR of masks
      *  that indicate the buffers to be cleared, by default COLOR and DEPTH buffers.
      */
-    clear(clearColor?: number[], mask?: BUFFER_BITS): void
+    clear(clearColor?: ColorSource, mask?: BUFFER_BITS): void
     {
-        if (this.current)
+        const fallbackColor = this.current
+            ? this.current.baseTexture.clear
+            : this.renderer.background.backgroundColor;
+        const color = Color.shared.setValue(clearColor ? clearColor : fallbackColor);
+
+        if ((this.current && this.current.baseTexture.alphaMode > 0)
+            || (!this.current && this._rendererPremultipliedAlpha))
         {
-            clearColor = clearColor || (this.current.baseTexture as BaseRenderTexture).clearColor;
-        }
-        else
-        {
-            clearColor = clearColor || this.renderer.background.colorRgba;
+            color.premultiply(color.alpha);
         }
 
         const destinationFrame = this.destinationFrame;
@@ -221,7 +235,7 @@ export class RenderTextureSystem implements ISystem
             this.renderer.gl.scissor(x, y, width, height);
         }
 
-        this.renderer.framebuffer.clear(clearColor[0], clearColor[1], clearColor[2], clearColor[3], mask);
+        this.renderer.framebuffer.clear(color.red, color.green, color.blue, color.alpha, mask);
 
         if (clearMask)
         {

@@ -1,21 +1,23 @@
+/// <reference path="../global.d.ts" />
+
 /**
  * Generalized convenience utilities for PIXI.
  * @example
+ * import { utils } from 'pixi.js';
  * // Extend PIXI's internal Event Emitter.
- * class MyEmitter extends PIXI.utils.EventEmitter {
- *   constructor() {
- *      super();
- *      console.log("Emitter created!");
- *   }
+ * class MyEmitter extends utils.EventEmitter {
+ *     constructor() {
+ *         super();
+ *         console.log('Emitter created!');
+ *     }
  * }
  *
  * // Get info on current device
- * console.log(PIXI.utils.isMobile);
- *
- * // Convert hex color to string
- * console.log(PIXI.utils.hex2string(0xff00ff)); // returns: "#ff00ff"
+ * console.log(utils.isMobile);
  * @namespace PIXI.utils
  */
+
+import './settings';
 
 /**
  * A simple JS library that detects mobile devices.
@@ -46,15 +48,13 @@
  */
 export { isMobile } from '@pixi/settings';
 
-import EventEmitter from 'eventemitter3';
-
 /**
  * A high performance event emitter
  * @see {@link https://github.com/primus/eventemitter3}
  * @memberof PIXI.utils
  * @class EventEmitter
  */
-export { EventEmitter };
+export { default as EventEmitter } from 'eventemitter3';
 
 /**
  * A polygon triangulation library
@@ -74,8 +74,10 @@ export { default as earcut } from 'earcut';
  * @memberof PIXI.utils
  * @name url
  * @member {object}
+ * @deprecated since 7.3.0
  */
 export * from './url';
+
 /**
  * Browser and Node.js compatible path utilities.
  * All paths that are passed in will become normalized to have posix separators.
@@ -85,12 +87,13 @@ export * from './url';
  */
 export * from './path';
 
-import './settings';
-
+// Other exports
+export * from './browser/detectVideoAlphaMode';
 export * from './browser/hello';
 export * from './browser/isWebGLSupported';
 export * from './color/hex';
 export * from './color/premultiply';
+export * from './const';
 export * from './data/createIndicesForQuads';
 export * from './data/getBufferType';
 export * from './data/interleaveTypedArrays';
@@ -99,11 +102,12 @@ export * from './data/removeItems';
 export * from './data/sign';
 export * from './data/uid';
 export * from './logging/deprecation';
+export * from './media/BoundingBox';
 export * from './media/caches';
 export * from './media/CanvasRenderTarget';
+export * from './media/getCanvasBoundingBox';
 export * from './media/trimCanvas';
 export * from './network/decomposeDataUri';
 export * from './network/determineCrossOrigin';
 export * from './network/getResolutionOfUrl';
-export * from './const';
 export * from './types';

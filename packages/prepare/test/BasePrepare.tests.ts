@@ -1,6 +1,7 @@
 import { BasePrepare } from '@pixi/prepare';
-import type { DisplayObject } from '@pixi/display';
+
 import type { IRenderer } from '@pixi/core';
+import type { DisplayObject } from '@pixi/display';
 
 describe('BasePrepare', () =>
 {

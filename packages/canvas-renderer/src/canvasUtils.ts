@@ -1,8 +1,7 @@
-import { settings, utils } from '@pixi/core';
+import { Color, settings, utils } from '@pixi/core';
 import { canUseNewCanvasBlendModes } from './utils/canUseNewCanvasBlendModes';
 
-import type { Texture } from '@pixi/core';
-import type { ICanvas } from '@pixi/settings';
+import type { ICanvas, Texture } from '@pixi/core';
 
 /**
  * Utility methods for Sprite/Texture tinting.
@@ -26,10 +25,7 @@ export const canvasUtils = {
     getTintedCanvas: (sprite: { texture: Texture }, color: number): ICanvas | HTMLImageElement =>
     {
         const texture = sprite.texture;
-
-        color = canvasUtils.roundColor(color);
-
-        const stringColor = `#${(`00000${(color | 0).toString(16)}`).slice(-6)}`;
+        const stringColor = Color.shared.setValue(color).toHex();
 
         texture.tintCache = texture.tintCache || {};
 
@@ -82,15 +78,13 @@ export const canvasUtils = {
      */
     getTintedPattern: (texture: Texture, color: number): CanvasPattern =>
     {
-        color = canvasUtils.roundColor(color);
-
-        const stringColor = `#${(`00000${(color | 0).toString(16)}`).slice(-6)}`;
+        const stringColor = Color.shared.setValue(color).toHex();
 
         texture.patternCache = texture.patternCache || {};
 
         let pattern = texture.patternCache[stringColor];
 
-        if (pattern && pattern.tintId === texture._updateID)
+        if (pattern?.tintId === texture._updateID)
         {
             return pattern;
         }
@@ -128,7 +122,7 @@ export const canvasUtils = {
         canvas.height = Math.ceil(crop.height);
 
         context.save();
-        context.fillStyle = `#${(`00000${(color | 0).toString(16)}`).slice(-6)}`;
+        context.fillStyle = Color.shared.setValue(color).toHex();
 
         context.fillRect(0, 0, crop.width, crop.height);
 
@@ -243,11 +237,7 @@ export const canvasUtils = {
         );
         context.restore();
 
-        const rgbValues = utils.hex2rgb(color);
-        const r = rgbValues[0];
-        const g = rgbValues[1];
-        const b = rgbValues[2];
-
+        const [r, g, b] = Color.shared.setValue(color).toArray();
         const pixelData = context.getImageData(0, 0, crop.width, crop.height);
 
         const pixels = pixelData.data;
@@ -265,25 +255,27 @@ export const canvasUtils = {
     /**
      * Rounds the specified color according to the canvasUtils.cacheStepsPerColorChannel.
      * @memberof PIXI.canvasUtils
+     * @deprecated since 7.3.0
+     * @see PIXI.Color.round
      * @param {number} color - the color to round, should be a hex color
      * @returns {number} The rounded color.
      */
     roundColor: (color: number): number =>
     {
-        const step = canvasUtils.cacheStepsPerColorChannel;
+        // #if _DEBUG
+        utils.deprecation('7.3.0', 'PIXI.canvasUtils.roundColor is deprecated');
+        // #endif
 
-        const rgbValues = utils.hex2rgb(color);
-
-        rgbValues[0] = Math.min(255, (rgbValues[0] / step) * step);
-        rgbValues[1] = Math.min(255, (rgbValues[1] / step) * step);
-        rgbValues[2] = Math.min(255, (rgbValues[2] / step) * step);
-
-        return utils.rgb2hex(rgbValues);
+        return Color.shared
+            .setValue(color)
+            .round(canvasUtils.cacheStepsPerColorChannel)
+            .toNumber();
     },
 
     /**
      * Number of steps which will be used as a cap when rounding colors.
      * @memberof PIXI.canvasUtils
+     * @deprecated since 7.3.0
      * @type {number}
      */
     cacheStepsPerColorChannel: 8,

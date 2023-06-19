@@ -12,4 +12,10 @@ declare namespace GlobalMixins
         autoStart?: boolean;
         sharedTicker?: boolean;
     }
+
+    interface Settings
+    {
+        /** @deprecated since 7.1.0 */
+        TARGET_FPMS: number;
+    }
 }

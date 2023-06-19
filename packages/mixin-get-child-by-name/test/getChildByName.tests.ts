@@ -1,5 +1,4 @@
-import { DisplayObject, Container } from '@pixi/display';
-
+import { Container, DisplayObject } from '@pixi/display';
 import '@pixi/mixin-get-child-by-name';
 
 describe('DisplayObject#name', () =>
