@@ -124,7 +124,7 @@ export class MeshView<GEOMETRY extends MeshGeometry = MeshGeometry>implements Vi
     {
         const { x, y } = point;
 
-        const vertices = this.geometry.getBuffer('aVertexPosition').data;
+        const vertices = this.geometry.getBuffer('aPosition').data;
 
         const points = tempPolygon.points;
         const indices = this.geometry.getIndex().data;

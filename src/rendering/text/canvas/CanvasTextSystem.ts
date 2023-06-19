@@ -283,7 +283,7 @@ export class CanvasTextSystem implements ISystem
                     );
                 }
 
-                if (style._fill)
+                if (style._fill !== undefined)
                 {
                     this.drawLetterSpacing(
                         lines[i],

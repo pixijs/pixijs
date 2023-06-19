@@ -191,7 +191,7 @@ export class TilingSpritePipe implements RenderPipe<TilingSpriteView>
 
             const matrix = view.tileTransform.matrix;
 
-            const uTextureTransform = Matrix.shared;
+            const uTextureTransform = tilingUniforms.uniforms.uTextureTransform;
 
             uTextureTransform.set(
                 matrix.a * tilingSpriteWidth / originalWidth,

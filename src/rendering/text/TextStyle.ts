@@ -248,14 +248,14 @@ export class TextStyle extends EventEmitter<{
 
         this.dropShadow = null;
 
-        if (typeof style.fill === 'string')
+        if (typeof fullStyle.fill === 'string')
         {
             // eg '34px' to number
-            this.fontSize = parseInt(style.fontSize as string, 10);
+            this.fontSize = parseInt(fullStyle.fontSize as string, 10);
         }
         else
         {
-            this.fontSize = style.fontSize as number;
+            this.fontSize = fullStyle.fontSize as number;
         }
 
         if (style.dropShadow)
