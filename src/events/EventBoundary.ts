@@ -588,6 +588,8 @@ export class EventBoundary
 
         if (container.effects && container.effects.length)
         {
+            let hit = false;
+
             for (let i = 0; i < container.effects.length; i++)
             {
                 const effect = container.effects[i];
@@ -598,10 +600,12 @@ export class EventBoundary
                     {
                         return false;
                     }
+
+                    hit = true;
                 }
             }
 
-            return true;
+            return hit;
         }
 
         return false;

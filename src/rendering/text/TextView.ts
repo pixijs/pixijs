@@ -14,7 +14,7 @@ import type { TextStyleOptions } from './TextStyle';
 let uid = 0;
 
 type Filter<T> = { [K in keyof T]: {
-    text?: string;
+    text?: TextString;
     renderMode?: K;
     resolution?: number;
     style?: T[K]
@@ -33,6 +33,8 @@ const map = {
     html: 'text',
     bitmap: 'bitmapText',
 };
+
+export type TextString = string | number | {toString: () => string};
 
 export class TextView implements View
 {
@@ -64,7 +66,7 @@ export class TextView implements View
 
     constructor(options: TextViewOptions)
     {
-        this._text = options.text;
+        this.text = options.text ?? '';
         this._style = options.style instanceof TextStyle ? options.style : new TextStyle(options.style);
 
         const renderMode = options.renderMode ?? this.detectRenderType(this._style);
@@ -76,14 +78,14 @@ export class TextView implements View
         this._resolution = options.resolution ?? TextView.defaultResolution;
     }
 
-    set text(value: string)
+    set text(value: TextString)
     {
         // check its a string
         value = value.toString();
 
         if (this._text === value) return;
 
-        this._text = value;
+        this._text = value as string;
         this.onUpdate();
     }
 

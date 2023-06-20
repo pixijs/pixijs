@@ -1,4 +1,5 @@
 import { extensions, ExtensionType } from '../../../extensions/Extensions';
+import { sayHello } from '../../../utils/sayHello';
 import { SharedDefaultRendererOptions, SharedRendererExtensions } from '../shared/system/SharedSystems';
 import { SystemManager } from '../shared/system/SystemManager';
 import { getCanvasTexture } from '../shared/texture/utils/getCanvasTexture';
@@ -77,6 +78,8 @@ export class WebGLRenderer extends SystemManager<WebGLRenderer> implements GLRen
         });
 
         this.setup(systemConfig);
+
+        sayHello(this.type);
     }
 
     /**
