@@ -103,39 +103,48 @@ export class NineSliceGeometry extends PlaneGeometry
 
         const textureMatrix = this._textureMatrix;
 
-        const a = textureMatrix.a;
-        const b = textureMatrix.b;
-        const c = textureMatrix.c;
-        const d = textureMatrix.d;
-        const tx = textureMatrix.tx;
-        const ty = textureMatrix.ty;
-
         const uvs = this.uvs;
 
-        let x = 0;
-        let y = 0;
+        uvs[0] = uvs[8] = uvs[16] = uvs[24] = 0;
+        uvs[1] = uvs[3] = uvs[5] = uvs[7] = 0;
 
-        uvs[0] = uvs[8] = uvs[16] = uvs[24] = (a * x) + (c * y) + tx;
-        uvs[1] = uvs[3] = uvs[5] = uvs[7] = (b * x) + (d * y) + ty;
+        uvs[6] = uvs[14] = uvs[22] = uvs[30] = 1;
+        uvs[25] = uvs[27] = uvs[29] = uvs[31] = 1;
 
-        x = this._originalWidth;
-        y = this._originalHeight;
+        const _uvw = 1.0 / this._originalWidth;
+        const _uvh = 1.0 / this._originalHeight;
 
-        uvs[6] = uvs[14] = uvs[22] = uvs[30] = (a * x) + (c * y) + tx;
-        uvs[25] = uvs[27] = uvs[29] = uvs[31] = (b * x) + (d * y) + ty;
+        uvs[2] = uvs[10] = uvs[18] = uvs[26] = _uvw * this._leftWidth;
+        uvs[9] = uvs[11] = uvs[13] = uvs[15] = _uvh * this._topHeight;
 
-        x = this._leftWidth;
-        y = this._topHeight;
+        uvs[4] = uvs[12] = uvs[20] = uvs[28] = 1 - (_uvw * this._rightWidth);
+        uvs[17] = uvs[19] = uvs[21] = uvs[23] = 1 - (_uvh * this._bottomHeight);
 
-        uvs[2] = uvs[10] = uvs[18] = uvs[26] = (a * x) + (c * y) + tx;
-        uvs[9] = uvs[11] = uvs[13] = uvs[15] = (b * x) + (d * y) + ty;
-
-        x = this._originalWidth - this._rightWidth;
-        y = this._originalHeight - this._bottomHeight;
-
-        uvs[4] = uvs[12] = uvs[20] = uvs[28] = (a * x) + (c * y) + tx;
-        uvs[17] = uvs[19] = uvs[21] = uvs[23] = (b * x) + (d * y) + ty;
+        multiplyUvs(textureMatrix, uvs);
 
         this.getBuffer('aUV').update();
     }
+}
+
+function multiplyUvs(matrix: Matrix, uvs: Float32Array, out?: Float32Array)
+{
+    out ??= uvs;
+
+    const a = matrix.a;
+    const b = matrix.b;
+    const c = matrix.c;
+    const d = matrix.d;
+    const tx = matrix.tx;
+    const ty = matrix.ty;
+
+    for (let i = 0; i < uvs.length; i += 2)
+    {
+        const x = uvs[i];
+        const y = uvs[i + 1];
+
+        out[i] = (x * a) + (y * c) + tx;
+        out[i + 1] = (x * b) + (y * d) + ty;
+    }
+
+    return out;
 }

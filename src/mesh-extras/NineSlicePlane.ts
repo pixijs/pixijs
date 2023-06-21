@@ -1,4 +1,3 @@
-import { Matrix } from '../maths/Matrix';
 import { MeshView } from '../rendering/mesh/shared/MeshView';
 import { Texture } from '../rendering/renderers/shared/texture/Texture';
 import { Container } from '../rendering/scene/Container';
@@ -75,19 +74,16 @@ export class NineSlicePlane extends Container<MeshView<NineSliceGeometry>>
 
         const texture = options.texture;
 
-        // calculate the matrix..
-        const textureMatrix = textureMatrixFromTexture(texture, Matrix.shared);
-
         const nineSliceGeometry = new NineSliceGeometry({
-            width: texture.frameWidth,
-            height: texture.frameHeight,
-            originalWidth: texture.frameWidth,
-            originalHeight: texture.frameHeight,
+            width: texture.width,
+            height: texture.height,
+            originalWidth: texture.width,
+            originalHeight: texture.height,
             leftWidth: options.leftWidth,
             topHeight: options.topHeight,
             rightWidth: options.rightWidth,
             bottomHeight: options.bottomHeight,
-            textureMatrix,
+            textureMatrix: texture.textureMatrix.mapCoord,
         });
 
         super({
@@ -183,28 +179,12 @@ export class NineSlicePlane extends Container<MeshView<NineSliceGeometry>>
         if (value === this.view.texture) return;
 
         // // calculate the matrix..
-        const textureMatrix = textureMatrixFromTexture(value, Matrix.shared);
-
         this.view.geometry.updateUvs({
-            originalWidth: value.frameWidth,
-            originalHeight: value.frameHeight,
-            textureMatrix,
+            originalWidth: value.width,
+            originalHeight: value.height,
+            textureMatrix: value.textureMatrix.mapCoord,
         });
 
         this.view.texture = value;
     }
-}
-
-function textureMatrixFromTexture(texture: Texture, out: Matrix): Matrix
-{
-    const layout = texture.layout;
-
-    // normalise...
-    out.scale(1.0 / texture.frameWidth, 1.0 / texture.frameHeight);
-    // apply frame size
-    out.scale(layout.frame.width, layout.frame.height);
-    // apply frame position
-    out.translate(-layout.frame.x, -layout.frame.y);
-
-    return out;
 }
