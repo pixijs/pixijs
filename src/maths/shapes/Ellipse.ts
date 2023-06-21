@@ -15,10 +15,10 @@ export class Ellipse implements ShapePrimitive
     public y: number;
 
     /** @default 0 */
-    public width: number;
+    public halfWidth: number;
 
     /** @default 0 */
-    public height: number;
+    public halfHeight: number;
 
     /**
      * The type of the object, mainly used to avoid `instanceof` checks
@@ -36,8 +36,8 @@ export class Ellipse implements ShapePrimitive
     {
         this.x = x;
         this.y = y;
-        this.width = halfWidth;
-        this.height = halfHeight;
+        this.halfWidth = halfWidth;
+        this.halfHeight = halfHeight;
     }
 
     /**
@@ -46,7 +46,7 @@ export class Ellipse implements ShapePrimitive
      */
     public clone(): Ellipse
     {
-        return new Ellipse(this.x, this.y, this.width, this.height);
+        return new Ellipse(this.x, this.y, this.halfWidth, this.halfHeight);
     }
 
     /**
@@ -57,14 +57,14 @@ export class Ellipse implements ShapePrimitive
      */
     public contains(x: number, y: number): boolean
     {
-        if (this.width <= 0 || this.height <= 0)
+        if (this.halfWidth <= 0 || this.halfHeight <= 0)
         {
             return false;
         }
 
         // normalize the coords to an ellipse with center 0,0
-        let normx = ((x - this.x) / this.width);
-        let normy = ((y - this.y) / this.height);
+        let normx = ((x - this.x) / this.halfWidth);
+        let normy = ((y - this.y) / this.halfHeight);
 
         normx *= normx;
         normy *= normy;
@@ -78,7 +78,7 @@ export class Ellipse implements ShapePrimitive
      */
     public getBounds(): Rectangle
     {
-        return new Rectangle(this.x - this.width, this.y - this.height, this.width, this.height);
+        return new Rectangle(this.x - this.halfWidth, this.y - this.halfHeight, this.halfWidth * 2, this.halfHeight * 2);
     }
 
     /**
@@ -90,8 +90,8 @@ export class Ellipse implements ShapePrimitive
     {
         this.x = ellipse.x;
         this.y = ellipse.y;
-        this.width = ellipse.width;
-        this.height = ellipse.height;
+        this.halfWidth = ellipse.halfWidth;
+        this.halfHeight = ellipse.halfHeight;
 
         return this;
     }
@@ -111,7 +111,7 @@ export class Ellipse implements ShapePrimitive
     // #if _DEBUG
     public toString(): string
     {
-        return `[@pixi/math:Ellipse x=${this.x} y=${this.y} width=${this.width} height=${this.height}]`;
+        return `[@pixi/math:Ellipse x=${this.x} y=${this.y} width=${this.halfWidth} height=${this.halfHeight}]`;
     }
     // #endif
 }
