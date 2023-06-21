@@ -54,7 +54,7 @@ export class GlBackBufferSystem implements ISystem
     backBufferTexture: Texture;
     renderer: WebGLRenderer;
     targetTexture: Texture;
-    useBackBuffer = true;
+    useBackBuffer = false;
 
     constructor(renderer: WebGLRenderer)
     {

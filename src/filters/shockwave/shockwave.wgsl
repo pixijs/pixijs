@@ -132,4 +132,4 @@ fn boolVec2(x: vec2<f32>, y: vec2<f32>) -> bool
     return false;
 }
 
-const PI: f32 = 3.14159265358979323846264;";
+const PI: f32 = 3.14159265358979323846264;
