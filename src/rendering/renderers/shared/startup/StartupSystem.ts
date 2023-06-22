@@ -1,4 +1,5 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
+import { sayHello } from '../../../../utils/sayHello';
 
 import type { ExtensionMetadata } from '../../../../extensions/Extensions';
 import type { Renderer } from '../../types';
@@ -62,7 +63,7 @@ export interface StartupSystemOptions
         if (options.hello)
         {
             // eslint-disable-next-line no-console
-            console.log(`PixiJS ${'$_VERSION'} - ${renderer.rendererLogId} - https://pixijs.com`);
+            sayHello(renderer.type);
         }
 
         // TODO: screen doesn't exist on renderer yet
