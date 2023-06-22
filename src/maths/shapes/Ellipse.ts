@@ -111,7 +111,7 @@ export class Ellipse implements ShapePrimitive
     // #if _DEBUG
     public toString(): string
     {
-        return `[@pixi/math:Ellipse x=${this.x} y=${this.y} width=${this.halfWidth} height=${this.halfHeight}]`;
+        return `[@pixi/math:Ellipse x=${this.x} y=${this.y} halfWidth=${this.halfWidth} halfHeight=${this.halfHeight}]`;
     }
     // #endif
 }
