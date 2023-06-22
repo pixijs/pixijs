@@ -53,6 +53,13 @@ export interface IBitmapFontOptions
      * @default 512
      */
     textureHeight?: number;
+
+    /**
+     * Skip generation of kerning information for the BitmapFont.
+     * If true, this could potentially increase the performance, but may impact the rendered text appearance.
+     * @default false
+     */
+    skipKerning?: boolean;
 }
 
 /**
@@ -492,27 +499,30 @@ export class BitmapFont
             positionX = Math.ceil(positionX);
         }
 
-        // Brute-force kerning info, this can be expensive b/c it's an O(n²),
-        // but we're using measureText which is native and fast.
-        for (let i = 0, len = charsList.length; i < len; i++)
+        if (!options?.skipKerning)
         {
-            const first = charsList[i];
-
-            for (let j = 0; j < len; j++)
+            // Brute-force kerning info, this can be expensive b/c it's an O(n²),
+            // but we're using measureText which is native and fast.
+            for (let i = 0, len = charsList.length; i < len; i++)
             {
-                const second = charsList[j];
-                const c1 = context.measureText(first).width;
-                const c2 = context.measureText(second).width;
-                const total = context.measureText(first + second).width;
-                const amount = total - (c1 + c2);
+                const first = charsList[i];
 
-                if (amount)
+                for (let j = 0; j < len; j++)
                 {
-                    fontData.kerning.push({
-                        first: extractCharCode(first),
-                        second: extractCharCode(second),
-                        amount,
-                    });
+                    const second = charsList[j];
+                    const c1 = context.measureText(first).width;
+                    const c2 = context.measureText(second).width;
+                    const total = context.measureText(first + second).width;
+                    const amount = total - (c1 + c2);
+
+                    if (amount)
+                    {
+                        fontData.kerning.push({
+                            first: extractCharCode(first),
+                            second: extractCharCode(second),
+                            amount,
+                        });
+                    }
                 }
             }
         }
