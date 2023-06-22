@@ -523,7 +523,8 @@ export class BitmapFont
             positionX = Math.ceil(positionX);
         }
 
-        if (!options?.skipKerning) {
+        if (!options?.skipKerning)
+        {
             // Brute-force kerning info, this can be expensive b/c it's an O(n²),
             // but we're using measureText which is native and fast.
             for (let i = 0, len = charsList.length; i < len; i++)
