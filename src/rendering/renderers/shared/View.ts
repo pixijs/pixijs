@@ -1,5 +1,6 @@
 import type { Point } from '../../../maths/Point';
 import type { Bounds } from '../../scene/bounds/Bounds';
+import type { DestroyOptions } from '../../scene/destroyTypes';
 
 export interface ViewObserver
 {
@@ -27,6 +28,6 @@ export interface View
     addBounds: (bounds: Bounds) => void;
     containsPoint: (point: Point) => boolean;
 
-    destroy(options?: unknown): void;
+    destroy(options?: DestroyOptions): void;
 }
 
