@@ -59,7 +59,7 @@ export class SpritePipe implements RenderPipe<SpriteView>
 
         if (gpuSprite.texture._source !== texture._source)
         {
-            return gpuSprite.batcher.checkAndUpdateTexture(gpuSprite, texture);
+            return !gpuSprite.batcher.checkAndUpdateTexture(gpuSprite, texture);
         }
 
         return false;
