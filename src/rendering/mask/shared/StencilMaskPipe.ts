@@ -95,14 +95,12 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
 
         maskData.instructionsLength = instructionsLength;
 
-        const currentRenderTargetUid = renderer.renderTarget.renderTarget.uid;
-
-        if (!this.maskStackHash[currentRenderTargetUid])
+        if (this.maskStackHash[_container.uid] === undefined)
         {
-            this.maskStackHash[currentRenderTargetUid] = 0;
+            this.maskStackHash[_container.uid] = 0;
         }
 
-        this.maskStackHash[currentRenderTargetUid]++;
+        this.maskStackHash[_container.uid]++;
     }
 
     pop(mask: StencilMask, _container: Container, instructionSet: InstructionSet): void
@@ -110,9 +108,8 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
         const renderer = this.renderer;
 
         // stencil is stored based on current render target..
-        const currentRenderTargetUid = renderer.renderTarget.renderTarget.uid;
 
-        this.maskStackHash[currentRenderTargetUid]--;
+        this.maskStackHash[_container.uid]--;
 
         renderer.renderPipes.batch.break(instructionSet);
 
@@ -124,7 +121,7 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
 
         const maskData = this.maskHash.get(mask);
 
-        if (this.maskStackHash[currentRenderTargetUid])
+        if (this.maskStackHash[_container.uid])
         {
             for (let i = 0; i < maskData.instructionsLength; i++)
             {
@@ -145,7 +142,7 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
         const renderer = this.renderer;
         const currentRenderTargetUid = renderer.renderTarget.renderTarget.uid;
 
-        let maskStackIndex = this.maskStackHash[currentRenderTargetUid];
+        let maskStackIndex = this.maskStackHash[currentRenderTargetUid] ?? 0;
 
         if (instruction.action === 'pushMaskBegin')
         {

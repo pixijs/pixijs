@@ -168,7 +168,7 @@ export class SpriteView implements View
     {
         this.didUpdate = true;
 
-        this.boundsDirty = true;
+        this.sourceBoundsDirty = this.boundsDirty = true;
 
         this.owner.onViewUpdate();
     }

@@ -43,8 +43,8 @@ export const buildCircle: ShapeBuildCommand<RoundedThing> = {
 
             x = ellipse.x;
             y = ellipse.y;
-            rx = ellipse.width;
-            ry = ellipse.height;
+            rx = ellipse.halfWidth;
+            ry = ellipse.halfHeight;
             dx = dy = 0;
         }
         else

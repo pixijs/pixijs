@@ -28,6 +28,6 @@ export interface View
     addBounds: (bounds: Bounds) => void;
     containsPoint: (point: Point) => boolean;
 
-    destroy<DESTROY_OPTIONS = DestroyOptions>(options: DESTROY_OPTIONS): void;
+    destroy(options?: DestroyOptions): void;
 }
 

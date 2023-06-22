@@ -138,10 +138,10 @@ export class LayerGroup implements Instruction
                 return;
             }
         }
-
         else
         {
             child.layerGroup = this;
+            child.didChange = true;
         }
 
         const children = child.children;

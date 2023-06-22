@@ -40,7 +40,6 @@ fn mainVertex(
 
     var modifiedPosition = (aPosition - tilingUniforms.uSizeAnchor.zw) * tilingUniforms.uSizeAnchor.xy;
   
-  
     var  mvpMatrix = globalUniforms.projectionMatrix * globalUniforms.worldTransformMatrix * localUniforms.transformMatrix;
 
     var  colorOut = localUniforms.color;

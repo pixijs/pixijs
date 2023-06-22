@@ -3,7 +3,7 @@ import { TextView } from './TextView';
 
 import type { ContainerOptions } from '../scene/Container';
 import type { TextStyle } from './TextStyle';
-import type { TextViewOptions } from './TextView';
+import type { TextString, TextViewOptions } from './TextView';
 
 export type TextOptions = ContainerOptions<TextView> & TextViewOptions;
 
@@ -23,7 +23,7 @@ export class Text extends Container<TextView>
         return this.view.anchor;
     }
 
-    set text(value: string)
+    set text(value: TextString)
     {
         this.view.text = value;
     }

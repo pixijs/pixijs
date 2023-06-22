@@ -25,7 +25,7 @@ export function getLocalBounds(target: Container, bounds: Bounds, relativeMatrix
 
     for (let i = 0; i < target.children.length; i++)
     {
-        _getLocalBounds(target.children[i], bounds, relativeMatrix || new Matrix(), target);
+        _getLocalBounds(target.children[i], bounds, relativeMatrix, target);
     }
 
     if (!bounds.isValid)

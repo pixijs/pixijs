@@ -49,7 +49,7 @@ export class TilingSpriteShader extends Shader implements TextureShader
             uClampFrame: { value: new Float32Array([0, 0, 1, 1]), type: 'vec4<f32>' },
             uClampOffset: { value: new Float32Array([0, 0]), type: 'vec2<f32>' },
             uTextureTransform: { value: new Matrix(), type: 'mat3x3<f32>' },
-            uSizeAnchor: { value: new Float32Array([100, 200, 0.5, 0.5]), type: 'vec2<f32>' },
+            uSizeAnchor: { value: new Float32Array([100, 200, 0.5, 0.5]), type: 'vec4<f32>' },
         });
 
         super({
