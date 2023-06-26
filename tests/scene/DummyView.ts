@@ -1,5 +1,5 @@
 import EventEmitter from 'eventemitter3';
-import { Rectangle } from '../../src';
+import { Rectangle } from '../../src/maths/shapes/Rectangle';
 
 import type { Point } from '../../src/maths/Point';
 import type { View, ViewObserver } from '../../src/rendering/renderers/shared/View';
