@@ -1,3 +1,5 @@
+import { Bounds } from '../../src/rendering/scene/bounds/Bounds';
+import { getGlobalBounds } from '../../src/rendering/scene/bounds/getGlobalBounds';
 import { Container } from '../../src/rendering/scene/Container';
 import { TilingSprite } from '../../src/tiling-sprite/TilingSprite';
 import { getRenderer } from '../utils/getRenderer';
@@ -43,5 +45,19 @@ describe('TilingSprite', () =>
         expect(renderer.renderPipes.tilingSprite['gpuBatchedTilingSprite'][sprite.uid]).toBeNull();
 
         expect(sprite.view.texture).toBeNull();
+    });
+
+    it('should global bounds to be correct', async () =>
+    {
+        const sprite = new TilingSprite({
+            texture: getTexture({ width: 256, height: 256 })
+        });
+
+        const bounds = getGlobalBounds(sprite, true, new Bounds());
+
+        expect(bounds.minX).toBe(0);
+        expect(bounds.maxX).toBe(256);
+        expect(bounds.minY).toBe(0);
+        expect(bounds.maxY).toBe(256);
     });
 });

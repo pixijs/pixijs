@@ -214,6 +214,7 @@ export class MeshPipe implements RenderPipe<MeshView>, InstructionPipe<MeshInstr
         const gpuMesh: BatchableMesh = BigPool.get(BatchableMesh);
 
         gpuMesh.renderable = renderable;
+        gpuMesh.texture = renderable.view._texture;
 
         this.gpuBatchableMeshHash[renderable.uid] = gpuMesh;
 

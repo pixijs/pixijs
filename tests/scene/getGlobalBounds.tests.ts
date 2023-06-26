@@ -199,6 +199,37 @@ describe('getGlobalBounds', () =>
         expect(bounds).toMatchObject({ minX: 0, minY: 0, maxX: 100, maxY: 100 });
     });
 
+    it('should addMaskBounds correctly with existing bounds', async () =>
+    {
+        const bounds = new Bounds();
+
+        bounds.set(0, 0, 100, 100);
+        bounds.pad(10);
+
+        // | - container
+        //     | - bg
+        //     | - maskedContainer
+        //     | - mask
+
+        const container = new Container();
+
+        const bg = new Container({ label: 'bg', view: new DummyView(0, 0, 500, 500) });
+
+        const maskedContainer = new Container({ label: 'maskedContainer', view: new DummyView(50, 50, 200, 200) });
+
+        const mask = new Container({ label: 'mask', view: new DummyView(100, 100, 100, 100) });
+
+        container.addChild(bg, maskedContainer, mask);
+
+        maskedContainer.mask = mask;
+
+        getGlobalBounds(container, false, bounds);
+
+        console.log(bounds);
+
+        expect(bounds).toMatchObject({ minX: 0, minY: 0, maxX: 500, maxY: 500 });
+    });
+
     it('should get global bounds correctly with a layer', async () =>
     {
         const container = new Container({ label: 'container', layer: true });
