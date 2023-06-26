@@ -1,3 +1,5 @@
+import { LayerRenderable } from '../../renderers/shared/LayerRenderable';
+
 import type { InstructionSet } from '../../renderers/shared/instructions/InstructionSet';
 import type { RenderPipe } from '../../renderers/shared/instructions/RenderPipe';
 import type { Renderable } from '../../renderers/shared/Renderable';
@@ -18,13 +20,17 @@ export function buildInstructions(layerGroup: LayerGroup, renderPipes: Renderer[
     renderPipes.blendMode.buildStart();
     renderPipes.colorMask.buildStart();
 
-    const proxyRenderable = layerGroup.proxyRenderable;
-
-    if (proxyRenderable)
+    if (layerGroup.root.view)
     {
-        renderPipes.blendMode.setBlendMode(proxyRenderable, proxyRenderable.layerBlendMode, instructionSet);
+        // proxy renderable is needed here as we do not want to inherit the transform / color of the root container
+        const proxyRenderable = layerGroup.proxyRenderable ?? initProxyRenderable(layerGroup);
 
-        (renderPipes as SharedPipes<any>)[proxyRenderable.view.type].addRenderable(proxyRenderable, instructionSet);
+        if (proxyRenderable)
+        {
+            renderPipes.blendMode.setBlendMode(proxyRenderable, proxyRenderable.layerBlendMode, instructionSet);
+
+            (renderPipes as SharedPipes<any>)[proxyRenderable.view.type].addRenderable(proxyRenderable, instructionSet);
+        }
     }
 
     const children = root.children;
@@ -141,5 +147,18 @@ function collectAllRenderablesAdvanced(
         const effect = container.effects[i];
 
         (renderPipes as SharedPipes<any>)[effect.pipe].pop(effect, container, instructionSet);
+    }
+}
+
+function initProxyRenderable(layerGroup: LayerGroup)
+{
+    const root = layerGroup.root;
+
+    if (root.view)
+    {
+        layerGroup.proxyRenderable = new LayerRenderable({
+            original: root,
+            view: root.view,
+        });
     }
 }

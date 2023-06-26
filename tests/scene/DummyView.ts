@@ -1,4 +1,5 @@
 import EventEmitter from 'eventemitter3';
+import { Rectangle } from '../../src/maths/shapes/Rectangle';
 
 import type { Point } from '../../src/maths/Point';
 import type { View, ViewObserver } from '../../src/rendering/renderers/shared/View';
@@ -14,8 +15,14 @@ export class DummyView extends EventEmitter implements View
     onUpdate: () => void;
     addBounds = (bounds: Bounds) =>
     {
-        bounds.addFrame(0, 0, 100, 100);
+        bounds.addFrame(this.size.x, this.size.y, this.size.width, this.size.height);
     };
     containsPoint: (point: Point) => boolean;
     destroy: () => void;
+    size: Rectangle;
+    constructor(x = 0, y = 0, width = 100, height = 100)
+    {
+        super();
+        this.size = new Rectangle(x, y, width, height);
+    }
 }

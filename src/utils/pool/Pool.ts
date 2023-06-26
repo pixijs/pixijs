@@ -3,7 +3,7 @@ export class Pool<T extends PoolItem>
     public readonly _classType: PoolItemConstructor<T>;
     private readonly _pool: T[] = [];
     private _count = 0;
-    private readonly _debug = false;
+    private _index = 0;
 
     constructor(ClassType: PoolItemConstructor<T>, initialSize?: number)
     {
@@ -19,7 +19,7 @@ export class Pool<T extends PoolItem>
     {
         for (let i = 0; i < total; i++)
         {
-            this._pool.push(new this._classType());
+            this._pool[this._index++] = new this._classType();
         }
 
         this._count += total;
@@ -27,9 +27,13 @@ export class Pool<T extends PoolItem>
 
     public get(data?: unknown): T
     {
-        let item = this._pool.pop();
+        let item;
 
-        if (!item)
+        if (this._index > 0)
+        {
+            item = this._pool[--this._index];
+        }
+        else
         {
             item = new this._classType();
         }
@@ -41,16 +45,9 @@ export class Pool<T extends PoolItem>
 
     public return(item: T): void
     {
-        if (this._pool.indexOf(item) !== -1)
-        {
-            if (this._debug)console.warn('Object already in pool', item);
-
-            return;
-        }
-
         item.reset?.();
 
-        this._pool.push(item);
+        this._pool[this._index++] = item;
     }
 
     get totalSize(): number

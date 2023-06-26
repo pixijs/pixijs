@@ -14,6 +14,7 @@ export function getGlobalBounds(target: Container, skipUpdateTransform: boolean,
     {
         if (!skipUpdateTransform)
         {
+            // TODO new Matrix.. EEEWW! pooling..
             parentTransform = updateTransformBackwards(target, new Matrix());
         }
         else
@@ -63,6 +64,15 @@ export function _getGlobalBounds(
         worldTransform = target.worldTransform;
     }
 
+    const parentBounds = bounds;
+    const preserveBounds = !!target.effects.length;
+
+    if (preserveBounds)
+    {
+        // TODO - cloning bounds is slow, we should have a pool (its on the todo list!)
+        bounds = bounds.clone();
+    }
+
     if (target.view)
     {
         bounds.setMatrix(worldTransform);
@@ -75,9 +85,14 @@ export function _getGlobalBounds(
         _getGlobalBounds(target.children[i], bounds, worldTransform, skipUpdateTransform);
     }
 
-    for (let i = 0; i < target.effects.length; i++)
+    if (preserveBounds)
     {
-        target.effects[i].addBounds?.(bounds);
+        for (let i = 0; i < target.effects.length; i++)
+        {
+            target.effects[i].addBounds?.(bounds);
+        }
+
+        parentBounds.addBounds(bounds);
     }
 }
 

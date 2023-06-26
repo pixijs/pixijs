@@ -52,7 +52,7 @@ export const effectsMixin: Partial<Container> = {
 
     set filters(value: Filter | Filter[])
     {
-        if (!Array.isArray(value)) value = [value];
+        if (!Array.isArray(value) && value !== null) value = [value];
 
         // TODO - not massively important, but could optimise here
         // by reusing the same effect.. rather than adding and removing from the pool!
@@ -67,11 +67,11 @@ export const effectsMixin: Partial<Container> = {
             this._filters.effect = null;
         }
 
-        this._filters.filters = value;
+        this._filters.filters = value as Filter[];
 
         if (!value) return;
 
-        const effect = getFilterEffect(value);
+        const effect = getFilterEffect(value as Filter[]);
 
         this._filters.effect = effect;
 

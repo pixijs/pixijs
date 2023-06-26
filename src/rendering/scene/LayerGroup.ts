@@ -1,8 +1,8 @@
 import { Matrix } from '../../maths/Matrix';
 import { InstructionSet } from '../renderers/shared/instructions/InstructionSet';
-import { LayerRenderable } from '../renderers/shared/LayerRenderable';
 
 import type { Instruction } from '../renderers/shared/instructions/Instruction';
+import type { LayerRenderable } from '../renderers/shared/LayerRenderable';
 import type { Renderable } from '../renderers/shared/Renderable';
 import type { View } from '../renderers/shared/View';
 import type { Container } from './Container';
@@ -46,16 +46,6 @@ export class LayerGroup implements Instruction
     constructor(root: Container)
     {
         this.root = root;
-
-        const view = root.view;
-
-        if (view)
-        {
-            this.proxyRenderable = new LayerRenderable({
-                original: root,
-                view,
-            });
-        }
 
         this.addChild(root);
     }

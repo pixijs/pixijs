@@ -101,8 +101,8 @@ export class TilingSpriteView implements View
 
         bounds.addFrame(
             _bounds[0],
-            _bounds[1],
             _bounds[2],
+            _bounds[1],
             _bounds[3],
         );
     }
