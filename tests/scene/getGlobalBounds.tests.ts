@@ -225,8 +225,6 @@ describe('getGlobalBounds', () =>
 
         getGlobalBounds(container, false, bounds);
 
-        console.log(bounds);
-
         expect(bounds).toMatchObject({ minX: 0, minY: 0, maxX: 500, maxY: 500 });
     });
 
