@@ -1,11 +1,12 @@
 import { MeshView } from '../rendering/mesh/shared/MeshView';
 import { Texture } from '../rendering/renderers/shared/texture/Texture';
 import { Container } from '../rendering/scene/Container';
+import { deprecation } from '../utils/logging/deprecation';
 import { NineSliceGeometry } from './NineSliceGeometry';
 
 import type { ContainerOptions } from '../rendering/scene/Container';
 
-export interface NineSlicePlaneOptions extends ContainerOptions<MeshView<NineSliceGeometry>>
+export interface NineSliceSpriteOptions extends ContainerOptions<MeshView<NineSliceGeometry>>
 {
     texture: Texture;
     leftWidth?: number;
@@ -41,9 +42,9 @@ export interface NineSlicePlaneOptions extends ContainerOptions<MeshView<NineSli
  * const plane9 = new NineSlicePlane(Texture.from('BoxWithRoundedCorners.png'), 15, 15, 15, 15);
  * @memberof PIXI
  */
-export class NineSlicePlane extends Container<MeshView<NineSliceGeometry>>
+export class NineSliceSprite extends Container<MeshView<NineSliceGeometry>>
 {
-    static defaultOptions: NineSlicePlaneOptions = {
+    static defaultOptions: NineSliceSpriteOptions = {
         texture: Texture.EMPTY,
         leftWidth: 10,
         topHeight: 10,
@@ -63,14 +64,14 @@ export class NineSlicePlane extends Container<MeshView<NineSliceGeometry>>
      * @param options.height - Height of the NineSlicePlane,
      * setting this will actually modify the vertices and not UV's of this plane.
      */
-    constructor(options: NineSlicePlaneOptions | Texture)
+    constructor(options: NineSliceSpriteOptions | Texture)
     {
         if ((options instanceof Texture))
         {
             options = { texture: options };
         }
 
-        options = { ...NineSlicePlane.defaultOptions, ...options };
+        options = { ...NineSliceSprite.defaultOptions, ...options };
 
         const texture = options.texture;
 
@@ -188,3 +189,14 @@ export class NineSlicePlane extends Container<MeshView<NineSliceGeometry>>
         this.view.texture = value;
     }
 }
+
+class NineSlicePlane extends NineSliceSprite
+{
+    constructor(options: NineSliceSpriteOptions | Texture)
+    {
+        deprecation('v8', 'NineSlicePlane is deprecated. Use NineSliceSprite instead.');
+        super(options);
+    }
+}
+
+export { NineSlicePlane };
