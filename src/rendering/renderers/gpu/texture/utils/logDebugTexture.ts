@@ -21,7 +21,7 @@ export function textureToCanvas(texture: Texture, renderer: WebGPURenderer): ICa
     canvas.width = texture.source.pixelWidth;
     canvas.height = texture.source.pixelHeight;
 
-    const context = canvas.getContext('webgpu') as any as GPUCanvasContext;
+    const context = canvas.getContext('webgpu') as unknown as GPUCanvasContext;
 
     context.configure({
         device: renderer.gpu.device,

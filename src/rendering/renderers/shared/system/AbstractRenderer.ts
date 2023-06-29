@@ -206,7 +206,7 @@ export class AbstractRenderer<RENDER_PIPES, RENDERER_OPTIONS>
      */
     addSystem(ClassRef: SystemConstructor, name: string): this
     {
-        const system = new ClassRef(this as any as Renderer);
+        const system = new ClassRef(this as unknown as Renderer);
 
         if ((this as any)[name])
         {
@@ -243,7 +243,7 @@ export class AbstractRenderer<RENDER_PIPES, RENDERER_OPTIONS>
 
             // sorry typescript..
             (this.renderPipes as any)[name] = new PipeClass(
-                this as any as Renderer,
+                this as unknown as Renderer,
                 Adaptor ? new Adaptor() : null
             );
         });

@@ -30,7 +30,7 @@ export class Loader
         {
             this._parsersValidated = false;
 
-            target[key as any as number] = value;
+            target[key as unknown as number] = value;
 
             return true;
         }

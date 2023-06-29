@@ -222,7 +222,7 @@ export class BitmapTextPipe implements RenderPipe<TextView>
     {
         for (const uid in this.gpuBitmapText)
         {
-            this.destroyRenderableByUid(uid as any as number);
+            this.destroyRenderableByUid(uid as unknown as number);
         }
 
         this.gpuBitmapText = null;

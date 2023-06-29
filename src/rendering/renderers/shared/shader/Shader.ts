@@ -74,8 +74,8 @@ export class Shader extends EventEmitter<{
                     const uniformName = groupMap[i][j];
 
                     nameHash[uniformName] = {
-                        group: i as any as number,
-                        binding: j as any as number,
+                        group: i as unknown as number,
+                        binding: j as unknown as number,
                         name: uniformName
                     };
                 }

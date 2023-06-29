@@ -228,7 +228,7 @@ export class GraphicsPipe implements RenderPipe<GraphicsView>
 
         for (const i in this.renderableBatchesHash)
         {
-            this.removeBatchForRenderable(i as any as number);
+            this.removeBatchForRenderable(i as unknown as number);
         }
 
         this.renderableBatchesHash = null;

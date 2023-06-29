@@ -184,7 +184,7 @@ export class GpuEncoderSystem implements ISystem
                 this.syncBindGroup(bindGroup);
             }
 
-            this.setBindGroup(i as any as number, bindGroup, shader.gpuProgram);
+            this.setBindGroup(i as unknown as number, bindGroup, shader.gpuProgram);
         }
     }
 
@@ -281,12 +281,12 @@ export class GpuEncoderSystem implements ISystem
 
         for (const i in boundVertexBuffer)
         {
-            this.setVertexBuffer(i as any as number, boundVertexBuffer[i]);
+            this.setVertexBuffer(i as unknown as number, boundVertexBuffer[i]);
         }
 
         for (const i in boundBindGroup)
         {
-            this.setBindGroup(i as any as number, boundBindGroup[i], null);
+            this.setBindGroup(i as unknown as number, boundBindGroup[i], null);
         }
 
         this.setIndexBuffer(boundIndexBuffer);

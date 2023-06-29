@@ -24,7 +24,7 @@ export class CanvasTextPipe implements RenderPipe<TextView>
 
     private renderer: Renderer;
 
-    private gpuText: Record<string, {
+    private gpuText: Record<number, {
         texture: Texture,
         currentKey: string,
         batchableSprite: BatchableSprite,
@@ -166,7 +166,7 @@ export class CanvasTextPipe implements RenderPipe<TextView>
 
         view._style.update();
 
-        const gpuTextData: CanvasTextPipe['gpuText'][string] = {
+        const gpuTextData: CanvasTextPipe['gpuText'][number] = {
             texture: null,
             currentKey: '--',
             batchableSprite: BigPool.get(BatchableSprite),
@@ -193,7 +193,7 @@ export class CanvasTextPipe implements RenderPipe<TextView>
     {
         for (const i in this.gpuText)
         {
-            this.destroyRenderableById(i as any as number);
+            this.destroyRenderableById(i as unknown as number);
         }
 
         this.gpuText = null;

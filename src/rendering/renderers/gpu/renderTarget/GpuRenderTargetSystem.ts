@@ -23,9 +23,7 @@ export class GpuRenderTargetSystem implements ISystem
 {
     /** @ignore */
     static extension = {
-        type: [
-            ExtensionType.WebGPURendererSystem,
-        ],
+        type: [ExtensionType.WebGPURendererSystem],
         name: 'renderTarget',
     } as const;
 
@@ -34,7 +32,8 @@ export class GpuRenderTargetSystem implements ISystem
     renderTarget: RenderTarget;
     onRenderTargetChange = new SystemRunner('onRenderTargetChange');
 
-    private renderSurfaceToRenderTargetHash: Map<RenderSurface, RenderTarget> = new Map();
+    private renderSurfaceToRenderTargetHash: Map<RenderSurface, RenderTarget>
+        = new Map();
     private gpuRenderTargetHash: Record<number, GpuRenderTarget> = {};
 
     private renderTargetStack: RenderTarget[] = [];
@@ -47,7 +46,15 @@ export class GpuRenderTargetSystem implements ISystem
         this.renderer = renderer;
     }
 
-    renderStart({ target, clear, clearColor }: {target: RenderSurface, clear: boolean, clearColor: RGBAArray}): void
+    renderStart({
+        target,
+        clear,
+        clearColor,
+    }: {
+        target: RenderSurface;
+        clear: boolean;
+        clearColor: RGBAArray;
+    }): void
     {
         // generate a render pass description..
         // create an encoder..
@@ -59,7 +66,11 @@ export class GpuRenderTargetSystem implements ISystem
 
         this.renderer.encoder.start();
 
-        this.push(this.rootRenderTarget, clear, clearColor ?? this.renderer.background.colorRgba);
+        this.push(
+            this.rootRenderTarget,
+            clear,
+            clearColor ?? this.renderer.background.colorRgba
+        );
     }
 
     protected contextChange(gpu: GPU): void
@@ -67,7 +78,11 @@ export class GpuRenderTargetSystem implements ISystem
         this.gpu = gpu;
     }
 
-    bind(renderSurface: RenderSurface, clear = true, clearColor?: RGBAArray): RenderTarget
+    bind(
+        renderSurface: RenderSurface,
+        clear = true,
+        clearColor?: RGBAArray
+    ): RenderTarget
     {
         const renderTarget = this.getRenderTarget(renderSurface);
 
@@ -75,7 +90,10 @@ export class GpuRenderTargetSystem implements ISystem
 
         const gpuRenderTarget = this.getGpuRenderTarget(renderTarget);
 
-        if (renderTarget.width !== gpuRenderTarget.width || renderTarget.height !== gpuRenderTarget.height)
+        if (
+            renderTarget.width !== gpuRenderTarget.width
+            || renderTarget.height !== gpuRenderTarget.height
+        )
         {
             this.resizeGpuRenderTarget(renderTarget);
         }
@@ -109,56 +127,68 @@ export class GpuRenderTargetSystem implements ISystem
             return gpuRenderTarget.contexts[0].getCurrentTexture();
         }
 
-        return this.renderer.texture.getGpuSource(renderTarget.colorTextures[0].source);
+        return this.renderer.texture.getGpuSource(
+            renderTarget.colorTextures[0].source
+        );
     }
 
-    getDescriptor(renderTarget: RenderTarget, clear: boolean, clearValue: RGBAArray): GPURenderPassDescriptor
+    getDescriptor(
+        renderTarget: RenderTarget,
+        clear: boolean,
+        clearValue: RGBAArray
+    ): GPURenderPassDescriptor
     {
         const gpuRenderTarget = this.getGpuRenderTarget(renderTarget);
 
         const loadOp = clear ? 'clear' : 'load';
 
-        const colorAttachments = renderTarget.colorTextures.map((texture, i) =>
-        {
-            const context = gpuRenderTarget.contexts[i];
-
-            let view: GPUTextureView;
-            let resolveTarget: GPUTextureView;
-
-            if (context)
+        const colorAttachments = renderTarget.colorTextures.map(
+            (texture, i) =>
             {
-                const currentTexture = context.getCurrentTexture();
+                const context = gpuRenderTarget.contexts[i];
 
-                const canvasTextureView = currentTexture.createView();
+                let view: GPUTextureView;
+                let resolveTarget: GPUTextureView;
 
-                view = canvasTextureView;
+                if (context)
+                {
+                    const currentTexture = context.getCurrentTexture();
+
+                    const canvasTextureView = currentTexture.createView();
+
+                    view = canvasTextureView;
+                }
+                else
+                {
+                    view = this.renderer.texture.getTextureView(texture);
+                }
+
+                if (gpuRenderTarget.msaaTextures[i])
+                {
+                    resolveTarget = view;
+                    view = this.renderer.texture.getTextureView(
+                        gpuRenderTarget.msaaTextures[i]
+                    );
+                }
+
+                return {
+                    view, // assign each frame based on the swap chain!
+                    resolveTarget,
+                    clearValue: clearValue || DEFAULT_CLEAR_COLOR,
+                    storeOp: 'store',
+                    loadOp,
+                };
             }
-            else
-            {
-                view = this.renderer.texture.getTextureView(texture);
-            }
-
-            if (gpuRenderTarget.msaaTextures[i])
-            {
-                resolveTarget = view;
-                view = this.renderer.texture.getTextureView(gpuRenderTarget.msaaTextures[i]);
-            }
-
-            return {
-                view, // assign each frame based on the swap chain!
-                resolveTarget,
-                clearValue: clearValue || DEFAULT_CLEAR_COLOR,
-                storeOp: 'store',
-                loadOp,
-            };
-        }) as GPURenderPassColorAttachment[];
+        ) as GPURenderPassColorAttachment[];
 
         let depthStencilAttachment;
 
         if (renderTarget.depthTexture)
         {
             depthStencilAttachment = {
-                view: this.renderer.texture.getGpuSource(renderTarget.depthTexture.source).createView(),
+                view: this.renderer.texture
+                    .getGpuSource(renderTarget.depthTexture.source)
+                    .createView(),
                 stencilStoreOp: 'store' as GPUStoreOp,
                 stencilLoadOp: loadOp as GPULoadOp,
             };
@@ -166,7 +196,7 @@ export class GpuRenderTargetSystem implements ISystem
 
         const descriptor: GPURenderPassDescriptor = {
             colorAttachments,
-            depthStencilAttachment
+            depthStencilAttachment,
         };
 
         // console.log(JSON.stringify(descriptor));
@@ -187,32 +217,46 @@ export class GpuRenderTargetSystem implements ISystem
     {
         this.renderTargetStack.pop();
 
-        this.bind(this.renderTargetStack[this.renderTargetStack.length - 1], false);
+        this.bind(
+            this.renderTargetStack[this.renderTargetStack.length - 1],
+            false
+        );
     }
 
     getRenderTarget(renderSurface: RenderSurface): RenderTarget
     {
-        return this.renderSurfaceToRenderTargetHash.get(renderSurface) ?? this.initRenderTarget(renderSurface);
+        return (
+            this.renderSurfaceToRenderTargetHash.get(renderSurface)
+            ?? this.initRenderTarget(renderSurface)
+        );
     }
 
     copyToTexture(
         sourceRenderSurfaceTexture: RenderTarget,
         destinationTexture: Texture,
-        origin: { x: number; y: number; },
-        size: { width: number; height: number; }
+        origin: { x: number; y: number },
+        size: { width: number; height: number }
     )
     {
         const renderer = this.renderer;
 
-        const baseGpuTexture = renderer.renderTarget.getGpuColorTexture(sourceRenderSurfaceTexture);
-        const backGpuTexture = renderer.texture.getGpuSource(destinationTexture.source);
+        const baseGpuTexture = renderer.renderTarget.getGpuColorTexture(
+            sourceRenderSurfaceTexture
+        );
+        const backGpuTexture = renderer.texture.getGpuSource(
+            destinationTexture.source
+        );
 
-        renderer.encoder.commandEncoder.copyTextureToTexture({
-            texture: baseGpuTexture,
-            origin,
-        }, {
-            texture: backGpuTexture,
-        }, size);
+        renderer.encoder.commandEncoder.copyTextureToTexture(
+            {
+                texture: baseGpuTexture,
+                origin,
+            },
+            {
+                texture: backGpuTexture,
+            },
+            size
+        );
 
         return destinationTexture;
     }
@@ -244,7 +288,7 @@ export class GpuRenderTargetSystem implements ISystem
         {
             renderTarget = new RenderTarget({
                 colorTextures: [renderSurface],
-                depthTexture: renderSurface.source.depthStencil
+                depthTexture: renderSurface.source.depthStencil,
             });
         }
 
@@ -257,7 +301,10 @@ export class GpuRenderTargetSystem implements ISystem
 
     private getGpuRenderTarget(renderTarget: RenderTarget)
     {
-        return this.gpuRenderTargetHash[renderTarget.uid] || this.initGpuRenderTarget(renderTarget);
+        return (
+            this.gpuRenderTargetHash[renderTarget.uid]
+            || this.initGpuRenderTarget(renderTarget)
+        );
     }
 
     private initGpuRenderTarget(renderTarget: RenderTarget): GpuRenderTarget
@@ -274,14 +321,21 @@ export class GpuRenderTargetSystem implements ISystem
         {
             if (colorTexture.source.resource instanceof HTMLCanvasElement)
             {
-                const context = renderTarget.colorTexture.source.resource.getContext('webgpu') as any as GPUCanvasContext;
+                const context
+                    = renderTarget.colorTexture.source.resource.getContext(
+                        'webgpu'
+                    ) as unknown as GPUCanvasContext;
 
                 try
                 {
                     context.configure({
                         device: this.gpu.device,
                         // eslint-disable-next-line max-len
-                        usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST | GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.COPY_SRC,
+                        usage:
+                            GPUTextureUsage.TEXTURE_BINDING
+                            | GPUTextureUsage.COPY_DST
+                            | GPUTextureUsage.RENDER_ATTACHMENT
+                            | GPUTextureUsage.COPY_SRC,
                         format: 'bgra8unorm',
                         alphaMode: 'opaque',
                     });
@@ -300,7 +354,7 @@ export class GpuRenderTargetSystem implements ISystem
             {
                 const msaaTexture = new TextureSource({
                     width: 0,
-                    height:  0,
+                    height: 0,
                     sampleCount: 4,
                 });
 
@@ -336,7 +390,11 @@ export class GpuRenderTargetSystem implements ISystem
             {
                 const msaaTexture = gpuRenderTarget.msaaTextures[i];
 
-                msaaTexture?.resize(colorTexture.source.width, colorTexture.source.height, colorTexture.source._resolution);
+                msaaTexture?.resize(
+                    colorTexture.source.width,
+                    colorTexture.source.height,
+                    colorTexture.source._resolution
+                );
             });
         }
     }

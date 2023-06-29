@@ -2,8 +2,7 @@ import { Matrix } from '../../src/maths/Matrix';
 import { Point } from '../../src/maths/Point';
 import { GlobalUniformSystem } from '../../src/rendering/renderers/shared/renderTarget/GlobalUniformSystem';
 
-import type { WebGLRenderPipes } from '../../src';
-import type { GlRenderTargetSystem } from '../../src/rendering/renderers/gl/GlRenderTargetSystem';
+import type { WebGLRenderer } from '../../src/rendering/renderers/gl/WebGLRenderer';
 import type { UniformBufferSystem } from '../../src/rendering/renderers/shared/shader/UniformBufferSystem';
 import type { UniformGroup } from '../../src/rendering/renderers/shared/shader/UniformGroup';
 
@@ -14,15 +13,15 @@ function createGlobalUniformSystem(): GlobalUniformSystem
             renderTarget: {
                 projectionMatrix: new Matrix(2, 2, 2, 2, 2, 2),
             }
-        } as any as GlRenderTargetSystem,
-        renderPipes: {} as any as WebGLRenderPipes,
+        },
+        renderPipes: {},
         uniformBuffer: {
             updateUniformGroup: () =>
             {
                 // do nothing
             },
-        } as any as UniformBufferSystem,
-    };
+        } as unknown as UniformBufferSystem,
+    } as WebGLRenderer;
 
     const globalUniformSystem = new GlobalUniformSystem(renderer);
 
