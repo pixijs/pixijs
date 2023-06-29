@@ -37,7 +37,6 @@ type NameType<T extends SystemsWithExtensionList> = T[number]['extension']['name
 export type ExtractSystemTypes<T extends SystemsWithExtensionList> = {
     [K in NameType<T>]: InstanceType<Extract<T[number], { extension: { name: K } }>>
 };
-// & PixiMixins.SharedRenderSystems;
 
 /**
  *   TS for extracting the init options based on a list of systems
