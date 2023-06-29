@@ -4,7 +4,7 @@ import { generateUniformsSync } from './program/generateUniformsSync';
 
 import type { UniformGroup } from '../../shared/shader/UniformGroup';
 import type { UniformsSyncCallback } from '../../shared/shader/utils/createUniformBufferSync';
-import type { ISystem } from '../../shared/system/System';
+import type { System } from '../../shared/system/System';
 import type { GlRenderingContext } from '../context/GlRenderingContext';
 import type { WebGLRenderer } from '../WebGLRenderer';
 import type { GlProgram } from './GlProgram';
@@ -13,7 +13,7 @@ import type { GlProgram } from './GlProgram';
  * System plugin to the renderer to manage shaders.
  * @memberof PIXI
  */
-export class GlUniformGroupSystem implements ISystem
+export class GlUniformGroupSystem implements System
 {
     /** @ignore */
     static extension = {

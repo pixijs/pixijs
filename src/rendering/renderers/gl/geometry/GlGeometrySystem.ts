@@ -3,7 +3,7 @@ import { getGlInfoFromFormat } from './utils/getGlInfoFromFormat';
 
 import type { Topology } from '../../shared/geometry/const';
 import type { Geometry } from '../../shared/geometry/Geometry';
-import type { ISystem } from '../../shared/system/System';
+import type { System } from '../../shared/system/System';
 import type { GlRenderingContext } from '../context/GlRenderingContext';
 import type { GlProgram } from '../shader/GlProgram';
 import type { WebGLRenderer } from '../WebGLRenderer';
@@ -23,7 +23,7 @@ const topologyToGlMap = {
  * @memberof PIXI
  */
 
-export class GlGeometrySystem implements ISystem
+export class GlGeometrySystem implements System
 {
     /** @ignore */
     static extension = {

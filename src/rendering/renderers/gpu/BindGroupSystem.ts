@@ -3,7 +3,7 @@ import { ExtensionType } from '../../../extensions/Extensions';
 import type { Buffer } from '../shared/buffer/Buffer';
 import type { BufferResource } from '../shared/buffer/BufferResource';
 import type { UniformGroup } from '../shared/shader/UniformGroup';
-import type { ISystem } from '../shared/system/System';
+import type { System } from '../shared/system/System';
 import type { TextureSource } from '../shared/texture/sources/TextureSource';
 import type { TextureStyle } from '../shared/texture/TextureStyle';
 import type { GPU } from './GpuDeviceSystem';
@@ -12,7 +12,7 @@ import type { BindResource } from './shader/BindResource';
 import type { GpuProgram } from './shader/GpuProgram';
 import type { WebGPURenderer } from './WebGPURenderer';
 
-export class BindGroupSystem implements ISystem
+export class BindGroupSystem implements System
 {
     /** @ignore */
     static extension = {

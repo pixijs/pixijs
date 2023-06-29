@@ -8,11 +8,11 @@ import { GlRenderTarget } from './GlRenderTarget';
 
 import type { ICanvas } from '../../../settings/adapter/ICanvas';
 import type { RenderSurface, RGBAArray } from '../gpu/renderTarget/GpuRenderTargetSystem';
-import type { ISystem } from '../shared/system/System';
+import type { System } from '../shared/system/System';
 import type { GlRenderingContext } from './context/GlRenderingContext';
 import type { WebGLRenderer } from './WebGLRenderer';
 
-export class GlRenderTargetSystem implements ISystem
+export class GlRenderTargetSystem implements System
 {
     /** @ignore */
     static extension = {

@@ -6,7 +6,7 @@ import { FederatedWheelEvent } from './FederatedWheelEvent';
 
 import type { ExtensionMetadata } from '../extensions/Extensions';
 import type { PointData } from '../maths/PointData';
-import type { ISystem } from '../rendering/renderers/shared/system/System';
+import type { System } from '../rendering/renderers/shared/system/System';
 import type { Renderer } from '../rendering/renderers/types';
 import type { EventMode } from './FederatedEventTarget';
 import type { FederatedMouseEvent } from './FederatedMouseEvent';
@@ -90,7 +90,7 @@ interface EventSystemFeatures
  * The system for handling UI events.
  * @memberof PIXI
  */
-export class EventSystem implements ISystem<EventSystemOptions>
+export class EventSystem implements System<EventSystemOptions>
 {
     /** @ignore */
     static extension: ExtensionMetadata = {

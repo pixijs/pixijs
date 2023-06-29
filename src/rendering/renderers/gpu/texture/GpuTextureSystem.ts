@@ -4,14 +4,14 @@ import { gpuUploadBufferImageResource } from './uploaders/gpuUploadBufferImageRe
 import { gpuUploadImageResource } from './uploaders/gpuUploadImageSource';
 import { GpuMipmapGenerator } from './utils/GpuMipmapGenerator';
 
-import type { ISystem } from '../../shared/system/System';
+import type { System } from '../../shared/system/System';
 import type { TextureSource } from '../../shared/texture/sources/TextureSource';
 import type { BindableTexture, Texture } from '../../shared/texture/Texture';
 import type { TextureStyle } from '../../shared/texture/TextureStyle';
 import type { GPU } from '../GpuDeviceSystem';
 import type { GpuTextureUploader } from './uploaders/GpuTextureUploader';
 
-export class GpuTextureSystem implements ISystem
+export class GpuTextureSystem implements System
 {
     /** @ignore */
     static extension = {

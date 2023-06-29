@@ -3,7 +3,7 @@ import { State } from '../../shared/state/State';
 import { mapWebGLBlendModesToPixi } from './mapWebGLBlendModesToPixi';
 
 import type { BLEND_MODES } from '../../shared/state/const';
-import type { ISystem } from '../../shared/system/System';
+import type { System } from '../../shared/system/System';
 import type { GlRenderingContext } from '../context/GlRenderingContext';
 
 const BLEND = 0;
@@ -17,7 +17,7 @@ const DEPTH_MASK = 5;
  * System plugin to the renderer to manage WebGL state machines.
  * @memberof PIXI
  */
-export class GlStateSystem implements ISystem
+export class GlStateSystem implements System
 {
     /** @ignore */
     static extension = {

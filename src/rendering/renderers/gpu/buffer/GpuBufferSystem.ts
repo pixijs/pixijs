@@ -2,11 +2,11 @@ import { ExtensionType } from '../../../../extensions/Extensions';
 import { fastCopy } from '../../shared/buffer/utils/fastCopy';
 
 import type { Buffer } from '../../shared/buffer/Buffer';
-import type { ISystem } from '../../shared/system/System';
+import type { System } from '../../shared/system/System';
 import type { GPU } from '../GpuDeviceSystem';
 import type { WebGPURenderer } from '../WebGPURenderer';
 
-export class BufferSystem implements ISystem
+export class BufferSystem implements System
 {
     /** @ignore */
     static extension = {

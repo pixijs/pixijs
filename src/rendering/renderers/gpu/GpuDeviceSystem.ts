@@ -1,6 +1,6 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 
-import type { ISystem } from '../shared/system/System';
+import type { System } from '../shared/system/System';
 import type { WebGPURenderer } from './WebGPURenderer';
 
 export interface GPU
@@ -15,7 +15,7 @@ export interface GPU
  * @extends PIXI.System
  * @memberof PIXI
  */
-export class GpuDeviceSystem implements ISystem
+export class GpuDeviceSystem implements System
 {
     /** @ignore */
     static extension = {
