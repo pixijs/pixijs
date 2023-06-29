@@ -1,44 +1,43 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { sayHello } from '../../../../utils/sayHello';
 
-import type { ExtensionMetadata } from '../../../../extensions/Extensions';
 import type { Renderer } from '../../types';
-import type { ISystem } from '../system/ISystem';
+import type { ISystem } from '../system/System';
 
 /**
  * Options for the startup system.
  * @ignore
  */
-export interface StartupSystemOptions
+export interface HelloSystemOptions
 {
     /**
      * Whether to log the version and type information of renderer to console.
-     * @memberof PIXI.IRendererOptions
+     * @memberof PIXI.RendererOptions
      */
     hello: boolean;
 }
 /**
  * A simple system responsible for initiating the renderer.
  * @memberof PIXI
- */export class StartupSystem implements ISystem<StartupSystemOptions>
+ */
+export class HelloSystem implements ISystem<HelloSystemOptions>
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
-            ExtensionType.WebGLRendererSystem,
-            ExtensionType.WebGPURendererSystem,
-            ExtensionType.CanvasRendererSystem,
+            ExtensionType.WebGLSystem,
+            ExtensionType.WebGPUSystem,
+            ExtensionType.CanvasSystem,
         ],
-        name: 'startup',
+        name: 'hello',
         priority: 0,
-    };
+    } as const;
 
     /** @ignore */
-    static defaultOptions: StartupSystemOptions = {
+    static defaultOptions: HelloSystemOptions = {
         /**
-         * {@link PIXI.WebGLRendererOptions.hello}
+         * {@link PIXI.WebGLOptions.hello}
          * @default false
-         * @memberof PIXI.settings.GL_RENDER_OPTIONS
          */
         hello: false,
     };
@@ -54,24 +53,12 @@ export interface StartupSystemOptions
      * It all starts here! This initiates every system, passing in the options for any system by name.
      * @param options - the config for the renderer and all its systems
      */
-    run(options: StartupSystemOptions): void
+    init(options: HelloSystemOptions): void
     {
-        const { renderer } = this;
-
-        renderer.runners.init.emit(renderer.options);
-
         if (options.hello)
         {
             // eslint-disable-next-line no-console
-            sayHello(renderer.type);
+            sayHello(this.renderer.type);
         }
-
-        // TODO: screen doesn't exist on renderer yet
-        // renderer.resize(renderer.screen.width, renderer.screen.height);
-    }
-
-    destroy(): void
-    {
-        // ka pow!
     }
 }

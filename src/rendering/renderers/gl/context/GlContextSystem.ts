@@ -1,8 +1,7 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
 
-import type { ExtensionMetadata } from '../../../../extensions/Extensions';
 import type { ICanvas } from '../../../../settings/adapter/ICanvas';
-import type { ISystem } from '../../shared/system/ISystem';
+import type { ISystem } from '../../shared/system/System';
 import type { WebGLRenderer } from '../WebGLRenderer';
 import type { GlRenderingContext } from './GlRenderingContext';
 import type { WebGLExtensions } from './WebGLExtensions';
@@ -20,7 +19,7 @@ export interface ContextSystemOptions
 {
     /**
      * **WebGL Only.** User-provided WebGL rendering context object.
-     * @memberof PIXI.WebGLRendererOptions
+     * @memberof PIXI.WebGLOptions
      */
     context: WebGL2RenderingContext | null;
     /**
@@ -28,20 +27,22 @@ export interface ContextSystemOptions
      * can be `'default'`, `'high-performance'` or `'low-power'`.
      * Setting to `'high-performance'` will prioritize rendering performance over power consumption,
      * while setting to `'low-power'` will prioritize power saving over rendering performance.
-     * @memberof PIXI.WebGLRendererOptions
+     * @memberof PIXI.WebGLOptions
      */
     powerPreference: WebGLPowerPreference;
     /**
      * **WebGL Only.** Whether the compositor will assume the drawing buffer contains colors with premultiplied alpha.
-     * @memberof PIXI.WebGLRendererOptions
+     * @memberof PIXI.WebGLOptions
      */
     premultipliedAlpha: boolean;
     /**
      * **WebGL Only.** Whether to enable drawing buffer preservation. If enabled, the drawing buffer will preserve
      * its value until cleared or overwritten. Enable this if you need to call `toDataUrl` on the WebGL context.
-     * @memberof PIXI.WebGLRendererOptions
+     * @memberof PIXI.WebGLOptions
      */
     preserveDrawingBuffer: boolean;
+
+    antialias?: boolean;
 }
 
 /**
@@ -51,37 +52,33 @@ export interface ContextSystemOptions
 export class GlContextSystem implements ISystem<ContextSystemOptions>
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
-            ExtensionType.WebGLRendererSystem,
+            ExtensionType.WebGLSystem,
         ],
         name: 'context',
-    };
+    } as const;
 
     /** @ignore */
     static defaultOptions: ContextSystemOptions = {
         /**
-         * {@link PIXI.WebGLRendererOptions.context}
+         * {@link PIXI.WebGLOptions.context}
          * @default null
-         * @memberof PIXI.settings.GL_RENDER_OPTIONS
          */
         context: null,
         /**
-         * {@link PIXI.WebGLRendererOptions.premultipliedAlpha}
+         * {@link PIXI.WebGLOptions.premultipliedAlpha}
          * @default true
-         * @memberof PIXI.settings.GL_RENDER_OPTIONS
          */
         premultipliedAlpha: true,
         /**
-         * {@link PIXI.WebGLRendererOptions.preserveDrawingBuffer}
+         * {@link PIXI.WebGLOptions.preserveDrawingBuffer}
          * @default false
-         * @memberof PIXI.settings.GL_RENDER_OPTIONS
          */
         preserveDrawingBuffer: false,
         /**
-         * {@link PIXI.WebGLRendererOptions.powerPreference}
+         * {@link PIXI.WebGLOptions.powerPreference}
          * @default default
-         * @memberof PIXI.settings.GL_RENDER_OPTIONS
          */
         powerPreference: 'default',
     };
@@ -183,7 +180,7 @@ export class GlContextSystem implements ISystem<ContextSystemOptions>
             this.initFromOptions({
                 alpha,
                 premultipliedAlpha,
-                antialias: this.renderer.options.antialias,
+                antialias: options.antialias,
                 stencil: true,
                 preserveDrawingBuffer: options.preserveDrawingBuffer,
                 powerPreference: options.powerPreference,
@@ -262,30 +259,10 @@ export class GlContextSystem implements ISystem<ContextSystemOptions>
             astc: gl.getExtension('WEBGL_compressed_texture_astc'),
         };
 
-        if (this.webGLVersion === 1)
-        {
-            Object.assign(this.extensions, common, {
-                drawBuffers: gl.getExtension('WEBGL_draw_buffers'),
-                depthTexture: gl.getExtension('WEBGL_depth_texture'),
-                loseContext: gl.getExtension('WEBGL_lose_context'),
-                vertexArrayObject: gl.getExtension('OES_vertex_array_object')
-                    || gl.getExtension('MOZ_OES_vertex_array_object')
-                    || gl.getExtension('WEBKIT_OES_vertex_array_object'),
-                uint32ElementIndex: gl.getExtension('OES_element_index_uint'),
-                // Floats and half-floats
-                floatTexture: gl.getExtension('OES_texture_float'),
-                floatTextureLinear: gl.getExtension('OES_texture_float_linear'),
-                textureHalfFloat: gl.getExtension('OES_texture_half_float'),
-                textureHalfFloatLinear: gl.getExtension('OES_texture_half_float_linear'),
-            });
-        }
-        else if (this.webGLVersion === 2)
-        {
-            Object.assign(this.extensions, common, {
-                // Floats and half-floats
-                colorBufferFloat: gl.getExtension('EXT_color_buffer_float'),
-            });
-        }
+        Object.assign(this.extensions, common, {
+            // Floats and half-floats
+            colorBufferFloat: gl.getExtension('EXT_color_buffer_float'),
+        });
     }
 
     /**

@@ -3,9 +3,8 @@ import { BufferUsage } from '../../shared/buffer/const';
 import { BUFFER_TYPE } from './const';
 import { GlBuffer } from './GlBuffer';
 
-import type { ExtensionMetadata } from '../../../../extensions/Extensions';
 import type { Buffer } from '../../shared/buffer/Buffer';
-import type { ISystem } from '../../shared/system/ISystem';
+import type { ISystem } from '../../shared/system/System';
 import type { GlRenderingContext } from '../context/GlRenderingContext';
 import type { WebGLRenderer } from '../WebGLRenderer';
 
@@ -29,12 +28,12 @@ import type { WebGLRenderer } from '../WebGLRenderer';
 export class GlBufferSystem implements ISystem
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
-            ExtensionType.WebGLRendererSystem,
+            ExtensionType.WebGLSystem,
         ],
         name: 'buffer',
-    };
+    } as const;
 
     private gl: GlRenderingContext;
 

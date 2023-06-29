@@ -2,7 +2,6 @@ import { ExtensionType } from '../../../extensions/Extensions';
 import { STENCIL_MODES } from '../../renderers/shared/state/const';
 import { collectAllRenderables } from '../../scene/utils/buildInstructions';
 
-import type { ExtensionMetadata } from '../../../extensions/Extensions';
 import type { Instruction } from '../../renderers/shared/instructions/Instruction';
 import type { InstructionSet } from '../../renderers/shared/instructions/InstructionSet';
 import type { InstructionPipe } from '../../renderers/shared/instructions/RenderPipe';
@@ -21,14 +20,14 @@ export interface StencilMaskInstruction extends Instruction
 
 export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
 {
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
-            ExtensionType.WebGLRendererPipes,
-            ExtensionType.WebGPURendererPipes,
-            ExtensionType.CanvasRendererPipes,
+            ExtensionType.WebGLPipes,
+            ExtensionType.WebGPUPipes,
+            ExtensionType.CanvasPipes,
         ],
         name: 'stencilMask',
-    };
+    } as const;
 
     private renderer: Renderer;
 

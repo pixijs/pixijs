@@ -6,7 +6,6 @@ import { ProxyRenderable } from '../rendering/renderers/shared/ProxyRenderable';
 import { QuadGeometry } from './QuadGeometry';
 import { TilingSpriteShader } from './shader/TilingSpriteShader';
 
-import type { ExtensionMetadata } from '../extensions/Extensions';
 import type { TypedArray } from '../rendering/renderers/shared/buffer/Buffer';
 import type { InstructionSet } from '../rendering/renderers/shared/instructions/InstructionSet';
 import type { RenderPipe } from '../rendering/renderers/shared/instructions/RenderPipe';
@@ -24,14 +23,14 @@ const sharedQuad = new QuadGeometry();
 export class TilingSpritePipe implements RenderPipe<TilingSpriteView>
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
-            ExtensionType.WebGLRendererPipes,
-            ExtensionType.WebGPURendererPipes,
-            ExtensionType.CanvasRendererPipes,
+            ExtensionType.WebGLPipes,
+            ExtensionType.WebGPUPipes,
+            ExtensionType.CanvasPipes,
         ],
         name: 'tilingSprite',
-    };
+    } as const;
 
     renderer: Renderer;
 

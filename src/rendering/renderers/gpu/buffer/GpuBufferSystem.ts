@@ -1,21 +1,20 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { fastCopy } from '../../shared/buffer/utils/fastCopy';
 
-import type { ExtensionMetadata } from '../../../../extensions/Extensions';
 import type { Buffer } from '../../shared/buffer/Buffer';
-import type { ISystem } from '../../shared/system/ISystem';
+import type { ISystem } from '../../shared/system/System';
 import type { GPU } from '../GpuDeviceSystem';
 import type { WebGPURenderer } from '../WebGPURenderer';
 
 export class BufferSystem implements ISystem
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
-            ExtensionType.WebGPURendererSystem,
+            ExtensionType.WebGPUSystem,
         ],
         name: 'buffer',
-    };
+    } as const;
 
     readonly renderer: WebGPURenderer;
     protected CONTEXT_UID: number;

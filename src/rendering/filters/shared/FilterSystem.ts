@@ -10,15 +10,14 @@ import { Bounds } from '../../scene/bounds/Bounds';
 import { getGlobalBounds } from '../../scene/bounds/getGlobalBounds';
 import { getGlobalRenderableBounds } from '../../scene/bounds/getRenderableBounds';
 
-import type { ExtensionMetadata } from '../../../extensions/Extensions';
 import type { PointData } from '../../../maths/PointData';
 import type { RenderSurface } from '../../renderers/gpu/renderTarget/GpuRenderTargetSystem';
 import type { BindResource } from '../../renderers/gpu/shader/BindResource';
-import type { GPURenderPipes } from '../../renderers/gpu/WebGPUSystems';
+import type { WebGPURenderer } from '../../renderers/gpu/WebGPURenderer';
 import type { Instruction } from '../../renderers/shared/instructions/Instruction';
 import type { Renderable } from '../../renderers/shared/Renderable';
 import type { RenderTarget } from '../../renderers/shared/renderTarget/RenderTarget';
-import type { ISystem } from '../../renderers/shared/system/ISystem';
+import type { ISystem } from '../../renderers/shared/system/System';
 import type { Renderer } from '../../renderers/types';
 import type { Container } from '../../scene/Container';
 import type { Sprite } from '../../sprite/shared/Sprite';
@@ -86,13 +85,13 @@ export interface FilterData
 export class FilterSystem implements ISystem
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
-            ExtensionType.WebGLRendererSystem,
-            ExtensionType.WebGPURendererSystem,
+            ExtensionType.WebGLSystem,
+            ExtensionType.WebGPUSystem,
         ],
         name: 'filter',
-    };
+    } as const;
 
     private filterStackIndex = 0;
     private filterStack: FilterData[] = [];
@@ -295,9 +294,9 @@ export class FilterSystem implements ISystem
 
         let globalUniforms: BindResource = this.filterGlobalUniforms;
 
-        if ((renderer.renderPipes as GPURenderPipes).uniformBatch)
+        if ((renderer as WebGPURenderer).renderPipes.uniformBatch)
         {
-            globalUniforms = (renderer.renderPipes as GPURenderPipes).uniformBatch
+            globalUniforms = (renderer as WebGPURenderer).renderPipes.uniformBatch
                 .getUniformBufferResource(this.filterGlobalUniforms);
         }
 
@@ -334,9 +333,9 @@ export class FilterSystem implements ISystem
             outputFrame[1] = 0;
             this.filterGlobalUniforms.update();
 
-            if ((renderer.renderPipes as GPURenderPipes).uniformBatch)
+            if ((renderer as WebGPURenderer).renderPipes.uniformBatch)
             {
-                const globalUniforms2 = (renderer.renderPipes as GPURenderPipes).uniformBatch
+                const globalUniforms2 = (renderer as WebGPURenderer).renderPipes.uniformBatch
                     .getUniformBufferResource(this.filterGlobalUniforms);
 
                 this.globalFilterBindGroup.setResource(globalUniforms2, 0);
@@ -368,7 +367,7 @@ export class FilterSystem implements ISystem
 
             renderer.globalUniforms.pop();
 
-            if ((renderer.renderPipes as GPURenderPipes).uniformBatch)
+            if ((renderer as WebGPURenderer).renderPipes.uniformBatch)
             {
                 this.globalFilterBindGroup.setResource(globalUniforms, 0);
             }

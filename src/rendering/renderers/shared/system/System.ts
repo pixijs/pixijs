@@ -7,7 +7,7 @@ export interface ISystem<INIT_OPTIONS = null, DESTROY_OPTIONS = null>
     destroy?: (options?: DESTROY_OPTIONS) => void;
 }
 
-export interface ISystemConstructor<R = Renderer>
+export interface SystemConstructor
 {
-    new (renderer: R): ISystem;
+    new (renderer: Renderer): ISystem;
 }

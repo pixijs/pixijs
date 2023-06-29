@@ -41,7 +41,7 @@ describe('Mesh', () =>
 
         container.addChild(mesh);
 
-        renderer.render(container);
+        renderer.render({ container });
 
         const gpuMesh = renderer.renderPipes.mesh['gpuBatchableMeshHash'][mesh.uid];
 

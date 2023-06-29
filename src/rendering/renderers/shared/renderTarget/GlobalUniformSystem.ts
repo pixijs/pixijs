@@ -4,14 +4,13 @@ import { Point } from '../../../../maths/Point';
 import { BindGroup } from '../../gpu/shader/BindGroup';
 import { UniformGroup } from '../shader/UniformGroup';
 
-import type { ExtensionMetadata } from '../../../../extensions/Extensions';
 import type { PointData } from '../../../../maths/PointData';
 import type { GlRenderTargetSystem } from '../../gl/GlRenderTargetSystem';
 import type { GpuRenderTargetSystem } from '../../gpu/renderTarget/GpuRenderTargetSystem';
 import type { WebGPURenderer } from '../../gpu/WebGPURenderer';
 import type { Renderer } from '../../types';
 import type { UniformBufferSystem } from '../shader/UniformBufferSystem';
-import type { ISystem } from '../system/ISystem';
+import type { ISystem } from '../system/System';
 
 export type GlobalUniformGroup = UniformGroup<{
     projectionMatrix: { value: Matrix; type: 'mat3x3<f32>' }
@@ -46,14 +45,14 @@ interface GlobalUniformRenderer
 export class GlobalUniformSystem implements ISystem
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
-            ExtensionType.WebGLRendererSystem,
-            ExtensionType.WebGPURendererSystem,
-            ExtensionType.CanvasRendererSystem,
+            ExtensionType.WebGLSystem,
+            ExtensionType.WebGPUSystem,
+            ExtensionType.CanvasSystem,
         ],
         name: 'globalUniforms',
-    };
+    } as const;
 
     private renderer: GlobalUniformRenderer;
 

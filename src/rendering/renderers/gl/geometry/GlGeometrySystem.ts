@@ -1,10 +1,9 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { getGlInfoFromFormat } from './utils/getGlInfoFromFormat';
 
-import type { ExtensionMetadata } from '../../../../extensions/Extensions';
 import type { Topology } from '../../shared/geometry/const';
 import type { Geometry } from '../../shared/geometry/Geometry';
-import type { ISystem } from '../../shared/system/ISystem';
+import type { ISystem } from '../../shared/system/System';
 import type { GlRenderingContext } from '../context/GlRenderingContext';
 import type { GlProgram } from '../shader/GlProgram';
 import type { WebGLRenderer } from '../WebGLRenderer';
@@ -27,12 +26,12 @@ const topologyToGlMap = {
 export class GlGeometrySystem implements ISystem
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
-            ExtensionType.WebGLRendererSystem,
+            ExtensionType.WebGLSystem,
         ],
         name: 'geometry',
-    };
+    } as const;
 
     /**
      * `true` if we has `*_vertex_array_object` extension.

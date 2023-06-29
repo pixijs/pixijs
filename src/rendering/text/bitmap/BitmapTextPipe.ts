@@ -7,7 +7,6 @@ import { SdfShader } from '../sdfShader/SdfShader';
 import { BitmapFontManager } from './BitmapFontManager';
 import { getBitmapTextLayout } from './utils/getBitmapTextLayout';
 
-import type { ExtensionMetadata } from '../../../extensions/Extensions';
 import type { GraphicsContext } from '../../graphics/shared/GraphicsContext';
 import type { InstructionSet } from '../../renderers/shared/instructions/InstructionSet';
 import type { RenderPipe } from '../../renderers/shared/instructions/RenderPipe';
@@ -28,14 +27,14 @@ class GraphicsProxyRenderable extends ProxyRenderable<GraphicsView>
 export class BitmapTextPipe implements RenderPipe<TextView>
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
-            ExtensionType.WebGLRendererPipes,
-            ExtensionType.WebGPURendererPipes,
-            ExtensionType.CanvasRendererPipes,
+            ExtensionType.WebGLPipes,
+            ExtensionType.WebGPUPipes,
+            ExtensionType.CanvasPipes,
         ],
         name: 'bitmapText',
-    };
+    } as const;
 
     private renderer: Renderer;
 
@@ -223,7 +222,7 @@ export class BitmapTextPipe implements RenderPipe<TextView>
     {
         for (const uid in this.gpuBitmapText)
         {
-            this.destroyRenderableByUid(uid as any as number);
+            this.destroyRenderableByUid(uid as unknown as number);
         }
 
         this.gpuBitmapText = null;

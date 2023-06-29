@@ -5,7 +5,6 @@ import { TextureSource } from '../../shared/texture/sources/TextureSource';
 import { TextureStyle } from '../../shared/texture/TextureStyle';
 import { generateProgram } from './program/generateProgram';
 
-import type { ExtensionMetadata } from '../../../../extensions/Extensions';
 import type { Shader } from '../../shared/shader/Shader';
 import type { GlRenderingContext } from '../context/GlRenderingContext';
 import type { WebGLRenderer } from '../WebGLRenderer';
@@ -21,12 +20,12 @@ const defaultSyncData = {
 export class GlShaderSystem
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
-            ExtensionType.WebGLRendererSystem,
+            ExtensionType.WebGLSystem,
         ],
         name: 'shader',
-    };
+    } as const;
 
     programDataHash: Record<string, GlProgramData> = {};
     renderer: WebGLRenderer;
@@ -78,7 +77,7 @@ export class GlShaderSystem
                     {
                         this.bindUniformBlock(
                             resource,
-                            shader.uniformBindMap[i as any as number][j as any as number],
+                            shader.uniformBindMap[i as unknown as number][j as unknown as number],
                             defaultSyncData.blockIndex++
                         );
                     }
@@ -91,7 +90,7 @@ export class GlShaderSystem
                 {
                     this.bindUniformBlock(
                         resource,
-                        shader.uniformBindMap[i as any as number][j as any as number],
+                        shader.uniformBindMap[i as unknown as number][j as unknown as number],
                         defaultSyncData.blockIndex++
                     );
                 }
@@ -100,7 +99,7 @@ export class GlShaderSystem
                     // TODO really we should not be binding the sampler here too
                     this.renderer.texture.bind(resource, defaultSyncData.textureCount);
 
-                    const uniformName = shader.uniformBindMap[i as any as number][j as any as number];
+                    const uniformName = shader.uniformBindMap[i as unknown as number][j as unknown as number];
 
                     const uniformData = programData.uniformData[uniformName];
 

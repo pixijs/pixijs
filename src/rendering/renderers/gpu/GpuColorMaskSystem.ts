@@ -1,18 +1,17 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 
-import type { ExtensionMetadata } from '../../../extensions/Extensions';
-import type { ISystem } from '../shared/system/ISystem';
+import type { ISystem } from '../shared/system/System';
 import type { WebGPURenderer } from './WebGPURenderer';
 
 export class GpuColorMaskSystem implements ISystem
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
-            ExtensionType.WebGPURendererSystem,
+            ExtensionType.WebGPUSystem,
         ],
         name: 'colorMask',
-    };
+    } as const;
 
     private renderer: WebGPURenderer;
 

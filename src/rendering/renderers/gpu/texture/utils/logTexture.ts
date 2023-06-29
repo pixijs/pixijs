@@ -19,7 +19,7 @@ export function logTexture(texture: Texture, renderer: WebGPURenderer): ICanvas
     canvas.width = texture.source.pixelWidth;
     canvas.height = texture.source.pixelHeight;
 
-    const context = canvas.getContext('webgpu') as any as GPUCanvasContext;
+    const context = canvas.getContext('webgpu') as unknown as GPUCanvasContext;
 
     context.configure({
         device: renderer.gpu.device,

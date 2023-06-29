@@ -6,7 +6,7 @@ describe('UniformBatch', () =>
 {
     it('should get a bind group correctly', () =>
     {
-        const uniformBatchPipe = new GpuUniformBatchPipe({} as any as WebGPURenderer);
+        const uniformBatchPipe = new GpuUniformBatchPipe({} as WebGPURenderer);
 
         const bufferResource = uniformBatchPipe.getArrayBufferResource(new Float32Array(32));
 

@@ -26,7 +26,7 @@ describe('TilingSprite', () =>
 
         container.addChild(sprite);
 
-        renderer.render(container);
+        renderer.render({ container });
         expect(renderer.renderPipes.tilingSprite['renderableHash'][sprite.uid]).not.toBeNull();
 
         expect(renderer.renderPipes.tilingSprite['gpuTilingSprite'][sprite.uid]).toBeUndefined();
@@ -34,7 +34,7 @@ describe('TilingSprite', () =>
 
         sprite.texture = getTexture({ width: 10, height: 10 });
 
-        renderer.render(container);
+        renderer.render({ container });
 
         expect(renderer.renderPipes.tilingSprite['gpuTilingSprite'][sprite.uid]).not.toBeNull();
 

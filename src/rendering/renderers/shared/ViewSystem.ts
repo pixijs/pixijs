@@ -2,10 +2,9 @@ import { ExtensionType } from '../../../extensions/Extensions';
 import { settings } from '../../../settings/settings';
 import { getCanvasTexture } from './texture/utils/getCanvasTexture';
 
-import type { ExtensionMetadata } from '../../../extensions/Extensions';
 import type { ICanvas } from '../../../settings/adapter/ICanvas';
 import type { Renderer } from '../types';
-import type { ISystem } from './system/ISystem';
+import type { ISystem } from './system/System';
 import type { CanvasSourceOptions } from './texture/sources/CanvasSource';
 import type { Texture } from './texture/Texture';
 
@@ -17,37 +16,37 @@ export interface ViewSystemOptions
 {
     /**
      * The width of the screen.
-     * @memberof PIXI.WebGLRendererOptions
+     * @memberof PIXI.WebGLOptions
      */
     width?: number;
     /**
      * The height of the screen.
-     * @memberof PIXI.WebGLRendererOptions
+     * @memberof PIXI.WebGLOptions
      */
     height?: number;
     /**
      * The canvas to use as a view, optional.
-     * @memberof PIXI.WebGLRendererOptions
+     * @memberof PIXI.WebGLOptions
      */
     element?: ICanvas;
     /**
      * Resizes renderer view in CSS pixels to allow for resolutions other than 1.
-     * @memberof PIXI.WebGLRendererOptions
+     * @memberof PIXI.WebGLOptions
      */
     autoDensity?: boolean;
     /**
      * The resolution / device pixel ratio of the renderer.
-     * @memberof PIXI.WebGLRendererOptions
+     * @memberof PIXI.WebGLOptions
      */
     resolution?: number;
     /**
      * **WebGL Only.** Whether to enable anti-aliasing. This may affect performance.
-     * @memberof PIXI.WebGLRendererOptions
+     * @memberof PIXI.WebGLOptions
      */
     antialias?: boolean;
     /**
      * TODO: multiView
-     * @memberof PIXI.WebGLRendererOptions
+     * @memberof PIXI.WebGLOptions
      */
     multiView?: boolean;
 }
@@ -60,47 +59,42 @@ export interface ViewSystemOptions
 export class ViewSystem implements ISystem
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
-            ExtensionType.WebGLRendererSystem,
-            ExtensionType.WebGPURendererSystem,
-            ExtensionType.CanvasRendererSystem,
+            ExtensionType.WebGLSystem,
+            ExtensionType.WebGPUSystem,
+            ExtensionType.CanvasSystem,
         ],
         name: 'view',
         priority: 0,
-    };
+    } as const;
 
     /** @ignore */
     static defaultOptions: ViewSystemOptions = {
         /**
-         * {@link PIXI.WebGLRendererOptions.width}
+         * {@link PIXI.WebGLOptions.width}
          * @default 800
-         * @memberof PIXI.settings.GL_RENDER_OPTIONS
          */
         width: 800,
         /**
-         * {@link PIXI.WebGLRendererOptions.height}
+         * {@link PIXI.WebGLOptions.height}
          * @default 600
-         * @memberof PIXI.settings.GL_RENDER_OPTIONS
          */
         height: 600,
         /**
-         * {@link PIXI.WebGLRendererOptions.resolution}
+         * {@link PIXI.WebGLOptions.resolution}
          * @type {number}
          * @default PIXI.settings.RESOLUTION
-         * @memberof PIXI.settings.GL_RENDER_OPTIONS
          */
         resolution: settings.RESOLUTION,
         /**
-         * {@link PIXI.WebGLRendererOptions.autoDensity}
+         * {@link PIXI.WebGLOptions.autoDensity}
          * @default false
-         * @memberof PIXI.settings.GL_RENDER_OPTIONS
          */
-        autoDensity: false,
+        autoDensity: true,
         /**
-         * {@link PIXI.WebGLRendererOptions.antialias}
+         * {@link PIXI.WebGLOptions.antialias}
          * @default false
-         * @memberof PIXI.settings.GL_RENDER_OPTIONS
          */
         antialias: false,
     };
@@ -154,6 +148,12 @@ export class ViewSystem implements ISystem
         this.texture = getCanvasTexture(this.element, options as CanvasSourceOptions);
 
         this.multiView = !!options.multiView;
+
+        if (this.autoDensity)
+        {
+            this.element.style.width = `${this.texture.width}px`;
+            this.element.style.height = `${this.texture.height}px`;
+        }
     }
 
     /**
@@ -162,9 +162,15 @@ export class ViewSystem implements ISystem
      * @param desiredScreenHeight - The new height of the screen.
      * @param resolution
      */
-    resizeView(desiredScreenWidth: number, desiredScreenHeight: number, resolution: number): void
+    resize(desiredScreenWidth: number, desiredScreenHeight: number, resolution: number): void
     {
         this.texture.source.resize(desiredScreenWidth, desiredScreenHeight, resolution);
+
+        if (this.autoDensity)
+        {
+            this.element.style.width = `${desiredScreenWidth}px`;
+            this.element.style.height = `${desiredScreenHeight}px`;
+        }
     }
 
     /**

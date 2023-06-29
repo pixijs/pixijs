@@ -1,8 +1,7 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { hex2rgb, hex2string } from '../../../../utils/color/hex';
 
-import type { ExtensionMetadata } from '../../../../extensions/Extensions';
-import type { ISystem } from '../system/ISystem';
+import type { ISystem } from '../system/System';
 
 /**
  * Options for the background system.
@@ -12,22 +11,22 @@ export interface BackgroundSystemOptions
 {
     /**
      * The background color used to clear the canvas. See {@link PIXI.ColorSource} for accepted color values.
-     * @memberof PIXI.WebGLRendererOptions
+     * @memberof PIXI.WebGLOptions
      */
     backgroundColor: number; // TODO: ColorSource;
     /**
-     * Alias for {@link PIXI.WebGLRendererOptions.backgroundColor}
-     * @memberof PIXI.WebGLRendererOptions
+     * Alias for {@link PIXI.WebGLOptions.backgroundColor}
+     * @memberof PIXI.WebGLOptions
      */
     background?: number; // TODO: ColorSource
     /**
      * Transparency of the background color, value from `0` (fully transparent) to `1` (fully opaque).
-     * @memberof PIXI.WebGLRendererOptions
+     * @memberof PIXI.WebGLOptions
      */
     backgroundAlpha: number;
     /**
      * Whether to clear the canvas before new render passes.
-     * @memberof PIXI.WebGLRendererOptions
+     * @memberof PIXI.WebGLOptions
      */
     clearBeforeRender: boolean;
 }
@@ -47,30 +46,30 @@ type ColorObject = { r: number; g: number; b: number; a: number };
 export class BackgroundSystem implements ISystem
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
-            ExtensionType.WebGLRendererSystem,
-            ExtensionType.WebGPURendererSystem,
-            ExtensionType.CanvasRendererSystem,
+            ExtensionType.WebGLSystem,
+            ExtensionType.WebGPUSystem,
+            ExtensionType.CanvasSystem,
         ],
         name: 'background',
         priority: 0,
-    };
+    } as const;
 
     /** @ignore */
     static defaultOptions: BackgroundSystemOptions = {
         /**
-         * {@link PIXI.WebGLRendererOptions.backgroundAlpha}
+         * {@link PIXI.WebGLOptions.backgroundAlpha}
          * @default 1
          */
         backgroundAlpha: 1,
         /**
-         * {@link PIXI.WebGLRendererOptions.backgroundColor}
+         * {@link PIXI.WebGLOptions.backgroundColor}
          * @default 0x000000
          */
         backgroundColor: 0x0,
         /**
-         * {@link PIXI.WebGLRendererOptions.clearBeforeRender}
+         * {@link PIXI.WebGLOptions.clearBeforeRender}
          * @default true
          */
         clearBeforeRender: true,

@@ -6,7 +6,7 @@ import { FederatedWheelEvent } from './FederatedWheelEvent';
 
 import type { ExtensionMetadata } from '../extensions/Extensions';
 import type { PointData } from '../maths/PointData';
-import type { ISystem } from '../rendering/renderers/shared/system/ISystem';
+import type { ISystem } from '../rendering/renderers/shared/system/System';
 import type { Renderer } from '../rendering/renderers/types';
 import type { EventMode } from './FederatedEventTarget';
 import type { FederatedMouseEvent } from './FederatedMouseEvent';
@@ -96,9 +96,9 @@ export class EventSystem implements ISystem<EventSystemOptions>
     static extension: ExtensionMetadata = {
         name: 'events',
         type: [
-            ExtensionType.WebGLRendererSystem,
-            ExtensionType.CanvasRendererSystem,
-            ExtensionType.WebGPURendererSystem,
+            ExtensionType.WebGLSystem,
+            ExtensionType.CanvasSystem,
+            ExtensionType.WebGPUSystem,
         ],
         priority: -1,
     };
@@ -247,7 +247,7 @@ export class EventSystem implements ISystem<EventSystemOptions>
      */
     init(options: EventSystemOptions): void
     {
-        const { canvas, resolution } = this.renderer;
+        const { element: canvas, resolution } = this.renderer;
 
         this.setTargetElement(canvas as HTMLCanvasElement);
         this.resolution = resolution;

@@ -1,31 +1,32 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { Matrix } from '../../../maths/Matrix';
 import { RenderTarget } from '../shared/renderTarget/RenderTarget';
-import { Runner } from '../shared/runner/Runner';
+import { SystemRunner } from '../shared/system/SystemRunner';
 import { Texture } from '../shared/texture/Texture';
+import { getCanvasTexture } from '../shared/texture/utils/getCanvasTexture';
 import { GlRenderTarget } from './GlRenderTarget';
 
-import type { ExtensionMetadata } from '../../../extensions/Extensions';
+import type { ICanvas } from '../../../settings/adapter/ICanvas';
 import type { RenderSurface, RGBAArray } from '../gpu/renderTarget/GpuRenderTargetSystem';
-import type { ISystem } from '../shared/system/ISystem';
+import type { ISystem } from '../shared/system/System';
 import type { GlRenderingContext } from './context/GlRenderingContext';
 import type { WebGLRenderer } from './WebGLRenderer';
 
 export class GlRenderTargetSystem implements ISystem
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
-            ExtensionType.WebGLRendererSystem,
+            ExtensionType.WebGLSystem,
         ],
         name: 'renderTarget',
-    };
+    } as const;
 
     rootProjectionMatrix: Matrix;
     rootRenderTarget: RenderTarget;
     renderTarget: RenderTarget;
 
-    onRenderTargetChange = new Runner('onRenderTargetChange');
+    onRenderTargetChange = new SystemRunner('onRenderTargetChange');
 
     // TODO work on this later!
     // multiRender = true;
@@ -70,6 +71,11 @@ export class GlRenderTargetSystem implements ISystem
         this.rootProjectionMatrix = renderTarget.projectionMatrix;
 
         this.push(renderTarget, clear, clearColor);
+    }
+
+    renderEnd(): void
+    {
+        this.finish();
     }
 
     bind(renderSurface: RenderSurface, clear = true, clearColor?: RGBAArray): RenderTarget
@@ -193,6 +199,11 @@ export class GlRenderTargetSystem implements ISystem
     private initRenderTarget(renderSurface: RenderSurface): RenderTarget
     {
         let renderTarget: RenderTarget = null;
+
+        if (renderSurface instanceof HTMLCanvasElement)
+        {
+            renderSurface = getCanvasTexture(renderSurface as ICanvas);
+        }
 
         if (renderSurface instanceof RenderTarget)
         {

@@ -9,7 +9,6 @@ import { getGlobalBounds } from '../../scene/bounds/getGlobalBounds';
 import { collectAllRenderables } from '../../scene/utils/buildInstructions';
 import { Sprite } from '../../sprite/shared/Sprite';
 
-import type { ExtensionMetadata } from '../../../extensions/Extensions';
 import type { PoolItem } from '../../../utils/pool/Pool';
 import type { Instruction } from '../../renderers/shared/instructions/Instruction';
 import type { InstructionSet } from '../../renderers/shared/instructions/InstructionSet';
@@ -67,14 +66,14 @@ export interface AlphaMaskData
 export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
-            ExtensionType.WebGLRendererPipes,
-            ExtensionType.WebGPURendererPipes,
-            ExtensionType.CanvasRendererPipes,
+            ExtensionType.WebGLPipes,
+            ExtensionType.WebGPUPipes,
+            ExtensionType.CanvasPipes,
         ],
         name: 'alphaMask',
-    };
+    } as const;
 
     private renderer: Renderer;
     private activeMaskStage: AlphaMaskData[] = [];

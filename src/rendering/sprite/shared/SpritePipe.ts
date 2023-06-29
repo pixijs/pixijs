@@ -2,7 +2,6 @@ import { ExtensionType } from '../../../extensions/Extensions';
 import { BigPool } from '../../../utils/pool/PoolGroup';
 import { BatchableSprite } from './BatchableSprite';
 
-import type { ExtensionMetadata } from '../../../extensions/Extensions';
 import type { PoolItem } from '../../../utils/pool/Pool';
 import type { InstructionSet } from '../../renderers/shared/instructions/InstructionSet';
 import type { RenderPipe } from '../../renderers/shared/instructions/RenderPipe';
@@ -15,14 +14,14 @@ let gpuSpriteHash: Record<number, BatchableSprite>;
 export class SpritePipe implements RenderPipe<SpriteView>
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
-            ExtensionType.WebGLRendererPipes,
-            ExtensionType.WebGPURendererPipes,
-            ExtensionType.CanvasRendererPipes,
+            ExtensionType.WebGLPipes,
+            ExtensionType.WebGPUPipes,
+            ExtensionType.CanvasPipes,
         ],
         name: 'sprite',
-    };
+    } as const;
 
     private renderer: Renderer;
     private gpuSpriteHash: Record<number, BatchableSprite> = {};

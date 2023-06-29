@@ -4,7 +4,6 @@ import { MAX_TEXTURES } from '../shared/const';
 import { generateDefaultBatchProgram } from './generateDefaultBatchProgram';
 import { getTextureBatchBindGroup } from './getTextureBatchBindGroup';
 
-import type { ExtensionMetadata } from '../../../extensions/Extensions';
 import type { GpuEncoderSystem } from '../../renderers/gpu/GpuEncoderSystem';
 import type { Batch } from '../shared/Batcher';
 import type { BatcherAdaptor, BatcherPipe } from '../shared/BatcherPipe';
@@ -12,12 +11,12 @@ import type { BatcherAdaptor, BatcherPipe } from '../shared/BatcherPipe';
 export class GpuBatchAdaptor implements BatcherAdaptor
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
-            ExtensionType.WebGPURendererPipesAdaptor,
+            ExtensionType.WebGPUPipesAdaptor,
         ],
         name: 'batch',
-    };
+    } as const;
 
     shader: Shader;
 

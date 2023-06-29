@@ -59,7 +59,7 @@ describe('Text', () =>
 
         container.addChild(text);
 
-        renderer.render(container);
+        renderer.render({ container });
 
         expect(renderer.canvasText['activeTextures'][key].usageCount).toBe(1);
 
@@ -79,7 +79,7 @@ describe('Text', () =>
 
         container.addChild(text);
 
-        renderer.render(container);
+        renderer.render({ container });
 
         expect(renderer.renderPipes.bitmapText['gpuBitmapText'][text.uid]).not.toBeNull();
 

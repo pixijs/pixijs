@@ -2,7 +2,6 @@ import { ExtensionType } from '../../../extensions/Extensions';
 import { BigPool } from '../../../utils/pool/PoolGroup';
 import { BatchableSprite } from '../../sprite/shared/BatchableSprite';
 
-import type { ExtensionMetadata } from '../../../extensions/Extensions';
 import type { ObservablePoint } from '../../../maths/ObservablePoint';
 import type { InstructionSet } from '../../renderers/shared/instructions/InstructionSet';
 import type { RenderPipe } from '../../renderers/shared/instructions/RenderPipe';
@@ -14,18 +13,18 @@ import type { TextView } from '../TextView';
 export class CanvasTextPipe implements RenderPipe<TextView>
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
-            ExtensionType.WebGLRendererPipes,
-            ExtensionType.WebGPURendererPipes,
-            ExtensionType.CanvasRendererPipes,
+            ExtensionType.WebGLPipes,
+            ExtensionType.WebGPUPipes,
+            ExtensionType.CanvasPipes,
         ],
         name: 'text',
-    };
+    } as const;
 
     private renderer: Renderer;
 
-    private gpuText: Record<string, {
+    private gpuText: Record<number, {
         texture: Texture,
         currentKey: string,
         batchableSprite: BatchableSprite,
@@ -167,7 +166,7 @@ export class CanvasTextPipe implements RenderPipe<TextView>
 
         view._style.update();
 
-        const gpuTextData: CanvasTextPipe['gpuText'][string] = {
+        const gpuTextData: CanvasTextPipe['gpuText'][number] = {
             texture: null,
             currentKey: '--',
             batchableSprite: BigPool.get(BatchableSprite),
@@ -194,7 +193,7 @@ export class CanvasTextPipe implements RenderPipe<TextView>
     {
         for (const i in this.gpuText)
         {
-            this.destroyRenderableById(i as any as number);
+            this.destroyRenderableById(i as unknown as number);
         }
 
         this.gpuText = null;

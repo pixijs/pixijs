@@ -2,9 +2,8 @@ import { ExtensionType } from '../../../../extensions/Extensions';
 import { State } from '../../shared/state/State';
 import { mapWebGLBlendModesToPixi } from './mapWebGLBlendModesToPixi';
 
-import type { ExtensionMetadata } from '../../../../extensions/Extensions';
 import type { BLEND_MODES } from '../../shared/state/const';
-import type { ISystem } from '../../shared/system/ISystem';
+import type { ISystem } from '../../shared/system/System';
 import type { GlRenderingContext } from '../context/GlRenderingContext';
 
 const BLEND = 0;
@@ -21,12 +20,12 @@ const DEPTH_MASK = 5;
 export class GlStateSystem implements ISystem
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
-            ExtensionType.WebGLRendererSystem,
+            ExtensionType.WebGLSystem,
         ],
         name: 'state',
-    };
+    } as const;
 
     /**
      * State ID

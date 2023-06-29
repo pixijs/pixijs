@@ -32,7 +32,7 @@ export interface BatchPipe
     break: (instructionSet: InstructionSet) => void;
 }
 
-export interface PipeConstructor<R = Renderer>
+export interface PipeConstructor
 {
-    new (renderer: R, adaptor?: any): RenderPipe | BatchPipe | InstructionPipe<any> ;
+    new (renderer: Renderer, adaptor?: any): RenderPipe | BatchPipe | InstructionPipe<any> ;
 }

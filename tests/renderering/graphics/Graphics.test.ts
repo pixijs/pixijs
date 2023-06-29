@@ -33,7 +33,7 @@ describe('Graphics', () =>
 
         container.addChild(graphics);
 
-        renderer.render(container);
+        renderer.render({ container });
 
         // we will lose this ref once its destroyed:
         const context = graphics.context;

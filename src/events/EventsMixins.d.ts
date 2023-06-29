@@ -16,7 +16,7 @@ declare namespace PixiMixins
 
     }
 
-    interface SharedRendererOptions
+    interface RendererOptions
     {
         /**
          * The default event mode for all display objects.
@@ -30,5 +30,8 @@ declare namespace PixiMixins
         eventFeatures?: import('./EventSystem').EventSystemOptions['eventFeatures']
     }
 
-    // TODO: Add `events` to WebGLRenderer and WebGPURenderer
+    interface RendererSystems
+    {
+        events: import('./EventSystem').EventSystem;
+    }
 }

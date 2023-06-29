@@ -9,11 +9,10 @@ import { CanvasTextMetrics } from './CanvasTextMetrics';
 import { fontStringFromTextStyle } from './utils/fontStringFromTextStyle';
 import { getCanvasFillStyle } from './utils/getCanvasFillStyle';
 
-import type { ExtensionMetadata } from '../../../extensions/Extensions';
 import type { ICanvas } from '../../../settings/adapter/ICanvas';
 import type { ICanvasRenderingContext2D } from '../../../settings/adapter/ICanvasRenderingContext2D';
 import type { StrokeStyle } from '../../graphics/shared/GraphicsContext';
-import type { ISystem } from '../../renderers/shared/system/ISystem';
+import type { ISystem } from '../../renderers/shared/system/System';
 import type { Texture } from '../../renderers/shared/texture/Texture';
 import type { TextStyle } from '../TextStyle';
 
@@ -28,14 +27,14 @@ interface CanvasAndContext
 export class CanvasTextSystem implements ISystem
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
-            ExtensionType.WebGLRendererSystem,
-            ExtensionType.WebGPURendererSystem,
-            ExtensionType.CanvasRendererSystem,
+            ExtensionType.WebGLSystem,
+            ExtensionType.WebGPUSystem,
+            ExtensionType.CanvasSystem,
         ],
         name: 'canvasText',
-    };
+    } as const;
 
     private activeTextures: Record<string, {
         canvasAndContext: CanvasAndContext,

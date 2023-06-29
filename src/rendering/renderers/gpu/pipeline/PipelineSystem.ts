@@ -3,11 +3,10 @@ import { createIdFromString } from '../../shared/createIdFromString';
 import { STENCIL_MODES } from '../../shared/state/const';
 import { GpuStencilModesToPixi } from '../state/GpuStencilModesToPixi';
 
-import type { ExtensionMetadata } from '../../../../extensions/Extensions';
 import type { Topology } from '../../shared/geometry/const';
 import type { Geometry } from '../../shared/geometry/Geometry';
 import type { State } from '../../shared/state/State';
-import type { ISystem } from '../../shared/system/ISystem';
+import type { ISystem } from '../../shared/system/System';
 import type { GPU } from '../GpuDeviceSystem';
 import type { GpuProgram } from '../shader/GpuProgram';
 import type { WebGPURenderer } from '../WebGPURenderer';
@@ -56,12 +55,12 @@ function getKey(
 export class PipelineSystem implements ISystem
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
-            ExtensionType.WebGPURendererSystem,
+            ExtensionType.WebGPUSystem,
         ],
         name: 'pipeline',
-    };
+    } as const;
     readonly renderer: WebGPURenderer;
 
     protected CONTEXT_UID: number;

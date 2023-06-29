@@ -1,18 +1,17 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 
-import type { ExtensionMetadata } from '../../../extensions/Extensions';
-import type { ISystem } from '../shared/system/ISystem';
+import type { ISystem } from '../shared/system/System';
 import type { WebGLRenderer } from './WebGLRenderer';
 
 export class GlColorMaskSystem implements ISystem
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
-            ExtensionType.WebGLRendererSystem,
+            ExtensionType.WebGLSystem,
         ],
         name: 'colorMask',
-    };
+    } as const;
 
     private renderer: WebGLRenderer;
     private colorMaskCache = 0b1111;

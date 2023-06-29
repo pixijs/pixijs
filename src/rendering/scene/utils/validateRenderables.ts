@@ -1,8 +1,7 @@
-import type { SharedPipes } from '../../renderers/shared/system/SharedSystems';
-import type { Renderer } from '../../renderers/types';
+import type { RenderPipes } from '../../renderers/types';
 import type { LayerGroup } from '../LayerGroup';
 
-export function validateRenderables(layerGroup: LayerGroup, renderPipes: Renderer['renderPipes']): boolean
+export function validateRenderables(layerGroup: LayerGroup, renderPipes: RenderPipes): boolean
 {
     const { list, index } = layerGroup.childrenRenderablesToUpdate;
 
@@ -14,7 +13,7 @@ export function validateRenderables(layerGroup: LayerGroup, renderPipes: Rendere
 
         const renderable = container.view;
 
-        rebuildRequired = (renderPipes as SharedPipes<any>)[renderable.type].validateRenderable(container);
+        rebuildRequired = (renderPipes[renderable.type as keyof RenderPipes] as any).validateRenderable(container);
 
         if (rebuildRequired)
         {

@@ -23,4 +23,8 @@ files.forEach((file) =>
     lines.push(`/// <reference path=".${name}" />`);
 });
 
-fs.appendFileSync(path.join(process.cwd(), './lib/index.d.ts'), lines.join('\n'));
+const filePath = path.join(process.cwd(), './lib/index.d.ts');
+const contents = fs.readFileSync(filePath, 'utf8');
+const updatedContents = `${lines.join('\n')}\n${contents}`;
+
+fs.writeFileSync(filePath, updatedContents);

@@ -42,11 +42,10 @@
  * ```
  * @memberof PIXI
  */
-export class Runner
+export class SystemRunner
 {
     public items: any[];
     private _name: string;
-    private _aliasCount: number;
 
     /**
      * @param name - The function name that will be executed on the listeners added to this Runner.
@@ -55,7 +54,6 @@ export class Runner
     {
         this.items = [];
         this._name = name;
-        this._aliasCount = 0;
     }
 
     /* eslint-disable jsdoc/require-param, jsdoc/check-param-names */
@@ -69,28 +67,12 @@ export class Runner
     {
         const { name, items } = this;
 
-        this._aliasCount++;
-
         for (let i = 0, len = items.length; i < len; i++)
         {
             items[i][name](a0, a1, a2, a3, a4, a5, a6, a7);
         }
 
-        if (items === this.items)
-        {
-            this._aliasCount--;
-        }
-
         return this;
-    }
-
-    private ensureNonAliasedItems(): void
-    {
-        if (this._aliasCount > 0 && this.items.length > 1)
-        {
-            this._aliasCount = 0;
-            this.items = this.items.slice(0);
-        }
     }
 
     /**
@@ -115,7 +97,6 @@ export class Runner
     {
         if ((item as any)[this._name])
         {
-            this.ensureNonAliasedItems();
             this.remove(item);
             this.items.push(item);
         }
@@ -133,7 +114,6 @@ export class Runner
 
         if (index !== -1)
         {
-            this.ensureNonAliasedItems();
             this.items.splice(index, 1);
         }
 
@@ -152,7 +132,6 @@ export class Runner
     /** Remove all listeners from the Runner */
     public removeAll(): this
     {
-        this.ensureNonAliasedItems();
         this.items.length = 0;
 
         return this;
@@ -184,20 +163,3 @@ export class Runner
         return this._name;
     }
 }
-
-Object.defineProperties(Runner.prototype, {
-    /**
-     * Alias for `emit`
-     * @memberof PIXI.Runner#
-     * @method dispatch
-     * @see PIXI.Runner#emit
-     */
-    dispatch: { value: Runner.prototype.emit },
-    /**
-     * Alias for `emit`
-     * @memberof PIXI.Runner#
-     * @method run
-     * @see PIXI.Runner#emit
-     */
-    run: { value: Runner.prototype.emit },
-});

@@ -4,7 +4,6 @@ import { Buffer } from '../shared/buffer/Buffer';
 import { BufferUsage } from '../shared/buffer/const';
 import { BindGroup } from './shader/BindGroup';
 
-import type { ExtensionMetadata } from '../../../extensions/Extensions';
 import type { PoolItem } from '../../../utils/pool/Pool';
 import type { UniformGroup } from '../shared/shader/UniformGroup';
 import type { WebGPURenderer } from './WebGPURenderer';
@@ -35,12 +34,12 @@ class UniformBindGroup extends BindGroup
 export class GpuUniformBufferPipe
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
-            ExtensionType.WebGPURendererPipes,
+            ExtensionType.WebGPUPipes,
         ],
         name: 'uniformBuffer',
-    };
+    } as const;
 
     private activeBindGroups: BindGroup[] = [];
     private activeBindGroupIndex = 0;

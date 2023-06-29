@@ -1,7 +1,6 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { UniformGroup } from '../../renderers/shared/shader/UniformGroup';
 
-import type { ExtensionMetadata } from '../../../extensions/Extensions';
 import type { InstructionSet } from '../../renderers/shared/instructions/InstructionSet';
 import type { InstructionPipe } from '../../renderers/shared/instructions/RenderPipe';
 import type { Renderer } from '../../renderers/types';
@@ -12,14 +11,14 @@ import type { FilterInstruction } from './FilterSystem';
 // eslint-disable-next-line max-len
 export class FilterPipe implements InstructionPipe<FilterInstruction>
 {
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
-            ExtensionType.WebGLRendererPipes,
-            ExtensionType.WebGPURendererPipes,
-            ExtensionType.CanvasRendererPipes,
+            ExtensionType.WebGLPipes,
+            ExtensionType.WebGPUPipes,
+            ExtensionType.CanvasPipes,
         ],
         name: 'filter',
-    };
+    } as const;
 
     renderer: Renderer;
 

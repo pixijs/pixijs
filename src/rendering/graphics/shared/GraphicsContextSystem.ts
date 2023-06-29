@@ -5,10 +5,9 @@ import { getTextureBatchBindGroup } from '../../batcher/gpu/getTextureBatchBindG
 import { Batcher } from '../../batcher/shared/Batcher';
 import { buildContextBatches } from './utils/buildContextBatches';
 
-import type { ExtensionMetadata } from '../../../extensions/Extensions';
 import type { PoolItem } from '../../../utils/pool/Pool';
 import type { Batch } from '../../batcher/shared/Batcher';
-import type { ISystem } from '../../renderers/shared/system/ISystem';
+import type { ISystem } from '../../renderers/shared/system/System';
 import type { BatchableGraphics } from './BatchableGraphics';
 import type { GraphicsContext } from './GraphicsContext';
 
@@ -33,14 +32,14 @@ export class GraphicsContextRenderData
 export class GraphicsContextSystem implements ISystem
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
-            ExtensionType.WebGLRendererSystem,
-            ExtensionType.WebGPURendererSystem,
-            ExtensionType.CanvasRendererSystem,
+            ExtensionType.WebGLSystem,
+            ExtensionType.WebGPUSystem,
+            ExtensionType.CanvasSystem,
         ],
-        name: 'graphicsContext',
-    };
+        name: 'graphicsContext'
+    } as const;
 
     // the root context batches, used to either make a batch or geometry
     // all graphics use this as a base
@@ -59,75 +58,9 @@ export class GraphicsContextSystem implements ISystem
         this.returnActiveBatchers();
     }
 
-    private returnActiveBatchers()
-    {
-        for (let i = 0; i < this.activeBatchers.length; i++)
-        {
-            BigPool.return(this.activeBatchers[i] as PoolItem);
-        }
-
-        this.activeBatchers.length = 0;
-    }
-
     getContextRenderData(context: GraphicsContext): GraphicsContextRenderData
     {
         return this.graphicsDataContextHash[context.uid] || this.initContextRenderData(context);
-    }
-
-    private initContextRenderData(context: GraphicsContext): GraphicsContextRenderData
-    {
-        const graphicsData: GraphicsContextRenderData = BigPool.get(GraphicsContextRenderData);// ();
-
-        const batches = this.gpuContextHash[context.uid].batches;
-
-        let vertexSize = 0;
-        let indexSize = 0;
-
-        batches.forEach((batch) =>
-        {
-            batch.applyTransform = false;
-            vertexSize += batch.geometryData.vertices.length;
-            indexSize += batch.geometryData.indices.length;
-        });
-
-        const batcher = BigPool.get(Batcher);
-
-        this.activeBatchers.push(batcher);
-
-        batcher.ensureAttributeBuffer(vertexSize);
-        batcher.ensureIndexBuffer(indexSize);
-
-        batcher.begin();
-
-        for (let i = 0; i < batches.length; i++)
-        {
-            const batch = batches[i];
-
-            batcher.add(batch);
-        }
-
-        batcher.finish();
-
-        const geometry = graphicsData.geometry;
-
-        geometry.indexBuffer.data = batcher.indexBuffer;
-
-        geometry.buffers[0].data = batcher.attributeBuffer.float32View;
-
-        const drawBatches = batcher.batches;
-
-        for (let i = 0; i < drawBatches.length; i++)
-        {
-            const batch = drawBatches[i];
-
-            batch.textures.bindGroup = getTextureBatchBindGroup(batch.textures.textures);
-        }
-
-        this.graphicsDataContextHash[context.uid] = graphicsData;
-
-        graphicsData.batches = drawBatches;
-
-        return graphicsData;
     }
 
     // Context management functions
@@ -189,6 +122,75 @@ export class GraphicsContextSystem implements ISystem
     getGpuContext(context: GraphicsContext): GpuGraphicsContext
     {
         return this.gpuContextHash[context.uid] || this.initContext(context);
+    }
+
+    private returnActiveBatchers()
+    {
+        for (let i = 0; i < this.activeBatchers.length; i++)
+        {
+            BigPool.return(this.activeBatchers[i] as PoolItem);
+        }
+
+        this.activeBatchers.length = 0;
+    }
+
+    private initContextRenderData(context: GraphicsContext): GraphicsContextRenderData
+    {
+        const graphicsData: GraphicsContextRenderData = BigPool.get(GraphicsContextRenderData);// ();
+
+        const batches = this.gpuContextHash[context.uid].batches;
+
+        let vertexSize = 0;
+        let indexSize = 0;
+
+        batches.forEach((batch) =>
+        {
+            batch.applyTransform = false;
+            vertexSize += batch.geometryData.vertices.length;
+            indexSize += batch.geometryData.indices.length;
+        });
+
+        const batcher = BigPool.get(Batcher);
+
+        this.activeBatchers.push(batcher);
+
+        batcher.ensureAttributeBuffer(vertexSize);
+        batcher.ensureIndexBuffer(indexSize);
+
+        batcher.begin();
+
+        for (let i = 0; i < batches.length; i++)
+        {
+            const batch = batches[i];
+
+            batcher.add(batch);
+        }
+
+        batcher.finish();
+
+        const geometry = graphicsData.geometry;
+
+        geometry.indexBuffer.data = batcher.indexBuffer;
+
+        // not to self - this works as we are assigning the batchers array buffer
+        // once its up loaded - this buffer is then put back in the pool to be reused.
+        // this mean we don't have to creating new Batchers for each graphics items
+        geometry.buffers[0].data = batcher.attributeBuffer.float32View;
+
+        const drawBatches = batcher.batches;
+
+        for (let i = 0; i < drawBatches.length; i++)
+        {
+            const batch = drawBatches[i];
+
+            batch.textures.bindGroup = getTextureBatchBindGroup(batch.textures.textures);
+        }
+
+        this.graphicsDataContextHash[context.uid] = graphicsData;
+
+        graphicsData.batches = drawBatches;
+
+        return graphicsData;
     }
 
     private initContext(context: GraphicsContext): GpuGraphicsContext
