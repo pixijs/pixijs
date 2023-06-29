@@ -1,5 +1,6 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { Matrix } from '../../../../maths/Matrix';
+import { isRenderingToScreen } from '../../shared/renderTarget/isRenderingToScreen';
 import { RenderTarget } from '../../shared/renderTarget/RenderTarget';
 import { SystemRunner } from '../../shared/system/SystemRunner';
 import { TextureSource } from '../../shared/texture/sources/TextureSource';
@@ -28,6 +29,7 @@ export class GpuRenderTargetSystem implements System
     } as const;
 
     rootRenderTarget: RenderTarget;
+    renderingToScreen: boolean;
     rootProjectionMatrix = new Matrix();
     renderTarget: RenderTarget;
     onRenderTargetChange = new SystemRunner('onRenderTargetChange');
@@ -61,6 +63,8 @@ export class GpuRenderTargetSystem implements System
 
         this.rootRenderTarget = this.getRenderTarget(target);
         this.rootProjectionMatrix = this.rootRenderTarget.projectionMatrix;
+
+        this.renderingToScreen = isRenderingToScreen(this.rootRenderTarget);
 
         this.renderTargetStack.length = 0;
 

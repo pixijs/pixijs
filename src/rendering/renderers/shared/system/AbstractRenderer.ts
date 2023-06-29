@@ -180,7 +180,9 @@ export class AbstractRenderer<PIPES, OPTIONS>
      */
     get renderingToScreen(): boolean
     {
-        return true; // TODO: this._renderingToScreen;
+        const renderer = this as unknown as Renderer;
+
+        return renderer.renderTarget.renderingToScreen;
     }
 
     /**

@@ -1,5 +1,6 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { Matrix } from '../../../maths/Matrix';
+import { isRenderingToScreen } from '../shared/renderTarget/isRenderingToScreen';
 import { RenderTarget } from '../shared/renderTarget/RenderTarget';
 import { SystemRunner } from '../shared/system/SystemRunner';
 import { Texture } from '../shared/texture/Texture';
@@ -23,6 +24,7 @@ export class GlRenderTargetSystem implements System
     } as const;
 
     rootProjectionMatrix: Matrix;
+    renderingToScreen: boolean;
     rootRenderTarget: RenderTarget;
     renderTarget: RenderTarget;
 
@@ -68,6 +70,9 @@ export class GlRenderTargetSystem implements System
         const renderTarget = this.getRenderTarget(rootRenderSurface);
 
         this.rootRenderTarget = renderTarget;
+
+        this.renderingToScreen = isRenderingToScreen(this.rootRenderTarget);
+
         this.rootProjectionMatrix = renderTarget.projectionMatrix;
 
         this.push(renderTarget, clear, clearColor);
