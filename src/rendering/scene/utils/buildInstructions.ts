@@ -3,12 +3,11 @@ import { LayerRenderable } from '../../renderers/shared/LayerRenderable';
 import type { InstructionSet } from '../../renderers/shared/instructions/InstructionSet';
 import type { RenderPipe } from '../../renderers/shared/instructions/RenderPipe';
 import type { Renderable } from '../../renderers/shared/Renderable';
-import type { SharedPipes } from '../../renderers/shared/system/SharedSystems';
-import type { Renderer } from '../../renderers/types';
+import type { RenderPipes } from '../../renderers/types';
 import type { Container } from '../Container';
 import type { LayerGroup } from '../LayerGroup';
 
-export function buildInstructions(layerGroup: LayerGroup, renderPipes: Renderer['renderPipes'])
+export function buildInstructions(layerGroup: LayerGroup, renderPipes: RenderPipes)
 {
     const root = layerGroup.root;
     const instructionSet = layerGroup.instructionSet;
@@ -29,7 +28,8 @@ export function buildInstructions(layerGroup: LayerGroup, renderPipes: Renderer[
         {
             renderPipes.blendMode.setBlendMode(proxyRenderable, proxyRenderable.layerBlendMode, instructionSet);
 
-            (renderPipes as SharedPipes<any>)[proxyRenderable.view.type].addRenderable(proxyRenderable, instructionSet);
+            // eslint-disable-next-line max-len
+            (renderPipes[proxyRenderable.view.type as keyof RenderPipes] as any).addRenderable(proxyRenderable, instructionSet);
         }
     }
 
@@ -50,7 +50,7 @@ export function buildInstructions(layerGroup: LayerGroup, renderPipes: Renderer[
 export function collectAllRenderables(
     container: Container,
     instructionSet: InstructionSet,
-    rendererPipes: Renderer['renderPipes']
+    rendererPipes: RenderPipes
 ): void
 {
     // if there is 0b01 or 0b10 the return value
@@ -70,7 +70,7 @@ export function collectAllRenderables(
 function collectAllRenderablesSimple(
     container: Container,
     instructionSet: InstructionSet,
-    renderPipes: Renderer['renderPipes']
+    renderPipes: RenderPipes
 ): void
 {
     const view = container.view;
@@ -102,14 +102,14 @@ function collectAllRenderablesSimple(
 function collectAllRenderablesAdvanced(
     container: Container,
     instructionSet: InstructionSet,
-    renderPipes: Renderer['renderPipes']
+    renderPipes: RenderPipes
 ): void
 {
     for (let i = 0; i < container.effects.length; i++)
     {
         const effect = container.effects[i];
 
-        (renderPipes as SharedPipes<any>)[effect.pipe].push(effect, container, instructionSet);
+        (renderPipes[effect.pipe as keyof RenderPipes] as any).push(effect, container, instructionSet);
     }
 
     if (container.isLayerRoot)
@@ -127,7 +127,7 @@ function collectAllRenderablesAdvanced(
 
             container.didViewUpdate = false;
 
-            (renderPipes as SharedPipes<any>)[view.type].addRenderable(container, instructionSet);
+            (renderPipes[view.type as keyof RenderPipes] as any).addRenderable(container, instructionSet);
         }
 
         const children = container.children;
@@ -146,7 +146,7 @@ function collectAllRenderablesAdvanced(
     {
         const effect = container.effects[i];
 
-        (renderPipes as SharedPipes<any>)[effect.pipe].pop(effect, container, instructionSet);
+        (renderPipes[effect.pipe as keyof RenderPipes] as any).pop(effect, container, instructionSet);
     }
 }
 

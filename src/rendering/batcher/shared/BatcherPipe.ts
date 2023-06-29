@@ -3,7 +3,6 @@ import { State } from '../../renderers/shared/state/State';
 import { getBatchedGeometry } from '../gpu/getBatchedGeometry';
 import { Batcher } from './Batcher';
 
-import type { ExtensionMetadata } from '../../../extensions/Extensions';
 import type { Geometry } from '../../renderers/shared/geometry/Geometry';
 import type { InstructionSet } from '../../renderers/shared/instructions/InstructionSet';
 import type { BatchPipe, InstructionPipe } from '../../renderers/shared/instructions/RenderPipe';
@@ -21,14 +20,14 @@ export interface BatcherAdaptor
 export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
             ExtensionType.WebGLRendererPipes,
             ExtensionType.WebGPURendererPipes,
             ExtensionType.CanvasRendererPipes,
         ],
         name: 'batch',
-    };
+    } as const;
 
     toUpdate: BatchableObject[] = [];
     instructionSet: InstructionSet;

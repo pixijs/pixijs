@@ -1,9 +1,8 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { UniformGroup } from '../../shared/shader/UniformGroup';
 
-import type { ExtensionMetadata } from '../../../../extensions/Extensions';
 import type { Shader } from '../../shared/shader/Shader';
-import type { ISystem } from '../../shared/system/ISystem';
+import type { ISystem } from '../../shared/system/System';
 import type { GPU } from '../GpuDeviceSystem';
 import type { WebGPURenderer } from '../WebGPURenderer';
 import type { GpuProgram } from './GpuProgram';
@@ -11,12 +10,12 @@ import type { GpuProgram } from './GpuProgram';
 export class GpuShaderSystem implements ISystem
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
             ExtensionType.WebGPURendererSystem,
         ],
         name: 'shader',
-    };
+    } as const;
 
     private readonly renderer: WebGPURenderer;
 

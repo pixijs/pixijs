@@ -18,99 +18,33 @@ import { BackgroundSystem } from '../background/BackgroundSystem';
 import { BlendModePipe } from '../BlendModePipe';
 import { GlobalUniformSystem } from '../renderTarget/GlobalUniformSystem';
 import { UniformBufferSystem } from '../shader/UniformBufferSystem';
-import { StartupSystem } from '../startup/StartupSystem';
+import { HelloSystem } from '../startup/HelloSystem';
 import { ViewSystem } from '../ViewSystem';
 
-import type { GLRenderPipes } from '../../gl/WebGLSystems';
-import type { GPURenderPipes } from '../../gpu/WebGPUSystems';
-import type { BackgroundSystemOptions } from '../background/BackgroundSystem';
-import type { StartupSystemOptions } from '../startup/StartupSystem';
-import type { ViewSystemOptions } from '../ViewSystem';
-
-export interface SharedRenderSystems extends PixiMixins.SharedRenderSystems
-{
-    view: ViewSystem,
-    startup: StartupSystem,
-    background: BackgroundSystem,
-    uniformBuffer: UniformBufferSystem,
-    // // pixi 2d
-
-    layer: LayerSystem,
-
-    globalUniforms: GlobalUniformSystem,
-
-    // // graphics context
-    graphicsContext: GraphicsContextSystem,
-    canvasText: CanvasTextSystem,
-
-    // filters
-    filter: FilterSystem
-}
-
-export interface SharedRenderPipes extends PixiMixins.SharedRenderPipes
-{
-    blendMode: BlendModePipe,
-    batch: BatcherPipe,
-    sprite: SpritePipe,
-    layer: LayerPipe,
-    mesh: MeshPipe,
-    graphics: GraphicsPipe,
-    text: CanvasTextPipe,
-    bitmapText: BitmapTextPipe,
-
-    tilingSprite: TilingSpritePipe,
-
-    filter: FilterPipe,
-
-    alphaMask: AlphaMaskPipe,
-    stencilMask: StencilMaskPipe,
-    colorMask: ColorMaskPipe,
-
-}
-
-export type RenderSystems<T extends Record<string, any>> = SharedRenderSystems & {
-    [K in keyof T]: InstanceType<T[K]>;
-};
-
-export type SharedPipes<T extends Record<string, any>> = SharedRenderPipes & {
-    [K in keyof T]: InstanceType<T[K]>;
-};
-
-export type RenderPipes = GLRenderPipes | GPURenderPipes;
-
-export interface SharedRendererOptions extends PixiMixins.SharedRendererOptions, BackgroundSystemOptions,
-    ViewSystemOptions,
-    StartupSystemOptions
-{}
-
-export const SharedDefaultRendererOptions = {
-    ...BackgroundSystem.defaultOptions,
-    ...ViewSystem.defaultOptions,
-    ...StartupSystem.defaultOptions
-};
-
-export const SharedRendererExtensions = [
-    GraphicsContextSystem,
-    FilterSystem,
+export const SharedSystems = [
     BackgroundSystem,
+    FilterSystem,
+    GraphicsContextSystem,
     GlobalUniformSystem,
-    UniformBufferSystem,
-    StartupSystem,
+    HelloSystem,
     ViewSystem,
     CanvasTextSystem,
     LayerSystem,
-    // Render Pipes
-    BatcherPipe,
-    FilterPipe,
-    GraphicsPipe,
+    UniformBufferSystem,
+];
+
+export const SharedRenderPipes = [
     BlendModePipe,
-    AlphaMaskPipe,
-    ColorMaskPipe,
-    StencilMaskPipe,
-    MeshPipe,
+    BatcherPipe,
     SpritePipe,
     LayerPipe,
-    TilingSpritePipe,
-    BitmapTextPipe,
+    MeshPipe,
+    GraphicsPipe,
     CanvasTextPipe,
+    BitmapTextPipe,
+    TilingSpritePipe,
+    FilterPipe,
+    AlphaMaskPipe,
+    StencilMaskPipe,
+    ColorMaskPipe,
 ];

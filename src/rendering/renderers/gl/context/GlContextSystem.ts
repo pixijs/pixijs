@@ -1,8 +1,7 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
 
-import type { ExtensionMetadata } from '../../../../extensions/Extensions';
 import type { ICanvas } from '../../../../settings/adapter/ICanvas';
-import type { ISystem } from '../../shared/system/ISystem';
+import type { ISystem } from '../../shared/system/System';
 import type { WebGLRenderer } from '../WebGLRenderer';
 import type { GlRenderingContext } from './GlRenderingContext';
 import type { WebGLExtensions } from './WebGLExtensions';
@@ -42,6 +41,8 @@ export interface ContextSystemOptions
      * @memberof PIXI.WebGLRendererOptions
      */
     preserveDrawingBuffer: boolean;
+
+    antialias?: boolean;
 }
 
 /**
@@ -51,12 +52,12 @@ export interface ContextSystemOptions
 export class GlContextSystem implements ISystem<ContextSystemOptions>
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
             ExtensionType.WebGLRendererSystem,
         ],
         name: 'context',
-    };
+    } as const;
 
     /** @ignore */
     static defaultOptions: ContextSystemOptions = {
@@ -183,7 +184,7 @@ export class GlContextSystem implements ISystem<ContextSystemOptions>
             this.initFromOptions({
                 alpha,
                 premultipliedAlpha,
-                antialias: this.renderer.options.antialias,
+                antialias: options.antialias,
                 stencil: true,
                 preserveDrawingBuffer: options.preserveDrawingBuffer,
                 powerPreference: options.powerPreference,
@@ -262,30 +263,10 @@ export class GlContextSystem implements ISystem<ContextSystemOptions>
             astc: gl.getExtension('WEBGL_compressed_texture_astc'),
         };
 
-        if (this.webGLVersion === 1)
-        {
-            Object.assign(this.extensions, common, {
-                drawBuffers: gl.getExtension('WEBGL_draw_buffers'),
-                depthTexture: gl.getExtension('WEBGL_depth_texture'),
-                loseContext: gl.getExtension('WEBGL_lose_context'),
-                vertexArrayObject: gl.getExtension('OES_vertex_array_object')
-                    || gl.getExtension('MOZ_OES_vertex_array_object')
-                    || gl.getExtension('WEBKIT_OES_vertex_array_object'),
-                uint32ElementIndex: gl.getExtension('OES_element_index_uint'),
-                // Floats and half-floats
-                floatTexture: gl.getExtension('OES_texture_float'),
-                floatTextureLinear: gl.getExtension('OES_texture_float_linear'),
-                textureHalfFloat: gl.getExtension('OES_texture_half_float'),
-                textureHalfFloatLinear: gl.getExtension('OES_texture_half_float_linear'),
-            });
-        }
-        else if (this.webGLVersion === 2)
-        {
-            Object.assign(this.extensions, common, {
-                // Floats and half-floats
-                colorBufferFloat: gl.getExtension('EXT_color_buffer_float'),
-            });
-        }
+        Object.assign(this.extensions, common, {
+            // Floats and half-floats
+            colorBufferFloat: gl.getExtension('EXT_color_buffer_float'),
+        });
     }
 
     /**

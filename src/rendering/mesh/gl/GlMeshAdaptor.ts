@@ -1,19 +1,18 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { color32BitToUniform } from '../../graphics/gpu/colorToUniform';
 
-import type { ExtensionMetadata } from '../../../extensions/Extensions';
 import type { Renderable } from '../../renderers/shared/Renderable';
 import type { MeshAdaptor, MeshPipe } from '../shared/MeshPipe';
 import type { MeshView } from '../shared/MeshView';
 
 export class GlMeshAdaptor implements MeshAdaptor
 {
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
             ExtensionType.WebGLRendererPipesAdaptor,
         ],
         name: 'mesh',
-    };
+    } as const;
 
     execute(meshPipe: MeshPipe, renderable: Renderable<MeshView>): void
     {

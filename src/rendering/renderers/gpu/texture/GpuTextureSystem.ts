@@ -4,26 +4,23 @@ import { gpuUploadBufferImageResource } from './uploaders/gpuUploadBufferImageRe
 import { gpuUploadImageResource } from './uploaders/gpuUploadImageSource';
 import { GpuMipmapGenerator } from './utils/GpuMipmapGenerator';
 
-import type { ExtensionMetadata } from '../../../../extensions/Extensions';
-import type { ISystem } from '../../shared/system/ISystem';
+import type { ISystem } from '../../shared/system/System';
 import type { TextureSource } from '../../shared/texture/sources/TextureSource';
 import type { BindableTexture, Texture } from '../../shared/texture/Texture';
 import type { TextureStyle } from '../../shared/texture/TextureStyle';
 import type { GPU } from '../GpuDeviceSystem';
-import type { WebGPURenderer } from '../WebGPURenderer';
 import type { GpuTextureUploader } from './uploaders/GpuTextureUploader';
 
 export class GpuTextureSystem implements ISystem
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
             ExtensionType.WebGPURendererSystem,
         ],
         name: 'texture',
-    };
+    } as const;
 
-    readonly renderer: WebGPURenderer;
     protected CONTEXT_UID: number;
     gpuSources: Record<number, GPUTexture> = {};
     gpuSamplers: Record<string, GPUSampler> = {};

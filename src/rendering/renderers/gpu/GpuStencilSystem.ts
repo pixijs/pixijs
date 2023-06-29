@@ -1,20 +1,19 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { STENCIL_MODES } from '../shared/state/const';
 
-import type { ExtensionMetadata } from '../../../extensions/Extensions';
 import type { RenderTarget } from '../shared/renderTarget/RenderTarget';
-import type { ISystem } from '../shared/system/ISystem';
+import type { ISystem } from '../shared/system/System';
 import type { WebGPURenderer } from './WebGPURenderer';
 
 export class GpuStencilSystem implements ISystem
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
             ExtensionType.WebGPURendererSystem,
         ],
         name: 'stencil',
-    };
+    } as const;
 
     private renderer: WebGPURenderer;
 

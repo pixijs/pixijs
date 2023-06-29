@@ -2,10 +2,9 @@ import { ExtensionType } from '../../../../extensions/Extensions';
 import { unsafeEvalSupported } from '../../../../utils/unsafeEvalSupported';
 import { generateUniformsSync } from './program/generateUniformsSync';
 
-import type { ExtensionMetadata } from '../../../../extensions/Extensions';
 import type { UniformGroup } from '../../shared/shader/UniformGroup';
 import type { UniformsSyncCallback } from '../../shared/shader/utils/createUniformBufferSync';
-import type { ISystem } from '../../shared/system/ISystem';
+import type { ISystem } from '../../shared/system/System';
 import type { GlRenderingContext } from '../context/GlRenderingContext';
 import type { WebGLRenderer } from '../WebGLRenderer';
 import type { GlProgram } from './GlProgram';
@@ -17,12 +16,12 @@ import type { GlProgram } from './GlProgram';
 export class GlUniformGroupSystem implements ISystem
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
             ExtensionType.WebGLRendererSystem,
         ],
         name: 'uniformGroup',
-    };
+    } as const;
 
     /**
      * The current WebGL rendering context.

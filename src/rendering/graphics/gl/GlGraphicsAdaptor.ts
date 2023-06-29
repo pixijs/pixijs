@@ -7,7 +7,6 @@ import { UniformGroup } from '../../renderers/shared/shader/UniformGroup';
 import { color32BitToUniform } from '../gpu/colorToUniform';
 import { generateDefaultGraphicsBatchGlProgram } from './generateDefaultGraphicsBatchGlProgram';
 
-import type { ExtensionMetadata } from '../../../extensions/Extensions';
 import type { WebGLRenderer } from '../../renderers/gl/WebGLRenderer';
 import type { Renderable } from '../../renderers/shared/Renderable';
 import type { GraphicsAdaptor, GraphicsPipe } from '../shared/GraphicsPipe';
@@ -16,12 +15,13 @@ import type { GraphicsView } from '../shared/GraphicsView';
 export class GlGraphicsAdaptor implements GraphicsAdaptor
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
             ExtensionType.WebGLRendererPipesAdaptor,
         ],
         name: 'graphics',
-    };
+    } as const;
+
     shader: Shader;
 
     init()

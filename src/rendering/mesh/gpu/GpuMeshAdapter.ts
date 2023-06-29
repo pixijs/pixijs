@@ -1,7 +1,6 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { color32BitToUniform } from '../../graphics/gpu/colorToUniform';
 
-import type { ExtensionMetadata } from '../../../extensions/Extensions';
 import type { WebGPURenderer } from '../../renderers/gpu/WebGPURenderer';
 import type { Renderable } from '../../renderers/shared/Renderable';
 import type { MeshAdaptor, MeshPipe } from '../shared/MeshPipe';
@@ -10,12 +9,12 @@ import type { MeshView } from '../shared/MeshView';
 export class GpuMeshAdapter implements MeshAdaptor
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
             ExtensionType.WebGPURendererPipesAdaptor,
         ],
         name: 'mesh',
-    };
+    } as const;
 
     execute(meshPipe: MeshPipe, renderable: Renderable<MeshView>)
     {

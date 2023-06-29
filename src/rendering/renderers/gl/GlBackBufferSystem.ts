@@ -5,9 +5,8 @@ import { TextureSource } from '../shared/texture/sources/TextureSource';
 import { Texture } from '../shared/texture/Texture';
 import { GlProgram } from './shader/GlProgram';
 
-import type { ExtensionMetadata } from '../../../extensions/Extensions';
 import type { RenderSurface } from '../gpu/renderTarget/GpuRenderTargetSystem';
-import type { ISystem } from '../shared/system/ISystem';
+import type { ISystem } from '../shared/system/System';
 import type { WebGLRenderer } from './WebGLRenderer';
 
 const bigTriangleProgram = new GlProgram({
@@ -44,12 +43,12 @@ const bigTriangleShader = new Shader({
 export class GlBackBufferSystem implements ISystem
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
             ExtensionType.WebGLRendererSystem,
         ],
         name: 'backBuffer',
-    };
+    } as const;
 
     backBufferTexture: Texture;
     renderer: WebGLRenderer;
@@ -66,20 +65,26 @@ export class GlBackBufferSystem implements ISystem
         this.useBackBuffer = useBackBuffer;
     }
 
-    renderToBackBuffer(target: RenderSurface)
+    renderStart({ target, clear }: { target: RenderSurface, clear: boolean })
     {
-        if (!this.useBackBuffer) return target;
+        if (this.useBackBuffer)
+        {
+            const renderTarget = this.renderer.renderTarget.getRenderTarget(target);
 
-        const renderTarget = this.renderer.renderTarget.getRenderTarget(target);
+            this.targetTexture = renderTarget.colorTexture;
 
-        this.targetTexture = renderTarget.colorTexture;
+            target = this._getBackBufferTexture(renderTarget.colorTexture);
+        }
 
-        const backBufferTexture = this._getBackBufferTexture(renderTarget.colorTexture);
-
-        return backBufferTexture;
+        this.renderer.renderTarget.start(target, clear, this.renderer.background.colorRgba);
     }
 
-    presentBackBuffer()
+    renderEnd()
+    {
+        this._presentBackBuffer();
+    }
+
+    private _presentBackBuffer()
     {
         if (!this.useBackBuffer) return;
 

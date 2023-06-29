@@ -1,8 +1,7 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { hex2rgb, hex2string } from '../../../../utils/color/hex';
 
-import type { ExtensionMetadata } from '../../../../extensions/Extensions';
-import type { ISystem } from '../system/ISystem';
+import type { ISystem } from '../system/System';
 
 /**
  * Options for the background system.
@@ -47,7 +46,7 @@ type ColorObject = { r: number; g: number; b: number; a: number };
 export class BackgroundSystem implements ISystem
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
             ExtensionType.WebGLRendererSystem,
             ExtensionType.WebGPURendererSystem,
@@ -55,7 +54,7 @@ export class BackgroundSystem implements ISystem
         ],
         name: 'background',
         priority: 0,
-    };
+    } as const;
 
     /** @ignore */
     static defaultOptions: BackgroundSystemOptions = {

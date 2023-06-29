@@ -94,7 +94,7 @@ export class Application<VIEW extends ICanvas = ICanvas>
     /** Render the current stage. */
     public render(): void
     {
-        this.renderer.render(this.stage);
+        this.renderer.render({ container: this.stage });
     }
 
     /**
@@ -104,7 +104,7 @@ export class Application<VIEW extends ICanvas = ICanvas>
      */
     get canvas(): VIEW
     {
-        return this.renderer.canvas as VIEW;
+        return this.renderer.element as VIEW;
     }
 
     // TODO: not implemented

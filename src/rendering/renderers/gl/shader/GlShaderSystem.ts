@@ -5,7 +5,6 @@ import { TextureSource } from '../../shared/texture/sources/TextureSource';
 import { TextureStyle } from '../../shared/texture/TextureStyle';
 import { generateProgram } from './program/generateProgram';
 
-import type { ExtensionMetadata } from '../../../../extensions/Extensions';
 import type { Shader } from '../../shared/shader/Shader';
 import type { GlRenderingContext } from '../context/GlRenderingContext';
 import type { WebGLRenderer } from '../WebGLRenderer';
@@ -21,12 +20,12 @@ const defaultSyncData = {
 export class GlShaderSystem
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
             ExtensionType.WebGLRendererSystem,
         ],
         name: 'shader',
-    };
+    } as const;
 
     programDataHash: Record<string, GlProgramData> = {};
     renderer: WebGLRenderer;

@@ -6,7 +6,6 @@ import { UniformGroup } from '../../renderers/shared/shader/UniformGroup';
 import { MAX_TEXTURES } from '../shared/const';
 import { generateDefaultBatchGlProgram } from './generateDefaultBatchGlProgram';
 
-import type { ExtensionMetadata } from '../../../extensions/Extensions';
 import type { WebGLRenderer } from '../../renderers/gl/WebGLRenderer';
 import type { Batch } from '../shared/Batcher';
 import type { BatcherAdaptor, BatcherPipe } from '../shared/BatcherPipe';
@@ -14,12 +13,12 @@ import type { BatcherAdaptor, BatcherPipe } from '../shared/BatcherPipe';
 export class GlBatchAdaptor implements BatcherAdaptor
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
             ExtensionType.WebGLRendererPipesAdaptor,
         ],
         name: 'batch',
-    };
+    } as const;
     shader: Shader;
     didUpload = false;
 

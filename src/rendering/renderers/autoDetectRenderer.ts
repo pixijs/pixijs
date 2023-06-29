@@ -1,32 +1,23 @@
 import { isWebGLSupported } from '../../utils/browser/isWebGLSupported';
 import { isWebGPUSupported } from '../../utils/browser/isWebGPUSupported';
 
-import type { WebGLRendererOptions } from './gl/WebGLRenderer';
-import type { WebGPURendererOptions } from './gpu/WebGPURenderer';
+import type { WebGLOptions } from './gl/WebGLRenderer';
+import type { WebGPUOptions } from './gpu/WebGPURenderer';
 import type { Renderer } from './types';
 
-export interface AutoDetectOptions extends SharedOptions
+export interface AutoDetectOptions extends WebGLOptions, WebGPUOptions
 {
     preference?: 'webgl' | 'webgpu' | 'canvas';
     manageImports?: boolean;
-    webgl?: Partial<GLOnlyOptions>,
-    webgpu?: Partial<GPUOnlyOptions>,
+    webgpu?: WebGPUOptions
+    webgl?: WebGLOptions
 }
-
-type GLOnlyOptions = Pick<WebGLRendererOptions, Exclude<keyof WebGLRendererOptions, keyof WebGPURendererOptions>>;
-type GPUOnlyOptions = Pick<WebGPURendererOptions, Exclude<keyof WebGPURendererOptions, keyof WebGLRendererOptions>>;
-type SharedOptions = Omit<RendererOptions, keyof GLOnlyOptions | keyof GPUOnlyOptions>;
-
-export type RendererOptions = WebGLRendererOptions | WebGPURendererOptions;
 
 const renderPriority = ['webgpu', 'webgl', 'canvas'];
 
 export async function autoDetectRenderer(options: Partial<AutoDetectOptions>): Promise<Renderer>
 {
     let preferredOrder: string[] = [];
-    let specificOptions: GLOnlyOptions | GPUOnlyOptions;
-
-    const { webgl, webgpu, ...rest } = options;
 
     if (options.preference)
     {
@@ -52,6 +43,8 @@ export async function autoDetectRenderer(options: Partial<AutoDetectOptions>): P
         await import('../../all');
     }
 
+    let finalOptions: Partial<AutoDetectOptions> = {};
+
     for (let i = 0; i < preferredOrder.length; i++)
     {
         const rendererType = preferredOrder[i];
@@ -61,7 +54,9 @@ export async function autoDetectRenderer(options: Partial<AutoDetectOptions>): P
             const { WebGPURenderer } = await import('./gpu/WebGPURenderer');
 
             RendererClass = WebGPURenderer;
-            specificOptions = webgpu;
+
+            finalOptions = { ...options, ...options.webgpu };
+
             break;
         }
         else if (rendererType === 'webgl' && isWebGLSupported())
@@ -69,19 +64,25 @@ export async function autoDetectRenderer(options: Partial<AutoDetectOptions>): P
             const { WebGLRenderer } = await import('./gl/WebGLRenderer');
 
             RendererClass = WebGLRenderer;
-            specificOptions = webgl;
+
+            finalOptions = { ...options, ...options.webgl };
 
             break;
         }
         else if (rendererType === 'canvas')
         {
+            finalOptions = { ...options };
+
             break;
         }
     }
 
+    delete finalOptions.webgpu;
+    delete finalOptions.webgl;
+
     const renderer = new RendererClass();
 
-    await renderer.init({ ...rest, ...specificOptions } as RendererOptions);
+    await renderer.init(finalOptions);
 
     return renderer;
 }

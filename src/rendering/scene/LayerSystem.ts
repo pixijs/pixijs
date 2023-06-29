@@ -5,22 +5,11 @@ import { executeInstructions } from './utils/executeInstructions';
 import { updateLayerGroupTransforms } from './utils/updateLayerGroupTransforms';
 import { validateRenderables } from './utils/validateRenderables';
 
-import type { ExtensionMetadata } from '../../extensions/Extensions';
-import type { GlRenderTargetSystem } from '../renderers/gl/GlRenderTargetSystem';
-import type { GpuRenderTargetSystem } from '../renderers/gpu/renderTarget/GpuRenderTargetSystem';
-import type { GPURenderPipes } from '../renderers/gpu/WebGPUSystems';
-import type { GlobalUniformSystem } from '../renderers/shared/renderTarget/GlobalUniformSystem';
-import type { ISystem } from '../renderers/shared/system/ISystem';
+import type { WebGPURenderPipes } from '../renderers/gpu/WebGPURenderer';
+import type { ISystem } from '../renderers/shared/system/System';
 import type { Renderer } from '../renderers/types';
 import type { Container } from './Container';
 import type { LayerGroup } from './LayerGroup';
-
-interface ContainerRenderer
-{
-    renderTarget: GlRenderTargetSystem | GpuRenderTargetSystem
-    globalUniforms: GlobalUniformSystem;
-    renderPipes: Renderer['renderPipes'];
-}
 
 /**
  * The view system manages the main canvas that is attached to the DOM.
@@ -31,23 +20,23 @@ interface ContainerRenderer
 export class LayerSystem implements ISystem
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
             ExtensionType.WebGLRendererSystem,
             ExtensionType.WebGPURendererSystem,
             ExtensionType.CanvasRendererSystem,
         ],
         name: 'layer',
-    };
+    } as const;
 
-    private renderer: ContainerRenderer;
+    private renderer: Renderer;
 
-    constructor(renderer: ContainerRenderer)
+    constructor(renderer: Renderer)
     {
         this.renderer = renderer;
     }
 
-    render(container: Container): void
+    render({ container }: {container: Container}): void
     {
         container.layer = true;
 
@@ -103,10 +92,10 @@ export class LayerSystem implements ISystem
         executeInstructions(container.layerGroup, renderPipes);
 
         // TODO need to add some events / runners for things like this to hook up to
-        if ((renderPipes as GPURenderPipes).uniformBatch)
+        if ((renderPipes as WebGPURenderPipes).uniformBatch)
         {
-            (renderPipes as GPURenderPipes).uniformBatch.renderEnd();
-            (renderPipes as GPURenderPipes).uniformBuffer.renderEnd();
+            (renderPipes as WebGPURenderPipes).uniformBatch.renderEnd();
+            (renderPipes as WebGPURenderPipes).uniformBuffer.renderEnd();
         }
     }
 

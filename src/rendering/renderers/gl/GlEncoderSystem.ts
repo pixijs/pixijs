@@ -1,6 +1,5 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 
-import type { ExtensionMetadata } from '../../../extensions/Extensions';
 import type { Rectangle } from '../../../maths/shapes/Rectangle';
 import type { Bounds } from '../../scene/bounds/Bounds';
 import type { GpuRenderTarget } from '../gpu/renderTarget/GpuRenderTarget';
@@ -10,18 +9,18 @@ import type { Geometry } from '../shared/geometry/Geometry';
 import type { RenderTarget } from '../shared/renderTarget/RenderTarget';
 import type { Shader } from '../shared/shader/Shader';
 import type { State } from '../shared/state/State';
-import type { ISystem } from '../shared/system/ISystem';
+import type { ISystem } from '../shared/system/System';
 import type { WebGLRenderer } from './WebGLRenderer';
 
 export class GlEncoderSystem implements ISystem
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
             ExtensionType.WebGLRendererSystem,
         ],
         name: 'encoder',
-    };
+    } as const;
 
     readonly commandFinished = Promise.resolve();
     private renderer: WebGLRenderer;

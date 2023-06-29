@@ -1,14 +1,14 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { Matrix } from '../../../../maths/Matrix';
 import { RenderTarget } from '../../shared/renderTarget/RenderTarget';
-import { Runner } from '../../shared/runner/Runner';
+import { SystemRunner } from '../../shared/system/SystemRunner';
 import { TextureSource } from '../../shared/texture/sources/TextureSource';
 import { Texture } from '../../shared/texture/Texture';
+import { getCanvasTexture } from '../../shared/texture/utils/getCanvasTexture';
 import { GpuRenderTarget } from './GpuRenderTarget';
 
-import type { ExtensionMetadata } from '../../../../extensions/Extensions';
 import type { ICanvas } from '../../../../settings/adapter/ICanvas';
-import type { ISystem } from '../../shared/system/ISystem';
+import type { ISystem } from '../../shared/system/System';
 import type { BindableTexture } from '../../shared/texture/Texture';
 import type { GPU } from '../GpuDeviceSystem';
 import type { WebGPURenderer } from '../WebGPURenderer';
@@ -22,17 +22,17 @@ export type RGBAArray = [number, number, number, number];
 export class GpuRenderTargetSystem implements ISystem
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
             ExtensionType.WebGPURendererSystem,
         ],
         name: 'renderTarget',
-    };
+    } as const;
 
     rootRenderTarget: RenderTarget;
     rootProjectionMatrix = new Matrix();
     renderTarget: RenderTarget;
-    onRenderTargetChange = new Runner('onRenderTargetChange');
+    onRenderTargetChange = new SystemRunner('onRenderTargetChange');
 
     private renderSurfaceToRenderTargetHash: Map<RenderSurface, RenderTarget> = new Map();
     private gpuRenderTargetHash: Record<number, GpuRenderTarget> = {};
@@ -47,19 +47,19 @@ export class GpuRenderTargetSystem implements ISystem
         this.renderer = renderer;
     }
 
-    start(rootRenderSurface: RenderSurface, clear = true, clearColor?: RGBAArray): void
+    renderStart({ target, clear, clearColor }: {target: RenderSurface, clear: boolean, clearColor: RGBAArray}): void
     {
         // generate a render pass description..
         // create an encoder..
 
-        this.rootRenderTarget = this.getRenderTarget(rootRenderSurface);
+        this.rootRenderTarget = this.getRenderTarget(target);
         this.rootProjectionMatrix = this.rootRenderTarget.projectionMatrix;
 
         this.renderTargetStack.length = 0;
 
         this.renderer.encoder.start();
 
-        this.push(rootRenderSurface, clear, clearColor);
+        this.push(this.rootRenderTarget, clear, clearColor ?? this.renderer.background.colorRgba);
     }
 
     protected contextChange(gpu: GPU): void
@@ -230,6 +230,11 @@ export class GpuRenderTargetSystem implements ISystem
     private initRenderTarget(renderSurface: RenderSurface): RenderTarget
     {
         let renderTarget = null;
+
+        if (renderSurface instanceof HTMLCanvasElement)
+        {
+            renderSurface = getCanvasTexture(renderSurface as ICanvas);
+        }
 
         if (renderSurface instanceof RenderTarget)
         {

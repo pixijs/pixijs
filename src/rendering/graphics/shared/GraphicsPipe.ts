@@ -3,7 +3,6 @@ import { BigPool } from '../../../utils/pool/PoolGroup';
 import { State } from '../../renderers/shared/state/State';
 import { BatchableGraphics } from './BatchableGraphics';
 
-import type { ExtensionMetadata } from '../../../extensions/Extensions';
 import type { PoolItem } from '../../../utils/pool/Pool';
 import type { Instruction } from '../../renderers/shared/instructions/Instruction';
 import type { InstructionSet } from '../../renderers/shared/instructions/InstructionSet';
@@ -37,14 +36,14 @@ export interface GraphicsSystem
 export class GraphicsPipe implements RenderPipe<GraphicsView>
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
             ExtensionType.WebGLRendererPipes,
             ExtensionType.WebGPURendererPipes,
             ExtensionType.CanvasRendererPipes,
         ],
         name: 'graphics',
-    };
+    } as const;
 
     renderer: GraphicsSystem;
     shader: Shader;

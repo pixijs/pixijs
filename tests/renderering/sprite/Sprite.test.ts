@@ -30,7 +30,7 @@ describe('Sprite', () =>
 
         container.addChild(sprite);
 
-        renderer.render(container);
+        renderer.render({ container });
 
         sprite.destroy();
 

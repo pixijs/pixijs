@@ -5,7 +5,6 @@ import { BufferUsage } from '../shared/buffer/const';
 import { UniformBufferBatch } from './buffer/UniformBufferBatch';
 import { BindGroup } from './shader/BindGroup';
 
-import type { ExtensionMetadata } from '../../../extensions/Extensions';
 import type { UniformGroup } from '../shared/shader/UniformGroup';
 import type { WebGPURenderer } from './WebGPURenderer';
 
@@ -16,12 +15,12 @@ const minUniformOffsetAlignment = 128;// 256 / 2;
 export class GpuUniformBatchPipe
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
             ExtensionType.WebGPURendererPipes,
         ],
         name: 'uniformBatch',
-    };
+    } as const;
 
     private renderer: WebGPURenderer;
 

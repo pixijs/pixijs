@@ -1,6 +1,5 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 
-import type { ExtensionMetadata } from '../../../extensions/Extensions';
 import type { Instruction } from '../../renderers/shared/instructions/Instruction';
 import type { InstructionSet } from '../../renderers/shared/instructions/InstructionSet';
 import type { InstructionPipe } from '../../renderers/shared/instructions/RenderPipe';
@@ -17,14 +16,14 @@ export interface ColorMaskInstruction extends Instruction
 export class ColorMaskPipe implements InstructionPipe<ColorMaskInstruction>
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
             ExtensionType.WebGLRendererPipes,
             ExtensionType.WebGPURendererPipes,
             ExtensionType.CanvasRendererPipes,
         ],
         name: 'colorMask',
-    };
+    } as const;
 
     private renderer: Renderer;
     private colorStack: number[] = [];

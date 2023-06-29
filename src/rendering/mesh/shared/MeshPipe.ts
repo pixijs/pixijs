@@ -8,7 +8,6 @@ import { Texture } from '../../renderers/shared/texture/Texture';
 import { BatchableMesh } from './BatchableMesh';
 import { MeshShader } from './MeshShader';
 
-import type { ExtensionMetadata } from '../../../extensions/Extensions';
 import type { PoolItem } from '../../../utils/pool/Pool';
 import type { Instruction } from '../../renderers/shared/instructions/Instruction';
 import type { InstructionSet } from '../../renderers/shared/instructions/InstructionSet';
@@ -46,14 +45,14 @@ export interface MeshInstruction extends Instruction
 export class MeshPipe implements RenderPipe<MeshView>, InstructionPipe<MeshInstruction>
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
             ExtensionType.WebGLRendererPipes,
             ExtensionType.WebGPURendererPipes,
             ExtensionType.CanvasRendererPipes,
         ],
         name: 'mesh',
-    };
+    } as const;
 
     localUniforms = new UniformGroup({
         transformMatrix: { value: new Matrix(), type: 'mat3x3<f32>' },

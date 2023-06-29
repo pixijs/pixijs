@@ -22,7 +22,6 @@ import { SubtractBlend } from '../../filters/blend-modes/SubtractBlend';
 import { VividLightBlend } from '../../filters/blend-modes/VividLightBlend';
 import { FilterEffect } from '../../filters/FilterEffect';
 
-import type { ExtensionMetadata } from '../../../extensions/Extensions';
 import type { BlendModeFilter } from '../../filters/blend-modes/BlendModeFilter';
 import type { FilterInstruction } from '../../filters/shared/FilterSystem';
 import type { Renderer } from '../types';
@@ -66,14 +65,14 @@ const BLEND_MODE_FILTERS: Partial<Record<BLEND_MODES, new () => BlendModeFilter>
 
 export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
 {
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
             ExtensionType.WebGLRendererPipes,
             ExtensionType.WebGPURendererPipes,
             ExtensionType.CanvasRendererPipes,
         ],
         name: 'blendMode',
-    };
+    } as const;
 
     private renderer: Renderer;
 

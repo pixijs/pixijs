@@ -13,8 +13,7 @@ import {
     wrapModeToGlAddress
 } from './utils/pixiToGlMaps';
 
-import type { ExtensionMetadata } from '../../../../extensions/Extensions';
-import type { ISystem } from '../../shared/system/ISystem';
+import type { ISystem } from '../../shared/system/System';
 import type { TextureSource } from '../../shared/texture/sources/TextureSource';
 import type { BindableTexture } from '../../shared/texture/Texture';
 import type { TextureStyle } from '../../shared/texture/TextureStyle';
@@ -25,12 +24,12 @@ import type { GLTextureUploader } from './uploaders/GLTextureUploader';
 export class GlTextureSystem implements ISystem
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
             ExtensionType.WebGLRendererSystem,
         ],
         name: 'texture',
-    };
+    } as const;
 
     readonly renderer: WebGLRenderer;
 

@@ -2,7 +2,6 @@ import { ExtensionType } from '../../../extensions/Extensions';
 import { BigPool } from '../../../utils/pool/PoolGroup';
 import { BatchableSprite } from '../../sprite/shared/BatchableSprite';
 
-import type { ExtensionMetadata } from '../../../extensions/Extensions';
 import type { ObservablePoint } from '../../../maths/ObservablePoint';
 import type { InstructionSet } from '../../renderers/shared/instructions/InstructionSet';
 import type { RenderPipe } from '../../renderers/shared/instructions/RenderPipe';
@@ -14,14 +13,14 @@ import type { TextView } from '../TextView';
 export class CanvasTextPipe implements RenderPipe<TextView>
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
             ExtensionType.WebGLRendererPipes,
             ExtensionType.WebGPURendererPipes,
             ExtensionType.CanvasRendererPipes,
         ],
         name: 'text',
-    };
+    } as const;
 
     private renderer: Renderer;
 

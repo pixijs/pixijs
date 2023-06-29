@@ -2,21 +2,20 @@ import { ExtensionType } from '../../../../extensions/Extensions';
 import { State } from '../../shared/state/State';
 import { GpuBlendModesToPixi } from './GpuBlendModesToPixi';
 
-import type { ExtensionMetadata } from '../../../../extensions/Extensions';
 import type { BLEND_MODES } from '../../shared/state/const';
-import type { ISystem } from '../../shared/system/ISystem';
+import type { ISystem } from '../../shared/system/System';
 import type { GPU } from '../GpuDeviceSystem';
 
 /** System plugin to the renderer to manage WebGL state machines. */
 export class GpuStateSystem implements ISystem
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
             ExtensionType.WebGPURendererSystem,
         ],
         name: 'state',
-    };
+    } as const;
     /**
      * State ID
      * @readonly

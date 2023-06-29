@@ -1,6 +1,5 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 
-import type { ExtensionMetadata } from '../../../extensions/Extensions';
 import type { Rectangle } from '../../../maths/shapes/Rectangle';
 import type { Bounds } from '../../scene/bounds/Bounds';
 import type { Buffer } from '../shared/buffer/Buffer';
@@ -10,7 +9,7 @@ import type { RenderTarget } from '../shared/renderTarget/RenderTarget';
 import type { Shader } from '../shared/shader/Shader';
 import type { UniformGroup } from '../shared/shader/UniformGroup';
 import type { State } from '../shared/state/State';
-import type { ISystem } from '../shared/system/ISystem';
+import type { ISystem } from '../shared/system/System';
 import type { GPU } from './GpuDeviceSystem';
 import type { GpuRenderTarget } from './renderTarget/GpuRenderTarget';
 import type { BindGroup } from './shader/BindGroup';
@@ -20,12 +19,12 @@ import type { WebGPURenderer } from './WebGPURenderer';
 export class GpuEncoderSystem implements ISystem
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
             ExtensionType.WebGPURendererSystem,
         ],
         name: 'encoder',
-    };
+    } as const;
 
     commandEncoder: GPUCommandEncoder;
     renderPassEncoder: GPURenderPassEncoder;
@@ -238,7 +237,7 @@ export class GpuEncoderSystem implements ISystem
         }
     }
 
-    finish()
+    postrender()
     {
         this.finishRenderPass();
 

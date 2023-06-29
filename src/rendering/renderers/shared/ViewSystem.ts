@@ -2,10 +2,9 @@ import { ExtensionType } from '../../../extensions/Extensions';
 import { settings } from '../../../settings/settings';
 import { getCanvasTexture } from './texture/utils/getCanvasTexture';
 
-import type { ExtensionMetadata } from '../../../extensions/Extensions';
 import type { ICanvas } from '../../../settings/adapter/ICanvas';
 import type { Renderer } from '../types';
-import type { ISystem } from './system/ISystem';
+import type { ISystem } from './system/System';
 import type { CanvasSourceOptions } from './texture/sources/CanvasSource';
 import type { Texture } from './texture/Texture';
 
@@ -60,7 +59,7 @@ export interface ViewSystemOptions
 export class ViewSystem implements ISystem
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
             ExtensionType.WebGLRendererSystem,
             ExtensionType.WebGPURendererSystem,
@@ -68,7 +67,7 @@ export class ViewSystem implements ISystem
         ],
         name: 'view',
         priority: 0,
-    };
+    } as const;
 
     /** @ignore */
     static defaultOptions: ViewSystemOptions = {
@@ -96,7 +95,7 @@ export class ViewSystem implements ISystem
          * @default false
          * @memberof PIXI.settings.GL_RENDER_OPTIONS
          */
-        autoDensity: false,
+        autoDensity: true,
         /**
          * {@link PIXI.WebGLRendererOptions.antialias}
          * @default false
@@ -154,6 +153,12 @@ export class ViewSystem implements ISystem
         this.texture = getCanvasTexture(this.element, options as CanvasSourceOptions);
 
         this.multiView = !!options.multiView;
+
+        if (this.autoDensity)
+        {
+            this.element.style.width = `${this.texture.width}px`;
+            this.element.style.height = `${this.texture.height}px`;
+        }
     }
 
     /**
@@ -162,9 +167,15 @@ export class ViewSystem implements ISystem
      * @param desiredScreenHeight - The new height of the screen.
      * @param resolution
      */
-    resizeView(desiredScreenWidth: number, desiredScreenHeight: number, resolution: number): void
+    resize(desiredScreenWidth: number, desiredScreenHeight: number, resolution: number): void
     {
         this.texture.source.resize(desiredScreenWidth, desiredScreenHeight, resolution);
+
+        if (this.autoDensity)
+        {
+            this.element.style.width = `${desiredScreenWidth}px`;
+            this.element.style.height = `${desiredScreenHeight}px`;
+        }
     }
 
     /**

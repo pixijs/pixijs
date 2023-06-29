@@ -4,9 +4,8 @@ import { EventsTicker } from './EventTicker';
 import { FederatedPointerEvent } from './FederatedPointerEvent';
 import { FederatedWheelEvent } from './FederatedWheelEvent';
 
-import type { ExtensionMetadata } from '../extensions/Extensions';
 import type { PointData } from '../maths/PointData';
-import type { ISystem } from '../rendering/renderers/shared/system/ISystem';
+import type { ISystem } from '../rendering/renderers/shared/system/System';
 import type { Renderer } from '../rendering/renderers/types';
 import type { EventMode } from './FederatedEventTarget';
 import type { FederatedMouseEvent } from './FederatedMouseEvent';
@@ -93,7 +92,7 @@ interface EventSystemFeatures
 export class EventSystem implements ISystem<EventSystemOptions>
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         name: 'events',
         type: [
             ExtensionType.WebGLRendererSystem,
@@ -101,7 +100,7 @@ export class EventSystem implements ISystem<EventSystemOptions>
             ExtensionType.WebGPURendererSystem,
         ],
         priority: -1,
-    };
+    } as const;
 
     /**
      * The event features that are enabled by the EventSystem
@@ -247,7 +246,7 @@ export class EventSystem implements ISystem<EventSystemOptions>
      */
     init(options: EventSystemOptions): void
     {
-        const { canvas, resolution } = this.renderer;
+        const { element: canvas, resolution } = this.renderer;
 
         this.setTargetElement(canvas as HTMLCanvasElement);
         this.resolution = resolution;

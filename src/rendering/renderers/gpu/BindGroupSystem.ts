@@ -1,10 +1,9 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 
-import type { ExtensionMetadata } from '../../../extensions/Extensions';
 import type { Buffer } from '../shared/buffer/Buffer';
 import type { BufferResource } from '../shared/buffer/BufferResource';
 import type { UniformGroup } from '../shared/shader/UniformGroup';
-import type { ISystem } from '../shared/system/ISystem';
+import type { ISystem } from '../shared/system/System';
 import type { TextureSource } from '../shared/texture/sources/TextureSource';
 import type { TextureStyle } from '../shared/texture/TextureStyle';
 import type { GPU } from './GpuDeviceSystem';
@@ -16,12 +15,12 @@ import type { WebGPURenderer } from './WebGPURenderer';
 export class BindGroupSystem implements ISystem
 {
     /** @ignore */
-    static extension: ExtensionMetadata = {
+    static extension = {
         type: [
             ExtensionType.WebGPURendererSystem,
         ],
         name: 'bindGroup',
-    };
+    } as const;
 
     private readonly renderer: WebGPURenderer;
 
