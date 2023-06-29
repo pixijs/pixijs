@@ -180,8 +180,9 @@ export class AbstractRenderer<PIPES, OPTIONS>
      */
     get renderingToScreen(): boolean
     {
-        // is this really BAD code??
-        return (this as any as {renderTarget: {renderingToScreen: boolean}}).renderTarget.renderingToScreen;
+        const renderer = this as unknown as Renderer;
+
+        return renderer.renderTarget.renderingToScreen;
     }
 
     /**
