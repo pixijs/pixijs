@@ -11,7 +11,7 @@ export class GlStencilSystem implements ISystem
     /** @ignore */
     static extension = {
         type: [
-            ExtensionType.WebGLRendererSystem,
+            ExtensionType.WebGLSystem,
         ],
         name: 'stencil',
     } as const;

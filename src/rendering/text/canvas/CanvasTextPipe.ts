@@ -15,9 +15,9 @@ export class CanvasTextPipe implements RenderPipe<TextView>
     /** @ignore */
     static extension = {
         type: [
-            ExtensionType.WebGLRendererPipes,
-            ExtensionType.WebGPURendererPipes,
-            ExtensionType.CanvasRendererPipes,
+            ExtensionType.WebGLPipes,
+            ExtensionType.WebGPUPipes,
+            ExtensionType.CanvasPipes,
         ],
         name: 'text',
     } as const;

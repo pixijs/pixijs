@@ -19,7 +19,7 @@ export interface ContextSystemOptions
 {
     /**
      * **WebGL Only.** User-provided WebGL rendering context object.
-     * @memberof PIXI.WebGLRendererOptions
+     * @memberof PIXI.WebGLOptions
      */
     context: WebGL2RenderingContext | null;
     /**
@@ -27,18 +27,18 @@ export interface ContextSystemOptions
      * can be `'default'`, `'high-performance'` or `'low-power'`.
      * Setting to `'high-performance'` will prioritize rendering performance over power consumption,
      * while setting to `'low-power'` will prioritize power saving over rendering performance.
-     * @memberof PIXI.WebGLRendererOptions
+     * @memberof PIXI.WebGLOptions
      */
     powerPreference: WebGLPowerPreference;
     /**
      * **WebGL Only.** Whether the compositor will assume the drawing buffer contains colors with premultiplied alpha.
-     * @memberof PIXI.WebGLRendererOptions
+     * @memberof PIXI.WebGLOptions
      */
     premultipliedAlpha: boolean;
     /**
      * **WebGL Only.** Whether to enable drawing buffer preservation. If enabled, the drawing buffer will preserve
      * its value until cleared or overwritten. Enable this if you need to call `toDataUrl` on the WebGL context.
-     * @memberof PIXI.WebGLRendererOptions
+     * @memberof PIXI.WebGLOptions
      */
     preserveDrawingBuffer: boolean;
 
@@ -54,7 +54,7 @@ export class GlContextSystem implements ISystem<ContextSystemOptions>
     /** @ignore */
     static extension = {
         type: [
-            ExtensionType.WebGLRendererSystem,
+            ExtensionType.WebGLSystem,
         ],
         name: 'context',
     } as const;
@@ -62,27 +62,23 @@ export class GlContextSystem implements ISystem<ContextSystemOptions>
     /** @ignore */
     static defaultOptions: ContextSystemOptions = {
         /**
-         * {@link PIXI.WebGLRendererOptions.context}
+         * {@link PIXI.WebGLOptions.context}
          * @default null
-         * @memberof PIXI.settings.GL_RENDER_OPTIONS
          */
         context: null,
         /**
-         * {@link PIXI.WebGLRendererOptions.premultipliedAlpha}
+         * {@link PIXI.WebGLOptions.premultipliedAlpha}
          * @default true
-         * @memberof PIXI.settings.GL_RENDER_OPTIONS
          */
         premultipliedAlpha: true,
         /**
-         * {@link PIXI.WebGLRendererOptions.preserveDrawingBuffer}
+         * {@link PIXI.WebGLOptions.preserveDrawingBuffer}
          * @default false
-         * @memberof PIXI.settings.GL_RENDER_OPTIONS
          */
         preserveDrawingBuffer: false,
         /**
-         * {@link PIXI.WebGLRendererOptions.powerPreference}
+         * {@link PIXI.WebGLOptions.powerPreference}
          * @default default
-         * @memberof PIXI.settings.GL_RENDER_OPTIONS
          */
         powerPreference: 'default',
     };

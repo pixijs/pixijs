@@ -16,9 +16,9 @@ export class SpritePipe implements RenderPipe<SpriteView>
     /** @ignore */
     static extension = {
         type: [
-            ExtensionType.WebGLRendererPipes,
-            ExtensionType.WebGPURendererPipes,
-            ExtensionType.CanvasRendererPipes,
+            ExtensionType.WebGLPipes,
+            ExtensionType.WebGPUPipes,
+            ExtensionType.CanvasPipes,
         ],
         name: 'sprite',
     } as const;

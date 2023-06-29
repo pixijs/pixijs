@@ -12,7 +12,7 @@ export class GpuShaderSystem implements ISystem
     /** @ignore */
     static extension = {
         type: [
-            ExtensionType.WebGPURendererSystem,
+            ExtensionType.WebGPUSystem,
         ],
         name: 'shader',
     } as const;

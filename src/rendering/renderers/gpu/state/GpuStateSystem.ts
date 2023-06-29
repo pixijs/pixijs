@@ -12,7 +12,7 @@ export class GpuStateSystem implements ISystem
     /** @ignore */
     static extension = {
         type: [
-            ExtensionType.WebGPURendererSystem,
+            ExtensionType.WebGPUSystem,
         ],
         name: 'state',
     } as const;

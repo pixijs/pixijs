@@ -38,9 +38,9 @@ export class GraphicsPipe implements RenderPipe<GraphicsView>
     /** @ignore */
     static extension = {
         type: [
-            ExtensionType.WebGLRendererPipes,
-            ExtensionType.WebGPURendererPipes,
-            ExtensionType.CanvasRendererPipes,
+            ExtensionType.WebGLPipes,
+            ExtensionType.WebGPUPipes,
+            ExtensionType.CanvasPipes,
         ],
         name: 'graphics',
     } as const;

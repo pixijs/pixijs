@@ -10,7 +10,7 @@ export class GpuStencilSystem implements ISystem
     /** @ignore */
     static extension = {
         type: [
-            ExtensionType.WebGPURendererSystem,
+            ExtensionType.WebGPUSystem,
         ],
         name: 'stencil',
     } as const;

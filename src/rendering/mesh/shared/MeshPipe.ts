@@ -47,9 +47,9 @@ export class MeshPipe implements RenderPipe<MeshView>, InstructionPipe<MeshInstr
     /** @ignore */
     static extension = {
         type: [
-            ExtensionType.WebGLRendererPipes,
-            ExtensionType.WebGPURendererPipes,
-            ExtensionType.CanvasRendererPipes,
+            ExtensionType.WebGLPipes,
+            ExtensionType.WebGPUPipes,
+            ExtensionType.CanvasPipes,
         ],
         name: 'mesh',
     } as const;

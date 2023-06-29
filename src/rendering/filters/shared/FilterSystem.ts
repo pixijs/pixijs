@@ -13,7 +13,7 @@ import { getGlobalRenderableBounds } from '../../scene/bounds/getRenderableBound
 import type { PointData } from '../../../maths/PointData';
 import type { RenderSurface } from '../../renderers/gpu/renderTarget/GpuRenderTargetSystem';
 import type { BindResource } from '../../renderers/gpu/shader/BindResource';
-import type { WebGPURenderPipes } from '../../renderers/gpu/WebGPURenderer';
+import type { WebGPURenderer } from '../../renderers/gpu/WebGPURenderer';
 import type { Instruction } from '../../renderers/shared/instructions/Instruction';
 import type { Renderable } from '../../renderers/shared/Renderable';
 import type { RenderTarget } from '../../renderers/shared/renderTarget/RenderTarget';
@@ -87,8 +87,8 @@ export class FilterSystem implements ISystem
     /** @ignore */
     static extension = {
         type: [
-            ExtensionType.WebGLRendererSystem,
-            ExtensionType.WebGPURendererSystem,
+            ExtensionType.WebGLSystem,
+            ExtensionType.WebGPUSystem,
         ],
         name: 'filter',
     } as const;
@@ -294,9 +294,9 @@ export class FilterSystem implements ISystem
 
         let globalUniforms: BindResource = this.filterGlobalUniforms;
 
-        if ((renderer.renderPipes as WebGPURenderPipes).uniformBatch)
+        if ((renderer as WebGPURenderer).renderPipes.uniformBatch)
         {
-            globalUniforms = (renderer.renderPipes as WebGPURenderPipes).uniformBatch
+            globalUniforms = (renderer as WebGPURenderer).renderPipes.uniformBatch
                 .getUniformBufferResource(this.filterGlobalUniforms);
         }
 
@@ -333,9 +333,9 @@ export class FilterSystem implements ISystem
             outputFrame[1] = 0;
             this.filterGlobalUniforms.update();
 
-            if ((renderer.renderPipes as WebGPURenderPipes).uniformBatch)
+            if ((renderer as WebGPURenderer).renderPipes.uniformBatch)
             {
-                const globalUniforms2 = (renderer.renderPipes as WebGPURenderPipes).uniformBatch
+                const globalUniforms2 = (renderer as WebGPURenderer).renderPipes.uniformBatch
                     .getUniformBufferResource(this.filterGlobalUniforms);
 
                 this.globalFilterBindGroup.setResource(globalUniforms2, 0);
@@ -367,7 +367,7 @@ export class FilterSystem implements ISystem
 
             renderer.globalUniforms.pop();
 
-            if ((renderer.renderPipes as WebGPURenderPipes).uniformBatch)
+            if ((renderer as WebGPURenderer).renderPipes.uniformBatch)
             {
                 this.globalFilterBindGroup.setResource(globalUniforms, 0);
             }

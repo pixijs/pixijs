@@ -22,7 +22,7 @@ export class GlStateSystem implements ISystem
     /** @ignore */
     static extension = {
         type: [
-            ExtensionType.WebGLRendererSystem,
+            ExtensionType.WebGLSystem,
         ],
         name: 'state',
     } as const;

@@ -4,6 +4,7 @@ import { EventsTicker } from './EventTicker';
 import { FederatedPointerEvent } from './FederatedPointerEvent';
 import { FederatedWheelEvent } from './FederatedWheelEvent';
 
+import type { ExtensionMetadata } from '../extensions/Extensions';
 import type { PointData } from '../maths/PointData';
 import type { ISystem } from '../rendering/renderers/shared/system/System';
 import type { Renderer } from '../rendering/renderers/types';
@@ -92,15 +93,15 @@ interface EventSystemFeatures
 export class EventSystem implements ISystem<EventSystemOptions>
 {
     /** @ignore */
-    static extension = {
+    static extension: ExtensionMetadata = {
         name: 'events',
         type: [
-            ExtensionType.WebGLRendererSystem,
-            ExtensionType.CanvasRendererSystem,
-            ExtensionType.WebGPURendererSystem,
+            ExtensionType.WebGLSystem,
+            ExtensionType.CanvasSystem,
+            ExtensionType.WebGPUSystem,
         ],
         priority: -1,
-    } as const;
+    };
 
     /**
      * The event features that are enabled by the EventSystem

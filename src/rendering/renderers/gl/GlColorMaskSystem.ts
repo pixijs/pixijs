@@ -8,7 +8,7 @@ export class GlColorMaskSystem implements ISystem
     /** @ignore */
     static extension = {
         type: [
-            ExtensionType.WebGLRendererSystem,
+            ExtensionType.WebGLSystem,
         ],
         name: 'colorMask',
     } as const;

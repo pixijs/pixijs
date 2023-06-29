@@ -29,9 +29,9 @@ export class CanvasTextSystem implements ISystem
     /** @ignore */
     static extension = {
         type: [
-            ExtensionType.WebGLRendererSystem,
-            ExtensionType.WebGPURendererSystem,
-            ExtensionType.CanvasRendererSystem,
+            ExtensionType.WebGLSystem,
+            ExtensionType.WebGPUSystem,
+            ExtensionType.CanvasSystem,
         ],
         name: 'canvasText',
     } as const;

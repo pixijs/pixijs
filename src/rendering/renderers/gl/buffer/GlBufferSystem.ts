@@ -30,7 +30,7 @@ export class GlBufferSystem implements ISystem
     /** @ignore */
     static extension = {
         type: [
-            ExtensionType.WebGLRendererSystem,
+            ExtensionType.WebGLSystem,
         ],
         name: 'buffer',
     } as const;

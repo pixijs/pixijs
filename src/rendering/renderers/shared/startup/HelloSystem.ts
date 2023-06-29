@@ -8,36 +8,36 @@ import type { ISystem } from '../system/System';
  * Options for the startup system.
  * @ignore
  */
-export interface StartupSystemOptions
+export interface HelloSystemOptions
 {
     /**
      * Whether to log the version and type information of renderer to console.
-     * @memberof PIXI.IRendererOptions
+     * @memberof PIXI.RendererOptions
      */
     hello: boolean;
 }
 /**
  * A simple system responsible for initiating the renderer.
  * @memberof PIXI
- */export class HelloSystem implements ISystem<StartupSystemOptions>
+ */
+export class HelloSystem implements ISystem<HelloSystemOptions>
 {
     /** @ignore */
     static extension = {
         type: [
-            ExtensionType.WebGLRendererSystem,
-            ExtensionType.WebGPURendererSystem,
-            ExtensionType.CanvasRendererSystem,
+            ExtensionType.WebGLSystem,
+            ExtensionType.WebGPUSystem,
+            ExtensionType.CanvasSystem,
         ],
         name: 'hello',
         priority: 0,
     } as const;
 
     /** @ignore */
-    static defaultOptions: StartupSystemOptions = {
+    static defaultOptions: HelloSystemOptions = {
         /**
-         * {@link PIXI.WebGLRendererOptions.hello}
+         * {@link PIXI.WebGLOptions.hello}
          * @default false
-         * @memberof PIXI.settings.GL_RENDER_OPTIONS
          */
         hello: false,
     };
@@ -53,7 +53,7 @@ export interface StartupSystemOptions
      * It all starts here! This initiates every system, passing in the options for any system by name.
      * @param options - the config for the renderer and all its systems
      */
-    init(options: StartupSystemOptions): void
+    init(options: HelloSystemOptions): void
     {
         if (options.hello)
         {

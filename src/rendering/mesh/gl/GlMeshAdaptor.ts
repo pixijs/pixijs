@@ -9,7 +9,7 @@ export class GlMeshAdaptor implements MeshAdaptor
 {
     static extension = {
         type: [
-            ExtensionType.WebGLRendererPipesAdaptor,
+            ExtensionType.WebGLPipesAdaptor,
         ],
         name: 'mesh',
     } as const;

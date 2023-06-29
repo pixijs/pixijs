@@ -7,61 +7,61 @@ declare namespace PixiMixins
     }
 
     // eslint-disable-next-line @typescript-eslint/no-empty-interface
-    interface WebGLRendererOptions
+    interface RendererOptions
     {
 
     }
 
     // eslint-disable-next-line @typescript-eslint/no-empty-interface
-    interface WebGPURendererOptions
+    interface WebGLOptions
     {
 
     }
 
     // eslint-disable-next-line @typescript-eslint/no-empty-interface
-    interface SharedRendererOptions
+    interface WebGPUOptions
     {
 
     }
 
     // eslint-disable-next-line @typescript-eslint/no-empty-interface
-    interface SharedRenderSystems
+    interface RendererSystems
     {
 
     }
     // eslint-disable-next-line @typescript-eslint/no-empty-interface
-    interface GLRenderSystems
+    interface WebGLSystems
     {
 
     }
     // eslint-disable-next-line @typescript-eslint/no-empty-interface
-    interface GPURenderSystems
+    interface WebGPUSystems
     {
 
     }
     // eslint-disable-next-line @typescript-eslint/no-empty-interface
-    interface CanvasRenderSystems
+    interface CanvasSystems
     {
 
     }
 
     // eslint-disable-next-line @typescript-eslint/no-empty-interface
-    interface SharedRenderPipes
+    interface RendererPipes
     {
 
     }
     // eslint-disable-next-line @typescript-eslint/no-empty-interface
-    interface GLRenderPipes
+    interface WebGLPipes
     {
 
     }
     // eslint-disable-next-line @typescript-eslint/no-empty-interface
-    interface GPURenderPipes
+    interface WebGPUPipes
     {
 
     }
     // eslint-disable-next-line @typescript-eslint/no-empty-interface
-    interface CanvasRenderPipes
+    interface CanvasPipes
     {
 
     }

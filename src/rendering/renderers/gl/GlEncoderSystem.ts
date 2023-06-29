@@ -17,7 +17,7 @@ export class GlEncoderSystem implements ISystem
     /** @ignore */
     static extension = {
         type: [
-            ExtensionType.WebGLRendererSystem,
+            ExtensionType.WebGLSystem,
         ],
         name: 'encoder',
     } as const;

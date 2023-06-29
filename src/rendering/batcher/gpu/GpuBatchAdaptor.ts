@@ -13,7 +13,7 @@ export class GpuBatchAdaptor implements BatcherAdaptor
     /** @ignore */
     static extension = {
         type: [
-            ExtensionType.WebGPURendererPipesAdaptor,
+            ExtensionType.WebGPUPipesAdaptor,
         ],
         name: 'batch',
     } as const;

@@ -45,7 +45,7 @@ export class GlBackBufferSystem implements ISystem
     /** @ignore */
     static extension = {
         type: [
-            ExtensionType.WebGLRendererSystem,
+            ExtensionType.WebGLSystem,
         ],
         name: 'backBuffer',
     } as const;

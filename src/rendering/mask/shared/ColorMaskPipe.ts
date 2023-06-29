@@ -18,9 +18,9 @@ export class ColorMaskPipe implements InstructionPipe<ColorMaskInstruction>
     /** @ignore */
     static extension = {
         type: [
-            ExtensionType.WebGLRendererPipes,
-            ExtensionType.WebGPURendererPipes,
-            ExtensionType.CanvasRendererPipes,
+            ExtensionType.WebGLPipes,
+            ExtensionType.WebGPUPipes,
+            ExtensionType.CanvasPipes,
         ],
         name: 'colorMask',
     } as const;

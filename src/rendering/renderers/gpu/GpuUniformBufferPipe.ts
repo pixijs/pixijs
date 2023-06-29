@@ -36,7 +36,7 @@ export class GpuUniformBufferPipe
     /** @ignore */
     static extension = {
         type: [
-            ExtensionType.WebGPURendererPipes,
+            ExtensionType.WebGPUPipes,
         ],
         name: 'uniformBuffer',
     } as const;

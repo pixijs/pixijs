@@ -9,8 +9,8 @@ export interface AutoDetectOptions extends WebGLOptions, WebGPUOptions
 {
     preference?: 'webgl' | 'webgpu' | 'canvas';
     manageImports?: boolean;
-    webgpu?: WebGPUOptions
-    webgl?: WebGLOptions
+    webgpu?: Partial<WebGPUOptions>;
+    webgl?: Partial<WebGLOptions>;
 }
 
 const renderPriority = ['webgpu', 'webgl', 'canvas'];

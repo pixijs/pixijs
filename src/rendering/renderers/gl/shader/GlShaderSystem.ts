@@ -22,7 +22,7 @@ export class GlShaderSystem
     /** @ignore */
     static extension = {
         type: [
-            ExtensionType.WebGLRendererSystem,
+            ExtensionType.WebGLSystem,
         ],
         name: 'shader',
     } as const;

@@ -18,7 +18,7 @@ export class GpuGraphicsAdaptor implements GraphicsAdaptor
     /** @ignore */
     static extension = {
         type: [
-            ExtensionType.WebGPURendererPipesAdaptor,
+            ExtensionType.WebGPUPipesAdaptor,
         ],
         name: 'graphics',
     } as const;

@@ -8,7 +8,7 @@ export class GpuColorMaskSystem implements ISystem
     /** @ignore */
     static extension = {
         type: [
-            ExtensionType.WebGPURendererSystem,
+            ExtensionType.WebGPUSystem,
         ],
         name: 'colorMask',
     } as const;

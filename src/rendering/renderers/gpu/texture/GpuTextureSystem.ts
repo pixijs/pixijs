@@ -16,7 +16,7 @@ export class GpuTextureSystem implements ISystem
     /** @ignore */
     static extension = {
         type: [
-            ExtensionType.WebGPURendererSystem,
+            ExtensionType.WebGPUSystem,
         ],
         name: 'texture',
     } as const;

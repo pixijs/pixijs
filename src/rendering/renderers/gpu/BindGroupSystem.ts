@@ -17,7 +17,7 @@ export class BindGroupSystem implements ISystem
     /** @ignore */
     static extension = {
         type: [
-            ExtensionType.WebGPURendererSystem,
+            ExtensionType.WebGPUSystem,
         ],
         name: 'bindGroup',
     } as const;

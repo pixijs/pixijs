@@ -22,9 +22,9 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
 {
     static extension = {
         type: [
-            ExtensionType.WebGLRendererPipes,
-            ExtensionType.WebGPURendererPipes,
-            ExtensionType.CanvasRendererPipes,
+            ExtensionType.WebGLPipes,
+            ExtensionType.WebGPUPipes,
+            ExtensionType.CanvasPipes,
         ],
         name: 'stencilMask',
     } as const;

@@ -15,7 +15,7 @@ export class GlBatchAdaptor implements BatcherAdaptor
     /** @ignore */
     static extension = {
         type: [
-            ExtensionType.WebGLRendererPipesAdaptor,
+            ExtensionType.WebGLPipesAdaptor,
         ],
         name: 'batch',
     } as const;

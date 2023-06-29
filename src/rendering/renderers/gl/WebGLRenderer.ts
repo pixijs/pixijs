@@ -22,7 +22,7 @@ import type { SystemConstructor } from '../shared/system/System';
 import type { ExtractRendererOptions, ExtractSystemTypes } from '../shared/system/utils/typeUtils';
 import type { GlRenderingContext } from './context/GlRenderingContext';
 
-export const DefaultWebGLSystems = [
+const DefaultWebGLSystems = [
     ...SharedSystems,
     GlBackBufferSystem,
     GlContextSystem,
@@ -37,54 +37,45 @@ export const DefaultWebGLSystems = [
     GlStencilSystem,
     GlColorMaskSystem,
 ];
-
-const DefaultWebGLPipes = [
-    ...SharedRenderPipes,
-];
-
-const DefaultAdapters = [
-    GlBatchAdaptor,
-    GlMeshAdaptor,
-    GlGraphicsAdaptor,
-];
+const DefaultWebGLPipes = [...SharedRenderPipes];
+const DefaultWebGLAdapters = [GlBatchAdaptor, GlMeshAdaptor, GlGraphicsAdaptor];
 
 // installed systems will bbe added to this array by the extensions manager..
-const systems: {name: string, value: SystemConstructor}[] = [];
-const renderPipes: {name: string, value: PipeConstructor}[] = [];
-const renderPipeAdaptors: {name: string, value: any}[] = [];
+const systems: { name: string; value: SystemConstructor }[] = [];
+const renderPipes: { name: string; value: PipeConstructor }[] = [];
+const renderPipeAdaptors: { name: string; value: any }[] = [];
 
-extensions.handleByNamedList(ExtensionType.WebGLRendererSystem, systems);
-extensions.handleByNamedList(ExtensionType.WebGLRendererPipes, renderPipes);
-extensions.handleByNamedList(ExtensionType.WebGLRendererPipesAdaptor, renderPipeAdaptors);
+extensions.handleByNamedList(ExtensionType.WebGLSystem, systems);
+extensions.handleByNamedList(ExtensionType.WebGLPipes, renderPipes);
+extensions.handleByNamedList(ExtensionType.WebGLPipesAdaptor, renderPipeAdaptors);
 
 // add all the default systems as well as any user defined ones from the extensions
-extensions.add(
-    ...DefaultWebGLSystems,
-    ...DefaultWebGLPipes,
-    ...DefaultAdapters
-);
+extensions.add(...DefaultWebGLSystems, ...DefaultWebGLPipes, ...DefaultWebGLAdapters);
 
-type WebGLSystemTypes = ExtractSystemTypes<typeof DefaultWebGLSystems>;
-export type WebGLOptions = ExtractRendererOptions<typeof DefaultWebGLSystems>;
-export type WebGLRenderPipes = ExtractSystemTypes<typeof DefaultWebGLPipes>;
+type WebGLSystems = ExtractSystemTypes<typeof DefaultWebGLSystems> &
+PixiMixins.RendererSystems &
+PixiMixins.WebGLSystems;
 
-export interface WebGLRenderer extends AbstractRenderer<WebGLRenderPipes, WebGLOptions>, WebGLSystemTypes
+export type WebGLPipes = ExtractSystemTypes<typeof DefaultWebGLPipes> &
+PixiMixins.RendererPipes &
+PixiMixins.WebGLPipes;
+
+export type WebGLOptions = ExtractRendererOptions<typeof DefaultWebGLSystems> &
+PixiMixins.RendererOptions &
+PixiMixins.WebGLOptions;
+
+export interface WebGLRenderer extends AbstractRenderer<WebGLPipes, WebGLOptions>, WebGLSystems {}
+export class WebGLRenderer extends AbstractRenderer<WebGLPipes, WebGLOptions> implements WebGLSystems
 {
-
-}
-export class WebGLRenderer extends AbstractRenderer<WebGLRenderPipes, WebGLOptions> implements WebGLSystemTypes
-{
-    type = 'webgl2';
-
     gl: GlRenderingContext;
 
     constructor()
     {
         const systemConfig = {
-            type: 'webgl',
+            type: 'webgl2',
             systems,
             renderPipes,
-            renderPipeAdaptors
+            renderPipeAdaptors,
         };
 
         super(systemConfig);

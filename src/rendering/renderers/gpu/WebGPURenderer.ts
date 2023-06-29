@@ -36,46 +36,36 @@ const DefaultWebGPUSystems = [
     GpuStencilSystem,
     BindGroupSystem,
 ];
-
-const DefaultWebGPUPipes = [
-    ...SharedRenderPipes,
-    GpuUniformBatchPipe,
-    GpuUniformBufferPipe,
-];
-
-const DefaultAdapters = [
-    GpuBatchAdaptor,
-    GpuMeshAdapter,
-    GpuGraphicsAdaptor,
-];
+const DefaultWebGPUPipes = [...SharedRenderPipes, GpuUniformBatchPipe, GpuUniformBufferPipe];
+const DefaultWebGPUAdapters = [GpuBatchAdaptor, GpuMeshAdapter, GpuGraphicsAdaptor];
 
 // installed systems will bbe added to this array by the extensions manager..
-const systems: {name: string, value: SystemConstructor}[] = [];
-const renderPipes: {name: string, value: PipeConstructor}[] = [];
-const renderPipeAdaptors: {name: string, value: any}[] = [];
+const systems: { name: string; value: SystemConstructor }[] = [];
+const renderPipes: { name: string; value: PipeConstructor }[] = [];
+const renderPipeAdaptors: { name: string; value: any }[] = [];
 
-extensions.handleByNamedList(ExtensionType.WebGPURendererSystem, systems);
-extensions.handleByNamedList(ExtensionType.WebGPURendererPipes, renderPipes);
-extensions.handleByNamedList(ExtensionType.WebGPURendererPipesAdaptor, renderPipeAdaptors);
+extensions.handleByNamedList(ExtensionType.WebGPUSystem, systems);
+extensions.handleByNamedList(ExtensionType.WebGPUPipes, renderPipes);
+extensions.handleByNamedList(ExtensionType.WebGPUPipesAdaptor, renderPipeAdaptors);
 
 // add all the default systems as well as any user defined ones from the extensions
-extensions.add(
-    ...DefaultWebGPUSystems,
-    ...DefaultWebGPUPipes,
-    ...DefaultAdapters
-);
+extensions.add(...DefaultWebGPUSystems, ...DefaultWebGPUPipes, ...DefaultWebGPUAdapters);
 
-type WebGPUSystemTypes = ExtractSystemTypes<typeof DefaultWebGPUSystems>;
-export type WebGPURenderPipes = ExtractSystemTypes<typeof DefaultWebGPUPipes>;
-export type WebGPUOptions = ExtractRendererOptions<typeof DefaultWebGPUSystems>;
+type WebGPUSystems = ExtractSystemTypes<typeof DefaultWebGPUSystems> &
+PixiMixins.RendererSystems &
+PixiMixins.WebGPUSystems;
 
-export interface WebGPURenderer extends AbstractRenderer<WebGPURenderPipes, WebGPUOptions>, WebGPUSystemTypes
-{
+export type WebGPUPipes = ExtractSystemTypes<typeof DefaultWebGPUPipes> &
+PixiMixins.RendererPipes &
+PixiMixins.WebGPUPipes;
 
-}
+export type WebGPUOptions = ExtractRendererOptions<typeof DefaultWebGPUSystems> &
+PixiMixins.RendererOptions &
+PixiMixins.WebGPUOptions;
 
-// eslint-disable-next-line max-len
-export class WebGPURenderer extends AbstractRenderer<WebGPURenderPipes, WebGPUOptions> implements WebGPUSystemTypes
+export interface WebGPURenderer extends AbstractRenderer<WebGPUPipes, WebGPUOptions>, WebGPUSystems {}
+
+export class WebGPURenderer extends AbstractRenderer<WebGPUPipes, WebGPUOptions> implements WebGPUSystems
 {
     gpu: GPU;
 
@@ -85,10 +75,9 @@ export class WebGPURenderer extends AbstractRenderer<WebGPURenderPipes, WebGPUOp
             type: 'webgpu',
             systems,
             renderPipes,
-            renderPipeAdaptors
+            renderPipeAdaptors,
         };
 
         super(systemConfig);
     }
 }
-

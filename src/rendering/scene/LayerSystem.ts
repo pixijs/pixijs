@@ -5,7 +5,7 @@ import { executeInstructions } from './utils/executeInstructions';
 import { updateLayerGroupTransforms } from './utils/updateLayerGroupTransforms';
 import { validateRenderables } from './utils/validateRenderables';
 
-import type { WebGPURenderPipes } from '../renderers/gpu/WebGPURenderer';
+import type { WebGPURenderer } from '../renderers/gpu/WebGPURenderer';
 import type { ISystem } from '../renderers/shared/system/System';
 import type { Renderer } from '../renderers/types';
 import type { Container } from './Container';
@@ -22,9 +22,9 @@ export class LayerSystem implements ISystem
     /** @ignore */
     static extension = {
         type: [
-            ExtensionType.WebGLRendererSystem,
-            ExtensionType.WebGPURendererSystem,
-            ExtensionType.CanvasRendererSystem,
+            ExtensionType.WebGLSystem,
+            ExtensionType.WebGPUSystem,
+            ExtensionType.CanvasSystem,
         ],
         name: 'layer',
     } as const;
@@ -45,7 +45,7 @@ export class LayerSystem implements ISystem
         // collect all the renderGroups in the scene and then render them one by one..
         const layerGroups = collectLayerGroups(container.layerGroup, []);
 
-        const renderPipes = renderer.renderPipes;
+        const renderPipes = (renderer as WebGPURenderer).renderPipes;
 
         for (let i = 0; i < layerGroups.length; i++)
         {
@@ -92,10 +92,10 @@ export class LayerSystem implements ISystem
         executeInstructions(container.layerGroup, renderPipes);
 
         // TODO need to add some events / runners for things like this to hook up to
-        if ((renderPipes as WebGPURenderPipes).uniformBatch)
+        if (renderPipes.uniformBatch)
         {
-            (renderPipes as WebGPURenderPipes).uniformBatch.renderEnd();
-            (renderPipes as WebGPURenderPipes).uniformBuffer.renderEnd();
+            renderPipes.uniformBatch.renderEnd();
+            renderPipes.uniformBuffer.renderEnd();
         }
     }
 

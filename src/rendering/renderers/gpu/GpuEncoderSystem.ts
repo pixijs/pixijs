@@ -21,7 +21,7 @@ export class GpuEncoderSystem implements ISystem
     /** @ignore */
     static extension = {
         type: [
-            ExtensionType.WebGPURendererSystem,
+            ExtensionType.WebGPUSystem,
         ],
         name: 'encoder',
     } as const;

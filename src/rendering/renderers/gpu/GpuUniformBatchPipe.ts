@@ -17,7 +17,7 @@ export class GpuUniformBatchPipe
     /** @ignore */
     static extension = {
         type: [
-            ExtensionType.WebGPURendererPipes,
+            ExtensionType.WebGPUPipes,
         ],
         name: 'uniformBatch',
     } as const;

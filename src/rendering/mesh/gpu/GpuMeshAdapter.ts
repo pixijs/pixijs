@@ -11,7 +11,7 @@ export class GpuMeshAdapter implements MeshAdaptor
     /** @ignore */
     static extension = {
         type: [
-            ExtensionType.WebGPURendererPipesAdaptor,
+            ExtensionType.WebGPUPipesAdaptor,
         ],
         name: 'mesh',
     } as const;

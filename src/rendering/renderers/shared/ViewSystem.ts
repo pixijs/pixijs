@@ -16,37 +16,37 @@ export interface ViewSystemOptions
 {
     /**
      * The width of the screen.
-     * @memberof PIXI.WebGLRendererOptions
+     * @memberof PIXI.WebGLOptions
      */
     width?: number;
     /**
      * The height of the screen.
-     * @memberof PIXI.WebGLRendererOptions
+     * @memberof PIXI.WebGLOptions
      */
     height?: number;
     /**
      * The canvas to use as a view, optional.
-     * @memberof PIXI.WebGLRendererOptions
+     * @memberof PIXI.WebGLOptions
      */
     element?: ICanvas;
     /**
      * Resizes renderer view in CSS pixels to allow for resolutions other than 1.
-     * @memberof PIXI.WebGLRendererOptions
+     * @memberof PIXI.WebGLOptions
      */
     autoDensity?: boolean;
     /**
      * The resolution / device pixel ratio of the renderer.
-     * @memberof PIXI.WebGLRendererOptions
+     * @memberof PIXI.WebGLOptions
      */
     resolution?: number;
     /**
      * **WebGL Only.** Whether to enable anti-aliasing. This may affect performance.
-     * @memberof PIXI.WebGLRendererOptions
+     * @memberof PIXI.WebGLOptions
      */
     antialias?: boolean;
     /**
      * TODO: multiView
-     * @memberof PIXI.WebGLRendererOptions
+     * @memberof PIXI.WebGLOptions
      */
     multiView?: boolean;
 }
@@ -61,9 +61,9 @@ export class ViewSystem implements ISystem
     /** @ignore */
     static extension = {
         type: [
-            ExtensionType.WebGLRendererSystem,
-            ExtensionType.WebGPURendererSystem,
-            ExtensionType.CanvasRendererSystem,
+            ExtensionType.WebGLSystem,
+            ExtensionType.WebGPUSystem,
+            ExtensionType.CanvasSystem,
         ],
         name: 'view',
         priority: 0,
@@ -72,34 +72,29 @@ export class ViewSystem implements ISystem
     /** @ignore */
     static defaultOptions: ViewSystemOptions = {
         /**
-         * {@link PIXI.WebGLRendererOptions.width}
+         * {@link PIXI.WebGLOptions.width}
          * @default 800
-         * @memberof PIXI.settings.GL_RENDER_OPTIONS
          */
         width: 800,
         /**
-         * {@link PIXI.WebGLRendererOptions.height}
+         * {@link PIXI.WebGLOptions.height}
          * @default 600
-         * @memberof PIXI.settings.GL_RENDER_OPTIONS
          */
         height: 600,
         /**
-         * {@link PIXI.WebGLRendererOptions.resolution}
+         * {@link PIXI.WebGLOptions.resolution}
          * @type {number}
          * @default PIXI.settings.RESOLUTION
-         * @memberof PIXI.settings.GL_RENDER_OPTIONS
          */
         resolution: settings.RESOLUTION,
         /**
-         * {@link PIXI.WebGLRendererOptions.autoDensity}
+         * {@link PIXI.WebGLOptions.autoDensity}
          * @default false
-         * @memberof PIXI.settings.GL_RENDER_OPTIONS
          */
         autoDensity: true,
         /**
-         * {@link PIXI.WebGLRendererOptions.antialias}
+         * {@link PIXI.WebGLOptions.antialias}
          * @default false
-         * @memberof PIXI.settings.GL_RENDER_OPTIONS
          */
         antialias: false,
     };

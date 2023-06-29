@@ -26,7 +26,7 @@ export class GlTextureSystem implements ISystem
     /** @ignore */
     static extension = {
         type: [
-            ExtensionType.WebGLRendererSystem,
+            ExtensionType.WebGLSystem,
         ],
         name: 'texture',
     } as const;

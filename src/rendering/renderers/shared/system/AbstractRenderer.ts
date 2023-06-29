@@ -35,20 +35,24 @@ const defaultRunners = [
     'update',
     'postrender',
     'prerender'
-];
+] as const;
+
+type DefaultRunners = typeof defaultRunners[number];
+type Runners = {[key in DefaultRunners]: SystemRunner} & {
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    [K: ({} & string) | ({} & symbol)]: SystemRunner;
+};
 
 /**
  * The SystemManager is a class that provides functions for managing a set of systems
  * This is a base class, that is generic (no render code or knowledge at all)
  */
-export class AbstractRenderer<RENDER_PIPES, RENDERER_OPTIONS>
+export class AbstractRenderer<PIPES, OPTIONS>
 {
-    /** a collection of runners defined by the user */
-
     readonly type: string;
 
-    runners: {[key: string]: SystemRunner} = {};
-    renderPipes = {} as RENDER_PIPES;
+    runners: Runners = {} as Runners;
+    renderPipes = {} as PIPES;
     view: ViewSystem;
 
     private _systemsHash: Record<string, ISystem> = {};
@@ -66,13 +70,15 @@ export class AbstractRenderer<RENDER_PIPES, RENDERER_OPTIONS>
         const combinedRunners = [...defaultRunners, ...(config.runners ?? [])];
 
         this.addRunners(...combinedRunners);
-
         this.addSystems(config.systems);
-
         this.addPipes(config.renderPipes, config.renderPipeAdaptors);
     }
 
-    async init(options: Partial<RENDERER_OPTIONS> = {})
+    /**
+     * Initialize the renderer.
+     * @param options - The options to use to create the renderer.
+     */
+    async init(options: Partial<OPTIONS> = {})
     {
         // loop through all systems...
         for (const systemName in this._systemsHash)
@@ -91,7 +97,13 @@ export class AbstractRenderer<RENDER_PIPES, RENDERER_OPTIONS>
         }
     }
 
-    render(options: RenderOptions): void
+    /**
+     * Renders the object to its view.
+     * @param options - The options to render with.
+     * @param options.container - The container to render.
+     * @param [options.target] - The target to render to.
+     */
+    public render(options: RenderOptions): void
     {
         if (options instanceof Container)
         {
@@ -117,9 +129,9 @@ export class AbstractRenderer<RENDER_PIPES, RENDERER_OPTIONS>
      * Resizes the WebGL view to the specified width and height.
      * @param desiredScreenWidth - The desired width of the screen.
      * @param desiredScreenHeight - The desired height of the screen.
-     * @param resolution
+     * @param resolution - The resolution / device pixel ratio of the renderer.
      */
-    resize(desiredScreenWidth: number, desiredScreenHeight: number, resolution?: number): void
+    public resize(desiredScreenWidth: number, desiredScreenHeight: number, resolution?: number): void
     {
         this.view.resize(desiredScreenWidth, desiredScreenHeight, resolution);
     }
@@ -175,7 +187,7 @@ export class AbstractRenderer<RENDER_PIPES, RENDERER_OPTIONS>
      * Create a bunch of runners based of a collection of ids
      * @param runnerIds - the runner ids to add
      */
-    addRunners(...runnerIds: string[]): void
+    private addRunners(...runnerIds: string[]): void
     {
         runnerIds.forEach((runnerId) =>
         {
@@ -183,7 +195,7 @@ export class AbstractRenderer<RENDER_PIPES, RENDERER_OPTIONS>
         });
     }
 
-    addSystems(systems: RendererConfig['systems']): void
+    private addSystems(systems: RendererConfig['systems']): void
     {
         let i: keyof typeof systems;
 
@@ -204,7 +216,7 @@ export class AbstractRenderer<RENDER_PIPES, RENDERER_OPTIONS>
      *        sure it doesn't collide with properties on Renderer.
      * @returns Return instance of renderer
      */
-    addSystem(ClassRef: SystemConstructor, name: string): this
+    private addSystem(ClassRef: SystemConstructor, name: string): this
     {
         const system = new ClassRef(this as unknown as Renderer);
 
@@ -225,7 +237,7 @@ export class AbstractRenderer<RENDER_PIPES, RENDERER_OPTIONS>
         return this;
     }
 
-    addPipes(pipes: RendererConfig['renderPipes'], pipeAdaptors: RendererConfig['renderPipeAdaptors']): void
+    private addPipes(pipes: RendererConfig['renderPipes'], pipeAdaptors: RendererConfig['renderPipeAdaptors']): void
     {
         const adaptors = pipeAdaptors.reduce((acc, adaptor) =>
         {

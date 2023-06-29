@@ -28,7 +28,7 @@ export class GlGeometrySystem implements ISystem
     /** @ignore */
     static extension = {
         type: [
-            ExtensionType.WebGLRendererSystem,
+            ExtensionType.WebGLSystem,
         ],
         name: 'geometry',
     } as const;

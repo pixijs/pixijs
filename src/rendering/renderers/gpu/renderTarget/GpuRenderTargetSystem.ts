@@ -23,7 +23,7 @@ export class GpuRenderTargetSystem implements ISystem
 {
     /** @ignore */
     static extension = {
-        type: [ExtensionType.WebGPURendererSystem],
+        type: [ExtensionType.WebGPUSystem],
         name: 'renderTarget',
     } as const;
 

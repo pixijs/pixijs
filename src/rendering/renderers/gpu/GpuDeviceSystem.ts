@@ -20,7 +20,7 @@ export class GpuDeviceSystem implements ISystem
     /** @ignore */
     static extension = {
         type: [
-            ExtensionType.WebGPURendererSystem,
+            ExtensionType.WebGPUSystem,
         ],
         name: 'device',
     } as const;

@@ -17,7 +17,7 @@ export class GlRenderTargetSystem implements ISystem
     /** @ignore */
     static extension = {
         type: [
-            ExtensionType.WebGLRendererSystem,
+            ExtensionType.WebGLSystem,
         ],
         name: 'renderTarget',
     } as const;

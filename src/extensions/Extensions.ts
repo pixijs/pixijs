@@ -16,19 +16,19 @@ enum ExtensionType
     Application = 'application',
 
     // WebGL renderer plugins/pipes/systems
-    WebGLRendererPipes = 'renderer-webgl-pipes',
-    WebGLRendererPipesAdaptor = 'renderer-webgl-pipes-adaptor',
-    WebGLRendererSystem = 'renderer-webgl-system',
+    WebGLPipes = 'webgl-pipes',
+    WebGLPipesAdaptor = 'webgl-pipes-adaptor',
+    WebGLSystem = 'webgl-system',
 
     // WebGPU renderer plugins/pipes/systems
-    WebGPURendererPipes = 'renderer-webgpu-pipes',
-    WebGPURendererPipesAdaptor = 'renderer-webgpu-pipes-adaptor',
-    WebGPURendererSystem = 'renderer-webgpu-system',
+    WebGPUPipes = 'webgpu-pipes',
+    WebGPUPipesAdaptor = 'webgpu-pipes-adaptor',
+    WebGPUSystem = 'webgpu-system',
 
     // Canvas renderer plugins/pipes/systems
-    CanvasRendererSystem = 'renderer-canvas-system',
-    CanvasRendererPipesAdaptor = 'renderer-canvas-pipes-adaptor',
-    CanvasRendererPipes = 'renderer-canvas-pipes',
+    CanvasSystem = 'canvas-system',
+    CanvasPipesAdaptor = 'canvas-pipes-adaptor',
+    CanvasPipes = 'canvas-pipes',
 
     // Asset related plugins
     Asset = 'asset',

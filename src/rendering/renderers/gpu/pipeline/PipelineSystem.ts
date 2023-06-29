@@ -57,7 +57,7 @@ export class PipelineSystem implements ISystem
     /** @ignore */
     static extension = {
         type: [
-            ExtensionType.WebGPURendererSystem,
+            ExtensionType.WebGPUSystem,
         ],
         name: 'pipeline',
     } as const;

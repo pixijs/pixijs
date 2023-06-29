@@ -18,7 +18,7 @@ export class GlUniformGroupSystem implements ISystem
     /** @ignore */
     static extension = {
         type: [
-            ExtensionType.WebGLRendererSystem,
+            ExtensionType.WebGLSystem,
         ],
         name: 'uniformGroup',
     } as const;

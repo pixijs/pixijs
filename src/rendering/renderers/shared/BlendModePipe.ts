@@ -67,9 +67,9 @@ export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
 {
     static extension = {
         type: [
-            ExtensionType.WebGLRendererPipes,
-            ExtensionType.WebGPURendererPipes,
-            ExtensionType.CanvasRendererPipes,
+            ExtensionType.WebGLPipes,
+            ExtensionType.WebGPUPipes,
+            ExtensionType.CanvasPipes,
         ],
         name: 'blendMode',
     } as const;

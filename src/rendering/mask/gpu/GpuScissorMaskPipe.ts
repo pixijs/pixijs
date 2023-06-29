@@ -26,7 +26,7 @@ export class GpuScissorMaskPipe implements InstructionPipe<ScissorMaskInstructio
     /** @ignore */
     static extension: ExtensionMetadata = {
         type: [
-            ExtensionType.WebGPURendererPipes,
+            ExtensionType.WebGPUPipes,
         ],
         name: 'scissorMask',
     };
