@@ -190,7 +190,7 @@ export class NineSliceSprite extends Container<MeshView<NineSliceGeometry>>
     }
 }
 
-class NineSlicePlane extends NineSliceSprite
+export class NineSlicePlane extends NineSliceSprite
 {
     constructor(options: NineSliceSpriteOptions | Texture)
     {
@@ -198,5 +198,3 @@ class NineSlicePlane extends NineSliceSprite
         super(options);
     }
 }
-
-export { NineSlicePlane };
