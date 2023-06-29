@@ -9,10 +9,10 @@ import type { Geometry } from '../shared/geometry/Geometry';
 import type { RenderTarget } from '../shared/renderTarget/RenderTarget';
 import type { Shader } from '../shared/shader/Shader';
 import type { State } from '../shared/state/State';
-import type { ISystem } from '../shared/system/System';
+import type { System } from '../shared/system/System';
 import type { WebGLRenderer } from './WebGLRenderer';
 
-export class GlEncoderSystem implements ISystem
+export class GlEncoderSystem implements System
 {
     /** @ignore */
     static extension = {

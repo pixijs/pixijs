@@ -1,7 +1,7 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
 
 import type { ICanvas } from '../../../../settings/adapter/ICanvas';
-import type { ISystem } from '../../shared/system/System';
+import type { System } from '../../shared/system/System';
 import type { WebGLRenderer } from '../WebGLRenderer';
 import type { GlRenderingContext } from './GlRenderingContext';
 import type { WebGLExtensions } from './WebGLExtensions';
@@ -49,7 +49,7 @@ export interface ContextSystemOptions
  * System plugin to the renderer to manage the context.
  * @memberof PIXI
  */
-export class GlContextSystem implements ISystem<ContextSystemOptions>
+export class GlContextSystem implements System<ContextSystemOptions>
 {
     /** @ignore */
     static extension = {

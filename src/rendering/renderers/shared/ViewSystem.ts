@@ -4,7 +4,7 @@ import { getCanvasTexture } from './texture/utils/getCanvasTexture';
 
 import type { ICanvas } from '../../../settings/adapter/ICanvas';
 import type { Renderer } from '../types';
-import type { ISystem } from './system/System';
+import type { System } from './system/System';
 import type { CanvasSourceOptions } from './texture/sources/CanvasSource';
 import type { Texture } from './texture/Texture';
 
@@ -56,7 +56,7 @@ export interface ViewSystemOptions
  * This main role is to deal with how the holding the view reference and dealing with how it is resized.
  * @memberof PIXI
  */
-export class ViewSystem implements ISystem
+export class ViewSystem implements System
 {
     /** @ignore */
     static extension = {

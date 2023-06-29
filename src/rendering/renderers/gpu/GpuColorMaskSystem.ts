@@ -1,9 +1,9 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 
-import type { ISystem } from '../shared/system/System';
+import type { System } from '../shared/system/System';
 import type { WebGPURenderer } from './WebGPURenderer';
 
-export class GpuColorMaskSystem implements ISystem
+export class GpuColorMaskSystem implements System
 {
     /** @ignore */
     static extension = {

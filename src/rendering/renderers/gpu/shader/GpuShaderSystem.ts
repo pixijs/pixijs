@@ -2,12 +2,12 @@ import { ExtensionType } from '../../../../extensions/Extensions';
 import { UniformGroup } from '../../shared/shader/UniformGroup';
 
 import type { Shader } from '../../shared/shader/Shader';
-import type { ISystem } from '../../shared/system/System';
+import type { System } from '../../shared/system/System';
 import type { GPU } from '../GpuDeviceSystem';
 import type { WebGPURenderer } from '../WebGPURenderer';
 import type { GpuProgram } from './GpuProgram';
 
-export class GpuShaderSystem implements ISystem
+export class GpuShaderSystem implements System
 {
     /** @ignore */
     static extension = {

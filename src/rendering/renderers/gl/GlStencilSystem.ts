@@ -3,10 +3,10 @@ import { GpuStencilModesToPixi } from '../gpu/state/GpuStencilModesToPixi';
 import { STENCIL_MODES } from '../shared/state/const';
 
 import type { RenderTarget } from '../shared/renderTarget/RenderTarget';
-import type { ISystem } from '../shared/system/System';
+import type { System } from '../shared/system/System';
 import type { WebGLRenderer } from './WebGLRenderer';
 
-export class GlStencilSystem implements ISystem
+export class GlStencilSystem implements System
 {
     /** @ignore */
     static extension = {

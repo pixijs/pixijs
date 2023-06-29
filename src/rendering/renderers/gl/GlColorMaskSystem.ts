@@ -1,9 +1,9 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 
-import type { ISystem } from '../shared/system/System';
+import type { System } from '../shared/system/System';
 import type { WebGLRenderer } from './WebGLRenderer';
 
-export class GlColorMaskSystem implements ISystem
+export class GlColorMaskSystem implements System
 {
     /** @ignore */
     static extension = {

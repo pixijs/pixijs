@@ -7,7 +7,7 @@ import { buildContextBatches } from './utils/buildContextBatches';
 
 import type { PoolItem } from '../../../utils/pool/Pool';
 import type { Batch } from '../../batcher/shared/Batcher';
-import type { ISystem } from '../../renderers/shared/system/System';
+import type { System } from '../../renderers/shared/system/System';
 import type { BatchableGraphics } from './BatchableGraphics';
 import type { GraphicsContext } from './GraphicsContext';
 
@@ -29,7 +29,7 @@ export class GraphicsContextRenderData
     }
 }
 
-export class GraphicsContextSystem implements ISystem
+export class GraphicsContextSystem implements System
 {
     /** @ignore */
     static extension = {

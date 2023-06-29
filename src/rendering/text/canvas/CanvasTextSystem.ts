@@ -12,7 +12,7 @@ import { getCanvasFillStyle } from './utils/getCanvasFillStyle';
 import type { ICanvas } from '../../../settings/adapter/ICanvas';
 import type { ICanvasRenderingContext2D } from '../../../settings/adapter/ICanvasRenderingContext2D';
 import type { StrokeStyle } from '../../graphics/shared/GraphicsContext';
-import type { ISystem } from '../../renderers/shared/system/System';
+import type { System } from '../../renderers/shared/system/System';
 import type { Texture } from '../../renderers/shared/texture/Texture';
 import type { TextStyle } from '../TextStyle';
 
@@ -24,7 +24,7 @@ interface CanvasAndContext
     context: ICanvasRenderingContext2D;
 }
 
-export class CanvasTextSystem implements ISystem
+export class CanvasTextSystem implements System
 {
     /** @ignore */
     static extension = {

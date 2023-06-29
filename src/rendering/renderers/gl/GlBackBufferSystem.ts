@@ -6,7 +6,7 @@ import { Texture } from '../shared/texture/Texture';
 import { GlProgram } from './shader/GlProgram';
 
 import type { RenderSurface } from '../gpu/renderTarget/GpuRenderTargetSystem';
-import type { ISystem } from '../shared/system/System';
+import type { System } from '../shared/system/System';
 import type { WebGLRenderer } from './WebGLRenderer';
 
 const bigTriangleProgram = new GlProgram({
@@ -40,7 +40,7 @@ const bigTriangleShader = new Shader({
     },
 });
 
-export class GlBackBufferSystem implements ISystem
+export class GlBackBufferSystem implements System
 {
     /** @ignore */
     static extension = {

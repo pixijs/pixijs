@@ -9,14 +9,14 @@ import type { RenderTarget } from '../shared/renderTarget/RenderTarget';
 import type { Shader } from '../shared/shader/Shader';
 import type { UniformGroup } from '../shared/shader/UniformGroup';
 import type { State } from '../shared/state/State';
-import type { ISystem } from '../shared/system/System';
+import type { System } from '../shared/system/System';
 import type { GPU } from './GpuDeviceSystem';
 import type { GpuRenderTarget } from './renderTarget/GpuRenderTarget';
 import type { BindGroup } from './shader/BindGroup';
 import type { GpuProgram } from './shader/GpuProgram';
 import type { WebGPURenderer } from './WebGPURenderer';
 
-export class GpuEncoderSystem implements ISystem
+export class GpuEncoderSystem implements System
 {
     /** @ignore */
     static extension = {

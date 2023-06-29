@@ -1,7 +1,7 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { hex2rgb, hex2string } from '../../../../utils/color/hex';
 
-import type { ISystem } from '../system/System';
+import type { System } from '../system/System';
 
 /**
  * Options for the background system.
@@ -43,7 +43,7 @@ type ColorObject = { r: number; g: number; b: number; a: number };
  * The background system manages the background color and alpha of the main view.
  * @memberof PIXI
  */
-export class BackgroundSystem implements ISystem
+export class BackgroundSystem implements System
 {
     /** @ignore */
     static extension = {

@@ -6,7 +6,7 @@ import { GpuStencilModesToPixi } from '../state/GpuStencilModesToPixi';
 import type { Topology } from '../../shared/geometry/const';
 import type { Geometry } from '../../shared/geometry/Geometry';
 import type { State } from '../../shared/state/State';
-import type { ISystem } from '../../shared/system/System';
+import type { System } from '../../shared/system/System';
 import type { GPU } from '../GpuDeviceSystem';
 import type { GpuProgram } from '../shader/GpuProgram';
 import type { WebGPURenderer } from '../WebGPURenderer';
@@ -52,7 +52,7 @@ function getKey(
     | (stencilStateId << 4)
     | multiSampleCount;
 }
-export class PipelineSystem implements ISystem
+export class PipelineSystem implements System
 {
     /** @ignore */
     static extension = {

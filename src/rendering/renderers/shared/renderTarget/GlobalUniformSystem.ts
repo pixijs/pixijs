@@ -10,7 +10,7 @@ import type { GpuRenderTargetSystem } from '../../gpu/renderTarget/GpuRenderTarg
 import type { WebGPURenderer } from '../../gpu/WebGPURenderer';
 import type { Renderer } from '../../types';
 import type { UniformBufferSystem } from '../shader/UniformBufferSystem';
-import type { ISystem } from '../system/System';
+import type { System } from '../system/System';
 
 export type GlobalUniformGroup = UniformGroup<{
     projectionMatrix: { value: Matrix; type: 'mat3x3<f32>' }
@@ -42,7 +42,7 @@ interface GlobalUniformRenderer
     uniformBuffer: UniformBufferSystem;
 }
 
-export class GlobalUniformSystem implements ISystem
+export class GlobalUniformSystem implements System
 {
     /** @ignore */
     static extension = {

@@ -3,11 +3,11 @@ import { State } from '../../shared/state/State';
 import { GpuBlendModesToPixi } from './GpuBlendModesToPixi';
 
 import type { BLEND_MODES } from '../../shared/state/const';
-import type { ISystem } from '../../shared/system/System';
+import type { System } from '../../shared/system/System';
 import type { GPU } from '../GpuDeviceSystem';
 
 /** System plugin to the renderer to manage WebGL state machines. */
-export class GpuStateSystem implements ISystem
+export class GpuStateSystem implements System
 {
     /** @ignore */
     static extension = {

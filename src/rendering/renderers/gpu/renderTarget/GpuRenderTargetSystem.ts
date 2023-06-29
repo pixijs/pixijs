@@ -8,7 +8,7 @@ import { getCanvasTexture } from '../../shared/texture/utils/getCanvasTexture';
 import { GpuRenderTarget } from './GpuRenderTarget';
 
 import type { ICanvas } from '../../../../settings/adapter/ICanvas';
-import type { ISystem } from '../../shared/system/System';
+import type { System } from '../../shared/system/System';
 import type { BindableTexture } from '../../shared/texture/Texture';
 import type { GPU } from '../GpuDeviceSystem';
 import type { WebGPURenderer } from '../WebGPURenderer';
@@ -19,7 +19,7 @@ export type RenderSurface = ICanvas | BindableTexture | RenderTarget;
 
 export type RGBAArray = [number, number, number, number];
 
-export class GpuRenderTargetSystem implements ISystem
+export class GpuRenderTargetSystem implements System
 {
     /** @ignore */
     static extension = {

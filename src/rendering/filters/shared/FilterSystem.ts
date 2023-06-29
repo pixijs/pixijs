@@ -17,7 +17,7 @@ import type { WebGPURenderer } from '../../renderers/gpu/WebGPURenderer';
 import type { Instruction } from '../../renderers/shared/instructions/Instruction';
 import type { Renderable } from '../../renderers/shared/Renderable';
 import type { RenderTarget } from '../../renderers/shared/renderTarget/RenderTarget';
-import type { ISystem } from '../../renderers/shared/system/System';
+import type { System } from '../../renderers/shared/system/System';
 import type { Renderer } from '../../renderers/types';
 import type { Container } from '../../scene/Container';
 import type { Sprite } from '../../sprite/shared/Sprite';
@@ -82,7 +82,7 @@ export interface FilterData
 }
 
 // eslint-disable-next-line max-len
-export class FilterSystem implements ISystem
+export class FilterSystem implements System
 {
     /** @ignore */
     static extension = {

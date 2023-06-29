@@ -4,7 +4,7 @@ import { BUFFER_TYPE } from './const';
 import { GlBuffer } from './GlBuffer';
 
 import type { Buffer } from '../../shared/buffer/Buffer';
-import type { ISystem } from '../../shared/system/System';
+import type { System } from '../../shared/system/System';
 import type { GlRenderingContext } from '../context/GlRenderingContext';
 import type { WebGLRenderer } from '../WebGLRenderer';
 
@@ -25,7 +25,7 @@ import type { WebGLRenderer } from '../WebGLRenderer';
  * @class
  * @memberof PIXI
  */
-export class GlBufferSystem implements ISystem
+export class GlBufferSystem implements System
 {
     /** @ignore */
     static extension = {

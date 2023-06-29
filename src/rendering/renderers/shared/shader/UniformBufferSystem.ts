@@ -5,12 +5,12 @@ import { createUBOElements } from './utils/createUBOElements';
 import { generateUniformBufferSync } from './utils/createUniformBufferSync';
 
 import type { Renderer } from '../../types';
-import type { ISystem } from '../system/System';
+import type { System } from '../system/System';
 import type { UniformGroup } from './UniformGroup';
 import type { UniformBufferLayout } from './utils/createUBOElements';
 import type { UniformsSyncCallback } from './utils/createUniformBufferSync';
 
-export class UniformBufferSystem implements ISystem
+export class UniformBufferSystem implements System
 {
     /** @ignore */
     static extension = {

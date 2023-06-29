@@ -6,7 +6,7 @@ import { updateLayerGroupTransforms } from './utils/updateLayerGroupTransforms';
 import { validateRenderables } from './utils/validateRenderables';
 
 import type { WebGPURenderer } from '../renderers/gpu/WebGPURenderer';
-import type { ISystem } from '../renderers/shared/system/System';
+import type { System } from '../renderers/shared/system/System';
 import type { Renderer } from '../renderers/types';
 import type { Container } from './Container';
 import type { LayerGroup } from './LayerGroup';
@@ -17,7 +17,7 @@ import type { LayerGroup } from './LayerGroup';
  * @memberof PIXI
  */
 
-export class LayerSystem implements ISystem
+export class LayerSystem implements System
 {
     /** @ignore */
     static extension = {

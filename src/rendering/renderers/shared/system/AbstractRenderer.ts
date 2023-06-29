@@ -7,7 +7,7 @@ import type { RenderSurface } from '../../gpu/renderTarget/GpuRenderTargetSystem
 import type { Renderer } from '../../types';
 import type { PipeConstructor } from '../instructions/RenderPipe';
 import type { ViewSystem } from '../ViewSystem';
-import type { ISystem, SystemConstructor } from './System';
+import type { System, SystemConstructor } from './System';
 
 interface RendererConfig
 {
@@ -55,7 +55,7 @@ export class AbstractRenderer<PIPES, OPTIONS>
     renderPipes = {} as PIPES;
     view: ViewSystem;
 
-    private _systemsHash: Record<string, ISystem> = {};
+    private _systemsHash: Record<string, System> = {};
     private _lastObjectRendered: Container;
 
     /**

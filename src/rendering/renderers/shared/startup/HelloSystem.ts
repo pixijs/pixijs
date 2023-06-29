@@ -2,7 +2,7 @@ import { ExtensionType } from '../../../../extensions/Extensions';
 import { sayHello } from '../../../../utils/sayHello';
 
 import type { Renderer } from '../../types';
-import type { ISystem } from '../system/System';
+import type { System } from '../system/System';
 
 /**
  * Options for the startup system.
@@ -20,7 +20,7 @@ export interface HelloSystemOptions
  * A simple system responsible for initiating the renderer.
  * @memberof PIXI
  */
-export class HelloSystem implements ISystem<HelloSystemOptions>
+export class HelloSystem implements System<HelloSystemOptions>
 {
     /** @ignore */
     static extension = {
