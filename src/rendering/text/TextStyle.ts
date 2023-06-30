@@ -17,7 +17,7 @@ export type TextStyleTextBaseline = 'alphabetic' | 'top' | 'hanging' | 'middle' 
 export type TextStyleWhiteSpace = 'normal' | 'pre' | 'pre-line';
 
 export type TextDropShadow = {
-    /** Set alpha for the drop shadow */
+    /** Set alpha for the drop shadow  */
     alpha: number;
     /** Set a angle of the drop shadow */
     angle: number;
