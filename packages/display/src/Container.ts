@@ -90,7 +90,7 @@ export class Container<T extends DisplayObject = DisplayObject> extends DisplayO
      * Will get automatically set to true if a new child is added, or if a child's zIndex changes.
      */
     public sortDirty: boolean;
-    public parent: Container;
+    public parent?: Container;
     public containerUpdateTransform: () => void;
 
     protected _width: number;
