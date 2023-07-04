@@ -30,9 +30,14 @@ export class Texture extends EventEmitter<{
     update: Texture
 }> implements BindableTexture
 {
-    static from(id: string): Texture
+    static from(id: string | TextureSource): Texture
     {
-        return Cache.get(id);
+        if (typeof id === 'string')
+        {
+            return Cache.get(id);
+        }
+
+        return new Texture({ source: id });
     }
 
     public label?: string;

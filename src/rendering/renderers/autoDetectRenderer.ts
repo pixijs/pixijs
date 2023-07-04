@@ -49,7 +49,7 @@ export async function autoDetectRenderer(options: Partial<AutoDetectOptions>): P
     {
         const rendererType = preferredOrder[i];
 
-        if (rendererType === 'webgpu' && isWebGPUSupported())
+        if (rendererType === 'webgpu' && (await isWebGPUSupported()))
         {
             const { WebGPURenderer } = await import('./gpu/WebGPURenderer');
 
