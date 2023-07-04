@@ -104,20 +104,20 @@ export interface TextStyleOptions
 }
 
 const valuesToIterateForKeys = [
-    'fontFamily',
-    'fontStyle',
-    'fontVariant',
-    'fontWeight',
-    'breakWords',
-    'align',
-    'leading',
-    'letterSpacing',
-    'lineHeight',
-    'textBaseline',
-    'whiteSpace',
-    'wordWrap',
-    'wordWrapWidth',
-    'padding',
+    '_fontFamily',
+    '_fontStyle',
+    '_fontVariant',
+    '_fontWeight',
+    '_breakWords',
+    '_align',
+    '_leading',
+    '_letterSpacing',
+    '_lineHeight',
+    '_textBaseline',
+    '_whiteSpace',
+    '_wordWrap',
+    '_wordWrapWidth',
+    '_padding',
 ];
 
 export class TextStyle extends EventEmitter<{
@@ -208,26 +208,26 @@ export class TextStyle extends EventEmitter<{
     _stroke: StrokeStyle;
     _originalStroke: FillStyleInputs | StrokeStyle;
 
-    dropShadow: TextDropShadow;
+    private _dropShadow: TextDropShadow;
 
-    fontFamily: string | string[];
-    fontSize: number;
-    fontStyle: TextStyleFontStyle;
-    fontVariant: TextStyleFontVariant;
-    fontWeight: TextStyleFontWeight;
+    private _fontFamily: string | string[];
+    private _fontSize: number;
+    private _fontStyle: TextStyleFontStyle;
+    private _fontVariant: TextStyleFontVariant;
+    private _fontWeight: TextStyleFontWeight;
 
-    breakWords: boolean;
-    align: TextStyleAlign;
-    leading: number;
-    letterSpacing: number;
-    lineHeight: number;
+    private _breakWords: boolean;
+    private _align: TextStyleAlign;
+    private _leading: number;
+    private _letterSpacing: number;
+    private _lineHeight: number;
 
-    textBaseline: TextStyleTextBaseline;
-    whiteSpace: TextStyleWhiteSpace;
-    wordWrap: boolean;
-    wordWrapWidth: number;
+    private _textBaseline: TextStyleTextBaseline;
+    private _whiteSpace: TextStyleWhiteSpace;
+    private _wordWrap: boolean;
+    private _wordWrapWidth: number;
 
-    padding: number;
+    private _padding: number;
 
     private _styleKey: string;
 
@@ -282,6 +282,67 @@ export class TextStyle extends EventEmitter<{
         this.update();
     }
 
+    get align(): TextStyleAlign { return this._align; }
+    set align(value: TextStyleAlign) { this._align = value; this.update(); }
+    get breakWords(): boolean { return this._breakWords; }
+    set breakWords(value: boolean) { this._breakWords = value; this.update(); }
+    get dropShadow(): TextDropShadow { return this._dropShadow; }
+    set dropShadow(value: TextDropShadow) { this._dropShadow = value; this.update(); }
+    get fontFamily(): string | string[] { return this._fontFamily; }
+    set fontFamily(value: string | string[]) { this._fontFamily = value; this.update(); }
+    get fontSize(): number { return this._fontSize; }
+    set fontSize(value: number) { this._fontSize = value; this.update(); }
+    get fontStyle(): TextStyleFontStyle { return this._fontStyle; }
+    set fontStyle(value: TextStyleFontStyle) { this._fontStyle = value; this.update(); }
+    get fontVariant(): TextStyleFontVariant { return this._fontVariant; }
+    set fontVariant(value: TextStyleFontVariant) { this._fontVariant = value; this.update(); }
+    get fontWeight(): TextStyleFontWeight { return this._fontWeight; }
+    set fontWeight(value: TextStyleFontWeight) { this._fontWeight = value; this.update(); }
+    get leading(): number { return this._leading; }
+    set leading(value: number) { this._leading = value; this.update(); }
+    get letterSpacing(): number { return this._letterSpacing; }
+    set letterSpacing(value: number) { this._letterSpacing = value; this.update(); }
+    get lineHeight(): number { return this._lineHeight; }
+    set lineHeight(value: number) { this._lineHeight = value; this.update(); }
+    get padding(): number { return this._padding; }
+    set padding(value: number) { this._padding = value; this.update(); }
+    get textBaseline(): TextStyleTextBaseline { return this._textBaseline; }
+    set textBaseline(value: TextStyleTextBaseline) { this._textBaseline = value; this.update(); }
+    get whiteSpace(): TextStyleWhiteSpace { return this._whiteSpace; }
+    set whiteSpace(value: TextStyleWhiteSpace) { this._whiteSpace = value; this.update(); }
+    get wordWrap(): boolean { return this._wordWrap; }
+    set wordWrap(value: boolean) { this._wordWrap = value; this.update(); }
+    get wordWrapWidth(): number { return this._wordWrapWidth; }
+    set wordWrapWidth(value: number) { this._wordWrapWidth = value; this.update(); }
+
+    get fill(): FillStyleInputs
+    {
+        return this._originalFill;
+    }
+
+    set fill(value: FillStyleInputs)
+    {
+        if (value === this._originalFill) return;
+
+        this._originalFill = value;
+        this._fill = convertFillInputToFillStyle(value, GraphicsContext.defaultFillStyle);
+        this.update();
+    }
+
+    get stroke(): FillStyleInputs | StrokeStyle
+    {
+        return this._originalStroke;
+    }
+
+    set stroke(value: FillStyleInputs | StrokeStyle)
+    {
+        if (value === this._originalFill) return;
+
+        this._originalFill = value;
+        this._stroke = convertFillInputToFillStyle(value, GraphicsContext.defaultStrokeStyle);
+        this.update();
+    }
+
     generateKey(): string
     {
         const key = [];
@@ -307,34 +368,6 @@ export class TextStyle extends EventEmitter<{
     {
         this._styleKey = null;
         this.emit('update', this);
-    }
-
-    get fill(): FillStyleInputs
-    {
-        return this._originalFill;
-    }
-
-    set fill(value: FillStyleInputs)
-    {
-        if (value === this._fill) return;
-
-        this._originalFill = value;
-
-        this._fill = convertFillInputToFillStyle(value, GraphicsContext.defaultFillStyle);
-    }
-
-    get stroke(): FillStyleInputs | StrokeStyle
-    {
-        return this._originalStroke;
-    }
-
-    set stroke(value: FillStyleInputs | StrokeStyle)
-    {
-        if (value === this._fill) return;
-
-        this._originalFill = value;
-
-        this._stroke = convertFillInputToFillStyle(value, GraphicsContext.defaultStrokeStyle);
     }
 
     get styleKey()
