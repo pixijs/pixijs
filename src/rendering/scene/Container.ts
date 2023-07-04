@@ -43,6 +43,7 @@ export interface ContainerOptions<T extends View>
 {
     label?: string;
     layer?: boolean;
+    depthSort?: boolean;
     view?: T;
 }
 
@@ -211,7 +212,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
     // a renderable object... like a sprite!
     public readonly view: T;
 
-    constructor({ label, layer, view }: ContainerOptions<T> = {})
+    constructor({ label, layer, view, depthSort }: ContainerOptions<T> = {})
     {
         super();
 
@@ -233,6 +234,8 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
             // but for now this is just faster!
             this.view.owner = this;
         }
+
+        this.depthSort = !!depthSort;
     }
 
     /**
@@ -277,6 +280,8 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         }
 
         this.children.push(child);
+
+        if (this.depthSort) this.depthSortDirty = true;
 
         child.parent = this;
 
@@ -486,6 +491,40 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
     set y(value: number)
     {
         this.position.y = value;
+    }
+
+    _depth = 0;
+    depthSortDirty = false;
+    depthSort = false;
+
+    get depth()
+    {
+        return this._depth;
+    }
+
+    /** The depth of the object. Setting this value, will automatically set the parent to be sortable */
+    set depth(value)
+    {
+        if (this._depth === value) return;
+
+        this._depth = value;
+
+        if (this.layerGroup && !this.isLayerRoot)
+        {
+            this.parent.depthSort = true;
+            this.parent.depthSortDirty = true;
+
+            this.layerGroup.structureDidChange = true;
+        }
+    }
+
+    sortChildrenDepth()
+    {
+        if (!this.depthSortDirty) return;
+
+        this.depthSortDirty = false;
+
+        this.children.sort(sortChildren);
     }
 
     /**
@@ -764,3 +803,8 @@ Container.mixin(onRenderMixin);
 Container.mixin(measureMixin);
 Container.mixin(effectsMixin);
 Container.mixin(findMixin);
+
+function sortChildren(a: Container, b: Container): number
+{
+    return a._depth - b._depth;
+}

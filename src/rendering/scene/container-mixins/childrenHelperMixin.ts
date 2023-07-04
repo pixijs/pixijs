@@ -184,6 +184,8 @@ export const childrenHelperMixin: Partial<Container> = {
             this.layerGroup.addChild(child);
         }
 
+        if (this.depthSort) this.depthSortDirty = true;
+
         this.emit('childAdded', child, this, index);
         child.emit('added', this);
 
