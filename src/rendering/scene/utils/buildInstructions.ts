@@ -33,7 +33,7 @@ export function buildInstructions(layerGroup: LayerGroup, renderPipes: RenderPip
         }
     }
 
-    if (root.depthSort)
+    if (root.sortChildren)
     {
         root.sortChildrenDepth();
     }
@@ -62,7 +62,7 @@ export function collectAllRenderables(
 
     if (container.layerVisibleRenderable < 0b11 || !container.includeInBuild) return;
 
-    if (container.depthSort)
+    if (container.sortChildren)
     {
         container.sortChildrenDepth();
     }

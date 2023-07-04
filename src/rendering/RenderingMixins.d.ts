@@ -72,9 +72,10 @@ declare namespace PixiMixins
     type MeasureMixin = import('./scene/container-mixins/measureMixin').MeasureMixin;
     type EffectsMixin = import('./scene/container-mixins/effectsMixin').EffectsMixin;
     type FindMixin = import('./scene/container-mixins/getByLabelMixin').GetByLabelMixin;
+    type SortMixin = import('./scene/container-mixins/sortMixin').SortMixin;
 
     // eslint-disable-next-line @typescript-eslint/no-empty-interface
-    interface Container extends LocalGlobal, ChildrenHelper, OnRenderMixin, MeasureMixin, EffectsMixin, FindMixin
+    interface Container extends LocalGlobal, ChildrenHelper, OnRenderMixin, MeasureMixin, EffectsMixin, FindMixin, SortMixin
     {
 
     }
