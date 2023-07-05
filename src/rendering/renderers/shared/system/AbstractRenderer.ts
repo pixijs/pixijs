@@ -103,17 +103,23 @@ export class AbstractRenderer<PIPES, OPTIONS>
      * @param options.container - The container to render.
      * @param [options.target] - The target to render to.
      */
-    public render(options: RenderOptions): void
+    public render(options: RenderOptions | Container): void
     {
         if (options instanceof Container)
         {
-            deprecation('8', 'passing Container as argument is deprecated, please use render options instead');
+            options = { container: options };
 
             // eslint-disable-next-line prefer-rest-params
-            options = { container: options, target: arguments[1] };
+            if (arguments[1])
+            {
+                deprecation('8', 'passing target as a second argument is deprecated, please use render options instead');
+
+                // eslint-disable-next-line prefer-rest-params
+                options.target = arguments[1];
+            }
         }
 
-        options.target = options.target || this.view.texture;
+        options.target ||= this.view.texture;
 
         // TODO get rid of this
         this._lastObjectRendered = options.container;
