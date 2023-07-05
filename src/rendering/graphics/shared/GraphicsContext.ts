@@ -112,6 +112,7 @@ export class GraphicsContext extends EventEmitter<{
     uid = UID++;
     usage = 0;
 
+    label: string;
     dirty = true;
 
     batchMode: BatchMode = 'auto';

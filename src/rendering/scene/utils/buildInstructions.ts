@@ -33,6 +33,11 @@ export function buildInstructions(layerGroup: LayerGroup, renderPipes: RenderPip
         }
     }
 
+    if (root.sortChildren)
+    {
+        root.sortChildrenDepth();
+    }
+
     const children = root.children;
 
     const length = children.length;
@@ -56,6 +61,11 @@ export function collectAllRenderables(
     // if there is 0b01 or 0b10 the return value
 
     if (container.layerVisibleRenderable < 0b11 || !container.includeInBuild) return;
+
+    if (container.sortChildren)
+    {
+        container.sortChildrenDepth();
+    }
 
     if (container.isSimple)
     {

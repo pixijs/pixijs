@@ -18,19 +18,19 @@ export interface TextureShader extends Shader
     texture: Texture;
 }
 
-export interface MeshRenderableTextureOptions
+export interface MeshViewTextureOptions
 {
     geometry: MeshGeometry;
     texture: Texture;
 }
 
-export interface MeshRenderableShaderOptions
+export interface MeshViewShaderOptions
 {
     geometry: MeshGeometry;
     shader: TextureShader;
 }
 
-export type MeshViewOptions = MeshRenderableTextureOptions | MeshRenderableShaderOptions;
+export type MeshViewOptions = MeshViewTextureOptions | MeshViewShaderOptions;
 
 export class MeshView<GEOMETRY extends MeshGeometry = MeshGeometry>implements View
 {
@@ -53,11 +53,11 @@ export class MeshView<GEOMETRY extends MeshGeometry = MeshGeometry>implements Vi
 
     constructor(options: MeshViewOptions)
     {
-        this.shader = (options as MeshRenderableShaderOptions).shader;
+        this.shader = (options as MeshViewShaderOptions).shader;
 
-        if ((options as MeshRenderableTextureOptions).texture)
+        if ((options as MeshViewTextureOptions).texture)
         {
-            this.texture = (options as MeshRenderableTextureOptions).texture;
+            this.texture = (options as MeshViewTextureOptions).texture;
         }
 
         this._geometry = options.geometry as GEOMETRY;

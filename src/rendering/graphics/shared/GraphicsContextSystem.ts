@@ -177,6 +177,9 @@ export class GraphicsContextSystem implements System
         // this mean we don't have to creating new Batchers for each graphics items
         geometry.buffers[0].data = batcher.attributeBuffer.float32View;
 
+        geometry.indexBuffer.update(batcher.indexSize * 4);
+        geometry.buffers[0].update(batcher.attributeSize * 4);
+
         const drawBatches = batcher.batches;
 
         for (let i = 0; i < drawBatches.length; i++)
