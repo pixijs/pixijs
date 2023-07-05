@@ -40,6 +40,21 @@ export interface ContainerEvents extends PixiMixins.ContainerEvents
     destroyed: [];
 }
 
+type AnyEvent = {
+    // The following is a hack to allow any custom event while maintaining type safety.
+    // For some reason, the tsc compiler gets angry about error TS1023
+    // "An index signature parameter type must be either 'string' or 'number'."
+    // This is really odd since ({}&string) should interpret as string, but then again
+    // there is some black magic behind why this works in the first place.
+    // Closest thing to an explanation:
+    // https://stackoverflow.com/questions/70144348/why-does-a-union-of-type-literals-and-string-cause-ide-code-completion-wh
+    //
+    // Side note, we disable @typescript-eslint/ban-types since {}&string is the only syntax that works.
+    // Nor of the Record/unknown/never alternatives work.
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    [K: ({} & string) | ({} & symbol)]: any;
+};
+
 export interface ContainerOptions<T extends View>
 {
     label?: string;
@@ -54,10 +69,10 @@ export const UPDATE_VISIBLE = 0b0100;
 export const UPDATE_TRANSFORM = 0b1000;
 
 export interface Container
-    extends Omit<PixiMixins.Container, keyof EventEmitter<ContainerEvents>>,
-    EventEmitter<ContainerEvents> {}
+    extends Omit<PixiMixins.Container, keyof EventEmitter<ContainerEvents & AnyEvent>>,
+    EventEmitter<ContainerEvents & AnyEvent> {}
 
-export class Container<T extends View = View> extends EventEmitter<ContainerEvents> implements Renderable
+export class Container<T extends View = View> extends EventEmitter<ContainerEvents & AnyEvent> implements Renderable
 {
     /**
      * Mixes all enumerable properties and methods from a source object to Container.
@@ -297,8 +312,8 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
             this.layerGroup.addChild(child);
         }
 
-        // this.emit('childAdded', child, this);
-        // child.emit('added', this);
+        this.emit('childAdded', child, this, this.children.length - 1);
+        child.emit('added', this);
 
         return child;
     }
@@ -337,8 +352,8 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         }
 
         child.parent = null;
-        // this.emit('childRemoved', child, this, index);
-        // child.emit('removed', this);
+        this.emit('childRemoved', child, this, index);
+        child.emit('removed', this);
 
         return child;
     }
