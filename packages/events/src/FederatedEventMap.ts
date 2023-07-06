@@ -46,4 +46,19 @@ export type FederatedEventEmitterTypes = {
     [K in keyof FederatedEventMap as K | `${K}capture`]: [event: FederatedEventMap[K]];
 } & {
     [K in keyof GlobalFederatedEventMap]: [event: GlobalFederatedEventMap[K]];
+} & {
+
+    // The following is a hack to allow any custom event while maintaining type safety.
+    // For some reason, the tsc compiler gets angry about error TS1023
+    // "An index signature parameter type must be either 'string' or 'number'."
+    // This is really odd since ({}&string) should interpret as string, but then again
+    // there is some black magic behind why this works in the first place.
+    // Closest thing to an explanation:
+    // https://stackoverflow.com/questions/70144348/why-does-a-union-of-type-literals-and-string-cause-ide-code-completion-wh
+    //
+    // Side note, we disable @typescript-eslint/ban-types since {}&string is the only syntax that works.
+    // Nor of the Record/unknown/never alternatives work.
+    // @ts-expect-error This syntax is a hack
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    [K: ({} & string) | ({} & symbol)]: any;
 };
