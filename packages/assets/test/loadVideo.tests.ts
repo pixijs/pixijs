@@ -1,5 +1,5 @@
 import { Assets } from '@pixi/assets';
-import { Texture } from '@pixi/core';
+import { BaseTexture, Texture, VideoResource } from '@pixi/core';
 import { basePath } from './basePath';
 
 describe('loadVideo', () =>
@@ -157,5 +157,32 @@ describe('loadVideo', () =>
         expect(ogv).toBeInstanceOf(Texture);
         expect(ogv.width).toBe(1);
         expect(ogv.height).toBe(1);
+    });
+
+    it('should destroy texture, base texture, and resource on unload', async () =>
+    {
+        await Assets.init({
+            basePath,
+        });
+
+        const texture = await Assets.load('videos/white.mp4');
+
+        expect(texture).toBeInstanceOf(Texture);
+        expect(texture.width).toBe(1);
+        expect(texture.height).toBe(1);
+
+        const baseTexture = texture.baseTexture;
+
+        expect(baseTexture).toBeInstanceOf(BaseTexture);
+
+        const resource = baseTexture.resource;
+
+        expect(resource).toBeInstanceOf(VideoResource);
+
+        await Assets.unload('videos/white.mp4');
+
+        expect(texture.baseTexture).toBeNull();
+        expect(baseTexture.destroyed).toBeTrue();
+        expect(resource.destroyed).toBeTrue();
     });
 });
