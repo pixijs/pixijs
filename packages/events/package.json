@@ -1,6 +1,6 @@
 {
   "name": "@pixi/events",
-  "version": "6.5.9",
+  "version": "6.5.10",
   "main": "dist/cjs/events.js",
   "module": "dist/esm/events.mjs",
   "bundle": "dist/browser/events.js",
@@ -45,8 +45,8 @@
     "url": "https://github.com/pixijs/pixi.js/issues"
   },
   "peerDependencies": {
-    "@pixi/display": "6.5.9",
-    "@pixi/math": "6.5.9",
-    "@pixi/utils": "6.5.9"
+    "@pixi/display": "6.5.10",
+    "@pixi/math": "6.5.10",
+    "@pixi/utils": "6.5.10"
   }
 }

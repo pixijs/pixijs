@@ -1,6 +1,6 @@
 {
   "name": "pixi.js-legacy",
-  "version": "6.5.9",
+  "version": "6.5.10",
   "description": "The HTML5 Creation Engine: Create beautiful digital content with the fastest, most flexible 2D WebGL renderer.",
   "author": "Mat Groves",
   "contributors": [
@@ -46,16 +46,16 @@
     "url": "https://opencollective.com/pixijs"
   },
   "dependencies": {
-    "@pixi/canvas-display": "6.5.9",
-    "@pixi/canvas-extract": "6.5.9",
-    "@pixi/canvas-graphics": "6.5.9",
-    "@pixi/canvas-mesh": "6.5.9",
-    "@pixi/canvas-particle-container": "6.5.9",
-    "@pixi/canvas-prepare": "6.5.9",
-    "@pixi/canvas-renderer": "6.5.9",
-    "@pixi/canvas-sprite": "6.5.9",
-    "@pixi/canvas-sprite-tiling": "6.5.9",
-    "@pixi/canvas-text": "6.5.9",
-    "pixi.js": "6.5.9"
+    "@pixi/canvas-display": "6.5.10",
+    "@pixi/canvas-extract": "6.5.10",
+    "@pixi/canvas-graphics": "6.5.10",
+    "@pixi/canvas-mesh": "6.5.10",
+    "@pixi/canvas-particle-container": "6.5.10",
+    "@pixi/canvas-prepare": "6.5.10",
+    "@pixi/canvas-renderer": "6.5.10",
+    "@pixi/canvas-sprite": "6.5.10",
+    "@pixi/canvas-sprite-tiling": "6.5.10",
+    "@pixi/canvas-text": "6.5.10",
+    "pixi.js": "6.5.10"
   }
 }
