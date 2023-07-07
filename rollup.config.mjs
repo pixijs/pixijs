@@ -1,13 +1,12 @@
 import path from 'path';
 import resolve from '@rollup/plugin-node-resolve';
 import { string } from 'rollup-plugin-string';
-import sourcemaps from 'rollup-plugin-sourcemaps';
 import esbuild from 'rollup-plugin-esbuild';
 import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
 import alias from '@rollup/plugin-alias';
 import workspacesRun from 'workspaces-run';
-import repo from './package.json';
+import repo from './package.json' assert { type: 'json' };
 
 const bundleTarget = 'es2017';
 const moduleTarget = 'es2020';
@@ -42,7 +41,6 @@ function convertPackageNameToRegExp(packageName)
 async function main()
 {
     const commonPlugins = [
-        sourcemaps(),
         resolve({
             browser: true,
             preferBuiltins: false,
@@ -55,45 +53,47 @@ async function main()
                 '**/*.vert',
             ],
         }),
-    ];
-
-    const define = {
-        'process.env.VERSION': `'${repo.version}'`,
-        'process.env.DEBUG': 'true',
-    };
-
-    const plugins = [
-        esbuild({
-            target: moduleTarget,
-            minifySyntax: true,
-            define,
-        }),
-        ...commonPlugins
-    ];
-
-    const bundlePlugins = [
-        esbuild({
-            target: bundleTarget,
-            minifySyntax: true,
-            define,
-        }),
-        ...commonPlugins
-    ];
-
-    const bundlePluginsProd = [
         // Import bundle dependencies from the source files
         // not from the build lib files, this will make sure
         // that conditional stuff works correctly (e.g., process.env.DEBUG)
         alias({
             entries: [
-                { find: 'pixi.js', replacement: path.resolve('./bundles/pixi.js/src/index.ts') },
-                { find: /^@pixi\/([^/]+)$/, replacement: path.resolve('./packages/$1/src/index.ts') },
+                { find: 'pixi.js', replacement: './bundles/pixi.js/src/index.ts' },
+                { find: /^@pixi\/(.+)$/, replacement: './packages/$1/src/index.ts' },
             ]
         }),
+    ];
+
+    const esbuildConfig = {
+        target: moduleTarget,
+        minifySyntax: true,
+        define: {
+            'process.env.VERSION': `'${repo.version}'`,
+            'process.env.DEBUG': 'true',
+        },
+        treeShaking: true,
+        tsconfigRaw: '{"compilerOptions":{"useDefineForClassFields":false}}'
+    }
+
+    const plugins = [
+        esbuild(esbuildConfig),
+        ...commonPlugins,
+    ];
+
+    const bundlePlugins = [
+        esbuild({ ...esbuildConfig, target: bundleTarget }),
+        ...commonPlugins,
+    ];
+
+    const bundlePluginsProd = [
         esbuild({
+            ...esbuildConfig,
             target: bundleTarget,
             minify: true,
-            define: {...define, 'process.env.DEBUG': 'false'},
+            define: {
+                ...esbuildConfig.define,
+                'process.env.DEBUG': 'false',
+            },
         }),
         ...commonPlugins,
     ];
@@ -102,7 +102,7 @@ async function main()
     const packages = [];
 
     // Collect the list of packages
-    await workspacesRun({ cwd: __dirname, orderByDeps: true }, async (pkg) =>
+    await workspacesRun.default({ cwd: process.cwd(), orderByDeps: true }, async (pkg) =>
     {
         if (!pkg.config.private)
         {
@@ -125,7 +125,7 @@ async function main()
         const external = Object.keys(dependencies)
             .concat(Object.keys(peerDependencies))
             .map(convertPackageNameToRegExp);
-        const basePath = path.relative(__dirname, pkg.dir);
+        const basePath = path.relative(process.cwd(), pkg.dir);
         const input = path.join(basePath, 'src/index.ts');
 
         results.push({
