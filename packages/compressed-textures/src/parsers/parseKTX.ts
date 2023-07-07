@@ -294,9 +294,10 @@ function validate(url: string, dataView: DataView): boolean
     {
         if (dataView.getUint8(i) !== FILE_IDENTIFIER[i])
         {
-            // #if _DEBUG
-            console.error(`${url} is not a valid *.ktx file!`);
-            // #endif
+            if (process.env.DEBUG)
+            {
+                console.error(`${url} is not a valid *.ktx file!`);
+            }
 
             return false;
         }

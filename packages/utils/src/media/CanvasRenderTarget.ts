@@ -41,9 +41,10 @@ export class CanvasRenderTarget
      */
     clear(): void
     {
-        // #if _DEBUG
-        this._checkDestroyed();
-        // #endif
+        if (process.env.DEBUG)
+        {
+            this._checkDestroyed();
+        }
 
         this._context.setTransform(1, 0, 0, 1, 0, 0);
         this._context.clearRect(0, 0, this._canvas.width, this._canvas.height);
@@ -56,9 +57,10 @@ export class CanvasRenderTarget
      */
     resize(desiredWidth: number, desiredHeight: number): void
     {
-        // #if _DEBUG
-        this._checkDestroyed();
-        // #endif
+        if (process.env.DEBUG)
+        {
+            this._checkDestroyed();
+        }
 
         this._canvas.width = Math.round(desiredWidth * this.resolution);
         this._canvas.height = Math.round(desiredHeight * this.resolution);
@@ -77,18 +79,20 @@ export class CanvasRenderTarget
      */
     get width(): number
     {
-        // #if _DEBUG
-        this._checkDestroyed();
-        // #endif
+        if (process.env.DEBUG)
+        {
+            this._checkDestroyed();
+        }
 
         return this._canvas.width;
     }
 
     set width(val: number)
     {
-        // #if _DEBUG
-        this._checkDestroyed();
-        // #endif
+        if (process.env.DEBUG)
+        {
+            this._checkDestroyed();
+        }
 
         this._canvas.width = Math.round(val);
     }
@@ -99,18 +103,20 @@ export class CanvasRenderTarget
      */
     get height(): number
     {
-        // #if _DEBUG
-        this._checkDestroyed();
-        // #endif
+        if (process.env.DEBUG)
+        {
+            this._checkDestroyed();
+        }
 
         return this._canvas.height;
     }
 
     set height(val: number)
     {
-        // #if _DEBUG
-        this._checkDestroyed();
-        // #endif
+        if (process.env.DEBUG)
+        {
+            this._checkDestroyed();
+        }
 
         this._canvas.height = Math.round(val);
     }
@@ -118,9 +124,10 @@ export class CanvasRenderTarget
     /** The Canvas object that belongs to this CanvasRenderTarget. */
     public get canvas(): ICanvas
     {
-        // #if _DEBUG
-        this._checkDestroyed();
-        // #endif
+        if (process.env.DEBUG)
+        {
+            this._checkDestroyed();
+        }
 
         return this._canvas;
     }
@@ -128,20 +135,22 @@ export class CanvasRenderTarget
     /** A CanvasRenderingContext2D object representing a two-dimensional rendering context. */
     public get context(): ICanvasRenderingContext2D
     {
-        // #if _DEBUG
-        this._checkDestroyed();
-        // #endif
+        if (process.env.DEBUG)
+        {
+            this._checkDestroyed();
+        }
 
         return this._context;
     }
 
-    // #if _DEBUG
     private _checkDestroyed(): asserts this is this & { _canvas: ICanvas; _context: ICanvasRenderingContext2D }
     {
-        if (this._canvas === null)
+        if (process.env.DEBUG)
         {
-            throw new TypeError('The CanvasRenderTarget has already been destroyed');
+            if (this._canvas === null)
+            {
+                throw new TypeError('The CanvasRenderTarget has already been destroyed');
+            }
         }
     }
-    // #endif
 }

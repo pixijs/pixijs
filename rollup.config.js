@@ -5,7 +5,7 @@ import sourcemaps from 'rollup-plugin-sourcemaps';
 import esbuild from 'rollup-plugin-esbuild';
 import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
-import jscc from 'rollup-plugin-jscc';
+import alias from '@rollup/plugin-alias';
 import workspacesRun from 'workspaces-run';
 import repo from './package.json';
 
@@ -57,21 +57,44 @@ async function main()
         }),
     ];
 
+    const define = {
+        'process.env.VERSION': `'${repo.version}'`,
+        'process.env.DEBUG': 'true',
+    };
+
     const plugins = [
-        jscc({ values: { _VERSION: repo.version, _DEBUG: true } }),
-        esbuild({ target: moduleTarget }),
+        esbuild({
+            target: moduleTarget,
+            minifySyntax: true,
+            define,
+        }),
         ...commonPlugins
     ];
 
     const bundlePlugins = [
-        jscc({ values: { _VERSION: repo.version, _DEBUG: true } }),
-        esbuild({ target: bundleTarget }),
+        esbuild({
+            target: bundleTarget,
+            minifySyntax: true,
+            define,
+        }),
         ...commonPlugins
     ];
 
     const bundlePluginsProd = [
-        jscc({ values: { _VERSION: repo.version, _DEBUG: false } }),
-        esbuild({ target: bundleTarget, minify: true }),
+        // Import bundle dependencies from the source files
+        // not from the build lib files, this will make sure
+        // that conditional stuff works correctly (e.g., process.env.DEBUG)
+        alias({
+            entries: [
+                { find: 'pixi.js', replacement: path.resolve('./bundles/pixi.js/src/index.ts') },
+                { find: /^@pixi\/([^/]+)$/, replacement: path.resolve('./packages/$1/src/index.ts') },
+            ]
+        }),
+        esbuild({
+            target: bundleTarget,
+            minify: true,
+            define: {...define, 'process.env.DEBUG': 'false'},
+        }),
         ...commonPlugins,
     ];
 

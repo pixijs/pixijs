@@ -71,9 +71,10 @@ Object.defineProperties(settings, {
         },
         set(value: WRAP_MODES)
         {
-            // #if _DEBUG
-            deprecation('7.1.0', 'settings.WRAP_MODE is deprecated, use BaseTexture.defaultOptions.wrapMode');
-            // #endif
+            if (process.env.DEBUG)
+            {
+                deprecation('7.1.0', 'settings.WRAP_MODE is deprecated, use BaseTexture.defaultOptions.wrapMode');
+            }
             BaseTexture.defaultOptions.wrapMode = value;
         },
     },
@@ -93,9 +94,10 @@ Object.defineProperties(settings, {
         },
         set(value: SCALE_MODES)
         {
-            // #if _DEBUG
-            deprecation('7.1.0', 'settings.SCALE_MODE is deprecated, use BaseTexture.defaultOptions.scaleMode');
-            // #endif
+            if (process.env.DEBUG)
+            {
+                deprecation('7.1.0', 'settings.SCALE_MODE is deprecated, use BaseTexture.defaultOptions.scaleMode');
+            }
             BaseTexture.defaultOptions.scaleMode = value;
         },
     },
@@ -116,9 +118,10 @@ Object.defineProperties(settings, {
         },
         set(value: MIPMAP_MODES)
         {
-            // #if _DEBUG
-            deprecation('7.1.0', 'settings.MIPMAP_TEXTURES is deprecated, use BaseTexture.defaultOptions.mipmap');
-            // #endif
+            if (process.env.DEBUG)
+            {
+                deprecation('7.1.0', 'settings.MIPMAP_TEXTURES is deprecated, use BaseTexture.defaultOptions.mipmap');
+            }
             BaseTexture.defaultOptions.mipmap = value;
         },
         // MIPMAP_MODES.POW2,
@@ -140,10 +143,11 @@ Object.defineProperties(settings, {
         },
         set(value: number)
         {
-            // #if _DEBUG
-            deprecation(
-                '7.1.0', 'settings.ANISOTROPIC_LEVEL is deprecated, use BaseTexture.defaultOptions.anisotropicLevel');
-            // #endif
+            if (process.env.DEBUG)
+            {
+                deprecation(
+                    '7.1.0', 'settings.ANISOTROPIC_LEVEL is deprecated, use BaseTexture.defaultOptions.anisotropicLevel');
+            }
             BaseTexture.defaultOptions.anisotropicLevel = value;
         },
 
@@ -160,9 +164,10 @@ Object.defineProperties(settings, {
     FILTER_RESOLUTION: {
         get()
         {
-            // #if _DEBUG
-            deprecation('7.1.0', 'settings.FILTER_RESOLUTION is deprecated, use Filter.defaultResolution');
-            // #endif
+            if (process.env.DEBUG)
+            {
+                deprecation('7.1.0', 'settings.FILTER_RESOLUTION is deprecated, use Filter.defaultResolution');
+            }
 
             return Filter.defaultResolution;
         },
@@ -184,9 +189,10 @@ Object.defineProperties(settings, {
     FILTER_MULTISAMPLE: {
         get()
         {
-            // #if _DEBUG
-            deprecation('7.1.0', 'settings.FILTER_MULTISAMPLE is deprecated, use Filter.defaultMultisample');
-            // #endif
+            if (process.env.DEBUG)
+            {
+                deprecation('7.1.0', 'settings.FILTER_MULTISAMPLE is deprecated, use Filter.defaultMultisample');
+            }
 
             return Filter.defaultMultisample;
         },
@@ -212,9 +218,10 @@ Object.defineProperties(settings, {
         },
         set(value: number)
         {
-            // #if _DEBUG
-            deprecation('7.1.0', 'settings.SPRITE_MAX_TEXTURES is deprecated, use BatchRenderer.defaultMaxTextures');
-            // #endif
+            if (process.env.DEBUG)
+            {
+                deprecation('7.1.0', 'settings.SPRITE_MAX_TEXTURES is deprecated, use BatchRenderer.defaultMaxTextures');
+            }
             BatchRenderer.defaultMaxTextures = value;
         },
     },
@@ -237,9 +244,10 @@ Object.defineProperties(settings, {
         },
         set(value: number)
         {
-            // #if _DEBUG
-            deprecation('7.1.0', 'settings.SPRITE_BATCH_SIZE is deprecated, use BatchRenderer.defaultBatchSize');
-            // #endif
+            if (process.env.DEBUG)
+            {
+                deprecation('7.1.0', 'settings.SPRITE_BATCH_SIZE is deprecated, use BatchRenderer.defaultBatchSize');
+            }
             BatchRenderer.defaultBatchSize = value;
         },
     },
@@ -260,10 +268,11 @@ Object.defineProperties(settings, {
         },
         set(value: boolean)
         {
-            // #if _DEBUG
+            if (process.env.DEBUG)
+            {
             // eslint-disable-next-line max-len
-            deprecation('7.1.0', 'settings.CAN_UPLOAD_SAME_BUFFER is deprecated, use BatchRenderer.canUploadSameBuffer');
-            // #endif
+                deprecation('7.1.0', 'settings.CAN_UPLOAD_SAME_BUFFER is deprecated, use BatchRenderer.canUploadSameBuffer');
+            }
             BatchRenderer.canUploadSameBuffer = value;
         },
     },
@@ -284,9 +293,10 @@ Object.defineProperties(settings, {
         },
         set(value: GC_MODES)
         {
-            // #if _DEBUG
-            deprecation('7.1.0', 'settings.GC_MODE is deprecated, use TextureGCSystem.defaultMode');
-            // #endif
+            if (process.env.DEBUG)
+            {
+                deprecation('7.1.0', 'settings.GC_MODE is deprecated, use TextureGCSystem.defaultMode');
+            }
             TextureGCSystem.defaultMode = value;
         },
     },
@@ -307,9 +317,10 @@ Object.defineProperties(settings, {
         },
         set(value: number)
         {
-            // #if _DEBUG
-            deprecation('7.1.0', 'settings.GC_MAX_IDLE is deprecated, use TextureGCSystem.defaultMaxIdle');
-            // #endif
+            if (process.env.DEBUG)
+            {
+                deprecation('7.1.0', 'settings.GC_MAX_IDLE is deprecated, use TextureGCSystem.defaultMaxIdle');
+            }
             TextureGCSystem.defaultMaxIdle = value;
         },
     },
@@ -330,9 +341,10 @@ Object.defineProperties(settings, {
         },
         set(value: number)
         {
-            // #if _DEBUG
-            deprecation('7.1.0', 'settings.GC_MAX_CHECK_COUNT is deprecated, use TextureGCSystem.defaultCheckCountMax');
-            // #endif
+            if (process.env.DEBUG)
+            {
+                deprecation('7.1.0', 'settings.GC_MAX_CHECK_COUNT is deprecated, use TextureGCSystem.defaultCheckCountMax');
+            }
             TextureGCSystem.defaultCheckCountMax = value;
         },
     },
@@ -353,9 +365,10 @@ Object.defineProperties(settings, {
         },
         set(value: PRECISION)
         {
-            // #if _DEBUG
-            deprecation('7.1.0', 'settings.PRECISION_VERTEX is deprecated, use Program.defaultVertexPrecision');
-            // #endif
+            if (process.env.DEBUG)
+            {
+                deprecation('7.1.0', 'settings.PRECISION_VERTEX is deprecated, use Program.defaultVertexPrecision');
+            }
             Program.defaultVertexPrecision = value;
         },
     },
@@ -376,9 +389,10 @@ Object.defineProperties(settings, {
         },
         set(value: PRECISION)
         {
-            // #if _DEBUG
-            deprecation('7.1.0', 'settings.PRECISION_FRAGMENT is deprecated, use Program.defaultFragmentPrecision');
-            // #endif
+            if (process.env.DEBUG)
+            {
+                deprecation('7.1.0', 'settings.PRECISION_FRAGMENT is deprecated, use Program.defaultFragmentPrecision');
+            }
             Program.defaultFragmentPrecision = value;
         },
     },

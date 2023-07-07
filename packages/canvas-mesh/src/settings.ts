@@ -17,9 +17,10 @@ Object.defineProperties(settings, {
         },
         set(value: number)
         {
-            // #if _DEBUG
-            utils.deprecation('7.1.0', 'settings.MESH_CANVAS_PADDING is deprecated, use Mesh.defaultCanvasPadding');
-            // #endif
+            if (process.env.DEBUG)
+            {
+                utils.deprecation('7.1.0', 'settings.MESH_CANVAS_PADDING is deprecated, use Mesh.defaultCanvasPadding');
+            }
             Mesh.defaultCanvasPadding = value;
         },
     },
