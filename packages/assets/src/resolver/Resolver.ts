@@ -447,7 +447,7 @@ export class Resolver
         {
             if (process.env.DEBUG)
             {
-            // eslint-disable-next-line max-len
+                // eslint-disable-next-line max-len
                 utils.deprecation('7.2.0', `Assets.add now uses an object instead of individual parameters.\nPlease use Assets.add({ alias, src, data, format, loadParser }) instead.`);
             }
 

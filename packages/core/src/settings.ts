@@ -270,7 +270,7 @@ Object.defineProperties(settings, {
         {
             if (process.env.DEBUG)
             {
-            // eslint-disable-next-line max-len
+                // eslint-disable-next-line max-len
                 deprecation('7.1.0', 'settings.CAN_UPLOAD_SAME_BUFFER is deprecated, use BatchRenderer.canUploadSameBuffer');
             }
             BatchRenderer.canUploadSameBuffer = value;

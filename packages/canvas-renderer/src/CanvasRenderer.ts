@@ -375,7 +375,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
     {
         if (process.env.DEBUG)
         {
-        // eslint-disable-next-line max-len
+            // eslint-disable-next-line max-len
             deprecation('7.0.0', 'renderer.blendModes has been deprecated, please use renderer.canvasContext.blendModes instead');
         }
 
@@ -513,7 +513,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
     {
         if (process.env.DEBUG)
         {
-        // eslint-disable-next-line max-len
+            // eslint-disable-next-line max-len
             deprecation('7.0.0', 'renderer.backgroundColor has been deprecated, use renderer.background.color instead.');
         }
 
@@ -543,7 +543,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
     {
         if (process.env.DEBUG)
         {
-        // eslint-disable-next-line max-len
+            // eslint-disable-next-line max-len
             deprecation('7.0.0', 'renderer.backgroundAlpha has been deprecated, use renderer.background.alpha instead.');
         }
 
@@ -558,7 +558,7 @@ export class CanvasRenderer extends SystemManager<CanvasRenderer> implements IRe
     {
         if (process.env.DEBUG)
         {
-        // eslint-disable-next-line max-len
+            // eslint-disable-next-line max-len
             deprecation('7.0.0', 'renderer.backgroundAlpha has been deprecated, use renderer.background.alpha instead.');
         }
 

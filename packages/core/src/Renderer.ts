@@ -351,7 +351,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
         {
             if (process.env.DEBUG)
             {
-            // eslint-disable-next-line max-len
+                // eslint-disable-next-line max-len
                 deprecation('7.0.0', 'options.useContextAlpha is deprecated, use options.premultipliedAlpha and options.backgroundAlpha instead');
             }
             options.premultipliedAlpha = options.useContextAlpha && options.useContextAlpha !== 'notMultiplied';
@@ -513,7 +513,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
     {
         if (process.env.DEBUG)
         {
-        // eslint-disable-next-line max-len
+            // eslint-disable-next-line max-len
             deprecation('7.0.0', 'renderer.clearBeforeRender has been deprecated, please use renderer.background.clearBeforeRender instead.');
         }
 
@@ -530,7 +530,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
     {
         if (process.env.DEBUG)
         {
-        // eslint-disable-next-line max-len
+            // eslint-disable-next-line max-len
             deprecation('7.0.0', 'renderer.useContextAlpha has been deprecated, please use renderer.context.premultipliedAlpha instead.');
         }
 
@@ -546,7 +546,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
     {
         if (process.env.DEBUG)
         {
-        // eslint-disable-next-line max-len
+            // eslint-disable-next-line max-len
             deprecation('7.0.0', 'renderer.preserveDrawingBuffer has been deprecated, we cannot truly know this unless pixi created the context');
         }
 
@@ -562,7 +562,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
     {
         if (process.env.DEBUG)
         {
-        // eslint-disable-next-line max-len
+            // eslint-disable-next-line max-len
             deprecation('7.0.0', 'renderer.backgroundColor has been deprecated, use renderer.background.color instead.');
         }
 
@@ -588,7 +588,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
     {
         if (process.env.DEBUG)
         {
-        // eslint-disable-next-line max-len
+            // eslint-disable-next-line max-len
             deprecation('7.0.0', 'renderer.backgroundAlpha has been deprecated, use renderer.background.alpha instead.');
         }
 
@@ -602,7 +602,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
     {
         if (process.env.DEBUG)
         {
-        // eslint-disable-next-line max-len
+            // eslint-disable-next-line max-len
             deprecation('7.0.0', 'renderer.backgroundAlpha has been deprecated, use renderer.background.alpha instead.');
         }
 
@@ -616,7 +616,7 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
     {
         if (process.env.DEBUG)
         {
-        // eslint-disable-next-line max-len
+            // eslint-disable-next-line max-len
             deprecation('7.0.0', 'renderer.powerPreference has been deprecated, we can only know this if pixi creates the context');
         }
 
