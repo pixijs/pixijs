@@ -56,7 +56,7 @@ export interface AssetInitOptions
          * If true, don't attempt to detect whether browser has preferred formats available.
          * May result in increased performance as it skips detection step.
          */
-        strict?: boolean;
+        skipDetection?: boolean;
     };
 
     /** advanced - override how bundlesIds are generated */
