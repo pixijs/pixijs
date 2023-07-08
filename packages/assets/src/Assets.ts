@@ -52,6 +52,11 @@ export interface AssetInitOptions
          * ['avif', 'webp', 'png', 'jpg', 'jpeg', 'webm', 'mp4', 'm4v', 'ogv']
          */
         format?: ArrayOr<string>;
+        /**
+         * If true, don't attempt to detect whether browser has preferred formats available.
+         * May result in increased performance as it skips detection step.
+         */
+        strict?: boolean;
     };
 
     /** advanced - override how bundlesIds are generated */
@@ -301,14 +306,17 @@ export class AssetsClass
         {
             const formatPref = options.texturePreference?.format;
 
-            formats = (typeof formatPref === 'string') ? [formatPref] : formatPref;
+            formats = typeof formatPref === 'string' ? [formatPref] : formatPref;
 
-            // we should remove any formats that are not supported by the browser
-            for (const detection of this._detections)
+            if (!options.texturePreference?.strict)
             {
-                if (!await detection.test())
+                // we should remove any formats that are not supported by the browser
+                for (const detection of this._detections)
                 {
-                    formats = await detection.remove(formats);
+                    if (!(await detection.test()))
+                    {
+                        formats = await detection.remove(formats);
+                    }
                 }
             }
         }
