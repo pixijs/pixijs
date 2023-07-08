@@ -308,7 +308,7 @@ export class AssetsClass
 
             formats = typeof formatPref === 'string' ? [formatPref] : formatPref;
 
-            if (!options.texturePreference?.strict)
+            if (!options.texturePreference?.skipDetection)
             {
                 // we should remove any formats that are not supported by the browser
                 for (const detection of this._detections)
