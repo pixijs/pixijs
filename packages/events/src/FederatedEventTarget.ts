@@ -64,46 +64,16 @@ export type FederatedEventHandler<T= FederatedPointerEvent> = (event: T) => void
  */
 export type EventMode = 'none' | 'passive' | 'auto' | 'static' | 'dynamic';
 
-/**
- * Describes the shape for a {@link PIXI.FederatedEvent}'s' `eventTarget`.
- * @memberof PIXI
- */
-export interface FederatedEventTarget extends utils.EventEmitter, EventTarget
+export interface FederatedOptions
 {
     /** The cursor preferred when the mouse pointer is hovering over. */
     cursor: Cursor | string;
-
-    /** The parent of this event target. */
-    readonly parent?: FederatedEventTarget;
-
-    /** The children of this event target. */
-    readonly children?: ReadonlyArray<FederatedEventTarget>;
-
-    /** Whether this event target should fire UI events. */
-    interactive: boolean
-    _internalInteractive: boolean;
     /** The mode of interaction for this object */
     eventMode: EventMode;
-    _internalEventMode: EventMode;
-
-    /** Returns true if the DisplayObject has interactive 'static' or 'dynamic' */
-    isInteractive: () => boolean;
-
     /** Whether this event target has any children that need UI events. This can be used optimize event propagation. */
     interactiveChildren: boolean;
-
     /** The hit-area specifies the area for which pointer events should be captured by this event target. */
     hitArea: IHitArea | null;
-
-    // In Angular projects, zone.js is monkey patching the `EventTarget`
-    // by adding its own `removeAllListeners(event?: string): void;` method,
-    // so we have to override this signature when extending both `EventTarget` and `utils.EventEmitter`
-    // to make it compatible with Angular projects
-    // @see https://github.com/pixijs/pixijs/issues/8794
-
-    /** Remove all listeners, or those of the specified event. */
-    removeAllListeners(event?: string | symbol): this;
-
     /** Handler for 'click' event */
     onclick: FederatedEventHandler | null;
     /** Handler for 'mousedown' event */
@@ -170,6 +140,36 @@ export interface FederatedEventTarget extends utils.EventEmitter, EventTarget
     ontouchstart: FederatedEventHandler | null;
     /** Handler for 'wheel' event */
     onwheel: FederatedEventHandler<FederatedWheelEvent> | null;
+}
+
+/**
+ * Describes the shape for a {@link PIXI.FederatedEvent}'s' `eventTarget`.
+ * @memberof PIXI
+ */
+export interface FederatedEventTarget extends utils.EventEmitter, EventTarget, FederatedOptions
+{
+    /** The parent of this event target. */
+    readonly parent?: FederatedEventTarget;
+
+    /** The children of this event target. */
+    readonly children?: ReadonlyArray<FederatedEventTarget>;
+
+    /** Whether this event target should fire UI events. */
+    interactive: boolean
+    _internalInteractive: boolean;
+    _internalEventMode: EventMode;
+
+    /** Returns true if the DisplayObject has interactive 'static' or 'dynamic' */
+    isInteractive: () => boolean;
+
+    // In Angular projects, zone.js is monkey patching the `EventTarget`
+    // by adding its own `removeAllListeners(event?: string): void;` method,
+    // so we have to override this signature when extending both `EventTarget` and `utils.EventEmitter`
+    // to make it compatible with Angular projects
+    // @see https://github.com/pixijs/pixijs/issues/8794
+
+    /** Remove all listeners, or those of the specified event. */
+    removeAllListeners(event?: string | symbol): this;
 }
 
 type AddListenerOptions = boolean | AddEventListenerOptions;
@@ -783,4 +783,19 @@ export const FederatedDisplayObject: IFederatedDisplayObject = {
     }
 };
 
-DisplayObject.mixin(FederatedDisplayObject);
+export const federatedOptions: Partial<FederatedOptions> = {
+    /**
+     * See {@link PIXI.DisplayObject#hitArea}
+     * @memberof PIXI.DisplayObject.defaultDisplayObjectOptions
+     * @type {IHitArea}
+     * @default null
+     */
+    hitArea: null,
+    /**
+     * See {@link PIXI.Container#interactiveChildren}
+     * @memberof PIXI.Container.defaultContainerOptions
+     */
+    interactiveChildren: true,
+};
+
+DisplayObject.mixin(FederatedDisplayObject, federatedOptions);

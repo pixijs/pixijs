@@ -12,17 +12,21 @@ export type PointerEvents = 'auto'
 | 'all'
 | 'inherit';
 
-export interface IAccessibleTarget
+export interface IAccessibleOptions
 {
     accessible: boolean;
     accessibleTitle: string;
     accessibleHint: string;
     tabIndex: number;
-    _accessibleActive: boolean;
-    _accessibleDiv: IAccessibleHTMLElement;
     accessibleType: string;
     accessiblePointerEvents: PointerEvents;
     accessibleChildren: boolean;
+}
+
+export interface IAccessibleTarget extends IAccessibleOptions
+{
+    _accessibleActive: boolean;
+    _accessibleDiv: IAccessibleHTMLElement;
     renderId: number;
 }
 
@@ -31,6 +35,44 @@ export interface IAccessibleHTMLElement extends HTMLElement
     type?: string;
     displayObject?: DisplayObject;
 }
+
+export const accessibleOptions: IAccessibleOptions = {
+    /**
+     * @memberof PIXI.IDisplayObjectOptions
+     * @see PIXI.DisplayObject#accessible
+     */
+    accessible: false,
+    /**
+     * @memberof PIXI.IDisplayObjectOptions
+     * @see PIXI.DisplayObject#accessibleTitle
+     */
+    accessibleTitle: null as string,
+    /**
+     * @memberof PIXI.IDisplayObjectOptions
+     * @see PIXI.DisplayObject#accessibleHint
+     */
+    accessibleHint: null as string,
+    /**
+     * @memberof PIXI.IDisplayObjectOptions
+     * @see PIXI.DisplayObject#tabIndex
+     */
+    tabIndex: 0,
+    /**
+     * @memberof PIXI.IDisplayObjectOptions
+     * @see PIXI.DisplayObject#accessibleType
+     */
+    accessibleType: 'button' as string,
+    /**
+     * @memberof PIXI.IDisplayObjectOptions
+     * @see PIXI.DisplayObject#accessiblePointerEvents
+     */
+    accessiblePointerEvents: 'auto',
+    /**
+     * @memberof PIXI.IDisplayObjectOptions
+     * @see PIXI.DisplayObject#accessibleChildren
+     */
+    accessibleChildren: true,
+};
 
 /**
  * Default property values of accessible objects
@@ -57,7 +99,7 @@ export const accessibleTarget: IAccessibleTarget = {
     /**
      * Sets the title attribute of the shadow div
      * If accessibleTitle AND accessibleHint has not been this will default to 'displayObject [tabIndex]'
-     * @member {?string}
+     * @member {string}
      * @memberof PIXI.DisplayObject#
      */
     accessibleTitle: null,

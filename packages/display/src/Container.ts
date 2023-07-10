@@ -2,7 +2,7 @@ import { MASK_TYPES, Matrix, utils } from '@pixi/core';
 import { DisplayObject } from './DisplayObject';
 
 import type { MaskData, Rectangle, Renderer } from '@pixi/core';
-import type { IDestroyOptions } from './DisplayObject';
+import type { IDestroyOptions, IDisplayObjectOptions } from './DisplayObject';
 
 const tempMatrix = new Matrix();
 
@@ -14,6 +14,25 @@ function sortChildren(a: DisplayObject, b: DisplayObject): number
     }
 
     return a.zIndex - b.zIndex;
+}
+
+/**
+ * Constructor options for Container.
+ * @see PIXI.Container
+ * @memberof PIXI
+ */
+export interface IContainerOptions
+{
+    /** @see PIXI.Container#sortableChildren */
+    sortableChildren: boolean;
+    /** @see PIXI.Container#children */
+    children: DisplayObject[];
+    /** @see PIXI.Container#sortDirty */
+    sortDirty: boolean;
+    /** @see PIXI.Container#width */
+    width?: number;
+    /** @see PIXI.Container#height */
+    height?: number;
 }
 
 export interface Container extends GlobalMixins.Container, DisplayObject {}
@@ -50,19 +69,22 @@ export interface Container extends GlobalMixins.Container, DisplayObject {}
 export class Container<T extends DisplayObject = DisplayObject> extends DisplayObject
 {
     /**
-     * Sets the default value for the container property `sortableChildren`.
-     * If set to true, the container will sort its children by zIndex value
-     * when `updateTransform()` is called, or manually if `sortChildren()` is called.
-     *
-     * This actually changes the order of elements in the array, so should be treated
-     * as a basic solution that is not performant compared to other solutions,
-     * such as {@link https://github.com/pixijs/layers PixiJS Layers}.
-     *
-     * Also be aware of that this may not work nicely with the `addChildAt()` function,
-     * as the `zIndex` sorting may cause the child to automatically sorted to another position.
-     * @static
+     * @deprecated since 7.3.0
+     * @see PIXI.Container.defaultContainerOptions.sortableChildren
      */
-    public static defaultSortableChildren = false;
+    public static set defaultSortableChildren(value: boolean)
+    {
+        if (process.env.DEBUG)
+        {
+            utils.deprecation('7.3.0', 'PIXI.Container.defaultSortableChildren property has been removed');
+        }
+
+        Container.defaultContainerOptions.sortableChildren = value;
+    }
+    public static get defaultSortableChildren(): boolean
+    {
+        return Container.defaultContainerOptions.sortableChildren;
+    }
 
     /**
      * The array of children of this container.
@@ -80,7 +102,7 @@ export class Container<T extends DisplayObject = DisplayObject> extends DisplayO
      *
      * Also be aware of that this may not work nicely with the `addChildAt()` function,
      * as the `zIndex` sorting may cause the child to automatically sorted to another position.
-     * @see PIXI.Container.defaultSortableChildren
+     * @see PIXI.Container.defaultContainerOptions.sortableChildren
      */
     public sortableChildren: boolean;
 
@@ -93,16 +115,26 @@ export class Container<T extends DisplayObject = DisplayObject> extends DisplayO
     public parent: Container;
     public containerUpdateTransform: () => void;
 
+    /** Default container options */
+    public static defaultContainerOptions: IContainerOptions = {
+        /**
+         * See {@link PIXI.Container#children}
+         * @type {DisplayObject[]}
+         * @default []
+         */
+        children: [],
+        /** See {@link PIXI.Container#sortableChildren} */
+        sortableChildren: false,
+        /** See {@link PIXI.Container#sortDirty} */
+        sortDirty: false,
+    };
+
     protected _width: number;
     protected _height: number;
 
-    constructor()
+    constructor(options?: Partial<IContainerOptions & IDisplayObjectOptions>)
     {
-        super();
-
-        this.children = [];
-        this.sortableChildren = Container.defaultSortableChildren;
-        this.sortDirty = false;
+        super({ ...Container.defaultContainerOptions, ...options });
 
         /**
          * Fired when a DisplayObject is added to this Container.
