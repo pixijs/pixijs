@@ -62,7 +62,7 @@ export class StartupSystem implements ISystem<StartupSystemOptions>
         if (options.hello)
         {
             // eslint-disable-next-line no-console
-            console.log(`PixiJS ${'$_VERSION'} - ${renderer.rendererLogId} - https://pixijs.com`);
+            console.log(`PixiJS ${process.env.VERSION} - ${renderer.rendererLogId} - https://pixijs.com`);
         }
 
         renderer.resize(renderer.screen.width, renderer.screen.height);

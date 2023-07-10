@@ -262,9 +262,10 @@ export const canvasUtils = {
      */
     roundColor: (color: number): number =>
     {
-        // #if _DEBUG
-        utils.deprecation('7.3.0', 'PIXI.canvasUtils.roundColor is deprecated');
-        // #endif
+        if (process.env.DEBUG)
+        {
+            utils.deprecation('7.3.0', 'PIXI.canvasUtils.roundColor is deprecated');
+        }
 
         return Color.shared
             .setValue(color)

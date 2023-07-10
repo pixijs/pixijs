@@ -448,13 +448,6 @@ export class Matrix
         return this;
     }
 
-    // #if _DEBUG
-    toString(): string
-    {
-        return `[@pixi/math:Matrix a=${this.a} b=${this.b} c=${this.c} d=${this.d} tx=${this.tx} ty=${this.ty}]`;
-    }
-    // #endif
-
     /**
      * A default (identity) matrix
      * @readonly
@@ -472,4 +465,12 @@ export class Matrix
     {
         return new Matrix();
     }
+}
+
+if (process.env.DEBUG)
+{
+    Matrix.prototype.toString = function toString(): string
+    {
+        return `[@pixi/math:Matrix a=${this.a} b=${this.b} c=${this.c} d=${this.d} tx=${this.tx} ty=${this.ty}]`;
+    };
 }

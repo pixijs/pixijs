@@ -33,9 +33,10 @@ export const detectCompressedTextures = {
 
         if (!gl)
         {
-            // #if _DEBUG
-            console.warn('WebGL not available for compressed textures.');
-            // #endif
+            if (process.env.DEBUG)
+            {
+                console.warn('WebGL not available for compressed textures.');
+            }
 
             return false;
         }

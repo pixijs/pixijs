@@ -30,9 +30,10 @@ export function generateProgram(gl: IRenderingContext, program: Program): GLProg
     {
         if (typeof gl.transformFeedbackVaryings !== 'function')
         {
-            // #if _DEBUG
-            console.warn(`TransformFeedback is not supported but TransformFeedbackVaryings are given.`);
-            // #endif
+            if (process.env.DEBUG)
+            {
+                console.warn(`TransformFeedback is not supported but TransformFeedbackVaryings are given.`);
+            }
         }
         else
         {

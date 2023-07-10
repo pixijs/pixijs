@@ -266,7 +266,7 @@ describe('Loader', () =>
 
         loader['_parsers'].push(loadTextures);
 
-        const spy = spyOn(console, 'warn');
+        const spy = jest.spyOn(console, 'warn');
 
         await loader.load({
             src: `${serverPath}textures/bunny.png`,
@@ -275,6 +275,8 @@ describe('Loader', () =>
 
         // eslint-disable-next-line max-len
         expect(spy).toHaveBeenCalledWith(`[Assets] specified load parser "chicken" not found while loading ${serverPath}textures/bunny.png`);
+
+        spy.mockRestore();
     });
 
     it('should throw a warning if a parser is added with the same name', async () =>
@@ -284,7 +286,7 @@ describe('Loader', () =>
         loader['_parsers'].push(loadTextures);
         loader['_parsers'].push(loadTextures);
 
-        const spy = spyOn(console, 'warn');
+        const spy = jest.spyOn(console, 'warn');
 
         await loader.load({
             src: `${serverPath}textures/bunny.other`,
@@ -293,6 +295,8 @@ describe('Loader', () =>
 
         // eslint-disable-next-line max-len
         expect(spy).toHaveBeenCalledWith('[Assets] loadParser name conflict "loadTextures"');
+
+        spy.mockRestore();
     });
 
     it('should load and parse with specified loader', async () =>
