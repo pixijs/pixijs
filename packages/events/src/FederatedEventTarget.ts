@@ -583,13 +583,14 @@ export const FederatedDisplayObject: IFederatedDisplayObject = {
     },
     set interactive(value: boolean)
     {
-        // #if _DEBUG
-        utils.deprecation(
-            '7.2.0',
-            // eslint-disable-next-line max-len
-            `Setting interactive is deprecated, use eventMode = 'none'/'passive'/'auto'/'static'/'dynamic' instead.`
-        );
-        // #endif
+        if (process.env.DEBUG)
+        {
+            utils.deprecation(
+                '7.2.0',
+                // eslint-disable-next-line max-len
+                `Setting interactive is deprecated, use eventMode = 'none'/'passive'/'auto'/'static'/'dynamic' instead.`
+            );
+        }
 
         this._internalInteractive = value;
         this.eventMode = value ? 'static' : 'auto';

@@ -293,9 +293,10 @@ export class BatchRenderer extends ObjectRenderer
      */
     get MAX_TEXTURES(): number
     {
-        // #if _DEBUG
-        deprecation('7.1.0', 'BatchRenderer#MAX_TEXTURES renamed to BatchRenderer#maxTextures');
-        // #endif
+        if (process.env.DEBUG)
+        {
+            deprecation('7.1.0', 'BatchRenderer#MAX_TEXTURES renamed to BatchRenderer#maxTextures');
+        }
 
         return this.maxTextures;
     }

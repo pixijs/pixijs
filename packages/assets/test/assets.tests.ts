@@ -465,6 +465,8 @@ describe('Assets', () =>
         await Promise.all([bunnyPromise, bunnyPromise2]);
 
         expect(spy).not.toHaveBeenCalled();
+
+        spy.mockRestore();
     });
 
     it('should append default url params when specified in the constructor', async () =>
