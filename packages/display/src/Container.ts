@@ -126,9 +126,9 @@ export class Container<T extends DisplayObject = DisplayObject> extends DisplayO
     protected _width: number;
     protected _height: number;
 
-    constructor(options?: Partial<IContainerOptions & IDisplayObjectOptions>)
+    constructor({ children, ...options }: Partial<IContainerOptions & IDisplayObjectOptions> = {})
     {
-        super({ ...Container.defaultContainerOptions, children: [], ...options });
+        super({ ...Container.defaultContainerOptions, ...options });
 
         /**
          * Fired when a DisplayObject is added to this Container.
@@ -145,6 +145,9 @@ export class Container<T extends DisplayObject = DisplayObject> extends DisplayO
          * @param {PIXI.Container} container - The container that removed the child.
          * @param {number} index - The former children's index of the removed child.
          */
+
+        this.children = [];
+        children?.forEach((child) => this.addChild(child as any));
     }
 
     /**
