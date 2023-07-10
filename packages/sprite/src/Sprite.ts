@@ -18,6 +18,7 @@ export interface ISpriteOptions
     tint: ColorSource;
     indices: Uint16Array;
     roundPixels?: boolean;
+    anchor: IPointData;
 }
 
 /**
@@ -149,6 +150,7 @@ export class Sprite extends Container
         blendMode: BLEND_MODES.NORMAL,
         pluginName: 'batch',
         tint: 0xFFFFFF,
+        anchor: { x: 0, y: 0 },
         indices: new Uint16Array([0, 1, 2, 0, 2, 3]),
     };
 
@@ -164,13 +166,17 @@ export class Sprite extends Container
             options = { texture: options };
         }
 
-        const texture = options?.texture;
+        const originalTexture = options?.texture;
+
+        options = Object.assign({}, Sprite.defaultSpriteOptions, options);
+
+        const anchor = originalTexture?.defaultAnchor ?? options.anchor;
 
         this._anchor = new ObservablePoint(
             this._onAnchorUpdate,
             this,
-            (texture ? texture.defaultAnchor.x : 0),
-            (texture ? texture.defaultAnchor.y : 0)
+            anchor.x,
+            anchor.y
         );
 
         this._width = 0;
@@ -197,7 +203,7 @@ export class Sprite extends Container
         this.isSprite = true;
         this._roundPixels = settings.ROUND_PIXELS;
 
-        Object.assign(this, Sprite.defaultSpriteOptions, options);
+        Object.assign(this, options);
     }
 
     /** When the texture is updated, this event will fire to update the scale and frame. */
