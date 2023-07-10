@@ -26,7 +26,7 @@ export interface IContainerOptions
     /** @see PIXI.Container#sortableChildren */
     sortableChildren: boolean;
     /** @see PIXI.Container#children */
-    children: DisplayObject[];
+    children?: DisplayObject[];
     /** @see PIXI.Container#sortDirty */
     sortDirty: boolean;
     /** @see PIXI.Container#width */
@@ -117,12 +117,6 @@ export class Container<T extends DisplayObject = DisplayObject> extends DisplayO
 
     /** Default container options */
     public static defaultContainerOptions: IContainerOptions = {
-        /**
-         * See {@link PIXI.Container#children}
-         * @type {DisplayObject[]}
-         * @default []
-         */
-        children: [],
         /** See {@link PIXI.Container#sortableChildren} */
         sortableChildren: false,
         /** See {@link PIXI.Container#sortDirty} */
@@ -134,7 +128,7 @@ export class Container<T extends DisplayObject = DisplayObject> extends DisplayO
 
     constructor(options?: Partial<IContainerOptions & IDisplayObjectOptions>)
     {
-        super({ ...Container.defaultContainerOptions, ...options });
+        super({ ...Container.defaultContainerOptions, children: [], ...options });
 
         /**
          * Fired when a DisplayObject is added to this Container.

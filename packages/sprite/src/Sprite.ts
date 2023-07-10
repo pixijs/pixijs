@@ -163,7 +163,8 @@ export class Sprite extends Container
         {
             options = { texture: options };
         }
-        const { texture } = options;
+
+        const texture = options?.texture;
 
         this._anchor = new ObservablePoint(
             this._onAnchorUpdate,
@@ -196,7 +197,7 @@ export class Sprite extends Container
         this.isSprite = true;
         this._roundPixels = settings.ROUND_PIXELS;
 
-        Object.assign(this, { ...Sprite.defaultSpriteOptions, ...options });
+        Object.assign(this, Sprite.defaultSpriteOptions, options);
     }
 
     /** When the texture is updated, this event will fire to update the scale and frame. */
