@@ -263,7 +263,7 @@ export class CanvasTextMetrics
             maxLineWidth = Math.max(maxLineWidth, lineWidth);
         }
 
-        const strokeWidth = (style.stroke as StrokeStyle)?.width || 0;
+        const strokeWidth = (style._stroke as StrokeStyle)?.width || 0;
 
         let width = maxLineWidth + strokeWidth;
 

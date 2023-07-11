@@ -62,9 +62,9 @@ export class TextureStyle extends EventEmitter<{
     _resourceId: number;
 
     // override to set styles globally
-    static readonly DEFAULT: TextureStyleOptions = {
+    static readonly defaultOptions: TextureStyleOptions = {
         addressMode: 'clamp-to-edge',
-        scaleMode: 'nearest'
+        scaleMode: 'linear'
     };
 
     uid = UID++;
@@ -104,7 +104,7 @@ export class TextureStyle extends EventEmitter<{
     {
         super();
 
-        options = { ...TextureStyle.DEFAULT, ...options };
+        options = { ...TextureStyle.defaultOptions, ...options };
 
         this.addressMode = options.addressMode;
 

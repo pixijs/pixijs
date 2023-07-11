@@ -3,6 +3,7 @@ import { Texture } from '../../renderers/shared/texture/Texture';
 import { Container } from '../../scene/Container';
 import { SpriteView } from './SpriteView';
 
+import type { PointData } from '../../../maths/PointData';
 import type { ContainerOptions } from '../../scene/Container';
 
 export interface SpriteOptions extends ContainerOptions<SpriteView>
@@ -41,6 +42,12 @@ export class Sprite extends Container<SpriteView>
     get anchor()
     {
         return this.view.anchor;
+    }
+
+    set anchor(value: PointData)
+    {
+        this.view.anchor.x = value.x;
+        this.view.anchor.y = value.y;
     }
 
     get texture()

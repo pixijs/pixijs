@@ -1,6 +1,9 @@
+import { GlProgram } from '../../renderers/gl/shader/GlProgram';
 import { GpuProgram } from '../../renderers/gpu/shader/GpuProgram';
 import { UniformGroup } from '../../renderers/shared/shader/UniformGroup';
 import { Filter } from '../Filter';
+import fragment from './colorMatrixFilter.frag';
+import vertex from './colorMatrixFilter.vert';
 import source from './colorMatrixFilter.wgsl';
 
 // ts fixed array of length 20
@@ -45,7 +48,7 @@ export class ColorMatrixFilter extends Filter
             }
         });
 
-        const gpuProgram = new GpuProgram({
+        const gpuProgram = GpuProgram.from({
             vertex: {
                 source,
                 entryPoint: 'mainVertex',
@@ -56,8 +59,15 @@ export class ColorMatrixFilter extends Filter
             },
         });
 
+        const glProgram = GlProgram.from({
+            vertex,
+            fragment,
+            name: 'color-matrix-filter'
+        });
+
         super({
             gpuProgram,
+            glProgram,
             resources: {
                 colorMatrixUniforms
             }
@@ -205,6 +215,16 @@ export class ColorMatrixFilter extends Filter
         ];
 
         this._loadMatrix(matrix, multiply);
+    }
+
+    /**
+     * for our american friends!
+     * @param scale
+     * @param multiply
+     */
+    public grayscale(scale: number, multiply: boolean): void
+    {
+        this.greyscale(scale, multiply);
     }
 
     /**

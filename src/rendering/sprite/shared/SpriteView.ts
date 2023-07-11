@@ -29,7 +29,7 @@ export class SpriteView implements View
 
     boundsDirty = true;
     sourceBoundsDirty = true;
-    didUpdate: boolean;
+    didUpdate = false;
 
     constructor(texture: Texture)
     {

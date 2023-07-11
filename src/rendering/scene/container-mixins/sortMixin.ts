@@ -1,9 +1,12 @@
+import { deprecation } from '../../../utils/logging/deprecation';
+
 import type { Container } from '../Container';
 
 export interface SortMixin
 {
     _depth: 0;
     depth: number;
+    zIndex: number;
     sortDirty: boolean;
     sortChildren: boolean;
 
@@ -15,6 +18,18 @@ export const sortMixin: Partial<Container> = {
     _depth: 0,
     sortDirty: false,
     sortChildren: false,
+
+    get zIndex()
+    {
+        return this._depth;
+    },
+
+    /** The depth of the object. Setting this value, will automatically set the parent to be sortable */
+    set zIndex(value)
+    {
+        deprecation('v8', 'zIndex has been renamed to depth');
+        this.depth = value;
+    },
 
     get depth()
     {

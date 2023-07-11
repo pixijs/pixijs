@@ -1,3 +1,4 @@
+import { deprecation } from '../../utils/logging/deprecation';
 import { Container } from '../scene/Container';
 import { TextView } from './TextView';
 
@@ -9,8 +10,19 @@ export type TextOptions = ContainerOptions<TextView> & TextViewOptions;
 
 export class Text extends Container<TextView>
 {
-    constructor(options: TextOptions)
+    constructor(options: TextOptions = {})
     {
+        // @deprecated
+        if (typeof options === 'string')
+        {
+            deprecation('v8', 'use new Text({ text: "hi!", style }) instead');
+            options = {
+                text: options,
+                // eslint-disable-next-line prefer-rest-params
+                style: arguments[1],
+            } as TextOptions;
+        }
+
         super({
             view: new TextView(options),
             label: 'Text',

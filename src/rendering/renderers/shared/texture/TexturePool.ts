@@ -61,6 +61,9 @@ export class TexturePoolClass
         return new Texture({
             source: textureSource,
             label: `texturePool_${count++}`,
+            style: {
+                scaleMode: 'nearest',
+            }
         });
     }
 

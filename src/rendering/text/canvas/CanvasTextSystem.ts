@@ -253,7 +253,7 @@ export class CanvasTextSystem implements System
                 linePositionYShift = 0;
             }
 
-            const strokeWidth = (style.stroke as StrokeStyle)?.width ?? 0;
+            const strokeWidth = (style._stroke as StrokeStyle)?.width ?? 0;
 
             // draw lines line by line
             for (let i = 0; i < lines.length; i++)
