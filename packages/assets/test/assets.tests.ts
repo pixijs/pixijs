@@ -15,6 +15,7 @@ describe('Assets', () =>
     {
         // reset the loader
         Assets.reset();
+        jest.clearAllMocks();
     });
 
     it('should load assets', async () =>
