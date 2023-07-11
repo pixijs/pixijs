@@ -10,7 +10,14 @@ import { isSingleItem } from './utils/isSingleItem';
 import type { FormatDetectionParser } from './detections';
 import type { LoadTextureConfig } from './loader/parsers';
 import type { BundleIdentifierOptions } from './resolver/Resolver';
-import type { ArrayOr, AssetsBundle, AssetsManifest, LoadParserName, ResolvedAsset, UnresolvedAsset } from './types';
+import type {
+    ArrayOr,
+    AssetsBundle,
+    AssetsManifest,
+    LoadParserName,
+    ResolvedAsset,
+    UnresolvedAsset,
+} from './types';
 
 export type ProgressCallback = (progress: number) => void;
 
@@ -19,7 +26,9 @@ export type ProgressCallback = (progress: number) => void;
  * @since 7.2.0
  * @memberof PIXI
  */
-export interface AssetsPreferences extends LoadTextureConfig, GlobalMixins.AssetsPreferences {}
+export interface AssetsPreferences
+    extends LoadTextureConfig,
+    GlobalMixins.AssetsPreferences {}
 
 /**
  * Initialization options object for Asset Class.
@@ -263,7 +272,9 @@ export class AssetsClass
         {
             if (process.env.DEBUG)
             {
-                console.warn('[Assets]AssetManager already initialized, did you load before calling this Asset.init()?');
+                console.warn(
+                    '[Assets]AssetManager already initialized, did you load before calling this Asset.init()?'
+                );
             }
 
             return;
@@ -299,7 +310,10 @@ export class AssetsClass
         }
 
         const resolutionPref = options.texturePreference?.resolution ?? 1;
-        const resolution = (typeof resolutionPref === 'number') ? [resolutionPref] : resolutionPref;
+        const resolution
+            = typeof resolutionPref === 'number'
+                ? [resolutionPref]
+                : resolutionPref;
 
         let formats: string[] = [];
 
@@ -321,7 +335,7 @@ export class AssetsClass
                 }
             }
         }
-        else
+        else if (!options.texturePreference?.skipDetection)
         {
             // we should add any formats that are supported by the browser
             for (const detection of this._detections)
@@ -331,6 +345,20 @@ export class AssetsClass
                     formats = await detection.add(formats);
                 }
             }
+        }
+        else
+        {
+            formats = [
+                'avif',
+                'webp',
+                'png',
+                'jpg',
+                'jpeg',
+                'webm',
+                'mp4',
+                'm4v',
+                'ogv',
+            ];
         }
 
         this.resolver.prefer({
@@ -392,7 +420,7 @@ export class AssetsClass
      * @param loadParser - the name of the load parser to use
      */
     public add(
-        aliases: ArrayOr<string> | (ArrayOr<UnresolvedAsset>),
+        aliases: ArrayOr<string> | ArrayOr<UnresolvedAsset>,
         srcs?: string | string[],
         data?: unknown,
         format?: string,
@@ -428,11 +456,11 @@ export class AssetsClass
      */
     public async load<T = any>(
         urls: string | UnresolvedAsset,
-        onProgress?: ProgressCallback,
+        onProgress?: ProgressCallback
     ): Promise<T>;
     public async load<T = any>(
         urls: string[] | UnresolvedAsset[],
-        onProgress?: ProgressCallback,
+        onProgress?: ProgressCallback
     ): Promise<Record<string, T>>;
     public async load<T = any>(
         urls: ArrayOr<string> | ArrayOr<UnresolvedAsset>,
@@ -446,32 +474,36 @@ export class AssetsClass
 
         const singleAsset = isSingleItem(urls);
 
-        const urlArray: string[] = convertToList<UnresolvedAsset | string>(urls)
-            .map((url) =>
+        const urlArray: string[] = convertToList<UnresolvedAsset | string>(
+            urls
+        ).map((url) =>
+        {
+            if (typeof url !== 'string')
             {
-                if (typeof url !== 'string')
-                {
-                    this.add(url);
-                    const srcs = url.src || url.srcs;
-                    const aliases = url.alias || url.name;
+                this.add(url);
+                const srcs = url.src || url.srcs;
+                const aliases = url.alias || url.name;
 
-                    if (aliases && Array.isArray(aliases)) return aliases[0];
-                    if (srcs && Array.isArray(srcs)) return srcs[0];
+                if (aliases && Array.isArray(aliases)) return aliases[0];
+                if (srcs && Array.isArray(srcs)) return srcs[0];
 
-                    return aliases || srcs;
-                }
+                return aliases || srcs;
+            }
 
-                // if it hasn't been added, add it now
-                if (!this.resolver.hasKey(url)) this.add({ alias: url, src: url });
+            // if it hasn't been added, add it now
+            if (!this.resolver.hasKey(url)) this.add({ alias: url, src: url });
 
-                return url;
-            }) as string[];
+            return url;
+        }) as string[];
 
         // check cache first...
         const resolveResults = this.resolver.resolve(urlArray);
 
         // remap to the keys used..
-        const out: Record<string, T> = await this._mapLoadToResolve<T>(resolveResults, onProgress);
+        const out: Record<string, T> = await this._mapLoadToResolve<T>(
+            resolveResults,
+            onProgress
+        );
 
         return singleAsset ? out[urlArray[0] as string] : out;
     }
@@ -549,7 +581,10 @@ export class AssetsClass
      * instead use the Promise returned by this function.
      * @returns all the bundles assets or a hash of assets for each bundle specified
      */
-    public async loadBundle(bundleIds: ArrayOr<string>, onProgress?: ProgressCallback): Promise<any>
+    public async loadBundle(
+        bundleIds: ArrayOr<string>,
+        onProgress?: ProgressCallback
+    ): Promise<any>
     {
         if (!this._initialized)
         {
@@ -581,11 +616,12 @@ export class AssetsClass
 
             total += Object.keys(resolveResult).length;
 
-            return this._mapLoadToResolve(resolveResult, _onProgress)
-                .then((resolveResult) =>
+            return this._mapLoadToResolve(resolveResult, _onProgress).then(
+                (resolveResult) =>
                 {
                     out[bundleId] = resolveResult;
-                });
+                }
+            );
         });
 
         await Promise.all(promises);
@@ -650,7 +686,9 @@ export class AssetsClass
      * await Assets.loadBundle('load-screen'); // Will resolve quicker as loading may have completed!
      * @param bundleIds - the bundleId / bundleIds you want to background load
      */
-    public async backgroundLoadBundle(bundleIds: ArrayOr<string>): Promise<void>
+    public async backgroundLoadBundle(
+        bundleIds: ArrayOr<string>
+    ): Promise<void>
     {
         if (!this._initialized)
         {
@@ -726,7 +764,10 @@ export class AssetsClass
         // pause background loader...
         this._backgroundLoader.active = false;
 
-        const loadedAssets = await this.loader.load<T>(resolveArray, onProgress);
+        const loadedAssets = await this.loader.load<T>(
+            resolveArray,
+            onProgress
+        );
 
         // resume background loader...
         this._backgroundLoader.active = true;
@@ -786,9 +827,9 @@ export class AssetsClass
             await this.init();
         }
 
-        const urlArray = convertToList<string | ResolvedAsset>(urls)
-            .map((url) =>
-                ((typeof url !== 'string') ? url.src : url));
+        const urlArray = convertToList<string | ResolvedAsset>(urls).map(
+            (url) => (typeof url !== 'string' ? url.src : url)
+        );
 
         // check cache first...
         const resolveResults = this.resolver.resolve(urlArray);
@@ -829,12 +870,15 @@ export class AssetsClass
         const resolveResults = this.resolver.resolveBundle(bundleIds);
 
         const promises = Object.keys(resolveResults).map((bundleId) =>
-            this._unloadFromResolved(resolveResults[bundleId]));
+            this._unloadFromResolved(resolveResults[bundleId])
+        );
 
         await Promise.all(promises);
     }
 
-    private async _unloadFromResolved(resolveResult: ResolvedAsset | Record<string, ResolvedAsset>)
+    private async _unloadFromResolved(
+        resolveResult: ResolvedAsset | Record<string, ResolvedAsset>
+    )
     {
         const resolveArray = Object.values(resolveResult);
 
@@ -864,8 +908,11 @@ export class AssetsClass
     {
         if (process.env.DEBUG)
         {
-            utils.deprecation('7.2.0', 'Assets.prefersWorkers is deprecated, '
-            + 'use Assets.setPreferences({ preferWorkers: true }) instead.');
+            utils.deprecation(
+                '7.2.0',
+                'Assets.prefersWorkers is deprecated, '
+                    + 'use Assets.setPreferences({ preferWorkers: true }) instead.'
+            );
         }
         this.setPreferences({ preferWorkers: value });
     }

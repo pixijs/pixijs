@@ -1,4 +1,4 @@
-import { Assets, loadTextures } from '@pixi/assets';
+import { Assets, detectAvif, detectMp4, detectOgv, detectWebm, detectWebp, loadTextures } from '@pixi/assets';
 import { BaseTexture, Texture } from '@pixi/core';
 import '@pixi/spritesheet';
 import { basePath } from './basePath';
@@ -6,8 +6,7 @@ import { basePath } from './basePath';
 function wait(value = 500)
 {
     // wait a bit...
-    return new Promise<void>((resolve) =>
-        setTimeout(() => resolve(), value));
+    return new Promise<void>((resolve) => setTimeout(() => resolve(), value));
 }
 
 describe('Assets', () =>
@@ -26,7 +25,7 @@ describe('Assets', () =>
 
         const bunny = await Assets.load('textures/bunny.png');
         const bunny2 = await Assets.load({
-            src: 'textures/bunny.png'
+            src: 'textures/bunny.png',
         });
 
         expect(bunny).toBeInstanceOf(Texture);
@@ -63,7 +62,7 @@ describe('Assets', () =>
         Assets.add('test', 'textures/bunny.png');
         Assets.add({
             alias: 'test1',
-            src: 'textures/bunny.png'
+            src: 'textures/bunny.png',
         });
 
         // not loaded yet!
@@ -108,15 +107,19 @@ describe('Assets', () =>
                 'textures/profile-abel@2x.jpg',
                 'textures/profile-abel@0.5x.webp',
                 'textures/profile-abel@2x.webp',
-            ]
+            ],
         });
 
         // not loaded yet!
         const bunny = await Assets.load('test');
         const bunny2 = await Assets.load('test2');
 
-        expect(bunny.baseTexture.resource.src).toBe(`${basePath}textures/profile-abel@2x.webp`);
-        expect(bunny2.baseTexture.resource.src).toBe(`${basePath}textures/profile-abel@2x.webp`);
+        expect(bunny.baseTexture.resource.src).toBe(
+            `${basePath}textures/profile-abel@2x.webp`
+        );
+        expect(bunny2.baseTexture.resource.src).toBe(
+            `${basePath}textures/profile-abel@2x.webp`
+        );
     });
 
     it('should load a correct texture based on preference', async () =>
@@ -139,7 +142,9 @@ describe('Assets', () =>
         // not loaded yet!
         const bunny = await Assets.load('test');
 
-        expect(bunny.baseTexture.resource.src).toBe(`${basePath}textures/profile-abel@2x.jpg`);
+        expect(bunny.baseTexture.resource.src).toBe(
+            `${basePath}textures/profile-abel@2x.jpg`
+        );
     });
 
     it('should map all names', async () =>
@@ -151,7 +156,7 @@ describe('Assets', () =>
         Assets.add(['fish', 'chicken'], 'textures/bunny.png');
         Assets.add({
             alias: ['fish2', 'chicken2'],
-            src: 'textures/bunny.png'
+            src: 'textures/bunny.png',
         });
 
         const bunny = await Assets.load('fish');
@@ -176,11 +181,11 @@ describe('Assets', () =>
         Assets.add('fish', 'textures/bunny.{png,webp}');
         Assets.add({
             alias: 'fish2',
-            src: 'textures/bunny.{png,webp}'
+            src: 'textures/bunny.{png,webp}',
         });
         Assets.add({
             alias: 'fish3',
-            src: ['textures/bunny.{png,webp}']
+            src: ['textures/bunny.{png,webp}'],
         });
         Assets.add({
             alias: 'fish4',
@@ -191,8 +196,8 @@ describe('Assets', () =>
 
                 {
                     src: 'textures/bunny.webp',
-                }
-            ]
+                },
+            ],
         });
 
         const bunny = await Assets.load('fish');
@@ -200,10 +205,18 @@ describe('Assets', () =>
         const bunny3 = await Assets.load('fish3');
         const bunny4 = await Assets.load('fish4');
 
-        expect(bunny.baseTexture.resource.src).toBe(`${basePath}textures/bunny.webp`);
-        expect(bunny2.baseTexture.resource.src).toBe(`${basePath}textures/bunny.webp`);
-        expect(bunny3.baseTexture.resource.src).toBe(`${basePath}textures/bunny.webp`);
-        expect(bunny4.baseTexture.resource.src).toBe(`${basePath}textures/bunny.webp`);
+        expect(bunny.baseTexture.resource.src).toBe(
+            `${basePath}textures/bunny.webp`
+        );
+        expect(bunny2.baseTexture.resource.src).toBe(
+            `${basePath}textures/bunny.webp`
+        );
+        expect(bunny3.baseTexture.resource.src).toBe(
+            `${basePath}textures/bunny.webp`
+        );
+        expect(bunny4.baseTexture.resource.src).toBe(
+            `${basePath}textures/bunny.webp`
+        );
     });
 
     it('should background load correctly', async () =>
@@ -217,10 +230,14 @@ describe('Assets', () =>
         // wait a bit...
         await wait();
 
-        const asset = await Assets.loader.promiseCache[`${basePath}textures/bunny.png`].promise;
+        const asset = await Assets.loader.promiseCache[
+            `${basePath}textures/bunny.png`
+        ].promise;
 
         expect(asset).toBeInstanceOf(Texture);
-        expect(asset.baseTexture.resource.src).toBe(`${basePath}textures/bunny.png`);
+        expect(asset.baseTexture.resource.src).toBe(
+            `${basePath}textures/bunny.png`
+        );
     });
 
     it('should error out if loader fails', async () =>
@@ -267,7 +284,10 @@ describe('Assets', () =>
             basePath,
         });
 
-        const pathsToLoad = ['textures/bunny.png', 'textures/profile-abel@2x.jpg'];
+        const pathsToLoad = [
+            'textures/bunny.png',
+            'textures/profile-abel@2x.jpg',
+        ];
 
         const assets = await Assets.load(pathsToLoad);
 
@@ -346,7 +366,8 @@ describe('Assets', () =>
 
         expect(json1).toStrictEqual({ text: 'Hello, world!', value: 123 });
 
-        const jsonDataURL2 = 'data:application/json;base64,eyJ0ZXh0IjoiSGVsbG8sIHdvcmxkISIsInZhbHVlIjogMTIzfQ==';
+        const jsonDataURL2
+            = 'data:application/json;base64,eyJ0ZXh0IjoiSGVsbG8sIHdvcmxkISIsInZhbHVlIjogMTIzfQ==';
 
         const json2 = await Assets.load(jsonDataURL2);
 
@@ -482,7 +503,9 @@ describe('Assets', () =>
         Assets.add('bunny', 'textures/bunny.png');
         const bunnyTexture = await Assets.load('bunny');
 
-        expect(bunnyTexture.textureCacheIds[0]).toEqual(`${basePath}textures/bunny.png?foo=bar&chicken=nuggets`);
+        expect(bunnyTexture.textureCacheIds[0]).toEqual(
+            `${basePath}textures/bunny.png?foo=bar&chicken=nuggets`
+        );
     });
 
     it('should support preferences settings', async () =>
@@ -490,7 +513,7 @@ describe('Assets', () =>
         await Assets.init({
             preferences: {
                 preferWorkers: false,
-            }
+            },
         });
 
         expect(loadTextures.config.preferWorkers).toBe(false);
@@ -521,5 +544,95 @@ describe('Assets', () =>
         texture2.destroy(true);
 
         expect(Assets.cache.has(url)).toBeFalse();
+    });
+
+    it('runs format detection if skipDetections is falsy and no format preference provided', async () =>
+    {
+        const avifSpy = jest.spyOn(detectAvif, 'test');
+        const webMSpy = jest.spyOn(detectWebm, 'test');
+        const mp4Spy = jest.spyOn(detectMp4, 'test');
+        const ogvSpy = jest.spyOn(detectOgv, 'test');
+        const webPSpy = jest.spyOn(detectWebp, 'test');
+
+        await Assets.init({
+            basePath,
+            texturePreference: {
+                skipDetection: false,
+            },
+        });
+
+        expect(avifSpy).toHaveBeenCalled();
+        expect(webMSpy).toHaveBeenCalled();
+        expect(mp4Spy).toHaveBeenCalled();
+        expect(ogvSpy).toHaveBeenCalled();
+        expect(webPSpy).toHaveBeenCalled();
+    });
+
+    it('runs format detection if skipDetections is falsy and format preference provided', async () =>
+    {
+        const avifSpy = jest.spyOn(detectAvif, 'test');
+        const webMSpy = jest.spyOn(detectWebm, 'test');
+        const mp4Spy = jest.spyOn(detectMp4, 'test');
+        const ogvSpy = jest.spyOn(detectOgv, 'test');
+        const webPSpy = jest.spyOn(detectWebp, 'test');
+
+        await Assets.init({
+            basePath,
+            texturePreference: {
+                format: 'png',
+                skipDetection: false,
+            },
+        });
+
+        expect(avifSpy).toHaveBeenCalled();
+        expect(webMSpy).toHaveBeenCalled();
+        expect(mp4Spy).toHaveBeenCalled();
+        expect(ogvSpy).toHaveBeenCalled();
+        expect(webPSpy).toHaveBeenCalled();
+    });
+
+    it('should skip format detection if skipDetections is set to true and format preference provided', async () =>
+    {
+        const avifSpy = jest.spyOn(detectAvif, 'test');
+        const webMSpy = jest.spyOn(detectWebm, 'test');
+        const mp4Spy = jest.spyOn(detectMp4, 'test');
+        const ogvSpy = jest.spyOn(detectOgv, 'test');
+        const webPSpy = jest.spyOn(detectWebp, 'test');
+
+        await Assets.init({
+            basePath,
+            texturePreference: {
+                format: 'png',
+                skipDetection: true,
+            },
+        });
+
+        expect(avifSpy).not.toHaveBeenCalled();
+        expect(webMSpy).not.toHaveBeenCalled();
+        expect(mp4Spy).not.toHaveBeenCalled();
+        expect(ogvSpy).not.toHaveBeenCalled();
+        expect(webPSpy).not.toHaveBeenCalled();
+    });
+
+    it('should skip format detection if skipDetections is set to true and no format preference provided', async () =>
+    {
+        const avifSpy = jest.spyOn(detectAvif, 'test');
+        const webMSpy = jest.spyOn(detectWebm, 'test');
+        const mp4Spy = jest.spyOn(detectMp4, 'test');
+        const ogvSpy = jest.spyOn(detectOgv, 'test');
+        const webPSpy = jest.spyOn(detectWebp, 'test');
+
+        await Assets.init({
+            basePath,
+            texturePreference: {
+                skipDetection: true,
+            },
+        });
+
+        expect(avifSpy).not.toHaveBeenCalled();
+        expect(webMSpy).not.toHaveBeenCalled();
+        expect(mp4Spy).not.toHaveBeenCalled();
+        expect(ogvSpy).not.toHaveBeenCalled();
+        expect(webPSpy).not.toHaveBeenCalled();
     });
 });
