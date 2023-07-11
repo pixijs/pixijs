@@ -9,8 +9,6 @@ export const detectWebp = {
     },
     test: async (): Promise<boolean> =>
     {
-        if (!globalThis.createImageBitmap) return false;
-
         const webpData = 'data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAAAAAAfQ//73v/+BiOh/AAA=';
 
         return new Promise((resolve) =>
