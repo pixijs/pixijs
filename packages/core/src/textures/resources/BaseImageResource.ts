@@ -85,7 +85,7 @@ export class BaseImageResource extends Resource
         }
         else if (typeof HTMLVideoElement !== 'undefined' && source instanceof HTMLVideoElement)
         {
-            if (source.readyState <= 1 && source.buffered.length === 0)
+            if (source.readyState <= 1)
             {
                 return false;
             }
