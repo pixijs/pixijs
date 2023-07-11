@@ -261,9 +261,10 @@ export class AssetsClass
     {
         if (this._initialized)
         {
-            // #if _DEBUG
-            console.warn('[Assets]AssetManager already initialized, did you load before calling this Asset.init()?');
-            // #endif
+            if (process.env.DEBUG)
+            {
+                console.warn('[Assets]AssetManager already initialized, did you load before calling this Asset.init()?');
+            }
 
             return;
         }
@@ -861,10 +862,11 @@ export class AssetsClass
     }
     public set preferWorkers(value: boolean)
     {
-        // #if _DEBUG
-        utils.deprecation('7.2.0', 'Assets.prefersWorkers is deprecated, '
+        if (process.env.DEBUG)
+        {
+            utils.deprecation('7.2.0', 'Assets.prefersWorkers is deprecated, '
             + 'use Assets.setPreferences({ preferWorkers: true }) instead.');
-        // #endif
+        }
         this.setPreferences({ preferWorkers: value });
     }
 

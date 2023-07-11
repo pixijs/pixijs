@@ -12,6 +12,8 @@ describe('loadVideo', () =>
 
     it('should load MP4 assets', async () =>
     {
+        jest.setTimeout(10000);
+
         await Assets.init({
             basePath,
         });

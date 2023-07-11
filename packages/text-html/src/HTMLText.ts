@@ -70,9 +70,9 @@ export class HTMLText extends Sprite
     private _text: string | null = null;
     private _style: HTMLTextStyle | null = null;
     private _autoResolution = true;
-    private _loading = false;
     private localStyleID = -1;
     private dirty = false;
+    private _updateID = 0;
 
     /** The HTMLTextStyle object is owned by this instance */
     private ownsStyle = false;
@@ -161,12 +161,13 @@ export class HTMLText extends Sprite
 
         const { width, height } = contentBounds;
 
-        // #if _DEBUG
-        if (width > this.maxWidth || height > this.maxHeight)
+        if (process.env.DEBUG)
         {
-            console.warn('[HTMLText] Large expanse of text, increase HTMLText.maxWidth or HTMLText.maxHeight property.');
+            if (width > this.maxWidth || height > this.maxHeight)
+            {
+                console.warn('[HTMLText] Large expanse of text, increase HTMLText.maxWidth or HTMLText.maxHeight property.');
+            }
         }
-        // #endif
 
         const contentWidth = Math.min(this.maxWidth, Math.ceil(width));
         const contentHeight = Math.min(this.maxHeight, Math.ceil(height));
@@ -221,33 +222,39 @@ export class HTMLText extends Sprite
         image.width = loadImage.width = Math.ceil((Math.max(1, width)));
         image.height = loadImage.height = Math.ceil((Math.max(1, height)));
 
-        if (!this._loading)
+        this._updateID++;
+
+        const updateID = this._updateID;
+
+        await new Promise<void>((resolve) =>
         {
-            this._loading = true;
-            await new Promise<void>((resolve) =>
+            loadImage.onload = async () =>
             {
-                loadImage.onload = async () =>
+                if (updateID < this._updateID)
                 {
-                    // Fake waiting for the image to load
-                    await style.onBeforeDraw();
-                    this._loading = false;
-
-                    // Swap image and loadImage, we do this to avoid
-                    // flashes between updateText calls, usually when
-                    // the onload time is longer than updateText time
-                    image.src = loadImage.src;
-                    loadImage.onload = null;
-                    loadImage.src = '';
-
-                    // Force update the texture
-                    this.updateTexture();
                     resolve();
-                };
-                const svgURL = new XMLSerializer().serializeToString(this._svgRoot);
 
-                loadImage.src = `data:image/svg+xml;charset=utf8,${encodeURIComponent(svgURL)}`;
-            });
-        }
+                    return;
+                }
+
+                // Fake waiting for the image to load
+                await style.onBeforeDraw();
+
+                // Swap image and loadImage, we do this to avoid
+                // flashes between updateText calls, usually when
+                // the onload time is longer than updateText time
+                image.src = loadImage.src;
+                loadImage.onload = null;
+                loadImage.src = '';
+
+                // Force update the texture
+                this.updateTexture();
+                resolve();
+            };
+            const svgURL = new XMLSerializer().serializeToString(this._svgRoot);
+
+            loadImage.src = `data:image/svg+xml;charset=utf8,${encodeURIComponent(svgURL)}`;
+        });
     }
 
     /** The raw image element that is rendered under-the-hood. */

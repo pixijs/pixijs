@@ -47,37 +47,38 @@ export class PluginSystem implements ISystem
          */
         this.plugins = {};
 
-        // #if _DEBUG
-        Object.defineProperties(this.plugins, {
-            extract: {
-                enumerable: false,
-                get()
-                {
-                    deprecation('7.0.0', 'renderer.plugins.extract has moved to renderer.extract');
+        if (process.env.DEBUG)
+        {
+            Object.defineProperties(this.plugins, {
+                extract: {
+                    enumerable: false,
+                    get()
+                    {
+                        deprecation('7.0.0', 'renderer.plugins.extract has moved to renderer.extract');
 
-                    return (renderer as any).extract;
+                        return (renderer as any).extract;
+                    },
                 },
-            },
-            prepare: {
-                enumerable: false,
-                get()
-                {
-                    deprecation('7.0.0', 'renderer.plugins.prepare has moved to renderer.prepare');
+                prepare: {
+                    enumerable: false,
+                    get()
+                    {
+                        deprecation('7.0.0', 'renderer.plugins.prepare has moved to renderer.prepare');
 
-                    return (renderer as any).prepare;
+                        return (renderer as any).prepare;
+                    },
                 },
-            },
-            interaction: {
-                enumerable: false,
-                get()
-                {
-                    deprecation('7.0.0', 'renderer.plugins.interaction has been deprecated, use renderer.events');
+                interaction: {
+                    enumerable: false,
+                    get()
+                    {
+                        deprecation('7.0.0', 'renderer.plugins.interaction has been deprecated, use renderer.events');
 
-                    return (renderer as any).events;
+                        return (renderer as any).events;
+                    },
                 },
-            },
-        });
-        // #endif
+            });
+        }
     }
 
     /**

@@ -19,9 +19,10 @@ Object.defineProperties(settings, {
         },
         set(value: number)
         {
-            // #if _DEBUG
-            deprecation('7.1.0', 'settings.TARGET_FPMS is deprecated, use Ticker.targetFPMS');
-            // #endif
+            if (process.env.DEBUG)
+            {
+                deprecation('7.1.0', 'settings.TARGET_FPMS is deprecated, use Ticker.targetFPMS');
+            }
 
             Ticker.targetFPMS = value;
         },

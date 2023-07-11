@@ -18,9 +18,11 @@ Object.defineProperties(settings, {
         },
         set(value: boolean)
         {
-            // #if _DEBUG
-            utils.deprecation('7.1.0', 'settings.SORTABLE_CHILDREN is deprecated, use Container.defaultSortableChildren');
-            // #endif
+            if (process.env.DEBUG)
+            {
+                // eslint-disable-next-line max-len
+                utils.deprecation('7.1.0', 'settings.SORTABLE_CHILDREN is deprecated, use Container.defaultSortableChildren');
+            }
             Container.defaultSortableChildren = value;
         },
     },
