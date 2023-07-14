@@ -1,4 +1,4 @@
-import { BaseTexture, extensions, ExtensionType, utils, VideoResource } from '@pixi/core';
+import { BaseTexture, extensions, ExtensionType, settings, utils, VideoResource } from '@pixi/core';
 import { checkDataUrl } from '../../../utils/checkDataUrl';
 import { checkExtension } from '../../../utils/checkExtension';
 import { LoaderParserPriority } from '../LoaderParser';
@@ -57,23 +57,36 @@ export const loadVideo = {
         loadAsset?: ResolvedAsset<IBaseTextureOptions<IVideoResourceOptions>>,
         loader?: Loader): Promise<Texture>
     {
-        const options = {
-            autoPlay: this.config.defaultAutoPlay,
-            ...loadAsset?.data?.resourceOptions,
-        };
-        const src = new VideoResource(url, options);
+        let texture: Texture;
+        const response = await settings.ADAPTER.fetch(url);
+        const blob = await response.blob();
+        const blobURL = URL.createObjectURL(blob);
 
-        await src.load();
+        try
+        {
+            const options = {
+                autoPlay: this.config.defaultAutoPlay,
+                ...loadAsset?.data?.resourceOptions,
+            };
+            const src = new VideoResource(blobURL, options);
 
-        const base = new BaseTexture(src, {
-            alphaMode: await utils.detectVideoAlphaMode(),
-            resolution: utils.getResolutionOfUrl(url),
-            ...loadAsset?.data,
-        });
+            await src.load();
 
-        base.resource.src = url;
+            const base = new BaseTexture(src, {
+                alphaMode: await utils.detectVideoAlphaMode(),
+                resolution: utils.getResolutionOfUrl(url),
+                ...loadAsset?.data,
+            });
 
-        const texture = createTexture(base, loader, url);
+            base.resource.src = url;
+            texture = createTexture(base, loader, url, blobURL);
+        }
+        catch (e)
+        {
+            URL.revokeObjectURL(blobURL);
+
+            throw e;
+        }
 
         return texture;
     },

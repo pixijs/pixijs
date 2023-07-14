@@ -105,7 +105,7 @@ export class VideoResource extends BaseImageResource
                 {
                     mime = src.slice(5, src.indexOf(';'));
                 }
-                else
+                else if (!src.startsWith('blob:'))
                 {
                     const baseSrc = src.split('?').shift().toLowerCase();
                     const ext = baseSrc.slice(baseSrc.lastIndexOf('.') + 1);
@@ -114,7 +114,11 @@ export class VideoResource extends BaseImageResource
                 }
 
                 sourceElement.src = src;
-                sourceElement.type = mime;
+
+                if (mime)
+                {
+                    sourceElement.type = mime;
+                }
 
                 videoElement.appendChild(sourceElement);
             }
