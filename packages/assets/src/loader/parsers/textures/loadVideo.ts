@@ -79,7 +79,11 @@ export const loadVideo = {
             });
 
             base.resource.src = url;
-            texture = createTexture(base, loader, url, blobURL);
+            texture = createTexture(base, loader, url);
+            texture.baseTexture.once('destroyed', () =>
+            {
+                URL.revokeObjectURL(blobURL);
+            });
         }
         catch (e)
         {
