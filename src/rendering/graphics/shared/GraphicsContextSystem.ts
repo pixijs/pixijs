@@ -96,7 +96,7 @@ export class GraphicsContextSystem implements System
                 {
                     size += contextBatches[i].vertexSize;
 
-                    if (size > 100)
+                    if (size > 400)
                     {
                         isBatchable = false;
                         break;

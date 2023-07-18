@@ -66,9 +66,6 @@ export class BitmapTextPipe implements RenderPipe<TextView>
     {
         const graphicsRenderable = this.getGpuBitmapText(renderable);
 
-        // TODO break the batch if we are not batching..
-        this.renderer.renderPipes.batch.break(instructionSet);
-
         this.renderer.renderPipes.graphics.addRenderable(graphicsRenderable, instructionSet);
 
         if (graphicsRenderable.view.context.customShader)

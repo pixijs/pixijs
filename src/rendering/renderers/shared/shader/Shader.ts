@@ -160,6 +160,13 @@ export class Shader extends EventEmitter<{
         this.resources = this._buildResourceAccessor(groups, nameHash);
     }
 
+    public addResource(name: string, groupIndex: number, bindIndex: number): void
+    {
+        this.uniformBindMap[groupIndex] ||= {};
+
+        this.uniformBindMap[groupIndex][bindIndex] ||= name;
+    }
+
     private _buildResourceAccessor(groups: ShaderGroups, nameHash: Record<string, GroupsData>)
     {
         const uniformsOut = {};

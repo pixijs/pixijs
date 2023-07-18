@@ -1,4 +1,5 @@
 import EventEmitter from 'eventemitter3';
+import { deprecation } from '../../utils/logging/deprecation';
 import { GraphicsContext } from '../graphics/shared/GraphicsContext';
 import { convertFillInputToFillStyle } from '../graphics/shared/utils/convertFillInputToFillStyle';
 
@@ -235,7 +236,32 @@ export class TextStyle extends EventEmitter<{
     {
         super();
 
-        // TODO getter setters...
+        const oldStyle = style as any;
+
+        if (typeof oldStyle.dropShadow === 'boolean')
+        {
+            deprecation('v8', 'dropShadow is now an object, not a boolean');
+
+            style.dropShadow = {
+                alpha: oldStyle.dropShadowAlpha ?? 1,
+                angle: oldStyle.dropShadowAngle,
+                blur: oldStyle.dropShadowBlur ?? 0,
+                color: oldStyle.dropShadowColor,
+                distance:   oldStyle.dropShadowDistance,
+            };
+        }
+
+        if (oldStyle.strokeThickness)
+        {
+            deprecation('v8', 'strokeThickness is now a part of stroke');
+
+            const color = oldStyle.stroke;
+
+            style.stroke = {
+                color,
+                width: oldStyle.strokeThickness
+            };
+        }
 
         const fullStyle = { ...TextStyle.defaultTextStyle, ...style };
 
@@ -358,6 +384,8 @@ export class TextStyle extends EventEmitter<{
 
         index = addFillStyleKey(this._fill, key as string[], index);
         index = addStokeStyleKey(this._stroke, key as string[], index);
+
+        // TODO - we need to add some shadow stuff here!
 
         this._styleKey = key.join('-');
 

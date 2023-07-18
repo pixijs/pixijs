@@ -92,6 +92,9 @@ export class Filter extends Shader
 
         this.resolution = options.resolution;
         this.blendRequired = options.blendRequired;
+
+        this.addResource('globalUniforms', 0, 0);
+        this.addResource('myTexture', 1, 1);
     }
 
     /**

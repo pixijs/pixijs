@@ -91,7 +91,7 @@ export class ViewSystem implements System
          * {@link PIXI.WebGLOptions.autoDensity}
          * @default false
          */
-        autoDensity: true,
+        autoDensity: false,
         /**
          * {@link PIXI.WebGLOptions.antialias}
          * @default false
