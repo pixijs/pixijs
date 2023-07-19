@@ -53,9 +53,9 @@ export class StencilMask implements Effect, PoolItem
     {
         const mask = this.mask as any;
 
-        if (mask.containsPoint)
+        if (mask.view?.containsPoint)
         {
-            return mask.containsPoint(point);
+            return mask.view.containsPoint(point);
         }
 
         return false;

@@ -157,17 +157,17 @@ describe('Container Tests', () =>
 
         root.layerGroup.structureDidChange = false;
 
-        expect(root.sortChildren).toEqual(false);
+        expect(root.sortableChildren).toEqual(false);
 
-        container1.depth = 1;
+        container1.zIndex = 1;
 
         expect(root.sortDirty).toEqual(true);
         expect(root.layerGroup.structureDidChange).toEqual(true);
 
-        root.sortChildrenDepth();
+        root.sortChildren();
 
         expect(root.sortDirty).toEqual(false);
-        expect(root.sortChildren).toEqual(true);
+        expect(root.sortableChildren).toEqual(true);
         expect(root.children).toEqual([container2, container3, container1]);
     });
 });

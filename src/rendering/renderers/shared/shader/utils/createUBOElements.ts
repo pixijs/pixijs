@@ -1,7 +1,13 @@
 /* eslint-disable quote-props */
-export type UNIFORM_TYPES =
+export type UNIFORM_TYPES_SINGLE =
 'f32' | 'vec2<f32>' | 'vec3<f32>' | 'vec4<f32>' |
-'mat2x2<f32>' | 'mat3x3<f32>' | 'mat4x4<f32>';
+'mat2x2<f32>' | 'mat3x3<f32>' | 'mat4x4<f32>' | 'u32';
+
+type OPTIONAL_SPACE = ' ' | '';
+
+type UNIFORM_TYPES_ARRAY = `array<${UNIFORM_TYPES_SINGLE},${OPTIONAL_SPACE}${number}>`;
+
+export type UNIFORM_TYPES = UNIFORM_TYPES_SINGLE | UNIFORM_TYPES_ARRAY;
 
 export const WGSL_TO_STD40_SIZE: Record<string, number> = {
     'f32': 4,

@@ -25,12 +25,12 @@ export const toLocalGlobalMixin: Partial<Container> = {
     {
         if (this.parent)
         {
-            this.parent.toGlobal(this.position, point, skipUpdate);
+            this.parent.toGlobal(this._position, point, skipUpdate);
         }
         else
         {
-            point.x = this.position.x;
-            point.y = this.position.y;
+            point.x = this._position.x;
+            point.y = this._position.y;
         }
 
         return point;

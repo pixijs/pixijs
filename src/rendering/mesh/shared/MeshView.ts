@@ -59,6 +59,10 @@ export class MeshView<GEOMETRY extends MeshGeometry = MeshGeometry>implements Vi
         {
             this.texture = (options as MeshViewTextureOptions).texture;
         }
+        else
+        {
+            this._texture = this.shader.texture;
+        }
 
         this._geometry = options.geometry as GEOMETRY;
         this._geometry.on('update', this.onGeometryUpdate, this);
@@ -101,8 +105,7 @@ export class MeshView<GEOMETRY extends MeshGeometry = MeshGeometry>implements Vi
 
         if (this.shader)
         {
-            this.shader.resources.uTexture = value.source;
-            this.shader.resources.uSampler = value.style;
+            this.shader.texture = value;
         }
 
         this._texture = value;

@@ -5,7 +5,7 @@ export function updateLocalTransform(lt: Matrix, container: Container): void
 {
     const scale = container._scale;
     const pivot = container._pivot;
-    const position = container.position;
+    const position = container._position;
 
     const sx = scale._x;
     const sy = scale._y;

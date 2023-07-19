@@ -2,6 +2,7 @@ import EventEmitter from 'eventemitter3';
 import { DEG_TO_RAD, RAD_TO_DEG } from '../../maths/const';
 import { Matrix } from '../../maths/Matrix';
 import { ObservablePoint } from '../../maths/ObservablePoint';
+import { convertColorToNumber } from '../../utils/color/convertColorToNumber';
 import { childrenHelperMixin } from './container-mixins/childrenHelperMixin';
 import { effectsMixin } from './container-mixins/effectsMixin';
 import { findMixin } from './container-mixins/getByLabelMixin';
@@ -11,6 +12,7 @@ import { sortMixin } from './container-mixins/sortMixin';
 import { toLocalGlobalMixin } from './container-mixins/toLocalGlobalMixin';
 import { LayerGroup } from './LayerGroup';
 
+import type { PointData } from '../../maths/PointData';
 import type { Dict } from '../../utils/types';
 import type { Renderable } from '../renderers/shared/Renderable';
 import type { BLEND_MODES } from '../renderers/shared/state/const';
@@ -130,7 +132,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
 
     // transform data..
     /** The coordinate of the object relative to the local coordinates of the parent. */
-    public position: ObservablePoint = new ObservablePoint(this, 0, 0);
+    public _position: ObservablePoint = new ObservablePoint(this, 0, 0);
 
     /** The scale factor of the object. */
     public _scale: ObservablePoint = defaultScale;
@@ -251,7 +253,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
             this.view.owner = this;
         }
 
-        this.sortChildren = !!sortableChildren;
+        this.sortableChildren = !!sortableChildren;
     }
 
     /**
@@ -261,7 +263,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
      * @param {...PIXI.Container} children - The Container(s) to add to the container
      * @returns {PIXI.Container} - The first child that was added.
      */
-    addChild<U extends Container[]>(...children: Container[]): U[0]
+    addChild<U extends Container[]>(...children: U): U[0]
     {
         if (children.length > 1)
         {
@@ -297,7 +299,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
 
         this.children.push(child);
 
-        if (this.sortChildren) this.sortDirty = true;
+        if (this.sortableChildren) this.sortDirty = true;
 
         child.parent = this;
 
@@ -314,6 +316,11 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
 
         this.emit('childAdded', child, this, this.children.length - 1);
         child.emit('added', this);
+
+        if (child._zIndex !== 0)
+        {
+            this.depthOfChildModified();
+        }
 
         return child;
     }
@@ -487,12 +494,12 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
      */
     get x(): number
     {
-        return this.position.x;
+        return this._position.x;
     }
 
     set x(value: number)
     {
-        this.position.x = value;
+        this._position.x = value;
     }
 
     /**
@@ -501,12 +508,22 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
      */
     get y(): number
     {
-        return this.position.y;
+        return this._position.y;
     }
 
     set y(value: number)
     {
-        this.position.y = value;
+        this._position.y = value;
+    }
+
+    get position(): ObservablePoint
+    {
+        return this._position;
+    }
+
+    set position(value: PointData)
+    {
+        this._position.copyFrom(value);
     }
 
     /**
@@ -551,6 +568,16 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         return this._pivot;
     }
 
+    set pivot(value: PointData)
+    {
+        if (this._pivot === defaultPivot)
+        {
+            this._pivot = new ObservablePoint(this, 0, 0);
+        }
+
+        this._pivot.copyFrom(value);
+    }
+
     get skew(): ObservablePoint
     {
         if (this._skew === defaultSkew)
@@ -569,6 +596,16 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         }
 
         return this._scale;
+    }
+
+    set scale(value: PointData)
+    {
+        if (this._scale === defaultScale)
+        {
+            this._scale = new ObservablePoint(this, 0, 0);
+        }
+
+        this._scale.copyFrom(value);
     }
 
     /** Called when the skew or the rotation changes. */
@@ -605,6 +642,8 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
 
     set tint(value: number)
     {
+        value = convertColorToNumber(value);
+
         // convert RGB to BGR
         value = ((value & 0xFF) << 16) + (value & 0xFF00) + ((value >> 16) & 0xFF);
 
@@ -750,7 +789,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         // this.parentRenderGroup = null;
         // this.parentTransform = null;
         this.effects = null;
-        this.position = null;
+        this._position = null;
         this._scale = null;
         this._pivot = null;
         this._skew = null;

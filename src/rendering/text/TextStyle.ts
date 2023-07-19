@@ -1,9 +1,10 @@
 import EventEmitter from 'eventemitter3';
+import { convertColorToNumber } from '../../utils/color/convertColorToNumber';
 import { deprecation } from '../../utils/logging/deprecation';
+import { FillGradient } from '../graphics/shared/fill/FillGradient';
 import { GraphicsContext } from '../graphics/shared/GraphicsContext';
 import { convertFillInputToFillStyle } from '../graphics/shared/utils/convertFillInputToFillStyle';
 
-import type { FillGradient } from '../graphics/shared/fill/FillGradient';
 import type { DefaultFillStyle, FillStyle, FillStyleInputs, StrokeStyle } from '../graphics/shared/GraphicsContext';
 import type { TextureDestroyOptions, TypeOrBool } from '../scene/destroyTypes';
 
@@ -236,32 +237,7 @@ export class TextStyle extends EventEmitter<{
     {
         super();
 
-        const oldStyle = style as any;
-
-        if (typeof oldStyle.dropShadow === 'boolean')
-        {
-            deprecation('v8', 'dropShadow is now an object, not a boolean');
-
-            style.dropShadow = {
-                alpha: oldStyle.dropShadowAlpha ?? 1,
-                angle: oldStyle.dropShadowAngle,
-                blur: oldStyle.dropShadowBlur ?? 0,
-                color: oldStyle.dropShadowColor,
-                distance:   oldStyle.dropShadowDistance,
-            };
-        }
-
-        if (oldStyle.strokeThickness)
-        {
-            deprecation('v8', 'strokeThickness is now a part of stroke');
-
-            const color = oldStyle.stroke;
-
-            style.stroke = {
-                color,
-                width: oldStyle.strokeThickness
-            };
-        }
+        convertV7Tov8Style(style);
 
         const fullStyle = { ...TextStyle.defaultTextStyle, ...style };
 
@@ -499,3 +475,52 @@ function addStokeStyleKey(strokeStyle: StrokeStyle, key: (number | string)[], in
     return index;
 }
 
+function convertV7Tov8Style(style: TextStyleOptions)
+{
+    const oldStyle = style as any;
+
+    if (typeof oldStyle.dropShadow === 'boolean')
+    {
+        deprecation('8', 'dropShadow is now an object, not a boolean');
+
+        style.dropShadow = {
+            alpha: oldStyle.dropShadowAlpha ?? 1,
+            angle: oldStyle.dropShadowAngle,
+            blur: oldStyle.dropShadowBlur ?? 0,
+            color: oldStyle.dropShadowColor,
+            distance:   oldStyle.dropShadowDistance,
+        };
+    }
+
+    if (oldStyle.strokeThickness)
+    {
+        deprecation('8', 'strokeThickness is now a part of stroke');
+
+        const color = oldStyle.stroke;
+
+        style.stroke = {
+            color,
+            width: oldStyle.strokeThickness
+        };
+    }
+
+    if (Array.isArray(oldStyle.fill))
+    {
+        deprecation('8', 'gradient fill is now a fill pattern: `new FillGradient(...)`');
+
+        const gradientFill = new FillGradient(0, 0, 0, style.fontSize as number);
+
+        const fills: number[] = oldStyle.fill.map(convertColorToNumber);
+
+        fills.forEach((number, index) =>
+        {
+            const ratio = oldStyle.fillGradientStops[index] ?? index / fills.length;
+
+            gradientFill.addColorStop(ratio, number);
+        });
+
+        style.fill = {
+            fill: gradientFill
+        };
+    }
+}

@@ -29,7 +29,7 @@ export interface FillStyle
 
 export interface PatternFillStyle
 {
-    fill?: FillPattern;
+    fill?: FillPattern | FillGradient;
     color?: number;
     alpha?: number;
 }

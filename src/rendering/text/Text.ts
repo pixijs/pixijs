@@ -13,9 +13,10 @@ export class Text extends Container<TextView>
     constructor(options: TextOptions = {})
     {
         // @deprecated
-        if (typeof options === 'string')
+        // eslint-disable-next-line prefer-rest-params
+        if (typeof options === 'string' || arguments[1])
         {
-            deprecation('v8', 'use new Text({ text: "hi!", style }) instead');
+            deprecation('8', 'use new Text({ text: "hi!", style }) instead');
             options = {
                 text: options,
                 // eslint-disable-next-line prefer-rest-params

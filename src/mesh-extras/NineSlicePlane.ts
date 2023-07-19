@@ -198,7 +198,7 @@ export class NineSlicePlane extends NineSliceSprite
         if (options instanceof Texture)
         {
             // eslint-disable-next-line max-len
-            deprecation('v8', 'NineSlicePlane now uses the options object {texture, leftWidth, rightWidth, topHeight, bottomHeight}');
+            deprecation('8', 'NineSlicePlane now uses the options object {texture, leftWidth, rightWidth, topHeight, bottomHeight}');
 
             options = {
                 texture: options,
@@ -208,7 +208,7 @@ export class NineSlicePlane extends NineSliceSprite
                 bottomHeight: arguments[4],
             };
         }
-        deprecation('v8', 'NineSlicePlane is deprecated. Use NineSliceSprite instead.');
+        deprecation('8', 'NineSlicePlane is deprecated. Use NineSliceSprite instead.');
         super(options);
     }
 }

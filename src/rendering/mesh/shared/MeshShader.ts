@@ -44,6 +44,8 @@ export class MeshShader extends Shader implements TextureShader
                 uSampler: options.texture.style,
             }
         });
+
+        this._texture = options.texture;
     }
 
     get texture(): Texture
