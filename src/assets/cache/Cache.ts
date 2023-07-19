@@ -53,9 +53,10 @@ class CacheClass
 
         if (!result)
         {
-            // #if _DEBUG
-            console.warn(`[Assets] Asset id ${key} was not found in the Cache`);
-            // #endif
+            if (process.env.DEBUG)
+            {
+                console.warn(`[Assets] Asset id ${key} was not found in the Cache`);
+            }
         }
 
         return result as T;
@@ -111,29 +112,14 @@ class CacheClass
         {
             if (this._cache.has(key) && this._cache.get(key) !== value)
             {
-                // #if _DEBUG
-                console.warn('[Cache] already has key:', key);
-                // #endif
+                if (process.env.DEBUG)
+                {
+                    console.warn('[Cache] already has key:', key);
+                }
             }
 
             this._cache.set(key, cacheableAssets[key]);
         });
-
-        // temporary to keep compatible with existing texture caching.. until we remove them!
-        // if (value instanceof Texture)
-        // {
-        //     const texture: Texture = value;
-
-        //     keys.forEach((key) =>
-        //     {
-        //         if (texture.baseTexture !== Texture.EMPTY.baseTexture)
-        //         {
-        //             BaseTexture.addToCache(texture.baseTexture, key);
-        //         }
-
-        //         Texture.addToCache(texture, key);
-        //     });
-        // }
     }
 
     /**
@@ -144,13 +130,12 @@ class CacheClass
      */
     public remove(key: string): void
     {
-        this._cacheMap.get(key);
-
         if (!this._cacheMap.has(key))
         {
-            // #if _DEBUG
-            console.warn(`[Assets] Asset id ${key} was not found in the Cache`);
-            // #endif
+            if (process.env.DEBUG)
+            {
+                console.warn(`[Assets] Asset id ${key} was not found in the Cache`);
+            }
 
             return;
         }

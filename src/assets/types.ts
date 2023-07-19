@@ -4,7 +4,14 @@ export type ArrayOr<T> = T | T[];
  * Names of the parsers that are built into PIXI.
  * @memberof PIXI
  */
-export type LoadParserName = 'loadTextures' | 'loadJson' | 'loadTxt' | 'loadWebFont' | 'loadSVG' | string;
+export type LoadParserName =
+    | 'loadJson'
+    | 'loadSVG'
+    | 'loadTextures'
+    | 'loadTxt'
+    | 'loadVideo'
+    | 'loadWebFont'
+    | string;
 
 /**
  * A fully resolved asset, with all the information needed to load it.
