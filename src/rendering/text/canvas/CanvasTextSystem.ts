@@ -174,6 +174,19 @@ export class CanvasTextSystem implements System
         // context.fillStyle = 'red';
         context.clearRect(0, 0, measured.width, measured.height);
 
+        // set stroke styles..
+
+        if (style._stroke?.width)
+        {
+            const strokeStyle = style._stroke;
+
+            context.lineWidth = strokeStyle.width;
+
+            context.miterLimit = strokeStyle.miterLimit;
+            context.lineJoin = strokeStyle.join;
+            context.lineCap = strokeStyle.cap;
+        }
+
         // return;
         context.font = font;
 
@@ -230,20 +243,10 @@ export class CanvasTextSystem implements System
 
                 if (style._stroke?.width)
                 {
-                    const strokeStyle = style._stroke;
-
                     context.strokeStyle = getCanvasFillStyle(style._stroke, context);
-                    context.lineWidth = strokeStyle.width;
-
-                    context.miterLimit = strokeStyle.miterLimit;
-                    context.lineJoin = strokeStyle.join;
-                    context.lineCap = strokeStyle.cap;
                 }
 
                 context.shadowColor = 'black';
-                context.shadowBlur = 0;
-                context.shadowOffsetX = 0;
-                context.shadowOffsetY = 0;
             }
 
             let linePositionYShift = (lineHeight - fontProperties.fontSize) / 2;

@@ -508,7 +508,7 @@ function convertV7Tov8Style(style: TextStyleOptions)
     {
         deprecation('8', 'gradient fill is now a fill pattern: `new FillGradient(...)`');
 
-        const gradientFill = new FillGradient(0, 0, 0, style.fontSize as number);
+        const gradientFill = new FillGradient(0, 0, 0, (style.fontSize as number) * 1.7);
 
         const fills: number[] = oldStyle.fill.map(convertColorToNumber);
 

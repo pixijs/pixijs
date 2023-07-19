@@ -1,8 +1,8 @@
 import { ObservablePoint } from '../../../maths/ObservablePoint';
+import { Texture } from '../../renderers/shared/texture/Texture';
 import { emptyViewObserver } from '../../renderers/shared/View';
 
 import type { PointData } from '../../../maths/PointData';
-import type { Texture } from '../../renderers/shared/texture/Texture';
 import type { View } from '../../renderers/shared/View';
 import type { Bounds } from '../../scene/bounds/Bounds';
 import type { TextureDestroyOptions, TypeOrBool } from '../../scene/destroyTypes';
@@ -44,6 +44,8 @@ export class SpriteView implements View
 
     set texture(value: Texture)
     {
+        value ||= Texture.EMPTY;
+
         if (this._texture === value) return;
 
         value.on('update', this.onUpdate, this);

@@ -4,6 +4,7 @@ import { Container } from '../../scene/Container';
 import { SpriteView } from './SpriteView';
 
 import type { PointData } from '../../../maths/PointData';
+import type { PointLike } from '../../../maths/PointLike';
 import type { ContainerOptions } from '../../scene/Container';
 
 export interface SpriteOptions extends ContainerOptions<SpriteView>
@@ -39,7 +40,7 @@ export class Sprite extends Container<SpriteView>
         });
     }
 
-    get anchor()
+    get anchor(): PointLike
     {
         return this.view.anchor;
     }
