@@ -1,5 +1,5 @@
-import { StencilMask } from '../../src';
 import { addMaskLocalBounds } from '../../src/rendering/mask/shared/addMaskLocalBounds';
+import { StencilMask } from '../../src/rendering/mask/shared/StencilMask';
 import { Bounds } from '../../src/rendering/scene/bounds/Bounds';
 import { getLocalBounds } from '../../src/rendering/scene/bounds/getLocalBounds';
 import { Container } from '../../src/rendering/scene/Container';
