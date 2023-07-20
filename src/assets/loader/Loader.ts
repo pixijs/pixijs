@@ -30,7 +30,7 @@ export class Loader
         {
             this._parsersValidated = false;
 
-            target[key as unknown as number] = value;
+            target[key as any as number] = value;
 
             return true;
         }
@@ -73,10 +73,11 @@ export class Loader
 
                 if (!parser)
                 {
-                    // #if _DEBUG
-                    // eslint-disable-next-line max-len
-                    console.warn(`[Assets] specified load parser "${data.loadParser}" not found while loading ${url}`);
-                    // #endif
+                    if (process.env.DEBUG)
+                    {
+                        // eslint-disable-next-line max-len
+                        console.warn(`[Assets] specified load parser "${data.loadParser}" not found while loading ${url}`);
+                    }
                 }
             }
 
@@ -96,10 +97,11 @@ export class Loader
 
                 if (!parser)
                 {
-                    // #if _DEBUG
-                    // eslint-disable-next-line max-len
-                    console.warn(`[Assets] ${url} could not be loaded as we don't know how to parse it, ensure the correct parser has been added`);
-                    // #endif
+                    if (process.env.DEBUG)
+                    {
+                        // eslint-disable-next-line max-len
+                        console.warn(`[Assets] ${url} could not be loaded as we don't know how to parse it, ensure the correct parser has been added`);
+                    }
 
                     return null;
                 }
@@ -264,9 +266,10 @@ export class Loader
             {
                 if (hash[parser.name])
                 {
-                    // #if _DEBUG
-                    console.warn(`[Assets] loadParser name conflict "${parser.name}"`);
-                    // #endif
+                    if (process.env.DEBUG)
+                    {
+                        console.warn(`[Assets] loadParser name conflict "${parser.name}"`);
+                    }
                 }
 
                 return { ...hash, [parser.name]: parser };

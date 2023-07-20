@@ -116,7 +116,7 @@ export const loadWebFont = {
 
                 await font.load();
 
-                (fonts as any).add(font);
+                fonts.add(font);
 
                 fontFaces.push(font);
             }
@@ -124,9 +124,10 @@ export const loadWebFont = {
             return fontFaces.length === 1 ? fontFaces[0] : fontFaces;
         }
 
-        // #if _DEBUG
-        console.warn('[loadWebFont] FontFace API is not supported. Skipping loading font');
-        // #endif
+        if (process.env.DEBUG)
+        {
+            console.warn('[loadWebFont] FontFace API is not supported. Skipping loading font');
+        }
 
         return null;
     },
@@ -134,6 +135,6 @@ export const loadWebFont = {
     unload(font: FontFace | FontFace[]): void
     {
         (Array.isArray(font) ? font : [font])
-            .forEach((t) => (settings.ADAPTER.getFontFaceSet() as any).delete(t));
+            .forEach((t) => settings.ADAPTER.getFontFaceSet().delete(t));
     }
 } as LoaderParser<FontFace | FontFace[]>;

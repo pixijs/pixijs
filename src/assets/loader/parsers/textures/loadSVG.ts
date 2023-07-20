@@ -54,5 +54,8 @@ export const loadSvg = {
         return response.text();
     },
 
-    // TODO: unload function
-} as LoaderParser<string>;
+    unload(asset: GraphicsContext): void
+    {
+        asset.destroy(true);
+    }
+} as LoaderParser<string | GraphicsContext>;
