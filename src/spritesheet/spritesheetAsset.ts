@@ -135,7 +135,7 @@ export const spritesheetAsset = {
 
             if (Array.isArray(multiPacks))
             {
-                const promises: Promise<Spritesheet>[] = [];
+                const promises: Promise<Spritesheet<SpriteSheetJson>>[] = [];
 
                 for (const item of multiPacks)
                 {
@@ -154,7 +154,7 @@ export const spritesheetAsset = {
 
                     itemUrl = copySearchParams(itemUrl, options.src);
 
-                    promises.push(loader.load<Spritesheet>({
+                    promises.push(loader.load<Spritesheet<SpriteSheetJson>>({
                         src: itemUrl,
                         data: {
                             ignoreMultiPack: true,

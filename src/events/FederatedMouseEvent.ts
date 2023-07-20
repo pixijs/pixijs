@@ -3,13 +3,14 @@ import { FederatedEvent } from './FederatedEvent';
 
 import type { PointData } from '../maths/PointData';
 import type { Container } from '../rendering/scene/Container';
+import type { PixiTouch } from './FederatedEvent';
 
 /**
  * A {@link PIXI.FederatedEvent} for mouse events.
  * @memberof PIXI
  */
 export class FederatedMouseEvent extends FederatedEvent<
-MouseEvent | PointerEvent | TouchEvent
+MouseEvent | PointerEvent | PixiTouch
 > implements MouseEvent
 {
     /** Whether the "alt" key was pressed when this mouse event occurred. */

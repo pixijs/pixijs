@@ -118,13 +118,13 @@ export interface SpritesheetData
  * supported by TexturePacker.
  * @memberof PIXI
  */
-export class Spritesheet
+export class Spritesheet<S extends SpritesheetData = SpritesheetData>
 {
     /** The maximum number of Textures to build per process. */
     static readonly BATCH_SIZE = 1000;
 
     /** For multi-packed spritesheets, this contains a reference to all the other spritesheets it depends on. */
-    public linkedSheets: Spritesheet[] = [];
+    public linkedSheets: Spritesheet<S>[] = [];
 
     /** Reference to ths source texture. */
     public textureSource: TextureSource;
@@ -137,7 +137,7 @@ export class Spritesheet
      *
      * new Sprite(sheet.textures['image.png']);
      */
-    public textures: Dict<Texture>;
+    public textures: Record<keyof S['frames'], Texture>;
 
     /**
      * A map containing the textures for each animation.
@@ -147,13 +147,13 @@ export class Spritesheet
      *
      * new AnimatedSprite(sheet.animations['anim_name']);
      */
-    public animations: Dict<Texture[]>;
+    public animations: Record<keyof S['animations'], Texture[]>;
 
     /**
      * Reference to the original JSON data.
      * @type {object}
      */
-    public data: SpritesheetData;
+    public data: S;
 
     /** The resolution of the spritesheet. */
     public resolution: number;
@@ -168,10 +168,10 @@ export class Spritesheet
      * Map of spritesheet frames.
      * @type {object}
      */
-    private _frames: Dict<SpritesheetFrameData>;
+    private _frames: S['frames'];
 
     /** Collection of frame names. */
-    private _frameKeys: string[];
+    private _frameKeys: (keyof S['frames'])[];
 
     /** Current batch index being processed. */
     private _batchIndex: number;
@@ -186,12 +186,12 @@ export class Spritesheet
      * @param texture - Reference to the source BaseTexture object.
      * @param {object} data - Spritesheet image data.
      */
-    constructor(texture: BindableTexture, data: SpritesheetData)
+    constructor(texture: BindableTexture, data: S)
     {
         this._texture = texture instanceof Texture ? texture : null;
         this.textureSource = texture.source;
-        this.textures = {};
-        this.animations = {};
+        this.textures = {} as Record<keyof S['frames'], Texture>;
+        this.animations = {} as Record<keyof S['animations'], Texture[]>;
         this.data = data;
 
         const metaResolution = parseFloat(data.meta.scale);
@@ -322,7 +322,7 @@ export class Spritesheet
                         defaultAnchor: data.anchor
                         // TODO - add data.borders
                     },
-                    label: i,
+                    label: i.toString(),
                 });
             }
 
@@ -337,7 +337,7 @@ export class Spritesheet
 
         for (const animName in animations)
         {
-            this.animations[animName] = [];
+            this.animations[animName as keyof S['animations']] = [];
             for (let i = 0; i < animations[animName].length; i++)
             {
                 const frameName = animations[animName][i];

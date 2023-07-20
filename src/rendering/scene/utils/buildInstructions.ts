@@ -33,9 +33,9 @@ export function buildInstructions(layerGroup: LayerGroup, renderPipes: RenderPip
         }
     }
 
-    if (root.sortChildren)
+    if (root.sortableChildren)
     {
-        root.sortChildrenDepth();
+        root.sortChildren();
     }
 
     const children = root.children;
@@ -62,9 +62,9 @@ export function collectAllRenderables(
 
     if (container.layerVisibleRenderable < 0b11 || !container.includeInBuild) return;
 
-    if (container.sortChildren)
+    if (container.sortableChildren)
     {
-        container.sortChildrenDepth();
+        container.sortChildren();
     }
 
     if (container.isSimple)
