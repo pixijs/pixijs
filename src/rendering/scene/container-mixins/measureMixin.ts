@@ -22,7 +22,7 @@ export const measureMixin: Partial<Container> = {
 
     get width(): number
     {
-        return this.scale.x * getLocalBounds(this, tempBounds, tempMatrix).width;
+        return Math.abs(this.scale.x * getLocalBounds(this, tempBounds, tempMatrix).width);
     },
 
     set width(value: number)
@@ -41,7 +41,7 @@ export const measureMixin: Partial<Container> = {
 
     get height(): number
     {
-        return this.scale.y * getLocalBounds(this, tempBounds, tempMatrix).height;
+        return Math.abs(this.scale.y * getLocalBounds(this, tempBounds, tempMatrix).height);
     },
 
     set height(value: number)

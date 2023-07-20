@@ -22,19 +22,10 @@ void main()
     
     float[20] cm = uColorMatrix;
 
-    // Un-premultiply alpha before applying the color matrix. See issue #3539.
-    if (color.a > 0.0) {
-        color.rgb /= color.a;
-    }
 
     if (uAlpha == 0.0) {
         fragColor = color;
         return;
-    }
-
-    // Un-premultiply alpha before applying the color matrix. See issue #3539.
-    if (color.a > 0.0) {
-      color.rgb /= color.a;
     }
 
     vec4 result;
