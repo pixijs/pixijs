@@ -261,10 +261,9 @@ export class AssetsClass
     {
         if (this._initialized)
         {
-            if (process.env.DEBUG)
-            {
-                console.warn('[Assets]AssetManager already initialized, did you load before calling this Asset.init()?');
-            }
+            // #if _DEBUG
+            console.warn('[Assets]AssetManager already initialized, did you load before calling this Asset.init()?');
+            // #endif
 
             return;
         }

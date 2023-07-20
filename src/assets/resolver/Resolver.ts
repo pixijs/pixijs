@@ -291,10 +291,9 @@ export class Resolver
     {
         if (this._manifest)
         {
-            if (process.env.DEBUG)
-            {
-                console.warn('[Resolver] Manifest already exists, this will be overwritten');
-            }
+            // #if _DEBUG
+            console.warn('[Resolver] Manifest already exists, this will be overwritten');
+            // #endif
         }
 
         this._manifest = manifest;
@@ -444,16 +443,16 @@ export class Resolver
 
         let keyCheck: (key: string) => void;
 
-        if (process.env.DEBUG)
+        // #if _DEBUG
+        // eslint-disable-next-line prefer-const
+        keyCheck = (key: string) =>
         {
-            keyCheck = (key: string) =>
+            if (this.hasKey(key))
             {
-                if (this.hasKey(key))
-                {
-                    console.warn(`[Resolver] already has key: ${key} overwriting`);
-                }
-            };
-        }
+                console.warn(`[Resolver] already has key: ${key} overwriting`);
+            }
+        };
+        // #endif
 
         const assetArray = convertToList(assets);
 
@@ -475,11 +474,10 @@ export class Resolver
             });
             const aliasesToUse = convertToList<string>(alias || name);
 
-            if (process.env.DEBUG)
-            {
-                // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-                Array.isArray(alias) ? alias.forEach(keyCheck) : keyCheck(alias);
-            }
+            // #if _DEBUG
+            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+            Array.isArray(alias) ? alias.forEach(keyCheck) : keyCheck(alias);
+            // #endif
 
             // loop through all the srcs and generate a resolve asset for each src
             const resolvedAssets: ResolvedAsset[] = [];

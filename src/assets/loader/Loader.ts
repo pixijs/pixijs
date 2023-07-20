@@ -73,11 +73,10 @@ export class Loader
 
                 if (!parser)
                 {
-                    if (process.env.DEBUG)
-                    {
-                        // eslint-disable-next-line max-len
-                        console.warn(`[Assets] specified load parser "${data.loadParser}" not found while loading ${url}`);
-                    }
+                    // #if _DEBUG
+                    // eslint-disable-next-line max-len
+                    console.warn(`[Assets] specified load parser "${data.loadParser}" not found while loading ${url}`);
+                    // #endif
                 }
             }
 
@@ -97,11 +96,10 @@ export class Loader
 
                 if (!parser)
                 {
-                    if (process.env.DEBUG)
-                    {
-                        // eslint-disable-next-line max-len
-                        console.warn(`[Assets] ${url} could not be loaded as we don't know how to parse it, ensure the correct parser has been added`);
-                    }
+                    // #if _DEBUG
+                    // eslint-disable-next-line max-len
+                    console.warn(`[Assets] ${url} could not be loaded as we don't know how to parse it, ensure the correct parser has been added`);
+                    // #endif
 
                     return null;
                 }
@@ -266,10 +264,9 @@ export class Loader
             {
                 if (hash[parser.name])
                 {
-                    if (process.env.DEBUG)
-                    {
-                        console.warn(`[Assets] loadParser name conflict "${parser.name}"`);
-                    }
+                    // #if _DEBUG
+                    console.warn(`[Assets] loadParser name conflict "${parser.name}"`);
+                    // #endif
                 }
 
                 return { ...hash, [parser.name]: parser };
