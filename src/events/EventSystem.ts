@@ -8,6 +8,7 @@ import type { ExtensionMetadata } from '../extensions/Extensions';
 import type { PointData } from '../maths/PointData';
 import type { System } from '../rendering/renderers/shared/system/System';
 import type { Renderer } from '../rendering/renderers/types';
+import type { PixiTouch } from './FederatedEvent';
 import type { EventMode } from './FederatedEventTarget';
 import type { FederatedMouseEvent } from './FederatedMouseEvent';
 
@@ -847,26 +848,3 @@ interface PixiPointerEvent extends PointerEvent
     isNormalized: boolean;
     type: string;
 }
-
-interface PixiTouch extends Touch
-{
-    button: number;
-    buttons: number;
-    isPrimary: boolean;
-    width: number;
-    height: number;
-    tiltX: number;
-    tiltY: number;
-    pointerType: string;
-    pointerId: number;
-    pressure: number;
-    twist: number;
-    tangentialPressure: number;
-    layerX: number;
-    layerY: number;
-    offsetX: number;
-    offsetY: number;
-    isNormalized: boolean;
-    type: string;
-}
-

@@ -658,7 +658,7 @@ export class EventBoundary
         // call the `on${type}` for the current target if it exists
         const handlerKey = `on${type}` as keyof IFederatedContainer;
 
-        (e.currentTarget[handlerKey] as FederatedEventHandler<FederatedEvent<UIEvent>>)?.(e);
+        (e.currentTarget[handlerKey] as FederatedEventHandler<FederatedEvent>)?.(e);
 
         const key = e.eventPhase === e.CAPTURING_PHASE || e.eventPhase === e.AT_TARGET ? `${type}capture` : type;
 
