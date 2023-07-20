@@ -3,7 +3,7 @@ import { GlProgram } from '../../renderers/gl/shader/GlProgram';
 import { GpuProgram } from '../../renderers/gpu/shader/GpuProgram';
 import { UniformGroup } from '../../renderers/shared/shader/UniformGroup';
 import { TextureMatrix } from '../../renderers/shared/texture/TextureMatrix';
-import { Filter } from '../Filter';
+import { Filter } from '../shared/Filter';
 import fragment from './mask.frag';
 import vertex from './mask.vert';
 import source from './mask.wgsl';

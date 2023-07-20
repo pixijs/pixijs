@@ -23,7 +23,7 @@ struct NoiseUniforms {
 @group(0) @binding(0) var<uniform> globalUniforms : GlobalUniforms;
 
 @group(1) @binding(0) var<uniform> gfu: GlobalFilterUniforms;
-@group(1) @binding(1) var myTexture: texture_2d<f32>;
+@group(1) @binding(1) var uSampler: texture_2d<f32>;
 @group(1) @binding(2) var mySampler : sampler;
 @group(1) @binding(3) var backTexture: texture_2d<f32>;
 
@@ -90,7 +90,7 @@ fn mainFragment(
     var pixelPosition =  globalTextureCoord(position.xy);// / (getSize());//-  gfu.outputFrame.xy);
   
     
-    var sample = textureSample(myTexture, mySampler, uv);
+    var sample = textureSample(uSampler, mySampler, uv);
     var back = textureSample(backTexture, mySampler, backgroundUv);
     var randomValue =  rand(pixelPosition.xy * noiseUniforms.uSeed);
     var diff = (randomValue - 0.5) * noiseUniforms.uNoise;

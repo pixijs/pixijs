@@ -21,7 +21,7 @@ struct ShockWaveUniforms {
 };
 @group(0) @binding(0) var<uniform> globalUniforms : GlobalUniforms;
 @group(1) @binding(0) var<uniform> gfu: GlobalFilterUniforms;
-@group(1) @binding(1) var myTexture: texture_2d<f32>;
+@group(1) @binding(1) var uSampler: texture_2d<f32>;
 @group(1) @binding(2) var mySampler : sampler;
 @group(1) @binding(3) var backTexture: texture_2d<f32>;
 @group(2) @binding(0) var<uniform> shockwaveUniforms : ShockWaveUniforms;
@@ -112,14 +112,14 @@ fn mainFragment(
     let coord: vec2<f32> = uv + offset;
     let clampedCoord: vec2<f32> = clamp(coord, gfu.inputClamp.xy, gfu.inputClamp.zw);
 
-    var clampedColor: vec4<f32> = textureSample(myTexture, mySampler, clampedCoord);
+    var clampedColor: vec4<f32> = textureSample(uSampler, mySampler, clampedCoord);
     
     if (boolVec2(coord, clampedCoord)) 
     {
         clampedColor *= max(0.0, 1.0 - length(coord - clampedCoord));
     }
     // No clamp :
-    return select(clampedColor * vec4<f32>(vec3<f32>(1.0 + (uBrightness - 1.0) * p * fade), clampedColor.a), textureSample(myTexture, mySampler, uv), returnColorOnly);
+    return select(clampedColor * vec4<f32>(vec3<f32>(1.0 + (uBrightness - 1.0) * p * fade), clampedColor.a), textureSample(uSampler, mySampler, uv), returnColorOnly);
 }
 
 fn boolVec2(x: vec2<f32>, y: vec2<f32>) -> bool

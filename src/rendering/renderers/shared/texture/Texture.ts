@@ -1,5 +1,6 @@
 import EventEmitter from 'eventemitter3';
 import { Cache } from '../../../../assets/cache/Cache';
+import { deprecation } from '../../../../utils/logging/deprecation';
 import { NOOP } from '../../../../utils/NOOP';
 import { TextureSource } from './sources/TextureSource';
 import { TextureLayout } from './TextureLayout';
@@ -249,6 +250,13 @@ export class Texture extends EventEmitter<{
     protected onUpdate()
     {
         this.emit('update', this);
+    }
+
+    get baseTexture(): TextureSource
+    {
+        deprecation('8', 'Texture.baseTexture is now Texture.source');
+
+        return this._source;
     }
 
     static EMPTY: Texture;

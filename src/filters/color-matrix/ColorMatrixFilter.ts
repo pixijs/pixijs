@@ -1,9 +1,9 @@
-import { GlProgram } from '../../renderers/gl/shader/GlProgram';
-import { GpuProgram } from '../../renderers/gpu/shader/GpuProgram';
-import { UniformGroup } from '../../renderers/shared/shader/UniformGroup';
-import { Filter } from '../Filter';
+import { Filter } from '../../rendering/filters/shared/Filter';
+import { GlProgram } from '../../rendering/renderers/gl/shader/GlProgram';
+import { GpuProgram } from '../../rendering/renderers/gpu/shader/GpuProgram';
+import { UniformGroup } from '../../rendering/renderers/shared/shader/UniformGroup';
+import vertex from '../defaultFilter.vert';
 import fragment from './colorMatrixFilter.frag';
-import vertex from './colorMatrixFilter.vert';
 import source from './colorMatrixFilter.wgsl';
 
 // ts fixed array of length 20

@@ -1,6 +1,6 @@
-import { GpuProgram } from '../../renderers/gpu/shader/GpuProgram';
-import { UniformGroup } from '../../renderers/shared/shader/UniformGroup';
-import { Filter } from '../Filter';
+import { Filter } from '../../rendering/filters/shared/Filter';
+import { GpuProgram } from '../../rendering/renderers/gpu/shader/GpuProgram';
+import { UniformGroup } from '../../rendering/renderers/shared/shader/UniformGroup';
 import source from './alpha.wgsl';
 
 export interface AlphaFilterOptions

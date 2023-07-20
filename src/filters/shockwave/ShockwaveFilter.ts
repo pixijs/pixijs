@@ -1,4 +1,4 @@
-import { Filter } from '../../rendering/filters/Filter';
+import { Filter } from '../../rendering/filters/shared/Filter';
 import { GlProgram } from '../../rendering/renderers/gl/shader/GlProgram';
 import { GpuProgram } from '../../rendering/renderers/gpu/shader/GpuProgram';
 import { UniformGroup } from '../../rendering/renderers/shared/shader/UniformGroup';
