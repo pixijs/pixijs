@@ -6,6 +6,7 @@ import { TextureLayout } from './TextureLayout';
 import { TextureMatrix } from './TextureMatrix';
 import { TextureStyle } from './TextureStyle';
 
+import type { TextureSourceOptions } from './sources/TextureSource';
 import type { TextureLayoutOptions } from './TextureLayout';
 import type { TextureStyleOptions } from './TextureStyle';
 
@@ -30,14 +31,21 @@ export class Texture extends EventEmitter<{
     update: Texture
 }> implements BindableTexture
 {
-    static from(id: string | TextureSource): Texture
+    static from(id: string | TextureSource | TextureSourceOptions): Texture
     {
         if (typeof id === 'string')
         {
             return Cache.get(id);
         }
+        else if (id instanceof TextureSource)
+        {
+            return new Texture({ source: id });
+        }
 
-        return new Texture({ source: id });
+        // TODO check to see if there is a resource and use the correct source type
+        return new Texture({
+            source: new TextureSource(id)
+        });
     }
 
     public label?: string;

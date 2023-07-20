@@ -23,6 +23,7 @@ export function mapWebGLBlendModesToPixi(gl: GlRenderingContext): Record<BLEND_M
     blendMap['add-npm'] = [gl.SRC_ALPHA, gl.ONE, gl.ONE, gl.ONE];
     blendMap['screen-npm'] = [gl.SRC_ALPHA, gl.ONE_MINUS_SRC_COLOR, gl.ONE, gl.ONE_MINUS_SRC_ALPHA];
 
+    blendMap.erase = [gl.ZERO, gl.ONE_MINUS_SRC_ALPHA];
     // TODO - implement if requested!
     // composite operations
     // array[BLEND_MODES.SRC_IN] = [gl.DST_ALPHA, gl.ZERO];

@@ -1,58 +1,53 @@
-import { deprecation } from '../../../utils/logging/deprecation';
-
 import type { Container } from '../Container';
 
 export interface SortMixin
 {
-    _depth: 0;
-    depth: number;
+    _zIndex: 0;
+
     zIndex: number;
     sortDirty: boolean;
-    sortChildren: boolean;
+    sortableChildren: boolean;
 
-    sortChildrenDepth: () => void;
+    sortChildren: () => void;
+    depthOfChildModified: () => void;
 }
 
 export const sortMixin: Partial<Container> = {
 
-    _depth: 0,
+    _zIndex: 0,
     sortDirty: false,
-    sortChildren: false,
+    sortableChildren: false,
 
     get zIndex()
     {
-        return this._depth;
+        return this._zIndex;
     },
 
     /** The depth of the object. Setting this value, will automatically set the parent to be sortable */
     set zIndex(value)
     {
-        deprecation('v8', 'zIndex has been renamed to depth');
-        this.depth = value;
+        if (this._zIndex === value) return;
+
+        this._zIndex = value;
+
+        this.depthOfChildModified();
     },
 
-    get depth()
+    depthOfChildModified()
     {
-        return this._depth;
-    },
-
-    /** The depth of the object. Setting this value, will automatically set the parent to be sortable */
-    set depth(value)
-    {
-        if (this._depth === value) return;
-
-        this._depth = value;
+        if (this.parent)
+        {
+            this.parent.sortableChildren = true;
+            this.parent.sortDirty = true;
+        }
 
         if (this.layerGroup && !this.isLayerRoot)
         {
-            this.parent.sortChildren = true;
-            this.parent.sortDirty = true;
-
             this.layerGroup.structureDidChange = true;
         }
     },
 
-    sortChildrenDepth()
+    sortChildren()
     {
         if (!this.sortDirty) return;
 
@@ -65,5 +60,5 @@ export const sortMixin: Partial<Container> = {
 
 function sortChildren(a: Container, b: Container): number
 {
-    return a._depth - b._depth;
+    return a._zIndex - b._zIndex;
 }

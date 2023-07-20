@@ -1,12 +1,12 @@
 import { Matrix } from '../../../maths/Matrix';
 import { MAX_TEXTURES } from '../../batcher/shared/const';
-import { Filter } from '../../filters/Filter';
 import { batchSamplersUniformGroup } from '../../renderers/gl/shader/batchSamplersUniformGroup';
+import { Shader } from '../../renderers/shared/shader/Shader';
 import { UniformGroup } from '../../renderers/shared/shader/UniformGroup';
 import { generateDefaultSdfBatchGlProgram } from './generateDefaultSdfBatchGlProgram';
 import { generateDefaultSdfBatchProgram } from './generateDefaultSdfBatchProgram';
 
-export class SdfShader extends Filter
+export class SdfShader extends Shader
 {
     constructor()
     {
