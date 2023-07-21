@@ -10,16 +10,13 @@ let UID = 0;
 
 export class GraphicsView implements View
 {
-    uid = UID++;
+    public readonly uid = UID++;
+    public readonly canBundle = true;
+    public readonly owner = emptyViewObserver;
+    public readonly type = 'graphics';
+    public batched: boolean;
 
-    canBundle = true;
-
-    owner = emptyViewObserver;
-
-    batched: boolean;
-    type = 'graphics';
-
-    didUpdate: boolean;
+    _didUpdate: boolean;
 
     private _context: GraphicsContext;
 
@@ -48,7 +45,7 @@ export class GraphicsView implements View
         return this._context;
     }
 
-    addBounds(bounds: Bounds)
+    public addBounds(bounds: Bounds)
     {
         bounds.addBounds(this._context.bounds);
     }
@@ -60,7 +57,7 @@ export class GraphicsView implements View
 
     protected onGraphicsContextUpdate()
     {
-        this.didUpdate = true;
+        this._didUpdate = true;
         this.owner.onViewUpdate();
     }
 
@@ -74,7 +71,7 @@ export class GraphicsView implements View
      */
     public destroy(options: TypeOrBool<TextureDestroyOptions & ContextDestroyOptions> = false): void
     {
-        this.owner = null;
+        (this as any).owner = null;
 
         const destroyContext = typeof options === 'boolean' ? options : options?.context;
 

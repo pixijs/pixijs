@@ -36,7 +36,7 @@ export class SpritePipe implements RenderPipe<SpriteView>
     {
         const gpuSprite = this.getGpuSprite(renderable);
 
-        if (renderable.view.didUpdate) this.updateBatchableSprite(renderable, gpuSprite);
+        if (renderable.view._didUpdate) this.updateBatchableSprite(renderable, gpuSprite);
 
         // TODO visibility
         this.renderer.renderPipes.batch.addToBatch(gpuSprite, instructionSet);
@@ -46,7 +46,7 @@ export class SpritePipe implements RenderPipe<SpriteView>
     {
         const gpuSprite = gpuSpriteHash[renderable.uid];
 
-        if (renderable.view.didUpdate) this.updateBatchableSprite(renderable, gpuSprite);
+        if (renderable.view._didUpdate) this.updateBatchableSprite(renderable, gpuSprite);
 
         gpuSprite.batcher.updateElement(gpuSprite);
     }
@@ -78,7 +78,7 @@ export class SpritePipe implements RenderPipe<SpriteView>
     {
         const view = renderable.view;
 
-        view.didUpdate = false;
+        view._didUpdate = false;
         batchableSprite.bounds = view.bounds;
         batchableSprite.texture = view._texture;
     }
@@ -98,7 +98,7 @@ export class SpritePipe implements RenderPipe<SpriteView>
 
         gpuSpriteHash[renderable.uid] = batchableSprite;
 
-        renderable.view.didUpdate = false;
+        renderable.view._didUpdate = false;
 
         // TODO perhaps manage this outside this pipe? (a bit like how we update / add)
         renderable.on('destroyed', () =>

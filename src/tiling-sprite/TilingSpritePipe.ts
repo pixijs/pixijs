@@ -75,9 +75,9 @@ export class TilingSpritePipe implements RenderPipe<TilingSpriteView>
 
     addRenderable(renderable: Renderable<TilingSpriteView>, instructionSet: InstructionSet)
     {
-        if (renderable.view.didUpdate)
+        if (renderable.view._didUpdate)
         {
-            renderable.view.didUpdate = false;
+            renderable.view._didUpdate = false;
 
             this.rebuild(renderable);
         }
@@ -100,9 +100,9 @@ export class TilingSpritePipe implements RenderPipe<TilingSpriteView>
 
     updateRenderable(renderable: Renderable<TilingSpriteView>)
     {
-        if (renderable.view.didUpdate)
+        if (renderable.view._didUpdate)
         {
-            renderable.view.didUpdate = false;
+            renderable.view._didUpdate = false;
 
             this.rebuild(renderable);
         }
@@ -188,7 +188,7 @@ export class TilingSpritePipe implements RenderPipe<TilingSpriteView>
             const tilingSpriteWidth = view.texture.width;
             const tilingSpriteHeight = view.texture.height;
 
-            const matrix = view.tileTransform.matrix;
+            const matrix = view._tileTransform.matrix;
 
             const uTextureTransform = tilingUniforms.uniforms.uTextureTransform;
 
@@ -309,7 +309,7 @@ export class TilingSpritePipe implements RenderPipe<TilingSpriteView>
         let anchorX = 0;
         let anchorY = 0;
 
-        if (view.applyAnchorToTexture)
+        if (view._applyAnchorToTexture)
         {
             anchorX = view.anchor.x;
             anchorY = view.anchor.y;
@@ -322,7 +322,7 @@ export class TilingSpritePipe implements RenderPipe<TilingSpriteView>
 
         const textureMatrix = Matrix.shared;
 
-        textureMatrix.copyFrom(view.tileTransform.matrix);
+        textureMatrix.copyFrom(view._tileTransform.matrix);
 
         textureMatrix.tx /= view.width;
         textureMatrix.ty /= view.height;

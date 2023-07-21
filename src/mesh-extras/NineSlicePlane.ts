@@ -93,7 +93,7 @@ export class NineSliceSprite extends Container<MeshView<NineSliceGeometry>>
                 geometry: nineSliceGeometry,
                 texture,
             }),
-            label: 'NineSlicePlane',
+            label: 'NineSliceSprite',
             ...options
         });
     }
