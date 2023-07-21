@@ -1,4 +1,4 @@
-import { deprecation } from '../../utils/logging/deprecation';
+import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { Container } from '../scene/Container';
 import { TextView } from './TextView';
 
@@ -16,7 +16,7 @@ export class Text extends Container<TextView>
         // eslint-disable-next-line prefer-rest-params
         if (typeof options === 'string' || arguments[1])
         {
-            deprecation('8', 'use new Text({ text: "hi!", style }) instead');
+            deprecation(v8_0_0, 'use new Text({ text: "hi!", style }) instead');
             options = {
                 text: options,
                 // eslint-disable-next-line prefer-rest-params

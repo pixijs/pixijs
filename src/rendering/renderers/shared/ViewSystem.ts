@@ -1,4 +1,5 @@
 import { ExtensionType } from '../../../extensions/Extensions';
+import { Rectangle } from '../../../maths/shapes/Rectangle';
 import { settings } from '../../../settings/settings';
 import { getCanvasTexture } from './texture/utils/getCanvasTexture';
 
@@ -116,6 +117,8 @@ export class ViewSystem implements System
 
     public antialias: boolean;
 
+    public screen: Rectangle;
+
     constructor(renderer: Renderer)
     {
         this.renderer = renderer;
@@ -141,12 +144,15 @@ export class ViewSystem implements System
      */
     init(options: ViewSystemOptions): void
     {
+        options = {
+            ...ViewSystem.defaultOptions,
+            ...options,
+        };
+
+        this.screen = new Rectangle(0, 0, options.width, options.height);
         this.element = options.element || settings.ADAPTER.createCanvas();
-
         this.antialias = !!options.antialias;
-
         this.texture = getCanvasTexture(this.element, options as CanvasSourceOptions);
-
         this.multiView = !!options.multiView;
 
         if (this.autoDensity)
@@ -165,6 +171,9 @@ export class ViewSystem implements System
     resize(desiredScreenWidth: number, desiredScreenHeight: number, resolution: number): void
     {
         this.texture.source.resize(desiredScreenWidth, desiredScreenHeight, resolution);
+
+        this.screen.width = this.texture.frameWidth;
+        this.screen.height = this.texture.frameHeight;
 
         if (this.autoDensity)
         {
