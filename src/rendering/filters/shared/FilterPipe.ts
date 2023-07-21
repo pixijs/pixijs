@@ -5,7 +5,7 @@ import type { InstructionSet } from '../../renderers/shared/instructions/Instruc
 import type { InstructionPipe } from '../../renderers/shared/instructions/RenderPipe';
 import type { Renderer } from '../../renderers/types';
 import type { Container } from '../../scene/Container';
-import type { FilterEffect } from '../FilterEffect';
+import type { FilterEffect } from './FilterEffect';
 import type { FilterInstruction } from './FilterSystem';
 
 // eslint-disable-next-line max-len

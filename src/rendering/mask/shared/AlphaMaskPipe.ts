@@ -1,7 +1,7 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { BigPool } from '../../../utils/pool/PoolGroup';
-import { FilterEffect } from '../../filters/FilterEffect';
 import { MaskFilter } from '../../filters/mask/MaskFilter';
+import { FilterEffect } from '../../filters/shared/FilterEffect';
 import { Texture } from '../../renderers/shared/texture/Texture';
 import { TexturePool } from '../../renderers/shared/texture/TexturePool';
 import { Bounds } from '../../scene/bounds/Bounds';

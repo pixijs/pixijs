@@ -2,7 +2,7 @@ import { GlProgram } from '../../renderers/gl/shader/GlProgram';
 import { GpuProgram } from '../../renderers/gpu/shader/GpuProgram';
 import { UniformGroup } from '../../renderers/shared/shader/UniformGroup';
 import { Texture } from '../../renderers/shared/texture/Texture';
-import { Filter } from '../Filter';
+import { Filter } from '../shared/Filter';
 import blendTemplateFrag from './blend-template.frag';
 import blendTemplateVert from './blend-template.vert';
 import blendTemplate from './blend-template.wgsl';

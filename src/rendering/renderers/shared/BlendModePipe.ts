@@ -20,7 +20,7 @@ import { SaturationBlend } from '../../filters/blend-modes/SaturationBlend';
 import { SoftLightBlend } from '../../filters/blend-modes/SoftLightBlend';
 import { SubtractBlend } from '../../filters/blend-modes/SubtractBlend';
 import { VividLightBlend } from '../../filters/blend-modes/VividLightBlend';
-import { FilterEffect } from '../../filters/FilterEffect';
+import { FilterEffect } from '../../filters/shared/FilterEffect';
 
 import type { BlendModeFilter } from '../../filters/blend-modes/BlendModeFilter';
 import type { FilterInstruction } from '../../filters/shared/FilterSystem';

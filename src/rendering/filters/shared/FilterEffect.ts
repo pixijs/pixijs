@@ -1,4 +1,4 @@
-import type { Effect } from '../scene/Effect';
+import type { Effect } from '../../scene/Effect';
 import type { Filter } from './Filter';
 
 export class FilterEffect implements Effect

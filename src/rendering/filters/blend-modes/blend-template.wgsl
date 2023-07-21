@@ -20,7 +20,7 @@ struct BlendUniforms {
 @group(0) @binding(0) var<uniform> globalUniforms : GlobalUniforms;
 
 @group(1) @binding(0) var<uniform> gfu: GlobalFilterUniforms;
-@group(1) @binding(1) var myTexture: texture_2d<f32>;
+@group(1) @binding(1) var uSampler: texture_2d<f32>;
 @group(1) @binding(2) var mySampler : sampler;
 @group(1) @binding(3) var backTexture: texture_2d<f32>;
 
@@ -76,7 +76,7 @@ fn mainFragment(
 
 
    var back =  textureSample(backTexture, mySampler, backgroundUv);
-   var front = textureSample(myTexture, mySampler, uv);
+   var front = textureSample(uSampler, mySampler, uv);
    
    var out = vec4<f32>(0.0,0.0,0.0,0.0);
 

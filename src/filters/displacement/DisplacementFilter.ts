@@ -1,16 +1,16 @@
-import { Matrix } from '../../../maths/Matrix';
-import { Point } from '../../../maths/Point';
-import { GlProgram } from '../../renderers/gl/shader/GlProgram';
-import { GpuProgram } from '../../renderers/gpu/shader/GpuProgram';
-import { UniformGroup } from '../../renderers/shared/shader/UniformGroup';
-import { Filter } from '../Filter';
+import { Matrix } from '../../maths/Matrix';
+import { Point } from '../../maths/Point';
+import { Filter } from '../../rendering/filters/shared/Filter';
+import { GlProgram } from '../../rendering/renderers/gl/shader/GlProgram';
+import { GpuProgram } from '../../rendering/renderers/gpu/shader/GpuProgram';
+import { UniformGroup } from '../../rendering/renderers/shared/shader/UniformGroup';
 import fragment from './displacement.frag';
 import vertex from './displacement.vert';
 import source from './displacement.wgsl';
 
-import type { Texture } from '../../renderers/shared/texture/Texture';
-import type { Sprite } from '../../sprite/shared/Sprite';
-import type { FilterSystem } from '../shared/FilterSystem';
+import type { FilterSystem } from '../../rendering/filters/shared/FilterSystem';
+import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
+import type { Sprite } from '../../rendering/sprite/shared/Sprite';
 
 export interface DisplacementFilterOptions
 {

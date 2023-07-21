@@ -7,7 +7,7 @@ out vec4 fragColor;
 
 uniform float uBlend;
 
-uniform sampler2D myTexture;
+uniform sampler2D uSampler;
 uniform sampler2D backTexture;
 
 {FUNCTIONS}
@@ -15,7 +15,7 @@ uniform sampler2D backTexture;
 void main()
 { 
     vec4 back = texture(backTexture, backgroundUv);
-    vec4 front = texture(myTexture, vTextureCoord);
+    vec4 front = texture(uSampler, vTextureCoord);
 
     {MAIN}
 }

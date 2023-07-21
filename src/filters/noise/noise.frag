@@ -6,7 +6,7 @@ out vec4 fragColor;
 
 uniform float uNoise;
 uniform float uSeed;
-uniform sampler2D myTexture;
+uniform sampler2D uSampler;
 
 float rand(vec2 co)
 {
@@ -15,7 +15,7 @@ float rand(vec2 co)
 
 void main()
 {
-    vec4 color = texture(myTexture, vTextureCoord);
+    vec4 color = texture(uSampler, vTextureCoord);
     float randomValue = rand(gl_FragCoord.xy * 0.2);
     float diff = (randomValue - 0.5) *  0.5;
 

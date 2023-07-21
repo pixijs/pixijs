@@ -1,8 +1,8 @@
-import { getFilterEffect, returnFilterEffect } from '../../filters/FilterEffect';
+import { getFilterEffect, returnFilterEffect } from '../../filters/shared/FilterEffect';
 import { MaskEffectManager } from '../../mask/shared/MaskEffectManager';
 
-import type { Filter } from '../../filters/Filter';
-import type { FilterEffect } from '../../filters/FilterEffect';
+import type { Filter } from '../../filters/shared/Filter';
+import type { FilterEffect } from '../../filters/shared/FilterEffect';
 import type { Container } from '../Container';
 import type { Effect } from '../Effect';
 

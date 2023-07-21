@@ -21,8 +21,8 @@ import type { System } from '../../renderers/shared/system/System';
 import type { Renderer } from '../../renderers/types';
 import type { Container } from '../../scene/Container';
 import type { Sprite } from '../../sprite/shared/Sprite';
-import type { Filter } from '../Filter';
-import type { FilterEffect } from '../FilterEffect';
+import type { Filter } from './Filter';
+import type { FilterEffect } from './FilterEffect';
 
 type FilterAction = 'pushFilter' | 'popFilter';
 
