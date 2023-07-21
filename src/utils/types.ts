@@ -2,3 +2,7 @@
 export type ArrayFixed<T, L extends number> = [ T, ...Array<T> ] & { length: L };
 
 export type Dict<T> = {[key: string]: T};
+
+export type Writeable<T extends { [x: string]: any }, K extends string> = {
+    [P in K]: T[P];
+};

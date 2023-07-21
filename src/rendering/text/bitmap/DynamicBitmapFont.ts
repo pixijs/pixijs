@@ -1,7 +1,7 @@
-import EventEmitter from 'eventemitter3';
 import { Rectangle } from '../../../maths/shapes/Rectangle';
 import { convertColorToNumber } from '../../../utils/color/convertColorToNumber';
 import { hex2rgb } from '../../../utils/color/hex';
+import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
 import { CanvasPool } from '../../renderers/shared/texture/CanvasPool';
 import { ALPHA_MODES } from '../../renderers/shared/texture/const';
 import { ImageSource } from '../../renderers/shared/texture/sources/ImageSource';
@@ -9,97 +9,48 @@ import { Texture } from '../../renderers/shared/texture/Texture';
 import { CanvasTextMetrics } from '../canvas/CanvasTextMetrics';
 import { fontStringFromTextStyle } from '../canvas/utils/fontStringFromTextStyle';
 import { getCanvasFillStyle } from '../canvas/utils/getCanvasFillStyle';
-import { TextStyle } from '../TextStyle';
+import { AbstractBitmapFont } from './AbstractBitmapFont';
 import { resolveCharacters } from './utils/resolveCharacters';
 
 import type { ICanvasRenderingContext2D } from '../../../settings/adapter/ICanvasRenderingContext2D';
+import type { Writeable } from '../../../utils/types';
 import type { CanvasAndContext } from '../../renderers/shared/texture/CanvasPool';
-import type { FontMetrics } from '../canvas/CanvasTextMetrics';
-import type { CharData } from './BitmapFont';
+import type { TextStyle } from '../TextStyle';
 
 export interface DynamicBitmapFontOptions
 {
     style: TextStyle
     overrideFill?: boolean
+    skipKerning?: boolean
+    resolution?: number
+    padding?: number
 }
 
-export interface IBitmapFont
+type WriteableDynamicBitmapFont = Writeable<DynamicBitmapFont, keyof DynamicBitmapFont>;
+
+export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
 {
-    baseRenderedFontSize: number
-    baseMeasurementFontSize: number
-    pages: {texture: Texture}[]
-    chars: Record<string, CharData>
-
-    lineHeight: number
-    baseLineOffset: number
-    fontName: string
-    fontMetrics: FontMetrics
-
-    distanceField: {
-        fieldType: string
-        distanceRange: number
-    }
-
-    destroy(): void
-}
-
-export class DynamicBitmapFont extends EventEmitter<{
-    destroy: DynamicBitmapFont
-}> implements IBitmapFont
-{
-    baseRenderedFontSize = 100;
-    baseMeasurementFontSize = 100;
-    padding = 4;
-
-    baseLineOffset = 0;
-
-    pages: {canvasAndContext?: CanvasAndContext, texture: Texture}[] = [];
-    chars: Record<string, CharData> = {};
-    lineHeight = 0;
-
-    measureCache: Record<string, number> = {};
-
-    currentChars: string[] = [];
-
-    dynamic = true;
-
-    currentX = 0;
-    currentY = 0;
-    currentPageIndex = -1;
-    style: TextStyle;
-    fontMetrics: FontMetrics;
-    sdf: boolean;
-    fontName: string;
-
     // this is a resolution modifier for the font size..
     // texture resolution will also be used to scale texture according to its font size also
-    resolution = 1;
+    public resolution = 1;
+    public override readonly pages: {canvasAndContext?: CanvasAndContext, texture: Texture}[] = [];
 
-    distanceField = {
-        fieldType: 'none',
-        distanceRange: 0
-    };
+    private _padding = 4;
+    private _measureCache: Record<string, number> = {};
+    private _currentChars: string[] = [];
+    private _currentX = 0;
+    private _currentY = 0;
+    private _currentPageIndex = -1;
+    private _style: TextStyle;
+
+    private _skipKerning = false;
 
     constructor(options: DynamicBitmapFontOptions)
     {
         super();
 
-        this.pages = [];
-
         const dynamicOptions = options;
-
-        this.dynamic = true;
-
-        let style;
-
-        if (dynamicOptions.style instanceof TextStyle)
-        {
-            style = dynamicOptions.style.clone();
-        }
-        else
-        {
-            style = new TextStyle(dynamicOptions.style);
-        }
+        const style = dynamicOptions.style.clone();
 
         style.fontSize = this.baseMeasurementFontSize;
 
@@ -112,46 +63,50 @@ export class DynamicBitmapFont extends EventEmitter<{
             style._fill.fill = null;
         }
 
-        this.style = style;
+        this._style = style;
+        this._skipKerning = dynamicOptions.skipKerning ?? false;
+        this.resolution = dynamicOptions.resolution ?? 1;
+        this._padding = dynamicOptions.padding ?? 4;
 
         const font = fontStringFromTextStyle(style);
+        const writable = this as WriteableDynamicBitmapFont;
 
-        this.fontMetrics = CanvasTextMetrics.measureFont(font);
-        this.lineHeight = style.lineHeight || this.fontMetrics.fontSize || style.fontSize;
+        writable.fontMetrics = CanvasTextMetrics.measureFont(font);
+        writable.lineHeight = style.lineHeight || this.fontMetrics.fontSize || style.fontSize;
     }
 
-    ensureCharacters(chars: string): void
+    public ensureCharacters(chars: string): void
     {
         const charList = resolveCharacters(chars)
-            .filter((char) => !this.currentChars.includes(char))
+            .filter((char) => !this._currentChars.includes(char))
             .filter((char, index, self) => self.indexOf(char) === index);
         // filter returns..
 
         if (!charList.length) return;
 
-        this.currentChars = [...this.currentChars, ...charList];
+        this._currentChars = [...this._currentChars, ...charList];
 
         let pageData;
 
-        if (this.currentPageIndex === -1)
+        if (this._currentPageIndex === -1)
         {
-            pageData = this.nextPage();
+            pageData = this._nextPage();
         }
         else
         {
-            pageData = this.pages[this.currentPageIndex];
+            pageData = this.pages[this._currentPageIndex];
         }
 
         let { canvas, context } = pageData.canvasAndContext;
         let textureSource = pageData.texture.source;
 
-        const style = this.style;
+        const style = this._style;
 
-        let currentX = this.currentX;
-        let currentY = this.currentY;
+        let currentX = this._currentX;
+        let currentY = this._currentY;
 
         const fontScale = this.baseRenderedFontSize / this.baseMeasurementFontSize;
-        const padding = this.padding * fontScale;
+        const padding = this._padding * fontScale;
 
         const widthScale = style.fontStyle === 'italic' ? 2 : 1;
         let maxCharHeight = 0;
@@ -189,7 +144,7 @@ export class DynamicBitmapFont extends EventEmitter<{
                 {
                     textureSource.update();
 
-                    const pageData = this.nextPage();
+                    const pageData = this._nextPage();
 
                     canvas = pageData.canvasAndContext.canvas;
                     context = pageData.canvasAndContext.context;
@@ -206,15 +161,15 @@ export class DynamicBitmapFont extends EventEmitter<{
             // This is in coord space of the measurements.. not the texture
             this.chars[char] = {
                 id: char.codePointAt(0),
-                xOffset: -this.padding,
-                yOffset: -this.padding,
+                xOffset: -this._padding,
+                yOffset: -this._padding,
                 xAdvance,
                 kerning: {},
             };
 
             if (skipTexture)
             {
-                this.drawGlyph(
+                this._drawGlyph(
                     context,
                     metrics,
                     currentX + padding,
@@ -248,25 +203,33 @@ export class DynamicBitmapFont extends EventEmitter<{
 
         textureSource.update();
 
-        this.currentX = currentX;
-        this.currentY = currentY;
+        this._currentX = currentX;
+        this._currentY = currentY;
 
         // now apply kerning..
-        this.applyKerning(charList, context);
+        this._skipKerning && this._applyKerning(charList, context);
     }
 
-    applyKerning(newChars: string[], context: ICanvasRenderingContext2D): void
+    /** The map of base page textures (i.e., sheets of glyphs). */
+    public override get pageTextures(): DynamicBitmapFont['pages']
     {
-        const measureCache = this.measureCache;
+        deprecation(v8_0_0, 'BitmapFont.pageTextures is deprecated, please use BitmapFont.pages instead.');
+
+        return this.pages;
+    }
+
+    private _applyKerning(newChars: string[], context: ICanvasRenderingContext2D): void
+    {
+        const measureCache = this._measureCache;
 
         for (let i = 0; i < newChars.length; i++)
         {
             const first = newChars[i];
 
-            for (let j = 0; j < this.currentChars.length; j++)
+            for (let j = 0; j < this._currentChars.length; j++)
             {
                 // first go through new char being first
-                const second = this.currentChars[j];
+                const second = this._currentChars[j];
 
                 let c1 = measureCache[first];
 
@@ -296,21 +259,16 @@ export class DynamicBitmapFont extends EventEmitter<{
         }
     }
 
-    nextPage(): {canvasAndContext: CanvasAndContext, texture: Texture}
+    private _nextPage(): {canvasAndContext: CanvasAndContext, texture: Texture}
     {
-        this.currentPageIndex++;
+        this._currentPageIndex++;
 
         const textureResolution = this.resolution;
-
         const canvasAndContext = CanvasPool.getOptimalCanvasAndContext(512, 512, textureResolution);
 
-        this.setupContext(canvasAndContext.context, this.style, textureResolution);
-
-        //  canvasAndContext.context.fillStyle = this.currentPageIndex ? 'blue' : 'green';
-        // canvasAndContext.context.fillRect(0, 0, 512, 512);
+        this._setupContext(canvasAndContext.context, this._style, textureResolution);
 
         const resolution = textureResolution * (this.baseRenderedFontSize / this.baseMeasurementFontSize);
-
         const texture = new Texture({
             source: new ImageSource({
                 resource: canvasAndContext.canvas,
@@ -325,31 +283,21 @@ export class DynamicBitmapFont extends EventEmitter<{
             texture,
         };
 
-        this.pages[this.currentPageIndex] = pageData;
-
-        // document.body.appendChild(canvasAndContext.canvas);
-        // canvasAndContext.canvas.style.position = 'absolute';
-        // canvasAndContext.canvas.style.top = '400px';
-        // canvasAndContext.canvas.style.left = `${this.currentPageIndex * 512}px`;
+        this.pages[this._currentPageIndex] = pageData;
 
         return pageData;
     }
 
     // canvas style!
-    setupContext(context: ICanvasRenderingContext2D, style: TextStyle, resolution: number): void
+    private _setupContext(context: ICanvasRenderingContext2D, style: TextStyle, resolution: number): void
     {
         style.fontSize = this.baseRenderedFontSize;
-
         context.scale(resolution, resolution);
-
         context.font = fontStringFromTextStyle(style);
-
         style.fontSize = this.baseMeasurementFontSize;
-
         context.textBaseline = style.textBaseline;
 
         const stroke = style._stroke;
-
         const strokeThickness = stroke?.width ?? 0;
 
         if (stroke)
@@ -371,9 +319,7 @@ export class DynamicBitmapFont extends EventEmitter<{
         if (style.dropShadow)
         {
             const shadowOptions = style.dropShadow;
-
             const dropShadowColor = convertColorToNumber(shadowOptions.color);
-
             const rgb = hex2rgb(dropShadowColor);
 
             const dropShadowBlur = shadowOptions.blur * resolution;
@@ -393,7 +339,7 @@ export class DynamicBitmapFont extends EventEmitter<{
         }
     }
 
-    drawGlyph(
+    private _drawGlyph(
         context: ICanvasRenderingContext2D,
         metrics: CanvasTextMetrics,
         x: number,
@@ -425,18 +371,9 @@ export class DynamicBitmapFont extends EventEmitter<{
         }
     }
 
-    destroy(): void
+    public override destroy(): void
     {
-        this.emit('destroy', this);
-
-        this.removeAllListeners();
-
-        for (const i in this.chars)
-        {
-            this.chars[i].texture.destroy();
-        }
-
-        this.chars = null;
+        super.destroy();
 
         for (let i = 0; i < this.pages.length; i++)
         {
@@ -446,6 +383,6 @@ export class DynamicBitmapFont extends EventEmitter<{
             texture.destroy(true);
         }
 
-        this.pages = null;
+        (this as WriteableDynamicBitmapFont).pages = null;
     }
 }

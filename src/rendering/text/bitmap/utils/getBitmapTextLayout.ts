@@ -1,5 +1,5 @@
 import type { TextStyle } from '../../TextStyle';
-import type { IBitmapFont } from '../DynamicBitmapFont';
+import type { AbstractBitmapFont } from '../AbstractBitmapFont';
 
 export interface BitmapTextLayoutData
 {
@@ -17,7 +17,7 @@ export interface BitmapTextLayoutData
     }[];
 }
 
-export function getBitmapTextLayout(chars: string[], style: TextStyle, font: IBitmapFont): BitmapTextLayoutData
+export function getBitmapTextLayout(chars: string[], style: TextStyle, font: AbstractBitmapFont<any>): BitmapTextLayoutData
 {
     const layoutData: BitmapTextLayoutData = {
         width: 0,

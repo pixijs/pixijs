@@ -105,7 +105,7 @@ export class BitmapTextPipe implements RenderPipe<TextView>
 
         context.clear();
 
-        if (bitmapFont.distanceField.fieldType !== 'none')
+        if (bitmapFont.distanceField.type !== 'none')
         {
             if (!context.customShader)
             {

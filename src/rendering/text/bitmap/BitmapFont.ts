@@ -1,50 +1,9 @@
-import EventEmitter from 'eventemitter3';
 import { Rectangle } from '../../../maths/shapes/Rectangle';
 import { Texture } from '../../renderers/shared/texture/Texture';
+import { AbstractBitmapFont } from './AbstractBitmapFont';
 
-import type { FontMetrics } from '../canvas/CanvasTextMetrics';
-import type { TextStyle } from '../TextStyle';
-import type { IBitmapFont } from './DynamicBitmapFont';
-
-export interface CharData
-{
-    id: number
-    xOffset: number
-    yOffset: number
-    xAdvance: number,
-    kerning: Record<string, number>,
-    texture?: Texture
-}
-
-export interface RawCharData
-{
-    id: number
-    page: number
-    xOffset: number
-    yOffset: number
-    xAdvance: number,
-    x: number
-    y: number
-    width: number
-    height: number
-    letter: string
-    kerning: Record<string, number>,
-}
-
-export interface BitmapFontData
-{
-    baseLineOffset: number;
-    chars: Record<string, RawCharData>
-    pages: {id: number, file: string}[]
-    lineHeight: number
-    fontSize: number
-    fontName: string
-
-    distanceField?: {
-        fieldType: 'sdf' | 'msdf' | 'none'
-        distanceRange: number
-    }
-}
+import type { Writeable } from '../../../utils/types';
+import type { BitmapFontData } from './AbstractBitmapFont';
 
 export interface BitmapFontOptions
 {
@@ -52,39 +11,13 @@ export interface BitmapFontOptions
     textures: Texture[]
 }
 
-export interface DynamicBitmapFontData
+type WriteableBitmapFont = Writeable<BitmapFont, keyof BitmapFont>;
+
+export class BitmapFont extends AbstractBitmapFont<BitmapFont>
 {
-    style: TextStyle
-}
-
-export class BitmapFont extends EventEmitter<{
-    destroy: BitmapFont
-}> implements IBitmapFont
-{
-    baseRenderedFontSize = 100;
-    baseMeasurementFontSize = 100;
-
-    pages: {texture: Texture}[] = [];
-
-    chars: Record<string, CharData> = {};
-
-    lineHeight = 0;
-
-    fontMetrics: FontMetrics;
-    fontName: string;
-
-    baseLineOffset = 0;
-
-    distanceField: {
-        fieldType: string;
-        distanceRange: number;
-    };
-
     constructor(options: BitmapFontOptions)
     {
         super();
-
-        this.pages = [];
 
         const { textures, data } = options;
 
@@ -119,44 +52,35 @@ export class BitmapFont extends EventEmitter<{
             this.chars[key] = {
                 id: key.codePointAt(0),
                 xOffset: charData.xOffset,
-                yOffset: charData.yOffset, // - 31, // + 61 - 87,
+                yOffset: charData.yOffset,
                 xAdvance: charData.xAdvance,
                 kerning: charData.kerning ?? {},
                 texture,
             };
         });
 
-        this.fontMetrics = {
+        this.baseRenderedFontSize = data.fontSize;
+
+        const writable = this as WriteableBitmapFont;
+
+        writable.baseMeasurementFontSize = data.fontSize;
+        writable.fontMetrics = {
             ascent: 0,
             descent: 0,
             fontSize: data.fontSize,
         };
-
-        this.baseLineOffset = data.baseLineOffset;
-        this.lineHeight = data.lineHeight; //* (100 / 35);// 1.3);
-        this.fontName = data.fontName;
-
-        this.baseMeasurementFontSize = data.fontSize;
-        this.baseRenderedFontSize = data.fontSize;
-
-        this.distanceField = data.distanceField ?? {
-            fieldType: 'none',
-            distanceRange: 0,
+        writable.baseLineOffset = data.baseLineOffset;
+        writable.lineHeight = data.lineHeight;
+        writable.fontName = data.fontName;
+        writable.distanceField = data.distanceField ?? {
+            type: 'none',
+            range: 0,
         };
     }
 
-    destroy(): void
+    public override destroy(): void
     {
-        this.emit('destroy', this);
-
-        this.removeAllListeners();
-
-        for (const i in this.chars)
-        {
-            this.chars[i].texture.destroy();
-        }
-
-        this.chars = null;
+        super.destroy();
 
         for (let i = 0; i < this.pages.length; i++)
         {
@@ -165,6 +89,6 @@ export class BitmapFont extends EventEmitter<{
             texture.destroy(true);
         }
 
-        this.pages = null;
+        (this as WriteableBitmapFont).pages = null;
     }
 }
