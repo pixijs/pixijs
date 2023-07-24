@@ -13,7 +13,7 @@ interface MaskConversionTest
 export class MaskEffectManagerClass
 {
     _effectClasses: EffectConstructor[] = [];
-    private tests: MaskConversionTest[] = [];
+    private readonly tests: MaskConversionTest[] = [];
     private _initialized = false;
 
     init()

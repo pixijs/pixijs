@@ -15,7 +15,7 @@ export class GpuStencilSystem implements System
         name: 'stencil',
     } as const;
 
-    private renderer: WebGPURenderer;
+    private readonly renderer: WebGPURenderer;
 
     private renderTargetStencilState: Record<number, {
         stencilMode: STENCIL_MODES;

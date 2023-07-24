@@ -18,7 +18,7 @@ export class GlStencilSystem implements System
 
     private gl: WebGLRenderingContext;
 
-    private stencilCache = {
+    private readonly stencilCache = {
         enabled: false,
         stencilReference: 0,
     };

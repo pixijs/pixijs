@@ -13,7 +13,7 @@ export class GlColorMaskSystem implements System
         name: 'colorMask',
     } as const;
 
-    private renderer: WebGLRenderer;
+    private readonly renderer: WebGLRenderer;
     private colorMaskCache = 0b1111;
 
     constructor(renderer: WebGLRenderer)

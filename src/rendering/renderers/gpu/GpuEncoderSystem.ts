@@ -38,7 +38,7 @@ export class GpuEncoderSystem implements System
     private boundIndexBuffer: Buffer;
     private boundPipeline: GPURenderPipeline;
 
-    private renderer: WebGPURenderer;
+    private readonly renderer: WebGPURenderer;
 
     constructor(renderer: WebGPURenderer)
     {

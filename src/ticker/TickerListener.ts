@@ -20,7 +20,7 @@ export class TickerListener<T = any>
     /** The calling to execute. */
     private context: T;
     /** If this should only execute once. */
-    private once: boolean;
+    private readonly once: boolean;
     /** `true` if this listener has been destroyed already. */
     private _destroyed = false;
 

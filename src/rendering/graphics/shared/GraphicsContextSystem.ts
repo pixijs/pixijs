@@ -51,7 +51,7 @@ export class GraphicsContextSystem implements System
     // used for non-batchable graphics
     graphicsDataContextHash: Record<number, GraphicsContextRenderData> = {};
 
-    private _needsContextNeedsRebuild: GraphicsContext[] = [];
+    private readonly _needsContextNeedsRebuild: GraphicsContext[] = [];
 
     prerender()
     {

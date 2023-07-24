@@ -43,7 +43,7 @@ export class GpuUniformBufferPipe
 
     private activeBindGroups: BindGroup[] = [];
     private activeBindGroupIndex = 0;
-    private renderer: WebGPURenderer;
+    private readonly renderer: WebGPURenderer;
 
     constructor(renderer: WebGPURenderer)
     {

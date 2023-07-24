@@ -19,7 +19,7 @@ import type { CacheParser } from './CacheParser';
  */
 class CacheClass
 {
-    private _parsers: CacheParser[] = [];
+    private readonly _parsers: CacheParser[] = [];
 
     private readonly _cache: Map<string, any> = new Map();
     private readonly _cacheMap: Map<string, {

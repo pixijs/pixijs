@@ -13,7 +13,7 @@ export class GpuColorMaskSystem implements System
         name: 'colorMask',
     } as const;
 
-    private renderer: WebGPURenderer;
+    private readonly renderer: WebGPURenderer;
 
     private colorMaskCache = 0b1111;
 

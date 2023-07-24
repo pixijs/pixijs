@@ -25,7 +25,7 @@ export class GpuUniformBatchPipe
     private renderer: WebGPURenderer;
 
     private bindGroupHash: Record<number, BindGroup> = {};
-    private batchBuffer: UniformBufferBatch;
+    private readonly batchBuffer: UniformBufferBatch;
 
     // number of buffers..
     private buffers: Buffer[] = [];

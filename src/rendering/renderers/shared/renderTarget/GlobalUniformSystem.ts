@@ -54,16 +54,16 @@ export class GlobalUniformSystem implements System
         name: 'globalUniforms',
     } as const;
 
-    private renderer: GlobalUniformRenderer;
+    private readonly renderer: GlobalUniformRenderer;
 
     private stackIndex = 0;
     private globalUniformDataStack: GlobalUniformData[] = [];
 
-    private uniformsPool: GlobalUniformGroup[] = [];
-    private activeUniforms: GlobalUniformGroup[] = [];
+    private readonly uniformsPool: GlobalUniformGroup[] = [];
+    private readonly activeUniforms: GlobalUniformGroup[] = [];
 
-    private bindGroupPool: BindGroup[] = [];
-    private activeBindGroups: BindGroup[] = [];
+    private readonly bindGroupPool: BindGroup[] = [];
+    private readonly activeBindGroups: BindGroup[] = [];
 
     private currentGlobalUniformData: GlobalUniformData;
 

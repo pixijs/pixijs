@@ -25,7 +25,7 @@ export class ColorMaskPipe implements InstructionPipe<ColorMaskInstruction>
         name: 'colorMask',
     } as const;
 
-    private renderer: Renderer;
+    private readonly renderer: Renderer;
     private colorStack: number[] = [];
     private colorStackIndex = 0;
     private currentColor = 0;

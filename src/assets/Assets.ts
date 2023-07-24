@@ -234,7 +234,7 @@ export class AssetsClass
     /** takes care of loading assets in the background */
     private readonly _backgroundLoader: BackgroundLoader;
 
-    private _detections: FormatDetectionParser[] = [];
+    private readonly _detections: FormatDetectionParser[] = [];
 
     private _initialized = false;
 

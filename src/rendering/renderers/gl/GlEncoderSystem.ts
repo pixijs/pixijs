@@ -23,7 +23,7 @@ export class GlEncoderSystem implements System
     } as const;
 
     readonly commandFinished = Promise.resolve();
-    private renderer: WebGLRenderer;
+    private readonly renderer: WebGLRenderer;
     // private gl: WebGL2RenderingContext;
 
     constructor(renderer: WebGLRenderer)

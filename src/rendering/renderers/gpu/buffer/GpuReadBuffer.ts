@@ -28,7 +28,7 @@ export function GpuReadBuffer(buffer: Buffer, renderer: WebGPURenderer)
 
     device.queue.submit([commandEncoder.finish()]);
 
-    stagingGPUBuffer.mapAsync(
+    void stagingGPUBuffer.mapAsync(
         GPUMapMode.READ,
         0, // Offset
         bufferSize, // Length
