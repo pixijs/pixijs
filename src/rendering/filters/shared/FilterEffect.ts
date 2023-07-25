@@ -3,16 +3,16 @@ import type { Filter } from './Filter';
 
 export class FilterEffect implements Effect
 {
-    filters: Filter[];
-    pipe = 'filter';
-    priority = 1;
+    public filters: Filter[];
+    public pipe = 'filter';
+    public priority = 1;
 
     constructor(options?: {filters: Filter[]})
     {
         this.filters = options?.filters;
     }
 
-    destroy(): void
+    public destroy(): void
     {
         for (let i = 0; i < this.filters.length; i++)
         {
@@ -21,17 +21,6 @@ export class FilterEffect implements Effect
 
         this.filters = null;
     }
-
-    // addBounds(_bounds: Bounds): void
-    // {
-    //     // TODO do we take into account padding?
-    // }
-
-    // addLocalBounds(_bounds: Bounds, _localRoot: Container<any>): void
-    // {
-    //     // nothing?? :D
-    //     // lets see if this need to exist in time!
-    // }
 }
 
 const filterEffectsPool: FilterEffect[] = [];

@@ -3,8 +3,8 @@
  */
 export class IGLUniformData
 {
-    location: WebGLUniformLocation;
-    value: number | boolean | Float32Array | Int32Array | Uint32Array | boolean[];
+    public location: WebGLUniformLocation;
+    public value: number | boolean | Float32Array | Int32Array | Uint32Array | boolean[];
 }
 
 /**
@@ -56,7 +56,7 @@ export class GlProgramData
     }
 
     /** Destroys this program. */
-    destroy(): void
+    public destroy(): void
     {
         this.uniformData = null;
         this.uniformGroups = null;

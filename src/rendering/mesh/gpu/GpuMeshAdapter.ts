@@ -9,14 +9,14 @@ import type { MeshView } from '../shared/MeshView';
 export class GpuMeshAdapter implements MeshAdaptor
 {
     /** @ignore */
-    static extension = {
+    public static extension = {
         type: [
             ExtensionType.WebGPUPipesAdaptor,
         ],
         name: 'mesh',
     } as const;
 
-    execute(meshPipe: MeshPipe, renderable: Renderable<MeshView>)
+    public execute(meshPipe: MeshPipe, renderable: Renderable<MeshView>)
     {
         const renderer = meshPipe.renderer;
         const view = renderable.view;

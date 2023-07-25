@@ -15,29 +15,29 @@ const minUniformOffsetAlignment = 128;// 256 / 2;
 export class GpuUniformBatchPipe
 {
     /** @ignore */
-    static extension = {
+    public static extension = {
         type: [
             ExtensionType.WebGPUPipes,
         ],
         name: 'uniformBatch',
     } as const;
 
-    private renderer: WebGPURenderer;
+    private _renderer: WebGPURenderer;
 
-    private bindGroupHash: Record<number, BindGroup> = {};
-    private readonly batchBuffer: UniformBufferBatch;
+    private _bindGroupHash: Record<number, BindGroup> = {};
+    private readonly _batchBuffer: UniformBufferBatch;
 
     // number of buffers..
-    private buffers: Buffer[] = [];
+    private _buffers: Buffer[] = [];
 
-    private bindGroups: BindGroup[] = [];
-    private bufferResources: BufferResource[] = [];
+    private _bindGroups: BindGroup[] = [];
+    private _bufferResources: BufferResource[] = [];
 
     constructor(renderer: WebGPURenderer)
     {
-        this.renderer = renderer;
+        this._renderer = renderer;
 
-        this.batchBuffer = new UniformBufferBatch({ minUniformOffsetAlignment });
+        this._batchBuffer = new UniformBufferBatch({ minUniformOffsetAlignment });
 
         const totalBuffers = (256 / minUniformOffsetAlignment);
 
@@ -47,176 +47,163 @@ export class GpuUniformBatchPipe
 
             if (i === 0) usage |= BufferUsage.COPY_SRC;
 
-            this.buffers.push(new Buffer({
-                data: this.batchBuffer.data,
+            this._buffers.push(new Buffer({
+                data: this._batchBuffer.data,
                 usage
             }));
         }
     }
 
-    renderEnd()
+    public renderEnd()
     {
-        this.uploadBindGroups();
-        this.resetBindGroups();
+        this._uploadBindGroups();
+        this._resetBindGroups();
     }
 
-    private resetBindGroups()
+    private _resetBindGroups()
     {
-        for (const i in this.bindGroupHash)
+        for (const i in this._bindGroupHash)
         {
-            this.bindGroupHash[i] = null;
+            this._bindGroupHash[i] = null;
         }
 
-        this.batchBuffer.clear();
+        this._batchBuffer.clear();
     }
 
     // just works for single bind groups for now
-    getUniformBindGroup(group: UniformGroup<any>, duplicate: boolean): BindGroup
+    public getUniformBindGroup(group: UniformGroup<any>, duplicate: boolean): BindGroup
     {
-        if (!duplicate && this.bindGroupHash[group.uid])
+        if (!duplicate && this._bindGroupHash[group.uid])
         {
-            return this.bindGroupHash[group.uid];
+            return this._bindGroupHash[group.uid];
         }
 
-        this.renderer.uniformBuffer.ensureUniformGroup(group);
+        this._renderer.uniformBuffer.ensureUniformGroup(group);
 
         const data = group.buffer.data as Float32Array;
 
-        const offset = this.batchBuffer.addEmptyGroup(data.length);
+        const offset = this._batchBuffer.addEmptyGroup(data.length);
 
-        this.renderer.uniformBuffer.syncUniformGroup(group, this.batchBuffer.data, offset / 4);
+        this._renderer.uniformBuffer.syncUniformGroup(group, this._batchBuffer.data, offset / 4);
 
-        this.bindGroupHash[group.uid] = this.getBindGroup(offset / minUniformOffsetAlignment);
+        this._bindGroupHash[group.uid] = this._getBindGroup(offset / minUniformOffsetAlignment);
 
-        return this.bindGroupHash[group.uid];
+        return this._bindGroupHash[group.uid];
     }
 
-    getUniformBufferResource(group: UniformGroup<any>): BufferResource
+    public getUniformBufferResource(group: UniformGroup<any>): BufferResource
     {
-        this.renderer.uniformBuffer.updateUniformGroup(group);
+        this._renderer.uniformBuffer.updateUniformGroup(group);
 
         const data = group.buffer.data as Float32Array;
 
-        const offset = this.batchBuffer.addGroup(data);
+        const offset = this._batchBuffer.addGroup(data);
 
-        return this.getBufferResource(offset / minUniformOffsetAlignment);
+        return this._getBufferResource(offset / minUniformOffsetAlignment);
     }
 
-    getArrayBindGroup(data: Float32Array): BindGroup
+    public getArrayBindGroup(data: Float32Array): BindGroup
     {
-        const offset = this.batchBuffer.addGroup(data);
+        const offset = this._batchBuffer.addGroup(data);
 
-        return this.getBindGroup(offset / minUniformOffsetAlignment);
+        return this._getBindGroup(offset / minUniformOffsetAlignment);
     }
 
-    getArrayBufferResource(data: Float32Array): BufferResource
+    public getArrayBufferResource(data: Float32Array): BufferResource
     {
-        const offset = this.batchBuffer.addGroup(data);
+        const offset = this._batchBuffer.addGroup(data);
 
         const index = offset / minUniformOffsetAlignment;
 
-        return this.getBufferResource(index);
+        return this._getBufferResource(index);
     }
 
-    getBufferResource(index: number): BufferResource
+    private _getBufferResource(index: number): BufferResource
     {
-        if (!this.bufferResources[index])
+        if (!this._bufferResources[index])
         {
-            const buffer = this.buffers[index % 2];
+            const buffer = this._buffers[index % 2];
 
-            this.bufferResources[index] = new BufferResource({
+            this._bufferResources[index] = new BufferResource({
                 buffer,
                 offset: ((index / 2) | 0) * 256,
                 size: minUniformOffsetAlignment
             });
         }
 
-        return this.bufferResources[index];
+        return this._bufferResources[index];
     }
 
-    getBindGroup(index: number): BindGroup
+    private _getBindGroup(index: number): BindGroup
     {
-        if (!this.bindGroups[index])
+        if (!this._bindGroups[index])
         {
             // even!
             const bindGroup = new BindGroup({
-                0: this.getBufferResource(index),
+                0: this._getBufferResource(index),
             });
 
-            this.bindGroups[index] = bindGroup;
+            this._bindGroups[index] = bindGroup;
         }
 
-        return this.bindGroups[index];
+        return this._bindGroups[index];
     }
 
-    uploadBindGroups()
+    private _uploadBindGroups()
     {
-        const bufferSystem = this.renderer.buffer;
+        const bufferSystem = this._renderer.buffer;
 
-        const firstBuffer = this.buffers[0];
+        const firstBuffer = this._buffers[0];
 
-        firstBuffer.update(this.batchBuffer.byteIndex);
+        firstBuffer.update(this._batchBuffer.byteIndex);
 
         bufferSystem.updateBuffer(firstBuffer);
 
-        const commandEncoder = this.renderer.gpu.device.createCommandEncoder();
+        const commandEncoder = this._renderer.gpu.device.createCommandEncoder();
 
-        for (let i = 1; i < this.buffers.length; i++)
+        for (let i = 1; i < this._buffers.length; i++)
         {
-            const buffer = this.buffers[i];
+            const buffer = this._buffers[i];
 
             commandEncoder.copyBufferToBuffer(
                 bufferSystem.getGPUBuffer(firstBuffer),
                 minUniformOffsetAlignment,
                 bufferSystem.getGPUBuffer(buffer),
                 0,
-                this.batchBuffer.byteIndex
+                this._batchBuffer.byteIndex
             );
         }
 
         // TODO make a system that will que up all commands in to one array?
-        this.renderer.gpu.device.queue.submit([commandEncoder.finish()]);
-
-        // WEbGL code for if we ever need it..
-        // const gl = this.renderer.gl as GlRenderingContext;
-
-        // const srcBuffer = bufferSystem.updateBuffer(this.uboEven);
-
-        // const dstBuffer = bufferSystem.updateBuffer(this.uboOdd);
-
-        // gl.bindBuffer(gl.COPY_READ_BUFFER, srcBuffer.buffer);
-        // gl.bindBuffer(gl.ARRAY_BUFFER, dstBuffer.buffer);
-
-        // // console.warn('No GPU device');
-        // gl.copyBufferSubData(gl.COPY_READ_BUFFER, gl.ARRAY_BUFFER, 0, 0, this.batchBuffer.byteIndex);
+        this._renderer.gpu.device.queue.submit([commandEncoder.finish()]);
     }
 
-    destroy()
+    public destroy()
     {
-        for (let i = 0; i < this.bindGroups.length; i++)
+        for (let i = 0; i < this._bindGroups.length; i++)
         {
-            this.bindGroups[i].destroy();
+            this._bindGroups[i].destroy();
         }
 
-        this.bindGroups = null;
-        this.bindGroupHash = null;
+        this._bindGroups = null;
+        this._bindGroupHash = null;
 
-        for (let i = 0; i < this.buffers.length; i++)
+        for (let i = 0; i < this._buffers.length; i++)
         {
-            this.buffers[i].destroy();
+            this._buffers[i].destroy();
         }
-        this.buffers = null;
+        this._buffers = null;
 
-        for (let i = 0; i < this.bufferResources.length; i++)
+        for (let i = 0; i < this._bufferResources.length; i++)
         {
-            this.bufferResources[i].destroy();
+            this._bufferResources[i].destroy();
         }
 
-        this.bufferResources = null;
+        this._bufferResources = null;
 
-        this.batchBuffer.destroy();
-        this.bindGroupHash = null;
+        this._batchBuffer.destroy();
+        this._bindGroupHash = null;
 
-        this.renderer = null;
+        this._renderer = null;
     }
 }

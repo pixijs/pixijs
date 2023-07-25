@@ -15,7 +15,6 @@ export interface GpuProgramOptions
 {
     fragment?: ProgramSource;
     vertex?: ProgramSource;
-    compute?: ProgramSource;
     layout?: ProgramLayout;
     gpuLayout?: ProgramPipelineLayoutDescription;
 }
@@ -29,27 +28,27 @@ export interface SimpleShaderOptions
 
 export class GpuProgram
 {
-    compute?: ProgramSource;
-    fragment?: ProgramSource;
-    vertex?: ProgramSource;
+    public fragment?: ProgramSource;
+    public vertex?: ProgramSource;
 
-    layout: ProgramLayout;
+    public layout: ProgramLayout;
 
-    gpuLayout: ProgramPipelineLayoutDescription;
+    public gpuLayout: ProgramPipelineLayoutDescription;
 
-    _layoutKey = 0;
-    _gpuLayout: {
+    /** @internal */
+    public _layoutKey = 0;
+    /** @internal */
+    public _gpuLayout: {
         bindGroups: GPUBindGroupLayout[];
         pipeline: GPUPipelineLayout | 'auto';
     };
 
-    structsAndGroups: StructsAndGroups;
+    public structsAndGroups: StructsAndGroups;
 
-    constructor({ fragment, vertex, compute, layout, gpuLayout }: GpuProgramOptions)
+    constructor({ fragment, vertex, layout, gpuLayout }: GpuProgramOptions)
     {
         this.fragment = fragment;
         this.vertex = vertex;
-        this.compute = compute;
 
         // TODO this should be cached - or dealt with at a system level.
         const structsAndGroups = extractStructAndGroups(this.fragment.source);
@@ -64,7 +63,7 @@ export class GpuProgram
         this.gpuLayout = gpuLayout ?? generateGpuLayoutGroups(structsAndGroups);
     }
 
-    destroy(): void
+    public destroy(): void
     {
         this._gpuLayout = null;
         this.gpuLayout = null;
@@ -72,11 +71,10 @@ export class GpuProgram
         this.structsAndGroups = null;
         this.fragment = null;
         this.vertex = null;
-        this.compute = null;
     }
 
-    static programCached: Record<string, GpuProgram> = {};
-    static from(options: GpuProgramOptions): GpuProgram
+    public static programCached: Record<string, GpuProgram> = {};
+    public static from(options: GpuProgramOptions): GpuProgram
     {
         // eslint-disable-next-line max-len
         const key = `${options.vertex.source}:${options.fragment.source}:${options.fragment.entryPoint}:${options.vertex.entryPoint}`;

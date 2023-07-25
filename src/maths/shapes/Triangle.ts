@@ -14,7 +14,7 @@ export class Triangle implements ShapePrimitive
      * The type of the object, mainly used to avoid `instanceof` checks
      * @default 'triangle'
      */
-    readonly type: SHAPE_PRIMITIVE = 'triangle';
+    public readonly type: SHAPE_PRIMITIVE = 'triangle';
 
     /**
      * The X coord of the first point.

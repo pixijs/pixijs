@@ -149,7 +149,7 @@ export class FederatedEvent<N extends UIEvent | PixiTouch = UIEvent | PixiTouch>
     }
 
     /** The propagation path for this event. Alias for {@link PIXI.EventBoundary.propagationPath}. */
-    composedPath(): FederatedEventTarget[]
+    public composedPath(): FederatedEventTarget[]
     {
         // Find the propagation path if it isn't cached or if the target has changed since since
         // the last evaluation.
@@ -168,7 +168,7 @@ export class FederatedEvent<N extends UIEvent | PixiTouch = UIEvent | PixiTouch>
      * @param _bubbles
      * @param _cancelable
      */
-    initEvent(_type: string, _bubbles?: boolean, _cancelable?: boolean): void
+    public initEvent(_type: string, _bubbles?: boolean, _cancelable?: boolean): void
     {
         throw new Error('initEvent() is a legacy DOM API. It is not implemented in the Federated Events API.');
     }
@@ -182,14 +182,14 @@ export class FederatedEvent<N extends UIEvent | PixiTouch = UIEvent | PixiTouch>
      * @param _viewArg
      * @param _detailArg
      */
-    initUIEvent(_typeArg: string, _bubblesArg?: boolean, _cancelableArg?: boolean, _viewArg?: Window | null,
+    public initUIEvent(_typeArg: string, _bubblesArg?: boolean, _cancelableArg?: boolean, _viewArg?: Window | null,
         _detailArg?: number): void
     {
         throw new Error('initUIEvent() is a legacy DOM API. It is not implemented in the Federated Events API.');
     }
 
     /** Prevent default behavior of PixiJS and the user agent. */
-    preventDefault(): void
+    public preventDefault(): void
     {
         if (this.nativeEvent instanceof Event && this.nativeEvent.cancelable)
         {
@@ -204,7 +204,7 @@ export class FederatedEvent<N extends UIEvent | PixiTouch = UIEvent | PixiTouch>
      * {@link PIXI.FederatedEventTarget.currentTarget currentTarget} and also the following
      * event targets on the propagation path.
      */
-    stopImmediatePropagation(): void
+    public stopImmediatePropagation(): void
     {
         this.propagationImmediatelyStopped = true;
     }
@@ -213,13 +213,13 @@ export class FederatedEvent<N extends UIEvent | PixiTouch = UIEvent | PixiTouch>
      * Stop this event from propagating to the next {@link PIXI.FederatedEventTarget}. The rest of the listeners
      * on the {@link PIXI.FederatedEventTarget.currentTarget currentTarget} will still be notified.
      */
-    stopPropagation(): void
+    public stopPropagation(): void
     {
         this.propagationStopped = true;
     }
 
-    readonly NONE = 0;
-    readonly CAPTURING_PHASE = 1;
-    readonly AT_TARGET = 2;
-    readonly BUBBLING_PHASE = 3;
+    public readonly NONE = 0;
+    public readonly CAPTURING_PHASE = 1;
+    public readonly AT_TARGET = 2;
+    public readonly BUBBLING_PHASE = 3;
 }

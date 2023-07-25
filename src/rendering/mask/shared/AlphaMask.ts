@@ -12,12 +12,12 @@ import type { Effect } from '../../scene/Effect';
 
 export class AlphaMask implements Effect, PoolItem
 {
-    static extension: ExtensionMetadata = ExtensionType.MaskEffect;
+    public static extension: ExtensionMetadata = ExtensionType.MaskEffect;
 
-    priority = 0;
-    mask: Container;
-    pipe = 'alphaMask';
-    renderMaskToTexture: boolean;
+    public priority = 0;
+    public mask: Container;
+    public pipe = 'alphaMask';
+    public renderMaskToTexture: boolean;
 
     constructor(options?: {mask: Container})
     {
@@ -27,7 +27,7 @@ export class AlphaMask implements Effect, PoolItem
         }
     }
 
-    init(mask: Container): void
+    public init(mask: Container): void
     {
         this.mask = mask;
 
@@ -41,23 +41,23 @@ export class AlphaMask implements Effect, PoolItem
         this.mask.measurable = false;
     }
 
-    reset()
+    public reset()
     {
         this.mask.measurable = true;
         this.mask = null;
     }
 
-    addBounds(bounds: Bounds, skipUpdateTransform?: boolean): void
+    public addBounds(bounds: Bounds, skipUpdateTransform?: boolean): void
     {
         addMaskBounds(this.mask, bounds, skipUpdateTransform);
     }
 
-    addLocalBounds(bounds: Bounds, localRoot: Container): void
+    public addLocalBounds(bounds: Bounds, localRoot: Container): void
     {
         addMaskLocalBounds(this.mask, bounds, localRoot);
     }
 
-    containsPoint(point: PointData): boolean
+    public containsPoint(point: PointData): boolean
     {
         const mask = this.mask as any;
 
@@ -69,12 +69,12 @@ export class AlphaMask implements Effect, PoolItem
         return false;
     }
 
-    destroy(): void
+    public destroy(): void
     {
         this.reset();
     }
 
-    static test(mask: any): boolean
+    public static test(mask: any): boolean
     {
         return mask instanceof Sprite;
     }

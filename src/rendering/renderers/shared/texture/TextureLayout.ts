@@ -27,14 +27,14 @@ export class TextureLayout extends EventEmitter<{
     destroy: TextureLayout
 }>
 {
-    frame: Rectangle;
-    orig: Rectangle;
+    public frame: Rectangle;
+    public orig: Rectangle;
 
-    rotate: number;
-    uvs: UVs = { x0: 0, y0: 0, x1: 0, y1: 0, x2: 0, y2: 0, x3: 0, y3: 0 };
+    public rotate: number;
+    public uvs: UVs = { x0: 0, y0: 0, x1: 0, y1: 0, x2: 0, y2: 0, x3: 0, y3: 0 };
 
-    trim?: Rectangle;
-    defaultAnchor?: { x: number; y: number };
+    public trim?: Rectangle;
+    public defaultAnchor?: { x: number; y: number };
 
     constructor(options: TextureLayoutOptions = {})
     {
@@ -52,7 +52,7 @@ export class TextureLayout extends EventEmitter<{
         this.updateUvs();
     }
 
-    updateUvs()
+    public updateUvs()
     {
         const uvs = this.uvs;
         const frame = this.frame;
@@ -98,14 +98,14 @@ export class TextureLayout extends EventEmitter<{
         }
     }
 
-    update()
+    public update()
     {
         this.updateUvs();
         this.emit('update', this);
     }
 
     /** Destroys this TextureLayout */
-    destroy()
+    public destroy()
     {
         this.emit('destroy', this);
         this.removeAllListeners();

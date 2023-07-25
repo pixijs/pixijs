@@ -32,18 +32,18 @@ export class Buffer extends EventEmitter<{
     destroy: Buffer,
 }> implements BindResource
 {
-    readonly resourceType = 'buffer';
-    resourceId = generateUID();
+    public readonly resourceType = 'buffer';
+    public resourceId = generateUID();
 
-    readonly uid = UID++;
+    public readonly uid = UID++;
 
-    descriptor: BufferDescriptor;
+    public descriptor: BufferDescriptor;
 
-    _updateID = 1;
-    _updateSize: number;
+    /** @internal */
+    public _updateID = 1;
+    /** @internal */
+    public _updateSize: number;
 
-    // TODO we should only need to resize a buffer if it gets Bigger..!
-    // private _maximumSize: number = 0;
     private _data: TypedArray;
 
     constructor({ data, size, usage, label }: BufferOptions)
@@ -96,7 +96,7 @@ export class Buffer extends EventEmitter<{
         }
     }
 
-    update(sizeInBytes?: number): void
+    public update(sizeInBytes?: number): void
     {
         this._updateSize = sizeInBytes || this.descriptor.size;
         this._updateID++;
@@ -104,7 +104,7 @@ export class Buffer extends EventEmitter<{
         this.emit('update', this);
     }
 
-    destroy()
+    public destroy()
     {
         this.emit('destroy', this);
 

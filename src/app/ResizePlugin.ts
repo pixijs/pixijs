@@ -22,7 +22,7 @@ export interface ResizePluginOptions
 export class ResizePlugin
 {
     /** @ignore */
-    static extension: ExtensionMetadata = ExtensionType.Application;
+    public static extension: ExtensionMetadata = ExtensionType.Application;
 
     public static resizeTo: Window | HTMLElement;
     public static resize: () => void;
@@ -31,7 +31,7 @@ export class ResizePlugin
     public static render: () => void;
     private static _resizeId: number;
     private static _resizeTo: Window | HTMLElement;
-    private static cancelResize: () => void;
+    private static _cancelResize: () => void;
 
     /**
      * Initialize the plugin with scope of application instance
@@ -39,7 +39,7 @@ export class ResizePlugin
      * @private
      * @param {object} [options] - See application options
      */
-    static init(options: ResizePluginOptions): void
+    public static init(options: ResizePluginOptions): void
     {
         Object.defineProperty(this, 'resizeTo',
             /**
@@ -80,7 +80,7 @@ export class ResizePlugin
                 return;
             }
 
-            this.cancelResize();
+            this._cancelResize();
 
             // // Throttle resize events per raf
             this._resizeId = requestAnimationFrame(() => this.resize());
@@ -92,7 +92,7 @@ export class ResizePlugin
          * @method cancelResize
          * @private
          */
-        this.cancelResize = (): void =>
+        this._cancelResize = (): void =>
         {
             if (this._resizeId)
             {
@@ -116,7 +116,7 @@ export class ResizePlugin
             }
 
             // clear queue resize
-            this.cancelResize();
+            this._cancelResize();
 
             let width: number;
             let height: number;
@@ -151,11 +151,11 @@ export class ResizePlugin
      * @static
      * @private
      */
-    static destroy(): void
+    public static destroy(): void
     {
         globalThis.removeEventListener('resize', this.queueResize);
-        this.cancelResize();
-        this.cancelResize = null;
+        this._cancelResize();
+        this._cancelResize = null;
         this.queueResize = null;
         this.resizeTo = null;
         this.resize = null;

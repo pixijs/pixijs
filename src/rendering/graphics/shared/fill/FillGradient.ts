@@ -25,19 +25,19 @@ let UID = 0;
 
 export class FillGradient implements CanvasGradient
 {
-    static defaultTextureSize = 256;
+    public static defaultTextureSize = 256;
 
-    readonly uid = UID++;
-    readonly type: GradientType = 'linear';
+    public readonly uid = UID++;
+    public readonly type: GradientType = 'linear';
 
-    x0: number;
-    y0: number;
-    x1: number;
-    y1: number;
+    public x0: number;
+    public y0: number;
+    public x1: number;
+    public y1: number;
 
-    texture: Texture;
-    transform: Matrix;
-    gradientStops: Array<{ offset: number, color: string }> = [];
+    public texture: Texture;
+    public transform: Matrix;
+    public gradientStops: Array<{ offset: number, color: string }> = [];
 
     constructor(x0: number, y0: number, x1: number, y1: number)
     {
@@ -48,7 +48,7 @@ export class FillGradient implements CanvasGradient
         this.y1 = y1;
     }
 
-    addColorStop(offset: number, color: number | string): this
+    public addColorStop(offset: number, color: number | string): this
     {
         color = convertNumberToHex(color);
 
@@ -58,7 +58,7 @@ export class FillGradient implements CanvasGradient
     }
 
     // TODO move to the system!
-    buildLinearGradient(): void
+    public buildLinearGradient(): void
     {
         const defaultSize = FillGradient.defaultTextureSize;
 

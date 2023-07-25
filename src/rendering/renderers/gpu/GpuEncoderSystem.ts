@@ -1,7 +1,6 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 
 import type { Rectangle } from '../../../maths/shapes/Rectangle';
-import type { Bounds } from '../../scene/bounds/Bounds';
 import type { Buffer } from '../shared/buffer/Buffer';
 import type { Topology } from '../shared/geometry/const';
 import type { Geometry } from '../shared/geometry/Geometry';
@@ -19,45 +18,43 @@ import type { WebGPURenderer } from './WebGPURenderer';
 export class GpuEncoderSystem implements System
 {
     /** @ignore */
-    static extension = {
-        type: [
-            ExtensionType.WebGPUSystem,
-        ],
+    public static extension = {
+        type: [ExtensionType.WebGPUSystem],
         name: 'encoder',
     } as const;
 
-    commandEncoder: GPUCommandEncoder;
-    renderPassEncoder: GPURenderPassEncoder;
-    commandFinished: Promise<void>;
+    public commandEncoder: GPUCommandEncoder;
+    public renderPassEncoder: GPURenderPassEncoder;
+    public commandFinished: Promise<void>;
 
-    private resolveCommandFinished: (value: void) => void;
+    private _resolveCommandFinished: (value: void) => void;
 
-    private gpu: GPU;
-    private boundBindGroup: Record<number, BindGroup> = {};
-    private boundVertexBuffer: Record<number, Buffer> = {};
-    private boundIndexBuffer: Buffer;
-    private boundPipeline: GPURenderPipeline;
+    private _gpu: GPU;
+    private _boundBindGroup: Record<number, BindGroup> = {};
+    private _boundVertexBuffer: Record<number, Buffer> = {};
+    private _boundIndexBuffer: Buffer;
+    private _boundPipeline: GPURenderPipeline;
 
-    private readonly renderer: WebGPURenderer;
+    private readonly _renderer: WebGPURenderer;
 
     constructor(renderer: WebGPURenderer)
     {
-        this.renderer = renderer;
+        this._renderer = renderer;
     }
 
-    start(): void
+    public start(): void
     {
         this.commandFinished = new Promise((resolve) =>
         {
-            this.resolveCommandFinished = resolve;
+            this._resolveCommandFinished = resolve;
         });
 
         // generate a render pass description..
         // create an encoder..
-        this.commandEncoder = this.renderer.gpu.device.createCommandEncoder();
+        this.commandEncoder = this._renderer.gpu.device.createCommandEncoder();
     }
 
-    beginRenderPass(renderTarget: RenderTarget, gpuRenderTarget: GpuRenderTarget)
+    public beginRenderPass(renderTarget: RenderTarget, gpuRenderTarget: GpuRenderTarget)
     {
         // TODO we should not finish a render pass each time we bind
         // for example filters - we would want to push / pop render targets
@@ -66,113 +63,83 @@ export class GpuEncoderSystem implements System
             this.renderPassEncoder.end();
         }
 
-        this.clearCache();
+        this._clearCache();
 
         this.renderPassEncoder = this.commandEncoder.beginRenderPass(gpuRenderTarget.descriptor);
 
-        this.setViewport(renderTarget.viewport);
+        this._setViewport(renderTarget.viewport);
     }
 
-    setViewport(viewport: Rectangle): void
+    private _setViewport(viewport: Rectangle): void
     {
-        this.renderPassEncoder.setViewport(
-            viewport.x,
-            viewport.y,
-            viewport.width,
-            viewport.height,
-            0, 1);
+        this.renderPassEncoder.setViewport(viewport.x, viewport.y, viewport.width, viewport.height, 0, 1);
     }
 
-    setScissor(bounds: Bounds): void
+    public setPipelineFromGeometryProgramAndState(
+        geometry: Geometry,
+        program: GpuProgram,
+        state: any,
+        topology?: Topology,
+    ): void
     {
-        bounds.fit(this.renderer.renderTarget.renderTarget.viewport);
+        const pipeline = this._renderer.pipeline.getPipeline(geometry, program, state, topology);
 
-        this.renderPassEncoder.setScissorRect(
-            bounds.minX,
-            bounds.minY,
-            bounds.width,
-            bounds.height
-        );
+        this._setPipeline(pipeline);
     }
 
-    clearScissor(): void
+    private _setPipeline(pipeline: GPURenderPipeline)
     {
-        const viewport = this.renderer.renderTarget.renderTarget.viewport;
-
-        this.renderPassEncoder.setScissorRect(
-            viewport.x,
-            viewport.y,
-            viewport.width,
-            viewport.height
-        );
-    }
-
-    setPipelineFromGeometryProgramAndState(geometry: Geometry, program: GpuProgram, state: any, topology?: Topology): void
-    {
-        const pipeline = this.renderer.pipeline.getPipeline(geometry, program, state, topology);
-
-        this.setPipeline(pipeline);
-    }
-
-    setPipeline(pipeline: GPURenderPipeline)
-    {
-        if (this.boundPipeline === pipeline) return;
-        this.boundPipeline = pipeline;
+        if (this._boundPipeline === pipeline) return;
+        this._boundPipeline = pipeline;
 
         this.renderPassEncoder.setPipeline(pipeline);
     }
 
-    setVertexBuffer(index: number, buffer: Buffer)
+    private _setVertexBuffer(index: number, buffer: Buffer)
     {
-        if (this.boundVertexBuffer[index] === buffer) return;
+        if (this._boundVertexBuffer[index] === buffer) return;
 
-        this.boundVertexBuffer[index] = buffer;
+        this._boundVertexBuffer[index] = buffer;
 
-        this.renderPassEncoder.setVertexBuffer(
-            index,
-            this.renderer.buffer.updateBuffer(buffer),
-        );
+        this.renderPassEncoder.setVertexBuffer(index, this._renderer.buffer.updateBuffer(buffer));
     }
 
-    setIndexBuffer(buffer: Buffer)
+    private _setIndexBuffer(buffer: Buffer)
     {
-        if (this.boundIndexBuffer === buffer) return;
+        if (this._boundIndexBuffer === buffer) return;
 
-        this.boundIndexBuffer = buffer;
+        this._boundIndexBuffer = buffer;
 
-        this.renderPassEncoder.setIndexBuffer(
-            this.renderer.buffer.updateBuffer(buffer),
-            'uint32',
-        );
+        this.renderPassEncoder.setIndexBuffer(this._renderer.buffer.updateBuffer(buffer), 'uint32');
     }
 
-    setBindGroup(index: number, bindGroup: BindGroup, program: GpuProgram)
+    public setBindGroup(index: number, bindGroup: BindGroup, program: GpuProgram)
     {
-        if (this.boundBindGroup[index] === bindGroup) return;
-        this.boundBindGroup[index] = bindGroup;
+        if (this._boundBindGroup[index] === bindGroup) return;
+        this._boundBindGroup[index] = bindGroup;
 
         // TODO or is dirty!
-        const gpuBindGroup = this.renderer.bindGroup.getBindGroup(bindGroup, program, index);
+        const gpuBindGroup = this._renderer.bindGroup.getBindGroup(bindGroup, program, index);
 
         this.renderPassEncoder.setBindGroup(index, gpuBindGroup);
     }
 
-    setGeometry(geometry: Geometry)
+    public setGeometry(geometry: Geometry)
     {
         for (const i in geometry.attributes)
         {
             const attribute = geometry.attributes[i];
 
-            this.setVertexBuffer(attribute.shaderLocation, attribute.buffer);
+            this._setVertexBuffer(attribute.shaderLocation, attribute.buffer);
         }
 
         if (geometry.indexBuffer)
         {
-            this.setIndexBuffer(geometry.indexBuffer);
+            this._setIndexBuffer(geometry.indexBuffer);
         }
     }
 
-    setShaderBindGroups(shader: Shader, skipSync?: boolean)
+    private _setShaderBindGroups(shader: Shader, skipSync?: boolean)
     {
         for (const i in shader.groups)
         {
@@ -181,14 +148,14 @@ export class GpuEncoderSystem implements System
             // update any uniforms?
             if (!skipSync)
             {
-                this.syncBindGroup(bindGroup);
+                this._syncBindGroup(bindGroup);
             }
 
             this.setBindGroup(i as unknown as number, bindGroup, shader.gpuProgram);
         }
     }
 
-    syncBindGroup(bindGroup: BindGroup)
+    private _syncBindGroup(bindGroup: BindGroup)
     {
         for (const j in bindGroup.resources)
         {
@@ -196,27 +163,27 @@ export class GpuEncoderSystem implements System
 
             if ((resource as UniformGroup).isUniformGroup)
             {
-                this.renderer.uniformBuffer.updateUniformGroup(resource as UniformGroup);
+                this._renderer.uniformBuffer.updateUniformGroup(resource as UniformGroup);
             }
         }
     }
 
-    draw(options: {
-        geometry: Geometry,
-        shader: Shader,
-        state?: State,
-        topology?: Topology,
-        size?: number,
-        start?: number,
-        instanceCount?: number
-        skipSync?: boolean,
+    public draw(options: {
+        geometry: Geometry;
+        shader: Shader;
+        state?: State;
+        topology?: Topology;
+        size?: number;
+        start?: number;
+        instanceCount?: number;
+        skipSync?: boolean;
     })
     {
         const { geometry, shader, state, topology, size, start, instanceCount, skipSync } = options;
 
         this.setPipelineFromGeometryProgramAndState(geometry, shader.gpuProgram, state, topology);
         this.setGeometry(geometry);
-        this.setShaderBindGroups(shader, skipSync);
+        this._setShaderBindGroups(shader, skipSync);
 
         if (geometry.indexBuffer)
         {
@@ -228,7 +195,7 @@ export class GpuEncoderSystem implements System
         }
     }
 
-    finishRenderPass()
+    public finishRenderPass()
     {
         if (this.renderPassEncoder)
         {
@@ -237,51 +204,46 @@ export class GpuEncoderSystem implements System
         }
     }
 
-    postrender()
+    public postrender()
     {
         this.finishRenderPass();
 
-        this.gpu.device.queue.submit([this.commandEncoder.finish()]);
+        this._gpu.device.queue.submit([this.commandEncoder.finish()]);
 
-        this.resolveCommandFinished();
+        this._resolveCommandFinished();
     }
 
     // restores a render pass if finishRenderPass was called
     // not optimised as really used for debugging!
     // used when we want to stop drawing and log a texture..
-    restoreRenderPass()
+    public restoreRenderPass()
     {
-        const descriptor = this.renderer.renderTarget.getDescriptor(
-            this.renderer.renderTarget.renderTarget,
+        const descriptor = this._renderer.renderTarget.getDescriptor(
+            this._renderer.renderTarget.renderTarget,
             false,
-            [0, 0, 0, 1]
+            [0, 0, 0, 1],
         );
 
         this.renderPassEncoder = this.commandEncoder.beginRenderPass(descriptor);
 
-        const boundPipeline = this.boundPipeline;
-        const boundVertexBuffer = { ...this.boundVertexBuffer };
-        const boundIndexBuffer = this.boundIndexBuffer;
-        const boundBindGroup = { ...this.boundBindGroup };
+        const boundPipeline = this._boundPipeline;
+        const boundVertexBuffer = { ...this._boundVertexBuffer };
+        const boundIndexBuffer = this._boundIndexBuffer;
+        const boundBindGroup = { ...this._boundBindGroup };
 
-        this.clearCache();
+        this._clearCache();
 
-        const viewport = this.renderer.renderTarget.renderTarget.viewport;
+        const viewport = this._renderer.renderTarget.renderTarget.viewport;
 
-        this.renderPassEncoder.setViewport(
-            viewport.x,
-            viewport.y,
-            viewport.width,
-            viewport.height,
-            0, 1);
+        this.renderPassEncoder.setViewport(viewport.x, viewport.y, viewport.width, viewport.height, 0, 1);
 
         // reinstate the cache...
 
-        this.setPipeline(boundPipeline);
+        this._setPipeline(boundPipeline);
 
         for (const i in boundVertexBuffer)
         {
-            this.setVertexBuffer(i as unknown as number, boundVertexBuffer[i]);
+            this._setVertexBuffer(i as unknown as number, boundVertexBuffer[i]);
         }
 
         for (const i in boundBindGroup)
@@ -289,28 +251,28 @@ export class GpuEncoderSystem implements System
             this.setBindGroup(i as unknown as number, boundBindGroup[i], null);
         }
 
-        this.setIndexBuffer(boundIndexBuffer);
+        this._setIndexBuffer(boundIndexBuffer);
     }
 
-    clearCache()
+    private _clearCache()
     {
         for (let i = 0; i < 16; i++)
         {
-            this.boundBindGroup[i] = null;
-            this.boundVertexBuffer[i] = null;
+            this._boundBindGroup[i] = null;
+            this._boundVertexBuffer[i] = null;
         }
 
-        this.boundIndexBuffer = null;
-        this.boundPipeline = null;
+        this._boundIndexBuffer = null;
+        this._boundPipeline = null;
     }
 
-    destroy()
+    public destroy()
     {
         // boom!
     }
 
     protected contextChange(gpu: GPU): void
     {
-        this.gpu = gpu;
+        this._gpu = gpu;
     }
 }

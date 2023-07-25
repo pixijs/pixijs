@@ -1,3 +1,4 @@
+import type { RenderPipe } from '../../renderers/shared/instructions/RenderPipe';
 import type { RenderPipes } from '../../renderers/types';
 import type { LayerGroup } from '../LayerGroup';
 
@@ -12,8 +13,9 @@ export function validateRenderables(layerGroup: LayerGroup, renderPipes: RenderP
         const container = list[i];
 
         const renderable = container.view;
+        const pipe = renderPipes[renderable.type as keyof RenderPipes] as RenderPipe<any>;
 
-        rebuildRequired = (renderPipes[renderable.type as keyof RenderPipes] as any).validateRenderable(container);
+        rebuildRequired = pipe.validateRenderable(container);
 
         if (rebuildRequired)
         {

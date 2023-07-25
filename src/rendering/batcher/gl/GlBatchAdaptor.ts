@@ -13,23 +13,24 @@ import type { BatcherAdaptor, BatcherPipe } from '../shared/BatcherPipe';
 export class GlBatchAdaptor implements BatcherAdaptor
 {
     /** @ignore */
-    static extension = {
+    public static extension = {
         type: [
             ExtensionType.WebGLPipesAdaptor,
         ],
         name: 'batch',
     } as const;
-    shader: Shader;
-    didUpload = false;
 
-    init()
+    private _shader: Shader;
+    private _didUpload = false;
+
+    public init()
     {
         const uniforms = new UniformGroup({
             tint: { value: new Float32Array([1, 1, 1, 1]), type: 'f32' },
             translationMatrix: { value: new Matrix(), type: 'mat3x3<f32>' },
         });
 
-        this.shader = new Shader({
+        this._shader = new Shader({
             glProgram: generateDefaultBatchGlProgram(MAX_TEXTURES),
             resources: {
                 uniforms,
@@ -38,7 +39,7 @@ export class GlBatchAdaptor implements BatcherAdaptor
         });
     }
 
-    execute(batchPipe: BatcherPipe, batch: Batch): void
+    public execute(batchPipe: BatcherPipe, batch: Batch): void
     {
         const renderer = batchPipe.renderer as WebGLRenderer;
 
@@ -46,13 +47,13 @@ export class GlBatchAdaptor implements BatcherAdaptor
 
         renderer.state.set(batchPipe.state);
 
-        renderer.shader.bind(this.shader, this.didUpload);
+        renderer.shader.bind(this._shader, this._didUpload);
 
-        this.didUpload = true;
+        this._didUpload = true;
 
         const activeBatcher = batch.batchParent;
 
-        renderer.geometry.bind(activeBatcher.geometry, this.shader.glProgram);
+        renderer.geometry.bind(activeBatcher.geometry, this._shader.glProgram);
 
         for (let i = 0; i < batch.textures.textures.length; i++)
         {
@@ -64,9 +65,9 @@ export class GlBatchAdaptor implements BatcherAdaptor
         renderer.geometry.draw('triangle-list', batch.size, batch.start);
     }
 
-    destroy(): void
+    public destroy(): void
     {
-        this.shader.destroy(true);
-        this.shader = null;
+        this._shader.destroy(true);
+        this._shader = null;
     }
 }

@@ -26,7 +26,7 @@ const topologyToGlMap = {
 export class GlGeometrySystem implements System
 {
     /** @ignore */
-    static extension = {
+    public static extension = {
         type: [
             ExtensionType.WebGLSystem,
         ],
@@ -57,29 +57,25 @@ export class GlGeometrySystem implements System
 
     protected _geometryVaoHash: Record<number, Record<string, WebGLVertexArrayObject>> = {};
 
-    /** Cache for all geometries by id, used in case renderer gets destroyed or for profiling. */
-    readonly managedGeometries: {[key: number]: Geometry};
-
     /** Renderer that owns this {@link GeometrySystem}. */
-    private renderer: WebGLRenderer;
+    private _renderer: WebGLRenderer;
 
     /** @param renderer - The renderer this System works for. */
     constructor(renderer: WebGLRenderer)
     {
-        this.renderer = renderer;
+        this._renderer = renderer;
         this._activeGeometry = null;
         this._activeVao = null;
 
         this.hasVao = true;
         this.hasInstance = true;
         this.canUseUInt32ElementIndex = true;
-        this.managedGeometries = {};
     }
 
     /** Sets up the renderer context and necessary buffers. */
     protected contextChange(): void
     {
-        this.gl = this.renderer.gl;
+        this.gl = this._renderer.gl;
     }
 
     /**
@@ -87,7 +83,7 @@ export class GlGeometrySystem implements System
      * @param geometry - Instance of geometry to bind.
      * @param program - Instance of program to use vao for.
      */
-    bind(geometry?: Geometry, program?: GlProgram): void
+    public bind(geometry?: Geometry, program?: GlProgram): void
     {
         // shader = shader || this.renderer.shader.shader;
 
@@ -104,57 +100,21 @@ export class GlGeometrySystem implements System
             gl.bindVertexArray(vao);
         }
 
-        // not sure the best way to address this..
-        // currently different shaders require different VAOs for the same geometry
-        // Still mulling over the best way to solve this one..
-        // will likely need to modify the shader attribute locations at run time!
-        // let vaos = geometry.glVertexArrayObjects[this.CONTEXT_UID];
-        // let incRefCount = false;
-
-        // if (!vaos)
-        // {
-        //     this.managedGeometries[geometry.id] = geometry;
-        //     geometry.disposeRunner.add(this);
-        //     geometry.glVertexArrayObjects[this.CONTEXT_UID] = vaos = {};
-        //     incRefCount = true;
-        // }
-
-        // const vao = vaos[program.id] || this.initGeometryVao(geometry, program, incRefCount);
-
-        // this._activeGeometry = geometry;
-
-        // if (this._activeVao !== vao)
-        // {
-        //     this._activeVao = vao;
-
-        //     if (this.hasVao)
-        //     {
-        //         gl.bindVertexArray(vao);
-        //     }
-        //     else
-        //     {
-        //         this.activateVao(geometry, shader.program);
-        //     }
-        // }
-
-        // // TODO - optimise later!
-        // // don't need to loop through if nothing changed!
-        // // maybe look to add an 'autoupdate' to geometry?
         this.updateBuffers();
     }
 
     /** Reset and unbind any active VAO and geometry. */
-    reset(): void
+    public reset(): void
     {
         this.unbind();
     }
 
     /** Update buffers of the currently bound geometry. */
-    updateBuffers(): void
+    public updateBuffers(): void
     {
         const geometry = this._activeGeometry;
 
-        const bufferSystem = this.renderer.buffer;
+        const bufferSystem = this._renderer.buffer;
 
         for (let i = 0; i < geometry.buffers.length; i++)
         {
@@ -208,7 +168,7 @@ export class GlGeometrySystem implements System
         return strings.join('-');
     }
 
-    getVao(geometry: Geometry, program: GlProgram): WebGLVertexArrayObject
+    protected getVao(geometry: Geometry, program: GlProgram): WebGLVertexArrayObject
     {
         return this._geometryVaoHash[geometry.uid]?.[program.key] || this.initGeometryVao(geometry, program);
     }
@@ -223,11 +183,11 @@ export class GlGeometrySystem implements System
      */
     protected initGeometryVao(geometry: Geometry, program: GlProgram, _incRefCount = true): WebGLVertexArrayObject
     {
-        const gl = this.renderer.gl;
+        const gl = this._renderer.gl;
         // const CONTEXT_UID = this.CONTEXT_UID;
-        const bufferSystem = this.renderer.buffer;
+        const bufferSystem = this._renderer.buffer;
 
-        this.renderer.shader.getProgramData(program);
+        this._renderer.shader.getProgramData(program);
 
         this.checkCompatibility(geometry, program);
 
@@ -335,7 +295,7 @@ export class GlGeometrySystem implements System
      * @param geometry - Geometry with buffers. Only VAO will be disposed
      * @param [contextLost=false] - If context was lost, we suppress deleteVertexArray
      */
-    onGeometryDestroy(geometry: Geometry, contextLost?: boolean): void
+    protected onGeometryDestroy(geometry: Geometry, contextLost?: boolean): void
     {
         const vaoObjectHash = this._geometryVaoHash[geometry.uid];
 
@@ -364,7 +324,7 @@ export class GlGeometrySystem implements System
      * Dispose all WebGL resources of all managed geometries.
      * @param [contextLost=false] - If context was lost, we suppress `gl.delete` calls
      */
-    destroyAll(contextLost = false): void
+    public destroyAll(contextLost = false): void
     {
         const gl = this.gl;
 
@@ -396,9 +356,9 @@ export class GlGeometrySystem implements System
      */
     protected activateVao(geometry: Geometry, program: GlProgram): void
     {
-        const gl = this.renderer.gl;
+        const gl = this._renderer.gl;
 
-        const bufferSystem = this.renderer.buffer;
+        const bufferSystem = this._renderer.buffer;
         const attributes = geometry.attributes;
 
         if (geometry.indexBuffer)
@@ -466,9 +426,9 @@ export class GlGeometrySystem implements System
      * @param instanceCount - The number of instances of the set of elements to execute. If not specified,
      *  all instances will be drawn.
      */
-    draw(topology?: Topology, size?: number, start?: number, instanceCount?: number): this
+    public draw(topology?: Topology, size?: number, start?: number, instanceCount?: number): this
     {
-        const { gl } = this.renderer;
+        const { gl } = this._renderer;
         const geometry = this._activeGeometry;
 
         const glTopology = topologyToGlMap[geometry.topology || topology];
@@ -512,8 +472,8 @@ export class GlGeometrySystem implements System
         this._activeGeometry = null;
     }
 
-    destroy(): void
+    public destroy(): void
     {
-        this.renderer = null;
+        this._renderer = null;
     }
 }

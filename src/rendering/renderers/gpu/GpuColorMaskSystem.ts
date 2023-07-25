@@ -6,31 +6,31 @@ import type { WebGPURenderer } from './WebGPURenderer';
 export class GpuColorMaskSystem implements System
 {
     /** @ignore */
-    static extension = {
+    public static extension = {
         type: [
             ExtensionType.WebGPUSystem,
         ],
         name: 'colorMask',
     } as const;
 
-    private readonly renderer: WebGPURenderer;
+    private readonly _renderer: WebGPURenderer;
 
-    private colorMaskCache = 0b1111;
+    private _colorMaskCache = 0b1111;
 
     constructor(renderer: WebGPURenderer)
     {
-        this.renderer = renderer;
+        this._renderer = renderer;
     }
 
-    setMask(colorMask: number)
+    public setMask(colorMask: number)
     {
-        if (this.colorMaskCache === colorMask) return;
-        this.colorMaskCache = colorMask;
+        if (this._colorMaskCache === colorMask) return;
+        this._colorMaskCache = colorMask;
 
-        this.renderer.pipeline.setColorMask(colorMask);
+        this._renderer.pipeline.setColorMask(colorMask);
     }
 
-    destroy()
+    public destroy()
     {
         // boom!
     }

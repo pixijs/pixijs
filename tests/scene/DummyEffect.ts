@@ -5,24 +5,24 @@ import type { Effect } from '../../src/rendering/scene/Effect';
 // pads out the bounds by 10
 export class DummyEffect implements Effect
 {
-    pipe: string;
-    priority: number;
-    addBounds?(bounds: Bounds): void
+    public pipe: string;
+    public priority: number;
+    public addBounds?(bounds: Bounds): void
     {
         bounds.pad(10);
     }
 
-    addLocalBounds?(bounds: Bounds): void
+    public addLocalBounds?(bounds: Bounds): void
     {
         bounds.pad(10);
     }
 
-    containsPoint?(_point: PointData): boolean
+    public containsPoint?(_point: PointData): boolean
     {
         return false;
     }
 
-    destroy(): void
+    public destroy(): void
     {
         // nothing to destroy
     }

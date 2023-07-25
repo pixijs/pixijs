@@ -18,8 +18,10 @@ export class SpriteView implements View
     public anchor: ObservablePoint;
 
     // sprite specific..
-    _texture: Texture;
-    _didUpdate = false;
+    /** @internal */
+    public _texture: Texture;
+    /** @internal */
+    public _didUpdate = false;
 
     private _bounds: [number, number, number, number] = [0, 1, 0, 0];
     private _sourceBounds: [number, number, number, number] = [0, 1, 0, 0];
@@ -121,7 +123,7 @@ export class SpriteView implements View
     /**
      * @internal
      */
-    onUpdate()
+    public onUpdate()
     {
         this._didUpdate = true;
 

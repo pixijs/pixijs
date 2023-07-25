@@ -514,7 +514,7 @@ export class Resolver
                         };
                     }
 
-                    formattedAsset = this.buildResolvedAsset(formattedAsset, {
+                    formattedAsset = this._buildResolvedAsset(formattedAsset, {
                         aliases: aliasesToUse,
                         data,
                         format,
@@ -691,7 +691,7 @@ export class Resolver
                 }
                 else
                 {
-                    this._resolverHash[key] = this.buildResolvedAsset({
+                    this._resolverHash[key] = this._buildResolvedAsset({
                         alias: [key],
                         src: key,
                     }, {});
@@ -758,7 +758,7 @@ export class Resolver
         return `${url}${paramConnector}${this._defaultSearchParams}`;
     }
 
-    private buildResolvedAsset(formattedAsset: ResolvedAsset, data?: {
+    private _buildResolvedAsset(formattedAsset: ResolvedAsset, data?: {
         aliases?: string[],
         data?: Record<string, unknown>
         loadParser?: string,

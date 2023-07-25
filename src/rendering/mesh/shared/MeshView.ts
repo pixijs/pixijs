@@ -39,10 +39,12 @@ export class MeshView<GEOMETRY extends MeshGeometry = MeshGeometry>implements Vi
     public readonly canBundle = true;
     public readonly owner = emptyViewObserver;
 
-    _texture: Texture;
-    _geometry: GEOMETRY;
-    // TODO this should be a shader type! As long as its compatible!
-    _shader?: TextureShader;
+    /** @ignore */
+    public _texture: Texture;
+    /** @ignore */
+    public _geometry: GEOMETRY;
+    /** @ignore */
+    public _shader?: TextureShader;
 
     constructor(options: MeshViewOptions)
     {

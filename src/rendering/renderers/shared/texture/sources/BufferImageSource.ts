@@ -11,5 +11,5 @@ export interface BufferSourceOptions extends TextureSourceOptions<Buffer>
 
 export class BufferImageSource extends TextureSource<TypedArray | ArrayBuffer>
 {
-    type = 'buffer';
+    public type = 'buffer';
 }

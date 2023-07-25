@@ -19,8 +19,8 @@ export class Bounds
     public maxY = -Infinity;
 
     // todo optimise.. lots of bounds wont need this!
-    matrixStack: Matrix[] = [];
-    matrix = new Matrix();
+    private readonly _matrixStack: Matrix[] = [];
+    public matrix = new Matrix();
 
     private _rectangle: Rectangle;
 
@@ -59,24 +59,24 @@ export class Bounds
         return rectangle;
     }
 
-    clear(): void
+    public clear(): void
     {
         this.minX = Infinity;
         this.minY = Infinity;
         this.maxX = -Infinity;
         this.maxY = -Infinity;
 
-        this.matrixStack.length = 0;
+        this._matrixStack.length = 0;
         this.matrix.identity();
     }
 
-    pushMatrix(matrix: Matrix)
+    public pushMatrix(matrix: Matrix)
     {
-        this.matrixStack.push(matrix);
+        this._matrixStack.push(matrix);
 
-        if (this.matrixStack.length > 1)
+        if (this._matrixStack.length > 1)
         {
-            this.matrix.copyFrom(this.matrixStack[this.matrixStack.length - 2]);
+            this.matrix.copyFrom(this._matrixStack[this._matrixStack.length - 2]);
 
             this.matrix.append(matrix);
         }
@@ -86,19 +86,19 @@ export class Bounds
         }
     }
 
-    popMatrix()
+    public popMatrix()
     {
-        this.matrixStack.pop();
+        this._matrixStack.pop();
 
-        if (this.matrixStack.length > 1)
+        if (this._matrixStack.length > 1)
         {
-            this.matrix.copyFrom(this.matrixStack[this.matrixStack.length - 2]);
+            this.matrix.copyFrom(this._matrixStack[this._matrixStack.length - 2]);
 
-            this.matrix.append(this.matrixStack[this.matrixStack.length - 1]);
+            this.matrix.append(this._matrixStack[this._matrixStack.length - 1]);
         }
-        else if (this.matrixStack.length === 1)
+        else if (this._matrixStack.length === 1)
         {
-            this.matrix.copyFrom(this.matrixStack[0]);
+            this.matrix.copyFrom(this._matrixStack[0]);
         }
         else
         {
@@ -106,12 +106,12 @@ export class Bounds
         }
     }
 
-    setMatrix(matrix: Matrix): void
+    public setMatrix(matrix: Matrix): void
     {
         this.matrix.copyFrom(matrix);
     }
 
-    set(x0: number, y0: number, x1: number, y1: number)
+    public set(x0: number, y0: number, x1: number, y1: number)
     {
         this.minX = x0;
         this.minY = y0;
@@ -126,7 +126,7 @@ export class Bounds
      * @param x1 - right X of frame
      * @param y1 - bottom Y of frame
      */
-    addFrame(x0: number, y0: number, x1: number, y1: number)
+    public addFrame(x0: number, y0: number, x1: number, y1: number)
     {
         const matrix = this.matrix;
 
@@ -177,17 +177,17 @@ export class Bounds
         this.maxY = maxY;
     }
 
-    addRect(rect: Rectangle)
+    public addRect(rect: Rectangle)
     {
         this.addFrame(rect.x, rect.y, rect.x + rect.width, rect.y + rect.height);
     }
 
-    addBounds(bounds: Bounds)
+    public addBounds(bounds: Bounds)
     {
         this.addFrame(bounds.minX, bounds.minY, bounds.maxX, bounds.maxY);
     }
 
-    addBoundsMask(mask: Bounds): void
+    public addBoundsMask(mask: Bounds): void
     {
         this.minX = this.minX > mask.minX ? this.minX : mask.minX;
         this.minY = this.minY > mask.minY ? this.minY : mask.minY;
@@ -195,7 +195,7 @@ export class Bounds
         this.maxY = this.maxY < mask.maxY ? this.maxY : mask.maxY;
     }
 
-    applyMatrix(matrix: Matrix): void
+    public applyMatrix(matrix: Matrix): void
     {
         const minX = this.minX;
         const minY = this.minY;
@@ -235,7 +235,7 @@ export class Bounds
         this.maxY = y > this.maxY ? y : this.maxY;
     }
 
-    fit(rect: Rectangle): this
+    public fit(rect: Rectangle): this
     {
         if (this.minX < rect.left) this.minX = rect.left;
         if (this.maxX > rect.right) this.maxX = rect.right;
@@ -246,7 +246,7 @@ export class Bounds
         return this;
     }
 
-    pad(paddingX: number, paddingY: number = paddingX): this
+    public pad(paddingX: number, paddingY: number = paddingX): this
     {
         this.minX -= paddingX;
         this.maxX += paddingX;
@@ -257,7 +257,7 @@ export class Bounds
         return this;
     }
 
-    ceil(): this
+    public ceil(): this
     {
         this.minX = Math.floor(this.minX);
         this.minY = Math.floor(this.minY);
@@ -267,12 +267,12 @@ export class Bounds
         return this;
     }
 
-    clone(): Bounds
+    public clone(): Bounds
     {
         return new Bounds(this.minX, this.minY, this.maxX, this.maxY);
     }
 
-    scale(x: number, y: number = x): this
+    public scale(x: number, y: number = x): this
     {
         this.minX *= x;
         this.minY *= y;
@@ -318,7 +318,7 @@ export class Bounds
      * @param beginOffset - begin offset
      * @param endOffset - end offset, excluded
      */
-    addVertexData(vertexData: Float32Array, beginOffset: number, endOffset: number): void
+    public addVertexData(vertexData: Float32Array, beginOffset: number, endOffset: number): void
     {
         let minX = this.minX;
         let minY = this.minY;
@@ -354,7 +354,7 @@ export class Bounds
         this.maxY = maxY;
     }
 
-    toString(): string
+    public toString(): string
     {
         // eslint-disable-next-line max-len
         return `[@pixi:Bounds minX=${this.minX} minY=${this.minY} maxX=${this.maxX} maxY=${this.maxY} width=${this.width} height=${this.height}]`;

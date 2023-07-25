@@ -1,13 +1,13 @@
 export class GlRenderTarget
 {
-    width = -1;
-    height = -1;
+    public width = -1;
+    public height = -1;
 
-    framebuffer: WebGLFramebuffer;
-    resolveTargetFramebuffer: WebGLFramebuffer;
-    msaaRenderBuffer: WebGLRenderbuffer[] = [];
-    depthStencilRenderBuffer: WebGLRenderbuffer;
+    public framebuffer: WebGLFramebuffer;
+    public resolveTargetFramebuffer: WebGLFramebuffer;
+    public msaaRenderBuffer: WebGLRenderbuffer[] = [];
+    public depthStencilRenderBuffer: WebGLRenderbuffer;
 
-    msaa = false;
-    dirtyId = -1;
+    public msaa = false;
+    public dirtyId = -1;
 }

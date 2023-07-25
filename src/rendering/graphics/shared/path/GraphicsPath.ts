@@ -19,14 +19,13 @@ export interface PathInstruction
 
 export class GraphicsPath
 {
-    instructions: PathInstruction[] = [];
+    public instructions: PathInstruction[] = [];
 
-    uid = UID++;
+    public uid = UID++;
 
-    dirty = true;
-
+    private _dirty = true;
     // needed for hit testing and bounds calculations
-    _shapePath: ShapePath;
+    private _shapePath: ShapePath;
 
     get shapePath(): ShapePath
     {
@@ -35,9 +34,9 @@ export class GraphicsPath
             this._shapePath = new ShapePath(this);
         }
 
-        if (this.dirty)
+        if (this._dirty)
         {
-            this.dirty = false;
+            this._dirty = false;
             this._shapePath.buildPath();
         }
 
@@ -56,59 +55,62 @@ export class GraphicsPath
         }
     }
 
-    addPath(path: GraphicsPath, transform?: Matrix): this
+    public addPath(path: GraphicsPath, transform?: Matrix): this
     {
         path = path.clone();
         this.instructions.push({ action: 'addPath', data: [path, transform] });
 
-        this.dirty = true;
+        this._dirty = true;
 
         return this;
     }
-    arc(x: number, y: number, radius: number, startAngle: number, endAngle: number, counterclockwise?: boolean): this;
-    arc(...args: [number, number, number, number, number, boolean]): this
+
+    public arc(x: number, y: number, radius: number, startAngle: number, endAngle: number, counterclockwise?: boolean): this;
+    public arc(...args: [number, number, number, number, number, boolean]): this
     {
         this.instructions.push({ action: 'arc', data: args });
 
-        this.dirty = true;
+        this._dirty = true;
 
         return this;
     }
-    arcTo(x1: number, y1: number, x2: number, y2: number, radius: number): this;
-    arcTo(...args: [number, number, number, number, number]): this
+
+    public arcTo(x1: number, y1: number, x2: number, y2: number, radius: number): this;
+    public arcTo(...args: [number, number, number, number, number]): this
     {
         this.instructions.push({ action: 'arcTo', data: args });
 
-        this.dirty = true;
+        this._dirty = true;
 
         return this;
     }
 
     // eslint-disable-next-line max-len
-    arcToSvg(rx: number, ry: number, xAxisRotation: number, largeArcFlag: number, sweepFlag: number, x: number, y: number): this;
-    arcToSvg(...args: [number, number, number, number, number, number, number]): this
+    public arcToSvg(rx: number, ry: number, xAxisRotation: number, largeArcFlag: number, sweepFlag: number, x: number, y: number): this;
+    public arcToSvg(...args: [number, number, number, number, number, number, number]): this
     {
         this.instructions.push({ action: 'arcToSvg', data: args });
 
-        this.dirty = true;
+        this._dirty = true;
 
         return this;
     }
 
-    bezierCurveTo(cp1x: number, cp1y: number, cp2x: number, cp2y: number, x: number, y: number): this;
-    bezierCurveTo(...args: [number, number, number, number, number, number]): this
+    public bezierCurveTo(cp1x: number, cp1y: number, cp2x: number, cp2y: number, x: number, y: number): this;
+    public bezierCurveTo(...args: [number, number, number, number, number, number]): this
     {
         this.instructions.push({ action: 'bezierCurveTo', data: args });
 
-        this.dirty = true;
+        this._dirty = true;
 
         return this;
     }
-    bezierCurveToShort(cp2x: number, cp2y: number, x: number, y: number): this
+
+    public bezierCurveToShort(cp2x: number, cp2y: number, x: number, y: number): this
     {
         const last = this.instructions[this.instructions.length - 1];
 
-        const lastPoint = this.getLastPoint(Point.shared);
+        const lastPoint = this._getLastPoint(Point.shared);
 
         let cp1x = 0;
         let cp1y = 0;
@@ -132,60 +134,66 @@ export class GraphicsPath
 
         this.instructions.push({ action: 'bezierCurveTo', data: [cp1x, cp1y, cp2x, cp2y, x, y] });
 
-        this.dirty = true;
+        this._dirty = true;
 
         return this;
     }
-    closePath(): this
+
+    public closePath(): this
     {
         this.instructions.push({ action: 'closePath', data: [] });
 
-        this.dirty = true;
+        this._dirty = true;
 
         return this;
     }
-    ellipse(x: number, y: number, radiusX: number, radiusY: number, matrix?: Matrix): this;
-    ellipse(...args: [number, number, number, number, Matrix]): this
+
+    public ellipse(x: number, y: number, radiusX: number, radiusY: number, matrix?: Matrix): this;
+    public ellipse(...args: [number, number, number, number, Matrix]): this
     {
         this.instructions.push({ action: 'ellipse', data: args });
 
         // TODO nail this!
 
-        this.dirty = true;
+        this._dirty = true;
 
         return this;
     }
-    lineTo(x: number, y: number): this;
-    lineTo(...args: [number, number]): this
+
+    public lineTo(x: number, y: number): this;
+    public lineTo(...args: [number, number]): this
     {
         this.instructions.push({ action: 'lineTo', data: args });
 
-        this.dirty = true;
+        this._dirty = true;
 
         return this;
     }
-    moveTo(x: number, y: number): this;
-    moveTo(...args: [number, number]): this
+
+    public moveTo(x: number, y: number): this;
+    public moveTo(...args: [number, number]): this
     {
         this.instructions.push({ action: 'moveTo', data: args });
 
         return this;
     }
-    quadraticCurveTo(cpx: number, cpy: number, x: number, y: number): this;
-    quadraticCurveTo(...args: [number, number, number, number]): this
+
+    public quadraticCurveTo(cpx: number, cpy: number, x: number, y: number): this;
+    public quadraticCurveTo(...args: [number, number, number, number]): this
     {
         this.instructions.push({ action: 'quadraticCurveTo', data: args });
 
-        this.dirty = true;
+        this._dirty = true;
 
         return this;
     }
-    quadraticCurveToShort(x: number, y: number): this
+
+    public quadraticCurveToShort(x: number, y: number): this
     {
         // check if we have a previous quadraticCurveTo
         const last = this.instructions[this.instructions.length - 1];
 
-        const lastPoint = this.getLastPoint(Point.shared);
+        const lastPoint = this._getLastPoint(Point.shared);
 
         let cpx1 = 0;
         let cpy1 = 0;
@@ -209,47 +217,51 @@ export class GraphicsPath
 
         this.instructions.push({ action: 'quadraticCurveTo', data: [cpx1, cpy1, x, y] });
 
-        this.dirty = true;
+        this._dirty = true;
 
         return this;
     }
-    rect(x: number, y: number, w: number, h: number, transform?: Matrix): this
+
+    public rect(x: number, y: number, w: number, h: number, transform?: Matrix): this
     {
         this.instructions.push({ action: 'rect', data: [x, y, w, h, transform] });
 
-        this.dirty = true;
+        this._dirty = true;
 
         return this;
     }
-    circle(x: number, y: number, radius: number, transform?: Matrix): this
+
+    public circle(x: number, y: number, radius: number, transform?: Matrix): this
     {
         this.instructions.push({ action: 'circle', data: [x, y, radius, transform] });
 
-        this.dirty = true;
+        this._dirty = true;
 
         return this;
     }
-    roundRect(x: number, y: number, w: number, h: number, radii?: number, transform?: Matrix): this;
-    roundRect(...args: [number, number, number, number, number, Matrix?]): this
+
+    public roundRect(x: number, y: number, w: number, h: number, radii?: number, transform?: Matrix): this;
+    public roundRect(...args: [number, number, number, number, number, Matrix?]): this
     {
         this.instructions.push({ action: 'roundRect', data: args });
 
-        this.dirty = true;
+        this._dirty = true;
 
         return this;
     }
 
-    poly(points: number[], close?: boolean, transform?: Matrix): this;
-    poly(...args: [number[], boolean, Matrix?]): this
+    public poly(points: number[], close?: boolean, transform?: Matrix): this;
+    public poly(...args: [number[], boolean, Matrix?]): this
     {
         this.instructions.push({ action: 'poly', data: args });
 
-        this.dirty = true;
+        this._dirty = true;
 
         return this;
     }
 
-    star(x: number, y: number, points: number, radius: number, innerRadius?: number, rotation = 0, transform?: Matrix): this
+    // eslint-disable-next-line max-len
+    public star(x: number, y: number, points: number, radius: number, innerRadius?: number, rotation = 0, transform?: Matrix): this
     {
         innerRadius = innerRadius || radius / 2;
 
@@ -274,7 +286,7 @@ export class GraphicsPath
         return this;
     }
 
-    clone(deep = false): GraphicsPath
+    public clone(deep = false): GraphicsPath
     {
         const newGraphicsPath2D = new GraphicsPath();
 
@@ -295,102 +307,15 @@ export class GraphicsPath
         return newGraphicsPath2D;
     }
 
-    getLastPoint(out: Point): Point
-    {
-        let index = this.instructions.length - 1;
-
-        let lastInstruction = this.instructions[index];
-
-        if (!lastInstruction)
-        {
-            out.x = 0;
-            out.y = 0;
-
-            return out;
-        }
-
-        while (lastInstruction.action === 'closePath')
-        {
-            index--;
-
-            if (index < 0)
-            {
-                out.x = 0;
-                out.y = 0;
-
-                return out;
-            }
-
-            lastInstruction = this.instructions[index];
-        }
-
-        let x: number;
-        let y: number;
-        let transform: Matrix;
-
-        switch (lastInstruction.action)
-        {
-            case 'moveTo':
-            case 'lineTo':
-                out.x = lastInstruction.data[0];
-                out.y = lastInstruction.data[1];
-                break;
-            case 'quadraticCurveTo':
-                out.x = lastInstruction.data[2];
-                out.y = lastInstruction.data[3];
-                break;
-            case 'bezierCurveTo':
-                out.x = lastInstruction.data[4];
-                out.y = lastInstruction.data[5];
-                break;
-            case 'arc':
-            case 'arcToSvg':
-                out.x = lastInstruction.data[5];
-                out.y = lastInstruction.data[6];
-                break;
-            case 'addPath':
-                // TODO prolly should transform the last point of the path
-                out.x = lastInstruction.data[0].lastX;
-                out.y = lastInstruction.data[2].lastY;
-                break;
-            case 'rect':
-                // TODO transform...
-
-                transform = lastInstruction.data[4];
-                x = lastInstruction.data[0];
-                y = lastInstruction.data[1];
-
-                if (transform)
-                {
-                    const { a, b, c, d, tx, ty } = transform;
-
-                    out.x = (a * x) + (c * y) + tx;
-                    out.y = (b * x) + (d * y) + ty;
-                }
-                else
-                {
-                    out.x = x;
-                    out.y = y;
-                }
-
-                break;
-            default:
-                console.warn(`${lastInstruction.action} is not supported yet`);
-                break;
-        }
-
-        return out;
-    }
-
-    clear(): this
+    public clear(): this
     {
         this.instructions.length = 0;
-        this.dirty = true;
+        this._dirty = true;
 
         return this;
     }
 
-    transform(matrix: Matrix): this
+    public transform(matrix: Matrix): this
     {
         if (matrix.isIdentity()) return this;
 
@@ -500,7 +425,7 @@ export class GraphicsPath
             }
         }
 
-        this.dirty = true;
+        this._dirty = true;
 
         return this;
     }
@@ -508,6 +433,93 @@ export class GraphicsPath
     get bounds(): Bounds
     {
         return this.shapePath.bounds;
+    }
+
+    private _getLastPoint(out: Point): Point
+    {
+        let index = this.instructions.length - 1;
+
+        let lastInstruction = this.instructions[index];
+
+        if (!lastInstruction)
+        {
+            out.x = 0;
+            out.y = 0;
+
+            return out;
+        }
+
+        while (lastInstruction.action === 'closePath')
+        {
+            index--;
+
+            if (index < 0)
+            {
+                out.x = 0;
+                out.y = 0;
+
+                return out;
+            }
+
+            lastInstruction = this.instructions[index];
+        }
+
+        let x: number;
+        let y: number;
+        let transform: Matrix;
+
+        switch (lastInstruction.action)
+        {
+            case 'moveTo':
+            case 'lineTo':
+                out.x = lastInstruction.data[0];
+                out.y = lastInstruction.data[1];
+                break;
+            case 'quadraticCurveTo':
+                out.x = lastInstruction.data[2];
+                out.y = lastInstruction.data[3];
+                break;
+            case 'bezierCurveTo':
+                out.x = lastInstruction.data[4];
+                out.y = lastInstruction.data[5];
+                break;
+            case 'arc':
+            case 'arcToSvg':
+                out.x = lastInstruction.data[5];
+                out.y = lastInstruction.data[6];
+                break;
+            case 'addPath':
+                // TODO prolly should transform the last point of the path
+                out.x = lastInstruction.data[0].lastX;
+                out.y = lastInstruction.data[2].lastY;
+                break;
+            case 'rect':
+                // TODO transform...
+
+                transform = lastInstruction.data[4];
+                x = lastInstruction.data[0];
+                y = lastInstruction.data[1];
+
+                if (transform)
+                {
+                    const { a, b, c, d, tx, ty } = transform;
+
+                    out.x = (a * x) + (c * y) + tx;
+                    out.y = (b * x) + (d * y) + ty;
+                }
+                else
+                {
+                    out.x = x;
+                    out.y = y;
+                }
+
+                break;
+            default:
+                console.warn(`${lastInstruction.action} is not supported yet`);
+                break;
+        }
+
+        return out;
     }
 }
 

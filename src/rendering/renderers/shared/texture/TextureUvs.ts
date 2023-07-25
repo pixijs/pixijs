@@ -65,7 +65,7 @@ export class TextureUvs
      * @param baseFrame - The base frame of the texture
      * @param rotate - Rotation of frame, see {@link PIXI.groupD8}
      */
-    set(frame: Rectangle, baseFrame: Size, rotate: number): void
+    public set(frame: Rectangle, baseFrame: Size, rotate: number): void
     {
         const tw = baseFrame.width;
         const th = baseFrame.height;
@@ -122,7 +122,7 @@ export class TextureUvs
     }
 
     // #if _DEBUG
-    toString(): string
+    public toString(): string
     {
         return `[@pixi/core:TextureUvs `
             + `x0=${this.x0} y0=${this.y0} `

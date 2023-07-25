@@ -1,12 +1,7 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 
-import type { Rectangle } from '../../../maths/shapes/Rectangle';
-import type { Bounds } from '../../scene/bounds/Bounds';
-import type { GpuRenderTarget } from '../gpu/renderTarget/GpuRenderTarget';
-import type { BindGroup } from '../gpu/shader/BindGroup';
 import type { Topology } from '../shared/geometry/const';
 import type { Geometry } from '../shared/geometry/Geometry';
-import type { RenderTarget } from '../shared/renderTarget/RenderTarget';
 import type { Shader } from '../shared/shader/Shader';
 import type { State } from '../shared/state/State';
 import type { System } from '../shared/system/System';
@@ -15,106 +10,32 @@ import type { WebGLRenderer } from './WebGLRenderer';
 export class GlEncoderSystem implements System
 {
     /** @ignore */
-    static extension = {
+    public static extension = {
         type: [
             ExtensionType.WebGLSystem,
         ],
         name: 'encoder',
     } as const;
 
-    readonly commandFinished = Promise.resolve();
-    private readonly renderer: WebGLRenderer;
-    // private gl: WebGL2RenderingContext;
+    public readonly commandFinished = Promise.resolve();
+    private readonly _renderer: WebGLRenderer;
 
     constructor(renderer: WebGLRenderer)
     {
-        this.renderer = renderer;
+        this._renderer = renderer;
     }
 
-    start(): void
+    public setGeometry(geometry: Geometry, shader?: Shader)
     {
-        // generate a render pass description..
+        this._renderer.geometry.bind(geometry, shader.glProgram);
     }
 
-    // protected contextChange(gl: GlRenderingContext): void
-    // {
-    //     this.gl = gl;
-    // }
-
-    beginRenderPass(renderTarget: RenderTarget, _gpuRenderTarget: GpuRenderTarget)
+    public finishRenderPass()
     {
-        this.setViewport(renderTarget.viewport);
+        // noop
     }
 
-    setViewport(_viewport: Rectangle): void
-    {
-        // this.renderPassEncoder.setViewport(
-        //     viewport.x,
-        //     viewport.y,
-        //     viewport.width,
-        //     viewport.height,
-        //     0, 1);
-    }
-
-    setScissor(bounds: Bounds): void
-    {
-        bounds.fit(this.renderer.renderTarget.renderTarget.viewport);
-
-        // this.renderPassEncoder.setScissorRect(
-        //     bounds.minX,
-        //     bounds.minY,
-        //     bounds.width,
-        //     bounds.height
-        // );
-    }
-
-    clearScissor(): void
-    {
-        //  const viewport = this.renderer.renderTarget.renderTarget.viewport;
-
-        // this.renderPassEncoder.setScissorRect(
-        //     viewport.x,
-        //     viewport.y,
-        //     viewport.width,
-        //     viewport.height
-        // );
-    }
-
-    setGeometry(geometry: Geometry, shader?: Shader)
-    {
-        this.renderer.geometry.bind(geometry, shader.glProgram);
-    }
-
-    setShaderBindGroups(_shader: Shader, _sync?: boolean)
-    {
-        // for (const i in shader.groups)
-        // {
-        //     const bindGroup = shader.groups[i] as BindGroup;
-
-        //     // update any uniforms?
-        //     if (sync)
-        //     {
-        //         this.syncBindGroup(bindGroup);
-        //     }
-
-        //     this.setBindGroup(i, bindGroup, shader.gpuProgram);
-        // }
-    }
-
-    syncBindGroup(_bindGroup: BindGroup)
-    {
-        // for (const j in bindGroup.resources)
-        // {
-        //     const resource = bindGroup.resources[j];
-
-        //     if (resource.group)
-        //     {
-        //         this.renderer.uniformBuffer.updateUniformAndUploadGroup(resource);
-        //     }
-        // }
-    }
-
-    draw(options: {
+    public draw(options: {
         geometry: Geometry,
         shader: Shader,
         state?: State,
@@ -125,7 +46,7 @@ export class GlEncoderSystem implements System
         skipSync?: boolean,
     })
     {
-        const renderer = this.renderer;
+        const renderer = this._renderer;
         const { geometry, shader, state, skipSync, topology: type, size, start, instanceCount } = options;
 
         renderer.shader.bind(shader, skipSync);
@@ -140,33 +61,7 @@ export class GlEncoderSystem implements System
         renderer.geometry.draw(type, size, start, instanceCount);
     }
 
-    finishRenderPass()
-    {
-        // if (this.renderPassEncoder)
-        // {
-        //     this.renderPassEncoder.end();
-        //     this.renderPassEncoder = null;
-        // }
-    }
-
-    finish()
-    {
-        // this.finishRenderPass();
-
-        // this.gpu.device.queue.submit([this.commandEncoder.finish()]);
-
-        // this.resolveCommandFinished();
-    }
-
-    // restores a render pass if finishRenderPass was called
-    // not optimised as really used for debugging!
-    // used when we want to stop drawing and log a texture..
-    restoreRenderPass()
-    {
-        // do stuff
-    }
-
-    destroy()
+    public destroy()
     {
         // boom!
     }

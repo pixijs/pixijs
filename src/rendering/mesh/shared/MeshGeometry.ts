@@ -15,11 +15,11 @@ export interface MeshGeometryOptions
 
 export class MeshGeometry extends Geometry
 {
-    static defaultOptions: MeshGeometryOptions = {
+    public static defaultOptions: MeshGeometryOptions = {
         topology: 'triangle-list',
     };
 
-    batchMode: BatchMode = 'auto';
+    public batchMode: BatchMode = 'auto';
 
     constructor(options: MeshGeometryOptions = {})
     {

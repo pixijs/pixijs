@@ -16,7 +16,7 @@ export interface NineSliceGeometryOptions
 
 export class NineSliceGeometry extends PlaneGeometry
 {
-    static defaultOptions: NineSliceGeometryOptions = {
+    public static defaultOptions: NineSliceGeometryOptions = {
         width: 100,
         height: 100,
         leftWidth: 10,
@@ -28,13 +28,18 @@ export class NineSliceGeometry extends PlaneGeometry
         originalHeight: 100,
     };
 
-    _originalWidth: number;
-    _originalHeight: number;
-    _leftWidth: number;
-    _rightWidth: number;
-    _topHeight: number;
-    _bottomHeight: number;
-    _textureMatrix: Matrix = new Matrix();
+    /** @internal */
+    public _leftWidth: number;
+    /** @internal */
+    public _rightWidth: number;
+    /** @internal */
+    public _topHeight: number;
+    /** @internal */
+    public _bottomHeight: number;
+
+    private _originalWidth: number;
+    private _originalHeight: number;
+    private readonly _textureMatrix: Matrix = new Matrix();
 
     constructor(options: NineSliceGeometryOptions)
     {
@@ -50,13 +55,13 @@ export class NineSliceGeometry extends PlaneGeometry
         this.update(options);
     }
 
-    update(options: NineSliceGeometryOptions)
+    public update(options: NineSliceGeometryOptions)
     {
         this.updateUvs(options);
         this.updatePositions(options);
     }
 
-    updatePositions(options: NineSliceGeometryOptions)
+    public updatePositions(options: NineSliceGeometryOptions)
     {
         this.width = options.width ?? this.width;
         this.height = options.height ?? this.height;
@@ -87,7 +92,7 @@ export class NineSliceGeometry extends PlaneGeometry
         this.getBuffer('aPosition').update();
     }
 
-    updateUvs(options: NineSliceGeometryOptions)
+    public updateUvs(options: NineSliceGeometryOptions)
     {
         this._originalWidth = options.originalWidth ?? this._originalWidth;
         this._originalHeight = options.originalHeight ?? this._originalHeight;

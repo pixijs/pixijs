@@ -27,7 +27,7 @@ export interface AlphaFilterOptions
  */
 export class AlphaFilter extends Filter
 {
-    static readonly DEFAULT_OPTIONS: AlphaFilterOptions = {
+    public static readonly DEFAULT_OPTIONS: AlphaFilterOptions = {
         alpha: 1
     };
 

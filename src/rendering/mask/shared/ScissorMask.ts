@@ -8,10 +8,9 @@ import type { Effect } from '../../scene/Effect';
 
 export class ScissorMask implements Effect
 {
-    priority = 0;
-    mask: Container;
-    pipe = 'scissorMask';
-    renderMask: boolean;
+    public priority = 0;
+    public mask: Container;
+    public pipe = 'scissorMask';
 
     constructor(mask: Container)
     {
@@ -19,21 +18,19 @@ export class ScissorMask implements Effect
 
         this.mask.renderable = false;
         this.mask.measurable = false;
-
-        this.renderMask = false;// !(mask instanceof Sprite && !mask.children.length);
     }
 
-    addBounds(bounds: Bounds, skipUpdateTransform?: boolean): void
+    public addBounds(bounds: Bounds, skipUpdateTransform?: boolean): void
     {
         addMaskBounds(this.mask, bounds, skipUpdateTransform);
     }
 
-    addLocalBounds(bounds: Bounds, localRoot: Container): void
+    public addLocalBounds(bounds: Bounds, localRoot: Container): void
     {
         addMaskLocalBounds(this.mask, bounds, localRoot);
     }
 
-    containsPoint(point: PointData): boolean
+    public containsPoint(point: PointData): boolean
     {
         const mask = this.mask as any;
 
@@ -45,13 +42,13 @@ export class ScissorMask implements Effect
         return false;
     }
 
-    reset()
+    public reset()
     {
         this.mask.measurable = true;
         this.mask = null;
     }
 
-    destroy(): void
+    public destroy(): void
     {
         this.reset();
     }

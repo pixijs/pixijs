@@ -126,13 +126,13 @@ export class ViewableBuffer
      *    `uint16`, `int32`, `uint32`, and `float32`.
      * @returns - typed array of given type
      */
-    view(type: string): TypedArray
+    public view(type: string): TypedArray
     {
         return (this as any)[`${type}View`];
     }
 
     /** Destroys all buffer references. Do not use after calling this. */
-    destroy(): void
+    public destroy(): void
     {
         this.rawBinaryData = null;
         this._int8View = null;
@@ -144,7 +144,7 @@ export class ViewableBuffer
         this.float32View = null;
     }
 
-    static sizeOf(type: string): number
+    public static sizeOf(type: string): number
     {
         switch (type)
         {

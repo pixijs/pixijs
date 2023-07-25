@@ -100,7 +100,29 @@
         "@typescript-eslint/no-unused-expressions": [1, { "allowShortCircuit": true }],
         "@typescript-eslint/no-floating-promises": "error",
         "@typescript-eslint/prefer-readonly": "error",
-        "no-void": ["error", { "allowAsStatement": true }]
+        "@typescript-eslint/explicit-member-accessibility": [
+            "error",
+            {
+                "accessibility": "explicit",
+                "overrides": {
+                    "accessors": "off",
+                    "constructors": "no-public",
+                    "methods": "explicit",
+                    "properties": "explicit",
+                    "parameterProperties": "explicit"
+                }
+            }
+        ],
+        "no-void": ["error", { "allowAsStatement": true }],
+        "@typescript-eslint/naming-convention": [
+            "error",
+            {
+                "selector": "memberLike",
+                "modifiers": ["private"],
+                "format": ["camelCase"],
+                "leadingUnderscore": "require"
+            }
+        ]
     },
     "overrides": [
         {
@@ -111,6 +133,7 @@
                 "sinon": false
             },
             "rules": {
+                "@typescript-eslint/explicit-member-accessibility": 0,
                 "@typescript-eslint/no-unused-expressions": 0,
                 "@typescript-eslint/dot-notation": [
                     0,

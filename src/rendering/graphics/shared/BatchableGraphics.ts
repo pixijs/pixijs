@@ -7,23 +7,22 @@ import type { GraphicsView } from './GraphicsView';
 
 export class BatchableGraphics implements BatchableObject
 {
-    indexStart: number;
-    textureId: number;
-    texture: Texture;
-    location: number;
-    batcher: Batcher = null;
-    batch: Batch = null;
-    renderable: Renderable<GraphicsView>;
-    indexOffset: number;
-    indexSize: number;
-    vertexOffset: number;
-    vertexSize: number;
-    color: number;
-    alpha: number;
-    colorAlpha: number;
-    applyTransform = true;
+    public indexStart: number;
+    public textureId: number;
+    public texture: Texture;
+    public location: number;
+    public batcher: Batcher = null;
+    public batch: Batch = null;
+    public renderable: Renderable<GraphicsView>;
+    public indexOffset: number;
+    public indexSize: number;
+    public vertexOffset: number;
+    public vertexSize: number;
+    public color: number;
+    public alpha: number;
+    public applyTransform = true;
 
-    geometryData: { vertices: number[]; uvs: number[]; indices: number[]; };
+    public geometryData: { vertices: number[]; uvs: number[]; indices: number[]; };
 
     get blendMode()
     {
@@ -35,7 +34,7 @@ export class BatchableGraphics implements BatchableObject
         return 'normal';
     }
 
-    packIndex(indexBuffer: Uint32Array, index: number, indicesOffset: number)
+    public packIndex(indexBuffer: Uint32Array, index: number, indicesOffset: number)
     {
         const indices = this.geometryData.indices;
 
@@ -45,7 +44,7 @@ export class BatchableGraphics implements BatchableObject
         }
     }
 
-    packAttributes(
+    public packAttributes(
         float32View: Float32Array,
         uint32View: Uint32Array,
         index: number,
@@ -118,7 +117,7 @@ export class BatchableGraphics implements BatchableObject
         return this.vertexSize;
     }
 
-    copyTo(gpuBuffer: BatchableGraphics)
+    public copyTo(gpuBuffer: BatchableGraphics)
     {
         gpuBuffer.indexOffset = this.indexOffset;
         gpuBuffer.indexSize = this.indexSize;

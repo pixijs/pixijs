@@ -15,7 +15,7 @@ export interface PlaneGeometryOptions
  */
 export class PlaneGeometry extends MeshGeometry
 {
-    static defaultOptions: PlaneGeometryOptions & MeshGeometryOptions = {
+    public static defaultOptions: PlaneGeometryOptions & MeshGeometryOptions = {
         width: 100,
         height: 100,
         verticesX: 10,
@@ -44,7 +44,7 @@ export class PlaneGeometry extends MeshGeometry
      * Refreshes plane coordinates
      * @param options
      */
-    build(options: PlaneGeometryOptions): void
+    public build(options: PlaneGeometryOptions): void
     {
         options = { ...PlaneGeometry.defaultOptions, ...options };
 

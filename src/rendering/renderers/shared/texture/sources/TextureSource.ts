@@ -2,7 +2,7 @@ import EventEmitter from 'eventemitter3';
 import { TextureStyle } from '../TextureStyle';
 
 import type { BindResource } from '../../../gpu/shader/BindResource';
-import type { TEXTURE_DIMENSIONS, TEXTURE_FORMATS, TEXTURE_VIEW_DIMENSIONS } from '../const';
+import type { TEXTURE_DIMENSIONS, TEXTURE_FORMATS } from '../const';
 import type { BindableTexture } from '../Texture';
 import type { TextureStyleOptions } from '../TextureStyle';
 
@@ -22,7 +22,6 @@ export interface TextureSourceOptions<T extends Record<string, any> = any>
     antialias?: boolean;
 
     dimensions?: TEXTURE_DIMENSIONS;
-    view?: TEXTURE_VIEW_DIMENSIONS;
 
     mipLevelCount?: number;
     autoGenerateMipmaps?: boolean;
@@ -37,44 +36,44 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     resize: TextureSource;
 }> implements BindableTexture, BindResource
 {
-    uid = UID++;
+    public uid = UID++;
 
-    resourceType = 'textureSource';
-    resourceId = RESOURCE_ID++;
+    public resourceType = 'textureSource';
+    public resourceId = RESOURCE_ID++;
 
-    type = 'unknown';
+    public type = 'unknown';
 
     // dimensions
-    _resolution = 1;
-    pixelWidth = 1;
-    pixelHeight = 1;
+    /** @internal */
+    public _resolution = 1;
+    public pixelWidth = 1;
+    public pixelHeight = 1;
 
-    width = 1;
-    height = 1;
+    public width = 1;
+    public height = 1;
 
-    resource: T;
+    public resource: T;
 
     // sample count for multisample textures
     // generally this is used only used internally by pixi!
-    sampleCount = 1;
+    public sampleCount = 1;
 
     // antialias = false;
 
     // mip stuff..
-    mipLevelCount = 1; // overridden if autoGenerateMipmaps is true
-    autoGenerateMipmaps = false;
+    public mipLevelCount = 1; // overridden if autoGenerateMipmaps is true
+    public autoGenerateMipmaps = false;
 
-    format: TEXTURE_FORMATS = 'rgba8unorm-srgb';
-    viewDimensions: TEXTURE_VIEW_DIMENSIONS = '2d';
-    dimension: TEXTURE_DIMENSIONS = '2d';
+    public format: TEXTURE_FORMATS = 'rgba8unorm-srgb';
+    public dimension: TEXTURE_DIMENSIONS = '2d';
 
-    style: TextureStyle;
+    public style: TextureStyle;
 
-    styleSourceKey: number;
+    public styleSourceKey: number;
 
     // properties used when rendering to this texture..
-    antialias = false;
-    depthStencil = true;
+    public antialias = false;
+    public depthStencil = true;
 
     constructor(options: TextureSourceOptions<T> = {})
     {
@@ -106,7 +105,6 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this.height = this.pixelHeight / this._resolution;
 
         this.format = options.format ?? 'bgra8unorm';
-        this.viewDimensions = options.view ?? '2d';
         this.dimension = options.dimensions ?? '2d';
         this.mipLevelCount = options.mipLevelCount ?? 1;
         this.autoGenerateMipmaps = options.autoGenerateMipmaps ?? false;
@@ -126,18 +124,18 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         return this;
     }
 
-    update()
+    public update()
     {
         this.emit('update', this);
     }
 
-    onStyleUpdate()
+    protected onStyleUpdate()
     {
         this.styleSourceKey = (this.style.resourceId << 24) + this.uid;
     }
 
     /** Destroys this texture source */
-    destroy()
+    public destroy()
     {
         this.emit('destroy', this);
 
@@ -167,7 +165,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this.height = this.pixelHeight / resolution;
     }
 
-    resize(width?: number, height?: number, resolution?: number)
+    public resize(width?: number, height?: number, resolution?: number)
     {
         resolution = resolution || this._resolution;
         width = width || this.width;

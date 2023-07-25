@@ -5,14 +5,14 @@ import type { TextureSourceOptions } from './sources/TextureSource';
 
 export class RenderTexture extends Texture
 {
-    static create(options: TextureSourceOptions): Texture
+    public static create(options: TextureSourceOptions): Texture
     {
         return new Texture({
             source: new TextureSource(options)
         });
     }
 
-    resize(width: number, height: number, resolution?: number): this
+    public resize(width: number, height: number, resolution?: number): this
     {
         this.source.resize(width, height, resolution);
 

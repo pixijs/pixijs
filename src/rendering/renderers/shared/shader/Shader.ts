@@ -34,13 +34,13 @@ export class Shader extends EventEmitter<{
     'destroy': Shader;
 }>
 {
-    gpuProgram: GpuProgram;
-    glProgram: GlProgram;
+    public gpuProgram: GpuProgram;
+    public glProgram: GlProgram;
 
-    groups: Record<number, BindGroup>;
-    resources: Record<string, any>;
+    public groups: Record<number, BindGroup>;
+    public resources: Record<string, any>;
 
-    uniformBindMap: Record<number, Record<number, string>> = {};
+    public uniformBindMap: Record<number, Record<number, string>> = {};
 
     constructor({ gpuProgram, glProgram, resources }: ShaderWithResourcesDescriptor);
     constructor({ gpuProgram, glProgram, groups, groupMap }: ShaderWithGroupsDescriptor);
@@ -191,7 +191,7 @@ export class Shader extends EventEmitter<{
         return uniformsOut;
     }
 
-    destroy(destroyProgram = false): void
+    public destroy(destroyProgram = false): void
     {
         this.emit('destroy', this);
 

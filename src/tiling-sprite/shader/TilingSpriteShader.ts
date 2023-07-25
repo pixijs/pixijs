@@ -38,12 +38,6 @@ export class TilingSpriteShader extends Shader implements TextureShader
             }
         });
 
-        // This is added automatically by the mesh pixi and the mesh renderer...
-        // const localUniforms = new UniformGroup({
-        //     color: { value: new Float32Array([1, 1, 1, 1]), type: 'vec4<f32>' },
-        //     transformMatrix: { value: new Matrix(), type: 'mat3x3<f32>' },
-        // });
-
         const tilingUniforms = new UniformGroup({
             uMapCoord: { value: new Matrix(), type: 'mat3x3<f32>' },
             uClampFrame: { value: new Float32Array([0, 0, 1, 1]), type: 'vec4<f32>' },

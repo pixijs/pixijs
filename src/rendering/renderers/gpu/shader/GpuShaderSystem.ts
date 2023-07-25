@@ -1,39 +1,29 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
-import { UniformGroup } from '../../shared/shader/UniformGroup';
 
-import type { Shader } from '../../shared/shader/Shader';
 import type { System } from '../../shared/system/System';
 import type { GPU } from '../GpuDeviceSystem';
-import type { WebGPURenderer } from '../WebGPURenderer';
 import type { GpuProgram } from './GpuProgram';
 
 export class GpuShaderSystem implements System
 {
     /** @ignore */
-    static extension = {
+    public static extension = {
         type: [
             ExtensionType.WebGPUSystem,
         ],
         name: 'shader',
     } as const;
 
-    private readonly renderer: WebGPURenderer;
-
-    private gpu: GPU;
-
-    constructor(renderer: WebGPURenderer)
-    {
-        this.renderer = renderer;
-    }
+    private _gpu: GPU;
 
     protected contextChange(gpu: GPU): void
     {
-        this.gpu = gpu;
+        this._gpu = gpu;
     }
 
-    createProgramLayout(program: GpuProgram)
+    public createProgramLayout(program: GpuProgram)
     {
-        const device = this.gpu.device;
+        const device = this._gpu.device;
 
         // TODO rename this... confusing with the below.. gpuLayout is defined by the user
         if (!program._gpuLayout)
@@ -59,29 +49,7 @@ export class GpuShaderSystem implements System
         }
     }
 
-    updateData(shader: Shader): void
-    {
-        for (let i = 0; i < shader.gpuProgram.layout.length; i++)
-        {
-            const group = shader.groups[i];
-            const groupLayout = shader.gpuProgram.layout[i];
-
-            for (const j in groupLayout)
-            {
-                const resource = group.resources[j] ?? group.resources[groupLayout[j]];
-
-                // TODO make this dynamic..
-                if (resource instanceof UniformGroup)
-                {
-                    const uniformGroup = resource;
-
-                    this.renderer.uniformBuffer.updateUniformGroup(uniformGroup);
-                }
-            }
-        }
-    }
-
-    destroy(): void
+    public destroy(): void
     {
         throw new Error('Method not implemented.');
     }

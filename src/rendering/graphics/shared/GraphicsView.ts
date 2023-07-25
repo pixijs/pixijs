@@ -16,7 +16,8 @@ export class GraphicsView implements View
     public readonly type = 'graphics';
     public batched: boolean;
 
-    _didUpdate: boolean;
+    /** @internal */
+    public _didUpdate: boolean;
 
     private _context: GraphicsContext;
 

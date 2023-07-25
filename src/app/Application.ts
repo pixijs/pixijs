@@ -56,7 +56,7 @@ export interface Application extends PixiMixins.Application {}
 export class Application<VIEW extends ICanvas = ICanvas>
 {
     /** Collection of installed plugins. */
-    static _plugins: ApplicationPlugin[] = [];
+    public static _plugins: ApplicationPlugin[] = [];
 
     /**
      * The root display container that's rendered.

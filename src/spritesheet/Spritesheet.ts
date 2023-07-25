@@ -121,7 +121,7 @@ export interface SpritesheetData
 export class Spritesheet<S extends SpritesheetData = SpritesheetData>
 {
     /** The maximum number of Textures to build per process. */
-    static readonly BATCH_SIZE = 1000;
+    public static readonly BATCH_SIZE = 1000;
 
     /** For multi-packed spritesheets, this contains a reference to all the other spritesheets it depends on. */
     public linkedSheets: Spritesheet<S>[] = [];
