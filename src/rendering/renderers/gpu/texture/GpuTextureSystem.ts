@@ -70,8 +70,8 @@ export class GpuTextureSystem implements System
         this.managedTextureSources[source.uid] = source;
 
         source.on('update', this.onSourceUpdate, this);
-        source.on('destroy', this.onSourceDestroy, this);
         source.on('resize', this.onSourceResize, this);
+        source.on('destroy', this.onSourceDestroy, this);
 
         this.onSourceUpdate(source);
 

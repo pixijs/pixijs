@@ -10,9 +10,7 @@ import { Bounds } from '../../scene/bounds/Bounds';
 import { getGlobalBounds } from '../../scene/bounds/getGlobalBounds';
 import { getGlobalRenderableBounds } from '../../scene/bounds/getRenderableBounds';
 
-import type { PointData } from '../../../maths/PointData';
 import type { RenderSurface } from '../../renderers/gpu/renderTarget/GpuRenderTargetSystem';
-import type { BindResource } from '../../renderers/gpu/shader/BindResource';
 import type { WebGPURenderer } from '../../renderers/gpu/WebGPURenderer';
 import type { Instruction } from '../../renderers/shared/instructions/Instruction';
 import type { Renderable } from '../../renderers/shared/Renderable';
@@ -79,6 +77,7 @@ export interface FilterData
     container: Container,
     filterEffect: FilterEffect,
     previousRenderSurface: RenderTarget,
+    backTexture?: Texture,
 }
 
 // eslint-disable-next-line max-len
@@ -103,8 +102,8 @@ export class FilterSystem implements System
         inputPixel: { value: new Float32Array(4), type: 'vec4<f32>' },
         inputClamp: { value: new Float32Array(4), type: 'vec4<f32>' },
         outputFrame: { value: new Float32Array(4), type: 'vec4<f32>' },
-        backgroundFrame: { value: new Float32Array(4), type: 'vec4<f32>' },
         globalFrame: { value: new Float32Array(4), type: 'vec4<f32>' },
+        outputTexture: { value: new Float32Array(4), type: 'vec4<f32>' },
     });
 
     private globalFilterBindGroup: BindGroup = new BindGroup({});
@@ -184,7 +183,9 @@ export class FilterSystem implements System
                 }
             }
 
-            enabled = filter.enabled || enabled;
+            const isCompatible = !!(filter.compatibleRenderers & renderer.type);
+
+            enabled = (filter.enabled && isCompatible) || enabled;
             blendRequired = blendRequired || filter.blendRequired;
         }
 
@@ -268,47 +269,28 @@ export class FilterSystem implements System
 
             renderer.encoder.finishRenderPass();
 
-            backTexture = this.getBackTexture(filterData.previousRenderSurface, bounds);
+            const previousBounds = this.filterStackIndex > 0 ? this.filterStack[this.filterStackIndex - 1].bounds : null;
+
+            backTexture = this.getBackTexture(filterData.previousRenderSurface, bounds, previousBounds);
         }
 
-        const offset = Point.shared;
-
-        // get previous bounds..
-        if (this.filterStackIndex > 0)
-        {
-            offset.x = this.filterStack[this.filterStackIndex - 1].bounds.minX;
-            offset.y = this.filterStack[this.filterStackIndex - 1].bounds.minY;
-        }
-
-        // update all the global uniforms used by each filter
-        this.updateGlobalFilterUniforms(bounds, inputTexture, backTexture, offset);
+        filterData.backTexture = backTexture;
 
         const filters = filterData.filterEffect.filters;
-
-        this.filterGlobalUniforms.update();
 
         // get a BufferResource from the uniformBatch.
         // this will batch the shader uniform data and give us a buffer resource we can
         // set on our globalUniform Bind Group
         // eslint-disable-next-line max-len
 
-        let globalUniforms: BindResource = this.filterGlobalUniforms;
-
-        if ((renderer as WebGPURenderer).renderPipes.uniformBatch)
-        {
-            globalUniforms = (renderer as WebGPURenderer).renderPipes.uniformBatch
-                .getUniformBufferResource(this.filterGlobalUniforms);
-        }
-
         // update the resources on the bind group...
-        this.globalFilterBindGroup.setResource(globalUniforms, 0);
         this.globalFilterBindGroup.setResource(inputTexture.style, 2);
         this.globalFilterBindGroup.setResource(backTexture.source, 3);
 
+        renderer.globalUniforms.pop();
+
         if (filters.length === 1)
         {
-            renderer.globalUniforms.pop();
-
             // render a single filter...
             // this.applyFilter(filters[0], inputTexture, filterData.previousRenderSurface, false);
             filters[0].apply(this, inputTexture, filterData.previousRenderSurface, false);
@@ -320,26 +302,6 @@ export class FilterSystem implements System
         else
         {
             let flip = filterData.inputTexture;
-
-            const outputFrame = this.filterGlobalUniforms.uniforms.outputFrame;
-
-            // when rendering to another texture we need to reset the offset of the filter outPutFrame
-            // basically we want it tucked into the top left corner..
-            // we can then set the offset back again when its rendered to the final target
-            const oX = outputFrame[0];
-            const oY = outputFrame[1];
-
-            outputFrame[0] = 0;
-            outputFrame[1] = 0;
-            this.filterGlobalUniforms.update();
-
-            if ((renderer as WebGPURenderer).renderPipes.uniformBatch)
-            {
-                const globalUniforms2 = (renderer as WebGPURenderer).renderPipes.uniformBatch
-                    .getUniformBufferResource(this.filterGlobalUniforms);
-
-                this.globalFilterBindGroup.setResource(globalUniforms2, 0);
-            }
 
             // get another texture that we will render the next filter too
             let flop = TexturePool.getOptimalTexture(
@@ -363,22 +325,6 @@ export class FilterSystem implements System
                 flop = t;
             }
 
-            // remove the global uniforms we added
-
-            renderer.globalUniforms.pop();
-
-            if ((renderer as WebGPURenderer).renderPipes.uniformBatch)
-            {
-                this.globalFilterBindGroup.setResource(globalUniforms, 0);
-            }
-            else
-            {
-                outputFrame[0] = oX;
-                outputFrame[1] = oY;
-                this.filterGlobalUniforms.update();
-            }
-
-            // BUG - global frame is only correct for the last filter in the stack
             filters[i].apply(this, flip, filterData.previousRenderSurface, false);
 
             // return those textures for later!
@@ -393,62 +339,7 @@ export class FilterSystem implements System
         }
     }
 
-    updateGlobalFilterUniforms(bounds: Bounds, texture: Texture, backTexture: Texture, offset: PointData)
-    {
-        const bx = bounds.minX;
-        const by = bounds.minY;
-
-        const uniforms = this.filterGlobalUniforms.uniforms;
-
-        const outputFrame = uniforms.outputFrame;
-        const inputSize = uniforms.inputSize;
-        const inputPixel = uniforms.inputPixel;
-        const inputClamp = uniforms.inputClamp;
-        const backgroundFrame = uniforms.backgroundFrame;
-        const globalFrame = uniforms.globalFrame;
-
-        outputFrame[0] = bx - offset.x;
-        outputFrame[1] = by - offset.y;
-        outputFrame[2] = texture.frameWidth;
-        outputFrame[3] = texture.frameHeight;
-
-        inputSize[0] = texture.source.width;
-        inputSize[1] = texture.source.height;
-        inputSize[2] = 1 / inputSize[0];
-        inputSize[3] = 1 / inputSize[1];
-
-        inputPixel[0] = texture.source.pixelWidth;
-        inputPixel[1] = texture.source.pixelHeight;
-        inputPixel[2] = 1.0 / inputPixel[0];
-        inputPixel[3] = 1.0 / inputPixel[1];
-
-        inputClamp[0] = 0.5 * inputPixel[2];
-        inputClamp[1] = 0.5 * inputPixel[3];
-        inputClamp[2] = (texture.frameWidth * inputSize[2]) - (0.5 * inputPixel[2]);
-        inputClamp[3] = (texture.frameHeight * inputSize[3]) - (0.5 * inputPixel[3]);
-
-        backgroundFrame[0] = 0;
-        backgroundFrame[1] = 0;
-        backgroundFrame[2] = backTexture.layout.frame.width;
-        backgroundFrame[3] = backTexture.layout.frame.height;
-
-        let resolution = this.renderer.renderTarget.rootRenderTarget.colorTexture.source._resolution;
-
-        if (this.filterStackIndex > 0)
-        {
-            resolution = this.filterStack[this.filterStackIndex - 1].inputTexture.source._resolution;
-        }
-
-        globalFrame[0] = offset.x * resolution;
-        globalFrame[1] = offset.y * resolution;
-
-        const rootTexture = this.renderer.renderTarget.rootRenderTarget.colorTexture;
-
-        globalFrame[2] = rootTexture.source.width * resolution;
-        globalFrame[3] = rootTexture.source.height * resolution;
-    }
-
-    getBackTexture(lastRenderSurface: RenderTarget, bounds: Bounds)
+    getBackTexture(lastRenderSurface: RenderTarget, bounds: Bounds, previousBounds?: Bounds)
     {
         const backgroundResolution = lastRenderSurface.colorTexture.source._resolution;
 
@@ -462,10 +353,10 @@ export class FilterSystem implements System
         let x = bounds.minX;
         let y = bounds.minY;
 
-        if (this.filterStackIndex)
+        if (previousBounds)
         {
-            x -= this.filterStack[this.filterStackIndex - 1].bounds.minX;
-            y -= this.filterStack[this.filterStackIndex - 1].bounds.minY;
+            x -= previousBounds.minX;
+            y -= previousBounds.minY;
         }
 
         x = Math.floor(x * backgroundResolution);
@@ -488,13 +379,107 @@ export class FilterSystem implements System
     {
         const renderer = this.renderer;
 
-        renderer.renderTarget.bind(output, !!clear);
+        const filterData = this.filterStack[this.filterStackIndex];
+
+        const bounds = filterData.bounds;
+
+        const offset = Point.shared;
+        const previousRenderSurface = filterData.previousRenderSurface;
+
+        const isFinalTarget = previousRenderSurface === this.renderer.renderTarget.getRenderTarget(output);
+
+        let resolution = this.renderer.renderTarget.rootRenderTarget.colorTexture.source._resolution;
+
+        if (this.filterStackIndex > 0)
+        {
+            resolution = this.filterStack[this.filterStackIndex - 1].inputTexture.source._resolution;
+        }
+
+        const filterUniforms = this.filterGlobalUniforms;
+        const uniforms = filterUniforms.uniforms;
+
+        const outputFrame = uniforms.outputFrame;
+        const inputSize = uniforms.inputSize;
+        const inputPixel = uniforms.inputPixel;
+        const inputClamp = uniforms.inputClamp;
+        const globalFrame = uniforms.globalFrame;
+        const outputTexture = uniforms.outputTexture;
+
+        // are we rendering back to the original surface?
+        if (isFinalTarget)
+        {
+            // get previous bounds..
+            if (this.filterStackIndex > 0)
+            {
+                offset.x = this.filterStack[this.filterStackIndex - 1].bounds.minX;
+                offset.y = this.filterStack[this.filterStackIndex - 1].bounds.minY;
+            }
+
+            outputFrame[0] = bounds.minX - offset.x;
+            outputFrame[1] = bounds.minY - offset.y;
+        }
+        else
+        {
+            outputFrame[0] = 0;
+            outputFrame[1] = 0;
+        }
+
+        outputFrame[2] = input.frameWidth;
+        outputFrame[3] = input.frameHeight;
+
+        inputSize[0] = input.source.width;
+        inputSize[1] = input.source.height;
+        inputSize[2] = 1 / inputSize[0];
+        inputSize[3] = 1 / inputSize[1];
+
+        inputPixel[0] = input.source.pixelWidth;
+        inputPixel[1] = input.source.pixelHeight;
+        inputPixel[2] = 1.0 / inputPixel[0];
+        inputPixel[3] = 1.0 / inputPixel[1];
+
+        inputClamp[0] = 0.5 * inputPixel[2];
+        inputClamp[1] = 0.5 * inputPixel[3];
+        inputClamp[2] = (input.frameWidth * inputSize[2]) - (0.5 * inputPixel[2]);
+        inputClamp[3] = (input.frameHeight * inputSize[3]) - (0.5 * inputPixel[3]);
+
+        const rootTexture = this.renderer.renderTarget.rootRenderTarget.colorTexture;
+
+        globalFrame[0] = offset.x * resolution;
+        globalFrame[1] = offset.y * resolution;
+
+        globalFrame[2] = rootTexture.source.width * resolution;
+        globalFrame[3] = rootTexture.source.height * resolution;
+
+        // set the output texture - this is where we are going to rendr to
+        const renderSurface = this.renderer.renderTarget.getRenderTarget(output);
+
+        outputTexture[0] = renderSurface.colorTexture.frameWidth;
+        outputTexture[1] = renderSurface.colorTexture.frameHeight;
+        outputTexture[2] = renderSurface.isRoot ? -1 : 1;
+
+        filterUniforms.update();
+
+        // TODO - should prolly use a adaptor...
+        if ((renderer as WebGPURenderer).renderPipes.uniformBatch)
+        {
+            const batchUniforms = (renderer as WebGPURenderer).renderPipes.uniformBatch
+                .getUniformBufferResource(this.filterGlobalUniforms);
+
+            this.globalFilterBindGroup.setResource(batchUniforms, 0);
+        }
+        else
+        {
+            this.globalFilterBindGroup.setResource(filterUniforms, 0);
+        }
+
+        // now lets update the output texture...
 
         // set bind group..
         this.globalFilterBindGroup.setResource(input.source, 1);
 
-        filter.groups[0] = renderer.globalUniforms.bindGroup;
-        filter.groups[1] = this.globalFilterBindGroup;
+        renderer.renderTarget.bind(output, !!clear);
+
+        filter.groups[0] = this.globalFilterBindGroup;
 
         renderer.encoder.draw({
             geometry: quadGeometry,

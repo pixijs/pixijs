@@ -58,7 +58,7 @@ export class HelloSystem implements System<HelloSystemOptions>
         if (options.hello)
         {
             // eslint-disable-next-line no-console
-            sayHello(this.renderer.type);
+            sayHello(this.renderer.name);
         }
     }
 }

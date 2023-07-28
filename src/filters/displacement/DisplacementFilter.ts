@@ -32,7 +32,7 @@ export class DisplacementFilter extends Filter
 
     constructor(options: DisplacementFilterOptions)
     {
-        let scale = options.scale || 20;
+        let scale = options.scale ?? 20;
 
         // check if is a number or a point
         if (typeof scale === 'number')
@@ -46,12 +46,13 @@ export class DisplacementFilter extends Filter
             rotation: { value: new Float32Array([0, 0, 0, 0]), type: 'vec4<f32>' },
         });
 
-        const glProgram = new GlProgram({
+        const glProgram = GlProgram.from({
             vertex,
             fragment,
+            name: 'displacement-filter'
         });
 
-        const gpuProgram = new GpuProgram({
+        const gpuProgram = GpuProgram.from({
             vertex: {
                 source,
                 entryPoint: 'mainVertex',
@@ -70,7 +71,7 @@ export class DisplacementFilter extends Filter
             resources: {
                 filterUniforms,
                 mapTexture: texture.source,
-                mapStyle: texture.style,
+                mapSampler: texture.style,
             }
         });
 

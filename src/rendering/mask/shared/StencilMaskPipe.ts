@@ -49,6 +49,7 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
         const renderer = this.renderer;
 
         renderer.renderPipes.batch.break(instructionSet);
+        renderer.renderPipes.blendMode.setBlendMode(mask.mask, 'none', instructionSet);
 
         instructionSet.add({
             type: 'stencilMask',
@@ -111,6 +112,7 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
         this.maskStackHash[_container.uid]--;
 
         renderer.renderPipes.batch.break(instructionSet);
+        renderer.renderPipes.blendMode.setBlendMode(mask.mask, 'none', instructionSet);
 
         instructionSet.add({
             type: 'stencilMask',

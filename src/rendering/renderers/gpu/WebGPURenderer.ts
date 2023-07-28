@@ -1,4 +1,5 @@
 import { extensions, ExtensionType } from '../../../extensions/Extensions';
+import { RendererType } from '../../../types';
 import { GpuBatchAdaptor } from '../../batcher/gpu/GpuBatchAdaptor';
 import { GpuGraphicsAdaptor } from '../../graphics/gpu/GpuGraphicsAdaptor';
 import { GpuMeshAdapter } from '../../mesh/gpu/GpuMeshAdapter';
@@ -72,7 +73,8 @@ export class WebGPURenderer extends AbstractRenderer<WebGPUPipes, WebGPUOptions>
     constructor()
     {
         const systemConfig = {
-            type: 'webgpu',
+            name: 'webgpu',
+            type: RendererType.WEBGPU,
             systems,
             renderPipes,
             renderPipeAdaptors,

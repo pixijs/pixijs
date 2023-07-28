@@ -105,7 +105,12 @@ export class GlShaderSystem
 
                     if (uniformData)
                     {
-                        gl.uniform1i(uniformData.location, defaultSyncData.textureCount++);
+                        if (uniformData.value !== defaultSyncData.textureCount)
+                        {
+                            gl.uniform1i(uniformData.location, defaultSyncData.textureCount);
+                        }
+
+                        defaultSyncData.textureCount++;
                     }
                 }
                 else if (resource instanceof TextureStyle)

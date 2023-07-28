@@ -116,7 +116,7 @@ export class TexturePoolClass
     {
         const source = texture.source;
 
-        return this.getOptimalTexture(source.width, source.height, source._resolution, source.antialias);
+        return this.getOptimalTexture(texture.width, texture.height, source._resolution, source.antialias);
     }
 
     /**

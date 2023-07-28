@@ -506,7 +506,7 @@ export class GlRenderTargetSystem implements System
         {
             gl.renderbufferStorage(
                 gl.RENDERBUFFER,
-                gl.DEPTH_STENCIL,
+                gl.DEPTH24_STENCIL8,
                 glRenderTarget.width,
                 glRenderTarget.height
             );
