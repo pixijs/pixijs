@@ -1,6 +1,6 @@
 import EventEmitter from 'eventemitter3';
 import { convertColorToNumber } from '../../utils/color/convertColorToNumber';
-import { deprecation } from '../../utils/logging/deprecation';
+import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { FillGradient } from '../graphics/shared/fill/FillGradient';
 import { GraphicsContext } from '../graphics/shared/GraphicsContext';
 import { convertFillInputToFillStyle } from '../graphics/shared/utils/convertFillInputToFillStyle';
@@ -481,7 +481,7 @@ function convertV7Tov8Style(style: TextStyleOptions)
 
     if (typeof oldStyle.dropShadow === 'boolean')
     {
-        deprecation('8', 'dropShadow is now an object, not a boolean');
+        deprecation(v8_0_0, 'dropShadow is now an object, not a boolean');
 
         style.dropShadow = {
             alpha: oldStyle.dropShadowAlpha ?? 1,
@@ -494,7 +494,7 @@ function convertV7Tov8Style(style: TextStyleOptions)
 
     if (oldStyle.strokeThickness)
     {
-        deprecation('8', 'strokeThickness is now a part of stroke');
+        deprecation(v8_0_0, 'strokeThickness is now a part of stroke');
 
         const color = oldStyle.stroke;
 
@@ -506,7 +506,7 @@ function convertV7Tov8Style(style: TextStyleOptions)
 
     if (Array.isArray(oldStyle.fill))
     {
-        deprecation('8', 'gradient fill is now a fill pattern: `new FillGradient(...)`');
+        deprecation(v8_0_0, 'gradient fill is now a fill pattern: `new FillGradient(...)`');
 
         const gradientFill = new FillGradient(0, 0, 0, (style.fontSize as number) * 1.7);
 

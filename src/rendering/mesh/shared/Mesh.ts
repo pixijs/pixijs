@@ -1,4 +1,4 @@
-import { deprecation } from '../../../utils/logging/deprecation';
+import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
 import { Container } from '../../scene/Container';
 import { MeshView } from './MeshView';
 
@@ -42,7 +42,7 @@ export class Mesh extends Container<MeshView>
 
     get material()
     {
-        deprecation('8', 'mesh.material property has been removed, use mesh.shader instead');
+        deprecation(v8_0_0, 'mesh.material property has been removed, use mesh.shader instead');
 
         return this.view.shader;
     }

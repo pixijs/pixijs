@@ -1,7 +1,8 @@
-import { deprecation } from '../../../../utils/logging/deprecation';
+import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
 import { Container } from '../../../scene/Container';
 import { SystemRunner } from './SystemRunner';
 
+import type { Rectangle } from '../../../../maths/shapes/Rectangle';
 import type { ICanvas } from '../../../../settings/adapter/ICanvas';
 import type { RenderSurface } from '../../gpu/renderTarget/GpuRenderTargetSystem';
 import type { Renderer } from '../../types';
@@ -112,7 +113,8 @@ export class AbstractRenderer<PIPES, OPTIONS>
             // eslint-disable-next-line prefer-rest-params
             if (arguments[1])
             {
-                deprecation('8', 'passing target as a second argument is deprecated, please use render options instead');
+                // eslint-disable-next-line max-len
+                deprecation(v8_0_0, 'passing target as a second argument is deprecated, please use render options instead');
 
                 // eslint-disable-next-line prefer-rest-params
                 options.target = arguments[1];
@@ -153,11 +155,21 @@ export class AbstractRenderer<PIPES, OPTIONS>
         this.view.resolution = value;
     }
 
+    /**
+     * Same as view.width, actual number of pixels in the canvas by horizontal.
+     * @member {number}
+     * @readonly
+     * @default 800
+     */
     get width(): number
     {
         return this.view.texture.frameWidth;
     }
 
+    /**
+     * Same as view.height, actual number of pixels in the canvas by vertical.
+     * @default 600
+     */
     get height(): number
     {
         return this.view.texture.frameHeight;
@@ -189,6 +201,17 @@ export class AbstractRenderer<PIPES, OPTIONS>
         const renderer = this as unknown as Renderer;
 
         return renderer.renderTarget.renderingToScreen;
+    }
+
+    /**
+     * Measurements of the screen. (0, 0, screenWidth, screenHeight).
+     *
+     * Its safe to use as filterArea or hitArea for the whole stage.
+     * @member {PIXI.Rectangle}
+     */
+    get screen(): Rectangle
+    {
+        return this.view.screen;
     }
 
     /**

@@ -15,6 +15,7 @@
         }
     },
     "rules": {
+        "camelcase": [1, {"allow": ["^v\\d{1,}_\\d{1,}_\\d{1,}$"]}],
         "no-multi-spaces": [1, { "exceptions": {} }],
         "object-curly-newline": [1, { "multiline": true, "consistent": true }],
 
