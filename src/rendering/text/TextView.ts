@@ -6,7 +6,7 @@ import { CanvasTextMetrics } from './canvas/CanvasTextMetrics';
 import { TextStyle } from './TextStyle';
 
 import type { PointData } from '../../maths/PointData';
-import type { View } from '../renderers/shared/View';
+import type { View, ViewObserver } from '../renderers/shared/View';
 import type { Bounds } from '../scene/bounds/Bounds';
 import type { TextureDestroyOptions, TypeOrBool } from '../scene/destroyTypes';
 import type { TextStyleOptions } from './TextStyle';
@@ -41,40 +41,30 @@ export class TextView implements View
     static defaultResolution = 1;
     static defaultAutoResolution = true;
 
-    uid = uid++;
-
-    batched = true;
-
-    type = 'text';
-
-    owner = emptyViewObserver;
-
-    _bounds: [number, number, number, number] = [0, 1, 0, 0];
-
-    boundsDirty = true;
-
-    anchor: ObservablePoint;
+    public readonly uid: number = uid++;
+    public readonly type: string = 'text';
+    public readonly owner: ViewObserver = emptyViewObserver;
+    public batched = true;
+    public anchor: ObservablePoint;
 
     _autoResolution = TextView.defaultAutoResolution;
     _resolution = TextView.defaultResolution;
-
-    readonly renderMode: 'canvas' | 'html' | 'bitmap';
-
     _style: TextStyle;
+    _didUpdate = true;
+
+    private _bounds: [number, number, number, number] = [0, 1, 0, 0];
+    private _boundsDirty = true;
     private _text: string;
-    didUpdate = true;
 
     constructor(options: TextViewOptions)
     {
         this.text = options.text ?? '';
         this._style = options.style instanceof TextStyle ? options.style : new TextStyle(options.style);
 
-        const renderMode = options.renderMode ?? this.detectRenderType(this._style);
+        const renderMode = options.renderMode ?? this._detectRenderType(this._style);
 
         this.type = map[renderMode];
-
         this.anchor = new ObservablePoint(this, 0, 0);
-
         this._resolution = options.resolution ?? TextView.defaultResolution;
     }
 
@@ -115,7 +105,6 @@ export class TextView implements View
         }
 
         this._style.on('update', this.onUpdate, this);
-
         this.onUpdate();
     }
 
@@ -131,44 +120,16 @@ export class TextView implements View
 
     get bounds()
     {
-        if (this.boundsDirty)
+        if (this._boundsDirty)
         {
-            this.updateBounds();
-            this.boundsDirty = false;
+            this._updateBounds();
+            this._boundsDirty = false;
         }
 
         return this._bounds;
     }
 
-    updateBounds()
-    {
-        const bounds = this._bounds;
-
-        if (this.type === 'bitmapText')
-        {
-            const bitmapMeasurement = BitmapFontManager.measureText(this.text, this._style);
-
-            const scale = bitmapMeasurement.scale;
-
-            const offset = bitmapMeasurement.offsetY * scale;
-
-            bounds[0] = 0;
-            bounds[1] = offset;
-            bounds[2] = bitmapMeasurement.width * scale;
-            bounds[3] = (bitmapMeasurement.height * scale) + offset;
-        }
-        else
-        {
-            const canvasMeasurement = CanvasTextMetrics.measureText(this.text, this._style);
-
-            bounds[0] = 0;
-            bounds[1] = 0;
-            bounds[2] = canvasMeasurement.width;
-            bounds[3] = canvasMeasurement.height;
-        }
-    }
-
-    addBounds(bounds: Bounds)
+    public addBounds(bounds: Bounds)
     {
         const _bounds = this.bounds;
 
@@ -178,22 +139,6 @@ export class TextView implements View
             _bounds[2],
             _bounds[3],
         );
-    }
-
-    /**
-     * @internal
-     */
-    onUpdate()
-    {
-        this.didUpdate = true;
-        this.boundsDirty = true;
-        this.owner.onViewUpdate();
-    }
-
-    _getKey(): string
-    {
-        // TODO add a dirty flag...
-        return `${this.text}:${this._style.styleKey}`;
     }
 
     public containsPoint(point: PointData)
@@ -213,7 +158,52 @@ export class TextView implements View
         return false;
     }
 
-    detectRenderType(style: TextStyle): 'canvas' | 'html' | 'bitmap'
+    /**
+     * @internal
+     */
+    onUpdate()
+    {
+        this._didUpdate = true;
+        this._boundsDirty = true;
+        this.owner.onViewUpdate();
+    }
+
+    /**
+     * @internal
+     */
+    _getKey(): string
+    {
+        // TODO add a dirty flag...
+        return `${this.text}:${this._style.styleKey}`;
+    }
+
+    private _updateBounds()
+    {
+        const bounds = this._bounds;
+
+        if (this.type === 'bitmapText')
+        {
+            const bitmapMeasurement = BitmapFontManager.measureText(this.text, this._style);
+            const scale = bitmapMeasurement.scale;
+            const offset = bitmapMeasurement.offsetY * scale;
+
+            bounds[0] = 0;
+            bounds[1] = offset;
+            bounds[2] = bitmapMeasurement.width * scale;
+            bounds[3] = (bitmapMeasurement.height * scale) + offset;
+        }
+        else
+        {
+            const canvasMeasurement = CanvasTextMetrics.measureText(this.text, this._style);
+
+            bounds[0] = 0;
+            bounds[1] = 0;
+            bounds[2] = canvasMeasurement.width;
+            bounds[3] = canvasMeasurement.height;
+        }
+    }
+
+    private _detectRenderType(style: TextStyle): 'canvas' | 'html' | 'bitmap'
     {
         return Cache.has(style.fontFamily as string) ? 'bitmap' : 'canvas';
     }
@@ -227,7 +217,7 @@ export class TextView implements View
      */
     public destroy(options: TypeOrBool<TextureDestroyOptions> = false): void
     {
-        this.owner = null;
+        (this as any).owner = null;
         this._bounds = null;
         this.anchor = null;
 

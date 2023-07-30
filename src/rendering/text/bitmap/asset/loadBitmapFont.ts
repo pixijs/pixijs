@@ -89,7 +89,6 @@ export const xmlBitmapFontLoader = {
 
     unload(bitmapFont: BitmapFont): void
     {
-        // TODO destroy bitmapFont
         bitmapFont.destroy();
     }
 } as LoaderParser;

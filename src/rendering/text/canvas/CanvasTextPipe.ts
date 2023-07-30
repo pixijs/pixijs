@@ -77,7 +77,7 @@ export class CanvasTextPipe implements RenderPipe<TextView>
 
         const batchableSprite = gpuText.batchableSprite;
 
-        if (renderable.view.didUpdate)
+        if (renderable.view._didUpdate)
         {
             this.updateText(renderable);
         }
@@ -90,7 +90,7 @@ export class CanvasTextPipe implements RenderPipe<TextView>
         const gpuText = this.getGpuText(renderable);
         const batchableSprite = gpuText.batchableSprite;
 
-        if (renderable.view.didUpdate)
+        if (renderable.view._didUpdate)
         {
             this.updateText(renderable);
         }
@@ -125,7 +125,7 @@ export class CanvasTextPipe implements RenderPipe<TextView>
             this.updateGpuText(renderable);
         }
 
-        renderable.view.didUpdate = false;
+        renderable.view._didUpdate = false;
 
         updateBounds(batchableSprite.bounds, renderable.view.anchor, batchableSprite.texture);
     }

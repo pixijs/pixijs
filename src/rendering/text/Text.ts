@@ -2,6 +2,8 @@ import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { Container } from '../scene/Container';
 import { TextView } from './TextView';
 
+import type { PointData } from '../../maths/PointData';
+import type { PointLike } from '../../maths/PointLike';
 import type { ContainerOptions } from '../scene/Container';
 import type { TextStyle } from './TextStyle';
 import type { TextString, TextViewOptions } from './TextView';
@@ -31,9 +33,15 @@ export class Text extends Container<TextView>
         });
     }
 
-    get anchor()
+    get anchor(): PointLike
     {
         return this.view.anchor;
+    }
+
+    set anchor(value: PointData)
+    {
+        this.view.anchor.x = value.x;
+        this.view.anchor.y = value.y;
     }
 
     set text(value: TextString)

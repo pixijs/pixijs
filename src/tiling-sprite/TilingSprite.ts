@@ -1,6 +1,8 @@
 import { Container } from '../rendering/scene/Container';
 import { TilingSpriteView } from './TilingSpriteView';
 
+import type { PointData } from '../maths/PointData';
+import type { PointLike } from '../maths/PointLike';
 import type { ContainerOptions } from '../rendering/scene/Container';
 import type { TilingSpriteViewOptions } from './TilingSpriteView';
 
@@ -27,9 +29,15 @@ export class TilingSprite extends Container<TilingSpriteView>
         return this.view.texture;
     }
 
-    get anchor()
+    get anchor(): PointLike
     {
         return this.view.anchor;
+    }
+
+    set anchor(value: PointData)
+    {
+        this.view.anchor.x = value.x;
+        this.view.anchor.y = value.y;
     }
 
     get width(): number
@@ -54,37 +62,37 @@ export class TilingSprite extends Container<TilingSpriteView>
 
     get tilePosition()
     {
-        return this.view.tileTransform.position;
+        return this.view._tileTransform.position;
     }
 
     set tilePosition(value)
     {
-        this.view.tileTransform.position.copyFrom(value);
+        this.view._tileTransform.position.copyFrom(value);
     }
 
     get tileScale()
     {
-        return this.view.tileTransform.scale;
+        return this.view._tileTransform.scale;
     }
 
     set tileScale(value)
     {
-        this.view.tileTransform.scale.copyFrom(value);
+        this.view._tileTransform.scale.copyFrom(value);
     }
 
     set tileRotation(value)
     {
-        this.view.tileTransform.rotation = value;
+        this.view._tileTransform.rotation = value;
     }
 
     get tileRotation()
     {
-        return this.view.tileTransform.rotation;
+        return this.view._tileTransform.rotation;
     }
 
     get tileTransform()
     {
-        return this.view.tileTransform;
+        return this.view._tileTransform;
     }
 }
 

@@ -3,7 +3,7 @@ import { Texture } from '../../renderers/shared/texture/Texture';
 import { emptyViewObserver } from '../../renderers/shared/View';
 
 import type { PointData } from '../../../maths/PointData';
-import type { View } from '../../renderers/shared/View';
+import type { View, ViewObserver } from '../../renderers/shared/View';
 import type { Bounds } from '../../scene/bounds/Bounds';
 import type { TextureDestroyOptions, TypeOrBool } from '../../scene/destroyTypes';
 
@@ -11,25 +11,20 @@ let uid = 0;
 
 export class SpriteView implements View
 {
-    owner = emptyViewObserver;
+    public readonly type = 'sprite';
+    public readonly owner: ViewObserver = emptyViewObserver;
+    public readonly uid: number = uid++;
+    public batched = true;
+    public anchor: ObservablePoint;
 
     // sprite specific..
     _texture: Texture;
-    anchor: ObservablePoint;
+    _didUpdate = false;
 
-    batched = true;
-
-    buildId = 0;
-    uid = uid++;
-
-    type = 'sprite';
-
-    _bounds: [number, number, number, number] = [0, 1, 0, 0];
-    _sourceBounds: [number, number, number, number] = [0, 1, 0, 0];
-
-    boundsDirty = true;
-    sourceBoundsDirty = true;
-    didUpdate = false;
+    private _bounds: [number, number, number, number] = [0, 1, 0, 0];
+    private _sourceBounds: [number, number, number, number] = [0, 1, 0, 0];
+    private _boundsDirty = true;
+    private _sourceBoundsDirty = true;
 
     constructor(texture: Texture)
     {
@@ -64,10 +59,10 @@ export class SpriteView implements View
 
     get bounds()
     {
-        if (this.boundsDirty)
+        if (this._boundsDirty)
         {
-            this.updateBounds();
-            this.boundsDirty = false;
+            this._updateBounds();
+            this._boundsDirty = false;
         }
 
         return this._bounds;
@@ -75,16 +70,67 @@ export class SpriteView implements View
 
     get sourceBounds()
     {
-        if (this.sourceBoundsDirty)
+        if (this._sourceBoundsDirty)
         {
             this._updateSourceBounds();
-            this.sourceBoundsDirty = false;
+            this._sourceBoundsDirty = false;
         }
 
         return this._sourceBounds;
     }
 
-    updateBounds()
+    // passed local space..
+    public containsPoint(point: PointData)
+    {
+        const width = this._texture.frameWidth;
+        const height = this._texture.frameHeight;
+        const x1 = -width * this.anchor.x;
+        let y1 = 0;
+
+        if (point.x >= x1 && point.x < x1 + width)
+        {
+            y1 = -height * this.anchor.y;
+
+            if (point.y >= y1 && point.y < y1 + height)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public addBounds(bounds: Bounds)
+    {
+        const trim = this._texture._layout.trim;
+
+        if (trim)
+        {
+            const sourceBounds = this.sourceBounds;
+
+            bounds.addFrame(sourceBounds[0], sourceBounds[2], sourceBounds[1], sourceBounds[3]);
+        }
+        else
+        {
+            const _bounds = this.bounds;
+
+            bounds.addFrame(_bounds[0], _bounds[2], _bounds[1], _bounds[3]);
+        }
+    }
+
+    /**
+     * @internal
+     */
+    onUpdate()
+    {
+        this._didUpdate = true;
+
+        this._sourceBoundsDirty = this._boundsDirty = true;
+
+        this.owner.onViewUpdate();
+    }
+
+    private _updateBounds()
     {
         const texture = this._texture;
         const textureSource = texture._source;
@@ -146,54 +192,6 @@ export class SpriteView implements View
 
         sourceBounds[3] = -anchor._y * height;
         sourceBounds[2] = sourceBounds[3] + height;
-    }
-
-    addBounds(bounds: Bounds)
-    {
-        const trim = this._texture._layout.trim;
-
-        if (trim)
-        {
-            const sourceBounds = this.sourceBounds;
-
-            bounds.addFrame(sourceBounds[0], sourceBounds[2], sourceBounds[1], sourceBounds[3]);
-        }
-        else
-        {
-            const _bounds = this.bounds;
-
-            bounds.addFrame(_bounds[0], _bounds[2], _bounds[1], _bounds[3]);
-        }
-    }
-
-    onUpdate()
-    {
-        this.didUpdate = true;
-
-        this.sourceBoundsDirty = this.boundsDirty = true;
-
-        this.owner.onViewUpdate();
-    }
-
-    // passed local space..
-    public containsPoint(point: PointData)
-    {
-        const width = this._texture.frameWidth;
-        const height = this._texture.frameHeight;
-        const x1 = -width * this.anchor.x;
-        let y1 = 0;
-
-        if (point.x >= x1 && point.x < x1 + width)
-        {
-            y1 = -height * this.anchor.y;
-
-            if (point.y >= y1 && point.y < y1 + height)
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /**
