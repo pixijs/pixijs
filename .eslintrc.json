@@ -14,33 +14,39 @@
             }
         }
     },
+    "parserOptions": {
+        "project": "./tsconfig.json"
+    },
     "rules": {
-        "camelcase": [1, {"allow": ["^v\\d{1,}_\\d{1,}_\\d{1,}$"]}],
+        "camelcase": [1, { "allow": ["^v\\d{1,}_\\d{1,}_\\d{1,}$"] }],
         "no-multi-spaces": [1, { "exceptions": {} }],
         "object-curly-newline": [1, { "multiline": true, "consistent": true }],
 
         // Imports and Exports
         "import/first": 1,
         "import/newline-after-import": 1,
-        "simple-import-sort/imports": [1, {
-            "groups": [
-                [
-                    "^\\w", // External
-                    "^\\u0000", // External side effect
-                    "^@pixi/", // @pixi/*
-                    "^\\u0000@pixi/", // @pixi/* side effect
-                    "^\\.", // Relative
-                    "^\\u0000\\.", // Relative side effect
-                    "^" // Others
-                ],
-                [
-                    "^\\w.*\\u0000$", // External types
-                    "^@pixi/.*\\u0000$", // @pixi/* types
-                    "^\\..*\\u0000$", // Relative types
-                    "\\u0000$" // Other types
+        "simple-import-sort/imports": [
+            1,
+            {
+                "groups": [
+                    [
+                        "^\\w", // External
+                        "^\\u0000", // External side effect
+                        "^@pixi/", // @pixi/*
+                        "^\\u0000@pixi/", // @pixi/* side effect
+                        "^\\.", // Relative
+                        "^\\u0000\\.", // Relative side effect
+                        "^" // Others
+                    ],
+                    [
+                        "^\\w.*\\u0000$", // External types
+                        "^@pixi/.*\\u0000$", // @pixi/* types
+                        "^\\..*\\u0000$", // Relative types
+                        "\\u0000$" // Other types
+                    ]
                 ]
-            ]
-        }],
+            }
+        ],
         "simple-import-sort/exports": 1,
 
         "spaced-comment": [1, "always", { "markers": ["/"] }],
@@ -48,10 +54,7 @@
         "@typescript-eslint/consistent-type-imports": [1, { "disallowTypeAnnotations": false }],
         "@typescript-eslint/no-parameter-properties": 1,
         "@typescript-eslint/type-annotation-spacing": 1,
-        "jsdoc/multiline-blocks": [
-            1,
-            { "noMultilineBlocks": true, "minimumLengthForMultiline": 115 }
-        ],
+        "jsdoc/multiline-blocks": [1, { "noMultilineBlocks": true, "minimumLengthForMultiline": 115 }],
         "jsdoc/check-access": 1,
         "jsdoc/check-alignment": 1,
         "jsdoc/check-param-names": 1,
@@ -83,10 +86,7 @@
         "jsdoc/require-param": 1,
         "jsdoc/require-param-description": 0,
         "jsdoc/require-param-name": 1,
-        "jsdoc/require-param-type": [
-            "warn",
-            { "contexts": ["TSMethodSignature"] }
-        ],
+        "jsdoc/require-param-type": ["warn", { "contexts": ["TSMethodSignature"] }],
         "jsdoc/require-property": 1,
         "jsdoc/require-property-description": 1,
         "jsdoc/require-property-name": 1,
@@ -97,7 +97,10 @@
         "jsdoc/valid-types": 1,
         "no-mixed-operators": "off",
         "no-mixed-operators/no-mixed-operators": 1,
-        "@typescript-eslint/no-unused-expressions": [1, {"allowShortCircuit": true}]
+        "@typescript-eslint/no-unused-expressions": [1, { "allowShortCircuit": true }],
+        "@typescript-eslint/no-floating-promises": "error",
+        "@typescript-eslint/prefer-readonly": "error",
+        "no-void": ["error", { "allowAsStatement": true }]
     },
     "overrides": [
         {

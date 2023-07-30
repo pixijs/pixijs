@@ -19,7 +19,7 @@ import type { PromiseAndParser } from './types';
  */
 export class Loader
 {
-    private _parsers: LoaderParser[] = [];
+    private readonly _parsers: LoaderParser[] = [];
     private _parserHash: Record<string, LoaderParser>;
 
     private _parsersValidated = false;

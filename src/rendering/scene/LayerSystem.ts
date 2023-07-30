@@ -29,7 +29,7 @@ export class LayerSystem implements System
         name: 'layer',
     } as const;
 
-    private renderer: Renderer;
+    private readonly renderer: Renderer;
 
     constructor(renderer: Renderer)
     {

@@ -31,7 +31,7 @@ export class GpuScissorMaskPipe implements InstructionPipe<ScissorMaskInstructio
         name: 'scissorMask',
     };
 
-    private renderer: WebGPURenderer;
+    private readonly renderer: WebGPURenderer;
 
     constructor(renderer: WebGPURenderer)
     {

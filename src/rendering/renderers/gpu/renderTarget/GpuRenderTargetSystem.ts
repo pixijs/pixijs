@@ -34,12 +34,12 @@ export class GpuRenderTargetSystem implements System
     renderTarget: RenderTarget;
     onRenderTargetChange = new SystemRunner('onRenderTargetChange');
 
-    private renderSurfaceToRenderTargetHash: Map<RenderSurface, RenderTarget>
+    private readonly renderSurfaceToRenderTargetHash: Map<RenderSurface, RenderTarget>
         = new Map();
     private gpuRenderTargetHash: Record<number, GpuRenderTarget> = {};
 
-    private renderTargetStack: RenderTarget[] = [];
-    private renderer: WebGPURenderer;
+    private readonly renderTargetStack: RenderTarget[] = [];
+    private readonly renderer: WebGPURenderer;
 
     private gpu: GPU;
 

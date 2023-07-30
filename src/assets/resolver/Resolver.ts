@@ -71,7 +71,7 @@ export interface BundleIdentifierOptions
  */
 export class Resolver
 {
-    private _defaultBundleIdentifierOptions: Required<BundleIdentifierOptions> = {
+    private readonly _defaultBundleIdentifierOptions: Required<BundleIdentifierOptions> = {
         connector: '-',
         createBundleAssetId: (bundleId, assetId) =>
             `${bundleId}${this._bundleIdConnector}${assetId}`,
@@ -106,7 +106,7 @@ export class Resolver
 
     private _assetMap: Record<string, ResolvedAsset[]> = {};
     private _preferredOrder: PreferOrder[] = [];
-    private _parsers: ResolveURLParser[] = [];
+    private readonly _parsers: ResolveURLParser[] = [];
 
     private _resolverHash: Record<string, ResolvedAsset> = {};
     private _rootPath: string;

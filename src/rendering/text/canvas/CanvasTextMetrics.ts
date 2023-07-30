@@ -161,13 +161,13 @@ export class CanvasTextMetrics
     private static _fonts: Record<string, FontMetrics> = {};
 
     /** Cache of new line chars. */
-    private static _newlines: number[] = [
+    private static readonly _newlines: number[] = [
         0x000A, // line feed
         0x000D, // carriage return
     ];
 
     /** Cache of breaking spaces. */
-    private static _breakingSpaces: number[] = [
+    private static readonly _breakingSpaces: number[] = [
         0x0009, // character tabulation
         0x0020, // space
         0x2000, // en quad
@@ -187,7 +187,7 @@ export class CanvasTextMetrics
     private static __canvas: ICanvas;
     private static __context: ICanvasRenderingContext2D;
 
-    private static _measurementCache: Record<string, CanvasTextMetrics> = {};
+    private static readonly _measurementCache: Record<string, CanvasTextMetrics> = {};
 
     /**
      * @param text - the text that was measured

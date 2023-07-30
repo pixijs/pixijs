@@ -50,8 +50,8 @@ export class RenderTarget
     dirtyId = 0;
     isRoot = false;
 
-    private _viewport: Rectangle;
-    private _projectionMatrix = new Matrix();
+    private readonly _viewport: Rectangle;
+    private readonly _projectionMatrix = new Matrix();
 
     constructor(descriptor: RenderTargetDescriptor = {})
     {

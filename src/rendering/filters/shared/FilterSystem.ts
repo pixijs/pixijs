@@ -96,9 +96,9 @@ export class FilterSystem implements System
     private filterStackIndex = 0;
     private filterStack: FilterData[] = [];
 
-    private renderer: Renderer;
+    private readonly renderer: Renderer;
 
-    private filterGlobalUniforms = new UniformGroup({
+    private readonly filterGlobalUniforms = new UniformGroup({
         inputSize: { value: new Float32Array(4), type: 'vec4<f32>' },
         inputPixel: { value: new Float32Array(4), type: 'vec4<f32>' },
         inputClamp: { value: new Float32Array(4), type: 'vec4<f32>' },
@@ -107,7 +107,7 @@ export class FilterSystem implements System
         globalFrame: { value: new Float32Array(4), type: 'vec4<f32>' },
     });
 
-    private globalFilterBindGroup: BindGroup = new BindGroup({});
+    private readonly globalFilterBindGroup: BindGroup = new BindGroup({});
     private activeFilterData: FilterData;
 
     constructor(renderer: Renderer)

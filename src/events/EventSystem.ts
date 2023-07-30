@@ -198,8 +198,8 @@ export class EventSystem implements System<EventSystemOptions>
     public readonly features: EventSystemFeatures;
 
     private currentCursor: string;
-    private rootPointerEvent: FederatedPointerEvent;
-    private rootWheelEvent: FederatedWheelEvent;
+    private readonly rootPointerEvent: FederatedPointerEvent;
+    private readonly rootWheelEvent: FederatedWheelEvent;
     private eventsAdded: boolean;
 
     /**

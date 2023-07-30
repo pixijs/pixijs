@@ -111,7 +111,7 @@ export class Ticker
      * any animation API, just invoke ticker.update(time).
      * @param time - Time since last tick.
      */
-    private _tick: (time: number) => any;
+    private readonly _tick: (time: number) => any;
 
     constructor()
     {

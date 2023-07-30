@@ -34,17 +34,17 @@ export class GlRenderTargetSystem implements System
     // multiRender = true;
     private gl: GlRenderingContext;
 
-    private renderSurfaceToRenderTargetHash: Map<RenderSurface, RenderTarget> = new Map();
+    private readonly renderSurfaceToRenderTargetHash: Map<RenderSurface, RenderTarget> = new Map();
     private gpuRenderTargetHash: Record<number, GlRenderTarget> = {};
 
-    private renderer: WebGLRenderer;
+    private readonly renderer: WebGLRenderer;
 
-    private renderTargetStack: RenderTarget[] = [];
+    private readonly renderTargetStack: RenderTarget[] = [];
 
-    private defaultClearColor: RGBAArray = [0, 0, 0, 0];
-    private clearColorCache: RGBAArray = [0, 0, 0, 0];
+    private readonly defaultClearColor: RGBAArray = [0, 0, 0, 0];
+    private readonly clearColorCache: RGBAArray = [0, 0, 0, 0];
 
-    private viewPortCache = {
+    private readonly viewPortCache = {
         x: 0,
         y: 0,
         width: 0,
