@@ -35,7 +35,7 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
     public resolution = 1;
     public override readonly pages: {canvasAndContext?: CanvasAndContext, texture: Texture}[] = [];
 
-    private readonly _padding = 4;
+    private readonly _padding;
     private readonly _measureCache: Record<string, number> = {};
     private _currentChars: string[] = [];
     private _currentX = 0;
@@ -43,7 +43,7 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
     private _currentPageIndex = -1;
     private readonly _style: TextStyle;
 
-    private readonly _skipKerning = false;
+    private readonly _skipKerning;
 
     constructor(options: DynamicBitmapFontOptions)
     {
