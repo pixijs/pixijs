@@ -96,7 +96,8 @@
         "jsdoc/tag-lines": 1,
         "jsdoc/valid-types": 1,
         "no-mixed-operators": "off",
-        "no-mixed-operators/no-mixed-operators": 1
+        "no-mixed-operators/no-mixed-operators": 1,
+        "@typescript-eslint/no-unused-expressions": [1, {"allowShortCircuit": true}]
     },
     "overrides": [
         {

@@ -1,4 +1,4 @@
-import type { BitmapFontData, RawCharData } from '../BitmapFont';
+import type { BitmapFontData, RawCharData } from '../AbstractBitmapFont';
 
 export const XMLFormat = {
     test(data: unknown): boolean
@@ -29,8 +29,8 @@ export const XMLFormat = {
         if (distanceField)
         {
             data.distanceField = {
-                fieldType: distanceField.getAttribute('fieldType') as 'sdf' | 'msdf' | 'none',
-                distanceRange: parseInt(distanceField.getAttribute('distanceRange'), 10),
+                type: distanceField.getAttribute('fieldType') as 'sdf' | 'msdf' | 'none',
+                range: parseInt(distanceField.getAttribute('distanceRange'), 10),
             };
         }
 
