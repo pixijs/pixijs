@@ -32,7 +32,7 @@ export class Texture extends EventEmitter<{
     update: Texture
 }> implements BindableTexture
 {
-    static from(id: string | TextureSource | TextureSourceOptions): Texture
+    public static from(id: string | TextureSource | TextureSourceOptions): Texture
     {
         if (typeof id === 'string')
         {
@@ -56,11 +56,10 @@ export class Texture extends EventEmitter<{
     private _style: TextureStyle;
     private _textureMatrix: TextureMatrix;
 
-    /**
-     * @internal
-     */
-    _layout: TextureLayout;
-    _source: TextureSource;
+    /** @internal */
+    public _layout: TextureLayout;
+    /** @internal */
+    public _source: TextureSource;
 
     constructor({ source, style, layout, label }: TextureOptions = {})
     {
@@ -208,7 +207,7 @@ export class Texture extends EventEmitter<{
      * Destroys this texture
      * @param destroySource - Destroy the source when the texture is destroyed.
      */
-    destroy(destroySource = false)
+    public destroy(destroySource = false)
     {
         if (this._style)
         {
@@ -259,8 +258,8 @@ export class Texture extends EventEmitter<{
         return this._source;
     }
 
-    static EMPTY: Texture;
-    static WHITE: Texture;
+    public static EMPTY: Texture;
+    public static WHITE: Texture;
 }
 
 Texture.EMPTY = new Texture({

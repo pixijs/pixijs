@@ -61,12 +61,12 @@ describe('Text', () =>
 
         renderer.render({ container });
 
-        expect(renderer.canvasText['activeTextures'][key].usageCount).toBe(1);
+        expect(renderer.canvasText['_activeTextures'][key].usageCount).toBe(1);
 
         text.destroy();
 
-        expect(renderer.renderPipes.text['gpuText'][text.uid]).toBeNull();
-        expect(renderer.canvasText['activeTextures'][key]).toBeNull();
+        expect(renderer.renderPipes.text['_gpuText'][text.uid]).toBeNull();
+        expect(renderer.canvasText['_activeTextures'][key]).toBeNull();
     });
 
     it('should destroy bitmap text correctly on the pipes and systems', async () =>
@@ -81,10 +81,10 @@ describe('Text', () =>
 
         renderer.render({ container });
 
-        expect(renderer.renderPipes.bitmapText['gpuBitmapText'][text.uid]).not.toBeNull();
+        expect(renderer.renderPipes.bitmapText['_gpuBitmapText'][text.uid]).not.toBeNull();
 
         text.destroy();
 
-        expect(renderer.renderPipes.bitmapText['gpuBitmapText'][text.uid]).toBeNull();
+        expect(renderer.renderPipes.bitmapText['_gpuBitmapText'][text.uid]).toBeNull();
     });
 });

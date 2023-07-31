@@ -14,7 +14,7 @@ let gpuSpriteHash: Record<number, BatchableSprite>;
 export class SpritePipe implements RenderPipe<SpriteView>
 {
     /** @ignore */
-    static extension = {
+    public static extension = {
         type: [
             ExtensionType.WebGLPipes,
             ExtensionType.WebGPUPipes,
@@ -23,38 +23,38 @@ export class SpritePipe implements RenderPipe<SpriteView>
         name: 'sprite',
     } as const;
 
-    private renderer: Renderer;
-    private gpuSpriteHash: Record<number, BatchableSprite> = {};
+    private _renderer: Renderer;
+    private _gpuSpriteHash: Record<number, BatchableSprite> = {};
 
     constructor(renderer: Renderer)
     {
-        this.renderer = renderer;
-        gpuSpriteHash = this.gpuSpriteHash;
+        this._renderer = renderer;
+        gpuSpriteHash = this._gpuSpriteHash;
     }
 
-    addRenderable(renderable: Renderable<SpriteView>, instructionSet: InstructionSet)
+    public addRenderable(renderable: Renderable<SpriteView>, instructionSet: InstructionSet)
     {
-        const gpuSprite = this.getGpuSprite(renderable);
+        const gpuSprite = this._getGpuSprite(renderable);
 
-        if (renderable.view._didUpdate) this.updateBatchableSprite(renderable, gpuSprite);
+        if (renderable.view._didUpdate) this._updateBatchableSprite(renderable, gpuSprite);
 
         // TODO visibility
-        this.renderer.renderPipes.batch.addToBatch(gpuSprite, instructionSet);
+        this._renderer.renderPipes.batch.addToBatch(gpuSprite, instructionSet);
     }
 
-    updateRenderable(renderable: Renderable<SpriteView>)
+    public updateRenderable(renderable: Renderable<SpriteView>)
     {
         const gpuSprite = gpuSpriteHash[renderable.uid];
 
-        if (renderable.view._didUpdate) this.updateBatchableSprite(renderable, gpuSprite);
+        if (renderable.view._didUpdate) this._updateBatchableSprite(renderable, gpuSprite);
 
         gpuSprite.batcher.updateElement(gpuSprite);
     }
 
-    validateRenderable(renderable: Renderable<SpriteView>): boolean
+    public validateRenderable(renderable: Renderable<SpriteView>): boolean
     {
         const texture = renderable.view._texture;
-        const gpuSprite = this.getGpuSprite(renderable);
+        const gpuSprite = this._getGpuSprite(renderable);
 
         if (gpuSprite.texture._source !== texture._source)
         {
@@ -64,7 +64,7 @@ export class SpritePipe implements RenderPipe<SpriteView>
         return false;
     }
 
-    destroyRenderable(renderable: Renderable<SpriteView>)
+    public destroyRenderable(renderable: Renderable<SpriteView>)
     {
         const batchableSprite = gpuSpriteHash[renderable.uid];
 
@@ -74,7 +74,7 @@ export class SpritePipe implements RenderPipe<SpriteView>
         gpuSpriteHash[renderable.uid] = null;
     }
 
-    updateBatchableSprite(renderable: Renderable<SpriteView>, batchableSprite: BatchableSprite)
+    private _updateBatchableSprite(renderable: Renderable<SpriteView>, batchableSprite: BatchableSprite)
     {
         const view = renderable.view;
 
@@ -83,12 +83,12 @@ export class SpritePipe implements RenderPipe<SpriteView>
         batchableSprite.texture = view._texture;
     }
 
-    getGpuSprite(renderable: Renderable<SpriteView>): BatchableSprite
+    private _getGpuSprite(renderable: Renderable<SpriteView>): BatchableSprite
     {
-        return gpuSpriteHash[renderable.uid] || this.initGPUSprite(renderable);
+        return gpuSpriteHash[renderable.uid] || this._initGPUSprite(renderable);
     }
 
-    initGPUSprite(renderable: Renderable<SpriteView>): BatchableSprite
+    private _initGPUSprite(renderable: Renderable<SpriteView>): BatchableSprite
     {
         const batchableSprite = BigPool.get(BatchableSprite);
 
@@ -109,14 +109,14 @@ export class SpritePipe implements RenderPipe<SpriteView>
         return batchableSprite;
     }
 
-    destroy()
+    public destroy()
     {
-        for (const i in this.gpuSpriteHash)
+        for (const i in this._gpuSpriteHash)
         {
-            BigPool.return(this.gpuSpriteHash[i] as PoolItem);
+            BigPool.return(this._gpuSpriteHash[i] as PoolItem);
         }
 
-        this.gpuSpriteHash = null;
-        this.renderer = null;
+        this._gpuSpriteHash = null;
+        this._renderer = null;
     }
 }

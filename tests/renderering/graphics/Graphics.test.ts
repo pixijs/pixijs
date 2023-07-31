@@ -42,15 +42,15 @@ describe('Graphics', () =>
 
         expect(graphics.context).toBeNull();
 
-        expect(renderer.renderPipes.graphics['renderableBatchesHash'][graphics.uid]).toBeNull();
+        expect(renderer.renderPipes.graphics['_renderableBatchesHash'][graphics.uid]).toBeNull();
 
-        expect(renderer.graphicsContext['gpuContextHash'][context.uid]).not.toBeNull();
-        expect(renderer.graphicsContext['gpuContextHash'][context.uid]).not.toBeNull();
+        expect(renderer.graphicsContext['_gpuContextHash'][context.uid]).not.toBeNull();
+        expect(renderer.graphicsContext['_gpuContextHash'][context.uid]).not.toBeNull();
 
         context.destroy(true);
 
-        expect(renderer.graphicsContext['gpuContextHash'][context.uid]).toBeNull();
-        expect(renderer.graphicsContext['gpuContextHash'][context.uid]).toBeNull();
+        expect(renderer.graphicsContext['_gpuContextHash'][context.uid]).toBeNull();
+        expect(renderer.graphicsContext['_gpuContextHash'][context.uid]).toBeNull();
 
         expect(context.instructions).toBeNull();
     });

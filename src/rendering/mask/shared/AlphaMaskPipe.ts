@@ -16,6 +16,7 @@ import type { InstructionPipe } from '../../renderers/shared/instructions/Render
 import type { RenderTarget } from '../../renderers/shared/renderTarget/RenderTarget';
 import type { Renderer } from '../../renderers/types';
 import type { Container } from '../../scene/Container';
+import type { Effect } from '../../scene/Effect';
 import type { AlphaMask } from './AlphaMask';
 
 type MaskMode = 'pushMaskBegin' | 'pushMaskEnd' | 'popMaskBegin' | 'popMaskEnd';
@@ -43,7 +44,7 @@ class AlphaMaskEffect extends FilterEffect implements PoolItem
         (this.filters[0] as MaskFilter).sprite = value;
     }
 
-    init: () => void;
+    public init: () => void;
 }
 
 export interface AlphaMaskInstruction extends Instruction
@@ -66,7 +67,7 @@ export interface AlphaMaskData
 export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
 {
     /** @ignore */
-    static extension = {
+    public static extension = {
         type: [
             ExtensionType.WebGLPipes,
             ExtensionType.WebGPUPipes,
@@ -75,17 +76,17 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
         name: 'alphaMask',
     } as const;
 
-    private renderer: Renderer;
-    private activeMaskStage: AlphaMaskData[] = [];
+    private _renderer: Renderer;
+    private _activeMaskStage: AlphaMaskData[] = [];
 
     constructor(renderer: Renderer)
     {
-        this.renderer = renderer;
+        this._renderer = renderer;
     }
 
-    push(mask: AlphaMask, maskedContainer: Container, instructionSet: InstructionSet): void
+    public push(mask: Effect, maskedContainer: Container, instructionSet: InstructionSet): void
     {
-        const renderer = this.renderer;
+        const renderer = this._renderer;
 
         renderer.renderPipes.batch.break(instructionSet);
 
@@ -97,9 +98,9 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
             maskedContainer
         } as AlphaMaskInstruction);
 
-        if (mask.renderMaskToTexture)
+        if ((mask as AlphaMask).renderMaskToTexture)
         {
-            const maskContainer = mask.mask;
+            const maskContainer = (mask as AlphaMask).mask;
 
             maskContainer.includeInBuild = true;
 
@@ -123,9 +124,9 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
         } as AlphaMaskInstruction);
     }
 
-    pop(mask: AlphaMask, _maskedContainer: Container, instructionSet: InstructionSet): void
+    public pop(mask: Effect, _maskedContainer: Container, instructionSet: InstructionSet): void
     {
-        const renderer = this.renderer;
+        const renderer = this._renderer;
 
         renderer.renderPipes.batch.break(instructionSet);
 
@@ -137,9 +138,9 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
         } as AlphaMaskInstruction);
     }
 
-    execute(instruction: AlphaMaskInstruction)
+    public execute(instruction: AlphaMaskInstruction)
     {
-        const renderer = this.renderer;
+        const renderer = this._renderer;
         const renderMask = instruction.mask.renderMaskToTexture;
 
         if (instruction.action === 'pushMaskBegin')
@@ -179,7 +180,7 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
                 sprite.worldTransform.tx = bounds.minX;
                 sprite.worldTransform.ty = bounds.minY;
 
-                this.activeMaskStage.push({
+                this._activeMaskStage.push({
 
                     filterEffect,
                     maskedContainer: instruction.maskedContainer,
@@ -190,7 +191,7 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
             {
                 filterEffect.sprite = instruction.mask.mask as Sprite;
 
-                this.activeMaskStage.push({
+                this._activeMaskStage.push({
                     filterEffect,
                     maskedContainer: instruction.maskedContainer,
                 });
@@ -198,7 +199,7 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
         }
         else if (instruction.action === 'pushMaskEnd')
         {
-            const maskData = this.activeMaskStage[this.activeMaskStage.length - 1];
+            const maskData = this._activeMaskStage[this._activeMaskStage.length - 1];
 
             if (renderMask)
             {
@@ -218,7 +219,7 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
         {
             renderer.filter.pop();
 
-            const maskData = this.activeMaskStage.pop();
+            const maskData = this._activeMaskStage.pop();
 
             if (renderMask)
             {
@@ -229,10 +230,9 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
         }
     }
 
-    destroy(): void
+    public destroy(): void
     {
-        this.renderer = null;
-
-        this.activeMaskStage = null;
+        this._renderer = null;
+        this._activeMaskStage = null;
     }
 }

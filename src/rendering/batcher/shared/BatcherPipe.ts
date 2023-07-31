@@ -20,7 +20,7 @@ export interface BatcherAdaptor
 export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
 {
     /** @ignore */
-    static extension = {
+    public static extension = {
         type: [
             ExtensionType.WebGLPipes,
             ExtensionType.WebGPUPipes,
@@ -29,34 +29,27 @@ export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
         name: 'batch',
     } as const;
 
-    toUpdate: BatchableObject[] = [];
-    instructionSet: InstructionSet;
-    activeBatcher: {
-        geometry: Geometry;
-        batcher: Batcher
-    };
+    public state: State = State.for2d();
+    public renderer: Renderer;
 
-    // shader: GpuShader;
-    state: State = State.for2d();
-    lastBatch: number;
+    private _lastBatch: number;
     private _batches: Record<number, {
         geometry: Geometry;
         batcher: Batcher
     }> = {};
-    renderer: Renderer;
-    adaptor: BatcherAdaptor;
+    private _adaptor: BatcherAdaptor;
 
     constructor(renderer: Renderer, adaptor: BatcherAdaptor)
     {
         this.renderer = renderer;
-        this.adaptor = adaptor;
+        this._adaptor = adaptor;
 
-        this.adaptor.init();
+        this._adaptor.init();
     }
 
-    buildStart(instructionSet: InstructionSet)
+    public buildStart(instructionSet: InstructionSet)
     {
-        this.lastBatch = 0;
+        this._lastBatch = 0;
 
         if (!this._batches[instructionSet.uid])
         {
@@ -69,12 +62,12 @@ export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
         this._batches[instructionSet.uid].batcher.begin();
     }
 
-    addToBatch(batchableObject: BatchableObject, instructionSet: InstructionSet)
+    public addToBatch(batchableObject: BatchableObject, instructionSet: InstructionSet)
     {
         this._batches[instructionSet.uid].batcher.add(batchableObject);
     }
 
-    break(instructionSet: InstructionSet)
+    public break(instructionSet: InstructionSet)
     {
         const batcher = this._batches[instructionSet.uid].batcher;
 
@@ -82,9 +75,9 @@ export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
 
         batcher.break(hardBreak);
 
-        while (this.lastBatch < batcher.batchIndex)
+        while (this._lastBatch < batcher.batchIndex)
         {
-            const batch = batcher.batches[this.lastBatch++];
+            const batch = batcher.batches[this._lastBatch++];
 
             // TODO feel we can avoid this check...
             if (batch.elementSize !== 0)
@@ -96,7 +89,7 @@ export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
         }
     }
 
-    buildEnd(instructionSet: InstructionSet)
+    public buildEnd(instructionSet: InstructionSet)
     {
         this.break(instructionSet);
 
@@ -113,7 +106,7 @@ export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
         geometry.indexBuffer.update(batcher.indexSize * 4);
     }
 
-    upload(instructionSet: InstructionSet)
+    public upload(instructionSet: InstructionSet)
     {
         const activeBatcher = this._batches[instructionSet.uid];
 
@@ -129,22 +122,19 @@ export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
         }
     }
 
-    execute(batch: Batch)
+    public execute(batch: Batch)
     {
-        this.adaptor.execute(this, batch);
+        this._adaptor.execute(this, batch);
     }
 
-    destroy()
+    public destroy()
     {
-        this.toUpdate = null;
-        this.instructionSet = null;
-        this.activeBatcher = null;
         this.state = null;
         this._batches = null;
         this.renderer = null;
 
-        this.adaptor.destroy();
-        this.adaptor = null;
+        this._adaptor.destroy();
+        this._adaptor = null;
 
         for (const i in this._batches)
         {

@@ -5,6 +5,7 @@ import type { InstructionSet } from '../../renderers/shared/instructions/Instruc
 import type { InstructionPipe } from '../../renderers/shared/instructions/RenderPipe';
 import type { Renderer } from '../../renderers/types';
 import type { Container } from '../../scene/Container';
+import type { Effect } from '../../scene/Effect';
 import type { ColorMask } from './ColorMask';
 
 export interface ColorMaskInstruction extends Instruction
@@ -16,7 +17,7 @@ export interface ColorMaskInstruction extends Instruction
 export class ColorMaskPipe implements InstructionPipe<ColorMaskInstruction>
 {
     /** @ignore */
-    static extension = {
+    public static extension = {
         type: [
             ExtensionType.WebGLPipes,
             ExtensionType.WebGPUPipes,
@@ -25,38 +26,38 @@ export class ColorMaskPipe implements InstructionPipe<ColorMaskInstruction>
         name: 'colorMask',
     } as const;
 
-    private readonly renderer: Renderer;
-    private colorStack: number[] = [];
-    private colorStackIndex = 0;
-    private currentColor = 0;
+    private readonly _renderer: Renderer;
+    private _colorStack: number[] = [];
+    private _colorStackIndex = 0;
+    private _currentColor = 0;
 
     constructor(renderer: Renderer)
     {
-        this.renderer = renderer;
+        this._renderer = renderer;
     }
 
-    buildStart()
+    public buildStart()
     {
-        this.colorStack[0] = 0xF;
-        this.colorStackIndex = 1;
-        this.currentColor = 0xF;
+        this._colorStack[0] = 0xF;
+        this._colorStackIndex = 1;
+        this._currentColor = 0xF;
     }
 
-    push(mask: ColorMask, _container: Container, instructionSet: InstructionSet): void
+    public push(mask: Effect, _container: Container, instructionSet: InstructionSet): void
     {
-        const renderer = this.renderer;
+        const renderer = this._renderer;
 
         renderer.renderPipes.batch.break(instructionSet);
 
-        const colorStack = this.colorStack;
+        const colorStack = this._colorStack;
 
-        colorStack[this.colorStackIndex] = colorStack[this.colorStackIndex - 1] & mask.mask;
+        colorStack[this._colorStackIndex] = colorStack[this._colorStackIndex - 1] & (mask as ColorMask).mask;
 
-        const currentColor = this.colorStack[this.colorStackIndex];
+        const currentColor = this._colorStack[this._colorStackIndex];
 
-        if (currentColor !== this.currentColor)
+        if (currentColor !== this._currentColor)
         {
-            this.currentColor = currentColor;
+            this._currentColor = currentColor;
             instructionSet.add({
                 type: 'colorMask',
                 colorMask: currentColor,
@@ -64,24 +65,24 @@ export class ColorMaskPipe implements InstructionPipe<ColorMaskInstruction>
             } as ColorMaskInstruction);
         }
 
-        this.colorStackIndex++;
+        this._colorStackIndex++;
     }
 
-    pop(_mask: ColorMask, _container: Container, instructionSet: InstructionSet): void
+    public pop(_mask: Effect, _container: Container, instructionSet: InstructionSet): void
     {
-        const renderer = this.renderer;
+        const renderer = this._renderer;
 
         renderer.renderPipes.batch.break(instructionSet);
 
-        const colorStack = this.colorStack;
+        const colorStack = this._colorStack;
 
-        this.colorStackIndex--;
+        this._colorStackIndex--;
 
-        const currentColor = colorStack[this.colorStackIndex - 1];
+        const currentColor = colorStack[this._colorStackIndex - 1];
 
-        if (currentColor !== this.currentColor)
+        if (currentColor !== this._currentColor)
         {
-            this.currentColor = currentColor;
+            this._currentColor = currentColor;
 
             instructionSet.add({
                 type: 'colorMask',
@@ -91,15 +92,15 @@ export class ColorMaskPipe implements InstructionPipe<ColorMaskInstruction>
         }
     }
 
-    execute(instruction: ColorMaskInstruction)
+    public execute(instruction: ColorMaskInstruction)
     {
-        const renderer = this.renderer;
+        const renderer = this._renderer;
 
         renderer.colorMask.setMask(instruction.colorMask);
     }
 
-    destroy()
+    public destroy()
     {
-        this.colorStack = null;
+        this._colorStack = null;
     }
 }

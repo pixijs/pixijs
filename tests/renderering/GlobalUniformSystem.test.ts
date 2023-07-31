@@ -165,25 +165,25 @@ describe('GlobalUniformSystem', () =>
             worldTransformMatrix: new Matrix(2, 2, 2, 2, 2, 2),
         });
 
-        expect(globalUniformSystem['activeUniforms'].length).toEqual(3);
-        expect(globalUniformSystem['activeBindGroups'].length).toEqual(3);
+        expect(globalUniformSystem['_activeUniforms'].length).toEqual(3);
+        expect(globalUniformSystem['_activeBindGroups'].length).toEqual(3);
 
         globalUniformSystem.pop();
 
-        expect(globalUniformSystem['activeBindGroups'].length).toEqual(3);
+        expect(globalUniformSystem['_activeBindGroups'].length).toEqual(3);
 
         globalUniformSystem.push({
             worldTransformMatrix: new Matrix(2, 2, 2, 2, 2, 2),
         });
 
-        expect(globalUniformSystem['activeBindGroups'].length).toEqual(4);
+        expect(globalUniformSystem['_activeBindGroups'].length).toEqual(4);
 
         // start again!
         globalUniformSystem.reset();
 
-        expect(globalUniformSystem['stackIndex']).toEqual(0);
-        expect(globalUniformSystem['activeUniforms'].length).toEqual(0);
-        expect(globalUniformSystem['activeBindGroups'].length).toEqual(0);
+        expect(globalUniformSystem['_stackIndex']).toEqual(0);
+        expect(globalUniformSystem['_activeUniforms'].length).toEqual(0);
+        expect(globalUniformSystem['_activeBindGroups'].length).toEqual(0);
     });
 
     it('should store color correctly second time', async () =>

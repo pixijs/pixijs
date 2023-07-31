@@ -2,27 +2,27 @@ import type { Buffer } from '../../shared/buffer/Buffer';
 
 export class UniformBufferBatch
 {
-    buffer: Buffer;
-    data: Float32Array;
-    minUniformOffsetAlignment = 256;
+    private _buffer: Buffer;
+    public data: Float32Array;
+    private readonly _minUniformOffsetAlignment: number = 256;
 
-    byteIndex = 0;
+    public byteIndex = 0;
 
     constructor({ minUniformOffsetAlignment }: {minUniformOffsetAlignment: number})
     {
-        this.minUniformOffsetAlignment = minUniformOffsetAlignment;
+        this._minUniformOffsetAlignment = minUniformOffsetAlignment;
         this.data = new Float32Array(65535);
     }
 
-    clear(): void
+    public clear(): void
     {
         this.byteIndex = 0;
     }
 
-    addEmptyGroup(size: number): number
+    public addEmptyGroup(size: number): number
     {
         // update the buffer.. only float32 for now!
-        if (size > this.minUniformOffsetAlignment / 4)
+        if (size > this._minUniformOffsetAlignment / 4)
         {
             throw new Error(`UniformBufferBatch: array is too large: ${size * 4}`);
         }
@@ -31,13 +31,11 @@ export class UniformBufferBatch
 
         let newSize = start + (size * 4);
 
-        newSize = Math.ceil(newSize / this.minUniformOffsetAlignment) * this.minUniformOffsetAlignment;
+        newSize = Math.ceil(newSize / this._minUniformOffsetAlignment) * this._minUniformOffsetAlignment;
 
         if (newSize > this.data.length * 4)
         {
             // TODO push a new buffer
-            // then resize at the end?
-            // this._resizeBuffer(newSize);
             throw new Error('UniformBufferBatch: ubo batch got too big');
         }
 
@@ -46,7 +44,7 @@ export class UniformBufferBatch
         return start;
     }
 
-    addGroup(array: Float32Array): number
+    public addGroup(array: Float32Array): number
     {
         const offset = this.addEmptyGroup(array.length);
 
@@ -58,15 +56,10 @@ export class UniformBufferBatch
         return offset;
     }
 
-    upload()
+    public destroy()
     {
-        // TODO
-    }
-
-    destroy()
-    {
-        this.buffer.destroy();
-        this.buffer = null;
+        this._buffer.destroy();
+        this._buffer = null;
 
         this.data = null;
     }

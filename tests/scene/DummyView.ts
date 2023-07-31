@@ -7,19 +7,19 @@ import type { Bounds } from '../../src/rendering/scene/bounds/Bounds';
 
 export class DummyView extends EventEmitter implements View
 {
-    owner: ViewObserver;
-    uid: number;
-    batched: boolean;
-    type = 'dummy';
-    renderableUpdateRequested: boolean;
-    onUpdate: () => void;
-    addBounds = (bounds: Bounds) =>
+    public owner: ViewObserver;
+    public uid: number;
+    public batched: boolean;
+    public type = 'dummy';
+    public renderableUpdateRequested: boolean;
+    public onUpdate: () => void;
+    public addBounds = (bounds: Bounds) =>
     {
         bounds.addFrame(this.size.x, this.size.y, this.size.width, this.size.height);
     };
-    containsPoint: (point: Point) => boolean;
-    destroy: () => void;
-    size: Rectangle;
+    public containsPoint: (point: Point) => boolean;
+    public destroy: () => void;
+    public size: Rectangle;
     constructor(x = 0, y = 0, width = 100, height = 100)
     {
         super();

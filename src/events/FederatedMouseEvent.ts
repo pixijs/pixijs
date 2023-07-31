@@ -14,25 +14,25 @@ MouseEvent | PointerEvent | PixiTouch
 > implements MouseEvent
 {
     /** Whether the "alt" key was pressed when this mouse event occurred. */
-    altKey: boolean;
+    public altKey: boolean;
 
     /** The specific button that was pressed in this mouse event. */
-    button: number;
+    public button: number;
 
     /** The button depressed when this event occurred. */
-    buttons: number;
+    public buttons: number;
 
     /** Whether the "control" key was pressed when this mouse event occurred. */
-    ctrlKey: boolean;
+    public ctrlKey: boolean;
 
     /** Whether the "meta" key was pressed when this mouse event occurred. */
-    metaKey: boolean;
+    public metaKey: boolean;
 
     /** This is currently not implemented in the Federated Events API. */
-    relatedTarget: EventTarget;
+    public relatedTarget: EventTarget;
 
     /** Whether the "shift" key was pressed when this mouse event occurred. */
-    shiftKey: boolean;
+    public shiftKey: boolean;
 
     /** The coordinates of the mouse event relative to the canvas. */
     public client: Point = new Point();
@@ -123,7 +123,7 @@ MouseEvent | PointerEvent | PixiTouch
      * Whether the modifier key was pressed when this event natively occurred.
      * @param key - The modifier key.
      */
-    getModifierState(key: string): boolean
+    public getModifierState(key: string): boolean
     {
         return 'getModifierState' in this.nativeEvent && this.nativeEvent.getModifierState(key);
     }
@@ -148,7 +148,7 @@ MouseEvent | PointerEvent | PixiTouch
      * @deprecated since 7.0.0
      */
     // eslint-disable-next-line max-params
-    initMouseEvent(
+    public initMouseEvent(
         _typeArg: string,
         _canBubbleArg: boolean,
         _cancelableArg: boolean,

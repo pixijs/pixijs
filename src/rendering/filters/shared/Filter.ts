@@ -24,7 +24,7 @@ export class Filter extends Shader
      * The default filter settings
      * @static
      */
-    static readonly defaultOptions: Partial<FilterOptions> = {
+    public static readonly defaultOptions: Partial<FilterOptions> = {
         blendMode: 'normal',
         resolution: 1,
         padding: 0,
@@ -53,7 +53,7 @@ export class Filter extends Shader
      * The WebGL state the filter requires to render.
      * @internal
      */
-    _state = State.for2d();
+    public _state = State.for2d();
 
     /**
      * The resolution of the filter. Setting this to be lower will lower the quality but

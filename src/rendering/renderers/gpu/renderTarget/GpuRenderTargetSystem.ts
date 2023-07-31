@@ -23,32 +23,32 @@ export type RGBAArray = [number, number, number, number];
 export class GpuRenderTargetSystem implements System
 {
     /** @ignore */
-    static extension = {
+    public static extension = {
         type: [ExtensionType.WebGPUSystem],
         name: 'renderTarget',
     } as const;
 
-    rootRenderTarget: RenderTarget;
-    renderingToScreen: boolean;
-    rootProjectionMatrix = new Matrix();
-    renderTarget: RenderTarget;
-    onRenderTargetChange = new SystemRunner('onRenderTargetChange');
+    public rootRenderTarget: RenderTarget;
+    public renderingToScreen: boolean;
+    public rootProjectionMatrix = new Matrix();
+    public renderTarget: RenderTarget;
+    public onRenderTargetChange = new SystemRunner('onRenderTargetChange');
 
-    private readonly renderSurfaceToRenderTargetHash: Map<RenderSurface, RenderTarget>
+    private readonly _renderSurfaceToRenderTargetHash: Map<RenderSurface, RenderTarget>
         = new Map();
-    private gpuRenderTargetHash: Record<number, GpuRenderTarget> = {};
+    private _gpuRenderTargetHash: Record<number, GpuRenderTarget> = {};
 
-    private readonly renderTargetStack: RenderTarget[] = [];
-    private readonly renderer: WebGPURenderer;
+    private readonly _renderTargetStack: RenderTarget[] = [];
+    private readonly _renderer: WebGPURenderer;
 
-    private gpu: GPU;
+    private _gpu: GPU;
 
     constructor(renderer: WebGPURenderer)
     {
-        this.renderer = renderer;
+        this._renderer = renderer;
     }
 
-    renderStart({
+    public renderStart({
         target,
         clear,
         clearColor,
@@ -61,45 +61,45 @@ export class GpuRenderTargetSystem implements System
         // generate a render pass description..
         // create an encoder..
 
-        this.rootRenderTarget = this.getRenderTarget(target);
+        this.rootRenderTarget = this._getRenderTarget(target);
         this.rootProjectionMatrix = this.rootRenderTarget.projectionMatrix;
 
         this.renderingToScreen = isRenderingToScreen(this.rootRenderTarget);
 
-        this.renderTargetStack.length = 0;
+        this._renderTargetStack.length = 0;
 
-        this.renderer.encoder.start();
+        this._renderer.encoder.start();
 
         this.push(
             this.rootRenderTarget,
             clear,
-            clearColor ?? this.renderer.background.colorRgba
+            clearColor ?? this._renderer.background.colorRgba
         );
     }
 
     protected contextChange(gpu: GPU): void
     {
-        this.gpu = gpu;
+        this._gpu = gpu;
     }
 
-    bind(
+    public bind(
         renderSurface: RenderSurface,
         clear = true,
         clearColor?: RGBAArray
     ): RenderTarget
     {
-        const renderTarget = this.getRenderTarget(renderSurface);
+        const renderTarget = this._getRenderTarget(renderSurface);
 
         this.renderTarget = renderTarget;
 
-        const gpuRenderTarget = this.getGpuRenderTarget(renderTarget);
+        const gpuRenderTarget = this._getGpuRenderTarget(renderTarget);
 
         if (
             renderTarget.width !== gpuRenderTarget.width
             || renderTarget.height !== gpuRenderTarget.height
         )
         {
-            this.resizeGpuRenderTarget(renderTarget);
+            this._resizeGpuRenderTarget(renderTarget);
         }
 
         const descriptor = this.getDescriptor(renderTarget, clear, clearColor);
@@ -108,8 +108,8 @@ export class GpuRenderTargetSystem implements System
 
         // TODO we should not finish a render pass each time we bind
         // for example filters - we would want to push / pop render targets
-        this.renderer.encoder.beginRenderPass(renderTarget, gpuRenderTarget);
-        this.renderer.pipeline.setMultisampleCount(gpuRenderTarget.msaaSamples);
+        this._renderer.encoder.beginRenderPass(renderTarget, gpuRenderTarget);
+        this._renderer.pipeline.setMultisampleCount(gpuRenderTarget.msaaSamples);
 
         this.onRenderTargetChange.emit(renderTarget);
 
@@ -122,27 +122,27 @@ export class GpuRenderTargetSystem implements System
      * @param renderTarget
      * @returns a gpu texture
      */
-    getGpuColorTexture(renderTarget: RenderTarget): GPUTexture
+    private _getGpuColorTexture(renderTarget: RenderTarget): GPUTexture
     {
-        const gpuRenderTarget = this.getGpuRenderTarget(renderTarget);
+        const gpuRenderTarget = this._getGpuRenderTarget(renderTarget);
 
         if (gpuRenderTarget.contexts[0])
         {
             return gpuRenderTarget.contexts[0].getCurrentTexture();
         }
 
-        return this.renderer.texture.getGpuSource(
+        return this._renderer.texture.getGpuSource(
             renderTarget.colorTextures[0].source
         );
     }
 
-    getDescriptor(
+    public getDescriptor(
         renderTarget: RenderTarget,
         clear: boolean,
         clearValue: RGBAArray
     ): GPURenderPassDescriptor
     {
-        const gpuRenderTarget = this.getGpuRenderTarget(renderTarget);
+        const gpuRenderTarget = this._getGpuRenderTarget(renderTarget);
 
         const loadOp = clear ? 'clear' : 'load';
 
@@ -164,13 +164,13 @@ export class GpuRenderTargetSystem implements System
                 }
                 else
                 {
-                    view = this.renderer.texture.getTextureView(texture);
+                    view = this._renderer.texture.getTextureView(texture);
                 }
 
                 if (gpuRenderTarget.msaaTextures[i])
                 {
                     resolveTarget = view;
-                    view = this.renderer.texture.getTextureView(
+                    view = this._renderer.texture.getTextureView(
                         gpuRenderTarget.msaaTextures[i]
                     );
                 }
@@ -190,7 +190,7 @@ export class GpuRenderTargetSystem implements System
         if (renderTarget.depthTexture)
         {
             depthStencilAttachment = {
-                view: this.renderer.texture
+                view: this._renderer.texture
                     .getGpuSource(renderTarget.depthTexture.source)
                     .createView(),
                 stencilStoreOp: 'store' as GPUStoreOp,
@@ -208,43 +208,43 @@ export class GpuRenderTargetSystem implements System
         return descriptor;
     }
 
-    push(renderSurface: RenderSurface, clear = true, clearColor?: RGBAArray)
+    public push(renderSurface: RenderSurface, clear = true, clearColor?: RGBAArray)
     {
         const renderTarget = this.bind(renderSurface, clear, clearColor);
 
-        this.renderTargetStack.push(renderTarget);
+        this._renderTargetStack.push(renderTarget);
 
         return renderTarget;
     }
 
-    pop()
+    public pop()
     {
-        this.renderTargetStack.pop();
+        this._renderTargetStack.pop();
 
         this.bind(
-            this.renderTargetStack[this.renderTargetStack.length - 1],
+            this._renderTargetStack[this._renderTargetStack.length - 1],
             false
         );
     }
 
-    getRenderTarget(renderSurface: RenderSurface): RenderTarget
+    private _getRenderTarget(renderSurface: RenderSurface): RenderTarget
     {
         return (
-            this.renderSurfaceToRenderTargetHash.get(renderSurface)
-            ?? this.initRenderTarget(renderSurface)
+            this._renderSurfaceToRenderTargetHash.get(renderSurface)
+            ?? this._initRenderTarget(renderSurface)
         );
     }
 
-    copyToTexture(
+    public copyToTexture(
         sourceRenderSurfaceTexture: RenderTarget,
         destinationTexture: Texture,
         origin: { x: number; y: number },
         size: { width: number; height: number }
     )
     {
-        const renderer = this.renderer;
+        const renderer = this._renderer;
 
-        const baseGpuTexture = renderer.renderTarget.getGpuColorTexture(
+        const baseGpuTexture = renderer.renderTarget._getGpuColorTexture(
             sourceRenderSurfaceTexture
         );
         const backGpuTexture = renderer.texture.getGpuSource(
@@ -265,17 +265,17 @@ export class GpuRenderTargetSystem implements System
         return destinationTexture;
     }
 
-    restart()
+    public restart()
     {
         this.bind(this.rootRenderTarget, false);
     }
 
-    destroy()
+    public destroy()
     {
         // boom
     }
 
-    private initRenderTarget(renderSurface: RenderSurface): RenderTarget
+    private _initRenderTarget(renderSurface: RenderSurface): RenderTarget
     {
         let renderTarget = null;
 
@@ -298,20 +298,20 @@ export class GpuRenderTargetSystem implements System
 
         renderTarget.isRoot = true;
 
-        this.renderSurfaceToRenderTargetHash.set(renderSurface, renderTarget);
+        this._renderSurfaceToRenderTargetHash.set(renderSurface, renderTarget);
 
         return renderTarget;
     }
 
-    private getGpuRenderTarget(renderTarget: RenderTarget)
+    private _getGpuRenderTarget(renderTarget: RenderTarget)
     {
         return (
-            this.gpuRenderTargetHash[renderTarget.uid]
-            || this.initGpuRenderTarget(renderTarget)
+            this._gpuRenderTargetHash[renderTarget.uid]
+            || this._initGpuRenderTarget(renderTarget)
         );
     }
 
-    private initGpuRenderTarget(renderTarget: RenderTarget): GpuRenderTarget
+    private _initGpuRenderTarget(renderTarget: RenderTarget): GpuRenderTarget
     {
         // always false for WebGPU
         renderTarget.isRoot = true;
@@ -333,7 +333,7 @@ export class GpuRenderTargetSystem implements System
                 try
                 {
                     context.configure({
-                        device: this.gpu.device,
+                        device: this._gpu.device,
                         // eslint-disable-next-line max-len
                         usage:
                             GPUTextureUsage.TEXTURE_BINDING
@@ -376,14 +376,14 @@ export class GpuRenderTargetSystem implements System
             }
         }
 
-        this.gpuRenderTargetHash[renderTarget.uid] = gpuRenderTarget;
+        this._gpuRenderTargetHash[renderTarget.uid] = gpuRenderTarget;
 
         return gpuRenderTarget;
     }
 
-    private resizeGpuRenderTarget(renderTarget: RenderTarget)
+    private _resizeGpuRenderTarget(renderTarget: RenderTarget)
     {
-        const gpuRenderTarget = this.getGpuRenderTarget(renderTarget);
+        const gpuRenderTarget = this._getGpuRenderTarget(renderTarget);
 
         gpuRenderTarget.width = renderTarget.width;
         gpuRenderTarget.height = renderTarget.height;

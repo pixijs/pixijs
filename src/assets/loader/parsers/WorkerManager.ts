@@ -81,14 +81,14 @@ let workerURL: string;
 class WorkerManagerClass
 {
     public worker: Worker;
-    private resolveHash: {
+    private _resolveHash: {
         [key: string]: {
             resolve: (...param: any[]) => void;
             reject: (...param: any[]) => void;
         }
     };
-    private readonly workerPool: Worker[];
-    private readonly queue: {
+    private readonly _workerPool: Worker[];
+    private readonly _queue: {
         id: string;
         arguments: any[];
         resolve: (...param: any[]) => void;
@@ -100,10 +100,10 @@ class WorkerManagerClass
 
     constructor()
     {
-        this.workerPool = [];
-        this.queue = [];
+        this._workerPool = [];
+        this._queue = [];
 
-        this.resolveHash = {};
+        this._resolveHash = {};
     }
 
     public isImageBitmapSupported(): Promise<boolean>
@@ -139,13 +139,13 @@ class WorkerManagerClass
         this._initialized = true;
     }
 
-    private getWorker(): Worker
+    private _getWorker(): Worker
     {
         if (MAX_WORKERS === undefined)
         {
             MAX_WORKERS = navigator.hardwareConcurrency || 4;
         }
-        let worker = this.workerPool.pop();
+        let worker = this._workerPool.pop();
 
         if (!worker && this._createdWorkers < MAX_WORKERS)
         {
@@ -160,33 +160,33 @@ class WorkerManagerClass
 
             worker.addEventListener('message', (event: MessageEvent) =>
             {
-                this.complete(event.data);
+                this._complete(event.data);
 
-                this.returnWorker(event.target as Worker);
-                this.next();
+                this._returnWorker(event.target as Worker);
+                this._next();
             });
         }
 
         return worker;
     }
 
-    private returnWorker(worker: Worker)
+    private _returnWorker(worker: Worker)
     {
-        this.workerPool.push(worker);
+        this._workerPool.push(worker);
     }
 
-    private complete(data: LoadImageBitmapResult): void
+    private _complete(data: LoadImageBitmapResult): void
     {
         if (data.error !== undefined)
         {
-            this.resolveHash[data.uuid].reject(data.error);
+            this._resolveHash[data.uuid].reject(data.error);
         }
         else
         {
-            this.resolveHash[data.uuid].resolve(data.data);
+            this._resolveHash[data.uuid].resolve(data.data);
         }
 
-        this.resolveHash[data.uuid] = null;
+        this._resolveHash[data.uuid] = null;
     }
 
     private async _run(id: string, args: any[]): Promise<any>
@@ -196,20 +196,20 @@ class WorkerManagerClass
 
         const promise = new Promise((resolve, reject) =>
         {
-            this.queue.push({ id, arguments: args, resolve, reject });
+            this._queue.push({ id, arguments: args, resolve, reject });
         });
 
-        this.next();
+        this._next();
 
         return promise;
     }
 
-    private next(): void
+    private _next(): void
     {
         // nothing to do
-        if (!this.queue.length) return;
+        if (!this._queue.length) return;
 
-        const worker = this.getWorker();
+        const worker = this._getWorker();
 
         // no workers available...
         if (!worker)
@@ -217,11 +217,11 @@ class WorkerManagerClass
             return;
         }
 
-        const toDo = this.queue.pop();
+        const toDo = this._queue.pop();
 
         const id = toDo.id;
 
-        this.resolveHash[UUID] = { resolve: toDo.resolve, reject: toDo.reject };
+        this._resolveHash[UUID] = { resolve: toDo.resolve, reject: toDo.reject };
 
         worker.postMessage({
             data: toDo.arguments,

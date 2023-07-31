@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/explicit-member-accessibility */
 import { generateUID } from '../texture/utils/generateUID';
 
 import type { BindResource } from '../../gpu/shader/BindResource';
@@ -19,32 +18,33 @@ export type UniformGroupOptions = {
 
 export class UniformGroup<UNIFORMS extends { [key: string]: UniformData } = any> implements BindResource
 {
-    static DEFAULT: UniformGroupOptions = {
+    public static DEFAULT: UniformGroupOptions = {
         ubo: false,
         isStatic: false,
     };
 
-    readonly uid = generateUID();
+    public readonly uid = generateUID();
 
-    resourceType = 'uniformGroup';
-    resourceId = this.uid;
+    public resourceType = 'uniformGroup';
+    public resourceId = this.uid;
 
-    uniformStructures: UNIFORMS;
-    uniforms: ExtractUniformObject<UNIFORMS>;
+    public uniformStructures: UNIFORMS;
+    public uniforms: ExtractUniformObject<UNIFORMS>;
 
-    ubo: boolean;
+    public ubo: boolean;
 
-    buffer?: Buffer;
+    public buffer?: Buffer;
 
-    isStatic: boolean;
+    public isStatic: boolean;
     // to identify this as a uniform group
-    readonly isUniformGroup = true;
+    public readonly isUniformGroup = true;
 
-    dirtyId = 0;
+    public dirtyId = 0;
 
-    readonly signature: string;
+    public readonly signature: string;
 
-    _syncFunction?: (uniforms: UNIFORMS, data: Float32Array, offset: number) => void;
+    /** @internal */
+    public _syncFunction?: (uniforms: UNIFORMS, data: Float32Array, offset: number) => void;
 
     constructor(uniformStructures: UNIFORMS, options?: UniformGroupOptions)
     {
@@ -77,7 +77,7 @@ export class UniformGroup<UNIFORMS extends { [key: string]: UniformData } = any>
         ).join('-');
     }
 
-    update(): void
+    public update(): void
     {
         this.dirtyId++;
         // dispatch...

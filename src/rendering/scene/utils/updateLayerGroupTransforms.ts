@@ -76,7 +76,7 @@ export function updateTransformAndChildren(container: Container, updateTick: num
 
     if (parent && !parent.isLayerRoot)
     {
-        updateFlags = updateFlags | container.updateFlags;
+        updateFlags = updateFlags | container._updateFlags;
 
         container.layerTransform.appendFrom(
             localTransform,
@@ -90,7 +90,7 @@ export function updateTransformAndChildren(container: Container, updateTick: num
     }
     else
     {
-        updateFlags = container.updateFlags;
+        updateFlags = container._updateFlags;
 
         container.layerTransform.copyFrom(localTransform);
 
@@ -141,6 +141,6 @@ function updateColorBlendVisibility(
         container.layerVisibleRenderable = container.localVisibleRenderable & parent.layerVisibleRenderable;
     }
 
-    container.updateFlags = 0;
+    container._updateFlags = 0;
 }
 

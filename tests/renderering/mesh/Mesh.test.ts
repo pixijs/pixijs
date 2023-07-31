@@ -43,7 +43,7 @@ describe('Mesh', () =>
 
         renderer.render({ container });
 
-        const gpuMesh = renderer.renderPipes.mesh['gpuBatchableMeshHash'][mesh.uid];
+        const gpuMesh = renderer.renderPipes.mesh['_gpuBatchableMeshHash'][mesh.uid];
 
         mesh.destroy();
 
@@ -51,8 +51,8 @@ describe('Mesh', () =>
         expect(mesh.texture).toBeNull();
         expect(mesh.view.owner).toBeNull();
 
-        expect(renderer.renderPipes.mesh['renderableHash'][mesh.uid]).toBeNull();
-        expect(renderer.renderPipes.mesh['gpuBatchableMeshHash'][mesh.uid]).toBeNull();
+        expect(renderer.renderPipes.mesh['_renderableHash'][mesh.uid]).toBeNull();
+        expect(renderer.renderPipes.mesh['_gpuBatchableMeshHash'][mesh.uid]).toBeNull();
 
         expect(gpuMesh.renderable).toBeNull();
     });

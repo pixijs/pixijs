@@ -2,11 +2,9 @@ import type { BindResource } from './BindResource';
 
 export class BindGroup
 {
-    resources: Record<string, BindResource>;
-
-    usageTick = 0;
-    key: string;
-    private dirty = true;
+    public resources: Record<string, BindResource>;
+    public key: string;
+    private _dirty = true;
 
     constructor(resources?: Record<string, BindResource>)
     {
@@ -24,16 +22,16 @@ export class BindGroup
         this.updateKey();
     }
 
-    update()
+    public update()
     {
         this.updateKey();
     }
 
-    updateKey(): void
+    public updateKey(): void
     {
-        if (!this.dirty) return;
+        if (!this._dirty) return;
 
-        this.dirty = false;
+        this._dirty = false;
 
         const keyParts = [];
         let index = 0;
@@ -48,7 +46,7 @@ export class BindGroup
         this.key = keyParts.join('|');
     }
 
-    setResource(resource: BindResource, index: number): void
+    public setResource(resource: BindResource, index: number): void
     {
         const currentResource = this.resources[index];
 
@@ -62,15 +60,15 @@ export class BindGroup
         resource.on?.('change', this.onResourceChange, this);
 
         this.resources[index] = resource;
-        this.dirty = true;
+        this._dirty = true;
     }
 
-    getResource(index: number): BindResource
+    public getResource(index: number): BindResource
     {
         return this.resources[index];
     }
 
-    destroy()
+    public destroy()
     {
         const resources = this.resources;
 
@@ -84,9 +82,9 @@ export class BindGroup
         this.resources = null;
     }
 
-    private onResourceChange()
+    protected onResourceChange()
     {
-        this.dirty = true;
+        this._dirty = true;
         this.update();
     }
 }

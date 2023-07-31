@@ -4,6 +4,7 @@ import { SystemRunner } from './SystemRunner';
 
 import type { Rectangle } from '../../../../maths/shapes/Rectangle';
 import type { ICanvas } from '../../../../settings/adapter/ICanvas';
+import type { Writeable } from '../../../../utils/types';
 import type { RenderSurface } from '../../gpu/renderTarget/GpuRenderTargetSystem';
 import type { Renderer } from '../../types';
 import type { PipeConstructor } from '../instructions/RenderPipe';
@@ -50,11 +51,11 @@ type Runners = {[key in DefaultRunners]: SystemRunner} & {
  */
 export class AbstractRenderer<PIPES, OPTIONS>
 {
-    readonly type: string;
+    public readonly type: string;
 
-    runners: Runners = {} as Runners;
-    renderPipes = {} as PIPES;
-    view: ViewSystem;
+    public readonly runners: Runners = {} as Runners;
+    public readonly renderPipes = {} as PIPES;
+    public view: ViewSystem;
 
     private _systemsHash: Record<string, System> = {};
     private _lastObjectRendered: Container;
@@ -70,16 +71,16 @@ export class AbstractRenderer<PIPES, OPTIONS>
 
         const combinedRunners = [...defaultRunners, ...(config.runners ?? [])];
 
-        this.addRunners(...combinedRunners);
-        this.addSystems(config.systems);
-        this.addPipes(config.renderPipes, config.renderPipeAdaptors);
+        this._addRunners(...combinedRunners);
+        this._addSystems(config.systems);
+        this._addPipes(config.renderPipes, config.renderPipeAdaptors);
     }
 
     /**
      * Initialize the renderer.
      * @param options - The options to use to create the renderer.
      */
-    async init(options: Partial<OPTIONS> = {})
+    public async init(options: Partial<OPTIONS> = {})
     {
         // loop through all systems...
         for (const systemName in this._systemsHash)
@@ -218,7 +219,7 @@ export class AbstractRenderer<PIPES, OPTIONS>
      * Create a bunch of runners based of a collection of ids
      * @param runnerIds - the runner ids to add
      */
-    private addRunners(...runnerIds: string[]): void
+    private _addRunners(...runnerIds: string[]): void
     {
         runnerIds.forEach((runnerId) =>
         {
@@ -226,7 +227,7 @@ export class AbstractRenderer<PIPES, OPTIONS>
         });
     }
 
-    private addSystems(systems: RendererConfig['systems']): void
+    private _addSystems(systems: RendererConfig['systems']): void
     {
         let i: keyof typeof systems;
 
@@ -234,7 +235,7 @@ export class AbstractRenderer<PIPES, OPTIONS>
         {
             const val = systems[i];
 
-            this.addSystem(val.value, val.name);
+            this._addSystem(val.value, val.name);
         }
     }
 
@@ -247,7 +248,7 @@ export class AbstractRenderer<PIPES, OPTIONS>
      *        sure it doesn't collide with properties on Renderer.
      * @returns Return instance of renderer
      */
-    private addSystem(ClassRef: SystemConstructor, name: string): this
+    private _addSystem(ClassRef: SystemConstructor, name: string): this
     {
         const system = new ClassRef(this as unknown as Renderer);
 
@@ -268,7 +269,7 @@ export class AbstractRenderer<PIPES, OPTIONS>
         return this;
     }
 
-    private addPipes(pipes: RendererConfig['renderPipes'], pipeAdaptors: RendererConfig['renderPipeAdaptors']): void
+    private _addPipes(pipes: RendererConfig['renderPipes'], pipeAdaptors: RendererConfig['renderPipeAdaptors']): void
     {
         const adaptors = pipeAdaptors.reduce((acc, adaptor) =>
         {
@@ -293,7 +294,7 @@ export class AbstractRenderer<PIPES, OPTIONS>
     }
 
     /** destroy the all runners and systems. Its apps job to */
-    destroy(): void
+    public destroy(): void
     {
         Object.values(this.runners).forEach((runner) =>
         {
@@ -301,7 +302,10 @@ export class AbstractRenderer<PIPES, OPTIONS>
         });
 
         this._systemsHash = null;
-        this.renderPipes = null;
-        this.runners = null;
+
+        const writeable = this as Writeable<typeof this, 'renderPipes' | 'runners'>;
+
+        writeable.renderPipes = null;
+        writeable.runners = null;
     }
 }

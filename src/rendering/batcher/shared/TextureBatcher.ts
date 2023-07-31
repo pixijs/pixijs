@@ -11,48 +11,46 @@ let batchPoolIndex = 0;
 
 export class TextureBatchOutput implements TextureBatch
 {
-    textures: TextureSource[] = [];
-    bindGroup: BindGroup;
-    size = 0;
-    batchLocations: Record<number, number> = {};
+    public textures: TextureSource[] = [];
+    public bindGroup: BindGroup;
+    public size = 0;
+    public batchLocations: Record<number, number> = {};
 }
 
 export class TextureBatcher
 {
-    textureTicks: Record<number, number> = {};
+    private _textureTicks: Record<number, number> = {};
+    private _tick = 1000;
+    private _output: TextureBatch;
+    private _bindingOffset: number;
 
-    tick = 1000;
-
-    output: TextureBatch;
-    bindingOffset: number;
-
-    begin()
+    public begin()
     {
         batchPoolIndex = 0;
 
-        this.bindingOffset = 0;
+        this._bindingOffset = 0;
         this.reset();
     }
 
-    reset()
+    public reset()
     {
-        this.tick++;
+        this._tick++;
 
-        this.output = batchPool[batchPoolIndex++] || new TextureBatchOutput();
+        this._output = batchPool[batchPoolIndex++] || new TextureBatchOutput();
 
-        this.output.size = 0;
+        this._output.size = 0;
     }
 
-    finish(previousBatch?: TextureBatch)
+    public finish(previousBatch?: TextureBatch)
     {
         // TODO make sure to add empty textures to the batch.
 
-        let output = this.output;
+        let output = this._output;
 
         // TODO this should never have length 0.. need to investigate..
         if (previousBatch && previousBatch.textures.length && output.textures.length)
         {
-            output = optimizeBindings(previousBatch, output, this.tick, this.bindingOffset++);
+            output = optimizeBindings(previousBatch, output, this._tick, this._bindingOffset++);
         }
 
         this.reset();
@@ -60,15 +58,15 @@ export class TextureBatcher
         return output;
     }
 
-    add(texture: BindableTexture): boolean
+    public add(texture: BindableTexture): boolean
     {
-        const tick = this.tick;
-        const textureTicks = this.textureTicks;
+        const tick = this._tick;
+        const textureTicks = this._textureTicks;
 
         if (textureTicks[texture.styleSourceKey] === tick) return true;
 
         const styleSourceKey = texture.styleSourceKey;
-        const output = this.output;
+        const output = this._output;
 
         if (output.size === MAX_TEXTURES) return false;
 
@@ -83,9 +81,9 @@ export class TextureBatcher
         return true;
     }
 
-    destroy()
+    public destroy()
     {
-        this.output = null;
-        this.textureTicks = null;
+        this._output = null;
+        this._textureTicks = null;
     }
 }

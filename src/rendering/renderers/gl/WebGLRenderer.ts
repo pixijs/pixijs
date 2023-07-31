@@ -67,7 +67,7 @@ PixiMixins.WebGLOptions;
 export interface WebGLRenderer extends AbstractRenderer<WebGLPipes, WebGLOptions>, WebGLSystems {}
 export class WebGLRenderer extends AbstractRenderer<WebGLPipes, WebGLOptions> implements WebGLSystems
 {
-    gl: GlRenderingContext;
+    public gl: GlRenderingContext;
 
     constructor()
     {

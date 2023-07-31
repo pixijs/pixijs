@@ -20,9 +20,8 @@ export interface MaskFilterOptions
 
 export class MaskFilter extends Filter
 {
-    uniformGroup: UniformGroup;
-    sprite: Sprite;
-    textureMatrix: TextureMatrix;
+    public sprite: Sprite;
+    private readonly _textureMatrix: TextureMatrix;
 
     constructor({ sprite }: MaskFilterOptions)
     {
@@ -62,7 +61,7 @@ export class MaskFilter extends Filter
 
         this.sprite = sprite;
 
-        this.textureMatrix = textureMatrix;
+        this._textureMatrix = textureMatrix;
     }
 
     public apply(
@@ -73,18 +72,14 @@ export class MaskFilter extends Filter
     ): void
     {
         // will trigger an update if the texture changed..
-        this.textureMatrix.texture = this.sprite.texture;
+        this._textureMatrix.texture = this.sprite.texture;
 
         filterManager.calculateSpriteMatrix(
             this.resources.filterUniforms.uniforms.filterMatrix as Matrix,
             this.sprite
-        ).prepend(this.textureMatrix.mapCoord);
-
-        // this.uniformGroup.update();
+        ).prepend(this._textureMatrix.mapCoord);
 
         this.resources.mapTexture = this.sprite.texture.source;
-
-        //   logDebugTexture(this.sprite.texture, filterManager.renderer);
 
         filterManager.applyFilter(this, input, output, clearMode);
     }

@@ -6,11 +6,11 @@ import type { Effect } from '../../scene/Effect';
 
 export class ColorMask implements Effect, PoolItem
 {
-    static extension: ExtensionMetadata = ExtensionType.MaskEffect;
+    public static extension: ExtensionMetadata = ExtensionType.MaskEffect;
 
-    priority = 0;
-    mask: number;
-    pipe = 'colorMask';
+    public priority = 0;
+    public mask: number;
+    public pipe = 'colorMask';
 
     constructor(options: {mask: number})
     {
@@ -20,17 +20,17 @@ export class ColorMask implements Effect, PoolItem
         }
     }
 
-    init(mask: number): void
+    public init(mask: number): void
     {
         this.mask = mask;
     }
 
-    destroy(): void
+    public destroy(): void
     {
         // nothing to destroy
     }
 
-    static test(mask: any): boolean
+    public static test(mask: any): boolean
     {
         return typeof mask === 'number';
     }

@@ -23,7 +23,7 @@ const sharedQuad = new QuadGeometry();
 export class TilingSpritePipe implements RenderPipe<TilingSpriteView>
 {
     /** @ignore */
-    static extension = {
+    public static extension = {
         type: [
             ExtensionType.WebGLPipes,
             ExtensionType.WebGPUPipes,
@@ -32,31 +32,31 @@ export class TilingSpritePipe implements RenderPipe<TilingSpriteView>
         name: 'tilingSprite',
     } as const;
 
-    renderer: Renderer;
+    private _renderer: Renderer;
 
-    renderableHash: Record<number, RenderableData> = {};
+    private _renderableHash: Record<number, RenderableData> = {};
 
     // TODO can prolly merge these properties into a single mesh and
     // add them onto the renderableHash (rather than having them on separate hashes)
-    gpuBatchedTilingSprite: Record<string, Renderable<MeshView>> = {};
+    private _gpuBatchedTilingSprite: Record<string, Renderable<MeshView>> = {};
 
-    gpuTilingSprite: Record<string, {
+    private _gpuTilingSprite: Record<string, {
         meshRenderable: Renderable<MeshView>
         textureMatrix: Matrix;
     }> = {};
 
     constructor(renderer: Renderer)
     {
-        this.renderer = renderer;
+        this._renderer = renderer;
     }
 
-    validateRenderable(renderable: Renderable<TilingSpriteView>): boolean
+    public validateRenderable(renderable: Renderable<TilingSpriteView>): boolean
     {
         const textureMatrix = renderable.view.texture.textureMatrix;
 
         let rebuild = false;
 
-        const renderableData = this.getRenderableData(renderable);
+        const renderableData = this._getRenderableData(renderable);
 
         if (renderableData.batched !== textureMatrix.isSimple)
         {
@@ -73,76 +73,76 @@ export class TilingSpritePipe implements RenderPipe<TilingSpriteView>
         return rebuild;
     }
 
-    addRenderable(renderable: Renderable<TilingSpriteView>, instructionSet: InstructionSet)
+    public addRenderable(renderable: Renderable<TilingSpriteView>, instructionSet: InstructionSet)
     {
         if (renderable.view._didUpdate)
         {
             renderable.view._didUpdate = false;
 
-            this.rebuild(renderable);
+            this._rebuild(renderable);
         }
 
-        const { batched } = this.getRenderableData(renderable);
+        const { batched } = this._getRenderableData(renderable);
 
         if (batched)
         {
-            const batchableTilingSprite = this.getBatchedTilingSprite(renderable);
+            const batchableTilingSprite = this._getBatchedTilingSprite(renderable);
 
-            this.renderer.renderPipes.mesh.addRenderable(batchableTilingSprite, instructionSet);
+            this._renderer.renderPipes.mesh.addRenderable(batchableTilingSprite, instructionSet);
         }
         else
         {
-            const gpuTilingSprite = this.getGpuTilingSprite(renderable);
+            const gpuTilingSprite = this._getGpuTilingSprite(renderable);
 
-            this.renderer.renderPipes.mesh.addRenderable(gpuTilingSprite.meshRenderable, instructionSet);
+            this._renderer.renderPipes.mesh.addRenderable(gpuTilingSprite.meshRenderable, instructionSet);
         }
     }
 
-    updateRenderable(renderable: Renderable<TilingSpriteView>)
+    public updateRenderable(renderable: Renderable<TilingSpriteView>)
     {
         if (renderable.view._didUpdate)
         {
             renderable.view._didUpdate = false;
 
-            this.rebuild(renderable);
+            this._rebuild(renderable);
         }
 
-        const { batched } = this.getRenderableData(renderable);
+        const { batched } = this._getRenderableData(renderable);
 
         if (batched)
         {
-            const batchableTilingSprite = this.getBatchedTilingSprite(renderable);
+            const batchableTilingSprite = this._getBatchedTilingSprite(renderable);
 
-            this.renderer.renderPipes.mesh.updateRenderable(batchableTilingSprite);
+            this._renderer.renderPipes.mesh.updateRenderable(batchableTilingSprite);
         }
         else
         {
-            const gpuTilingSprite = this.getGpuTilingSprite(renderable);
+            const gpuTilingSprite = this._getGpuTilingSprite(renderable);
 
-            this.renderer.renderPipes.mesh.updateRenderable(gpuTilingSprite.meshRenderable);
+            this._renderer.renderPipes.mesh.updateRenderable(gpuTilingSprite.meshRenderable);
         }
     }
 
-    destroyRenderable(renderable: Renderable<TilingSpriteView>)
+    public destroyRenderable(renderable: Renderable<TilingSpriteView>)
     {
         // TODO pooling for the items... not a biggie though!
-        this.renderableHash[renderable.uid] = null;
-        this.gpuTilingSprite[renderable.uid] = null;
-        this.gpuBatchedTilingSprite[renderable.uid] = null;
+        this._renderableHash[renderable.uid] = null;
+        this._gpuTilingSprite[renderable.uid] = null;
+        this._gpuBatchedTilingSprite[renderable.uid] = null;
     }
 
-    getRenderableData(renderable: Renderable<TilingSpriteView>): RenderableData
+    private _getRenderableData(renderable: Renderable<TilingSpriteView>): RenderableData
     {
-        return this.renderableHash[renderable.uid] || this.initRenderableData(renderable);
+        return this._renderableHash[renderable.uid] || this._initRenderableData(renderable);
     }
 
-    initRenderableData(renderable: Renderable<TilingSpriteView>): RenderableData
+    private _initRenderableData(renderable: Renderable<TilingSpriteView>): RenderableData
     {
         const renderableData = {
             batched: true,
         };
 
-        this.renderableHash[renderable.uid] = renderableData;
+        this._renderableHash[renderable.uid] = renderableData;
 
         this.validateRenderable(renderable);
 
@@ -154,26 +154,26 @@ export class TilingSpritePipe implements RenderPipe<TilingSpriteView>
         return renderableData;
     }
 
-    rebuild(renderable: Renderable<TilingSpriteView>)
+    private _rebuild(renderable: Renderable<TilingSpriteView>)
     {
-        const renderableData = this.getRenderableData(renderable);
+        const renderableData = this._getRenderableData(renderable);
         const view = renderable.view;
         const textureMatrix = view.texture.textureMatrix;
 
         if (renderableData.batched)
         {
-            const batchedMesh = this.getBatchedTilingSprite(renderable);
+            const batchedMesh = this._getBatchedTilingSprite(renderable);
 
             batchedMesh.view.texture = view.texture;
             view.texture.style.addressMode = 'repeat';
             view.texture.style.update();
 
-            this.updateBatchPositions(renderable);
-            this.updateBatchUvs(renderable);
+            this._updateBatchPositions(renderable);
+            this._updateBatchUvs(renderable);
         }
         else
         {
-            const gpuTilingSprite = this.getGpuTilingSprite(renderable);
+            const gpuTilingSprite = this._getGpuTilingSprite(renderable);
             const { meshRenderable } = gpuTilingSprite;
 
             const meshView = meshRenderable.view;
@@ -215,12 +215,12 @@ export class TilingSpritePipe implements RenderPipe<TilingSpriteView>
         }
     }
 
-    getGpuTilingSprite(renderable: Renderable<TilingSpriteView>)
+    private _getGpuTilingSprite(renderable: Renderable<TilingSpriteView>)
     {
-        return this.gpuTilingSprite[renderable.uid] || this.initGpuTilingSprite(renderable);
+        return this._gpuTilingSprite[renderable.uid] || this._initGpuTilingSprite(renderable);
     }
 
-    initGpuTilingSprite(renderable: Renderable<TilingSpriteView>)
+    private _initGpuTilingSprite(renderable: Renderable<TilingSpriteView>)
     {
         const view = renderable.view;
 
@@ -246,17 +246,17 @@ export class TilingSpritePipe implements RenderPipe<TilingSpriteView>
             textureMatrix,
         };
 
-        this.gpuTilingSprite[renderable.uid] = gpuTilingSpriteData;
+        this._gpuTilingSprite[renderable.uid] = gpuTilingSpriteData;
 
         return gpuTilingSpriteData;
     }
 
-    getBatchedTilingSprite(renderable: Renderable<TilingSpriteView>): Renderable<MeshView>
+    private _getBatchedTilingSprite(renderable: Renderable<TilingSpriteView>): Renderable<MeshView>
     {
-        return this.gpuBatchedTilingSprite[renderable.uid] || this.initBatchedTilingSprite(renderable);
+        return this._gpuBatchedTilingSprite[renderable.uid] || this._initBatchedTilingSprite(renderable);
     }
 
-    initBatchedTilingSprite(renderable: Renderable<TilingSpriteView>)
+    private _initBatchedTilingSprite(renderable: Renderable<TilingSpriteView>)
     {
         const meshView = new MeshView({
             geometry: new QuadGeometry(),
@@ -268,14 +268,14 @@ export class TilingSpritePipe implements RenderPipe<TilingSpriteView>
             view: meshView,
         });
 
-        this.gpuBatchedTilingSprite[renderable.uid] = batchableMeshRenderable;
+        this._gpuBatchedTilingSprite[renderable.uid] = batchableMeshRenderable;
 
         return batchableMeshRenderable;
     }
 
-    updateBatchPositions(renderable: Renderable<TilingSpriteView>)
+    private _updateBatchPositions(renderable: Renderable<TilingSpriteView>)
     {
-        const meshRenderable = this.getBatchedTilingSprite(renderable);
+        const meshRenderable = this._getBatchedTilingSprite(renderable);
         const view = renderable.view;
 
         const positionBuffer = meshRenderable.view.geometry.getBuffer('aPosition');
@@ -294,13 +294,13 @@ export class TilingSpritePipe implements RenderPipe<TilingSpriteView>
         positions[7] = (1 - anchorY) * view.height;
     }
 
-    updateBatchUvs(renderable: Renderable<TilingSpriteView>)
+    private _updateBatchUvs(renderable: Renderable<TilingSpriteView>)
     {
         const view = renderable.view;
         const width = view.texture.frameWidth;
         const height = view.texture.frameHeight;
 
-        const meshRenderable = this.getBatchedTilingSprite(renderable);
+        const meshRenderable = this._getBatchedTilingSprite(renderable);
 
         const uvBuffer = meshRenderable.view.geometry.getBuffer('aUV');
 
@@ -334,13 +334,13 @@ export class TilingSpritePipe implements RenderPipe<TilingSpriteView>
         applyMatrix(uvs, 2, 0, textureMatrix);
     }
 
-    destroy()
+    public destroy()
     {
-        this.renderableHash = null;
-        this.gpuTilingSprite = null;
-        this.gpuBatchedTilingSprite = null;
+        this._renderableHash = null;
+        this._gpuTilingSprite = null;
+        this._gpuBatchedTilingSprite = null;
 
-        this.renderer = null;
+        this._renderer = null;
     }
 }
 

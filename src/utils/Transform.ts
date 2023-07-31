@@ -15,7 +15,10 @@ export interface TransformOptions
  */
 export class Transform
 {
-    /** The local transformation matrix. */
+    /**
+     * The local transformation matrix.
+     * @internal
+     */
     public _matrix: Matrix;
 
     /** The coordinate of the object relative to the local coordinates of the parent. */
@@ -100,7 +103,7 @@ export class Transform
      * @param point
      * @internal
      */
-    onUpdate(point?: ObservablePoint): void
+    public onUpdate(point?: ObservablePoint): void
     {
         this.dirty = true;
 
@@ -124,7 +127,7 @@ export class Transform
     }
 
     // #if _DEBUG
-    toString(): string
+    public toString(): string
     {
         return `[@pixi/math:Transform `
             + `position=(${this.position.x}, ${this.position.y}) `
@@ -139,7 +142,7 @@ export class Transform
      * Decomposes a matrix and sets the transforms properties based on it.
      * @param matrix - The matrix to decompose
      */
-    setFromMatrix(matrix: Matrix): void
+    public setFromMatrix(matrix: Matrix): void
     {
         matrix.decompose(this);
         this.dirty = true;

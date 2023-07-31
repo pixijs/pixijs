@@ -21,7 +21,7 @@ export interface NoiseFilterOptions
  */
 export class NoiseFilter extends Filter
 {
-    static readonly DEFAULT: NoiseFilterOptions = {
+    public static readonly DEFAULT: NoiseFilterOptions = {
         noise: 0.5,
         seed: undefined,
     };

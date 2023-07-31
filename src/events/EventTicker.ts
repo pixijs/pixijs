@@ -22,7 +22,7 @@ class EventsTickerClass
 
     private _deltaTime = 0;
     private _didMove = false;
-    private tickerAdded = false;
+    private _tickerAdded = false;
     private _pauseUpdate = true;
 
     /**
@@ -36,7 +36,7 @@ class EventsTickerClass
         this.interactionFrequency = 10;
         this._deltaTime = 0;
         this._didMove = false;
-        this.tickerAdded = false;
+        this._tickerAdded = false;
         this._pauseUpdate = true;
     }
 
@@ -54,27 +54,27 @@ class EventsTickerClass
     /** Adds the ticker listener. */
     public addTickerListener(): void
     {
-        if (this.tickerAdded || !this.domElement)
+        if (this._tickerAdded || !this.domElement)
         {
             return;
         }
 
-        Ticker.system.add(this.tickerUpdate, this, UPDATE_PRIORITY.INTERACTION);
+        Ticker.system.add(this._tickerUpdate, this, UPDATE_PRIORITY.INTERACTION);
 
-        this.tickerAdded = true;
+        this._tickerAdded = true;
     }
 
     /** Removes the ticker listener. */
     public removeTickerListener(): void
     {
-        if (!this.tickerAdded)
+        if (!this._tickerAdded)
         {
             return;
         }
 
-        Ticker.system.remove(this.tickerUpdate, this);
+        Ticker.system.remove(this._tickerUpdate, this);
 
-        this.tickerAdded = false;
+        this._tickerAdded = false;
     }
 
     /** Sets flag to not fire extra events when the user has already moved there mouse */
@@ -84,7 +84,7 @@ class EventsTickerClass
     }
 
     /** Updates the state of interactive objects. */
-    private update(): void
+    private _update(): void
     {
         if (!this.domElement || this._pauseUpdate)
         {
@@ -100,7 +100,7 @@ class EventsTickerClass
         }
 
         // eslint-disable-next-line dot-notation
-        const rootPointerEvent = this.events['rootPointerEvent'];
+        const rootPointerEvent = this.events['_rootPointerEvent'];
 
         if (this.events.supportsTouchEvents && (rootPointerEvent as PointerEvent).pointerType === 'touch')
         {
@@ -120,7 +120,7 @@ class EventsTickerClass
      * Invoked by a throttled ticker update from {@link PIXI.Ticker.system}.
      * @param ticker - The throttled ticker.
      */
-    private tickerUpdate(ticker: Ticker): void
+    private _tickerUpdate(ticker: Ticker): void
     {
         this._deltaTime += ticker.deltaTime;
 
@@ -131,7 +131,7 @@ class EventsTickerClass
 
         this._deltaTime = 0;
 
-        this.update();
+        this._update();
     }
 }
 

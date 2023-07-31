@@ -126,7 +126,7 @@ export class TextStyle extends EventEmitter<{
     update: TextDropShadow
 }>
 {
-    static defaultTextStyle: TextStyleOptions = {
+    public static defaultTextStyle: TextStyleOptions = {
         /**
          * See {@link PIXI.TextStyle.align}
          * @type {'left'|'center'|'right'|'justify'}
@@ -204,11 +204,13 @@ export class TextStyle extends EventEmitter<{
     };
 
     // colors!!
-    _fill: FillStyle;
-    _originalFill: FillStyleInputs;
+    /** @internal */
+    public _fill: FillStyle;
+    private _originalFill: FillStyleInputs;
 
-    _stroke: StrokeStyle;
-    _originalStroke: FillStyleInputs | StrokeStyle;
+    /** @internal */
+    public _stroke: StrokeStyle;
+    private _originalStroke: FillStyleInputs | StrokeStyle;
 
     private _dropShadow: TextDropShadow;
 
@@ -345,7 +347,7 @@ export class TextStyle extends EventEmitter<{
         this.update();
     }
 
-    generateKey(): string
+    private _generateKey(): string
     {
         const key = [];
 
@@ -368,7 +370,7 @@ export class TextStyle extends EventEmitter<{
         return this._styleKey;
     }
 
-    update()
+    public update()
     {
         this._styleKey = null;
         this.emit('update', this);
@@ -376,10 +378,10 @@ export class TextStyle extends EventEmitter<{
 
     get styleKey()
     {
-        return this._styleKey || this.generateKey();
+        return this._styleKey || this._generateKey();
     }
 
-    clone(): TextStyle
+    public clone(): TextStyle
     {
         return new TextStyle({
             align: this.align,

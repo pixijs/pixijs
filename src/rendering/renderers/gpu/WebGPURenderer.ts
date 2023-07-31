@@ -67,7 +67,7 @@ export interface WebGPURenderer extends AbstractRenderer<WebGPUPipes, WebGPUOpti
 
 export class WebGPURenderer extends AbstractRenderer<WebGPUPipes, WebGPUOptions> implements WebGPUSystems
 {
-    gpu: GPU;
+    public gpu: GPU;
 
     constructor()
     {

@@ -8,60 +8,60 @@ import type { WebGPURenderer } from './WebGPURenderer';
 export class GpuStencilSystem implements System
 {
     /** @ignore */
-    static extension = {
+    public static extension = {
         type: [
             ExtensionType.WebGPUSystem,
         ],
         name: 'stencil',
     } as const;
 
-    private readonly renderer: WebGPURenderer;
+    private readonly _renderer: WebGPURenderer;
 
-    private renderTargetStencilState: Record<number, {
+    private _renderTargetStencilState: Record<number, {
         stencilMode: STENCIL_MODES;
         stencilReference: number;
     }> = {};
 
-    private activeRenderTarget: RenderTarget;
+    private _activeRenderTarget: RenderTarget;
 
     constructor(renderer: WebGPURenderer)
     {
-        this.renderer = renderer;
+        this._renderer = renderer;
 
         renderer.renderTarget.onRenderTargetChange.add(this);
     }
 
-    onRenderTargetChange(renderTarget: RenderTarget)
+    protected onRenderTargetChange(renderTarget: RenderTarget)
     {
-        let stencilState = this.renderTargetStencilState[renderTarget.uid];
+        let stencilState = this._renderTargetStencilState[renderTarget.uid];
 
         if (!stencilState)
         {
-            stencilState = this.renderTargetStencilState[renderTarget.uid] = {
+            stencilState = this._renderTargetStencilState[renderTarget.uid] = {
                 stencilMode: STENCIL_MODES.DISABLED,
                 stencilReference: 0,
             };
         }
 
-        this.activeRenderTarget = renderTarget;
+        this._activeRenderTarget = renderTarget;
 
         this.setStencilMode(stencilState.stencilMode, stencilState.stencilReference);
     }
 
-    setStencilMode(stencilMode: STENCIL_MODES, stencilReference: number)
+    public setStencilMode(stencilMode: STENCIL_MODES, stencilReference: number)
     {
-        const stencilState = this.renderTargetStencilState[this.activeRenderTarget.uid];
+        const stencilState = this._renderTargetStencilState[this._activeRenderTarget.uid];
 
         stencilState.stencilMode = stencilMode;
         stencilState.stencilReference = stencilReference;
 
-        const renderer = this.renderer;
+        const renderer = this._renderer;
 
         renderer.pipeline.setStencilMode(stencilMode);
         renderer.encoder.renderPassEncoder.setStencilReference(stencilReference);
     }
 
-    destroy()
+    public destroy()
     {
         // boom
     }

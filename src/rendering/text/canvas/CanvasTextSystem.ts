@@ -27,7 +27,7 @@ interface CanvasAndContext
 export class CanvasTextSystem implements System
 {
     /** @ignore */
-    static extension = {
+    public static extension = {
         type: [
             ExtensionType.WebGLSystem,
             ExtensionType.WebGPUSystem,
@@ -36,13 +36,13 @@ export class CanvasTextSystem implements System
         name: 'canvasText',
     } as const;
 
-    private activeTextures: Record<string, {
+    private _activeTextures: Record<string, {
         canvasAndContext: CanvasAndContext,
         texture: Texture,
         usageCount: number,
     }> = {};
 
-    getTextureSize(text: string, resolution: number, style: TextStyle): { width: number, height: number }
+    public getTextureSize(text: string, resolution: number, style: TextStyle): { width: number, height: number }
     {
         const measured = CanvasTextMetrics.measureText(text || ' ', style);
 
@@ -57,13 +57,13 @@ export class CanvasTextSystem implements System
         return { width, height };
     }
 
-    getTexture(text: string, resolution: number, style: TextStyle, textKey: string)
+    public getTexture(text: string, resolution: number, style: TextStyle, textKey: string)
     {
-        if (this.activeTextures[textKey])
+        if (this._activeTextures[textKey])
         {
-            this.increaseReferenceCount(textKey);
+            this._increaseReferenceCount(textKey);
 
-            return this.activeTextures[textKey].texture;
+            return this._activeTextures[textKey].texture;
         }
 
         // create a canvas with the word hello on it
@@ -105,7 +105,7 @@ export class CanvasTextSystem implements System
         texture.source.update();
         texture.layout.updateUvs();
 
-        this.activeTextures[textKey] = {
+        this._activeTextures[textKey] = {
             canvasAndContext,
             texture,
             usageCount: 1,
@@ -114,14 +114,14 @@ export class CanvasTextSystem implements System
         return texture;
     }
 
-    increaseReferenceCount(textKey: string)
+    private _increaseReferenceCount(textKey: string)
     {
-        this.activeTextures[textKey].usageCount++;
+        this._activeTextures[textKey].usageCount++;
     }
 
-    decreaseReferenceCount(textKey: string)
+    public decreaseReferenceCount(textKey: string)
     {
-        const activeTexture = this.activeTextures[textKey];
+        const activeTexture = this._activeTextures[textKey];
 
         activeTexture.usageCount--;
 
@@ -132,13 +132,13 @@ export class CanvasTextSystem implements System
             activeTexture.texture.source.resource = null;
             activeTexture.texture.source.type = 'unknown';
 
-            this.activeTextures[textKey] = null;
+            this._activeTextures[textKey] = null;
         }
     }
 
-    getReferenceCount(textKey: string)
+    public getReferenceCount(textKey: string)
     {
-        return this.activeTextures[textKey].usageCount;
+        return this._activeTextures[textKey].usageCount;
     }
 
     /**
@@ -275,7 +275,7 @@ export class CanvasTextSystem implements System
 
                 if (style._stroke)
                 {
-                    this.drawLetterSpacing(
+                    this._drawLetterSpacing(
                         lines[i],
                         style,
                         canvasAndContext,
@@ -287,7 +287,7 @@ export class CanvasTextSystem implements System
 
                 if (style._fill !== undefined)
                 {
-                    this.drawLetterSpacing(
+                    this._drawLetterSpacing(
                         lines[i],
                         style,
                         canvasAndContext,
@@ -309,7 +309,7 @@ export class CanvasTextSystem implements System
      * @param isStroke - Is this drawing for the outside stroke of the
      *  text? If not, it's for the inside fill
      */
-    private drawLetterSpacing(
+    private _drawLetterSpacing(
         text: string,
         style: TextStyle,
         canvasAndContext: CanvasAndContext,
@@ -383,7 +383,7 @@ export class CanvasTextSystem implements System
         }
     }
 
-    destroy(): void
+    public destroy(): void
     {
         // TODO: Destroy all the canvas elements
     }

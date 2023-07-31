@@ -4,7 +4,6 @@ import { BufferUsage } from '../buffer/const';
 import { createUBOElements } from './utils/createUBOElements';
 import { generateUniformBufferSync } from './utils/createUniformBufferSync';
 
-import type { Renderer } from '../../types';
 import type { System } from '../system/System';
 import type { UniformGroup } from './UniformGroup';
 import type { UniformBufferLayout } from './utils/createUBOElements';
@@ -13,7 +12,7 @@ import type { UniformsSyncCallback } from './utils/createUniformBufferSync';
 export class UniformBufferSystem implements System
 {
     /** @ignore */
-    static extension = {
+    public static extension = {
         type: [
             ExtensionType.WebGLSystem,
             ExtensionType.WebGPUSystem,
@@ -22,28 +21,21 @@ export class UniformBufferSystem implements System
         name: 'uniformBuffer',
     } as const;
 
-    readonly renderer: Renderer;
-
     /** Cache of uniform buffer layouts and sync functions, so we don't have to re-create them */
     private _syncFunctionHash: Record<string, {
         layout: UniformBufferLayout,
         syncFunction: (uniforms: Record<string, any>, data: Float32Array, offset: number) => void
     }> = {};
 
-    constructor(renderer: Renderer)
-    {
-        this.renderer = renderer;
-    }
-
-    ensureUniformGroup(uniformGroup: UniformGroup): void
+    public ensureUniformGroup(uniformGroup: UniformGroup): void
     {
         if (!uniformGroup._syncFunction)
         {
-            this.initUniformGroup(uniformGroup);
+            this._initUniformGroup(uniformGroup);
         }
     }
 
-    initUniformGroup(uniformGroup: UniformGroup): UniformsSyncCallback
+    private _initUniformGroup(uniformGroup: UniformGroup): UniformsSyncCallback
     {
         const uniformGroupSignature = uniformGroup.signature;
 
@@ -73,9 +65,9 @@ export class UniformBufferSystem implements System
         return uniformGroup._syncFunction;
     }
 
-    syncUniformGroup(uniformGroup: UniformGroup, data?: Float32Array, offset?: number): boolean
+    public syncUniformGroup(uniformGroup: UniformGroup, data?: Float32Array, offset?: number): boolean
     {
-        const syncFunction = uniformGroup._syncFunction || this.initUniformGroup(uniformGroup);
+        const syncFunction = uniformGroup._syncFunction || this._initUniformGroup(uniformGroup);
 
         data ||= (uniformGroup.buffer.data as Float32Array);
         offset ||= 0;
@@ -85,7 +77,7 @@ export class UniformBufferSystem implements System
         return true;
     }
 
-    updateUniformGroup(uniformGroup: UniformGroup): boolean
+    public updateUniformGroup(uniformGroup: UniformGroup): boolean
     {
         if (uniformGroup.isStatic && !uniformGroup.dirtyId) return false;
         uniformGroup.dirtyId = 0;
@@ -97,7 +89,7 @@ export class UniformBufferSystem implements System
         return synced;
     }
 
-    destroy(): void
+    public destroy(): void
     {
         throw new Error('Method not implemented.');
     }

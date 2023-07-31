@@ -43,25 +43,25 @@ function getKey(
     topology: number,
 )
 {
-    return (geometryId << 26)
-    | (programId << 18)
-    | (colorMask << 14)
-    | (stateId << 8)
-    | (blendModeId << 3)
-    | (topology << 1)
-    | (stencilStateId << 4)
-    | multiSampleCount;
+    return (
+        (geometryId << 26)
+        | (programId << 18)
+        | (colorMask << 14)
+        | (stateId << 8)
+        | (blendModeId << 3)
+        | (topology << 1)
+        | (stencilStateId << 4)
+        | multiSampleCount
+    );
 }
 export class PipelineSystem implements System
 {
     /** @ignore */
-    static extension = {
-        type: [
-            ExtensionType.WebGPUSystem,
-        ],
+    public static extension = {
+        type: [ExtensionType.WebGPUSystem],
         name: 'pipeline',
     } as const;
-    readonly renderer: WebGPURenderer;
+    private readonly _renderer: WebGPURenderer;
 
     protected CONTEXT_UID: number;
 
@@ -70,60 +70,65 @@ export class PipelineSystem implements System
 
     private _pipeCache: Record<number, GPURenderPipeline> = {};
 
-    private gpu: GPU;
-    private stencilState: GPUDepthStencilState;
+    private _gpu: GPU;
+    private _stencilState: GPUDepthStencilState;
 
-    private stencilMode: STENCIL_MODES;
-    private colorMask = 0b1111;
-    private multisampleCount = 1;
+    private _stencilMode: STENCIL_MODES;
+    private _colorMask = 0b1111;
+    private _multisampleCount = 1;
 
     constructor(renderer: WebGPURenderer)
     {
-        this.renderer = renderer;
+        this._renderer = renderer;
     }
 
     protected contextChange(gpu: GPU): void
     {
-        this.gpu = gpu;
+        this._gpu = gpu;
         this.setStencilMode(STENCIL_MODES.DISABLED);
     }
 
-    setMultisampleCount(multisampleCount: number): void
+    public setMultisampleCount(multisampleCount: number): void
     {
-        this.multisampleCount = multisampleCount;
+        this._multisampleCount = multisampleCount;
     }
 
-    setColorMask(colorMask: number): void
+    public setColorMask(colorMask: number): void
     {
-        this.colorMask = colorMask;
+        this._colorMask = colorMask;
     }
 
-    setStencilMode(stencilMode: STENCIL_MODES): void
+    public setStencilMode(stencilMode: STENCIL_MODES): void
     {
-        this.stencilMode = stencilMode;
-        this.stencilState = GpuStencilModesToPixi[stencilMode];
+        this._stencilMode = stencilMode;
+        this._stencilState = GpuStencilModesToPixi[stencilMode];
     }
 
-    setPipeline(geometry: Geometry, program: GpuProgram, state: State, passEncoder: GPURenderPassEncoder): void
+    public setPipeline(geometry: Geometry, program: GpuProgram, state: State, passEncoder: GPURenderPassEncoder): void
     {
         const pipeline = this.getPipeline(geometry, program, state);
 
         passEncoder.setPipeline(pipeline);
     }
 
-    getPipeline(geometry: Geometry, program: GpuProgram, state: State, topology?: Topology): GPURenderPipeline // a state...)
+    public getPipeline(
+        geometry: Geometry,
+        program: GpuProgram,
+        state: State,
+        topology?: Topology,
+    ): GPURenderPipeline
     {
         if (!geometry._layoutKey)
         {
             // prepare the geometry for the pipeline
-            this.generateBufferKey(geometry);
+            this._generateBufferKey(geometry);
         }
 
         if (!program._layoutKey)
         {
             // prepare the program for the pipeline
-            this.generateProgramKey(program);
-            this.renderer.shader.createProgramLayout(program);
+            this._generateProgramKey(program);
+            this._renderer.shader.createProgramLayout(program);
         }
 
         topology = topology || geometry.topology;
@@ -135,45 +140,45 @@ export class PipelineSystem implements System
             program._layoutKey,
             state.data,
             state._blendModeId,
-            this.stencilMode,
-            this.multisampleCount,
-            this.colorMask,
-            topologyStringToId[topology]
+            this._stencilMode,
+            this._multisampleCount,
+            this._colorMask,
+            topologyStringToId[topology],
         );
 
         if (this._pipeCache[key]) return this._pipeCache[key];
 
-        this._pipeCache[key] = this.createPipeline(geometry, program, state, topology);
+        this._pipeCache[key] = this._createPipeline(geometry, program, state, topology);
 
         return this._pipeCache[key];
     }
 
-    private createPipeline(geometry: Geometry, program: GpuProgram, state: State, topology: Topology): GPURenderPipeline
+    private _createPipeline(geometry: Geometry, program: GpuProgram, state: State, topology: Topology): GPURenderPipeline
     {
-        const device = this.gpu.device;
+        const device = this._gpu.device;
 
-        const buffers = this.createVertexBufferLayouts(geometry);
+        const buffers = this._createVertexBufferLayouts(geometry);
 
-        const blendModes = this.renderer.state.getColorTargets(state);
+        const blendModes = this._renderer.state.getColorTargets(state);
 
-        let depthStencil = this.stencilState;
+        let depthStencil = this._stencilState;
 
         // mask states..
-        depthStencil = GpuStencilModesToPixi[this.stencilMode];
+        depthStencil = GpuStencilModesToPixi[this._stencilMode];
 
-        blendModes[0].writeMask = this.stencilMode === STENCIL_MODES.RENDERING_MASK_ADD ? 0 : this.colorMask;
+        blendModes[0].writeMask = this._stencilMode === STENCIL_MODES.RENDERING_MASK_ADD ? 0 : this._colorMask;
 
         const descriptor: GPURenderPipelineDescriptor = {
             // TODO later check if its helpful to create..
             // layout,
             vertex: {
-                module: this.getModule(program.vertex.source),
+                module: this._getModule(program.vertex.source),
                 entryPoint: program.vertex.entryPoint,
                 // geometry..
                 buffers,
             },
             fragment: {
-                module: this.getModule(program.fragment.source),
+                module: this._getModule(program.fragment.source),
                 entryPoint: program.fragment.entryPoint,
                 targets: blendModes,
             },
@@ -183,8 +188,7 @@ export class PipelineSystem implements System
             },
             layout: program._gpuLayout.pipeline,
             multisample: {
-                count:  this.multisampleCount,
-
+                count: this._multisampleCount,
             },
             depthStencil,
             label: `PIXI Pipeline`,
@@ -195,14 +199,14 @@ export class PipelineSystem implements System
         return pipeline;
     }
 
-    private getModule(code: string): GPUShaderModule
+    private _getModule(code: string): GPUShaderModule
     {
-        return this._moduleCache[code] || this.createModule(code);
+        return this._moduleCache[code] || this._createModule(code);
     }
 
-    private createModule(code: string): GPUShaderModule
+    private _createModule(code: string): GPUShaderModule
     {
-        const device = this.gpu.device;
+        const device = this._gpu.device;
 
         this._moduleCache[code] = device.createShaderModule({
             code,
@@ -211,7 +215,7 @@ export class PipelineSystem implements System
         return this._moduleCache[code];
     }
 
-    private generateProgramKey(program: GpuProgram): number
+    private _generateProgramKey(program: GpuProgram): number
     {
         const { vertex, fragment } = program;
 
@@ -222,7 +226,7 @@ export class PipelineSystem implements System
         return program._layoutKey;
     }
 
-    private generateBufferKey(geometry: Geometry): number
+    private _generateBufferKey(geometry: Geometry): number
     {
         const keyGen = [];
         let index = 0;
@@ -247,7 +251,7 @@ export class PipelineSystem implements System
         return geometry._layoutKey;
     }
 
-    private createVertexBufferLayouts(geometry: Geometry): GPUVertexBufferLayout[]
+    private _createVertexBufferLayouts(geometry: Geometry): GPUVertexBufferLayout[]
     {
         if (this._bufferLayoutsCache[geometry._layoutKey])
         {
@@ -261,12 +265,10 @@ export class PipelineSystem implements System
             const bufferEntry: GPUVertexBufferLayout = {
                 arrayStride: 0,
                 stepMode: 'vertex',
-                attributes: [
-
-                ],
+                attributes: [],
             };
 
-            const bufferEntryAttributes = (bufferEntry.attributes as GPUVertexAttribute[]);
+            const bufferEntryAttributes = bufferEntry.attributes as GPUVertexAttribute[];
 
             for (const i in geometry.attributes)
             {
@@ -295,7 +297,7 @@ export class PipelineSystem implements System
         return vertexBuffersLayout;
     }
 
-    destroy(): void
+    public destroy(): void
     {
         throw new Error('Method not implemented.');
     }

@@ -1,7 +1,7 @@
 import { LayerRenderable } from '../../renderers/shared/LayerRenderable';
 
 import type { InstructionSet } from '../../renderers/shared/instructions/InstructionSet';
-import type { RenderPipe } from '../../renderers/shared/instructions/RenderPipe';
+import type { InstructionPipe, RenderPipe } from '../../renderers/shared/instructions/RenderPipe';
 import type { Renderable } from '../../renderers/shared/Renderable';
 import type { RenderPipes } from '../../renderers/types';
 import type { Container } from '../Container';
@@ -27,9 +27,10 @@ export function buildInstructions(layerGroup: LayerGroup, renderPipes: RenderPip
         if (proxyRenderable)
         {
             renderPipes.blendMode.setBlendMode(proxyRenderable, proxyRenderable.layerBlendMode, instructionSet);
+            const pipe = renderPipes[proxyRenderable.view.type as keyof RenderPipes] as RenderPipe<any>;
 
             // eslint-disable-next-line max-len
-            (renderPipes[proxyRenderable.view.type as keyof RenderPipes] as any).addRenderable(proxyRenderable, instructionSet);
+            pipe.addRenderable(proxyRenderable, instructionSet);
         }
     }
 
@@ -118,8 +119,9 @@ function collectAllRenderablesAdvanced(
     for (let i = 0; i < container.effects.length; i++)
     {
         const effect = container.effects[i];
+        const pipe = renderPipes[effect.pipe as keyof RenderPipes]as InstructionPipe<any>;
 
-        (renderPipes[effect.pipe as keyof RenderPipes] as any).push(effect, container, instructionSet);
+        pipe.push(effect, container, instructionSet);
     }
 
     if (container.isLayerRoot)
@@ -134,10 +136,11 @@ function collectAllRenderablesAdvanced(
         {
             // TODO add blends in
             renderPipes.blendMode.setBlendMode(container as Renderable, container.layerBlendMode, instructionSet);
-
             container.didViewUpdate = false;
 
-            (renderPipes[view.type as keyof RenderPipes] as any).addRenderable(container, instructionSet);
+            const pipe = renderPipes[view.type as keyof RenderPipes]as RenderPipe<any>;
+
+            pipe.addRenderable(container, instructionSet);
         }
 
         const children = container.children;
@@ -155,8 +158,9 @@ function collectAllRenderablesAdvanced(
     for (let i = container.effects.length - 1; i >= 0; i--)
     {
         const effect = container.effects[i];
+        const pipe = renderPipes[effect.pipe as keyof RenderPipes]as InstructionPipe<any>;
 
-        (renderPipes[effect.pipe as keyof RenderPipes] as any).pop(effect, container, instructionSet);
+        pipe.pop(effect, container, instructionSet);
     }
 }
 

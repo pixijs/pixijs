@@ -27,8 +27,8 @@ export class TexturePoolClass
      */
     public enableFullScreen: boolean;
 
-    private texturePool: {[x in string | number]: Texture[]};
-    private poolKeyHash: Record<number, number> = {};
+    private _texturePool: {[x in string | number]: Texture[]};
+    private _poolKeyHash: Record<number, number> = {};
 
     /**
      * @param textureOptions - options that will be passed to BaseRenderTexture constructor
@@ -36,7 +36,7 @@ export class TexturePoolClass
      */
     constructor(textureOptions?: TextureSourceOptions)
     {
-        this.texturePool = {};
+        this._texturePool = {};
         this.textureOptions = textureOptions || {};
         this.enableFullScreen = false;
     }
@@ -47,7 +47,7 @@ export class TexturePoolClass
      * @param pixelHeight - Height of texture in pixels.
      * @param antialias
      */
-    createTexture(pixelWidth: number, pixelHeight: number, antialias: boolean): Texture
+    public createTexture(pixelWidth: number, pixelHeight: number, antialias: boolean): Texture
     {
         const textureSource = new TextureSource({
             ...this.textureOptions,
@@ -72,7 +72,7 @@ export class TexturePoolClass
      * @param antialias
      * @returns The new render texture.
      */
-    getOptimalTexture(frameWidth: number, frameHeight: number, resolution = 1, antialias: boolean): Texture
+    public getOptimalTexture(frameWidth: number, frameHeight: number, resolution = 1, antialias: boolean): Texture
     {
         let po2Width = Math.ceil((frameWidth * resolution) - 1e-6);
         let po2Height = Math.ceil((frameHeight * resolution) - 1e-6);
@@ -82,12 +82,12 @@ export class TexturePoolClass
 
         const key = (po2Width << 17) + (po2Height << 1) + (antialias ? 1 : 0);
 
-        if (!this.texturePool[key])
+        if (!this._texturePool[key])
         {
-            this.texturePool[key] = [];
+            this._texturePool[key] = [];
         }
 
-        let texture = this.texturePool[key].pop();
+        let texture = this._texturePool[key].pop();
 
         if (!texture)
         {
@@ -107,12 +107,12 @@ export class TexturePoolClass
         texture.frameHeight = frameHeight;
         texture.layout.update();
 
-        this.poolKeyHash[texture.id] = key;
+        this._poolKeyHash[texture.id] = key;
 
         return texture;
     }
 
-    getSameSizeTexture(texture: Texture)
+    public getSameSizeTexture(texture: Texture)
     {
         const source = texture.source;
 
@@ -123,25 +123,25 @@ export class TexturePoolClass
      * Place a render texture back into the pool.
      * @param renderTexture - The renderTexture to free
      */
-    returnTexture(renderTexture: Texture): void
+    public returnTexture(renderTexture: Texture): void
     {
-        const key = this.poolKeyHash[renderTexture.id];
+        const key = this._poolKeyHash[renderTexture.id];
 
-        this.texturePool[key].push(renderTexture);
+        this._texturePool[key].push(renderTexture);
     }
 
     /**
      * Clears the pool.
      * @param destroyTextures - Destroy all stored textures.
      */
-    clear(destroyTextures?: boolean): void
+    public clear(destroyTextures?: boolean): void
     {
         destroyTextures = destroyTextures !== false;
         if (destroyTextures)
         {
-            for (const i in this.texturePool)
+            for (const i in this._texturePool)
             {
-                const textures = this.texturePool[i];
+                const textures = this._texturePool[i];
 
                 if (textures)
                 {
@@ -153,7 +153,7 @@ export class TexturePoolClass
             }
         }
 
-        this.texturePool = {};
+        this._texturePool = {};
     }
 }
 

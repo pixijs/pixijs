@@ -21,7 +21,7 @@ export interface TilingSpriteViewOptions
 
 export class TilingSpriteView implements View
 {
-    static defaultOptions: TilingSpriteViewOptions = {
+    public static defaultOptions: TilingSpriteViewOptions = {
         texture: Texture.WHITE,
         width: 256,
         height: 256,
@@ -34,10 +34,14 @@ export class TilingSpriteView implements View
     public batched = true;
     public anchor: ObservablePoint;
 
-    _tileTransform: Transform;
-    _texture: Texture;
-    _applyAnchorToTexture: boolean;
-    _didUpdate: boolean;
+    /** @internal */
+    public _tileTransform: Transform;
+    /** @internal */
+    public _texture: Texture;
+    /** @internal */
+    public _applyAnchorToTexture: boolean;
+    /** @internal */
+    public _didUpdate: boolean;
 
     private _bounds: [number, number, number, number] = [0, 1, 0, 0];
     private _boundsDirty = true;
@@ -153,7 +157,7 @@ export class TilingSpriteView implements View
     /**
      * @internal
      */
-    onUpdate()
+    public onUpdate()
     {
         this._boundsDirty = true;
         this._didUpdate = true;

@@ -28,15 +28,13 @@ let UID = 0;
 
 export class FillPattern implements CanvasPattern
 {
-    readonly uid = UID++;
-    texture: Texture;
-    repetition: string;
-    transform = new Matrix();
+    public readonly uid = UID++;
+    public texture: Texture;
+    public transform = new Matrix();
 
     constructor(texture: Texture, repetition?: PatternRepetition)
     {
         this.texture = texture;
-        this.repetition = repetition;
 
         this.transform.scale(
             1 / texture.frameWidth,
@@ -50,7 +48,7 @@ export class FillPattern implements CanvasPattern
         }
     }
 
-    setTransform(transform?: Matrix): void
+    public setTransform(transform?: Matrix): void
     {
         const texture = this.texture;
 

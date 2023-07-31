@@ -27,22 +27,22 @@ describe('TilingSprite', () =>
         container.addChild(sprite);
 
         renderer.render({ container });
-        expect(renderer.renderPipes.tilingSprite['renderableHash'][sprite.uid]).not.toBeNull();
+        expect(renderer.renderPipes.tilingSprite['_renderableHash'][sprite.uid]).not.toBeNull();
 
-        expect(renderer.renderPipes.tilingSprite['gpuTilingSprite'][sprite.uid]).toBeUndefined();
-        expect(renderer.renderPipes.tilingSprite['gpuBatchedTilingSprite'][sprite.uid]).not.toBeNull();
+        expect(renderer.renderPipes.tilingSprite['_gpuTilingSprite'][sprite.uid]).toBeUndefined();
+        expect(renderer.renderPipes.tilingSprite['_gpuBatchedTilingSprite'][sprite.uid]).not.toBeNull();
 
         sprite.texture = getTexture({ width: 10, height: 10 });
 
         renderer.render({ container });
 
-        expect(renderer.renderPipes.tilingSprite['gpuTilingSprite'][sprite.uid]).not.toBeNull();
+        expect(renderer.renderPipes.tilingSprite['_gpuTilingSprite'][sprite.uid]).not.toBeNull();
 
         sprite.destroy();
 
-        expect(renderer.renderPipes.tilingSprite['renderableHash'][sprite.uid]).toBeNull();
-        expect(renderer.renderPipes.tilingSprite['gpuTilingSprite'][sprite.uid]).toBeNull();
-        expect(renderer.renderPipes.tilingSprite['gpuBatchedTilingSprite'][sprite.uid]).toBeNull();
+        expect(renderer.renderPipes.tilingSprite['_renderableHash'][sprite.uid]).toBeNull();
+        expect(renderer.renderPipes.tilingSprite['_gpuTilingSprite'][sprite.uid]).toBeNull();
+        expect(renderer.renderPipes.tilingSprite['_gpuBatchedTilingSprite'][sprite.uid]).toBeNull();
 
         expect(sprite.view.texture).toBeNull();
     });

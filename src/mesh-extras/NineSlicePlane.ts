@@ -45,7 +45,7 @@ export interface NineSliceSpriteOptions extends ContainerOptions<MeshView<NineSl
  */
 export class NineSliceSprite extends Container<MeshView<NineSliceGeometry>>
 {
-    static defaultOptions: NineSliceSpriteOptions = {
+    public static defaultOptions: NineSliceSpriteOptions = {
         texture: Texture.EMPTY,
         leftWidth: 10,
         topHeight: 10,

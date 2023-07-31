@@ -16,35 +16,31 @@ import type { WebGLRenderer } from './WebGLRenderer';
 export class GlRenderTargetSystem implements System
 {
     /** @ignore */
-    static extension = {
+    public static extension = {
         type: [
             ExtensionType.WebGLSystem,
         ],
         name: 'renderTarget',
     } as const;
 
-    rootProjectionMatrix: Matrix;
-    renderingToScreen: boolean;
-    rootRenderTarget: RenderTarget;
-    renderTarget: RenderTarget;
-
-    onRenderTargetChange = new SystemRunner('onRenderTargetChange');
+    public rootProjectionMatrix: Matrix;
+    public renderingToScreen: boolean;
+    public rootRenderTarget: RenderTarget;
+    public renderTarget: RenderTarget;
+    public onRenderTargetChange = new SystemRunner('onRenderTargetChange');
 
     // TODO work on this later!
     // multiRender = true;
-    private gl: GlRenderingContext;
+    private _gl: GlRenderingContext;
 
-    private readonly renderSurfaceToRenderTargetHash: Map<RenderSurface, RenderTarget> = new Map();
-    private gpuRenderTargetHash: Record<number, GlRenderTarget> = {};
+    private readonly _renderSurfaceToRenderTargetHash: Map<RenderSurface, RenderTarget> = new Map();
+    private _gpuRenderTargetHash: Record<number, GlRenderTarget> = {};
+    private readonly _renderer: WebGLRenderer;
+    private readonly _renderTargetStack: RenderTarget[] = [];
+    private readonly _defaultClearColor: RGBAArray = [0, 0, 0, 0];
+    private readonly _clearColorCache: RGBAArray = [0, 0, 0, 0];
 
-    private readonly renderer: WebGLRenderer;
-
-    private readonly renderTargetStack: RenderTarget[] = [];
-
-    private readonly defaultClearColor: RGBAArray = [0, 0, 0, 0];
-    private readonly clearColorCache: RGBAArray = [0, 0, 0, 0];
-
-    private readonly viewPortCache = {
+    private readonly _viewPortCache = {
         x: 0,
         y: 0,
         width: 0,
@@ -55,17 +51,17 @@ export class GlRenderTargetSystem implements System
     {
         this.rootProjectionMatrix = new Matrix();
 
-        this.renderer = renderer;
+        this._renderer = renderer;
     }
 
-    contextChange(gl: GlRenderingContext): void
+    protected contextChange(gl: GlRenderingContext): void
     {
-        this.gl = gl;
+        this._gl = gl;
     }
 
-    start(rootRenderSurface: any, clear = true, clearColor?: RGBAArray): void
+    public start(rootRenderSurface: any, clear = true, clearColor?: RGBAArray): void
     {
-        this.renderTargetStack.length = 0;
+        this._renderTargetStack.length = 0;
 
         const renderTarget = this.getRenderTarget(rootRenderSurface);
 
@@ -78,33 +74,28 @@ export class GlRenderTargetSystem implements System
         this.push(renderTarget, clear, clearColor);
     }
 
-    renderEnd(): void
-    {
-        this.finish();
-    }
-
-    bind(renderSurface: RenderSurface, clear = true, clearColor?: RGBAArray): RenderTarget
+    public bind(renderSurface: RenderSurface, clear = true, clearColor?: RGBAArray): RenderTarget
     {
         const renderTarget = this.getRenderTarget(renderSurface);
 
         this.renderTarget = renderTarget;
 
-        const gpuRenderTarget = this.getGpuRenderTarget(renderTarget);
+        const gpuRenderTarget = this._getGpuRenderTarget(renderTarget);
 
         if (renderTarget.dirtyId !== gpuRenderTarget.dirtyId)
         {
             gpuRenderTarget.dirtyId = renderTarget.dirtyId;
-            this.resizeGpuRenderTarget(renderTarget);
+            this._resizeGpuRenderTarget(renderTarget);
         }
 
-        const gl = this.gl;
+        const gl = this._gl;
 
         gl.bindFramebuffer(gl.FRAMEBUFFER, gpuRenderTarget.framebuffer);
 
         // unbind the current render texture..
         renderTarget.colorTextures.forEach((texture) =>
         {
-            this.renderer.texture.unbind(texture);
+            this._renderer.texture.unbind(texture);
         });
 
         const viewport = renderTarget.viewport;
@@ -114,10 +105,10 @@ export class GlRenderTargetSystem implements System
         if (renderTarget.isRoot)
         {
             // /TODO this is the same logic?
-            viewPortY = this.renderer.view.element.height - viewport.height;
+            viewPortY = this._renderer.view.element.height - viewport.height;
         }
 
-        const viewPortCache = this.viewPortCache;
+        const viewPortCache = this._viewPortCache;
 
         if (viewPortCache.x !== viewport.x
             || viewPortCache.y !== viewPortY
@@ -139,13 +130,13 @@ export class GlRenderTargetSystem implements System
 
         if (clear)
         {
-            const gl = this.gl;
+            const gl = this._gl;
 
             if (clear)
             {
-                clearColor = clearColor ?? this.defaultClearColor;
+                clearColor = clearColor ?? this._defaultClearColor;
 
-                const clearColorCache = this.clearColorCache;
+                const clearColorCache = this._clearColorCache;
 
                 if (clearColorCache[0] !== clearColor[0]
                      || clearColorCache[1] !== clearColor[1]
@@ -175,33 +166,33 @@ export class GlRenderTargetSystem implements System
      * @param renderTarget
      * @returns a gpu texture
      */
-    getGpuColorTexture(renderTarget: RenderTarget): Texture
+    public getGpuColorTexture(renderTarget: RenderTarget): Texture
     {
         return renderTarget.colorTexture;
     }
 
-    push(renderSurface: RenderSurface, clear = true, clearColor?: RGBAArray)
+    public push(renderSurface: RenderSurface, clear = true, clearColor?: RGBAArray)
     {
         const renderTarget = this.bind(renderSurface, clear, clearColor);
 
-        this.renderTargetStack.push(renderTarget);
+        this._renderTargetStack.push(renderTarget);
 
         return renderTarget;
     }
 
-    pop()
+    public pop()
     {
-        this.renderTargetStack.pop();
+        this._renderTargetStack.pop();
 
-        this.bind(this.renderTargetStack[this.renderTargetStack.length - 1], false);
+        this.bind(this._renderTargetStack[this._renderTargetStack.length - 1], false);
     }
 
-    getRenderTarget(renderSurface: RenderSurface): RenderTarget
+    public getRenderTarget(renderSurface: RenderSurface): RenderTarget
     {
-        return this.renderSurfaceToRenderTargetHash.get(renderSurface) ?? this.initRenderTarget(renderSurface);
+        return this._renderSurfaceToRenderTargetHash.get(renderSurface) ?? this._initRenderTarget(renderSurface);
     }
 
-    private initRenderTarget(renderSurface: RenderSurface): RenderTarget
+    private _initRenderTarget(renderSurface: RenderSurface): RenderTarget
     {
         let renderTarget: RenderTarget = null;
 
@@ -231,18 +222,18 @@ export class GlRenderTargetSystem implements System
             });
         }
 
-        this.renderSurfaceToRenderTargetHash.set(renderSurface, renderTarget);
+        this._renderSurfaceToRenderTargetHash.set(renderSurface, renderTarget);
 
         return renderTarget;
     }
 
-    finishRenderPass()
+    public finishRenderPass()
     {
-        const glRenderTarget = this.getGpuRenderTarget(this.renderTarget);
+        const glRenderTarget = this._getGpuRenderTarget(this.renderTarget);
 
         if (!glRenderTarget.msaa) return;
 
-        const gl = this.renderer.gl;
+        const gl = this._renderer.gl;
 
         gl.bindFramebuffer(gl.FRAMEBUFFER, glRenderTarget.resolveTargetFramebuffer);
         gl.bindFramebuffer(gl.READ_FRAMEBUFFER, glRenderTarget.framebuffer);
@@ -257,19 +248,14 @@ export class GlRenderTargetSystem implements System
         gl.bindFramebuffer(gl.READ_FRAMEBUFFER, null);
     }
 
-    finish()
-    {
-        // NOTHING TO DO JUST YET..
-    }
-
-    copyToTexture(
+    public copyToTexture(
         sourceRenderSurfaceTexture: RenderTarget,
         destinationTexture: Texture,
         origin: { x: number; y: number; },
         size: { width: number; height: number; }
     )
     {
-        const renderer = this.renderer;
+        const renderer = this._renderer;
 
         const baseTexture = renderer.renderTarget.getGpuColorTexture(sourceRenderSurfaceTexture);
 
@@ -290,14 +276,14 @@ export class GlRenderTargetSystem implements System
         return destinationTexture;
     }
 
-    private getGpuRenderTarget(renderTarget: RenderTarget)
+    private _getGpuRenderTarget(renderTarget: RenderTarget)
     {
-        return this.gpuRenderTargetHash[renderTarget.uid] || this.initGpuRenderTarget(renderTarget);
+        return this._gpuRenderTargetHash[renderTarget.uid] || this._initGpuRenderTarget(renderTarget);
     }
 
-    private initGpuRenderTarget(renderTarget: RenderTarget)
+    private _initGpuRenderTarget(renderTarget: RenderTarget)
     {
-        const renderer = this.renderer;
+        const renderer = this._renderer;
 
         const gl = renderer.gl;
 
@@ -308,46 +294,46 @@ export class GlRenderTargetSystem implements System
         // we are rendering to a canvas..
         if (renderTarget.colorTexture.source.resource instanceof HTMLCanvasElement)
         {
-            this.gpuRenderTargetHash[renderTarget.uid] = glRenderTarget;
+            this._gpuRenderTargetHash[renderTarget.uid] = glRenderTarget;
 
             glRenderTarget.framebuffer = null;
 
             return glRenderTarget;
         }
 
-        this.initColor(renderTarget, glRenderTarget);
+        this._initColor(renderTarget, glRenderTarget);
 
         if (renderTarget.stencil)
         {
-            this.initStencil(glRenderTarget);
+            this._initStencil(glRenderTarget);
         }
 
         // set up a depth texture..
 
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
-        this.gpuRenderTargetHash[renderTarget.uid] = glRenderTarget;
+        this._gpuRenderTargetHash[renderTarget.uid] = glRenderTarget;
 
         return glRenderTarget;
     }
 
-    private resizeGpuRenderTarget(renderTarget: RenderTarget)
+    private _resizeGpuRenderTarget(renderTarget: RenderTarget)
     {
         if (renderTarget.isRoot) return;
 
-        const glRenderTarget = this.getGpuRenderTarget(renderTarget);
+        const glRenderTarget = this._getGpuRenderTarget(renderTarget);
 
-        this.resizeColor(renderTarget, glRenderTarget);
+        this._resizeColor(renderTarget, glRenderTarget);
 
         if (renderTarget.stencil)
         {
-            this.resizeStencil(glRenderTarget);
+            this._resizeStencil(glRenderTarget);
         }
     }
 
-    private initColor(renderTarget: RenderTarget, glRenderTarget: GlRenderTarget)
+    private _initColor(renderTarget: RenderTarget, glRenderTarget: GlRenderTarget)
     {
-        const renderer = this.renderer;
+        const renderer = this._renderer;
 
         const gl = renderer.gl;
         // deal with our outputs..
@@ -404,7 +390,7 @@ export class GlRenderTargetSystem implements System
         }
     }
 
-    private resizeColor(renderTarget: RenderTarget, glRenderTarget: GlRenderTarget)
+    private _resizeColor(renderTarget: RenderTarget, glRenderTarget: GlRenderTarget)
     {
         const source = renderTarget.colorTexture.source;
 
@@ -421,7 +407,7 @@ export class GlRenderTargetSystem implements System
 
         if (glRenderTarget.msaa)
         {
-            const renderer = this.renderer;
+            const renderer = this._renderer;
             const gl = renderer.gl;
 
             const viewFramebuffer = glRenderTarget.framebuffer;
@@ -462,9 +448,9 @@ export class GlRenderTargetSystem implements System
         }
     }
 
-    private initStencil(glRenderTarget: GlRenderTarget)
+    private _initStencil(glRenderTarget: GlRenderTarget)
     {
-        const gl = this.renderer.gl;
+        const gl = this._renderer.gl;
 
         const depthStencilRenderBuffer = gl.createRenderbuffer();
 
@@ -483,9 +469,9 @@ export class GlRenderTargetSystem implements System
         );
     }
 
-    private resizeStencil(glRenderTarget: GlRenderTarget)
+    private _resizeStencil(glRenderTarget: GlRenderTarget)
     {
-        const gl = this.renderer.gl;
+        const gl = this._renderer.gl;
 
         gl.bindRenderbuffer(
             gl.RENDERBUFFER,
@@ -513,36 +499,9 @@ export class GlRenderTargetSystem implements System
         }
     }
 
-    destroy()
+    public destroy()
     {
         //
     }
 }
 
-// finish(): void
-// {
-//     this.gl.finish();
-
-//     // TODO - implement this properly
-//     // if (this.renderer.view.multiView)
-//     // {
-//     //     const renderTarget = this.rootRenderTarget;
-
-//     //     // now copy it to where it needs to be!
-//     //     if (renderTarget.isRoot)
-//     //     {
-//     //
-//     //         // const canvas = renderTarget.colorTexture.source.resource;
-
-//     //         // if (!renderTarget.copyContext)
-//     //         // {
-//     //         //     renderTarget.copyContext = canvas.getContext('2d');
-//     //         // }
-
-//     //         // renderTarget.copyContext.drawImage(
-//     //         //     this.renderer.view.element,
-//     //         //     0, 0,
-//     //         // );
-//     //     }
-//     // }
-// }

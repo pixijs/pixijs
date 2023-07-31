@@ -30,12 +30,11 @@ export class CanvasPoolClass
      * @default false
      */
     public enableFullScreen: boolean;
-    canvasPool: {[x in string | number]: CanvasAndContext[]};
-    poolKeyHash: Record<number, string> = {};
+    private _canvasPool: {[x in string | number]: CanvasAndContext[]};
 
     constructor(canvasOptions?: ICanvasRenderingContext2DSettings)
     {
-        this.canvasPool = {};
+        this._canvasPool = {};
         this.canvasOptions = canvasOptions || {};
         this.enableFullScreen = false;
     }
@@ -45,7 +44,7 @@ export class CanvasPoolClass
      * @param pixelWidth - Width of texture in pixels.
      * @param pixelHeight - Height of texture in pixels.
      */
-    createCanvasAndContext(pixelWidth: number, pixelHeight: number): CanvasAndContext
+    private _createCanvasAndContext(pixelWidth: number, pixelHeight: number): CanvasAndContext
     {
         const canvas = settings.ADAPTER.createCanvas();
 
@@ -64,7 +63,7 @@ export class CanvasPoolClass
      * @param resolution - The resolution of the render texture.
      * @returns The new render texture.
      */
-    getOptimalCanvasAndContext(minWidth: number, minHeight: number, resolution = 1): CanvasAndContext
+    public getOptimalCanvasAndContext(minWidth: number, minHeight: number, resolution = 1): CanvasAndContext
     {
         minWidth = Math.ceil((minWidth * resolution) - 1e-6);
         minHeight = Math.ceil((minHeight * resolution) - 1e-6);
@@ -73,16 +72,16 @@ export class CanvasPoolClass
 
         const key = (minWidth << 17) + (minHeight << 1);
 
-        if (!this.canvasPool[key])
+        if (!this._canvasPool[key])
         {
-            this.canvasPool[key] = [];
+            this._canvasPool[key] = [];
         }
 
-        let canvasAndContext = this.canvasPool[key].pop();
+        let canvasAndContext = this._canvasPool[key].pop();
 
         if (!canvasAndContext)
         {
-            canvasAndContext = this.createCanvasAndContext(minWidth, minHeight);
+            canvasAndContext = this._createCanvasAndContext(minWidth, minHeight);
         }
 
         return canvasAndContext;
@@ -92,18 +91,18 @@ export class CanvasPoolClass
      * Place a render texture back into the pool.
      * @param canvasAndContext
      */
-    returnCanvasAndContext(canvasAndContext: CanvasAndContext): void
+    public returnCanvasAndContext(canvasAndContext: CanvasAndContext): void
     {
         const { width, height } = canvasAndContext.canvas;
 
         const key = (width << 17) + (height << 1);
 
-        this.canvasPool[key].push(canvasAndContext);
+        this._canvasPool[key].push(canvasAndContext);
     }
 
-    clear(): void
+    public clear(): void
     {
-        this.canvasPool = {};
+        this._canvasPool = {};
     }
 }
 

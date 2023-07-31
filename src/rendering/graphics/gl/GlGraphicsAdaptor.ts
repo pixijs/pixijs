@@ -15,16 +15,16 @@ import type { GraphicsView } from '../shared/GraphicsView';
 export class GlGraphicsAdaptor implements GraphicsAdaptor
 {
     /** @ignore */
-    static extension = {
+    public static extension = {
         type: [
             ExtensionType.WebGLPipesAdaptor,
         ],
         name: 'graphics',
     } as const;
 
-    shader: Shader;
+    private _shader: Shader;
 
-    init()
+    public init()
     {
         const uniforms = new UniformGroup({
             color: { value: new Float32Array([1, 1, 1, 1]), type: 'vec4<f32>' },
@@ -33,7 +33,7 @@ export class GlGraphicsAdaptor implements GraphicsAdaptor
 
         // uniforms.default.static = true;
 
-        this.shader = new Shader({
+        this._shader = new Shader({
             glProgram: generateDefaultGraphicsBatchGlProgram(MAX_TEXTURES),
             resources: {
                 localUniforms: uniforms,
@@ -42,10 +42,10 @@ export class GlGraphicsAdaptor implements GraphicsAdaptor
         });
     }
 
-    execute(graphicsPipe: GraphicsPipe, renderable: Renderable<GraphicsView>): void
+    public execute(graphicsPipe: GraphicsPipe, renderable: Renderable<GraphicsView>): void
     {
         const context = renderable.view.context;
-        const shader = context.customShader || this.shader;
+        const shader = context.customShader || this._shader;
         const renderer = graphicsPipe.renderer as WebGLRenderer;
         const contextSystem = renderer.graphicsContext;
 
@@ -97,9 +97,9 @@ export class GlGraphicsAdaptor implements GraphicsAdaptor
         }
     }
 
-    destroy(): void
+    public destroy(): void
     {
-        this.shader.destroy(true);
-        this.shader = null;
+        this._shader.destroy(true);
+        this._shader = null;
     }
 }

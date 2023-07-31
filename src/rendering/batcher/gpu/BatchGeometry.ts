@@ -60,7 +60,7 @@ export class BatchGeometry extends Geometry
         });
     }
 
-    reset()
+    public reset()
     {
         this.indexBuffer.data = placeHolderIndexData;
         this.buffers[0].data = placeHolderBufferData;

@@ -38,8 +38,8 @@ export type TextString = string | number | {toString: () => string};
 
 export class TextView implements View
 {
-    static defaultResolution = 1;
-    static defaultAutoResolution = true;
+    public static defaultResolution = 1;
+    public static defaultAutoResolution = true;
 
     public readonly uid: number = uid++;
     public readonly type: string = 'text';
@@ -47,10 +47,14 @@ export class TextView implements View
     public batched = true;
     public anchor: ObservablePoint;
 
-    _autoResolution = TextView.defaultAutoResolution;
-    _resolution = TextView.defaultResolution;
-    _style: TextStyle;
-    _didUpdate = true;
+    /** @internal */
+    public _autoResolution = TextView.defaultAutoResolution;
+    /** @internal */
+    public _resolution = TextView.defaultResolution;
+    /** @internal */
+    public _style: TextStyle;
+    /** @internal */
+    public _didUpdate = true;
 
     private _bounds: [number, number, number, number] = [0, 1, 0, 0];
     private _boundsDirty = true;
@@ -158,20 +162,16 @@ export class TextView implements View
         return false;
     }
 
-    /**
-     * @internal
-     */
-    onUpdate()
+    /** @internal */
+    public onUpdate()
     {
         this._didUpdate = true;
         this._boundsDirty = true;
         this.owner.onViewUpdate();
     }
 
-    /**
-     * @internal
-     */
-    _getKey(): string
+    /** @internal */
+    public _getKey(): string
     {
         // TODO add a dirty flag...
         return `${this.text}:${this._style.styleKey}`;

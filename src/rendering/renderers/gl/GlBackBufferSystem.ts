@@ -43,59 +43,59 @@ const bigTriangleShader = new Shader({
 export class GlBackBufferSystem implements System
 {
     /** @ignore */
-    static extension = {
+    public static extension = {
         type: [
             ExtensionType.WebGLSystem,
         ],
         name: 'backBuffer',
     } as const;
 
-    backBufferTexture: Texture;
-    renderer: WebGLRenderer;
-    targetTexture: Texture;
-    useBackBuffer = false;
+    private _backBufferTexture: Texture;
+    private readonly _renderer: WebGLRenderer;
+    private _targetTexture: Texture;
+    private _useBackBuffer = false;
 
     constructor(renderer: WebGLRenderer)
     {
-        this.renderer = renderer;
+        this._renderer = renderer;
     }
 
-    init({ useBackBuffer }: { useBackBuffer?: boolean } = {})
+    public init({ useBackBuffer }: { useBackBuffer?: boolean } = {})
     {
-        this.useBackBuffer = useBackBuffer;
+        this._useBackBuffer = useBackBuffer;
     }
 
-    renderStart({ target, clear }: { target: RenderSurface, clear: boolean })
+    protected renderStart({ target, clear }: { target: RenderSurface, clear: boolean })
     {
-        if (this.useBackBuffer)
+        if (this._useBackBuffer)
         {
-            const renderTarget = this.renderer.renderTarget.getRenderTarget(target);
+            const renderTarget = this._renderer.renderTarget.getRenderTarget(target);
 
-            this.targetTexture = renderTarget.colorTexture;
+            this._targetTexture = renderTarget.colorTexture;
 
             target = this._getBackBufferTexture(renderTarget.colorTexture);
         }
 
-        this.renderer.renderTarget.start(target, clear, this.renderer.background.colorRgba);
+        this._renderer.renderTarget.start(target, clear, this._renderer.background.colorRgba);
     }
 
-    renderEnd()
+    protected renderEnd()
     {
         this._presentBackBuffer();
     }
 
     private _presentBackBuffer()
     {
-        if (!this.useBackBuffer) return;
+        if (!this._useBackBuffer) return;
 
-        const renderer = this.renderer;
+        const renderer = this._renderer;
         const gl = renderer.gl;
 
         renderer.renderTarget.finishRenderPass();
 
-        renderer.renderTarget.bind(this.targetTexture, false);
+        renderer.renderTarget.bind(this._targetTexture, false);
 
-        bigTriangleShader.resources.uTexture = this.backBufferTexture.source;
+        bigTriangleShader.resources.uTexture = this._backBufferTexture.source;
 
         renderer.shader.bind(bigTriangleShader, false);
         renderer.state.set(State.for2d());
@@ -107,7 +107,7 @@ export class GlBackBufferSystem implements System
     {
         const source = targetTexture.source;
 
-        this.backBufferTexture = this.backBufferTexture || new Texture({
+        this._backBufferTexture = this._backBufferTexture || new Texture({
             source: new TextureSource({
                 width: 1,
                 height: 1,
@@ -117,16 +117,16 @@ export class GlBackBufferSystem implements System
         });
 
         // this will not resize if its the same size already! No extra check required
-        this.backBufferTexture.source.resize(
+        this._backBufferTexture.source.resize(
             source.width,
             source.height,
             source._resolution,
         );
 
-        return this.backBufferTexture;
+        return this._backBufferTexture;
     }
 
-    destroy()
+    public destroy()
     {
         //
     }
