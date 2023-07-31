@@ -1,5 +1,6 @@
 import { Filter } from '../../rendering/filters/shared/Filter';
 import { TexturePool } from '../../rendering/renderers/shared/texture/TexturePool';
+import { RendererType } from '../../types';
 import { generateBlurGlProgram } from './gl/generateBlurGlProgram';
 import { generateBlurProgram } from './gpu/generateBlurProgram';
 
@@ -19,7 +20,7 @@ export interface BlurFilterPassOptions extends BlurFilterOptions
  */
 export class BlurFilterPass extends Filter
 {
-    static defaultOptions: Partial<BlurFilterPassOptions> = {
+    public static defaultOptions: Partial<BlurFilterPassOptions> = {
         strength: 8,
         quality: 4,
         kernelSize: 5,
@@ -30,7 +31,7 @@ export class BlurFilterPass extends Filter
     public strength!: number;
 
     private _quality: number;
-    private _uniforms: any;
+    private readonly _uniforms: any;
 
     /**
      * @param options
@@ -99,7 +100,7 @@ export class BlurFilterPass extends Filter
 
             for (let i = 0; i < this.passes - 1; i++)
             {
-                filterManager.applyFilter(this, flip, flop, true);
+                filterManager.applyFilter(this, flip, flop, filterManager.renderer.type === RendererType.WEBGPU);
 
                 const temp = flop;
 
