@@ -24,50 +24,47 @@ import type { GLTextureUploader } from './uploaders/GLTextureUploader';
 export class GlTextureSystem implements System
 {
     /** @ignore */
-    static extension = {
+    public static extension = {
         type: [
             ExtensionType.WebGLSystem,
         ],
         name: 'texture',
     } as const;
 
-    readonly renderer: WebGLRenderer;
+    private readonly _renderer: WebGLRenderer;
 
-    glTextures: Record<number, GlTexture> = {};
-    glSamplers: Record<string, WebGLSampler> = {};
+    private _glTextures: Record<number, GlTexture> = {};
+    private _glSamplers: Record<string, WebGLSampler> = {};
 
-    boundTextures: TextureSource[] = [];
-    boundTexturesSamplers: number[] = [];
-    activeTextureLocation = -1;
+    private _boundTextures: TextureSource[] = [];
+    private _activeTextureLocation = -1;
 
-    boundSamplers: Record<number, WebGLSampler> = {};
+    private _boundSamplers: Record<number, WebGLSampler> = {};
 
-    managedTextureSources: Record<number, TextureSource> = {};
-
-    uploads: Record<string, GLTextureUploader> = {
+    private readonly _uploads: Record<string, GLTextureUploader> = {
         image: glUploadImageResource,
         buffer: glUploadBufferImageResource
     };
 
-    gl: GlRenderingContext;
-    mapFormatToInternalFormat: Record<string, number>;
-    mapFormatToType: Record<string, number>;
-    mapFormatToFormat: Record<string, number>;
+    private _gl: GlRenderingContext;
+    private _mapFormatToInternalFormat: Record<string, number>;
+    private _mapFormatToType: Record<string, number>;
+    private _mapFormatToFormat: Record<string, number>;
 
     constructor(renderer: WebGLRenderer)
     {
-        this.renderer = renderer;
+        this._renderer = renderer;
     }
 
     protected contextChange(gl: GlRenderingContext): void
     {
-        this.gl = gl;
+        this._gl = gl;
 
-        if (!this.mapFormatToInternalFormat)
+        if (!this._mapFormatToInternalFormat)
         {
-            this.mapFormatToInternalFormat = mapFormatToGlInternalFormat(gl);
-            this.mapFormatToType = mapFormatToGlType(gl);
-            this.mapFormatToFormat = mapFormatToGlFormat(gl);
+            this._mapFormatToInternalFormat = mapFormatToGlInternalFormat(gl);
+            this._mapFormatToType = mapFormatToGlType(gl);
+            this._mapFormatToFormat = mapFormatToGlFormat(gl);
         }
 
         for (let i = 0; i < 16; i++)
@@ -76,32 +73,28 @@ export class GlTextureSystem implements System
         }
     }
 
-    bind(texture: BindableTexture, location = 0)
+    public bind(texture: BindableTexture, location = 0)
     {
-        // if (this.boundTexturesSamplers[location] === texture.styleSourceKey) return;
-
-        // this.boundTexturesSamplers[location] = texture.styleSourceKey;
-
         if (texture)
         {
             this.bindSource(texture.source, location);
-            this.bindSampler(texture.style, location);
+            this._bindSampler(texture.style, location);
         }
         else
         {
             this.bindSource(null, location);
-            this.bindSampler(null, location);
+            this._bindSampler(null, location);
         }
     }
 
-    bindSource(source: TextureSource, location = 0): void
+    public bindSource(source: TextureSource, location = 0): void
     {
-        const gl = this.gl;
+        const gl = this._gl;
 
-        if (this.boundTextures[location] !== source)
+        if (this._boundTextures[location] !== source)
         {
-            this.boundTextures[location] = source;
-            this.activateLocation(location);
+            this._boundTextures[location] = source;
+            this._activateLocation(location);
 
             source = source || Texture.EMPTY.source;
 
@@ -112,38 +105,38 @@ export class GlTextureSystem implements System
         }
     }
 
-    bindSampler(style: TextureStyle, location = 0): void
+    private _bindSampler(style: TextureStyle, location = 0): void
     {
-        const gl = this.gl;
+        const gl = this._gl;
 
         if (!style)
         {
-            this.boundSamplers[location] = null;
+            this._boundSamplers[location] = null;
             gl.bindSampler(location, null);
 
             return;
         }
 
-        const sampler = this.getGlSampler(style);
+        const sampler = this._getGlSampler(style);
 
-        if (this.boundSamplers[location] !== sampler)
+        if (this._boundSamplers[location] !== sampler)
         {
-            this.boundSamplers[location] = sampler;
+            this._boundSamplers[location] = sampler;
             gl.bindSampler(location, sampler);
         }
     }
 
-    unbind(texture: Texture): void
+    public unbind(texture: Texture): void
     {
         const source = texture.source;
-        const boundTextures = this.boundTextures;
-        const gl = this.gl;
+        const boundTextures = this._boundTextures;
+        const gl = this._gl;
 
         for (let i = 0; i < boundTextures.length; i++)
         {
             if (boundTextures[i] === source)
             {
-                this.activateLocation(i);
+                this._activateLocation(i);
 
                 const glTexture = this.getGlSource(source);
 
@@ -153,24 +146,24 @@ export class GlTextureSystem implements System
         }
     }
 
-    activateLocation(location: number): void
+    private _activateLocation(location: number): void
     {
-        if (this.activeTextureLocation !== location)
+        if (this._activeTextureLocation !== location)
         {
-            this.activeTextureLocation = location;
-            this.gl.activeTexture(this.gl.TEXTURE0 + location);
+            this._activeTextureLocation = location;
+            this._gl.activeTexture(this._gl.TEXTURE0 + location);
         }
     }
 
-    public initSource(source: TextureSource): GlTexture
+    private _initSource(source: TextureSource): GlTexture
     {
-        const gl = this.gl;
+        const gl = this._gl;
 
         const glTexture = new GlTexture(gl.createTexture());
 
-        glTexture.type = this.mapFormatToType[source.format];
-        glTexture.internalFormat = this.mapFormatToInternalFormat[source.format];
-        glTexture.format = this.mapFormatToFormat[source.format];
+        glTexture.type = this._mapFormatToType[source.format];
+        glTexture.internalFormat = this._mapFormatToInternalFormat[source.format];
+        glTexture.format = this._mapFormatToFormat[source.format];
 
         if (source.autoGenerateMipmaps)
         {
@@ -179,7 +172,7 @@ export class GlTextureSystem implements System
             source.mipLevelCount = Math.floor(Math.log2(biggestDimension)) + 1;
         }
 
-        this.glTextures[source.uid] = glTexture;
+        this._glTextures[source.uid] = glTexture;
 
         source.on('update', this.onSourceUpdate, this);
         source.on('resize', this.onSourceUpdate, this);
@@ -190,19 +183,19 @@ export class GlTextureSystem implements System
         return glTexture;
     }
 
-    onSourceUpdate(source: TextureSource): void
+    protected onSourceUpdate(source: TextureSource): void
     {
-        const gl = this.gl;
+        const gl = this._gl;
 
-        const glTexture = this.glTextures[source.uid];
+        const glTexture = this._glTextures[source.uid];
 
         gl.bindTexture(gl.TEXTURE_2D, glTexture.texture);
 
-        this.boundTextures[this.activeTextureLocation] = source;
+        this._boundTextures[this._activeTextureLocation] = source;
 
-        if (this.uploads[source.type])
+        if (this._uploads[source.type])
         {
-            this.uploads[source.type].upload(source, glTexture, this.gl);
+            this._uploads[source.type].upload(source, glTexture, this._gl);
 
             if (source.autoGenerateMipmaps && source.mipLevelCount > 1)
             {
@@ -216,27 +209,27 @@ export class GlTextureSystem implements System
         }
     }
 
-    onSourceDestroy(source: TextureSource): void
+    protected onSourceDestroy(source: TextureSource): void
     {
-        const gl = this.gl;
+        const gl = this._gl;
 
         source.off('destroy', this.onSourceDestroy, this);
         source.off('update', this.onSourceUpdate, this);
 
-        const glTexture = this.glTextures[source.uid];
+        const glTexture = this._glTextures[source.uid];
 
-        delete this.glTextures[source.uid];
+        delete this._glTextures[source.uid];
 
         gl.deleteTexture(glTexture.target);
     }
 
-    initSampler(style: TextureStyle): WebGLSampler
+    private _initSampler(style: TextureStyle): WebGLSampler
     {
-        const gl = this.gl;
+        const gl = this._gl;
 
-        const glSampler = this.gl.createSampler();
+        const glSampler = this._gl.createSampler();
 
-        this.glSamplers[style.resourceId] = glSampler;
+        this._glSamplers[style.resourceId] = glSampler;
 
         // 1. set the wrapping mode
         gl.samplerParameteri(glSampler, gl.TEXTURE_WRAP_S, wrapModeToGlAddress[style.addressModeU]);
@@ -248,7 +241,7 @@ export class GlTextureSystem implements System
 
         // assuming the currently bound texture is the one we want to set the filter for
         // the only smelly part of this code, WebGPU is much better here :P
-        if (this.boundTextures[this.activeTextureLocation].mipLevelCount > 1)
+        if (this._boundTextures[this._activeTextureLocation].mipLevelCount > 1)
         {
             const glFilterMode = mipmapScaleModeToGlFilter[style.minFilter][style.mipmapFilter];
 
@@ -260,7 +253,7 @@ export class GlTextureSystem implements System
         }
 
         // 3. set the anisotropy
-        const anisotropicExt = this.renderer.context.extensions.anisotropicFiltering;
+        const anisotropicExt = this._renderer.context.extensions.anisotropicFiltering;
 
         if (anisotropicExt && style.maxAnisotropy > 1)
         {
@@ -275,20 +268,20 @@ export class GlTextureSystem implements System
             gl.samplerParameteri(glSampler, gl.TEXTURE_COMPARE_FUNC, compareModeToGlCompare[style.compare]);
         }
 
-        return this.glSamplers[style.resourceId];
+        return this._glSamplers[style.resourceId];
     }
 
-    getGlSampler(sampler: TextureStyle): WebGLSampler
+    private _getGlSampler(sampler: TextureStyle): WebGLSampler
     {
-        return this.glSamplers[sampler.resourceId] || this.initSampler(sampler);
+        return this._glSamplers[sampler.resourceId] || this._initSampler(sampler);
     }
 
-    getGlSource(source: TextureSource): GlTexture
+    public getGlSource(source: TextureSource): GlTexture
     {
-        return this.glTextures[source.uid] || this.initSource(source);
+        return this._glTextures[source.uid] || this._initSource(source);
     }
 
-    destroy(): void
+    public destroy(): void
     {
         throw new Error('Method not implemented.');
     }

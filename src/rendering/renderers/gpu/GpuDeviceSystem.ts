@@ -18,14 +18,14 @@ export interface GPU
 export class GpuDeviceSystem implements System
 {
     /** @ignore */
-    static extension = {
+    public static extension = {
         type: [
             ExtensionType.WebGPUSystem,
         ],
         name: 'device',
     } as const;
 
-    gpu: GPU;
+    public gpu: GPU;
 
     private _renderer: WebGPURenderer;
     private _initPromise: Promise<void>;
@@ -42,7 +42,7 @@ export class GpuDeviceSystem implements System
     {
         if (this._initPromise) return this._initPromise;
 
-        this._initPromise = this.createDeviceAndAdaptor({})
+        this._initPromise = this._createDeviceAndAdaptor({})
             .then((gpu) =>
             {
                 this.gpu = gpu;
@@ -69,7 +69,7 @@ export class GpuDeviceSystem implements System
      * @see https://developer.mozilla.org/en/docs/Web/API/HTMLCanvasElement/getContext
      * @returns {WebGLRenderingContext} the WebGL context
      */
-    async createDeviceAndAdaptor(options: GPURequestAdapterOptions): Promise<GPU>
+    private async _createDeviceAndAdaptor(options: GPURequestAdapterOptions): Promise<GPU>
     {
         // TODO we only need one of these..
         const adapter = await navigator.gpu.requestAdapter(options);
@@ -79,7 +79,7 @@ export class GpuDeviceSystem implements System
         return { adapter, device };
     }
 
-    destroy(): void
+    public destroy(): void
     {
         this._renderer = null;
     }

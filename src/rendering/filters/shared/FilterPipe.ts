@@ -1,17 +1,16 @@
 import { ExtensionType } from '../../../extensions/Extensions';
-import { UniformGroup } from '../../renderers/shared/shader/UniformGroup';
 
 import type { InstructionSet } from '../../renderers/shared/instructions/InstructionSet';
 import type { InstructionPipe } from '../../renderers/shared/instructions/RenderPipe';
 import type { Renderer } from '../../renderers/types';
 import type { Container } from '../../scene/Container';
-import type { FilterEffect } from './FilterEffect';
+import type { Effect } from '../../scene/Effect';
 import type { FilterInstruction } from './FilterSystem';
 
 // eslint-disable-next-line max-len
 export class FilterPipe implements InstructionPipe<FilterInstruction>
 {
-    static extension = {
+    public static extension = {
         type: [
             ExtensionType.WebGLPipes,
             ExtensionType.WebGPUPipes,
@@ -20,25 +19,16 @@ export class FilterPipe implements InstructionPipe<FilterInstruction>
         name: 'filter',
     } as const;
 
-    renderer: Renderer;
-
-    filterGlobalUniforms = new UniformGroup({
-        inputSize: { value: new Float32Array(4), type: 'vec4<f32>' },
-        inputPixel: { value: new Float32Array(4), type: 'vec4<f32>' },
-        inputClamp: { value: new Float32Array(4), type: 'vec4<f32>' },
-        outputFrame: { value: new Float32Array(4), type: 'vec4<f32>' },
-        backgroundFrame: { value: new Float32Array(4), type: 'vec4<f32>' },
-        globalFrame: { value: new Float32Array(4), type: 'vec4<f32>' },
-    });
+    private _renderer: Renderer;
 
     constructor(renderer: Renderer)
     {
-        this.renderer = renderer;
+        this._renderer = renderer;
     }
 
-    push(filterEffect: FilterEffect, container: Container, instructionSet: InstructionSet): void
+    public push(filterEffect: Effect, container: Container, instructionSet: InstructionSet): void
     {
-        const renderPipes = this.renderer.renderPipes;
+        const renderPipes = this._renderer.renderPipes;
 
         renderPipes.batch.break(instructionSet);
 
@@ -51,9 +41,9 @@ export class FilterPipe implements InstructionPipe<FilterInstruction>
         } as FilterInstruction);
     }
 
-    pop(_filterEffect: FilterEffect, _container: Container, instructionSet: InstructionSet): void
+    public pop(_filterEffect: Effect, _container: Container, instructionSet: InstructionSet): void
     {
-        this.renderer.renderPipes.batch.break(instructionSet);
+        this._renderer.renderPipes.batch.break(instructionSet);
 
         instructionSet.add({
             type: 'filter',
@@ -62,21 +52,20 @@ export class FilterPipe implements InstructionPipe<FilterInstruction>
         });
     }
 
-    execute(instruction: FilterInstruction)
+    public execute(instruction: FilterInstruction)
     {
         if (instruction.action === 'pushFilter')
         {
-            this.renderer.filter.push(instruction);
+            this._renderer.filter.push(instruction);
         }
         else if (instruction.action === 'popFilter')
         {
-            this.renderer.filter.pop();
+            this._renderer.filter.pop();
         }
     }
 
-    destroy(): void
+    public destroy(): void
     {
-        this.renderer = null;
-        this.filterGlobalUniforms = null;
+        this._renderer = null;
     }
 }

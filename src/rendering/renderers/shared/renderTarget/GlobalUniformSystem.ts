@@ -45,7 +45,7 @@ interface GlobalUniformRenderer
 export class GlobalUniformSystem implements System
 {
     /** @ignore */
-    static extension = {
+    public static extension = {
         type: [
             ExtensionType.WebGLSystem,
             ExtensionType.WebGPUSystem,
@@ -54,74 +54,74 @@ export class GlobalUniformSystem implements System
         name: 'globalUniforms',
     } as const;
 
-    private renderer: GlobalUniformRenderer;
+    private readonly _renderer: GlobalUniformRenderer;
 
-    private stackIndex = 0;
-    private globalUniformDataStack: GlobalUniformData[] = [];
+    private _stackIndex = 0;
+    private _globalUniformDataStack: GlobalUniformData[] = [];
 
-    private uniformsPool: GlobalUniformGroup[] = [];
-    private activeUniforms: GlobalUniformGroup[] = [];
+    private readonly _uniformsPool: GlobalUniformGroup[] = [];
+    private readonly _activeUniforms: GlobalUniformGroup[] = [];
 
-    private bindGroupPool: BindGroup[] = [];
-    private activeBindGroups: BindGroup[] = [];
+    private readonly _bindGroupPool: BindGroup[] = [];
+    private readonly _activeBindGroups: BindGroup[] = [];
 
-    private currentGlobalUniformData: GlobalUniformData;
+    private _currentGlobalUniformData: GlobalUniformData;
 
     constructor(renderer: GlobalUniformRenderer)
     {
-        this.renderer = renderer;
+        this._renderer = renderer;
     }
 
-    reset()
+    public reset()
     {
-        this.stackIndex = 0;
+        this._stackIndex = 0;
 
-        for (let i = 0; i < this.activeUniforms.length; i++)
+        for (let i = 0; i < this._activeUniforms.length; i++)
         {
-            this.uniformsPool.push(this.activeUniforms[i]);
+            this._uniformsPool.push(this._activeUniforms[i]);
         }
 
-        for (let i = 0; i < this.activeBindGroups.length; i++)
+        for (let i = 0; i < this._activeBindGroups.length; i++)
         {
-            this.bindGroupPool.push(this.activeBindGroups[i]);
+            this._bindGroupPool.push(this._activeBindGroups[i]);
         }
 
-        this.activeUniforms.length = 0;
-        this.activeBindGroups.length = 0;
+        this._activeUniforms.length = 0;
+        this._activeBindGroups.length = 0;
     }
 
-    start(options: GlobalUniformOptions): void
+    public start(options: GlobalUniformOptions): void
     {
         this.reset();
 
         this.push(options);
     }
 
-    bind({
+    public bind({
         projectionMatrix,
         worldTransformMatrix,
         worldColor,
         offset,
     }: GlobalUniformOptions)
     {
-        const currentGlobalUniformData = this.stackIndex ? this.globalUniformDataStack[this.stackIndex - 1] : {
-            projectionMatrix: this.renderer.renderTarget.renderTarget.projectionMatrix,
+        const currentGlobalUniformData = this._stackIndex ? this._globalUniformDataStack[this._stackIndex - 1] : {
+            projectionMatrix: this._renderer.renderTarget.renderTarget.projectionMatrix,
             worldTransformMatrix: new Matrix(),
             worldColor: 0xFFFFFFFF,
             offset: new Point(),
         };
 
         const globalUniformData: GlobalUniformData = {
-            projectionMatrix: projectionMatrix || this.renderer.renderTarget.renderTarget.projectionMatrix,
+            projectionMatrix: projectionMatrix || this._renderer.renderTarget.renderTarget.projectionMatrix,
             worldTransformMatrix: worldTransformMatrix || currentGlobalUniformData.worldTransformMatrix,
             worldColor: worldColor || currentGlobalUniformData.worldColor,
             offset: offset || currentGlobalUniformData.offset,
             bindGroup: null,
         };
 
-        const uniformGroup = this.uniformsPool.pop() || this.createUniforms();
+        const uniformGroup = this._uniformsPool.pop() || this._createUniforms();
 
-        this.activeUniforms.push(uniformGroup);
+        this._activeUniforms.push(uniformGroup);
 
         const uniforms = uniformGroup.uniforms;
 
@@ -138,47 +138,47 @@ export class GlobalUniformSystem implements System
 
         let bindGroup: BindGroup;
 
-        if ((this.renderer as WebGPURenderer).renderPipes.uniformBatch)
+        if ((this._renderer as WebGPURenderer).renderPipes.uniformBatch)
         {
-            bindGroup = (this.renderer as WebGPURenderer).renderPipes.uniformBatch.getUniformBindGroup(uniformGroup, false);
+            bindGroup = (this._renderer as WebGPURenderer).renderPipes.uniformBatch.getUniformBindGroup(uniformGroup, false);
         }
         else
         {
-            this.renderer.uniformBuffer.updateUniformGroup(uniformGroup as UniformGroup);
+            this._renderer.uniformBuffer.updateUniformGroup(uniformGroup as UniformGroup);
 
-            bindGroup = this.bindGroupPool.pop() || new BindGroup();
-            this.activeBindGroups.push(bindGroup);
+            bindGroup = this._bindGroupPool.pop() || new BindGroup();
+            this._activeBindGroups.push(bindGroup);
             bindGroup.setResource(uniformGroup, 0);
         }
 
         globalUniformData.bindGroup = bindGroup;
 
-        this.currentGlobalUniformData = globalUniformData;
+        this._currentGlobalUniformData = globalUniformData;
     }
 
-    push(options: GlobalUniformOptions)
+    public push(options: GlobalUniformOptions)
     {
         this.bind(options);
 
-        this.globalUniformDataStack[this.stackIndex++] = this.currentGlobalUniformData;
+        this._globalUniformDataStack[this._stackIndex++] = this._currentGlobalUniformData;
     }
 
-    pop()
+    public pop()
     {
-        this.currentGlobalUniformData = this.globalUniformDataStack[--this.stackIndex - 1];
+        this._currentGlobalUniformData = this._globalUniformDataStack[--this._stackIndex - 1];
     }
 
     get bindGroup(): BindGroup
     {
-        return this.currentGlobalUniformData.bindGroup;
+        return this._currentGlobalUniformData.bindGroup;
     }
 
     get uniformGroup()
     {
-        return this.currentGlobalUniformData.bindGroup.resources[0] as UniformGroup;
+        return this._currentGlobalUniformData.bindGroup.resources[0] as UniformGroup;
     }
 
-    private createUniforms(): GlobalUniformGroup
+    private _createUniforms(): GlobalUniformGroup
     {
         const globalUniforms = new UniformGroup({
             projectionMatrix: { value: new Matrix(), type: 'mat3x3<f32>' },
@@ -193,7 +193,7 @@ export class GlobalUniformSystem implements System
         return globalUniforms;
     }
 
-    destroy()
+    public destroy()
     {
         // boom!
     }

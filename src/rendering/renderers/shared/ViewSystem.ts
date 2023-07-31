@@ -1,9 +1,9 @@
 import { ExtensionType } from '../../../extensions/Extensions';
+import { Rectangle } from '../../../maths/shapes/Rectangle';
 import { settings } from '../../../settings/settings';
 import { getCanvasTexture } from './texture/utils/getCanvasTexture';
 
 import type { ICanvas } from '../../../settings/adapter/ICanvas';
-import type { Renderer } from '../types';
 import type { System } from './system/System';
 import type { CanvasSourceOptions } from './texture/sources/CanvasSource';
 import type { Texture } from './texture/Texture';
@@ -59,7 +59,7 @@ export interface ViewSystemOptions
 export class ViewSystem implements System
 {
     /** @ignore */
-    static extension = {
+    public static extension = {
         type: [
             ExtensionType.WebGLSystem,
             ExtensionType.WebGPUSystem,
@@ -70,7 +70,7 @@ export class ViewSystem implements System
     } as const;
 
     /** @ignore */
-    static defaultOptions: ViewSystemOptions = {
+    public static defaultOptions: ViewSystemOptions = {
         /**
          * {@link PIXI.WebGLOptions.width}
          * @default 800
@@ -99,8 +99,6 @@ export class ViewSystem implements System
         antialias: false,
     };
 
-    readonly renderer: Renderer;
-
     public multiView: boolean;
 
     /** The canvas element that everything is drawn to. */
@@ -116,10 +114,7 @@ export class ViewSystem implements System
 
     public antialias: boolean;
 
-    constructor(renderer: Renderer)
-    {
-        this.renderer = renderer;
-    }
+    public screen: Rectangle;
 
     get resolution(): number
     {
@@ -139,14 +134,17 @@ export class ViewSystem implements System
      * initiates the view system
      * @param options - the options for the view
      */
-    init(options: ViewSystemOptions): void
+    public init(options: ViewSystemOptions): void
     {
+        options = {
+            ...ViewSystem.defaultOptions,
+            ...options,
+        };
+
+        this.screen = new Rectangle(0, 0, options.width, options.height);
         this.element = options.element || settings.ADAPTER.createCanvas();
-
         this.antialias = !!options.antialias;
-
         this.texture = getCanvasTexture(this.element, options as CanvasSourceOptions);
-
         this.multiView = !!options.multiView;
 
         if (this.autoDensity)
@@ -162,9 +160,12 @@ export class ViewSystem implements System
      * @param desiredScreenHeight - The new height of the screen.
      * @param resolution
      */
-    resize(desiredScreenWidth: number, desiredScreenHeight: number, resolution: number): void
+    public resize(desiredScreenWidth: number, desiredScreenHeight: number, resolution: number): void
     {
         this.texture.source.resize(desiredScreenWidth, desiredScreenHeight, resolution);
+
+        this.screen.width = this.texture.frameWidth;
+        this.screen.height = this.texture.frameHeight;
 
         if (this.autoDensity)
         {
@@ -177,7 +178,7 @@ export class ViewSystem implements System
      * Destroys this System and optionally removes the canvas from the dom.
      * @param {boolean} [removeView=false] - Whether to remove the canvas from the DOM.
      */
-    destroy(removeView: boolean): void
+    public destroy(removeView: boolean): void
     {
         // ka boom!
         if (removeView && this.element.parentNode)

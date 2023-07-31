@@ -5,25 +5,24 @@ import type { View } from '../../renderers/shared/View';
 
 export class BatchableSprite implements BatchableObject
 {
-    visible: boolean;
-    indexStart: number;
-    sprite: Renderable<View>;
+    public indexStart: number;
+    public sprite: Renderable<View>;
 
     // batch specific..
-    vertexSize = 4;
-    indexSize = 6;
+    public vertexSize = 4;
+    public indexSize = 6;
 
-    texture: Texture;
+    public texture: Texture;
 
-    textureId: number;
-    location = 0; // location in the buffer
-    batcher: Batcher = null;
-    batch: Batch = null;
-    bounds: [number, number, number, number];
+    public textureId: number;
+    public location = 0; // location in the buffer
+    public batcher: Batcher = null;
+    public batch: Batch = null;
+    public bounds: [number, number, number, number];
 
     get blendMode() { return this.sprite.layerBlendMode; }
 
-    packAttributes(
+    public packAttributes(
         float32View: Float32Array,
         uint32View: Uint32Array,
         index: number,
@@ -96,7 +95,7 @@ export class BatchableSprite implements BatchableObject
         float32View[index++] = textureId;
     }
 
-    packIndex(indexBuffer: Uint32Array, index: number, indicesOffset: number)
+    public packIndex(indexBuffer: Uint32Array, index: number, indicesOffset: number)
     {
         indexBuffer[index++] = indicesOffset + 0;
         indexBuffer[index++] = indicesOffset + 1;
@@ -107,7 +106,7 @@ export class BatchableSprite implements BatchableObject
         indexBuffer[index++] = indicesOffset + 3;
     }
 
-    reset()
+    public reset()
     {
         this.sprite = null;
         this.texture = null;

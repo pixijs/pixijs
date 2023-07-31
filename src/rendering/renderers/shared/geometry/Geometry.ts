@@ -34,20 +34,18 @@ export class Geometry extends EventEmitter<{
     destroy: Geometry,
 }>
 {
-    topology: Topology;
+    public topology: Topology;
 
-    uid: number = UID++;
-    attributes: Record<string, Attribute>;
-    buffers: Buffer[];
-    indexBuffer: Buffer;
+    public uid: number = UID++;
+    public attributes: Record<string, Attribute>;
+    public buffers: Buffer[];
+    public indexBuffer: Buffer;
 
-    _layoutKey = 0;
-    _bufferLayout: Record<number, Buffer>;
+    /** @internal */
+    public _layoutKey = 0;
 
-    tick = 0;
-
-    instanced: boolean;
-    instanceCount: number;
+    public instanced: boolean;
+    public instanceCount: number;
 
     constructor({ attributes, indexBuffer, topology }: GeometryDescriptor)
     {
@@ -82,30 +80,8 @@ export class Geometry extends EventEmitter<{
         this.topology = topology || 'triangle-list';
     }
 
-    setBufferAtIndex(buffer: Buffer, index: number): void
+    protected onBufferUpdate(): void
     {
-        const previousBuffer = this.buffers[index];
-
-        previousBuffer.off('update', this.onBufferUpdate, this);
-
-        buffer.on('update', this.onBufferUpdate, this);
-
-        this.buffers[index] = buffer;
-
-        for (const i in this.attributes)
-        {
-            const attribute = this.attributes[i];
-
-            if (attribute.buffer === previousBuffer)
-            {
-                attribute.buffer = buffer;
-            }
-        }
-    }
-
-    onBufferUpdate(): void
-    {
-        this.tick = this.tick++;
         this.emit('update', this);
     }
 
@@ -114,7 +90,7 @@ export class Geometry extends EventEmitter<{
      * @param id - The name of the attribute required
      * @returns - The attribute requested.
      */
-    getAttribute(id: string): Attribute
+    public getAttribute(id: string): Attribute
     {
         return this.attributes[id];
     }
@@ -123,7 +99,7 @@ export class Geometry extends EventEmitter<{
      * Returns the index buffer
      * @returns - The index buffer.
      */
-    getIndex(): Buffer
+    public getIndex(): Buffer
     {
         return this.indexBuffer;
     }
@@ -133,12 +109,12 @@ export class Geometry extends EventEmitter<{
      * @param id - The name of the buffer required.
      * @returns - The buffer requested.
      */
-    getBuffer(id: string): Buffer
+    public getBuffer(id: string): Buffer
     {
         return this.getAttribute(id).buffer;
     }
 
-    getSize(): number
+    public getSize(): number
     {
         for (const i in this.attributes)
         {
@@ -152,7 +128,7 @@ export class Geometry extends EventEmitter<{
         return 0;
     }
 
-    destroy(destroyBuffers = false): void
+    public destroy(destroyBuffers = false): void
     {
         this.emit('destroy', this);
 

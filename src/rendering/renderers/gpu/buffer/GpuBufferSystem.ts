@@ -4,35 +4,33 @@ import { fastCopy } from '../../shared/buffer/utils/fastCopy';
 import type { Buffer } from '../../shared/buffer/Buffer';
 import type { System } from '../../shared/system/System';
 import type { GPU } from '../GpuDeviceSystem';
-import type { WebGPURenderer } from '../WebGPURenderer';
 
 export class BufferSystem implements System
 {
     /** @ignore */
-    static extension = {
+    public static extension = {
         type: [
             ExtensionType.WebGPUSystem,
         ],
         name: 'buffer',
     } as const;
 
-    readonly renderer: WebGPURenderer;
     protected CONTEXT_UID: number;
     private _gpuBuffers: { [key: number]: GPUBuffer } = {};
 
-    private gpu: GPU;
+    private _gpu: GPU;
 
     protected contextChange(gpu: GPU): void
     {
-        this.gpu = gpu;
+        this._gpu = gpu;
     }
 
-    getGPUBuffer(buffer: Buffer): GPUBuffer
+    public getGPUBuffer(buffer: Buffer): GPUBuffer
     {
         return this._gpuBuffers[buffer.uid] || this.createGPUBuffer(buffer);
     }
 
-    updateBuffer(buffer: Buffer): GPUBuffer
+    public updateBuffer(buffer: Buffer): GPUBuffer
     {
         const gpuBuffer = this._gpuBuffers[buffer.uid] || this.createGPUBuffer(buffer);
 
@@ -40,14 +38,14 @@ export class BufferSystem implements System
         if (buffer._updateID && buffer.data)
         {
             buffer._updateID = 0;
-            this.gpu.device.queue.writeBuffer(gpuBuffer, 0, buffer.data.buffer, 0, buffer._updateSize);// , 0);
+            this._gpu.device.queue.writeBuffer(gpuBuffer, 0, buffer.data.buffer, 0, buffer._updateSize);// , 0);
         }
 
         return gpuBuffer;
     }
 
     /** dispose all WebGL resources of all managed buffers */
-    destroyAll(): void
+    public destroyAll(): void
     {
         for (const id in this._gpuBuffers)
         {
@@ -57,9 +55,9 @@ export class BufferSystem implements System
         this._gpuBuffers = {};
     }
 
-    createGPUBuffer(buffer: Buffer): GPUBuffer
+    public createGPUBuffer(buffer: Buffer): GPUBuffer
     {
-        const gpuBuffer = this.gpu.device.createBuffer(buffer.descriptor);
+        const gpuBuffer = this._gpu.device.createBuffer(buffer.descriptor);
 
         buffer._updateID = 0;
 
@@ -93,7 +91,7 @@ export class BufferSystem implements System
      * Disposes buffer
      * @param buffer - buffer with data
      */
-    onBufferDestroy(buffer: Buffer): void
+    protected onBufferDestroy(buffer: Buffer): void
     {
         const gpuBuffer = this._gpuBuffers[buffer.uid];
 
@@ -102,7 +100,7 @@ export class BufferSystem implements System
         this._gpuBuffers[buffer.uid] = null;
     }
 
-    destroy(): void
+    public destroy(): void
     {
         throw new Error('Method not implemented.');
     }

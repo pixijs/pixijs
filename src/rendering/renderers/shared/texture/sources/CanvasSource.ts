@@ -11,9 +11,9 @@ export interface CanvasSourceOptions extends TextureSourceOptions<ICanvas>
 
 export class CanvasSource extends TextureSource<ICanvas>
 {
-    type = 'image';
-    autoDensity: boolean;
-    alphaMode = 0;
+    public type = 'image';
+    public autoDensity: boolean;
+    public alphaMode = 0;
 
     constructor(options: CanvasSourceOptions)
     {
@@ -54,7 +54,7 @@ export class CanvasSource extends TextureSource<ICanvas>
         }
     }
 
-    resizeCanvas()
+    public resizeCanvas()
     {
         if (this.autoDensity)
         {
@@ -66,7 +66,7 @@ export class CanvasSource extends TextureSource<ICanvas>
         this.resource.height = this.pixelHeight;
     }
 
-    resize(width = this.width, height = this.height, resolution = this._resolution): void
+    public resize(width = this.width, height = this.height, resolution = this._resolution): void
     {
         super.resize(width, height, resolution);
 

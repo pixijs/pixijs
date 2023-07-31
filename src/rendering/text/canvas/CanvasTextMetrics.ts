@@ -161,13 +161,13 @@ export class CanvasTextMetrics
     private static _fonts: Record<string, FontMetrics> = {};
 
     /** Cache of new line chars. */
-    private static _newlines: number[] = [
+    private static readonly _newlines: number[] = [
         0x000A, // line feed
         0x000D, // carriage return
     ];
 
     /** Cache of breaking spaces. */
-    private static _breakingSpaces: number[] = [
+    private static readonly _breakingSpaces: number[] = [
         0x0009, // character tabulation
         0x0020, // space
         0x2000, // en quad
@@ -184,10 +184,12 @@ export class CanvasTextMetrics
         0x3000, // ideographic space
     ];
 
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     private static __canvas: ICanvas;
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     private static __context: ICanvasRenderingContext2D;
 
-    private static _measurementCache: Record<string, CanvasTextMetrics> = {};
+    private static readonly _measurementCache: Record<string, CanvasTextMetrics> = {};
 
     /**
      * @param text - the text that was measured
@@ -250,7 +252,7 @@ export class CanvasTextMetrics
 
         context.font = font;
 
-        const outputText = wordWrap ? CanvasTextMetrics.wordWrap(text, style, canvas) : text;
+        const outputText = wordWrap ? CanvasTextMetrics._wordWrap(text, style, canvas) : text;
         const lines = outputText.split(/(?:\r\n|\r|\n)/);
         const lineWidths = new Array<number>(lines.length);
         let maxLineWidth = 0;
@@ -347,7 +349,7 @@ export class CanvasTextMetrics
      * @param canvas - optional specification of the canvas to use for measuring.
      * @returns New string with new lines applied where required
      */
-    private static wordWrap(
+    private static _wordWrap(
         text: string,
         style: TextStyle,
         canvas: ICanvas = CanvasTextMetrics._canvas
@@ -363,8 +365,8 @@ export class CanvasTextMetrics
         const { letterSpacing, whiteSpace } = style;
 
         // How to handle whitespaces
-        const collapseSpaces = CanvasTextMetrics.collapseSpaces(whiteSpace);
-        const collapseNewlines = CanvasTextMetrics.collapseNewlines(whiteSpace);
+        const collapseSpaces = CanvasTextMetrics._collapseSpaces(whiteSpace);
+        const collapseNewlines = CanvasTextMetrics._collapseNewlines(whiteSpace);
 
         // whether or not spaces may be added to the beginning of lines
         let canPrependSpaces = !collapseSpaces;
@@ -378,7 +380,7 @@ export class CanvasTextMetrics
         const wordWrapWidth = style.wordWrapWidth + letterSpacing;
 
         // break text into words, spaces and newline chars
-        const tokens = CanvasTextMetrics.tokenize(text);
+        const tokens = CanvasTextMetrics._tokenize(text);
 
         for (let i = 0; i < tokens.length; i++)
         {
@@ -386,12 +388,12 @@ export class CanvasTextMetrics
             let token = tokens[i];
 
             // if word is a new line
-            if (CanvasTextMetrics.isNewline(token))
+            if (CanvasTextMetrics._isNewline(token))
             {
                 // keep the new line
                 if (!collapseNewlines)
                 {
-                    lines += CanvasTextMetrics.addLine(line);
+                    lines += CanvasTextMetrics._addLine(line);
                     canPrependSpaces = !collapseSpaces;
                     line = '';
                     width = 0;
@@ -417,7 +419,7 @@ export class CanvasTextMetrics
             }
 
             // get word width from cache if possible
-            const tokenWidth = CanvasTextMetrics.getFromCache(token, letterSpacing, cache, context);
+            const tokenWidth = CanvasTextMetrics._getFromCache(token, letterSpacing, cache, context);
 
             // word is longer than desired bounds
             if (tokenWidth > wordWrapWidth)
@@ -426,7 +428,7 @@ export class CanvasTextMetrics
                 if (line !== '')
                 {
                     // start newlines for overflow words
-                    lines += CanvasTextMetrics.addLine(line);
+                    lines += CanvasTextMetrics._addLine(line);
                     line = '';
                     width = 0;
                 }
@@ -467,11 +469,11 @@ export class CanvasTextMetrics
 
                         j += k - 1;
 
-                        const characterWidth = CanvasTextMetrics.getFromCache(char, letterSpacing, cache, context);
+                        const characterWidth = CanvasTextMetrics._getFromCache(char, letterSpacing, cache, context);
 
                         if (characterWidth + width > wordWrapWidth)
                         {
-                            lines += CanvasTextMetrics.addLine(line);
+                            lines += CanvasTextMetrics._addLine(line);
                             canPrependSpaces = false;
                             line = '';
                             width = 0;
@@ -489,7 +491,7 @@ export class CanvasTextMetrics
                     // finish that line and start a new one
                     if (line.length > 0)
                     {
-                        lines += CanvasTextMetrics.addLine(line);
+                        lines += CanvasTextMetrics._addLine(line);
                         line = '';
                         width = 0;
                     }
@@ -497,7 +499,7 @@ export class CanvasTextMetrics
                     const isLastToken = i === tokens.length - 1;
 
                     // give it its own line if it's not the end
-                    lines += CanvasTextMetrics.addLine(token, !isLastToken);
+                    lines += CanvasTextMetrics._addLine(token, !isLastToken);
                     canPrependSpaces = false;
                     line = '';
                     width = 0;
@@ -515,7 +517,7 @@ export class CanvasTextMetrics
                     canPrependSpaces = false;
 
                     // add a new line
-                    lines += CanvasTextMetrics.addLine(line);
+                    lines += CanvasTextMetrics._addLine(line);
 
                     // start a new line
                     line = '';
@@ -534,7 +536,7 @@ export class CanvasTextMetrics
             }
         }
 
-        lines += CanvasTextMetrics.addLine(line, false);
+        lines += CanvasTextMetrics._addLine(line, false);
 
         return lines;
     }
@@ -545,9 +547,9 @@ export class CanvasTextMetrics
      * @param newLine - Add new line character to end
      * @returns A formatted line
      */
-    private static addLine(line: string, newLine = true): string
+    private static _addLine(line: string, newLine = true): string
     {
-        line = CanvasTextMetrics.trimRight(line);
+        line = CanvasTextMetrics._trimRight(line);
 
         line = (newLine) ? `${line}\n` : line;
 
@@ -562,7 +564,7 @@ export class CanvasTextMetrics
      * @param context        - The canvas context
      * @returns The from cache.
      */
-    private static getFromCache(key: string, letterSpacing: number, cache: CharacterWidthCache,
+    private static _getFromCache(key: string, letterSpacing: number, cache: CharacterWidthCache,
         context: ICanvasRenderingContext2D): number
     {
         let width = cache[key];
@@ -581,7 +583,7 @@ export class CanvasTextMetrics
      * @param whiteSpace - The TextStyle property whiteSpace
      * @returns Should collapse
      */
-    private static collapseSpaces(whiteSpace: TextStyleWhiteSpace): boolean
+    private static _collapseSpaces(whiteSpace: TextStyleWhiteSpace): boolean
     {
         return (whiteSpace === 'normal' || whiteSpace === 'pre-line');
     }
@@ -591,7 +593,7 @@ export class CanvasTextMetrics
      * @param whiteSpace - The white space
      * @returns should collapse
      */
-    private static collapseNewlines(whiteSpace: TextStyleWhiteSpace): boolean
+    private static _collapseNewlines(whiteSpace: TextStyleWhiteSpace): boolean
     {
         return (whiteSpace === 'normal');
     }
@@ -601,7 +603,7 @@ export class CanvasTextMetrics
      * @param text - The text
      * @returns Trimmed string
      */
-    private static trimRight(text: string): string
+    private static _trimRight(text: string): string
     {
         if (typeof text !== 'string')
         {
@@ -628,7 +630,7 @@ export class CanvasTextMetrics
      * @param char - The character
      * @returns True if newline, False otherwise.
      */
-    private static isNewline(char: string): boolean
+    private static _isNewline(char: string): boolean
     {
         if (typeof char !== 'string')
         {
@@ -648,7 +650,7 @@ export class CanvasTextMetrics
      * @param [_nextChar] - The next character
      * @returns True if whitespace, False otherwise.
      */
-    static isBreakingSpace(char: string, _nextChar?: string): boolean
+    public static isBreakingSpace(char: string, _nextChar?: string): boolean
     {
         if (typeof char !== 'string')
         {
@@ -663,7 +665,7 @@ export class CanvasTextMetrics
      * @param text - The text
      * @returns A tokenized array
      */
-    private static tokenize(text: string): string[]
+    private static _tokenize(text: string): string[]
     {
         const tokens: string[] = [];
         let token = '';
@@ -678,7 +680,7 @@ export class CanvasTextMetrics
             const char = text[i];
             const nextChar = text[i + 1];
 
-            if (CanvasTextMetrics.isBreakingSpace(char, nextChar) || CanvasTextMetrics.isNewline(char))
+            if (CanvasTextMetrics.isBreakingSpace(char, nextChar) || CanvasTextMetrics._isNewline(char))
             {
                 if (token !== '')
                 {
@@ -712,7 +714,7 @@ export class CanvasTextMetrics
      * @param breakWords - The style attr break words
      * @returns Whether to break word or not
      */
-    static canBreakWords(_token: string, breakWords: boolean): boolean
+    public static canBreakWords(_token: string, breakWords: boolean): boolean
     {
         return breakWords;
     }
@@ -731,7 +733,7 @@ export class CanvasTextMetrics
      * @param _breakWords - The style attr break words
      * @returns whether to break word or not
      */
-    static canBreakChars(_char: string, _nextChar: string, _token: string, _index: number,
+    public static canBreakChars(_char: string, _nextChar: string, _token: string, _index: number,
         _breakWords: boolean): boolean
     {
         return true;
@@ -747,7 +749,7 @@ export class CanvasTextMetrics
      * @returns The characters of the token
      * @see CanvasTextMetrics.graphemeSegmenter
      */
-    static wordWrapSplit(token: string): string[]
+    public static wordWrapSplit(token: string): string[]
     {
         return CanvasTextMetrics.graphemeSegmenter(token);
     }

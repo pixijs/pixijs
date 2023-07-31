@@ -7,14 +7,14 @@ import type { MeshView } from '../shared/MeshView';
 
 export class GlMeshAdaptor implements MeshAdaptor
 {
-    static extension = {
+    public static extension = {
         type: [
             ExtensionType.WebGLPipesAdaptor,
         ],
         name: 'mesh',
     } as const;
 
-    execute(meshPipe: MeshPipe, renderable: Renderable<MeshView>): void
+    public execute(meshPipe: MeshPipe, renderable: Renderable<MeshView>): void
     {
         const renderer = meshPipe.renderer;
         const view = renderable.view;

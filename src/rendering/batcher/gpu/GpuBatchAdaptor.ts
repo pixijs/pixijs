@@ -11,18 +11,18 @@ import type { BatcherAdaptor, BatcherPipe } from '../shared/BatcherPipe';
 export class GpuBatchAdaptor implements BatcherAdaptor
 {
     /** @ignore */
-    static extension = {
+    public static extension = {
         type: [
             ExtensionType.WebGPUPipesAdaptor,
         ],
         name: 'batch',
     } as const;
 
-    shader: Shader;
+    private _shader: Shader;
 
-    init()
+    public init()
     {
-        this.shader = new Shader({
+        this._shader = new Shader({
             gpuProgram: generateDefaultBatchProgram(MAX_TEXTURES),
             groups: {
                 // these will be dynamically allocated
@@ -30,7 +30,7 @@ export class GpuBatchAdaptor implements BatcherAdaptor
         });
     }
 
-    execute(batchPipe: BatcherPipe, batch: Batch): void
+    public execute(batchPipe: BatcherPipe, batch: Batch): void
     {
         batchPipe.state.blendMode = batch.blendMode;
 
@@ -39,13 +39,13 @@ export class GpuBatchAdaptor implements BatcherAdaptor
             batch.textures.bindGroup = getTextureBatchBindGroup(batch.textures.textures);
         }
 
-        const program = this.shader.gpuProgram;
+        const program = this._shader.gpuProgram;
 
         const encoder = batchPipe.renderer.encoder as GpuEncoderSystem;
         const globalUniformsBindGroup = batchPipe.renderer.globalUniforms.bindGroup;
 
         // create a state objects we need...
-        this.shader.groups[1] = batch.textures.bindGroup;
+        this._shader.groups[1] = batch.textures.bindGroup;
 
         const activeBatcher = batch.batchParent;
 
@@ -65,9 +65,9 @@ export class GpuBatchAdaptor implements BatcherAdaptor
         encoder.renderPassEncoder.drawIndexed(batch.size, 1, batch.start);
     }
 
-    destroy(): void
+    public destroy(): void
     {
-        this.shader.destroy(true);
-        this.shader = null;
+        this._shader.destroy(true);
+        this._shader = null;
     }
 }

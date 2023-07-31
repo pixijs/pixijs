@@ -1,6 +1,6 @@
 import EventEmitter from 'eventemitter3';
 import { convertColorToNumber } from '../../utils/color/convertColorToNumber';
-import { deprecation } from '../../utils/logging/deprecation';
+import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { FillGradient } from '../graphics/shared/fill/FillGradient';
 import { GraphicsContext } from '../graphics/shared/GraphicsContext';
 import { convertFillInputToFillStyle } from '../graphics/shared/utils/convertFillInputToFillStyle';
@@ -126,7 +126,7 @@ export class TextStyle extends EventEmitter<{
     update: TextDropShadow
 }>
 {
-    static defaultTextStyle: TextStyleOptions = {
+    public static defaultTextStyle: TextStyleOptions = {
         /**
          * See {@link PIXI.TextStyle.align}
          * @type {'left'|'center'|'right'|'justify'}
@@ -204,11 +204,13 @@ export class TextStyle extends EventEmitter<{
     };
 
     // colors!!
-    _fill: FillStyle;
-    _originalFill: FillStyleInputs;
+    /** @internal */
+    public _fill: FillStyle;
+    private _originalFill: FillStyleInputs;
 
-    _stroke: StrokeStyle;
-    _originalStroke: FillStyleInputs | StrokeStyle;
+    /** @internal */
+    public _stroke: StrokeStyle;
+    private _originalStroke: FillStyleInputs | StrokeStyle;
 
     private _dropShadow: TextDropShadow;
 
@@ -345,7 +347,7 @@ export class TextStyle extends EventEmitter<{
         this.update();
     }
 
-    generateKey(): string
+    private _generateKey(): string
     {
         const key = [];
 
@@ -368,7 +370,7 @@ export class TextStyle extends EventEmitter<{
         return this._styleKey;
     }
 
-    update()
+    public update()
     {
         this._styleKey = null;
         this.emit('update', this);
@@ -376,10 +378,10 @@ export class TextStyle extends EventEmitter<{
 
     get styleKey()
     {
-        return this._styleKey || this.generateKey();
+        return this._styleKey || this._generateKey();
     }
 
-    clone(): TextStyle
+    public clone(): TextStyle
     {
         return new TextStyle({
             align: this.align,
@@ -481,7 +483,7 @@ function convertV7Tov8Style(style: TextStyleOptions)
 
     if (typeof oldStyle.dropShadow === 'boolean')
     {
-        deprecation('8', 'dropShadow is now an object, not a boolean');
+        deprecation(v8_0_0, 'dropShadow is now an object, not a boolean');
 
         style.dropShadow = {
             alpha: oldStyle.dropShadowAlpha ?? 1,
@@ -494,7 +496,7 @@ function convertV7Tov8Style(style: TextStyleOptions)
 
     if (oldStyle.strokeThickness)
     {
-        deprecation('8', 'strokeThickness is now a part of stroke');
+        deprecation(v8_0_0, 'strokeThickness is now a part of stroke');
 
         const color = oldStyle.stroke;
 
@@ -506,7 +508,7 @@ function convertV7Tov8Style(style: TextStyleOptions)
 
     if (Array.isArray(oldStyle.fill))
     {
-        deprecation('8', 'gradient fill is now a fill pattern: `new FillGradient(...)`');
+        deprecation(v8_0_0, 'gradient fill is now a fill pattern: `new FillGradient(...)`');
 
         const gradientFill = new FillGradient(0, 0, 0, (style.fontSize as number) * 1.7);
 

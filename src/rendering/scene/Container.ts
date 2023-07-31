@@ -80,105 +80,134 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
      * Mixes all enumerable properties and methods from a source object to Container.
      * @param source - The source of properties and methods to mix in.
      */
-    static mixin(source: Dict<any>): void
+    public static mixin(source: Dict<any>): void
     {
         Object.defineProperties(Container.prototype, Object.getOwnPropertyDescriptors(source));
     }
 
-    uid: number = uid++;
-    label: string = null;
+    /** @internal */
+    public uid: number = uid++;
 
-    updateFlags = 0b1111;
+    public label: string = null;
+
+    /** @internal */
+    public _updateFlags = 0b1111;
 
     // is this container the root of a layer?
     // TODO implement this in a few more places
-    isLayerRoot = false;
+    /** @internal */
+    public isLayerRoot = false;
     // the layer group this container belongs to OR owns
-    // TODO consider separating that?
-    // currently just need to check if its a container is layer root
-    // to ascertain if its a layer owner or not..
-    layerGroup: LayerGroup = null;
+    /** @internal */
+    public layerGroup: LayerGroup = null;
 
     // set to true if the container has changed. It is reset once the changes have been applied
     // by the transform system
     // its here to stop ensure that when things change, only one update gets registers with the transform system
-    didChange = false;
+    /** @internal */
+    public didChange = false;
     // same as above, but for the renderable
-    didViewUpdate = false;
+    /** @internal */
+    public didViewUpdate = false;
     // how deep is the container relative to its layer..
     // unless the element is the root layer - it will be relative to its parent
-    relativeLayerDepth = 0;
+    /** @internal */
+    public relativeLayerDepth = 0;
 
-    children: Container[] = [];
-    parent: Container = null;
+    public children: Container[] = [];
+    public parent: Container = null;
 
     // used internally for changing up the render order.. mainly for masks and filters
     // TODO setting this should cause a rebuild??
-    includeInBuild = true;
-    measurable = true;
-    isSimple = true;
+    /** @internal */
+    public includeInBuild = true;
+    /** @internal */
+    public measurable = true;
+    /** @internal */
+    public isSimple = true;
 
     /// /////////////Transform related props//////////////
 
     // used by the transform system to check if a container needs to be updated that frame
     // if the tick matches the current transform system tick, it is not updated again
-    updateTick = -1;
+    /** @internal */
+    public updateTick = -1;
 
-    localTransform: Matrix = new Matrix();
+    public localTransform: Matrix = new Matrix();
     // transform relative to its layer..
-    layerTransform: Matrix = new Matrix();
+    public layerTransform: Matrix = new Matrix();
     // the global transform taking into account the layer and all parents
-    _worldTransform: Matrix;
+    private _worldTransform: Matrix;
 
     // transform data..
-    /** The coordinate of the object relative to the local coordinates of the parent. */
+    /**
+     * The coordinate of the object relative to the local coordinates of the parent.
+     * @internal
+     */
     public _position: ObservablePoint = new ObservablePoint(this, 0, 0);
 
-    /** The scale factor of the object. */
+    /**
+     * The scale factor of the object.
+     * @internal
+     */
     public _scale: ObservablePoint = defaultScale;
 
-    /** The pivot point of the displayObject that it rotates around. */
+    /**
+     * The pivot point of the displayObject that it rotates around.
+     * @internal
+     */
     public _pivot: ObservablePoint = defaultPivot;
 
-    /** The skew amount, on the x and y axis. */
+    /**
+     * The skew amount, on the x and y axis.
+     * @internal
+     */
     public _skew: ObservablePoint = defaultSkew;
 
     /**
      * The X-coordinate value of the normalized local X axis,
      * the first column of the local transformation matrix without a scale.
+     * @internal
      */
     public _cx = 1;
 
     /**
      * The Y-coordinate value of the normalized local X axis,
      * the first column of the local transformation matrix without a scale.
+     * @internal
      */
     public _sx = 0;
 
     /**
      * The X-coordinate value of the normalized local Y axis,
      * the second column of the local transformation matrix without a scale.
+     * @internal
      */
     public _cy = 0;
 
     /**
      * The Y-coordinate value of the normalized local Y axis,
      * the second column of the local transformation matrix without a scale.
+     * @internal
      */
     public _sy = 1;
 
     /** The rotation amount. */
-    public _rotation = 0;
+    private _rotation = 0;
 
     /// COLOR related props //////////////
 
     // color stored as ABGR
+    /** @internal */
     public localColor = 0xFFFFFFFF;
+    /** @internal */
     public layerColor = 0xFFFFFFFF;
 
     /// BLEND related props //////////////
 
+    /** @internal */
     public localBlendMode: BLEND_MODES = 'inherit';
+    /** @internal */
     public layerBlendMode: BLEND_MODES = 'normal';
 
     /// VISIBILITY related props //////////////
@@ -186,14 +215,16 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
     // visibility
     // 0b11
     // first bit is visible, second bit is renderable
-    localVisibleRenderable = 0b11; // 0b11 | 0b10 | 0b01 | 0b00
-    layerVisibleRenderable = 0b11; // 0b11 | 0b10 | 0b01 | 0b00
+    /** @internal */
+    public localVisibleRenderable = 0b11; // 0b11 | 0b10 | 0b01 | 0b00
+    /** @internal */
+    public layerVisibleRenderable = 0b11; // 0b11 | 0b10 | 0b01 | 0b00
 
     /// /// EFFECTS and masks etc...
 
-    effects: Effect[] = [];
+    public effects: Effect[] = [];
 
-    addEffect(effect: Effect)
+    public addEffect(effect: Effect)
     {
         const index = this.effects.indexOf(effect);
 
@@ -208,10 +239,10 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
             this.layerGroup.structureDidChange = true;
         }
 
-        this.updateIsSimple();
+        this._updateIsSimple();
     }
 
-    removeEffect(effect: Effect)
+    public removeEffect(effect: Effect)
     {
         const index = this.effects.indexOf(effect);
 
@@ -224,7 +255,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
             this.layerGroup.structureDidChange = true;
         }
 
-        this.updateIsSimple();
+        this._updateIsSimple();
     }
 
     // a renderable object... like a sprite!
@@ -263,7 +294,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
      * @param {...PIXI.Container} children - The Container(s) to add to the container
      * @returns {PIXI.Container} - The first child that was added.
      */
-    addChild<U extends Container[]>(...children: U): U[0]
+    public addChild<U extends Container[]>(...children: U): U[0]
     {
         if (children.length > 1)
         {
@@ -307,7 +338,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         child.didViewUpdate = false;
 
         // TODO - OPtimise this? could check what the parent has set?
-        child.updateFlags = 0b1111;
+        child._updateFlags = 0b1111;
 
         if (this.layerGroup)
         {
@@ -330,7 +361,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
      * @param {...PIXI.Container} children - The Container(s) to remove
      * @returns {PIXI.Container} The first child that was removed.
      */
-    removeChild<U extends Container[]>(...children: U): U[0]
+    public removeChild<U extends Container[]>(...children: U): U[0]
     {
         // if there is only one argument we can bypass looping through the them
         if (children.length > 1)
@@ -365,7 +396,11 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         return child;
     }
 
-    onUpdate(point?: ObservablePoint)
+    /**
+     * @param point
+     * @internal
+     */
+    public onUpdate(point?: ObservablePoint)
     {
         if (point)
         {
@@ -373,7 +408,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
 
             if (point === this._skew)
             {
-                this.updateSkew();
+                this._updateSkew();
             }
         }
 
@@ -396,7 +431,8 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         }
     }
 
-    onViewUpdate()
+    /** @internal */
+    public onViewUpdate()
     {
         if (this.didViewUpdate) return;
         this.didViewUpdate = true;
@@ -425,7 +461,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         return this.isLayerRoot;
     }
 
-    enableLayer()
+    public enableLayer()
     {
         // does it OWN the layer..
         if (this.layerGroup && this.layerGroup.root === this) return;
@@ -464,7 +500,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
             parentLayerGroup.addLayerGroupChild(this.layerGroup);
         }
 
-        this.updateIsSimple();
+        this._updateIsSimple();
     }
 
     get worldTransform()
@@ -609,7 +645,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
     }
 
     /** Called when the skew or the rotation changes. */
-    updateSkew(): void
+    private _updateSkew(): void
     {
         const rotation = this._rotation;
         const skew = this._skew;
@@ -630,7 +666,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
 
         this.localColor = (this.localColor & 0x00FFFFFF) | (value << 24);
 
-        this.updateFlags |= UPDATE_COLOR;
+        this._updateFlags |= UPDATE_COLOR;
 
         this.onUpdate();
     }
@@ -653,7 +689,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
 
         this.localColor = (this.localColor & 0xFF000000) | (value & 0xFFFFFF);
 
-        this.updateFlags |= UPDATE_COLOR;
+        this._updateFlags |= UPDATE_COLOR;
 
         this.onUpdate();
     }
@@ -671,27 +707,12 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
     set blendMode(value: BLEND_MODES)
     {
         if (this.localBlendMode === value) return;
-
-        // TODO look at this in the future!!
-        // blend mode changes break batches!
-
-        // if (this.layerGroup && !this.isLayerRoot)
-        // {
-        //     const didChangeToAdvanced = this.localBlendMode < (1 << 4) && value >= (1 << 4);
-
-        //     // if its a single non batched item, we can just update the blend mode
-        //     if (didChangeToAdvanced || this.children.length !== 0 || !this.view || !this.view.batched)
-        //     {
-        //         this.layerGroup.structureDidChange = true;
-        //     }
-        // }
-
         if (this.layerGroup && !this.isLayerRoot)
         {
             this.layerGroup.structureDidChange = true;
         }
 
-        this.updateFlags |= UPDATE_BLEND;
+        this._updateFlags |= UPDATE_BLEND;
 
         this.localBlendMode = value;
 
@@ -722,7 +743,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
             this.layerGroup.structureDidChange = true;
         }
 
-        this.updateFlags |= UPDATE_VISIBLE;
+        this._updateFlags |= UPDATE_VISIBLE;
 
         this.localVisibleRenderable = (this.localVisibleRenderable & 0b01) | (valueNumber << 1);
 
@@ -742,7 +763,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
 
         this.localVisibleRenderable = (this.localVisibleRenderable & 0b10) | valueNumber;
 
-        this.updateFlags |= UPDATE_VISIBLE;
+        this._updateFlags |= UPDATE_VISIBLE;
 
         if (this.layerGroup && !this.isLayerRoot)
         {
@@ -759,7 +780,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         return (this.localVisibleRenderable === 0b11 && worldAlpha > 0);
     }
 
-    updateIsSimple()
+    private _updateIsSimple()
     {
         this.isSimple = !(this.isLayerRoot) && (this.effects.length === 0);
     }

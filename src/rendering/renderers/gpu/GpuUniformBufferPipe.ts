@@ -34,25 +34,25 @@ class UniformBindGroup extends BindGroup
 export class GpuUniformBufferPipe
 {
     /** @ignore */
-    static extension = {
+    public static extension = {
         type: [
             ExtensionType.WebGPUPipes,
         ],
         name: 'uniformBuffer',
     } as const;
 
-    private activeBindGroups: BindGroup[] = [];
-    private activeBindGroupIndex = 0;
-    private renderer: WebGPURenderer;
+    private _activeBindGroups: BindGroup[] = [];
+    private _activeBindGroupIndex = 0;
+    private readonly _renderer: WebGPURenderer;
 
     constructor(renderer: WebGPURenderer)
     {
-        this.renderer = renderer;
+        this._renderer = renderer;
     }
 
-    getUniformBindGroup(uniformGroup: UniformGroup)
+    public getUniformBindGroup(uniformGroup: UniformGroup)
     {
-        const renderer = this.renderer;
+        const renderer = this._renderer;
 
         renderer.uniformBuffer.ensureUniformGroup(uniformGroup);
 
@@ -62,18 +62,18 @@ export class GpuUniformBufferPipe
 
         bindGroup.buffer.update(uniformGroup.buffer.data.byteLength);
 
-        this.activeBindGroups[this.activeBindGroupIndex++] = bindGroup;
+        this._activeBindGroups[this._activeBindGroupIndex++] = bindGroup;
 
         return bindGroup;
     }
 
-    renderEnd()
+    public renderEnd()
     {
-        for (let i = 0; i < this.activeBindGroupIndex; i++)
+        for (let i = 0; i < this._activeBindGroupIndex; i++)
         {
-            BigPool.return(this.activeBindGroups[i] as PoolItem);
+            BigPool.return(this._activeBindGroups[i] as PoolItem);
         }
 
-        this.activeBindGroupIndex = 0;
+        this._activeBindGroupIndex = 0;
     }
 }

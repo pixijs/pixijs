@@ -2,7 +2,7 @@
 import { MeshView } from '../rendering/mesh/shared/MeshView';
 import { Texture } from '../rendering/renderers/shared/texture/Texture';
 import { Container } from '../rendering/scene/Container';
-import { deprecation } from '../utils/logging/deprecation';
+import { deprecation, v8_0_0 } from '../utils/logging/deprecation';
 import { NineSliceGeometry } from './NineSliceGeometry';
 
 import type { ContainerOptions } from '../rendering/scene/Container';
@@ -45,7 +45,7 @@ export interface NineSliceSpriteOptions extends ContainerOptions<MeshView<NineSl
  */
 export class NineSliceSprite extends Container<MeshView<NineSliceGeometry>>
 {
-    static defaultOptions: NineSliceSpriteOptions = {
+    public static defaultOptions: NineSliceSpriteOptions = {
         texture: Texture.EMPTY,
         leftWidth: 10,
         topHeight: 10,
@@ -93,7 +93,7 @@ export class NineSliceSprite extends Container<MeshView<NineSliceGeometry>>
                 geometry: nineSliceGeometry,
                 texture,
             }),
-            label: 'NineSlicePlane',
+            label: 'NineSliceSprite',
             ...options
         });
     }
@@ -198,7 +198,7 @@ export class NineSlicePlane extends NineSliceSprite
         if (options instanceof Texture)
         {
             // eslint-disable-next-line max-len
-            deprecation('8', 'NineSlicePlane now uses the options object {texture, leftWidth, rightWidth, topHeight, bottomHeight}');
+            deprecation(v8_0_0, 'NineSlicePlane now uses the options object {texture, leftWidth, rightWidth, topHeight, bottomHeight}');
 
             options = {
                 texture: options,
@@ -208,7 +208,7 @@ export class NineSlicePlane extends NineSliceSprite
                 bottomHeight: arguments[4],
             };
         }
-        deprecation('8', 'NineSlicePlane is deprecated. Use NineSliceSprite instead.');
+        deprecation(v8_0_0, 'NineSlicePlane is deprecated. Use NineSliceSprite instead.');
         super(options);
     }
 }

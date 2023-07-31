@@ -32,12 +32,12 @@ export interface TickerPluginOptions
 export class TickerPlugin
 {
     /** @ignore */
-    static extension: ExtensionMetadata = ExtensionType.Application;
+    public static extension: ExtensionMetadata = ExtensionType.Application;
 
-    static start: () => void;
-    static stop: () => void;
-    static _ticker: Ticker;
-    static ticker: Ticker;
+    public static start: () => void;
+    public static stop: () => void;
+    private static _ticker: Ticker;
+    public static ticker: Ticker;
 
     /**
      * Initialize the plugin with scope of application instance
@@ -45,7 +45,7 @@ export class TickerPlugin
      * @private
      * @param {object} [options] - See application options
      */
-    static init(options?: PixiMixins.ApplicationOptions): void
+    protected static init(options?: PixiMixins.ApplicationOptions): void
     {
         // Set default
         options = Object.assign({
@@ -126,7 +126,7 @@ export class TickerPlugin
      * @static
      * @private
      */
-    static destroy(): void
+    protected static destroy(): void
     {
         if (this._ticker)
         {

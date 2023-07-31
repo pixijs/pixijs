@@ -54,7 +54,7 @@ export interface ShockwaveFilterOptions
  */
 export class ShockwaveFilter extends Filter
 {
-    static readonly DEFAULT: ShockwaveFilterOptions = {
+    public static readonly DEFAULT: ShockwaveFilterOptions = {
         center: { x: 0, y: 0 },
         speed: 500,
         amplitude: 30,
@@ -70,7 +70,8 @@ export class ShockwaveFilter extends Filter
         uWave: Float32Array;
     };
 
-    time: number;
+    /** Sets the elapsed time of the shockwave. It could control the current size of shockwave. */
+    public time: number;
 
     /**
      * @param options

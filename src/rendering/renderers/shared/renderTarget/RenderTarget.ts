@@ -23,7 +23,7 @@ let UID = 0;
 
 export class RenderTarget
 {
-    static defaultDescriptor: RenderTargetDescriptor = {
+    public static defaultDescriptor: RenderTargetDescriptor = {
         width: 0,
         height: 0,
         resolution: 1,
@@ -32,26 +32,22 @@ export class RenderTarget
         antialias: false, // save on perf by default!
     };
 
-    uid = UID++;
+    public uid = UID++;
 
-    width = 0;
-    height = 0;
-    resolution = 1;
+    public width = 0;
+    public height = 0;
+    public resolution = 1;
 
-    colorTextures: Texture[] = [];
+    public colorTextures: Texture[] = [];
 
-    depthTexture: Texture;
+    public depthTexture: Texture;
+    public stencil: boolean;
 
-    clearColor = 0x000000;
+    public dirtyId = 0;
+    public isRoot = false;
 
-    antialias: boolean;
-    stencil: boolean;
-
-    dirtyId = 0;
-    isRoot = false;
-
-    private _viewport: Rectangle;
-    private _projectionMatrix = new Matrix();
+    private readonly _viewport: Rectangle;
+    private readonly _projectionMatrix = new Matrix();
 
     constructor(descriptor: RenderTargetDescriptor = {})
     {
@@ -84,7 +80,7 @@ export class RenderTarget
 
             const colorSource = this.colorTexture.source;
 
-            this.resize(colorSource.width, colorSource.height, colorSource._resolution);
+            this._resize(colorSource.width, colorSource.height, colorSource._resolution);
         }
 
         // the first color texture drives the size of all others..
@@ -153,10 +149,10 @@ export class RenderTarget
 
     protected onSourceResize(source: TextureSource)
     {
-        this.resize(source.width, source.height, source._resolution, true);
+        this._resize(source.width, source.height, source._resolution, true);
     }
 
-    private resize(width: number, height: number, resolution = this.resolution, skipColorTexture = false)
+    private _resize(width: number, height: number, resolution = this.resolution, skipColorTexture = false)
     {
         this.width = width;
         this.height = height;
@@ -177,7 +173,7 @@ export class RenderTarget
         }
     }
 
-    destroy()
+    public destroy()
     {
         throw new Error('Method not implemented.');
     }

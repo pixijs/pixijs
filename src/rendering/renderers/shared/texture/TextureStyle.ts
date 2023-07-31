@@ -5,11 +5,6 @@ import { createIdFromString } from '../createIdFromString';
 import type { BindResource } from '../../gpu/shader/BindResource';
 import type { COMPARE_FUNCTION, SCALE_MODE, WRAP_MODE } from './const';
 
-let UID = 0;
-
-// TODO - should this be a function?
-// eg getSource()
-
 export interface TextureStyleOptions extends Partial<TextureStyle>
 {
     /** setting this will set wrapModeU,wrapModeV and wrapModeW all at once! */
@@ -59,47 +54,46 @@ export class TextureStyle extends EventEmitter<{
     destroy: TextureStyle,
 }> implements BindResource
 {
-    resourceType = 'textureSampler';
-    _resourceId: number;
+    public resourceType = 'textureSampler';
+    private _resourceId: number;
 
     // override to set styles globally
-    static readonly defaultOptions: TextureStyleOptions = {
+    public static readonly defaultOptions: TextureStyleOptions = {
         addressMode: 'clamp-to-edge',
         scaleMode: 'linear'
     };
 
-    uid = UID++;
-
     /** */
-    addressModeU?: WRAP_MODE;
+    public addressModeU?: WRAP_MODE;
     /** */
-    addressModeV?: WRAP_MODE;
+    public addressModeV?: WRAP_MODE;
     /** Specifies the {{GPUAddressMode|address modes}} for the texture width, height, and depth coordinates, respectively. */
-    addressModeW?: WRAP_MODE;
+    public addressModeW?: WRAP_MODE;
     /** Specifies the sampling behavior when the sample footprint is smaller than or equal to one texel. */
-    magFilter?: SCALE_MODE;
+    public magFilter?: SCALE_MODE;
     /** Specifies the sampling behavior when the sample footprint is larger than one texel. */
-    minFilter?: SCALE_MODE;
+    public minFilter?: SCALE_MODE;
     /** Specifies behavior for sampling between mipmap levels. */
-    mipmapFilter?: SCALE_MODE;
+    public mipmapFilter?: SCALE_MODE;
     /** */
-    lodMinClamp?: number;
+    public lodMinClamp?: number;
     /** Specifies the minimum and maximum levels of detail, respectively, used internally when sampling a texture. */
-    lodMaxClamp?: number;
+    public lodMaxClamp?: number;
     /**
      * When provided the sampler will be a comparison sampler with the specified
      * {@link GPUCompareFunction}.
      * Note: Comparison samplers may use filtering, but the sampling results will be
      * implementation-dependent and may differ from the normal filtering rules.
      */
-    compare?: COMPARE_FUNCTION;
+    public compare?: COMPARE_FUNCTION;
     /**
      * Specifies the maximum anisotropy value clamp used by the sampler.
      * Note: Most implementations support {@link GPUSamplerDescriptor#maxAnisotropy} values in range
      * between 1 and 16, inclusive. The used value of {@link GPUSamplerDescriptor#maxAnisotropy} will
      * be clamped to the maximum value that the platform supports.
+     * @internal
      */
-    _maxAnisotropy?: number = 1;
+    public _maxAnisotropy?: number = 1;
 
     constructor(options: TextureStyleOptions = {})
     {
@@ -180,17 +174,17 @@ export class TextureStyle extends EventEmitter<{
     // TODO - move this to WebGL?
     get resourceId(): number
     {
-        return this._resourceId || this.generateResourceId();
+        return this._resourceId || this._generateResourceId();
     }
 
-    update()
+    public update()
     {
         // manage the resource..
         this.emit('change', this);
         this._resourceId = null;
     }
 
-    generateResourceId(): number
+    private _generateResourceId(): number
     {
         // eslint-disable-next-line max-len
         const bigKey = `${this.addressModeU}-${this.addressModeV}-${this.addressModeW}-${this.magFilter}-${this.minFilter}-${this.mipmapFilter}-${this.lodMinClamp}-${this.lodMaxClamp}-${this.compare}-${this._maxAnisotropy}`;
@@ -201,7 +195,7 @@ export class TextureStyle extends EventEmitter<{
     }
 
     /** Destroys the style */
-    destroy()
+    public destroy()
     {
         this.emit('destroy', this);
 

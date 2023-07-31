@@ -47,30 +47,30 @@ export class TextureMatrix
      * Clamp region for normalized coords, left-top pixel center in xy , bottom-right in zw.
      * Calculated based on clampOffset.
      */
-    readonly uClampFrame: Float32Array;
+    public readonly uClampFrame: Float32Array;
 
     /** Normalized clamp offset. Calculated based on clampOffset. */
-    readonly uClampOffset: Float32Array;
+    public readonly uClampOffset: Float32Array;
 
     /**
      * Tracks Texture frame changes.
      * @protected
      */
-    _textureID: number;
+    protected _textureID: number;
 
     /**
      * Tracks Texture frame changes.
      * @protected
      */
-    _updateID: number;
-    _texture: Texture;
+    protected _updateID: number;
+    protected _texture: Texture;
 
     /**
      * If texture size is the same as baseTexture.
      * @default false
      * @readonly
      */
-    isSimple: boolean;
+    public isSimple: boolean;
 
     /**
      * @param texture - observed texture
@@ -114,7 +114,7 @@ export class TextureMatrix
      * @param [out=uvs] - output
      * @returns - output
      */
-    multiplyUvs(uvs: Float32Array, out?: Float32Array): Float32Array
+    public multiplyUvs(uvs: Float32Array, out?: Float32Array): Float32Array
     {
         if (out === undefined)
         {
@@ -135,7 +135,7 @@ export class TextureMatrix
         return out;
     }
 
-    update(): boolean
+    public update(): boolean
     {
         const tex = this._texture;
 

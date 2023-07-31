@@ -27,8 +27,7 @@ export interface DisplacementFilterOptions
  */
 export class DisplacementFilter extends Filter
 {
-    uniformGroup: UniformGroup;
-    sprite: Sprite;
+    private readonly _sprite: Sprite;
 
     constructor(options: DisplacementFilterOptions)
     {
@@ -75,8 +74,8 @@ export class DisplacementFilter extends Filter
             }
         });
 
-        this.sprite = options.sprite;
-        this.sprite.renderable = false;
+        this._sprite = options.sprite;
+        this._sprite.renderable = false;
     }
 
     public apply(
@@ -90,11 +89,11 @@ export class DisplacementFilter extends Filter
 
         filterManager.calculateSpriteMatrix(
             uniforms.filterMatrix,
-            this.sprite
+            this._sprite
         );
 
         // Extract rotation from world transform
-        const wt = this.sprite.worldTransform;
+        const wt = this._sprite.worldTransform;
         const lenX = Math.sqrt((wt.a * wt.a) + (wt.b * wt.b));
         const lenY = Math.sqrt((wt.c * wt.c) + (wt.d * wt.d));
 
@@ -106,7 +105,7 @@ export class DisplacementFilter extends Filter
             uniforms.rotation[3] = wt.d / lenY;
         }
 
-        this.resources.mapTexture = this.sprite.texture.source;
+        this.resources.mapTexture = this._sprite.texture.source;
 
         filterManager.applyFilter(this, input, output, clearMode);
     }

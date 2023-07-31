@@ -20,7 +20,7 @@ import type { LayerGroup } from './LayerGroup';
 export class LayerSystem implements System
 {
     /** @ignore */
-    static extension = {
+    public static extension = {
         type: [
             ExtensionType.WebGLSystem,
             ExtensionType.WebGPUSystem,
@@ -29,18 +29,18 @@ export class LayerSystem implements System
         name: 'layer',
     } as const;
 
-    private renderer: Renderer;
+    private readonly _renderer: Renderer;
 
     constructor(renderer: Renderer)
     {
-        this.renderer = renderer;
+        this._renderer = renderer;
     }
 
-    render({ container }: {container: Container}): void
+    protected render({ container }: {container: Container}): void
     {
         container.layer = true;
 
-        const renderer = this.renderer;
+        const renderer = this._renderer;
 
         // collect all the renderGroups in the scene and then render them one by one..
         const layerGroups = collectLayerGroups(container.layerGroup, []);
@@ -99,7 +99,7 @@ export class LayerSystem implements System
         }
     }
 
-    destroy()
+    public destroy()
     {
         // boom!
     }

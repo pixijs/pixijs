@@ -1,7 +1,7 @@
 import { settings } from '../../../../settings/settings';
 import { XMLFormat } from './xmlFormat';
 
-import type { BitmapFontData } from '../BitmapFont';
+import type { BitmapFontData } from '../AbstractBitmapFont';
 
 export const XMLStringFormat = {
     test(data: unknown): boolean

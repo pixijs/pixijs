@@ -12,11 +12,14 @@ interface MaskConversionTest
 
 export class MaskEffectManagerClass
 {
-    _effectClasses: EffectConstructor[] = [];
-    private tests: MaskConversionTest[] = [];
+    /**
+     * @private
+     */
+    public readonly _effectClasses: EffectConstructor[] = [];
+    private readonly _tests: MaskConversionTest[] = [];
     private _initialized = false;
 
-    init()
+    public init()
     {
         if (this._initialized) return;
 
@@ -31,18 +34,18 @@ export class MaskEffectManagerClass
         });
     }
 
-    add(test: MaskConversionTest)
+    public add(test: MaskConversionTest)
     {
-        this.tests.push(test);
+        this._tests.push(test);
     }
 
-    getMaskEffect(item: any): Effect
+    public getMaskEffect(item: any): Effect
     {
         if (!this._initialized) this.init();
 
-        for (let i = 0; i < this.tests.length; i++)
+        for (let i = 0; i < this._tests.length; i++)
         {
-            const test = this.tests[i];
+            const test = this._tests[i];
 
             if (test.test(item))
             {
@@ -53,7 +56,7 @@ export class MaskEffectManagerClass
         return item;
     }
 
-    returnMaskEffect(effect: Effect & PoolItem)
+    public returnMaskEffect(effect: Effect & PoolItem)
     {
         BigPool.return(effect);
     }

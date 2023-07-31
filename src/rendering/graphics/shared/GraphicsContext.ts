@@ -92,13 +92,13 @@ export class GraphicsContext extends EventEmitter<{
     destroy: GraphicsContext
 }>
 {
-    static defaultFillStyle: FillStyle = {
+    public static defaultFillStyle: FillStyle = {
         color: 0,
         alpha: 1,
         texture: Texture.WHITE,
     };
 
-    static defaultStrokeStyle: StrokeStyle = {
+    public static defaultStrokeStyle: StrokeStyle = {
         width: 1,
         color: 0,
         alpha: 1,
@@ -109,22 +109,13 @@ export class GraphicsContext extends EventEmitter<{
         texture: Texture.WHITE,
     };
 
-    uid = UID++;
-    usage = 0;
+    public uid = UID++;
+    public dirty = true;
+    public batchMode: BatchMode = 'auto';
+    public instructions: GraphicsInstructions[] = [];
+    public customShader?: Shader;
 
-    label: string;
-    dirty = true;
-
-    batchMode: BatchMode = 'auto';
-
-    transformMatrix: Matrix;
-
-    instructions: GraphicsInstructions[] = [];
-
-    activePath: GraphicsPath = new GraphicsPath();
-
-    customShader?: Shader;
-
+    private _activePath: GraphicsPath = new GraphicsPath();
     private _transform: Matrix = new Matrix();
 
     private _fillStyle: FillStyle = { ...GraphicsContext.defaultFillStyle };
@@ -137,7 +128,7 @@ export class GraphicsContext extends EventEmitter<{
     private _tick = 0;
 
     private _bounds = new Bounds();
-    private boundsDirty = true;
+    private _boundsDirty = true;
 
     set fillStyle(value: FillStyleInputs)
     {
@@ -214,25 +205,25 @@ export class GraphicsContext extends EventEmitter<{
         return this._strokeStyleOriginal;
     }
 
-    setFillStyle(style: FillStyleInputs): this
+    public setFillStyle(style: FillStyleInputs): this
     {
         this.fillStyle = style;
 
         return this;
     }
 
-    setStrokeStyle(style: FillStyleInputs): this
+    public setStrokeStyle(style: FillStyleInputs): this
     {
         this.strokeStyle = style;
 
         return this;
     }
 
-    texture(texture: Texture): this;
-    texture(texture: Texture, tint: number): this;
-    texture(texture: Texture, tint: number, dx: number, dy: number): this;
-    texture(texture: Texture, tint: number, dx: number, dy: number, dw: number, dh: number): this;
-    texture(texture: Texture, tint?: number, dx?: number, dy?: number, dw?: number, dh?: number): this
+    public texture(texture: Texture): this;
+    public texture(texture: Texture, tint: number): this;
+    public texture(texture: Texture, tint: number, dx: number, dy: number): this;
+    public texture(texture: Texture, tint: number, dx: number, dy: number, dw: number, dh: number): this;
+    public texture(texture: Texture, tint?: number, dx?: number, dy?: number, dw?: number, dh?: number): this
     {
         this.instructions.push({
             action: 'texture',
@@ -256,14 +247,14 @@ export class GraphicsContext extends EventEmitter<{
         return this;
     }
 
-    beginPath(): this
+    public beginPath(): this
     {
-        this.activePath = new GraphicsPath();
+        this._activePath = new GraphicsPath();
 
         return this;
     }
 
-    fill(style?: FillStyleInputs): this
+    public fill(style?: FillStyleInputs): this
     {
         let path: GraphicsPath;
 
@@ -275,7 +266,7 @@ export class GraphicsContext extends EventEmitter<{
         }
         else
         {
-            path = this.activePath.clone();
+            path = this._activePath.clone();
         }
 
         if (!path) return this;
@@ -296,13 +287,13 @@ export class GraphicsContext extends EventEmitter<{
 
         this.onUpdate();
 
-        this.activePath.instructions.length = 0;
+        this._activePath.instructions.length = 0;
         this._tick = 0;
 
         return this;
     }
 
-    stroke(style?: FillStyleInputs): this
+    public stroke(style?: FillStyleInputs): this
     {
         let path: GraphicsPath;
 
@@ -314,7 +305,7 @@ export class GraphicsContext extends EventEmitter<{
         }
         else
         {
-            path = this.activePath.clone();
+            path = this._activePath.clone();
         }
 
         if (!path) return this;
@@ -335,19 +326,19 @@ export class GraphicsContext extends EventEmitter<{
 
         this.onUpdate();
 
-        this.activePath.instructions.length = 0;
+        this._activePath.instructions.length = 0;
         this._tick = 0;
 
         return this;
     }
 
-    cut(): this
+    public cut(): this
     {
         for (let i = 0; i < 2; i++)
         {
             const lastInstruction = this.instructions[this.instructions.length - 1 - i];
 
-            const holePath = this.activePath.clone();
+            const holePath = this._activePath.clone();
 
             if (lastInstruction)
             {
@@ -358,18 +349,18 @@ export class GraphicsContext extends EventEmitter<{
             }
         }
 
-        this.activePath.instructions.length = 0;
+        this._activePath.instructions.length = 0;
 
         return this;
     }
 
-    arc(x: number, y: number, radius: number, startAngle: number, endAngle: number, counterclockwise?: boolean): this
+    public arc(x: number, y: number, radius: number, startAngle: number, endAngle: number, counterclockwise?: boolean): this
     {
         this._tick++;
 
         const t = this._transform;
 
-        this.activePath.arc(
+        this._activePath.arc(
             (t.a * x) + (t.c * y) + t.tx,
             (t.b * x) + (t.d * y) + t.ty,
             radius,
@@ -380,13 +371,14 @@ export class GraphicsContext extends EventEmitter<{
 
         return this;
     }
-    arcTo(x1: number, y1: number, x2: number, y2: number, radius: number): this
+
+    public arcTo(x1: number, y1: number, x2: number, y2: number, radius: number): this
     {
         this._tick++;
 
         const t = this._transform;
 
-        this.activePath.arcTo(
+        this._activePath.arcTo(
             (t.a * x1) + (t.c * y1) + t.tx,
             (t.b * x1) + (t.d * y1) + t.ty,
             (t.a * x2) + (t.c * y2) + t.tx,
@@ -397,7 +389,7 @@ export class GraphicsContext extends EventEmitter<{
         return this;
     }
 
-    arcToSvg(
+    public arcToSvg(
         rx: number, ry: number,
         xAxisRotation: number,
         largeArcFlag: number,
@@ -409,7 +401,7 @@ export class GraphicsContext extends EventEmitter<{
 
         const t = this._transform;
 
-        this.activePath.arcToSvg(
+        this._activePath.arcToSvg(
             rx, ry,
             xAxisRotation, // should we rotate this with transform??
             largeArcFlag,
@@ -421,14 +413,14 @@ export class GraphicsContext extends EventEmitter<{
         return this;
     }
 
-    bezierCurveTo(cp1x: number, cp1y: number, cp2x: number, cp2y: number, x: number, y: number): this
+    public bezierCurveTo(cp1x: number, cp1y: number, cp2x: number, cp2y: number, x: number, y: number): this
     {
         this._tick++;
 
         // TODO optimize for no transform
         const t = this._transform;
 
-        this.activePath.bezierCurveTo(
+        this._activePath.bezierCurveTo(
             (t.a * cp1x) + (t.c * cp1y) + t.tx,
             (t.b * cp1x) + (t.d * cp1y) + t.ty,
             (t.a * cp2x) + (t.c * cp2y) + t.tx,
@@ -439,49 +431,50 @@ export class GraphicsContext extends EventEmitter<{
 
         return this;
     }
-    closePath(): this
+
+    public closePath(): this
     {
         this._tick++;
 
-        this.activePath?.closePath();
+        this._activePath?.closePath();
 
         return this;
     }
 
-    ellipse(x: number, y: number, radiusX: number, radiusY: number): this
+    public ellipse(x: number, y: number, radiusX: number, radiusY: number): this
     {
         this._tick++;
 
-        this.activePath.ellipse(x, y, radiusX, radiusY, this._transform.clone());
+        this._activePath.ellipse(x, y, radiusX, radiusY, this._transform.clone());
 
         return this;
     }
 
-    circle(x: number, y: number, radius: number): this
+    public circle(x: number, y: number, radius: number): this
     {
         this._tick++;
 
-        this.activePath.circle(x, y, radius, this._transform.clone());
+        this._activePath.circle(x, y, radius, this._transform.clone());
 
         return this;
     }
 
-    path(path: GraphicsPath): this
+    public path(path: GraphicsPath): this
     {
         this._tick++;
 
-        this.activePath.addPath(path, this._transform.clone());
+        this._activePath.addPath(path, this._transform.clone());
 
         return this;
     }
 
-    lineTo(x: number, y: number): this
+    public lineTo(x: number, y: number): this
     {
         this._tick++;
 
         const t = this._transform;
 
-        this.activePath.lineTo(
+        this._activePath.lineTo(
             (t.a * x) + (t.c * y) + t.tx,
             (t.b * x) + (t.d * y) + t.ty
         );
@@ -489,13 +482,13 @@ export class GraphicsContext extends EventEmitter<{
         return this;
     }
 
-    moveTo(x: number, y: number): this
+    public moveTo(x: number, y: number): this
     {
         this._tick++;
 
         const t = this._transform;
 
-        this.activePath.moveTo(
+        this._activePath.moveTo(
             (t.a * x) + (t.c * y) + t.tx,
             (t.b * x) + (t.d * y) + t.ty
         );
@@ -503,13 +496,13 @@ export class GraphicsContext extends EventEmitter<{
         return this;
     }
 
-    quadraticCurveTo(cpx: number, cpy: number, x: number, y: number): void
+    public quadraticCurveTo(cpx: number, cpy: number, x: number, y: number): void
     {
         this._tick++;
 
         const t = this._transform;
 
-        this.activePath.quadraticCurveTo(
+        this._activePath.quadraticCurveTo(
             (t.a * cpx) + (t.c * cpy) + t.tx,
             (t.b * cpx) + (t.d * cpy) + t.ty,
             (t.a * x) + (t.c * y) + t.tx,
@@ -517,50 +510,50 @@ export class GraphicsContext extends EventEmitter<{
         );
     }
 
-    rect(x: number, y: number, w: number, h: number): this
+    public rect(x: number, y: number, w: number, h: number): this
     {
         this._tick++;
 
-        this.activePath.rect(x, y, w, h, this._transform.clone());
+        this._activePath.rect(x, y, w, h, this._transform.clone());
 
         return this;
     }
 
-    roundRect(x: number, y: number, w: number, h: number, radii?: number): this
+    public roundRect(x: number, y: number, w: number, h: number, radii?: number): this
     {
         this._tick++;
 
-        this.activePath.roundRect(x, y, w, h, radii, this._transform.clone());
+        this._activePath.roundRect(x, y, w, h, radii, this._transform.clone());
 
         return this;
     }
 
-    poly(points: number[], close?: boolean): this
+    public poly(points: number[], close?: boolean): this
     {
         this._tick++;
 
-        this.activePath.poly(points, close, this._transform.clone());
+        this._activePath.poly(points, close, this._transform.clone());
 
         return this;
     }
 
-    star(x: number, y: number, points: number, radius: number, innerRadius: number, rotation: number): this
+    public star(x: number, y: number, points: number, radius: number, innerRadius: number, rotation: number): this
     {
         this._tick++;
 
-        this.activePath.star(x, y, points, radius, innerRadius, rotation, this._transform.clone());
+        this._activePath.star(x, y, points, radius, innerRadius, rotation, this._transform.clone());
 
         return this;
     }
 
-    svg(svg: string): void
+    public svg(svg: string): void
     {
         this._tick++;
 
         SVGParser(svg, this);
     }
 
-    restore(): void
+    public restore(): void
     {
         const state = this._stateStack.pop();
 
@@ -572,7 +565,7 @@ export class GraphicsContext extends EventEmitter<{
         }
     }
 
-    save(): void
+    public save(): void
     {
         this._stateStack.push({
             transform: this._transform.clone(),
@@ -581,35 +574,35 @@ export class GraphicsContext extends EventEmitter<{
         });
     }
 
-    getTransform(): Matrix
+    public getTransform(): Matrix
     {
         return this._transform;
     }
 
-    resetTransform(): this
+    public resetTransform(): this
     {
         this._transform.identity();
 
         return this;
     }
 
-    rotate(angle: number): this
+    public rotate(angle: number): this
     {
         this._transform.rotate(angle);
 
         return this;
     }
 
-    scale(x: number, y: number = x): this
+    public scale(x: number, y: number = x): this
     {
         this._transform.scale(x, y);
 
         return this;
     }
 
-    setTransform(transform: Matrix): this;
-    setTransform(a: number, b: number, c: number, d: number, dx: number, dy: number): this;
-    setTransform(a: number | Matrix, b?: number, c?: number, d?: number, dx?: number, dy?: number): this
+    public setTransform(transform: Matrix): this;
+    public setTransform(a: number, b: number, c: number, d: number, dx: number, dy: number): this;
+    public setTransform(a: number | Matrix, b?: number, c?: number, d?: number, dx?: number, dy?: number): this
     {
         if (a instanceof Matrix)
         {
@@ -623,9 +616,9 @@ export class GraphicsContext extends EventEmitter<{
         return this;
     }
 
-    transform(transform: Matrix): this;
-    transform(a: number, b: number, c: number, d: number, dx: number, dy: number): this;
-    transform(a: number | Matrix, b?: number, c?: number, d?: number, dx?: number, dy?: number): this
+    public transform(transform: Matrix): this;
+    public transform(a: number, b: number, c: number, d: number, dx: number, dy: number): this;
+    public transform(a: number | Matrix, b?: number, c?: number, d?: number, dx?: number, dy?: number): this
     {
         if (a instanceof Matrix)
         {
@@ -640,14 +633,14 @@ export class GraphicsContext extends EventEmitter<{
         return this;
     }
 
-    translate(x: number, y: number): this
+    public translate(x: number, y: number): this
     {
         this._transform.translate(x, y);
 
         return this;
     }
 
-    clear(): this
+    public clear(): this
     {
         this.instructions.length = 0;
         this.resetTransform();
@@ -657,18 +650,18 @@ export class GraphicsContext extends EventEmitter<{
         return this;
     }
 
-    onUpdate(): void
+    protected onUpdate(): void
     {
         if (this.dirty) return;
 
         this.emit('update', this, 0x10);
         this.dirty = true;
-        this.boundsDirty = true;
+        this._boundsDirty = true;
     }
 
     get bounds(): Bounds
     {
-        if (!this.boundsDirty) return this._bounds;
+        if (!this._boundsDirty) return this._bounds;
 
         // TODO switch to idy dirty with tick..
         const bounds = this._bounds;
@@ -805,10 +798,9 @@ export class GraphicsContext extends EventEmitter<{
         this._strokeStyle = null;
 
         this.instructions = null;
-        this.activePath = null;
+        this._activePath = null;
         this._bounds = null;
         this._stateStack = null;
-        this.transformMatrix = null;
         this.customShader = null;
         this._transform = null;
     }

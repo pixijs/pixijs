@@ -9,26 +9,26 @@ import type { WebGLRenderer } from './WebGLRenderer';
 export class GlStencilSystem implements System
 {
     /** @ignore */
-    static extension = {
+    public static extension = {
         type: [
             ExtensionType.WebGLSystem,
         ],
         name: 'stencil',
     } as const;
 
-    private gl: WebGLRenderingContext;
+    private _gl: WebGLRenderingContext;
 
-    private stencilCache = {
+    private readonly _stencilCache = {
         enabled: false,
         stencilReference: 0,
     };
 
-    private renderTargetStencilState: Record<number, {
+    private _renderTargetStencilState: Record<number, {
         stencilMode: STENCIL_MODES;
         stencilReference: number;
     }> = {};
 
-    private stencilOpsMapping: {
+    private _stencilOpsMapping: {
         keep: number;
         zero: number;
         replace: number;
@@ -39,7 +39,7 @@ export class GlStencilSystem implements System
         'decrement-wrap': number;
     };
 
-    private comparisonFuncMapping: {
+    private _comparisonFuncMapping: {
         always: number;
         never: number;
         equal: number;
@@ -50,7 +50,7 @@ export class GlStencilSystem implements System
         'greater-equal': number;
     };
 
-    private activeRenderTarget: RenderTarget;
+    private _activeRenderTarget: RenderTarget;
 
     constructor(renderer: WebGLRenderer)
     {
@@ -61,9 +61,9 @@ export class GlStencilSystem implements System
     {
         // TODO - this could be declared in a gl const
         // we know the numbers don't tend to change!
-        this.gl = gl;
+        this._gl = gl;
 
-        this.comparisonFuncMapping = {
+        this._comparisonFuncMapping = {
             always: gl.ALWAYS,
             never: gl.NEVER,
             equal: gl.EQUAL,
@@ -74,7 +74,7 @@ export class GlStencilSystem implements System
             'greater-equal': gl.GEQUAL,
         };
 
-        this.stencilOpsMapping = {
+        this._stencilOpsMapping = {
             keep: gl.KEEP,
             zero: gl.ZERO,
             replace: gl.REPLACE,
@@ -86,15 +86,15 @@ export class GlStencilSystem implements System
         };
     }
 
-    onRenderTargetChange(renderTarget: RenderTarget)
+    protected onRenderTargetChange(renderTarget: RenderTarget)
     {
-        this.activeRenderTarget = renderTarget;
+        this._activeRenderTarget = renderTarget;
 
-        let stencilState = this.renderTargetStencilState[renderTarget.uid];
+        let stencilState = this._renderTargetStencilState[renderTarget.uid];
 
         if (!stencilState)
         {
-            stencilState = this.renderTargetStencilState[renderTarget.uid] = {
+            stencilState = this._renderTargetStencilState[renderTarget.uid] = {
                 stencilMode: STENCIL_MODES.DISABLED,
                 stencilReference: 0,
             };
@@ -104,9 +104,9 @@ export class GlStencilSystem implements System
         this.setStencilMode(stencilState.stencilMode, stencilState.stencilReference);
     }
 
-    setStencilMode(stencilMode: STENCIL_MODES, stencilReference: number)
+    public setStencilMode(stencilMode: STENCIL_MODES, stencilReference: number)
     {
-        const stencilState = this.renderTargetStencilState[this.activeRenderTarget.uid];
+        const stencilState = this._renderTargetStencilState[this._activeRenderTarget.uid];
 
         // store the stencil state for restoration later, if a render target changes
         stencilState.stencilMode = stencilMode;
@@ -114,13 +114,13 @@ export class GlStencilSystem implements System
 
         const mode = GpuStencilModesToPixi[stencilMode];
 
-        const gl = this.gl;
+        const gl = this._gl;
 
         if (stencilMode === STENCIL_MODES.DISABLED)
         {
-            if (this.stencilCache.enabled)
+            if (this._stencilCache.enabled)
             {
-                this.stencilCache.enabled = false;
+                this._stencilCache.enabled = false;
 
                 gl.disable(gl.STENCIL_TEST);
             }
@@ -128,20 +128,20 @@ export class GlStencilSystem implements System
             return;
         }
 
-        if (!this.stencilCache.enabled)
+        if (!this._stencilCache.enabled)
         {
-            this.stencilCache.enabled = true;
+            this._stencilCache.enabled = true;
             gl.enable(gl.STENCIL_TEST);
         }
 
         // this is pretty simple mapping.
         // will work for pixi's simple mask cases.
         // although a true mapping of the GPU state to webGL state should be done
-        gl.stencilFunc(this.comparisonFuncMapping[mode.stencilBack.compare], stencilReference, 0xFF);
-        gl.stencilOp(gl.KEEP, gl.KEEP, this.stencilOpsMapping[mode.stencilBack.passOp]);
+        gl.stencilFunc(this._comparisonFuncMapping[mode.stencilBack.compare], stencilReference, 0xFF);
+        gl.stencilOp(gl.KEEP, gl.KEEP, this._stencilOpsMapping[mode.stencilBack.passOp]);
     }
 
-    destroy()
+    public destroy()
     {
         // boom!
     }

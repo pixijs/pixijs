@@ -14,7 +14,7 @@ export interface SpriteOptions extends ContainerOptions<SpriteView>
 
 export class Sprite extends Container<SpriteView>
 {
-    static from(id: Texture | string)
+    public static from(id: Texture | string)
     {
         if (typeof id === 'string')
         {

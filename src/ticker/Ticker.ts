@@ -111,7 +111,7 @@ export class Ticker
      * any animation API, just invoke ticker.update(time).
      * @param time - Time since last tick.
      */
-    private _tick: (time: number) => any;
+    private readonly _tick: (time: number) => any;
 
     constructor()
     {
@@ -195,7 +195,7 @@ export class Ticker
      * @param {number} [priority=PIXI.UPDATE_PRIORITY.NORMAL] - The priority for emitting
      * @returns This instance of a ticker
      */
-    add<T = any>(fn: TickerCallback<T>, context?: T, priority: number = UPDATE_PRIORITY.NORMAL): this
+    public add<T = any>(fn: TickerCallback<T>, context?: T, priority: number = UPDATE_PRIORITY.NORMAL): this
     {
         return this._addListener(new TickerListener(fn, context, priority));
     }
@@ -207,7 +207,7 @@ export class Ticker
      * @param {number} [priority=PIXI.UPDATE_PRIORITY.NORMAL] - The priority for emitting
      * @returns This instance of a ticker
      */
-    addOnce<T = any>(fn: TickerCallback<T>, context?: T, priority: number = UPDATE_PRIORITY.NORMAL): this
+    public addOnce<T = any>(fn: TickerCallback<T>, context?: T, priority: number = UPDATE_PRIORITY.NORMAL): this
     {
         return this._addListener(new TickerListener(fn, context, priority, true));
     }
@@ -264,7 +264,7 @@ export class Ticker
      * @param context - The listener context to be removed
      * @returns This instance of a ticker
      */
-    remove<T = any>(fn: TickerCallback<T>, context?: T): this
+    public remove<T = any>(fn: TickerCallback<T>, context?: T): this
     {
         let listener = this._head.next;
 
@@ -315,7 +315,7 @@ export class Ticker
     }
 
     /** Starts the ticker. If the ticker has listeners a new animation frame is requested at this point. */
-    start(): void
+    public start(): void
     {
         if (!this.started)
         {
@@ -325,7 +325,7 @@ export class Ticker
     }
 
     /** Stops the ticker. If the ticker has requested an animation frame it is canceled at this point. */
-    stop(): void
+    public stop(): void
     {
         if (this.started)
         {
@@ -335,7 +335,7 @@ export class Ticker
     }
 
     /** Destroy the ticker and don't use after this. Calling this method removes all references to internal events. */
-    destroy(): void
+    public destroy(): void
     {
         if (!this._protected)
         {
@@ -365,7 +365,7 @@ export class Ticker
      * and listeners are added.
      * @param {number} [currentTime=performance.now()] - the current time of execution
      */
-    update(currentTime: number = performance.now()): void
+    public update(currentTime: number = performance.now()): void
     {
         let elapsedMS;
 

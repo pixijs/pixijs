@@ -34,22 +34,17 @@ export type MeshViewOptions = MeshViewTextureOptions | MeshViewShaderOptions;
 
 export class MeshView<GEOMETRY extends MeshGeometry = MeshGeometry>implements View
 {
-    uid: number = UID++;
+    public readonly uid: number = UID++;
+    public readonly type = 'mesh';
+    public readonly canBundle = true;
+    public readonly owner = emptyViewObserver;
 
-    type = 'mesh';
-
-    _texture: Texture;
-
-    _geometry: GEOMETRY;
-
-    // TODO this should be a shader type! As long as its compatible!
-    _shader?: TextureShader;
-
-    canBundle = true;
-
-    action?: string;
-
-    owner = emptyViewObserver;
+    /** @ignore */
+    public _texture: Texture;
+    /** @ignore */
+    public _geometry: GEOMETRY;
+    /** @ignore */
+    public _shader?: TextureShader;
 
     constructor(options: MeshViewOptions)
     {
@@ -65,7 +60,7 @@ export class MeshView<GEOMETRY extends MeshGeometry = MeshGeometry>implements Vi
         }
 
         this._geometry = options.geometry as GEOMETRY;
-        this._geometry.on('update', this.onGeometryUpdate, this);
+        this._geometry.on('update', this.onUpdate, this);
     }
 
     set shader(value: TextureShader)
@@ -73,7 +68,6 @@ export class MeshView<GEOMETRY extends MeshGeometry = MeshGeometry>implements Vi
         if (this._shader === value) return;
 
         this._shader = value;
-
         this.onUpdate();
     }
 
@@ -90,7 +84,6 @@ export class MeshView<GEOMETRY extends MeshGeometry = MeshGeometry>implements Vi
         value.on('update', this.onUpdate, this);
 
         this._geometry = value;
-
         this.onUpdate();
     }
 
@@ -109,7 +102,6 @@ export class MeshView<GEOMETRY extends MeshGeometry = MeshGeometry>implements Vi
         }
 
         this._texture = value;
-
         this.onUpdate();
     }
 
@@ -118,7 +110,19 @@ export class MeshView<GEOMETRY extends MeshGeometry = MeshGeometry>implements Vi
         return this._texture;
     }
 
-    addBounds(bounds: Bounds)
+    get batched()
+    {
+        if (this._shader) return false;
+
+        if (this._geometry.batchMode === 'auto')
+        {
+            return this._geometry.positions.length / 2 <= 100;
+        }
+
+        return this._geometry.batchMode === 'batch';
+    }
+
+    public addBounds(bounds: Bounds)
     {
         bounds.addVertexData(this.geometry.positions, 0, this.geometry.positions.length);
     }
@@ -156,16 +160,10 @@ export class MeshView<GEOMETRY extends MeshGeometry = MeshGeometry>implements Vi
         return false;
     }
 
-    get batched()
+    /** Called when the geometry is updated. */
+    protected onUpdate()
     {
-        if (this._shader) return false;
-
-        if (this._geometry.batchMode === 'auto')
-        {
-            return this._geometry.positions.length / 2 <= 100;
-        }
-
-        return this._geometry.batchMode === 'batch';
+        this.owner.onViewUpdate();
     }
 
     /**
@@ -189,15 +187,5 @@ export class MeshView<GEOMETRY extends MeshGeometry = MeshGeometry>implements Vi
         this._texture = null;
         this._geometry = null;
         this._shader = null;
-    }
-
-    protected onGeometryUpdate()
-    {
-        this.onUpdate();
-    }
-
-    protected onUpdate()
-    {
-        this.owner.onViewUpdate();
     }
 }

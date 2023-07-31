@@ -137,7 +137,7 @@ export class EventBoundary
     protected eventPool: Map<typeof FederatedEvent, FederatedEvent[]> = new Map();
 
     /** Every interactive element gathered from the scene. Only used in `pointermove` */
-    private _allInteractiveElements: FederatedEventTarget[] = [];
+    private readonly _allInteractiveElements: FederatedEventTarget[] = [];
     /** Every element that passed the hit test. Only used in `pointermove` */
     private _hitElements: FederatedEventTarget[] = [];
     /** Whether or not to collect all the interactive elements from the scene. Enabled in `pointermove` */
@@ -662,11 +662,11 @@ export class EventBoundary
 
         const key = e.eventPhase === e.CAPTURING_PHASE || e.eventPhase === e.AT_TARGET ? `${type}capture` : type;
 
-        this.notifyListeners(e, key);
+        this._notifyListeners(e, key);
 
         if (e.eventPhase === e.AT_TARGET)
         {
-            this.notifyListeners(e, type);
+            this._notifyListeners(e, type);
         }
     }
 
@@ -1448,7 +1448,7 @@ export class EventBoundary
      * @param e - The event to call each listener with.
      * @param type - The event key.
      */
-    private notifyListeners(e: FederatedEvent, type: string): void
+    private _notifyListeners(e: FederatedEvent, type: string): void
     {
         const listeners = ((e.currentTarget as any)._events as EmitterListeners)[type];
 

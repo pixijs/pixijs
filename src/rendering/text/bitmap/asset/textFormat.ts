@@ -1,4 +1,4 @@
-import type { BitmapFontData, RawCharData } from '../BitmapFont';
+import type { BitmapFontData, RawCharData } from '../AbstractBitmapFont';
 
 /**
  * Internal data format used to convert to BitmapFontData.
@@ -116,8 +116,8 @@ export const TextFormat = {
         if (distanceField)
         {
             font.distanceField = {
-                distanceRange: parseInt(distanceField.distanceRange, 10),
-                fieldType: distanceField.fieldType
+                range: parseInt(distanceField.distanceRange, 10),
+                type: distanceField.fieldType
             };
         }
 

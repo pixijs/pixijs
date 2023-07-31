@@ -2,11 +2,11 @@ import type { TextureSource } from '../../shared/texture/sources/TextureSource';
 
 export class GpuRenderTarget
 {
-    contexts: GPUCanvasContext[] = [];
-    msaaTextures: TextureSource[] = [];
-    msaa: boolean;
-    msaaSamples = 1;
-    width: number;
-    height: number;
-    descriptor: GPURenderPassDescriptor;
+    public contexts: GPUCanvasContext[] = [];
+    public msaaTextures: TextureSource[] = [];
+    public msaa: boolean;
+    public msaaSamples = 1;
+    public width: number;
+    public height: number;
+    public descriptor: GPURenderPassDescriptor;
 }

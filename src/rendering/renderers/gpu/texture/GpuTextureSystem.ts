@@ -14,7 +14,7 @@ import type { GpuTextureUploader } from './uploaders/GpuTextureUploader';
 export class GpuTextureSystem implements System
 {
     /** @ignore */
-    static extension = {
+    public static extension = {
         type: [
             ExtensionType.WebGPUSystem,
         ],
@@ -22,24 +22,22 @@ export class GpuTextureSystem implements System
     } as const;
 
     protected CONTEXT_UID: number;
-    gpuSources: Record<number, GPUTexture> = {};
-    gpuSamplers: Record<string, GPUSampler> = {};
-    bindGroupHash: Record<string, BindGroup> = {};
-    textureViewHash: Record<string, GPUTextureView> = {};
+    private _gpuSources: Record<number, GPUTexture> = {};
+    private _gpuSamplers: Record<string, GPUSampler> = {};
+    private _bindGroupHash: Record<string, BindGroup> = {};
+    private _textureViewHash: Record<string, GPUTextureView> = {};
 
-    managedTextureSources: Record<number, TextureSource> = {};
-
-    uploads: Record<string, GpuTextureUploader> = {
+    private readonly _uploads: Record<string, GpuTextureUploader> = {
         image: gpuUploadImageResource,
         buffer: gpuUploadBufferImageResource
     };
 
-    gpu: GPU;
-    mipmapGenerator?: GpuMipmapGenerator;
+    private _gpu: GPU;
+    private _mipmapGenerator?: GpuMipmapGenerator;
 
     protected contextChange(gpu: GPU): void
     {
-        this.gpu = gpu;
+        this._gpu = gpu;
     }
 
     public initSource(source: TextureSource): GPUTexture
@@ -63,11 +61,9 @@ export class GpuTextureSystem implements System
                 | GPUTextureUsage.COPY_SRC,
         };
 
-        const gpuTexture = this.gpu.device.createTexture(textureDescriptor);
+        const gpuTexture = this._gpu.device.createTexture(textureDescriptor);
 
-        this.gpuSources[source.uid] = gpuTexture;
-
-        this.managedTextureSources[source.uid] = source;
+        this._gpuSources[source.uid] = gpuTexture;
 
         source.on('update', this.onSourceUpdate, this);
         source.on('resize', this.onSourceResize, this);
@@ -78,103 +74,103 @@ export class GpuTextureSystem implements System
         return gpuTexture;
     }
 
-    onSourceUpdate(source: TextureSource): void
+    protected onSourceUpdate(source: TextureSource): void
     {
-        const gpuTexture = this.gpuSources[source.uid];
+        const gpuTexture = this._gpuSources[source.uid];
 
         // destroyed!
         if (!gpuTexture) return;
 
-        if (this.uploads[source.type])
+        if (this._uploads[source.type])
         {
-            this.uploads[source.type].upload(source, gpuTexture, this.gpu);
+            this._uploads[source.type].upload(source, gpuTexture, this._gpu);
         }
 
         if (source.autoGenerateMipmaps && source.mipLevelCount > 1)
         {
-            if (!this.mipmapGenerator)
+            if (!this._mipmapGenerator)
             {
-                this.mipmapGenerator = new GpuMipmapGenerator(this.gpu.device);
+                this._mipmapGenerator = new GpuMipmapGenerator(this._gpu.device);
             }
 
-            this.mipmapGenerator.generateMipmap(gpuTexture);
+            this._mipmapGenerator.generateMipmap(gpuTexture);
         }
     }
 
-    onSourceDestroy(source: TextureSource): void
+    protected onSourceDestroy(source: TextureSource): void
     {
         source.off('update', this.onSourceUpdate, this);
         source.off('destroy', this.onSourceDestroy, this);
         source.off('resize', this.onSourceResize, this);
 
-        const gpuTexture = this.gpuSources[source.uid];
+        const gpuTexture = this._gpuSources[source.uid];
 
-        delete this.gpuSources[source.uid];
+        delete this._gpuSources[source.uid];
 
         gpuTexture.destroy();
     }
 
-    onSourceResize(source: TextureSource): void
+    protected onSourceResize(source: TextureSource): void
     {
-        const gpuTexture = this.gpuSources[source.uid];
+        const gpuTexture = this._gpuSources[source.uid];
 
         if (gpuTexture.width !== source.pixelWidth || gpuTexture.height !== source.pixelHeight)
         {
-            this.gpuSources[source.uid].destroy();
-            this.gpuSources[source.uid] = null;
+            this._gpuSources[source.uid].destroy();
+            this._gpuSources[source.uid] = null;
             this.initSource(source);
         }
     }
 
-    initSampler(sampler: TextureStyle): GPUSampler
+    private _initSampler(sampler: TextureStyle): GPUSampler
     {
-        this.gpuSamplers[sampler.resourceId] = this.gpu.device.createSampler(sampler);
+        this._gpuSamplers[sampler.resourceId] = this._gpu.device.createSampler(sampler);
 
-        return this.gpuSamplers[sampler.resourceId];
+        return this._gpuSamplers[sampler.resourceId];
     }
 
-    getGpuSampler(sampler: TextureStyle): GPUSampler
+    public getGpuSampler(sampler: TextureStyle): GPUSampler
     {
-        return this.gpuSamplers[sampler.resourceId] || this.initSampler(sampler);
+        return this._gpuSamplers[sampler.resourceId] || this._initSampler(sampler);
     }
 
-    getGpuSource(source: TextureSource): GPUTexture
+    public getGpuSource(source: TextureSource): GPUTexture
     {
-        return this.gpuSources[source.uid] || this.initSource(source);
+        return this._gpuSources[source.uid] || this.initSource(source);
     }
 
-    getTextureBindGroup(texture: Texture)
+    public getTextureBindGroup(texture: Texture)
     {
-        return this.bindGroupHash[texture.id] ?? this.createTextureBindGroup(texture);
+        return this._bindGroupHash[texture.id] ?? this._createTextureBindGroup(texture);
     }
 
-    createTextureBindGroup(texture: Texture)
+    private _createTextureBindGroup(texture: Texture)
     {
         const bindGroupId = texture.id;
 
-        this.bindGroupHash[bindGroupId] = new BindGroup({
+        this._bindGroupHash[bindGroupId] = new BindGroup({
             0: texture.source,
             1: texture.style,
         });
 
-        return this.bindGroupHash[bindGroupId];
+        return this._bindGroupHash[bindGroupId];
     }
 
-    getTextureView(texture: BindableTexture)
+    public getTextureView(texture: BindableTexture)
     {
         const source = texture.source;
 
-        return this.textureViewHash[source.uid] ?? this.createTextureView(source);
+        return this._textureViewHash[source.uid] ?? this._createTextureView(source);
     }
 
-    createTextureView(texture: TextureSource)
+    private _createTextureView(texture: TextureSource)
     {
-        this.textureViewHash[texture.uid] = this.getGpuSource(texture).createView();
+        this._textureViewHash[texture.uid] = this.getGpuSource(texture).createView();
 
-        return this.textureViewHash[texture.uid];
+        return this._textureViewHash[texture.uid];
     }
 
-    destroy(): void
+    public destroy(): void
     {
         throw new Error('Method not implemented.');
     }

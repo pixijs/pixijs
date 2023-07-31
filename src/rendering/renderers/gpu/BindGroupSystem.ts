@@ -15,48 +15,40 @@ import type { WebGPURenderer } from './WebGPURenderer';
 export class BindGroupSystem implements System
 {
     /** @ignore */
-    static extension = {
+    public static extension = {
         type: [
             ExtensionType.WebGPUSystem,
         ],
         name: 'bindGroup',
     } as const;
 
-    private readonly renderer: WebGPURenderer;
+    private readonly _renderer: WebGPURenderer;
 
-    private hash: Record<string, GPUBindGroup> = {};
-    private gpu: GPU;
-
-    // TODO implement a way to tidy up unused bind groups!
-    // private bindGroupCount = 0;
+    private _hash: Record<string, GPUBindGroup> = {};
+    private _gpu: GPU;
 
     constructor(renderer: WebGPURenderer)
     {
-        this.renderer = renderer;
+        this._renderer = renderer;
     }
 
     protected contextChange(gpu: GPU): void
     {
-        this.gpu = gpu;
+        this._gpu = gpu;
     }
 
-    getBindGroup(bindGroup: BindGroup, program: GpuProgram, groupIndex: number): GPUBindGroup
+    public getBindGroup(bindGroup: BindGroup, program: GpuProgram, groupIndex: number): GPUBindGroup
     {
         bindGroup.updateKey();
 
-        const gpuBindGroup = this.hash[bindGroup.key] || this.createBindGroup(bindGroup, program, groupIndex);
-
-        // TODO update the usageTick - and destroy unused ones!
-        // bindGroup.usageTick
+        const gpuBindGroup = this._hash[bindGroup.key] || this._createBindGroup(bindGroup, program, groupIndex);
 
         return gpuBindGroup;
     }
 
-    private createBindGroup(group: BindGroup, program: GpuProgram, groupIndex: number): GPUBindGroup
+    private _createBindGroup(group: BindGroup, program: GpuProgram, groupIndex: number): GPUBindGroup
     {
-        // this.bindGroupCount++;
-
-        const device = this.gpu.device;
+        const device = this._gpu.device;
         const groupLayout = program.layout[groupIndex];
         const entries: GPUBindGroupEntry[] = [];
 
@@ -70,12 +62,12 @@ export class BindGroupSystem implements System
             {
                 const uniformGroup = resource as UniformGroup;
 
-                this.renderer.uniformBuffer.updateUniformGroup(uniformGroup as UniformGroup);
+                this._renderer.uniformBuffer.updateUniformGroup(uniformGroup as UniformGroup);
 
                 const buffer = uniformGroup.buffer;
 
                 gpuResource = {
-                    buffer: this.renderer.buffer.getGPUBuffer(buffer),
+                    buffer: this._renderer.buffer.getGPUBuffer(buffer),
                     offset: 0,
                     size: buffer.descriptor.size,
                 };
@@ -85,7 +77,7 @@ export class BindGroupSystem implements System
                 const buffer = resource as Buffer;
 
                 gpuResource = {
-                    buffer: this.renderer.buffer.getGPUBuffer(buffer),
+                    buffer: this._renderer.buffer.getGPUBuffer(buffer),
                     offset: 0,
                     size: buffer.descriptor.size,
                 };
@@ -95,7 +87,7 @@ export class BindGroupSystem implements System
                 const bufferResource = resource as BufferResource;
 
                 gpuResource = {
-                    buffer: this.renderer.buffer.getGPUBuffer(bufferResource.buffer),
+                    buffer: this._renderer.buffer.getGPUBuffer(bufferResource.buffer),
                     offset: bufferResource.offset,
                     size: bufferResource.size,
                 };
@@ -104,13 +96,13 @@ export class BindGroupSystem implements System
             {
                 const sampler = resource as TextureStyle;
 
-                gpuResource = this.renderer.texture.getGpuSampler(sampler);
+                gpuResource = this._renderer.texture.getGpuSampler(sampler);
             }
             else if (resource.resourceType === 'textureSource')
             {
                 const texture = resource as TextureSource;
 
-                gpuResource = this.renderer.texture.getGpuSource(texture).createView({
+                gpuResource = this._renderer.texture.getGpuSource(texture).createView({
 
                 });
             }
@@ -126,12 +118,12 @@ export class BindGroupSystem implements System
             entries,
         });
 
-        this.hash[group.key] = gpuBindGroup;
+        this._hash[group.key] = gpuBindGroup;
 
         return gpuBindGroup;
     }
 
-    destroy(): void
+    public destroy(): void
     {
         // boom!
     }

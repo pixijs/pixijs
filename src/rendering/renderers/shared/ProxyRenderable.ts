@@ -13,12 +13,12 @@ export interface ProxyOptions<T>
 
 export class ProxyRenderable<T extends View = View> extends EventEmitter implements Renderable<T>
 {
-    uid = getRenderableUID();
-    view: T;
-    original: Renderable<any>;
-    layerTransform: Matrix;
-    worldTransform: Matrix;
-    didViewUpdate = false;
+    public uid = getRenderableUID();
+    public view: T;
+    private _original: Renderable<any>;
+    public layerTransform: Matrix;
+    public worldTransform: Matrix;
+    public didViewUpdate = false;
 
     constructor({ original, view }: ProxyOptions<T>)
     {
@@ -32,29 +32,29 @@ export class ProxyRenderable<T extends View = View> extends EventEmitter impleme
         }
     }
 
-    init(original: Renderable<any>)
+    public init(original: Renderable<any>)
     {
-        this.original = original;
+        this._original = original;
         this.layerTransform = original.layerTransform;
     }
 
     get layerColor()
     {
-        return this.original.layerColor;
+        return this._original.layerColor;
     }
 
     get layerBlendMode()
     {
-        return this.original.layerBlendMode;
+        return this._original.layerBlendMode;
     }
 
     get layerVisibleRenderable()
     {
-        return this.original.layerVisibleRenderable;
+        return this._original.layerVisibleRenderable;
     }
 
     get isRenderable()
     {
-        return this.original.isRenderable;
+        return this._original.isRenderable;
     }
 }

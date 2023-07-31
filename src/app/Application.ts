@@ -2,6 +2,7 @@ import { extensions, ExtensionType } from '../extensions/Extensions';
 import { autoDetectRenderer } from '../rendering/renderers/autoDetectRenderer';
 import { Container } from '../rendering/scene/Container';
 
+import type { Rectangle } from '../maths/shapes/Rectangle';
 import type { AutoDetectOptions } from '../rendering/renderers/autoDetectRenderer';
 import type { Renderer } from '../rendering/renderers/types';
 import type { ICanvas } from '../settings/adapter/ICanvas';
@@ -55,7 +56,7 @@ export interface Application extends PixiMixins.Application {}
 export class Application<VIEW extends ICanvas = ICanvas>
 {
     /** Collection of installed plugins. */
-    static _plugins: ApplicationPlugin[] = [];
+    public static _plugins: ApplicationPlugin[] = [];
 
     /**
      * The root display container that's rendered.
@@ -107,16 +108,15 @@ export class Application<VIEW extends ICanvas = ICanvas>
         return this.renderer.element as VIEW;
     }
 
-    // TODO: not implemented
-    // /**
-    //  * Reference to the renderer's screen rectangle. Its safe to use as `filterArea` or `hitArea` for the whole screen.
-    //  * @member {PIXI.Rectangle}
-    //  * @readonly
-    //  */
-    // get screen(): Rectangle
-    // {
-    //     return this.renderer.screen;
-    // }
+    /**
+     * Reference to the renderer's screen rectangle. Its safe to use as `filterArea` or `hitArea` for the whole screen.
+     * @member {PIXI.Rectangle}
+     * @readonly
+     */
+    get screen(): Rectangle
+    {
+        return this.renderer.screen;
+    }
 
     // TODO: implement destroy
     // /**

@@ -71,7 +71,7 @@ export interface BundleIdentifierOptions
  */
 export class Resolver
 {
-    private _defaultBundleIdentifierOptions: Required<BundleIdentifierOptions> = {
+    private readonly _defaultBundleIdentifierOptions: Required<BundleIdentifierOptions> = {
         connector: '-',
         createBundleAssetId: (bundleId, assetId) =>
             `${bundleId}${this._bundleIdConnector}${assetId}`,
@@ -106,7 +106,7 @@ export class Resolver
 
     private _assetMap: Record<string, ResolvedAsset[]> = {};
     private _preferredOrder: PreferOrder[] = [];
-    private _parsers: ResolveURLParser[] = [];
+    private readonly _parsers: ResolveURLParser[] = [];
 
     private _resolverHash: Record<string, ResolvedAsset> = {};
     private _rootPath: string;
@@ -514,7 +514,7 @@ export class Resolver
                         };
                     }
 
-                    formattedAsset = this.buildResolvedAsset(formattedAsset, {
+                    formattedAsset = this._buildResolvedAsset(formattedAsset, {
                         aliases: aliasesToUse,
                         data,
                         format,
@@ -691,7 +691,7 @@ export class Resolver
                 }
                 else
                 {
-                    this._resolverHash[key] = this.buildResolvedAsset({
+                    this._resolverHash[key] = this._buildResolvedAsset({
                         alias: [key],
                         src: key,
                     }, {});
@@ -758,7 +758,7 @@ export class Resolver
         return `${url}${paramConnector}${this._defaultSearchParams}`;
     }
 
-    private buildResolvedAsset(formattedAsset: ResolvedAsset, data?: {
+    private _buildResolvedAsset(formattedAsset: ResolvedAsset, data?: {
         aliases?: string[],
         data?: Record<string, unknown>
         loadParser?: string,

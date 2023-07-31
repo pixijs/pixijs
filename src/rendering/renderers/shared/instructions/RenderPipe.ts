@@ -1,4 +1,6 @@
 import type { BatchableObject } from '../../../batcher/shared/Batcher';
+import type { Container } from '../../../scene/Container';
+import type { Effect } from '../../../scene/Effect';
 import type { Renderer } from '../../types';
 import type { Renderable } from '../Renderable';
 import type { View } from '../View';
@@ -17,6 +19,9 @@ export interface InstructionPipe<INSTRUCTION extends Instruction>
 
     renderEnd?: () => void;
     renderStart?: () => void;
+
+    push?: (effect: Effect, maskedContainer: Container, instructionSet: InstructionSet) => void
+    pop?: (effect: Effect, maskedContainer: Container, instructionSet: InstructionSet) => void
 }
 
 export interface RenderPipe<VIEW extends View = View>
@@ -24,6 +29,8 @@ export interface RenderPipe<VIEW extends View = View>
     addRenderable: (renderable: Renderable<VIEW>, instructionSet: InstructionSet) => void;
     updateRenderable: (renderable: Renderable<VIEW>, instructionSet?: InstructionSet) => void;
     destroyRenderable: (renderable: Renderable<VIEW>) => void;
+
+    validateRenderable?: (renderable: Renderable<VIEW>) => boolean;
 }
 
 export interface BatchPipe

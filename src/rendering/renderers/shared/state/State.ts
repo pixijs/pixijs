@@ -8,7 +8,6 @@ const blendModeIds = {
     screen: 3,
     overlay: 4,
 };
-
 const BLEND = 0;
 const OFFSET = 1;
 const CULLING = 2;
@@ -25,10 +24,11 @@ const DEPTH_MASK = 5;
  */
 export class State
 {
-    data: number;
-    _blendMode: BLEND_MODES;
-    _polygonOffset: number;
-    _blendModeId: number;
+    public data: number;
+    /** @internal */
+    public _blendModeId: number;
+    private _blendMode: BLEND_MODES;
+    private _polygonOffset: number;
 
     constructor()
     {
@@ -39,7 +39,6 @@ export class State
 
         this.blend = true;
         this.depthMask = true;
-        //  this.depthTest = true;
     }
 
     /**
@@ -200,7 +199,7 @@ export class State
     }
 
     // #if _DEBUG
-    toString(): string
+    public toString(): string
     {
         return `[@pixi/core:State `
             + `blendMode=${this.blendMode} `
@@ -212,7 +211,7 @@ export class State
     }
     // #endif
 
-    static for2d(): State
+    public static for2d(): State
     {
         const state = new State();
 

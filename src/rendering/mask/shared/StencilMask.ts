@@ -11,11 +11,11 @@ import type { Effect } from '../../scene/Effect';
 
 export class StencilMask implements Effect, PoolItem
 {
-    static extension: ExtensionMetadata = ExtensionType.MaskEffect;
+    public static extension: ExtensionMetadata = ExtensionType.MaskEffect;
 
-    priority = 0;
-    mask: Container;
-    pipe = 'stencilMask';
+    public priority = 0;
+    public mask: Container;
+    public pipe = 'stencilMask';
 
     constructor(options: {mask: Container})
     {
@@ -25,31 +25,31 @@ export class StencilMask implements Effect, PoolItem
         }
     }
 
-    init(mask: Container): void
+    public init(mask: Container): void
     {
         this.mask = mask;
         this.mask.includeInBuild = false;
         this.mask.measurable = false;
     }
 
-    reset()
+    public reset()
     {
         this.mask.measurable = true;
         this.mask.includeInBuild = true;
         this.mask = null;
     }
 
-    addBounds(bounds: Bounds, skipUpdateTransform: boolean): void
+    public addBounds(bounds: Bounds, skipUpdateTransform: boolean): void
     {
         addMaskBounds(this.mask, bounds, skipUpdateTransform);
     }
 
-    addLocalBounds(bounds: Bounds, localRoot: Container): void
+    public addLocalBounds(bounds: Bounds, localRoot: Container): void
     {
         addMaskLocalBounds(this.mask, bounds, localRoot);
     }
 
-    containsPoint(point: PointData): boolean
+    public containsPoint(point: PointData): boolean
     {
         const mask = this.mask as any;
 
@@ -61,12 +61,12 @@ export class StencilMask implements Effect, PoolItem
         return false;
     }
 
-    destroy(): void
+    public destroy(): void
     {
         this.reset();
     }
 
-    static test(mask: any): boolean
+    public static test(mask: any): boolean
     {
         return mask instanceof Container;
     }

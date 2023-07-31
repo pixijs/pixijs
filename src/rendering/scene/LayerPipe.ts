@@ -8,7 +8,7 @@ import type { LayerGroup } from './LayerGroup';
 
 export class LayerPipe implements InstructionPipe<LayerGroup>
 {
-    static extension = {
+    public static extension = {
         type: [
             ExtensionType.WebGLPipes,
             ExtensionType.WebGPUPipes,
@@ -17,40 +17,40 @@ export class LayerPipe implements InstructionPipe<LayerGroup>
         name: 'layer',
     } as const;
 
-    private renderer: Renderer;
+    private _renderer: Renderer;
 
     constructor(renderer: Renderer)
     {
-        this.renderer = renderer;
+        this._renderer = renderer;
     }
 
-    addLayerGroup(layerGroup: LayerGroup, instructionSet: InstructionSet): void
+    public addLayerGroup(layerGroup: LayerGroup, instructionSet: InstructionSet): void
     {
-        this.renderer.renderPipes.batch.break(instructionSet);
+        this._renderer.renderPipes.batch.break(instructionSet);
 
         instructionSet.add(layerGroup);
     }
 
-    execute(layerGroup: LayerGroup)
+    public execute(layerGroup: LayerGroup)
     {
         if (!layerGroup.isRenderable) return;
 
-        this.renderer.globalUniforms.push({
-            projectionMatrix: this.renderer.renderTarget.renderTarget.projectionMatrix,
+        this._renderer.globalUniforms.push({
+            projectionMatrix: this._renderer.renderTarget.renderTarget.projectionMatrix,
             worldTransformMatrix: layerGroup.worldTransform,
             worldColor: layerGroup.worldColor,
 
         });
 
-        executeInstructions(layerGroup, this.renderer.renderPipes);
+        executeInstructions(layerGroup, this._renderer.renderPipes);
 
-        this.renderer.globalUniforms.pop();
+        this._renderer.globalUniforms.pop();
 
         // now render a quad..
     }
 
-    destroy(): void
+    public destroy(): void
     {
-        this.renderer = null;
+        this._renderer = null;
     }
 }

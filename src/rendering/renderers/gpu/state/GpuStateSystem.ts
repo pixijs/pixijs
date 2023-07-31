@@ -10,7 +10,7 @@ import type { GPU } from '../GpuDeviceSystem';
 export class GpuStateSystem implements System
 {
     /** @ignore */
-    static extension = {
+    public static extension = {
         type: [
             ExtensionType.WebGPUSystem,
         ],
@@ -57,12 +57,12 @@ export class GpuStateSystem implements System
         this.defaultState.blend = true;
     }
 
-    contextChange(gpu: GPU): void
+    protected contextChange(gpu: GPU): void
     {
         this.gpu = gpu;
     }
 
-    getColorTargets(state: State): GPUColorTargetState[]
+    public getColorTargets(state: State): GPUColorTargetState[]
     {
         const blend = GpuBlendModesToPixi[state.blendMode] || GpuBlendModesToPixi.normal;
 
@@ -75,7 +75,7 @@ export class GpuStateSystem implements System
         ];
     }
 
-    destroy(): void
+    public destroy(): void
     {
         this.gpu = null;
     }

@@ -16,10 +16,13 @@ export interface Observer<T>
  */
 export class ObservablePoint implements PointLike
 {
-    _x: number;
-    _y: number;
+    /** @internal */
+    public _x: number;
+    /** @internal */
+    public _y: number;
+
     /** This object used to call the `onChange` callback when the point changes. */
-    observer: Observer<ObservablePoint>;
+    private readonly _observer: Observer<ObservablePoint>;
 
     /**
      * Creates a new `ObservablePoint`
@@ -32,7 +35,7 @@ export class ObservablePoint implements PointLike
         this._x = x || 0;
         this._y = y || 0;
 
-        this.observer = observer;
+        this._observer = observer;
     }
 
     /**
@@ -58,7 +61,7 @@ export class ObservablePoint implements PointLike
         {
             this._x = x;
             this._y = y;
-            this.observer.onUpdate();
+            this._observer.onUpdate();
         }
 
         return this;
@@ -75,7 +78,7 @@ export class ObservablePoint implements PointLike
         {
             this._x = p.x;
             this._y = p.y;
-            this.observer.onUpdate();
+            this._observer.onUpdate();
         }
 
         return this;
@@ -106,7 +109,7 @@ export class ObservablePoint implements PointLike
     // #if _DEBUG
     public toString(): string
     {
-        return `[@pixi/math:ObservablePoint x=${0} y=${0} scope=${this.observer}]`;
+        return `[@pixi/math:ObservablePoint x=${0} y=${0} scope=${this._observer}]`;
     }
     // #endif
 
@@ -121,7 +124,7 @@ export class ObservablePoint implements PointLike
         if (this._x !== value)
         {
             this._x = value;
-            this.observer.onUpdate(this);
+            this._observer.onUpdate(this);
         }
     }
 
@@ -136,7 +139,7 @@ export class ObservablePoint implements PointLike
         if (this._y !== value)
         {
             this._y = value;
-            this.observer.onUpdate(this);
+            this._observer.onUpdate(this);
         }
     }
 }

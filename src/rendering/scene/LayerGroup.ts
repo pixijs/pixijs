@@ -9,39 +9,39 @@ import type { Container } from './Container';
 
 export class LayerGroup implements Instruction
 {
-    type = 'layer';
-    root: Container = null;
-    rootRenderable: Renderable<View> = null;
+    public type = 'layer';
+    public root: Container = null;
 
-    canBundle = false;
+    public canBundle = false;
 
-    layerGroupParent: LayerGroup = null;
-    layerGroupChildren: LayerGroup[] = [];
+    public layerGroupParent: LayerGroup = null;
+    public layerGroupChildren: LayerGroup[] = [];
 
-    children: Container[] = [];
+    private readonly _children: Container[] = [];
 
-    //    layerTransform: Matrix = new Matrix();
-    worldTransform: Matrix = new Matrix();
-    worldColor = 0xffffffff;
+    public worldTransform: Matrix = new Matrix();
+    public worldColor = 0xffffffff;
 
     // these updates are transform changes..
-    readonly childrenToUpdate: Record<number, { list: Container[]; index: number; }> = {};
-    updateTick = 0;
+    public readonly childrenToUpdate: Record<number, { list: Container[]; index: number; }> = {};
+    public updateTick = 0;
 
     // these update are renderable changes..
-    readonly childrenRenderablesToUpdate: { list: Renderable[]; index: number; } = { list: [], index: 0 };
+    public readonly childrenRenderablesToUpdate: { list: Renderable[]; index: number; } = { list: [], index: 0 };
 
     // other
-    structureDidChange = true;
+    public structureDidChange = true;
 
-    instructionSet: InstructionSet = new InstructionSet();
+    public instructionSet: InstructionSet = new InstructionSet();
+
+    private readonly _onRenderContainers: Container[] = [];
 
     /**
      * proxy renderable is used to render the root containers view if it has one
      * this is used as we do not want to inherit the transform / color of the root container
      * it is only used by the parent root layer group
      */
-    proxyRenderable: LayerRenderable<View>;
+    public proxyRenderable: LayerRenderable<View>;
 
     constructor(root: Container)
     {
@@ -60,11 +60,11 @@ export class LayerGroup implements Instruction
         return this.root.layerTransform;
     }
 
-    addLayerGroupChild(layerGroupChild: LayerGroup)
+    public addLayerGroupChild(layerGroupChild: LayerGroup)
     {
         if (layerGroupChild.layerGroupParent)
         {
-            layerGroupChild.layerGroupParent.removeLayerGroupChild(layerGroupChild);
+            layerGroupChild.layerGroupParent._removeLayerGroupChild(layerGroupChild);
         }
 
         layerGroupChild.layerGroupParent = this;
@@ -74,11 +74,11 @@ export class LayerGroup implements Instruction
         this.layerGroupChildren.push(layerGroupChild);
     }
 
-    removeLayerGroupChild(layerGroupChild: LayerGroup)
+    private _removeLayerGroupChild(layerGroupChild: LayerGroup)
     {
         if (layerGroupChild.root.didChange)
         {
-            this.removeChildFromUpdate(layerGroupChild.root);
+            this._removeChildFromUpdate(layerGroupChild.root);
         }
 
         const index = this.layerGroupChildren.indexOf(layerGroupChild);
@@ -91,14 +91,14 @@ export class LayerGroup implements Instruction
         layerGroupChild.layerGroupParent = null;
     }
 
-    addChild(child: Container)
+    public addChild(child: Container)
     {
         this.structureDidChange = true;
 
         // TODO this can be optimized..
         if (child !== this.root)
         {
-            this.children.push(child);
+            this._children.push(child);
 
             child.updateTick = -1;
 
@@ -147,7 +147,7 @@ export class LayerGroup implements Instruction
         }
     }
 
-    removeChild(child: Container)
+    public removeChild(child: Container)
     {
         // remove all the children...
         this.structureDidChange = true;
@@ -168,7 +168,7 @@ export class LayerGroup implements Instruction
 
             if (child.didChange)
             {
-                child.layerGroup.removeChildFromUpdate(child);
+                child.layerGroup._removeChildFromUpdate(child);
             }
 
             child.layerGroup = null;
@@ -176,18 +176,18 @@ export class LayerGroup implements Instruction
 
         else
         {
-            this.removeLayerGroupChild(child.layerGroup);
+            this._removeLayerGroupChild(child.layerGroup);
         }
 
-        const index = this.children.indexOf(child);
+        const index = this._children.indexOf(child);
 
         if (index > -1)
         {
-            this.children.splice(index, 1);
+            this._children.splice(index, 1);
         }
     }
 
-    onChildUpdate(child: Container)
+    public onChildUpdate(child: Container)
     {
         let childrenToUpdate = this.childrenToUpdate[child.relativeLayerDepth];
 
@@ -203,7 +203,7 @@ export class LayerGroup implements Instruction
     }
 
     // SHOULD THIS BE HERE?
-    updateRenderable(container: Renderable)
+    public updateRenderable(container: Renderable)
     {
         // only update if its visible!
         if (container.layerVisibleRenderable < 0b11) return;
@@ -213,12 +213,12 @@ export class LayerGroup implements Instruction
         this.instructionSet.renderPipes[container.view.type].updateRenderable(container);
     }
 
-    onChildViewUpdate(child: Renderable)
+    public onChildViewUpdate(child: Renderable)
     {
         this.childrenRenderablesToUpdate.list[this.childrenRenderablesToUpdate.index++] = child;
     }
 
-    removeChildFromUpdate(child: Container)
+    private _removeChildFromUpdate(child: Container)
     {
         const childrenToUpdate = this.childrenToUpdate[child.relativeLayerDepth];
 
@@ -243,26 +243,24 @@ export class LayerGroup implements Instruction
         return (this.root.localVisibleRenderable === 0b11 && worldAlpha > 0);
     }
 
-    onRenderContainers: Container[] = [];
-
     /**
      * adding a container to the onRender list will make sure the user function
      * passed in to the user defined 'onRender` callBack
      * @param container - the container to add to the onRender list
      */
-    addOnRender(container: Container)
+    public addOnRender(container: Container)
     {
-        this.onRenderContainers.push(container);
+        this._onRenderContainers.push(container);
     }
 
-    removeOnRender(container: Container)
+    public removeOnRender(container: Container)
     {
-        this.onRenderContainers.splice(this.onRenderContainers.indexOf(container), 1);
+        this._onRenderContainers.splice(this._onRenderContainers.indexOf(container), 1);
     }
 
-    runOnRender()
+    public runOnRender()
     {
-        this.onRenderContainers.forEach((container) =>
+        this._onRenderContainers.forEach((container) =>
         {
             container._onRender();
         });

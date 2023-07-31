@@ -52,7 +52,7 @@ export interface ContextSystemOptions
 export class GlContextSystem implements System<ContextSystemOptions>
 {
     /** @ignore */
-    static extension = {
+    public static extension = {
         type: [
             ExtensionType.WebGLSystem,
         ],
@@ -60,7 +60,7 @@ export class GlContextSystem implements System<ContextSystemOptions>
     } as const;
 
     /** @ignore */
-    static defaultOptions: ContextSystemOptions = {
+    public static defaultOptions: ContextSystemOptions = {
         /**
          * {@link PIXI.WebGLOptions.context}
          * @default null
@@ -95,10 +95,7 @@ export class GlContextSystem implements System<ContextSystemOptions>
      * @readonly
      * @property {boolean} uint32Indices - Support for 32-bit indices buffer.
      */
-    readonly supports: ISupportDict;
-
-    preserveDrawingBuffer: boolean;
-    powerPreference: WebGLPowerPreference;
+    public readonly supports: ISupportDict;
 
     protected CONTEXT_UID: number;
     protected gl: WebGL2RenderingContext;
@@ -116,12 +113,12 @@ export class GlContextSystem implements System<ContextSystemOptions>
      */
     public extensions: WebGLExtensions;
 
-    private renderer: WebGLRenderer;
+    private _renderer: WebGLRenderer;
 
     /** @param renderer - The renderer this System works for. */
     constructor(renderer: WebGLRenderer)
     {
-        this.renderer = renderer;
+        this._renderer = renderer;
 
         this.webGLVersion = 1;
         this.extensions = {};
@@ -151,7 +148,7 @@ export class GlContextSystem implements System<ContextSystemOptions>
     protected contextChange(gl: WebGL2RenderingContext): void
     {
         this.gl = gl;
-        this.renderer.gl = gl;
+        this._renderer.gl = gl;
 
         // restore a context if it was previously lost
         if (gl.isContextLost() && gl.getExtension('WEBGL_lose_context'))
@@ -160,7 +157,7 @@ export class GlContextSystem implements System<ContextSystemOptions>
         }
     }
 
-    init(options: ContextSystemOptions): void
+    public init(options: ContextSystemOptions): void
     {
         /*
          * The options passed in to create a new WebGL context.
@@ -171,11 +168,8 @@ export class GlContextSystem implements System<ContextSystemOptions>
         }
         else
         {
-            const alpha = this.renderer.background.alpha < 1;
+            const alpha = this._renderer.background.alpha < 1;
             const premultipliedAlpha = options.premultipliedAlpha ?? true;
-
-            this.preserveDrawingBuffer = options.preserveDrawingBuffer;
-            this.powerPreference = options.powerPreference;
 
             this.initFromOptions({
                 alpha,
@@ -193,14 +187,14 @@ export class GlContextSystem implements System<ContextSystemOptions>
      * @protected
      * @param {WebGLRenderingContext} gl - WebGL context
      */
-    initFromContext(gl: WebGL2RenderingContext): void
+    protected initFromContext(gl: WebGL2RenderingContext): void
     {
         this.gl = gl;
         this.validateContext(gl);
 
-        this.renderer.runners.contextChange.emit(gl);
+        this._renderer.runners.contextChange.emit(gl);
 
-        const element = this.renderer.view.element;
+        const element = this._renderer.view.element;
 
         (element as any).addEventListener('webglcontextlost', this.handleContextLost, false);
         element.addEventListener('webglcontextrestored', this.handleContextRestored, false);
@@ -212,9 +206,9 @@ export class GlContextSystem implements System<ContextSystemOptions>
      * @see https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/getContext
      * @param {object} options - context attributes
      */
-    initFromOptions(options: WebGLContextAttributes): void
+    protected initFromOptions(options: WebGLContextAttributes): void
     {
-        const gl = this.createContext(this.renderer.view.element, options);
+        const gl = this.createContext(this._renderer.view.element, options);
 
         this.initFromContext(gl);
     }
@@ -227,7 +221,7 @@ export class GlContextSystem implements System<ContextSystemOptions>
      * @see https://developer.mozilla.org/en/docs/Web/API/HTMLCanvasElement/getContext
      * @returns {WebGLRenderingContext} the WebGL context
      */
-    createContext(canvas: ICanvas, options: WebGLContextAttributes): GlRenderingContext
+    public createContext(canvas: ICanvas, options: WebGLContextAttributes): GlRenderingContext
     {
         const gl = canvas.getContext('webgl2', options);
 
@@ -277,14 +271,14 @@ export class GlContextSystem implements System<ContextSystemOptions>
     /** Handles a restored webgl context. */
     protected handleContextRestored(): void
     {
-        this.renderer.runners.contextChange.emit(this.gl);
+        this._renderer.runners.contextChange.emit(this.gl);
     }
 
-    destroy(): void
+    public destroy(): void
     {
-        const element = this.renderer.view.element;
+        const element = this._renderer.view.element;
 
-        this.renderer = null;
+        this._renderer = null;
 
         // remove listeners
         (element as any).removeEventListener('webglcontextlost', this.handleContextLost);
@@ -296,15 +290,6 @@ export class GlContextSystem implements System<ContextSystemOptions>
         {
             this.extensions.loseContext.loseContext();
         }
-    }
-
-    /** Handle the post-render runner event. */
-    protected postrender(): void
-    {
-        // if (this.renderer.objectRenderer.renderingToScreen)
-        // {
-        //     this.gl.flush();
-        // }
     }
 
     /**

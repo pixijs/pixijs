@@ -6,7 +6,7 @@ import { GL_FORMATS, GL_TARGETS, GL_TYPES } from './const';
  */
 export class GlTexture
 {
-    target: GL_TARGETS = GL_TARGETS.TEXTURE_2D;
+    public target: GL_TARGETS = GL_TARGETS.TEXTURE_2D;
 
     /** The WebGL texture. */
     public texture: WebGLTexture;
@@ -29,7 +29,7 @@ export class GlTexture
     /** Type of sampler corresponding to this texture. See {@link PIXI.SAMPLER_TYPES} */
     public samplerType: number;
 
-    format: GL_FORMATS;
+    public format: GL_FORMATS;
 
     constructor(texture: WebGLTexture)
     {
@@ -39,7 +39,6 @@ export class GlTexture
         this.type = GL_TYPES.UNSIGNED_BYTE;
         this.internalFormat = GL_FORMATS.RGBA;
         this.format = GL_FORMATS.RGBA;
-
         this.samplerType = 0;
     }
 }

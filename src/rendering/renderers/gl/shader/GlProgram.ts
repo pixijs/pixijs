@@ -48,16 +48,16 @@ const processes: Record<string, ((source: string, options: any, isFragment?: boo
 
 export class GlProgram
 {
-    fragment?: string;
-    vertex?: string;
+    public fragment?: string;
+    public vertex?: string;
 
-    attributeData: Record<string, IAttributeData>;
-    uniformData: Record<string, IUniformData>;
-    uniformBlockData: Record<string, IUniformBlockData>;
+    public attributeData: Record<string, IAttributeData>;
+    public uniformData: Record<string, IUniformData>;
+    public uniformBlockData: Record<string, IUniformBlockData>;
 
-    transformFeedbackVaryings?: {names: string[], bufferMode: 'separate' | 'interleaved'};
+    public transformFeedbackVaryings?: {names: string[], bufferMode: 'separate' | 'interleaved'};
 
-    readonly key: string;
+    public readonly key: string;
 
     constructor({ fragment, vertex, name }: GlProgramOptions)
     {
@@ -88,7 +88,7 @@ export class GlProgram
         this.key = `${this.vertex}:${this.fragment}`;
     }
 
-    destroy(): void
+    public destroy(): void
     {
         this.fragment = null;
         this.vertex = null;
@@ -100,8 +100,8 @@ export class GlProgram
         this.transformFeedbackVaryings = null;
     }
 
-    static programCached: Record<string, GlProgram> = {};
-    static from(options: GlProgramOptions): GlProgram
+    public static programCached: Record<string, GlProgram> = {};
+    public static from(options: GlProgramOptions): GlProgram
     {
         const key = `${options.vertex}:${options.fragment}`;
 

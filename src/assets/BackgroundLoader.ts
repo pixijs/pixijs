@@ -55,7 +55,7 @@ export class BackgroundLoader
 
         if (this._isActive && !this._isLoading)
         {
-            this._next();
+            void this._next();
         }
     }
 
@@ -83,7 +83,7 @@ export class BackgroundLoader
 
             this._isLoading = false;
 
-            this._next();
+            void this._next();
         }
     }
 
@@ -104,7 +104,7 @@ export class BackgroundLoader
 
         if (value && !this._isLoading)
         {
-            this._next();
+            void this._next();
         }
     }
 }

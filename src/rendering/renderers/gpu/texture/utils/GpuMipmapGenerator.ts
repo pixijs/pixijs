@@ -5,11 +5,11 @@
  */
 export class GpuMipmapGenerator
 {
-    device: GPUDevice;
-    sampler: GPUSampler;
-    pipelines: Record<string, GPURenderPipeline>;
+    public device: GPUDevice;
+    public sampler: GPUSampler;
+    public pipelines: Record<string, GPURenderPipeline>;
 
-    mipmapShaderModule: any;
+    public mipmapShaderModule: any;
 
     constructor(device: GPUDevice)
     {
@@ -19,7 +19,7 @@ export class GpuMipmapGenerator
         this.pipelines = {};
     }
 
-    getMipmapPipeline(format: GPUTextureFormat)
+    private _getMipmapPipeline(format: GPUTextureFormat)
     {
         let pipeline = this.pipelines[format];
 
@@ -81,9 +81,9 @@ export class GpuMipmapGenerator
      * @param {module:External.GPUTexture} texture - Texture to generate mipmaps for.
      * @returns {module:External.GPUTexture} - The originally passed texture
      */
-    generateMipmap(texture: GPUTexture)
+    public generateMipmap(texture: GPUTexture)
     {
-        const pipeline = this.getMipmapPipeline(texture.format);
+        const pipeline = this._getMipmapPipeline(texture.format);
 
         if (texture.dimension === '3d' || texture.dimension === '1d')
         {

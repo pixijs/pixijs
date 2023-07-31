@@ -8,17 +8,17 @@ export class BufferResource extends EventEmitter<{
     'change': BindResource,
 }> implements BindResource
 {
-    readonly uid = generateUID();
+    public readonly uid = generateUID();
 
-    resourceType = 'bufferResource';
+    public resourceType = 'bufferResource';
 
     // this really means ths the buffer resource cannot be updated!
-    resourceId = generateUID();
+    public resourceId = generateUID();
 
-    buffer: Buffer;
-    readonly offset: number;
-    readonly size: number;
-    readonly bufferResource = true;
+    public buffer: Buffer;
+    public readonly offset: number;
+    public readonly size: number;
+    public readonly bufferResource = true;
 
     constructor({ buffer, offset, size }: { buffer: Buffer; offset: number; size: number; })
     {
@@ -38,7 +38,7 @@ export class BufferResource extends EventEmitter<{
         this.emit('change', this);
     }
 
-    destroy(destroyBuffer = false): void
+    public destroy(destroyBuffer = false): void
     {
         if (destroyBuffer)
         {

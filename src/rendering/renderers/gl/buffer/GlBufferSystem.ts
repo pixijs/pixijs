@@ -28,37 +28,36 @@ import type { WebGLRenderer } from '../WebGLRenderer';
 export class GlBufferSystem implements System
 {
     /** @ignore */
-    static extension = {
+    public static extension = {
         type: [
             ExtensionType.WebGLSystem,
         ],
         name: 'buffer',
     } as const;
 
-    private gl: GlRenderingContext;
-
+    private _gl: GlRenderingContext;
     private _gpuBuffers: {[key: number]: GlBuffer} = {};
 
     /** Cache keeping track of the base bound buffer bases */
-    private readonly boundBufferBases: {[key: number]: Buffer};
+    private readonly _boundBufferBases: {[key: number]: Buffer};
 
-    private renderer: WebGLRenderer;
+    private _renderer: WebGLRenderer;
 
     /**
      * @param {PIXI.Renderer} renderer - The renderer this System works for.
      */
     constructor(renderer: WebGLRenderer)
     {
-        this.renderer = renderer;
-        this.boundBufferBases = {};
+        this._renderer = renderer;
+        this._boundBufferBases = {};
     }
 
     /**
      * @ignore
      */
-    destroy(): void
+    public destroy(): void
     {
-        this.renderer = null;
+        this._renderer = null;
     }
 
     /** Sets up the renderer context and necessary buffers. */
@@ -66,10 +65,10 @@ export class GlBufferSystem implements System
     {
         this.destroyAll(true);
 
-        this.gl = this.renderer.gl;
+        this._gl = this._renderer.gl;
     }
 
-    getGlBuffer(buffer: Buffer): GlBuffer
+    public getGlBuffer(buffer: Buffer): GlBuffer
     {
         return this._gpuBuffers[buffer.uid] || this.createGLBuffer(buffer);
     }
@@ -78,9 +77,9 @@ export class GlBufferSystem implements System
      * This binds specified buffer. On first run, it will create the webGL buffers for the context too
      * @param buffer - the buffer to bind to the renderer
      */
-    bind(buffer: Buffer): void
+    public bind(buffer: Buffer): void
     {
-        const { gl } = this;
+        const { _gl: gl } = this;
 
         const glBuffer = this.getGlBuffer(buffer);
 
@@ -94,15 +93,15 @@ export class GlBufferSystem implements System
      * @param buffer - the buffer to bind
      * @param index - the base index to bind it to.
      */
-    bindBufferBase(buffer: Buffer, index: number): void
+    public bindBufferBase(buffer: Buffer, index: number): void
     {
-        const { gl } = this;
+        const { _gl: gl } = this;
 
-        if (this.boundBufferBases[index] !== buffer)
+        if (this._boundBufferBases[index] !== buffer)
         {
             const glBuffer = this.getGlBuffer(buffer);
 
-            this.boundBufferBases[index] = buffer;
+            this._boundBufferBases[index] = buffer;
 
             gl.bindBufferBase(gl.UNIFORM_BUFFER, index, glBuffer.buffer);
         }
@@ -115,9 +114,9 @@ export class GlBufferSystem implements System
      * @param index - the base index to bind at, defaults to 0
      * @param offset - the offset to bind at (this is blocks of 256). 0 = 0, 1 = 256, 2 = 512 etc
      */
-    bindBufferRange(buffer: Buffer, index?: number, offset?: number): void
+    public bindBufferRange(buffer: Buffer, index?: number, offset?: number): void
     {
-        const { gl } = this;
+        const { _gl: gl } = this;
 
         offset = offset || 0;
 
@@ -130,9 +129,9 @@ export class GlBufferSystem implements System
      * Will ensure the data in the buffer is uploaded to the GPU.
      * @param {PIXI.Buffer} buffer - the buffer to update
      */
-    updateBuffer(buffer: Buffer): GlBuffer
+    public updateBuffer(buffer: Buffer): GlBuffer
     {
-        const { gl } = this;
+        const { _gl: gl } = this;
 
         const glBuffer = this.getGlBuffer(buffer);
 
@@ -168,9 +167,9 @@ export class GlBufferSystem implements System
      * dispose all WebGL resources of all managed buffers
      * @param {boolean} [contextLost=false] - If context was lost, we suppress `gl.delete` calls
      */
-    destroyAll(contextLost?: boolean): void
+    public destroyAll(contextLost?: boolean): void
     {
-        const gl = this.gl;
+        const gl = this._gl;
 
         if (!contextLost)
         {
@@ -192,7 +191,7 @@ export class GlBufferSystem implements System
     {
         const glBuffer = this._gpuBuffers[buffer.uid];
 
-        const gl = this.gl;
+        const gl = this._gl;
 
         if (!contextLost)
         {
@@ -209,7 +208,7 @@ export class GlBufferSystem implements System
      */
     protected createGLBuffer(buffer: Buffer): GlBuffer
     {
-        const { gl } = this;
+        const { _gl: gl } = this;
 
         let type = BUFFER_TYPE.ARRAY_BUFFER;
 

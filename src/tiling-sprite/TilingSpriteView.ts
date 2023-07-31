@@ -1,7 +1,6 @@
 import { ObservablePoint } from '../maths/ObservablePoint';
 import { Texture } from '../rendering/renderers/shared/texture/Texture';
 import { emptyViewObserver } from '../rendering/renderers/shared/View';
-import { NOOP } from '../utils/NOOP';
 import { Transform } from '../utils/Transform';
 
 import type { PointData } from '../maths/PointData';
@@ -22,36 +21,32 @@ export interface TilingSpriteViewOptions
 
 export class TilingSpriteView implements View
 {
-    static defaultOptions: TilingSpriteViewOptions = {
+    public static defaultOptions: TilingSpriteViewOptions = {
         texture: Texture.WHITE,
         width: 256,
         height: 256,
         applyAnchorToTexture: false,
     };
 
-    batched = true;
+    public readonly owner = emptyViewObserver;
+    public readonly uid = uid++;
+    public readonly type = 'tilingSprite';
+    public batched = true;
+    public anchor: ObservablePoint;
 
-    owner = emptyViewObserver;
+    /** @internal */
+    public _tileTransform: Transform;
+    /** @internal */
+    public _texture: Texture;
+    /** @internal */
+    public _applyAnchorToTexture: boolean;
+    /** @internal */
+    public _didUpdate: boolean;
 
-    uid = uid++;
-
-    type = 'tilingSprite';
-
-    onRenderableUpdate = NOOP;
-
-    _bounds: [number, number, number, number] = [0, 1, 0, 0];
-
-    boundsDirty = true;
-
-    anchor: ObservablePoint;
-    _texture: Texture;
-
-    tileTransform: Transform;
-    applyAnchorToTexture: boolean;
-
+    private _bounds: [number, number, number, number] = [0, 1, 0, 0];
+    private _boundsDirty = true;
     private _width: number;
     private _height: number;
-    didUpdate: boolean;
 
     constructor(options: TilingSpriteViewOptions)
     {
@@ -59,52 +54,23 @@ export class TilingSpriteView implements View
 
         this.anchor = new ObservablePoint(this, 0, 0);
 
-        this.applyAnchorToTexture = options.applyAnchorToTexture;
+        this._applyAnchorToTexture = options.applyAnchorToTexture;
 
         this.texture = options.texture;
         this._width = options.width;
         this._height = options.height;
-
-        this.tileTransform = new Transform({ observer: this });
+        this._tileTransform = new Transform({ observer: this });
     }
 
     get bounds()
     {
-        if (this.boundsDirty)
+        if (this._boundsDirty)
         {
-            this.updateBounds();
-            this.boundsDirty = false;
+            this._updateBounds();
+            this._boundsDirty = false;
         }
 
         return this._bounds;
-    }
-
-    updateBounds()
-    {
-        const bounds = this._bounds;
-
-        const anchor = this.anchor;
-
-        const width = this._width;
-        const height = this._height;
-
-        bounds[1] = -anchor._x * width;
-        bounds[0] = bounds[1] + width;
-
-        bounds[3] = -anchor._y * height;
-        bounds[2] = bounds[3] + height;
-    }
-
-    addBounds(bounds: Bounds)
-    {
-        const _bounds = this.bounds;
-
-        bounds.addFrame(
-            _bounds[0],
-            _bounds[2],
-            _bounds[1],
-            _bounds[3],
-        );
     }
 
     set texture(value: Texture)
@@ -143,14 +109,32 @@ export class TilingSpriteView implements View
         return this._height;
     }
 
-    /**
-     * @internal
-     */
-    onUpdate()
+    private _updateBounds()
     {
-        this.boundsDirty = true;
-        this.didUpdate = true;
-        this.owner.onViewUpdate();
+        const bounds = this._bounds;
+
+        const anchor = this.anchor;
+
+        const width = this._width;
+        const height = this._height;
+
+        bounds[1] = -anchor._x * width;
+        bounds[0] = bounds[1] + width;
+
+        bounds[3] = -anchor._y * height;
+        bounds[2] = bounds[3] + height;
+    }
+
+    public addBounds(bounds: Bounds)
+    {
+        const _bounds = this.bounds;
+
+        bounds.addFrame(
+            _bounds[0],
+            _bounds[2],
+            _bounds[1],
+            _bounds[3],
+        );
     }
 
     public containsPoint(point: PointData)
@@ -171,6 +155,16 @@ export class TilingSpriteView implements View
     }
 
     /**
+     * @internal
+     */
+    public onUpdate()
+    {
+        this._boundsDirty = true;
+        this._didUpdate = true;
+        this.owner.onViewUpdate();
+    }
+
+    /**
      * Destroys this sprite renderable and optionally its texture.
      * @param options - Options parameter. A boolean will act as if all options
      *  have been set to that value
@@ -179,10 +173,8 @@ export class TilingSpriteView implements View
      */
     public destroy(options: TypeOrBool<TextureDestroyOptions> = false)
     {
-        this.onRenderableUpdate = NOOP;
         this.anchor = null;
-        this.tileTransform = null;
-
+        this._tileTransform = null;
         this._bounds = null;
 
         const destroyTexture = typeof options === 'boolean' ? options : options?.texture;

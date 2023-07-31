@@ -16,23 +16,23 @@ import type { View } from './View';
  */
 export class LayerRenderable<T extends View = View> extends EventEmitter implements Renderable<T>
 {
-    uid = getRenderableUID();
-    view: T;
-    original: Container<View>;
-    layerTransform: Matrix;
-    worldTransform: Matrix;
-    layerColor: number;
-    layerVisibleRenderable: number;
-    didViewUpdate: boolean;
+    public uid = getRenderableUID();
+    public view: T;
+    private readonly _original: Container<View>;
+    public layerTransform: Matrix;
+    public worldTransform: Matrix;
+    public layerColor: number;
+    public layerVisibleRenderable: number;
+    public didViewUpdate: boolean;
 
-    constructor({ original, view }: { original: Container<View>; view: T; })
+    constructor({ original, view }: { original: Container<View>; view: T })
     {
         super();
 
         this.view = view;
-        this.original = original;
+        this._original = original;
         this.layerTransform = new Matrix();
-        this.layerColor = 0xFFFFFFFF;
+        this.layerColor = 0xffffffff;
         this.layerVisibleRenderable = 0b11;
 
         this.view.owner = this;
@@ -40,17 +40,17 @@ export class LayerRenderable<T extends View = View> extends EventEmitter impleme
 
     get layerBlendMode()
     {
-        return this.original.layerBlendMode;
+        return this._original.layerBlendMode;
     }
 
-    onViewUpdate()
+    public onViewUpdate()
     {
         this.didViewUpdate = true;
-        this.original.layerGroup.onChildViewUpdate(this);
+        this._original.layerGroup.onChildViewUpdate(this);
     }
 
     get isRenderable()
     {
-        return this.original.isRenderable;
+        return this._original.isRenderable;
     }
 }

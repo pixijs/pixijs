@@ -23,7 +23,7 @@ export interface HelloSystemOptions
 export class HelloSystem implements System<HelloSystemOptions>
 {
     /** @ignore */
-    static extension = {
+    public static extension = {
         type: [
             ExtensionType.WebGLSystem,
             ExtensionType.WebGPUSystem,
@@ -34,7 +34,7 @@ export class HelloSystem implements System<HelloSystemOptions>
     } as const;
 
     /** @ignore */
-    static defaultOptions: HelloSystemOptions = {
+    public static defaultOptions: HelloSystemOptions = {
         /**
          * {@link PIXI.WebGLOptions.hello}
          * @default false
@@ -42,23 +42,23 @@ export class HelloSystem implements System<HelloSystemOptions>
         hello: false,
     };
 
-    readonly renderer: Renderer;
+    private readonly _renderer: Renderer;
 
     constructor(renderer: Renderer)
     {
-        this.renderer = renderer;
+        this._renderer = renderer;
     }
 
     /**
      * It all starts here! This initiates every system, passing in the options for any system by name.
      * @param options - the config for the renderer and all its systems
      */
-    init(options: HelloSystemOptions): void
+    public init(options: HelloSystemOptions): void
     {
         if (options.hello)
         {
             // eslint-disable-next-line no-console
-            sayHello(this.renderer.name);
+            sayHello(this._renderer.name);
         }
     }
 }

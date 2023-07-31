@@ -20,7 +20,7 @@ const DEPTH_MASK = 5;
 export class GlStateSystem implements System
 {
     /** @ignore */
-    static extension = {
+    public static extension = {
         type: [
             ExtensionType.WebGLSystem,
         ],
@@ -101,7 +101,7 @@ export class GlStateSystem implements System
         this.defaultState.blend = true;
     }
 
-    contextChange(gl: GlRenderingContext): void
+    protected contextChange(gl: GlRenderingContext): void
     {
         this.gl = gl;
 
@@ -116,7 +116,7 @@ export class GlStateSystem implements System
      * Sets the current state
      * @param {*} state - The state to set.
      */
-    set(state: State): void
+    public set(state: State): void
     {
         state = state || this.defaultState;
 
@@ -155,7 +155,7 @@ export class GlStateSystem implements System
      * Sets the state, when previous state is unknown.
      * @param {*} state - The state to set
      */
-    forceState(state: State): void
+    public forceState(state: State): void
     {
         state = state || this.defaultState;
         for (let i = 0; i < this.map.length; i++)
@@ -174,9 +174,9 @@ export class GlStateSystem implements System
      * Sets whether to enable or disable blending.
      * @param value - Turn on or off WebGl blending.
      */
-    setBlend(value: boolean): void
+    public setBlend(value: boolean): void
     {
-        this.updateCheck(GlStateSystem.checkBlendMode, value);
+        this._updateCheck(GlStateSystem._checkBlendMode, value);
 
         this.gl[value ? 'enable' : 'disable'](this.gl.BLEND);
     }
@@ -185,9 +185,9 @@ export class GlStateSystem implements System
      * Sets whether to enable or disable polygon offset fill.
      * @param value - Turn on or off webgl polygon offset testing.
      */
-    setOffset(value: boolean): void
+    public setOffset(value: boolean): void
     {
-        this.updateCheck(GlStateSystem.checkPolygonOffset, value);
+        this._updateCheck(GlStateSystem._checkPolygonOffset, value);
 
         this.gl[value ? 'enable' : 'disable'](this.gl.POLYGON_OFFSET_FILL);
     }
@@ -196,7 +196,7 @@ export class GlStateSystem implements System
      * Sets whether to enable or disable depth test.
      * @param value - Turn on or off webgl depth testing.
      */
-    setDepthTest(value: boolean): void
+    public setDepthTest(value: boolean): void
     {
         this.gl[value ? 'enable' : 'disable'](this.gl.DEPTH_TEST);
     }
@@ -205,7 +205,7 @@ export class GlStateSystem implements System
      * Sets whether to enable or disable depth mask.
      * @param value - Turn on or off webgl depth mask.
      */
-    setDepthMask(value: boolean): void
+    public setDepthMask(value: boolean): void
     {
         this.gl.depthMask(value);
     }
@@ -214,7 +214,7 @@ export class GlStateSystem implements System
      * Sets whether to enable or disable cull face.
      * @param {boolean} value - Turn on or off webgl cull face.
      */
-    setCullFace(value: boolean): void
+    public setCullFace(value: boolean): void
     {
         this.gl[value ? 'enable' : 'disable'](this.gl.CULL_FACE);
     }
@@ -223,7 +223,7 @@ export class GlStateSystem implements System
      * Sets the gl front face.
      * @param {boolean} value - true is clockwise and false is counter-clockwise
      */
-    setFrontFace(value: boolean): void
+    public setFrontFace(value: boolean): void
     {
         this.gl.frontFace(this.gl[value ? 'CW' : 'CCW']);
     }
@@ -232,7 +232,7 @@ export class GlStateSystem implements System
      * Sets the blend mode.
      * @param {number} value - The blend mode to set to.
      */
-    setBlendMode(value: BLEND_MODES): void
+    public setBlendMode(value: BLEND_MODES): void
     {
         if (!this.blendModesMap[value])
         {
@@ -275,14 +275,14 @@ export class GlStateSystem implements System
      * @param {number} value - the polygon offset
      * @param {number} scale - the polygon offset scale
      */
-    setPolygonOffset(value: number, scale: number): void
+    public setPolygonOffset(value: number, scale: number): void
     {
         this.gl.polygonOffset(value, scale);
     }
 
     // used
     /** Resets all the logic and disables the VAOs. */
-    reset(): void
+    public reset(): void
     {
         this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, false);
 
@@ -303,7 +303,7 @@ export class GlStateSystem implements System
      * @param func - the checking function to add or remove
      * @param value - should the check function be added or removed.
      */
-    updateCheck(func: (system: this, state: State) => void, value: boolean): void
+    private _updateCheck(func: (system: this, state: State) => void, value: boolean): void
     {
         const index = this.checks.indexOf(func);
 
@@ -322,7 +322,7 @@ export class GlStateSystem implements System
      * @param system - the System to perform the state check on
      * @param state - the state that the blendMode will pulled from
      */
-    private static checkBlendMode(system: GlStateSystem, state: State): void
+    private static _checkBlendMode(system: GlStateSystem, state: State): void
     {
         system.setBlendMode(state.blendMode);
     }
@@ -332,7 +332,7 @@ export class GlStateSystem implements System
      * @param system - the System to perform the state check on
      * @param state - the state that the blendMode will pulled from
      */
-    private static checkPolygonOffset(system: GlStateSystem, state: State): void
+    private static _checkPolygonOffset(system: GlStateSystem, state: State): void
     {
         system.setPolygonOffset(1, state.polygonOffset);
     }
@@ -340,7 +340,7 @@ export class GlStateSystem implements System
     /**
      * @ignore
      */
-    destroy(): void
+    public destroy(): void
     {
         this.gl = null;
     }

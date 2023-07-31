@@ -46,7 +46,7 @@ type ColorObject = { r: number; g: number; b: number; a: number };
 export class BackgroundSystem implements System
 {
     /** @ignore */
-    static extension = {
+    public static extension = {
         type: [
             ExtensionType.WebGLSystem,
             ExtensionType.WebGPUSystem,
@@ -57,7 +57,7 @@ export class BackgroundSystem implements System
     } as const;
 
     /** @ignore */
-    static defaultOptions: BackgroundSystemOptions = {
+    public static defaultOptions: BackgroundSystemOptions = {
         /**
          * {@link PIXI.WebGLOptions.backgroundAlpha}
          * @default 1
@@ -108,7 +108,7 @@ export class BackgroundSystem implements System
      * initiates the background system
      * @param options - the options for the background colors
      */
-    init(options: BackgroundSystemOptions): void
+    public init(options: BackgroundSystemOptions): void
     {
         options = { ...defaultBackgroundOptions, ...options };
 
@@ -167,7 +167,7 @@ export class BackgroundSystem implements System
         return this._backgroundColorString;
     }
 
-    destroy(): void
+    public destroy(): void
     {
         // ka boom!
     }

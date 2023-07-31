@@ -6,27 +6,27 @@ import type { WebGLRenderer } from './WebGLRenderer';
 export class GlColorMaskSystem implements System
 {
     /** @ignore */
-    static extension = {
+    public static extension = {
         type: [
             ExtensionType.WebGLSystem,
         ],
         name: 'colorMask',
     } as const;
 
-    private renderer: WebGLRenderer;
-    private colorMaskCache = 0b1111;
+    private readonly _renderer: WebGLRenderer;
+    private _colorMaskCache = 0b1111;
 
     constructor(renderer: WebGLRenderer)
     {
-        this.renderer = renderer;
+        this._renderer = renderer;
     }
 
-    setMask(colorMask: number)
+    public setMask(colorMask: number)
     {
-        if (this.colorMaskCache === colorMask) return;
-        this.colorMaskCache = colorMask;
+        if (this._colorMaskCache === colorMask) return;
+        this._colorMaskCache = colorMask;
 
-        this.renderer.gl.colorMask(
+        this._renderer.gl.colorMask(
             !!(colorMask & 0b1000),
             !!(colorMask & 0b0100),
             !!(colorMask & 0b0010),
@@ -34,7 +34,7 @@ export class GlColorMaskSystem implements System
         );
     }
 
-    destroy()
+    public destroy()
     {
         // boom
     }

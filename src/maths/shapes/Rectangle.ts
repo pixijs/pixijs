@@ -18,7 +18,7 @@ export class Rectangle implements ShapePrimitive
      * The type of the object, mainly used to avoid `instanceof` checks
      * @default 'rectangle'
      */
-    readonly type: SHAPE_PRIMITIVE = 'rectangle';
+    public readonly type: SHAPE_PRIMITIVE = 'rectangle';
 
     /** @default 0 */
     public x: number;

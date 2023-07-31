@@ -20,45 +20,45 @@ const defaultSyncData = {
 export class GlShaderSystem
 {
     /** @ignore */
-    static extension = {
+    public static extension = {
         type: [
             ExtensionType.WebGLSystem,
         ],
         name: 'shader',
     } as const;
 
-    programDataHash: Record<string, GlProgramData> = {};
-    renderer: WebGLRenderer;
-    gl: WebGL2RenderingContext;
+    public activeProgram: GlProgram = null;
 
-    activeProgram: GlProgram = null;
-    maxBindings: number;
-    nextIndex = 0;
-    boundUniformsIdsToIndexHash: Record<number, number> = {};
-    boundIndexToUniformsHash: Record<number, UniformGroup | BufferResource> = {};
+    private _programDataHash: Record<string, GlProgramData> = {};
+    private readonly _renderer: WebGLRenderer;
+    private _gl: WebGL2RenderingContext;
+    private _maxBindings: number;
+    private _nextIndex = 0;
+    private _boundUniformsIdsToIndexHash: Record<number, number> = {};
+    private _boundIndexToUniformsHash: Record<number, UniformGroup | BufferResource> = {};
 
     constructor(renderer: WebGLRenderer)
     {
-        this.renderer = renderer;
+        this._renderer = renderer;
     }
 
-    contextChange(gl: GlRenderingContext): void
+    protected contextChange(gl: GlRenderingContext): void
     {
-        this.gl = gl;
+        this._gl = gl;
 
-        this.maxBindings = gl.getParameter(gl.MAX_UNIFORM_BUFFER_BINDINGS);
+        this._maxBindings = gl.getParameter(gl.MAX_UNIFORM_BUFFER_BINDINGS);
     }
 
-    bind(shader: Shader, skipSync?: boolean): void
+    public bind(shader: Shader, skipSync?: boolean): void
     {
-        this.setProgram(shader.glProgram);
+        this._setProgram(shader.glProgram);
 
         if (skipSync) return;
 
         defaultSyncData.textureCount = 0;
         defaultSyncData.blockIndex = 0;
 
-        const gl = this.gl;
+        const gl = this._gl;
 
         const programData = this.getProgramData(shader.glProgram);
 
@@ -83,7 +83,7 @@ export class GlShaderSystem
                     }
                     else
                     {
-                        this.updateUniformGroup(resource);
+                        this._updateUniformGroup(resource);
                     }
                 }
                 else if (resource instanceof BufferResource)
@@ -97,7 +97,7 @@ export class GlShaderSystem
                 else if (resource instanceof TextureSource)
                 {
                     // TODO really we should not be binding the sampler here too
-                    this.renderer.texture.bind(resource, defaultSyncData.textureCount);
+                    this._renderer.texture.bind(resource, defaultSyncData.textureCount);
 
                     const uniformName = shader.uniformBindMap[i as unknown as number][j as unknown as number];
 
@@ -122,42 +122,42 @@ export class GlShaderSystem
         }
     }
 
-    updateUniformGroup(uniformGroup: UniformGroup): void
+    private _updateUniformGroup(uniformGroup: UniformGroup): void
     {
-        this.renderer.uniformGroup.updateUniformGroup(uniformGroup, this.activeProgram, defaultSyncData);
+        this._renderer.uniformGroup.updateUniformGroup(uniformGroup, this.activeProgram, defaultSyncData);
     }
 
-    bindUniformBlock(uniformGroup: UniformGroup | BufferResource, name: string, index = 0): void
+    public bindUniformBlock(uniformGroup: UniformGroup | BufferResource, name: string, index = 0): void
     {
-        const bufferSystem = this.renderer.buffer;
+        const bufferSystem = this._renderer.buffer;
         const programData = this.getProgramData(this.activeProgram);
 
         const isBufferResource = (uniformGroup as BufferResource).bufferResource;
 
         if (isBufferResource)
         {
-            this.renderer.uniformBuffer.updateUniformGroup(uniformGroup as UniformGroup);
+            this._renderer.uniformBuffer.updateUniformGroup(uniformGroup as UniformGroup);
         }
 
         bufferSystem.updateBuffer(uniformGroup.buffer);
 
-        let boundIndex = this.boundUniformsIdsToIndexHash[uniformGroup.uid];
+        let boundIndex = this._boundUniformsIdsToIndexHash[uniformGroup.uid];
 
         // check if it is already bound..
         if (boundIndex === undefined)
         {
-            const nextIndex = this.nextIndex++ % this.maxBindings;
+            const nextIndex = this._nextIndex++ % this._maxBindings;
 
-            const currentBoundUniformGroup = this.boundIndexToUniformsHash[nextIndex];
+            const currentBoundUniformGroup = this._boundIndexToUniformsHash[nextIndex];
 
             if (currentBoundUniformGroup)
             {
-                this.boundUniformsIdsToIndexHash[currentBoundUniformGroup.uid] = undefined;
+                this._boundUniformsIdsToIndexHash[currentBoundUniformGroup.uid] = undefined;
             }
 
             // find a free slot..
-            boundIndex = this.boundUniformsIdsToIndexHash[uniformGroup.uid] = nextIndex;
-            this.boundIndexToUniformsHash[nextIndex] = uniformGroup;
+            boundIndex = this._boundUniformsIdsToIndexHash[uniformGroup.uid] = nextIndex;
+            this._boundIndexToUniformsHash[nextIndex] = uniformGroup;
 
             if (isBufferResource)
             {
@@ -169,7 +169,7 @@ export class GlShaderSystem
             }
         }
 
-        const gl = this.gl;
+        const gl = this._gl;
 
         const uniformBlockIndex = this.activeProgram.uniformBlockData[name].index;
 
@@ -179,7 +179,7 @@ export class GlShaderSystem
         gl.uniformBlockBinding(programData.program, uniformBlockIndex, boundIndex);
     }
 
-    setProgram(program: GlProgram)
+    private _setProgram(program: GlProgram)
     {
         if (this.activeProgram === program) return;
 
@@ -187,22 +187,22 @@ export class GlShaderSystem
 
         const programData = this.getProgramData(program);
 
-        this.gl.useProgram(programData.program);
+        this._gl.useProgram(programData.program);
     }
 
-    getProgramData(program: GlProgram): GlProgramData
+    public getProgramData(program: GlProgram): GlProgramData
     {
         const key = program.key;
 
-        return this.programDataHash[key] || this.createProgramData(program);
+        return this._programDataHash[key] || this._createProgramData(program);
     }
 
-    createProgramData(program: GlProgram): GlProgramData
+    private _createProgramData(program: GlProgram): GlProgramData
     {
         const key = program.key;
 
-        this.programDataHash[key] = generateProgram(this.gl, program);
+        this._programDataHash[key] = generateProgram(this._gl, program);
 
-        return this.programDataHash[key];
+        return this._programDataHash[key];
     }
 }

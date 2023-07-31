@@ -3,6 +3,9 @@ import type { Dict } from '../types';
 // A map of warning messages already fired
 const warnings: Dict<boolean> = {};
 
+/** deprecation name for version 8.0.0 */
+export const v8_0_0 = '8.0.0';
+
 /**
  * Helper for warning developers about deprecated features & settings.
  * A stack track for warnings is given; useful for tracking-down where

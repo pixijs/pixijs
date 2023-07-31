@@ -5,17 +5,17 @@ import type { MeshView } from './MeshView';
 
 export class BatchableMesh implements BatchableObject
 {
-    indexStart: number;
-    textureId: number;
-    texture: Texture;
-    location: number;
-    batcher: Batcher = null;
-    batch: Batch = null;
-    renderable: Renderable<MeshView>;
+    public indexStart: number;
+    public textureId: number;
+    public texture: Texture;
+    public location: number;
+    public batcher: Batcher = null;
+    public batch: Batch = null;
+    public renderable: Renderable<MeshView>;
 
     get blendMode() { return this.renderable.layerBlendMode; }
 
-    reset()
+    public reset()
     {
         this.renderable = null;
         this.texture = null;
@@ -23,7 +23,7 @@ export class BatchableMesh implements BatchableObject
         this.batch = null;
     }
 
-    packIndex(indexBuffer: Uint32Array, index: number, indicesOffset: number)
+    public packIndex(indexBuffer: Uint32Array, index: number, indicesOffset: number)
     {
         const indices = this.renderable.view.geometry.indices;
 
@@ -33,7 +33,7 @@ export class BatchableMesh implements BatchableObject
         }
     }
 
-    packAttributes(
+    public packAttributes(
         float32View: Float32Array,
         uint32View: Uint32Array,
         index: number,

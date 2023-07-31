@@ -74,7 +74,7 @@ export class FederatedPointerEvent extends FederatedMouseEvent implements Pointe
     public detail: number;
 
     // Only included for completeness for now
-    getCoalescedEvents(): PointerEvent[]
+    public getCoalescedEvents(): PointerEvent[]
     {
         if (this.type === 'pointermove' || this.type === 'mousemove' || this.type === 'touchmove')
         {
@@ -85,7 +85,7 @@ export class FederatedPointerEvent extends FederatedMouseEvent implements Pointe
     }
 
     // Only included for completeness for now
-    getPredictedEvents(): PointerEvent[]
+    public getPredictedEvents(): PointerEvent[]
     {
         throw new Error('getPredictedEvents is not supported!');
     }
