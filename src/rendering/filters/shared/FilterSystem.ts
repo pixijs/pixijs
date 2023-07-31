@@ -84,7 +84,7 @@ export interface FilterData
 export class FilterSystem implements System
 {
     /** @ignore */
-    static extension = {
+    public static extension = {
         type: [
             ExtensionType.WebGLSystem,
             ExtensionType.WebGPUSystem,
@@ -92,12 +92,12 @@ export class FilterSystem implements System
         name: 'filter',
     } as const;
 
-    private filterStackIndex = 0;
-    private filterStack: FilterData[] = [];
+    private _filterStackIndex = 0;
+    private _filterStack: FilterData[] = [];
 
-    private renderer: Renderer;
+    private readonly _renderer: Renderer;
 
-    private filterGlobalUniforms = new UniformGroup({
+    private readonly _filterGlobalUniforms = new UniformGroup({
         inputSize: { value: new Float32Array(4), type: 'vec4<f32>' },
         inputPixel: { value: new Float32Array(4), type: 'vec4<f32>' },
         inputClamp: { value: new Float32Array(4), type: 'vec4<f32>' },
@@ -106,30 +106,30 @@ export class FilterSystem implements System
         outputTexture: { value: new Float32Array(4), type: 'vec4<f32>' },
     });
 
-    private globalFilterBindGroup: BindGroup = new BindGroup({});
-    private activeFilterData: FilterData;
+    private readonly _globalFilterBindGroup: BindGroup = new BindGroup({});
+    private _activeFilterData: FilterData;
 
     constructor(renderer: Renderer)
     {
-        this.renderer = renderer;
+        this._renderer = renderer;
     }
 
-    push(instruction: FilterInstruction)
+    public push(instruction: FilterInstruction)
     {
-        const renderer = this.renderer;
+        const renderer = this._renderer;
 
         const filters = instruction.filterEffect.filters;
 
-        if (!this.filterStack[this.filterStackIndex])
+        if (!this._filterStack[this._filterStackIndex])
         {
-            this.filterStack[this.filterStackIndex] = this.getFilterData();
+            this._filterStack[this._filterStackIndex] = this._getFilterData();
         }
 
         // get a filter data from the stack. They can be reused multiple times each frame,
         // so we don't need to worry about overwriting them in a single pass.
-        const filterData = this.filterStack[this.filterStackIndex];
+        const filterData = this._filterStack[this._filterStackIndex];
 
-        this.filterStackIndex++;
+        this._filterStackIndex++;
 
         const bounds: Bounds = filterData.bounds;
 
@@ -241,12 +241,12 @@ export class FilterSystem implements System
         });
     }
 
-    pop()
+    public pop()
     {
-        const renderer = this.renderer;
+        const renderer = this._renderer;
 
-        this.filterStackIndex--;
-        const filterData = this.filterStack[this.filterStackIndex];
+        this._filterStackIndex--;
+        const filterData = this._filterStack[this._filterStackIndex];
 
         // if we are skipping this filter then we just do nothing :D
         if (filterData.skip)
@@ -254,7 +254,7 @@ export class FilterSystem implements System
             return;
         }
 
-        this.activeFilterData = filterData;
+        this._activeFilterData = filterData;
 
         const inputTexture = filterData.inputTexture;
 
@@ -269,7 +269,7 @@ export class FilterSystem implements System
 
             renderer.encoder.finishRenderPass();
 
-            const previousBounds = this.filterStackIndex > 0 ? this.filterStack[this.filterStackIndex - 1].bounds : null;
+            const previousBounds = this._filterStackIndex > 0 ? this._filterStack[this._filterStackIndex - 1].bounds : null;
 
             backTexture = this.getBackTexture(filterData.previousRenderSurface, bounds, previousBounds);
         }
@@ -284,8 +284,8 @@ export class FilterSystem implements System
         // eslint-disable-next-line max-len
 
         // update the resources on the bind group...
-        this.globalFilterBindGroup.setResource(inputTexture.style, 2);
-        this.globalFilterBindGroup.setResource(backTexture.source, 3);
+        this._globalFilterBindGroup.setResource(inputTexture.style, 2);
+        this._globalFilterBindGroup.setResource(backTexture.source, 3);
 
         renderer.globalUniforms.pop();
 
@@ -339,7 +339,7 @@ export class FilterSystem implements System
         }
     }
 
-    getBackTexture(lastRenderSurface: RenderTarget, bounds: Bounds, previousBounds?: Bounds)
+    public getBackTexture(lastRenderSurface: RenderTarget, bounds: Bounds, previousBounds?: Bounds)
     {
         const backgroundResolution = lastRenderSurface.colorTexture.source._resolution;
 
@@ -365,7 +365,7 @@ export class FilterSystem implements System
         const width = Math.ceil(bounds.width * backgroundResolution);
         const height = Math.ceil(bounds.height * backgroundResolution);
 
-        this.renderer.renderTarget.copyToTexture(
+        this._renderer.renderTarget.copyToTexture(
             lastRenderSurface,
             backTexture,
             { x, y },
@@ -375,27 +375,27 @@ export class FilterSystem implements System
         return backTexture;
     }
 
-    applyFilter(filter: Filter, input: Texture, output: RenderSurface, clear: boolean)
+    public applyFilter(filter: Filter, input: Texture, output: RenderSurface, clear: boolean)
     {
-        const renderer = this.renderer;
+        const renderer = this._renderer;
 
-        const filterData = this.filterStack[this.filterStackIndex];
+        const filterData = this._filterStack[this._filterStackIndex];
 
         const bounds = filterData.bounds;
 
         const offset = Point.shared;
         const previousRenderSurface = filterData.previousRenderSurface;
 
-        const isFinalTarget = previousRenderSurface === this.renderer.renderTarget.getRenderTarget(output);
+        const isFinalTarget = previousRenderSurface === this._renderer.renderTarget.getRenderTarget(output);
 
-        let resolution = this.renderer.renderTarget.rootRenderTarget.colorTexture.source._resolution;
+        let resolution = this._renderer.renderTarget.rootRenderTarget.colorTexture.source._resolution;
 
-        if (this.filterStackIndex > 0)
+        if (this._filterStackIndex > 0)
         {
-            resolution = this.filterStack[this.filterStackIndex - 1].inputTexture.source._resolution;
+            resolution = this._filterStack[this._filterStackIndex - 1].inputTexture.source._resolution;
         }
 
-        const filterUniforms = this.filterGlobalUniforms;
+        const filterUniforms = this._filterGlobalUniforms;
         const uniforms = filterUniforms.uniforms;
 
         const outputFrame = uniforms.outputFrame;
@@ -409,10 +409,10 @@ export class FilterSystem implements System
         if (isFinalTarget)
         {
             // get previous bounds..
-            if (this.filterStackIndex > 0)
+            if (this._filterStackIndex > 0)
             {
-                offset.x = this.filterStack[this.filterStackIndex - 1].bounds.minX;
-                offset.y = this.filterStack[this.filterStackIndex - 1].bounds.minY;
+                offset.x = this._filterStack[this._filterStackIndex - 1].bounds.minX;
+                offset.y = this._filterStack[this._filterStackIndex - 1].bounds.minY;
             }
 
             outputFrame[0] = bounds.minX - offset.x;
@@ -442,7 +442,7 @@ export class FilterSystem implements System
         inputClamp[2] = (input.frameWidth * inputSize[2]) - (0.5 * inputPixel[2]);
         inputClamp[3] = (input.frameHeight * inputSize[3]) - (0.5 * inputPixel[3]);
 
-        const rootTexture = this.renderer.renderTarget.rootRenderTarget.colorTexture;
+        const rootTexture = this._renderer.renderTarget.rootRenderTarget.colorTexture;
 
         globalFrame[0] = offset.x * resolution;
         globalFrame[1] = offset.y * resolution;
@@ -451,7 +451,7 @@ export class FilterSystem implements System
         globalFrame[3] = rootTexture.source.height * resolution;
 
         // set the output texture - this is where we are going to rendr to
-        const renderSurface = this.renderer.renderTarget.getRenderTarget(output);
+        const renderSurface = this._renderer.renderTarget.getRenderTarget(output);
 
         outputTexture[0] = renderSurface.colorTexture.frameWidth;
         outputTexture[1] = renderSurface.colorTexture.frameHeight;
@@ -463,23 +463,23 @@ export class FilterSystem implements System
         if ((renderer as WebGPURenderer).renderPipes.uniformBatch)
         {
             const batchUniforms = (renderer as WebGPURenderer).renderPipes.uniformBatch
-                .getUniformBufferResource(this.filterGlobalUniforms);
+                .getUniformBufferResource(this._filterGlobalUniforms);
 
-            this.globalFilterBindGroup.setResource(batchUniforms, 0);
+            this._globalFilterBindGroup.setResource(batchUniforms, 0);
         }
         else
         {
-            this.globalFilterBindGroup.setResource(filterUniforms, 0);
+            this._globalFilterBindGroup.setResource(filterUniforms, 0);
         }
 
         // now lets update the output texture...
 
         // set bind group..
-        this.globalFilterBindGroup.setResource(input.source, 1);
+        this._globalFilterBindGroup.setResource(input.source, 1);
 
         renderer.renderTarget.bind(output, !!clear);
 
-        filter.groups[0] = this.globalFilterBindGroup;
+        filter.groups[0] = this._globalFilterBindGroup;
 
         renderer.encoder.draw({
             geometry: quadGeometry,
@@ -489,7 +489,7 @@ export class FilterSystem implements System
         });
     }
 
-    getFilterData(): FilterData
+    private _getFilterData(): FilterData
     {
         return {
             skip: false,
@@ -510,9 +510,9 @@ export class FilterSystem implements System
      * @param {PIXI.Sprite} sprite - The sprite to map to.
      * @returns The mapped matrix.
      */
-    calculateSpriteMatrix(outputMatrix: Matrix, sprite: Sprite): Matrix
+    public calculateSpriteMatrix(outputMatrix: Matrix, sprite: Sprite): Matrix
     {
-        const data = this.activeFilterData;
+        const data = this._activeFilterData;
 
         const mappedMatrix = outputMatrix.set(
             data.inputTexture._source.width,
@@ -532,7 +532,7 @@ export class FilterSystem implements System
         return mappedMatrix;
     }
 
-    destroy()
+    public destroy()
     {
         // BOOM!
     }
