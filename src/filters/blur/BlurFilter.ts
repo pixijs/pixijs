@@ -25,7 +25,7 @@ export interface BlurFilterOptions extends Partial<FilterOptions>
  */
 export class BlurFilter extends Filter
 {
-    static defaultOptions: Partial<BlurFilterOptions> = {
+    public static defaultOptions: Partial<BlurFilterOptions> = {
         strength: 8,
         quality: 4,
         kernelSize: 5,
