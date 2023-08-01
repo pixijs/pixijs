@@ -75,7 +75,7 @@ export class LayerSystem implements System
             else
             {
                 // update remaining renderables
-                updateThings(layerGroup);
+                updateRenderables(layerGroup);
             }
 
             // upload all the things!
@@ -105,7 +105,7 @@ export class LayerSystem implements System
     }
 }
 
-function updateThings(layerGroup: LayerGroup)
+function updateRenderables(layerGroup: LayerGroup)
 {
     const { list, index } = layerGroup.childrenRenderablesToUpdate;
 
