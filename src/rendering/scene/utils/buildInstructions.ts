@@ -19,35 +19,14 @@ export function buildInstructions(layerGroup: LayerGroup, renderPipes: RenderPip
     renderPipes.blendMode.buildStart();
     renderPipes.colorMask.buildStart();
 
-    if (layerGroup.root.view)
-    {
-        // proxy renderable is needed here as we do not want to inherit the transform / color of the root container
-        const proxyRenderable = layerGroup.proxyRenderable ?? initProxyRenderable(layerGroup);
-
-        if (proxyRenderable)
-        {
-            renderPipes.blendMode.setBlendMode(proxyRenderable, proxyRenderable.layerBlendMode, instructionSet);
-            const pipe = renderPipes[proxyRenderable.view.type as keyof RenderPipes] as RenderPipe<any>;
-
-            // eslint-disable-next-line max-len
-            pipe.addRenderable(proxyRenderable, instructionSet);
-        }
-    }
-
     if (root.sortableChildren)
     {
         root.sortChildren();
     }
 
-    const children = root.children;
+    collectAllRenderablesAdvanced(root, instructionSet, renderPipes, true);
 
-    const length = children.length;
-
-    for (let i = 0; i < length; i++)
-    {
-        collectAllRenderables(children[i], instructionSet, renderPipes);
-    }
-
+    // instructionSet.log();
     // TODO add some events / runners for build end
     renderPipes.batch.buildEnd(instructionSet);
     renderPipes.blendMode.buildEnd(instructionSet);
@@ -74,7 +53,7 @@ export function collectAllRenderables(
     }
     else
     {
-        collectAllRenderablesAdvanced(container, instructionSet, rendererPipes);
+        collectAllRenderablesAdvanced(container, instructionSet, rendererPipes, false);
     }
 }
 
@@ -113,7 +92,8 @@ function collectAllRenderablesSimple(
 function collectAllRenderablesAdvanced(
     container: Container,
     instructionSet: InstructionSet,
-    renderPipes: RenderPipes
+    renderPipes: RenderPipes,
+    isRoot: boolean
 ): void
 {
     for (let i = 0; i < container.effects.length; i++)
@@ -124,7 +104,26 @@ function collectAllRenderablesAdvanced(
         pipe.push(effect, container, instructionSet);
     }
 
-    if (container.isLayerRoot)
+    if (isRoot)
+    {
+        const layerGroup = container.layerGroup;
+
+        if (layerGroup.root.view)
+        {
+            // proxy renderable is needed here as we do not want to inherit the transform / color of the root container
+            const proxyRenderable = layerGroup.proxyRenderable ?? initProxyRenderable(layerGroup);
+
+            if (proxyRenderable)
+            {
+                renderPipes.blendMode.setBlendMode(proxyRenderable, proxyRenderable.layerBlendMode, instructionSet);
+
+                // eslint-disable-next-line max-len
+                (renderPipes[proxyRenderable.view.type as keyof RenderPipes] as any).addRenderable(proxyRenderable, instructionSet);
+            }
+        }
+    }
+
+    if (!isRoot && container.isLayerRoot)
     {
         renderPipes.layer.addLayerGroup(container.layerGroup, instructionSet);
     }
@@ -168,11 +167,8 @@ function initProxyRenderable(layerGroup: LayerGroup)
 {
     const root = layerGroup.root;
 
-    if (root.view)
-    {
-        layerGroup.proxyRenderable = new LayerRenderable({
-            original: root,
-            view: root.view,
-        });
-    }
+    layerGroup.proxyRenderable = new LayerRenderable({
+        original: root,
+        view: root.view,
+    });
 }

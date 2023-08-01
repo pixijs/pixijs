@@ -350,7 +350,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
 
         if (child._zIndex !== 0)
         {
-            this.depthOfChildModified();
+            child.depthOfChildModified();
         }
 
         return child;
