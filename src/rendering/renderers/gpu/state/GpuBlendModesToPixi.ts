@@ -120,6 +120,19 @@ GpuBlendModesToPixi['screen-npm'] = {
     },
 };
 
+GpuBlendModesToPixi.erase = {
+    alpha: {
+        srcFactor: 'zero',
+        dstFactor: 'one-minus-src-alpha',
+        operation: 'add',
+    },
+    color: {
+        srcFactor: 'zero',
+        dstFactor: 'one-minus-src',
+        operation: 'add',
+    },
+};
+
 // composite operations
 // GpuBlendModesToPixi[BLEND_MODES.SRC_IN] = {
 //     alpha: {

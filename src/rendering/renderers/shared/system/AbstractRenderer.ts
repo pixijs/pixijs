@@ -70,6 +70,7 @@ export class AbstractRenderer<PIPES, OPTIONS>
     constructor(config: RendererConfig)
     {
         this.type = config.type;
+        this.name = config.name;
 
         const combinedRunners = [...defaultRunners, ...(config.runners ?? [])];
 
