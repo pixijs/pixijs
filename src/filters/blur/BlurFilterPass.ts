@@ -19,7 +19,7 @@ export interface BlurFilterPassOptions extends BlurFilterOptions
  */
 export class BlurFilterPass extends Filter
 {
-    static defaultOptions: Partial<BlurFilterPassOptions> = {
+    public static defaultOptions: Partial<BlurFilterPassOptions> = {
         strength: 8,
         quality: 4,
         kernelSize: 5,
@@ -30,7 +30,7 @@ export class BlurFilterPass extends Filter
     public strength!: number;
 
     private _quality: number;
-    private _uniforms: any;
+    private readonly _uniforms: any;
 
     /**
      * @param options
