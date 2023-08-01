@@ -1,4 +1,5 @@
 import { ExtensionType } from '../../../extensions/Extensions';
+import { CLEAR } from '../../renderers/gl/const';
 import { STENCIL_MODES } from '../../renderers/shared/state/const';
 import { collectAllRenderables } from '../../scene/utils/buildInstructions';
 
@@ -98,12 +99,14 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
 
         maskData.instructionsLength = instructionsLength;
 
-        if (this._maskStackHash[_container.uid] === undefined)
+        const renderTargetUid = renderer.renderTarget.renderTarget.uid;
+
+        if (this._maskStackHash[renderTargetUid] === undefined)
         {
-            this._maskStackHash[_container.uid] = 0;
+            this._maskStackHash[renderTargetUid] = 0;
         }
 
-        this._maskStackHash[_container.uid]++;
+        this._maskStackHash[renderTargetUid]++;
     }
 
     public pop(mask: Effect, _container: Container, instructionSet: InstructionSet): void
@@ -112,9 +115,11 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
 
         const renderer = this._renderer;
 
+        const renderTargetUid = renderer.renderTarget.renderTarget.uid;
+
         // stencil is stored based on current render target..
 
-        this._maskStackHash[_container.uid]--;
+        this._maskStackHash[renderTargetUid]--;
 
         renderer.renderPipes.batch.break(instructionSet);
         renderer.renderPipes.blendMode.setBlendMode(effect.mask, 'none', instructionSet);
@@ -127,7 +132,7 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
 
         const maskData = this._maskHash.get(mask as StencilMask);
 
-        if (this._maskStackHash[_container.uid])
+        if (this._maskStackHash[renderTargetUid] !== 0)
         {
             for (let i = 0; i < maskData.instructionsLength; i++)
             {
@@ -146,13 +151,14 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
     public execute(instruction: StencilMaskInstruction)
     {
         const renderer = this._renderer;
-        const currentRenderTargetUid = renderer.renderTarget.renderTarget.uid;
+        const renderTargetUid = renderer.renderTarget.renderTarget.uid;
 
-        let maskStackIndex = this._maskStackHash[currentRenderTargetUid] ?? 0;
+        let maskStackIndex = this._maskStackHash[renderTargetUid] ?? 0;
 
         if (instruction.action === 'pushMaskBegin')
         {
             maskStackIndex++;
+
             renderer.stencil.setStencilMode(STENCIL_MODES.RENDERING_MASK_ADD, maskStackIndex);
             renderer.colorMask.setMask(0);
         }
@@ -170,6 +176,10 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
                 renderer.stencil.setStencilMode(STENCIL_MODES.RENDERING_MASK_REMOVE, maskStackIndex);
                 renderer.colorMask.setMask(0);
             }
+            else
+            {
+                renderer.renderTarget.clear(CLEAR.STENCIL);
+            }
         }
         else if (instruction.action === 'popMaskEnd')
         {
@@ -185,7 +195,7 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
             renderer.colorMask.setMask(0xF);
         }
 
-        this._maskStackHash[currentRenderTargetUid] = maskStackIndex;
+        this._maskStackHash[renderTargetUid] = maskStackIndex;
     }
 
     public destroy()

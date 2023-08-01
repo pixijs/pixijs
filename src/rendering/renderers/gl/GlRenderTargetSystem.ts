@@ -5,11 +5,13 @@ import { RenderTarget } from '../shared/renderTarget/RenderTarget';
 import { SystemRunner } from '../shared/system/SystemRunner';
 import { Texture } from '../shared/texture/Texture';
 import { getCanvasTexture } from '../shared/texture/utils/getCanvasTexture';
+import { CLEAR } from './const';
 import { GlRenderTarget } from './GlRenderTarget';
 
 import type { ICanvas } from '../../../settings/adapter/ICanvas';
 import type { RenderSurface, RGBAArray } from '../gpu/renderTarget/GpuRenderTargetSystem';
 import type { System } from '../shared/system/System';
+import type { CLEAR_OR_BOOL } from './const';
 import type { GlRenderingContext } from './context/GlRenderingContext';
 import type { WebGLRenderer } from './WebGLRenderer';
 
@@ -59,7 +61,11 @@ export class GlRenderTargetSystem implements System
         this._gl = gl;
     }
 
-    public start(rootRenderSurface: any, clear = true, clearColor?: RGBAArray): void
+    public start(
+        rootRenderSurface: RenderSurface,
+        clear: CLEAR_OR_BOOL = true,
+        clearColor?: RGBAArray
+    ): void
     {
         this._renderTargetStack.length = 0;
 
@@ -74,7 +80,11 @@ export class GlRenderTargetSystem implements System
         this.push(renderTarget, clear, clearColor);
     }
 
-    public bind(renderSurface: RenderSurface, clear = true, clearColor?: RGBAArray): RenderTarget
+    public bind(
+        renderSurface: RenderSurface,
+        clear: CLEAR_OR_BOOL = true,
+        clearColor?: RGBAArray
+    ): RenderTarget
     {
         const renderTarget = this.getRenderTarget(renderSurface);
 
@@ -128,36 +138,46 @@ export class GlRenderTargetSystem implements System
             );
         }
 
-        if (clear)
-        {
-            const gl = this._gl;
-
-            if (clear)
-            {
-                clearColor = clearColor ?? this._defaultClearColor;
-
-                const clearColorCache = this._clearColorCache;
-
-                if (clearColorCache[0] !== clearColor[0]
-                     || clearColorCache[1] !== clearColor[1]
-                     || clearColorCache[2] !== clearColor[2]
-                     || clearColorCache[3] !== clearColor[3])
-                {
-                    clearColorCache[0] = clearColor[0];
-                    clearColorCache[1] = clearColor[1];
-                    clearColorCache[2] = clearColor[2];
-                    clearColorCache[3] = clearColor[3];
-
-                    gl.clearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3]);
-                }
-
-                gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
-            }
-        }
+        this.clear(clear, clearColor);
 
         this.onRenderTargetChange.emit(renderTarget);
 
         return renderTarget;
+    }
+
+    public clear(clear: CLEAR_OR_BOOL, clearColor?: RGBAArray)
+    {
+        if (!clear) return;
+
+        // if clear is boolean..
+        if (typeof clear === 'boolean')
+        {
+            clear = clear ? CLEAR.ALL : CLEAR.NONE;
+        }
+
+        const gl = this._gl;
+
+        if (clear & CLEAR.COLOR)
+        {
+            clearColor = clearColor ?? this._defaultClearColor;
+
+            const clearColorCache = this._clearColorCache;
+
+            if (clearColorCache[0] !== clearColor[0]
+                || clearColorCache[1] !== clearColor[1]
+                || clearColorCache[2] !== clearColor[2]
+                || clearColorCache[3] !== clearColor[3])
+            {
+                clearColorCache[0] = clearColor[0];
+                clearColorCache[1] = clearColor[1];
+                clearColorCache[2] = clearColor[2];
+                clearColorCache[3] = clearColor[3];
+
+                gl.clearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3]);
+            }
+        }
+
+        gl.clear(clear);
     }
 
     /**
@@ -171,7 +191,11 @@ export class GlRenderTargetSystem implements System
         return renderTarget.colorTexture;
     }
 
-    public push(renderSurface: RenderSurface, clear = true, clearColor?: RGBAArray)
+    public push(
+        renderSurface: RenderSurface,
+        clear: CLEAR_OR_BOOL = true,
+        clearColor?: RGBAArray
+    )
     {
         const renderTarget = this.bind(renderSurface, clear, clearColor);
 
