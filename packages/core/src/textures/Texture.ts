@@ -100,6 +100,12 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
     public valid: boolean;
 
     /**
+     * Has the texture been destroyed?
+     * @readonly
+     */
+    public destroyed: boolean;
+
+    /**
      * Does this Texture have any frame data assigned to it?
      *
      * This mode is enabled automatically if no frame was passed inside constructor.
@@ -190,6 +196,7 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
         this._frame = frame;
         this.trim = trim;
         this.valid = false;
+        this.destroyed = false;
         this._uvs = DEFAULT_UVS;
         this.uvMatrix = null;
         this.orig = orig || frame;// new Rectangle(0, 0, 1, 1);
@@ -314,6 +321,7 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
         this.orig = null;
 
         this.valid = false;
+        this.destroyed = true;
 
         Texture.removeFromCache(this);
         this.textureCacheIds = null;
