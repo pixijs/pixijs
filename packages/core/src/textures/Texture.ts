@@ -290,6 +290,7 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
     /**
      * Destroys this texture
      * @param [destroyBase=false] - Whether to destroy the base texture as well
+     * @fires PIXI.Texture#destroyed
      */
     destroy(destroyBase?: boolean): void
     {
@@ -321,10 +322,13 @@ export class Texture<R extends Resource = Resource> extends EventEmitter
         this.orig = null;
 
         this.valid = false;
-        this.destroyed = true;
 
         Texture.removeFromCache(this);
         this.textureCacheIds = null;
+
+        this.destroyed = true;
+        this.emit('destroyed', this);
+        this.removeAllListeners();
     }
 
     /**

@@ -615,6 +615,7 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
 
         this.destroyed = true;
         this.emit('destroyed', this);
+        this.removeAllListeners();
     }
 
     /**
