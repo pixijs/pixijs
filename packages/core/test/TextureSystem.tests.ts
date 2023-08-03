@@ -132,5 +132,21 @@ describe('TextureSystem', () =>
         textureSystem.bind(Texture.EMPTY.baseTexture, 0);
 
         expect(textureSystem.boundTextures[0]).toEqual(null);
+
+        const baseTexture = createTempTexture();
+
+        expect(baseTexture.valid).toBe(true);
+
+        textureSystem.bind(baseTexture, 0);
+
+        expect(textureSystem.boundTextures[0]).toEqual(baseTexture);
+
+        baseTexture.destroy();
+
+        expect(baseTexture.valid).toBe(false);
+
+        textureSystem.bind(baseTexture, 0);
+
+        expect(textureSystem.boundTextures[0]).toEqual(null);
     });
 });
