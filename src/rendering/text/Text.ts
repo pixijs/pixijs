@@ -12,24 +12,25 @@ export type TextOptions = ContainerOptions<TextView> & TextViewOptions;
 
 export class Text extends Container<TextView>
 {
-    constructor(options: TextOptions = {})
+    constructor(options: TextOptions);
+    constructor(...args: [TextOptions] | [TextString, TextStyle])
     {
+        let options = args[0];
+
         // @deprecated
-        // eslint-disable-next-line prefer-rest-params
-        if (typeof options === 'string' || arguments[1])
+        if (typeof options === 'string' || args[1])
         {
             deprecation(v8_0_0, 'use new Text({ text: "hi!", style }) instead');
             options = {
                 text: options,
-                // eslint-disable-next-line prefer-rest-params
-                style: arguments[1],
+                style: args[1],
             } as TextOptions;
         }
 
         super({
-            view: new TextView(options),
+            view: new TextView(options as TextOptions),
             label: 'Text',
-            ...options
+            ...options as TextOptions
         });
     }
 

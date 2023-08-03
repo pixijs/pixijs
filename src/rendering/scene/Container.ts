@@ -847,3 +847,5 @@ Container.mixin(effectsMixin);
 Container.mixin(findMixin);
 Container.mixin(sortMixin);
 
+// TODO is there a way to log if this is used?
+export const DisplayObject = Container;

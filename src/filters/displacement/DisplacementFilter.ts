@@ -4,13 +4,15 @@ import { Filter } from '../../rendering/filters/shared/Filter';
 import { GlProgram } from '../../rendering/renderers/gl/shader/GlProgram';
 import { GpuProgram } from '../../rendering/renderers/gpu/shader/GpuProgram';
 import { UniformGroup } from '../../rendering/renderers/shared/shader/UniformGroup';
+import { Sprite } from '../../rendering/sprite/shared/Sprite';
+import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import fragment from './displacement.frag';
 import vertex from './displacement.vert';
 import source from './displacement.wgsl';
 
+import type { PointData } from '../../maths/PointData';
 import type { FilterSystem } from '../../rendering/filters/shared/FilterSystem';
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
-import type { Sprite } from '../../rendering/sprite/shared/Sprite';
 
 export interface DisplacementFilterOptions
 {
@@ -29,8 +31,21 @@ export class DisplacementFilter extends Filter
 {
     private readonly _sprite: Sprite;
 
-    constructor(options: DisplacementFilterOptions)
+    constructor(options: Sprite | DisplacementFilterOptions);
+    constructor(...args: [Sprite | DisplacementFilterOptions] | [Sprite, number | PointData])
     {
+        let options = args[0];
+
+        if (options instanceof Sprite)
+        {
+            if (args[1])
+            {
+                deprecation(v8_0_0, 'DisplacementFilter now uses options object instead of params. {sprite, scale}');
+            }
+
+            options = { sprite: options, scale: args[1] };
+        }
+
         let scale = options.scale ?? 20;
 
         // check if is a number or a point

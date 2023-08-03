@@ -42,8 +42,21 @@ export class BlurFilter extends Filter
      * @param options.quality - The quality of the blur filter.
      * @param options.kernelSize - The kernelSize of the blur filter.Options: 5, 7, 9, 11, 13, 15.
      */
-    constructor(options: BlurFilterOptions = {})
+    constructor(options?: BlurFilterOptions);
+    constructor(...args: [BlurFilterOptions?] | [number?, number?, number?, number?])
     {
+        let options = args[0] ?? {};
+
+        // if options is a number)
+        if (typeof options === 'number')
+        {
+            options = { strength: options };
+
+            if (args[1])options.quality = args[1];
+            if (args[2])options.resolution = args[2];
+            if (args[3])options.kernelSize = args[3];
+        }
+
         options = { ...BlurFilterPass.defaultOptions, ...options };
 
         super({

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/indent */
 /**
  * How to treat textures with premultiplied alpha
  * @name ALPHA_MODES
@@ -183,8 +184,25 @@ export type TEXTURE_DIMENSIONS =
 export type WRAP_MODE =
 
     | 'clamp-to-edge'
+    /**
+     * The texture uvs tile and repeat
+     * @default 10497
+     */
     | 'repeat'
+    /**
+     * The texture uvs tile and repeat with mirroring
+     * @default 33648
+     */
     | 'mirror-repeat';
+
+export enum WRAP_MODES
+{
+    CLAMP = 'clamp-to-edge',
+
+    REPEAT = 'repeat',
+
+    MIRRORED_REPEAT = 'mirror-repeat',
+}
 
 /**
  * The scale modes that are supported by pixi.
@@ -199,9 +217,22 @@ export type WRAP_MODE =
  * @property {number} NEAREST Pixelating scaling
  */
 export type SCALE_MODE =
-
+    /**
+     * Pixelating scaling
+     * @default 0
+     */
  | 'nearest'
+     /**
+      * Smooth scaling
+      * @default 1
+      */
  | 'linear';
+
+export enum SCALE_MODES
+{
+    NEAREST = 'nearest',
+    LINEAR = 'linear',
+}
 
 export type COMPARE_FUNCTION =
     | 'never'

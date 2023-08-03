@@ -8,6 +8,7 @@ import type { Writeable } from '../../../../utils/types';
 import type { RenderSurface } from '../../gpu/renderTarget/GpuRenderTargetSystem';
 import type { Renderer } from '../../types';
 import type { PipeConstructor } from '../instructions/RenderPipe';
+import type { Texture } from '../texture/Texture';
 import type { ViewSystem } from '../ViewSystem';
 import type { System, SystemConstructor } from './System';
 
@@ -108,20 +109,21 @@ export class AbstractRenderer<PIPES, OPTIONS>
      * @param options.container - The container to render.
      * @param [options.target] - The target to render to.
      */
-    public render(options: RenderOptions | Container): void
+    public render(options: RenderOptions | Container): void;
+    public render(...args: [RenderOptions | Container] | [Container, Texture]): void
     {
+        let options = args[0];
+
         if (options instanceof Container)
         {
             options = { container: options };
 
-            // eslint-disable-next-line prefer-rest-params
-            if (arguments[1])
+            if (args[1])
             {
                 // eslint-disable-next-line max-len
                 deprecation(v8_0_0, 'passing target as a second argument is deprecated, please use render options instead');
 
-                // eslint-disable-next-line prefer-rest-params
-                options.target = arguments[1];
+                options.target = args[1];
             }
         }
 
