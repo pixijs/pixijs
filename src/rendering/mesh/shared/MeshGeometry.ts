@@ -1,3 +1,4 @@
+import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
 import { Buffer } from '../../renderers/shared/buffer/Buffer';
 import { BufferUsage } from '../../renderers/shared/buffer/const';
 import { Geometry } from '../../renderers/shared/geometry/Geometry';
@@ -21,8 +22,24 @@ export class MeshGeometry extends Geometry
 
     public batchMode: BatchMode = 'auto';
 
-    constructor(options: MeshGeometryOptions = {})
+    constructor(options: MeshGeometryOptions);
+    /** @deprecated */
+    constructor(positions: Float32Array, uvs: Float32Array, indices: Uint32Array);
+    constructor(...args: [MeshGeometryOptions] | [Float32Array, Float32Array, Uint32Array])
     {
+        let options = args[0] ?? {};
+
+        if (options instanceof Float32Array)
+        {
+            deprecation(v8_0_0, 'use new MeshGeometry({ positions, uvs, indices }) instead');
+
+            options = {
+                positions: options,
+                uvs: args[1],
+                indices: args[2],
+            };
+        }
+
         options = { ...MeshGeometry.defaultOptions, ...options };
 
         const positions = options.positions || new Float32Array([0, 0, 1, 0, 1, 1, 0, 1]);

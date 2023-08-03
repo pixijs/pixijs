@@ -1,9 +1,29 @@
+import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
+
 export type Topology =
     'point-list'
     | 'line-list'
     | 'line-strip'
     | 'triangle-list'
     | 'triangle-strip';
+
+const DEPRECATED_DRAW_MODES = {
+    POINTS: 'point-list',
+    LINES: 'line-list',
+    LINE_STRIP: 'line-strip',
+    TRIANGLES: 'triangle-list',
+    TRIANGLE_STRIP: 'triangle-strip',
+};
+
+/** @deprecated */
+export const DRAW_MODES = new Proxy(DEPRECATED_DRAW_MODES, {
+    get(target, prop: keyof typeof DEPRECATED_DRAW_MODES)
+    {
+        deprecation(v8_0_0, `DRAW_MODES.${prop} is deprecated, use '${prop}' instead`);
+
+        return target[prop];
+    },
+});
 
 export type VertexFormat =
     | 'uint8x2'
@@ -36,3 +56,4 @@ export type VertexFormat =
     | 'sint32x2'
     | 'sint32x3'
     | 'sint32x4';
+

@@ -1,6 +1,7 @@
 import { Filter } from '../../rendering/filters/shared/Filter';
 import { TexturePool } from '../../rendering/renderers/shared/texture/TexturePool';
 import { RendererType } from '../../types';
+import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { BlurFilterPass } from './BlurFilterPass';
 
 import type { FilterOptions } from '../../rendering/filters/shared/Filter';
@@ -43,6 +44,8 @@ export class BlurFilter extends Filter
      * @param options.kernelSize - The kernelSize of the blur filter.Options: 5, 7, 9, 11, 13, 15.
      */
     constructor(options?: BlurFilterOptions);
+    /** @deprecated */
+    constructor(strength?: number, quality?: number, resolution?: number, kernelSize?: number);
     constructor(...args: [BlurFilterOptions?] | [number?, number?, number?, number?])
     {
         let options = args[0] ?? {};
@@ -50,6 +53,9 @@ export class BlurFilter extends Filter
         // if options is a number)
         if (typeof options === 'number')
         {
+            // eslint-disable-next-line max-len
+            deprecation(v8_0_0, 'BlurFilter constructor params are now options object. See params: { strength, quality, resolution, kernelSize }');
+
             options = { strength: options };
 
             if (args[1])options.quality = args[1];
