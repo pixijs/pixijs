@@ -1,9 +1,9 @@
 import { Polygon } from '../../../maths/shapes/Polygon';
+import { Texture } from '../../renderers/shared/texture/Texture';
 import { emptyViewObserver } from '../../renderers/shared/View';
 
 import type { PointData } from '../../../maths/PointData';
 import type { Shader } from '../../renderers/shared/shader/Shader';
-import type { Texture } from '../../renderers/shared/texture/Texture';
 import type { View } from '../../renderers/shared/View';
 import type { Bounds } from '../../scene/bounds/Bounds';
 import type { DestroyOptions } from '../../scene/destroyTypes';
@@ -18,21 +18,20 @@ export interface TextureShader extends Shader
     texture: Texture;
 }
 
-export interface MeshViewTextureOptions
+export interface MeshViewOptions<
+    GEOMETRY extends MeshGeometry = MeshGeometry,
+    SHADER extends TextureShader = TextureShader
+>
 {
-    geometry: MeshGeometry;
-    texture: Texture;
+    geometry: GEOMETRY;
+    shader?: SHADER;
+    texture?: Texture;
 }
 
-export interface MeshViewShaderOptions
-{
-    geometry: MeshGeometry;
-    shader: TextureShader;
-}
-
-export type MeshViewOptions = MeshViewTextureOptions | MeshViewShaderOptions;
-
-export class MeshView<GEOMETRY extends MeshGeometry = MeshGeometry>implements View
+export class MeshView<
+    GEOMETRY extends MeshGeometry = MeshGeometry,
+    SHADER extends TextureShader = TextureShader
+>implements View
 {
     public readonly uid: number = UID++;
     public readonly type = 'mesh';
@@ -44,26 +43,18 @@ export class MeshView<GEOMETRY extends MeshGeometry = MeshGeometry>implements Vi
     /** @ignore */
     public _geometry: GEOMETRY;
     /** @ignore */
-    public _shader?: TextureShader;
+    public _shader?: SHADER;
 
-    constructor(options: MeshViewOptions)
+    constructor(options: MeshViewOptions<GEOMETRY, SHADER>)
     {
-        this.shader = (options as MeshViewShaderOptions).shader;
+        this.shader = options.shader;
+        this.texture = options.texture ?? this.shader?.texture ?? Texture.WHITE;
 
-        if ((options as MeshViewTextureOptions).texture)
-        {
-            this.texture = (options as MeshViewTextureOptions).texture;
-        }
-        else
-        {
-            this._texture = this.shader.texture;
-        }
-
-        this._geometry = options.geometry as GEOMETRY;
+        this._geometry = options.geometry;
         this._geometry.on('update', this.onUpdate, this);
     }
 
-    set shader(value: TextureShader)
+    set shader(value: SHADER)
     {
         if (this._shader === value) return;
 
@@ -189,3 +180,4 @@ export class MeshView<GEOMETRY extends MeshGeometry = MeshGeometry>implements Vi
         this._shader = null;
     }
 }
+

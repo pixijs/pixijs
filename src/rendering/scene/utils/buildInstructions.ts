@@ -30,7 +30,7 @@ export function buildInstructions(layerGroup: LayerGroup, renderPipes: RenderPip
     renderPipes.batch.buildEnd(instructionSet);
     renderPipes.blendMode.buildEnd(instructionSet);
 
-    instructionSet.log();
+    // instructionSet.log();
 }
 
 export function collectAllRenderables(
