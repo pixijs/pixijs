@@ -26,6 +26,7 @@ export function buildInstructions(layerGroup: LayerGroup, renderPipes: RenderPip
 
     collectAllRenderablesAdvanced(root, instructionSet, renderPipes, true);
 
+    // instructionSet.log();
     // TODO add some events / runners for build end
     renderPipes.batch.buildEnd(instructionSet);
     renderPipes.blendMode.buildEnd(instructionSet);

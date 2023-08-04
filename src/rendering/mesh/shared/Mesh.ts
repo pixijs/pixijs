@@ -7,6 +7,7 @@ import type { Topology } from '../../renderers/shared/geometry/const';
 import type { State } from '../../renderers/shared/state/State';
 import type { Texture } from '../../renderers/shared/texture/Texture';
 import type { ContainerOptions } from '../../scene/Container';
+import type { MeshGeometry } from './MeshGeometry';
 import type { MeshViewOptions, TextureShader } from './MeshView';
 
 export type MeshOptions<
