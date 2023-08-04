@@ -14,12 +14,12 @@ export class TextureBatchOutput implements TextureBatch
     public textures: TextureSource[] = [];
     public bindGroup: BindGroup;
     public size = 0;
-    public batchLocations: Record<number, number> = {};
+    public batchLocations: Record<number, number> = Object.create(null);
 }
 
 export class TextureBatcher
 {
-    private _textureTicks: Record<number, number> = {};
+    private _textureTicks: Record<number, number> = Object.create(null);
     private _tick = 1000;
     private _output: TextureBatch;
     private _bindingOffset: number;

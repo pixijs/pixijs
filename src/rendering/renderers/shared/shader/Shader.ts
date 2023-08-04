@@ -47,7 +47,7 @@ export class Shader extends EventEmitter<{
     public groups: Record<number, BindGroup>;
     public resources: Record<string, any>;
 
-    public uniformBindMap: Record<number, Record<number, string>> = {};
+    public uniformBindMap: Record<number, Record<number, string>> = Object.create(null);
 
     constructor({ gpuProgram, glProgram, resources, compatibleRenderers }: ShaderWithResourcesDescriptor);
     constructor({ gpuProgram, glProgram, groups, groupMap, compatibleRenderers }: ShaderWithGroupsDescriptor);

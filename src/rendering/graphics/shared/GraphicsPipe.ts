@@ -48,7 +48,7 @@ export class GraphicsPipe implements RenderPipe<GraphicsView>
     public state: State = State.for2d();
 
     // batchable graphics list, used to render batches
-    private _renderableBatchesHash: Record<number, BatchableGraphics[]> = {};
+    private _renderableBatchesHash: Record<number, BatchableGraphics[]> = Object.create(null);
     private _adaptor: GraphicsAdaptor;
 
     constructor(renderer: GraphicsSystem, adaptor: GraphicsAdaptor)

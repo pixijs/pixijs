@@ -1,5 +1,5 @@
-const idCounts: Record<string, number> = {};
-const idHash: Record<string, number> = {};
+const idCounts: Record<string, number> = Object.create(null);
+const idHash: Record<string, number> = Object.create(null);
 
 export function createIdFromString(value: string, groupId: string): number
 {

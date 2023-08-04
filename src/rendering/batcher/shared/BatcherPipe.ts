@@ -36,7 +36,7 @@ export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
     private _batches: Record<number, {
         geometry: Geometry;
         batcher: Batcher
-    }> = {};
+    }> = Object.create(null);
     private _adaptor: BatcherAdaptor;
 
     constructor(renderer: Renderer, adaptor: BatcherAdaptor)

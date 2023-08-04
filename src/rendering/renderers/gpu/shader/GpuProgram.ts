@@ -73,7 +73,7 @@ export class GpuProgram
         this.vertex = null;
     }
 
-    public static programCached: Record<string, GpuProgram> = {};
+    public static programCached: Record<string, GpuProgram> = Object.create(null);
     public static from(options: GpuProgramOptions): GpuProgram
     {
         // eslint-disable-next-line max-len

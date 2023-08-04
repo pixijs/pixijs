@@ -33,13 +33,13 @@ export class GlTextureSystem implements System
 
     private readonly _renderer: WebGLRenderer;
 
-    private _glTextures: Record<number, GlTexture> = {};
-    private _glSamplers: Record<string, WebGLSampler> = {};
+    private _glTextures: Record<number, GlTexture> = Object.create(null);
+    private _glSamplers: Record<string, WebGLSampler> = Object.create(null);
 
     private _boundTextures: TextureSource[] = [];
     private _activeTextureLocation = -1;
 
-    private _boundSamplers: Record<number, WebGLSampler> = {};
+    private _boundSamplers: Record<number, WebGLSampler> = Object.create(null);
 
     private readonly _uploads: Record<string, GLTextureUploader> = {
         image: glUploadImageResource,

@@ -56,11 +56,11 @@ export class AbstractRenderer<PIPES, OPTIONS>
     public readonly type: number;
     public readonly name: string;
 
-    public readonly runners: Runners = {} as Runners;
-    public readonly renderPipes = {} as PIPES;
+    public readonly runners: Runners = Object.create(null) as Runners;
+    public readonly renderPipes = Object.create(null) as PIPES;
     public view: ViewSystem;
 
-    private _systemsHash: Record<string, System> = {};
+    private _systemsHash: Record<string, System> = Object.create(null);
     private _lastObjectRendered: Container;
 
     /**

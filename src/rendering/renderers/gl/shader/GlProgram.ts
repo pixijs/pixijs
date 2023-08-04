@@ -100,7 +100,7 @@ export class GlProgram
         this.transformFeedbackVaryings = null;
     }
 
-    public static programCached: Record<string, GlProgram> = {};
+    public static programCached: Record<string, GlProgram> = Object.create(null);
     public static from(options: GlProgramOptions): GlProgram
     {
         const key = `${options.vertex}:${options.fragment}`;

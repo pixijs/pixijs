@@ -139,6 +139,8 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
     // the global transform taking into account the layer and all parents
     private _worldTransform: Matrix;
 
+    public destroyed = false;
+
     // transform data..
     /**
      * The coordinate of the object relative to the local coordinates of the parent.
@@ -801,6 +803,9 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
      */
     public destroy(options: DestroyOptions = false): void
     {
+        if (this.destroyed) return;
+        this.destroyed = true;
+
         this.removeFromParent();
         this.parent = null;
         // this._onRender = null;

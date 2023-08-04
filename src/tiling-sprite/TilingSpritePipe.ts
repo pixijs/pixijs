@@ -34,16 +34,16 @@ export class TilingSpritePipe implements RenderPipe<TilingSpriteView>
 
     private _renderer: Renderer;
 
-    private _renderableHash: Record<number, RenderableData> = {};
+    private _renderableHash: Record<number, RenderableData> = Object.create(null);
 
     // TODO can prolly merge these properties into a single mesh and
     // add them onto the renderableHash (rather than having them on separate hashes)
-    private _gpuBatchedTilingSprite: Record<string, Renderable<MeshView>> = {};
+    private _gpuBatchedTilingSprite: Record<string, Renderable<MeshView>> = Object.create(null);
 
     private _gpuTilingSprite: Record<string, {
         meshRenderable: Renderable<MeshView>
         textureMatrix: Matrix;
-    }> = {};
+    }> = Object.create(null);
 
     constructor(renderer: Renderer)
     {

@@ -28,7 +28,7 @@ export class TexturePoolClass
     public enableFullScreen: boolean;
 
     private _texturePool: {[x in string | number]: Texture[]};
-    private _poolKeyHash: Record<number, number> = {};
+    private _poolKeyHash: Record<number, number> = Object.create(null);
 
     /**
      * @param textureOptions - options that will be passed to BaseRenderTexture constructor

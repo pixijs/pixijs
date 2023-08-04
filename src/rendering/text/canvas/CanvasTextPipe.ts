@@ -29,7 +29,7 @@ export class CanvasTextPipe implements RenderPipe<TextView>
         currentKey: string,
         batchableSprite: BatchableSprite,
         needsTextureUpdate: boolean,
-    }> = {};
+    }> = Object.create(null);
 
     constructor(renderer: Renderer)
     {
