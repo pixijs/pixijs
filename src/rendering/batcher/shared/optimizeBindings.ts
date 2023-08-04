@@ -7,7 +7,7 @@ export let missingCount = 0;
 export const currentCopy: TextureSource[] = [];
 export let currentCount = 0;
 
-export const usedSlots: Record<number, number> = {};
+export const usedSlots: Record<number, number> = Object.create(null);
 
 /**
  * This function will take the previous texture batch and the current texture batch and

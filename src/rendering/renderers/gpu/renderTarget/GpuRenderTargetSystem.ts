@@ -38,7 +38,7 @@ export class GpuRenderTargetSystem implements System
 
     private readonly _renderSurfaceToRenderTargetHash: Map<RenderSurface, RenderTarget>
         = new Map();
-    private _gpuRenderTargetHash: Record<number, GpuRenderTarget> = {};
+    private _gpuRenderTargetHash: Record<number, GpuRenderTarget> = Object.create(null);
 
     private readonly _renderTargetStack: RenderTarget[] = [];
     private readonly _renderer: WebGPURenderer;

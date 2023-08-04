@@ -70,8 +70,8 @@ export class MeshPipe implements RenderPipe<MeshView>, InstructionPipe<MeshInstr
     public renderer: Renderer;
     public state: State = State.for2d();
 
-    private _renderableHash: Record<number, RenderableData> = {};
-    private _gpuBatchableMeshHash: Record<number, BatchableMesh> = {};
+    private _renderableHash: Record<number, RenderableData> = Object.create(null);
+    private _gpuBatchableMeshHash: Record<number, BatchableMesh> = Object.create(null);
     private _adaptor: MeshAdaptor;
 
     constructor(renderer: Renderer, adaptor: MeshAdaptor)

@@ -16,7 +16,7 @@ export class BufferSystem implements System
     } as const;
 
     protected CONTEXT_UID: number;
-    private _gpuBuffers: { [key: number]: GPUBuffer } = {};
+    private _gpuBuffers: { [key: number]: GPUBuffer } = Object.create(null);
 
     private _gpu: GPU;
 

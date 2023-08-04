@@ -195,7 +195,7 @@ export class GlGeometrySystem implements System
 
         if (!this._geometryVaoHash[geometry.uid])
         {
-            this._geometryVaoHash[geometry.uid] = {};
+            this._geometryVaoHash[geometry.uid] = Object.create(null);
 
             geometry.on('destroy', this.onGeometryDestroy, this);
         }

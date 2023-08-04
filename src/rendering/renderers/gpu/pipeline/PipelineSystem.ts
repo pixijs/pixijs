@@ -65,10 +65,10 @@ export class PipelineSystem implements System
 
     protected CONTEXT_UID: number;
 
-    private _moduleCache: Record<string, GPUShaderModule> = {};
-    private _bufferLayoutsCache: Record<number, GPUVertexBufferLayout[]> = {};
+    private _moduleCache: Record<string, GPUShaderModule> = Object.create(null);
+    private _bufferLayoutsCache: Record<number, GPUVertexBufferLayout[]> = Object.create(null);
 
-    private _pipeCache: Record<number, GPURenderPipeline> = {};
+    private _pipeCache: Record<number, GPURenderPipeline> = Object.create(null);
 
     private _gpu: GPU;
     private _stencilState: GPUDepthStencilState;

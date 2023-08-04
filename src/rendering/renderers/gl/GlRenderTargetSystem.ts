@@ -36,7 +36,7 @@ export class GlRenderTargetSystem implements System
     private _gl: GlRenderingContext;
 
     private readonly _renderSurfaceToRenderTargetHash: Map<RenderSurface, RenderTarget> = new Map();
-    private _gpuRenderTargetHash: Record<number, GlRenderTarget> = {};
+    private _gpuRenderTargetHash: Record<number, GlRenderTarget> = Object.create(null);
     private readonly _renderer: WebGLRenderer;
     private readonly _renderTargetStack: RenderTarget[] = [];
     private readonly _defaultClearColor: RGBAArray = [0, 0, 0, 0];

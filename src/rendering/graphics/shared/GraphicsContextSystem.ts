@@ -46,7 +46,7 @@ export class GraphicsContextSystem implements System
     private readonly _activeBatchers: Batcher[] = [];
     private _gpuContextHash: Record<number, GpuGraphicsContext> = {};
     // used for non-batchable graphics
-    private _graphicsDataContextHash: Record<number, GraphicsContextRenderData> = {};
+    private _graphicsDataContextHash: Record<number, GraphicsContextRenderData> = Object.create(null);
     private readonly _needsContextNeedsRebuild: GraphicsContext[] = [];
 
     protected prerender()

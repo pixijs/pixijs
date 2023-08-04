@@ -36,10 +36,10 @@ export class GlBufferSystem implements System
     } as const;
 
     private _gl: GlRenderingContext;
-    private _gpuBuffers: {[key: number]: GlBuffer} = {};
+    private _gpuBuffers: {[key: number]: GlBuffer} = Object.create(null);
 
     /** Cache keeping track of the base bound buffer bases */
-    private readonly _boundBufferBases: {[key: number]: Buffer};
+    private readonly _boundBufferBases: {[key: number]: Buffer} = Object.create(null);
 
     private _renderer: WebGLRenderer;
 
@@ -49,7 +49,6 @@ export class GlBufferSystem implements System
     constructor(renderer: WebGLRenderer)
     {
         this._renderer = renderer;
-        this._boundBufferBases = {};
     }
 
     /**

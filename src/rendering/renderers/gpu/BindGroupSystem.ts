@@ -24,7 +24,7 @@ export class BindGroupSystem implements System
 
     private readonly _renderer: WebGPURenderer;
 
-    private _hash: Record<string, GPUBindGroup> = {};
+    private _hash: Record<string, GPUBindGroup> = Object.create(null);
     private _gpu: GPU;
 
     constructor(renderer: WebGPURenderer)
