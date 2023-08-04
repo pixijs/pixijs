@@ -1,6 +1,6 @@
 import EventEmitter from 'eventemitter3';
-import { RendererType } from '../../../../types';
 import { BindGroup } from '../../gpu/shader/BindGroup';
+import { RendererType } from '../../types';
 import { UniformGroup } from './UniformGroup';
 
 import type { GlProgram } from '../../gl/shader/GlProgram';

@@ -847,3 +847,4 @@ Container.mixin(effectsMixin);
 Container.mixin(findMixin);
 Container.mixin(sortMixin);
 
+export type DisplayObject<T extends View = View> = Container<T>;

@@ -1,8 +1,9 @@
 import EventEmitter from 'eventemitter3';
+import { deprecation, v8_0_0 } from '../../../../../utils/logging/deprecation';
 import { TextureStyle } from '../TextureStyle';
 
 import type { BindResource } from '../../../gpu/shader/BindResource';
-import type { TEXTURE_DIMENSIONS, TEXTURE_FORMATS } from '../const';
+import type { SCALE_MODE, TEXTURE_DIMENSIONS, TEXTURE_FORMATS, WRAP_MODE } from '../const';
 import type { BindableTexture } from '../Texture';
 import type { TextureStyleOptions } from '../TextureStyle';
 
@@ -192,5 +193,39 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
 
         this.resourceId++;
         this.emit('change', this);
+    }
+
+    /** @deprecated */
+    set wrapMode(value: WRAP_MODE)
+    {
+        // eslint-disable-next-line max-len
+        deprecation(v8_0_0, 'TextureSource.wrapMode property has been deprecated. Use TextureSource.style.addressMode instead.');
+        this.style.wrapMode = value;
+    }
+
+    /** @deprecated */
+    get wrapMode(): WRAP_MODE
+    {
+        // eslint-disable-next-line max-len
+        deprecation(v8_0_0, 'TextureSource.wrapMode property has been deprecated. Use TextureSource.style.addressMode instead.');
+
+        return this.style.wrapMode;
+    }
+
+    /** @deprecated */
+    set scaleMode(value: SCALE_MODE)
+    {
+        // eslint-disable-next-line max-len
+        deprecation(v8_0_0, 'TextureSource.scaleMode property has been deprecated. Use TextureSource.style.scaleMode instead.');
+        this.style.scaleMode = value;
+    }
+
+    /** @deprecated */
+    get scaleMode(): SCALE_MODE
+    {
+        // eslint-disable-next-line max-len
+        deprecation(v8_0_0, 'TextureSource.scaleMode property has been deprecated. Use TextureSource.style.scaleMode instead.');
+
+        return this.style.scaleMode;
     }
 }

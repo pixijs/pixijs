@@ -1,4 +1,3 @@
-/* eslint-disable prefer-rest-params */
 import { MeshView } from '../rendering/mesh/shared/MeshView';
 import { Texture } from '../rendering/renderers/shared/texture/Texture';
 import { Container } from '../rendering/scene/Container';
@@ -193,8 +192,13 @@ export class NineSliceSprite extends Container<MeshView<NineSliceGeometry>>
 
 export class NineSlicePlane extends NineSliceSprite
 {
-    constructor(options: NineSliceSpriteOptions | Texture)
+    constructor(options: NineSliceSpriteOptions | Texture);
+    /** @deprecated */
+    constructor(texture: Texture, leftWidth: number, topHeight: number, rightWidth: number, bottomHeight: number);
+    constructor(...args: [NineSliceSpriteOptions | Texture] | [Texture, number, number, number, number])
     {
+        let options = args[0];
+
         if (options instanceof Texture)
         {
             // eslint-disable-next-line max-len
@@ -202,10 +206,10 @@ export class NineSlicePlane extends NineSliceSprite
 
             options = {
                 texture: options,
-                leftWidth: arguments[1],
-                topHeight: arguments[2],
-                rightWidth: arguments[3],
-                bottomHeight: arguments[4],
+                leftWidth: args[1],
+                topHeight: args[2],
+                rightWidth: args[3],
+                bottomHeight: args[4],
             };
         }
         deprecation(v8_0_0, 'NineSlicePlane is deprecated. Use NineSliceSprite instead.');

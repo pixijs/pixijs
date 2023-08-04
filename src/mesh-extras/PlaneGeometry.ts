@@ -1,4 +1,5 @@
 import { MeshGeometry } from '../rendering/mesh/shared/MeshGeometry';
+import { deprecation, v8_0_0 } from '../utils/logging/deprecation';
 
 import type { MeshGeometryOptions } from '../rendering/mesh/shared/MeshGeometry';
 
@@ -34,9 +35,28 @@ export class PlaneGeometry extends MeshGeometry
      * @param options.verticesX - Number of vertices on x-axis
      * @param options.verticesY - Number of vertices on y-axis
      */
-    constructor(options: PlaneGeometryOptions = {})
+    constructor(options: PlaneGeometryOptions);
+    /** @deprecated */
+    constructor(width?: number, height?: number, verticesX?: number, verticesY?: number);
+    constructor(...args: [PlaneGeometryOptions?] | [number?, number?, number?, number?])
     {
         super({});
+
+        let options = args[0] ?? {};
+
+        if (typeof options === 'number')
+        {
+            // eslint-disable-next-line max-len
+            deprecation(v8_0_0, 'PlaneGeometry constructor changed please use { width, height, verticesX, verticesY } instead');
+
+            options = {
+                width: options,
+                height: args[1],
+                verticesX: args[2],
+                verticesY: args[3],
+            };
+        }
+
         this.build(options);
     }
 

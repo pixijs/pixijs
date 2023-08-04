@@ -1,6 +1,6 @@
 import { Filter } from '../../rendering/filters/shared/Filter';
 import { TexturePool } from '../../rendering/renderers/shared/texture/TexturePool';
-import { RendererType } from '../../types';
+import { RendererType } from '../../rendering/renderers/types';
 import { generateBlurGlProgram } from './gl/generateBlurGlProgram';
 import { generateBlurProgram } from './gpu/generateBlurProgram';
 

@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/indent */
+
+import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
+
 /**
  * How to treat textures with premultiplied alpha
  * @name ALPHA_MODES
@@ -183,8 +187,35 @@ export type TEXTURE_DIMENSIONS =
 export type WRAP_MODE =
 
     | 'clamp-to-edge'
+    /**
+     * The texture uvs tile and repeat
+     * @default 10497
+     */
     | 'repeat'
+    /**
+     * The texture uvs tile and repeat with mirroring
+     * @default 33648
+     */
     | 'mirror-repeat';
+
+export enum DEPRECATED_WRAP_MODES
+{
+    CLAMP = 'clamp-to-edge',
+
+    REPEAT = 'repeat',
+
+    MIRRORED_REPEAT = 'mirror-repeat',
+}
+
+/** @deprecated */
+export const WRAP_MODES = new Proxy(DEPRECATED_WRAP_MODES, {
+    get(target, prop: keyof typeof DEPRECATED_WRAP_MODES)
+    {
+        deprecation(v8_0_0, `DRAW_MODES.${prop} is deprecated, use '${prop}' instead`);
+
+        return target[prop];
+    },
+});
 
 /**
  * The scale modes that are supported by pixi.
@@ -193,15 +224,38 @@ export type WRAP_MODE =
  * It can be re-assigned to either LINEAR or NEAREST, depending upon suitability.
  * @memberof PIXI
  * @static
- * @name SCALE_MODES
+ * @name SCALE_MODE
  * @enum {number}
  * @property {number} LINEAR Smooth scaling
  * @property {number} NEAREST Pixelating scaling
  */
 export type SCALE_MODE =
-
+    /**
+     * Pixelating scaling
+     * @default 0
+     */
  | 'nearest'
+     /**
+      * Smooth scaling
+      * @default 1
+      */
  | 'linear';
+
+export enum DEPRECATED_SCALE_MODES
+{
+    NEAREST = 'nearest',
+    LINEAR = 'linear',
+}
+
+/** @deprecated */
+export const SCALE_MODES = new Proxy(DEPRECATED_SCALE_MODES, {
+    get(target, prop: keyof typeof DEPRECATED_SCALE_MODES)
+    {
+        deprecation(v8_0_0, `DRAW_MODES.${prop} is deprecated, use '${prop}' instead`);
+
+        return target[prop];
+    },
+});
 
 export type COMPARE_FUNCTION =
     | 'never'

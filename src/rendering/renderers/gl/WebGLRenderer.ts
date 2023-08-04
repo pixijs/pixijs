@@ -1,10 +1,10 @@
 import { extensions, ExtensionType } from '../../../extensions/Extensions';
-import { RendererType } from '../../../types';
 import { GlBatchAdaptor } from '../../batcher/gl/GlBatchAdaptor';
 import { GlGraphicsAdaptor } from '../../graphics/gl/GlGraphicsAdaptor';
 import { GlMeshAdaptor } from '../../mesh/gl/GlMeshAdaptor';
 import { AbstractRenderer } from '../shared/system/AbstractRenderer';
 import { SharedRenderPipes, SharedSystems } from '../shared/system/SharedSystems';
+import { RendererType } from '../types';
 import { GlBufferSystem } from './buffer/GlBufferSystem';
 import { GlContextSystem } from './context/GlContextSystem';
 import { GlGeometrySystem } from './geometry/GlGeometrySystem';
