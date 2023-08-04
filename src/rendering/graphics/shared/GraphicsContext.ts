@@ -172,7 +172,7 @@ export class GraphicsContext extends EventEmitter<{
         return this._fillStyleOriginal;
     }
 
-    set strokeStyle(value: FillStyleInputs)
+    set strokeStyle(value: FillStyleInputs | StrokeStyle)
     {
         if (this._strokeStyleOriginal === value) return;
 
@@ -293,7 +293,7 @@ export class GraphicsContext extends EventEmitter<{
         return this;
     }
 
-    public stroke(style?: FillStyleInputs): this
+    public stroke(style?: FillStyleInputs | StrokeStyle): this
     {
         let path: GraphicsPath;
 
