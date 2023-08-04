@@ -1,5 +1,6 @@
 import { Filter } from '../../rendering/filters/shared/Filter';
 import { TexturePool } from '../../rendering/renderers/shared/texture/TexturePool';
+import { RendererType } from '../../types';
 import { generateBlurGlProgram } from './gl/generateBlurGlProgram';
 import { generateBlurProgram } from './gpu/generateBlurProgram';
 
@@ -99,7 +100,7 @@ export class BlurFilterPass extends Filter
 
             for (let i = 0; i < this.passes - 1; i++)
             {
-                filterManager.applyFilter(this, flip, flop, true);
+                filterManager.applyFilter(this, flip, flop, filterManager.renderer.type === RendererType.WEBGPU);
 
                 const temp = flop;
 

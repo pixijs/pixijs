@@ -92,10 +92,10 @@ export class FilterSystem implements System
         name: 'filter',
     } as const;
 
+    public readonly renderer: Renderer;
+
     private _filterStackIndex = 0;
     private _filterStack: FilterData[] = [];
-
-    private readonly _renderer: Renderer;
 
     private readonly _filterGlobalUniforms = new UniformGroup({
         inputSize: { value: new Float32Array(4), type: 'vec4<f32>' },
@@ -111,12 +111,12 @@ export class FilterSystem implements System
 
     constructor(renderer: Renderer)
     {
-        this._renderer = renderer;
+        this.renderer = renderer;
     }
 
     public push(instruction: FilterInstruction)
     {
-        const renderer = this._renderer;
+        const renderer = this.renderer;
 
         const filters = instruction.filterEffect.filters;
 
@@ -243,7 +243,7 @@ export class FilterSystem implements System
 
     public pop()
     {
-        const renderer = this._renderer;
+        const renderer = this.renderer;
 
         this._filterStackIndex--;
         const filterData = this._filterStack[this._filterStackIndex];
@@ -365,7 +365,7 @@ export class FilterSystem implements System
         const width = Math.ceil(bounds.width * backgroundResolution);
         const height = Math.ceil(bounds.height * backgroundResolution);
 
-        this._renderer.renderTarget.copyToTexture(
+        this.renderer.renderTarget.copyToTexture(
             lastRenderSurface,
             backTexture,
             { x, y },
@@ -377,7 +377,7 @@ export class FilterSystem implements System
 
     public applyFilter(filter: Filter, input: Texture, output: RenderSurface, clear: boolean)
     {
-        const renderer = this._renderer;
+        const renderer = this.renderer;
 
         const filterData = this._filterStack[this._filterStackIndex];
 
@@ -386,9 +386,9 @@ export class FilterSystem implements System
         const offset = Point.shared;
         const previousRenderSurface = filterData.previousRenderSurface;
 
-        const isFinalTarget = previousRenderSurface === this._renderer.renderTarget.getRenderTarget(output);
+        const isFinalTarget = previousRenderSurface === this.renderer.renderTarget.getRenderTarget(output);
 
-        let resolution = this._renderer.renderTarget.rootRenderTarget.colorTexture.source._resolution;
+        let resolution = this.renderer.renderTarget.rootRenderTarget.colorTexture.source._resolution;
 
         if (this._filterStackIndex > 0)
         {
@@ -442,7 +442,7 @@ export class FilterSystem implements System
         inputClamp[2] = (input.frameWidth * inputSize[2]) - (0.5 * inputPixel[2]);
         inputClamp[3] = (input.frameHeight * inputSize[3]) - (0.5 * inputPixel[3]);
 
-        const rootTexture = this._renderer.renderTarget.rootRenderTarget.colorTexture;
+        const rootTexture = this.renderer.renderTarget.rootRenderTarget.colorTexture;
 
         globalFrame[0] = offset.x * resolution;
         globalFrame[1] = offset.y * resolution;
@@ -451,7 +451,7 @@ export class FilterSystem implements System
         globalFrame[3] = rootTexture.source.height * resolution;
 
         // set the output texture - this is where we are going to rendr to
-        const renderSurface = this._renderer.renderTarget.getRenderTarget(output);
+        const renderSurface = this.renderer.renderTarget.getRenderTarget(output);
 
         outputTexture[0] = renderSurface.colorTexture.frameWidth;
         outputTexture[1] = renderSurface.colorTexture.frameHeight;

@@ -21,6 +21,7 @@ export class GlStencilSystem implements System
     private readonly _stencilCache = {
         enabled: false,
         stencilReference: 0,
+        stencilMode: STENCIL_MODES.NONE,
     };
 
     private _renderTargetStencilState: Record<number, {
@@ -88,6 +89,8 @@ export class GlStencilSystem implements System
 
     protected onRenderTargetChange(renderTarget: RenderTarget)
     {
+        if (this._activeRenderTarget === renderTarget) return;
+
         this._activeRenderTarget = renderTarget;
 
         let stencilState = this._renderTargetStencilState[renderTarget.uid];
@@ -108,13 +111,14 @@ export class GlStencilSystem implements System
     {
         const stencilState = this._renderTargetStencilState[this._activeRenderTarget.uid];
 
+        const gl = this._gl;
+        const mode = GpuStencilModesToPixi[stencilMode];
+
+        const _stencilCache = this._stencilCache;
+
         // store the stencil state for restoration later, if a render target changes
         stencilState.stencilMode = stencilMode;
         stencilState.stencilReference = stencilReference;
-
-        const mode = GpuStencilModesToPixi[stencilMode];
-
-        const gl = this._gl;
 
         if (stencilMode === STENCIL_MODES.DISABLED)
         {
@@ -134,11 +138,17 @@ export class GlStencilSystem implements System
             gl.enable(gl.STENCIL_TEST);
         }
 
-        // this is pretty simple mapping.
-        // will work for pixi's simple mask cases.
-        // although a true mapping of the GPU state to webGL state should be done
-        gl.stencilFunc(this._comparisonFuncMapping[mode.stencilBack.compare], stencilReference, 0xFF);
-        gl.stencilOp(gl.KEEP, gl.KEEP, this._stencilOpsMapping[mode.stencilBack.passOp]);
+        if (stencilMode !== _stencilCache.stencilMode || _stencilCache.stencilReference !== stencilReference)
+        {
+            _stencilCache.stencilMode = stencilMode;
+            _stencilCache.stencilReference = stencilReference;
+
+            // this is pretty simple mapping.
+            // will work for pixi's simple mask cases.
+            // although a true mapping of the GPU state to webGL state should be done
+            gl.stencilFunc(this._comparisonFuncMapping[mode.stencilBack.compare], stencilReference, 0xFF);
+            gl.stencilOp(gl.KEEP, gl.KEEP, this._stencilOpsMapping[mode.stencilBack.passOp]);
+        }
     }
 
     public destroy()

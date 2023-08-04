@@ -4,7 +4,7 @@ import { addMaskBounds } from './addMaskBounds';
 import { addMaskLocalBounds } from './addMaskLocalBounds';
 
 import type { ExtensionMetadata } from '../../../extensions/Extensions';
-import type { PointData } from '../../../maths/PointData';
+import type { Point } from '../../../maths/Point';
 import type { PoolItem } from '../../../utils/pool/Pool';
 import type { Bounds } from '../../scene/bounds/Bounds';
 import type { Effect } from '../../scene/Effect';
@@ -49,16 +49,12 @@ export class StencilMask implements Effect, PoolItem
         addMaskLocalBounds(this.mask, bounds, localRoot);
     }
 
-    public containsPoint(point: PointData): boolean
+    public containsPoint(point: Point, hitTestFn: (container: Container, point: Point) => boolean): boolean
     {
         const mask = this.mask as any;
 
-        if (mask.view?.containsPoint)
-        {
-            return mask.view.containsPoint(point);
-        }
-
-        return false;
+        // if the point is in the mask, yay!
+        return hitTestFn(mask, point);
     }
 
     public destroy(): void
