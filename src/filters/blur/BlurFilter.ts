@@ -1,6 +1,6 @@
 import { Filter } from '../../rendering/filters/shared/Filter';
 import { TexturePool } from '../../rendering/renderers/shared/texture/TexturePool';
-import { RendererType } from '../../types';
+import { RendererType } from '../../rendering/renderers/types';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { BlurFilterPass } from './BlurFilterPass';
 

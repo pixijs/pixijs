@@ -1,10 +1,10 @@
 import { extensions, ExtensionType } from '../../../extensions/Extensions';
-import { RendererType } from '../../../types';
 import { GpuBatchAdaptor } from '../../batcher/gpu/GpuBatchAdaptor';
 import { GpuGraphicsAdaptor } from '../../graphics/gpu/GpuGraphicsAdaptor';
 import { GpuMeshAdapter } from '../../mesh/gpu/GpuMeshAdapter';
 import { AbstractRenderer } from '../shared/system/AbstractRenderer';
 import { SharedRenderPipes, SharedSystems } from '../shared/system/SharedSystems';
+import { RendererType } from '../types';
 import { BindGroupSystem } from './BindGroupSystem';
 import { BufferSystem } from './buffer/GpuBufferSystem';
 import { GpuColorMaskSystem } from './GpuColorMaskSystem';
