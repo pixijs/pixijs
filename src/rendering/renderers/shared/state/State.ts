@@ -7,6 +7,7 @@ const blendModeIds = {
     multiply: 2,
     screen: 3,
     overlay: 4,
+    erase: 5,
 };
 const BLEND = 0;
 const OFFSET = 1;

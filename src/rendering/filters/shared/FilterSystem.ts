@@ -185,7 +185,13 @@ export class FilterSystem implements System
 
             const isCompatible = !!(filter.compatibleRenderers & renderer.type);
 
-            enabled = (filter.enabled && isCompatible) || enabled;
+            if (!isCompatible)
+            {
+                enabled = false;
+                break;
+            }
+
+            enabled = filter.enabled || enabled;
             blendRequired = blendRequired || filter.blendRequired;
         }
 

@@ -1,4 +1,5 @@
 import { generateUID } from '../texture/utils/generateUID';
+import { defaultUniformValue } from './utils/defaultUniformValue';
 
 import type { BindResource } from '../../gpu/shader/BindResource';
 import type { Buffer } from '../buffer/Buffer';
@@ -60,10 +61,9 @@ export class UniformGroup<UNIFORMS extends { [key: string]: UniformData } = any>
 
             uniformData.name = i;
             uniformData.size = uniformData.size ?? 1;
+            uniformData.value ??= defaultUniformValue(uniformData.type, uniformData.size);
 
-            uniforms[i]
-            = uniformData.value as ExtractUniformObject<UNIFORMS>[keyof UNIFORMS]
-            ?? uniformData as ExtractUniformObject<UNIFORMS>[keyof UNIFORMS];
+            uniforms[i] = uniformData.value as ExtractUniformObject<UNIFORMS>[keyof UNIFORMS];
         }
 
         this.uniforms = uniforms;

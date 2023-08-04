@@ -30,6 +30,8 @@ export function buildInstructions(layerGroup: LayerGroup, renderPipes: RenderPip
     // TODO add some events / runners for build end
     renderPipes.batch.buildEnd(instructionSet);
     renderPipes.blendMode.buildEnd(instructionSet);
+
+    // instructionSet.log();
 }
 
 export function collectAllRenderables(
@@ -96,14 +98,6 @@ function collectAllRenderablesAdvanced(
     isRoot: boolean
 ): void
 {
-    for (let i = 0; i < container.effects.length; i++)
-    {
-        const effect = container.effects[i];
-        const pipe = renderPipes[effect.pipe as keyof RenderPipes]as InstructionPipe<any>;
-
-        pipe.push(effect, container, instructionSet);
-    }
-
     if (isRoot)
     {
         const layerGroup = container.layerGroup;
@@ -120,6 +114,16 @@ function collectAllRenderablesAdvanced(
                 // eslint-disable-next-line max-len
                 (renderPipes[proxyRenderable.view.type as keyof RenderPipes] as any).addRenderable(proxyRenderable, instructionSet);
             }
+        }
+    }
+    else
+    {
+        for (let i = 0; i < container.effects.length; i++)
+        {
+            const effect = container.effects[i];
+            const pipe = renderPipes[effect.pipe as keyof RenderPipes]as InstructionPipe<any>;
+
+            pipe.push(effect, container, instructionSet);
         }
     }
 
@@ -153,13 +157,16 @@ function collectAllRenderablesAdvanced(
         }
     }
 
-    // loop backwards through effects
-    for (let i = container.effects.length - 1; i >= 0; i--)
+    if (!isRoot)
     {
-        const effect = container.effects[i];
-        const pipe = renderPipes[effect.pipe as keyof RenderPipes]as InstructionPipe<any>;
+        // loop backwards through effects
+        for (let i = container.effects.length - 1; i >= 0; i--)
+        {
+            const effect = container.effects[i];
+            const pipe = renderPipes[effect.pipe as keyof RenderPipes]as InstructionPipe<any>;
 
-        pipe.pop(effect, container, instructionSet);
+            pipe.pop(effect, container, instructionSet);
+        }
     }
 }
 
