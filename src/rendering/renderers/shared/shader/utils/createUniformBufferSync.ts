@@ -134,15 +134,17 @@ export function generateUniformBufferSync(
                     v = uv.${name};
                     offset += ${offset - prev};
 
+                    let arrayOffset = offset;
+                    
                     t = 0;
 
                     for(var i=0; i < ${uboElement.data.size * rowSize}; i++)
                     {
                         for(var j = 0; j < ${elementSize}; j++)
                         {
-                            data[offset++] = v[t++];
+                            data[arrayOffset++] = v[t++];
                         }
-                        offset += ${remainder};
+                        ${remainder !== 0 ? 'arrayOffset += ${remainder};' : ''}
                     }
                 `);
             }
@@ -164,6 +166,9 @@ export function generateUniformBufferSync(
     }
 
     const fragmentSrc = funcFragments.join('\n');
+
+    // console.log('--------------------------');
+    // console.log(fragmentSrc);
 
     // eslint-disable-next-line no-new-func
     return new Function(

@@ -1,4 +1,5 @@
 import { extensions, ExtensionType } from '../../../extensions/Extensions';
+import { RendererType } from '../../../types';
 import { GlBatchAdaptor } from '../../batcher/gl/GlBatchAdaptor';
 import { GlGraphicsAdaptor } from '../../graphics/gl/GlGraphicsAdaptor';
 import { GlMeshAdaptor } from '../../mesh/gl/GlMeshAdaptor';
@@ -72,7 +73,8 @@ export class WebGLRenderer extends AbstractRenderer<WebGLPipes, WebGLOptions> im
     constructor()
     {
         const systemConfig = {
-            type: 'webgl2',
+            name: 'webgl2',
+            type: RendererType.WEBGL,
             systems,
             renderPipes,
             renderPipeAdaptors,

@@ -175,6 +175,7 @@ export class GlTextureSystem implements System
         this._glTextures[source.uid] = glTexture;
 
         source.on('update', this.onSourceUpdate, this);
+        source.on('resize', this.onSourceUpdate, this);
         source.on('destroy', this.onSourceDestroy, this);
 
         this.onSourceUpdate(source);

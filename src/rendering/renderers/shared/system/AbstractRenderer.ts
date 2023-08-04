@@ -13,7 +13,8 @@ import type { System, SystemConstructor } from './System';
 
 interface RendererConfig
 {
-    type: string;
+    type: number;
+    name: string;
     runners?: string[];
     systems: {name: string, value: SystemConstructor}[];
     renderPipes: {name: string, value: PipeConstructor}[];
@@ -51,7 +52,8 @@ type Runners = {[key in DefaultRunners]: SystemRunner} & {
  */
 export class AbstractRenderer<PIPES, OPTIONS>
 {
-    public readonly type: string;
+    public readonly type: number;
+    public readonly name: string;
 
     public readonly runners: Runners = {} as Runners;
     public readonly renderPipes = {} as PIPES;

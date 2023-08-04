@@ -66,8 +66,8 @@ export class GpuTextureSystem implements System
         this._gpuSources[source.uid] = gpuTexture;
 
         source.on('update', this.onSourceUpdate, this);
-        source.on('destroy', this.onSourceDestroy, this);
         source.on('resize', this.onSourceResize, this);
+        source.on('destroy', this.onSourceDestroy, this);
 
         this.onSourceUpdate(source);
 

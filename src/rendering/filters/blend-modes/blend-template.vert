@@ -11,11 +11,16 @@ uniform globalUniforms {
 uniform vec4 inputSize;
 uniform vec4 outputFrame;
 uniform vec4 backgroundFrame;
+uniform vec4 outputTexture;
 
 vec4 filterVertexPosition( void )
 {
-    vec2 position = aPosition * max(outputFrame.zw, vec2(0.)) + outputFrame.xy;
-    return vec4((projectionMatrix * vec3(position, 1.0)).xy, 0.0, 1.0);
+    vec2 position = aPosition * outputFrame.zw + outputFrame.xy;
+    
+    position.x = position.x * (2.0 / outputTexture.x) - 1.0;
+    position.y = position.y * (2.0*outputTexture.z / outputTexture.y) - outputTexture.z;
+
+    return vec4(position, 0.0, 1.0);
 }
 
 vec2 filterTextureCoord( void )
@@ -23,14 +28,8 @@ vec2 filterTextureCoord( void )
     return aPosition * (outputFrame.zw * inputSize.zw);
 }
 
-vec2 filterBackgroundTextureCoord( void ) 
-{
-    return aPosition * aPosition * backgroundFrame.zw;
-}
-
 void main(void)
 {
     gl_Position = filterVertexPosition();
     vTextureCoord = filterTextureCoord();
-    backgroundUv = filterBackgroundTextureCoord();
 }

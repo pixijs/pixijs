@@ -47,9 +47,12 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
 
     public push(mask: Effect, _container: Container, instructionSet: InstructionSet): void
     {
+        const effect = mask as StencilMask;
+
         const renderer = this._renderer;
 
         renderer.renderPipes.batch.break(instructionSet);
+        renderer.renderPipes.blendMode.setBlendMode(effect.mask, 'none', instructionSet);
 
         instructionSet.add({
             type: 'stencilMask',
@@ -58,7 +61,6 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
             canBundle: false,
         } as StencilMaskInstruction);
 
-        const effect = mask as StencilMask;
         const maskContainer = effect.mask;
 
         maskContainer.includeInBuild = true;
@@ -106,6 +108,8 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
 
     public pop(mask: Effect, _container: Container, instructionSet: InstructionSet): void
     {
+        const effect = mask as StencilMask;
+
         const renderer = this._renderer;
 
         // stencil is stored based on current render target..
@@ -113,6 +117,7 @@ export class StencilMaskPipe implements InstructionPipe<StencilMaskInstruction>
         this._maskStackHash[_container.uid]--;
 
         renderer.renderPipes.batch.break(instructionSet);
+        renderer.renderPipes.blendMode.setBlendMode(effect.mask, 'none', instructionSet);
 
         instructionSet.add({
             type: 'stencilMask',

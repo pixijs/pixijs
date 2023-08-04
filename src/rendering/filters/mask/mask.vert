@@ -3,21 +3,20 @@ in vec2 aPosition;
 out vec2 vTextureCoord;
 out vec2 vMaskCoord;
 
-uniform globalUniforms {
-  mat3 projectionMatrix;
-  mat3 worldTransformMatrix;
-  float worldAlpha;
-};
 
 uniform vec4 inputSize;
 uniform vec4 outputFrame;
+uniform vec4 outputTexture;
 uniform mat3 filterMatrix;
 
 vec4 filterVertexPosition(  vec2 aPosition )
 {
-    vec2 position = aPosition * max(outputFrame.zw, vec2(0.)) + outputFrame.xy;
+    vec2 position = aPosition * outputFrame.zw + outputFrame.xy;
+       
+    position.x = position.x * (2.0 / outputTexture.x) - 1.0;
+    position.y = position.y * (2.0*outputTexture.z / outputTexture.y) - outputTexture.z;
 
-    return vec4((projectionMatrix * vec3(position, 1.0)).xy, 0.0, 1.0);
+    return vec4(position, 0.0, 1.0);
 }
 
 vec2 filterTextureCoord(  vec2 aPosition )

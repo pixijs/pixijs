@@ -61,7 +61,7 @@ export class GpuRenderTargetSystem implements System
         // generate a render pass description..
         // create an encoder..
 
-        this.rootRenderTarget = this._getRenderTarget(target);
+        this.rootRenderTarget = this.getRenderTarget(target);
         this.rootProjectionMatrix = this.rootRenderTarget.projectionMatrix;
 
         this.renderingToScreen = isRenderingToScreen(this.rootRenderTarget);
@@ -88,7 +88,7 @@ export class GpuRenderTargetSystem implements System
         clearColor?: RGBAArray
     ): RenderTarget
     {
-        const renderTarget = this._getRenderTarget(renderSurface);
+        const renderTarget = this.getRenderTarget(renderSurface);
 
         this.renderTarget = renderTarget;
 
@@ -227,7 +227,7 @@ export class GpuRenderTargetSystem implements System
         );
     }
 
-    private _getRenderTarget(renderSurface: RenderSurface): RenderTarget
+    public getRenderTarget(renderSurface: RenderSurface): RenderTarget
     {
         return (
             this._renderSurfaceToRenderTargetHash.get(renderSurface)

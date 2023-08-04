@@ -9,8 +9,8 @@ struct GlobalFilterUniforms {
   inputPixel:vec4<f32>,
   inputClamp:vec4<f32>,
   outputFrame:vec4<f32>,
-  backgroundFrame:vec4<f32>,
   globalFrame:vec4<f32>,
+  outputTexture:vec4<f32>,
 };
 
 struct ColorMatrixUniforms {
@@ -18,13 +18,12 @@ struct ColorMatrixUniforms {
   uAlpha:f32,
 };
 
-@group(0) @binding(0) var<uniform> globalUniforms : GlobalUniforms;
 
-@group(1) @binding(0) var<uniform> gfu: GlobalFilterUniforms;
-@group(1) @binding(1) var uSampler: texture_2d<f32>;
-@group(1) @binding(2) var mySampler : sampler;
-@group(1) @binding(3) var backTexture: texture_2d<f32>;
-@group(2) @binding(0) var<uniform> colorMatrixUniforms : ColorMatrixUniforms;
+@group(0) @binding(0) var<uniform> gfu: GlobalFilterUniforms;
+@group(0) @binding(1) var uSampler: texture_2d<f32>;
+@group(0) @binding(2) var mySampler : sampler;
+@group(0) @binding(3) var backTexture: texture_2d<f32>;
+@group(1) @binding(0) var<uniform> colorMatrixUniforms : ColorMatrixUniforms;
 
 
 struct VSOutput {
@@ -34,9 +33,12 @@ struct VSOutput {
   
 fn filterVertexPosition(aPosition:vec2<f32>) -> vec4<f32>
 {
-    var position = aPosition * max(gfu.outputFrame.zw, vec2(0.)) + gfu.outputFrame.xy;
+    var position = aPosition * gfu.outputFrame.zw + gfu.outputFrame.xy;
 
-    return vec4((globalUniforms.projectionMatrix * globalUniforms.worldTransformMatrix * vec3(position, 1.0)).xy, 0.0, 1.0);
+    position.x = position.x * (2.0 / gfu.outputTexture.x) - 1.0;
+    position.y = position.y * (2.0*gfu.outputTexture.z / gfu.outputTexture.y) - gfu.outputTexture.z;
+
+    return vec4(position, 0.0, 1.0);
 }
 
 fn filterTextureCoord( aPosition:vec2<f32> ) -> vec2<f32>
@@ -67,12 +69,13 @@ fn mainFragment(
     return c;
   }
 
+ 
     // Un-premultiply alpha before applying the color matrix. See issue #3539.
-    if (c.a > 0.0) {
-      c.r /= c.a;
-      c.g /= c.a;
-      c.b /= c.a;
-    }
+    // if (c.a > 0.0) {
+    //   c.r /= c.a;
+    //   c.g /= c.a;
+    //   c.b /= c.a;
+    // }
 
     var cm = colorMatrixUniforms.uColorMatrix;
 
@@ -105,9 +108,9 @@ fn mainFragment(
 
     var rgb = mix(c.rgb, result.rgb, colorMatrixUniforms.uAlpha);
 
-    rgb.r *= result.a;
-    rgb.g *= result.a;
-    rgb.b *= result.a;
+    // rgb.r *= result.a;
+    // rgb.g *= result.a;
+    // rgb.b *= result.a;
 
     return vec4(rgb, result.a);
 }

@@ -92,6 +92,7 @@ export function _getGlobalBounds(
             target.effects[i].addBounds?.(bounds);
         }
 
+        parentBounds.setMatrix(Matrix.IDENTITY);
         parentBounds.addBounds(bounds);
     }
 }

@@ -1,7 +1,10 @@
 import EventEmitter from 'eventemitter3';
+import { RendererType } from '../../../../types';
 import { BindGroup } from '../../gpu/shader/BindGroup';
+import { UniformGroup } from './UniformGroup';
 
 import type { GlProgram } from '../../gl/shader/GlProgram';
+import type { BindResource } from '../../gpu/shader/BindResource';
 import type { GpuProgram } from '../../gpu/shader/GpuProgram';
 
 export type ShaderGroups = Record<number, BindGroup>;
@@ -12,6 +15,7 @@ export interface ShaderWithGroupsDescriptor
     gpuProgram?: GpuProgram;
     groups: ShaderGroups;
     groupMap?: Record<string, Record<string, any>>;
+    compatibleRenderers?: number;
 }
 
 export interface ShaderWithResourcesDescriptor
@@ -19,6 +23,7 @@ export interface ShaderWithResourcesDescriptor
     glProgram?: GlProgram;
     gpuProgram?: GpuProgram;
     resources: Record<string, any>;
+    compatibleRenderers?: number;
 }
 
 interface GroupsData
@@ -37,19 +42,31 @@ export class Shader extends EventEmitter<{
     public gpuProgram: GpuProgram;
     public glProgram: GlProgram;
 
+    public readonly compatibleRenderers;
+
     public groups: Record<number, BindGroup>;
     public resources: Record<string, any>;
 
     public uniformBindMap: Record<number, Record<number, string>> = {};
 
-    constructor({ gpuProgram, glProgram, resources }: ShaderWithResourcesDescriptor);
-    constructor({ gpuProgram, glProgram, groups, groupMap }: ShaderWithGroupsDescriptor);
-    constructor({ gpuProgram, glProgram, groups, resources, groupMap }: ShaderDescriptor)
+    constructor({ gpuProgram, glProgram, resources, compatibleRenderers }: ShaderWithResourcesDescriptor);
+    constructor({ gpuProgram, glProgram, groups, groupMap, compatibleRenderers }: ShaderWithGroupsDescriptor);
+    constructor({ gpuProgram, glProgram, groups, resources, groupMap, compatibleRenderers }: ShaderDescriptor)
     {
         super();
 
         this.gpuProgram = gpuProgram;
         this.glProgram = glProgram;
+
+        if (compatibleRenderers === undefined)
+        {
+            compatibleRenderers = 0;
+
+            if (gpuProgram)compatibleRenderers |= RendererType.WEBGPU;
+            if (glProgram)compatibleRenderers |= RendererType.WEBGL;
+        }
+
+        this.compatibleRenderers = compatibleRenderers;
 
         const nameHash: Record<string, GroupsData> = {};
 
@@ -113,7 +130,6 @@ export class Shader extends EventEmitter<{
                     // basically we want to be driven by how webGPU does things.
                     // so making a fake group will work and not affect gpu as it means no gpu shader was provided..
                     nameHash[i] = { group: 99, binding: bindTick, name: i };
-                    groups[99].setResource(resources[i], bindTick);
 
                     groupMap[99] = groupMap[99] || {};
                     groupMap[99][bindTick] = i;
@@ -141,7 +157,12 @@ export class Shader extends EventEmitter<{
             for (const i in resources)
             {
                 const name = i;
-                const value = resources[i];
+                let value = resources[i];
+
+                if (!(value.source) && !(value as BindResource).resourceType)
+                {
+                    value = new UniformGroup(value);
+                }
 
                 const data = nameHash[name];
 

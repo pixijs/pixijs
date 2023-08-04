@@ -1,6 +1,5 @@
 
 in vec2 vTextureCoord;
-in vec2 backgroundUv;
 in vec4 vColor;
 
 out vec4 fragColor;
@@ -14,7 +13,7 @@ uniform sampler2D backTexture;
 
 void main()
 { 
-    vec4 back = texture(backTexture, backgroundUv);
+    vec4 back = texture(backTexture, vTextureCoord);
     vec4 front = texture(uSampler, vTextureCoord);
 
     {MAIN}

@@ -72,11 +72,7 @@ export class Filter extends Shader
     {
         options = { ...Filter.defaultOptions, ...options };
 
-        super({
-            gpuProgram: options.gpuProgram,
-            glProgram: options.glProgram,
-            resources: options.resources,
-        });
+        super(options);
 
         this.padding = options.padding;
 
@@ -93,8 +89,8 @@ export class Filter extends Shader
         this.resolution = options.resolution;
         this.blendRequired = options.blendRequired;
 
-        this.addResource('globalUniforms', 0, 0);
-        this.addResource('uSampler', 1, 1);
+        this.addResource('filterUniforms', 0, 0);
+        this.addResource('uSampler', 0, 1);
     }
 
     /**
