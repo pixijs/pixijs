@@ -79,7 +79,7 @@ export abstract class AbstractBitmapFont<FontType>
     implements Omit<BitmapFontData, 'chars' | 'pages' | 'fontSize'>
 {
     /** The map of characters by character code. */
-    public readonly chars: Record<string, CharData> = {};
+    public readonly chars: Record<string, CharData> = Object.create(null);
 
     /** The line-height of the font face in pixels. */
     public readonly lineHeight: BitmapFontData['lineHeight'] = 0;

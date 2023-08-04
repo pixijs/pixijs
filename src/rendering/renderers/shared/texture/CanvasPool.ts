@@ -34,7 +34,7 @@ export class CanvasPoolClass
 
     constructor(canvasOptions?: ICanvasRenderingContext2DSettings)
     {
-        this._canvasPool = {};
+        this._canvasPool = Object.create(null);
         this.canvasOptions = canvasOptions || {};
         this.enableFullScreen = false;
     }

@@ -30,8 +30,8 @@ export class GpuEncoderSystem implements System
     private _resolveCommandFinished: (value: void) => void;
 
     private _gpu: GPU;
-    private _boundBindGroup: Record<number, BindGroup> = {};
-    private _boundVertexBuffer: Record<number, Buffer> = {};
+    private _boundBindGroup: Record<number, BindGroup> = Object.create(null);
+    private _boundVertexBuffer: Record<number, Buffer> = Object.create(null);
     private _boundIndexBuffer: Buffer;
     private _boundPipeline: GPURenderPipeline;
 

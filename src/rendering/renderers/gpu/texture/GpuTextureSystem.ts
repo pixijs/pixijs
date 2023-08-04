@@ -22,10 +22,10 @@ export class GpuTextureSystem implements System
     } as const;
 
     protected CONTEXT_UID: number;
-    private _gpuSources: Record<number, GPUTexture> = {};
-    private _gpuSamplers: Record<string, GPUSampler> = {};
-    private _bindGroupHash: Record<string, BindGroup> = {};
-    private _textureViewHash: Record<string, GPUTextureView> = {};
+    private _gpuSources: Record<number, GPUTexture> = Object.create(null);
+    private _gpuSamplers: Record<string, GPUSampler> = Object.create(null);
+    private _bindGroupHash: Record<string, BindGroup> = Object.create(null);
+    private _textureViewHash: Record<string, GPUTextureView> = Object.create(null);
 
     private readonly _uploads: Record<string, GpuTextureUploader> = {
         image: gpuUploadImageResource,

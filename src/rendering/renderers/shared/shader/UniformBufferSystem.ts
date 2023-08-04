@@ -25,7 +25,7 @@ export class UniformBufferSystem implements System
     private _syncFunctionHash: Record<string, {
         layout: UniformBufferLayout,
         syncFunction: (uniforms: Record<string, any>, data: Float32Array, offset: number) => void
-    }> = {};
+    }> = Object.create(null);
 
     public ensureUniformGroup(uniformGroup: UniformGroup): void
     {

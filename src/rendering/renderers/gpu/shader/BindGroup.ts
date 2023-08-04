@@ -2,14 +2,12 @@ import type { BindResource } from './BindResource';
 
 export class BindGroup
 {
-    public resources: Record<string, BindResource>;
+    public resources: Record<string, BindResource> = Object.create(null);
     public key: string;
     private _dirty = true;
 
     constructor(resources?: Record<string, BindResource>)
     {
-        this.resources = {};
-
         let index = 0;
 
         for (const i in resources)

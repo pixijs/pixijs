@@ -121,7 +121,7 @@ export class GlContextSystem implements System<ContextSystemOptions>
         this._renderer = renderer;
 
         this.webGLVersion = 1;
-        this.extensions = {};
+        this.extensions = Object.create(null);
 
         this.supports = {
             uint32Indices: false,

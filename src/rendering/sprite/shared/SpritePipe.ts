@@ -24,7 +24,7 @@ export class SpritePipe implements RenderPipe<SpriteView>
     } as const;
 
     private _renderer: Renderer;
-    private _gpuSpriteHash: Record<number, BatchableSprite> = {};
+    private _gpuSpriteHash: Record<number, BatchableSprite> = Object.create(null);
 
     constructor(renderer: Renderer)
     {

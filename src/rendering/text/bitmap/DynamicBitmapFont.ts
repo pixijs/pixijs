@@ -36,7 +36,7 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
     public override readonly pages: {canvasAndContext?: CanvasAndContext, texture: Texture}[] = [];
 
     private readonly _padding: number = 4;
-    private readonly _measureCache: Record<string, number> = {};
+    private readonly _measureCache: Record<string, number> = Object.create(null);
     private _currentChars: string[] = [];
     private _currentX = 0;
     private _currentY = 0;

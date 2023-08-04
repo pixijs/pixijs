@@ -29,13 +29,13 @@ export class GlShaderSystem
 
     public activeProgram: GlProgram = null;
 
-    private _programDataHash: Record<string, GlProgramData> = {};
+    private _programDataHash: Record<string, GlProgramData> = Object.create(null);
     private readonly _renderer: WebGLRenderer;
     private _gl: WebGL2RenderingContext;
     private _maxBindings: number;
     private _nextIndex = 0;
-    private _boundUniformsIdsToIndexHash: Record<number, number> = {};
-    private _boundIndexToUniformsHash: Record<number, UniformGroup | BufferResource> = {};
+    private _boundUniformsIdsToIndexHash: Record<number, number> = Object.create(null);
+    private _boundIndexToUniformsHash: Record<number, UniformGroup | BufferResource> = Object.create(null);
 
     constructor(renderer: WebGLRenderer)
     {

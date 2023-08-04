@@ -23,7 +23,7 @@ export class LayerGroup implements Instruction
     public worldColor = 0xffffffff;
 
     // these updates are transform changes..
-    public readonly childrenToUpdate: Record<number, { list: Container[]; index: number; }> = {};
+    public readonly childrenToUpdate: Record<number, { list: Container[]; index: number; }> = Object.create(null);
     public updateTick = 0;
 
     // these update are renderable changes..

@@ -20,7 +20,7 @@ export class GpuStencilSystem implements System
     private _renderTargetStencilState: Record<number, {
         stencilMode: STENCIL_MODES;
         stencilReference: number;
-    }> = {};
+    }> = Object.create(null);
 
     private _activeRenderTarget: RenderTarget;
 

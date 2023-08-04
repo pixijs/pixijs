@@ -81,7 +81,7 @@ export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
 
     private _isAdvanced = false;
 
-    private _filterHash: Partial<Record<BLEND_MODES, FilterEffect>> = {};
+    private _filterHash: Partial<Record<BLEND_MODES, FilterEffect>> = Object.create(null);
 
     constructor(renderer: Renderer)
     {
