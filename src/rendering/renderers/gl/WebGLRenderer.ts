@@ -1,5 +1,4 @@
 import { extensions, ExtensionType } from '../../../extensions/Extensions';
-import { RendererType } from '../../../types';
 import { GlBatchAdaptor } from '../../batcher/gl/GlBatchAdaptor';
 import { GlGraphicsAdaptor } from '../../graphics/gl/GlGraphicsAdaptor';
 import { GlMeshAdaptor } from '../../mesh/gl/GlMeshAdaptor';
