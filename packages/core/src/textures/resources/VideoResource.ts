@@ -9,6 +9,9 @@ export interface IVideoResourceOptions
     autoPlay?: boolean;
     updateFPS?: number;
     crossorigin?: boolean | string;
+    loop?: boolean;
+    muted?: boolean;
+    playsinline?: boolean;
 }
 
 export interface IVideoResourceOptionsElement
@@ -67,6 +70,9 @@ export class VideoResource extends BaseImageResource
      * @param {number} [options.updateFPS=0] - How many times a second to update the texture from the video.
      * Leave at 0 to update at every render.
      * @param {boolean} [options.crossorigin=true] - Load image using cross origin
+     * @param {boolean} [options.loop=false] - Loops the video
+     * @param {boolean} [options.muted=false] - Mutes the video audio, useful for autoplay
+     * @param {boolean} [options.playsinline=true] - Prevents opening the video on mobile devices
      */
     constructor(
         source?: HTMLVideoElement | Array<string | IVideoResourceOptionsElement> | string, options?: IVideoResourceOptions
@@ -79,9 +85,35 @@ export class VideoResource extends BaseImageResource
             const videoElement = document.createElement('video');
 
             // workaround for https://github.com/pixijs/pixijs/issues/5996
-            videoElement.setAttribute('preload', 'auto');
-            videoElement.setAttribute('webkit-playsinline', '');
-            videoElement.setAttribute('playsinline', '');
+            if (options.autoLoad !== false)
+            {
+                videoElement.setAttribute('preload', 'auto');
+            }
+
+            if (options.playsinline !== false)
+            {
+                videoElement.setAttribute('webkit-playsinline', '');
+                videoElement.setAttribute('playsinline', '');
+            }
+
+            if (options.muted === true)
+            {
+                // For some reason we need to set both muted flags for chrome to autoplay
+                // https://stackoverflow.com/a/51189390
+
+                videoElement.setAttribute('muted', '');
+                videoElement.muted = true;
+            }
+
+            if (options.loop === true)
+            {
+                videoElement.setAttribute('loop', '');
+            }
+
+            if (options.autoPlay !== false)
+            {
+                videoElement.setAttribute('autoplay', '');
+            }
 
             if (typeof source === 'string')
             {
