@@ -48,7 +48,7 @@ export interface ViewSystemOptions
 export class ViewSystem implements ISystem<ViewSystemOptions, boolean>
 {
     /** @ignore */
-    static defaultOptions = {
+    static defaultOptions: ViewSystemOptions = {
         /**
          * {@link PIXI.IRendererOptions.width}
          * @default 800
@@ -67,7 +67,7 @@ export class ViewSystem implements ISystem<ViewSystemOptions, boolean>
          * @default PIXI.settings.RESOLUTION
          * @memberof PIXI.settings.RENDER_OPTIONS
          */
-        resolution: settings.RESOLUTION,
+        resolution: undefined,
         /**
          * {@link PIXI.IRendererOptions.autoDensity}
          * @default false
