@@ -9,18 +9,20 @@ import type { ImageResource, IPointData, ITextureBorders } from '@pixi/core';
 export interface ISpritesheetFrameData
 {
     frame: {
+        h: number;
+        w: number;
         x: number;
         y: number;
-        w: number;
-        h: number;
     };
     trimmed?: boolean;
     rotated?: boolean;
     sourceSize?: {
-        w: number;
         h: number;
+        w: number;
     };
     spriteSourceSize?: {
+        h?: number;
+        w?: number;
         x: number;
         y: number;
     };
