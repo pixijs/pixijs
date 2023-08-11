@@ -41,7 +41,7 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-npm-cache-
     - name: Install Dependencies
-      if: steps.npm-cache.outputs.cache-hit != 'true'
+      # if: steps.npm-cache.outputs.cache-hit != 'true'
       run: npm ci
     # - name: Run Unit Tests
     #   run: xvfb-run --auto-servernum npm run coverage
