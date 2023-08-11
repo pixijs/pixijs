@@ -39,6 +39,7 @@ jobs:
     - name: Install Dependencies
       if: steps.node-modules-cache.outputs.cache-hit != 'true'
       run: npm ci
+
     - name: Run Unit Tests
       run: xvfb-run --auto-servernum npm run coverage
       env:
