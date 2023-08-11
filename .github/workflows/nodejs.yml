@@ -28,9 +28,21 @@ jobs:
         registry-url: 'https://registry.npmjs.org'
     - name: Install npm
       run: npm install -g npm@8
+    - name: Get npm cache directory
+      id: npm-cache-dir
+      shell: bash
+      run: echo "dir=$(npm config get cache)" >> ${GITHUB_OUTPUT}
+    - name: Cache npm
+      id: npm-cache
+      uses: actions/cache@v3
+        with:
+          path: ${{ steps.npm-cache-dir.outputs.dir }}
+          key: ${{ runner.os }}-npm-cache-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-cache-
     - name: Install Dependencies
+      if: steps.npm-cache.outputs.cache-hit != 'true'
       run: npm ci
-
     - name: Run Unit Tests
       run: xvfb-run --auto-servernum npm run coverage
       env:
