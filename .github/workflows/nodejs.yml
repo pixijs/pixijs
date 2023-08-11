@@ -44,10 +44,10 @@ jobs:
     #   env:
     #     NODE_ENV: production
 
-    # - name: Extract Branch Name
-    #   id: branch_name
-    #   if: github.event_name == 'push'
-    #   run: echo BRANCH_NAME=${GITHUB_REF/refs\/heads\//} >> $GITHUB_OUTPUT
+    - name: Extract Branch Name
+      id: branch_name
+      if: github.event_name == 'push'
+      run: echo BRANCH_NAME=${GITHUB_REF/refs\/heads\//} >> $GITHUB_OUTPUT
 
     # - name: Build for Distribution
     #   run: npm run dist
