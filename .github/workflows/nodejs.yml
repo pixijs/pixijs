@@ -39,63 +39,63 @@ jobs:
     - name: Install Dependencies
       if: steps.node-modules-cache.outputs.cache-hit != 'true'
       run: npm ci
-    # - name: Run Unit Tests
-    #   run: xvfb-run --auto-servernum npm run coverage
-    #   env:
-    #     NODE_ENV: production
+    - name: Run Unit Tests
+      run: xvfb-run --auto-servernum npm run coverage
+      env:
+        NODE_ENV: production
 
     - name: Extract Branch Name
       id: branch_name
       if: github.event_name == 'push'
       run: echo BRANCH_NAME=${GITHUB_REF/refs\/heads\//} >> $GITHUB_OUTPUT
 
-    # - name: Build for Distribution
-    #   run: npm run dist
+    - name: Build for Distribution
+      run: npm run dist
 
     # Append assets to releases
-    # - name: Upload Assets to Release
-    #   if: github.event_name == 'release'
-    #   uses: softprops/action-gh-release@v1
-    #   with:
-    #     files: |
-    #       ./dist/*
+    - name: Upload Assets to Release
+      if: github.event_name == 'release'
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          ./dist/*
 
     # Examples:
     # 1) PR feature/acme merged into dev
     # 2) branch A merged into branch B
     # 3) branch A pushed directly to git
-    # - name: Deploy Non-Tag Branches
-    #   uses: jakejarvis/s3-sync-action@master
-    #   if: github.event_name == 'push' && env.AWS_ACCESS_KEY_ID != ''
-    #   with:
-    #     args: --acl public-read --follow-symlinks --delete --cache-control "max-age=60"
-    #   env:
-    #     DEST_DIR: ${{ steps.branch_name.outputs.BRANCH_NAME }}
+    - name: Deploy Non-Tag Branches
+      uses: jakejarvis/s3-sync-action@master
+      if: github.event_name == 'push' && env.AWS_ACCESS_KEY_ID != ''
+      with:
+        args: --acl public-read --follow-symlinks --delete --cache-control "max-age=60"
+      env:
+        DEST_DIR: ${{ steps.branch_name.outputs.BRANCH_NAME }}
 
     # Release is published and deployed into s3://bucket-name/v5.22/
-    # - name: Deploy Released Branches
-    #   uses: jakejarvis/s3-sync-action@master
-    #   if: github.event_name == 'release' && env.AWS_ACCESS_KEY_ID != ''
-    #   with:
-    #     args: --acl public-read --follow-symlinks --delete --cache-control "max-age=2592000"
-    #   env:
-    #     DEST_DIR: ${{ github.event.release.tag_name }}
+    - name: Deploy Released Branches
+      uses: jakejarvis/s3-sync-action@master
+      if: github.event_name == 'release' && env.AWS_ACCESS_KEY_ID != ''
+      with:
+        args: --acl public-read --follow-symlinks --delete --cache-control "max-age=2592000"
+      env:
+        DEST_DIR: ${{ github.event.release.tag_name }}
 
     # Same release from previous deployed into s3://bucket-name/release/
-    # - name: Deploy Latest Release
-    #   uses: jakejarvis/s3-sync-action@master
-    #   if: github.event_name == 'release' && github.event.release.prerelease == false && env.AWS_ACCESS_KEY_ID != ''
-    #   with:
-    #     args: --acl public-read --follow-symlinks --delete --cache-control "max-age=1209600"
-    #   env:
-    #     DEST_DIR: 'release'
+    - name: Deploy Latest Release
+      uses: jakejarvis/s3-sync-action@master
+      if: github.event_name == 'release' && github.event.release.prerelease == false && env.AWS_ACCESS_KEY_ID != ''
+      with:
+        args: --acl public-read --follow-symlinks --delete --cache-control "max-age=1209600"
+      env:
+        DEST_DIR: 'release'
 
     # Publish to NPM
-    # - name: Publish Latest Release
-    #   if: github.event_name == 'release' && github.event.release.prerelease == false && env.NODE_AUTH_TOKEN != ''
-    #   run: npm run publish-ci
+    - name: Publish Latest Release
+      if: github.event_name == 'release' && github.event.release.prerelease == false && env.NODE_AUTH_TOKEN != ''
+      run: npm run publish-ci
 
     # Publish to NPM with prerelease dist-tag
-    # - name: Publish Latest Prerelease
-    #   if: github.event_name == 'release' && github.event.release.prerelease && env.NODE_AUTH_TOKEN != ''
-    #   run: npm run publish-ci -- --tag prerelease
+    - name: Publish Latest Prerelease
+      if: github.event_name == 'release' && github.event.release.prerelease && env.NODE_AUTH_TOKEN != ''
+      run: npm run publish-ci -- --tag prerelease
