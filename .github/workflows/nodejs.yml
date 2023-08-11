@@ -28,11 +28,11 @@ jobs:
         registry-url: 'https://registry.npmjs.org'
     - name: Install npm
       run: npm install -g npm@8
-    - name: Get npm cache directory
+    - name: Get Dependencies Directory
       id: npm-cache-dir
       shell: bash
       run: echo "dir=$(npm config get cache)" >> ${GITHUB_OUTPUT}
-    - name: Cache npm
+    - name: Cache Dependencies
       id: npm-cache
       uses: actions/cache@v3
       with:
