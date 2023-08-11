@@ -433,6 +433,7 @@ export abstract class DisplayObject extends utils.EventEmitter<DisplayObjectEven
     /** Recursively updates transform of all objects from the root to this one internal function for toLocal() */
     protected _recursivePostUpdateTransform(): void
     {
+        if (!this.transform) return;
         if (this.parent)
         {
             this.parent._recursivePostUpdateTransform();
