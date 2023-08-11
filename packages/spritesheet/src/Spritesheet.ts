@@ -34,12 +34,44 @@ export interface ISpritesheetFrameData
  */
 export interface ISpritesheetData
 {
-    frames: utils.Dict<ISpritesheetFrameData>;
     animations?: utils.Dict<string[]>;
+    frames: utils.Dict<ISpritesheetFrameData>;
     meta: {
+        app?: string;
+        format?: string;
+        frameTags?: {
+            from: number;
+            name: string;
+            to: number;
+            direction: string;
+        }[];
+        image?: string;
+        layers?: {
+            blendMode: string;
+            name: string;
+            opacity: number;
+        }[];
         scale: string;
+        size?: {
+            h: number;
+            w: number;
+        };
+        slices?: {
+            color: string;
+            name: string;
+            keys: {
+                frame: number,
+                bounds: {
+                    x: number;
+                    y: number;
+                    w: number;
+                    h: number;
+                };
+            }[];
+        }[];
         // eslint-disable-next-line camelcase
         related_multi_packs?: string[];
+        version?: string;
     };
 }
 
