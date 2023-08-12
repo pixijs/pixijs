@@ -448,6 +448,7 @@ export abstract class DisplayObject extends utils.EventEmitter<DisplayObjectEven
     /** Updates the object transform for rendering. TODO - Optimization pass! */
     updateTransform(): void
     {
+        if (!this.transform) return;
         this._boundsID++;
 
         this.transform.updateTransform(this.parent.transform);
