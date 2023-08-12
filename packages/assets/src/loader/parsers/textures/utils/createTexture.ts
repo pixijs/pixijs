@@ -21,13 +21,22 @@ export function createTexture(base: BaseTexture, loader: Loader, url: string)
     };
 
     // remove the promise from the loader and the url from the cache when the texture is destroyed
-    texture.baseTexture.once('destroyed', unload);
+    texture.baseTexture.once('destroyed', () =>
+    {
+        if (url in loader.promiseCache)
+        {
+            console.warn('[Assets] A BaseTexture managed by Assets was destroyed instead of unloaded! '
+                + 'Use Assets.unload() instead of destroying the BaseTexture.');
+            unload();
+        }
+    });
     texture.once('destroyed', () =>
     {
         if (!base.destroyed)
         {
+            console.warn('[Assets] A Texture managed by Assets was destroyed instead of unloaded! '
+                + 'Use Assets.unload() instead of destroying the Texture.');
             unload();
-            console.warn('[Assets] A Texture managed by Assets was destroyed but its BaseTexture was not!');
         }
     });
 
