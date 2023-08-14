@@ -433,25 +433,23 @@ export abstract class DisplayObject extends utils.EventEmitter<DisplayObjectEven
     /** Recursively updates transform of all objects from the root to this one internal function for toLocal() */
     protected _recursivePostUpdateTransform(): void
     {
-        if (!this.transform) return;
         if (this.parent)
         {
             this.parent._recursivePostUpdateTransform();
-            this.transform.updateTransform(this.parent.transform);
+            this.transform?.updateTransform(this.parent.transform);
         }
         else
         {
-            this.transform.updateTransform(this._tempDisplayObjectParent.transform);
+            this.transform?.updateTransform(this._tempDisplayObjectParent.transform);
         }
     }
 
     /** Updates the object transform for rendering. TODO - Optimization pass! */
     updateTransform(): void
     {
-        if (!this.transform) return;
         this._boundsID++;
 
-        this.transform.updateTransform(this.parent.transform);
+        this.transform?.updateTransform(this.parent.transform);
         // multiply the alphas..
         this.worldAlpha = this.alpha * this.parent.worldAlpha;
     }
@@ -639,7 +637,7 @@ export abstract class DisplayObject extends utils.EventEmitter<DisplayObjectEven
         }
 
         // simply apply the matrix..
-        return this.worldTransform.applyInverse<P>(position, point);
+        return this.worldTransform?.applyInverse<P>(position, point);
     }
 
     /**
@@ -800,7 +798,7 @@ export abstract class DisplayObject extends utils.EventEmitter<DisplayObjectEven
      */
     get worldTransform(): Matrix
     {
-        return this.transform.worldTransform;
+        return this.transform?.worldTransform;
     }
 
     /**

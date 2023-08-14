@@ -266,6 +266,24 @@ describe('DisplayObject', () =>
         );
     });
 
+    describe('nullCheck', () =>
+    {
+        it('should return undefined as transform may be null', () =>
+        {
+            // @ts-expect-error - instantiating DisplayObject
+            const child = new DisplayObject();
+            const container = new Container();
+
+            container.addChild(child);
+
+            container.transform = null;
+            child.transform = null;
+
+            expect(child.toLocal({ x: 10, y: 10 })).toBeUndefined();
+            expect(child.updateTransform()).toBeUndefined();
+        });
+    });
+
     describe('remove', () =>
     {
         it('should trigger removed listeners', () =>
