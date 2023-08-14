@@ -5,7 +5,8 @@ import { basePath } from './basePath';
 
 import type { BundleIdentifierOptions } from '../src/resolver/Resolver';
 
-function wait(value = 500)
+// jest has a 5000ms limits
+function wait(value = 4000)
 {
     // wait a bit...
     return new Promise<void>((resolve) =>
