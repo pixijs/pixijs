@@ -451,7 +451,7 @@ export abstract class DisplayObject extends utils.EventEmitter<DisplayObjectEven
 
         this.transform?.updateTransform(this.parent.transform);
         // multiply the alphas..
-        this.worldAlpha = this.alpha * this.parent.worldAlpha;
+        this.worldAlpha = this.alpha * this.parent?.worldAlpha;
     }
 
     /**

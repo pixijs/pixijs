@@ -276,8 +276,7 @@ describe('DisplayObject', () =>
 
             container.addChild(child);
 
-            container.transform = null;
-            child.transform = null;
+            container.destroy({ children: true });
 
             expect(child.toLocal({ x: 10, y: 10 })).toBeUndefined();
             expect(child.updateTransform()).toBeUndefined();
