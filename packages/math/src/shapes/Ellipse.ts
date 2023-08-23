@@ -82,11 +82,12 @@ export class Ellipse
     {
         return new Rectangle(this.x - this.width, this.y - this.height, this.width, this.height);
     }
+}
 
-    // #if _DEBUG
-    toString(): string
+if (process.env.DEBUG)
+{
+    Ellipse.prototype.toString = function toString(): string
     {
         return `[@pixi/math:Ellipse x=${this.x} y=${this.y} width=${this.width} height=${this.height}]`;
-    }
-    // #endif
+    };
 }

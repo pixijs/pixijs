@@ -19,9 +19,11 @@ Object.defineProperties(settings, {
         },
         set(value: number)
         {
-            // #if _DEBUG
-            utils.deprecation('7.1.0', 'settings.UPLOADS_PER_FRAME is deprecated, use prepare.BasePrepare.uploadsPerFrame');
-            // #endif
+            if (process.env.DEBUG)
+            {
+                // eslint-disable-next-line max-len
+                utils.deprecation('7.1.0', 'settings.UPLOADS_PER_FRAME is deprecated, use prepare.BasePrepare.uploadsPerFrame');
+            }
             BasePrepare.uploadsPerFrame = value;
         },
     },

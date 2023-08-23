@@ -167,19 +167,6 @@ export class State
         this._polygonOffset = value;
     }
 
-    // #if _DEBUG
-    toString(): string
-    {
-        return `[@pixi/core:State `
-            + `blendMode=${this.blendMode} `
-            + `clockwiseFrontFace=${this.clockwiseFrontFace} `
-            + `culling=${this.culling} `
-            + `depthMask=${this.depthMask} `
-            + `polygonOffset=${this.polygonOffset}`
-            + `]`;
-    }
-    // #endif
-
     static for2d(): State
     {
         const state = new State();
@@ -189,5 +176,19 @@ export class State
 
         return state;
     }
+}
+
+if (process.env.DEBUG)
+{
+    State.prototype.toString = function toString(): string
+    {
+        return `[@pixi/core:State `
+            + `blendMode=${this.blendMode} `
+            + `clockwiseFrontFace=${this.clockwiseFrontFace} `
+            + `culling=${this.culling} `
+            + `depthMask=${this.depthMask} `
+            + `polygonOffset=${this.polygonOffset}`
+            + `]`;
+    };
 }
 

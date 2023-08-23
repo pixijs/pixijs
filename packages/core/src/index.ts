@@ -9,7 +9,7 @@ import './settings';
  * String of the current PIXI version.
  * @memberof PIXI
  */
-export const VERSION = '$_VERSION';
+export const VERSION = process.env.VERSION;
 
 // Export dependencies
 export * from '@pixi/color';

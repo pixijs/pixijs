@@ -148,7 +148,7 @@ export class ImageResource extends BaseImageResource
                 source.onload = null;
                 source.onerror = null;
 
-                this.resize(source.width, source.height);
+                this.update();
                 this._load = null;
 
                 if (this.createBitmap)

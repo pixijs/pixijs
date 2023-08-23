@@ -7,6 +7,11 @@ import type { Texture } from '@pixi/core';
 
 describe('Compressed Loader', () =>
 {
+    const basePath = process.env.GITHUB_ACTIONS
+        // eslint-disable-next-line max-len
+        ? `https://raw.githubusercontent.com/pixijs/pixijs/${process.env.GITHUB_SHA}/packages/compressed-textures/test/assets/`
+        : 'http://localhost:8080/compressed-textures/test/assets/';
+
     beforeEach(() => Assets.reset());
 
     it('should load a ktx image', async () =>
@@ -21,6 +26,18 @@ describe('Compressed Loader', () =>
         expect(texture.baseTexture.valid).toBe(true);
         expect(texture.width).toBe(898);
         expect(texture.height).toBe(227);
+    });
+
+    it('should load an uncompressed ktx image', async () =>
+    {
+        await Assets.init({ basePath });
+
+        // eslint-disable-next-line max-len
+        const texture = await Assets.load<Texture>(`test-image-ktx.ktx`);
+
+        expect(texture.baseTexture.valid).toBe(true);
+        expect(texture.width).toBe(128);
+        expect(texture.height).toBe(128);
     });
 
     it('should load a a DDS image', async () =>

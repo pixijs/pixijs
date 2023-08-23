@@ -583,6 +583,7 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
      * Destroys this base texture.
      * The method stops if resource doesn't want this texture to be destroyed.
      * Removes texture from all caches.
+     * @fires PIXI.BaseTexture#destroyed
      */
     destroy(): void
     {
@@ -606,6 +607,8 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
             this.cacheId = null;
         }
 
+        this.valid = false;
+
         // finally let the WebGL renderer know..
         this.dispose();
 
@@ -613,6 +616,7 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
         this.textureCacheIds = null;
 
         this.destroyed = true;
+        this.emit('destroyed', this);
     }
 
     /**
@@ -747,6 +751,8 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
             format = FORMATS.RGBA;
             type = TYPES.UNSIGNED_BYTE;
         }
+
+        resource.internal = true;
 
         return new BaseTexture(resource, Object.assign({}, defaultBufferOptions, { type, format }, options));
     }

@@ -1,5 +1,6 @@
 import {
     BaseTexture,
+    BufferResource,
     ImageResource,
     RenderTexture,
     SCALE_MODES,
@@ -271,5 +272,17 @@ describe('BaseTexture', () =>
         expect(baseTexture.type).toBe(TYPES.FLOAT);
 
         baseTexture.destroy();
+    });
+
+    it('should destroy the resource of the texture that was created with fromBuffer', () =>
+    {
+        const baseTexture = BaseTexture.fromBuffer(new Float32Array(2 * 3 * 4), 2, 3);
+        const resource = baseTexture.resource;
+
+        expect(resource).toBeInstanceOf(BufferResource);
+
+        baseTexture.destroy();
+
+        expect(resource.destroyed).toBeTrue();
     });
 });

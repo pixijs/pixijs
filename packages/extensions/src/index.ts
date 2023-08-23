@@ -73,12 +73,13 @@ const normalizeExtension = (ext: ExtensionFormatLoose | any): ExtensionFormat =>
     // Class/Object submission, use extension object
     if (typeof ext === 'function' || (typeof ext === 'object' && ext.extension))
     {
-        // #if _DEBUG
-        if (!ext.extension)
+        if (process.env.DEBUG)
         {
-            throw new Error('Extension class must have an extension object');
+            if (!ext.extension)
+            {
+                throw new Error('Extension class must have an extension object');
+            }
         }
-        // #endif
         const metadata: ExtensionMetadataDetails = (typeof ext.extension !== 'object')
             ? { type: ext.extension }
             : ext.extension;
@@ -185,12 +186,13 @@ const extensions = {
         const addHandlers = this._addHandlers;
         const removeHandlers = this._removeHandlers;
 
-        // #if _DEBUG
-        if (addHandlers[type] || removeHandlers[type])
+        if (process.env.DEBUG)
         {
-            throw new Error(`Extension type ${type} already has a handler`);
+            if (addHandlers[type] || removeHandlers[type])
+            {
+                throw new Error(`Extension type ${type} already has a handler`);
+            }
         }
-        // #endif
 
         addHandlers[type] = onAdd;
         removeHandlers[type] = onRemove;
