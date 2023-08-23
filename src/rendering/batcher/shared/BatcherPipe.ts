@@ -118,7 +118,6 @@ export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
             const attributeBuffer = activeBatcher.geometry.buffers[0];
 
             attributeBuffer.update(activeBatcher.batcher.attributeSize * 4);
-            this.renderer.buffer.updateBuffer(attributeBuffer);
         }
     }
 

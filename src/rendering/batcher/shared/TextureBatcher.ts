@@ -7,7 +7,6 @@ import type { BindableTexture } from '../../renderers/shared/texture/Texture';
 import type { TextureBatch } from './Batcher';
 
 const batchPool: TextureBatchOutput[] = [];
-let batchPoolIndex = 0;
 
 export class TextureBatchOutput implements TextureBatch
 {
@@ -23,10 +22,10 @@ export class TextureBatcher
     private _tick = 1000;
     private _output: TextureBatch;
     private _bindingOffset: number;
-
+    private _batchPoolIndex = 0;
     public begin()
     {
-        batchPoolIndex = 0;
+        this._batchPoolIndex = 0;
 
         this._bindingOffset = 0;
         this.reset();
@@ -36,7 +35,7 @@ export class TextureBatcher
     {
         this._tick++;
 
-        this._output = batchPool[batchPoolIndex++] || new TextureBatchOutput();
+        this._output = batchPool[this._batchPoolIndex++] || new TextureBatchOutput();
 
         this._output.size = 0;
     }
@@ -76,7 +75,7 @@ export class TextureBatcher
 
         output.batchLocations[styleSourceKey] = output.size++;
 
-        batchPoolIndex = 0;
+        this._batchPoolIndex = 0;
 
         return true;
     }

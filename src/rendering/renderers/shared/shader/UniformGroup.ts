@@ -24,6 +24,8 @@ export class UniformGroup<UNIFORMS extends { [key: string]: UniformData } = any>
         isStatic: false,
     };
 
+    public touched = 0;
+
     public readonly uid = generateUID();
 
     public resourceType = 'uniformGroup';

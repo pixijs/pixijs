@@ -35,6 +35,7 @@ export class Buffer extends EventEmitter<{
     public readonly resourceType = 'buffer';
     public resourceId = generateUID();
 
+    public touched = 0;
     public readonly uid = UID++;
 
     public descriptor: BufferDescriptor;

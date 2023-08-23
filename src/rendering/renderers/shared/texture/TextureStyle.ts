@@ -55,6 +55,7 @@ export class TextureStyle extends EventEmitter<{
 }> implements BindResource
 {
     public resourceType = 'textureSampler';
+    public touched = 0;
     private _resourceId: number;
 
     // override to set styles globally

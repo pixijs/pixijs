@@ -192,9 +192,7 @@ export class GlShaderSystem
 
     public getProgramData(program: GlProgram): GlProgramData
     {
-        const key = program.key;
-
-        return this._programDataHash[key] || this._createProgramData(program);
+        return this._programDataHash[program.key] || this._createProgramData(program);
     }
 
     private _createProgramData(program: GlProgram): GlProgramData

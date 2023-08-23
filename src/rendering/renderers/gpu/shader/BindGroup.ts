@@ -66,6 +66,16 @@ export class BindGroup
         return this.resources[index];
     }
 
+    public touch(tick: number)
+    {
+        const resources = this.resources;
+
+        for (const i in resources)
+        {
+            resources[i].touched = tick;
+        }
+    }
+
     public destroy()
     {
         const resources = this.resources;

@@ -33,10 +33,22 @@ export interface TextureSourceOptions<T extends Record<string, any> = any>
 export class TextureSource<T extends Record<string, any> = any> extends EventEmitter<{
     change: BindResource;
     update: TextureSource;
+    unload: TextureSource;
     destroy: TextureSource;
     resize: TextureSource;
 }> implements BindableTexture, BindResource
 {
+    public static defaultOptions: TextureSourceOptions = {
+        resolution: 1,
+        format: 'bgra8unorm',
+        dimensions: '2d',
+        mipLevelCount: 1,
+        autoGenerateMipmaps: false,
+        sampleCount: 1,
+        antialias: false,
+        style: {} as TextureStyleOptions,
+    };
+
     public uid = UID++;
 
     public resourceType = 'textureSource';
@@ -76,13 +88,21 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     public antialias = false;
     public depthStencil = true;
 
+    /**
+     * Used by automatic texture Garbage Collection, stores last GC tick when it was bound
+     * @protected
+     */
+    public touched = 0;
+
     constructor(options: TextureSourceOptions<T> = {})
     {
         super();
 
+        options = { ...TextureSource.defaultOptions, ...options };
+
         this.resource = options.resource;
 
-        this._resolution = options.resolution ?? 1;
+        this._resolution = options.resolution;
 
         if (options.width)
         {
@@ -105,12 +125,12 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this.width = this.pixelWidth / this._resolution;
         this.height = this.pixelHeight / this._resolution;
 
-        this.format = options.format ?? 'bgra8unorm';
-        this.dimension = options.dimensions ?? '2d';
-        this.mipLevelCount = options.mipLevelCount ?? 1;
-        this.autoGenerateMipmaps = options.autoGenerateMipmaps ?? false;
-        this.sampleCount = options.sampleCount ?? 1;
-        this.antialias = options.antialias ?? false;
+        this.format = options.format;
+        this.dimension = options.dimensions;
+        this.mipLevelCount = options.mipLevelCount;
+        this.autoGenerateMipmaps = options.autoGenerateMipmaps;
+        this.sampleCount = options.sampleCount;
+        this.antialias = options.antialias;
 
         const style = options.style ?? {};
 
@@ -149,6 +169,13 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this.type = null;
         this.resource = null;
         this.removeAllListeners();
+    }
+
+    public unload()
+    {
+        this.resourceId++;
+        this.emit('change', this);
+        this.emit('unload', this);
     }
 
     get resolution(): number

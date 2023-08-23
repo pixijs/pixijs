@@ -21,6 +21,8 @@ export class GpuTextureSystem implements System
         name: 'texture',
     } as const;
 
+    public readonly managedTextures: TextureSource[] = [];
+
     protected CONTEXT_UID: number;
     private _gpuSources: Record<number, GPUTexture> = Object.create(null);
     private _gpuSamplers: Record<string, GPUSampler> = Object.create(null);
@@ -68,6 +70,9 @@ export class GpuTextureSystem implements System
         source.on('update', this.onSourceUpdate, this);
         source.on('resize', this.onSourceResize, this);
         source.on('destroy', this.onSourceDestroy, this);
+        source.on('unload', this.onSourceUnload, this);
+
+        this.managedTextures.push(source);
 
         this.onSourceUpdate(source);
 
@@ -97,17 +102,28 @@ export class GpuTextureSystem implements System
         }
     }
 
+    protected onSourceUnload(source: TextureSource): void
+    {
+        const gpuTexture = this._gpuSources[source.uid];
+
+        if (gpuTexture)
+        {
+            this._gpuSources[source.uid] = null;
+
+            gpuTexture.destroy();
+        }
+    }
+
     protected onSourceDestroy(source: TextureSource): void
     {
         source.off('update', this.onSourceUpdate, this);
+        source.off('unload', this.onSourceUnload, this);
         source.off('destroy', this.onSourceDestroy, this);
         source.off('resize', this.onSourceResize, this);
 
-        const gpuTexture = this._gpuSources[source.uid];
+        this.managedTextures.splice(this.managedTextures.indexOf(source), 1);
 
-        delete this._gpuSources[source.uid];
-
-        gpuTexture.destroy();
+        this.onSourceUnload(source);
     }
 
     protected onSourceResize(source: TextureSource): void
@@ -116,8 +132,7 @@ export class GpuTextureSystem implements System
 
         if (gpuTexture.width !== source.pixelWidth || gpuTexture.height !== source.pixelHeight)
         {
-            this._gpuSources[source.uid].destroy();
-            this._gpuSources[source.uid] = null;
+            this.onSourceUnload(source);
             this.initSource(source);
         }
     }

@@ -9,6 +9,7 @@ export class BufferResource extends EventEmitter<{
 }> implements BindResource
 {
     public readonly uid = generateUID();
+    public touched = 0;
 
     public resourceType = 'bufferResource';
 
