@@ -31,6 +31,8 @@ export class GlTextureSystem implements System
         name: 'texture',
     } as const;
 
+    public readonly managedTextures: TextureSource[] = [];
+
     private readonly _renderer: WebGLRenderer;
 
     private _glTextures: Record<number, GlTexture> = Object.create(null);
@@ -91,6 +93,8 @@ export class GlTextureSystem implements System
     {
         const gl = this._gl;
 
+        source.touched = this._renderer.textureGC.count;
+
         if (this._boundTextures[location] !== source)
         {
             this._boundTextures[location] = source;
@@ -126,7 +130,7 @@ export class GlTextureSystem implements System
         }
     }
 
-    public unbind(texture: Texture): void
+    public unbind(texture: BindableTexture): void
     {
         const source = texture.source;
         const boundTextures = this._boundTextures;
@@ -177,10 +181,25 @@ export class GlTextureSystem implements System
         source.on('update', this.onSourceUpdate, this);
         source.on('resize', this.onSourceUpdate, this);
         source.on('destroy', this.onSourceDestroy, this);
+        source.on('unload', this.onSourceUnload, this);
+
+        this.managedTextures.push(source);
 
         this.onSourceUpdate(source);
 
         return glTexture;
+    }
+
+    protected onSourceUnload(source: TextureSource): void
+    {
+        const glTexture = this._glTextures[source.uid];
+
+        if (!glTexture) return;
+
+        this.unbind(source);
+        this._glTextures[source.uid] = null;
+
+        this._gl.deleteTexture(glTexture.texture);
     }
 
     protected onSourceUpdate(source: TextureSource): void
@@ -211,16 +230,13 @@ export class GlTextureSystem implements System
 
     protected onSourceDestroy(source: TextureSource): void
     {
-        const gl = this._gl;
-
         source.off('destroy', this.onSourceDestroy, this);
         source.off('update', this.onSourceUpdate, this);
+        source.off('unload', this.onSourceUnload, this);
 
-        const glTexture = this._glTextures[source.uid];
+        this.managedTextures.splice(this.managedTextures.indexOf(source), 1);
 
-        delete this._glTextures[source.uid];
-
-        gl.deleteTexture(glTexture.target);
+        this.onSourceUnload(source);
     }
 
     private _initSampler(style: TextureStyle): WebGLSampler

@@ -32,8 +32,6 @@ export class GpuBatchAdaptor implements BatcherAdaptor
 
     public execute(batchPipe: BatcherPipe, batch: Batch): void
     {
-        batchPipe.state.blendMode = batch.blendMode;
-
         if (!batch.textures.bindGroup)
         {
             batch.textures.bindGroup = getTextureBatchBindGroup(batch.textures.textures);
@@ -54,7 +52,7 @@ export class GpuBatchAdaptor implements BatcherAdaptor
         encoder.setPipelineFromGeometryProgramAndState(
             activeBatcher.geometry,
             program,
-            batchPipe.state
+            batch.state
         );
 
         encoder.setGeometry(activeBatcher.geometry);

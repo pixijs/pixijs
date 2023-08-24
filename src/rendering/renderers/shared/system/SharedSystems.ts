@@ -19,6 +19,7 @@ import { BlendModePipe } from '../BlendModePipe';
 import { GlobalUniformSystem } from '../renderTarget/GlobalUniformSystem';
 import { UniformBufferSystem } from '../shader/UniformBufferSystem';
 import { HelloSystem } from '../startup/HelloSystem';
+import { TextureGCSystem } from '../texture/TextureGCSystem';
 import { ViewSystem } from '../ViewSystem';
 
 export const SharedSystems = [
@@ -31,6 +32,7 @@ export const SharedSystems = [
     CanvasTextSystem,
     LayerSystem,
     UniformBufferSystem,
+    TextureGCSystem,
 ];
 
 export const SharedRenderPipes = [

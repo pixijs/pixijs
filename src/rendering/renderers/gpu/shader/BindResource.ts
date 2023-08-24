@@ -9,6 +9,8 @@ export interface BindResource
     /** Unique id for this resource this can change and is used to link the gpu*/
     resourceId: number;
 
+    touched: number;
+
     /**
      * event dispatch whenever the underlying resource needs to change
      * this could be a texture or buffer that has been resized.

@@ -1,5 +1,6 @@
 import { ViewableBuffer } from '../../../utils/ViewableBuffer';
 import { fastCopy } from '../../renderers/shared/buffer/utils/fastCopy';
+import { State } from '../../renderers/shared/state/State';
 import { TextureBatcher } from './TextureBatcher';
 
 import type { BindGroup } from '../../renderers/gpu/shader/BindGroup';
@@ -30,6 +31,7 @@ export class Batch
     public size = 0;
     public textures: TextureBatch;
     public blendMode: BLEND_MODES;
+    public state = State.for2d();
 
     public canBundle = true;
     public batchParent: { geometry: Geometry, batcher: Batcher };
@@ -137,7 +139,7 @@ export class Batcher
 
             this._currentBlendMode = blendMode;
             batch = this.batches[this.batchIndex];
-            batch.blendMode = blendMode;
+            batch.state.blendMode = blendMode;
 
             this._textureBatcher.add(texture);
         }
@@ -241,26 +243,16 @@ export class Batcher
             currentBatch.textures = this._textureBatcher.finish();
         }
 
-        const size = this.elementSize - currentBatch.elementStart;
-
-        for (let i = 0; i < size; i++)
-        {
-            const batchableObject = this._elements[currentBatch.elementStart + i];
-
-            batchableObject.textureId = currentBatch.textures.batchLocations[batchableObject.texture.styleSourceKey];
-
-            batchableObject.packAttributes(
-                this.attributeBuffer.float32View,
-                this.attributeBuffer.uint32View,
-                batchableObject.location, batchableObject.textureId
-            );
-
-            batchableObject.packIndex(
-                this.indexBuffer,
-                batchableObject.indexStart,
-                batchableObject.location / this._vertexSize,
-            );
-        }
+        this._packData(
+            this.attributeBuffer.float32View,
+            this.attributeBuffer.uint32View,
+            this.indexBuffer,
+            currentBatch.textures.batchLocations,
+            currentBatch.elementStart,
+            this.elementSize - currentBatch.elementStart,
+            this._vertexSize,
+            this._elements
+        );
 
         this.batchIndex++;
 
@@ -271,7 +263,7 @@ export class Batcher
             nextBatch = this.batches[this.batchIndex] = new Batch();
         }
 
-        nextBatch.blendMode = this._currentBlendMode;
+        nextBatch.state.blendMode = this._currentBlendMode;
         nextBatch.elementStart = this.elementSize;
         nextBatch.elementSize = 0;
         nextBatch.start = this.indexSize;
@@ -359,5 +351,43 @@ export class Batcher
         this.attributeBuffer = null;
 
         this._textureBatcher.destroy();
+    }
+
+    private _packData(
+        float32View: Float32Array,
+        uint32View: Uint32Array,
+        indexBuffer: Uint32Array,
+        batchLocations: Record<number, number>,
+        elementStart: number,
+        size: number,
+        vertexSize: number,
+        elements: BatchableObject[],
+
+    )
+    {
+        let batchableObject: BatchableObject = null;
+        let textureId = 0;
+        let location = 0;
+
+        for (let i = 0; i < size; i++)
+        {
+            batchableObject = elements[elementStart + i];
+
+            textureId = batchableObject.textureId = batchLocations[batchableObject.texture.styleSourceKey];
+            location = batchableObject.location;
+
+            batchableObject.packAttributes(
+                float32View,
+                uint32View,
+                location,
+                textureId
+            );
+
+            batchableObject.packIndex(
+                indexBuffer,
+                batchableObject.indexStart,
+                location / vertexSize,
+            );
+        }
     }
 }

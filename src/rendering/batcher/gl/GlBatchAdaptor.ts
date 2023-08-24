@@ -43,11 +43,9 @@ export class GlBatchAdaptor implements BatcherAdaptor
     {
         const renderer = batchPipe.renderer as WebGLRenderer;
 
-        batchPipe.state.blendMode = batch.blendMode;
-
-        renderer.state.set(batchPipe.state);
-
         renderer.shader.bind(this._shader, this._didUpload);
+
+        renderer.shader.bindUniformBlock(renderer.globalUniforms.uniformGroup, 'globalUniforms', 0);
 
         this._didUpload = true;
 
@@ -55,12 +53,12 @@ export class GlBatchAdaptor implements BatcherAdaptor
 
         renderer.geometry.bind(activeBatcher.geometry, this._shader.glProgram);
 
+        renderer.state.set(batch.state);
+
         for (let i = 0; i < batch.textures.textures.length; i++)
         {
             renderer.texture.bind(batch.textures.textures[i], i);
         }
-
-        renderer.shader.bindUniformBlock(renderer.globalUniforms.uniformGroup, 'globalUniforms', 0);
 
         renderer.geometry.draw('triangle-list', batch.size, batch.start);
     }

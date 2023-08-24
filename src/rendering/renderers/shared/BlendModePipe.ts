@@ -92,10 +92,7 @@ export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
     {
         if (this._activeBlendMode === blendMode)
         {
-            if (this._isAdvanced)
-            {
-                this._renderableList.push(renderable);
-            }
+            if (this._isAdvanced) this._renderableList.push(renderable);
 
             return;
         }

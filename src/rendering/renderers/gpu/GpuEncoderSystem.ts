@@ -118,9 +118,13 @@ export class GpuEncoderSystem implements System
         if (this._boundBindGroup[index] === bindGroup) return;
         this._boundBindGroup[index] = bindGroup;
 
-        // TODO or is dirty!
+        bindGroup.touch(this._renderer.textureGC.count);
+
+        // TODO getting the bind group works as it looks at th e assets and generates a key
+        // should this just be hidden behind a dirty flag?
         const gpuBindGroup = this._renderer.bindGroup.getBindGroup(bindGroup, program, index);
 
+        // mark each item as having been used..
         this.renderPassEncoder.setBindGroup(index, gpuBindGroup);
     }
 
