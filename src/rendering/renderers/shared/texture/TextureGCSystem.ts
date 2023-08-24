@@ -27,8 +27,8 @@ export class TextureGCSystem implements System
 
     public static defaultOptions: TextureGCSystemOptions = {
         textureGCActive: true,
-        textureGCAMaxIdle: 60 * 6,
-        textureGCCheckCountMax: 60,
+        textureGCAMaxIdle: 60 * 60,
+        textureGCCheckCountMax: 600,
     };
 
     /**
@@ -86,10 +86,10 @@ export class TextureGCSystem implements System
      */
     protected postrender(): void
     {
-        // if (!this.renderer.objectRenderer.renderingToScreen)
-        // {
-        //     return;
-        // }
+        if (!this._renderer.renderingToScreen)
+        {
+            return;
+        }
 
         this.count++;
 
