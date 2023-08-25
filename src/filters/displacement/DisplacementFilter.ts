@@ -32,7 +32,7 @@ export class DisplacementFilter extends Filter
     private readonly _sprite: Sprite;
 
     constructor(options: Sprite | DisplacementFilterOptions);
-    /** @deprecated */
+    /** @deprecated since 8.0.0 */
     constructor(sprite: Sprite, scale?: number | PointData);
     constructor(...args: [Sprite | DisplacementFilterOptions] | [Sprite, (number | PointData)?])
     {

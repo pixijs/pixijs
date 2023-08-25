@@ -1,6 +1,7 @@
 // import { SHAPES } from '../const';
 import { Point } from '../Point';
 
+import type { Bounds } from '../../rendering/scene/bounds/Bounds';
 import type { SHAPE_PRIMITIVE } from '../const';
 import type { Matrix } from '../Matrix';
 import type { ShapePrimitive } from './ShapePrimitive';
@@ -82,6 +83,21 @@ export class Rectangle implements ShapePrimitive
     public clone(): Rectangle
     {
         return new Rectangle(this.x, this.y, this.width, this.height);
+    }
+
+    /**
+     * Converts a Bounds object to a Rectangle object.
+     * @param bounds - The bounds to copy and convert to a rectangle.
+     * @returns Returns itself.
+     */
+    public copyFromBounds(bounds: Bounds): this
+    {
+        this.x = bounds.minX;
+        this.y = bounds.minY;
+        this.width = bounds.maxX - bounds.minX;
+        this.height = bounds.maxY - bounds.minY;
+
+        return this;
     }
 
     /**

@@ -15,7 +15,7 @@ const DEPRECATED_DRAW_MODES = {
     TRIANGLE_STRIP: 'triangle-strip',
 };
 
-/** @deprecated */
+/** @deprecated since 8.0.0 */
 export const DRAW_MODES = new Proxy(DEPRECATED_DRAW_MODES, {
     get(target, prop: keyof typeof DEPRECATED_DRAW_MODES)
     {

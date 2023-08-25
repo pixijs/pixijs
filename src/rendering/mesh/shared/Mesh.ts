@@ -20,7 +20,7 @@ export class Mesh<
 > extends Container<MeshView<GEOMETRY, SHADER>>
 {
     constructor(options: MeshOptions<GEOMETRY, SHADER>);
-    /** @deprecated */
+    /** @deprecated since 8.0.0 */
     constructor(geometry: GEOMETRY, shader: SHADER, state?: State, drawMode?: Topology);
     constructor(...args: [MeshOptions<GEOMETRY, SHADER>] | [GEOMETRY, SHADER, State?, Topology?])
     {

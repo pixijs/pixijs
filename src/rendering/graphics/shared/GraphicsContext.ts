@@ -3,6 +3,7 @@ import EventEmitter from 'eventemitter3';
 import { Matrix } from '../../../maths/Matrix';
 import { Point } from '../../../maths/Point';
 import { convertColorToNumber } from '../../../utils/color/convertColorToNumber';
+import { deprecation } from '../../../utils/logging/deprecation';
 import { Texture } from '../../renderers/shared/texture/Texture';
 import { Bounds } from '../../scene/bounds/Bounds';
 import { FillGradient } from './fill/FillGradient';
@@ -254,7 +255,10 @@ export class GraphicsContext extends EventEmitter<{
         return this;
     }
 
-    public fill(style?: FillStyleInputs): this
+    /** @deprecated 8.0.0 */
+    public fill(color: number, alpha: number): this;
+    public fill(style?: FillStyleInputs): this;
+    public fill(style?: FillStyleInputs | number, alpha?: number): this
     {
         let path: GraphicsPath;
 
@@ -275,6 +279,11 @@ export class GraphicsContext extends EventEmitter<{
 
         if (style)
         {
+            if (alpha !== undefined && typeof style === 'number')
+            {
+                deprecation('8.0.0', 'GraphicsContext.fill(color, alpha) is deprecated, use GraphicsContext.fill({ color, alpha }) instead');
+                style = { color: style, alpha };
+            }
             fillStyle = convertFillInputToFillStyle(style, GraphicsContext.defaultFillStyle);
         }
 

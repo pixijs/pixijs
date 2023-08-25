@@ -8,7 +8,6 @@ import type { Writeable } from '../../../../utils/types';
 import type { RenderSurface } from '../../gpu/renderTarget/GpuRenderTargetSystem';
 import type { Renderer } from '../../types';
 import type { PipeConstructor } from '../instructions/RenderPipe';
-import type { Texture } from '../texture/Texture';
 import type { ViewSystem } from '../ViewSystem';
 import type { System, SystemConstructor } from './System';
 
@@ -103,6 +102,8 @@ export class AbstractRenderer<PIPES, OPTIONS>
         }
     }
 
+    /** @deprecated since 8.0.0 */
+    public render(container: Container, options: {renderTexture: any}): void;
     /**
      * Renders the object to its view.
      * @param options - The options to render with.
@@ -110,20 +111,20 @@ export class AbstractRenderer<PIPES, OPTIONS>
      * @param [options.target] - The target to render to.
      */
     public render(options: RenderOptions | Container): void;
-    public render(...args: [RenderOptions | Container] | [Container, Texture]): void
+    public render(args: RenderOptions | Container, deprecated?: {renderTexture: any}): void
     {
-        let options = args[0];
+        let options = args;
 
         if (options instanceof Container)
         {
             options = { container: options };
 
-            if (args[1])
+            if (deprecated)
             {
                 // eslint-disable-next-line max-len
-                deprecation(v8_0_0, 'passing target as a second argument is deprecated, please use render options instead');
+                deprecation(v8_0_0, 'passing a second argument is deprecated, please use render options instead');
 
-                options.target = args[1];
+                options.target = deprecated.renderTexture;
             }
         }
 

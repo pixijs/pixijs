@@ -104,7 +104,7 @@ export const TextFormat = {
             pages: [],
             lineHeight: 0,
             fontSize: 0,
-            fontName: '',
+            fontFamily: '',
             distanceField: null,
             baseLineOffset: 0,
         };
@@ -122,7 +122,7 @@ export const TextFormat = {
         }
 
         font.fontSize = parseInt(info.size, 10);
-        font.fontName = info.face;
+        font.fontFamily = info.face;
         font.lineHeight = parseInt(common.lineHeight, 10);
 
         const page = rawData.page;
