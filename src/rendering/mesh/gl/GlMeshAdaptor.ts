@@ -19,7 +19,7 @@ export class GlMeshAdaptor implements MeshAdaptor
         const renderer = meshPipe.renderer;
         const view = renderable.view;
 
-        const state = meshPipe.state;
+        const state = view.state;
 
         state.blendMode = renderable.layerBlendMode;
 

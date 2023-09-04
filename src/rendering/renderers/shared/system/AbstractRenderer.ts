@@ -2,6 +2,7 @@ import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
 import { Container } from '../../../scene/Container';
 import { SystemRunner } from './SystemRunner';
 
+import type { Matrix } from '../../../../maths/Matrix';
 import type { Rectangle } from '../../../../maths/shapes/Rectangle';
 import type { ICanvas } from '../../../../settings/adapter/ICanvas';
 import type { Writeable } from '../../../../utils/types';
@@ -24,6 +25,7 @@ interface RendererConfig
 export interface RenderOptions
 {
     container: Container;
+    transform?: Matrix;
     target?: RenderSurface;
 }
 

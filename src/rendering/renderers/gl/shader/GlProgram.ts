@@ -1,4 +1,5 @@
 import { ensurePrecision } from './program/ensurePrecision';
+import { getMaxFragmentPrecision } from './program/getMaxFragmentPrecision';
 import { setProgramName } from './program/setProgramName';
 import { setProgramVersion } from './program/setProgramVersion';
 
@@ -38,6 +39,8 @@ export interface GlProgramOptions
     fragment?: string;
     vertex?: string;
     name?: string;
+    preferredVertexPrecision?: string;
+    preferredFragmentPrecision?: string;
 }
 
 const processes: Record<string, ((source: string, options: any, isFragment?: boolean) => string)> = {
@@ -48,6 +51,11 @@ const processes: Record<string, ((source: string, options: any, isFragment?: boo
 
 export class GlProgram
 {
+    public static defaultOptions: GlProgramOptions = {
+        preferredVertexPrecision: 'highp',
+        preferredFragmentPrecision: 'mediump',
+    };
+
     public fragment?: string;
     public vertex?: string;
 
@@ -59,24 +67,31 @@ export class GlProgram
 
     public readonly key: string;
 
-    constructor({ fragment, vertex, name }: GlProgramOptions)
+    constructor(options: GlProgramOptions)
     {
-        const options = {
+        options = { ...GlProgram.defaultOptions, ...options };
+
+        const preprocessorOptions = {
             ensurePrecision: {
-                requestedPrecision: 'highp',
-                maxSupportedPrecision: 'highp',
+                requestedFragmentPrecision: options.preferredFragmentPrecision,
+                requestedVertexPrecision: options.preferredVertexPrecision,
+                maxSupportedVertexPrecision: 'highp',
+                maxSupportedFragmentPrecision: getMaxFragmentPrecision(),
             },
             setProgramName: {
-                name,
+                name: options.name,
             },
             setProgramVersion: {
                 version: '300 es',
             }
         };
 
+        let fragment = options.fragment;
+        let vertex = options.vertex;
+
         Object.keys(processes).forEach((processKey) =>
         {
-            const processOptions = options[processKey as keyof typeof options] ?? {};
+            const processOptions = preprocessorOptions[processKey as keyof typeof preprocessorOptions] ?? {};
 
             fragment = processes[processKey](fragment, processOptions, true);
             vertex = processes[processKey](vertex, processOptions, false);

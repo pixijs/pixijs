@@ -3,7 +3,6 @@ import { Matrix } from '../../../maths/Matrix';
 import { BigPool } from '../../../utils/pool/PoolGroup';
 import { BindGroup } from '../../renderers/gpu/shader/BindGroup';
 import { UniformGroup } from '../../renderers/shared/shader/UniformGroup';
-import { State } from '../../renderers/shared/state/State';
 import { Texture } from '../../renderers/shared/texture/Texture';
 import { BatchableMesh } from './BatchableMesh';
 import { MeshShader } from './MeshShader';
@@ -68,7 +67,6 @@ export class MeshPipe implements RenderPipe<MeshView>, InstructionPipe<MeshInstr
     });
 
     public renderer: Renderer;
-    public state: State = State.for2d();
 
     private _renderableHash: Record<number, RenderableData> = Object.create(null);
     private _gpuBatchableMeshHash: Record<number, BatchableMesh> = Object.create(null);
@@ -244,6 +242,5 @@ export class MeshPipe implements RenderPipe<MeshView>, InstructionPipe<MeshInstr
         this._adaptor = null;
 
         this.renderer = null;
-        this.state = null;
     }
 }

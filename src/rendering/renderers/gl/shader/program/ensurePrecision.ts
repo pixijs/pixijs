@@ -1,25 +1,39 @@
 import type { PRECISION } from '../const';
 
+interface EnsurePrecisionOptions
+{
+    requestedVertexPrecision: PRECISION;
+    requestedFragmentPrecision: PRECISION;
+    maxSupportedVertexPrecision: PRECISION;
+    maxSupportedFragmentPrecision: PRECISION;
+}
+
 /**
  * Sets the float precision on the shader, ensuring the device supports the request precision.
  * If the precision is already present, it just ensures that the device is able to handle it.
  * @param src
- * @param root0
- * @param root0.requestedPrecision
- * @param root0.maxSupportedPrecision
+ * @param options
+ * @param options.requestedVertexPrecision
+ * @param options.requestedFragmentPrecision
+ * @param options.maxSupportedVertexPrecision
+ * @param options.maxSupportedFragmentPrecision
+ * @param isFragment
  */
 export function ensurePrecision(
     src: string,
-    { requestedPrecision, maxSupportedPrecision }: {requestedPrecision: PRECISION, maxSupportedPrecision: PRECISION}
+    options: EnsurePrecisionOptions,
+    isFragment: boolean,
 ): string
 {
+    const maxSupportedPrecision = isFragment ? options.maxSupportedFragmentPrecision : options.maxSupportedVertexPrecision;
+
     if (src.substring(0, 9) !== 'precision')
     {
         // no precision supplied, so PixiJS will add the requested level.
-        let precision = requestedPrecision;
+        let precision = isFragment ? options.requestedFragmentPrecision : options.requestedVertexPrecision;
 
         // If highp is requested but not supported, downgrade precision to a level all devices support.
-        if (requestedPrecision === 'highp' && maxSupportedPrecision !== 'highp')
+        if (precision === 'highp' && maxSupportedPrecision !== 'highp')
         {
             precision = 'mediump';
         }
