@@ -496,7 +496,7 @@ export class Matrix
     // #if _DEBUG
     public toString(): string
     {
-        return `[@pixi/math:Matrix a=${this.a} b=${this.b} c=${this.c} d=${this.d} tx=${this.tx} ty=${this.ty}]`;
+        return `[pixi.js:Matrix a=${this.a} b=${this.b} c=${this.c} d=${this.d} tx=${this.tx} ty=${this.ty}]`;
     }
     // #endif
 

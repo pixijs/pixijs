@@ -5,6 +5,7 @@ import { executeInstructions } from './utils/executeInstructions';
 import { updateLayerGroupTransforms } from './utils/updateLayerGroupTransforms';
 import { validateRenderables } from './utils/validateRenderables';
 
+import type { Matrix } from '../../maths/Matrix';
 import type { WebGPURenderer } from '../renderers/gpu/WebGPURenderer';
 import type { System } from '../renderers/shared/system/System';
 import type { Renderer } from '../renderers/types';
@@ -36,7 +37,7 @@ export class LayerSystem implements System
         this._renderer = renderer;
     }
 
-    protected render({ container }: {container: Container}): void
+    protected render({ container, transform }: {container: Container, transform: Matrix}): void
     {
         container.layer = true;
 
@@ -80,6 +81,11 @@ export class LayerSystem implements System
 
             // upload all the things!
             renderer.renderPipes.batch.upload(layerGroup.instructionSet);
+        }
+
+        if (transform)
+        {
+            container.layerGroup.worldTransform.copyFrom(transform);
         }
 
         renderer.globalUniforms.start(
