@@ -7,6 +7,7 @@ import { UniformGroup } from '../../renderers/shared/shader/UniformGroup';
 import { color32BitToUniform } from '../gpu/colorToUniform';
 import { generateDefaultGraphicsBatchGlProgram } from './generateDefaultGraphicsBatchGlProgram';
 
+import type { Batch } from '../../batcher/shared/Batcher';
 import type { WebGLRenderer } from '../../renderers/gl/WebGLRenderer';
 import type { Renderable } from '../../renderers/shared/Renderable';
 import type { GraphicsAdaptor, GraphicsPipe } from '../shared/GraphicsPipe';
@@ -53,7 +54,7 @@ export class GlGraphicsAdaptor implements GraphicsAdaptor
         { return; }
 
         const {
-            geometry, batches,
+            geometry, instructions,
         } = contextSystem.getContextRenderData(context);
 
         const state = graphicsPipe.state;
@@ -81,7 +82,9 @@ export class GlGraphicsAdaptor implements GraphicsAdaptor
 
         renderer.geometry.bind(geometry, shader.glProgram);
 
-        for (let i = 0; i < batches.length; i++)
+        const batches = instructions.instructions as Batch[];
+
+        for (let i = 0; i < instructions.instructionSize; i++)
         {
             const batch = batches[i];
 

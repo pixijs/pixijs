@@ -7,6 +7,7 @@ import { UniformGroup } from '../../renderers/shared/shader/UniformGroup';
 import { color32BitToUniform } from './colorToUniform';
 import { generateDefaultGraphicsBatchProgram } from './generateDefaultGraphicsBatchProgram';
 
+import type { Batch } from '../../batcher/shared/Batcher';
 import type { GpuEncoderSystem } from '../../renderers/gpu/GpuEncoderSystem';
 import type { WebGPURenderer } from '../../renderers/gpu/WebGPURenderer';
 import type { Renderable } from '../../renderers/shared/Renderable';
@@ -53,7 +54,7 @@ export class GpuGraphicsAdaptor implements GraphicsAdaptor
         { return; }
 
         const {
-            geometry, batches
+            geometry, instructions
         } = contextSystem.getContextRenderData(context);
 
         graphicsPipe.state.blendMode = renderable.layerBlendMode;
@@ -90,13 +91,15 @@ export class GpuGraphicsAdaptor implements GraphicsAdaptor
 
         encoder.setBindGroup(2, localBindGroup, shader.gpuProgram);
 
-        for (let i = 0; i < batches.length; i++)
+        const batches = instructions.instructions as Batch[];
+
+        for (let i = 0; i < instructions.instructionSize; i++)
         {
             const batch = batches[i];
 
-            shader.groups[1] = batch.textures.bindGroup;
+            shader.groups[1] = batch.bindGroup;
 
-            encoder.setBindGroup(1, batch.textures.bindGroup, shader.gpuProgram);
+            encoder.setBindGroup(1, batch.bindGroup, shader.gpuProgram);
 
             encoder.renderPassEncoder.drawIndexed(batch.size, 1, batch.start);
         }

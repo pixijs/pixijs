@@ -1,12 +1,17 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { Shader } from '../../renderers/shared/shader/Shader';
+import { State } from '../../renderers/shared/state/State';
 import { MAX_TEXTURES } from '../shared/const';
 import { generateDefaultBatchProgram } from './generateDefaultBatchProgram';
 import { getTextureBatchBindGroup } from './getTextureBatchBindGroup';
 
 import type { GpuEncoderSystem } from '../../renderers/gpu/GpuEncoderSystem';
+import type { WebGPURenderer } from '../../renderers/gpu/WebGPURenderer';
+import type { Geometry } from '../../renderers/shared/geometry/Geometry';
 import type { Batch } from '../shared/Batcher';
 import type { BatcherAdaptor, BatcherPipe } from '../shared/BatcherPipe';
+
+const tempState = State.for2d();
 
 export class GpuBatchAdaptor implements BatcherAdaptor
 {
@@ -19,6 +24,7 @@ export class GpuBatchAdaptor implements BatcherAdaptor
     } as const;
 
     private _shader: Shader;
+    private readonly _pipelines: Record<string, GPURenderPipeline> = {};
 
     public init()
     {
@@ -30,36 +36,61 @@ export class GpuBatchAdaptor implements BatcherAdaptor
         });
     }
 
-    public execute(batchPipe: BatcherPipe, batch: Batch): void
+    public start(batchPipe: BatcherPipe, geometry: Geometry): void
     {
-        if (!batch.textures.bindGroup)
-        {
-            batch.textures.bindGroup = getTextureBatchBindGroup(batch.textures.textures);
-        }
-
+        const renderer = batchPipe.renderer as WebGPURenderer;
+        const encoder = renderer.encoder as GpuEncoderSystem;
         const program = this._shader.gpuProgram;
 
-        const encoder = batchPipe.renderer.encoder as GpuEncoderSystem;
-        const globalUniformsBindGroup = batchPipe.renderer.globalUniforms.bindGroup;
+        encoder.setGeometry(geometry);
 
-        // create a state objects we need...
-        this._shader.groups[1] = batch.textures.bindGroup;
+        if (!this._pipelines.normal)
+        {
+            tempState.blendMode = 'normal';
 
-        const activeBatcher = batch.batchParent;
+            this._pipelines.normal = renderer.pipeline.getPipeline(
+                geometry,
+                program,
+                tempState
+            );
+        }
 
-        // TODO.. prolly should cache this?
-        // or add it to the instructions?
-        encoder.setPipelineFromGeometryProgramAndState(
-            activeBatcher.geometry,
-            program,
-            batch.state
-        );
+        const globalUniformsBindGroup = renderer.globalUniforms.bindGroup;
 
-        encoder.setGeometry(activeBatcher.geometry);
         encoder.setBindGroup(0, globalUniformsBindGroup, program);
-        encoder.setBindGroup(1, batch.textures.bindGroup, program);
+    }
 
-        // TODO move this to a draw function on the pipe!
+    public execute(batchPipe: BatcherPipe, batch: Batch): void
+    {
+        const program = this._shader.gpuProgram;
+        const renderer = batchPipe.renderer as WebGPURenderer;
+        const encoder = renderer.encoder as GpuEncoderSystem;
+
+        if (!batch.gpuBindGroup)
+        {
+            const textureBatch = batch.textures;
+
+            batch.bindGroup = getTextureBatchBindGroup(textureBatch.textures, textureBatch.count);
+            batch.gpuBindGroup = renderer.bindGroup.getBindGroup(
+                batch.bindGroup, program, 1
+            );
+        }
+
+        if (!this._pipelines[batch.blendMode])
+        {
+            tempState.blendMode = batch.blendMode;
+            this._pipelines[batch.blendMode] = renderer.pipeline.getPipeline(
+                batch.batcher.geometry,
+                program,
+                tempState
+            );
+        }
+
+        batch.bindGroup.touch(renderer.textureGC.count);
+
+        encoder.setPipeline(this._pipelines[batch.blendMode]);
+
+        encoder.renderPassEncoder.setBindGroup(1, batch.gpuBindGroup);
         encoder.renderPassEncoder.drawIndexed(batch.size, 1, batch.start);
     }
 

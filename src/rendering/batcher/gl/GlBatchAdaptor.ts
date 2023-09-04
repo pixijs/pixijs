@@ -3,10 +3,12 @@ import { Matrix } from '../../../maths/Matrix';
 import { batchSamplersUniformGroup } from '../../renderers/gl/shader/batchSamplersUniformGroup';
 import { Shader } from '../../renderers/shared/shader/Shader';
 import { UniformGroup } from '../../renderers/shared/shader/UniformGroup';
+import { State } from '../../renderers/shared/state/State';
 import { MAX_TEXTURES } from '../shared/const';
 import { generateDefaultBatchGlProgram } from './generateDefaultBatchGlProgram';
 
 import type { WebGLRenderer } from '../../renderers/gl/WebGLRenderer';
+import type { Geometry } from '../../renderers/shared/geometry/Geometry';
 import type { Batch } from '../shared/Batcher';
 import type { BatcherAdaptor, BatcherPipe } from '../shared/BatcherPipe';
 
@@ -22,6 +24,7 @@ export class GlBatchAdaptor implements BatcherAdaptor
 
     private _shader: Shader;
     private _didUpload = false;
+    private readonly _tempState = State.for2d();
 
     public init()
     {
@@ -39,7 +42,7 @@ export class GlBatchAdaptor implements BatcherAdaptor
         });
     }
 
-    public execute(batchPipe: BatcherPipe, batch: Batch): void
+    public start(batchPipe: BatcherPipe, geometry: Geometry): void
     {
         const renderer = batchPipe.renderer as WebGLRenderer;
 
@@ -47,17 +50,24 @@ export class GlBatchAdaptor implements BatcherAdaptor
 
         renderer.shader.bindUniformBlock(renderer.globalUniforms.uniformGroup, 'globalUniforms', 0);
 
+        renderer.geometry.bind(geometry, this._shader.glProgram);
+    }
+
+    public execute(batchPipe: BatcherPipe, batch: Batch): void
+    {
+        const renderer = batchPipe.renderer as WebGLRenderer;
+
         this._didUpload = true;
 
-        const activeBatcher = batch.batchParent;
+        this._tempState.blendMode = batch.blendMode;
 
-        renderer.geometry.bind(activeBatcher.geometry, this._shader.glProgram);
+        renderer.state.set(this._tempState);
 
-        renderer.state.set(batch.state);
+        const textures = batch.textures.textures;
 
-        for (let i = 0; i < batch.textures.textures.length; i++)
+        for (let i = 0; i < textures.length; i++)
         {
-            renderer.texture.bind(batch.textures.textures[i], i);
+            renderer.texture.bind(textures[i], i);
         }
 
         renderer.geometry.draw('triangle-list', batch.size, batch.start);
