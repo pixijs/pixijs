@@ -1,4 +1,5 @@
 import { Polygon } from '../../../maths/shapes/Polygon';
+import { State } from '../../renderers/shared/state/State';
 import { Texture } from '../../renderers/shared/texture/Texture';
 import { emptyViewObserver } from '../../renderers/shared/View';
 
@@ -37,6 +38,7 @@ export class MeshView<
     public readonly type = 'mesh';
     public readonly canBundle = true;
     public readonly owner = emptyViewObserver;
+    public state = State.for2d();
 
     /** @ignore */
     public _texture: Texture;
