@@ -15,6 +15,6 @@ jobs:
         uses: peter-evans/repository-dispatch@v2.1.1
         with:
           event-type: update-dev
-          repository: pixijs/beta.pixijs.com
+          repository: pixijs/pixijs.com
           token: ${{ secrets.PAT }}
           client-payload: '{"ref": "${{ github.ref }}", "pr_sha": "${{ github.sha }}", "sha": "${{ github.event.pull_request.head.sha }}"}'

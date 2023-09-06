@@ -6,6 +6,7 @@ import { FederatedWheelEvent } from './FederatedWheelEvent';
 
 import type { ExtensionMetadata, IPointData, IRenderer, ISystem } from '@pixi/core';
 import type { DisplayObject } from '@pixi/display';
+import type { PixiTouch } from './FederatedEvent';
 import type { EventMode } from './FederatedEventTarget';
 import type { FederatedMouseEvent } from './FederatedMouseEvent';
 
@@ -345,7 +346,7 @@ export class EventSystem implements ISystem<EventSystemOptions>
         this.rootBoundary.rootTarget = this.renderer.lastObjectRendered as DisplayObject;
 
         // if we support touch events, then only use those for touch events, not pointer events
-        if (this.supportsTouchEvents && (nativeEvent as PointerEvent).pointerType === 'touch') return;
+        if (this.supportsTouchEvents && ['touch', 'pen'].includes((nativeEvent as PointerEvent).pointerType)) return;
 
         const events = this.normalizeToPointerData(nativeEvent);
 
@@ -388,7 +389,7 @@ export class EventSystem implements ISystem<EventSystemOptions>
         this.rootBoundary.rootTarget = this.renderer.lastObjectRendered as DisplayObject;
 
         // if we support touch events, then only use those for touch events, not pointer events
-        if (this.supportsTouchEvents && (nativeEvent as PointerEvent).pointerType === 'touch') return;
+        if (this.supportsTouchEvents && ['touch', 'pen'].includes((nativeEvent as PointerEvent).pointerType)) return;
 
         EventsTicker.pointerMoved();
 
@@ -414,7 +415,7 @@ export class EventSystem implements ISystem<EventSystemOptions>
         this.rootBoundary.rootTarget = this.renderer.lastObjectRendered as DisplayObject;
 
         // if we support touch events, then only use those for touch events, not pointer events
-        if (this.supportsTouchEvents && (nativeEvent as PointerEvent).pointerType === 'touch') return;
+        if (this.supportsTouchEvents && ['touch', 'pen'].includes((nativeEvent as PointerEvent).pointerType)) return;
 
         let target = nativeEvent.target;
 
@@ -840,28 +841,6 @@ interface PixiPointerEvent extends PointerEvent
     pressure: number;
     twist: number;
     tangentialPressure: number;
-    isNormalized: boolean;
-    type: string;
-}
-
-interface PixiTouch extends Touch
-{
-    button: number;
-    buttons: number;
-    isPrimary: boolean;
-    width: number;
-    height: number;
-    tiltX: number;
-    tiltY: number;
-    pointerType: string;
-    pointerId: number;
-    pressure: number;
-    twist: number;
-    tangentialPressure: number;
-    layerX: number;
-    layerY: number;
-    offsetX: number;
-    offsetY: number;
     isNormalized: boolean;
     type: string;
 }

@@ -86,9 +86,10 @@ export const url = {
      */
     get parse()
     {
-        // #if _DEBUG
-        deprecation('7.3.0', 'utils.url.parse is deprecated, use native URL API instead.');
-        // #endif
+        if (process.env.DEBUG)
+        {
+            deprecation('7.3.0', 'utils.url.parse is deprecated, use native URL API instead.');
+        }
 
         return _parse as ParseFunction;
     },
@@ -97,9 +98,10 @@ export const url = {
      */
     get format()
     {
-        // #if _DEBUG
-        deprecation('7.3.0', 'utils.url.format is deprecated, use native URL API instead.');
-        // #endif
+        if (process.env.DEBUG)
+        {
+            deprecation('7.3.0', 'utils.url.format is deprecated, use native URL API instead.');
+        }
 
         return _format as FormatFunction;
     },
@@ -108,9 +110,10 @@ export const url = {
      */
     get resolve()
     {
-        // #if _DEBUG
-        deprecation('7.3.0', 'utils.url.resolve is deprecated, use native URL API instead.');
-        // #endif
+        if (process.env.DEBUG)
+        {
+            deprecation('7.3.0', 'utils.url.resolve is deprecated, use native URL API instead.');
+        }
 
         return _resolve as ResolveFunction;
     }

@@ -1,6 +1,9 @@
 import { spawn } from 'child_process';
 import { join } from 'path';
 
+process.env.DEBUG = '1';
+process.env.VERSION = '0.0.0';
+
 // eslint-disable-next-line func-names
 module.exports = async function ()
 {

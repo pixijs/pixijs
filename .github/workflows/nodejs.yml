@@ -28,7 +28,16 @@ jobs:
         registry-url: 'https://registry.npmjs.org'
     - name: Install npm
       run: npm install -g npm@8
+    - name: Cache Dependencies
+      id: node-modules-cache
+      uses: actions/cache@v3
+      with:
+        path: node_modules
+        key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-modules-
     - name: Install Dependencies
+      if: steps.node-modules-cache.outputs.cache-hit != 'true'
       run: npm ci
 
     - name: Run Unit Tests

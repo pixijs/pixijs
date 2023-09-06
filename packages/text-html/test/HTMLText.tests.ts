@@ -91,5 +91,24 @@ describe('HTMLText', () =>
             expect(style2Id).toBe(style.styleID);
             text.destroy();
         });
+
+        it('should warn user when large expanse of text is found', () =>
+        {
+            const text = new HTMLText('Lorem ipsum dolor sit amet, consectetur adipiscing elit, '
+                + 'sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. '
+                + 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi '
+                + 'ut aliquip ex ea commodo consequat. '
+                + 'Duis aute irure dolor in reprehenderit in voluptate velit esse '
+                + 'cillum dolore eu fugiat nulla pariatur. '
+                + 'Excepteur sint occaecat cupidatat non proident, sunt in culpa '
+                + 'qui officia deserunt mollit anim id est laborum.');
+
+            const warn = jest.spyOn(console, 'warn').mockImplementation();
+
+            text.measureText({ resolution: 10 });
+            expect(warn).toBeCalled();
+            warn.mockReset();
+            text.destroy();
+        });
     });
 });

@@ -465,6 +465,8 @@ describe('Assets', () =>
         await Promise.all([bunnyPromise, bunnyPromise2]);
 
         expect(spy).not.toHaveBeenCalled();
+
+        spy.mockRestore();
     });
 
     it('should append default url params when specified in the constructor', async () =>
@@ -494,5 +496,30 @@ describe('Assets', () =>
         expect(loadTextures.config.preferWorkers).toBe(false);
         Assets.setPreferences({ preferWorkers: true });
         expect(loadTextures.config.preferWorkers).toBe(true);
+    });
+
+    it('should remove the asset from the cache when destroyed', async () =>
+    {
+        await Assets.init({
+            basePath,
+        });
+
+        const url = 'textures/bunny.png';
+        const texture1 = await Assets.load(url);
+
+        expect(Assets.cache.has(url)).toBeTrue();
+
+        texture1.destroy(true);
+
+        expect(Assets.cache.has(url)).toBeFalse();
+
+        const texture2 = await Assets.load(url);
+
+        expect(Assets.cache.has(url)).toBeTrue();
+        expect(texture2).not.toBe(texture1);
+
+        texture2.destroy(true);
+
+        expect(Assets.cache.has(url)).toBeFalse();
     });
 });

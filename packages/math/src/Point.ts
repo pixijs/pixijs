@@ -85,11 +85,12 @@ export class Point implements IPoint
 
         return this;
     }
+}
 
-    // #if _DEBUG
-    toString(): string
+if (process.env.DEBUG)
+{
+    Point.prototype.toString = function toString(): string
     {
         return `[@pixi/math:Point x=${this.x} y=${this.y}]`;
-    }
-    // #endif
+    };
 }

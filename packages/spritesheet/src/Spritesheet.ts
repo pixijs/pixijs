@@ -9,18 +9,20 @@ import type { ImageResource, IPointData, ITextureBorders } from '@pixi/core';
 export interface ISpritesheetFrameData
 {
     frame: {
+        h: number;
+        w: number;
         x: number;
         y: number;
-        w: number;
-        h: number;
     };
     trimmed?: boolean;
     rotated?: boolean;
     sourceSize?: {
-        w: number;
         h: number;
+        w: number;
     };
     spriteSourceSize?: {
+        h?: number;
+        w?: number;
         x: number;
         y: number;
     };
@@ -34,12 +36,44 @@ export interface ISpritesheetFrameData
  */
 export interface ISpritesheetData
 {
-    frames: utils.Dict<ISpritesheetFrameData>;
     animations?: utils.Dict<string[]>;
+    frames: utils.Dict<ISpritesheetFrameData>;
     meta: {
+        app?: string;
+        format?: string;
+        frameTags?: {
+            from: number;
+            name: string;
+            to: number;
+            direction: string;
+        }[];
+        image?: string;
+        layers?: {
+            blendMode: string;
+            name: string;
+            opacity: number;
+        }[];
         scale: string;
+        size?: {
+            h: number;
+            w: number;
+        };
+        slices?: {
+            color: string;
+            name: string;
+            keys: {
+                frame: number,
+                bounds: {
+                    x: number;
+                    y: number;
+                    w: number;
+                    h: number;
+                };
+            }[];
+        }[];
         // eslint-disable-next-line camelcase
         related_multi_packs?: string[];
+        version?: string;
     };
 }
 
@@ -114,13 +148,13 @@ export interface ISpritesheetData
  * supported by TexturePacker.
  * @memberof PIXI
  */
-export class Spritesheet
+export class Spritesheet<S extends ISpritesheetData = ISpritesheetData>
 {
     /** The maximum number of Textures to build per process. */
     static readonly BATCH_SIZE = 1000;
 
     /** For multi-packed spritesheets, this contains a reference to all the other spritesheets it depends on. */
-    public linkedSheets: Spritesheet[] = [];
+    public linkedSheets: Spritesheet<S>[] = [];
 
     /** Reference to ths source texture. */
     public baseTexture: BaseTexture;
@@ -133,7 +167,7 @@ export class Spritesheet
      *
      * new Sprite(sheet.textures['image.png']);
      */
-    public textures: utils.Dict<Texture>;
+    public textures: Record<keyof S['frames'], Texture>;
 
     /**
      * A map containing the textures for each animation.
@@ -143,13 +177,13 @@ export class Spritesheet
      *
      * new AnimatedSprite(sheet.animations['anim_name']);
      */
-    public animations: utils.Dict<Texture[]>;
+    public animations: Record<keyof S['animations'], Texture[]>;
 
     /**
      * Reference to the original JSON data.
      * @type {object}
      */
-    public data: ISpritesheetData;
+    public data: S;
 
     /** The resolution of the spritesheet. */
     public resolution: number;
@@ -164,10 +198,10 @@ export class Spritesheet
      * Map of spritesheet frames.
      * @type {object}
      */
-    private _frames: utils.Dict<ISpritesheetFrameData>;
+    private _frames: S['frames'];
 
     /** Collection of frame names. */
-    private _frameKeys: string[];
+    private _frameKeys: (keyof S['frames'])[];
 
     /** Current batch index being processed. */
     private _batchIndex: number;
@@ -185,12 +219,12 @@ export class Spritesheet
      *        the resolution of the spritesheet. If not provided, the imageUrl will
      *        be used on the BaseTexture.
      */
-    constructor(texture: BaseTexture | Texture, data: ISpritesheetData, resolutionFilename: string = null)
+    constructor(texture: BaseTexture | Texture, data: S, resolutionFilename: string = null)
     {
         this._texture = texture instanceof Texture ? texture : null;
         this.baseTexture = texture instanceof BaseTexture ? texture : this._texture.baseTexture;
-        this.textures = {};
-        this.animations = {};
+        this.textures = {} as Record<keyof S['frames'], Texture>;
+        this.animations = {} as Record<keyof S['animations'], Texture[]>;
         this.data = data;
 
         const resource = this.baseTexture.resource as ImageResource;
@@ -327,7 +361,7 @@ export class Spritesheet
                 );
 
                 // lets also add the frame to pixi's global cache for 'from' and 'fromLoader' functions
-                Texture.addToCache(this.textures[i], i);
+                Texture.addToCache(this.textures[i], i.toString());
             }
 
             frameIndex++;
@@ -341,7 +375,7 @@ export class Spritesheet
 
         for (const animName in animations)
         {
-            this.animations[animName] = [];
+            this.animations[animName as keyof S['animations']] = [];
             for (let i = 0; i < animations[animName].length; i++)
             {
                 const frameName = animations[animName][i];

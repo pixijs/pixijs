@@ -85,7 +85,6 @@ Or via unpkg:
 
 - [Filters Demo](https://pixijs.io/filters/tools/demo/)
 - [Run Pixie Run](http://work.goodboydigital.com/runpixierun/)
-- [Flash vs HTML](http://flashvhtml.com)
 - [Bunny Demo](http://www.goodboydigital.com/pixijs/bunnymark)
 - [Storm Brewing](http://www.goodboydigital.com/pixijs/storm)
 - [Render Texture Demo](http://www.goodboydigital.com/pixijs/examples/11)

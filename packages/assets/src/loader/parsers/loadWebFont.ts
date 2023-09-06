@@ -122,9 +122,10 @@ export const loadWebFont = {
             return fontFaces.length === 1 ? fontFaces[0] : fontFaces;
         }
 
-        // #if _DEBUG
-        console.warn('[loadWebFont] FontFace API is not supported. Skipping loading font');
-        // #endif
+        if (process.env.DEBUG)
+        {
+            console.warn('[loadWebFont] FontFace API is not supported. Skipping loading font');
+        }
 
         return null;
     },

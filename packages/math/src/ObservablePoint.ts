@@ -109,13 +109,6 @@ export class ObservablePoint<T = any> implements IPoint
         return (p.x === this._x) && (p.y === this._y);
     }
 
-    // #if _DEBUG
-    toString(): string
-    {
-        return `[@pixi/math:ObservablePoint x=${0} y=${0} scope=${this.scope}]`;
-    }
-    // #endif
-
     /** Position of the observable point on the x axis. */
     get x(): number
     {
@@ -145,4 +138,12 @@ export class ObservablePoint<T = any> implements IPoint
             this.cb.call(this.scope);
         }
     }
+}
+
+if (process.env.DEBUG)
+{
+    ObservablePoint.prototype.toString = function toString(): string
+    {
+        return `[@pixi/math:ObservablePoint x=${this.x} y=${this.y} scope=${this.scope}]`;
+    };
 }
