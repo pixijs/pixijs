@@ -245,9 +245,9 @@ export class Loader
             {
                 const loadedAsset = await loadPromise.promise;
 
-                loadPromise.parser?.unload?.(loadedAsset, asset, this);
-
                 delete this.promiseCache[url];
+
+                loadPromise.parser?.unload?.(loadedAsset, asset, this);
             }
         });
 
