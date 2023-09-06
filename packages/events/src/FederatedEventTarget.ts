@@ -601,12 +601,12 @@ export const FederatedDisplayObject: IFederatedDisplayObject = {
     _internalEventMode: undefined,
     /**
      * Enable interaction events for the DisplayObject. Touch, pointer and mouse.
-     * This now replaces the `interactive` property
-     * There is 5 types of interaction settings:
+     * This now replaces the `interactive` property.
+     * There are 5 types of interaction settings:
      * - `'none'`: Ignores all interaction events, even on its children.
      * - `'passive'`: Does not emit events and ignores all hit testing on itself and non-interactive children.
      * Interactive children will still emit events.
-     * - `'auto'`: Does not emit events and but is hit tested if parent is interactive. Same as `interactive = false` in v7
+     * - `'auto'`: Does not emit events but is hit tested if parent is interactive. Same as `interactive = false` in v7
      * - `'static'`: Emit events and is hit tested. Same as `interaction = true` in v7
      * - `'dynamic'`: Emits events and is hit tested but will also receive mock interaction events fired from a ticker to
      * allow for interaction when the mouse isn't moving

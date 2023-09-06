@@ -346,7 +346,7 @@ export class EventSystem implements ISystem<EventSystemOptions>
         this.rootBoundary.rootTarget = this.renderer.lastObjectRendered as DisplayObject;
 
         // if we support touch events, then only use those for touch events, not pointer events
-        if (this.supportsTouchEvents && (nativeEvent as PointerEvent).pointerType === 'touch') return;
+        if (this.supportsTouchEvents && ['touch', 'pen'].includes((nativeEvent as PointerEvent).pointerType)) return;
 
         const events = this.normalizeToPointerData(nativeEvent);
 
@@ -389,7 +389,7 @@ export class EventSystem implements ISystem<EventSystemOptions>
         this.rootBoundary.rootTarget = this.renderer.lastObjectRendered as DisplayObject;
 
         // if we support touch events, then only use those for touch events, not pointer events
-        if (this.supportsTouchEvents && (nativeEvent as PointerEvent).pointerType === 'touch') return;
+        if (this.supportsTouchEvents && ['touch', 'pen'].includes((nativeEvent as PointerEvent).pointerType)) return;
 
         EventsTicker.pointerMoved();
 
@@ -415,7 +415,7 @@ export class EventSystem implements ISystem<EventSystemOptions>
         this.rootBoundary.rootTarget = this.renderer.lastObjectRendered as DisplayObject;
 
         // if we support touch events, then only use those for touch events, not pointer events
-        if (this.supportsTouchEvents && (nativeEvent as PointerEvent).pointerType === 'touch') return;
+        if (this.supportsTouchEvents && ['touch', 'pen'].includes((nativeEvent as PointerEvent).pointerType)) return;
 
         let target = nativeEvent.target;
 

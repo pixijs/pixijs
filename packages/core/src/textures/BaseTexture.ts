@@ -607,6 +607,8 @@ export class BaseTexture<R extends Resource = Resource, RO = IAutoDetectOptions>
             this.cacheId = null;
         }
 
+        this.valid = false;
+
         // finally let the WebGL renderer know..
         this.dispose();
 
