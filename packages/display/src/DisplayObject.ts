@@ -550,6 +550,8 @@ export abstract class DisplayObject extends utils.EventEmitter<DisplayObjectEven
         const parentRef = this.parent;
 
         this.parent = null;
+        // inherit the worldAlpha of the parent node
+        this._tempDisplayObjectParent.worldAlpha = parentRef?.worldAlpha ?? 1;
         this.transform = this._tempDisplayObjectParent.transform;
 
         const worldBounds = this._bounds;

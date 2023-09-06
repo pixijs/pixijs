@@ -341,4 +341,28 @@ describe('DisplayObject', () =>
             expect(listenerCallCount).toEqual(1);
         });
     });
+
+    describe('worldAlpha', () =>
+    {
+        it('should calculate the parent worldAlpha', () =>
+        {
+            const parent = new Container();
+
+            parent.alpha = 0.4;
+            const child = new Container();
+
+            child.alpha = 0.6;
+            parent.addChild(child);
+
+            parent.enableTempParent();
+            parent.updateTransform();
+            parent.disableTempParent(null);
+
+            expect(child.worldAlpha).toBe(0.24);
+
+            child.getLocalBounds();
+
+            expect(child.worldAlpha).toBe(0.24);
+        });
+    });
 });
