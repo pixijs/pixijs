@@ -182,6 +182,7 @@ export class TextView implements View
     private _updateBounds()
     {
         const bounds = this._bounds;
+        const padding = this._style.padding;
 
         if (this.type === 'bitmapText')
         {
@@ -189,28 +190,28 @@ export class TextView implements View
             const scale = bitmapMeasurement.scale;
             const offset = bitmapMeasurement.offsetY * scale;
 
-            bounds[0] = 0;
-            bounds[1] = offset;
-            bounds[2] = bitmapMeasurement.width * scale;
-            bounds[3] = (bitmapMeasurement.height * scale) + offset;
+            bounds[0] = -padding;
+            bounds[1] = offset - padding;
+            bounds[2] = (bitmapMeasurement.width * scale) - padding;
+            bounds[3] = ((bitmapMeasurement.height * scale) + offset) - padding;
         }
         else if (this.type === 'htmlText')
         {
             const htmlMeasurement = measureHtmlText(this.text, this._style as HTMLTextStyle);
 
-            bounds[0] = 0;
-            bounds[1] = 0;
-            bounds[2] = htmlMeasurement.width;
-            bounds[3] = htmlMeasurement.height;
+            bounds[0] = -padding;
+            bounds[1] = -padding;
+            bounds[2] = htmlMeasurement.width - padding;
+            bounds[3] = htmlMeasurement.height - padding;
         }
         else
         {
             const canvasMeasurement = CanvasTextMetrics.measureText(this.text, this._style);
 
-            bounds[0] = 0;
-            bounds[1] = 0;
-            bounds[2] = canvasMeasurement.width;
-            bounds[3] = canvasMeasurement.height;
+            bounds[0] = -padding;
+            bounds[1] = -padding;
+            bounds[2] = canvasMeasurement.width - padding;
+            bounds[3] = canvasMeasurement.height - padding;
         }
     }
 
