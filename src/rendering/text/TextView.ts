@@ -229,7 +229,7 @@ export class TextView implements View
 
     private _detectRenderType(style: TextStyleOptions | TextStyle): 'canvas' | 'html' | 'bitmap'
     {
-        return Cache.has(style.fontFamily as string) ? 'bitmap' : 'canvas';
+        return Cache.has(style?.fontFamily as string) ? 'bitmap' : 'canvas';
     }
 
     /**
