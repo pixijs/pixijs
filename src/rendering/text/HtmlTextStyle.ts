@@ -6,7 +6,7 @@ import { TextStyle } from './TextStyle';
 import type { FillStyleInputs } from '../graphics/shared/GraphicsContext';
 import type { TextStyleOptions } from './TextStyle';
 
-export interface HTMLTextStyleOptions extends TextStyleOptions
+export interface HTMLTextStyleOptions extends Omit<TextStyleOptions, 'leading' | 'textBaseline' | 'trim' >
 {
     cssOverrides?: string[];
 }
@@ -59,12 +59,10 @@ export class HTMLTextStyle extends TextStyle
             fontStyle: this.fontStyle,
             fontVariant: this.fontVariant,
             fontWeight: this.fontWeight,
-            leading: this.leading,
             letterSpacing: this.letterSpacing,
             lineHeight: this.lineHeight,
             padding: this.padding,
             stroke: this._stroke,
-            textBaseline: this.textBaseline,
             whiteSpace: this.whiteSpace,
             wordWrap: this.wordWrap,
             wordWrapWidth: this.wordWrapWidth,
@@ -133,7 +131,7 @@ export class HTMLTextStyle extends TextStyle
     override set stroke(value: FillStyleInputs)
     {
         // if its not a string or a number, then its a texture!
-        if (typeof value !== 'string' && typeof value !== 'number')
+        if (value && typeof value !== 'string' && typeof value !== 'number')
         {
             console.warn('[HTMLTextStyle] only color stroke is not supported by HTMLText');
         }
