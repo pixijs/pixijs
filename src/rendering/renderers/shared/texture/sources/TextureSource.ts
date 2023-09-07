@@ -222,7 +222,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this.emit('change', this);
     }
 
-    /** @deprecated */
+    /** @deprecated since 8.0.0 */
     set wrapMode(value: WRAP_MODE)
     {
         // eslint-disable-next-line max-len
@@ -230,7 +230,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this.style.wrapMode = value;
     }
 
-    /** @deprecated */
+    /** @deprecated since 8.0.0 */
     get wrapMode(): WRAP_MODE
     {
         // eslint-disable-next-line max-len
@@ -239,7 +239,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         return this.style.wrapMode;
     }
 
-    /** @deprecated */
+    /** @deprecated since 8.0.0 */
     set scaleMode(value: SCALE_MODE)
     {
         // eslint-disable-next-line max-len
@@ -247,7 +247,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this.style.scaleMode = value;
     }
 
-    /** @deprecated */
+    /** @deprecated since 8.0.0 */
     get scaleMode(): SCALE_MODE
     {
         // eslint-disable-next-line max-len

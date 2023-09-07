@@ -207,7 +207,7 @@ export enum DEPRECATED_WRAP_MODES
     MIRRORED_REPEAT = 'mirror-repeat',
 }
 
-/** @deprecated */
+/** @deprecated since 8.0.0 */
 export const WRAP_MODES = new Proxy(DEPRECATED_WRAP_MODES, {
     get(target, prop: keyof typeof DEPRECATED_WRAP_MODES)
     {
@@ -247,7 +247,7 @@ export enum DEPRECATED_SCALE_MODES
     LINEAR = 'linear',
 }
 
-/** @deprecated */
+/** @deprecated since 8.0.0 */
 export const SCALE_MODES = new Proxy(DEPRECATED_SCALE_MODES, {
     get(target, prop: keyof typeof DEPRECATED_SCALE_MODES)
     {

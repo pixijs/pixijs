@@ -85,7 +85,6 @@ Or via unpkg:
 
 - [Filters Demo](https://pixijs.io/filters/tools/demo/)
 - [Run Pixie Run](http://work.goodboydigital.com/runpixierun/)
-- [Flash vs HTML](http://flashvhtml.com)
 - [Bunny Demo](http://www.goodboydigital.com/pixijs/bunnymark)
 - [Storm Brewing](http://www.goodboydigital.com/pixijs/storm)
 - [Render Texture Demo](http://www.goodboydigital.com/pixijs/examples/11)
@@ -167,7 +166,7 @@ app.ticker.add(() => {
 ### How to build ###
 
 Note that for most users you don't need to build this project. If all you want is to use PixiJS, then
-just download one of our [prebuilt releases](https://github.com/pixijs/pixijs/releases). 
+just download one of our [prebuilt releases](https://github.com/pixijs/pixijs/releases).
 The only time you should need to build PixiJS is if you are developing it.
 
 If you don't already have Node.js and NPM, go install them. Then, in the folder where you have cloned

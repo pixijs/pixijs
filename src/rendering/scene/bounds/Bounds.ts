@@ -50,10 +50,7 @@ export class Bounds
         }
         else
         {
-            rectangle.x = this.minX;
-            rectangle.y = this.minY;
-            rectangle.width = this.maxX - this.minX;
-            rectangle.height = this.maxY - this.minY;
+            rectangle.copyFromBounds(this);
         }
 
         return rectangle;

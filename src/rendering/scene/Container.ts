@@ -3,6 +3,7 @@ import { DEG_TO_RAD, RAD_TO_DEG } from '../../maths/const';
 import { Matrix } from '../../maths/Matrix';
 import { ObservablePoint } from '../../maths/ObservablePoint';
 import { convertColorToNumber } from '../../utils/color/convertColorToNumber';
+import { deprecation } from '../../utils/logging/deprecation';
 import { childrenHelperMixin } from './container-mixins/childrenHelperMixin';
 import { effectsMixin } from './container-mixins/effectsMixin';
 import { findMixin } from './container-mixins/getByLabelMixin';
@@ -89,6 +90,20 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
     public uid: number = uid++;
 
     public label: string = null;
+    /** @deprecated since 8.0.0 */
+    public get name(): string
+    {
+        deprecation('8.0.0', 'Container.name property has been removed, use Container.label instead');
+
+        return this.label;
+    }
+    /** @deprecated since 8.0.0 */
+    public set name(value: string)
+    {
+        deprecation('8.0.0', 'Container.name property has been removed, use Container.label instead');
+
+        this.label = value;
+    }
 
     /** @internal */
     public _updateFlags = 0b1111;

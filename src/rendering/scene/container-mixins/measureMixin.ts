@@ -11,8 +11,8 @@ export interface MeasureMixin
     width: number;
     height: number;
 
-    getLocalBounds(): Rectangle;
-    getBounds(skipUpdate?: boolean): Rectangle;
+    getLocalBounds(rect?: Rectangle): Rectangle;
+    getBounds(skipUpdate?: boolean, rect?: Rectangle): Rectangle;
 }
 
 const tempBounds = new Bounds();
@@ -60,11 +60,14 @@ export const measureMixin: Partial<Container> = {
 
     /**
      * Retrieves the local bounds of the displayObject as a Bounds object.
+     * @param rect - Optional rectangle to store the result of the bounds calculation.
      * @returns - The bounding area.
      */
-    getLocalBounds(): Rectangle
+    getLocalBounds(rect?: Rectangle): Rectangle
     {
-        return getLocalBounds(this, new Bounds(), tempMatrix).rectangle;
+        const bounds = getLocalBounds(this, new Bounds(), tempMatrix);
+
+        return rect ? rect.copyFromBounds(bounds) : bounds.rectangle.clone();
     },
 
     /**
@@ -72,11 +75,14 @@ export const measureMixin: Partial<Container> = {
      * @param skipUpdate - Setting to `true` will stop the transforms of the scene graph from
      *  being updated. This means the calculation returned MAY be out of date BUT will give you a
      *  nice performance boost.
+     * @param rect - Optional rectangle to store the result of the bounds calculation.
      * @returns - The minimum axis-aligned rectangle in world space that fits around this object.
      */
-    getBounds(skipUpdate?: boolean): Rectangle
+    getBounds(skipUpdate?: boolean, rect?: Rectangle): Rectangle
     {
-        return getGlobalBounds(this, skipUpdate, tempBounds).rectangle;
+        const bounds = getGlobalBounds(this, skipUpdate, tempBounds);
+
+        return rect ? rect.copyFromBounds(bounds) : bounds.rectangle.clone();
     }
 
 } as Container;
