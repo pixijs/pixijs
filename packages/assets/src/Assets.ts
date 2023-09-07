@@ -431,7 +431,14 @@ export class AssetsClass
                     const aliases = url.alias || url.name;
 
                     if (aliases && Array.isArray(aliases)) return aliases[0];
-                    if (srcs && Array.isArray(srcs)) return srcs[0];
+                    if (srcs && Array.isArray(srcs))
+                    {
+                        const src = srcs[0];
+
+                        if (typeof src === 'string') return src;
+
+                        return src.src || src.srcs;
+                    }
 
                     return aliases || srcs;
                 }

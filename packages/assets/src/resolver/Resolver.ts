@@ -493,7 +493,11 @@ export class Resolver
 
                 return Array.isArray(src) ? src : [src];
             });
-            const aliasesToUse = convertToList<string>(alias || name);
+
+            let aliasesToUse: string[] = null;
+
+            // alias/name can be undefined, so we need to check for that
+            if (alias || name) aliasesToUse = convertToList<string>(alias || name);
 
             if (process.env.DEBUG)
             {
@@ -536,6 +540,12 @@ export class Resolver
                         };
                     }
 
+                    // check if aliases is undefined
+                    if (!aliasesToUse)
+                    {
+                        aliasesToUse = [formattedAsset.src];
+                    }
+
                     formattedAsset = this.buildResolvedAsset(formattedAsset, {
                         aliases: aliasesToUse,
                         data,
@@ -544,6 +554,7 @@ export class Resolver
                     });
 
                     resolvedAssets.push(formattedAsset);
+                    this._resolverHash[formattedAsset.src] = formattedAsset;
                 });
             });
 
