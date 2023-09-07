@@ -4,15 +4,14 @@ import { emptyViewObserver } from '../renderers/shared/View';
 import { BitmapFontManager } from './bitmap/BitmapFontManager';
 import { CanvasTextMetrics } from './canvas/CanvasTextMetrics';
 import { measureHtmlText } from './html/utils/measureHtmlText.';
-import { HTMLTextStyle } from './HtmlTextStyle';
-import { TextStyle } from './TextStyle';
+import { ensureStyle } from './shared/utils/ensureStyle';
 
 import type { PointData } from '../../maths/PointData';
 import type { View, ViewObserver } from '../renderers/shared/View';
 import type { Bounds } from '../scene/bounds/Bounds';
 import type { TextureDestroyOptions, TypeOrBool } from '../scene/destroyTypes';
-import type { HTMLTextStyleOptions } from './HtmlTextStyle';
-import type { TextStyleOptions } from './TextStyle';
+import type { HTMLTextStyle, HTMLTextStyleOptions } from './HtmlTextStyle';
+import type { TextStyle, TextStyleOptions } from './TextStyle';
 
 export type TextString = string | number | {toString: () => string};
 
@@ -61,6 +60,7 @@ export class TextView implements View
     private _bounds: [number, number, number, number] = [0, 1, 0, 0];
     private _boundsDirty = true;
     private _text: string;
+    private readonly _renderMode: string;
 
     constructor(options: TextViewOptions)
     {
@@ -68,20 +68,14 @@ export class TextView implements View
 
         const renderMode = options.renderMode ?? this._detectRenderType(options.style);
 
-        if (options.style instanceof TextStyle || options.style instanceof HTMLTextStyle)
-        {
-            this._style = options.style;
-        }
-        else
-        {
-            this._style = renderMode === 'html'
-                ? new HTMLTextStyle(options.style)
-                : new TextStyle(options.style);
-        }
+        this._renderMode = renderMode;
+
+        this._style = ensureStyle(renderMode, options.style);
 
         this.type = map[renderMode];
 
         this.anchor = new ObservablePoint(this, 0, 0);
+
         this._resolution = options.resolution ?? TextView.defaultResolution;
 
         this._autoResolution = !options.resolution ?? TextView.defaultAutoResolution;
@@ -114,14 +108,7 @@ export class TextView implements View
 
         this._style?.off('update', this.onUpdate, this);
 
-        if (style instanceof TextStyle)
-        {
-            this._style = style;
-        }
-        else
-        {
-            this._style = new TextStyle(style);
-        }
+        this._style = ensureStyle(this._renderMode, style);
 
         this._style.on('update', this.onUpdate, this);
         this.onUpdate();
