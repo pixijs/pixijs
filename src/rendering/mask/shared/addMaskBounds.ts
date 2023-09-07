@@ -3,7 +3,7 @@ import { getGlobalBounds } from '../../scene/bounds/getGlobalBounds';
 
 import type { Container } from '../../scene/Container';
 
-export const tempBounds = new Bounds();
+const tempBounds = new Bounds();
 
 export function addMaskBounds(mask: Container, bounds: Bounds, skipUpdateTransform: boolean): void
 {

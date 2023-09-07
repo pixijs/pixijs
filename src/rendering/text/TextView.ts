@@ -3,15 +3,18 @@ import { ObservablePoint } from '../../maths/ObservablePoint';
 import { emptyViewObserver } from '../renderers/shared/View';
 import { BitmapFontManager } from './bitmap/BitmapFontManager';
 import { CanvasTextMetrics } from './canvas/CanvasTextMetrics';
+import { measureHtmlText } from './html/utils/measureHtmlText.';
+import { HTMLTextStyle } from './HtmlTextStyle';
 import { TextStyle } from './TextStyle';
 
 import type { PointData } from '../../maths/PointData';
 import type { View, ViewObserver } from '../renderers/shared/View';
 import type { Bounds } from '../scene/bounds/Bounds';
 import type { TextureDestroyOptions, TypeOrBool } from '../scene/destroyTypes';
+import type { HTMLTextStyleOptions } from './HtmlTextStyle';
 import type { TextStyleOptions } from './TextStyle';
 
-let uid = 0;
+export type TextString = string | number | {toString: () => string};
 
 type Filter<T> = { [K in keyof T]: {
     text?: TextString;
@@ -22,19 +25,18 @@ type Filter<T> = { [K in keyof T]: {
 
 export type TextStyles = {
     canvas: TextStyleOptions | TextStyle;
-    // html: HTMLTextStyle;
+    html: HTMLTextStyleOptions | HTMLTextStyle;
     bitmap: TextStyleOptions | TextStyle;
 };
 
 export type TextViewOptions = Filter<TextStyles>;
-
 const map = {
     canvas: 'text',
-    html: 'text',
+    html: 'htmlText',
     bitmap: 'bitmapText',
 };
 
-export type TextString = string | number | {toString: () => string};
+let uid = 0;
 
 export class TextView implements View
 {
@@ -63,13 +65,26 @@ export class TextView implements View
     constructor(options: TextViewOptions)
     {
         this.text = options.text ?? '';
-        this._style = options.style instanceof TextStyle ? options.style : new TextStyle(options.style);
 
-        const renderMode = options.renderMode ?? this._detectRenderType(this._style);
+        const renderMode = options.renderMode ?? this._detectRenderType(options.style);
+
+        if (options.style instanceof TextStyle || options.style instanceof HTMLTextStyle)
+        {
+            this._style = options.style;
+        }
+        else
+        {
+            this._style = renderMode === 'html'
+                ? new HTMLTextStyle(options.style)
+                : new TextStyle(options.style);
+        }
 
         this.type = map[renderMode];
+
         this.anchor = new ObservablePoint(this, 0, 0);
         this._resolution = options.resolution ?? TextView.defaultResolution;
+
+        this._autoResolution = !options.resolution ?? TextView.defaultAutoResolution;
     }
 
     set text(value: TextString)
@@ -192,6 +207,15 @@ export class TextView implements View
             bounds[2] = bitmapMeasurement.width * scale;
             bounds[3] = (bitmapMeasurement.height * scale) + offset;
         }
+        else if (this.type === 'htmlText')
+        {
+            const htmlMeasurement = measureHtmlText(this.text, this._style as HTMLTextStyle);
+
+            bounds[0] = 0;
+            bounds[1] = 0;
+            bounds[2] = htmlMeasurement.width;
+            bounds[3] = htmlMeasurement.height;
+        }
         else
         {
             const canvasMeasurement = CanvasTextMetrics.measureText(this.text, this._style);
@@ -203,7 +227,7 @@ export class TextView implements View
         }
     }
 
-    private _detectRenderType(style: TextStyle): 'canvas' | 'html' | 'bitmap'
+    private _detectRenderType(style: TextStyleOptions | TextStyle): 'canvas' | 'html' | 'bitmap'
     {
         return Cache.has(style.fontFamily as string) ? 'bitmap' : 'canvas';
     }

@@ -1,4 +1,5 @@
 import { ObservablePoint } from '../../../maths/ObservablePoint';
+import { updateQuadBounds } from '../../../utils/updateQuadBounds';
 import { Texture } from '../../renderers/shared/texture/Texture';
 import { emptyViewObserver } from '../../renderers/shared/View';
 
@@ -134,44 +135,7 @@ export class SpriteView implements View
 
     private _updateBounds()
     {
-        const texture = this._texture;
-        const textureSource = texture._source;
-
-        const layout = texture.layout;
-
-        const orig = layout.orig;
-        const trim = layout.trim;
-
-        const textureSourceWidth = textureSource.width;
-        const textureSourceHeight = textureSource.height;
-
-        const width = textureSourceWidth * orig.width;
-        const height = textureSourceHeight * orig.height;
-
-        const anchor = this.anchor;
-        const bounds = this._bounds;
-
-        if (trim)
-        {
-            const sourceWidth = textureSourceWidth * trim.width;
-            const sourceHeight = textureSourceHeight * trim.height;
-
-            bounds[1] = (trim.x * textureSourceWidth) - (anchor._x * width);
-            bounds[0] = bounds[1] + sourceWidth;
-
-            bounds[3] = (trim.y * textureSourceHeight) - (anchor._y * height);
-            bounds[2] = bounds[3] + sourceHeight;
-        }
-        else
-        {
-            bounds[1] = -anchor._x * width;
-            bounds[0] = bounds[1] + width;
-
-            bounds[3] = -anchor._y * height;
-            bounds[2] = bounds[3] + height;
-        }
-
-        return;
+        updateQuadBounds(this._bounds, this.anchor, this._texture);
     }
 
     private _updateSourceBounds()

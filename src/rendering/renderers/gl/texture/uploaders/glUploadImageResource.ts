@@ -12,7 +12,45 @@ export const glUploadImageResource = {
     {
         gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, !(source.alphaMode === 0));
 
-        if (glTexture.width === source.width || glTexture.height === source.height)
+        const glWidth = glTexture.width;
+        const glHeight = glTexture.height;
+
+        const textureWidth = source.pixelWidth;
+        const textureHeight = source.pixelHeight;
+
+        const resourceWidth = source.resource.width;
+        const resourceHeight = source.resource.height;
+
+        if (resourceWidth < textureWidth || resourceHeight < textureHeight)
+        {
+            if (glWidth !== textureWidth || glHeight !== textureHeight)
+            {
+                gl.texImage2D(
+                    glTexture.target,
+                    0,
+                    glTexture.internalFormat,
+                    textureWidth,
+                    textureHeight,
+                    0,
+                    glTexture.format,
+                    glTexture.type,
+                    null
+                );
+            }
+
+            gl.texSubImage2D(
+                gl.TEXTURE_2D,
+                0,
+                0,
+                0,
+                resourceWidth,
+                resourceHeight,
+                glTexture.format,
+                glTexture.type,
+                source.resource as TexImageSource
+            );
+        }
+        else if (glWidth === textureWidth || glHeight === textureHeight)
         {
             gl.texSubImage2D(
                 gl.TEXTURE_2D,
@@ -30,8 +68,8 @@ export const glUploadImageResource = {
                 glTexture.target,
                 0,
                 glTexture.internalFormat,
-                source.pixelWidth,
-                source.pixelHeight,
+                textureWidth,
+                textureHeight,
                 0,
                 glTexture.format,
                 glTexture.type,
@@ -39,8 +77,8 @@ export const glUploadImageResource = {
             );
         }
 
-        glTexture.width = source.pixelWidth;
-        glTexture.height = source.pixelHeight;
+        glTexture.width = textureWidth;
+        glTexture.height = textureHeight;
     }
 } as GLTextureUploader;
 

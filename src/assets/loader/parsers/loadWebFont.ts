@@ -20,6 +20,11 @@ const validFontMIMEs = [
     'font/woff2',
 ];
 
+export const FontCache = new Map<string, {
+    url: string,
+    fontFaces: FontFace[],
+}>();
+
 /**
  * Loader plugin for handling web fonts
  * @memberof PIXI
@@ -120,6 +125,11 @@ export const loadWebFont = {
 
                 fontFaces.push(font);
             }
+
+            FontCache.set(name, {
+                url,
+                fontFaces,
+            });
 
             return fontFaces.length === 1 ? fontFaces[0] : fontFaces;
         }
