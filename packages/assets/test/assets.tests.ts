@@ -206,6 +206,39 @@ describe('Assets', () =>
         expect(bunny4.baseTexture.resource.src).toBe(`${basePath}textures/bunny.webp`);
     });
 
+    it('should split url versions correctly with load', async () =>
+    {
+        jest.setTimeout(10000000);
+        await Assets.init({
+            basePath,
+        });
+
+        const bunny = await Assets.load('textures/bunny.{png,webp}');
+        const bunny5 = await Assets.load({ src: 'textures/bunny.1.{png,webp}' });
+        const bunny6 = await Assets.load({ src: ['textures/bunny.2.{png,webp}'] });
+        const bunny7 = await Assets.load({
+            src: [
+                {
+                    src: 'textures/bunny.3.png',
+                },
+                {
+                    src: 'textures/bunny.3.webp',
+                }
+            ]
+        });
+        const bunny8 = await Assets.load({
+            src: {
+                src: 'textures/bunny.4.png',
+            },
+        });
+
+        expect(bunny.baseTexture.resource.src).toBe(`${basePath}textures/bunny.webp`);
+        expect(bunny5.baseTexture.resource.src).toBe(`${basePath}textures/bunny.1.webp`);
+        expect(bunny6.baseTexture.resource.src).toBe(`${basePath}textures/bunny.2.webp`);
+        expect(bunny7.baseTexture.resource.src).toBe(`${basePath}textures/bunny.3.webp`);
+        expect(bunny8.baseTexture.resource.src).toBe(`${basePath}textures/bunny.4.png`);
+    });
+
     it('should background load correctly', async () =>
     {
         await Assets.init({
@@ -461,8 +494,57 @@ describe('Assets', () =>
 
         const bunnyPromise = Assets.load('textures/bunny.png');
         const bunnyPromise2 = Assets.load('textures/bunny.png');
+        const bunnyPromise3 = Assets.load('textures/bunny.{png,webp}');
+        const bunnyPromise4 = Assets.load('textures/bunny.{png,webp}');
+        const bunnyPromise5 = Assets.load({ src: 'textures/bunny.1.{png,webp}' });
+        const bunnyPromise6 = Assets.load({ src: 'textures/bunny.1.{png,webp}' });
+        const bunnyPromise7 = Assets.load({ src: ['textures/bunny.2.{png,webp}'] });
+        const bunnyPromise8 = Assets.load({ src: ['textures/bunny.2.{png,webp}'] });
+        const bunnyPromise9 = Assets.load({
+            src: [
+                {
+                    src: 'textures/bunny.3.png',
+                },
+                {
+                    src: 'textures/bunny.3.webp',
+                }
+            ]
+        });
+        const bunnyPromise10 = Assets.load({
+            src: [
+                {
+                    src: 'textures/bunny.3.png',
+                },
+                {
+                    src: 'textures/bunny.3.webp',
+                }
+            ]
+        });
+        const bunnyPromise11 = Assets.load({
+            src: {
+                src: 'textures/bunny.4.png',
+            },
+        });
+        const bunnyPromise12 = Assets.load({
+            src: {
+                src: 'textures/bunny.4.png',
+            },
+        });
 
-        await Promise.all([bunnyPromise, bunnyPromise2]);
+        await Promise.all([
+            bunnyPromise,
+            bunnyPromise2,
+            bunnyPromise3,
+            bunnyPromise4,
+            bunnyPromise5,
+            bunnyPromise6,
+            bunnyPromise7,
+            bunnyPromise8,
+            bunnyPromise9,
+            bunnyPromise10,
+            bunnyPromise11,
+            bunnyPromise12
+        ]);
 
         expect(spy).not.toHaveBeenCalled();
 
