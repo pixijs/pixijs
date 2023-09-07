@@ -107,7 +107,7 @@ class BitmapFontManagerClass
      *     fill: 'purple',
      * });
      *
-     * const title = new Text({ text: 'This is the title', fontName: 'TitleFont', renderMode: 'bitmap' });
+     * const title = new Text({ text: 'This is the title', fontFamily: 'TitleFont', renderMode: 'bitmap' });
      */
     public install(name: string, textStyle?: TextStyle | Partial<TextStyleOptions>, options?: BitmapFontInstallOptions)
     {

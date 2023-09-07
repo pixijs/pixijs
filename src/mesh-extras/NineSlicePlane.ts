@@ -190,10 +190,11 @@ export class NineSliceSprite extends Container<MeshView<NineSliceGeometry>>
     }
 }
 
+/** @deprecated since 8.0.0 */
 export class NineSlicePlane extends NineSliceSprite
 {
     constructor(options: NineSliceSpriteOptions | Texture);
-    /** @deprecated */
+    /** @deprecated since 8.0.0 */
     constructor(texture: Texture, leftWidth: number, topHeight: number, rightWidth: number, bottomHeight: number);
     constructor(...args: [NineSliceSpriteOptions | Texture] | [Texture, number, number, number, number])
     {

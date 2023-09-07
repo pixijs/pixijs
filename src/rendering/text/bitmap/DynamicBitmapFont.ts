@@ -209,7 +209,10 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
         this._skipKerning && this._applyKerning(charList, context);
     }
 
-    /** The map of base page textures (i.e., sheets of glyphs). */
+    /**
+     * @deprecated since 8.0.0
+     * The map of base page textures (i.e., sheets of glyphs).
+     */
     public override get pageTextures(): DynamicBitmapFont['pages']
     {
         deprecation(v8_0_0, 'BitmapFont.pageTextures is deprecated, please use BitmapFont.pages instead.');

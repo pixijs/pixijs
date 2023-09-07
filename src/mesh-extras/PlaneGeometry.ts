@@ -36,7 +36,7 @@ export class PlaneGeometry extends MeshGeometry
      * @param options.verticesY - Number of vertices on y-axis
      */
     constructor(options: PlaneGeometryOptions);
-    /** @deprecated */
+    /** @deprecated since 8.0.0 */
     constructor(width?: number, height?: number, verticesX?: number, verticesY?: number);
     constructor(...args: [PlaneGeometryOptions?] | [number?, number?, number?, number?])
     {

@@ -2,16 +2,30 @@ import type { Container } from '../Container';
 
 export interface GetByLabelMixin
 {
+    getChildByName(label: RegExp | string, deep?: boolean): Container | null;
     getChildByLabel(label: RegExp | string, deep?: boolean): Container | null;
     getChildrenByLabel(label: RegExp | string, deep?: boolean, out?: Container[]): Container[];
 }
 
 export const findMixin: Partial<Container> = {
     /**
+     * @method getChildByName
+     * @memberof PIXI.Container#
+     * @deprecated since 8.0.0
+     * @see PIXI.Container#getChildByLabel
+     * @param {string} name - Instance name.
+     * @param {boolean}[deep=false] - Whether to search recursively
+     * @returns {PIXI.DisplayObject} The child with the specified name.
+     */
+    getChildByName(name: string, deep = false): Container | null
+    {
+        return this.getChildByLabel(name, deep);
+    },
+    /**
      * Returns the first child in the container with the specified label.
      *
      * Recursive searches are done in a pre-order traversal.
-     * @method getChildByName
+     * @method getChildByLabel
      * @memberof PIXI.Container#
      * @param {string|RegExp} label - Instance label.
      * @param {boolean}[deep=false] - Whether to search recursively

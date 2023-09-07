@@ -71,7 +71,7 @@ export class BitmapFont extends AbstractBitmapFont<BitmapFont>
         };
         writable.baseLineOffset = data.baseLineOffset;
         writable.lineHeight = data.lineHeight;
-        writable.fontName = data.fontName;
+        writable.fontFamily = data.fontFamily;
         writable.distanceField = data.distanceField ?? {
             type: 'none',
             range: 0,
