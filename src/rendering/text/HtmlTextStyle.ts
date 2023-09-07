@@ -1,7 +1,9 @@
+/* eslint-disable accessor-pairs */
 import { textStyleToCSS } from './html/utils/textStyleToCSS';
 import { generateTextStyleKey } from './shared/utils/generateTextStyleKey';
 import { TextStyle } from './TextStyle';
 
+import type { FillStyleInputs } from '../graphics/shared/GraphicsContext';
 import type { TextStyleOptions } from './TextStyle';
 
 export interface HTMLTextStyleOptions extends TextStyleOptions
@@ -78,5 +80,64 @@ export class HTMLTextStyle extends TextStyle
         }
 
         return this._cssStyle;
+    }
+
+    /**
+     * Add a style override, this can be any CSS property
+     * it will override any built-in style. This is the
+     * property and the value as a string (e.g., `color: red`).
+     * This will override any other internal style.
+     * @param {string} value - CSS style(s) to add.
+     * @example
+     * style.addOverride('background-color: red');
+     */
+    public addOverride(...value: string[]): void
+    {
+        const toAdd = value.filter((v) => !this.cssOverrides.includes(v));
+
+        if (toAdd.length > 0)
+        {
+            this.cssOverrides.push(...toAdd);
+            this.update();
+        }
+    }
+
+    /**
+     * Remove any overrides that match the value.
+     * @param {string} value - CSS style to remove.
+     * @example
+     * style.removeOverride('background-color: red');
+     */
+    public removeOverride(...value: string[]): void
+    {
+        const toRemove = value.filter((v) => this.cssOverrides.includes(v));
+
+        if (toRemove.length > 0)
+        {
+            this.cssOverrides = this.cssOverrides.filter((v) => !toRemove.includes(v));
+            this.update();
+        }
+    }
+
+    override set fill(value: FillStyleInputs)
+    {
+        // if its not a string or a number, then its a texture!
+        if (typeof value !== 'string' && typeof value !== 'number')
+        {
+            console.warn('[HTMLTextStyle] only color fill is not supported by HTMLText');
+        }
+
+        super.fill = value;
+    }
+
+    override set stroke(value: FillStyleInputs)
+    {
+        // if its not a string or a number, then its a texture!
+        if (typeof value !== 'string' && typeof value !== 'number')
+        {
+            console.warn('[HTMLTextStyle] only color stroke is not supported by HTMLText');
+        }
+
+        super.stroke = value;
     }
 }
