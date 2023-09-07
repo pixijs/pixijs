@@ -17,6 +17,7 @@ import type { CanvasAndContext } from '../../renderers/shared/texture/CanvasPool
 import type { Texture } from '../../renderers/shared/texture/Texture';
 import type { Renderer } from '../../renderers/types';
 import type { HTMLTextStyle } from '../HtmlTextStyle';
+import type { TextViewOptions } from '../TextView';
 import type { FontCSSStyleOptions } from './utils/loadFontCSS';
 
 const nssvg = 'http://www.w3.org/2000/svg';
@@ -88,13 +89,9 @@ export class HTMLTextSystem implements System
         this._createCanvas = renderer.type === RendererType.WEBGPU;
     }
 
-    public getTexture(
-        text: string,
-        resolution: number,
-        style: HTMLTextStyle,
-    ): Promise<Texture>
+    public getTexture(options: TextViewOptions): Promise<Texture>
     {
-        return this._buildTexturePromise(text, resolution, style);
+        return this._buildTexturePromise(options.text as string, options.resolution, options.style as HTMLTextStyle);
     }
 
     public getManagedTexture(
