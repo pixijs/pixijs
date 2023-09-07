@@ -135,7 +135,7 @@ export class SpriteView implements View
 
     private _updateBounds()
     {
-        updateQuadBounds(this._bounds, this.anchor, this._texture);
+        updateQuadBounds(this._bounds, this.anchor, this._texture, 0);
     }
 
     private _updateSourceBounds()

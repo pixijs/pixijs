@@ -126,7 +126,9 @@ export class CanvasTextPipe implements RenderPipe<TextView>
 
         renderable.view._didUpdate = false;
 
-        updateQuadBounds(batchableSprite.bounds, renderable.view.anchor, batchableSprite.texture);
+        const padding = renderable.view._style.padding;
+
+        updateQuadBounds(batchableSprite.bounds, renderable.view.anchor, batchableSprite.texture, padding);
     }
 
     private _updateGpuText(renderable: Renderable<TextView>)

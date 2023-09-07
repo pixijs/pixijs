@@ -121,7 +121,9 @@ export class HTMLTextPipe implements RenderPipe<TextView>
 
         renderable.view._didUpdate = false;
 
-        updateQuadBounds(batchableSprite.bounds, renderable.view.anchor, batchableSprite.texture);
+        const padding = renderable.view._style.padding;
+
+        updateQuadBounds(batchableSprite.bounds, renderable.view.anchor, batchableSprite.texture, padding);
     }
 
     private async _updateGpuText(renderable: Renderable<TextView>)
@@ -160,7 +162,9 @@ export class HTMLTextPipe implements RenderPipe<TextView>
         gpuText.textureNeedsUploading = true;
         renderable.view.onUpdate();
 
-        updateQuadBounds(batchableSprite.bounds, renderable.view.anchor, batchableSprite.texture);
+        const padding = renderable.view._style.padding;
+
+        updateQuadBounds(batchableSprite.bounds, renderable.view.anchor, batchableSprite.texture, padding);
     }
 
     private _getGpuText(renderable: Renderable<TextView>)

@@ -12,8 +12,8 @@ export type TextOptions = ContainerOptions<TextView> & TextViewOptions;
 
 export class Text extends Container<TextView>
 {
-    /** @deprecated since 8.0.0 */
     constructor(text: TextString, options?: Partial<TextStyle>);
+    /** @deprecated since 8.0.0 */
     constructor(options: TextOptions);
     constructor(...args: [TextOptions] | [TextString, Partial<TextStyle>])
     {
