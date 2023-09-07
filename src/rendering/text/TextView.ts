@@ -4,7 +4,7 @@ import { emptyViewObserver } from '../renderers/shared/View';
 import { BitmapFontManager } from './bitmap/BitmapFontManager';
 import { CanvasTextMetrics } from './canvas/CanvasTextMetrics';
 import { measureHtmlText } from './html/utils/measureHtmlText.';
-import { ensureStyle } from './shared/utils/ensureStyle';
+import { ensureTextStyle } from './shared/utils/ensureTextStyle';
 
 import type { PointData } from '../../maths/PointData';
 import type { View, ViewObserver } from '../renderers/shared/View';
@@ -70,7 +70,7 @@ export class TextView implements View
 
         this._renderMode = renderMode;
 
-        this._style = ensureStyle(renderMode, options.style);
+        this._style = ensureTextStyle(renderMode, options.style);
 
         this.type = map[renderMode];
 
@@ -108,7 +108,7 @@ export class TextView implements View
 
         this._style?.off('update', this.onUpdate, this);
 
-        this._style = ensureStyle(this._renderMode, style);
+        this._style = ensureTextStyle(this._renderMode, style);
 
         this._style.on('update', this.onUpdate, this);
         this.onUpdate();

@@ -11,7 +11,10 @@ import type { TextStyleOptions } from '../../TextStyle';
  * @param style - The style to use
  * @returns - The style class
  */
-export function ensureStyle(renderMode: string, style: TextStyle | HTMLTextStyle | TextStyleOptions | HTMLTextStyleOptions)
+export function ensureTextStyle(
+    renderMode: string,
+    style: TextStyle | HTMLTextStyle | TextStyleOptions | HTMLTextStyleOptions
+)
 {
     if (style instanceof TextStyle || style instanceof HTMLTextStyle)
     {
