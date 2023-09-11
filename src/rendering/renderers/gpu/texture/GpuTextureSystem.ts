@@ -1,17 +1,22 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
+import { settings } from '../../../../settings/settings';
+import { CanvasPool } from '../../shared/texture/CanvasPool';
 import { BindGroup } from '../shader/BindGroup';
 import { gpuUploadBufferImageResource } from './uploaders/gpuUploadBufferImageResource';
 import { gpuUploadImageResource } from './uploaders/gpuUploadImageSource';
 import { GpuMipmapGenerator } from './utils/GpuMipmapGenerator';
 
+import type { ICanvas } from '../../../../settings/adapter/ICanvas';
 import type { System } from '../../shared/system/System';
+import type { CanvasGenerator, GetPixelsOutput } from '../../shared/texture/GenerateCanvas';
 import type { TextureSource } from '../../shared/texture/sources/TextureSource';
 import type { BindableTexture, Texture } from '../../shared/texture/Texture';
 import type { TextureStyle } from '../../shared/texture/TextureStyle';
 import type { GPU } from '../GpuDeviceSystem';
+import type { WebGPURenderer } from '../WebGPURenderer';
 import type { GpuTextureUploader } from './uploaders/GpuTextureUploader';
 
-export class GpuTextureSystem implements System
+export class GpuTextureSystem implements System, CanvasGenerator
 {
     /** @ignore */
     public static extension = {
@@ -36,6 +41,13 @@ export class GpuTextureSystem implements System
 
     private _gpu: GPU;
     private _mipmapGenerator?: GpuMipmapGenerator;
+
+    private readonly _renderer: WebGPURenderer;
+
+    constructor(renderer: WebGPURenderer)
+    {
+        this._renderer = renderer;
+    }
 
     protected contextChange(gpu: GPU): void
     {
@@ -183,6 +195,67 @@ export class GpuTextureSystem implements System
         this._textureViewHash[texture.uid] = this.getGpuSource(texture).createView();
 
         return this._textureViewHash[texture.uid];
+    }
+
+    public generateCanvas(texture: Texture): ICanvas
+    {
+        const renderer = this._renderer;
+
+        const commandEncoder = renderer.gpu.device.createCommandEncoder();// renderer.renderTarget.commandEncoder;
+
+        // create canvas
+        const canvas = settings.ADAPTER.createCanvas();
+
+        canvas.width = texture.source.pixelWidth;
+        canvas.height = texture.source.pixelHeight;
+
+        const context = canvas.getContext('webgpu') as unknown as GPUCanvasContext;
+
+        context.configure({
+            device: renderer.gpu.device,
+            // eslint-disable-next-line max-len
+            usage: GPUTextureUsage.COPY_DST | GPUTextureUsage.COPY_SRC,
+            format: 'bgra8unorm',
+            alphaMode: 'opaque',
+        });
+
+        commandEncoder.copyTextureToTexture({
+            texture: renderer.texture.getGpuSource(texture.source),
+            origin: {
+                x: 0,
+                y: 0,
+            },
+        }, {
+            texture: context.getCurrentTexture(),
+        }, {
+            width: canvas.width,
+            height: canvas.height,
+        });
+
+        renderer.gpu.device.queue.submit([commandEncoder.finish()]);
+
+        return canvas;
+    }
+
+    public getPixels(texture: Texture): GetPixelsOutput
+    {
+        const webGPUCanvas = this.generateCanvas(texture);
+
+        const canvasAndContext = CanvasPool.getOptimalCanvasAndContext(webGPUCanvas.width, webGPUCanvas.height);
+
+        const context = canvasAndContext.context;
+
+        context.drawImage(webGPUCanvas, 0, 0);
+
+        const { width, height } = webGPUCanvas;
+
+        const imageData = context.getImageData(0, 0, width, height);
+
+        const pixels = new Uint8ClampedArray(imageData.data.buffer);
+
+        CanvasPool.returnCanvasAndContext(canvasAndContext);
+
+        return { pixels, width, height };
     }
 
     public destroy(): void

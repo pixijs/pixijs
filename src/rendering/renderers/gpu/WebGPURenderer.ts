@@ -19,9 +19,12 @@ import { GpuShaderSystem } from './shader/GpuShaderSystem';
 import { GpuStateSystem } from './state/GpuStateSystem';
 import { GpuTextureSystem } from './texture/GpuTextureSystem';
 
+import type { Container } from '../../scene/Container';
+import type { IGenerateTextureOptions } from '../shared/GenerateTextureSystem';
 import type { PipeConstructor } from '../shared/instructions/RenderPipe';
 import type { SystemConstructor } from '../shared/system/System';
 import type { ExtractRendererOptions, ExtractSystemTypes } from '../shared/system/utils/typeUtils';
+import type { Texture } from '../shared/texture/Texture';
 
 const DefaultWebGPUSystems = [
     ...SharedSystems,
@@ -81,5 +84,14 @@ export class WebGPURenderer extends AbstractRenderer<WebGPUPipes, WebGPUOptions>
         };
 
         super(systemConfig);
+    }
+
+    // legacy support, AbstractRenderer provides deprecation warning
+    protected _generateTexture(container: Container, options?: IGenerateTextureOptions): Texture
+    {
+        return this.textureGenerator.generateTexture({
+            container,
+            region: options?.region,
+        });
     }
 }

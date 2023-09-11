@@ -18,9 +18,12 @@ import { GlUniformGroupSystem } from './shader/GlUniformGroupSystem';
 import { GlStateSystem } from './state/GlStateSystem';
 import { GlTextureSystem } from './texture/GlTextureSystem';
 
+import type { Container } from '../../scene/Container';
+import type { IGenerateTextureOptions } from '../shared/GenerateTextureSystem';
 import type { PipeConstructor } from '../shared/instructions/RenderPipe';
 import type { SystemConstructor } from '../shared/system/System';
 import type { ExtractRendererOptions, ExtractSystemTypes } from '../shared/system/utils/typeUtils';
+import type { Texture } from '../shared/texture/Texture';
 import type { GlRenderingContext } from './context/GlRenderingContext';
 
 const DefaultWebGLSystems = [
@@ -81,5 +84,14 @@ export class WebGLRenderer extends AbstractRenderer<WebGLPipes, WebGLOptions> im
         };
 
         super(systemConfig);
+    }
+
+    // legacy support, AbstractRenderer provides deprecation warning
+    protected _generateTexture(container: Container, options?: IGenerateTextureOptions): Texture
+    {
+        return this.textureGenerator.generateTexture({
+            container,
+            region: options?.region,
+        });
     }
 }

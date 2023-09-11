@@ -8,7 +8,9 @@ import type { ICanvas } from '../../../../settings/adapter/ICanvas';
 import type { Writeable } from '../../../../utils/types';
 import type { RenderSurface } from '../../gpu/renderTarget/GpuRenderTargetSystem';
 import type { Renderer } from '../../types';
+import type { IGenerateTextureOptions } from '../GenerateTextureSystem';
 import type { PipeConstructor } from '../instructions/RenderPipe';
+import type { Texture } from '../texture/Texture';
 import type { ViewSystem } from '../ViewSystem';
 import type { System, SystemConstructor } from './System';
 
@@ -315,5 +317,30 @@ export class AbstractRenderer<PIPES, OPTIONS>
 
         writeable.renderPipes = null;
         writeable.runners = null;
+    }
+
+    /**
+     * @deprecated since 8.0.0
+     * @param container - the container to render
+     * @param options - options to use when generating the texture
+     * @returns a texture
+     */
+    public generateTexture(container: Container, options?: IGenerateTextureOptions): Texture
+    {
+        deprecation(
+            v8_0_0,
+            'renderer.generateTexture() is deprecated, please use renderer.textureGenerator.generateTexture() directly'
+        );
+
+        return this._generateTexture(container, options);
+    }
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    protected _generateTexture(container: Container, options?: IGenerateTextureOptions): Texture
+    {
+        // subclasses need to handle as the abstract renderer does not know the systems available
+        throw new Error('Not implemented');
     }
 }
