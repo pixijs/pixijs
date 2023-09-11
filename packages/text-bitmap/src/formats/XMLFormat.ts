@@ -11,11 +11,11 @@ export class XMLFormat
      * @param data
      * @returns - True if resource could be treated as font data, false otherwise.
      */
-    static test(data: unknown): boolean
+    static test(data: string | XMLDocument | BitmapFontData): boolean
     {
         const xml = data as Document;
 
-        return 'getElementsByTagName' in xml
+        return 'getElementsByTagName' in data
             && xml.getElementsByTagName('page').length
             && xml.getElementsByTagName('info')[0].getAttribute('face') !== null;
     }
