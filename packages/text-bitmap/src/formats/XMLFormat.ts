@@ -15,7 +15,8 @@ export class XMLFormat
     {
         const xml = data as Document;
 
-        return 'getElementsByTagName' in data
+        return typeof data !== 'string'
+            && 'getElementsByTagName' in data
             && xml.getElementsByTagName('page').length
             && xml.getElementsByTagName('info')[0].getAttribute('face') !== null;
     }
