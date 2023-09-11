@@ -86,7 +86,11 @@ export class GraphicsContextSystem implements System
             let isBatchable = true;
             // check the size...
 
-            if (batchMode === 'auto')
+            if (context.customShader || batchMode === 'no-batch')
+            {
+                isBatchable = false;
+            }
+            else if (batchMode === 'auto')
             {
                 for (let i = 0; i < contextBatches.length; i++)
                 {
@@ -98,10 +102,6 @@ export class GraphicsContextSystem implements System
                         break;
                     }
                 }
-            }
-            else if (batchMode === 'no-batch')
-            {
-                isBatchable = false;
             }
 
             gpuContext = this._gpuContextHash[context.uid] = {
