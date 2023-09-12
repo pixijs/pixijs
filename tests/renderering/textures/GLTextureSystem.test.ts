@@ -1,6 +1,7 @@
-import { type WebGLRenderer } from '../../../src';
 import { getRenderer } from '../../utils/getRenderer';
 import { getTexture } from '../../utils/getTexture';
+
+import type { WebGLRenderer } from '../../../src/rendering/renderers/gl/WebGLRenderer';
 
 describe('GLTextureSystem', () =>
 {

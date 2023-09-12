@@ -1,8 +1,10 @@
-import { Container, ExtractSystem, Texture } from '../../../src';
+import { ExtractSystem } from '../../../src/rendering/renderers/shared/ExtractSystem';
+import { Texture } from '../../../src/rendering/renderers/shared/texture/Texture';
+import { Container } from '../../../src/rendering/scene/Container';
 import { getRenderer } from '../../utils/getRenderer';
 import { getTexture } from '../../utils/getTexture';
 
-import type { WebGLRenderer } from '../../../src';
+import type { WebGLRenderer } from '../../../src/rendering/renderers/gl/WebGLRenderer';
 
 describe('GenerateTexture', () =>
 {
