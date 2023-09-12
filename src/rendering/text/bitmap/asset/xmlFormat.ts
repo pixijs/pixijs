@@ -17,7 +17,7 @@ export const XMLFormat = {
             pages: [],
             lineHeight: 0,
             fontSize: 0,
-            fontName: '',
+            fontFamily: '',
             distanceField: null,
             baseLineOffset: 0,
         };
@@ -40,7 +40,7 @@ export const XMLFormat = {
         const kerning = xml.getElementsByTagName('kerning');
 
         data.fontSize = parseInt(info.getAttribute('size'), 10);
-        data.fontName = info.getAttribute('face');
+        data.fontFamily = info.getAttribute('face');
         data.lineHeight = parseInt(common.getAttribute('lineHeight'), 10);
 
         for (let i = 0; i < page.length; i++)

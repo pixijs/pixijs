@@ -23,7 +23,7 @@ export class MeshGeometry extends Geometry
     public batchMode: BatchMode = 'auto';
 
     constructor(options: MeshGeometryOptions);
-    /** @deprecated */
+    /** @deprecated since 8.0.0 */
     constructor(positions: Float32Array, uvs: Float32Array, indices: Uint32Array);
     constructor(...args: [MeshGeometryOptions] | [Float32Array, Float32Array, Uint32Array])
     {

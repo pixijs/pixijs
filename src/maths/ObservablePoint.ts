@@ -43,9 +43,9 @@ export class ObservablePoint implements PointLike
      * @param observer - Optional observer to pass to the new observable point.
      * @returns a copy of this observable point
      */
-    public clone(observer: Observer<ObservablePoint>): ObservablePoint
+    public clone(observer?: Observer<ObservablePoint>): ObservablePoint
     {
-        return new ObservablePoint(observer, this._x, this._y);
+        return new ObservablePoint(observer ?? this._observer, this._x, this._y);
     }
 
     /**

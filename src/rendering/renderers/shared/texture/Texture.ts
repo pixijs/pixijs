@@ -251,7 +251,7 @@ export class Texture extends EventEmitter<{
         this.emit('update', this);
     }
 
-    /** @deprecated */
+    /** @deprecated since 8.0.0 */
     get baseTexture(): TextureSource
     {
         deprecation(v8_0_0, 'Texture.baseTexture is now Texture.source');

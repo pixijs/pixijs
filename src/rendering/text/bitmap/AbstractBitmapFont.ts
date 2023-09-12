@@ -32,7 +32,7 @@ export interface BitmapFontData
     pages: { id: number; file: string }[];
     lineHeight: number;
     fontSize: number;
-    fontName: string;
+    fontFamily: string;
     distanceField?: {
         type: 'sdf' | 'msdf' | 'none';
         range: number;
@@ -85,7 +85,7 @@ export abstract class AbstractBitmapFont<FontType>
     public readonly lineHeight: BitmapFontData['lineHeight'] = 0;
 
     /** The name of the font face. */
-    public readonly fontName: BitmapFontData['fontName'] = '';
+    public readonly fontFamily: BitmapFontData['fontFamily'] = '';
     public readonly fontMetrics: FontMetrics = { fontSize: 0, ascent: 0, descent: 0 };
     public readonly baseLineOffset: BitmapFontData['baseLineOffset'] = 0;
     /** The range and type of the distance field for this font. */
@@ -96,14 +96,18 @@ export abstract class AbstractBitmapFont<FontType>
     public readonly baseMeasurementFontSize: number = 100;
     protected baseRenderedFontSize = 100;
 
-    /** The name of the font face. */
-    public get font(): BitmapFontData['fontName']
+    /**
+     * @deprecated since 8.0.0
+     * The name of the font face.
+     */
+    public get font(): BitmapFontData['fontFamily']
     {
-        deprecation(v8_0_0, 'BitmapFont.font is deprecated, please use BitmapFont.fontName instead.');
+        deprecation(v8_0_0, 'BitmapFont.font is deprecated, please use BitmapFont.fontFamily instead.');
 
-        return this.fontName;
+        return this.fontFamily;
     }
 
+    /** @deprecated since 8.0.0 */
     public get pageTextures(): AbstractBitmapFont<FontType>['pages']
     {
         deprecation(v8_0_0, 'BitmapFont.pageTextures is deprecated, please use BitmapFont.pages instead.');
@@ -111,7 +115,10 @@ export abstract class AbstractBitmapFont<FontType>
         return this.pages;
     }
 
-    /** The size of the font face in pixels. */
+    /**
+     * @deprecated since 8.0.0
+     * The size of the font face in pixels.
+     */
     public get size(): BitmapFontData['fontSize']
     {
         deprecation(v8_0_0, 'BitmapFont.size is deprecated, please use BitmapFont.fontMetrics.fontSize instead.');
@@ -119,7 +126,10 @@ export abstract class AbstractBitmapFont<FontType>
         return this.fontMetrics.fontSize;
     }
 
-    /** The kind of distance field for this font or "none". */
+    /**
+     * @deprecated since 8.0.0
+     * The kind of distance field for this font or "none".
+     */
     public get distanceFieldRange(): BitmapFontData['distanceField']['range']
     {
         // eslint-disable-next-line max-len
@@ -128,7 +138,10 @@ export abstract class AbstractBitmapFont<FontType>
         return this.distanceField.range;
     }
 
-    /** The range of the distance field in pixels. */
+    /**
+     * @deprecated since 8.0.0
+     * The range of the distance field in pixels.
+     */
     public get distanceFieldType(): BitmapFontData['distanceField']['type']
     {
         // eslint-disable-next-line max-len

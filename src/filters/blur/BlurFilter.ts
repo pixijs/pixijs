@@ -44,7 +44,7 @@ export class BlurFilter extends Filter
      * @param options.kernelSize - The kernelSize of the blur filter.Options: 5, 7, 9, 11, 13, 15.
      */
     constructor(options?: BlurFilterOptions);
-    /** @deprecated */
+    /** @deprecated since 8.0.0 */
     constructor(strength?: number, quality?: number, resolution?: number, kernelSize?: number);
     constructor(...args: [BlurFilterOptions?] | [number?, number?, number?, number?])
     {

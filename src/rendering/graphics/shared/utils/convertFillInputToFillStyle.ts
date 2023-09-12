@@ -4,12 +4,21 @@ import { Texture } from '../../../renderers/shared/texture/Texture';
 import { FillGradient } from '../fill/FillGradient';
 import { FillPattern } from '../fill/FillPattern';
 
-import type { FillStyle, FillStyleInputs, PatternFillStyle } from '../GraphicsContext';
+import type {
+    FillStyle,
+    FillStyleInputs,
+    PatternFillStyle,
+} from '../GraphicsContext';
 
-export function convertFillInputToFillStyle(value: FillStyleInputs, defaultStyle: FillStyle): FillStyle
+export function convertFillInputToFillStyle(
+    value: FillStyleInputs,
+    defaultStyle: FillStyle
+): FillStyle
 {
     if (!value)
-    { return null; }
+    {
+        return null;
+    }
 
     let fillStyleToParse: FillStyle;
     let styleToMerge: FillStyleInputs;
@@ -19,7 +28,6 @@ export function convertFillInputToFillStyle(value: FillStyleInputs, defaultStyle
         styleToMerge = (value as PatternFillStyle).fill;
         fillStyleToParse = { ...defaultStyle, ...(value as PatternFillStyle) };
     }
-
     else
     {
         styleToMerge = value;
@@ -67,10 +75,7 @@ export function convertFillInputToFillStyle(value: FillStyleInputs, defaultStyle
     {
         const m = style.matrix || new Matrix();
 
-        m.scale(
-            1 / style.texture.frameWidth,
-            1 / style.texture.frameHeight
-        );
+        m.scale(1 / style.texture.frameWidth, 1 / style.texture.frameHeight);
 
         style.matrix = m;
 
