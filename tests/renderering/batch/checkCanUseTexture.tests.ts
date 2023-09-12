@@ -1,5 +1,5 @@
-import { InstructionSet } from '../../../src';
 import { type Batch, type BatchableObject, Batcher } from '../../../src/rendering/batcher/shared/Batcher';
+import { InstructionSet } from '../../../src/rendering/renderers/shared/instructions/InstructionSet';
 import { Texture } from '../../../src/rendering/renderers/shared/texture/Texture';
 import '../../../src/rendering/renderers/shared/texture/sources/ImageSource';
 
