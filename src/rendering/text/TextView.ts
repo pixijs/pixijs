@@ -4,16 +4,18 @@ import { emptyViewObserver } from '../renderers/shared/View';
 import { BitmapFontManager } from './bitmap/BitmapFontManager';
 import { CanvasTextMetrics } from './canvas/CanvasTextMetrics';
 import { measureHtmlText } from './html/utils/measureHtmlText.';
+import { HTMLTextStyle } from './HtmlTextStyle';
 import { ensureTextStyle } from './shared/utils/ensureTextStyle';
 
 import type { PointData } from '../../maths/PointData';
 import type { View, ViewObserver } from '../renderers/shared/View';
 import type { Bounds } from '../scene/bounds/Bounds';
 import type { TextureDestroyOptions, TypeOrBool } from '../scene/destroyTypes';
-import type { HTMLTextStyle, HTMLTextStyleOptions } from './HtmlTextStyle';
+import type { HTMLTextStyleOptions } from './HtmlTextStyle';
 import type { TextStyle, TextStyleOptions } from './TextStyle';
 
 export type TextString = string | number | {toString: () => string};
+export type PixiTextStyle = TextStyle | HTMLTextStyle;
 
 type Filter<T> = { [K in keyof T]: {
     text?: TextString;
@@ -53,7 +55,7 @@ export class TextView implements View
     /** @internal */
     public _resolution = TextView.defaultResolution;
     /** @internal */
-    public _style: TextStyle;
+    public _style: PixiTextStyle;
     /** @internal */
     public _didUpdate = true;
 
@@ -97,12 +99,12 @@ export class TextView implements View
         return this._text;
     }
 
-    get style(): TextStyle
+    get style(): PixiTextStyle
     {
         return this._style;
     }
 
-    set style(style: TextStyle | Partial<TextStyle>)
+    set style(style: PixiTextStyle | Partial<PixiTextStyle>)
     {
         style = style || {};
 
@@ -214,8 +216,13 @@ export class TextView implements View
         }
     }
 
-    private _detectRenderType(style: TextStyleOptions | TextStyle): 'canvas' | 'html' | 'bitmap'
+    private _detectRenderType(style: TextStyleOptions | PixiTextStyle): 'canvas' | 'html' | 'bitmap'
     {
+        if (style instanceof HTMLTextStyle)
+        {
+            return 'html';
+        }
+
         return Cache.has(style?.fontFamily as string) ? 'bitmap' : 'canvas';
     }
 
