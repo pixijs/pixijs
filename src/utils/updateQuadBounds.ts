@@ -1,7 +1,12 @@
 import type { ObservablePoint } from '../maths/ObservablePoint';
 import type { Texture } from '../rendering/renderers/shared/texture/Texture';
 
-export function updateQuadBounds(bounds: [number, number, number, number], anchor: ObservablePoint, texture: Texture)
+export function updateQuadBounds(
+    bounds: [number, number, number, number],
+    anchor: ObservablePoint,
+    texture: Texture,
+    padding: number
+)
 {
     const textureSource = texture._source;
 
@@ -21,19 +26,19 @@ export function updateQuadBounds(bounds: [number, number, number, number], ancho
         const sourceWidth = textureSourceWidth * trim.width;
         const sourceHeight = textureSourceHeight * trim.height;
 
-        bounds[1] = (trim.x * textureSourceWidth) - (anchor._x * width);
+        bounds[1] = (trim.x * textureSourceWidth) - (anchor._x * width) - padding;
         bounds[0] = bounds[1] + sourceWidth;
 
-        bounds[3] = (trim.y * textureSourceHeight) - (anchor._y * height);
+        bounds[3] = (trim.y * textureSourceHeight) - (anchor._y * height) - padding;
         bounds[2] = bounds[3] + sourceHeight;
     }
 
     else
     {
-        bounds[1] = -anchor._x * width;
+        bounds[1] = (-anchor._x * width) - padding;
         bounds[0] = bounds[1] + width;
 
-        bounds[3] = -anchor._y * height;
+        bounds[3] = (-anchor._y * height) - padding;
         bounds[2] = bounds[3] + height;
     }
 

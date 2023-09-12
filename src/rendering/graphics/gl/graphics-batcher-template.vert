@@ -1,4 +1,3 @@
-precision highp float;
 in vec2 aPosition;
 in vec2 aUV;
 in vec4 aColor;
