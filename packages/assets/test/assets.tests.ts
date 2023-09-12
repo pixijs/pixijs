@@ -449,46 +449,44 @@ describe('Assets', () =>
 
         const spy = jest.spyOn(console, 'warn');
 
-        const promises = [];
-
-        promises.push(Assets.load('textures/bunny.png'));
-        promises.push(Assets.load('textures/bunny.png'));
-        promises.push(Assets.load({ src: 'textures/bunny.1.{png,webp}' }));
-        promises.push(Assets.load({ src: 'textures/bunny.1.{png,webp}' }));
-        promises.push(Assets.load({ src: ['textures/bunny.2.{png,webp}'] }));
-        promises.push(Assets.load({ src: ['textures/bunny.2.{png,webp}'] }));
-        promises.push(Assets.load({
-            src: [
-                {
-                    src: 'textures/bunny.3.png',
+        await Promise.all([
+            Assets.load('textures/bunny.png'),
+            Assets.load('textures/bunny.png'),
+            Assets.load({ src: 'textures/bunny.1.{png,webp}' }),
+            Assets.load({ src: 'textures/bunny.1.{png,webp}' }),
+            Assets.load({ src: ['textures/bunny.2.{png,webp}'] }),
+            Assets.load({ src: ['textures/bunny.2.{png,webp}'] }),
+            Assets.load({
+                src: [
+                    {
+                        src: 'textures/bunny.3.png',
+                    },
+                    {
+                        src: 'textures/bunny.3.webp',
+                    }
+                ]
+            }),
+            Assets.load({
+                src: [
+                    {
+                        src: 'textures/bunny.3.png',
+                    },
+                    {
+                        src: 'textures/bunny.3.webp',
+                    }
+                ]
+            }),
+            Assets.load({
+                src: {
+                    src: 'textures/bunny.4.png',
                 },
-                {
-                    src: 'textures/bunny.3.webp',
-                }
-            ]
-        }));
-        promises.push(Assets.load({
-            src: [
-                {
-                    src: 'textures/bunny.3.png',
+            }),
+            Assets.load({
+                src: {
+                    src: 'textures/bunny.4.png',
                 },
-                {
-                    src: 'textures/bunny.3.webp',
-                }
-            ]
-        }));
-        promises.push(Assets.load({
-            src: {
-                src: 'textures/bunny.4.png',
-            },
-        }));
-        promises.push(Assets.load({
-            src: {
-                src: 'textures/bunny.4.png',
-            },
-        }));
-
-        await Promise.all(promises);
+            }),
+        ]);
 
         expect(spy).not.toHaveBeenCalled();
 
