@@ -5,17 +5,18 @@ import { TextView } from './TextView';
 import type { PointData } from '../../maths/PointData';
 import type { PointLike } from '../../maths/PointLike';
 import type { ContainerOptions } from '../scene/Container';
+import type { HTMLTextStyle } from './HtmlTextStyle';
 import type { TextStyle } from './TextStyle';
-import type { TextString, TextViewOptions } from './TextView';
+import type { AnyTextStyle, TextString, TextViewOptions } from './TextView';
 
 export type TextOptions = ContainerOptions<TextView> & TextViewOptions;
 
 export class Text extends Container<TextView>
 {
-    constructor(text: TextString, options?: Partial<TextStyle>);
     /** @deprecated since 8.0.0 */
+    constructor(text: TextString, options?: Partial<AnyTextStyle>);
     constructor(options: TextOptions);
-    constructor(...args: [TextOptions] | [TextString, Partial<TextStyle>])
+    constructor(...args: [TextOptions] | [TextString, Partial<AnyTextStyle>])
     {
         let options = args[0];
 
@@ -57,12 +58,12 @@ export class Text extends Container<TextView>
         return this.view.text;
     }
 
-    set style(value: TextStyle | Partial<TextStyle>)
+    set style(value: AnyTextStyle | Partial<AnyTextStyle>)
     {
         this.view.style = value;
     }
 
-    get style(): TextStyle
+    get style(): AnyTextStyle
     {
         return this.view.style;
     }
@@ -91,6 +92,34 @@ export class BitmapText extends Text
         }
 
         options.renderMode = 'bitmap';
+
+        super(options);
+    }
+}
+
+/** @deprecated since 8.0.0 */
+export class HTMLText extends Text
+{
+    /** @deprecated since 8.0.0 */
+    constructor(text: TextString, options?: Partial<HTMLTextStyle>);
+    constructor(options: TextOptions);
+    constructor(...args: [TextOptions] | [TextString, Partial<HTMLTextStyle>])
+    {
+        // eslint-disable-next-line max-len
+        deprecation(v8_0_0, 'use new Text({ text: "hi!", style, renderMode: "html" }) instead');
+
+        let options: TextOptions = args[0] as TextOptions;
+
+        // @deprecated
+        if (typeof options === 'string' || args[1])
+        {
+            options = {
+                text: options,
+                style: args[1],
+            } as TextOptions;
+        }
+
+        options.renderMode = 'html';
 
         super(options);
     }
