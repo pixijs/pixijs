@@ -1,6 +1,8 @@
-import { Container, ExtractSystem, Texture, type WebGLRenderer } from '../../../src';
+import { Container, ExtractSystem, Texture } from '../../../src';
 import { getRenderer } from '../../utils/getRenderer';
 import { getTexture } from '../../utils/getTexture';
+
+import type { WebGLRenderer } from '../../../src';
 
 describe('GenerateTexture', () =>
 {
