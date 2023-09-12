@@ -94,6 +94,17 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
      */
     public touched = 0;
 
+    /**
+     * Used by the batcher to build texture batches. faster to have the variable here!
+     * @protected
+     */
+    public _batchTick = -1;
+    /**
+     * A temporary batch location for the texture batching. Here for performance reasons only!
+     * @protected
+     */
+    public _textureBindLocation = -1;
+
     constructor(options: TextureSourceOptions<T> = {})
     {
         super();

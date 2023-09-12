@@ -134,7 +134,7 @@ export class MeshPipe implements RenderPipe<MeshView>, InstructionPipe<MeshInstr
 
             gpuBatchableMesh.texture = renderable.view._texture;
 
-            batcher.addToBatch(gpuBatchableMesh, instructionSet);
+            batcher.addToBatch(gpuBatchableMesh);
         }
         else
         {

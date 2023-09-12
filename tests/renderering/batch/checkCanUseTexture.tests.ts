@@ -1,4 +1,5 @@
 import { type Batch, type BatchableObject, Batcher } from '../../../src/rendering/batcher/shared/Batcher';
+import { InstructionSet } from '../../../src/rendering/renderers/shared/instructions/InstructionSet';
 import { Texture } from '../../../src/rendering/renderers/shared/texture/Texture';
 import '../../../src/rendering/renderers/shared/texture/sources/ImageSource';
 
@@ -37,7 +38,7 @@ describe('checkCanUseTexture', () =>
 
         batcher.begin();
         batcher.add(batchableObject);
-        batcher.finish();
+        batcher.finish(new InstructionSet());
 
         expect(batcher.checkAndUpdateTexture(batchableObject, Texture.WHITE)).toBeTrue();
     });
@@ -52,7 +53,7 @@ describe('checkCanUseTexture', () =>
 
         batcher.begin();
         batcher.add(batchableObject);
-        batcher.break(false);
+        batcher.break(new InstructionSet());
 
         batchableObject.texture = Texture.EMPTY;
 

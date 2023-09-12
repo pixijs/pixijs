@@ -8,9 +8,11 @@ import type { InstructionSet } from '../../renderers/shared/instructions/Instruc
 import type { BatchPipe, InstructionPipe } from '../../renderers/shared/instructions/RenderPipe';
 import type { Renderer } from '../../renderers/types';
 import type { Batch, BatchableObject } from './Batcher';
+import type { BatcherStyleSource } from './BatcherStyleSource';
 
 export interface BatcherAdaptor
 {
+    start(batchPipe: BatcherPipe, geometry: Geometry): void
     init(): void;
     execute(batchPipe: BatcherPipe, batch: Batch): void
     destroy(): void;
@@ -32,12 +34,12 @@ export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
     public state: State = State.for2d();
     public renderer: Renderer;
 
-    private _lastBatch: number;
-    private _batches: Record<number, {
-        geometry: Geometry;
-        batcher: Batcher
-    }> = Object.create(null);
+    private _batches: Record<number, Batcher | BatcherStyleSource> = Object.create(null);
+    private _geometries: Record<number, Geometry> = Object.create(null);
     private _adaptor: BatcherAdaptor;
+
+    private _activeBatch: Batcher | BatcherStyleSource;
+    private _activeGeometry: Geometry;
 
     constructor(renderer: Renderer, adaptor: BatcherAdaptor)
     {
@@ -49,87 +51,70 @@ export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
 
     public buildStart(instructionSet: InstructionSet)
     {
-        this._lastBatch = 0;
-
         if (!this._batches[instructionSet.uid])
         {
-            this._batches[instructionSet.uid] = {
-                batcher: new Batcher(),
-                geometry: getBatchedGeometry(),
-            };
+            // TODO keeping around to bench mark at a later date..
+            //   this._batches[instructionSet.uid] = new BatcherStyleSource();
+            this._batches[instructionSet.uid] = new Batcher();
+            this._geometries[instructionSet.uid] = getBatchedGeometry();
         }
 
-        this._batches[instructionSet.uid].batcher.begin();
+        this._activeBatch = this._batches[instructionSet.uid];
+        this._activeGeometry = this._geometries[this._activeBatch.uid];
+
+        this._activeBatch.begin();
     }
 
-    public addToBatch(batchableObject: BatchableObject, instructionSet: InstructionSet)
+    public addToBatch(batchableObject: BatchableObject)
     {
-        this._batches[instructionSet.uid].batcher.add(batchableObject);
+        this._activeBatch.add(batchableObject);
     }
 
     public break(instructionSet: InstructionSet)
     {
-        const batcher = this._batches[instructionSet.uid].batcher;
-
-        const hardBreak = instructionSet.instructionSize > 0 && (instructionSet.lastInstruction().type !== 'batch');
-
-        batcher.break(hardBreak);
-
-        while (this._lastBatch < batcher.batchIndex)
-        {
-            const batch = batcher.batches[this._lastBatch++];
-
-            // TODO feel we can avoid this check...
-            if (batch.elementSize !== 0)
-            {
-                batch.batchParent = this._batches[instructionSet.uid];
-
-                instructionSet.instructions[instructionSet.instructionSize++] = batch;
-            }
-        }
+        this._activeBatch.break(instructionSet);
     }
 
     public buildEnd(instructionSet: InstructionSet)
     {
-        this.break(instructionSet);
+        const activeBatch = this._activeBatch;
+        const geometry = this._activeGeometry;
 
-        const { geometry, batcher } = this._batches[instructionSet.uid];
+        activeBatch.finish(instructionSet);
 
-        if (batcher.elementSize === 0) return;
+        geometry.indexBuffer.data = activeBatch.indexBuffer;
+        geometry.indexBuffer.update(activeBatch.indexSize * 4);
 
-        batcher.finish();
-
-        geometry.indexBuffer.data = batcher.indexBuffer;
-
-        geometry.buffers[0].data = batcher.attributeBuffer.float32View;
-
-        geometry.indexBuffer.update(batcher.indexSize * 4);
+        geometry.buffers[0].data = activeBatch.attributeBuffer.float32View;
     }
 
-    public upload(instructionSet: InstructionSet)
+    public upload()
     {
-        const activeBatcher = this._batches[instructionSet.uid];
+        const activeBatcher = this._activeBatch;
 
-        // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
-        if (activeBatcher && activeBatcher.batcher.dirty)
+        if (activeBatcher.dirty)
         {
-            activeBatcher.batcher.dirty = false;
-
-            const attributeBuffer = activeBatcher.geometry.buffers[0];
-
-            attributeBuffer.update(activeBatcher.batcher.attributeSize * 4);
+            activeBatcher.dirty = false;
+            this._activeGeometry.buffers[0].update(activeBatcher.attributeSize * 4);
         }
     }
 
     public execute(batch: Batch)
     {
+        if (batch.action === 'startBatch')
+        {
+            const batcher = batch.batcher;
+            const geometry = this._geometries[batcher.uid];
+
+            this._adaptor.start(this, geometry);
+        }
+
         this._adaptor.execute(this, batch);
     }
 
     public destroy()
     {
         this.state = null;
-        this._batches = null;
         this.renderer = null;
 
         this._adaptor.destroy();
@@ -137,10 +122,16 @@ export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
 
         for (const i in this._batches)
         {
-            const batchData = this._batches[i];
-
-            batchData.batcher.destroy();
-            batchData.geometry.destroy();
+            this._batches[i].destroy();
         }
+
+        this._batches = null;
+
+        for (const i in this._geometries)
+        {
+            this._geometries[i].destroy();
+        }
+
+        this._geometries = null;
     }
 }
