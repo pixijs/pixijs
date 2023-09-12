@@ -49,8 +49,11 @@ export class BitmapTextPipe implements RenderPipe<TextView>
     {
         const graphicsRenderable = this._getGpuBitmapText(renderable);
 
-        // todo only if text change..
-        this._updateContext(renderable, graphicsRenderable.view.context);
+        if (renderable.view._didUpdate)
+        {
+            renderable.view._didUpdate = false;
+            this._updateContext(renderable, graphicsRenderable.view.context);
+        }
 
         const rebuild = this._renderer.renderPipes.graphics.validateRenderable(graphicsRenderable);
 
@@ -63,6 +66,13 @@ export class BitmapTextPipe implements RenderPipe<TextView>
     public addRenderable(renderable: Renderable<TextView>, instructionSet: InstructionSet)
     {
         const graphicsRenderable = this._getGpuBitmapText(renderable);
+
+        if (renderable.view._didUpdate)
+        {
+            renderable.view._didUpdate = false;
+
+            this._updateContext(renderable, graphicsRenderable.view.context);
+        }
 
         this._renderer.renderPipes.graphics.addRenderable(graphicsRenderable, instructionSet);
 
