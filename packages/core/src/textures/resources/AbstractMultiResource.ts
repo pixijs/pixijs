@@ -197,6 +197,7 @@ export abstract class AbstractMultiResource extends Resource
                 const { realWidth, realHeight } = this.items[0];
 
                 this.resize(realWidth, realHeight);
+                this.update();
 
                 return Promise.resolve(this);
             }

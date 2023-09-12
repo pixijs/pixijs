@@ -97,13 +97,14 @@ export class Polygon
 
         return inside;
     }
+}
 
-    // #if _DEBUG
-    toString(): string
+if (process.env.DEBUG)
+{
+    Polygon.prototype.toString = function toString(): string
     {
         return `[@pixi/math:Polygon`
             + `closeStroke=${this.closeStroke}`
             + `points=${this.points.reduce((pointsDesc, currentPoint) => `${pointsDesc}, ${currentPoint}`, '')}]`;
-    }
-    // #endif
+    };
 }

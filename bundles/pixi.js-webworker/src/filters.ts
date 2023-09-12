@@ -29,9 +29,10 @@ Object.entries(filters).forEach(([key, FilterClass]) =>
     Object.defineProperty(filters, key, {
         get()
         {
-            // #if _DEBUG
-            utils.deprecation('7.1.0', `filters.${key} has moved to ${key}`);
-            // #endif
+            if (process.env.DEBUG)
+            {
+                utils.deprecation('7.1.0', `filters.${key} has moved to ${key}`);
+            }
 
             return FilterClass;
         },

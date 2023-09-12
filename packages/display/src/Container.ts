@@ -180,9 +180,10 @@ export class Container<T extends DisplayObject = DisplayObject> extends DisplayO
     }
 
     /**
-     * Adds a child to the container at a specified index. If the index is out of bounds an error will be thrown
-     * @param {PIXI.DisplayObject} child - The child to add
-     * @param {number} index - The index to place the child in
+     * Adds a child to the container at a specified index. If the index is out of bounds an error will be thrown.
+     * If the child is already in this container, it will be moved to the specified index.
+     * @param {PIXI.DisplayObject} child - The child to add.
+     * @param {number} index - The absolute index where the child will be positioned at the end of the operation.
      * @returns {PIXI.DisplayObject} The child that was added.
      */
     addChildAt<U extends T>(child: U, index: number): U

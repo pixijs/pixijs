@@ -47,8 +47,11 @@ export class BackgroundLoader
             this._assetList.push(a);
         });
 
-        // eslint-disable-next-line no-console
-        if (this.verbose)console.log('[BackgroundLoader] assets: ', this._assetList);
+        if (this.verbose)
+        {
+            // eslint-disable-next-line no-console
+            console.log('[BackgroundLoader] assets: ', this._assetList);
+        }
 
         if (this._isActive && !this._isLoading)
         {

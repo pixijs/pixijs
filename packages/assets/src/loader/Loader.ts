@@ -72,10 +72,11 @@ export class Loader
 
                 if (!parser)
                 {
-                    // #if _DEBUG
-                    // eslint-disable-next-line max-len
-                    console.warn(`[Assets] specified load parser "${data.loadParser}" not found while loading ${url}`);
-                    // #endif
+                    if (process.env.DEBUG)
+                    {
+                        // eslint-disable-next-line max-len
+                        console.warn(`[Assets] specified load parser "${data.loadParser}" not found while loading ${url}`);
+                    }
                 }
             }
 
@@ -95,10 +96,11 @@ export class Loader
 
                 if (!parser)
                 {
-                    // #if _DEBUG
-                    // eslint-disable-next-line max-len
-                    console.warn(`[Assets] ${url} could not be loaded as we don't know how to parse it, ensure the correct parser has been added`);
-                    // #endif
+                    if (process.env.DEBUG)
+                    {
+                        // eslint-disable-next-line max-len
+                        console.warn(`[Assets] ${url} could not be loaded as we don't know how to parse it, ensure the correct parser has been added`);
+                    }
 
                     return null;
                 }
@@ -243,9 +245,9 @@ export class Loader
             {
                 const loadedAsset = await loadPromise.promise;
 
-                loadPromise.parser?.unload?.(loadedAsset, asset, this);
-
                 delete this.promiseCache[url];
+
+                loadPromise.parser?.unload?.(loadedAsset, asset, this);
             }
         });
 
@@ -263,9 +265,10 @@ export class Loader
             {
                 if (hash[parser.name])
                 {
-                    // #if _DEBUG
-                    console.warn(`[Assets] loadParser name conflict "${parser.name}"`);
-                    // #endif
+                    if (process.env.DEBUG)
+                    {
+                        console.warn(`[Assets] loadParser name conflict "${parser.name}"`);
+                    }
                 }
 
                 return { ...hash, [parser.name]: parser };

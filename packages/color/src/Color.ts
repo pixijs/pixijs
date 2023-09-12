@@ -9,7 +9,7 @@ import type {
     HsvColor,
     RgbaColor,
     RgbColor
-} from 'colord/types';
+} from 'colord';
 
 extend([namesPlugin]);
 
