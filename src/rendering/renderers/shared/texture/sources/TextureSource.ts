@@ -89,6 +89,12 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     public depthStencil = true;
 
     /**
+     * Has the source been destroyed?
+     * @readonly
+     */
+    public destroyed: boolean;
+
+    /**
      * Used by automatic texture Garbage Collection, stores last GC tick when it was bound
      * @protected
      */
@@ -138,6 +144,8 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this.style.on('change', this.onStyleUpdate, this);
 
         this.styleSourceKey = (this.style.resourceId << 24) + this.uid;
+
+        this.destroyed = false;
     }
 
     get source(): TextureSource
@@ -158,6 +166,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     /** Destroys this texture source */
     public destroy()
     {
+        this.destroyed = true;
         this.emit('destroy', this);
 
         if (this.style)
