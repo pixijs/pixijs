@@ -15,7 +15,7 @@ import type { HTMLTextStyleOptions } from './HtmlTextStyle';
 import type { TextStyle, TextStyleOptions } from './TextStyle';
 
 export type TextString = string | number | {toString: () => string};
-export type PixiTextStyle = TextStyle | HTMLTextStyle;
+export type AnyTextStyle = TextStyle | HTMLTextStyle;
 
 type Filter<T> = { [K in keyof T]: {
     text?: TextString;
@@ -55,7 +55,7 @@ export class TextView implements View
     /** @internal */
     public _resolution = TextView.defaultResolution;
     /** @internal */
-    public _style: PixiTextStyle;
+    public _style: AnyTextStyle;
     /** @internal */
     public _didUpdate = true;
 
@@ -99,12 +99,12 @@ export class TextView implements View
         return this._text;
     }
 
-    get style(): PixiTextStyle
+    get style(): AnyTextStyle
     {
         return this._style;
     }
 
-    set style(style: PixiTextStyle | Partial<PixiTextStyle>)
+    set style(style: AnyTextStyle | Partial<AnyTextStyle>)
     {
         style = style || {};
 
@@ -216,7 +216,7 @@ export class TextView implements View
         }
     }
 
-    private _detectRenderType(style: TextStyleOptions | PixiTextStyle): 'canvas' | 'html' | 'bitmap'
+    private _detectRenderType(style: TextStyleOptions | AnyTextStyle): 'canvas' | 'html' | 'bitmap'
     {
         if (style instanceof HTMLTextStyle)
         {

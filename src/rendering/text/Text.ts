@@ -7,16 +7,16 @@ import type { PointLike } from '../../maths/PointLike';
 import type { ContainerOptions } from '../scene/Container';
 import type { HTMLTextStyle } from './HtmlTextStyle';
 import type { TextStyle } from './TextStyle';
-import type { PixiTextStyle, TextString, TextViewOptions } from './TextView';
+import type { AnyTextStyle, TextString, TextViewOptions } from './TextView';
 
 export type TextOptions = ContainerOptions<TextView> & TextViewOptions;
 
 export class Text extends Container<TextView>
 {
     /** @deprecated since 8.0.0 */
-    constructor(text: TextString, options?: Partial<PixiTextStyle>);
+    constructor(text: TextString, options?: Partial<AnyTextStyle>);
     constructor(options: TextOptions);
-    constructor(...args: [TextOptions] | [TextString, Partial<PixiTextStyle>])
+    constructor(...args: [TextOptions] | [TextString, Partial<AnyTextStyle>])
     {
         let options = args[0];
 
@@ -58,12 +58,12 @@ export class Text extends Container<TextView>
         return this.view.text;
     }
 
-    set style(value: PixiTextStyle | Partial<PixiTextStyle>)
+    set style(value: AnyTextStyle | Partial<AnyTextStyle>)
     {
         this.view.style = value;
     }
 
-    get style(): PixiTextStyle
+    get style(): AnyTextStyle
     {
         return this.view.style;
     }
