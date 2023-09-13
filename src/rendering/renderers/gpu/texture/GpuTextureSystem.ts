@@ -201,7 +201,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
     {
         const renderer = this._renderer;
 
-        const commandEncoder = renderer.gpu.device.createCommandEncoder();// renderer.renderTarget.commandEncoder;
+        const commandEncoder = renderer.gpu.device.createCommandEncoder();
 
         // create canvas
         const canvas = settings.ADAPTER.createCanvas();

@@ -8,7 +8,7 @@ import type { ICanvas } from '../../../../settings/adapter/ICanvas';
 import type { Writeable } from '../../../../utils/types';
 import type { RenderSurface } from '../../gpu/renderTarget/GpuRenderTargetSystem';
 import type { Renderer } from '../../types';
-import type { IGenerateTextureOptions } from '../GenerateTextureSystem';
+import type { GenerateTextureOptions, GenerateTextureSystem } from '../GenerateTextureSystem';
 import type { PipeConstructor } from '../instructions/RenderPipe';
 import type { Texture } from '../texture/Texture';
 import type { ViewSystem } from '../ViewSystem';
@@ -62,6 +62,7 @@ export class AbstractRenderer<PIPES, OPTIONS>
     public readonly runners: Runners = Object.create(null) as Runners;
     public readonly renderPipes = Object.create(null) as PIPES;
     public view: ViewSystem;
+    public textureGenerator: GenerateTextureSystem;
 
     private _systemsHash: Record<string, System> = Object.create(null);
     private _lastObjectRendered: Container;
@@ -321,26 +322,11 @@ export class AbstractRenderer<PIPES, OPTIONS>
 
     /**
      * @deprecated since 8.0.0
-     * @param container - the container to render
-     * @param options - options to use when generating the texture
+     * @param options - options or container target to use when generating the texture
      * @returns a texture
      */
-    public generateTexture(container: Container, options?: IGenerateTextureOptions): Texture
+    public generateTexture(options: GenerateTextureOptions | Container): Texture
     {
-        deprecation(
-            v8_0_0,
-            'renderer.generateTexture() is deprecated, please use renderer.textureGenerator.generateTexture() directly'
-        );
-
-        return this._generateTexture(container, options);
-    }
-
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    protected _generateTexture(container: Container, options?: IGenerateTextureOptions): Texture
-    {
-        // subclasses need to handle as the abstract renderer does not know the systems available
-        throw new Error('Not implemented');
+        return this.textureGenerator.generateTexture(options);
     }
 }

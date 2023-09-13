@@ -1,4 +1,4 @@
-import { extensions, ExtensionType } from '../../../extensions/Extensions';
+import { ExtensionType } from '../../../extensions/Extensions';
 import { Container } from '../../scene/Container';
 import { Texture } from './texture/Texture';
 
@@ -165,5 +165,3 @@ export class ExtractSystem implements System
         this._renderer = null as any as Renderer;
     }
 }
-
-extensions.add(ExtractSystem);

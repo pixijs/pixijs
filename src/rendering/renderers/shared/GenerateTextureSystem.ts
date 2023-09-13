@@ -11,32 +11,6 @@ import type { System } from './system/System';
 import type { TextureSourceOptions } from './texture/sources/TextureSource';
 import type { Texture } from './texture/Texture';
 
-// legacy support for v7
-export interface IGenerateTextureOptions
-{
-/**
- * The region of the displayObject, that shall be rendered,
- * if no region is specified, defaults to the local bounds of the displayObject.
- */
-    region?: Rectangle;
-    // un-supported
-    resolution?: number;
-    multisample?: number;
-    // from legacy IBaseTextureOptions
-    alphaMode?: number;
-    mipmap?: number;
-    anisotropicLevel?: number;
-    scaleMode?: number;
-    width?: number;
-    height?: number;
-    wrapMode?: number;
-    format?: number;
-    type?: number;
-    target?: number;
-    resourceOptions?: any;
-    pixiIdPrefix?: string;
-}
-
 export type GenerateTextureSourceOptions = Omit<TextureSourceOptions, 'resource' | 'width' | 'height' | 'resolution'>;
 
 export type GenerateTextureOptions =
@@ -55,7 +29,6 @@ export type GenerateTextureOptions =
     textureSourceOptions?: GenerateTextureSourceOptions
 };
 
-// const tempTransform = new Transform();
 const tempRect = new Rectangle();
 const tempBounds = new Bounds();
 
