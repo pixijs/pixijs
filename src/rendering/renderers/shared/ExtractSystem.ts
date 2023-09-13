@@ -9,6 +9,32 @@ import type { GenerateTextureOptions } from './GenerateTextureSystem';
 import type { System } from './system/System';
 import type { GetPixelsOutput } from './texture/GenerateCanvas';
 
+type Formats = 'png' | 'jpg'; // Add other formats if needed
+
+interface ImageOptions
+{
+    format?: Formats;
+    quality?: number;
+}
+
+const defaultImageOptions: ImageOptions = {
+    format: 'png' as Formats,
+    quality: 1,
+};
+
+// define types for extract options
+export interface BaseExtractOptions
+{
+    target: Container | Texture;
+    frame?: Rectangle;
+}
+export type ExtractImageOptions = BaseExtractOptions & ImageOptions;
+export type ExtractDownloadOptions = BaseExtractOptions & {
+    resolution?: number;
+    filename: string;
+};
+export type ExtractOptions = BaseExtractOptions | ExtractImageOptions | ExtractDownloadOptions;
+
 /**
  * System plugin to the renderer to manage texture garbage collection on the GPU,
  * ensuring that it does not get clogged up with textures that are no longer being used.
@@ -33,20 +59,38 @@ export class ExtractSystem implements System
         this._renderer = renderer;
     }
 
-    public async image(target?: Container | Texture, format?: string, quality?: number,
-        frame?: Rectangle): Promise<HTMLImageElement>
+    private _normalizeOptions<T extends ExtractOptions>(
+        options: ExtractImageOptions | Container | Texture,
+        defaults: Partial<T> = {},
+    ): T
+    {
+        if (options instanceof Container || options instanceof Texture)
+        {
+            return {
+                target: options,
+                ...defaults
+            } as T;
+        }
+
+        return {
+            ...defaults,
+            ...options,
+        } as T;
+    }
+
+    public async image(options: ExtractImageOptions | Container | Texture): Promise<HTMLImageElement>
     {
         const image = new Image();
 
-        image.src = await this.base64(target, format, quality, frame);
+        image.src = await this.base64(options);
 
         return image;
     }
 
-    public async base64(target?: Container | Texture, format?: string, quality?: number,
-        frame?: Rectangle): Promise<string>
+    public async base64(options: ExtractImageOptions | Container | Texture): Promise<string>
     {
-        const canvas = this.canvas(target, frame);
+        const { target, format, quality, frame } = this._normalizeOptions<ExtractImageOptions>(options, defaultImageOptions);
+        const canvas = this.canvas({ target, frame });
 
         if (canvas.toBlob !== undefined)
         {
@@ -92,8 +136,9 @@ export class ExtractSystem implements System
             + 'or ICanvas.convertToBlob to be implemented');
     }
 
-    public canvas(target?: Container | Texture, frame?: Rectangle): ICanvas
+    public canvas(options: ExtractOptions | Container | Texture): ICanvas
     {
+        const { target, frame } = this._normalizeOptions(options);
         const renderer = this._renderer;
         const texture = target instanceof Texture
             ? target
@@ -113,8 +158,9 @@ export class ExtractSystem implements System
         return canvas;
     }
 
-    public pixels(target?: Container | Texture, frame?: Rectangle): GetPixelsOutput
+    public pixels(options: ExtractOptions | Container | Texture): GetPixelsOutput
     {
+        const { target, frame } = this._normalizeOptions(options);
         const renderer = this._renderer;
         const texture = target instanceof Texture
             ? target
@@ -134,22 +180,22 @@ export class ExtractSystem implements System
         return pixelInfo;
     }
 
-    public texture(target?: Container, frame?: Rectangle): Texture
+    public texture(options: ExtractOptions | Container | Texture): Texture
     {
+        const { target, frame } = this._normalizeOptions(options);
+
         return this._renderer.textureGenerator.generateTexture({
             container: target,
             region: frame,
         } as GenerateTextureOptions);
     }
 
-    public download({ target, region, filename }: {
-        target?: Container | Texture,
-        resolution?: number,
-        region?: Rectangle,
-        filename?: string
-    })
+    public download(options: ExtractDownloadOptions | Container | Texture)
     {
-        const canvas = this.canvas(target, region);
+        const {
+            filename,
+        } = this._normalizeOptions<ExtractDownloadOptions>(options);
+        const canvas = this.canvas(options);
 
         const link = document.createElement('a');
 
