@@ -1,4 +1,4 @@
-import { extensions, ExtensionType } from '../../../extensions/Extensions';
+import { ExtensionType } from '../../../extensions/Extensions';
 import { Matrix } from '../../../maths/Matrix';
 import { Rectangle } from '../../../maths/shapes/Rectangle';
 import { Bounds } from '../../scene/bounds/Bounds';
@@ -108,5 +108,3 @@ export class GenerateTextureSystem implements System
         // ka boom!
     }
 }
-
-extensions.add(GenerateTextureSystem);
