@@ -2,6 +2,8 @@ import { TextFormat } from './TextFormat';
 import { XMLFormat } from './XMLFormat';
 import { XMLStringFormat } from './XMLStringFormat';
 
+import type { BitmapFontData } from '../BitmapFontData';
+
 // Registered formats, maybe make this extensible in the future?
 const formats = [
     TextFormat,
@@ -15,7 +17,7 @@ const formats = [
  * @param {any} data - Data to detect format
  * @returns {any} Format or null
  */
-export function autoDetectFormat(data: unknown): typeof formats[number] | null
+export function autoDetectFormat(data: string | XMLDocument | BitmapFontData): typeof formats[number] | null
 {
     for (let i = 0; i < formats.length; i++)
     {
