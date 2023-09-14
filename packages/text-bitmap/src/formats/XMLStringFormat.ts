@@ -14,7 +14,7 @@ export class XMLStringFormat
      * @param data
      * @returns - True if resource could be treated as font data, false otherwise.
      */
-    static test(data: unknown): boolean
+    static test(data: string | XMLDocument | BitmapFontData): boolean
     {
         if (typeof data === 'string' && data.includes('<font>'))
         {
