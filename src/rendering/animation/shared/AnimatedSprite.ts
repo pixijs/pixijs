@@ -199,21 +199,27 @@ export class AnimatedSprite extends Sprite
      */
     public update(ticker: Ticker): void
     {
+        // If the animation isn't playing, no update is needed.
         if (!this._playing)
         {
             return;
         }
 
+        // Calculate elapsed time based on ticker's deltaTime and animation speed.
         const deltaTime = ticker.deltaTime;
         const elapsed = this.animationSpeed * deltaTime;
         const previousFrame = this.currentFrame;
 
+        // If there are specific durations set for each frame:
         if (this._durations !== null)
         {
+            // Calculate the lag for the current frame based on the current time.
             let lag = this._currentTime % 1 * this._durations[this.currentFrame];
 
+            // Adjust the lag based on elapsed time.
             lag += elapsed / 60 * 1000;
 
+            // If the lag is negative, adjust the current time and the lag.
             while (lag < 0)
             {
                 this._currentTime--;
@@ -222,25 +228,32 @@ export class AnimatedSprite extends Sprite
 
             const sign = Math.sign(this.animationSpeed * deltaTime);
 
+            // Floor the current time to get a whole number frame.
             this._currentTime = Math.floor(this._currentTime);
 
+            // Adjust the current time and the lag until the lag is less than the current frame's duration.
             while (lag >= this._durations[this.currentFrame])
             {
                 lag -= this._durations[this.currentFrame] * sign;
                 this._currentTime += sign;
             }
 
+            // Adjust the current time based on the lag and current frame's duration.
             this._currentTime += lag / this._durations[this.currentFrame];
         }
         else
         {
+            // If no specific durations set, simply adjust the current time by elapsed time.
             this._currentTime += elapsed;
         }
 
+        // Handle scenarios when animation reaches the start or the end.
         if (this._currentTime < 0 && !this.loop)
         {
+            // If the animation shouldn't loop and it reaches the start, go to the first frame.
             this.gotoAndStop(0);
 
+            // If there's an onComplete callback, call it.
             if (this.onComplete)
             {
                 this.onComplete();
@@ -248,8 +261,10 @@ export class AnimatedSprite extends Sprite
         }
         else if (this._currentTime >= this._textures.length && !this.loop)
         {
+            // If the animation shouldn't loop and it reaches the end, go to the last frame.
             this.gotoAndStop(this._textures.length - 1);
 
+            // If there's an onComplete callback, call it.
             if (this.onComplete)
             {
                 this.onComplete();
@@ -257,15 +272,18 @@ export class AnimatedSprite extends Sprite
         }
         else if (previousFrame !== this.currentFrame)
         {
+            // If the current frame is different from the last update, handle loop scenarios.
             if (this.loop && this.onLoop)
             {
                 if ((this.animationSpeed > 0 && this.currentFrame < previousFrame)
                     || (this.animationSpeed < 0 && this.currentFrame > previousFrame))
                 {
+                    // If the animation loops, and there's an onLoop callback, call it.
                     this.onLoop();
                 }
             }
 
+            // Update the texture for the current frame.
             this._updateTexture();
         }
     }
