@@ -8,7 +8,9 @@ import type { ICanvas } from '../../../../settings/adapter/ICanvas';
 import type { Writeable } from '../../../../utils/types';
 import type { RenderSurface } from '../../gpu/renderTarget/GpuRenderTargetSystem';
 import type { Renderer } from '../../types';
+import type { GenerateTextureOptions, GenerateTextureSystem } from '../GenerateTextureSystem';
 import type { PipeConstructor } from '../instructions/RenderPipe';
+import type { Texture } from '../texture/Texture';
 import type { ViewSystem } from '../ViewSystem';
 import type { System, SystemConstructor } from './System';
 
@@ -60,6 +62,7 @@ export class AbstractRenderer<PIPES, OPTIONS>
     public readonly runners: Runners = Object.create(null) as Runners;
     public readonly renderPipes = Object.create(null) as PIPES;
     public view: ViewSystem;
+    public textureGenerator: GenerateTextureSystem;
 
     private _systemsHash: Record<string, System> = Object.create(null);
     private _lastObjectRendered: Container;
@@ -315,5 +318,15 @@ export class AbstractRenderer<PIPES, OPTIONS>
 
         writeable.renderPipes = null;
         writeable.runners = null;
+    }
+
+    /**
+     * @deprecated since 8.0.0
+     * @param options - options or container target to use when generating the texture
+     * @returns a texture
+     */
+    public generateTexture(options: GenerateTextureOptions | Container): Texture
+    {
+        return this.textureGenerator.generateTexture(options);
     }
 }
