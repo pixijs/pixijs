@@ -1,11 +1,12 @@
 import { Matrix } from '../../maths/Matrix';
+import { compileHighShaderProgram } from '../../rendering/high-shader/compileHighShaderToProgram';
+import { localUniformBit } from '../../rendering/high-shader/shader-bits/localUniformBit';
 import { GlProgram } from '../../rendering/renderers/gl/shader/GlProgram';
-import { GpuProgram } from '../../rendering/renderers/gpu/shader/GpuProgram';
 import { Shader } from '../../rendering/renderers/shared/shader/Shader';
 import { UniformGroup } from '../../rendering/renderers/shared/shader/UniformGroup';
 import programFrag from './tiling-sprite.frag';
 import programVert from './tiling-sprite.vert';
-import programWgsl from './tiling-sprite.wgsl';
+import { tilingBit } from './tilingBit';
 
 import type { TextureShader } from '../../rendering/mesh/shared/MeshView';
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
@@ -27,15 +28,11 @@ export class TilingSpriteShader extends Shader implements TextureShader
             name: 'tiling-sprite',
         });
 
-        const gpuProgram = GpuProgram.from({
-            vertex: {
-                source: programWgsl,
-                entryPoint: 'mainVertex',
-            },
-            fragment: {
-                source: programWgsl,
-                entryPoint: 'mainFragment',
-            }
+        const gpuProgram = compileHighShaderProgram({
+            bits: [
+                localUniformBit,
+                tilingBit,
+            ]
         });
 
         const tilingUniforms = new UniformGroup({

@@ -31,8 +31,6 @@ export class GlGraphicsAdaptor implements GraphicsAdaptor
             transformMatrix: { value: new Matrix(), type: 'mat3x3<f32>' },
         });
 
-        // uniforms.default.static = true;
-
         this._shader = new Shader({
             glProgram: generateDefaultGraphicsBatchGlProgram(MAX_TEXTURES),
             resources: {

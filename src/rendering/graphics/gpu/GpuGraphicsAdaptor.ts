@@ -1,11 +1,14 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { Matrix } from '../../../maths/Matrix';
 import { MAX_TEXTURES } from '../../batcher/shared/const';
+import { compileHighShaderProgram } from '../../high-shader/compileHighShaderToProgram';
+import { colorBit } from '../../high-shader/shader-bits/colorBit';
+import { generateTextureBatchBit } from '../../high-shader/shader-bits/generateTextureBatchBit';
+import { localUniformBit } from '../../high-shader/shader-bits/localUniformBit';
 import { BindGroup } from '../../renderers/gpu/shader/BindGroup';
 import { Shader } from '../../renderers/shared/shader/Shader';
 import { UniformGroup } from '../../renderers/shared/shader/UniformGroup';
 import { color32BitToUniform } from './colorToUniform';
-import { generateDefaultGraphicsBatchProgram } from './generateDefaultGraphicsBatchProgram';
 
 import type { GpuEncoderSystem } from '../../renderers/gpu/GpuEncoderSystem';
 import type { WebGPURenderer } from '../../renderers/gpu/WebGPURenderer';
@@ -32,8 +35,16 @@ export class GpuGraphicsAdaptor implements GraphicsAdaptor
             transformMatrix: { value: new Matrix(), type: 'mat3x3<f32>' },
         });
 
+        const gpuProgram = compileHighShaderProgram({
+            bits: [
+                colorBit,
+                generateTextureBatchBit(MAX_TEXTURES),
+                localUniformBit,
+            ]
+        });
+
         this._shader = new Shader({
-            gpuProgram: generateDefaultGraphicsBatchProgram(MAX_TEXTURES),
+            gpuProgram,
             groups: {
                 // added on the fly!
                 2: new BindGroup({ 0: localUniforms }),

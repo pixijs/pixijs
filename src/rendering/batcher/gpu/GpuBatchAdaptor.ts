@@ -1,7 +1,9 @@
 import { ExtensionType } from '../../../extensions/Extensions';
+import { compileHighShaderProgram } from '../../high-shader/compileHighShaderToProgram';
+import { colorBit } from '../../high-shader/shader-bits/colorBit';
+import { generateTextureBatchBit } from '../../high-shader/shader-bits/generateTextureBatchBit';
 import { Shader } from '../../renderers/shared/shader/Shader';
 import { MAX_TEXTURES } from '../shared/const';
-import { generateDefaultBatchProgram } from './generateDefaultBatchProgram';
 import { getTextureBatchBindGroup } from './getTextureBatchBindGroup';
 
 import type { GpuEncoderSystem } from '../../renderers/gpu/GpuEncoderSystem';
@@ -22,8 +24,15 @@ export class GpuBatchAdaptor implements BatcherAdaptor
 
     public init()
     {
+        const gpuProgram = compileHighShaderProgram({
+            bits: [
+                colorBit,
+                generateTextureBatchBit(MAX_TEXTURES),
+            ]
+        });
+
         this._shader = new Shader({
-            gpuProgram: generateDefaultBatchProgram(MAX_TEXTURES),
+            gpuProgram,
             groups: {
                 // these will be dynamically allocated
             },

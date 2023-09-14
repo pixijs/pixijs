@@ -43,21 +43,29 @@ export function extractStructAndGroups(wgsl: string): StructsAndGroups
     }
 
     // Find the structs
-    const structs = wgsl.match(structPattern).map((struct) =>
-    {
-        const name = struct.match(structName)[1];
-        const members = struct.match(structMemberPattern).reduce((acc: Record<string, string>, member) =>
+    const structs = wgsl
+        .match(structPattern)
+        ?.map((struct) =>
         {
-            const [name, type] = member.split(':');
+            const name = struct.match(structName)[1];
+            const members = struct.match(structMemberPattern).reduce((acc: Record<string, string>, member) =>
+            {
+                const [name, type] = member.split(':');
 
-            acc[name.trim()] = type.trim();
+                acc[name.trim()] = type.trim();
 
-            return acc;
-        }, {});
+                return acc;
+            }, {});
 
-        return { name, members };
-    // Only include the structs mentioned in the @group/@binding annotations
-    }).filter(({ name }) => groups.some((group) => group.type === name));
+            if (!members)
+            {
+                return null;
+            }
+
+            return { name, members };
+            // Only include the structs mentioned in the @group/@binding annotations
+        })
+        .filter(({ name }) => groups.some((group) => group.type === name)) ?? [];
 
     return {
         groups,

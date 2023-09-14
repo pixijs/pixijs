@@ -1,6 +1,7 @@
 import { extractStructAndGroups } from './extractStructAndGroups';
 import { generateGpuLayoutGroups } from './generateGpuLayoutGroups';
 import { generateLayoutHash } from './generateLayoutHash';
+import { removeStructAndGroupDuplicates } from './removeStructAndGroupDuplicates';
 
 import type { ProgramLayout, ProgramPipelineLayoutDescription } from '../../gl/shader/GlProgram';
 import type { StructsAndGroups } from './extractStructAndGroups';
@@ -51,16 +52,26 @@ export class GpuProgram
         this.vertex = vertex;
 
         // TODO this should be cached - or dealt with at a system level.
-        const structsAndGroups = extractStructAndGroups(this.fragment.source);
+        if (fragment.source === vertex.source)
+        {
+            const structsAndGroups = extractStructAndGroups(fragment.source);
 
-        this.structsAndGroups = structsAndGroups;
+            this.structsAndGroups = structsAndGroups;
+        }
+        else
+        {
+            const vertexStructsAndGroups = extractStructAndGroups(vertex.source);
+            const fragmentStructsAndGroups = extractStructAndGroups(fragment.source);
+
+            this.structsAndGroups = removeStructAndGroupDuplicates(vertexStructsAndGroups, fragmentStructsAndGroups);
+        }
 
         // todo layout
-        this.layout = layout ?? generateLayoutHash(structsAndGroups);
+        this.layout = layout ?? generateLayoutHash(this.structsAndGroups);
 
         // struct properties!
 
-        this.gpuLayout = gpuLayout ?? generateGpuLayoutGroups(structsAndGroups);
+        this.gpuLayout = gpuLayout ?? generateGpuLayoutGroups(this.structsAndGroups);
     }
 
     public destroy(): void
@@ -87,3 +98,4 @@ export class GpuProgram
         return GpuProgram.programCached[key];
     }
 }
+
