@@ -4,6 +4,7 @@ import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { FillGradient } from '../graphics/shared/fill/FillGradient';
 import { GraphicsContext } from '../graphics/shared/GraphicsContext';
 import { convertFillInputToFillStyle } from '../graphics/shared/utils/convertFillInputToFillStyle';
+import { generateTextStyleKey } from './shared/utils/generateTextStyleKey';
 
 import type { DefaultFillStyle, FillStyle, FillStyleInputs, StrokeStyle } from '../graphics/shared/GraphicsContext';
 import type { TextureDestroyOptions, TypeOrBool } from '../scene/destroyTypes';
@@ -104,23 +105,6 @@ export interface TextStyleOptions
     /** The width at which text will wrap, it needs wordWrap to be set to true */
     wordWrapWidth?: number;
 }
-
-const valuesToIterateForKeys = [
-    '_fontFamily',
-    '_fontStyle',
-    '_fontVariant',
-    '_fontWeight',
-    '_breakWords',
-    '_align',
-    '_leading',
-    '_letterSpacing',
-    '_lineHeight',
-    '_textBaseline',
-    '_whiteSpace',
-    '_wordWrap',
-    '_wordWrapWidth',
-    '_padding',
-];
 
 export class TextStyle extends EventEmitter<{
     update: TextDropShadow
@@ -233,7 +217,7 @@ export class TextStyle extends EventEmitter<{
 
     private _padding: number;
 
-    private _styleKey: string;
+    protected _styleKey: string;
 
     constructor(style: Partial<TextStyleOptions> = {})
     {
@@ -347,25 +331,9 @@ export class TextStyle extends EventEmitter<{
         this.update();
     }
 
-    private _generateKey(): string
+    protected _generateKey(): string
     {
-        const key = [];
-
-        let index = 0;
-
-        for (let i = 0; i < valuesToIterateForKeys.length; i++)
-        {
-            const prop = valuesToIterateForKeys[i];
-
-            key[index++] = this[prop as keyof typeof this];
-        }
-
-        index = addFillStyleKey(this._fill, key as string[], index);
-        index = addStokeStyleKey(this._stroke, key as string[], index);
-
-        // TODO - we need to add some shadow stuff here!
-
-        this._styleKey = key.join('-');
+        this._styleKey = generateTextStyleKey(this);
 
         return this._styleKey;
     }
@@ -449,32 +417,6 @@ export class TextStyle extends EventEmitter<{
         this._originalStroke = null;
         this._originalFill = null;
     }
-}
-
-function addFillStyleKey(fillStyle: FillStyle, key: (number | string)[], index: number)
-{
-    if (!fillStyle) return index;
-
-    key[index++] = fillStyle.color;
-    key[index++] = fillStyle.alpha;
-    key[index++] = (fillStyle.fill as FillGradient)?.uid;
-
-    return index;
-}
-
-function addStokeStyleKey(strokeStyle: StrokeStyle, key: (number | string)[], index: number)
-{
-    if (!strokeStyle) return index;
-
-    index = addFillStyleKey(strokeStyle, key, index);
-
-    key[index++] = strokeStyle.width;
-    key[index++] = strokeStyle.alignment;
-    key[index++] = strokeStyle.cap;
-    key[index++] = strokeStyle.join;
-    key[index++] = strokeStyle.miterLimit;
-
-    return index;
 }
 
 function convertV7Tov8Style(style: TextStyleOptions)

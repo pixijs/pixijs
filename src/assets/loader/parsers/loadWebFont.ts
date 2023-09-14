@@ -1,6 +1,7 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { settings } from '../../../settings/settings';
 import { path } from '../../../utils/path';
+import { Cache } from '../../cache/Cache';
 import { checkDataUrl } from '../../utils/checkDataUrl';
 import { checkExtension } from '../../utils/checkExtension';
 import { LoaderParserPriority } from './LoaderParser';
@@ -121,6 +122,11 @@ export const loadWebFont = {
                 fontFaces.push(font);
             }
 
+            Cache.set(name, {
+                url,
+                fontFaces,
+            });
+
             return fontFaces.length === 1 ? fontFaces[0] : fontFaces;
         }
 
@@ -134,6 +140,10 @@ export const loadWebFont = {
     unload(font: FontFace | FontFace[]): void
     {
         (Array.isArray(font) ? font : [font])
-            .forEach((t) => settings.ADAPTER.getFontFaceSet().delete(t));
+            .forEach((t) =>
+            {
+                Cache.remove(t.family);
+                settings.ADAPTER.getFontFaceSet().delete(t);
+            });
     }
 } as LoaderParser<FontFace | FontFace[]>;

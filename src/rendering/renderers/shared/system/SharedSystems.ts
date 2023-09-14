@@ -14,6 +14,8 @@ import { SpritePipe } from '../../../sprite/shared/SpritePipe';
 import { BitmapTextPipe } from '../../../text/bitmap/BitmapTextPipe';
 import { CanvasTextPipe } from '../../../text/canvas/CanvasTextPipe';
 import { CanvasTextSystem } from '../../../text/canvas/CanvasTextSystem';
+import { HTMLTextPipe } from '../../../text/html/HTMLTextPipe';
+import { HTMLTextSystem } from '../../../text/html/HTMLTextSystem';
 import { BackgroundSystem } from '../background/BackgroundSystem';
 import { BlendModePipe } from '../BlendModePipe';
 import { ExtractSystem } from '../ExtractSystem';
@@ -32,6 +34,7 @@ export const SharedSystems = [
     HelloSystem,
     ViewSystem,
     CanvasTextSystem,
+    HTMLTextSystem,
     LayerSystem,
     UniformBufferSystem,
     TextureGCSystem,
@@ -47,6 +50,7 @@ export const SharedRenderPipes = [
     MeshPipe,
     GraphicsPipe,
     CanvasTextPipe,
+    HTMLTextPipe,
     BitmapTextPipe,
     TilingSpritePipe,
     FilterPipe,
