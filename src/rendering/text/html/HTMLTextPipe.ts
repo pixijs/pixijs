@@ -4,7 +4,6 @@ import { updateQuadBounds } from '../../../utils/updateQuadBounds';
 import { Texture } from '../../renderers/shared/texture/Texture';
 import { BatchableSprite } from '../../sprite/shared/BatchableSprite';
 
-import type { InstructionSet } from '../../renderers/shared/instructions/InstructionSet';
 import type { RenderPipe } from '../../renderers/shared/instructions/RenderPipe';
 import type { Renderable } from '../../renderers/shared/Renderable';
 import type { Renderer } from '../../renderers/types';
@@ -62,7 +61,7 @@ export class HTMLTextPipe implements RenderPipe<TextView>
         return false;
     }
 
-    public addRenderable(renderable: Renderable<TextView>, instructionSet: InstructionSet)
+    public addRenderable(renderable: Renderable<TextView>)
     {
         const gpuText = this._getGpuText(renderable);
 
@@ -73,7 +72,7 @@ export class HTMLTextPipe implements RenderPipe<TextView>
             this._updateText(renderable);
         }
 
-        this._renderer.renderPipes.batch.addToBatch(batchableSprite, instructionSet);
+        this._renderer.renderPipes.batch.addToBatch(batchableSprite);
     }
 
     public updateRenderable(renderable: Renderable<TextView>)

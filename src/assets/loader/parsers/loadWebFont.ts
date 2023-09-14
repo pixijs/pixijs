@@ -1,6 +1,7 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { settings } from '../../../settings/settings';
 import { path } from '../../../utils/path';
+import { Cache } from '../../cache/Cache';
 import { checkDataUrl } from '../../utils/checkDataUrl';
 import { checkExtension } from '../../utils/checkExtension';
 import { LoaderParserPriority } from './LoaderParser';
@@ -19,11 +20,6 @@ const validFontMIMEs = [
     'font/woff',
     'font/woff2',
 ];
-
-export const FontCache = new Map<string, {
-    url: string,
-    fontFaces: FontFace[],
-}>();
 
 /**
  * Loader plugin for handling web fonts
@@ -126,7 +122,7 @@ export const loadWebFont = {
                 fontFaces.push(font);
             }
 
-            FontCache.set(name, {
+            Cache.set(name, {
                 url,
                 fontFaces,
             });
@@ -144,6 +140,10 @@ export const loadWebFont = {
     unload(font: FontFace | FontFace[]): void
     {
         (Array.isArray(font) ? font : [font])
-            .forEach((t) => settings.ADAPTER.getFontFaceSet().delete(t));
+            .forEach((t) =>
+            {
+                Cache.remove(t.family);
+                settings.ADAPTER.getFontFaceSet().delete(t);
+            });
     }
 } as LoaderParser<FontFace | FontFace[]>;

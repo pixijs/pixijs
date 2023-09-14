@@ -1,4 +1,4 @@
-import { FontCache } from '../../../../assets/loader/parsers/loadWebFont';
+import { Cache } from '../../../../assets/cache/Cache';
 import { FontStylePromiseCache, HTMLTextSystem } from '../HTMLTextSystem';
 import { loadFontCSS } from './loadFontCSS';
 
@@ -14,12 +14,12 @@ import type { HTMLTextStyle } from '../../HtmlTextStyle';
 export async function getFontCss(fontFamilies: string[], style: HTMLTextStyle)
 {
     const fontPromises = fontFamilies
-        .filter((fontFamily) => FontCache.has(fontFamily))
+        .filter((fontFamily) => Cache.has(fontFamily))
         .map((fontFamily, i) =>
         {
             if (!FontStylePromiseCache.has(fontFamily))
             {
-                const { url } = FontCache.get(fontFamily);
+                const { url } = Cache.get(fontFamily);
 
                 if (i === 0)
                 {
