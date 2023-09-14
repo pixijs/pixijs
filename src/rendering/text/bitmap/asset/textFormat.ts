@@ -46,7 +46,7 @@ export interface BitmapFontRawData
 }
 
 export const TextFormat = {
-    test(data: string): boolean
+    test(data: string | XMLDocument | BitmapFontData): boolean
     {
         return typeof data === 'string' && data.startsWith('info face=');
     },

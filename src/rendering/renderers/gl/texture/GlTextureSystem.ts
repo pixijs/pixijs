@@ -1,4 +1,6 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
+import { Rectangle } from '../../../../maths/shapes/Rectangle';
+import { settings } from '../../../../settings/settings';
 import { Texture } from '../../shared/texture/Texture';
 import { GlTexture } from './GlTexture';
 import { glUploadBufferImageResource } from './uploaders/glUploadBufferImageResource';
@@ -12,8 +14,11 @@ import {
     scaleModeToGlFilter,
     wrapModeToGlAddress
 } from './utils/pixiToGlMaps';
+import { unpremultiplyAlpha } from './utils/unpremultiplyAlpha';
 
+import type { ICanvas } from '../../../../settings/adapter/ICanvas';
 import type { System } from '../../shared/system/System';
+import type { CanvasGenerator, GetPixelsOutput } from '../../shared/texture/GenerateCanvas';
 import type { TextureSource } from '../../shared/texture/sources/TextureSource';
 import type { BindableTexture } from '../../shared/texture/Texture';
 import type { TextureStyle } from '../../shared/texture/TextureStyle';
@@ -21,7 +26,10 @@ import type { GlRenderingContext } from '../context/GlRenderingContext';
 import type { WebGLRenderer } from '../WebGLRenderer';
 import type { GLTextureUploader } from './uploaders/GLTextureUploader';
 
-export class GlTextureSystem implements System
+const TEMP_RECT = new Rectangle();
+const BYTES_PER_PIXEL = 4;
+
+export class GlTextureSystem implements System, CanvasGenerator
 {
     /** @ignore */
     public static extension = {
@@ -297,8 +305,75 @@ export class GlTextureSystem implements System
         return this._glTextures[source.uid] || this._initSource(source);
     }
 
+    public generateCanvas(texture: Texture): ICanvas
+    {
+        const { pixels, width, height } = this.getPixels(texture);
+
+        const canvas = settings.ADAPTER.createCanvas();
+
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext('2d');
+
+        if (ctx)
+        {
+            const imageData = ctx.createImageData(width, height);
+
+            imageData.data.set(pixels);
+            ctx.putImageData(imageData, 0, 0);
+        }
+
+        return canvas;
+    }
+
+    public getPixels(texture: Texture): GetPixelsOutput
+    {
+        const resolution = texture.source.resolution;
+        const frame = TEMP_RECT;
+
+        frame.x = texture.frameX;
+        frame.y = texture.frameY;
+        frame.width = texture.frameWidth;
+        frame.height = texture.frameHeight;
+
+        const width = Math.max(Math.round(frame.width * resolution), 1);
+        const height = Math.max(Math.round(frame.height * resolution), 1);
+        const pixels = new Uint8Array(BYTES_PER_PIXEL * width * height);
+
+        const renderer = this._renderer;
+
+        const renderTarget = renderer.renderTarget.getRenderTarget(texture);
+        const glRenterTarget = renderer.renderTarget.getGpuRenderTarget(renderTarget);
+
+        const gl = renderer.gl;
+
+        gl.bindFramebuffer(gl.FRAMEBUFFER, glRenterTarget.resolveTargetFramebuffer);
+
+        gl.readPixels(
+            Math.round(frame.x * resolution),
+            Math.round(frame.y * resolution),
+            width,
+            height,
+            gl.RGBA,
+            gl.UNSIGNED_BYTE,
+            pixels
+        );
+
+        // if (texture.source.premultiplyAlpha > 0)
+        // TODO - premultiplied alpha does not exist right now, need to add that back in!
+        // eslint-disable-next-line no-constant-condition
+        if (false)
+        {
+            unpremultiplyAlpha(pixels);
+        }
+
+        return { pixels: new Uint8ClampedArray(pixels.buffer), width, height };
+    }
+
     public destroy(): void
     {
         throw new Error('Method not implemented.');
     }
 }
+

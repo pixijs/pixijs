@@ -54,6 +54,7 @@ export class GlBackBufferSystem implements System
     private readonly _renderer: WebGLRenderer;
     private _targetTexture: Texture;
     private _useBackBuffer = false;
+    private _useBackBufferThisRender = false;
 
     constructor(renderer: WebGLRenderer)
     {
@@ -67,6 +68,8 @@ export class GlBackBufferSystem implements System
 
     protected renderStart({ target, clear }: { target: RenderSurface, clear: boolean })
     {
+        this._useBackBufferThisRender = this._useBackBuffer && !!target;
+
         if (this._useBackBuffer)
         {
             const renderTarget = this._renderer.renderTarget.getRenderTarget(target);
@@ -86,12 +89,13 @@ export class GlBackBufferSystem implements System
 
     private _presentBackBuffer()
     {
-        if (!this._useBackBuffer) return;
-
         const renderer = this._renderer;
-        const gl = renderer.gl;
 
         renderer.renderTarget.finishRenderPass();
+
+        if (!this._useBackBufferThisRender) return;
+
+        const gl = renderer.gl;
 
         renderer.renderTarget.bind(this._targetTexture, false);
 

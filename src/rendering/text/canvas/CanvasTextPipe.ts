@@ -70,7 +70,7 @@ export class CanvasTextPipe implements RenderPipe<TextView>
         return false;
     }
 
-    public addRenderable(renderable: Renderable<TextView>, instructionSet: InstructionSet)
+    public addRenderable(renderable: Renderable<TextView>, _instructionSet: InstructionSet)
     {
         const gpuText = this._getGpuText(renderable);
 
@@ -81,7 +81,7 @@ export class CanvasTextPipe implements RenderPipe<TextView>
             this._updateText(renderable);
         }
 
-        this._renderer.renderPipes.batch.addToBatch(batchableSprite, instructionSet);
+        this._renderer.renderPipes.batch.addToBatch(batchableSprite);
     }
 
     public updateRenderable(renderable: Renderable<TextView>)

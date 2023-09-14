@@ -18,6 +18,8 @@ import { HTMLTextPipe } from '../../../text/html/HTMLTextPipe';
 import { HTMLTextSystem } from '../../../text/html/HTMLTextSystem';
 import { BackgroundSystem } from '../background/BackgroundSystem';
 import { BlendModePipe } from '../BlendModePipe';
+import { ExtractSystem } from '../ExtractSystem';
+import { GenerateTextureSystem } from '../GenerateTextureSystem';
 import { GlobalUniformSystem } from '../renderTarget/GlobalUniformSystem';
 import { UniformBufferSystem } from '../shader/UniformBufferSystem';
 import { HelloSystem } from '../startup/HelloSystem';
@@ -36,6 +38,8 @@ export const SharedSystems = [
     LayerSystem,
     UniformBufferSystem,
     TextureGCSystem,
+    GenerateTextureSystem,
+    ExtractSystem,
 ];
 
 export const SharedRenderPipes = [

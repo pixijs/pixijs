@@ -30,6 +30,7 @@ export interface BindableTexture
 
 export class Texture extends EventEmitter<{
     update: Texture
+    destroy: Texture
 }> implements BindableTexture
 {
     public static from(id: string | TextureSource | TextureSourceOptions): Texture
@@ -53,6 +54,12 @@ export class Texture extends EventEmitter<{
     public id = UID++;
     public styleSourceKey = 0;
 
+    /**
+     * Has the texture been destroyed?
+     * @readonly
+     */
+    public destroyed: boolean;
+
     private _style: TextureStyle;
     private _textureMatrix: TextureMatrix;
 
@@ -75,6 +82,7 @@ export class Texture extends EventEmitter<{
         }
 
         this.styleSourceKey = (this.style.resourceId << 24) + this._source.uid;
+        this.destroyed = false;
     }
 
     set source(value: TextureSource)
@@ -231,6 +239,8 @@ export class Texture extends EventEmitter<{
         }
 
         this._textureMatrix = null;
+        this.destroyed = true;
+        this.emit('destroy', this);
         this.removeAllListeners();
     }
 

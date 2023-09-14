@@ -84,10 +84,10 @@ export class GpuEncoderSystem implements System
     {
         const pipeline = this._renderer.pipeline.getPipeline(geometry, program, state, topology);
 
-        this._setPipeline(pipeline);
+        this.setPipeline(pipeline);
     }
 
-    private _setPipeline(pipeline: GPURenderPipeline)
+    public setPipeline(pipeline: GPURenderPipeline)
     {
         if (this._boundPipeline === pipeline) return;
         this._boundPipeline = pipeline;
@@ -243,7 +243,7 @@ export class GpuEncoderSystem implements System
 
         // reinstate the cache...
 
-        this._setPipeline(boundPipeline);
+        this.setPipeline(boundPipeline);
 
         for (const i in boundVertexBuffer)
         {

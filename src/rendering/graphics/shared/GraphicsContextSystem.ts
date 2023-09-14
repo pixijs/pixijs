@@ -3,10 +3,10 @@ import { BigPool } from '../../../utils/pool/PoolGroup';
 import { BatchGeometry } from '../../batcher/gpu/BatchGeometry';
 import { getTextureBatchBindGroup } from '../../batcher/gpu/getTextureBatchBindGroup';
 import { Batcher } from '../../batcher/shared/Batcher';
+import { InstructionSet } from '../../renderers/shared/instructions/InstructionSet';
 import { buildContextBatches } from './utils/buildContextBatches';
 
 import type { PoolItem } from '../../../utils/pool/Pool';
-import type { Batch } from '../../batcher/shared/Batcher';
 import type { System } from '../../renderers/shared/system/System';
 import type { BatchableGraphics } from './BatchableGraphics';
 import type { GraphicsContext } from './GraphicsContext';
@@ -20,12 +20,12 @@ export class GpuGraphicsContext
 export class GraphicsContextRenderData
 {
     public geometry = new BatchGeometry();
-    public batches: Batch[] = [];
+    public instructions = new InstructionSet();
 
     public init()
     {
-        this.batches.length = 0;
         this.geometry.reset();
+        this.instructions.reset();
     }
 }
 
@@ -162,7 +162,7 @@ export class GraphicsContextSystem implements System
             batcher.add(batch);
         }
 
-        batcher.finish();
+        batcher.finish(graphicsData.instructions);
 
         const geometry = graphicsData.geometry;
 
@@ -182,12 +182,10 @@ export class GraphicsContextSystem implements System
         {
             const batch = drawBatches[i];
 
-            batch.textures.bindGroup = getTextureBatchBindGroup(batch.textures.textures);
+            batch.bindGroup = getTextureBatchBindGroup(batch.textures.textures, batch.textures.count);
         }
 
         this._graphicsDataContextHash[context.uid] = graphicsData;
-
-        graphicsData.batches = drawBatches;
 
         return graphicsData;
     }

@@ -136,6 +136,7 @@ export interface Path
     toAbsolute: (url: string, baseUrl?: string, rootUrl?: string) => string;
     isUrl: (path: string) => boolean;
     isDataUrl: (path: string) => boolean;
+    isBlobUrl: (path: string) => boolean;
     hasProtocol: (path: string) => boolean;
     getProtocol: (path: string) => string;
     normalize: (path: string) => string;
@@ -157,7 +158,7 @@ export const path: Path = {
      */
     toPosix(path: string) { return replaceAll(path, '\\', '/'); },
     /**
-     * Checks if the path is a URL
+     * Checks if the path is a URL e.g. http://, https://
      * @param path - The path to check
      */
     isUrl(path: string) { return (/^https?:/).test(this.toPosix(path)); },
@@ -172,13 +173,22 @@ export const path: Path = {
             .test(path);
     },
     /**
-     * Checks if the path has a protocol e.g. http://
+     * Checks if the path is a blob URL
+     * @param path - The path to check
+     */
+    isBlobUrl(path: string)
+    {
+        // Not necessary to have an exact regex to match the blob URLs
+        return path.startsWith('blob:');
+    },
+    /**
+     * Checks if the path has a protocol e.g. http://, https://, file:///, data:, blob:, C:/
      * This will return true for windows file paths
      * @param path - The path to check
      */
-    hasProtocol(path: string) { return (/^[^/:]+:\//).test(this.toPosix(path)); },
+    hasProtocol(path: string) { return (/^[^/:]+:/).test(this.toPosix(path)); },
     /**
-     * Returns the protocol of the path e.g. http://, C:/, file:///
+     * Returns the protocol of the path e.g. http://, https://, file:///, data:, blob:, C:/
      * @param path - The path to get the protocol from
      */
     getProtocol(path: string)
@@ -186,21 +196,21 @@ export const path: Path = {
         assertPath(path);
         path = this.toPosix(path);
 
-        let protocol = '';
+        const matchFile = (/^file:\/\/\//).exec(path);
 
-        const isFile = (/^file:\/\/\//).exec(path);
-        const isHttp = (/^[^/:]+:\/\//).exec(path);
-        const isWindows = (/^[^/:]+:\//).exec(path);
-
-        if (isFile || isHttp || isWindows)
+        if (matchFile)
         {
-            const arr = (isFile?.[0] || isHttp?.[0] || isWindows?.[0]) as string;
-
-            protocol = arr;
-            path = path.slice(arr.length);
+            return matchFile[0];
         }
 
-        return protocol;
+        const matchProtocol = (/^[^/:]+:\/{0,2}/).exec(path);
+
+        if (matchProtocol)
+        {
+            return matchProtocol[0];
+        }
+
+        return '';
     },
 
     /**
@@ -214,13 +224,13 @@ export const path: Path = {
      */
     toAbsolute(url: string, customBaseUrl?: string, customRootUrl?: string)
     {
-        if (this.isDataUrl(url)) return url;
+        assertPath(url);
 
-        // const baseUrl = removeUrlParams(this.toPosix(customBaseUrl ?? settings.ADAPTER.getBaseUrl()));
+        if (this.isDataUrl(url) || this.isBlobUrl(url)) return url;
+
         const baseUrl = removeUrlParams(this.toPosix(customBaseUrl ?? settings.ADAPTER.getBaseUrl()));
         const rootUrl = removeUrlParams(this.toPosix(customRootUrl ?? this.rootname(baseUrl)));
 
-        assertPath(url);
         url = this.toPosix(url);
 
         // root relative url
@@ -240,10 +250,12 @@ export const path: Path = {
      */
     normalize(path: string)
     {
-        path = this.toPosix(path);
         assertPath(path);
 
         if (path.length === 0) return '.';
+        if (this.isDataUrl(path) || this.isBlobUrl(path)) return path;
+
+        path = this.toPosix(path);
 
         let protocol = '';
         const isAbsolute = path.startsWith('/');

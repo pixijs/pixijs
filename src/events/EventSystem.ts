@@ -349,9 +349,6 @@ export class EventSystem implements System<EventSystemOptions>
         if (!this.features.click) return;
         this.rootBoundary.rootTarget = this.renderer.lastObjectRendered;
 
-        // if we support touch events, then only use those for touch events, not pointer events
-        if (this.supportsTouchEvents && (nativeEvent as PointerEvent).pointerType === 'touch') return;
-
         const events = this._normalizeToPointerData(nativeEvent);
 
         /*
@@ -392,9 +389,6 @@ export class EventSystem implements System<EventSystemOptions>
         if (!this.features.move) return;
         this.rootBoundary.rootTarget = this.renderer.lastObjectRendered;
 
-        // if we support touch events, then only use those for touch events, not pointer events
-        if (this.supportsTouchEvents && (nativeEvent as PointerEvent).pointerType === 'touch') return;
-
         EventsTicker.pointerMoved();
 
         const normalizedEvents = this._normalizeToPointerData(nativeEvent);
@@ -417,9 +411,6 @@ export class EventSystem implements System<EventSystemOptions>
     {
         if (!this.features.click) return;
         this.rootBoundary.rootTarget = this.renderer.lastObjectRendered;
-
-        // if we support touch events, then only use those for touch events, not pointer events
-        if (this.supportsTouchEvents && (nativeEvent as PointerEvent).pointerType === 'touch') return;
 
         let target = nativeEvent.target;
 
@@ -452,9 +443,6 @@ export class EventSystem implements System<EventSystemOptions>
     {
         if (!this.features.click) return;
         this.rootBoundary.rootTarget = this.renderer.lastObjectRendered;
-
-        // if we support touch events, then only use those for touch events, not pointer events
-        if (this.supportsTouchEvents && (nativeEvent as PointerEvent).pointerType === 'touch') return;
 
         const normalizedEvents = this._normalizeToPointerData(nativeEvent);
 
@@ -543,17 +531,14 @@ export class EventSystem implements System<EventSystemOptions>
             this.domElement.addEventListener('mouseout', this._onPointerOverOut, true);
             this.domElement.addEventListener('mouseover', this._onPointerOverOut, true);
             globalThis.addEventListener('mouseup', this._onPointerUp, true);
-        }
 
-        // Always look directly for touch events so that we can provide original data
-        // In a future version we should change this to being just a fallback and rely solely on
-        // PointerEvents whenever available
-        if (this.supportsTouchEvents)
-        {
-            this.domElement.addEventListener('touchstart', this._onPointerDown, true);
-            // this.domElement.addEventListener('touchcancel', this.onPointerCancel, true);
-            this.domElement.addEventListener('touchend', this._onPointerUp, true);
-            this.domElement.addEventListener('touchmove', this._onPointerMove, true);
+            if (this.supportsTouchEvents)
+            {
+                this.domElement.addEventListener('touchstart', this._onPointerDown, true);
+                // this.domElement.addEventListener('touchcancel', this.onPointerCancel, true);
+                this.domElement.addEventListener('touchend', this._onPointerUp, true);
+                this.domElement.addEventListener('touchmove', this._onPointerMove, true);
+            }
         }
 
         this.domElement.addEventListener('wheel', this.onWheel, {
@@ -602,14 +587,14 @@ export class EventSystem implements System<EventSystemOptions>
             this.domElement.removeEventListener('mouseout', this._onPointerOverOut, true);
             this.domElement.removeEventListener('mouseover', this._onPointerOverOut, true);
             globalThis.removeEventListener('mouseup', this._onPointerUp, true);
-        }
 
-        if (this.supportsTouchEvents)
-        {
-            this.domElement.removeEventListener('touchstart', this._onPointerDown, true);
-            // this.domElement.removeEventListener('touchcancel', this.onPointerCancel, true);
-            this.domElement.removeEventListener('touchend', this._onPointerUp, true);
-            this.domElement.removeEventListener('touchmove', this._onPointerMove, true);
+            if (this.supportsTouchEvents)
+            {
+                this.domElement.removeEventListener('touchstart', this._onPointerDown, true);
+                // this.domElement.removeEventListener('touchcancel', this.onPointerCancel, true);
+                this.domElement.removeEventListener('touchend', this._onPointerUp, true);
+                this.domElement.removeEventListener('touchmove', this._onPointerMove, true);
+            }
         }
 
         this.domElement.removeEventListener('wheel', this.onWheel, true);

@@ -90,7 +90,7 @@ export class GlRenderTargetSystem implements System
 
         this.renderTarget = renderTarget;
 
-        const gpuRenderTarget = this._getGpuRenderTarget(renderTarget);
+        const gpuRenderTarget = this.getGpuRenderTarget(renderTarget);
 
         if (renderTarget.dirtyId !== gpuRenderTarget.dirtyId)
         {
@@ -253,7 +253,7 @@ export class GlRenderTargetSystem implements System
 
     public finishRenderPass()
     {
-        const glRenderTarget = this._getGpuRenderTarget(this.renderTarget);
+        const glRenderTarget = this.getGpuRenderTarget(this.renderTarget);
 
         if (!glRenderTarget.msaa) return;
 
@@ -300,7 +300,7 @@ export class GlRenderTargetSystem implements System
         return destinationTexture;
     }
 
-    private _getGpuRenderTarget(renderTarget: RenderTarget)
+    public getGpuRenderTarget(renderTarget: RenderTarget)
     {
         return this._gpuRenderTargetHash[renderTarget.uid] || this._initGpuRenderTarget(renderTarget);
     }
@@ -345,7 +345,7 @@ export class GlRenderTargetSystem implements System
     {
         if (renderTarget.isRoot) return;
 
-        const glRenderTarget = this._getGpuRenderTarget(renderTarget);
+        const glRenderTarget = this.getGpuRenderTarget(renderTarget);
 
         this._resizeColor(renderTarget, glRenderTarget);
 

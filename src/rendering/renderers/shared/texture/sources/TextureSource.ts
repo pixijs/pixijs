@@ -89,10 +89,27 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     public depthStencil = true;
 
     /**
+     * Has the source been destroyed?
+     * @readonly
+     */
+    public destroyed: boolean;
+
+    /**
      * Used by automatic texture Garbage Collection, stores last GC tick when it was bound
      * @protected
      */
     public touched = 0;
+
+    /**
+     * Used by the batcher to build texture batches. faster to have the variable here!
+     * @protected
+     */
+    public _batchTick = -1;
+    /**
+     * A temporary batch location for the texture batching. Here for performance reasons only!
+     * @protected
+     */
+    public _textureBindLocation = -1;
 
     constructor(options: TextureSourceOptions<T> = {})
     {
@@ -138,6 +155,8 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this.style.on('change', this.onStyleUpdate, this);
 
         this.styleSourceKey = (this.style.resourceId << 24) + this.uid;
+
+        this.destroyed = false;
     }
 
     get source(): TextureSource
@@ -158,6 +177,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     /** Destroys this texture source */
     public destroy()
     {
+        this.destroyed = true;
         this.emit('destroy', this);
 
         if (this.style)

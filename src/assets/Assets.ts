@@ -413,14 +413,14 @@ export class AssetsClass
             {
                 if (typeof url !== 'string')
                 {
-                    this.add(url);
-                    const srcs = url.src || url.srcs;
-                    const aliases = url.alias || url.name;
+                    const aliases = this.resolver.getAlias(url);
 
-                    if (aliases && Array.isArray(aliases)) return aliases[0];
-                    if (srcs && Array.isArray(srcs)) return srcs[0];
+                    if (aliases.some((alias) => !this.resolver.hasKey(alias)))
+                    {
+                        this.add(url);
+                    }
 
-                    return aliases || srcs;
+                    return Array.isArray(aliases) ? aliases[0] : aliases;
                 }
 
                 // if it hasn't been added, add it now

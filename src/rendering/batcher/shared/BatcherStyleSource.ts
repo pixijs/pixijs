@@ -1,90 +1,29 @@
 import { ViewableBuffer } from '../../../utils/ViewableBuffer';
 import { fastCopy } from '../../renderers/shared/buffer/utils/fastCopy';
-import { getBatchedGeometry } from '../gpu/getBatchedGeometry';
+import { Batch } from './Batcher';
 import { BatchTextureArray } from './BatchTextureArray';
 import { MAX_TEXTURES } from './const';
 
-import type { BindGroup } from '../../renderers/gpu/shader/BindGroup';
 import type { InstructionSet } from '../../renderers/shared/instructions/InstructionSet';
 import type { BLEND_MODES } from '../../renderers/shared/state/const';
+import type { TextureSource } from '../../renderers/shared/texture/sources/TextureSource';
 import type { Texture } from '../../renderers/shared/texture/Texture';
+import type { BatchableObject, BatchAction, Batcher } from './Batcher';
 
-// TODO OPTIMISE THIS CODE
-
-export type BatchAction = 'startBatch' | 'renderBatch';
-
-export class Batch
+class BatchData
 {
-    public type = 'batch';
-    public action: BatchAction = 'startBatch';
-
-    // TODO - eventually this could be useful for flagging batches as dirty and then only rebuilding those ones
-    // public elementStart = 0;
-    // public elementSize = 0;
-
-    // for drawing..
-    public start = 0;
-    public size = 0;
-    public textures: BatchTextureArray;
-
-    public blendMode: BLEND_MODES = 'normal';
-
-    public canBundle = true;
-
-    /**
-     * breaking rules slightly here in the name of performance..
-     * storing references to these bindgroups here is just faster for access!
-     * keeps a reference to the GPU bind group to set when rendering this batch for WebGPU. Will be null is using WebGL.
-     */
-    public gpuBindGroup: GPUBindGroup;
-    /**
-     * breaking rules slightly here in the name of performance..
-     * storing references to these bindgroups here is just faster for access!
-     * keeps a reference to the bind group to set when rendering this batch for WebGPU. Will be null if using WebGl.
-     */
-    public bindGroup: BindGroup;
-
-    public batcher: Batcher;
-
-    public destroy()
-    {
-        this.textures = null;
-        this.gpuBindGroup = null;
-        this.bindGroup = null;
-        this.batcher = null;
-    }
-}
-
-export interface BatchableObject
-{
-    indexStart: number;
-
-    packAttributes: (
-        float32View: Float32Array,
-        uint32View: Uint32Array,
-        index: number,
-        textureId: number,
-    ) => void;
-    packIndex: (indexBuffer: Uint32Array, index: number, indicesOffset: number) => void;
-
-    texture: Texture;
-    blendMode: BLEND_MODES;
-    vertexSize: number;
-    indexSize: number;
-
-    // stored for efficient updating..
-    textureId: number;
-    location: number; // location in the buffer
-    batcher: Batcher;
-    batch: Batch;
+    public batchTick = -1;
+    public batchLocation = -1;
 }
 
 let BATCH_TICK = 0;
+const textureHashy = Object.create(null);
+
 let UID = 0;
 
-export class Batcher
+export class BatcherStyleSource
 {
-    public uid = UID++;
+    public readonly uid = UID++;
     public attributeBuffer: ViewableBuffer;
     public indexBuffer: Uint32Array;
 
@@ -98,7 +37,6 @@ export class Batcher
     public batchIndex = 0;
     public batches: Batch[] = [];
 
-    public geometry = getBatchedGeometry();
     // specifics.
     private readonly _vertexSize: number = 6;
 
@@ -139,7 +77,8 @@ export class Batcher
 
         batchableObject.indexStart = this.indexSize;
         batchableObject.location = this.attributeSize;
-        batchableObject.batcher = this;
+        batchableObject.batcher = this as any as Batcher
+        ;
 
         this.indexSize += batchableObject.indexSize;
         this.attributeSize += ((batchableObject.vertexSize) * this._vertexSize);
@@ -176,7 +115,6 @@ export class Batcher
      */
     public break(instructionSet: InstructionSet)
     {
-        // ++BATCH_TICK;
         const elements = this._elements;
 
         let textureBatch = this._textureBatchPool[this._textureBatchPoolIndex++] || new BatchTextureArray();
@@ -208,6 +146,7 @@ export class Batcher
         let action: BatchAction = 'startBatch';
         let batch = this._batchPool[this._batchPoolIndex++] || new Batch();
 
+        // write the data...
         for (let i = this.elementStart; i < this.elementSize; ++i)
         {
             const element = elements[i];
@@ -215,13 +154,13 @@ export class Batcher
             elements[i] = null;
 
             const texture = element.texture;
-            const source = texture._source;
+            const styleSourceKey = texture.styleSourceKey;
 
-            const blendModeChange = blendMode !== element.blendMode;
+            const textureBatchData = textureHashy[styleSourceKey] || new BatchData();
 
-            if (source._batchTick === BATCH_TICK && !blendModeChange)
+            if (textureBatchData.batchTick === BATCH_TICK)
             {
-                element.textureId = source._textureBindLocation;
+                element.textureId = textureBatchData.batchLocation;
 
                 size += element.indexSize;
                 element.packAttributes(f32, u32, element.location, element.textureId);
@@ -232,9 +171,9 @@ export class Batcher
                 continue;
             }
 
-            source._batchTick = BATCH_TICK;
+            textureBatchData.batchTick = BATCH_TICK;
 
-            if (textureBatch.count >= MAX_TEXTURES || blendModeChange)
+            if (textureBatch.count >= MAX_TEXTURES || blendMode !== element.blendMode)
             {
                 this._finishBatch(
                     batch,
@@ -248,6 +187,7 @@ export class Batcher
 
                 action = 'renderBatch';
                 start = size;
+
                 // create a batch...
                 blendMode = element.blendMode;
 
@@ -258,9 +198,10 @@ export class Batcher
                 ++BATCH_TICK;
             }
 
-            element.textureId = source._textureBindLocation = textureBatch.count;
-            textureBatch.ids[source._textureBindLocation] = textureBatch.count;
-            textureBatch.textures[textureBatch.count++] = source;
+            textureBatchData.batchLocation = element.textureId = textureBatch.count;
+
+            textureBatch.ids[styleSourceKey] = textureBatch.count;
+            textureBatch.textures[textureBatch.count++] = texture as any as TextureSource;
             element.batch = batch;
 
             size += element.indexSize;
@@ -302,7 +243,7 @@ export class Batcher
         batch.gpuBindGroup = null;
         batch.action = action;
 
-        batch.batcher = this;
+        batch.batcher = this as any as Batcher;
         batch.textures = textureBatch;
         batch.blendMode = blendMode;
 

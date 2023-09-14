@@ -4,7 +4,7 @@ import { XMLFormat } from './xmlFormat';
 import type { BitmapFontData } from '../AbstractBitmapFont';
 
 export const XMLStringFormat = {
-    test(data: unknown): boolean
+    test(data: string | XMLDocument | BitmapFontData): boolean
     {
         if (typeof data === 'string' && data.includes('<font>'))
         {

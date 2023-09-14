@@ -4,16 +4,21 @@ import { MAX_TEXTURES } from '../shared/const';
 
 import type { BindableTexture } from '../../renderers/shared/texture/Texture';
 
-const cachedGroups: Record<string, BindGroup> = {};
+const cachedGroups: Record<number, BindGroup> = {};
 
-export function getTextureBatchBindGroup(textures: BindableTexture[])
+export function getTextureBatchBindGroup(textures: BindableTexture[], size: number)
 {
-    const key = textures.map((t) => t.styleSourceKey).join('-');
+    let uid = 0;
 
-    return cachedGroups[key] || generateTextureBatchBindGroup(textures, key);
+    for (let i = 0; i < size; i++)
+    {
+        uid = ((uid * 31) + textures[i].styleSourceKey) >>> 0;
+    }
+
+    return cachedGroups[uid] || generateTextureBatchBindGroup(textures, uid);
 }
 
-function generateTextureBatchBindGroup(textures: BindableTexture[], key: string): BindGroup
+function generateTextureBatchBindGroup(textures: BindableTexture[], key: number): BindGroup
 {
     const bindGroupResources: Record<string, any> = {};
 
