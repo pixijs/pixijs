@@ -1,11 +1,12 @@
 import type { BitmapFontData, RawCharData } from '../AbstractBitmapFont';
 
 export const XMLFormat = {
-    test(data: unknown): boolean
+    test(data: string | XMLDocument | BitmapFontData): boolean
     {
         const xml = data as Document;
 
-        return 'getElementsByTagName' in xml
+        return typeof xml !== 'string'
+            && 'getElementsByTagName' in xml
             && xml.getElementsByTagName('page').length
             && xml.getElementsByTagName('info')[0].getAttribute('face') !== null;
     },
