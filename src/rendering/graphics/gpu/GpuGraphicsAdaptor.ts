@@ -1,5 +1,6 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { Matrix } from '../../../maths/Matrix';
+import { getTextureBatchBindGroup } from '../../batcher/gpu/getTextureBatchBindGroup';
 import { MAX_TEXTURES } from '../../batcher/shared/const';
 import { BindGroup } from '../../renderers/gpu/shader/BindGroup';
 import { Shader } from '../../renderers/shared/shader/Shader';
@@ -98,6 +99,16 @@ export class GpuGraphicsAdaptor implements GraphicsAdaptor
             const batch = batches[i];
 
             shader.groups[1] = batch.bindGroup;
+
+            if (!batch.gpuBindGroup)
+            {
+                const textureBatch = batch.textures;
+
+                batch.bindGroup = getTextureBatchBindGroup(textureBatch.textures, textureBatch.count);
+                batch.gpuBindGroup = renderer.bindGroup.getBindGroup(
+                    batch.bindGroup, shader.gpuProgram, 1
+                );
+            }
 
             encoder.setBindGroup(1, batch.bindGroup, shader.gpuProgram);
 

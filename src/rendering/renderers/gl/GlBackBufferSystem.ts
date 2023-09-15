@@ -5,7 +5,7 @@ import { TextureSource } from '../shared/texture/sources/TextureSource';
 import { Texture } from '../shared/texture/Texture';
 import { GlProgram } from './shader/GlProgram';
 
-import type { RenderSurface } from '../gpu/renderTarget/GpuRenderTargetSystem';
+import type { RenderSurface, RGBAArray } from '../gpu/renderTarget/GpuRenderTargetSystem';
 import type { System } from '../shared/system/System';
 import type { WebGLRenderer } from './WebGLRenderer';
 
@@ -66,7 +66,7 @@ export class GlBackBufferSystem implements System
         this._useBackBuffer = useBackBuffer;
     }
 
-    protected renderStart({ target, clear }: { target: RenderSurface, clear: boolean })
+    protected renderStart({ target, clear, clearColor }: { target: RenderSurface, clear: boolean, clearColor: RGBAArray })
     {
         this._useBackBufferThisRender = this._useBackBuffer && !!target;
 
@@ -79,7 +79,7 @@ export class GlBackBufferSystem implements System
             target = this._getBackBufferTexture(renderTarget.colorTexture);
         }
 
-        this._renderer.renderTarget.start(target, clear, this._renderer.background.colorRgba);
+        this._renderer.renderTarget.start(target, clear, clearColor || this._renderer.background.colorRgba);
     }
 
     protected renderEnd()

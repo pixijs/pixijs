@@ -4,6 +4,7 @@ import { Texture } from './texture/Texture';
 
 import type { Rectangle } from '../../../maths/shapes/Rectangle';
 import type { ICanvas } from '../../../settings/adapter/ICanvas';
+import type { RGBAArray } from '../gpu/renderTarget/GpuRenderTargetSystem';
 import type { Renderer } from '../types';
 import type { GenerateTextureOptions } from './GenerateTextureSystem';
 import type { System } from './system/System';
@@ -16,21 +17,16 @@ interface ImageOptions
     format?: Formats;
     quality?: number;
 }
-
-const defaultImageOptions: ImageOptions = {
-    format: 'png' as Formats,
-    quality: 1,
-};
-
 // define types for extract options
 export interface BaseExtractOptions
 {
     target: Container | Texture;
     frame?: Rectangle;
+    resolution?: number;
+    clearColor?: RGBAArray;
 }
 export type ExtractImageOptions = BaseExtractOptions & ImageOptions;
 export type ExtractDownloadOptions = BaseExtractOptions & {
-    resolution?: number;
     filename: string;
 };
 export type ExtractOptions = BaseExtractOptions | ExtractImageOptions | ExtractDownloadOptions;
@@ -50,6 +46,11 @@ export class ExtractSystem implements System
         ],
         name: 'extract',
     } as const;
+
+    public static defaultImageOptions: ImageOptions = {
+        format: 'png' as Formats,
+        quality: 1,
+    };
 
     private _renderer: Renderer;
 
@@ -89,8 +90,14 @@ export class ExtractSystem implements System
 
     public async base64(options: ExtractImageOptions | Container | Texture): Promise<string>
     {
-        const { target, format, quality, frame } = this._normalizeOptions<ExtractImageOptions>(options, defaultImageOptions);
-        const canvas = this.canvas({ target, frame });
+        options = this._normalizeOptions<ExtractImageOptions>(
+            options,
+            ExtractSystem.defaultImageOptions
+        );
+
+        const { format, quality } = options;
+
+        const canvas = this.canvas(options);
 
         if (canvas.toBlob !== undefined)
         {
@@ -138,13 +145,16 @@ export class ExtractSystem implements System
 
     public canvas(options: ExtractOptions | Container | Texture): ICanvas
     {
-        const { target, frame } = this._normalizeOptions(options);
+        const { target, frame, clearColor, resolution } = this._normalizeOptions(options);
+
         const renderer = this._renderer;
         const texture = target instanceof Texture
             ? target
             : renderer.textureGenerator.generateTexture({
                 container: target,
                 region: frame,
+                clearColor,
+                resolution,
             } as GenerateTextureOptions);
 
         const canvas = renderer.texture.generateCanvas(texture);
@@ -160,13 +170,14 @@ export class ExtractSystem implements System
 
     public pixels(options: ExtractOptions | Container | Texture): GetPixelsOutput
     {
-        const { target, frame } = this._normalizeOptions(options);
+        const { target, frame, resolution } = this._normalizeOptions(options);
         const renderer = this._renderer;
         const texture = target instanceof Texture
             ? target
             : renderer.textureGenerator.generateTexture({
                 container: target,
                 region: frame,
+                resolution,
             } as GenerateTextureOptions);
 
         const pixelInfo = renderer.texture.getPixels(texture);
@@ -182,11 +193,12 @@ export class ExtractSystem implements System
 
     public texture(options: ExtractOptions | Container | Texture): Texture
     {
-        const { target, frame } = this._normalizeOptions(options);
+        const { target, frame, resolution } = this._normalizeOptions(options);
 
         return this._renderer.textureGenerator.generateTexture({
             container: target,
             region: frame,
+            resolution,
         } as GenerateTextureOptions);
     }
 

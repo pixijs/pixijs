@@ -6,6 +6,7 @@ import { getLocalBounds } from '../../scene/bounds/getLocalBounds';
 import { Container } from '../../scene/Container';
 import { RenderTexture } from './texture/RenderTexture';
 
+import type { RGBAArray } from '../gpu/renderTarget/GpuRenderTargetSystem';
 import type { Renderer } from '../types';
 import type { System } from './system/System';
 import type { TextureSourceOptions } from './texture/sources/TextureSource';
@@ -25,12 +26,15 @@ export type GenerateTextureOptions =
 
     resolution?: number;
 
+    clearColor?: RGBAArray;
+
     /** The options passed to the texture source. */
-    textureSourceOptions?: GenerateTextureSourceOptions
+    textureSourceOptions?: GenerateTextureSourceOptions,
 };
 
 const tempRect = new Rectangle();
 const tempBounds = new Bounds();
+const noColor: RGBAArray = [0, 0, 0, 0];
 
 /**
  * System that manages the generation of textures from the renderer.
@@ -77,8 +81,9 @@ export class GenerateTextureSystem implements System
         }
 
         const resolution = options.resolution || this._renderer.resolution;
-        const container = options.container;
 
+        const container = options.container;
+        const clearColor = options.clearColor || noColor;
         const region = options.region?.copyTo(tempRect)
             || getLocalBounds(container, tempBounds).rectangle;
 
@@ -98,6 +103,7 @@ export class GenerateTextureSystem implements System
             container,
             transform,
             target,
+            clearColor,
         });
 
         return target;

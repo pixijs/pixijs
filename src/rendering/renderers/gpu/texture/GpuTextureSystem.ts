@@ -216,7 +216,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
             // eslint-disable-next-line max-len
             usage: GPUTextureUsage.COPY_DST | GPUTextureUsage.COPY_SRC,
             format: 'bgra8unorm',
-            alphaMode: 'opaque',
+            alphaMode: 'premultiplied',
         });
 
         commandEncoder.copyTextureToTexture({
