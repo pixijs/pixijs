@@ -36,7 +36,52 @@ export function compileHighShader({
     bits
 }: CompileHighShaderOptions): HighShaderSource
 {
-    const cacheId = bits
+    const cacheId = generateCacheId(template, bits);
+
+    if (cacheMap[cacheId]) return cacheMap[cacheId];
+
+    const { vertex, fragment } = compileInputsAndOutputs(template, bits);
+
+    cacheMap[cacheId] = compileBits(vertex, fragment, bits);
+
+    return cacheMap[cacheId];
+}
+
+export function compileHighShaderGl({
+    template,
+    bits
+}: CompileHighShaderOptions): HighShaderSource
+{
+    const cacheId = generateCacheId(template, bits);
+
+    if (cacheMap[cacheId]) return cacheMap[cacheId];
+
+    cacheMap[cacheId] = compileBits(template.vertex, template.fragment, bits);
+
+    return cacheMap[cacheId];
+}
+
+function compileInputsAndOutputs(template: HighShaderTemplate, bits: HighShaderBit[])
+{
+    const vertexFragments = bits.map((shaderBit) => shaderBit.vertex).filter((v) => !!v);
+    const fragmentFragments = bits.map((shaderBit) => shaderBit.fragment).filter((v) => !!v);
+
+    // WebGPU compile inputs and outputs..
+    let compiledVertex = compileInputs(vertexFragments, template.vertex);
+
+    compiledVertex = compileOutputs(vertexFragments, compiledVertex);
+
+    const compiledFragment = compileInputs(fragmentFragments, template.fragment, true);
+
+    return {
+        vertex: compiledVertex,
+        fragment: compiledFragment,
+    };
+}
+
+function generateCacheId(template: HighShaderTemplate, bits: HighShaderBit[]): string
+{
+    return bits
         .map((highFragment) =>
         {
             if (!bitCacheMap.has(highFragment))
@@ -48,22 +93,12 @@ export function compileHighShader({
         })
         .sort((a, b) => a - b)
         .join('-') + template.vertex + template.fragment;
+}
 
-    if (cacheMap[cacheId]) return cacheMap[cacheId];
-
-    const vertexFragments = bits.map((shaderBit) => shaderBit.vertex).filter((v) => !!v);
-    const fragmentFragments = bits.map((shaderBit) => shaderBit.fragment).filter((v) => !!v);
-
-    // process..
-    // WebGPU compile inputs and outputs..
-    let compiledVertex = compileInputs(vertexFragments, template.vertex);
-
-    compiledVertex = compileOutputs(vertexFragments, compiledVertex);
-
-    const compiledFragment = compileInputs(fragmentFragments, template.fragment, true);
-
-    const vertexParts = compileHooks(template.vertex);
-    const fragmentParts = compileHooks(template.fragment);
+function compileBits(vertex: string, fragment: string, bits: HighShaderBit[])
+{
+    const vertexParts = compileHooks(vertex);
+    const fragmentParts = compileHooks(fragment);
 
     bits.forEach((shaderBit) =>
     {
@@ -71,13 +106,8 @@ export function compileHighShader({
         addBits(shaderBit.fragment, fragmentParts, shaderBit.name);
     });
 
-    const vertex = injectBits(compiledVertex, vertexParts);
-    const fragment = injectBits(compiledFragment, fragmentParts);
-
-    cacheMap[cacheId] = {
-        vertex,
-        fragment,
+    return {
+        vertex: injectBits(vertex, vertexParts),
+        fragment: injectBits(fragment, fragmentParts),
     };
-
-    return cacheMap[cacheId];
 }

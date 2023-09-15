@@ -1,11 +1,12 @@
+import { GlProgram } from '../renderers/gl/shader/GlProgram';
 import { GpuProgram } from '../renderers/gpu/shader/GpuProgram';
-import { compileHighShader } from './compiler/compileHighShader';
-import { fragmentGPUTemplate, vertexGPUTemplate } from './defaultProgramTemplate';
-import { globalUniformsBit } from './shader-bits/globalUniformsBit';
+import { compileHighShader, compileHighShaderGl } from './compiler/compileHighShader';
+import { fragmentGlTemplate, fragmentGPUTemplate, vertexGlTemplate, vertexGPUTemplate } from './defaultProgramTemplate';
+import { globalUniformsBit, globalUniformsBitGl } from './shader-bits/globalUniformsBit';
 
 import type { HighShaderBit } from './compiler/types';
 
-export function compileHighShaderProgram({ bits }: {bits: HighShaderBit[]}): GpuProgram
+export function compileHighShaderGpuProgram({ bits, name }: {bits: HighShaderBit[], name: string}): GpuProgram
 {
     const source = compileHighShader({
         template: {
@@ -19,6 +20,7 @@ export function compileHighShaderProgram({ bits }: {bits: HighShaderBit[]}): Gpu
     });
 
     return new GpuProgram({
+        name,
         vertex: {
             source: source.vertex,
             entryPoint: 'main',
@@ -27,5 +29,22 @@ export function compileHighShaderProgram({ bits }: {bits: HighShaderBit[]}): Gpu
             source: source.fragment,
             entryPoint: 'main',
         },
+    });
+}
+
+export function compileHighShaderGlProgram({ bits, name }: {bits: HighShaderBit[], name: string}): GlProgram
+{
+    return new GlProgram({
+        name,
+        ...compileHighShaderGl({
+            template: {
+                vertex: vertexGlTemplate,
+                fragment: fragmentGlTemplate,
+            },
+            bits: [
+                globalUniformsBitGl,
+                ...bits,
+            ]
+        })
     });
 }

@@ -9,3 +9,15 @@ export const colorBit = {
         `
     }
 };
+
+export const colorBitGl = {
+    name: 'color-bit',
+    vertex: {
+        header: /* glsl */`
+            in vec4 aColor;
+        `,
+        main: /* glsl */`
+            vColor *= aColor;
+        `
+    }
+};

@@ -61,7 +61,66 @@ const fragmentGPUTemplate = /* wgsl */`
       };
 `;
 
+const vertexGlTemplate = /* glsl */`
+    in vec2 aPosition;
+    in vec2 aUV;
+
+    out vec4 vColor;
+    out vec2 vUV;
+
+    {{header}}
+
+    void main(void){
+
+        mat3 worldTransformMatrix = worldTransformMatrix;
+        mat3 modelMatrix = mat3(
+            1.0, 0.0, 0.0,
+            0.0, 1.0, 0.0,
+            0.0, 0.0, 1.0
+          );
+        vec2 position = aPosition;
+
+        {{start}}
+        
+        vColor = vec4(1.);
+        vUV = aUV;
+
+        {{main}}
+
+        mat3 modelViewProjectionMatrix = projectionMatrix * worldTransformMatrix * modelMatrix;
+
+        gl_Position = vec4((modelViewProjectionMatrix * vec3(position, 1.0)).xy, 0.0, 1.0);
+
+        vColor *= worldAlpha;
+
+        {{return}}
+    }
+`;
+
+const fragmentGlTemplate = /* glsl */`
+   
+    in vec4 vColor;
+    in vec2 vUV;
+
+    out vec4 finalColor;
+
+    {{header}}
+
+    void main(void) {
+        
+        {{start}}
+
+        vec4 outColor;
+      
+        {{main}}
+        
+        finalColor = outColor * vColor;
+    }
+`;
+
 export {
+    fragmentGlTemplate,
     fragmentGPUTemplate,
+    vertexGlTemplate,
     vertexGPUTemplate
 };

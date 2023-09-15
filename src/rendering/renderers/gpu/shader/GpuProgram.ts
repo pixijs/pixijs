@@ -14,6 +14,7 @@ export interface ProgramSource
 
 export interface GpuProgramOptions
 {
+    name?: string;
     fragment?: ProgramSource;
     vertex?: ProgramSource;
     layout?: ProgramLayout;
@@ -45,9 +46,12 @@ export class GpuProgram
     };
 
     public structsAndGroups: StructsAndGroups;
+    public name: string;
 
-    constructor({ fragment, vertex, layout, gpuLayout }: GpuProgramOptions)
+    constructor({ fragment, vertex, layout, gpuLayout, name }: GpuProgramOptions)
     {
+        this.name = name;
+
         this.fragment = fragment;
         this.vertex = vertex;
 

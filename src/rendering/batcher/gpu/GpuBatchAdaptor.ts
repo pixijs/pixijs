@@ -1,5 +1,5 @@
 import { ExtensionType } from '../../../extensions/Extensions';
-import { compileHighShaderProgram } from '../../high-shader/compileHighShaderToProgram';
+import { compileHighShaderGpuProgram } from '../../high-shader/compileHighShaderToProgram';
 import { colorBit } from '../../high-shader/shader-bits/colorBit';
 import { generateTextureBatchBit } from '../../high-shader/shader-bits/generateTextureBatchBit';
 import { Shader } from '../../renderers/shared/shader/Shader';
@@ -24,7 +24,8 @@ export class GpuBatchAdaptor implements BatcherAdaptor
 
     public init()
     {
-        const gpuProgram = compileHighShaderProgram({
+        const gpuProgram = compileHighShaderGpuProgram({
+            name: 'batch',
             bits: [
                 colorBit,
                 generateTextureBatchBit(MAX_TEXTURES),
