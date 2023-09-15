@@ -20,7 +20,7 @@ describe('GenerateTexture', () =>
         const renderer = (await getRenderer()) as WebGLRenderer;
         const container = new Container();
         const texture = renderer.textureGenerator.generateTexture({
-            container,
+            target: container,
         });
 
         expect(texture).toBeInstanceOf(Texture);

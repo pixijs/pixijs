@@ -17,12 +17,12 @@ export type GenerateTextureSourceOptions = Omit<TextureSourceOptions, 'resource'
 export type GenerateTextureOptions =
 {
     /** The container to generate the texture from */
-    container: Container;
+    target: Container;
     /**
      * The region of the displayObject, that shall be rendered,
      * if no region is specified, defaults to the local bounds of the displayObject.
      */
-    region?: Rectangle;
+    frame?: Rectangle;
 
     resolution?: number;
 
@@ -73,8 +73,8 @@ export class GenerateTextureSystem implements System
         if (options instanceof Container)
         {
             options = {
-                container: options,
-                region: undefined,
+                target: options,
+                frame: undefined,
                 textureSourceOptions: {},
                 resolution: undefined,
             };
@@ -82,9 +82,9 @@ export class GenerateTextureSystem implements System
 
         const resolution = options.resolution || this._renderer.resolution;
 
-        const container = options.container;
+        const container = options.target;
         const clearColor = options.clearColor || noColor;
-        const region = options.region?.copyTo(tempRect)
+        const region = options.frame?.copyTo(tempRect)
             || getLocalBounds(container, tempBounds).rectangle;
 
         region.width = Math.max(region.width, 1 / resolution) | 0;
