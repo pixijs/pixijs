@@ -45,7 +45,7 @@ export class TextView implements View
     public static defaultAutoResolution = true;
 
     public readonly uid: number = uid++;
-    public readonly type: string = 'text';
+    public readonly renderPipeId: string = 'text';
     public readonly owner: ViewObserver = emptyViewObserver;
     public batched = true;
     public anchor: ObservablePoint;
@@ -74,7 +74,7 @@ export class TextView implements View
 
         this._style = ensureTextStyle(renderMode, options.style);
 
-        this.type = map[renderMode];
+        this.renderPipeId = map[renderMode];
 
         this.anchor = new ObservablePoint(this, 0, 0);
 
@@ -186,7 +186,7 @@ export class TextView implements View
         const bounds = this._bounds;
         const padding = this._style.padding;
 
-        if (this.type === 'bitmapText')
+        if (this.renderPipeId === 'bitmapText')
         {
             const bitmapMeasurement = BitmapFontManager.measureText(this.text, this._style);
             const scale = bitmapMeasurement.scale;
@@ -197,7 +197,7 @@ export class TextView implements View
             bounds[2] = (bitmapMeasurement.width * scale) - padding;
             bounds[3] = ((bitmapMeasurement.height * scale) + offset) - padding;
         }
-        else if (this.type === 'htmlText')
+        else if (this.renderPipeId === 'htmlText')
         {
             const htmlMeasurement = measureHtmlText(this.text, this._style as HTMLTextStyle);
 

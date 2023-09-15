@@ -21,7 +21,7 @@ export interface View
      * an identifier that is used to identify the type of system that will be used to render this renderable
      * eg, 'sprite' will use the sprite system (based on the systems name
      */
-    type: string;
+    renderPipeId: string;
 
     owner: ViewObserver;
 

@@ -76,7 +76,7 @@ function collectAllRenderablesSimple(
 
         const rp = renderPipes as unknown as Record<string, RenderPipe>;
 
-        rp[view.type].addRenderable(container, instructionSet);
+        rp[view.renderPipeId].addRenderable(container, instructionSet);
     }
 
     if (!container.isLayerRoot)
@@ -112,7 +112,7 @@ function collectAllRenderablesAdvanced(
                 renderPipes.blendMode.setBlendMode(proxyRenderable, proxyRenderable.layerBlendMode, instructionSet);
 
                 // eslint-disable-next-line max-len
-                (renderPipes[proxyRenderable.view.type as keyof RenderPipes] as any).addRenderable(proxyRenderable, instructionSet);
+                (renderPipes[proxyRenderable.view.renderPipeId as keyof RenderPipes] as any).addRenderable(proxyRenderable, instructionSet);
             }
         }
     }
@@ -141,7 +141,7 @@ function collectAllRenderablesAdvanced(
             renderPipes.blendMode.setBlendMode(container as Renderable, container.layerBlendMode, instructionSet);
             container.didViewUpdate = false;
 
-            const pipe = renderPipes[view.type as keyof RenderPipes]as RenderPipe<any>;
+            const pipe = renderPipes[view.renderPipeId as keyof RenderPipes]as RenderPipe<any>;
 
             pipe.addRenderable(container, instructionSet);
         }

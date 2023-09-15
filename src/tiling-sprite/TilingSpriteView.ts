@@ -30,7 +30,7 @@ export class TilingSpriteView implements View
 
     public readonly owner = emptyViewObserver;
     public readonly uid = uid++;
-    public readonly type = 'tilingSprite';
+    public readonly renderPipeId = 'tilingSprite';
     public batched = true;
     public anchor: ObservablePoint;
 

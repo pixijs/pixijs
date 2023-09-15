@@ -13,7 +13,7 @@ export class GraphicsView implements View
     public readonly uid = UID++;
     public readonly canBundle = true;
     public readonly owner = emptyViewObserver;
-    public readonly type = 'graphics';
+    public readonly renderPipeId = 'graphics';
     public batched: boolean;
 
     /** @internal */

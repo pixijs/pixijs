@@ -13,7 +13,7 @@ export function validateRenderables(layerGroup: LayerGroup, renderPipes: RenderP
         const container = list[i];
 
         const renderable = container.view;
-        const pipe = renderPipes[renderable.type as keyof RenderPipes] as RenderPipe<any>;
+        const pipe = renderPipes[renderable.renderPipeId as keyof RenderPipes] as RenderPipe<any>;
 
         rebuildRequired = pipe.validateRenderable(container);
 
