@@ -1,9 +1,10 @@
+import { Color } from '../../../../color/Color';
 import { Matrix } from '../../../../maths/Matrix';
-import { convertColorToNumber } from '../../../../utils/color/convertColorToNumber';
 import { Texture } from '../../../renderers/shared/texture/Texture';
 import { FillGradient } from '../fill/FillGradient';
 import { FillPattern } from '../fill/FillPattern';
 
+import type { ColorSource } from '../../../../color/Color';
 import type {
     FillStyle,
     FillStyleInputs,
@@ -34,13 +35,18 @@ export function convertFillInputToFillStyle(
         fillStyleToParse = defaultStyle;
     }
 
-    if (typeof styleToMerge === 'number' || typeof styleToMerge === 'string')
+    if (Color.isColorLike(styleToMerge as ColorSource))
     {
-        return {
+        const temp = Color.shared.setValue(styleToMerge as ColorSource ?? 0);
+        const opts = {
             ...fillStyleToParse,
-            color: convertColorToNumber(styleToMerge),
+            color: temp.toNumber(),
             texture: Texture.WHITE,
         };
+
+        opts.alpha ??= temp.alpha;
+
+        return opts;
     }
     else if (styleToMerge instanceof FillPattern)
     {
@@ -82,7 +88,7 @@ export function convertFillInputToFillStyle(
         style.color = 0xffffff;
     }
 
-    style.color = convertColorToNumber(style.color);
+    style.color = Color.shared.setValue(style.color).toNumber();
 
     // its a regular fill style!
     return style;

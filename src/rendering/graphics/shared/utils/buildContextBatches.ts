@@ -1,3 +1,4 @@
+import { Color } from '../../../../color/Color';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { BigPool } from '../../../../utils/pool/PoolGroup';
 import { buildSimpleUvs, buildUvs } from '../../../renderers/shared/geometry/utils/buildUvs';
@@ -242,7 +243,7 @@ function addShapePathToGeometryData(
         graphicsBatch.vertexOffset = vertOffset;
         graphicsBatch.vertexSize = (vertices.length / 2) - vertOffset;
 
-        graphicsBatch.color = style.color;
+        graphicsBatch.color = Color.shared.setValue(style.color).toNumber();
         graphicsBatch.alpha = style.alpha;
 
         graphicsBatch.texture = texture;

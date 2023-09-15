@@ -1,3 +1,5 @@
+import { Color } from '../../../../color/Color';
+
 import type { FillGradient } from '../../../graphics/shared/fill/FillGradient';
 import type { FillStyle, StrokeStyle } from '../../../graphics/shared/GraphicsContext';
 import type { TextStyle } from '../../TextStyle';
@@ -50,7 +52,7 @@ function addFillStyleKey(fillStyle: FillStyle, key: (number | string)[], index: 
 {
     if (!fillStyle) return index;
 
-    key[index++] = fillStyle.color;
+    key[index++] = Color.shared.setValue(fillStyle.color).toNumber();
     key[index++] = fillStyle.alpha;
     key[index++] = (fillStyle.fill as FillGradient)?.uid;
 

@@ -1,4 +1,5 @@
 import { Cache } from '../../../assets/cache/Cache';
+import { Color } from '../../../color/Color';
 import { ExtensionType } from '../../../extensions/Extensions';
 import { BigPool } from '../../../utils/pool/PoolGroup';
 import { GraphicsView } from '../../graphics/shared/GraphicsView';
@@ -147,7 +148,7 @@ export class BitmapTextPipe implements RenderPipe<TextView>
 
         context.translate(offsetX, offsetY);
 
-        const tint = style._fill.color;
+        const tint = Color.shared.setValue(style._fill.color).toNumber();
 
         for (let i = 0; i < bitmapTextLayout.lines.length; i++)
         {

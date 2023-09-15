@@ -1,3 +1,4 @@
+import { Color } from '../../color/Color';
 import { Filter } from '../../rendering/filters/shared/Filter';
 import { GlProgram } from '../../rendering/renderers/gl/shader/GlProgram';
 import { GpuProgram } from '../../rendering/renderers/gpu/shader/GpuProgram';
@@ -5,6 +6,8 @@ import { UniformGroup } from '../../rendering/renderers/shared/shader/UniformGro
 import vertex from '../defaultFilter.vert';
 import fragment from './colorMatrixFilter.frag';
 import source from './colorMatrixFilter.wgsl';
+
+import type { ColorSource } from '../../color/Color';
 
 // ts fixed array of length 20
 export type ColorMatrix = [
@@ -183,16 +186,13 @@ export class ColorMatrixFilter extends Filter
      * @param multiply - if true, current matrix and matrix are multiplied. If false,
      *  just set the current matrix with @param matrix
      */
-    public tint(color: number, multiply?: boolean): void
+    public tint(color: ColorSource, multiply?: boolean): void
     {
-        const r = (color >> 16) & 0xff;
-        const g = (color >> 8) & 0xff;
-        const b = color & 0xff;
-
+        const [r, g, b] = Color.shared.setValue(color).toArray();
         const matrix: ColorMatrix = [
-            r / 255, 0, 0, 0, 0,
-            0, g / 255, 0, 0, 0,
-            0, 0, b / 255, 0, 0,
+            r, 0, 0, 0, 0,
+            0, g, 0, 0, 0,
+            0, 0, b, 0, 0,
             0, 0, 0, 1, 0,
         ];
 
@@ -492,20 +492,22 @@ export class ColorMatrixFilter extends Filter
      * @param multiply - if true, current matrix and matrix are multiplied. If false,
      *  just set the current matrix with @param matrix
      */
-    public colorTone(desaturation: number, toned: number, lightColor: number, darkColor: number, multiply: boolean): void
+    public colorTone(
+        desaturation: number,
+        toned: number,
+        lightColor: ColorSource,
+        darkColor: ColorSource,
+        multiply: boolean
+    ): void
     {
         desaturation = desaturation || 0.2;
         toned = toned || 0.15;
         lightColor = lightColor || 0xFFE580;
         darkColor = darkColor || 0x338000;
 
-        const lR = ((lightColor >> 16) & 0xFF) / 255;
-        const lG = ((lightColor >> 8) & 0xFF) / 255;
-        const lB = (lightColor & 0xFF) / 255;
-
-        const dR = ((darkColor >> 16) & 0xFF) / 255;
-        const dG = ((darkColor >> 8) & 0xFF) / 255;
-        const dB = (darkColor & 0xFF) / 255;
+        const temp = Color.shared;
+        const [lR, lG, lB] = temp.setValue(lightColor).toArray();
+        const [dR, dG, dB] = temp.setValue(darkColor).toArray();
 
         const matrix: ColorMatrix = [
             0.3, 0.59, 0.11, 0, 0,

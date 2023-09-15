@@ -1,5 +1,5 @@
+import { Color } from '../../../../color/Color';
 import { Matrix } from '../../../../maths/Matrix';
-import { convertNumberToHex } from '../../../../utils/color/convertNumberToHex';
 import { FillGradient } from '../../../graphics/shared/fill/FillGradient';
 import { FillPattern } from '../../../graphics/shared/fill/FillPattern';
 import { Texture } from '../../../renderers/shared/texture/Texture';
@@ -13,7 +13,7 @@ export function getCanvasFillStyle(
 {
     if (fillStyle.texture === Texture.WHITE && !fillStyle.fill)
     {
-        return convertNumberToHex(fillStyle.color);
+        return Color.shared.setValue(fillStyle.color).toHex();
     }
     else if (!fillStyle.fill)
     {
@@ -58,7 +58,7 @@ export function getCanvasFillStyle(
 
             fillGradient.gradientStops.forEach((stop) =>
             {
-                gradient.addColorStop(stop.offset, convertNumberToHex(stop.color));
+                gradient.addColorStop(stop.offset, Color.shared.setValue(stop.color).toHex());
             });
 
             return gradient;

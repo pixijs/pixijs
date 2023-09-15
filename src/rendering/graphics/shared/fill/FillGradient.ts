@@ -1,8 +1,10 @@
+import { Color } from '../../../../color/Color';
 import { Matrix } from '../../../../maths/Matrix';
 import { settings } from '../../../../settings/settings';
-import { convertNumberToHex } from '../../../../utils/color/convertNumberToHex';
 import { ImageSource } from '../../../renderers/shared/texture/sources/ImageSource';
 import { Texture } from '../../../renderers/shared/texture/Texture';
+
+import type { ColorSource } from '../../../../color/Color';
 
 export type GradientType = 'linear' | 'radial';
 
@@ -48,11 +50,9 @@ export class FillGradient implements CanvasGradient
         this.y1 = y1;
     }
 
-    public addColorStop(offset: number, color: number | string): this
+    public addColorStop(offset: number, color: ColorSource): this
     {
-        color = convertNumberToHex(color);
-
-        this.gradientStops.push({ offset, color });
+        this.gradientStops.push({ offset, color: Color.shared.setValue(color).toHex() });
 
         return this;
     }

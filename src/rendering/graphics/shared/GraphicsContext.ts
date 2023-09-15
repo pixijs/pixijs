@@ -1,8 +1,8 @@
 /* eslint-disable max-len */
 import EventEmitter from 'eventemitter3';
+import { Color, type ColorSource } from '../../../color/Color';
 import { Matrix } from '../../../maths/Matrix';
 import { Point } from '../../../maths/Point';
-import { convertColorToNumber } from '../../../utils/color/convertColorToNumber';
 import { deprecation } from '../../../utils/logging/deprecation';
 import { Texture } from '../../renderers/shared/texture/Texture';
 import { Bounds } from '../../scene/bounds/Bounds';
@@ -21,7 +21,7 @@ import type { ShapePath } from './path/ShapePath';
 
 export interface FillStyle
 {
-    color?: number;
+    color?: ColorSource;
     alpha?: number;
     texture?: Texture;
     matrix?: Matrix;
@@ -37,7 +37,7 @@ export interface PatternFillStyle
 
 export interface DefaultFillStyle
 {
-    color?: number;
+    color?: ColorSource;
     alpha?: number;
     texture?: Texture;
     matrix?: Matrix;
@@ -58,7 +58,7 @@ const tmpPoint = new Point();
 
 export type BatchMode = 'auto' | 'batch' | 'no-batch';
 
-export type FillStyleInputs = number | string | FillGradient | CanvasPattern | PatternFillStyle | DefaultFillStyle;
+export type FillStyleInputs = ColorSource | FillGradient | CanvasPattern | PatternFillStyle | DefaultFillStyle;
 
 export interface FillInstruction
 {
@@ -137,9 +137,9 @@ export class GraphicsContext extends EventEmitter<{
 
         this._fillStyleOriginal = value;
 
-        if (typeof value === 'number' || typeof value === 'string')
+        if (Color.isColorLike(value as ColorSource))
         {
-            this._fillStyle.color = convertColorToNumber(value);
+            this._normalizeColor(value as ColorSource, this._fillStyle);
             this._fillStyle.texture = Texture.WHITE;
         }
         else if (value instanceof FillPattern)
@@ -164,7 +164,8 @@ export class GraphicsContext extends EventEmitter<{
         else
         {
             // its a regular fill style!
-            this._fillStyle = { ...GraphicsContext.defaultFillStyle, ...value };
+            this._fillStyle = { ...GraphicsContext.defaultFillStyle, ...value as DefaultFillStyle };
+            this._normalizeColor(this._fillStyle.color, this._fillStyle);
         }
     }
 
@@ -179,9 +180,9 @@ export class GraphicsContext extends EventEmitter<{
 
         this._strokeStyleOriginal = value;
 
-        if (typeof value === 'number' || typeof value === 'string')
+        if (Color.isColorLike(value as ColorSource))
         {
-            this._strokeStyle.color = convertColorToNumber(value);
+            this._normalizeColor(value as ColorSource, this._strokeStyle);
             this._strokeStyle.texture = Texture.WHITE;
         }
         else if (value instanceof FillGradient)
@@ -197,7 +198,8 @@ export class GraphicsContext extends EventEmitter<{
         else
         {
             // its a regular fill style!
-            this._strokeStyle = { ...GraphicsContext.defaultStrokeStyle, ...value };
+            this._strokeStyle = { ...GraphicsContext.defaultStrokeStyle, ...value as StrokeStyle };
+            this._normalizeColor(this._strokeStyle.color, this._strokeStyle);
         }
     }
 
@@ -221,10 +223,10 @@ export class GraphicsContext extends EventEmitter<{
     }
 
     public texture(texture: Texture): this;
-    public texture(texture: Texture, tint: number): this;
-    public texture(texture: Texture, tint: number, dx: number, dy: number): this;
-    public texture(texture: Texture, tint: number, dx: number, dy: number, dw: number, dh: number): this;
-    public texture(texture: Texture, tint?: number, dx?: number, dy?: number, dw?: number, dh?: number): this
+    public texture(texture: Texture, tint: ColorSource): this;
+    public texture(texture: Texture, tint: ColorSource, dx: number, dy: number): this;
+    public texture(texture: Texture, tint: ColorSource, dx: number, dy: number, dw: number, dh: number): this;
+    public texture(texture: Texture, tint?: ColorSource, dx?: number, dy?: number, dw?: number, dh?: number): this
     {
         this.instructions.push({
             action: 'texture',
@@ -239,7 +241,7 @@ export class GraphicsContext extends EventEmitter<{
 
                 transform: this._transform.clone(),
                 alpha: this._fillStyle.alpha,
-                style: tint || 0xffffff,
+                style: tint ? Color.shared.setValue(tint).toNumber() : 0xffffff,
             }
         });
 
@@ -256,9 +258,9 @@ export class GraphicsContext extends EventEmitter<{
     }
 
     /** @deprecated 8.0.0 */
-    public fill(color: number, alpha: number): this;
+    public fill(color: ColorSource, alpha: number): this;
     public fill(style?: FillStyleInputs): this;
-    public fill(style?: FillStyleInputs | number, alpha?: number): this
+    public fill(style?: FillStyleInputs | ColorSource, alpha?: number): this
     {
         let path: GraphicsPath;
 
@@ -812,6 +814,19 @@ export class GraphicsContext extends EventEmitter<{
         this._stateStack = null;
         this.customShader = null;
         this._transform = null;
+    }
+
+    /**
+     * Normalize the color input from options for line style or fill
+     * @param color
+     * @param {PIXI.FillStyle} options - Fill style object.
+     */
+    private _normalizeColor(color: ColorSource, options: FillStyle): void
+    {
+        const temp = Color.shared.setValue(color ?? 0);
+
+        options.color = temp.toNumber();
+        options.alpha ??= temp.alpha;
     }
 }
 

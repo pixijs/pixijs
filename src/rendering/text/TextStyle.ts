@@ -1,5 +1,5 @@
 import EventEmitter from 'eventemitter3';
-import { convertColorToNumber } from '../../utils/color/convertColorToNumber';
+import { Color, type ColorSource } from '../../color/Color';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { FillGradient } from '../graphics/shared/fill/FillGradient';
 import { GraphicsContext } from '../graphics/shared/GraphicsContext';
@@ -27,7 +27,7 @@ export type TextDropShadow = {
     /** Set a shadow blur radius */
     blur: number;
     /** A fill style to be used on the  e.g., 'red', '#00FF00' */
-    color: string | number;
+    color: ColorSource;
     /** Set a distance of the drop shadow */
     distance: number;
 };
@@ -454,7 +454,7 @@ function convertV7Tov8Style(style: TextStyleOptions)
 
         const gradientFill = new FillGradient(0, 0, 0, (style.fontSize as number) * 1.7);
 
-        const fills: number[] = oldStyle.fill.map(convertColorToNumber);
+        const fills: number[] = oldStyle.fill.map((color: ColorSource) => Color.shared.setValue(color).toNumber());
 
         fills.forEach((number, index) =>
         {

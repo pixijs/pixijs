@@ -3,6 +3,7 @@ import { Container } from '../../scene/Container';
 import { GraphicsContext } from './GraphicsContext';
 import { GraphicsView } from './GraphicsView';
 
+import type { ColorSource } from '../../../color/Color';
 import type { Matrix } from '../../../maths/Matrix';
 import type { Texture } from '../../renderers/shared/texture/Texture';
 import type { ContainerOptions } from '../../scene/Container';
@@ -48,9 +49,9 @@ export class Graphics extends Container<GraphicsView>
 
     // --------------------------------------- GraphicsContext methods ---------------------------------------
     /** @deprecated 8.0.0 */
-    public fill(color: number, alpha: number): this;
+    public fill(color: ColorSource, alpha: number): this;
     public fill(style?: FillStyleInputs): this;
-    public fill(...args: [FillStyleInputs, number?]): this
+    public fill(...args: [FillStyleInputs, ColorSource?]): this
     {
         return this._callContextMethod('fill', args);
     }
@@ -59,10 +60,10 @@ export class Graphics extends Container<GraphicsView>
         return this._callContextMethod('stroke', args);
     }
     public texture(texture: Texture): this;
-    public texture(texture: Texture, tint: number): this;
-    public texture(texture: Texture, tint: number, dx: number, dy: number): this;
-    public texture(texture: Texture, tint: number, dx: number, dy: number, dw: number, dh: number): this;
-    public texture(texture: Texture, tint?: number, dx?: number, dy?: number, dw?: number, dh?: number): this;
+    public texture(texture: Texture, tint: ColorSource): this;
+    public texture(texture: Texture, tint: ColorSource, dx: number, dy: number): this;
+    public texture(texture: Texture, tint: ColorSource, dx: number, dy: number, dw: number, dh: number): this;
+    public texture(texture: Texture, tint?: ColorSource, dx?: number, dy?: number, dw?: number, dh?: number): this;
     public texture(...args: [Texture, number?, number?, number?, number?, number?]): this
     {
         return this._callContextMethod('texture', args);

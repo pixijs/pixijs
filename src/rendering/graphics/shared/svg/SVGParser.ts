@@ -1,4 +1,4 @@
-import { convertColorToNumber } from '../../../../utils/color/convertColorToNumber';
+import { Color } from '../../../../color/Color';
 import { GraphicsPath } from '../path/GraphicsPath';
 
 import type { FillStyle, GraphicsContext, StrokeStyle } from '../GraphicsContext';
@@ -235,7 +235,7 @@ function parseStyle(svg: SVGElement): {strokeStyle: StrokeStyle; fillStyle: Fill
 
                     if (value !== 'none')
                     {
-                        strokeStyle.color = convertColorToNumber(value);
+                        strokeStyle.color = Color.shared.setValue(value).toNumber();
                         useStroke = true;
                     }
 
@@ -248,7 +248,7 @@ function parseStyle(svg: SVGElement): {strokeStyle: StrokeStyle; fillStyle: Fill
                     if (value !== 'none')
                     {
                         useFill = true;
-                        fillStyle.color = convertColorToNumber(value);
+                        fillStyle.color = Color.shared.setValue(value).toNumber();
                     }
                     break;
                 case 'fill-opacity':
@@ -271,7 +271,7 @@ function parseStyle(svg: SVGElement): {strokeStyle: StrokeStyle; fillStyle: Fill
         if (stroke && stroke !== 'none')
         {
             useStroke = true;
-            strokeStyle.color = convertColorToNumber(stroke);
+            strokeStyle.color = Color.shared.setValue(stroke).toNumber();
 
             strokeStyle.width = parseFloatAttribute(svg, 'stroke-width', 1);
         }
@@ -281,7 +281,7 @@ function parseStyle(svg: SVGElement): {strokeStyle: StrokeStyle; fillStyle: Fill
         if (fill && fill !== 'none')
         {
             useFill = true;
-            fillStyle.color = convertColorToNumber(fill);
+            fillStyle.color = Color.shared.setValue(fill).toNumber();
         }
     }
 
