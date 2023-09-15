@@ -153,6 +153,6 @@ export class GlStencilSystem implements System
 
     public destroy()
     {
-        // boom!
+        // No critical operations to be called in the destroy method.
     }
 }

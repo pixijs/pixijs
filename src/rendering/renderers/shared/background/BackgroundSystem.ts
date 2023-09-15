@@ -169,6 +169,6 @@ export class BackgroundSystem implements System
 
     public destroy(): void
     {
-        // ka boom!
+        // No cleanup required
     }
 }

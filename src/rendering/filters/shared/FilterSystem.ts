@@ -540,7 +540,6 @@ export class FilterSystem implements System
 
     public destroy()
     {
-        // BOOM!
+        // No critical operations to be called in the destroy method.
     }
 }
-

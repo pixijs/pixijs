@@ -239,6 +239,13 @@ export class GraphicsContextSystem implements System
 
     public destroy()
     {
-        // boom!
+        // Clean up all graphics contexts
+        for (const context of this._needsContextNeedsRebuild)
+        {
+            this._cleanGraphicsContextData(context);
+            this._gpuContextHash[context.uid] = null;
+        }
+
+        this._needsContextNeedsRebuild.length = 0;
     }
 }

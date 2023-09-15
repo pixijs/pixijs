@@ -118,6 +118,11 @@ export class AbstractRenderer<PIPES, OPTIONS>
     public render(options: RenderOptions | Container): void;
     public render(args: RenderOptions | Container, deprecated?: {renderTexture: any}): void
     {
+        if (this._isDestroyed)
+        {
+            throw new Error('Cannot render after destroy');
+        }
+
         let options = args;
 
         if (options instanceof Container)
@@ -280,6 +285,20 @@ export class AbstractRenderer<PIPES, OPTIONS>
         return this;
     }
 
+    private _destroySystem(name: string): void
+    {
+        const system = this._systemsHash[name];
+
+        for (const i in this.runners)
+        {
+            this.runners[i].remove(system);
+        }
+
+        system.destroy?.();
+
+        delete this._systemsHash[name];
+    }
+
     private _addPipes(pipes: RendererConfig['renderPipes'], pipeAdaptors: RendererConfig['renderPipeAdaptors']): void
     {
         const adaptors = pipeAdaptors.reduce((acc, adaptor) =>
@@ -304,20 +323,36 @@ export class AbstractRenderer<PIPES, OPTIONS>
         });
     }
 
+    private get _isDestroyed()
+    {
+        return this._systemsHash === null
+            && this.runners === null
+            && this.renderPipes === null;
+    }
+
     /** destroy the all runners and systems. Its apps job to */
     public destroy(): void
     {
+        const writeable = this as Writeable<typeof this, 'renderPipes' | 'runners'>;
+
+        // destroy all runners
         Object.values(this.runners).forEach((runner) =>
         {
             runner.destroy();
         });
 
+        writeable.runners = null;
+
+        // destroy all systems
+        Object.keys(this._systemsHash).forEach((name) =>
+        {
+            this._destroySystem(name);
+        });
+
         this._systemsHash = null;
 
-        const writeable = this as Writeable<typeof this, 'renderPipes' | 'runners'>;
-
+        // destroy all pipes
         writeable.renderPipes = null;
-        writeable.runners = null;
     }
 
     /**

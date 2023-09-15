@@ -186,7 +186,6 @@ export class ViewSystem implements System
             this.element.parentNode.removeChild(this.element);
         }
 
-        // this._renderer = null;
-        this.element = null;
+        // note: don't clear the element as other systems may need to unbind from it (eg. GLContextSystem)
     }
 }
