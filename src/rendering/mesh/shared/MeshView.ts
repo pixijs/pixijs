@@ -35,7 +35,7 @@ export class MeshView<
 >implements View
 {
     public readonly uid: number = UID++;
-    public readonly type = 'mesh';
+    public readonly renderPipeId = 'mesh';
     public readonly canBundle = true;
     public readonly owner = emptyViewObserver;
     public state = State.for2d();

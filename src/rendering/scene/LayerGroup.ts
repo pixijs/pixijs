@@ -210,7 +210,7 @@ export class LayerGroup implements Instruction
 
         container.didViewUpdate = false;
         // actually updates the renderable..
-        this.instructionSet.renderPipes[container.view.type].updateRenderable(container);
+        this.instructionSet.renderPipes[container.view.renderPipeId].updateRenderable(container);
     }
 
     public onChildViewUpdate(child: Renderable)

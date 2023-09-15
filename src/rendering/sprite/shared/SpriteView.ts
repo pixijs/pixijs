@@ -12,7 +12,7 @@ let uid = 0;
 
 export class SpriteView implements View
 {
-    public readonly type = 'sprite';
+    public readonly renderPipeId = 'sprite';
     public readonly owner: ViewObserver = emptyViewObserver;
     public readonly uid: number = uid++;
     public batched = true;

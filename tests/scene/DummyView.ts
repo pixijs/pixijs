@@ -10,7 +10,7 @@ export class DummyView extends EventEmitter implements View
     public owner: ViewObserver;
     public uid: number;
     public batched: boolean;
-    public type = 'dummy';
+    public renderPipeId = 'dummy';
     public renderableUpdateRequested: boolean;
     public onUpdate: () => void;
     public addBounds = (bounds: Bounds) =>
