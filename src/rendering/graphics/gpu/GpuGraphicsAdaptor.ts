@@ -1,11 +1,14 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { Matrix } from '../../../maths/Matrix';
 import { MAX_TEXTURES } from '../../batcher/shared/const';
+import { compileHighShaderGpuProgram } from '../../high-shader/compileHighShaderToProgram';
+import { colorBit } from '../../high-shader/shader-bits/colorBit';
+import { generateTextureBatchBit } from '../../high-shader/shader-bits/generateTextureBatchBit';
+import { localUniformBit } from '../../high-shader/shader-bits/localUniformBit';
 import { BindGroup } from '../../renderers/gpu/shader/BindGroup';
 import { Shader } from '../../renderers/shared/shader/Shader';
 import { UniformGroup } from '../../renderers/shared/shader/UniformGroup';
 import { color32BitToUniform } from './colorToUniform';
-import { generateDefaultGraphicsBatchProgram } from './generateDefaultGraphicsBatchProgram';
 
 import type { Batch } from '../../batcher/shared/Batcher';
 import type { GpuEncoderSystem } from '../../renderers/gpu/GpuEncoderSystem';
@@ -33,8 +36,17 @@ export class GpuGraphicsAdaptor implements GraphicsAdaptor
             transformMatrix: { value: new Matrix(), type: 'mat3x3<f32>' },
         });
 
+        const gpuProgram = compileHighShaderGpuProgram({
+            name: 'graphics',
+            bits: [
+                colorBit,
+                generateTextureBatchBit(MAX_TEXTURES),
+                localUniformBit,
+            ]
+        });
+
         this._shader = new Shader({
-            gpuProgram: generateDefaultGraphicsBatchProgram(MAX_TEXTURES),
+            gpuProgram,
             groups: {
                 // added on the fly!
                 2: new BindGroup({ 0: localUniforms }),
@@ -61,11 +73,11 @@ export class GpuGraphicsAdaptor implements GraphicsAdaptor
 
         const localUniforms = shader.resources.localUniforms;
 
-        shader.resources.localUniforms.uniforms.transformMatrix = renderable.layerTransform;
+        shader.resources.localUniforms.uniforms.uTransformMatrix = renderable.layerTransform;
 
         color32BitToUniform(
             renderable.layerColor,
-            localUniforms.uniforms.color,
+            localUniforms.uniforms.uColor,
             0
         );
 
