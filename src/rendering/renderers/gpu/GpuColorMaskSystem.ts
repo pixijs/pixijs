@@ -1,5 +1,6 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 
+import type { Writeable } from '../../../utils/types';
 import type { System } from '../shared/system/System';
 import type { WebGPURenderer } from './WebGPURenderer';
 
@@ -32,6 +33,9 @@ export class GpuColorMaskSystem implements System
 
     public destroy()
     {
-        // boom!
+        const writeable = this as Writeable<typeof this, '_renderer'>;
+
+        writeable._renderer = null;
+        this._colorMaskCache = null;
     }
 }

@@ -343,5 +343,6 @@ export class GlStateSystem implements System
     public destroy(): void
     {
         this.gl = null;
+        this.checks.length = 0;
     }
 }

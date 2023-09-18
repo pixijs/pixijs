@@ -10,6 +10,7 @@ import { getCanvasTexture } from '../../shared/texture/utils/getCanvasTexture';
 import { GpuRenderTarget } from './GpuRenderTarget';
 
 import type { ICanvas } from '../../../../settings/adapter/ICanvas';
+import type { Writeable } from '../../../../utils/types';
 import type { CLEAR_OR_BOOL } from '../../gl/const';
 import type { System } from '../../shared/system/System';
 import type { BindableTexture } from '../../shared/texture/Texture';
@@ -282,7 +283,10 @@ export class GpuRenderTargetSystem implements System
 
     public destroy()
     {
-        // boom
+        const writeable = this as Writeable<typeof this, '_renderer'>;
+
+        writeable._renderer = null;
+        this._renderSurfaceToRenderTargetHash.clear();
     }
 
     private _startRenderPass(

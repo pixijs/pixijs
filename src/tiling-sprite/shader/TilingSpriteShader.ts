@@ -1,11 +1,12 @@
 import { Matrix } from '../../maths/Matrix';
-import { GlProgram } from '../../rendering/renderers/gl/shader/GlProgram';
-import { GpuProgram } from '../../rendering/renderers/gpu/shader/GpuProgram';
+import {
+    compileHighShaderGlProgram,
+    compileHighShaderGpuProgram
+} from '../../rendering/high-shader/compileHighShaderToProgram';
+import { localUniformBit, localUniformBitGl } from '../../rendering/high-shader/shader-bits/localUniformBit';
 import { Shader } from '../../rendering/renderers/shared/shader/Shader';
 import { UniformGroup } from '../../rendering/renderers/shared/shader/UniformGroup';
-import programFrag from './tiling-sprite.frag';
-import programVert from './tiling-sprite.vert';
-import programWgsl from './tiling-sprite.wgsl';
+import { tilingBit, tilingBitGl } from './tilingBit';
 
 import type { TextureShader } from '../../rendering/mesh/shared/MeshView';
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
@@ -21,21 +22,20 @@ export class TilingSpriteShader extends Shader implements TextureShader
 
     constructor(options: TilingSpriteOptions)
     {
-        const glProgram = GlProgram.from({
-            vertex: programVert,
-            fragment: programFrag,
-            name: 'tiling-sprite',
+        const gpuProgram = compileHighShaderGpuProgram({
+            name: 'tiling-sprite-shader',
+            bits: [
+                localUniformBit,
+                tilingBit,
+            ],
         });
 
-        const gpuProgram = GpuProgram.from({
-            vertex: {
-                source: programWgsl,
-                entryPoint: 'mainVertex',
-            },
-            fragment: {
-                source: programWgsl,
-                entryPoint: 'mainFragment',
-            }
+        const glProgram = compileHighShaderGlProgram({
+            name: 'tiling-sprite-shader',
+            bits: [
+                localUniformBitGl,
+                tilingBitGl,
+            ]
         });
 
         const tilingUniforms = new UniformGroup({

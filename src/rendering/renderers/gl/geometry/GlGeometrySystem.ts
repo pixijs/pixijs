@@ -475,5 +475,8 @@ export class GlGeometrySystem implements System
     public destroy(): void
     {
         this._renderer = null;
+        this.gl = null;
+        this._activeVao = null;
+        this._activeGeometry = null;
     }
 }

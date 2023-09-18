@@ -6,6 +6,7 @@ import type { Matrix } from '../../../../maths/Matrix';
 import type { Rectangle } from '../../../../maths/shapes/Rectangle';
 import type { ICanvas } from '../../../../settings/adapter/ICanvas';
 import type { Writeable } from '../../../../utils/types';
+import type { DestroyOptions } from '../../../scene/destroyTypes';
 import type { RenderSurface, RGBAArray } from '../../gpu/renderTarget/GpuRenderTargetSystem';
 import type { Renderer } from '../../types';
 import type { GenerateTextureOptions, GenerateTextureSystem } from '../GenerateTextureSystem';
@@ -305,20 +306,24 @@ export class AbstractRenderer<PIPES, OPTIONS>
         });
     }
 
-    /** destroy the all runners and systems. Its apps job to */
-    public destroy(): void
+    public destroy(options: DestroyOptions = false): void
     {
+        const writeable = this as Writeable<typeof this, 'renderPipes' | 'runners'>;
+
+        this.runners.destroy.items.reverse();
+        this.runners.destroy.emit(options);
+
+        // destroy all runners
         Object.values(this.runners).forEach((runner) =>
         {
             runner.destroy();
         });
 
+        writeable.runners = null;
         this._systemsHash = null;
 
-        const writeable = this as Writeable<typeof this, 'renderPipes' | 'runners'>;
-
+        // destroy all pipes
         writeable.renderPipes = null;
-        writeable.runners = null;
     }
 
     /**

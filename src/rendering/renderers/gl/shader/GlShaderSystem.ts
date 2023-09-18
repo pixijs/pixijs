@@ -203,4 +203,18 @@ export class GlShaderSystem
 
         return this._programDataHash[key];
     }
+
+    public destroy(): void
+    {
+        for (const key of Object.keys(this._programDataHash))
+        {
+            const programData = this._programDataHash[key];
+
+            programData.destroy();
+            this._programDataHash[key] = null;
+        }
+
+        this._programDataHash = null;
+        this._boundUniformsIdsToIndexHash = null;
+    }
 }

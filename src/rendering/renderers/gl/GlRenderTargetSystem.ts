@@ -523,9 +523,5 @@ export class GlRenderTargetSystem implements System
         }
     }
 
-    public destroy()
-    {
-        //
-    }
+    public destroy?: () => void;
 }
-

@@ -260,6 +260,29 @@ export class GpuTextureSystem implements System, CanvasGenerator
 
     public destroy(): void
     {
-        throw new Error('Method not implemented.');
+        for (const k of Object.keys(this._gpuSources))
+        {
+            const key = Number(k);
+            const gpuTexture = this._gpuSources[key];
+
+            gpuTexture.destroy();
+            this._gpuSources[key] = null;
+        }
+
+        for (const k of Object.keys(this._bindGroupHash))
+        {
+            const key = Number(k);
+            const bindGroup = this._bindGroupHash[key];
+
+            bindGroup.destroy();
+            this._bindGroupHash[key] = null;
+        }
+
+        this._gpu = null;
+        this._mipmapGenerator = null;
+        this._gpuSources = null;
+        this._bindGroupHash = null;
+        this._textureViewHash = null;
+        this._gpuSamplers = null;
     }
 }
