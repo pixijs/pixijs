@@ -34,6 +34,7 @@ export class GpuShaderSystem implements System
 
                 const pipelineLayoutDesc = { bindGroupLayouts: bindGroups };
 
+                // TODO - this group should be reused for all programs, look into a cache / key setup
                 program._gpuLayout = {
                     bindGroups,
                     pipeline: device.createPipelineLayout(pipelineLayoutDesc),
@@ -51,6 +52,6 @@ export class GpuShaderSystem implements System
 
     public destroy(): void
     {
-        throw new Error('Method not implemented.');
+        this._gpu = null;
     }
 }

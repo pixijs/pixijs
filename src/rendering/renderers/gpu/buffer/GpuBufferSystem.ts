@@ -1,6 +1,7 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { fastCopy } from '../../shared/buffer/utils/fastCopy';
 
+import type { Writeable } from '../../../../utils/types';
 import type { Buffer } from '../../shared/buffer/Buffer';
 import type { System } from '../../shared/system/System';
 import type { GPU } from '../GpuDeviceSystem';
@@ -102,7 +103,20 @@ export class BufferSystem implements System
 
     public destroy(): void
     {
-        throw new Error('Method not implemented.');
+        for (const k of Object.keys(this._gpuBuffers))
+        {
+            const key = Number(k);
+            const gpuBuffer = this._gpuBuffers[key];
+
+            gpuBuffer.destroy();
+            this._gpuBuffers[key] = null;
+        }
+
+        this._gpuBuffers = null;
+
+        const writeable = this as Writeable<typeof this, '_renderer'>;
+
+        writeable._renderer = null;
     }
 }
 

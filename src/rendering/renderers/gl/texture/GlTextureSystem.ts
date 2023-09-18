@@ -17,6 +17,7 @@ import {
 import { unpremultiplyAlpha } from './utils/unpremultiplyAlpha';
 
 import type { ICanvas } from '../../../../settings/adapter/ICanvas';
+import type { Writeable } from '../../../../utils/types';
 import type { System } from '../../shared/system/System';
 import type { CanvasGenerator, GetPixelsOutput } from '../../shared/texture/GenerateCanvas';
 import type { TextureSource } from '../../shared/texture/sources/TextureSource';
@@ -373,7 +374,9 @@ export class GlTextureSystem implements System, CanvasGenerator
 
     public destroy(): void
     {
-        throw new Error('Method not implemented.');
+        const writeable = this as Writeable<typeof this, '_renderer'>;
+
+        writeable._renderer = null;
     }
 }
 

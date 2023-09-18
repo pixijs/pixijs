@@ -3,9 +3,7 @@ import { Matrix } from '../../../maths/Matrix';
 import { BigPool } from '../../../utils/pool/PoolGroup';
 import { BindGroup } from '../../renderers/gpu/shader/BindGroup';
 import { UniformGroup } from '../../renderers/shared/shader/UniformGroup';
-import { Texture } from '../../renderers/shared/texture/Texture';
 import { BatchableMesh } from './BatchableMesh';
-import { MeshShader } from './MeshShader';
 
 import type { PoolItem } from '../../../utils/pool/Pool';
 import type { Instruction } from '../../renderers/shared/instructions/Instruction';
@@ -31,7 +29,9 @@ interface RenderableData
 
 export interface MeshAdaptor
 {
+    init(): void;
     execute(meshPipe: MeshPipe, renderable: Renderable<MeshView>): void;
+    destroy(): void;
 }
 
 export interface MeshInstruction extends Instruction
@@ -54,16 +54,12 @@ export class MeshPipe implements RenderPipe<MeshView>, InstructionPipe<MeshInstr
     } as const;
 
     public localUniforms = new UniformGroup({
-        transformMatrix: { value: new Matrix(), type: 'mat3x3<f32>' },
-        color: { value: new Float32Array([1, 1, 1, 1]), type: 'vec4<f32>' },
+        uTransformMatrix: { value: new Matrix(), type: 'mat3x3<f32>' },
+        uColor: { value: new Float32Array([1, 1, 1, 1]), type: 'vec4<f32>' },
     });
 
     public localUniformsBindGroup = new BindGroup({
         0: this.localUniforms,
-    });
-
-    public meshShader = new MeshShader({
-        texture: Texture.EMPTY,
     });
 
     public renderer: Renderer;
@@ -76,6 +72,8 @@ export class MeshPipe implements RenderPipe<MeshView>, InstructionPipe<MeshInstr
     {
         this.renderer = renderer;
         this._adaptor = adaptor;
+
+        this._adaptor.init();
     }
 
     public validateRenderable(renderable: Renderable<MeshView>): boolean
@@ -236,9 +234,7 @@ export class MeshPipe implements RenderPipe<MeshView>, InstructionPipe<MeshInstr
         this.localUniforms = null;
         this.localUniformsBindGroup = null;
 
-        this.meshShader.destroy();
-        this.meshShader = null;
-
+        this._adaptor.destroy();
         this._adaptor = null;
 
         this.renderer = null;

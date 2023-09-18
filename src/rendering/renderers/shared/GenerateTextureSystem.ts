@@ -6,6 +6,7 @@ import { getLocalBounds } from '../../scene/bounds/getLocalBounds';
 import { Container } from '../../scene/Container';
 import { RenderTexture } from './texture/RenderTexture';
 
+import type { Writeable } from '../../../utils/types';
 import type { Renderer } from '../types';
 import type { System } from './system/System';
 import type { TextureSourceOptions } from './texture/sources/TextureSource';
@@ -105,6 +106,8 @@ export class GenerateTextureSystem implements System
 
     public destroy(): void
     {
-        // ka boom!
+        const writeable = this as Writeable<typeof this, '_renderer'>;
+
+        writeable._renderer = null;
     }
 }

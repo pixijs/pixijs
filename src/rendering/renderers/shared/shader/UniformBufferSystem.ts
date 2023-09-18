@@ -91,6 +91,6 @@ export class UniformBufferSystem implements System
 
     public destroy(): void
     {
-        throw new Error('Method not implemented.');
+        this._syncFunctionHash = null;
     }
 }

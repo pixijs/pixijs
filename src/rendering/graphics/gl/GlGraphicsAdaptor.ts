@@ -1,11 +1,14 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { Matrix } from '../../../maths/Matrix';
 import { MAX_TEXTURES } from '../../batcher/shared/const';
+import { compileHighShaderGlProgram } from '../../high-shader/compileHighShaderToProgram';
+import { colorBitGl } from '../../high-shader/shader-bits/colorBit';
+import { generateTextureBatchBitGl } from '../../high-shader/shader-bits/generateTextureBatchBit';
+import { localUniformBitGl } from '../../high-shader/shader-bits/localUniformBit';
 import { batchSamplersUniformGroup } from '../../renderers/gl/shader/batchSamplersUniformGroup';
 import { Shader } from '../../renderers/shared/shader/Shader';
 import { UniformGroup } from '../../renderers/shared/shader/UniformGroup';
 import { color32BitToUniform } from '../gpu/colorToUniform';
-import { generateDefaultGraphicsBatchGlProgram } from './generateDefaultGraphicsBatchGlProgram';
 
 import type { Batch } from '../../batcher/shared/Batcher';
 import type { WebGLRenderer } from '../../renderers/gl/WebGLRenderer';
@@ -28,14 +31,21 @@ export class GlGraphicsAdaptor implements GraphicsAdaptor
     public init()
     {
         const uniforms = new UniformGroup({
-            color: { value: new Float32Array([1, 1, 1, 1]), type: 'vec4<f32>' },
-            transformMatrix: { value: new Matrix(), type: 'mat3x3<f32>' },
+            uColor: { value: new Float32Array([1, 1, 1, 1]), type: 'vec4<f32>' },
+            uTransformMatrix: { value: new Matrix(), type: 'mat3x3<f32>' },
         });
 
-        // uniforms.default.static = true;
+        const glProgram = compileHighShaderGlProgram({
+            name: 'graphics',
+            bits: [
+                colorBitGl,
+                generateTextureBatchBitGl(MAX_TEXTURES),
+                localUniformBitGl,
+            ]
+        });
 
         this._shader = new Shader({
-            glProgram: generateDefaultGraphicsBatchGlProgram(MAX_TEXTURES),
+            glProgram,
             resources: {
                 localUniforms: uniforms,
                 batchSamplers: batchSamplersUniformGroup,
@@ -65,11 +75,11 @@ export class GlGraphicsAdaptor implements GraphicsAdaptor
 
         const localUniforms = shader.resources.localUniforms.uniforms;
 
-        localUniforms.transformMatrix = renderable.layerTransform;
+        localUniforms.uTransformMatrix = renderable.layerTransform;
 
         color32BitToUniform(
             renderable.layerColor,
-            localUniforms.color,
+            localUniforms.uColor,
             0
         );
 

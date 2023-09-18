@@ -5,6 +5,7 @@ import { Container } from '../rendering/scene/Container';
 import type { Rectangle } from '../maths/shapes/Rectangle';
 import type { AutoDetectOptions } from '../rendering/renderers/autoDetectRenderer';
 import type { Renderer } from '../rendering/renderers/types';
+import type { DestroyOptions } from '../rendering/scene/destroyTypes';
 import type { ICanvas } from '../settings/adapter/ICanvas';
 import type { ResizePluginOptions } from './ResizePlugin';
 
@@ -118,37 +119,40 @@ export class Application<VIEW extends ICanvas = ICanvas>
         return this.renderer.screen;
     }
 
-    // TODO: implement destroy
-    // /**
-    //  * Destroy and don't use after this.
-    //  * @param {boolean} [removeView=false] - Automatically remove canvas from DOM.
-    //  * @param {object|boolean} [stageOptions] - Options parameter. A boolean will act as if all options
-    //  *  have been set to that value
-    //  * @param {boolean} [stageOptions.children=false] - if set to true, all the children will have their destroy
-    //  *  method called as well. 'stageOptions' will be passed on to those calls.
-    //  * @param {boolean} [stageOptions.texture=false] - Only used for child Sprites if stageOptions.children is set
-    //  *  to true. Should it destroy the texture of the child sprite
-    //  * @param {boolean} [stageOptions.baseTexture=false] - Only used for child Sprites if stageOptions.children is set
-    //  *  to true. Should it destroy the base texture of the child sprite
-    //  */
-    // public destroy(removeView?: boolean, stageOptions?: IDestroyOptions | boolean): void
-    // {
-    //     // Destroy plugins in the opposite order
-    //     // which they were constructed
-    //     const plugins = Application._plugins.slice(0);
+    /**
+     * Destroys the application and all of its resources.
+     * @param {object|boolean} [options=false] - The options for destroying the application.
+     * @param {boolean} [options.removeView=false] - Whether to remove the application's canvas element from the DOM.
+     * @param {boolean} [options.children=false] - If set to true, all the children will have their destroy method
+     * called as well. `options` will be passed on to those calls.
+     * @param {boolean} [options.texture=false] - Only used for children with textures e.g. Sprites.
+     * If options.children is set to true,
+     * it should destroy the texture of the child sprite.
+     * @param {boolean} [options.textureSource=false] - Only used for children with textures e.g. Sprites.
+     *  If options.children is set to true,
+     * it should destroy the texture source of the child sprite.
+     * @param {boolean} [options.context=false] - Only used for children with graphicsContexts e.g. Graphics.
+     * If options.children is set to true,
+     * it should destroy the context of the child graphics.
+     */
+    public destroy(options: DestroyOptions = false): void
+    {
+        // Destroy plugins in the opposite order
+        // which they were constructed
+        const plugins = Application._plugins.slice(0);
 
-    //     plugins.reverse();
-    //     plugins.forEach((plugin) =>
-    //     {
-    //         plugin.destroy.call(this);
-    //     });
+        plugins.reverse();
+        plugins.forEach((plugin) =>
+        {
+            plugin.destroy.call(this);
+        });
 
-    //     this.stage.destroy(stageOptions);
-    //     this.stage = null;
+        this.stage.destroy(options);
+        this.stage = null;
 
-    //     this.renderer.destroy(removeView);
-    //     this.renderer = null;
-    // }
+        this.renderer.destroy(options);
+        this.renderer = null;
+    }
 }
 
 extensions.handleByList(ExtensionType.Application, Application._plugins);

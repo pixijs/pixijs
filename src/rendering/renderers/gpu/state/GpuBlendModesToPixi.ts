@@ -4,7 +4,7 @@ export const GpuBlendModesToPixi: Partial<Record<BLEND_MODES, GPUBlendState>> = 
 
 GpuBlendModesToPixi.normal = {
     alpha: {
-        srcFactor: 'src-alpha',
+        srcFactor: 'one',
         dstFactor: 'one-minus-src-alpha',
         operation: 'add',
     },

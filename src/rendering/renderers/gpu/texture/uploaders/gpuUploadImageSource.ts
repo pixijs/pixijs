@@ -17,7 +17,7 @@ export const gpuUploadImageResource = {
 
         gpu.device.queue.copyExternalImageToTexture(
             { source: resource },
-            { texture: gpuTexture },
+            { texture: gpuTexture, premultipliedAlpha: true },
             {
                 width,
                 height,

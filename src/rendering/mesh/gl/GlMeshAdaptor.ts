@@ -1,5 +1,10 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { color32BitToUniform } from '../../graphics/gpu/colorToUniform';
+import { compileHighShaderGlProgram } from '../../high-shader/compileHighShaderToProgram';
+import { localUniformBitGl } from '../../high-shader/shader-bits/localUniformBit';
+import { textureBitGl } from '../../high-shader/shader-bits/textureBit';
+import { Shader } from '../../renderers/shared/shader/Shader';
+import { Texture } from '../../renderers/shared/texture/Texture';
 
 import type { Renderable } from '../../renderers/shared/Renderable';
 import type { MeshAdaptor, MeshPipe } from '../shared/MeshPipe';
@@ -14,6 +19,31 @@ export class GlMeshAdaptor implements MeshAdaptor
         name: 'mesh',
     } as const;
 
+    private _shader: Shader;
+
+    public init(): void
+    {
+        const glProgram = compileHighShaderGlProgram({
+            name: 'mesh',
+            bits: [
+                localUniformBitGl,
+                textureBitGl,
+            ]
+        });
+
+        this._shader = new Shader({
+            glProgram,
+            resources: {
+                uTexture: Texture.EMPTY.source,
+                uSampler: Texture.EMPTY.style,
+            }
+        });
+
+        // will be added later in the shader so declare them here:
+        this._shader.addResource('globalUniforms', 0, 0);
+        this._shader.addResource('localUniforms', 1, 0);
+    }
+
     public execute(meshPipe: MeshPipe, renderable: Renderable<MeshView>): void
     {
         const renderer = meshPipe.renderer;
@@ -25,26 +55,26 @@ export class GlMeshAdaptor implements MeshAdaptor
 
         const localUniforms = meshPipe.localUniforms;
 
-        localUniforms.uniforms.transformMatrix = renderable.layerTransform;
+        localUniforms.uniforms.uTransformMatrix = renderable.layerTransform;
         localUniforms.update();
 
         color32BitToUniform(
             renderable.layerColor,
-            localUniforms.uniforms.color,
+            localUniforms.uniforms.uColor,
             0
         );
 
-        let shader = view._shader;
+        let shader: Shader = view._shader;
 
         if (!shader)
         {
-            shader = meshPipe.meshShader;
-            shader.texture = view.texture;
+            shader = this._shader;
+
+            shader.resources.uTexture = view.texture.source;
+            shader.resources.uSampler = view.texture.style;
         }
 
-        // GPU..
         shader.groups[0] = renderer.globalUniforms.bindGroup;
-
         shader.groups[1] = meshPipe.localUniformsBindGroup;
 
         renderer.encoder.draw({
@@ -52,5 +82,11 @@ export class GlMeshAdaptor implements MeshAdaptor
             shader,
             state
         });
+    }
+
+    public destroy(): void
+    {
+        this._shader.destroy(true);
+        this._shader = null;
     }
 }

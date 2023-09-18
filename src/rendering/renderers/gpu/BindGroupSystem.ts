@@ -1,5 +1,6 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 
+import type { Writeable } from '../../../utils/types';
 import type { Buffer } from '../shared/buffer/Buffer';
 import type { BufferResource } from '../shared/buffer/BufferResource';
 import type { UniformGroup } from '../shared/shader/UniformGroup';
@@ -125,6 +126,15 @@ export class BindGroupSystem implements System
 
     public destroy(): void
     {
-        // boom!
+        for (const key of Object.keys(this._hash))
+        {
+            this._hash[key] = null;
+        }
+
+        this._hash = null;
+
+        const writeable = this as Writeable<typeof this, '_renderer'>;
+
+        writeable._renderer = null;
     }
 }

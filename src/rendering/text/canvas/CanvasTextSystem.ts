@@ -387,6 +387,6 @@ export class CanvasTextSystem implements System
 
     public destroy(): void
     {
-        // TODO: Destroy all the canvas elements
+        this._activeTextures = null;
     }
 }

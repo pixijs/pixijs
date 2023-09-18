@@ -271,6 +271,7 @@ export class EventSystem implements System<EventSystemOptions>
     {
         this.setTargetElement(null);
         this.renderer = null;
+        this._currentCursor = null;
     }
 
     /**
