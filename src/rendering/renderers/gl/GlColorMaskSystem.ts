@@ -34,8 +34,5 @@ export class GlColorMaskSystem implements System
         );
     }
 
-    public destroy()
-    {
-        // boom
-    }
+    public destroy?: () => void;
 }

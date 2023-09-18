@@ -151,8 +151,5 @@ export class GlStencilSystem implements System
         }
     }
 
-    public destroy()
-    {
-        // boom!
-    }
+    public destroy?: () => void;
 }

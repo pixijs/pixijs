@@ -132,6 +132,10 @@ export class GlBackBufferSystem implements System
 
     public destroy()
     {
-        //
+        if (this._backBufferTexture)
+        {
+            this._backBufferTexture.destroy();
+            this._backBufferTexture = null;
+        }
     }
 }

@@ -6,6 +6,7 @@ import { updateLayerGroupTransforms } from './utils/updateLayerGroupTransforms';
 import { validateRenderables } from './utils/validateRenderables';
 
 import type { Matrix } from '../../maths/Matrix';
+import type { Writeable } from '../../utils/types';
 import type { WebGPURenderer } from '../renderers/gpu/WebGPURenderer';
 import type { System } from '../renderers/shared/system/System';
 import type { Renderer } from '../renderers/types';
@@ -107,7 +108,9 @@ export class LayerSystem implements System
 
     public destroy()
     {
-        // boom!
+        const writeable = this as Writeable<typeof this, '_renderer'>;
+
+        writeable._renderer = null;
     }
 }
 

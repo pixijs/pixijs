@@ -538,9 +538,5 @@ export class FilterSystem implements System
         return mappedMatrix;
     }
 
-    public destroy()
-    {
-        // BOOM!
-    }
+    public destroy?: () => void;
 }
-

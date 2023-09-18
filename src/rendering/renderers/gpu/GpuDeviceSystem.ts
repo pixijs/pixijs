@@ -81,6 +81,7 @@ export class GpuDeviceSystem implements System
 
     public destroy(): void
     {
+        this.gpu = null;
         this._renderer = null;
     }
 }

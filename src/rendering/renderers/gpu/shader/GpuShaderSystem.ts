@@ -51,6 +51,6 @@ export class GpuShaderSystem implements System
 
     public destroy(): void
     {
-        throw new Error('Method not implemented.');
+        this._gpu = null;
     }
 }

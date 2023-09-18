@@ -150,5 +150,6 @@ export class GlUniformGroupSystem implements System
         this._renderer = null;
         // TODO implement destroy method for ShaderSystem
         this.destroyed = true;
+        this._cache = null;
     }
 }

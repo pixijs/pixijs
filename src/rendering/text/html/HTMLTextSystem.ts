@@ -213,6 +213,6 @@ export class HTMLTextSystem implements System
 
     public destroy(): void
     {
-        // TODO: Destroy all the canvas elements
+        this._activeTextures = null;
     }
 }

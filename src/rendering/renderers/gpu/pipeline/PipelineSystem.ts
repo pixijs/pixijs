@@ -3,6 +3,7 @@ import { createIdFromString } from '../../shared/createIdFromString';
 import { STENCIL_MODES } from '../../shared/state/const';
 import { GpuStencilModesToPixi } from '../state/GpuStencilModesToPixi';
 
+import type { Writeable } from '../../../../utils/types';
 import type { Topology } from '../../shared/geometry/const';
 import type { Geometry } from '../../shared/geometry/Geometry';
 import type { State } from '../../shared/state/State';
@@ -299,6 +300,9 @@ export class PipelineSystem implements System
 
     public destroy(): void
     {
-        throw new Error('Method not implemented.');
+        const writeable = this as Writeable<typeof this, '_renderer'>;
+
+        writeable._renderer = null;
+        this._bufferLayoutsCache = null;
     }
 }

@@ -4,6 +4,7 @@ import { settings } from '../../../settings/settings';
 import { getCanvasTexture } from './texture/utils/getCanvasTexture';
 
 import type { ICanvas } from '../../../settings/adapter/ICanvas';
+import type { DestroyOptions } from '../../scene/destroyTypes';
 import type { System } from './system/System';
 import type { CanvasSourceOptions } from './texture/sources/CanvasSource';
 import type { Texture } from './texture/Texture';
@@ -176,17 +177,19 @@ export class ViewSystem implements System
 
     /**
      * Destroys this System and optionally removes the canvas from the dom.
-     * @param {boolean} [removeView=false] - Whether to remove the canvas from the DOM.
+     * @param {options | false} options - The options for destroying the view, or "false".
+     * @param options.removeView - Whether to remove the view element from the DOM. Defaults to `false`.
      */
-    public destroy(removeView: boolean): void
+    public destroy(options: DestroyOptions = false): void
     {
-        // ka boom!
+        const removeView = typeof options === 'boolean' ? options : !!options?.removeView;
+
         if (removeView && this.element.parentNode)
         {
             this.element.parentNode.removeChild(this.element);
         }
 
-        // this._renderer = null;
-        this.element = null;
+        // note: don't nullify the element
+        //       other systems may need to unbind from it during the destroy iteration (eg. GLContextSystem)
     }
 }
