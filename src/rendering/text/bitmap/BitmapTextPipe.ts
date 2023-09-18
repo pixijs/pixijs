@@ -210,7 +210,7 @@ export class BitmapTextPipe implements RenderPipe<TextView>
         const resolution = 1;// this.renderer.view.resolution;
         const distance = worldScale * dynamicFont.distanceField.range * (1 / fontScale) * resolution;
 
-        context.customShader.resources.localUniforms.uniforms.distance = distance;
+        context.customShader.resources.localUniforms.uniforms.uDistance = distance;
     }
 
     public destroy()

@@ -54,8 +54,8 @@ export class MeshPipe implements RenderPipe<MeshView>, InstructionPipe<MeshInstr
     } as const;
 
     public localUniforms = new UniformGroup({
-        transformMatrix: { value: new Matrix(), type: 'mat3x3<f32>' },
-        color: { value: new Float32Array([1, 1, 1, 1]), type: 'vec4<f32>' },
+        uTransformMatrix: { value: new Matrix(), type: 'mat3x3<f32>' },
+        uColor: { value: new Float32Array([1, 1, 1, 1]), type: 'vec4<f32>' },
     });
 
     public localUniformsBindGroup = new BindGroup({

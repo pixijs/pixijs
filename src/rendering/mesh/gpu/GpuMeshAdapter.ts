@@ -1,8 +1,8 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { color32BitToUniform } from '../../graphics/gpu/colorToUniform';
-import { compileHighShaderProgram } from '../../high-shader/compileHighShaderToProgram';
-import { localUniformBit } from '../../high-shader/shader-bits/localUniformBit';
-import { textureBit } from '../../high-shader/shader-bits/textureBit';
+import { compileHighShaderGpuProgram } from '../../high-shader/compileHighShaderToProgram';
+import { localUniformBitGl } from '../../high-shader/shader-bits/localUniformBit';
+import { textureBitGl } from '../../high-shader/shader-bits/textureBit';
 import { Shader } from '../../renderers/shared/shader/Shader';
 import { Texture } from '../../renderers/shared/texture/Texture';
 
@@ -25,10 +25,11 @@ export class GpuMeshAdapter implements MeshAdaptor
 
     public init(): void
     {
-        const gpuProgram = compileHighShaderProgram({
+        const gpuProgram = compileHighShaderGpuProgram({
+            name: 'mesh',
             bits: [
-                localUniformBit,
-                textureBit,
+                localUniformBitGl,
+                textureBitGl,
             ]
         });
 
@@ -52,12 +53,12 @@ export class GpuMeshAdapter implements MeshAdaptor
 
         const localUniforms = meshPipe.localUniforms;
 
-        localUniforms.uniforms.transformMatrix = renderable.layerTransform;
+        localUniforms.uniforms.uTransformMatrix = renderable.layerTransform;
         localUniforms.update();
 
         color32BitToUniform(
             renderable.layerColor,
-            localUniforms.uniforms.color,
+            localUniforms.uniforms.uColor,
             0
         );
 

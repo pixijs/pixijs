@@ -62,7 +62,7 @@ export function generateTextureBatchBit(maxTextures: number): HighShaderBit
     if (!textureBatchBitCache[maxTextures])
     {
         textureBatchBitCache[maxTextures] = {
-            name: 'textureBatchBit',
+            name: 'texture-batch-bit',
             vertex: {
                 header: `
                 @in aTextureId: f32;
@@ -83,6 +83,64 @@ export function generateTextureBatchBit(maxTextures: number): HighShaderBit
                 var uvDy = dpdy(vUV);
     
                 ${generateSampleSrc(16)}
+            `
+            }
+        };
+    }
+
+    return textureBatchBitCache[maxTextures];
+}
+
+function generateSampleGlSrc(maxTextures: number): string
+{
+    const src = [];
+
+    for (let i = 0; i < maxTextures; i++)
+    {
+        if (i > 0)
+        {
+            src.push('else');
+        }
+
+        if (i < maxTextures - 1)
+        {
+            src.push(`if(vTextureId < ${i}.5)`);
+        }
+
+        src.push('{');
+        src.push(`\toutColor = texture(uSamplers[${i}], vUV);`);
+        src.push('}');
+    }
+
+    return src.join('\n');
+}
+
+export function generateTextureBatchBitGl(maxTextures: number): HighShaderBit
+{
+    if (!textureBatchBitCache[maxTextures])
+    {
+        textureBatchBitCache[maxTextures] = {
+            name: 'texture-batch-bit',
+            vertex: {
+                header: `
+                in float aTextureId;
+                out float vTextureId;
+              
+            `,
+                main: `
+                vTextureId = aTextureId;
+            `
+            },
+            fragment: {
+                header: `
+                in float vTextureId;
+    
+                uniform sampler2D uSamplers[${maxTextures}];
+              
+            `,
+                main: `
+    
+                ${generateSampleGlSrc(16)}
             `
             }
         };

@@ -1,10 +1,10 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { color32BitToUniform } from '../../graphics/gpu/colorToUniform';
-import { GlProgram } from '../../renderers/gl/shader/GlProgram';
+import { compileHighShaderGlProgram } from '../../high-shader/compileHighShaderToProgram';
+import { localUniformBitGl } from '../../high-shader/shader-bits/localUniformBit';
+import { textureBitGl } from '../../high-shader/shader-bits/textureBit';
 import { Shader } from '../../renderers/shared/shader/Shader';
 import { Texture } from '../../renderers/shared/texture/Texture';
-import programFrag from '../gl/mesh-default.frag';
-import programVert from '../gl/mesh-default.vert';
 
 import type { Renderable } from '../../renderers/shared/Renderable';
 import type { MeshAdaptor, MeshPipe } from '../shared/MeshPipe';
@@ -23,10 +23,12 @@ export class GlMeshAdaptor implements MeshAdaptor
 
     public init(): void
     {
-        const glProgram = GlProgram.from({
-            vertex: programVert,
-            fragment: programFrag,
-            name: 'mesh-default',
+        const glProgram = compileHighShaderGlProgram({
+            name: 'mesh',
+            bits: [
+                localUniformBitGl,
+                textureBitGl,
+            ]
         });
 
         this._shader = new Shader({
@@ -53,12 +55,12 @@ export class GlMeshAdaptor implements MeshAdaptor
 
         const localUniforms = meshPipe.localUniforms;
 
-        localUniforms.uniforms.transformMatrix = renderable.layerTransform;
+        localUniforms.uniforms.uTransformMatrix = renderable.layerTransform;
         localUniforms.update();
 
         color32BitToUniform(
             renderable.layerColor,
-            localUniforms.uniforms.color,
+            localUniforms.uniforms.uColor,
             0
         );
 

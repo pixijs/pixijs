@@ -1,12 +1,12 @@
 import { Matrix } from '../../maths/Matrix';
-import { compileHighShaderProgram } from '../../rendering/high-shader/compileHighShaderToProgram';
-import { localUniformBit } from '../../rendering/high-shader/shader-bits/localUniformBit';
-import { GlProgram } from '../../rendering/renderers/gl/shader/GlProgram';
+import {
+    compileHighShaderGlProgram,
+    compileHighShaderGpuProgram
+} from '../../rendering/high-shader/compileHighShaderToProgram';
+import { localUniformBit, localUniformBitGl } from '../../rendering/high-shader/shader-bits/localUniformBit';
 import { Shader } from '../../rendering/renderers/shared/shader/Shader';
 import { UniformGroup } from '../../rendering/renderers/shared/shader/UniformGroup';
-import programFrag from './tiling-sprite.frag';
-import programVert from './tiling-sprite.vert';
-import { tilingBit } from './tilingBit';
+import { tilingBit, tilingBitGl } from './tilingBit';
 
 import type { TextureShader } from '../../rendering/mesh/shared/MeshView';
 import type { Texture } from '../../rendering/renderers/shared/texture/Texture';
@@ -22,16 +22,19 @@ export class TilingSpriteShader extends Shader implements TextureShader
 
     constructor(options: TilingSpriteOptions)
     {
-        const glProgram = GlProgram.from({
-            vertex: programVert,
-            fragment: programFrag,
-            name: 'tiling-sprite',
-        });
-
-        const gpuProgram = compileHighShaderProgram({
+        const gpuProgram = compileHighShaderGpuProgram({
+            name: 'tiling-sprite-shader',
             bits: [
                 localUniformBit,
                 tilingBit,
+            ],
+        });
+
+        const glProgram = compileHighShaderGlProgram({
+            name: 'tiling-sprite-shader',
+            bits: [
+                localUniformBitGl,
+                tilingBitGl,
             ]
         });
 

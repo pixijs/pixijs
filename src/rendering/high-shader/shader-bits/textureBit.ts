@@ -13,3 +13,17 @@ export const textureBit = {
     }
 };
 
+export const textureBitGl = {
+    name: 'texture-bit',
+    fragment: {
+        header: /* wgsl */`
+        uniform sampler2D uTexture;
+
+         
+        `,
+        main: /* wgsl */`
+            outColor = texture(uTexture, vUV);
+        `
+    }
+};
+

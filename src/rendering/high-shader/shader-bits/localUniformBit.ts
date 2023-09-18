@@ -4,7 +4,7 @@ export const localUniformBit = {
         header: /* wgsl */`
 
             struct LocalUniforms {
-                transformMatrix:mat3x3<f32>,
+                uTransformMatrix:mat3x3<f32>,
                 uColor:vec4<f32>,
             }
 
@@ -12,7 +12,22 @@ export const localUniformBit = {
         `,
         main: /* wgsl */`
             vColor *= localUniforms.uColor;
-            modelMatrix *= localUniforms.transformMatrix;
+            modelMatrix *= localUniforms.uTransformMatrix;
+        `
+    },
+};
+
+export const localUniformBitGl = {
+    name: 'local-uniform-bit',
+    vertex: {
+        header: /* glsl */`
+
+            uniform mat3 uTransformMatrix;
+            uniform vec4 uColor;
+        `,
+        main: /* glsl */`
+            vColor *= uColor;
+            modelMatrix = uTransformMatrix;
         `
     },
 };
