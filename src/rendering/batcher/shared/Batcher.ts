@@ -151,7 +151,7 @@ export class Batcher
 
         // TODO could try to be a bit smarter if there are spare textures..
         // but need to figure out how to alter the bind groups too..
-        if (!textureId) return false;
+        if (!textureId && textureId !== 0) return false;
 
         batchableObject.textureId = textureId;
         batchableObject.texture = texture;
