@@ -9,6 +9,12 @@
 
 export function resolveCharacters(chars: string | (string | string[])[]): string[]
 {
+    // Skip unexpected 'empty set' check at end
+    if (chars === '')
+    {
+        return [];
+    }
+
     // Split the chars string into individual characters
     if (typeof chars === 'string')
     {
@@ -28,6 +34,10 @@ export function resolveCharacters(chars: string | (string | string[])[]): string
             if (item.length !== 2)
             {
                 throw new Error(`[BitmapFont]: Invalid character range length, expecting 2 got ${item.length}.`);
+            }
+            if (item[0].length === 0 || item[1].length === 0)
+            {
+                throw new Error('[BitmapFont]: Invalid character delimiter.');
             }
 
             const startCode = item[0].charCodeAt(0);
