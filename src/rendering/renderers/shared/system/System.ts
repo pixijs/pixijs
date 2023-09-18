@@ -12,3 +12,4 @@ export interface SystemConstructor
 {
     new (renderer: Renderer): System;
 }
+
