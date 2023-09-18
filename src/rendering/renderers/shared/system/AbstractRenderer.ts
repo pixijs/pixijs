@@ -281,20 +281,6 @@ export class AbstractRenderer<PIPES, OPTIONS>
         return this;
     }
 
-    private _destroySystem(name: string, options: DestroyOptions = false): void
-    {
-        const system = this._systemsHash[name];
-
-        for (const i in this.runners)
-        {
-            this.runners[i].remove(system);
-        }
-
-        system.destroy?.(options);
-
-        delete this._systemsHash[name];
-    }
-
     private _addPipes(pipes: RendererConfig['renderPipes'], pipeAdaptors: RendererConfig['renderPipeAdaptors']): void
     {
         const adaptors = pipeAdaptors.reduce((acc, adaptor) =>
@@ -323,6 +309,9 @@ export class AbstractRenderer<PIPES, OPTIONS>
     {
         const writeable = this as Writeable<typeof this, 'renderPipes' | 'runners'>;
 
+        this.runners.destroy.items.reverse();
+        this.runners.destroy.emit(options);
+
         // destroy all runners
         Object.values(this.runners).forEach((runner) =>
         {
@@ -330,13 +319,6 @@ export class AbstractRenderer<PIPES, OPTIONS>
         });
 
         writeable.runners = null;
-
-        // destroy all systems
-        Object.keys(this._systemsHash).forEach((name) =>
-        {
-            this._destroySystem(name, options);
-        });
-
         this._systemsHash = null;
 
         // destroy all pipes

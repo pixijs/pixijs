@@ -34,8 +34,5 @@ export class GlColorMaskSystem implements System
         );
     }
 
-    public destroy()
-    {
-        // No critical operations to be called in the destroy method.
-    }
+    public destroy?: () => void;
 }
