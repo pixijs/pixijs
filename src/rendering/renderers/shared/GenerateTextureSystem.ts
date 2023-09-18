@@ -1,3 +1,4 @@
+import { Color, type ColorSource } from '../../../color/Color';
 import { ExtensionType } from '../../../extensions/Extensions';
 import { Matrix } from '../../../maths/Matrix';
 import { Rectangle } from '../../../maths/shapes/Rectangle';
@@ -17,21 +18,24 @@ export type GenerateTextureSourceOptions = Omit<TextureSourceOptions, 'resource'
 export type GenerateTextureOptions =
 {
     /** The container to generate the texture from */
-    container: Container;
+    target: Container;
     /**
      * The region of the displayObject, that shall be rendered,
      * if no region is specified, defaults to the local bounds of the displayObject.
      */
-    region?: Rectangle;
+    frame?: Rectangle;
 
     resolution?: number;
 
+    clearColor?: ColorSource;
+
     /** The options passed to the texture source. */
-    textureSourceOptions?: GenerateTextureSourceOptions
+    textureSourceOptions?: GenerateTextureSourceOptions,
 };
 
 const tempRect = new Rectangle();
 const tempBounds = new Bounds();
+const noColor: ColorSource = [0, 0, 0, 0];
 
 /**
  * System that manages the generation of textures from the renderer.
@@ -70,17 +74,31 @@ export class GenerateTextureSystem implements System
         if (options instanceof Container)
         {
             options = {
-                container: options,
-                region: undefined,
+                target: options,
+                frame: undefined,
                 textureSourceOptions: {},
                 resolution: undefined,
             };
         }
 
         const resolution = options.resolution || this._renderer.resolution;
-        const container = options.container;
 
-        const region = options.region?.copyTo(tempRect)
+        const container = options.target;
+
+        let clearColor = options.clearColor;
+
+        if (clearColor)
+        {
+            const isRGBAArray = Array.isArray(clearColor) && clearColor.length === 4;
+
+            clearColor = isRGBAArray ? clearColor : Color.shared.setValue(clearColor).toRgbAArray();
+        }
+        else
+        {
+            clearColor = noColor;
+        }
+
+        const region = options.frame?.copyTo(tempRect)
             || getLocalBounds(container, tempBounds).rectangle;
 
         region.width = Math.max(region.width, 1 / resolution) | 0;
@@ -99,6 +117,7 @@ export class GenerateTextureSystem implements System
             container,
             transform,
             target,
+            clearColor,
         });
 
         return target;

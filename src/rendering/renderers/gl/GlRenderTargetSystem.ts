@@ -10,7 +10,7 @@ import { CLEAR } from './const';
 import { GlRenderTarget } from './GlRenderTarget';
 
 import type { ICanvas } from '../../../settings/adapter/ICanvas';
-import type { RenderSurface, RGBAArray } from '../gpu/renderTarget/GpuRenderTargetSystem';
+import type { RenderSurface } from '../gpu/renderTarget/GpuRenderTargetSystem';
 import type { System } from '../shared/system/System';
 import type { CLEAR_OR_BOOL } from './const';
 import type { GlRenderingContext } from './context/GlRenderingContext';
@@ -40,8 +40,8 @@ export class GlRenderTargetSystem implements System
     private _gpuRenderTargetHash: Record<number, GlRenderTarget> = Object.create(null);
     private readonly _renderer: WebGLRenderer;
     private readonly _renderTargetStack: RenderTarget[] = [];
-    private readonly _defaultClearColor: RGBAArray = [0, 0, 0, 0];
-    private readonly _clearColorCache: RGBAArray = [0, 0, 0, 0];
+    private readonly _defaultClearColor: number[] = [0, 0, 0, 0];
+    private readonly _clearColorCache: number[] = [0, 0, 0, 0];
 
     private readonly _viewPortCache = {
         x: 0,
@@ -172,7 +172,7 @@ export class GlRenderTargetSystem implements System
             }
 
             const clearColorCache = this._clearColorCache;
-            const clearColorArray = clearColor as RGBAArray;
+            const clearColorArray = clearColor as number[];
 
             if (clearColorCache[0] !== clearColorArray[0]
                 || clearColorCache[1] !== clearColorArray[1]

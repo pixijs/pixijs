@@ -82,7 +82,7 @@ const settings: Settings & Partial<PixiMixins.Settings> = {
      * @type {number}
      * @default 1
      */
-    RESOLUTION: 2,
+    RESOLUTION: 1,
 };
 
 export { settings };

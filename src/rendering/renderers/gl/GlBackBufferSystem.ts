@@ -1,3 +1,4 @@
+import { Color, type ColorSource } from '../../../color/Color';
 import { ExtensionType } from '../../../extensions/Extensions';
 import { Shader } from '../shared/shader/Shader';
 import { State } from '../shared/state/State';
@@ -66,7 +67,7 @@ export class GlBackBufferSystem implements System
         this._useBackBuffer = useBackBuffer;
     }
 
-    protected renderStart({ target, clear }: { target: RenderSurface, clear: boolean })
+    protected renderStart({ target, clear, clearColor }: { target: RenderSurface, clear: boolean, clearColor: ColorSource })
     {
         this._useBackBufferThisRender = this._useBackBuffer && !!target;
 
@@ -79,7 +80,18 @@ export class GlBackBufferSystem implements System
             target = this._getBackBufferTexture(renderTarget.colorTexture);
         }
 
-        this._renderer.renderTarget.start(target, clear, this._renderer.background.colorRgba);
+        if (clearColor)
+        {
+            const isRGBAArray = Array.isArray(clearColor) && clearColor.length === 4;
+
+            clearColor = isRGBAArray ? clearColor : Color.shared.setValue(clearColor).toRgbAArray();
+        }
+        else
+        {
+            clearColor = this._renderer.background.colorRgba;
+        }
+
+        this._renderer.renderTarget.start(target, clear, clearColor);
     }
 
     protected renderEnd()

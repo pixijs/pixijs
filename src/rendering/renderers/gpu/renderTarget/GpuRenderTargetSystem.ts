@@ -19,7 +19,6 @@ import type { GPU } from '../GpuDeviceSystem';
 import type { WebGPURenderer } from '../WebGPURenderer';
 
 export type RenderSurface = ICanvas | BindableTexture | RenderTarget;
-export type RGBAArray = [number, number, number, number];
 
 export class GpuRenderTargetSystem implements System
 {
@@ -41,7 +40,7 @@ export class GpuRenderTargetSystem implements System
 
     private readonly _renderTargetStack: RenderTarget[] = [];
     private readonly _renderer: WebGPURenderer;
-    private readonly _defaultClearColor: RGBAArray = [0, 0, 0, 0];
+    private readonly _defaultClearColor: ColorSource = [0, 0, 0, 0];
 
     private _gpu: GPU;
 

@@ -108,9 +108,9 @@ fn mainFragment(
 
     var rgb = mix(c.rgb, result.rgb, colorMatrixUniforms.uAlpha);
 
-    // rgb.r *= result.a;
-    // rgb.g *= result.a;
-    // rgb.b *= result.a;
+    rgb.r *= result.a;
+    rgb.g *= result.a;
+    rgb.b *= result.a;
 
     return vec4(rgb, result.a);
 }

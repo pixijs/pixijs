@@ -2,11 +2,13 @@ import EventEmitter from 'eventemitter3';
 import { Cache } from '../../../../assets/cache/Cache';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
 import { NOOP } from '../../../../utils/NOOP';
+import { BufferImageSource } from './sources/BufferImageSource';
 import { TextureSource } from './sources/TextureSource';
 import { TextureLayout } from './TextureLayout';
 import { TextureMatrix } from './TextureMatrix';
 import { TextureStyle } from './TextureStyle';
 
+import type { BufferSourceOptions } from './sources/BufferImageSource';
 import type { TextureSourceOptions } from './sources/TextureSource';
 import type { TextureLayoutOptions } from './TextureLayout';
 import type { TextureStyleOptions } from './TextureStyle';
@@ -47,6 +49,16 @@ export class Texture extends EventEmitter<{
         // TODO check to see if there is a resource and use the correct source type
         return new Texture({
             source: new TextureSource(id)
+        });
+    }
+
+    public static fromBuffer(options: BufferSourceOptions): Texture
+    {
+        return new Texture({
+            source: BufferImageSource.from(options),
+            style: {
+                scaleMode: 'nearest',
+            }
         });
     }
 
