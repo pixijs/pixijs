@@ -221,9 +221,9 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         this._boundTextures[this._activeTextureLocation] = source;
 
-        if (this._uploads[source.type])
+        if (this._uploads[source.uploadMethodId])
         {
-            this._uploads[source.type].upload(source, glTexture, this._gl);
+            this._uploads[source.uploadMethodId].upload(source, glTexture, this._gl);
 
             if (source.autoGenerateMipmaps && source.mipLevelCount > 1)
             {

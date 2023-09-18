@@ -1,4 +1,6 @@
+import type { CanvasSource } from '../../../shared/texture/sources/CanvasSource';
 import type { ImageSource } from '../../../shared/texture/sources/ImageSource';
+import type { VideoSource } from '../../../shared/texture/sources/VideoSource';
 import type { GPU } from '../../GpuDeviceSystem';
 import type { GpuTextureUploader } from './GpuTextureUploader';
 
@@ -6,7 +8,7 @@ export const gpuUploadImageResource = {
 
     type: 'image',
 
-    upload(source: ImageSource, gpuTexture: GPUTexture, gpu: GPU)
+    upload(source: ImageSource | CanvasSource | VideoSource, gpuTexture: GPUTexture, gpu: GPU)
     {
         const resource = source.resource as ImageBitmap | HTMLCanvasElement | OffscreenCanvas | HTMLVideoElement;
 

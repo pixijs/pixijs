@@ -96,7 +96,7 @@ export class CanvasTextSystem implements System
             false
         );
 
-        texture.source.type = 'image';
+        texture.source.uploadMethodId = 'image';
         texture.source.resource = canvas;
 
         texture.frameWidth = width / resolution;
@@ -130,7 +130,7 @@ export class CanvasTextSystem implements System
             CanvasPool.returnCanvasAndContext(activeTexture.canvasAndContext);
             TexturePool.returnTexture(activeTexture.texture);
             activeTexture.texture.source.resource = null;
-            activeTexture.texture.source.type = 'unknown';
+            activeTexture.texture.source.uploadMethodId = 'unknown';
 
             this._activeTextures[textKey] = null;
         }

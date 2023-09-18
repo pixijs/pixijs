@@ -98,9 +98,9 @@ export class GpuTextureSystem implements System, CanvasGenerator
         // destroyed!
         if (!gpuTexture) return;
 
-        if (this._uploads[source.type])
+        if (this._uploads[source.uploadMethodId])
         {
-            this._uploads[source.type].upload(source, gpuTexture, this._gpu);
+            this._uploads[source.uploadMethodId].upload(source, gpuTexture, this._gpu);
         }
 
         if (source.autoGenerateMipmaps && source.mipLevelCount > 1)

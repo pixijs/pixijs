@@ -7,7 +7,7 @@ import type { ICanvas } from '../../../../../settings/adapter/ICanvas';
 import type { ALPHA_MODES } from '../const';
 import type { TextureSourceOptions } from './TextureSource';
 
-type ImageResource = ImageBitmap | HTMLCanvasElement | OffscreenCanvas | ICanvas;
+type ImageResource = ImageBitmap | HTMLCanvasElement | OffscreenCanvas | ICanvas | HTMLVideoElement;
 
 export interface ImageSourceOptions extends TextureSourceOptions<ImageResource>
 {
@@ -16,7 +16,7 @@ export interface ImageSourceOptions extends TextureSourceOptions<ImageResource>
 
 export class ImageSource extends TextureSource<ImageResource>
 {
-    public type = 'image';
+    public uploadMethodId = 'image';
     public alphaMode: ALPHA_MODES;
 
     constructor(options: ImageSourceOptions)

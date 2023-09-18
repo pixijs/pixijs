@@ -203,7 +203,7 @@ export class HTMLTextSystem implements System
     {
         TexturePool.returnTexture(activeTexture.texture);
         activeTexture.texture.source.resource = null;
-        activeTexture.texture.source.type = 'unknown';
+        activeTexture.texture.source.uploadMethodId = 'unknown';
     }
 
     public getReferenceCount(textKey: string)
