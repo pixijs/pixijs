@@ -21,7 +21,7 @@ export class BufferResource extends EventEmitter<{
     public readonly size: number;
     public readonly bufferResource = true;
 
-    constructor({ buffer, offset, size }: { buffer: Buffer; offset: number; size: number; })
+    constructor({ buffer, offset, size }: { buffer: Buffer; offset: number; size?: number; })
     {
         super();
 

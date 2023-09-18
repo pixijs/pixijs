@@ -1,6 +1,8 @@
+import { Graphics } from '../../../src/rendering/graphics/shared/Graphics';
 import { ExtractSystem } from '../../../src/rendering/renderers/shared/ExtractSystem';
 import { Texture } from '../../../src/rendering/renderers/shared/texture/Texture';
 import { Container } from '../../../src/rendering/scene/Container';
+import { Sprite } from '../../../src/rendering/sprite/shared/Sprite';
 import { getRenderer } from '../../utils/getRenderer';
 import { getTexture } from '../../utils/getTexture';
 
@@ -108,136 +110,111 @@ describe('GenerateTexture', () =>
         renderer.destroy();
     });
 
-    // it('should extract the same pixels', async () =>
-    // {
-    //     const renderer = (await getRenderer('webgl', { width: 2, height: 2 })) as WebGLRenderer;
-    //     const graphics = new Graphics()
-    //         .context.
-    //         // .beginFill(0xFF0000)
-    //         .drawRect(0, 0, 1, 1)
-    //         .endFill()
-    //         .beginFill(0x00FF00)
-    //         .drawRect(1, 0, 1, 1)
-    //         .endFill()
-    //         .beginFill(0x0000FF)
-    //         .drawRect(0, 1, 1, 1)
-    //         .endFill()
-    //         .beginFill(0xFFFF00)
-    //         .drawRect(1, 1, 1, 1)
-    //         .endFill();
-    //     const expectedPixels = new Uint8Array([
-    //         255, 0, 0, 255,
-    //         0, 255, 0, 255,
-    //         0, 0, 255, 255,
-    //         255, 255, 0, 255
-    //     ]);
-    //     const renderTexture = renderer.generateTexture(graphics);
-    //     const extract = renderer.extract;
+    it('should extract the same pixels', async () =>
+    {
+        const renderer = (await getRenderer({ width: 2, height: 2 })) as WebGLRenderer;
 
-    //     renderer.render(graphics);
+        const graphics = new Graphics()
+            // .beginFill(0xFF0000)
+            .rect(0, 0, 1, 1)
+            .fill(0xFF0000)
+            .rect(1, 0, 1, 1)
+            .fill(0x00FF00)
+            .rect(0, 1, 1, 1)
+            .fill(0x0000FF)
+            .rect(1, 1, 1, 1)
+            .fill(0xFFFF00);
 
-    //     const pixelsRenderer = extract.pixels();
-    //     const pixelsRenderTexture = extract.pixels(renderTexture);
-    //     const pixelsGraphics = extract.pixels(graphics);
+        const expectedPixels = new Uint8ClampedArray([
+            255, 0, 0, 255,
+            0, 255, 0, 255,
+            0, 0, 255, 255,
+            255, 255, 0, 255
+        ]);
 
-    //     expect(pixelsRenderer).toEqual(expectedPixels);
-    //     expect(pixelsRenderTexture).toEqual(expectedPixels);
-    //     expect(pixelsGraphics).toEqual(expectedPixels);
+        const pixelsGraphics = renderer.extract.pixels(graphics);
 
-    //     renderTexture.destroy(true);
-    //     graphics.destroy();
-    //     renderer.destroy();
-    // });
+        expect(pixelsGraphics.pixels).toEqual(expectedPixels);
+    });
 
-    // it('should extract pixels from renderer correctly', async () =>
-    // {
-    //     const renderer = new Renderer({ width: 2, height: 2 });
-    //     const texturePixels = new Uint8Array([
-    //         255, 0, 0, 255, 0, 255, 0, 153,
-    //         0, 0, 255, 102, 255, 255, 0, 51
-    //     ]);
-    //     const texture = Texture.fromBuffer(texturePixels, 2, 2, {
-    //         width: 2,
-    //         height: 2,
-    //         format: FORMATS.RGBA,
-    //         type: TYPES.UNSIGNED_BYTE,
-    //         alphaMode: ALPHA_MODES.UNPACK
-    //     });
-    //     const sprite = new Sprite(texture);
-    //     const extract = renderer.extract;
+    it('should extract pixels from renderer correctly', async () =>
+    {
+        const renderer = (await getRenderer({ width: 2, height: 2 })) as WebGLRenderer;
+        const texturePixels = new Uint8Array([
+            255, 0, 0, 255, 0, 255, 0, 153,
+            0, 0, 255, 102, 255, 255, 0, 51
+        ]);
 
-    //     renderer.render(sprite);
+        const texture = Texture.fromBuffer({
+            resource: texturePixels,
+            width: 2,
+            height: 2,
+        });
 
-    //     const extractedPixels = extract.pixels();
+        const sprite = new Sprite(texture);
 
-    //     expect(extractedPixels).toEqual(new Uint8Array([
-    //         255, 0, 0, 255, 0, 153, 0, 255,
-    //         0, 0, 102, 255, 51, 51, 0, 255
-    //     ]));
+        const extractedPixels = renderer.extract.pixels(sprite).pixels;
 
-    //     texture.destroy(true);
-    //     sprite.destroy();
-    //     renderer.destroy();
-    // });
+        expect(extractedPixels).toEqual(new Uint8ClampedArray([
+            255, 0, 0, 255, 0, 255, 0, 153,
+            0, 0, 255, 102, 255, 255, 0, 51
+        ]));
+    });
 
-    // it('should extract canvas from renderer correctly', async () =>
-    // {
-    //     const renderer = new Renderer({ width: 2, height: 2 });
-    //     const texturePixels = new Uint8Array([
-    //         255, 0, 0, 255, 0, 255, 0, 153,
-    //         0, 0, 255, 102, 255, 255, 0, 51
-    //     ]);
-    //     const texture = Texture.fromBuffer(texturePixels, 2, 2, {
-    //         width: 2,
-    //         height: 2,
-    //         format: FORMATS.RGBA,
-    //         type: TYPES.UNSIGNED_BYTE,
-    //         alphaMode: ALPHA_MODES.UNPACK
-    //     });
-    //     const sprite = new Sprite(texture);
-    //     const extract = renderer.extract;
+    it('should extract canvas from renderer correctly', async () =>
+    {
+        const renderer = (await getRenderer({ width: 2, height: 2 })) as WebGLRenderer;
 
-    //     renderer.render(sprite);
+        const texturePixels = new Uint8Array([
+            255, 0, 0, 255, 0, 255, 0, 153,
+            0, 0, 255, 102, 255, 255, 0, 51
+        ]);
 
-    //     const canvas = extract.canvas();
-    //     const context = canvas.getContext('2d');
-    //     const imageData = context?.getImageData(0, 0, 2, 2);
+        const texture = Texture.fromBuffer({
+            resource: texturePixels,
+            width: 2,
+            height: 2,
+        });
 
-    //     expect(imageData?.data).toEqual(new Uint8ClampedArray([
-    //         255, 0, 0, 255, 0, 153, 0, 255,
-    //         0, 0, 102, 255, 51, 51, 0, 255
-    //     ]));
+        const sprite = new Sprite(texture);
 
-    //     texture.destroy(true);
-    //     sprite.destroy();
-    //     renderer.destroy();
-    // });
+        renderer.render(sprite);
 
-    // it('should extract pixels from render texture correctly', async () =>
-    // {
-    //     const renderer = new Renderer({ width: 2, height: 2 });
-    //     const texturePixels = new Uint8Array([
-    //         255, 0, 0, 255, 0, 255, 0, 153,
-    //         0, 0, 255, 102, 255, 255, 0, 51
-    //     ]);
-    //     const texture = Texture.fromBuffer(texturePixels, 2, 2, {
-    //         width: 2,
-    //         height: 2,
-    //         format: FORMATS.RGBA,
-    //         type: TYPES.UNSIGNED_BYTE,
-    //         alphaMode: ALPHA_MODES.UNPACK
-    //     });
-    //     const sprite = new Sprite(texture);
-    //     const extract = renderer.extract;
+        const canvas = renderer.extract.canvas(sprite);
+        const context = canvas.getContext('2d');
+        const imageData = context?.getImageData(0, 0, 2, 2);
 
-    //     const extractedPixels = extract.pixels(sprite);
+        expect(imageData?.data).toEqual(new Uint8ClampedArray([
+            255, 0, 0, 255,
+            0, 255, 0, 153,
+            0, 0, 255, 102,
+            255, 255, 0, 51
+        ]));
+    });
 
-    //     expect(extractedPixels).toEqual(texturePixels);
+    it('should extract pixels from render texture correctly', async () =>
+    {
+        const renderer = (await getRenderer({ width: 2, height: 2 })) as WebGLRenderer;
 
-    //     texture.destroy(true);
-    //     sprite.destroy();
-    //     renderer.destroy();
-    // });
+        const texturePixels = new Uint8ClampedArray([
+            255, 0, 0, 255, 0, 255, 0, 153,
+            0, 0, 255, 102, 255, 255, 0, 51
+        ]);
+
+        const texture = Texture.fromBuffer({
+            resource: texturePixels,
+            width: 2,
+            height: 2,
+        });
+
+        const sprite = new Sprite(texture);
+
+        const { pixels, width, height } = renderer.extract.pixels(sprite);
+
+        expect(pixels).toEqual(texturePixels);
+        expect(width).toEqual(2);
+        expect(height).toEqual(2);
+    });
 
     // it('should extract canvas from render texture correctly', async () =>
     // {

@@ -7,7 +7,7 @@ import type { Rectangle } from '../../../../maths/shapes/Rectangle';
 import type { ICanvas } from '../../../../settings/adapter/ICanvas';
 import type { Writeable } from '../../../../utils/types';
 import type { DestroyOptions } from '../../../scene/destroyTypes';
-import type { RenderSurface } from '../../gpu/renderTarget/GpuRenderTargetSystem';
+import type { RenderSurface, RGBAArray } from '../../gpu/renderTarget/GpuRenderTargetSystem';
 import type { Renderer } from '../../types';
 import type { GenerateTextureOptions, GenerateTextureSystem } from '../GenerateTextureSystem';
 import type { PipeConstructor } from '../instructions/RenderPipe';
@@ -30,6 +30,7 @@ export interface RenderOptions
     container: Container;
     transform?: Matrix;
     target?: RenderSurface;
+    clearColor?: RGBAArray;
 }
 
 const defaultRunners = [
