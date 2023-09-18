@@ -1,6 +1,7 @@
+import type { DestroyOptions } from '../../../scene/destroyTypes';
 import type { Renderer } from '../../types';
 
-export interface System<INIT_OPTIONS = null, DESTROY_OPTIONS = null>
+export interface System<INIT_OPTIONS = null, DESTROY_OPTIONS = DestroyOptions>
 {
     init?: (options?: INIT_OPTIONS) => void;
     /** Generic destroy methods to be overridden by the subclass */

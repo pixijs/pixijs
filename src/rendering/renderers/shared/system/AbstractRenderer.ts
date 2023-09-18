@@ -6,6 +6,7 @@ import type { Matrix } from '../../../../maths/Matrix';
 import type { Rectangle } from '../../../../maths/shapes/Rectangle';
 import type { ICanvas } from '../../../../settings/adapter/ICanvas';
 import type { Writeable } from '../../../../utils/types';
+import type { DestroyOptions } from '../../../scene/destroyTypes';
 import type { RenderSurface } from '../../gpu/renderTarget/GpuRenderTargetSystem';
 import type { Renderer } from '../../types';
 import type { GenerateTextureOptions, GenerateTextureSystem } from '../GenerateTextureSystem';
@@ -118,11 +119,6 @@ export class AbstractRenderer<PIPES, OPTIONS>
     public render(options: RenderOptions | Container): void;
     public render(args: RenderOptions | Container, deprecated?: {renderTexture: any}): void
     {
-        if (this._isDestroyed)
-        {
-            throw new Error('Cannot render after destroy');
-        }
-
         let options = args;
 
         if (options instanceof Container)
@@ -285,7 +281,7 @@ export class AbstractRenderer<PIPES, OPTIONS>
         return this;
     }
 
-    private _destroySystem(name: string): void
+    private _destroySystem(name: string, options: DestroyOptions = false): void
     {
         const system = this._systemsHash[name];
 
@@ -294,7 +290,7 @@ export class AbstractRenderer<PIPES, OPTIONS>
             this.runners[i].remove(system);
         }
 
-        system.destroy?.();
+        system.destroy?.(options);
 
         delete this._systemsHash[name];
     }
@@ -323,15 +319,7 @@ export class AbstractRenderer<PIPES, OPTIONS>
         });
     }
 
-    private get _isDestroyed()
-    {
-        return this._systemsHash === null
-            && this.runners === null
-            && this.renderPipes === null;
-    }
-
-    /** destroy the all runners and systems. Its apps job to */
-    public destroy(): void
+    public destroy(options: DestroyOptions = false): void
     {
         const writeable = this as Writeable<typeof this, 'renderPipes' | 'runners'>;
 
@@ -346,7 +334,7 @@ export class AbstractRenderer<PIPES, OPTIONS>
         // destroy all systems
         Object.keys(this._systemsHash).forEach((name) =>
         {
-            this._destroySystem(name);
+            this._destroySystem(name, options);
         });
 
         this._systemsHash = null;
