@@ -1,5 +1,3 @@
-// const cacheMap: Record<string, HighTemplate> = {};
-// const CACHE_UID = 1;
 /**
  * takes the HighFragment source parts and adds them to the hook hash
  * @param srcParts - the hash of hook arrays
