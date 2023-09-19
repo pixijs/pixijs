@@ -54,9 +54,11 @@ export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
         if (!this._batches[instructionSet.uid])
         {
             // TODO keeping around to bench mark at a later date..
-            //   this._batches[instructionSet.uid] = new BatcherStyleSource();
-            this._batches[instructionSet.uid] = new Batcher();
-            this._geometries[instructionSet.uid] = getBatchedGeometry();
+            // const batcher = new BatcherStyleSource();
+            const batcher = new Batcher();
+
+            this._batches[instructionSet.uid] = batcher;
+            this._geometries[batcher.uid] = getBatchedGeometry();
         }
 
         this._activeBatch = this._batches[instructionSet.uid];

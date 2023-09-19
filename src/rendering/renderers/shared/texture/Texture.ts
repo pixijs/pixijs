@@ -8,6 +8,7 @@ import { TextureLayout } from './TextureLayout';
 import { TextureMatrix } from './TextureMatrix';
 import { TextureStyle } from './TextureStyle';
 
+import type { Rectangle } from '../../../../maths/shapes/Rectangle';
 import type { BufferSourceOptions } from './sources/BufferImageSource';
 import type { TextureSourceOptions } from './sources/TextureSource';
 import type { TextureLayoutOptions } from './TextureLayout';
@@ -21,6 +22,7 @@ export interface TextureOptions
     style?: TextureStyle | TextureStyleOptions
     layout?: TextureLayout | TextureLayoutOptions
     label?: string;
+    frame?: Rectangle;
 }
 
 export interface BindableTexture
@@ -80,13 +82,27 @@ export class Texture extends EventEmitter<{
     /** @internal */
     public _source: TextureSource;
 
-    constructor({ source, style, layout, label }: TextureOptions = {})
+    constructor({ source, style, layout, label, frame }: TextureOptions = {})
     {
         super();
 
         this.label = label;
         this.source = source?.source ?? new TextureSource();
-        this.layout = layout instanceof TextureLayout ? layout : new TextureLayout(layout);
+
+        layout = layout instanceof TextureLayout ? layout : new TextureLayout(layout);
+
+        if (frame)
+        {
+            const { width, height } = this._source;
+
+            layout.frame.x = frame.x / width;
+            layout.frame.y = frame.y / height;
+
+            layout.frame.width = frame.width / width;
+            layout.frame.height = frame.height / height;
+        }
+
+        this.layout = layout as TextureLayout;
 
         if (style)
         {
