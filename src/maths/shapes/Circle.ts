@@ -3,10 +3,7 @@ import { Rectangle } from './Rectangle';
 import type { SHAPE_PRIMITIVE } from '../const';
 import type { ShapePrimitive } from './ShapePrimitive';
 
-/**
- * The Circle object is used to help draw graphics and can also be used to specify a hit area for displayObjects.
- * @memberof PIXI
- */
+/** The Circle object is used to help draw graphics and can also be used to specify a hit area for containers. */
 export class Circle implements ShapePrimitive
 {
     /** @default 0 */

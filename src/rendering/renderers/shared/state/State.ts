@@ -17,11 +17,10 @@ const WINDING = 4;
 const DEPTH_MASK = 5;
 
 /**
- * This is a WebGL state, and is is passed to {@link PIXI.StateSystem}.
+ * This is a WebGL state, and is is passed to {@link StateSystem}.
  *
  * Each mesh rendered may require WebGL to be in a different state.
  * For example you may want different blend mode or to enable polygon offsets
- * @memberof PIXI
  */
 export class State
 {
@@ -168,9 +167,9 @@ export class State
     }
 
     /**
-     * The blend mode to be applied when this state is set. Apply a value of `PIXI.BLEND_MODES.NORMAL` to reset the blend mode.
+     * The blend mode to be applied when this state is set. Apply a value of `normal` to reset the blend mode.
      * Setting this mode to anything other than NO_BLEND will automatically switch blending on.
-     * @default PIXI.BLEND_MODES.NORMAL
+     * @default 'normal'
      */
     get blendMode(): BLEND_MODES
     {

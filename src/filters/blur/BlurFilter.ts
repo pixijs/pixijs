@@ -22,7 +22,6 @@ export interface BlurFilterOptions extends Partial<FilterOptions>
  * The BlurFilter applies a Gaussian blur to an object.
  *
  * The strength of the blur can be set for the x-axis and y-axis separately.
- * @memberof PIXI
  */
 export class BlurFilter extends Filter
 {
@@ -189,7 +188,7 @@ export class BlurFilter extends Filter
 
     /**
      * Sets the blendmode of the filter
-     * @default PIXI.BLEND_MODES.NORMAL
+     * @default "normal"
      */
     get blendMode(): BLEND_MODES
     {

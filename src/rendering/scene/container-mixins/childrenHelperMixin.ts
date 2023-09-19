@@ -23,7 +23,7 @@ export const childrenHelperMixin: Partial<Container> = {
      * @param beginIndex - The beginning position.
      * @param endIndex - The ending position. Default value is size of the container.
      * @returns - List of removed children
-     * @memberof PIXI.Container#
+     * @memberof Container#
      */
     removeChildren(beginIndex = 0, endIndex?: number): Container[]
     {
@@ -70,7 +70,7 @@ export const childrenHelperMixin: Partial<Container> = {
      * Removes a child from the specified index position.
      * @param index - The index to get the child from
      * @returns The child that was removed.
-     * @memberof PIXI.Container#
+     * @memberof Container#
      */
     removeChildAt<U extends Container>(index: number): U
     {
@@ -83,7 +83,7 @@ export const childrenHelperMixin: Partial<Container> = {
      * Returns the child at the specified index
      * @param index - The index to get the child at
      * @returns - The child at the given index, if any.
-     * @memberof PIXI.Container#
+     * @memberof Container#
      */
     getChildAt<U extends Container>(index: number): U
     {
@@ -99,7 +99,7 @@ export const childrenHelperMixin: Partial<Container> = {
      * Changes the position of an existing child in the container container
      * @param child - The child Container instance for which you want to change the index number
      * @param index - The resulting index number for the child container
-     * @memberof PIXI.Container#
+     * @memberof Container#
      */
     setChildIndex(child: Container, index: number): void
     {
@@ -116,7 +116,7 @@ export const childrenHelperMixin: Partial<Container> = {
      * Returns the index position of a child Container instance
      * @param child - The Container instance to identify
      * @returns - The index position of the child container to identify
-     * @memberof PIXI.Container#
+     * @memberof Container#
      */
     getChildIndex(child: Container): number
     {
@@ -133,10 +133,10 @@ export const childrenHelperMixin: Partial<Container> = {
     /**
      * Adds a child to the container at a specified index. If the index is out of bounds an error will be thrown.
      * If the child is already in this container, it will be moved to the specified index.
-     * @param {PIXI.Container} child - The child to add.
+     * @param {Container} child - The child to add.
      * @param {number} index - The absolute index where the child will be positioned at the end of the operation.
-     * @returns {PIXI.Container} The child that was added.
-     * @memberof PIXI.Container#
+     * @returns {Container} The child that was added.
+     * @memberof Container#
      */
     addChildAt<U extends Container>(child: U, index: number): U
     {
@@ -210,7 +210,7 @@ export const childrenHelperMixin: Partial<Container> = {
         this.children[index1] = child2;
         this.children[index2] = child;
     },
-    /** Remove the DisplayObject from its parent Container. If the DisplayObject has no parent, do nothing. */
+    /** Remove the Container from its parent Container. If the Container has no parent, do nothing. */
     removeFromParent()
     {
         this.parent?.removeChild(this);

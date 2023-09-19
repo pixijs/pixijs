@@ -1,9 +1,6 @@
 import { FederatedMouseEvent } from './FederatedMouseEvent';
 
-/**
- * A {@link PIXI.FederatedEvent} for wheel events.
- * @memberof PIXI
- */
+/** A {@link FederatedEvent} for wheel events. */
 export class FederatedWheelEvent extends FederatedMouseEvent implements WheelEvent
 {
     /**

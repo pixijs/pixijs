@@ -28,7 +28,6 @@ export interface EventSystemOptions
      * The default event mode mode for all display objects.
      * This option only is available when using **@pixi/events** package
      * (included in the **pixi.js** and **pixi.js-legacy** bundle), otherwise it will be ignored.
-     * @memberof PIXI.RendererOptions
      */
     eventMode?: EventMode;
 
@@ -36,9 +35,8 @@ export interface EventSystemOptions
      * The event features that are enabled by the EventSystem
      * This option only is available when using **@pixi/events** package
      * (included in the **pixi.js** and **pixi.js-legacy** bundle), otherwise it will be ignored.
-     * @memberof PIXI.RendererOptions
      * @example
-     * const app = new PIXI.Application({
+     * const app = new Application({
      *   view: canvas,
      *   events: {
      *     move: true,
@@ -55,7 +53,6 @@ export interface EventSystemOptions
  * The event features that are enabled by the EventSystem
  * This option only is available when using **@pixi/events** package
  * (included in the **pixi.js** and **pixi.js-legacy** bundle), otherwise it will be ignored.
- * @memberof PIXI
  * @since 7.2.0
  */
 interface EventSystemFeatures
@@ -87,10 +84,7 @@ interface EventSystemFeatures
     wheel: boolean;
 }
 
-/**
- * The system for handling UI events.
- * @memberof PIXI
- */
+/** The system for handling UI events. */
 export class EventSystem implements System<EventSystemOptions>
 {
     /** @ignore */
@@ -121,8 +115,8 @@ export class EventSystem implements System<EventSystemOptions>
 
     /**
      * The default interaction mode for all display objects.
-     * @see PIXI.DisplayObject.eventMode
-     * @type {PIXI.EventMode}
+     * @see Container.eventMode
+     * @type {EventMode}
      * @readonly
      * @since 7.2.0
      */
@@ -132,14 +126,14 @@ export class EventSystem implements System<EventSystemOptions>
     }
 
     /**
-     * The {@link PIXI.EventBoundary} for the stage.
+     * The {@link EventBoundary} for the stage.
      *
-     * The {@link PIXI.EventBoundary#rootTarget rootTarget} of this root boundary is automatically set to
+     * The {@link EventBoundary#rootTarget rootTarget} of this root boundary is automatically set to
      * the last rendered object before any event processing is initiated. This means the main scene
      * needs to be rendered atleast once before UI events will start propagating.
      *
      * The root boundary should only be changed during initialization. Otherwise, any state held by the
-     * event boundary may be lost (like hovered & pressed DisplayObjects).
+     * event boundary may be lost (like hovered & pressed Containers).
      */
     public readonly rootBoundary: EventBoundary;
 
@@ -168,14 +162,14 @@ export class EventSystem implements System<EventSystemOptions>
 
     /**
      * The DOM element to which the root event listeners are bound. This is automatically set to
-     * the renderer's {@link PIXI.Renderer#view view}.
+     * the renderer's {@link Renderer#view view}.
      */
     public domElement: HTMLElement = null;
 
     /** The resolution used to convert between the DOM client space into world space. */
     public resolution = 1;
 
-    /** The renderer managing this {@link PIXI.EventSystem}. */
+    /** The renderer managing this {@link EventSystem}. */
     public renderer: Renderer;
 
     /**
@@ -184,7 +178,7 @@ export class EventSystem implements System<EventSystemOptions>
      * (included in the **pixi.js** and **pixi.js-legacy** bundle), otherwise it will be ignored.
      * @since 7.2.0
      * @example
-     * const app = new PIXI.Application()
+     * const app = new Application()
      * app.renderer.events.features.globalMove = false
      *
      * // to override all features use Object.assign
@@ -203,7 +197,7 @@ export class EventSystem implements System<EventSystemOptions>
     private _eventsAdded: boolean;
 
     /**
-     * @param {PIXI.Renderer} renderer
+     * @param {Renderer} renderer
      */
     constructor(renderer: Renderer)
     {
@@ -342,7 +336,7 @@ export class EventSystem implements System<EventSystemOptions>
     }
 
     /**
-     * Event handler for pointer down events on {@link PIXI.EventSystem#domElement this.domElement}.
+     * Event handler for pointer down events on {@link EventSystem#domElement this.domElement}.
      * @param nativeEvent - The native mouse/pointer/touch event.
      */
     private _onPointerDown(nativeEvent: MouseEvent | PointerEvent | TouchEvent): void
@@ -382,7 +376,7 @@ export class EventSystem implements System<EventSystemOptions>
     }
 
     /**
-     * Event handler for pointer move events on on {@link PIXI.EventSystem#domElement this.domElement}.
+     * Event handler for pointer move events on on {@link EventSystem#domElement this.domElement}.
      * @param nativeEvent - The native mouse/pointer/touch events.
      */
     private _onPointerMove(nativeEvent: MouseEvent | PointerEvent | TouchEvent): void
@@ -405,7 +399,7 @@ export class EventSystem implements System<EventSystemOptions>
     }
 
     /**
-     * Event handler for pointer up events on {@link PIXI.EventSystem#domElement this.domElement}.
+     * Event handler for pointer up events on {@link EventSystem#domElement this.domElement}.
      * @param nativeEvent - The native mouse/pointer/touch event.
      */
     private _onPointerUp(nativeEvent: MouseEvent | PointerEvent | TouchEvent): void
@@ -437,7 +431,7 @@ export class EventSystem implements System<EventSystemOptions>
     }
 
     /**
-     * Event handler for pointer over & out events on {@link PIXI.EventSystem#domElement this.domElement}.
+     * Event handler for pointer over & out events on {@link EventSystem#domElement this.domElement}.
      * @param nativeEvent - The native mouse/pointer/touch event.
      */
     private _onPointerOverOut(nativeEvent: MouseEvent | PointerEvent | TouchEvent): void
@@ -458,7 +452,7 @@ export class EventSystem implements System<EventSystemOptions>
     }
 
     /**
-     * Passive handler for `wheel` events on {@link PIXI.EventSystem.domElement this.domElement}.
+     * Passive handler for `wheel` events on {@link EventSystem.domElement this.domElement}.
      * @param nativeEvent - The native wheel event.
      */
     protected onWheel(nativeEvent: WheelEvent): void
@@ -471,7 +465,7 @@ export class EventSystem implements System<EventSystemOptions>
     }
 
     /**
-     * Sets the {@link PIXI.EventSystem#domElement domElement} and binds event listeners.
+     * Sets the {@link EventSystem#domElement domElement} and binds event listeners.
      *
      * To deregister the current DOM element without setting a new one, pass {@code null}.
      * @param element - The new DOM element.
@@ -484,7 +478,7 @@ export class EventSystem implements System<EventSystemOptions>
         this._addEvents();
     }
 
-    /** Register event listeners on {@link PIXI.Renderer#domElement this.domElement}. */
+    /** Register event listeners on {@link Renderer#domElement this.domElement}. */
     private _addEvents(): void
     {
         if (this._eventsAdded || !this.domElement)
@@ -550,7 +544,7 @@ export class EventSystem implements System<EventSystemOptions>
         this._eventsAdded = true;
     }
 
-    /** Unregister event listeners on {@link PIXI.EventSystem#domElement this.domElement}. */
+    /** Unregister event listeners on {@link EventSystem#domElement this.domElement}. */
     private _removeEvents(): void
     {
         if (!this._eventsAdded || !this.domElement)
@@ -608,7 +602,7 @@ export class EventSystem implements System<EventSystemOptions>
      * Maps x and y coords from a DOM object and maps them correctly to the PixiJS view. The
      * resulting value is stored in the point. This takes into account the fact that the DOM
      * element could be scaled and positioned anywhere on the screen.
-     * @param  {PIXI.PointData} point - the point that the result will be stored in
+     * @param  {PointData} point - the point that the result will be stored in
      * @param  {number} x - the x coord of the position to map
      * @param  {number} y - the y coord of the position to map
      */
@@ -709,7 +703,7 @@ export class EventSystem implements System<EventSystemOptions>
     /**
      * Normalizes the native {@link https://w3c.github.io/uievents/#interface-wheelevent WheelEvent}.
      *
-     * The returned {@link PIXI.FederatedWheelEvent} is a shared instance. It will not persist across
+     * The returned {@link FederatedWheelEvent} is a shared instance. It will not persist across
      * multiple native wheel events.
      * @param nativeEvent - The native wheel event that occurred on the canvas.
      * @returns A federated wheel event.
@@ -743,7 +737,7 @@ export class EventSystem implements System<EventSystemOptions>
     }
 
     /**
-     * Normalizes the `nativeEvent` into a federateed {@link PIXI.FederatedPointerEvent}.
+     * Normalizes the `nativeEvent` into a federateed {@link FederatedPointerEvent}.
      * @param event
      * @param nativeEvent
      */

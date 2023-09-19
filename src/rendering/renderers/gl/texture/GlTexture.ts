@@ -1,9 +1,6 @@
 import { GL_FORMATS, GL_TARGETS, GL_TYPES } from './const';
 
-/**
- * Internal texture for WebGL context.
- * @memberof PIXI
- */
+/** Internal texture for WebGL context. */
 export class GlTexture
 {
     public target: GL_TARGETS = GL_TARGETS.TEXTURE_2D;
@@ -26,7 +23,7 @@ export class GlTexture
     /** Type copied from baseTexture. */
     public internalFormat: number;
 
-    /** Type of sampler corresponding to this texture. See {@link PIXI.SAMPLER_TYPES} */
+    /** Type of sampler corresponding to this texture. See {@link SAMPLER_TYPES} */
     public samplerType: number;
 
     public format: GL_FORMATS;

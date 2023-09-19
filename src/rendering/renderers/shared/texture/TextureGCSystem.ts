@@ -12,7 +12,6 @@ export interface TextureGCSystemOptions
 /**
  * System plugin to the renderer to manage texture garbage collection on the GPU,
  * ensuring that it does not get clogged up with textures that are no longer being used.
- * @memberof PIXI
  */
 export class TextureGCSystem implements System
 {
@@ -45,19 +44,19 @@ export class TextureGCSystem implements System
 
     /**
      * Maximum idle frames before a texture is destroyed by garbage collection.
-     * @see PIXI.TextureGCSystem.defaultMaxIdle
+     * @see TextureGCSystem.defaultMaxIdle
      */
     public maxIdle: number;
 
     /**
      * Frames between two garbage collections.
-     * @see PIXI.TextureGCSystem.defaultCheckCountMax
+     * @see TextureGCSystem.defaultCheckCountMax
      */
     public checkCountMax: number;
 
     /**
      * Current garbage collection mode.
-     * @see PIXI.TextureGCSystem.defaultMode
+     * @see TextureGCSystem.defaultMode
      */
     public active: boolean;
     private _renderer: Renderer;

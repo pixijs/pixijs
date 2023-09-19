@@ -54,8 +54,7 @@ function getCacheableAssets(keys: string[], asset: Spritesheet, ignoreMultiPack:
 
 /**
  * Asset extension for loading spritesheets.
- * @memberof PIXI
- * @type {PIXI.AssetExtension}
+ * @type {AssetExtension}
  */
 export const spritesheetAsset = {
     extension: ExtensionType.Asset,
@@ -89,7 +88,7 @@ export const spritesheetAsset = {
     /**
      * Loader plugin that parses sprite sheets!
      * once the JSON has been loaded this checks to see if the JSON is spritesheet data.
-     * If it is, we load the spritesheets image and parse the data into PIXI.Spritesheet
+     * If it is, we load the spritesheets image and parse the data into Spritesheet
      * All textures in the sprite sheet are then added to the cache
      * @ignore
      */

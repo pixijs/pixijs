@@ -14,10 +14,7 @@ export interface BlurFilterPassOptions extends BlurFilterOptions
     horizontal: boolean;
 }
 
-/**
- * The BlurFilterPass applies a horizontal or vertical Gaussian blur to an object.
- * @memberof PIXI
- */
+/** The BlurFilterPass applies a horizontal or vertical Gaussian blur to an object. */
 export class BlurFilterPass extends Filter
 {
     public static defaultOptions: Partial<BlurFilterPassOptions> = {

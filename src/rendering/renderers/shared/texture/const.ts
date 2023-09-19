@@ -5,7 +5,6 @@ import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
 /**
  * How to treat textures with premultiplied alpha
  * @name ALPHA_MODES
- * @memberof PIXI
  * @static
  * @enum {number}
  * @property {number} NO_PREMULTIPLIED_ALPHA - Source is not premultiplied, leave it like that.
@@ -31,9 +30,8 @@ export enum ALPHA_MODES
 
 /**
  * Constants for multi-sampling antialiasing.
- * @see PIXI.Framebuffer#multisample
+ * @see Framebuffer#multisample
  * @name MSAA_QUALITY
- * @memberof PIXI
  * @static
  * @enum {number}
  * @property {number} NONE - No multisampling for this renderTexture
@@ -185,7 +183,10 @@ export type TEXTURE_DIMENSIONS =
     | '3d';
 
 export type WRAP_MODE =
-
+    /**
+     * The texture uvs are clamped
+     * @default 33071
+     */
     | 'clamp-to-edge'
     /**
      * The texture uvs tile and repeat
@@ -220,25 +221,14 @@ export const WRAP_MODES = new Proxy(DEPRECATED_WRAP_MODES, {
 /**
  * The scale modes that are supported by pixi.
  *
- * The {@link PIXI.settings.SCALE_MODE} scale mode affects the default scaling mode of future operations.
+ * The {@link settings.SCALE_MODE} scale mode affects the default scaling mode of future operations.
  * It can be re-assigned to either LINEAR or NEAREST, depending upon suitability.
- * @memberof PIXI
  * @static
- * @name SCALE_MODE
- * @enum {number}
- * @property {number} LINEAR Smooth scaling
- * @property {number} NEAREST Pixelating scaling
  */
 export type SCALE_MODE =
-    /**
-     * Pixelating scaling
-     * @default 0
-     */
+    /** Pixelating scaling */
  | 'nearest'
-     /**
-      * Smooth scaling
-      * @default 1
-      */
+     /** Smooth scaling */
  | 'linear';
 
 export enum DEPRECATED_SCALE_MODES
@@ -247,7 +237,9 @@ export enum DEPRECATED_SCALE_MODES
     LINEAR = 'linear',
 }
 
-/** @deprecated since 8.0.0 */
+/**
+ * @deprecated since 8.0.0
+ */
 export const SCALE_MODES = new Proxy(DEPRECATED_SCALE_MODES, {
     get(target, prop: keyof typeof DEPRECATED_SCALE_MODES)
     {

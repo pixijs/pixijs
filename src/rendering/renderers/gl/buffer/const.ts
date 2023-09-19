@@ -1,8 +1,7 @@
 /**
  * Constants for various buffer types in Pixi
- * @see PIXI.BUFFER_TYPE
+ * @see BUFFER_TYPE
  * @name BUFFER_TYPE
- * @memberof PIXI
  * @static
  * @enum {number}
  * @property {number} ELEMENT_ARRAY_BUFFER - buffer type for using as an index buffer

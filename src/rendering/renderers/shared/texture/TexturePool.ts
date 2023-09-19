@@ -2,6 +2,7 @@ import { nextPow2 } from '../../../../maths/pow2';
 import { TextureSource } from './sources/TextureSource';
 import { Texture } from './Texture';
 
+import type { SCALE_MODE } from './const';
 import type { TextureSourceOptions } from './sources/TextureSource';
 
 let count = 0;
@@ -13,7 +14,6 @@ let count = 0;
  *
  * If you use custom RenderTexturePool for your filters, you can use methods
  * `getFilterTexture` and `returnFilterTexture` same as in
- * @memberof PIXI
  */
 export class TexturePoolClass
 {
@@ -32,7 +32,7 @@ export class TexturePoolClass
 
     /**
      * @param textureOptions - options that will be passed to BaseRenderTexture constructor
-     * @param {PIXI.SCALE_MODES} [textureOptions.scaleMode] - See {@link PIXI.SCALE_MODES} for possible values.
+     * @param {SCALE_MODE} [textureOptions.scaleMode] - See {@link SCALE_MODE} for possible values.
      */
     constructor(textureOptions?: TextureSourceOptions)
     {

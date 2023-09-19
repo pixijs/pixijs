@@ -1,9 +1,6 @@
 export type ArrayOr<T> = T | T[];
 
-/**
- * Names of the parsers that are built into PIXI.
- * @memberof PIXI
- */
+/** Names of the parsers that are built into PixiJS. */
 export type LoadParserName =
     | 'loadJson'
     | 'loadSVG'
@@ -13,10 +10,7 @@ export type LoadParserName =
     | 'loadWebFont'
     | string;
 
-/**
- * A fully resolved asset, with all the information needed to load it.
- * @memberof PIXI
- */
+/** A fully resolved asset, with all the information needed to load it. */
 export interface ResolvedAsset<T=any>
 {
     /** Aliases associated with asset */
@@ -42,20 +36,13 @@ export interface ResolvedAsset<T=any>
     [key: string]: any;
 }
 
-/**
- * A fully resolved src,
- * Glob patterns will not work here, and the src will be resolved to a single file.
- * @memberof PIXI
- */
+/** A fully resolved src, Glob patterns will not work here, and the src will be resolved to a single file. */
 // NOTE: Omit does not seem to work here
 export type ResolvedSrc = Pick<ResolvedAsset, 'src' | 'srcs' | 'format' | 'loadParser' | 'data'> & {[key: string]: any;};
 
 export type AssetSrc = ArrayOr<string> | ArrayOr<ResolvedSrc>;
 
-/**
- * An asset that has not been resolved yet.
- * @memberof PIXI
- */
+/** An asset that has not been resolved yet. */
 export interface UnresolvedAsset<T=any> extends Omit<ResolvedAsset<T>, 'src' | 'srcs' | 'name' | 'alias'>
 {
     /** Aliases associated with asset */
@@ -74,26 +61,17 @@ export interface UnresolvedAsset<T=any> extends Omit<ResolvedAsset<T>, 'src' | '
     srcs?: AssetSrc;
 }
 
-/**
- * The object version of an unresolved asset
- * @memberof PIXI
- */
+/** The object version of an unresolved asset */
 export type UnresolvedAssetObject = Omit<UnresolvedAsset, 'name' | 'alias'>;
 
-/**
- * Structure of a bundle found in a manifest file
- * @memberof PIXI
- */
+/** Structure of a bundle found in a manifest file */
 export interface AssetsBundle
 {
     name: string;
     assets: UnresolvedAsset[] | Record<string, ArrayOr<string> | UnresolvedAssetObject>;
 }
 
-/**
- * The expected format of a manifest. This would normally be auto generated or made by the developer
- * @memberof PIXI
- */
+/** The expected format of a manifest. This would normally be auto generated or made by the developer */
 export interface AssetsManifest
 {
     bundles: AssetsBundle[];

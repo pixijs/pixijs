@@ -58,7 +58,7 @@ export class Filter extends Shader
     /**
      * The resolution of the filter. Setting this to be lower will lower the quality but
      * increase the performance of the filter.
-     * @default PIXI.Filter.defaultOptions.resolution
+     * @default Filter.defaultOptions.resolution
      */
     public resolution: number;
 
@@ -112,7 +112,7 @@ export class Filter extends Shader
 
     /**
      * Sets the blend mode of the filter.
-     * @default PIXI.BLEND_MODES.NORMAL
+     * @default "normal"
      */
     get blendMode(): BLEND_MODES
     {

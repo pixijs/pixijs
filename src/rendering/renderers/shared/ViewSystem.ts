@@ -9,53 +9,28 @@ import type { System } from './system/System';
 import type { CanvasSourceOptions } from './texture/sources/CanvasSource';
 import type { Texture } from './texture/Texture';
 
-/**
- * Options passed to the ViewSystem
- * @memberof PIXI
- */
+/** Options passed to the ViewSystem */
 export interface ViewSystemOptions
 {
-    /**
-     * The width of the screen.
-     * @memberof PIXI.WebGLOptions
-     */
+    /** The width of the screen. */
     width?: number;
-    /**
-     * The height of the screen.
-     * @memberof PIXI.WebGLOptions
-     */
+    /** The height of the screen. */
     height?: number;
-    /**
-     * The canvas to use as a view, optional.
-     * @memberof PIXI.WebGLOptions
-     */
+    /** The canvas to use as a view, optional. */
     element?: ICanvas;
-    /**
-     * Resizes renderer view in CSS pixels to allow for resolutions other than 1.
-     * @memberof PIXI.WebGLOptions
-     */
+    /** Resizes renderer view in CSS pixels to allow for resolutions other than 1. */
     autoDensity?: boolean;
-    /**
-     * The resolution / device pixel ratio of the renderer.
-     * @memberof PIXI.WebGLOptions
-     */
+    /** The resolution / device pixel ratio of the renderer. */
     resolution?: number;
-    /**
-     * **WebGL Only.** Whether to enable anti-aliasing. This may affect performance.
-     * @memberof PIXI.WebGLOptions
-     */
+    /** **WebGL Only.** Whether to enable anti-aliasing. This may affect performance. */
     antialias?: boolean;
-    /**
-     * TODO: multiView
-     * @memberof PIXI.WebGLOptions
-     */
+    /** TODO: multiView */
     multiView?: boolean;
 }
 
 /**
  * The view system manages the main canvas that is attached to the DOM.
  * This main role is to deal with how the holding the view reference and dealing with how it is resized.
- * @memberof PIXI
  */
 export class ViewSystem implements System
 {
@@ -73,28 +48,28 @@ export class ViewSystem implements System
     /** @ignore */
     public static defaultOptions: ViewSystemOptions = {
         /**
-         * {@link PIXI.WebGLOptions.width}
+         * {@link WebGLOptions.width}
          * @default 800
          */
         width: 800,
         /**
-         * {@link PIXI.WebGLOptions.height}
+         * {@link WebGLOptions.height}
          * @default 600
          */
         height: 600,
         /**
-         * {@link PIXI.WebGLOptions.resolution}
+         * {@link WebGLOptions.resolution}
          * @type {number}
-         * @default PIXI.settings.RESOLUTION
+         * @default settings.RESOLUTION
          */
         resolution: settings.RESOLUTION,
         /**
-         * {@link PIXI.WebGLOptions.autoDensity}
+         * {@link WebGLOptions.autoDensity}
          * @default false
          */
         autoDensity: false,
         /**
-         * {@link PIXI.WebGLOptions.antialias}
+         * {@link WebGLOptions.antialias}
          * @default false
          */
         antialias: false,

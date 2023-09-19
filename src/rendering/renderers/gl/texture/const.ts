@@ -1,6 +1,5 @@
 /**
  * Various GL texture/resources formats.
- * @memberof PIXI
  * @static
  * @name FORMATS
  * @enum {number}
@@ -38,7 +37,6 @@ export enum GL_FORMATS
 
 /**
  * Various GL target types.
- * @memberof PIXI
  * @static
  * @name TARGETS
  * @enum {number}
@@ -69,14 +67,13 @@ export enum GL_TARGETS
 /**
  * The wrap modes that are supported by pixi.
  *
- * The {@link PIXI.settings.WRAP_MODE} wrap mode affects the default wrapping mode of future operations.
+ * The {@link settings.WRAP_MODE} wrap mode affects the default wrapping mode of future operations.
  * It can be re-assigned to either CLAMP or REPEAT, depending upon suitability.
  * If the texture is non power of two then clamp will be used regardless as WebGL can
  * only use REPEAT if the texture is po2.
  *
  * This property only affects WebGL.
  * @name WRAP_MODES
- * @memberof PIXI
  * @static
  * @enum {number}
  * @property {number} CLAMP - The textures uvs are clamped

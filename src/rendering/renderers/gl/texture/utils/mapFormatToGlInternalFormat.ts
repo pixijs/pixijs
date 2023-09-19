@@ -2,7 +2,6 @@ import type { GlRenderingContext } from '../../context/GlRenderingContext';
 
 /**
  * Returns a lookup table that maps each type-format pair to a compatible internal format.
- * @memberof PIXI
  * @function mapTypeAndFormatToInternalFormat
  * @private
  * @param {WebGLRenderingContext} gl - The rendering context.

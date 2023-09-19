@@ -45,7 +45,7 @@ export interface BitmapFontInstallOptions
      * Characters included in the font set. You can also use ranges.
      * For example, `[['a', 'z'], ['A', 'Z'], "!@#$%^&*()~{}[] "]`.
      * Don't forget to include spaces ' ' in your character set!
-     * @default PIXI.BitmapFont.ALPHANUMERIC
+     * @default BitmapFont.ALPHANUMERIC
      */
     chars?: string | (string | string[])[];
     /**

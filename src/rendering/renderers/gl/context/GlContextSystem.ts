@@ -17,38 +17,27 @@ export interface ISupportDict
  */
 export interface ContextSystemOptions
 {
-    /**
-     * **WebGL Only.** User-provided WebGL rendering context object.
-     * @memberof PIXI.WebGLOptions
-     */
+    /** **WebGL Only.** User-provided WebGL rendering context object. */
     context: WebGL2RenderingContext | null;
     /**
      * **WebGL Only.** A hint indicating what configuration of GPU is suitable for the WebGL context,
      * can be `'default'`, `'high-performance'` or `'low-power'`.
      * Setting to `'high-performance'` will prioritize rendering performance over power consumption,
      * while setting to `'low-power'` will prioritize power saving over rendering performance.
-     * @memberof PIXI.WebGLOptions
      */
     powerPreference: WebGLPowerPreference;
-    /**
-     * **WebGL Only.** Whether the compositor will assume the drawing buffer contains colors with premultiplied alpha.
-     * @memberof PIXI.WebGLOptions
-     */
+    /** **WebGL Only.** Whether the compositor will assume the drawing buffer contains colors with premultiplied alpha. */
     premultipliedAlpha: boolean;
     /**
      * **WebGL Only.** Whether to enable drawing buffer preservation. If enabled, the drawing buffer will preserve
      * its value until cleared or overwritten. Enable this if you need to call `toDataUrl` on the WebGL context.
-     * @memberof PIXI.WebGLOptions
      */
     preserveDrawingBuffer: boolean;
 
     antialias?: boolean;
 }
 
-/**
- * System plugin to the renderer to manage the context.
- * @memberof PIXI
- */
+/** System plugin to the renderer to manage the context. */
 export class GlContextSystem implements System<ContextSystemOptions>
 {
     /** @ignore */
@@ -62,22 +51,22 @@ export class GlContextSystem implements System<ContextSystemOptions>
     /** @ignore */
     public static defaultOptions: ContextSystemOptions = {
         /**
-         * {@link PIXI.WebGLOptions.context}
+         * {@link WebGLOptions.context}
          * @default null
          */
         context: null,
         /**
-         * {@link PIXI.WebGLOptions.premultipliedAlpha}
+         * {@link WebGLOptions.premultipliedAlpha}
          * @default true
          */
         premultipliedAlpha: true,
         /**
-         * {@link PIXI.WebGLOptions.preserveDrawingBuffer}
+         * {@link WebGLOptions.preserveDrawingBuffer}
          * @default false
          */
         preserveDrawingBuffer: false,
         /**
-         * {@link PIXI.WebGLOptions.powerPreference}
+         * {@link WebGLOptions.powerPreference}
          * @default default
          */
         powerPreference: 'default',
@@ -233,7 +222,7 @@ export class GlContextSystem implements System<ContextSystemOptions>
         return this.gl;
     }
 
-    /** Auto-populate the {@link PIXI.ContextSystem.extensions extensions}. */
+    /** Auto-populate the {@link ContextSystem.extensions extensions}. */
     protected getExtensions(): void
     {
         // time to set up default extensions that Pixi uses.

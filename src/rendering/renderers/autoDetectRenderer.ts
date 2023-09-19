@@ -5,6 +5,7 @@ import type { WebGLOptions } from './gl/WebGLRenderer';
 import type { WebGPUOptions } from './gpu/WebGPURenderer';
 import type { Renderer } from './types';
 
+/** Options for autoDetectRenderer. */
 export interface AutoDetectOptions extends WebGLOptions, WebGPUOptions
 {
     preference?: 'webgl' | 'webgpu' | 'canvas';

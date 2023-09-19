@@ -1,6 +1,5 @@
 /**
  * Collection of valid extension types.
- * @memberof PIXI
  * @property {string} Application - Application plugins
  * @property {string} RendererPlugin - Plugins for Renderer
  * @property {string} CanvasRendererPlugin - Plugins for CanvasRenderer
@@ -53,7 +52,6 @@ type ExtensionMetadata = ExtensionType | ExtensionMetadataDetails;
  * Format when registering an extension. Generally, the extension
  * should have these values as `extension` static property,
  * but you can override name or type by providing an object.
- * @memberof PIXI
  */
 interface ExtensionFormatLoose
 {
@@ -67,10 +65,7 @@ interface ExtensionFormatLoose
     ref: any;
 }
 
-/**
- * Strict extension format that is used internally for registrations.
- * @memberof PIXI
- */
+/** Strict extension format that is used internally for registrations. */
 interface ExtensionFormat extends ExtensionFormatLoose
 {
     /** The extension type, always expressed as multiple, even if a single */
@@ -129,7 +124,6 @@ export const normalizeExtensionPriority = (ext: ExtensionFormatLoose | any, defa
 
 /**
  * Global registration of all PixiJS extensions. One-stop-shop for extensibility.
- * @memberof PIXI
  * @namespace extensions
  */
 const extensions = {
@@ -146,7 +140,7 @@ const extensions = {
     /**
      * Remove extensions from PixiJS.
      * @param extensions - Extensions to be removed.
-     * @returns {PIXI.extensions} For chaining.
+     * @returns {extensions} For chaining.
      */
     remove(...extensions: Array<ExtensionFormatLoose | any>)
     {
@@ -161,7 +155,7 @@ const extensions = {
     /**
      * Register new extensions with PixiJS.
      * @param extensions - The spread of extensions to add to PixiJS.
-     * @returns {PIXI.extensions} For chaining.
+     * @returns {extensions} For chaining.
      */
     add(...extensions: Array<ExtensionFormatLoose | any>)
     {
@@ -191,9 +185,9 @@ const extensions = {
     /**
      * Internal method to handle extensions by name.
      * @param type - The extension type.
-     * @param onAdd  - Function for handling when extensions are added/registered passes {@link PIXI.ExtensionFormat}.
-     * @param onRemove  - Function for handling when extensions are removed/unregistered passes {@link PIXI.ExtensionFormat}.
-     * @returns {PIXI.extensions} For chaining.
+     * @param onAdd  - Function for handling when extensions are added/registered passes {@link ExtensionFormat}.
+     * @param onRemove  - Function for handling when extensions are removed/unregistered passes {@link ExtensionFormat}.
+     * @returns {extensions} For chaining.
      */
     handle(type: ExtensionType, onAdd: ExtensionHandler, onRemove: ExtensionHandler)
     {
@@ -227,7 +221,7 @@ const extensions = {
      * Handle a type, but using a map by `name` property.
      * @param type - Type of extension to handle.
      * @param map - The object map of named extensions.
-     * @returns {PIXI.extensions} For chaining.
+     * @returns {extensions} For chaining.
      */
     handleByMap(type: ExtensionType, map: Record<string, any>)
     {
@@ -248,7 +242,7 @@ const extensions = {
      * @param type - Type of extension to handle.
      * @param map - The array of named extensions.
      * @param defaultPriority - Fallback priority if none is defined.
-     * @returns {PIXI.extensions} For chaining.
+     * @returns {extensions} For chaining.
      */
     handleByNamedList(type: ExtensionType, map: {name: string, value: any}[], defaultPriority = -1)
     {
@@ -282,7 +276,7 @@ const extensions = {
      * @param type - Type of extension to handle.
      * @param list - The list of extensions.
      * @param defaultPriority - The default priority to use if none is specified.
-     * @returns {PIXI.extensions} For chaining.
+     * @returns {extensions} For chaining.
      */
     handleByList(type: ExtensionType, list: any[], defaultPriority = -1)
     {

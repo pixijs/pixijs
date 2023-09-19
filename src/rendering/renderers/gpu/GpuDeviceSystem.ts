@@ -12,8 +12,6 @@ export interface GPU
 /**
  * System plugin to the renderer to manage the context.
  * @class
- * @extends PIXI.System
- * @memberof PIXI
  */
 export class GpuDeviceSystem implements System
 {
@@ -31,7 +29,7 @@ export class GpuDeviceSystem implements System
     private _initPromise: Promise<void>;
 
     /**
-     * @param {PIXI.Renderer} renderer - The renderer this System works for.
+     * @param {WebGPURenderer} renderer - The renderer this System works for.
      */
     constructor(renderer: WebGPURenderer)
     {

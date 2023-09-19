@@ -2,10 +2,7 @@ import { Rectangle } from './Rectangle';
 
 import type { ShapePrimitive } from './ShapePrimitive';
 
-/**
- * The Ellipse object is used to help draw graphics and can also be used to specify a hit area for displayObjects.
- * @memberof PIXI
- */
+/** The Ellipse object is used to help draw graphics and can also be used to specify a hit area for containers. */
 export class Ellipse implements ShapePrimitive
 {
     /** @default 0 */
@@ -42,7 +39,7 @@ export class Ellipse implements ShapePrimitive
 
     /**
      * Creates a clone of this Ellipse instance
-     * @returns {PIXI.Ellipse} A copy of the ellipse
+     * @returns {Ellipse} A copy of the ellipse
      */
     public clone(): Ellipse
     {

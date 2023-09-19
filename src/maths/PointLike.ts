@@ -1,26 +1,23 @@
 import type { PointData } from './PointData';
 
-/**
- * Common interface for points. Both Point and ObservablePoint implement it
- * @memberof PIXI
- */
+/** Common interface for points. Both Point and ObservablePoint implement it */
 export interface PointLike extends PointData
 {
     /**
      * Copies x and y from the given point
-     * @param {PIXI.PointData} p - The point to copy from
+     * @param {PointData} p - The point to copy from
      * @returns {this} Returns itself.
      */
     copyFrom: (p: PointData) => this;
     /**
      * Copies x and y into the given point
-     * @param {PIXI.PointLike} p - The point to copy.
-     * @returns {PIXI.PointLike} Given point with values updated
+     * @param {PointLike} p - The point to copy.
+     * @returns {PointLike} Given point with values updated
      */
     copyTo: <T extends PointLike>(p: T) => T;
     /**
      * Returns true if the given point is equal to this point
-     * @param {PIXI.PointData} p - The point to check
+     * @param {PointData} p - The point to check
      * @returns {boolean} Whether the given point equal to this point
      */
     equals: (p: PointData) => boolean;

@@ -513,7 +513,7 @@ export class FilterSystem implements System
      *
      * Use `outputMatrix * vTextureCoord` in the shader.
      * @param outputMatrix - The matrix to output to.
-     * @param {PIXI.Sprite} sprite - The sprite to map to.
+     * @param {Sprite} sprite - The sprite to map to.
      * @returns The mapped matrix.
      */
     public calculateSpriteMatrix(outputMatrix: Matrix, sprite: Sprite): Matrix

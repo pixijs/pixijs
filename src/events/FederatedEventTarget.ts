@@ -49,24 +49,17 @@ export interface IHitArea
     contains(x: number, y: number): boolean;
 }
 
-/**
- * Function type for handlers, e.g., onclick
- * @memberof PIXI
- */
+/** Function type for handlers, e.g., onclick */
 export type FederatedEventHandler<T= FederatedPointerEvent> = (event: T) => void;
 
 /**
- * The type of interaction a DisplayObject can be. For more information on values and their meaning,
- * see {@link PIXI.DisplayObject.eventMode DisplayObject's eventMode property}.
- * @memberof PIXI
+ * The type of interaction a Container can be. For more information on values and their meaning,
+ * see {@link Container.eventMode Container's eventMode property}.
  * @since 7.2.0
  */
 export type EventMode = 'none' | 'passive' | 'auto' | 'static' | 'dynamic';
 
-/**
- * Describes the shape for a {@link PIXI.FederatedEvent}'s' `eventTarget`.
- * @memberof PIXI
- */
+/** Describes the shape for a {@link FederatedEvent}'s' `eventTarget`. */
 export interface FederatedEventTarget extends EventEmitter, EventTarget
 {
     /** The cursor preferred when the mouse pointer is hovering over. */
@@ -84,7 +77,7 @@ export interface FederatedEventTarget extends EventEmitter, EventTarget
     eventMode: EventMode;
     _internalEventMode: EventMode;
 
-    /** Returns true if the DisplayObject has interactive 'static' or 'dynamic' */
+    /** Returns true if the Container has interactive 'static' or 'dynamic' */
     isInteractive: () => boolean;
 
     /** Whether this event target has any children that need UI events. This can be used optimize event propagation. */
@@ -202,7 +195,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `click` event.
-     * @memberof PIXI.DisplayObject#
+     * @memberof Container#
      * @default null
      * @example
      * this.onclick = (event) => {
@@ -213,7 +206,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `mousedown` event.
-     * @memberof PIXI.DisplayObject#
+     * @memberof Container#
      * @default null
      * @example
      * this.onmousedown = (event) => {
@@ -224,7 +217,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `mouseenter` event.
-     * @memberof PIXI.DisplayObject#
+     * @memberof Container#
      * @default null
      * @example
      * this.onmouseenter = (event) => {
@@ -235,7 +228,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `mouseleave` event.
-     * @memberof PIXI.DisplayObject#
+     * @memberof Container#
      * @default null
      * @example
      * this.onmouseleave = (event) => {
@@ -246,7 +239,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `mousemove` event.
-     * @memberof PIXI.DisplayObject#
+     * @memberof Container#
      * @default null
      * @example
      * this.onmousemove = (event) => {
@@ -257,7 +250,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `globalmousemove` event.
-     * @memberof PIXI.DisplayObject#
+     * @memberof Container#
      * @default null
      * @example
      * this.onglobalmousemove = (event) => {
@@ -268,7 +261,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `mouseout` event.
-     * @memberof PIXI.DisplayObject#
+     * @memberof Container#
      * @default null
      * @example
      * this.onmouseout = (event) => {
@@ -279,7 +272,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `mouseover` event.
-     * @memberof PIXI.DisplayObject#
+     * @memberof Container#
      * @default null
      * @example
      * this.onmouseover = (event) => {
@@ -290,7 +283,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `mouseup` event.
-     * @memberof PIXI.DisplayObject#
+     * @memberof Container#
      * @default null
      * @example
      * this.onmouseup = (event) => {
@@ -301,7 +294,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `mouseupoutside` event.
-     * @memberof PIXI.DisplayObject#
+     * @memberof Container#
      * @default null
      * @example
      * this.onmouseupoutside = (event) => {
@@ -312,7 +305,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `pointercancel` event.
-     * @memberof PIXI.DisplayObject#
+     * @memberof Container#
      * @default null
      * @example
      * this.onpointercancel = (event) => {
@@ -323,7 +316,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `pointerdown` event.
-     * @memberof PIXI.DisplayObject#
+     * @memberof Container#
      * @default null
      * @example
      * this.onpointerdown = (event) => {
@@ -334,7 +327,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `pointerenter` event.
-     * @memberof PIXI.DisplayObject#
+     * @memberof Container#
      * @default null
      * @example
      * this.onpointerenter = (event) => {
@@ -345,7 +338,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `pointerleave` event.
-     * @memberof PIXI.DisplayObject#
+     * @memberof Container#
      * @default null
      * @example
      * this.onpointerleave = (event) => {
@@ -356,7 +349,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `pointermove` event.
-     * @memberof PIXI.DisplayObject#
+     * @memberof Container#
      * @default null
      * @example
      * this.onpointermove = (event) => {
@@ -367,7 +360,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `globalpointermove` event.
-     * @memberof PIXI.DisplayObject#
+     * @memberof Container#
      * @default null
      * @example
      * this.onglobalpointermove = (event) => {
@@ -378,7 +371,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `pointerout` event.
-     * @memberof PIXI.DisplayObject#
+     * @memberof Container#
      * @default null
      * @example
      * this.onpointerout = (event) => {
@@ -389,7 +382,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `pointerover` event.
-     * @memberof PIXI.DisplayObject#
+     * @memberof Container#
      * @default null
      * @example
      * this.onpointerover = (event) => {
@@ -400,7 +393,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `pointertap` event.
-     * @memberof PIXI.DisplayObject#
+     * @memberof Container#
      * @default null
      * @example
      * this.onpointertap = (event) => {
@@ -411,7 +404,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `pointerup` event.
-     * @memberof PIXI.DisplayObject#
+     * @memberof Container#
      * @default null
      * @example
      * this.onpointerup = (event) => {
@@ -422,7 +415,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `pointerupoutside` event.
-     * @memberof PIXI.DisplayObject#
+     * @memberof Container#
      * @default null
      * @example
      * this.onpointerupoutside = (event) => {
@@ -433,7 +426,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `rightclick` event.
-     * @memberof PIXI.DisplayObject#
+     * @memberof Container#
      * @default null
      * @example
      * this.onrightclick = (event) => {
@@ -444,7 +437,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `rightdown` event.
-     * @memberof PIXI.DisplayObject#
+     * @memberof Container#
      * @default null
      * @example
      * this.onrightdown = (event) => {
@@ -455,7 +448,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `rightup` event.
-     * @memberof PIXI.DisplayObject#
+     * @memberof Container#
      * @default null
      * @example
      * this.onrightup = (event) => {
@@ -466,7 +459,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `rightupoutside` event.
-     * @memberof PIXI.DisplayObject#
+     * @memberof Container#
      * @default null
      * @example
      * this.onrightupoutside = (event) => {
@@ -477,7 +470,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `tap` event.
-     * @memberof PIXI.DisplayObject#
+     * @memberof Container#
      * @default null
      * @example
      * this.ontap = (event) => {
@@ -488,7 +481,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `touchcancel` event.
-     * @memberof PIXI.DisplayObject#
+     * @memberof Container#
      * @default null
      * @example
      * this.ontouchcancel = (event) => {
@@ -499,7 +492,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `touchend` event.
-     * @memberof PIXI.DisplayObject#
+     * @memberof Container#
      * @default null
      * @example
      * this.ontouchend = (event) => {
@@ -510,7 +503,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `touchendoutside` event.
-     * @memberof PIXI.DisplayObject#
+     * @memberof Container#
      * @default null
      * @example
      * this.ontouchendoutside = (event) => {
@@ -521,7 +514,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `touchmove` event.
-     * @memberof PIXI.DisplayObject#
+     * @memberof Container#
      * @default null
      * @example
      * this.ontouchmove = (event) => {
@@ -532,7 +525,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `globaltouchmove` event.
-     * @memberof PIXI.DisplayObject#
+     * @memberof Container#
      * @default null
      * @example
      * this.onglobaltouchmove = (event) => {
@@ -543,7 +536,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `touchstart` event.
-     * @memberof PIXI.DisplayObject#
+     * @memberof Container#
      * @default null
      * @example
      * this.ontouchstart = (event) => {
@@ -554,7 +547,7 @@ export const FederatedContainer: IFederatedContainer = {
 
     /**
      * Property-based event handler for the `wheel` event.
-     * @memberof PIXI.DisplayObject#
+     * @memberof Container#
      * @default null
      * @example
      * this.onwheel = (event) => {
@@ -563,8 +556,8 @@ export const FederatedContainer: IFederatedContainer = {
      */
     onwheel:  null,
     /**
-     * Enable interaction events for the DisplayObject. Touch, pointer and mouse
-     * @memberof PIXI.DisplayObject#
+     * Enable interaction events for the Container. Touch, pointer and mouse
+     * @memberof Container#
      */
     get interactive()
     {
@@ -579,7 +572,7 @@ export const FederatedContainer: IFederatedContainer = {
      */
     _internalEventMode: undefined,
     /**
-     * Enable interaction events for the DisplayObject. Touch, pointer and mouse.
+     * Enable interaction events for the Container. Touch, pointer and mouse.
      * This now replaces the `interactive` property.
      * There are 5 types of interaction settings:
      * - `'none'`: Ignores all interaction events, even on its children.
@@ -597,7 +590,7 @@ export const FederatedContainer: IFederatedContainer = {
      * sprite.on('tap', (event) => {
      *     // Handle event
      * });
-     * @memberof PIXI.DisplayObject#
+     * @memberof Container#
      * @since 7.2.0
      */
     get eventMode()
@@ -610,9 +603,9 @@ export const FederatedContainer: IFederatedContainer = {
     },
 
     /**
-     * Determines if the displayObject is interactive or not
-     * @returns {boolean} Whether the displayObject is interactive or not
-     * @memberof PIXI.DisplayObject#
+     * Determines if the container is interactive or not
+     * @returns {boolean} Whether the container is interactive or not
+     * @memberof Container#
      * @since 7.2.0
      * @example
      * import { Sprite } from 'pixi.js';
@@ -638,23 +631,23 @@ export const FederatedContainer: IFederatedContainer = {
     },
 
     /**
-     * Determines if the children to the displayObject can be clicked/touched
+     * Determines if the children to the container can be clicked/touched
      * Setting this to false allows PixiJS to bypass a recursive `hitTest` function
-     * @memberof PIXI.Container#
+     * @memberof Container#
      */
     interactiveChildren: true,
 
     /**
      * Interaction shape. Children will be hit first, then this shape will be checked.
-     * Setting this will cause this shape to be checked in hit tests rather than the displayObject's bounds.
+     * Setting this will cause this shape to be checked in hit tests rather than the container's bounds.
      * @example
      * import { Rectangle, Sprite } from 'pixi.js';
      *
      * const sprite = new Sprite(texture);
      * sprite.interactive = true;
      * sprite.hitArea = new Rectangle(0, 0, 100, 100);
-     * @member {PIXI.IHitArea}
-     * @memberof PIXI.DisplayObject#
+     * @member {IHitArea}
+     * @memberof Container#
      */
     hitArea: null,
 
@@ -662,7 +655,7 @@ export const FederatedContainer: IFederatedContainer = {
      * Unlike `on` or `addListener` which are methods from EventEmitter, `addEventListener`
      * seeks to be compatible with the DOM's `addEventListener` with support for options.
      * **IMPORTANT:** _Only_ available if using the `@pixi/events` package.
-     * @memberof PIXI.DisplayObject
+     * @memberof Container
      * @param type - The type of event to listen to.
      * @param listener - The listener callback or object.
      * @param options - Listener options, used for capture phase.
@@ -711,7 +704,7 @@ export const FederatedContainer: IFederatedContainer = {
      * Unlike `off` or `removeListener` which are methods from EventEmitter, `removeEventListener`
      * seeks to be compatible with the DOM's `removeEventListener` with support for options.
      * **IMPORTANT:** _Only_ available if using the `@pixi/events` package.
-     * @memberof PIXI.DisplayObject
+     * @memberof Container
      * @param type - The type of event the listener is bound to.
      * @param listener - The listener callback or object.
      * @param options - The original listener options. This is required to deregister a capture phase listener.
@@ -733,14 +726,14 @@ export const FederatedContainer: IFederatedContainer = {
     },
 
     /**
-     * Dispatch the event on this {@link PIXI.DisplayObject} using the event's {@link PIXI.EventBoundary}.
+     * Dispatch the event on this {@link Container} using the event's {@link EventBoundary}.
      *
      * The target of the event is set to `this` and the `defaultPrevented` flag is cleared before dispatch.
      *
      * **IMPORTANT:** _Only_ available if using the `@pixi/events` package.
-     * @memberof PIXI.DisplayObject
+     * @memberof Container
      * @param e - The event to dispatch.
-     * @returns Whether the {@link PIXI.FederatedEvent.preventDefault preventDefault}() method was not invoked.
+     * @returns Whether the {@link FederatedEvent.preventDefault preventDefault}() method was not invoked.
      * @example
      * // Reuse a click event!
      * button.dispatchEvent(clickEvent);
@@ -749,7 +742,7 @@ export const FederatedContainer: IFederatedContainer = {
     {
         if (!(e instanceof FederatedEvent))
         {
-            throw new Error('DisplayObject cannot propagate events outside of the Federated Events API');
+            throw new Error('Container cannot propagate events outside of the Federated Events API');
         }
 
         e.defaultPrevented = false;

@@ -7,10 +7,7 @@ export class IGLUniformData
     public value: number | boolean | Float32Array | Int32Array | Uint32Array | boolean[];
 }
 
-/**
- * Helper class to create a WebGL Program
- * @memberof PIXI
- */
+/** Helper class to create a WebGL Program */
 export class GlProgramData
 {
     /** The shader program. */

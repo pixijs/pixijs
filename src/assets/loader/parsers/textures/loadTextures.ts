@@ -24,8 +24,7 @@ const validImageMIMEs = [
 
 /**
  * Configuration for the `loadTextures` loader plugin.
- * @memberof PIXI
- * @see PIXI.loadTextures
+ * @see loadTextures
  */
 export interface LoadTextureConfig
 {
@@ -91,7 +90,6 @@ export async function loadImageBitmap(url: string): Promise<ImageBitmap>
  *    crossOrigin: 'anonymous',
  * };
  * ```
- * @memberof PIXI
  */
 export const loadTextures = {
 

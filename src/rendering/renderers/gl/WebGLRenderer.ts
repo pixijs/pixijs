@@ -53,19 +53,24 @@ extensions.handleByNamedList(ExtensionType.WebGLPipesAdaptor, renderPipeAdaptors
 // add all the default systems as well as any user defined ones from the extensions
 extensions.add(...DefaultWebGLSystems, ...DefaultWebGLPipes, ...DefaultWebGLAdapters);
 
+/** The default WebGL renderer, uses WebGL2 contexts. */
 type WebGLSystems = ExtractSystemTypes<typeof DefaultWebGLSystems> &
 PixiMixins.RendererSystems &
 PixiMixins.WebGLSystems;
 
+/** The default WebGL renderer, uses WebGL2 contexts. */
 export type WebGLPipes = ExtractSystemTypes<typeof DefaultWebGLPipes> &
 PixiMixins.RendererPipes &
 PixiMixins.WebGLPipes;
 
-export type WebGLOptions = ExtractRendererOptions<typeof DefaultWebGLSystems> &
-PixiMixins.RendererOptions &
-PixiMixins.WebGLOptions;
+/** Options for WebGLRenderer. */
+export interface WebGLOptions extends ExtractRendererOptions<typeof DefaultWebGLSystems>,
+    PixiMixins.RendererOptions,
+    PixiMixins.WebGLOptions {}
 
+/** The default WebGL renderer, uses WebGL2 contexts. */
 export interface WebGLRenderer extends AbstractRenderer<WebGLPipes, WebGLOptions>, WebGLSystems {}
+/** The default WebGL renderer, uses WebGL2 contexts. */
 export class WebGLRenderer extends AbstractRenderer<WebGLPipes, WebGLOptions> implements WebGLSystems
 {
     public gl: GlRenderingContext;
