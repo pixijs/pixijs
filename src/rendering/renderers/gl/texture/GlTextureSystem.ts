@@ -5,6 +5,7 @@ import { Texture } from '../../shared/texture/Texture';
 import { GlTexture } from './GlTexture';
 import { glUploadBufferImageResource } from './uploaders/glUploadBufferImageResource';
 import { glUploadImageResource } from './uploaders/glUploadImageResource';
+import { glUploadVideoResource } from './uploaders/glUploadVideoResource';
 import { mapFormatToGlFormat } from './utils/mapFormatToGlFormat';
 import { mapFormatToGlInternalFormat } from './utils/mapFormatToGlInternalFormat';
 import { mapFormatToGlType } from './utils/mapFormatToGlType';
@@ -54,7 +55,8 @@ export class GlTextureSystem implements System, CanvasGenerator
 
     private readonly _uploads: Record<string, GLTextureUploader> = {
         image: glUploadImageResource,
-        buffer: glUploadBufferImageResource
+        buffer: glUploadBufferImageResource,
+        video: glUploadVideoResource,
     };
 
     private _gl: GlRenderingContext;

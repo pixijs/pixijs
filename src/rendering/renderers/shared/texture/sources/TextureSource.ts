@@ -36,6 +36,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     unload: TextureSource;
     destroy: TextureSource;
     resize: TextureSource;
+    error: Error;
 }> implements BindableTexture, BindResource
 {
     public static defaultOptions: TextureSourceOptions = {

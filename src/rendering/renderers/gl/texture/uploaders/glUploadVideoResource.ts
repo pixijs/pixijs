@@ -1,16 +1,31 @@
-import type { CanvasSource } from '../../../shared/texture/sources/CanvasSource';
-import type { ImageSource } from '../../../shared/texture/sources/ImageSource';
 import type { VideoSource } from '../../../shared/texture/sources/VideoSource';
 import type { GlRenderingContext } from '../../context/GlRenderingContext';
 import type { GlTexture } from '../GlTexture';
 import type { GLTextureUploader } from './GLTextureUploader';
 
-export const glUploadImageResource = {
+export const glUploadVideoResource = {
 
-    id: 'image',
+    id: 'video',
 
-    upload(source: ImageSource | CanvasSource | VideoSource, glTexture: GlTexture, gl: GlRenderingContext)
+    upload(source: VideoSource, glTexture: GlTexture, gl: GlRenderingContext)
     {
+        if (!source.isValid)
+        {
+            gl.texImage2D(
+                glTexture.target,
+                0,
+                glTexture.internalFormat,
+                1,
+                1,
+                0,
+                glTexture.format,
+                glTexture.type,
+                null
+            );
+
+            return;
+        }
+
         gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, !(source.alphaMode === 0));
 
         const glWidth = glTexture.width;
@@ -19,8 +34,8 @@ export const glUploadImageResource = {
         const textureWidth = source.pixelWidth;
         const textureHeight = source.pixelHeight;
 
-        const resourceWidth = source.resource.width;
-        const resourceHeight = source.resource.height;
+        const resourceWidth = source.resource.videoWidth;
+        const resourceHeight = source.resource.videoHeight;
 
         if (resourceWidth < textureWidth || resourceHeight < textureHeight)
         {

@@ -4,6 +4,6 @@ import type { GlTexture } from '../GlTexture';
 
 export interface GLTextureUploader
 {
-    type: string;
+    id: string;
     upload(source: TextureSource, glTexture: GlTexture, gl: GlRenderingContext): void;
 }
