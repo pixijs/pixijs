@@ -7,6 +7,7 @@ describe('Paths', () =>
         expect(path.toPosix('C:\\foo\\bar')).toBe('C:/foo/bar');
         expect(path.toPosix('C:\\foo\\bar/')).toBe('C:/foo/bar/');
         expect(path.toPosix('C:\\foo/bar')).toBe('C:/foo/bar');
+
         expect(path.toPosix('foo\\bar')).toBe('foo/bar');
         expect(path.toPosix('foo\\bar/baz')).toBe('foo/bar/baz');
     });
@@ -18,13 +19,17 @@ describe('Paths', () =>
         expect(path.isUrl('http://foo.com/bar/baz')).toBe(true);
         expect(path.isUrl('https://foo.com/bar/baz')).toBe(true);
         expect(path.isUrl('https://foo.com/bar/baz/')).toBe(true);
+
         expect(path.isUrl('file:///foo/bar/baz')).toBe(false);
+        expect(path.isUrl('data:text/plain;base64,SGVsbG8sIFdvcmxkIQ==')).toBe(false);
+        expect(path.isUrl('blob:http://example.com/00000000-0000-0000-0000-000000000000')).toBe(false);
+        expect(path.isUrl('blob:https://example.com/00000000-0000-0000-0000-000000000000')).toBe(false);
+        expect(path.isUrl('C:/foo/bar')).toBe(false);
+        expect(path.isUrl('C:\\foo\\bar')).toBe(false);
         expect(path.isUrl('//foo.com')).toBe(false);
         expect(path.isUrl('foo.com')).toBe(false);
         expect(path.isUrl('/foo.com')).toBe(false);
         expect(path.isUrl('foo/bar')).toBe(false);
-        expect(path.isUrl('C:/foo/bar')).toBe(false);
-        expect(path.isUrl('C:\\foo\\bar')).toBe(false);
     });
 
     it('should check if a path contains a protocol', () =>
@@ -33,6 +38,9 @@ describe('Paths', () =>
         expect(path.hasProtocol('https://foo.com')).toBe(true);
         expect(path.hasProtocol('https://foo.com/')).toBe(true);
         expect(path.hasProtocol('file:///foo/bar/baz')).toBe(true);
+        expect(path.hasProtocol('data:text/plain;base64,SGVsbG8sIFdvcmxkIQ==')).toBe(true);
+        expect(path.hasProtocol('blob:http://example.com/00000000-0000-0000-0000-000000000000')).toBe(true);
+        expect(path.hasProtocol('blob:https://example.com/00000000-0000-0000-0000-000000000000')).toBe(true);
         expect(path.hasProtocol('C:/foo/bar')).toBe(true);
         expect(path.hasProtocol('C:\\foo\\bar')).toBe(true);
 
@@ -48,6 +56,9 @@ describe('Paths', () =>
         expect(path.getProtocol('https://foo.com')).toBe('https://');
         expect(path.getProtocol('https://foo.com/')).toBe('https://');
         expect(path.getProtocol('file:///foo/bar/baz')).toBe('file:///');
+        expect(path.getProtocol('data:text/plain;base64,SGVsbG8sIFdvcmxkIQ==')).toBe('data:');
+        expect(path.getProtocol('blob:http://example.com/00000000-0000-0000-0000-000000000000')).toBe('blob:');
+        expect(path.getProtocol('blob:https://example.com/00000000-0000-0000-0000-000000000000')).toBe('blob:');
         expect(path.getProtocol('C:/foo/bar')).toBe('C:/');
         expect(path.getProtocol('C:\\foo\\bar')).toBe('C:/');
         expect(path.getProtocol('/foo/bar/baz')).toBe('');
@@ -56,15 +67,19 @@ describe('Paths', () =>
 
     it('should state if a path is absolute or not', () =>
     {
-        expect(path.isAbsolute('/foo/bar')).toBe(true);
-        expect(path.isAbsolute('/foo/bar/')).toBe(true);
-        expect(path.isAbsolute('C:\\foo\\bar')).toBe(true);
-        expect(path.isAbsolute('C:/foo/bar')).toBe(true);
-        expect(path.isAbsolute('C:/foo/bar/')).toBe(true);
         expect(path.isAbsolute('http://foo.com/bar/baz')).toBe(true);
         expect(path.isAbsolute('https://foo.com/bar/baz')).toBe(true);
         expect(path.isAbsolute('https://foo.com/bar/baz/')).toBe(true);
         expect(path.isAbsolute('file:///foo/bar/baz')).toBe(true);
+        expect(path.isAbsolute('data:text/plain;base64,SGVsbG8sIFdvcmxkIQ==')).toBe(true);
+        expect(path.isAbsolute('blob:http://example.com/00000000-0000-0000-0000-000000000000')).toBe(true);
+        expect(path.isAbsolute('blob:https://example.com/00000000-0000-0000-0000-000000000000')).toBe(true);
+        expect(path.isAbsolute('C:\\foo\\bar')).toBe(true);
+        expect(path.isAbsolute('C:/foo/bar')).toBe(true);
+        expect(path.isAbsolute('C:/foo/bar/')).toBe(true);
+        expect(path.isAbsolute('/foo/bar')).toBe(true);
+        expect(path.isAbsolute('/foo/bar/')).toBe(true);
+
         expect(path.isAbsolute('foo/bar')).toBe(false);
         expect(path.isAbsolute('foo/bar/')).toBe(false);
         expect(path.isAbsolute('foo\\bar')).toBe(false);
@@ -80,11 +95,17 @@ describe('Paths', () =>
         expect(path.normalize('https://foo.com/../../bar/baz//file')).toBe('https://foo.com/bar/baz/file');
         expect(path.normalize('https://foo.com/../../../../../bar/baz//file')).toBe('https://foo.com/bar/baz/file');
         expect(path.normalize('file:///foo/../../../../../bar/baz//file')).toBe('file:///bar/baz/file');
-        expect(path.normalize('C:/foo/../../../../../bar/baz//file')).toBe('C:/bar/baz/file');
-        expect(path.normalize('/foo/../../../../../bar/baz//file')).toBe('/bar/baz/file');
         expect(path.normalize('file:///foo/bar/baz//file')).toBe('file:///foo/bar/baz/file');
+        expect(path.normalize('data:text/plain;base64,SGVsbG8sIFdvcmxkIQ=='))
+            .toBe('data:text/plain;base64,SGVsbG8sIFdvcmxkIQ==');
+        expect(path.normalize('blob:http://example.com/00000000-0000-0000-0000-000000000000'))
+            .toBe('blob:http://example.com/00000000-0000-0000-0000-000000000000');
+        expect(path.normalize('blob:https://example.com/00000000-0000-0000-0000-000000000000'))
+            .toBe('blob:https://example.com/00000000-0000-0000-0000-000000000000');
+        expect(path.normalize('C:/foo/../../../../../bar/baz//file')).toBe('C:/bar/baz/file');
         expect(path.normalize('C:\\foo\\bar\\baz\\file')).toBe('C:/foo/bar/baz/file');
         expect(path.normalize('C:/foo\\bar\\baz\\file')).toBe('C:/foo/bar/baz/file');
+        expect(path.normalize('/foo/../../../../../bar/baz//file')).toBe('/bar/baz/file');
         expect(path.normalize('/foo/bar/baz/file')).toBe('/foo/bar/baz/file');
         expect(path.normalize('foo')).toBe('foo');
     });
@@ -268,6 +289,12 @@ describe('Paths', () =>
 
         // url is already absolute
         expect(path.toAbsolute('http://example.com/browser.png')).toEqual(`http://example.com/browser.png`);
+        expect(path.toAbsolute('data:text/plain;base64,SGVsbG8sIFdvcmxkIQ=='))
+            .toBe('data:text/plain;base64,SGVsbG8sIFdvcmxkIQ==');
+        expect(path.toAbsolute('blob:http://example.com/00000000-0000-0000-0000-000000000000'))
+            .toBe('blob:http://example.com/00000000-0000-0000-0000-000000000000');
+        expect(path.toAbsolute('blob:https://example.com/00000000-0000-0000-0000-000000000000'))
+            .toBe('blob:https://example.com/00000000-0000-0000-0000-000000000000');
         expect(path.toAbsolute('C:/windows.png')).toEqual(`C:/windows.png`);
         expect(path.toAbsolute('C:\\windows.png')).toEqual(`C:/windows.png`);
     });
