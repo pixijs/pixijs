@@ -89,7 +89,7 @@ export class VideoSource extends TextureSource<VideoResource>
     {
         this.resource.addEventListener('play', this._onPlay);
         this.resource.addEventListener('pause', this._onPause);
-        this.resource.addEventListener('end', this._onEnd);
+        this.resource.addEventListener('ended', this._onEnd);
     }
 
     private readonly _onPlay = (): void =>
