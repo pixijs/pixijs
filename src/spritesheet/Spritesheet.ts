@@ -6,10 +6,7 @@ import type { TextureSource } from '../rendering/renderers/shared/texture/source
 import type { BindableTexture } from '../rendering/renderers/shared/texture/Texture';
 import type { Dict } from '../utils/types';
 
-/**
- * Represents the JSON data for a spritesheet atlas.
- * @memberof PIXI
- */
+/** Represents the JSON data for a spritesheet atlas. */
 export interface SpritesheetFrameData
 {
     frame: {
@@ -34,10 +31,7 @@ export interface SpritesheetFrameData
     // borders?: ITextureBorders;
 }
 
-/**
- * Atlas format.
- * @memberof PIXI
- */
+/** Atlas format. */
 export interface SpritesheetData
 {
     frames: Dict<SpritesheetFrameData>;
@@ -147,10 +141,9 @@ export interface SpritesheetData
  * ```
  * Sprite sheets can be packed using tools like {@link https://codeandweb.com/texturepacker|TexturePacker},
  * {@link https://renderhjs.net/shoebox/|Shoebox} or {@link https://github.com/krzysztof-o/spritesheet.js|Spritesheet.js}.
- * Default anchor points (see {@link PIXI.Texture#defaultAnchor}), default 9-slice borders
- * (see {@link PIXI.Texture#defaultBorders}) and grouping of animation sprites are currently only
+ * Default anchor points (see {@link Texture#defaultAnchor}), default 9-slice borders
+ * (see {@link Texture#defaultBorders}) and grouping of animation sprites are currently only
  * supported by TexturePacker.
- * @memberof PIXI
  */
 export class Spritesheet<S extends SpritesheetData = SpritesheetData>
 {
@@ -165,7 +158,7 @@ export class Spritesheet<S extends SpritesheetData = SpritesheetData>
 
     /**
      * A map containing all textures of the sprite sheet.
-     * Can be used to create a {@link PIXI.Sprite|Sprite}:
+     * Can be used to create a {@link Sprite|Sprite}:
      * @example
      * import { Sprite } from 'pixi.js';
      *
@@ -175,7 +168,7 @@ export class Spritesheet<S extends SpritesheetData = SpritesheetData>
 
     /**
      * A map containing the textures for each animation.
-     * Can be used to create an {@link PIXI.AnimatedSprite|AnimatedSprite}:
+     * Can be used to create an {@link AnimatedSprite|AnimatedSprite}:
      * @example
      * import { AnimatedSprite } from 'pixi.js';
      *
@@ -249,7 +242,7 @@ export class Spritesheet<S extends SpritesheetData = SpritesheetData>
     /**
      * Parser spritesheet from loaded data. This is done asynchronously
      * to prevent creating too many Texture within a single process.
-     * @method PIXI.Spritesheet#parse
+     * @method Spritesheet#parse
      */
     public parse(): Promise<Record<string, Texture>>
     {

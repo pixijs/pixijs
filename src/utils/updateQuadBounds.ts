@@ -26,20 +26,20 @@ export function updateQuadBounds(
         const sourceWidth = textureSourceWidth * trim.width;
         const sourceHeight = textureSourceHeight * trim.height;
 
-        bounds[1] = (trim.x * textureSourceWidth) - (anchor._x * width) - padding;
-        bounds[0] = bounds[1] + sourceWidth;
+        bounds[0] = (trim.x * textureSourceWidth) - (anchor._x * width) - padding;
+        bounds[1] = bounds[0] + sourceWidth;
 
-        bounds[3] = (trim.y * textureSourceHeight) - (anchor._y * height) - padding;
-        bounds[2] = bounds[3] + sourceHeight;
+        bounds[2] = (trim.y * textureSourceHeight) - (anchor._y * height) - padding;
+        bounds[3] = bounds[2] + sourceHeight;
     }
 
     else
     {
-        bounds[1] = (-anchor._x * width) - padding;
-        bounds[0] = bounds[1] + width;
+        bounds[0] = (-anchor._x * width) - padding;
+        bounds[1] = bounds[0] + width;
 
-        bounds[3] = (-anchor._y * height) - padding;
-        bounds[2] = bounds[3] + height;
+        bounds[2] = (-anchor._y * height) - padding;
+        bounds[3] = bounds[2] + height;
     }
 
     return;

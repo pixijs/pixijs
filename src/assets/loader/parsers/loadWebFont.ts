@@ -21,10 +21,7 @@ const validFontMIMEs = [
     'font/woff2',
 ];
 
-/**
- * Loader plugin for handling web fonts
- * @memberof PIXI
- */
+/** Loader plugin for handling web fonts */
 export type LoadFontData = {
     family: string;
     display: string;

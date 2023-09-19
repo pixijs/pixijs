@@ -11,9 +11,9 @@ let promise: Promise<ALPHA_MODES> | undefined;
  * the upload behavior by uploading a white 2x2 webm with 50% alpha
  * without `UNPACK_PREMULTIPLY_ALPHA_WEBGL` and then checking whether
  * the uploaded pixels are premultiplied.
- * @memberof PIXI.utils
+ * @memberof utils
  * @function detectVideoAlphaMode
- * @returns {Promise<PIXI.ALPHA_MODES>} The correct alpha mode for video textures.
+ * @returns {Promise<ALPHA_MODES>} The correct alpha mode for video textures.
  */
 export async function detectVideoAlphaMode(): Promise<ALPHA_MODES>
 {

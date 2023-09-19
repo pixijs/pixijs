@@ -14,10 +14,9 @@ const tempMat = new Matrix();
  *
  * Takes track of Texture changes through `_lastTextureID` private field.
  * Use `update()` method call to track it from outside.
- * @see PIXI.Texture
- * @see PIXI.Mesh
- * @see PIXI.TilingSprite
- * @memberof PIXI
+ * @see Texture
+ * @see Mesh
+ * @see TilingSprite
  */
 export class TextureMatrix
 {

@@ -4,7 +4,7 @@ let supported: boolean | undefined;
 
 /**
  * Helper for checking for WebGL support.
- * @memberof PIXI.utils
+ * @memberof utils
  * @function isWebGLSupported
  * @returns {boolean} Is WebGL supported.
  */

@@ -40,7 +40,6 @@ export interface NineSliceSpriteOptions extends ContainerOptions<MeshView<NineSl
  * import { NineSlicePlane, Texture } from 'pixi.js';
  *
  * const plane9 = new NineSlicePlane(Texture.from('BoxWithRoundedCorners.png'), 15, 15, 15, 15);
- * @memberof PIXI
  */
 export class NineSliceSprite extends Container<MeshView<NineSliceGeometry>>
 {

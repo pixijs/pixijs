@@ -20,8 +20,8 @@ export type GenerateTextureOptions =
     /** The container to generate the texture from */
     target: Container;
     /**
-     * The region of the displayObject, that shall be rendered,
-     * if no region is specified, defaults to the local bounds of the displayObject.
+     * The region of the container, that shall be rendered,
+     * if no region is specified, defaults to the local bounds of the container.
      */
     frame?: Rectangle;
 
@@ -37,10 +37,7 @@ const tempRect = new Rectangle();
 const tempBounds = new Bounds();
 const noColor: ColorSource = [0, 0, 0, 0];
 
-/**
- * System that manages the generation of textures from the renderer.
- * @memberof PIXI
- */
+/** System that manages the generation of textures from the renderer. */
 export class GenerateTextureSystem implements System
 {
     /** @ignore */
@@ -61,11 +58,11 @@ export class GenerateTextureSystem implements System
 
     /**
      * A Useful function that returns a texture of the display object that can then be used to create sprites
-     * This can be quite useful if your displayObject is complicated and needs to be reused multiple times.
+     * This can be quite useful if your container is complicated and needs to be reused multiple times.
      * @param {GenerateTextureOptions | Container} options - Generate texture options.
      * @param {Container} [options.container] - If not given, the renderer's resolution is used.
-     * @param {PIXI.Rectangle} options.region - The region of the displayObject, that shall be rendered,
-     *        if no region is specified, defaults to the local bounds of the displayObject.
+     * @param {Rectangle} options.region - The region of the container, that shall be rendered,
+     *        if no region is specified, defaults to the local bounds of the container.
      * @param {GenerateTextureSourceOptions} [options.textureSourceOptions] - Texture options for GPU.
      * @returns a shiny new texture of the container passed in
      */

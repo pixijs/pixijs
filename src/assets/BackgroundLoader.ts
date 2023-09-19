@@ -1,10 +1,7 @@
 import type { Loader } from './loader/Loader';
 import type { ResolvedAsset } from './types';
 
-/**
- * Quietly Loads assets in the background.
- * @memberof PIXI
- */
+/** Quietly Loads assets in the background. */
 export class BackgroundLoader
 {
     /** Whether or not the loader should continue loading. */

@@ -34,7 +34,6 @@ export type ExtractOptions = BaseExtractOptions | ExtractImageOptions | ExtractD
 /**
  * System plugin to the renderer to manage texture garbage collection on the GPU,
  * ensuring that it does not get clogged up with textures that are no longer being used.
- * @memberof PIXI
  */
 export class ExtractSystem implements System
 {

@@ -9,10 +9,7 @@ import type { GlRenderingContext } from '../context/GlRenderingContext';
 import type { WebGLRenderer } from '../WebGLRenderer';
 import type { GlProgram } from './GlProgram';
 
-/**
- * System plugin to the renderer to manage shaders.
- * @memberof PIXI
- */
+/** System plugin to the renderer to manage shaders. */
 export class GlUniformGroupSystem implements System
 {
     /** @ignore */

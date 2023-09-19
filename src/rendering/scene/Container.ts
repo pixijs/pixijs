@@ -170,7 +170,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
     public _scale: ObservablePoint = defaultScale;
 
     /**
-     * The pivot point of the displayObject that it rotates around.
+     * The pivot point of the container that it rotates around.
      * @internal
      */
     public _pivot: ObservablePoint = defaultPivot;
@@ -309,8 +309,8 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
      * Adds one or more children to the container.
      *
      * Multiple items can be added like so: `myContainer.addChild(thingOne, thingTwo, thingThree)`
-     * @param {...PIXI.Container} children - The Container(s) to add to the container
-     * @returns {PIXI.Container} - The first child that was added.
+     * @param {...Container} children - The Container(s) to add to the container
+     * @returns {Container} - The first child that was added.
      */
     public addChild<U extends Container[]>(...children: U): U[0]
     {
@@ -376,8 +376,8 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
 
     /**
      * Removes one or more children from the container.
-     * @param {...PIXI.Container} children - The Container(s) to remove
-     * @returns {PIXI.Container} The first child that was removed.
+     * @param {...Container} children - The Container(s) to remove
+     * @returns {Container} The first child that was removed.
      */
     public removeChild<U extends Container[]>(...children: U): U[0]
     {
@@ -543,7 +543,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
     /// ////// transform related stuff
 
     /**
-     * The position of the displayObject on the x axis relative to the local coordinates of the parent.
+     * The position of the container on the x axis relative to the local coordinates of the parent.
      * An alias to position.x
      */
     get x(): number
@@ -557,7 +557,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
     }
 
     /**
-     * The position of the displayObject on the y axis relative to the local coordinates of the parent.
+     * The position of the container on the y axis relative to the local coordinates of the parent.
      * An alias to position.y
      */
     get y(): number
@@ -860,5 +860,3 @@ Container.mixin(measureMixin);
 Container.mixin(effectsMixin);
 Container.mixin(findMixin);
 Container.mixin(sortMixin);
-
-export type DisplayObject<T extends View = View> = Container<T>;

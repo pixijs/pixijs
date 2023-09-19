@@ -16,7 +16,6 @@ import type { LayerGroup } from './LayerGroup';
 /**
  * The view system manages the main canvas that is attached to the DOM.
  * This main role is to deal with how the holding the view reference and dealing with how it is resized.
- * @memberof PIXI
  */
 
 export class LayerSystem implements System

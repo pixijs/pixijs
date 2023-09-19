@@ -14,7 +14,6 @@ import type { CacheParser } from './CacheParser';
  *
  * It is not intended that this class is created by developers - it is part of the Asset package.
  * This is the first major system of PixiJS' main Assets class.
- * @memberof PIXI
  * @class Cache
  */
 class CacheClass

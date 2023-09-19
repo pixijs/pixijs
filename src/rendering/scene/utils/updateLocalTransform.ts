@@ -13,7 +13,7 @@ export function updateLocalTransform(lt: Matrix, container: Container): void
     const px = pivot._x;
     const py = pivot._y;
 
-    // get the matrix values of the displayobject based on its this properties..
+    // get the matrix values of the container based on its this properties..
     lt.a = container._cx * sx;
     lt.b = container._sx * sx;
     lt.c = container._cy * sy;

@@ -11,9 +11,6 @@ export interface PlaneGeometryOptions
     verticesY?: number;
 }
 
-/**
- * @memberof PIXI
- */
 export class PlaneGeometry extends MeshGeometry
 {
     public static defaultOptions: PlaneGeometryOptions & MeshGeometryOptions = {

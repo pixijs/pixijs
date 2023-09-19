@@ -11,7 +11,6 @@ const tempPoints = [new Point(), new Point(), new Point(), new Point()];
 /**
  * Rectangle object is an area defined by its position, as indicated by its top-left corner
  * point (x, y) and by its width and its height.
- * @memberof PIXI
  */
 export class Rectangle implements ShapePrimitive
 {

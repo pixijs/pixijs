@@ -1,9 +1,6 @@
 type TypedArray = Float32Array | Uint32Array | Int32Array | Uint8Array;
 
-/**
- * Flexible wrapper around `ArrayBuffer` that also provides typed array views on demand.
- * @memberof PIXI
- */
+/** Flexible wrapper around `ArrayBuffer` that also provides typed array views on demand. */
 export class ViewableBuffer
 {
     public size: number;

@@ -3,7 +3,7 @@ import { settings } from '../../settings/settings';
 /**
  * Helper for checking for WebGPU support.
  * @param options
- * @memberof PIXI.utils
+ * @memberof utils
  * @function isWebGPUSupported
  * @returns Is WebGPU supported.
  */

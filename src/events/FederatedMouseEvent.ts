@@ -5,10 +5,7 @@ import type { PointData } from '../maths/PointData';
 import type { Container } from '../rendering/scene/Container';
 import type { PixiTouch } from './FederatedEvent';
 
-/**
- * A {@link PIXI.FederatedEvent} for mouse events.
- * @memberof PIXI
- */
+/** A {@link FederatedEvent} for mouse events. */
 export class FederatedMouseEvent extends FederatedEvent<
 MouseEvent | PointerEvent | PixiTouch
 > implements MouseEvent
@@ -44,13 +41,13 @@ MouseEvent | PointerEvent | PixiTouch
     public get clientY(): number { return this.client.y; }
 
     /**
-     * Alias for {@link PIXI.FederatedMouseEvent.clientX this.clientX}.
+     * Alias for {@link FederatedMouseEvent.clientX this.clientX}.
      * @readonly
      */
     get x(): number { return this.clientX; }
 
     /**
-     * Alias for {@link PIXI.FederatedMouseEvent.clientY this.clientY}.
+     * Alias for {@link FederatedMouseEvent.clientY this.clientY}.
      * @readonly
      */
     get y(): number { return this.clientY; }
@@ -86,7 +83,7 @@ MouseEvent | PointerEvent | PixiTouch
     get globalY(): number { return this.global.y; }
 
     /**
-     * The pointer coordinates in the renderer's {@link PIXI.Renderer.screen screen}. This has slightly
+     * The pointer coordinates in the renderer's {@link Renderer.screen screen}. This has slightly
      * different semantics than native PointerEvent screenX/screenY.
      */
     public screen: Point = new Point();
@@ -105,11 +102,11 @@ MouseEvent | PointerEvent | PixiTouch
 
     /**
      * This will return the local coordinates of the specified container for this InteractionData
-     * @param {PIXI.Container} container - The Container that you would like the local
+     * @param {Container} container - The Container that you would like the local
      *  coords off
-     * @param {PIXI.PointData} point - A Point object in which to store the value, optional (otherwise
+     * @param {PointData} point - A Point object in which to store the value, optional (otherwise
      *  will create a new point)
-     * @param {PIXI.PointData} globalPos - A Point object containing your custom global coords, optional
+     * @param {PointData} globalPos - A Point object containing your custom global coords, optional
      *  (otherwise will use the current global coords)
      * @returns - A point containing the coordinates of the InteractionData position relative
      *  to the Container

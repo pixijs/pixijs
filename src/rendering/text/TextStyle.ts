@@ -32,10 +32,7 @@ export type TextDropShadow = {
     distance: number;
 };
 
-/**
- * Generic interface for TextStyle options.
- * @memberof PIXI
- */
+/** Generic interface for TextStyle options. */
 export interface TextStyleOptions
 {
     /**
@@ -91,7 +88,6 @@ export interface TextStyleOptions
      * @type {'alphabetic'|'top'|'hanging'|'middle'|'ideographic'|'bottom'}
      */
     textBaseline?: TextStyleTextBaseline;
-    /** See {@link PIXI.TextStyle.trim} */
     trim?: false,
     /**
      * Determines whether newlines & spaces are collapsed or preserved "normal"
@@ -112,13 +108,13 @@ export class TextStyle extends EventEmitter<{
 {
     public static defaultTextStyle: TextStyleOptions = {
         /**
-         * See {@link PIXI.TextStyle.align}
+         * See {@link TextStyle.align}
          * @type {'left'|'center'|'right'|'justify'}
          */
         align: 'left',
-        /** See {@link PIXI.TextStyle.breakWords} */
+        /** See {@link TextStyle.breakWords} */
         breakWords: false,
-        /** See {@link PIXI.TextStyle.dropShadow} */
+        /** See {@link TextStyle.dropShadow} */
         dropShadow:  {
             alpha: 1,
             angle: Math.PI / 6,
@@ -127,63 +123,63 @@ export class TextStyle extends EventEmitter<{
             distance: 5,
         },
         /**
-         * See {@link PIXI.TextStyle.fill}
+         * See {@link TextStyle.fill}
          * @type {string|string[]|number|number[]|CanvasGradient|CanvasPattern}
          */
         fill: 'black',
         /**
-         * See {@link PIXI.TextStyle.fontFamily}
+         * See {@link TextStyle.fontFamily}
          * @type {string|string[]}
          */
         fontFamily: 'Arial',
         /**
-         * See {@link PIXI.TextStyle.fontSize}
+         * See {@link TextStyle.fontSize}
          * @type {number|string}
          */
         fontSize: 26,
         /**
-         * See {@link PIXI.TextStyle.fontStyle}
+         * See {@link TextStyle.fontStyle}
          * @type {'normal'|'italic'|'oblique'}
          */
         fontStyle: 'normal',
         /**
-         * See {@link PIXI.TextStyle.fontVariant}
+         * See {@link TextStyle.fontVariant}
          * @type {'normal'|'small-caps'}
          */
         fontVariant: 'normal',
         /**
-         * See {@link PIXI.TextStyle.fontWeight}
+         * See {@link TextStyle.fontWeight}
          * @type {'normal'|'bold'|'bolder'|'lighter'|'100'|'200'|'300'|'400'|'500'|'600'|'700'|'800'|'900'}
          */
         fontWeight: 'normal',
-        /** See {@link PIXI.TextStyle.leading} */
+        /** See {@link TextStyle.leading} */
         leading: 0,
-        /** See {@link PIXI.TextStyle.letterSpacing} */
+        /** See {@link TextStyle.letterSpacing} */
         letterSpacing: 0,
-        /** See {@link PIXI.TextStyle.lineHeight} */
+        /** See {@link TextStyle.lineHeight} */
         lineHeight: 0,
-        /** See {@link PIXI.TextStyle.padding} */
+        /** See {@link TextStyle.padding} */
         padding: 0,
         /**
-         * See {@link PIXI.TextStyle.stroke}
+         * See {@link TextStyle.stroke}
          * @type {string|number}
          */
         stroke: null,
         /**
-         * See {@link PIXI.TextStyle.textBaseline}
+         * See {@link TextStyle.textBaseline}
          * @type {'alphabetic'|'top'|'hanging'|'middle'|'ideographic'|'bottom'}
          */
         textBaseline: 'alphabetic',
-        /** See {@link PIXI.TextStyle.trim} */
+        /** See {@link TextStyle.trim} */
         trim: false,
         /**
-         * See {@link PIXI.TextStyle.whiteSpace}
+         * See {@link TextStyle.whiteSpace}
          * @type {'normal'|'pre'|'pre-line'}
          */
         whiteSpace: 'pre',
-        /** See {@link PIXI.TextStyle.wordWrap} */
+        /** See {@link TextStyle.wordWrap} */
         wordWrap: false,
-        /** See {@link PIXI.TextStyle.wordWrapWidth} */
+        /** See {@link TextStyle.wordWrapWidth} */
         wordWrapWidth: 100,
     };
 

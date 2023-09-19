@@ -9,10 +9,7 @@ export interface TransformOptions
     observer?: {onUpdate: (transform: Transform) => void}
 }
 
-/**
- * Transform that takes care about its versions.
- * @memberof PIXI
- */
+/** Transform that takes care about its versions. */
 export class Transform
 {
     /**
@@ -27,7 +24,7 @@ export class Transform
     /** The scale factor of the object. */
     public scale: ObservablePoint;
 
-    /** The pivot point of the displayObject that it rotates around. */
+    /** The pivot point of the container that it rotates around. */
     public pivot: ObservablePoint;
 
     /** The skew amount, on the x and y axis. */

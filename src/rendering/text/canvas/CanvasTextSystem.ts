@@ -98,8 +98,8 @@ export class CanvasTextSystem implements System
         texture.source.type = 'image';
         texture.source.resource = canvas;
 
-        texture.frameWidth = width;
-        texture.frameHeight = height;
+        texture.frameWidth = width / resolution;
+        texture.frameHeight = height / resolution;
 
         texture.source.update();
         texture.layout.updateUvs();

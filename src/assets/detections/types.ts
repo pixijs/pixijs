@@ -1,10 +1,6 @@
 import type { ExtensionMetadata } from '../../extensions/Extensions';
 
-/**
- * Format detection is useful for detecting feature support
- * on the current platform.
- * @memberof PIXI
- */
+/** Format detection is useful for detecting feature support on the current platform. */
 export interface FormatDetectionParser
 {
     /** Should be ExtensionType.DetectionParser */

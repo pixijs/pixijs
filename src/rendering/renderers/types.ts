@@ -1,9 +1,10 @@
 import type { WebGLOptions, WebGLPipes, WebGLRenderer } from './gl/WebGLRenderer';
 import type { WebGPUOptions, WebGPUPipes, WebGPURenderer } from './gpu/WebGPURenderer';
 
+/** A generic renderer. */
 export type Renderer = WebGLRenderer | WebGPURenderer;
 export type RenderPipes = WebGLPipes | WebGPUPipes;
-export type RendererOptions = WebGLOptions | WebGPUOptions;
+export interface RendererOptions extends WebGLOptions, WebGPUOptions {}
 
 /* eslint-disable @typescript-eslint/indent */
 /**

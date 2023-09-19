@@ -7,9 +7,8 @@ import type { EventSystem } from './EventSystem';
  * This class handles automatic firing of PointerEvents
  * in the case where the pointer is stationary for too long.
  * This is to ensure that hit-tests are still run on moving objects.
- * @memberof PIXI
  * @since 7.2.0
- * @see PIXI.EventsTicker
+ * @see EventsTicker
  */
 class EventsTickerClass
 {
@@ -117,7 +116,7 @@ class EventsTickerClass
      * Updates the state of interactive objects if at least {@link interactionFrequency}
      * milliseconds have passed since the last invocation.
      *
-     * Invoked by a throttled ticker update from {@link PIXI.Ticker.system}.
+     * Invoked by a throttled ticker update from {@link Ticker.system}.
      * @param ticker - The throttled ticker.
      */
     private _tickerUpdate(ticker: Ticker): void
@@ -139,8 +138,7 @@ class EventsTickerClass
  * This class handles automatic firing of PointerEvents
  * in the case where the pointer is stationary for too long.
  * This is to ensure that hit-tests are still run on moving objects.
- * @memberof PIXI
- * @type {PIXI.EventsTickerClass}
+ * @type {EventsTickerClass}
  * @since 7.2.0
  */
 export const EventsTicker = new EventsTickerClass();

@@ -12,7 +12,6 @@ function booleanArray(size: number): Array<boolean>
 
 /**
  * @method defaultValue
- * @memberof PIXI.glCore.shader
  * @param {string} type - Type of value
  * @param {number} size
  * @private

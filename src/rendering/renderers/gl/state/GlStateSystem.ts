@@ -13,10 +13,7 @@ const DEPTH_TEST = 3;
 const WINDING = 4;
 const DEPTH_MASK = 5;
 
-/**
- * System plugin to the renderer to manage WebGL state machines.
- * @memberof PIXI
- */
+/** System plugin to the renderer to manage WebGL state machines. */
 export class GlStateSystem implements System
 {
     /** @ignore */
@@ -41,7 +38,7 @@ export class GlStateSystem implements System
 
     /**
      * Blend mode
-     * @default PIXI.BLEND_MODES.NONE
+     * @default 'none'
      * @readonly
      */
     public blendMode: BLEND_MODES;

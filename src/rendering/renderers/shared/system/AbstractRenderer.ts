@@ -222,7 +222,7 @@ export class AbstractRenderer<PIPES, OPTIONS>
      * Measurements of the screen. (0, 0, screenWidth, screenHeight).
      *
      * Its safe to use as filterArea or hitArea for the whole stage.
-     * @member {PIXI.Rectangle}
+     * @member {Rectangle}
      */
     get screen(): Rectangle
     {

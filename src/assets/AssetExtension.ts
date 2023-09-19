@@ -7,7 +7,6 @@ import type { ResolveURLParser } from './resolver/types';
 /**
  * This developer convenience object allows developers to group
  * together the various asset parsers into a single object.
- * @memberof PIXI
  */
 interface AssetExtension<ASSET = any, META_DATA = any>
 {

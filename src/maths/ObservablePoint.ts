@@ -12,7 +12,6 @@ export interface Observer<T>
  * the position on the horizontal axis and `y` represents the position on the vertical axis.
  *
  * An `ObservablePoint` is a point that triggers a callback when the point's position is changed.
- * @memberof PIXI
  */
 export class ObservablePoint implements PointLike
 {

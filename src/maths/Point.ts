@@ -6,7 +6,6 @@ import type { PointLike } from './PointLike';
  * The Point object represents a location in a two-dimensional coordinate system, where `x` represents
  * the position on the horizontal axis and `y` represents the position on the vertical axis
  * @class
- * @memberof PIXI
  * @implements {PointLike}
  */
 export class Point implements PointLike
