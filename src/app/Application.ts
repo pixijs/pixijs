@@ -9,10 +9,7 @@ import type { DestroyOptions } from '../rendering/scene/destroyTypes';
 import type { ICanvas } from '../settings/adapter/ICanvas';
 import type { ResizePluginOptions } from './ResizePlugin';
 
-/**
- * Any plugin that's usable for Application should contain these methods.
- * @memberof PIXI
- */
+/** Any plugin that's usable for Application should contain these methods. */
 export interface ApplicationPlugin
 {
     /**
@@ -25,10 +22,7 @@ export interface ApplicationPlugin
     destroy(): void;
 }
 
-/**
- * Application options supplied to constructor.
- * @memberof PIXI
- */
+/** Application options supplied to constructor. */
 export interface ApplicationOptions extends AutoDetectOptions, PixiMixins.ApplicationOptions, ResizePluginOptions {}
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -52,7 +46,6 @@ export interface Application extends PixiMixins.Application {}
  * // ex, add display objects
  * app.stage.addChild(Sprite.from('something.png'));
  * @class
- * @memberof PIXI
  */
 export class Application<VIEW extends ICanvas = ICanvas>
 {
@@ -61,13 +54,13 @@ export class Application<VIEW extends ICanvas = ICanvas>
 
     /**
      * The root display container that's rendered.
-     * @member {PIXI.Container}
+     * @member {Container}
      */
     public stage: Container = new Container();
 
     /**
      * WebGL renderer if available, otherwise CanvasRenderer.
-     * @member {PIXI.Renderer}
+     * @member {Renderer}
      */
     public renderer: Renderer;
 
@@ -101,7 +94,7 @@ export class Application<VIEW extends ICanvas = ICanvas>
 
     /**
      * Reference to the renderer's canvas element.
-     * @member {PIXI.ICanvas}
+     * @member {ICanvas}
      * @readonly
      */
     get canvas(): VIEW
@@ -111,7 +104,7 @@ export class Application<VIEW extends ICanvas = ICanvas>
 
     /**
      * Reference to the renderer's screen rectangle. Its safe to use as `filterArea` or `hitArea` for the whole screen.
-     * @member {PIXI.Rectangle}
+     * @member {Rectangle}
      * @readonly
      */
     get screen(): Rectangle

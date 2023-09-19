@@ -1,7 +1,4 @@
-/**
- * Common interface for points. Both Point and ObservablePoint implement it
- * @memberof PIXI
- */
+/** Common interface for points. Both Point and ObservablePoint implement it */
 export interface PointData
 {
     /** X coord */

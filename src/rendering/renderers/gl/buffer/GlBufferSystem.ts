@@ -6,6 +6,8 @@ import { GlBuffer } from './GlBuffer';
 import type { Writeable } from '../../../../utils/types';
 import type { Buffer } from '../../shared/buffer/Buffer';
 import type { System } from '../../shared/system/System';
+// @ts-expect-error - used for jsdoc typedefs
+import type { Renderer } from '../../types';
 import type { GlRenderingContext } from '../context/GlRenderingContext';
 import type { WebGLRenderer } from '../WebGLRenderer';
 
@@ -22,9 +24,8 @@ import type { WebGLRenderer } from '../WebGLRenderer';
  *
  * This system will handle the binding of buffers to the GPU as well as uploading
  * them. With this system, you never need to work directly with GPU buffers, but instead work with
- * the PIXI.Buffer class.
+ * the Buffer class.
  * @class
- * @memberof PIXI
  */
 export class GlBufferSystem implements System
 {
@@ -45,7 +46,7 @@ export class GlBufferSystem implements System
     private _renderer: WebGLRenderer;
 
     /**
-     * @param {PIXI.Renderer} renderer - The renderer this System works for.
+     * @param {Renderer} renderer - The renderer this System works for.
      */
     constructor(renderer: WebGLRenderer)
     {
@@ -133,7 +134,7 @@ export class GlBufferSystem implements System
 
     /**
      * Will ensure the data in the buffer is uploaded to the GPU.
-     * @param {PIXI.Buffer} buffer - the buffer to update
+     * @param {Buffer} buffer - the buffer to update
      */
     public updateBuffer(buffer: Buffer): GlBuffer
     {

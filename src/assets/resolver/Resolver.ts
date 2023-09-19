@@ -67,7 +67,6 @@ export interface BundleIdentifierOptions
  *
  * It is not intended that this class is created by developers - its part of the Asset class
  * This is the third major system of PixiJS' main Assets class
- * @memberof PIXI
  */
 export class Resolver
 {

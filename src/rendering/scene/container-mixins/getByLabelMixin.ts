@@ -10,12 +10,12 @@ export interface GetByLabelMixin
 export const findMixin: Partial<Container> = {
     /**
      * @method getChildByName
-     * @memberof PIXI.Container#
+     * @memberof Container#
      * @deprecated since 8.0.0
-     * @see PIXI.Container#getChildByLabel
+     * @see Container#getChildByLabel
      * @param {string} name - Instance name.
      * @param {boolean}[deep=false] - Whether to search recursively
-     * @returns {PIXI.DisplayObject} The child with the specified name.
+     * @returns {Container} The child with the specified name.
      */
     getChildByName(name: string, deep = false): Container | null
     {
@@ -26,10 +26,10 @@ export const findMixin: Partial<Container> = {
      *
      * Recursive searches are done in a pre-order traversal.
      * @method getChildByLabel
-     * @memberof PIXI.Container#
+     * @memberof Container#
      * @param {string|RegExp} label - Instance label.
      * @param {boolean}[deep=false] - Whether to search recursively
-     * @returns {PIXI.DisplayObject} The child with the specified label.
+     * @returns {Container} The child with the specified label.
      */
     getChildByLabel(label: string | RegExp, deep = false): Container | null
     {
@@ -63,11 +63,11 @@ export const findMixin: Partial<Container> = {
     /**
      * Returns all children in the container with the specified label.
      * @method getChildrenByLabel
-     * @memberof PIXI.Container#
+     * @memberof Container#
      * @param {string|RegExp} label - Instance label.
      * @param {boolean}[deep=false] - Whether to search recursively
-     * @param {PIXI.Container[]} [out=[]] - The array to store matching children in.
-     * @returns {PIXI.Container[]} An array of children with the specified label.
+     * @param {Container[]} [out=[]] - The array to store matching children in.
+     * @returns {Container[]} An array of children with the specified label.
      */
     getChildrenByLabel(label: string | RegExp, deep = false, out = []): Container[]
     {

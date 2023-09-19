@@ -26,14 +26,13 @@ import { Sprite } from '../../sprite/shared/Sprite';
  * const animatedSprite = new AnimatedSprite(textureArray);
  * ```
  *
- * The more efficient and simpler way to create an animated sprite is using a {@link PIXI.Spritesheet}
+ * The more efficient and simpler way to create an animated sprite is using a {@link Spritesheet}
  * containing the animation definitions:
  * @example
  * import { AnimatedSprite, Assets } from 'pixi.js';
  *
  * const sheet = await Assets.load('assets/spritesheet.json');
  * animatedSprite = new AnimatedSprite(sheet.animations['image_sequence']);
- * @memberof PIXI
  */
 export class AnimatedSprite extends Sprite
 {
@@ -50,9 +49,9 @@ export class AnimatedSprite extends Sprite
     public loop: boolean;
 
     /**
-     * Update anchor to [Texture's defaultAnchor]{@link PIXI.Texture#defaultAnchor} when frame changes.
+     * Update anchor to [Texture's defaultAnchor]{@link Texture#defaultAnchor} when frame changes.
      *
-     * Useful with [sprite sheet animations]{@link PIXI.Spritesheet#animations} created with tools.
+     * Useful with [sprite sheet animations]{@link Spritesheet#animations} created with tools.
      * Changing anchor for each frame allows to pin sprite origin to certain moving feature
      * of the frame (e.g. left foot).
      *
@@ -94,13 +93,13 @@ export class AnimatedSprite extends Sprite
     private _durations: number[];
 
     /**
-     * `true` uses PIXI.Ticker.shared to auto update animation time.
+     * `true` uses Ticker.shared to auto update animation time.
      * @default true
      */
     private _autoUpdate: boolean;
 
     /**
-     * `true` if the instance is currently connected to PIXI.Ticker.shared to auto update animation time.
+     * `true` if the instance is currently connected to Ticker.shared to auto update animation time.
      * @default false
      */
     private _isConnectedToTicker: boolean;
@@ -112,7 +111,7 @@ export class AnimatedSprite extends Sprite
     private _previousFrame: number;
 
     /**
-     * @param textures - An array of {@link PIXI.Texture} or frame
+     * @param textures - An array of {@link Texture} or frame
      *  objects that make up the animation.
      * @param {boolean} [autoUpdate=true] - Whether to use Ticker.shared to auto update animation time.
      */
@@ -464,10 +463,10 @@ export class AnimatedSprite extends Sprite
     }
 }
 
-/** @memberof PIXI.AnimatedSprite */
+/** @memberof AnimatedSprite */
 export interface FrameObject
 {
-    /** The {@link PIXI.Texture} of the frame. */
+    /** The {@link Texture} of the frame. */
     texture: Texture;
 
     /** The duration of the frame, in milliseconds. */

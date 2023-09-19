@@ -54,7 +54,6 @@ const contextSettings: ICanvasRenderingContext2DSettings = {
  *     align: 'center',
  * });
  * const textMetrics = TextMetrics.measureText('Your text', style);
- * @memberof PIXI
  */
 export class CanvasTextMetrics
 {
@@ -129,7 +128,7 @@ export class CanvasTextMetrics
      * Checking that we can use modern canvas 2D API.
      *
      * Note: This is an unstable API, Chrome < 94 use `textLetterSpacing`, later versions use `letterSpacing`.
-     * @see PIXI.TextMetrics.experimentalLetterSpacing
+     * @see TextMetrics.experimentalLetterSpacing
      * @see https://developer.mozilla.org/en-US/docs/Web/API/ICanvasRenderingContext2D/letterSpacing
      * @see https://developer.chrome.com/origintrials/#/view_trial/3585991203293757441
      */
@@ -153,11 +152,11 @@ export class CanvasTextMetrics
      * New rendering behavior for letter-spacing which uses Chrome's new native API. This will
      * lead to more accurate letter-spacing results because it does not try to manually draw
      * each character. However, this Chrome API is experimental and may not serve all cases yet.
-     * @see PIXI.TextMetrics.experimentalLetterSpacingSupported
+     * @see TextMetrics.experimentalLetterSpacingSupported
      */
     public static experimentalLetterSpacing = false;
 
-    /** Cache of {@see PIXI.TextMetrics.FontMetrics} objects. */
+    /** Cache of {@see TextMetrics.FontMetrics} objects. */
     private static _fonts: Record<string, FontMetrics> = {};
 
     /** Cache of new line chars. */
@@ -200,7 +199,7 @@ export class CanvasTextMetrics
      * @param lineWidths - an array of the line widths for each line matched to `lines`
      * @param lineHeight - the measured line height for this style
      * @param maxLineWidth - the maximum line width for all measured lines
-     * @param {PIXI.IFontMetrics} fontProperties - the font properties object from TextMetrics.measureFont
+     * @param {FontMetrics} fontProperties - the font properties object from TextMetrics.measureFont
      */
     constructor(text: string, style: TextStyle, width: number, height: number, lines: string[], lineWidths: number[],
         lineHeight: number, maxLineWidth: number, fontProperties: FontMetrics)

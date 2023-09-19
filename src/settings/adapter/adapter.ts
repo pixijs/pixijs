@@ -5,7 +5,6 @@ import type { ICanvasRenderingContext2D } from './ICanvasRenderingContext2D';
  * This interface describes all the DOM dependent calls that Pixi makes throughout its codebase.
  * Implementations of this interface can be used to make sure Pixi will work in any environment,
  * such as browser, Web Workers, and Node.js.
- * @memberof PIXI
  */
 export interface Adapter
 {

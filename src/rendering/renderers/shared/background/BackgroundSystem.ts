@@ -9,25 +9,13 @@ import type { System } from '../system/System';
  */
 export interface BackgroundSystemOptions
 {
-    /**
-     * The background color used to clear the canvas. See {@link PIXI.ColorSource} for accepted color values.
-     * @memberof PIXI.WebGLOptions
-     */
+    /** The background color used to clear the canvas. See {@link ColorSource} for accepted color values. */
     backgroundColor: number; // TODO: ColorSource;
-    /**
-     * Alias for {@link PIXI.WebGLOptions.backgroundColor}
-     * @memberof PIXI.WebGLOptions
-     */
+    /** Alias for {@link WebGLOptions.backgroundColor} */
     background?: number; // TODO: ColorSource
-    /**
-     * Transparency of the background color, value from `0` (fully transparent) to `1` (fully opaque).
-     * @memberof PIXI.WebGLOptions
-     */
+    /** Transparency of the background color, value from `0` (fully transparent) to `1` (fully opaque). */
     backgroundAlpha: number;
-    /**
-     * Whether to clear the canvas before new render passes.
-     * @memberof PIXI.WebGLOptions
-     */
+    /** Whether to clear the canvas before new render passes. */
     clearBeforeRender: boolean;
 }
 
@@ -39,10 +27,7 @@ export const defaultBackgroundOptions = {
 
 type ColorObject = { r: number; g: number; b: number; a: number };
 
-/**
- * The background system manages the background color and alpha of the main view.
- * @memberof PIXI
- */
+/** The background system manages the background color and alpha of the main view. */
 export class BackgroundSystem implements System
 {
     /** @ignore */
@@ -59,17 +44,17 @@ export class BackgroundSystem implements System
     /** @ignore */
     public static defaultOptions: BackgroundSystemOptions = {
         /**
-         * {@link PIXI.WebGLOptions.backgroundAlpha}
+         * {@link WebGLOptions.backgroundAlpha}
          * @default 1
          */
         backgroundAlpha: 1,
         /**
-         * {@link PIXI.WebGLOptions.backgroundColor}
+         * {@link WebGLOptions.backgroundColor}
          * @default 0x000000
          */
         backgroundColor: 0x0,
         /**
-         * {@link PIXI.WebGLOptions.clearBeforeRender}
+         * {@link WebGLOptions.clearBeforeRender}
          * @default true
          */
         clearBeforeRender: true,

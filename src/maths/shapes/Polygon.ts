@@ -4,10 +4,7 @@ import type { SHAPE_PRIMITIVE } from '../const';
 import type { PointData } from '../PointData';
 import type { ShapePrimitive } from './ShapePrimitive';
 
-/**
- * A class to define a shape via user defined coordinates.
- * @memberof PIXI
- */
+/** A class to define a shape via user defined coordinates. */
 export class Polygon implements ShapePrimitive
 {
     /** An array of the points of this polygon. */
@@ -26,7 +23,7 @@ export class Polygon implements ShapePrimitive
     constructor(...points: PointData[] | number[]);
 
     /**
-     * @param {PIXI.PointData[]|number[]} points - This can be an array of Points
+     * @param {PointData[]|number[]} points - This can be an array of Points
      *  that form the polygon, a flat array of numbers that will be interpreted as [x,y, x,y, ...], or
      *  the arguments passed can be all the points of the polygon e.g.
      *  `new Polygon(new Point(), new Point(), ...)`, or the arguments passed can be flat

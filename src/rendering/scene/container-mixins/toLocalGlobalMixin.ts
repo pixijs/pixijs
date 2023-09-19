@@ -19,7 +19,7 @@ export const toLocalGlobalMixin: Partial<Container> = {
      * @param point - The optional point to write the global value to.
      * @param skipUpdate - Should we skip the update transform.
      * @returns - The updated point.
-     * @memberof PIXI.Container#
+     * @memberof Container#
      */
     getGlobalPosition(point: Point = new Point(), skipUpdate = false): Point
     {
@@ -43,7 +43,7 @@ export const toLocalGlobalMixin: Partial<Container> = {
      *  (otherwise will create a new Point).
      * @param skipUpdate - Should we skip the update transform.
      * @returns - A point object representing the position of this object.
-     * @memberof PIXI.Container#
+     * @memberof Container#
      */
     toGlobal<P extends PointData = Point>(position: PointData, point?: P, skipUpdate = false): P
     {
@@ -73,7 +73,7 @@ export const toLocalGlobalMixin: Partial<Container> = {
      *  (otherwise will create a new Point).
      * @param skipUpdate - Should we skip the update transform
      * @returns - A point object representing the position of this object
-     * @memberof PIXI.Container#
+     * @memberof Container#
      */
     toLocal<P extends PointData = Point>(position: PointData, from?: Container, point?: P, skipUpdate?: boolean): P
     {

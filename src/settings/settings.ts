@@ -19,7 +19,7 @@ interface Settings
  * // Use the native window resolution as the default resolution
  * // will support high-density displays when rendering
  * settings.RESOLUTION = window.devicePixelRatio;
- * @namespace PIXI.settings
+ * @namespace settings
  */
 const settings: Settings & Partial<PixiMixins.Settings> = {
     /**
@@ -30,9 +30,9 @@ const settings: Settings & Partial<PixiMixins.Settings> = {
      * By default the adapter is set to work in the browser. However you can create your own
      * by implementing the `IAdapter` interface. See `IAdapter` for more information.
      * @name ADAPTER
-     * @memberof PIXI.settings
-     * @type {PIXI.Adapter}
-     * @default PIXI.BrowserAdapter
+     * @memberof settings
+     * @type {Adapter}
+     * @default BrowserAdapter
      */
     ADAPTER: BrowserAdapter,
 
@@ -40,7 +40,7 @@ const settings: Settings & Partial<PixiMixins.Settings> = {
      * The prefix that denotes a URL is for a retina asset.
      * @static
      * @name RETINA_PREFIX
-     * @memberof PIXI.settings
+     * @memberof settings
      * @type {RegExp}
      * @default /@([0-9\.]+)x/
      * @example `@2x`
@@ -62,13 +62,13 @@ const settings: Settings & Partial<PixiMixins.Settings> = {
      * 1: Use the `pixi.js-legacy` package, which includes a Canvas renderer as a fallback in case high performance WebGL is
      *    not supported.
      *
-     * 2: Call `isWebGLSupported` (which if found in the PIXI.utils package) in your code before attempting to create a
+     * 2: Call `isWebGLSupported` (which if found in the utils package) in your code before attempting to create a
      *    PixiJS renderer, and show an error message to the user if the function returns false, explaining that their
      *    device & browser combination does not support high performance WebGL.
      *    This is a much better strategy than trying to create a PixiJS renderer and finding it then fails.
      * @static
      * @name FAIL_IF_MAJOR_PERFORMANCE_CAVEAT
-     * @memberof PIXI.settings
+     * @memberof settings
      * @type {boolean}
      * @default false
      */
@@ -78,7 +78,7 @@ const settings: Settings & Partial<PixiMixins.Settings> = {
      * Default resolution / device pixel ratio of the renderer.
      * @static
      * @name RESOLUTION
-     * @memberof PIXI.settings
+     * @memberof settings
      * @type {number}
      * @default 1
      */

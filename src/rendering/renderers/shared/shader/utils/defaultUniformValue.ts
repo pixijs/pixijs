@@ -1,6 +1,5 @@
 /**
  * @method defaultValue
- * @memberof PIXI.glCore.shader
  * @param {string} type - Type of value
  * @param {number} size
  * @private

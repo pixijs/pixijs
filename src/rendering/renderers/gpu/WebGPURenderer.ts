@@ -60,6 +60,7 @@ export type WebGPUPipes = ExtractSystemTypes<typeof DefaultWebGPUPipes> &
 PixiMixins.RendererPipes &
 PixiMixins.WebGPUPipes;
 
+/** Options for WebGPURenderer. */
 export type WebGPUOptions = ExtractRendererOptions<typeof DefaultWebGPUSystems> &
 PixiMixins.RendererOptions &
 PixiMixins.WebGPUOptions;

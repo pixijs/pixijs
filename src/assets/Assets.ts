@@ -16,14 +16,10 @@ export type ProgressCallback = (progress: number) => void;
 /**
  * Extensible preferences that can be used, for instance, when configuring loaders.
  * @since 7.2.0
- * @memberof PIXI
  */
 export interface AssetsPreferences extends LoadTextureConfig, PixiMixins.AssetsPreferences {}
 
-/**
- * Initialization options object for Asset Class.
- * @memberof PIXI
- */
+/** Initialization options object for Asset Class. */
 export interface AssetInitOptions
 {
     // basic...
@@ -69,7 +65,6 @@ export interface AssetInitOptions
 /**
  * A one stop shop for all Pixi resource management!
  * Super modern and easy to use, with enough flexibility to customize and do what you need!
- * @memberof PIXI
  * @namespace Assets
  *
  * Only one Asset Class exists accessed via the Global Asset object.
@@ -222,12 +217,12 @@ export class AssetsClass
     public resolver: Resolver;
     /**
      * The loader, loads stuff!
-     * @type {PIXI.AssetLoader}
+     * @type {Loader}
      */
     public loader: Loader;
     /**
      * The global cache of all assets within PixiJS
-     * @type {PIXI.Cache}
+     * @type {Cache}
      */
     public cache: typeof Cache;
 

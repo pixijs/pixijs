@@ -9,7 +9,6 @@ import type { ExtensionMetadata } from '../../extensions/Extensions';
  *
  * Useful if you want to add more than just a raw asset to the cache
  * (for example a spritesheet will want to make all its sub textures easily accessible in the cache)
- * @memberof PIXI
  */
 export interface CacheParser<T=any>
 {

@@ -59,7 +59,7 @@ export const measureMixin: Partial<Container> = {
     },
 
     /**
-     * Retrieves the local bounds of the displayObject as a Bounds object.
+     * Retrieves the local bounds of the container as a Bounds object.
      * @param rect - Optional rectangle to store the result of the bounds calculation.
      * @returns - The bounding area.
      */
@@ -71,7 +71,7 @@ export const measureMixin: Partial<Container> = {
     },
 
     /**
-     * Calculates and returns the (world) bounds of the display object as a [Rectangle]{@link PIXI.Rectangle}.
+     * Calculates and returns the (world) bounds of the display object as a [Rectangle]{@link Rectangle}.
      * @param skipUpdate - Setting to `true` will stop the transforms of the scene graph from
      *  being updated. This means the calculation returned MAY be out of date BUT will give you a
      *  nice performance boost.

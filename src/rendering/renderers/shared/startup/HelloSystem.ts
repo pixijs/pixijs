@@ -10,16 +10,10 @@ import type { System } from '../system/System';
  */
 export interface HelloSystemOptions
 {
-    /**
-     * Whether to log the version and type information of renderer to console.
-     * @memberof PIXI.RendererOptions
-     */
+    /** Whether to log the version and type information of renderer to console. */
     hello: boolean;
 }
-/**
- * A simple system responsible for initiating the renderer.
- * @memberof PIXI
- */
+/** A simple system responsible for initiating the renderer. */
 export class HelloSystem implements System<HelloSystemOptions>
 {
     /** @ignore */
@@ -36,7 +30,7 @@ export class HelloSystem implements System<HelloSystemOptions>
     /** @ignore */
     public static defaultOptions: HelloSystemOptions = {
         /**
-         * {@link PIXI.WebGLOptions.hello}
+         * {@link WebGLOptions.hello}
          * @default false
          */
         hello: false,

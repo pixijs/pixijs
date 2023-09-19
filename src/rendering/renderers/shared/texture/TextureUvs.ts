@@ -15,7 +15,6 @@ import type { Size } from '../../../../maths/Size';
  * | Bottom-Right | `(x2,y2)`   |
  * | Bottom-Left  | `(x3,y3)`   |
  * @protected
- * @memberof PIXI
  */
 export class TextureUvs
 {
@@ -63,7 +62,7 @@ export class TextureUvs
      * @protected
      * @param frame - The frame of the texture
      * @param baseFrame - The base frame of the texture
-     * @param rotate - Rotation of frame, see {@link PIXI.groupD8}
+     * @param rotate - Rotation of frame, see {@link groupD8}
      */
     public set(frame: Rectangle, baseFrame: Size, rotate: number): void
     {

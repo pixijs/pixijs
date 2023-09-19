@@ -9,7 +9,7 @@ export interface ResizePluginOptions
 {
     /**
      * Element to automatically resize stage to.
-     * @memberof PIXI.ApplicationOptions
+     * @memberof ApplicationOptions
      */
     resizeTo?: Window | HTMLElement;
 }
@@ -47,7 +47,7 @@ export class ResizePlugin
              * renderer's view element to match width and height.
              * @member {Window|HTMLElement}
              * @name resizeTo
-             * @memberof PIXI.Application#
+             * @memberof Application#
              */
             {
                 set(dom: Window | HTMLElement)
@@ -69,7 +69,7 @@ export class ResizePlugin
         /**
          * Resize is throttled, so it's safe to call this multiple times per frame and it'll
          * only be called once.
-         * @memberof PIXI.Application#
+         * @memberof Application#
          * @method queueResize
          * @private
          */
@@ -88,7 +88,7 @@ export class ResizePlugin
 
         /**
          * Cancel the resize queue.
-         * @memberof PIXI.Application#
+         * @memberof Application#
          * @method cancelResize
          * @private
          */
@@ -105,7 +105,7 @@ export class ResizePlugin
          * Execute an immediate resize on the renderer, this is not
          * throttled and can be expensive to call many times in a row.
          * Will resize only if `resizeTo` property is set.
-         * @memberof PIXI.Application#
+         * @memberof Application#
          * @method resize
          */
         this.resize = (): void =>

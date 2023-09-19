@@ -25,9 +25,9 @@ const tempLocalMapping = new Point();
  *
  * ## Root event boundary
  *
- * The {@link PIXI.EventSystem#rootBoundary rootBoundary} handles events coming from the &lt;canvas /&gt;.
- * {@link PIXI.EventSystem} handles the normalization from native {@link https://dom.spec.whatwg.org/#event Events}
- * into {@link PIXI.FederatedEvent FederatedEvents}. The rootBoundary then does the hit-testing and event dispatch
+ * The {@link EventSystem#rootBoundary rootBoundary} handles events coming from the &lt;canvas /&gt;.
+ * {@link EventSystem} handles the normalization from native {@link https://dom.spec.whatwg.org/#event Events}
+ * into {@link FederatedEvent FederatedEvents}. The rootBoundary then does the hit-testing and event dispatch
  * for the upstream normalized event.
  *
  * ## Additional event boundaries
@@ -74,7 +74,6 @@ const tempLocalMapping = new Point();
  *     }
  * }
  * ```
- * @memberof PIXI
  */
 export class EventBoundary
 {
@@ -99,7 +98,7 @@ export class EventBoundary
     public cursor: Cursor | string;
 
     /**
-     * This flag would emit `pointermove`, `touchmove`, and `mousemove` events on all DisplayObjects.
+     * This flag would emit `pointermove`, `touchmove`, and `mousemove` events on all Containers.
      *
      * The `moveOnAll` semantics mirror those of earlier versions of PixiJS. This was disabled in favor of
      * the Pointer Event API's approach.
@@ -112,9 +111,9 @@ export class EventBoundary
     /**
      * Maps event types to forwarding handles for them.
      *
-     * {@link PIXI.EventBoundary EventBoundary} provides mapping for "pointerdown", "pointermove",
+     * {@link EventBoundary EventBoundary} provides mapping for "pointerdown", "pointermove",
      * "pointerout", "pointerleave", "pointerover", "pointerup", and "pointerupoutside" by default.
-     * @see PIXI.EventBoundary#addEventMapping
+     * @see EventBoundary#addEventMapping
      */
     protected mappingTable: Record<string, Array<{
         fn: (e: FederatedEvent) => void,
@@ -123,7 +122,7 @@ export class EventBoundary
 
     /**
      * State object for mapping methods.
-     * @see PIXI.EventBoundary#trackingData
+     * @see EventBoundary#trackingData
      */
     protected mappingState: Record<string, any> = {
         trackingData: {}
@@ -131,8 +130,8 @@ export class EventBoundary
 
     /**
      * The event pool maps event constructors to an free pool of instances of those specific events.
-     * @see PIXI.EventBoundary#allocateEvent
-     * @see PIXI.EventBoundary#freeEvent
+     * @see EventBoundary#allocateEvent
+     * @see EventBoundary#freeEvent
      */
     protected eventPool: Map<typeof FederatedEvent, FederatedEvent[]> = new Map();
 
@@ -175,8 +174,8 @@ export class EventBoundary
      * Adds an event mapping for the event `type` handled by `fn`.
      *
      * Event mappings can be used to implement additional or custom events. They take an event
-     * coming from the upstream scene (or directly from the {@link PIXI.EventSystem}) and dispatch new downstream events
-     * generally trickling down and bubbling up to {@link PIXI.EventBoundary.rootTarget this.rootTarget}.
+     * coming from the upstream scene (or directly from the {@link EventSystem}) and dispatch new downstream events
+     * generally trickling down and bubbling up to {@link EventBoundary.rootTarget this.rootTarget}.
      *
      * To modify the semantics of existing events, the built-in mapping methods of EventBoundary should be overridden
      * instead.
@@ -265,7 +264,7 @@ export class EventBoundary
     }
 
     /**
-     * Propagate the passed event from from {@link PIXI.EventBoundary.rootTarget this.rootTarget} to its
+     * Propagate the passed event from from {@link EventBoundary.rootTarget this.rootTarget} to its
      * target {@code e.target}.
      * @param e - The event to propagate.
      * @param type
@@ -342,7 +341,7 @@ export class EventBoundary
     }
 
     /**
-     * Finds the propagation path from {@link PIXI.EventBoundary.rootTarget rootTarget} to the passed
+     * Finds the propagation path from {@link EventBoundary.rootTarget rootTarget} to the passed
      * {@code target}. The last element in the path is {@code target}.
      * @param target
      */
@@ -454,7 +453,7 @@ export class EventBoundary
     }
 
     /**
-     * Recursive implementation for {@link PIXI.EventBoundary.hitTest hitTest}.
+     * Recursive implementation for {@link EventBoundary.hitTest hitTest}.
      * @param currentTarget - The Container that is to be hit tested.
      * @param eventMode - The event mode for the `currentTarget` or one of its parents.
      * @param location - The location that is being tested for overlap.
@@ -464,7 +463,7 @@ export class EventBoundary
      *  cannot pass the hit test. It is used as a preliminary optimization to prune entire subtrees
      *  of the scene graph.
      * @returns An array holding the hit testing target and all its ancestors in order. The first element
-     *  is the target itself and the last is {@link PIXI.EventBoundary.rootTarget rootTarget}. This is the opposite
+     *  is the target itself and the last is {@link EventBoundary.rootTarget rootTarget}. This is the opposite
      *  order w.r.t. the propagation path. If no hit testing target is found, null is returned.
      */
     protected hitTestRecursive(
@@ -569,8 +568,8 @@ export class EventBoundary
     /**
      * Checks whether the container or any of its children cannot pass the hit test at all.
      *
-     * {@link PIXI.EventBoundary}'s implementation uses the {@link PIXI.Container.hitArea hitArea}
-     * and {@link PIXI.Container._mask} for pruning.
+     * {@link EventBoundary}'s implementation uses the {@link Container.hitArea hitArea}
+     * and {@link Container._mask} for pruning.
      * @param container
      * @param location
      */
@@ -611,11 +610,11 @@ export class EventBoundary
      * Checks whether the container passes hit testing for the given location.
      * @param container
      * @param location
-     * @returns - Whether `displayObject` passes hit testing for `location`.
+     * @returns - Whether `container` passes hit testing for `location`.
      */
     protected hitTestFn(container: Container, location: Point): boolean
     {
-        // If the displayObject is passive then it cannot be hit directly.
+        // If the container is passive then it cannot be hit directly.
         if (container.eventMode === 'passive')
         {
             return false;
@@ -1073,7 +1072,7 @@ export class EventBoundary
      * `pointerdown` target to `rootTarget`.
      *
      * (The most specific ancestor of the `pointerdown` event and the `pointerup` event must the
-     * `{@link PIXI.EventBoundary}'s root because the `pointerup` event occurred outside of the boundary.)
+     * `{@link EventBoundary}'s root because the `pointerup` event occurred outside of the boundary.)
      *
      * `touchendoutside`, `mouseupoutside`, and `rightupoutside` events are fired as well for specific pointer
      * types. The tracking data for the specific pointer is cleared of a `pressTarget`.
@@ -1176,7 +1175,7 @@ export class EventBoundary
     /**
      * Creates an event whose {@code originalEvent} is {@code from}, with an optional `type` and `target` override.
      *
-     * The event is allocated using {@link PIXI.EventBoundary#allocateEvent this.allocateEvent}.
+     * The event is allocated using {@link EventBoundary#allocateEvent this.allocateEvent}.
      * @param from - The {@code originalEvent} for the returned event.
      * @param [type=from.type] - The type of the returned event.
      * @param target - The target of the returned event.
@@ -1210,7 +1209,7 @@ export class EventBoundary
     /**
      * Creates a wheel event whose {@code originalEvent} is {@code from}.
      *
-     * The event is allocated using {@link PIXI.EventBoundary#allocateEvent this.allocateEvent}.
+     * The event is allocated using {@link EventBoundary#allocateEvent this.allocateEvent}.
      * @param from - The upstream wheel event.
      */
     protected createWheelEvent(from: FederatedWheelEvent): FederatedWheelEvent
@@ -1231,7 +1230,7 @@ export class EventBoundary
     /**
      * Clones the event {@code from}, with an optional {@code type} override.
      *
-     * The event is allocated using {@link PIXI.EventBoundary#allocateEvent this.allocateEvent}.
+     * The event is allocated using {@link EventBoundary#allocateEvent this.allocateEvent}.
      * @param from - The event to clone.
      * @param [type=from.type] - The type of the returned event.
      */
@@ -1255,7 +1254,7 @@ export class EventBoundary
     }
 
     /**
-     * Copies wheel {@link PIXI.FederatedWheelEvent} data from {@code from} into {@code to}.
+     * Copies wheel {@link FederatedWheelEvent} data from {@code from} into {@code to}.
      *
      * The following properties are copied:
      * + deltaMode
@@ -1274,7 +1273,7 @@ export class EventBoundary
     }
 
     /**
-     * Copies pointer {@link PIXI.FederatedPointerEvent} data from {@code from} into {@code to}.
+     * Copies pointer {@link FederatedPointerEvent} data from {@code from} into {@code to}.
      *
      * The following properties are copied:
      * + pointerId
@@ -1306,7 +1305,7 @@ export class EventBoundary
     }
 
     /**
-     * Copies mouse {@link PIXI.FederatedMouseEvent} data from {@code from} to {@code to}.
+     * Copies mouse {@link FederatedMouseEvent} data from {@code from} to {@code to}.
      *
      * The following properties are copied:
      * + altKey
@@ -1344,7 +1343,7 @@ export class EventBoundary
     }
 
     /**
-     * Copies base {@link PIXI.FederatedEvent} data from {@code from} into {@code to}.
+     * Copies base {@link FederatedEvent} data from {@code from} into {@code to}.
      *
      * The following properties are copied:
      * + isTrusted
@@ -1387,7 +1386,7 @@ export class EventBoundary
     }
 
     /**
-     * Allocate a specific type of event from {@link PIXI.EventBoundary#eventPool this.eventPool}.
+     * Allocate a specific type of event from {@link EventBoundary#eventPool this.eventPool}.
      *
      * This allocation is constructor-agnostic, as long as it only takes one argument - this event
      * boundary.
@@ -1418,7 +1417,7 @@ export class EventBoundary
      *
      * It is illegal to reuse the event until it is allocated again, using `this.allocateEvent`.
      *
-     * It is also advised that events not allocated from {@link PIXI.EventBoundary#allocateEvent this.allocateEvent}
+     * It is also advised that events not allocated from {@link EventBoundary#allocateEvent this.allocateEvent}
      * not be freed. This is because of the possibility that the same event is freed twice, which can cause
      * it to be allocated twice & result in overwriting.
      * @param event - The event to be freed.
@@ -1439,7 +1438,7 @@ export class EventBoundary
     }
 
     /**
-     * Similar to {@link PIXI.EventEmitter.emit}, except it stops if the `propagationImmediatelyStopped` flag
+     * Similar to {@link EventEmitter.emit}, except it stops if the `propagationImmediatelyStopped` flag
      * is set on the event.
      * @param e - The event to call each listener with.
      * @param type - The event key.

@@ -10,7 +10,7 @@ export interface TickerPluginOptions
      * Automatically starts the rendering after the construction.
      *  **Note**: Setting this parameter to `false` does NOT stop the shared ticker even if you set
      *  `options.sharedTicker` to `true` in case that it is already started. Stop it by your own.
-     * @memberof PIXI.ApplicationOptions
+     * @memberof ApplicationOptions
      * @default true
      */
     autoStart?: boolean;
@@ -18,7 +18,7 @@ export interface TickerPluginOptions
      * Set`true` to use `Ticker.shared`, `false` to create new ticker.
      *  If set to `false`, you cannot register a handler to occur before anything that runs on the shared ticker.
      *  The system ticker will always run before both the shared ticker and the app ticker.
-     * @memberof PIXI.ApplicationOptions
+     * @memberof ApplicationOptions
      * @default false
      */
     sharedTicker?: boolean;
@@ -27,7 +27,6 @@ export interface TickerPluginOptions
 /**
  * Middleware for for Application Ticker.
  * @class
- * @memberof PIXI
  */
 export class TickerPlugin
 {
@@ -77,7 +76,7 @@ export class TickerPlugin
         /**
          * Convenience method for stopping the render.
          * @method
-         * @memberof PIXI.Application
+         * @memberof Application
          * @instance
          */
         this.stop = (): void =>
@@ -88,7 +87,7 @@ export class TickerPlugin
         /**
          * Convenience method for starting the render.
          * @method
-         * @memberof PIXI.Application
+         * @memberof Application
          * @instance
          */
         this.start = (): void =>
@@ -98,19 +97,19 @@ export class TickerPlugin
 
         /**
          * Internal reference to the ticker.
-         * @type {PIXI.Ticker}
+         * @type {Ticker}
          * @name _ticker
-         * @memberof PIXI.Application#
+         * @memberof Application#
          * @private
          */
         this._ticker = null;
 
         /**
          * Ticker for doing render updates.
-         * @type {PIXI.Ticker}
+         * @type {Ticker}
          * @name ticker
-         * @memberof PIXI.Application#
-         * @default PIXI.Ticker.shared
+         * @memberof Application#
+         * @default Ticker.shared
          */
         this.ticker = options.sharedTicker ? Ticker.shared : new Ticker();
 

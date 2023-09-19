@@ -40,7 +40,6 @@
  *
  * myGame.update.emit(time);
  * ```
- * @memberof PIXI
  */
 export class SystemRunner
 {

@@ -14,7 +14,6 @@ import type { PointData } from './PointData';
  * | b | d | ty|
  * | 0 | 0 | 1 |
  * ```
- * @memberof PIXI
  */
 export class Matrix
 {
@@ -147,8 +146,8 @@ export class Matrix
      * Get a new position with the current transformation applied.
      * Can be used to go from a child's coordinate space to the world coordinate space. (e.g. rendering)
      * @param pos - The origin
-     * @param {PIXI.Point} [newPos] - The point that the new position is assigned to (allowed to be same as input)
-     * @returns {PIXI.Point} The new point, transformed through this matrix
+     * @param {Point} [newPos] - The point that the new position is assigned to (allowed to be same as input)
+     * @returns {Point} The new point, transformed through this matrix
      */
     public apply<P extends PointData = Point>(pos: PointData, newPos?: P): P
     {
@@ -167,8 +166,8 @@ export class Matrix
      * Get a new position with the inverse of the current transformation applied.
      * Can be used to go from the world coordinate space to a child's coordinate space. (e.g. input)
      * @param pos - The origin
-     * @param {PIXI.Point} [newPos] - The point that the new position is assigned to (allowed to be same as input)
-     * @returns {PIXI.Point} The new point, inverse-transformed through this matrix
+     * @param {Point} [newPos] - The point that the new position is assigned to (allowed to be same as input)
+     * @returns {Point} The new point, inverse-transformed through this matrix
      */
     public applyInverse<P extends PointData = Point>(pos: PointData, newPos?: P): P
     {

@@ -4,7 +4,6 @@ import type { Ticker, TickerCallback } from './Ticker';
  * Internal class for handling the priority sorting of ticker handlers.
  * @private
  * @class
- * @memberof PIXI
  */
 export class TickerListener<T = any>
 {

@@ -30,7 +30,7 @@ export class GpuStateSystem implements System
 
     /**
      * Blend mode
-     * @default PIXI.BLEND_MODES.NONE
+     * @default 'none'
      * @readonly
      */
     public blendMode: BLEND_MODES;
