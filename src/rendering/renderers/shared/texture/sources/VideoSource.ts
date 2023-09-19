@@ -395,6 +395,7 @@ export class VideoSource extends TextureSource<VideoResource>
         if (this.isValid)
         {
             this.isReady = true;
+
             this.resize(source.videoWidth, source.videoHeight);
             // this.width = source.videoWidth;
             // this.height = source.videoHeight;

@@ -34,39 +34,7 @@ export const glUploadVideoResource = {
         const textureWidth = source.pixelWidth;
         const textureHeight = source.pixelHeight;
 
-        const resourceWidth = source.resource.videoWidth;
-        const resourceHeight = source.resource.videoHeight;
-
-        if (resourceWidth < textureWidth || resourceHeight < textureHeight)
-        {
-            if (glWidth !== textureWidth || glHeight !== textureHeight)
-            {
-                gl.texImage2D(
-                    glTexture.target,
-                    0,
-                    glTexture.internalFormat,
-                    textureWidth,
-                    textureHeight,
-                    0,
-                    glTexture.format,
-                    glTexture.type,
-                    null
-                );
-            }
-
-            gl.texSubImage2D(
-                gl.TEXTURE_2D,
-                0,
-                0,
-                0,
-                resourceWidth,
-                resourceHeight,
-                glTexture.format,
-                glTexture.type,
-                source.resource as TexImageSource
-            );
-        }
-        else if (glWidth === textureWidth || glHeight === textureHeight)
+        if (glWidth === textureWidth || glHeight === textureHeight)
         {
             gl.texSubImage2D(
                 gl.TEXTURE_2D,
