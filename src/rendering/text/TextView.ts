@@ -1,7 +1,9 @@
 import { Cache } from '../../assets/cache/Cache';
 import { ObservablePoint } from '../../maths/ObservablePoint';
 import { emptyViewObserver } from '../renderers/shared/View';
+import { BitmapFont } from './bitmap/BitmapFont';
 import { BitmapFontManager } from './bitmap/BitmapFontManager';
+import { DynamicBitmapFont } from './bitmap/DynamicBitmapFont';
 import { CanvasTextMetrics } from './canvas/CanvasTextMetrics';
 import { measureHtmlText } from './html/utils/measureHtmlText.';
 import { HTMLTextStyle } from './HtmlTextStyle';
@@ -143,8 +145,8 @@ export class TextView implements View
 
         bounds.addFrame(
             _bounds[0],
-            _bounds[1],
             _bounds[2],
+            _bounds[1],
             _bounds[3],
         );
     }
@@ -185,6 +187,7 @@ export class TextView implements View
     {
         const bounds = this._bounds;
         const padding = this._style.padding;
+        const anchor = this.anchor;
 
         if (this.renderPipeId === 'bitmapText')
         {
@@ -192,28 +195,35 @@ export class TextView implements View
             const scale = bitmapMeasurement.scale;
             const offset = bitmapMeasurement.offsetY * scale;
 
-            bounds[0] = -padding;
-            bounds[1] = offset - padding;
-            bounds[2] = (bitmapMeasurement.width * scale) - padding;
-            bounds[3] = ((bitmapMeasurement.height * scale) + offset) - padding;
+            const width = bitmapMeasurement.width * scale;
+            const height = bitmapMeasurement.height * scale;
+
+            bounds[0] = (-anchor._x * width) - padding;
+            bounds[1] = bounds[0] + width;
+            bounds[2] = (-anchor._y * (height + offset)) - padding;
+            bounds[3] = bounds[2] + height;
         }
         else if (this.renderPipeId === 'htmlText')
         {
             const htmlMeasurement = measureHtmlText(this.text, this._style as HTMLTextStyle);
 
-            bounds[0] = -padding;
-            bounds[1] = -padding;
-            bounds[2] = htmlMeasurement.width - padding;
-            bounds[3] = htmlMeasurement.height - padding;
+            const { width, height } = htmlMeasurement;
+
+            bounds[0] = (-anchor._x * width) - padding;
+            bounds[1] = bounds[0] + width;
+            bounds[2] = (-anchor._y * height) - padding;
+            bounds[3] = bounds[2] + height;
         }
         else
         {
             const canvasMeasurement = CanvasTextMetrics.measureText(this.text, this._style);
 
-            bounds[0] = -padding;
-            bounds[1] = -padding;
-            bounds[2] = canvasMeasurement.width - padding;
-            bounds[3] = canvasMeasurement.height - padding;
+            const { width, height } = canvasMeasurement;
+
+            bounds[0] = (-anchor._x * width) - padding;
+            bounds[1] = bounds[0] + width;
+            bounds[2] = (-anchor._y * height) - padding;
+            bounds[3] = bounds[2] + height;
         }
     }
 
@@ -224,7 +234,14 @@ export class TextView implements View
             return 'html';
         }
 
-        return Cache.has(style?.fontFamily as string) ? 'bitmap' : 'canvas';
+        const fontData = Cache.get(style?.fontFamily as string);
+
+        if (fontData instanceof DynamicBitmapFont || fontData instanceof BitmapFont)
+        {
+            return 'bitmap';
+        }
+
+        return 'canvas';
     }
 
     /**

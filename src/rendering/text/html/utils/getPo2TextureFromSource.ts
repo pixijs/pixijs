@@ -32,8 +32,8 @@ export function getPo2TextureFromSource(image: HTMLImageElement | HTMLCanvasElem
     texture.source.type = 'image';
     texture.source.resource = image;
 
-    texture.frameWidth = image.width;
-    texture.frameHeight = image.height;
+    texture.frameWidth = image.width / resolution;
+    texture.frameHeight = image.height / resolution;
 
     texture.source.update();
     texture.layout.updateUvs();
