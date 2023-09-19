@@ -6,7 +6,7 @@ import type { AnyColor, HslaColor, HslColor, HsvaColor, HsvColor, RgbaColor, Rgb
 extend([namesPlugin]);
 
 /**
- * Value types for the constructor of {@link PIXI.Color}.
+ * Value types for the constructor of {@link Color}.
  * These types are extended from [colord](https://www.npmjs.com/package/colord) with some PixiJS-specific extensions.
  *
  * Possible value types are:
@@ -37,8 +37,7 @@ extend([namesPlugin]);
  *   `'hsl(0, 100%, 50%)'`, `'hsl(0deg 100% 50%)'`, `'hsla(0, 100%, 50%, 0.5)'`, `'hsla(0deg 100% 50% / 50%)'`, etc.
  * - HSV(A) objects:
  *   `{ h: 0, s: 100, v: 100 }`, `{ h: 0, s: 100, v: 100, a: 0.5 }`, etc.
- * - {@link PIXI.Color} objects.
- * @memberof PIXI
+ * - {@link Color} objects.
  * @since 7.2.0
  */
 export type ColorSource =
@@ -80,7 +79,6 @@ type ColorSourceTypedArray = Float32Array | Uint8Array | Uint8ClampedArray;
  * new Color({ h: 0, s: 100, l: 50, a: 0.5 }).toArray(); // [1, 0, 0, 0.5]
  * new Color('hsl(0, 100%, 50%, 50%)').toArray(); // [1, 0, 0, 0.5]
  * new Color({ h: 0, s: 100, v: 100, a: 0.5 }).toArray(); // [1, 0, 0, 0.5]
- * @memberof PIXI
  * @since 7.2.0
  */
 export class Color
@@ -114,7 +112,7 @@ export class Color
     private _int: number;
 
     /**
-     * @param {PIXI.ColorSource} value - Optional value to use, if not provided, white is used.
+     * @param {ColorSource} value - Optional value to use, if not provided, white is used.
      */
     constructor(value: ColorSource = 0xffffff)
     {
@@ -152,7 +150,7 @@ export class Color
     /**
      * Set the value, suitable for chaining
      * @param value
-     * @see PIXI.Color.value
+     * @see Color.value
      */
     public setValue(value: ColorSource): this
     {
@@ -173,10 +171,10 @@ export class Color
      * must be assignable to its setter's parameter type. Setting `value` to `null` will throw an `Error`.
      *
      * When getting:
-     * - A return value of `null` means the previous value was overridden (e.g., {@link PIXI.Color.multiply multiply},
-     *   {@link PIXI.Color.premultiply premultiply} or {@link PIXI.Color.round round}).
+     * - A return value of `null` means the previous value was overridden (e.g., {@link Color.multiply multiply},
+     *   {@link Color.premultiply premultiply} or {@link Color.round round}).
      * - Otherwise, the color source used when setting is returned.
-     * @type {PIXI.ColorSource}
+     * @type {ColorSource}
      */
     set value(value: ColorSource | null)
     {
@@ -189,7 +187,7 @@ export class Color
         }
         else if (value === null)
         {
-            throw new Error('Cannot set PIXI.Color#value to null');
+            throw new Error('Cannot set Color#value to null');
         }
         else if (this._value === null || !this._isSourceEqual(this._value, value))
         {
@@ -444,7 +442,7 @@ export class Color
     /**
      * Multiply with another color. This action is destructive, and will
      * override the previous `value` property to be `null`.
-     * @param {PIXI.ColorSource} value - The color to multiply by.
+     * @param {ColorSource} value - The color to multiply by.
      */
     public multiply(value: ColorSource): this
     {
@@ -466,7 +464,7 @@ export class Color
      * override the previous `value` property to be `null`.
      * @param alpha - The alpha to multiply by.
      * @param {boolean} [applyToRGB=true] - Whether to premultiply RGB channels.
-     * @returns {PIXI.Color} - Itself.
+     * @returns {Color} - Itself.
      */
     public premultiply(alpha: number, applyToRGB = true): this
     {
