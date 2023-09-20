@@ -1,0 +1,601 @@
+// VideoSource.ts
+
+import { Ticker } from '../../../../../ticker/Ticker';
+import { crossOrigin } from '../utils/crossOrigin';
+import { TextureSource } from './TextureSource';
+
+import type { Dict } from '../../../../../utils/types';
+import type { TextureSourceOptions } from './TextureSource';
+
+type VideoResource = HTMLVideoElement;
+
+export interface VideoSourceOptions extends TextureSourceOptions<VideoResource>
+{
+    autoLoad?: boolean;
+    autoPlay?: boolean;
+    updateFPS?: number;
+    crossorigin?: boolean | string;
+    loop?: boolean;
+    muted?: boolean;
+    playsinline?: boolean;
+}
+
+export interface VideoResourceOptionsElement
+{
+    src: string;
+    mime: string;
+}
+
+export class VideoSource extends TextureSource<VideoResource>
+{
+    // Public static
+    public static defaultOptions: VideoSourceOptions = {
+        ...TextureSource.defaultOptions,
+        autoLoad: true,
+        autoPlay: true,
+        updateFPS: 0,
+        crossorigin: true,
+        loop: false,
+        muted: true,
+        playsinline: true,
+    };
+
+    // Public
+    public alphaMode = 0;
+    public isReady = false;
+    public uploadMethodId = 'video';
+
+    // Protected
+    /**
+     * When set to true will automatically play videos used by this texture once
+     * they are loaded. If false, it will not modify the playing state.
+     * @default true
+     */
+    protected autoPlay: boolean;
+
+    // Private
+    /**
+     * `true` to use Ticker.shared to auto update the base texture.
+     * @default true
+     */
+    private _autoUpdate: boolean;
+
+    /**
+     * `true` if the instance is currently connected to PIXI.Ticker.shared to auto update the base texture.
+     * @default false
+     */
+    private _isConnectedToTicker: boolean;
+
+    /**
+     * Promise when loading.
+     * @default null
+     */
+    private _load: Promise<this>;
+
+    private _msToNextUpdate: number;
+
+    /** Callback when completed with load. */
+    private _resolve: (value?: this | PromiseLike<this>) => void;
+    private _reject: (error: ErrorEvent) => void;
+
+    private _updateFPS: number;
+    private _videoFrameRequestCallbackHandle: number | null;
+
+    /**
+     * Create a VideoSource from various input types.
+     * @param {HTMLVideoElement|object|string|Array<string|object>} source - Video element to use.
+     * @param {object} [options] - Options to use
+     * @param {boolean} [options.autoLoad=true] - Start loading the video immediately
+     * @param {boolean} [options.autoPlay=true] - Start playing video immediately
+     * @param {number} [options.updateFPS=0] - How many times a second to update the texture from the video.
+     * Leave at 0 to update at every render.
+     * @param {boolean} [options.crossorigin=true] - Load image using cross origin
+     * @param {boolean} [options.loop=false] - Loops the video
+     * @param {boolean} [options.muted=false] - Mutes the video audio, useful for autoplay
+     * @param {boolean} [options.playsinline=true] - Prevents opening the video on mobile devices
+     */
+    public static from(
+        source?: HTMLVideoElement | Array<string | VideoResourceOptionsElement> | string,
+        options?: VideoSourceOptions
+    )
+    {
+        // Merge provided options with default ones
+        options = {
+            ...VideoSource.defaultOptions,
+            ...options
+        };
+
+        // If source is not an instance of HTMLVideoElement, create a new one with the given options
+        if (!(source instanceof HTMLVideoElement))
+        {
+            const videoElement = document.createElement('video');
+
+            if (options.autoLoad !== false)
+            {
+                videoElement.setAttribute('preload', 'auto');
+            }
+            if (options.playsinline !== false)
+            {
+                videoElement.setAttribute('webkit-playsinline', '');
+                videoElement.setAttribute('playsinline', '');
+            }
+            if (options.muted === true)
+            {
+                videoElement.setAttribute('muted', '');
+                videoElement.muted = true;
+            }
+            if (options.loop === true)
+            {
+                videoElement.setAttribute('loop', '');
+            }
+            if (options.autoPlay !== false)
+            {
+                videoElement.setAttribute('autoplay', '');
+            }
+
+            // Convert single string source to an array
+            if (typeof source === 'string')
+            {
+                source = [source];
+            }
+
+            const firstSrc = (source[0] as VideoResourceOptionsElement).src || source[0] as string;
+
+            crossOrigin(videoElement, firstSrc, options.crossorigin);
+
+            // Handle array of objects or strings
+            for (const srcOption of source)
+            {
+                const sourceElement = document.createElement('source');
+                let { src, mime } = srcOption as VideoResourceOptionsElement;
+
+                src = src ?? srcOption as string;
+
+                if (src.startsWith('data:'))
+                {
+                    mime = src.slice(5, src.indexOf(';'));
+                }
+                else if (!src.startsWith('blob:'))
+                {
+                    const ext = src.split('?')[0].slice(src.lastIndexOf('.') + 1).toLowerCase();
+
+                    mime = mime || VideoSource.MIME_TYPES[ext] || `video/${ext}`;
+                }
+
+                sourceElement.src = src;
+                if (mime)
+                {
+                    sourceElement.type = mime;
+                }
+
+                videoElement.appendChild(sourceElement);
+            }
+
+            source = videoElement;
+        }
+
+        return new VideoSource({ ...options, resource: source });
+    }
+
+    constructor(
+        options: VideoSourceOptions
+    )
+    {
+        super(options);
+
+        // Merge provided options with default ones
+        options = {
+            ...VideoSource.defaultOptions,
+            ...options
+        };
+
+        this._autoUpdate = true;
+        this._isConnectedToTicker = false;
+        this._updateFPS = options.updateFPS || 0;
+        this._msToNextUpdate = 0;
+        this.autoPlay = options.autoPlay !== false;
+
+        // Binding for frame updates
+        this._videoFrameRequestCallback = this._videoFrameRequestCallback.bind(this);
+        this._videoFrameRequestCallbackHandle = null;
+
+        this._load = null;
+        this._resolve = null;
+        this._reject = null;
+
+        // Bind for listeners
+        this._onCanPlay = this._onCanPlay.bind(this);
+        this._onError = this._onError.bind(this);
+        this._onPlayStart = this._onPlayStart.bind(this);
+        this._onPlayStop = this._onPlayStop.bind(this);
+        this._onSeeked = this._onSeeked.bind(this);
+
+        if (options.autoLoad !== false)
+        {
+            void this.load();
+        }
+    }
+
+    /** Update the video frame if the source is not destroyed and meets certain conditions. */
+    protected updateFrame(): void
+    {
+        if (this.destroyed)
+        {
+            return;
+        }
+
+        if (this._updateFPS)
+        {
+            // Account for if video has had its playbackRate changed
+            const elapsedMS = Ticker.shared.elapsedMS * this.resource.playbackRate;
+
+            this._msToNextUpdate = Math.floor(this._msToNextUpdate - elapsedMS);
+        }
+
+        if (!this._updateFPS || this._msToNextUpdate <= 0)
+        {
+            this._msToNextUpdate = this._updateFPS ? Math.floor(1000 / this._updateFPS) : 0;
+        }
+
+        if (this.isValid)
+        {
+            this.update();
+        }
+    }
+
+    /** Callback to update the video frame and potentially request the next frame update. */
+    private _videoFrameRequestCallback(): void
+    {
+        this.updateFrame();
+
+        if (this.destroyed)
+        {
+            this._videoFrameRequestCallbackHandle = null;
+        }
+        else
+        {
+            this._videoFrameRequestCallbackHandle = (this.source as any).requestVideoFrameCallback(
+                this._videoFrameRequestCallback
+            );
+        }
+    }
+
+    /**
+     * Checks if the resource has valid dimensions.
+     * @returns {boolean} True if width and height are set, otherwise false.
+     */
+    public get isValid(): boolean
+    {
+        return !!this.resource.videoWidth && !!this.resource.videoHeight;
+    }
+
+    /**
+     * Start preloading the video resource.
+     * @returns {Promise<this>} Handle the validate event
+     */
+    public load(): Promise<this>
+    {
+        if (this._load)
+        {
+            return this._load;
+        }
+
+        const source = this.resource;
+
+        // Check if source data is enough and set it to complete if needed
+        if ((source.readyState === source.HAVE_ENOUGH_DATA || source.readyState === source.HAVE_FUTURE_DATA)
+            && source.width && source.height)
+        {
+            (source as any).complete = true;
+        }
+
+        // Add event listeners related to playback and seeking
+        source.addEventListener('play', this._onPlayStart);
+        source.addEventListener('pause', this._onPlayStop);
+        source.addEventListener('seeked', this._onSeeked);
+
+        // Add or handle source readiness event listeners
+        if (!this._isSourceReady())
+        {
+            source.addEventListener('canplay', this._onCanPlay);
+            source.addEventListener('canplaythrough', this._onCanPlay);
+            source.addEventListener('error', this._onError, true);
+        }
+        else
+        {
+            this._onCanPlay();
+        }
+
+        // Create and return the loading promise
+        this._load = new Promise((resolve, reject): void =>
+        {
+            if (this.isValid)
+            {
+                resolve(this);
+            }
+            else
+            {
+                this._resolve = resolve;
+                this._reject = reject;
+
+                source.load();
+            }
+        });
+
+        return this._load;
+    }
+
+    /**
+     * Handle video error events.
+     * @param event - The error event
+     */
+    private _onError(event: ErrorEvent): void
+    {
+        this.resource.removeEventListener('error', this._onError, true);
+        this.emit('error', event);
+
+        if (this._reject)
+        {
+            this._reject(event);
+            this._reject = null;
+            this._resolve = null;
+        }
+    }
+
+    /**
+     * Checks if the underlying source is playing.
+     * @returns True if playing.
+     */
+    private _isSourcePlaying(): boolean
+    {
+        const source = this.resource;
+
+        return (!source.paused && !source.ended && this._isSourceReady());
+    }
+
+    /**
+     * Checks if the underlying source is ready for playing.
+     * @returns True if ready.
+     */
+    private _isSourceReady(): boolean
+    {
+        const source = this.resource;
+
+        return source.readyState > 2;
+    }
+
+    /** Runs the update loop when the video is ready to play. */
+    private _onPlayStart(): void
+    {
+    // Handle edge case where video might not have received its "can play" event yet
+        if (!this.isValid)
+        {
+            this._onCanPlay();
+        }
+
+        this._configureAutoUpdate();
+    }
+
+    /** Stops the update loop when a pause event is triggered. */
+    private _onPlayStop(): void
+    {
+        this._configureAutoUpdate();
+    }
+
+    /** Handles behavior when the video completes seeking to the current playback position. */
+    private _onSeeked(): void
+    {
+        if (this._autoUpdate && !this._isSourcePlaying())
+        {
+            this._msToNextUpdate = 0;
+            this.updateFrame();
+            this._msToNextUpdate = 0;
+        }
+    }
+
+    /** Fired when the video is loaded and ready to play. */
+    private _onCanPlay(): void
+    {
+        const source = this.resource;
+
+        // Remove event listeners
+        source.removeEventListener('canplay', this._onCanPlay);
+        source.removeEventListener('canplaythrough', this._onCanPlay);
+
+        if (this.isValid)
+        {
+            this.isReady = true;
+            this.resize(source.videoWidth, source.videoHeight);
+        }
+
+        // Reset update timers and perform a frame update
+        this._msToNextUpdate = 0;
+        this.updateFrame();
+        this._msToNextUpdate = 0;
+
+        // Resolve the loading promise if it exists
+        if (this._resolve)
+        {
+            this._resolve(this);
+            this._resolve = null;
+            this._reject = null;
+        }
+
+        // Handle play behavior based on current source status
+        if (this._isSourcePlaying())
+        {
+            this._onPlayStart();
+        }
+        else if (this.autoPlay)
+        {
+            void this.resource.play();
+        }
+    }
+
+    /** Cleans up resources and event listeners associated with this texture. */
+    public destroy()
+    {
+        this._configureAutoUpdate();
+
+        const source = this.resource;
+
+        if (source)
+        {
+            // Remove event listeners
+            source.removeEventListener('play', this._onPlayStart);
+            source.removeEventListener('pause', this._onPlayStop);
+            source.removeEventListener('seeked', this._onSeeked);
+            source.removeEventListener('canplay', this._onCanPlay);
+            source.removeEventListener('canplaythrough', this._onCanPlay);
+            source.removeEventListener('error', this._onError, true);
+
+            // Clear the video source and pause
+            source.pause();
+            source.src = '';
+            source.load();
+        }
+
+        super.destroy();
+    }
+
+    /** Should the base texture automatically update itself, set to true by default. */
+    get autoUpdate(): boolean
+    {
+        return this._autoUpdate;
+    }
+
+    set autoUpdate(value: boolean)
+    {
+        if (value !== this._autoUpdate)
+        {
+            this._autoUpdate = value;
+            this._configureAutoUpdate();
+        }
+    }
+
+    /**
+     * How many times a second to update the texture from the video.
+     * Leave at 0 to update at every render.
+     * A lower fps can help performance, as updating the texture at 60fps on a 30ps video may not be efficient.
+     */
+    get updateFPS(): number
+    {
+        return this._updateFPS;
+    }
+
+    set updateFPS(value: number)
+    {
+        if (value !== this._updateFPS)
+        {
+            this._updateFPS = value;
+            this._configureAutoUpdate();
+        }
+    }
+
+    /**
+     * Configures the updating mechanism based on the current state and settings.
+     *
+     * This method decides between using the browser's native video frame callback or a custom ticker
+     * for updating the video frame. It ensures optimal performance and responsiveness
+     * based on the video's state, playback status, and the desired frames-per-second setting.
+     *
+     * - If `_autoUpdate` is enabled and the video source is playing:
+     *   - It will prefer the native video frame callback if available and no specific FPS is set.
+     *   - Otherwise, it will use a custom ticker for manual updates.
+     * - If `_autoUpdate` is disabled or the video isn't playing, any active update mechanisms are halted.
+     */
+    private _configureAutoUpdate(): void
+    {
+        // Check if automatic updating is enabled and if the source is currently playing
+        if (this._autoUpdate && this._isSourcePlaying())
+        {
+            // Determine if we should use the browser's native video frame callback (generally for better performance)
+            if (!this._updateFPS && (this.source as any).requestVideoFrameCallback)
+            {
+                // If connected to a custom ticker, remove the update frame function from it
+                if (this._isConnectedToTicker)
+                {
+                    Ticker.shared.remove(this.updateFrame, this);
+                    this._isConnectedToTicker = false;
+                    // Reset the time until the next update
+                    this._msToNextUpdate = 0;
+                }
+
+                // Check if we haven't already requested a video frame callback, and if not, request one
+                if (this._videoFrameRequestCallbackHandle === null)
+                {
+                    this._videoFrameRequestCallbackHandle = (this.source as any).requestVideoFrameCallback(
+                        this._videoFrameRequestCallback
+                    );
+                }
+            }
+            else
+            {
+                // If a video frame request callback exists, cancel it, as we are switching to manual ticker-based updates
+                if (this._videoFrameRequestCallbackHandle !== null)
+                {
+                    (this.source as any).cancelVideoFrameCallback(this._videoFrameRequestCallbackHandle);
+                    this._videoFrameRequestCallbackHandle = null;
+                }
+
+                // If not connected to the custom ticker, add the update frame function to it
+                if (!this._isConnectedToTicker)
+                {
+                    Ticker.shared.add(this.updateFrame, this);
+                    this._isConnectedToTicker = true;
+                    // Reset the time until the next update
+                    this._msToNextUpdate = 0;
+                }
+            }
+        }
+        else
+        {
+            // If automatic updating is disabled or the source isn't playing, perform cleanup
+
+            // Cancel any existing video frame callback request
+            if (this._videoFrameRequestCallbackHandle !== null)
+            {
+                (this.source as any).cancelVideoFrameCallback(this._videoFrameRequestCallbackHandle);
+                this._videoFrameRequestCallbackHandle = null;
+            }
+
+            // Remove the update frame function from the custom ticker
+            if (this._isConnectedToTicker)
+            {
+                Ticker.shared.remove(this.updateFrame, this);
+                this._isConnectedToTicker = false;
+                // Reset the time until the next update
+                this._msToNextUpdate = 0;
+            }
+        }
+    }
+
+    /**
+     * Used to auto-detect the type of resource.
+     * @param {*} source - The source object
+     * @param {string} extension - The extension of source, if set
+     * @returns {boolean} `true` if video source
+     */
+    public static test(source: unknown, extension?: string): source is HTMLVideoElement
+    {
+        return (globalThis.HTMLVideoElement && source instanceof HTMLVideoElement)
+            || VideoSource.TYPES.includes(extension);
+    }
+
+    /**
+     * List of common video file extensions supported by VideoResource.
+     * @readonly
+     */
+    public static TYPES: Array<string> = ['mp4', 'm4v', 'webm', 'ogg', 'ogv', 'h264', 'avi', 'mov'];
+
+    /**
+     * Map of video MIME types that can't be directly derived from file extensions.
+     * @readonly
+     */
+    public static MIME_TYPES: Dict<string>
+        = {
+            ogv: 'video/ogg',
+            mov: 'video/quicktime',
+            m4v: 'video/mp4',
+        };
+}

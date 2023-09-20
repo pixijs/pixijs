@@ -36,6 +36,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     unload: TextureSource;
     destroy: TextureSource;
     resize: TextureSource;
+    error: Error;
 }> implements BindableTexture, BindResource
 {
     public static defaultOptions: TextureSourceOptions = {
@@ -54,7 +55,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     public resourceType = 'textureSource';
     public resourceId = RESOURCE_ID++;
 
-    public type = 'unknown';
+    public uploadMethodId = 'unknown';
 
     // dimensions
     /** @internal */
@@ -186,7 +187,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
             this.style = null;
         }
 
-        this.type = null;
+        this.uploadMethodId = null;
         this.resource = null;
         this.removeAllListeners();
     }

@@ -4,6 +4,7 @@ import { CanvasPool } from '../../shared/texture/CanvasPool';
 import { BindGroup } from '../shader/BindGroup';
 import { gpuUploadBufferImageResource } from './uploaders/gpuUploadBufferImageResource';
 import { gpuUploadImageResource } from './uploaders/gpuUploadImageSource';
+import { gpuUploadVideoResource } from './uploaders/gpuUploadVideoSource';
 import { GpuMipmapGenerator } from './utils/GpuMipmapGenerator';
 
 import type { ICanvas } from '../../../../settings/adapter/ICanvas';
@@ -36,7 +37,8 @@ export class GpuTextureSystem implements System, CanvasGenerator
 
     private readonly _uploads: Record<string, GpuTextureUploader> = {
         image: gpuUploadImageResource,
-        buffer: gpuUploadBufferImageResource
+        buffer: gpuUploadBufferImageResource,
+        video: gpuUploadVideoResource
     };
 
     private _gpu: GPU;
@@ -64,7 +66,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
         }
 
         const textureDescriptor = {
-            size: { width: source.pixelWidth, height: source.pixelHeight },
+            size: { width: source.pixelWidth | 1, height: source.pixelHeight | 1 },
             format: source.format,
             sampleCount: source.sampleCount,
             mipLevelCount: source.mipLevelCount,
@@ -98,9 +100,9 @@ export class GpuTextureSystem implements System, CanvasGenerator
         // destroyed!
         if (!gpuTexture) return;
 
-        if (this._uploads[source.type])
+        if (this._uploads[source.uploadMethodId])
         {
-            this._uploads[source.type].upload(source, gpuTexture, this._gpu);
+            this._uploads[source.uploadMethodId].upload(source, gpuTexture, this._gpu);
         }
 
         if (source.autoGenerateMipmaps && source.mipLevelCount > 1)

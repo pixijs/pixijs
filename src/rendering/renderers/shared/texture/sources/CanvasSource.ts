@@ -11,7 +11,7 @@ export interface CanvasSourceOptions extends TextureSourceOptions<ICanvas>
 
 export class CanvasSource extends TextureSource<ICanvas>
 {
-    public type = 'image';
+    public uploadMethodId = 'image';
     public autoDensity: boolean;
     public alphaMode = 0;
 
