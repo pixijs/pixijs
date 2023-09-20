@@ -187,10 +187,12 @@ export class VideoSource extends TextureSource<VideoResource>
         options: VideoSourceOptions
     )
     {
-        super({
+        super(options);
+
+        options = {
             ...VideoSource.defaultOptions,
             ...options,
-        });
+        };
 
         this._autoUpdate = true;
         this._isConnectedToTicker = false;
@@ -397,19 +399,13 @@ export class VideoSource extends TextureSource<VideoResource>
             this.isReady = true;
 
             this.resize(source.videoWidth, source.videoHeight);
-            // this.width = source.videoWidth;
-            // this.height = source.videoHeight;
-
-            // document.body.appendChild(source);
-            // source.style.cssText = 'position: absolute; top: 0; left: 0; z-index: 1000;';
         }
 
         this._msToNextUpdate = 0;
         this.updateFrame();
         this._msToNextUpdate = 0;
 
-        // prevent multiple loaded dispatches..
-        if (!this.isValid && this._resolve)
+        if (this._resolve)
         {
             this._resolve(this);
             this._resolve = null;
