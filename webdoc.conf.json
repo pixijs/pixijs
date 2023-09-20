@@ -4,7 +4,7 @@
         "include": "./src/**/*.ts"
     },
     "plugins": ["@webdoc/plugin-markdown", "@webdoc/plugin-format"],
-    "template": {
+    "templates": {
         "applicationName": "PixiJS",
         "footer": "Made with ♥ by Goodboy Digital (goodboydigital.com)",
         "copyright": "PixiJS Copyright © 2013-2023 Mat Groves.",
@@ -28,6 +28,12 @@
     },
     "opts": {
         "destination": "./docs",
-        "export": "./docs/webdoc.api.json"
+        "export": "./docs/webdoc.api.json",
+        "template"      : "@pixi/webdoc-template"
+    },
+    "template": {
+        "outputSourceFiles": true,
+        "readme": "./README.md",
+        "repository": "https://github.com/pixijs/pixijs/"
     }
 }
