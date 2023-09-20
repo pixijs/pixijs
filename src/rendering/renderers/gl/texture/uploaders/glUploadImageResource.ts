@@ -1,6 +1,5 @@
 import type { CanvasSource } from '../../../shared/texture/sources/CanvasSource';
 import type { ImageSource } from '../../../shared/texture/sources/ImageSource';
-import type { VideoSource } from '../../../shared/texture/sources/VideoSource';
 import type { GlRenderingContext } from '../../context/GlRenderingContext';
 import type { GlTexture } from '../GlTexture';
 import type { GLTextureUploader } from './GLTextureUploader';
@@ -9,7 +8,7 @@ export const glUploadImageResource = {
 
     id: 'image',
 
-    upload(source: ImageSource | CanvasSource | VideoSource, glTexture: GlTexture, gl: GlRenderingContext)
+    upload(source: ImageSource | CanvasSource, glTexture: GlTexture, gl: GlRenderingContext)
     {
         gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, !(source.alphaMode === 0));
 
