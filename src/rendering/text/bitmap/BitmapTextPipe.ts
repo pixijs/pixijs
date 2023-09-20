@@ -138,14 +138,14 @@ export class BitmapTextPipe implements RenderPipe<TextView>
 
         let index = 0;
 
-        const scale = style.fontSize / bitmapFont.baseMeasurementFontSize;
+        const padding = style.padding;
+        const scale = bitmapTextLayout.scale;
 
-        context.scale(scale, scale);
-
-        const offsetX = -view.anchor.x * bitmapTextLayout.width;
-        const offsetY = -view.anchor.y * bitmapTextLayout.height;
-
-        context.translate(offsetX, offsetY);
+        context
+            .translate(
+                (-view.anchor._x * bitmapTextLayout.width) - padding,
+                (-view.anchor._y * (bitmapTextLayout.height + bitmapTextLayout.offsetY)) - padding)
+            .scale(scale, scale);
 
         const tint = style._fill.color;
 

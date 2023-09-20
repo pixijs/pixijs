@@ -100,6 +100,8 @@ export class Texture extends EventEmitter<{
 
             layout.frame.width = frame.width / width;
             layout.frame.height = frame.height / height;
+
+            (layout as TextureLayout).updateUvs();
         }
 
         this.layout = layout as TextureLayout;

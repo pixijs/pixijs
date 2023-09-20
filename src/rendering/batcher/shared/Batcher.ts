@@ -147,7 +147,7 @@ export class Batcher
 
     public checkAndUpdateTexture(batchableObject: BatchableObject, texture: Texture): boolean
     {
-        const textureId = batchableObject.batch.textures.ids[texture._source._textureBindLocation];
+        const textureId = batchableObject.batch.textures.ids[texture._source.uid];
 
         // TODO could try to be a bit smarter if there are spare textures..
         // but need to figure out how to alter the bind groups too..
@@ -259,7 +259,7 @@ export class Batcher
             }
 
             element.textureId = source._textureBindLocation = textureBatch.count;
-            textureBatch.ids[source._textureBindLocation] = textureBatch.count;
+            textureBatch.ids[source.uid] = textureBatch.count;
             textureBatch.textures[textureBatch.count++] = source;
             element.batch = batch;
 
