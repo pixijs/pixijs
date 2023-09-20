@@ -28,10 +28,7 @@ export interface VideoResourceOptionsElement
 
 export class VideoSource extends TextureSource<VideoResource>
 {
-    public alphaMode = 0;
-    public uploadMethodId = 'video';
-    public isReady = false;
-
+    // Public static
     public static defaultOptions: VideoSourceOptions = {
         ...TextureSource.defaultOptions,
         autoLoad: true,
@@ -43,6 +40,20 @@ export class VideoSource extends TextureSource<VideoResource>
         playsinline: true,
     };
 
+    // Public
+    public alphaMode = 0;
+    public isReady = false;
+    public uploadMethodId = 'video';
+
+    // Protected
+    /**
+     * When set to true will automatically play videos used by this texture once
+     * they are loaded. If false, it will not modify the playing state.
+     * @default true
+     */
+    protected autoPlay: boolean;
+
+    // Private
     /**
      * `true` to use Ticker.shared to auto update the base texture.
      * @default true
@@ -54,17 +65,6 @@ export class VideoSource extends TextureSource<VideoResource>
      * @default false
      */
     private _isConnectedToTicker: boolean;
-    private _updateFPS: number;
-    private _msToNextUpdate: number;
-
-    private _videoFrameRequestCallbackHandle: number | null;
-
-    /**
-     * When set to true will automatically play videos used by this texture once
-     * they are loaded. If false, it will not modify the playing state.
-     * @default true
-     */
-    protected autoPlay: boolean;
 
     /**
      * Promise when loading.
@@ -72,9 +72,14 @@ export class VideoSource extends TextureSource<VideoResource>
      */
     private _load: Promise<this>;
 
+    private _msToNextUpdate: number;
+
     /** Callback when completed with load. */
     private _resolve: (value?: this | PromiseLike<this>) => void;
     private _reject: (error: ErrorEvent) => void;
+
+    private _updateFPS: number;
+    private _videoFrameRequestCallbackHandle: number | null;
 
     /**
      * Create a VideoSource from various input types.
