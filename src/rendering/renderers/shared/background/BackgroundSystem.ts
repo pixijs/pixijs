@@ -19,12 +19,6 @@ export interface BackgroundSystemOptions
     clearBeforeRender: boolean;
 }
 
-export const defaultBackgroundOptions = {
-    alpha: 1,
-    color: 0x000000,
-    clearBeforeRender: true,
-};
-
 type ColorObject = { r: number; g: number; b: number; a: number };
 
 /** The background system manages the background color and alpha of the main view. */
@@ -95,7 +89,7 @@ export class BackgroundSystem implements System
      */
     public init(options: BackgroundSystemOptions): void
     {
-        options = { ...defaultBackgroundOptions, ...options };
+        options = { ...BackgroundSystem.defaultOptions, ...options };
 
         this.clearBeforeRender = options.clearBeforeRender;
         this.color = options.background || options.backgroundColor || this._backgroundColor; // run bg color setter
