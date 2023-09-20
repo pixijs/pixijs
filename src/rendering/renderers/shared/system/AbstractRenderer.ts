@@ -31,6 +31,7 @@ export interface RenderOptions
     transform?: Matrix;
     target?: RenderSurface;
     clearColor?: RGBAArray;
+    clear?: boolean;
 }
 
 const defaultRunners = [
