@@ -1,4 +1,3 @@
-import type { ImageSource } from '../../../shared/texture/sources/ImageSource';
 import type { VideoSource } from '../../../shared/texture/sources/VideoSource';
 import type { GPU } from '../../GpuDeviceSystem';
 import type { GpuTextureUploader } from './GpuTextureUploader';
@@ -28,5 +27,5 @@ export const gpuUploadVideoResource = {
             }
         );
     }
-} as GpuTextureUploader<ImageSource>;
+} as GpuTextureUploader<VideoSource>;
 
