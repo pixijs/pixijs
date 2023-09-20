@@ -98,7 +98,7 @@ export class BackgroundSystem implements System
         options = { ...defaultBackgroundOptions, ...options };
 
         this.clearBeforeRender = options.clearBeforeRender;
-        this.color = options.backgroundColor || this._backgroundColor; // run bg color setter
+        this.color = options.background || options.backgroundColor || this._backgroundColor; // run bg color setter
         this.alpha = options.backgroundAlpha;
     }
 
