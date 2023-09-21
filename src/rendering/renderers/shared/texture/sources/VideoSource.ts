@@ -39,6 +39,7 @@ export class VideoSource extends TextureSource<VideoResource>
         loop: false,
         muted: true,
         playsinline: true,
+        preload: false,
     };
 
     // Public
@@ -224,7 +225,12 @@ export class VideoSource extends TextureSource<VideoResource>
         // Add or handle source readiness event listeners
         if (!this._isSourceReady())
         {
-            source.addEventListener('canplay', this._onCanPlay);
+            const options = this.options as VideoSourceOptions;
+
+            if (!options.preload)
+            {
+                source.addEventListener('canplay', this._onCanPlay);
+            }
             source.addEventListener('canplaythrough', this._onCanPlay);
             source.addEventListener('error', this._onError, true);
         }

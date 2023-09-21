@@ -7,10 +7,7 @@ import { LoaderParserPriority } from '../LoaderParser';
 import { createTexture } from './utils/createTexture';
 
 import type { TextureSourceOptions } from '../../../../rendering/renderers/shared/texture/sources/TextureSource';
-import type {
-    VideoResourceOptionsElement,
-    VideoSourceOptions
-} from '../../../../rendering/renderers/shared/texture/sources/VideoSource';
+import type { VideoSourceOptions } from '../../../../rendering/renderers/shared/texture/sources/VideoSource';
 import type { Texture } from '../../../../rendering/renderers/shared/texture/Texture';
 import type { ResolvedAsset } from '../../../types';
 import type { Loader } from '../../Loader';
@@ -69,23 +66,19 @@ export function determineCrossOrigin(url: string, loc: Location = globalThis.loc
 }
 
 /**
- * Loads our textures!
- * this makes use of imageBitmaps where available.
- * We load the ImageBitmap on a different thread using the WorkerManager
- * We can then use the ImageBitmap as a source for a Pixi Texture
+ * Loads our video textures!
  *
- * You can customize the behavior of this loader by setting the `config` property.
+ * You can pass VideoSource options to the loader via the .data property of the asset
+ * when using Asset.load().
  * ```js
- * // Set the config
- * import { loadTextures } from '@pixi/assets';
- * loadTextures.config = {
- *    // If true we will use a worker to load the ImageBitmap
- *    preferWorkers: true,
- *    // If false we will use new Image() instead of createImageBitmap
- *    // If false then this will also disable the use of workers as it requires createImageBitmap
- *    preferCreateImageBitmap: true,
- *    crossOrigin: 'anonymous',
- * };
+ * // Set the data
+ * const texture = await Assets.load({
+ *     src: './assets/city.mp4',
+ *     data: {
+ *         preload: true,
+ *         autoPlay: true,
+ *     },
+ * });
  * ```
  */
 
@@ -106,23 +99,17 @@ export const loadVideoTextures = {
     },
 
     async load(
-        url: Array<string | VideoResourceOptionsElement>
-        | string, asset: ResolvedAsset<TextureSourceOptions>,
+        url: string,
+        asset: ResolvedAsset<TextureSourceOptions>,
         loader: Loader
     ): Promise<Texture>
     {
-        const firstSrc = typeof url === 'string'
-            ? url
-            : (url[0] as VideoResourceOptionsElement).src || url[0] as string;
-
         // Merge provided options with default ones
         const options: VideoSourceOptions = {
             ...VideoSource.defaultOptions,
-            resolution: asset.data?.resolution || getResolutionOfUrl(firstSrc),
+            resolution: asset.data?.resolution || getResolutionOfUrl(url),
             ...asset.data,
         };
-
-        let source = url;
 
         // Create a new HTMLVideoElement with the given options
         const videoElement = document.createElement('video');
@@ -150,46 +137,34 @@ export const loadVideoTextures = {
             videoElement.setAttribute('autoplay', '');
         }
 
-        // Convert single string source to an array
-        if (typeof source === 'string')
+        crossOrigin(videoElement, url, options.crossorigin);
+
+        const sourceElement = document.createElement('source');
+        let mime: string | undefined;
+
+        if (url.startsWith('data:'))
         {
-            source = [source];
+            mime = url.slice(5, url.indexOf(';'));
+        }
+        else if (!url.startsWith('blob:'))
+        {
+            const ext = url.split('?')[0].slice(url.lastIndexOf('.') + 1).toLowerCase();
+
+            mime = mime || VideoSource.MIME_TYPES[ext] || `video/${ext}`;
         }
 
-        crossOrigin(videoElement, firstSrc, options.crossorigin);
+        sourceElement.src = url;
 
-        // Handle array of objects or strings
-        for (const srcOption of source)
+        if (mime)
         {
-            const sourceElement = document.createElement('source');
-            let { src, mime } = srcOption as VideoResourceOptionsElement;
-
-            src = src ?? srcOption as string;
-
-            if (src.startsWith('data:'))
-            {
-                mime = src.slice(5, src.indexOf(';'));
-            }
-            else if (!src.startsWith('blob:'))
-            {
-                const ext = src.split('?')[0].slice(src.lastIndexOf('.') + 1).toLowerCase();
-
-                mime = mime || VideoSource.MIME_TYPES[ext] || `video/${ext}`;
-            }
-
-            sourceElement.src = src;
-
-            if (mime)
-            {
-                sourceElement.type = mime;
-            }
-
-            videoElement.appendChild(sourceElement);
+            sourceElement.type = mime;
         }
+
+        videoElement.appendChild(sourceElement);
 
         const base = new VideoSource({ ...options, resource: videoElement });
 
-        return createTexture(base, loader, firstSrc);
+        return createTexture(base, loader, url);
     },
 
     unload(texture: Texture): void
