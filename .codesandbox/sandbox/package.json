@@ -2,7 +2,8 @@
     "name": "pixi.js-sandbox",
     "private": true,
     "main": "index.js",
+    "type": "module",
     "dependencies": {
-        "pixi.js": "^7.2.1"
+        "pixi.js": "^7.3.0"
     }
 }

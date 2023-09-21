@@ -53,26 +53,11 @@ async function main()
                 '**/*.vert',
             ],
         }),
-        // Import bundle dependencies from the source files
-        // not from the build lib files, this will make sure
-        // that conditional stuff works correctly (e.g., process.env.DEBUG)
-        alias({
-            entries: [
-                { find: 'pixi.js', replacement: './bundles/pixi.js/src/index.ts' },
-                { find: /^@pixi\/(.+)$/, replacement: './packages/$1/src/index.ts' },
-            ]
-        }),
     ];
 
     const esbuildConfig = {
         target: moduleTarget,
         minifySyntax: true,
-        define: {
-            'process.env.VERSION': `'${repo.version}'`,
-            'process.env.DEBUG': 'true',
-        },
-        treeShaking: true,
-        tsconfigRaw: '{"compilerOptions":{"useDefineForClassFields":false}}'
     }
 
     const plugins = [
