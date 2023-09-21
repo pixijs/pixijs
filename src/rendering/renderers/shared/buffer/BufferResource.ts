@@ -1,5 +1,5 @@
 import EventEmitter from 'eventemitter3';
-import { generateUID } from '../texture/utils/generateUID';
+import { uid } from '../../../../utils/data/uid';
 
 import type { BindResource } from '../../gpu/shader/BindResource';
 import type { Buffer } from './Buffer';
@@ -8,13 +8,13 @@ export class BufferResource extends EventEmitter<{
     'change': BindResource,
 }> implements BindResource
 {
-    public readonly uid = generateUID();
+    public readonly uid = uid();
     public touched = 0;
 
     public resourceType = 'bufferResource';
 
     // this really means ths the buffer resource cannot be updated!
-    public resourceId = generateUID();
+    public resourceId = uid();
 
     public buffer: Buffer;
     public readonly offset: number;
@@ -34,7 +34,7 @@ export class BufferResource extends EventEmitter<{
 
     protected onBufferChange(): void
     {
-        this.resourceId = generateUID();
+        this.resourceId = uid();
 
         this.emit('change', this);
     }
