@@ -98,48 +98,46 @@ export const loadVideoTextures = {
         return checkDataUrl(url, Object.values(VideoSource.MIME_TYPES)) || checkExtension(url, extensions);
     },
 
-    async load(
-        url: string,
-        asset: ResolvedAsset<TextureSourceOptions>,
-        loader: Loader
-    ): Promise<Texture>
+    async load(url: string, asset: ResolvedAsset<TextureSourceOptions>, loader: Loader): Promise<Texture>
     {
-        // Merge provided options with default ones
+        // --- Merge default and provided options ---
         const options: VideoSourceOptions = {
             ...VideoSource.defaultOptions,
-            resolution: asset.data?.resolution || getResolutionOfUrl(url),
+            resolution: asset.data?.resolution || getResolutionOfUrl(url), // Assume getResolutionOfUrl is globally available
             ...asset.data,
         };
 
-        // Create a new HTMLVideoElement with the given options
+        // --- Create and configure HTMLVideoElement ---
         const videoElement = document.createElement('video');
 
-        if (options.autoLoad !== false)
+        // Set attributes based on options
+        const attributeMap = {
+            preload: options.autoLoad !== false ? 'auto' : undefined,
+            'webkit-playsinline': options.playsinline !== false ? '' : undefined,
+            playsinline: options.playsinline !== false ? '' : undefined,
+            muted: options.muted === true ? '' : undefined,
+            loop: options.loop === true ? '' : undefined,
+            autoplay: options.autoPlay !== false ? '' : undefined
+        };
+
+        Object.keys(attributeMap).forEach((key) =>
         {
-            videoElement.setAttribute('preload', 'auto');
-        }
-        if (options.playsinline !== false)
-        {
-            videoElement.setAttribute('webkit-playsinline', '');
-            videoElement.setAttribute('playsinline', '');
-        }
+            const value = attributeMap[key as keyof typeof attributeMap];
+
+            if (value !== undefined) videoElement.setAttribute(key, value);
+        });
+
         if (options.muted === true)
         {
-            videoElement.setAttribute('muted', '');
             videoElement.muted = true;
         }
-        if (options.loop === true)
-        {
-            videoElement.setAttribute('loop', '');
-        }
-        if (options.autoPlay !== false)
-        {
-            videoElement.setAttribute('autoplay', '');
-        }
 
-        crossOrigin(videoElement, url, options.crossorigin);
+        crossOrigin(videoElement, url, options.crossorigin); // Assume crossOrigin is globally available
 
+        // --- Set up source and MIME type ---
         const sourceElement = document.createElement('source');
+
+        // Determine MIME type
         let mime: string | undefined;
 
         if (url.startsWith('data:'))
@@ -150,7 +148,7 @@ export const loadVideoTextures = {
         {
             const ext = url.split('?')[0].slice(url.lastIndexOf('.') + 1).toLowerCase();
 
-            mime = mime || VideoSource.MIME_TYPES[ext] || `video/${ext}`;
+            mime = VideoSource.MIME_TYPES[ext] || `video/${ext}`;
         }
 
         sourceElement.src = url;
@@ -162,6 +160,7 @@ export const loadVideoTextures = {
 
         videoElement.appendChild(sourceElement);
 
+        // --- Create texture ---
         const base = new VideoSource({ ...options, resource: videoElement });
 
         return createTexture(base, loader, url);
