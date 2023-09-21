@@ -5,6 +5,7 @@ import { Texture } from '../../shared/texture/Texture';
 import { GlTexture } from './GlTexture';
 import { glUploadBufferImageResource } from './uploaders/glUploadBufferImageResource';
 import { glUploadImageResource } from './uploaders/glUploadImageResource';
+import { glUploadVideoResource } from './uploaders/glUploadVideoResource';
 import { mapFormatToGlFormat } from './utils/mapFormatToGlFormat';
 import { mapFormatToGlInternalFormat } from './utils/mapFormatToGlInternalFormat';
 import { mapFormatToGlType } from './utils/mapFormatToGlType';
@@ -54,7 +55,8 @@ export class GlTextureSystem implements System, CanvasGenerator
 
     private readonly _uploads: Record<string, GLTextureUploader> = {
         image: glUploadImageResource,
-        buffer: glUploadBufferImageResource
+        buffer: glUploadBufferImageResource,
+        video: glUploadVideoResource,
     };
 
     private _gl: GlRenderingContext;
@@ -215,15 +217,15 @@ export class GlTextureSystem implements System, CanvasGenerator
     {
         const gl = this._gl;
 
-        const glTexture = this._glTextures[source.uid];
+        const glTexture = this.getGlSource(source);
 
         gl.bindTexture(gl.TEXTURE_2D, glTexture.texture);
 
         this._boundTextures[this._activeTextureLocation] = source;
 
-        if (this._uploads[source.type])
+        if (this._uploads[source.uploadMethodId])
         {
-            this._uploads[source.type].upload(source, glTexture, this._gl);
+            this._uploads[source.uploadMethodId].upload(source, glTexture, this._gl);
 
             if (source.autoGenerateMipmaps && source.mipLevelCount > 1)
             {

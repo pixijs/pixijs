@@ -25,7 +25,7 @@ export class BatchTextureArray
             const t = this.textures[i];
 
             this.textures[i] = null;
-            this.ids[t._textureBindLocation] = null;
+            this.ids[t.uid] = null;
         }
 
         this.count = 0;

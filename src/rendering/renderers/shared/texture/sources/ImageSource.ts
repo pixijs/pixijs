@@ -16,7 +16,7 @@ export interface ImageSourceOptions extends TextureSourceOptions<ImageResource>
 
 export class ImageSource extends TextureSource<ImageResource>
 {
-    public type = 'image';
+    public uploadMethodId = 'image';
     public alphaMode: ALPHA_MODES;
 
     constructor(options: ImageSourceOptions)

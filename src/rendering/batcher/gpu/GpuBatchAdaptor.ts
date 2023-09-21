@@ -76,15 +76,16 @@ export class GpuBatchAdaptor implements BatcherAdaptor
         const renderer = batchPipe.renderer as WebGPURenderer;
         const encoder = renderer.encoder as GpuEncoderSystem;
 
-        if (!batch.gpuBindGroup)
+        if (!batch.bindGroup)
         {
             const textureBatch = batch.textures;
 
             batch.bindGroup = getTextureBatchBindGroup(textureBatch.textures, textureBatch.count);
-            batch.gpuBindGroup = renderer.bindGroup.getBindGroup(
-                batch.bindGroup, program, 1
-            );
         }
+
+        const gpuBindGroup = renderer.bindGroup.getBindGroup(
+            batch.bindGroup, program, 1
+        );
 
         if (!this._pipelines[batch.blendMode])
         {
@@ -100,7 +101,7 @@ export class GpuBatchAdaptor implements BatcherAdaptor
 
         encoder.setPipeline(this._pipelines[batch.blendMode]);
 
-        encoder.renderPassEncoder.setBindGroup(1, batch.gpuBindGroup);
+        encoder.renderPassEncoder.setBindGroup(1, gpuBindGroup);
         encoder.renderPassEncoder.drawIndexed(batch.size, 1, batch.start);
     }
 

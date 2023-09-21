@@ -29,7 +29,7 @@ export function getPo2TextureFromSource(image: HTMLImageElement | HTMLCanvasElem
         false
     );
 
-    texture.source.type = 'image';
+    texture.source.uploadMethodId = 'image';
     texture.source.resource = image;
 
     texture.frameWidth = image.width / resolution;

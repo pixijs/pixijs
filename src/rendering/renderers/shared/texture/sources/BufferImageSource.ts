@@ -11,7 +11,7 @@ export interface BufferSourceOptions extends TextureSourceOptions<TypedArray | A
 
 export class BufferImageSource extends TextureSource<TypedArray | ArrayBuffer>
 {
-    public type = 'buffer';
+    public uploadMethodId = 'buffer';
 
     public static from(options: BufferSourceOptions): BufferImageSource
     {
