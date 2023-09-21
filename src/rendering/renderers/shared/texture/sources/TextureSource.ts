@@ -201,12 +201,56 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
 
     public getResourceWidth(): number
     {
-        throw new Error('Method not implemented.');
+        const { resource } = this;
+
+        if ('naturalWidth' in resource && resource.naturalWidth !== undefined)
+        {
+            return resource.naturalWidth;
+        }
+
+        if ('videoWidth' in resource && resource.videoWidth !== undefined)
+        {
+            return resource.videoWidth;
+        }
+
+        if ('displayWidth' in resource && resource.displayWidth !== undefined)
+        {
+            return resource.displayWidth;
+        }
+
+        if ('width' in resource && resource.width !== undefined)
+        {
+            return resource.width;
+        }
+
+        throw new Error('Unable to determine resource width');
     }
 
     public getResourceHeight(): number
     {
-        throw new Error('Method not implemented.');
+        const { resource } = this;
+
+        if ('naturalHeight' in resource && resource.naturalHeight !== undefined)
+        {
+            return resource.naturalHeight;
+        }
+
+        if ('videoHeight' in resource && resource.videoHeight !== undefined)
+        {
+            return resource.videoHeight;
+        }
+
+        if ('displayHeight' in resource && resource.displayHeight !== undefined)
+        {
+            return resource.displayHeight;
+        }
+
+        if ('height' in resource && resource.height !== undefined)
+        {
+            return resource.height;
+        }
+
+        throw new Error('Unable to determine resource height');
     }
 
     get resolution(): number
