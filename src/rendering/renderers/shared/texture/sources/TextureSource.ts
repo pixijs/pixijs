@@ -199,6 +199,16 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this.emit('unload', this);
     }
 
+    public getResourceWidth(): number
+    {
+        throw new Error('Method not implemented.');
+    }
+
+    public getResourceHeight(): number
+    {
+        throw new Error('Method not implemented.');
+    }
+
     get resolution(): number
     {
         return this._resolution;
