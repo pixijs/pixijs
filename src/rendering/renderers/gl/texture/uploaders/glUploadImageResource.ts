@@ -18,8 +18,8 @@ export const glUploadImageResource = {
         const textureWidth = source.pixelWidth;
         const textureHeight = source.pixelHeight;
 
-        const resourceWidth = source.getResourceWidth();
-        const resourceHeight = source.getResourceHeight();
+        const resourceWidth = source.resourceWidth;
+        const resourceHeight = source.resourceHeight;
 
         if (resourceWidth < textureWidth || resourceHeight < textureHeight)
         {
