@@ -43,19 +43,13 @@ let uid = 0;
 
 export class TextView implements View
 {
-    public static defaultResolution = 1;
-    public static defaultAutoResolution = true;
-
     public readonly uid: number = uid++;
     public readonly renderPipeId: string = 'text';
     public readonly owner: ViewObserver = emptyViewObserver;
     public batched = true;
     public anchor: ObservablePoint;
+    public resolution: number = null;
 
-    /** @internal */
-    public _autoResolution = TextView.defaultAutoResolution;
-    /** @internal */
-    public _resolution = TextView.defaultResolution;
     /** @internal */
     public _style: AnyTextStyle;
     /** @internal */
@@ -80,9 +74,7 @@ export class TextView implements View
 
         this.anchor = new ObservablePoint(this, 0, 0);
 
-        this._resolution = options.resolution ?? TextView.defaultResolution;
-
-        this._autoResolution = !options.resolution ?? TextView.defaultAutoResolution;
+        this.resolution = options.resolution ?? null;
     }
 
     set text(value: TextString)
@@ -116,16 +108,6 @@ export class TextView implements View
 
         this._style.on('update', this.onUpdate, this);
         this.onUpdate();
-    }
-
-    set resolution(value: number)
-    {
-        this._resolution = value;
-    }
-
-    get resolution(): number
-    {
-        return this._resolution;
     }
 
     get bounds()

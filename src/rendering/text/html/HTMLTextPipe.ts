@@ -143,7 +143,8 @@ export class HTMLTextPipe implements RenderPipe<TextView>
 
         const view = renderable.view;
 
-        const resolution = view._autoResolution ? this._renderer.view.resolution : view._resolution;
+        // eslint-disable-next-line no-eq-null, eqeqeq
+        const resolution = view.resolution == null ? this._renderer.view.resolution : view.resolution;
 
         const texture = await this._renderer.htmlText.getManagedTexture(
             view.text,
