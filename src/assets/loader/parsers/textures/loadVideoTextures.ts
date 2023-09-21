@@ -13,7 +13,8 @@ import type { ResolvedAsset } from '../../../types';
 import type { Loader } from '../../Loader';
 import type { LoaderParser } from '../LoaderParser';
 
-const extensions = VideoSource.TYPES.map((ext) => `.${ext}`);
+const validVideoExtensions = ['.mp4', '.m4v', '.webm', '.ogg', '.ogv', '.h264', '.avi', '.mov'];
+const validVideoMIMEs = validVideoExtensions.map((ext) => `video/${ext.substring(1)}`);
 
 /**
  * Set cross origin based detecting the url and the crossorigin
@@ -68,7 +69,7 @@ export function determineCrossOrigin(url: string, loc: Location = globalThis.loc
 /**
  * Loads our video textures!
  *
- * You can pass VideoSource options to the loader via the .data property of the asset
+ * You can pass VideoSource options to the loader via the .data property of the asset descriptor
  * when using Asset.load().
  * ```js
  * // Set the data
@@ -95,7 +96,10 @@ export const loadVideoTextures = {
 
     test(url: string): boolean
     {
-        return checkDataUrl(url, Object.values(VideoSource.MIME_TYPES)) || checkExtension(url, extensions);
+        const isValidDataUrl = checkDataUrl(url, validVideoMIMEs);
+        const isValidExtension = checkExtension(url, validVideoExtensions);
+
+        return isValidDataUrl || isValidExtension;
     },
 
     async load(url: string, asset: ResolvedAsset<TextureSourceOptions>, loader: Loader): Promise<Texture>

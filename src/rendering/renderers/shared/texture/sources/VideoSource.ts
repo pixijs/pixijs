@@ -504,24 +504,6 @@ export class VideoSource extends TextureSource<VideoResource>
     }
 
     /**
-     * Used to auto-detect the type of resource.
-     * @param {*} source - The source object
-     * @param {string} extension - The extension of source, if set
-     * @returns {boolean} `true` if video source
-     */
-    public static test(source: unknown, extension?: string): source is HTMLVideoElement
-    {
-        return (globalThis.HTMLVideoElement && source instanceof HTMLVideoElement)
-            || VideoSource.TYPES.includes(extension);
-    }
-
-    /**
-     * List of common video file extensions supported by VideoResource.
-     * @readonly
-     */
-    public static TYPES: Array<string> = ['mp4', 'm4v', 'webm', 'ogg', 'ogv', 'h264', 'avi', 'mov'];
-
-    /**
      * Map of video MIME types that can't be directly derived from file extensions.
      * @readonly
      */

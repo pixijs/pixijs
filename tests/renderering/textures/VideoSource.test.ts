@@ -1,6 +1,7 @@
 import path from 'path';
 import { Assets } from '../../../src/assets/Assets';
 import { VideoSource } from '../../../src/rendering/renderers/shared/texture/sources/VideoSource';
+import '../../../src/all';
 
 import type { VideoSourceOptions } from '../../../src/rendering/renderers/shared/texture/sources/VideoSource';
 
@@ -8,9 +9,12 @@ const url = path.resolve(__dirname, '../../assets/assets/video', 'park.mp4');
 
 describe('VideoSource', () =>
 {
-    const setup = async (_options?: VideoSourceOptions, forceUrl?: string) =>
+    const setup = async (options?: VideoSourceOptions, forceUrl?: string) =>
     {
-        const texture = await Assets.load(forceUrl ?? url);
+        const texture = await Assets.load({
+            src: forceUrl ?? url,
+            data: options
+        });
         const source = texture.source;
         const sourceElement = source.resource.firstElementChild as HTMLSourceElement;
 
@@ -31,8 +35,6 @@ describe('VideoSource', () =>
         expect(source.pixelHeight).toEqual(0);
         expect(source.isReady).toBe(false);
         expect(source.isValid).toBe(false);
-
-        source.destroy();
     });
 
     it('should load new source', async () =>
@@ -46,30 +48,27 @@ describe('VideoSource', () =>
         expect(source.height).toEqual(1080);
         expect(source.isValid).toBe(true);
         expect(source.isReady).toBe(true);
-
-        source.destroy();
     });
 
     it('should find correct video extension from Url', async () =>
     {
-        const { source, sourceElement } = await setup();
+        const { sourceElement } = await setup();
 
         expect(sourceElement.type).toEqual('video/mp4');
-
-        source.destroy();
     });
 
     it('should get video extension without being thrown by query string', async () =>
     {
-        const { source, sourceElement } = await setup({}, `${url}?some=param`);
+        const { sourceElement } = await setup({}, `${url}?some=param`);
 
         expect(sourceElement.type).toEqual('video/mp4');
-
-        source.destroy();
     });
 
     it('should respect the updateFPS settings property and getter / setter', async () =>
     {
+        // clear the cache since we're creating new properties for the existing source
+        Assets.reset();
+
         const { source } = await setup({ updateFPS: 30 });
 
         await source.load();
@@ -77,8 +76,6 @@ describe('VideoSource', () =>
         expect(source.updateFPS).toEqual(30);
         source.updateFPS = 20;
         expect(source.updateFPS).toEqual(20);
-
-        source.destroy();
     });
 
     it('should load data URL', async () =>
@@ -88,8 +85,6 @@ describe('VideoSource', () =>
         const { source } = await setup({}, webmDataURL);
 
         await expect(source.load()).toResolve();
-
-        source.destroy();
     });
 
     it('should not hang on load if an error occurs', async () =>
@@ -123,8 +118,20 @@ describe('VideoSource', () =>
         await expect(errorOnLoad).toResolve();
         expect(await errorOnLoad).toBe(true);
         await expect(loadPromise).toReject();
+    });
 
-        source.destroy();
+    it('should wait until fully loaded if preload option is true', async () =>
+    {
+        // clear the cache since we're creating new properties for the existing source
+        Assets.reset();
+
+        const { source } = await setup({ preload: true, autoLoad: false });
+        const spy = jest.spyOn(source.resource, 'addEventListener');
+
+        await source.load();
+
+        expect(spy).toHaveBeenCalledWith('canplaythrough', expect.any(Function));
+        expect(spy).not.toHaveBeenCalledWith('canplay', expect.any(Function));
     });
 });
 
