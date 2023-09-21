@@ -190,6 +190,8 @@ export class ExtractSystem implements System
     {
         options = this._normalizeOptions(options);
 
+        if (options.target instanceof Texture) return options.target;
+
         return this._renderer.textureGenerator.generateTexture(options as GenerateTextureOptions);
     }
 
@@ -206,6 +208,30 @@ export class ExtractSystem implements System
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+    }
+
+    public log(options: (ExtractOptions & {width?: number}) | Container | Texture)
+    {
+        const width = options.width ?? 200;
+
+        options = this._normalizeOptions(options);
+
+        const canvas = this.canvas(options);
+
+        const base64 = canvas.toDataURL();
+
+        // eslint-disable-next-line no-console
+        console.log(`[Pixi Texture] ${canvas.width}px ${canvas.height}px`);
+
+        const style = [
+            'font-size: 1px;',
+            `padding: ${width}px ${300}px;`,
+            `background: url(${base64}) no-repeat;`,
+            'background-size: contain;',
+        ].join(' ');
+
+        // eslint-disable-next-line no-console
+        console.log('%c ', style);
     }
 
     public destroy(): void
