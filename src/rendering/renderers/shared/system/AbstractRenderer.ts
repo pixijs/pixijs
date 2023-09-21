@@ -31,7 +31,7 @@ export interface RenderOptions
     container: Container;
     transform?: Matrix;
     target?: RenderSurface;
-    clearColor?: RGBAArray;
+    clearColor?: ColorSource;
     clear?: boolean;
 }
 
