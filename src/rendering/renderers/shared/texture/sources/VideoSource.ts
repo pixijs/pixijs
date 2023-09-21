@@ -1,7 +1,7 @@
 // VideoSource.ts
 
+import { Assets } from '../../../../../assets/Assets';
 import { Ticker } from '../../../../../ticker/Ticker';
-import { crossOrigin } from '../utils/crossOrigin';
 import { TextureSource } from './TextureSource';
 
 import type { Dict } from '../../../../../utils/types';
@@ -18,6 +18,7 @@ export interface VideoSourceOptions extends TextureSourceOptions<VideoResource>
     loop?: boolean;
     muted?: boolean;
     playsinline?: boolean;
+    preload?: boolean;
 }
 
 export interface VideoResourceOptionsElement
@@ -85,96 +86,22 @@ export class VideoSource extends TextureSource<VideoResource>
      * Create a VideoSource from various input types.
      * @param {HTMLVideoElement|object|string|Array<string|object>} source - Video element to use.
      * @param {object} [options] - Options to use
-     * @param {boolean} [options.autoLoad=true] - Start loading the video immediately
-     * @param {boolean} [options.autoPlay=true] - Start playing video immediately
-     * @param {number} [options.updateFPS=0] - How many times a second to update the texture from the video.
-     * Leave at 0 to update at every render.
-     * @param {boolean} [options.crossorigin=true] - Load image using cross origin
-     * @param {boolean} [options.loop=false] - Loops the video
-     * @param {boolean} [options.muted=false] - Mutes the video audio, useful for autoplay
-     * @param {boolean} [options.playsinline=true] - Prevents opening the video on mobile devices
      */
-    public static from(
+    public static async from(
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         source?: HTMLVideoElement | Array<string | VideoResourceOptionsElement> | string,
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         options?: VideoSourceOptions
     )
     {
-        // Merge provided options with default ones
-        options = {
-            ...VideoSource.defaultOptions,
-            ...options
-        };
-
-        // If source is not an instance of HTMLVideoElement, create a new one with the given options
-        if (!(source instanceof HTMLVideoElement))
-        {
-            const videoElement = document.createElement('video');
-
-            if (options.autoLoad !== false)
-            {
-                videoElement.setAttribute('preload', 'auto');
-            }
-            if (options.playsinline !== false)
-            {
-                videoElement.setAttribute('webkit-playsinline', '');
-                videoElement.setAttribute('playsinline', '');
-            }
-            if (options.muted === true)
-            {
-                videoElement.setAttribute('muted', '');
-                videoElement.muted = true;
-            }
-            if (options.loop === true)
-            {
-                videoElement.setAttribute('loop', '');
-            }
-            if (options.autoPlay !== false)
-            {
-                videoElement.setAttribute('autoplay', '');
-            }
-
-            // Convert single string source to an array
-            if (typeof source === 'string')
-            {
-                source = [source];
-            }
-
-            const firstSrc = (source[0] as VideoResourceOptionsElement).src || source[0] as string;
-
-            crossOrigin(videoElement, firstSrc, options.crossorigin);
-
-            // Handle array of objects or strings
-            for (const srcOption of source)
-            {
-                const sourceElement = document.createElement('source');
-                let { src, mime } = srcOption as VideoResourceOptionsElement;
-
-                src = src ?? srcOption as string;
-
-                if (src.startsWith('data:'))
-                {
-                    mime = src.slice(5, src.indexOf(';'));
-                }
-                else if (!src.startsWith('blob:'))
-                {
-                    const ext = src.split('?')[0].slice(src.lastIndexOf('.') + 1).toLowerCase();
-
-                    mime = mime || VideoSource.MIME_TYPES[ext] || `video/${ext}`;
-                }
-
-                sourceElement.src = src;
-                if (mime)
-                {
-                    sourceElement.type = mime;
-                }
-
-                videoElement.appendChild(sourceElement);
-            }
-
-            source = videoElement;
-        }
-
-        return new VideoSource({ ...options, resource: source });
+        // todo: do we even need this? Technically VideoSource is a new class not the old VideoResource class...
+        // deprecation('8.0.0', `PIXI.VideoResource.from() is deprecated, use Assets.load(url) instead.`);
+        // todo: how to pass options?
+        return Assets.load(source as string);
     }
 
     constructor(
