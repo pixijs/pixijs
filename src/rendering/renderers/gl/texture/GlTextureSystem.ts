@@ -217,7 +217,7 @@ export class GlTextureSystem implements System, CanvasGenerator
     {
         const gl = this._gl;
 
-        const glTexture = this._glTextures[source.uid];
+        const glTexture = this.getGlSource(source);
 
         gl.bindTexture(gl.TEXTURE_2D, glTexture.texture);
 

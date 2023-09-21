@@ -95,7 +95,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
 
     protected onSourceUpdate(source: TextureSource): void
     {
-        const gpuTexture = this._gpuSources[source.uid];
+        const gpuTexture = this.getGpuSource(source);
 
         // destroyed!
         if (!gpuTexture) return;

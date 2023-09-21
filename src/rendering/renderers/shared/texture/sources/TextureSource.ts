@@ -72,8 +72,6 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     // generally this is used only used internally by pixi!
     public sampleCount = 1;
 
-    // antialias = false;
-
     // mip stuff..
     public mipLevelCount = 1; // overridden if autoGenerateMipmaps is true
     public autoGenerateMipmaps = false;
