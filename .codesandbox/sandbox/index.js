@@ -2,7 +2,7 @@ import * as PIXI from 'pixi.js';
 
 (async () => {
     const app = new PIXI.Application();
-    await app.init({ background: '#1099bb', resizeTo: window });
+    await app.init({ background: '#1099bb', resizeTo: window, preference: 'webgl' });
 
     // do pixi things
     document.body.appendChild(app.canvas);
