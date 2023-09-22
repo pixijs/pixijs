@@ -139,8 +139,12 @@ export class AbstractRenderer<PIPES, OPTIONS>
 
         options.target ||= this.view.texture;
 
-        // TODO get rid of this
-        this._lastObjectRendered = options.container;
+        // TODO: we should eventually fix events so that it can handle multiple canvas elements
+        if (options.target === this.view.texture)
+        {
+            // TODO get rid of this
+            this._lastObjectRendered = options.container;
+        }
 
         this.runners.prerender.emit(options);
         this.runners.renderStart.emit(options);

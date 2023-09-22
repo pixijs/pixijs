@@ -10,6 +10,7 @@ import { Bounds } from '../../scene/bounds/Bounds';
 import { getGlobalBounds } from '../../scene/bounds/getGlobalBounds';
 import { getGlobalRenderableBounds } from '../../scene/bounds/getRenderableBounds';
 
+import type { GlRenderTargetSystem } from '../../renderers/gl/GlRenderTargetSystem';
 import type { RenderSurface } from '../../renderers/gpu/renderTarget/GpuRenderTargetSystem';
 import type { WebGPURenderer } from '../../renderers/gpu/WebGPURenderer';
 import type { Instruction } from '../../renderers/shared/instructions/Instruction';
@@ -268,6 +269,10 @@ export class FilterSystem implements System
 
         let backTexture = Texture.EMPTY;
 
+        // TODO - another area we need to know about the renderer
+        // but its still not worth making ana adaptor for this yet
+        (renderer.renderTarget as GlRenderTargetSystem).finishRenderPass?.();
+
         if (filterData.blendRequired)
         {
             // this actually forces the current commandQueue to render everything so far.
@@ -301,7 +306,6 @@ export class FilterSystem implements System
             // this.applyFilter(filters[0], inputTexture, filterData.previousRenderSurface, false);
             filters[0].apply(this, inputTexture, filterData.previousRenderSurface, false);
 
-            // logDebugTexture(inputTexture, this.renderer);
             // return the texture to the pool so we can reuse the next frame
             TexturePool.returnTexture(inputTexture);
         }
