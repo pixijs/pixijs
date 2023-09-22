@@ -1,6 +1,7 @@
 // VideoSource.ts
 
 import { Ticker } from '../../../../../ticker/Ticker';
+import { detectVideoAlphaMode } from '../../../../../utils/browser/detectVideoAlphaMode';
 import { crossOrigin } from '../utils/crossOrigin';
 import { TextureSource } from './TextureSource';
 
@@ -41,7 +42,6 @@ export class VideoSource extends TextureSource<VideoResource>
     };
 
     // Public
-    public alphaMode = 0;
     public isReady = false;
     public uploadMethodId = 'video';
 
@@ -273,7 +273,7 @@ export class VideoSource extends TextureSource<VideoResource>
      * Start preloading the video resource.
      * @returns {Promise<this>} Handle the validate event
      */
-    public load(): Promise<this>
+    public async load(): Promise<this>
     {
         if (this._load)
         {
@@ -305,6 +305,8 @@ export class VideoSource extends TextureSource<VideoResource>
         {
             this._onCanPlay();
         }
+
+        this.alphaMode = await detectVideoAlphaMode();
 
         // Create and return the loading promise
         this._load = new Promise((resolve, reject): void =>

@@ -3,30 +3,17 @@
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
 
 /**
- * How to treat textures with premultiplied alpha
- * @name ALPHA_MODES
- * @static
- * @enum {number}
- * @property {number} NO_PREMULTIPLIED_ALPHA - Source is not premultiplied, leave it like that.
- *  Option for compressed and data textures that are created from typed arrays.
- * @property {number} PREMULTIPLY_ON_UPLOAD - Source is not premultiplied, premultiply on upload.
- *  Default option, used for all loaded images.
- * @property {number} PREMULTIPLIED_ALPHA - Source is already premultiplied
- *  Example: spine atlases with `_pma` suffix.
- * @property {number} NPM - Alias for NO_PREMULTIPLIED_ALPHA.
- * @property {number} UNPACK - Default option, alias for PREMULTIPLY_ON_UPLOAD.
- * @property {number} PMA - Alias for PREMULTIPLIED_ALPHA.
+ * Specifies the alpha composition mode for textures.
+ *
+ * - `no-premultiply-alpha`: Does not premultiply alpha.
+ * - `premultiply-alpha-on-upload`: Premultiplies alpha on texture upload.
+ * - `premultiplied-alpha`: Assumes the texture is already in premultiplied alpha format.
+ * @typedef {'no-premultiply-alpha' | 'premultiply-alpha-on-upload' | 'premultiplied-alpha'} ALPHA_MODES
  */
-export enum ALPHA_MODES
-    // eslint-disable-next-line @typescript-eslint/indent
- {
-    NPM = 0,
-    UNPACK = 1,
-    PMA = 2,
-    NO_PREMULTIPLIED_ALPHA = 0,
-    PREMULTIPLY_ON_UPLOAD = 1,
-    PREMULTIPLIED_ALPHA = 2,
-}
+export type ALPHA_MODES =
+    'no-premultiply-alpha' |
+    'premultiply-alpha-on-upload' |
+    'premultiplied-alpha';
 
 /**
  * Constants for multi-sampling antialiasing.

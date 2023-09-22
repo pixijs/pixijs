@@ -5,7 +5,7 @@ export const colorBit = {
             @in aColor: vec4<f32>;
         `,
         main: /* wgsl */`
-            vColor *= vec4<f32>(aColor.rgb * aColor.a, aColor.a);
+            vColor *= aColor;
         `
     }
 };
@@ -17,7 +17,7 @@ export const colorBitGl = {
             in vec4 aColor;
         `,
         main: /* glsl */`
-            vColor *= vec4(aColor.rgb * aColor.a, aColor.a);
+           vColor *=  aColor;
         `
     }
 };
