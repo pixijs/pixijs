@@ -1,12 +1,12 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { VideoSource } from '../../../../rendering/renderers/shared/texture/sources/VideoSource';
+import { detectVideoAlphaMode } from '../../../../utils/browser/detectVideoAlphaMode';
 import { getResolutionOfUrl } from '../../../../utils/network/getResolutionOfUrl';
 import { checkDataUrl } from '../../../utils/checkDataUrl';
 import { checkExtension } from '../../../utils/checkExtension';
 import { LoaderParserPriority } from '../LoaderParser';
 import { createTexture } from './utils/createTexture';
 
-import type { TextureSourceOptions } from '../../../../rendering/renderers/shared/texture/sources/TextureSource';
 import type { VideoSourceOptions } from '../../../../rendering/renderers/shared/texture/sources/VideoSource';
 import type { Texture } from '../../../../rendering/renderers/shared/texture/Texture';
 import type { ResolvedAsset } from '../../../types';
@@ -102,12 +102,13 @@ export const loadVideoTextures = {
         return isValidDataUrl || isValidExtension;
     },
 
-    async load(url: string, asset: ResolvedAsset<TextureSourceOptions>, loader: Loader): Promise<Texture>
+    async load(url: string, asset: ResolvedAsset<VideoSourceOptions>, loader: Loader): Promise<Texture>
     {
         // --- Merge default and provided options ---
         const options: VideoSourceOptions = {
             ...VideoSource.defaultOptions,
-            resolution: asset.data?.resolution || getResolutionOfUrl(url), // Assume getResolutionOfUrl is globally available
+            resolution: asset.data?.resolution || getResolutionOfUrl(url),
+            alphaMode: asset.data?.alphaMode || await detectVideoAlphaMode(),
             ...asset.data,
         };
 

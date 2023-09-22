@@ -1,6 +1,5 @@
 // VideoSource.ts
 
-import { Assets } from '../../../../../assets/Assets';
 import { Ticker } from '../../../../../ticker/Ticker';
 import { TextureSource } from './TextureSource';
 
@@ -19,6 +18,7 @@ export interface VideoSourceOptions extends TextureSourceOptions<VideoResource>
     muted?: boolean;
     playsinline?: boolean;
     preload?: boolean;
+    alphaMode?: number;
 }
 
 export interface VideoResourceOptionsElement
@@ -83,28 +83,6 @@ export class VideoSource extends TextureSource<VideoResource>
     private _updateFPS: number;
     private _videoFrameRequestCallbackHandle: number | null;
 
-    /**
-     * Create a VideoSource from various input types.
-     * @param {HTMLVideoElement|object|string|Array<string|object>} source - Video element to use.
-     * @param {object} [options] - Options to use
-     */
-    public static async from(
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        source?: HTMLVideoElement | Array<string | VideoResourceOptionsElement> | string,
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        options?: VideoSourceOptions
-    )
-    {
-        // todo: do we even need this? Technically VideoSource is a new class not the old VideoResource class...
-        // deprecation('8.0.0', `PIXI.VideoResource.from() is deprecated, use Assets.load(url) instead.`);
-        // todo: how to pass options?
-        return Assets.load(source as string);
-    }
-
     constructor(
         options: VideoSourceOptions
     )
@@ -122,6 +100,7 @@ export class VideoSource extends TextureSource<VideoResource>
         this._updateFPS = options.updateFPS || 0;
         this._msToNextUpdate = 0;
         this.autoPlay = options.autoPlay !== false;
+        this.alphaMode = options.alphaMode ?? 0;
 
         // Binding for frame updates
         this._videoFrameRequestCallback = this._videoFrameRequestCallback.bind(this);

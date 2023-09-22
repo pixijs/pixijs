@@ -21,6 +21,12 @@ describe('VideoSource', () =>
         return { source, sourceElement };
     };
 
+    beforeEach(() =>
+    {
+        // clear the cache since we're creating new properties for the existing source
+        Assets.reset();
+    });
+
     it('should create new source', async () =>
     {
         const { source, sourceElement } = await setup();
@@ -66,9 +72,6 @@ describe('VideoSource', () =>
 
     it('should respect the updateFPS settings property and getter / setter', async () =>
     {
-        // clear the cache since we're creating new properties for the existing source
-        Assets.reset();
-
         const { source } = await setup({ updateFPS: 30 });
 
         await source.load();
@@ -122,9 +125,6 @@ describe('VideoSource', () =>
 
     it('should wait until fully loaded if preload option is true', async () =>
     {
-        // clear the cache since we're creating new properties for the existing source
-        Assets.reset();
-
         const { source } = await setup({ preload: true, autoLoad: false });
         const spy = jest.spyOn(source.resource, 'addEventListener');
 
