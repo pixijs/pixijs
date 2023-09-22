@@ -112,11 +112,11 @@ export class TexturePoolClass
         return texture;
     }
 
-    public getSameSizeTexture(texture: Texture)
+    public getSameSizeTexture(texture: Texture, antialias = false)
     {
         const source = texture.source;
 
-        return this.getOptimalTexture(texture.width, texture.height, source._resolution, source.antialias);
+        return this.getOptimalTexture(texture.width, texture.height, source._resolution, antialias);
     }
 
     /**

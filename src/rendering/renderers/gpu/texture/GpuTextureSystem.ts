@@ -66,7 +66,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
         }
 
         const textureDescriptor = {
-            size: { width: source.pixelWidth | 1, height: source.pixelHeight | 1 },
+            size: { width: source.pixelWidth || 1, height: source.pixelHeight || 1 },
             format: source.format,
             sampleCount: source.sampleCount,
             mipLevelCount: source.mipLevelCount,
@@ -95,7 +95,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
 
     protected onSourceUpdate(source: TextureSource): void
     {
-        const gpuTexture = this._gpuSources[source.uid];
+        const gpuTexture = this.getGpuSource(source);
 
         // destroyed!
         if (!gpuTexture) return;

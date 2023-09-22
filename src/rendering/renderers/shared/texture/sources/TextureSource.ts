@@ -72,8 +72,6 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     // generally this is used only used internally by pixi!
     public sampleCount = 1;
 
-    // antialias = false;
-
     // mip stuff..
     public mipLevelCount = 1; // overridden if autoGenerateMipmaps is true
     public autoGenerateMipmaps = false;
@@ -112,7 +110,8 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
      */
     public _textureBindLocation = -1;
 
-    constructor(options: TextureSourceOptions<T> = {})
+    // eslint-disable-next-line @typescript-eslint/no-parameter-properties
+    constructor(protected readonly options: TextureSourceOptions<T> = {})
     {
         super();
 
@@ -197,6 +196,20 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this.resourceId++;
         this.emit('change', this);
         this.emit('unload', this);
+    }
+
+    public get resourceWidth(): number
+    {
+        const { resource } = this;
+
+        return resource.naturalWidth || resource.videoWidth || resource.displayWidth || resource.width;
+    }
+
+    public get resourceHeight(): number
+    {
+        const { resource } = this;
+
+        return resource.naturalHeight || resource.videoHeight || resource.displayHeight || resource.height;
     }
 
     get resolution(): number

@@ -2,7 +2,7 @@ import * as PIXI from 'pixi.js';
 
 (async () => {
     const app = new PIXI.Application();
-    await app.init({ background: '#1099bb', resizeTo: window });
+    await app.init({ background: '0x1099bb', resizeTo: window, preference: 'webgl' });
 
     // do pixi things
     document.body.appendChild(app.canvas);
@@ -21,12 +21,12 @@ import * as PIXI from 'pixi.js';
     app.stage.addChild(bunny);
 
     // Listen for animate update
-    app.ticker.add((delta) =>
+    app.ticker.add((ticker) =>
     {
         // just for fun, let's rotate mr rabbit a little
         // delta is 1 if running at 100% performance
         // creates frame-independent transformation
-        bunny.rotation += 0.1 * delta;
+        bunny.rotation += 0.1 * ticker.deltaTime;
     });
  })()
 
