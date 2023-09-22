@@ -210,6 +210,16 @@ export class Graphics extends Container<GraphicsView>
         this.view.context.strokeStyle = value;
     }
 
+    public beginFill(): this
+    {
+        return this;
+    }
+
+    public endFill(): this
+    {
+        return this;
+    }
+
     // v7 deprecations
     /**
      * @param {...any} args
