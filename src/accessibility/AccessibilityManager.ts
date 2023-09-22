@@ -28,7 +28,7 @@ const DIV_HOOK_ZINDEX = 2;
  * The Accessibility manager recreates the ability to tab and have content read by screen readers.
  * This is very important as it can possibly help people with disabilities access PixiJS content.
  *
- * A DisplayObject can be made accessible just like it can be made interactive. This manager will map the
+ * A Container can be made accessible just like it can be made interactive. This manager will map the
  * events as if the mouse was being used, minimizing the effort required to implement.
  *
  * An instance of this class is automatically created by default, and can be found at `renderer.plugins.accessibility`
@@ -232,26 +232,26 @@ export class AccessibilityManager
     /**
      * This recursive function will run through the scene graph and add any new accessible objects to the DOM layer.
      * @private
-     * @param {PIXI.Container} displayObject - The DisplayObject to check.
+     * @param {PIXI.Container} container - The Container to check.
      */
-    private _updateAccessibleObjects(displayObject: Container): void
+    private _updateAccessibleObjects(container: Container): void
     {
-        if (!displayObject.visible || !displayObject.accessibleChildren)
+        if (!container.visible || !container.accessibleChildren)
         {
             return;
         }
 
-        if (displayObject.accessible && displayObject.isInteractive())
+        if (container.accessible && container.isInteractive())
         {
-            if (!displayObject._accessibleActive)
+            if (!container._accessibleActive)
             {
-                this._addChild(displayObject);
+                this._addChild(container);
             }
 
-            displayObject.renderId = this._renderId;
+            container.renderId = this._renderId;
         }
 
-        const children = displayObject.children;
+        const children = container.children;
 
         if (children)
         {
@@ -415,11 +415,11 @@ export class AccessibilityManager
     }
 
     /**
-     * Adds a DisplayObject to the accessibility manager
+     * Adds a Container to the accessibility manager
      * @private
-     * @param {PIXI.Container} displayObject - The child to make accessible.
+     * @param {PIXI.Container} container - The child to make accessible.
      */
-    private _addChild<T extends Container>(displayObject: T): void
+    private _addChild<T extends Container>(container: T): void
     {
         //    this.activate();
 
@@ -464,35 +464,35 @@ export class AccessibilityManager
         }
 
         // set pointer events
-        div.style.pointerEvents = displayObject.accessiblePointerEvents;
+        div.style.pointerEvents = container.accessiblePointerEvents;
         // set the type, this defaults to button!
-        div.type = displayObject.accessibleType;
+        div.type = container.accessibleType;
 
-        if (displayObject.accessibleTitle && displayObject.accessibleTitle !== null)
+        if (container.accessibleTitle && container.accessibleTitle !== null)
         {
-            div.title = displayObject.accessibleTitle;
+            div.title = container.accessibleTitle;
         }
-        else if (!displayObject.accessibleHint
-                 || displayObject.accessibleHint === null)
+        else if (!container.accessibleHint
+                 || container.accessibleHint === null)
         {
-            div.title = `displayObject ${displayObject.tabIndex}`;
+            div.title = `container ${container.tabIndex}`;
         }
 
-        if (displayObject.accessibleHint
-            && displayObject.accessibleHint !== null)
+        if (container.accessibleHint
+            && container.accessibleHint !== null)
         {
-            div.setAttribute('aria-label', displayObject.accessibleHint);
+            div.setAttribute('aria-label', container.accessibleHint);
         }
 
         if (this.debug) this.updateDebugHTML(div);
 
-        displayObject._accessibleActive = true;
-        displayObject._accessibleDiv = div;
-        div.displayObject = displayObject;
+        container._accessibleActive = true;
+        container._accessibleDiv = div;
+        div.container = container;
 
-        this._children.push(displayObject);
-        this._div.appendChild(displayObject._accessibleDiv);
-        displayObject._accessibleDiv.tabIndex = displayObject.tabIndex;
+        this._children.push(container);
+        this._div.appendChild(container._accessibleDiv);
+        container._accessibleDiv.tabIndex = container.tabIndex;
     }
 
     /**
@@ -503,7 +503,7 @@ export class AccessibilityManager
      */
     private _dispatchEvent(e: UIEvent, type: string[]): void
     {
-        const { displayObject: target } = e.target as AccessibleHTMLElement;
+        const { container: target } = e.target as AccessibleHTMLElement;
         const boundary = this.renderer.events.rootBoundary;
         const event: FederatedEvent = Object.assign(new FederatedEvent(boundary), { target });
 
