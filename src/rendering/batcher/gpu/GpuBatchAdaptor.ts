@@ -53,6 +53,15 @@ export class GpuBatchAdaptor implements BatcherAdaptor
 
         encoder.setGeometry(geometry);
 
+        tempState.blendMode = 'normal';
+
+        // this just initates the pipeline, so we can then set bind groups on it
+        renderer.pipeline.getPipeline(
+            geometry,
+            program,
+            tempState
+        );
+
         const globalUniformsBindGroup = renderer.globalUniforms.bindGroup;
 
         encoder.setBindGroup(0, globalUniformsBindGroup, program);
