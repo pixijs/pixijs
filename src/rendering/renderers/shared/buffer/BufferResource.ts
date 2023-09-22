@@ -8,13 +8,13 @@ export class BufferResource extends EventEmitter<{
     'change': BindResource,
 }> implements BindResource
 {
-    public readonly uid = uid();
+    public readonly uid = uid('buffer');
     public touched = 0;
 
     public resourceType = 'bufferResource';
 
     // this really means ths the buffer resource cannot be updated!
-    public resourceId = uid();
+    public resourceId = uid('buffer');
 
     public buffer: Buffer;
     public readonly offset: number;
@@ -34,7 +34,7 @@ export class BufferResource extends EventEmitter<{
 
     protected onBufferChange(): void
     {
-        this.resourceId = uid();
+        this.resourceId = uid('buffer');
 
         this.emit('change', this);
     }

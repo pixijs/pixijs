@@ -2,6 +2,7 @@
 // import { Matrix } from '../../shared/maths/Matrix';
 import { Matrix } from '../../../../maths/Matrix';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
+import { uid } from '../../../../utils/data/uid';
 import { calculateProjection } from '../../gpu/renderTarget/calculateProjection';
 import { TextureSource } from '../texture/sources/TextureSource';
 import { Texture } from '../texture/Texture';
@@ -19,8 +20,6 @@ export interface RenderTargetDescriptor
     antialias?: boolean;
 }
 
-let UID = 0;
-
 export class RenderTarget
 {
     public static defaultDescriptor: RenderTargetDescriptor = {
@@ -32,7 +31,7 @@ export class RenderTarget
         antialias: false, // save on perf by default!
     };
 
-    public uid = UID++;
+    public uid = uid('renderTarget');
 
     public width = 0;
     public height = 0;

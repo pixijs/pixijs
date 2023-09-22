@@ -26,7 +26,7 @@ export class UniformGroup<UNIFORMS extends { [key: string]: UniformData } = any>
 
     public touched = 0;
 
-    public readonly uid = uid();
+    public readonly uid = uid('uniform');
 
     public resourceType = 'uniformGroup';
     public resourceId = this.uid;
