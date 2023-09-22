@@ -5,7 +5,7 @@ const app = new PIXI.Application({ background: '#1099bb', resizeTo: window });
 document.body.appendChild(app.view);
 
 // create a new Sprite from an image path
-const bunny = PIXI.Sprite.from('https://beta.pixijs.com/assets/bunny.png');
+const bunny = PIXI.Sprite.from('https://pixijs.com/assets/bunny.png');
 
 // center the sprite's anchor point
 bunny.anchor.set(0.5);

@@ -59,7 +59,7 @@ async function main()
         alias({
             entries: [
                 { find: 'pixi.js', replacement: './bundles/pixi.js/src/index.ts' },
-                { find: /^@pixi\/(.+)$/, replacement: './packages/$1/src/index.ts' },
+                { find: /^@pixi\/(?!colord)(.+)$/, replacement: './packages/$1/src/index.ts' },
             ]
         }),
     ];
