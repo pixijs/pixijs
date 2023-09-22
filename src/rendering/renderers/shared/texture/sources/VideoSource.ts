@@ -5,6 +5,7 @@ import { detectVideoAlphaMode } from '../../../../../utils/browser/detectVideoAl
 import { TextureSource } from './TextureSource';
 
 import type { Dict } from '../../../../../utils/types';
+import type { ALPHA_MODES } from '../const';
 import type { TextureSourceOptions } from './TextureSource';
 
 type VideoResource = HTMLVideoElement;
@@ -19,7 +20,7 @@ export interface VideoSourceOptions extends TextureSourceOptions<VideoResource>
     muted?: boolean;
     playsinline?: boolean;
     preload?: boolean;
-    alphaMode?: number;
+    alphaMode?: ALPHA_MODES;
 }
 
 export interface VideoResourceOptionsElement
@@ -100,7 +101,7 @@ export class VideoSource extends TextureSource<VideoResource>
         this._updateFPS = options.updateFPS || 0;
         this._msToNextUpdate = 0;
         this.autoPlay = options.autoPlay !== false;
-        this.alphaMode = options.alphaMode ?? 0;
+        this.alphaMode = options.alphaMode ?? 'premultiply-alpha-on-upload';
 
         // Binding for frame updates
         this._videoFrameRequestCallback = this._videoFrameRequestCallback.bind(this);
