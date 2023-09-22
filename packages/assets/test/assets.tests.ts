@@ -440,6 +440,59 @@ describe('Assets', () =>
         expect(font).toBeInstanceOf(FontFace);
     });
 
+    it('should not show a cache warning if the same asset is loaded twice', async () =>
+    {
+        jest.setTimeout(10000);
+        await Assets.init({
+            basePath,
+        });
+
+        const spy = jest.spyOn(console, 'warn');
+
+        await Promise.all([
+            Assets.load('textures/bunny.png'),
+            Assets.load('textures/bunny.png'),
+            Assets.load({ src: 'textures/bunny.1.{png,webp}' }),
+            Assets.load({ src: 'textures/bunny.1.{png,webp}' }),
+            Assets.load({ src: ['textures/bunny.2.{png,webp}'] }),
+            Assets.load({ src: ['textures/bunny.2.{png,webp}'] }),
+            Assets.load({
+                src: [
+                    {
+                        src: 'textures/bunny.3.png',
+                    },
+                    {
+                        src: 'textures/bunny.3.webp',
+                    }
+                ]
+            }),
+            Assets.load({
+                src: [
+                    {
+                        src: 'textures/bunny.3.png',
+                    },
+                    {
+                        src: 'textures/bunny.3.webp',
+                    }
+                ]
+            }),
+            Assets.load({
+                src: {
+                    src: 'textures/bunny.4.png',
+                },
+            }),
+            Assets.load({
+                src: {
+                    src: 'textures/bunny.4.png',
+                },
+            }),
+        ]);
+
+        expect(spy).not.toHaveBeenCalled();
+
+        spy.mockRestore();
+    });
+
     it('should load font assets with space in URL', async () =>
     {
         await Assets.init({
@@ -449,24 +502,6 @@ describe('Assets', () =>
         const font = await Assets.load('fonts/url with space.ttf');
 
         expect(font).toBeInstanceOf(FontFace);
-    });
-
-    it('should not show a cache warning if the same asset is loaded twice', async () =>
-    {
-        await Assets.init({
-            basePath,
-        });
-
-        const spy = jest.spyOn(console, 'warn');
-
-        const bunnyPromise = Assets.load('textures/bunny.png');
-        const bunnyPromise2 = Assets.load('textures/bunny.png');
-
-        await Promise.all([bunnyPromise, bunnyPromise2]);
-
-        expect(spy).not.toHaveBeenCalled();
-
-        spy.mockRestore();
     });
 
     it('should append default url params when specified in the constructor', async () =>
