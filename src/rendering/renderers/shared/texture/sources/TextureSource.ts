@@ -197,6 +197,20 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this.emit('unload', this);
     }
 
+    public get resourceWidth(): number
+    {
+        const { resource } = this;
+
+        return resource.naturalWidth || resource.videoWidth || resource.displayWidth || resource.width;
+    }
+
+    public get resourceHeight(): number
+    {
+        const { resource } = this;
+
+        return resource.naturalHeight || resource.videoHeight || resource.displayHeight || resource.height;
+    }
+
     get resolution(): number
     {
         return this._resolution;
