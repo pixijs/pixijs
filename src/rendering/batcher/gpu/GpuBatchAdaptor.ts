@@ -26,7 +26,6 @@ export class GpuBatchAdaptor implements BatcherAdaptor
     } as const;
 
     private _shader: Shader;
-    private readonly _pipelines: Record<string, GPURenderPipeline> = {};
 
     public init()
     {
@@ -54,17 +53,6 @@ export class GpuBatchAdaptor implements BatcherAdaptor
 
         encoder.setGeometry(geometry);
 
-        if (!this._pipelines.normal)
-        {
-            tempState.blendMode = 'normal';
-
-            this._pipelines.normal = renderer.pipeline.getPipeline(
-                geometry,
-                program,
-                tempState
-            );
-        }
-
         const globalUniformsBindGroup = renderer.globalUniforms.bindGroup;
 
         encoder.setBindGroup(0, globalUniformsBindGroup, program);
@@ -87,19 +75,15 @@ export class GpuBatchAdaptor implements BatcherAdaptor
             batch.bindGroup, program, 1
         );
 
-        if (!this._pipelines[batch.blendMode])
-        {
-            tempState.blendMode = batch.blendMode;
-            this._pipelines[batch.blendMode] = renderer.pipeline.getPipeline(
-                batch.batcher.geometry,
-                program,
-                tempState
-            );
-        }
+        const pipeline = renderer.pipeline.getPipeline(
+            batch.batcher.geometry,
+            program,
+            tempState
+        );
 
         batch.bindGroup.touch(renderer.textureGC.count);
 
-        encoder.setPipeline(this._pipelines[batch.blendMode]);
+        encoder.setPipeline(pipeline);
 
         encoder.renderPassEncoder.setBindGroup(1, gpuBindGroup);
         encoder.renderPassEncoder.drawIndexed(batch.size, 1, batch.start);
