@@ -269,7 +269,9 @@ export class GlRenderTargetSystem implements System
         );
 
         gl.bindFramebuffer(gl.FRAMEBUFFER, glRenderTarget.framebuffer);
-        gl.bindFramebuffer(gl.READ_FRAMEBUFFER, null);
+
+        // dont think we need this anymore? keeping around just in case the wheels fall off
+        // gl.bindFramebuffer(gl.READ_FRAMEBUFFER, null);
     }
 
     public copyToTexture(
