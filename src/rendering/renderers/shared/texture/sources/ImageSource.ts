@@ -5,7 +5,7 @@ import { TextureSource } from './TextureSource';
 
 import type { ICanvas } from '../../../../../settings/adapter/ICanvas';
 
-type ImageResource = ImageBitmap | HTMLCanvasElement | OffscreenCanvas | ICanvas;
+type ImageResource = ImageBitmap | HTMLCanvasElement | OffscreenCanvas | ICanvas | VideoFrame;
 
 export class ImageSource extends TextureSource<ImageResource>
 {

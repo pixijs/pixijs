@@ -2,7 +2,6 @@
 
 import { Ticker } from '../../../../../ticker/Ticker';
 import { detectVideoAlphaMode } from '../../../../../utils/browser/detectVideoAlphaMode';
-import { crossOrigin } from '../utils/crossOrigin';
 import { TextureSource } from './TextureSource';
 
 import type { Dict } from '../../../../../utils/types';
@@ -19,6 +18,8 @@ export interface VideoSourceOptions extends TextureSourceOptions<VideoResource>
     loop?: boolean;
     muted?: boolean;
     playsinline?: boolean;
+    preload?: boolean;
+    alphaMode?: number;
 }
 
 export interface VideoResourceOptionsElement
@@ -39,6 +40,7 @@ export class VideoSource extends TextureSource<VideoResource>
         loop: false,
         muted: true,
         playsinline: true,
+        preload: false,
     };
 
     // Public
@@ -81,102 +83,6 @@ export class VideoSource extends TextureSource<VideoResource>
     private _updateFPS: number;
     private _videoFrameRequestCallbackHandle: number | null;
 
-    /**
-     * Create a VideoSource from various input types.
-     * @param {HTMLVideoElement|object|string|Array<string|object>} source - Video element to use.
-     * @param {object} [options] - Options to use
-     * @param {boolean} [options.autoLoad=true] - Start loading the video immediately
-     * @param {boolean} [options.autoPlay=true] - Start playing video immediately
-     * @param {number} [options.updateFPS=0] - How many times a second to update the texture from the video.
-     * Leave at 0 to update at every render.
-     * @param {boolean} [options.crossorigin=true] - Load image using cross origin
-     * @param {boolean} [options.loop=false] - Loops the video
-     * @param {boolean} [options.muted=false] - Mutes the video audio, useful for autoplay
-     * @param {boolean} [options.playsinline=true] - Prevents opening the video on mobile devices
-     */
-    public static from(
-        source?: HTMLVideoElement | Array<string | VideoResourceOptionsElement> | string,
-        options?: VideoSourceOptions
-    )
-    {
-        // Merge provided options with default ones
-        options = {
-            ...VideoSource.defaultOptions,
-            ...options
-        };
-
-        // If source is not an instance of HTMLVideoElement, create a new one with the given options
-        if (!(source instanceof HTMLVideoElement))
-        {
-            const videoElement = document.createElement('video');
-
-            if (options.autoLoad !== false)
-            {
-                videoElement.setAttribute('preload', 'auto');
-            }
-            if (options.playsinline !== false)
-            {
-                videoElement.setAttribute('webkit-playsinline', '');
-                videoElement.setAttribute('playsinline', '');
-            }
-            if (options.muted === true)
-            {
-                videoElement.setAttribute('muted', '');
-                videoElement.muted = true;
-            }
-            if (options.loop === true)
-            {
-                videoElement.setAttribute('loop', '');
-            }
-            if (options.autoPlay !== false)
-            {
-                videoElement.setAttribute('autoplay', '');
-            }
-
-            // Convert single string source to an array
-            if (typeof source === 'string')
-            {
-                source = [source];
-            }
-
-            const firstSrc = (source[0] as VideoResourceOptionsElement).src || source[0] as string;
-
-            crossOrigin(videoElement, firstSrc, options.crossorigin);
-
-            // Handle array of objects or strings
-            for (const srcOption of source)
-            {
-                const sourceElement = document.createElement('source');
-                let { src, mime } = srcOption as VideoResourceOptionsElement;
-
-                src = src ?? srcOption as string;
-
-                if (src.startsWith('data:'))
-                {
-                    mime = src.slice(5, src.indexOf(';'));
-                }
-                else if (!src.startsWith('blob:'))
-                {
-                    const ext = src.split('?')[0].slice(src.lastIndexOf('.') + 1).toLowerCase();
-
-                    mime = mime || VideoSource.MIME_TYPES[ext] || `video/${ext}`;
-                }
-
-                sourceElement.src = src;
-                if (mime)
-                {
-                    sourceElement.type = mime;
-                }
-
-                videoElement.appendChild(sourceElement);
-            }
-
-            source = videoElement;
-        }
-
-        return new VideoSource({ ...options, resource: source });
-    }
-
     constructor(
         options: VideoSourceOptions
     )
@@ -194,6 +100,7 @@ export class VideoSource extends TextureSource<VideoResource>
         this._updateFPS = options.updateFPS || 0;
         this._msToNextUpdate = 0;
         this.autoPlay = options.autoPlay !== false;
+        this.alphaMode = options.alphaMode ?? 0;
 
         // Binding for frame updates
         this._videoFrameRequestCallback = this._videoFrameRequestCallback.bind(this);
@@ -297,7 +204,12 @@ export class VideoSource extends TextureSource<VideoResource>
         // Add or handle source readiness event listeners
         if (!this._isSourceReady())
         {
-            source.addEventListener('canplay', this._onCanPlay);
+            const options = this.options as VideoSourceOptions;
+
+            if (!options.preload)
+            {
+                source.addEventListener('canplay', this._onCanPlay);
+            }
             source.addEventListener('canplaythrough', this._onCanPlay);
             source.addEventListener('error', this._onError, true);
         }
@@ -571,24 +483,6 @@ export class VideoSource extends TextureSource<VideoResource>
             }
         }
     }
-
-    /**
-     * Used to auto-detect the type of resource.
-     * @param {*} source - The source object
-     * @param {string} extension - The extension of source, if set
-     * @returns {boolean} `true` if video source
-     */
-    public static test(source: unknown, extension?: string): source is HTMLVideoElement
-    {
-        return (globalThis.HTMLVideoElement && source instanceof HTMLVideoElement)
-            || VideoSource.TYPES.includes(extension);
-    }
-
-    /**
-     * List of common video file extensions supported by VideoResource.
-     * @readonly
-     */
-    public static TYPES: Array<string> = ['mp4', 'm4v', 'webm', 'ogg', 'ogv', 'h264', 'avi', 'mov'];
 
     /**
      * Map of video MIME types that can't be directly derived from file extensions.
