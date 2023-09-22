@@ -5,6 +5,7 @@
   "sideEffects": [
     "./lib/events/init.*",
     "./lib/app/init.*",
+    "./lib/accessibility/init.*",
     "./lib/assets/init.*",
     "./lib/spritesheet/init.*",
     "./lib/rendering/init.*",
@@ -27,6 +28,14 @@
       },
       "require": {
         "default": "./lib/all.js"
+      }
+    },
+    "./accessibility": {
+      "import": {
+        "default": "./lib/accessibility/init.mjs"
+      },
+      "require": {
+        "default": "./lib/accessibility/init.js"
       }
     },
     "./app": {
