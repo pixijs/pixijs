@@ -1,4 +1,5 @@
 import { Matrix } from '../../../maths/Matrix';
+import { warn } from '../../../utils/logging/warn';
 import { updateLocalTransform } from '../utils/updateLocalTransform';
 import { Bounds } from './Bounds';
 
@@ -91,7 +92,9 @@ export function getParent(target: Container, root: Container, matrix: Matrix)
     if (!parent)
     {
         // we have reach the top of the tree!
-        console.warn('Item is not inside the root container');
+        // #if _DEBUG
+        warn('Item is not inside the root container');
+        // #endif
 
         return;
     }

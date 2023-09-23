@@ -1,4 +1,5 @@
 import { ExtensionType } from '../../../extensions/Extensions';
+import { warn } from '../../../utils/logging/warn';
 import { ColorBlend } from '../../filters/blend-modes/ColorBlend';
 import { ColorBurnBlend } from '../../filters/blend-modes/ColorBurnBlend';
 import { ColorDodgeBlend } from '../../filters/blend-modes/ColorDodgeBlend';
@@ -122,7 +123,9 @@ export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
 
         if (!BLEND_MODE_FILTERS[blendMode as keyof typeof BLEND_MODE_FILTERS])
         {
-            console.warn(`Unable to assign 'BLEND_MODES.${blendMode}' using the blend mode pipeline`);
+            // #if _DEBUG
+            warn(`Unable to assign 'BLEND_MODES.${blendMode}' using the blend mode pipeline`);
+            // #endif
 
             return;
         }

@@ -1,4 +1,5 @@
 import { extensions, ExtensionType } from '../extensions/Extensions';
+import { warn } from '../utils/logging/warn';
 import { BackgroundLoader } from './BackgroundLoader';
 import { Cache } from './cache/Cache';
 import { Loader } from './loader/Loader';
@@ -257,7 +258,7 @@ export class AssetsClass
         if (this._initialized)
         {
             // #if _DEBUG
-            console.warn('[Assets]AssetManager already initialized, did you load before calling this Asset.init()?');
+            warn('[Assets]AssetManager already initialized, did you load before calling this Asset.init()?');
             // #endif
 
             return;

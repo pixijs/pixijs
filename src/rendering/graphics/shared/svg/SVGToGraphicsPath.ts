@@ -1,3 +1,5 @@
+import { warn } from '../../../../utils/logging/warn';
+
 import type { GraphicsPath } from '../path/GraphicsPath';
 
 const commandSizeMap = {
@@ -233,7 +235,9 @@ export function SVGToGraphicsPath(svgPath: string, path: GraphicsPath): Graphics
                 path.closePath();
                 break;
             default:
-                console.warn(`Unknown SVG path command: ${type}`);
+                // #if _DEBUG
+                warn(`Unknown SVG path command: ${type}`);
+                // #endif
         }
     }
 

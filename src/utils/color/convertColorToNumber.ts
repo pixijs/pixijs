@@ -1,3 +1,4 @@
+import { warn } from '../logging/warn';
 import { ColorNames } from './ColorNames';
 
 export function convertColorToNumber(color: string | number): number
@@ -31,7 +32,9 @@ export function convertColorToNumber(color: string | number): number
 
         return parseInt(color.substring(offset), 16);
 
-        console.warn(`[pixi.js] Invalid color: ${color}`);
+        // #if _DEBUG
+        warn(`Invalid color: ${color}`);
+        // #endif
     }
 
     return 0;

@@ -1,5 +1,6 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { isSafari } from '../../../utils/isSafari';
+import { warn } from '../../../utils/logging/warn';
 import { BigPool } from '../../../utils/pool/PoolGroup';
 import { TexturePool } from '../../renderers/shared/texture/TexturePool';
 import { RendererType } from '../../renderers/types';
@@ -191,7 +192,9 @@ export class HTMLTextSystem implements System
                     this._cleanUp(activeTexture);
                 }).catch(() =>
                 {
-                    console.warn('HTMLTextSystem: Failed to clean texture');
+                    // #if _DEBUG
+                    warn('HTMLTextSystem: Failed to clean texture');
+                    // #endif
                 });
             }
 
