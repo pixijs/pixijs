@@ -153,6 +153,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this.autoGenerateMipmaps = options.autoGenerateMipmaps;
         this.sampleCount = options.sampleCount;
         this.antialias = options.antialias;
+        this.alphaMode = options.alphaMode;
 
         const style = options.style ?? {};
 

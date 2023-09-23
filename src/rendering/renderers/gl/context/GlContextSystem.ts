@@ -159,11 +159,12 @@ export class GlContextSystem implements System<ContextSystemOptions>
         {
             const alpha = this._renderer.background.alpha < 1;
             const premultipliedAlpha = options.premultipliedAlpha ?? true;
+            const antialias = options.antialias && !this._renderer.backBuffer.useBackBuffer;
 
             this.initFromOptions({
                 alpha,
                 premultipliedAlpha,
-                antialias: options.antialias,
+                antialias,
                 stencil: true,
                 preserveDrawingBuffer: options.preserveDrawingBuffer,
                 powerPreference: options.powerPreference,
