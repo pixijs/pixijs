@@ -284,6 +284,28 @@ export class Resolver
     }
 
     /**
+     * Returns the aliases for a given asset
+     * @param asset - the asset to get the aliases for
+     */
+    public getAlias(asset: UnresolvedAsset): string[]
+    {
+        const { alias, name, src, srcs } = asset;
+        const aliasesToUse = convertToList<ArrayOr<string | AssetSrc>>(
+            alias || name || src || srcs, (value: string | AssetSrc) =>
+            {
+                if (typeof value === 'string') return value;
+
+                if (Array.isArray(value)) return value.map((v) => (v as ResolvedSrc)?.src ?? (v as ResolvedSrc)?.srcs ?? v);
+
+                if (value?.src || value?.srcs) return value.src ?? value.srcs;
+
+                return value;
+            }, true) as string[];
+
+        return aliasesToUse;
+    }
+
+    /**
      * Add a manifest to the asset resolver. This is a nice way to add all the asset information in one go.
      * generally a manifest would be built using a tool.
      * @param manifest - the manifest to add to the resolver
@@ -480,7 +502,7 @@ export class Resolver
         // loop through all the assets and generate a resolve asset for each src
         assetArray.forEach((asset) =>
         {
-            const { alias, name, src, srcs } = asset;
+            const { src, srcs } = asset;
             let { data, format, loadParser } = asset;
 
             // src can contain an unresolved asset itself
@@ -493,12 +515,13 @@ export class Resolver
 
                 return Array.isArray(src) ? src : [src];
             });
-            const aliasesToUse = convertToList<string>(alias || name);
+
+            const aliasesToUse = this.getAlias(asset);
 
             if (process.env.DEBUG)
             {
                 // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-                Array.isArray(alias) ? alias.forEach(keyCheck) : keyCheck(alias);
+                Array.isArray(aliasesToUse) ? aliasesToUse.forEach(keyCheck) : keyCheck(aliasesToUse);
             }
 
             // loop through all the srcs and generate a resolve asset for each src
@@ -534,6 +557,12 @@ export class Resolver
                             ...formattedAsset,
                             ...src,
                         };
+                    }
+
+                    // check if aliases is undefined
+                    if (!aliasesToUse)
+                    {
+                        throw new Error(`[Resolver] alias is undefined for this asset: ${formattedAsset.src}`);
                     }
 
                     formattedAsset = this.buildResolvedAsset(formattedAsset, {
