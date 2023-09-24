@@ -498,7 +498,7 @@ describe('Assets', () =>
         expect(loadTextures.config.preferWorkers).toBe(true);
     });
 
-    it('should remove the asset from the cache when destroyed', async () =>
+    it('should remove the asset from the cache when the texture is destroyed', async () =>
     {
         await Assets.init({
             basePath,
@@ -509,7 +509,7 @@ describe('Assets', () =>
 
         expect(Assets.cache.has(url)).toBeTrue();
 
-        texture1.destroy(true);
+        texture1.destroy();
 
         expect(Assets.cache.has(url)).toBeFalse();
 
@@ -518,7 +518,32 @@ describe('Assets', () =>
         expect(Assets.cache.has(url)).toBeTrue();
         expect(texture2).not.toBe(texture1);
 
-        texture2.destroy(true);
+        texture2.destroy();
+
+        expect(Assets.cache.has(url)).toBeFalse();
+    });
+
+    it('should remove the asset from the cache when the base texture is destroyed', async () =>
+    {
+        await Assets.init({
+            basePath,
+        });
+
+        const url = 'textures/bunny.png';
+        const texture1 = await Assets.load(url);
+
+        expect(Assets.cache.has(url)).toBeTrue();
+
+        texture1.baseTexture.destroy();
+
+        expect(Assets.cache.has(url)).toBeFalse();
+
+        const texture2 = await Assets.load(url);
+
+        expect(Assets.cache.has(url)).toBeTrue();
+        expect(texture2).not.toBe(texture1);
+
+        texture2.baseTexture.destroy();
 
         expect(Assets.cache.has(url)).toBeFalse();
     });
