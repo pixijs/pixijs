@@ -1,4 +1,5 @@
 import EventEmitter from 'eventemitter3';
+import { uid } from '../../../../../utils/data/uid';
 import { deprecation, v8_0_0 } from '../../../../../utils/logging/deprecation';
 import { TextureStyle } from '../TextureStyle';
 
@@ -6,9 +7,6 @@ import type { BindResource } from '../../../gpu/shader/BindResource';
 import type { ALPHA_MODES, SCALE_MODE, TEXTURE_DIMENSIONS, TEXTURE_FORMATS, WRAP_MODE } from '../const';
 import type { BindableTexture } from '../Texture';
 import type { TextureStyleOptions } from '../TextureStyle';
-
-let UID = 0;
-let RESOURCE_ID = 0;
 
 export interface TextureSourceOptions<T extends Record<string, any> = any>
 {
@@ -53,10 +51,10 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         style: {} as TextureStyleOptions,
     };
 
-    public uid = UID++;
+    public uid = uid('textureSource');
 
     public resourceType = 'textureSource';
-    public resourceId = RESOURCE_ID++;
+    public resourceId = uid('textureResource');
 
     public uploadMethodId = 'unknown';
 

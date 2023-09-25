@@ -1,14 +1,13 @@
 import { ObservablePoint } from '../maths/ObservablePoint';
 import { Texture } from '../rendering/renderers/shared/texture/Texture';
 import { emptyViewObserver } from '../rendering/renderers/shared/View';
+import { uid } from '../utils/data/uid';
 import { Transform } from '../utils/Transform';
 
 import type { PointData } from '../maths/PointData';
 import type { View } from '../rendering/renderers/shared/View';
 import type { Bounds } from '../rendering/scene/bounds/Bounds';
 import type { TextureDestroyOptions, TypeOrBool } from '../rendering/scene/destroyTypes';
-
-let uid = 0;
 
 export interface TilingSpriteViewOptions
 {
@@ -29,7 +28,7 @@ export class TilingSpriteView implements View
     };
 
     public readonly owner = emptyViewObserver;
-    public readonly uid = uid++;
+    public readonly uid = uid('tilingSpriteView');
     public readonly renderPipeId = 'tilingSprite';
     public batched = true;
     public anchor: ObservablePoint;

@@ -1,4 +1,5 @@
 import { ObservablePoint } from '../../../maths/ObservablePoint';
+import { uid } from '../../../utils/data/uid';
 import { updateQuadBounds } from '../../../utils/updateQuadBounds';
 import { Texture } from '../../renderers/shared/texture/Texture';
 import { emptyViewObserver } from '../../renderers/shared/View';
@@ -8,13 +9,11 @@ import type { View, ViewObserver } from '../../renderers/shared/View';
 import type { Bounds } from '../../scene/bounds/Bounds';
 import type { TextureDestroyOptions, TypeOrBool } from '../../scene/destroyTypes';
 
-let uid = 0;
-
 export class SpriteView implements View
 {
     public readonly renderPipeId = 'sprite';
     public readonly owner: ViewObserver = emptyViewObserver;
-    public readonly uid: number = uid++;
+    public readonly uid: number = uid('spriteView');
     public batched = true;
     public anchor: ObservablePoint;
 

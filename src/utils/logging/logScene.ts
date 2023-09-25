@@ -71,13 +71,7 @@ export function logLayerGroupScene(
     data: {index: number, color?: string} = { index: 0, color: '#000000' }
 )
 {
-    // if (!container.renderGroup) return;
-
-    // {
-    //     data.color = colors[colorTick++];
-    // }
-
-    //    turn depth into number of spaces:
+    // turn depth into number of spaces:
     let spaces = '';
 
     for (let i = 0; i < depth; i++)
@@ -86,7 +80,6 @@ export function logLayerGroupScene(
     }
 
     const output = `%c ${spaces}- ${data.index}: ${layerGroup.root.label} worldX:${layerGroup.worldTransform.tx}`;
-    // make this red text
 
     console.log(output, `color:${data.color}; font-weight:bold;`);
 
