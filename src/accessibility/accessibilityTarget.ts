@@ -37,7 +37,6 @@ export interface AccessibleHTMLElement extends HTMLElement
  * used by {@link AccessibilitySystem}.
  * @private
  * @function accessibleTarget
- * @memberof PIXI
  * @type {object}
  * @example
  * import { accessibleTarget } from 'pixi.js';
