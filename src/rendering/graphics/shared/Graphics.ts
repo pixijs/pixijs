@@ -215,8 +215,12 @@ export class Graphics extends Container<GraphicsView>
     {
         // eslint-disable-next-line max-len
         deprecation('8.0.0', 'Graphics#beginFill is no longer needed. Use Graphics#fill to fill the shape with the desired style.');
-        this.context.beginPath();
+
+        this.endFill();
+
         this.context.fillStyle = { color, alpha };
+
+        return this;
     }
 
     /**
@@ -227,6 +231,8 @@ export class Graphics extends Container<GraphicsView>
         // eslint-disable-next-line max-len
         deprecation('8.0.0', 'Graphics#endFill is no longer needed. Use Graphics#fill to fill the shape with the desired style.');
         this.context.fill();
+
+        return this;
     }
 
     /**
