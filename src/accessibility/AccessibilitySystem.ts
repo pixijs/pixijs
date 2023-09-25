@@ -5,9 +5,10 @@ import { isMobile } from '../settings/utils/isMobile';
 import { removeItems } from '../utils/data/removeItems';
 import { accessibilityTarget, type AccessibleHTMLElement } from './accessibilityTarget';
 
-import type { ExtensionMetadata } from '../extensions/Extensions';
 import type { Rectangle } from '../maths/shapes/Rectangle';
+import type { System } from '../rendering/renderers/shared/system/System';
 import type { Renderer } from '../rendering/renderers/types';
+import type { isMobileResult } from '../settings/utils/isMobile';
 
 // add some extra variables to the container..
 Container.mixin(accessibilityTarget);
@@ -35,16 +36,16 @@ const DIV_HOOK_ZINDEX = 2;
  * @class
  * @memberof PIXI
  */
-export class AccessibilityManager
+export class AccessibilitySystem implements System
 {
     /** @ignore */
-    public static extension: ExtensionMetadata = {
-        name: 'accessibility',
+    public static extension = {
         type: [
-            ExtensionType.Renderer,
-            // ExtensionType.CanvasRendererPlugin,
+            ExtensionType.WebGLSystem,
+            ExtensionType.WebGPUSystem,
         ],
-    };
+        name: 'accessibility',
+    } as const;
 
     /** Setting this to true will visually show the divs. */
     public debug = false;
@@ -53,7 +54,7 @@ export class AccessibilityManager
      * The renderer this accessibility manager works for.
      * @type {PIXI.CanvasRenderer|PIXI.Renderer}
      */
-    public renderer: Renderer;
+    private _renderer: Renderer;
 
     /** Internal variable, see isActive getter. */
     private _isActive = false;
@@ -62,7 +63,7 @@ export class AccessibilityManager
     private _isMobileAccessibility = false;
 
     /** Button element for handling touch hooks. */
-    private _hookDiv: HTMLElement;
+    private _hookDiv: HTMLElement | null;
 
     /** This is the dom element that will sit over the PixiJS element. This is where the div overlays will go. */
     private _div: HTMLElement;
@@ -82,14 +83,16 @@ export class AccessibilityManager
     /**  The frequency to update the div elements. */
     private readonly _androidUpdateFrequency = 500; // 2fps
 
+    // eslint-disable-next-line jsdoc/require-param
     /**
      * @param {PIXI.CanvasRenderer|PIXI.Renderer} renderer - A reference to the current renderer
      */
-    constructor(renderer: Renderer)
+    // eslint-disable-next-line @typescript-eslint/no-parameter-properties
+    constructor(renderer: Renderer, private readonly _mobileInfo: isMobileResult = isMobile)
     {
         this._hookDiv = null;
 
-        if (isMobile.tablet || isMobile.phone)
+        if (_mobileInfo.tablet || _mobileInfo.phone)
         {
             this._createTouchHook();
         }
@@ -105,7 +108,7 @@ export class AccessibilityManager
         div.style.zIndex = DIV_TOUCH_ZINDEX.toString();
 
         this._div = div;
-        this.renderer = renderer;
+        this._renderer = renderer;
 
         /**
          * pre-bind the functions
@@ -143,6 +146,11 @@ export class AccessibilityManager
     get isMobileAccessibility(): boolean
     {
         return this._isMobileAccessibility;
+    }
+
+    get hookDiv()
+    {
+        return this._hookDiv;
     }
 
     /**
@@ -204,8 +212,8 @@ export class AccessibilityManager
         globalThis.document.addEventListener('mousemove', this._onMouseMove, true);
         globalThis.removeEventListener('keydown', this._onKeyDown, false);
 
-        this.renderer.runners.postrender.add(this._update);
-        this.renderer.view.element.parentNode?.appendChild(this._div);
+        this._renderer.runners.postrender.add(this._update);
+        this._renderer.view.element.parentNode?.appendChild(this._div);
     }
 
     /**
@@ -225,7 +233,7 @@ export class AccessibilityManager
         globalThis.document.removeEventListener('mousemove', this._onMouseMove, true);
         globalThis.addEventListener('keydown', this._onKeyDown, false);
 
-        this.renderer.runners.postrender.remove(this._update);
+        this._renderer.runners.postrender.remove(this._update);
         this._div.parentNode?.removeChild(this._div);
     }
 
@@ -274,26 +282,26 @@ export class AccessibilityManager
         */
         const now = performance.now();
 
-        if (isMobile.android.device && now < this._androidUpdateCount)
+        if (this._mobileInfo.android.device && now < this._androidUpdateCount)
         {
             return;
         }
 
         this._androidUpdateCount = now + this._androidUpdateFrequency;
 
-        if (!this.renderer.renderingToScreen)
+        if (!this._renderer.renderingToScreen || !this._renderer.view.element)
         {
             return;
         }
 
         // update children...
-        if (this.renderer.lastObjectRendered)
+        if (this._renderer.lastObjectRendered)
         {
-            this._updateAccessibleObjects(this.renderer.lastObjectRendered as Container);
+            this._updateAccessibleObjects(this._renderer.lastObjectRendered as Container);
         }
 
-        const { x, y, width, height } = this.renderer.view.element.getBoundingClientRect();
-        const { width: viewWidth, height: viewHeight, resolution } = this.renderer;
+        const { x, y, width, height } = this._renderer.view.element.getBoundingClientRect();
+        const { width: viewWidth, height: viewHeight, resolution } = this._renderer;
 
         const sx = (width / viewWidth) * resolution;
         const sy = (height / viewHeight) * resolution;
@@ -401,7 +409,7 @@ export class AccessibilityManager
             hitArea.y = 0;
         }
 
-        const { width: viewWidth, height: viewHeight } = this.renderer;
+        const { width: viewWidth, height: viewHeight } = this._renderer;
 
         if (hitArea.x + hitArea.width > viewWidth)
         {
@@ -504,10 +512,10 @@ export class AccessibilityManager
     private _dispatchEvent(e: UIEvent, type: string[]): void
     {
         const { container: target } = e.target as AccessibleHTMLElement;
-        const boundary = this.renderer.events.rootBoundary;
+        const boundary = this._renderer.events.rootBoundary;
         const event: FederatedEvent = Object.assign(new FederatedEvent(boundary), { target });
 
-        boundary.rootTarget = this.renderer.lastObjectRendered as Container;
+        boundary.rootTarget = this._renderer.lastObjectRendered as Container;
         type.forEach((type) => boundary.dispatchEvent(event, type));
     }
 
@@ -592,8 +600,8 @@ export class AccessibilityManager
 
         this._pool = null;
         this._children = null;
-        this.renderer = null;
+        this._renderer = null;
     }
 }
 
-extensions.add(AccessibilityManager);
+extensions.add(AccessibilitySystem);

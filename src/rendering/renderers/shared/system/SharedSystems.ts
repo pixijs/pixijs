@@ -1,3 +1,4 @@
+import { AccessibilitySystem } from '../../../../accessibility/AccessibilitySystem';
 import { TilingSpritePipe } from '../../../../tiling-sprite/TilingSpritePipe';
 import { BatcherPipe } from '../../../batcher/shared/BatcherPipe';
 import { FilterPipe } from '../../../filters/shared/FilterPipe';
@@ -40,6 +41,7 @@ export const SharedSystems = [
     TextureGCSystem,
     GenerateTextureSystem,
     ExtractSystem,
+    AccessibilitySystem,
 ];
 
 export const SharedRenderPipes = [
