@@ -34,7 +34,7 @@ export interface AccessibleHTMLElement extends HTMLElement
 
 /**
  * Default property values of accessible objects
- * used by {@link PIXI.AccessibilitySystem}.
+ * used by {@link AccessibilitySystem}.
  * @private
  * @function accessibleTarget
  * @memberof PIXI
@@ -50,7 +50,7 @@ export const accessibilityTarget: AccessibleTarget = {
      *  Flag for if the object is accessible. If true AccessibilityManager will overlay a
      *   shadow div with attributes set
      * @member {boolean}
-     * @memberof PIXI.Container#
+     * @memberof Container#
      */
     accessible: false,
 
@@ -58,20 +58,20 @@ export const accessibilityTarget: AccessibleTarget = {
      * Sets the title attribute of the shadow div
      * If accessibleTitle AND accessibleHint has not been this will default to 'container [tabIndex]'
      * @member {?string}
-     * @memberof PIXI.Container#
+     * @memberof Container#
      */
     accessibleTitle: null,
 
     /**
      * Sets the aria-label attribute of the shadow div
      * @member {string}
-     * @memberof PIXI.Container#
+     * @memberof Container#
      */
     accessibleHint: null,
 
     /**
      * @member {number}
-     * @memberof PIXI.Container#
+     * @memberof Container#
      * @private
      * @todo Needs docs.
      */
@@ -79,14 +79,14 @@ export const accessibilityTarget: AccessibleTarget = {
 
     /**
      * @member {boolean}
-     * @memberof PIXI.Container#
+     * @memberof Container#
      * @todo Needs docs.
      */
     _accessibleActive: false,
 
     /**
      * @member {boolean}
-     * @memberof PIXI.Container#
+     * @memberof Container#
      * @todo Needs docs.
      */
     _accessibleDiv: null,
@@ -95,7 +95,7 @@ export const accessibilityTarget: AccessibleTarget = {
      * Specify the type of div the accessible layer is. Screen readers treat the element differently
      * depending on this type. Defaults to button.
      * @member {string}
-     * @memberof PIXI.Container#
+     * @memberof Container#
      * @default 'button'
      */
     accessibleType: 'button',
@@ -104,7 +104,7 @@ export const accessibilityTarget: AccessibleTarget = {
      * Specify the pointer-events the accessible div will use
      * Defaults to auto.
      * @member {string}
-     * @memberof PIXI.Container#
+     * @memberof Container#
      * @default 'auto'
      */
     accessiblePointerEvents: 'auto',
@@ -113,7 +113,7 @@ export const accessibilityTarget: AccessibleTarget = {
      * Setting to false will prevent any children inside this container to
      * be accessible. Defaults to true.
      * @member {boolean}
-     * @memberof PIXI.Container#
+     * @memberof Container#
      * @default true
      */
     accessibleChildren: true,

@@ -6,6 +6,10 @@ import { removeItems } from '../utils/data/removeItems';
 import { accessibilityTarget, type AccessibleHTMLElement } from './accessibilityTarget';
 
 import type { Rectangle } from '../maths/shapes/Rectangle';
+// @ts-expect-error - used for jsdoc typedefs
+import type { WebGLRenderer } from '../rendering/renderers/gl/WebGLRenderer';
+// @ts-expect-error - used for jsdoc typedefs
+import type { WebGPURenderer } from '../rendering/renderers/gpu/WebGPURenderer';
 import type { System } from '../rendering/renderers/shared/system/System';
 import type { Renderer } from '../rendering/renderers/types';
 import type { isMobileResult } from '../settings/utils/isMobile';
@@ -51,7 +55,7 @@ export class AccessibilitySystem implements System
 
     /**
      * The renderer this accessibility manager works for.
-     * @type {PIXI.WebGLRenderer|PIXI.WebGPURenderer}
+     * @type {WebGLRenderer|WebGPURenderer}
      */
     private _renderer: Renderer;
 
@@ -84,7 +88,7 @@ export class AccessibilitySystem implements System
 
     // eslint-disable-next-line jsdoc/require-param
     /**
-     * @param {PIXI.WebGLRenderer|PIXI.WebGPURenderer} renderer - A reference to the current renderer
+     * @param {WebGLRenderer|WebGPURenderer} renderer - A reference to the current renderer
      */
     // eslint-disable-next-line @typescript-eslint/no-parameter-properties
     constructor(renderer: Renderer, private readonly _mobileInfo: isMobileResult = isMobile)
@@ -239,7 +243,7 @@ export class AccessibilitySystem implements System
     /**
      * This recursive function will run through the scene graph and add any new accessible objects to the DOM layer.
      * @private
-     * @param {PIXI.Container} container - The Container to check.
+     * @param {Container} container - The Container to check.
      */
     private _updateAccessibleObjects(container: Container): void
     {
@@ -392,7 +396,7 @@ export class AccessibilitySystem implements System
 
     /**
      * Adjust the hit area based on the bounds of a display object
-     * @param {PIXI.Rectangle} hitArea - Bounds of the child
+     * @param {Rectangle} hitArea - Bounds of the child
      */
     public capHitArea(hitArea: Rectangle): void
     {
@@ -424,7 +428,7 @@ export class AccessibilitySystem implements System
     /**
      * Adds a Container to the accessibility manager
      * @private
-     * @param {PIXI.Container} container - The child to make accessible.
+     * @param {Container} container - The child to make accessible.
      */
     private _addChild<T extends Container>(container: T): void
     {
