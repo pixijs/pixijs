@@ -114,7 +114,8 @@ export class Color
     private _int: number;
 
     /** An array of the current Color. Only populated when `toArray` functions are called */
-    private _array: number[] | null;
+    private _arrayRgba: number[] | null;
+    private _arrayRgb: number[] | null;
 
     /**
      * @param {ColorSource} value - Optional value to use, if not provided, white is used.
@@ -326,16 +327,43 @@ export class Color
     {
         const [r, g, b] = this._components;
 
-        if (!this._array)
+        if (!this._arrayRgb)
         {
-            this._array = [];
+            this._arrayRgb = [];
         }
 
-        out = out || this._array as T;
+        out = out || this._arrayRgb as T;
 
         out[0] = Math.round(r * 255);
         out[1] = Math.round(g * 255);
         out[2] = Math.round(b * 255);
+
+        return out;
+    }
+
+    /**
+     * Convert to an [R, G, B, A] array of normalized floats (numbers from 0.0 to 1.0).
+     * @example
+     * import { Color } from 'pixi.js';
+     * new Color('white').toArray(); // returns [1, 1, 1, 1]
+     * @param {number[]|Float32Array} [out] - Output array
+     */
+    public toArray(): number[];
+    public toArray<T extends number[] | Float32Array>(out: T): T;
+    public toArray<T extends number[] | Float32Array>(out?: T): T
+    {
+        if (!this._arrayRgba)
+        {
+            this._arrayRgba = [];
+        }
+
+        out = out || this._arrayRgba as T;
+        const [r, g, b, a] = this._components;
+
+        out[0] = r;
+        out[1] = g;
+        out[2] = b;
+        out[3] = a;
 
         return out;
     }
@@ -351,44 +379,17 @@ export class Color
     public toRgbArray<T extends number[] | Float32Array>(out: T): T;
     public toRgbArray<T extends number[] | Float32Array>(out?: T): T
     {
-        if (!this._array)
+        if (!this._arrayRgb)
         {
-            this._array = [];
+            this._arrayRgb = [];
         }
 
-        out = out || this._array as T;
+        out = out || this._arrayRgb as T;
         const [r, g, b] = this._components;
 
         out[0] = r;
         out[1] = g;
         out[2] = b;
-
-        return out;
-    }
-
-    /**
-     * Convert to an [R, G, B, A] array of normalized floats (numbers from 0.0 to 1.0).
-     * @example
-     * import { Color } from 'pixi.js';
-     * new Color('white').toRgbAArray(); // returns [1, 1, 1, 1]
-     * @param {number[]|Float32Array} [out] - Output array
-     */
-    public toRgbAArray(): number[];
-    public toRgbAArray<T extends number[] | Float32Array>(out: T): T;
-    public toRgbAArray<T extends number[] | Float32Array>(out?: T): T
-    {
-        if (!this._array)
-        {
-            this._array = [];
-        }
-
-        out = out || this._array as T;
-        const [r, g, b, a] = this._components;
-
-        out[0] = r;
-        out[1] = g;
-        out[2] = b;
-        out[3] = a;
 
         return out;
     }
@@ -540,33 +541,6 @@ export class Color
         this._components[3] = this._clamp(alpha);
 
         return this;
-    }
-
-    /**
-     * Convert to an [R, G, B, A] array of normalized floats (numbers from 0.0 to 1.0).
-     * @example
-     * import { Color } from 'pixi.js';
-     * new Color('white').toArray(); // returns [1, 1, 1, 1]
-     * @param {number[]|Float32Array} [out] - Output array
-     */
-    public toArray(): number[];
-    public toArray<T extends number[] | Float32Array>(out: T): T;
-    public toArray<T extends number[] | Float32Array>(out?: T): T
-    {
-        if (!this._array)
-        {
-            this._array = [];
-        }
-
-        out = out || this._array as T;
-        const [r, g, b, a] = this._components;
-
-        out[0] = r;
-        out[1] = g;
-        out[2] = b;
-        out[3] = a;
-
-        return out;
     }
 
     /**

@@ -150,7 +150,7 @@ export class AbstractRenderer<PIPES, OPTIONS>
         {
             const isRGBAArray = Array.isArray(options.clearColor) && options.clearColor.length === 4;
 
-            options.clearColor = isRGBAArray ? options.clearColor : Color.shared.setValue(options.clearColor).toRgbAArray();
+            options.clearColor = isRGBAArray ? options.clearColor : Color.shared.setValue(options.clearColor).toArray();
         }
 
         this.runners.prerender.emit(options);

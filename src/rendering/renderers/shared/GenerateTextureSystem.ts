@@ -88,7 +88,7 @@ export class GenerateTextureSystem implements System
         {
             const isRGBAArray = Array.isArray(clearColor) && clearColor.length === 4;
 
-            clearColor = isRGBAArray ? clearColor : Color.shared.setValue(clearColor).toRgbAArray();
+            clearColor = isRGBAArray ? clearColor : Color.shared.setValue(clearColor).toArray();
         }
         else
         {

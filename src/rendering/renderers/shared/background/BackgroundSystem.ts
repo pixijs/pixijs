@@ -97,7 +97,7 @@ export class BackgroundSystem implements System
     set color(value: ColorSource)
     {
         this._backgroundColor.setValue(value);
-        this._backgroundColorRgba = this._backgroundColor.toRgbAArray() as [number, number, number, number];
+        this._backgroundColorRgba = this._backgroundColor.toArray() as [number, number, number, number];
     }
 
     /** The background color alpha. Setting this to 0 will make the canvas transparent. */

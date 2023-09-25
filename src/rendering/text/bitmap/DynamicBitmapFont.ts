@@ -320,7 +320,7 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
         if (style.dropShadow)
         {
             const shadowOptions = style.dropShadow;
-            const rgb = Color.shared.setValue(shadowOptions.color).toRgbAArray();
+            const rgb = Color.shared.setValue(shadowOptions.color).toArray();
 
             const dropShadowBlur = shadowOptions.blur * resolution;
             const dropShadowDistance = shadowOptions.distance * resolution;
