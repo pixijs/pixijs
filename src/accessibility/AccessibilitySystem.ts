@@ -32,9 +32,8 @@ const DIV_HOOK_ZINDEX = 2;
  * A Container can be made accessible just like it can be made interactive. This manager will map the
  * events as if the mouse was being used, minimizing the effort required to implement.
  *
- * An instance of this class is automatically created by default, and can be found at `renderer.plugins.accessibility`
+ * An instance of this class is automatically created by default, and can be found at `renderer.accessibility`
  * @class
- * @memberof PIXI
  */
 export class AccessibilitySystem implements System
 {
