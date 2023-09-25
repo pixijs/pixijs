@@ -35,7 +35,6 @@ export class GlMeshAdaptor implements MeshAdaptor
             glProgram,
             resources: {
                 uTexture: Texture.EMPTY.source,
-                uSampler: Texture.EMPTY.style,
             }
         });
 
@@ -70,8 +69,10 @@ export class GlMeshAdaptor implements MeshAdaptor
         {
             shader = this._shader;
 
-            shader.resources.uTexture = view.texture.source;
-            shader.resources.uSampler = view.texture.style;
+            const source = view.texture.source;
+
+            shader.resources.uTexture = source;
+            shader.resources.uSampler = source.style;
         }
 
         shader.groups[0] = renderer.globalUniforms.bindGroup;

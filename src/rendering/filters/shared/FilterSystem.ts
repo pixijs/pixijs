@@ -309,7 +309,7 @@ export class FilterSystem implements System
         // eslint-disable-next-line max-len
 
         // update the resources on the bind group...
-        this._globalFilterBindGroup.setResource(inputTexture.style, 2);
+        this._globalFilterBindGroup.setResource(inputTexture.source.style, 2);
         this._globalFilterBindGroup.setResource(backTexture.source, 3);
 
         renderer.globalUniforms.pop();
@@ -500,6 +500,7 @@ export class FilterSystem implements System
 
         // set bind group..
         this._globalFilterBindGroup.setResource(input.source, 1);
+        this._globalFilterBindGroup.setResource(input.source.style, 2);
 
         renderer.renderTarget.bind(output, !!clear);
 

@@ -42,8 +42,8 @@ export class FillPattern implements CanvasPattern
 
         if (repetition)
         {
-            texture.style.addressModeU = repetitionMap[repetition].addressModeU as WRAP_MODE;
-            texture.style.addressModeV = repetitionMap[repetition].addressModeV as WRAP_MODE;
+            texture.source.style.addressModeU = repetitionMap[repetition].addressModeU as WRAP_MODE;
+            texture.source.style.addressModeV = repetitionMap[repetition].addressModeV as WRAP_MODE;
         }
     }
 

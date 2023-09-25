@@ -5,7 +5,6 @@ import { TextureStyle } from '../TextureStyle';
 
 import type { BindResource } from '../../../gpu/shader/BindResource';
 import type { ALPHA_MODES, SCALE_MODE, TEXTURE_DIMENSIONS, TEXTURE_FORMATS, WRAP_MODE } from '../const';
-import type { BindableTexture } from '../Texture';
 import type { TextureStyleOptions } from '../TextureStyle';
 
 export interface TextureSourceOptions<T extends Record<string, any> = any>
@@ -36,8 +35,9 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     unload: TextureSource;
     destroy: TextureSource;
     resize: TextureSource;
+    styleChange: TextureSource;
     error: Error;
-}> implements BindableTexture, BindResource
+}> implements BindResource
 {
     public static defaultOptions: TextureSourceOptions = {
         resolution: 1,
@@ -81,10 +81,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     public dimension: TEXTURE_DIMENSIONS = '2d';
 
     public alphaMode: ALPHA_MODES;
-
-    public style: TextureStyle;
-
-    public styleSourceKey: number;
+    private _style: TextureStyle;
 
     // properties used when rendering to this texture..
     public antialias = false;
@@ -156,9 +153,6 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         const style = options.style ?? {};
 
         this.style = style instanceof TextureStyle ? style : new TextureStyle(style);
-        this.style.on('change', this.onStyleUpdate, this);
-
-        this.styleSourceKey = (this.style.resourceId << 24) + this.uid;
 
         this.destroyed = false;
     }
@@ -168,14 +162,30 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         return this;
     }
 
+    get style(): TextureStyle
+    {
+        return this._style;
+    }
+
+    set style(value: TextureStyle)
+    {
+        if (this.style === value) return;
+
+        this._style?.off('change', this._onStyleChange, this);
+        this._style = value;
+        this._style?.on('change', this._onStyleChange, this);
+
+        this._onStyleChange();
+    }
+
+    private _onStyleChange()
+    {
+        this.emit('styleChange', this);
+    }
+
     public update()
     {
         this.emit('update', this);
-    }
-
-    protected onStyleUpdate()
-    {
-        this.styleSourceKey = (this.style.resourceId << 24) + this.uid;
     }
 
     /** Destroys this texture source */
@@ -184,10 +194,10 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this.destroyed = true;
         this.emit('destroy', this);
 
-        if (this.style)
+        if (this._style)
         {
-            this.style.destroy();
-            this.style = null;
+            this._style.destroy();
+            this._style = null;
         }
 
         this.uploadMethodId = null;
@@ -265,7 +275,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     {
         // eslint-disable-next-line max-len
         deprecation(v8_0_0, 'TextureSource.wrapMode property has been deprecated. Use TextureSource.style.addressMode instead.');
-        this.style.wrapMode = value;
+        this._style.wrapMode = value;
     }
 
     /** @deprecated since 8.0.0 */
@@ -274,7 +284,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         // eslint-disable-next-line max-len
         deprecation(v8_0_0, 'TextureSource.wrapMode property has been deprecated. Use TextureSource.style.addressMode instead.');
 
-        return this.style.wrapMode;
+        return this._style.wrapMode;
     }
 
     /** @deprecated since 8.0.0 */
@@ -282,7 +292,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     {
         // eslint-disable-next-line max-len
         deprecation(v8_0_0, 'TextureSource.scaleMode property has been deprecated. Use TextureSource.style.scaleMode instead.');
-        this.style.scaleMode = value;
+        this._style.scaleMode = value;
     }
 
     /** @deprecated since 8.0.0 */
@@ -291,6 +301,6 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         // eslint-disable-next-line max-len
         deprecation(v8_0_0, 'TextureSource.scaleMode property has been deprecated. Use TextureSource.style.scaleMode instead.');
 
-        return this.style.scaleMode;
+        return this._style.scaleMode;
     }
 }

@@ -7,18 +7,15 @@ import { BufferImageSource } from './sources/BufferImageSource';
 import { TextureSource } from './sources/TextureSource';
 import { TextureLayout } from './TextureLayout';
 import { TextureMatrix } from './TextureMatrix';
-import { TextureStyle } from './TextureStyle';
 
 import type { Rectangle } from '../../../../maths/shapes/Rectangle';
 import type { BufferSourceOptions } from './sources/BufferImageSource';
 import type { TextureSourceOptions } from './sources/TextureSource';
 import type { TextureLayoutOptions } from './TextureLayout';
-import type { TextureStyleOptions } from './TextureStyle';
 
 export interface TextureOptions
 {
     source?: TextureSource;
-    style?: TextureStyle | TextureStyleOptions
     layout?: TextureLayout | TextureLayoutOptions
     label?: string;
     frame?: Rectangle;
@@ -27,8 +24,6 @@ export interface TextureOptions
 export interface BindableTexture
 {
     source: TextureSource;
-    style: TextureStyle;
-    styleSourceKey: number;
 }
 
 export class Texture extends EventEmitter<{
@@ -56,10 +51,12 @@ export class Texture extends EventEmitter<{
     public static fromBuffer(options: BufferSourceOptions): Texture
     {
         return new Texture({
-            source: BufferImageSource.from(options),
-            style: {
-                scaleMode: 'nearest',
-            }
+            source: BufferImageSource.from({
+                ...options,
+                style: {
+                    scaleMode: 'nearest',
+                }
+            }),
         });
     }
 
@@ -73,7 +70,7 @@ export class Texture extends EventEmitter<{
      */
     public destroyed: boolean;
 
-    private _style: TextureStyle;
+    // private _style: TextureStyle;
     private _textureMatrix: TextureMatrix;
 
     /** @internal */
@@ -81,7 +78,7 @@ export class Texture extends EventEmitter<{
     /** @internal */
     public _source: TextureSource;
 
-    constructor({ source, style, layout, label, frame }: TextureOptions = {})
+    constructor({ source, layout, label, frame }: TextureOptions = {})
     {
         super();
 
@@ -105,12 +102,6 @@ export class Texture extends EventEmitter<{
 
         this.layout = layout as TextureLayout;
 
-        if (style)
-        {
-            this._style = style instanceof TextureStyle ? style : new TextureStyle(style);
-        }
-
-        this.styleSourceKey = (this.style.resourceId << 24) + this._source.uid;
         this.destroyed = false;
     }
 
@@ -118,34 +109,19 @@ export class Texture extends EventEmitter<{
     {
         if (this._source)
         {
-            this._source.off('update', this.onStyleSourceUpdate, this);
             this._source.off('resize', this.onUpdate, this);
         }
 
         this._source = value;
 
-        value.on('update', this.onStyleSourceUpdate, this);
         value.on('resize', this.onUpdate, this);
 
-        this.styleSourceKey = (this.style.resourceId << 24) + this._source.uid;
         this.emit('update', this);
     }
 
     get source(): TextureSource
     {
         return this._source;
-    }
-
-    get style(): TextureStyle
-    {
-        return this._style || this.source.style;
-    }
-
-    set style(value: TextureStyle)
-    {
-        this._style?.off('change', this.onStyleSourceUpdate, this);
-        this._style = value;
-        this._style?.on('change', this.onStyleSourceUpdate, this);
     }
 
     get layout(): TextureLayout
@@ -246,12 +222,6 @@ export class Texture extends EventEmitter<{
      */
     public destroy(destroySource = false)
     {
-        if (this._style)
-        {
-            this._style.destroy();
-            this._style = null;
-        }
-
         if (this._layout)
         {
             this._layout.destroy();
@@ -271,15 +241,6 @@ export class Texture extends EventEmitter<{
         this.destroyed = true;
         this.emit('destroy', this);
         this.removeAllListeners();
-    }
-
-    /**
-     * @internal
-     */
-    protected onStyleSourceUpdate()
-    {
-        this.styleSourceKey = (this.style.resourceId << 24) + this._source.uid;
-        this.emit('update', this);
     }
 
     /**

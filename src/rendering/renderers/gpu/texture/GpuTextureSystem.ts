@@ -176,13 +176,15 @@ export class GpuTextureSystem implements System, CanvasGenerator
         return this._bindGroupHash[texture.id] ?? this._createTextureBindGroup(texture);
     }
 
-    private _createTextureBindGroup(texture: Texture)
+    private _createTextureBindGroup(texture: BindableTexture)
     {
-        const bindGroupId = texture.id;
+        const source = texture.source;
+
+        const bindGroupId = source.uid;
 
         this._bindGroupHash[bindGroupId] = new BindGroup({
-            0: texture.source,
-            1: texture.style,
+            0: source,
+            1: source.style,
         });
 
         return this._bindGroupHash[bindGroupId];

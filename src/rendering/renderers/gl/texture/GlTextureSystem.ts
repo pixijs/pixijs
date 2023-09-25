@@ -59,6 +59,9 @@ export class GlTextureSystem implements System, CanvasGenerator
     private _mapFormatToType: Record<string, number>;
     private _mapFormatToFormat: Record<string, number>;
 
+    // TODO - separate samplers will be a cool thing to add, but not right now!
+    private readonly _useSeparateSamplers = false;
+
     constructor(renderer: WebGLRenderer)
     {
         this._renderer = renderer;
@@ -83,15 +86,25 @@ export class GlTextureSystem implements System, CanvasGenerator
 
     public bind(texture: BindableTexture, location = 0)
     {
+        const source = texture.source;
+
         if (texture)
         {
-            this.bindSource(texture.source, location);
-            this._bindSampler(texture.style, location);
+            this.bindSource(source, location);
+
+            if (this._useSeparateSamplers)
+            {
+                this._bindSampler(source.style, location);
+            }
         }
         else
         {
             this.bindSource(null, location);
-            this._bindSampler(null, location);
+
+            if (this._useSeparateSamplers)
+            {
+                this._bindSampler(null, location);
+            }
         }
     }
 
@@ -186,12 +199,25 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         source.on('update', this.onSourceUpdate, this);
         source.on('resize', this.onSourceUpdate, this);
+        source.on('styleChange', this.onStyleChange, this);
         source.on('destroy', this.onSourceDestroy, this);
         source.on('unload', this.onSourceUnload, this);
 
         this.managedTextures.push(source);
 
         this.onSourceUpdate(source);
+        this.onStyleChange(source);
+
+        return glTexture;
+    }
+
+    protected onStyleChange(source: TextureSource): void
+    {
+        const gl = this._gl;
+
+        const glTexture = this._glTextures[source.uid];
+
+        gl.bindTexture(gl.TEXTURE_2D, glTexture.texture);
 
         applyStyleParams(
             source.style,
@@ -201,8 +227,6 @@ export class GlTextureSystem implements System, CanvasGenerator
             'texParameteri',
             gl.TEXTURE_2D
         );
-
-        return glTexture;
     }
 
     protected onSourceUnload(source: TextureSource): void

@@ -8,7 +8,6 @@ type UIDNames =
     | 'textureSource'
     | 'textureResource'
     | 'batcher'
-    | 'batcherStyleSource'
     | 'graphicsContext'
     | 'graphicsView'
     | 'graphicsPath'
