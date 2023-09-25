@@ -1,3 +1,4 @@
+import { uid } from '../../../utils/data/uid';
 import { emptyViewObserver } from '../../renderers/shared/View';
 import { GraphicsContext } from './GraphicsContext';
 
@@ -6,11 +7,9 @@ import type { View } from '../../renderers/shared/View';
 import type { Bounds } from '../../scene/bounds/Bounds';
 import type { ContextDestroyOptions, TextureDestroyOptions, TypeOrBool } from '../../scene/destroyTypes';
 
-let UID = 0;
-
 export class GraphicsView implements View
 {
-    public readonly uid = UID++;
+    public readonly uid = uid('graphicsView');
     public readonly canBundle = true;
     public readonly owner = emptyViewObserver;
     public readonly renderPipeId = 'graphics';

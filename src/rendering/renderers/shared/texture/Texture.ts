@@ -1,5 +1,6 @@
 import EventEmitter from 'eventemitter3';
 import { Cache } from '../../../../assets/cache/Cache';
+import { uid } from '../../../../utils/data/uid';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
 import { NOOP } from '../../../../utils/NOOP';
 import { BufferImageSource } from './sources/BufferImageSource';
@@ -11,8 +12,6 @@ import type { Rectangle } from '../../../../maths/shapes/Rectangle';
 import type { BufferSourceOptions } from './sources/BufferImageSource';
 import type { TextureSourceOptions } from './sources/TextureSource';
 import type { TextureLayoutOptions } from './TextureLayout';
-
-let UID = 0;
 
 export interface TextureOptions
 {
@@ -62,7 +61,8 @@ export class Texture extends EventEmitter<{
     }
 
     public label?: string;
-    public id = UID++;
+    public id = uid('texture');
+    public styleSourceKey = 0;
 
     /**
      * Has the texture been destroyed?

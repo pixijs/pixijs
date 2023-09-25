@@ -1,4 +1,5 @@
 import { Matrix } from '../../../../maths/Matrix';
+import { uid } from '../../../../utils/data/uid';
 
 import type { WRAP_MODE } from '../../../renderers/shared/texture/const';
 import type { Texture } from '../../../renderers/shared/texture/Texture';
@@ -24,11 +25,9 @@ const repetitionMap = {
     },
 };
 
-let UID = 0;
-
 export class FillPattern implements CanvasPattern
 {
-    public readonly uid = UID++;
+    public readonly uid = uid('fillPattern');
     public texture: Texture;
     public transform = new Matrix();
 
