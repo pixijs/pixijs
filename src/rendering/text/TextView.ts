@@ -1,5 +1,6 @@
 import { Cache } from '../../assets/cache/Cache';
 import { ObservablePoint } from '../../maths/ObservablePoint';
+import { uid } from '../../utils/data/uid';
 import { emptyViewObserver } from '../renderers/shared/View';
 import { BitmapFont } from './bitmap/BitmapFont';
 import { BitmapFontManager } from './bitmap/BitmapFontManager';
@@ -39,11 +40,9 @@ const map = {
     bitmap: 'bitmapText',
 };
 
-let uid = 0;
-
 export class TextView implements View
 {
-    public readonly uid: number = uid++;
+    public readonly uid: number = uid('textView');
     public readonly renderPipeId: string = 'text';
     public readonly owner: ViewObserver = emptyViewObserver;
     public batched = true;

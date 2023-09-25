@@ -1,13 +1,11 @@
 import EventEmitter from 'eventemitter3';
-import { generateUID } from '../texture/utils/generateUID';
+import { uid } from '../../../../utils/data/uid';
 
 import type { BindResource } from '../../gpu/shader/BindResource';
 import type { BufferUsage } from './const';
 
 // eslint-disable-next-line max-len
 export type TypedArray = Int8Array | Uint8Array | Int16Array | Uint16Array | Int32Array | Uint32Array | Uint8ClampedArray | Float32Array | Float64Array;
-
-let UID = 0;
 
 export interface BufferOptions
 {
@@ -33,10 +31,10 @@ export class Buffer extends EventEmitter<{
 }> implements BindResource
 {
     public readonly resourceType = 'buffer';
-    public resourceId = generateUID();
+    public resourceId = uid('bufferResource');
 
     public touched = 0;
-    public readonly uid = UID++;
+    public readonly uid = uid('buffer');
 
     public descriptor: BufferDescriptor;
 
@@ -86,7 +84,7 @@ export class Buffer extends EventEmitter<{
             if (oldData.length !== value.length)
             {
                 this.descriptor.size = value.byteLength;
-                this.resourceId = generateUID();
+                this.resourceId = uid('bufferResource');
 
                 this.emit('change', this);
             }
