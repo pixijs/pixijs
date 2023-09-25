@@ -1,6 +1,7 @@
 import { Color } from '../../../../color/Color';
 import { Matrix } from '../../../../maths/Matrix';
 import { settings } from '../../../../settings/settings';
+import { uid } from '../../../../utils/data/uid';
 import { ImageSource } from '../../../renderers/shared/texture/sources/ImageSource';
 import { Texture } from '../../../renderers/shared/texture/Texture';
 
@@ -23,13 +24,11 @@ export interface LinearGradientFillStyle
     stops: number[];
 }
 
-let UID = 0;
-
 export class FillGradient implements CanvasGradient
 {
     public static defaultTextureSize = 256;
 
-    public readonly uid = UID++;
+    public readonly uid = uid('fillGradient');
     public readonly type: GradientType = 'linear';
 
     public x0: number;

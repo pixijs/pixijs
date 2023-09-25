@@ -1,4 +1,5 @@
 import EventEmitter from 'eventemitter3';
+import { uid } from '../../../../utils/data/uid';
 import { ensureIsBuffer } from './utils/ensureIsBuffer';
 
 import type { Buffer, TypedArray } from '../buffer/Buffer';
@@ -27,8 +28,6 @@ export interface GeometryDescriptor
     topology?: Topology;
 }
 
-let UID = 1;
-
 export class Geometry extends EventEmitter<{
     update: Geometry,
     destroy: Geometry,
@@ -36,7 +35,7 @@ export class Geometry extends EventEmitter<{
 {
     public topology: Topology;
 
-    public uid: number = UID++;
+    public uid: number = uid('geometry');
     public attributes: Record<string, Attribute>;
     public buffers: Buffer[];
     public indexBuffer: Buffer;

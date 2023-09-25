@@ -3,6 +3,7 @@ import { Color, type ColorSource } from '../../color/Color';
 import { DEG_TO_RAD, RAD_TO_DEG } from '../../maths/const';
 import { Matrix } from '../../maths/Matrix';
 import { ObservablePoint } from '../../maths/ObservablePoint';
+import { uid } from '../../utils/data/uid';
 import { deprecation } from '../../utils/logging/deprecation';
 import { childrenHelperMixin } from './container-mixins/childrenHelperMixin';
 import { effectsMixin } from './container-mixins/effectsMixin';
@@ -20,13 +21,6 @@ import type { BLEND_MODES } from '../renderers/shared/state/const';
 import type { View } from '../renderers/shared/View';
 import type { DestroyOptions } from './destroyTypes';
 import type { Effect } from './Effect';
-
-let uid = 0;
-
-export function getRenderableUID()
-{
-    return uid++;
-}
 
 // as pivot and skew are the least used properties of a container, we can use this optimisation
 // to avoid allocating lots of unnecessary objects for them.
@@ -87,7 +81,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
     }
 
     /** @internal */
-    public uid: number = uid++;
+    public uid: number = uid('renderable');
 
     public label: string = null;
     /** @deprecated since 8.0.0 */

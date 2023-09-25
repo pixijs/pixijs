@@ -1,11 +1,10 @@
 import { Point } from '../../../../maths/Point';
+import { uid } from '../../../../utils/data/uid';
 import { SVGToGraphicsPath } from '../svg/SVGToGraphicsPath';
 import { ShapePath } from './ShapePath';
 
 import type { Matrix } from '../../../../maths/Matrix';
 import type { Bounds } from '../../../scene/bounds/Bounds';
-
-let UID = 0;
 
 export interface PathInstruction
 {
@@ -21,7 +20,7 @@ export class GraphicsPath
 {
     public instructions: PathInstruction[] = [];
 
-    public uid = UID++;
+    public uid = uid('graphicsPath');
 
     private _dirty = true;
     // needed for hit testing and bounds calculations

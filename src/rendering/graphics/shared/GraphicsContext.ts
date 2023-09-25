@@ -3,6 +3,7 @@ import EventEmitter from 'eventemitter3';
 import { Color, type ColorSource } from '../../../color/Color';
 import { Matrix } from '../../../maths/Matrix';
 import { Point } from '../../../maths/Point';
+import { uid } from '../../../utils/data/uid';
 import { deprecation } from '../../../utils/logging/deprecation';
 import { Texture } from '../../renderers/shared/texture/Texture';
 import { Bounds } from '../../scene/bounds/Bounds';
@@ -49,7 +50,6 @@ export interface StrokeStyle extends FillStyle
 
 export type ConvertedStrokeStyle = Omit<StrokeStyle, 'color'> & ConvertedFillStyle;
 
-let UID = 0;
 const tmpPoint = new Point();
 
 export type BatchMode = 'auto' | 'batch' | 'no-batch';
@@ -110,7 +110,7 @@ export class GraphicsContext extends EventEmitter<{
         fill: null,
     };
 
-    public uid = UID++;
+    public uid = uid('graphicsContext');
     public dirty = true;
     public batchMode: BatchMode = 'auto';
     public instructions: GraphicsInstructions[] = [];

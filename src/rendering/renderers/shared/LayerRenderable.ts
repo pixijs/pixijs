@@ -1,6 +1,6 @@
 import EventEmitter from 'eventemitter3';
 import { Matrix } from '../../../maths/Matrix';
-import { getRenderableUID } from '../../scene/Container';
+import { uid } from '../../../utils/data/uid';
 
 import type { Container } from '../../scene/Container';
 import type { Renderable } from './Renderable';
@@ -16,7 +16,7 @@ import type { View } from './View';
  */
 export class LayerRenderable<T extends View = View> extends EventEmitter implements Renderable<T>
 {
-    public uid = getRenderableUID();
+    public uid = uid('renderable');
     public view: T;
     private readonly _original: Container<View>;
     public layerTransform: Matrix;
