@@ -40,6 +40,11 @@ const bigTriangleShader = new Shader({
     },
 });
 
+export interface GlBackBufferOptions
+{
+    useBackBuffer?: boolean;
+    antialias?: boolean;
+}
 export class GlBackBufferSystem implements System
 {
     /** @ignore */
@@ -55,15 +60,19 @@ export class GlBackBufferSystem implements System
     private _targetTexture: Texture;
     private _useBackBuffer = false;
     private _useBackBufferThisRender = false;
+    private _antialias: boolean;
 
     constructor(renderer: WebGLRenderer)
     {
         this._renderer = renderer;
     }
 
-    public init({ useBackBuffer }: { useBackBuffer?: boolean } = {})
+    get useBackBuffer() { return this._useBackBuffer; }
+
+    public init({ useBackBuffer, antialias }: GlBackBufferOptions = {})
     {
         this._useBackBuffer = useBackBuffer;
+        this._antialias = antialias;
     }
 
     protected renderStart({ target, clear, clearColor }: { target: RenderSurface, clear: boolean, clearColor: RGBAArray })
@@ -113,10 +122,10 @@ export class GlBackBufferSystem implements System
 
         this._backBufferTexture = this._backBufferTexture || new Texture({
             source: new TextureSource({
-                width: 1,
-                height: 1,
-                resolution: 1,
-                antialias: false,
+                width: source.width,
+                height: source.height,
+                resolution: source._resolution,
+                antialias: this._antialias,
             }),
         });
 

@@ -80,7 +80,7 @@ export class LayerSystem implements System
             }
 
             // upload all the things!
-            renderer.renderPipes.batch.upload();
+            renderer.renderPipes.batch.upload(layerGroup.instructionSet);
         }
 
         if (transform)

@@ -171,8 +171,7 @@ export class CanvasTextSystem implements System
 
         context.scale(resolution, resolution);
 
-        // context.fillStyle = 'red';
-        context.clearRect(0, 0, measured.width, measured.height);
+        context.clearRect(0, 0, measured.width + 4, measured.height + 4);
 
         // set stroke styles..
 

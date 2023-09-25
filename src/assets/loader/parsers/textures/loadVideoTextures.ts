@@ -4,7 +4,6 @@ import { detectVideoAlphaMode } from '../../../../utils/browser/detectVideoAlpha
 import { getResolutionOfUrl } from '../../../../utils/network/getResolutionOfUrl';
 import { checkDataUrl } from '../../../utils/checkDataUrl';
 import { checkExtension } from '../../../utils/checkExtension';
-import { LoaderParserPriority } from '../LoaderParser';
 import { createTexture } from './utils/createTexture';
 
 import type { VideoSourceOptions } from '../../../../rendering/renderers/shared/texture/sources/VideoSource';
@@ -89,7 +88,7 @@ export const loadVideoTextures = {
 
     extension: {
         type: ExtensionType.LoadParser,
-        priority: LoaderParserPriority.High,
+
     },
 
     config: null,

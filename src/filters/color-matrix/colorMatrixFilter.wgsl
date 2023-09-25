@@ -71,11 +71,11 @@ fn mainFragment(
 
  
     // Un-premultiply alpha before applying the color matrix. See issue #3539.
-    // if (c.a > 0.0) {
-    //   c.r /= c.a;
-    //   c.g /= c.a;
-    //   c.b /= c.a;
-    // }
+    if (c.a > 0.0) {
+      c.r /= c.a;
+      c.g /= c.a;
+      c.b /= c.a;
+    }
 
     var cm = colorMatrixUniforms.uColorMatrix;
 
