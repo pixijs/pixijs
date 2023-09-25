@@ -94,6 +94,8 @@ export class NineSliceSprite extends Container<MeshView<NineSliceGeometry>>
             label: 'NineSliceSprite',
             ...options
         });
+
+        this.allowChildren = false;
     }
 
     // /** The width of the NineSlicePlane, setting this will actually modify the vertices and UV's of this plane. */

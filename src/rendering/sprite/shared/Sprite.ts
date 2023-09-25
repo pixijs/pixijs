@@ -38,6 +38,8 @@ export class Sprite extends Container<SpriteView>
             label: 'Sprite',
             ...options
         });
+
+        this.allowChildren = false;
     }
 
     get anchor(): PointLike

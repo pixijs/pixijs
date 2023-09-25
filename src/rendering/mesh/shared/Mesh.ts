@@ -47,6 +47,8 @@ export class Mesh<
             label: 'Mesh',
             ...options
         });
+
+        this.allowChildren = false;
     }
 
     get texture()

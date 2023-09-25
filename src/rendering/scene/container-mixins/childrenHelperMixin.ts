@@ -1,9 +1,11 @@
 import { removeItems } from '../../../utils/data/removeItems';
+import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
 
 import type { Container } from '../Container';
 
 export interface ChildrenHelperMixin
 {
+    allowChildren: boolean;
     addChild<U extends Container[]>(...children: U): U[0];
     removeChild<U extends Container[]>(...children: U): U[0];
     removeChildren(beginIndex?: number, endIndex?: number): Container[];
@@ -17,6 +19,8 @@ export interface ChildrenHelperMixin
 }
 
 export const childrenHelperMixin: Partial<Container> = {
+
+    allowChildren: true,
 
     /**
      * Removes all children from this container that are within the begin and end indexes.
@@ -140,6 +144,11 @@ export const childrenHelperMixin: Partial<Container> = {
      */
     addChildAt<U extends Container>(child: U, index: number): U
     {
+        if (!this.allowChildren)
+        {
+            deprecation(v8_0_0, 'addChildAt: Only Containers will be allowed to add children in v8.0.0');
+        }
+
         const { children } = this;
 
         if (index < 0 || index > children.length)
