@@ -4,27 +4,12 @@ import { Texture } from '../Texture';
 import { TextureSource } from './TextureSource';
 
 import type { ICanvas } from '../../../../../settings/adapter/ICanvas';
-import type { ALPHA_MODES } from '../const';
-import type { TextureSourceOptions } from './TextureSource';
 
 type ImageResource = ImageBitmap | HTMLCanvasElement | OffscreenCanvas | ICanvas | VideoFrame;
-
-export interface ImageSourceOptions extends TextureSourceOptions<ImageResource>
-{
-    alphaMode?: ALPHA_MODES;
-}
 
 export class ImageSource extends TextureSource<ImageResource>
 {
     public uploadMethodId = 'image';
-    public alphaMode: ALPHA_MODES;
-
-    constructor(options: ImageSourceOptions)
-    {
-        super(options);
-
-        this.alphaMode = options.alphaMode ?? 0;
-    }
 }
 
 // create a white canvas

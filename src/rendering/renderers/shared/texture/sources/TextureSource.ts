@@ -4,7 +4,7 @@ import { deprecation, v8_0_0 } from '../../../../../utils/logging/deprecation';
 import { TextureStyle } from '../TextureStyle';
 
 import type { BindResource } from '../../../gpu/shader/BindResource';
-import type { SCALE_MODE, TEXTURE_DIMENSIONS, TEXTURE_FORMATS, WRAP_MODE } from '../const';
+import type { ALPHA_MODES, SCALE_MODE, TEXTURE_DIMENSIONS, TEXTURE_FORMATS, WRAP_MODE } from '../const';
 import type { BindableTexture } from '../Texture';
 import type { TextureStyleOptions } from '../TextureStyle';
 
@@ -25,6 +25,8 @@ export interface TextureSourceOptions<T extends Record<string, any> = any>
     mipLevelCount?: number;
     autoGenerateMipmaps?: boolean;
 
+    alphaMode?: ALPHA_MODES;
+
     style?: TextureStyleOptions | TextureStyle;
 }
 
@@ -40,6 +42,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     public static defaultOptions: TextureSourceOptions = {
         resolution: 1,
         format: 'bgra8unorm',
+        alphaMode: 'no-premultiply-alpha',
         dimensions: '2d',
         mipLevelCount: 1,
         autoGenerateMipmaps: false,
@@ -76,6 +79,8 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
 
     public format: TEXTURE_FORMATS = 'rgba8unorm-srgb';
     public dimension: TEXTURE_DIMENSIONS = '2d';
+
+    public alphaMode: ALPHA_MODES;
 
     public style: TextureStyle;
 
@@ -146,6 +151,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
         this.autoGenerateMipmaps = options.autoGenerateMipmaps;
         this.sampleCount = options.sampleCount;
         this.antialias = options.antialias;
+        this.alphaMode = options.alphaMode;
 
         const style = options.style ?? {};
 

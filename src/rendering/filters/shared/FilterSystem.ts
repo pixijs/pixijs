@@ -11,6 +11,7 @@ import { getGlobalBounds } from '../../scene/bounds/getGlobalBounds';
 import { getGlobalRenderableBounds } from '../../scene/bounds/getRenderableBounds';
 
 import type { GlRenderTargetSystem } from '../../renderers/gl/GlRenderTargetSystem';
+import type { WebGLRenderer } from '../../renderers/gl/WebGLRenderer';
 import type { RenderSurface } from '../../renderers/gpu/renderTarget/GpuRenderTargetSystem';
 import type { WebGPURenderer } from '../../renderers/gpu/WebGPURenderer';
 import type { Instruction } from '../../renderers/shared/instructions/Instruction';
@@ -192,6 +193,15 @@ export class FilterSystem implements System
                 break;
             }
 
+            if (filter.blendRequired && !((renderer as WebGLRenderer).backBuffer?.useBackBuffer ?? true))
+            {
+                // eslint-disable-next-line max-len
+                console.warn('[PixiJS] Blend filter requires backBuffer on WebGL renderer to be enabled. Set `useBackBuffer: true` in the renderer options.');
+
+                enabled = false;
+                break;
+            }
+
             enabled = filter.enabled || enabled;
             blendRequired = blendRequired || filter.blendRequired;
         }
@@ -280,6 +290,7 @@ export class FilterSystem implements System
 
             renderer.encoder.finishRenderPass();
 
+            // renderer.renderTarget.finishRenderPass();
             const previousBounds = this._filterStackIndex > 0 ? this._filterStack[this._filterStackIndex - 1].bounds : null;
 
             backTexture = this.getBackTexture(filterData.previousRenderSurface, bounds, previousBounds);

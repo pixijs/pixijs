@@ -13,7 +13,6 @@ export class CanvasSource extends TextureSource<ICanvas>
 {
     public uploadMethodId = 'image';
     public autoDensity: boolean;
-    public alphaMode = 0;
 
     constructor(options: CanvasSourceOptions)
     {
@@ -41,6 +40,8 @@ export class CanvasSource extends TextureSource<ICanvas>
                 options.height /= options.resolution;
             }
         }
+
+        options.alphaMode ??= 'premultiply-alpha-on-upload';
 
         super(options);
 

@@ -28,6 +28,10 @@ void main()
         return;
     }
 
+    if (color.a > 0.0) {
+        color.rgb /= color.a;
+    }
+
     vec4 result;
 
     result.r = (cm[0] * color.r);

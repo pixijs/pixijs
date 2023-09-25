@@ -1,5 +1,4 @@
-import type { CanvasSource } from '../../../shared/texture/sources/CanvasSource';
-import type { ImageSource } from '../../../shared/texture/sources/ImageSource';
+import type { TextureSource } from '../../../shared/texture/sources/TextureSource';
 import type { GPU } from '../../GpuDeviceSystem';
 import type { GpuTextureUploader } from './GpuTextureUploader';
 
@@ -7,7 +6,7 @@ export const gpuUploadImageResource = {
 
     type: 'image',
 
-    upload(source: ImageSource | CanvasSource, gpuTexture: GPUTexture, gpu: GPU)
+    upload(source: TextureSource, gpuTexture: GPUTexture, gpu: GPU)
     {
         const resource = source.resource as ImageBitmap | HTMLCanvasElement | OffscreenCanvas;
 
@@ -15,15 +14,16 @@ export const gpuUploadImageResource = {
 
         const width = source.resourceWidth || source.pixelWidth;
         const height = source.resourceHeight || source.pixelHeight;
+        const premultipliedAlpha = source.alphaMode === 'premultiply-alpha-on-upload';
 
         gpu.device.queue.copyExternalImageToTexture(
             { source: resource },
-            { texture: gpuTexture, premultipliedAlpha: true },
+            { texture: gpuTexture, premultipliedAlpha },
             {
                 width,
                 height,
             }
         );
     }
-} as GpuTextureUploader<ImageSource>;
+} as GpuTextureUploader<TextureSource>;
 
