@@ -213,7 +213,6 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
     public localColor = 0xFFFFFFFF;
     /** @internal */
     public layerColor = 0xFFFFFFFF;
-    private readonly _tintColor = new Color();
 
     /// BLEND related props //////////////
 
@@ -695,8 +694,8 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
 
     set tint(value: ColorSource)
     {
-        this._tintColor.setValue(value);
-        const bgr = this._tintColor.toBgrNumber();
+        const tempColor = Color.shared.setValue(value);
+        const bgr = tempColor.toBgrNumber();
 
         if (bgr === (this.localColor & 0x00FFFFFF)) return;
 
@@ -709,7 +708,10 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
 
     get tint(): ColorSource
     {
-        return this._tintColor.value;
+        const bgr = this.localColor & 0x00FFFFFF;
+        // convert bgr to rgb..
+
+        return ((bgr & 0xFF) << 16) + (bgr & 0xFF00) + ((bgr >> 16) & 0xFF);
     }
 
     /// //////////////// blend related stuff

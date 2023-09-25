@@ -55,55 +55,55 @@ export class BatchableSprite implements BatchableObject
         const argb = sprite.layerColor;
 
         // xy
-        float32View[index++] = (a * w1) + (c * h1) + tx;
-        float32View[index++] = (d * h1) + (b * w1) + ty;
+        float32View[index + 0] = (a * w1) + (c * h1) + tx;
+        float32View[index + 1] = (d * h1) + (b * w1) + ty;
 
-        float32View[index++] = uvs.x0;// [0];
-        float32View[index++] = uvs.y0;// [1];
+        float32View[index + 2] = uvs.x0;
+        float32View[index + 3] = uvs.y0;
 
-        uint32View[index++] = argb;
-        float32View[index++] = textureId;
-
-        // xy
-        float32View[index++] = (a * w0) + (c * h1) + tx;
-        float32View[index++] = (d * h1) + (b * w0) + ty;
-
-        float32View[index++] = uvs.x1;// [2];
-        float32View[index++] = uvs.y1;// [3];
-
-        uint32View[index++] = argb;
-        float32View[index++] = textureId;
+        uint32View[index + 4] = argb;
+        float32View[index + 5] = textureId;
 
         // xy
-        float32View[index++] = (a * w0) + (c * h0) + tx;
-        float32View[index++] = (d * h0) + (b * w0) + ty;
+        float32View[index + 6] = (a * w0) + (c * h1) + tx;
+        float32View[index + 7] = (d * h1) + (b * w0) + ty;
 
-        float32View[index++] = uvs.x2;
-        float32View[index++] = uvs.y2;
+        float32View[index + 8] = uvs.x1;
+        float32View[index + 9] = uvs.y1;
 
-        uint32View[index++] = argb;
-        float32View[index++] = textureId;
+        uint32View[index + 10] = argb;
+        float32View[index + 11] = textureId;
 
         // xy
-        float32View[index++] = (a * w1) + (c * h0) + tx;
-        float32View[index++] = (d * h0) + (b * w1) + ty;
+        float32View[index + 12] = (a * w0) + (c * h0) + tx;
+        float32View[index + 13] = (d * h0) + (b * w0) + ty;
 
-        float32View[index++] = uvs.x3;
-        float32View[index++] = uvs.y3;
+        float32View[index + 14] = uvs.x2;
+        float32View[index + 15] = uvs.y2;
 
-        uint32View[index++] = argb;
-        float32View[index++] = textureId;
+        uint32View[index + 16] = argb;
+        float32View[index + 17] = textureId;
+
+        // xy
+        float32View[index + 18] = (a * w1) + (c * h0) + tx;
+        float32View[index + 19] = (d * h0) + (b * w1) + ty;
+
+        float32View[index + 20] = uvs.x3;
+        float32View[index + 21] = uvs.y3;
+
+        uint32View[index + 22] = argb;
+        float32View[index + 23] = textureId;
     }
 
     public packIndex(indexBuffer: Uint32Array, index: number, indicesOffset: number)
     {
-        indexBuffer[index++] = indicesOffset + 0;
-        indexBuffer[index++] = indicesOffset + 1;
-        indexBuffer[index++] = indicesOffset + 2;
+        indexBuffer[index] = indicesOffset + 0;
+        indexBuffer[index + 1] = indicesOffset + 1;
+        indexBuffer[index + 2] = indicesOffset + 2;
 
-        indexBuffer[index++] = indicesOffset + 0;
-        indexBuffer[index++] = indicesOffset + 2;
-        indexBuffer[index++] = indicesOffset + 3;
+        indexBuffer[index + 3] = indicesOffset + 0;
+        indexBuffer[index + 4] = indicesOffset + 2;
+        indexBuffer[index + 5] = indicesOffset + 3;
     }
 
     public reset()
