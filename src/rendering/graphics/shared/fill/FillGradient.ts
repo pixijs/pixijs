@@ -85,12 +85,12 @@ export class FillGradient implements CanvasGradient
 
         this.texture = new Texture({
             source: new ImageSource({
-                resource: canvas
+                resource: canvas,
+                style: {
+                    addressModeU: 'clamp-to-edge',
+                    addressModeV: 'repeat',
+                }
             }),
-            style: {
-                addressModeU: 'clamp-to-edge',
-                addressModeV: 'repeat',
-            }
         });
 
         // generate some UVS based on the gradient direction sent

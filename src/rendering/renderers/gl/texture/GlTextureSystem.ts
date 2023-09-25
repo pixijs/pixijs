@@ -59,6 +59,9 @@ export class GlTextureSystem implements System, CanvasGenerator
     private _mapFormatToType: Record<string, number>;
     private _mapFormatToFormat: Record<string, number>;
 
+    // TODO - separate samplers will be a cool thing to add, but not right now!
+    private readonly _useSeparateSamplers = false;
+
     constructor(renderer: WebGLRenderer)
     {
         this._renderer = renderer;
@@ -83,15 +86,25 @@ export class GlTextureSystem implements System, CanvasGenerator
 
     public bind(texture: BindableTexture, location = 0)
     {
+        const source = texture.source;
+
         if (texture)
         {
-            this.bindSource(texture.source, location);
-            this._bindSampler(texture.style, location);
+            this.bindSource(source, location);
+
+            if (this._useSeparateSamplers)
+            {
+                this._bindSampler(source.style, location);
+            }
         }
         else
         {
             this.bindSource(null, location);
-            this._bindSampler(null, location);
+
+            if (this._useSeparateSamplers)
+            {
+                this._bindSampler(null, location);
+            }
         }
     }
 

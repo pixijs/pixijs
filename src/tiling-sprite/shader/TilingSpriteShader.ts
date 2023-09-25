@@ -52,7 +52,7 @@ export class TilingSpriteShader extends Shader implements TextureShader
             resources: {
                 tilingUniforms,
                 uTexture: options.texture.source,
-                uSampler: options.texture.style,
+                uSampler: options.texture.source.style,
             }
         });
     }
@@ -69,6 +69,6 @@ export class TilingSpriteShader extends Shader implements TextureShader
         this._texture = value;
 
         this.resources.uTexture = value.source;
-        this.resources.uSampler = value.style;
+        this.resources.uSampler = value.source.style;
     }
 }

@@ -79,15 +79,15 @@ export class DisplacementFilter extends Filter
             },
         });
 
-        const texture = options.sprite.texture;
+        const textureSource = options.sprite.texture.source;
 
         super({
             gpuProgram,
             glProgram,
             resources: {
                 filterUniforms,
-                mapTexture: texture.source,
-                mapSampler: texture.style,
+                mapTexture: textureSource,
+                mapSampler: textureSource.style,
             }
         });
 

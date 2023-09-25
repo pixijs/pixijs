@@ -37,7 +37,7 @@ export class GpuMeshAdapter implements MeshAdaptor
             gpuProgram,
             resources: {
                 uTexture: Texture.EMPTY._source,
-                uSampler: Texture.EMPTY.style,
+                uSampler: Texture.EMPTY._source.style,
             }
         });
     }
