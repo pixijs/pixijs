@@ -34,7 +34,7 @@ export interface AccessibleHTMLElement extends HTMLElement
 
 /**
  * Default property values of accessible objects
- * used by {@link PIXI.AccessibilityManager}.
+ * used by {@link PIXI.AccessibilitySystem}.
  * @private
  * @function accessibleTarget
  * @memberof PIXI

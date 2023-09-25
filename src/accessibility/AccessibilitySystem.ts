@@ -51,7 +51,7 @@ export class AccessibilitySystem implements System
 
     /**
      * The renderer this accessibility manager works for.
-     * @type {PIXI.CanvasRenderer|PIXI.Renderer}
+     * @type {PIXI.WebGLRenderer|PIXI.WebGPURenderer}
      */
     private _renderer: Renderer;
 
@@ -84,7 +84,7 @@ export class AccessibilitySystem implements System
 
     // eslint-disable-next-line jsdoc/require-param
     /**
-     * @param {PIXI.CanvasRenderer|PIXI.Renderer} renderer - A reference to the current renderer
+     * @param {PIXI.WebGLRenderer|PIXI.WebGPURenderer} renderer - A reference to the current renderer
      */
     // eslint-disable-next-line @typescript-eslint/no-parameter-properties
     constructor(renderer: Renderer, private readonly _mobileInfo: isMobileResult = isMobile)
