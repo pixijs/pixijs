@@ -17,6 +17,8 @@ export class TilingSprite extends Container<TilingSpriteView>
             label: 'TilingSprite',
             ...options
         });
+
+        this.allowChildren = false;
     }
 
     set texture(value)

@@ -4,7 +4,7 @@ import { DEG_TO_RAD, RAD_TO_DEG } from '../../maths/const';
 import { Matrix } from '../../maths/Matrix';
 import { ObservablePoint } from '../../maths/ObservablePoint';
 import { uid } from '../../utils/data/uid';
-import { deprecation } from '../../utils/logging/deprecation';
+import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { childrenHelperMixin } from './container-mixins/childrenHelperMixin';
 import { effectsMixin } from './container-mixins/effectsMixin';
 import { findMixin } from './container-mixins/getByLabelMixin';
@@ -308,6 +308,11 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
      */
     public addChild<U extends Container[]>(...children: U): U[0]
     {
+        if (!this.allowChildren)
+        {
+            deprecation(v8_0_0, 'addChild: Only Containers will be allowed to add children in v8.0.0');
+        }
+
         if (children.length > 1)
         {
             // loop through the array and add all children

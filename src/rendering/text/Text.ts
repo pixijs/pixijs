@@ -35,6 +35,8 @@ export class Text extends Container<TextView>
             label: 'Text',
             ...options as TextOptions
         });
+
+        this.allowChildren = false;
     }
 
     get anchor(): PointLike

@@ -28,6 +28,8 @@ export class Graphics extends Container<GraphicsView>
             label: 'Graphics',
             ...options
         });
+
+        this.allowChildren = false;
     }
 
     get context(): GraphicsContext
