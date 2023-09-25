@@ -5,10 +5,10 @@ import { FillPattern } from '../../../graphics/shared/fill/FillPattern';
 import { Texture } from '../../../renderers/shared/texture/Texture';
 
 import type { ICanvasRenderingContext2D } from '../../../../settings/adapter/ICanvasRenderingContext2D';
-import type { FillStyle } from '../../../graphics/shared/GraphicsContext';
+import type { ConvertedFillStyle } from '../../../graphics/shared/GraphicsContext';
 
 export function getCanvasFillStyle(
-    fillStyle: FillStyle,
+    fillStyle: ConvertedFillStyle,
     context: ICanvasRenderingContext2D): string | CanvasGradient | CanvasPattern
 {
     if (fillStyle.texture === Texture.WHITE && !fillStyle.fill)

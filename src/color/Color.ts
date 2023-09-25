@@ -1,7 +1,7 @@
-import { colord, extend } from 'colord';
-import namesPlugin from 'colord/plugins/names';
+import { colord, extend } from '@pixi/colord';
+import namesPlugin from '@pixi/colord/plugins/names';
 
-import type { AnyColor, HslaColor, HslColor, HsvaColor, HsvColor, RgbaColor, RgbColor } from 'colord';
+import type { AnyColor, HslaColor, HslColor, HsvaColor, HsvColor, RgbaColor, RgbColor } from '@pixi/colord';
 
 extend([namesPlugin]);
 
@@ -199,40 +199,6 @@ export class Color
     {
         return this._value;
     }
-
-    // public setRGBA(rgba: number[]): this;
-    // public setRGBA(r: number, g: number, b: number, a: number): this;
-    // public setRGBA(r: number | number[], g?: number, b?: number, a?: number): this
-    // {
-    //     if (Array.isArray(r))
-    //     {
-    //         [r, g, b, a] = r;
-    //     }
-
-    //     this._components[0] = r;
-    //     this._components[1] = g;
-    //     this._components[2] = b;
-    //     this._components[3] = a;
-
-    //     this._int = (((r * 255) << 16) + ((g * 255) << 8) + (b * 255 | 0));
-    //     this._value = [r, g, b, a];
-
-    //     return this;
-    // }
-
-    // public setRGB(rgb: number[]): this;
-    // public setRGB(r: number, g: number, b: number): this;
-    // public setRGB(r: number | number[], g?: number, b?: number): this
-    // {
-    //     if (Array.isArray(r))
-    //     {
-    //         [r, g, b] = r;
-    //     }
-
-    //     this.setRGBA(r, g, b, 1);
-
-    //     return this;
-    // }
 
     public toBgrNumber(): number
     {

@@ -3,7 +3,6 @@ import { fontStringFromTextStyle } from './utils/fontStringFromTextStyle';
 
 import type { ICanvas, ICanvasRenderingContext2DSettings } from '../../../settings/adapter/ICanvas';
 import type { ICanvasRenderingContext2D } from '../../../settings/adapter/ICanvasRenderingContext2D';
-import type { StrokeStyle } from '../../graphics/shared/GraphicsContext';
 import type { TextStyle, TextStyleWhiteSpace } from '../TextStyle';
 
 // The type for Intl.Segmenter is only available since TypeScript 4.7.2, so let's make a polyfill for it.
@@ -264,7 +263,7 @@ export class CanvasTextMetrics
             maxLineWidth = Math.max(maxLineWidth, lineWidth);
         }
 
-        const strokeWidth = (style._stroke as StrokeStyle)?.width || 0;
+        const strokeWidth = style._stroke?.width || 0;
 
         let width = maxLineWidth + strokeWidth;
 

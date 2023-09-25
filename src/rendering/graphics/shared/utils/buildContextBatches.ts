@@ -1,4 +1,3 @@
-import { Color } from '../../../../color/Color';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { BigPool } from '../../../../utils/pool/PoolGroup';
 import { buildSimpleUvs, buildUvs } from '../../../renderers/shared/geometry/utils/buildUvs';
@@ -14,7 +13,7 @@ import { triangulateWithHoles } from './triangulateWithHoles';
 
 import type { Polygon } from '../../../../maths/shapes/Polygon';
 import type { ShapeBuildCommand } from '../buildCommands/ShapeBuildCommand';
-import type { FillStyle, GraphicsContext, StrokeStyle, TextureInstruction } from '../GraphicsContext';
+import type { ConvertedFillStyle, GraphicsContext, TextureInstruction } from '../GraphicsContext';
 import type { GraphicsPath } from '../path/GraphicsPath';
 import type { ShapePath } from '../path/ShapePath';
 
@@ -59,7 +58,7 @@ export function buildContextBatches(context: GraphicsContext): BatchableGraphics
             // build path collection of polys and shapes points..
             const shapePath = instruction.data.path.shapePath;
 
-            const style: FillStyle = instruction.data.style;
+            const style = instruction.data.style;
 
             const hole = instruction.data.hole;
 
@@ -143,7 +142,7 @@ function addTextureToGeometryData(
 
 function addShapePathToGeometryData(
     shapePath: ShapePath,
-    style: FillStyle,
+    style: ConvertedFillStyle,
     hole: GraphicsPath,
     isStroke: boolean,
     batches: BatchableGraphics[],
@@ -208,8 +207,7 @@ function addShapePathToGeometryData(
         else
         {
             const close = (shape as Polygon).closePath ?? true;
-
-            const lineStyle = style as StrokeStyle;
+            const lineStyle = style;
 
             buildLine(points, lineStyle, false, close, vertices, 2, vertOffset, indices, indexOffset);
         }
@@ -243,7 +241,7 @@ function addShapePathToGeometryData(
         graphicsBatch.vertexOffset = vertOffset;
         graphicsBatch.vertexSize = (vertices.length / 2) - vertOffset;
 
-        graphicsBatch.color = Color.shared.setValue(style.color).toNumber();
+        graphicsBatch.color = style.color as number;
         graphicsBatch.alpha = style.alpha;
 
         graphicsBatch.texture = texture;

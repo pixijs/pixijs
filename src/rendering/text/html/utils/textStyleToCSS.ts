@@ -1,6 +1,5 @@
 import { Color } from '../../../../color/Color';
 
-import type { FillStyle, StrokeStyle } from '../../../graphics/shared/GraphicsContext';
 import type { HTMLTextStyle } from '../../HtmlTextStyle';
 import type { TextStyle } from '../../TextStyle';
 
@@ -11,8 +10,8 @@ import type { TextStyle } from '../../TextStyle';
  */
 export function textStyleToCSS(style: HTMLTextStyle): string
 {
-    const stroke: StrokeStyle = style._stroke as StrokeStyle;
-    const fill: FillStyle = style._fill as FillStyle;
+    const stroke = style._stroke;
+    const fill = style._fill;
 
     return [
         `transform-origin: top left`,

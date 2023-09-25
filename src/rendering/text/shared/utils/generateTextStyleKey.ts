@@ -1,7 +1,5 @@
-import { Color } from '../../../../color/Color';
-
 import type { FillGradient } from '../../../graphics/shared/fill/FillGradient';
-import type { FillStyle, StrokeStyle } from '../../../graphics/shared/GraphicsContext';
+import type { ConvertedFillStyle, ConvertedStrokeStyle } from '../../../graphics/shared/GraphicsContext';
 import type { TextStyle } from '../../TextStyle';
 
 const valuesToIterateForKeys = [
@@ -48,18 +46,18 @@ export function generateTextStyleKey(style: TextStyle): string
     return key.join('-');
 }
 
-function addFillStyleKey(fillStyle: FillStyle, key: (number | string)[], index: number)
+function addFillStyleKey(fillStyle: ConvertedFillStyle, key: (number | string)[], index: number)
 {
     if (!fillStyle) return index;
 
-    key[index++] = Color.shared.setValue(fillStyle.color).toNumber();
+    key[index++] = fillStyle.color;
     key[index++] = fillStyle.alpha;
     key[index++] = (fillStyle.fill as FillGradient)?.uid;
 
     return index;
 }
 
-function addStokeStyleKey(strokeStyle: StrokeStyle, key: (number | string)[], index: number)
+function addStokeStyleKey(strokeStyle: ConvertedStrokeStyle, key: (number | string)[], index: number)
 {
     if (!strokeStyle) return index;
 

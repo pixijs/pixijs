@@ -6,6 +6,7 @@ import { FillPattern } from '../fill/FillPattern';
 
 import type { ColorSource } from '../../../../color/Color';
 import type {
+    ConvertedFillStyle,
     FillStyle,
     FillStyleInputs,
     PatternFillStyle,
@@ -13,15 +14,15 @@ import type {
 
 export function convertFillInputToFillStyle(
     value: FillStyleInputs,
-    defaultStyle: FillStyle
-): FillStyle
+    defaultStyle: ConvertedFillStyle
+): ConvertedFillStyle
 {
     if (!value)
     {
         return null;
     }
 
-    let fillStyleToParse: FillStyle;
+    let fillStyleToParse: ConvertedFillStyle;
     let styleToMerge: FillStyleInputs;
 
     if ((value as PatternFillStyle)?.fill)
@@ -38,13 +39,12 @@ export function convertFillInputToFillStyle(
     if (Color.isColorLike(styleToMerge as ColorSource))
     {
         const temp = Color.shared.setValue(styleToMerge as ColorSource ?? 0);
-        const opts = {
+        const opts: ConvertedFillStyle = {
             ...fillStyleToParse,
             color: temp.toNumber(),
+            alpha: fillStyleToParse.alpha ?? temp.alpha,
             texture: Texture.WHITE,
         };
-
-        opts.alpha ??= temp.alpha;
 
         return opts;
     }
@@ -57,6 +57,7 @@ export function convertFillInputToFillStyle(
             color: 0xffffff,
             texture: pattern.texture,
             matrix: pattern.transform,
+            fill: fillStyleToParse.fill ?? null,
         };
     }
 
@@ -75,7 +76,7 @@ export function convertFillInputToFillStyle(
         };
     }
 
-    const style = { ...defaultStyle, ...(value as FillStyle) };
+    const style: FillStyle = { ...defaultStyle, ...(value as FillStyle) };
 
     if (style.texture !== Texture.WHITE)
     {
@@ -91,5 +92,5 @@ export function convertFillInputToFillStyle(
     style.color = Color.shared.setValue(style.color).toNumber();
 
     // its a regular fill style!
-    return style;
+    return style as ConvertedFillStyle;
 }

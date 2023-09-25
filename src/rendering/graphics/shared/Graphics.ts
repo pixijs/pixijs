@@ -68,14 +68,6 @@ export class Graphics extends Container<GraphicsView>
     {
         return this._callContextMethod('texture', args);
     }
-    public setFillStyle(...args: Parameters<GraphicsContext['setFillStyle']>): this
-    {
-        return this._callContextMethod('setFillStyle', args);
-    }
-    public setStrokeStyle(...args: Parameters<GraphicsContext['setStrokeStyle']>): this
-    {
-        return this._callContextMethod('setStrokeStyle', args);
-    }
     public beginPath(...args: Parameters<GraphicsContext['beginPath']>): this
     {
         return this._callContextMethod('beginPath', args);
@@ -198,7 +190,7 @@ export class Graphics extends Container<GraphicsView>
     {
         return this.view.context.fillStyle;
     }
-    set fillStyle(value: GraphicsContext['fillStyle'])
+    set fillStyle(value: FillStyleInputs)
     {
         this.view.context.fillStyle = value;
     }
@@ -206,7 +198,7 @@ export class Graphics extends Container<GraphicsView>
     {
         return this.view.context.strokeStyle;
     }
-    set strokeStyle(value: GraphicsContext['strokeStyle'])
+    set strokeStyle(value: FillStyleInputs)
     {
         this.view.context.strokeStyle = value;
     }

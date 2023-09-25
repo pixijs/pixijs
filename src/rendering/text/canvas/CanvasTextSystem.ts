@@ -10,7 +10,6 @@ import { getCanvasFillStyle } from './utils/getCanvasFillStyle';
 
 import type { ICanvas } from '../../../settings/adapter/ICanvas';
 import type { ICanvasRenderingContext2D } from '../../../settings/adapter/ICanvasRenderingContext2D';
-import type { StrokeStyle } from '../../graphics/shared/GraphicsContext';
 import type { System } from '../../renderers/shared/system/System';
 import type { Texture } from '../../renderers/shared/texture/Texture';
 import type { TextStyle } from '../TextStyle';
@@ -258,7 +257,7 @@ export class CanvasTextSystem implements System
                 linePositionYShift = 0;
             }
 
-            const strokeWidth = (style._stroke as StrokeStyle)?.width ?? 0;
+            const strokeWidth = style._stroke?.width ?? 0;
 
             // draw lines line by line
             for (let i = 0; i < lines.length; i++)

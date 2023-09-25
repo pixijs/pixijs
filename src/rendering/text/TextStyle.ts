@@ -6,7 +6,12 @@ import { GraphicsContext } from '../graphics/shared/GraphicsContext';
 import { convertFillInputToFillStyle } from '../graphics/shared/utils/convertFillInputToFillStyle';
 import { generateTextStyleKey } from './shared/utils/generateTextStyleKey';
 
-import type { DefaultFillStyle, FillStyle, FillStyleInputs, StrokeStyle } from '../graphics/shared/GraphicsContext';
+import type {
+    ConvertedFillStyle,
+    ConvertedStrokeStyle,
+    FillStyle,
+    FillStyleInputs
+} from '../graphics/shared/GraphicsContext';
 import type { TextureDestroyOptions, TypeOrBool } from '../scene/destroyTypes';
 
 export type TextStyleAlign = 'left' | 'center' | 'right' | 'justify';
@@ -82,7 +87,7 @@ export interface TextStyleOptions
      */
     padding?: number;
     /** A canvas fillstyle that will be used on the text stroke, e.g., 'blue', '#FCFF00' */
-    stroke?: StrokeStyle | FillStyleInputs;
+    stroke?: FillStyleInputs;
     /**
      * The baseline of the text that is rendered.
      * @type {'alphabetic'|'top'|'hanging'|'middle'|'ideographic'|'bottom'}
@@ -185,12 +190,12 @@ export class TextStyle extends EventEmitter<{
 
     // colors!!
     /** @internal */
-    public _fill: FillStyle;
+    public _fill: ConvertedFillStyle;
     private _originalFill: FillStyleInputs;
 
     /** @internal */
-    public _stroke: StrokeStyle;
-    private _originalStroke: FillStyleInputs | StrokeStyle;
+    public _stroke: ConvertedStrokeStyle;
+    private _originalStroke: FillStyleInputs;
 
     private _dropShadow: TextDropShadow;
 
@@ -313,17 +318,17 @@ export class TextStyle extends EventEmitter<{
         this.update();
     }
 
-    get stroke(): FillStyleInputs | StrokeStyle
+    get stroke(): FillStyleInputs
     {
         return this._originalStroke;
     }
 
-    set stroke(value: FillStyleInputs | StrokeStyle)
+    set stroke(value: FillStyleInputs)
     {
         if (value === this._originalFill) return;
 
         this._originalFill = value;
-        this._stroke = convertFillInputToFillStyle(value, GraphicsContext.defaultStrokeStyle);
+        this._stroke = convertFillInputToFillStyle(value, GraphicsContext.defaultStrokeStyle) as ConvertedStrokeStyle;
         this.update();
     }
 
@@ -391,9 +396,9 @@ export class TextStyle extends EventEmitter<{
                 this._fill.texture.destroy(destroyTextureSource);
             }
 
-            if ((this._originalFill as DefaultFillStyle)?.texture)
+            if ((this._originalFill as FillStyle)?.texture)
             {
-                (this._originalFill as DefaultFillStyle).texture.destroy(destroyTextureSource);
+                (this._originalFill as FillStyle).texture.destroy(destroyTextureSource);
             }
 
             if (this._stroke?.texture)
@@ -401,9 +406,9 @@ export class TextStyle extends EventEmitter<{
                 this._stroke.texture.destroy(destroyTextureSource);
             }
 
-            if ((this._originalStroke as DefaultFillStyle)?.texture)
+            if ((this._originalStroke as FillStyle)?.texture)
             {
-                (this._originalStroke as DefaultFillStyle).texture.destroy(destroyTextureSource);
+                (this._originalStroke as FillStyle).texture.destroy(destroyTextureSource);
             }
         }
 

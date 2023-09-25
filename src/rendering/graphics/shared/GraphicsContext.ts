@@ -6,8 +6,6 @@ import { Point } from '../../../maths/Point';
 import { deprecation } from '../../../utils/logging/deprecation';
 import { Texture } from '../../renderers/shared/texture/Texture';
 import { Bounds } from '../../scene/bounds/Bounds';
-import { FillGradient } from './fill/FillGradient';
-import { FillPattern } from './fill/FillPattern';
 import { GraphicsPath } from './path/GraphicsPath';
 import { SVGParser } from './svg/SVGParser';
 import { convertFillInputToFillStyle } from './utils/convertFillInputToFillStyle';
@@ -17,30 +15,26 @@ import type { ShapePrimitive } from '../../../maths/shapes/ShapePrimitive';
 import type { Shader } from '../../renderers/shared/shader/Shader';
 import type { TextureDestroyOptions, TypeOrBool } from '../../scene/destroyTypes';
 import type { LineCap, LineJoin } from './const';
+import type { FillGradient } from './fill/FillGradient';
+import type { FillPattern } from './fill/FillPattern';
 import type { ShapePath } from './path/ShapePath';
 
 export interface FillStyle
 {
     color?: ColorSource;
     alpha?: number;
-    texture?: Texture;
-    matrix?: Matrix;
-    fill?: FillPattern | FillGradient;
+    texture?: Texture | null;
+    matrix?: Matrix | null;
+    fill?: FillPattern | FillGradient | null;
 }
+
+export type ConvertedFillStyle = Omit<Required<FillStyle>, 'color'> & { color: number };
 
 export interface PatternFillStyle
 {
     fill?: FillPattern | FillGradient;
     color?: number;
     alpha?: number;
-}
-
-export interface DefaultFillStyle
-{
-    color?: ColorSource;
-    alpha?: number;
-    texture?: Texture;
-    matrix?: Matrix;
 }
 
 export interface StrokeStyle extends FillStyle
@@ -53,17 +47,19 @@ export interface StrokeStyle extends FillStyle
     miterLimit?: number;
 }
 
+export type ConvertedStrokeStyle = Omit<StrokeStyle, 'color'> & ConvertedFillStyle;
+
 let UID = 0;
 const tmpPoint = new Point();
 
 export type BatchMode = 'auto' | 'batch' | 'no-batch';
 
-export type FillStyleInputs = ColorSource | FillGradient | CanvasPattern | PatternFillStyle | DefaultFillStyle;
+export type FillStyleInputs = ColorSource | FillGradient | CanvasPattern | PatternFillStyle | FillStyle | ConvertedFillStyle | StrokeStyle | ConvertedStrokeStyle;
 
 export interface FillInstruction
 {
     action: 'fill' | 'stroke' | 'cut'
-    data: { style: FillStyle, path: GraphicsPath, hole?: GraphicsPath }
+    data: { style: ConvertedFillStyle, path: GraphicsPath, hole?: GraphicsPath }
 }
 
 export interface TextureInstruction
@@ -93,13 +89,15 @@ export class GraphicsContext extends EventEmitter<{
     destroy: GraphicsContext
 }>
 {
-    public static defaultFillStyle: FillStyle = {
+    public static defaultFillStyle: ConvertedFillStyle = {
         color: 0,
         alpha: 1,
         texture: Texture.WHITE,
+        matrix: null,
+        fill: null,
     };
 
-    public static defaultStrokeStyle: StrokeStyle = {
+    public static defaultStrokeStyle: ConvertedStrokeStyle = {
         width: 1,
         color: 0,
         alpha: 1,
@@ -108,6 +106,8 @@ export class GraphicsContext extends EventEmitter<{
         cap: 'butt',
         join: 'miter',
         texture: Texture.WHITE,
+        matrix: null,
+        fill: null,
     };
 
     public uid = UID++;
@@ -119,107 +119,33 @@ export class GraphicsContext extends EventEmitter<{
     private _activePath: GraphicsPath = new GraphicsPath();
     private _transform: Matrix = new Matrix();
 
-    private _fillStyle: FillStyle = { ...GraphicsContext.defaultFillStyle };
-    private _fillStyleOriginal: FillStyleInputs = 0xffffff;
-
-    private _strokeStyle: StrokeStyle = { ...GraphicsContext.defaultStrokeStyle };
-    private _strokeStyleOriginal: FillStyleInputs = 0xffffff;
-    private _stateStack: { fillStyle: FillStyle; strokeStyle: StrokeStyle, transform: Matrix }[] = [];
+    private _fillStyle: ConvertedFillStyle = { ...GraphicsContext.defaultFillStyle };
+    private _strokeStyle: ConvertedStrokeStyle = { ...GraphicsContext.defaultStrokeStyle };
+    private _stateStack: { fillStyle: ConvertedFillStyle; strokeStyle: ConvertedStrokeStyle, transform: Matrix }[] = [];
 
     private _tick = 0;
 
     private _bounds = new Bounds();
     private _boundsDirty = true;
 
+    get fillStyle(): ConvertedFillStyle
+    {
+        return this._fillStyle;
+    }
+
     set fillStyle(value: FillStyleInputs)
     {
-        if (this._fillStyleOriginal === value) return;
-
-        this._fillStyleOriginal = value;
-
-        if (Color.isColorLike(value as ColorSource))
-        {
-            this._normalizeColor(value as ColorSource, this._fillStyle);
-            this._fillStyle.texture = Texture.WHITE;
-        }
-        else if (value instanceof FillPattern)
-        {
-            const pattern = value as FillPattern;
-
-            this._fillStyle.color = 0xffffff;
-            this._fillStyle.texture = pattern.texture;
-            this._fillStyle.matrix = pattern.transform;
-        }
-        // TODO Texture
-        else if (value instanceof FillGradient)
-        {
-            const gradient = value as FillGradient;
-
-            gradient.buildLinearGradient();
-
-            this._fillStyle.color = 0xffffff;
-            this._fillStyle.texture = gradient.texture;
-            this._fillStyle.matrix = gradient.transform;
-        }
-        else
-        {
-            // its a regular fill style!
-            this._fillStyle = { ...GraphicsContext.defaultFillStyle, ...value as DefaultFillStyle };
-            this._normalizeColor(this._fillStyle.color, this._fillStyle);
-        }
+        this._fillStyle = convertFillInputToFillStyle(value, GraphicsContext.defaultFillStyle);
     }
 
-    get fillStyle(): FillStyleInputs
+    get strokeStyle(): ConvertedStrokeStyle
     {
-        return this._fillStyleOriginal;
+        return this._strokeStyle;
     }
 
-    set strokeStyle(value: FillStyleInputs | StrokeStyle)
+    set strokeStyle(value: FillStyleInputs)
     {
-        if (this._strokeStyleOriginal === value) return;
-
-        this._strokeStyleOriginal = value;
-
-        if (Color.isColorLike(value as ColorSource))
-        {
-            this._normalizeColor(value as ColorSource, this._strokeStyle);
-            this._strokeStyle.texture = Texture.WHITE;
-        }
-        else if (value instanceof FillGradient)
-        {
-            const gradient = value as FillGradient;
-
-            gradient.buildLinearGradient();
-
-            this._strokeStyle.color = 0xffffff;
-            this._strokeStyle.texture = gradient.texture;
-            this._strokeStyle.matrix = gradient.transform;
-        }
-        else
-        {
-            // its a regular fill style!
-            this._strokeStyle = { ...GraphicsContext.defaultStrokeStyle, ...value as StrokeStyle };
-            this._normalizeColor(this._strokeStyle.color, this._strokeStyle);
-        }
-    }
-
-    get strokeStyle(): FillStyleInputs
-    {
-        return this._strokeStyleOriginal;
-    }
-
-    public setFillStyle(style: FillStyleInputs): this
-    {
-        this.fillStyle = style;
-
-        return this;
-    }
-
-    public setStrokeStyle(style: FillStyleInputs): this
-    {
-        this.strokeStyle = style;
-
-        return this;
+        this._strokeStyle = convertFillInputToFillStyle(value, GraphicsContext.defaultStrokeStyle) as ConvertedStrokeStyle;
     }
 
     public texture(texture: Texture): this;
@@ -260,7 +186,7 @@ export class GraphicsContext extends EventEmitter<{
     /** @deprecated 8.0.0 */
     public fill(color: ColorSource, alpha: number): this;
     public fill(style?: FillStyleInputs): this;
-    public fill(style?: FillStyleInputs | ColorSource, alpha?: number): this
+    public fill(style?: FillStyleInputs, alpha?: number): this
     {
         let path: GraphicsPath;
 
@@ -277,8 +203,6 @@ export class GraphicsContext extends EventEmitter<{
 
         if (!path) return this;
 
-        let fillStyle = this._fillStyle;
-
         if (style)
         {
             if (alpha !== undefined && typeof style === 'number')
@@ -286,14 +210,14 @@ export class GraphicsContext extends EventEmitter<{
                 deprecation('8.0.0', 'GraphicsContext.fill(color, alpha) is deprecated, use GraphicsContext.fill({ color, alpha }) instead');
                 style = { color: style, alpha };
             }
-            fillStyle = convertFillInputToFillStyle(style, GraphicsContext.defaultFillStyle);
+            this.fillStyle = convertFillInputToFillStyle(style, GraphicsContext.defaultFillStyle);
         }
 
         // TODO not a fan of the clone!!
         this.instructions.push({
             action: 'fill',
             // TODO copy fill style!
-            data: { style: fillStyle, path }
+            data: { style: this.fillStyle, path }
         });
 
         this.onUpdate();
@@ -304,7 +228,7 @@ export class GraphicsContext extends EventEmitter<{
         return this;
     }
 
-    public stroke(style?: FillStyleInputs | StrokeStyle): this
+    public stroke(style?: FillStyleInputs): this
     {
         let path: GraphicsPath;
 
@@ -321,18 +245,16 @@ export class GraphicsContext extends EventEmitter<{
 
         if (!path) return this;
 
-        let strokeStyle = this._strokeStyle;
-
         if (style)
         {
-            strokeStyle = convertFillInputToFillStyle(style, GraphicsContext.defaultStrokeStyle);
+            this.strokeStyle = convertFillInputToFillStyle(style, GraphicsContext.defaultStrokeStyle);
         }
 
         // TODO not a fan of the clone!!
         this.instructions.push({
             action: 'stroke',
             // TODO copy fill style!
-            data: { style: strokeStyle, path }
+            data: { style: this.strokeStyle, path }
         });
 
         this.onUpdate();
@@ -814,19 +736,6 @@ export class GraphicsContext extends EventEmitter<{
         this._stateStack = null;
         this.customShader = null;
         this._transform = null;
-    }
-
-    /**
-     * Normalize the color input from options for line style or fill
-     * @param color
-     * @param {PIXI.FillStyle} options - Fill style object.
-     */
-    private _normalizeColor(color: ColorSource, options: FillStyle): void
-    {
-        const temp = Color.shared.setValue(color ?? 0);
-
-        options.color = temp.toNumber();
-        options.alpha ??= temp.alpha;
     }
 }
 
