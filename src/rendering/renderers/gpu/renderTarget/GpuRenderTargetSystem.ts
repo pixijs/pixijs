@@ -1,4 +1,3 @@
-import { type ColorSource } from '../../../../color/Color';
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { Matrix } from '../../../../maths/Matrix';
 import { CLEAR } from '../../gl/const';
@@ -129,7 +128,7 @@ export class GpuRenderTargetSystem implements System
     public getDescriptor(
         renderTarget: RenderTarget,
         clear: CLEAR_OR_BOOL,
-        clearValue: ColorSource
+        clearValue: RgbaArray
     ): GPURenderPassDescriptor
     {
         if (typeof clear === 'boolean')
