@@ -10,7 +10,7 @@ uniform sampler2D mapTexture;
 uniform vec4 filterArea;
 uniform vec4 filterClamp;
 uniform vec4 inputClamp;
-uniform vec4 inputSize;
+uniform highp vec4 inputSize;
 uniform mat2 rotation;
 uniform vec2 scale;
 

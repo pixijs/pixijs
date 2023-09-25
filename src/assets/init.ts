@@ -12,6 +12,7 @@ import { loadTxt } from './loader/parsers/loadTxt';
 import { loadWebFont } from './loader/parsers/loadWebFont';
 import { loadSvg } from './loader/parsers/textures/loadSVG';
 import { loadTextures } from './loader/parsers/textures/loadTextures';
+import { loadVideoTextures } from './loader/parsers/textures/loadVideoTextures';
 import { resolveTextureUrl } from './resolver/parsers/resolveTextureUrl';
 
 import type { AssetExtension } from './AssetExtension';
@@ -31,6 +32,7 @@ extensions.add(
     loadWebFont,
     loadSvg,
     loadTextures,
+    loadVideoTextures,
 
     resolveTextureUrl,
 
