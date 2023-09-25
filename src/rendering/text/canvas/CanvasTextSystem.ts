@@ -1,7 +1,6 @@
+import { Color } from '../../../color/Color';
 import { ExtensionType } from '../../../extensions/Extensions';
 import { nextPow2 } from '../../../maths/pow2';
-import { convertColorToNumber } from '../../../utils/color/convertColorToNumber';
-import { hex2rgb } from '../../../utils/color/hex';
 import { CanvasPool } from '../../renderers/shared/texture/CanvasPool';
 import { TexturePool } from '../../renderers/shared/texture/TexturePool';
 import { Bounds } from '../../scene/bounds/Bounds';
@@ -11,7 +10,6 @@ import { getCanvasFillStyle } from './utils/getCanvasFillStyle';
 
 import type { ICanvas } from '../../../settings/adapter/ICanvas';
 import type { ICanvasRenderingContext2D } from '../../../settings/adapter/ICanvasRenderingContext2D';
-import type { StrokeStyle } from '../../graphics/shared/GraphicsContext';
 import type { System } from '../../renderers/shared/system/System';
 import type { Texture } from '../../renderers/shared/texture/Texture';
 import type { TextStyle } from '../TextStyle';
@@ -223,14 +221,17 @@ export class CanvasTextSystem implements System
 
                 const shadowOptions = style.dropShadow;
 
-                const dropShadowColor = convertColorToNumber(shadowOptions.color);
+                const dropShadowColor = shadowOptions.color;
+                const dropShadowAlpha = shadowOptions.alpha;
 
-                const rgb = hex2rgb(dropShadowColor);
+                context.shadowColor = Color.shared
+                    .setValue(dropShadowColor)
+                    .setAlpha(dropShadowAlpha)
+                    .toRgbaString();
 
                 const dropShadowBlur = shadowOptions.blur * resolution;
                 const dropShadowDistance = shadowOptions.distance * resolution;
 
-                context.shadowColor = `rgba(${rgb[0] * 255},${rgb[1] * 255},${rgb[2] * 255},${shadowOptions.alpha})`;
                 context.shadowBlur = dropShadowBlur;
                 context.shadowOffsetX = Math.cos(shadowOptions.angle) * dropShadowDistance;
                 context.shadowOffsetY = (Math.sin(shadowOptions.angle) * dropShadowDistance) + dsOffsetShadow;
@@ -255,7 +256,7 @@ export class CanvasTextSystem implements System
                 linePositionYShift = 0;
             }
 
-            const strokeWidth = (style._stroke as StrokeStyle)?.width ?? 0;
+            const strokeWidth = style._stroke?.width ?? 0;
 
             // draw lines line by line
             for (let i = 0; i < lines.length; i++)

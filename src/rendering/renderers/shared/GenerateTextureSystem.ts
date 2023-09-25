@@ -1,3 +1,4 @@
+import { Color, type ColorSource } from '../../../color/Color';
 import { ExtensionType } from '../../../extensions/Extensions';
 import { Matrix } from '../../../maths/Matrix';
 import { Rectangle } from '../../../maths/shapes/Rectangle';
@@ -7,7 +8,6 @@ import { Container } from '../../scene/Container';
 import { RenderTexture } from './texture/RenderTexture';
 
 import type { Writeable } from '../../../utils/types';
-import type { RGBAArray } from '../gpu/renderTarget/GpuRenderTargetSystem';
 import type { Renderer } from '../types';
 import type { System } from './system/System';
 import type { TextureSourceOptions } from './texture/sources/TextureSource';
@@ -27,7 +27,7 @@ export type GenerateTextureOptions =
 
     resolution?: number;
 
-    clearColor?: RGBAArray;
+    clearColor?: ColorSource;
 
     /** The options passed to the texture source. */
     textureSourceOptions?: GenerateTextureSourceOptions,
@@ -35,7 +35,7 @@ export type GenerateTextureOptions =
 
 const tempRect = new Rectangle();
 const tempBounds = new Bounds();
-const noColor: RGBAArray = [0, 0, 0, 0];
+const noColor: ColorSource = [0, 0, 0, 0];
 
 /** System that manages the generation of textures from the renderer. */
 export class GenerateTextureSystem implements System
@@ -81,7 +81,20 @@ export class GenerateTextureSystem implements System
         const resolution = options.resolution || this._renderer.resolution;
 
         const container = options.target;
-        const clearColor = options.clearColor || noColor;
+
+        let clearColor = options.clearColor;
+
+        if (clearColor)
+        {
+            const isRGBAArray = Array.isArray(clearColor) && clearColor.length === 4;
+
+            clearColor = isRGBAArray ? clearColor : Color.shared.setValue(clearColor).toArray();
+        }
+        else
+        {
+            clearColor = noColor;
+        }
+
         const region = options.frame?.copyTo(tempRect)
             || getLocalBounds(container, tempBounds).rectangle;
 

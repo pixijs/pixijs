@@ -1,6 +1,5 @@
+import { Color } from '../../../color/Color';
 import { Rectangle } from '../../../maths/shapes/Rectangle';
-import { convertColorToNumber } from '../../../utils/color/convertColorToNumber';
-import { hex2rgb } from '../../../utils/color/hex';
 import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
 import { CanvasPool } from '../../renderers/shared/texture/CanvasPool';
 import { ImageSource } from '../../renderers/shared/texture/sources/ImageSource';
@@ -320,8 +319,7 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
         if (style.dropShadow)
         {
             const shadowOptions = style.dropShadow;
-            const dropShadowColor = convertColorToNumber(shadowOptions.color);
-            const rgb = hex2rgb(dropShadowColor);
+            const rgb = Color.shared.setValue(shadowOptions.color).toArray();
 
             const dropShadowBlur = shadowOptions.blur * resolution;
             const dropShadowDistance = shadowOptions.distance * resolution;

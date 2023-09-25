@@ -2,9 +2,9 @@ import { ExtensionType } from '../../../extensions/Extensions';
 import { Container } from '../../scene/Container';
 import { Texture } from './texture/Texture';
 
+import type { ColorSource } from '../../../color/Color';
 import type { Rectangle } from '../../../maths/shapes/Rectangle';
 import type { ICanvas } from '../../../settings/adapter/ICanvas';
-import type { RGBAArray } from '../gpu/renderTarget/GpuRenderTargetSystem';
 import type { Renderer } from '../types';
 import type { GenerateTextureOptions } from './GenerateTextureSystem';
 import type { System } from './system/System';
@@ -23,7 +23,7 @@ export interface BaseExtractOptions
     target: Container | Texture;
     frame?: Rectangle;
     resolution?: number;
-    clearColor?: RGBAArray;
+    clearColor?: ColorSource;
 }
 export type ExtractImageOptions = BaseExtractOptions & ImageOptions;
 export type ExtractDownloadOptions = BaseExtractOptions & {

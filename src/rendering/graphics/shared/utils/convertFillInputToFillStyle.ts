@@ -1,10 +1,12 @@
+import { Color } from '../../../../color/Color';
 import { Matrix } from '../../../../maths/Matrix';
-import { convertColorToNumber } from '../../../../utils/color/convertColorToNumber';
 import { Texture } from '../../../renderers/shared/texture/Texture';
 import { FillGradient } from '../fill/FillGradient';
 import { FillPattern } from '../fill/FillPattern';
 
+import type { ColorSource } from '../../../../color/Color';
 import type {
+    ConvertedFillStyle,
     FillStyle,
     FillStyleInputs,
     PatternFillStyle,
@@ -12,15 +14,15 @@ import type {
 
 export function convertFillInputToFillStyle(
     value: FillStyleInputs,
-    defaultStyle: FillStyle
-): FillStyle
+    defaultStyle: ConvertedFillStyle
+): ConvertedFillStyle
 {
     if (!value)
     {
         return null;
     }
 
-    let fillStyleToParse: FillStyle;
+    let fillStyleToParse: ConvertedFillStyle;
     let styleToMerge: FillStyleInputs;
 
     if ((value as PatternFillStyle)?.fill)
@@ -34,13 +36,17 @@ export function convertFillInputToFillStyle(
         fillStyleToParse = defaultStyle;
     }
 
-    if (typeof styleToMerge === 'number' || typeof styleToMerge === 'string')
+    if (Color.isColorLike(styleToMerge as ColorSource))
     {
-        return {
+        const temp = Color.shared.setValue(styleToMerge as ColorSource ?? 0);
+        const opts: ConvertedFillStyle = {
             ...fillStyleToParse,
-            color: convertColorToNumber(styleToMerge),
+            color: temp.toNumber(),
+            alpha: fillStyleToParse.alpha ?? temp.alpha,
             texture: Texture.WHITE,
         };
+
+        return opts;
     }
     else if (styleToMerge instanceof FillPattern)
     {
@@ -51,6 +57,7 @@ export function convertFillInputToFillStyle(
             color: 0xffffff,
             texture: pattern.texture,
             matrix: pattern.transform,
+            fill: fillStyleToParse.fill ?? null,
         };
     }
 
@@ -69,7 +76,7 @@ export function convertFillInputToFillStyle(
         };
     }
 
-    const style = { ...defaultStyle, ...(value as FillStyle) };
+    const style: FillStyle = { ...defaultStyle, ...(value as FillStyle) };
 
     if (style.texture !== Texture.WHITE)
     {
@@ -82,8 +89,8 @@ export function convertFillInputToFillStyle(
         style.color = 0xffffff;
     }
 
-    style.color = convertColorToNumber(style.color);
+    style.color = Color.shared.setValue(style.color).toNumber();
 
     // its a regular fill style!
-    return style;
+    return style as ConvertedFillStyle;
 }

@@ -3,6 +3,7 @@ import { Container } from '../../scene/Container';
 import { GraphicsContext } from './GraphicsContext';
 import { GraphicsView } from './GraphicsView';
 
+import type { ColorSource } from '../../../color/Color';
 import type { Matrix } from '../../../maths/Matrix';
 import type { Texture } from '../../renderers/shared/texture/Texture';
 import type { ContainerOptions } from '../../scene/Container';
@@ -48,9 +49,9 @@ export class Graphics extends Container<GraphicsView>
 
     // --------------------------------------- GraphicsContext methods ---------------------------------------
     /** @deprecated 8.0.0 */
-    public fill(color: number, alpha: number): this;
+    public fill(color: ColorSource, alpha: number): this;
     public fill(style?: FillStyleInputs): this;
-    public fill(...args: [FillStyleInputs, number?]): this
+    public fill(...args: [FillStyleInputs, ColorSource?]): this
     {
         return this._callContextMethod('fill', args);
     }
@@ -59,21 +60,13 @@ export class Graphics extends Container<GraphicsView>
         return this._callContextMethod('stroke', args);
     }
     public texture(texture: Texture): this;
-    public texture(texture: Texture, tint: number): this;
-    public texture(texture: Texture, tint: number, dx: number, dy: number): this;
-    public texture(texture: Texture, tint: number, dx: number, dy: number, dw: number, dh: number): this;
-    public texture(texture: Texture, tint?: number, dx?: number, dy?: number, dw?: number, dh?: number): this;
+    public texture(texture: Texture, tint: ColorSource): this;
+    public texture(texture: Texture, tint: ColorSource, dx: number, dy: number): this;
+    public texture(texture: Texture, tint: ColorSource, dx: number, dy: number, dw: number, dh: number): this;
+    public texture(texture: Texture, tint?: ColorSource, dx?: number, dy?: number, dw?: number, dh?: number): this;
     public texture(...args: [Texture, number?, number?, number?, number?, number?]): this
     {
         return this._callContextMethod('texture', args);
-    }
-    public setFillStyle(...args: Parameters<GraphicsContext['setFillStyle']>): this
-    {
-        return this._callContextMethod('setFillStyle', args);
-    }
-    public setStrokeStyle(...args: Parameters<GraphicsContext['setStrokeStyle']>): this
-    {
-        return this._callContextMethod('setStrokeStyle', args);
     }
     public beginPath(...args: Parameters<GraphicsContext['beginPath']>): this
     {
@@ -197,7 +190,7 @@ export class Graphics extends Container<GraphicsView>
     {
         return this.view.context.fillStyle;
     }
-    set fillStyle(value: GraphicsContext['fillStyle'])
+    set fillStyle(value: FillStyleInputs)
     {
         this.view.context.fillStyle = value;
     }
@@ -205,7 +198,7 @@ export class Graphics extends Container<GraphicsView>
     {
         return this.view.context.strokeStyle;
     }
-    set strokeStyle(value: GraphicsContext['strokeStyle'])
+    set strokeStyle(value: FillStyleInputs)
     {
         this.view.context.strokeStyle = value;
     }
@@ -216,7 +209,7 @@ export class Graphics extends Container<GraphicsView>
      * @param alpha
      * @deprecated since 8.0.0
      */
-    public beginFill(color: number, alpha?: number)
+    public beginFill(color: ColorSource, alpha?: number)
     {
         // eslint-disable-next-line max-len
         deprecation('8.0.0', 'Graphics#beginFill is no longer needed. Use Graphics#fill to fill the shape with the desired style.');

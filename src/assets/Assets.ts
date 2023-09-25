@@ -216,10 +216,7 @@ export class AssetsClass
 {
     /** the resolver to map various urls */
     public resolver: Resolver;
-    /**
-     * The loader, loads stuff!
-     * @type {Loader}
-     */
+    /** The loader, loads stuff! */
     public loader: Loader;
     /**
      * The global cache of all assets within PixiJS

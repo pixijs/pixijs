@@ -1,6 +1,5 @@
-import { hex2string, rgb2hex } from '../../../../utils/color/hex';
+import { Color } from '../../../../color/Color';
 
-import type { FillStyle, StrokeStyle } from '../../../graphics/shared/GraphicsContext';
 import type { HTMLTextStyle } from '../../HtmlTextStyle';
 import type { TextStyle } from '../../TextStyle';
 
@@ -11,13 +10,13 @@ import type { TextStyle } from '../../TextStyle';
  */
 export function textStyleToCSS(style: HTMLTextStyle): string
 {
-    const stroke: StrokeStyle = style._stroke as StrokeStyle;
-    const fill: FillStyle = style._fill as FillStyle;
+    const stroke = style._stroke;
+    const fill = style._fill;
 
     return [
         `transform-origin: top left`,
         'display: inline-block',
-        `color: ${normalizeColor(fill.color)}`,
+        `color: ${Color.shared.setValue(fill.color).toHex()}`,
         `font-size: ${(style.fontSize as number)}px`,
         `font-family: ${style.fontFamily}`,
         `font-weight: ${style.fontWeight}`,
@@ -34,9 +33,9 @@ export function textStyleToCSS(style: HTMLTextStyle): string
         ] : [],
         ...stroke ? [
             `-webkit-text-stroke-width: ${stroke.width}px`,
-            `-webkit-text-stroke-color: ${normalizeColor(stroke.fill)}`,
+            `-webkit-text-stroke-color: ${Color.shared.setValue(stroke.color).toHex()}`,
             `text-stroke-width: ${stroke.width}px`,
-            `text-stroke-color: ${normalizeColor(stroke.color)}`,
+            `text-stroke-color: ${Color.shared.setValue(stroke.color).toHex()}`,
             'paint-order: stroke',
         ] : [],
         ...style.dropShadow ? [dropShadowToCSS(style.dropShadow)] : [],
@@ -46,16 +45,9 @@ export function textStyleToCSS(style: HTMLTextStyle): string
 
 function dropShadowToCSS(dropShadowStyle: TextStyle['dropShadow']): string
 {
-    let color = normalizeColor(dropShadowStyle.color);
-    const alpha = dropShadowStyle.alpha;
+    const color = Color.shared.setValue(dropShadowStyle.color).setAlpha(dropShadowStyle.alpha).toHexa();
     const x = Math.round(Math.cos(dropShadowStyle.angle) * dropShadowStyle.distance);
     const y = Math.round(Math.sin(dropShadowStyle.angle) * dropShadowStyle.distance);
-
-    // Append alpha to color
-    if (color.startsWith('#') && alpha < 1)
-    {
-        color += (alpha * 255 | 0).toString(16).padStart(2, '0');
-    }
 
     const position = `${x}px ${y}px`;
 
@@ -65,19 +57,4 @@ function dropShadowToCSS(dropShadowStyle: TextStyle['dropShadow']): string
     }
 
     return `text-shadow: ${position} ${color}`;
-}
-
-function normalizeColor(color: any): string
-{
-    if (Array.isArray(color))
-    {
-        color = rgb2hex(color);
-    }
-
-    if (typeof color === 'number')
-    {
-        return hex2string(color);
-    }
-
-    return color;
 }

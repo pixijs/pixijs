@@ -9,6 +9,7 @@ import { Texture } from '../../shared/texture/Texture';
 import { getCanvasTexture } from '../../shared/texture/utils/getCanvasTexture';
 import { GpuRenderTarget } from './GpuRenderTarget';
 
+import type { RgbaArray } from '../../../../color/Color';
 import type { ICanvas } from '../../../../settings/adapter/ICanvas';
 import type { Writeable } from '../../../../utils/types';
 import type { CLEAR_OR_BOOL } from '../../gl/const';
@@ -17,11 +18,7 @@ import type { BindableTexture } from '../../shared/texture/Texture';
 import type { GPU } from '../GpuDeviceSystem';
 import type { WebGPURenderer } from '../WebGPURenderer';
 
-const DEFAULT_CLEAR_COLOR = [0, 0, 0, 0];
-
 export type RenderSurface = ICanvas | BindableTexture | RenderTarget;
-
-export type RGBAArray = [number, number, number, number];
 
 export class GpuRenderTargetSystem implements System
 {
@@ -43,6 +40,7 @@ export class GpuRenderTargetSystem implements System
 
     private readonly _renderTargetStack: RenderTarget[] = [];
     private readonly _renderer: WebGPURenderer;
+    private readonly _defaultClearColor: RgbaArray = [0, 0, 0, 0];
 
     private _gpu: GPU;
 
@@ -58,7 +56,7 @@ export class GpuRenderTargetSystem implements System
     }: {
         target: RenderSurface;
         clear: CLEAR_OR_BOOL;
-        clearColor: RGBAArray;
+        clearColor: RgbaArray;
     }): void
     {
         // generate a render pass description..
@@ -88,7 +86,7 @@ export class GpuRenderTargetSystem implements System
     public bind(
         renderSurface: RenderSurface,
         clear: CLEAR_OR_BOOL = true,
-        clearColor?: RGBAArray
+        clearColor?: RgbaArray
     ): RenderTarget
     {
         const renderTarget = this.getRenderTarget(renderSurface);
@@ -130,7 +128,7 @@ export class GpuRenderTargetSystem implements System
     public getDescriptor(
         renderTarget: RenderTarget,
         clear: CLEAR_OR_BOOL,
-        clearValue: RGBAArray
+        clearValue: RgbaArray
     ): GPURenderPassDescriptor
     {
         if (typeof clear === 'boolean')
@@ -171,10 +169,12 @@ export class GpuRenderTargetSystem implements System
 
                 const loadOp = ((clear as CLEAR) & CLEAR.COLOR ? 'clear' : 'load') as GPULoadOp;
 
+                clearValue ??= this._defaultClearColor;
+
                 return {
                     view, // assign each frame based on the swap chain!
                     resolveTarget,
-                    clearValue: clearValue || DEFAULT_CLEAR_COLOR,
+                    clearValue,
                     storeOp: 'store',
                     loadOp
                 };
@@ -201,14 +201,12 @@ export class GpuRenderTargetSystem implements System
             depthStencilAttachment,
         };
 
-        // console.log(JSON.stringify(descriptor));
-
         return descriptor;
     }
 
     public clear(
         clear: CLEAR_OR_BOOL = CLEAR.ALL,
-        clearColor?: RGBAArray
+        clearColor?: RgbaArray
     )
     {
         if (!clear) return;
@@ -219,7 +217,7 @@ export class GpuRenderTargetSystem implements System
         );
     }
 
-    public push(renderSurface: RenderSurface, clear: CLEAR | boolean = CLEAR.ALL, clearColor?: RGBAArray)
+    public push(renderSurface: RenderSurface, clear: CLEAR | boolean = CLEAR.ALL, clearColor?: RgbaArray)
     {
         const renderTarget = this.bind(renderSurface, clear, clearColor);
 
@@ -291,7 +289,7 @@ export class GpuRenderTargetSystem implements System
 
     private _startRenderPass(
         clear: CLEAR_OR_BOOL = true,
-        clearColor?: RGBAArray
+        clearColor?: RgbaArray
     )
     {
         const renderTarget = this.renderTarget;

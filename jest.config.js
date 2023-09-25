@@ -13,9 +13,6 @@ module.exports = {
         '\\.frag$': 'jest-raw-loader',
         '\\.wgsl$': 'jest-raw-loader',
     },
-    moduleNameMapper: {
-        '^@pixi/(.*)$': '<rootDir>/src/$1',
-    },
     testMatch: ['**/?(*.)+(spec|tests|test).[tj]s?(x)'],
     snapshotResolver: '<rootDir>/scripts/jest/jest-snapshot-resolver.js',
     globals: {

@@ -1,3 +1,4 @@
+import { Color, type ColorSource } from '../../../../color/Color';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
 import { Container } from '../../../scene/Container';
 import { SystemRunner } from './SystemRunner';
@@ -7,7 +8,7 @@ import type { Rectangle } from '../../../../maths/shapes/Rectangle';
 import type { ICanvas } from '../../../../settings/adapter/ICanvas';
 import type { Writeable } from '../../../../utils/types';
 import type { DestroyOptions } from '../../../scene/destroyTypes';
-import type { RenderSurface, RGBAArray } from '../../gpu/renderTarget/GpuRenderTargetSystem';
+import type { RenderSurface } from '../../gpu/renderTarget/GpuRenderTargetSystem';
 import type { Renderer } from '../../types';
 import type { GenerateTextureOptions, GenerateTextureSystem } from '../GenerateTextureSystem';
 import type { PipeConstructor } from '../instructions/RenderPipe';
@@ -30,7 +31,7 @@ export interface RenderOptions
     container: Container;
     transform?: Matrix;
     target?: RenderSurface;
-    clearColor?: RGBAArray;
+    clearColor?: ColorSource;
     clear?: boolean;
 }
 
@@ -143,6 +144,13 @@ export class AbstractRenderer<PIPES, OPTIONS>
         {
             // TODO get rid of this
             this._lastObjectRendered = options.container;
+        }
+
+        if (options.clearColor)
+        {
+            const isRGBAArray = Array.isArray(options.clearColor) && options.clearColor.length === 4;
+
+            options.clearColor = isRGBAArray ? options.clearColor : Color.shared.setValue(options.clearColor).toArray();
         }
 
         this.runners.prerender.emit(options);

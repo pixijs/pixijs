@@ -1,8 +1,8 @@
 import EventEmitter from 'eventemitter3';
+import { Color, type ColorSource } from '../../color/Color';
 import { DEG_TO_RAD, RAD_TO_DEG } from '../../maths/const';
 import { Matrix } from '../../maths/Matrix';
 import { ObservablePoint } from '../../maths/ObservablePoint';
-import { convertColorToNumber } from '../../utils/color/convertColorToNumber';
 import { uid } from '../../utils/data/uid';
 import { deprecation } from '../../utils/logging/deprecation';
 import { childrenHelperMixin } from './container-mixins/childrenHelperMixin';
@@ -213,6 +213,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
     public localColor = 0xFFFFFFFF;
     /** @internal */
     public layerColor = 0xFFFFFFFF;
+    private readonly _tintColor = new Color();
 
     /// BLEND related props //////////////
 
@@ -687,30 +688,23 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         return ((this.localColor >> 24) & 0xFF) / 255;
     }
 
-    set tint(value: number)
+    set tint(value: ColorSource)
     {
-        value = convertColorToNumber(value);
+        this._tintColor.setValue(value);
+        const bgr = this._tintColor.toBgrNumber();
 
-        // convert RGB to BGR
-        value = ((value & 0xFF) << 16) + (value & 0xFF00) + ((value >> 16) & 0xFF);
+        if (bgr === (this.localColor & 0x00FFFFFF)) return;
 
-        if (value === (this.localColor & 0x00FFFFFF)) return;
-
-        // set the BGR values of the color only
-
-        this.localColor = (this.localColor & 0xFF000000) | (value & 0xFFFFFF);
+        this.localColor = (this.localColor & 0xFF000000) | (bgr & 0xFFFFFF);
 
         this._updateFlags |= UPDATE_COLOR;
 
         this.onUpdate();
     }
 
-    get tint(): number
+    get tint(): ColorSource
     {
-        const bgr = this.localColor & 0x00FFFFFF;
-        // convert bgr to rgb..
-
-        return ((bgr & 0xFF) << 16) + (bgr & 0xFF00) + ((bgr >> 16) & 0xFF);
+        return this._tintColor.value;
     }
 
     /// //////////////// blend related stuff
