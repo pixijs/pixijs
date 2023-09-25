@@ -60,10 +60,11 @@ export class GlBackBufferSystem implements System
         useBackBuffer: false,
     };
 
+    public useBackBuffer = false;
+
     private _backBufferTexture: Texture;
     private readonly _renderer: WebGLRenderer;
     private _targetTexture: Texture;
-    private _useBackBuffer = false;
     private _useBackBufferThisRender = false;
     private _antialias: boolean;
 
@@ -72,21 +73,19 @@ export class GlBackBufferSystem implements System
         this._renderer = renderer;
     }
 
-    get useBackBuffer() { return this._useBackBuffer; }
-
     public init(options: GlBackBufferOptions = {})
     {
         const { useBackBuffer, antialias } = { ...GlBackBufferSystem.defaultOptions, ...options };
 
-        this._useBackBuffer = useBackBuffer;
+        this.useBackBuffer = useBackBuffer;
         this._antialias = antialias;
     }
 
     protected renderStart({ target, clear, clearColor }: { target: RenderSurface, clear: boolean, clearColor: RGBAArray })
     {
-        this._useBackBufferThisRender = this._useBackBuffer && !!target;
+        this._useBackBufferThisRender = this.useBackBuffer && !!target;
 
-        if (this._useBackBuffer)
+        if (this.useBackBuffer)
         {
             const renderTarget = this._renderer.renderTarget.getRenderTarget(target);
 
