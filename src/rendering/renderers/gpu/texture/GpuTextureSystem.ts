@@ -146,6 +146,9 @@ export class GpuTextureSystem implements System, CanvasGenerator
 
         if (gpuTexture.width !== source.pixelWidth || gpuTexture.height !== source.pixelHeight)
         {
+            this._textureViewHash[source.uid] = null;
+            this._bindGroupHash[source.uid] = null;
+
             this.onSourceUnload(source);
             this.initSource(source);
         }

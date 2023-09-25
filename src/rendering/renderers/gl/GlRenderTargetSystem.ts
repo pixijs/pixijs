@@ -182,17 +182,6 @@ export class GlRenderTargetSystem implements System
         gl.clear(clear);
     }
 
-    /**
-     * returns the gpu texture for the first color texture in the render target
-     * mainly used by the filter manager to get copy the texture for blending
-     * @param renderTarget
-     * @returns a gpu texture
-     */
-    public getGpuColorTexture(renderTarget: RenderTarget): Texture
-    {
-        return renderTarget.colorTexture;
-    }
-
     public push(
         renderSurface: RenderSurface,
         clear: CLEAR_OR_BOOL = true,
@@ -253,9 +242,11 @@ export class GlRenderTargetSystem implements System
         return renderTarget;
     }
 
-    public finishRenderPass()
+    public finishRenderPass(renderTarget?: RenderTarget)
     {
-        const glRenderTarget = this.getGpuRenderTarget(this.renderTarget);
+        renderTarget = renderTarget || this.renderTarget;
+
+        const glRenderTarget = this.getGpuRenderTarget(renderTarget);
 
         if (!glRenderTarget.msaa) return;
 
@@ -284,14 +275,14 @@ export class GlRenderTargetSystem implements System
     )
     {
         const renderer = this._renderer;
+        const glRenderTarget = this.getGpuRenderTarget(sourceRenderSurfaceTexture);
+        const gl = renderer.gl;
 
-        const baseTexture = renderer.renderTarget.getGpuColorTexture(sourceRenderSurfaceTexture);
+        this.finishRenderPass(sourceRenderSurfaceTexture);
 
-        renderer.renderTarget.bind(baseTexture, false);
+        gl.bindFramebuffer(gl.FRAMEBUFFER, glRenderTarget.resolveTargetFramebuffer);
 
         renderer.texture.bind(destinationTexture, 0);
-
-        const gl = renderer.gl;
 
         gl.copyTexSubImage2D(gl.TEXTURE_2D, 0,
             0, 0,

@@ -1,4 +1,5 @@
 import { Texture } from '../../../../../rendering/renderers/shared/texture/Texture';
+import { warn } from '../../../../../utils/logging/warn';
 import { Cache } from '../../../../cache/Cache';
 
 import type { TextureSource } from '../../../../../rendering/renderers/shared/texture/sources/TextureSource';
@@ -26,8 +27,11 @@ export function createTexture(source: TextureSource, loader: Loader, url: string
     {
         if (url in loader.promiseCache)
         {
-            console.warn('[Assets] A BaseTexture managed by Assets was destroyed instead of unloaded! '
+            // #if _DEBUG
+            warn('[Assets] A BaseTexture managed by Assets was destroyed instead of unloaded! '
                 + 'Use Assets.unload() instead of destroying the BaseTexture.');
+            // #endif
+
             unload();
         }
     });
@@ -35,8 +39,11 @@ export function createTexture(source: TextureSource, loader: Loader, url: string
     {
         if (!source.destroyed)
         {
-            console.warn('[Assets] A Texture managed by Assets was destroyed instead of unloaded! '
+            // #if _DEBUG
+            warn('[Assets] A Texture managed by Assets was destroyed instead of unloaded! '
                 + 'Use Assets.unload() instead of destroying the Texture.');
+            // #endif
+
             unload();
         }
     });

@@ -2,7 +2,6 @@ import { Color } from '../../../color/Color';
 import { Rectangle } from '../../../maths/shapes/Rectangle';
 import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
 import { CanvasPool } from '../../renderers/shared/texture/CanvasPool';
-import { ALPHA_MODES } from '../../renderers/shared/texture/const';
 import { ImageSource } from '../../renderers/shared/texture/sources/ImageSource';
 import { Texture } from '../../renderers/shared/texture/Texture';
 import { CanvasTextMetrics } from '../canvas/CanvasTextMetrics';
@@ -274,7 +273,7 @@ export class DynamicBitmapFont extends AbstractBitmapFont<DynamicBitmapFont>
             source: new ImageSource({
                 resource: canvasAndContext.canvas,
                 resolution,
-                alphaMode: ALPHA_MODES.PMA
+                alphaMode: 'premultiply-alpha-on-upload'
             }),
 
         });

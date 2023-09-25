@@ -90,14 +90,15 @@ export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
         geometry.buffers[0].data = activeBatch.attributeBuffer.float32View;
     }
 
-    public upload()
+    public upload(instructionSet: InstructionSet)
     {
-        const activeBatcher = this._activeBatch;
+        const batcher = this._batches[instructionSet.uid];
+        const geometry = this._geometries[batcher.uid];
 
-        if (activeBatcher.dirty)
+        if (batcher.dirty)
         {
-            activeBatcher.dirty = false;
-            this._activeGeometry.buffers[0].update(activeBatcher.attributeSize * 4);
+            batcher.dirty = false;
+            geometry.buffers[0].update(batcher.attributeSize * 4);
         }
     }
 

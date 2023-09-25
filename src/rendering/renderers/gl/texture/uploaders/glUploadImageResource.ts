@@ -10,7 +10,9 @@ export const glUploadImageResource = {
 
     upload(source: ImageSource | CanvasSource, glTexture: GlTexture, gl: GlRenderingContext)
     {
-        gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, !(source.alphaMode === 0));
+        const premultipliedAlpha = source.alphaMode === 'premultiply-alpha-on-upload';
+
+        gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, premultipliedAlpha);
 
         const glWidth = glTexture.width;
         const glHeight = glTexture.height;

@@ -1,4 +1,5 @@
 /* eslint-disable accessor-pairs */
+import { warn } from '../../utils/logging/warn';
 import { textStyleToCSS } from './html/utils/textStyleToCSS';
 import { generateTextStyleKey } from './shared/utils/generateTextStyleKey';
 import { TextStyle } from './TextStyle';
@@ -122,7 +123,9 @@ export class HTMLTextStyle extends TextStyle
         // if its not a string or a number, then its a texture!
         if (typeof value !== 'string' && typeof value !== 'number')
         {
-            console.warn('[HTMLTextStyle] only color fill is not supported by HTMLText');
+            // #if _DEBUG
+            warn('[HTMLTextStyle] only color fill is not supported by HTMLText');
+            // #endif
         }
 
         super.fill = value;
@@ -133,7 +136,9 @@ export class HTMLTextStyle extends TextStyle
         // if its not a string or a number, then its a texture!
         if (value && typeof value !== 'string' && typeof value !== 'number')
         {
-            console.warn('[HTMLTextStyle] only color stroke is not supported by HTMLText');
+            // #if _DEBUG
+            warn('[HTMLTextStyle] only color stroke is not supported by HTMLText');
+            // #endif
         }
 
         super.stroke = value;

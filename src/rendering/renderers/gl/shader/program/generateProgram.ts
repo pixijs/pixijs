@@ -1,3 +1,4 @@
+import { warn } from '../../../../../utils/logging/warn';
 import { GlProgramData } from '../GlProgramData';
 import { compileShader } from './compileShader';
 import { defaultValue } from './defaultValue';
@@ -32,7 +33,7 @@ export function generateProgram(gl: GlRenderingContext, program: GlProgram): GlP
         if (typeof gl.transformFeedbackVaryings !== 'function')
         {
             // #if _DEBUG
-            console.warn(`TransformFeedback is not supported but TransformFeedbackVaryings are given.`);
+            warn(`TransformFeedback is not supported but TransformFeedbackVaryings are given.`);
             // #endif
         }
         else

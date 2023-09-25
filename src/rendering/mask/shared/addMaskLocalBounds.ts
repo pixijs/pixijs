@@ -1,4 +1,5 @@
 import { Matrix } from '../../../maths/Matrix';
+import { warn } from '../../../utils/logging/warn';
 import { Bounds } from '../../scene/bounds/Bounds';
 import { getLocalBounds } from '../../scene/bounds/getLocalBounds';
 import { updateLocalTransform } from '../../scene/utils/updateLocalTransform';
@@ -26,7 +27,9 @@ export function getMatrixRelativeToParent(target: Container, root: Container, ma
     if (!target)
     {
         // we have reach the top of the tree!
-        console.warn('Item is not inside the root container');
+        // #if _DEBUG
+        warn('Item is not inside the root container');
+        // #endif
 
         return matrix;
     }

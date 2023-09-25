@@ -41,6 +41,12 @@ const bigTriangleShader = new Shader({
     },
 });
 
+export interface GlBackBufferOptions
+{
+    useBackBuffer?: boolean;
+    antialias?: boolean;
+}
+
 export class GlBackBufferSystem implements System
 {
     /** @ignore */
@@ -51,27 +57,36 @@ export class GlBackBufferSystem implements System
         name: 'backBuffer',
     } as const;
 
+    public static defaultOptions: GlBackBufferOptions = {
+        useBackBuffer: false,
+    };
+
+    public useBackBuffer = false;
+
     private _backBufferTexture: Texture;
     private readonly _renderer: WebGLRenderer;
     private _targetTexture: Texture;
-    private _useBackBuffer = false;
     private _useBackBufferThisRender = false;
+    private _antialias: boolean;
 
     constructor(renderer: WebGLRenderer)
     {
         this._renderer = renderer;
     }
 
-    public init({ useBackBuffer }: { useBackBuffer?: boolean } = {})
+    public init(options: GlBackBufferOptions = {})
     {
-        this._useBackBuffer = useBackBuffer;
+        const { useBackBuffer, antialias } = { ...GlBackBufferSystem.defaultOptions, ...options };
+
+        this.useBackBuffer = useBackBuffer;
+        this._antialias = antialias;
     }
 
     protected renderStart({ target, clear, clearColor }: { target: RenderSurface, clear: boolean, clearColor: RgbaArray })
     {
-        this._useBackBufferThisRender = this._useBackBuffer && !!target;
+        this._useBackBufferThisRender = this.useBackBuffer && !!target;
 
-        if (this._useBackBuffer)
+        if (this.useBackBuffer)
         {
             const renderTarget = this._renderer.renderTarget.getRenderTarget(target);
 
@@ -116,10 +131,10 @@ export class GlBackBufferSystem implements System
 
         this._backBufferTexture = this._backBufferTexture || new Texture({
             source: new TextureSource({
-                width: 1,
-                height: 1,
-                resolution: 1,
-                antialias: false,
+                width: source.width,
+                height: source.height,
+                resolution: source._resolution,
+                antialias: this._antialias,
             }),
         });
 
