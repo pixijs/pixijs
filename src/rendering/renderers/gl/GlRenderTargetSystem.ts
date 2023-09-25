@@ -1,4 +1,3 @@
-import { Color, type ColorSource } from '../../../color/Color';
 import { ExtensionType } from '../../../extensions/Extensions';
 import { Matrix } from '../../../maths/Matrix';
 import { isRenderingToScreen } from '../shared/renderTarget/isRenderingToScreen';
@@ -9,6 +8,7 @@ import { getCanvasTexture } from '../shared/texture/utils/getCanvasTexture';
 import { CLEAR } from './const';
 import { GlRenderTarget } from './GlRenderTarget';
 
+import type { RgbaArray } from '../../../color/Color';
 import type { ICanvas } from '../../../settings/adapter/ICanvas';
 import type { RenderSurface } from '../gpu/renderTarget/GpuRenderTargetSystem';
 import type { System } from '../shared/system/System';
@@ -40,8 +40,8 @@ export class GlRenderTargetSystem implements System
     private _gpuRenderTargetHash: Record<number, GlRenderTarget> = Object.create(null);
     private readonly _renderer: WebGLRenderer;
     private readonly _renderTargetStack: RenderTarget[] = [];
-    private readonly _defaultClearColor: number[] = [0, 0, 0, 0];
-    private readonly _clearColorCache: number[] = [0, 0, 0, 0];
+    private readonly _defaultClearColor: RgbaArray = [0, 0, 0, 0];
+    private readonly _clearColorCache: RgbaArray = [0, 0, 0, 0];
 
     private readonly _viewPortCache = {
         x: 0,
@@ -65,7 +65,7 @@ export class GlRenderTargetSystem implements System
     public start(
         rootRenderSurface: RenderSurface,
         clear: CLEAR_OR_BOOL = true,
-        clearColor?: ColorSource
+        clearColor?: RgbaArray
     ): void
     {
         this._renderTargetStack.length = 0;
@@ -84,7 +84,7 @@ export class GlRenderTargetSystem implements System
     public bind(
         renderSurface: RenderSurface,
         clear: CLEAR_OR_BOOL = true,
-        clearColor?: ColorSource
+        clearColor?: RgbaArray
     ): RenderTarget
     {
         const renderTarget = this.getRenderTarget(renderSurface);
@@ -146,7 +146,7 @@ export class GlRenderTargetSystem implements System
         return renderTarget;
     }
 
-    public clear(clear: CLEAR_OR_BOOL, clearColor?: ColorSource)
+    public clear(clear: CLEAR_OR_BOOL, clearColor?: RgbaArray)
     {
         if (!clear) return;
 
@@ -160,16 +160,7 @@ export class GlRenderTargetSystem implements System
 
         if (clear & CLEAR.COLOR)
         {
-            if (clearColor)
-            {
-                const isRGBAArray = Array.isArray(clearColor) && clearColor.length === 4;
-
-                clearColor = isRGBAArray ? clearColor : Color.shared.setValue(clearColor).toRgbAArray();
-            }
-            else
-            {
-                clearColor = this._defaultClearColor;
-            }
+            clearColor ??= this._defaultClearColor;
 
             const clearColorCache = this._clearColorCache;
             const clearColorArray = clearColor as number[];
@@ -205,7 +196,7 @@ export class GlRenderTargetSystem implements System
     public push(
         renderSurface: RenderSurface,
         clear: CLEAR_OR_BOOL = true,
-        clearColor?: ColorSource
+        clearColor?: RgbaArray
     )
     {
         const renderTarget = this.bind(renderSurface, clear, clearColor);

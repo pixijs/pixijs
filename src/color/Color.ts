@@ -5,6 +5,8 @@ import type { AnyColor, HslaColor, HslColor, HsvaColor, HsvColor, RgbaColor, Rgb
 
 extend([namesPlugin]);
 
+export type RgbaArray = [number, number, number, number];
+
 /**
  * Value types for the constructor of {@link Color}.
  * These types are extended from [colord](https://www.npmjs.com/package/colord) with some PixiJS-specific extensions.
@@ -111,6 +113,9 @@ export class Color
     /** Cache color as number */
     private _int: number;
 
+    /** An array of the current Color. Only populated when `toArray` functions are called */
+    private _array: number[] | null;
+
     /**
      * @param {ColorSource} value - Optional value to use, if not provided, white is used.
      */
@@ -198,13 +203,6 @@ export class Color
     get value(): Exclude<ColorSource, Color> | null
     {
         return this._value;
-    }
-
-    public toBgrNumber(): number
-    {
-        const [r, g, b] = this.toUint8RgbArray();
-
-        return (b << 16) + (g << 8) + r;
     }
 
     /**
@@ -328,7 +326,12 @@ export class Color
     {
         const [r, g, b] = this._components;
 
-        out = out ?? ([] as number[] as T);
+        if (!this._array)
+        {
+            this._array = [];
+        }
+
+        out = out || this._array as T;
 
         out[0] = Math.round(r * 255);
         out[1] = Math.round(g * 255);
@@ -348,7 +351,12 @@ export class Color
     public toRgbArray<T extends number[] | Float32Array>(out: T): T;
     public toRgbArray<T extends number[] | Float32Array>(out?: T): T
     {
-        out = out ?? ([] as number[] as T);
+        if (!this._array)
+        {
+            this._array = [];
+        }
+
+        out = out || this._array as T;
         const [r, g, b] = this._components;
 
         out[0] = r;
@@ -369,7 +377,12 @@ export class Color
     public toRgbAArray<T extends number[] | Float32Array>(out: T): T;
     public toRgbAArray<T extends number[] | Float32Array>(out?: T): T
     {
-        out = out ?? ([] as number[] as T);
+        if (!this._array)
+        {
+            this._array = [];
+        }
+
+        out = out || this._array as T;
         const [r, g, b, a] = this._components;
 
         out[0] = r;
@@ -389,6 +402,19 @@ export class Color
     public toNumber(): number
     {
         return this._int;
+    }
+
+    /**
+     * Convert to a BGR number
+     * @example
+     * import { Color } from 'pixi.js';
+     * new Color(0xffcc99).toBgrNumber(); // returns 0x99ccff
+     */
+    public toBgrNumber(): number
+    {
+        const [r, g, b] = this.toUint8RgbArray();
+
+        return (b << 16) + (g << 8) + r;
     }
 
     /**
@@ -527,7 +553,12 @@ export class Color
     public toArray<T extends number[] | Float32Array>(out: T): T;
     public toArray<T extends number[] | Float32Array>(out?: T): T
     {
-        out = out ?? ([] as number[] as T);
+        if (!this._array)
+        {
+            this._array = [];
+        }
+
+        out = out || this._array as T;
         const [r, g, b, a] = this._components;
 
         out[0] = r;

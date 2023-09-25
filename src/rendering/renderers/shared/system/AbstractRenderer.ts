@@ -1,8 +1,8 @@
+import { Color, type ColorSource } from '../../../../color/Color';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
 import { Container } from '../../../scene/Container';
 import { SystemRunner } from './SystemRunner';
 
-import type { ColorSource } from '../../../../color/Color';
 import type { Matrix } from '../../../../maths/Matrix';
 import type { Rectangle } from '../../../../maths/shapes/Rectangle';
 import type { ICanvas } from '../../../../settings/adapter/ICanvas';
@@ -144,6 +144,13 @@ export class AbstractRenderer<PIPES, OPTIONS>
         {
             // TODO get rid of this
             this._lastObjectRendered = options.container;
+        }
+
+        if (options.clearColor)
+        {
+            const isRGBAArray = Array.isArray(options.clearColor) && options.clearColor.length === 4;
+
+            options.clearColor = isRGBAArray ? options.clearColor : Color.shared.setValue(options.clearColor).toRgbAArray();
         }
 
         this.runners.prerender.emit(options);

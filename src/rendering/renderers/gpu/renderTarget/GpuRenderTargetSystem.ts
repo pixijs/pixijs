@@ -1,4 +1,4 @@
-import { Color, type ColorSource } from '../../../../color/Color';
+import { type ColorSource } from '../../../../color/Color';
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { Matrix } from '../../../../maths/Matrix';
 import { CLEAR } from '../../gl/const';
@@ -10,6 +10,7 @@ import { Texture } from '../../shared/texture/Texture';
 import { getCanvasTexture } from '../../shared/texture/utils/getCanvasTexture';
 import { GpuRenderTarget } from './GpuRenderTarget';
 
+import type { RgbaArray } from '../../../../color/Color';
 import type { ICanvas } from '../../../../settings/adapter/ICanvas';
 import type { Writeable } from '../../../../utils/types';
 import type { CLEAR_OR_BOOL } from '../../gl/const';
@@ -40,7 +41,7 @@ export class GpuRenderTargetSystem implements System
 
     private readonly _renderTargetStack: RenderTarget[] = [];
     private readonly _renderer: WebGPURenderer;
-    private readonly _defaultClearColor: ColorSource = [0, 0, 0, 0];
+    private readonly _defaultClearColor: RgbaArray = [0, 0, 0, 0];
 
     private _gpu: GPU;
 
@@ -56,7 +57,7 @@ export class GpuRenderTargetSystem implements System
     }: {
         target: RenderSurface;
         clear: CLEAR_OR_BOOL;
-        clearColor: ColorSource;
+        clearColor: RgbaArray;
     }): void
     {
         // generate a render pass description..
@@ -86,7 +87,7 @@ export class GpuRenderTargetSystem implements System
     public bind(
         renderSurface: RenderSurface,
         clear: CLEAR_OR_BOOL = true,
-        clearColor?: ColorSource
+        clearColor?: RgbaArray
     ): RenderTarget
     {
         const renderTarget = this.getRenderTarget(renderSurface);
@@ -169,16 +170,7 @@ export class GpuRenderTargetSystem implements System
 
                 const loadOp = ((clear as CLEAR) & CLEAR.COLOR ? 'clear' : 'load') as GPULoadOp;
 
-                if (clearValue)
-                {
-                    const isRGBAArray = Array.isArray(clearValue) && clearValue.length === 4;
-
-                    clearValue = isRGBAArray ? clearValue : Color.shared.setValue(clearValue).toRgbAArray();
-                }
-                else
-                {
-                    clearValue = this._defaultClearColor;
-                }
+                clearValue ??= this._defaultClearColor;
 
                 return {
                     view, // assign each frame based on the swap chain!
@@ -215,7 +207,7 @@ export class GpuRenderTargetSystem implements System
 
     public clear(
         clear: CLEAR_OR_BOOL = CLEAR.ALL,
-        clearColor?: ColorSource
+        clearColor?: RgbaArray
     )
     {
         if (!clear) return;
@@ -226,7 +218,7 @@ export class GpuRenderTargetSystem implements System
         );
     }
 
-    public push(renderSurface: RenderSurface, clear: CLEAR | boolean = CLEAR.ALL, clearColor?: ColorSource)
+    public push(renderSurface: RenderSurface, clear: CLEAR | boolean = CLEAR.ALL, clearColor?: RgbaArray)
     {
         const renderTarget = this.bind(renderSurface, clear, clearColor);
 
@@ -298,7 +290,7 @@ export class GpuRenderTargetSystem implements System
 
     private _startRenderPass(
         clear: CLEAR_OR_BOOL = true,
-        clearColor?: ColorSource
+        clearColor?: RgbaArray
     )
     {
         const renderTarget = this.renderTarget;
