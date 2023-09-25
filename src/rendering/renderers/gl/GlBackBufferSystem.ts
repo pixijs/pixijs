@@ -45,6 +45,7 @@ export interface GlBackBufferOptions
     useBackBuffer?: boolean;
     antialias?: boolean;
 }
+
 export class GlBackBufferSystem implements System
 {
     /** @ignore */
@@ -54,6 +55,10 @@ export class GlBackBufferSystem implements System
         ],
         name: 'backBuffer',
     } as const;
+
+    public static defaultOptions: GlBackBufferOptions = {
+        useBackBuffer: false,
+    };
 
     private _backBufferTexture: Texture;
     private readonly _renderer: WebGLRenderer;
@@ -69,8 +74,10 @@ export class GlBackBufferSystem implements System
 
     get useBackBuffer() { return this._useBackBuffer; }
 
-    public init({ useBackBuffer, antialias }: GlBackBufferOptions = {})
+    public init(options: GlBackBufferOptions = {})
     {
+        const { useBackBuffer, antialias } = { ...GlBackBufferSystem.defaultOptions, ...options };
+
         this._useBackBuffer = useBackBuffer;
         this._antialias = antialias;
     }
