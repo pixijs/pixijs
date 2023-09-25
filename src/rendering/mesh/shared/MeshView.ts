@@ -1,4 +1,5 @@
 import { Polygon } from '../../../maths/shapes/Polygon';
+import { uid } from '../../../utils/data/uid';
 import { State } from '../../renderers/shared/state/State';
 import { Texture } from '../../renderers/shared/texture/Texture';
 import { emptyViewObserver } from '../../renderers/shared/View';
@@ -9,8 +10,6 @@ import type { View } from '../../renderers/shared/View';
 import type { Bounds } from '../../scene/bounds/Bounds';
 import type { DestroyOptions } from '../../scene/destroyTypes';
 import type { MeshGeometry } from './MeshGeometry';
-
-let UID = 0;
 
 const tempPolygon = new Polygon();
 
@@ -34,7 +33,7 @@ export class MeshView<
     SHADER extends TextureShader = TextureShader
 >implements View
 {
-    public readonly uid: number = UID++;
+    public readonly uid: number = uid('meshView');
     public readonly renderPipeId = 'mesh';
     public readonly canBundle = true;
     public readonly owner = emptyViewObserver;

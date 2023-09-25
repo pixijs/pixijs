@@ -1,10 +1,10 @@
-import type { Instruction } from './Instruction';
+import { uid } from '../../../../utils/data/uid';
 
-let UID = 0;
+import type { Instruction } from './Instruction';
 
 export class InstructionSet
 {
-    public uid = UID++;
+    public uid = uid('instructionSet');
     public instructions: Instruction[] = [];
     public instructionSize = 0;
     public renderPipes: any;

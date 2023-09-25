@@ -1,3 +1,4 @@
+import { uid } from '../../../utils/data/uid';
 import { ViewableBuffer } from '../../../utils/ViewableBuffer';
 import { fastCopy } from '../../renderers/shared/buffer/utils/fastCopy';
 import { getBatchedGeometry } from '../gpu/getBatchedGeometry';
@@ -80,11 +81,10 @@ export interface BatchableObject
 }
 
 let BATCH_TICK = 0;
-let UID = 0;
 
 export class Batcher
 {
-    public uid = UID++;
+    public uid = uid('batcher');
     public attributeBuffer: ViewableBuffer;
     public indexBuffer: Uint32Array;
 

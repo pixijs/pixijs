@@ -1,3 +1,4 @@
+import { uid } from '../../../utils/data/uid';
 import { ViewableBuffer } from '../../../utils/ViewableBuffer';
 import { fastCopy } from '../../renderers/shared/buffer/utils/fastCopy';
 import { Batch } from './Batcher';
@@ -19,11 +20,9 @@ class BatchData
 let BATCH_TICK = 0;
 const textureHashy = Object.create(null);
 
-let UID = 0;
-
 export class BatcherStyleSource
 {
-    public readonly uid = UID++;
+    public readonly uid = uid('batcherStyleSource');
     public attributeBuffer: ViewableBuffer;
     public indexBuffer: Uint32Array;
 

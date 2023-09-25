@@ -45,7 +45,7 @@ export class CanvasTextPipe implements RenderPipe<TextView>
         {
             const view = renderable.view;
 
-            const resolution = view._autoResolution ? this._renderer.view.resolution : view._resolution;
+            const resolution = view.resolution ?? this._renderer.resolution;
 
             const { width, height } = this._renderer.canvasText.getTextureSize(
                 view.text,
@@ -142,7 +142,7 @@ export class CanvasTextPipe implements RenderPipe<TextView>
             this._renderer.canvasText.decreaseReferenceCount(gpuText.currentKey);
         }
 
-        const resolution = view._autoResolution ? this._renderer.view.resolution : view._resolution;
+        const resolution = view.resolution ?? this._renderer.resolution;
 
         gpuText.texture = batchableSprite.texture = this._renderer.canvasText.getTexture(
             view.text,
