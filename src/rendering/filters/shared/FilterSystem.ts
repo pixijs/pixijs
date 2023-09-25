@@ -1,6 +1,7 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { Matrix } from '../../../maths/Matrix';
 import { Point } from '../../../maths/Point';
+import { warn } from '../../../utils/logging/warn';
 import { BindGroup } from '../../renderers/gpu/shader/BindGroup';
 import { Geometry } from '../../renderers/shared/geometry/Geometry';
 import { UniformGroup } from '../../renderers/shared/shader/UniformGroup';
@@ -195,8 +196,10 @@ export class FilterSystem implements System
 
             if (filter.blendRequired && !((renderer as WebGLRenderer).backBuffer?.useBackBuffer ?? true))
             {
+                // #if _DEBUG
                 // eslint-disable-next-line max-len
-                console.warn('[PixiJS] Blend filter requires backBuffer on WebGL renderer to be enabled. Set `useBackBuffer: true` in the renderer options.');
+                warn('Blend filter requires backBuffer on WebGL renderer to be enabled. Set `useBackBuffer: true` in the renderer options.');
+                // #endif
 
                 enabled = false;
                 break;

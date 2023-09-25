@@ -1,5 +1,6 @@
 import EventEmitter from 'eventemitter3';
 import { Point } from '../maths/Point';
+import { warn } from '../utils/logging/warn';
 import { EventsTicker } from './EventTicker';
 import { FederatedMouseEvent } from './FederatedMouseEvent';
 import { FederatedPointerEvent } from './FederatedPointerEvent';
@@ -232,7 +233,9 @@ export class EventBoundary
         }
         else
         {
-            console.warn(`[EventBoundary]: Event mapping not defined for ${e.type}`);
+            // #if _DEBUG
+            warn(`[EventBoundary]: Event mapping not defined for ${e.type}`);
+            // #endif
         }
     }
 
@@ -675,7 +678,9 @@ export class EventBoundary
     {
         if (!(from instanceof FederatedPointerEvent))
         {
-            console.warn('EventBoundary cannot map a non-pointer event as a pointer event');
+            // #if _DEBUG
+            warn('EventBoundary cannot map a non-pointer event as a pointer event');
+            // #endif
 
             return;
         }
@@ -713,7 +718,9 @@ export class EventBoundary
     {
         if (!(from instanceof FederatedPointerEvent))
         {
-            console.warn('EventBoundary cannot map a non-pointer event as a pointer event');
+            // #if _DEBUG
+            warn('EventBoundary cannot map a non-pointer event as a pointer event');
+            // #endif
 
             return;
         }
@@ -854,7 +861,9 @@ export class EventBoundary
     {
         if (!(from instanceof FederatedPointerEvent))
         {
-            console.warn('EventBoundary cannot map a non-pointer event as a pointer event');
+            // #if _DEBUG
+            warn('EventBoundary cannot map a non-pointer event as a pointer event');
+            // #endif
 
             return;
         }
@@ -898,7 +907,9 @@ export class EventBoundary
     {
         if (!(from instanceof FederatedPointerEvent))
         {
-            console.warn('EventBoundary cannot map a non-pointer event as a pointer event');
+            // #if _DEBUG
+            warn('EventBoundary cannot map a non-pointer event as a pointer event');
+            // #endif
 
             return;
         }
@@ -955,7 +966,9 @@ export class EventBoundary
     {
         if (!(from instanceof FederatedPointerEvent))
         {
-            console.warn('EventBoundary cannot map a non-pointer event as a pointer event');
+            // #if _DEBUG
+            warn('EventBoundary cannot map a non-pointer event as a pointer event');
+            // #endif
 
             return;
         }
@@ -1082,7 +1095,9 @@ export class EventBoundary
     {
         if (!(from instanceof FederatedPointerEvent))
         {
-            console.warn('EventBoundary cannot map a non-pointer event as a pointer event');
+            // #if _DEBUG
+            warn('EventBoundary cannot map a non-pointer event as a pointer event');
+            // #endif
 
             return;
         }
@@ -1127,7 +1142,9 @@ export class EventBoundary
     {
         if (!(from instanceof FederatedWheelEvent))
         {
-            console.warn('EventBoundary cannot map a non-wheel event as a wheel event');
+            // #if _DEBUG
+            warn('EventBoundary cannot map a non-wheel event as a wheel event');
+            // #endif
 
             return;
         }

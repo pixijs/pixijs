@@ -1,5 +1,6 @@
 import { Matrix } from '../../../../maths/Matrix';
 import { convertNumberToHex } from '../../../../utils/color/convertNumberToHex';
+import { warn } from '../../../../utils/logging/warn';
 import { FillGradient } from '../../../graphics/shared/fill/FillGradient';
 import { FillPattern } from '../../../graphics/shared/fill/FillPattern';
 import { Texture } from '../../../renderers/shared/texture/Texture';
@@ -65,7 +66,9 @@ export function getCanvasFillStyle(
         }
     }
 
-    console.warn('[PixiJS] FillStyle not recognised', fillStyle);
+    // #if _DEBUG
+    warn('FillStyle not recognised', fillStyle);
+    // #endif
 
     return 'red';
 }

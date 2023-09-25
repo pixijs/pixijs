@@ -1,5 +1,6 @@
 import { Point } from '../../../../maths/Point';
 import { uid } from '../../../../utils/data/uid';
+import { warn } from '../../../../utils/logging/warn';
 import { SVGToGraphicsPath } from '../svg/SVGToGraphicsPath';
 import { ShapePath } from './ShapePath';
 
@@ -419,7 +420,9 @@ export class GraphicsPath
                     data[0].transform(matrix);
                     break;
                 default:
-                    console.warn('unknown transform action', instruction.action);
+                    // #if _DEBUG
+                    warn('unknown transform action', instruction.action);
+                    // #endif
                     break;
             }
         }
@@ -514,7 +517,9 @@ export class GraphicsPath
 
                 break;
             default:
-                console.warn(`${lastInstruction.action} is not supported yet`);
+                // #if _DEBUG
+                warn(`${lastInstruction.action} is not supported yet`);
+                // #endif
                 break;
         }
 

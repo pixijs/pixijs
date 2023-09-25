@@ -1,3 +1,4 @@
+import { warn } from '../../utils/logging/warn';
 import { convertToList } from '../utils/convertToList';
 
 import type { CacheParser } from './CacheParser';
@@ -53,7 +54,7 @@ class CacheClass
         if (!result)
         {
             // #if _DEBUG
-            console.warn(`[Assets] Asset id ${key} was not found in the Cache`);
+            warn(`[Assets] Asset id ${key} was not found in the Cache`);
             // #endif
         }
 
@@ -111,7 +112,7 @@ class CacheClass
             if (this._cache.has(key) && this._cache.get(key) !== value)
             {
                 // #if _DEBUG
-                console.warn('[Cache] already has key:', key);
+                warn('[Cache] already has key:', key);
                 // #endif
             }
 
@@ -130,7 +131,7 @@ class CacheClass
         if (!this._cacheMap.has(key))
         {
             // #if _DEBUG
-            console.warn(`[Assets] Asset id ${key} was not found in the Cache`);
+            warn(`[Assets] Asset id ${key} was not found in the Cache`);
             // #endif
 
             return;

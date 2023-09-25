@@ -1,3 +1,5 @@
+import { warn } from '../../../../utils/logging/warn';
+
 /**
  * takes the HighFragment source parts and adds them to the hook hash
  * @param srcParts - the hash of hook arrays
@@ -34,7 +36,9 @@ export function addBits(srcParts: Record<string, string>, parts: Record<string, 
 
             else
             {
-                console.warn(`${i} placement hook does not exist in shader`);
+                // #if _DEBUG
+                warn(`${i} placement hook does not exist in shader`);
+                // #endif
             }
         }
     }
