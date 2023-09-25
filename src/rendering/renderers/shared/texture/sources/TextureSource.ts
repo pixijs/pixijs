@@ -37,6 +37,7 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     unload: TextureSource;
     destroy: TextureSource;
     resize: TextureSource;
+    styleChange: TextureSource;
     error: Error;
 }> implements BindResource
 {
@@ -172,11 +173,16 @@ export class TextureSource<T extends Record<string, any> = any> extends EventEmi
     {
         if (this.style === value) return;
 
-        this._style?.off('change', this.update, this);
+        this._style?.off('change', this._onStyleChange, this);
         this._style = value;
-        this._style?.on('change', this.update, this);
+        this._style?.on('change', this._onStyleChange, this);
 
-        this.update();
+        this._onStyleChange();
+    }
+
+    private _onStyleChange()
+    {
+        this.emit('styleChange', this);
     }
 
     public update()

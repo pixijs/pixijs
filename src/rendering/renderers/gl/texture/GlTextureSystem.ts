@@ -199,12 +199,25 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         source.on('update', this.onSourceUpdate, this);
         source.on('resize', this.onSourceUpdate, this);
+        source.on('styleChange', this.onStyleChange, this);
         source.on('destroy', this.onSourceDestroy, this);
         source.on('unload', this.onSourceUnload, this);
 
         this.managedTextures.push(source);
 
         this.onSourceUpdate(source);
+        this.onStyleChange(source);
+
+        return glTexture;
+    }
+
+    protected onStyleChange(source: TextureSource): void
+    {
+        const gl = this._gl;
+
+        const glTexture = this._glTextures[source.uid];
+
+        gl.bindTexture(gl.TEXTURE_2D, glTexture.texture);
 
         applyStyleParams(
             source.style,
@@ -214,8 +227,6 @@ export class GlTextureSystem implements System, CanvasGenerator
             'texParameteri',
             gl.TEXTURE_2D
         );
-
-        return glTexture;
     }
 
     protected onSourceUnload(source: TextureSource): void
