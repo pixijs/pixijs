@@ -210,17 +210,30 @@ export class Graphics extends Container<GraphicsView>
         this.view.context.strokeStyle = value;
     }
 
-    public beginFill(): this
-    {
-        return this;
-    }
-
-    public endFill(): this
-    {
-        return this;
-    }
-
     // v7 deprecations
+    /**
+     * @param color
+     * @param alpha
+     * @deprecated since 8.0.0
+     */
+    public beginFill(color: number, alpha?: number)
+    {
+        // eslint-disable-next-line max-len
+        deprecation('8.0.0', 'Graphics#beginFill is no longer needed. Use Graphics#fill to fill the shape with the desired style.');
+        this.context.beginPath();
+        this.context.fillStyle = { color, alpha };
+    }
+
+    /**
+     * @deprecated since 8.0.0
+     */
+    public endFill()
+    {
+        // eslint-disable-next-line max-len
+        deprecation('8.0.0', 'Graphics#endFill is no longer needed. Use Graphics#fill to fill the shape with the desired style.');
+        this.context.fill();
+    }
+
     /**
      * @param {...any} args
      * @deprecated since 8.0.0
