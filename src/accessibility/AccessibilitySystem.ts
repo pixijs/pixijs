@@ -29,8 +29,15 @@ const DIV_HOOK_POS_X = -1000;
 const DIV_HOOK_POS_Y = -1000;
 const DIV_HOOK_ZINDEX = 2;
 
+/** @ignore */
+export interface AccessibilityOptions
+{
+    /** Setting this to true will visually show the divs. */
+    debug?: boolean;
+}
+
 /**
- * The Accessibility manager recreates the ability to tab and have content read by screen readers.
+ * The Accessibility system recreates the ability to tab and have content read by screen readers.
  * This is very important as it can possibly help people with disabilities access PixiJS content.
  *
  * A Container can be made accessible just like it can be made interactive. This manager will map the
@@ -215,7 +222,7 @@ export class AccessibilitySystem implements System
         globalThis.document.addEventListener('mousemove', this._onMouseMove, true);
         globalThis.removeEventListener('keydown', this._onKeyDown, false);
 
-        this._renderer.runners.postrender.add(this._update);
+        this._renderer.runners.postrender.add(this);
         this._renderer.view.element.parentNode?.appendChild(this._div);
     }
 
@@ -236,7 +243,7 @@ export class AccessibilitySystem implements System
         globalThis.document.removeEventListener('mousemove', this._onMouseMove, true);
         globalThis.addEventListener('keydown', this._onKeyDown, false);
 
-        this._renderer.runners.postrender.remove(this._update);
+        this._renderer.runners.postrender.remove(this);
         this._div.parentNode?.removeChild(this._div);
     }
 
@@ -274,10 +281,21 @@ export class AccessibilitySystem implements System
     }
 
     /**
-     * Before each render this function will ensure that all divs are mapped correctly to their DisplayObjects.
-     * @private
+     * Runner init called, view is available at this point.
+     * @ignore
      */
-    private readonly _update = () =>
+    public init(options?: AccessibilityOptions)
+    {
+        this.debug = options?.debug ?? this.debug;
+        this._renderer.runners.postrender.remove(this);
+    }
+
+    /**
+     * Runner postrender was called, ensure that all divs are mapped correctly to their DisplayObjects.
+     * Only fires while active.
+     * @ignore
+     */
+    public postrender(): void
     {
         /* On Android default web browser, tab order seems to be calculated by position rather than tabIndex,
         *  moving buttons can cause focus to flicker between two buttons making it hard/impossible to navigate,
@@ -364,7 +382,7 @@ export class AccessibilitySystem implements System
                         div.title = child.accessibleTitle;
                     }
                     if (div.getAttribute('aria-label') !== child.accessibleHint
-                        && child.accessibleHint !== null)
+                       && child.accessibleHint !== null)
                     {
                         div.setAttribute('aria-label', child.accessibleHint);
                     }
@@ -375,18 +393,21 @@ export class AccessibilitySystem implements System
                 {
                     div.title = child.accessibleTitle;
                     div.tabIndex = child.tabIndex;
-                    if (this.debug) this.updateDebugHTML(div);
+                    if (this.debug)
+                    {
+                        this.updateDebugHTML(div);
+                    }
                 }
             }
         }
 
         // increment the render id..
         this._renderId++;
-    };
+    }
 
     /**
      * private function that will visually add the information to the
-     * accessability div
+     * accessibility div
      * @param {HTMLElement} div -
      */
     public updateDebugHTML(div: AccessibleHTMLElement): void
@@ -495,7 +516,10 @@ export class AccessibilitySystem implements System
             div.setAttribute('aria-label', container.accessibleHint);
         }
 
-        if (this.debug) this.updateDebugHTML(div);
+        if (this.debug)
+        {
+            this.updateDebugHTML(div);
+        }
 
         container._accessibleActive = true;
         container._accessibleDiv = div;
