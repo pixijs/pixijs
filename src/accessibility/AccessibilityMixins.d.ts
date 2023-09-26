@@ -5,4 +5,9 @@ declare namespace PixiMixins
     {
 
     }
+
+    interface RendererSystems
+    {
+        accessibility: import('./AccessibilitySystem').AccessibilitySystem;
+    }
 }
