@@ -80,6 +80,8 @@ export class GpuBatchAdaptor implements BatcherAdaptor
             batch.bindGroup = getTextureBatchBindGroup(textureBatch.textures, textureBatch.count);
         }
 
+        tempState.blendMode = batch.blendMode;
+
         const gpuBindGroup = renderer.bindGroup.getBindGroup(
             batch.bindGroup, program, 1
         );
