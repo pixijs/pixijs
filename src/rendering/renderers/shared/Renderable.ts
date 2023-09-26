@@ -1,7 +1,7 @@
 import type EventEmitter from 'eventemitter3';
-import type { Matrix } from '../../../maths/Matrix';
+import type { Matrix } from '../../../maths/matrix/Matrix';
 import type { BLEND_MODES } from './state/const';
-import type { View } from './View';
+import type { View } from './view/View';
 
 export interface Renderable<VIEW extends View = View> extends EventEmitter
 {

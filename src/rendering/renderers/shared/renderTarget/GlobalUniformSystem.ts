@@ -1,10 +1,10 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
-import { Matrix } from '../../../../maths/Matrix';
-import { Point } from '../../../../maths/Point';
+import { Matrix } from '../../../../maths/matrix/Matrix';
+import { Point } from '../../../../maths/point/Point';
 import { BindGroup } from '../../gpu/shader/BindGroup';
 import { UniformGroup } from '../shader/UniformGroup';
 
-import type { PointData } from '../../../../maths/PointData';
+import type { PointData } from '../../../../maths/point/PointData';
 import type { Writeable } from '../../../../utils/types';
 import type { GlRenderTargetSystem } from '../../gl/GlRenderTargetSystem';
 import type { GpuRenderTargetSystem } from '../../gpu/renderTarget/GpuRenderTargetSystem';

@@ -1,5 +1,5 @@
-import { Container } from '../../src/rendering/scene/Container';
-import { updateLayerGroupTransforms } from '../../src/rendering/scene/utils/updateLayerGroupTransforms';
+import { Container } from '../../src/scene/container/Container';
+import { updateLayerGroupTransforms } from '../../src/scene/container/utils/updateLayerGroupTransforms';
 
 describe('Transform Blend Modes', () =>
 {

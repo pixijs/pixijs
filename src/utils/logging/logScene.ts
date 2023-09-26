@@ -1,8 +1,9 @@
 /* eslint-disable no-console */
-import { Sprite } from '../../rendering/sprite/shared/Sprite';
 
-import type { Container } from '../../rendering/scene/Container';
-import type { LayerGroup } from '../../rendering/scene/LayerGroup';
+import { Sprite } from '../../scene/sprite/Sprite';
+
+import type { Container } from '../../scene/container/Container';
+import type { LayerGroup } from '../../scene/container/LayerGroup';
 
 const colors = [
     '#000080', // Navy Blue

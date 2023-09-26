@@ -1,4 +1,4 @@
-import { nextPow2 } from '../../../../maths/pow2';
+import { nextPow2 } from '../../../../maths/misc/pow2';
 import { settings } from '../../../../settings/settings';
 
 import type { ICanvas, ICanvasRenderingContext2DSettings } from '../../../../settings/adapter/ICanvas';

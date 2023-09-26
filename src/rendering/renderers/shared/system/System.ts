@@ -1,4 +1,4 @@
-import type { DestroyOptions } from '../../../scene/destroyTypes';
+import type { DestroyOptions } from '../../../../scene/container/destroyTypes';
 import type { Renderer } from '../../types';
 
 export interface System<INIT_OPTIONS = null, DESTROY_OPTIONS = DestroyOptions>

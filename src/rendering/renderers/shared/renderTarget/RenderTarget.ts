@@ -1,6 +1,6 @@
 // what we are building is a platform and a framework.
 // import { Matrix } from '../../shared/maths/Matrix';
-import { Matrix } from '../../../../maths/Matrix';
+import { Matrix } from '../../../../maths/matrix/Matrix';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { uid } from '../../../../utils/data/uid';
 import { calculateProjection } from '../../gpu/renderTarget/calculateProjection';

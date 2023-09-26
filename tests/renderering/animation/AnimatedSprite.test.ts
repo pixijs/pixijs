@@ -1,5 +1,5 @@
-import { AnimatedSprite } from '../../../src/rendering/animation/shared/AnimatedSprite';
 import { Texture } from '../../../src/rendering/renderers/shared/texture/Texture';
+import { AnimatedSprite } from '../../../src/scene/sprite-animated/AnimatedSprite';
 
 import type { Ticker } from '../../../src/ticker/Ticker';
 

@@ -1,5 +1,5 @@
 import EventEmitter from 'eventemitter3';
-import { groupD8 } from '../../../../maths/groupD8';
+import { groupD8 } from '../../../../maths/matrix/groupD8';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
 
 export interface TextureLayoutOptions

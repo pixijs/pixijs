@@ -5,7 +5,7 @@ import { FederatedPointerEvent } from './FederatedPointerEvent';
 import { FederatedWheelEvent } from './FederatedWheelEvent';
 
 import type { ExtensionMetadata } from '../extensions/Extensions';
-import type { PointData } from '../maths/PointData';
+import type { PointData } from '../maths/point/PointData';
 import type { System } from '../rendering/renderers/shared/system/System';
 import type { Renderer } from '../rendering/renderers/types';
 import type { PixiTouch } from './FederatedEvent';

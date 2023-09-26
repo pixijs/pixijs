@@ -1,7 +1,7 @@
-import { groupD8 } from '../../../../maths/groupD8';
+import { groupD8 } from '../../../../maths/matrix/groupD8';
 
+import type { Size } from '../../../../maths/misc/Size';
 import type { Rectangle } from '../../../../maths/shapes/Rectangle';
-import type { Size } from '../../../../maths/Size';
 
 /**
  * Stores a texture's frame in UV coordinates, in

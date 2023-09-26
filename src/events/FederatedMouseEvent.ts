@@ -1,8 +1,8 @@
-import { Point } from '../maths/Point';
+import { Point } from '../maths/point/Point';
 import { FederatedEvent } from './FederatedEvent';
 
-import type { PointData } from '../maths/PointData';
-import type { Container } from '../rendering/scene/Container';
+import type { PointData } from '../maths/point/PointData';
+import type { Container } from '../scene/container/Container';
 import type { PixiTouch } from './FederatedEvent';
 
 /** A {@link FederatedEvent} for mouse events. */

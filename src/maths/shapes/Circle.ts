@@ -1,6 +1,6 @@
 import { Rectangle } from './Rectangle';
 
-import type { SHAPE_PRIMITIVE } from '../const';
+import type { SHAPE_PRIMITIVE } from '../misc/const';
 import type { ShapePrimitive } from './ShapePrimitive';
 
 /** The Circle object is used to help draw graphics and can also be used to specify a hit area for containers. */

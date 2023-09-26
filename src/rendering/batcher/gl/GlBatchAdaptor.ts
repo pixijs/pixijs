@@ -1,5 +1,5 @@
 import { ExtensionType } from '../../../extensions/Extensions';
-import { Matrix } from '../../../maths/Matrix';
+import { Matrix } from '../../../maths/matrix/Matrix';
 import { compileHighShaderGlProgram } from '../../high-shader/compileHighShaderToProgram';
 import { colorBitGl } from '../../high-shader/shader-bits/colorBit';
 import { generateTextureBatchBitGl } from '../../high-shader/shader-bits/generateTextureBatchBit';

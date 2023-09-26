@@ -1,7 +1,7 @@
 import { Rectangle } from '../maths/shapes/Rectangle';
 import { Texture } from '../rendering/renderers/shared/texture/Texture';
 
-import type { PointData } from '../maths/PointData';
+import type { PointData } from '../maths/point/PointData';
 import type { TextureSource } from '../rendering/renderers/shared/texture/sources/TextureSource';
 import type { BindableTexture } from '../rendering/renderers/shared/texture/Texture';
 import type { Dict } from '../utils/types';

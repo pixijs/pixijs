@@ -1,4 +1,4 @@
-import { Container } from '../../src/rendering/scene/Container';
+import { Container } from '../../src/scene/container/Container';
 
 describe('Depth sorting', () =>
 {

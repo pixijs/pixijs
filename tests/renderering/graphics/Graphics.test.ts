@@ -1,8 +1,8 @@
-import { Matrix } from '../../../src/maths/Matrix';
-import { Graphics } from '../../../src/rendering/graphics/shared/Graphics';
-import { Bounds } from '../../../src/rendering/scene/bounds/Bounds';
-import { getLocalBounds } from '../../../src/rendering/scene/bounds/getLocalBounds';
-import { Container } from '../../../src/rendering/scene/Container';
+import { Matrix } from '../../../src/maths/matrix/Matrix';
+import { Bounds } from '../../../src/scene/container/bounds/Bounds';
+import { getLocalBounds } from '../../../src/scene/container/bounds/getLocalBounds';
+import { Container } from '../../../src/scene/container/Container';
+import { Graphics } from '../../../src/scene/graphics/shared/Graphics';
 import { getRenderer } from '../../utils/getRenderer';
 
 describe('Graphics', () =>

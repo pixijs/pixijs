@@ -1,8 +1,8 @@
-import { addMaskBounds } from '../../src/rendering/mask/shared/addMaskBounds';
-import { Bounds } from '../../src/rendering/scene/bounds/Bounds';
-import { getGlobalBounds } from '../../src/rendering/scene/bounds/getGlobalBounds';
-import { Container } from '../../src/rendering/scene/Container';
-import { updateLayerGroupTransforms } from '../../src/rendering/scene/utils/updateLayerGroupTransforms';
+import { addMaskBounds } from '../../src/rendering/mask/utils/addMaskBounds';
+import { Bounds } from '../../src/scene/container/bounds/Bounds';
+import { getGlobalBounds } from '../../src/scene/container/bounds/getGlobalBounds';
+import { Container } from '../../src/scene/container/Container';
+import { updateLayerGroupTransforms } from '../../src/scene/container/utils/updateLayerGroupTransforms';
 import { DummyEffect } from './DummyEffect';
 import { DummyView } from './DummyView';
 

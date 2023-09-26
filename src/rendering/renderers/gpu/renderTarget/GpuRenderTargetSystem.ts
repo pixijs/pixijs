@@ -1,5 +1,5 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
-import { Matrix } from '../../../../maths/Matrix';
+import { Matrix } from '../../../../maths/matrix/Matrix';
 import { CLEAR } from '../../gl/const';
 import { isRenderingToScreen } from '../../shared/renderTarget/isRenderingToScreen';
 import { RenderTarget } from '../../shared/renderTarget/RenderTarget';

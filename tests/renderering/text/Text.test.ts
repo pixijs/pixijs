@@ -1,10 +1,10 @@
-import { Container } from '../../../src/rendering/scene/Container';
-import { Sprite } from '../../../src/rendering/sprite/shared/Sprite';
-import { Text } from '../../../src/rendering/text/Text';
+import { Container } from '../../../src/scene/container/Container';
+import { Sprite } from '../../../src/scene/sprite/Sprite';
+import { Text } from '../../../src/scene/text/Text';
 import { getRenderer } from '../../utils/getRenderer';
 import '../../../src/rendering/renderers/shared/texture/Texture';
 
-import type { DestroyOptions } from '../../../src/rendering/scene/destroyTypes';
+import type { DestroyOptions } from '../../../src/scene/container/destroyTypes';
 
 describe('Text', () =>
 {

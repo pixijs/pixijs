@@ -1,8 +1,8 @@
-import { Graphics } from '../../../src/rendering/graphics/shared/Graphics';
-import { ExtractSystem } from '../../../src/rendering/renderers/shared/ExtractSystem';
+import { ExtractSystem } from '../../../src/rendering/renderers/shared/extract/ExtractSystem';
 import { Texture } from '../../../src/rendering/renderers/shared/texture/Texture';
-import { Container } from '../../../src/rendering/scene/Container';
-import { Sprite } from '../../../src/rendering/sprite/shared/Sprite';
+import { Container } from '../../../src/scene/container/Container';
+import { Graphics } from '../../../src/scene/graphics/shared/Graphics';
+import { Sprite } from '../../../src/scene/sprite/Sprite';
 import { getRenderer } from '../../utils/getRenderer';
 import { getTexture } from '../../utils/getTexture';
 

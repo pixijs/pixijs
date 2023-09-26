@@ -1,4 +1,4 @@
-import { Point } from '../maths/Point';
+import { Point } from '../maths/point/Point';
 
 import type { EventBoundary } from './EventBoundary';
 import type { FederatedEventTarget } from './FederatedEventTarget';

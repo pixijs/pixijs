@@ -1,5 +1,5 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
-import { GraphicsContext } from '../../../../rendering/graphics/shared/GraphicsContext';
+import { GraphicsContext } from '../../../../scene/graphics/shared/GraphicsContext';
 import { settings } from '../../../../settings/settings';
 import { checkDataUrl } from '../../../utils/checkDataUrl';
 import { checkExtension } from '../../../utils/checkExtension';

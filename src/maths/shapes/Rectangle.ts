@@ -1,9 +1,9 @@
 // import { SHAPES } from '../const';
-import { Point } from '../Point';
+import { Point } from '../point/Point';
 
-import type { Bounds } from '../../rendering/scene/bounds/Bounds';
-import type { SHAPE_PRIMITIVE } from '../const';
-import type { Matrix } from '../Matrix';
+import type { Bounds } from '../../scene/container/bounds/Bounds';
+import type { Matrix } from '../matrix/Matrix';
+import type { SHAPE_PRIMITIVE } from '../misc/const';
 import type { ShapePrimitive } from './ShapePrimitive';
 
 const tempPoints = [new Point(), new Point(), new Point(), new Point()];
