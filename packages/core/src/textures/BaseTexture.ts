@@ -16,6 +16,15 @@ const defaultBufferOptions = {
     alphaMode: ALPHA_MODES.NPM,
 };
 
+/**
+ * Value types for the constructor of {@link PIXI.BaseTexture}, including:
+ * - `HTMLImageElement`
+ * - `HTMLVideoElement`
+ * - `ImageBitmap`
+ * - {@link PIXI.ICanvas}
+ * - `VideoFrame`
+ * @memberof PIXI
+ */
 export type ImageSource = HTMLImageElement | HTMLVideoElement | ImageBitmap | ICanvas | VideoFrame;
 
 export interface IBaseTextureOptions<RO = any>
