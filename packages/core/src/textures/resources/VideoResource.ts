@@ -306,7 +306,7 @@ export class VideoResource extends BaseImageResource
     {
         const source = this.source as HTMLVideoElement;
 
-        return (!source.paused && !source.ended && this._isSourceReady());
+        return (!source.paused && !source.ended);
     }
 
     /**
