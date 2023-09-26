@@ -14,7 +14,7 @@ export class BaseImageResource extends Resource
 {
     /**
      * The source element.
-     * @member {HTMLImageElement|HTMLVideoElement|ImageBitmap|PIXI.ICanvas}
+     * @member {PIXI.ImageSourcee}
      * @readonly
      */
     public source: ImageSource;
@@ -28,7 +28,7 @@ export class BaseImageResource extends Resource
     public noSubImage: boolean;
 
     /**
-     * @param {HTMLImageElement|HTMLVideoElement|ImageBitmap|PIXI.ICanvas} source
+     * @param {PIXI.ImageSourcee} source
      */
     constructor(source: ImageSource)
     {
@@ -65,7 +65,7 @@ export class BaseImageResource extends Resource
      * @param renderer - Upload to the renderer
      * @param baseTexture - Reference to parent texture
      * @param glTexture
-     * @param {HTMLImageElement|HTMLVideoElement|ImageBitmap|PIXI.ICanvas} [source] - (optional)
+     * @param {PIXI.ImageSourcee} [source] - (optional)
      * @returns - true is success
      */
     override upload(renderer: Renderer, baseTexture: BaseTexture, glTexture: GLTexture, source?: ImageSource): boolean

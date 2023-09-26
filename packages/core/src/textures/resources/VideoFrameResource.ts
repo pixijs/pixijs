@@ -1,7 +1,5 @@
 import { BaseImageResource } from './BaseImageResource';
 
-type VideoFrame = any;
-
 /**
  * Resource type for VideoFrame.
  * @memberof PIXI
@@ -24,6 +22,6 @@ export class VideoFrameResource extends BaseImageResource
      */
     static test(source: unknown): source is VideoFrame
     {
-        return !!(globalThis as any).VideoFrame && source instanceof (globalThis as any).VideoFrame;
+        return !!globalThis.VideoFrame && source instanceof globalThis.VideoFrame;
     }
 }
