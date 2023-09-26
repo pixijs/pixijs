@@ -1,4 +1,4 @@
-import type { Container } from '../rendering/scene/Container';
+import type { Container } from '../scene/container/Container';
 
 export type PointerEvents = 'auto'
 | 'none'

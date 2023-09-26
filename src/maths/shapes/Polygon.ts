@@ -1,7 +1,7 @@
 import { Rectangle } from './Rectangle';
 
-import type { SHAPE_PRIMITIVE } from '../const';
-import type { PointData } from '../PointData';
+import type { SHAPE_PRIMITIVE } from '../misc/const';
+import type { PointData } from '../point/PointData';
 import type { ShapePrimitive } from './ShapePrimitive';
 
 /** A class to define a shape via user defined coordinates. */

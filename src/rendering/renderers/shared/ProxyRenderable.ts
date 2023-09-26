@@ -1,9 +1,9 @@
 import EventEmitter from 'eventemitter3';
-import { getRenderableUID } from '../../scene/Container';
+import { uid } from '../../../utils/data/uid';
 
-import type { Matrix } from '../../../maths/Matrix';
+import type { Matrix } from '../../../maths/matrix/Matrix';
 import type { Renderable } from './Renderable';
-import type { View } from './View';
+import type { View } from './view/View';
 
 export interface ProxyOptions<T>
 {
@@ -13,7 +13,7 @@ export interface ProxyOptions<T>
 
 export class ProxyRenderable<T extends View = View> extends EventEmitter implements Renderable<T>
 {
-    public uid = getRenderableUID();
+    public uid = uid('renderable');
     public view: T;
     private _original: Renderable<any>;
     public layerTransform: Matrix;

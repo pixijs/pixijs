@@ -1,6 +1,6 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
-import { createIdFromString } from '../../shared/createIdFromString';
 import { STENCIL_MODES } from '../../shared/state/const';
+import { createIdFromString } from '../../shared/utils/createIdFromString';
 import { GpuStencilModesToPixi } from '../state/GpuStencilModesToPixi';
 
 import type { Writeable } from '../../../../utils/types';

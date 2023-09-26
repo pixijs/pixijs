@@ -1,4 +1,4 @@
-import { generateUID } from '../texture/utils/generateUID';
+import { uid } from '../../../../utils/data/uid';
 import { defaultUniformValue } from './utils/defaultUniformValue';
 
 import type { BindResource } from '../../gpu/shader/BindResource';
@@ -26,7 +26,7 @@ export class UniformGroup<UNIFORMS extends { [key: string]: UniformData } = any>
 
     public touched = 0;
 
-    public readonly uid = generateUID();
+    public readonly uid = uid('uniform');
 
     public resourceType = 'uniformGroup';
     public resourceId = this.uid;

@@ -1,5 +1,5 @@
 import { extensions } from '../extensions/Extensions';
-import { Container } from '../rendering/scene/Container';
+import { Container } from '../scene/container/Container';
 import { AccessibilitySystem } from './AccessibilitySystem';
 import { accessibilityTarget } from './accessibilityTarget';
 

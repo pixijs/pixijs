@@ -8,7 +8,6 @@ import type { InstructionSet } from '../../renderers/shared/instructions/Instruc
 import type { BatchPipe, InstructionPipe } from '../../renderers/shared/instructions/RenderPipe';
 import type { Renderer } from '../../renderers/types';
 import type { Batch, BatchableObject } from './Batcher';
-import type { BatcherStyleSource } from './BatcherStyleSource';
 
 export interface BatcherAdaptor
 {
@@ -34,11 +33,11 @@ export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
     public state: State = State.for2d();
     public renderer: Renderer;
 
-    private _batches: Record<number, Batcher | BatcherStyleSource> = Object.create(null);
+    private _batches: Record<number, Batcher> = Object.create(null);
     private _geometries: Record<number, Geometry> = Object.create(null);
     private _adaptor: BatcherAdaptor;
 
-    private _activeBatch: Batcher | BatcherStyleSource;
+    private _activeBatch: Batcher;
     private _activeGeometry: Geometry;
 
     constructor(renderer: Renderer, adaptor: BatcherAdaptor)
@@ -53,8 +52,6 @@ export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
     {
         if (!this._batches[instructionSet.uid])
         {
-            // TODO keeping around to bench mark at a later date..
-            // const batcher = new BatcherStyleSource();
             const batcher = new Batcher();
 
             this._batches[instructionSet.uid] = batcher;
@@ -90,14 +87,15 @@ export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
         geometry.buffers[0].data = activeBatch.attributeBuffer.float32View;
     }
 
-    public upload()
+    public upload(instructionSet: InstructionSet)
     {
-        const activeBatcher = this._activeBatch;
+        const batcher = this._batches[instructionSet.uid];
+        const geometry = this._geometries[batcher.uid];
 
-        if (activeBatcher.dirty)
+        if (batcher.dirty)
         {
-            activeBatcher.dirty = false;
-            this._activeGeometry.buffers[0].update(activeBatcher.attributeSize * 4);
+            batcher.dirty = false;
+            geometry.buffers[0].update(batcher.attributeSize * 4);
         }
     }
 

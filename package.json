@@ -1,6 +1,6 @@
 {
   "name": "pixi.js",
-  "version": "8.0.0-alpha.3",
+  "version": "8.0.0-beta.1",
   "author": "PixiJS Team",
   "sideEffects": [
     "./lib/events/init.*",
@@ -100,9 +100,9 @@
     "build:dts": "ts-node --transpile-only ./scripts/types/fixTypes.ts && copyfiles -u 1 \"src/**/*.d.ts\" lib/",
     "dist": "run-s lint test:types build docs",
     "prewatch": "npm run build",
-    "postwatch:build": "rimraf \"src/**/index.ts\" --glob",
+    "postbuild": "rimraf \"src/**/index.ts\" --glob",
     "watch": "nodemon --watch \"./src/*\" --exec \"npm run watch:build\" -e ts,js,vert,frag,wgsl,d.ts --ignore \"index.ts\"",
-    "watch:build": "run-s build:index build:rollup build:tsc build:dts",
+    "watch:build": "run-s build:index build:rollup build:tsc build:dts postbuild",
     "test": "npx jest --silent",
     "test:debug": "cross-env DEBUG_MODE=1 npx jest",
     "test:pkg": "ts-node --transpile-only ./scripts/jest/jest-run.ts",
@@ -132,6 +132,7 @@
     "@types/css-font-loading-module": "^0.0.8",
     "@types/earcut": "^2.1.1",
     "@webgpu/types": "^0.1.30",
+    "@pixi/colord": "^2.9.6",
     "earcut": "^2.2.4",
     "eventemitter3": "^5.0.0",
     "ismobilejs": "^1.1.0"

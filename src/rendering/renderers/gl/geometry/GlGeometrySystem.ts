@@ -1,4 +1,5 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
+import { warn } from '../../../../utils/logging/warn';
 import { getGlInfoFromFormat } from './utils/getGlInfoFromFormat';
 
 import type { Topology } from '../../shared/geometry/const';
@@ -228,7 +229,9 @@ export class GlGeometrySystem implements System
             }
             else if (!attributes[j].size)
             {
-                console.warn(`PIXI Geometry attribute '${j}' size cannot be determined (likely the bound shader does not have the attribute)`);  // eslint-disable-line
+                // #if _DEBUG
+                warn(`PIXI Geometry attribute '${j}' size cannot be determined (likely the bound shader does not have the attribute)`);  // eslint-disable-line
+                // #endif
             }
 
             tempStride[attributes[j].buffer.uid] += attributes[j].size * byteSizeMap[attributes[j].type];

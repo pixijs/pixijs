@@ -1,7 +1,7 @@
 import { extensions, ExtensionType } from '../../../extensions/Extensions';
+import { GlGraphicsAdaptor } from '../../../scene/graphics/gl/GlGraphicsAdaptor';
+import { GlMeshAdaptor } from '../../../scene/mesh/gl/GlMeshAdaptor';
 import { GlBatchAdaptor } from '../../batcher/gl/GlBatchAdaptor';
-import { GlGraphicsAdaptor } from '../../graphics/gl/GlGraphicsAdaptor';
-import { GlMeshAdaptor } from '../../mesh/gl/GlMeshAdaptor';
 import { AbstractRenderer } from '../shared/system/AbstractRenderer';
 import { SharedRenderPipes, SharedSystems } from '../shared/system/SharedSystems';
 import { RendererType } from '../types';

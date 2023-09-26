@@ -1,3 +1,4 @@
+import { warn } from '../../utils/logging/warn';
 import { path } from '../../utils/path';
 import { convertToList } from '../utils/convertToList';
 import { createStringVariations } from '../utils/createStringVariations';
@@ -313,7 +314,7 @@ export class Resolver
         if (this._manifest)
         {
             // #if _DEBUG
-            console.warn('[Resolver] Manifest already exists, this will be overwritten');
+            warn('[Resolver] Manifest already exists, this will be overwritten');
             // #endif
         }
 
@@ -470,7 +471,9 @@ export class Resolver
         {
             if (this.hasKey(key))
             {
-                console.warn(`[Resolver] already has key: ${key} overwriting`);
+                // #if _DEBUG
+                warn(`[Resolver] already has key: ${key} overwriting`);
+                // #endif
             }
         };
         // #endif

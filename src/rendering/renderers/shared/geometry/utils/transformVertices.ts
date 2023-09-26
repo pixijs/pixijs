@@ -1,4 +1,4 @@
-import type { Matrix } from '../../../../../maths/Matrix';
+import type { Matrix } from '../../../../../maths/matrix/Matrix';
 
 export function transformVertices(vertices: number[], m: Matrix, offset?: number, stride?: number, size?: number)
 {

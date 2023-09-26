@@ -1,4 +1,4 @@
-import { nextPow2 } from '../../../../maths/pow2';
+import { nextPow2 } from '../../../../maths/misc/pow2';
 import { TextureSource } from './sources/TextureSource';
 import { Texture } from './Texture';
 

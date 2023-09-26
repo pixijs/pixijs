@@ -1,6 +1,6 @@
 import EventEmitter from 'eventemitter3';
 import { deprecation } from '../../../../utils/logging/deprecation';
-import { createIdFromString } from '../createIdFromString';
+import { createIdFromString } from '../utils/createIdFromString';
 
 import type { BindResource } from '../../gpu/shader/BindResource';
 import type { COMPARE_FUNCTION, SCALE_MODE, WRAP_MODE } from './const';

@@ -1,4 +1,4 @@
-import { ALPHA_MODES } from '../../rendering/renderers/shared/texture/const';
+import type { ALPHA_MODES } from '../../rendering/renderers/shared/texture/const';
 
 let promise: Promise<ALPHA_MODES> | undefined;
 
@@ -24,7 +24,7 @@ export async function detectVideoAlphaMode(): Promise<ALPHA_MODES>
 
         if (!gl)
         {
-            return ALPHA_MODES.UNPACK;
+            return 'premultiply-alpha-on-upload';
         }
 
         const video = await new Promise<HTMLVideoElement | null>((resolve) =>
@@ -43,7 +43,7 @@ export async function detectVideoAlphaMode(): Promise<ALPHA_MODES>
 
         if (!video)
         {
-            return ALPHA_MODES.UNPACK;
+            return 'premultiply-alpha-on-upload';
         }
 
         const texture = gl.createTexture();
@@ -73,7 +73,7 @@ export async function detectVideoAlphaMode(): Promise<ALPHA_MODES>
         gl.deleteTexture(texture);
         gl.getExtension('WEBGL_lose_context')?.loseContext();
 
-        return pixel[0] <= pixel[3] ? ALPHA_MODES.PMA : ALPHA_MODES.UNPACK;
+        return pixel[0] <= pixel[3] ? 'premultiplied-alpha' : 'premultiply-alpha-on-upload';
     })();
 
     return promise;

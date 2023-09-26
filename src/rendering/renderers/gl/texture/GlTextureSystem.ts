@@ -6,15 +6,10 @@ import { GlTexture } from './GlTexture';
 import { glUploadBufferImageResource } from './uploaders/glUploadBufferImageResource';
 import { glUploadImageResource } from './uploaders/glUploadImageResource';
 import { glUploadVideoResource } from './uploaders/glUploadVideoResource';
+import { applyStyleParams } from './utils/applyStyleParams';
 import { mapFormatToGlFormat } from './utils/mapFormatToGlFormat';
 import { mapFormatToGlInternalFormat } from './utils/mapFormatToGlInternalFormat';
 import { mapFormatToGlType } from './utils/mapFormatToGlType';
-import {
-    compareModeToGlCompare,
-    mipmapScaleModeToGlFilter,
-    scaleModeToGlFilter,
-    wrapModeToGlAddress
-} from './utils/pixiToGlMaps';
 import { unpremultiplyAlpha } from './utils/unpremultiplyAlpha';
 
 import type { ICanvas } from '../../../../settings/adapter/ICanvas';
@@ -46,12 +41,12 @@ export class GlTextureSystem implements System, CanvasGenerator
     private readonly _renderer: WebGLRenderer;
 
     private _glTextures: Record<number, GlTexture> = Object.create(null);
-    private _glSamplers: Record<string, WebGLSampler> = Object.create(null);
+    private readonly _glSamplers: Record<string, WebGLSampler> = Object.create(null);
 
     private _boundTextures: TextureSource[] = [];
     private _activeTextureLocation = -1;
 
-    private _boundSamplers: Record<number, WebGLSampler> = Object.create(null);
+    private readonly _boundSamplers: Record<number, WebGLSampler> = Object.create(null);
 
     private readonly _uploads: Record<string, GLTextureUploader> = {
         image: glUploadImageResource,
@@ -63,6 +58,9 @@ export class GlTextureSystem implements System, CanvasGenerator
     private _mapFormatToInternalFormat: Record<string, number>;
     private _mapFormatToType: Record<string, number>;
     private _mapFormatToFormat: Record<string, number>;
+
+    // TODO - separate samplers will be a cool thing to add, but not right now!
+    private readonly _useSeparateSamplers = false;
 
     constructor(renderer: WebGLRenderer)
     {
@@ -88,15 +86,25 @@ export class GlTextureSystem implements System, CanvasGenerator
 
     public bind(texture: BindableTexture, location = 0)
     {
+        const source = texture.source;
+
         if (texture)
         {
-            this.bindSource(texture.source, location);
-            this._bindSampler(texture.style, location);
+            this.bindSource(source, location);
+
+            if (this._useSeparateSamplers)
+            {
+                this._bindSampler(source.style, location);
+            }
         }
         else
         {
             this.bindSource(null, location);
-            this._bindSampler(null, location);
+
+            if (this._useSeparateSamplers)
+            {
+                this._bindSampler(null, location);
+            }
         }
     }
 
@@ -191,14 +199,34 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         source.on('update', this.onSourceUpdate, this);
         source.on('resize', this.onSourceUpdate, this);
+        source.on('styleChange', this.onStyleChange, this);
         source.on('destroy', this.onSourceDestroy, this);
         source.on('unload', this.onSourceUnload, this);
 
         this.managedTextures.push(source);
 
         this.onSourceUpdate(source);
+        this.onStyleChange(source);
 
         return glTexture;
+    }
+
+    protected onStyleChange(source: TextureSource): void
+    {
+        const gl = this._gl;
+
+        const glTexture = this._glTextures[source.uid];
+
+        gl.bindTexture(gl.TEXTURE_2D, glTexture.texture);
+
+        applyStyleParams(
+            source.style,
+            gl,
+            source.mipLevelCount > 1,
+            this._renderer.context.extensions.anisotropicFiltering,
+            'texParameteri',
+            gl.TEXTURE_2D
+        );
     }
 
     protected onSourceUnload(source: TextureSource): void
@@ -258,42 +286,14 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         this._glSamplers[style.resourceId] = glSampler;
 
-        // 1. set the wrapping mode
-        gl.samplerParameteri(glSampler, gl.TEXTURE_WRAP_S, wrapModeToGlAddress[style.addressModeU]);
-        gl.samplerParameteri(glSampler, gl.TEXTURE_WRAP_T, wrapModeToGlAddress[style.addressModeV]);
-        gl.samplerParameteri(glSampler, gl.TEXTURE_WRAP_R, wrapModeToGlAddress[style.addressModeW]);
-
-        // 2. set the filtering mode
-        gl.samplerParameteri(glSampler, gl.TEXTURE_MAG_FILTER, scaleModeToGlFilter[style.minFilter]);
-
-        // assuming the currently bound texture is the one we want to set the filter for
-        // the only smelly part of this code, WebGPU is much better here :P
-        if (this._boundTextures[this._activeTextureLocation].mipLevelCount > 1)
-        {
-            const glFilterMode = mipmapScaleModeToGlFilter[style.minFilter][style.mipmapFilter];
-
-            gl.samplerParameteri(glSampler, gl.TEXTURE_MIN_FILTER, glFilterMode);
-        }
-        else
-        {
-            gl.samplerParameteri(glSampler, gl.TEXTURE_MIN_FILTER, scaleModeToGlFilter[style.magFilter]);
-        }
-
-        // 3. set the anisotropy
-        const anisotropicExt = this._renderer.context.extensions.anisotropicFiltering;
-
-        if (anisotropicExt && style.maxAnisotropy > 1)
-        {
-            const level = Math.min(style.maxAnisotropy, gl.getParameter(anisotropicExt.MAX_TEXTURE_MAX_ANISOTROPY_EXT));
-
-            gl.samplerParameteri(glSampler, anisotropicExt.TEXTURE_MAX_ANISOTROPY_EXT, level);
-        }
-
-        // 4. set the compare mode
-        if (style.compare)
-        {
-            gl.samplerParameteri(glSampler, gl.TEXTURE_COMPARE_FUNC, compareModeToGlCompare[style.compare]);
-        }
+        applyStyleParams(
+            style,
+            gl,
+            this._boundTextures[this._activeTextureLocation].mipLevelCount > 1,
+            this._renderer.context.extensions.anisotropicFiltering,
+            'samplerParameteri',
+            glSampler
+        );
 
         return this._glSamplers[style.resourceId];
     }

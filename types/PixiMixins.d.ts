@@ -4,3 +4,4 @@
 /// <reference path="../src/rendering/RenderingMixins.d.ts" />
 /// <reference path="../src/settings/SettingsMixins.d.ts" />
 /// <reference path="../src/ticker/TickerMixins.d.ts" />
+/// <reference path="../src/scene/SceneMixins.d.ts" />

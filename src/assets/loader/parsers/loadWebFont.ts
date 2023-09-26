@@ -1,5 +1,6 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { settings } from '../../../settings/settings';
+import { warn } from '../../../utils/logging/warn';
 import { path } from '../../../utils/path';
 import { Cache } from '../../cache/Cache';
 import { checkDataUrl } from '../../utils/checkDataUrl';
@@ -128,7 +129,7 @@ export const loadWebFont = {
         }
 
         // #if _DEBUG
-        console.warn('[loadWebFont] FontFace API is not supported. Skipping loading font');
+        warn('[loadWebFont] FontFace API is not supported. Skipping loading font');
         // #endif
 
         return null;

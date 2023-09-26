@@ -1,4 +1,5 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
+import { warn } from '../../../../utils/logging/warn';
 
 import type { ICanvas } from '../../../../settings/adapter/ICanvas';
 import type { System } from '../../shared/system/System';
@@ -159,11 +160,12 @@ export class GlContextSystem implements System<ContextSystemOptions>
         {
             const alpha = this._renderer.background.alpha < 1;
             const premultipliedAlpha = options.premultipliedAlpha ?? true;
+            const antialias = options.antialias && !this._renderer.backBuffer.useBackBuffer;
 
             this.initFromOptions({
                 alpha,
                 premultipliedAlpha,
-                antialias: options.antialias,
+                antialias,
                 stencil: true,
                 preserveDrawingBuffer: options.preserveDrawingBuffer,
                 powerPreference: options.powerPreference,
@@ -299,9 +301,11 @@ export class GlContextSystem implements System<ContextSystemOptions>
         // this is going to be fairly simple for now.. but at least we have room to grow!
         if (attributes && !attributes.stencil)
         {
+            // #if _DEBUG
             /* eslint-disable max-len, no-console */
-            console.warn('Provided WebGL context does not have a stencil buffer, masks may not render correctly');
+            warn('Provided WebGL context does not have a stencil buffer, masks may not render correctly');
             /* eslint-enable max-len, no-console */
+            // #endif
         }
 
         const hasUint32 = isWebGl2 || !!(gl as WebGLRenderingContext).getExtension('OES_element_index_uint');
@@ -310,9 +314,11 @@ export class GlContextSystem implements System<ContextSystemOptions>
 
         if (!hasUint32)
         {
+            // #if _DEBUG
             /* eslint-disable max-len, no-console */
-            console.warn('Provided WebGL context does not support 32 index buffer, complex graphics may not render correctly');
+            warn('Provided WebGL context does not support 32 index buffer, complex graphics may not render correctly');
             /* eslint-enable max-len, no-console */
+            // #endif
         }
     }
 }

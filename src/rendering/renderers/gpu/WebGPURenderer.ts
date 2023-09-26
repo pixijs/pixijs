@@ -1,7 +1,7 @@
 import { extensions, ExtensionType } from '../../../extensions/Extensions';
+import { GpuGraphicsAdaptor } from '../../../scene/graphics/gpu/GpuGraphicsAdaptor';
+import { GpuMeshAdapter } from '../../../scene/mesh/gpu/GpuMeshAdapter';
 import { GpuBatchAdaptor } from '../../batcher/gpu/GpuBatchAdaptor';
-import { GpuGraphicsAdaptor } from '../../graphics/gpu/GpuGraphicsAdaptor';
-import { GpuMeshAdapter } from '../../mesh/gpu/GpuMeshAdapter';
 import { AbstractRenderer } from '../shared/system/AbstractRenderer';
 import { SharedRenderPipes, SharedSystems } from '../shared/system/SharedSystems';
 import { RendererType } from '../types';

@@ -150,6 +150,7 @@ export const loadTextures = {
 
         const base = new ImageSource({
             resource: src,
+            alphaMode: 'premultiply-alpha-on-upload',
             resolution: asset.data?.resolution || getResolutionOfUrl(url),
             ...asset.data,
         });

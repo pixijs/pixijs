@@ -1,6 +1,6 @@
 import { FederatedEvent } from '../events/FederatedEvent';
 import { extensions, ExtensionType } from '../extensions/Extensions';
-import { Container } from '../rendering/scene/Container';
+import { Container } from '../scene/container/Container';
 import { isMobile } from '../settings/utils/isMobile';
 import { removeItems } from '../utils/data/removeItems';
 import { accessibilityTarget, type AccessibleHTMLElement } from './accessibilityTarget';

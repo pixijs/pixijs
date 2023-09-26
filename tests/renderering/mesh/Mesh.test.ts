@@ -1,6 +1,6 @@
-import { Mesh } from '../../../src/rendering/mesh/shared/Mesh';
-import { MeshGeometry } from '../../../src/rendering/mesh/shared/MeshGeometry';
-import { Container } from '../../../src/rendering/scene/Container';
+import { Container } from '../../../src/scene/container/Container';
+import { Mesh } from '../../../src/scene/mesh/shared/Mesh';
+import { MeshGeometry } from '../../../src/scene/mesh/shared/MeshGeometry';
 import { getRenderer } from '../../utils/getRenderer';
 import { getTexture } from '../../utils/getTexture';
 

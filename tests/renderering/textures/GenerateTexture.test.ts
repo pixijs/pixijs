@@ -1,5 +1,5 @@
 import { Texture } from '../../../src/rendering/renderers/shared/texture/Texture';
-import { Container } from '../../../src/rendering/scene/Container';
+import { Container } from '../../../src/scene/container/Container';
 import { getRenderer } from '../../utils/getRenderer';
 
 import type { WebGLRenderer } from '../../../src/rendering/renderers/gl/WebGLRenderer';

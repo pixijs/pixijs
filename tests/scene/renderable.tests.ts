@@ -1,4 +1,4 @@
-import { Container } from '../../src/rendering/scene/Container';
+import { Container } from '../../src/scene/container/Container';
 import { DummyView } from './DummyView';
 
 describe('Renderable Containers', () =>

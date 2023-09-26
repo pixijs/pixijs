@@ -1,5 +1,5 @@
 import { extensions, ExtensionType } from '../extensions/Extensions';
-import { bitmapFontCachePlugin, xmlBitmapFontLoader } from '../rendering/text/bitmap/asset/loadBitmapFont';
+import { bitmapFontCachePlugin, xmlBitmapFontLoader } from '../scene/text/bitmap/asset/loadBitmapFont';
 import { cacheTextureArray } from './cache/parsers/cacheTextureArray';
 import { detectAvif } from './detections/parsers/detectAvif';
 import { detectDefaults } from './detections/parsers/detectDefaults';

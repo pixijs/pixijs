@@ -1,6 +1,6 @@
-import type { PointData } from '../../src/maths/PointData';
-import type { Bounds } from '../../src/rendering/scene/bounds/Bounds';
-import type { Effect } from '../../src/rendering/scene/Effect';
+import type { PointData } from '../../src/maths/point/PointData';
+import type { Bounds } from '../../src/scene/container/bounds/Bounds';
+import type { Effect } from '../../src/scene/container/Effect';
 
 // pads out the bounds by 10
 export class DummyEffect implements Effect

@@ -1,6 +1,7 @@
+import { Color } from '../../../../color/Color';
 import { ExtensionType } from '../../../../extensions/Extensions';
-import { hex2rgb, hex2string } from '../../../../utils/color/hex';
 
+import type { ColorSource } from '../../../../color/Color';
 import type { System } from '../system/System';
 
 /**
@@ -10,22 +11,14 @@ import type { System } from '../system/System';
 export interface BackgroundSystemOptions
 {
     /** The background color used to clear the canvas. See {@link ColorSource} for accepted color values. */
-    backgroundColor: number; // TODO: ColorSource;
+    backgroundColor: ColorSource;
     /** Alias for {@link WebGLOptions.backgroundColor} */
-    background?: number; // TODO: ColorSource
+    background?: ColorSource
     /** Transparency of the background color, value from `0` (fully transparent) to `1` (fully opaque). */
     backgroundAlpha: number;
     /** Whether to clear the canvas before new render passes. */
     clearBeforeRender: boolean;
 }
-
-export const defaultBackgroundOptions = {
-    alpha: 1,
-    color: 0x000000,
-    clearBeforeRender: true,
-};
-
-type ColorObject = { r: number; g: number; b: number; a: number };
 
 /** The background system manages the background color and alpha of the main view. */
 export class BackgroundSystem implements System
@@ -69,21 +62,14 @@ export class BackgroundSystem implements System
      */
     public clearBeforeRender: boolean;
 
-    private _backgroundColorString: string;
-    private _backgroundColorRgba: [number, number, number, number];
-    private _backgroundColor: number;
-    private readonly _backgroundColorRgbaObject: ColorObject;
+    private readonly _backgroundColor: Color;
+    private _backgroundColorRgba: [number, number, number, number] = [0, 0, 0, 0];
 
     constructor()
     {
         this.clearBeforeRender = true;
 
-        this._backgroundColor = 0x000000;
-
-        this._backgroundColorRgba = [0, 0, 0, 1];
-        this._backgroundColorRgbaObject = { r: 0, g: 0, b: 0, a: 1 };
-
-        this._backgroundColorString = '#000000';
+        this._backgroundColor = new Color(0x000000);
 
         this.color = this._backgroundColor; // run bg color setter
         this.alpha = 1;
@@ -95,61 +81,40 @@ export class BackgroundSystem implements System
      */
     public init(options: BackgroundSystemOptions): void
     {
-        options = { ...defaultBackgroundOptions, ...options };
+        options = { ...BackgroundSystem.defaultOptions, ...options };
 
         this.clearBeforeRender = options.clearBeforeRender;
-        this.color = options.backgroundColor || this._backgroundColor; // run bg color setter
+        this.color = options.background || options.backgroundColor || this._backgroundColor; // run bg color setter
         this.alpha = options.backgroundAlpha;
     }
 
     /** The background color to fill if not transparent */
-    get color(): number
+    get color(): Color
     {
         return this._backgroundColor;
     }
 
-    set color(value: number)
+    set color(value: ColorSource)
     {
-        this._backgroundColor = value;
-        this._backgroundColorString = hex2string(value);
-
-        const rgbaObject = this._backgroundColorRgbaObject;
-        const rgba = this._backgroundColorRgba;
-
-        hex2rgb(value, rgba);
-
-        rgbaObject.r = rgba[0];
-        rgbaObject.g = rgba[1];
-        rgbaObject.b = rgba[2];
-        rgbaObject.a = rgba[3];
+        this._backgroundColor.setValue(value);
+        this._backgroundColorRgba = this._backgroundColor.toArray() as [number, number, number, number];
     }
 
     /** The background color alpha. Setting this to 0 will make the canvas transparent. */
     get alpha(): number
     {
-        return this._backgroundColorRgba[3];
+        return this._backgroundColor.alpha;
     }
 
     set alpha(value: number)
     {
-        this._backgroundColorRgba[3] = value;
+        this._backgroundColor.setAlpha(value);
     }
 
     /** The background color as an [R, G, B, A] array. */
     get colorRgba(): [number, number, number, number]
     {
         return this._backgroundColorRgba;
-    }
-
-    get colorRgbaObject(): ColorObject
-    {
-        return this._backgroundColorRgbaObject;
-    }
-
-    /** The background color as a string. */
-    get colorString(): string
-    {
-        return this._backgroundColorString;
     }
 
     public destroy(): void

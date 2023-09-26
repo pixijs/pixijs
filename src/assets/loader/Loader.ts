@@ -1,3 +1,4 @@
+import { warn } from '../../utils/logging/warn';
 import { path } from '../../utils/path';
 import { convertToList } from '../utils/convertToList';
 import { isSingleItem } from '../utils/isSingleItem';
@@ -73,7 +74,7 @@ export class Loader
                 {
                     // #if _DEBUG
                     // eslint-disable-next-line max-len
-                    console.warn(`[Assets] specified load parser "${data.loadParser}" not found while loading ${url}`);
+                    warn(`[Assets] specified load parser "${data.loadParser}" not found while loading ${url}`);
                     // #endif
                 }
             }
@@ -96,7 +97,7 @@ export class Loader
                 {
                     // #if _DEBUG
                     // eslint-disable-next-line max-len
-                    console.warn(`[Assets] ${url} could not be loaded as we don't know how to parse it, ensure the correct parser has been added`);
+                    warn(`[Assets] ${url} could not be loaded as we don't know how to parse it, ensure the correct parser has been added`);
                     // #endif
 
                     return null;
@@ -263,7 +264,7 @@ export class Loader
                 if (hash[parser.name])
                 {
                     // #if _DEBUG
-                    console.warn(`[Assets] loadParser name conflict "${parser.name}"`);
+                    warn(`[Assets] loadParser name conflict "${parser.name}"`);
                     // #endif
                 }
 
