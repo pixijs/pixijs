@@ -1,10 +1,10 @@
 import EventEmitter from 'eventemitter3';
-import { Matrix } from '../../../maths/Matrix';
+import { Matrix } from '../../../maths/matrix/Matrix';
 import { uid } from '../../../utils/data/uid';
 
-import type { Container } from '../../scene/Container';
+import type { Container } from '../../../scene/container/Container';
 import type { Renderable } from './Renderable';
-import type { View } from './View';
+import type { View } from './view/View';
 
 /**
  * LayerRenderable is used to render the view of the root container of a layer group

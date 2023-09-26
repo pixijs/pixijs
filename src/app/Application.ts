@@ -1,11 +1,11 @@
 import { extensions, ExtensionType } from '../extensions/Extensions';
 import { autoDetectRenderer } from '../rendering/renderers/autoDetectRenderer';
-import { Container } from '../rendering/scene/Container';
+import { Container } from '../scene/container/Container';
 
 import type { Rectangle } from '../maths/shapes/Rectangle';
 import type { AutoDetectOptions } from '../rendering/renderers/autoDetectRenderer';
 import type { Renderer } from '../rendering/renderers/types';
-import type { DestroyOptions } from '../rendering/scene/destroyTypes';
+import type { DestroyOptions } from '../scene/container/destroyTypes';
 import type { ICanvas } from '../settings/adapter/ICanvas';
 import type { ResizePluginOptions } from './ResizePlugin';
 

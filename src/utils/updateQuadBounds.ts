@@ -1,4 +1,4 @@
-import type { ObservablePoint } from '../maths/ObservablePoint';
+import type { ObservablePoint } from '../maths/point/ObservablePoint';
 import type { Texture } from '../rendering/renderers/shared/texture/Texture';
 
 export function updateQuadBounds(

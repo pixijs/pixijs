@@ -1,7 +1,7 @@
-import { Matrix } from '../maths/Matrix';
-import { ObservablePoint } from '../maths/ObservablePoint';
+import { Matrix } from '../maths/matrix/Matrix';
+import { ObservablePoint } from '../maths/point/ObservablePoint';
 
-import type { Observer } from '../maths/ObservablePoint';
+import type { Observer } from '../maths/point/ObservablePoint';
 
 export interface TransformOptions
 {

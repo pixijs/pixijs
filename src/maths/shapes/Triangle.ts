@@ -1,7 +1,7 @@
 // import { SHAPES } from '../const';
 import { Rectangle } from './Rectangle';
 
-import type { SHAPE_PRIMITIVE } from '../const';
+import type { SHAPE_PRIMITIVE } from '../misc/const';
 import type { ShapePrimitive } from './ShapePrimitive';
 
 /** A class to define a shape of a triangle via user defined coordinates. */

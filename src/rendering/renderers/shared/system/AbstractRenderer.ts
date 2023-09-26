@@ -1,19 +1,19 @@
 import { Color, type ColorSource } from '../../../../color/Color';
+import { Container } from '../../../../scene/container/Container';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
-import { Container } from '../../../scene/Container';
 import { SystemRunner } from './SystemRunner';
 
-import type { Matrix } from '../../../../maths/Matrix';
+import type { Matrix } from '../../../../maths/matrix/Matrix';
 import type { Rectangle } from '../../../../maths/shapes/Rectangle';
+import type { DestroyOptions } from '../../../../scene/container/destroyTypes';
 import type { ICanvas } from '../../../../settings/adapter/ICanvas';
 import type { Writeable } from '../../../../utils/types';
-import type { DestroyOptions } from '../../../scene/destroyTypes';
 import type { RenderSurface } from '../../gpu/renderTarget/GpuRenderTargetSystem';
 import type { Renderer } from '../../types';
-import type { GenerateTextureOptions, GenerateTextureSystem } from '../GenerateTextureSystem';
+import type { GenerateTextureOptions, GenerateTextureSystem } from '../extract/GenerateTextureSystem';
 import type { PipeConstructor } from '../instructions/RenderPipe';
 import type { Texture } from '../texture/Texture';
-import type { ViewSystem } from '../ViewSystem';
+import type { ViewSystem } from '../view/ViewSystem';
 import type { System, SystemConstructor } from './System';
 
 interface RendererConfig

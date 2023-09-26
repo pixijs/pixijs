@@ -1,5 +1,5 @@
 import { extensions } from '../extensions/Extensions';
-import { Container } from '../rendering/scene/Container';
+import { Container } from '../scene/container/Container';
 import { EventSystem } from './EventSystem';
 import { FederatedContainer } from './FederatedEventTarget';
 

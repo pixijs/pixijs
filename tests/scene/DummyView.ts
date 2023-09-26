@@ -1,9 +1,9 @@
 import EventEmitter from 'eventemitter3';
 import { Rectangle } from '../../src/maths/shapes/Rectangle';
 
-import type { Point } from '../../src/maths/Point';
-import type { View, ViewObserver } from '../../src/rendering/renderers/shared/View';
-import type { Bounds } from '../../src/rendering/scene/bounds/Bounds';
+import type { Point } from '../../src/maths/point/Point';
+import type { View, ViewObserver } from '../../src/rendering/renderers/shared/view/View';
+import type { Bounds } from '../../src/scene/container/bounds/Bounds';
 
 export class DummyView extends EventEmitter implements View
 {

@@ -1,9 +1,9 @@
+import type { Container } from '../../../../scene/container/Container';
+import type { Effect } from '../../../../scene/container/Effect';
 import type { BatchableObject } from '../../../batcher/shared/Batcher';
-import type { Container } from '../../../scene/Container';
-import type { Effect } from '../../../scene/Effect';
 import type { Renderer } from '../../types';
 import type { Renderable } from '../Renderable';
-import type { View } from '../View';
+import type { View } from '../view/View';
 import type { Instruction } from './Instruction';
 import type { InstructionSet } from './InstructionSet';
 

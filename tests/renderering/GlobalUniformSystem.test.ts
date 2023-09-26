@@ -1,5 +1,5 @@
-import { Matrix } from '../../src/maths/Matrix';
-import { Point } from '../../src/maths/Point';
+import { Matrix } from '../../src/maths/matrix/Matrix';
+import { Point } from '../../src/maths/point/Point';
 import { GlobalUniformSystem } from '../../src/rendering/renderers/shared/renderTarget/GlobalUniformSystem';
 
 import type { WebGLRenderer } from '../../src/rendering/renderers/gl/WebGLRenderer';

@@ -1,4 +1,4 @@
-import type { Container } from '../rendering/scene/Container';
+import type { Container } from '../scene/container/Container';
 import type { FederatedEventTarget } from './FederatedEventTarget';
 // @ts-expect-error - used for jsdoc typedefs
 import type { FederatedPointerEvent } from './FederatedPointerEvent';

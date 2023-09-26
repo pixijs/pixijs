@@ -1,8 +1,8 @@
-import { addMaskLocalBounds } from '../../src/rendering/mask/shared/addMaskLocalBounds';
-import { StencilMask } from '../../src/rendering/mask/shared/StencilMask';
-import { Bounds } from '../../src/rendering/scene/bounds/Bounds';
-import { getLocalBounds } from '../../src/rendering/scene/bounds/getLocalBounds';
-import { Container } from '../../src/rendering/scene/Container';
+import { StencilMask } from '../../src/rendering/mask/stencil/StencilMask';
+import { addMaskLocalBounds } from '../../src/rendering/mask/utils/addMaskLocalBounds';
+import { Bounds } from '../../src/scene/container/bounds/Bounds';
+import { getLocalBounds } from '../../src/scene/container/bounds/getLocalBounds';
+import { Container } from '../../src/scene/container/Container';
 import { DummyEffect } from './DummyEffect';
 import { DummyView } from './DummyView';
 

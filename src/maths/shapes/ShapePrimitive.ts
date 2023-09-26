@@ -1,4 +1,4 @@
-import type { SHAPE_PRIMITIVE } from '../const';
+import type { SHAPE_PRIMITIVE } from '../misc/const';
 import type { Rectangle } from './Rectangle';
 
 /** A basic object to define a Pixi shape. */

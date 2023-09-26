@@ -1,4 +1,4 @@
-import { Matrix } from '../../../../maths/Matrix';
+import { Matrix } from '../../../../maths/matrix/Matrix';
 
 import type { Texture } from './Texture';
 

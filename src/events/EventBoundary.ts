@@ -1,12 +1,12 @@
 import EventEmitter from 'eventemitter3';
-import { Point } from '../maths/Point';
+import { Point } from '../maths/point/Point';
 import { warn } from '../utils/logging/warn';
 import { EventsTicker } from './EventTicker';
 import { FederatedMouseEvent } from './FederatedMouseEvent';
 import { FederatedPointerEvent } from './FederatedPointerEvent';
 import { FederatedWheelEvent } from './FederatedWheelEvent';
 
-import type { Container } from '../rendering/scene/Container';
+import type { Container } from '../scene/container/Container';
 import type { EmitterListeners, TrackingData } from './EventBoundaryTypes';
 import type { FederatedEvent } from './FederatedEvent';
 import type {

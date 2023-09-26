@@ -1,9 +1,9 @@
 import EventEmitter from 'eventemitter3';
 import { uid } from '../../../utils/data/uid';
 
-import type { Matrix } from '../../../maths/Matrix';
+import type { Matrix } from '../../../maths/matrix/Matrix';
 import type { Renderable } from './Renderable';
-import type { View } from './View';
+import type { View } from './view/View';
 
 export interface ProxyOptions<T>
 {

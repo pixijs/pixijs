@@ -14,8 +14,8 @@
 //     codeUbo: (name, uniform) => {} <--- returns the string of the piece of code that uploads the
 //                                         uniform to a uniform buffer
 // }
-import type { Matrix } from '../../../../../maths/Matrix';
-import type { PointLike } from '../../../../../maths/PointLike';
+import type { Matrix } from '../../../../../maths/matrix/Matrix';
+import type { PointLike } from '../../../../../maths/point/PointLike';
 import type { Rectangle } from '../../../../../maths/shapes/Rectangle';
 import type { UNIFORM_TYPES, UniformData } from './createUBOElements';
 
