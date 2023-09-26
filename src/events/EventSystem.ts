@@ -246,7 +246,7 @@ export class EventSystem implements System<EventSystemOptions>
 
         this.setTargetElement(canvas as HTMLCanvasElement);
         this.resolution = resolution;
-        EventSystem._defaultEventMode = options.eventMode ?? 'auto';
+        EventSystem._defaultEventMode = options.eventMode ?? 'passive';
         Object.assign(this.features, options.eventFeatures ?? {});
         this.rootBoundary.enableGlobalMoveEvents = this.features.globalMove;
     }
