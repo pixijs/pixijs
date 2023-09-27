@@ -1,3 +1,4 @@
+import { CanvasTextMetrics } from '../../canvas/CanvasTextMetrics';
 import { HTMLTextRenderData } from '../HTMLTextSystem';
 
 import type { Size } from '../../../../maths/misc/Size';
@@ -41,8 +42,11 @@ export function measureHtmlText(
 
     svgRoot.remove();
 
+    // we probably can find a better way to do this,
+    const descenderPadding = CanvasTextMetrics.measureFont(style.fontStyle).descent;
+
     return {
         width: contentBounds.width,
-        height: contentBounds.height,
+        height: contentBounds.height + descenderPadding,
     };
 }
