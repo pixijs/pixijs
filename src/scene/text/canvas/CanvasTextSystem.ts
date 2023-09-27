@@ -3,7 +3,7 @@ import { ExtensionType } from '../../../extensions/Extensions';
 import { nextPow2 } from '../../../maths/misc/pow2';
 import { CanvasPool } from '../../../rendering/renderers/shared/texture/CanvasPool';
 import { TexturePool } from '../../../rendering/renderers/shared/texture/TexturePool';
-import { Bounds } from '../../container/bounds/Bounds';
+import { getPo2TextureFromSource } from '../html/utils/getPo2TextureFromSource';
 import { CanvasTextMetrics } from './CanvasTextMetrics';
 import { fontStringFromTextStyle } from './utils/fontStringFromTextStyle';
 import { getCanvasFillStyle } from './utils/getCanvasFillStyle';
@@ -13,8 +13,6 @@ import type { Texture } from '../../../rendering/renderers/shared/texture/Textur
 import type { ICanvas } from '../../../settings/adapter/ICanvas';
 import type { ICanvasRenderingContext2D } from '../../../settings/adapter/ICanvasRenderingContext2D';
 import type { TextStyle } from '../TextStyle';
-
-const tempBounds = new Bounds();
 
 interface CanvasAndContext
 {
@@ -79,32 +77,7 @@ export class CanvasTextSystem implements System
 
         this.renderTextToCanvas(text, style, resolution, canvasAndContext);
 
-        const bounds = tempBounds;
-
-        bounds.minX = 0;
-        bounds.minY = 0;
-
-        bounds.maxX = (canvas.width / resolution) | 0;
-        bounds.maxY = (canvas.height / resolution) | 0;
-
-        const texture = TexturePool.getOptimalTexture(
-            bounds.width,
-            bounds.height,
-            resolution,
-            false
-        );
-
-        const source = texture.source;
-
-        source.uploadMethodId = 'image';
-        source.alphaMode = 'premultiply-alpha-on-upload';
-        source.resource = canvas;
-
-        texture.frameWidth = width / resolution;
-        texture.frameHeight = height / resolution;
-
-        source.update();
-        texture.layout.updateUvs();
+        const texture = getPo2TextureFromSource(canvas, resolution);
 
         this._activeTextures[textKey] = {
             canvasAndContext,

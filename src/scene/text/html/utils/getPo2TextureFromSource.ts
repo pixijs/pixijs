@@ -2,6 +2,7 @@ import { TexturePool } from '../../../../rendering/renderers/shared/texture/Text
 import { Bounds } from '../../../container/bounds/Bounds';
 
 import type { Texture } from '../../../../rendering/renderers/shared/texture/Texture';
+import type { ICanvas } from '../../../../settings/adapter/ICanvas';
 
 const tempBounds = new Bounds();
 
@@ -12,7 +13,7 @@ const tempBounds = new Bounds();
  * @param resolution - The resolution of the texture
  * @returns - The texture
  */
-export function getPo2TextureFromSource(image: HTMLImageElement | HTMLCanvasElement, resolution: number): Texture
+export function getPo2TextureFromSource(image: HTMLImageElement | HTMLCanvasElement | ICanvas, resolution: number): Texture
 {
     const bounds = tempBounds;
 
@@ -31,6 +32,7 @@ export function getPo2TextureFromSource(image: HTMLImageElement | HTMLCanvasElem
 
     texture.source.uploadMethodId = 'image';
     texture.source.resource = image;
+    texture.source.alphaMode = 'premultiply-alpha-on-upload';
 
     texture.frameWidth = image.width / resolution;
     texture.frameHeight = image.height / resolution;
