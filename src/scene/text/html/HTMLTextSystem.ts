@@ -12,6 +12,7 @@ import { getTemporaryCanvasFromImage } from './utils/getTemporaryCanvasFromImage
 import { loadSVGImage } from './utils/loadSVGImage';
 import { measureHtmlText } from './utils/measureHtmlText.';
 
+import type { WebGPURenderer } from '../../../rendering/renderers/gpu/WebGPURenderer';
 import type { System } from '../../../rendering/renderers/shared/system/System';
 import type { CanvasAndContext } from '../../../rendering/renderers/shared/texture/CanvasPool';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
@@ -84,9 +85,11 @@ export class HTMLTextSystem implements System
      * Bit of a shame.. but no other work around just yet!
      */
     private readonly _createCanvas: boolean;
+    private readonly _renderer: Renderer;
 
     constructor(renderer: Renderer)
     {
+        this._renderer = renderer;
         this._createCanvas = renderer.type === RendererType.WEBGPU;
     }
 
@@ -157,9 +160,17 @@ export class HTMLTextSystem implements System
             resource = getTemporaryCanvasFromImage(image, resolution);
         }
 
+        const texture = getPo2TextureFromSource(resource, resolution);
+
+        if (this._createCanvas)
+        {
+            // TODO initSource will be in webGL soon too, we can remove this cast then
+            (this._renderer as WebGPURenderer).texture.initSource(texture.source);
+        }
+
         BigPool.return(htmlTextData as PoolItem);
 
-        return getPo2TextureFromSource(resource, resolution);
+        return texture;
     }
 
     private _increaseReferenceCount(textKey: string)
