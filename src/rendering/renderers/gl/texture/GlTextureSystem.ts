@@ -219,6 +219,8 @@ export class GlTextureSystem implements System, CanvasGenerator
 
         gl.bindTexture(gl.TEXTURE_2D, glTexture.texture);
 
+        this._boundTextures[this._activeTextureLocation] = source;
+
         applyStyleParams(
             source.style,
             gl,
