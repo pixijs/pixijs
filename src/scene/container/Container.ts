@@ -60,7 +60,6 @@ export const UPDATE_TRANSFORM = 0b1000;
 /**
  * Constructor options use for Container instances.
  * @see Container
- * @memberof PIXI
  */
 export interface ContainerOptions<T extends View> extends PixiMixins.ContainerOptions
 {
