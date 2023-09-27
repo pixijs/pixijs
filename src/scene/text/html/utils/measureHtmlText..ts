@@ -42,7 +42,6 @@ export function measureHtmlText(
 
     svgRoot.remove();
 
-    // we probably can find a better way to do this,
     const descenderPadding = CanvasTextMetrics.measureFont(style.fontStyle).descent;
 
     return {
