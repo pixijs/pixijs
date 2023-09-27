@@ -167,7 +167,7 @@ export class GraphicsContext extends EventEmitter<{
 
                 transform: this._transform.clone(),
                 alpha: this._fillStyle.alpha,
-                style: tint ? Color.shared.setValue(tint).toNumber() : 0xffffff,
+                style: tint ? Color.shared.setValue(tint).toNumber() : 0,
             }
         });
 
