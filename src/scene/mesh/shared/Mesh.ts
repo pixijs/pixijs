@@ -1,5 +1,6 @@
 import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
 import { Container } from '../../container/Container';
+import { definedProps } from '../../container/utils/definedProps';
 import { MeshGeometry } from './MeshGeometry';
 import { MeshView } from './MeshView';
 
@@ -12,7 +13,7 @@ import type { MeshViewOptions, TextureShader } from './MeshView';
 export type MeshOptions<
     GEOMETRY extends MeshGeometry = MeshGeometry,
     SHADER extends TextureShader = TextureShader
-> = ContainerOptions<MeshView<GEOMETRY, SHADER>> & MeshViewOptions<GEOMETRY, SHADER>;
+> = Partial<ContainerOptions<MeshView<GEOMETRY, SHADER>>> & MeshViewOptions<GEOMETRY, SHADER>;
 
 export class Mesh<
     GEOMETRY extends MeshGeometry = MeshGeometry,
@@ -42,10 +43,12 @@ export class Mesh<
             }
         }
 
+        const { geometry, shader, texture, ...rest } = options;
+
         super({
-            view: new MeshView(options),
+            view: new MeshView(definedProps({ geometry, shader, texture })),
             label: 'Mesh',
-            ...options
+            ...rest
         });
 
         this.allowChildren = false;
@@ -83,4 +86,3 @@ export class Mesh<
         return this.view.shader;
     }
 }
-

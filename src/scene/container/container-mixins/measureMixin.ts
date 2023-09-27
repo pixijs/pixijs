@@ -6,11 +6,13 @@ import { getLocalBounds } from '../bounds/getLocalBounds';
 import type { Rectangle } from '../../../maths/shapes/Rectangle';
 import type { Container } from '../Container';
 
-export interface MeasureMixin
+export interface MeasureMixinConstructor
 {
-    width: number;
-    height: number;
-
+    width?: number;
+    height?: number;
+}
+export interface MeasureMixin extends MeasureMixinConstructor
+{
     getLocalBounds(rect?: Rectangle): Rectangle;
     getBounds(skipUpdate?: boolean, rect?: Rectangle): Rectangle;
 }

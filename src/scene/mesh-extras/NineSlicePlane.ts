@@ -1,12 +1,13 @@
 import { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { Container } from '../container/Container';
+import { definedProps } from '../container/utils/definedProps';
 import { MeshView } from '../mesh/shared/MeshView';
 import { NineSliceGeometry } from './NineSliceGeometry';
 
 import type { ContainerOptions } from '../container/Container';
 
-export interface NineSliceSpriteOptions extends ContainerOptions<MeshView<NineSliceGeometry>>
+export interface NineSliceSpriteOptions extends Partial<ContainerOptions<MeshView<NineSliceGeometry>>>
 {
     texture: Texture;
     leftWidth?: number;
@@ -72,27 +73,27 @@ export class NineSliceSprite extends Container<MeshView<NineSliceGeometry>>
 
         options = { ...NineSliceSprite.defaultOptions, ...options };
 
-        const texture = options.texture;
+        const { leftWidth, rightWidth, topHeight, bottomHeight, texture, ...rest } = options;
 
-        const nineSliceGeometry = new NineSliceGeometry({
+        const nineSliceGeometry = new NineSliceGeometry(definedProps({
             width: texture.width,
             height: texture.height,
             originalWidth: texture.width,
             originalHeight: texture.height,
-            leftWidth: options.leftWidth,
-            topHeight: options.topHeight,
-            rightWidth: options.rightWidth,
-            bottomHeight: options.bottomHeight,
+            leftWidth,
+            topHeight,
+            rightWidth,
+            bottomHeight,
             textureMatrix: texture.textureMatrix.mapCoord,
-        });
+        }));
 
         super({
-            view: new MeshView<NineSliceGeometry>({
+            view: new MeshView<NineSliceGeometry>(definedProps({
                 geometry: nineSliceGeometry,
                 texture,
-            }),
+            })),
             label: 'NineSliceSprite',
-            ...options
+            ...rest
         });
 
         this.allowChildren = false;

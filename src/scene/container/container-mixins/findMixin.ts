@@ -1,13 +1,41 @@
+import { deprecation, v8_0_0 } from '../../../utils/logging/deprecation';
+
 import type { Container } from '../Container';
 
-export interface GetByLabelMixin
+export interface FindMixinConstructor
 {
+    label?: string;
+}
+export interface FindMixin extends FindMixinConstructor
+{
+    /**
+     * @deprecated since 8.0.0
+     * @see Container#label
+     */
+    name: string;
     getChildByName(label: RegExp | string, deep?: boolean): Container | null;
     getChildByLabel(label: RegExp | string, deep?: boolean): Container | null;
     getChildrenByLabel(label: RegExp | string, deep?: boolean, out?: Container[]): Container[];
 }
 
 export const findMixin: Partial<Container> = {
+    label: null,
+
+    /** @deprecated since 8.0.0 */
+    get name(): string
+    {
+        deprecation(v8_0_0, 'Container.name property has been removed, use Container.label instead');
+
+        return this.label;
+    },
+    /** @deprecated since 8.0.0 */
+    set name(value: string)
+    {
+        deprecation(v8_0_0, 'Container.name property has been removed, use Container.label instead');
+
+        this.label = value;
+    },
+
     /**
      * @method getChildByName
      * @memberof Container#
@@ -47,7 +75,6 @@ export const findMixin: Partial<Container> = {
             for (let i = 0; i < children.length; i++)
             {
                 const child = children[i];
-
                 const found = child.getChildByLabel(label, true);
 
                 if (found)
@@ -93,5 +120,4 @@ export const findMixin: Partial<Container> = {
 
         return out;
     },
-
 } as Container;
