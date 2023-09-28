@@ -139,6 +139,7 @@
     "./lib/prepare/init.*",
     "./lib/spritesheet/init.*",
     "./lib/rendering/init.*",
+    "./lib/prepare/init.*",
     "./lib/unsafe-eval/init.*"
   ],
   "exports": {
@@ -262,6 +263,14 @@
       },
       "require": {
         "default": "./lib/rendering/init.js"
+      }
+    },
+    "./prepare": {
+      "import": {
+        "default": "./lib/prepare/init.mjs"
+      },
+      "require": {
+        "default": "./lib/prepare/init.js"
       }
     },
     "./unsafe-eval": {

@@ -5,6 +5,7 @@ import { GraphicsContext } from '../scene/graphics/shared/GraphicsContext';
 import { Text } from '../scene/text/Text';
 import { PrepareBase } from './PrepareBase';
 
+import type { FillInstruction, TextureInstruction } from '../scene/graphics/shared/GraphicsContext';
 import type { PrepareQueueItem, PrepareSourceItem } from './PrepareBase';
 
 /**
@@ -53,6 +54,35 @@ export abstract class PrepareQueue extends PrepareBase
         {
             // todo: extract the text view texture resource
         } // todo: check for other container types
+
+        return null;
+    }
+
+    /**
+     * Resolve the given graphics context and return an item for the queue
+     * @param graphicsContext
+     */
+    protected resolveGraphicsContextQueueItem(graphicsContext: GraphicsContext): PrepareQueueItem | null
+    {
+        this.renderer.graphicsContext.getContextRenderData(graphicsContext);
+
+        const { instructions } = graphicsContext;
+
+        for (const instruction of instructions)
+        {
+            if (instruction.action === 'texture')
+            {
+                const { image } = (instruction as TextureInstruction).data;
+
+                return image.source;
+            }
+            else if (instruction.action === 'fill')
+            {
+                const { texture } = (instruction as FillInstruction).data.style;
+
+                return texture.source;
+            }
+        }
 
         return null;
     }
