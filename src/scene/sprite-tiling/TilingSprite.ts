@@ -1,4 +1,5 @@
 import { Container } from '../container/Container';
+import { definedProps } from '../container/utils/definedProps';
 import { TilingSpriteView } from './TilingSpriteView';
 
 import type { PointData } from '../../maths/point/PointData';
@@ -6,16 +7,29 @@ import type { PointLike } from '../../maths/point/PointLike';
 import type { ContainerOptions } from '../container/Container';
 import type { TilingSpriteViewOptions } from './TilingSpriteView';
 
-export type TilingSpriteOptions = TilingSpriteViewOptions & ContainerOptions<TilingSpriteView>;
+export interface TilingSpriteOptions extends TilingSpriteViewOptions, Partial<ContainerOptions<TilingSpriteView>>
+{
+    anchor?: PointData
+    tilePosition?: PointData
+    tileScale?: PointData
+    tileRotation?: number
+}
 
 export class TilingSprite extends Container<TilingSpriteView>
 {
     constructor(options?: TilingSpriteOptions)
     {
+        const { texture, width, height, applyAnchorToTexture, ...rest } = options ?? {};
+
         super({
-            view: new TilingSpriteView(options),
+            view: new TilingSpriteView(definedProps({
+                texture,
+                width,
+                height,
+                applyAnchorToTexture,
+            })),
             label: 'TilingSprite',
-            ...options
+            ...rest
         });
 
         this.allowChildren = false;
@@ -67,7 +81,7 @@ export class TilingSprite extends Container<TilingSpriteView>
         return this.view._tileTransform.position;
     }
 
-    set tilePosition(value)
+    set tilePosition(value: PointData)
     {
         this.view._tileTransform.position.copyFrom(value);
     }
@@ -77,7 +91,7 @@ export class TilingSprite extends Container<TilingSpriteView>
         return this.view._tileTransform.scale;
     }
 
-    set tileScale(value)
+    set tileScale(value: PointData)
     {
         this.view._tileTransform.scale.copyFrom(value);
     }

@@ -6,20 +6,59 @@ import type { FilterEffect } from '../../../filters/FilterEffect';
 import type { Container } from '../Container';
 import type { Effect } from '../Effect';
 
-export interface EffectsMixin
+export interface EffectsMixinConstructor
+{
+    mask?: number | Container;
+    filters?: Filter | Filter[];
+    effects?: Effect[];
+}
+export interface EffectsMixin extends EffectsMixinConstructor
 {
     _mask?: {mask: unknown, effect: Effect};
     _filters?: {filters: Filter[], effect: FilterEffect};
-
-    mask: number | Container;
-    filters: Filter[];
+    addEffect(effect: Effect): void;
+    removeEffect(effect: Effect): void;
 }
 
 export const effectsMixin: Partial<Container> = {
     _mask: null,
     _filters: null,
+    effects: [],
 
-    set mask(value: unknown)
+    addEffect(effect: Effect)
+    {
+        const index = this.effects.indexOf(effect);
+
+        if (index !== -1) return; // already exists!
+
+        this.effects.push(effect);
+
+        this.effects.sort((a, b) => a.priority - b.priority);
+
+        if (!this.isLayerRoot && this.layerGroup)
+        {
+            this.layerGroup.structureDidChange = true;
+        }
+
+        this._updateIsSimple();
+    },
+    removeEffect(effect: Effect)
+    {
+        const index = this.effects.indexOf(effect);
+
+        if (index === -1) return; // already exists!
+
+        this.effects.splice(index, 1);
+
+        if (!this.isLayerRoot && this.layerGroup)
+        {
+            this.layerGroup.structureDidChange = true;
+        }
+
+        this._updateIsSimple();
+    },
+
+    set mask(value: number | Container)
     {
         this._mask ||= { mask: null, effect: null };
 

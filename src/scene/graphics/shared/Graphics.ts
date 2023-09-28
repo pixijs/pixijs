@@ -9,9 +9,11 @@ import type { Texture } from '../../../rendering/renderers/shared/texture/Textur
 import type { ContainerOptions } from '../../container/Container';
 import type { FillStyleInputs } from './GraphicsContext';
 
-export interface GraphicsOptions extends ContainerOptions<GraphicsView>
+export interface GraphicsOptions extends Partial<ContainerOptions<GraphicsView>>
 {
     context?: GraphicsContext;
+    fillStyle?: FillStyleInputs;
+    strokeStyle?: FillStyleInputs;
 }
 
 export class Graphics extends Container<GraphicsView>
@@ -23,10 +25,12 @@ export class Graphics extends Container<GraphicsView>
             options = { context: options };
         }
 
+        const { context, ...rest } = options || {};
+
         super({
-            view: new GraphicsView(options?.context),
+            view: new GraphicsView(context),
             label: 'Graphics',
-            ...options
+            ...rest
         });
 
         this.allowChildren = false;

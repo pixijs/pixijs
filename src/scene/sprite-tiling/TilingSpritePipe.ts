@@ -165,8 +165,14 @@ export class TilingSpritePipe implements RenderPipe<TilingSpriteView>
             const batchedMesh = this._getBatchedTilingSprite(renderable);
 
             batchedMesh.view.texture = view.texture;
-            view.texture.source.style.addressMode = 'repeat';
-            view.texture.source.style.update();
+
+            const style = view.texture.source.style;
+
+            if (style.addressMode !== 'repeat')
+            {
+                style.addressMode = 'repeat';
+                style.update();
+            }
 
             this._updateBatchPositions(renderable);
             this._updateBatchUvs(renderable);

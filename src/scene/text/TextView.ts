@@ -34,6 +34,7 @@ export type TextStyles = {
 };
 
 export type TextViewOptions = Filter<TextStyles>;
+
 const map = {
     canvas: 'text',
     html: 'htmlText',

@@ -7,9 +7,10 @@ import type { PointData } from '../../maths/point/PointData';
 import type { PointLike } from '../../maths/point/PointLike';
 import type { ContainerOptions } from '../container/Container';
 
-export interface SpriteOptions extends ContainerOptions<SpriteView>
+export interface SpriteOptions extends Partial<ContainerOptions<SpriteView>>
 {
     texture?: Texture;
+    anchor?: PointLike
 }
 
 export class Sprite extends Container<SpriteView>
@@ -31,12 +32,12 @@ export class Sprite extends Container<SpriteView>
             options = { texture: options };
         }
 
-        options.texture ??= Texture.EMPTY;
+        const { texture, ...rest } = options;
 
         super({
-            view: new SpriteView(options.texture),
+            view: new SpriteView(texture ?? Texture.EMPTY),
             label: 'Sprite',
-            ...options
+            ...rest
         });
 
         this.allowChildren = false;

@@ -7,6 +7,24 @@ import { getTexture } from '../utils/getTexture';
 
 describe('TilingSprite', () =>
 {
+    it('should accept constructor arguments', () =>
+    {
+        const x = 10;
+        const y = 20;
+        const width = 100;
+        const height = 200;
+        const anchor = { x: 0.5, y: 0.5 };
+
+        const sprite = new TilingSprite({ texture: getTexture({ width: 256, height: 256 }), x, y, width, height, anchor });
+
+        expect(sprite.x).toBe(x);
+        expect(sprite.y).toBe(y);
+        expect(sprite.width).toBe(width);
+        expect(sprite.height).toBe(height);
+        expect(sprite.anchor.x).toBe(anchor.x);
+        expect(sprite.anchor.y).toBe(anchor.y);
+    });
+
     it('should not throw when destroyed', () =>
     {
         const sprite = new TilingSprite();

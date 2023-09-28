@@ -1,19 +1,20 @@
 import type { Container } from '../Container';
 
-export interface SortMixin
+export interface SortMixinConstructor
+{
+    zIndex?: number;
+    sortDirty?: boolean;
+    sortableChildren?: boolean;
+}
+export interface SortMixin extends SortMixinConstructor
 {
     _zIndex: 0;
-
-    zIndex: number;
-    sortDirty: boolean;
-    sortableChildren: boolean;
 
     sortChildren: () => void;
     depthOfChildModified: () => void;
 }
 
 export const sortMixin: Partial<Container> = {
-
     _zIndex: 0,
     sortDirty: false,
     sortableChildren: false,
@@ -54,8 +55,7 @@ export const sortMixin: Partial<Container> = {
         this.sortDirty = false;
 
         this.children.sort(sortChildren);
-    }
-
+    },
 } as Container;
 
 function sortChildren(a: Container, b: Container): number

@@ -7,12 +7,13 @@ import { uid } from '../../utils/data/uid';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { childrenHelperMixin } from './container-mixins/childrenHelperMixin';
 import { effectsMixin } from './container-mixins/effectsMixin';
-import { findMixin } from './container-mixins/getByLabelMixin';
+import { findMixin } from './container-mixins/findMixin';
 import { measureMixin } from './container-mixins/measureMixin';
 import { onRenderMixin } from './container-mixins/onRenderMixin';
 import { sortMixin } from './container-mixins/sortMixin';
 import { toLocalGlobalMixin } from './container-mixins/toLocalGlobalMixin';
 import { LayerGroup } from './LayerGroup';
+import { definedProps } from './utils/definedProps';
 
 import type { PointData } from '../../maths/point/PointData';
 import type { Renderable } from '../../rendering/renderers/shared/Renderable';
@@ -20,7 +21,6 @@ import type { BLEND_MODES } from '../../rendering/renderers/shared/state/const';
 import type { View } from '../../rendering/renderers/shared/view/View';
 import type { Dict } from '../../utils/types';
 import type { DestroyOptions } from './destroyTypes';
-import type { Effect } from './Effect';
 
 // as pivot and skew are the least used properties of a container, we can use this optimisation
 // to avoid allocating lots of unnecessary objects for them.
@@ -52,18 +52,54 @@ type AnyEvent = {
     [K: ({} & string) | ({} & symbol)]: any;
 };
 
-export interface ContainerOptions<T extends View>
-{
-    label?: string;
-    layer?: boolean;
-    sortableChildren?: boolean;
-    view?: T;
-}
-
 export const UPDATE_COLOR = 0b0001;
 export const UPDATE_BLEND = 0b0010;
 export const UPDATE_VISIBLE = 0b0100;
 export const UPDATE_TRANSFORM = 0b1000;
+
+/**
+ * Constructor options use for Container instances.
+ * @see Container
+ */
+export interface ContainerOptions<T extends View> extends PixiMixins.ContainerOptions
+{
+    /** @see Container#layer */
+    layer?: boolean;
+    /** @see Container#view */
+    view?: T;
+
+    /** @see Container#blendMode */
+    blendMode?: BLEND_MODES;
+    /** @see Container#tint */
+    tint?: ColorSource;
+
+    /** @see Container#alpha */
+    alpha?: number;
+    /** @see Container#angle */
+    angle?: number;
+    /** @see Container#children */
+    children?: Container[];
+    /** @see Container#parent */
+    parent?: Container;
+    /** @see Container#renderable */
+    renderable?: boolean;
+    /** @see Container#rotation */
+    rotation?: number;
+    /** @see Container#scale */
+    scale?: PointData;
+    /** @see Container#pivot */
+    pivot?: PointData;
+    /** @see Container#position */
+    position?: PointData;
+    /** @see Container#skew */
+    skew?: PointData;
+    /** @see Container#visible */
+    visible?: boolean;
+    /** @see Container#x */
+    x?: number;
+    /** @see Container#y */
+    y?: number;
+}
 
 export interface Container
     extends Omit<PixiMixins.Container, keyof EventEmitter<ContainerEvents & AnyEvent>>,
@@ -82,22 +118,6 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
 
     /** @internal */
     public uid: number = uid('renderable');
-
-    public label: string = null;
-    /** @deprecated since 8.0.0 */
-    public get name(): string
-    {
-        deprecation('8.0.0', 'Container.name property has been removed, use Container.label instead');
-
-        return this.label;
-    }
-    /** @deprecated since 8.0.0 */
-    public set name(value: string)
-    {
-        deprecation('8.0.0', 'Container.name property has been removed, use Container.label instead');
-
-        this.label = value;
-    }
 
     /** @internal */
     public _updateFlags = 0b1111;
@@ -231,71 +251,28 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
     /** @internal */
     public layerVisibleRenderable = 0b11; // 0b11 | 0b10 | 0b01 | 0b00
 
-    /// /// EFFECTS and masks etc...
-
-    public effects: Effect[] = [];
-
-    public addEffect(effect: Effect)
-    {
-        const index = this.effects.indexOf(effect);
-
-        if (index !== -1) return; // already exists!
-
-        this.effects.push(effect);
-
-        this.effects.sort((a, b) => a.priority - b.priority);
-
-        if (!this.isLayerRoot && this.layerGroup)
-        {
-            this.layerGroup.structureDidChange = true;
-        }
-
-        this._updateIsSimple();
-    }
-
-    public removeEffect(effect: Effect)
-    {
-        const index = this.effects.indexOf(effect);
-
-        if (index === -1) return; // already exists!
-
-        this.effects.splice(index, 1);
-
-        if (!this.isLayerRoot && this.layerGroup)
-        {
-            this.layerGroup.structureDidChange = true;
-        }
-
-        this._updateIsSimple();
-    }
-
     // a renderable object... like a sprite!
     public readonly view: T;
 
-    constructor({ label, layer, view, sortableChildren }: ContainerOptions<T> = {})
+    constructor(options: Partial<ContainerOptions<T>> = {})
     {
         super();
 
-        if (label)
+        if (options.view)
         {
-            this.label = label;
-        }
-
-        if (layer)
-        {
-            this.enableLayer();
-        }
-
-        if (view)
-        {
-            this.view = view;
-
+            this.view = options.view;
             // in the future we could de-couple container and view..
             // but for now this is just faster!
             this.view.owner = this;
+            options.view = undefined;
         }
 
-        this.sortableChildren = !!sortableChildren;
+        Object.assign(this, definedProps(options));
+
+        this.children = [];
+        options.children?.forEach((child) => this.addChild(child));
+        this.effects = [];
+        options.effects?.forEach((effect) => this.addEffect(effect));
     }
 
     /**
@@ -517,6 +494,14 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         }
 
         this._updateIsSimple();
+    }
+
+    /**
+     * @ignore
+     */
+    public _updateIsSimple()
+    {
+        this.isSimple = !(this.isLayerRoot) && (this.effects.length === 0);
     }
 
     get worldTransform()
@@ -792,11 +777,6 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         return (this.localVisibleRenderable === 0b11 && worldAlpha > 0);
     }
 
-    private _updateIsSimple()
-    {
-        this.isSimple = !(this.isLayerRoot) && (this.effects.length === 0);
-    }
-
     /**
      * Removes all internal references and listeners as well as removes children from the display list.
      * Do not use a Container after calling `destroy`.
@@ -818,12 +798,8 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
 
         this.removeFromParent();
         this.parent = null;
-        // this._onRender = null;
         this._mask = null;
         this._filters = null;
-        // this.renderGroup = null;
-        // this.parentRenderGroup = null;
-        // this.parentTransform = null;
         this.effects = null;
         this._position = null;
         this._scale = null;

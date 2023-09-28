@@ -1,9 +1,12 @@
 import type { Container } from '../Container';
 
-export interface OnRenderMixin
+export interface OnRenderMixinConstructor
+{
+    onRender?: (() => void | null);
+}
+export interface OnRenderMixin extends OnRenderMixinConstructor
 {
     _onRender: (() => void) | null;
-    onRender: () => void;
 }
 
 export const onRenderMixin: Partial<Container> = {
