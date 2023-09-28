@@ -8,7 +8,21 @@ export interface TextureLayoutOptions
     orig?: Rectangle;
     trim?: Rectangle;
     defaultAnchor?: { x: number; y: number };
+    defaultBorders?: TextureBorders;
     rotate?: number;
+}
+
+/** Stores the width of the non-scalable borders, for example when used with {@link PIXI.NineSlicePlane} texture. */
+export interface TextureBorders
+{
+    /** left border in pixels */
+    left: number;
+    /** top border in pixels */
+    top: number;
+    /** right border in pixels */
+    right: number;
+    /** bottom border in pixels */
+    bottom: number;
 }
 
 export type UVs = {
@@ -35,6 +49,7 @@ export class TextureLayout extends EventEmitter<{
 
     public trim?: Rectangle;
     public defaultAnchor?: { x: number; y: number };
+    public defaultBorders?: TextureBorders;
 
     constructor(options: TextureLayoutOptions = {})
     {
@@ -48,6 +63,7 @@ export class TextureLayout extends EventEmitter<{
         // optional
         this.trim = options.trim;
         this.defaultAnchor = options.defaultAnchor;
+        this.defaultBorders = options.defaultBorders;
 
         this.updateUvs();
     }

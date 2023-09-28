@@ -70,19 +70,18 @@ export class NineSliceSprite extends Container<MeshView<NineSliceGeometry>>
             options = { texture: options };
         }
 
-        options = { ...NineSliceSprite.defaultOptions, ...options };
-
-        const texture = options.texture;
+        const texture = options.texture ?? NineSliceSprite.defaultOptions.texture;
+        const borders = texture.layout.defaultBorders;
 
         const nineSliceGeometry = new NineSliceGeometry({
             width: texture.width,
             height: texture.height,
             originalWidth: texture.width,
             originalHeight: texture.height,
-            leftWidth: options.leftWidth,
-            topHeight: options.topHeight,
-            rightWidth: options.rightWidth,
-            bottomHeight: options.bottomHeight,
+            leftWidth: options.leftWidth ?? borders?.left ?? NineSliceSprite.defaultOptions.leftWidth,
+            topHeight: options.topHeight ?? borders?.top ?? NineSliceSprite.defaultOptions.topHeight,
+            rightWidth: options.rightWidth ?? borders?.right ?? NineSliceSprite.defaultOptions.rightWidth,
+            bottomHeight: options.bottomHeight ?? borders?.bottom ?? NineSliceSprite.defaultOptions.bottomHeight,
             textureMatrix: texture.textureMatrix.mapCoord,
         });
 
