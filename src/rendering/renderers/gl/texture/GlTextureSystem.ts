@@ -85,6 +85,11 @@ export class GlTextureSystem implements System, CanvasGenerator
         }
     }
 
+    public initSource(source: TextureSource)
+    {
+        this.bind(source);
+    }
+
     public bind(texture: BindableTexture, location = 0)
     {
         const source = texture.source;
