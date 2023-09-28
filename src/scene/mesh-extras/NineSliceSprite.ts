@@ -1,6 +1,7 @@
 import { Texture } from '../../rendering/renderers/shared/texture/Texture';
 import { deprecation, v8_0_0 } from '../../utils/logging/deprecation';
 import { Container } from '../container/Container';
+import { definedProps } from '../container/utils/definedProps';
 import { MeshView } from '../mesh/shared/MeshView';
 import { NineSliceGeometry } from './NineSliceGeometry';
 
@@ -70,28 +71,29 @@ export class NineSliceSprite extends Container<MeshView<NineSliceGeometry>>
             options = { texture: options };
         }
 
-        const texture = options.texture ?? NineSliceSprite.defaultOptions.texture;
+        const { leftWidth, rightWidth, topHeight, bottomHeight, texture: optTex, ...rest } = options;
+        const texture = optTex ?? NineSliceSprite.defaultOptions.texture;
         const borders = texture.layout.defaultBorders;
 
-        const nineSliceGeometry = new NineSliceGeometry({
+        const nineSliceGeometry = new NineSliceGeometry(definedProps({
             width: texture.width,
             height: texture.height,
             originalWidth: texture.width,
             originalHeight: texture.height,
-            leftWidth: options.leftWidth ?? borders?.left ?? NineSliceSprite.defaultOptions.leftWidth,
-            topHeight: options.topHeight ?? borders?.top ?? NineSliceSprite.defaultOptions.topHeight,
-            rightWidth: options.rightWidth ?? borders?.right ?? NineSliceSprite.defaultOptions.rightWidth,
-            bottomHeight: options.bottomHeight ?? borders?.bottom ?? NineSliceSprite.defaultOptions.bottomHeight,
+            leftWidth: leftWidth ?? borders?.left ?? NineSliceSprite.defaultOptions.leftWidth,
+            topHeight: topHeight ?? borders?.top ?? NineSliceSprite.defaultOptions.topHeight,
+            rightWidth: rightWidth ?? borders?.right ?? NineSliceSprite.defaultOptions.rightWidth,
+            bottomHeight: bottomHeight ?? borders?.bottom ?? NineSliceSprite.defaultOptions.bottomHeight,
             textureMatrix: texture.textureMatrix.mapCoord,
-        });
+        }));
 
         super({
-            view: new MeshView<NineSliceGeometry>({
+            view: new MeshView<NineSliceGeometry>(definedProps({
                 geometry: nineSliceGeometry,
                 texture,
-            }),
+            })),
             label: 'NineSliceSprite',
-            ...options
+            ...rest
         });
 
         this.allowChildren = false;

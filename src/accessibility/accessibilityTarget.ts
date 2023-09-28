@@ -12,17 +12,21 @@ export type PointerEvents = 'auto'
 | 'all'
 | 'inherit';
 
-export interface AccessibleTarget
+export interface AccessibleOptions
 {
     accessible: boolean;
     accessibleTitle: string;
     accessibleHint: string;
     tabIndex: number;
-    _accessibleActive: boolean;
-    _accessibleDiv: AccessibleHTMLElement;
     accessibleType: string;
     accessiblePointerEvents: PointerEvents;
     accessibleChildren: boolean;
+}
+
+export interface AccessibleTarget extends AccessibleOptions
+{
+    _accessibleActive: boolean;
+    _accessibleDiv: AccessibleHTMLElement;
     renderId: number;
 }
 

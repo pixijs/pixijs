@@ -5,16 +5,14 @@ declare namespace PixiMixins
     type IFederatedContainer = import('./FederatedEventTarget').IFederatedContainer;
 
     // eslint-disable-next-line @typescript-eslint/no-empty-interface
-    interface Container extends Omit<FederatedEventTarget, keyof IFederatedContainer>, IFederatedContainer
-    {
+    interface Container extends Omit<FederatedEventTarget, keyof IFederatedContainer>, IFederatedContainer {}
 
-    }
+    type FederatedOptions = import('./FederatedEventTarget').FederatedOptions;
+    // eslint-disable-next-line @typescript-eslint/no-empty-interface
+    interface ContainerOptions extends FederatedOptions {}
 
     // eslint-disable-next-line @typescript-eslint/no-empty-interface
-    interface ContainerEvents extends FederatedEventEmitterTypes
-    {
-
-    }
+    interface ContainerEvents extends FederatedEventEmitterTypes {}
 
     interface RendererOptions
     {
@@ -27,7 +25,7 @@ declare namespace PixiMixins
          * The event features that are enabled by the EventSystem.
          * @since 7.2.0
          */
-        eventFeatures?: import('./EventSystem').EventSystemOptions['eventFeatures']
+        eventFeatures?: import('./EventSystem').EventSystemOptions['eventFeatures'];
     }
 
     interface RendererSystems

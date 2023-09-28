@@ -3,6 +3,25 @@ import { updateLayerGroupTransforms } from '../../src/scene/container/utils/upda
 
 describe('Container Tests', () =>
 {
+    it('should accept constructor arguments', () =>
+    {
+        const x = 10;
+        const y = 20;
+        const angle = 90;
+        const children = [new Container(), new Container()];
+
+        const addedSpy = jest.spyOn(children[0], 'emit');
+
+        const container = new Container({ x, y, angle, children });
+
+        expect(container.x).toBe(x);
+        expect(container.y).toBe(y);
+        expect(container.angle).toBe(angle);
+        expect(container.children).toContain(children[0]);
+        expect(container.children).toContain(children[1]);
+        expect(addedSpy).toBeCalledTimes(1);
+    });
+
     it('should a global position correctly', async () =>
     {
         const container = new Container({
