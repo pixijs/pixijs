@@ -300,4 +300,14 @@ export class Graphics extends Container<GraphicsView>
 
         return this._callContextMethod('star', args);
     }
+
+    get roundPixels()
+    {
+        return !!this.view.roundPixels;
+    }
+
+    set roundPixels(value: boolean)
+    {
+        this.view.roundPixels = value ? 1 : 0;
+    }
 }

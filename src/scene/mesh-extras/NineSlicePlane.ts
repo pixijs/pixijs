@@ -189,6 +189,16 @@ export class NineSliceSprite extends Container<MeshView<NineSliceGeometry>>
 
         this.view.texture = value;
     }
+
+    get roundPixels()
+    {
+        return !!this.view.roundPixels;
+    }
+
+    set roundPixels(value: boolean)
+    {
+        this.view.roundPixels = value ? 1 : 0;
+    }
 }
 
 /** @deprecated since 8.0.0 */

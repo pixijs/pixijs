@@ -21,6 +21,7 @@ export class BatchableGraphics implements BatchableObject
     public color: number;
     public alpha: number;
     public applyTransform = true;
+    public roundPixels: 0 | 1 = 0;
 
     public geometryData: { vertices: number[]; uvs: number[]; indices: number[]; };
 
@@ -52,6 +53,7 @@ export class BatchableGraphics implements BatchableObject
     )
     {
         const geometry = this.geometryData;
+        const graphics = this.renderable;
 
         const positions = geometry.vertices;
         const uvs = geometry.uvs;
@@ -64,11 +66,10 @@ export class BatchableGraphics implements BatchableObject
 
         if (this.applyTransform)
         {
-            const renderable = this.renderable;
+            const argb = mixColors(bgr + ((this.alpha * 255) << 24), graphics.layerColor);
 
-            const argb = mixColors(bgr + ((this.alpha * 255) << 24), renderable.layerColor);
-
-            const wt = renderable.layerTransform;
+            const wt = graphics.layerTransform;
+            const textureIdAndRound = (textureId << 16) | (this.roundPixels & 0xFFFF);
 
             const a = wt.a;
             const b = wt.b;
@@ -78,19 +79,20 @@ export class BatchableGraphics implements BatchableObject
             const ty = wt.ty;
 
             for (let i = offset; i < vertSize; i += 2)
-
             {
                 const x = positions[i];
                 const y = positions[i + 1];
 
-                float32View[index++] = (a * x) + (c * y) + tx;
-                float32View[index++] = (b * x) + (d * y) + ty;
+                float32View[index] = (a * x) + (c * y) + tx;
+                float32View[index + 1] = (b * x) + (d * y) + ty;
 
-                float32View[index++] = uvs[i];
-                float32View[index++] = uvs[i + 1];
+                float32View[index + 2] = uvs[i];
+                float32View[index + 3] = uvs[i + 1];
 
-                uint32View[index++] = argb;
-                float32View[index++] = textureId;
+                uint32View[index + 4] = argb;
+                uint32View[index + 5] = textureIdAndRound;
+
+                index += 6;
             }
         }
         else
@@ -99,14 +101,16 @@ export class BatchableGraphics implements BatchableObject
 
             for (let i = offset; i < vertSize; i += 2)
             {
-                float32View[index++] = positions[i];
-                float32View[index++] = positions[i + 1];
+                float32View[index] = positions[i];
+                float32View[index + 1] = positions[i + 1];
 
-                float32View[index++] = uvs[i];
-                float32View[index++] = uvs[i + 1];
+                float32View[index + 2] = uvs[i];
+                float32View[index + 3] = uvs[i + 1];
 
-                uint32View[index++] = argb;
-                float32View[index++] = textureId;
+                uint32View[index + 4] = argb;
+                uint32View[index + 5] = textureId;
+
+                index += 6;
             }
         }
     }

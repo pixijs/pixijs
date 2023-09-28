@@ -63,6 +63,9 @@ export class AbstractRenderer<PIPES, OPTIONS>
     public readonly type: number;
     public readonly name: string;
 
+    /** @internal */
+    public _roundPixels: 0 | 1;
+
     public readonly runners: Runners = Object.create(null) as Runners;
     public readonly renderPipes = Object.create(null) as PIPES;
     public view: ViewSystem;
@@ -92,7 +95,7 @@ export class AbstractRenderer<PIPES, OPTIONS>
      * Initialize the renderer.
      * @param options - The options to use to create the renderer.
      */
-    public async init(options: Partial<OPTIONS> = {})
+    public async init(options: Partial<OPTIONS & {roundPixels: boolean}> = {})
     {
         // loop through all systems...
         for (const systemName in this._systemsHash)
@@ -102,6 +105,8 @@ export class AbstractRenderer<PIPES, OPTIONS>
             const defaultSystemOptions = (system.constructor as any).defaultOptions;
 
             options = { ...defaultSystemOptions, ...options };
+
+            this._roundPixels = options.roundPixels ? 1 : 0;
         }
 
         // await emits..
@@ -347,5 +352,10 @@ export class AbstractRenderer<PIPES, OPTIONS>
     public generateTexture(options: GenerateTextureOptions | Container): Texture
     {
         return this.textureGenerator.generateTexture(options);
+    }
+
+    get roundPixels(): boolean
+    {
+        return !!this._roundPixels;
     }
 }

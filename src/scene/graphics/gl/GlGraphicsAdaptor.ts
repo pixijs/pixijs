@@ -5,10 +5,10 @@ import { compileHighShaderGlProgram } from '../../../rendering/high-shader/compi
 import { colorBitGl } from '../../../rendering/high-shader/shader-bits/colorBit';
 import { generateTextureBatchBitGl } from '../../../rendering/high-shader/shader-bits/generateTextureBatchBit';
 import { localUniformBitGl } from '../../../rendering/high-shader/shader-bits/localUniformBit';
+import { roundPixelsBitGl } from '../../../rendering/high-shader/shader-bits/roundPixelsBit';
 import { batchSamplersUniformGroup } from '../../../rendering/renderers/gl/shader/batchSamplersUniformGroup';
 import { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import { UniformGroup } from '../../../rendering/renderers/shared/shader/UniformGroup';
-import { color32BitToUniform } from '../gpu/colorToUniform';
 
 import type { Batch } from '../../../rendering/batcher/shared/Batcher';
 import type { WebGLRenderer } from '../../../rendering/renderers/gl/WebGLRenderer';
@@ -26,7 +26,7 @@ export class GlGraphicsAdaptor implements GraphicsAdaptor
         name: 'graphics',
     } as const;
 
-    private _shader: Shader;
+    public shader: Shader;
 
     public init()
     {
@@ -41,10 +41,11 @@ export class GlGraphicsAdaptor implements GraphicsAdaptor
                 colorBitGl,
                 generateTextureBatchBitGl(MAX_TEXTURES),
                 localUniformBitGl,
+                roundPixelsBitGl,
             ]
         });
 
-        this._shader = new Shader({
+        this.shader = new Shader({
             glProgram,
             resources: {
                 localUniforms: uniforms,
@@ -56,32 +57,13 @@ export class GlGraphicsAdaptor implements GraphicsAdaptor
     public execute(graphicsPipe: GraphicsPipe, renderable: Renderable<GraphicsView>): void
     {
         const context = renderable.view.context;
-        const shader = context.customShader || this._shader;
+        const shader = context.customShader || this.shader;
         const renderer = graphicsPipe.renderer as WebGLRenderer;
         const contextSystem = renderer.graphicsContext;
-
-        if (!contextSystem.updateGpuContext(context).batches.length)
-        { return; }
 
         const {
             geometry, instructions,
         } = contextSystem.getContextRenderData(context);
-
-        const state = graphicsPipe.state;
-
-        state.blendMode = renderable.layerBlendMode;
-
-        renderer.state.set(graphicsPipe.state);
-
-        const localUniforms = shader.resources.localUniforms.uniforms;
-
-        localUniforms.uTransformMatrix = renderable.layerTransform;
-
-        color32BitToUniform(
-            renderable.layerColor,
-            localUniforms.uColor,
-            0
-        );
 
         // WebGL specific..
 
@@ -112,7 +94,7 @@ export class GlGraphicsAdaptor implements GraphicsAdaptor
 
     public destroy(): void
     {
-        this._shader.destroy(true);
-        this._shader = null;
+        this.shader.destroy(true);
+        this.shader = null;
     }
 }

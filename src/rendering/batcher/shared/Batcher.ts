@@ -1,7 +1,6 @@
 import { uid } from '../../../utils/data/uid';
 import { ViewableBuffer } from '../../../utils/ViewableBuffer';
 import { fastCopy } from '../../renderers/shared/buffer/utils/fastCopy';
-import { getBatchedGeometry } from '../gpu/getBatchedGeometry';
 import { BatchTextureArray } from './BatchTextureArray';
 import { MAX_TEXTURES } from './const';
 
@@ -9,8 +8,6 @@ import type { BindGroup } from '../../renderers/gpu/shader/BindGroup';
 import type { InstructionSet } from '../../renderers/shared/instructions/InstructionSet';
 import type { BLEND_MODES } from '../../renderers/shared/state/const';
 import type { Texture } from '../../renderers/shared/texture/Texture';
-
-// TODO OPTIMISE THIS CODE
 
 export type BatchAction = 'startBatch' | 'renderBatch';
 
@@ -78,6 +75,8 @@ export interface BatchableObject
     location: number; // location in the buffer
     batcher: Batcher;
     batch: Batch;
+
+    roundPixels: 0 | 1;
 }
 
 let BATCH_TICK = 0;
@@ -98,7 +97,6 @@ export class Batcher
     public batchIndex = 0;
     public batches: Batch[] = [];
 
-    public geometry = getBatchedGeometry();
     // specifics.
     private readonly _vertexSize: number = 6;
 

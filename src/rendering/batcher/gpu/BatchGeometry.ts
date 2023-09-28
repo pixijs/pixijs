@@ -48,10 +48,10 @@ export class BatchGeometry extends Geometry
                     stride,
                     offset: 4 * 4,
                 },
-                aTextureId: {
+                aTextureIdAndRound: {
                     buffer: attributeBuffer,
                     shaderLocation: 3,
-                    format: 'float32',
+                    format: 'uint16x2',
                     stride,
                     offset: 5 * 4,
                 },

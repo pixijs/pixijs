@@ -2,6 +2,7 @@ import { ExtensionType } from '../../../extensions/Extensions';
 import { compileHighShaderGpuProgram } from '../../high-shader/compileHighShaderToProgram';
 import { colorBit } from '../../high-shader/shader-bits/colorBit';
 import { generateTextureBatchBit } from '../../high-shader/shader-bits/generateTextureBatchBit';
+import { roundPixelsBit } from '../../high-shader/shader-bits/roundPixelsBit';
 import { Shader } from '../../renderers/shared/shader/Shader';
 import { State } from '../../renderers/shared/state/State';
 import { MAX_TEXTURES } from '../shared/const';
@@ -26,6 +27,7 @@ export class GpuBatchAdaptor implements BatcherAdaptor
     } as const;
 
     private _shader: Shader;
+    private _geometry: Geometry;
 
     public init()
     {
@@ -34,6 +36,7 @@ export class GpuBatchAdaptor implements BatcherAdaptor
             bits: [
                 colorBit,
                 generateTextureBatchBit(MAX_TEXTURES),
+                roundPixelsBit,
             ]
         });
 
@@ -51,11 +54,13 @@ export class GpuBatchAdaptor implements BatcherAdaptor
         const encoder = renderer.encoder as GpuEncoderSystem;
         const program = this._shader.gpuProgram;
 
+        this._geometry = geometry;
+
         encoder.setGeometry(geometry);
 
         tempState.blendMode = 'normal';
 
-        // this just initates the pipeline, so we can then set bind groups on it
+        // this just initiates the pipeline, so we can then set bind groups on it
         renderer.pipeline.getPipeline(
             geometry,
             program,
@@ -87,7 +92,7 @@ export class GpuBatchAdaptor implements BatcherAdaptor
         );
 
         const pipeline = renderer.pipeline.getPipeline(
-            batch.batcher.geometry,
+            this._geometry,
             program,
             tempState
         );

@@ -6,12 +6,11 @@ import type { View } from '../../rendering/renderers/shared/view/View';
 export class BatchableSprite implements BatchableObject
 {
     public indexStart: number;
-    public sprite: Renderable<View>;
+    public renderable: Renderable<View>;
 
     // batch specific..
     public vertexSize = 4;
     public indexSize = 6;
-
     public texture: Texture;
 
     public textureId: number;
@@ -19,8 +18,9 @@ export class BatchableSprite implements BatchableObject
     public batcher: Batcher = null;
     public batch: Batch = null;
     public bounds: [number, number, number, number];
+    public roundPixels: 0 | 1 = 0;
 
-    get blendMode() { return this.sprite.layerBlendMode; }
+    get blendMode() { return this.renderable.layerBlendMode; }
 
     public packAttributes(
         float32View: Float32Array,
@@ -29,7 +29,7 @@ export class BatchableSprite implements BatchableObject
         textureId: number,
     )
     {
-        const sprite = this.sprite;
+        const sprite = this.renderable;
         const texture = this.texture;
 
         const wt = sprite.layerTransform;
@@ -54,7 +54,8 @@ export class BatchableSprite implements BatchableObject
         // a b g r
         const argb = sprite.layerColor;
 
-        // xy
+        const textureIdAndRound = (textureId << 16) | (this.roundPixels & 0xFFFF);
+
         float32View[index + 0] = (a * w1) + (c * h1) + tx;
         float32View[index + 1] = (d * h1) + (b * w1) + ty;
 
@@ -62,7 +63,7 @@ export class BatchableSprite implements BatchableObject
         float32View[index + 3] = uvs.y0;
 
         uint32View[index + 4] = argb;
-        float32View[index + 5] = textureId;
+        uint32View[index + 5] = textureIdAndRound;
 
         // xy
         float32View[index + 6] = (a * w0) + (c * h1) + tx;
@@ -72,7 +73,7 @@ export class BatchableSprite implements BatchableObject
         float32View[index + 9] = uvs.y1;
 
         uint32View[index + 10] = argb;
-        float32View[index + 11] = textureId;
+        uint32View[index + 11] = textureIdAndRound;
 
         // xy
         float32View[index + 12] = (a * w0) + (c * h0) + tx;
@@ -82,7 +83,7 @@ export class BatchableSprite implements BatchableObject
         float32View[index + 15] = uvs.y2;
 
         uint32View[index + 16] = argb;
-        float32View[index + 17] = textureId;
+        uint32View[index + 17] = textureIdAndRound;
 
         // xy
         float32View[index + 18] = (a * w1) + (c * h0) + tx;
@@ -92,7 +93,7 @@ export class BatchableSprite implements BatchableObject
         float32View[index + 21] = uvs.y3;
 
         uint32View[index + 22] = argb;
-        float32View[index + 23] = textureId;
+        uint32View[index + 23] = textureIdAndRound;
     }
 
     public packIndex(indexBuffer: Uint32Array, index: number, indicesOffset: number)
@@ -108,7 +109,7 @@ export class BatchableSprite implements BatchableObject
 
     public reset()
     {
-        this.sprite = null;
+        this.renderable = null;
         this.texture = null;
         this.batcher = null;
         this.batch = null;

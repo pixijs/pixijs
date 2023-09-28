@@ -265,6 +265,8 @@ export class TilingSpritePipe implements RenderPipe<TilingSpriteView>
             texture: renderable.view.texture,
         });
 
+        meshView.roundPixels = (this._renderer._roundPixels | renderable.view.roundPixels) as 0 | 1;
+
         const batchableMeshRenderable = new ProxyRenderable({
             original: renderable,
             view: meshView,

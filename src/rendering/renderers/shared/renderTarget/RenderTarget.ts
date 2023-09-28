@@ -47,6 +47,7 @@ export class RenderTarget
 
     private readonly _viewport: Rectangle;
     private readonly _projectionMatrix = new Matrix();
+    private readonly _size = new Float32Array(2);
 
     constructor(descriptor: RenderTargetDescriptor = {})
     {
@@ -99,6 +100,16 @@ export class RenderTarget
                 })
             });
         }
+    }
+
+    get size(): [number, number]
+    {
+        const _size = this._size;
+
+        _size[0] = this.pixelWidth;
+        _size[1] = this.pixelHeight;
+
+        return _size as any as [number, number];
     }
 
     get pixelWidth(): number

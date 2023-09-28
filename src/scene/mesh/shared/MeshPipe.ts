@@ -3,6 +3,7 @@ import { Matrix } from '../../../maths/matrix/Matrix';
 import { BindGroup } from '../../../rendering/renderers/gpu/shader/BindGroup';
 import { UniformGroup } from '../../../rendering/renderers/shared/shader/UniformGroup';
 import { BigPool } from '../../../utils/pool/PoolGroup';
+import { color32BitToUniform } from '../../graphics/gpu/colorToUniform';
 import { BatchableMesh } from './BatchableMesh';
 
 import type { Instruction } from '../../../rendering/renderers/shared/instructions/Instruction';
@@ -56,6 +57,7 @@ export class MeshPipe implements RenderPipe<MeshView>, InstructionPipe<MeshInstr
     public localUniforms = new UniformGroup({
         uTransformMatrix: { value: new Matrix(), type: 'mat3x3<f32>' },
         uColor: { value: new Float32Array([1, 1, 1, 1]), type: 'vec4<f32>' },
+        uRound: { value: 0, type: 'f32' },
     });
 
     public localUniformsBindGroup = new BindGroup({
@@ -172,6 +174,22 @@ export class MeshPipe implements RenderPipe<MeshView>, InstructionPipe<MeshInstr
     {
         if (!renderable.isRenderable) return;
 
+        const view = renderable.view;
+
+        view.state.blendMode = renderable.layerBlendMode;
+
+        const localUniforms = this.localUniforms;
+
+        localUniforms.uniforms.uTransformMatrix = renderable.layerTransform;
+        localUniforms.uniforms.uRound = this.renderer._roundPixels | renderable.view.roundPixels;
+        localUniforms.update();
+
+        color32BitToUniform(
+            renderable.layerColor,
+            localUniforms.uniforms.uColor,
+            0
+        );
+
         this._adaptor.execute(this, renderable);
     }
 
@@ -210,6 +228,7 @@ export class MeshPipe implements RenderPipe<MeshView>, InstructionPipe<MeshInstr
 
         gpuMesh.renderable = renderable;
         gpuMesh.texture = renderable.view._texture;
+        gpuMesh.roundPixels = (this.renderer._roundPixels | renderable.view.roundPixels) as 0 | 1;
 
         this._gpuBatchableMeshHash[renderable.uid] = gpuMesh;
 

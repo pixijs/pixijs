@@ -1,6 +1,6 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { State } from '../../renderers/shared/state/State';
-import { getBatchedGeometry } from '../gpu/getBatchedGeometry';
+import { BatchGeometry } from '../gpu/BatchGeometry';
 import { Batcher } from './Batcher';
 
 import type { Geometry } from '../../renderers/shared/geometry/Geometry';
@@ -34,7 +34,7 @@ export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
     public renderer: Renderer;
 
     private _batches: Record<number, Batcher> = Object.create(null);
-    private _geometries: Record<number, Geometry> = Object.create(null);
+    private _geometries: Record<number, BatchGeometry> = Object.create(null);
     private _adaptor: BatcherAdaptor;
 
     private _activeBatch: Batcher;
@@ -55,7 +55,7 @@ export class BatcherPipe implements InstructionPipe<Batch>, BatchPipe
             const batcher = new Batcher();
 
             this._batches[instructionSet.uid] = batcher;
-            this._geometries[batcher.uid] = getBatchedGeometry();
+            this._geometries[batcher.uid] = new BatchGeometry();
         }
 
         this._activeBatch = this._batches[instructionSet.uid];

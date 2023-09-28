@@ -5,7 +5,8 @@ export const localUniformMSDFBit = {
             struct LocalUniforms {
                 uColor:vec4<f32>,
                 uTransformMatrix:mat3x3<f32>,
-                uDistance: f32
+                uDistance: f32,
+                uRound:f32,
             }
 
             @group(2) @binding(0) var<uniform> localUniforms : LocalUniforms;
@@ -13,6 +14,12 @@ export const localUniformMSDFBit = {
         main: /* wgsl */`
             vColor *= localUniforms.uColor;
             modelMatrix *= localUniforms.uTransformMatrix;
+        `,
+        end: /* wgsl */`
+            if(localUniforms.uRound == 1)
+            {
+                vPosition = vec4(roundPixels(vPosition.xy, globalUniforms.uResolution), vPosition.zw);
+            }
         `
     },
     fragment: {

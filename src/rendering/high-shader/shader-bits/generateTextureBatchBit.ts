@@ -2,6 +2,11 @@ import type { HighShaderBit } from '../compiler/types';
 
 const textureBatchBitCache: Record<number, HighShaderBit> = {};
 
+/**
+ *
+ * @param maxTextures - the max textures the shader can use.
+ * @returns a shader bit that will allow the shader to sample multiple textures AND round pixels.
+ */
 function generateBindingSrc(maxTextures: number): string
 {
     const src = [];
@@ -65,11 +70,17 @@ export function generateTextureBatchBit(maxTextures: number): HighShaderBit
             name: 'texture-batch-bit',
             vertex: {
                 header: `
-                @in aTextureId: f32;
+                @in aTextureIdAndRound: vec2<u32>;
                 @out @interpolate(flat) vTextureId : u32;
             `,
                 main: `
-                vTextureId = u32(aTextureId);
+                vTextureId = aTextureIdAndRound.y;
+            `,
+                end: `
+                if(aTextureIdAndRound.x == 1)
+                {
+                    vPosition = vec4<f32>(roundPixels(vPosition.xy, globalUniforms.uResolution), vPosition.zw);
+                }
             `
             },
             fragment: {
@@ -91,6 +102,11 @@ export function generateTextureBatchBit(maxTextures: number): HighShaderBit
     return textureBatchBitCache[maxTextures];
 }
 
+/**
+ *
+ * @param maxTextures - the max textures the shader can use.
+ * @returns a shader bit that will allow the shader to sample multiple textures AND round pixels.
+ */
 function generateSampleGlSrc(maxTextures: number): string
 {
     const src = [];
@@ -123,12 +139,18 @@ export function generateTextureBatchBitGl(maxTextures: number): HighShaderBit
             name: 'texture-batch-bit',
             vertex: {
                 header: `
-                in float aTextureId;
+                in vec2 aTextureIdAndRound;
                 out float vTextureId;
               
             `,
                 main: `
-                vTextureId = aTextureId;
+                vTextureId = aTextureIdAndRound.y;
+            `,
+                end: `
+                if(aTextureIdAndRound.x == 1.)
+                {
+                    gl_Position.xy = roundPixels(gl_Position.xy, uResolution);
+                }
             `
             },
             fragment: {

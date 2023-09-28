@@ -1,18 +1,21 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { State } from '../../../rendering/renderers/shared/state/State';
 import { BigPool } from '../../../utils/pool/PoolGroup';
+import { color32BitToUniform } from '../gpu/colorToUniform';
 import { BatchableGraphics } from './BatchableGraphics';
 
 import type { Instruction } from '../../../rendering/renderers/shared/instructions/Instruction';
 import type { InstructionSet } from '../../../rendering/renderers/shared/instructions/InstructionSet';
 import type { BatchPipe, RenderPipe } from '../../../rendering/renderers/shared/instructions/RenderPipe';
 import type { Renderable } from '../../../rendering/renderers/shared/Renderable';
+import type { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import type { PoolItem } from '../../../utils/pool/Pool';
 import type { GpuGraphicsContext, GraphicsContextSystem } from './GraphicsContextSystem';
 import type { GraphicsView } from './GraphicsView';
 
 export interface GraphicsAdaptor
 {
+    shader: Shader;
     init(): void;
     execute(graphicsPipe: GraphicsPipe, renderable: Renderable<GraphicsView>): void;
     destroy(): void;
@@ -30,6 +33,7 @@ export interface GraphicsSystem
     renderPipes: {
         batch: BatchPipe
     }
+    _roundPixels: 0 | 1;
 }
 
 export class GraphicsPipe implements RenderPipe<GraphicsView>
@@ -130,6 +134,29 @@ export class GraphicsPipe implements RenderPipe<GraphicsView>
     {
         if (!renderable.isRenderable) return;
 
+        const renderer = this.renderer;
+        const context = renderable.view.context;
+        const contextSystem = renderer.graphicsContext;
+
+        // early out if there is no actual visual stuff...
+        if (!contextSystem.getGpuContext(context).batches.length)
+        { return; }
+
+        const shader = context.customShader || this._adaptor.shader;
+
+        this.state.blendMode = renderable.layerBlendMode;
+
+        const localUniforms = shader.resources.localUniforms.uniforms;
+
+        localUniforms.uTransformMatrix = renderable.layerTransform;
+        localUniforms.uRound = renderer._roundPixels | renderable.view.roundPixels;
+
+        color32BitToUniform(
+            renderable.layerColor,
+            localUniforms.uColor,
+            0
+        );
+
         this._adaptor.execute(this, renderable);
     }
 
@@ -179,6 +206,8 @@ export class GraphicsPipe implements RenderPipe<GraphicsView>
 
         const gpuContext: GpuGraphicsContext = this.renderer.graphicsContext.getGpuContext(context);
 
+        const roundPixels = (this.renderer._roundPixels | renderable.view.roundPixels) as 0 | 1;
+
         const batches = gpuContext.batches.map((batch) =>
         {
             // TODO pool this!!
@@ -187,6 +216,8 @@ export class GraphicsPipe implements RenderPipe<GraphicsView>
             batch.copyTo(batchClone);
 
             batchClone.renderable = renderable;
+
+            batchClone.roundPixels = roundPixels;
 
             return batchClone;
         });

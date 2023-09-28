@@ -28,6 +28,8 @@ export class SpriteView implements View
     private _boundsDirty = true;
     private _sourceBoundsDirty = true;
 
+    public roundPixels: 0 | 1 = 0;
+
     constructor(texture: Texture)
     {
         this.anchor = new ObservablePoint(

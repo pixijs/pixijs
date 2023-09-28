@@ -42,6 +42,8 @@ export class TilingSpriteView implements View
     /** @internal */
     public _didUpdate: boolean;
 
+    public roundPixels: 0 | 1 = 0;
+
     private _bounds: [number, number, number, number] = [0, 1, 0, 0];
     private _boundsDirty = true;
     private _width: number;

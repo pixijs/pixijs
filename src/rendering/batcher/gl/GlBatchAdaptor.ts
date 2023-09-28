@@ -3,6 +3,7 @@ import { Matrix } from '../../../maths/matrix/Matrix';
 import { compileHighShaderGlProgram } from '../../high-shader/compileHighShaderToProgram';
 import { colorBitGl } from '../../high-shader/shader-bits/colorBit';
 import { generateTextureBatchBitGl } from '../../high-shader/shader-bits/generateTextureBatchBit';
+import { roundPixelsBitGl } from '../../high-shader/shader-bits/roundPixelsBit';
 import { batchSamplersUniformGroup } from '../../renderers/gl/shader/batchSamplersUniformGroup';
 import { Shader } from '../../renderers/shared/shader/Shader';
 import { UniformGroup } from '../../renderers/shared/shader/UniformGroup';
@@ -40,6 +41,7 @@ export class GlBatchAdaptor implements BatcherAdaptor
             bits: [
                 colorBitGl,
                 generateTextureBatchBitGl(MAX_TEXTURES),
+                roundPixelsBitGl,
             ]
         });
 

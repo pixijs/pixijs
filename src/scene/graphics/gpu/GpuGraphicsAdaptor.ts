@@ -5,11 +5,9 @@ import { MAX_TEXTURES } from '../../../rendering/batcher/shared/const';
 import { compileHighShaderGpuProgram } from '../../../rendering/high-shader/compileHighShaderToProgram';
 import { colorBit } from '../../../rendering/high-shader/shader-bits/colorBit';
 import { generateTextureBatchBit } from '../../../rendering/high-shader/shader-bits/generateTextureBatchBit';
-import { localUniformBit } from '../../../rendering/high-shader/shader-bits/localUniformBit';
-import { BindGroup } from '../../../rendering/renderers/gpu/shader/BindGroup';
+import { roundPixelsBit } from '../../../rendering/high-shader/shader-bits/roundPixelsBit';
 import { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import { UniformGroup } from '../../../rendering/renderers/shared/shader/UniformGroup';
-import { color32BitToUniform } from './colorToUniform';
 
 import type { Batch } from '../../../rendering/batcher/shared/Batcher';
 import type { GpuEncoderSystem } from '../../../rendering/renderers/gpu/GpuEncoderSystem';
@@ -28,59 +26,73 @@ export class GpuGraphicsAdaptor implements GraphicsAdaptor
         name: 'graphics',
     } as const;
 
-    private _shader: Shader;
+    public shader: Shader;
 
     public init()
     {
         const localUniforms = new UniformGroup({
-            color: { value: new Float32Array([1, 1, 1, 1]), type: 'vec4<f32>' },
             transformMatrix: { value: new Matrix(), type: 'mat3x3<f32>' },
+            uColor: { value: new Float32Array([1, 1, 1, 1]), type: 'vec4<f32>' },
+            uRound: { value: 0, type: 'f32' },
         });
+
+        const localUniformBit2 = {
+            name: 'local-uniform-bit',
+            vertex: {
+                header: /* wgsl */`
+        
+                    struct LocalUniforms {
+                        uTransformMatrix:mat3x3<f32>,
+                        uColor:vec4<f32>,
+                        uRound:f32,
+                    }
+        
+                    @group(2) @binding(0) var<uniform> localUniforms : LocalUniforms;
+                `,
+                main: /* wgsl */`
+                    vColor *= localUniforms.uColor;
+                    modelMatrix *= localUniforms.uTransformMatrix;
+                `,
+                end: /* wgsl */`
+                    if(localUniforms.uRound == 1)
+                    {
+                        vPosition = vec4(roundPixels(vPosition.xy, globalUniforms.uResolution), vPosition.zw);
+                    }
+                `
+            },
+        };
 
         const gpuProgram = compileHighShaderGpuProgram({
             name: 'graphics',
             bits: [
                 colorBit,
                 generateTextureBatchBit(MAX_TEXTURES),
-                localUniformBit,
+                localUniformBit2,
+                roundPixelsBit
             ]
         });
 
-        this._shader = new Shader({
+        this.shader = new Shader({
             gpuProgram,
-            groups: {
+            resources: {
                 // added on the fly!
-                2: new BindGroup({ 0: localUniforms }),
+                localUniforms,
             },
         });
+
+        this.shader.addResource('globalUniforms', 0, 0);
     }
 
     public execute(graphicsPipe: GraphicsPipe, renderable: Renderable<GraphicsView>): void
     {
         const context = renderable.view.context;
-        const shader = context.customShader || this._shader;
+        const shader = context.customShader || this.shader;
         const renderer = graphicsPipe.renderer as WebGPURenderer;
         const contextSystem = renderer.graphicsContext;
-
-        // early out if there is no actual visual stuff...
-        if (!contextSystem.getGpuContext(context).batches.length)
-        { return; }
 
         const {
             geometry, instructions
         } = contextSystem.getContextRenderData(context);
-
-        graphicsPipe.state.blendMode = renderable.layerBlendMode;
-
-        const localUniforms = shader.resources.localUniforms;
-
-        shader.resources.localUniforms.uniforms.uTransformMatrix = renderable.layerTransform;
-
-        color32BitToUniform(
-            renderable.layerColor,
-            localUniforms.uniforms.uColor,
-            0
-        );
 
         // WebGPU specific...
 
@@ -100,7 +112,7 @@ export class GpuGraphicsAdaptor implements GraphicsAdaptor
         encoder.setBindGroup(0, globalUniformsBindGroup, shader.gpuProgram);
 
         const localBindGroup = (renderer as WebGPURenderer)
-            .renderPipes.uniformBatch.getUniformBindGroup(localUniforms, true);
+            .renderPipes.uniformBatch.getUniformBindGroup(shader.resources.localUniforms, true);
 
         encoder.setBindGroup(2, localBindGroup, shader.gpuProgram);
 
@@ -130,7 +142,7 @@ export class GpuGraphicsAdaptor implements GraphicsAdaptor
 
     public destroy(): void
     {
-        this._shader.destroy(true);
-        this._shader = null;
+        this.shader.destroy(true);
+        this.shader = null;
     }
 }

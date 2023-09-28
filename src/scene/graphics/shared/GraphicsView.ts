@@ -15,6 +15,8 @@ export class GraphicsView implements View
     public readonly renderPipeId = 'graphics';
     public batched: boolean;
 
+    public roundPixels: 0 | 1 = 0;
+
     /** @internal */
     public _didUpdate: boolean;
 

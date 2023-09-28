@@ -185,9 +185,12 @@ export class HTMLTextPipe implements RenderPipe<TextView>
             generatingTexture: false,
         };
 
-        gpuTextData.batchableSprite.sprite = renderable;
-        gpuTextData.batchableSprite.texture = Texture.EMPTY;
-        gpuTextData.batchableSprite.bounds = [0, 1, 0, 0];
+        const batchableSprite = gpuTextData.batchableSprite;
+
+        batchableSprite.renderable = renderable;
+        batchableSprite.texture = Texture.EMPTY;
+        batchableSprite.bounds = [0, 1, 0, 0];
+        batchableSprite.roundPixels = (this._renderer._roundPixels | renderable.view.roundPixels) as 0 | 1;
 
         this._gpuText[renderable.uid] = gpuTextData;
 

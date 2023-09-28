@@ -96,5 +96,15 @@ export class TilingSprite extends Container<TilingSpriteView>
     {
         return this.view._tileTransform;
     }
+
+    get roundPixels()
+    {
+        return !!this.view.roundPixels;
+    }
+
+    set roundPixels(value: boolean)
+    {
+        this.view.roundPixels = value ? 1 : 0;
+    }
 }
 

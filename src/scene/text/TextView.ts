@@ -53,6 +53,7 @@ export class TextView implements View
     public _style: AnyTextStyle;
     /** @internal */
     public _didUpdate = true;
+    public roundPixels?: 0 | 1 = 0;
 
     private _bounds: [number, number, number, number] = [0, 1, 0, 0];
     private _boundsDirty = true;

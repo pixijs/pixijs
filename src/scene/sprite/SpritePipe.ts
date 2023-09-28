@@ -92,9 +92,13 @@ export class SpritePipe implements RenderPipe<SpriteView>
     {
         const batchableSprite = BigPool.get(BatchableSprite);
 
-        batchableSprite.sprite = renderable;
-        batchableSprite.texture = renderable.view._texture;
-        batchableSprite.bounds = renderable.view.bounds;
+        batchableSprite.renderable = renderable;
+
+        const view = renderable.view;
+
+        batchableSprite.texture = view._texture;
+        batchableSprite.bounds = view.bounds;
+        batchableSprite.roundPixels = (this._renderer._roundPixels | view.roundPixels) as 0 | 1;
 
         gpuSpriteHash[renderable.uid] = batchableSprite;
 

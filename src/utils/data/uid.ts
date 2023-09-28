@@ -7,23 +7,23 @@ type UIDNames =
     | 'texture'
     | 'textureSource'
     | 'textureResource'
-    | 'batcher'
-    | 'graphicsContext'
-    | 'graphicsView'
-    | 'graphicsPath'
-    | 'fillGradient'
-    | 'fillPattern'
-    | 'meshView'
-    | 'renderable'
-    | 'buffer'
-    | 'bufferResource'
+    | 'batcher' //
+    | 'graphicsContext' //
+    | 'graphicsView' //
+    | 'graphicsPath' //
+    | 'fillGradient' //
+    | 'fillPattern' //
+    | 'meshView' //
+    | 'renderable' //
+    | 'buffer' //
+    | 'bufferResource' //
     | 'geometry'
-    | 'instructionSet'
-    | 'renderTarget'
-    | 'uniform'
-    | 'spriteView'
-    | 'textView'
-    | 'tilingSpriteView';
+    | 'instructionSet' //
+    | 'renderTarget' //
+    | 'uniform' //
+    | 'spriteView' //
+    | 'textView' //
+    | 'tilingSpriteView'; // ;
 
 /**
  * Gets the next unique identifier
