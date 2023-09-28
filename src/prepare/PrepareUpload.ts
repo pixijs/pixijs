@@ -1,7 +1,9 @@
 import { TextureSource } from '../rendering/renderers/shared/texture/sources/TextureSource';
+import { GraphicsContext } from '../scene/graphics/shared/GraphicsContext';
 import { TextView } from '../scene/text/TextView';
 import { PrepareQueue } from './PrepareQueue';
 
+import type { FillInstruction, TextureInstruction } from '../scene/graphics/shared/GraphicsContext';
 import type { PrepareQueueItem } from './PrepareBase';
 
 /**
@@ -24,6 +26,10 @@ export abstract class PrepareUpload extends PrepareQueue
         {
             this.uploadText(item);
         }
+        else if (item instanceof GraphicsContext)
+        {
+            this.uploadGraphicsContext(item);
+        }
     }
 
     protected uploadTextureSource(textureSource: TextureSource): void
@@ -34,5 +40,34 @@ export abstract class PrepareUpload extends PrepareQueue
     protected uploadText(_text: TextView): void
     {
         // todo: upload the text view resource
+    }
+
+    /**
+     * Resolve the given graphics context and return an item for the queue
+     * @param graphicsContext
+     */
+    protected uploadGraphicsContext(graphicsContext: GraphicsContext): void
+    {
+        this.renderer.graphicsContext.getContextRenderData(graphicsContext);
+
+        const { instructions } = graphicsContext;
+
+        for (const instruction of instructions)
+        {
+            if (instruction.action === 'texture')
+            {
+                const { image } = (instruction as TextureInstruction).data;
+
+                this.uploadTextureSource(image.source);
+            }
+            else if (instruction.action === 'fill')
+            {
+                const { texture } = (instruction as FillInstruction).data.style;
+
+                this.uploadTextureSource(texture.source);
+            }
+        }
+
+        return null;
     }
 }

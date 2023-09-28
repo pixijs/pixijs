@@ -12,7 +12,7 @@ import type { TextView } from '../scene/text/TextView';
 export type PrepareSourceItem = Container | TextureSource | Texture | GraphicsContext;
 
 /** The valid types resolved to the queue ready for upload */
-export type PrepareQueueItem = TextureSource | TextView;
+export type PrepareQueueItem = TextureSource | TextView | GraphicsContext;
 
 /**
  * Part of the prepare system. Responsible for uploading all the items to the GPU.
