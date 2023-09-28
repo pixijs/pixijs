@@ -74,15 +74,15 @@ export interface ContainerOptions<T extends View> extends PixiMixins.ContainerOp
     tint?: ColorSource;
 
     /** @see Container#alpha */
-    alpha: number;
+    alpha?: number;
     /** @see Container#angle */
     angle?: number;
     /** @see Container#children */
     children?: Container[];
     /** @see Container#parent */
-    parent: Container;
+    parent?: Container;
     /** @see Container#renderable */
-    renderable: boolean;
+    renderable?: boolean;
     /** @see Container#rotation */
     rotation?: number;
     /** @see Container#scale */
@@ -94,7 +94,7 @@ export interface ContainerOptions<T extends View> extends PixiMixins.ContainerOp
     /** @see Container#skew */
     skew?: PointData;
     /** @see Container#visible */
-    visible: boolean;
+    visible?: boolean;
     /** @see Container#x */
     x?: number;
     /** @see Container#y */
@@ -264,7 +264,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
             // in the future we could de-couple container and view..
             // but for now this is just faster!
             this.view.owner = this;
-            delete options.view;
+            options.view = undefined;
         }
 
         Object.assign(this, definedProps(options));
@@ -494,6 +494,14 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         }
 
         this._updateIsSimple();
+    }
+
+    /**
+     * @ignore
+     */
+    public _updateIsSimple()
+    {
+        this.isSimple = !(this.isLayerRoot) && (this.effects.length === 0);
     }
 
     get worldTransform()

@@ -18,7 +18,6 @@ export interface EffectsMixin extends EffectsMixinConstructor
     _filters?: {filters: Filter[], effect: FilterEffect};
     addEffect(effect: Effect): void;
     removeEffect(effect: Effect): void;
-    _updateIsSimple(): void;
 }
 
 export const effectsMixin: Partial<Container> = {
@@ -57,10 +56,6 @@ export const effectsMixin: Partial<Container> = {
         }
 
         this._updateIsSimple();
-    },
-    _updateIsSimple()
-    {
-        this.isSimple = !(this.isLayerRoot) && (this.effects.length === 0);
     },
 
     set mask(value: number | Container)
