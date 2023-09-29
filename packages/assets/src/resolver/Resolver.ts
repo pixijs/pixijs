@@ -423,6 +423,8 @@ export class Resolver
         this._bundles[bundleId] = assetNames;
     }
 
+    /** @deprecated */
+    public add(a: ArrayOr<string>, s?: string | string[], d?: unknown, f?: string, lp?: LoadParserName): void;
     /**
      * Tells the resolver what keys are associated with witch asset.
      * The most important thing the resolver does
@@ -448,13 +450,15 @@ export class Resolver
      * });
      *
      * resolver.resolve('bunnyBooBooSmooth') // => { src: 'bunny.png', data: { scaleMode: SCALE_MODES.NEAREST } }
-     * @param aliases - the key or keys that you will reference when loading this asset
-     * @param srcs - the asset or assets that will be chosen from when loading via the specified key
-     * @param data - asset-specific data that will be passed to the loaders
+     * @param data - the data to add to the resolver
+     * @param data.aliases - the key or keys that you will reference when loading this asset
+     * @param data.srcs - the asset or assets that will be chosen from when loading via the specified key
+     * @param data.data - asset-specific data that will be passed to the loaders
      * - Useful if you want to initiate loaded objects with specific data
-     * @param format - the format of the asset
-     * @param loadParser - the name of the load parser to use
+     * @param data.format - the format of the asset
+     * @param data.loadParser - the name of the load parser to use
      */
+    public add(data:(ArrayOr<UnresolvedAsset>)): void;
     public add(
         aliases: ArrayOr<string> | (ArrayOr<UnresolvedAsset>),
         srcs?: AssetSrc,
@@ -596,11 +600,11 @@ export class Resolver
      *             assets: [
      *                 {
      *                     name: 'background',
-     *                     srcs: 'sunset.png',
+     *                     src: 'sunset.png',
      *                 },
      *                 {
      *                     name: 'bar',
-     *                     srcs: 'load-bar.{png,webp}',
+     *                     src: 'load-bar.{png,webp}',
      *                 },
      *             ],
      *         },
@@ -609,11 +613,11 @@ export class Resolver
      *             assets: [
      *                 {
      *                     name: 'character',
-     *                     srcs: 'robot.png',
+     *                     src: 'robot.png',
      *                 },
      *                 {
      *                     name: 'enemy',
-     *                     srcs: 'bad-guy.png',
+     *                     src: 'bad-guy.png',
      *                 },
      *             ],
      *         },

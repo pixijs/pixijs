@@ -181,11 +181,11 @@ export interface AssetInitOptions
  *             assets: [
  *                 {
  *                     name: 'background',
- *                     srcs: 'sunset.png',
+ *                     src: 'sunset.png',
  *                 },
  *                 {
  *                     name: 'bar',
- *                     srcs: 'load-bar.{png,webp}',
+ *                     src: 'load-bar.{png,webp}',
  *                 },
  *             ],
  *         },
@@ -194,11 +194,11 @@ export interface AssetInitOptions
  *             assets: [
  *                 {
  *                     name: 'character',
- *                     srcs: 'robot.png',
+ *                     src: 'robot.png',
  *                 },
  *                 {
  *                     name: 'enemy',
- *                     srcs: 'bad-guy.png',
+ *                     src: 'bad-guy.png',
  *                 },
  *             ],
  *         },
@@ -321,6 +321,8 @@ export class AssetsClass
         }
     }
 
+    /** @deprecated */
+    public add(a: ArrayOr<string>, s?: string | string[], d?: unknown, f?: string, lp?: LoadParserName): void;
     /**
      * Allows you to specify how to resolve any assets load requests.
      * There are a few ways to add things here as shown below:
@@ -359,15 +361,17 @@ export class AssetsClass
      * });
      *
      * const bunny = await Assets.load('bunnyBooBoo'); // Will try to load WebP if available
-     * @param aliases - the key or keys that you will reference when loading this asset
-     * @param srcs - the asset or assets that will be chosen from when loading via the specified key
-     * @param data - asset-specific data that will be passed to the loaders
+     * @param data - the data to add
+     * @param data.aliases - the key or keys that you will reference when loading this asset
+     * @param data.srcs - the asset or assets that will be chosen from when loading via the specified key
+     * @param data.data - asset-specific data that will be passed to the loaders
      * - Useful if you want to initiate loaded objects with specific data
-     * @param format - the format of the asset
-     * @param loadParser - the name of the load parser to use
+     * @param data.format - the format of the asset
+     * @param data.loadParser - the name of the load parser to use
      */
+    public add(data:(ArrayOr<UnresolvedAsset>)): void;
     public add(
-        aliases: ArrayOr<string> | (ArrayOr<UnresolvedAsset>),
+        aliases: ArrayOr<string> | ArrayOr<UnresolvedAsset>,
         srcs?: string | string[],
         data?: unknown,
         format?: string,
@@ -487,11 +491,11 @@ export class AssetsClass
      *             assets: [
      *                 {
      *                     name: 'background',
-     *                     srcs: 'sunset.png',
+     *                     src: 'sunset.png',
      *                 },
      *                 {
      *                     name: 'bar',
-     *                     srcs: 'load-bar.{png,webp}',
+     *                     src: 'load-bar.{png,webp}',
      *                 },
      *             ],
      *         },
@@ -500,11 +504,11 @@ export class AssetsClass
      *             assets: [
      *                 {
      *                     name: 'character',
-     *                     srcs: 'robot.png',
+     *                     src: 'robot.png',
      *                 },
      *                 {
      *                     name: 'enemy',
-     *                     srcs: 'bad-guy.png',
+     *                     src: 'bad-guy.png',
      *                 },
      *             ],
      *         },
