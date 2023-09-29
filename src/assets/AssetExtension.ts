@@ -11,7 +11,7 @@ import type { ResolveURLParser } from './resolver/types';
 interface AssetExtension<ASSET = any, META_DATA = any>
 {
     extension: ExtensionType.Asset,
-    loader?: Partial<LoaderParser<ASSET, META_DATA>>,
+    loader?: LoaderParser<ASSET, META_DATA>,
     resolver?: Partial<ResolveURLParser>,
     cache?: Partial<CacheParser<ASSET>>,
     detection?: Partial<FormatDetectionParser>,

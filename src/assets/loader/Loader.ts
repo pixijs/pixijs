@@ -261,7 +261,13 @@ export class Loader
             .filter((parser) => parser.name)
             .reduce((hash, parser) =>
             {
-                if (hash[parser.name])
+                if (!parser.name)
+                {
+                    // #if _DEBUG
+                    warn(`[Assets] loadParser should have a name`);
+                    // #endif
+                }
+                else if (hash[parser.name])
                 {
                     // #if _DEBUG
                     warn(`[Assets] loadParser name conflict "${parser.name}"`);
