@@ -265,7 +265,7 @@ export class VideoSource extends TextureSource<VideoResource>
     {
         const source = this.resource;
 
-        return (!source.paused && !source.ended && this._isSourceReady());
+        return (!source.paused && !source.ended);
     }
 
     /**
