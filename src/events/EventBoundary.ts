@@ -617,12 +617,6 @@ export class EventBoundary
      */
     protected hitTestFn(container: Container, location: Point): boolean
     {
-        // If the container is passive then it cannot be hit directly.
-        if (container.eventMode === 'passive')
-        {
-            return false;
-        }
-
         // If the container failed pruning with a hitArea, then it must pass it.
         if (container.hitArea)
         {
