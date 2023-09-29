@@ -25,6 +25,12 @@ export interface View
 
     owner: ViewObserver;
 
+    /**
+     * this is an int because it is packed directly into an attribute in the shader
+     * @internal
+     */
+    roundPixels?: 0 | 1;
+
     addBounds: (bounds: Bounds) => void;
     containsPoint: (point: Point) => boolean;
 

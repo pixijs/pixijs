@@ -9,7 +9,7 @@ declare namespace PixiMixins
     // eslint-disable-next-line @typescript-eslint/no-empty-interface
     interface RendererOptions
     {
-
+        roundPixels?: boolean;
     }
 
     // eslint-disable-next-line @typescript-eslint/no-empty-interface

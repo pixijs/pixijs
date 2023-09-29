@@ -17,11 +17,12 @@ export type GlobalUniformGroup = UniformGroup<{
     projectionMatrix: { value: Matrix; type: 'mat3x3<f32>' }
     worldTransformMatrix: { value: Matrix; type: 'mat3x3<f32>' }
     worldAlpha: { value: number; type: 'f32' }
+    uResolution: { value: number[]; type: 'vec2<f32>' }
 }>;
 
 export interface GlobalUniformOptions
 {
-    projectionMatrix?: Matrix
+    projectionData?: {size: [number, number], projectionMatrix: Matrix}
     worldTransformMatrix?: Matrix
     worldColor?: number
     offset?: PointData
@@ -32,6 +33,7 @@ export interface GlobalUniformData
     projectionMatrix: Matrix
     worldTransformMatrix: Matrix
     worldColor: number
+    resolution: number[]
     offset: PointData
     bindGroup: BindGroup
 }
@@ -99,21 +101,24 @@ export class GlobalUniformSystem implements System
     }
 
     public bind({
-        projectionMatrix,
+        projectionData,
         worldTransformMatrix,
         worldColor,
         offset,
     }: GlobalUniformOptions)
     {
+        const renderTarget = this._renderer.renderTarget.renderTarget;
+
         const currentGlobalUniformData = this._stackIndex ? this._globalUniformDataStack[this._stackIndex - 1] : {
-            projectionMatrix: this._renderer.renderTarget.renderTarget.projectionMatrix,
+            projectionData: renderTarget,
             worldTransformMatrix: new Matrix(),
             worldColor: 0xFFFFFFFF,
             offset: new Point(),
         };
 
         const globalUniformData: GlobalUniformData = {
-            projectionMatrix: projectionMatrix || this._renderer.renderTarget.renderTarget.projectionMatrix,
+            projectionMatrix: projectionData?.projectionMatrix || renderTarget.projectionMatrix,
+            resolution: projectionData?.size || renderTarget.size,
             worldTransformMatrix: worldTransformMatrix || currentGlobalUniformData.worldTransformMatrix,
             worldColor: worldColor || currentGlobalUniformData.worldColor,
             offset: offset || currentGlobalUniformData.offset,
@@ -127,6 +132,9 @@ export class GlobalUniformSystem implements System
         const uniforms = uniformGroup.uniforms;
 
         uniforms.projectionMatrix = globalUniformData.projectionMatrix;
+
+        uniforms.uResolution = globalUniformData.resolution;
+
         uniforms.worldTransformMatrix.copyFrom(globalUniformData.worldTransformMatrix);
 
         uniforms.worldTransformMatrix.tx -= globalUniformData.offset.x;
@@ -186,6 +194,7 @@ export class GlobalUniformSystem implements System
             worldTransformMatrix: { value: new Matrix(), type: 'mat3x3<f32>' },
             // TODO - someone smart - set this to be a unorm8x4 rather than a vec4<f32>
             worldAlpha: { value: 1, type: 'f32' },
+            uResolution: { value: [0, 0], type: 'vec2<f32>' },
         }, {
             ubo: true,
             isStatic: true,

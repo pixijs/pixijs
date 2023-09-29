@@ -12,6 +12,7 @@ export class BatchableMesh implements BatchableObject
     public batcher: Batcher = null;
     public batch: Batch = null;
     public renderable: Renderable<MeshView>;
+    public roundPixels: 0 | 1 = 0;
 
     get blendMode() { return this.renderable.layerBlendMode; }
 
@@ -42,11 +43,13 @@ export class BatchableMesh implements BatchableObject
     {
         const renderable = this.renderable;
 
-        const geometry = this.renderable.view.geometry;
+        const view = this.renderable.view;
 
+        const geometry = view.geometry;
         const wt = renderable.layerTransform;
 
-        // wt.toArray(true);
+        const textureIdAndRound = (textureId << 16) | (this.roundPixels & 0xFFFF);
+
         const a = wt.a;
         const b = wt.b;
         const c = wt.c;
@@ -65,15 +68,17 @@ export class BatchableMesh implements BatchableObject
             const x = positions[i];
             const y = positions[i + 1];
 
-            float32View[index++] = (a * x) + (c * y) + tx;
-            float32View[index++] = (b * x) + (d * y) + ty;
+            float32View[index] = (a * x) + (c * y) + tx;
+            float32View[index + 1] = (b * x) + (d * y) + ty;
 
             // TODO implement texture matrix?
-            float32View[index++] = uvs[i];
-            float32View[index++] = uvs[i + 1];
+            float32View[index + 2] = uvs[i];
+            float32View[index + 3] = uvs[i + 1];
 
-            uint32View[index++] = abgr;
-            float32View[index++] = textureId;
+            uint32View[index + 4] = abgr;
+            uint32View[index + 5] = textureIdAndRound;
+
+            index += 6;
         }
     }
 

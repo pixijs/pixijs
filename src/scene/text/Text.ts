@@ -75,6 +75,16 @@ export class Text extends Container<TextView>
     {
         return this.view.style;
     }
+
+    get roundPixels()
+    {
+        return !!this.view.roundPixels;
+    }
+
+    set roundPixels(value: boolean)
+    {
+        this.view.roundPixels = value ? 1 : 0;
+    }
 }
 
 /** @deprecated 8.0.0 */

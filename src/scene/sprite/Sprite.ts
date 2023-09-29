@@ -63,4 +63,15 @@ export class Sprite extends Container<SpriteView>
     {
         this.view.texture = value;
     }
+
+    get roundPixels()
+    {
+        return !!this.view.roundPixels;
+    }
+
+    set roundPixels(value: boolean)
+    {
+        this.view.roundPixels = value ? 1 : 0;
+    }
 }
+

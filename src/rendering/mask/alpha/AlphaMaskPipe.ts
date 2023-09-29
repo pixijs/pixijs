@@ -168,7 +168,7 @@ export class AlphaMaskPipe implements InstructionPipe<AlphaMaskInstruction>
                 const renderTarget = renderer.renderTarget.push(filterTexture, true);
 
                 renderer.globalUniforms.push({
-                    projectionMatrix: renderTarget.projectionMatrix,
+                    projectionData: renderTarget,
                     offset: bounds,
                     worldColor: 0xFFFFFFFF
                 });

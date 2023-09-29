@@ -58,10 +58,13 @@ type Runners = {[key in DefaultRunners]: SystemRunner} & {
  * The SystemManager is a class that provides functions for managing a set of systems
  * This is a base class, that is generic (no render code or knowledge at all)
  */
-export class AbstractRenderer<PIPES, OPTIONS>
+export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions>
 {
     public readonly type: number;
     public readonly name: string;
+
+    /** @internal */
+    public _roundPixels: 0 | 1;
 
     public readonly runners: Runners = Object.create(null) as Runners;
     public readonly renderPipes = Object.create(null) as PIPES;
@@ -102,6 +105,8 @@ export class AbstractRenderer<PIPES, OPTIONS>
             const defaultSystemOptions = (system.constructor as any).defaultOptions;
 
             options = { ...defaultSystemOptions, ...options };
+
+            this._roundPixels = options.roundPixels ? 1 : 0;
         }
 
         // await emits..
@@ -347,5 +352,14 @@ export class AbstractRenderer<PIPES, OPTIONS>
     public generateTexture(options: GenerateTextureOptions | Container): Texture
     {
         return this.textureGenerator.generateTexture(options);
+    }
+
+    /**
+     * Whether the renderer will round coordinates to whole pixels when rendering.
+     * Can be overridden on a per scene item basis.
+     */
+    get roundPixels(): boolean
+    {
+        return !!this._roundPixels;
     }
 }

@@ -1,10 +1,10 @@
 import { ExtensionType } from '../../../extensions/Extensions';
 import { compileHighShaderGlProgram } from '../../../rendering/high-shader/compileHighShaderToProgram';
 import { localUniformBitGl } from '../../../rendering/high-shader/shader-bits/localUniformBit';
+import { roundPixelsBitGl } from '../../../rendering/high-shader/shader-bits/roundPixelsBit';
 import { textureBitGl } from '../../../rendering/high-shader/shader-bits/textureBit';
 import { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import { Texture } from '../../../rendering/renderers/shared/texture/Texture';
-import { color32BitToUniform } from '../../graphics/gpu/colorToUniform';
 
 import type { Renderable } from '../../../rendering/renderers/shared/Renderable';
 import type { MeshAdaptor, MeshPipe } from '../shared/MeshPipe';
@@ -28,6 +28,7 @@ export class GlMeshAdaptor implements MeshAdaptor
             bits: [
                 localUniformBitGl,
                 textureBitGl,
+                roundPixelsBitGl,
             ]
         });
 
@@ -48,21 +49,6 @@ export class GlMeshAdaptor implements MeshAdaptor
         const renderer = meshPipe.renderer;
         const view = renderable.view;
 
-        const state = view.state;
-
-        state.blendMode = renderable.layerBlendMode;
-
-        const localUniforms = meshPipe.localUniforms;
-
-        localUniforms.uniforms.uTransformMatrix = renderable.layerTransform;
-        localUniforms.update();
-
-        color32BitToUniform(
-            renderable.layerColor,
-            localUniforms.uniforms.uColor,
-            0
-        );
-
         let shader: Shader = view._shader;
 
         if (!shader)
@@ -81,7 +67,7 @@ export class GlMeshAdaptor implements MeshAdaptor
         renderer.encoder.draw({
             geometry: view._geometry,
             shader,
-            state
+            state: view.state
         });
     }
 

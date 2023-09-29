@@ -172,8 +172,9 @@ export class CanvasTextPipe implements RenderPipe<TextView>
             batchableSprite: BigPool.get(BatchableSprite),
         };
 
-        gpuTextData.batchableSprite.sprite = renderable;
+        gpuTextData.batchableSprite.renderable = renderable;
         gpuTextData.batchableSprite.bounds = [0, 1, 0, 0];
+        gpuTextData.batchableSprite.roundPixels = (this._renderer._roundPixels | renderable.view.roundPixels) as 0 | 1;
 
         this._gpuText[renderable.uid] = gpuTextData;
 

@@ -36,6 +36,8 @@ const vertexGPUTemplate = /* wgsl */`
        
         vColor *= globalUniforms.worldAlpha;
 
+        {{end}}
+
         {{return}}
     };
 `;
@@ -93,7 +95,7 @@ const vertexGlTemplate = /* glsl */`
 
         vColor *= worldAlpha;
 
-        {{return}}
+        {{end}}
     }
 `;
 

@@ -36,7 +36,7 @@ export class LayerPipe implements InstructionPipe<LayerGroup>
         if (!layerGroup.isRenderable) return;
 
         this._renderer.globalUniforms.push({
-            projectionMatrix: this._renderer.renderTarget.renderTarget.projectionMatrix,
+            projectionData: this._renderer.renderTarget.renderTarget,
             worldTransformMatrix: layerGroup.worldTransform,
             worldColor: layerGroup.worldColor,
 

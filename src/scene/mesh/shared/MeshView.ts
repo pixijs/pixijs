@@ -46,6 +46,8 @@ export class MeshView<
     /** @ignore */
     public _shader?: SHADER;
 
+    public roundPixels: 0 | 1 = 0;
+
     constructor(options: MeshViewOptions<GEOMETRY, SHADER>)
     {
         this.shader = options.shader;

@@ -4,6 +4,7 @@ import {
     compileHighShaderGpuProgram
 } from '../../../rendering/high-shader/compileHighShaderToProgram';
 import { localUniformBit, localUniformBitGl } from '../../../rendering/high-shader/shader-bits/localUniformBit';
+import { roundPixelsBit, roundPixelsBitGl } from '../../../rendering/high-shader/shader-bits/roundPixelsBit';
 import { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import { UniformGroup } from '../../../rendering/renderers/shared/shader/UniformGroup';
 import { tilingBit, tilingBitGl } from './tilingBit';
@@ -27,6 +28,7 @@ export class TilingSpriteShader extends Shader implements TextureShader
             bits: [
                 localUniformBit,
                 tilingBit,
+                roundPixelsBit,
             ],
         });
 
@@ -35,6 +37,7 @@ export class TilingSpriteShader extends Shader implements TextureShader
             bits: [
                 localUniformBitGl,
                 tilingBitGl,
+                roundPixelsBitGl,
             ]
         });
 

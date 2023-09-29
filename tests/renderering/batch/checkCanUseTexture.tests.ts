@@ -24,6 +24,7 @@ class DummyBatchableObject implements BatchableObject
     location: number;
     batcher: Batcher = null;
     batch: Batch = null;
+    roundPixels: 0 | 1 = 0;
 }
 
 describe('checkCanUseTexture', () =>

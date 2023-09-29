@@ -188,6 +188,8 @@ export class BitmapTextPipe implements RenderPipe<TextView>
 
         this._gpuBitmapText[renderable.uid] = proxyRenderable;
 
+        proxyRenderable.view.roundPixels = (this._renderer._roundPixels | renderable.view.roundPixels) as 0 | 1;
+
         this._updateContext(renderable, proxyRenderable.view.context);
 
         renderable.on('destroyed', () =>
