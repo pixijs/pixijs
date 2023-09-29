@@ -11,7 +11,7 @@ export interface MeasureMixinConstructor
     width?: number;
     height?: number;
 }
-export interface MeasureMixin extends MeasureMixinConstructor
+export interface MeasureMixin extends Required<MeasureMixinConstructor>
 {
     getLocalBounds(rect?: Rectangle): Rectangle;
     getBounds(skipUpdate?: boolean, rect?: Rectangle): Rectangle;

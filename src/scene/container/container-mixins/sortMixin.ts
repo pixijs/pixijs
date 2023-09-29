@@ -6,7 +6,7 @@ export interface SortMixinConstructor
     sortDirty?: boolean;
     sortableChildren?: boolean;
 }
-export interface SortMixin extends SortMixinConstructor
+export interface SortMixin extends Required<SortMixinConstructor>
 {
     _zIndex: 0;
 

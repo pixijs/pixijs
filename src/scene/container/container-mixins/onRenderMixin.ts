@@ -4,7 +4,7 @@ export interface OnRenderMixinConstructor
 {
     onRender?: (() => void | null);
 }
-export interface OnRenderMixin extends OnRenderMixinConstructor
+export interface OnRenderMixin extends Required<OnRenderMixinConstructor>
 {
     _onRender: (() => void) | null;
 }

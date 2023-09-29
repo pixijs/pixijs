@@ -6,7 +6,7 @@ export interface FindMixinConstructor
 {
     label?: string;
 }
-export interface FindMixin extends FindMixinConstructor
+export interface FindMixin extends Required<FindMixinConstructor>
 {
     /**
      * @deprecated since 8.0.0

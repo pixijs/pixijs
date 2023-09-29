@@ -12,7 +12,7 @@ export interface EffectsMixinConstructor
     filters?: Filter | Filter[];
     effects?: Effect[];
 }
-export interface EffectsMixin extends EffectsMixinConstructor
+export interface EffectsMixin extends Required<EffectsMixinConstructor>
 {
     _mask?: {mask: unknown, effect: Effect};
     _filters?: {filters: Filter[], effect: FilterEffect};
