@@ -209,9 +209,9 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions>
 
     // NOTE: this was `view` in v7
     /** The canvas element that everything is drawn to.*/
-    get element(): ICanvas
+    get canvas(): ICanvas
     {
-        return this.view.element;
+        return this.view.canvas;
     }
 
     /**

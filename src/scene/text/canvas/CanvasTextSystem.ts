@@ -73,11 +73,9 @@ export class CanvasTextSystem implements System
         // create a texture from the canvas
         const { canvas } = canvasAndContext;
 
-        // add a red background
-
         this.renderTextToCanvas(text, style, resolution, canvasAndContext);
 
-        const texture = getPo2TextureFromSource(canvas, resolution);
+        const texture = getPo2TextureFromSource(canvas, width, height, resolution);
 
         this._activeTextures[textKey] = {
             canvasAndContext,

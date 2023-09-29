@@ -10,10 +10,17 @@ const tempBounds = new Bounds();
  * Takes an image and creates a texture from it, using a power of 2 texture from the texture pool.
  * Remember to return the texture when you don't need it any more!
  * @param image - The image to create a texture from
+ * @param width - the frame width of the texture
+ * @param height - the frame height of the texture
  * @param resolution - The resolution of the texture
  * @returns - The texture
  */
-export function getPo2TextureFromSource(image: HTMLImageElement | HTMLCanvasElement | ICanvas, resolution: number): Texture
+export function getPo2TextureFromSource(
+    image: HTMLImageElement | HTMLCanvasElement | ICanvas,
+    width: number,
+    height: number,
+    resolution: number
+): Texture
 {
     const bounds = tempBounds;
 
@@ -34,8 +41,8 @@ export function getPo2TextureFromSource(image: HTMLImageElement | HTMLCanvasElem
     texture.source.resource = image;
     texture.source.alphaMode = 'premultiply-alpha-on-upload';
 
-    texture.frameWidth = image.width / resolution;
-    texture.frameHeight = image.height / resolution;
+    texture.frameWidth = width / resolution;
+    texture.frameHeight = height / resolution;
 
     texture.source.update();
     texture.layout.updateUvs();
