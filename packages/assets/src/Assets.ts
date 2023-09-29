@@ -180,11 +180,11 @@ export interface AssetInitOptions
  *             name: 'load-screen',
  *             assets: [
  *                 {
- *                     name: 'background',
+ *                     alias: 'background',
  *                     src: 'sunset.png',
  *                 },
  *                 {
- *                     name: 'bar',
+ *                     alias: 'bar',
  *                     src: 'load-bar.{png,webp}',
  *                 },
  *             ],
@@ -193,11 +193,11 @@ export interface AssetInitOptions
  *             name: 'game-screen',
  *             assets: [
  *                 {
- *                     name: 'character',
+ *                     alias: 'character',
  *                     src: 'robot.png',
  *                 },
  *                 {
- *                     name: 'enemy',
+ *                     alias: 'enemy',
  *                     src: 'bad-guy.png',
  *                 },
  *             ],
@@ -490,11 +490,11 @@ export class AssetsClass
      *             name: 'load-screen',
      *             assets: [
      *                 {
-     *                     name: 'background',
+     *                     alias: 'background',
      *                     src: 'sunset.png',
      *                 },
      *                 {
-     *                     name: 'bar',
+     *                     alias: 'bar',
      *                     src: 'load-bar.{png,webp}',
      *                 },
      *             ],
@@ -503,11 +503,11 @@ export class AssetsClass
      *             name: 'game-screen',
      *             assets: [
      *                 {
-     *                     name: 'character',
+     *                     alias: 'character',
      *                     src: 'robot.png',
      *                 },
      *                 {
-     *                     name: 'enemy',
+     *                     alias: 'enemy',
      *                     src: 'bad-guy.png',
      *                 },
      *             ],

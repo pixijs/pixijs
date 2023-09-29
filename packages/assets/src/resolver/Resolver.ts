@@ -599,11 +599,11 @@ export class Resolver
      *             name: 'load-screen',
      *             assets: [
      *                 {
-     *                     name: 'background',
+     *                     alias: 'background',
      *                     src: 'sunset.png',
      *                 },
      *                 {
-     *                     name: 'bar',
+     *                     alias: 'bar',
      *                     src: 'load-bar.{png,webp}',
      *                 },
      *             ],
@@ -612,11 +612,11 @@ export class Resolver
      *             name: 'game-screen',
      *             assets: [
      *                 {
-     *                     name: 'character',
+     *                     alias: 'character',
      *                     src: 'robot.png',
      *                 },
      *                 {
-     *                     name: 'enemy',
+     *                     alias: 'enemy',
      *                     src: 'bad-guy.png',
      *                 },
      *             ],
