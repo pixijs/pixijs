@@ -84,11 +84,10 @@ export function determineCrossOrigin(url: string, loc: Location = globalThis.loc
 
 export const loadVideoTextures = {
 
-    name: 'loadVideoTextures',
+    name: 'loadVideo',
 
     extension: {
         type: ExtensionType.LoadParser,
-
     },
 
     config: null,

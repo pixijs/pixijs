@@ -175,12 +175,12 @@ export interface AssetInitOptions
  *             name: 'load-screen',
  *             assets: [
  *                 {
- *                     name: 'background',
- *                     srcs: 'sunset.png',
+ *                     alias: 'background',
+ *                     src: 'sunset.png',
  *                 },
  *                 {
- *                     name: 'bar',
- *                     srcs: 'load-bar.{png,webp}',
+ *                     alias: 'bar',
+ *                     src: 'load-bar.{png,webp}',
  *                 },
  *             ],
  *         },
@@ -188,12 +188,12 @@ export interface AssetInitOptions
  *             name: 'game-screen',
  *             assets: [
  *                 {
- *                     name: 'character',
- *                     srcs: 'robot.png',
+ *                     alias: 'character',
+ *                     src: 'robot.png',
  *                 },
  *                 {
- *                     name: 'enemy',
- *                     srcs: 'bad-guy.png',
+ *                     alias: 'enemy',
+ *                     src: 'bad-guy.png',
  *                 },
  *             ],
  *         },
@@ -466,12 +466,12 @@ export class AssetsClass
      *             name: 'load-screen',
      *             assets: [
      *                 {
-     *                     name: 'background',
-     *                     srcs: 'sunset.png',
+     *                     alias: 'background',
+     *                     src: 'sunset.png',
      *                 },
      *                 {
-     *                     name: 'bar',
-     *                     srcs: 'load-bar.{png,webp}',
+     *                     alias: 'bar',
+     *                     src: 'load-bar.{png,webp}',
      *                 },
      *             ],
      *         },
@@ -479,12 +479,12 @@ export class AssetsClass
      *             name: 'game-screen',
      *             assets: [
      *                 {
-     *                     name: 'character',
-     *                     srcs: 'robot.png',
+     *                     alias: 'character',
+     *                     src: 'robot.png',
      *                 },
      *                 {
-     *                     name: 'enemy',
-     *                     srcs: 'bad-guy.png',
+     *                     alias: 'enemy',
+     *                     src: 'bad-guy.png',
      *                 },
      *             ],
      *         },
