@@ -116,7 +116,7 @@ export class GlRenderTargetSystem implements System
         if (renderTarget.isRoot)
         {
             // /TODO this is the same logic?
-            viewPortY = this._renderer.view.element.height - viewport.height;
+            viewPortY = this._renderer.view.canvas.height - viewport.height;
         }
 
         const viewPortCache = this._viewPortCache;

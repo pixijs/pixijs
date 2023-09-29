@@ -1,6 +1,7 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { settings } from '../../../../settings/settings';
+import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
 import { getCanvasTexture } from '../texture/utils/getCanvasTexture';
 
 import type { DestroyOptions } from '../../../../scene/container/destroyTypes';
@@ -17,6 +18,8 @@ export interface ViewSystemOptions
     /** The height of the screen. */
     height?: number;
     /** The canvas to use as a view, optional. */
+    canvas?: ICanvas;
+    /** @deprecated */
     element?: ICanvas;
     /** Resizes renderer view in CSS pixels to allow for resolutions other than 1. */
     autoDensity?: boolean;
@@ -78,7 +81,7 @@ export class ViewSystem implements System
     public multiView: boolean;
 
     /** The canvas element that everything is drawn to. */
-    public element: ICanvas;
+    public canvas: ICanvas;
 
     public texture: Texture;
 
@@ -117,16 +120,22 @@ export class ViewSystem implements System
             ...options,
         };
 
+        if (options.element)
+        {
+            deprecation(v8_0_0, 'ViewSystem.element has been renamed to ViewSystem.canvas');
+            options.canvas = options.element;
+        }
+
         this.screen = new Rectangle(0, 0, options.width, options.height);
-        this.element = options.element || settings.ADAPTER.createCanvas();
+        this.canvas = options.canvas || settings.ADAPTER.createCanvas();
         this.antialias = !!options.antialias;
-        this.texture = getCanvasTexture(this.element, options as CanvasSourceOptions);
+        this.texture = getCanvasTexture(this.canvas, options as CanvasSourceOptions);
         this.multiView = !!options.multiView;
 
         if (this.autoDensity)
         {
-            this.element.style.width = `${this.texture.width}px`;
-            this.element.style.height = `${this.texture.height}px`;
+            this.canvas.style.width = `${this.texture.width}px`;
+            this.canvas.style.height = `${this.texture.height}px`;
         }
     }
 
@@ -145,8 +154,8 @@ export class ViewSystem implements System
 
         if (this.autoDensity)
         {
-            this.element.style.width = `${desiredScreenWidth}px`;
-            this.element.style.height = `${desiredScreenHeight}px`;
+            this.canvas.style.width = `${desiredScreenWidth}px`;
+            this.canvas.style.height = `${desiredScreenHeight}px`;
         }
     }
 
@@ -159,9 +168,9 @@ export class ViewSystem implements System
     {
         const removeView = typeof options === 'boolean' ? options : !!options?.removeView;
 
-        if (removeView && this.element.parentNode)
+        if (removeView && this.canvas.parentNode)
         {
-            this.element.parentNode.removeChild(this.element);
+            this.canvas.parentNode.removeChild(this.canvas);
         }
 
         // note: don't nullify the element
