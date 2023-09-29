@@ -242,7 +242,7 @@ export class EventSystem implements System<EventSystemOptions>
      */
     public init(options: EventSystemOptions): void
     {
-        const { element: canvas, resolution } = this.renderer;
+        const { canvas, resolution } = this.renderer;
 
         this.setTargetElement(canvas as HTMLCanvasElement);
         this.resolution = resolution;

@@ -185,7 +185,7 @@ export class GlContextSystem implements System<ContextSystemOptions>
 
         this._renderer.runners.contextChange.emit(gl);
 
-        const element = this._renderer.view.element;
+        const element = this._renderer.view.canvas;
 
         (element as any).addEventListener('webglcontextlost', this.handleContextLost, false);
         element.addEventListener('webglcontextrestored', this.handleContextRestored, false);
@@ -199,7 +199,7 @@ export class GlContextSystem implements System<ContextSystemOptions>
      */
     protected initFromOptions(options: WebGLContextAttributes): void
     {
-        const gl = this.createContext(this._renderer.view.element, options);
+        const gl = this.createContext(this._renderer.view.canvas, options);
 
         this.initFromContext(gl);
     }
@@ -267,7 +267,7 @@ export class GlContextSystem implements System<ContextSystemOptions>
 
     public destroy(): void
     {
-        const element = this._renderer.view.element;
+        const element = this._renderer.view.canvas;
 
         this._renderer = null;
 

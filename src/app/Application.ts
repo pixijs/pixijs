@@ -99,7 +99,7 @@ export class Application<VIEW extends ICanvas = ICanvas>
      */
     get canvas(): VIEW
     {
-        return this.renderer.element as VIEW;
+        return this.renderer.canvas as VIEW;
     }
 
     /**

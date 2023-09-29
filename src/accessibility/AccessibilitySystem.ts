@@ -223,7 +223,7 @@ export class AccessibilitySystem implements System
         globalThis.removeEventListener('keydown', this._onKeyDown, false);
 
         this._renderer.runners.postrender.add(this);
-        this._renderer.view.element.parentNode?.appendChild(this._div);
+        this._renderer.view.canvas.parentNode?.appendChild(this._div);
     }
 
     /**
@@ -310,7 +310,7 @@ export class AccessibilitySystem implements System
 
         this._androidUpdateCount = now + this._androidUpdateFrequency;
 
-        if (!this._renderer.renderingToScreen || !this._renderer.view.element)
+        if (!this._renderer.renderingToScreen || !this._renderer.view.canvas)
         {
             return;
         }
@@ -321,7 +321,7 @@ export class AccessibilitySystem implements System
             this._updateAccessibleObjects(this._renderer.lastObjectRendered as Container);
         }
 
-        const { x, y, width, height } = this._renderer.view.element.getBoundingClientRect();
+        const { x, y, width, height } = this._renderer.view.canvas.getBoundingClientRect();
         const { width: viewWidth, height: viewHeight, resolution } = this._renderer;
 
         const sx = (width / viewWidth) * resolution;
