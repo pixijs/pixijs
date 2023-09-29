@@ -353,4 +353,13 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions>
     {
         return this.textureGenerator.generateTexture(options);
     }
+
+    /**
+     * Whether the renderer will round coordinates to whole pixels when rendering.
+     * Can be overridden on a per scene item basis.
+     */
+    get roundPixels(): boolean
+    {
+        return !!this._roundPixels;
+    }
 }

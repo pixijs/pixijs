@@ -23,6 +23,28 @@ describe('Round Pixels', () =>
         });
 
         expect(app.renderer['_roundPixels']).toBe(1);
+        expect(app.renderer.roundPixels).toBe(true);
+    });
+
+    it('Round pixels should set correctly when passed as an option to the renderer', async () =>
+    {
+        const renderer = new WebGLRenderer();
+
+        await renderer.init({
+            roundPixels: true,
+        });
+
+        expect(renderer.roundPixels).toBe(true);
+        expect(renderer._roundPixels).toBe(1);
+
+        const renderer2 = new WebGLRenderer();
+
+        await renderer2.init({
+            roundPixels: false,
+        });
+
+        expect(renderer2.roundPixels).toBe(false);
+        expect(renderer2._roundPixels).toBe(0);
     });
 
     it('Round pixels correctly on a sprite', async () =>
