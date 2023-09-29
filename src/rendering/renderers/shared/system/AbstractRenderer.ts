@@ -58,7 +58,7 @@ type Runners = {[key in DefaultRunners]: SystemRunner} & {
  * The SystemManager is a class that provides functions for managing a set of systems
  * This is a base class, that is generic (no render code or knowledge at all)
  */
-export class AbstractRenderer<PIPES, OPTIONS>
+export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions>
 {
     public readonly type: number;
     public readonly name: string;
@@ -95,7 +95,7 @@ export class AbstractRenderer<PIPES, OPTIONS>
      * Initialize the renderer.
      * @param options - The options to use to create the renderer.
      */
-    public async init(options: Partial<OPTIONS & {roundPixels: boolean}> = {})
+    public async init(options: Partial<OPTIONS> = {})
     {
         // loop through all systems...
         for (const systemName in this._systemsHash)
@@ -352,10 +352,5 @@ export class AbstractRenderer<PIPES, OPTIONS>
     public generateTexture(options: GenerateTextureOptions | Container): Texture
     {
         return this.textureGenerator.generateTexture(options);
-    }
-
-    get roundPixels(): boolean
-    {
-        return !!this._roundPixels;
     }
 }

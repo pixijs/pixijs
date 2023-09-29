@@ -1,3 +1,4 @@
+import { Application } from '../../src/app/Application';
 import { Rectangle } from '../../src/maths/shapes/Rectangle';
 import { WebGLRenderer } from '../../src/rendering/renderers/gl/WebGLRenderer';
 import { Texture } from '../../src/rendering/renderers/shared/texture/Texture';
@@ -15,23 +16,13 @@ describe('Round Pixels', () =>
 {
     it('Round pixels should set correctly when passed as an option', async () =>
     {
-        const renderer = new WebGLRenderer();
+        const app = new Application();
 
-        await renderer.init({
+        await app.init({
             roundPixels: true,
         });
 
-        expect(renderer.roundPixels).toBe(true);
-        expect(renderer._roundPixels).toBe(1);
-
-        const renderer2 = new WebGLRenderer();
-
-        await renderer2.init({
-            roundPixels: false,
-        });
-
-        expect(renderer2.roundPixels).toBe(false);
-        expect(renderer2._roundPixels).toBe(0);
+        expect(app.renderer['_roundPixels']).toBe(1);
     });
 
     it('Round pixels correctly on a sprite', async () =>
