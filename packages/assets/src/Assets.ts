@@ -10,7 +10,15 @@ import { isSingleItem } from './utils/isSingleItem';
 import type { FormatDetectionParser } from './detections';
 import type { LoadTextureConfig } from './loader/parsers';
 import type { BundleIdentifierOptions } from './resolver/Resolver';
-import type { ArrayOr, AssetsBundle, AssetsManifest, LoadParserName, ResolvedAsset, UnresolvedAsset } from './types';
+import type {
+    ArrayOr,
+    AssetsBundle,
+    AssetsManifest,
+    AssetSrc,
+    LoadParserName,
+    ResolvedAsset,
+    UnresolvedAsset
+} from './types';
 
 export type ProgressCallback = (progress: number) => void;
 
@@ -372,13 +380,13 @@ export class AssetsClass
     public add(data:(ArrayOr<UnresolvedAsset>)): void;
     public add(
         aliases: ArrayOr<string> | ArrayOr<UnresolvedAsset>,
-        srcs?: string | string[],
+        srcs?: AssetSrc,
         data?: unknown,
         format?: string,
         loadParser?: LoadParserName
     ): void
     {
-        this.resolver.add(aliases, srcs, data, format, loadParser);
+        this.resolver.add(aliases as ArrayOr<string>, srcs, data, format, loadParser);
     }
 
     /**

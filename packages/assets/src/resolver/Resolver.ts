@@ -424,7 +424,7 @@ export class Resolver
     }
 
     /** @deprecated */
-    public add(a: ArrayOr<string>, s?: string | string[], d?: unknown, f?: string, lp?: LoadParserName): void;
+    public add(a: ArrayOr<string>, s?: AssetSrc, d?: unknown, f?: string, lp?: LoadParserName): void;
     /**
      * Tells the resolver what keys are associated with witch asset.
      * The most important thing the resolver does
