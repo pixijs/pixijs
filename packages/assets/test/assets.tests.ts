@@ -504,6 +504,17 @@ describe('Assets', () =>
         expect(font).toBeInstanceOf(FontFace);
     });
 
+    it('should load font assets with encoded URL', async () =>
+    {
+        await Assets.init({
+            basePath,
+        });
+
+        const font = await Assets.load('fonts/url%20with%20space.ttf');
+
+        expect(font).toBeInstanceOf(FontFace);
+    });
+
     it('should append default url params when specified in the constructor', async () =>
     {
         await Assets.init({
