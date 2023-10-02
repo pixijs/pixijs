@@ -32,6 +32,6 @@
       "*.d.ts"
     ],
     "dependencies": {
-      "@pixi/colord": "^2.9.4"
+      "@pixi/colord": "^2.9.6"
     }
   }
