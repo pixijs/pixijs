@@ -24,6 +24,16 @@ export const localUniformBit = {
     },
 };
 
+// TODO this works, but i think down the road it will be better to manage groups automatically if there are clashes
+export const localUniformBitGroup2 = {
+    ...localUniformBit,
+    vertex: {
+        ...localUniformBit.vertex,
+        // replace the group!
+        header: localUniformBit.vertex.header.replace('group(1)', 'group(2)'),
+    }
+};
+
 export const localUniformBitGl = {
     name: 'local-uniform-bit',
     vertex: {
