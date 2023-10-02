@@ -5,6 +5,7 @@ import { MAX_TEXTURES } from '../../../rendering/batcher/shared/const';
 import { compileHighShaderGpuProgram } from '../../../rendering/high-shader/compileHighShaderToProgram';
 import { colorBit } from '../../../rendering/high-shader/shader-bits/colorBit';
 import { generateTextureBatchBit } from '../../../rendering/high-shader/shader-bits/generateTextureBatchBit';
+import { localUniformBitGroup2 } from '../../../rendering/high-shader/shader-bits/localUniformBit';
 import { roundPixelsBit } from '../../../rendering/high-shader/shader-bits/roundPixelsBit';
 import { Shader } from '../../../rendering/renderers/shared/shader/Shader';
 import { UniformGroup } from '../../../rendering/renderers/shared/shader/UniformGroup';
@@ -31,43 +32,18 @@ export class GpuGraphicsAdaptor implements GraphicsAdaptor
     public init()
     {
         const localUniforms = new UniformGroup({
-            transformMatrix: { value: new Matrix(), type: 'mat3x3<f32>' },
+            uTransformMatrix: { value: new Matrix(), type: 'mat3x3<f32>' },
             uColor: { value: new Float32Array([1, 1, 1, 1]), type: 'vec4<f32>' },
             uRound: { value: 0, type: 'f32' },
         });
-
-        const localUniformBit2 = {
-            name: 'local-uniform-bit',
-            vertex: {
-                header: /* wgsl */`
-        
-                    struct LocalUniforms {
-                        uTransformMatrix:mat3x3<f32>,
-                        uColor:vec4<f32>,
-                        uRound:f32,
-                    }
-        
-                    @group(2) @binding(0) var<uniform> localUniforms : LocalUniforms;
-                `,
-                main: /* wgsl */`
-                    vColor *= localUniforms.uColor;
-                    modelMatrix *= localUniforms.uTransformMatrix;
-                `,
-                end: /* wgsl */`
-                    if(localUniforms.uRound == 1)
-                    {
-                        vPosition = vec4(roundPixels(vPosition.xy, globalUniforms.uResolution), vPosition.zw);
-                    }
-                `
-            },
-        };
 
         const gpuProgram = compileHighShaderGpuProgram({
             name: 'graphics',
             bits: [
                 colorBit,
                 generateTextureBatchBit(MAX_TEXTURES),
-                localUniformBit2,
+
+                localUniformBitGroup2,
                 roundPixelsBit
             ]
         });
