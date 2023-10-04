@@ -9,9 +9,10 @@ export interface TestScene
     options?: Partial<RendererOptions>;
     pixelMatch?: number;
     skip?: boolean;
+    only?: boolean;
     renderers?: {
-        canvas: boolean,
-        webgl: boolean,
-        webgpu: boolean,
+        canvas?: boolean,
+        webgl?: boolean,
+        webgpu?: boolean,
     }
 }

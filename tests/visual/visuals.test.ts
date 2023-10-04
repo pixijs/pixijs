@@ -3,26 +3,30 @@ import path from 'path';
 import { renderTest } from './tester';
 
 const paths = glob.sync('**/*.scene.ts', { cwd: path.join(process.cwd(), './tests') });
+const scenes = paths.map((p) =>
+{
+    const relativePath = path.relative('visual/', p);
+
+    // eslint-disable-next-line @typescript-eslint/no-var-requires, global-require
+    return { path: p, data: require(`./${relativePath}`).scene };
+});
+
+const onlyScenes = scenes.filter((s) => s.data.only);
+const scenesToTest = onlyScenes.length ? onlyScenes : scenes;
 
 describe('Visual Tests', () =>
 {
-    for (let i = 0; i < paths.length; i++)
+    scenesToTest.forEach((scene) =>
     {
-        const file = paths[i];
-
-        const relativePath = path.relative('visual/', file);
-        // eslint-disable-next-line @typescript-eslint/no-var-requires, global-require
-        const data = require(`./${relativePath}`).scene;
-
         const defaultRenderers = {
             canvas: false,
+            webgpu: true,
             webgl: true,
-            webgpu: true
         };
 
         const renderers = {
             ...defaultRenderers,
-            ...data.renderers
+            ...scene.data.renderers
         };
 
         // eslint-disable-next-line no-loop-func
@@ -33,23 +37,23 @@ describe('Visual Tests', () =>
                 return;
             }
 
-            it(`[${renderer}] - ${data.it}`, async () =>
+            it(`[${renderer}] - ${scene.data.it}`, async () =>
             {
-                jest.setTimeout(10000);
-                if (data.skip)
+                jest.setTimeout(process.env.DEBUG_MODE ? 10000000 : 10000);
+                if (scene.data.skip)
                 {
                     return;
                 }
 
                 const res = await renderTest(
-                    data.id
-                        || path.basename(file).toLowerCase().replaceAll('.', '-'), data.create,
+                    scene.data.id
+                        || path.basename(scene.path).toLowerCase().replaceAll('.', '-'), scene.data.create,
                     renderer as 'canvas' | 'webgl' | 'webgpu',
-                    data.options ?? {}
+                    scene.data.options ?? {}
                 );
 
-                expect(res).toBeLessThanOrEqual(data.pixelMatch || 40);
+                expect(res).toBeLessThanOrEqual(scene.data.pixelMatch || 40);
             });
         });
-    }
+    });
 });

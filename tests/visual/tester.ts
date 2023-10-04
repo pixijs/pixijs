@@ -86,6 +86,14 @@ export async function renderTest(
     ensureDirSync('.artifacts');
     await writeFile(`.artifacts/${rendererType}-${id}-diff.png`, PNG.sync.write(diff));
 
+    // renderer.destroy({
+    //     removeView: true,
+    //     texture: true,
+    //     children: true,
+    //     context: true,
+    //     textureSource: true,
+    // });
+
     return match;
 }
 
