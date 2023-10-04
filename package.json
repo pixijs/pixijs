@@ -186,11 +186,6 @@
     "typescript": "^5.0.4",
     "yargs-parser": "^21.0.1"
   },
-  "engines": {
-    "node": ">=18",
-    "npm": ">=8",
-    "yarn": "please-use-npm"
-  },
   "bundle": "dist/pixi.js",
   "bundleModule": "dist/pixi.mjs"
 }
