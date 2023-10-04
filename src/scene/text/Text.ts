@@ -8,7 +8,7 @@ import type { PointLike } from '../../maths/point/PointLike';
 import type { ContainerOptions } from '../container/Container';
 import type { HTMLTextStyle } from './html/HtmlTextStyle';
 import type { TextStyle } from './TextStyle';
-import type { AnyTextStyle, TextString, TextViewOptions } from './TextView';
+import type { AnyTextStyle, AnyTextStyleOptions, TextString, TextViewOptions } from './TextView';
 
 export type TextOptions = Partial<ContainerOptions<TextView>> & TextViewOptions &
 {
@@ -66,7 +66,7 @@ export class Text extends Container<TextView>
         return this.view.text;
     }
 
-    set style(value: AnyTextStyle | Partial<AnyTextStyle>)
+    set style(value: AnyTextStyle | Partial<AnyTextStyle> | AnyTextStyleOptions)
     {
         this.view.style = value;
     }
