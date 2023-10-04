@@ -7,7 +7,7 @@ import { BitmapFontManager } from './bitmap/BitmapFontManager';
 import { DynamicBitmapFont } from './bitmap/DynamicBitmapFont';
 import { CanvasTextMetrics } from './canvas/CanvasTextMetrics';
 import { HTMLTextStyle } from './html/HtmlTextStyle';
-import { measureHtmlText } from './html/utils/measureHtmlText.';
+import { measureHtmlText } from './html/utils/measureHtmlText';
 import { ensureTextStyle } from './utils/ensureTextStyle';
 
 import type { PointData } from '../../maths/point/PointData';

@@ -20,8 +20,8 @@ export function getSVGUrl(
 {
     const { domElement, styleElement, svgRoot } = htmlTextData;
 
-    domElement.innerHTML = text;
-    domElement.setAttribute('style', `transform: scale(${resolution});\n${style.cssStyle}`);
+    domElement.innerHTML = `<style>${style.cssStyle}</style><div>${text}</div>`;
+    domElement.setAttribute('style', `transform: scale(${resolution});transform-origin: top left; display: inline-block`);
     styleElement.textContent = fontCSS;
 
     const { width, height } = htmlTextData.image;
