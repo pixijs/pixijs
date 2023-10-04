@@ -34,8 +34,6 @@ describe('textStyleToCSS', () =>
             }`;
 
         expect(formatCSSString(css)).toBe(formatCSSString(expected));
-        console.log(css, expected);
-        // expect(families).toEqual(['Arial', 'Cabin']);
     });
 
     it('should extract css correctly if there are tagStyles', async () =>
