@@ -691,7 +691,7 @@ export class Container<T extends View = View> extends EventEmitter<ContainerEven
         this.onUpdate();
     }
 
-    get tint(): ColorSource
+    get tint(): number
     {
         const bgr = this.localColor & 0x00FFFFFF;
         // convert bgr to rgb..
