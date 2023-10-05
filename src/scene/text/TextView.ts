@@ -19,6 +19,7 @@ import type { TextStyle, TextStyleOptions } from './TextStyle';
 
 export type TextString = string | number | {toString: () => string};
 export type AnyTextStyle = TextStyle | HTMLTextStyle;
+export type AnyTextStyleOptions = TextStyleOptions | HTMLTextStyleOptions;
 
 type Filter<T> = { [K in keyof T]: {
     text?: TextString;
@@ -99,7 +100,7 @@ export class TextView implements View
         return this._style;
     }
 
-    set style(style: AnyTextStyle | Partial<AnyTextStyle>)
+    set style(style: AnyTextStyle | Partial<AnyTextStyle> | AnyTextStyleOptions)
     {
         style = style || {};
 
