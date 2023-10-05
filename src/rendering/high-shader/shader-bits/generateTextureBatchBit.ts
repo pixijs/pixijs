@@ -1,6 +1,6 @@
 import type { HighShaderBit } from '../compiler/types';
 
-const textureBatchBitCache: Record<number, HighShaderBit> = {};
+const textureBatchBitGpuCache: Record<number, HighShaderBit> = {};
 
 /**
  *
@@ -64,9 +64,9 @@ function generateSampleSrc(maxTextures: number): string
 
 export function generateTextureBatchBit(maxTextures: number): HighShaderBit
 {
-    if (!textureBatchBitCache[maxTextures])
+    if (!textureBatchBitGpuCache[maxTextures])
     {
-        textureBatchBitCache[maxTextures] = {
+        textureBatchBitGpuCache[maxTextures] = {
             name: 'texture-batch-bit',
             vertex: {
                 header: `
@@ -99,8 +99,10 @@ export function generateTextureBatchBit(maxTextures: number): HighShaderBit
         };
     }
 
-    return textureBatchBitCache[maxTextures];
+    return textureBatchBitGpuCache[maxTextures];
 }
+
+const textureBatchBitGlCache: Record<number, HighShaderBit> = {};
 
 /**
  *
@@ -133,9 +135,9 @@ function generateSampleGlSrc(maxTextures: number): string
 
 export function generateTextureBatchBitGl(maxTextures: number): HighShaderBit
 {
-    if (!textureBatchBitCache[maxTextures])
+    if (!textureBatchBitGlCache[maxTextures])
     {
-        textureBatchBitCache[maxTextures] = {
+        textureBatchBitGlCache[maxTextures] = {
             name: 'texture-batch-bit',
             vertex: {
                 header: `
@@ -168,5 +170,5 @@ export function generateTextureBatchBitGl(maxTextures: number): HighShaderBit
         };
     }
 
-    return textureBatchBitCache[maxTextures];
+    return textureBatchBitGlCache[maxTextures];
 }
