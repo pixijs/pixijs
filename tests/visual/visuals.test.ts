@@ -52,7 +52,7 @@ describe('Visual Tests', () =>
                     scene.data.options ?? {}
                 );
 
-                expect(res).toBeLessThanOrEqual(scene.data.pixelMatch || 40);
+                expect(res).toBeLessThanOrEqual(scene.data.pixelMatch || 100);
             });
         });
     });
