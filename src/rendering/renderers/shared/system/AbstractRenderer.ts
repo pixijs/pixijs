@@ -39,6 +39,7 @@ const defaultRunners = [
     'init',
     'destroy',
     'contextChange',
+    'resolutionChange',
     'reset',
     'renderEnd',
     'renderStart',
@@ -185,6 +186,7 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions>
     set resolution(value: number)
     {
         this.view.resolution = value;
+        this.runners.resolutionChange.emit(value);
     }
 
     /**
