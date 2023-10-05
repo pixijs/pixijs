@@ -60,7 +60,9 @@ export async function renderTest(
 
     document.body.appendChild(renderer.canvas as HTMLCanvasElement);
 
-    renderer.render(stage);
+    renderer.render({
+        container: stage,
+    });
 
     const imageLocation = `./tests/visual/snapshots/${rendererType}-${id}.png`;
 
@@ -86,13 +88,7 @@ export async function renderTest(
     ensureDirSync('.artifacts');
     await writeFile(`.artifacts/${rendererType}-${id}-diff.png`, PNG.sync.write(diff));
 
-    // renderer.destroy({
-    //     removeView: true,
-    //     texture: true,
-    //     children: true,
-    //     context: true,
-    //     textureSource: true,
-    // });
+    renderer.destroy();
 
     return match;
 }
