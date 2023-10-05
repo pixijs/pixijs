@@ -26,9 +26,9 @@ export function measureHtmlText(
 
     const { domElement, styleElement, svgRoot } = htmlTextRenderData;
 
-    domElement.innerHTML = text;
+    domElement.innerHTML = `<style>${style.cssStyle}</style><div>${text}</div>`;
 
-    domElement.setAttribute('style', style.cssStyle);
+    domElement.setAttribute('style', 'transform-origin: top left; display: inline-block');
 
     if (fontStyleCSS)
     {

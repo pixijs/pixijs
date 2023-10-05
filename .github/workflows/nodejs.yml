@@ -44,6 +44,7 @@ jobs:
       env:
         NODE_ENV: production
     - name: Upload Test Artifacts
+      if: ${{ success() || failure() }}
       uses: actions/upload-artifact@v3
       with:
         name: test-artifacts
