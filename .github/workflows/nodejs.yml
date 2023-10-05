@@ -43,6 +43,11 @@ jobs:
       run: xvfb-run --auto-servernum npm run coverage
       env:
         NODE_ENV: production
+    - name: Upload Test Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-artifacts
+        path: .artifacts/
 
     - name: Extract Branch Name
       id: branch_name

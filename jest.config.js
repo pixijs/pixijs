@@ -1,8 +1,8 @@
 module.exports = {
     testPathIgnorePatterns: ['/node_modules/', '/src/', '/dist/', '/lib/'],
     preset: 'ts-jest/presets/js-with-ts',
-    runner: 'jest-electron/runner',
-    testEnvironment: 'jest-electron/environment',
+    runner: '@pixi/jest-electron/runner',
+    testEnvironment: '@pixi/jest-electron/environment',
     setupFilesAfterEnv: [
         'jest-extended/all',
     ],
