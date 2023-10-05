@@ -40,8 +40,8 @@ export async function renderTest(
 ): Promise<number>
 {
     const sceneOpts = {
-        width: 512,
-        height: 512,
+        width: 128,
+        height: 128,
         backgroundColor: 0x1099bb,
         ...options
     };
