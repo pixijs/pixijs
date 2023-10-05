@@ -2,7 +2,6 @@ import { ExtensionType } from '../../../../extensions/Extensions';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
 import { DOMAdapter } from '../../../../settings/adapter/adapter';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
-import { AbstractRenderer } from '../system/AbstractRenderer';
 import { getCanvasTexture } from '../texture/utils/getCanvasTexture';
 
 import type { DestroyOptions } from '../../../../scene/container/destroyTypes';
@@ -61,12 +60,6 @@ export class ViewSystem implements System
          * @default 600
          */
         height: 600,
-        /**
-         * {@link WebGLOptions.resolution}
-         * @type {number}
-         * @default settings.RESOLUTION
-         */
-        resolution: AbstractRenderer.RESOLUTION,
         /**
          * {@link WebGLOptions.autoDensity}
          * @default false
@@ -138,6 +131,8 @@ export class ViewSystem implements System
             this.canvas.style.width = `${this.texture.width}px`;
             this.canvas.style.height = `${this.texture.height}px`;
         }
+
+        this.resolution = options.resolution;
     }
 
     /**
