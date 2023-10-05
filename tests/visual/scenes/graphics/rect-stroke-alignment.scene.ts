@@ -4,8 +4,7 @@ import type { Container } from '../../../../src/scene/container/Container';
 import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
-    it: 'should render text',
-    only: true,
+    it: 'should render text stroke alignment',
     create: async (scene: Container) =>
     {
         const rect = new Graphics()

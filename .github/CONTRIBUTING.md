@@ -66,9 +66,50 @@ Tips for a faster workflow:
 - Run `npm start` in one terminal. This watches the source tree and compiles it incrementally.
 - When desired, run `npm run test` in another terminal. This runs tests using the compilation output from `npm start`.
 - Run `npm run test:debug` to use headful DevTools to debug or develop tests
-- For testing specific a package, use `npm run test:pkg` with the `--packages` flag, e.g., `npm run test:pkg -- --packages=@pixi/math`
-- The `--packages` flag supports multiple packages, e.g., `npm run test:pkg -- --packages=@pixi/math @pixi/core`
-- Run `npm run test:pkg:debug` for debugging specific packages `npm run test:pkg:debug -- --packages=@pixi/math @pixi/core`
+
+#### Visual Regression Testing
+
+PIxiJS uses a custom visual tester that allows you to create pixi scenes and compare them to a reference image.
+These tests can be found [here](../tests/visual/scenes/). To run these tests, run `npm run test:scene` from the command line, or run `npm run test:scene:debug` to use headful DevTools to debug or develop tests.
+
+All visual tests must end with `.scene.ts` and follows this format:
+
+```ts
+import { Graphics } from '../../../../src/scene/graphics/shared/Graphics';
+
+import type { Container } from '../../../../src/scene/container/Container';
+import type { TestScene } from '../../types';
+
+// Must always export scene
+export const scene: TestScene = {
+    // Name of the test
+    it: 'should render text',
+    // Optional: PixiJS Renderer options
+    options: {},
+    // Optional: Whether to run only this test
+    only: false,
+    // Optional: Whether to skip this test
+    skip: false,
+    // Optional: Renderers to run this test on
+    renderers: {
+        // Whether to run this test on the Canvas Renderer
+        canvas: true,
+        // Whether to run this test on the WebGL Renderer
+        webgl: true,
+        // Whether to run this test on the WebGPU Renderer
+        webgpu: true,
+    },
+    // The amount of pixels that can be different before the test fails
+    pixelMatch: 40,
+    // The function that creates the scene to test
+    create: async (scene: Container) =>
+    {
+        const rect = new Graphics().rect(0, 0, 100, 100).fill('red');
+
+        scene.addChild(rect);
+    },
+};
+```
 
 ### Submitting Your Change
 
