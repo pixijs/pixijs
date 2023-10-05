@@ -10,7 +10,7 @@ import { getPo2TextureFromSource } from './utils/getPo2TextureFromSource';
 import { getSVGUrl } from './utils/getSVGUrl';
 import { getTemporaryCanvasFromImage } from './utils/getTemporaryCanvasFromImage';
 import { loadSVGImage } from './utils/loadSVGImage';
-import { measureHtmlText } from './utils/measureHtmlText.';
+import { measureHtmlText } from './utils/measureHtmlText';
 
 import type { WebGPURenderer } from '../../../rendering/renderers/gpu/WebGPURenderer';
 import type { System } from '../../../rendering/renderers/shared/system/System';
@@ -136,7 +136,7 @@ export class HTMLTextSystem implements System
     )
     {
         const htmlTextData = BigPool.get(HTMLTextRenderData);
-        const fontFamilies = extractFontFamilies(text, style.fontFamily as string);
+        const fontFamilies = extractFontFamilies(text, style);
         const fontCSS = await getFontCss(fontFamilies, style);
         const measured = measureHtmlText(text, style, fontCSS, htmlTextData);
 

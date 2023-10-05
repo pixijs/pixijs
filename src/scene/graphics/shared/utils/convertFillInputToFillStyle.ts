@@ -42,7 +42,7 @@ export function convertFillInputToFillStyle(
         const opts: ConvertedFillStyle = {
             ...fillStyleToParse,
             color: temp.toNumber(),
-            alpha: fillStyleToParse.alpha ?? temp.alpha,
+            alpha: temp.alpha === 1 ? fillStyleToParse.alpha : temp.alpha,
             texture: Texture.WHITE,
         };
 

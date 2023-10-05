@@ -10,18 +10,21 @@ import type { TextStyleOptions } from '../TextStyle';
 export interface HTMLTextStyleOptions extends Omit<TextStyleOptions, 'leading' | 'textBaseline' | 'trim' >
 {
     cssOverrides?: string[];
+    tagStyles?: Record<string, HTMLTextStyleOptions>;
 }
 
 export class HTMLTextStyle extends TextStyle
 {
     private _cssOverrides: string[] = [];
     private _cssStyle: string;
+    public tagStyles: Record<string, HTMLTextStyleOptions>;
 
-    constructor(options: HTMLTextStyleOptions)
+    constructor(options: HTMLTextStyleOptions = {})
     {
         super(options);
 
         this.cssOverrides ??= options.cssOverrides;
+        this.tagStyles = options.tagStyles ?? {};
     }
 
     set cssOverrides(value: string | string[])
