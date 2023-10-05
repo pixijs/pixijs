@@ -59,7 +59,7 @@ type Runners = {[key in DefaultRunners]: SystemRunner} & {
  * The SystemManager is a class that provides functions for managing a set of systems
  * This is a base class, that is generic (no render code or knowledge at all)
  */
-export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions>
+export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions, CANVAS extends ICanvas = HTMLCanvasElement>
 {
     public readonly type: number;
     public readonly name: string;
@@ -211,9 +211,9 @@ export class AbstractRenderer<PIPES, OPTIONS extends PixiMixins.RendererOptions>
 
     // NOTE: this was `view` in v7
     /** The canvas element that everything is drawn to.*/
-    get canvas(): ICanvas
+    get canvas(): CANVAS
     {
-        return this.view.canvas;
+        return this.view.canvas as CANVAS;
     }
 
     /**

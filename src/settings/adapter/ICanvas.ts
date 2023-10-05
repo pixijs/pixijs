@@ -93,7 +93,7 @@ export interface ICanvas extends PixiMixins.ICanvas, Partial<EventTarget>
     ): WebGL2RenderingContext | null;
     getContext(
         contextId: 'webgpu',
-    ): WebGL2RenderingContext | null;
+    ): GPUCanvasContext | null;
     getContext(
         contextId: ContextIds,
         options?: ContextSettings,

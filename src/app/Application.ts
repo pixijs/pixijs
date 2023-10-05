@@ -6,7 +6,6 @@ import type { Rectangle } from '../maths/shapes/Rectangle';
 import type { AutoDetectOptions } from '../rendering/renderers/autoDetectRenderer';
 import type { Renderer } from '../rendering/renderers/types';
 import type { DestroyOptions } from '../scene/container/destroyTypes';
-import type { ICanvas } from '../settings/adapter/ICanvas';
 import type { ResizePluginOptions } from './ResizePlugin';
 
 /** Any plugin that's usable for Application should contain these methods. */
@@ -47,7 +46,7 @@ export interface Application extends PixiMixins.Application {}
  * app.stage.addChild(Sprite.from('something.png'));
  * @class
  */
-export class Application<VIEW extends ICanvas = ICanvas>
+export class Application<R extends Renderer = Renderer>
 {
     /** Collection of installed plugins. */
     public static _plugins: ApplicationPlugin[] = [];
@@ -62,7 +61,7 @@ export class Application<VIEW extends ICanvas = ICanvas>
      * WebGL renderer if available, otherwise CanvasRenderer.
      * @member {Renderer}
      */
-    public renderer: Renderer;
+    public renderer: R;
 
     /**
      * @param options - The optional application and renderer parameters.
@@ -77,7 +76,7 @@ export class Application<VIEW extends ICanvas = ICanvas>
             ...options,
         };
 
-        this.renderer = await autoDetectRenderer(options as ApplicationOptions);
+        this.renderer = await autoDetectRenderer(options as ApplicationOptions) as R;
 
         // install plugins here
         Application._plugins.forEach((plugin) =>
@@ -94,12 +93,11 @@ export class Application<VIEW extends ICanvas = ICanvas>
 
     /**
      * Reference to the renderer's canvas element.
-     * @member {ICanvas}
      * @readonly
      */
-    get canvas(): VIEW
+    get canvas(): R['canvas']
     {
-        return this.renderer.canvas as VIEW;
+        return this.renderer.canvas as R['canvas'];
     }
 
     /**
