@@ -210,7 +210,7 @@ export class GraphicsContext extends EventEmitter<{
                 deprecation('8.0.0', 'GraphicsContext.fill(color, alpha) is deprecated, use GraphicsContext.fill({ color, alpha }) instead');
                 style = { color: style, alpha };
             }
-            this.fillStyle = convertFillInputToFillStyle(style, GraphicsContext.defaultFillStyle);
+            this._fillStyle = convertFillInputToFillStyle(style, GraphicsContext.defaultFillStyle);
         }
 
         // TODO not a fan of the clone!!
@@ -247,7 +247,7 @@ export class GraphicsContext extends EventEmitter<{
 
         if (style)
         {
-            this.strokeStyle = convertFillInputToFillStyle(style, GraphicsContext.defaultStrokeStyle);
+            this._strokeStyle = convertFillInputToFillStyle(style, GraphicsContext.defaultStrokeStyle);
         }
 
         // TODO not a fan of the clone!!
