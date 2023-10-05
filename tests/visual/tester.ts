@@ -34,7 +34,7 @@ function toArrayBuffer(buf: Buffer): ArrayBuffer
  */
 export async function renderTest(
     id: string,
-    createFunction: (scene: Container) => Promise<void>,
+    createFunction: (scene: Container, renderer: Renderer) => Promise<void>,
     rendererType: 'canvas' | 'webgl' | 'webgpu',
     options?: Partial<RendererOptions>,
 ): Promise<number>
@@ -56,7 +56,7 @@ export async function renderTest(
     stage.addChild(new Graphics().rect(0, 0, sceneOpts.width, sceneOpts.height)).fill(renderer.background.color);
     stage.addChild(scene);
 
-    await createFunction(scene);
+    await createFunction(scene, renderer);
 
     document.body.appendChild(renderer.canvas as HTMLCanvasElement);
 
@@ -145,6 +145,7 @@ async function saveSnapShot(output: string, stage: Container, renderer: Renderer
         format: 'png',
         resolution: 1,
     });
+
     const base64Data = base64Image.replace(/^data:image\/png;base64,/, '');
 
     await new Promise<void>((resolve) =>
