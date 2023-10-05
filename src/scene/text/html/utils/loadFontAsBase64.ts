@@ -1,4 +1,4 @@
-import { settings } from '../../../../settings/settings';
+import { DOMAdapter } from '../../../../settings/adapter/adapter';
 
 /**
  * Resolves a font url to a base64 string
@@ -7,7 +7,7 @@ import { settings } from '../../../../settings/settings';
  */
 export async function loadFontAsBase64(url: string): Promise<string>
 {
-    const response = await settings.ADAPTER.fetch(url);
+    const response = await DOMAdapter.get().fetch(url);
 
     const blob = await response.blob();
 

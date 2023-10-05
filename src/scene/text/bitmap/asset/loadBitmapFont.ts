@@ -1,7 +1,7 @@
 import { LoaderParserPriority } from '../../../../assets/loader/parsers/LoaderParser';
 import { copySearchParams } from '../../../../assets/utils/copySearchParams';
 import { ExtensionType } from '../../../../extensions/Extensions';
-import { settings } from '../../../../settings/settings';
+import { DOMAdapter } from '../../../../settings/adapter/adapter';
 import { path } from '../../../../utils/path';
 import { BitmapFont } from '../BitmapFont';
 import { TextFormat } from './textFormat';
@@ -82,7 +82,7 @@ export const xmlBitmapFontLoader = {
 
     async load(url: string, _options: ResolvedAsset): Promise<string>
     {
-        const response = await settings.ADAPTER.fetch(url);
+        const response = await DOMAdapter.get().fetch(url);
 
         return await response.text();
     },

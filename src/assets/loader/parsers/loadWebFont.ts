@@ -1,5 +1,5 @@
 import { ExtensionType } from '../../../extensions/Extensions';
-import { settings } from '../../../settings/settings';
+import { DOMAdapter } from '../../../settings/adapter/adapter';
 import { warn } from '../../../utils/logging/warn';
 import { path } from '../../../utils/path';
 import { Cache } from '../../cache/Cache';
@@ -112,7 +112,7 @@ export const loadWebFont = {
 
     async load(url: string, options?: ResolvedAsset<LoadFontData>): Promise<FontFace | FontFace[]>
     {
-        const fonts = settings.ADAPTER.getFontFaceSet();
+        const fonts = DOMAdapter.get().getFontFaceSet();
 
         if (fonts)
         {
@@ -158,7 +158,7 @@ export const loadWebFont = {
             .forEach((t) =>
             {
                 Cache.remove(t.family);
-                settings.ADAPTER.getFontFaceSet().delete(t);
+                DOMAdapter.get().getFontFaceSet().delete(t);
             });
     }
 } as LoaderParser<FontFace | FontFace[]>;

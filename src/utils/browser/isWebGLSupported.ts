@@ -1,4 +1,5 @@
-import { settings } from '../../settings/settings';
+import { AbstractRenderer } from '../../rendering/renderers/shared/system/AbstractRenderer';
+import { DOMAdapter } from '../../settings/adapter/adapter';
 
 let supported: boolean | undefined;
 
@@ -16,17 +17,17 @@ export function isWebGLSupported(): boolean
         {
             const contextOptions = {
                 stencil: true,
-                failIfMajorPerformanceCaveat: settings.FAIL_IF_MAJOR_PERFORMANCE_CAVEAT,
+                failIfMajorPerformanceCaveat: AbstractRenderer.FAIL_IF_MAJOR_PERFORMANCE_CAVEAT,
             };
 
             try
             {
-                if (!settings.ADAPTER.getWebGLRenderingContext())
+                if (!DOMAdapter.get().getWebGLRenderingContext())
                 {
                     return false;
                 }
 
-                const canvas = settings.ADAPTER.createCanvas();
+                const canvas = DOMAdapter.get().createCanvas();
                 let gl: WebGLRenderingContext = canvas.getContext('webgl2', contextOptions);
 
                 const success = !!gl?.getContextAttributes()?.stencil;

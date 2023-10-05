@@ -1,4 +1,4 @@
-import { settings } from '../../../../../settings/settings';
+import { DOMAdapter } from '../../../../../settings/adapter/adapter';
 import { TextureSource } from './TextureSource';
 
 import type { ICanvas } from '../../../../../settings/adapter/ICanvas';
@@ -18,7 +18,7 @@ export class CanvasSource extends TextureSource<ICanvas>
     {
         if (!options.resource)
         {
-            options.resource = settings.ADAPTER.createCanvas();
+            options.resource = DOMAdapter.get().createCanvas();
         }
 
         if (!options.width)

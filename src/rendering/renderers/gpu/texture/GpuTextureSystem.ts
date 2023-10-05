@@ -1,5 +1,5 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
-import { settings } from '../../../../settings/settings';
+import { DOMAdapter } from '../../../../settings/adapter/adapter';
 import { CanvasPool } from '../../shared/texture/CanvasPool';
 import { BindGroup } from '../shader/BindGroup';
 import { gpuUploadBufferImageResource } from './uploaders/gpuUploadBufferImageResource';
@@ -211,7 +211,7 @@ export class GpuTextureSystem implements System, CanvasGenerator
         const commandEncoder = renderer.gpu.device.createCommandEncoder();
 
         // create canvas
-        const canvas = settings.ADAPTER.createCanvas();
+        const canvas = DOMAdapter.get().createCanvas();
 
         canvas.width = texture.source.pixelWidth;
         canvas.height = texture.source.pixelHeight;

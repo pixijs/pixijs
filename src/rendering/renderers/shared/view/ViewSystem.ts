@@ -1,7 +1,8 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
-import { settings } from '../../../../settings/settings';
+import { DOMAdapter } from '../../../../settings/adapter/adapter';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
+import { AbstractRenderer } from '../system/AbstractRenderer';
 import { getCanvasTexture } from '../texture/utils/getCanvasTexture';
 
 import type { DestroyOptions } from '../../../../scene/container/destroyTypes';
@@ -65,7 +66,7 @@ export class ViewSystem implements System
          * @type {number}
          * @default settings.RESOLUTION
          */
-        resolution: settings.RESOLUTION,
+        resolution: AbstractRenderer.RESOLUTION,
         /**
          * {@link WebGLOptions.autoDensity}
          * @default false
@@ -127,7 +128,7 @@ export class ViewSystem implements System
         }
 
         this.screen = new Rectangle(0, 0, options.width, options.height);
-        this.canvas = options.canvas || settings.ADAPTER.createCanvas();
+        this.canvas = options.canvas || DOMAdapter.get().createCanvas();
         this.antialias = !!options.antialias;
         this.texture = getCanvasTexture(this.canvas, options as CanvasSourceOptions);
         this.multiView = !!options.multiView;

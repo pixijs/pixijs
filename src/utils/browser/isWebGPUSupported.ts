@@ -1,4 +1,4 @@
-import { settings } from '../../settings/settings';
+import { DOMAdapter } from '../../settings/adapter/adapter';
 
 /**
  * Helper for checking for WebGPU support.
@@ -10,8 +10,7 @@ import { settings } from '../../settings/settings';
 export async function isWebGPUSupported(options: GPURequestAdapterOptions = {}): Promise<boolean>
 {
     // try to create get the gpu
-
-    const gpu = settings.ADAPTER.getNavigator().gpu;
+    const gpu = DOMAdapter.get().getNavigator().gpu;
 
     if (!gpu) return false;
 

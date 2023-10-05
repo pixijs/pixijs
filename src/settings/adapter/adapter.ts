@@ -52,3 +52,16 @@ export const BrowserAdapter = {
         return parser.parseFromString(xml, 'text/xml');
     },
 } as Adapter;
+
+let currentAdapter: Adapter = BrowserAdapter;
+
+export const DOMAdapter = {
+    get(): Adapter
+    {
+        return currentAdapter;
+    },
+    set(adapter: Adapter): void
+    {
+        currentAdapter = adapter;
+    },
+};

@@ -1,4 +1,4 @@
-import { settings } from '../../../settings/settings';
+import { DOMAdapter } from '../../../settings/adapter/adapter';
 import { fontStringFromTextStyle } from './utils/fontStringFromTextStyle';
 
 import type { ICanvas, ICanvasRenderingContext2DSettings } from '../../../settings/adapter/ICanvas';
@@ -137,7 +137,7 @@ export class CanvasTextMetrics
 
         if (result !== undefined)
         {
-            const proto = settings.ADAPTER.getCanvasRenderingContext2D().prototype;
+            const proto = DOMAdapter.get().getCanvasRenderingContext2D().prototype;
 
             result
                 = CanvasTextMetrics._experimentalLetterSpacingSupported
@@ -825,11 +825,11 @@ export class CanvasTextMetrics
                     return c as ICanvas;
                 }
 
-                canvas = settings.ADAPTER.createCanvas();
+                canvas = DOMAdapter.get().createCanvas();
             }
             catch (ex)
             {
-                canvas = settings.ADAPTER.createCanvas();
+                canvas = DOMAdapter.get().createCanvas();
             }
             canvas.width = canvas.height = 10;
             CanvasTextMetrics.__canvas = canvas;

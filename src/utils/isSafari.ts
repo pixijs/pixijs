@@ -1,8 +1,8 @@
-import { settings } from '../settings/settings';
+import { DOMAdapter } from '../settings/adapter/adapter';
 
 export function isSafari(): boolean
 {
-    const { userAgent } = settings.ADAPTER.getNavigator();
+    const { userAgent } = DOMAdapter.get().getNavigator();
 
     return (/^((?!chrome|android).)*safari/i).test(userAgent);
 }
