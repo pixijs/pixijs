@@ -1,6 +1,5 @@
 import { Sprite } from '../../../../src/scene/sprite/Sprite';
 import { HTMLTextStyle } from '../../../../src/scene/text/html/HtmlTextStyle';
-import { Text } from '../../../../src/scene/text/Text';
 
 import type { Renderer } from '../../../../src/rendering/renderers/types';
 import type { Container } from '../../../../src/scene/container/Container';
@@ -8,7 +7,6 @@ import type { TestScene } from '../../types';
 
 export const scene: TestScene = {
     it: 'should render html-text correctly',
-    only: true,
     create: async (scene: Container, renderer: Renderer) =>
     {
         const htmlTexture = await renderer.htmlText.getTexture({
