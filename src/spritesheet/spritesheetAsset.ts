@@ -1,7 +1,7 @@
 import { LoaderParserPriority } from '../assets/loader/parsers/LoaderParser';
+import { Resolver } from '../assets/resolver/Resolver';
 import { copySearchParams } from '../assets/utils/copySearchParams';
 import { ExtensionType } from '../extensions/Extensions';
-import { settings } from '../settings/settings';
 import { path } from '../utils/path';
 import { Spritesheet } from './Spritesheet';
 
@@ -79,7 +79,7 @@ export const spritesheetAsset = {
             const split = value.split('.');
 
             return {
-                resolution: parseFloat(settings.RETINA_PREFIX.exec(value)?.[1] ?? '1'),
+                resolution: parseFloat(Resolver.RETINA_PREFIX.exec(value)?.[1] ?? '1'),
                 format: split[split.length - 2],
                 src: value,
             };

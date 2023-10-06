@@ -1,14 +1,15 @@
-import { settings } from '../../settings/settings';
+import { DOMAdapter } from '../../settings/adapter/adapter';
 
 let supported: boolean | undefined;
 
 /**
  * Helper for checking for WebGL support.
+ * @param failIfMajorPerformanceCaveat
  * @memberof utils
  * @function isWebGLSupported
  * @returns {boolean} Is WebGL supported.
  */
-export function isWebGLSupported(): boolean
+export function isWebGLSupported(failIfMajorPerformanceCaveat: boolean): boolean
 {
     if (typeof supported === 'undefined')
     {
@@ -16,17 +17,17 @@ export function isWebGLSupported(): boolean
         {
             const contextOptions = {
                 stencil: true,
-                failIfMajorPerformanceCaveat: settings.FAIL_IF_MAJOR_PERFORMANCE_CAVEAT,
+                failIfMajorPerformanceCaveat,
             };
 
             try
             {
-                if (!settings.ADAPTER.getWebGLRenderingContext())
+                if (!DOMAdapter.get().getWebGLRenderingContext())
                 {
                     return false;
                 }
 
-                const canvas = settings.ADAPTER.createCanvas();
+                const canvas = DOMAdapter.get().createCanvas();
                 let gl: WebGLRenderingContext = canvas.getContext('webgl2', contextOptions);
 
                 const success = !!gl?.getContextAttributes()?.stencil;

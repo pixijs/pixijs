@@ -1,4 +1,4 @@
-import { settings } from '../../../../../settings/settings';
+import { DOMAdapter } from '../../../../../settings/adapter/adapter';
 import { NOOP } from '../../../../../utils/NOOP';
 import { Texture } from '../Texture';
 import { TextureSource } from './TextureSource';
@@ -13,7 +13,7 @@ export class ImageSource extends TextureSource<ImageResource>
 }
 
 // create a white canvas
-const canvas = settings.ADAPTER.createCanvas();
+const canvas = DOMAdapter.get().createCanvas();
 
 const size = 1;
 

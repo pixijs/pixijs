@@ -1,5 +1,5 @@
 import { ExtensionType } from '../../../extensions/Extensions';
-import { settings } from '../../../settings/settings';
+import { DOMAdapter } from '../../../settings/adapter/adapter';
 import { checkDataUrl } from '../../utils/checkDataUrl';
 import { checkExtension } from '../../utils/checkExtension';
 import { LoaderParserPriority } from './LoaderParser';
@@ -25,7 +25,7 @@ export const loadJson = {
 
     async load<T>(url: string): Promise<T>
     {
-        const response = await settings.ADAPTER.fetch(url);
+        const response = await DOMAdapter.get().fetch(url);
 
         const json = await response.json();
 

@@ -1,5 +1,6 @@
 import { isWebGLSupported } from '../../utils/browser/isWebGLSupported';
 import { isWebGPUSupported } from '../../utils/browser/isWebGPUSupported';
+import { AbstractRenderer } from './shared/system/AbstractRenderer';
 
 import type { WebGLOptions } from './gl/WebGLRenderer';
 import type { WebGPUOptions } from './gpu/WebGPURenderer';
@@ -60,7 +61,13 @@ export async function autoDetectRenderer(options: Partial<AutoDetectOptions>): P
 
             break;
         }
-        else if (rendererType === 'webgl' && isWebGLSupported())
+        else if (
+            rendererType === 'webgl'
+            && isWebGLSupported(
+                options.failIfMajorPerformanceCaveat
+                    ?? AbstractRenderer.defaultOptions.failIfMajorPerformanceCaveat
+            )
+        )
         {
             const { WebGLRenderer } = await import('./gl/WebGLRenderer');
 

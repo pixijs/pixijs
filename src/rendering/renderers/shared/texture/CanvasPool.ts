@@ -1,5 +1,5 @@
 import { nextPow2 } from '../../../../maths/misc/pow2';
-import { settings } from '../../../../settings/settings';
+import { DOMAdapter } from '../../../../settings/adapter/adapter';
 
 import type { ICanvas, ICanvasRenderingContext2DSettings } from '../../../../settings/adapter/ICanvas';
 import type { ICanvasRenderingContext2D } from '../../../../settings/adapter/ICanvasRenderingContext2D';
@@ -45,7 +45,7 @@ export class CanvasPoolClass
      */
     private _createCanvasAndContext(pixelWidth: number, pixelHeight: number): CanvasAndContext
     {
-        const canvas = settings.ADAPTER.createCanvas();
+        const canvas = DOMAdapter.get().createCanvas();
 
         canvas.width = pixelWidth;
         canvas.height = pixelHeight;

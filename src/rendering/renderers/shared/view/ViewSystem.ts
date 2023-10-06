@@ -1,6 +1,6 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
-import { settings } from '../../../../settings/settings';
+import { DOMAdapter } from '../../../../settings/adapter/adapter';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
 import { getCanvasTexture } from '../texture/utils/getCanvasTexture';
 
@@ -60,12 +60,6 @@ export class ViewSystem implements System
          * @default 600
          */
         height: 600,
-        /**
-         * {@link WebGLOptions.resolution}
-         * @type {number}
-         * @default settings.RESOLUTION
-         */
-        resolution: settings.RESOLUTION,
         /**
          * {@link WebGLOptions.autoDensity}
          * @default false
@@ -127,7 +121,7 @@ export class ViewSystem implements System
         }
 
         this.screen = new Rectangle(0, 0, options.width, options.height);
-        this.canvas = options.canvas || settings.ADAPTER.createCanvas();
+        this.canvas = options.canvas || DOMAdapter.get().createCanvas();
         this.antialias = !!options.antialias;
         this.texture = getCanvasTexture(this.canvas, options as CanvasSourceOptions);
         this.multiView = !!options.multiView;
@@ -137,6 +131,8 @@ export class ViewSystem implements System
             this.canvas.style.width = `${this.texture.width}px`;
             this.canvas.style.height = `${this.texture.height}px`;
         }
+
+        this.resolution = options.resolution;
     }
 
     /**

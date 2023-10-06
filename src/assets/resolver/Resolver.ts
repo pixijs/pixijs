@@ -71,6 +71,16 @@ export interface BundleIdentifierOptions
  */
 export class Resolver
 {
+    /**
+     * The prefix that denotes a URL is for a retina asset.
+     * @static
+     * @name RETINA_PREFIX
+     * @type {RegExp}
+     * @default /@([0-9\.]+)x/
+     * @example `@2x`
+     */
+    public static RETINA_PREFIX = /@([0-9\.]+)x/;
+
     private readonly _defaultBundleIdentifierOptions: Required<BundleIdentifierOptions> = {
         connector: '-',
         createBundleAssetId: (bundleId, assetId) =>
@@ -228,7 +238,7 @@ export class Resolver
      *     test: loadTextures.test, // test if url ends in an image
      *     parse: (value: string) =>
      *     ({
-     *         resolution: parseFloat(settings.RETINA_PREFIX.exec(value)?.[1] ?? '1'),
+     *         resolution: parseFloat(Resolver.RETINA_PREFIX.exec(value)?.[1] ?? '1'),
      *         format: value.split('.').pop(),
      *         src: value,
      *     }),

@@ -1,6 +1,6 @@
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
-import { settings } from '../../../../settings/settings';
+import { DOMAdapter } from '../../../../settings/adapter/adapter';
 import { Texture } from '../../shared/texture/Texture';
 import { GlTexture } from './GlTexture';
 import { glUploadBufferImageResource } from './uploaders/glUploadBufferImageResource';
@@ -314,7 +314,7 @@ export class GlTextureSystem implements System, CanvasGenerator
     {
         const { pixels, width, height } = this.getPixels(texture);
 
-        const canvas = settings.ADAPTER.createCanvas();
+        const canvas = DOMAdapter.get().createCanvas();
 
         canvas.width = width;
         canvas.height = height;
