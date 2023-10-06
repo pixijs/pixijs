@@ -1,9 +1,18 @@
 /* eslint-disable max-len */
 
+import { ExtensionType } from '../../extensions/Extensions';
 import { BlendModeFilter } from './BlendModeFilter';
+
+import type { ExtensionMetadata } from '../../extensions/Extensions';
 
 export class HardLightBlend extends BlendModeFilter
 {
+    /** @ignore */
+    public static extensions: ExtensionMetadata = {
+        name: 'hard-light',
+        type: ExtensionType.BlendMode
+    };
+
     constructor()
     {
         super({

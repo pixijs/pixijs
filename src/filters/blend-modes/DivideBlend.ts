@@ -1,10 +1,19 @@
 /* eslint-disable max-len */
 
+import { ExtensionType } from '../../extensions/Extensions';
 import { BlendModeFilter } from './BlendModeFilter';
+
+import type { ExtensionMetadata } from '../../extensions/Extensions';
 
 /** Divides the blend from the base color using each color channel */
 export class DivideBlend extends BlendModeFilter
 {
+    /** @ignore */
+    public static extensions: ExtensionMetadata = {
+        name: 'divide',
+        type: ExtensionType.BlendMode
+    };
+
     constructor()
     {
         super({

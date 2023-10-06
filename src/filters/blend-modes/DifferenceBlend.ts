@@ -1,7 +1,16 @@
+import { ExtensionType } from '../../extensions/Extensions';
 import { BlendModeFilter } from './BlendModeFilter';
+
+import type { ExtensionMetadata } from '../../extensions/Extensions';
 
 export class DifferenceBlend extends BlendModeFilter
 {
+    /** @ignore */
+    public static extensions: ExtensionMetadata = {
+        name: 'difference',
+        type: ExtensionType.BlendMode
+    };
+
     constructor()
     {
         super({

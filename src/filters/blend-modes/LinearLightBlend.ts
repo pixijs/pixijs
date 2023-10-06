@@ -1,10 +1,19 @@
 /* eslint-disable max-len */
 
+import { ExtensionType } from '../../extensions/Extensions';
 import { BlendModeFilter } from './BlendModeFilter';
+
+import type { ExtensionMetadata } from '../../extensions/Extensions';
 
 /** Increase or decrease brightness by durning or dodging color values, based on the blend color */
 export class LinearLightBlend extends BlendModeFilter
 {
+    /** @ignore */
+    public static extensions: ExtensionMetadata = {
+        name: 'linear-light',
+        type: ExtensionType.BlendMode
+    };
+
     constructor()
     {
         super({

@@ -1,10 +1,19 @@
 /* eslint-disable max-len */
 
+import { ExtensionType } from '../../extensions/Extensions';
 import { BlendModeFilter } from './BlendModeFilter';
+
+import type { ExtensionMetadata } from '../../extensions/Extensions';
 
 /** Subtracts the blend from the base color using each color channel */
 export class SubtractBlend extends BlendModeFilter
 {
+    /** @ignore */
+    public static extensions: ExtensionMetadata = {
+        name: 'subtract',
+        type: ExtensionType.BlendMode
+    };
+
     constructor()
     {
         super({

@@ -1,10 +1,19 @@
 /* eslint-disable max-len */
 
+import { ExtensionType } from '../../extensions/Extensions';
 import { BlendModeFilter } from './BlendModeFilter';
+
+import type { ExtensionMetadata } from '../../extensions/Extensions';
 
 /** Looks at the color information in each channel and brightens the base color to reflect the blend color by decreasing contrast between the two.  */
 export class LinearDodgeBlend extends BlendModeFilter
 {
+    /** @ignore */
+    public static extensions: ExtensionMetadata = {
+        name: 'linear-dodge',
+        type: ExtensionType.BlendMode
+    };
+
     constructor()
     {
         super({

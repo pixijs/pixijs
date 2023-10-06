@@ -38,6 +38,8 @@ enum ExtensionType
 
     MaskEffect = 'mask-effect',
 
+    BlendMode = 'blend-mode',
+
     TextureSource = 'texture-source',
 }
 

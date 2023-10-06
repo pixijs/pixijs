@@ -1,9 +1,18 @@
+import { ExtensionType } from '../../extensions/Extensions';
 import { BlendModeFilter } from './BlendModeFilter';
 import { hslgl } from './hls/GLhls';
 import { hslgpu } from './hls/GPUhls';
 
+import type { ExtensionMetadata } from '../../extensions/Extensions';
+
 export class ColorBlend extends BlendModeFilter
 {
+    /** @ignore */
+    public static extensions: ExtensionMetadata = {
+        name: 'color',
+        type: ExtensionType.BlendMode
+    };
+
     constructor()
     {
         super({

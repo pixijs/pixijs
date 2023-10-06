@@ -7,6 +7,7 @@
     "./lib/app/init.*",
     "./lib/accessibility/init.*",
     "./lib/assets/init.*",
+    "./lib/filters/blend-modes/init.*",
     "./lib/spritesheet/init.*",
     "./lib/rendering/init.*",
     "./lib/all.*"
@@ -44,6 +45,14 @@
       },
       "require": {
         "default": "./lib/app/init.js"
+      }
+    },
+    "./blendModes": {
+      "import": {
+        "default": "./lib/filters/blend-modes/init.mjs"
+      },
+      "require": {
+        "default": "./lib/filters/blend-modes/init.js"
       }
     },
     "./assets": {
