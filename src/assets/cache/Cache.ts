@@ -85,12 +85,10 @@ class CacheClass
         }
 
         // convert cacheable assets to a map of key-value pairs
-        const cacheableMap = new Map();
+        const cacheableMap = new Map(Object.entries(cacheableAssets || {}));
 
         if (!cacheableAssets)
         {
-            cacheableAssets = {};
-
             keys.forEach((key) =>
             {
                 cacheableMap.set(key, value);
