@@ -91,12 +91,8 @@ export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
 
         if (!this._isAdvanced && !normalBlendModes.includes(blendMode))
         {
-            // convert blendmode to capitalized string and split on hyphen and capitalize each word
-            const blendModeString = blendMode.split('-').map((word) => word[0].toUpperCase() + word.slice(1))
-                .join('');
-
             // eslint-disable-next-line max-len
-            warn(`Blend mode '${blendMode}' is not active. It may not have been imported e.g 'import { ${blendModeString} } from 'pixi.js'`);
+            warn(`Blend mode '${blendMode}' is not active. It may not have been imported e.g 'import 'pixi.js/blendModes'`);
         }
         // #endif
 
