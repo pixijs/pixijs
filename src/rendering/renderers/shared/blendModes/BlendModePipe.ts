@@ -21,6 +21,20 @@ export interface AdvancedBlendInstruction extends Instruction
 // class map
 const BLEND_MODE_FILTERS: Partial<Record<BLEND_MODES, new () => BlendModeFilter>> = {} as const;
 
+// #if _DEBUG
+const normalBlendModes: BLEND_MODES[] = [
+    'normal',
+    'add',
+    'multiply',
+    'screen',
+    'none',
+    'erase',
+    'normal-npm',
+    'add-npm',
+    'screen-npm',
+];
+// #endif
+
 extensions.handle(ExtensionType.BlendMode, (value) =>
 {
     if (!value.name)
@@ -77,18 +91,6 @@ export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
         this._isAdvanced = !!BLEND_MODE_FILTERS[blendMode];
 
         // #if _DEBUG
-        const normalBlendModes: BLEND_MODES[] = [
-            'normal',
-            'add',
-            'multiply',
-            'screen',
-            'none',
-            'erase',
-            'normal-npm',
-            'add-npm',
-            'screen-npm',
-        ];
-
         if (!this._isAdvanced && !normalBlendModes.includes(blendMode))
         {
             // eslint-disable-next-line max-len
