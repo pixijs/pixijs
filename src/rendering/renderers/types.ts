@@ -1,8 +1,9 @@
+import type { ICanvas } from '../../settings/adapter/ICanvas';
 import type { WebGLOptions, WebGLPipes, WebGLRenderer } from './gl/WebGLRenderer';
 import type { WebGPUOptions, WebGPUPipes, WebGPURenderer } from './gpu/WebGPURenderer';
 
 /** A generic renderer. */
-export type Renderer = WebGLRenderer | WebGPURenderer;
+export type Renderer<T extends ICanvas = HTMLCanvasElement> = WebGLRenderer<T> | WebGPURenderer<T>;
 export type RenderPipes = WebGLPipes | WebGPUPipes;
 export interface RendererOptions extends WebGLOptions, WebGPUOptions {}
 
