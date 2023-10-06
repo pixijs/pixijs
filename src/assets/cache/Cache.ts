@@ -21,7 +21,7 @@ class CacheClass
 {
     private readonly _parsers: CacheParser[] = [];
 
-    private readonly _cache: Map<string, any> = new Map();
+    private readonly _cache: Map<any, any> = new Map();
     private readonly _cacheMap: Map<string, {
         keys: string[],
         cacheKeys: string[],
@@ -38,7 +38,7 @@ class CacheClass
      * Check if the key exists
      * @param key - The key to check
      */
-    public has(key: string): boolean
+    public has(key: any): boolean
     {
         return this._cache.has(key);
     }
@@ -47,7 +47,7 @@ class CacheClass
      * Fetch entry by key
      * @param key - The key of the entry to get
      */
-    public get<T = any>(key: string): T
+    public get<T = any>(key: any): T
     {
         const result = this._cache.get(key);
 
@@ -66,7 +66,7 @@ class CacheClass
      * @param key - The key or keys to set
      * @param value - The value to store in the cache or from which cacheable assets will be derived.
      */
-    public set(key: string | string[], value: unknown): void
+    public set(key: any | any[], value: unknown): void
     {
         const keys = convertToList<string>(key);
 
@@ -84,17 +84,20 @@ class CacheClass
             }
         }
 
+        // convert cacheable assets to a map of key-value pairs
+        const cacheableMap = new Map();
+
         if (!cacheableAssets)
         {
             cacheableAssets = {};
 
             keys.forEach((key) =>
             {
-                cacheableAssets[key] = value;
+                cacheableMap.set(key, value);
             });
         }
 
-        const cacheKeys = Object.keys(cacheableAssets);
+        const cacheKeys = [...cacheableMap.keys()];
 
         const cachedAssets = {
             cacheKeys,
@@ -104,7 +107,7 @@ class CacheClass
         // this is so we can remove them later..
         keys.forEach((key) =>
         {
-            this._cacheMap.set(key, cachedAssets);
+            this._cacheMap.set(key, cachedAssets as any);
         });
 
         cacheKeys.forEach((key) =>
@@ -116,7 +119,7 @@ class CacheClass
                 // #endif
             }
 
-            this._cache.set(key, cacheableAssets[key]);
+            this._cache.set(key, cacheableMap.get(key));
         });
     }
 
@@ -126,7 +129,7 @@ class CacheClass
      * This function will also remove any associated alias from the cache also.
      * @param key - The key of the entry to remove
      */
-    public remove(key: string): void
+    public remove(key: any): void
     {
         if (!this._cacheMap.has(key))
         {
