@@ -1,25 +1,4 @@
-import { ExtensionType } from '../../../../extensions/Extensions';
-import { ColorBlend } from '../../../../filters/blend-modes/ColorBlend';
-import { ColorBurnBlend } from '../../../../filters/blend-modes/ColorBurnBlend';
-import { ColorDodgeBlend } from '../../../../filters/blend-modes/ColorDodgeBlend';
-import { DarkenBlend } from '../../../../filters/blend-modes/DarkenBlend';
-import { DifferenceBlend } from '../../../../filters/blend-modes/DifferenceBlend';
-import { DivideBlend } from '../../../../filters/blend-modes/DivideBlend';
-import { ExclusionBlend } from '../../../../filters/blend-modes/ExclusionBlend';
-import { HardLightBlend } from '../../../../filters/blend-modes/HardLightBlend';
-import { HardMixBlend } from '../../../../filters/blend-modes/HardMixBlend';
-import { LightenBlend } from '../../../../filters/blend-modes/LightenBlend';
-import { LinearBurnBlend } from '../../../../filters/blend-modes/LinearBurnBlend';
-import { LinearDodgeBlend } from '../../../../filters/blend-modes/LinearDodgeBlend';
-import { LinearLightBlend } from '../../../../filters/blend-modes/LinearLightBlend';
-import { LuminosityBlend } from '../../../../filters/blend-modes/LuminosityBlend';
-import { NegationBlend } from '../../../../filters/blend-modes/NegationBlend';
-import { OverlayBlend } from '../../../../filters/blend-modes/OverlayBlend';
-import { PinLightBlend } from '../../../../filters/blend-modes/PinLightBlend';
-import { SaturationBlend } from '../../../../filters/blend-modes/SaturationBlend';
-import { SoftLightBlend } from '../../../../filters/blend-modes/SoftLightBlend';
-import { SubtractBlend } from '../../../../filters/blend-modes/SubtractBlend';
-import { VividLightBlend } from '../../../../filters/blend-modes/VividLightBlend';
+import { extensions, ExtensionType } from '../../../../extensions/Extensions';
 import { FilterEffect } from '../../../../filters/FilterEffect';
 import { warn } from '../../../../utils/logging/warn';
 
@@ -40,29 +19,19 @@ export interface AdvancedBlendInstruction extends Instruction
 }
 
 // class map
-const BLEND_MODE_FILTERS: Partial<Record<BLEND_MODES, new () => BlendModeFilter>> = {
-    color: ColorBlend,
-    'color-burn': ColorBurnBlend,
-    'color-dodge': ColorDodgeBlend,
-    darken: DarkenBlend,
-    difference: DifferenceBlend,
-    divide: DivideBlend,
-    exclusion: ExclusionBlend,
-    'hard-light': HardLightBlend,
-    'hard-mix': HardMixBlend,
-    lighten: LightenBlend,
-    'linear-burn': LinearBurnBlend,
-    'linear-dodge': LinearDodgeBlend,
-    'linear-light': LinearLightBlend,
-    luminosity: LuminosityBlend,
-    negation: NegationBlend,
-    overlay: OverlayBlend,
-    'pin-light': PinLightBlend,
-    saturation: SaturationBlend,
-    'soft-light': SoftLightBlend,
-    subtract: SubtractBlend,
-    'vivid-light': VividLightBlend,
-} as const;
+const BLEND_MODE_FILTERS: Partial<Record<BLEND_MODES, new () => BlendModeFilter>> = {} as const;
+
+extensions.handle(ExtensionType.BlendMode, (value) =>
+{
+    if (!value.name)
+    {
+        throw new Error('BlendMode extension must have a name property');
+    }
+    BLEND_MODE_FILTERS[value.name as BLEND_MODES] = value.ref;
+}, (value) =>
+{
+    delete BLEND_MODE_FILTERS[value.name as BLEND_MODES];
+});
 
 export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
 {
@@ -106,6 +75,30 @@ export class BlendModePipe implements InstructionPipe<AdvancedBlendInstruction>
         }
 
         this._isAdvanced = !!BLEND_MODE_FILTERS[blendMode];
+
+        // #if _DEBUG
+        const normalBlendModes: BLEND_MODES[] = [
+            'normal',
+            'add',
+            'multiply',
+            'screen',
+            'none',
+            'erase',
+            'normal-npm',
+            'add-npm',
+            'screen-npm',
+        ];
+
+        if (!this._isAdvanced && !normalBlendModes.includes(blendMode))
+        {
+            // convert blendmode to capitalized string and split on hyphen and capitalize each word
+            const blendModeString = blendMode.split('-').map((word) => word[0].toUpperCase() + word.slice(1))
+                .join('');
+
+            // eslint-disable-next-line max-len
+            warn(`Blend mode '${blendMode}' is not active. It may not have been imported e.g 'import { ${blendModeString} } from 'pixi.js'`);
+        }
+        // #endif
 
         if (this._isAdvanced)
         {

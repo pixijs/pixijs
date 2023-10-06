@@ -1,6 +1,9 @@
 /* eslint-disable max-len */
 
+import { ExtensionType } from '../../extensions/Extensions';
 import { BlendModeFilter } from './BlendModeFilter';
+
+import type { ExtensionMetadata } from '../../extensions/Extensions';
 
 /**
  Looks at the color information in each channel and darkens the base color to
@@ -8,6 +11,12 @@ import { BlendModeFilter } from './BlendModeFilter';
  */
 export class LinearBurnBlend extends BlendModeFilter
 {
+    /** @ignore */
+    public static extensions: ExtensionMetadata = {
+        name: 'linear-burn',
+        type: ExtensionType.BlendMode
+    };
+
     constructor()
     {
         super({
