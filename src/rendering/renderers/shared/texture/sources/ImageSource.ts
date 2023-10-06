@@ -1,15 +1,31 @@
+import { ExtensionType } from '../../../../../extensions/Extensions';
 import { DOMAdapter } from '../../../../../settings/adapter/adapter';
 import { NOOP } from '../../../../../utils/NOOP';
 import { Texture } from '../Texture';
 import { TextureSource } from './TextureSource';
 
+import type { ExtensionMetadata } from '../../../../../extensions/Extensions';
 import type { ICanvas } from '../../../../../settings/adapter/ICanvas';
 
-type ImageResource = ImageBitmap | HTMLCanvasElement | OffscreenCanvas | ICanvas | VideoFrame;
+export type ImageResource =
+ImageBitmap
+| HTMLCanvasElement
+| OffscreenCanvas
+| ICanvas
+| VideoFrame
+| HTMLImageElement
+| HTMLVideoElement;
 
 export class ImageSource extends TextureSource<ImageResource>
 {
+    public static extension: ExtensionMetadata = ExtensionType.TextureSource;
     public uploadMethodId = 'image';
+
+    public static test(resource: any): resource is ImageResource
+    {
+        return (typeof HTMLImageElement !== 'undefined' && resource instanceof HTMLImageElement)
+        || (typeof ImageBitmap !== 'undefined' && resource instanceof ImageBitmap);
+    }
 }
 
 // create a white canvas

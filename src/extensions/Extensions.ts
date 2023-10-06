@@ -37,6 +37,8 @@ enum ExtensionType
     DetectionParser = 'detection-parser',
 
     MaskEffect = 'mask-effect',
+
+    TextureSource = 'texture-source',
 }
 
 interface ExtensionMetadataDetails

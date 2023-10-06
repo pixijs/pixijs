@@ -3,7 +3,7 @@ import { Cache } from '../../../../assets/cache/Cache';
 import { uid } from '../../../../utils/data/uid';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
 import { NOOP } from '../../../../utils/NOOP';
-import { BufferImageSource } from './sources/BufferImageSource';
+import { resourceToTexture } from './sources/resourceToTexture';
 import { TextureSource } from './sources/TextureSource';
 import { TextureLayout } from './TextureLayout';
 import { TextureMatrix } from './TextureMatrix';
@@ -31,7 +31,7 @@ export class Texture extends EventEmitter<{
     destroy: Texture
 }> implements BindableTexture
 {
-    public static from(id: string | TextureSource | TextureSourceOptions): Texture
+    public static from(id: string | TextureSource | TextureSourceOptions | BufferSourceOptions, skipCache = false): Texture
     {
         if (typeof id === 'string')
         {
@@ -42,22 +42,8 @@ export class Texture extends EventEmitter<{
             return new Texture({ source: id });
         }
 
-        // TODO check to see if there is a resource and use the correct source type
-        return new Texture({
-            source: new TextureSource(id)
-        });
-    }
-
-    public static fromBuffer(options: BufferSourceOptions): Texture
-    {
-        return new Texture({
-            source: BufferImageSource.from({
-                ...options,
-                style: {
-                    scaleMode: 'nearest',
-                }
-            }),
-        });
+        // return a auto generated texture from resource
+        return resourceToTexture(id, skipCache);
     }
 
     public label?: string;

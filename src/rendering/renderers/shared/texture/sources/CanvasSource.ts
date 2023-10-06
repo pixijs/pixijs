@@ -1,6 +1,8 @@
+import { ExtensionType } from '../../../../../extensions/Extensions';
 import { DOMAdapter } from '../../../../../settings/adapter/adapter';
 import { TextureSource } from './TextureSource';
 
+import type { ExtensionMetadata } from '../../../../../extensions/Extensions';
 import type { ICanvas } from '../../../../../settings/adapter/ICanvas';
 import type { TextureSourceOptions } from './TextureSource';
 
@@ -11,6 +13,8 @@ export interface CanvasSourceOptions extends TextureSourceOptions<ICanvas>
 
 export class CanvasSource extends TextureSource<ICanvas>
 {
+    public static extension: ExtensionMetadata = ExtensionType.TextureSource;
+
     public uploadMethodId = 'image';
     public autoDensity: boolean;
 
@@ -72,5 +76,11 @@ export class CanvasSource extends TextureSource<ICanvas>
         super.resize(width, height, resolution);
 
         this.resizeCanvas();
+    }
+
+    public static test(resource: any): resource is ICanvas
+    {
+        return (globalThis.HTMLCanvasElement && resource instanceof HTMLCanvasElement)
+        || (globalThis.OffscreenCanvas && resource instanceof OffscreenCanvas);
     }
 }

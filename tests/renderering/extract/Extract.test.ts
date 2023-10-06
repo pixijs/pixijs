@@ -5,6 +5,7 @@ import { Graphics } from '../../../src/scene/graphics/shared/Graphics';
 import { Sprite } from '../../../src/scene/sprite/Sprite';
 import { getRenderer } from '../../utils/getRenderer';
 import { getTexture } from '../../utils/getTexture';
+import '../../../src/rendering/init';
 
 import type { WebGLRenderer } from '../../../src/rendering/renderers/gl/WebGLRenderer';
 
@@ -145,7 +146,7 @@ describe('GenerateTexture', () =>
             0, 0, 255, 102, 255, 255, 0, 51
         ]);
 
-        const texture = Texture.fromBuffer({
+        const texture = Texture.from({
             resource: texturePixels,
             width: 2,
             height: 2,
@@ -170,7 +171,7 @@ describe('GenerateTexture', () =>
             0, 0, 255, 102, 255, 255, 0, 51
         ]);
 
-        const texture = Texture.fromBuffer({
+        const texture = Texture.from({
             resource: texturePixels,
             width: 2,
             height: 2,
@@ -201,7 +202,7 @@ describe('GenerateTexture', () =>
             0, 0, 255, 102, 255, 255, 0, 51
         ]);
 
-        const texture = Texture.fromBuffer({
+        const texture = Texture.from({
             resource: texturePixels,
             width: 2,
             height: 2,
