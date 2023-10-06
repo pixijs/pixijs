@@ -1,9 +1,11 @@
 // VideoSource.ts
 
+import { ExtensionType } from '../../../../../extensions/Extensions';
 import { Ticker } from '../../../../../ticker/Ticker';
 import { detectVideoAlphaMode } from '../../../../../utils/browser/detectVideoAlphaMode';
 import { TextureSource } from './TextureSource';
 
+import type { ExtensionMetadata } from '../../../../../extensions/Extensions';
 import type { Dict } from '../../../../../utils/types';
 import type { ALPHA_MODES } from '../const';
 import type { TextureSourceOptions } from './TextureSource';
@@ -31,6 +33,8 @@ export interface VideoResourceOptionsElement
 
 export class VideoSource extends TextureSource<VideoResource>
 {
+    public static extension: ExtensionMetadata = ExtensionType.TextureSource;
+
     // Public static
     public static defaultOptions: VideoSourceOptions = {
         ...TextureSource.defaultOptions,
@@ -495,4 +499,10 @@ export class VideoSource extends TextureSource<VideoResource>
             mov: 'video/quicktime',
             m4v: 'video/mp4',
         };
+
+    public static test(resource: any): resource is VideoResource
+    {
+        return (globalThis.HTMLVideoElement && resource instanceof HTMLVideoElement)
+        || (globalThis.VideoFrame && resource instanceof VideoFrame);
+    }
 }
