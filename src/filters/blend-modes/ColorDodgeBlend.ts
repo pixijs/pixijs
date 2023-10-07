@@ -11,7 +11,7 @@ import type { ExtensionMetadata } from '../../extensions/Extensions';
 export class ColorDodgeBlend extends BlendModeFilter
 {
     /** @ignore */
-    public static extensions: ExtensionMetadata = {
+    public static extension: ExtensionMetadata = {
         name: 'color-dodge',
         type: ExtensionType.BlendMode
     };

@@ -8,7 +8,7 @@ import type { ExtensionMetadata } from '../../extensions/Extensions';
 export class VividLightBlend extends BlendModeFilter
 {
     /** @ignore */
-    public static extensions: ExtensionMetadata = {
+    public static extension: ExtensionMetadata = {
         name: 'vivid-light',
         type: ExtensionType.BlendMode
     };

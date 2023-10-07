@@ -9,7 +9,7 @@ import type { ExtensionMetadata } from '../../extensions/Extensions';
 export class DivideBlend extends BlendModeFilter
 {
     /** @ignore */
-    public static extensions: ExtensionMetadata = {
+    public static extension: ExtensionMetadata = {
         name: 'divide',
         type: ExtensionType.BlendMode
     };

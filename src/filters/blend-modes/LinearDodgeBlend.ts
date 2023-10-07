@@ -9,7 +9,7 @@ import type { ExtensionMetadata } from '../../extensions/Extensions';
 export class LinearDodgeBlend extends BlendModeFilter
 {
     /** @ignore */
-    public static extensions: ExtensionMetadata = {
+    public static extension: ExtensionMetadata = {
         name: 'linear-dodge',
         type: ExtensionType.BlendMode
     };

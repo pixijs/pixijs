@@ -12,7 +12,7 @@ import type { ExtensionMetadata } from '../../extensions/Extensions';
 export class ColorBurnBlend extends BlendModeFilter
 {
     /** @ignore */
-    public static extensions: ExtensionMetadata = {
+    public static extension: ExtensionMetadata = {
         name: 'color-burn',
         type: ExtensionType.BlendMode
     };

@@ -12,7 +12,7 @@ import type { ExtensionMetadata } from '../../extensions/Extensions';
 export class HardMixBlend extends BlendModeFilter
 {
     /** @ignore */
-    public static extensions: ExtensionMetadata = {
+    public static extension: ExtensionMetadata = {
         name: 'hard-mix',
         type: ExtensionType.BlendMode
     };

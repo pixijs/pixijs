@@ -7,7 +7,7 @@ import type { ExtensionMetadata } from '../../extensions/Extensions';
 export class DarkenBlend extends BlendModeFilter
 {
     /** @ignore */
-    public static extensions: ExtensionMetadata = {
+    public static extension: ExtensionMetadata = {
         name: 'darken',
         type: ExtensionType.BlendMode
     };

@@ -8,7 +8,7 @@ import type { ExtensionMetadata } from '../../extensions/Extensions';
 export class SoftLightBlend extends BlendModeFilter
 {
     /** @ignore */
-    public static extensions: ExtensionMetadata = {
+    public static extension: ExtensionMetadata = {
         name: 'soft-light',
         type: ExtensionType.BlendMode
     };
