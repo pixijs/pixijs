@@ -16,7 +16,10 @@ export function getMaxFragmentPrecision(): PRECISION
             {
                 const shaderFragment = gl.getShaderPrecisionFormat(gl.FRAGMENT_SHADER, gl.HIGH_FLOAT);
 
-                maxFragmentPrecision = shaderFragment.precision ? PRECISION.HIGH : PRECISION.MEDIUM;
+                if (shaderFragment)
+                {
+                    maxFragmentPrecision = shaderFragment.precision ? PRECISION.HIGH : PRECISION.MEDIUM;
+                }
             }
         }
     }
