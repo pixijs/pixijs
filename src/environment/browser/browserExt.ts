@@ -6,13 +6,9 @@ export const browserExt = {
         name: 'browser',
         priority: -1,
     },
-    test: async (manageImports: boolean) =>
+    test: () => true,
+    load: async () =>
     {
-        if (manageImports)
-        {
-            await import('./browserAll');
-        }
-
-        return true;
+        await import('./browserAll');
     },
 };

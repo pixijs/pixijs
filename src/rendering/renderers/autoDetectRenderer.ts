@@ -42,7 +42,7 @@ export async function autoDetectRenderer(options: Partial<AutoDetectOptions>): P
     let RendererClass: new () => Renderer;
 
     await autoDetectEnvironment(
-        options.manageImports ?? false,
+        options.manageImports ?? true,
     );
 
     let finalOptions: Partial<AutoDetectOptions> = {};

@@ -6,18 +6,9 @@ export const webworkerExt = {
         name: 'webworker',
         priority: 0,
     },
-    test: async (manageImports: boolean) =>
+    test: () => typeof self !== 'undefined' && self.WorkerGlobalScope !== undefined,
+    load: async () =>
     {
-        if (typeof self === 'undefined' || self.WorkerGlobalScope === undefined)
-        {
-            return false;
-        }
-
-        if (manageImports)
-        {
-            await import('./webworkerAll');
-        }
-
-        return true;
+        await import('./webworkerAll');
     },
 };

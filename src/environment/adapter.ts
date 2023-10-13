@@ -1,4 +1,4 @@
-import { BrowserAdapter } from './browser/browser';
+import { BrowserAdapter } from './browser/BrowserAdapter';
 
 import type { ICanvas } from './canvas/ICanvas';
 import type { ICanvasRenderingContext2D } from './canvas/ICanvasRenderingContext2D';
