@@ -91,14 +91,6 @@ describe('TextureSystem', () =>
         expect(glTex.internalFormat).toEqual(renderer.gl.RGB32F);
     });
 
-    function createIntegerTexture()
-    {
-        return BaseTexture.fromBuffer(new Uint8Array([0]), 1, 1, {
-            format: FORMATS.RED_INTEGER,
-            type: TYPES.UNSIGNED_BYTE
-        });
-    }
-
     it('should unbind textures with non-float samplerType for batching', () =>
     {
         if (renderer.context.webGLVersion === 1)
@@ -108,8 +100,13 @@ describe('TextureSystem', () =>
 
         const textureSystem = renderer.texture;
         const { boundTextures } = textureSystem;
-        const sampleTex = createIntegerTexture();
-        const sampleTex2 = createIntegerTexture();
+        const sampleTex = BaseTexture.fromBuffer(new Int32Array(4), 1, 1);
+        const sampleTex2 = BaseTexture.fromBuffer(new Int32Array(4), 1, 1);
+
+        expect(sampleTex.format).toBe(FORMATS.RGBA_INTEGER);
+        expect(sampleTex2.format).toBe(FORMATS.RGBA_INTEGER);
+        expect(sampleTex.type).toBe(TYPES.INT);
+        expect(sampleTex2.type).toBe(TYPES.INT);
 
         textureSystem.bind(Texture.WHITE.baseTexture, 0);
         textureSystem.bind(sampleTex, 1);
@@ -133,6 +130,22 @@ describe('TextureSystem', () =>
         expect(Texture.EMPTY.baseTexture.valid).toBe(false);
 
         textureSystem.bind(Texture.EMPTY.baseTexture, 0);
+
+        expect(textureSystem.boundTextures[0]).toEqual(null);
+
+        const baseTexture = createTempTexture();
+
+        expect(baseTexture.valid).toBe(true);
+
+        textureSystem.bind(baseTexture, 0);
+
+        expect(textureSystem.boundTextures[0]).toEqual(baseTexture);
+
+        baseTexture.destroy();
+
+        expect(baseTexture.valid).toBe(false);
+
+        textureSystem.bind(baseTexture, 0);
 
         expect(textureSystem.boundTextures[0]).toEqual(null);
     });

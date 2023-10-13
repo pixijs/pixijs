@@ -190,9 +190,10 @@ export class BasisParser
 
         if (!basisFile.startTranscoding())
         {
-            // #if _DEBUG
-            console.error(`Basis failed to start transcoding!`);
-            // #endif
+            if (process.env.DEBUG)
+            {
+                console.error(`Basis failed to start transcoding!`);
+            }
 
             basisFile.close();
             basisFile.delete();
@@ -231,9 +232,10 @@ export class BasisParser
                 {
                     if (fallbackMode)
                     {
-                        // #if _DEBUG
-                        console.error(`Basis failed to transcode image ${i}, level ${0}!`);
-                        // #endif
+                        if (process.env.DEBUG)
+                        {
+                            console.error(`Basis failed to transcode image ${i}, level ${0}!`);
+                        }
                         break;
                     }
                     else
@@ -243,10 +245,11 @@ export class BasisParser
                         i = -1;
                         fallbackMode = true;
 
-                        // #if _DEBUG
+                        if (process.env.DEBUG)
+                        {
                         /* eslint-disable-next-line max-len */
-                        console.warn(`Basis failed to transcode image ${i}, level ${0} to a compressed texture format. Retrying to an uncompressed fallback format!`);
-                        // #endif
+                            console.warn(`Basis failed to transcode image ${i}, level ${0} to a compressed texture format. Retrying to an uncompressed fallback format!`);
+                        }
                         continue;
                     }
                 }

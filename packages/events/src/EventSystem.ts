@@ -6,6 +6,7 @@ import { FederatedWheelEvent } from './FederatedWheelEvent';
 
 import type { ExtensionMetadata, IPointData, IRenderer, ISystem } from '@pixi/core';
 import type { DisplayObject } from '@pixi/display';
+import type { PixiTouch } from './FederatedEvent';
 import type { EventMode } from './FederatedEventTarget';
 import type { FederatedMouseEvent } from './FederatedMouseEvent';
 
@@ -344,9 +345,6 @@ export class EventSystem implements ISystem<EventSystemOptions>
         if (!this.features.click) return;
         this.rootBoundary.rootTarget = this.renderer.lastObjectRendered as DisplayObject;
 
-        // if we support touch events, then only use those for touch events, not pointer events
-        if (this.supportsTouchEvents && (nativeEvent as PointerEvent).pointerType === 'touch') return;
-
         const events = this.normalizeToPointerData(nativeEvent);
 
         /*
@@ -387,9 +385,6 @@ export class EventSystem implements ISystem<EventSystemOptions>
         if (!this.features.move) return;
         this.rootBoundary.rootTarget = this.renderer.lastObjectRendered as DisplayObject;
 
-        // if we support touch events, then only use those for touch events, not pointer events
-        if (this.supportsTouchEvents && (nativeEvent as PointerEvent).pointerType === 'touch') return;
-
         EventsTicker.pointerMoved();
 
         const normalizedEvents = this.normalizeToPointerData(nativeEvent);
@@ -412,9 +407,6 @@ export class EventSystem implements ISystem<EventSystemOptions>
     {
         if (!this.features.click) return;
         this.rootBoundary.rootTarget = this.renderer.lastObjectRendered as DisplayObject;
-
-        // if we support touch events, then only use those for touch events, not pointer events
-        if (this.supportsTouchEvents && (nativeEvent as PointerEvent).pointerType === 'touch') return;
 
         let target = nativeEvent.target;
 
@@ -447,9 +439,6 @@ export class EventSystem implements ISystem<EventSystemOptions>
     {
         if (!this.features.click) return;
         this.rootBoundary.rootTarget = this.renderer.lastObjectRendered as DisplayObject;
-
-        // if we support touch events, then only use those for touch events, not pointer events
-        if (this.supportsTouchEvents && (nativeEvent as PointerEvent).pointerType === 'touch') return;
 
         const normalizedEvents = this.normalizeToPointerData(nativeEvent);
 
@@ -538,17 +527,14 @@ export class EventSystem implements ISystem<EventSystemOptions>
             this.domElement.addEventListener('mouseout', this.onPointerOverOut, true);
             this.domElement.addEventListener('mouseover', this.onPointerOverOut, true);
             globalThis.addEventListener('mouseup', this.onPointerUp, true);
-        }
 
-        // Always look directly for touch events so that we can provide original data
-        // In a future version we should change this to being just a fallback and rely solely on
-        // PointerEvents whenever available
-        if (this.supportsTouchEvents)
-        {
-            this.domElement.addEventListener('touchstart', this.onPointerDown, true);
-            // this.domElement.addEventListener('touchcancel', this.onPointerCancel, true);
-            this.domElement.addEventListener('touchend', this.onPointerUp, true);
-            this.domElement.addEventListener('touchmove', this.onPointerMove, true);
+            if (this.supportsTouchEvents)
+            {
+                this.domElement.addEventListener('touchstart', this.onPointerDown, true);
+                // this.domElement.addEventListener('touchcancel', this.onPointerCancel, true);
+                this.domElement.addEventListener('touchend', this.onPointerUp, true);
+                this.domElement.addEventListener('touchmove', this.onPointerMove, true);
+            }
         }
 
         this.domElement.addEventListener('wheel', this.onWheel, {
@@ -597,14 +583,14 @@ export class EventSystem implements ISystem<EventSystemOptions>
             this.domElement.removeEventListener('mouseout', this.onPointerOverOut, true);
             this.domElement.removeEventListener('mouseover', this.onPointerOverOut, true);
             globalThis.removeEventListener('mouseup', this.onPointerUp, true);
-        }
 
-        if (this.supportsTouchEvents)
-        {
-            this.domElement.removeEventListener('touchstart', this.onPointerDown, true);
-            // this.domElement.removeEventListener('touchcancel', this.onPointerCancel, true);
-            this.domElement.removeEventListener('touchend', this.onPointerUp, true);
-            this.domElement.removeEventListener('touchmove', this.onPointerMove, true);
+            if (this.supportsTouchEvents)
+            {
+                this.domElement.removeEventListener('touchstart', this.onPointerDown, true);
+                // this.domElement.removeEventListener('touchcancel', this.onPointerCancel, true);
+                this.domElement.removeEventListener('touchend', this.onPointerUp, true);
+                this.domElement.removeEventListener('touchmove', this.onPointerMove, true);
+            }
         }
 
         this.domElement.removeEventListener('wheel', this.onWheel, true);
@@ -623,12 +609,9 @@ export class EventSystem implements ISystem<EventSystemOptions>
      */
     public mapPositionToPoint(point: IPointData, x: number, y: number): void
     {
-        let rect;
-
-        // IE 11 fix
-        if (!this.domElement.parentElement)
-        {
-            rect = {
+        const rect = this.domElement.isConnected
+            ? this.domElement.getBoundingClientRect()
+            : {
                 x: 0,
                 y: 0,
                 width: (this.domElement as any).width,
@@ -636,11 +619,6 @@ export class EventSystem implements ISystem<EventSystemOptions>
                 left: 0,
                 top: 0
             };
-        }
-        else
-        {
-            rect = this.domElement.getBoundingClientRect();
-        }
 
         const resolutionMultiplier = 1.0 / this.resolution;
 
@@ -848,28 +826,6 @@ interface PixiPointerEvent extends PointerEvent
     pressure: number;
     twist: number;
     tangentialPressure: number;
-    isNormalized: boolean;
-    type: string;
-}
-
-interface PixiTouch extends Touch
-{
-    button: number;
-    buttons: number;
-    isPrimary: boolean;
-    width: number;
-    height: number;
-    tiltX: number;
-    tiltY: number;
-    pointerType: string;
-    pointerId: number;
-    pressure: number;
-    twist: number;
-    tangentialPressure: number;
-    layerX: number;
-    layerY: number;
-    offsetX: number;
-    offsetY: number;
     isNormalized: boolean;
     type: string;
 }

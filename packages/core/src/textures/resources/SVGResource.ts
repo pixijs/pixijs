@@ -84,7 +84,7 @@ export class SVGResource extends BaseImageResource
             // Save this until after load is finished
             this._resolve = (): void =>
             {
-                this.resize(this.source.width, this.source.height);
+                this.update();
                 resolve(this);
             };
 

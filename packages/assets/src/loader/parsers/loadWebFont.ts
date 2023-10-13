@@ -78,6 +78,23 @@ export function getFontFamilyName(url: string): string
     return fontFamilyName;
 }
 
+// See RFC 3986 Chapter 2. Characters
+const validURICharactersRegex = /^[0-9A-Za-z%:/?#\[\]@!\$&'()\*\+,;=\-._~]*$/;
+
+/**
+ * Encode URI only when it contains invalid characters.
+ * @param uri - URI to encode.
+ */
+function encodeURIWhenNeeded(uri: string)
+{
+    if (validURICharactersRegex.test(uri))
+    {
+        return uri;
+    }
+
+    return encodeURI(uri);
+}
+
 /** Web font loader plugin */
 export const loadWebFont = {
     extension: {
@@ -107,7 +124,7 @@ export const loadWebFont = {
             {
                 const weight = weights[i];
 
-                const font = new FontFace(name, `url(${encodeURI(url)})`, {
+                const font = new FontFace(name, `url(${encodeURIWhenNeeded(url)})`, {
                     ...data,
                     weight,
                 });
@@ -122,9 +139,10 @@ export const loadWebFont = {
             return fontFaces.length === 1 ? fontFaces[0] : fontFaces;
         }
 
-        // #if _DEBUG
-        console.warn('[loadWebFont] FontFace API is not supported. Skipping loading font');
-        // #endif
+        if (process.env.DEBUG)
+        {
+            console.warn('[loadWebFont] FontFace API is not supported. Skipping loading font');
+        }
 
         return null;
     },

@@ -111,9 +111,10 @@ export const loadTextures = {
 
     async load(url: string, asset: ResolvedAsset<IBaseTextureOptions>, loader: Loader): Promise<Texture>
     {
-        let src: any = null;
+        const useImageBitmap = globalThis.createImageBitmap && this.config.preferCreateImageBitmap;
+        let src: HTMLImageElement | ImageBitmap;
 
-        if (globalThis.createImageBitmap && this.config.preferCreateImageBitmap)
+        if (useImageBitmap)
         {
             if (this.config.preferWorkers && await WorkerManager.isImageBitmapSupported())
             {
@@ -126,11 +127,11 @@ export const loadTextures = {
         }
         else
         {
-            src = await new Promise((resolve) =>
+            src = await new Promise((resolve, reject) =>
             {
-                src = new Image();
-                src.crossOrigin = this.config.crossOrigin;
+                const src = new Image();
 
+                src.crossOrigin = this.config.crossOrigin;
                 src.src = url;
                 if (src.complete)
                 {
@@ -138,18 +139,22 @@ export const loadTextures = {
                 }
                 else
                 {
-                    src.onload = (): void =>
-                    {
-                        resolve(src);
-                    };
+                    src.onload = () => resolve(src);
+                    src.onerror = (e) => reject(e);
                 }
             });
         }
 
-        const base = new BaseTexture(src, {
-            resolution: utils.getResolutionOfUrl(url),
-            ...asset.data,
-        });
+        const options = { ...asset.data };
+
+        options.resolution ??= utils.getResolutionOfUrl(url);
+        if (useImageBitmap && options.resourceOptions?.ownsImageBitmap === undefined)
+        {
+            options.resourceOptions = { ...options.resourceOptions };
+            options.resourceOptions.ownsImageBitmap = true;
+        }
+
+        const base = new BaseTexture(src, options);
 
         base.resource.src = url;
 

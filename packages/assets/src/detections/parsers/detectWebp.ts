@@ -1,4 +1,5 @@
-import { extensions, ExtensionType, settings } from '@pixi/core';
+import { extensions, ExtensionType } from '@pixi/core';
+import { testImageFormat } from '../utils/testImageFormat';
 
 import type { FormatDetectionParser } from '..';
 
@@ -7,15 +8,9 @@ export const detectWebp = {
         type: ExtensionType.DetectionParser,
         priority: 0,
     },
-    test: async (): Promise<boolean> =>
-    {
-        if (!globalThis.createImageBitmap) return false;
-
-        const webpData = 'data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAAAAAAfQ//73v/+BiOh/AAA=';
-        const blob = await settings.ADAPTER.fetch(webpData).then((r) => r.blob());
-
-        return createImageBitmap(blob).then(() => true, () => false);
-    },
+    test: async (): Promise<boolean> => testImageFormat(
+        'data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAAAAAAfQ//73v/+BiOh/AAA='
+    ),
     add: async (formats) => [...formats, 'webp'],
     remove: async (formats) => formats.filter((f) => f !== 'webp'),
 } as FormatDetectionParser;

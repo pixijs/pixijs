@@ -349,10 +349,11 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
 
         if ('useContextAlpha' in options)
         {
-            // #if _DEBUG
-            // eslint-disable-next-line max-len
-            deprecation('7.0.0', 'options.useContextAlpha is deprecated, use options.premultipliedAlpha and options.backgroundAlpha instead');
-            // #endif
+            if (process.env.DEBUG)
+            {
+                // eslint-disable-next-line max-len
+                deprecation('7.0.0', 'options.useContextAlpha is deprecated, use options.premultipliedAlpha and options.backgroundAlpha instead');
+            }
             options.premultipliedAlpha = options.useContextAlpha && options.useContextAlpha !== 'notMultiplied';
             options.backgroundAlpha = options.useContextAlpha === false ? 1 : options.backgroundAlpha;
         }
@@ -510,10 +511,11 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      */
     get clearBeforeRender(): boolean
     {
-        // #if _DEBUG
-        // eslint-disable-next-line max-len
-        deprecation('7.0.0', 'renderer.clearBeforeRender has been deprecated, please use renderer.background.clearBeforeRender instead.');
-        // #endif
+        if (process.env.DEBUG)
+        {
+            // eslint-disable-next-line max-len
+            deprecation('7.0.0', 'renderer.clearBeforeRender has been deprecated, please use renderer.background.clearBeforeRender instead.');
+        }
 
         return this.background.clearBeforeRender;
     }
@@ -526,10 +528,11 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      */
     get useContextAlpha(): boolean | 'notMultiplied'
     {
-        // #if _DEBUG
-        // eslint-disable-next-line max-len
-        deprecation('7.0.0', 'renderer.useContextAlpha has been deprecated, please use renderer.context.premultipliedAlpha instead.');
-        // #endif
+        if (process.env.DEBUG)
+        {
+            // eslint-disable-next-line max-len
+            deprecation('7.0.0', 'renderer.useContextAlpha has been deprecated, please use renderer.context.premultipliedAlpha instead.');
+        }
 
         return this.context.useContextAlpha;
     }
@@ -541,10 +544,11 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      */
     get preserveDrawingBuffer(): boolean
     {
-        // #if _DEBUG
-        // eslint-disable-next-line max-len
-        deprecation('7.0.0', 'renderer.preserveDrawingBuffer has been deprecated, we cannot truly know this unless pixi created the context');
-        // #endif
+        if (process.env.DEBUG)
+        {
+            // eslint-disable-next-line max-len
+            deprecation('7.0.0', 'renderer.preserveDrawingBuffer has been deprecated, we cannot truly know this unless pixi created the context');
+        }
 
         return this.context.preserveDrawingBuffer;
     }
@@ -556,19 +560,21 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      */
     get backgroundColor(): ColorSource
     {
-        // #if _DEBUG
-        // eslint-disable-next-line max-len
-        deprecation('7.0.0', 'renderer.backgroundColor has been deprecated, use renderer.background.color instead.');
-        // #endif
+        if (process.env.DEBUG)
+        {
+            // eslint-disable-next-line max-len
+            deprecation('7.0.0', 'renderer.backgroundColor has been deprecated, use renderer.background.color instead.');
+        }
 
         return this.background.color;
     }
 
     set backgroundColor(value: ColorSource)
     {
-        // #if _DEBUG
-        deprecation('7.0.0', 'renderer.backgroundColor has been deprecated, use renderer.background.color instead.');
-        // #endif
+        if (process.env.DEBUG)
+        {
+            deprecation('7.0.0', 'renderer.backgroundColor has been deprecated, use renderer.background.color instead.');
+        }
 
         this.background.color = value;
     }
@@ -580,10 +586,11 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      */
     get backgroundAlpha(): number
     {
-        // #if _DEBUG
-        // eslint-disable-next-line max-len
-        deprecation('7.0.0', 'renderer.backgroundAlpha has been deprecated, use renderer.background.alpha instead.');
-        // #endif
+        if (process.env.DEBUG)
+        {
+            // eslint-disable-next-line max-len
+            deprecation('7.0.0', 'renderer.backgroundAlpha has been deprecated, use renderer.background.alpha instead.');
+        }
 
         return this.background.alpha;
     }
@@ -593,10 +600,11 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      */
     set backgroundAlpha(value: number)
     {
-        // #if _DEBUG
-        // eslint-disable-next-line max-len
-        deprecation('7.0.0', 'renderer.backgroundAlpha has been deprecated, use renderer.background.alpha instead.');
-        // #endif
+        if (process.env.DEBUG)
+        {
+            // eslint-disable-next-line max-len
+            deprecation('7.0.0', 'renderer.backgroundAlpha has been deprecated, use renderer.background.alpha instead.');
+        }
 
         this.background.alpha = value;
     }
@@ -606,10 +614,11 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      */
     get powerPreference(): WebGLPowerPreference
     {
-        // #if _DEBUG
-        // eslint-disable-next-line max-len
-        deprecation('7.0.0', 'renderer.powerPreference has been deprecated, we can only know this if pixi creates the context');
-        // #endif
+        if (process.env.DEBUG)
+        {
+            // eslint-disable-next-line max-len
+            deprecation('7.0.0', 'renderer.powerPreference has been deprecated, we can only know this if pixi creates the context');
+        }
 
         return this.context.powerPreference;
     }
@@ -618,12 +627,11 @@ export class Renderer extends SystemManager<Renderer> implements IRenderer
      * Useful function that returns a texture of the display object that can then be used to create sprites
      * This can be quite useful if your displayObject is complicated and needs to be reused multiple times.
      * @param displayObject - The displayObject the object will be generated from.
-     * @param {object} options - Generate texture options.
-     * @param {PIXI.SCALE_MODES} options.scaleMode - The scale mode of the texture.
-     * @param {number} options.resolution - The resolution / device pixel ratio of the texture being generated.
+     * @param {IGenerateTextureOptions} options - Generate texture options.
      * @param {PIXI.Rectangle} options.region - The region of the displayObject, that shall be rendered,
      *        if no region is specified, defaults to the local bounds of the displayObject.
-     * @param {PIXI.MSAA_QUALITY} options.multisample - The number of samples of the frame buffer.
+     * @param {number} [options.resolution] - If not given, the renderer's resolution is used.
+     * @param {PIXI.MSAA_QUALITY} [options.multisample] - If not given, the renderer's multisample is used.
      * @returns A texture of the graphics object.
      */
     generateTexture(displayObject: IRenderableObject, options?: IGenerateTextureOptions): RenderTexture

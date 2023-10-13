@@ -13,7 +13,10 @@ import type { LoaderParser } from '../LoaderParser';
 const validSVGExtension = '.svg';
 const validSVGMIME = 'image/svg+xml';
 
-/** Loads SVG's into Textures */
+/**
+ * Loads SVG's into Textures.
+ * @memberof PIXI
+ */
 export const loadSVG = {
     extension: {
         type: ExtensionType.LoadParser,
@@ -43,9 +46,9 @@ export const loadSVG = {
             ...data?.data,
         });
 
-        base.resource.src = asset;
+        base.resource.src = data.src;
 
-        const texture = createTexture(base, loader, asset);
+        const texture = createTexture(base, loader, data.src);
 
         return texture;
     },

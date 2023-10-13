@@ -73,9 +73,10 @@ export function premultiplyRgba(
     premultiply = true
 ): Float32Array
 {
-    // #if _DEBUG
-    deprecation('7.2.0', `utils.premultiplyRgba has moved to Color.premultiply`);
-    // #endif
+    if (process.env.DEBUG)
+    {
+        deprecation('7.2.0', `utils.premultiplyRgba has moved to Color.premultiply`);
+    }
 
     return Color.shared
         .setValue(rgb)
@@ -93,9 +94,10 @@ export function premultiplyRgba(
  */
 export function premultiplyTint(tint: number, alpha: number): number
 {
-    // #if _DEBUG
-    deprecation('7.2.0', `utils.premultiplyTint has moved to Color.toPremultiplied`);
-    // #endif
+    if (process.env.DEBUG)
+    {
+        deprecation('7.2.0', `utils.premultiplyTint has moved to Color.toPremultiplied`);
+    }
 
     return Color.shared
         .setValue(tint)
@@ -114,9 +116,10 @@ export function premultiplyTint(tint: number, alpha: number): number
  */
 export function premultiplyTintToRgba(tint: number, alpha: number, out?: Float32Array, premultiply = true): Float32Array
 {
-    // #if _DEBUG
-    deprecation('7.2.0', `utils.premultiplyTintToRgba has moved to Color.premultiply`);
-    // #endif
+    if (process.env.DEBUG)
+    {
+        deprecation('7.2.0', `utils.premultiplyTintToRgba has moved to Color.premultiply`);
+    }
 
     return Color.shared
         .setValue(tint)

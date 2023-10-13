@@ -97,7 +97,7 @@ export class Application<VIEW extends ICanvas = ICanvas>
      */
     get view(): VIEW
     {
-        return this.renderer.view;
+        return this.renderer?.view;
     }
 
     /**
@@ -107,7 +107,7 @@ export class Application<VIEW extends ICanvas = ICanvas>
      */
     get screen(): Rectangle
     {
-        return this.renderer.screen;
+        return this.renderer?.screen;
     }
 
     /**

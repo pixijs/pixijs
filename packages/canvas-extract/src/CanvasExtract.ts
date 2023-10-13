@@ -140,8 +140,16 @@ export class CanvasExtract implements ISystem, IExtract
             else
             {
                 renderTexture = renderer.generateTexture(target, {
+                    region: frame,
                     resolution: renderer.resolution
                 });
+
+                if (frame)
+                {
+                    TEMP_RECT.width = frame.width;
+                    TEMP_RECT.height = frame.height;
+                    frame = TEMP_RECT;
+                }
             }
         }
 
@@ -166,8 +174,8 @@ export class CanvasExtract implements ISystem, IExtract
 
         const x = Math.round(frame.x * resolution);
         const y = Math.round(frame.y * resolution);
-        const width = Math.round(frame.width * resolution);
-        const height = Math.round(frame.height * resolution);
+        const width = Math.max(Math.round(frame.width * resolution), 1);
+        const height = Math.max(Math.round(frame.height * resolution), 1);
 
         const canvasBuffer = new utils.CanvasRenderTarget(width, height, 1);
         const canvasData = context.getImageData(x, y, width, height);
@@ -208,8 +216,16 @@ export class CanvasExtract implements ISystem, IExtract
             else
             {
                 renderTexture = renderer.generateTexture(target, {
+                    region: frame,
                     resolution: renderer.resolution
                 });
+
+                if (frame)
+                {
+                    TEMP_RECT.width = frame.width;
+                    TEMP_RECT.height = frame.height;
+                    frame = TEMP_RECT;
+                }
             }
         }
 
@@ -234,8 +250,8 @@ export class CanvasExtract implements ISystem, IExtract
 
         const x = Math.round(frame.x * resolution);
         const y = Math.round(frame.y * resolution);
-        const width = Math.round(frame.width * resolution);
-        const height = Math.round(frame.height * resolution);
+        const width = Math.max(Math.round(frame.width * resolution), 1);
+        const height = Math.max(Math.round(frame.height * resolution), 1);
 
         return context.getImageData(x, y, width, height).data;
     }

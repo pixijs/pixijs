@@ -54,6 +54,12 @@ export interface AssetInitOptions
         format?: ArrayOr<string>;
     };
 
+    /**
+     * If true, don't attempt to detect whether browser has preferred formats available.
+     * May result in increased performance as it skips detection step.
+     */
+    skipDetections?: boolean;
+
     /** advanced - override how bundlesIds are generated */
     bundleIdentifier?: BundleIdentifierOptions;
 
@@ -256,9 +262,10 @@ export class AssetsClass
     {
         if (this._initialized)
         {
-            // #if _DEBUG
-            console.warn('[Assets]AssetManager already initialized, did you load before calling this Asset.init()?');
-            // #endif
+            if (process.env.DEBUG)
+            {
+                console.warn('[Assets]AssetManager already initialized, did you load before calling this Asset.init()?');
+            }
 
             return;
         }
@@ -295,34 +302,11 @@ export class AssetsClass
         const resolutionPref = options.texturePreference?.resolution ?? 1;
         const resolution = (typeof resolutionPref === 'number') ? [resolutionPref] : resolutionPref;
 
-        let formats: string[] = [];
-
-        if (options.texturePreference?.format)
-        {
-            const formatPref = options.texturePreference?.format;
-
-            formats = (typeof formatPref === 'string') ? [formatPref] : formatPref;
-
-            // we should remove any formats that are not supported by the browser
-            for (const detection of this._detections)
-            {
-                if (!await detection.test())
-                {
-                    formats = await detection.remove(formats);
-                }
-            }
-        }
-        else
-        {
-            // we should add any formats that are supported by the browser
-            for (const detection of this._detections)
-            {
-                if (await detection.test())
-                {
-                    formats = await detection.add(formats);
-                }
-            }
-        }
+        const formats = await this._detectFormats({
+            preferredFormats: options.texturePreference?.format,
+            skipDetections: options.skipDetections,
+            detections: this._detections
+        });
 
         this.resolver.prefer({
             params: {
@@ -442,14 +426,14 @@ export class AssetsClass
             {
                 if (typeof url !== 'string')
                 {
-                    this.add(url);
-                    const srcs = url.src || url.srcs;
-                    const aliases = url.alias || url.name;
+                    const aliases = this.resolver.getAlias(url);
 
-                    if (aliases && Array.isArray(aliases)) return aliases[0];
-                    if (srcs && Array.isArray(srcs)) return srcs[0];
+                    if (aliases.some((alias) => !this.resolver.hasKey(alias)))
+                    {
+                        this.add(url);
+                    }
 
-                    return aliases || srcs;
+                    return Array.isArray(aliases) ? aliases[0] : aliases;
                 }
 
                 // if it hasn't been added, add it now
@@ -837,6 +821,49 @@ export class AssetsClass
         await this.loader.unload(resolveArray);
     }
 
+    /**
+     * Detects the supported formats for the browser, and returns an array of supported formats, respecting
+     * the users preferred formats order.
+     * @param options - the options to use when detecting formats
+     * @param options.preferredFormats - the preferred formats to use
+     * @param options.skipDetections - if we should skip the detections altogether
+     * @param options.detections - the detections to use
+     * @returns - the detected formats
+     */
+    private async _detectFormats(options: {
+        preferredFormats: string | string[],
+        skipDetections: boolean,
+        detections: FormatDetectionParser[]
+    }): Promise<string[]>
+    {
+        let formats: string[] = [];
+
+        // set preferred formats
+        if (options.preferredFormats)
+        {
+            formats = Array.isArray(options.preferredFormats)
+                ? options.preferredFormats : [options.preferredFormats];
+        }
+
+        // we should add any formats that are supported by the browser
+        for (const detection of options.detections)
+        {
+            if (options.skipDetections || await detection.test())
+            {
+                formats = await detection.add(formats);
+            }
+            else if (!options.skipDetections)
+            {
+                formats = await detection.remove(formats);
+            }
+        }
+
+        // remove any duplicates
+        formats = formats.filter((format, index) => formats.indexOf(format) === index);
+
+        return formats;
+    }
+
     /** All the detection parsers currently added to the Assets class. */
     public get detections(): FormatDetectionParser[]
     {
@@ -853,10 +880,11 @@ export class AssetsClass
     }
     public set preferWorkers(value: boolean)
     {
-        // #if _DEBUG
-        utils.deprecation('7.2.0', 'Assets.prefersWorkers is deprecated, '
+        if (process.env.DEBUG)
+        {
+            utils.deprecation('7.2.0', 'Assets.prefersWorkers is deprecated, '
             + 'use Assets.setPreferences({ preferWorkers: true }) instead.');
-        // #endif
+        }
         this.setPreferences({ preferWorkers: value });
     }
 

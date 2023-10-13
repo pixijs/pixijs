@@ -14,7 +14,7 @@ module.exports = {
         '\\.worker.ts$': '<rootDir>/test/jest-webworker-loader.js',
     },
     moduleNameMapper: {
-        '^@pixi/(.*)$': '<rootDir>/packages/$1/src',
+        '^@pixi/(?!colord)(.*)$': '<rootDir>/packages/$1/src',
     },
     testMatch: ['**/?(*.)+(spec|tests).[tj]s?(x)'],
     snapshotResolver: '<rootDir>/test/jest-snapshot-resolver.js',

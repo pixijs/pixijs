@@ -1,4 +1,8 @@
-export const convertToList = <T>(input: string | T | (string | T)[], transform?: (input: string) => T): T[] =>
+export const convertToList = <T>(
+    input: string | T | (string | T)[],
+    transform?: (input: string) => T,
+    forceTransform = false
+): T[] =>
 {
     if (!Array.isArray(input))
     {
@@ -12,7 +16,7 @@ export const convertToList = <T>(input: string | T | (string | T)[], transform?:
 
     return (input as (string | T)[]).map((item): T =>
     {
-        if (typeof item === 'string')
+        if (typeof item === 'string' || forceTransform)
         {
             return transform(item as string);
         }

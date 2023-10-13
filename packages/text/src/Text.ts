@@ -80,10 +80,11 @@ export class Text extends Sprite
     }
     public static set experimentalLetterSpacing(value)
     {
-        // #if _DEBUG
-        utils.deprecation('7.1.0',
-            'Text.experimentalLetterSpacing is deprecated, use TextMetrics.experimentalLetterSpacing');
-        // #endif
+        if (process.env.DEBUG)
+        {
+            utils.deprecation('7.1.0',
+                'Text.experimentalLetterSpacing is deprecated, use TextMetrics.experimentalLetterSpacing');
+        }
 
         TextMetrics.experimentalLetterSpacing = value;
     }

@@ -47,7 +47,9 @@ export const loadKTX = {
                 });
             }
 
-            const base = new BaseTexture(resource, options);
+            const res = (resource as typeof uncompressed[0]).resource ?? (resource as typeof compressed[0]);
+
+            const base = new BaseTexture(res, options);
 
             base.ktxKeyValueData = kvData;
 

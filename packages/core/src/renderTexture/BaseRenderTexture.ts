@@ -83,8 +83,8 @@ export class BaseRenderTexture extends BaseTexture
             /* eslint-enable prefer-rest-params */
         }
 
-        options.width = options.width || 100;
-        options.height = options.height || 100;
+        options.width = options.width ?? 100;
+        options.height = options.height ?? 100;
         options.multisample ??= MSAA_QUALITY.NONE;
 
         super(null, options);

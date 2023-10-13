@@ -6,6 +6,7 @@
  */
 
 import { format as _format, parse as _parse, resolve as _resolve } from 'url';
+import { deprecation } from './logging/deprecation';
 
 interface ParsedUrlQuery
 {
@@ -80,7 +81,40 @@ type ResolveFunction = {
 };
 
 export const url = {
-    parse: _parse as ParseFunction,
-    format: _format as FormatFunction,
-    resolve: _resolve as ResolveFunction,
+    /**
+     * @deprecated since 7.3.0
+     */
+    get parse()
+    {
+        if (process.env.DEBUG)
+        {
+            deprecation('7.3.0', 'utils.url.parse is deprecated, use native URL API instead.');
+        }
+
+        return _parse as ParseFunction;
+    },
+    /**
+     * @deprecated since 7.3.0
+     */
+    get format()
+    {
+        if (process.env.DEBUG)
+        {
+            deprecation('7.3.0', 'utils.url.format is deprecated, use native URL API instead.');
+        }
+
+        return _format as FormatFunction;
+    },
+    /**
+     * @deprecated since 7.3.0
+     */
+    get resolve()
+    {
+        if (process.env.DEBUG)
+        {
+            deprecation('7.3.0', 'utils.url.resolve is deprecated, use native URL API instead.');
+        }
+
+        return _resolve as ResolveFunction;
+    }
 };
