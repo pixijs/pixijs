@@ -18,7 +18,7 @@ import { GlUniformGroupSystem } from './shader/GlUniformGroupSystem';
 import { GlStateSystem } from './state/GlStateSystem';
 import { GlTextureSystem } from './texture/GlTextureSystem';
 
-import type { ICanvas } from '../../../settings/adapter/ICanvas';
+import type { ICanvas } from '../../../environment/canvas/ICanvas';
 import type { PipeConstructor } from '../shared/instructions/RenderPipe';
 import type { SystemConstructor } from '../shared/system/System';
 import type { ExtractRendererOptions, ExtractSystemTypes } from '../shared/system/utils/typeUtils';

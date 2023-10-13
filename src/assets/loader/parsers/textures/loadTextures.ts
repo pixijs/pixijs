@@ -1,6 +1,6 @@
+import { DOMAdapter } from '../../../../environment/adapter';
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { ImageSource } from '../../../../rendering/renderers/shared/texture/sources/ImageSource';
-import { DOMAdapter } from '../../../../settings/adapter/adapter';
 import { getResolutionOfUrl } from '../../../../utils/network/getResolutionOfUrl';
 import { checkDataUrl } from '../../../utils/checkDataUrl';
 import { checkExtension } from '../../../utils/checkExtension';

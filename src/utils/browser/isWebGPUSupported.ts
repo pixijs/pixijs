@@ -1,4 +1,4 @@
-import { DOMAdapter } from '../../settings/adapter/adapter';
+import { DOMAdapter } from '../../environment/adapter';
 
 /**
  * Helper for checking for WebGPU support.

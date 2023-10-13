@@ -3,7 +3,7 @@ import { RenderTarget } from '../../../src/rendering/renderers/shared/renderTarg
 import { CanvasSource } from '../../../src/rendering/renderers/shared/texture/sources/CanvasSource';
 import { Texture } from '../../../src/rendering/renderers/shared/texture/Texture';
 
-import type { ICanvas } from '../../../src/settings/adapter/ICanvas';
+import type { ICanvas } from '../../../src/environment/canvas/ICanvas';
 
 function makeTextureFromResource(resource: HTMLCanvasElement)
 {

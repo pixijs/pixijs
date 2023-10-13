@@ -1,5 +1,5 @@
+import { DOMAdapter } from '../../../../environment/adapter';
 import { ExtensionType } from '../../../../extensions/Extensions';
-import { DOMAdapter } from '../../../../settings/adapter/adapter';
 import { CanvasPool } from '../../shared/texture/CanvasPool';
 import { BindGroup } from '../shader/BindGroup';
 import { gpuUploadBufferImageResource } from './uploaders/gpuUploadBufferImageResource';
@@ -7,7 +7,7 @@ import { gpuUploadImageResource } from './uploaders/gpuUploadImageSource';
 import { gpuUploadVideoResource } from './uploaders/gpuUploadVideoSource';
 import { GpuMipmapGenerator } from './utils/GpuMipmapGenerator';
 
-import type { ICanvas } from '../../../../settings/adapter/ICanvas';
+import type { ICanvas } from '../../../../environment/canvas/ICanvas';
 import type { System } from '../../shared/system/System';
 import type { CanvasGenerator, GetPixelsOutput } from '../../shared/texture/GenerateCanvas';
 import type { TextureSource } from '../../shared/texture/sources/TextureSource';

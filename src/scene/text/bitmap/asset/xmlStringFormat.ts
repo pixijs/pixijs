@@ -1,4 +1,4 @@
-import { DOMAdapter } from '../../../../settings/adapter/adapter';
+import { DOMAdapter } from '../../../../environment/adapter';
 import { XMLFormat } from './xmlFormat';
 
 import type { BitmapFontData } from '../AbstractBitmapFont';

@@ -1,8 +1,8 @@
+import { DOMAdapter } from '../../../../environment/adapter';
 import { nextPow2 } from '../../../../maths/misc/pow2';
-import { DOMAdapter } from '../../../../settings/adapter/adapter';
 
-import type { ICanvas, ICanvasRenderingContext2DSettings } from '../../../../settings/adapter/ICanvas';
-import type { ICanvasRenderingContext2D } from '../../../../settings/adapter/ICanvasRenderingContext2D';
+import type { ICanvas, ICanvasRenderingContext2DSettings } from '../../../../environment/canvas/ICanvas';
+import type { ICanvasRenderingContext2D } from '../../../../environment/canvas/ICanvasRenderingContext2D';
 
 export interface CanvasAndContext
 {

@@ -19,7 +19,7 @@ import { GpuShaderSystem } from './shader/GpuShaderSystem';
 import { GpuStateSystem } from './state/GpuStateSystem';
 import { GpuTextureSystem } from './texture/GpuTextureSystem';
 
-import type { ICanvas } from '../../../settings/adapter/ICanvas';
+import type { ICanvas } from '../../../environment/canvas/ICanvas';
 import type { PipeConstructor } from '../shared/instructions/RenderPipe';
 import type { SystemConstructor } from '../shared/system/System';
 import type { ExtractRendererOptions, ExtractSystemTypes } from '../shared/system/utils/typeUtils';

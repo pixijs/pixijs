@@ -8,10 +8,10 @@ import { CanvasTextMetrics } from './CanvasTextMetrics';
 import { fontStringFromTextStyle } from './utils/fontStringFromTextStyle';
 import { getCanvasFillStyle } from './utils/getCanvasFillStyle';
 
+import type { ICanvas } from '../../../environment/canvas/ICanvas';
+import type { ICanvasRenderingContext2D } from '../../../environment/canvas/ICanvasRenderingContext2D';
 import type { System } from '../../../rendering/renderers/shared/system/System';
 import type { Texture } from '../../../rendering/renderers/shared/texture/Texture';
-import type { ICanvas } from '../../../settings/adapter/ICanvas';
-import type { ICanvasRenderingContext2D } from '../../../settings/adapter/ICanvasRenderingContext2D';
 import type { TextStyle } from '../TextStyle';
 
 interface CanvasAndContext

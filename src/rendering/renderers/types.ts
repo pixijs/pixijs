@@ -1,4 +1,4 @@
-import type { ICanvas } from '../../settings/adapter/ICanvas';
+import type { ICanvas } from '../../environment/canvas/ICanvas';
 import type { WebGLOptions, WebGLPipes, WebGLRenderer } from './gl/WebGLRenderer';
 import type { WebGPUOptions, WebGPUPipes, WebGPURenderer } from './gpu/WebGPURenderer';
 

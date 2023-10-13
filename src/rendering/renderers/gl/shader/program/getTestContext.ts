@@ -1,4 +1,4 @@
-import { DOMAdapter } from '../../../../../settings/adapter/adapter';
+import { DOMAdapter } from '../../../../../environment/adapter';
 
 const unknownContext = {};
 let context: WebGLRenderingContext | WebGL2RenderingContext = unknownContext as any;

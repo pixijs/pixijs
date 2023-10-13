@@ -1,9 +1,11 @@
 /**
  * -------------------------------------------------------
  * Get every d.ts file in the src folder and add a
- * reference to it in the lib/index.d.ts file
+ * reference path to it in the lib/index.d.ts file
  *
  * This allows us to define our PixiMixins in the src folder
+ *
+ * e.g. /// <reference path="./app/ApplicationMixins.d.ts" />
  * -------------------------------------------------------
  */
 

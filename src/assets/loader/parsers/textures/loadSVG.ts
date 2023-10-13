@@ -1,6 +1,6 @@
+import { DOMAdapter } from '../../../../environment/adapter';
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { GraphicsContext } from '../../../../scene/graphics/shared/GraphicsContext';
-import { DOMAdapter } from '../../../../settings/adapter/adapter';
 import { checkDataUrl } from '../../../utils/checkDataUrl';
 import { checkExtension } from '../../../utils/checkExtension';
 import { LoaderParserPriority } from '../LoaderParser';

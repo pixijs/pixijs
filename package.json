@@ -2,92 +2,6 @@
   "name": "pixi.js",
   "version": "8.0.0-beta.5",
   "author": "PixiJS Team",
-  "sideEffects": [
-    "./lib/events/init.*",
-    "./lib/app/init.*",
-    "./lib/accessibility/init.*",
-    "./lib/assets/init.*",
-    "./lib/filters/blend-modes/init.*",
-    "./lib/spritesheet/init.*",
-    "./lib/rendering/init.*",
-    "./lib/all.*"
-  ],
-  "exports": {
-    ".": {
-      "import": {
-        "types": "./lib/index.d.ts",
-        "default": "./lib/index.mjs"
-      },
-      "require": {
-        "types": "./lib/index.d.ts",
-        "default": "./lib/index.js"
-      }
-    },
-    "./all": {
-      "import": {
-        "default": "./lib/all.mjs"
-      },
-      "require": {
-        "default": "./lib/all.js"
-      }
-    },
-    "./accessibility": {
-      "import": {
-        "default": "./lib/accessibility/init.mjs"
-      },
-      "require": {
-        "default": "./lib/accessibility/init.js"
-      }
-    },
-    "./app": {
-      "import": {
-        "default": "./lib/app/init.mjs"
-      },
-      "require": {
-        "default": "./lib/app/init.js"
-      }
-    },
-    "./blendModes": {
-      "import": {
-        "default": "./lib/filters/blend-modes/init.mjs"
-      },
-      "require": {
-        "default": "./lib/filters/blend-modes/init.js"
-      }
-    },
-    "./assets": {
-      "import": {
-        "default": "./lib/assets/init.mjs"
-      },
-      "require": {
-        "default": "./lib/assets/init.js"
-      }
-    },
-    "./events": {
-      "import": {
-        "default": "./lib/events/init.mjs"
-      },
-      "require": {
-        "default": "./lib/events/init.js"
-      }
-    },
-    "./rendering": {
-      "import": {
-        "default": "./lib/rendering/init.mjs"
-      },
-      "require": {
-        "default": "./lib/rendering/init.js"
-      }
-    },
-    "./spritesheet": {
-      "import": {
-        "default": "./lib/spritesheet/init.mjs"
-      },
-      "require": {
-        "default": "./lib/spritesheet/init.js"
-      }
-    }
-  },
   "main": "lib/index.js",
   "module": "lib/index.mjs",
   "types": "lib/index.d.ts",
@@ -101,15 +15,18 @@
     "clean": "run-s clean:*",
     "clean:build": "rimraf \"{lib,dist,out}\" --glob",
     "clean:index": "rimraf \"src/**/index.ts\" --glob",
+    "clean:docs": "rimraf \"{docs}\" --glob",
+    "clean:artifacts": "rimraf \"{artifacts}\" --glob",
     "prebuild": "npm run clean",
     "build": "run-s build:index build:rollup build:tsc build:dts",
     "build:rollup": "npx rollup -c",
     "build:tsc": "tsc-silent -p tsconfig.types.json --suppress @",
     "build:index": "ts-node --transpile-only ./scripts/index/generateIndexFiles.ts",
     "build:dts": "ts-node --transpile-only ./scripts/types/fixTypes.ts && copyfiles -u 1 \"src/**/*.d.ts\" lib/",
+    "build:pkg": "ts-node ./scripts/utils/exports.ts",
     "dist": "run-s lint test:types build docs",
     "prewatch": "npm run build",
-    "postbuild": "rimraf \"src/**/index.ts\" --glob",
+    "postbuild": "rimraf \"src/**/index.ts\" --glob && npm run build:pkg",
     "watch": "nodemon --watch \"./src/*\" --exec \"npm run watch:build\" -e ts,js,vert,frag,wgsl,d.ts --ignore \"index.ts\"",
     "watch:build": "run-s build:index build:rollup build:tsc build:dts postbuild",
     "test": "npx jest --silent",
@@ -160,6 +77,7 @@
     "@types/pixelmatch": "^5.2.4",
     "@types/pngjs": "^6.0.2",
     "@webdoc/cli": "^2.2.0",
+    "@xmldom/xmldom": "^0.8.10",
     "copyfiles": "^2.4.1",
     "cross-env": "^7.0.3",
     "electron": "^12.0.0",
@@ -199,5 +117,100 @@
     "yargs-parser": "^21.0.1"
   },
   "bundle": "dist/pixi.js",
-  "bundleModule": "dist/pixi.mjs"
+  "bundleModule": "dist/pixi.mjs",
+  "sideEffects": [
+    "./lib/environment/browser/browserAll.*",
+    "./lib/environment/webworker/webworkerAll.*",
+    "./lib/accessibility/init.*",
+    "./lib/filters/blendModes/init.*",
+    "./lib/app/init.*",
+    "./lib/assets/init.*",
+    "./lib/events/init.*",
+    "./lib/spritesheet/init.*",
+    "./lib/rendering/init.*"
+  ],
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./lib/index.d.ts",
+        "default": "./lib/index.mjs"
+      },
+      "require": {
+        "types": "./lib/index.d.ts",
+        "default": "./lib/index.js"
+      }
+    },
+    "./browser": {
+      "import": {
+        "default": "./lib/environment/browser/browserAll.mjs"
+      },
+      "require": {
+        "default": "./lib/environment/browser/browserAll.js"
+      }
+    },
+    "./webworker": {
+      "import": {
+        "default": "./lib/environment/webworker/webworkerAll.mjs"
+      },
+      "require": {
+        "default": "./lib/environment/webworker/webworkerAll.js"
+      }
+    },
+    "./accessibility": {
+      "import": {
+        "default": "./lib/accessibility/init.mjs"
+      },
+      "require": {
+        "default": "./lib/accessibility/init.js"
+      }
+    },
+    "./advanced-blend-modes": {
+      "import": {
+        "default": "./lib/filters/blendModes/init.mjs"
+      },
+      "require": {
+        "default": "./lib/filters/blendModes/init.js"
+      }
+    },
+    "./app": {
+      "import": {
+        "default": "./lib/app/init.mjs"
+      },
+      "require": {
+        "default": "./lib/app/init.js"
+      }
+    },
+    "./assets": {
+      "import": {
+        "default": "./lib/assets/init.mjs"
+      },
+      "require": {
+        "default": "./lib/assets/init.js"
+      }
+    },
+    "./events": {
+      "import": {
+        "default": "./lib/events/init.mjs"
+      },
+      "require": {
+        "default": "./lib/events/init.js"
+      }
+    },
+    "./spritesheet": {
+      "import": {
+        "default": "./lib/spritesheet/init.mjs"
+      },
+      "require": {
+        "default": "./lib/spritesheet/init.js"
+      }
+    },
+    "./rendering": {
+      "import": {
+        "default": "./lib/rendering/init.mjs"
+      },
+      "require": {
+        "default": "./lib/rendering/init.js"
+      }
+    }
+  }
 }

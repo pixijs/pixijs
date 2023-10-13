@@ -1,11 +1,11 @@
+import { DOMAdapter } from '../../../../environment/adapter';
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
-import { DOMAdapter } from '../../../../settings/adapter/adapter';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
 import { getCanvasTexture } from '../texture/utils/getCanvasTexture';
 
+import type { ICanvas } from '../../../../environment/canvas/ICanvas';
 import type { DestroyOptions } from '../../../../scene/container/destroyTypes';
-import type { ICanvas } from '../../../../settings/adapter/ICanvas';
 import type { System } from '../system/System';
 import type { CanvasSourceOptions } from '../texture/sources/CanvasSource';
 import type { Texture } from '../texture/Texture';

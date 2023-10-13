@@ -1,7 +1,7 @@
 import { LoaderParserPriority } from '../../../../assets/loader/parsers/LoaderParser';
 import { copySearchParams } from '../../../../assets/utils/copySearchParams';
+import { DOMAdapter } from '../../../../environment/adapter';
 import { ExtensionType } from '../../../../extensions/Extensions';
-import { DOMAdapter } from '../../../../settings/adapter/adapter';
 import { path } from '../../../../utils/path';
 import { BitmapFont } from '../BitmapFont';
 import { TextFormat } from './textFormat';

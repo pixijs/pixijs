@@ -20,6 +20,7 @@ export const bump = async (currentVersion: string): Promise<string> =>
         type: 'list',
         message: `Release version (currently v${currentVersion}):`,
         choices: [
+            { value: 'prerelease', name: `Prerelease (v${semver.inc(currentVersion, 'prerelease')})` },
             { value: 'patch', name: `Patch (v${semver.inc(currentVersion, 'patch')})` },
             { value: 'minor', name: `Minor (v${semver.inc(currentVersion, 'minor')})` },
             { value: 'major', name: `Major (v${semver.inc(currentVersion, 'major')})` },

@@ -1,8 +1,8 @@
-import { DOMAdapter } from '../../../settings/adapter/adapter';
+import { DOMAdapter } from '../../../environment/adapter';
 import { fontStringFromTextStyle } from './utils/fontStringFromTextStyle';
 
-import type { ICanvas, ICanvasRenderingContext2DSettings } from '../../../settings/adapter/ICanvas';
-import type { ICanvasRenderingContext2D } from '../../../settings/adapter/ICanvasRenderingContext2D';
+import type { ICanvas, ICanvasRenderingContext2DSettings } from '../../../environment/canvas/ICanvas';
+import type { ICanvasRenderingContext2D } from '../../../environment/canvas/ICanvasRenderingContext2D';
 import type { TextStyle, TextStyleWhiteSpace } from '../TextStyle';
 
 // The type for Intl.Segmenter is only available since TypeScript 4.7.2, so let's make a polyfill for it.
