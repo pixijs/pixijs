@@ -354,8 +354,7 @@ export class TilingSpritePipe implements RenderPipe<TilingSpriteView>
     }
 }
 
-// TODO - move to a shared location
-export function applyMatrix(array: TypedArray, stride: number, offset: number, matrix: Matrix)
+function applyMatrix(array: TypedArray, stride: number, offset: number, matrix: Matrix)
 {
     let index = 0;
     const size = array.length / (stride || 2);

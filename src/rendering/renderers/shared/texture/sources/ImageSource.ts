@@ -1,11 +1,11 @@
+import { DOMAdapter } from '../../../../../environment/adapter';
 import { ExtensionType } from '../../../../../extensions/Extensions';
-import { DOMAdapter } from '../../../../../settings/adapter/adapter';
 import { NOOP } from '../../../../../utils/NOOP';
 import { Texture } from '../Texture';
 import { TextureSource } from './TextureSource';
 
+import type { ICanvas } from '../../../../../environment/canvas/ICanvas';
 import type { ExtensionMetadata } from '../../../../../extensions/Extensions';
-import type { ICanvas } from '../../../../../settings/adapter/ICanvas';
 
 export type ImageResource =
 ImageBitmap

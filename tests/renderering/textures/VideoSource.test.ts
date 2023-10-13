@@ -1,7 +1,7 @@
 import path from 'path';
 import { Assets } from '../../../src/assets/Assets';
 import { VideoSource } from '../../../src/rendering/renderers/shared/texture/sources/VideoSource';
-import '../../../src/all';
+import '../../../src/environment/browser/browserAll';
 
 import type { VideoSourceOptions } from '../../../src/rendering/renderers/shared/texture/sources/VideoSource';
 

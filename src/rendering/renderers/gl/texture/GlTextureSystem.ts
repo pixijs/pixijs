@@ -1,6 +1,6 @@
+import { DOMAdapter } from '../../../../environment/adapter';
 import { ExtensionType } from '../../../../extensions/Extensions';
 import { Rectangle } from '../../../../maths/shapes/Rectangle';
-import { DOMAdapter } from '../../../../settings/adapter/adapter';
 import { Texture } from '../../shared/texture/Texture';
 import { GlTexture } from './GlTexture';
 import { glUploadBufferImageResource } from './uploaders/glUploadBufferImageResource';
@@ -12,7 +12,7 @@ import { mapFormatToGlInternalFormat } from './utils/mapFormatToGlInternalFormat
 import { mapFormatToGlType } from './utils/mapFormatToGlType';
 import { unpremultiplyAlpha } from './utils/unpremultiplyAlpha';
 
-import type { ICanvas } from '../../../../settings/adapter/ICanvas';
+import type { ICanvas } from '../../../../environment/canvas/ICanvas';
 import type { Writeable } from '../../../../utils/types';
 import type { System } from '../../shared/system/System';
 import type { CanvasGenerator, GetPixelsOutput } from '../../shared/texture/GenerateCanvas';

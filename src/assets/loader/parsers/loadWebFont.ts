@@ -1,5 +1,5 @@
+import { DOMAdapter } from '../../../environment/adapter';
 import { ExtensionType } from '../../../extensions/Extensions';
-import { DOMAdapter } from '../../../settings/adapter/adapter';
 import { warn } from '../../../utils/logging/warn';
 import { path } from '../../../utils/path';
 import { Cache } from '../../cache/Cache';

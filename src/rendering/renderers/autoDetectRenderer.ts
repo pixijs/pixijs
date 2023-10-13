@@ -1,3 +1,4 @@
+import { autoDetectEnvironment } from '../../environment/autoDetectEnvironment';
 import { isWebGLSupported } from '../../utils/browser/isWebGLSupported';
 import { isWebGPUSupported } from '../../utils/browser/isWebGPUSupported';
 import { AbstractRenderer } from './shared/system/AbstractRenderer';
@@ -40,10 +41,9 @@ export async function autoDetectRenderer(options: Partial<AutoDetectOptions>): P
 
     let RendererClass: new () => Renderer;
 
-    if (options.manageImports ?? true)
-    {
-        await import('../../all');
-    }
+    await autoDetectEnvironment(
+        options.manageImports ?? true,
+    );
 
     let finalOptions: Partial<AutoDetectOptions> = {};
 

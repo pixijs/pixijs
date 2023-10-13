@@ -1,9 +1,9 @@
+import { DOMAdapter } from '../../../../../environment/adapter';
 import { ExtensionType } from '../../../../../extensions/Extensions';
-import { DOMAdapter } from '../../../../../settings/adapter/adapter';
 import { TextureSource } from './TextureSource';
 
+import type { ICanvas } from '../../../../../environment/canvas/ICanvas';
 import type { ExtensionMetadata } from '../../../../../extensions/Extensions';
-import type { ICanvas } from '../../../../../settings/adapter/ICanvas';
 import type { TextureSourceOptions } from './TextureSource';
 
 export interface CanvasSourceOptions extends TextureSourceOptions<ICanvas>

@@ -3,10 +3,10 @@ import { Container } from '../../../../scene/container/Container';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
 import { SystemRunner } from './SystemRunner';
 
+import type { ICanvas } from '../../../../environment/canvas/ICanvas';
 import type { Matrix } from '../../../../maths/matrix/Matrix';
 import type { Rectangle } from '../../../../maths/shapes/Rectangle';
 import type { DestroyOptions } from '../../../../scene/container/destroyTypes';
-import type { ICanvas } from '../../../../settings/adapter/ICanvas';
 import type { Writeable } from '../../../../utils/types';
 import type { RenderSurface } from '../../gpu/renderTarget/GpuRenderTargetSystem';
 import type { Renderer } from '../../types';

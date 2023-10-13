@@ -41,6 +41,8 @@ enum ExtensionType
     BlendMode = 'blend-mode',
 
     TextureSource = 'texture-source',
+
+    Environment = 'environment',
 }
 
 interface ExtensionMetadataDetails
