@@ -1,6 +1,11 @@
 declare module '*.worker.ts'
 {
-    const WorkerFactory: new () => Worker;
+    class WorkerLoader extends Worker
+    {
+        constructor();
 
-    export default WorkerFactory;
+        static revokeObjectURL(): void;
+    }
+
+    export default WorkerLoader;
 }

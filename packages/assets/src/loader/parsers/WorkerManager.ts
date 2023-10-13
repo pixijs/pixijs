@@ -50,7 +50,7 @@ class WorkerManagerClass
             worker.addEventListener('message', (event: MessageEvent<boolean>) =>
             {
                 worker.terminate();
-                // TODO: URL.revokeObjectURL(workerURL);
+                CheckImageBitmapWorker.revokeObjectURL();
                 resolve(event.data);
             });
         });
