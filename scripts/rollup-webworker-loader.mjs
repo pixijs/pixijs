@@ -7,14 +7,16 @@ const VIRTUAL_MODULE_PREFIX = `\0${PLUGIN_NAME}:`;
 
 const DEFAULT_OPTIONS = {
     worker: {
-        pattern: /worker:(.+)/,
+        pattern: /(.+\.worker\.[cm]?[jt]s)/,
         assertionType: 'worker',
     },
 };
 
 export default (() =>
 {
-    const state = {};
+    const state = {
+        exclude: new Set(),
+    };
 
     return {
         name: PLUGIN_NAME,
@@ -42,9 +44,12 @@ export default (() =>
             if (importee === null) return null;
 
             const resolvedPath = resolve(importer ? resolve(importer, '..') : '.', importee);
+            const id = VIRTUAL_MODULE_PREFIX + resolvedPath;
+
+            if (state.exclude.has(id)) return null;
 
             return {
-                id: VIRTUAL_MODULE_PREFIX + resolvedPath,
+                id,
                 assertions: { type: DEFAULT_OPTIONS.worker.assertionType },
             };
         },
@@ -54,10 +59,14 @@ export default (() =>
 
             const source = id.slice(VIRTUAL_MODULE_PREFIX.length);
 
+            state.exclude.add(id);
+
             const bundle = await rollup({
                 plugins: state.options.plugins,
                 input: source,
             });
+
+            state.exclude.delete(id);
 
             const output = await bundle.generate({
                 format: 'iife',

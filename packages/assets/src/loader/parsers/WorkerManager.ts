@@ -1,5 +1,5 @@
-import CheckImageBitmapWorker from 'worker:./workers/checkImageBitmap.worker.ts';
-import LoadImageBitmapWorker from 'worker:./workers/loadImageBitmap.worker.ts';
+import CheckImageBitmapWorker from './workers/checkImageBitmap.worker.ts';
+import LoadImageBitmapWorker from './workers/loadImageBitmap.worker.ts';
 
 let UUID = 0;
 let MAX_WORKERS: number;

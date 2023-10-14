@@ -41,6 +41,8 @@ function convertPackageNameToRegExp(packageName)
 
 async function main()
 {
+    const webworkerPlugin = webworker();
+
     const commonPlugins = [
         resolve({
             browser: true,
@@ -54,7 +56,6 @@ async function main()
                 '**/*.vert',
             ],
         }),
-        webworker(),
         // Import bundle dependencies from the source files
         // not from the build lib files, this will make sure
         // that conditional stuff works correctly (e.g., process.env.DEBUG)
@@ -78,16 +79,19 @@ async function main()
     };
 
     const plugins = [
+        webworkerPlugin,
         esbuild(esbuildConfig),
         ...commonPlugins,
     ];
 
     const bundlePlugins = [
+        webworkerPlugin,
         esbuild({ ...esbuildConfig, target: bundleTarget }),
         ...commonPlugins,
     ];
 
     const bundlePluginsProd = [
+        webworkerPlugin,
         esbuild({
             ...esbuildConfig,
             target: bundleTarget,
