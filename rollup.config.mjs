@@ -5,7 +5,7 @@ import esbuild from 'rollup-plugin-esbuild';
 import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
 import alias from '@rollup/plugin-alias';
-import webworkerLoader from './scripts/rollup-webworker-loader.mjs';
+import webworker from './scripts/rollup-webworker-loader.mjs';
 import workspacesRun from 'workspaces-run';
 import repo from './package.json' assert { type: 'json' };
 
@@ -54,7 +54,7 @@ async function main()
                 '**/*.vert',
             ],
         }),
-        webworkerLoader(),
+        webworker(),
         // Import bundle dependencies from the source files
         // not from the build lib files, this will make sure
         // that conditional stuff works correctly (e.g., process.env.DEBUG)
@@ -75,7 +75,7 @@ async function main()
         },
         treeShaking: true,
         tsconfigRaw: '{"compilerOptions":{"useDefineForClassFields":false}}'
-    }
+    };
 
     const plugins = [
         esbuild(esbuildConfig),

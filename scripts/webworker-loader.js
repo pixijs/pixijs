@@ -1,5 +1,5 @@
 module.exports = {
-    generateCode(source, moduleType)
+    buildWorkerCode(source, moduleType)
     {
         let result = `\
 const WORKER_CODE = ${JSON.stringify(source)};

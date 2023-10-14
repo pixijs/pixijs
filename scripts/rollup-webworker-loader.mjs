@@ -1,21 +1,78 @@
+import { resolve } from 'node:path';
+import { rollup } from 'rollup';
 import webworkerLoader from './webworker-loader.js';
 
-const regex = /.*\.worker\.ts/;
+const PLUGIN_NAME = '@pixi/webworker-loader/rollup-plugin';
+const VIRTUAL_MODULE_PREFIX = `\0${PLUGIN_NAME}:`;
 
-export default function myExample()
+const DEFAULT_OPTIONS = {
+    worker: {
+        pattern: /worker:(.+)/,
+        assertionType: 'worker',
+    },
+};
+
+export default (() =>
 {
+    const state = {};
+
     return {
-        name: '@pixi/webworker-loader/rollup-plugin',
-        transform(code, id)
+        name: PLUGIN_NAME,
+
+        options(options)
         {
-            if (!regex.test(id))
+            state.options = options;
+
+            return null;
+        },
+        resolveId(source, importer, options)
+        {
+            let importee = null;
+
+            const assertType = options.assertions.type;
+
+            if (assertType === DEFAULT_OPTIONS.worker.assertionType) importee = source;
+            else
             {
-                return null;
+                const patternMatch = source.match(DEFAULT_OPTIONS.worker.pattern);
+
+                if (patternMatch) importee = patternMatch[1];
             }
 
-            code = webworkerLoader.generateCode(code, 'esm');
+            if (importee === null) return null;
 
-            return { code, map: null };
-        }
+            const resolvedPath = resolve(importer ? resolve(importer, '..') : '.', importee);
+
+            return {
+                id: VIRTUAL_MODULE_PREFIX + resolvedPath,
+                assertions: { type: DEFAULT_OPTIONS.worker.assertionType },
+            };
+        },
+        async load(id)
+        {
+            if (!id.startsWith(VIRTUAL_MODULE_PREFIX)) return null;
+
+            const source = id.slice(VIRTUAL_MODULE_PREFIX.length);
+
+            const bundle = await rollup({
+                plugins: state.options.plugins,
+                input: source,
+            });
+
+            const output = await bundle.generate({
+                format: 'iife',
+                name: 'WorkerLoader',
+                sourcemap: 'inline', // TODO: Use external source map?
+            });
+
+            const workerCode = output.output[0].code;
+
+            const code = webworkerLoader.buildWorkerCode(workerCode, 'esm');
+
+            return {
+                code,
+                assertions: { type: DEFAULT_OPTIONS.worker.assertionType },
+            };
+        },
     };
-}
+});

@@ -8,6 +8,6 @@ module.exports = {
 
         const transformedCode = tsTransformer.process(sourceText, sourcePath, config, options);
 
-        return webworkerLoader.generateCode(transformedCode, 'cjs');
+        return webworkerLoader.buildWorkerCode(transformedCode, 'cjs');
     }
 };

@@ -1,4 +1,4 @@
-declare module '*.worker.ts'
+declare module 'worker:*.worker.ts'
 {
     class WorkerLoader extends Worker
     {
