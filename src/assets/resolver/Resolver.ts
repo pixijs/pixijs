@@ -694,7 +694,6 @@ export class Resolver
                 if (this._assetMap[key])
                 {
                     let assets = this._assetMap[key];
-                    const bestAsset = assets[0];
                     const preferredOrder = this._getPreferredOrder(assets);
 
                     preferredOrder?.priority.forEach((priorityKey) =>
@@ -718,7 +717,7 @@ export class Resolver
                         });
                     });
 
-                    this._resolverHash[key] = (assets[0] ?? bestAsset);
+                    this._resolverHash[key] = assets[0];
                 }
                 else
                 {
@@ -807,7 +806,7 @@ export class Resolver
         formattedAsset.src = this._appendDefaultSearchParams(formattedAsset.src);
         formattedAsset.data = { ...assetData || {}, ...formattedAsset.data };
         formattedAsset.loadParser = loadParser ?? formattedAsset.loadParser;
-        formattedAsset.format = format ?? formattedAsset.src.split('.').pop();
+        formattedAsset.format = format ?? formattedAsset.format ?? formattedAsset.src.split('.').pop();
         formattedAsset.srcs = formattedAsset.src;
         formattedAsset.name = formattedAsset.alias;
 
