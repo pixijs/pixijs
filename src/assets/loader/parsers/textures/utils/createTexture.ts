@@ -7,6 +7,8 @@ import type { Loader } from '../../../Loader';
 
 export function createTexture(source: TextureSource, loader: Loader, url: string)
 {
+    source.label = url;
+
     const texture = new Texture({
         source,
         label: url,

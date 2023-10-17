@@ -2,7 +2,7 @@
     "compilerOptions": {
         "typeRoots": [ "./node_modules/@webgpu/types", "./node_modules/@types"],
         "target": "es2020",
-        "lib": ["ESNext", "DOM"],
+        "lib": ["ESNext", "DOM", "webworker"],
         "module": "ESNext",
         "allowJs": false,
         "removeComments": false,

@@ -3,10 +3,11 @@
   "version": "8.0.0-beta.3",
   "author": "PixiJS Team",
   "sideEffects": [
-    "./lib/events/init.*",
     "./lib/app/init.*",
     "./lib/accessibility/init.*",
     "./lib/assets/init.*",
+    "./lib/compressed-textures/ktx/init.*",
+    "./lib/events/init.*",
     "./lib/spritesheet/init.*",
     "./lib/rendering/init.*",
     "./lib/all.*"
@@ -52,6 +53,14 @@
       },
       "require": {
         "default": "./lib/assets/init.js"
+      }
+    },
+    "./ktx": {
+      "import": {
+        "default": "./lib/compressed-textures/ktx/init.mjs"
+      },
+      "require": {
+        "default": "./lib/compressed-textures/ktx/init.js"
       }
     },
     "./events": {
@@ -180,6 +189,7 @@
     "rollup-plugin-jscc": "^2.0.0",
     "rollup-plugin-sourcemaps": "^0.4.2",
     "rollup-plugin-string": "^3.0.0",
+    "rollup-plugin-web-worker-loader": "^1.6.1",
     "semver": "^7.3.8",
     "tree-kill": "^1.2.2",
     "ts-jest": "^26.0.0",

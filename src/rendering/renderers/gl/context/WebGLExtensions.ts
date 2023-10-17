@@ -30,6 +30,14 @@ export interface WEBGL_compressed_texture_atc
     COMPRESSED_RGBA_ATC_INTERPOLATED_ALPHA_WEBGL: number;
 }
 
+export interface EXT_texture_compression_bptc
+{
+    COMPRESSED_RGBA_BPTC_UNORM_EXT: number;
+    COMPRESSED_RGB_BPTC_SIGNED_FLOAT_EXT: number;
+    COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT_EXT: number;
+    COMPRESSED_SRGB_ALPHA_BPTC_UNORM_EXT: number;
+}
+
 export interface WebGLExtensions
 {
     drawBuffers?: WEBGL_draw_buffers;
@@ -51,5 +59,6 @@ export interface WebGLExtensions
     pvrtc?: WEBGL_compressed_texture_pvrtc;
     atc?: WEBGL_compressed_texture_atc;
     astc?: WEBGL_compressed_texture_astc;
+    bptc?: EXT_texture_compression_bptc;
 }
 /* eslint-enable camelcase */

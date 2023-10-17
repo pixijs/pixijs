@@ -3,13 +3,13 @@ import { Cache } from '../../../../assets/cache/Cache';
 import { uid } from '../../../../utils/data/uid';
 import { deprecation, v8_0_0 } from '../../../../utils/logging/deprecation';
 import { NOOP } from '../../../../utils/NOOP';
-import { BufferImageSource } from './sources/BufferImageSource';
+import { BufferImageSource } from './sources/BufferSource';
 import { TextureSource } from './sources/TextureSource';
 import { TextureLayout } from './TextureLayout';
 import { TextureMatrix } from './TextureMatrix';
 
 import type { Rectangle } from '../../../../maths/shapes/Rectangle';
-import type { BufferSourceOptions } from './sources/BufferImageSource';
+import type { BufferSourceOptions } from './sources/BufferSource';
 import type { TextureSourceOptions } from './sources/TextureSource';
 import type { TextureLayoutOptions } from './TextureLayout';
 

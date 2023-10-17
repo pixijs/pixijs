@@ -3,6 +3,7 @@ import { settings } from '../../../../settings/settings';
 import { CanvasPool } from '../../shared/texture/CanvasPool';
 import { BindGroup } from '../shader/BindGroup';
 import { gpuUploadBufferImageResource } from './uploaders/gpuUploadBufferImageResource';
+import { blockDataMap, gpuUploadCompressedTextureResource } from './uploaders/gpuUploadCompressedTextureResource';
 import { gpuUploadImageResource } from './uploaders/gpuUploadImageSource';
 import { gpuUploadVideoResource } from './uploaders/gpuUploadVideoSource';
 import { GpuMipmapGenerator } from './utils/GpuMipmapGenerator';
@@ -38,7 +39,8 @@ export class GpuTextureSystem implements System, CanvasGenerator
     private readonly _uploads: Record<string, GpuTextureUploader> = {
         image: gpuUploadImageResource,
         buffer: gpuUploadBufferImageResource,
-        video: gpuUploadVideoResource
+        video: gpuUploadVideoResource,
+        compressed: gpuUploadCompressedTextureResource
     };
 
     private _gpu: GPU;
@@ -65,16 +67,27 @@ export class GpuTextureSystem implements System, CanvasGenerator
             source.mipLevelCount = Math.floor(Math.log2(biggestDimension)) + 1;
         }
 
-        const textureDescriptor = {
-            size: { width: source.pixelWidth || 1, height: source.pixelHeight || 1 },
+        let usage = GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST;
+
+        if (source.uploadMethodId !== 'compressed')
+        {
+            usage |= GPUTextureUsage.RENDER_ATTACHMENT;
+            usage |= GPUTextureUsage.COPY_SRC;
+        }
+
+        const blockData = blockDataMap[source.format] || { blockBytes: 4, blockWidth: 1, blockHeight: 1 };
+
+        const width = Math.ceil(source.pixelWidth / blockData.blockWidth) * blockData.blockWidth;
+        const height = Math.ceil(source.pixelHeight / blockData.blockHeight) * blockData.blockHeight;
+
+        const textureDescriptor: GPUTextureDescriptor = {
+            label: source.label,
+            size: { width, height },
             format: source.format,
             sampleCount: source.sampleCount,
             mipLevelCount: source.mipLevelCount,
             dimension: source.dimension,
-            usage: GPUTextureUsage.TEXTURE_BINDING
-                | GPUTextureUsage.COPY_DST
-                | GPUTextureUsage.RENDER_ATTACHMENT
-                | GPUTextureUsage.COPY_SRC,
+            usage
         };
 
         const gpuTexture = this._gpu.device.createTexture(textureDescriptor);

@@ -16,7 +16,7 @@ export interface StructsAndGroups
 export function extractStructAndGroups(wgsl: string): StructsAndGroups
 {
     // Patterns for parsing the WGSL file
-    const linePattern = /(?<!\/\/.*)@(group|binding)\(\d+\)[^;]+;/g;
+    const linePattern = /(^|[^/])@(group|binding)\(\d+\)[^;]+;/g;
     const groupPattern = /@group\((\d+)\)/;
     const bindingPattern = /@binding\((\d+)\)/;
     const namePattern = /var(<[^>]+>)? (\w+)/;
