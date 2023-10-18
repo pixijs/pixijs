@@ -10,6 +10,7 @@ const subImports = [
     ['./app', './lib/app'],
     ['./assets', './lib/assets'],
     // 'compressed-textures', // to be implemented
+    ['./ktx', './lib/compressed-textures/ktx'],
     // 'basis', // to be implemented
     ['./events', './lib/events'],
     // ['./math-extras', './lib/math-extras'],
