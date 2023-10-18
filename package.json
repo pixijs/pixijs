@@ -129,6 +129,7 @@
     "./lib/assets/init.*",
     "./lib/compressed-textures/dds/init.*",
     "./lib/compressed-textures/ktx/init.*",
+    "./lib/compressed-textures/basis/init.*",
     "./lib/events/init.*",
     "./lib/spritesheet/init.*",
     "./lib/rendering/init.*"
@@ -206,6 +207,14 @@
       },
       "require": {
         "default": "./lib/compressed-textures/ktx/init.js"
+      }
+    },
+    "./basis": {
+      "import": {
+        "default": "./lib/compressed-textures/basis/init.mjs"
+      },
+      "require": {
+        "default": "./lib/compressed-textures/basis/init.js"
       }
     },
     "./events": {
