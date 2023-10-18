@@ -3,7 +3,7 @@ import type { GPU } from '../../GpuDeviceSystem';
 import type { GpuTextureUploader } from './GpuTextureUploader';
 
 export const blockDataMap: Record<string, {blockBytes: number, blockWidth: number, blockHeight: number}> = {
-    'bc1-rgb-unorm': { blockBytes: 8, blockWidth: 4, blockHeight: 4 },
+    'bc1-rgba-unorm': { blockBytes: 8, blockWidth: 4, blockHeight: 4 },
     'bc2-rgba-unorm': { blockBytes: 16, blockWidth: 4, blockHeight: 4 },
     'bc3-rgba-unorm': { blockBytes: 16, blockWidth: 4, blockHeight: 4 },
     'bc7-rgba-unorm': { blockBytes: 16, blockWidth: 4, blockHeight: 4 },

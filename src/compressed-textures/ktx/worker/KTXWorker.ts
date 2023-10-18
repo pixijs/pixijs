@@ -45,13 +45,13 @@ async function getKTX(): Promise<LIBKTXModule>
 
 async function fetchKTXTexture(url: string, ktx: LIBKTXModule)
 {
-    const ktx2ContainerResponse = await fetch(`${url}`);
+    const ktx2Response = await fetch(url);
 
-    if (ktx2ContainerResponse.ok)
+    if (ktx2Response.ok)
     {
-        const ktx2ContainerResponseArrayBuffer = await ktx2ContainerResponse.arrayBuffer();
+        const ktx2ArrayBuffer = await ktx2Response.arrayBuffer();
 
-        return new ktx.ktxTexture(new Uint8Array(ktx2ContainerResponseArrayBuffer));
+        return new ktx.ktxTexture(new Uint8Array(ktx2ArrayBuffer));
     }
 
     throw new Error(`Failed to load KTX(2) texture: ${url}`);

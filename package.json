@@ -127,6 +127,7 @@
     "./lib/filters/blendModes/init.*",
     "./lib/app/init.*",
     "./lib/assets/init.*",
+    "./lib/compressed-textures/dds/init.*",
     "./lib/compressed-textures/ktx/init.*",
     "./lib/events/init.*",
     "./lib/spritesheet/init.*",
@@ -189,6 +190,14 @@
       },
       "require": {
         "default": "./lib/assets/init.js"
+      }
+    },
+    "./dds": {
+      "import": {
+        "default": "./lib/compressed-textures/dds/init.mjs"
+      },
+      "require": {
+        "default": "./lib/compressed-textures/dds/init.js"
       }
     },
     "./ktx": {
